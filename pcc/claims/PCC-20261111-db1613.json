@@ -1,0 +1,23 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-11T09:06:41Z",
+ "id": "PCC-20261111-db1613",
+ "kind": "statement",
+ "producer": {
+  "commit": "73d6d5849f08cd240a4a333d3a86c2cca5f294d3",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/small-prime-development-01.txt",
+    "sha256": "1e22cba46fcb05f19a78d225e26154cb20e0da3e883c529d2c1245f4a4d94575"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Four-field BigUint development oracle passes on p13,29,31,101: both complete source/target Jacobian class sets have independently counted orders180,960,1008,9216; self-inverse counts4/4,4/16,16/4,4/16; all paired additions/dual norms and independent BigUint elliptic orders agree. Chart adapter uses BigUint directly. Fp2 field-layer lineage is shared, so this does not independently validate that field layer or provide signed standing. New feature source pin/replay pending; no timing."
+}

@@ -9,6 +9,9 @@ use chained_jacobian_transfer as chain;
 use num_bigint::BigUint;
 use reference::{FpPoly, HyperellipticCurveP, MumfordDivisorP};
 
+#[cfg(test)]
+mod small_prime_oracle;
+
 fn polynomial(c: &[i64]) -> FpPoly {
     FpPoly::from_coeffs(
         c.iter().map(|x| BigUint::from(*x as u64)).collect(),

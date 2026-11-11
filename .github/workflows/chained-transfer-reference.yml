@@ -35,7 +35,9 @@ jobs:
           ref: ${{ steps.pin.outputs.revision }}
           persist-credentials: false
           path: crypto
-          sparse-checkout: research/chained_jacobian_transfers_20261110/native
+          sparse-checkout: |
+            research/chained_jacobian_transfers_20261110/native
+            src/prime_hyperelliptic
       - name: Run digest guards and development comparisons
         env:
           RUSTUP_TOOLCHAIN: 1.99.1

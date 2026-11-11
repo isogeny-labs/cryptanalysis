@@ -1,98 +1,92 @@
-#set page(paper: "a4", margin: 18mm)
-#set text(font: "DejaVu Sans", size: 10pt)
-#set par(justify: true)
-= Chained transfer differential reference
-2026-11-11 · fixed F₁₀₁ fixture · producer-run development checks
+#set page(paper:"a4",margin:18mm)
+#set text(font:"DejaVu Sans",size:10pt)
+#set par(justify:true)
+= Pinned chained-transfer and small-prime oracle
+2026-11-11 · cryptanalysis · producer-run development checks
 
-*Standing: unverified.* The reference arithmetic predates this work and is
-imported unchanged, but both implementations are run by this producer and
-use Cantor reduction. Agreement is not signed independent verification.
+*Standing: unsigned and unverified.* The unchanged pre-existing BigUint
+arithmetic checks complete finite class sets. Both implementations use Cantor;
+the field-point counter shares the existing Fp2 lineage. Agreement is not
+signed independent validation of every layer. No benchmark or computational
+advantage is claimed. [pcc:unverified]
 
-== Pinned source and models
-Native source: isogeny-labs/crypto commit
-aabae1979457c3ba9e5112487a907b50cab15a99, package
-research/chained_jacobian_transfers_20261110/native. The reference is
-suite/src/prime_hyperelliptic from cryptanalysis commit
-68594c8874c75a0a6c04a3874adb1374088ca4f5. source-pin.json and SHA-256
-manifests bind all imported files; check.sh refuses drift before compiling.
+== Source custody and execution scope
+Current crypto pin:75a737b8366ec6c78ed8672886423fcbe69853a2. Seven runtime
+SHA-256 inputs include native Cargo/source files and the external unchanged
+src/prime_hyperelliptic/fp2.rs. The consumer enables small-prime and refuses
+source/reference drift before compiling. The reference files remain pinned
+to cryptanalysis68594c8874c75a0a6c04a3874adb1374088ca4f5.
 
-The source is C:y²=x⁶+1 over F₁₀₁, based at (10,0). The target is
-C₂:w²=41z⁶+9z⁴+9z²+41. The order-17 elliptic subgroup has
-P=(4,41) on E:y²=x³+1. A faithful coordinate change makes each odd
-quintic monic: t=a·z, Y=a²·Z with a=inverse(leading(F)). The reference
-therefore computes on the same curves, not an unrecorded twist.
-[pcc:unverified]
+check.sh passes native formatting, strict Clippy and25 tests, then reference
+formatting, strict Clippy and29 tests with1 existing benchmark ignored. Raw
+receipt small-prime-pinned-01.txt; PCC-20261111-465843 remains unsigned.
+Earlier18db046,b280efc,aabae197 pin metadata and every raw receipt remain
+retained. No failed attempt was replaced. [pcc:unverified]
 
-== Exact development coverage
-#table(columns: (1fr, 2fr), inset: 5pt,
-  [Check], [Retained scope],
-  [Source arithmetic], [10,404 canonical additions and inverses],
-  [Richelot subgroup], [All 289 additions in the order-17 target subgroup],
-  [Full forward image], [10,404 source images and fixed-translation additions; 2,601 distinct target classes],
-  [Point-count order], [Both Jacobian orders recomputed as 10,404 from Fp/Fp² counts],
-  [Successor], [Both9,216-class sets: paired additions, dual norms, independent point-count order9,216 and self-inverse counts4/16],
-  [Local suite], [28 tests pass; 1 pre-existing benchmark remains ignored],
+== Exact four-field comparison
+#table(columns:(0.5fr,1fr,1fr,1fr),inset:5pt,
+[p],[Each Jac order],[Self-inverse source/target],[Elliptic quotient orders],
+[13],[180],[4 / 4],[10 / 18],
+[29],[960],[4 / 16],[40 / 24],
+[31],[1008],[16 / 4],[28 / 36],
+[101],[9216],[4 / 16],[96 / 96],
 )
-Raw outputs retain the original baseline and successor development/pinned
-receipts. The latest full replay includes source guards, formatting and strict
-Clippy against the published aabae197 pin. Initial18db046 metadata is archived
-in source-pins/. PCC-20261111-820d6f remains unsigned/unverified. First Clippy failure and the subsequent pass are
-retained; its compatibility annotation affects only the unchanged reference’s
-from_fp(&self) API. No correctness test was suppressed. [pcc:unverified]
+On all eight complete models, BigUint independently computes the monic chart
+change, paired additions, dual norms, self-inverse counts, Fp/Fp² Jacobian
+orders and elliptic quotient orders. The first13/29/101 fields were fixed
+before execution;31 was separately added as a nonresidue control and uses3
+rather than2. [pcc:unverified]
 
-== Reproduce and limits
-Check out the two repositories as siblings, with the pinned native files in
-crypto, then run experiments/chained-transfer-reference/check.sh from
-cryptanalysis. Cargo.lock and numeric dependency versions are fixed.
-
-There is no DLP timing or speed claim, new curve-family coverage, or full
-formal Picard construction in this record. The initial target is isomorphic to its source. The successor rational
-2-torsion counts4/16 obstruct an F101-isomorphism of the Jacobians; its
-source elliptic quotient has96 points and preserved prime subgroup3. The
-upstream report retains vanishing projections and direct elliptic shortcuts
-for both complete endpoint functions. These checks do not establish a new
-computational reduction.
+Different rational2-torsion counts obstruct a base-field Jacobian isomorphism;
+equal counts at13 do not establish one. The source prime subgroups are5,5,7,3.
+The native backend validates odd primes≤4096 and caps enumeration at101.
+These tiny correctness fixtures do not establish large-field performance,
+cryptographic-size support or transfer between prime characteristics.
 [pcc:unverified]
 
-Primary sources: Galbraith, corrected book ch.8 §8.3 and ch.10 §§10.3–10.4;
-Kunzweiler, DCC92 (2024), DOI10.1007/s10623-024-01366-1, §§3.1–3.2.
-The complete source receipt is pinned upstream. KB and vault gaps remain
-explicit; no novelty claim is made.
+The earlier r17 fixture retains10,404 source additions/inverses,289 target
+subgroup additions, complete Richelot-image translation checks and independent
+point-count orders. Its initial target is source-isomorphic and its complete
+elliptic endpoint matches a direct shortcut. [pcc:unverified]
 
 #pagebreak()
-= Route of the pinned upstream fixture
-#image("route.svg", width: 100%)
-This diagram is copied from the pinned upstream commit. Solid arrows show the
-explicit maps; dashed arrows are zero controls; dotted arrows are complete
-finite elliptic shortcuts. Both fixed-field fixtures are shown, with their
-different subgroup sizes visible. All evidence remains unsigned.
-
-#pagebreak()
-= Second nonbacktracking Jacobian hop
+= Retained two-hop construction and limits
 #image("chain.svg",width:100%)
+The predeclared successor second pairing has determinant67, base11 and
+third-model coefficients[38,9,29,62,86,17,8]. All9,216 target classes have
+BigUint additions/dual norms checked, independent order9,216 and self-inverse
+count8. The rational composite kernel has8 elements,4 self-inverse; do not
+confuse it with geometric degree16. Source P=(48,20),r3 reaches the canonical
+class u(T)=T²+86T+27,v(T)=34T+7. Upstream native checks include trivial
+next-kernel/previous-dual intersection and reversed-chain/source norm[8].
+[pcc:unverified]
 
-The predeclared next pairing(2,18),(-2,28),(-18,-28), with leading scale20,
-has determinant67 and new base11. The third sextic coefficients are
-[38,9,29,62,86,17,8]. The unchanged BigUint reference checks all9,216 target
-classes: paired additions, dual norm and self-inverse count8. Fp/Fp² point
-counts independently give Jacobian order9,216. Thus all three Jacobians are
-distinguished over F101 by rational2-torsion4,16,8. [pcc:unverified]
+The source global successor argument derives n R f∗ = tau phi[2] for its
+first elliptic projection in characteristic≠2,3,5, with
+tau(X,V)=(X/100+1/125,−V/1000). The actual base translation(1/125,0) is
+included. Seven cleared ring lemmas compile upstream; projective/Picard
+completion is a written argument, not a full Lean construction. It is not
+asserted as a collapse of the final Jacobian-valued two-hop map.
+[pcc:unverified]
 
-The rational composite kernel has8 elements,4 self-inverse; do not confuse
-this with the geometric degree16. The upstream native test also checks a
-trivial next-kernel/previous-dual intersection, both dual norms and nonzero
-r3 transport through both steps. Source P=(48,20) reaches the canonical
-class u(T)=T²+86T+27,v(T)=34T+7. Reversed chain and source norm give[8],
-invertible modulo3. None of these point computations reveals its unknown
-DLP scalar. [pcc:unverified]
+== Reproduction and review
+Check out crypto and cryptanalysis as siblings, with the exact pinned native
+and external Fp2 files, then run experiments/chained-transfer-reference/check.sh.
+Cargo.lock and source manifests freeze the dependencies. The focused
+push-main/manual workflow checks out that same runtime closure and runs both
+suites. Actual final-head CI is tracked in GitHub separately from local
+receipts. Prior focused run42986170752 succeeded on exactc6bc590; its raw
+Actions log is retained without treating it as signed PCC scientific standing.
+[pcc:unverified]
 
-The source guards, formatting, strict Clippy and28-test/1ignored replay
-passed against aabae197. Receipts second-hop-development-01.txt and
-second-hop-pinned-01.txt are retained; PCC-20261111-d0f154 is unsigned. This
-checkpoint predates the later small-prime feature, which requires a separate
-source-pin update. The initial18db046 and successorb280efc baseline metadata
-remain archived. [pcc:unverified]
+Crypto’s original PR3877 remains subject to its current-main ledger-prefix
+fork and historical archived-receipt gates. No history or verifier was
+rewritten. S3 checkpoint credentials, live IsoLab budget/capacity, KB/ecdb and
+the autoresearcher vault binding remain unavailable. No performance run has
+been launched. The queue is crypto issue3904; locked-atlas integration stays
+in its source handoff.
 
-There is no timing, measured ECDLP improvement, cryptographic-size field
-coverage or full formal Jacobian geometry claim. The upstream queue names
-checkpoint/budget access gates and proof/merge blockers.
+Primary sources: Galbraith corrected ch.8 §8.3,ch.10 §§10.3–10.4/10.6;
+Kunzweiler,DCC92(2024),DOI10.1007/s10623-024-01366-1,Propositions7–8.
+The new arithmetic covers bounded fixtures; independent signed validation,
+full geometric formalization and any computational advantage remain open.
