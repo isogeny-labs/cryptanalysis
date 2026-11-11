@@ -11,6 +11,8 @@ use isogeny_algos::{genus2, poly};
 use num_bigint::BigUint;
 use num_traits::ToPrimitive;
 use std::collections::HashSet;
+#[path = "seven_torsion.rs"]
+mod torsion;
 
 #[derive(Clone, Copy, Debug)]
 struct QuotientChart {

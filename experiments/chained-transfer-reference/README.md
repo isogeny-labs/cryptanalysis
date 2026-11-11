@@ -1,5 +1,17 @@
 # Chained transfer differential reference
 
+Current [transported seven-chain](SEVEN_CHAIN.md) constructs actual global
+Psi between the accepted T0 and a distinct unpolarized F101 Jacobian T1.
+Both complete12317-class domains pass dual[7],bijections,paired additions,
+coefficient descent and all109 source/reverse28/inverse74/direct4 controls.
+Actual49-kernel/64-lift action,full geometric two-kernel inclusion and a
+complete target-automorphism/sign proof support the written construction.
+Local guard passes25native/65reference unit+two integrations;the additional
+third integration and strict all-target Clippy also pass. Source helpers90,
+formal geometry partial,standing unsigned. [SEVEN_CHAIN_STATUS.md](SEVEN_CHAIN_STATUS.md)
+retains exact records,corrections,report and the new consumer ledger fork.
+Final-head focused CI is a separate pending obligation. [pcc:unverified]
+
 Current [degree49 Jacobian transfer](SEVEN_TRANSFER.md) supplies actual
 Phi/PhiHat between the fixed F101 Jacobians C0/C1. Full geometric2-kernel
 certificates and a written quotient/polarization proof give a genuine(7,7)
@@ -7,7 +19,8 @@ map. Both entire12317-class rational domains,dual[7],bijections,paired
 additions and all109 original source controls pass. New eight Lean helpers
 bring the project to80 written lemmas;actual geometry remains written.
 The full local guard passes native25/reference57 unit+two integrations,
-one old benchmark ignored;exact-head CI remains pending. See the diagram,
+one old benchmark ignored;exact2450815e2 CI43085588914 later succeeds.
+Parent1484 now has a frozen-ledger conflict with main. See the diagram,
 inspected two-page PDF and immutable receipts. All standing unsigned.
 [pcc:unverified]
 

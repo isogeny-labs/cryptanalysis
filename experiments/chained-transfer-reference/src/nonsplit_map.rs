@@ -343,8 +343,6 @@ impl RichelotMap {
         Self::from_assessment(construct()).unwrap()
     }
     fn from_assessment(a: Assessment) -> Result<Self> {
-        let p = a.field.p;
-        let k = Field::new(a.field);
         let pairing = a
             .pairs
             .iter()
@@ -352,15 +350,59 @@ impl RichelotMap {
                 let g = std::array::from_fn(|i| {
                     let (u, v) = p[i];
                     vec![
-                        k.k.mul(&a.roots[u], &a.roots[v]),
+                        a.field.mul(&a.roots[u], &a.roots[v]),
                         a.roots[u].add(&a.roots[v]).neg(),
-                        k.k.c(1),
+                        a.field.c(1),
                     ]
                 });
-                !k.k.determinant(&g).is_zero()
+                !a.field.determinant(&g).is_zero()
             })
+            .copied()
             .ok_or("no nondegenerate stable kernel")?;
-        assert_eq!(*pairing, [(0, 4), (1, 5), (2, 3)]);
+        // Preserve the frozen old-model choice; transported kernels use the
+        // separately validated explicit constructor below.
+        assert_eq!(pairing, [(0, 4), (1, 5), (2, 3)]);
+        Self::from_selected_pairing(a, pairing)
+    }
+    fn from_selected_pairing(a: Assessment, pairing: super::Pairing) -> Result<Self> {
+        let p = a.field.p;
+        if a.roots.len() != 6 || a.source.len() != 7 {
+            return Err("selected Richelot chart requires six branch roots and a sextic".into());
+        }
+        let mut used = [false; 6];
+        for (u, v) in pairing {
+            for i in [u, v] {
+                if i >= 6 || used[i] {
+                    return Err("selected kernel is not a disjoint six-root matching".into());
+                }
+                used[i] = true;
+            }
+        }
+        if super::canonical_pairing(pairing) != pairing || !a.pairs.contains(&pairing) {
+            return Err("selected kernel is not an inventoried canonical stable matching".into());
+        }
+        for (i, root) in a.roots.iter().enumerate() {
+            if root.p != a.field.q.p
+                || root.degree().is_some_and(|d| d >= 3)
+                || a.roots[..i].contains(root)
+            {
+                return Err(
+                    "branch roots are not six distinct canonical elements of the field".into(),
+                );
+            }
+        }
+        let mut permutation = [0; 6];
+        for (i, root) in a.roots.iter().enumerate() {
+            permutation[i] = a
+                .roots
+                .iter()
+                .position(|r| *r == a.field.pow(root, p))
+                .ok_or("branch roots are not Frobenius stable")?;
+        }
+        if !super::stable(&pairing, &permutation) {
+            return Err("selected kernel is not Frobenius stable".into());
+        }
+        let k = Field::new(a.field);
         let raw_g = std::array::from_fn(|i| {
             let (u, v) = pairing[i];
             vec![
@@ -369,16 +411,21 @@ impl RichelotMap {
                 k.k.c(1),
             ]
         });
+        if k.k.product(&raw_g) != a.source.iter().map(|c| k.k.c(*c)).collect::<Vec<_>>() {
+            return Err("selected factor product does not equal the source sextic".into());
+        }
         let delta = k.k.determinant(&raw_g);
-        assert!(!delta.is_zero());
+        if delta.is_zero() {
+            return Err("selected Richelot determinant is zero".into());
+        }
         let raw_h = k.k.dual_factors(&raw_g, &delta);
         let g = std::array::from_fn(|i| raw_g[i].iter().map(|c| k.lift3(c)).collect());
         let h = std::array::from_fn(|i| raw_h[i].iter().map(|c| k.lift3(c)).collect());
-        let raw_target =
-            k.k.product(&raw_h)
-                .iter()
-                .map(|c| k.k.base(c))
-                .collect::<Vec<_>>();
+        let product = k.k.product(&raw_h);
+        if product.iter().any(|c| c.degree().is_some_and(|d| d > 0)) {
+            return Err("selected Richelot target coefficients do not descend".into());
+        }
+        let raw_target = product.iter().map(|c| k.k.base(c)).collect::<Vec<_>>();
         if raw_target.len() != 7 {
             return Err("odd target chart requires explicit coordinate conversion".into());
         }

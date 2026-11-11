@@ -9,6 +9,7 @@ explain the gap and what would let the work move past it.
 
 | Problem | Status | What it blocks | What would unblock it |
 | --- | --- | --- | --- |
+| [Chained-transfer frozen ledger synchronization](https://github.com/isogeny-labs/crypto/blob/research/chained-jacobian-transfer-20261110/problems/chained-transfer-admission-and-ledger-sync.md) | open | Merge1484 and its CT21 continuation after main61/frozenPhi60 diverged at row56 | Accepted reconciliation retaining both histories and passing actual prefix/hash-link/current-head CI/review;native evidence in chained-transfer-reference/evidence/seven-consumer-ledger-fork-01.json |
 | [Xedni affine-CVP checkpoint access](xedni-affine-cvp-checkpoint-access.md) | open | Frozen p=67 exact-discriminant comparison for the new coefficient-coset optimizer | Valid checkpoint upload and a passing gate, then the four frozen rows |
 | [Prime IC Jacobian timing checkpoint access](prime-ic-jacobian-checkpoint-access.md) | open | Measured relation-collection speedup claim for the new Jacobian lane backend | Successful checkpoint gate plus a retained paired run on an isolation-qualified host |
 | [Prime-field arity-three CDCL(T) implementation](prime-field-m3-cdclt-implementation.md) | open, narrowed | Freezing and running the corrected `m=3`, `s=6..14` prime-field PDP exponent screen | Development oracle and representation sizing now pass; still need the production typed IR, source-bound `F_p` theory and explanation/proof checker, matched exporters, complete accounting, power/preflight and immutable freeze |
@@ -70,7 +71,7 @@ cause is unknown; explicit unknowns are useful, invented explanations are not.
 - `resolved`: linked evidence meets the stated exit criteria for this specific
   obstruction. State any remaining limitations.
 - `superseded`: a linked successor now tracks this obstruction; this is not a
-  claim that it was solved.
+  claim that it was solved. [pcc:unverified]
 
 These statuses describe the problem record, not the scientific status of a
 hypothesis or the completion of a campaign. Stopping work does not resolve
@@ -79,7 +80,7 @@ a problem or authorize abandoning the user's requirement.
 Keep observations, calculations, hypotheses, resource/access/assistance gaps,
 and proved limits distinct. Bound a negative result by its exact inputs and
 search limits. A resource ceiling, missing implementation, or failed search
-does not establish a mathematical obstruction or a security theorem.
+does not establish a mathematical obstruction or a security theorem. [pcc:unverified]
 
 Preserve historical evidence and append dated updates explaining corrections.
 A resolution cites its evidence and the criteria met; a supersession cites its

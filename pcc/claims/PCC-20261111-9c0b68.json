@@ -1,0 +1,58 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-11T20:07:50Z",
+ "id": "PCC-20261111-9c0b68",
+ "kind": "statement",
+ "producer": {
+  "commit": "2450815e2a3b84687b405ef8498dae9dc2663fe1",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/seven-phi-ci-observation-01.json",
+    "sha256": "f0d6c90fa814b078bcfe1970fd44272c8b6cb3b2104f2802a52235ca9e25d82e"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/seven-consumer-ledger-fork-01.json",
+    "sha256": "5961b5fde3ea7b0e2a8115aef5159169e8bd29ecfcc9641ab65059c36211436e"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/seven-consumer-ledger-fork-01.txt",
+    "sha256": "dd442bc956bcd545c4331ebbc15bf0ef6ea05b96b29d873819a7bf8533a18b30"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/seven-phi-ci-reference-130748995086.txt.xz",
+    "sha256": "fe78ab034e71cbccce464ef13504910b2eb1401faef07dcfb0b3325c6dce133f"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/seven-phi-ci-cppcheck-130748394350.txt.xz",
+    "sha256": "12e05d21c3c2cbbc810c991328a5539c9417d745de5dac5095469f3bb0567d2d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/seven-phi-ci-clang-tidy-130748394286.txt.xz",
+    "sha256": "06c268b86167425dcbedb88c6f10688ae2c6f70a41743e448dea15a2d1315ebb"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Observed exact Phi head2450815e2 focused GitHub43085588914/reference130748995086 succeeds with native25/reference57 unit plus two integrations and one pre-existing ignored benchmark. Required store/gate/records,allCodeQL and other checks complete;two unrelated C-analysis jobs cppcheck/clang-tidy fail with actual diagnostics retained,not reported as infrastructure success. Main later advancedfb3f88a03 with five checkpoint-bypass ledger entries from1485/1486. Main61/frozenPhi60/live65 rows share only56-prefix;current prefix verification fails and PR1484 mergeable_state dirty. No history was rewritten,no merge/protection bypass attempted,and CI success is not a signed scientific verdict."
+}
