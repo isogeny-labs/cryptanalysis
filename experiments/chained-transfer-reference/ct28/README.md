@@ -1,10 +1,10 @@
-# CT28: native quotient norms — pending compilation
+# CT28: native quotient norms — scoped CI passed [pcc:unverified]
 
 **[pcc:unverified]** Engineering continuation of [CT27 #1489](https://github.com/isogeny-labs/cryptanalysis/pull/1489), based on exact head `06aafcad7537e0f69f524dc1c86a507388f8736e`. Existing engines, frozen proofs, ledger and pins are not modified.
 
 The newly added `src/ct28_direct_norm.rs` implements formulas for both elliptic quotient norms of the two fixed even genus-two F101 sextics. It handles degree-zero and degree-one supports; split, nonsplit and repeated quadratic supports without factoring; s=0, t=0, x=0; and balanced infinity contributions. It rejects wrong-curve inputs and unsupported fields. The implementation evaluates no unknown scalar and uses elliptic group arithmetic only for tangencies and infinity corrections.
 
-Its native regression enumerates 12,317 classes **per fixed curve**, comparing both coordinates against the unchanged `SplitQuotients::norms`, checking support census, exceptions, infinity and wrong-curve rejection. **These are unexecuted assertions, not successful test results**: this tool environment has neither Rust nor a network checkout. No performance or correctness claim for this new Rust code is accepted until it compiles and passes the independently replayed test.
+Its native regression enumerates 12,317 classes **per fixed curve**, comparing both coordinates against the unchanged `SplitQuotients::norms`, checking support census, exceptions, infinity and wrong-curve rejection. **Scoped exact-source GitHub Actions run #43108763483 passed rustfmt, the targeted release Rust test (1 passed, 66 filtered), and strict Clippy at source commit 96041cc1. Both 12,317-class per-curve direct-vs-generic comparisons passed; see the session log for retained failed runs and original-curve tag fix. Scientific standing remains unsigned [pcc:unverified].
 
 Reproduction with pinned sibling checkout:
 
