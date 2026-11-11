@@ -80,7 +80,9 @@ fn reciprocal_point(curve: &Curve, f: F, c: u64, x: u64, y: u64) -> Result<Divis
 /// while native quotient norm computations are reserved for the regression.
 fn direct_norms(split: &SplitQuotients, d: &Class) -> Result<(Divisor, Divisor)> {
     let (u, v, plus) = d.components();
-    split.first.balanced.wrap(u.clone(), v.clone(), plus)?;
+    // Check the ORIGINAL curve tag. Re-wrapping only u/v/plus on this curve
+    // would relabel a valid zero class from any other curve as our identity.
+    split.first.balanced.check(d)?;
     let curve = &split.first.base;
     let reciprocal = &split.second.base;
     let f = F {
