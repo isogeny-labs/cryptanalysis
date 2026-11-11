@@ -18,8 +18,8 @@ source/reference drift before compiling. The reference files remain pinned
 to cryptanalysis68594c8874c75a0a6c04a3874adb1374088ca4f5.
 
 check.sh passes native formatting, strict Clippy and25 tests, then reference
-formatting, strict Clippy and29 tests with1 existing benchmark ignored. Raw
-receipt small-prime-pinned-01.txt; PCC-20261111-465843 remains unsigned.
+formatting, strict Clippy and33 tests with1 existing benchmark ignored. Raw
+receipt cubic-pinned-02.txt; PCC-20261111-29610e remains unsigned.
 Earlier18db046,b280efc,aabae197 pin metadata and every raw receipt remain
 retained. No failed attempt was replaced. [pcc:unverified]
 
@@ -90,3 +90,49 @@ Primary sources: Galbraith corrected ch.8 §8.3,ch.10 §§10.3–10.4/10.6;
 Kunzweiler,DCC92(2024),DOI10.1007/s10623-024-01366-1,Propositions7–8.
 The new arithmetic covers bounded fixtures; independent signed validation,
 full geometric formalization and any computational advantage remain open.
+
+#pagebreak()
+= Cubic arbitrary-class norm prerequisite
+#image("cubic.svg",width:100%)
+
+The existing Enge20261024 cover family already supplies C(d,s). This extension
+implements the bounded missing arbitrary-class norm on genus4 using unchanged
+BigUint polynomial/Cantor arithmetic. The pre-existing E109/F101 fixture
+has cubic covers of genera4 and13; whole pullback substitutes X³ in u,v.
+Deflation recovers the exact source class on the coefficient image.
+[pcc:unverified]
+
+For arbitrary canonical genus4 inputs, support u is completely factored
+through degree4. In each residue field Fp[X]/q the norm sums Frobenius
+conjugates of (X³,v(X)), checks orbit closure/descent and retains support
+multiplicity. The map takes no scalar labels. Checked primes are5..101.
+The second norm remains restricted to the exact pullback image; no global
+arbitrary-genus13 norm is implemented. [pcc:unverified]
+
+All109 source scalars pass both maps, norm[3] and composed restricted norm[9].
+The fixed130 cases kA and kA+B,k=0..64 have closed support degrees1..4.
+A separate root crypto example reconstructs their sources, genus13 images
+and elliptic norms with pre-existing arithmetic, plus a distinct
+Frobenius-gcd irreducibility criterion. The producer norm is not imported.
+Both Jacobian engines use Cantor and the harnesses are producer-authored;
+PCC-2d5c08 is unsigned. [pcc:unverified]
+
+The E19/F17 control checks361 ordered subgroup pairs, ramification and
+degree12 representatives. Four new tests and the full guarded25+33 suite
+pass. First compile/PATH failures remain retained separately. Four structural
+Lean lemmas compile upstream; Picard/finite-field geometry is not formalized.
+[pcc:unverified]
+
+Odd full elliptic group order prevents rational linear/quadratic factors
+in f(X²+s), restricting the present rational-factor constructor. It does
+not exclude a Frobenius-stable unordered splitting into nonrational quadratics.
+Next: balanced genus2 arithmetic, then an actual non-split descent assessment.
+No genus increase, point recovery or source-group embedding alone supplies
+a DLP speedup. No benchmark or prime-field descent is claimed.
+[pcc:unverified]
+
+Source-linked account and witnesses: crypto research/chained_jacobian_transfers_20261110/
+CUBIC_NORM_20261111.md. Primary geometry: Galbraith corrected ch.8§8.3,
+ch.10§§10.3–10.4. Existing Enge relation-yield and total-cost gaps remain open.
+Canonical transfer/leaderboard graphs remain unchanged: no signed finding or
+performance edge has been promoted.
