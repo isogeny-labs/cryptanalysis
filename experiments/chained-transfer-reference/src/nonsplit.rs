@@ -1,5 +1,5 @@
 //! Fixed F17 Frobenius-stable Richelot kernel/codomain assessment.
-//! This module constructs factors and target models, not divisor maps.
+//! Kernel/codomain construction; operational maps live in nonsplit_map.rs.
 //! Base polynomial arithmetic is the pre-existing checked BigUint layer.
 use super::balanced::Balanced;
 use super::reference::{Fp2Ctx, FpPoly};
@@ -9,6 +9,9 @@ use std::collections::BTreeSet;
 type E = FpPoly;
 type Poly = Vec<E>;
 type Pairing = [(usize, usize); 3];
+
+#[path = "nonsplit_map.rs"]
+mod map;
 
 struct CubicField {
     p: u64,

@@ -35,7 +35,7 @@ change, not an unrecorded twist or a square-root assumption. [pcc:unverified]
   sets have paired additions and both dual norms compared with BigUint;
   independent Fp/Fp² point counts give order9,216, and reference negation
   counts self-inverse classes as4 and16.
-- Latest guarded suite receipt: native25 and reference40 passing tests, one pre-existing benchmark left
+- Latest guarded suite receipt: native25 and reference43 passing tests, one pre-existing benchmark left
   ignored. These are local correctness counts, not performance measurements.
   [pcc:unverified]
 
@@ -48,6 +48,18 @@ changes. Strict Clippy's first attempt found the reference's pre-existing
 `Fp2Ctx::from_fp(&self)` convention warning. The compatibility annotation is
 confined to the imported reference module; no correctness test or reference
 arithmetic was changed. Both the warning and subsequent pass are retained.
+[pcc:unverified]
+
+The [operational non-split map](NONSPLIT_MAP.md),
+[diagram/PDF](nonsplit-map-report.pdf), now evaluates the determinant11
+correspondence/dual with F17⁶ intermediates and complete F17 descent. All285
+classes in each direction satisfy both dual norms[2], bijection and paired
+additivity; all19 elliptic source scalar/recovery relations pass. Full guard
+passes native25/reference43 tests,1 old benchmark ignored, formatting/strict
+Clippy/guards(PCC-bd303e). A separate pre-existing flat F17⁶ engine replays128
+field witnesses, without importing new field/map code; this validates that
+layer, not independently the full Jacobian map. All standing unsigned, no
+cost advantage or cross-prime descent. Next: predeclared shifted E109 cover.
 [pcc:unverified]
 
 The subsequent [balanced genus2 prototype](BALANCED.md),
