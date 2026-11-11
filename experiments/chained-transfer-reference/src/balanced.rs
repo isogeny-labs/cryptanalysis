@@ -309,13 +309,31 @@ pub struct QuadraticCover {
 }
 impl QuadraticCover {
     pub fn new(p: u64, a: u64, b: u64) -> Result<Self> {
+        Self::with_cubic(p, [b, a, 0])
+    }
+    pub(super) fn with_cubic(p: u64, coefficients: [u64; 3]) -> Result<Self> {
         let modulus = BigUint::from(p);
         let f = FpPoly::from_coeffs(
-            [b, a, 0, 1].into_iter().map(BigUint::from).collect(),
+            coefficients
+                .into_iter()
+                .chain([1])
+                .map(BigUint::from)
+                .collect(),
             modulus.clone(),
         );
         let base = Curve::try_new(modulus, f, 1).map_err(|e| e.to_string())?;
-        let balanced = Balanced::new(p, &[b, 0, a, 0, 0, 0, 1])?;
+        let balanced = Balanced::new(
+            p,
+            &[
+                coefficients[0],
+                0,
+                coefficients[1],
+                0,
+                coefficients[2],
+                0,
+                1,
+            ],
+        )?;
         Ok(Self { base, balanced })
     }
     pub fn pull(&self, d: &Divisor) -> Result<Class> {

@@ -1,0 +1,29 @@
+   Compiling chained-transfer-reference v0.1.0 (/workspace/cryptanalysis/experiments/chained-transfer-reference)
+warning: unused import: `construct_for`
+ --> src/nonsplit_map.rs:4:24
+  |
+4 | use super::{construct, construct_for, Assessment, CubicField, E};
+  |                        ^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: `chained-transfer-reference` (bin "chained-transfer-reference" test) generated 1 warning (run `cargo fix --bin "chained-transfer-reference" -p chained-transfer-reference --tests` to apply 1 suggestion)
+    Finished `release` profile [optimized] target(s) in 7.16s
+     Running unittests src/main.rs (experiments/chained-transfer-reference/target/release/deps/chained_transfer_reference-d352df790eb46e3d)
+
+running 3 tests
+retained degenerate pairing[(0, 3), (1, 4), (2, 5)], delta0
+stable pairing[(0, 4), (1, 5), (2, 3)], delta11, target[10, 6, 14, 2, 12, 10, 9]
+retained degenerate pairing[(0, 3), (1, 4), (2, 5)], delta0
+stable pairing[(0, 5), (1, 3), (2, 4)], delta6, target[10, 11, 14, 15, 12, 7, 9]
+stable pairing[(0, 4), (1, 5), (2, 3)], delta11, target[10, 6, 14, 2, 12, 10, 9]
+stable pairing[(0, 5), (1, 3), (2, 4)], delta6, target[10, 11, 14, 15, 12, 7, 9]
+PASS nonzero full prime19 source through quadratic pullback/non-split Richelot, all19 scalar relations, reversed-chain/source norm[4] and inverse5 recovery; no scalar label in map
+test nonsplit::map::full_prime19_subgroup_and_source_recovery ... ok
+PASS F17² embeddings on289 pairs and128 compositum inverse/Frobenius controls using irreducible cubic and nonsquare quadratic adjunction
+test nonsplit::map::compositum_embeddings_inverses_and_frobenius ... ok
+PASS all285 source/target rational classes, both dual norms[2],285-image bijection, paired additivity, balanced infinities and coefficientwise F17 descent
+test nonsplit::map::complete_rational_domains_duals_and_additivity ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 42 filtered out; finished in 12.07s
+

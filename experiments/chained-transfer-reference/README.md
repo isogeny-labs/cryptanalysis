@@ -1,5 +1,14 @@
 # Chained transfer differential reference
 
+Latest continuation: [shifted full-order109 transfer](SHIFTED109.md),
+[diagram/PDF](shifted109-report.pdf). The predeclared shift2 source admits a
+determinant63 map/dual with all12,317 source and target classes checked;
+all109 scalar/recovery[4]/inverse82 relations pass. Independent flat F101⁶
+field replay and four shifted-cover Lean lemmas pass in crypto. Targeted
+changed-input tests/Clippy pass; current full46-test guarded CI is pending.
+The older receipts below retain their exact scope. No cost advantage,
+solver or cross-prime descent result. [pcc:unverified]
+
 This development oracle compares the native fixed F101 transfer fixture in
 [crypto #3877](https://github.com/isogeny-labs/crypto/pull/3877) with the
 pre-existing `suite/src/prime_hyperelliptic` BigUint implementation, which is
