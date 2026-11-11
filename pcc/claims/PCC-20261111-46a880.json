@@ -1,0 +1,23 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-11T12:48:29Z",
+ "id": "PCC-20261111-46a880",
+ "kind": "statement",
+ "producer": {
+  "commit": "767c945a0a832c4f9d2827add8aefce3a16d2371",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/shifted109-focused-ci-01.txt",
+    "sha256": "b89ac9de098050f29ff3d0c811e674934e0ae1da5d7aeb1223b0daba194a4d37"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Exact-head focused run43022364261 succeeds on shifted109 producer767c945a0a832c4f9d2827add8aefce3a16d2371: immutable raw log records native25 and reference46 passing tests,1 existing benchmark ignored,formatting,strict Clippy and seven unchanged runtime guards. This is CI correctness execution,not signed scientific validation,performance evidence or an all-workflow success assertion."
+}

@@ -1,4 +1,4 @@
-//! Fixed F17 Frobenius-stable Richelot kernel/codomain assessment.
+//! Bounded Frobenius-stable Richelot kernel/codomain assessment.
 //! Kernel/codomain construction; operational maps live in nonsplit_map.rs.
 //! Base polynomial arithmetic is the pre-existing checked BigUint layer.
 use super::balanced::Balanced;
