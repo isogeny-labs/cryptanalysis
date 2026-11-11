@@ -806,4 +806,190 @@ fn shifted_prime109_full_domains_and_source_recovery() {
     println!("PASS frozen shifted E109/F101, delta63, raw scale22; all12317 source/target classes both dual norms[2], bijection/additivity/coefficient descent; all109 scalar/recovery[4]/inverse82 relations, no scalar labels in maps");
 }
 
+/// Geometric branch-pair classes and coefficient Frobenius. This accepts
+/// extension classes directly, independently of the prime-field map wrapper.
+fn branch_two_torsion(j: &Jacobian<'_>, roots: &[Element]) -> Vec<Divisor> {
+    assert_eq!(roots.len(), 6);
+    let k = j.k;
+    let mut out = vec![];
+    for (i, x) in roots.iter().enumerate() {
+        assert!(k.zero(&k.value(&j.f, x)));
+        assert!(!roots[..i].contains(x));
+        for y in roots.iter().skip(i + 1) {
+            let d = j
+                .pair(vec![k.mul(x, y), k.neg(&k.add(x, y)), k.c(1)], vec![], 0)
+                .unwrap();
+            assert_ne!(d, j.zero());
+            assert!(!out.contains(&d));
+            assert_eq!(j.add(&d, &d).unwrap(), j.zero());
+            out.push(d);
+        }
+    }
+    assert_eq!(out.len(), 15);
+    out
+}
+
+fn frobenius_class(k: &Field, d: &Divisor, power: u32) -> Divisor {
+    let exponent = k.k.p.pow(power);
+    Divisor {
+        u: d.u.iter().map(|c| k.pow(c, exponent)).collect(),
+        v: d.v.iter().map(|c| k.pow(c, exponent)).collect(),
+        plus: d.plus,
+    }
+}
+
+#[test]
+fn accepted_targets_frobenius_two_torsion_and_next_kernels() {
+    use super::{canonical_pairing, pairings, stable};
+    for (p, coefficients) in [(17, [2, 2, 0]), (101, [56, 13, 6])] {
+        let assessment = construct_for(p, coefficients).unwrap();
+        let source_roots = assessment.roots.clone();
+        let r = RichelotMap::from_assessment(assessment).unwrap();
+        let k = &r.k;
+        let cubic = &k.k;
+        let source = Jacobian::new(k, &r.source);
+        let target = Jacobian::new(k, &r.target);
+        let mut target_roots = vec![];
+        let mut discriminant_characters = vec![];
+        for h in &r.h {
+            assert_eq!(h.len(), 3);
+            assert!(h.iter().all(|c| c.b.is_zero()));
+            let d = cubic
+                .mul(&h[1].a, &h[1].a)
+                .sub(&cubic.mul(&cubic.c(4), &cubic.mul(&h[0].a, &h[2].a)));
+            assert!(!d.is_zero());
+            let square = if let Some(root) = cubic.sqrt(&d) {
+                discriminant_characters.push(1_i8);
+                k.lift3(&root)
+            } else {
+                discriminant_characters.push(-1_i8);
+                let quotient = cubic.mul(&d, &cubic.inv(&k.nonresidue));
+                Element {
+                    a: cubic.z(),
+                    b: cubic.sqrt(&quotient).unwrap(),
+                }
+            };
+            assert_eq!(k.mul(&square, &square), k.lift3(&d));
+            let denominator = k.inv(&k.mul(&k.c(2), &h[2]));
+            target_roots.push(k.mul(&k.add(&k.neg(&h[1]), &square), &denominator));
+            target_roots.push(k.mul(&k.sub(&k.neg(&h[1]), &square), &denominator));
+        }
+        // Label by actual Frobenius orbits, without assuming3+3 or a6-cycle.
+        let mut ordered = vec![];
+        for root in &target_roots {
+            let mut x = root.clone();
+            while !ordered.contains(&x) {
+                assert!(target_roots.contains(&x));
+                ordered.push(x.clone());
+                x = k.pow(&x, p);
+            }
+        }
+        assert_eq!(ordered.len(), 6);
+        let permutation = std::array::from_fn(|i| {
+            ordered
+                .iter()
+                .position(|x| *x == k.pow(&ordered[i], p))
+                .unwrap()
+        });
+        let dual_pairing = canonical_pairing(std::array::from_fn(|i| {
+            (
+                ordered
+                    .iter()
+                    .position(|x| *x == target_roots[2 * i])
+                    .unwrap(),
+                ordered
+                    .iter()
+                    .position(|x| *x == target_roots[2 * i + 1])
+                    .unwrap(),
+            )
+        }));
+        let next = pairings()
+            .into_iter()
+            .filter(|pairing| stable(pairing, &permutation))
+            .collect::<Vec<_>>();
+        assert!(next.contains(&dual_pairing));
+        assert_eq!(discriminant_characters, [-1, -1, -1]);
+        assert_eq!(permutation, [1, 2, 3, 4, 5, 0]);
+        assert_eq!(next, [dual_pairing]);
+        let geometric_source = source_roots.iter().map(|x| k.lift3(x)).collect::<Vec<_>>();
+        let source_torsion = branch_two_torsion(&source, &geometric_source);
+        let target_torsion = branch_two_torsion(&target, &ordered);
+        let source_fixed = 1 + source_torsion
+            .iter()
+            .filter(|d| frobenius_class(k, d, 3) == **d)
+            .count();
+        let target_fixed = 1 + target_torsion
+            .iter()
+            .filter(|d| frobenius_class(k, d, 3) == **d)
+            .count();
+        assert_eq!(source_fixed, 16);
+        assert_eq!(target_fixed, 4);
+        for d in source_torsion.iter().chain(&target_torsion) {
+            assert_eq!(frobenius_class(k, d, 6), *d);
+        }
+        let mut kernel = 1;
+        let mut images = vec![target.zero()];
+        let mut ordered_images = vec![target.zero()];
+        // For a degree2 branch pair, the completed infinity coefficient is0.
+        // Evaluate both completed branch fibers, including y=0 cases.
+        for i in 0..6 {
+            for j in i + 1..6 {
+                let a = r
+                    .fiber(
+                        &geometric_source[i],
+                        &k.c(0),
+                        &r.g,
+                        &r.h,
+                        r.target_scale,
+                        &target,
+                    )
+                    .unwrap();
+                let b = r
+                    .fiber(
+                        &geometric_source[j],
+                        &k.c(0),
+                        &r.g,
+                        &r.h,
+                        r.target_scale,
+                        &target,
+                    )
+                    .unwrap();
+                let image = target.add(&a, &b).unwrap();
+                assert_eq!(target.add(&image, &image).unwrap(), target.zero());
+                kernel += usize::from(image == target.zero());
+                ordered_images.push(image.clone());
+                if !images.contains(&image) {
+                    images.push(image);
+                }
+            }
+        }
+        assert_eq!((kernel, images.len()), (4, 4));
+        let mut all_source = vec![source.zero()];
+        all_source.extend(source_torsion);
+        for (i, d) in all_source.iter().enumerate() {
+            let conjugate = frobenius_class(k, d, 1);
+            source.check(&conjugate).unwrap();
+            let index = all_source.iter().position(|a| *a == conjugate).unwrap();
+            assert_eq!(
+                ordered_images[index],
+                frobenius_class(k, &ordered_images[i], 1)
+            );
+            for (j, e) in all_source.iter().enumerate() {
+                let sum = source.add(d, e).unwrap();
+                let index = all_source.iter().position(|a| *a == sum).unwrap();
+                assert_eq!(
+                    ordered_images[index],
+                    target.add(&ordered_images[i], &ordered_images[j]).unwrap()
+                );
+            }
+        }
+        for d in &target_torsion {
+            let conjugate = frobenius_class(k, d, 1);
+            target.check(&conjugate).unwrap();
+            assert!(target_torsion.contains(&conjugate));
+        }
+        println!("F{p} target discriminant characters{discriminant_characters:?}, branch Frobenius{permutation:?}, next stable{next:?}, previous dual{dual_pairing:?}; source/target2-torsion over Fp³ {source_fixed}/{target_fixed}; full geometric2-torsion16 each, map kernel{kernel}/image{}; all256 torsion additions and Frobenius-equivariant branch images pass", images.len());
+    }
+}
+
 use std::collections::BTreeSet;

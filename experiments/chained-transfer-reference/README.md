@@ -1,5 +1,15 @@
 # Chained transfer differential reference
 
+Current [target Frobenius assessment](TARGET_FROBENIUS.md) strengthens both
+accepted17/101 maps to an unpolarized Fp-Jacobian nonisomorphism obstruction:
+source/target2-torsion over Fp³ has16/4 elements. Both targets have six-cycle
+branch action and only their previous dual as a rational Richelot kernel;
+another rational step must backtrack. All256 torsion additions/Frobenius
+branch-image controls pass; seven core Lean certificates compile upstream.
+Prior shifted source767c945a0 passes exact-head native25/reference46 CI;
+current CT16 full47-test replay is pending. Standing unsigned; no universal
+transfer impossibility or computational advantage. [pcc:unverified]
+
 Latest continuation: [shifted full-order109 transfer](SHIFTED109.md),
 [diagram/PDF](shifted109-report.pdf). The predeclared shift2 source admits a
 determinant63 map/dual with all12,317 source and target classes checked;

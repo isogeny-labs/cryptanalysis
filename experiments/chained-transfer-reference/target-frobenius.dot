@@ -1,0 +1,11 @@
+digraph obstruction {
+ graph [rankdir=LR,bgcolor="white",fontname="DejaVu Sans",pad=0.2];
+ node [shape=box,style="rounded,filled",fillcolor="#eef3fa",fontname="DejaVu Sans",fontsize=11];
+ edge [fontname="DejaVu Sans",fontsize=10];
+ S [label="Source Jac(C)/Fp\nBranch Frobenius(012)(345)\nFp³-two-torsion16"];
+ T [fillcolor="#e7f5ea",label="Target Jac(Ct)/Fp\nBranch Frobenius(012345)\nFp³-two-torsion4"];
+ N [fillcolor="#fcece6",label="Only stable next kernel:\nprevious dual\nNo rational nonbacktracking hop"];
+ S -> T [label="accepted Richelot\np17/101, δ11/63"];
+ T -> S [label="dual\ncomposition[2]",color="#247044"];
+ T -> N [label="all15 matchings",color="#a34c26"];
+}
