@@ -1,0 +1,13 @@
+digraph chain {
+  graph [rankdir=LR, bgcolor="white", fontsize=12,
+    label="Second-hop chain over F101 · unsigned correctness construction", labelloc=t];
+  node [shape=box, style="rounded,filled", fillcolor="#edf4fa", fontname="DejaVu Sans", fontsize=11];
+  edge [fontname="DejaVu Sans", fontsize=10];
+  E [label="Es/F101\n#E=96, r=3\nP=(48,20)"];
+  J0 [label="Jac(Cs)\n#J=9216\n#rational2-torsion=4"];
+  J1 [label="Jac(Ct)\n#J=9216\n#rational2-torsion=16"];
+  J2 [label="Jac(Cu)\n#J=9216\n#rational2-torsion=8", fillcolor="#e1f1e9"];
+  E -> J0 [label="whole fiber"];
+  J0 -> J1 [label="R1\ndegree4"];
+  J1 -> J2 [label="R2\ndegree4"];
+}

@@ -195,3 +195,58 @@ fn check_successor() {
 fn successor_both_complete_models_against_biguint() {
     check_successor();
 }
+
+#[test]
+fn predeclared_second_hop_target_against_biguint() {
+    use chain::richelot::model::{Class, Richelot};
+    let first = Richelot::new([[-1, 0, 1], [4, 1, 1], [4, -1, 1]], 1, 2).unwrap();
+    let second = Richelot::new([[36, -20, 1], [-56, -26, 1], [10080, 920, 20]], 2, 11).unwrap();
+    assert_eq!(first.target(), second.source());
+    let model = second.target();
+    let f = model.quintic();
+    let c = curve(&f);
+    assert_eq!(
+        reference::brute_force_jac_order_via_lpoly(&c),
+        BigUint::from(9216_u32)
+    );
+    let classes = model.classes();
+    assert_eq!(classes.len(), 9216);
+    let converted = |d: &Class| {
+        let (u, v) = d.coefficients();
+        convert(&chain::Divisor { u, v }, &c, &f)
+    };
+    let mut two = 0;
+    for (i, d) in classes.iter().enumerate() {
+        let a = converted(d);
+        if a.checked_neg(&c).unwrap() == a {
+            two += 1;
+        }
+        let h = &classes[(7919 * i + 37) % classes.len()];
+        assert_eq!(
+            a.checked_add(&converted(h), &c).unwrap(),
+            converted(&d.add(h).unwrap())
+        );
+        assert_eq!(
+            a.checked_add(&a, &c).unwrap(),
+            converted(&second.transfer(&second.dual(d).unwrap()).unwrap())
+        );
+    }
+    assert_eq!(two, 8);
+    let source = first.source();
+    let sf = source.quintic();
+    let sc = curve(&sf);
+    let mut kernel = vec![];
+    for d in source.classes() {
+        let image = second.transfer(&first.transfer(&d).unwrap()).unwrap();
+        if image == model.zero() {
+            let (u, v) = d.coefficients();
+            kernel.push(convert(&chain::Divisor { u, v }, &sc, &sf));
+        }
+    }
+    let two_kernel = kernel
+        .iter()
+        .filter(|d| d.checked_neg(&sc).unwrap() == **d)
+        .count();
+    assert_eq!((kernel.len(), two_kernel), (8, 4));
+    println!("PASS second-hop target: independent point-count order9216, 9216 paired additions/dual norms, self-inverse count8; rational composite kernel8 with4 self-inverse elements");
+}

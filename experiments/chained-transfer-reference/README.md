@@ -11,7 +11,7 @@ checks are not signed independent validation. [pcc:unverified]
 Source E:y²=x³+1, C:y²=x⁶+1, W=(10,0), P=(4,41), r=17 over F101.
 The Richelot target is C₂:w²=41z⁶+9z⁴+9z²+41. The upstream native
 package is pinned to crypto commit
-`b280efc5c22b77718063514c09083af27d6b78c0`; `source-pin.json` and both
+`aabae1979457c3ba9e5112487a907b50cab15a99`; `source-pin.json` and both
 SHA-256 manifests bind the exact new and reference sources. The reference
 comes from cryptanalysis `68594c8874c75a0a6c04a3874adb1374088ca4f5`.
 The initial upstream18db046 pin is retained in `source-pins/` and Git history;
@@ -35,15 +35,15 @@ change, not an unrecorded twist or a square-root assumption. [pcc:unverified]
   sets have paired additions and both dual norms compared with BigUint;
   independent Fp/Fp² point counts give order9,216, and reference negation
   counts self-inverse classes as4 and16.
-- Latest guarded suite receipt: 27 passing tests, one pre-existing benchmark left
+- Latest guarded suite receipt: 28 passing tests, one pre-existing benchmark left
   ignored. These are local correctness counts, not performance measurements.
   [pcc:unverified]
 
 Evidence: `evidence/differential-01.txt` through `differential-04.txt`.
 Successor receipts: `evidence/successor-development-01.txt` and
 `evidence/successor-pinned-01.txt`; the latter completes source guards,
-formatting, strict Clippy and full replay against the published b280efc pin.
-Records PCC-20261111-5e39d6 and PCC-20261111-820d6f remain unverified until actual signed standing
+formatting, strict Clippy and full replay against the published aabae197 pin.
+Records PCC-20261111-5e39d6 and PCC-20261111-820d6f and PCC-20261111-d0f154 remain unverified until actual signed standing
 changes. Strict Clippy's first attempt found the reference's pre-existing
 `Fp2Ctx::from_fp(&self)` convention warning. The compatibility annotation is
 confined to the imported reference module; no correctness test or reference
@@ -69,7 +69,7 @@ repositories in the same layout and runs this command.
 
 No standalone DLP solver, experiment allocation, measured speedup, field-family
 generalization or full Picard/Richelot formalization is claimed. See the
-upstream [report](https://github.com/isogeny-labs/crypto/blob/b280efc5c22b77718063514c09083af27d6b78c0/research/chained_jacobian_transfers_20261110/REPORT_20261111.md)
+upstream [report](https://github.com/isogeny-labs/crypto/blob/aabae1979457c3ba9e5112487a907b50cab15a99/research/chained_jacobian_transfers_20261110/REPORT_20261111.md)
 for the genuine Jacobian hops, duals, zero controls and retained equivalences:
 the initial target is isomorphic to its source; the successor has different
 rational2-torsion cardinalities and therefore nonisomorphic F101 Jacobians.
@@ -83,3 +83,23 @@ Primary sources reviewed: Galbraith corrected book ch.8 §8.3 and ch.10
 §§3.1–3.2. Source review, hashes and unavailable KB/vault notes are in the
 upstream `SOURCES_20261111.md`. Canonical transfer/leaderboard graphs are
 unchanged because this is unsigned fixed-fixture development evidence.
+
+## Second nonbacktracking Jacobian hop
+
+The fixed next pairing is(2,18),(-2,28),(-18,-28), with leading scale20,
+determinant67 and new base11. The third curve has coefficients
+[38,9,29,62,86,17,8]. On its complete9,216-class set the pre-existing
+reference checks paired additions and dual norm, independently derives order
+9,216 from Fp/Fp² point counts, and counts8 self-inverse elements. It also
+counts the rational composite kernel as8 elements with4 self-inverse, rather
+than assuming the geometric degree16 is a rational cardinality. The upstream
+native check finds trivial intersection of the next and previous-dual kernels,
+and transports the original r3 subgroup nontrivially through both hops.
+These remain unsigned development assertions. [pcc:unverified]
+
+`evidence/second-hop-development-01.txt` preserves the first development run;
+`evidence/second-hop-pinned-01.txt` binds the complete28-test replay to the
+published aabae197 checkpoint, before the later small-prime feature. Earlier
+18db046 and b280efc pin metadata and every receipt remain retained. The next
+family extension requires an explicit new feature/source pin; it is outside
+this immutable replay. [pcc:unverified]
