@@ -18,8 +18,10 @@
 //!   such Cayley graph per maximal-conductor curve plus the
 //!   descending trees underneath.
 //!
-//! This module builds the graph by BFS using Vélu walks (a simple
-//! but correct algorithm), records the graph structure, and
+//! This module builds a *partial sampled* graph by BFS using
+//! pointwise-rational Vélu walks; Galois-stable kernels without rational
+//! nonzero points are omitted. This can miss edges and connected components.
+//! It records the sampled graph structure, and
 //! exposes path-finding and statistics.
 
 use super::velu::{velu_isogeny_2, velu_isogeny_odd, VeluIsogeny};
