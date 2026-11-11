@@ -10,7 +10,7 @@ use Cantor reduction. Agreement is not signed independent verification.
 
 == Pinned source and models
 Native source: isogeny-labs/crypto commit
-18db046d2e9fd0b01473f549815a1b51069da677, package
+b280efc5c22b77718063514c09083af27d6b78c0, package
 research/chained_jacobian_transfers_20261110/native. The reference is
 suite/src/prime_hyperelliptic from cryptanalysis commit
 68594c8874c75a0a6c04a3874adb1374088ca4f5. source-pin.json and SHA-256
@@ -30,10 +30,13 @@ therefore computes on the same curves, not an unrecorded twist.
   [Richelot subgroup], [All 289 additions in the order-17 target subgroup],
   [Full forward image], [10,404 source images and fixed-translation additions; 2,601 distinct target classes],
   [Point-count order], [Both Jacobian orders recomputed as 10,404 from Fp/Fp² counts],
-  [Local suite], [26 tests pass; 1 pre-existing benchmark remains ignored],
+  [Successor], [Both9,216-class sets: paired additions, dual norms, independent point-count order9,216 and self-inverse counts4/16],
+  [Local suite], [27 tests pass; 1 pre-existing benchmark remains ignored],
 )
-Raw outputs are evidence/differential-01.txt through differential-04.txt and
-the pinned-run receipt. First Clippy failure and the subsequent pass are
+Raw outputs retain the original baseline and successor development/pinned
+receipts. The latest full replay includes source guards, formatting and strict
+Clippy against the published b280efc pin. Initial18db046 metadata is archived
+in source-pins/. PCC-20261111-820d6f remains unsigned/unverified. First Clippy failure and the subsequent pass are
 retained; its compatibility annotation affects only the unchanged reference’s
 from_fp(&self) API. No correctness test was suppressed. [pcc:unverified]
 
@@ -43,9 +46,12 @@ crypto, then run experiments/chained-transfer-reference/check.sh from
 cryptanalysis. Cargo.lock and numeric dependency versions are fixed.
 
 There is no DLP timing or speed claim, new curve-family coverage, or full
-formal Picard construction in this record. The upstream report retains
-vanishing projection controls and the elliptic shortcut comparison. These
-checks do not turn that route into a new computational reduction.
+formal Picard construction in this record. The initial target is isomorphic to its source. The successor rational
+2-torsion counts4/16 obstruct an F101-isomorphism of the Jacobians; its
+source elliptic quotient has96 points and preserved prime subgroup3. The
+upstream report retains vanishing projections and direct elliptic shortcuts
+for both complete endpoint functions. These checks do not establish a new
+computational reduction.
 [pcc:unverified]
 
 Primary sources: Galbraith, corrected book ch.8 §8.3 and ch.10 §§10.3–10.4;
@@ -57,4 +63,6 @@ explicit; no novelty claim is made.
 = Route of the pinned upstream fixture
 #image("route.svg", width: 100%)
 This diagram is copied from the pinned upstream commit. Solid arrows show the
-explicit maps; dashed arrows are zero controls. All evidence remains unsigned.
+explicit maps; dashed arrows are zero controls; dotted arrows are complete
+finite elliptic shortcuts. Both fixed-field fixtures are shown, with their
+different subgroup sizes visible. All evidence remains unsigned.

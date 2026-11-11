@@ -11,9 +11,11 @@ checks are not signed independent validation. [pcc:unverified]
 Source E:y²=x³+1, C:y²=x⁶+1, W=(10,0), P=(4,41), r=17 over F101.
 The Richelot target is C₂:w²=41z⁶+9z⁴+9z²+41. The upstream native
 package is pinned to crypto commit
-`18db046d2e9fd0b01473f549815a1b51069da677`; `source-pin.json` and both
+`b280efc5c22b77718063514c09083af27d6b78c0`; `source-pin.json` and both
 SHA-256 manifests bind the exact new and reference sources. The reference
 comes from cryptanalysis `68594c8874c75a0a6c04a3874adb1374088ca4f5`.
+The initial upstream18db046 pin is retained in `source-pins/` and Git history;
+its earlier receipts remain unchanged.
 
 The reference needs a monic quintic. On each odd chart Y²=F(t), let
 L=leading(F), a=1/L, t=a*z, Y=a²*Z. Then F(a*z)/a⁴ is monic;
@@ -28,12 +30,20 @@ change, not an unrecorded twist or a square-root assumption. [pcc:unverified]
   fixed-translation addition in the pre-existing target arithmetic.
 - Both Jacobian orders recomputed as 10,404 from Fp/Fp² point counts using
   the pre-existing implementation.
-- Latest suite receipt: 26 passing tests, one pre-existing benchmark left
+- Successor C_s:y²=x⁶+6x⁴+9x²−16 and
+  C_t:w²=20z⁶+81z⁴+83z²+21, based at1 and2: both complete9,216-class
+  sets have paired additions and both dual norms compared with BigUint;
+  independent Fp/Fp² point counts give order9,216, and reference negation
+  counts self-inverse classes as4 and16.
+- Latest guarded suite receipt: 27 passing tests, one pre-existing benchmark left
   ignored. These are local correctness counts, not performance measurements.
   [pcc:unverified]
 
 Evidence: `evidence/differential-01.txt` through `differential-04.txt`.
-Record PCC-20261111-5e39d6 remains unverified until its actual signed standing
+Successor receipts: `evidence/successor-development-01.txt` and
+`evidence/successor-pinned-01.txt`; the latter completes source guards,
+formatting, strict Clippy and full replay against the published b280efc pin.
+Records PCC-20261111-5e39d6 and PCC-20261111-820d6f remain unverified until actual signed standing
 changes. Strict Clippy's first attempt found the reference's pre-existing
 `Fp2Ctx::from_fp(&self)` convention warning. The compatibility annotation is
 confined to the imported reference module; no correctness test or reference
@@ -59,10 +69,14 @@ repositories in the same layout and runs this command.
 
 No standalone DLP solver, experiment allocation, measured speedup, field-family
 generalization or full Picard/Richelot formalization is claimed. See the
-upstream [report](https://github.com/isogeny-labs/crypto/blob/18db046d2e9fd0b01473f549815a1b51069da677/research/chained_jacobian_transfers_20261110/REPORT_20261111.md)
-for the genuine Jacobian hop, its dual, zero controls and the retained finding
-that the complete elliptic endpoint function equals a cheaper elliptic
-shortcut on all 102 source points. [pcc:unverified]
+upstream [report](https://github.com/isogeny-labs/crypto/blob/b280efc5c22b77718063514c09083af27d6b78c0/research/chained_jacobian_transfers_20261110/REPORT_20261111.md)
+for the genuine Jacobian hops, duals, zero controls and retained equivalences:
+the initial target is isomorphic to its source; the successor has different
+rational2-torsion cardinalities and therefore nonisomorphic F101 Jacobians.
+Both complete elliptic endpoint functions equal direct elliptic shortcuts.
+The preserved prime subgroups are17 and3 respectively, with no extrapolation
+to growing fields or an advantage over existing ECDLP algorithms.
+[pcc:unverified]
 
 Primary sources reviewed: Galbraith corrected book ch.8 §8.3 and ch.10
 §§10.3–10.4; Kunzweiler DCC 2024, DOI 10.1007/s10623-024-01366-1,
