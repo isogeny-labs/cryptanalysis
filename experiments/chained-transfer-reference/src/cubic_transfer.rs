@@ -3,7 +3,7 @@
 //! No DLP solver, scalar label or benchmark is used by a map evaluation.
 use super::reference::{FpPoly, HyperellipticCurveP as Curve, MumfordDivisorP as Divisor};
 use num_bigint::BigUint;
-use num_traits::{One, ToPrimitive, Zero};
+use num_traits::{One, Zero};
 type Result<T> = std::result::Result<T, String>;
 type ExtensionPoint = Option<(FpPoly, FpPoly)>;
 
@@ -161,56 +161,8 @@ impl CubicChain {
         if d.level != 1 {
             return Err("arbitrary-class norm is implemented only for genus4".into());
         }
-        let factors = factor_at_most_four(&d.d.u, self.p)?;
-        let mut out = self.zero(0);
-        let mut degrees = vec![];
-        for (q, e) in factors {
-            let degree = q.degree().unwrap();
-            degrees.push((degree, e));
-            let ext = Extension { q };
-            let x = ext.reduce(&FpPoly::from_coeffs(
-                vec![BigUint::zero(), BigUint::one()],
-                BigUint::from(self.p),
-            ));
-            let mut point = Some((ext.pow(&x, 3), ext.reduce(&d.d.v)));
-            if !ext.on_curve(&point, &self.curves[0].f) {
-                return Err("projected support outside elliptic curve".into());
-            }
-            let original = point.clone();
-            let mut sum = None;
-            for _ in 0..degree {
-                sum = ext.add_points(&sum, &point, &self.curves[0].f)?;
-                point = point.map(|(x, y)| (ext.pow(&x, self.p), ext.pow(&y, self.p)));
-            }
-            if point != original {
-                return Err("support Frobenius orbit did not close".into());
-            }
-            let trace = match sum {
-                None => self.zero(0),
-                Some((x, y)) => {
-                    if x.coeffs.len() > 1 || y.coeffs.len() > 1 {
-                        return Err("elliptic trace did not descend".into());
-                    }
-                    self.point(
-                        0,
-                        x.coeffs
-                            .first()
-                            .cloned()
-                            .unwrap_or_default()
-                            .to_u64()
-                            .unwrap(),
-                        y.coeffs
-                            .first()
-                            .cloned()
-                            .unwrap_or_default()
-                            .to_u64()
-                            .unwrap(),
-                    )?
-                }
-            };
-            out = self.add(&out, &self.mul(&trace, u64::from(e))?)?;
-        }
-        Ok((out, degrees))
+        let (out, degrees) = norm_power_support(&self.curves[0], &d.d.u, &d.d.v, self.p, 3)?;
+        Ok((self.wrap(0, out)?, degrees))
     }
     pub fn rational_points(&self, level: usize) -> Result<Vec<Class>> {
         let curve = self.curves.get(level).ok_or("unknown curve level")?;
@@ -225,6 +177,61 @@ impl CubicChain {
         }
         Ok(out)
     }
+}
+
+/// Shared finite-support pushforward for (x,y) -> (x^power,y). Callers
+/// validate their source model and its infinity contribution separately.
+/// Degree<=4 factorization and elliptic target arithmetic are unchanged.
+pub(super) fn norm_power_support(
+    target: &Curve,
+    u: &FpPoly,
+    v: &FpPoly,
+    p: u64,
+    power: u64,
+) -> Result<(Divisor, Vec<(usize, u32)>)> {
+    target.validate().map_err(|e| e.to_string())?;
+    if target.genus != 1 || target.p != BigUint::from(p) || u.p != target.p || v.p != target.p {
+        return Err("finite norm target/field mismatch".into());
+    }
+    let factors = factor_at_most_four(u, p)?;
+    let mut out = Divisor::identity(target.p.clone());
+    let mut degrees = vec![];
+    for (q, e) in factors {
+        let degree = q.degree().unwrap();
+        degrees.push((degree, e));
+        let ext = Extension { q };
+        let x = ext.reduce(&FpPoly::x(target.p.clone()));
+        let mut point = Some((ext.pow(&x, power), ext.reduce(v)));
+        if !ext.on_curve(&point, &target.f) {
+            return Err("projected support outside elliptic curve".into());
+        }
+        let original = point.clone();
+        let mut sum = None;
+        for _ in 0..degree {
+            sum = ext.add_points(&sum, &point, &target.f)?;
+            point = point.map(|(x, y)| (ext.pow(&x, p), ext.pow(&y, p)));
+        }
+        if point != original {
+            return Err("support Frobenius orbit did not close".into());
+        }
+        let trace = match sum {
+            None => Divisor::identity(target.p.clone()),
+            Some((x, y)) => {
+                if x.coeffs.len() > 1 || y.coeffs.len() > 1 {
+                    return Err("elliptic trace did not descend".into());
+                }
+                Divisor::try_from_point(target, &x.coeff(0), &y.coeff(0))
+                    .map_err(|e| e.to_string())?
+            }
+        };
+        let contribution = trace
+            .checked_scalar_mul(&BigUint::from(e), target)
+            .map_err(|e| e.to_string())?;
+        out = out
+            .checked_add(&contribution, target)
+            .map_err(|e| e.to_string())?;
+    }
+    Ok((out, degrees))
 }
 
 /// Complete bounded factorization: strip all linear factors; a remaining

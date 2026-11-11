@@ -35,7 +35,7 @@ change, not an unrecorded twist or a square-root assumption. [pcc:unverified]
   sets have paired additions and both dual norms compared with BigUint;
   independent Fp/Fp² point counts give order9,216, and reference negation
   counts self-inverse classes as4 and16.
-- Latest guarded suite receipt: native25 and reference33 passing tests, one pre-existing benchmark left
+- Latest guarded suite receipt: native25 and reference37 passing tests, one pre-existing benchmark left
   ignored. These are local correctness counts, not performance measurements.
   [pcc:unverified]
 
@@ -48,6 +48,16 @@ changes. Strict Clippy's first attempt found the reference's pre-existing
 `Fp2Ctx::from_fp(&self)` convention warning. The compatibility annotation is
 confined to the imported reference module; no correctness test or reference
 arithmetic was changed. Both the warning and subsequent pass are retained.
+[pcc:unverified]
+
+The subsequent [balanced genus2 prototype](BALANCED.md),
+[diagram/PDF](balanced-report.pdf), handles monic split-infinity sextics at
+checked primes5..101. Both10,404-class old/translated models match the existing
+chart engine; E109/F101 transfers without a rational Weierstrass point and
+all11,663 classes have paired norm additions checked. Latest complete guard
+passes native25/reference37 tests,1 existing benchmark ignored, formatting
+and strict Clippy (PCC-8b7ca0). The production backend/catalog remain unchanged.
+No non-split Richelot correspondence or computational advantage is supplied.
 [pcc:unverified]
 
 ## Cubic covers and arbitrary-class closed-point norm

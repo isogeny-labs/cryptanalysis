@@ -1,0 +1,24 @@
+   Compiling chained-transfer-reference v0.1.0 (/workspace/cryptanalysis/experiments/chained-transfer-reference)
+warning: unused import: `ToPrimitive`
+ --> src/cubic_transfer.rs:6:23
+  |
+6 | use num_traits::{One, ToPrimitive, Zero};
+  |                       ^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+error[E0308]: mismatched types
+   --> src/balanced.rs:373:17
+    |
+373 |                 chain::fp(-(d.u.coeff(0).to_u64().unwrap() as i64)),
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `F2`, found `i64`
+
+error[E0308]: mismatched types
+   --> src/balanced.rs:374:17
+    |
+374 |                 d.v.coeff(0).to_u64().unwrap() as i64,
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `F2`, found `i64`
+
+For more information about this error, try `rustc --explain E0308`.
+warning: `chained-transfer-reference` (bin "chained-transfer-reference" test) generated 1 warning
+error: could not compile `chained-transfer-reference` (bin "chained-transfer-reference" test) due to 2 previous errors; 1 warning emitted
