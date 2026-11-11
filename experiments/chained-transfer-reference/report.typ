@@ -10,7 +10,7 @@ use Cantor reduction. Agreement is not signed independent verification.
 
 == Pinned source and models
 Native source: isogeny-labs/crypto commit
-b280efc5c22b77718063514c09083af27d6b78c0, package
+aabae1979457c3ba9e5112487a907b50cab15a99, package
 research/chained_jacobian_transfers_20261110/native. The reference is
 suite/src/prime_hyperelliptic from cryptanalysis commit
 68594c8874c75a0a6c04a3874adb1374088ca4f5. source-pin.json and SHA-256
@@ -31,11 +31,11 @@ therefore computes on the same curves, not an unrecorded twist.
   [Full forward image], [10,404 source images and fixed-translation additions; 2,601 distinct target classes],
   [Point-count order], [Both Jacobian orders recomputed as 10,404 from Fp/Fp² counts],
   [Successor], [Both9,216-class sets: paired additions, dual norms, independent point-count order9,216 and self-inverse counts4/16],
-  [Local suite], [27 tests pass; 1 pre-existing benchmark remains ignored],
+  [Local suite], [28 tests pass; 1 pre-existing benchmark remains ignored],
 )
 Raw outputs retain the original baseline and successor development/pinned
 receipts. The latest full replay includes source guards, formatting and strict
-Clippy against the published b280efc pin. Initial18db046 metadata is archived
+Clippy against the published aabae197 pin. Initial18db046 metadata is archived
 in source-pins/. PCC-20261111-820d6f remains unsigned/unverified. First Clippy failure and the subsequent pass are
 retained; its compatibility annotation affects only the unchanged reference’s
 from_fp(&self) API. No correctness test was suppressed. [pcc:unverified]
@@ -66,3 +66,33 @@ This diagram is copied from the pinned upstream commit. Solid arrows show the
 explicit maps; dashed arrows are zero controls; dotted arrows are complete
 finite elliptic shortcuts. Both fixed-field fixtures are shown, with their
 different subgroup sizes visible. All evidence remains unsigned.
+
+#pagebreak()
+= Second nonbacktracking Jacobian hop
+#image("chain.svg",width:100%)
+
+The predeclared next pairing(2,18),(-2,28),(-18,-28), with leading scale20,
+has determinant67 and new base11. The third sextic coefficients are
+[38,9,29,62,86,17,8]. The unchanged BigUint reference checks all9,216 target
+classes: paired additions, dual norm and self-inverse count8. Fp/Fp² point
+counts independently give Jacobian order9,216. Thus all three Jacobians are
+distinguished over F101 by rational2-torsion4,16,8. [pcc:unverified]
+
+The rational composite kernel has8 elements,4 self-inverse; do not confuse
+this with the geometric degree16. The upstream native test also checks a
+trivial next-kernel/previous-dual intersection, both dual norms and nonzero
+r3 transport through both steps. Source P=(48,20) reaches the canonical
+class u(T)=T²+86T+27,v(T)=34T+7. Reversed chain and source norm give[8],
+invertible modulo3. None of these point computations reveals its unknown
+DLP scalar. [pcc:unverified]
+
+The source guards, formatting, strict Clippy and28-test/1ignored replay
+passed against aabae197. Receipts second-hop-development-01.txt and
+second-hop-pinned-01.txt are retained; PCC-20261111-d0f154 is unsigned. This
+checkpoint predates the later small-prime feature, which requires a separate
+source-pin update. The initial18db046 and successorb280efc baseline metadata
+remain archived. [pcc:unverified]
+
+There is no timing, measured ECDLP improvement, cryptographic-size field
+coverage or full formal Jacobian geometry claim. The upstream queue names
+checkpoint/budget access gates and proof/merge blockers.

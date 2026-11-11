@@ -1,0 +1,23 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-11T08:20:14Z",
+ "id": "PCC-20261111-ad0e63",
+ "kind": "statement",
+ "producer": {
+  "commit": "c6bc59091ab4971d3c8f9d52026c3bbae2fdf551",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/second-hop-development-01.txt",
+    "sha256": "1ca34e9ffaceb51f3a5e48ec1a204c41c70270f9fd92a3dcaadc3def1425245a"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Predeclared second-hop target checked with unchanged pre-existing BigUint reference: independent Fp/Fp\u00b2 order9216, all9216 paired additions and target dual norms agree, self-inverse count8. Rational composite kernel has8 elements and4 self-inverse elements, as counted with independent negation. One targeted test passes. This first development run precedes a new immutable source-pin replay; it is unsigned and makes no speed or geometric formalization claim."
+}
