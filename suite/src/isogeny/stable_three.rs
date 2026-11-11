@@ -266,4 +266,48 @@ mod tests {
             Err(StableThreeError::SingularCurve)
         ));
     }
+
+    fn scalar(p: u64, a: u64, mut k: u64, mut base: Point) -> Point {
+        let mut out = None;
+        while k != 0 {
+            if k & 1 != 0 {
+                out = add_points(p, a, out, base);
+            }
+            base = add_points(p, a, base, base);
+            k >>= 1;
+        }
+        out
+    }
+
+    #[test]
+    fn transported_r31_discrete_logs_recover() {
+        // E(F103) has order 124 = 4*31. The stable 3-kernel has no
+        // nonidentity F103 points, and degree 3 preserves the r=31 subgroup.
+        let curve = SmallCurve {
+            name: "103-3",
+            p: 103,
+            a: 0,
+            b: 3,
+        };
+        let iso = three_isogenies_over_fp_small(&curve, 200)
+            .unwrap()
+            .into_iter()
+            .next()
+            .unwrap();
+        let generator = Some((72, 44));
+        let image_generator = iso.evaluate(generator);
+        assert_eq!(image_generator, Some((36, 88)));
+        assert_eq!(scalar(103, 0, 31, generator), None);
+        assert_eq!(scalar(103, iso.codomain.a, 31, image_generator), None);
+        for k in 0..31 {
+            let q = scalar(103, 0, k, generator);
+            let mapped = iso.evaluate(q);
+            // Enumerative toy DLP in the image; never a performance comparison.
+            let recovered = (0..31)
+                .find(|&j| scalar(103, iso.codomain.a, j, image_generator) == mapped)
+                .unwrap();
+            assert_eq!(recovered, k);
+        }
+    }
+
 }
