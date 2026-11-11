@@ -4,9 +4,9 @@
 //! curve `E_0/F_p`, the **`S`-isogeny graph** has vertices the
 //! j-invariants of curves reachable from `E_0` by composing
 //! `ℓ`-isogenies for `ℓ ∈ S`, and edges labelled by which `ℓ` was
-//! used.  Connected components of this graph are precisely the
-//! isogeny classes of `E_0` (the set of `F_p`-curves with the
-//! same `#E(F_p) = p + 1 − t`).
+//! used. Components of a **complete** S-graph lie within Fp-isogeny
+//! classes, but need not exhaust a class unless S generates its
+//! connectivity. This implementation also omits some rational kernels.
 //!
 //! Computationally:
 //!
