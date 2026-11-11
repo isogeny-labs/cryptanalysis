@@ -1,0 +1,18 @@
+digraph Phi {
+  graph [rankdir=TB,bgcolor="white",pad="0.16",nodesep="0.5",ranksep="0.75",fontname="DejaVu Sans"];
+  node [shape=box,style="rounded,filled",fillcolor="#edf3fb",color="#476384",fontname="DejaVu Sans",fontsize=10,margin="0.14,0.1"];
+  edge [fontname="DejaVu Sans",fontsize=9,color="#476384",arrowsize=0.7];
+  a0 [label="A0=E109(1,46) × E113(44,21)\nF101; traces −7/−11"];
+  a1 [label="A1=E109′(26,58) × E113′(69,50)\nF101; traces −7/−11"];
+  j0 [label="J0=Jac(C0), 12317 rational classes\nC0: y²=x⁶+6x⁴+13x²+56"];
+  j1 [label="J1=Jac(C1), 12317 rational classes\nC1: y²=x⁶+26x⁴+42x²+68"];
+  {rank=same;a0;a1;}
+  {rank=same;j0;j1;}
+  a0 -> a1 [label="α1 × α2\nactual degree7 elliptic maps",style=dashed];
+  a0 -> j0 [dir=both,label="P0 down / N0 up\nPN=NP=[2]",style=dashed];
+  a1 -> j1 [dir=both,label="P1 down / N1 up\nquotient swap; scale21",style=dashed];
+  j0 -> j1 [label="Φ type(7,7), degree49\nP1 α N0=Φ[2]\nboth dual norms[7]",color="#245aaf",penwidth=2,style=dashed];
+  note [shape=note,fillcolor="#fff7df",label="Full geometric2-kernel:16 points; norm graph4/kernel4\nBoth rational domains:12317-class dual/bijection checks\nAll109 original source scalars; N1 Φ f*P=([2]α1(P),0)\nWritten global proof + partial Lean helpers; scientific standing unsigned"];
+  j0 -> note [style=invis];
+  j1 -> note [style=invis];
+}
