@@ -1,0 +1,28 @@
+cargo 1.99.1 (5f94df478 2026-08-27)
+de54efb0d23228e8e7df9fc80d20e94e04df6548d02405cded1db6b164642ed1  src/seven_glue.rs
+   Compiling chained-transfer-reference v0.1.0 (/workspace/cryptanalysis/experiments/chained-transfer-reference)
+    Finished `release` profile [optimized] target(s) in 13.80s
+     Running unittests src/main.rs (target/release/deps/chained_transfer_reference-157d0dc5fc6a5631)
+
+running 1 test
+retained gluing[0, 0] raw[38, 0, 48, 0, 9, 0, 46]:nonsquare leading unsupported,no retwist
+retained gluing[0, 1] raw[32, 0, 26, 0, 49, 0, 41]:nonsquare leading unsupported,no retwist
+gluing[1, 0] raw[19, 0, 86, 0, 34, 0, 79],rho33,monic[68, 0, 42, 0, 26, 0, 1],charts[QuotientChart { destination: 1, shift: 76, scale: 21 }, QuotientChart { destination: 0, shift: 14, scale: 21 }],LLPoly { c1: 18, c2: 279 };descent,smoothness,actual quotient109/113 bijections,matched2-kernel support pass
+gluing[1, 1] raw[87, 0, 15, 0, 13, 0, 21],rho18,monic[33, 0, 44, 0, 92, 0, 1],charts[QuotientChart { destination: 1, shift: 98, scale: 7 }, QuotientChart { destination: 0, shift: 82, scale: 7 }],LLPoly { c1: 18, c2: 279 };descent,smoothness,actual quotient109/113 bijections,matched2-kernel support pass
+PASS all16 geometric sourceJ[2] classes,actual branch-point norms graph4/kernel4,old P0 graph kernel and A=P1 alpha N0 annihilation;finite-etale group-scheme/global factor bridge written separately
+test nonsplit::map::seven_glue::full_geometric_two_kernel_inclusion_before_global_factor ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 55 filtered out; finished in 0.11s
+
+     Running tests/frobenius_independent.rs (target/release/deps/frobenius_independent-70dd63d42d874561)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/seven_independent.rs (target/release/deps/seven_independent-7557517fa72787fc)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+

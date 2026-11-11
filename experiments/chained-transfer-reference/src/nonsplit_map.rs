@@ -7,6 +7,8 @@ use crate::reference::{Fp2, Fp2Ctx, FpPoly};
 use num_bigint::BigUint;
 use num_traits::ToPrimitive;
 use std::collections::BTreeMap;
+#[path = "seven_glue.rs"]
+mod seven_glue;
 type Result<T> = std::result::Result<T, String>;
 
 #[derive(Clone, Debug, PartialEq, Eq)]

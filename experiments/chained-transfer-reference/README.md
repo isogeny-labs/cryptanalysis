@@ -1,24 +1,34 @@
 # Chained transfer differential reference
 
-Current [elliptic degree7 checkpoint](ELLIPTIC_SEVEN.md) constructs four
-actual maps/duals on the109/113 elliptic factors. Exact cleared curve/both
-globalx[7],all source/codomain points,pair additions,scalars and recovery
-pass;another unchanged arithmetic/kernel engine replays the frozen
-certificates locally and in the consumer CI layout. Separate102/five-input
-guards keep construction and verifier custody distinct. Four Lean helpers
-compile,total72. Prior50-unit-plus1-integration CI passes/1482 merged;
-current51-unit-plus2-integration replay pending. Genuine compatible Jacobian
-gluing/7-hop remains CT20;no solver/cost gain accepted. [pcc:unverified]
+Current [degree49 Jacobian transfer](SEVEN_TRANSFER.md) supplies actual
+Phi/PhiHat between the fixed F101 Jacobians C0/C1. Full geometric2-kernel
+certificates and a written quotient/polarization proof give a genuine(7,7)
+map. Both entire12317-class rational domains,dual[7],bijections,paired
+additions and all109 original source controls pass. New eight Lean helpers
+bring the project to80 written lemmas;actual geometry remains written.
+The full local guard passes native25/reference57 unit+two integrations,
+one old benchmark ignored;exact-head CI remains pending. See the diagram,
+inspected two-page PDF and immutable receipts. All standing unsigned.
+[pcc:unverified]
+
+Prior [elliptic degree7 checkpoint](ELLIPTIC_SEVEN.md) constructs four
+actual maps/duals on the109/113 elliptic factors with exact polynomial and
+complete group checks. A separate unchanged Montgomery engine replays
+frozen certificates. Separate102/five-input guards and seven native
+inputs remain distinct at75a737b8. PR1483 merged52fe5eba0 after exact-head
+43038507853 passed native25/reference51+two integrations. The old report's
+pending-CI/root-receipt gaps are historical:original root records/receipts
+are restored unchanged in crypto dcd324f35. [pcc:unverified]
 
 Current [odd-kernel assessment](ODD_KERNELS.md) closes rational3/5
 maximal-isotropic kernels for the accepted17/101 examples,also7 for17.
-Shifted101 has four abstract7 candidates;actual kernels/codomains/maps remain
-next. Every fixed finite plane/pairing ratio and six upstream Lean algebra/
+Shifted101 has four abstract7 candidates;one now has an actual Jacobian
+map above. Every fixed finite plane/pairing ratio and six upstream Lean algebra/
 root certificates pass. Separately authored closedPR3918 polynomial Rust
 oracle now compiles unchanged and passes;formatting-only integration enters
-CI without importing producer field/Richelot/Cantor code. Prior49-test CI
-passes/PR1481 merged;current50-unit-plus1-integration replay pending.
-Standing unsigned,no odd-prime transfer or solver advantage accepted.
+CI without importing producer field/Richelot/Cantor code. PR1481/1482 and
+their exact49/50-unit-plus1-integration receipts remain historical.
+Standing unsigned;solving-cost comparisons remain open.
 [pcc:unverified]
 
 Current [split-quotient checkpoint](SPLIT_QUOTIENTS.md) makes both elliptic
