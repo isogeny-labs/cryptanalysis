@@ -1,0 +1,17 @@
+digraph route {
+  graph [rankdir=TB, bgcolor="white", labelloc=t,
+    label="F101 chained Jacobian fixture · producer development evidence · PCC unverified", fontsize=16];
+  node [shape=box, style="rounded,filled", fillcolor="#edf4fa", fontname="DejaVu Sans", fontsize=11];
+  edge [fontname="DejaVu Sans", fontsize=10];
+  E [label="E/F101: v²=u³+1\nP=(4,41), r=17"];
+  J [label="Jac(C)/F101\nC: y²=x⁶+1\nbase W=(10,0)"];
+  J2 [label="Jac(C2)/F101\nC2: w²=41z⁶+9z⁴+9z²+41\nRichelot determinant 40"];
+  E2 [label="E2/F101\nV²=X³+9X²+66X+39\nimage P=(91,84)", fillcolor="#e1f1e9"];
+  Z [label="E/F101: v²=u³+1\nzero on f*(E)", fillcolor="#f5e7e7"];
+  Z2 [label="E2/F101, second quotient\nzero on the order-17 image", fillcolor="#f5e7e7"];
+  E -> J [label="f* · degree-2 cover\nwhole-fiber pullback"];
+  J -> J2 [label="R · (2,2)-isogeny\nexplicit correspondence"];
+  J2 -> E2 [label="first norm\nX=41z², V=41w"];
+  J -> Z [label="g* · zero control", style=dashed, color="#ad5555"];
+  J2 -> Z2 [label="second norm · zero control", style=dashed, color="#ad5555"];
+}
