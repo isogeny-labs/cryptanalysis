@@ -1,0 +1,30 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-11T13:04:14Z",
+ "id": "PCC-20261111-96b1e2",
+ "kind": "statement",
+ "producer": {
+  "commit": "63cf80560b8339b9ea67629746131f5c6f722299",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/split-target-components-01.txt",
+    "sha256": "ceb0d31092affe0ad7547cb9abf3a0da03e33f87f4973e8c49811f3d734f23af"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/split-quotients-clippy-01.txt",
+    "sha256": "8f1bcff9239a1d677aba300c695110ccb44d08f241b268d9fd76e561f255e954"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "All19/109 elliptic source scalars in accepted17/101 targets have explicit two-quotient coordinates([4]P,0) after reversing Richelot and applying both source norms; inverse5/82 recovers P and split reconstruction returns the reversed class. Incorrect odd annihilator is rejected; formatting/strict Clippy pass. This exposes direct original-source controls,not discrete-log recovery or a performance claim. Standard pull/norm and pairing geometry remains written,all producer-run standing unsigned."
+}

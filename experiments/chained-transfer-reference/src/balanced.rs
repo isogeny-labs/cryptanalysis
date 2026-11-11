@@ -31,6 +31,7 @@ impl Class {
     }
 }
 
+#[derive(Clone)]
 pub struct Balanced {
     p: u64,
     f: FpPoly,
@@ -304,7 +305,7 @@ impl Balanced {
 }
 
 pub struct QuadraticCover {
-    base: Curve,
+    pub(super) base: Curve,
     pub balanced: Balanced,
 }
 impl QuadraticCover {
@@ -354,9 +355,264 @@ impl QuadraticCover {
     }
 }
 
+/// Checked prime-field reciprocal curve isomorphism:
+/// T=a/x, Y=kappa*y/x^3. Both sextics must be monic split at infinity.
+/// The divisor map completes zero support and both old infinities.
+struct Reciprocal {
+    source: Balanced,
+    target: Balanced,
+    a: u64,
+    kappa: u64,
+    inverse_a: u64,
+}
+impl Reciprocal {
+    fn new(source: &Balanced, a: u64, kappa: u64) -> Result<Self> {
+        let p = source.p;
+        if a == 0 || a >= p || kappa == 0 || kappa >= p {
+            return Err("reciprocal needs nonzero canonical coordinate scales".into());
+        }
+        let inverse_a = BigUint::from(a)
+            .modpow(&BigUint::from(p - 2), &BigUint::from(p))
+            .to_u64()
+            .unwrap();
+        let mut coefficients = [0_u64; 7];
+        let mut power = 1;
+        for (i, c) in coefficients.iter_mut().enumerate() {
+            *c = source.f.coeff(6 - i).to_u64().unwrap() * kappa % p * kappa % p * power % p;
+            power = power * inverse_a % p;
+        }
+        let target = Balanced::new(p, &coefficients)?;
+        Ok(Self {
+            source: source.clone(),
+            target,
+            a,
+            kappa,
+            inverse_a,
+        })
+    }
+    fn map(&self, d: &Class) -> Result<Class> {
+        self.source.check(d)?;
+        let p = self.source.p;
+        let m = d.degree();
+        let mut u = vec![0_u64; m + 1];
+        let mut power = 1;
+        for i in 0..=m {
+            u[m - i] = d.u.coeff(i).to_u64().unwrap() * power % p;
+            power = power * self.a % p;
+        }
+        let u = self.target.poly(&u).monic();
+        let remaining = u.degree().unwrap();
+        let lost = m - remaining;
+        let scale = self.kappa * self.inverse_a % p * self.inverse_a % p * self.inverse_a % p;
+        let mut v = vec![0_u64; 4];
+        let mut power = 1;
+        for (i, c) in d.v.coeffs.iter().enumerate() {
+            v[3 - i] = c.to_u64().unwrap() * power % p * scale % p;
+            power = power * self.a % p;
+        }
+        let v = self.target.poly(&v).rem(&u);
+        let mut out = self.target.wrap(u, v, 0)?;
+        if lost != 0 {
+            let sign = d.v.coeff(0).to_u64().unwrap() * scale % p;
+            if sign == 1 {
+                out = self
+                    .target
+                    .add(&out, &self.target.mul(&self.target.delta(), lost as u64)?)?;
+            } else if sign != p - 1 {
+                return Err("lost reciprocal support has invalid infinity branch".into());
+            }
+        }
+        let plus = self.target.point(0, self.kappa, 1)?;
+        let minus = self.target.point(0, p - self.kappa, 1)?;
+        out = self
+            .target
+            .add(&out, &self.target.mul(&plus, u64::from(d.plus))?)?;
+        self.target.add(
+            &out,
+            &self
+                .target
+                .mul(&minus, (2 - m) as u64 - u64::from(d.plus))?,
+        )
+    }
+}
+
+/// Explicit two-elliptic-quotient coordinates for the bounded even sextic.
+/// The square constant fixes a genuine Fp reciprocal isomorphism,no twist.
+pub(super) struct SplitQuotients {
+    pub(super) first: QuadraticCover,
+    pub(super) second: QuadraticCover,
+    forward: Reciprocal,
+    inverse: Reciprocal,
+}
+impl SplitQuotients {
+    pub(super) fn new(p: u64, coefficients: [u64; 3]) -> Result<Self> {
+        let first = QuadraticCover::with_cubic(p, coefficients)?;
+        let [b, a4, a2] = coefficients;
+        let s = (1..p)
+            .find(|s| s * s % p == b)
+            .ok_or("split-quotient prototype requires a nonzero square constant")?;
+        let second = QuadraticCover::with_cubic(p, [b * b % p, a2 * b % p, a4])?;
+        let forward = Reciprocal::new(&first.balanced, s, b)?;
+        let inverse = Reciprocal::new(&second.balanced, s, s)?;
+        if forward.target.f != second.balanced.f || inverse.target.f != first.balanced.f {
+            return Err("reciprocal quotient model mismatch".into());
+        }
+        Ok(Self {
+            first,
+            second,
+            forward,
+            inverse,
+        })
+    }
+    pub(super) fn norms(&self, d: &Class) -> Result<(Divisor, Divisor)> {
+        Ok((
+            self.first.norm(d)?,
+            self.second.norm(&self.forward.map(d)?)?,
+        ))
+    }
+    pub(super) fn pulls(&self, a: &Divisor, b: &Divisor) -> Result<Class> {
+        self.first.balanced.add(
+            &self.first.pull(a)?,
+            &self.inverse.map(&self.second.pull(b)?)?,
+        )
+    }
+    /// Odd annihilators are explicit inputs,not unverified group-order
+    /// certificates. Each actual input point must be annihilated by its value.
+    pub(super) fn reconstruct(&self, a: &Divisor, b: &Divisor, odd: [u64; 2]) -> Result<Class> {
+        let mut halves = vec![];
+        for ((d, c), n) in [(a, &self.first.base), (b, &self.second.base)]
+            .into_iter()
+            .zip(odd)
+        {
+            if n < 3 || n.is_multiple_of(2) {
+                return Err("split reconstruction requires odd annihilators greater than1".into());
+            }
+            d.validate(c).map_err(|e| e.to_string())?;
+            if !d
+                .checked_scalar_mul(&BigUint::from(n), c)
+                .map_err(|e| e.to_string())?
+                .is_identity()
+            {
+                return Err("supplied odd integer does not annihilate the component".into());
+            }
+            halves.push(
+                d.checked_scalar_mul(&BigUint::from(n.div_ceil(2)), c)
+                    .map_err(|e| e.to_string())?,
+            );
+        }
+        self.pulls(&halves[0], &halves[1])
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn complete_split_quotients_reciprocal_and_reconstruction() {
+        use std::collections::BTreeSet;
+        for (p, coefficients, orders, expected) in [
+            (17, [2, 2, 0], [19, 15], 285),
+            (101, [56, 13, 6], [109, 113], 12317),
+        ] {
+            let split = SplitQuotients::new(p, coefficients).unwrap();
+            let c = &split.first.balanced;
+            let other = &split.second.balanced;
+            let count = |curve: &Curve| {
+                1 + (0..p)
+                    .map(|x| {
+                        let y2 = curve.f.eval(&BigUint::from(x));
+                        (0..p).filter(|y| BigUint::from(y * y % p) == y2).count() as u64
+                    })
+                    .sum::<u64>()
+            };
+            assert_eq!(
+                [count(&split.first.base), count(&split.second.base)],
+                orders
+            );
+            let classes = c.classes().unwrap();
+            assert_eq!(classes.len(), expected);
+            let mut images = BTreeSet::new();
+            let mut reciprocal_images = BTreeSet::new();
+            let mut zero_multiplicities = BTreeSet::new();
+            for (i, d) in classes.iter().enumerate() {
+                let changed = split
+                    .forward
+                    .map(d)
+                    .unwrap_or_else(|e| panic!("reciprocal{i}: {e}"));
+                assert_eq!(split.inverse.map(&changed).unwrap(), *d);
+                reciprocal_images.insert(changed.key());
+                let e = &classes[(7919 * i + 37) % classes.len()];
+                assert_eq!(
+                    split.forward.map(&c.add(d, e).unwrap()).unwrap(),
+                    other.add(&changed, &split.forward.map(e).unwrap()).unwrap()
+                );
+                let norms = split.norms(d).unwrap();
+                let second_norms = split.norms(e).unwrap();
+                let norm_sum = split.norms(&c.add(d, e).unwrap()).unwrap();
+                assert_eq!(
+                    norm_sum.0,
+                    norms
+                        .0
+                        .checked_add(&second_norms.0, &split.first.base)
+                        .unwrap()
+                );
+                assert_eq!(
+                    norm_sum.1,
+                    norms
+                        .1
+                        .checked_add(&second_norms.1, &split.second.base)
+                        .unwrap()
+                );
+                let pulled1 = split.first.pull(&norms.0).unwrap();
+                let pulled2 = split
+                    .inverse
+                    .map(&split.second.pull(&norms.1).unwrap())
+                    .unwrap();
+                let cross1 = split.norms(&pulled1).unwrap();
+                let cross2 = split.norms(&pulled2).unwrap();
+                assert!(cross1.1.is_identity());
+                assert!(cross2.0.is_identity());
+                assert_eq!(
+                    cross1.0,
+                    norms
+                        .0
+                        .checked_scalar_mul(&BigUint::from(2_u64), &split.first.base)
+                        .unwrap()
+                );
+                assert_eq!(
+                    cross2.1,
+                    norms
+                        .1
+                        .checked_scalar_mul(&BigUint::from(2_u64), &split.second.base)
+                        .unwrap()
+                );
+                assert_eq!(c.add(&pulled1, &pulled2).unwrap(), c.mul(d, 2).unwrap());
+                assert_eq!(split.reconstruct(&norms.0, &norms.1, orders).unwrap(), *d);
+                images.insert((
+                    norms.0.u.coeffs,
+                    norms.0.v.coeffs,
+                    norms.1.u.coeffs,
+                    norms.1.v.coeffs,
+                ));
+                zero_multiplicities.insert(d.u.coeffs.iter().take_while(|c| c.is_zero()).count());
+            }
+            assert_eq!(images.len(), expected);
+            assert_eq!(reciprocal_images.len(), expected);
+            assert_eq!(zero_multiplicities, BTreeSet::from([0, 1, 2]));
+            assert!(split.forward.map(&other.zero()).is_err());
+            assert!(Reciprocal::new(c, 0, 1).is_err());
+            assert!(Reciprocal::new(c, 1, 0).is_err());
+            assert!(split
+                .reconstruct(
+                    &Divisor::identity(BigUint::from(p)),
+                    &Divisor::identity(BigUint::from(p)),
+                    [2, 3]
+                )
+                .is_err());
+            println!("PASS F{p} all{expected} reciprocal classes/inverse/bijection/paired additions,zero-support multiplicities0/1/2,both elliptic norm additions,cross norms0,pull1 norm1+pull2 norm2=[2],odd reconstruction; full elliptic product orders{orders:?}; no scalar labels or solver");
+        }
+        assert!(SplitQuotients::new(17, [3, 2, 0]).is_err());
+    }
     use crate::chain;
     use std::collections::BTreeSet;
     fn old_chart(d: &Class) -> chain::Divisor {
