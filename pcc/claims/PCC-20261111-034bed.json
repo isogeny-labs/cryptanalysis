@@ -1,0 +1,30 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-11T13:20:53Z",
+ "id": "PCC-20261111-034bed",
+ "kind": "statement",
+ "producer": {
+  "commit": "da66ab9d953d2ba96c4ac9d6e8379c3478b3f277",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/odd-kernels-01.txt",
+    "sha256": "284eab61a4cd608910feaf977ec490b7deb30b16d9526e99ae0ba56f76003fd8"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/odd-kernels-clippy-01.txt",
+    "sha256": "090433e1d001b0a11989da37a206e36febb5db44588315dad08c18561c16eb4e"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Fixed odd-prime module controls pass for accepted p17 traces\u22121/3 and p101 traces\u22127/\u221211 atell3/5/7: all130/806/2850 RREF2-planes and40/156/400 maximal-isotropic planes checked across every nonzero component pairing ratio. Coprime characteristic factors give0 stable isotropic planes at3/5 bothp and7 p17; p101ell7 has4 candidate planes with eigenvalues2/5 and4/6. Companion finite models are controls,not assumed actual repeated Jordan types; the written coprime/irreducible-block argument supplies the actual-module negative. No geometric odd-prime torsion/kernel polynomial,codomain,map,solver or advantage constructed; all producer-run standing unsigned."
+}

@@ -1,0 +1,21 @@
+Source: closed cryptoPR3918,head3a972adb7aaaf1ee10dde605dc48f2c9822dbda5.
+Original path: research/chained_jacobian_transfers_20261110/native/tests/ct16_frobenius_torsion.rs
+Original SHA256:284e4d72af09fa0729bfa14a7c06249ce8fe78cb6194f01cc0008bf63ab2b04a
+Preserved verbatim:evidence/external-ct16-original.rs.
+Reviewed243-line std-only Rust polynomial-quotient/Frobenius/Rabin/matching
+oracle;imports no new field,Richelot,Cantor or producer module.
+Compiled original bytes unchanged:
+rustc --edition2021 --test ORIGINAL -o /workspace/scratch/ct16-external-frobenius-test
+Executed standalone correctness test;receipt external-frobenius-01.txt.
+Copied to tests/frobenius_independent.rs for registered consumer CI;only
+cargo fmt normalization applied,no algorithm/fixture/lint allow changed.
+Separate Cargo test and strict Clippy pass,receipts retained.
+Validates both source cubic factorizations,both reflected target irreducible
+sextics for17/101,root Frobenius orbits and15-pair/matching fixed sets at
+extension degrees1/2/3/6. Does not evaluate or independently verify whole
+Jacobian correspondence/group arithmetic. Harness separately authored in
+another continuation,receipts still producer-run and unsigned.
+No closed PR reopened,no frozen ledger/history imported or rewritten.
+rustc 1.99.1 (58cf8f9c3 2026-10-13)
+284e4d72af09fa0729bfa14a7c06249ce8fe78cb6194f01cc0008bf63ab2b04a  experiments/chained-transfer-reference/evidence/external-ct16-original.rs
+0f048b82d0c2f2be4e0caf9abdc6145fc7bd82bd0dc53cfcf18e1f0e034188e1  experiments/chained-transfer-reference/tests/frobenius_independent.rs
