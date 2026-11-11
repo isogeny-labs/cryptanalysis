@@ -10,6 +10,7 @@ from __future__ import annotations
 import io
 import json
 import os
+import shlex
 import subprocess
 import sys
 import tempfile
@@ -166,6 +167,37 @@ class RoundTripTests(unittest.TestCase):
         r = run(["ledger", "verify", "--base", "main"], self.repo)
         self.assertEqual(r.returncode, 1)
         self.assertIn("history removed", r.stdout)
+
+    def test_ledger_prefix_decrypts_vaulted_base_and_fails_closed(self):
+        filter_script = self.repo / "vault_filter.py"
+        filter_script.write_text(
+            "import sys\n"
+            "data = sys.stdin.buffer.read()\n"
+            "if sys.argv[1] == 'clean':\n"
+            "    sys.stdout.buffer.write(b'VLT1' + data)\n"
+            "elif data.startswith(b'VLT1'):\n"
+            "    sys.stdout.buffer.write(data[4:])\n"
+            "else:\n"
+            "    sys.exit(1)\n"
+        )
+        command = f"{shlex.quote(sys.executable)} {shlex.quote(str(filter_script))}"
+        for direction in ("clean", "smudge"):
+            subprocess.run(["git", "-C", str(self.repo), "config", f"filter.vault.{direction}",
+                            f"{command} {direction}"], check=True)
+        (self.repo / ".gitattributes").write_text("pcc/ledger.jsonl filter=vault\n")
+        cid = self.make_solve()
+        self.commit("vaulted claim")
+        stored = subprocess.check_output(["git", "-C", str(self.repo), "show", "main:pcc/ledger.jsonl"])
+        self.assertTrue(stored.startswith(b"VLT1"))
+        subprocess.run(["git", "-C", str(self.repo), "checkout", "-q", "-b", "work"], check=True)
+        self.assertEqual(run(["verdict", cid, "--sign-key", str(self.key), "--key-id", "ci-main"],
+                             self.repo).returncode, 0)
+        verified = run(["ledger", "verify", "--base", "main"], self.repo)
+        self.assertEqual(verified.returncode, 0, verified.stdout + verified.stderr)
+        subprocess.run(["git", "-C", str(self.repo), "config", "filter.vault.smudge", "false"], check=True)
+        rejected = run(["ledger", "verify", "--base", "main"], self.repo)
+        self.assertEqual(rejected.returncode, 3)
+        self.assertIn("could not decrypt", rejected.stderr)
 
     def test_lint_prose_uses_ledger_standings(self):
         cid = self.make_solve()

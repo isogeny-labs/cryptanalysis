@@ -38,6 +38,7 @@ import json
 import os
 import re
 import secrets
+import shlex
 import shutil
 import socket
 import subprocess
@@ -124,6 +125,28 @@ def git(repo: Path, *args: str) -> str | None:
                                        stderr=subprocess.DEVNULL).strip()
     except (OSError, subprocess.CalledProcessError):
         return None
+
+
+def base_ledger_text(repo: Path, base: str) -> str | None:
+    """Read the base ledger through the vault filter when Git stores ciphertext."""
+    try:
+        blob = subprocess.check_output(["git", "-C", str(repo), "show", f"{base}:{LEDGER_PATH}"],
+                                       stderr=subprocess.DEVNULL)
+    except (OSError, subprocess.CalledProcessError):
+        return None
+    if blob.startswith(b"VLT1"):
+        command = git(repo, "config", "--get", "filter.vault.smudge")
+        if not command:
+            raise PccError("ledger: vault smudge filter is not configured for the base ledger")
+        try:
+            blob = subprocess.run(shlex.split(command), input=blob, capture_output=True,
+                                  check=True).stdout
+        except (OSError, ValueError, subprocess.CalledProcessError) as exc:
+            raise PccError("ledger: could not decrypt the base ledger") from exc
+    try:
+        return blob.decode("utf-8")
+    except UnicodeDecodeError as exc:
+        raise PccError("ledger: base ledger is not UTF-8") from exc
 
 
 def head_commit(repo: Path) -> str:
@@ -1946,7 +1969,7 @@ def main(argv: list[str] | None = None) -> int:
         head = read_ledger(path)
         check_chain(head, errors)
         if a.base and not errors:
-            text = git(repo, "show", f"{a.base}:{LEDGER_PATH}")
+            text = base_ledger_text(repo, a.base)
             if text is None:
                 print(f"ledger: {a.base} has no {LEDGER_PATH}; nothing to compare", file=out)
             else:
