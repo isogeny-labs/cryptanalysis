@@ -1,0 +1,19 @@
+digraph CT26 {
+  graph [rankdir=LR, bgcolor="white", pad=0.35, nodesep=0.5, ranksep=0.75,
+         label="CT26  |  Frobenius on 7-torsion over F_101\nProducer oracle, unsigned [pcc:unverified]",
+         labelloc=t, fontsize=17, fontname="Helvetica"];
+  node [shape=box, style="rounded,filled", fillcolor="#f5f7fa", color="#536577",
+        fontcolor="#223246", fontname="Helvetica", fontsize=12, margin="0.16,0.12"];
+  edge [color="#5c6672", arrowsize=0.8, fontname="Helvetica", fontsize=10];
+  e1 [label="E109[7]\nFrob eigenvalues 5, 2\nselected kernel: [5], F_101^6"];
+  e2 [label="E113[7]\nFrob eigenvalues 6, 4\nselected kernel: [6], F_101^2"];
+  prod [label="E109[7] x E113[7]\n2850 rank-2 planes\n400 isotropic"];
+  f [label="6 Frob-stable planes\n4 isotropic, 2 excluded", fillcolor="#e7eef7"];
+  k [label="Selected product kernel\n49 elements, Frob diag(5,6)\n7x7 group tables", fillcolor="#e7f5ee"];
+  j [label="J0[7] image via P0\n49 Jacobian divisor images\nNOT YET EXECUTED", fillcolor="#fff3dc"];
+  e1 -> prod; e2 -> prod;
+  prod -> f;
+  prod -> k;
+  k -> j [style=dashed, label="next test"];
+  f -> j [style=dotted, label="HLP 2-gluing hypothesis"];
+}
