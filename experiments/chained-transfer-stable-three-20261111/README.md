@@ -40,6 +40,11 @@ A separate finite-field implementation enumerated every affine point and infinit
 
 Especially, F103 E(0,3) has 124 points and no nontrivial rational 3-torsion, yet psi3 has the root 0, `f(0)=3` is a nonsquare, and the codomain is `Y²=X³+22`. The old sampler returns []; the new API enumerates the rational isogeny. The F101 E(0,2) sample has one irrational and one rational generator kernel in its two x-roots.
 
+
+## End-to-end toy subgroup transport (unmeasured)
+
+The same F103 input has `#E=124=4*31`. A source point `P=(72,44)` has order 31; its rational 3-isogeny image is `P'=(36,88)` of order 31. A separate local finite-field scratch implementation enumerated all 31 scalar multiples `[k]P`, transferred them with the isogeny, and recovered every `k=0,…,30` by exhaustive search on the target subgroup. The corresponding Rust unit test `transported_r31_discrete_logs_recover` is committed but **not executed** here. This is a correctness fixture, not a cost comparison; exhaustive toy DLP cannot support a speedup claim. [pcc:unverified]
+
 ## Follow-up gates
 
 Run `cargo test --release --lib stable_three` from the `suite/` crate (check workspace layout) and `cargo clippy --release --all-targets -- -D warnings`; run repository-required validation before merge. Check PCC standing/signature, PR CI and branch protection. Add odd-prime general kernel-polynomial computation and integrate graph/volcano with an explicit completeness flag; do not silently change their return types or count a sampled absence as no isogeny. No new cloud execution or resource spend.
