@@ -44,8 +44,10 @@
 //!
 //! ## Scope
 //!
-//! We enumerate the kernel `G` by brute force over `F_p` and
-//! compute Vélu's sums directly.  This is `O(ℓ)` field operations
+//! This module enumerates pointwise-rational kernels over `F_p` and
+//! computes Vélu's sums directly. It is not a complete enumerator of
+//! isogenies defined over `F_p`: Frobenius-stable kernels may have
+//! no nonidentity `F_p`-points. For degree 3, see `stable_three`.  This is `O(ℓ)` field operations
 //! per isogeny — fine for `ℓ ≤ 100` and the toy curves used here.
 //! Production-grade `√ℓ`-style algorithms (Bernstein–De Feo–
 //! Leroux–Smith, 2020) are deliberately not implemented.
@@ -251,20 +253,26 @@ pub fn velu_isogeny_2(domain: &SmallCurve, x_t: u64) -> Option<VeluIsogeny> {
 
 // ── ℓ-odd isogeny via cofactor sampling ──────────────────────────────────────
 
-/// Return all `ℓ`-isogenies from the curve as `VeluIsogeny` records.
+/// Sample degree-`ℓ` isogenies with **pointwise Fp-rational** kernels.
+/// This is a partial, bounded random sampler, NOT an enumerator of all
+/// Fp-defined degree-`ℓ` isogenies. The result may be empty even when a
+/// Frobenius-stable kernel exists (e.g. p=103, E:y²=x³+3, ℓ=3).
+/// For exhaustive rational degree-3 kernels over small fields, use
+/// `super::stable_three::three_isogenies_over_fp_small`.
 /// `ℓ` must be an odd prime.
 ///
 /// Algorithm (random-point cofactor method, Schoof 1995 §3):
 ///
 /// 1. Compute `#E(F_p) = p + 1 − t` via [`crate::isogeny::cm::cm_discriminant`].
-/// 2. If `ℓ ∤ #E`, there is no `F_p`-rational `ℓ`-torsion, so no
-///    isogenies of degree `ℓ` are defined over `F_p`.  Return `[]`.
+/// 2. If `ℓ ∤ #E`, no nonzero `F_p`-rational point has order `ℓ`.
+///    Return `[]` **for this pointwise-kernel sampler only**. Rational
+///    isogenies with nonrational kernel generators are not excluded.
 /// 3. Otherwise let `m = #E / ℓ`.  Repeatedly sample random
 ///    `P ∈ E(F_p)` and form `Q = m·P`; if `Q ≠ O`, then `Q` has
 ///    order dividing `ℓ`, and (since `ℓ` is prime) its order is
 ///    exactly `ℓ`, so `⟨Q⟩` is a cyclic subgroup of order `ℓ`.
-/// 4. Stop when we've enumerated every distinct cyclic subgroup
-///    (at most `ℓ+1` of them when `E[ℓ](F_p) ≅ (Z/ℓ)²`).
+/// 4. Stop after the sampling cap or `ℓ+1` distinct subgroups.
+///    The sampling cap does not certify that all such subgroups were found.
 ///
 /// Cost: `O(ℓ² · log² p)` total — `O(log² p)` per scalar mult,
 /// `O(ℓ)` samples expected per distinct subgroup, `O(ℓ)` subgroups
@@ -284,7 +292,7 @@ pub fn velu_isogeny_odd(domain: &SmallCurve, ell: u64) -> Vec<VeluIsogeny> {
     }
     let order = cm.order as u64;
     if !order.is_multiple_of(ell) {
-        // No F_p-rational ℓ-torsion → no ℓ-isogenies definable over F_p.
+        // No pointwise Fp-rational ℓ-torsion; other stable kernels may exist.
         return Vec::new();
     }
     let cofactor = order / ell;
