@@ -1,0 +1,17 @@
+digraph CT27 {
+  graph [rankdir=LR, bgcolor="white", pad="0.22", nodesep="0.36", ranksep="0.42", fontname="Helvetica"];
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=12, color="#39485b", fillcolor="#f1f5f9"];
+  edge [fontname="Helvetica", fontsize=10, color="#475569"];
+  C [label="Genus-2 balanced class\nu=x²+s x+t, v=v0+v1 x\nplus = k"];
+  E [label="Even quotient E_e\nU=x², Y=y\nbase-field direct norm",fillcolor="#dbeafe"];
+  R [label="Reciprocal quotient E_r\nV=c/x², Z=c y/x³\nbase-field direct norm",fillcolor="#dcfce7"];
+  X [label="Exceptional branches\ns=0; t=0; repeated; ∞±",fillcolor="#fef3c7"];
+  W [label="Independent F101²\nFrobenius-conjugate pushforward\n12,317 classes/chart",fillcolor="#f3e8ff"];
+  N [label="Native Rust differential\n+ full-cost benchmark\nNOT YET DONE",fillcolor="#fee2e2"];
+  C -> E [label="line/chord identity"];
+  C -> R [label="reciprocal reduction"];
+  C -> X [style=dashed];
+  X -> E [style=dashed]; X -> R [style=dashed];
+  E -> W [label="exact equality"];R -> W [label="exact equality"];
+  W -> N [style=dashed,label="future verification"];
+}
