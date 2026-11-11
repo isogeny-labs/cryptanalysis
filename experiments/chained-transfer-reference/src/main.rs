@@ -18,6 +18,8 @@ mod nonsplit;
 #[cfg(test)]
 mod odd_kernels;
 #[cfg(test)]
+mod seven;
+#[cfg(test)]
 mod small_prime_oracle;
 
 fn polynomial(c: &[i64]) -> FpPoly {

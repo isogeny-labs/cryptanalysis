@@ -1,5 +1,15 @@
 # Chained transfer differential reference
 
+Current [elliptic degree7 checkpoint](ELLIPTIC_SEVEN.md) constructs four
+actual maps/duals on the109/113 elliptic factors. Exact cleared curve/both
+globalx[7],all source/codomain points,pair additions,scalars and recovery
+pass;another unchanged arithmetic/kernel engine replays the frozen
+certificates locally and in the consumer CI layout. Separate102/five-input
+guards keep construction and verifier custody distinct. Four Lean helpers
+compile,total72. Prior50-unit-plus1-integration CI passes/1482 merged;
+current51-unit-plus2-integration replay pending. Genuine compatible Jacobian
+gluing/7-hop remains CT20;no solver/cost gain accepted. [pcc:unverified]
+
 Current [odd-kernel assessment](ODD_KERNELS.md) closes rational3/5
 maximal-isotropic kernels for the accepted17/101 examples,also7 for17.
 Shifted101 has four abstract7 candidates;actual kernels/codomains/maps remain
