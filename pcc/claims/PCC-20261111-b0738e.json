@@ -1,0 +1,44 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-11T22:00:04Z",
+ "id": "PCC-20261111-b0738e",
+ "kind": "statement",
+ "producer": {
+  "commit": "994869034bbc9cc882db826cdabf73d2befb97cc",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/closed-fibres-kernel-02-partial.txt",
+    "sha256": "9a4645aa93f8b2402d2e9305470a8a13a6badd5d4427c98c14e5c443f4a6e951"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/closed-fibres-source-02.rs",
+    "sha256": "a1b1af0008b907431bf413ce1509b862b1e62ec3e020fb614e1ebbdd1fa464c3"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/closed-fibres-map-source-02.rs",
+    "sha256": "2f43c693119e2971d817adad5eaff811f116ec52e2836b6638b956a53059f798"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/closed-fibres-chain-source-02.rs",
+    "sha256": "ea48871519ab99820d4df2a131a8bf7f5450af430ec2ea095c60702f399aa171"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "CT23 kernel test02 reports PASS and ok for actual49 distinct T0 classes KerPsi=R0(KerPhi) over the existing F101^6 field without support-root splitting: all7-annihilators, all49 geometric dualR0 norm2 checks, all2401 additions and Frobenius eigenscalars[5,6]. Elliptic7 kernels/Phi killing are checked with the retained independent flat-field elliptic route; full kernel identification uses the accepted global square and degree49. Receipt is an explicitly partial snapshot of still-running02: its separate full-domain test has not finished. No full-suite, cost or signed verdict is inferred."
+}

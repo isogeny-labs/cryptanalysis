@@ -11,6 +11,194 @@ use num_bigint::BigUint;
 use num_traits::ToPrimitive;
 use std::collections::{HashMap, HashSet};
 
+#[test]
+fn closed_fibre_targeted_r0_r1_both_directions() {
+    let chain = SevenChain::new();
+    for (name, r) in [("R0", &chain.r0), ("R1", &chain.r1)] {
+        for reverse in [false, true] {
+            let source = if reverse { &r.target } else { &r.source };
+            let all = source.classes().unwrap();
+            let mut counts = [0_usize; 5];
+            for i in 0..192 {
+                let index = if i < 12 {
+                    i
+                } else {
+                    (i * 113 + 47) % all.len()
+                };
+                let d = &all[index];
+                let (image, route) = r.evaluate_closed(d, reverse).unwrap();
+                counts[route as usize] += 1;
+                assert_eq!(
+                    image,
+                    r.evaluate(d, reverse).unwrap(),
+                    "{name} reverse={reverse} index={index}"
+                );
+            }
+            assert!(counts[1] > 100, "closed chart must actually be exercised");
+            println!("{name} reverse={reverse} targeted192 route counts{counts:?};closed/pointwise exact equality");
+        }
+    }
+}
+
+#[test]
+fn closed_fibre_geometric_two_boundaries_and_reference() {
+    use super::super::super::closed_fibres::ClosedFibre;
+    let c = SevenChain::new();
+    let b = Bridge::new();
+    let source0 = source_branch_roots(&b.k);
+    let action = two_action(&c.t, &b);
+    let target0 = target_branch_roots(&b, &c.r0);
+    let target1 = target_branch_roots(&b, &c.r1);
+    for (name, r, roots, reverse) in [
+        ("R0", &c.r0, &source0, false),
+        ("R0", &c.r0, &target0, true),
+        ("R1", &c.r1, &action.roots, false),
+        ("R1", &c.r1, &target1, true),
+    ] {
+        let values = richelot_two_action(r, roots, reverse);
+        let mut counts = [0_usize; 5];
+        for (d, expected) in values {
+            match r.closed_extension(&d, reverse).unwrap() {
+                ClosedFibre::Image(value, route) => {
+                    assert_eq!(value, expected);
+                    counts[route as usize] += 1;
+                }
+                ClosedFibre::Boundary(route) => {
+                    counts[route as usize] += 1;
+                }
+            }
+        }
+        assert_eq!(counts.iter().sum::<usize>(), 16);
+        assert_eq!(counts[0], 1);
+        assert_eq!(counts[1], 0, "branch ordinates must not be inverted");
+        assert_eq!(counts[2..].iter().sum::<usize>(), 15);
+        println!("{name} reverse={reverse} ALL16 actual geometric2-torsion route counts{counts:?};identity agrees with pointwise table,all15 nonzero branch classes have explicit chart boundaries;completed pointwise action retained");
+    }
+}
+
+#[test]
+fn closed_fibre_all_r0_r1_domains_and_group_controls() {
+    use std::cell::RefCell;
+    let chain = SevenChain::new();
+    for (name, r) in [("R0", &chain.r0), ("R1", &chain.r1)] {
+        let counts = RefCell::new([[0_usize; 5]; 2]);
+        let evaluate = |d: &Class, reverse: bool| {
+            let (image, route) = r.evaluate_closed(d, reverse)?;
+            assert_eq!(
+                image,
+                r.evaluate(d, reverse)?,
+                "all-class old/closed {name} reverse={reverse}"
+            );
+            counts.borrow_mut()[usize::from(reverse)][route as usize] += 1;
+            Ok(image)
+        };
+        assert_full_graph_pair(
+            &r.source,
+            &r.target,
+            |d| evaluate(d, false),
+            |d| evaluate(d, true),
+            2,
+        );
+        for row in *counts.borrow() {
+            assert_eq!(row.iter().sum::<usize>(), 12317);
+            assert!(row[1] > 10000);
+        }
+        assert!(r.evaluate_closed(&r.target.zero(), false).is_err());
+        assert!(r.evaluate_closed(&r.source.zero(), true).is_err());
+        println!("{name} BOTH complete12317 domains route counts{:?};old/closed equality,both dual2,bijections,paired additions,descent,wrong-model rejection pass",counts.borrow());
+    }
+}
+
+#[test]
+fn closed_fibre_explicit_psi_kernel49_group_dual_and_frobenius() {
+    use super::super::super::closed_fibres::ClosedFibre;
+    let c = SevenChain::new();
+    let b = Bridge::new();
+    assert_eq!(c.r0.k.k.q, b.k.k.q);
+    let source = Jacobian::new(&b.k, &c.r0.source);
+    let target = Jacobian::new(&c.r0.k, &c.r0.target);
+    let c1 = Jacobian::new(&b.k, &c.r1.source);
+    let maps = c.t.edges.each_ref().map(|e| lift_map(&b.f, e));
+    let kernels = maps
+        .each_ref()
+        .map(|m| super::elliptic_seven_points(&b.f, m));
+    let eigen: [usize; 2] = std::array::from_fn(|i| {
+        (1..7)
+            .find(|n| {
+                curve::pmul(&b.f, &maps[i].dom, &kernels[i][1], *n as u128)
+                    == super::frobenius_point(&b.f, kernels[i][1])
+            })
+            .unwrap()
+    });
+    assert_eq!(eigen, [5, 6]);
+    let image = |d: &Divisor, reverse| match c.r0.closed_extension(d, reverse).unwrap() {
+        ClosedFibre::Image(value, _) => value,
+        ClosedFibre::Boundary(route) => {
+            panic!("actual7-kernel closed chart boundary {route:?}: {d:?}")
+        }
+    };
+    let mut points = vec![];
+    for p in &kernels[0] {
+        for q in &kernels[1] {
+            let product = [*p, *q];
+            let d =
+                extension_product_pull(&source, &b.f, product, &old_charts(), 56, |a| b.embed(a))
+                    .unwrap();
+            let pushed = image(&d, false);
+            target.check(&pushed).unwrap();
+            assert!(!points.contains(&pushed));
+            assert_eq!(super::multiply(&target, &pushed, 7), target.zero());
+            assert_eq!(
+                image(&pushed, true),
+                source.add(&d, &d).unwrap(),
+                "actual geometric dualR0 norm2"
+            );
+            let alpha = std::array::from_fn(|i| maps[i].eval(&b.f, &product[i]));
+            assert_eq!(
+                extension_product_pull(&c1, &b.f, alpha, &c.t.model.charts, 68, |a| b.embed(a))
+                    .unwrap(),
+                c1.zero(),
+                "Phi kills each actual lift,so Psi R0=R1 Phi identifies the displayed kernel"
+            );
+            points.push(pushed);
+        }
+    }
+    assert_eq!(points.len(), 49);
+    assert_eq!(points[0], target.zero());
+    let pack = |p: &[Element]| {
+        p.iter()
+            .map(|e| {
+                std::array::from_fn::<u64, 6, _>(|i| {
+                    if i < 3 {
+                        e.a.coeff(i).to_u64().unwrap()
+                    } else {
+                        e.b.coeff(i - 3).to_u64().unwrap()
+                    }
+                })
+            })
+            .collect::<Vec<_>>()
+    };
+    println!("# explicit-psi-kernel/v1;p101;T^3+6T^2+13T+56=0;S^2=2;basis[1,T,T2,S,ST,ST2];T0[31,75,74,54,71,55,1];index,u_coefficients,v_coefficients,plus");
+    for i in 0..49 {
+        println!(
+            "actualPsiKernel\t{i}\t{:?}\t{:?}\t{}",
+            pack(&points[i].u),
+            pack(&points[i].v),
+            points[i].plus
+        );
+        let fi = ((i / 7 * eigen[0]) % 7) * 7 + (i % 7 * eigen[1]) % 7;
+        assert_eq!(
+            super::super::super::frobenius_class(&c.r0.k, &points[i], 1),
+            points[fi]
+        );
+        for j in 0..49 {
+            let sum = ((i / 7 + j / 7) % 7) * 7 + (i % 7 + j % 7) % 7;
+            assert_eq!(target.add(&points[i], &points[j]).unwrap(), points[sum]);
+        }
+    }
+    println!("PASS actual49 distinct KerPsi=R0(KerPhi) classes over existingFp6,no support-root splitting;all7-annihilators/all49 geometric dualR0 norm2/all2401 additions/Frobenius eigenscalars{eigen:?};identification uses retained global square and degree49");
+}
+
 impl Bridge {
     fn flat(&self, a: &Element) -> ER {
         let eval = |p: &crate::reference::FpPoly| {
@@ -236,10 +424,11 @@ impl SevenChain {
     }
     fn forward(&self, d: &Class) -> super::super::super::Result<Class> {
         self.r1
-            .forward(&self.quarter_phi(&self.r0.dual(d)?, false)?)
+            .forward_closed(&self.quarter_phi(&self.r0.dual_closed(d)?, false)?)
     }
     fn dual(&self, d: &Class) -> super::super::super::Result<Class> {
-        self.r0.forward(&self.quarter_phi(&self.r1.dual(d)?, true)?)
+        self.r0
+            .forward_closed(&self.quarter_phi(&self.r1.dual_closed(d)?, true)?)
     }
     fn naive(&self, d: &Class, reverse: bool) -> super::super::super::Result<Class> {
         if reverse {

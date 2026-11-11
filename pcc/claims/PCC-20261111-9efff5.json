@@ -1,0 +1,37 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-11T22:22:02Z",
+ "id": "PCC-20261111-9efff5",
+ "kind": "statement",
+ "producer": {
+  "commit": "994869034bbc9cc882db826cdabf73d2befb97cc",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/explicit-psi-kernel-07.tsv",
+    "sha256": "1c86cf06a14e822512525ecf13398be7cfacd9cc0acbdb5c0c70c2f13f8ee893"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/closed-fibres-chain-source-05.rs",
+    "sha256": "a10630a82f578bcc0a291a7805f268a3fc6e2de1ed9a5a7b905d3175c801f79c"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/closed-fibres-full-and-kernel-02.txt",
+    "sha256": "ce0573f25d3bbbfc315b7fcddb36556fd40e4f1de469afe4aef26042b7ddacf6"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Compact explicit49-class Psi-kernel witness TSV07 is a text extraction of actualPsiKernel rows emitted by the checked kernel test in the still-running complete guard07. It states F101, cubic T^3+6T^2+13T+56, S^2=2, coefficient basis[1,T,T2,S,ST,ST2], actual T0 model, each u/v coefficient vector and balanced plus. Exactly49 class rows plus header are retained. Source05 pins the exporter; the complete guard outcome remains pending and is not inferred from this extraction. Prior02 independently checks these constructed classes for7-torsion/group/Frobenius/dualR0; unsigned producer evidence."
+}

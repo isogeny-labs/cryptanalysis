@@ -1,3 +1,15 @@
+# CT23: closed Richelot fibres and explicit Psi kernel
+
+[CLOSED_FIBRES.md](CLOSED_FIBRES.md), [current status](CLOSED_FIBRES_STATUS.md)
+and [report](closed-fibres-report.pdf) describe the resultant evaluator and
+actual49-class T0 kernel witness. All four12317-class R0/R1 domains match
+pointwise evaluation,including dual2/bijections/paired sums and geometric
+chart boundaries. Integrated complete guard07 passes25native/70reference
+unit plus three integrations,one old ignored benchmark,all guards/fmt/
+strictClippy (PCC1f1423). The original pointwise and naive routes remain.
+Independent flat-field replay checks the exported divisor validity and
+Frobenius only. Full scientific standing remains unsigned. [pcc:unverified]
+
 # Chained transfer differential reference
 
 Current [direct elliptic norms](DIRECT_NORMS.md) evaluate both C0/C1
