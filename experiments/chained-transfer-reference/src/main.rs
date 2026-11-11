@@ -10,6 +10,8 @@ use num_bigint::BigUint;
 use reference::{FpPoly, HyperellipticCurveP, MumfordDivisorP};
 
 #[cfg(test)]
+mod balanced;
+#[cfg(test)]
 mod cubic_transfer;
 #[cfg(test)]
 mod small_prime_oracle;
