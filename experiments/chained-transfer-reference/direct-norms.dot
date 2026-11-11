@@ -1,0 +1,20 @@
+digraph Norms {
+  graph [rankdir=LR,bgcolor="white",pad="0.15",nodesep="0.35",ranksep="0.55"];
+  node [shape=box,style="rounded,filled",fontname="DejaVu Sans",fontsize=10,color="#3b617d",fillcolor="#edf4fb",margin="0.12,0.09"];
+  edge [fontname="DejaVu Sans",fontsize=9,color="#3b617d"];
+  input [label="C0/C1 balanced class\nu,v,plus; validated model/field"];
+  cases [label="Finite support: degree0/1/2\nrepeated roots and A/B zero cases"];
+  first [label="First quotient sum\nlambda=1,shift=d/3"];
+  second [label="Reciprocal support/ordinate\nlambda=b,shift=c/3"];
+  inf [label="Second infinity correction\n+(2n+m-2)Q,Q=(c/3,b)"];
+  output [label="Both actual elliptic points\nmatched coordinates for Phi/Psi",fillcolor="#e9f5ed"];
+  reference [label="Unchanged generic norms\nall12317 C0 + all12317 C1",fillcolor="#f3f1ec"];
+  input -> cases;
+  cases -> first;
+  cases -> second;
+  second -> inf;
+  first -> output;
+  inf -> output;
+  input -> reference [style=dashed];
+  reference -> output [label="exact equality",style=dashed];
+}

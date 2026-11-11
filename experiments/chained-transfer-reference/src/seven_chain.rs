@@ -244,10 +244,12 @@ impl SevenChain {
     fn naive(&self, d: &Class, reverse: bool) -> super::super::super::Result<Class> {
         if reverse {
             let half = self.r1.target.mul(d, 6159)?;
-            self.r0.forward(&self.t.dual(&self.r1.dual(&half)?)?)
+            self.r0
+                .forward(&self.t.dual_generic(&self.r1.dual(&half)?)?)
         } else {
             let half = self.r0.target.mul(d, 6159)?;
-            self.r1.forward(&self.t.forward(&self.r0.dual(&half)?)?)
+            self.r1
+                .forward(&self.t.forward_generic(&self.r0.dual(&half)?)?)
         }
     }
 }

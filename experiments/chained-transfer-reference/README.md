@@ -1,5 +1,16 @@
 # Chained transfer differential reference
 
+Current [direct elliptic norms](DIRECT_NORMS.md) evaluate both C0/C1
+quotients using base-field formulas with repeated/zero support and every
+balanced infinity term. Both norms match the unchanged generic route on
+all12317 classes ofeach model. Integrated complete guard passes25native/
+66reference unit+three integrations,one old benchmark ignored;all Phi/
+PhiHat classes agree with retained generic evaluation and all Psi/source
+controls pass. Seven new partial Lean lemmas bring the source census97;
+geometry remains written and standing unsigned. [DIRECT_NORMS_STATUS.md](DIRECT_NORMS_STATUS.md)
+retains exact receipts,limits and the inspected two-page report. No timing,
+solver or broader catalog claim. [pcc:unverified]
+
 Current [transported seven-chain](SEVEN_CHAIN.md) constructs actual global
 Psi between the accepted T0 and a distinct unpolarized F101 Jacobian T1.
 Both complete12317-class domains pass dual[7],bijections,paired additions,
