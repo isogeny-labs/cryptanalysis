@@ -1,0 +1,48 @@
+   Compiling chained-transfer-reference v0.1.0 (/workspace/cryptanalysis/experiments/chained-transfer-reference)
+error[E0277]: the trait bound `num_bigint::BigUint: From<i32>` is not satisfied
+   --> src/cubic_transfer.rs:408:48
+    |
+408 |         assert!((0..101).all(|x| !sextic.eval(&BigUint::from(x)).is_zero()));
+    |                                                ^^^^^^^ the trait `From<i32>` is not implemented for `num_bigint::BigUint`
+    |
+    = help: `num_bigint::BigUint` implements trait `From<T>`:
+              From<bool>
+              From<u128>
+              From<u16>
+              From<u32>
+              From<u64>
+              From<u8>
+              From<usize>
+
+error[E0277]: the trait bound `num_bigint::BigUint: From<i32>` is not satisfied
+   --> src/cubic_transfer.rs:412:26
+    |
+412 |                     vec![BigUint::from(a), BigUint::from(b), BigUint::one()],
+    |                          ^^^^^^^ the trait `From<i32>` is not implemented for `num_bigint::BigUint`
+    |
+    = help: `num_bigint::BigUint` implements trait `From<T>`:
+              From<bool>
+              From<u128>
+              From<u16>
+              From<u32>
+              From<u64>
+              From<u8>
+              From<usize>
+
+error[E0277]: the trait bound `num_bigint::BigUint: From<i32>` is not satisfied
+   --> src/cubic_transfer.rs:412:44
+    |
+412 |                     vec![BigUint::from(a), BigUint::from(b), BigUint::one()],
+    |                                            ^^^^^^^ the trait `From<i32>` is not implemented for `num_bigint::BigUint`
+    |
+    = help: `num_bigint::BigUint` implements trait `From<T>`:
+              From<bool>
+              From<u128>
+              From<u16>
+              From<u32>
+              From<u64>
+              From<u8>
+              From<usize>
+
+For more information about this error, try `rustc --explain E0277`.
+error: could not compile `chained-transfer-reference` (bin "chained-transfer-reference" test) due to 3 previous errors

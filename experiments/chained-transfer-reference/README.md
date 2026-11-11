@@ -35,7 +35,7 @@ change, not an unrecorded twist or a square-root assumption. [pcc:unverified]
   sets have paired additions and both dual norms compared with BigUint;
   independent Fp/Fp² point counts give order9,216, and reference negation
   counts self-inverse classes as4 and16.
-- Latest guarded suite receipt: native25 and reference29 passing tests, one pre-existing benchmark left
+- Latest guarded suite receipt: native25 and reference33 passing tests, one pre-existing benchmark left
   ignored. These are local correctness counts, not performance measurements.
   [pcc:unverified]
 
@@ -49,6 +49,51 @@ changes. Strict Clippy's first attempt found the reference's pre-existing
 confined to the imported reference module; no correctness test or reference
 arithmetic was changed. Both the warning and subsequent pass are retained.
 [pcc:unverified]
+
+## Cubic covers and arbitrary-class closed-point norm
+
+`src/cubic_transfer.rs` extends the prior Enge cover family's missing norm
+prerequisite. It reuses the pre-existing checked BigUint arithmetic. On the
+existing E/F101:y²=x³+x+46,#E109,G(2,37), whole cubic pullbacks reach
+`y²=x9+x3+46` (genus4), then `y²=x27+x9+46` (genus13). Polynomial substitution
+handles nonsplit/ramified fibers. Coefficient deflation is an exact-image
+inverse; it is not a global genus13 norm. [pcc:unverified]
+
+The genus4 norm accepts every canonical divisor of degree≤4: complete bounded
+support factorization, elliptic Frobenius traces in Fp[X]/q, multiplicity,
+orbit closure and descent checks. It never reads a DLP scalar. Tests cover
+all109 source scalars,130 fixed translated classes with closed support
+degrees1..4, and an E19/F17 control with all361 ordered subgroup pairs,
+ramification and degree12 target representatives. Four development tests and
+strict Clippy pass (PCC-daf60f). [pcc:unverified]
+
+The separate crypto root example `chained_cubic_norm_reference` imports no new
+norm code. Its pre-existing genus4/13 and affine elliptic engines reconstruct
+all130 witnesses; another Frobenius-gcd criterion confirms irreducible
+cubic/quartic support. Both Jacobian engines use Cantor and both harnesses
+are producer-authored; this is not signed scientific standing. The TSV and
+independent receipt are retained in the crypto study, PCC-2d5c08.
+[pcc:unverified]
+
+Full guarded replay `evidence/cubic-pinned-02.txt` passes native25 tests and
+reference33 tests, formatting and strict Clippy; one old benchmark remains
+ignored (PCC-29610e). The seven upstream runtime sources remain at75a737b8.
+The first development compile and first wrapper PATH failure remain in
+`cubic-transfer-01.txt` and `cubic-pinned-01.txt`. No benchmark was executed.
+[pcc:unverified]
+
+The source E109's quadratic sextic has no rational linear/quadratic factors.
+The general odd-full-group argument restricts individually rational Richelot
+factors and the rational-Weierstrass chart; it does not exclude a
+Frobenius-stable unordered triple of nonrational quadratics. Balanced genus2
+arithmetic and explicit descent are next prerequisites. No cost advantage or
+cross-prime descent follows. See the upstream `CUBIC_NORM_20261111.md`,
+`cubic-report.pdf` and queue CT11–CT13. [pcc:unverified]
+
+Small-prime PR1474 merged852a464a7310d733a472e4550e1fe4070614c538;
+focused run42999610365 succeeds on exactdf2b78a2. Its raw log is retained
+(PCC-ca8352). Broader C++ analysis failures are distinct; no all-CI-green
+claim is made. [pcc:unverified]
 
 ## Reproduce
 
