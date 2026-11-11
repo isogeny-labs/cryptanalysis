@@ -19,6 +19,9 @@ pub struct Class {
     plus: u8,
 }
 impl Class {
+    pub(super) fn components(&self) -> (&FpPoly, &FpPoly, u8) {
+        (&self.u, &self.v, self.plus)
+    }
     fn degree(&self) -> usize {
         self.u.degree().unwrap()
     }
@@ -37,6 +40,9 @@ fn canonical(f: &FpPoly, p: &BigUint) -> bool {
     f.p == *p && f.coeffs.iter().all(|c| c < p) && f.coeffs.last().is_none_or(|c| !c.is_zero())
 }
 impl Balanced {
+    pub(super) fn equation_and_infinity(&self) -> (&FpPoly, &FpPoly) {
+        (&self.f, &self.polynomial_part)
+    }
     pub fn new(p: u64, coefficients: &[u64]) -> Result<Self> {
         if !(5..=101).contains(&p)
             || coefficients.len() != 7
@@ -88,7 +94,7 @@ impl Balanced {
             BigUint::from(self.p),
         )
     }
-    fn wrap(&self, u: FpPoly, v: FpPoly, plus: u8) -> Result<Class> {
+    pub(super) fn wrap(&self, u: FpPoly, v: FpPoly, plus: u8) -> Result<Class> {
         let d = Class {
             f: self.f.clone(),
             u,
@@ -98,7 +104,7 @@ impl Balanced {
         self.check(&d)?;
         Ok(d)
     }
-    fn check(&self, d: &Class) -> Result<()> {
+    pub(super) fn check(&self, d: &Class) -> Result<()> {
         if d.f != self.f || !canonical(&d.u, &self.f.p) || !canonical(&d.v, &self.f.p) {
             return Err("balanced curve/field/canonical tag mismatch".into());
         }

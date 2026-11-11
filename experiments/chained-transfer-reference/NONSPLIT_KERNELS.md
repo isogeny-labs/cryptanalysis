@@ -2,7 +2,9 @@
 
 `src/nonsplit.rs` constructs kernel splittings and codomain models on the
 predeclared E19/F17 fixture, and independently audits the E109/F101 control.
-It does **not** yet implement a divisor correspondence. Claims42713c and
+This document freezes the kernel-only checkpoint0348e90f0. The subsequent
+[operational map](NONSPLIT_MAP.md) implements its frozen correspondence.
+Claims42713c and
 final guarded-replay record3c51f5 remain unsigned/unverified. No benchmark or
 computational advantage is asserted. [pcc:unverified]
 
