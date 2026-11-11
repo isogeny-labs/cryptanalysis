@@ -11,7 +11,7 @@ checks are not signed independent validation. [pcc:unverified]
 Source E:y²=x³+1, C:y²=x⁶+1, W=(10,0), P=(4,41), r=17 over F101.
 The Richelot target is C₂:w²=41z⁶+9z⁴+9z²+41. The upstream native
 package is pinned to crypto commit
-`aabae1979457c3ba9e5112487a907b50cab15a99`; `source-pin.json` and both
+`75a737b8366ec6c78ed8672886423fcbe69853a2`; `source-pin.json` and both
 SHA-256 manifests bind the exact new and reference sources. The reference
 comes from cryptanalysis `68594c8874c75a0a6c04a3874adb1374088ca4f5`.
 The initial upstream18db046 pin is retained in `source-pins/` and Git history;
@@ -35,14 +35,14 @@ change, not an unrecorded twist or a square-root assumption. [pcc:unverified]
   sets have paired additions and both dual norms compared with BigUint;
   independent Fp/Fp² point counts give order9,216, and reference negation
   counts self-inverse classes as4 and16.
-- Latest guarded suite receipt: 28 passing tests, one pre-existing benchmark left
+- Latest guarded suite receipt: native25 and reference29 passing tests, one pre-existing benchmark left
   ignored. These are local correctness counts, not performance measurements.
   [pcc:unverified]
 
 Evidence: `evidence/differential-01.txt` through `differential-04.txt`.
 Successor receipts: `evidence/successor-development-01.txt` and
 `evidence/successor-pinned-01.txt`; the latter completes source guards,
-formatting, strict Clippy and full replay against the published aabae197 pin.
+formatting, strict Clippy and full replay against the published75a737b8 feature pin.
 Records PCC-20261111-5e39d6 and PCC-20261111-820d6f and PCC-20261111-d0f154 remain unverified until actual signed standing
 changes. Strict Clippy's first attempt found the reference's pre-existing
 `Fp2Ctx::from_fp(&self)` convention warning. The compatibility annotation is
@@ -69,7 +69,7 @@ repositories in the same layout and runs this command.
 
 No standalone DLP solver, experiment allocation, measured speedup, field-family
 generalization or full Picard/Richelot formalization is claimed. See the
-upstream [report](https://github.com/isogeny-labs/crypto/blob/aabae1979457c3ba9e5112487a907b50cab15a99/research/chained_jacobian_transfers_20261110/REPORT_20261111.md)
+upstream [report](https://github.com/isogeny-labs/crypto/blob/75a737b8366ec6c78ed8672886423fcbe69853a2/research/chained_jacobian_transfers_20261110/REPORT_20261111.md)
 for the genuine Jacobian hops, duals, zero controls and retained equivalences:
 the initial target is isomorphic to its source; the successor has different
 rational2-torsion cardinalities and therefore nonisomorphic F101 Jacobians.
@@ -103,3 +103,34 @@ published aabae197 checkpoint, before the later small-prime feature. Earlier
 18db046 and b280efc pin metadata and every receipt remain retained. The next
 family extension requires an explicit new feature/source pin; it is outside
 this immutable replay. [pcc:unverified]
+
+## Checked small-prime feature
+
+The current pin includes seven runtime inputs, including the unchanged external
+crypto/src/prime_hyperelliptic/fp2.rs, and enables native feature small-prime.
+check.sh now runs native formatting/Clippy/all25 tests before the29-test
+reference suite(1 existing benchmark ignored). The original18db046,b280efc
+and aabae197 pin metadata and every raw receipt remain retained. Latest
+receipt small-prime-pinned-01.txt, PCC-20261111-465843, remains unsigned.
+[pcc:unverified]
+
+|p|Each Jacobian order|Source/target self-inverse counts|Independent elliptic orders|
+|---|---|---|---|
+|13|180|4/4|10/18|
+|29|960|4/16|40/24|
+|31|1008|16/4|28/36|
+|101|9216|4/16|96/96|
+
+All eight complete class sets have independent BigUint chart arithmetic,
+paired additions, dual norms, point-count orders and negation counts checked.
+The quadratic-field counter shares the existing Fp2 lineage with the native
+field layer; it is not an independent validation of that layer. The native
+backend accepts checked primes≤4096 and caps exhaustive enumeration at101.
+No cryptographic-size or cross-prime transfer is inferred. [pcc:unverified]
+
+The upstream global successor argument identifies its first elliptic endpoint
+with a rational2-isogeny shortcut in characteristic different from2,3,5.
+Its Lean statements cover cleared algebra, while geometric completion remains
+a written argument. It does not identify the final Jacobian-valued two-hop
+map with that endpoint. No performance result or signed standing is claimed.
+[pcc:unverified]

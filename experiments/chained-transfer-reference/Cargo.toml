@@ -10,4 +10,4 @@ publish = false
 num-bigint = "=0.4.8"
 num-traits = "=0.2.19"
 # Sibling checkout is bound by upstream-commit.txt/upstream.sha256 and check.sh.
-chained-jacobian-transfer = { path = "../../../crypto/research/chained_jacobian_transfers_20261110/native" }
+chained-jacobian-transfer = { path = "../../../crypto/research/chained_jacobian_transfers_20261110/native", features = ["small-prime"] }
