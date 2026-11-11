@@ -31,7 +31,7 @@ def power(a,n):
  return z
 def remainder(a,h):
  a=poly(a);h=poly(h)
- assert h!=(0,)
+ if h==(0,):raise ZeroDivisionError('division by zero polynomial')
  inv=pow(h[-1],-1,P)
  while a!=(0,) and len(a)>=len(h):
   shift=len(a)-len(h); factor=a[-1]*inv%P
@@ -74,6 +74,7 @@ def main():
   t=P+1-N;f=(b,a,0,1)
   eigen=[z for z in range(7) if (z*z-t*z+P)%7==0]
   check(len(eigen)==2,name,'Frobenius roots')
+  check({pow(z,3,7) for z in eigen}=={1,6},name,'cannot isolate eigenspaces via Frobenius cubing')
   psi=psi7(a,b)
   check(len(psi)==25 and psi[-1]==7,name,'psi7 degree/lead')
   check(remainder(psi,h)==(0,),name,'kernel not dividing psi7')
