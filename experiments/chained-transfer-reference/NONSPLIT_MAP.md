@@ -111,10 +111,11 @@ checkout script discovers the committed TSV automatically; its minimal
 profile includes that exact compile-time fixture. No new field arithmetic
 was added to the reference engine or frozen B5a benchmark code.
 
-CT15 next freezes shift2 on the existing E109/F101 source, after this F17
-pipeline validation. The cover family was already in the Enge study; its
-unshifted6-cycle negative and the equivalent F17 targets stay retained.
-No shifted map is yet claimed. Production/catalog integration, larger fields,
+The subsequent [CT15 shifted109 checkpoint](SHIFTED109.md) now evaluates
+the frozen shift2 source with full12,317-class dual/descent controls. This
+supersedes the earlier prospective shift plan, without changing this F17
+receipt. The cover family was already in the Enge study; its unshifted6-cycle
+negative and equivalent targets stay retained. Production/catalog integration, larger fields,
 extension-field class coverage and signed independent validation remain open.
 
 No benchmark, solver comparison or paid job ran. S3 admission and live IsoLab

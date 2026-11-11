@@ -1,0 +1,23 @@
+   Compiling chained-transfer-reference v0.1.0 (/workspace/cryptanalysis/experiments/chained-transfer-reference)
+warning: associated function `new` is never used
+  --> src/nonsplit.rs:21:8
+   |
+20 | impl CubicField {
+   | --------------- associated function in this implementation
+21 |     fn new() -> Self {
+   |        ^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `chained-transfer-reference` (bin "chained-transfer-reference" test) generated 1 warning
+    Finished `release` profile [optimized] target(s) in 9.02s
+     Running unittests src/main.rs (experiments/chained-transfer-reference/target/release/deps/chained_transfer_reference-d352df790eb46e3d)
+
+running 2 tests
+PASS F17² embeddings on289 pairs and128 compositum inverse/Frobenius controls, wide_seeds=false, using irreducible cubic and nonsquare quadratic adjunction
+test nonsplit::map::compositum_embeddings_inverses_and_frobenius ... ok
+PASS F101² embeddings on10201 pairs and128 compositum inverse/Frobenius controls, wide_seeds=true, using irreducible cubic and nonsquare quadratic adjunction
+test nonsplit::map::shifted101_compositum_reference_witnesses ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 45 filtered out; finished in 0.51s
+

@@ -1,11 +1,12 @@
-//! Operational fixed F17 non-split correspondence. Source support is split
-//! only in F17²; coefficients lie in F17³, so their compositum F17⁶ suffices.
+//! Bounded split-leading non-split correspondence. Source support splits
+//! in Fp²; coefficients lie in Fp³, so their compositum Fp⁶ suffices.
 //! Target fibers remain quadratic Mumford pairs; no target roots are chosen.
-use super::{construct, CubicField, E};
+use super::{construct, construct_for, Assessment, CubicField, E};
 use crate::balanced::{Balanced, Class};
 use crate::reference::{Fp2, Fp2Ctx, FpPoly};
 use num_bigint::BigUint;
 use num_traits::ToPrimitive;
+use std::collections::BTreeMap;
 type Result<T> = std::result::Result<T, String>;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -256,6 +257,12 @@ impl<'a> Jacobian<'a> {
     fn add(&self, a: &Divisor, b: &Divisor) -> Result<Divisor> {
         self.check(a)?;
         self.check(b)?;
+        if *a == self.zero() {
+            return Ok(b.clone());
+        }
+        if *b == self.zero() {
+            return Ok(a.clone());
+        }
         let k = self.k;
         let (d1, e1, e2) = k.xgcd(&a.u, &b.u);
         let (d, c1, c2) = k.xgcd(&d1, &k.addp(&a.v, &b.v));
@@ -325,10 +332,16 @@ struct RichelotMap {
     target: Balanced,
     g: [Poly; 3],
     h: [Poly; 3],
+    target_scale: u64,
+    quadratic: Fp2Ctx,
+    square_roots: BTreeMap<(u64, u64), Fp2>,
 }
 impl RichelotMap {
     fn new() -> Self {
-        let a = construct();
+        Self::from_assessment(construct()).unwrap()
+    }
+    fn from_assessment(a: Assessment) -> Result<Self> {
+        let p = a.field.p;
         let k = Field::new(a.field);
         let pairing = a
             .pairs
@@ -344,7 +357,7 @@ impl RichelotMap {
                 });
                 !k.k.determinant(&g).is_zero()
             })
-            .unwrap();
+            .ok_or("no nondegenerate stable kernel")?;
         assert_eq!(*pairing, [(0, 4), (1, 5), (2, 3)]);
         let raw_g = std::array::from_fn(|i| {
             let (u, v) = pairing[i];
@@ -355,19 +368,48 @@ impl RichelotMap {
             ]
         });
         let delta = k.k.determinant(&raw_g);
-        assert_eq!(k.k.base(&delta), 11);
+        assert!(!delta.is_zero());
         let raw_h = k.k.dual_factors(&raw_g, &delta);
         let g = std::array::from_fn(|i| raw_g[i].iter().map(|c| k.lift3(c)).collect());
         let h = std::array::from_fn(|i| raw_h[i].iter().map(|c| k.lift3(c)).collect());
-        let source = Balanced::new(17, &[2, 0, 2, 0, 0, 0, 1]).unwrap();
-        let target = Balanced::new(17, &[3, 12, 11, 4, 7, 3, 1]).unwrap();
-        Self {
+        let raw_target =
+            k.k.product(&raw_h)
+                .iter()
+                .map(|c| k.k.base(c))
+                .collect::<Vec<_>>();
+        if raw_target.len() != 7 {
+            return Err("odd target chart requires explicit coordinate conversion".into());
+        }
+        let leading = raw_target[6];
+        let target_scale = (1..p)
+            .find(|y| y * y % p == leading)
+            .ok_or("nonsquare target leading requires explicit split-infinity chart")?;
+        let leading_inverse = k.k.base(&k.k.inv(&k.k.c(leading)));
+        let normalized = raw_target
+            .iter()
+            .map(|c| c * leading_inverse % p)
+            .collect::<Vec<_>>();
+        let source = Balanced::new(p, &a.source)?;
+        let target = Balanced::new(p, &normalized)?;
+        let quadratic = Fp2Ctx::try_new(p).map_err(|e| e.to_string())?;
+        let mut square_roots = BTreeMap::new();
+        for aa in 0..p {
+            for bb in 0..p {
+                let value = quadratic.element(aa, bb);
+                let square = quadratic.square(value);
+                square_roots.entry((square.a, square.b)).or_insert(value);
+            }
+        }
+        Ok(Self {
             k,
             source,
             target,
             g,
             h,
-        }
+            target_scale,
+            quadratic,
+            square_roots,
+        })
     }
     fn fiber(
         &self,
@@ -447,42 +489,55 @@ impl RichelotMap {
         target.pair(u, v, 0)
     }
     fn roots(&self, u: &FpPoly) -> Result<Vec<Fp2>> {
-        let ctx = Fp2Ctx::try_new(17).unwrap();
+        let ctx = self.quadratic;
         let m = u.degree().ok_or("zero source support")?;
         if m == 0 {
             return Ok(vec![]);
         }
-        let mut out = vec![];
-        for a in 0..17 {
-            for b in 0..17 {
-                let x = ctx.element(a, b);
-                let value = u.coeffs.iter().rev().fold(ctx.zero(), |v, c| {
-                    ctx.add(ctx.mul(v, x), ctx.from_fp(c.to_u64().unwrap()))
-                });
-                if ctx.is_zero(value) {
-                    out.push(x);
-                }
-            }
+        let b = ctx.from_fp(u.coeff(0).to_u64().unwrap());
+        if m == 1 {
+            return Ok(vec![ctx.neg(b)]);
         }
-        if m == 2 && out.len() == 1 {
-            out.push(out[0]);
+        if m != 2 {
+            return Err("source support degree exceeds2".into());
         }
-        if out.len() != m {
-            return Err("source support did not split over F17²".into());
-        }
-        Ok(out)
+        let a = ctx.from_fp(u.coeff(1).to_u64().unwrap());
+        let discriminant = ctx.sub(ctx.square(a), ctx.mul(ctx.from_fp(4), b));
+        let root = self
+            .square_roots
+            .get(&(discriminant.a, discriminant.b))
+            .ok_or("source quadratic discriminant did not split")?;
+        let half = ctx.from_fp(self.k.k.p.div_ceil(2));
+        Ok(vec![
+            ctx.mul(ctx.add(ctx.neg(a), *root), half),
+            ctx.mul(ctx.sub(ctx.neg(a), *root), half),
+        ])
     }
     fn evaluate(&self, d: &Class, reverse: bool) -> Result<Class> {
         let (source, target, g, h, source_scale, target_scale) = if reverse {
-            (&self.target, &self.source, &self.h, &self.g, 3, 1)
+            (
+                &self.target,
+                &self.source,
+                &self.h,
+                &self.g,
+                self.target_scale,
+                1,
+            )
         } else {
-            (&self.source, &self.target, &self.g, &self.h, 1, 3)
+            (
+                &self.source,
+                &self.target,
+                &self.g,
+                &self.h,
+                1,
+                self.target_scale,
+            )
         };
         source.check(d)?;
         let target_ctx = Jacobian::new(&self.k, target);
         let (u, v, plus) = d.components();
         let mut out = target_ctx.zero();
-        let quadratic = Fp2Ctx::try_new(17).unwrap();
+        let quadratic = self.quadratic;
         for x in self.roots(u)? {
             let y = v.coeffs.iter().rev().fold(quadratic.zero(), |w, c| {
                 quadratic.add(quadratic.mul(w, x), quadratic.from_fp(c.to_u64().unwrap()))
@@ -491,15 +546,17 @@ impl RichelotMap {
             let image = self.fiber(&self.k.lift2(x), &raw_y, g, h, target_scale, &target_ctx)?;
             out = target_ctx.add(&out, &image)?;
         }
-        let infinity = self.infinity(g, h, source_scale, target_scale, &target_ctx)?;
         let coefficient = 2 * i64::from(plus) + u.degree().unwrap() as i64 - 2;
-        let infinity = if coefficient < 0 {
-            target_ctx.neg(&infinity)
-        } else {
-            infinity
-        };
-        for _ in 0..coefficient.unsigned_abs() {
-            out = target_ctx.add(&out, &infinity)?;
+        if coefficient != 0 {
+            let infinity = self.infinity(g, h, source_scale, target_scale, &target_ctx)?;
+            let infinity = if coefficient < 0 {
+                target_ctx.neg(&infinity)
+            } else {
+                infinity
+            };
+            for _ in 0..coefficient.unsigned_abs() {
+                out = target_ctx.add(&out, &infinity)?;
+            }
         }
         if reverse {
             out = target_ctx.neg(&out);
@@ -514,19 +571,24 @@ impl RichelotMap {
     }
 }
 
-#[test]
-fn compositum_embeddings_inverses_and_frobenius() {
-    let f = Field::new(CubicField::new());
-    let q = Fp2Ctx::try_new(17).unwrap();
-    for a in 0..17 {
-        for b in 0..17 {
+fn compositum_control(
+    p: u64,
+    coefficients: [u64; 3],
+    wide: bool,
+    output_variable: &str,
+    header: &str,
+) {
+    let f = Field::new(CubicField::with_cubic(p, coefficients).unwrap());
+    let q = Fp2Ctx::try_new(p).unwrap();
+    for a in 0..p {
+        for b in 0..p {
             let x = q.element(a, b);
-            let y = q.element((a + 3) % 17, (7 * b + 2) % 17);
+            let y = q.element((a + 3) % p, (7 * b + 2) % p);
             assert_eq!(f.mul(&f.lift2(x), &f.lift2(y)), f.lift2(q.mul(x, y)));
             assert_eq!(f.add(&f.lift2(x), &f.lift2(y)), f.lift2(q.add(x, y)));
         }
     }
-    let mut witness=String::from("# chained-nonsplit-field6/v1; p17; T^3+2T+2=0; s^2=3; a(T)+b(T)s\nn\tx\ty\tproduct\tinverse\tfrobenius3\tfrobenius6\n");
+    let mut witness = format!("{header}\nn\tx\ty\tproduct\tinverse\tfrobenius3\tfrobenius6\n");
     let encode = |x: &Element| {
         (0..3)
             .map(|i| x.a.coeff(i).to_string())
@@ -535,24 +597,34 @@ fn compositum_embeddings_inverses_and_frobenius() {
             .join(",")
     };
     for n in 0..128 {
+        let seeds = if wide {
+            [
+                (37 * p * p + 19) * n + 13,
+                (13 * p * p + 7 * p + 29) * n + 23,
+                (29 * p * p + 11 * p + 7) * n + 31,
+                (11 * p * p + 23 * p + 17) * n + 43,
+            ]
+        } else {
+            [n, 37 * n + 19, 13 * n + 7, 29 * n + 11]
+        };
         let x = Element {
-            a: f.k.element(n),
-            b: f.k.element((37 * n + 19) % 4913),
+            a: f.k.element(seeds[0] % p.pow(3)),
+            b: f.k.element(seeds[1] % p.pow(3)),
         };
         assert!(!f.zero(&x));
         let inverse = f.inv(&x);
         assert_eq!(f.mul(&x, &inverse), f.c(1));
         assert_eq!(
-            f.pow(&x, 17_u64.pow(3)),
+            f.pow(&x, p.pow(3)),
             Element {
                 a: x.a.clone(),
                 b: x.b.neg()
             }
         );
-        assert_eq!(f.pow(&x, 17_u64.pow(6)), x);
+        assert_eq!(f.pow(&x, p.pow(6)), x);
         let y = Element {
-            a: f.k.element((13 * n + 7) % 4913),
-            b: f.k.element((29 * n + 11) % 4913),
+            a: f.k.element(seeds[2] % p.pow(3)),
+            b: f.k.element(seeds[3] % p.pow(3)),
         };
         witness += &format!(
             "{n}\t{}\t{}\t{}\t{}\t{}\t{}\n",
@@ -560,14 +632,34 @@ fn compositum_embeddings_inverses_and_frobenius() {
             encode(&y),
             encode(&f.mul(&x, &y)),
             encode(&inverse),
-            encode(&f.pow(&x, 17_u64.pow(3))),
-            encode(&f.pow(&x, 17_u64.pow(6)))
+            encode(&f.pow(&x, p.pow(3))),
+            encode(&f.pow(&x, p.pow(6)))
         );
     }
-    if let Ok(path) = std::env::var("CHAINED_F6_WITNESS_OUT") {
+    if let Ok(path) = std::env::var(output_variable) {
         std::fs::write(path, witness).unwrap();
     }
-    println!("PASS F17² embeddings on289 pairs and128 compositum inverse/Frobenius controls using irreducible cubic and nonsquare quadratic adjunction");
+    println!("PASS F{p}² embeddings on{} pairs and128 compositum inverse/Frobenius controls, wide_seeds={wide}, using irreducible cubic and nonsquare quadratic adjunction",p*p);
+}
+#[test]
+fn compositum_embeddings_inverses_and_frobenius() {
+    compositum_control(
+        17,
+        [2, 2, 0],
+        false,
+        "CHAINED_F6_WITNESS_OUT",
+        "# chained-nonsplit-field6/v1; p17; T^3+2T+2=0; s^2=3; a(T)+b(T)s",
+    );
+}
+#[test]
+fn shifted101_compositum_reference_witnesses() {
+    compositum_control(
+        101,
+        [56, 13, 6],
+        true,
+        "CHAINED_SHIFTED_F6_WITNESS_OUT",
+        "# chained-nonsplit-field6/v2; p101; T^3+6T^2+13T+56=0; s^2=2; a(T)+b(T)s; seeds=wide1",
+    );
 }
 #[test]
 fn complete_rational_domains_duals_and_additivity() {
@@ -640,6 +732,78 @@ fn full_prime19_subgroup_and_source_recovery() {
         );
     }
     println!("PASS nonzero full prime19 source through quadratic pullback/non-split Richelot, all19 scalar relations, reversed-chain/source norm[4] and inverse5 recovery; no scalar label in map");
+}
+
+#[test]
+fn shifted_prime109_full_domains_and_source_recovery() {
+    use crate::balanced::QuadraticCover;
+    use crate::reference::{HyperellipticCurveP as Curve, MumfordDivisorP};
+    let r = RichelotMap::from_assessment(construct_for(101, [56, 13, 6]).unwrap()).unwrap();
+    assert_eq!(r.target_scale, 22);
+    let p = BigUint::from(101_u64);
+    let base = Curve::try_new(
+        p.clone(),
+        FpPoly::from_coeffs(
+            [56_u64, 13, 6, 1].into_iter().map(BigUint::from).collect(),
+            p.clone(),
+        ),
+        1,
+    )
+    .unwrap();
+    let cover = QuadraticCover::with_cubic(101, [56, 13, 6]).unwrap();
+    let g = MumfordDivisorP::try_from_point(&base, &BigUint::from(0_u64), &BigUint::from(37_u64))
+        .unwrap();
+    let image = r.forward(&cover.pull(&g).unwrap()).unwrap();
+    assert_ne!(image, r.target.zero());
+    assert_eq!(r.target.mul(&image, 109).unwrap(), r.target.zero());
+    for n in 0..109_u64 {
+        let point = g.checked_scalar_mul(&BigUint::from(n), &base).unwrap();
+        let transferred = r.forward(&cover.pull(&point).unwrap()).unwrap();
+        assert_eq!(transferred, r.target.mul(&image, n).unwrap());
+        let norm = cover.norm(&r.dual(&transferred).unwrap()).unwrap();
+        assert_eq!(
+            norm,
+            point
+                .checked_scalar_mul(&BigUint::from(4_u64), &base)
+                .unwrap()
+        );
+        assert_eq!(
+            norm.checked_scalar_mul(&BigUint::from(82_u64), &base)
+                .unwrap(),
+            point
+        );
+    }
+    let source = r.source.classes().unwrap();
+    let target = r.target.classes().unwrap();
+    assert_eq!((source.len(), target.len()), (12317, 12317));
+    let mut images = BTreeSet::new();
+    for (i, d) in source.iter().enumerate() {
+        let image = r
+            .forward(d)
+            .unwrap_or_else(|e| panic!("shifted source{i}: {e}"));
+        assert_eq!(
+            r.dual(&image).unwrap(),
+            r.source.mul(d, 2).unwrap(),
+            "shifted source dual{i}"
+        );
+        let e = &source[(7919 * i + 37) % source.len()];
+        assert_eq!(
+            r.forward(&r.source.add(d, e).unwrap()).unwrap(),
+            r.target.add(&image, &r.forward(e).unwrap()).unwrap(),
+            "shifted addition{i}"
+        );
+        let (u, v, n) = image.components();
+        images.insert((u.coeffs.clone(), v.coeffs.clone(), n));
+    }
+    assert_eq!(images.len(), 12317);
+    for (i, d) in target.iter().enumerate() {
+        assert_eq!(
+            r.forward(&r.dual(d).unwrap()).unwrap(),
+            r.target.mul(d, 2).unwrap(),
+            "shifted target dual{i}"
+        );
+    }
+    println!("PASS frozen shifted E109/F101, delta63, raw scale22; all12317 source/target classes both dual norms[2], bijection/additivity/coefficient descent; all109 scalar/recovery[4]/inverse82 relations, no scalar labels in maps");
 }
 
 use std::collections::BTreeSet;

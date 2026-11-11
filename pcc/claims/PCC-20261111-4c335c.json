@@ -1,0 +1,30 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-11T12:22:25Z",
+ "id": "PCC-20261111-4c335c",
+ "kind": "statement",
+ "producer": {
+  "commit": "9cd20ac5f80cdd140be2d16d49701c1b950ef13c",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/shifted109-map-development-01.txt",
+    "sha256": "b408042b1af98f1ad9cac49a88055e82eb4b4166a71a4a1589e5336033b93512"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/generalized-map-controls-01.txt",
+    "sha256": "a50ced0f22b97352e79fe2613fa2f152c0569e81ff3458ff8c3fc58c614818af"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Frozen shifted E109/F101 operational Richelot map passes complete12317-class source/target correctness test: determinant63, raw scale22, both full-domain dual norms[2],12317-image bijection, paired additivity and coefficient descent. All109 elliptic scalars preserve relations with source norm[4]/inverse82 recovery; separate inventory checks original-source coordinate translation. Existing F17 three map controls also pass after parameterization. Maps use no scalar labels. No current-head complete CI matrix, independent whole-map scientific verdict, solver, speed or cross-prime descent claim; F101 field reference extension remains next."
+}

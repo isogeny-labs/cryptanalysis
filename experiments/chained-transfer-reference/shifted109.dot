@@ -1,0 +1,12 @@
+digraph shifted {
+ graph [rankdir=LR,bgcolor="white",fontname="DejaVu Sans",pad=0.2];
+ node [shape=box,style="rounded,filled",fillcolor="#eef3fa",fontname="DejaVu Sans",fontsize=11];
+ edge [fontname="DejaVu Sans",fontsize=10];
+ E [label="E/F101: X³+X+46\nFull prime order109\nU=X−2"];
+ J [label="Jac(C)/F101\nt⁶+6t⁴+13t²+56\n12,317 rational classes"];
+ T [fillcolor="#e7f5ea",label="Jac(Ct)/F101\n[31,75,74,54,71,55,1]\n12,317 rational classes"];
+ E -> J [label="whole quadratic\npullback U=t²"];
+ J -> E [label="source norm\nN f*=[2]",color="#247044"];
+ J -> T [label="non-split Richelot\nδ63; raw w=22Y",color="#2255aa"];
+ T -> J [label="sign-corrected dual\nboth compositions[2]",color="#247044"];
+}
