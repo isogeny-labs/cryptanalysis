@@ -39,6 +39,8 @@ jobs:
           sparse-checkout: |
             research/chained_jacobian_transfers_20261110/native
             src/prime_hyperelliptic
+            isogeny_algos
+            src/cryptanalysis/isogeny_walk
       - name: Run digest guards and development comparisons
         env:
           RUSTUP_TOOLCHAIN: 1.99.1

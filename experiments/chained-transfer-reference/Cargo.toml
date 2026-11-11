@@ -5,9 +5,15 @@ edition = "2021"
 publish = false
 
 [workspace]
+exclude = ["independent-walk"]
 
 [dependencies]
 num-bigint = "=0.4.8"
 num-traits = "=0.2.19"
 # Sibling checkout is bound by upstream-commit.txt/upstream.sha256 and check.sh.
 chained-jacobian-transfer = { path = "../../../crypto/research/chained_jacobian_transfers_20261110/native", features = ["small-prime"] }
+
+[dev-dependencies]
+# Existing engine,separately pinned by seven-reference.sha256/check.sh.
+isogeny_algos = { path = "../../../crypto/isogeny_algos" }
+chained-seven-reference = { path = "independent-walk" }

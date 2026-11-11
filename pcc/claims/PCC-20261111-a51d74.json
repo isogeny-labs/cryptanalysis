@@ -1,0 +1,37 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-11T13:52:34Z",
+ "id": "PCC-20261111-a51d74",
+ "kind": "statement",
+ "producer": {
+  "commit": "75e5064d1d089b917b068e7ca15b124ec0bcae37",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/elliptic-seven-01.txt",
+    "sha256": "07b6224dec69fc7f00cdad2cba7a783bb0ccb924663bd216058a642a924f20f5"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/elliptic-seven-witness-01.tsv",
+    "sha256": "78f0b33e611113f8b6c8340874c39f153c0620b91a86c8242c606c675a927615"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/seven-reference.sha256",
+    "sha256": "b83b7136132e92d6a0a88f3d1779bda2e4e25bce8557964049730b3571d28cc1"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "FixedF101 actual degree7 maps constructed with unchanged existing isogeny_algos engine: E109short(1,46) kernels[9,76,20,1]/[72,100,35,1] give codomains(5,39)/(26,58); E113 short(44,21),long-shift38,kernels[59,46,8,1]/[77,86,71,1] give(69,50)/(13,42). All exact denominator-cleared curve identities and both global rational-x dual compositions[7] pass; normalized dual scale29,full109/113 source/codomain point bijections,all pair additions/scalars,both dual norms and inverse78/97 recovery pass. Small frozen TSV retained. No map reads DLP scalar;only bounded correctness. Independent existing-kernel replay/current full CI remain next;no new Jacobian7-map,solver or computational advantage accepted."
+}

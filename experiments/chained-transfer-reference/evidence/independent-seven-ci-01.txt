@@ -1,0 +1,52 @@
+    Updating crates.io index
+     Locking 19 packages to highest compatible versions
+      Adding cfg-if v1.0.5
+      Adding chained-seven-reference v0.1.0 (/workspace/cryptanalysis/experiments/chained-transfer-reference/independent-walk)
+      Adding getrandom v0.2.17
+      Adding libc v0.2.191
+      Adding ppv-lite86 v0.2.21
+      Adding proc-macro2 v1.0.107
+      Adding quote v1.0.47
+      Adding rand v0.8.8
+      Adding rand_chacha v0.3.1
+      Adding rand_core v0.6.4
+      Adding serde v1.0.229
+      Adding serde_core v1.0.229
+      Adding serde_derive v1.0.229
+      Adding syn v2.0.119
+      Adding syn v3.0.10
+      Adding unicode-ident v1.0.27
+      Adding wasi v0.11.1+wasi-snapshot-preview1
+      Adding zerocopy v0.8.63
+      Adding zerocopy-derive v0.8.63
+ Downloading crates ...
+  Downloaded unicode-ident v1.0.27
+  Downloaded zerocopy v0.8.63
+  Downloaded syn v3.0.10
+  Downloaded libc v0.2.191
+   Compiling libc v0.2.191
+   Compiling proc-macro2 v1.0.107
+   Compiling quote v1.0.47
+   Compiling unicode-ident v1.0.27
+   Compiling zerocopy v0.8.63
+   Compiling cfg-if v1.0.5
+   Compiling serde_core v1.0.229
+   Compiling serde v1.0.229
+   Compiling syn v3.0.10
+   Compiling getrandom v0.2.17
+   Compiling rand_core v0.6.4
+   Compiling serde_derive v1.0.229
+   Compiling ppv-lite86 v0.2.21
+   Compiling rand_chacha v0.3.1
+   Compiling rand v0.8.8
+   Compiling chained-seven-reference v0.1.0 (/workspace/cryptanalysis/experiments/chained-transfer-reference/independent-walk)
+   Compiling chained-transfer-reference v0.1.0 (/workspace/cryptanalysis/experiments/chained-transfer-reference)
+    Finished `release` profile [optimized] target(s) in 19.34s
+     Running tests/seven_independent.rs (experiments/chained-transfer-reference/target/release/deps/seven_independent-7557517fa72787fc)
+
+running 1 test
+PASS4 frozen degree7 forward/dual kernel certificates,exact curve and both globalx[7] identities,all109/113 source/target points and bijections using pre-existing Montgomery field/poly/kernel engines;no producer Kohel code imported,no solver/speed claim
+test independent_seven_certificate_replay ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
