@@ -63,13 +63,7 @@ fn double(curve: &Curve, x: u64, y: u64) -> Result<Divisor> {
     d.checked_add(&d, curve)
         .map_err(|e| format!("CT28 tangent failure: {e}"))
 }
-fn reciprocal_point(
-    curve: &Curve,
-    f: F,
-    c: u64,
-    x: u64,
-    y: u64,
-) -> Result<Divisor> {
+fn reciprocal_point(curve: &Curve, f: F, c: u64, x: u64, y: u64) -> Result<Divisor> {
     if x == 0 {
         return Ok(identity(curve));
     }
@@ -142,25 +136,13 @@ fn direct_norms(split: &SplitQuotients, d: &Class) -> Result<(Divisor, Divisor)>
                     identity(reciprocal)
                 } else {
                     let x = f.neg(s);
-                    reciprocal_point(
-                        reciprocal,
-                        f,
-                        c,
-                        x,
-                        f.add(v0, f.mul(v1, x)),
-                    )?
+                    reciprocal_point(reciprocal, f, c, x, f.add(v0, f.mul(v1, x)))?
                 }
             } else {
                 let sp = f.div(s, t)?;
                 let tp = f.inv(t)?;
-                let z0 = f.mul(
-                    f.mul(c, tp),
-                    f.sub(f.mul(v0, sp), v1),
-                );
-                let z1 = f.mul(
-                    c,
-                    f.sub(f.mul(v0, f.sub(f.mul(sp, sp), tp)), f.mul(v1, sp)),
-                );
+                let z0 = f.mul(f.mul(c, tp), f.sub(f.mul(v0, sp), v1));
+                let z1 = f.mul(c, f.sub(f.mul(v0, f.sub(f.mul(sp, sp), tp)), f.mul(v1, sp)));
                 if sp != 0 {
                     let m = f.neg(f.div(z1, f.mul(sp, c))?);
                     let n = f.add(z0, f.mul(m, f.mul(c, tp)));
@@ -204,10 +186,7 @@ fn direct_norms(split: &SplitQuotients, d: &Class) -> Result<(Divisor, Divisor)>
 
 #[test]
 fn ct28_complete_direct_norms_vs_frozen_generic_norms() {
-    for (coefficients, name) in [
-        ([56_u64, 13, 6], "C0"),
-        ([68_u64, 42, 26], "C1"),
-    ] {
+    for (coefficients, name) in [([56_u64, 13, 6], "C0"), ([68_u64, 42, 26], "C1")] {
         let split = SplitQuotients::new(101, coefficients).unwrap();
         let classes = split.first.balanced.classes().unwrap();
         assert_eq!(classes.len(), 12317, "CT28 {name} class inventory");
@@ -242,13 +221,25 @@ fn ct28_complete_direct_norms_vs_frozen_generic_norms() {
                 .unwrap_or_else(|e| panic!("CT28 {name} generic input {i}: {e}"));
             assert_eq!(new, old, "CT28 {name} norm mismatch input {i}");
         }
-        assert_eq!(counts, [3, 236, 6844, 5116, 118], "CT28 {name} support census");
+        assert_eq!(
+            counts,
+            [3, 236, 6844, 5116, 118],
+            "CT28 {name} support census"
+        );
         assert!(s_zero > 0 && t_zero > 0, "CT28 exceptional supports absent");
         let zero = split.first.balanced.zero();
-        assert_eq!(direct_norms(&split, &zero).unwrap().0, identity(&split.first.base));
-        assert_eq!(direct_norms(&split, &zero).unwrap().1, identity(&split.second.base));
+        assert_eq!(
+            direct_norms(&split, &zero).unwrap().0,
+            identity(&split.first.base)
+        );
+        assert_eq!(
+            direct_norms(&split, &zero).unwrap().1,
+            identity(&split.second.base)
+        );
         assert_ne!(
-            direct_norms(&split, &split.first.balanced.delta()).unwrap().1,
+            direct_norms(&split, &split.first.balanced.delta())
+                .unwrap()
+                .1,
             identity(&split.second.base)
         );
         println!(
