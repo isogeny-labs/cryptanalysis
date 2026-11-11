@@ -16,6 +16,8 @@ mod cubic_transfer;
 #[cfg(test)]
 mod nonsplit;
 #[cfg(test)]
+mod odd_kernels;
+#[cfg(test)]
 mod small_prime_oracle;
 
 fn polynomial(c: &[i64]) -> FpPoly {

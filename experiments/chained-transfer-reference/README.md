@@ -1,5 +1,16 @@
 # Chained transfer differential reference
 
+Current [odd-kernel assessment](ODD_KERNELS.md) closes rational3/5
+maximal-isotropic kernels for the accepted17/101 examples,also7 for17.
+Shifted101 has four abstract7 candidates;actual kernels/codomains/maps remain
+next. Every fixed finite plane/pairing ratio and six upstream Lean algebra/
+root certificates pass. Separately authored closedPR3918 polynomial Rust
+oracle now compiles unchanged and passes;formatting-only integration enters
+CI without importing producer field/Richelot/Cantor code. Prior49-test CI
+passes/PR1481 merged;current50-unit-plus1-integration replay pending.
+Standing unsigned,no odd-prime transfer or solver advantage accepted.
+[pcc:unverified]
+
 Current [split-quotient checkpoint](SPLIT_QUOTIENTS.md) makes both elliptic
 norms/full odd rational-group reconstruction explicit. All285/12,317 classes
 pass completed reciprocal coordinates,inverses,both norm additions,cross-norm

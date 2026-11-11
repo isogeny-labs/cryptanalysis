@@ -1,0 +1,12 @@
+digraph odd {
+ graph [rankdir=LR,bgcolor="white",fontname="DejaVu Sans",pad=0.2];
+ node [shape=box,style="rounded,filled",fillcolor="#eef3fa",fontname="DejaVu Sans",fontsize=11];
+ edge [fontname="DejaVu Sans",fontsize=10];
+ J [label="Accepted17/101 Jacobians\nOdd torsion ≅ E1[ell] ⊕ E2[ell]\nCoprime Frobenius factors"];
+ N [fillcolor="#fcece6",label="No rational maximal-isotropic kernel\nell3/5:both examples\nell7:F17"];
+ C [fillcolor="#fff4d9",label="F101,ell7:4 abstract candidates\nEigenlines2/5 ×4/6\nNo geometric map constructed"];
+ V [fillcolor="#e7f5ea",label="Separate polynomial Rust oracle\nCT16 cubic/sextic/Rabin audit\nOriginal source unchanged"];
+ J -> N [label="irreducible block\nCRT projection argument"];
+ J -> C [label="two split squarefree blocks"];
+ V -> J [label="independent branch data\nwhole map remains unchecked",style=dashed];
+}

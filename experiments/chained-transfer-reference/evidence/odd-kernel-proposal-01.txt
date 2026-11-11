@@ -1,0 +1,31 @@
+CT18 pre-execution correctness proposal. 2026-11-11.
+Fixed sources as CT17. p17,E1/E2orders19/15,traces−1/3;
+p101shift109,E1/E2orders109/113,traces−7/−11.
+Fixed odd primes ell3/5,with7 as a mathematically motivated control.
+No prime search,benchmark,collector,solver or paid allocation.
+Assess V=E1[ell]directsumE2[ell] using characteristic polynomials
+X²−tiX+p moduloell. Check their gcd and quadratic irreducibility.
+Enumerate all RREF2-planes in4 dimensions overFell,all maximal isotropic
+planes under the product alternating form,and Frobenius-stable members.
+Use block companion models only as finite linear algebra controls; repeated
+eigenvalue cases do not identify actual torsion Jordan type by assumption.
+Written bridge: actual coprime characteristic factors make both block
+projections polynomials inFrobenius,so invariant planes split by factors.
+If one factor irreducible,any invariant2-plane is a whole elliptic block,
+which is not isotropic. If both distinct split factors,each pair of
+invariant elliptic lines gives a stable isotropic plane,independent of
+nonzero component pairing scale. Check all nonzero pairing-scale ratios
+for the finite model. Expected negatives at3/5 for bothp,at7 forp17;
+p101ell7 is prospective candidate,not an accepted isogeny/codomain/map.
+The existing degree4 split/Richelot isogenies have degrees prime toell,
+so actual torsion modules transfer equivariantly and preserve isotropy up
+to a nonzero common scalar. No actual odd-prime map accepted by this test.
+Primary reviewed: J.S.Milne,Abelian Varieties,Version2.0,2008-03-16,
+https://www.jmilne.org/math/CourseNotes/AV.pdf
+sha256f5ca4e63e5092a4b102daad1470e4cbed5fe8f82115e3a28c8881e3f67f6aaef
+I§13 Weil pairings/Galois invariance andProp13.2 functoriality;
+IProp10.20 characteristic polynomial onTate module;
+IITheorem1.1 point counts/Frobenius polynomial;I Remark8.12 quotients.
+These support the stated linear/torsion inputs,not an unreviewed claim that
+a positive kernel candidate already has an explicit Jacobian codomain or map.
+KB/ecdb unavailable as upstream,no novelty claim.
