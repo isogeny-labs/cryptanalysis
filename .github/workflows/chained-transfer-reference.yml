@@ -1,0 +1,51 @@
+name: Chained transfer differential reference
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'experiments/chained-transfer-reference/**'
+      - 'suite/src/prime_hyperelliptic/**'
+      - '.github/workflows/chained-transfer-reference.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  reference:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+          path: cryptanalysis
+          sparse-checkout: |
+            experiments/chained-transfer-reference
+            suite/src/prime_hyperelliptic
+      - id: pin
+        name: Read the committed source revision
+        run: |
+          pin=$(cat cryptanalysis/experiments/chained-transfer-reference/upstream-commit.txt)
+          [[ $pin =~ ^[0-9a-f]{40}$ ]] || exit 2
+          echo "revision=$pin" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          repository: isogeny-labs/crypto
+          ref: ${{ steps.pin.outputs.revision }}
+          persist-credentials: false
+          path: crypto
+          sparse-checkout: research/chained_jacobian_transfers_20261110/native
+      - name: Run digest guards and development comparisons
+        env:
+          RUSTUP_TOOLCHAIN: 1.99.1
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.99.1 --profile minimal --component rustfmt --component clippy
+          cryptanalysis/experiments/chained-transfer-reference/check.sh 2>&1 | tee "$RUNNER_TEMP/differential.txt"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: chained-transfer-reference-${{ github.sha }}
+          path: ${{ runner.temp }}/differential.txt
+          if-no-files-found: ignore

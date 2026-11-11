@@ -1,0 +1,23 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-11T06:38:06Z",
+ "id": "PCC-20261111-2348fd",
+ "kind": "statement",
+ "producer": {
+  "commit": "68594c8874c75a0a6c04a3874adb1374088ca4f5",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/differential-02.txt",
+    "sha256": "77e5c5a132841b5212b370c7d83fe7a60aa993316d30f943c3f3f6f6183c7f22"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "The producer-run cross-repository development test suite reports 24 passing tests, with the pre-existing benchmark left ignored. It compares 10404 canonical source additions and inverses plus 289 Richelot target subgroup additions with the pre-existing cryptanalysis BigUint implementation. No independent signed verdict or speed claim."
+}

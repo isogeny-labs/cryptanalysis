@@ -1,0 +1,49 @@
+research/chained_jacobian_transfers_20261110/native/Cargo.lock: OK
+research/chained_jacobian_transfers_20261110/native/Cargo.toml: OK
+research/chained_jacobian_transfers_20261110/native/src/lib.rs: OK
+research/chained_jacobian_transfers_20261110/native/src/richelot.rs: OK
+suite/src/prime_hyperelliptic/curve.rs: OK
+suite/src/prime_hyperelliptic/fp2.rs: OK
+suite/src/prime_hyperelliptic/fp_poly.rs: OK
+suite/src/prime_hyperelliptic/mod.rs: OK
+cargo 1.99.1 (5f94df478 2026-08-27)
+    Checking chained-transfer-reference v0.1.0 (/workspace/cryptanalysis/experiments/chained-transfer-reference)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.81s
+    Finished `release` profile [optimized] target(s) in 0.06s
+     Running unittests src/main.rs (experiments/chained-transfer-reference/target/release/deps/chained_transfer_reference-fbb4a76035f5e7ac)
+
+running 27 tests
+test independent_point_count_orders_of_both_models ... ok
+test reference::curve::tests::benchmark_fast_vs_slow_p251 ... ignored
+PASS all 289 Richelot target subgroup additions against pre-existing BigUint arithmetic
+test compares_all_richelot_target_subgroup_additions ... ok
+test reference::curve::tests::checked_curve_construction_rejects_wrong_models ... ok
+test reference::curve::tests::checked_divisor_construction_rejects_malformed_inputs ... ok
+test reference::curve::tests::double_equals_add_self ... ok
+test reference::curve::tests::brute_force_consistency_small ... ok
+test reference::curve::tests::fast_counter_matches_slow ... ok
+test reference::curve::tests::identity_arithmetic ... ok
+test reference::curve::tests::lpoly_matches_brute_force ... ok
+test reference::curve::tests::neg_then_add_is_identity ... ok
+test reference::curve::tests::weierstrass_and_shared_support_cases_are_checked ... ok
+test reference::fp2::tests::checked_context_rejects_composites_and_forged_nonresidues ... ok
+test reference::fp2::tests::fp2_basic_arithmetic ... ok
+test reference::fp2::tests::fp2_inv_roundtrip ... ok
+test reference::fp2::tests::fp2_qr_half_split ... ok
+test reference::fp2::tests::fp2_qr_test_consistency ... ok
+test reference::fp2::tests::public_element_fields_are_canonicalized_before_arithmetic ... ok
+test reference::fp_poly::tests::divrem_invariant_small_prime ... ok
+test reference::fp_poly::tests::equality_includes_the_coefficient_field ... ok
+test reference::fp_poly::tests::eval_horner_mod_p ... ok
+test reference::fp_poly::tests::ext_gcd_bezout ... ok
+test reference::fp_poly::tests::fp_inv_roundtrip ... ok
+test reference::fp_poly::tests::monic_makes_leading_one ... ok
+PASS 10404 canonical additions and inverses against pre-existing cryptanalysis BigUint implementation
+Development correctness only; no timing or independent signed verification
+test compares_every_canonical_source_class ... ok
+test reference::curve::tests::exhaustive_small_field_group_law_matches_point_count_reference ... ok
+PASS all 10404 rational Richelot source images plus fixed-translation addition against BigUint
+test compares_full_rational_richelot_image ... ok
+
+test result: ok. 26 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 11.07s
+
