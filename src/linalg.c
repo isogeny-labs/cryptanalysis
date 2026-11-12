@@ -172,9 +172,16 @@ static uint64_t dense_dot(const uint64_t *a, const uint64_t *b, uint32_t n, uint
     for (uint32_t i0 = 0; i0 < n;) {
         uint32_t i1 = n - i0 > chunk ? i0 + chunk : n;
         ca_u128 acc = 0;
-        uint32_t i = i0;
-        for (; i + 2 <= i1; i += 2) acc += (ca_u128)a[i] * b[i] + (ca_u128)a[i + 1] * b[i + 1];
-        if (i < i1) acc += (ca_u128)a[i] * b[i];
+        /* one running 128-bit sum (mul, add, adc a term), four terms a step */
+        const uint64_t *pa = a + i0, *pb = b + i0;
+        uint32_t cnt = i1 - i0;
+        for (; cnt >= 4; cnt -= 4, pa += 4, pb += 4) {
+            acc += (ca_u128)pa[0] * pb[0];
+            acc += (ca_u128)pa[1] * pb[1];
+            acc += (ca_u128)pa[2] * pb[2];
+            acc += (ca_u128)pa[3] * pb[3];
+        }
+        for (; cnt; cnt--) acc += (ca_u128)*pa++ * *pb++;
         uint64_t hi = (uint64_t)(acc >> 64), lo = (uint64_t)acc;
         r = ca_addmod(r, ca_addmod(shoup_mul(hi, r64, r64p, q), shoup_mul(lo, 1, onep, q), q), q);
         i0 = i1;
