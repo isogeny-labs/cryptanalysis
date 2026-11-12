@@ -1142,8 +1142,8 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
             wk->retried = 0;
             wk->ring[wk->ring_pos++ % GLV_RING] = h;
 #endif
-            wk->a = ca_addmod(wk->a, c.alpha[wk->idx], n);
-            wk->b = ca_addmod(wk->b, c.beta[wk->idx], n);
+            wk->a = ca_addmod_sel(wk->a, c.alpha[wk->idx], n);
+            wk->b = ca_addmod_sel(wk->b, c.beta[wk->idx], n);
             if (k) {
                 wk->a = glv_lam_mul(&c, wk->a, k, n);
                 wk->b = glv_lam_mul(&c, wk->b, k, n);

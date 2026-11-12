@@ -500,8 +500,8 @@ static void walk_restart(rho_shared *sh, rho_walk *w, ca_rng *rng, uint64_t *ops
 static inline void walk_apply(const rho_shared *sh, rho_walk *w, uint32_t i, int negated)
 {
     const uint64_t n = sh->n;
-    uint64_t a = ca_addmod(w->a, sh->alpha[i], n);
-    uint64_t b = ca_addmod(w->b, sh->beta[i], n);
+    uint64_t a = ca_addmod_sel(w->a, sh->alpha[i], n);
+    uint64_t b = ca_addmod_sel(w->b, sh->beta[i], n);
     if (sh->negmap) {
         /* With the negation map, `negated` is a coin flip on walk data, so
          * the negated coefficients are formed unconditionally and selected:
@@ -714,8 +714,8 @@ static void rho_zp_round(rho_shared *sh, rho_walk *walks, uint32_t W, ca_rng *rn
         wk->Y.w[0] = y;
         wk->h = h;
         wk->idx = i;
-        wk->a = ca_addmod(wk->a, al[i], N);
-        wk->b = ca_addmod(wk->b, be[i], N);
+        wk->a = ca_addmod_sel(wk->a, al[i], N);
+        wk->b = ca_addmod_sel(wk->b, be[i], N);
         uint64_t sd = wk->since_dp + 1;
         wk->since_dp = sd;
         if ((h & dpm) == 0) {

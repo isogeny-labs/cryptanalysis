@@ -112,6 +112,19 @@ static inline uint64_t ca_mix64(uint64_t x)
     return x;
 }
 
+/* ca_addmod's value for every input (a + b, minus m when that wraps or
+ * reaches m), computed with a mask instead of a branch.  The walks add
+ * random exponent coefficients, so the reduction is a coin flip on walk
+ * data and gcc's branch for ca_addmod mispredicts about half the time.
+ * ca_addmod itself keeps its form: verification/pqc-assay proves that exact
+ * code (SAW and Lean) and pins the header by hash. */
+static inline uint64_t ca_addmod_sel(uint64_t a, uint64_t b, uint64_t m)
+{
+    const uint64_t s = a + b;
+    const uint64_t c = (uint64_t)(s < a) | (uint64_t)(s >= m);
+    return s - (m & ((uint64_t)0 - c));
+}
+
 /* ---- the EC walk step, shared by group_ec.c and rho.c ------------------ */
 struct ca_group;
 /* Points of a ca_group_ec_init group are w[0] = x, w[1] = y in Montgomery
