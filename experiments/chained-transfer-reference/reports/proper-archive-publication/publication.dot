@@ -1,0 +1,17 @@
+digraph {
+ graph [rankdir=TB,bgcolor="white",pad="0.1",ranksep="0.4"];
+ node [shape=box,style="rounded,filled",fontname="DejaVu Sans",fontsize=11,fillcolor="#edf4f4",color="#456273"];
+ edge [fontname="DejaVu Sans",fontsize=10,color="#407758"];
+ F [label="Failed full01 · NOT accepted
+159 files · whole79644-byte tar.xz
+a921d348…"];
+ P [label="Complete LOCAL full02 /400f38
+158 files · whole80516-byte tar.xz
+201254e7…"];
+ H [label="Exact handoff5fcf · both intact archives
+Existing trusted-base workflow43319185494"];
+ B [fillcolor="#e4f2e8",label="Actual remote upload + two byte replays
+Bot5bec81e · real manifests / normal push
+Local exact fast-forward · artifact/wiring0"];
+ F -> H; P -> H; H -> B;
+}
