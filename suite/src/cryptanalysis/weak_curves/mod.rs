@@ -55,6 +55,7 @@
 
 pub mod arith;
 pub mod dlp;
+mod fixed;
 pub mod fpk;
 pub mod mov;
 pub mod singular;
