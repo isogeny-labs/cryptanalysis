@@ -7,6 +7,21 @@
 #include <stdlib.h>
 #include <string.h>
 
+/* a*b mod m for a, b < m (so the high word of the product is < m and the
+ * quotient fits 64 bits): one hardware 128/64 division on x86-64 instead of
+ * the __umodti3 call the compiler emits for a 128-bit '%'.  Same residue. */
+static inline uint64_t mulmod_lt(uint64_t a, uint64_t b, uint64_t m)
+{
+#if defined(__x86_64__) && defined(__GNUC__)
+    const ca_u128 t = (ca_u128)a * b;
+    uint64_t q = (uint64_t)t, rem = (uint64_t)(t >> 64);
+    __asm__("divq %2" : "+a"(q), "+d"(rem) : "r"(m) : "cc");
+    return rem;
+#else
+    return (uint64_t)(((ca_u128)a * b) % m);
+#endif
+}
+
 uint64_t ca_powmod(uint64_t base, uint64_t exp, uint64_t m)
 {
     if (m == 1) return 0;
@@ -21,8 +36,8 @@ uint64_t ca_powmod(uint64_t base, uint64_t exp, uint64_t m)
     uint64_t r = 1;
     base %= m;
     while (exp) {
-        if (exp & 1) r = ca_mulmod(r, base, m);
-        base = ca_mulmod(base, base, m);
+        if (exp & 1) r = mulmod_lt(r, base, m);
+        base = mulmod_lt(base, base, m);
         exp >>= 1;
     }
     return r;
@@ -241,15 +256,15 @@ int ca_sqrtmod_prime(uint64_t a, uint64_t p, uint64_t *root)
         unsigned i = 0;
         uint64_t tt = t;
         while (tt != 1) {
-            tt = ca_mulmod(tt, tt, p);
+            tt = mulmod_lt(tt, tt, p);
             i++;
             if (i == m) return 0;
         }
         uint64_t b = c;
-        for (unsigned j = 0; j + i + 1 < m; j++) b = ca_mulmod(b, b, p);
-        r = ca_mulmod(r, b, p);
-        c = ca_mulmod(b, b, p);
-        t = ca_mulmod(t, c, p);
+        for (unsigned j = 0; j + i + 1 < m; j++) b = mulmod_lt(b, b, p);
+        r = mulmod_lt(r, b, p);
+        c = mulmod_lt(b, b, p);
+        t = mulmod_lt(t, c, p);
         m = i;
     }
     *root = r;
@@ -278,9 +293,9 @@ int ca_mont_init(ca_mont *m, uint64_t p)
     for (int i = 0; i < 6; i++) inv *= 2 - p * inv;
     m->pinv = (uint64_t)0 - inv;
     /* R mod p where R = 2^64 */
-    m->r1 = (uint64_t)((((ca_u128)1) << 64) % p);
-    m->r2 = (uint64_t)(((ca_u128)m->r1 * m->r1) % p);
-    m->r3 = (uint64_t)(((ca_u128)m->r2 * m->r1) % p);
+    m->r1 = ((uint64_t)0 - p) % p; /* 2^64 mod p, in 64-bit arithmetic */
+    m->r2 = mulmod_lt(m->r1, m->r1, p);
+    m->r3 = mulmod_lt(m->r2, m->r1, p);
     return 1;
 }
 
