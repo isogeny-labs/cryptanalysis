@@ -106,6 +106,15 @@ static int precomp_ilog2(uint64_t v)
 static void pc_base_mul(const ca_precomp_table *t, ca_elem *r, uint64_t k, uint64_t *ops)
 {
     const ca_group *g = t->g;
+    /* Native E(F_p): the same sum in Jacobian coordinates with one field
+     * inversion at the end instead of one per addition.  The group law has
+     * one result, so the affine point is the same; the additions charged
+     * are the popcount - 1 the loop below charges. */
+    if (t->bitlen < 64) k &= ((uint64_t)1 << t->bitlen) - 1;
+    if (ca_ec_fb_sum(g, r, t->Gpow, k, NULL, 0)) {
+        if (ops && k) *ops += (uint64_t)__builtin_popcountll(k) - 1;
+        return;
+    }
     ca_elem acc;
     int started = 0;
     for (int b = 0; b < t->bitlen; b++) {
