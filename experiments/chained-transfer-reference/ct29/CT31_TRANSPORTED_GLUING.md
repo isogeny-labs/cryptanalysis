@@ -2,6 +2,8 @@
 
 **Standing:** [pcc:unverified]. This is an independent stdlib-only arithmetic implementation and local producer-run test, **not** an independently signed PCC verdict, a complete Jacobian map, or a DLP-cost measurement. It does not import the producer's FpR, Kohel, genus-2, Cantor, or HLP implementation.
 
+![CT31 two-hop transport and genus-2 gluing](ct31-transported-gluing.svg)
+
 ## Exact scope and new witness
 
 For the specific ordinary trace -7 and -11 elliptic chains over F101,
