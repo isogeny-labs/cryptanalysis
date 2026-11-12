@@ -444,16 +444,30 @@ static void rho_start_mul(const rho_shared *sh, ca_elem *t1, ca_elem *t2, uint64
     }
 }
 
+/* a * base + b * target, the point of a walk start or a multiplier, charged
+ * as rho_start_mul and one ca_group_op charge it: one operation per set bit
+ * of a and of b, and one for the sum.  The native curve adds the fixed-base
+ * points in Jacobian coordinates and inverts once (ca_ec_fb_sum), instead
+ * of one inversion per set bit; the affine sum is the same point. */
+static void rho_start_point(const rho_shared *sh, ca_elem *Y, uint64_t a, uint64_t b, uint64_t *ops)
+{
+    if (sh->fb_base && ca_ec_fb_sum(sh->g, Y, sh->fb_base, a, sh->fb_target, b)) {
+        *ops += (uint64_t)__builtin_popcountll(a) + (uint64_t)__builtin_popcountll(b) + 1;
+        return;
+    }
+    ca_elem t1, t2;
+    rho_start_mul(sh, &t1, &t2, a, b, ops);
+    ca_group_op(sh->g, Y, &t1, &t2);
+    (*ops)++;
+}
+
 // cppcheck-suppress constParameterPointer ; CA_RHO_TRACE builds write through sh (trail_counter)
 static void walk_restart(rho_shared *sh, rho_walk *w, ca_rng *rng, uint64_t *ops)
 {
     const ca_group *g = sh->g;
     w->a = ca_rng_below(rng, sh->n);
     w->b = ca_rng_below(rng, sh->n);
-    ca_elem t1, t2;
-    rho_start_mul(sh, &t1, &t2, w->a, w->b, ops);
-    ca_group_op(g, &w->Y, &t1, &t2);
-    (*ops)++;
+    rho_start_point(sh, &w->Y, w->a, w->b, ops);
     if (sh->negmap && ca_group_canonicalize(g, &w->Y)) {
         w->a = w->a ? sh->n - w->a : 0;
         w->b = w->b ? sh->n - w->b : 0;
@@ -1162,10 +1176,7 @@ static ca_status rho_solve_impl(const ca_group *g, const ca_elem *base, const ca
     for (uint32_t i = 0; i < sh.r; i++) {
         sh.alpha[i] = ca_rng_below(&rng, n);
         sh.beta[i] = ca_rng_below(&rng, n);
-        ca_elem t1, t2;
-        rho_start_mul(&sh, &t1, &t2, sh.alpha[i], sh.beta[i], &setup_ops);
-        ca_group_op(g, &sh.M[i], &t1, &t2);
-        setup_ops++;
+        rho_start_point(&sh, &sh.M[i], sh.alpha[i], sh.beta[i], &setup_ops);
     }
     sh.setup_ops = setup_ops;
 #ifdef CA_RHO_TRACE

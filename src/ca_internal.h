@@ -313,6 +313,14 @@ struct ca_group;
  * (and does nothing) for any other vtable. */
 int ca_zp_group_mul(const struct ca_group *g, ca_elem *r, const ca_elem *a, uint64_t k);
 int ca_ec_group_mul(const struct ca_group *g, ca_elem *r, const ca_elem *a, uint64_t k);
+/* r = the sum of pow1[b] over the set bits b of k1 plus the sum of pow2[b]
+ * over the set bits of k2, for the native E(F_p) group: the affine point
+ * the same additions with ca_group_op give (the group law has one result),
+ * accumulated in Jacobian coordinates with one field inversion at the end
+ * instead of one per addition.  Returns 0 (r untouched) for any other group.
+ * Counts no group operations; the caller charges them. */
+int ca_ec_fb_sum(const struct ca_group *g, ca_elem *r, const ca_elem *pow1, uint64_t k1,
+                 const ca_elem *pow2, uint64_t k2);
 
 int ca_check_members(const struct ca_group *g, const ca_elem *base, const ca_elem *target,
                      uint64_t n, const char *solver);

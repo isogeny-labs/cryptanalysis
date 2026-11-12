@@ -338,6 +338,38 @@ int ca_ec_group_mul(const ca_group *g, ca_elem *r, const ca_elem *a, uint64_t k)
     return 1;
 }
 
+/* The affine point of a Jacobian accumulator: one inversion. */
+static void ec_jac_to_affine(const ca_group *g, ca_elem *r, const ec_jac *acc)
+{
+    if (acc->inf) {
+        ec_identity(g, r);
+        return;
+    }
+    uint64_t zi = ec_field_inv(g, acc->z), zi2 = ec_field_sqr(g, zi);
+    FX(r) = ec_field_mul(g, acc->x, zi2);
+    FY(r) = ec_field_mul(g, acc->y, ec_field_mul(g, zi2, zi));
+    FINF(r) = 0;
+    r->w[3] = 0;
+}
+
+/* acc += the sum of pow[b] over the set bits b of k (pow[b] affine). */
+static void ec_jac_add_bits(const ca_group *g, ec_jac *acc, const ca_elem *pow, uint64_t k)
+{
+    for (int b = 0; k; b++, k >>= 1)
+        if ((k & 1) && !FINF(&pow[b])) ec_jac_add_affine(g, acc, FX(&pow[b]), FY(&pow[b]));
+}
+
+int ca_ec_fb_sum(const ca_group *g, ca_elem *r, const ca_elem *pow1, uint64_t k1,
+                 const ca_elem *pow2, uint64_t k2)
+{
+    if (g->vt != &ec_vt) return 0; /* a caller's own vtable: use it */
+    ec_jac acc = {0, 0, 0, 1};
+    ec_jac_add_bits(g, &acc, pow1, k1);
+    ec_jac_add_bits(g, &acc, pow2, k2);
+    ec_jac_to_affine(g, r, &acc);
+    return 1;
+}
+
 ca_status ca_group_ec_init(ca_group *g, uint64_t p, uint64_t a, uint64_t b, uint64_t order)
 {
     memset(g, 0, sizeof(*g));
