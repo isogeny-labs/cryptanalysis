@@ -1,0 +1,37 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-12T03:53:48Z",
+ "id": "PCC-20261112-205514",
+ "kind": "statement",
+ "producer": {
+  "commit": "25fd0be7cea37cefd298d3ac38b6f863bb9105d5",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct26-ci-observation-07.json",
+    "sha256": "38e5fea8ce8818294bc85da9e3459428a8e4ad8e8e170b195399cfb093351fdb"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct26-ci-43144567065.log.xz",
+    "sha256": "8a303c5b4cca36248628318147201edee6ac4bf81582ec7100d9f6597810b236"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct26-ci-43144567065.log.sha256",
+    "sha256": "df3bcb76bfd1530e7f90446e8e53616f1bd04a218fa763c8b42b6c87296cc299"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Unsigned exact25fd0be7cea37cefd298d3ac38b6f863bb9105d5 CT26 focusedCI43144567065 succeeds25native/82reference unit+five integrations,one old ignored benchmark,all source guards/fmt/strictClippy. Full decoded log/API/check observation standard-xz/raw-archive hashes/exact roundtrip retained. Gatepasses/signskips,ready1498 mergeabletrue/mergedfalse on immediate1496. LaterCT27 excluded;no signed scientific standing or measured advantage."
+}
