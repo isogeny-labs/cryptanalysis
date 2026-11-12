@@ -1,0 +1,58 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-12T01:51:53Z",
+ "id": "PCC-20261112-3f015c",
+ "kind": "statement",
+ "producer": {
+  "commit": "65aabe34879630ad4d973021fb21307e1d856dc1",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct26-root-table-01.txt",
+    "sha256": "8f948171e6a4fc39d3a37045f1bd8ad74656fc8e66012ecdeab96160bd59dddd"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct26-clippy-01.txt",
+    "sha256": "625f498bdd76a87ad144e747c7ff1086e658861aa619f72f16e52ec4b02b9aa5"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct26-nonsplit_map-source-01.rs",
+    "sha256": "fe47090ad5a4839a7a6d150b56beb0cbf4e233ee54d2a778d1382a81a14e4ac9"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct26-seven_chain-source-01.rs",
+    "sha256": "c57a7eef512500cf03083bf4b5bfa265710954be687b5c04baae6b240df6f932"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct26-seven_successor_chain-source-01.rs",
+    "sha256": "fd505e4b5975ec22eff63c4bf64f22636f02265623e3d5ed44b2d356ddb62d8b"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct26-source-01.sha256",
+    "sha256": "ee40bb2b896062e9e73cba50593272f40787eb752b55fbd1136b2bf11c2769c6"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Unsigned CT26 correctness01/strictClippy01 passes. For EVERY17/101 base discriminant,the lazy axis table preserves the original exhaustive p-squared builder canonical root;both quadratic polynomial roots actually vanish. Degree0/1,zero/error/unsupported-degree calls leave cache empty,degree2 initializes. Candidate33/201 versus original289/10201 candidate squares are static correctness metadata,not timing. Existing arithmetic engines and original exhaustive builder retained. Full transfer graphs/whole guard remain pending."
+}

@@ -80,13 +80,20 @@ fn closed_fibre_geometric_two_boundaries_and_reference() {
 fn closed_fibre_all_r0_r1_domains_and_group_controls() {
     use std::cell::RefCell;
     let chain = SevenChain::new();
-    for (name, r) in [("R0", &chain.r0), ("R1", &chain.r1)] {
+    let reference = SevenChain::new();
+    for (name, r, old) in [
+        ("R0", &chain.r0, &reference.r0),
+        ("R1", &chain.r1, &reference.r1),
+    ] {
+        assert!(r.square_roots.get().is_none());
+        assert!(old.square_roots.get().is_none());
         let counts = RefCell::new([[0_usize; 5]; 2]);
         let evaluate = |d: &Class, reverse: bool| {
             let (image, route) = r.evaluate_closed(d, reverse)?;
+            assert!(r.square_roots.get().is_none(), "closed {name} used table");
             assert_eq!(
                 image,
-                r.evaluate(d, reverse)?,
+                old.evaluate(d, reverse)?,
                 "all-class old/closed {name} reverse={reverse}"
             );
             counts.borrow_mut()[usize::from(reverse)][route as usize] += 1;
@@ -105,6 +112,8 @@ fn closed_fibre_all_r0_r1_domains_and_group_controls() {
         }
         assert!(r.evaluate_closed(&r.target.zero(), false).is_err());
         assert!(r.evaluate_closed(&r.source.zero(), true).is_err());
+        assert!(r.square_roots.get().is_none());
+        assert!(old.square_roots.get().is_some());
         println!("{name} BOTH complete12317 domains route counts{:?};old/closed equality,both dual2,bijections,paired additions,descent,wrong-model rejection pass",counts.borrow());
     }
 }

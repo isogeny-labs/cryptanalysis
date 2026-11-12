@@ -1,0 +1,41 @@
+   Compiling chained-transfer-reference v0.1.0 (/workspace/cryptanalysis/experiments/chained-transfer-reference)
+    Finished `release` profile [optimized] target(s) in 2m 25s
+     Running unittests src/main.rs (experiments/chained-transfer-reference/target/release/deps/chained_transfer_reference-157d0dc5fc6a5631)
+
+running 1 test
+retained degenerate pairing[(0, 3), (1, 4), (2, 5)], delta0
+stable pairing[(0, 4), (1, 5), (2, 3)], delta11, target[10, 6, 14, 2, 12, 10, 9]
+stable pairing[(0, 5), (1, 3), (2, 4)], delta6, target[10, 11, 14, 15, 12, 7, 9]
+PASS p17:every17 base discriminants/canonical roots match original exhaustive table;degree0/1/error calls leave cache empty,quadratic initializes;candidate33 axis squares,original289 squares;correctness metadata only
+retained degenerate pairing[(0, 3), (1, 4), (2, 5)], delta0
+stable pairing[(0, 4), (1, 5), (2, 3)], delta63, target[56, 41, 62, 78, 24, 57, 80]
+stable pairing[(0, 5), (1, 3), (2, 4)], delta38, target[56, 60, 62, 23, 24, 44, 80]
+PASS p101:every101 base discriminants/canonical roots match original exhaustive table;degree0/1/error calls leave cache empty,quadratic initializes;candidate201 axis squares,original10201 squares;correctness metadata only
+test nonsplit::map::lazy_base_discriminant_table_matches_original_exhaustive_roots ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 82 filtered out; finished in 0.01s
+
+     Running tests/frobenius_independent.rs (experiments/chained-transfer-reference/target/release/deps/frobenius_independent-70dd63d42d874561)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/richelot_automorphisms.rs (experiments/chained-transfer-reference/target/release/deps/richelot_automorphisms-1cffdb9f6310ade7)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/seven_independent.rs (experiments/chained-transfer-reference/target/release/deps/seven_independent-7557517fa72787fc)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/successor_automorphisms.rs (experiments/chained-transfer-reference/target/release/deps/successor_automorphisms-caccb791c1c4cfd7)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.00s
+
