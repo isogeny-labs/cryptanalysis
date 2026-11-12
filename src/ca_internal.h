@@ -155,7 +155,8 @@ static inline int ca_ec_canon_words(uint64_t p, uint64_t *y, uint64_t inf)
 {
     uint64_t yy = *y, ny = p - yy;
     uint64_t flip = (uint64_t)(ny < yy) & (uint64_t)(inf == 0);
-    *y = flip ? ny : yy;
+    /* a mask, not `flip ? ny : yy`: gcc 13 at -O3 turned that into a branch */
+    *y = yy ^ ((yy ^ ny) & ((uint64_t)0 - flip));
     return (int)flip;
 }
 
