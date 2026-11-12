@@ -1,0 +1,51 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-12T04:10:01Z",
+ "id": "PCC-20261112-ef6945",
+ "kind": "statement",
+ "producer": {
+  "commit": "25fd0be7cea37cefd298d3ac38b6f863bb9105d5",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct27-integrated-producer-04.txt",
+    "sha256": "e0d170404d3bf0c5b9aad3d265f4ba43a1ab383cfd6b8c70a17e109197abefd0"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct27-integrated-clippy-04.txt",
+    "sha256": "9b5ea118493b70835746942e5aae292fb744230de46fdbaeccaa903c4af45df6"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct27-producer-integrated-source-04.rs",
+    "sha256": "4802fc002a6fa4475ad23e6becaabea84cfaa2f7a7b6699303add89542e08da0"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct27-main-source-04.rs",
+    "sha256": "9043538f18ca55032db06b7f8f65f9af1f4b4b71621a2271287150182b2d255c"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct27-integrated-source-04.sha256",
+    "sha256": "685cdaa007974d989bd95de14666b6fbb0de795c1aaed64721682e3b92a6d814"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Unsigned CT27 actual-consumer integrated producer04 passes targeted unit/strictClippy:both T0/T1 all12317-class corpora and complete negation/doubling/predetermined-pair index tables reproduce byte-for-byte against frozen fixtures. Actual src/main/full_class_fixtures source04 snapshots/hashes pinned. No conditional test skip or ignored addition;all computations always run. This is producer integration only;root independent12-test replay4b2aa9 remains separate and full changed consumer guard is still required. No measured advantage or signed standing."
+}

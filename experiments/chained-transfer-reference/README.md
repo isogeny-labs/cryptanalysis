@@ -1,3 +1,5 @@
+Current CT27 complete-class acceptance and resume: [FULL_CLASS_STATUS.md](FULL_CLASS_STATUS.md). [pcc:unverified]
+
 # CT26: lazy canonical roots for the Richelot reference
 
 [Written proof](ROOT_TABLE.md), [current status](ROOT_TABLE_STATUS.md) and
