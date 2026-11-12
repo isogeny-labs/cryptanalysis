@@ -3153,6 +3153,9 @@ static int tau4_paired_lattice_mul_impl(const ca_group *g,
     ca_i128 best_l1 = -1;
     size_t chosen_a = 0, chosen_b = 0;
     unsigned chosen_gauge = 0;
+    /* Mode predicates are loop-invariant. */
+    const int free_rot_score = mode == 8 || mode == 9 || mode == 11 || mode == 12 ||
+                               mode == 13 || mode == 14;
     for (size_t ia = 0; ia < count_a; ia++) {
         const tau4_lattice_stream *left = &streams[0][ia];
         for (size_t ib = 0; ib < count_b; ib++) {
@@ -3162,18 +3165,16 @@ static int tau4_paired_lattice_mul_impl(const ca_group *g,
             unsigned adds = left->weight + right->weight;
             unsigned base_score = 6 * steps + 11 * adds;
             cost.pair_scores++;
-            if ((mode == 8 || mode == 9 || mode == 11 || mode == 12 ||
-                 mode == 13 || mode == 14) &&
-                base_score > best_score)
-                continue;
+            if (free_rot_score && base_score > best_score) continue;
             unsigned gauge = 0;
             unsigned rotations = mode == 3
                 ? tau4_pair_gauge_rotations(left, right, &gauge)
-                : (mode == 8 || mode == 9 || mode == 11 || mode == 12 ||
-                   mode == 13 || mode == 14)
+                : free_rot_score
                 ? tau4_pair_free_gauge_rotations(pre, left, right)
                 : left->rotations + right->rotations;
             unsigned score = base_score + rotations;
+            /* tau4_pair_score_better ranks a larger score last. */
+            if (score > best_score) continue;
             ca_i128 l1 = left->l1 + right->l1;
             if (tau4_pair_score_better(score, steps, adds, rotations, l1,
                                        best_score, best_steps, best_adds,
