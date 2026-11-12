@@ -719,8 +719,9 @@ static void lz_run_block(lz_pool *P, uint32_t t)
         const uint64_t q = z->q, coef = J->coef, coefp = J->coefp, c1 = J->c1, c1p = J->c1p,
                        c2 = J->c2, c2p = J->c2p;
         uint64_t *x = J->x, *wn = J->wn;
-        const uint64_t *wc = J->wc, *wp = J->wp, *Bw = J->Bw;
+        const uint64_t *wc = J->wc, *Bw = J->Bw;
         if (c2) {
+            const uint64_t *wp = J->wp;
             for (uint32_t j = j0; j < j1; j++) {
                 const uint64_t wj = wc[j];
                 x[j] = ca_addmod(x[j], shoup_mul(wj, coef, coefp, q), q);
@@ -764,6 +765,9 @@ static inline uint32_t lz_gen(lz_pool *P)
     return (uint32_t)(atomic_load_explicit(&P->ticket, memory_order_acquire) >> 32);
 }
 
+/* pthread_create fixes the start routine as void *(*)(void *), so arg stays
+ * non-const even though the worker only reads through it. */
+// cppcheck-suppress constParameterCallback
 static void *lz_worker_main(void *arg)
 {
     const lz_worker *W = arg;

@@ -2525,7 +2525,7 @@ static int m4gb_detect(const char *path, uint64_t *field, uint64_t *vars)
                     *vars = n;
                 } else {
                     uint64_t count = 0;
-                    for (char *tok = strtok(rest, " \t\r\n#"); tok; tok = strtok(NULL, " \t\r\n#"))
+                    for (const char *tok = strtok(rest, " \t\r\n#"); tok; tok = strtok(NULL, " \t\r\n#"))
                         count++;
                     *vars = count;
                 }
@@ -2536,9 +2536,9 @@ static int m4gb_detect(const char *path, uint64_t *field, uint64_t *vars)
                 const char *gf = strstr(s, "GF(");
                 if (gf) {
                     unsigned long long ch = strtoull(gf + 3, NULL, 10), q = ch;
-                    const char *caret = strchr(gf, '^');
                     if (strstr(gf, "[x]")) {
                         /* GF(2)[x] / x^e + ...: the first exponent is the extension degree */
+                        const char *caret = strchr(gf, '^');
                         if (caret) {
                             unsigned long long e = strtoull(caret + 1, NULL, 10);
                             for (unsigned long long i = 1; i < e; i++) q *= ch;
