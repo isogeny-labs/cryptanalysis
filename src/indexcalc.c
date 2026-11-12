@@ -96,7 +96,10 @@ typedef struct rel_list {
 static int rel_push(rel_list *l, const relation *r)
 {
     if (l->n == l->cap) {
-        uint32_t nc = l->cap ? l->cap * 2 : 1024;
+        /* 64 to start: a worker's local list holds one sieve unit's
+         * relations or one random-exponent batch (flushed at 64), and the
+         * precompute's own list is reserved for its target (rel_reserve) */
+        uint32_t nc = l->cap ? l->cap * 2 : 64;
         /* malloc/copy/free rather than realloc: the growth is amortised and
          * rare, and the explicit handover keeps the old buffer's lifetime
          * unambiguous; calloc so a partly filled buffer is never copied from
