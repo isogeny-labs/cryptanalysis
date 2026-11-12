@@ -323,10 +323,9 @@ uint64_t ca_mont_inv(const ca_mont *m, uint64_t a)
 
 /* One Miller-Rabin round in Montgomery form: 1 is r1 = R mod n there, and
  * n - 1 is n - r1. */
-static int mr_witness(const ca_mont *m, uint64_t a, uint64_t d, unsigned s)
+static int mr_after_pow(const ca_mont *m, uint64_t x, unsigned s)
 {
     const uint64_t one = m->r1, minus_one = m->p - m->r1;
-    uint64_t x = ca_mont_pow(m, ca_mont_to(m, a), d);
     if (x == one || x == minus_one) return 0;
     for (unsigned r = 1; r < s; r++) {
         x = ca_mont_sqr(m, x);
@@ -334,6 +333,29 @@ static int mr_witness(const ca_mont *m, uint64_t a, uint64_t d, unsigned s)
     }
     return 1; /* composite */
 }
+
+static int mr_witness(const ca_mont *m, uint64_t a, uint64_t d, unsigned s)
+{
+    return mr_after_pow(m, ca_mont_pow(m, ca_mont_to(m, a), d), s);
+}
+
+#ifndef CA_GLV_FIELD_COUNT
+/* Four ladders with the shared exponent d, interleaved: each is a chain of
+ * dependent Montgomery squarings, so four in lockstep keep the multiplier
+ * busy.  w[l] becomes w[l]^d (the same residue ca_mont_pow returns). */
+static void mont_pow4(const ca_mont *m, uint64_t w[4], uint64_t e)
+{
+    uint64_t r[4] = {m->r1, m->r1, m->r1, m->r1};
+    while (e) {
+        if (e & 1)
+            for (int l = 0; l < 4; l++) r[l] = ca_mont_mul(m, r[l], w[l]);
+        e >>= 1;
+        if (e)
+            for (int l = 0; l < 4; l++) w[l] = ca_mont_sqr(m, w[l]);
+    }
+    for (int l = 0; l < 4; l++) w[l] = r[l];
+}
+#endif
 
 int ca_is_prime(uint64_t n)
 {
@@ -349,9 +371,26 @@ int ca_is_prime(uint64_t n)
     /* n is odd here.  These 12 bases are deterministic for all n < 2^64. */
     ca_mont m;
     ca_mont_init(&m, n);
-    for (size_t i = 0; i < sizeof(small) / sizeof(small[0]); i++) {
+    const size_t nb = sizeof(small) / sizeof(small[0]);
+#ifdef CA_GLV_FIELD_COUNT
+    for (size_t i = 0; i < nb; i++) {
         if (mr_witness(&m, small[i], d, s)) return 0;
     }
+#else
+    /* Base 2 alone first: it already rejects nearly every composite.  A
+     * number that passes (a prime, almost always) needs all the other bases,
+     * which then run four at a time.  The verdict is the same: n is
+     * composite iff some base is a witness. */
+    if (mr_witness(&m, small[0], d, s)) return 0;
+    for (size_t i = 1; i < nb; i += 4) {
+        uint64_t w[4];
+        size_t cnt = nb - i < 4 ? nb - i : 4;
+        for (size_t l = 0; l < 4; l++) w[l] = ca_mont_to(&m, small[i + (l < cnt ? l : cnt - 1)]);
+        mont_pow4(&m, w, d);
+        for (size_t l = 0; l < cnt; l++)
+            if (mr_after_pow(&m, w[l], s)) return 0;
+    }
+#endif
     return 1;
 }
 
