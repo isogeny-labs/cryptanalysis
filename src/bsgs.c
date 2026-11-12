@@ -26,8 +26,8 @@
  * native curve and the native (Z/pZ)^* group the hash is computed inline
  * (ec_hash and zp_hash are these same functions, so every value agrees)
  * instead of through the vtable once per element. */
-static void bsgs_hash_block(const ca_group *g, const ca_htab1 *tab, uint64_t *hs,
-                            const ca_elem *e, uint64_t n)
+static void bsgs_hash_block(const ca_group *g, const ca_htab1 *tab, uint64_t *hs, const ca_elem *e,
+                            uint64_t n)
 {
     /* The table's base and mask go into locals: the stores to hs[] are
      * uint64_t lvalues, so through tab the compiler would reload both at
@@ -35,11 +35,11 @@ static void bsgs_hash_block(const ca_group *g, const ca_htab1 *tab, uint64_t *hs
     const ca_htab1_entry *ep = tab->e;
     const size_t mask = tab->cap - 1;
     const int pf = tab->cap != 0;
-#define BSGS_HASH_LOOP(HASH)                                                          \
-    for (uint64_t k = 0; k < n; k++) {                                                \
-        const uint64_t h = (HASH);                                                    \
-        hs[k] = h;                                                                    \
-        if (pf) __builtin_prefetch(&ep[(size_t)(h ? h : 1) & mask], 0, 1);            \
+#define BSGS_HASH_LOOP(HASH)                                                                       \
+    for (uint64_t k = 0; k < n; k++) {                                                             \
+        const uint64_t h = (HASH);                                                                 \
+        hs[k] = h;                                                                                 \
+        if (pf) __builtin_prefetch(&ep[(size_t)(h ? h : 1) & mask], 0, 1);                         \
     }
     if (ca_ec_group_is_native(g)) {
         BSGS_HASH_LOOP(ca_ec_hash_words(e[k].w[0], e[k].w[1], e[k].w[2]))

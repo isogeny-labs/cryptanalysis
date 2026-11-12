@@ -351,8 +351,8 @@ typedef struct lz_gat {
  * constants of the reductions. */
 typedef struct lz_ctx {
     uint64_t q;
-    lz_gat ga, gt;  /* A and A^T for the gather kernels (fast != 0) */
-    int fast;       /* 0: the 128-bit scatter kernels; 1: the gathers */
+    lz_gat ga, gt;    /* A and A^T for the gather kernels (fast != 0) */
+    int fast;         /* 0: the 128-bit scatter kernels; 1: the gathers */
     uint32_t heavy_a; /* heavy rows of A (they need 2^64 D_i mod q) */
     uint32_t tcols; /* rows of A^T = cols of A */
     uint32_t *tptr, *tcol; /* A^T in CSR */
@@ -432,8 +432,10 @@ static int lz_gat_build(lz_gat *g, uint32_t rows, const uint32_t *ptr, const uin
         uint32_t o = ptr[i];
         const uint32_t e = ptr[i + 1];
         for (uint32_t k = ptr[i]; k < e; k++)
-            if (val[k] == 1) g->idx[o++] = col[k];
-            else if (val[k] == -1) g->idx[o++] = col[k] + voff;
+            if (val[k] == 1)
+                g->idx[o++] = col[k];
+            else if (val[k] == -1)
+                g->idx[o++] = col[k] + voff;
         g->ue[i] = o;
         uint64_t rs = 0;
         for (uint32_t k = ptr[i]; k < e; k++)
@@ -517,9 +519,9 @@ lz_row128(const lz_ctx *z, uint32_t k, uint32_t e, const uint32_t *col, const in
  * otherwise).  The sum is congruent to the signed (A v)_i, so the value is
  * the exact (A v)_i mod q the 128-bit rows compute. */
 static inline __attribute__((always_inline)) void
-spmv_body(const lz_ctx *z, const uint32_t *ptr, const uint32_t *ue, const lz_gat *g,
-          uint32_t rows, const uint64_t *vv, uint64_t *y, uint64_t *yn, const uint64_t *D,
-          const uint64_t *Dp, const uint64_t *DR, const uint64_t *DRp)
+spmv_body(const lz_ctx *z, const uint32_t *ptr, const uint32_t *ue, const lz_gat *g, uint32_t rows,
+          const uint64_t *vv, uint64_t *y, uint64_t *yn, const uint64_t *D, const uint64_t *Dp,
+          const uint64_t *DR, const uint64_t *DRp)
 {
     const uint64_t q = z->q, onep = z->onep;
     const uint32_t *const idx = g->idx, *const oval = g->oval;
@@ -546,9 +548,9 @@ spmv_body(const lz_ctx *z, const uint32_t *ptr, const uint32_t *ue, const lz_gat
  * the block's first row.  The two call shapes, A v (scaled, with its
  * negation) and A^T w (neither), get their own copies: the tests on D and
  * yn then leave the row loop. */
-static void lz_spmv(const lz_ctx *z, const lz_gat *g, uint32_t r0, uint32_t rows, const uint64_t *vv,
-                 uint64_t *y, uint64_t *yn, const uint64_t *D, const uint64_t *Dp,
-                 const uint64_t *DR, const uint64_t *DRp)
+static void lz_spmv(const lz_ctx *z, const lz_gat *g, uint32_t r0, uint32_t rows,
+                    const uint64_t *vv, uint64_t *y, uint64_t *yn, const uint64_t *D,
+                    const uint64_t *Dp, const uint64_t *DR, const uint64_t *DRp)
 {
     const uint32_t *ptr = g->ptr + r0, *ue = g->ue + r0;
     if (D && yn)
@@ -612,8 +614,7 @@ static ca_status lz_init(lz_ctx *z, const ca_spmat *A, uint64_t q)
     const uint64_t K = rmax > cmax ? rmax : cmax; /* below nnz 2^31 < 2^63 */
     const uint64_t light_sum = UINT64_MAX / q;
     z->bias128 = (ca_u128)K * q;
-    if (A->rows >= (uint32_t)1 << 31 || A->cols >= (uint32_t)1 << 31 ||
-        A->nnz >= (uint32_t)1 << 31)
+    if (A->rows >= (uint32_t)1 << 31 || A->cols >= (uint32_t)1 << 31 || A->nnz >= (uint32_t)1 << 31)
         return CA_OK;
     z->tcols = A->cols;
     z->tptr = calloc((size_t)A->cols + 1, sizeof(uint32_t));
@@ -850,8 +851,8 @@ static void lz_run_block(lz_pool *P, uint32_t t)
     }
     case LZ_JOB_UPDATE: {
         const uint32_t j0 = P->trow[t], j1 = P->trow[t + 1];
-        lz_update(z->fast, z->q, j0, j1, J->n, J->x, J->wn, J->wc, J->wp, J->Bw, J->coef,
-                  J->coefp, J->c1, J->c1p, J->c2, J->c2p);
+        lz_update(z->fast, z->q, j0, j1, J->n, J->x, J->wn, J->wc, J->wp, J->Bw, J->coef, J->coefp,
+                  J->c1, J->c1p, J->c2, J->c2p);
         break;
     }
     default: break;
@@ -1186,8 +1187,8 @@ static ca_status lanczos(const ca_spmat *A, const uint64_t *b, uint64_t q, uint6
                 J->c2p = c2p;
                 lz_pool_run(P);
             } else {
-                lz_update(z.fast, q, 0, n, n, x, w_next, w_cur, w_prev, Bw, coef, coefp, c1,
-                          c1p, c2, c2p);
+                lz_update(z.fast, q, 0, n, n, x, w_next, w_cur, w_prev, Bw, coef, coefp, c1, c1p,
+                          c2, c2p);
             }
         } else {
             for (uint32_t j = 0; j < n; j++)

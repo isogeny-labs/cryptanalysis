@@ -427,17 +427,19 @@ ph_done:
     return rc;
 }
 
-
 /* base^(n / q_i^e_i) for every prime power of n = prod q_i^e_i, by splitting
  * the factor list in halves: the element for a half is the parent raised to
  * the product of the other half, so every level of the tree costs about one
  * exponentiation by n in total instead of one per factor.  The results are
  * the same group elements (integer exponents, no reduction); the caller still
  * charges group_ops per original exponent. */
-static void ph_split_powers(const ca_group *g, const ca_elem *y, const uint64_t *qe,
-                            unsigned lo, unsigned hi, ca_elem *out)
+static void ph_split_powers(const ca_group *g, const ca_elem *y, const uint64_t *qe, unsigned lo,
+                            unsigned hi, ca_elem *out)
 {
-    if (hi - lo == 1) { out[lo] = *y; return; }
+    if (hi - lo == 1) {
+        out[lo] = *y;
+        return;
+    }
     unsigned mid = lo + (hi - lo) / 2;
     uint64_t pl = 1, pr = 1;
     for (unsigned i = lo; i < mid; i++) pl *= qe[i];
@@ -525,8 +527,10 @@ ca_status ca_pohlig_hellman(const ca_group *g, const ca_elem *base, const ca_ele
                  * (q^e - xk) base_e: one short exponentiation instead of a
                  * 64-bit modular inversion; xk = 0 gives the identity.  The
                  * charge is what the xk multiplication below would add. */
-                if (xk == 0) ca_group_identity(g, &t);
-                else ca_group_mul(g, &t, &base_e, qe - xk, NULL);
+                if (xk == 0)
+                    ca_group_identity(g, &t);
+                else
+                    ca_group_mul(g, &t, &base_e, qe - xk, NULL);
                 if (st) st->group_ops += ph_mul_ops(xk);
             } else {
                 ca_group_mul(g, &t, &base_e, xk, st ? &st->group_ops : NULL);

@@ -69,15 +69,14 @@ uint64_t ca_cheon_best_divisor(uint64_t p, double *cost_exps)
     return best;
 }
 
-
 #ifndef CA_GLV_FIELD_COUNT
 /* Four independent Z_p^* ladders with a shared exponent, interleaved.  One
  * ladder is a chain of dependent Montgomery squarings, so the multiplier
  * idles most of the time; four chains in lockstep fill it.  w[l] becomes
  * w[l]^e (Montgomery form), the residue ca_mont_pow computes for each. */
-#define CHEON_LANES 4
-#define CHEON_SEG 128
-#define CHEON_BLOCK (CHEON_LANES * CHEON_SEG)
+#    define CHEON_LANES 4
+#    define CHEON_SEG   128
+#    define CHEON_BLOCK (CHEON_LANES * CHEON_SEG)
 
 static void cheon_pow4(const ca_mont *m, uint64_t w[CHEON_LANES], uint64_t e)
 {
@@ -99,9 +98,8 @@ static void cheon_pow4(const ca_mont *m, uint64_t w[CHEON_LANES], uint64_t e)
  * segments whose starting points are one exponentiation each, and the four
  * segments are walked together.  Nothing is counted here: the caller adds
  * what the serial chain would have charged. */
-static void cheon_orbit_hashes(const ca_group *g, const ca_elem *x, uint64_t e,
-                               uint64_t ei, const uint64_t *pw, uint64_t p,
-                               uint64_t *out)
+static void cheon_orbit_hashes(const ca_group *g, const ca_elem *x, uint64_t e, uint64_t ei,
+                               const uint64_t *pw, uint64_t p, uint64_t *out)
 {
     uint64_t w[CHEON_LANES];
     for (int l = 0; l < CHEON_LANES; l++) {
@@ -187,8 +185,8 @@ static ca_status orbit_bsgs(const ca_group *g, const ca_elem *base, const ca_ele
         uint64_t gpw[CHEON_LANES + 1];
         for (int l = 0; l <= CHEON_LANES; l++)
             gpw[l] = ca_powmod(eta_inv_m, (uint64_t)l * CHEON_SEG, p);
-        const uint64_t gstep_ops = (uint64_t)__builtin_popcountll(eta_inv_m) +
-                                   (uint64_t)(63 - __builtin_clzll(eta_inv_m));
+        const uint64_t gstep_ops =
+            (uint64_t)__builtin_popcountll(eta_inv_m) + (uint64_t)(63 - __builtin_clzll(eta_inv_m));
         uint64_t hb[CHEON_BLOCK], ei = 1;
         int done = 0;
         for (; !done && steps - i0 >= CHEON_BLOCK; i0 += CHEON_BLOCK) {
@@ -202,11 +200,20 @@ static ca_status orbit_bsgs(const ca_group *g, const ca_elem *base, const ca_ele
                     ca_elem chk;
                     ca_group_mul(g, &chk, base, ca_powmod(eta, c, p), &ops);
                     exps++;
-                    if (ca_group_equal(g, &chk, target)) { *u = c; rc = CA_OK; done = 1; break; }
+                    if (ca_group_equal(g, &chk, target)) {
+                        *u = c;
+                        rc = CA_OK;
+                        done = 1;
+                        break;
+                    }
                 }
                 ops += gstep_ops;
                 exps++;
-                if (max_exps && exps > max_exps) { rc = CA_ERR_LIMIT; done = 1; break; }
+                if (max_exps && exps > max_exps) {
+                    rc = CA_ERR_LIMIT;
+                    done = 1;
+                    break;
+                }
             }
         }
         if (!done && i0 < steps) ca_group_mul(g, &gt, target, ca_powmod(eta_inv_m, i0, p), NULL);

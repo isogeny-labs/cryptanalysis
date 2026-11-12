@@ -372,7 +372,10 @@ static ca_status grumpy_solve_impl(const ca_group *g, const ca_elem *base, const
     uint64_t max_iter = width > UINT64_MAX - 2 ? UINT64_MAX : width + 2;
     if (laned) {
         ls = malloc(sizeof(*ls));
-        if (!ls) { rc = CA_ERR_NOMEM; goto out; }
+        if (!ls) {
+            rc = CA_ERR_NOMEM;
+            goto out;
+        }
         gr_lanes_fill(g, ls, walk, step);
     }
     for (; i < max_iter; i++) {
@@ -380,8 +383,8 @@ static ca_status grumpy_solve_impl(const ca_group *g, const ca_elem *base, const
             const ca_elem *pt = laned ? &ls->lane[tpe * GR_LANES + lc] : &walk[tpe];
             uint64_t ot, oi;
             /* ec_hash inline on the native curve: the same function */
-            const uint64_t ph = laned ? ca_ec_hash_words(pt->w[0], pt->w[1], pt->w[2])
-                                      : ca_group_hash(g, pt);
+            const uint64_t ph =
+                laned ? ca_ec_hash_words(pt->w[0], pt->w[1], pt->w[2]) : ca_group_hash(g, pt);
             int ir = ca_htab_insert(&tab, ph, (uint64_t)tpe, i, &ot, &oi);
             if (ir < 0) { rc = CA_ERR_NOMEM; goto finalize; }
             if (ir == 1) {

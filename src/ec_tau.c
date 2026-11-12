@@ -2395,7 +2395,7 @@ typedef struct tau4_lattice_stream {
     unsigned power_histogram[3];
     uint64_t power_mask[3][4];
     unsigned lowest_nonzero;
-    int wide;                 /* digits came from the wide fallback recoder */
+    int wide; /* digits came from the wide fallback recoder */
     ca_i128 l1;
 } tau4_lattice_stream;
 
@@ -3154,8 +3154,8 @@ static int tau4_paired_lattice_mul_impl(const ca_group *g,
     size_t chosen_a = 0, chosen_b = 0;
     unsigned chosen_gauge = 0;
     /* Mode predicates are loop-invariant. */
-    const int free_rot_score = mode == 8 || mode == 9 || mode == 11 || mode == 12 ||
-                               mode == 13 || mode == 14;
+    const int free_rot_score =
+        mode == 8 || mode == 9 || mode == 11 || mode == 12 || mode == 13 || mode == 14;
     for (size_t ia = 0; ia < count_a; ia++) {
         const tau4_lattice_stream *left = &streams[0][ia];
         for (size_t ib = 0; ib < count_b; ib++) {
@@ -3167,11 +3167,9 @@ static int tau4_paired_lattice_mul_impl(const ca_group *g,
             cost.pair_scores++;
             if (free_rot_score && base_score > best_score) continue;
             unsigned gauge = 0;
-            unsigned rotations = mode == 3
-                ? tau4_pair_gauge_rotations(left, right, &gauge)
-                : free_rot_score
-                ? tau4_pair_free_gauge_rotations(pre, left, right)
-                : left->rotations + right->rotations;
+            unsigned rotations = mode == 3        ? tau4_pair_gauge_rotations(left, right, &gauge)
+                                 : free_rot_score ? tau4_pair_free_gauge_rotations(pre, left, right)
+                                                  : left->rotations + right->rotations;
             unsigned score = base_score + rotations;
             /* tau4_pair_score_better ranks a larger score last. */
             if (score > best_score) continue;
