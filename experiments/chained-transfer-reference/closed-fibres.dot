@@ -1,0 +1,18 @@
+digraph ClosedFibre {
+  rankdir=LR;
+  graph [bgcolor="white",pad="0.15",nodesep="0.28",ranksep="0.4"];
+  node [shape=box,style="rounded,filled",fillcolor="#edf5fc",color="#315c83",fontname="DejaVu Sans",fontsize=11];
+  edge [color="#315c83",fontname="DejaVu Sans",fontsize=10];
+  u [label="Valid quadratic source support\nu=x²+a·x+b; y=v(x)"];
+  eq [label="Reduce correspondence\nA(z)·x+B(z)=0"];
+  norm [label="Whole-fibre resultant\nR=B²−a·A·B+b·A²"];
+  recover [label="Checked unit chart\nx=−B/A; recover Y modulo R"];
+  reduce [label="Existing balanced reduction\nfinite4−2K; raw plus=−1"];
+  output [label="Same actual R0/R1 output\nNo support roots chosen"];
+  fallback [label="Explicit chart boundary\nRetain completed pointwise map",fillcolor="#fff4df",color="#9b6b2d"];
+  kernel [label="Actual Ψ kernel over F101⁶\n49 classes;2401 sums;Frobenius5/6",fillcolor="#e8f5ec",color="#326743"];
+  u -> eq -> norm -> recover -> reduce -> output;
+  norm -> fallback [label="degree drop"];
+  recover -> fallback [label="nonunit"];
+  output -> kernel [label="R0(Ker Φ)"];
+}

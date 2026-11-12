@@ -1,0 +1,65 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-11T22:11:01Z",
+ "id": "PCC-20261111-60944e",
+ "kind": "statement",
+ "producer": {
+  "commit": "994869034bbc9cc882db826cdabf73d2befb97cc",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/closed-fibres-full-and-kernel-02.txt",
+    "sha256": "ce0573f25d3bbbfc315b7fcddb36556fd40e4f1de469afe4aef26042b7ddacf6"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/closed-fibres-boundaries-03.txt",
+    "sha256": "60d90f9fd9944817a4f74c61c4bf31e888b7be396ec59351fed3187f5e27b704"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/closed-fibres-source-02.rs",
+    "sha256": "a1b1af0008b907431bf413ce1509b862b1e62ec3e020fb614e1ebbdd1fa464c3"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/closed-fibres-map-source-02.rs",
+    "sha256": "2f43c693119e2971d817adad5eaff811f116ec52e2836b6638b956a53059f798"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/closed-fibres-chain-source-02.rs",
+    "sha256": "ea48871519ab99820d4df2a131a8bf7f5450af430ec2ea095c60702f399aa171"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/closed-fibres-chain-source-03.rs",
+    "sha256": "afbf9109bd58d2aed423b9ff3fbcbd35a31b2cb959c1f6e7b3eb09c96426e9f9"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/closed-fibres-clippy-04.txt",
+    "sha256": "dc6880ae6ad10055f96d2f3a033d78eeffd96d93c522291cae3c6372057f938f"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "CT23 complete comparison02 passes both full12317-class rational domains for each R0/R1 map, exact old/closed equality, both dual2 identities/bijections/paired additions/descent/wrong-model rejection. Every direction has239 lower-degree and12078 quadratic cases, zero chart fallbacks. Kernel49 and targeted tests also pass; three-test process completes. Separate boundary03 passes all16 actual geometric2-torsion classes in all four directions: identity evaluated, all15 nonzero branch classes report explicit projection/ordinate boundaries with completed pointwise action retained. StrictClippy04 passes. Exact02 arithmetic/source snapshots and03 boundary source retained. Unsigned local correctness evidence; no timing claim."
+}

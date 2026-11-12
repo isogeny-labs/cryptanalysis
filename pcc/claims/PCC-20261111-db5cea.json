@@ -1,0 +1,44 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-11T21:55:28Z",
+ "id": "PCC-20261111-db5cea",
+ "kind": "statement",
+ "producer": {
+  "commit": "994869034bbc9cc882db826cdabf73d2befb97cc",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/closed-fibres-targeted-01.txt",
+    "sha256": "7a4ffd136eadfc70c6adc29aed2bd572a86ba79dae9bf3535445f3fc360873b8"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/closed-fibres-source-01.rs",
+    "sha256": "a1b1af0008b907431bf413ce1509b862b1e62ec3e020fb614e1ebbdd1fa464c3"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/closed-fibres-map-source-01.rs",
+    "sha256": "2f43c693119e2971d817adad5eaff811f116ec52e2836b6638b956a53059f798"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/closed-fibres-chain-source-01.rs",
+    "sha256": "8db023c9e68580ceef0f48e903e899599b76d63ef128246103ef06fbafb4fc7d"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "CT23 closed-fibre targeted test01 reports exact equality with unchanged completed pointwise R0/R1 forward/dual on192 deterministic inputs in each direction. Routes lower-degree/quadratic/boundaries are respectively[7,185,0,0,0],[8,184,0,0,0],[6,186,0,0,0],[9,183,0,0,0]. It checks resultant elimination, ordinate curve identity and unchanged shared reduction; full-domain and geometric kernel acceptance remain open. Unsigned local correctness evidence, not timing or independent signed verification."
+}
