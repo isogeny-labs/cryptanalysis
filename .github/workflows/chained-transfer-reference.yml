@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     # Existing and new complete Richelot/Phi/Psi corpora,including cold builds.
     # Full-domain acceptance remains unchanged;no expensive PR event added.
-    timeout-minutes: 45
+    timeout-minutes: 75
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with:

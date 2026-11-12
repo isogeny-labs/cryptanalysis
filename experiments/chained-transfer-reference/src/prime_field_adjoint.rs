@@ -9,7 +9,7 @@ use isogeny_algos::field::{Field, Zp};
 use isogeny_algos::kernel::kohel::kohel;
 use std::collections::HashSet;
 
-pub(super) struct PrimeFieldAdjoint {
+pub(crate) struct PrimeFieldAdjoint {
     fp: Zp,
     source: Balanced,
     target: Balanced,
@@ -19,7 +19,7 @@ pub(super) struct PrimeFieldAdjoint {
 }
 
 impl PrimeFieldAdjoint {
-    pub(super) fn new() -> Self {
+    pub(crate) fn new() -> Self {
         let fp = Zp::new(101);
         let dual = [
             kohel(&fp, &Curve::new(26, 58), &vec![58, 26, 58, 1], 7),
@@ -42,7 +42,7 @@ impl PrimeFieldAdjoint {
         }
     }
 
-    pub(super) fn evaluate(&self, d: &Class) -> Result<Class, String> {
+    pub(crate) fn evaluate(&self, d: &Class) -> Result<Class, String> {
         self.source.check(d)?;
         let mut components = Vec::with_capacity(2);
         for i in 0..2 {

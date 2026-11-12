@@ -8,7 +8,7 @@ use isogeny_algos::poly;
 use num_traits::ToPrimitive;
 type Result<T> = std::result::Result<T, String>;
 
-pub(super) struct DirectQuartic {
+pub(crate) struct DirectQuartic {
     fp: Zp,
     source: Balanced,
     curve: Curve<u64>,
@@ -19,7 +19,35 @@ pub(super) struct DirectQuartic {
 }
 
 impl DirectQuartic {
-    pub(super) fn first() -> Self {
+    pub(crate) fn t2(component: usize) -> Self {
+        let (curve, n, q, m, infinity) = match component {
+            0 => (
+                Curve::new(59, 27),
+                vec![97, 93, 7, 0, 97],
+                vec![55, 0, 1],
+                vec![71, 49, 20, 63],
+                Pt::Aff(97, 63),
+            ),
+            1 => (
+                Curve::new(23, 7),
+                vec![74, 0, 81, 42, 64],
+                vec![23, 0, 1],
+                vec![37, 9, 9, 35],
+                Pt::Aff(64, 35),
+            ),
+            _ => panic!("two fixed T2 components only"),
+        };
+        Self {
+            source: Balanced::new(101, &[95, 93, 43, 39, 92, 17, 1]).unwrap(),
+            curve,
+            n,
+            q,
+            m,
+            infinity,
+            ..Self::first()
+        }
+    }
+    pub(crate) fn first() -> Self {
         Self {
             fp: Zp::new(101),
             source: Balanced::new(101, &[31, 75, 74, 54, 71, 55, 1]).unwrap(),
@@ -31,7 +59,7 @@ impl DirectQuartic {
         }
     }
 
-    pub(super) fn second() -> Self {
+    pub(crate) fn second() -> Self {
         Self {
             curve: Curve::new(44, 21),
             n: vec![5, 49, 31, 0, 87],
@@ -42,7 +70,7 @@ impl DirectQuartic {
         }
     }
 
-    pub(super) fn t1(component: usize) -> Self {
+    pub(crate) fn t1(component: usize) -> Self {
         let (curve, n, q, m, infinity) = match component {
             0 => (
                 Curve::new(26, 58),
@@ -148,7 +176,7 @@ impl DirectQuartic {
         }
     }
 
-    pub(super) fn norm(&self, d: &Class) -> Result<(Pt<u64>, usize)> {
+    pub(crate) fn norm(&self, d: &Class) -> Result<(Pt<u64>, usize)> {
         self.source.check(d)?;
         let (u, v, n) = d.components();
         let coefficients = |p: &crate::reference::FpPoly| {

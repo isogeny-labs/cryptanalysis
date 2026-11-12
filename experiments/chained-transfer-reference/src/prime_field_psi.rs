@@ -11,7 +11,7 @@ use isogeny_algos::kernel::kohel::kohel;
 use num_traits::ToPrimitive;
 use std::collections::HashSet;
 
-pub(super) struct PrimeFieldPsi {
+pub(crate) struct PrimeFieldPsi {
     fp: Zp,
     source: Balanced,
     target: Balanced,
@@ -20,7 +20,7 @@ pub(super) struct PrimeFieldPsi {
     pulls: [Pullback; 2],
 }
 impl PrimeFieldPsi {
-    pub(super) fn new() -> Self {
+    pub(crate) fn new() -> Self {
         let fp = Zp::new(101);
         let alpha = [
             kohel(&fp, &Curve::new(1, 46), &vec![72, 100, 35, 1], 7),
@@ -37,7 +37,7 @@ impl PrimeFieldPsi {
             pulls: [Pullback::fixed(1, 0), Pullback::fixed(1, 1)],
         }
     }
-    pub(super) fn forward(&self, d: &Class) -> Result<Class, String> {
+    pub(crate) fn forward(&self, d: &Class) -> Result<Class, String> {
         self.source.check(d)?;
         let mut components = Vec::with_capacity(2);
         for i in 0..2 {
@@ -50,7 +50,7 @@ impl PrimeFieldPsi {
     }
 }
 
-pub(super) fn key(d: &Class) -> (Vec<u64>, Vec<u64>, u8) {
+pub(crate) fn key(d: &Class) -> (Vec<u64>, Vec<u64>, u8) {
     let (u, v, n) = d.components();
     let coefficients =
         |p: &crate::reference::FpPoly| p.coeffs.iter().map(|c| c.to_u64().unwrap()).collect();
