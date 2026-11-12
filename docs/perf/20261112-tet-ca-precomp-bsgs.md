@@ -22,22 +22,22 @@ Binaries (Release, gcc, no -march): base `ca_perfbench` sha256 `1ea0d4c8a28288ea
 |---|---|---|--:|--:|--|
 | `9f7389b1` | walk starts via `ca_ec_fb_sum` (one inversion) instead of one inversion per addition | `precomp_build_ec32` | 630,732,851 | 605,928,843 | not separated |
 | `2983b93c` | exponent update `ca_addmod` -> `ca_addmod_sel` (branchless) in build and online walks | `precomp_build_ec32` | 605,928,843 | 611,247,363 (+0.9 %) | 59.5 ms -> 50.0 ms (7 alternating runs) |
-| `c4dbb662` | grumpy: 3 walks x 32 lanes advanced by one batched op (one inversion per 96 additions) | `grumpy_ec32` | 72,054,474 | 39,090,253 | 6.5 ms -> 3.1 ms |
-| `8774fe3c` | bsgs: inline native ec/zp hash, slot base and mask in locals | `bsgs_ec32` | 43,076,871 | 41,223,005 | 3.9 -> 3.6 ms (noisy) |
-| | | `bsgs_zp36` | 85,819,148 | 79,258,212 | 6.8 -> 6.3 ms (noisy) |
+| `c4dbb662` | grumpy: 3 walks x 32 lanes advanced by one batched op (one inversion per 96 additions) | `grumpy_ec32` | 72,054,474 | 39,090,253 | 6.5 ms -> 3.1 ms (alternating pair runs) |
+| `8774fe3c` | bsgs: inline native ec/zp hash, slot base and mask in locals | `bsgs_ec32` | 43,076,871 | 41,223,005 | noisy, see below |
+| | | `bsgs_zp36` | 85,819,148 | 79,258,212 | noisy, see below |
 | `3d780ad3` | grumpy: inline native ec hash | `grumpy_ec32` | 39,090,253 | 38,715,846 | within noise |
 
 End to end, `perfindex.py instr` base vs candidate over the dlp kernels:
 
 | kernel | base Ir | cand Ir | ratio | local wall base -> cand (median) |
 |---|--:|--:|--:|--|
-| `c_grumpy_ec32` | 72,054,474 | 38,715,846 | 1.861x | 6.4 -> 3.1 ms |
-| `c_precomp_build_ec32` | 630,732,851 | 611,247,363 | 1.032x | 62.4 -> 51.9 ms (1.20x) |
-| `c_bsgs_zp36` | 85,819,148 | 79,258,212 | 1.083x | 7.1 -> 6.6 ms |
-| `c_bsgs_ec32` | 43,076,871 | 41,223,005 | 1.045x | 4.5 -> 3.6 ms (very noisy) |
+| `c_grumpy_ec32` | 72,054,474 | 38,715,846 | 1.861x | 6.7 -> 3.2 ms |
+| `c_precomp_build_ec32` | 630,732,851 | 611,247,363 | 1.032x | 65.1 -> 52.0 ms (1.25x; base runs ranged 62.4-65.1) |
+| `c_bsgs_zp36` | 85,819,148 | 79,258,212 | 1.083x | 7.3 -> 7.0 ms (noisy) |
+| `c_bsgs_ec32` | 43,076,871 | 41,223,005 | 1.045x | 5.1 -> 3.8 ms (very noisy) |
 | `c_pohlig_zp61s` (BSGS inside) | 119,127,605 | 109,920,801 | 1.084x | 8.9 -> 8.3 ms |
 | `c_pohlig_ec48s` (BSGS inside) | 34,203,653 | 33,033,558 | 1.035x | not timed |
-| `c_precomp_online_ec32` | 156,987,477 | 155,983,237 | 1.006x | neutral |
+| `c_precomp_online_ec32` | 156,987,477 | 155,983,237 | 1.006x | 18.9 -> 18.7 ms, neutral |
 
 The wall win of `2983b93c` is not an Ir win (Ir rises 0.9 %): the wrap of the running
 exponent mod n is a coin flip on walk data and the branch mispredicted about half the
