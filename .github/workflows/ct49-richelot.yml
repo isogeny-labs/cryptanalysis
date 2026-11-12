@@ -38,3 +38,9 @@ jobs:
           /tmp/ct49-pgl2-O3 > /tmp/ct49-pgl2-output-O3
           diff -u /tmp/ct49-pgl2-output-O0 /tmp/ct49-pgl2-output-O3
           cat /tmp/ct49-pgl2-output-O3
+      - name: Second independent cubic-field construction in Python
+        run: |
+          python3 -B experiments/chained-transfer-reference/ct49/ct49_richelot.py > /tmp/ct49-pycubic
+          python3 -O -B experiments/chained-transfer-reference/ct49/ct49_richelot.py > /tmp/ct49-pycubic-opt
+          diff -u /tmp/ct49-pycubic /tmp/ct49-pycubic-opt
+          cat /tmp/ct49-pycubic
