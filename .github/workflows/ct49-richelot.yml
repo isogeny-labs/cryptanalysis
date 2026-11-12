@@ -1,0 +1,32 @@
+name: CT49 non-split Richelot geometry
+on:
+  push:
+    paths:
+      - 'experiments/chained-transfer-reference/ct49/**'
+      - '.github/workflows/ct49-richelot.yml'
+  pull_request:
+    paths:
+      - 'experiments/chained-transfer-reference/ct49/**'
+      - '.github/workflows/ct49-richelot.yml'
+  workflow_dispatch:
+jobs:
+  ct49:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Independent Python exact finite-field and Frobenius audit
+        run: |
+          python3 -B experiments/chained-transfer-reference/ct49/ct49_branch_audit.py > /tmp/ct49-python-normal
+          python3 -O -B experiments/chained-transfer-reference/ct49/ct49_branch_audit.py > /tmp/ct49-python-opt
+          diff -u /tmp/ct49-python-normal /tmp/ct49-python-opt
+          cat /tmp/ct49-python-normal
+      - name: Independently coded JavaScript non-split Richelot codomains
+        run: |
+          node --check experiments/chained-transfer-reference/ct49/ct49_richelot.js
+          node experiments/chained-transfer-reference/ct49/ct49_richelot.js > /tmp/ct49-node-normal
+          node --no-opt experiments/chained-transfer-reference/ct49/ct49_richelot.js > /tmp/ct49-node-noopt
+          diff -u /tmp/ct49-node-normal /tmp/ct49-node-noopt
+          cat /tmp/ct49-node-normal
