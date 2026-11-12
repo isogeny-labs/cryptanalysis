@@ -276,7 +276,12 @@ uint32_t ca_ec_j0_coord_canonicalize(const ca_group *g, ca_elem *Y)
  * restores the loop of out-of-line ca_ec_endo calls.  The trajectory-
  * changing representatives CA_RHO_J0_COORDINATE_ORBIT and
  * CA_J0_RHO_COORD_CANON take precedence when selected. */
-static uint32_t glv_class_reduce(const ca_group *g, ca_elem *Y, uint32_t m, uint64_t *h_out)
+/* Inlined at its call sites: the per-step reduction is a few dozen
+ * instructions, and as a call its prologue, epilogue and the endo-kind
+ * test cost about a seventh of it (callgrind, j0-56). */
+static inline __attribute__((always_inline)) uint32_t glv_class_reduce(const ca_group *g,
+                                                                       ca_elem *Y, uint32_t m,
+                                                                       uint64_t *h_out)
 {
 #ifdef CA_RHO_J0_COORDINATE_ORBIT
     if (g->endo_kind == CA_CURVE_ENDO_J0 && m == 6) {
