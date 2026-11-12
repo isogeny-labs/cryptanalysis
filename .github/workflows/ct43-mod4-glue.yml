@@ -1,0 +1,35 @@
+name: CT43 finite-ring elliptic gluing candidates
+on:
+  pull_request:
+    paths:
+      - 'experiments/chained-transfer-reference/ct43/**'
+      - '.github/workflows/ct43-mod4-glue.yml'
+  push:
+    branches:
+      - research/ct36-normalized-dual49-20261112
+    paths:
+      - 'experiments/chained-transfer-reference/ct43/**'
+      - '.github/workflows/ct43-mod4-glue.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  level-four:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - name: Python exhaustive and independent JS arithmetic
+        run: |
+          python3 -B experiments/chained-transfer-reference/ct43/ct43_mod4_glue.py >/tmp/ct43.normal
+          python3 -O -B experiments/chained-transfer-reference/ct43/ct43_mod4_glue.py >/tmp/ct43.optimized
+          diff -u /tmp/ct43.normal /tmp/ct43.optimized
+          python3 -m py_compile experiments/chained-transfer-reference/ct43/ct43_mod4_glue.py
+          cat /tmp/ct43.normal
+          node --check experiments/chained-transfer-reference/ct43/ct43_independent.js
+          node experiments/chained-transfer-reference/ct43/ct43_independent.js >/tmp/ct43.js
+          node --no-opt experiments/chained-transfer-reference/ct43/ct43_independent.js >/tmp/ct43.noopt
+          diff -u /tmp/ct43.js /tmp/ct43.noopt
+          cat /tmp/ct43.js
