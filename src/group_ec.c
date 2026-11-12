@@ -370,6 +370,24 @@ int ca_ec_fb_sum(const ca_group *g, ca_elem *r, const ca_elem *pow1, uint64_t k1
     return 1;
 }
 
+int ca_ec_group_mul2(const ca_group *g, ca_elem *r, const ca_elem *P, uint64_t a, const ca_elem *Q,
+                     uint64_t b, const ca_elem *PQ)
+{
+    if (g->vt != &ec_vt || FINF(P) || FINF(Q) || FINF(PQ)) return 0;
+    ec_jac acc = {0, 0, 0, 1};
+    const uint64_t ab = a | b;
+    for (int bit = ab ? 63 - __builtin_clzll(ab) : -1; bit >= 0; bit--) {
+        ec_jac_dbl(g, &acc);
+        const unsigned sel = (unsigned)((a >> bit) & 1) | (unsigned)(((b >> bit) & 1) << 1);
+        if (sel) {
+            const ca_elem *T = sel == 1 ? P : sel == 2 ? Q : PQ;
+            ec_jac_add_affine(g, &acc, FX(T), FY(T));
+        }
+    }
+    ec_jac_to_affine(g, r, &acc);
+    return 1;
+}
+
 ca_status ca_group_ec_init(ca_group *g, uint64_t p, uint64_t a, uint64_t b, uint64_t order)
 {
     memset(g, 0, sizeof(*g));

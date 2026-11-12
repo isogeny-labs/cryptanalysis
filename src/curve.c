@@ -440,6 +440,8 @@ static void glv_hist_normalize(glv_walk *walks, uint32_t W)
 typedef struct glv_ctx {
     const ca_group *g;
     ca_elem base, target;
+    ca_elem bt;  /* base + target, for the joint start-point product */
+    int have_bt; /* bt is set (native curve, no tau start-up) */
     uint32_t r;
     ca_elem *M;
     uint64_t *alpha, *beta;
@@ -667,6 +669,13 @@ static void glv_account_tau_startup(ca_curve_startup_stats *startup,
     startup->eval_gauge_table_lookups += one->gauge_table_lookups;
 }
 
+/* What ca_group_mul charges a native-curve scalar k: one op per set bit and
+ * one doubling per bit after the lowest (group_common.c). */
+static inline uint64_t glv_ladder_ops(uint64_t k)
+{
+    return k ? (uint64_t)__builtin_popcountll(k) + (uint64_t)(63 - __builtin_clzll(k)) : 0;
+}
+
 static int glv_startup_combination(const glv_ctx *c, ca_elem *out,
                                    uint64_t a, uint64_t b, int restart, uint64_t *ops)
 {
@@ -693,6 +702,11 @@ static int glv_startup_combination(const glv_ctx *c, ca_elem *out,
             if (restart) c->startup->restart_output_inversions += one.inversions;
             else c->startup->table_output_inversions += one.inversions;
         }
+    } else if (c->have_bt && ca_ec_group_mul2(c->g, out, &c->base, a, &c->target, b, &c->bt)) {
+        /* a base + b target by one joint Jacobian ladder and one inversion;
+         * the same point, charged as the two ca_group_mul calls and the
+         * ca_group_op below charge it */
+        *ops += glv_ladder_ops(a) + glv_ladder_ops(b) + 1;
     } else {
         ca_elem t1, t2;
         ca_group_mul(c->g, &t1, &c->base, a, ops);
@@ -783,6 +797,14 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
     c.g = g;
     c.base = *base;
     c.target = *target;
+#ifndef CA_GLV_FIELD_COUNT
+    /* the joint start-point ladder (ca_ec_group_mul2) needs base + target;
+     * diagnostic field-count builds keep the separate products they count */
+    if (!paired2 && ca_ec_group_is_native(g)) {
+        ca_group_op(g, &c.bt, base, target);
+        c.have_bt = !ca_group_is_identity(g, &c.bt);
+    }
+#endif
     c.startup = startup;
     c.free_gauge = free_gauge;
     c.tau_pair_steered = tau_pair_steered;

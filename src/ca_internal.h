@@ -335,6 +335,13 @@ int ca_ec_group_mul(const struct ca_group *g, ca_elem *r, const ca_elem *a, uint
  * Counts no group operations; the caller charges them. */
 int ca_ec_fb_sum(const struct ca_group *g, ca_elem *r, const ca_elem *pow1, uint64_t k1,
                  const ca_elem *pow2, uint64_t k2);
+/* r = a P + b Q for the native E(F_p) group, by Shamir's joint
+ * double-and-add in Jacobian coordinates with PQ = P + Q given (affine),
+ * and one inversion: the affine point ca_group_mul and ca_group_op give.
+ * Returns 0 (r untouched) for another group or when P, Q or PQ is the
+ * point at infinity.  Counts no group operations. */
+int ca_ec_group_mul2(const struct ca_group *g, ca_elem *r, const ca_elem *P, uint64_t a,
+                     const ca_elem *Q, uint64_t b, const ca_elem *PQ);
 
 int ca_check_members(const struct ca_group *g, const ca_elem *base, const ca_elem *target,
                      uint64_t n, const char *solver);
