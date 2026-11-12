@@ -870,7 +870,7 @@ static lz_pool *lz_pool_acquire(uint32_t threads, uint32_t nnz)
     return P;
 }
 
-static void lz_pool_release(lz_pool *P)
+static void lz_pool_release(const lz_pool *P)
 {
     if (P) pthread_mutex_unlock(&lz_pool_lock);
 }
@@ -1089,7 +1089,6 @@ static ca_status lanczos(const ca_spmat *A, const uint64_t *b, uint64_t q, uint6
                 t_one = now - t_phase;
                 phase = 1;
                 warm = 1;
-                left = LZ_PROBE;
             } else if (phase == 1) {
                 pool_wins = now - t_phase < t_one;
                 phase = 2;

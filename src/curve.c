@@ -289,8 +289,7 @@ static inline __attribute__((always_inline)) uint32_t glv_class_reduce(const ca_
         if (h_out) *h_out = ca_group_hash(g, Y);
         return k;
     }
-#endif
-#ifdef CA_J0_RHO_COORD_CANON
+#elif defined(CA_J0_RHO_COORD_CANON)
     if (g->endo_kind == 1 && m == 6) {
         uint32_t k = ca_ec_j0_coord_canonicalize(g, Y);
         if (h_out) *h_out = ca_group_hash(g, Y);
@@ -809,6 +808,9 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
     c.free_gauge = free_gauge;
     c.tau_pair_steered = tau_pair_steered;
     c.m = g->aut_order;
+    /* curve_enable sets aut_order to 4 or 6 whenever endo_kind is set; a
+     * zero here is a malformed group, and n / c.m below would divide by it */
+    if (c.m == 0) return CA_ERR_INVALID;
     c.lam_pow[0] = 1 % n;
     for (uint32_t k = 1; k < c.m; k++)
         c.lam_pow[k] = ca_mulmod(c.lam_pow[k - 1], g->endo_lambda, n);

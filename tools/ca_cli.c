@@ -2566,6 +2566,8 @@ static int m4gb_pick(const char *dir, uint64_t field, uint64_t vars, char *out, 
     while ((e = readdir(d))) {
         unsigned long long n = 0, q = 0;
         char tail = 0;
+        /* a file-name pattern match: the count test rejects every non-match */
+        // NOLINTNEXTLINE(cert-err34-c)
         if (sscanf(e->d_name, "solver_m4gb_n%llu_gf%llu%c", &n, &q, &tail) != 2) continue;
         if (q != field || n < vars) continue;
         if (!best || n < best) {
@@ -2681,7 +2683,7 @@ static int cmd_m4gb(void)
             timed_out = 1;
             break;
         }
-        struct timespec ts = {0, 20 * 1000 * 1000};
+        struct timespec ts = {0, 20L * 1000 * 1000};
         nanosleep(&ts, NULL);
     }
     double wall = ca_now() - t0;
@@ -2737,9 +2739,9 @@ static int cmd_m4gb(void)
     json_print_string(binary);
     printf(",\"field\":%" PRIu64 ",\"vars\":%" PRIu64 ",\"unit_ideal\":%s", field, vars,
            unit_ideal ? "true" : "false");
-    size_t basis_size = 0;
-    int all_points = 1;
     if (!unit_ideal) {
+        size_t basis_size = 0;
+        int all_points = 1;
         FILE *bf = fopen(basis_path, "r");
         if (!bf) die("M4GB wrote no basis file");
         /* pass 1: size and shape */
@@ -2773,7 +2775,9 @@ static int cmd_m4gb(void)
         }
         if (!basis_size) all_points = 0;
         printf(",\"basis_size\":%zu", basis_size);
-        rewind(bf);
+        /* rewind(bf), spelled as the standard defines it */
+        (void)fseek(bf, 0L, SEEK_SET);
+        clearerr(bf);
         /* pass 2: the lines (capped) and the solution */
         printf(",\"basis\":[");
         size_t shown = 0;
@@ -2792,7 +2796,8 @@ static int cmd_m4gb(void)
         }
         printf("],\"basis_truncated\":%s", shown > cap ? "true" : "false");
         if (all_points) {
-            rewind(bf);
+            (void)fseek(bf, 0L, SEEK_SET);
+            clearerr(bf);
             printf(",\"solution\":{");
             size_t k = 0;
             while (fgets(line, sizeof line, bf)) {
