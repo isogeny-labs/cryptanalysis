@@ -362,7 +362,7 @@ static void *pc_build_worker(void *arg)
             if (stall[i]) {
                 stall[i] = 0;
             } else {
-                a[i] = ca_addmod(a[i], pend[i], t->n);
+                a[i] = ca_addmod_sel(a[i], pend[i], t->n);
                 stepc[i]++;
             }
         }
@@ -982,7 +982,7 @@ static ca_status pc_table_solve(const ca_precomp_table *t, const ca_elem *target
             if (steps >= t->chain_limit) { active = 0; break; }
             uint32_t idx = (uint32_t)(ca_mix64(h) % t->r);
             ca_group_op(g, &Y, &Y, &t->S[idx]);
-            a = ca_addmod(a, t->s[idx], n);
+            a = ca_addmod_sel(a, t->s[idx], n);
             ops++;
             steps++;
             if ((checkpoint || verbose) && (ops & 1023) == 0) {
