@@ -2851,8 +2851,14 @@ static int cmd_m4gb(void)
             /* across filesystems: copy */
             FILE *src = fopen(basis_path, "r"), *dst = fopen(out_path, "w");
             if (!src || !dst) die("cannot write --out");
-            size_t n;
-            while ((n = fread(line, 1, sizeof line, src)) > 0) fwrite(line, 1, n, dst);
+            /* Stop at the first short read (end of file or error): a further
+             * fread would return 0 anyway, and this keeps it off a stream in
+             * the EOF or error state (clang-analyzer unix.Stream). */
+            for (;;) {
+                const size_t n = fread(line, 1, sizeof line, src);
+                if (n) fwrite(line, 1, n, dst);
+                if (n < sizeof line) break;
+            }
             fclose(src);
             fclose(dst);
             if (!keep) unlink(basis_path);
