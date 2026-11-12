@@ -2401,16 +2401,21 @@ static size_t gen_tau4_digits_atlas(ca_i128 wide_x, ca_i128 wide_y, const ca_tau
     size_t nd = 0;
     while (x || y) {
         if (nd > 252) return 0;
-        int ax = (int)((x % 81 + 81) % 81);
-        int by = (int)((y % 81 + 81) % 81);
+        /* x % 81 in (-81, 81): adding 81 on a negative remainder equals the
+         * (x % 81 + 81) % 81 residue without the second division. */
+        int ax = (int)(x % 81), by = (int)(y % 81);
+        ax += 81 & -(ax < 0);
+        by += 81 & -(by < 0);
         ca_tau4_atlas_pattern p = ca_tau4_atlas_patterns[ca_tau4_atlas_index[81 * ax + by]];
-        for (size_t j = 0; j < 4; j++) digits[nd + j] = j == p.position ? p.slot : 255;
+        memset(digits + nd, 255, 4);
+        if (p.position < 4) digits[nd + p.position] = p.slot;
         nd += 4;
         int64_t a = x - p.correction_a, b = y - p.correction_b;
         int64_t nx = a + 3 * b, ny = -a - 2 * b;
-        if (nx % 9 || ny % 9) return 0;
-        x = nx / 9;
-        y = ny / 9;
+        int64_t qx = nx / 9, qy = ny / 9;
+        if (qx * 9 != nx || qy * 9 != ny) return 0;
+        x = qx;
+        y = qy;
     }
     while (nd && digits[nd - 1] == 255) nd--;
     return nd;
