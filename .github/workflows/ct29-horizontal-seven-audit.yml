@@ -9,6 +9,8 @@ on:
       - 'experiments/chained-transfer-reference/ct33/**'
       - 'experiments/chained-transfer-reference/ct34/**'
       - 'experiments/chained-transfer-reference/ct35/**'
+      - 'experiments/chained-transfer-reference/ct36/**'
+      - 'experiments/chained-transfer-reference/ct37/**'
       - '.github/workflows/ct29-horizontal-seven-audit.yml'
   pull_request:
     paths:
@@ -17,6 +19,8 @@ on:
       - 'experiments/chained-transfer-reference/ct33/**'
       - 'experiments/chained-transfer-reference/ct34/**'
       - 'experiments/chained-transfer-reference/ct35/**'
+      - 'experiments/chained-transfer-reference/ct36/**'
+      - 'experiments/chained-transfer-reference/ct37/**'
       - '.github/workflows/ct29-horizontal-seven-audit.yml'
   workflow_dispatch:
 permissions:
@@ -49,3 +53,12 @@ jobs:
           diff -u /tmp/ct35.stdout /tmp/ct35.optimized
           cat /tmp/ct35.stdout
           go run experiments/chained-transfer-reference/ct35/ct35_analytic_independent.go
+          python3 -B experiments/chained-transfer-reference/ct36/ct36_dual49_oracle.py > /tmp/ct36.stdout
+          python3 -O -B experiments/chained-transfer-reference/ct36/ct36_dual49_oracle.py > /tmp/ct36.optimized
+          diff -u /tmp/ct36.stdout /tmp/ct36.optimized
+          cat /tmp/ct36.stdout
+          python3 -B experiments/chained-transfer-reference/ct37/ct37_frobenius_isotypy.py > /tmp/ct37.stdout
+          python3 -O -B experiments/chained-transfer-reference/ct37/ct37_frobenius_isotypy.py > /tmp/ct37.optimized
+          diff -u /tmp/ct37.stdout /tmp/ct37.optimized
+          python3 -m py_compile experiments/chained-transfer-reference/ct37/ct37_frobenius_isotypy.py
+          cat /tmp/ct37.stdout
