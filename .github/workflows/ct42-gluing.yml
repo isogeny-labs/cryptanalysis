@@ -28,3 +28,4 @@ jobs:
           node --no-opt experiments/chained-transfer-reference/ct42/ct42_gluing.js > /tmp/ct42.noopt
           diff -u /tmp/ct42.normal /tmp/ct42.noopt
           cat /tmp/ct42.normal
+          go run experiments/chained-transfer-reference/ct42/ct42_independent.go
