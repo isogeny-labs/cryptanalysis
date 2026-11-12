@@ -1,3 +1,20 @@
+# New component: proper T20 replay and independent kernel checks
+
+CompleteLOCAL400f38 exactcrypto030e passes41native/23algebra/tenidentity
+comparisons/bothnativeJSONcmp/39modules224compiled198written0trusted/
+checker4+16mutants+CLI0/all719upstream82consumer184originalhashes/no-rg.
+Newindependentlyencodedkernelrecordchecksuseexistingengines;thefullR20
+suitereplaysproducerimplementation. Allscientificstandingunsigned.
+[pcc:unverified]
+
+Mainpcc/claims/PCC-20261112-a5bc14.json /[inspected2page50510PDF report](reports/proper-t20-replay/REPORT.md);
+failurepcc/claims/PCC-20261112-7d49ad.json /[inspected1page38464PDF report](reports/proper-t20-failures/REPORT.md).
+Wholefailed79644andpositive80516rawarchivesintactlocalpendingdocumented
+roottrusted-baseartifact-autofixS3upload/replay/realmanifests. Metadataisnot
+remoterawavailability. Allold35Rust/check/pins+3wholejobsunchanged;new
+fourthproperjobadditive,parent748e/immediate1513. [pcc:unverified]
+
+---
 # CT28: direct first F101 elliptic quartic norm
 
 [Written proof](QUARTIC_COVER.md),[acceptance/resume](QUARTIC_STATUS.md) and [inspected report](reports/quartic-first/complete-report.pdf) record complete25native/85reference unit+five integrations,all source guards/fmt/strictClippy,301fbe. Every12317 first T0/E109 norm matches the retained route,with all actual poles/repeated/infinity cases. Scientific standing unsigned,geometric formalization partial;no measured cost ratio. [pcc:unverified]

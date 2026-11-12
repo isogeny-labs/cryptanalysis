@@ -1,0 +1,16 @@
+   Compiling chained-kernel-independent-checker v0.1.0 (/workspace/cryptanalysis/experiments/chained-transfer-reference/kernel-checker)
+    Finished `release` profile [optimized] target(s) in 2.19s
+     Running unittests src/main.rs (/workspace/scratch/ct48-kernel-target/release/deps/chained_kernel_independent_checker-9b1f7f1689ff80fc)
+
+running 4 tests
+
+thread 'tests::malformed_inputs' (181361) panicked at /workspace/crypto/isogeny_algos/src/fpr.rs:71:9:
+FpR::from_modulus: modulus is reducible
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test tests::polynomial_tampering ... ok
+test tests::malformed_inputs ... ok
+test tests::complete_certificate ... ok
+test tests::geometric_tampering ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.44s
+

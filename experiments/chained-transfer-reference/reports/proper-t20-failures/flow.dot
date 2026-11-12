@@ -1,0 +1,11 @@
+digraph {
+  graph [rankdir=TB,bgcolor="white",ranksep="0.35",pad="0.1"];
+  node [shape=box,style="rounded,filled",fontname="DejaVu Sans",fontsize=11,color="#456273",fillcolor="#fff0e5"];
+  edge [fontname="DejaVu Sans",fontsize=10,color="#456273",arrowsize=0.7];
+  K1 [label="Checker01 /f0c793:3pass1fail\nPositive record rejects sum-table index\nAssumed7-row index;wire uses49-point index"];
+  K2 [label="Checker02 /163fbf:all4PASS +CLI0\nGlobal index +actual kernel membership\nAll49 exact sums;all16 mutants reject",fillcolor="#e4f2e8"];
+  H [label="Harness draft /f956ff:Bash-n2\nJoined printf+if caught before any control\nPreserved then corrected;3 admissions reject2"];
+  F1 [label="Full01 /4a80d5:exit124,NOTaccepted\nChecker5min cold dependency build timeout\nFour tests/CLI/final driver guards not reached"];
+  F2 [label="Complete local full02 /400f38\nReuse exact dependency in fresh per-run native cache\nAll timeouts/counts/hash criteria unchanged\nAll719+82+184guards;80516raw archive pending S3",fillcolor="#e4f2e8"];
+  K1 -> K2;K2 -> H [style=invis];H -> F1 [style=invis];F1 -> F2;
+}

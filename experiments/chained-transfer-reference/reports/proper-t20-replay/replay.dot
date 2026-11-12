@@ -1,0 +1,12 @@
+digraph {
+  graph [rankdir=TB,bgcolor="white",nodesep="0.3",ranksep="0.4",pad="0.1"];
+  node [shape=box,style="rounded,filled",fontname="DejaVu Sans",fontsize=11,color="#456273",fillcolor="#edf4f4"];
+  edge [fontname="DejaVu Sans",fontsize=10,color="#407758",arrowsize=0.7];
+  P [label="Exact crypto030ea125 /F101\nC0→C20→T20 proper maps and kernel record\nC20:y²=18x⁶+75x⁴+45x²+40\nT20:y²=76x⁶+62x⁵+52x⁴+63x³+69x²+3x+25"];
+  R [label="Complete local full02 /400f38\n41native +23algebra +10identity byte comparisons\n39Lean modules /224compiled /198written /0trusted\nBoth native JSON comparisons;all719+82+184hashes\nNo-rg control;raw archive publication pending",fillcolor="#e4f2e8"];
+  K [label="Independently encoded kernel recomputation /163fbf\nψ49 from ψ7([7]) and calls6,7,8 only\nComposed denominator =h49²;exact quotient/DDF\n49 actualE7 points/independent C0 Mumford pulls\n2401 additions;7 kernel records;49 table entries",fillcolor="#e4f2e8"];
+  P -> R [label="same producer R20 implementation\nseparate checkout/tool/input guards"];
+  P -> K [label="untrusted kernel record\nexisting arithmetic engines"];
+  N [shape=note,fillcolor="#f4f2ed",label="Old35 Rust/check/pin inputs +3completejobs unchanged\nFour checker tests;all16tampered inputs reject;CLI0\nNo scientific signature or cost measurement"];
+  R -> N [style=invis];K -> N [style=invis];
+}
