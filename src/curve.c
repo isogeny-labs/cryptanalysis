@@ -378,7 +378,14 @@ typedef struct glv_walk {
     uint32_t tries; /* look-ahead advances taken from this Y */
     uint8_t retry;
 #ifdef CA_GLV_CYCLE_ESCAPE
-    /* the last four committed points, newest first, for 2- and 4-cycle detection */
+    /* The last four committed points, for 2- and 4-cycle detection, as a
+     * ring: the point j commits back is in slot (hpos + j) & 3, so a commit
+     * writes one slot (hpos - 1) instead of shifting all four.  hpos sits in
+     * what was padding after retry, so sizeof(glv_walk) is unchanged, and
+     * glv_hist_normalize rotates every ring to hpos == 0 before a checkpoint
+     * is written: that is the newest-first layout the shifting code kept,
+     * byte for byte (both hold the last four points pushed). */
+    uint8_t hpos;
     ca_elem hY[4];
     uint64_t ha[4], hb[4], hh[4];
     uint32_t hn;
@@ -396,6 +403,37 @@ typedef struct glv_walk {
     uint8_t retried;
 #endif
 } glv_walk;
+
+#ifdef CA_GLV_CYCLE_ESCAPE
+/* the ring slot of the point j commits back */
+#    define GLV_HSLOT(wk, j) (((uint32_t)(wk)->hpos + (j)) & 3u)
+
+/* Rotate every walk's history ring to hpos == 0 (newest point in slot 0):
+ * the same four points in the same logical order, so the walk is
+ * unchanged, and the bytes a checkpoint writes are the layout of the
+ * former shift-per-commit history. */
+static void glv_hist_normalize(glv_walk *walks, uint32_t W)
+{
+    for (uint32_t w = 0; w < W; w++) {
+        glv_walk *wk = &walks[w];
+        if (!wk->hpos) continue;
+        ca_elem Y[4];
+        uint64_t a[4], b[4], h[4];
+        for (uint32_t j = 0; j < 4; j++) {
+            const uint32_t s = GLV_HSLOT(wk, j);
+            Y[j] = wk->hY[s];
+            a[j] = wk->ha[s];
+            b[j] = wk->hb[s];
+            h[j] = wk->hh[s];
+        }
+        memcpy(wk->hY, Y, sizeof(Y));
+        memcpy(wk->ha, a, sizeof(a));
+        memcpy(wk->hb, b, sizeof(b));
+        memcpy(wk->hh, h, sizeof(h));
+        wk->hpos = 0;
+    }
+}
+#endif
 
 /* base/target and the multiplier table travel with the walk in this context
  * rather than in each glv_walk. */
@@ -536,9 +574,12 @@ static int glv_checkpoint_load(const char *path, const glv_checkpoint_header *ex
     if (ok) ok = fgetc(f) == EOF && hash == checksum && tab->count == h.entries;
     fclose(f);
     for (uint32_t i = 0; ok && i < h.walks; i++)
-        ok = walks[i].a < c->g->order && walks[i].b < c->g->order &&
-             walks[i].idx < c->r && walks[i].first < c->r &&
-             walks[i].tries < c->r && walks[i].retry <= 1;
+        ok = walks[i].a < c->g->order && walks[i].b < c->g->order && walks[i].idx < c->r &&
+             walks[i].first < c->r && walks[i].tries < c->r && walks[i].retry <= 1
+#ifdef CA_GLV_CYCLE_ESCAPE
+             && walks[i].hpos == 0 /* written normalised (glv_hist_normalize) */
+#endif
+            ;
     if (ok && h.solved)
         ok = ca_verify_log(c->g, &c->base, &c->target, h.result);
     if (!ok) { ca_set_error("glv: checkpoint is damaged or incompatible"); return 0; }
@@ -1117,17 +1158,18 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
                  * smallest hash by doubling it, so every walk that enters the
                  * same cycle leaves it the same way and walks still merge. */
                 uint32_t L = 0;
-                if (wk->hn >= 2 && wk->hh[1] == h)
+                if (wk->hn >= 2 && wk->hh[GLV_HSLOT(wk, 1)] == h)
                     L = 2;
-                else if (wk->hn >= 4 && wk->hh[3] == h)
+                else if (wk->hn >= 4 && wk->hh[GLV_HSLOT(wk, 3)] == h)
                     L = 4;
                 if (L) {
+                    /* best: the ring slot of the minimum, scanned newest first */
                     uint32_t best = UINT32_MAX; /* UINT32_MAX: the new point itself */
                     uint64_t best_h = h;
                     for (uint32_t i = 0; i + 1 < L; i++)
-                        if (wk->hh[i] < best_h) {
-                            best_h = wk->hh[i];
-                            best = i;
+                        if (wk->hh[GLV_HSLOT(wk, i)] < best_h) {
+                            best_h = wk->hh[GLV_HSLOT(wk, i)];
+                            best = GLV_HSLOT(wk, i);
                         }
 #    ifdef CA_GLV_FIELD_COUNT
                     ca_fc_ev[L == 2 ? CA_FC_EV_ESC2 : CA_FC_EV_ESC4]++;
@@ -1184,16 +1226,12 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
                     continue; /* no data point or abandon test until the doubling is done */
 #    endif
                 } else {
-                    for (uint32_t i = 3; i > 0; i--) {
-                        wk->hY[i] = wk->hY[i - 1];
-                        wk->ha[i] = wk->ha[i - 1];
-                        wk->hb[i] = wk->hb[i - 1];
-                        wk->hh[i] = wk->hh[i - 1];
-                    }
-                    wk->hY[0] = wk->Y;
-                    wk->ha[0] = wk->a;
-                    wk->hb[0] = wk->b;
-                    wk->hh[0] = h;
+                    const uint32_t p0 = (wk->hpos - 1u) & 3u;
+                    wk->hpos = (uint8_t)p0;
+                    wk->hY[p0] = wk->Y;
+                    wk->ha[p0] = wk->a;
+                    wk->hb[p0] = wk->b;
+                    wk->hh[p0] = h;
                     if (wk->hn < 4) wk->hn++;
                 }
             }
@@ -1293,6 +1331,9 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
             next_progress = now + (progress_interval ? progress_interval : 5);
         }
         if (checkpoint_path && now >= next_checkpoint) {
+#ifdef CA_GLV_CYCLE_ESCAPE
+            glv_hist_normalize(walks, W);
+#endif
             if (!glv_checkpoint_save(checkpoint_path, &identity, walks, &tab, &rng,
                                      effective_seed, ops, steps,
                                      elapsed_prior + now - t0, 0, 0)) {
@@ -1308,6 +1349,9 @@ done:
 #endif
     if (have_tab && checkpoint_ready) {
         double elapsed = elapsed_prior + ca_now() - t0;
+#ifdef CA_GLV_CYCLE_ESCAPE
+        if (checkpoint_path) glv_hist_normalize(walks, W);
+#endif
         if (checkpoint_path && !glv_checkpoint_save(checkpoint_path, &identity,
                 walks, &tab, &rng, effective_seed, ops, steps, elapsed,
                 rc == CA_OK ? *x : 0, rc == CA_OK)) rc = CA_ERR_INTERNAL;
