@@ -379,7 +379,10 @@ static ca_status grumpy_solve_impl(const ca_group *g, const ca_elem *base, const
         for (int tpe = 0; tpe < 3; tpe++) {
             const ca_elem *pt = laned ? &ls->lane[tpe * GR_LANES + lc] : &walk[tpe];
             uint64_t ot, oi;
-            int ir = ca_htab_insert(&tab, ca_group_hash(g, pt), (uint64_t)tpe, i, &ot, &oi);
+            /* ec_hash inline on the native curve: the same function */
+            const uint64_t ph = laned ? ca_ec_hash_words(pt->w[0], pt->w[1], pt->w[2])
+                                      : ca_group_hash(g, pt);
+            int ir = ca_htab_insert(&tab, ph, (uint64_t)tpe, i, &ot, &oi);
             if (ir < 0) { rc = CA_ERR_NOMEM; goto finalize; }
             if (ir == 1) {
                 if (grumpy_collide(&c, (int)ot, oi, tpe, i, x)) { rc = CA_OK; goto finalize; }
