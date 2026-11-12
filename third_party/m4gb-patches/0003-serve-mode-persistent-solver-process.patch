@@ -1,0 +1,76 @@
+diff --git a/src/common.hpp b/src/common.hpp
+index 6afa5ac..21a7fc4 100644
+--- a/src/common.hpp
++++ b/src/common.hpp
+@@ -25,6 +25,8 @@
+ #define M4GB_SOLVER_COMMON_HPP
+ 
+ #include <iostream>
++#include <sstream>
++#include <fstream>
+ #include <stdexcept>
+ #include <string>
+ #include <thread>
+@@ -87,6 +89,7 @@ int main(int argc, char** argv)
+ 			("default", "Read inputfile in default format")
+ 			("loglevel", po::value<unsigned>(&loglevel)->default_value( (int)(gb::lg_info) ), "Set log level:\n\t0=abort, 1=error, 2=warning, 3=info, \n\t4-7=verbose")
+ 			("nrthreads", po::value<unsigned>(&nrthreads)->default_value(std::thread::hardware_concurrency()), "Maximum number of threads to use")
++			("serve", "Server mode: read `SOLVE <inputfile> <outputfile>` lines from stdin, solve each with one\n\tsolver instance (field tables and thread pool set up once), answer one line per request on stdout\n\t(`OK`, `UNSAT` for the unit ideal, `ERR <what>`), `QUIT` or end of input stops. Log level 1 keeps stdout clean.")
+ 			;
+ 		all.add(opt_cmds).add(opt_opts);
+ 
+@@ -148,6 +151,54 @@ int main(int argc, char** argv)
+ 				<< "ordering : " << ordering_name<gb::mysolver_t::monomial_t::order_tag_t>::name() << std::endl;
+ 			return 0;
+ 		}
++		if (vm.count("serve"))
++		{
++			// One solver instance for many systems: every request pays the
++			// parse, the solve and the output, none pays the process start, the
++			// field's log/multiplication tables or the thread pool again.
++			// solve() re-initialises its own state at every call.
++			gb::mysolver_t solver;
++			solver.nrthreads = nrthreads;
++			gb::poly_format pf = vm.count("mqchallenge") ? gb::pf_mqchallenge : gb::pf_default;
++			std::cout << "READY" << std::endl;
++			std::string line;
++			while (std::getline(std::cin, line))
++			{
++				std::istringstream iss(line);
++				std::string cmd, in, out;
++				iss >> cmd >> in >> out;
++				if (cmd == "QUIT")
++					break;
++				if (cmd != "SOLVE" || in.empty())
++				{
++					std::cout << "ERR bad request (expected: SOLVE <inputfile> [outputfile])" << std::endl;
++					continue;
++				}
++				if (!std::ifstream(in).good())
++				{
++					// The parser logs a missing file instead of throwing.
++					std::cout << "ERR cannot open input file '" << in << "'" << std::endl;
++					continue;
++				}
++				try
++				{
++					solver.read_file(in, pf);
++					solver.solve();
++					if (!out.empty())
++						solver.save_solution(out);
++					std::cout << "OK" << std::endl;
++				}
++				catch (std::exception& e)
++				{
++					std::string what = e.what();
++					if (what.find("contradiction:") != std::string::npos)
++						std::cout << "UNSAT" << std::endl;
++					else
++						std::cout << "ERR " << what << std::endl;
++				}
++			}
++			return 0;
++		}
+ 		if (vm.count("help") || vm.count("solve")+vm.count("showinput") == 0 || inputfile.empty())
+ 		{
+ 			std::cout << opt_cmds << opt_opts << std::endl;
