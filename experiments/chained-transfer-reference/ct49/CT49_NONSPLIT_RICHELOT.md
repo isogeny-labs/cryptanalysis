@@ -69,3 +69,45 @@ Local Python cubic arithmetic separately derived Delta_j=(0,50,51),(0,81,20),(0,
 Sources checked before construction: crypto PR #3877's \`PARTIAL_FROBENIUS_PROOF.md\`, \`UNBALANCED_MODEL_PROOF.md\`, its native \`richelot.rs\` bracket normalization, CT42's actual six-cycle \`J[2]\` data, cryptanalysis \`TARGET_FROBENIUS.md\`; standard Richelot theory in Bruin–Doerksen (2011), DOI [10.4153/CJM-2011-039-3](https://doi.org/10.4153/CJM-2011-039-3), and Kunzweiler's Richelot correspondence as referenced by native. Shared research-KB and locked atlas are not accessible to this runtime; no novelty/absence inference.
 
 **Next:** independently evaluate each nondegenerate correspondence on every class of the source 12,317-element Jacobian, including nonmonic charts, all ramified and nonsplit divisors and infinity fibres; verify degree-four group homomorphism, kernel, dual \`dual * map=[2]\`, and explicit orientation against the old T_i. Determine whether any target is already a named catalog surface. Only then assemble a full cold construction/transport/recovery/solve cost comparison with optimized rho and the existing index-calculus baseline under approved EKS/S3 budget. The present result is **explicit codomain and kernel geometry**, not a fully evaluated ECDLP transfer or an attack. [pcc:unverified]
+
+
+## Exact finite-field isomorphism exclusion for the four target classes
+
+The independent C++ enumerator [ct49_pgl2.cpp](ct49_pgl2.cpp) traverses all
+\`|PGL₂(F_101)|=(101+1)·101·100=1,030,200\` projective fractional-linear
+changes of hyperelliptic x-coordinate for **each pair**. It normalizes the
+four matrix entries either to \`c=1\` or \`c=0,d=1\`, checks nonzero determinant,
+and compares the *homogeneous binary sextics* at seven distinct F101 points.
+A polynomial of degree at most six vanishing at all seven is zero, so this
+is exhaustive rather than a probabilistic root sampling. The scale factor
+is allowed to be **any nonzero F101 element**, not merely a square; zero
+matches therefore exclude both F101-isomorphism and scalar quadratic-twist
+equivalence. The test does not distinguish unpolarized isomorphisms of
+the resulting Jacobians.
+
+**Result [pcc:unverified]:** zero equivalences in the twelve comparisons
+between the three older T0/T1/T2 models and the four new target
+representatives; also zero equivalences in all six pairwise comparisons
+among the four new target representatives. The two shifts for each source
+are related by x↦−x and have a verified positive equivalence. Consequently
+the eight Richelot sextic presentations give **exactly four distinct
+F101 genus-two curve-isomorphism classes**, all different from the three
+T_i models even allowing quadratic twists. These are not proven to be
+previously absent from the broader fixed 72-Jacobian catalog.
+
+Three mutation controls reject false-negative-only checkers: the self-pair
+T0/T0 has one detected projective equivalence, the x-mirror pair has
+one, and the altered T0 constant coefficient 31→37 has none.
+Both \`g++ -O0\` and \`g++ -O3\`, with \`-Wall -Wextra -Werror\`,
+give byte-identical outputs; the bounded workflow reruns both.
+
+\`\`\`sh
+g++ -O3 -std=c++17 -Wall -Wextra -Werror \
+ experiments/chained-transfer-reference/ct49/ct49_pgl2.cpp -o /tmp/ct49-pgl2
+/tmp/ct49-pgl2
+\`\`\`
+
+A full nonmonic Cantor correspondence, polarization/duality and the
+actual endpoint subgroup costs are still open. The exhaustive PGL2
+check certifies a **curve-model classification under this exact field**,
+not an independently signed theorem or an ECDLP solving advantage.
