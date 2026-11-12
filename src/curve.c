@@ -836,10 +836,16 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
     glv_walk *walks = calloc(W, sizeof(glv_walk));
     ca_elem *Yn = calloc(W, sizeof(ca_elem));
     ca_elem *B = calloc(W, sizeof(ca_elem));
+    /* Yh[w] = ca_group_hash of walks[w].Y, kept with the point so that the
+     * next multiplier index needs no second hash of it.  Set wherever Y
+     * changes: after each glv_restart, after a checkpoint load, and at the
+     * DP test, where h is already the hash of the committed (or escaped)
+     * point.  Not part of the checkpoint (glv_walk is unchanged). */
+    uint64_t *Yh = calloc(W, sizeof(uint64_t));
     ca_htab tab;
     int have_tab = 0;
     ca_status failure = CA_ERR_NOMEM;
-    if (!c.M || !c.alpha || !c.beta || !scratch || !walks || !Yn || !B) goto nomem;
+    if (!c.M || !c.alpha || !c.beta || !scratch || !walks || !Yn || !B || !Yh) goto nomem;
     for (uint32_t i = 0; i < c.r; i++) {
         c.alpha[i] = ca_rng_below(&rng, n);
         c.beta[i] = ca_rng_below(&rng, n);
@@ -899,6 +905,7 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
             goto done;
         }
         ops += prior_ops;
+        for (uint32_t w = 0; w < W; w++) Yh[w] = ca_group_hash(g, &walks[w].Y);
 #ifdef CA_GLV_TRACE
         trace_prior_ops = prior_ops;
         ops_mark += prior_ops;
@@ -911,6 +918,7 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
                 rc = CA_ERR_INTERNAL;
                 goto done;
             }
+            Yh[w] = ca_group_hash(g, &walks[w].Y);
         }
         checkpoint_ready = 1;
     }
@@ -937,7 +945,7 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
             }
 #endif
             if (!wk->retry) {
-                wk->idx = (uint32_t)(ca_mix64(ca_group_hash(g, &wk->Y)) & r_mask);
+                wk->idx = (uint32_t)(ca_mix64(Yh[w]) & r_mask);
                 wk->first = wk->idx;
                 wk->tries = 0;
             }
@@ -1123,6 +1131,7 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
 #ifdef CA_GLV_BATCH_ESCAPE
         glv_dp_check:
 #endif
+            Yh[w] = h; /* h is ca_group_hash(g, &wk->Y) on every path here */
             if ((h & c.dp_mask) == 0) {
                 uint64_t oa, ob;
                 int ins = ca_htab_insert(&tab, h, wk->a, wk->b, &oa, &ob);
@@ -1156,6 +1165,7 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
                         rc = CA_ERR_INTERNAL;
                         goto done;
                     }
+                    Yh[w] = ca_group_hash(g, &wk->Y);
 #ifdef CA_GLV_TRACE
                     tr.restart_ops += ops - before;
                     wk->ring_pos = 0;
@@ -1194,6 +1204,7 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
                     rc = CA_ERR_INTERNAL;
                     goto done;
                 }
+                Yh[w] = ca_group_hash(g, &wk->Y);
 #ifdef CA_GLV_TRACE
                 tr.restart_ops += ops - before;
                 wk->ring_pos = 0;
@@ -1296,6 +1307,7 @@ done:
     free(walks);
     free(Yn);
     free(B);
+    free(Yh);
     return rc;
 nomem:
     if (have_tab) ca_htab_free(&tab);
@@ -1306,6 +1318,7 @@ nomem:
     free(walks);
     free(Yn);
     free(B);
+    free(Yh);
     return failure;
 }
 
