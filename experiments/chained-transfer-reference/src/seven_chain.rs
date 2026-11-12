@@ -10,6 +10,8 @@ use isogeny_algos::fpr::ER;
 use num_bigint::BigUint;
 use num_traits::ToPrimitive;
 use std::collections::{HashMap, HashSet};
+#[path = "prime_field_adjoint.rs"]
+mod prime_field_adjoint;
 #[path = "prime_field_psi.rs"]
 mod prime_field_psi;
 #[path = "quartic_cover.rs"]
@@ -373,6 +375,7 @@ pub(super) struct SevenChain {
     r0: RichelotMap,
     r1: RichelotMap,
     prime: prime_field_psi::PrimeFieldPsi,
+    adjoint: prime_field_adjoint::PrimeFieldAdjoint,
 }
 impl SevenChain {
     pub(super) fn new() -> Self {
@@ -403,6 +406,7 @@ impl SevenChain {
             r0,
             r1,
             prime: prime_field_psi::PrimeFieldPsi::new(),
+            adjoint: prime_field_adjoint::PrimeFieldAdjoint::new(),
         }
     }
 
@@ -453,6 +457,9 @@ impl SevenChain {
             .forward_closed(&self.quarter_phi(&self.r0.dual_closed(d)?, false)?)
     }
     pub(super) fn dual(&self, d: &Class) -> super::super::super::Result<Class> {
+        self.adjoint.evaluate(d)
+    }
+    fn dual_reference(&self, d: &Class) -> super::super::super::Result<Class> {
         self.r0
             .forward_closed(&self.quarter_phi(&self.r1.dual_closed(d)?, true)?)
     }
