@@ -1,0 +1,17 @@
+digraph CT47 {
+  graph [rankdir=LR, bgcolor="white", fontname="DejaVu Sans", margin=0.2];
+  node [shape=box, style="rounded,filled", color="#365374",
+        fillcolor="#eff4f8", fontname="DejaVu Sans", fontsize=11];
+  edge [color="#567995", penwidth=1.6];
+  k [label="Extension degree k\nr = v2(k)", fillcolor="#dbeaf5"];
+  a [label="3 does not divide k\nmaximal torsion depth s = r+2"];
+  b [label="3 divides k\nmaximal torsion depth s = r+3"];
+  c [label="Cyclic Frobenius mod 2\nExact trace valuation", fillcolor="#e3f2e8"];
+  d [label="Scalar Frobenius mod 2\nNormalized determinant obstruction",
+     fillcolor="#fcf1de"];
+  e [label="Fixed k has finite depth\nFor s >= 3, minimum extension degree\nk = 2^(s-2)",
+     fillcolor="#e9e8f8"];
+  k -> a [label="3 does not divide k"];
+  k -> b [label="3 divides k"];
+  a -> c; b -> d; c -> e; d -> e;
+}
