@@ -11,6 +11,9 @@ use num_traits::ToPrimitive;
 use std::collections::{HashMap, HashSet};
 #[path = "quartic_pullback_points.rs"]
 mod existing_points;
+pub(super) fn rational_points(f: &Zp, e: &Curve<u64>) -> Vec<Pt<u64>> {
+    existing_points::points(f, e)
+}
 
 pub(super) struct Pullback {
     fp: Zp,
