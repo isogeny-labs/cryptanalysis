@@ -1,0 +1,41 @@
+name: CT48 finite cross-factor Hom Smith controls
+
+on:
+  pull_request:
+    paths:
+      - "experiments/chained-transfer-reference/ct48/**"
+      - ".github/workflows/ct48-smith-cross-hom.yml"
+  push:
+    branches:
+      - "research/ct47-exact-extension-depth-20261112"
+    paths:
+      - "experiments/chained-transfer-reference/ct48/**"
+      - ".github/workflows/ct48-smith-cross-hom.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  two-independent-arithmetic-routes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Syntax and bytecode compilation
+        run: |
+          python3 -m py_compile experiments/chained-transfer-reference/ct48/ct48_smith.py
+          node --check experiments/chained-transfer-reference/ct48/ct48_independent.js
+      - name: Exhaustive small Hom and minor-gcd Python normal/-O
+        run: |
+          python3 -B experiments/chained-transfer-reference/ct48/ct48_smith.py > /tmp/ct48.py
+          python3 -O -B experiments/chained-transfer-reference/ct48/ct48_smith.py > /tmp/ct48.pyopt
+          diff -u /tmp/ct48.py /tmp/ct48.pyopt
+          grep -Fq "smith_cases=129; full_brute_hom_cases=15; trace_mutant_rejected=1" /tmp/ct48.py
+          cat /tmp/ct48.py
+      - name: Independent JS 2-adic elimination normal/no-opt
+        run: |
+          node experiments/chained-transfer-reference/ct48/ct48_independent.js > /tmp/ct48.js
+          node --no-opt experiments/chained-transfer-reference/ct48/ct48_independent.js > /tmp/ct48.jsno
+          diff -u /tmp/ct48.js /tmp/ct48.jsno
+          grep -Fq "smith_cases=129; independent_2adic_pivot_reductions=516; trace_mutant_rejected=1" /tmp/ct48.js
+          cat /tmp/ct48.js
