@@ -22,6 +22,9 @@ assert_clean() {
   [[ -z $dirty ]] || { echo 'independent source has modified or untracked protected inputs' >&2; exit 2; }
 }
 assert_clean
+for required_tool in grep awk timeout sha256sum cargo lean; do
+  command -v "$required_tool" >/dev/null || { echo "missing independent replay tool:$required_tool" >&2; exit 2; }
+done
 if [[ $# -ge 2 ]]; then
   run_dir=$2
   [[ ! -e $run_dir ]] || { echo 'independent output directory already exists' >&2; exit 2; }
@@ -45,7 +48,7 @@ lean --version
   cargo clippy --all-targets --offline --locked -- -D warnings
   timeout 15m cargo test --release --offline --locked -- --nocapture
 ) 2>&1 | tee "$run_dir/standalone.txt"
-rg -q '^test result: ok\. 32 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out;' "$run_dir/standalone.txt"
+grep -Eq '^test result: ok\. 32 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out;' "$run_dir/standalone.txt"
 (
   cd "$upstream_study/algebra-certificates"
   sha256sum --check reference.sha256
@@ -57,8 +60,8 @@ rg -q '^test result: ok\. 32 passed; 0 failed; 0 ignored; 0 measured; 0 filtered
   cmp "$run_dir/duplication.json" ../evidence/quartic-duplication-identity-03.json
   cmp "$run_dir/halving.json" ../evidence/two-primary-halving-identity-03.json
 ) 2>&1 | tee "$run_dir/algebra.txt"
-rg -q '^test result: ok\. 23 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out;' "$run_dir/algebra.txt"
-rg -n '^(theorem|lemma) ' "$upstream_study/lean" --glob '*.lean' > "$run_dir/written-declarations.txt"
+grep -Eq '^test result: ok\. 23 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out;' "$run_dir/algebra.txt"
+grep -nE '^(theorem|lemma) ' "$upstream_study"/lean/*.lean > "$run_dir/written-declarations.txt"
 [[ $(wc -l < "$run_dir/written-declarations.txt") -eq 160 ]]
 timeout 10m bash tools/lean/proof-gate.sh --out "$run_dir/proofs" "$upstream_study"/lean/*.lean 2>&1 | tee "$run_dir/proof-gate.txt"
 awk '/^PASS[[:space:]]/ {modules++;compiled+=$2;trusted+=$4} END {if(modules!=32 || trusted!=0) exit 1;printf "PASS independent proof modules:%d compiled-theorems:%d trusted-native:%d written-declarations:160\n",modules,compiled,trusted}' "$run_dir/proof-gate.txt" | tee "$run_dir/proof-summary.txt"

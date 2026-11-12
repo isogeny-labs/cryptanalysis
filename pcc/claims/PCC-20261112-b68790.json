@@ -1,0 +1,86 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-12T14:58:30Z",
+ "id": "PCC-20261112-b68790",
+ "kind": "statement",
+ "producer": {
+  "commit": "8f4563147cf6f918c3096b4712f124fc50accf48",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/independent-admission-04/dirty.exit",
+    "sha256": "53c234e5e8472b6ac51c1ae1cab3fe06fad053beb8ebfd8977b010655bfdd3c3"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/independent-admission-04/dirty.txt",
+    "sha256": "304c694d39adbfa2e622f84d60445d78a9378396f34c76c076ffd13c4a341a1e"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/independent-admission-04/driver.sh.txt",
+    "sha256": "06fe0e8f0a17440e47cfbe3f269c4a9b46241dab3ee8a91737648dfc0a3adb1b"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/independent-admission-04/missing-tool.exit",
+    "sha256": "53c234e5e8472b6ac51c1ae1cab3fe06fad053beb8ebfd8977b010655bfdd3c3"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/independent-admission-04/missing-tool.txt",
+    "sha256": "322d4016712967fe877e6737e8d2a2230b38da8550f864587067bd2c40154fe5"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/independent-admission-04/protocol.md",
+    "sha256": "f0b7ac38cbc3c0795e363f39aa766f54b51b022ccce1ee3d9f8d00c2e0eb7eed"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/independent-admission-04/rg-shim.sh.txt",
+    "sha256": "77758234af4877d8391f52800aed7ae42a7221fbf29b67bc5b2df6fbb45a0d58"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/independent-admission-04/source.sha256",
+    "sha256": "41fee14b9b7f5f2c70d49fe48c2c8c7d14e9b0c135f4c5b16fbf6d6efde19ae1"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/independent-admission-04/wrong-head.exit",
+    "sha256": "53c234e5e8472b6ac51c1ae1cab3fe06fad053beb8ebfd8977b010655bfdd3c3"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/independent-admission-04/wrong-head.txt",
+    "sha256": "9808b4b84db8f48ebb7304db1c0986da786c5ff9fc9b70cf9bc00b82e8ae4e22"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Unsigned portable independentV4 admission04 controls all rejectexit2 before outputs:wrongHEADdd03 versus0796pin,dirtybundledJSON,and missinggrep preflight. Frozen9driversubjectmanifest/currentdriver/protocol/alwaysfail-rg shim andcomplete three diagnostic/status pairs retained. Correct0796source restored;fullno-rg04 active,separate result pending. No crypto source,pin,testcount,lock orproofacceptance criteria change."
+}

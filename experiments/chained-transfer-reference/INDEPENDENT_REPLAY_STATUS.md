@@ -1,3 +1,60 @@
+# Latest: complete no-rg04 passes; commit/publish portable1509 fix next
+
+Full04/22ad5d(root8533ad) all32/23/twocerts/32modules186compiled160written/
+0trusted,all695upstream+9driverhashes unchanged underfail-rgshim. Whole129-file
+tar.xz55488/perfileSHA/exactroundtrip. Threeadmission b68790 controlsreject2/
+nooutputs. CurrentV2report36571-byte one-pagePDF inspected;failedCI55e8da/
+one-pagebcde35 preserved. No active native/proof replay. [pcc:unverified]
+
+Nextgovernance/prefix8f/PCC/benchrec/prose/scopedcommit andpublish same1509
+branch viaexpected8fnonforceCAS. OwnnewCI mustrunfull98+fiveandindependent
+32/23/32modules beforeproblemresolves. Original13Rust/check.sh/pin75a/
+workflow/independent0796pin unchanged. Prior8ffailedheadstaysparent. After
+publishedfix,resumeunbalancedprotocoldc75fb(no mathcodeyet). Root51d ownCI
+43239467137 next15:29UTC;old0796successbfbd6bsettled. [pcc:unverified]
+
+---
+# Latest active checkpoint — consumer portable parser no-rg replay04 running
+
+Root LOCAL/REMOTE51d76d91817317b2be98abeb6c79e68dac31e5ce/treeae34b568,
+139paths/published4acd0e. OwnCI43239467137 next15:29UTC,33/23/fivecert/
+169written33modules,195compiledexpectednotobserved. Old0796 own43230599875
+SUCCESSall4jobs/fullbfbd6b,settled. Rootauto-mergesetup--auto--merge exit0;
+actualmain/frozenledger/C/archive189/signing gates remain. [pcc:unverified]
+
+Consumer1509 exact8f4563147cf6f918c3096b4712f124fc50accf48 CI43232186220
+OVERALLFAIL:reference25native/98+five/oldignoredSUCCESS;independent32passes
+thenrgmissingline48exit127,algebra/proofsNOTRUN. FullbothUTF8logs/API/XZ/
+hash/roundtrip consumer55e8da/root e76fea. Failedheadsettled. [pcc:unverified]
+
+V4/d46be5 changesonly3newdriverparsers togrep/samefullregex,deterministic
+sameLeanfiles,pre-outputtoolschecks. Old13Rust/check.sh/75a/reference75min
+job andindependent0796pin unchanged. Admissionb68790 wrongHEADdd03,
+dirtyJSONandmissinggrep allreject2/nooutput. Fullno-rg04 ACTIVE session87739,
+20minbound,raw /workspace/scratch/ct42-independent-full-04.txt;runout
+/workspace/scratch/ct42-independent-run-04;9driverfrozenmanifest
+ct42-integration-source-04.sha256. Shim ct42-no-rg/rg alwaysreject127.
+DO NOT edit9driversubjects (driver/pin/workflow/oldcheck/pin/protocolV1–V4)
+orcloneprotectedsourcewhileactive. Currentproofgatepartialpassed;no whole
+04resultyet. No othernative/proofjob. [pcc:unverified]
+
+NEXT terminal04/status/9afterhash/upstreamhashes;archivewholeruntree+shim+
+admissions+source snapshots+transcript/times/status into ONE tar.xz/perfile
+SHA/exactroundtrip,PCCconsumer+rootmirror. Newreport_V2/figures/PDF inspected,
+problemrecordinputclosure marklocalonly,currentgovernance/prefix8f/PCC/
+artifact/diff,commitextendexisting1509/expected8fnonforceCAS/newfull98+
+independentCI. Keepfailed8fhead/failure55e8da andall earlierreportsimmutable.
+No unchanged98localrerun;its actualreferencejobgreen. ThenunbalancedphaseA
+underfrozenprotocoldc75fb: NO unbalancedcode/run yet. [pcc:unverified]
+
+CurrentrootCI/publication/consumerfailure/protocol/journals dirtyafter51d;
+include nextsourcecheckpoint. No subagents,paidrun,benchmark/solver,force/
+rebase/ledgerrewrite/lineagechoice. Livebudget/S3/vault8edec422/KB/frozen
+ledger/C/signing blockerspersist. Continueaftercomponentcheckpoint.
+
+---
+Oldercheckpointsbelow;latestheadercontrolsactivejob/nextaction/cadence.
+
 # Latest packaging state — commit and publish ready child now
 
 Full03/db5e8a accepted; four final report pages inspected/ca563d. Packaging
