@@ -1,0 +1,30 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-12T13:48:34Z",
+ "id": "PCC-20261112-db5e8a",
+ "kind": "statement",
+ "producer": {
+  "commit": "c7128485f23c8977635bc5776071d23a37c2db14",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/independent-positive-03/raw-tree.tar.xz",
+    "sha256": "da29dddd978d498420f018593be318252e26c26435a0274b692c0d955de6b8e2"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/independent-positive-03/custody.json",
+    "sha256": "e073df903e61b7921260591077112de35a78716086fec906a68613a447a6b1c5"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Unsigned complete isolated consumer independent replay03 at exact crypto 0796b36df6ee9712bfa335d81191abc26ed937ce passes all32 standalone/23 algebra/32 Lean modules/186 compiled theorems/160 written declarations/0 trusted native, both certificates byte-identical. All protected source hashes and eight consumer driver subjects unchanged. Wrong HEAD and dirty bundled JSON admission reject2 before outputs. Whole run tree, source snapshots, before/after guards, transcript, times and statuses archived in one standard tar.xz with every file SHA256 and exact roundtrip. Prior missing-lock01 and missing-fixture02 retained. This is correctness integration, not signed science or a benchmark."
+}

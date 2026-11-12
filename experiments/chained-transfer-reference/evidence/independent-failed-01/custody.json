@@ -1,0 +1,88 @@
+{
+  "at": "2026-11-12T13:01:08.758502+00:00",
+  "source_head": "16c9927b777a9076dac00f175d553299e0a2db62",
+  "exit": 101,
+  "standalone": "all32passed/oldguards/static",
+  "algebra": "NOT_RUN;cargo fetch --locked cannotcreateuntrackedmissingCargo.lock",
+  "proofs": "NOT_RUN",
+  "consumer_driver_5hashes_unchanged": true,
+  "root_cause": "newcrate Cargo.lock ignoredbyrepositorypattern,notincommittedsource although localtestedlockexists",
+  "archive_bytes": 40092,
+  "archive_sha256": "81a02a327d211ddf4118502a0fdaea4bf395e688d9136dfeb718d03c255afdc0",
+  "raw_files": [
+    {
+      "path": "check-independent.sh.txt",
+      "bytes": 3654,
+      "sha256": "1d4ec572ade69f8e1045316cdc770906be0650a9b81dec65fb9ec99a3e9ac2e8"
+    },
+    {
+      "path": "driver-after.txt",
+      "bytes": 307,
+      "sha256": "5035dcd2d91149cab1ea9ba6b59447887b3b8ff2d3abd325f1e65605e202b37d"
+    },
+    {
+      "path": "driver-source.sha256",
+      "bytes": 617,
+      "sha256": "1b2cc4d011b923722f8d06e745003ce7f5d02b30e9f02b5a2df66da4484b287c"
+    },
+    {
+      "path": "exit.txt",
+      "bytes": 4,
+      "sha256": "39b8dc3fc8b44765c8e6f1adee04c5b465e555ab791cc42d0d9e810d5b64297c"
+    },
+    {
+      "path": "finished.txt",
+      "bytes": 36,
+      "sha256": "4530f6e36bb3700a46a35324216da376a9b7595bbd7d4bdc3ab14ce3ed759a1e"
+    },
+    {
+      "path": "local-tested-Cargo.lock.txt",
+      "bytes": 2888,
+      "sha256": "27dc8f9ff6cedff502cc7e97371eb26fc674f089f95f2f20086484cdf4626cbc"
+    },
+    {
+      "path": "lock-ignore.txt",
+      "bytes": 104,
+      "sha256": "6a492d25b55f7f09f9610cf0869c69cc5197d2eefeb964fb1a0e086beaf6273f"
+    },
+    {
+      "path": "run/algebra.txt",
+      "bytes": 430,
+      "sha256": "eabf4895039ff3fb1cb9507d449caeb0cb301b824578e59f6cc38ca2b18b9d1d"
+    },
+    {
+      "path": "run/source.sha256",
+      "bytes": 83059,
+      "sha256": "c83d1d84022fcf5bcf2ff4b3c306e08a17b05910f69157cb96529319ebf486be"
+    },
+    {
+      "path": "run/standalone.txt",
+      "bytes": 55713,
+      "sha256": "a21cf909f27ff7728ae7ccc089ff27e0711d274bb07479ad93086b75d857d7f1"
+    },
+    {
+      "path": "source-pin.txt",
+      "bytes": 41,
+      "sha256": "405143efe915fa4579e5729651b4657a104a7d69d4bc5e04bb4d74b739ea020c"
+    },
+    {
+      "path": "started.txt",
+      "bytes": 36,
+      "sha256": "f88df52b40c01595612dd9625990ea113df50899f7274849f0bd045b16c26651"
+    },
+    {
+      "path": "transcript.txt",
+      "bytes": 56352,
+      "sha256": "460fe9ecbb0b114f568cffc9a062009af987691c42cf559ea015b4829ed1bceb"
+    },
+    {
+      "path": "workflow.yml.txt",
+      "bytes": 5071,
+      "sha256": "6f26e92b96f5da8e850aeab9387cadf9c9d82ca62d665f56cc17a1931b9da003"
+    }
+  ],
+  "all_files_exact_roundtrip": true,
+  "native_criteria_unchanged": true,
+  "next": "upstreamtrackexactalreadytestedlock/addpackageignoreexception,newsourcepin/versionedretryfull32+23+proofs",
+  "standing": "unsigned integrationfailure;partial32passnotwholeacceptance"
+}

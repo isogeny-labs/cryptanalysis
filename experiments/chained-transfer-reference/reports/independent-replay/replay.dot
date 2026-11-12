@@ -1,0 +1,23 @@
+digraph replay {
+  graph [rankdir=LR, bgcolor="white", nodesep=0.22, ranksep=0.35, pad=0.15];
+  node [shape=box, style="rounded,filled", fillcolor="#edf3f7", fontname="DejaVu Sans", fontsize=10, margin="0.12,0.09"];
+  edge [color="#4d6579", arrowsize=0.7];
+  a1 [label="01 · crypto16c\n32 native pass"];
+  b1 [label="Missing Git lockfile\nexit101", fillcolor="#fbe7e5"];
+  c1 [label="Algebra + proofs\nNOT RUN", fillcolor="#f2f2f2"];
+  a2 [label="02 · cryptodd03\n32 native pass"];
+  b2 [label="Missing sparse JSON\ncompile exit101", fillcolor="#fbe7e5"];
+  c2 [label="Algebra tests + proofs\nNOT RUN", fillcolor="#f2f2f2"];
+  a3 [label="03 · crypto0796\n32 native pass"];
+  b3 [label="23 algebra pass\n2 exact certificates", fillcolor="#e4f1e6"];
+  c3 [label="32 Lean modules pass\n186 compiled / 160 written", fillcolor="#e4f1e6"];
+  a1 -> b1 -> c1;
+  a2 -> b2 -> c2;
+  a3 -> b3 -> c3;
+  {rank=same; a1; a2; a3}
+  {rank=same; b1; b2; b3}
+  {rank=same; c1; c2; c3}
+  a1 -> a2 -> a3 [style=invis];
+  b1 -> b2 -> b3 [style=invis];
+  c1 -> c2 -> c3 [style=invis];
+}
