@@ -803,6 +803,10 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
         return CA_ERR_INTERNAL;
     }
     const uint32_t r_mask = c.r - 1;
+#ifndef CA_GLV_FIELD_COUNT
+    const int ec_native = ca_ec_group_is_native(g);
+    const ca_ec_consts ecc = ec_native ? ca_ec_consts_of(g) : (ca_ec_consts){0, 0, 0, 0};
+#endif
     uint64_t wcap = sqrt_nm / (24u * (uint64_t)lg);
     uint32_t W = wcap < 1 ? 1 : (wcap > GLV_MAX_WALKS ? GLV_MAX_WALKS : (uint32_t)wcap);
 
@@ -940,32 +944,93 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
         ca_set_error("glv: cannot persist progress"); rc = CA_ERR_INTERNAL; goto done;
     }
     while (ops < cap) {
-        for (uint32_t w = 0; w < W; w++) {
-            glv_walk *wk = &walks[w];
+#ifndef CA_GLV_FIELD_COUNT
+        if (ec_native) {
+            /* The batched affine step without the vtable or the staging copies:
+             * each walk's point and its multiplier are read where they lie, as
+             * in rho_thread_main's native EC round.  Montgomery's trick runs over
+             * GLV_CHAINS interleaved chains (walk w in chain w mod GLV_CHAINS)
+             * with suffix products, the chain totals are joined so the batch
+             * pays one field inversion, and each point is added with
+             * ca_ec_add_with_di, which handles the special cases as
+             * ec_batch_op does.  An inverse is unique, so Yn is the point
+             * ca_group_batch_op gave, word for word.  Field-count builds keep
+             * the vtable path, whose multiplications they count. */
+            uint64_t *const den = scratch, *const suf = scratch + W;
+            for (uint32_t w = 0; w < W; w++) {
+                glv_walk *wk = &walks[w];
+                const ca_elem *Bp;
+#    ifdef CA_GLV_BATCH_ESCAPE
+                if (wk->esc) /* escaping: the batch doubles the cycle member */
+                    Bp = &wk->Y;
+                else
+#    endif
+                {
+                    if (!wk->retry) {
+                        wk->idx = (uint32_t)(ca_mix64(Yh[w]) & r_mask);
+                        wk->first = wk->idx;
+                        wk->tries = 0;
+                    }
+                    Bp = &c.M[wk->idx];
+                }
+                den[w] = ca_ec_add_den(&ecc, &wk->Y, Bp);
+            }
+#    define GLV_CHAINS 4u
+#    define BM(x, y)   ca_ec_bmul((x), (y), ecc.p, ecc.npi)
+            const uint32_t kc = W < GLV_CHAINS ? W : GLV_CHAINS;
+            for (uint32_t w = W; w-- > 0;) suf[w] = w + kc < W ? BM(den[w], suf[w + kc]) : den[w];
+            uint64_t before[GLV_CHAINS], after[GLV_CHAINS], inv[GLV_CHAINS];
+            before[0] = ecc.one;
+            for (uint32_t j = 1; j < kc; j++) before[j] = BM(before[j - 1], suf[j - 1]);
+            after[kc - 1] = ecc.one;
+            for (uint32_t j = kc - 1; j-- > 0;) after[j] = BM(after[j + 1], suf[j + 1]);
+            uint64_t all = BM(before[kc - 1], suf[kc - 1]);
+            all = ca_mont_inv(&g->mont, all);
+            for (uint32_t j = 0; j < kc; j++) inv[j] = BM(all, BM(before[j], after[j]));
+            for (uint32_t w = 0, j = 0; w < W; w++) {
+                const glv_walk *wk = &walks[w];
+                uint64_t di = w + kc < W ? BM(inv[j], suf[w + kc]) : inv[j];
+                inv[j] = BM(inv[j], den[w]);
+#    ifdef CA_GLV_BATCH_ESCAPE
+                const ca_elem *Bp = wk->esc ? &wk->Y : &c.M[wk->idx];
+#    else
+                const ca_elem *Bp = &c.M[wk->idx];
+#    endif
+                ca_ec_add_with_di(&ecc, &Yn[w], &wk->Y, Bp, di);
+                j = j + 1 == kc ? 0 : j + 1;
+            }
+#    undef BM
+#    undef GLV_CHAINS
+        } else
+#endif
+        {
+            for (uint32_t w = 0; w < W; w++) {
+                glv_walk *wk = &walks[w];
 #ifdef CA_GLV_BATCH_ESCAPE
-            if (wk->esc) { /* escaping: the batch doubles the cycle member */
-                B[w] = wk->Y;
+                if (wk->esc) { /* escaping: the batch doubles the cycle member */
+                    B[w] = wk->Y;
+                    Yn[w] = wk->Y;
+                    continue;
+                }
+#endif
+                if (!wk->retry) {
+                    wk->idx = (uint32_t)(ca_mix64(Yh[w]) & r_mask);
+                    wk->first = wk->idx;
+                    wk->tries = 0;
+                }
+                B[w] = c.M[wk->idx];
                 Yn[w] = wk->Y;
-                continue;
             }
+#ifdef CA_GLV_FIELD_COUNT
+            ca_fc_phase = CA_FC_BATCH;
+            ca_fc_ev[CA_FC_EV_BATCHES]++;
+            ca_fc_ev[CA_FC_EV_BATCH_WALKS] += W;
 #endif
-            if (!wk->retry) {
-                wk->idx = (uint32_t)(ca_mix64(Yh[w]) & r_mask);
-                wk->first = wk->idx;
-                wk->tries = 0;
-            }
-            B[w] = c.M[wk->idx];
-            Yn[w] = wk->Y;
+            ca_group_batch_op(g, Yn, Yn, B, W, scratch);
+#ifdef CA_GLV_FIELD_COUNT
+            ca_fc_phase = CA_FC_POST;
+#endif
         }
-#ifdef CA_GLV_FIELD_COUNT
-        ca_fc_phase = CA_FC_BATCH;
-        ca_fc_ev[CA_FC_EV_BATCHES]++;
-        ca_fc_ev[CA_FC_EV_BATCH_WALKS] += W;
-#endif
-        ca_group_batch_op(g, Yn, Yn, B, W, scratch);
-#ifdef CA_GLV_FIELD_COUNT
-        ca_fc_phase = CA_FC_POST;
-#endif
         ops += W;
         steps += W;
 #ifdef CA_GLV_TRACE
