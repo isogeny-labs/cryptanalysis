@@ -1,0 +1,37 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-12T07:11:56Z",
+ "id": "PCC-20261112-fd53e1",
+ "kind": "statement",
+ "producer": {
+  "commit": "6cf2f1a9902b3babeec56d62a9983891b9ffb079",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ci-43165729371-api-01.json",
+    "sha256": "efabea9d347bece58b82aa51d7a3316f1df1a8fdd27c579f8d358b442de520f7"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ci-43165729371-job-131007036839-01.log.xz",
+    "sha256": "b2a802978be3c9a4bb0f2608f6522192729a6f74bbe744f6d7f96fe704c84633"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ci-43165729371-custody-01.json",
+    "sha256": "e4f461f15f8e275c4c633779d6dcc04b6451534e008407fe8d9d8ab4803b2200"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Unsigned exact-head focused CI custody: run43165729371 succeeds on 6cf2f1a9902b3babeec56d62a9983891b9ffb079. First-component consumer6cf scope:25native,85reference unit tests plus five integration tests,one historical ignored;all digest/fmt/Clippy guards pass. Complete decoded logs/API retained as whole standard XZ archives with raw/archive SHA256 and exact roundtrip. This records execution completion, not signed mathematical standing; later source changes are outside this scope."
+}

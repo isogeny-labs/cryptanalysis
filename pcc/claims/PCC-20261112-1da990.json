@@ -1,0 +1,58 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-12T06:19:38Z",
+ "id": "PCC-20261112-1da990",
+ "kind": "statement",
+ "producer": {
+  "commit": "6cf2f1a9902b3babeec56d62a9983891b9ffb079",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/prime-field-source-guards-02.txt",
+    "sha256": "5b671968ee0dab00267aca871b7135bfae65427be783690cfb0cda53d2a294a9"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/prime-field-source-02.sha256",
+    "sha256": "646adaf887539635304b4afc6e50dc3d011c5c9fee34463b8903bced26dd6606"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/prime-field-clippy-02.txt",
+    "sha256": "24f83a6caae02bc208be94a9c13e94d07628c620b827b3b716a78ebd3856fa32"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/prime-field-balanced-source-02.rs",
+    "sha256": "732058d65ced0d1d5567ac0e2c9625bbf5237891c179f45223e574437bf934c9"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/prime-field-seven_chain-source-02.rs",
+    "sha256": "2e8d54c5edd714b2ead146f29f6fa7664aba7a2c7682b0ffd7b944da933b3eb3"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/prime-field-prime_field_psi-source-02.rs",
+    "sha256": "911e307ba632324b40cc4232c09c3998662ff8f61340e44e2288da99b1ebc89e"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Unsigned actual whole-prime integration02 passes strictClippy/exact source guards:SevenChain.forward selects cached standalone PrimeFieldPsi,exact old forward body retained as forward_reference,old dual/naive/test suffix unchanged. Full comparison explicitly uses old forward_reference. Existing Balanced reduction arithmetic and surrounding engine bodies byte-exact;all prior tests retained. Eight sources/hash/static receipts frozen;full changed guard pending,prototype72e1d8/global78176c/4934b4 separate. No accepted timing or new full-suite result."
+}
