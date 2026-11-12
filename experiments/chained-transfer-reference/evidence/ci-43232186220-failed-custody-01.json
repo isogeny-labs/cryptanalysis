@@ -1,0 +1,34 @@
+{
+  "at": "2026-11-12T14:53:02.038868+00:00",
+  "head": "8f4563147cf6f918c3096b4712f124fc50accf48",
+  "overall": "failure",
+  "reference_job": "success",
+  "native": 25,
+  "reference": 98,
+  "historical_ignored": 1,
+  "independent_job": "failure exit127",
+  "standalone": 32,
+  "algebra": "NOT_RUN",
+  "proofs": "NOT_RUN",
+  "cause": "rg executable absent on GitHub runner;driver line48 after all32 native passed",
+  "next": "portable grep parsing,same exactsource0796/allfullcriteria;local no-rg replay andnewexactCI",
+  "logs": [
+    {
+      "job": 131230109865,
+      "raw_bytes": 248642,
+      "raw_sha256": "8032636b9142ec743d9dbca995910b60439cc50be69f2444cab21224b98f461f",
+      "archive_bytes": 30572,
+      "archive_sha256": "6f1f5f7bb0d913f0544515ffdf0faba40494423edfb77898b71544c9d4dc6d4d",
+      "exact_roundtrip": true
+    },
+    {
+      "job": 131230110069,
+      "raw_bytes": 98924,
+      "raw_sha256": "4715c1b48c724d5a1dbe8544c45b6892f9576f45b05ae1aabfe66a1bd9c71ef4",
+      "archive_bytes": 15580,
+      "archive_sha256": "fc03bf91eab92acb3b5c8b0b715a6afbcd1698d0e4a595189ef2455f7b0ffb25",
+      "exact_roundtrip": true
+    }
+  ],
+  "standing": "unsigned CI result;not whole replay acceptance"
+}

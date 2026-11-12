@@ -1,0 +1,660 @@
+{
+  "at": "2026-11-12T13:48:33.931397+00:00",
+  "source_head": "0796b36df6ee9712bfa335d81191abc26ed937ce",
+  "exit": 0,
+  "standalone_passed": 32,
+  "algebra_passed": 23,
+  "proof_modules_passed": 32,
+  "compiled_theorems": 186,
+  "written_declarations": 160,
+  "trusted_native": 0,
+  "exact_certificates": [
+    "IDC1he156b6adc8f9cdd5",
+    "IDC1h26ac6af51218fa21"
+  ],
+  "driver_inputs_unchanged": 8,
+  "protected_source_manifest": "run/source.sha256",
+  "protected_aftercheck": "run/after.txt",
+  "all_protected_source_unchanged": true,
+  "admission_wrong_head_exit": 2,
+  "admission_dirty_json_fixture_exit": 2,
+  "started": "2026-11-12T13:40:42,342868956+00:00",
+  "finished": "2026-11-12T13:44:19,810345546+00:00",
+  "archive_bytes": 54612,
+  "archive_sha256": "da29dddd978d498420f018593be318252e26c26435a0274b692c0d955de6b8e2",
+  "tar_bytes": 583680,
+  "tar_sha256": "19782f371e85611d03e312817a7a6c85040c9f818ec939b8df28a10af07b58eb",
+  "all_files_exact_roundtrip": true,
+  "raw_files": [
+    {
+      "path": "INDEPENDENT_REPLAY_PROTOCOL.md.txt",
+      "bytes": 3313,
+      "sha256": "e3daec248ec5680b2f362261c568f98c422d64afd947c0396817ec3dbc0bee54"
+    },
+    {
+      "path": "INDEPENDENT_REPLAY_PROTOCOL_V2.md.txt",
+      "bytes": 1468,
+      "sha256": "52620b48b38756e6aabf690dddf52573cc0fd4ec6f38d88f29e4b20cf74b90f9"
+    },
+    {
+      "path": "INDEPENDENT_REPLAY_PROTOCOL_V3.md.txt",
+      "bytes": 1472,
+      "sha256": "04f3b700464aebbbf3487a123ceaa8e2504fb93918d3163261212b5877f2e3c9"
+    },
+    {
+      "path": "check-independent.sh.txt",
+      "bytes": 3706,
+      "sha256": "f048aa14af1965fca95b0e41204b2c9b314f6634dde79e5cb1293b647ea5f0b3"
+    },
+    {
+      "path": "check.sh.txt",
+      "bytes": 1383,
+      "sha256": "ed876d3ca2569bb07f74b2e4c4e805311c6357f56840745715d9888908acba37"
+    },
+    {
+      "path": "checkout.txt",
+      "bytes": 448,
+      "sha256": "7f6d2152d6b8caaa8ba9a631e0c3ee32331344fc8cc425171ab1b068e2b1f797"
+    },
+    {
+      "path": "dirty-fixture.exit",
+      "bytes": 2,
+      "sha256": "53c234e5e8472b6ac51c1ae1cab3fe06fad053beb8ebfd8977b010655bfdd3c3"
+    },
+    {
+      "path": "dirty-fixture.txt",
+      "bytes": 62,
+      "sha256": "304c694d39adbfa2e622f84d60445d78a9378396f34c76c076ffd13c4a341a1e"
+    },
+    {
+      "path": "driver-after.txt",
+      "bytes": 535,
+      "sha256": "b96ce8d4de45c0c9891a668793a030a94f487f175040e3ee115ac4e20353930a"
+    },
+    {
+      "path": "driver-source.sha256",
+      "bytes": 1031,
+      "sha256": "e54428290df50b6a5ff40657f09eb2c80e7b360d8ebec0f07c7eab2fc090b395"
+    },
+    {
+      "path": "exit.txt",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "finished.txt",
+      "bytes": 36,
+      "sha256": "7fb2c60279ed701149279ab9b5421562649775e38350c73a98ab7436e4392139"
+    },
+    {
+      "path": "independent-upstream-commit.txt.txt",
+      "bytes": 41,
+      "sha256": "0954988d02b7c535d6ac813c2abb219efa0a9bdd8bcc451bd0364942540bd4f7"
+    },
+    {
+      "path": "run/after.txt",
+      "bytes": 40228,
+      "sha256": "45a53156db7a73a3518c3e1acf9d9254b063bca9829b7213418d75cc0a42eddd"
+    },
+    {
+      "path": "run/algebra.txt",
+      "bytes": 3404,
+      "sha256": "3414b4d487e7978d293e22dac0b59fa908b992a1eae2539d314edbc0ace2eb9a"
+    },
+    {
+      "path": "run/duplication.json",
+      "bytes": 12346,
+      "sha256": "b0a298a393b2c60fdee6b9f8262079500e937ea335c8056e5f0685ea7572a940"
+    },
+    {
+      "path": "run/halving.json",
+      "bytes": 7696,
+      "sha256": "f7d5bff47953a7dee995f274fee7abfbefec021067b4455f7ea0dbcb34abb129"
+    },
+    {
+      "path": "run/proof-gate.txt",
+      "bytes": 3701,
+      "sha256": "0f0996e0a92705d0952bc3a3fa908338423b16da8d2111fd8a117f545d3f905b"
+    },
+    {
+      "path": "run/proof-summary.txt",
+      "bytes": 98,
+      "sha256": "4b8186fa44b713de4ddfd35cbf407fc076e62f164d11dcdd582dc370f53c9f8f"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_BalancedChart_lean/audit.log",
+      "bytes": 466,
+      "sha256": "27068a585764ab3d39f0b2df44fb5bb7f44ef2f361a408711e33c6c41a224038"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_BalancedChart_lean/build.log",
+      "bytes": 240,
+      "sha256": "b928748c6bf6542e5e55661dc26116eb2fbed3b0e9a48b26f7398d73f30daff6"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_BalancedChart_lean/status",
+      "bytes": 5,
+      "sha256": "c26de83abdc9496cd1301470918ec39ecca1cf389ef0ae1c6504da1800d1c431"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_BalancedDivisors_lean/audit.log",
+      "bytes": 840,
+      "sha256": "52badc010a7ae8af81980a39d78a41dc017789540826a4e119566b95633277ad"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_BalancedDivisors_lean/build.log",
+      "bytes": 1088,
+      "sha256": "aee2f555d3d2ccfc04c7b6748f7f22dffae8ceb9d1671402f10449b8323b2949"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_BalancedDivisors_lean/status",
+      "bytes": 5,
+      "sha256": "c26de83abdc9496cd1301470918ec39ecca1cf389ef0ae1c6504da1800d1c431"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_ChainCompression_lean/audit.log",
+      "bytes": 479,
+      "sha256": "a47eaf8dfed6e5020779eeb348c0fc86908bccc8189777204fa8c286784c4496"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_ChainCompression_lean/build.log",
+      "bytes": 250,
+      "sha256": "e1613e76595214e1cf92415b3b434518b8198ca2cbbb95d74acd41eb95647835"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_ChainCompression_lean/status",
+      "bytes": 5,
+      "sha256": "c26de83abdc9496cd1301470918ec39ecca1cf389ef0ae1c6504da1800d1c431"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_ChainTransfer_lean/audit.log",
+      "bytes": 1447,
+      "sha256": "a021b2408390b7c712bcb0f41b1fe85e938043a5d5e6b1dc85e8fbde2074d5da"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_ChainTransfer_lean/build.log",
+      "bytes": 769,
+      "sha256": "b737922584a6b4cb3bda20ddd4976775cf53a6882341e8e377d08b25e49b716d"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_ChainTransfer_lean/status",
+      "bytes": 5,
+      "sha256": "c26de83abdc9496cd1301470918ec39ecca1cf389ef0ae1c6504da1800d1c431"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_ChainTransport_lean/audit.log",
+      "bytes": 716,
+      "sha256": "118c1ab258c33230fee1c81e08853f5d354ee19117030ad95774f52d16e3e18c"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_ChainTransport_lean/build.log",
+      "bytes": 561,
+      "sha256": "59851cc90dc8fa94e4cf231df81cd9a26ac9108dbc387c0f7f4f6fa21bb0b7af"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_ChainTransport_lean/status",
+      "bytes": 5,
+      "sha256": "c26de83abdc9496cd1301470918ec39ecca1cf389ef0ae1c6504da1800d1c431"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_ClosedFibres_lean/audit.log",
+      "bytes": 814,
+      "sha256": "3a7e8ca03f0d8755050dcc6b7a640974b07c6825c67676e5afd22461880b1006"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_ClosedFibres_lean/build.log",
+      "bytes": 645,
+      "sha256": "2437abfbd4fbd9c9847f60bf23aec36c5090a85a9f4228fb532aa77357224778"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_ClosedFibres_lean/status",
+      "bytes": 5,
+      "sha256": "c26de83abdc9496cd1301470918ec39ecca1cf389ef0ae1c6504da1800d1c431"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_CubicPullback_lean/audit.log",
+      "bytes": 888,
+      "sha256": "2285a14ef4adc285138a87c019fefbbec4c9393ffaccec16b828b3f21a5f260f"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_CubicPullback_lean/build.log",
+      "bytes": 401,
+      "sha256": "dae49c7d7d74733677e798e917b7fd1945461e8b2edfa90c8ddb8a3d60396976"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_CubicPullback_lean/status",
+      "bytes": 5,
+      "sha256": "c26de83abdc9496cd1301470918ec39ecca1cf389ef0ae1c6504da1800d1c431"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_CyclicFortyNine_lean/audit.log",
+      "bytes": 564,
+      "sha256": "75ae23e82950029a1db1cf4f0b16825b765641c84f0da34764ce55a4f098b99c"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_CyclicFortyNine_lean/build.log",
+      "bytes": 440,
+      "sha256": "fbf191073222b26723533f4b32ae863b8d08203f5ef2681300c971738b63bcb4"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_CyclicFortyNine_lean/status",
+      "bytes": 5,
+      "sha256": "c26de83abdc9496cd1301470918ec39ecca1cf389ef0ae1c6504da1800d1c431"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_DirectNorms_lean/audit.log",
+      "bytes": 876,
+      "sha256": "b458ed076913bebada756d62012286f5bbdf04e5b27c72771597761565596031"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_DirectNorms_lean/build.log",
+      "bytes": 722,
+      "sha256": "46bfc7610d66fa73918077976c780a0f9212a5f02f19725ee5962ffc3d63e05b"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_DirectNorms_lean/status",
+      "bytes": 5,
+      "sha256": "c26de83abdc9496cd1301470918ec39ecca1cf389ef0ae1c6504da1800d1c431"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_EllipticSeven_lean/audit.log",
+      "bytes": 618,
+      "sha256": "dcee80a552a74332901e0741b2ee424ef2fe6d3d56df6446efb9a21ca57e6a4a"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_EllipticSeven_lean/build.log",
+      "bytes": 420,
+      "sha256": "93e8844440883f92111f3301b7bff757d2918b66839eb5811fb53d69b366b8f5"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_EllipticSeven_lean/status",
+      "bytes": 5,
+      "sha256": "c26de83abdc9496cd1301470918ec39ecca1cf389ef0ae1c6504da1800d1c431"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_FrobeniusPairings_lean/audit.log",
+      "bytes": 608,
+      "sha256": "ab963b5b5fd861741c8207090577885c1eee6b1f05f18b5e7cff7e3a4db8ae73"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_FrobeniusPairings_lean/build.log",
+      "bytes": 444,
+      "sha256": "51f7219a0215dd822109215d626e7649f49146d697851e22014441e501d98afb"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_FrobeniusPairings_lean/status",
+      "bytes": 5,
+      "sha256": "c26de83abdc9496cd1301470918ec39ecca1cf389ef0ae1c6504da1800d1c431"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_IndependentMapChart_lean/audit.log",
+      "bytes": 594,
+      "sha256": "f7cd03a4570eb5e6aabd1c9a99984d7ff4ec5b3e873bee8f770ecf3a35821085"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_IndependentMapChart_lean/build.log",
+      "bytes": 376,
+      "sha256": "b66d96b8c89d477d48b8cf7485cfaaabf1dd19bb6871fd1fad102df6df412fac"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_IndependentMapChart_lean/status",
+      "bytes": 5,
+      "sha256": "c26de83abdc9496cd1301470918ec39ecca1cf389ef0ae1c6504da1800d1c431"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_KernelChart_lean/audit.log",
+      "bytes": 631,
+      "sha256": "f3077371b15f4dd375f60cb4bc343e29067b18903093f6133c76e2e40a284f1d"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_KernelChart_lean/build.log",
+      "bytes": 435,
+      "sha256": "a3cb6c6cd72f0e32ac98dd6654a7df69e3eaee80f333c446728bccc26b78c95a"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_KernelChart_lean/status",
+      "bytes": 5,
+      "sha256": "c26de83abdc9496cd1301470918ec39ecca1cf389ef0ae1c6504da1800d1c431"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_OddFieldDescent_lean/audit.log",
+      "bytes": 843,
+      "sha256": "245457c294d9a7377c4f25a31e1203071ff31d9265af49ac1138dcff809ec0b3"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_OddFieldDescent_lean/build.log",
+      "bytes": 552,
+      "sha256": "4e364bce1a23fe1996ab5c1bbbf0e2f1f2616bc69c02808955a439a4844ab867"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_OddFieldDescent_lean/status",
+      "bytes": 5,
+      "sha256": "c26de83abdc9496cd1301470918ec39ecca1cf389ef0ae1c6504da1800d1c431"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_OddKernelProjectors_lean/audit.log",
+      "bytes": 737,
+      "sha256": "4f808a3db9b65748df58baa6bc84289da5e2fa81c10df635e147a2df71e6de22"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_OddKernelProjectors_lean/build.log",
+      "bytes": 577,
+      "sha256": "0392bbd238f53213d9cf05cedc7920e89b8cca79e88bf654e85c9bdbaebc2f0b"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_OddKernelProjectors_lean/status",
+      "bytes": 5,
+      "sha256": "c26de83abdc9496cd1301470918ec39ecca1cf389ef0ae1c6504da1800d1c431"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_PolynomialIdentities_lean/audit.log",
+      "bytes": 1087,
+      "sha256": "737698b846f22f32e1f87809b0a7f65931d4f6cf8c87230a456ad5aee85a3182"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_PolynomialIdentities_lean/build.log",
+      "bytes": 940,
+      "sha256": "7d43b43eaebbb7ea019ff9a0090f909e5bb93ac2260670a81e6fe013a6862066"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_PolynomialIdentities_lean/status",
+      "bytes": 5,
+      "sha256": "c26de83abdc9496cd1301470918ec39ecca1cf389ef0ae1c6504da1800d1c431"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_QuarticFibre_lean/audit.log",
+      "bytes": 470,
+      "sha256": "c5b2286d09c073202945beac030bcb61ec21ac20b52e0d90799e9fa7ffc471b0"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_QuarticFibre_lean/build.log",
+      "bytes": 245,
+      "sha256": "d3c457edfe2b93b3179020d4ca105e69e47f73a2a5ad77bc0710ad8554e26b8f"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_QuarticFibre_lean/status",
+      "bytes": 5,
+      "sha256": "c26de83abdc9496cd1301470918ec39ecca1cf389ef0ae1c6504da1800d1c431"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_QuarticGluing_lean/audit.log",
+      "bytes": 634,
+      "sha256": "b4b81d4def6761c436aab3c8d3ca29e4a073ada3694b421e7974ed6a2eea1228"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_QuarticGluing_lean/build.log",
+      "bytes": 474,
+      "sha256": "d2b0026dc95028c0af0fb88f7ce4678a881054fa54aafa39c7f68c8b3d6ff5c3"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_QuarticGluing_lean/status",
+      "bytes": 5,
+      "sha256": "c26de83abdc9496cd1301470918ec39ecca1cf389ef0ae1c6504da1800d1c431"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_ReverseRecovery_lean/audit.log",
+      "bytes": 474,
+      "sha256": "aba514af70cd5c667385b363f0706d46efc24d4e8a3dc3cde3b34b024192f0bd"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_ReverseRecovery_lean/build.log",
+      "bytes": 246,
+      "sha256": "0b66936fd106679924d819af8a06c33faaaa3bba9984914665691c9baafb9ff7"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_ReverseRecovery_lean/status",
+      "bytes": 5,
+      "sha256": "c26de83abdc9496cd1301470918ec39ecca1cf389ef0ae1c6504da1800d1c431"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_RichelotAlgebra_lean/audit.log",
+      "bytes": 753,
+      "sha256": "5cec9fcc79de1d941d38a3a041648a82dbc297ceced7f3e24ae08f9e23de95a5"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_RichelotAlgebra_lean/build.log",
+      "bytes": 441,
+      "sha256": "722b94b79efcec39f032af9d5addfcae013c3e3c460ff0e7ab5c9399b52c0b1f"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_RichelotAlgebra_lean/status",
+      "bytes": 5,
+      "sha256": "c26de83abdc9496cd1301470918ec39ecca1cf389ef0ae1c6504da1800d1c431"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_RichelotDescent_lean/audit.log",
+      "bytes": 644,
+      "sha256": "4d6c9ebd94814af2974ef910b0a1247b64130f75be38c5c4d69fb71b998adb86"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_RichelotDescent_lean/build.log",
+      "bytes": 444,
+      "sha256": "0ee9c95f2e8c8cfba64be9acc508008733ac1a242ca8ed9c0807a9a4b102ecc0"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_RichelotDescent_lean/status",
+      "bytes": 5,
+      "sha256": "c26de83abdc9496cd1301470918ec39ecca1cf389ef0ae1c6504da1800d1c431"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_RootTable_lean/audit.log",
+      "bytes": 336,
+      "sha256": "d99ea8a8ecd1e52a83c69c7d08ead4ce643f13803b01225626ba9f38acc817ea"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_RootTable_lean/build.log",
+      "bytes": 100,
+      "sha256": "73fedb5f0cfd018efb3d62314cc58f3e29ec7d3013b4ece902cb6f2a9e71da2d"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_RootTable_lean/status",
+      "bytes": 5,
+      "sha256": "c26de83abdc9496cd1301470918ec39ecca1cf389ef0ae1c6504da1800d1c431"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_SevenCensusControls_lean/audit.log",
+      "bytes": 502,
+      "sha256": "40378aefad94d83d547787bf5a1ec0081c5d183568bbc1360366d781b6803cb2"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_SevenCensusControls_lean/build.log",
+      "bytes": 270,
+      "sha256": "8ee9cc47aef7c47089fd7d56bd703c57ed1a9cb9fdd7177b01513b47a0902cd8"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_SevenCensusControls_lean/status",
+      "bytes": 5,
+      "sha256": "c26de83abdc9496cd1301470918ec39ecca1cf389ef0ae1c6504da1800d1c431"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_SevenJacobian_lean/audit.log",
+      "bytes": 927,
+      "sha256": "30faead090b26dd042b84884d52dcff193f53297dedb32d65e1bafa6d8ae142f"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_SevenJacobian_lean/build.log",
+      "bytes": 793,
+      "sha256": "9b132f940b61d9d20ade2ded2da8e3273790559c7bd3e2bc4718a02f44b59e28"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_SevenJacobian_lean/status",
+      "bytes": 5,
+      "sha256": "c26de83abdc9496cd1301470918ec39ecca1cf389ef0ae1c6504da1800d1c431"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_ShiftedCover_lean/audit.log",
+      "bytes": 617,
+      "sha256": "63f626a8d6faa17329d5d6d41fc25444eea9033fdb353240ee148a00e7e9079d"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_ShiftedCover_lean/build.log",
+      "bytes": 420,
+      "sha256": "4e21ba6543cfb443ece20882e9ecb6b3f9c2aa9be05f45b5c12e3ceacf90f0f0"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_ShiftedCover_lean/status",
+      "bytes": 5,
+      "sha256": "c26de83abdc9496cd1301470918ec39ecca1cf389ef0ae1c6504da1800d1c431"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_SpectralControls_lean/audit.log",
+      "bytes": 637,
+      "sha256": "8f6fbd59c112e6e2029e02d4b57ccc2534fdbc60d32681e641c67e8d682aa293"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_SpectralControls_lean/build.log",
+      "bytes": 436,
+      "sha256": "ae544365ccbc6623d6d65c63f4256cc3e51ae7f644838901130a98d1554eb97e"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_SpectralControls_lean/status",
+      "bytes": 5,
+      "sha256": "c26de83abdc9496cd1301470918ec39ecca1cf389ef0ae1c6504da1800d1c431"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_SplitQuotients_lean/audit.log",
+      "bytes": 880,
+      "sha256": "b2528005eb07e0516e9df8d7cf21351f3394f96daf9878af272de17771a17d21"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_SplitQuotients_lean/build.log",
+      "bytes": 723,
+      "sha256": "ec6d0edec77beaa16f0a02700b7bdd40d265649dadba7ef7963220b87c849321"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_SplitQuotients_lean/status",
+      "bytes": 5,
+      "sha256": "c26de83abdc9496cd1301470918ec39ecca1cf389ef0ae1c6504da1800d1c431"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_SuccessorCollapse_lean/audit.log",
+      "bytes": 898,
+      "sha256": "9f3178e88c8d4c07285b605ac9a59e5351800fd52b95cf5d8956139cd6ec335f"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_SuccessorCollapse_lean/build.log",
+      "bytes": 738,
+      "sha256": "359edf72eec26a2410e28bf398a05afee20a4646f5ee5ded8371161543096fcb"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_SuccessorCollapse_lean/status",
+      "bytes": 5,
+      "sha256": "c26de83abdc9496cd1301470918ec39ecca1cf389ef0ae1c6504da1800d1c431"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_SuccessorNorms_lean/audit.log",
+      "bytes": 884,
+      "sha256": "1a911862c1baee0f585ede5c0744593dfc6e7fe5d699ce459809a273fa95705a"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_SuccessorNorms_lean/build.log",
+      "bytes": 743,
+      "sha256": "a118d7572769cd456e0071281291ac16009abfc233e966d8c50c0d8f874a396d"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_SuccessorNorms_lean/status",
+      "bytes": 5,
+      "sha256": "c26de83abdc9496cd1301470918ec39ecca1cf389ef0ae1c6504da1800d1c431"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_TargetFrobenius_lean/audit.log",
+      "bytes": 730,
+      "sha256": "b1a18a0088c6192929e79b13f345387c74d19c5746e9a2a3d49657ba0ed939f4"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_TargetFrobenius_lean/build.log",
+      "bytes": 596,
+      "sha256": "af39c64319c7802bc7e977651370561993a64b0f70c3063bbda3c9e49c80480c"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_TargetFrobenius_lean/status",
+      "bytes": 5,
+      "sha256": "c26de83abdc9496cd1301470918ec39ecca1cf389ef0ae1c6504da1800d1c431"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_TwoHopTransport_lean/audit.log",
+      "bytes": 686,
+      "sha256": "f04ecdcd00374010006cc298a3e2d53af11fc583a4fedb0bde0cdaa85ae87542"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_TwoHopTransport_lean/build.log",
+      "bytes": 508,
+      "sha256": "8e7e85fa08e56844be786eae17c982788318420770764656111540eac7cb25c4"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_TwoHopTransport_lean/status",
+      "bytes": 5,
+      "sha256": "c26de83abdc9496cd1301470918ec39ecca1cf389ef0ae1c6504da1800d1c431"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_TwoPrimaryQuotient_lean/audit.log",
+      "bytes": 840,
+      "sha256": "30d6756f2095523014dc5b882e23ace937696090b57d2d2161a3381553c24444"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_TwoPrimaryQuotient_lean/build.log",
+      "bytes": 665,
+      "sha256": "4cc292676225e116d902b6de17ecb0184781fa430f20999d1a5cc995ed55cc6c"
+    },
+    {
+      "path": "run/proofs/research_chained_jacobian_transfers_20261110_lean_TwoPrimaryQuotient_lean/status",
+      "bytes": 5,
+      "sha256": "c26de83abdc9496cd1301470918ec39ecca1cf389ef0ae1c6504da1800d1c431"
+    },
+    {
+      "path": "run/source.sha256",
+      "bytes": 83318,
+      "sha256": "ca56d7d87957b4a57f4e8ac4bc04ff1ef8235ca8e295c3601474fed62651b7b8"
+    },
+    {
+      "path": "run/standalone.txt",
+      "bytes": 55210,
+      "sha256": "95e5741c838fdd7b89fcb5cb2083c3017e7e1d2f9166c12452609a21df5ec911"
+    },
+    {
+      "path": "run/written-declarations.txt",
+      "bytes": 20596,
+      "sha256": "737925d6dca4de0e316d2d581ceaa78ffe07f9ade3dc566e93749e23337bbd21"
+    },
+    {
+      "path": "sparse-checkout.txt",
+      "bytes": 545,
+      "sha256": "768a11c5194d21aa15211bce3efe5b5f60f645301246ac3e64fc9a2c57fc065a"
+    },
+    {
+      "path": "started.txt",
+      "bytes": 36,
+      "sha256": "cb1cdc9d47c938f95a31bead2a490ff232d4a017ecafad2d49a19a4517b76987"
+    },
+    {
+      "path": "transcript.txt",
+      "bytes": 62769,
+      "sha256": "12def53d034337c09ad219d4c7c9dbbb3295d33a3b16a7c45c96aa8a2ba64304"
+    },
+    {
+      "path": "upstream-commit.txt.txt",
+      "bytes": 41,
+      "sha256": "651873529e8c62016fd591b3af9a9ac785bd1cd9c3260589aa5e416700445833"
+    },
+    {
+      "path": "workflow.yml.txt",
+      "bytes": 5133,
+      "sha256": "c9995f56f9730003390d338aff0477e3150c2de42ab28a616921635e909318cc"
+    },
+    {
+      "path": "wrong-head.exit",
+      "bytes": 2,
+      "sha256": "53c234e5e8472b6ac51c1ae1cab3fe06fad053beb8ebfd8977b010655bfdd3c3"
+    },
+    {
+      "path": "wrong-head.txt",
+      "bytes": 130,
+      "sha256": "9808b4b84db8f48ebb7304db1c0986da786c5ff9fc9b70cf9bc00b82e8ae4e22"
+    }
+  ],
+  "standing": "unsigned clean-checkout integration;not scientific signing or timing evidence",
+  "preserved_failures": [
+    "independent-failed-01",
+    "independent-failed-02"
+  ]
+}

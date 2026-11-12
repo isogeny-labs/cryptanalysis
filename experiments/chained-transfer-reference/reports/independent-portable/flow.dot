@@ -1,0 +1,9 @@
+digraph replay {
+ graph[rankdir=TB,bgcolor="white",ranksep=.25,pad=.15];
+ node[shape=box,style="rounded,filled",fillcolor="#e7f0e8",fontname="DejaVu Sans",fontsize=11];
+ source[label="Exact crypto0796 + portable driver\nrg shim always exits127"];
+ native[label="32 standalone PASS\nall oldguards / strictClippy"];
+ algebra[label="23 algebra PASS\n2 byte-identical certificates"];
+ proofs[label="32 Lean modules PASS\n186 compiled / 160 written / 0 trusted"];
+ source->native->algebra->proofs;
+}

@@ -1,0 +1,37 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-12T12:22:14Z",
+ "id": "PCC-20261112-1976fd",
+ "kind": "statement",
+ "producer": {
+  "commit": "c7128485f23c8977635bc5776071d23a37c2db14",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ci-43202427032-job-131128987039-01.log.xz",
+    "sha256": "b1b16810f049e6cdc30616329fa3b8cb775d3268c4cf12f225dcff5c2ec0c6d0"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ci-43202427032-api-01.json",
+    "sha256": "40e1fb211df301501630fcc0a827166031eba11d004ab61d9157312daf9d5de6"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ci-43202427032-custody-01.json",
+    "sha256": "d61c18877671d9da85aa983d41394f85e503912d9278be7f84173e114670199b"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Unsigned exactconsumer1508/c7128485f23c8977635bc5776071d23a37c2db14 ownCI43202427032 SUCCESS25native/98reference+5integration/1historicalignored.Allguard/static/developmentchecks passing.Complete249023-byte decodedreferencejob131128987039 plusAPI/raw+archiveSHA256/standardXZ/exactroundtrip retained;currentfixedparent is settled,no unchangedrepeatpoll.Scientific signing andothermergegates separate."
+}
