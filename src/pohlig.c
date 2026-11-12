@@ -480,6 +480,7 @@ ca_status ca_pohlig_hellman(const ca_group *g, const ca_elem *base, const ca_ele
     /* Three or more prime powers: get every base^(n/q^e) and target^(n/q^e)
      * from one halving tree instead of one long exponentiation each. */
     ca_elem split_base[CA_MAX_FACTORS], split_target[CA_MAX_FACTORS];
+    const int zp_native = g->kind == CA_GROUP_ZP && ca_zp_group_is_native(g);
     int use_split = 0;
     if (f.count >= 3) {
         uint64_t pw[CA_MAX_FACTORS], total = 1;
@@ -519,8 +520,18 @@ ca_status ca_pohlig_hellman(const ca_group *g, const ca_elem *base, const ca_ele
         for (unsigned k = 0; k < e; k++) {
             /* h_k = (target_e - xk * base_e) * q^(e-1-k) */
             ca_elem t, hk;
-            ca_group_mul(g, &t, &base_e, xk, st ? &st->group_ops : NULL);
-            ca_group_inv(g, &t, &t);
+            if (zp_native) {
+                /* base_e has order q^e (n = ord(base)), so (xk base_e)^-1 is
+                 * (q^e - xk) base_e: one short exponentiation instead of a
+                 * 64-bit modular inversion; xk = 0 gives the identity.  The
+                 * charge is what the xk multiplication below would add. */
+                if (xk == 0) ca_group_identity(g, &t);
+                else ca_group_mul(g, &t, &base_e, qe - xk, NULL);
+                if (st) st->group_ops += ph_mul_ops(xk);
+            } else {
+                ca_group_mul(g, &t, &base_e, xk, st ? &st->group_ops : NULL);
+                ca_group_inv(g, &t, &t);
+            }
             ca_group_op(g, &hk, &target_e, &t);
             ca_group_mul(g, &hk, &hk, qe / (qk * q), st ? &st->group_ops : NULL);
             uint64_t d;
