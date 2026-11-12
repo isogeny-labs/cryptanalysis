@@ -1,0 +1,44 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-12T07:10:04Z",
+ "id": "PCC-20261112-f87a99",
+ "kind": "statement",
+ "producer": {
+  "commit": "6cf2f1a9902b3babeec56d62a9983891b9ffb079",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/prime-field-complete-interrupted-03.txt",
+    "sha256": "f462fb7d5479132576744d9c27871815dbacdd2bd60fa70de9886261f872b418"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/prime-field-source-after-interruption-03.txt",
+    "sha256": "ee255242f39a76b1a62488ff5c5e725ed1d463ccdcea9165ec6b234cb2e6187f"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/prime-field-interruption-03.json",
+    "sha256": "bb59d5799639f139249a2ef60c08194e17d0b2c989f6a261e1164fbc5365fb49"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/prime-field-source-02.sha256",
+    "sha256": "646adaf887539635304b4afc6e50dc3d011c5c9fee34463b8903bced26dd6606"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Unsigned custody record: actual whole-prime full guard03 is interrupted, not running or passed. Retained partial output has native25 passes but no reference-suite completion/terminal status; executor session24821 disappeared across workspace restart. All eight source02 hashes still match. Preserve partial03 and retry identical check.sh04; no mathematical failure or completed90-suite claim inferred."
+}

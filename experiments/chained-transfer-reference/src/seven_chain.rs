@@ -10,10 +10,14 @@ use isogeny_algos::fpr::ER;
 use num_bigint::BigUint;
 use num_traits::ToPrimitive;
 use std::collections::{HashMap, HashSet};
+#[path = "prime_field_psi.rs"]
+mod prime_field_psi;
 #[path = "quartic_cover.rs"]
 mod quartic_cover;
 #[path = "quartic_norm.rs"]
 mod quartic_norm;
+#[path = "quartic_pullback.rs"]
+mod quartic_pullback;
 
 #[test]
 fn closed_fibre_targeted_r0_r1_both_directions() {
@@ -368,6 +372,7 @@ pub(super) struct SevenChain {
     t: SevenTransfer,
     r0: RichelotMap,
     r1: RichelotMap,
+    prime: prime_field_psi::PrimeFieldPsi,
 }
 impl SevenChain {
     pub(super) fn new() -> Self {
@@ -393,7 +398,12 @@ impl SevenChain {
         );
         assert_eq!(coefficients(&r0), [31, 75, 74, 54, 71, 55, 1]);
         assert_eq!(coefficients(&r1), [95, 26, 19, 27, 94, 91, 1]);
-        Self { t, r0, r1 }
+        Self {
+            t,
+            r0,
+            r1,
+            prime: prime_field_psi::PrimeFieldPsi::new(),
+        }
     }
 
     /// P1 alpha N0 /4 or its adjoint on the odd rational point groups.
@@ -436,6 +446,9 @@ impl SevenChain {
         }
     }
     pub(super) fn forward(&self, d: &Class) -> super::super::super::Result<Class> {
+        self.prime.forward(d)
+    }
+    fn forward_reference(&self, d: &Class) -> super::super::super::Result<Class> {
         self.r1
             .forward_closed(&self.quarter_phi(&self.r0.dual_closed(d)?, false)?)
     }
