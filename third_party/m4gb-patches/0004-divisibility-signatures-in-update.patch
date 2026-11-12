@@ -1,0 +1,314 @@
+diff --git a/lib/monomial_base.hpp b/lib/monomial_base.hpp
+index f31d78b..662281c 100644
+--- a/lib/monomial_base.hpp
++++ b/lib/monomial_base.hpp
+@@ -33,12 +33,65 @@
+ #include <stdlib.h>
+ #include <string>
+ #include <cstring>
++#include <cstdint>
+ #include <algorithm>
+ #include <stdexcept>
+ 
+ namespace gb
+ {
+ 
++#ifndef M4GB_SUPPORT_MASK
++#define M4GB_SUPPORT_MASK 1
++#endif
++	// Divisibility signature of a monomial: m1 has bit (v mod 64) set when
++	// variable v occurs, m2 when it occurs with exponent >= 2; small says every
++	// exponent is <= 2 and no two variables share a bit (N <= 64).
++	//  - "a divides b" implies (a.m1 & ~b.m1) == 0 for every N, so m1 rejects
++	//    most non-divisors before the exact exponent walk, which for the
++	//    integer-coded monomials decodes one variable at a time;
++	//  - when a and b are both small, "a divides b" is exactly
++	//    (a.m1 & ~b.m1) == 0 && (a.m2 & ~b.m2) == 0, so no walk is needed.
++	//    Over GF(2) with the field equations every monomial is small.
++	struct monomial_signature_t
++	{
++		std::uint64_t m1, m2;
++		bool small;
++	};
++	template<std::size_t N, typename Mo>
++	inline monomial_signature_t monomial_signature_walk(const Mo& m)
++	{
++		monomial_signature_t s{ 0, 0, N <= 64 };
++		for (auto it = m.begin(); it != m.end(); ++it)
++		{
++			const std::uint64_t bit = std::uint64_t(1) << (unsigned(it->first) & 63u);
++			s.m1 |= bit;
++			if (it->second >= 2)
++			{
++				s.m2 |= bit;
++				if (it->second > 2)
++					s.small = false;
++			}
++		}
++		return s;
++	}
++	template<typename Mo>
++	inline monomial_signature_t monomial_signature(const Mo& m)
++	{
++		return monomial_signature_walk<Mo::max_vars>(m);
++	}
++	// 1: a divides b, 0: it does not, -1: undecided (walk the exponents)
++	template<typename Mo1, typename Mo2>
++	inline int monomial_divides_by_signature(const Mo1& a, const Mo2& b)
++	{
++		const monomial_signature_t sa = monomial_signature(a);
++		const monomial_signature_t sb = monomial_signature(b);
++		if ((sa.m1 & ~sb.m1) != 0)
++			return 0;
++		if (sa.small && sb.small)
++			return (sa.m2 & ~sb.m2) == 0 ? 1 : 0;
++		return -1;
++	}
++
+ 	struct unordered_tag_t {};
+ 	struct degrevlex_tag_t {};
+ 
+@@ -580,6 +633,23 @@ namespace gb
+ 			_size = (sizetype)(it - _begin());
+ 		}
+ 		
++		// exponent 1 for the variables in m1, 2 for those also in m2, stored in
++		// this class's variable order (N <= 64, so bit v is variable v)
++		void set_from_signature(std::uint64_t m1, std::uint64_t m2)
++		{
++			_size = 0;
++			const bool descending = _vless(varinttype(1), varinttype(0));
++			while (m1 != 0)
++			{
++				const unsigned v = descending ? 63u - unsigned(__builtin_clzll(m1)) : unsigned(__builtin_ctzll(m1));
++				const std::uint64_t bit = std::uint64_t(1) << v;
++				_data[_size].first = varinttype(v);
++				_data[_size].second = expinttype((m2 & bit) ? 2 : 1);
++				++_size;
++				m1 &= ~bit;
++			}
++		}
++
+ 		template<typename Mo1, typename Mo2>
+ 		void set_lcm(const Mo1& l, const Mo2& r)
+ 		{
+@@ -593,6 +663,18 @@ namespace gb
+ 				*this = l;
+ 				return;
+ 			}
++#if M4GB_SUPPORT_MASK
++			if (N <= 64)
++			{
++				// both exponent vectors in {0,1,2}: the lcm is the union of the masks
++				const monomial_signature_t sl = monomial_signature(l), sr = monomial_signature(r);
++				if (sl.small && sr.small)
++				{
++					set_from_signature(sl.m1 | sr.m1, sl.m2 | sr.m2);
++					return;
++				}
++			}
++#endif
+ 			auto it = _begin();
+ 			auto it1 = l.begin();
+ 			auto it2 = r.begin();
+@@ -684,6 +766,11 @@ namespace gb
+ 		template<typename Mo>
+ 		bool divides(const Mo& r) const
+ 		{
++#if M4GB_SUPPORT_MASK
++			const int bysig = monomial_divides_by_signature(*this, r);
++			if (bysig >= 0)
++				return bysig == 1;
++#endif
+ 			auto it1 = begin();
+ 			auto it2 = r.begin();
+ 			while (true)
+diff --git a/lib/monomial_degrevlex.hpp b/lib/monomial_degrevlex.hpp
+index 0f42926..25d48b9 100644
+--- a/lib/monomial_degrevlex.hpp
++++ b/lib/monomial_degrevlex.hpp
+@@ -300,6 +300,30 @@ namespace gb
+ 	struct minimum_of_degree_tag {};
+ 	struct maximum_of_degree_tag {};
+ 
++	template<std::size_t N, std::size_t D, typename Int>
++	class monomial_int_t < N, D, typename monomial_traits<N, D>::var_greater, monomial_degrevlex_less<N, D>, Int >;
++
++	// Signature of an integer-coded degrevlex monomial from a small
++	// thread-local direct-mapped cache: decoding the integer walks the
++	// combinatorial number system one variable at a time, and the same leading
++	// monomials and lcms are tested over and over inside update().
++	template<std::size_t N, std::size_t D, typename Int>
++	inline monomial_signature_t monomial_signature(const monomial_int_t < N, D, typename monomial_traits<N, D>::var_greater, monomial_degrevlex_less<N, D>, Int >& m)
++	{
++		// POD so the thread-local array is zero-initialised without a guard;
++		// key holds value + 1, so 0 marks an empty slot
++		struct entry_t { std::uint64_t key; monomial_signature_t sig; };
++		static const unsigned bits = 14;
++		static thread_local entry_t cache[std::size_t(1) << bits];
++		const std::uint64_t k = std::uint64_t(m.value()) + 1;
++		entry_t& e = cache[std::size_t((k * 0x9E3779B97F4A7C15ull) >> (64 - bits))];
++		if (e.key == k)
++			return e.sig;
++		e.key = k;
++		e.sig = monomial_signature_walk<N>(m);
++		return e.sig;
++	}
++
+ 	template<std::size_t N, std::size_t D, typename Int>
+ 	class monomial_int_t < N, D, typename monomial_traits<N, D>::var_greater, monomial_degrevlex_less<N, D>, Int >
+ 	{
+@@ -668,6 +692,11 @@ namespace gb
+ 		template<typename Mo>
+ 		bool divides(const Mo& r) const
+ 		{
++#if M4GB_SUPPORT_MASK
++			const int bysig = monomial_divides_by_signature(*this, r);
++			if (bysig >= 0)
++				return bysig == 1;
++#endif
+ 			auto it1 = begin();
+ 			auto it2 = r.begin();
+ 			while (true)
+diff --git a/src/m4gb.hpp b/src/m4gb.hpp
+index b022704..4ce9f16 100644
+--- a/src/m4gb.hpp
++++ b/src/m4gb.hpp
+@@ -1358,6 +1358,9 @@ namespace gb
+ 			int_monomial_t p2;
+ 			int_monomial_t intlcm;
+ 			unsigned lcmdeg;
++#if M4GB_SUPPORT_MASK
++			monomial_signature_t lcmsig; // signature of intlcm, from the static lcm
++#endif
+ 
+ 			crit_pair_t(const int_monomial_t& _p1, const int_monomial_t& _p2)
+ 				: p1(_p1), p2(_p2)
+@@ -1365,6 +1368,9 @@ namespace gb
+ 				if (p2 < p1)
+ 					std::swap(p1, p2);
+ 				static_monomial_t M = gb::lcm(p1, p2);
++#if M4GB_SUPPORT_MASK
++				lcmsig = monomial_signature(M);
++#endif
+ #ifdef MAXDEGREE
+ 				intlcm = M.degree() > MAXDEGREE ? int_monomial_t() : int_monomial_t(M);
+ #else
+@@ -1583,6 +1589,45 @@ namespace gb
+ 			int_monomial_t plm = plt.second;
+ 			static_monomial_t pLM(plm);
+ 			unsigned plmdeg = pLM.degree();
++#if M4GB_SUPPORT_MASK
++			// signature of the new leading monomial, computed once for every test below
++			const monomial_signature_t pSIG = monomial_signature(pLM);
++			// 1: pLM divides x, 0: it does not, decided from the signatures;
++			// falls back to the exponent walk when either is not small
++			auto plm_divides = [&](const int_monomial_t& x) -> bool {
++				const monomial_signature_t sx = monomial_signature(x);
++				if ((pSIG.m1 & ~sx.m1) != 0)
++					return false;
++				if (pSIG.small && sx.small)
++					return (pSIG.m2 & ~sx.m2) == 0;
++				return pLM.divides(x);
++			};
++			// lcm(pLM, x) != L, from the signatures when all three are small
++			auto lcm_differs = [&](const int_monomial_t& x, const int_monomial_t& L, const monomial_signature_t& sl) -> bool {
++				const monomial_signature_t sx = monomial_signature(x);
++				if (pSIG.small && sx.small && sl.small)
++					return (pSIG.m1 | sx.m1) != sl.m1 || (pSIG.m2 | sx.m2) != sl.m2;
++				return lcm(pLM, x) != L;
++			};
++			auto plm_divides_lcm = [&](const crit_pair_t& cp) -> bool {
++				if ((pSIG.m1 & ~cp.lcmsig.m1) != 0)
++					return false;
++				if (pSIG.small && cp.lcmsig.small)
++					return (pSIG.m2 & ~cp.lcmsig.m2) == 0;
++				return pLM.divides(cp.intlcm);
++			};
++			auto sig_divides = [](const monomial_signature_t& a, const int_monomial_t& A, const monomial_signature_t& b, const int_monomial_t& B) -> bool {
++				if ((a.m1 & ~b.m1) != 0)
++					return false;
++				if (a.small && b.small)
++					return (a.m2 & ~b.m2) == 0;
++				return A | B;
++			};
++#else
++			auto plm_divides = [&](const int_monomial_t& x) -> bool { return pLM.divides(x); };
++			auto lcm_differs = [&](const int_monomial_t& x, const int_monomial_t& L, int) -> bool { return lcm(pLM, x) != L; };
++			auto plm_divides_lcm = [&](const crit_pair_t& cp) -> bool { return pLM.divides(cp.intlcm); };
++#endif
+ 			p.pop_back();
+ 			matrix.cleanup(p);
+ 			p.shrink_to_fit();
+@@ -1616,10 +1661,17 @@ namespace gb
+ 
+ 			for (auto it = CP.begin(); it != CP.end();)
+ 			{
+-				if (plmdeg < it->lcmdeg && pLM | it->intlcm
+-					&& lcm(pLM, it->p2) != it->intlcm
+-					&& lcm(pLM, it->p1) != it->intlcm
++#if M4GB_SUPPORT_MASK
++				if (plmdeg < it->lcmdeg && plm_divides_lcm(*it)
++					&& lcm_differs(it->p2, it->intlcm, it->lcmsig)
++					&& lcm_differs(it->p1, it->intlcm, it->lcmsig)
++					)
++#else
++				if (plmdeg < it->lcmdeg && plm_divides_lcm(*it)
++					&& lcm_differs(it->p2, it->intlcm, 0)
++					&& lcm_differs(it->p1, it->intlcm, 0)
+ 					)
++#endif
+ 				{
+ 					it = CP.erase(it);
+ 				}
+@@ -1648,7 +1700,11 @@ namespace gb
+ 					newCP_good.emplace(std::move(newCP), true); // good
+ 			}
+ #if 1
++#if M4GB_SUPPORT_MASK
++			std::vector<std::pair<int_monomial_t, monomial_signature_t> > minimal_lcms;
++#else
+ 			std::vector<int_monomial_t> minimal_lcms;
++#endif
+ 			for (auto it = newCP_good.begin(); it != newCP_good.end(); )
+ 			{
+ 				// process equal lcm new pairs together: [it,it2) range
+@@ -1663,6 +1719,21 @@ namespace gb
+ 				}
+ 				// check if there is a proper divisor among lower lcms kept
+ 				bool isminimal = true;
++#if M4GB_SUPPORT_MASK
++				const monomial_signature_t& LS = it->first.lcmsig;
++				for (auto it3 = minimal_lcms.begin(); it3 != minimal_lcms.end() && it3->first < L; ++it3)
++				{
++					if (sig_divides(it3->second, it3->first, LS, L))
++					{
++						isminimal = false;
++						break;
++					}
++				}
++				// if isminimal then remember its lcm, it can act as proper divisor
++				// otherwise set isgood = false
++				if (isminimal)
++					minimal_lcms.emplace_back(L, LS);
++#else
+ 				for (auto it3 = minimal_lcms.begin(); it3 != minimal_lcms.end() && *it3 < L; ++it3)
+ 				{
+ 					if (*it3 | L)
+@@ -1675,6 +1746,7 @@ namespace gb
+ 				// otherwise set isgood = false
+ 				if (isminimal)
+ 					minimal_lcms.push_back(L);
++#endif
+ 				else
+ 					isgood = false;
+ 				// isgood = [isminimal] && [all are *not* coprime]
+@@ -1733,7 +1805,7 @@ namespace gb
+ 					++it;
+ 					continue;
+ 				}
+-				if (plmdeg < it->second && pLM.divides(it->first))
++				if (plmdeg < it->second && plm_divides(it->first))
+ 				{
+ 					const int_monomial_t glm = it->first;
+ 					auto git = matrix.basisitem.find(glm);
