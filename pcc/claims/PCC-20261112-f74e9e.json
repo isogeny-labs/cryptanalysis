@@ -1,0 +1,37 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-12T05:43:09Z",
+ "id": "PCC-20261112-f74e9e",
+ "kind": "statement",
+ "producer": {
+  "commit": "5ceb1db026898a07a1dcbda8ba186c9d1741f1e8",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct27-ci-observation-08.json",
+    "sha256": "f24a23bcfa11daaf8f76455f5b07d4c411aaace859d15435f9a951d5ba7ad991"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct27-ci-43157257094.log.xz",
+    "sha256": "c562a9137a6c36ed6d1e973f5b283be2ac410ced8a153c4cb0be83f8c95dca8d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct27-ci-43157257094.log.xz.sha256",
+    "sha256": "a4f591907ebf0adf14ef72101c05e904eb9ba06e2f5fd43e1ead6bc1068e68a9"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Unsigned parent CT27 exact5ceb1db026898a07a1dcbda8ba186c9d1741f1e8 focusedCI43157257094 succeeds25native/83reference unit+five integrations,one old ignored,all source guards/fmt/strictClippy. Full decoded log standard-XZ/raw-archive hashes/exact roundtrip and API/PR/check observation retained;gatepasses/signskips,ready1501 mergeabletrue/mergedfalse on1498. Later CT28 full85/prototypes excluded,no signed scientific standing."
+}
