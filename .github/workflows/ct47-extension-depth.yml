@@ -1,0 +1,41 @@
+name: CT47 exact extension torsion-depth arithmetic
+
+on:
+  pull_request:
+    paths:
+      - "experiments/chained-transfer-reference/ct47/**"
+      - ".github/workflows/ct47-extension-depth.yml"
+  push:
+    branches:
+      - "research/ct47-exact-extension-depth-20261112"
+    paths:
+      - "experiments/chained-transfer-reference/ct47/**"
+      - ".github/workflows/ct47-extension-depth.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  finite-2-primary-control:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile Python and check JavaScript syntax
+        run: |
+          python3 -m py_compile experiments/chained-transfer-reference/ct47/ct47_extension_depth.py
+          node --check experiments/chained-transfer-reference/ct47/ct47_independent.js
+      - name: Python normal and optimized invariants
+        run: |
+          python3 -B experiments/chained-transfer-reference/ct47/ct47_extension_depth.py > /tmp/ct47.normal
+          python3 -O -B experiments/chained-transfer-reference/ct47/ct47_extension_depth.py > /tmp/ct47.optimized
+          diff -u /tmp/ct47.normal /tmp/ct47.optimized
+          grep -Fq "full_exhaustive_matrix_cases=48; trace_only_false_positives=3" /tmp/ct47.normal
+          cat /tmp/ct47.normal
+      - name: Independent JavaScript normal and no-opt invariants
+        run: |
+          node experiments/chained-transfer-reference/ct47/ct47_independent.js > /tmp/ct47.node
+          node --no-opt experiments/chained-transfer-reference/ct47/ct47_independent.js > /tmp/ct47.node-no-opt
+          diff -u /tmp/ct47.node /tmp/ct47.node-no-opt
+          grep -Fq "CT47 JS PASS [pcc:unverified]" /tmp/ct47.node
+          cat /tmp/ct47.node
