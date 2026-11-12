@@ -1,3 +1,18 @@
+# CT25: direct C2 successor norms
+
+[Written specialization](SUCCESSOR_NORMS.md),
+[current status](SUCCESSOR_NORMS_STATUS.md) and
+[inspected report](reports/successor-norms/norms-report.pdf) describe both
+direct C2 elliptic norms and their Phi2/Psi2 integration. All12317 classes
+match both retained generic norms, including every degree/zero category,
+repeated support and balanced infinity correction. Both complete forward/
+dual transfer graphs agree with genuine generic references. Full changed
+guard04 passes25native/81reference unit plus five integrations, one old
+ignored benchmark, all guards/fmt/strictClippy, PCC03b76b. Parent1494 exact43a
+CI succeeds25/80+five, PCCd942e6; this child's own CI remains separate.
+Scientific standing unsigned, formalization partial, no measured advantage.
+[pcc:unverified]
+
 # CT24: two consecutive nondual Jacobian transfers
 
 [Written proof](SUCCESSOR_CHAIN_V2.md),[current checkpoint](SUCCESSOR_CHECKPOINT.md)

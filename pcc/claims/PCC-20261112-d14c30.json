@@ -1,0 +1,51 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-12T00:23:47Z",
+ "id": "PCC-20261112-d14c30",
+ "kind": "statement",
+ "producer": {
+  "commit": "43a8e80ea4d01c564499e678751f44c51dae5243",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct25-phi2-02.txt",
+    "sha256": "668d5a8748ff918c87b8a1d61c834ffaa29b96f7d08fba29ef3a8bd9fe5f4c91"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct25-clippy-02.txt",
+    "sha256": "d8801c9d7ce32a680a4125b9dfd1ab5bf1e4dc54e407147351c57fbadf39e9c4"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct25-direct_norms-source-02.rs",
+    "sha256": "1606aad7f907ef6212e1cfa5b32078a4b20d012bc9f2159e51907c7ca3497b70"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct25-seven_successor-source-02.rs",
+    "sha256": "928f871a4d897a9e710ed7a591292fe75e9aca53f41941296e9c71a5ff6132d9"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct25-seven_successor_chain-source-02.rs",
+    "sha256": "c505836004ba20ee1865d61d666aa41824e21fd745e76890492c0e8b87e95f8f"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Unsigned integrated C2 norm component02 passes strictClippy and all5 successor_seven tests:both COMPLETE12317 Phi2/Phi2Hat graphs agree with retained generic norm versions plus dual7/bijections/paired sums/descent/all109/113 source/geometric49/16/64-lift controls. Exact3 source02 snapshots/raw/filter scope retained. Psi2 full generic comparisons03 still running;no full changed guard or speed claim."
+}

@@ -1,0 +1,44 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-12T00:42:35Z",
+ "id": "PCC-20261112-158476",
+ "kind": "statement",
+ "producer": {
+  "commit": "43a8e80ea4d01c564499e678751f44c51dae5243",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct25-psi2-03.txt",
+    "sha256": "c864db6413f0ef2b92645c91f5d414367d965ba36ffb1e909e7094f3f78ceae4"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct25-direct_norms-source-02.rs",
+    "sha256": "1606aad7f907ef6212e1cfa5b32078a4b20d012bc9f2159e51907c7ca3497b70"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct25-seven_successor-source-02.rs",
+    "sha256": "928f871a4d897a9e710ed7a591292fe75e9aca53f41941296e9c71a5ff6132d9"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct25-seven_successor_chain-source-02.rs",
+    "sha256": "c505836004ba20ee1865d61d666aa41824e21fd745e76890492c0e8b87e95f8f"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Unsigned integrated CT25 Psi2 component03 now passes BOTH complete12317 T1/T2 production/generic graphs,dual7/bijections/paired sums/descent/wrong-model,and all109/113 source controls with genuinely generic naive Phi2 references. Exact source02 from d14c30 remains unchanged. Source/Clippy/Phi2 components already passed;whole changed guard04 remains separate. No timing or measured advantage."
+}
