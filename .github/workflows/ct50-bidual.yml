@@ -24,6 +24,12 @@ jobs:
           python3 -O -B experiments/chained-transfer-reference/ct50/ct50_dual.py > /tmp/ct50-opt
           diff -u /tmp/ct50-normal /tmp/ct50-opt
           cat /tmp/ct50-normal
+      - name: Universal six-variable integer-polynomial identities (independent symbolic ring)
+        run: |
+          python3 -B experiments/chained-transfer-reference/ct50/ct50_symbolic.py > /tmp/ct50-symbolic
+          python3 -O -B experiments/chained-transfer-reference/ct50/ct50_symbolic.py > /tmp/ct50-symbolic-opt
+          diff -u /tmp/ct50-symbolic /tmp/ct50-symbolic-opt
+          cat /tmp/ct50-symbolic
       - name: Independent CT49 forward-Richelot JavaScript and two-field Python baseline
         run: |
           node experiments/chained-transfer-reference/ct49/ct49_richelot.js > /tmp/ct49-js
