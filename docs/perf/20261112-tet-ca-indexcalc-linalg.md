@@ -114,3 +114,15 @@ Build dirs `/home/user/wt/b-linalg` and `b-linalg-tsan` removed after the run.
 sha256 prefixes of the measured binaries (Release `-g -O3`, gcc 13.3, no
 `-march`): base `ca_perfbench` 6313d30c3ebbbfdf, final `ca_perfbench`
 ffdb3b9cf5a77db3, base `ca` 52da2d40167843fe, final `ca` 94cdfff2da27d7b2.
+
+## Review follow-up
+
+An independent review rebuilt base and candidate, reran test_linalg (34,207
+checks, also at CA_LA_THREADS=3), test_indexcalc (195 checks, also at 4
+threads), compared all 34 ca_perfbench fingerprints (identical) and `ca ic
+--seed 7` output at three primes and CA_LA_THREADS 1 and 4 (identical apart
+from the timing fields), and saw `relation/c_dense_solve` Callgrind Ir fall
+about 19 % (including setup). One small hardening: `lz_free` and
+`lz_gat_free` now null the pointers they free, so the error path of `lz_init`
+(which calls `lz_free`, after which `lanczos` calls it again) no longer frees
+twice. No change to results or to the measured kernels.

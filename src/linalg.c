@@ -456,6 +456,7 @@ static void lz_gat_free(lz_gat *g)
     free(g->ue);
     free(g->idx);
     free(g->oval);
+    g->ue = g->idx = g->oval = NULL;
 }
 
 /* sum of v[*p] over [p, e) in 64 bits: two chains, four terms a step */
@@ -563,6 +564,8 @@ static void lz_free(lz_ctx *z)
     free(z->tptr);
     free(z->tcol);
     free(z->tval);
+    z->tptr = z->tcol = NULL;
+    z->tval = NULL;
     lz_gat_free(&z->ga);
     lz_gat_free(&z->gt);
 }
