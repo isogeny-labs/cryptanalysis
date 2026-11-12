@@ -76,11 +76,18 @@ or, without a spec file:
 
 ```sh
 taskq submit --repo cryptanalysis --checkout . --queue ca-cpu --verify \
-    --setup 'cmake -S . -B build/taskq-cpu -DCMAKE_BUILD_TYPE=Release -DCA_BUILD_TESTS=OFF -DCA_BUILD_SHARED=OFF' \
+    --setup 'cmake -S . -B build/taskq-cpu -DCMAKE_BUILD_TYPE=Release -DCA_BUILD_TESTS=OFF -DCA_BUILD_SHARED=OFF -DCA_ARCH=x86-64-v3' \
     --setup 'cmake --build build/taskq-cpu --target ca -j 4' \
     -- python3 cloud/taskq/ca_ecdlp_job.py --ca build/taskq-cpu/ca \
        --instance cloud/taskq/instances/generic-26.json --seed 1
 ```
+
+`-DCA_ARCH=x86-64-v3` builds for the instruction-set level every `ca-cpu`
+node (`arch: amd64`) implements; never use `native` on a queue whose nodes
+come from several Spot families.  The library compiles with
+`-ffp-contract=off` at every level, so the walk, fingerprints and replays are
+the same as a baseline build
+([evidence](../../docs/perf/20261112-build-flags-and-cuda.md)).
 
 From an agent, add the MCP server to `.mcp.json`
 (`{"mcpServers": {"taskq": {"command": "taskq", "args": ["mcp"], "env": {"TASKQ_REDIS_URL": "…"}}}}`)
