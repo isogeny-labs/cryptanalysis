@@ -34,6 +34,13 @@ set(CA_ARCH "" CACHE STRING "-march= level: empty (baseline), x86-64-v2, x86-64-
 set_property(CACHE CA_ARCH PROPERTY STRINGS "" x86-64-v2 x86-64-v3 x86-64-v4 native)
 option(CA_NATIVE "Deprecated alias for -DCA_ARCH=native" OFF)
 option(CA_LTO "Link-time optimisation (INTERPROCEDURAL_OPTIMIZATION) for the library and executables" OFF)
+option(CA_CUDA_LINEINFO "CUDA: add -lineinfo and the ptxas register/spill report (-Xptxas -v)" OFF)
+# Two kernel variants for an A/B on a GPU.  Both leave the walk, the walk ids
+# and the DP output unchanged by construction, and neither is compiled into
+# the host emulator; both are untested on a GPU (see cuda/ca_device.cuh and
+# docs/perf/20261112-build-flags-and-cuda.md).
+option(CA_GPU_PTX_MONT "CUDA: Montgomery product on 32-bit limbs with PTX carry chains (untested on a GPU)" OFF)
+option(CA_GPU_SMEM_TABLE "CUDA: copy the multiplier table to shared memory per block (untested on a GPU)" OFF)
 # OFF, ON (= address,undefined), or an explicit -fsanitize= list such as
 # "thread" or "memory".  ON is kept so existing invocations keep working.
 set(CA_SANITIZE OFF CACHE STRING "Sanitizers: OFF, ON (address,undefined), or a -fsanitize= list")
@@ -196,9 +203,16 @@ if(CA_CUDA)
     if(CA_ARCH)
       add_compile_options($<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=-march=${CA_ARCH}>)
     endif()
+    if(CA_CUDA_LINEINFO)
+      add_compile_options($<$<COMPILE_LANGUAGE:CUDA>:-lineinfo> "$<$<COMPILE_LANGUAGE:CUDA>:SHELL:-Xptxas -v>")
+    endif()
   elseif(CMAKE_CUDA_COMPILER_ID STREQUAL "Clang")
     if(CA_FP_CONTRACT_FLAG)
       add_compile_options($<$<COMPILE_LANGUAGE:CUDA>:${CA_FP_CONTRACT_FLAG}>)
+    endif()
+    if(CA_CUDA_LINEINFO)
+      add_compile_options($<$<COMPILE_LANGUAGE:CUDA>:-gline-tables-only>
+                          "$<$<COMPILE_LANGUAGE:CUDA>:SHELL:-Xcuda-ptxas -v>")
     endif()
   endif()
   list(APPEND CA_SOURCES cuda/rho_kernel.cu cuda/gpu_cuda.c)
@@ -219,6 +233,12 @@ target_include_directories(cryptanalysis_objects PRIVATE
 if(CA_CUDA)
   target_compile_definitions(cryptanalysis_objects PRIVATE CA_HAVE_CUDA=1)
   set_target_properties(cryptanalysis_objects PROPERTIES CUDA_SEPARABLE_COMPILATION OFF)
+  if(CA_GPU_PTX_MONT)
+    target_compile_definitions(cryptanalysis_objects PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:CA_GPU_PTX_MONT>)
+  endif()
+  if(CA_GPU_SMEM_TABLE)
+    target_compile_definitions(cryptanalysis_objects PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:CA_GPU_SMEM_TABLE>)
+  endif()
 endif()
 target_compile_options(cryptanalysis_objects PRIVATE $<$<COMPILE_LANGUAGE:C>:${CA_WARNINGS}>)
 target_compile_definitions(cryptanalysis_objects PRIVATE CA_BUILDING _GNU_SOURCE
