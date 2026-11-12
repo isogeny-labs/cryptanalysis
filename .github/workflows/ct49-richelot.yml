@@ -30,3 +30,11 @@ jobs:
           node --no-opt experiments/chained-transfer-reference/ct49/ct49_richelot.js > /tmp/ct49-node-noopt
           diff -u /tmp/ct49-node-normal /tmp/ct49-node-noopt
           cat /tmp/ct49-node-normal
+      - name: Independent exhaustive PGL2 sextic isomorphism and twist controls
+        run: |
+          g++ -O0 -std=c++17 -Wall -Wextra -Werror experiments/chained-transfer-reference/ct49/ct49_pgl2.cpp -o /tmp/ct49-pgl2-O0
+          g++ -O3 -std=c++17 -Wall -Wextra -Werror experiments/chained-transfer-reference/ct49/ct49_pgl2.cpp -o /tmp/ct49-pgl2-O3
+          /tmp/ct49-pgl2-O0 > /tmp/ct49-pgl2-output-O0
+          /tmp/ct49-pgl2-O3 > /tmp/ct49-pgl2-output-O3
+          diff -u /tmp/ct49-pgl2-output-O0 /tmp/ct49-pgl2-output-O3
+          cat /tmp/ct49-pgl2-output-O3
