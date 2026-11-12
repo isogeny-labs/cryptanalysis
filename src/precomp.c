@@ -106,6 +106,15 @@ static int precomp_ilog2(uint64_t v)
 static void pc_base_mul(const ca_precomp_table *t, ca_elem *r, uint64_t k, uint64_t *ops)
 {
     const ca_group *g = t->g;
+    /* Native E(F_p): the same sum in Jacobian coordinates with one field
+     * inversion at the end instead of one per addition.  The group law has
+     * one result, so the affine point is the same; the additions charged
+     * are the popcount - 1 the loop below charges. */
+    if (t->bitlen < 64) k &= ((uint64_t)1 << t->bitlen) - 1;
+    if (ca_ec_fb_sum(g, r, t->Gpow, k, NULL, 0)) {
+        if (ops && k) *ops += (uint64_t)__builtin_popcountll(k) - 1;
+        return;
+    }
     ca_elem acc;
     int started = 0;
     for (int b = 0; b < t->bitlen; b++) {
@@ -353,7 +362,7 @@ static void *pc_build_worker(void *arg)
             if (stall[i]) {
                 stall[i] = 0;
             } else {
-                a[i] = ca_addmod(a[i], pend[i], t->n);
+                a[i] = ca_addmod_sel(a[i], pend[i], t->n);
                 stepc[i]++;
             }
         }
@@ -973,7 +982,7 @@ static ca_status pc_table_solve(const ca_precomp_table *t, const ca_elem *target
             if (steps >= t->chain_limit) { active = 0; break; }
             uint32_t idx = (uint32_t)(ca_mix64(h) % t->r);
             ca_group_op(g, &Y, &Y, &t->S[idx]);
-            a = ca_addmod(a, t->s[idx], n);
+            a = ca_addmod_sel(a, t->s[idx], n);
             ops++;
             steps++;
             if ((checkpoint || verbose) && (ops & 1023) == 0) {
