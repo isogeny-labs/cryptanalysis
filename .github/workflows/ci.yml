@@ -35,7 +35,7 @@ jobs:
 
   # ------------------------------------------------------------- build ----
   build:
-    name: ${{ matrix.os }} / ${{ matrix.cc }} / ${{ matrix.build_type }}
+    name: ${{ matrix.os }} / ${{ matrix.cc }} / ${{ matrix.build_type }}${{ matrix.flags && format(' / {0}', matrix.flags) || '' }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 25
     strategy:
@@ -47,6 +47,10 @@ jobs:
           - { os: ubuntu-latest,  cc: clang, build_type: Release }
           - { os: ubuntu-24.04-arm, cc: gcc, build_type: Release }
           - { os: macos-latest,   cc: clang, build_type: Release }
+          # The lab-image flags: a named ISA level (with -ffp-contract=off,
+          # which CMakeLists.txt always applies) plus LTO, so that neither
+          # can rot.  GitHub's x86 runners all implement x86-64-v3.
+          - { os: ubuntu-latest,  cc: gcc,   build_type: Release, flags: "-DCA_ARCH=x86-64-v3 -DCA_LTO=ON" }
     env:
       CC: ${{ matrix.cc }}
     steps:
@@ -56,7 +60,7 @@ jobs:
         run: |
           cmake -S . -B build \
             -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
-            -DCA_WERROR=ON
+            -DCA_WERROR=ON ${{ matrix.flags }}
 
       - name: Build
         run: cmake --build build -j"$(getconf _NPROCESSORS_ONLN)"

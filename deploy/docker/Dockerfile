@@ -34,7 +34,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         build-essential cmake ca-certificates && rm -rf /var/lib/apt/lists/*
 WORKDIR /src
 COPY . .
-RUN cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCA_BUILD_TESTS=OFF -DCA_BUILD_SHARED=OFF \
+# ISA level of the agent binary.  "auto" picks x86-64-v3 (AVX2/BMI2/FMA;
+# every current EC2 x86 family, not the pre-Haswell c3/m3/r3/i2) on an x86-64
+# build host and the compiler baseline elsewhere.  Never "native": the image
+# runs on whichever Spot family the scheduler hands it.  The library always
+# compiles with -ffp-contract=off, so the walk does not depend on this choice
+# (docs/perf/20261112-build-flags-and-cuda.md).
+ARG CA_ARCH=auto
+RUN arch="$CA_ARCH"; \
+    if [ "$arch" = auto ]; then \
+        case "$(uname -m)" in x86_64) arch=x86-64-v3 ;; *) arch= ;; esac; \
+    fi; \
+    cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCA_BUILD_TESTS=OFF -DCA_BUILD_SHARED=OFF \
+        -DCA_ARCH="$arch" \
     && cmake --build build -j"$(nproc)" --target ca
 
 FROM debian:bookworm-slim AS agent

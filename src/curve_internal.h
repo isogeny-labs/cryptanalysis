@@ -62,16 +62,20 @@ static inline uint32_t ca_j0_factored_hash_class_reduce_h(const ca_group *g, ca_
     const uint64_t yh[2] = {ca_mix64(y[0]), ca_mix64(y[1])};
     uint64_t best_hash = ca_mix64(x[0] * UINT64_C(0x9E3779B97F4A7C15) ^ yh[0]);
     uint32_t best_k = 0;
+    /* The running minimum is selected with a mask, not branched on: the
+     * comparisons are coin flips on walk data (about 1.5 of the five
+     * replace the minimum per step), so a branch mispredicts often.  Same
+     * strict "<", same order, so the same minimum and the same k. */
     for (uint32_t k = 1; k < 6; k++) {
         uint64_t h = ca_mix64(x[k % 3] * UINT64_C(0x9E3779B97F4A7C15) ^ yh[k & 1]);
-        if (h < best_hash) { best_hash = h; best_k = k; }
+        const uint64_t lt = (uint64_t)0 - (uint64_t)(h < best_hash);
+        best_hash = (h & lt) | (best_hash & ~lt);
+        best_k = (k & (uint32_t)lt) | (best_k & ~(uint32_t)lt);
     }
     Y->w[0] = x[best_k % 3];
     Y->w[1] = y[best_k & 1];
-    if (best_k) {
-        Y->w[2] = 0;
-        Y->w[3] = 0;
-    }
+    /* w[2] is already 0 (finite point); w[3] is cleared when k != 0, as before */
+    Y->w[3] = best_k ? 0 : Y->w[3];
     if (hash_out) *hash_out = best_hash;
     return best_k;
 }

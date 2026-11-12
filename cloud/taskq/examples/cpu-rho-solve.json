@@ -14,7 +14,7 @@
              "--alg", "rho", "--seed", "1", "--threads", "1"],
     "setup": [
       ["cmake", "-S", ".", "-B", "build/taskq-cpu", "-DCMAKE_BUILD_TYPE=Release",
-       "-DCA_BUILD_TESTS=OFF", "-DCA_BUILD_SHARED=OFF"],
+       "-DCA_BUILD_TESTS=OFF", "-DCA_BUILD_SHARED=OFF", "-DCA_ARCH=x86-64-v3"],
       ["cmake", "--build", "build/taskq-cpu", "--target", "ca", "-j", "4"]
     ]
   },

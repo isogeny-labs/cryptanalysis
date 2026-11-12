@@ -112,6 +112,19 @@ static inline uint64_t ca_mix64(uint64_t x)
     return x;
 }
 
+/* ca_addmod's value for every input (a + b, minus m when that wraps or
+ * reaches m), computed with a mask instead of a branch.  The walks add
+ * random exponent coefficients, so the reduction is a coin flip on walk
+ * data and gcc's branch for ca_addmod mispredicts about half the time.
+ * ca_addmod itself keeps its form: verification/pqc-assay proves that exact
+ * code (SAW and Lean) and pins the header by hash. */
+static inline uint64_t ca_addmod_sel(uint64_t a, uint64_t b, uint64_t m)
+{
+    const uint64_t s = a + b;
+    const uint64_t c = (uint64_t)(s < a) | (uint64_t)(s >= m);
+    return s - (m & ((uint64_t)0 - c));
+}
+
 /* ---- the EC walk step, shared by group_ec.c and rho.c ------------------ */
 struct ca_group;
 /* Points of a ca_group_ec_init group are w[0] = x, w[1] = y in Montgomery
@@ -142,7 +155,8 @@ static inline int ca_ec_canon_words(uint64_t p, uint64_t *y, uint64_t inf)
 {
     uint64_t yy = *y, ny = p - yy;
     uint64_t flip = (uint64_t)(ny < yy) & (uint64_t)(inf == 0);
-    *y = flip ? ny : yy;
+    /* a mask, not `flip ? ny : yy`: gcc 13 at -O3 turned that into a branch */
+    *y = yy ^ ((yy ^ ny) & ((uint64_t)0 - flip));
     return (int)flip;
 }
 
@@ -313,6 +327,21 @@ struct ca_group;
  * (and does nothing) for any other vtable. */
 int ca_zp_group_mul(const struct ca_group *g, ca_elem *r, const ca_elem *a, uint64_t k);
 int ca_ec_group_mul(const struct ca_group *g, ca_elem *r, const ca_elem *a, uint64_t k);
+/* r = the sum of pow1[b] over the set bits b of k1 plus the sum of pow2[b]
+ * over the set bits of k2, for the native E(F_p) group: the affine point
+ * the same additions with ca_group_op give (the group law has one result),
+ * accumulated in Jacobian coordinates with one field inversion at the end
+ * instead of one per addition.  Returns 0 (r untouched) for any other group.
+ * Counts no group operations; the caller charges them. */
+int ca_ec_fb_sum(const struct ca_group *g, ca_elem *r, const ca_elem *pow1, uint64_t k1,
+                 const ca_elem *pow2, uint64_t k2);
+/* r = a P + b Q for the native E(F_p) group, by Shamir's joint
+ * double-and-add in Jacobian coordinates with PQ = P + Q given (affine),
+ * and one inversion: the affine point ca_group_mul and ca_group_op give.
+ * Returns 0 (r untouched) for another group or when P, Q or PQ is the
+ * point at infinity.  Counts no group operations. */
+int ca_ec_group_mul2(const struct ca_group *g, ca_elem *r, const ca_elem *P, uint64_t a,
+                     const ca_elem *Q, uint64_t b, const ca_elem *PQ);
 
 int ca_check_members(const struct ca_group *g, const ca_elem *base, const ca_elem *target,
                      uint64_t n, const char *solver);
