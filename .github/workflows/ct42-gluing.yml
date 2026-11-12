@@ -1,0 +1,30 @@
+name: CT42 actual two-primary gluing and branch-cycle audit
+on:
+  pull_request:
+    paths:
+      - 'experiments/chained-transfer-reference/ct42/**'
+      - '.github/workflows/ct42-gluing.yml'
+  push:
+    branches:
+      - research/ct36-normalized-dual49-20261112
+    paths:
+      - 'experiments/chained-transfer-reference/ct42/**'
+      - '.github/workflows/ct42-gluing.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  branch-cycle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - name: Independent polynomial signatures and geometric J[2] controls
+        run: |
+          node --check experiments/chained-transfer-reference/ct42/ct42_gluing.js
+          node experiments/chained-transfer-reference/ct42/ct42_gluing.js > /tmp/ct42.normal
+          node --no-opt experiments/chained-transfer-reference/ct42/ct42_gluing.js > /tmp/ct42.noopt
+          diff -u /tmp/ct42.normal /tmp/ct42.noopt
+          cat /tmp/ct42.normal
