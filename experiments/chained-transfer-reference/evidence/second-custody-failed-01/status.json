@@ -1,0 +1,7 @@
+{
+  "stage": "custody before freezing",
+  "native": "NOT_RUN",
+  "diagnostic": "AssertionError prime_field_pipeline_compressed_two_hop_all_classes_and_source_controls",
+  "cause": "changing old.dual to old.dual_reference causes rustfmt wrapping;renaming back does not reverse line wrapping",
+  "fix": "format the accepted source with only reference-name adaptations and compare exact formatted test bodies;retain original evaluator guards"
+}
