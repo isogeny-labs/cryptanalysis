@@ -2776,15 +2776,21 @@ static size_t tau4_lattice_streams(const ca_tau4_joint_precomp *pre, uint64_t sc
     ca_i128 best_l1 = -1;
     size_t n = 0;
     static const int axial[5][2] = {{-1, 0}, {0, -1}, {0, 0}, {0, 1}, {1, 0}};
+    /* Axial neighbors' residues, kept by the shortlist pass for reuse below. */
+    ca_i128 axial_x[5], axial_y[5];
+    int have_axial = 0;
     unsigned two[2] = {0, 1};
     unsigned shortlist[4] = {0, 1, 2, 3};
     if (mode == 2 || mode == 3 || mode == 4 || mode == 6 || mode == 7 ||
         mode == 8 || mode == 11 || mode == 12) {
         ca_i128 smallest = -1, second = -1;
+        have_axial = 1;
         for (unsigned i = 0; i < 5; i++) {
             ca_i128 u = u0 + axial[i][0], v = v0 + axial[i][1];
             ca_i128 x = (ca_i128)scalar - u * v1.x - v * v2.x;
             ca_i128 y = -u * v1.y - v * v2.y;
+            axial_x[i] = x;
+            axial_y[i] = y;
             ca_i128 l1 = iabs128(x) + iabs128(y);
             if (smallest < 0 || l1 < smallest) {
                 second = smallest;
@@ -2800,10 +2806,13 @@ static size_t tau4_lattice_streams(const ca_tau4_joint_precomp *pre, uint64_t sc
     if (mode == 13 || mode == 14) {
         ca_i128 l1[5];
         int used[5] = {0};
+        have_axial = 1;
         for (unsigned i = 0; i < 5; i++) {
             ca_i128 u = u0 + axial[i][0], v = v0 + axial[i][1];
             ca_i128 x = (ca_i128)scalar - u * v1.x - v * v2.x;
             ca_i128 y = -u * v1.y - v * v2.y;
+            axial_x[i] = x;
+            axial_y[i] = y;
             l1[i] = iabs128(x) + iabs128(y);
         }
         for (unsigned j = 0; j < 4; j++) {
@@ -2826,9 +2835,15 @@ static size_t tau4_lattice_streams(const ca_tau4_joint_precomp *pre, uint64_t sc
             ? shortlist[index] : (unsigned)index;
         int du = mode == 25 ? (int)(index / 5) - 2 : axial[axial_index][0];
         int dv = mode == 25 ? (int)(index % 5) - 2 : axial[axial_index][1];
-        ca_i128 u = u0 + du, v = v0 + dv;
-        ca_i128 x = (ca_i128)scalar - u * v1.x - v * v2.x;
-        ca_i128 y = -u * v1.y - v * v2.y;
+        ca_i128 x, y;
+        if (have_axial && mode != 25) {
+            x = axial_x[axial_index];
+            y = axial_y[axial_index];
+        } else {
+            ca_i128 u = u0 + du, v = v0 + dv;
+            x = (ca_i128)scalar - u * v1.x - v * v2.x;
+            y = -u * v1.y - v * v2.y;
+        }
         tau4_lattice_stream *stream = &streams[n];
         stream->l1 = iabs128(x) + iabs128(y);
         stream->weight = stream->rotations = 0;
