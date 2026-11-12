@@ -2525,7 +2525,8 @@ static int m4gb_detect(const char *path, uint64_t *field, uint64_t *vars)
                     *vars = n;
                 } else {
                     uint64_t count = 0;
-                    for (const char *tok = strtok(rest, " \t\r\n#"); tok; tok = strtok(NULL, " \t\r\n#"))
+                    for (const char *tok = strtok(rest, " \t\r\n#"); tok;
+                         tok = strtok(NULL, " \t\r\n#"))
                         count++;
                     *vars = count;
                 }
