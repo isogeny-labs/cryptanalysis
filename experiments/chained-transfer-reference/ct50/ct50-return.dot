@@ -1,0 +1,21 @@
+digraph CT50 {
+  graph [rankdir=LR, bgcolor="white", fontname="Helvetica", label="CT50: F101-rational Richelot neighbors, each new target has a unique return kernel", labelloc=t, fontsize=16];
+  node [fontname="Helvetica", shape=box, style="rounded,filled", fillcolor="#F0F4FA", color="#51657D", fontsize=12];
+  edge [fontname="Helvetica", color="#2563A6", fontsize=11, penwidth=1.8];
+  Cpi1 [label="Cpi1\nFrob 3+3", fillcolor="#FFF5DF"];
+  Cpi2 [label="Cpi2\nFrob 3+3", fillcolor="#FFF5DF"];
+  C10 [label="C10\nFrob 3+3", fillcolor="#FFF5DF"];
+  C20 [label="C20\nFrob 3+3", fillcolor="#FFF5DF"];
+  R1 [label="R(Cpi1)\nFrob 6", fillcolor="#DBF0EA"];
+  R2 [label="R(Cpi2)\nFrob 6", fillcolor="#DBF0EA"];
+  R3 [label="R(C10)\nFrob 6", fillcolor="#DBF0EA"];
+  R4 [label="R(C20)\nFrob 6", fillcolor="#DBF0EA"];
+  Cpi1 -> R1 [label="two shifts / x to -x\ndeg 4"];
+  Cpi2 -> R2 [label="two shifts / x to -x\ndeg 4"];
+  C10 -> R3 [label="two shifts / x to -x\ndeg 4"];
+  C20 -> R4 [label="two shifts / x to -x\ndeg 4"];
+  R1 -> Cpi1 [label="only rational kernel\nexact bidual", color="#157347", constraint=false, style=dashed];
+  R2 -> Cpi2 [label="only rational kernel", color="#157347", constraint=false, style=dashed];
+  R3 -> C10 [label="only rational kernel", color="#157347", constraint=false, style=dashed];
+  R4 -> C20 [label="only rational kernel", color="#157347", constraint=false, style=dashed];
+}

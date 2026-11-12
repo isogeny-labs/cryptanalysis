@@ -1,0 +1,38 @@
+name: CT50 exact Richelot bidual and rational kernel audit
+on:
+  push:
+    paths:
+      - 'experiments/chained-transfer-reference/ct50/**'
+      - '.github/workflows/ct50-bidual.yml'
+  pull_request:
+    paths:
+      - 'experiments/chained-transfer-reference/ct50/**'
+      - '.github/workflows/ct50-bidual.yml'
+  workflow_dispatch:
+jobs:
+  ct50:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Independent cubic-field bidual exact polynomial and kernel checks
+        run: |
+          python3 -m py_compile experiments/chained-transfer-reference/ct50/ct50_dual.py
+          python3 -B experiments/chained-transfer-reference/ct50/ct50_dual.py > /tmp/ct50-normal
+          python3 -O -B experiments/chained-transfer-reference/ct50/ct50_dual.py > /tmp/ct50-opt
+          diff -u /tmp/ct50-normal /tmp/ct50-opt
+          cat /tmp/ct50-normal
+      - name: Universal six-variable integer-polynomial identities (independent symbolic ring)
+        run: |
+          python3 -B experiments/chained-transfer-reference/ct50/ct50_symbolic.py > /tmp/ct50-symbolic
+          python3 -O -B experiments/chained-transfer-reference/ct50/ct50_symbolic.py > /tmp/ct50-symbolic-opt
+          diff -u /tmp/ct50-symbolic /tmp/ct50-symbolic-opt
+          cat /tmp/ct50-symbolic
+      - name: Independent CT49 forward-Richelot JavaScript and two-field Python baseline
+        run: |
+          node experiments/chained-transfer-reference/ct49/ct49_richelot.js > /tmp/ct49-js
+          python3 -B experiments/chained-transfer-reference/ct49/ct49_branch_audit.py > /tmp/ct49-py
+          tail -1 /tmp/ct49-js
+          tail -1 /tmp/ct49-py
