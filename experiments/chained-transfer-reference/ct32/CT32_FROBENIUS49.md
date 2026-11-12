@@ -23,11 +23,11 @@ Over **F101^6**, exactly \(\gcd(49,\lambda^6-1)=7\) elements of **each** forward
 
 ## Commands, controls and acceptance boundaries
 
-\`\`\`sh
+```sh
 python3 -B experiments/chained-transfer-reference/ct32/ct32_frobenius49.py
 python3 -O -B experiments/chained-transfer-reference/ct32/ct32_frobenius49.py
 go run experiments/chained-transfer-reference/ct32/ct32_frobenius49_independent.go
-\`\`\`
+```
 
 The first oracle counts points directly, enumerates every root of Frobenius's characteristic polynomial modulo 7 and 49, independently computes linear Hensel lifts, checks trace/determinant, enumerates stable primitive lines and calculates field degrees/fixed-point counts. Its negative controls reject false roots, repeated-root Hensel assumptions, wrong eigendirections and a spurious full-kernel claim over F101^6. The separate Go oracle recounts both curves using nested x/y loops, enumerates the modular roots again, and independently computes orders and fixed-point counts. Both are stdlib-only and ran locally without paid compute. Producer execution is **not** independent signed PCC verification.
 
