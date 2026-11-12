@@ -1,0 +1,30 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-11T23:08:34Z",
+ "id": "PCC-20261111-85aed0",
+ "kind": "statement",
+ "producer": {
+  "commit": "5d5dc81faa442de6d9a4ee8144806ab89cf9a3b8",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/successor-native-source-01.txt",
+    "sha256": "0073f8d7649a509f47e81de432bdf0ca1143ef25ed2f41c20d25f1f8bd714a25"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/successor-native-source-01.rs",
+    "sha256": "8638363ea46d6d4126b5be60cdf75686f17eb247d380ab47c0fef91083e3bae5"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "First native actual Phi2/Phi2Hat C1->C2 source01 passes all109 and all113 original elliptic scalar components through Phi1 thenPhi2:nonzero/fullorders,scalar equality,positive dual7,Jacobian composite norm49,fullreverse elliptic norm98 with inverses99/15 and direct targetcoordinates2 beta alpha. Uses unchanged field/elliptic/SplitQuotients engines,accepted C1 matched norms,predeclared beta kernels and C2 charts18;no unknown DLP labels/table. Full12317 domains/geometric controls/changed-suite remain pending. Unsigned local correctness evidence,no timing claim."
+}

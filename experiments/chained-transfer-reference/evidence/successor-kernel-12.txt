@@ -1,0 +1,102 @@
+   Compiling chained-transfer-reference v0.1.0 (/workspace/cryptanalysis/experiments/chained-transfer-reference)
+    Finished `release` profile [optimized] target(s) in 32.05s
+     Running unittests src/main.rs (experiments/chained-transfer-reference/target/release/deps/chained_transfer_reference-157d0dc5fc6a5631)
+
+running 1 test
+retained gluing[0, 0] raw[38, 0, 48, 0, 9, 0, 46]:nonsquare leading unsupported,no retwist
+retained gluing[0, 1] raw[32, 0, 26, 0, 49, 0, 41]:nonsquare leading unsupported,no retwist
+gluing[1, 0] raw[19, 0, 86, 0, 34, 0, 79],rho33,monic[68, 0, 42, 0, 26, 0, 1],charts[QuotientChart { destination: 1, shift: 76, scale: 21 }, QuotientChart { destination: 0, shift: 14, scale: 21 }],LLPoly { c1: 18, c2: 279 };descent,smoothness,actual quotient109/113 bijections,matched2-kernel support pass
+gluing[1, 1] raw[87, 0, 15, 0, 13, 0, 21],rho18,monic[33, 0, 44, 0, 92, 0, 1],charts[QuotientChart { destination: 1, shift: 98, scale: 7 }, QuotientChart { destination: 0, shift: 82, scale: 7 }],LLPoly { c1: 18, c2: 279 };descent,smoothness,actual quotient109/113 bijections,matched2-kernel support pass
+retained degenerate pairing[(0, 3), (1, 4), (2, 5)], delta0
+stable pairing[(0, 4), (1, 5), (2, 3)], delta63, target[56, 41, 62, 78, 24, 57, 80]
+stable pairing[(0, 5), (1, 3), (2, 4)], delta38, target[56, 60, 62, 23, 24, 44, 80]
+transported actual R1 pairing[(0, 5), (1, 3), (2, 4)],delta33,raw target[78, 66, 56, 53, 91, 29, 88];normalization/map/duals are the next acceptance step
+new-source stable pairing[(0, 4), (1, 5), (2, 3)],delta68,raw target[78, 35, 56, 48, 91, 72, 88]
+new-source stable pairing[(0, 5), (1, 3), (2, 4)],delta33,raw target[78, 66, 56, 53, 91, 29, 88]
+retained degenerate pairing[(0, 3), (1, 4), (2, 5)], delta0
+stable pairing[(0, 4), (1, 5), (2, 3)], delta63, target[56, 41, 62, 78, 24, 57, 80]
+stable pairing[(0, 5), (1, 3), (2, 4)], delta38, target[56, 60, 62, 23, 24, 44, 80]
+transported actual R1 pairing[(0, 5), (1, 3), (2, 4)],delta33,raw target[78, 66, 56, 53, 91, 29, 88];normalization/map/duals are the next acceptance step
+ACTUAL R2 transported pairing[(0, 4), (1, 5), (2, 3)],delta49,raw target[49, 99, 36, 35, 23, 80, 76];normalization/map/dual acceptance next
+C2 stable pairing[(0, 4), (1, 5), (2, 3)],delta49,raw target[49, 99, 36, 35, 23, 80, 76]
+C2 stable pairing[(0, 5), (1, 3), (2, 4)],delta52,raw target[49, 2, 36, 66, 23, 21, 76]
+ACTUAL R2 target scale50,normalized T2[95, 93, 43, 39, 92, 17, 1]
+# explicit-psi2-kernel/v1;p101;T^3+6T^2+13T+56=0;S^2=2;basis[1,T,T2,S,ST,ST2];T1[95,26,19,27,94,91,1];index,u_coefficients,v_coefficients,plus
+actualPsi2Kernel	0	[[1, 0, 0, 0, 0, 0]]	[]	1
+actualPsi2Kernel	1	[[37, 0, 0, 0, 0, 0], [53, 0, 0, 0, 0, 0], [1, 0, 0, 0, 0, 0]]	[[0, 0, 0, 12, 0, 0], [0, 0, 0, 68, 0, 0]]	0
+actualPsi2Kernel	2	[[37, 0, 0, 0, 0, 0], [3, 0, 0, 0, 0, 0], [1, 0, 0, 0, 0, 0]]	[[0, 0, 0, 1, 0, 0], [0, 0, 0, 64, 0, 0]]	0
+actualPsi2Kernel	3	[[25, 0, 0, 0, 0, 0], [81, 0, 0, 0, 0, 0], [1, 0, 0, 0, 0, 0]]	[[0, 0, 0, 43, 0, 0], [0, 0, 0, 45, 0, 0]]	0
+actualPsi2Kernel	4	[[25, 0, 0, 0, 0, 0], [81, 0, 0, 0, 0, 0], [1, 0, 0, 0, 0, 0]]	[[0, 0, 0, 58, 0, 0], [0, 0, 0, 56, 0, 0]]	0
+actualPsi2Kernel	5	[[37, 0, 0, 0, 0, 0], [3, 0, 0, 0, 0, 0], [1, 0, 0, 0, 0, 0]]	[[0, 0, 0, 100, 0, 0], [0, 0, 0, 37, 0, 0]]	0
+actualPsi2Kernel	6	[[37, 0, 0, 0, 0, 0], [53, 0, 0, 0, 0, 0], [1, 0, 0, 0, 0, 0]]	[[0, 0, 0, 89, 0, 0], [0, 0, 0, 33, 0, 0]]	0
+actualPsi2Kernel	7	[[88, 73, 39, 0, 0, 0], [98, 23, 80, 0, 0, 0], [1, 0, 0, 0, 0, 0]]	[[0, 0, 0, 46, 6, 39], [0, 0, 0, 46, 67, 70]]	0
+actualPsi2Kernel	8	[[73, 73, 37, 0, 0, 0], [36, 42, 98, 0, 0, 0], [1, 0, 0, 0, 0, 0]]	[[0, 0, 0, 58, 33, 13], [0, 0, 0, 9, 61, 70]]	0
+actualPsi2Kernel	9	[[96, 95, 62, 0, 0, 0], [38, 19, 0, 0, 0, 0], [1, 0, 0, 0, 0, 0]]	[[0, 0, 0, 4, 82, 27], [0, 0, 0, 23, 78, 55]]	0
+actualPsi2Kernel	10	[[99, 37, 8, 0, 0, 0], [71, 21, 33, 0, 0, 0], [1, 0, 0, 0, 0, 0]]	[[0, 0, 0, 53, 35, 34], [0, 0, 0, 74, 60, 96]]	0
+actualPsi2Kernel	11	[[24, 25, 20, 0, 0, 0], [60, 82, 100, 0, 0, 0], [1, 0, 0, 0, 0, 0]]	[[0, 0, 0, 70, 33, 88], [0, 0, 0, 22, 59, 13]]	0
+actualPsi2Kernel	12	[[16, 77, 20, 0, 0, 0], [15, 32, 9, 0, 0, 0], [1, 0, 0, 0, 0, 0]]	[[0, 0, 0, 10, 72, 43], [0, 0, 0, 66, 10, 57]]	0
+actualPsi2Kernel	13	[[65, 5, 96, 0, 0, 0], [84, 41, 7, 0, 0, 0], [1, 0, 0, 0, 0, 0]]	[[0, 0, 0, 17, 88, 69], [0, 0, 0, 89, 14, 97]]	0
+actualPsi2Kernel	14	[[68, 29, 59, 0, 0, 0], [49, 100, 50, 0, 0, 0], [1, 0, 0, 0, 0, 0]]	[[0, 0, 0, 48, 27, 51], [0, 0, 0, 29, 84, 55]]	0
+actualPsi2Kernel	15	[[24, 18, 49, 0, 0, 0], [88, 85, 88, 0, 0, 0], [1, 0, 0, 0, 0, 0]]	[[0, 0, 0, 51, 25, 81], [0, 0, 0, 0, 19, 98]]	0
+actualPsi2Kernel	16	[[94, 74, 50, 0, 0, 0], [80, 88, 49, 0, 0, 0], [1, 0, 0, 0, 0, 0]]	[[0, 0, 0, 0, 10, 86], [0, 0, 0, 60, 87, 19]]	0
+actualPsi2Kernel	17	[[31, 24, 61, 0, 0, 0], [67, 5, 65, 0, 0, 0], [1, 0, 0, 0, 0, 0]]	[[0, 0, 0, 28, 78, 37], [0, 0, 0, 73, 67, 50]]	0
+actualPsi2Kernel	18	[[45, 61, 5, 0, 0, 0], [54, 58, 47, 0, 0, 0], [1, 0, 0, 0, 0, 0]]	[[0, 0, 0, 90, 84, 52], [0, 0, 0, 14, 71, 63]]	0
+actualPsi2Kernel	19	[[35, 52, 70, 0, 0, 0], [86, 9, 85, 0, 0, 0], [1, 0, 0, 0, 0, 0]]	[[0, 0, 0, 83, 57, 2], [0, 0, 0, 88, 1, 45]]	0
+actualPsi2Kernel	20	[[70, 94, 57, 0, 0, 0], [13, 45, 61, 0, 0, 0], [1, 0, 0, 0, 0, 0]]	[[0, 0, 0, 8, 3, 51], [0, 0, 0, 46, 96, 48]]	0
+actualPsi2Kernel	21	[[60, 100, 3, 0, 0, 0], [1, 79, 72, 0, 0, 0], [1, 0, 0, 0, 0, 0]]	[[0, 0, 0, 6, 33, 90], [0, 0, 0, 43, 50, 24]]	0
+actualPsi2Kernel	22	[[81, 2, 49, 0, 0, 0], [80, 15, 33, 0, 0, 0], [1, 0, 0, 0, 0, 0]]	[[0, 0, 0, 14, 91, 19], [0, 0, 0, 93, 9, 44]]	0
+actualPsi2Kernel	23	[[38, 73, 11, 0, 0, 0], [44, 60, 7, 0, 0, 0], [1, 0, 0, 0, 0, 0]]	[[0, 0, 0, 65, 28, 45], [0, 0, 0, 52, 11, 1]]	0
+actualPsi2Kernel	24	[[53, 15, 76, 0, 0, 0], [69, 62, 55, 0, 0, 0], [1, 0, 0, 0, 0, 0]]	[[0, 0, 0, 76, 16, 39], [0, 0, 0, 93, 29, 76]]	0
+actualPsi2Kernel	25	[[25, 40, 32, 0, 0, 0], [77, 75, 3, 0, 0, 0], [1, 0, 0, 0, 0, 0]]	[[0, 0, 0, 95, 12, 71], [0, 0, 0, 32, 26, 45]]	0
+actualPsi2Kernel	26	[[47, 33, 90, 0, 0, 0], [84, 95, 52, 0, 0, 0], [1, 0, 0, 0, 0, 0]]	[[0, 0, 0, 12, 92, 12], [0, 0, 0, 33, 64, 74]]	0
+actualPsi2Kernel	27	[[54, 10, 15, 0, 0, 0], [5, 75, 16, 0, 0, 0], [1, 0, 0, 0, 0, 0]]	[[0, 0, 0, 3, 58, 94], [0, 0, 0, 52, 80, 67]]	0
+actualPsi2Kernel	28	[[60, 100, 3, 0, 0, 0], [1, 79, 72, 0, 0, 0], [1, 0, 0, 0, 0, 0]]	[[0, 0, 0, 95, 68, 11], [0, 0, 0, 58, 51, 77]]	0
+actualPsi2Kernel	29	[[54, 10, 15, 0, 0, 0], [5, 75, 16, 0, 0, 0], [1, 0, 0, 0, 0, 0]]	[[0, 0, 0, 98, 43, 7], [0, 0, 0, 49, 21, 34]]	0
+actualPsi2Kernel	30	[[47, 33, 90, 0, 0, 0], [84, 95, 52, 0, 0, 0], [1, 0, 0, 0, 0, 0]]	[[0, 0, 0, 89, 9, 89], [0, 0, 0, 68, 37, 27]]	0
+actualPsi2Kernel	31	[[25, 40, 32, 0, 0, 0], [77, 75, 3, 0, 0, 0], [1, 0, 0, 0, 0, 0]]	[[0, 0, 0, 6, 89, 30], [0, 0, 0, 69, 75, 56]]	0
+actualPsi2Kernel	32	[[53, 15, 76, 0, 0, 0], [69, 62, 55, 0, 0, 0], [1, 0, 0, 0, 0, 0]]	[[0, 0, 0, 25, 85, 62], [0, 0, 0, 8, 72, 25]]	0
+actualPsi2Kernel	33	[[38, 73, 11, 0, 0, 0], [44, 60, 7, 0, 0, 0], [1, 0, 0, 0, 0, 0]]	[[0, 0, 0, 36, 73, 56], [0, 0, 0, 49, 90, 100]]	0
+actualPsi2Kernel	34	[[81, 2, 49, 0, 0, 0], [80, 15, 33, 0, 0, 0], [1, 0, 0, 0, 0, 0]]	[[0, 0, 0, 87, 10, 82], [0, 0, 0, 8, 92, 57]]	0
+actualPsi2Kernel	35	[[68, 29, 59, 0, 0, 0], [49, 100, 50, 0, 0, 0], [1, 0, 0, 0, 0, 0]]	[[0, 0, 0, 53, 74, 50], [0, 0, 0, 72, 17, 46]]	0
+actualPsi2Kernel	36	[[70, 94, 57, 0, 0, 0], [13, 45, 61, 0, 0, 0], [1, 0, 0, 0, 0, 0]]	[[0, 0, 0, 93, 98, 50], [0, 0, 0, 55, 5, 53]]	0
+actualPsi2Kernel	37	[[35, 52, 70, 0, 0, 0], [86, 9, 85, 0, 0, 0], [1, 0, 0, 0, 0, 0]]	[[0, 0, 0, 18, 44, 99], [0, 0, 0, 13, 100, 56]]	0
+actualPsi2Kernel	38	[[45, 61, 5, 0, 0, 0], [54, 58, 47, 0, 0, 0], [1, 0, 0, 0, 0, 0]]	[[0, 0, 0, 11, 17, 49], [0, 0, 0, 87, 30, 38]]	0
+actualPsi2Kernel	39	[[31, 24, 61, 0, 0, 0], [67, 5, 65, 0, 0, 0], [1, 0, 0, 0, 0, 0]]	[[0, 0, 0, 73, 23, 64], [0, 0, 0, 28, 34, 51]]	0
+actualPsi2Kernel	40	[[94, 74, 50, 0, 0, 0], [80, 88, 49, 0, 0, 0], [1, 0, 0, 0, 0, 0]]	[[0, 0, 0, 0, 91, 15], [0, 0, 0, 41, 14, 82]]	0
+actualPsi2Kernel	41	[[24, 18, 49, 0, 0, 0], [88, 85, 88, 0, 0, 0], [1, 0, 0, 0, 0, 0]]	[[0, 0, 0, 50, 76, 20], [0, 0, 0, 0, 82, 3]]	0
+actualPsi2Kernel	42	[[88, 73, 39, 0, 0, 0], [98, 23, 80, 0, 0, 0], [1, 0, 0, 0, 0, 0]]	[[0, 0, 0, 55, 95, 62], [0, 0, 0, 55, 34, 31]]	0
+actualPsi2Kernel	43	[[65, 5, 96, 0, 0, 0], [84, 41, 7, 0, 0, 0], [1, 0, 0, 0, 0, 0]]	[[0, 0, 0, 84, 13, 32], [0, 0, 0, 12, 87, 4]]	0
+actualPsi2Kernel	44	[[16, 77, 20, 0, 0, 0], [15, 32, 9, 0, 0, 0], [1, 0, 0, 0, 0, 0]]	[[0, 0, 0, 91, 29, 58], [0, 0, 0, 35, 91, 44]]	0
+actualPsi2Kernel	45	[[24, 25, 20, 0, 0, 0], [60, 82, 100, 0, 0, 0], [1, 0, 0, 0, 0, 0]]	[[0, 0, 0, 31, 68, 13], [0, 0, 0, 79, 42, 88]]	0
+actualPsi2Kernel	46	[[99, 37, 8, 0, 0, 0], [71, 21, 33, 0, 0, 0], [1, 0, 0, 0, 0, 0]]	[[0, 0, 0, 48, 66, 67], [0, 0, 0, 27, 41, 5]]	0
+actualPsi2Kernel	47	[[96, 95, 62, 0, 0, 0], [38, 19, 0, 0, 0, 0], [1, 0, 0, 0, 0, 0]]	[[0, 0, 0, 97, 19, 74], [0, 0, 0, 78, 23, 46]]	0
+actualPsi2Kernel	48	[[73, 73, 37, 0, 0, 0], [36, 42, 98, 0, 0, 0], [1, 0, 0, 0, 0, 0]]	[[0, 0, 0, 43, 68, 88], [0, 0, 0, 92, 40, 31]]	0
+PASS actual49 KerPsi2=R1(KerPhi2),all7-annihilators/all49 geometric dualR1 norm2/all2401 additions/Frobenius5/6,actualP2 beta killing;identification uses separate global square/degree49. Compact witness output includes every class in the declared existingFp6 basis.
+test nonsplit::map::seven_glue::torsion::successor::geometric::continuation::successor_chain_explicit_kernel49_group_and_frobenius ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 80 filtered out; finished in 17.25s
+
+     Running tests/frobenius_independent.rs (experiments/chained-transfer-reference/target/release/deps/frobenius_independent-70dd63d42d874561)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/richelot_automorphisms.rs (experiments/chained-transfer-reference/target/release/deps/richelot_automorphisms-1cffdb9f6310ade7)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/seven_independent.rs (experiments/chained-transfer-reference/target/release/deps/seven_independent-7557517fa72787fc)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/successor_automorphisms.rs (experiments/chained-transfer-reference/target/release/deps/successor_automorphisms-caccb791c1c4cfd7)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.00s
+

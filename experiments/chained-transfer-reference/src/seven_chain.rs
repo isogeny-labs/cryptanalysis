@@ -200,7 +200,7 @@ fn closed_fibre_explicit_psi_kernel49_group_dual_and_frobenius() {
 }
 
 impl Bridge {
-    fn flat(&self, a: &Element) -> ER {
+    pub(super) fn flat(&self, a: &Element) -> ER {
         let eval = |p: &crate::reference::FpPoly| {
             p.coeffs.iter().rev().fold(self.f.zero(), |v, c| {
                 self.f
@@ -213,7 +213,7 @@ impl Bridge {
     }
 }
 
-fn target_branch_roots(b: &Bridge, r: &RichelotMap) -> Vec<Element> {
+pub(super) fn target_branch_roots(b: &Bridge, r: &RichelotMap) -> Vec<Element> {
     let mut roots = vec![];
     for h in &r.h {
         assert_eq!(h.len(), 3);
@@ -237,7 +237,7 @@ fn target_branch_roots(b: &Bridge, r: &RichelotMap) -> Vec<Element> {
 
 /// Branch divisors have degree2 finite support,so their balanced-infinity
 /// correction is zero. Reverse sign is the existing polarized-dual choice.
-fn richelot_two_action(
+pub(super) fn richelot_two_action(
     r: &RichelotMap,
     roots: &[Element],
     reverse: bool,
@@ -351,13 +351,13 @@ fn composite_kills_all_geometric_two_and_retains_elliptic_embeddings() {
     println!("PASS actualR0/R1/dualR0 geometric16-class actions,all256 additions each,image4/four preimages,exact kernel transport,compositeR1 Phi R0Hat kills ALL16 T0[2] classes;all12 elliptic2-torsion intersection controls preserve embeddings;global regular quotient/degree/polarization/nonisomorphism argument remains written");
 }
 
-struct SevenChain {
+pub(super) struct SevenChain {
     t: SevenTransfer,
     r0: RichelotMap,
     r1: RichelotMap,
 }
 impl SevenChain {
-    fn new() -> Self {
+    pub(super) fn new() -> Self {
         let t = SevenTransfer::new();
         let b = Bridge::new();
         let r0 =
@@ -422,11 +422,11 @@ impl SevenChain {
             self.t.target.pulls(&components[0], &components[1])
         }
     }
-    fn forward(&self, d: &Class) -> super::super::super::Result<Class> {
+    pub(super) fn forward(&self, d: &Class) -> super::super::super::Result<Class> {
         self.r1
             .forward_closed(&self.quarter_phi(&self.r0.dual_closed(d)?, false)?)
     }
-    fn dual(&self, d: &Class) -> super::super::super::Result<Class> {
+    pub(super) fn dual(&self, d: &Class) -> super::super::super::Result<Class> {
         self.r0
             .forward_closed(&self.quarter_phi(&self.r1.dual_closed(d)?, true)?)
     }
