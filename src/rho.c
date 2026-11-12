@@ -135,9 +135,10 @@ typedef struct rho_walk {
     uint64_t since_dp;
     ca_elem saved;
     uint32_t win;
-    ca_elem hist[4]; /* the last committed points, newest first */
+    ca_elem hist[4]; /* the last committed points, a ring: newest at hist_pos */
     uint64_t hist_h[4];
     uint32_t hist_n;
+    uint32_t hist_pos;
 #ifdef CA_RHO_TRACE
     uint64_t ring[RHO_RING];
     uint64_t ring_n;   /* committed points since the walk start or the last escape */
@@ -412,6 +413,13 @@ static inline uint32_t rho_index(const rho_shared *sh, uint64_t h)
     return (uint32_t)(((ca_u128)low * sh->r) >> 64);
 }
 
+/* The look-ahead's next multiplier, (i + 1) mod r, without a division when
+ * r is a power of two. */
+static inline uint32_t rho_next_index(const rho_shared *sh, uint32_t i)
+{
+    return sh->r_mask ? (i + 1) & sh->r_mask : (i + 1) % sh->r;
+}
+
 static inline void exp_add(uint64_t n, uint64_t *a, uint64_t d) { *a = ca_addmod(*a, d, n); }
 
 /* k * (the base the table was built from) as the sum of the stored
@@ -525,7 +533,7 @@ static void walk_step_single(rho_shared *sh, rho_walk *w, uint64_t *ops)
          * it is; the 2-cycle it makes is caught by the window test.  The
          * choice depends on the point alone, so merged walks stay merged. */
         if (sh->negmap && rho_index(sh, h) == i && rejected + 1 < sh->r) {
-            i = (i + 1) % sh->r;
+            i = rho_next_index(sh, i);
             rejected++;
             continue;
         }
@@ -845,7 +853,7 @@ static void *rho_thread_main(void *arg)
                 h = ca_group_hash(g, &Yn[w]);
             }
             if (sh->negmap && rho_index(sh, h) == wk->idx && wk->retry + 1 < sh->r) {
-                wk->idx = (wk->idx + 1) % sh->r;
+                wk->idx = rho_next_index(sh, wk->idx);
                 wk->retry++; /* bounded as in walk_step_single */
 #ifdef CA_RHO_TRACE
                 sh->tr.retry_slots++;
@@ -875,17 +883,19 @@ static void *rho_thread_main(void *arg)
 
             if (sh->negmap) {
                 /* a repeat of the point two or four steps back is a 2- or 4-cycle */
-                int in_cycle = (wk->hist_n >= 2 && h == wk->hist_h[1] &&
-                                ca_group_equal(g, &wk->Y, &wk->hist[1])) ||
-                               (wk->hist_n >= 4 && h == wk->hist_h[3] &&
-                                ca_group_equal(g, &wk->Y, &wk->hist[3]));
+                /* hist is a ring with the newest point at hist_pos, so the
+                 * point j steps back is at (hist_pos - j) & 3 and a commit
+                 * writes one slot instead of shifting all four */
+                const uint32_t p1 = (wk->hist_pos - 1) & 3, p3 = (wk->hist_pos - 3) & 3;
+                int in_cycle = (wk->hist_n >= 2 && h == wk->hist_h[p1] &&
+                                ca_group_equal(g, &wk->Y, &wk->hist[p1])) ||
+                               (wk->hist_n >= 4 && h == wk->hist_h[p3] &&
+                                ca_group_equal(g, &wk->Y, &wk->hist[p3]));
                 if (!in_cycle) {
-                    for (int k = 3; k > 0; k--) {
-                        wk->hist[k] = wk->hist[k - 1];
-                        wk->hist_h[k] = wk->hist_h[k - 1];
-                    }
-                    wk->hist[0] = wk->Y;
-                    wk->hist_h[0] = h;
+                    const uint32_t p0 = (wk->hist_pos + 1) & 3;
+                    wk->hist_pos = p0;
+                    wk->hist[p0] = wk->Y;
+                    wk->hist_h[p0] = h;
                     if (wk->hist_n < 4) wk->hist_n++;
                     if (wk->win == 0) {
                         wk->saved = wk->Y;
