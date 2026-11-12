@@ -84,6 +84,8 @@ def check(ok,message):
     if not ok:raise AssertionError(message)
 
 def main():
+    check(all(polyeval((56,13,6,1),F(j))!=F(0) for j in range(P)),
+          "cubic modulus must be irreducible")
     t=F((0,1,0)); z=[t,power(t,P),power(t,P*P)]
     check(power(z[2],P)==z[0],'Frobenius closure g')
     check(all(polyeval((56,13,6,1),r)==F(0) for r in z),'cubic roots')
