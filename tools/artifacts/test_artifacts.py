@@ -260,6 +260,17 @@ class RoundTrip(unittest.TestCase):
 class Policy(unittest.TestCase):
     P = artifacts.DEFAULT_POLICY
 
+    def test_required_pcc_ledger_stays_in_git_without_exempting_run_data(self):
+        # The ledger reader compares Git-history prefixes at this exact path.
+        policy = artifacts.Config.load(TOOL.parents[2]).policy
+        self.assertEqual(policy["data_min_bytes"], 64 << 10)
+        self.assertTrue(artifacts.belongs_in_store("pcc/ledger.jsonl", 70_000, self.P))
+        self.assertFalse(artifacts.belongs_in_store("pcc/ledger.jsonl", 70_000, policy))
+        for path in ("pcc/other.jsonl", "experiments/replay/run.jsonl",
+                     "experiments/replay/run.log", "experiments/replay/raw.tar.xz"):
+            with self.subTest(path=path):
+                self.assertTrue(artifacts.belongs_in_store(path, 70_000, policy))
+
     def test_rules(self):
         f = artifacts.belongs_in_store
         self.assertTrue(f("a/b.jsonl", 70_000, self.P))
