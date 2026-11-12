@@ -15,7 +15,9 @@ depends on first finding a Step-8 Weierstrass conversion.  Both paths reject
 any direction that changes a supplied point-incidence row or coefficient
 residue class and recheck those properties on the result.
 
-The frozen p=67 comparison has **not run**.  The mandatory pre-run checkpoint
+**Update 2026-11-12:** the frozen p=67 comparison ran once under an owner waiver of the S3 checkpoint (PROTOCOL.md, "Amendment 2026-11-12"; `runs/run-20261112/`): the exact neighborhood (radii 1, 2, 4) gave the same 56-bit discriminant as Babai (radius 0), a bounded null result `[pcc:unverified]`. The text below is the 2026-11-02 state.
+
+The frozen p=67 comparison had **not run** as of 2026-11-02.  The mandatory pre-run checkpoint
 upload is denied by both the installed presigned token (HTTP 403) and the
 2026-11-02 managed AWS identity (`PutObject AccessDenied`).  The exact blocker
 and exit condition are recorded in

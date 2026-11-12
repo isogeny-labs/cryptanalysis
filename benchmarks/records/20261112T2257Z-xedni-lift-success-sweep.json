@@ -1,0 +1,264 @@
+{
+  "branch": "claude/ecdlp-chained-transfers-8cpiek",
+  "closed_utc": "2026-11-12T23:36:48+00:00",
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "research/xedni_lift_success_20261112/run_all.py",
+        "suite/target/release/ca-icx",
+        "research/xedni_lift_success_20261112/data"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "started_utc": "2026-11-12T22:57:22+00:00",
+      "wall_s": 2152.352
+    }
+  ],
+  "commit": "0d69fc5526c02c4071db896d8800be74929f4ff7",
+  "commit_dirty": true,
+  "created_utc": "2026-11-12T22:57:17+00:00",
+  "curve_uid": null,
+  "entries": [],
+  "host": {
+    "cpu": "Intel(R) Xeon(R) Processor @ 2.30GHz",
+    "cpus_online": 4,
+    "hostname": "vm",
+    "isolation": "unstated",
+    "platform": "Linux-6.18.44-fc-v378-x86_64-with-glibc2.39"
+  },
+  "id": "20261112T2257Z-xedni-lift-success-sweep",
+  "metrics": [
+    {
+      "baseline": null,
+      "better": "neutral",
+      "n": null,
+      "name": "trials_ok",
+      "note": "r=3..6, 2 curve families x 2 lift families, 12 primes",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "count",
+      "value": 500242.0
+    },
+    {
+      "baseline": null,
+      "better": "neutral",
+      "n": null,
+      "name": "successes_certified",
+      "note": "exact-verified relations in box |n_i|<=6",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "count",
+      "value": 572.0
+    },
+    {
+      "baseline": null,
+      "better": "neutral",
+      "n": null,
+      "name": "successes_non_line",
+      "note": "",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "count",
+      "value": 96.0
+    },
+    {
+      "baseline": null,
+      "better": "lower",
+      "n": null,
+      "name": "wall",
+      "note": "4 processes; not a speed claim",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "wall_s",
+      "value": 2152.0
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 191,
+      "name": "pooled_slope_beta_p_ge_127",
+      "note": "log-log slope of success rate vs p, 99.7% Wald interval, prediction -1",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        -1.337,
+        -1.012
+      ],
+      "unit": "ratio",
+      "value": -1.174
+    },
+    {
+      "baseline": null,
+      "better": "lower",
+      "n": 150057,
+      "name": "success_rate_p65521",
+      "note": "0 successes; 95% upper limit",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "percent",
+      "value": 0.0
+    },
+    {
+      "baseline": null,
+      "better": "lower",
+      "n": 5959,
+      "name": "success_rate_p127",
+      "note": "",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.05,
+        1.65
+      ],
+      "unit": "percent",
+      "value": 1.326
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 191,
+      "name": "pooled_c0_hat_beta_fixed_minus1",
+      "note": "ML C in rate=C/p, p>=127",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ratio",
+      "value": 1.165
+    }
+  ],
+  "problem": "xedni:lift-success-toy-primes",
+  "raw": [
+    {
+      "bytes": 158110,
+      "path": "research/xedni_lift_success_20261112/data/rows-p1021.jsonl.gz",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/58/58d9cee6c8686f497544ebe6e5ac626b61043e071bd6561c5d9b07e663fb98f1",
+      "sha256": "58d9cee6c8686f497544ebe6e5ac626b61043e071bd6561c5d9b07e663fb98f1",
+      "uploaded": false
+    },
+    {
+      "bytes": 56987,
+      "path": "research/xedni_lift_success_20261112/data/rows-p127.jsonl.gz",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/e7/e7b77e9cb898c18c41dac4d28902657c424f8613dbc1a1cdbe85a731e5329f2a",
+      "sha256": "e7b77e9cb898c18c41dac4d28902657c424f8613dbc1a1cdbe85a731e5329f2a",
+      "uploaded": false
+    },
+    {
+      "bytes": 633632,
+      "path": "research/xedni_lift_success_20261112/data/rows-p16381.jsonl.gz",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/4c/4c86cc72bf5658a107a484a35891c918d3188e7b755bb9a6532dd35b50e4467e",
+      "sha256": "4c86cc72bf5658a107a484a35891c918d3188e7b755bb9a6532dd35b50e4467e",
+      "uploaded": false
+    },
+    {
+      "bytes": 238931,
+      "path": "research/xedni_lift_success_20261112/data/rows-p2039.jsonl.gz",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/99/996a926ae72e544a3b965dbaa2c9db4bbe7a50dc87de656d101015f7083e9371",
+      "sha256": "996a926ae72e544a3b965dbaa2c9db4bbe7a50dc87de656d101015f7083e9371",
+      "uploaded": false
+    },
+    {
+      "bytes": 83817,
+      "path": "research/xedni_lift_success_20261112/data/rows-p251.jsonl.gz",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/0a/0a03f7cf50b097b097514970d01a71137215daaa053a2f44081f7f6ebc51d124",
+      "sha256": "0a03f7cf50b097b097514970d01a71137215daaa053a2f44081f7f6ebc51d124",
+      "uploaded": false
+    },
+    {
+      "bytes": 27817,
+      "path": "research/xedni_lift_success_20261112/data/rows-p31.jsonl.gz",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/6b/6b937fe9d06d0747659ce82f857323842d510501374acabce57bced711f48a84",
+      "sha256": "6b937fe9d06d0747659ce82f857323842d510501374acabce57bced711f48a84",
+      "uploaded": false
+    },
+    {
+      "bytes": 881980,
+      "path": "research/xedni_lift_success_20261112/data/rows-p32749.jsonl.gz",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/6b/6bffbf2c7b3fe5cee0ff6eca959cc0921e646af80e9440af193532ba63c21186",
+      "sha256": "6bffbf2c7b3fe5cee0ff6eca959cc0921e646af80e9440af193532ba63c21186",
+      "uploaded": false
+    },
+    {
+      "bytes": 316467,
+      "path": "research/xedni_lift_success_20261112/data/rows-p4093.jsonl.gz",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/0c/0cdfaa5b2fe5b4cd323c64a1791c244d9d967978ede2cc26ba0f5b7b6c04d0a1",
+      "sha256": "0cdfaa5b2fe5b4cd323c64a1791c244d9d967978ede2cc26ba0f5b7b6c04d0a1",
+      "uploaded": false
+    },
+    {
+      "bytes": 117194,
+      "path": "research/xedni_lift_success_20261112/data/rows-p509.jsonl.gz",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/d0/d06e65754bd03a0810abf900890efbb5d9ed6b0eb70aa87e11570ea990a9b238",
+      "sha256": "d06e65754bd03a0810abf900890efbb5d9ed6b0eb70aa87e11570ea990a9b238",
+      "uploaded": false
+    },
+    {
+      "bytes": 1251018,
+      "path": "research/xedni_lift_success_20261112/data/rows-p65521.jsonl.gz",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/c6/c6559a91f6c44bf76741ebc30dc04b483d59319f22babc78299ae0622135d1c0",
+      "sha256": "c6559a91f6c44bf76741ebc30dc04b483d59319f22babc78299ae0622135d1c0",
+      "uploaded": false
+    },
+    {
+      "bytes": 42698,
+      "path": "research/xedni_lift_success_20261112/data/rows-p67.jsonl.gz",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/16/1622303b0a72be215b695a086b99af487db4eb8517f1e6e90fdf7a0acff148d2",
+      "sha256": "1622303b0a72be215b695a086b99af487db4eb8517f1e6e90fdf7a0acff148d2",
+      "uploaded": false
+    },
+    {
+      "bytes": 426899,
+      "path": "research/xedni_lift_success_20261112/data/rows-p8191.jsonl.gz",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/e9/e92ca289fd9ca311170c68b2b8caa18d9c9a807edfdde390348d5bc313c1999e",
+      "sha256": "e92ca289fd9ca311170c68b2b8caa18d9c9a807edfdde390348d5bc313c1999e",
+      "uploaded": false
+    },
+    {
+      "bytes": 52563,
+      "path": "research/xedni_lift_success_20261112/results.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/38/3898e78020d4a2678e40ee504de01b8d760b49b151c64fe03531c172bee09168",
+      "sha256": "3898e78020d4a2678e40ee504de01b8d760b49b151c64fe03531c172bee09168",
+      "uploaded": false
+    },
+    {
+      "bytes": 17949,
+      "path": "research/xedni_lift_success_20261112/run.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/72/72b273dab941cabc2fbbf492a31f980cbc1010ca4345121e26cdf46d65a28821",
+      "sha256": "72b273dab941cabc2fbbf492a31f980cbc1010ca4345121e26cdf46d65a28821",
+      "uploaded": false
+    },
+    {
+      "bytes": 103,
+      "path": "research/xedni_lift_success_20261112/dispersion.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/3f/3fc58e24ccc8d9cf7816ba131831dcc88fbdaa4a4796a5a438492836fbd98d54",
+      "sha256": "3fc58e24ccc8d9cf7816ba131831dcc88fbdaa4a4796a5a438492836fbd98d54",
+      "uploaded": false
+    },
+    {
+      "bytes": 1031,
+      "path": "research/xedni_lift_success_20261112/FREEZE.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/8a/8ab844dfe2bc3c52f58eb45d1723fe56fa092a4f2b2b29799c2c5a47c9e5afa9",
+      "sha256": "8ab844dfe2bc3c52f58eb45d1723fe56fa092a4f2b2b29799c2c5a47c9e5afa9",
+      "uploaded": false
+    }
+  ],
+  "repo": "cryptanalysis",
+  "reports": {
+    "pdf": "research/xedni_lift_success_20261112/REPORT.pdf",
+    "png": [],
+    "svg": [
+      "research/xedni_lift_success_20261112/success_vs_p.svg"
+    ]
+  },
+  "schema": "bench.record/v1",
+  "session": null,
+  "slug": "xedni-lift-success-sweep",
+  "status": "measured",
+  "summary": "Xedni lift success over p=31..65521 (500,242 trials, 572 certified successes): pooled slope -1.17 [-1.34,-1.01]; no family bounded away from 1/p; mostly collinear-lift events [pcc:unverified]",
+  "validation": null
+}

@@ -1,11 +1,11 @@
 {
   "headline_unit": "S",
-  "latest_record": "20261110T0408Z-clmad-audit",
+  "latest_record": "20261112T2333Z-xedni-p67-frozen-comparison",
   "note": "Every value is quoted from the record it names, in that record's unit. Percentages and ratios under 'derived' are computed here from those values and are not measurements. Series in different units are never compared.",
   "records": {
     "censored": 0,
     "invalid": 0,
-    "measured": 16,
+    "measured": 18,
     "open": 0
   },
   "repo": "cryptanalysis",
@@ -2561,6 +2561,281 @@
       ],
       "problem": "rho-plain-negmap-counts-20261030",
       "unit": "ratio"
+    },
+    {
+      "better": "neutral",
+      "first": 56.0,
+      "latest": 56.0,
+      "latest_derived": {},
+      "metric": "discriminant_bits_babai_radius0",
+      "points": [
+        {
+          "commit": "0d69fc5526c0",
+          "date": "2026-11-12",
+          "derived": {},
+          "n": null,
+          "record": "20261112T2333Z-xedni-p67-frozen-comparison",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "Frozen p=67 xedni affine-lift comparison under the owner's 2026-11-12 checkpoint waiver: all 4 radii pass acceptance; exact neighbourhood search gives no gain over Babai (56 discriminant bits from 1114 raw) [pcc:unverified]",
+          "value": 56.0
+        }
+      ],
+      "problem": "xedni:affine-cvp-p67-frozen",
+      "unit": "count"
+    },
+    {
+      "better": "neutral",
+      "first": 56.0,
+      "latest": 56.0,
+      "latest_derived": {},
+      "metric": "discriminant_bits_best_radius4",
+      "points": [
+        {
+          "commit": "0d69fc5526c0",
+          "date": "2026-11-12",
+          "derived": {},
+          "n": null,
+          "record": "20261112T2333Z-xedni-p67-frozen-comparison",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "Frozen p=67 xedni affine-lift comparison under the owner's 2026-11-12 checkpoint waiver: all 4 radii pass acceptance; exact neighbourhood search gives no gain over Babai (56 discriminant bits from 1114 raw) [pcc:unverified]",
+          "value": 56.0
+        }
+      ],
+      "problem": "xedni:affine-cvp-p67-frozen",
+      "unit": "count"
+    },
+    {
+      "better": "neutral",
+      "first": 1114.0,
+      "latest": 1114.0,
+      "latest_derived": {},
+      "metric": "discriminant_bits_raw",
+      "points": [
+        {
+          "commit": "0d69fc5526c0",
+          "date": "2026-11-12",
+          "derived": {},
+          "n": null,
+          "record": "20261112T2333Z-xedni-p67-frozen-comparison",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "Frozen p=67 xedni affine-lift comparison under the owner's 2026-11-12 checkpoint waiver: all 4 radii pass acceptance; exact neighbourhood search gives no gain over Babai (56 discriminant bits from 1114 raw) [pcc:unverified]",
+          "value": 1114.0
+        }
+      ],
+      "problem": "xedni:affine-cvp-p67-frozen",
+      "unit": "count"
+    },
+    {
+      "better": "higher",
+      "first": 1.165,
+      "latest": 1.165,
+      "latest_derived": {
+        "improvement_vs_first_percent": -0.0
+      },
+      "metric": "pooled_c0_hat_beta_fixed_minus1",
+      "points": [
+        {
+          "commit": "0d69fc5526c0",
+          "date": "2026-11-12",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 191,
+          "record": "20261112T2257Z-xedni-lift-success-sweep",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "Xedni lift success over p=31..65521 (500,242 trials, 572 certified successes): pooled slope -1.17 [-1.34,-1.01]; no family bounded away from 1/p; mostly collinear-lift events [pcc:unverified]",
+          "value": 1.165
+        }
+      ],
+      "problem": "xedni:lift-success-toy-primes",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": -1.174,
+      "latest": -1.174,
+      "latest_derived": {
+        "improvement_vs_first_percent": -0.0
+      },
+      "metric": "pooled_slope_beta_p_ge_127",
+      "points": [
+        {
+          "commit": "0d69fc5526c0",
+          "date": "2026-11-12",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 191,
+          "record": "20261112T2257Z-xedni-lift-success-sweep",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            -1.337,
+            -1.012
+          ],
+          "summary": "Xedni lift success over p=31..65521 (500,242 trials, 572 certified successes): pooled slope -1.17 [-1.34,-1.01]; no family bounded away from 1/p; mostly collinear-lift events [pcc:unverified]",
+          "value": -1.174
+        }
+      ],
+      "problem": "xedni:lift-success-toy-primes",
+      "unit": "ratio"
+    },
+    {
+      "better": "lower",
+      "first": 1.326,
+      "latest": 1.326,
+      "latest_derived": {
+        "improvement_vs_first_percent": 0.0
+      },
+      "metric": "success_rate_p127",
+      "points": [
+        {
+          "commit": "0d69fc5526c0",
+          "date": "2026-11-12",
+          "derived": {
+            "improvement_vs_first_percent": 0.0
+          },
+          "n": 5959,
+          "record": "20261112T2257Z-xedni-lift-success-sweep",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            1.05,
+            1.65
+          ],
+          "summary": "Xedni lift success over p=31..65521 (500,242 trials, 572 certified successes): pooled slope -1.17 [-1.34,-1.01]; no family bounded away from 1/p; mostly collinear-lift events [pcc:unverified]",
+          "value": 1.326
+        }
+      ],
+      "problem": "xedni:lift-success-toy-primes",
+      "unit": "percent"
+    },
+    {
+      "better": "lower",
+      "first": 0.0,
+      "latest": 0.0,
+      "latest_derived": {},
+      "metric": "success_rate_p65521",
+      "points": [
+        {
+          "commit": "0d69fc5526c0",
+          "date": "2026-11-12",
+          "derived": {},
+          "n": 150057,
+          "record": "20261112T2257Z-xedni-lift-success-sweep",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "Xedni lift success over p=31..65521 (500,242 trials, 572 certified successes): pooled slope -1.17 [-1.34,-1.01]; no family bounded away from 1/p; mostly collinear-lift events [pcc:unverified]",
+          "value": 0.0
+        }
+      ],
+      "problem": "xedni:lift-success-toy-primes",
+      "unit": "percent"
+    },
+    {
+      "better": "neutral",
+      "first": 572.0,
+      "latest": 572.0,
+      "latest_derived": {},
+      "metric": "successes_certified",
+      "points": [
+        {
+          "commit": "0d69fc5526c0",
+          "date": "2026-11-12",
+          "derived": {},
+          "n": null,
+          "record": "20261112T2257Z-xedni-lift-success-sweep",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "Xedni lift success over p=31..65521 (500,242 trials, 572 certified successes): pooled slope -1.17 [-1.34,-1.01]; no family bounded away from 1/p; mostly collinear-lift events [pcc:unverified]",
+          "value": 572.0
+        }
+      ],
+      "problem": "xedni:lift-success-toy-primes",
+      "unit": "count"
+    },
+    {
+      "better": "neutral",
+      "first": 96.0,
+      "latest": 96.0,
+      "latest_derived": {},
+      "metric": "successes_non_line",
+      "points": [
+        {
+          "commit": "0d69fc5526c0",
+          "date": "2026-11-12",
+          "derived": {},
+          "n": null,
+          "record": "20261112T2257Z-xedni-lift-success-sweep",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "Xedni lift success over p=31..65521 (500,242 trials, 572 certified successes): pooled slope -1.17 [-1.34,-1.01]; no family bounded away from 1/p; mostly collinear-lift events [pcc:unverified]",
+          "value": 96.0
+        }
+      ],
+      "problem": "xedni:lift-success-toy-primes",
+      "unit": "count"
+    },
+    {
+      "better": "neutral",
+      "first": 500242.0,
+      "latest": 500242.0,
+      "latest_derived": {},
+      "metric": "trials_ok",
+      "points": [
+        {
+          "commit": "0d69fc5526c0",
+          "date": "2026-11-12",
+          "derived": {},
+          "n": null,
+          "record": "20261112T2257Z-xedni-lift-success-sweep",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "Xedni lift success over p=31..65521 (500,242 trials, 572 certified successes): pooled slope -1.17 [-1.34,-1.01]; no family bounded away from 1/p; mostly collinear-lift events [pcc:unverified]",
+          "value": 500242.0
+        }
+      ],
+      "problem": "xedni:lift-success-toy-primes",
+      "unit": "count"
+    },
+    {
+      "better": "lower",
+      "first": 2152.0,
+      "latest": 2152.0,
+      "latest_derived": {
+        "improvement_vs_first_percent": 0.0
+      },
+      "metric": "wall",
+      "points": [
+        {
+          "commit": "0d69fc5526c0",
+          "date": "2026-11-12",
+          "derived": {
+            "improvement_vs_first_percent": 0.0
+          },
+          "n": null,
+          "record": "20261112T2257Z-xedni-lift-success-sweep",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "Xedni lift success over p=31..65521 (500,242 trials, 572 certified successes): pooled slope -1.17 [-1.34,-1.01]; no family bounded away from 1/p; mostly collinear-lift events [pcc:unverified]",
+          "value": 2152.0
+        }
+      ],
+      "problem": "xedni:lift-success-toy-primes",
+      "unit": "wall_s"
     }
   ],
   "units": {

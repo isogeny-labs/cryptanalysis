@@ -1,10 +1,10 @@
 # Xedni affine-CVP checkpoint access
 
-- **Status:** open
+- **Status:** open (p=67 toy run completed 2026-11-12 under owner waiver; credentials still missing)
 - **Kind:** access/tool limit
 - **Affected work:** [frozen xedni affine-lift protocol](../research/xedni_lift_optimizer_20261101/PROTOCOL.md)
 - **Next action owner:** environment operator for checkpoint credentials; research agent for the frozen run
-- **Last updated:** 2026-11-02
+- **Last updated:** 2026-11-12
 
 ## Problem
 
@@ -102,3 +102,14 @@ authorization blocker remains unresolved; no frozen row was run.
 2026-11-02: the post-direct-discriminant gate also failed, this time during
 TLS negotiation.  No frozen row was run and the gate remains mandatory.
 
+
+2026-11-12: the owner waived the S3 resume-checkpoint requirement for toy-size
+xedni runs, verbatim: "for this toy-size run only, the S3 resume-checkpoint
+requirement is waived because no upload credential exists in this container."
+(given in the crypto session; scope: the frozen p=67 run and
+`research/xedni_lift_success_20261112/`; bench records, the frozen protocol and
+certificates are not waived).  The frozen p=67 comparison then ran once, as
+specified, with the checkpoint gate not run; result and amendment are in the
+protocol's "Amendment 2026-11-12" and `runs/run-20261112/`.  The credential
+blocker itself is not resolved, so this record stays open for runs that are
+not toy-size.
