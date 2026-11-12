@@ -114,6 +114,9 @@ typedef struct rho_shared {
     const char *checkpoint_path;
 
     pthread_mutex_t lock;
+    /* 1 when the one walker runs on the calling thread with no monitor:
+     * nothing else touches tab, so the DP insert takes no lock */
+    int single;
     ca_htab tab;
     atomic_int done;
     atomic_uint_fast64_t total_ops;
@@ -576,6 +579,26 @@ static uint32_t walk_escape_cycle(rho_shared *sh, rho_walk *w, uint64_t *ops)
     return cycle_len;
 }
 
+/* The distinguished-point insert.  sh->single is set before the walker
+ * starts and never changes; with one walker on the calling thread and no
+ * monitor thread nothing else reads or writes the table, so the mutex is
+ * skipped.  The same entry is inserted either way. */
+static inline int rho_dp_insert(rho_shared *sh, uint64_t h, uint64_t a, uint64_t b, uint64_t *oa,
+                                uint64_t *ob, size_t *entries)
+{
+    int rc;
+    if (sh->single) {
+        rc = ca_htab_insert(&sh->tab, h, a, b, oa, ob);
+        *entries = sh->tab.count;
+        return rc;
+    }
+    pthread_mutex_lock(&sh->lock);
+    rc = ca_htab_insert(&sh->tab, h, a, b, oa, ob);
+    *entries = sh->tab.count;
+    pthread_mutex_unlock(&sh->lock);
+    return rc;
+}
+
 /* Try to solve from a collision between stored (a1,b1) and new (a2,b2) at
  * the same canonical point.  Returns 1 on success and sets sh->result. */
 static int rho_try_solve(rho_shared *sh, uint64_t a1, uint64_t b1, uint64_t a2, uint64_t b2)
@@ -622,10 +645,8 @@ static __attribute__((noinline)) int rho_zp_dp(rho_shared *sh, rho_walk *wk, uin
 {
     uint64_t oa, ob;
     int rc;
-    pthread_mutex_lock(&sh->lock);
-    rc = ca_htab_insert(&sh->tab, h, wk->a, wk->b, &oa, &ob);
-    size_t entries = sh->tab.count;
-    pthread_mutex_unlock(&sh->lock);
+    size_t entries;
+    rc = rho_dp_insert(sh, h, wk->a, wk->b, &oa, &ob, &entries);
     atomic_fetch_add(&sh->total_dps, 1);
     if (rc < 0) {
         pthread_mutex_lock(&sh->lock);
@@ -947,10 +968,8 @@ static void *rho_thread_main(void *arg)
             if ((h & sh->dp_mask) == 0) {
                 uint64_t oa, ob;
                 int rc;
-                pthread_mutex_lock(&sh->lock);
-                rc = ca_htab_insert(&sh->tab, h, wk->a, wk->b, &oa, &ob);
-                size_t entries = sh->tab.count;
-                pthread_mutex_unlock(&sh->lock);
+                size_t entries;
+                rc = rho_dp_insert(sh, h, wk->a, wk->b, &oa, &ob, &entries);
                 atomic_fetch_add(&sh->total_dps, 1);
                 if (rc < 0) {
                     pthread_mutex_lock(&sh->lock);
@@ -1244,6 +1263,7 @@ static ca_status rho_solve_impl(const ca_group *g, const ca_elem *base, const ca
         return CA_ERR_NOMEM;
     }
     uint32_t started = 0;
+    sh.single = threads == 1 && !monitored;
     for (uint32_t t = 0; t < threads; t++) {
         ths[t].sh = &sh;
         ths[t].id = t;
