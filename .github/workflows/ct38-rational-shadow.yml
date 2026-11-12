@@ -1,0 +1,31 @@
+name: CT38 rational-shadow geometric-kernel negative control
+on:
+  pull_request:
+    paths:
+      - 'experiments/chained-transfer-reference/ct38/**'
+      - '.github/workflows/ct38-rational-shadow.yml'
+  push:
+    branches:
+      - research/ct36-normalized-dual49-20261112
+    paths:
+      - 'experiments/chained-transfer-reference/ct38/**'
+      - '.github/workflows/ct38-rational-shadow.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  finite-controls:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - name: Run independent rational shadow checks
+        run: |
+          python3 -B experiments/chained-transfer-reference/ct38/ct38_rational_shadow.py > /tmp/ct38.normal
+          python3 -O -B experiments/chained-transfer-reference/ct38/ct38_rational_shadow.py > /tmp/ct38.optimized
+          diff -u /tmp/ct38.normal /tmp/ct38.optimized
+          python3 -m py_compile experiments/chained-transfer-reference/ct38/ct38_rational_shadow.py
+          go run experiments/chained-transfer-reference/ct38/ct38_shadow_independent.go
+          cat /tmp/ct38.normal
