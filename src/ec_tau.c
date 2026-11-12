@@ -60,11 +60,15 @@ typedef struct tau_vec {
 
 static inline uint64_t fa(const ca_group *g, uint64_t x, uint64_t y)
 {
-    return ca_addmod(x, y, g->p);
+    return ca_addmod_sel(x, y, g->p);
 }
 static inline uint64_t fs(const ca_group *g, uint64_t x, uint64_t y)
 {
-    return ca_submod(x, y, g->p);
+    /* ca_submod's value for every input: x - y, plus p when x < y, by mask.
+     * Jacobian formulas subtract data-dependent residues, so the borrow is a
+     * coin flip and the branch in ca_submod mispredicts about half the time. */
+    const uint64_t d = x - y;
+    return d + (g->p & ((uint64_t)0 - (uint64_t)(x < y)));
 }
 static inline uint64_t fm(const ca_group *g, uint64_t x, uint64_t y)
 {
@@ -2384,32 +2388,69 @@ int ca_ec_tau4_residue_recode_verify_scalar(const ca_tau4_precomp *pre, uint64_t
     return a == x && b == y;
 }
 
+typedef struct tau4_lattice_stream {
+    uint8_t digits[256];
+    size_t length;
+    unsigned weight, rotations;
+    unsigned power_histogram[3];
+    uint64_t power_mask[3][4];
+    unsigned lowest_nonzero;
+    int wide; /* digits came from the wide fallback recoder */
+    ca_i128 l1;
+} tau4_lattice_stream;
+
 /* Four width-4 decisions in one lookup.  Congruence modulo 81 preserves the
  * first four digits because 81 is associated to tau^8.  The correction is
  * the exact contribution of those digits, not a representative modulo 81. */
-static size_t gen_tau4_digits_atlas(ca_i128 wide_x, ca_i128 wide_y, const ca_tau4_digit table[81],
-                                    uint8_t digits[256])
+static inline __attribute__((always_inline)) size_t
+gen_tau4_digits_atlas_stats(ca_i128 wide_x, ca_i128 wide_y, const ca_tau4_digit table[81],
+                            uint8_t digits[256], tau4_lattice_stream *st)
 {
     const ca_i128 limit = (ca_i128)1 << 55;
-    if (wide_x <= -limit || wide_x >= limit || wide_y <= -limit || wide_y >= limit)
+    if (wide_x <= -limit || wide_x >= limit || wide_y <= -limit || wide_y >= limit) {
+        if (st) st->wide = 1;
         return gen_tau4_digits(wide_x, wide_y, table, digits);
+    }
     int64_t x = (int64_t)wide_x, y = (int64_t)wide_y;
     size_t nd = 0;
     while (x || y) {
         if (nd > 252) return 0;
-        int ax = (int)((x % 81 + 81) % 81);
-        int by = (int)((y % 81 + 81) % 81);
+        /* x % 81 in (-81, 81): adding 81 on a negative remainder equals the
+         * (x % 81 + 81) % 81 residue without the second division. */
+        int ax = (int)(x % 81), by = (int)(y % 81);
+        ax += 81 & -(ax < 0);
+        by += 81 & -(by < 0);
         ca_tau4_atlas_pattern p = ca_tau4_atlas_patterns[ca_tau4_atlas_index[81 * ax + by]];
-        for (size_t j = 0; j < 4; j++) digits[nd + j] = j == p.position ? p.slot : 255;
+        memset(digits + nd, 255, 4);
+        if (p.position < 4) {
+            digits[nd + p.position] = p.slot;
+            if (st && p.slot != 255) {
+                /* The stream statistics, accumulated where the digit is born. */
+                size_t at = nd + p.position;
+                unsigned power = (unsigned)table[p.slot].power;
+                if (!st->weight) st->lowest_nonzero = (unsigned)at;
+                st->weight++;
+                st->power_histogram[power]++;
+                st->power_mask[power][at >> 6] |= UINT64_C(1) << (at & 63);
+                st->rotations += power != 0;
+            }
+        }
         nd += 4;
         int64_t a = x - p.correction_a, b = y - p.correction_b;
         int64_t nx = a + 3 * b, ny = -a - 2 * b;
-        if (nx % 9 || ny % 9) return 0;
-        x = nx / 9;
-        y = ny / 9;
+        int64_t qx = nx / 9, qy = ny / 9;
+        if (qx * 9 != nx || qy * 9 != ny) return 0;
+        x = qx;
+        y = qy;
     }
     while (nd && digits[nd - 1] == 255) nd--;
     return nd;
+}
+
+static size_t gen_tau4_digits_atlas(ca_i128 wide_x, ca_i128 wide_y, const ca_tau4_digit table[81],
+                                    uint8_t digits[256])
+{
+    return gen_tau4_digits_atlas_stats(wide_x, wide_y, table, digits, NULL);
 }
 
 int ca_ec_tau4_recode_compare(int64_t x, int64_t y)
@@ -2715,16 +2756,6 @@ int ca_ec_tau4_joint_mul_profile(const ca_group *g, const ca_tau4_joint_precomp 
     return 1;
 }
 
-typedef struct tau4_lattice_stream {
-    uint8_t digits[256];
-    size_t length;
-    unsigned weight, rotations;
-    unsigned power_histogram[3];
-    uint64_t power_mask[3][4];
-    unsigned lowest_nonzero;
-    ca_i128 l1;
-} tau4_lattice_stream;
-
 /* Exact neighboring representatives of one scalar coset. The 25-neighbor
  * enumeration order matches reduce_with_lattice_eisenstein. */
 static size_t tau4_lattice_streams(const ca_tau4_joint_precomp *pre, uint64_t scalar,
@@ -2745,15 +2776,21 @@ static size_t tau4_lattice_streams(const ca_tau4_joint_precomp *pre, uint64_t sc
     ca_i128 best_l1 = -1;
     size_t n = 0;
     static const int axial[5][2] = {{-1, 0}, {0, -1}, {0, 0}, {0, 1}, {1, 0}};
+    /* Axial neighbors' residues, kept by the shortlist pass for reuse below. */
+    ca_i128 axial_x[5], axial_y[5];
+    int have_axial = 0;
     unsigned two[2] = {0, 1};
     unsigned shortlist[4] = {0, 1, 2, 3};
     if (mode == 2 || mode == 3 || mode == 4 || mode == 6 || mode == 7 ||
         mode == 8 || mode == 11 || mode == 12) {
         ca_i128 smallest = -1, second = -1;
+        have_axial = 1;
         for (unsigned i = 0; i < 5; i++) {
             ca_i128 u = u0 + axial[i][0], v = v0 + axial[i][1];
             ca_i128 x = (ca_i128)scalar - u * v1.x - v * v2.x;
             ca_i128 y = -u * v1.y - v * v2.y;
+            axial_x[i] = x;
+            axial_y[i] = y;
             ca_i128 l1 = iabs128(x) + iabs128(y);
             if (smallest < 0 || l1 < smallest) {
                 second = smallest;
@@ -2769,10 +2806,13 @@ static size_t tau4_lattice_streams(const ca_tau4_joint_precomp *pre, uint64_t sc
     if (mode == 13 || mode == 14) {
         ca_i128 l1[5];
         int used[5] = {0};
+        have_axial = 1;
         for (unsigned i = 0; i < 5; i++) {
             ca_i128 u = u0 + axial[i][0], v = v0 + axial[i][1];
             ca_i128 x = (ca_i128)scalar - u * v1.x - v * v2.x;
             ca_i128 y = -u * v1.y - v * v2.y;
+            axial_x[i] = x;
+            axial_y[i] = y;
             l1[i] = iabs128(x) + iabs128(y);
         }
         for (unsigned j = 0; j < 4; j++) {
@@ -2795,26 +2835,40 @@ static size_t tau4_lattice_streams(const ca_tau4_joint_precomp *pre, uint64_t sc
             ? shortlist[index] : (unsigned)index;
         int du = mode == 25 ? (int)(index / 5) - 2 : axial[axial_index][0];
         int dv = mode == 25 ? (int)(index % 5) - 2 : axial[axial_index][1];
-        ca_i128 u = u0 + du, v = v0 + dv;
-        ca_i128 x = (ca_i128)scalar - u * v1.x - v * v2.x;
-        ca_i128 y = -u * v1.y - v * v2.y;
+        ca_i128 x, y;
+        if (have_axial && mode != 25) {
+            x = axial_x[axial_index];
+            y = axial_y[axial_index];
+        } else {
+            ca_i128 u = u0 + du, v = v0 + dv;
+            x = (ca_i128)scalar - u * v1.x - v * v2.x;
+            y = -u * v1.y - v * v2.y;
+        }
         tau4_lattice_stream *stream = &streams[n];
         stream->l1 = iabs128(x) + iabs128(y);
-        stream->length = gen_tau4_digits_atlas(x + y, -y, pre->digit, stream->digits);
-        counts->recode_attempts++;
-        if (!stream->length) return 0;
         stream->weight = stream->rotations = 0;
         memset(stream->power_histogram, 0, sizeof(stream->power_histogram));
         memset(stream->power_mask, 0, sizeof(stream->power_mask));
         stream->lowest_nonzero = 256;
-        for (size_t i = 0; i < stream->length; i++) {
-            if (stream->digits[i] == 255) continue;
-            stream->weight++;
-            unsigned power = (unsigned)pre->digit[stream->digits[i]].power;
-            stream->power_histogram[power]++;
-            stream->power_mask[power][i >> 6] |= UINT64_C(1) << (i & 63);
-            if (i < stream->lowest_nonzero) stream->lowest_nonzero = (unsigned)i;
-            stream->rotations += power != 0;
+        stream->wide = 0;
+        stream->length = gen_tau4_digits_atlas_stats(x + y, -y, pre->digit, stream->digits, stream);
+        counts->recode_attempts++;
+        if (!stream->length) return 0;
+        if (stream->wide) {
+            /* Wide-coefficient fallback recoder: scan its digits. */
+            stream->weight = stream->rotations = 0;
+            memset(stream->power_histogram, 0, sizeof(stream->power_histogram));
+            memset(stream->power_mask, 0, sizeof(stream->power_mask));
+            stream->lowest_nonzero = 256;
+            for (size_t i = 0; i < stream->length; i++) {
+                if (stream->digits[i] == 255) continue;
+                stream->weight++;
+                unsigned power = (unsigned)pre->digit[stream->digits[i]].power;
+                stream->power_histogram[power]++;
+                stream->power_mask[power][i >> 6] |= UINT64_C(1) << (i & 63);
+                if (i < stream->lowest_nonzero) stream->lowest_nonzero = (unsigned)i;
+                stream->rotations += power != 0;
+            }
         }
         if (best_l1 < 0 || stream->l1 < best_l1) {
             best_l1 = stream->l1;
@@ -3028,12 +3082,14 @@ int ca_ec_tau4_free_gauge_verify_map(void)
 
 static unsigned tau4_popcount64(uint64_t word)
 {
-#if defined(__GNUC__) || defined(__clang__)
+#if (defined(__GNUC__) || defined(__clang__)) && defined(__POPCNT__)
     return (unsigned)__builtin_popcountll(word);
 #else
-    unsigned count = 0;
-    while (word) { word &= word - 1; count++; }
-    return count;
+    /* Inline SWAR count: the baseline target would otherwise call libgcc. */
+    word = word - ((word >> 1) & UINT64_C(0x5555555555555555));
+    word = (word & UINT64_C(0x3333333333333333)) + ((word >> 2) & UINT64_C(0x3333333333333333));
+    word = (word + (word >> 4)) & UINT64_C(0x0f0f0f0f0f0f0f0f);
+    return (unsigned)((word * UINT64_C(0x0101010101010101)) >> 56);
 #endif
 }
 
@@ -3046,19 +3102,22 @@ static unsigned tau4_pair_free_gauge_rotations(const ca_tau4_joint_precomp *pre,
                                                const tau4_lattice_stream *left,
                                                const tau4_lattice_stream *right)
 {
-    size_t length = left->length > right->length ? left->length : right->length;
+    size_t length = left->length < right->length ? left->length : right->length;
     unsigned last_nonempty = left->lowest_nonzero < right->lowest_nonzero
         ? left->lowest_nonzero : right->lowest_nonzero;
     if (last_nonempty == 256) return 0;
     unsigned rotations = 0;
+    /* Only words below the shorter stream can overlap (the masks are zero
+     * above a stream's length).  A position holds one power, so the masks of
+     * one stream are disjoint: the sum over a != b of |L_a & R_b| is the sum
+     * over a of |L_a & (R_any ^ R_a)|, three popcounts instead of six. */
     for (size_t word = 0; word < (length + 63) / 64; word++) {
-        for (unsigned a = 0; a < 3; a++) {
-            for (unsigned b = 0; b < 3; b++) {
-                if (a != b)
-                    rotations += tau4_popcount64(left->power_mask[a][word] &
-                                                 right->power_mask[b][word]);
-            }
-        }
+        uint64_t r0 = right->power_mask[0][word], r1 = right->power_mask[1][word],
+                 r2 = right->power_mask[2][word];
+        uint64_t any = r0 | r1 | r2;
+        rotations += tau4_popcount64(left->power_mask[0][word] & (any ^ r0)) +
+                     tau4_popcount64(left->power_mask[1][word] & (any ^ r1)) +
+                     tau4_popcount64(left->power_mask[2][word] & (any ^ r2));
     }
     int has_left = last_nonempty < left->length && left->digits[last_nonempty] != 255;
     int has_right = last_nonempty < right->length && right->digits[last_nonempty] != 255;
@@ -3094,6 +3153,9 @@ static int tau4_paired_lattice_mul_impl(const ca_group *g,
     ca_i128 best_l1 = -1;
     size_t chosen_a = 0, chosen_b = 0;
     unsigned chosen_gauge = 0;
+    /* Mode predicates are loop-invariant. */
+    const int free_rot_score =
+        mode == 8 || mode == 9 || mode == 11 || mode == 12 || mode == 13 || mode == 14;
     for (size_t ia = 0; ia < count_a; ia++) {
         const tau4_lattice_stream *left = &streams[0][ia];
         for (size_t ib = 0; ib < count_b; ib++) {
@@ -3103,18 +3165,14 @@ static int tau4_paired_lattice_mul_impl(const ca_group *g,
             unsigned adds = left->weight + right->weight;
             unsigned base_score = 6 * steps + 11 * adds;
             cost.pair_scores++;
-            if ((mode == 8 || mode == 9 || mode == 11 || mode == 12 ||
-                 mode == 13 || mode == 14) &&
-                base_score > best_score)
-                continue;
+            if (free_rot_score && base_score > best_score) continue;
             unsigned gauge = 0;
-            unsigned rotations = mode == 3
-                ? tau4_pair_gauge_rotations(left, right, &gauge)
-                : (mode == 8 || mode == 9 || mode == 11 || mode == 12 ||
-                   mode == 13 || mode == 14)
-                ? tau4_pair_free_gauge_rotations(pre, left, right)
-                : left->rotations + right->rotations;
+            unsigned rotations = mode == 3        ? tau4_pair_gauge_rotations(left, right, &gauge)
+                                 : free_rot_score ? tau4_pair_free_gauge_rotations(pre, left, right)
+                                                  : left->rotations + right->rotations;
             unsigned score = base_score + rotations;
+            /* tau4_pair_score_better ranks a larger score last. */
+            if (score > best_score) continue;
             ca_i128 l1 = left->l1 + right->l1;
             if (tau4_pair_score_better(score, steps, adds, rotations, l1,
                                        best_score, best_steps, best_adds,

@@ -69,6 +69,51 @@ uint64_t ca_cheon_best_divisor(uint64_t p, double *cost_exps)
     return best;
 }
 
+#ifndef CA_GLV_FIELD_COUNT
+/* Four independent Z_p^* ladders with a shared exponent, interleaved.  One
+ * ladder is a chain of dependent Montgomery squarings, so the multiplier
+ * idles most of the time; four chains in lockstep fill it.  w[l] becomes
+ * w[l]^e (Montgomery form), the residue ca_mont_pow computes for each. */
+#    define CHEON_LANES 4
+#    define CHEON_SEG   128
+#    define CHEON_BLOCK (CHEON_LANES * CHEON_SEG)
+
+static void cheon_pow4(const ca_mont *m, uint64_t w[CHEON_LANES], uint64_t e)
+{
+    uint64_t r[CHEON_LANES];
+    for (int l = 0; l < CHEON_LANES; l++) r[l] = m->r1;
+    while (e) {
+        if (e & 1)
+            for (int l = 0; l < CHEON_LANES; l++) r[l] = ca_mont_mul(m, r[l], w[l]);
+        e >>= 1;
+        if (e)
+            for (int l = 0; l < CHEON_LANES; l++) w[l] = ca_mont_sqr(m, w[l]);
+    }
+    for (int l = 0; l < CHEON_LANES; l++) w[l] = r[l];
+}
+
+/* Hashes of x^(e^(i0 + t)), t = 0..CHEON_BLOCK-1, for x a point of the
+ * order-p subgroup of a native Z_p group; ei = e^i0 mod p and pw[l] =
+ * e^(l * CHEON_SEG) mod p (pw[LANES] = e^BLOCK).  The block is cut into four
+ * segments whose starting points are one exponentiation each, and the four
+ * segments are walked together.  Nothing is counted here: the caller adds
+ * what the serial chain would have charged. */
+static void cheon_orbit_hashes(const ca_group *g, const ca_elem *x, uint64_t e, uint64_t ei,
+                               const uint64_t *pw, uint64_t p, uint64_t *out)
+{
+    uint64_t w[CHEON_LANES];
+    for (int l = 0; l < CHEON_LANES; l++) {
+        ca_elem c;
+        ca_group_mul(g, &c, x, ca_mulmod(ei, pw[l], p), NULL);
+        w[l] = c.w[0];
+    }
+    for (int s = 0; s < CHEON_SEG; s++) {
+        for (int l = 0; l < CHEON_LANES; l++) out[l * CHEON_SEG + s] = ca_zp_hash_word(w[l]);
+        cheon_pow4(&g->mont, w, e);
+    }
+}
+#endif
+
 /*
  * Generic "exponent-orbit BSGS": find u in [0, ord) with
  *   base^(eta^u) == target,   eta of multiplicative order ord mod p.
@@ -86,7 +131,39 @@ static ca_status orbit_bsgs(const ca_group *g, const ca_elem *base, const ca_ele
     uint64_t exps = 0, ops = 0;
     /* baby steps: cur = base^(eta^j) ; next = cur^eta */
     ca_elem cur = *base;
-    for (uint64_t j = 0; j < m; j++) {
+    uint64_t j0 = 0;
+#ifndef CA_GLV_FIELD_COUNT
+    /* Native Z_p, subgroup inputs, enough steps for a block: walk four
+     * segments of the orbit at once (same table, same insertion order, same
+     * charges).  Anything else takes the serial loops below. */
+    int fast = 0;
+    uint64_t pw[CHEON_LANES + 1], step_ops = 0;
+    if (g->kind == CA_GROUP_ZP && ca_zp_group_is_native(g) && eta != 0 && m >= CHEON_BLOCK) {
+        ca_elem t1, t2;
+        ca_group_mul(g, &t1, base, p, NULL);
+        ca_group_mul(g, &t2, target, p, NULL);
+        fast = ca_group_is_identity(g, &t1) && ca_group_is_identity(g, &t2);
+    }
+    if (fast) {
+        for (int l = 0; l <= CHEON_LANES; l++) pw[l] = ca_powmod(eta, (uint64_t)l * CHEON_SEG, p);
+        step_ops = (uint64_t)__builtin_popcountll(eta) + (uint64_t)(63 - __builtin_clzll(eta));
+        uint64_t hb[CHEON_BLOCK], ej = 1;
+        for (; m - j0 >= CHEON_BLOCK; j0 += CHEON_BLOCK) {
+            cheon_orbit_hashes(g, base, eta, ej, pw, p, hb);
+            for (uint64_t t = 0; t < CHEON_BLOCK; t++) {
+                if (ca_htab1_insert(&tab, hb[t], j0 + t, NULL) < 0) {
+                    ca_htab1_free(&tab);
+                    return CA_ERR_NOMEM;
+                }
+            }
+            exps += CHEON_BLOCK;
+            ops += CHEON_BLOCK * step_ops;
+            ej = ca_mulmod(ej, pw[CHEON_LANES], p);
+        }
+        if (j0 < m) ca_group_mul(g, &cur, base, ej, NULL);
+    }
+#endif
+    for (uint64_t j = j0; j < m; j++) {
         if (ca_htab1_insert(&tab, ca_group_hash(g, &cur), j, NULL) < 0) {
             ca_htab1_free(&tab);
             return CA_ERR_NOMEM;
@@ -99,7 +176,51 @@ static ca_status orbit_bsgs(const ca_group *g, const ca_elem *base, const ca_ele
     ca_elem gt = *target;
     uint64_t steps = m ? (ord - 1) / m + 1 : 1;
     ca_status rc = CA_ERR_NOT_FOUND;
-    for (uint64_t i = 0; i < steps; i++) {
+    uint64_t i0 = 0;
+#ifndef CA_GLV_FIELD_COUNT
+    /* Same blocking for the giant steps.  Hashes are computed a block ahead
+     * but consumed one step at a time, so lookups, verification, charges and
+     * the early exits are exactly the serial loop's. */
+    if (fast && eta_inv_m != 0 && steps >= CHEON_BLOCK) {
+        uint64_t gpw[CHEON_LANES + 1];
+        for (int l = 0; l <= CHEON_LANES; l++)
+            gpw[l] = ca_powmod(eta_inv_m, (uint64_t)l * CHEON_SEG, p);
+        const uint64_t gstep_ops =
+            (uint64_t)__builtin_popcountll(eta_inv_m) + (uint64_t)(63 - __builtin_clzll(eta_inv_m));
+        uint64_t hb[CHEON_BLOCK], ei = 1;
+        int done = 0;
+        for (; !done && steps - i0 >= CHEON_BLOCK; i0 += CHEON_BLOCK) {
+            cheon_orbit_hashes(g, target, eta_inv_m, ei, gpw, p, hb);
+            ei = ca_mulmod(ei, gpw[CHEON_LANES], p);
+            for (uint64_t t = 0; t < CHEON_BLOCK; t++) {
+                uint64_t j;
+                if (ca_htab1_find(&tab, hb[t], &j)) {
+                    ca_u128 cand = (ca_u128)j + (ca_u128)m * (i0 + t);
+                    uint64_t c = (uint64_t)(cand % ord);
+                    ca_elem chk;
+                    ca_group_mul(g, &chk, base, ca_powmod(eta, c, p), &ops);
+                    exps++;
+                    if (ca_group_equal(g, &chk, target)) {
+                        *u = c;
+                        rc = CA_OK;
+                        done = 1;
+                        break;
+                    }
+                }
+                ops += gstep_ops;
+                exps++;
+                if (max_exps && exps > max_exps) {
+                    rc = CA_ERR_LIMIT;
+                    done = 1;
+                    break;
+                }
+            }
+        }
+        if (!done && i0 < steps) ca_group_mul(g, &gt, target, ca_powmod(eta_inv_m, i0, p), NULL);
+        if (done) i0 = steps;
+    }
+#endif
+    for (uint64_t i = i0; i < steps; i++) {
         uint64_t j;
         if (ca_htab1_find(&tab, ca_group_hash(g, &gt), &j)) {
             ca_u128 cand = (ca_u128)j + (ca_u128)m * i;
