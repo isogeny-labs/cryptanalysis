@@ -55,7 +55,7 @@ Local Python normal and -O runs yielded identical eight bidual lines, all matchi
 
 **Sources checked:** crypto #3877 partial-Frobenius report and exact model tables, cryptanalysis #1511 CT49, cryptanalysis existing `SHIFTED109.md` full-rational Richelot precedent, and standard Richelot dual theory in [Magma handbook](https://magma.maths.usyd.edu.au/magma/handbook/text/1615) and [Dokchitser et al. on Richelot dual curves](https://londmathsoc.onlinelibrary.wiley.com/doi/full/10.1112/plms.12545). Shared research-KB MCP and locked lead atlas were unavailable in the current connected runtime; no prior-art absence claim. [pcc:unverified]
 
-See editable [DOT graph](ct50-return.dot) for the four forced-return target leaves. No paid compute, no merge-gate override, no frozen evidence or ledger edit.
+See editable [DOT graph](ct50-return.dot) and [rendered SVG](ct50-return.svg) for the four forced-return target leaves. No paid compute, no merge-gate override, no frozen evidence or ledger edit.
 
 ## Universal independent symbolic proof oracle
 
