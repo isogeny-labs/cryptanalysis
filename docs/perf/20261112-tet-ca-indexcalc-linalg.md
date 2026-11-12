@@ -111,5 +111,6 @@ is a wash: linalg 0.79-0.89 s both ways.
 ## Disk / artefacts
 
 Build dirs `/home/user/wt/b-linalg` and `b-linalg-tsan` removed after the run.
-sha256 (Release `-g -O3`, gcc 13.3): see the commit message trail; base
-`ca_perfbench` and final `ca_perfbench` hashes in the session record.
+sha256 prefixes of the measured binaries (Release `-g -O3`, gcc 13.3, no
+`-march`): base `ca_perfbench` 6313d30c3ebbbfdf, final `ca_perfbench`
+ffdb3b9cf5a77db3, base `ca` 52da2d40167843fe, final `ca` 94cdfff2da27d7b2.
