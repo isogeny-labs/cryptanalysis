@@ -37,6 +37,9 @@ pub struct Fpk {
     k: usize,
     /// Monic modulus, `k + 1` coefficients, lowest degree first.
     modulus: Vec<BigUint>,
+    /// `(p − f_j) mod p` for `j < k`: the reduction `t^k = −Σ f_j t^j`
+    /// as additions of non-negative terms.
+    neg_modulus: Vec<BigUint>,
 }
 
 // ── Polynomials over F_p (lowest degree first, trimmed) ──────────────────
@@ -167,6 +170,16 @@ fn is_irreducible(f: &[BigUint], p: &BigUint) -> bool {
 }
 
 impl Fpk {
+    fn build(p: BigUint, k: usize, modulus: Vec<BigUint>) -> Self {
+        let neg_modulus = modulus[..k].iter().map(|c| sub_mod(&BigUint::zero(), c, &p)).collect();
+        Fpk {
+            p,
+            k,
+            modulus,
+            neg_modulus,
+        }
+    }
+
     /// `F_{p^k}` with a random irreducible modulus found by Rabin's test.
     /// For `k = 1` the modulus is `t` (so `F_{p^1} = F_p`).
     pub fn new<R: Rng + ?Sized>(
@@ -178,11 +191,11 @@ impl Fpk {
             return Err(WeakCurveError::InvalidInput("extension degree 0".into()));
         }
         if k == 1 {
-            return Ok(Fpk {
-                p: p.clone(),
+            return Ok(Fpk::build(
+                p.clone(),
                 k,
-                modulus: vec![BigUint::zero(), BigUint::one()],
-            });
+                vec![BigUint::zero(), BigUint::one()],
+            ));
         }
         for _ in 0..(200 * k) {
             let mut f: Vec<BigUint> = (0..k).map(|_| rng.gen_biguint_below(p)).collect();
@@ -191,11 +204,7 @@ impl Fpk {
             }
             f.push(BigUint::one());
             if is_irreducible(&f, p) {
-                return Ok(Fpk {
-                    p: p.clone(),
-                    k,
-                    modulus: f,
-                });
+                return Ok(Fpk::build(p.clone(), k, f));
             }
         }
         Err(WeakCurveError::SolverFailed(format!(
@@ -210,11 +219,7 @@ impl Fpk {
         if f.len() < 2 || !f.last()?.is_one() || !is_irreducible(&f, p) {
             return None;
         }
-        Some(Fpk {
-            p: p.clone(),
-            k: f.len() - 1,
-            modulus: f,
-        })
+        Some(Fpk::build(p.clone(), f.len() - 1, f))
     }
 
     /// The characteristic.
@@ -310,19 +315,23 @@ impl Fpk {
                 prod[i + j] += &a[i] * &b[j];
             }
         }
-        let mut prod: Vec<BigUint> = prod.into_iter().map(|c| c % p).collect();
-        // Reduce by the monic modulus: t^k = −(f₀ + … + f_{k−1} t^{k−1}).
+        // Reduce by the monic modulus, t^k = −(f₀ + … + f_{k−1} t^{k−1}),
+        // adding `c·(p − f_j)` instead of subtracting `c·f_j`: only the
+        // coefficient being folded down is reduced mod p, and the low
+        // `k` once at the end, rather than every product and every term.
         for i in (k..2 * k - 1).rev() {
-            let c = std::mem::take(&mut prod[i]);
+            let c = std::mem::take(&mut prod[i]) % p;
             if c.is_zero() {
                 continue;
             }
             for j in 0..k {
-                let t = (&c * &self.modulus[j]) % p;
-                prod[i - k + j] = sub_mod(&prod[i - k + j], &t, p);
+                prod[i - k + j] += &c * &self.neg_modulus[j];
             }
         }
         prod.truncate(k);
+        for c in &mut prod {
+            *c %= p;
+        }
         prod
     }
 

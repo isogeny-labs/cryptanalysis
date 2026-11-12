@@ -73,11 +73,11 @@
 use std::cell::Cell;
 
 use num_bigint::BigUint;
-use num_traits::{One, Zero};
+use num_traits::{One, ToPrimitive, Zero};
 
 use crate::ecc::curve::CurveParams;
 use crate::ecc::field::FieldElement;
-use crate::ecc::point::Point;
+use crate::ecc::point::{word, Point};
 
 pub mod bsgs;
 pub mod gaudry_schost;
@@ -118,6 +118,10 @@ pub struct EcGroup {
     g: Point,
     group_ops: Cell<u64>,
     inversions: Cell<u64>,
+    /// `p` and `a mod p` as words when `p` is an odd prime below `2^64`:
+    /// the counted additions then run on machine words
+    /// (see [`Point::add_vartime`]).  `None` keeps the [`Point`] arithmetic.
+    word: Option<(u64, u64)>,
 }
 
 impl EcGroup {
@@ -125,6 +129,10 @@ impl EcGroup {
     /// `n` (for our tests `n` is prime, so any non-identity point
     /// does).
     pub fn new(a: FieldElement, p: BigUint, n: BigUint, g: Point) -> Self {
+        let word = p
+            .to_u64()
+            .filter(|&pw| pw >= 3 && crate::cryptanalysis::residual_walk::is_prime_u64(pw))
+            .and_then(|pw| a.value.to_u64().map(|av| (pw, av % pw)));
         Self {
             a,
             p,
@@ -132,6 +140,7 @@ impl EcGroup {
             g,
             group_ops: Cell::new(0),
             inversions: Cell::new(0),
+            word,
         }
     }
 
@@ -188,7 +197,7 @@ impl EcGroup {
         if !trivial {
             self.inversions.set(self.inversions.get() + 1);
         }
-        x.add(y, &self.a)
+        x.add_vartime(y, &self.a)
     }
 
     /// Counted doubling.
@@ -197,7 +206,7 @@ impl EcGroup {
         if !matches!(x, Point::Infinity) {
             self.inversions.set(self.inversions.get() + 1);
         }
-        x.double(&self.a)
+        x.double_vartime(&self.a)
     }
 
     /// **Set-up** addition — *not* counted.  For building initial
@@ -228,6 +237,11 @@ impl EcGroup {
     pub fn batch_add(&self, pairs: &[(Point, Point)]) -> Vec<Point> {
         self.group_ops
             .set(self.group_ops.get() + pairs.len() as u64);
+        if let Some((pw, _)) = self.word {
+            if let Some(out) = self.batch_add_word(pairs, pw) {
+                return out;
+            }
+        }
 
         let mut out: Vec<Option<Point>> = vec![None; pairs.len()];
         let mut denoms: Vec<FieldElement> = Vec::with_capacity(pairs.len());
@@ -271,6 +285,76 @@ impl EcGroup {
         out.into_iter()
             .map(|o| o.expect("every slot filled"))
             .collect()
+    }
+}
+
+impl EcGroup {
+    /// [`Self::batch_add`] on words; `None` if a coordinate is not a
+    /// reduced word (nothing has been counted yet except `group_ops`,
+    /// which the caller has already added, and which the fallback does
+    /// not add again -- so this never counts and falls back cleanly).
+    fn batch_add_word(&self, pairs: &[(Point, Point)], p: u64) -> Option<Vec<Point>> {
+        enum Slot {
+            Done(Point),
+            Generic { x1: u64, y1: u64, x2: u64, y2: u64 },
+        }
+        let mut slots: Vec<Slot> = Vec::with_capacity(pairs.len());
+        let mut denoms: Vec<u64> = Vec::with_capacity(pairs.len());
+        let mut degenerate = 0u64;
+        for (pp, qq) in pairs {
+            match (pp, qq) {
+                (Point::Infinity, r) => slots.push(Slot::Done(r.clone())),
+                (r, Point::Infinity) => slots.push(Slot::Done(r.clone())),
+                (Point::Affine { x: fx1, y: fy1 }, Point::Affine { x: fx2, y: fy2 }) => {
+                    let (x1, y1, x2, y2) = (
+                        word::coord(fx1, p)?,
+                        word::coord(fy1, p)?,
+                        word::coord(fx2, p)?,
+                        word::coord(fy2, p)?,
+                    );
+                    if x1 == x2 {
+                        degenerate += 1;
+                        slots.push(Slot::Done(pp.add_vartime(qq, &self.a)));
+                    } else {
+                        denoms.push(word::sub(x2, x1, p));
+                        slots.push(Slot::Generic { x1, y1, x2, y2 });
+                    }
+                }
+            }
+        }
+        self.inversions.set(self.inversions.get() + degenerate);
+        let mut invs = vec![0u64; denoms.len()];
+        if !denoms.is_empty() {
+            self.inversions.set(self.inversions.get() + 1);
+            // Montgomery's trick on words; the denominators are nonzero.
+            let mut prefix = Vec::with_capacity(denoms.len());
+            let mut acc = 1u64 % p;
+            for &d in &denoms {
+                prefix.push(acc);
+                acc = word::mul(acc, d, p);
+            }
+            let mut inv_acc = crate::utils::mod_inverse_u64(acc, p)
+                .expect("batch_add: zero denominator");
+            for i in (0..denoms.len()).rev() {
+                invs[i] = word::mul(inv_acc, prefix[i], p);
+                inv_acc = word::mul(inv_acc, denoms[i], p);
+            }
+        }
+        let mut k = 0;
+        Some(
+            slots
+                .into_iter()
+                .map(|s| match s {
+                    Slot::Done(pt) => pt,
+                    Slot::Generic { x1, y1, x2, y2 } => {
+                        let l = word::mul(word::sub(y2, y1, p), invs[k], p);
+                        k += 1;
+                        let (x3, y3) = word::finish(l, x1, y1, x2, p);
+                        word::point(x3, y3, &self.p)
+                    }
+                })
+                .collect(),
+        )
     }
 }
 
