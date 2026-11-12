@@ -7,6 +7,7 @@ use crate::reference::{Fp2, Fp2Ctx, FpPoly};
 use num_bigint::BigUint;
 use num_traits::ToPrimitive;
 use std::collections::BTreeMap;
+use std::sync::OnceLock;
 #[path = "closed_fibres.rs"]
 mod closed_fibres;
 #[path = "seven_glue.rs"]
@@ -344,7 +345,7 @@ struct RichelotMap {
     h: [Poly; 3],
     target_scale: u64,
     quadratic: Fp2Ctx,
-    square_roots: BTreeMap<(u64, u64), Fp2>,
+    square_roots: OnceLock<BTreeMap<(u64, u64), Fp2>>,
 }
 impl RichelotMap {
     fn new() -> Self {
@@ -449,14 +450,6 @@ impl RichelotMap {
         let source = Balanced::new(p, &a.source)?;
         let target = Balanced::new(p, &normalized)?;
         let quadratic = Fp2Ctx::try_new(p).map_err(|e| e.to_string())?;
-        let mut square_roots = BTreeMap::new();
-        for aa in 0..p {
-            for bb in 0..p {
-                let value = quadratic.element(aa, bb);
-                let square = quadratic.square(value);
-                square_roots.entry((square.a, square.b)).or_insert(value);
-            }
-        }
         Ok(Self {
             k,
             source,
@@ -465,7 +458,7 @@ impl RichelotMap {
             h,
             target_scale,
             quadratic,
-            square_roots,
+            square_roots: OnceLock::new(),
         })
     }
     fn fiber(
@@ -562,6 +555,7 @@ impl RichelotMap {
         let discriminant = ctx.sub(ctx.square(a), ctx.mul(ctx.from_fp(4), b));
         let root = self
             .square_roots
+            .get_or_init(|| base_discriminant_root_table(ctx))
             .get(&(discriminant.a, discriminant.b))
             .ok_or("source quadratic discriminant did not split")?;
         let half = ctx.from_fp(self.k.k.p.div_ceil(2));
@@ -625,6 +619,74 @@ impl RichelotMap {
     }
     fn dual(&self, d: &Class) -> Result<Class> {
         self.evaluate(d, true)
+    }
+}
+
+/// The typed root API queries only base-field discriminants. In odd
+/// characteristic, (a+b*s)^2 is real only if a=0 or b=0. These axes occur
+/// in this order in the old lexicographic enumeration, preserving its
+/// first root. This is deliberately not a general Fp2 root table.
+fn base_discriminant_root_table(ctx: Fp2Ctx) -> BTreeMap<(u64, u64), Fp2> {
+    let p = ctx.modulus();
+    let mut roots = BTreeMap::new();
+    for value in (0..p)
+        .map(|b| ctx.element(0, b))
+        .chain((1..p).map(|a| ctx.element(a, 0)))
+    {
+        let square = ctx.square(value);
+        roots.entry((square.a, square.b)).or_insert(value);
+    }
+    roots
+}
+
+#[test]
+fn lazy_base_discriminant_table_matches_original_exhaustive_roots() {
+    for (p, coefficients) in [(17_u64, [2, 2, 0]), (101, [56, 13, 6])] {
+        let r = RichelotMap::from_assessment(construct_for(p, coefficients).unwrap()).unwrap();
+        let ctx = r.quadratic;
+        let polynomial = |coefficients: &[u64]| {
+            FpPoly::from_coeffs(
+                coefficients.iter().copied().map(BigUint::from).collect(),
+                BigUint::from(p),
+            )
+        };
+        assert!(r.square_roots.get().is_none());
+        assert!(r.roots(&polynomial(&[1])).unwrap().is_empty());
+        assert_eq!(r.roots(&polynomial(&[0, 1])).unwrap(), [ctx.zero()]);
+        assert!(r.roots(&polynomial(&[])).is_err());
+        assert!(r.roots(&polynomial(&[1, 0, 0, 1])).is_err());
+        assert!(r.square_roots.get().is_none());
+
+        // Unchanged original exhaustive builder, including first-insertion
+        // semantics and all nonreal square keys absent from the candidate.
+        let mut original = BTreeMap::new();
+        for aa in 0..p {
+            for bb in 0..p {
+                let value = ctx.element(aa, bb);
+                let square = ctx.square(value);
+                original.entry((square.a, square.b)).or_insert(value);
+            }
+        }
+        assert_eq!(original.len() as u64, p.pow(2).div_ceil(2));
+        let half = ctx.inv(ctx.from_fp(2)).unwrap();
+        let quarter = ctx.square(half);
+        for d in 0..p {
+            let b = ctx.neg(ctx.mul(ctx.from_fp(d), quarter));
+            let roots = r.roots(&polynomial(&[b.a, 0, 1])).unwrap();
+            let first = original[&(d, 0)];
+            assert_eq!(roots, [ctx.mul(first, half), ctx.neg(ctx.mul(first, half))]);
+            for x in roots {
+                assert_eq!(ctx.add(ctx.square(x), b), ctx.zero());
+            }
+            let table = r.square_roots.get().unwrap();
+            assert_eq!(table.len() as u64, p);
+            assert_eq!(table[&(d, 0)], first, "canonical first root p{p} d{d}");
+        }
+        for (&(a, b), &root) in r.square_roots.get().unwrap() {
+            assert_eq!(b, 0);
+            assert_eq!(ctx.square(root), ctx.from_fp(a));
+        }
+        println!("PASS p{p}:every{p} base discriminants/canonical roots match original exhaustive table;degree0/1/error calls leave cache empty,quadratic initializes;candidate{} axis squares,original{} squares;correctness metadata only",2*p-1,p*p);
     }
 }
 
