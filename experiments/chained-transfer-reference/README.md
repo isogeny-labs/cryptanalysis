@@ -1,4 +1,8 @@
-Current CT27 complete-class acceptance and resume: [FULL_CLASS_STATUS.md](FULL_CLASS_STATUS.md). [pcc:unverified]
+# CT28: direct first F101 elliptic quartic norm
+
+[Written proof](QUARTIC_COVER.md),[acceptance/resume](QUARTIC_STATUS.md) and [inspected report](reports/quartic-first/complete-report.pdf) record complete25native/85reference unit+five integrations,all source guards/fmt/strictClippy,301fbe. Every12317 first T0/E109 norm matches the retained route,with all actual poles/repeated/infinity cases. Scientific standing unsigned,geometric formalization partial;no measured cost ratio. [pcc:unverified]
+
+Previous CT27 complete-class acceptance and resume: [FULL_CLASS_STATUS.md](FULL_CLASS_STATUS.md). [pcc:unverified]
 
 # CT26: lazy canonical roots for the Richelot reference
 

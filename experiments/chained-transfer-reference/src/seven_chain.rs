@@ -10,6 +10,10 @@ use isogeny_algos::fpr::ER;
 use num_bigint::BigUint;
 use num_traits::ToPrimitive;
 use std::collections::{HashMap, HashSet};
+#[path = "quartic_cover.rs"]
+mod quartic_cover;
+#[path = "quartic_norm.rs"]
+mod quartic_norm;
 
 #[test]
 fn closed_fibre_targeted_r0_r1_both_directions() {
