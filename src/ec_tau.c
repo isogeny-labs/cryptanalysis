@@ -60,11 +60,15 @@ typedef struct tau_vec {
 
 static inline uint64_t fa(const ca_group *g, uint64_t x, uint64_t y)
 {
-    return ca_addmod(x, y, g->p);
+    return ca_addmod_sel(x, y, g->p);
 }
 static inline uint64_t fs(const ca_group *g, uint64_t x, uint64_t y)
 {
-    return ca_submod(x, y, g->p);
+    /* ca_submod's value for every input: x - y, plus p when x < y, by mask.
+     * Jacobian formulas subtract data-dependent residues, so the borrow is a
+     * coin flip and the branch in ca_submod mispredicts about half the time. */
+    const uint64_t d = x - y;
+    return d + (g->p & ((uint64_t)0 - (uint64_t)(x < y)));
 }
 static inline uint64_t fm(const ca_group *g, uint64_t x, uint64_t y)
 {
