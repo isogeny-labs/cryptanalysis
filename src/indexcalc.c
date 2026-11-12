@@ -112,6 +112,20 @@ static int rel_push(rel_list *l, const relation *r)
     return 0;
 }
 
+/* An empty list with room for cap relations, so that a collector whose
+ * target is known up front fills one buffer instead of doubling through
+ * 1024, 2048, ... slots (each doubling briefly holds both buffers and
+ * copies the old one: at 784 bytes a relation that was most of the
+ * precompute's peak heap).  rel_push still grows the list past cap. */
+static int rel_reserve(rel_list *l, uint32_t cap)
+{
+    if (l->r || cap == 0) return 0;
+    l->r = calloc(cap, sizeof(relation));
+    if (!l->r) return -1;
+    l->cap = cap;
+    return 0;
+}
+
 /* A journal record is committed only after fflush and fsync.  The native
  * layout is intentionally versioned and checked: a different build/ABI must
  * reject the file rather than reinterpret relations. */
@@ -1106,6 +1120,18 @@ static ca_status ic_precompute_impl(uint64_t p, uint64_t g, const ca_ic_params *
 
     /* ---- relation collection ---- */
     rel_list rels = {0};
+    /* the target, room for the overshoot of the last sieve units or of the
+     * random-exponent workers (at most 64 a thread there), and the zeta row;
+     * a larger overshoot grows the list as before */
+    {
+        const uint64_t want =
+            (uint64_t)target + target / 16 + 64 * (uint64_t)(threads < 16 ? threads : 16) + 256;
+        if (rel_reserve(&rels, want < UINT32_MAX ? (uint32_t)want : UINT32_MAX) < 0) {
+            free(fb_log2);
+            ca_ic_free(ctx);
+            return CA_ERR_NOMEM;
+        }
+    }
     double t0 = ca_now();
     double prior_sieve_seconds = 0;
     /* an explicit relation for zeta (usually itself a factor-base prime):
