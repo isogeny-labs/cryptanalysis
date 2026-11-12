@@ -26,12 +26,33 @@ impl SuccessorChain {
     /// P2 beta N1 /4 or its adjoint. Only the known odd elliptic group
     /// orders are used for division; no point has a discrete-log label.
     fn quarter_phi(&self, d: &Class, reverse: bool) -> Result<Class, String> {
+        self.quarter_phi_with_norms(d, reverse, false)
+    }
+
+    fn quarter_phi_generic(&self, d: &Class, reverse: bool) -> Result<Class, String> {
+        self.quarter_phi_with_norms(d, reverse, true)
+    }
+
+    fn quarter_phi_with_norms(
+        &self,
+        d: &Class,
+        reverse: bool,
+        generic: bool,
+    ) -> Result<Class, String> {
         let s = &self.s;
         let f = &s.old.fp;
         let coordinates = if reverse {
-            s.target_coordinates(d)?
+            if generic {
+                s.target_coordinates_generic(d)?
+            } else {
+                s.target_coordinates(d)?
+            }
         } else {
-            s.old.target_coordinates(d)?
+            if generic {
+                s.old.target_coordinates_generic(d)?
+            } else {
+                s.old.target_coordinates(d)?
+            }
         };
         let actual = std::array::from_fn(|i| {
             let e = &s.beta[i];
@@ -67,13 +88,25 @@ impl SuccessorChain {
             .forward_closed(&self.quarter_phi(&self.r2.dual_closed(d)?, true)?)
     }
 
+    fn forward_generic(&self, d: &Class) -> Result<Class, String> {
+        self.r2
+            .forward_closed(&self.quarter_phi_generic(&self.r1.dual_closed(d)?, false)?)
+    }
+
+    fn dual_generic(&self, d: &Class) -> Result<Class, String> {
+        self.r1
+            .forward_closed(&self.quarter_phi_generic(&self.r2.dual_closed(d)?, true)?)
+    }
+
     fn naive(&self, d: &Class, reverse: bool) -> Result<Class, String> {
         if reverse {
             let half = self.r2.target.mul(d, 6159)?;
-            self.r1.forward(&self.s.dual(&self.r2.dual(&half)?)?)
+            self.r1
+                .forward(&self.s.dual_generic(&self.r2.dual(&half)?)?)
         } else {
             let half = self.r1.target.mul(d, 6159)?;
-            self.r2.forward(&self.s.forward(&self.r1.dual(&half)?)?)
+            self.r2
+                .forward(&self.s.forward_generic(&self.r1.dual(&half)?)?)
         }
     }
 }
@@ -151,8 +184,24 @@ fn successor_chain_both_full_domains_duals_and_additions() {
     super::super::super::chain::assert_full_graph_pair(
         &c.r1.target,
         &c.r2.target,
-        |d| c.forward(d),
-        |d| c.dual(d),
+        |d| {
+            let image = c.forward(d)?;
+            assert_eq!(
+                image,
+                c.forward_generic(d)?,
+                "Psi2 direct/generic all-source"
+            );
+            Ok(image)
+        },
+        |d| {
+            let image = c.dual(d)?;
+            assert_eq!(
+                image,
+                c.dual_generic(d)?,
+                "Psi2Hat direct/generic all-target"
+            );
+            Ok(image)
+        },
         7,
     );
     assert!(c.forward(&c.r2.target.zero()).is_err());
