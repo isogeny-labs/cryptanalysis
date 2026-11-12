@@ -5,10 +5,14 @@ on:
       - research/ct29-horizontal-seven-cycles-20261111
     paths:
       - 'experiments/chained-transfer-reference/ct29/**'
+      - 'experiments/chained-transfer-reference/ct32/**'
+      - 'experiments/chained-transfer-reference/ct33/**'
       - '.github/workflows/ct29-horizontal-seven-audit.yml'
   pull_request:
     paths:
       - 'experiments/chained-transfer-reference/ct29/**'
+      - 'experiments/chained-transfer-reference/ct32/**'
+      - 'experiments/chained-transfer-reference/ct33/**'
       - '.github/workflows/ct29-horizontal-seven-audit.yml'
   workflow_dispatch:
 permissions:
@@ -31,3 +35,6 @@ jobs:
           python3 -B experiments/chained-transfer-reference/ct32/ct32_frobenius49.py
           python3 -O -B experiments/chained-transfer-reference/ct32/ct32_frobenius49.py
           go run experiments/chained-transfer-reference/ct32/ct32_frobenius49_independent.go
+          python3 -B experiments/chained-transfer-reference/ct33/ct33_cyclic49_kernel.py
+          python3 -O -B experiments/chained-transfer-reference/ct33/ct33_cyclic49_kernel.py
+          go run experiments/chained-transfer-reference/ct33/ct33_cyclic49_independent.go
