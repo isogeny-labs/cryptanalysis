@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+set -u
+source_root=/workspace/scratch/ct48-proper-layout/crypto
+consumer_root=/workspace/scratch/ct48-proper-layout/cryptanalysis
+driver=$consumer_root/experiments/chained-transfer-reference/check-proper.sh
+receipt_root=/workspace/scratch/ct48-proper-admissions-01
+mkdir "$receipt_root" || exit 1
+git -C "$source_root" checkout --detach c7af55d0002cf09d5b8d7003cd237229662e926b > "$receipt_root/wrong-head-checkout.txt" 2>&1 || exit 1
+bash "$driver" "$source_root" "$receipt_root/wrong-head-output" > "$receipt_root/wrong-head.txt" 2>&1
+status=$?
+printf '%s\n' "$status" > "$receipt_root/wrong-head.exit"+if [ "$status" -ne 2 ] || [ -e "$receipt_root/wrong-head-output" ]; then exit 1; fi
+git -C "$source_root" checkout --detach 030ea125bf66d98e9365cc9bc7126480d829bfae > "$receipt_root/restore-head.txt" 2>&1 || exit 1
+geometry=$source_root/research/chained_jacobian_transfers_20261110/evidence/t20-full-02/geometry-certificate.json
+cp "$geometry" "$receipt_root/geometry-before.json" || exit 1
+printf '\n' >> "$geometry"
+bash "$driver" "$source_root" "$receipt_root/dirty-geometry-output" > "$receipt_root/dirty-geometry.txt" 2>&1
+status=$?
+printf '%s\n' "$status" > "$receipt_root/dirty-geometry.exit"
+cp "$receipt_root/geometry-before.json" "$geometry" || exit 1
+if [ "$status" -ne 2 ] || [ -e "$receipt_root/dirty-geometry-output" ]; then exit 1; fi
+mkdir "$receipt_root/no-grep-bin" || exit 1
+for name in bash git dirname cat; do ln -s "$(command -v "$name")" "$receipt_root/no-grep-bin/$name" || exit 1; done
+PATH="$receipt_root/no-grep-bin" /bin/bash "$driver" "$source_root" "$receipt_root/missing-grep-output" > "$receipt_root/missing-grep.txt" 2>&1
+status=$?
+printf '%s\n' "$status" > "$receipt_root/missing-grep.exit"
+if [ "$status" -ne 2 ] || [ -e "$receipt_root/missing-grep-output" ]; then exit 1; fi
+printf 'PASS three admission rejections2/no output allocations\n'

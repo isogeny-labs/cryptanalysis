@@ -1,0 +1,31 @@
+   Compiling serde_core v1.0.229
+   Compiling serde_json v1.0.145
+   Compiling ryu v1.0.23
+   Compiling memchr v2.8.3
+   Compiling itoa v1.0.19
+   Compiling isogeny_algos v0.1.0 (/workspace/crypto/isogeny_algos)
+   Compiling chained-kernel-independent-checker v0.1.0 (/workspace/cryptanalysis/experiments/chained-transfer-reference/kernel-checker)
+    Finished `release` profile [optimized] target(s) in 4m 16s
+     Running unittests src/main.rs (/workspace/scratch/ct48-kernel-target/release/deps/chained_kernel_independent_checker-9b1f7f1689ff80fc)
+
+running 4 tests
+
+thread 'tests::malformed_inputs' (181230) panicked at /workspace/crypto/isogeny_algos/src/fpr.rs:71:9:
+FpR::from_modulus: modulus is reducible
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test tests::polynomial_tampering ... ok
+test tests::malformed_inputs ... ok
+
+thread 'tests::complete_certificate' (181228) panicked at src/main.rs:501:30:
+called `Result::unwrap()` on an `Err` value: "kernel sum index"
+test tests::complete_certificate ... FAILED
+test tests::geometric_tampering ... ok
+
+failures:
+
+failures:
+    tests::complete_certificate
+
+test result: FAILED. 3 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.69s
+
+error: test failed, to rerun pass `--bin chained-kernel-independent-checker`

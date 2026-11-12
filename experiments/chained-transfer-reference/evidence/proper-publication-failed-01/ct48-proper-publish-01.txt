@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/publish_checkpoint_objects.py", line 66, in <module>
+    got=api('git/blobs',dict(encoding='base64',content=base64.b64encode(content).decode()))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/publish_checkpoint_objects.py", line 28, in api
+    raise RuntimeError(p.stderr.strip())
+RuntimeError: gh: Bad credentials (HTTP 401)
