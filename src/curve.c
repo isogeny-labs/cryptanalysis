@@ -1144,10 +1144,11 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
 #endif
             wk->a = ca_addmod_sel(wk->a, c.alpha[wk->idx], n);
             wk->b = ca_addmod_sel(wk->b, c.beta[wk->idx], n);
-            if (k) {
-                wk->a = glv_lam_mul(&c, wk->a, k, n);
-                wk->b = glv_lam_mul(&c, wk->b, k, n);
-            }
+            /* k is 0 on about one step in m: multiplying by lam^0 = 1
+             * returns the coefficient unchanged (it is < n), so the update
+             * is unconditional rather than a branch on walk data */
+            wk->a = glv_lam_mul(&c, wk->a, k, n);
+            wk->b = glv_lam_mul(&c, wk->b, k, n);
             wk->Y = Yn[w];
             wk->since_dp++;
 #ifdef CA_GLV_CYCLE_ESCAPE
