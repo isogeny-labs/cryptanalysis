@@ -1,0 +1,44 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-11T23:34:56Z",
+ "id": "PCC-20261111-3dcebd",
+ "kind": "statement",
+ "producer": {
+  "commit": "5d5dc81faa442de6d9a4ee8144806ab89cf9a3b8",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/successor-chain-07-partial.txt",
+    "sha256": "fdce90a096026300bb1aecddd849c29d407867aaf26ccbcb95037539926bd1cb"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/successor-chain-source-07.rs",
+    "sha256": "5ccfb0189ab244b44f476f9cec1f3cef620cca31c814dc6061b4975797a1078e"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/successor-clippy-10-attempt.txt",
+    "sha256": "11d15ee5449bd729b7bc7158744d8b7bf6d69d33e8f03ada8192e555ac33a075"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/successor-native-geometric-source-10.rs",
+    "sha256": "5cd9b73b31c3d7f690b7e42624a41639cbbfe8027543a34c52fedce759464b4e"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Unsigned bounded partial07 receipt: both original109/113 source Psi1/Psi2 controls pass all scalars,nonzero order,both naive/quarter directions,commuting squares,dual7/composite49,fullreverse norm196/inverses104/64 and actual4 beta alpha. This frozen partial receipt does NOT assert the concurrently running complete Psi2 graph passed. Exact compiled chain-source07 retained. Clippy10 index-only range-loop diagnostic/source10 preserved separately."
+}

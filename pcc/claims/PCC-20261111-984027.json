@@ -1,0 +1,37 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-11T23:33:28Z",
+ "id": "PCC-20261111-984027",
+ "kind": "statement",
+ "producer": {
+  "commit": "5d5dc81faa442de6d9a4ee8144806ab89cf9a3b8",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/seven-ci-retry-observation-09.json",
+    "sha256": "4a13abf1a0addabf6c26e4cda06b3feba9e0eab6b959f834c446a7c747f78179"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/seven-ci-retry-43113992769.log.xz",
+    "sha256": "025b654e7f174ff05d2591b00f028fcdf8293c06d3f70aeb6cf4a8ed258ac621"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/seven-ci-retry-43113992769.log.sha256",
+    "sha256": "2f3ebcb6df7bf65801055f3dc653ba185d16fe30849d1a35eb7cc2168fc27116"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Unsigned fixed7c1f32ecb24daffce449703075573c824dd1f241 retry43113992769 succeeds25native/65reference unit plus3integration tests,1pre-existing ignored benchmark. Full API metadata and decoded job log archived with raw/archive SHA256 and standard-xz roundtrip. Earlier startup_failure43097723254 remains immutable; this CI observation is not signed scientific verification."
+}

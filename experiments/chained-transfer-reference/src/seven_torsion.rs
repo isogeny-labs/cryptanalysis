@@ -14,6 +14,8 @@ use num_bigint::BigUint;
 use std::collections::HashSet;
 #[path = "seven_chain.rs"]
 mod chain;
+#[path = "seven_successor.rs"]
+mod successor;
 
 struct Bridge {
     f: FpR,
