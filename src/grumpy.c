@@ -223,6 +223,57 @@ static int grumpy_checkpoint_load(const char *path, const grumpy_checkpoint_head
     return ok;
 }
 
+/* Lanes.  On the native curve the three walks advance GR_LANES iterations at
+ * a time: lane t*GR_LANES + c holds walk_t + c * step_t, and one batched op
+ * moves all 3 * GR_LANES lanes by GR_LANES * step_t, sharing one field
+ * inversion among 96 additions instead of among 3.  Iteration i reads lane
+ * c = i - block start; the walk points, the table inserts, the counts and
+ * every checkpoint byte are those of the one-iteration loop (the walk saved
+ * is lane c, the point of iteration i).  A refill may compute up to
+ * GR_LANES - 1 points past the last one used; they are not counted. */
+enum { GR_LANES = 32, GR_LOG = 5 };
+
+typedef struct gr_lanes {
+    ca_elem lane[3 * GR_LANES];
+    ca_elem stride[3 * GR_LANES]; /* GR_LANES * step_t, in every lane of t */
+    uint64_t scratch[2 * 3 * GR_LANES];
+} gr_lanes;
+
+static void gr_lanes_fill(const ca_group *g, gr_lanes *ls, const ca_elem walk[3],
+                          const ca_elem step[3])
+{
+    ca_elem off[3][GR_LOG + 1]; /* off[t][k] = 2^k * step_t */
+    for (int t = 0; t < 3; t++) {
+        off[t][0] = step[t];
+        for (int k = 1; k <= GR_LOG; k++) ca_group_dbl(g, &off[t][k], &off[t][k - 1]);
+        ls->lane[t * GR_LANES] = walk[t];
+        for (int c = 0; c < GR_LANES; c++) ls->stride[t * GR_LANES + c] = off[t][GR_LOG];
+    }
+    ca_elem A[3 * GR_LANES / 2], Bv[3 * GR_LANES / 2], R[3 * GR_LANES / 2];
+    int k = 0;
+    for (int span = 1; span < GR_LANES; span *= 2, k++) {
+        /* lanes span .. 2 span - 1 = lanes 0 .. span - 1 + span * step */
+        for (int t = 0; t < 3; t++)
+            for (int c = 0; c < span; c++) {
+                A[t * span + c] = ls->lane[t * GR_LANES + c];
+                Bv[t * span + c] = off[t][k];
+            }
+        ca_group_batch_op(g, R, A, Bv, (size_t)3 * span, ls->scratch);
+        for (int t = 0; t < 3; t++)
+            for (int c = 0; c < span; c++) ls->lane[t * GR_LANES + span + c] = R[t * span + c];
+    }
+}
+
+static inline void gr_lanes_advance(const ca_group *g, gr_lanes *ls)
+{
+    ca_group_batch_op(g, ls->lane, ls->lane, ls->stride, (size_t)3 * GR_LANES, ls->scratch);
+}
+
+static inline void gr_lanes_sync(ca_elem walk[3], const gr_lanes *ls, unsigned c)
+{
+    for (int t = 0; t < 3; t++) walk[t] = ls->lane[t * GR_LANES + c];
+}
+
 static ca_status grumpy_solve_impl(const ca_group *g, const ca_elem *base, const ca_elem *target,
                                    uint64_t lo, uint64_t hi, const ca_grumpy_params *params,
                                    const char *checkpoint_path, uint32_t progress_interval,
@@ -265,6 +316,9 @@ static ca_status grumpy_solve_impl(const ca_group *g, const ca_elem *base, const
     ca_group_inv(g, &m1G_neg, &m1G_neg);
     ops += 1;
 
+    const int laned = ca_ec_group_is_native(g);
+    gr_lanes *ls = NULL;
+    unsigned lc = 0; /* lane of iteration i */
     ca_htab tab;
     if (ca_htab_init(&tab, (size_t)(3 * sq / 2 + 64)) != CA_OK) return CA_ERR_NOMEM;
     /* The three walks B (baby), U and V (giants) advance together through
@@ -316,10 +370,16 @@ static ca_status grumpy_solve_impl(const ca_group *g, const ca_elem *base, const
     /* Upper bound on iterations: the baby walk alone finds x' in at most
      * width+1 steps (it meets U_0 = H'). */
     uint64_t max_iter = width > UINT64_MAX - 2 ? UINT64_MAX : width + 2;
+    if (laned) {
+        ls = malloc(sizeof(*ls));
+        if (!ls) { rc = CA_ERR_NOMEM; goto out; }
+        gr_lanes_fill(g, ls, walk, step);
+    }
     for (; i < max_iter; i++) {
         for (int tpe = 0; tpe < 3; tpe++) {
+            const ca_elem *pt = laned ? &ls->lane[tpe * GR_LANES + lc] : &walk[tpe];
             uint64_t ot, oi;
-            int ir = ca_htab_insert(&tab, ca_group_hash(g, &walk[tpe]), (uint64_t)tpe, i, &ot, &oi);
+            int ir = ca_htab_insert(&tab, ca_group_hash(g, pt), (uint64_t)tpe, i, &ot, &oi);
             if (ir < 0) { rc = CA_ERR_NOMEM; goto finalize; }
             if (ir == 1) {
                 if (grumpy_collide(&c, (int)ot, oi, tpe, i, x)) { rc = CA_OK; goto finalize; }
@@ -327,7 +387,14 @@ static ca_status grumpy_solve_impl(const ca_group *g, const ca_elem *base, const
                  * walk period divides a small order; keep going */
             }
         }
-        ca_group_batch_op(g, walk, walk, step, 3, scratch);
+        if (laned) {
+            if (++lc == GR_LANES) {
+                gr_lanes_advance(g, ls);
+                lc = 0;
+            }
+        } else {
+            ca_group_batch_op(g, walk, walk, step, 3, scratch);
+        }
         ops += 3;
         if (params->max_ops && ops > params->max_ops) {
             rc = CA_ERR_LIMIT;
@@ -347,6 +414,7 @@ static ca_status grumpy_solve_impl(const ca_group *g, const ca_elem *base, const
                 next_progress = now + progress_interval;
             }
             if (now >= next_checkpoint) {
+                if (laned) gr_lanes_sync(walk, ls, lc);
                 if (!grumpy_checkpoint_save(checkpoint_path, &identity, g, walk, &tab,
                                             i + 1, ops, elapsed_prior + now - t0, 0, 0)) {
                     rc = CA_ERR_INTERNAL;
@@ -359,6 +427,7 @@ static ca_status grumpy_solve_impl(const ca_group *g, const ca_elem *base, const
     }
     rc = CA_ERR_NOT_FOUND;
 finalize:
+    if (laned) gr_lanes_sync(walk, ls, lc); /* the point of iteration i */
     if (monitored &&
         (!grumpy_checkpoint_save(checkpoint_path, &identity, g, walk, &tab,
                                  i, ops, elapsed_prior + ca_now() - t0,
@@ -378,6 +447,7 @@ out:
         st->threads = 1;
         st->seconds += elapsed_prior + ca_now() - t0;
     }
+    free(ls);
     ca_htab_free(&tab);
     return rc;
 }
