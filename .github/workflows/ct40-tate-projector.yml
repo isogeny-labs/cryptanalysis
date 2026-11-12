@@ -1,0 +1,27 @@
+name: CT40 local Tate projector oracle
+on:
+  pull_request:
+    paths:
+      - 'experiments/chained-transfer-reference/ct40/**'
+      - '.github/workflows/ct40-tate-projector.yml'
+  push:
+    branches:
+      - research/ct36-normalized-dual49-20261112
+    paths:
+      - 'experiments/chained-transfer-reference/ct40/**'
+      - '.github/workflows/ct40-tate-projector.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  projector-arithmetic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - name: Execute standalone integer-polynomial and modular-matrix controls
+        run: |
+          node --check experiments/chained-transfer-reference/ct40/ct40_projector_audit.js
+          node experiments/chained-transfer-reference/ct40/ct40_projector_audit.js
