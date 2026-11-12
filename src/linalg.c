@@ -882,6 +882,9 @@ static inline uint32_t lz_gen(lz_pool *P)
     return (uint32_t)(atomic_load_explicit(&P->ticket, memory_order_acquire) >> 32);
 }
 
+/* pthread_create fixes the start routine as void *(*)(void *), so arg stays
+ * non-const even though the worker only reads through it. */
+// cppcheck-suppress constParameterCallback
 static void *lz_worker_main(void *arg)
 {
     const lz_worker *W = arg;
@@ -988,7 +991,7 @@ static lz_pool *lz_pool_acquire(uint32_t threads, uint32_t nnz)
     return P;
 }
 
-static void lz_pool_release(lz_pool *P)
+static void lz_pool_release(const lz_pool *P)
 {
     if (P) pthread_mutex_unlock(&lz_pool_lock);
 }
@@ -1206,7 +1209,6 @@ static ca_status lanczos(const ca_spmat *A, const uint64_t *b, uint64_t q, uint6
                 t_one = now - t_phase;
                 phase = 1;
                 warm = 1;
-                left = LZ_PROBE;
             } else if (phase == 1) {
                 pool_wins = now - t_phase < t_one;
                 phase = 2;

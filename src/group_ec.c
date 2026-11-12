@@ -359,13 +359,13 @@ static void ec_jac_add_bits(const ca_group *g, ec_jac *acc, const ca_elem *pow, 
         if ((k & 1) && !FINF(&pow[b])) ec_jac_add_affine(g, acc, FX(&pow[b]), FY(&pow[b]));
 }
 
-int ca_ec_fb_sum(const ca_group *g, ca_elem *r, const ca_elem *pow1, uint64_t k1,
-                 const ca_elem *pow2, uint64_t k2)
+int ca_ec_fb_sum(const ca_group *g, ca_elem *r, const ca_elem *pows1, uint64_t k1,
+                 const ca_elem *pows2, uint64_t k2)
 {
     if (g->vt != &ec_vt) return 0; /* a caller's own vtable: use it */
     ec_jac acc = {0, 0, 0, 1};
-    ec_jac_add_bits(g, &acc, pow1, k1);
-    ec_jac_add_bits(g, &acc, pow2, k2);
+    ec_jac_add_bits(g, &acc, pows1, k1);
+    ec_jac_add_bits(g, &acc, pows2, k2);
     ec_jac_to_affine(g, r, &acc);
     return 1;
 }

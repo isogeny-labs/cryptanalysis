@@ -357,8 +357,12 @@ static void *pc_build_worker(void *arg)
         }
         if (!pc_charge_ops(bd, active)) break;
         ca_group_batch_op(g, Yn, Y, B, W, scratch);
+        /* the sums become the lanes' points by swapping the two buffers,
+         * not by copying W points back every round */
+        ca_elem *const Yt = Y;
+        Y = Yn;
+        Yn = Yt;
         for (uint32_t i = 0; i < W; i++) {
-            Y[i] = Yn[i];
             if (stall[i]) {
                 stall[i] = 0;
             } else {
