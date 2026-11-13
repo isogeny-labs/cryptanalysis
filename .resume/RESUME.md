@@ -1,3 +1,53 @@
+# Canonical norm — independent local replay, own seven-job CI and raw publication settled
+
+Science069644bf/tree6eebf810/parentc3b; publishedmetadataea833df7. ReadyPR1521 remains under1520; protocolac58df/c3b actuallypublished beforecode. FULL027b231c COMPLETE exact069/3d,all438guards/23outer+20nested native+tee0/portable+cleanliness0/12consumer+24producerrecords equal accepted originals/threeCLIgoldens byteexact. Native75275f/CLIaf3d78/formal13originalbindings andexplicit written/native geometrybridges unchanged. [pcc:unverified]
+
+Own43400864083 ALLSEVEN terminalSUCCESS, exact069,new131803082298: ALL36nativeJSON equal originals andALL24exactPCCverdictsPASS withoriginalclaim IDs+commits+ORIGINALcanonicalclaimdigests,168c99. ALL7whole logs/API+438source snapshots/dispatch/discovery retained inwhole471-file790964-byte archive8f9f11. Original partial134968-bytecollector d82dd3 preserved; raw-vs-canonical bookkeepingassertion frozenb15b45 thenfixed viaunchangedPCCfunction. OptionalZIPstorageproxy403/zeroZIPdownload963670;exit/guard observation fromunchangeddriver terminalmarker/successfulstep,NOTdownloadedexitfiles. CISETTLED:doNOTrepoll orredispatch. [pcc:unverified]
+
+Allnormrawavailability COMPLETE: SIXinitial48e581/7cd6ea;BOTHfull82e079/1dd28b;primary69520 2a1f0f/5327f4. Latest43410133205/job131834185847 actuallyreplaysTHREEobjects BEFOREaef7ecb51943090d0afe10fd5a947529d378973d/directparent9b795075/EXACT7paths:67172publicationcollector+134968partialCI+790964completeCI. NormalFF/artifact/wiring0/all2175CURRENTinputs+dirtybytes unchanged,cfbe78;GENUINEconsumerentries f5c83d/allphysicalarchivesintact/ignored. Finalpublication controlplane retained WHOLE APIJSON+losslesswholelogXZ/fullmemberhashes directly;no recursive extraarchive. [pcc:unverified]
+
+ReportCI61f7a2 ONE34768-bytePDFpage ALLinspected/editableDOT/SVG/JSON/Typst. Earliernative16c9f6 THREE48914-bytePDFpages/full02d99c38 ONE36300page remainimmutable. Generaladmissiblechartinvariance written;nativealternative8typicalclasses each. No fullformalgeometry,signedexecution ormeasuredcomputationaladvantage. [pcc:unverified]
+
+Rootglobal NOTgreen/missingauthentic2293097-byteecbenchfixture/SHA8970667;originalAWS2nocredentials/anonymousHeadObject403/add561. MainPR3877conflict/frozenledger/signing/reviews separate. Routine09:45d0f30b,next13:45unlessconcretesignal. Vault8edec422locked/KBtoolabsent/sourcefallback/no subagents/no paidbenchmarkadmission. [pcc:unverified]
+
+NEXT UNBLOCKED: openreadychild under1521 andfreeze/publish source-backed publictargetN4/B2 protocol BEFOREnewcases/code. Originalcomplete solverexists;legacykonlyconstructsQinsidecountedbody andisunusedafterward. CreatepublicQ APIs forbothIC/plainrho,keepknownwitnessoutsidebinaryinput andtargetconstructionoutsidebothintervals;accountingaloneisNOTgain. Preservewithdrawnq<=11subgroupenumeration negative result. Initialq223seed1 originalN4builder (q7mod12);old5/7/11controls stayfixed. AdditiveV2 only, explicitfield/model/basepoint bridges;originalV1admission/source/oldcontrols immutable. No genericDLPfallback orunadmittedbenchmark.
+
+---
+
+# Canonical norm — complete native/full replay; exact-source CI receipt next
+
+Scientific069644bf/tree6eebf810/parentc3b/184paths ACTUALLYpublished normalGit0/e326f2;pre-codeprotocolac58df/c3b/ready1521 remainsparent1520. FULL02 COMPLETE7b231c exact069/3d,original09:26:05→09:33:59UTC,all23outer+20producerpairs[0,0]/native+driver+portable+cleanliness+outerguards0/all438outerinputs unchanged. ALL12consumerJSON equalunit02 75275f/ALL24producer equalc162f3/3consumerCLIgoldens byteexact/twoORIGINAL13declarationgates0trusted/13new+11producerexactbindings. No local nativeprocess active. [pcc:unverified]
+
+Fullnative fixeddomains148/356/1324/allsource+allJac/both2compositions/odd37,89,331scalars andexplicitcompletion/origin/nonreduced controls pass. Formalfbfa81/c88b36 remains partial:actualgeometry bridges written/native. Generalalladmissiblechart invariance written;native alternate8typicalclasses perfield explicit. Native16c9f6 THREE48,914-bytePDFpages andfulladdendumd99c38 ONE36,300-bytepage ALLinspected/editable. Failedstatic/Lean/compatibility/full01missingcontrol/helper129+127 preserved;no criteriaweakened. [pcc:unverified]
+
+ALLSIX initialnative raw archives ACTUALLYpublished48e581/7cd6ea;BOTHwholefullarchives ACTUALLYpublished82e079/1dd28b via43403906430/job131813350314 beforebf9/directparent923f/exact7paths,includingwholefull01failure668940/full02success676560. Originalsource-reviewb992d8 WHOLE69520-bytearchive isACTUALLYpublished via43405549514/job131818908219 before006db8ec/directparentbeb9/exact6paths;genuineconsumerentry5327f4. Original12primarysources includeexistingN4/B2 complete solver,itsplanted-scalarAPI andqmod12=7 fieldconstraint;legacytimings notnewlyvalidated. [pcc:unverified]
+
+Frozen451bc2 precedesONLYonesortedexactprimaryPCCsubject added toBOTHexistingPCCgate/sign artifactpull steps. Originalverifier/keyring/trust andALL437focusedinputs/WHOLE7workflow unchanged. Firstwiring1 becausemanifestuntracked retainedf347b7;stageOWNgenuinemanifest thenORIGINALwiringcheck0. b992originalPCCverify2/not_covered unsignedstatement isexpectedstanding,NOTproofvalidation. No newPCC orartifactpolicy. Nativefullunchanged;datareadcontrolqualifiescurrentmetadata delta. [pcc:unverified]
+
+Own43400864083 onexact069 initialALLSEVENjobsinprogress/new131803082298;terminalNOTyetretrieved,next10:16UTC. Routine09:45snapshotd0f30b:root923/open/mergeablefalse/no returnedreviewsorthreads;stacked1521/1520/1519readyopen/unmerged. Nextglobal13:45unlessconcretesignal. Mainfrozenledger/signing/conflict/review gates remain. Rootglobal NOTgreen/missingoriginalecbenchfixture;originalAWS2nocredentials/anonymous403/add561. KBtoolabsent/sourcefallback/vault8edec422locked/no subagents/no paidbenchmarkadmission. No measuredcomputationaladvantage. [pcc:unverified]
+
+NEXT:publish this fullcheckpoint bynormalexpected-head Git;updatePR1521/3877/queue3904;retrieveown7CIat10:16/wholelogs andactualstatuses. Thenfreeze/publish nextsolveradapterprotocol BEFOREnewcases/code. ReuseexistingN4/B2 viaa public-target API andgeometricfield/model/basepoint bridges;keepoldfixedadapter admission/proofsubjects immutable,versionadditivecontrols asneeded. Preservewithdrawnoldsubgroup-enumeration result;no generic-DLP fallback or costinference fromlegacy reports.
+
+---
+
+# Current canonical norm checkpoint — native, CLI and partial formal component
+
+Protocolac58df/sourcec3b8d74c was ACTUALLYpublished beforecode/readyPR1521 under1520,424a30. New Rustg3-norm-checker uses original field/poly/elliptic/Picard engines;no original arithmetic source edit. Unit01c19a2e/fullunit02 75275f FOURpass/ZEROfailedignoredfiltered/all359guards unchanged. Independently counted C(q,q²,q³) triples(6,26,192),(8,50,380),(12,122,1308),RR+Newton/BFS orders148,356,1324. ALLsource/Jac both2compositions,all740/2492/14564 generatingedges/odd37,89,331scalars/recovery pass. Normkernel2 each;nonreduced/exceptional/explicitfourinfinities+fouru0branches percase/actualwrongplaneorigin/offcurve/tripleroot controls pass. [pcc:unverified]
+
+CLIaf3d78/wholef459a6:THREErequests/nineclasses,TWELVEactualexit2processcontrols/372guards0/overwritebytesunchanged. Formalscopec88b36:13 SAMEdeclarations pass both ORIGINALproducer4.35 andconsumer4.34.1 gates0trusted;ALL13exact originalconsumerPCCbindings localpass. Writtenfbfa81 derivation/proofmap retains allactualgeometrybridges;formalizationpartial. Generalchart independence written;nativealternatecontrols8typicalclasses perfield,notexhaustivepairs. Native report16c9f6 THREEfinal48,914-bytePDFpages ALLvisuallyinspected,editablefigures/recordeddata/fullmodeltags. [pcc:unverified]
+
+Everyfailedstatic/Lean/compatibility attempt preservedwhole with frozen4710c0/2b2a5e/e14270 corrections. ALLSIXnativearchives ACTUALLYpublished48e581 atcanonicalroot5c527/directparent5fff:43398333803/job131794658518 SIXremote replays beforeexact8pathbot. Genuinemanifestprojection7cd6ea toEXACTconsumerpaths preservesphysicalwholebytes;no newPCCarchive hydration/verifier change. ProducerownCI27e47f andprior4+8+5publications complete. FirstFFstaleoldworkflowguard failure andfrozen8b570c/current2175FFguard correction retained upstream;old2132source hashes+WHOLEold6prefix retained. [pcc:unverified]
+
+Integration planb4cd92:pinproducer3d49af7f3d0a28e76b79e4825c9d2324e85853d2,physicalCargo siblings/cleanprotectedinputs/freshoutsideoutput+cache/437portablehashes. Originalproducer20pairs plus23outerpairs:producer,new4tests/9CLIclasses/two13declarationgates/13exactbindings. Wholeold20,796-byteSIXjobprefix unchanged;distinctSEVENTHjob appended. Metadataactionlint/bashsyntax/437hashes pass. Sourcecommit/publication,admissioncontrols andfull2100s cleanreplay/ownexacthead7CI remainNEXT,notaccepted yet. [pcc:unverified]
+
+ROOTglobal NOTgreen:twooriginaltimeouts/missingcanonicalecbenchfixture2364e3;originalAWSCLI installedbutpull2 unablecredentials/anonymousread1 HeadObject403/add561. No fabricatedfixture/sourcepricing/testedit. Mainconflict/frozenledger/signing/reviews remain;routineglobalnext09:44UTC. OlderC0/T20full147b9f/ALL6CIf507c9/ALL4raw andolderroot/consumerCIs settled;do notrepoll. KB127/sourcefallback/vault8edec422locked/no subagents/no paidbenchmarkadmission. No measuredcomputationaladvantage. Continue nextunblockedresearch afterfullreplay.
+
+---
+
+CURRENT G3normconsumer:protocolac58df/proposalreport13a4a0 BEFOREcode. Branchresearch/chained-transfer-g3-norm-20261113 from1bb/readyparent1520;pinproducer3d49af7/mathsourcea719/343inputs/wholeold20796SIXjobs. NO native normcode/runyet. Publishprotocol+readychildbeforeimplementation. See experiments/chained-transfer-reference/G3_NORM_CHECKPOINT.md. Earlier CURRENT/ACTIVE text historical. [pcc:unverified]
+
+---
+
 Current checkpoint — complete F101 chain, all six CI jobs, all four raw archives
 
 Scientific source a39fefaa084756d0a58386253651a667e2ad9de6 pins upstream

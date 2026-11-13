@@ -1,0 +1,52 @@
+{
+  "at": "2026-11-13T08:58:07.531673+00:00",
+  "original_tree": "/workspace/scratch/ct56-g3-norm-unit-02",
+  "files": 373,
+  "raw_bytes": 3880960,
+  "raw_sha256": "f08504c4670e3152d8a7350bc46c9b277572e11f17b9803ab339ebb2276b7eb1",
+  "archive_bytes": 617016,
+  "archive_sha256": "10c48e81b252c734bc5f5d1eaf273799fbe96502950c31de6709d876c28b1e7b",
+  "members_raw_bytes": 63903,
+  "members_raw_sha256": "fd5c26b59c836cc4695a2a5c9f1c255595b8f4ec184611948c3e9bd73bd97db4",
+  "members_xz_bytes": 16552,
+  "members_xz_sha256": "4cef20152378d5f3adbace1407e838036ccefc5494f6771c63bc60adb84cd360",
+  "every_member_hash": true,
+  "exact_standard_tar_xz_roundtrip": true,
+  "cache_outside_raw": true,
+  "standing": "unsigned byte-custody data only;not native/mathematical/remoteavailability verdict",
+  "plan.json": {
+    "protocol": "ac58df published c3b8d74c/ready PR1521 BEFORE code",
+    "phase": "unit",
+    "attempt": "02",
+    "command": [
+      "cargo",
+      "test",
+      "--release",
+      "--offline",
+      "--locked",
+      "--manifest-path",
+      "experiments/chained-transfer-reference/g3-norm-checker/Cargo.toml",
+      "--lib",
+      "--",
+      "--nocapture",
+      "--test-threads=1"
+    ],
+    "timeout_s": 900,
+    "guards": 359,
+    "upstream343_unchanged": true,
+    "whole_old_six_jobs_bytes": 20796,
+    "cache": "/workspace/scratch/ct56-g3-norm-unit-02-build-cache",
+    "cache_outside_raw": true,
+    "prediction": "all FOUR unfiltered tests cover complete fixed q=5,7,11 source and independently counted full Jacobian domains, both compositions [2], controls and odd recovery",
+    "falsification": "original nonzero exit, failed domain/control or changed guard; preserve whole attempt and diagnose without reducing acceptance",
+    "scope": "local development correctness check; no benchmark, timing ratio, IC solver or paid execution"
+  },
+  "native.exit": "0",
+  "guard.exit": "0",
+  "guards.json": {
+    "count": 359,
+    "changed": []
+  },
+  "start.txt": "2026-11-13T08:46:30Z",
+  "finish.txt": "2026-11-13T08:56:09Z"
+}

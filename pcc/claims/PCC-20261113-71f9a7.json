@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-13T08:53:21Z",
+ "id": "PCC-20261113-71f9a7",
+ "kind": "theorem",
+ "producer": {
+  "commit": "c3b8d74cb356be7a1a10ae8778831f1661d506cc",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "b5261e66e717906fed9a1a8b876fb6a873239901449804a78b11ed5dc4b9a247",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-reference/g3-norm-checker/lean/CanonicalNorm.lean",
+   "theorem": "G3CanonicalNorm.reverse_composition_from_surjective_pullback"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Independent canonical-class norm conditional quotient pushforward/section choice/multiplicity/geometric surjectivity implication and odd subgroup recovery. Actual divisor groups, Picard functors, function-field norm/principal divisor bridge, quotient algebra identification, covers/reducers and geometric product-pullback surjectivity remain written/native bridges. SAME source accepted separately by original producer4.35 and matching consumer4.34.1 gates;no verifier/trust change. Local exact bindings remain unsigned until main CI verdict;no full formal geometry or computational advantage.",
+ "statement": "theorem reverse_composition_from_surjective_pullback {A J : Type} [IntModule A] [IntModule J] (pull : A \u2192 J) (norm : J \u2192 A) (pull_two : \u2200 x, pull ((2 : Int) \u2022 x)=(2 : Int) \u2022 pull x) (diagonal : \u2200 x, norm (pull x)=(2 : Int) \u2022 x) (geometric_surjectivity : \u2200 j, \u2203 x, pull x=j) (j : J) : pull (norm j)=(2 : Int) \u2022 j"
+}
