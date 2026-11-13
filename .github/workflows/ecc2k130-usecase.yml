@@ -51,7 +51,7 @@ jobs:
           python-version: ${{ matrix.python }}
           cache: pip
           cache-dependency-path: usecases/ecc2k130/requirements.txt
-      - uses: azure/setup-helm@v4
+      - uses: azure/setup-helm@v5
       - name: Install deployment dependencies
         run: pip install -r usecases/ecc2k130/requirements.txt
       - name: Compile
