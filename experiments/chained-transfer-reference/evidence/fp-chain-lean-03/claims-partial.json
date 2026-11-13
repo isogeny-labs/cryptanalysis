@@ -1,0 +1,112 @@
+[
+  {
+    "name": "PrimeFieldChain.actual_c0_first_cover",
+    "claim_path": "pcc/claims/PCC-20261113-e36488.json",
+    "statement": "theorem actual_c0_first_cover {K : Type} [CommRing K] (z : K) (characteristic : (101 : K)=0) : z^6+6*z^4+13*z^2+56=(z^2+2)^3+(z^2+2)+46",
+    "proof": {
+      "path": "experiments/chained-transfer-reference/fp-chain-checker/lean/ChainAdapter.lean",
+      "theorem": "PrimeFieldChain.actual_c0_first_cover",
+      "decl_sha256": "96e1d39c5c9e640f8a8c1586a9b516cde46d7c1a69293776c3b675d273db21a6"
+    }
+  },
+  {
+    "name": "PrimeFieldChain.actual_c0_reciprocal_cover",
+    "claim_path": "pcc/claims/PCC-20261113-850d19.json",
+    "statement": "theorem actual_c0_reciprocal_cover {K : Type} [CommRing K] (z : K) (characteristic : (101 : K)=0) : (z^6+6*z^4+13*z^2+56)*56^2 = (56+38*z^2)^3+44*(56+38*z^2)*z^4+21*z^6",
+    "proof": {
+      "path": "experiments/chained-transfer-reference/fp-chain-checker/lean/ChainAdapter.lean",
+      "theorem": "PrimeFieldChain.actual_c0_reciprocal_cover",
+      "decl_sha256": "91e7f7553a911e40dd5ec02c03834a598fd5ca7746f00708966b7fa70436a620"
+    }
+  },
+  {
+    "name": "PrimeFieldChain.actual_repeated_finite_fibre",
+    "claim_path": "pcc/claims/PCC-20261113-07b234.json",
+    "statement": "theorem actual_repeated_finite_fibre {K : Type} [CommRing K] (z : K) (characteristic : (101 : K)=0) : (z^2+2)-2=z^2 \u2227 z^6+6*z^4+13*z^2+56-37^2=z^2*(z^4+6*z^2+13) \u2227 (37 : K)^2=2^3+2+46 \u2227 (-37 : K)^2=2^3+2+46",
+    "proof": {
+      "path": "experiments/chained-transfer-reference/fp-chain-checker/lean/ChainAdapter.lean",
+      "theorem": "PrimeFieldChain.actual_repeated_finite_fibre",
+      "decl_sha256": "4865d0ccf88947c83bffd1ea748fb332642221f802e04b023b006a0fe072736e"
+    }
+  },
+  {
+    "name": "PrimeFieldChain.actual_empty_finite_fibre_and_infinity_targets",
+    "claim_path": "pcc/claims/PCC-20261113-14b91d.json",
+    "statement": "theorem actual_empty_finite_fibre_and_infinity_targets {K : Type} [CommRing K] (z : K) (characteristic : (101 : K)=0) : (56+38*z^2)-38*z^2=56 \u2227 (56 : K)*92=1 \u2227 (56 : K)^2=38^3+44*38+21 \u2227 (-56 : K)^2=38^3+44*38+21",
+    "proof": {
+      "path": "experiments/chained-transfer-reference/fp-chain-checker/lean/ChainAdapter.lean",
+      "theorem": "PrimeFieldChain.actual_empty_finite_fibre_and_infinity_targets",
+      "decl_sha256": "69b82b57aded94a1c12ce681b1732ea3b874413a2d0b51ba7bb02bcb46984efc"
+    }
+  },
+  {
+    "name": "PrimeFieldChain.completed_degree_two_balanced_accounting",
+    "claim_path": "pcc/claims/PCC-20261113-5b4811.json",
+    "statement": "theorem completed_degree_two_balanced_accounting (d nplus nminus : Int) (degree_two : d+nplus+nminus=2) : nminus-1=1-d-nplus",
+    "proof": {
+      "path": "experiments/chained-transfer-reference/fp-chain-checker/lean/ChainAdapter.lean",
+      "theorem": "PrimeFieldChain.completed_degree_two_balanced_accounting",
+      "decl_sha256": "d03b9e6a249348811b6abcc833e5e7b645c99993108cd657c45345921f9ae122"
+    }
+  },
+  {
+    "name": "PrimeFieldChain.actual_public_constants",
+    "claim_path": "pcc/claims/PCC-20261113-047147.json",
+    "statement": "theorem actual_public_constants : (2 : Nat)*6159%12317=1 \u2227 (4 : Nat)*9238%12317=1 \u2227 (2 : Nat)*55%109=1 \u2227 (2 : Nat)*57%113=1 \u2227 (4 : Nat)*82%109=1 \u2227 (4 : Nat)*85%113=1 \u2227 (98 : Nat)*99%109=1 \u2227 (196 : Nat)*104%109=1",
+    "proof": {
+      "path": "experiments/chained-transfer-reference/fp-chain-checker/lean/ChainAdapter.lean",
+      "theorem": "PrimeFieldChain.actual_public_constants",
+      "decl_sha256": "4a9ad08f9d0ce725bd175009d0532b350dac240b100ba7377341fe734aef58f9"
+    }
+  },
+  {
+    "name": "PrimeFieldChain.nonuniform_component_recovery",
+    "claim_path": "pcc/claims/PCC-20261113-c21d9a.json",
+    "statement": "theorem nonuniform_component_recovery {E F : Type} [IntModule E] [IntModule F] (e : E) (f : F) (order_e : (109 : Int) \u2022 e=0) (order_f : (113 : Int) \u2022 f=0) : (104 : Int) \u2022 ((196 : Int) \u2022 e)=e \u2227 (85 : Int) \u2022 ((4 : Int) \u2022 f)=f",
+    "proof": {
+      "path": "experiments/chained-transfer-reference/fp-chain-checker/lean/ChainAdapter.lean",
+      "theorem": "PrimeFieldChain.nonuniform_component_recovery",
+      "decl_sha256": "36eeeab68bb2b295e26d82127428d167f2d6f95f6369b70408287258121c74f8"
+    }
+  },
+  {
+    "name": "PrimeFieldChain.inverse_norm_component_recovery",
+    "claim_path": "pcc/claims/PCC-20261113-97a7e1.json",
+    "statement": "theorem inverse_norm_component_recovery {E F : Type} [IntModule E] [IntModule F] (e : E) (f : F) (order_e : (109 : Int) \u2022 e=0) (order_f : (113 : Int) \u2022 f=0) : (99 : Int) \u2022 ((98 : Int) \u2022 e)=e \u2227 (57 : Int) \u2022 ((2 : Int) \u2022 f)=f",
+    "proof": {
+      "path": "experiments/chained-transfer-reference/fp-chain-checker/lean/ChainAdapter.lean",
+      "theorem": "PrimeFieldChain.inverse_norm_component_recovery",
+      "decl_sha256": "c6aa0a5517ddf19357d0027043172490c69b485051c9b4d0b29ce6353e55f50d"
+    }
+  },
+  {
+    "name": "PrimeFieldChain.forward_component_normalization",
+    "claim_path": "pcc/claims/PCC-20261113-fe8d0e.json",
+    "statement": "theorem forward_component_normalization {E F : Type} [IntModule E] [IntModule F] (e : E) (f : F) (order_e : (109 : Int) \u2022 e=0) (order_f : (113 : Int) \u2022 f=0) : (4 : Int) \u2022 ((55 : Int) \u2022 e)=(2 : Int) \u2022 e \u2227 (4 : Int) \u2022 ((57 : Int) \u2022 f)=(2 : Int) \u2022 f",
+    "proof": {
+      "path": "experiments/chained-transfer-reference/fp-chain-checker/lean/ChainAdapter.lean",
+      "theorem": "PrimeFieldChain.forward_component_normalization",
+      "decl_sha256": "c1dc478f60232af27242168eb75c393a08984d71cd0314d60a6de584ceb2fa8b"
+    }
+  },
+  {
+    "name": "PrimeFieldChain.norm_diagram_uniqueness",
+    "claim_path": "pcc/claims/PCC-20261113-af5e24.json",
+    "statement": "theorem norm_diagram_uniqueness {C J A : Type} [IntModule J] (norm : J \u2192 A) (pull : A \u2192 J) (composition : \u2200 x, pull (norm x)=(4 : Int) \u2022 x) (order : \u2200 x : J, (12317 : Int) \u2022 x=0) (f g : C \u2192 J) (same_diagram : \u2200 x, norm (f x)=norm (g x)) : \u2200 x, f x=g x",
+    "proof": {
+      "path": "experiments/chained-transfer-reference/fp-chain-checker/lean/ChainAdapter.lean",
+      "theorem": "PrimeFieldChain.norm_diagram_uniqueness",
+      "decl_sha256": "2a50f08ae116440b064e602feceef3450d666bf054a944c5b5ccfdf2e257aa1c"
+    }
+  },
+  {
+    "name": "PrimeFieldChain.conditional_two_way_inverse",
+    "claim_path": "pcc/claims/PCC-20261113-5d5b7d.json",
+    "statement": "theorem conditional_two_way_inverse {C T E E2 F : Type} [IntModule E] [IntModule E2] [IntModule F] (n0 : C \u2192 E) (n1 : C \u2192 F) (m0 : T \u2192 E2) (m1 : T \u2192 F) (alpha : E \u2192 E2) (beta : E2 \u2192 E) (forward : C \u2192 T) (reverse : T \u2192 C) (n_injective : \u2200 x y, n0 x=n0 y \u2192 n1 x=n1 y \u2192 x=y) (m_injective : \u2200 x y, m0 x=m0 y \u2192 m1 x=m1 y \u2192 x=y) (order_e : \u2200 x : E, (109 : Int) \u2022 x=0) (order_e2 : \u2200 x : E2, (109 : Int) \u2022 x=0) (order_f : \u2200 x : F, (113 : Int) \u2022 x=0) (alpha_linear : \u2200 (k : Int) x, alpha (k \u2022 x)=k \u2022 alpha x) (beta_linear : \u2200 (k : Int) x, beta (k \u2022 x)=k \u2022 beta x) (beta_alpha : \u2200 x, beta (alpha x)=(49 : Int) \u2022 x) (alpha_beta : \u2200 x, alpha (beta x)=(49 : Int) \u2022 x) (forward0 : \u2200 x, m0 (forward x)=(2 : Int) \u2022 alpha (n0 x)) (forward1 : \u2200 x, m1 (forward x)=(2 : Int) \u2022 n1 x) (reverse0 : \u2200 t, n0 (reverse t)=(2 : Int) \u2022 ((104 : Int) \u2022 beta (m0 t))) (reverse1 : \u2200 t, n1 (reverse t)=(2 : Int) \u2022 ((85 : Int) \u2022 m1 t)) : (\u2200 x, reverse (forward x)=x) \u2227 (\u2200 t, forward (reverse t)=t)",
+    "proof": {
+      "path": "experiments/chained-transfer-reference/fp-chain-checker/lean/ChainAdapter.lean",
+      "theorem": "PrimeFieldChain.conditional_two_way_inverse",
+      "decl_sha256": "e905af5fd1233430a3695704b7035b58c61b96e61ff22569e5086da75d7eb9a9"
+    }
+  }
+]

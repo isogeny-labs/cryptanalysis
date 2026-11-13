@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-13T02:12:29Z",
+ "id": "PCC-20261113-af5e24",
+ "kind": "theorem",
+ "producer": {
+  "commit": "635bd2d2b57af89fb474039db6fcba72631bf681",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "2a50f08ae116440b064e602feceef3450d666bf054a944c5b5ccfdf2e257aa1c",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-reference/fp-chain-checker/lean/ChainAdapter.lean",
+   "theorem": "PrimeFieldChain.norm_diagram_uniqueness"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Fixed C0/T20 adapter:actual characteristic101 coefficients and conditional finite-group norm uniqueness/two-way inverse with nonuniform104/85. Actual curves/Picard/completion/reducer/chain normalizations and joint norm injectivity remain explicit written/native bridges;no global inverse isogeny/full formal geometry/scientific signature.",
+ "statement": "theorem norm_diagram_uniqueness {C J A : Type} [IntModule J] (norm : J \u2192 A) (pull : A \u2192 J) (composition : \u2200 x, pull (norm x)=(4 : Int) \u2022 x) (order : \u2200 x : J, (12317 : Int) \u2022 x=0) (f g : C \u2192 J) (same_diagram : \u2200 x, norm (f x)=norm (g x)) : \u2200 x, f x=g x"
+}

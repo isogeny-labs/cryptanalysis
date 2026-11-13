@@ -1,0 +1,44 @@
+{
+  "protocol": "8f3da8",
+  "compatibility_addendum": "FP_CHAIN_PROOF_COMPATIBILITY.md frozenBEFOREcorrective03",
+  "source_sha256": "a08e9262d56dd6a1f525e4dce11ddfe371e7f3551df850ebf23f5f9b4f6335b6",
+  "declarations": 11,
+  "all_exact_local_bindings": "pass",
+  "main_gate": {
+    "compiler": "4.35.0",
+    "compiled": 11,
+    "trusted": 0,
+    "original_exit": 0,
+    "guard_exit": 0
+  },
+  "binding03": {
+    "compiler": "4.34.1",
+    "auditor": "unchangedconsumeroriginal4.34.1",
+    "exact_claims": 11,
+    "local_pass": 11,
+    "full_compatible_gate": {
+      "compiled": 11,
+      "trusted": 0,
+      "original_exit": 0,
+      "guard_exit": 0
+    }
+  },
+  "failure01": "exact e36488 FAIL_audit;retaineddiagnostic confirms incompatibleoleanheader",
+  "failure02": "sameexactclaim FAIL_audit under forced4.35;oldconsumer auditor removedAPIs Lean.ofReduceBool/Lean.trustCompiler/String.trim",
+  "same_original_failed_claim_reused": true,
+  "verifier_changes": false,
+  "source_or_statement_changes_after_first_gate": false,
+  "axioms": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+  ],
+  "formal_boundary": "actualcurves/Picard/completion/reducer/chainidentification/jointnorminjectivity remain written/native;conditionaltwo-way inverse not globalgeometry proof",
+  "whole_files": 107,
+  "raw_tar_sha256": "d1fef87f185e7266285fa4d11f0b745ae1adc716ecb22e14e5983888350f68f7",
+  "archive_bytes": 39660,
+  "archive_sha256": "31a5ce995071e11577704b82e941303385420bc1f26103ed5d31c7bf15d4c17f",
+  "exact_roundtrip": true,
+  "every_member_replayed": true,
+  "standing": "unsigned local proof/binding evidence,notmainci signature"
+}

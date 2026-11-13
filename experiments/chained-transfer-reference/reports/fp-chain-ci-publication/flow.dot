@@ -1,0 +1,10 @@
+digraph {
+ graph [rankdir=TB,bgcolor="white",pad="0.12",ranksep="0.3"];
+ node [shape=box,style="rounded,filled",fontname="DejaVu Sans",fontsize=12,color="#456273",fillcolor="#edf4f5"];
+ edge [color="#367c65"];
+ S [label="Published source a39 · root pin927\nAll50 prior inputs /five whole jobs retained +sixth"];
+ L [label="Local147b9f · complete original full01\n43 /24 /40 upstream Lean /old consumers /new4+CLI+11\n794 hashes unchanged ·all exits0 ·no-rg"];
+ C [label="Own43353278346 · ALL SIX jobs successful\nWhole job logs/API/stdXZ/hashes/roundtrip\nSource a39 · no independent scientific signature"];
+ P [fillcolor="#e4f2e8",label="All four original raw archives actually published\nunit+CLI:cee9 ·full:9917 ·admission:5048\nWhole remote byte replays BEFORE normal manifest bots"];
+ {rank=same;L;C;} S -> L; S -> C; L -> P; C -> P [style=dashed];
+}
