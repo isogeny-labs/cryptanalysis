@@ -1,0 +1,19 @@
+digraph P {
+graph [rankdir=LR,bgcolor="transparent",nodesep=.25,ranksep=.32];
+node [shape=box,style="rounded,filled",fillcolor="#edf5fb",fontname="DejaVu Sans",fontsize=11];
+edge [fontname="DejaVu Sans",fontsize=10];
+O [label="Existing N4/B2
+complete IC body
+q mod 12 = 7"];
+P [label="Proposed P1
+public Q only
+original body derivative",fillcolor="#fff3df"];
+B [label="Proposed P2
+field / model / P0
+completed-map bridge",fillcolor="#fff3df"];
+E [label="Future comparison
+admission required
+all cold solving costs",fillcolor="#fff3df"];
+O -> P [style=dashed,label="API equivalence"];
+P -> B [style=dashed]; B -> E [style=dashed];
+}

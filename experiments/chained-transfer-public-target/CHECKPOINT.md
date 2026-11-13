@@ -1,0 +1,22 @@
+# Public-target destination calculus — protocol checkpoint
+
+## Goal
+Continue ChainedECDLPTransfers across crypto/cryptanalysis/vaultlockedcrypto-autoresearcher;nontrivialDLP-preservingmaps,prime-fielddescent andcompletecostadvantage remainobjective. Currentboundedrung: public-Q N4/B2 API andadditiveV2bridges,notnewsolvername orspeedclaim.
+
+## Lead / hypothesis
+OriginalN4/B2 alreadycomplete;itsk_true onlyconstructsQinsidecountedbody. Reusewholeoriginalalgorithmwithpublictarget input,thencheckfield/model/basepoint/completedmapbridges. Preserveoldwithdrawnsubgroupenumerationandlegacycostscope. Primaryb992d8/actual5327f4,12wholeoriginalcataloghashes match. CurrentKBabsent/prior127fallback receipts;vault8edec422locked/no unlock/write/subagents. [pcc:unverified]
+
+## Spec
+experiments/chained-transfer-public-target/PROTOCOL-01.md, prospective7e016c;sourcecatalog/evidence/primary-01;proposalreportpcc/claims/PCC-20261113-ad4849.json/ONE35418bytePDFpageALLinspected. Parentready1521/source069/metadata1e4f1292. Newbranchresearch/chained-transfer-public-target-20261113 MUSTnormallypublish/openreadychildunder1521 BEFOREnewcases/code. candidate_idnull. Frozenoriginalbuilderq223seed1/max200000;fiveknownanswerwitnesses outsideactualpublicinputs;originalsixB2retrycaps;all5mustsolveforacceptance. [pcc:unverified]
+
+## State
+No newnativeimplementation/casegeneration/solve/proof attempted. ParentnormFULL7b231c/own7CI168c99 settled/all36JSON+24canonicalbindingsmatch;rawgenuinecfbe78/f5c83d. Parentconsumer1e4f1292/907161/normalpush0. Rootfinalmetadata1a47c84e/9249cc/normalpush0 aftercanonicalaef7;cachedwhitespace2 onoriginalpushlog preserved9b10d2,losslessencodingcorrectionandoriginalgates0. Rootglobal NOTgreen/missingauthenticfixture/originalpull2credentials/anonymous403/add561;mainledger/signing/conflict/review requirements separate. CIandraw settled:no repoll/redispatch. [pcc:unverified]
+
+## Next steps
+Normalpublish protocolcommit/newbranch/openreadychildunder1521. Thenimplement P1 ORIGINAL-body publicQ derivative andstrictCLI;freezeplan/source+commands BEFOREboundedstatic/unit/proofchecks. Separateoriginalsourceverification;recordEVERYattempt/failure;no genericDLPfallback. ThenP2additiveV2constructor/model/basepoint/completefibre/normbridge andfeasibleLean. ComparativeexperimentneedsoriginalS3checkpointgate/livebudget/capacity;notadmitted.
+
+## Runs in flight
+NONE native. Onlythismetadata governance/publication. No backgroundexperimentpromised. Scratchwholepreviousraw andbuildcaches outsideevidence retained;rootdiagnosticbinaryneededonceauthenticfixtureavailable. Workspace~5GiBfreeatlastread.
+
+## Stop and success conditions
+Do notstopatprotocolornegativeattempt;continue nextunblockedresearch. P1all5publicICsolves+strictcontrols/derivativediff/originalverification required. P2fullbridge/compositions/actualoddsubgroup/written+faithfulpartialLean required. Costadvantage requiresactualadmittedcompletecomparison. Preservefailures,wholearchives/memberhashes/genuineremotepublication andnewversionedcorrections. No force/rebase/rechain/lineageselection;nextglobalroutine13:45unlessconcretesignal.
