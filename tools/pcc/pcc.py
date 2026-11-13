@@ -612,17 +612,55 @@ def lean_sources(target: Path) -> list[Path]:
 
 
 def lean_find_declaration(sources: list[Path], name: str) -> tuple[Path, str] | None:
-    """The normalized statement text of `theorem|lemma <name> ... :=` (the
-    name may be qualified; the last component is matched)."""
+    """Bind a unique declaration, respecting explicit namespace/section scopes.
+
+    Qualified requests never fall back to another namespace's short name.
+    Unqualified requests must be unique. This remains a source binding scan,
+    not a Lean elaborator; the existing kernel gate is still required.
+    """
     short = re.escape(name.split(".")[-1])
-    pat = re.compile(r"(?<![\w.'])(theorem|lemma)\s+(?:[\w'.]*\.)?" + short + r"(?![\w'])(.*?)(?<![:])(:=|\bby\b|\|)",
+    pat = re.compile(r"(?<![\w.'])(theorem|lemma)\s+((?:[\w'.]*\.)?" + short + r")(?![\w'])(.*?)(?<![:])(:=|\bby\b|\|)",
                      re.S)
+    scope_pat = re.compile(
+        r"^[ \t]*(?:(?:public|private|noncomputable)[ \t]+)*"
+        r"(namespace|section|end)(?:[ \t]+([\w'.]+))?[ \t]*$", re.M)
+    requested = name.removeprefix("_root_.")
+    qualified = "." in name
+    matches: list[tuple[Path, str]] = []
     for src in sources:
         text = strip_lean_comments_and_strings(src.read_text(encoding="utf-8", errors="replace"))
+        scope_events = list(scope_pat.finditer(text))
+        # Unsupported scope syntax must not silently turn a nested theorem
+        # into a root declaration. Prefer no binding to a guessed binding.
+        keywords = re.finditer(r"(?<![\w.'])(?:namespace|section|end)(?![\w'])", text)
+        if any(not any(e.start() <= k.start() < e.end() for e in scope_events) for k in keywords):
+            return None
+        scopes = iter(scope_events)
+        event = next(scopes, None)
+        namespace = ""
+        parents: list[str] = []
         for m in pat.finditer(text):
-            stmt = m.group(1) + " " + name.split(".")[-1] + " " + m.group(2)
-            return src, re.sub(r"\s+", " ", stmt).strip()
-    return None
+            while event is not None and event.start() < m.start():
+                kind, scope_name = event.group(1), event.group(2)
+                if kind == "end":
+                    if parents:
+                        namespace = parents.pop()
+                else:
+                    parents.append(namespace)
+                    if kind == "namespace" and scope_name:
+                        namespace = (scope_name.removeprefix("_root_.")
+                                     if scope_name.startswith("_root_.") else
+                                     ".".join(filter(None, [namespace, scope_name])))
+                event = next(scopes, None)
+            declared = m.group(2)
+            full = (declared.removeprefix("_root_.") if declared.startswith("_root_.") else
+                    ".".join(filter(None, [namespace, declared])))
+            if qualified and full != requested:
+                continue
+            # Preserve the established short-name statement digest format.
+            stmt = m.group(1) + " " + name.split(".")[-1] + " " + m.group(3)
+            matches.append((src, re.sub(r"\s+", " ", stmt).strip()))
+    return matches[0] if len(matches) == 1 else None
 
 
 def verify_lean(proof: dict[str, Any], repo: Path, reasons: list[str], notes: list[str]) -> str:

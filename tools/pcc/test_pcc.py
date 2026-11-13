@@ -323,6 +323,36 @@ class ClaimTypeTests(unittest.TestCase):
 
 
 class LeanScanTests(unittest.TestCase):
+    def test_qualified_declarations_do_not_bind_another_namespace(self):
+        with tempfile.TemporaryDirectory() as td:
+            a, b = Path(td) / "A.lean", Path(td) / "B.lean"
+            a.write_text("namespace First\ntheorem same (n : Nat) : n = n := rfl\nend First\n")
+            b.write_text("namespace Second\nsection Local\ntheorem same (n : Nat) : n + 0 = n := by simp\nend Local\nend Second\n")
+            self.assertEqual(pcc.lean_find_declaration([a, b], "Second.same")[0], b)
+            self.assertEqual(pcc.lean_find_declaration([a, b], "First.same")[0], a)
+            self.assertIsNone(pcc.lean_find_declaration([a, b], "Missing.same"))
+            self.assertIsNone(pcc.lean_find_declaration([a, b], "_root_.same"))
+            self.assertIsNone(pcc.lean_find_declaration([a, b], "same"))
+
+    def test_nested_namespaces_sections_and_root_qualified_names(self):
+        with tempfile.TemporaryDirectory() as td:
+            p = Path(td) / "Names.lean"
+            p.write_text("namespace Outer\npublic section\nnamespace Inner\n"
+                         "theorem one : True := by trivial\nend Inner\nend\n"
+                         "theorem two : True := by trivial\n"
+                         "theorem _root_.Elsewhere.three : True := by trivial\nend Outer\n"
+                         "theorem Explicit.four : True := by trivial\n")
+            for name in ["Outer.Inner.one", "Outer.two", "Elsewhere.three", "Explicit.four"]:
+                self.assertIsNotNone(pcc.lean_find_declaration([p], name), name)
+            for name in ["Outer.one", "Outer.Inner.two", "Outer.Elsewhere.three", "Wrong.four"]:
+                self.assertIsNone(pcc.lean_find_declaration([p], name), name)
+
+    def test_unsupported_scope_layout_fails_closed(self):
+        with tempfile.TemporaryDirectory() as td:
+            p = Path(td) / "Inline.lean"
+            p.write_text("namespace Hidden theorem rootLooking : True := by trivial\nend Hidden\n")
+            self.assertIsNone(pcc.lean_find_declaration([p], "_root_.rootLooking"))
+
     def test_comment_and_string_lookalikes_are_not_holes(self):
         src = "theorem t : 1 = 1 := rfl\n-- sorry here is a comment\n/- block sorry -/\ndef s := \"sorry\"\n"
         text = pcc.strip_lean_comments_and_strings(src)
