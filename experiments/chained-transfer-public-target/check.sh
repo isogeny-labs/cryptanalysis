@@ -27,7 +27,7 @@ case "$out/" in "$repo/"*|"$producer/"*|"$build/"*) echo 'output overlaps source
 case "$build/" in "$repo/"*|"$producer/"*|"$out/"*) echo 'cache overlaps source/output' >&2; exit 2;; esac
 [[ ! -e "$out" && ! -e "$build" ]] || { echo 'output/cache must be fresh' >&2; exit 2; }
 cd "$repo"
-reference=experiments/chained-transfer-public-target/reference-01.sha256
+reference=experiments/chained-transfer-public-target/reference-02.sha256
 sha256sum --check "$reference" >/dev/null || exit 2
 cmp .github/workflows/chained-transfer-reference.yml "$study/evidence/primary-01/whole-parent-seven-jobs.yml" || exit 2
 mkdir "$out"
@@ -98,7 +98,8 @@ run_expected 2 reject-extra-arg native_cli solve "$study/fixtures/public-five.js
 run_expected 0 output-bytes python3 "$study/replay_io.py" outputs "$study" "$out"
 modules=("$study/native/lean/PublicTargetBridge.lean" "$study/formal/PublicOriginConvention.lean")
 run_expected 0 producer-proof env ELAN_TOOLCHAIN=leanprover/lean4:v4.35.0 bash "$producer/tools/lean/proof-gate.sh" --out "$out/producer-proofs" "${modules[@]}"
-run_expected 0 consumer-proof env ELAN_TOOLCHAIN=leanprover/lean4:v4.34.1 bash tools/lean/proof-gate.sh --out "$out/consumer-proofs" "${modules[@]}"
+consumer_modules=(experiments/chained-transfer-public-target/native/lean/PublicTargetBridge.lean experiments/chained-transfer-public-target/formal/PublicOriginConvention.lean)
+run_expected 0 consumer-proof env ELAN_TOOLCHAIN=leanprover/lean4:v4.34.1 bash tools/lean/proof-gate.sh --out "$out/consumer-proofs" "${consumer_modules[@]}"
 for claim in "${claims[@]}"; do
   run_expected 0 "binding-$(basename "$claim" .json)" env ELAN_TOOLCHAIN=leanprover/lean4:v4.34.1 python3 tools/pcc/pcc.py verify "$claim" --json
 done

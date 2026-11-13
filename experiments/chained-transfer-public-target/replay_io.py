@@ -12,7 +12,7 @@ import sys
 mode = sys.argv[1]
 if mode == "snapshot":
     repo, producer, out = map(Path, sys.argv[2:])
-    ref = repo / "experiments/chained-transfer-public-target/reference-01.sha256"
+    ref = repo / "experiments/chained-transfer-public-target/reference-02.sha256"
     for line in ref.read_text().splitlines():
         expected, relative = line.split("  ", 1)
         source = (repo / relative).resolve()

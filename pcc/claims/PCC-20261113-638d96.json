@@ -1,0 +1,58 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-13T13:10:06Z",
+ "id": "PCC-20261113-638d96",
+ "kind": "statement",
+ "producer": {
+  "commit": "f5d6c92a4eb53fc838ab8bf2665887e12522cbd9",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/rho-accessor-correction-01/compile.log.xz",
+    "sha256": "1f7f817265a2d7428eb7290b947de80bf0ea594ea9b3712fa352daba8914d08f"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/rho-accessor-correction-01/correction.json",
+    "sha256": "b74656559bc853ffed01f9ef72510cb9207531e2b9008e70d3bc249486492c59"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/rho-accessor-correction-01/guards.json.xz",
+    "sha256": "22cc23c8c220cda030d95bd537ab541f4246ad657c16363b86215ef097a130a9"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/rho-accessor-correction-01/native.log.xz",
+    "sha256": "b84a0860818bf8fb33533e6e1805386574cd0c090c62fed316785c4d52ba741e"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/rho-accessor-correction-01/original-command.sh.xz",
+    "sha256": "b1747407bbe851850404a9ae2e7cb046d899e3b8e2d7145fa8ebf89f1df619ac"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/rho-accessor-correction-01/rustc.txt.xz",
+    "sha256": "d25e4a8abd15949554c12856aea7a50b323f285121bfd3345ce62a6bc296a3a8"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Rho accessor01 originalcompile0/native101/2202guards0;onlyfirsttarget complete. Frozen correction BEFOREtest/launcher edits:legacy rho includes target construction after snapshot;public derivative omits it. Preserve full failedlog. New02 must retain exact public/accessor7counters and ok/steps/dps;legacy counters mustequal public PLUS independently originalec.mul construction delta all7/all5,with exactQ match. Originalwalk/accessor body unchanged. First launcher date/rustc concatenation loses validstart;preserve diagnostic andfixnew02 literal newline. Not a rho success or cost ratio."
+}

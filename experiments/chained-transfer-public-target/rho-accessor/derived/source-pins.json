@@ -1,0 +1,23 @@
+{
+  "original_path": "experiments/chained-transfer-public-target/native/derived/public_solver.rs",
+  "original_sha256": "02a15bb04b6d8a59ae5d80c62b02f993aba740621d7ff94f463db82525e44d9f",
+  "candidate_sha256": "091aa12e1a16b1eb102dd66797f2c5eda153f48ca1afd37529e4c97c8cfcae25",
+  "literal_substitutions": [
+    [
+      "pub struct RhoOut {\n    pub ok: bool,",
+      "pub struct RhoOut {\n    pub ok: bool,\n    pub k_found: Option<u64>,"
+    ],
+    [
+      "return RhoOut { ok, steps, dps,",
+      "return RhoOut { ok, k_found: Some(k), steps, dps,"
+    ],
+    [
+      "return RhoOut { ok: false, steps, dps,",
+      "return RhoOut { ok: false, k_found: None, steps, dps,"
+    ]
+  ],
+  "diff_raw_bytes": 1282,
+  "diff_raw_sha256": "f3210b33e6f55cc37f0d0bc5ceb32dcffd9ee0b1121811be244696c77c3f7986",
+  "diff_xz_sha256": "422a1c22233a262986e04aeed51ac1b329538ce9161e4ca5b0213b55a4b01e4a",
+  "scope": "Output accessor only, no original walk body change"
+}
