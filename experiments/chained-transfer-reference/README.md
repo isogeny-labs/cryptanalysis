@@ -1,3 +1,12 @@
+# New component: independent F101 T20 norms and completed pullback
+
+Four new native tests accept all12,317 rational classes:independent image-Mumford norm agrees with the F101² pointwise oracle,both actual[4],public recovery9238 and component82/85,group/Frobenius,all109+113 scalar images/exact orders. Full signed infinity/repeated fibres and negative controls pass,204440. Eleven exact Lean statements/localPCCpasses/zero trusted-native,380d2b;bounded36-fibre CLI/new universal IDC,fdd132. Scientific standing unsigned,no cost/solver advantage. [pcc:unverified]
+
+[Independent written proof](PRIME_NORM_INDEPENDENT_PROOF.md),[frozen protocolec2a8b](PRIME_NORM_REPLAY_PROTOCOL.md),[inspected three-page unit report6c3a4e](reports/prime-norm-independent-unit/REPORT.md),[active checkpoint](PRIME_NORM_CHECKPOINT.md). First manifest error101 preserved7f58bd;four bad infinity multiplicities and two squarefree fibres differ as required. All35 old source/check/pins and four complete CI jobs retained byte-identical;new fifth job/driver drafted. Full pinned6298 replay/admission controls pending. Whole506,588-byte unit raw archive intact local pending documented root trusted-base migration;remote availability not yet claimed. [pcc:unverified]
+
+Prior proper replay whole failed79,644-byte and positive80,516-byte archives ARE now remotely published at immutable root5bec canonical manifests;consumer71c03a addendum/c0b8 checkpoints this,actual trusted-base43319185494 full remote replay evidence retained. The old pending paragraphs below are historical and additively superseded. Consumer exact8072 own43315145393 succeeds all4 jobs,b3c8f1;no repoll. [pcc:unverified]
+
+---
 # New component: proper T20 replay and independent kernel checks
 
 CompleteLOCAL400f38 exactcrypto030e passes41native/23algebra/tenidentity

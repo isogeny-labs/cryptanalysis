@@ -1,0 +1,11 @@
+ledger 0 ledger: 210 entries, chain ok
+
+prose 0 lint-prose: 0 finding(s)
+
+working-diff 0 
+Traceback (most recent call last):
+  File "/workspace/scratch/ct53_stage_prime_unit.py", line 37, in <module>
+    run=subprocess.run(['git','diff','--cached','--check'],cwd=r,capture_output=True);(o/'cached-diff.log').write_bytes(run.stdout+run.stderr);(o/'cached-diff.exit').write_text(str(run.returncode)+'\n');assert run.returncode==0,(run.stdout+run.stderr).decode()
+                                                                                                                                                                                                                  ^^^^^^^^^^^^^^^^^
+AssertionError: experiments/chained-transfer-reference/evidence/prime-norm-tests-01/tests.log:61: new blank line at EOF.
+
