@@ -1,3 +1,7 @@
+CURRENT G3normconsumer:protocolac58df/proposalreport13a4a0 BEFOREcode. Branchresearch/chained-transfer-g3-norm-20261113 from1bb/readyparent1520;pinproducer3d49af7/mathsourcea719/343inputs/wholeold20796SIXjobs. NO native normcode/runyet. Publishprotocol+readychildbeforeimplementation. See experiments/chained-transfer-reference/G3_NORM_CHECKPOINT.md. Earlier CURRENT/ACTIVE text historical. [pcc:unverified]
+
+---
+
 Current checkpoint — complete F101 chain, all six CI jobs, all four raw archives
 
 Scientific source a39fefaa084756d0a58386253651a667e2ad9de6 pins upstream

@@ -1,0 +1,394 @@
+name: Chained transfer differential reference
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'experiments/chained-transfer-reference/**'
+      - 'suite/src/prime_hyperelliptic/**'
+      - '.github/workflows/chained-transfer-reference.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  independent:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+          path: cryptanalysis
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            experiments/chained-transfer-reference/check-independent.sh
+            experiments/chained-transfer-reference/independent-upstream-commit.txt
+      - id: independent_pin
+        name: Read the independent source revision
+        run: |
+          pin=$(cat cryptanalysis/experiments/chained-transfer-reference/independent-upstream-commit.txt)
+          [[ $pin =~ ^[0-9a-f]{40}$ ]] || exit 2
+          echo "revision=$pin" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          repository: isogeny-labs/crypto
+          ref: ${{ steps.independent_pin.outputs.revision }}
+          persist-credentials: false
+          path: crypto-independent
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            research/chained_jacobian_transfers_20261110/successor-preflight
+            research/chained_jacobian_transfers_20261110/algebra-certificates
+            research/chained_jacobian_transfers_20261110/lean
+            research/chained_jacobian_transfers_20261110/evidence/quartic-duplication-identity-03.json
+            research/chained_jacobian_transfers_20261110/evidence/two-primary-halving-identity-03.json
+            isogeny_algos
+            src/cryptanalysis/jv_cover.rs
+            src/cryptanalysis/identity_certificate.rs
+            docs/identity-certificates/schoenhage-10mult.json
+            src/hash/sha256.rs
+            tools/lean
+      - name: Install the pinned native and proof toolchains
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.99.1 --profile minimal --component rustfmt --component clippy
+          curl -fsSL --connect-timeout 15 --max-time 120 https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o "$RUNNER_TEMP/elan-init.sh"
+          sh "$RUNNER_TEMP/elan-init.sh" -y --no-modify-path --default-toolchain "$(cat crypto-independent/research/chained_jacobian_transfers_20261110/lean/lean-toolchain)"
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Replay the pinned independent maps and proofs
+        env:
+          RUSTUP_TOOLCHAIN: 1.99.1
+        run: |
+          set -euo pipefail
+          bash cryptanalysis/experiments/chained-transfer-reference/check-independent.sh crypto-independent "$RUNNER_TEMP/independent" 2>&1 | tee "$RUNNER_TEMP/independent.txt"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: chained-transfer-independent-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/independent.txt
+            ${{ runner.temp }}/independent
+          if-no-files-found: ignore
+
+  reference:
+    runs-on: ubuntu-latest
+    # Existing and new complete Richelot/Phi/Psi corpora,including cold builds.
+    # Full-domain acceptance remains unchanged;no expensive PR event added.
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+          path: cryptanalysis
+          sparse-checkout: |
+            experiments/chained-transfer-reference
+            suite/src/prime_hyperelliptic
+      - id: pin
+        name: Read the committed source revision
+        run: |
+          pin=$(cat cryptanalysis/experiments/chained-transfer-reference/upstream-commit.txt)
+          [[ $pin =~ ^[0-9a-f]{40}$ ]] || exit 2
+          echo "revision=$pin" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          repository: isogeny-labs/crypto
+          ref: ${{ steps.pin.outputs.revision }}
+          persist-credentials: false
+          path: crypto
+          sparse-checkout: |
+            research/chained_jacobian_transfers_20261110/native
+            src/prime_hyperelliptic
+            isogeny_algos
+            src/cryptanalysis/isogeny_walk
+      - name: Run digest guards and development comparisons
+        env:
+          RUSTUP_TOOLCHAIN: 1.99.1
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.99.1 --profile minimal --component rustfmt --component clippy
+          cryptanalysis/experiments/chained-transfer-reference/check.sh 2>&1 | tee "$RUNNER_TEMP/differential.txt"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: chained-transfer-reference-${{ github.sha }}
+          path: ${{ runner.temp }}/differential.txt
+          if-no-files-found: ignore
+
+  partial-frobenius:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+          path: cryptanalysis
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            experiments/chained-transfer-reference/check-partial.sh
+            experiments/chained-transfer-reference/partial-upstream-commit.txt
+      - id: partial_pin
+        name: Read the partial-Frobenius source revision
+        run: |
+          pin=$(cat cryptanalysis/experiments/chained-transfer-reference/partial-upstream-commit.txt)
+          [[ $pin =~ ^[0-9a-f]{40}$ ]] || exit 2
+          echo "revision=$pin" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          repository: isogeny-labs/crypto
+          ref: ${{ steps.partial_pin.outputs.revision }}
+          persist-credentials: false
+          path: crypto-partial
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            research/chained_jacobian_transfers_20261110/successor-preflight
+            research/chained_jacobian_transfers_20261110/algebra-certificates
+            research/chained_jacobian_transfers_20261110/lean
+            research/chained_jacobian_transfers_20261110/evidence/quartic-duplication-identity-03.json
+            research/chained_jacobian_transfers_20261110/evidence/two-primary-halving-identity-03.json
+            research/chained_jacobian_transfers_20261110/evidence/isogeny-cycle-norm-identity-01.json
+            research/chained_jacobian_transfers_20261110/evidence/isogeny-cycle-first-identity-01.json
+            research/chained_jacobian_transfers_20261110/evidence/isogeny-cycle-second-identity-01.json
+            research/chained_jacobian_transfers_20261110/evidence/unbalanced-direct-identity-01.json
+            research/chained_jacobian_transfers_20261110/evidence/unbalanced-reciprocal-identity-01.json
+            isogeny_algos
+            src/cryptanalysis/jv_cover.rs
+            src/cryptanalysis/identity_certificate.rs
+            docs/identity-certificates/schoenhage-10mult.json
+            src/hash/sha256.rs
+            tools/lean
+      - name: Install the pinned native and proof toolchains
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.99.1 --profile minimal --component rustfmt --component clippy
+          curl -fsSL --connect-timeout 15 --max-time 120 https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o "$RUNNER_TEMP/elan-init.sh"
+          sh "$RUNNER_TEMP/elan-init.sh" -y --no-modify-path --default-toolchain "$(cat crypto-partial/research/chained_jacobian_transfers_20261110/lean/lean-toolchain)"
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Replay the pinned partial-Frobenius models and proofs
+        env:
+          RUSTUP_TOOLCHAIN: 1.99.1
+        run: |
+          set -euo pipefail
+          bash cryptanalysis/experiments/chained-transfer-reference/check-partial.sh crypto-partial "$RUNNER_TEMP/partial" 2>&1 | tee "$RUNNER_TEMP/partial.txt"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: chained-transfer-partial-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/partial.txt
+            ${{ runner.temp }}/partial
+          if-no-files-found: ignore
+
+  proper-t20:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+          path: cryptanalysis
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            experiments/chained-transfer-reference
+            .github/workflows/chained-transfer-reference.yml
+      - id: proper_pin
+        name: Read the proper-T20 source revision
+        run: |
+          pin=$(cat cryptanalysis/experiments/chained-transfer-reference/proper-upstream-commit.txt)
+          [[ $pin =~ ^[0-9a-f]{40}$ ]] || exit 2
+          echo "revision=$pin" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          repository: isogeny-labs/crypto
+          ref: ${{ steps.proper_pin.outputs.revision }}
+          persist-credentials: false
+          path: crypto
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            research/chained_jacobian_transfers_20261110/successor-preflight
+            research/chained_jacobian_transfers_20261110/algebra-certificates
+            research/chained_jacobian_transfers_20261110/lean
+            research/chained_jacobian_transfers_20261110/evidence/kernel-full-03/kernel-certificate.json
+            research/chained_jacobian_transfers_20261110/evidence/t20-full-02/geometry-certificate.json
+            research/chained_jacobian_transfers_20261110/evidence/quartic-duplication-identity-03.json
+            research/chained_jacobian_transfers_20261110/evidence/two-primary-halving-identity-03.json
+            research/chained_jacobian_transfers_20261110/evidence/isogeny-cycle-norm-identity-01.json
+            research/chained_jacobian_transfers_20261110/evidence/isogeny-cycle-first-identity-01.json
+            research/chained_jacobian_transfers_20261110/evidence/isogeny-cycle-second-identity-01.json
+            research/chained_jacobian_transfers_20261110/evidence/unbalanced-direct-identity-01.json
+            research/chained_jacobian_transfers_20261110/evidence/unbalanced-reciprocal-identity-01.json
+            research/chained_jacobian_transfers_20261110/evidence/even-kernel-cubic-identity-01.json
+            research/chained_jacobian_transfers_20261110/evidence/t20-common-scale-identity-01.json
+            research/chained_jacobian_transfers_20261110/evidence/t20-normalization-identity-01.json
+            isogeny_algos
+            src/cryptanalysis/jv_cover.rs
+            src/cryptanalysis/identity_certificate.rs
+            docs/identity-certificates/schoenhage-10mult.json
+            src/hash/sha256.rs
+            tools/lean
+      - name: Install the pinned native and proof toolchains
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.99.1 --profile minimal --component rustfmt --component clippy
+          curl -fsSL --connect-timeout 15 --max-time 120 https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o "$RUNNER_TEMP/elan-init.sh"
+          sh "$RUNNER_TEMP/elan-init.sh" -y --no-modify-path --default-toolchain "$(cat crypto/research/chained_jacobian_transfers_20261110/lean/lean-toolchain)"
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Replay proper maps and independently recompute the kernel record
+        env:
+          RUSTUP_TOOLCHAIN: 1.99.1
+        run: |
+          set -euo pipefail
+          timeout 30m bash cryptanalysis/experiments/chained-transfer-reference/check-proper.sh crypto "$RUNNER_TEMP/proper" 2>&1 | tee "$RUNNER_TEMP/proper.txt"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: chained-transfer-proper-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/proper.txt
+            ${{ runner.temp }}/proper
+          if-no-files-found: ignore
+
+
+  prime-norms:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+          path: cryptanalysis
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            experiments/chained-transfer-reference
+            suite/src/prime_hyperelliptic
+            .github/workflows/chained-transfer-reference.yml
+      - id: prime_norm_pin
+        name: Read the independent prime-norm source revision
+        run: |
+          pin=$(cat cryptanalysis/experiments/chained-transfer-reference/prime-norm-upstream-commit.txt)
+          [[ $pin =~ ^[0-9a-f]{40}$ ]] || exit 2
+          echo "revision=$pin" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          repository: isogeny-labs/crypto
+          ref: ${{ steps.prime_norm_pin.outputs.revision }}
+          persist-credentials: false
+          path: crypto
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            research/chained_jacobian_transfers_20261110/successor-preflight
+            research/chained_jacobian_transfers_20261110/algebra-certificates
+            research/chained_jacobian_transfers_20261110/lean
+            research/chained_jacobian_transfers_20261110/evidence/kernel-full-03/kernel-certificate.json
+            research/chained_jacobian_transfers_20261110/evidence/t20-full-02/geometry-certificate.json
+            research/chained_jacobian_transfers_20261110/evidence/quartic-duplication-identity-03.json
+            research/chained_jacobian_transfers_20261110/evidence/two-primary-halving-identity-03.json
+            research/chained_jacobian_transfers_20261110/evidence/isogeny-cycle-norm-identity-01.json
+            research/chained_jacobian_transfers_20261110/evidence/isogeny-cycle-first-identity-01.json
+            research/chained_jacobian_transfers_20261110/evidence/isogeny-cycle-second-identity-01.json
+            research/chained_jacobian_transfers_20261110/evidence/unbalanced-direct-identity-01.json
+            research/chained_jacobian_transfers_20261110/evidence/unbalanced-reciprocal-identity-01.json
+            research/chained_jacobian_transfers_20261110/evidence/even-kernel-cubic-identity-01.json
+            research/chained_jacobian_transfers_20261110/evidence/t20-common-scale-identity-01.json
+            research/chained_jacobian_transfers_20261110/evidence/t20-normalization-identity-01.json
+            research/chained_jacobian_transfers_20261110/evidence/t20-direct-linear-image-identity-02.json
+            isogeny_algos
+            src/cryptanalysis/jv_cover.rs
+            src/cryptanalysis/identity_certificate.rs
+            docs/identity-certificates/schoenhage-10mult.json
+            src/hash/sha256.rs
+            tools/lean
+      - name: Install the pinned native and proof toolchains
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.99.1 --profile minimal --component rustfmt --component clippy
+          curl -fsSL --connect-timeout 15 --max-time 120 https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o "$RUNNER_TEMP/elan-init.sh"
+          sh "$RUNNER_TEMP/elan-init.sh" -y --no-modify-path --default-toolchain "$(cat crypto/research/chained_jacobian_transfers_20261110/lean/lean-toolchain)"
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Replay producer and independently check the complete F101 norm and pullback
+        env:
+          RUSTUP_TOOLCHAIN: 1.99.1
+        run: |
+          set -euo pipefail
+          timeout 55m bash cryptanalysis/experiments/chained-transfer-reference/check-prime-norms.sh crypto "$RUNNER_TEMP/prime-norms" 2>&1 | tee "$RUNNER_TEMP/prime-norms.txt"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: chained-transfer-prime-norms-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/prime-norms.txt
+            ${{ runner.temp }}/prime-norms
+          if-no-files-found: ignore
+
+
+  fp-chain:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+          path: cryptanalysis
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            experiments/chained-transfer-reference
+            suite/src/prime_hyperelliptic
+            .github/workflows/chained-transfer-reference.yml
+            .github/workflows/pcc-gate.yml
+      - id: fp_chain_pin
+        name: Read the complete prime-field chain source revision
+        run: |
+          pin=$(cat cryptanalysis/experiments/chained-transfer-reference/fp-chain-upstream-commit.txt)
+          [[ $pin =~ ^[0-9a-f]{40}$ ]] || exit 2
+          echo "revision=$pin" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          repository: isogeny-labs/crypto
+          ref: ${{ steps.fp_chain_pin.outputs.revision }}
+          persist-credentials: false
+          path: crypto
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            research/chained_jacobian_transfers_20261110/successor-preflight
+            research/chained_jacobian_transfers_20261110/algebra-certificates
+            research/chained_jacobian_transfers_20261110/lean
+            research/chained_jacobian_transfers_20261110/evidence/kernel-full-03/kernel-certificate.json
+            research/chained_jacobian_transfers_20261110/evidence/t20-full-02/geometry-certificate.json
+            research/chained_jacobian_transfers_20261110/evidence/quartic-duplication-identity-03.json
+            research/chained_jacobian_transfers_20261110/evidence/two-primary-halving-identity-03.json
+            research/chained_jacobian_transfers_20261110/evidence/isogeny-cycle-norm-identity-01.json
+            research/chained_jacobian_transfers_20261110/evidence/isogeny-cycle-first-identity-01.json
+            research/chained_jacobian_transfers_20261110/evidence/isogeny-cycle-second-identity-01.json
+            research/chained_jacobian_transfers_20261110/evidence/unbalanced-direct-identity-01.json
+            research/chained_jacobian_transfers_20261110/evidence/unbalanced-reciprocal-identity-01.json
+            research/chained_jacobian_transfers_20261110/evidence/even-kernel-cubic-identity-01.json
+            research/chained_jacobian_transfers_20261110/evidence/t20-common-scale-identity-01.json
+            research/chained_jacobian_transfers_20261110/evidence/t20-normalization-identity-01.json
+            research/chained_jacobian_transfers_20261110/evidence/t20-direct-linear-image-identity-02.json
+            isogeny_algos
+            src/cryptanalysis/jv_cover.rs
+            src/cryptanalysis/identity_certificate.rs
+            docs/identity-certificates/schoenhage-10mult.json
+            src/hash/sha256.rs
+            tools/lean
+      - name: Install the pinned native and proof toolchains
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.99.1 --profile minimal --component rustfmt --component clippy
+          curl -fsSL --connect-timeout 15 --max-time 120 https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o "$RUNNER_TEMP/elan-init.sh"
+          sh "$RUNNER_TEMP/elan-init.sh" -y --no-modify-path --default-toolchain "$(cat crypto/research/chained_jacobian_transfers_20261110/lean/lean-toolchain)"
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Replay all retained scopes and the complete F101 C0 to T20 adapter
+        env:
+          RUSTUP_TOOLCHAIN: 1.99.1
+        run: |
+          set -euo pipefail
+          timeout 55m bash cryptanalysis/experiments/chained-transfer-reference/check-fp-chain.sh crypto "$RUNNER_TEMP/fp-chain" 2>&1 | tee "$RUNNER_TEMP/fp-chain.txt"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: chained-transfer-fp-chain-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/fp-chain.txt
+            ${{ runner.temp }}/fp-chain
+          if-no-files-found: ignore

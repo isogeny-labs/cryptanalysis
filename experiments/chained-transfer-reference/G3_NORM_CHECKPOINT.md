@@ -1,0 +1,7 @@
+# G3 canonical norm checkpoint — protocol before code
+
+Frozenprotocolpcc/claims/PCC-20261113-ac58df.json;source-reviewed lead88d09a fromproducer,pinned3d49af7/mathsourcea719,343currenthashes/cases/wholeold20796SIXworkflowbytes retained. Initialproposalreportpcc/claims/PCC-20261113-13a4a0.json TWO41376PDFpages byteidenticaltoalreadyinspectedproducer;no native consumercode orrunyet. UpstreamnewCI43388101185 reportedSUCCESSatinitialdiscovery,wholejobacceptanceretainedseparately. All standingunsigned. [pcc:unverified]
+
+Currentconsumerbranchresearch/chained-transfer-g3-norm-20261113,parent1bb5838a34e6a3ba53890b08554959826d8e1c2a/readyPR1520. Remote branchcreatedfromsameexactparent;initialprotocolcommit/publication/newreadychildpending. NativeR2/R4algebra/weightedFp6norm/actualDinf shift/fullclassBFS/both[2]compositions/oddrecovery followsONLYAFTERprotocolpublished. [pcc:unverified]
+
+NEXT:protocolscopedgovernance/normalpublication/regularreadychildPRunder1520;thenimplementg3-norm-checker Rustcrate withoriginalengines/4substantivetests/strictencodedAPI+CLI/faithfulwritten+partialformalproof. Startstaticthenunfilteredunitunder900seconds,freshcacheoutsidewhole rawboundary. Keepfailedattemptsandfixed3cases. No paidbenchmark;oldC0full/ALL6CI/ALL4rawsettled,norepoll. ProducerCI/rawpublication andlegacyrootmissingfixture independent. Mainledger/signing/merge/KB127/vault8edec422constraints unchanged.
