@@ -1,0 +1,124 @@
+{
+  "protocol": "8f3da8",
+  "start": "2026-11-13T01:50:50Z",
+  "finish": "2026-11-13T01:57:32Z",
+  "original_exit": 0,
+  "guard_exit": 0,
+  "source_inputs": 784,
+  "source_changed": [],
+  "tests": {
+    "passed": 4,
+    "failed": 0,
+    "ignored": 0,
+    "filtered": 0
+  },
+  "domains": {
+    "C0": 12317,
+    "T20": 12317
+  },
+  "c0_norm": {
+    "oracle": "independent F101^2 pointwise vs F101 image-Mumford",
+    "distinct_pairs": 12317,
+    "both_compositions": 2,
+    "inverses": [
+      "6159 after P0",
+      "55/57 before P0"
+    ],
+    "degrees": [
+      3,
+      236,
+      12078
+    ],
+    "repeated": 118,
+    "nonsplit": 5116,
+    "zero_support": 238,
+    "pole_support": [
+      0,
+      238
+    ]
+  },
+  "fibres": {
+    "total_elliptic_points": 222,
+    "first": {
+      "O": 1,
+      "degrees": [
+        0,
+        0,
+        108
+      ],
+      "repeated": 2,
+      "signed_infinities": [
+        0,
+        0
+      ]
+    },
+    "second": {
+      "O": 1,
+      "degrees": [
+        2,
+        0,
+        110
+      ],
+      "repeated": 0,
+      "signed_infinities": [
+        2,
+        2
+      ]
+    }
+  },
+  "chain": {
+    "both_inverse_directions": true,
+    "both_public_routes": true,
+    "group_frobenius": true,
+    "all_scalar_images": [
+      109,
+      113
+    ],
+    "all_alpha_beta_points": 109,
+    "compositions_alpha_beta": 49,
+    "equality_provenance": "accepted actual global degree196chain SAME normdiagram+injectivity;no new direct R20 implementation"
+  },
+  "negative_controls": {
+    "omitted_half": [
+      12316,
+      1
+    ],
+    "uniform104": [
+      12208,
+      109
+    ],
+    "uniform85": [
+      12204,
+      113
+    ],
+    "wrong_infinity_reject_different": [
+      0,
+      2
+    ],
+    "squarefree_reject_different": [
+      0,
+      2
+    ],
+    "backtrack_wrong_E2_route_reject_different": [
+      106,
+      2
+    ],
+    "wrong_reciprocal_sign": "valid but different/roundtrip fails",
+    "coherent_translation": "positive oracle control"
+  },
+  "fixture_mutants": 20,
+  "whole_files": 794,
+  "build_cache_boundary": "fresh original same-run release dependencies kept outside raw tree;fingerprints retained",
+  "raw_tar_bytes": 14970880,
+  "raw_tar_sha256": "77d639443403f4b33fff5d0d7fddcdf395030d03a1e8d2f943d3aff2c77e8676",
+  "archive_bytes": 2412572,
+  "archive_sha256": "8ec2a0e4b6d41163c1b93c42112a2e9e2e730c6ea4c9bc212f31a1af022e9a6c",
+  "member_index_raw_bytes": 144242,
+  "member_index_raw_sha256": "961e84147a67f8a23160872dba7f4436169182294342caa942f2a5d73f8628b8",
+  "member_index_xz_bytes": 34900,
+  "member_index_xz_sha256": "b8c750037b20b961bae0a6508f8443f8d81f7789103bd29711cbc07e8aa32ef4",
+  "exact_roundtrip": true,
+  "every_member_replayed": true,
+  "standing": "unsigned local correctness evidence,not timing/solver or arbitrary extension-domain evidence",
+  "remote_archive_publication": "pending if root artifact route required"
+}

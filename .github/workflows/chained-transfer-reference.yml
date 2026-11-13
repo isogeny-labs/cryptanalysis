@@ -319,3 +319,76 @@ jobs:
             ${{ runner.temp }}/prime-norms.txt
             ${{ runner.temp }}/prime-norms
           if-no-files-found: ignore
+
+
+  fp-chain:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+          path: cryptanalysis
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            experiments/chained-transfer-reference
+            suite/src/prime_hyperelliptic
+            .github/workflows/chained-transfer-reference.yml
+            .github/workflows/pcc-gate.yml
+      - id: fp_chain_pin
+        name: Read the complete prime-field chain source revision
+        run: |
+          pin=$(cat cryptanalysis/experiments/chained-transfer-reference/fp-chain-upstream-commit.txt)
+          [[ $pin =~ ^[0-9a-f]{40}$ ]] || exit 2
+          echo "revision=$pin" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          repository: isogeny-labs/crypto
+          ref: ${{ steps.fp_chain_pin.outputs.revision }}
+          persist-credentials: false
+          path: crypto
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            research/chained_jacobian_transfers_20261110/successor-preflight
+            research/chained_jacobian_transfers_20261110/algebra-certificates
+            research/chained_jacobian_transfers_20261110/lean
+            research/chained_jacobian_transfers_20261110/evidence/kernel-full-03/kernel-certificate.json
+            research/chained_jacobian_transfers_20261110/evidence/t20-full-02/geometry-certificate.json
+            research/chained_jacobian_transfers_20261110/evidence/quartic-duplication-identity-03.json
+            research/chained_jacobian_transfers_20261110/evidence/two-primary-halving-identity-03.json
+            research/chained_jacobian_transfers_20261110/evidence/isogeny-cycle-norm-identity-01.json
+            research/chained_jacobian_transfers_20261110/evidence/isogeny-cycle-first-identity-01.json
+            research/chained_jacobian_transfers_20261110/evidence/isogeny-cycle-second-identity-01.json
+            research/chained_jacobian_transfers_20261110/evidence/unbalanced-direct-identity-01.json
+            research/chained_jacobian_transfers_20261110/evidence/unbalanced-reciprocal-identity-01.json
+            research/chained_jacobian_transfers_20261110/evidence/even-kernel-cubic-identity-01.json
+            research/chained_jacobian_transfers_20261110/evidence/t20-common-scale-identity-01.json
+            research/chained_jacobian_transfers_20261110/evidence/t20-normalization-identity-01.json
+            research/chained_jacobian_transfers_20261110/evidence/t20-direct-linear-image-identity-02.json
+            isogeny_algos
+            src/cryptanalysis/jv_cover.rs
+            src/cryptanalysis/identity_certificate.rs
+            docs/identity-certificates/schoenhage-10mult.json
+            src/hash/sha256.rs
+            tools/lean
+      - name: Install the pinned native and proof toolchains
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.99.1 --profile minimal --component rustfmt --component clippy
+          curl -fsSL --connect-timeout 15 --max-time 120 https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o "$RUNNER_TEMP/elan-init.sh"
+          sh "$RUNNER_TEMP/elan-init.sh" -y --no-modify-path --default-toolchain "$(cat crypto/research/chained_jacobian_transfers_20261110/lean/lean-toolchain)"
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Replay all retained scopes and the complete F101 C0 to T20 adapter
+        env:
+          RUSTUP_TOOLCHAIN: 1.99.1
+        run: |
+          set -euo pipefail
+          timeout 55m bash cryptanalysis/experiments/chained-transfer-reference/check-fp-chain.sh crypto "$RUNNER_TEMP/fp-chain" 2>&1 | tee "$RUNNER_TEMP/fp-chain.txt"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: chained-transfer-fp-chain-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/fp-chain.txt
+            ${{ runner.temp }}/fp-chain
+          if-no-files-found: ignore
