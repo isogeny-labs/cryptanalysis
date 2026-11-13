@@ -1,6 +1,23 @@
+# Current research queue — 2026-11-13T19:59:57.594812+00:00
+
+Source parenta7ea5998/root4cce14d0. Odd-source de87bd/b9a91f, six partial bindings/50 total, report1ea6c9 and new639-input CI are prepared for source publication. No computational advantage claimed. [pcc:unverified]
+
+| Priority | Task | Exact next acceptance |
+| --- | --- | --- |
+| 1 | Odd-source source/full/CI | Normal commit/push; clean physical source/original3d siblings;640 hashes/four actual controls/13 ordered phasepairs/ALL4 whole JSON/both original6-declaration gates/6 canonical bindings. All ten workflows84native50digests; no completed own full/CI yet. [pcc:unverified] |
+| 2 | Actual Aprime HLP panel | Frozen56fbbb precedes code; fresh source type, replay ALL6 old models, all6 new root/sign outcomes/all135 product kernels/full coordinate/Frobenius/descent/quotient/origin checks; retain singular/nonsquare/Tzero/duplicates. [pcc:unverified] |
+| 3 | New complete Jacobian maps | Every eligible fresh Phi/Norm/both2/origins/exceptional multiplicity/branch/tag controls; actual F=PhiNew gamma Nold,G=PhiOld delta NormNew,both52 on all old/new C-point classes/public5/exactell/cofactor tables; written/formal/report/cleanCI. No actual new Jacobian yet. [pcc:unverified] |
+| 4 | Whole raw publication | Kernel full/CI and odd-source failed/successful native/full/CI trees; standard whole archives and complete indices through unchanged genuine publisher. Freeze NEW complete currentguard06 before exact root FF; old3096guard05 historical/released. [pcc:unverified] |
+| 5 | Computational advantage | Original S3 checkpoint/livebudget/capacity admission, complete transport/cold+online cost and strongest IC/rho references. Correctness timings are not performance evidence. [pcc:unverified] |
+| 6 | Formal/global/merge requirements |50 faithful local bindings remain partial; geometric maps/group/degree/polarization bridges and signed execution open. Authentic root fixture, main ledger/signing/reviews/conflict, vault and KB/ecdb unresolved. [pcc:unverified] |
+
+Settled latest: kernel fullf4c0a7/CI6add5b all617guards/80native44digests; gluing06b112/aefb67; seventeen genuine closed capturese5f4c5/74b399; actual source13de87bd/disjointj/both13. Preserve first compile101/1ea2d5 and first PATH not-covered78ddb7; same first Lean claim laterpasses. Continue after each rung. [pcc:unverified]
+
+---
+
 # Chained ECDLP Transfers persistent research queue
 
-Updated 2026-11-13T19:32:04.837885+00:00. Start from source7cf45856 and root4cce14d0; preserve all historical captures and unsigned PCC standing. This is a continuing research assignment. [pcc:unverified]
+Historical previous queue updated 2026-11-13T19:32:04.837885+00:00. Start from source7cf45856 and root4cce14d0; preserve all historical captures and unsigned PCC standing. This is a continuing research assignment. [pcc:unverified]
 
 | Priority | Current task | Acceptance and next action |
 | --- | --- | --- |

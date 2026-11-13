@@ -1,0 +1,114 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-13T19:44:33Z",
+ "id": "PCC-20261113-6add5b",
+ "kind": "statement",
+ "producer": {
+  "commit": "a7ea5998b4482c99469185119d1acbc5b60921a4",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/chain-kernel-own-CI-01/P1-whole-job.log.xz",
+    "sha256": "006cfbe8c056a539588c60f157a4fb3e159f8145e977880b864220fbf274e883"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/chain-kernel-own-CI-01/PCC-whole-job.log.xz",
+    "sha256": "35a491112c5d5e87fec51a65cf4454ff83b3a6be4fc31405b812d000ae11a76f"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/chain-kernel-own-CI-01/V2-whole-job.log.xz",
+    "sha256": "8873f2732798306cd45f3c9ff91f8230b1939f1f2de523f5002439c3e63d0c79"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/chain-kernel-own-CI-01/all-native-records.json.hash.json",
+    "sha256": "aba2a0aa4420334d3f8b37df5d35ea97e35ed66513a3fa09d284bf348fbb9bd6"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/chain-kernel-own-CI-01/all44-exact-verdicts.json.xz",
+    "sha256": "6fca2f8edf7025abf4c7b647210547dd263b3563cd460eae15732a12259970e0"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/chain-kernel-own-CI-01/bitangents-whole-job.log.xz",
+    "sha256": "792897d56ad939cf588be79898282669f8d26e93b6d6b6507204ff23bbcaefbe"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/chain-kernel-own-CI-01/chain-whole-job.log.xz",
+    "sha256": "c3bf2c5942de5f4bacca2b8fbe2f36db1e78ee454b6bf9c14fc5f2d7c0fad30a"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/chain-kernel-own-CI-01/completed-whole-job.log.xz",
+    "sha256": "cd31ae0215982ebc71296d8709ee6078b866af17f7b73bd902b6b7e724c67a0a"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/chain-kernel-own-CI-01/gluing-whole-job.log.hash.json",
+    "sha256": "8ebb392c6bef83c322922391e51299069f57a2b2340c360dcfaaca41384d3dfb"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/chain-kernel-own-CI-01/kernels-whole-job.log.xz",
+    "sha256": "fefc361e9a19c8fce815deae3b1df193ba31717c9402c501c1bee400e39346c9"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/chain-kernel-own-CI-01/observation.json",
+    "sha256": "2e0f7d3d47c43f40b0c68f629300b12e64111a1ef3d67357a9df5e614fa172e6"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/chain-kernel-own-CI-01/original-PCC-canonical-digests.json.xz",
+    "sha256": "67b4a377bf29cd36ad90161779017c3e312e411a258b820625adebf0fcf3502c"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/chain-kernel-own-CI-01/two-primary-whole-job.log.xz",
+    "sha256": "201063303bd1f3f493ee29b7904bfe87df2be4daa98063aa227bdfb9084d3a99"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/chain-kernel-own-CI-01/whole-object-catalog.json",
+    "sha256": "2fb2a41df0ecf37ed089f1f5e4dd53aeff80f51c6c55967a739c20fb04ce6c34"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Exacta7ea5998 ownCI all NINE unique workflows SUCCESS; duplicate PCC run43493242015 also success in run inventory, latest gate43493579772/132120742026 captured once. ALL80 native JSON match originals(ONLY old candidate/P1 wall and wall_total omitted/raw retained), all44 exact local PCC verdicts pass/current source/original canonical digests. New chain-kernel one unfiltered test/ALL4 whole JSON exact/both original3-declaration gates/3 bindings. Whole9 logs/API/617 source snapshots retained; large combined records/gluing log catalogued for next genuine whole archive, small whole objects Git;no remote availability claim. PCC allows notcovered2/sign legitimately skipped; CI guards scope original successful steps/markers, not standalone artifact ZIP files; separate localfull617 f4c0a7 guards0. Unsigned/partial geometry/no computational advantage/global-root claim."
+}

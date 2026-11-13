@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-13T19:49:17Z",
+ "id": "PCC-20261113-7781ea",
+ "kind": "theorem",
+ "producer": {
+  "commit": "a7ea5998b4482c99469185119d1acbc5b60921a4",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "a18fef190b5ca111728afaaad0ed9279355976aaccc3b26c2b6628e661b53e3f",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/odd-source/lean/OddSource.lean",
+   "theorem": "OddSource223.recovery_from_scalar_composition"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Faithful partial universal rational-map coefficient clearing and normalized scaling, scalar recovery DERIVED from scalar-action/composition/torsion axioms plus explicit Bezout; exact odd13/full13/proposed52 integer certificates. Actual de87bd and written b9a91f;both unchanged original4.35/4.34.1 gates PASS6/zero trusted; standard Lean foundations recorded. Geometry/curve extension/O preservation/morphism degree/dual/finite K-group and ppav-product interpretations remain written, future Jacobian52 maps unconstructed. No signed execution or computational advantage",
+ "statement": "theorem recovery_from_scalar_composition {A B : Type} (F : A \u2192 B) (G : B \u2192 A) (act : Nat \u2192 A \u2192 A) (plus : A \u2192 A \u2192 A) (zero : A) (n inv ell c : Nat) (mul : \u2200 m k x, act (m*k) x=act m (act k x)) (sum : \u2200 m k x, act (m+k) x=plus (act m x) (act k x)) (one : \u2200 x, act 1 x=x) (zeroStable : \u2200 m, act m zero=zero) (addZero : \u2200 x, plus x zero=x) (torsion : \u2200 x, act ell x=zero) (composition : \u2200 x, G (F x)=act n x) (bezout : inv*n=1+c*ell) : \u2200 x, act inv (G (F x))=x"
+}
