@@ -1,0 +1,16 @@
+digraph {
+ graph [rankdir=TB,bgcolor="white",pad="0.12",ranksep="0.3"];
+ node [shape=box,style="rounded,filled",fontname="DejaVu Sans",fontsize=11,color="#456273",fillcolor="#edf4f4"];
+ edge [fontname="DejaVu Sans",fontsize=10,color="#397b64"];
+ U [label="Intact unit204440 ·206 files /506588 bytes
+SHA0682a55f…31ffa1c"];
+ F [label="Intact integration3043e8 ·970 files /2419924 bytes
+SHA58462b62…fcd4a31"];
+ R [label="Trusted-base workflow43340558886
+Job131607521223 ·2 complete remote byte replays
+Actual log precedes normal pointer commit",fillcolor="#e4f2e8"];
+ B [label="Canonical root9bc7bb08…b80686
+Parent e25b829 ·exact4paths ·real manifest entries
+Local exact FF0 ·artifact0 ·wiring0",fillcolor="#f4f0de"];
+ U -> R; F -> R; R -> B;
+}

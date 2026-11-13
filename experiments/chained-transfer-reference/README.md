@@ -1,3 +1,10 @@
+# Independent prime-norm whole raw publication complete
+
+Actual rootb83ad3/[immutable9bc7 canonical manifest](https://github.com/isogeny-labs/crypto/blob/9bc7bb08b2465603cbaaf6648e85dd2568b80686/research/chained_jacobian_transfers_20261110/evidence/consumer-prime-norm-whole-archive-handoff-01/.artifacts.json) publishes both whole unit206-file506588-byte and full970-file2419924-byte archives. Trusted-base43340558886/job131607521223 records TWO whole remote byte replays before the normal bot commit;exactlocalFF0/artifact0/wiring0. Full log/API/stdXZ/hashes/roundtrips retained. [Inspected one-page35707 publication addendumb3ac97](reports/prime-norm-archive-publication/REPORT.md) is byte-identical to root. Earlier pending paragraphs are historical/additively superseded;no original claim/report/custody rewrite. Scientificstandingunsigned. [pcc:unverified]
+
+Replaymetadata400fbe is published7dfa6c;allscience/pins/FIVEwholejobs unchanged. CompleteLOCAL3043e8 and reportsf5c69e/6c3a4e retain full norm4/recovery/group/DLP/oracle/negativecontrols and43/24eleven/40module238compiled212written/oldkernel4CLI/newnorm4CLI/consumer11Lean/allguards. Ownsciencecd2fivejobCI43338033189 next01:24UTC;root6298all4CI3e89b6settled. No cost/solveradvantage. NextnewfrozenfullF101C0↔T20adapterprotocol. [pcc:unverified]
+
+---
 # Complete independent prime-norm integration replay
 
 Full01/3043e8 passes43native/24algebraelevenexactoutputs/botholdnativeJSONcomparisons/40upstreammodules238compiled212written0trusted/oldkernel4+CLI/newnorm4+CLI+exactnewIDC/11consumerLean/all722upstream+51consumerhashes/originalexits0/no-rg. [Inspected two-page replay reportf5c69e](reports/prime-norm-replay/REPORT.md) and[latest checkpoint](PRIME_NORM_CHECKPOINT.md) record full original receipts/custody/admissions and boundaries. Sciencecd2d564/readyPR1519;all implementation/pin/five jobs unchanged by this addendum. Scientificstandingunsigned;no cost/solveradvantage. [pcc:unverified]
