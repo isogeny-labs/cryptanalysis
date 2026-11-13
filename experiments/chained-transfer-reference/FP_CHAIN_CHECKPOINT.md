@@ -1,3 +1,59 @@
+Current checkpoint — complete F101 chain, all six CI jobs, all four raw archives
+
+Scientific source a39fefaa084756d0a58386253651a667e2ad9de6 pins upstream
+927a4efe5fe68b4270ae5989f3cbab0b68852f4b. Local full147b9f is COMPLETE:
+original02:38:22–02:52:52UTC,outer/driver/original exits0,eleven phase pairs
+[0,0],all794 input hashes unchanged,cleanliness[0,0,0],failing rg shim never
+invoked. BOTH independently enumerated12,317-class domains,all old scopes,
+new four tests,bounded36-fibre CLI and eleven new Lean declarations pass.
+Written f97916/partial formalization e9bf81 retain their exact bridge limits.
+No native process is running. [pcc:unverified]
+
+Own CI43353278346 on exacta39 is COMPLETE ALL SIX SUCCESS,f507c9/root6321c6.
+Every whole job log/API/standardXZ/raw+archive hash/exact roundtrip remains.
+The new job TOTAL42 modules260 compiled includes40 upstream238 plus11 old
+and11 new consumer declarations,zero trusted axioms. Old five jobs remain;
+reference has25+98+five integration tests as1+1+1+2 and ONE OLD ignored test.
+Local no-rg instrumentation is separate from uninstrumented CI. These
+science CIs are SETTLED;do not repoll or redispatch. [pcc:unverified]
+
+All FOUR original native raw trees are actually remotely published with
+whole-byte replay BEFORE normal manifest bot commits:unit+CLI973bee/953892
+canonicalcee9;fullca8c22/505bd4 canonical9917;admission91f519/17f652
+canonical5048. Whole archives respectively2412572/SHA8ec2a0e4,
+2412084/SHA26c3048e,2451524/SHA9f0b2e6e,130472/SHA0250a35b.
+Actual full43356854601/job131660813332 and admission43358286544/
+job131665457719 receipts include exactFF0/artifact0/wiring0. Original
+c37d26/0556d8 claim subjects hydrate exact published bytes. Consumer1431777
+published108 metadata paths with scoped governance4e11ac;root5048 is the
+actual admission manifest bot. ONE later PCC data-read workflow change
+adds sorted admission hydration;other793 runtime/proof/focused-workflow
+inputs still match FULL01. Verifiers/trust policy are unchanged.
+[pcc:unverified]
+
+Additive report578f99 contains TWO final50,492-byte PDF pages,ALL visually
+inspected,with editable DOT/SVG/recorded data/renderer/Typst and source links:
+cryptanalysis:experiments/chained-transfer-reference/reports/fp-chain-ci-publication/REPORT.md.
+Original packaging0ed3e9,wiring d98424 and CI-collector07a92c failures remain;
+corrected collector matches frozen1+1+1+2 layout without changing native
+criteria. Earlier pending/active paragraphs below are HISTORICAL and
+superseded by this checkpoint. Scientific standing remains unsigned.
+[pcc:unverified]
+
+NEXT:publish current metadata/refresh GitHub PR3877,PR1520 and queue3904;
+then complete source review and freeze the next genus3 prime-field descent
+adapter. Existing GHS/Ciani construction and canonical quartic Picard
+arithmetic already exist;reuse them. Candidate gap:complete encoded-point
+pullback including nonsplit/ramified/overlapping Frobenius fibres and the
+actual origin shift,without fitting a constant from scalar samples.
+This is a proposal,not an implemented or proved new transfer. Preserve
+source-backed literature review,negative results,protocol-before-code and
+Rust/Lean execution. Main frozen-ledger/signing/merge conflict,KB127,
+vault8edec422 and actual benchmark budget/checkpoint admission stay open.
+No paid launch,subagents,force/rebase/rechain/lineage choice or cost claim. [pcc:unverified]
+
+---
+
 Current checkpoint — full archive ACTUALLY published / admission archive separate pending
 
 Full147b9f nativeacceptance unchanged;ACTUALfullpublicationrootca8c22/
