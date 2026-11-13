@@ -139,7 +139,7 @@ jobs:
             export ARTIFACTS_AWS="$artifacts_cli_aws"
           fi
           python3 tools/artifacts/artifacts.py pull --jobs 16 experiments/hecke-432-j1728-path-holdout-20261026 experiments/hecke-432-j1728-product-holdout-20261026 experiments/hecke-432-j1728-relative-quartic-splitting-20261026/rnf-checkpoint.bin experiments/hecke-432-sign-branch-holdout-20261026
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
       - name: Install the exact symbolic verifier dependency
