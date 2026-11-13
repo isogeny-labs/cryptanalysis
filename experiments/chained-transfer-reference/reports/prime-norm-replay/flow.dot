@@ -1,0 +1,21 @@
+digraph {
+ graph [rankdir=TB,bgcolor="white",pad="0.12",ranksep="0.33"];
+ node [shape=box,style="rounded,filled",fontname="DejaVu Sans",fontsize=12,color="#456273",fillcolor="#edf4f4"];
+ edge [fontname="DejaVu Sans",fontsize=11,color="#397b64"];
+ upstream [label="Producer6298 · pinned full closure
+43 native ·24 algebra ·11 exact identity outputs
+40 proof modules ·238 compiled /212 written /0trusted"];
+ checkers [label="Independent consumercd2d564 · fixed F101 models
+Old kernel checker4 +CLI retained
+New norm checker4 +CLI +11 bound Lean declarations",fillcolor="#e4f2e8"];
+ accept [label="Complete LOCAL full01/3043e8
+722 upstream +51 consumer inputs unchanged
+All original exits0 ·both old JSON comparisons
+New identity byte comparison ·rg never invoked",fillcolor="#f4f0de"];
+ upstream -> checkers [label="one fresh per-run native cache
+existing arithmetic dependency only"];
+ checkers -> accept [label="all eight bounded phases +final guards"];
+ pending [label="Own5job CI43338033189:pending next01:24UTC
+Two intact whole raw archives:actual S3 migration pending",fillcolor="#fff2de"];
+ accept -> pending [label="local correctness does not imply publication or CI"];
+}

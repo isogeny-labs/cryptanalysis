@@ -1,0 +1,61 @@
+   Compiling proc-macro2 v1.0.107
+   Compiling autocfg v1.5.1
+   Compiling quote v1.0.47
+   Compiling unicode-ident v1.0.27
+   Compiling serde_core v1.0.228
+   Compiling serde_json v1.0.145
+   Compiling serde v1.0.228
+   Compiling num-traits v0.2.19
+   Compiling memchr v2.8.3
+   Compiling syn v2.0.119
+   Compiling num-integer v0.1.47
+   Compiling itoa v1.0.19
+   Compiling ryu v1.0.23
+   Compiling num-bigint v0.4.8
+   Compiling hex v0.4.3
+   Compiling isogeny_algos v0.1.0 (/workspace/crypto/isogeny_algos)
+   Compiling serde_derive v1.0.228
+   Compiling balanced-source-engine v0.1.0 (/workspace/cryptanalysis/experiments/chained-transfer-reference/norm-checker/engine)
+   Compiling chained-t20-prime-norm-checker v0.1.0 (/workspace/cryptanalysis/experiments/chained-transfer-reference/norm-checker)
+    Finished `release` profile [optimized] target(s) in 5m 19s
+     Running unittests src/lib.rs (/workspace/scratch/ct53-prime-tests-01/target/release/deps/chained_t20_prime_norm_checker-bda7188be7f8560e)
+
+running 4 tests
+REJECT fixture mutant field: wrong fixed source/field/schema/ordinate normalization
+REJECT fixture mutant source: wrong fixed source/field/schema/ordinate normalization
+REJECT fixture mutant source-range: wrong fixed source/field/schema/ordinate normalization
+REJECT fixture mutant target-a: wrong fixed target/order/infinity tag
+REJECT fixture mutant target-b: wrong fixed target/order/infinity tag
+REJECT fixture mutant order: wrong fixed target/order/infinity tag
+REJECT fixture mutant q-constant: cover equation/degree4 anchor/target count failed
+REJECT fixture mutant q-leading: nonmonic/repeated pole or noncoprime coordinate
+REJECT fixture mutant n-constant: cover equation/degree4 anchor/target count failed
+REJECT fixture mutant m-constant: cover equation/degree4 anchor/target count failed
+REJECT fixture mutant omitted50: cover equation/degree4 anchor/target count failed
+REJECT fixture mutant infinity-y: wrong fixed target/order/infinity tag
+REJECT fixture mutant infinity-x: wrong fixed target/order/infinity tag
+REJECT fixture mutant overlong: noncanonical or overlong cover polynomial
+REJECT fixture mutant schema: wrong fixed source/field/schema/ordinate normalization
+REJECT fixture mutant dlp-label: unknown field `dlp_label`, expected one of `schema`, `field`, `raw_source`, `monic_source`, `raw_y_scale`, `targets` at line 1 column 12
+test tests::sixteen_fixture_mutants_rejected ... ok
+PASS all109+113 complete rational elliptic fibres/O;strata=[[1, 0, 2, 0, 106], [1, 0, 0, 2, 110]],repeated_fibres=[0, 2],finite_fibre_poles=[[0, 0], [0, 0]];both infinity signs/drops with exact finite and infinite multiplicity;[4]/cross0;9 malformed balanced inputs,3 elliptic domain mutants,1MiB bound
+test tests::complete_elliptic_fibres_multiplicity_and_domains ... ok
+PASS all12317 distinct balanced inputs/output pairs;F101 image-Mumford norm==F101² pointwise oracle;both actual[4],cross0,both public inverses9238/82/85,identity/negation/doubling/paired-additions/two-generator translations;all109+113scalarimages/exactorders,Frobenius;degrees=[3, 236, 12078],repeated=118,nonsplit=5116,poles=[2, 2];coherent translated-cover positive controls
+test tests::complete_norm_pullback_group_recovery_and_dlp ... ok
+PASS wrong inverse2=6159 different/equal=[12316, 1];wrong pullback sign=[12316, 1];infinity multiplicity reject/different=[0, 4];squarefree repeated fibre reject/different=[0, 2];universal identity RHS+1 rejected;coherent translations tested as positive controls in complete test
+test tests::wrong_recovery_sign_and_multiplicity_controls ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 28.18s
+
+     Running unittests src/main.rs (/workspace/scratch/ct53-prime-tests-01/target/release/deps/chained_t20_prime_norm_checker-18031eaea55da544)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests chained_t20_prime_norm_checker
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

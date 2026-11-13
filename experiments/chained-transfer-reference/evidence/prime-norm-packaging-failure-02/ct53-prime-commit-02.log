@@ -1,0 +1,18 @@
+ledger 0 ledger: 211 entries, chain ok
+
+prose 0 lint-prose: 0 finding(s)
+
+working-diff 0 
+The following paths are ignored by one of your .gitignore files:
+.resume
+hint: Use -f if you really want to add them.
+hint: Disable this message with "git config set advice.addIgnoredFile false"
+Traceback (most recent call last):
+  File "/workspace/scratch/ct53_stage_prime_unit_02.py", line 36, in <module>
+    selected=stage()
+             ^^^^^^^
+  File "/workspace/scratch/ct53_stage_prime_unit_02.py", line 29, in stage
+    subprocess.run(['git','add','--pathspec-from-file='+str(manifest),'--pathspec-file-nul'],cwd=r,check=True)
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['git', 'add', '--pathspec-from-file=/workspace/scratch/ct53-prime-stage.bin', '--pathspec-file-nul']' returned non-zero exit status 1.

@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-13T00:14:46Z",
+ "id": "PCC-20261113-3084cb",
+ "kind": "theorem",
+ "producer": {
+  "commit": "c0b8c791ec35577bbae4af5cbcbc7ed34d2ee8a7",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "94a12a6a8afff41f31c342c60824ff3e3851ebf8556c5a2a90780bce2b72e17d",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-reference/norm-checker/lean/PullbackFibres.lean",
+   "theorem": "PrimeNormPullback.actual_ordinate_normalization"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Independent prime-norm adapter algebra;exact char101 coefficients/degree drops and conditional unit recovery. Curves/Picard/projective completion/jet bridge and old balanced reducer remain written/native;local Lean is unsigned.",
+ "statement": "theorem actual_ordinate_normalization {K : Type} [CommRing K] (z : K) (characteristic : (101 : K)=0) : 50*(44+47*z+55*z^2+2*z^3)=79+27*z+23*z^2+100*z^3 \u2227 50*(87+17*z+53*z^2+5*z^3)=7+42*z+24*z^2+48*z^3 \u2227 50^2*(100+12*z+74*z^2+50*z^3+6*z^4+46*z^5+z^6)= 25+3*z+69*z^2+63*z^3+52*z^4+62*z^5+76*z^6"
+}

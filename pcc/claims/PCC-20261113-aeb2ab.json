@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-13T00:15:20Z",
+ "id": "PCC-20261113-aeb2ab",
+ "kind": "theorem",
+ "producer": {
+  "commit": "c0b8c791ec35577bbae4af5cbcbc7ed34d2ee8a7",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "fb61b0aa050c08579877eda9f79939501d96981336e44bc62c584b898cbd0b9e",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-reference/norm-checker/lean/PullbackFibres.lean",
+   "theorem": "PrimeNormPullback.actual_second_degree_drop"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Independent prime-norm adapter algebra;exact char101 coefficients/degree drops and conditional unit recovery. Curves/Picard/projective completion/jet bridge and old balanced reducer remain written/native;local Lean is unsigned.",
+ "statement": "theorem actual_second_degree_drop {K : Type} [CommRing K] (z : K) (characteristic : (101 : K)=0) : (49+92*z^2+96*z^3+71*z^4)-71*(z^2+46)^2 = z^2*(96*z+24)"
+}

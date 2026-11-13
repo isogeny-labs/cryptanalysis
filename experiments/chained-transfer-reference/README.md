@@ -1,3 +1,26 @@
+# Independent prime-norm whole raw publication complete
+
+Actual rootb83ad3/[immutable9bc7 canonical manifest](https://github.com/isogeny-labs/crypto/blob/9bc7bb08b2465603cbaaf6648e85dd2568b80686/research/chained_jacobian_transfers_20261110/evidence/consumer-prime-norm-whole-archive-handoff-01/.artifacts.json) publishes both whole unit206-file506588-byte and full970-file2419924-byte archives. Trusted-base43340558886/job131607521223 records TWO whole remote byte replays before the normal bot commit;exactlocalFF0/artifact0/wiring0. Full log/API/stdXZ/hashes/roundtrips retained. [Inspected one-page35707 publication addendumb3ac97](reports/prime-norm-archive-publication/REPORT.md) is byte-identical to root. Earlier pending paragraphs are historical/additively superseded;no original claim/report/custody rewrite. Scientificstandingunsigned. [pcc:unverified]
+
+Replaymetadata400fbe is published7dfa6c;allscience/pins/FIVEwholejobs unchanged. CompleteLOCAL3043e8 and reportsf5c69e/6c3a4e retain full norm4/recovery/group/DLP/oracle/negativecontrols and43/24eleven/40module238compiled212written/oldkernel4CLI/newnorm4CLI/consumer11Lean/allguards. Ownsciencecd2fivejobCI43338033189 next01:24UTC;root6298all4CI3e89b6settled. No cost/solveradvantage. NextnewfrozenfullF101C0↔T20adapterprotocol. [pcc:unverified]
+
+---
+# Complete independent prime-norm integration replay
+
+Full01/3043e8 passes43native/24algebraelevenexactoutputs/botholdnativeJSONcomparisons/40upstreammodules238compiled212written0trusted/oldkernel4+CLI/newnorm4+CLI+exactnewIDC/11consumerLean/all722upstream+51consumerhashes/originalexits0/no-rg. [Inspected two-page replay reportf5c69e](reports/prime-norm-replay/REPORT.md) and[latest checkpoint](PRIME_NORM_CHECKPOINT.md) record full original receipts/custody/admissions and boundaries. Sciencecd2d564/readyPR1519;all implementation/pin/five jobs unchanged by this addendum. Scientificstandingunsigned;no cost/solveradvantage. [pcc:unverified]
+
+Whole206-file unit506588-byte archive and970-file full2419924-byte archive are intact with member/raw/archive hashes/exact roundtrips. Root handoff5643d0/exactcopies uses existing trusted-base artifact-autofix;actual S3 upload/whole readback/real manifests are PENDING,not inferred from metadata. Own consumer CI43338033189/5jobs pending next01:24UTC;root6298 own43330431536 SUCCESSall4/3e89b6 is settled. Earlier pendingfull paragraphs below are historical and superseded by this checkpoint. [pcc:unverified]
+
+---
+# New component: independent F101 T20 norms and completed pullback
+
+Four new native tests accept all12,317 rational classes:independent image-Mumford norm agrees with the F101² pointwise oracle,both actual[4],public recovery9238 and component82/85,group/Frobenius,all109+113 scalar images/exact orders. Full signed infinity/repeated fibres and negative controls pass,204440. Eleven exact Lean statements/localPCCpasses/zero trusted-native,380d2b;bounded36-fibre CLI/new universal IDC,fdd132. Scientific standing unsigned,no cost/solver advantage. [pcc:unverified]
+
+[Independent written proof](PRIME_NORM_INDEPENDENT_PROOF.md),[frozen protocolec2a8b](PRIME_NORM_REPLAY_PROTOCOL.md),[inspected three-page unit report6c3a4e](reports/prime-norm-independent-unit/REPORT.md),[active checkpoint](PRIME_NORM_CHECKPOINT.md). First manifest error101 preserved7f58bd;four bad infinity multiplicities and two squarefree fibres differ as required. All35 old source/check/pins and four complete CI jobs retained byte-identical;new fifth job/driver drafted. Full pinned6298 replay/admission controls pending. Whole506,588-byte unit raw archive intact local pending documented root trusted-base migration;remote availability not yet claimed. [pcc:unverified]
+
+Prior proper replay whole failed79,644-byte and positive80,516-byte archives ARE now remotely published at immutable root5bec canonical manifests;consumer71c03a addendum/c0b8 checkpoints this,actual trusted-base43319185494 full remote replay evidence retained. The old pending paragraphs below are historical and additively superseded. Consumer exact8072 own43315145393 succeeds all4 jobs,b3c8f1;no repoll. [pcc:unverified]
+
+---
 # New component: proper T20 replay and independent kernel checks
 
 CompleteLOCAL400f38 exactcrypto030e passes41native/23algebra/tenidentity
