@@ -1,3 +1,107 @@
+Current checkpoint — full archive ACTUALLY published / admission archive separate pending
+
+Full147b9f nativeacceptance unchanged;ACTUALfullpublicationrootca8c22/
+consumer505bd4:43356854601/job131660813332ONEwhole2451524SHA9f0b2e6eremote
+bytereplyBEFOREnormalbot9917ca568e3125dec81a9caaf01f0caeb741288d/treece4670ea/
+parent5163351(37paths/1a3ba4,parentcee9). ExactlocalFF0/artifact0/wiring0;
+wholeUTF8log426089/XZ43360/wholepublicationtreeXZ49548/hashes/memberroundtrip.
+Canonical evidence/fp-chain-full-archive-handoff-01/.artifacts.json at9917.
+Dirtyownedadmissionmetadatawasdisjointfrom3botpaths andpreservedbyteexact
+acrossFF. Followup43356919904no-opNOTuploadproof. [pcc:unverified]
+
+Consumerpackaging0ed3e9 ACTUALartifact1 selectsseparate130472byte0556d8
+admissionwholearchive. Preserveoriginalclaim/whole109membertree/stagedunion.
+Rootcd89c8copiesadmissionarchiveSHA0250a35b7ef58a036dc0c07f90cf7704eb43c13f9cc9acdac164fbaa5cad96fb in evidence/fp-chain-admission-archive-handoff-01;
+commit/publishnow AFTERactualfullbot9917,thenactualnewupload/readback/bot.
+AfterACTUALadmissioncanonicalmanifest,projectgenuineentrytoEXACTconsumer
+0556proofpath/git-rm-cachedONLYownnewarchive(physicalbytesstay)/managedignore,
+addEXACTadmissiondatareadtoBOTHexistingPCCgate/sign,verifierunchanged.
+PCCworkflowONEprotectedinputchangesfroma39;other793mustmatchacceptedfull,
+qualifyCIdependencydifference. No broadnative rerunforunexecutedPCCdataread;
+allRust/Lean/proof/old50/FIVEwholejobs unchanged. Freshconsumermetadatagov02
+mustretainfailedgov01/output/stagingunion and passartifact0/hydrationwire0.
+Own6CI43353278346exacta39scheduled03:25/noearlypoll. FullsourcefreezeENDED,
+no nativeprocess. Mainledger/signing/merge/budget/KB/vaultgaps unchanged.
+Continueactualadmissionpublication/consumercheckpoint/CI/nextg3task.
+Earlierfull-publication-pending/activeheaders historical. [pcc:unverified]
+
+---
+Current checkpoint — full C0/T20 replay COMPLETE LOCAL / sourcea39 / own6CI pending
+
+FULL01 pcc147b9f COMPLETE original2026-11-13T02:38:22Z→02:52:52Z,outer+
+driver+original0/all11phasepipepairs[0,0]/all794=722root+72consumerhashes
+unchanged/allcleanliness[0,0,0]/alwaysfailingrgNEVERinvoked. Exact927/a39
+siblings/freshsame-run nativecache only;sourcefreezeENDEDafteroriginal
+terminal+allguards. NO runninglocalnativeprocess. Fullscopeold43native/
+24algebra/elevenexactidentities/botholdJSONbytecmp/40rootmodules238compiled
+212written0trusted/oldkernel4CLI/oldnorm4boundedCLI+exactIDC+11oldLean PLUS
+NEWchain4/BOTH12317domains/36boundedCLI/11newLean0trusted. [pcc:unverified]
+
+Entire1012file originalsource/log/command/receipt/proofoutputtree ONEstdtarXZ
+2451524SHA9f0b2e6e6484e5f5d1487ad6d790b43e9fc388cc79f320b6c4a102ff273f8300,
+raw16281600SHA576babf1…/memberindexlosslessXZ41524/everymemberhash/roundtrip.
+Intactscratch /workspace/scratch/ct54-chain-full-whole-raw-01.tar.xz;rootnew
+handoff pcc/claims/PCC-20261113-55b832.json in evidence/fp-chain-full-archive-handoff-01 hasWHOLEcopy.
+ACTUALfullupload/bytereply/manifest/bot PENDING documentedexistingroute;
+oldunit+CLI973bee/953892/canonicalcee9 aredifferentpublishedobjects. Full
+report pcc/claims/PCC-20261113-2b2d22.json ONEfinal38924PDFpageALLinspected/editableDOT/SVG/counts/
+renderer/Typst. Unitc37/Leane9bf/CLId22/writtenf979/3pageunitreporta2remain
+immutable. OwnSIXCI43353278346exacta39pending,next2026-11-13T03:25UTC/no
+repollredispatch. OlderfocusedCIssettled. [pcc:unverified]
+
+NEXT:commitconsumerfullmetadata/source72unchanged;rootownedmetadata+ONE
+fullarchivehandoff/artifactgateexplicitpending/normalGitpublish;followactual
+trusted-basefullbytereply/realmanifestbot/exactFF/artifact0/custodyaddendum.
+Thenown6CI03:25 and nextsource-backednontrivialtransfer/descent/computation
+task. FreshnextleadKB6actual127;priorrootplane-quarticprogram/CianiGHS/native
+KMimplementationfound,readactualsource/currentgapsbeforefreezinganything;
+do notredoexistingconstructionorcallproposalnew. Vault8edec422/KBbackend/
+budgetcheckpoint/mainledger/signing/mergegatesunchanged. Sourcea39+root927
+remainfixed;primarymetadataheadcanadvancewithoutscientificrerun. Allold50/
+FIVEwhole16651prefix unchanged/new6thonly/PCCdatareadonly/verifiersunchanged.
+No paidexperiment/subagents/force/rebase/rechain/globalinverse/costclaim.
+Earlieractiveheadersarehistorical,supersededbyoriginalfullterminal.
+
+---
+Current checkpoint — full F101 chain replay ACTIVE / sourcea39 / own six-job CI in progress
+
+Publishednativeffae1a5e91c94bba2e76bef1486bfb1332b33946/treef276d5e7 (112paths,
+governanced0bdce),then driverproof/archiveguardstrengtheninga39fefaa084756d0a58386253651a667e2ad9de6/tree8af44315/1c9040. Both normalexpected-head/nonforce
+Gitpush0. Strictadmission0556d8fouractualexit2 BEFOREallocation/wrongrootHEAD
+cee9/dirtynewsource/dirtynewfixture/missinggrep/all70restoredunchanged.
+FULL01 ACTIVE original2026-11-13T02:38:22Z/55min/794sourcefreeze=722root+72
+consumer,at /workspace/scratch/ct54-chain-full-01;originalscript same name.sh.
+Cleanexact927/a39 siblings /workspace/scratch/ct54-chain-replay-layout.
+Nativecachefresh /tmp/chained-fp-chain-build.xWW3FiFm,OUTSIDErawtree. Freeze
+ALLselectedisolatedruntime/proof/workflowinputs untiloriginalouter.exit/
+outer-finish/outer-guard.exit/after.json/outer-guards.json andrun/driver.exit/
+original.exit/guard-exits.txt. Neverinferexitfromstdout/expiredtoolsession.
+OriginalPID213119,toolsession30291;readfile/processstatusifsessionexpires.
+Alwaysfailingrgshim markerMUSTNOTexist;allold43/24eleven/bothJSON/40modules
+238compiled212written/kernel4CLI/norm4CLI+oldIDC/consumer11Lean PLUSnew4CLI+
+11Lean required. No fullacceptanceyet. [pcc:unverified]
+
+OwnSIXjobCI43353278346 sourcea39 dispatchedONCE20402:35:50Z,initialempty
+listingpreserved/discoveredwithoutredispatch/inprogress. Nextscheduled
+status2026-11-13T03:25UTC;noearlypoll/redispatch. RequirewholeALL6jobs/logs/
+old5scopesretained/new6fullscope/allfinalguards. Oldroot3e89andconsumerold5
+1d21settledNOrepoll. Unitc37d26/CLId22bca/elevenLeane9bf81/writtenf97916/
+reporta2ebd5THREE57877pagesallinspected/actualrawroot973beeconsumer953892
+canonicalcee9 remaincompletebutNOTfullreplayorown6CIacceptance.
+[pcc:unverified]
+
+NEXT:preserveactivecheckpoint/GitHubqueue+PR1520(finalimplementedscope),
+thenreadsource-backed nextnontrivialtransfer/descent/computational leadwhile
+fullcompiles. Afteroriginalfullterminal+allguards,archiveENTIRErawtree/
+PCC/report/actualS3routeasneeded andcontinuouscommit/publication;thenown6CI
+scheduled03:25. Rootprimarycee9 mayadvancemetadata;isolatedexact927 pinmust
+remainunchanged. Allold50nonworkflow+FIVEwhole16651byteprefixunchanged,
+new6thonly;PCCgate/signonly genuineunitarchivedataread,verifiersunchanged.
+NativeRust/Leanonly/no paidexperimentwithoutactualbudget/checkpoint/no
+subagents/force/rebase/rechain/lineagechoice/costclaim. Earlierheadersare
+historical;currentactiveclaimrecordpins originalreceipts/sourceheads.
+
+---
 Current checkpoint — 2026-11-13, complete prime-field chain unit/proof/CLI accepted locally
 
 New ready1520 branchresearch/chained-transfer-fp-chain-20261113 currently635
