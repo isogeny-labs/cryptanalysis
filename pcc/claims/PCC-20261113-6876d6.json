@@ -1,0 +1,37 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-13T20:06:21Z",
+ "id": "PCC-20261113-6876d6",
+ "kind": "statement",
+ "producer": {
+  "commit": "3de8c174cf65e6b34bf8579d97b817b8f5dc2ded",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/odd-source-normal-publication-01/expected-head-lookup.log.xz",
+    "sha256": "2696e337e25150459ab8ade70e804f6e38b4814af58a403f871fd41c640d9114"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/odd-source-normal-publication-01/push.log.xz",
+    "sha256": "aab7e3fabcd2d2d1d6244d2590f4cb8f214934f5e27062785f5b766f70a5f67b"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/odd-source-normal-publication-01/receipt.json",
+    "sha256": "253cd7e1d546d715834e3320aa03cad2404c73018be333e09c6deccc9ecdf2c6"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Normal nonforce Git publication of odd-source3de8c174/directa7ea5998 succeeds0 after exact expected remote-head check;265 paths/treea125fd03/governancebff7b2. Whole original Git lookup/push logs retained losslessXZ with exact roundtrip;receipt direct,no canonical raw aliases introduced. Actual de87bd/b9a91f/six partial bindings/inspected two55957-byte report and prospective Aprime56fbbb source published. Own full/ten-workflow audit pending;unsigned/no speed or global-root claim."
+}

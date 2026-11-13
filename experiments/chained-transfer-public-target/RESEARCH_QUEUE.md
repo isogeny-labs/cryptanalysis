@@ -1,3 +1,19 @@
+# Current research queue — 2026-11-13T21:07:05.395677+00:00
+
+Current source parent3de8c174;actual different-product maps9722d7/9561ce/written1fd6e7/two new partial bindings/52total/report13cfa7 are prepared for normal publication. Complete data768f4a/0bb0f5 and675-input CI integration are ready. Standing unsigned;no cost advantage claimed. [pcc:unverified]
+
+| Priority | Task | Discriminating next action |
+| --- | --- | --- |
+| 1 | Actual odd-product source/full/CI | Normal commit/push;cleanphysical newsource/original3d siblings;genuine120752-byte fixture02 materialized with exact manifest/hash;676guards/fouractualcontrols/12phasepairs/ALL17wholeJSON/bothoriginal2declgates/2canonicalbindings. Collect11workflows101native52digests. [pcc:unverified] |
+| 2 | Full geometric chain kernel | Transport literal oldGold through actual gamma2 permutation[0,3,2,1];audit all135 intersections/all9 rational target cases. Derive2-primaryC4/C2 factors and13-primary structure from actual degree140608/both52 before labeling free(52,52,52). RationalF2,4,2/G2,2,2 do not suffice. [pcc:unverified] |
+| 3 | Actual new-target solver/cost coverage | Inspect original publicIC/Jacobian solver interfaces;freeze actual public-target native correctness and complete counter-coverage plan for ALL3 new targets,retaining failures. Complete accounting and original benchmark admission precede any S/ratio/advantage claim. [pcc:unverified] |
+| 4 | Performance admission | Original S3 checkpoint/livebudget/capacity,complete cold and online transport costs,strongest IC/rho references. No native correctness runtime supplies a performance conclusion. [pcc:unverified] |
+| 5 | Formal/global/merge |52 faithful local bindings remain partial;actual geometric/scalar/Picard/Galois/degree/polarization bridges and signed execution open. Authenticated remote original fixture hydration/CI is a materially different remaining infrastructure route to investigate;original root global gate still notgreen. Preserve main ledger/reviews/signing/conflict;vaultlocked/KBecdb unavailable. [pcc:unverified] |
+
+Settled:odd-source b2b04d/5fee41(640guards/84native50digests),kernel f4c0a7/6add5b,gluing06b112/aefb67;all9 new captures+2completefixtures768f4a/0bb0f5(20objects16S3+4Git),all17oldercapturese5f4c5/74b399. Guard06 historical3241 RELEASED;futureFF needsNEWguard07 includingnewCI675/laterwork. Preserve all prior failed attempts and exact statements. Continueaftereachrung. [pcc:unverified]
+
+---
+
 # Current research queue — 2026-11-13T19:59:57.594812+00:00
 
 Source parenta7ea5998/root4cce14d0. Odd-source de87bd/b9a91f, six partial bindings/50 total, report1ea6c9 and new639-input CI are prepared for source publication. No computational advantage claimed. [pcc:unverified]

@@ -1,0 +1,41 @@
+"""Checkpoint the accepted source through unchanged repository governance."""
+from pathlib import Path
+import subprocess,json,hashlib,lzma,shutil
+r=Path('/workspace/cryptanalysis');s=r/'experiments/chained-transfer-public-target';base='3de8c174cf65e6b34bf8579d97b817b8f5dc2ded'
+assert subprocess.check_output(['git','rev-parse','HEAD'],cwd=r,text=True).strip()==base
+d=s/'evidence/odd-product-source-governance-01';d.mkdir();shutil.copyfile(__file__,d/'original-command.py')
+scope=['.gitattributes',str(s.relative_to(r)),'.github/workflows/chained-transfer-odd-product.yml','pcc/claims','pcc/ledger.jsonl','problems/chained-transfer-public-target-destination-bridge.md','problems/chained-transfer-geometric-two-torsion.md','problems/chained-transfer-primefield-polarized-two-kernel.md','problems/README.md','docs/session-logs/2026-11-13.md','.resume/RESUME.md']
+def paths():return sorted((set(subprocess.check_output(['git','ls-files','--modified','--others','--exclude-standard','-z','--',*scope],cwd=r).split(b'\0'))|set(subprocess.check_output(['git','diff','--cached','--name-only','-z'],cwd=r).split(b'\0')))-{b''})
+def run(name,cmd):
+ p=subprocess.run(cmd,cwd=r,capture_output=True);raw=p.stdout+p.stderr
+ (d/(name+'.txt.xz'if len(raw)>60000 else name+'.txt')).write_bytes(lzma.compress(raw)if len(raw)>60000 else raw)
+ (d/(name+'.exit')).write_text(str(p.returncode)+'\n');print(name,p.returncode,flush=True);assert p.returncode==0,raw.decode(errors='replace')[:2000]
+guard=json.loads(Path('/workspace/scratch/ct63-odd-product-maps-native-02/before.json').read_text());assert len(guard)==2485 and all(hashlib.sha256(Path(p).read_bytes()).hexdigest()==h for p,h in guard.items())
+protected=['tools','suite','.github/workflows','experiments/chained-transfer-reference']+[str((s/name).relative_to(r))for name in ['native','v2','rho-accessor','prime-field','completed-descent','ci_v2','ci_completed','ci_two_primary','two-primary','ci_bitangents','bitangents','kernel-census','kernel-replay','ci_kernels','PROTOCOL-01.md','COMPLETED_DESCENT_PROTOCOL_02.md','V2_MAPS_01.md','DERIVATION.md','PROOF_MAP.md','README.md','KERNEL_CENSUS_PROTOCOL_01.md','KERNEL_REPLAY_PROTOCOL_01.md','KERNEL_OBSTRUCTION_DERIVATION_01.md','GLUING_CHAIN_PROPOSAL_01.md']]
+changed_protected=set(subprocess.check_output(['git','diff','--name-only',base,'--',*protected],cwd=r,text=True).splitlines())
+assert changed_protected <= {'.github/workflows/chained-transfer-odd-product.yml'}, changed_protected
+for name,ref in [('parent437','experiments/chained-transfer-reference/g3-norm-reference-01.sha256'),('P1434',str((s/'reference-02.sha256').relative_to(r))),('V2468',str((s/'ci_v2/reference-01.sha256').relative_to(r))),('completed483',str((s/'ci_completed/reference-01.sha256').relative_to(r))),('two502',str((s/'ci_two_primary/reference-01.sha256').relative_to(r))),('bit522',str((s/'ci_bitangents/reference-01.sha256').relative_to(r))),('kernels554',str((s/'ci_kernels/reference-01.sha256').relative_to(r))),('gluing596',str((s/'ci_gluing/reference-01.sha256').relative_to(r))),('chain616',str((s/'ci_chain/reference-01.sha256').relative_to(r))),('odd639',str((s/'ci_odd/reference-01.sha256').relative_to(r))),('oddproduct675',str((s/'ci_odd_product/reference-01.sha256').relative_to(r)))]:run(name,['sha256sum','--check',ref])
+run('shell',['bash','-n',str(s/'ci_odd_product/check.sh')]);run('actionlint',['/workspace/scratch/actionlint-bin/actionlint','.github/workflows/chained-transfer-odd-product.yml'])
+run('format',['/home/agent/.cargo/bin/rustfmt','--edition','2021','--config','skip_children=true','--check',*[str(s/p)for p in ['odd-product-models/src/lib.rs','odd-product-models/src/even.rs','odd-product-models/src/source.rs','odd-product-models/src/tests.rs','odd-product-maps/src/lib.rs','odd-product-maps/src/adapter.rs','odd-product-maps/src/norm.rs','odd-product-maps/src/chain.rs','odd-product-maps/src/tests.rs']]])
+run('report-python',['python3','tools/ci/check_report_graph_python.py'])
+run('ledger',['python3','tools/pcc/pcc.py','ledger','verify','--base',base]);run('prose',['python3','tools/pcc/pcc.py','lint-prose',*[p.decode()for p in paths()if p.endswith(b'.md')]])
+run('whitespace',['git','diff','--check','--',*scope]);run('wiring',['python3','tools/artifacts/wire_workflows.py','--check']);run('benchrec',['python3','tools/benchrec.py','gate'])
+for name in ['odd-product-models','odd-product-maps']:subprocess.run(['git','add','--sparse','-f','--',str((s/name/'Cargo.lock').relative_to(r))],cwd=r,check=True)
+def stage():
+ ps=paths();f=Path('/workspace/scratch/ct65-odd-product-source.paths0');f.write_bytes(b'\0'.join(p for p in ps if p!=b'.resume/RESUME.md')+b'\0')
+ subprocess.run(['git','add','--sparse','--pathspec-from-file='+str(f),'--pathspec-file-nul'],cwd=r,check=True);subprocess.run(['git','add','--sparse','-u','--','.resume/RESUME.md'],cwd=r,check=True)
+ selected=set(subprocess.check_output(['git','diff','--cached','--name-only','-z'],cwd=r).split(b'\0'))-{b''};assert selected==set(ps)
+ for p in ps:
+  if p.startswith(b'pcc/claims/'):
+   for proof in json.loads((r/p.decode()).read_text()).get('proofs',[]):
+    if proof.get('kind')=='attestation':
+     x=proof['subject'];assert hashlib.sha256((r/x['path']).read_bytes()).hexdigest()==x['sha256'],x['path']
+     assert x['path'].encode()in selected or subprocess.run(['git','cat-file','-e',base+':'+x['path']],cwd=r,capture_output=True).returncode==0,x['path']
+ return selected
+stage();run('cached-whitespace',['git','diff','--cached','--check']);tree=subprocess.check_output(['git','write-tree'],cwd=r,text=True).strip();run('artifact',['python3','tools/artifacts/artifacts.py','check',base,tree])
+meta=dict(base=base,all2485_native_inputs_unchanged=True,all_original_reference_manifests_pass=True,new_reference=675,new_outer_self=676,previous_ten_workflows_engines_verifiers_frozen_inputs_unchanged=True,ledger_prose_whitespace_cached_whitespace_wiring_benchrec_artifact_format_shell_actionlint_reportPython=0,all_new_subject_hashes_and_staging=True,native='9722d7/e1e62b/9561ce',written='1fd6e7',formal='two new faithful partial exact bindings4d1338/95d4e6;both gates/no axioms/zero trusted;52 total',report='13cfa7;TWO59335-byte final PDF pages ALL inspected',settled='3de8 fullb2b04d/CI5fee4184native50digests;9 new captures+2 whole fixtures genuine768f4a/0bb0f5/20objects16S3+4Git/3241 guards/hold06 released',next='normal publish;676input physical clean full/four controls/11workflows101native52digests;full geometric52 kernel type and actual new-target solver/cost coverage;benchmark admission remains open')
+(d/'custody.json').write_text(json.dumps(meta,indent=2)+'\n')
+cmd=['python3','tools/pcc/pcc.py','claim','new','--kind','statement','--claim-type','data','--statement','Actual odd-product source governance own3de8:all2485 native inputs and ALLold437/434/468/483/502/522/554/596/616/639/new675 reference manifests unchanged. Previous ten workflows/original engines/verifiers/frozen inputs unchanged;ledger/allchangedMDprose/working+cached whitespace/wiring/benchrec/artifact/format/actionlint/shell/reportPython0;all new subjects hash/staging covered. Models9722d7/all6old parity/all6new3square3nonsquare;complete3 target maps9561ce/both2/both52/public5/exactell/complete origin/multiplicity/branch controls and reusable tagged odd-source recovery. Written1fd6e7 degree140608/oldendpointdistinction,2partial exact bindings/noaxioms/zero trusted/52total,whole3proofcaptures/TWO59335-byte inspected PDF pages13cfa7;first redundant-rfl failure preserved. 9 new whole captures+2complete fixtures genuinely768f4a/0bb0f5/20objects16S3+4Git/3241guardshold06released. Own new675 source full/CI pending;unsigned/geometry partial/no computational advantage/global-root claim.']
+for p in sorted(d.iterdir()):cmd+=['--proof','attestation:'+str(p.relative_to(r))]
+cl=subprocess.check_output(cmd,cwd=r,text=True).strip();selected=stage();subprocess.run(['git','diff','--cached','--check'],cwd=r,check=True);subprocess.run(['git','commit','--quiet','-m','research: implement different-product Jacobian52 transfers and source recovery'],cwd=r,check=True)
+print(cl,subprocess.check_output(['git','log','-1','--format=%H %T %P'],cwd=r,text=True).strip(),len(selected),flush=True)

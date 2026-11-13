@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-13T20:37:00Z",
+ "id": "PCC-20261113-4d1338",
+ "kind": "theorem",
+ "producer": {
+  "commit": "3de8c174cf65e6b34bf8579d97b817b8f5dc2ded",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "52f858e9a352e41a86f4c22703f41bad5bbe4119fbbb63ad96343674f99bf1b3",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/odd-product-maps/lean/OddProductChain.lean",
+   "theorem": "OddProductChain223.both_chain_fiftytwo"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Faithful global functional52 implications derived from FOUR genuine old/new dual2 pairs,BOTH source13 pairs and explicit scalar-commutation/multiplication laws;original-point52 composite gives actual inverse159985 via prior Bezout/recovery lemmas. No assumed52/inverse conclusion,custom axioms or native evaluation. Actual9722d7/9561ce/written1fd6e7. Both unchanged original4.35/4.34.1 gates PASS2/zero trusted;no axioms. Actual geometry/Picard/Galois/polarization/degree and scalar-action interpretation remain written/open;unsigned/no cost claim",
+ "statement": "theorem both_chain_fiftytwo {A B J L : Type} (phiOld : A \u2192 J) (normOld : J \u2192 A) (gamma : A \u2192 B) (delta : B \u2192 A) (phiNew : B \u2192 L) (normNew : L \u2192 B) (sA : Nat \u2192 A \u2192 A) (sB : Nat \u2192 B \u2192 B) (sJ : Nat \u2192 J \u2192 J) (sL : Nat \u2192 L \u2192 L) (oldA : \u2200 a, normOld (phiOld a)=sA 2 a) (oldJ : \u2200 x, phiOld (normOld x)=sJ 2 x) (newB : \u2200 b, normNew (phiNew b)=sB 2 b) (newL : \u2200 y, phiNew (normNew y)=sL 2 y) (sourceA : \u2200 a, delta (gamma a)=sA 13 a) (sourceB : \u2200 b, gamma (delta b)=sB 13 b) (gammaScalar : \u2200 n a, gamma (sA n a)=sB n (gamma a)) (deltaScalar : \u2200 n b, delta (sB n b)=sA n (delta b)) (phiOldScalar : \u2200 n a, phiOld (sA n a)=sJ n (phiOld a)) (phiNewScalar : \u2200 n b, phiNew (sB n b)=sL n (phiNew b)) (jMul : \u2200 m n x, sJ (m*n) x=sJ m (sJ n x)) (lMul : \u2200 m n y, sL (m*n) y=sL m (sL n y)) : (\u2200 x, phiOld (delta (normNew (phiNew (gamma (normOld x)))))=sJ 52 x) \u2227 (\u2200 y, phiNew (gamma (normOld (phiOld (delta (normNew y)))))=sL 52 y)"
+}
