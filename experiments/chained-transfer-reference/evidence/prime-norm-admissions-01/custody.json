@@ -1,0 +1,55 @@
+{
+  "protocol": "ec2a8b",
+  "consumer": "cd2d564928613e48265df464f4536082de5edc43",
+  "observations": [
+    {
+      "name": "wrong-head",
+      "original_exit": 2,
+      "start": "2026-11-13T00:30:52.744687+00:00",
+      "finish": "2026-11-13T00:30:52.770228+00:00",
+      "output_allocated": false,
+      "upstream": "/workspace/scratch/ct53-wrong-head-crypto",
+      "mutation": null,
+      "restored_byte_exact": null
+    },
+    {
+      "name": "dirty-new-source",
+      "original_exit": 2,
+      "start": "2026-11-13T00:30:52.771015+00:00",
+      "finish": "2026-11-13T00:30:53.474663+00:00",
+      "output_allocated": false,
+      "upstream": "/workspace/crypto",
+      "mutation": "/workspace/cryptanalysis/experiments/chained-transfer-reference/norm-checker/src/lib.rs",
+      "restored_byte_exact": true
+    },
+    {
+      "name": "dirty-new-certificate",
+      "original_exit": 2,
+      "start": "2026-11-13T00:30:53.478482+00:00",
+      "finish": "2026-11-13T00:30:54.200741+00:00",
+      "output_allocated": false,
+      "upstream": "/workspace/crypto",
+      "mutation": "/workspace/cryptanalysis/experiments/chained-transfer-reference/evidence/prime-norm-fibre-identity-01.json",
+      "restored_byte_exact": true
+    },
+    {
+      "name": "missing-grep",
+      "original_exit": 2,
+      "start": "2026-11-13T00:30:54.201650+00:00",
+      "finish": "2026-11-13T00:30:54.214511+00:00",
+      "output_allocated": false,
+      "upstream": "/workspace/crypto",
+      "mutation": null,
+      "restored_byte_exact": null
+    }
+  ],
+  "outer_original_exit": 0,
+  "all_controls_reject2_before_allocation": true,
+  "changed_sources_restored_byte_exact": true,
+  "whole_files": 11,
+  "raw_tar_sha256": "310c35734cc3568bbbeef7eb427d705c7eb58e0159de8626c689a509c4a645d4",
+  "archive_sha256": "6c8ba4db7ca32d640262cb841b5157ef04076483564b7768bf10eac371d3743a",
+  "archive_bytes": 4780,
+  "exact_roundtrip": true,
+  "every_member_replayed": true
+}

@@ -1,3 +1,10 @@
+# Complete independent prime-norm integration replay
+
+Full01/3043e8 passes43native/24algebraelevenexactoutputs/botholdnativeJSONcomparisons/40upstreammodules238compiled212written0trusted/oldkernel4+CLI/newnorm4+CLI+exactnewIDC/11consumerLean/all722upstream+51consumerhashes/originalexits0/no-rg. [Inspected two-page replay reportf5c69e](reports/prime-norm-replay/REPORT.md) and[latest checkpoint](PRIME_NORM_CHECKPOINT.md) record full original receipts/custody/admissions and boundaries. Sciencecd2d564/readyPR1519;all implementation/pin/five jobs unchanged by this addendum. Scientificstandingunsigned;no cost/solveradvantage. [pcc:unverified]
+
+Whole206-file unit506588-byte archive and970-file full2419924-byte archive are intact with member/raw/archive hashes/exact roundtrips. Root handoff5643d0/exactcopies uses existing trusted-base artifact-autofix;actual S3 upload/whole readback/real manifests are PENDING,not inferred from metadata. Own consumer CI43338033189/5jobs pending next01:24UTC;root6298 own43330431536 SUCCESSall4/3e89b6 is settled. Earlier pendingfull paragraphs below are historical and superseded by this checkpoint. [pcc:unverified]
+
+---
 # New component: independent F101 T20 norms and completed pullback
 
 Four new native tests accept all12,317 rational classes:independent image-Mumford norm agrees with the F101² pointwise oracle,both actual[4],public recovery9238 and component82/85,group/Frobenius,all109+113 scalar images/exact orders. Full signed infinity/repeated fibres and negative controls pass,204440. Eleven exact Lean statements/localPCCpasses/zero trusted-native,380d2b;bounded36-fibre CLI/new universal IDC,fdd132. Scientific standing unsigned,no cost/solver advantage. [pcc:unverified]
