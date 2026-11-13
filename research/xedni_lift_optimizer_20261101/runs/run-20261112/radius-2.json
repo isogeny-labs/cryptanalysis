@@ -1,0 +1,72 @@
+{
+  "input": "/home/user/cryptanalysis/research/xedni_lift_optimizer_20261101/inputs/p67_balanced_snf.json",
+  "model": "weierstrass",
+  "operation": "xedni-lift",
+  "result": {
+    "babai_coefficients": [
+      "1",
+      "0",
+      "-402",
+      "-68",
+      "1675",
+      "-11792",
+      "21345"
+    ],
+    "babai_score": {
+      "coefficient_height_bits": 15,
+      "discriminant": "-52145967401385984",
+      "discriminant_bits": 56,
+      "nonsingular": true,
+      "squared_l2_norm": "597632143"
+    },
+    "baseline_coefficients": [
+      "-98222058138325139429314034498231517652404",
+      "-276487705205595415391939321508657825914952",
+      "3208904426990363975857904798808547812146928",
+      "-33208319184496542583803541631254651878624",
+      "460558990134065214987466795562922181201884",
+      "3475480192127422464",
+      "-193356541404"
+    ],
+    "baseline_score": {
+      "coefficient_height_bits": 142,
+      "discriminant": "-168190575488678547640658893238429791305124536648520291368082683394647261608172098012873569561022657489165346418977438454222056199853768583126167627734255891657907050762785658921959989564964893633577085112023265690913089095482099632980731994626711204028003220800391318676161991077513614453570851553492897029874633033211269595014172246016",
+      "discriminant_bits": 1114,
+      "nonsingular": true,
+      "squared_l2_norm": "10596378021249510307011819793300593300640688989249432131137365131282352848288255384048"
+    },
+    "candidates_evaluated": 125,
+    "congruence_preserved": true,
+    "exact_constraints_preserved": true,
+    "method": "LLL-HP + exact-rational Babai CVP + exact discriminant neighborhood",
+    "optimized_coefficients": [
+      "1",
+      "0",
+      "-402",
+      "-68",
+      "1675",
+      "-11792",
+      "21345"
+    ],
+    "optimized_score": {
+      "coefficient_height_bits": 15,
+      "discriminant": "-52145967401385984",
+      "discriminant_bits": 56,
+      "nonsingular": true,
+      "squared_l2_norm": "597632143"
+    }
+  },
+  "schema_version": 1,
+  "scope": "prime-field xedni Steps 7-9 seven-coefficient coset optimization; no dependence or ECDLP success claim",
+  "search": {
+    "max_candidates": 125,
+    "radius": 2
+  },
+  "software": {
+    "arch": "x86_64",
+    "field_backend": "x86_64:vpclmulqdq",
+    "os": "linux",
+    "version": "0.1.0"
+  },
+  "status": "complete"
+}

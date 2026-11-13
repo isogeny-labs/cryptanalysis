@@ -1,0 +1,121 @@
+{
+  "branch": "claude/ecdlp-chained-transfers-8cpiek",
+  "closed_utc": "2026-11-12T23:36:58+00:00",
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "research/xedni_lift_optimizer_20261101/run_evaluation.py",
+        "--binary",
+        "suite/target/release/ca-icx",
+        "--output",
+        "research/xedni_lift_optimizer_20261101/runs/run-20261112"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "started_utc": "2026-11-12T23:33:46+00:00",
+      "wall_s": 0.061
+    }
+  ],
+  "commit": "0d69fc5526c02c4071db896d8800be74929f4ff7",
+  "commit_dirty": true,
+  "created_utc": "2026-11-12T23:33:42+00:00",
+  "curve_uid": null,
+  "entries": [],
+  "host": {
+    "cpu": "Intel(R) Xeon(R) Processor @ 2.30GHz",
+    "cpus_online": 4,
+    "hostname": "vm",
+    "isolation": "unstated",
+    "platform": "Linux-6.18.44-fc-v378-x86_64-with-glibc2.39"
+  },
+  "id": "20261112T2333Z-xedni-p67-frozen-comparison",
+  "metrics": [
+    {
+      "baseline": null,
+      "better": "neutral",
+      "n": null,
+      "name": "discriminant_bits_babai_radius0",
+      "note": "",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "count",
+      "value": 56.0
+    },
+    {
+      "baseline": 56.0,
+      "better": "neutral",
+      "n": null,
+      "name": "discriminant_bits_best_radius4",
+      "note": "no gain over Babai at radii 1,2,4",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "count",
+      "value": 56.0
+    },
+    {
+      "baseline": null,
+      "better": "neutral",
+      "n": null,
+      "name": "discriminant_bits_raw",
+      "note": "",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "count",
+      "value": 1114.0
+    }
+  ],
+  "problem": "xedni:affine-cvp-p67-frozen",
+  "raw": [
+    {
+      "bytes": 2354,
+      "path": "research/xedni_lift_optimizer_20261101/runs/run-20261112/radius-0.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/a3/a336b84c4b69a3d242d3923b55564b73c6ef91a29c3acd2d423229c241d253d4",
+      "sha256": "a336b84c4b69a3d242d3923b55564b73c6ef91a29c3acd2d423229c241d253d4",
+      "uploaded": false
+    },
+    {
+      "bytes": 2356,
+      "path": "research/xedni_lift_optimizer_20261101/runs/run-20261112/radius-1.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/1b/1be2c38b1384d5685cdc54bb8593fbce0061a607d3cd4d2d6345e1dda5c11ef4",
+      "sha256": "1be2c38b1384d5685cdc54bb8593fbce0061a607d3cd4d2d6345e1dda5c11ef4",
+      "uploaded": false
+    },
+    {
+      "bytes": 2358,
+      "path": "research/xedni_lift_optimizer_20261101/runs/run-20261112/radius-2.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/56/564b97ac544bef4a6045838006891b30c1e26c10fe78d7d246f169eee9f3fecd",
+      "sha256": "564b97ac544bef4a6045838006891b30c1e26c10fe78d7d246f169eee9f3fecd",
+      "uploaded": false
+    },
+    {
+      "bytes": 2358,
+      "path": "research/xedni_lift_optimizer_20261101/runs/run-20261112/radius-4.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/0b/0b15dc016981d74516d89e51a9911fdc14fcfd1879665e34738c37cc3a89148a",
+      "sha256": "0b15dc016981d74516d89e51a9911fdc14fcfd1879665e34738c37cc3a89148a",
+      "uploaded": false
+    },
+    {
+      "bytes": 2334,
+      "path": "research/xedni_lift_optimizer_20261101/runs/run-20261112/summary.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/c8/c8b1331c98bd2c36030058e489a8303e1803106e2ea940fd80462478ad57444d",
+      "sha256": "c8b1331c98bd2c36030058e489a8303e1803106e2ea940fd80462478ad57444d",
+      "uploaded": false
+    }
+  ],
+  "repo": "cryptanalysis",
+  "reports": {
+    "pdf": "research/xedni_lift_optimizer_20261101/runs/run-20261112/REPORT.pdf",
+    "png": [],
+    "svg": []
+  },
+  "schema": "bench.record/v1",
+  "session": null,
+  "slug": "xedni-p67-frozen-comparison",
+  "status": "measured",
+  "summary": "Frozen p=67 xedni affine-lift comparison under the owner's 2026-11-12 checkpoint waiver: all 4 radii pass acceptance; exact neighbourhood search gives no gain over Babai (56 discriminant bits from 1114 raw) [pcc:unverified]",
+  "validation": null
+}
