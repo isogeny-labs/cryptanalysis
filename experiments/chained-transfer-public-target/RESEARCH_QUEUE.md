@@ -1,3 +1,19 @@
+# Current research queue — 2026-11-13T22:02:13.214833+00:00
+
+Refinementfb9ee is settled:clean physical full02/b38c7f ALL703guards/10phasepairs/7wholeJSON/bothoriginal3declgates/3canonicalbindings/fouractualcontrols pass. OwnTWELVE workflows65dd08 ALLSUCCESS/108native55canonicaldigests. First caller setup74ee remains preserved. Standing unsigned,geometrypartial,no computational advantage. [pcc:unverified]
+
+| Priority | Task | Next discriminating action |
+| --- | --- | --- |
+| 1 | Actual new-target IC | Prospective98c6f0 normallypublished2aee BEFOREcode. Implement typed generic originalIC/class-input/actualP0/fb0anchor;all3 x public5 x FB30/36/48/64/all60attempts/actualJacobian+independentoriginalsource checks. No ECDLPfallback,witness or lookup. [pcc:unverified] |
+| 2 | Authenticated original root fixture | Prospective708cb8/2aee before additive dataonlyworkflow. Normalpublishworkflow;collectactual originaltoolpull/verify/exactsizehash/wholeartifact. Ifsuccess,authenticatedwholeartifactdownload/originalverify/exactcachedoriginaltargetedregression120s/guards. Globalroot gate staysseparate. [pcc:unverified] |
+| 3 | Whole-data publication | ct65 full/11CI,ct66 native,ct67 failedsetup/full02/12CI and later solver wholecaptures/completeindices through unchanged genuinepublisher. FreezeNEWguard07 includingcurrent702/703/laterwork beforebotFF;old3241guard06 historical/released. [pcc:unverified] |
+| 4 | Complete beta coordinates | Matched(1,0) gives globalwritten beta degree13^3/polarization13/both13/F=2beta. Actualcompletequotient/divisor coordinates remainopen;none of current3kernels free52. [pcc:unverified] |
+| 5 | Admission/formal/merge | OriginalS3checkpoint/livebudget/capacity/completecold+onlinecounters/strongestICrho references;55partialbindings/actualgeometry/signedexecutionopen. Mainledger/signing/reviews/conflict/vault/KBecdb remain. [pcc:unverified] |
+
+Native147b66/all2514guards;activewritten03f46ce2 and55bindings;report1ca98b/TWO63907-byte finalpagesinspected. Genuine768f4a/0bb0f5 all9captures+2fixtures20objects16S3+4Git;rootcdfce1bbnormalpush0. Allfrozeninputs/priorworkflows/originalengines/verifiers unchanged;continue aftereachoutcome. [pcc:unverified]
+
+---
+
 # Current research queue — 2026-11-13T21:56:35.376030+00:00
 
 Published refinementfb9ee1d6/134paths/treeb3ed0a15/3d6caf normalpush0. Clean physical full02 runs from that exact source/original3d,703guards and FOUR actual controls2/nooutput/restored;whole fixture originalverify0. First setup01 failed before native on a corrupted negative-control revision and is preserved74ee4e. Own12 workflow events are in progress;terminal full/108native55canonical audit pending. [pcc:unverified]
