@@ -1,0 +1,30 @@
+name: CT29 horizontal seven exact-map audit
+on:
+  push:
+    branches:
+      - research/ct29-horizontal-seven-cycles-20261111
+    paths:
+      - 'experiments/chained-transfer-reference/ct29/**'
+      - '.github/workflows/ct29-horizontal-seven-audit.yml'
+  pull_request:
+    paths:
+      - 'experiments/chained-transfer-reference/ct29/**'
+      - '.github/workflows/ct29-horizontal-seven-audit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  exact-map:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - name: Check exact rational-function and group identities
+        run: |
+          python3 -B experiments/chained-transfer-reference/ct29/audit_rational_maps_stdlib.py
+          python3 -B experiments/chained-transfer-reference/ct29/audit_geometric_seven_stdlib.py
+          python3 -O -B experiments/chained-transfer-reference/ct29/audit_geometric_seven_stdlib.py
+          python3 -B experiments/chained-transfer-reference/ct29/audit_transported_two_torsion_stdlib.py
+          python3 -O -B experiments/chained-transfer-reference/ct29/audit_transported_two_torsion_stdlib.py
