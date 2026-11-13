@@ -9,6 +9,7 @@ explain the gap and what would let the work move past it.
 
 | Problem | Status | What it blocks | What would unblock it |
 | --- | --- | --- | --- |
+| [Fixed q223 prime-field polarized two-kernel](chained-transfer-primefield-polarized-two-kernel.md) | investigating; unsigned derived fixed-degree obstruction | Another F223-rational polarized(2,2,2) Jacobian target from fixedJ | c88589/907dfc/c2270b; independent full/CI next, then different gluing on ResE or another justified route. [pcc:unverified] |
 | [Actual q223 geometric two-torsion and nondual map](chained-transfer-geometric-two-torsion.md) | open | Actual geometric coordinates, Frobenius, kernel and nondual codomain | Native510d03 C4, written65f7a4 field6 and all28 actual bitangentse887a9; actual Jac2basis/Weilpairing/kernel/map remain. [pcc:unverified] |
 | [Public-target chained-transfer destination bridge](chained-transfer-public-target-destination-bridge.md) | partial; P1 independent replay/CI and actual V2 native checked | higher-genus DLP-preserving completed maps with actual field/model/P0 | 67baa2/a5a143/e5d852/a5a4a6; all five public answers, actual32source/224Cclass controls, own V2 CI and completed-descent candidate next; no advantage |
 | [q223 prime-field elliptic shortcut](q223-prime-field-elliptic-shortcut.md) | fixed shortcut excluded; formal integer scope only | Hasse count195..253 cannot divide11092292 | Three original Lean bindings d8f845/180a3c/7c5dfe; positive Jacobian descent retained; actual geometry formalization open |
