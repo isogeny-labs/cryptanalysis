@@ -1,0 +1,12 @@
+[package]
+name = "chained-n4-completed-descent"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[workspace]
+
+[dependencies]
+chained-n4-public-target = { path = "../native" }
+chained-n4-completed-v2 = { path = "../v2" }
+serde_json = "=1.0.145"
