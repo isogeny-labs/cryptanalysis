@@ -1,3 +1,28 @@
+# Resume: Chained ECDLP Transfers — 2026-11-13T23:47:27.717648+00:00
+
+## Goal
+Continue nontrivial DLP-preserving transfers,chained Jacobians,prime-field descent and admitted computational comparisons across the three repositories. Continue after each rung. [pcc:unverified]
+
+## Lead / hypothesis
+Actual class-input IC solves all15 public cases in three transferred Jacobians. Current next scientific obligations are common-origin compatibility and complete operation coverage. Existing CI credentials may restore ORIGINAL S3 checkpoint transport;actual permission/outcome is unknown. [pcc:unverified]
+
+## Spec
+Scientific1816c3b9/nativee869bd/written1e65f0/57partialbindings/reportd1027f. Exact-source independentfull3f52fc730guards/ninephasepairs/82wholeJSON/both2gates2bindings/fouractualcontrols;own14CId53e33190native57canonical settled. Prospective16bb06/4c55 published BEFORE the data-only .github/workflows/chained-transfer-checkpoint-transport.yml. Protocol docs/chained-transfer-checkpoint-transport/PROTOCOL_01.md freezes originalconsumer3de8script/SHA3c419216/originalgate/readback/receipt/localgate requirements. [pcc:unverified]
+
+## State
+This committed HEAD contains the additive transport workflow and a complete tracked resume. All prior14workflows/729scientificinputs/engines/verifiers remain unchanged. Genuine43d6ba/babda6 all25wholeobjects13S3+12Git complete/guard07historicalreleased/futureFFNEW08. Originalrootfixture restored1ea795;rootfull03 remains124/unknowntotals;633ab0 locates twoexact101failures atmissingmandatorytime-namespacefiles beforepublicationassertions. [pcc:unverified]
+
+## Next steps
+NormalpublishthisHEAD. Discover EXACTHEAD workflow Original chained-transfer checkpoint transport;collect whole jobs/API/log/artifact at /workspace/scratch/ct69-original-checkpoint-transport-01. Preserve actualgate/readbackfailure or originalreceipt. Before editing this consumer worktree again,if remote success,require matchingcleanHEAD/originaltool+resume and copy ONLYgenuine originalreceipt toignored .resume/.last-push;run unchanged scripts/checkpoint.sh gate and retain actualexit. Never synthesize statehash/receipt. Then commit result andcontinue common-origin nativebridge/costcoverage/completebeta coordinates. [pcc:unverified]
+
+## Runs in flight
+No local scientific process. Next normalpublication triggers bounded10min data-onlyCI/originalgate120s and ordinary repositoryCI. Collect by exactcommitSHA/workflow name;source/runIDs are inGitHub Actions. Keep consumer tracked/untracked state clean until receipt import/originallocalgate evaluation;rawcaptures outside repository in scratch. No paidbenchmark/admittedperformance run. [pcc:unverified]
+
+## Stop and success conditions
+Transport requires originalremote gate0/genuineexactS3readback/originalreceipt/matchingcleanlocaloriginalgate0. A failure remains a scoped result;diagnose actualstage andcontinue useful authorized science. Any laterstatechange stalesadmission untilneworiginalcheckpoint. Budget/capacity/isolation/completecounters/strongestrefs,actualgeometry/logextension/mainledger/signing/reviews/conflict/vault/KB gaps remain separate. [pcc:unverified]
+
+---
+
 # Chained ECDLP Transfers: actual q223 V2 and completed-descent candidate next
 
 ## Goal
