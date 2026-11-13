@@ -51,3 +51,9 @@ Unresolved.
 Nativee08eac ALLfivepublicICtargets/THREEunfilteredtests0 andactualCLI9e522f ALLfive/14exit2controls pass;allsourceanswers ORIGINALindependentenginechecked. Fiveinitialrelationfailures remain inTENpairedattempts. NineSAMEconditionalLeanbindings passbothoriginalgates/zero trusted andexactlocalPCC/f68241. THREEwholearchives genuinelypublishedf32a84/30806e. Allstandingunsigned. [pcc:unverified]
 
 ExecutableP1 independentcleanfull/ownCI andpublicrhoansweraccessor arepending. P2concretefield/model/P0/origin/fibre/norm/composition bridges remainunimplemented;writtenS=-I andrawdegree6two-delta requireactualnativevalidation. Costadmission/advantageremainsseparate. Theproblem isunresolved. [pcc:unverified]
+
+## 2026-11-13 — independent P1, rho and actual V2 checkpoint
+
+P1 full67baa2/all43phasepairs/435guards and exact68d ownCIa5a143 nowpass;all13non-timing native records and14canonical claimdigests match. Rhoe5d852 allfive native/actualCLI answers and actualunknownscalar/witness controls pass. ActualV2a5a4a6 plus native03 covers32source/all224Cpointclasses/both2compositions/exactell/nonzeroactuallegacyP0origin/basepoint/12branch+4infinity/multiplicity/finitezero/gauge/tag controls. Allunsigned/partialformal. Actual637e1a/genuine20436e publish7wholecaptures+4largeindices,3smallindices inGit;oldfailures/nullcontrol preserved. [pcc:unverified]
+
+NewownV2/rho/integer CI is implemented under0cb563 and will run on its published source;independent cleanfull remainsnext. The active74e00a prospectivecompleted-descent protocol02 must be normallypublished beforecandidateimplementation. Costadvantage remainsunestablished/S3livebudget admissionblocked. Three extra integer Lean bindings exclude only the fixed prime-field elliptic shortcut;positiveJac(F223)descent remains. This destination problem is partial,not resolved. [pcc:unverified]

@@ -1,16 +1,16 @@
-# Public-target result status — 2026-11-13
+# Current public-target / actual V2 status — 2026-11-13
 
-This additive status follows the frozen prospective README/protocol. Native/API/partial formal observations are unsigned; scientific source publication and independent CI are separate.
+All observations unsigned;full formalgeometry andcostadvantage remain open.
 
-| Requirement | Current evidence | Remaining obligation |
+| Requirement | Evidence | Next obligation |
 | --- | --- | --- |
-| Public IC interface | e08eac five native targets and9e522f five actualCLI targets;14 rejection controls | independent clean replay and own CI |
-| Original algorithm fidelity | Four whole originalfiles byteexact;four literalplumbing changes | preserve exact source and independent replay |
-| Public rho | Literal witness-free derivative exists | expose original recoveredscalar by versioned accessor and independent sourcecheck |
-| Source order/admission | Original FpR/curve/prime + uniqueHasse4multiple;ell2773073/order11092292 | full written/native scope,not a Lean Hasse implementation |
-| Feasible formal algebra | 9 SAME originalgates/0trusted/9exactPCCbindings locallypass/f68241 | actualgeometry/Picard/solver bridges remain |
-| Whole raw availability | f32a84/30806e three actualremote byte replays | maintain immutableoriginals/manifests |
-| Completed V2 bridge | Written S=-I and delta vs2delta;no scalarfit | implement/test actual field/model/P0/fibres/norm/compositions |
-| Cost advantage | Not established | original S3checkpoint/livebudget/strongestrefs/allcoldphases |
+| P1 public IC | e08eac/9e522f;independentfull67baa2;ownCIa5a143 exact68d | preserve original algorithm and all failed attempts |
+| Recovered public rho answers | e5d852 allfive native/actualCLI;output-only3changes/2202guards0 | new ownV2/rhoCI |
+| Actual q223 maps/model/origin/P0 | a5a4a6/a59e6a;32source224Cclass/both2compositions;actualnonzerolegacyorigin | independent cleanfull/ownCI on published V2 source |
+| Conditional formal statements | existing14 plus3integer exactlocalbindings/0trusted | actualdivisor/Picard/Hasse/solverobjects notformalized |
+| Fixedprimefield elliptic shortcut | d8f845/180a3c/7c5dfe;written countcontradiction/e1c4bb report | preserve exactscope;positiveJacdescent retained |
+| Raw evidence |637e1a/20436e sevenwholecaptures+sevenindices,11S3/3smallGit | native03/newCI futurewholehandoff |
+| Completed-transfer descent | activeprospective protocol74e00a | normalpublication BEFOREimplementation,thenallfivepairedtargetsmoke |
+| Computational advantage | unestablished | originalS3checkpoint/livebudget/strongestrefs/completecostadmission |
 
-Native report19f350: TWO50557-bytePDFpages,ALLinspected,editablefigures andexactnativeidentity. Everyrelationfailure andfailedLeanattempt isretained. [pcc:unverified]
+See CHECKPOINT.md forcommands/sourceIDs/failures;V2_MAPS_01.md forwrittenmath andremainingformalbridges. [pcc:unverified]

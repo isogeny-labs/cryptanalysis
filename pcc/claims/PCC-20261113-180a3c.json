@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-13T13:47:17Z",
+ "id": "PCC-20261113-180a3c",
+ "kind": "theorem",
+ "producer": {
+  "commit": "68d22cee01126c9a03a2222687b0faf62113489d",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "6b64068e00868c1b042d7218610b2e027c8eb7531eb03ca5cdfff2b52abd1383",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/prime-field/NoBaseFieldCurve.lean",
+   "theorem": "NoBaseFieldCurve223.all_hasse_candidates_fail_divisibility"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Exactinteger q223Hasse radiusbounds/all59candidatecounts faildivisibility/conditionalNatno-small-divisor. Actual elliptic groups, Hasse theorem, rationalpoint inclusion/Lagrange and isogeny point-count invariance remain standardwritten bridges,not formalizedhere. SAME3decls ORIGINALproducer4.35 andconsumer4.34.1PASS3/0trusted;no customaxioms/sorry/native_decide/verifierchange. Excludes onlyprime-field elliptic model/isogenyshortcut foractualsource,not positiveJac(F223)transfer. Exact localbindings unsigned/no fullformalgeometry orcostclaim.",
+ "statement": "theorem all_hasse_candidates_fail_divisibility : \u2200 k : Fin 59, \u00ac (195+k.val) \u2223 (11092292 : Nat)"
+}

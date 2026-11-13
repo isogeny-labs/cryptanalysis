@@ -1,0 +1,20 @@
+digraph Bound {
+graph [rankdir=LR,bgcolor="transparent",ranksep=.35];
+node [shape=box,style="rounded,filled",fillcolor="#edf5fb",fontname="DejaVu Sans",fontsize=10];
+edge [fontname="DejaVu Sans",fontsize=9];
+B [label="Hypothetical B / F223
+m = #B(F223)
+195 <= m <= 253"];
+BK [label="Base extension B_K
+m divides #B(K)"];
+E [label="Actual E / K
+K = F223 cubed
+#E(K) = 11092292"];
+X [label="All59 possible m fail
+m does not divide11092292
+original Lean kernel",fillcolor="#fff0e8"];
+B -> BK [label="rational-point subgroup"];
+BK -> E [label="hypothetical K-isogeny
+equal point count",style=dashed];
+E -> X;B -> X;
+}
