@@ -1,0 +1,132 @@
+[
+  {
+    "theorem": "G3CanonicalNorm.principal_push_well_defined",
+    "claim_path": "pcc/claims/PCC-20261113-288e5a.json",
+    "statement": "theorem principal_push_well_defined {D J E : Type} [IntModule D] [IntModule J] [IntModule E] (cl : D \u2192 J) (push : D \u2192 E) (cl_sub : \u2200 a b, cl (a-b)=cl a-cl b) (push_sub : \u2200 a b, push (a-b)=push a-push b) (principal_norm : \u2200 d, cl d=0 \u2192 push d=0) (a b : D) (same_class : cl a=cl b) : push a=push b",
+    "proof": {
+      "path": "experiments/chained-transfer-reference/g3-norm-checker/lean/CanonicalNorm.lean",
+      "theorem": "G3CanonicalNorm.principal_push_well_defined",
+      "decl_sha256": "98b4c556fb6c690b3f3cc15a9d7670d7472178ea6c23da61fb73f1c4b3b7d1f3"
+    }
+  },
+  {
+    "theorem": "G3CanonicalNorm.canonical_section_independence",
+    "claim_path": "pcc/claims/PCC-20261113-e713a7.json",
+    "statement": "theorem canonical_section_independence {D J E : Type} [IntModule D] [IntModule J] [IntModule E] (cl : D \u2192 J) (push : D \u2192 E) (cl_sub : \u2200 a b, cl (a-b)=cl a-cl b) (push_sub : \u2200 a b, push (a-b)=push a-push b) (principal_norm : \u2200 d, cl d=0 \u2192 push d=0) (s t : J \u2192 D) (s_law : \u2200 x, cl (s x)=x) (t_law : \u2200 x, cl (t x)=x) (x : J) : push (s x)=push (t x)",
+    "proof": {
+      "path": "experiments/chained-transfer-reference/g3-norm-checker/lean/CanonicalNorm.lean",
+      "theorem": "G3CanonicalNorm.canonical_section_independence",
+      "decl_sha256": "ae9a3699ce8a603997d304d1f8e7b07b92ad38b96b6c290911db778d93442f25"
+    }
+  },
+  {
+    "theorem": "G3CanonicalNorm.descended_norm_additive",
+    "claim_path": "pcc/claims/PCC-20261113-3adf69.json",
+    "statement": "theorem descended_norm_additive {D J E : Type} [IntModule D] [IntModule J] [IntModule E] (cl : D \u2192 J) (push : D \u2192 E) (cl_sub : \u2200 a b, cl (a-b)=cl a-cl b) (push_sub : \u2200 a b, push (a-b)=push a-push b) (cl_add : \u2200 a b, cl (a+b)=cl a+cl b) (push_add : \u2200 a b, push (a+b)=push a+push b) (principal_norm : \u2200 d, cl d=0 \u2192 push d=0) (s : J \u2192 D) (s_law : \u2200 x, cl (s x)=x) (x y : J) : push (s (x+y))=push (s x)+push (s y)",
+    "proof": {
+      "path": "experiments/chained-transfer-reference/g3-norm-checker/lean/CanonicalNorm.lean",
+      "theorem": "G3CanonicalNorm.descended_norm_additive",
+      "decl_sha256": "86b1100c86361816ed177eb23a70a4a0c7a5bef1d74b7ca003d668e36b41c732"
+    }
+  },
+  {
+    "theorem": "G3CanonicalNorm.plane_section_reference_independence",
+    "claim_path": "pcc/claims/PCC-20261113-88e863.json",
+    "statement": "theorem plane_section_reference_independence {D J E : Type} [IntModule D] [IntModule J] [IntModule E] (cl : D \u2192 J) (push : D \u2192 E) (cl_sub : \u2200 a b, cl (a-b)=cl a-cl b) (push_sub : \u2200 a b, push (a-b)=push a-push b) (principal_norm : \u2200 d, cl d=0 \u2192 push d=0) (d k0 k1 : D) (canonical_sections : cl k0=cl k1) : push (d-k0)=push (d-k1)",
+    "proof": {
+      "path": "experiments/chained-transfer-reference/g3-norm-checker/lean/CanonicalNorm.lean",
+      "theorem": "G3CanonicalNorm.plane_section_reference_independence",
+      "decl_sha256": "4e2c0a5a478acef4b6630b9a231f3be470606b6ecaa755685c1dc766569fb552"
+    }
+  },
+  {
+    "theorem": "G3CanonicalNorm.exceptional_representative_correction",
+    "claim_path": "pcc/claims/PCC-20261113-ce73e0.json",
+    "statement": "theorem exceptional_representative_correction {D : Type} [IntModule D] (canonical p0 p : D) : (canonical-p)-(canonical-p0)=p0-p",
+    "proof": {
+      "path": "experiments/chained-transfer-reference/g3-norm-checker/lean/CanonicalNorm.lean",
+      "theorem": "G3CanonicalNorm.exceptional_representative_correction",
+      "decl_sha256": "5e175625fef1f7574a4e7227ffa1e85049733ffa3a941483b95cf45a10bc6bb8"
+    }
+  },
+  {
+    "theorem": "G3CanonicalNorm.monogenic_companion_characteristic",
+    "claim_path": "pcc/claims/PCC-20261113-131202.json",
+    "statement": "theorem monogenic_companion_characteristic {K : Type} [CommRing K] (t c0 c1 c2 : K) : t*(t*(t-c2)-c1)-c0=t^3-c2*t^2-c1*t-c0",
+    "proof": {
+      "path": "experiments/chained-transfer-reference/g3-norm-checker/lean/CanonicalNorm.lean",
+      "theorem": "G3CanonicalNorm.monogenic_companion_characteristic",
+      "decl_sha256": "ef9dce2e6589fd39f5e4b962ff1e5ed2998916f10dcb430aa1ced3465feb5e4e"
+    }
+  },
+  {
+    "theorem": "G3CanonicalNorm.monogenic_relation_evaluation",
+    "claim_path": "pcc/claims/PCC-20261113-b5a0de.json",
+    "statement": "theorem monogenic_relation_evaluation {K : Type} [CommRing K] (t c0 c1 c2 : K) (relation : t^3=c0+c1*t+c2*t^2) : t^3-c2*t^2-c1*t-c0=0",
+    "proof": {
+      "path": "experiments/chained-transfer-reference/g3-norm-checker/lean/CanonicalNorm.lean",
+      "theorem": "G3CanonicalNorm.monogenic_relation_evaluation",
+      "decl_sha256": "dcc1e58a44160345bf162986f6d136a3de8f61266a4dd8d61dae00da7ed60dd8"
+    }
+  },
+  {
+    "theorem": "G3CanonicalNorm.repeated_cycle_multiplicity",
+    "claim_path": "pcc/claims/PCC-20261113-0e4156.json",
+    "statement": "theorem repeated_cycle_multiplicity {E : Type} [IntModule E] (p q : E) : (2 : Int) \u2022 p+q=p+(p+q)",
+    "proof": {
+      "path": "experiments/chained-transfer-reference/g3-norm-checker/lean/CanonicalNorm.lean",
+      "theorem": "G3CanonicalNorm.repeated_cycle_multiplicity",
+      "decl_sha256": "05f2f67ffb9eb60669a38ffa4488ecfe76b44ce6b2496bdd73e98b7d15208660"
+    }
+  },
+  {
+    "theorem": "G3CanonicalNorm.reduced_cycle_changes_nonzero_repeated_point",
+    "claim_path": "pcc/claims/PCC-20261113-69969a.json",
+    "statement": "theorem reduced_cycle_changes_nonzero_repeated_point {E : Type} [IntModule E] (p q : E) (nonzero : p\u22600) : (2 : Int) \u2022 p+q\u2260p+q",
+    "proof": {
+      "path": "experiments/chained-transfer-reference/g3-norm-checker/lean/CanonicalNorm.lean",
+      "theorem": "G3CanonicalNorm.reduced_cycle_changes_nonzero_repeated_point",
+      "decl_sha256": "57ceac487a0889367d9657e901a703df94a7228ef9dc46965357fbeea8a74f3f"
+    }
+  },
+  {
+    "theorem": "G3CanonicalNorm.reverse_composition_from_surjective_pullback",
+    "claim_path": "pcc/claims/PCC-20261113-71f9a7.json",
+    "statement": "theorem reverse_composition_from_surjective_pullback {A J : Type} [IntModule A] [IntModule J] (pull : A \u2192 J) (norm : J \u2192 A) (pull_two : \u2200 x, pull ((2 : Int) \u2022 x)=(2 : Int) \u2022 pull x) (diagonal : \u2200 x, norm (pull x)=(2 : Int) \u2022 x) (geometric_surjectivity : \u2200 j, \u2203 x, pull x=j) (j : J) : pull (norm j)=(2 : Int) \u2022 j",
+    "proof": {
+      "path": "experiments/chained-transfer-reference/g3-norm-checker/lean/CanonicalNorm.lean",
+      "theorem": "G3CanonicalNorm.reverse_composition_from_surjective_pullback",
+      "decl_sha256": "b5261e66e717906fed9a1a8b876fb6a873239901449804a78b11ed5dc4b9a247"
+    }
+  },
+  {
+    "theorem": "G3CanonicalNorm.odd_two_recovery",
+    "claim_path": "pcc/claims/PCC-20261113-52df06.json",
+    "statement": "theorem odd_two_recovery {E : Type} [IntModule E] (ell u v : Int) (bezout : 2*u+ell*v=1) (x : E) (order : ell \u2022 x=0) : u \u2022 ((2 : Int) \u2022 x)=x",
+    "proof": {
+      "path": "experiments/chained-transfer-reference/g3-norm-checker/lean/CanonicalNorm.lean",
+      "theorem": "G3CanonicalNorm.odd_two_recovery",
+      "decl_sha256": "21a19a63a74ed0312b3ebf50fdc63d6749227c43340fb18eb69af7227bc17146"
+    }
+  },
+  {
+    "theorem": "G3CanonicalNorm.two_way_odd_subgroup_recovery",
+    "claim_path": "pcc/claims/PCC-20261113-9d7846.json",
+    "statement": "theorem two_way_odd_subgroup_recovery {E J : Type} [IntModule E] [IntModule J] (phi : E \u2192 J) (norm : J \u2192 E) (forward_composition : \u2200 x, norm (phi x)=(2 : Int) \u2022 x) (reverse_composition : \u2200 y, phi (norm y)=(2 : Int) \u2022 y) (ell u v : Int) (bezout : 2*u+ell*v=1) (x : E) (y : J) (order_x : ell \u2022 x=0) (order_y : ell \u2022 y=0) : u \u2022 norm (phi x)=x \u2227 u \u2022 phi (norm y)=y",
+    "proof": {
+      "path": "experiments/chained-transfer-reference/g3-norm-checker/lean/CanonicalNorm.lean",
+      "theorem": "G3CanonicalNorm.two_way_odd_subgroup_recovery",
+      "decl_sha256": "36c218b2ef640b6c1dc975aacadd06bfe7cf0b24517faf22c54f07a5e6f130dc"
+    }
+  },
+  {
+    "theorem": "G3CanonicalNorm.actual_odd_recovery_constants",
+    "claim_path": "pcc/claims/PCC-20261113-04079d.json",
+    "statement": "theorem actual_odd_recovery_constants : (2 : Int)*19+37*(-1)=1 \u2227 (2 : Int)*45+89*(-1)=1 \u2227 (2 : Int)*166+331*(-1)=1",
+    "proof": {
+      "path": "experiments/chained-transfer-reference/g3-norm-checker/lean/CanonicalNorm.lean",
+      "theorem": "G3CanonicalNorm.actual_odd_recovery_constants",
+      "decl_sha256": "a18866b1047864cad018e97b1dc5c60fc64df73cfa81f67bde4d68d4b1df93a1"
+    }
+  }
+]

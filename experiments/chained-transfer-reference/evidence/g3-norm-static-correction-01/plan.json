@@ -1,0 +1,11 @@
+{
+  "before": {
+    "experiments/chained-transfer-reference/g3-norm-checker/src/lib.rs": "7a0b8e64d8754f53701537a57f49eefa772595f05e47b3642e8a7fe2b4bea889",
+    "experiments/chained-transfer-reference/g3-norm-checker/src/tests.rs": "a3c1794859237813139190579d25945cfa58bebcc443b56d9ecc41dacd7605fa"
+  },
+  "failure": "static01 original101 E0425 four calls curve::pneg absent; original curve::neg is correct public API",
+  "custody": "e1f736 whole371file614544bytearchive/357guards0",
+  "correction": "ONLY replace curve::pneg with curve::neg in new consumer files; no original engine or criteria change",
+  "next": "fresh static02 strict Clippy alltargets offline locked900s before unit4",
+  "standing": "unverified local development observation"
+}

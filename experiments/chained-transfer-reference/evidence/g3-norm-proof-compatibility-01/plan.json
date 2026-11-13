@@ -1,0 +1,26 @@
+{
+  "source_sha256": "09e446958c9db7151171a26f62e8038e127a113400cf5a95137bcc4d2e7bda88",
+  "compiled13": "Lean02 all13 #print axioms reports only standard foundations ornone;originalconsumer audit fails oldAPIs under4.35,wholebdbc4f",
+  "source_and_all13_statements_unchanged": true,
+  "next": [
+    {
+      "attempt": "03",
+      "compiler": "4.35.0",
+      "gate": "/workspace/crypto/tools/lean/proof-gate.sh",
+      "audit": "originalproducer4.35"
+    },
+    {
+      "attempt": "04",
+      "compiler": "4.34.1",
+      "gate": "tools/lean/proof-gate.sh",
+      "audit": "originalconsumer4.34.1"
+    },
+    {
+      "exact_PCC": "all13 originalconsumerbindings with ELAN_TOOLCHAIN4.34.1,sourcehashsame"
+    }
+  ],
+  "falsification": "any nonzero original build/audit/binding orsourceguard;preserve full output",
+  "verifier_or_trust_changes": false,
+  "precedent": "FP_CHAIN_PROOF_COMPATIBILITY.md originalsourcecompatibility,not newverifier",
+  "formal_boundary": "actualcurves/divisors/Picard/functionfieldnorm/quotientidentification/geometricPsurjectivity remain written/native"
+}

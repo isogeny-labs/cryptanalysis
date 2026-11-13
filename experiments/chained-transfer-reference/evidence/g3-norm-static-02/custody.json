@@ -1,0 +1,51 @@
+{
+  "at": "2026-11-13T08:34:49.917169+00:00",
+  "original_tree": "/workspace/scratch/ct56-g3-norm-static-02",
+  "files": 371,
+  "raw_bytes": 3860480,
+  "raw_sha256": "cb3443513ee1059bdf9778b56ce2c9faa341779b2930682b53adbbfbc4b178f6",
+  "archive_bytes": 614288,
+  "archive_sha256": "3ee02c9419cd5b8dc2e10a630254d3ad51e59c5583175f9b1dc6b3be36af9746",
+  "members_raw_bytes": 63483,
+  "members_raw_sha256": "4ac4450c2050e5be8a71ad5dd60d025a7ec2fa80016a6c663fa914722ec9238e",
+  "members_xz_bytes": 16484,
+  "members_xz_sha256": "69e4d43472f7ad6699d65f7b4b8fb865712ec0550f55d535f0ef867951a050a7",
+  "every_member_hash": true,
+  "exact_standard_tar_xz_roundtrip": true,
+  "cache_outside_raw": true,
+  "standing": "unsigned byte-custody data only;not native/mathematical/remoteavailability verdict",
+  "plan.json": {
+    "protocol": "ac58df published c3b8d74c/ready PR1521 BEFORE code",
+    "phase": "static",
+    "attempt": "02",
+    "command": [
+      "cargo",
+      "clippy",
+      "--all-targets",
+      "--offline",
+      "--locked",
+      "--manifest-path",
+      "experiments/chained-transfer-reference/g3-norm-checker/Cargo.toml",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "timeout_s": 900,
+    "guards": 357,
+    "upstream343_unchanged": true,
+    "whole_old_six_jobs_bytes": 20796,
+    "cache": "/workspace/scratch/ct56-g3-norm-static-02-build-cache",
+    "cache_outside_raw": true,
+    "prediction": "strict compile warnings zero",
+    "falsification": "original nonzero exit, failed domain/control or changed guard; preserve whole attempt and diagnose without reducing acceptance",
+    "scope": "local development correctness check; no benchmark, timing ratio, IC solver or paid execution"
+  },
+  "native.exit": "0",
+  "guard.exit": "0",
+  "guards.json": {
+    "count": 357,
+    "changed": []
+  },
+  "start.txt": "2026-11-13T08:34:06Z",
+  "finish.txt": "2026-11-13T08:34:14Z"
+}
