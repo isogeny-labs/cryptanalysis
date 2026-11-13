@@ -1,3 +1,19 @@
+# Current research queue — 2026-11-13T21:28:09.206056+00:00
+
+Actual source45ee45d2 is normally published,237paths/tree45a23a5f/governance545f18/publicationb2d415. Independent full417921 passes676 guards/12 phasepairs/TWO unfiltered tests/ALL17 JSON/two original proof gates/two canonical bindings/four actual admission controls. Own ELEVEN workflows0ba3a0 succeed with ALL101 native records/52 original canonical digests;new remote fixture hydration succeeds. Standing unsigned/geometry partial/no computational advantage. [pcc:unverified]
+
+| Priority | Task | Discriminating next action |
+| --- | --- | --- |
+| 1 | Transported full52 kernels and same-output source API | Frozen579e08 beforecode. Additive refinement crate;actual gamma2/conjugate transport/all135 intersections/all9 rational cases/independent rank/untransported negative;full geometric kernel proof. Source candidate PhiNew gamma double matches frozenChain/all3/32odd+zero/public5/tags/recovery/negatives;faithful Lean/report/CI. [pcc:unverified] |
+| 2 | Actual new-target solver/counter coverage | Inspect original publicIC/Jacobian interfaces;freeze exact public-target correctness and complete cost-coverage plan for ALL3 targets. Preserve failures and original admission;no assumed speedup. [pcc:unverified] |
+| 3 | Whole-data publication | New ct65 full676/own11CI captures remain local whole originals plus small whole Git objects;pack unchanged standard whole archives/complete indices with later refinement captures. NEWguard07 required before any future botFF;old3241guard06 historical/released. [pcc:unverified] |
+| 4 | Performance admission | Original S3 checkpoint/livebudget/capacity, complete cold+online transport/strongest IC/rho matched references. No correctness runtime supplies a performance conclusion. [pcc:unverified] |
+| 5 | Formal/global/merge |52 faithful local bindings partial;actual geometry/degree/polarization/Picard/Galois and signed execution open. Materially different authenticated original root-fixture CI hydration remains to implement;globalroot notgreen. Preserve main ledger/signing/reviews/conflict;vaultlocked/KBecdb gaps. [pcc:unverified] |
+
+Rootcdfce1bb39b38f normalpush0;genuine9captures+2fixtures768f4a/0bb0f5,20objects16S3+4Git. Odd-source b2b04d/5fee41 and older full/CI settled;all negative results/raw failures remain. No unchanged settled workflow redispatch. Continue after each rung. [pcc:unverified]
+
+---
+
 # Current research queue — 2026-11-13T21:07:05.395677+00:00
 
 Current source parent3de8c174;actual different-product maps9722d7/9561ce/written1fd6e7/two new partial bindings/52total/report13cfa7 are prepared for normal publication. Complete data768f4a/0bb0f5 and675-input CI integration are ready. Standing unsigned;no cost advantage claimed. [pcc:unverified]
