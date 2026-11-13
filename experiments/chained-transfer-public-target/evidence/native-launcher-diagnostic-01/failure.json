@@ -1,0 +1,16 @@
+{
+  "observed_exit": 126,
+  "attempted_paths": [
+    "/root/.cargo/bin/rustfmt",
+    "/root/.cargo/bin/cargo"
+  ],
+  "observed_errors": [
+    "Permission denied",
+    "Permission denied"
+  ],
+  "actual_original_stderr_file": false,
+  "capture_scope": "tool transcript observation only;metadata formatting/lock setup, no compiler or constructor process launched",
+  "actual_user_home": "/home/agent",
+  "correction": "use inherited HOME/.cargo/bin and set -e for dependent preparation",
+  "no_native_result": true
+}

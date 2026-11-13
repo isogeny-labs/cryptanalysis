@@ -1,0 +1,76 @@
+{
+  "at": "2026-11-13T11:15:34.008094+00:00",
+  "protocol": "7e016c/f888/ready1523/388636",
+  "unit": "e08eac FIVEpublicICsolves+all10pairs preserved/all2188guards0",
+  "scope": "actual original-native derivative CLI processes;literalpublicQ only,knownanswers OUTSIDErequests;no timingratio",
+  "guards": 2188,
+  "positive_processes": [
+    "describe exactsameinstance",
+    "solve FIVE literalpublictargets/all5mustpass independentoriginalnativechecks"
+  ],
+  "negative_processes": {
+    "foreign-q": {
+      "expected_exit": 2,
+      "expected_no_output": true
+    },
+    "schema": {
+      "expected_exit": 2,
+      "expected_no_output": true
+    },
+    "field": {
+      "expected_exit": 2,
+      "expected_no_output": true
+    },
+    "model": {
+      "expected_exit": 2,
+      "expected_no_output": true
+    },
+    "noncanonical": {
+      "expected_exit": 2,
+      "expected_no_output": true
+    },
+    "offcurve": {
+      "expected_exit": 2,
+      "expected_no_output": true
+    },
+    "nonmember": {
+      "expected_exit": 2,
+      "expected_no_output": true
+    },
+    "unknown-scalar": {
+      "expected_exit": 2,
+      "expected_no_output": true
+    },
+    "unknown-witness": {
+      "expected_exit": 2,
+      "expected_no_output": true
+    },
+    "empty": {
+      "expected_exit": 2,
+      "expected_no_output": true
+    },
+    "six": {
+      "expected_exit": 2,
+      "expected_no_output": true
+    },
+    "oversize": {
+      "expected_exit": 2,
+      "expected_no_output": true
+    },
+    "overwrite": {
+      "expected_exit": 2,
+      "expected_original_bytes_unchanged": true
+    },
+    "extra-arg": {
+      "expected_exit": 2,
+      "expected_no_output": true
+    }
+  },
+  "timeout_per_process_s": 900,
+  "native_address_limit_KiB": 2097152,
+  "compile": "original cargo build release/offline/locked;reuse SAME outside unit01 cache,not fresh/cold benchmark",
+  "cache": "/workspace/scratch/ct57-n4-unit-01-build-cache",
+  "source_dependency_scope": "whole2175parent+newnative sources;installedRust/thirdparties versioned/locked not copied;cacheoutside",
+  "acceptance": "describeJSON==unitnativeidentity;solve0/all5nativeindependentchecks andscalars==unitanswers;ALL14exit2/nonoutputoroverwritebytesunchanged/allguards0",
+  "failure": "retainwholeoriginalattempt;no weakerprocess/admission/solvercriteria"
+}

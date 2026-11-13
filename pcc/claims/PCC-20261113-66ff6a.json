@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-13T11:20:55Z",
+ "id": "PCC-20261113-66ff6a",
+ "kind": "theorem",
+ "producer": {
+  "commit": "f888bd5fe50262d0d74d85ff4caaf4e4af96c81d",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "64b342c7459852294c35863246d462842b349c04b12ad95ce3900bea4ed1d61b",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/native/lean/PublicTargetBridge.lean",
+   "theorem": "PublicTargetBridge.translated_key_bridge_addition"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Public-target conditional basepoint/reference translation, affine three-log ratio, short-Weierstrass and quartic ordinate polynomial bridges. Actual divisor/Picard groups, hyperelliptic-involution infinity-origin identity, N4 solver kernel, completed V2 maps/norm and model/basepoint identification remain written/native obligations. SAME9 source declarations accepted by ORIGINALproducer4.35 and ORIGINALconsumer4.34.1 gates,zero trusted;no verifier/trust change. Exact local bindings remain unsigned until main CI verdict;no full formal geometry or computational advantage.",
+ "statement": "theorem translated_key_bridge_addition {D : Type} [IntModule D] (x y delta : D) : ((x+delta)-delta)+((y+delta)-delta)=x+y"
+}

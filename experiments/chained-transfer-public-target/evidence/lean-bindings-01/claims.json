@@ -1,0 +1,92 @@
+[
+  {
+    "theorem": "PublicTargetBridge.raw_reference_change",
+    "claim_path": "pcc/claims/PCC-20261113-4491e0.json",
+    "statement": "theorem raw_reference_change {D : Type} [IntModule D] (canonical oldP newP divisor : D) : (divisor-(canonical-newP))-(divisor-(canonical-oldP))=newP-oldP",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/native/lean/PublicTargetBridge.lean",
+      "theorem": "PublicTargetBridge.raw_reference_change",
+      "decl_sha256": "4c0ab15a188dc4f688b440fb16a92cc9ab32217755d0fdf453529e4475934be3"
+    }
+  },
+  {
+    "theorem": "PublicTargetBridge.same_actual_class_translation",
+    "claim_path": "pcc/claims/PCC-20261113-01219f.json",
+    "statement": "theorem same_actual_class_translation {D : Type} [IntModule D] (canonical oldP newP divisor : D) : (divisor-(canonical-newP))-(newP-oldP)=divisor-(canonical-oldP)",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/native/lean/PublicTargetBridge.lean",
+      "theorem": "PublicTargetBridge.same_actual_class_translation",
+      "decl_sha256": "82b935028e98548c0b0d7781a8fabbf576040eb30025c712477899bcdd0569ae"
+    }
+  },
+  {
+    "theorem": "PublicTargetBridge.exceptional_basepoint_translation",
+    "claim_path": "pcc/claims/PCC-20261113-ae629f.json",
+    "statement": "theorem exceptional_basepoint_translation {D : Type} [IntModule D] (oldP newP point : D) : (newP-point)-(newP-oldP)=oldP-point",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/native/lean/PublicTargetBridge.lean",
+      "theorem": "PublicTargetBridge.exceptional_basepoint_translation",
+      "decl_sha256": "4d919b195abae92cf127e5d7845d7b2adf6d6d1d445dd26d6a5e7e9eb3aad27e"
+    }
+  },
+  {
+    "theorem": "PublicTargetBridge.translated_key_bridge_addition",
+    "claim_path": "pcc/claims/PCC-20261113-66ff6a.json",
+    "statement": "theorem translated_key_bridge_addition {D : Type} [IntModule D] (x y delta : D) : ((x+delta)-delta)+((y+delta)-delta)=x+y",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/native/lean/PublicTargetBridge.lean",
+      "theorem": "PublicTargetBridge.translated_key_bridge_addition",
+      "decl_sha256": "64b342c7459852294c35863246d462842b349c04b12ad95ce3900bea4ed1d61b"
+    }
+  },
+  {
+    "theorem": "PublicTargetBridge.affine_offset_cancels_in_two_differences",
+    "claim_path": "pcc/claims/PCC-20261113-2358db.json",
+    "statement": "theorem affine_offset_cancels_in_two_differences {K : Type} [CommRing K] (a b d k : K) : (a+d+b)-(a+b)=d \u2227 (a+k*d+b)-(a+b)=k*d",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/native/lean/PublicTargetBridge.lean",
+      "theorem": "PublicTargetBridge.affine_offset_cancels_in_two_differences",
+      "decl_sha256": "33185de1d875b62d92495da411a5c7f07dd1ca6d6a6ba5a85c4e410b784ec9d9"
+    }
+  },
+  {
+    "theorem": "PublicTargetBridge.three_affine_log_ratio",
+    "claim_path": "pcc/claims/PCC-20261113-473a23.json",
+    "statement": "theorem three_affine_log_ratio {K : Type} [CommRing K] (a b d k inverse : K) (unit : d*inverse=1) : ((a+k*d+b)-(a+b))*inverse=k",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/native/lean/PublicTargetBridge.lean",
+      "theorem": "PublicTargetBridge.three_affine_log_ratio",
+      "decl_sha256": "d920cc1dc713495606e3451008017b76224cb0c090fe2f77f7d4dba12ad4f858"
+    }
+  },
+  {
+    "theorem": "PublicTargetBridge.short_model_cleared_polynomial",
+    "claim_path": "pcc/claims/PCC-20261113-391b45.json",
+    "statement": "theorem short_model_cleared_polynomial {K : Type} [CommRing K] (v a2 a4 a6 : K) : 27*(v^3+a2*v^2+a4*v+a6) = (3*v+a2)^3+3*(3*a4-a2^2)*(3*v+a2)+ (27*a6-9*a2*a4+2*a2^3)",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/native/lean/PublicTargetBridge.lean",
+      "theorem": "PublicTargetBridge.short_model_cleared_polynomial",
+      "decl_sha256": "982948aab4f2b767dda4c389a15863d026df0fcf06f8a15d0d818ab023e6ad09"
+    }
+  },
+  {
+    "theorem": "PublicTargetBridge.short_model_with_unit_three",
+    "claim_path": "pcc/claims/PCC-20261113-c3da38.json",
+    "statement": "theorem short_model_with_unit_three {K : Type} [CommRing K] (v y a2 a4 a6 inverse3 : K) (three_unit : 3*inverse3=1) (source : y^2=v^3+a2*v^2+a4*v+a6) : y^2=(v+a2*inverse3)^3+ (a4-a2^2*inverse3)*(v+a2*inverse3)+ (a6-a2*a4*inverse3+2*a2^3*inverse3^3)",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/native/lean/PublicTargetBridge.lean",
+      "theorem": "PublicTargetBridge.short_model_with_unit_three",
+      "decl_sha256": "81ce423dc65ce1fc452c8fbb930bb05c72dcae159fe076b0912811f7d78a46d8"
+    }
+  },
+  {
+    "theorem": "PublicTargetBridge.quartic_ordinate_sign_bridge",
+    "claim_path": "pcc/claims/PCC-20261113-5a6e46.json",
+    "statement": "theorem quartic_ordinate_sign_bridge {K : Type} [CommRing K] (t y a b c B s alpha v x oldY newY : K) (half_a : 2*B=a) (half_b : 2*s=b-B^2) (alpha_law : alpha=c-2*B*s) (old_x : v=2*t^2+a*t-2*y) (new_x : x=2*(-y+t^2+B*t+s)) (old_y : oldY=2*t*(v+2*s)+c+B*v) (new_y : newY=2*x*t+B*x+alpha) : x=v+2*s \u2227 newY=oldY \u2227 3*x+B^2-4*s=3*v+b",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/native/lean/PublicTargetBridge.lean",
+      "theorem": "PublicTargetBridge.quartic_ordinate_sign_bridge",
+      "decl_sha256": "430ca1e838b0004936d88080d77f0ebfa2884f455aab310460266340db49d9a4"
+    }
+  }
+]

@@ -1,0 +1,52 @@
+[
+  {
+    "theorem": "PublicOriginConvention.degree_six_reference_has_two_deltas",
+    "claim_path": "pcc/claims/PCC-20261113-58138a.json",
+    "statement": "theorem degree_six_reference_has_two_deltas {D : Type} [IntModule D] (canonical oldP newP divisor : D) : (divisor-(canonical-newP)-(canonical-newP))- (divisor-(canonical-oldP)-(canonical-oldP)) = (newP-oldP)+(newP-oldP)",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/formal/PublicOriginConvention.lean",
+      "theorem": "PublicOriginConvention.degree_six_reference_has_two_deltas",
+      "decl_sha256": "9349f7930906386a45f71b55cb041af91a6cbc40231cd54cd981e13ffc684e31"
+    }
+  },
+  {
+    "theorem": "PublicOriginConvention.infinity_involution_origin_difference",
+    "claim_path": "pcc/claims/PCC-20261113-2a3b42.json",
+    "statement": "theorem infinity_involution_origin_difference {E : Type} [IntModule E] (infinityMinus image : E) : (infinityMinus-image)-infinityMinus= -image",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/formal/PublicOriginConvention.lean",
+      "theorem": "PublicOriginConvention.infinity_involution_origin_difference",
+      "decl_sha256": "7e0b6bf67a322ad16f963b8680b4d2771d4f1a30158460be3b60f54fa76889bb"
+    }
+  },
+  {
+    "theorem": "PublicOriginConvention.transported_forward_double",
+    "claim_path": "pcc/claims/PCC-20261113-d1a2d4.json",
+    "statement": "theorem transported_forward_double {E F J : Type} [IntModule E] [IntModule F] [IntModule J] (source : E \u2192 F) (inverse : F \u2192 E) (pullOld : E \u2192 J) (pullNew : F \u2192 J) (normNew : J \u2192 F) (map_bridge : \u2200 x, pullOld x=pullNew (source x)) (new_diagonal : \u2200 y, normNew (pullNew y)=(2 : Int) \u2022 y) (inverse_two : \u2200 y, inverse ((2 : Int) \u2022 y)=(2 : Int) \u2022 inverse y) (left_inverse : \u2200 x, inverse (source x)=x) (x : E) : inverse (normNew (pullOld x))=(2 : Int) \u2022 x",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/formal/PublicOriginConvention.lean",
+      "theorem": "PublicOriginConvention.transported_forward_double",
+      "decl_sha256": "96a1203ba859eeb5a454ca00e9272cf588cde967bd1ea7b836e17db91330aa78"
+    }
+  },
+  {
+    "theorem": "PublicOriginConvention.transported_reverse_double",
+    "claim_path": "pcc/claims/PCC-20261113-1927a6.json",
+    "statement": "theorem transported_reverse_double {E F J : Type} [IntModule E] [IntModule F] [IntModule J] (source : E \u2192 F) (inverse : F \u2192 E) (pullOld : E \u2192 J) (pullNew : F \u2192 J) (normNew : J \u2192 F) (map_bridge : \u2200 x, pullOld x=pullNew (source x)) (new_reverse : \u2200 j, pullNew (normNew j)=(2 : Int) \u2022 j) (right_inverse : \u2200 y, source (inverse y)=y) (j : J) : pullOld (inverse (normNew j))=(2 : Int) \u2022 j",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/formal/PublicOriginConvention.lean",
+      "theorem": "PublicOriginConvention.transported_reverse_double",
+      "decl_sha256": "ee1d595649fc974511d877a0cf82c215abb63ead0f6b420b22e915813d164ffd"
+    }
+  },
+  {
+    "theorem": "PublicOriginConvention.common_sign_preserves_affine_log_ratio",
+    "claim_path": "pcc/claims/PCC-20261113-cb437d.json",
+    "statement": "theorem common_sign_preserves_affine_log_ratio {K : Type} [CommRing K] (a b d k inverse : K) (denominator_unit : d*inverse=1) : (((-a)+k*(-d)+b)-((-a)+b))*(-inverse)=k",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/formal/PublicOriginConvention.lean",
+      "theorem": "PublicOriginConvention.common_sign_preserves_affine_log_ratio",
+      "decl_sha256": "84649203a23925b20f2d038cc3135f1b83d14cf182bb8a0ef49e7a3eabbfda2a"
+    }
+  }
+]

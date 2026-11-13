@@ -1,0 +1,20 @@
+digraph Native {
+graph [rankdir=LR,bgcolor="transparent",nodesep=.2,ranksep=.25];
+node [shape=box,style="rounded,filled",fillcolor="#edf5fb",fontname="DejaVu Sans",fontsize=10];
+edge [fontname="DejaVu Sans",fontsize=9];
+S [label="E / F223 cubed
+a2=(127,56,199)
+a4=(152,35,36)
+a6=(212,109,150)
+modulus z cubed - 3"];
+Q [label="Strict public Q
+no witness field
+exact model tags"];
+I [label="Original N4/B2
+relation / LA / descent
+all retries retained"];
+V [label="Original independent
+FpR + source curve
+k_found G = Q"];
+S -> Q; Q -> I; I -> V;
+}

@@ -1,0 +1,147 @@
+name: pcc-gate
+
+# Proof-carrying claims (docs/SABOTAGE_RESISTANCE.md): the sabotage canary, the
+# hash-chained ledger, every claim's proofs and the PR prose are checked here.
+# On main, the sign job signs verdicts with the CI key a producer never holds.
+
+on:
+  pull_request:
+    # PR prose is an input to this gate, so edits need a new validation event.
+    types: [opened, synchronize, reopened, edited, ready_for_review]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    env:
+      BASE_REF: ${{ github.base_ref || 'main' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Pull store data this workflow reads (tools/artifacts)
+        shell: bash
+        working-directory: ${{ github.workspace }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+        run: |
+          if ! command -v aws >/dev/null; then
+            python3 -m venv "$RUNNER_TEMP/artifacts-awscli"
+            artifacts_cli_python="$RUNNER_TEMP/artifacts-awscli/bin/python"
+            artifacts_cli_aws="$RUNNER_TEMP/artifacts-awscli/bin/aws"
+            if [ -d "$RUNNER_TEMP/artifacts-awscli/Scripts" ]; then
+              artifacts_cli_python="$RUNNER_TEMP/artifacts-awscli/Scripts/python.exe"
+              artifacts_cli_aws="$RUNNER_TEMP/artifacts-awscli/Scripts/aws.exe"
+            fi
+            "$artifacts_cli_python" -m pip install --disable-pip-version-check awscli==1.46.2
+            export ARTIFACTS_AWS="$artifacts_cli_aws"
+          fi
+          python3 tools/artifacts/artifacts.py pull --jobs 16 docs experiments/chained-transfer-reference/evidence/fp-chain-admissions-01/whole-raw.tar.xz experiments/chained-transfer-reference/evidence/fp-chain-unit-01/whole-raw.tar.xz experiments/chained-transfer-reference/evidence/g3-norm-destination-primary-01/whole-primary.tar.xz
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Report and graph Python source syntax
+        run: python3 tools/ci/check_report_graph_python.py
+      - name: GLV cap no-worse Lean input binding
+        run: python3 experiments/glv-cap-confirm-20261106/formal/no-worse-20261108/check_binding.py
+      - name: Sabotage canary
+        run: python3 tools/pcc/pcc.py canary
+      - name: Fetch base tip
+        if: github.event_name == 'pull_request'
+        run: git fetch --no-tags --depth=1 origin "+refs/heads/$BASE_REF:refs/remotes/origin/$BASE_REF"
+      - name: Ledger chain (against the base on pull requests)
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            python3 tools/pcc/pcc.py ledger verify --base "origin/$BASE_REF"
+          else
+            python3 tools/pcc/pcc.py ledger verify
+          fi
+      - name: Verify all claims (exit 2 = not covered is allowed)
+        run: python3 tools/pcc/pcc.py verify-all || [ $? -eq 2 ]
+      - name: Strong-claim word in the PR body needs [pcc:ID] or [pcc:unverified]
+        if: github.event_name == 'pull_request'
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: printf '%s' "$PR_BODY" | python3 tools/pcc/pcc.py lint-prose --stdin
+      - name: Advisory prose lint of changed reports
+        if: github.event_name == 'pull_request'
+        continue-on-error: true
+        run: |
+          files="$(git diff --name-only "origin/$BASE_REF...HEAD" -- '**/REPORT.md' 'docs/**/*.md' | while read -r f; do [ -f "$f" ] && echo "$f"; done)"
+          if [ -n "$files" ]; then
+            echo "$files" | xargs python3 tools/pcc/pcc.py lint-prose
+          fi
+      - name: pcc self-tests
+        run: |
+          if [ -f tools/pcc/test_pcc.py ]; then python3 tools/pcc/test_pcc.py; fi
+
+  sign:
+    if: github.event_name == 'push'
+    needs: gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    concurrency:
+      group: pcc-sign
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Pull store data this workflow reads (tools/artifacts)
+        shell: bash
+        working-directory: ${{ github.workspace }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+        run: |
+          if ! command -v aws >/dev/null; then
+            python3 -m venv "$RUNNER_TEMP/artifacts-awscli"
+            artifacts_cli_python="$RUNNER_TEMP/artifacts-awscli/bin/python"
+            artifacts_cli_aws="$RUNNER_TEMP/artifacts-awscli/bin/aws"
+            if [ -d "$RUNNER_TEMP/artifacts-awscli/Scripts" ]; then
+              artifacts_cli_python="$RUNNER_TEMP/artifacts-awscli/Scripts/python.exe"
+              artifacts_cli_aws="$RUNNER_TEMP/artifacts-awscli/Scripts/aws.exe"
+            fi
+            "$artifacts_cli_python" -m pip install --disable-pip-version-check awscli==1.46.2
+            export ARTIFACTS_AWS="$artifacts_cli_aws"
+          fi
+          python3 tools/artifacts/artifacts.py pull --jobs 16 docs experiments/chained-transfer-reference/evidence/fp-chain-admissions-01/whole-raw.tar.xz experiments/chained-transfer-reference/evidence/fp-chain-unit-01/whole-raw.tar.xz experiments/chained-transfer-reference/evidence/g3-norm-destination-primary-01/whole-primary.tar.xz
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Sign verdicts for claims without standing
+        env:
+          PCC_SIGNING_KEY: ${{ secrets.PCC_SIGNING_KEY }}
+        run: |
+          if [ -z "$PCC_SIGNING_KEY" ]; then
+            echo "::notice::PCC_SIGNING_KEY is not set; no verdicts signed."
+            exit 0
+          fi
+          KEYFILE="$(mktemp)"
+          chmod 600 "$KEYFILE"
+          printf '%s' "$PCC_SIGNING_KEY" > "$KEYFILE"
+          for f in pcc/claims/*.json; do
+            [ -f "$f" ] || continue
+            id="$(basename "$f" .json)"
+            if ! python3 tools/pcc/pcc.py standing "$id"; then
+              python3 tools/pcc/pcc.py verdict --sign-key "$KEYFILE" --key-id ci-main "$id" || true
+            fi
+          done
+          rm -f "$KEYFILE"
+          if [ -n "$(git status --porcelain pcc/ledger.jsonl)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add pcc/ledger.jsonl
+            git commit -m "pcc: signed verdicts for ${GITHUB_SHA::12}"
+            git push origin HEAD:main
+          fi

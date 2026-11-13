@@ -45,3 +45,9 @@ Next discriminating step: publish the protocol/ready child before new cases or
 code; then implement and test P1. Constructor or solver failure is retained
 at the frozen parameters; do not select a replacement seed after observing it.
 Unresolved.
+
+## 2026-11-13 — P1 local progress, P2 still open
+
+Nativee08eac ALLfivepublicICtargets/THREEunfilteredtests0 andactualCLI9e522f ALLfive/14exit2controls pass;allsourceanswers ORIGINALindependentenginechecked. Fiveinitialrelationfailures remain inTENpairedattempts. NineSAMEconditionalLeanbindings passbothoriginalgates/zero trusted andexactlocalPCC/f68241. THREEwholearchives genuinelypublishedf32a84/30806e. Allstandingunsigned. [pcc:unverified]
+
+ExecutableP1 independentcleanfull/ownCI andpublicrhoansweraccessor arepending. P2concretefield/model/P0/origin/fibre/norm/composition bridges remainunimplemented;writtenS=-I andrawdegree6two-delta requireactualnativevalidation. Costadmission/advantageremainsseparate. Theproblem isunresolved. [pcc:unverified]

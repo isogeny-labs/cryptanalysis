@@ -1,0 +1,44 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-13T11:56:34Z",
+ "id": "PCC-20261113-e00dd3",
+ "kind": "statement",
+ "producer": {
+  "commit": "f888bd5fe50262d0d74d85ff4caaf4e4af96c81d",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/diagnostic-data-read-plan-01/inverse-check.json",
+    "sha256": "002079caefabfcc6530e951624c35355b33131078f99022b7efc863f4c880b68"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/diagnostic-data-read-plan-01/restore-check.json",
+    "sha256": "79e9571176da5c7b50a87efadfc8c0bb437919233529579ce087ee4a09fdc660"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/diagnostic-data-read-plan-01/original-0da3f3-verdict.json",
+    "sha256": "addafb549efd03226e0aae08df7ce7bf8f2943d79d1b01b70cda7c4d4ee94a14"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/diagnostic-data-read-plan-01/original-0da3f3-verdict.exit",
+    "sha256": "53c234e5e8472b6ac51c1ae1cab3fe06fad053beb8ebfd8977b010655bfdd3c3"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Actual diagnosticdatarestore bytecheck0:ORIGINALxz decompress exactfrozen0da3f3rawsubjectbytes;ORIGINALPCCverify2/not_covered retainedasunsigneddatastanding,not mathpass. ONLYworkflowdelta frozen9b0cb8 onefixeddatarestore inBOTHexistinggate/signjobs;removeinsertionsrecoverswholeoldworkflow. Governance03explicitunstagedsubjectcoveragefail retained;allowONLYthisexactrawalias ifstagedXZ/exactdecompress/PCCpin match andbothrestoreblocks;allothernewsubjects stillGit/staged required. No verifier/trust/nativecriterion/policychange."
+}

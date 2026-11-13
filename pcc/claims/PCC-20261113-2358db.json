@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-13T11:20:59Z",
+ "id": "PCC-20261113-2358db",
+ "kind": "theorem",
+ "producer": {
+  "commit": "f888bd5fe50262d0d74d85ff4caaf4e4af96c81d",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "33185de1d875b62d92495da411a5c7f07dd1ca6d6a6ba5a85c4e410b784ec9d9",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/native/lean/PublicTargetBridge.lean",
+   "theorem": "PublicTargetBridge.affine_offset_cancels_in_two_differences"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Public-target conditional basepoint/reference translation, affine three-log ratio, short-Weierstrass and quartic ordinate polynomial bridges. Actual divisor/Picard groups, hyperelliptic-involution infinity-origin identity, N4 solver kernel, completed V2 maps/norm and model/basepoint identification remain written/native obligations. SAME9 source declarations accepted by ORIGINALproducer4.35 and ORIGINALconsumer4.34.1 gates,zero trusted;no verifier/trust change. Exact local bindings remain unsigned until main CI verdict;no full formal geometry or computational advantage.",
+ "statement": "theorem affine_offset_cancels_in_two_differences {K : Type} [CommRing K] (a b d k : K) : (a+d+b)-(a+b)=d \u2227 (a+k*d+b)-(a+b)=k*d"
+}

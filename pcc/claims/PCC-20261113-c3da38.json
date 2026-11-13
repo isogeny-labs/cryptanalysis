@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-13T11:21:10Z",
+ "id": "PCC-20261113-c3da38",
+ "kind": "theorem",
+ "producer": {
+  "commit": "f888bd5fe50262d0d74d85ff4caaf4e4af96c81d",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "81ce423dc65ce1fc452c8fbb930bb05c72dcae159fe076b0912811f7d78a46d8",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/native/lean/PublicTargetBridge.lean",
+   "theorem": "PublicTargetBridge.short_model_with_unit_three"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Public-target conditional basepoint/reference translation, affine three-log ratio, short-Weierstrass and quartic ordinate polynomial bridges. Actual divisor/Picard groups, hyperelliptic-involution infinity-origin identity, N4 solver kernel, completed V2 maps/norm and model/basepoint identification remain written/native obligations. SAME9 source declarations accepted by ORIGINALproducer4.35 and ORIGINALconsumer4.34.1 gates,zero trusted;no verifier/trust change. Exact local bindings remain unsigned until main CI verdict;no full formal geometry or computational advantage.",
+ "statement": "theorem short_model_with_unit_three {K : Type} [CommRing K] (v y a2 a4 a6 inverse3 : K) (three_unit : 3*inverse3=1) (source : y^2=v^3+a2*v^2+a4*v+a6) : y^2=(v+a2*inverse3)^3+ (a4-a2^2*inverse3)*(v+a2*inverse3)+ (a6-a2*a4*inverse3+2*a2^3*inverse3^3)"
+}

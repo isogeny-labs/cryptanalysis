@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-13T11:20:51Z",
+ "id": "PCC-20261113-ae629f",
+ "kind": "theorem",
+ "producer": {
+  "commit": "f888bd5fe50262d0d74d85ff4caaf4e4af96c81d",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "4d919b195abae92cf127e5d7845d7b2adf6d6d1d445dd26d6a5e7e9eb3aad27e",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/native/lean/PublicTargetBridge.lean",
+   "theorem": "PublicTargetBridge.exceptional_basepoint_translation"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Public-target conditional basepoint/reference translation, affine three-log ratio, short-Weierstrass and quartic ordinate polynomial bridges. Actual divisor/Picard groups, hyperelliptic-involution infinity-origin identity, N4 solver kernel, completed V2 maps/norm and model/basepoint identification remain written/native obligations. SAME9 source declarations accepted by ORIGINALproducer4.35 and ORIGINALconsumer4.34.1 gates,zero trusted;no verifier/trust change. Exact local bindings remain unsigned until main CI verdict;no full formal geometry or computational advantage.",
+ "statement": "theorem exceptional_basepoint_translation {D : Type} [IntModule D] (oldP newP point : D) : (newP-point)-(newP-oldP)=oldP-point"
+}
