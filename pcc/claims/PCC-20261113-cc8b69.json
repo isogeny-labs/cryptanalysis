@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-13T21:38:39Z",
+ "id": "PCC-20261113-cc8b69",
+ "kind": "theorem",
+ "producer": {
+  "commit": "c37ad390a4e2ec21bc4e54a005c2642767099199",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "65cb73857d9c68e06da00ba2cd1007aed0786b19a6ac6852f816038ab7c3e0d5",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/odd-product-refinements/lean/OddProductRefinement.lean",
+   "theorem": "OddProductRefinement223.quotient_factor_and_twice_chain"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Faithful structural implications for actual native147b66/writtenf4eb22:52-primary projectors13/40 plus trivial4/13 intersection;global quotient universal property and genuine transported-kernel containment derive beta existence and F=beta double without assuming beta;old dual2 pair eliminates redundant source PhiNorm with identical outputs. Three exact declarations,both unchanged original4.35/4.34.1 gatesPASS3/0trusted/noaxioms. Actual etale/geometric kernel classification,quotient category,degree/polarization,Picard/scalar interpretations remain written/open. No complete beta coordinate implementation or performance/signedexecution claim",
+ "statement": "theorem quotient_factor_and_twice_chain {A B J L : Type} (phiOld : A \u2192 J) (normOld : J \u2192 A) (gamma : A \u2192 B) (phiNew : B \u2192 L) (doubleJ : J \u2192 J) (zeroJ : J) (zeroL : L) (admissible : (A \u2192 L) \u2192 Prop) (quotient : \u2200 f, admissible f \u2192 (\u2200 a, phiOld a=zeroJ \u2192 f a=zeroL) \u2192 \u2203 beta : J \u2192 L, \u2200 a, beta (phiOld a)=f a) (compositionHom : admissible (fun a => phiNew (gamma a))) (transportedKernel : \u2200 a, phiOld a=zeroJ \u2192 phiNew (gamma a)=zeroL) (oldJ : \u2200 x, phiOld (normOld x)=doubleJ x) : \u2203 beta : J \u2192 L, (\u2200 a, beta (phiOld a)=phiNew (gamma a)) \u2227 (\u2200 x, phiNew (gamma (normOld x))=beta (doubleJ x))"
+}

@@ -1,3 +1,19 @@
+# Current research queue — 2026-11-13T21:47:47.317718+00:00
+
+Source parentc37ad390. Actual refinement147b66/all2514guards/prospective579e08 beforecode;active written03f46ce2,3faithfulbindings/55total,report1ca98b/TWO63907-byte finalpagesinspected. New702input/703outer strict replay is prepared;its own clean full/12CI remain pending. Standing unsigned;no computational advantage. [pcc:unverified]
+
+| Priority | Task | Discriminating next action |
+| --- | --- | --- |
+| 1 | Refinement normal source/full/CI | Normal commit/push;clean physical newsource/original3d siblings;genuine fixture readonly/materialization verify0;703guards/fouractualcontrols/10phasepairs/ALL7wholeJSON/bothoriginal3declgates/3canonicalbindings. Collect12workflows108native55digests. [pcc:unverified] |
+| 2 | Actual target-solver/counter coverage | Inspect original publicIC/Jacobian interfaces;freeze native actual-public correctness/counter-coverage plan for all3 targets,retaining failures. Complete cold+online transport/setup/solver/verification counters and original admission precede any advantage claim. [pcc:unverified] |
+| 3 | Complete odd-degree beta coordinates | Matched(1,0) has global written beta degree13^3/polarization13/both13/F=2beta. Investigate actual quotient correspondence/divisor descent;odd-subgroup halving is not complete coordinates. None of current3 kernels free52;all nonsquare free cases retained. [pcc:unverified] |
+| 4 | Whole-data publication | New ct65 full/11CI and ct66 native/currentfull/currentCI wholecaptures/completeindices through unchanged genuine publisher. NEWguard07 includingnew702/703/laterwork before any botFF;old3241guard06 historical/released. [pcc:unverified] |
+| 5 | Admission/formal/global/merge | Original S3 checkpoint/livebudget/capacity and strongest IC/rho/counter gates;55localbindings geometrypartial/signedexecutionopen. Implement materially different authenticated original rootfixture CI hydration;globalroot notgreen. Preserve mainledger/signing/reviews/conflict;vaultlocked/KBecdb unavailable. [pcc:unverified] |
+
+Settled45ee:independentfull417921/676guards/12phases/17JSON/2bindings;ELEVENCI0ba3a0/101native52digests. Genuine768f4a/0bb0f5 all9captures+2fixtures20objects16S3+4Git. Rootcdfce1bb normalpush0. Preserved failedhistoricalnative/Lean/governance and currentcitation01/02 corrections;all scientific/code/Lean claims unchanged. Continue after each rung. [pcc:unverified]
+
+---
+
 # Current research queue — 2026-11-13T21:28:09.206056+00:00
 
 Actual source45ee45d2 is normally published,237paths/tree45a23a5f/governance545f18/publicationb2d415. Independent full417921 passes676 guards/12 phasepairs/TWO unfiltered tests/ALL17 JSON/two original proof gates/two canonical bindings/four actual admission controls. Own ELEVEN workflows0ba3a0 succeed with ALL101 native records/52 original canonical digests;new remote fixture hydration succeeds. Standing unsigned/geometry partial/no computational advantage. [pcc:unverified]
