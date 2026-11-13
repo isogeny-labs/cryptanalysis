@@ -1,3 +1,19 @@
+# Current research queue — 2026-11-13T23:41:10.246548+00:00
+
+Scientific1816c3b9 is settled:full3f52fc/all730guards/ninephasepairs/82wholeJSONexceptdeclaredwalls/both2gates2bindings/fouractualadmissioncontrols;own14CI d53e33/all190native57canonicaldigests exact/15eventsincludeextraPCCeditedbody. Nativee869bd all15publiccases/60attempts/57partialbindings/reportd1027f/genuinewholedata43d6ba/babda6. [pcc:unverified]
+
+| Priority | Task | Next discriminating action |
+| --- | --- | --- |
+| 1 | Native common-origin compatibility | Freeze exactorigin/class inputs againstoriginalrandomP0/legacyaffine triples;preserveoriginals,all failures andactualgroup checks. [pcc:unverified] |
+| 2 | Complete cost coverage | CoverFpR/extension/source-model/maps/admission/solver/independentverification,bothcoldand online,beforeanyperformancecomparison. [pcc:unverified] |
+| 3 | Original checkpoint transport | Prospective16bb06 docs/chained-transfer-checkpoint-transport/PROTOCOL_01.md BEFOREnewworkflow. Normalpublishprotocol;implementoriginaltrustedgate withcurrentCIcredentialsonly/genuineS3readback/exactoriginalreceipt/matchinglocaloriginalgate0. Retainactualfailureorpass;no tokenexport/gate/statehash edits. [pcc:unverified] |
+| 4 | Complete beta coordinates | Matched(1,0) globalwritten degree13^3/polarization13/both13/F=2beta;actualcompletecoordinatesopen. [pcc:unverified] |
+| 5 | Root/formal/merge | Rootfull124/unknowntotals;633ab0 twoexact101clockinitfailures beforepublicationassertions/requirednamespacefilesabsent. FuturecapableLinuxhost originalregression. Mainledger/signing/reviews/conflict/geometry/logextension/vault/KB gapsremain. [pcc:unverified] |
+
+Wholecurrent730full/14CI capturesawaitnextgenuinewholepublication;older12captures+12indices+wholePDF25objectsalreadygenuine43d6ba/babda6. Guard07historical/released;futureFFfreezeNEW08. OriginalS3/livebudget/capacity/isolation/fullcost/strongestrefs remainindependentadmissionrequirements. Continueaftereachrung. [pcc:unverified]
+
+---
+
 # Current research queue — 2026-11-13T23:24:13.335184+00:00
 
 Actualnew-targetICe869bd all15publiccases/all60attempts/82wholeJSON/2543guards,written1e65f0/twofaithfulbindings/57total/reportd1027f finalTWO69377-bytepages inspected. Genuine43d6ba/babda6 covers12wholecaptures+12wholeindices+wholePDF25objects13S3+12Git;hold07 releasedafterexactFF/all3455guards+linktypes. Newsource/checkpointnowprepared;normalpublication/full730/14CIpending. [pcc:unverified]
