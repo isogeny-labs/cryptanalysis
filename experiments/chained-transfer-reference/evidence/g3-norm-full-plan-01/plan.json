@@ -1,0 +1,21 @@
+{
+  "protocol": "ac58df/c3b beforecode;integrationb4cd92",
+  "source": "069644bf59499e4172eb8bcdce5de8a6665da93f",
+  "producer": "3d49af7f3d0a28e76b79e4825c9d2324e85853d2",
+  "layout": "/workspace/scratch/ct56-norm-replay-layout",
+  "guards": 437,
+  "full_timeout_s": 2100,
+  "initial_admission": [
+    "missing native tool",
+    "wrong actual producerHEAD",
+    "dirty protected source",
+    "output inside source"
+  ],
+  "expected_control_exit": 2,
+  "expected_controls_create_no_output": true,
+  "full_scope": "23outer+20inner originalnative/tee0;producer4+CLI9+twooriginalproofmodules+11bindings;consumer4fullJac/source+CLI9+two13declarationgates+13exactbindings;allportable/final/cleanliness guards",
+  "build_cache": "/workspace/scratch/ct56-g3-norm-full-01-build-cache",
+  "cache_fresh_outside_raw": true,
+  "falsification": "any original admission/phase/tee/guard/domain failure;retain whole attempt,neverreduce scope",
+  "scope": "local development correctness replay;no benchmark,paidexperiment orcost ratio"
+}
