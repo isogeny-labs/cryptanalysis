@@ -1,3 +1,19 @@
+# Current research queue — 2026-11-13T23:24:13.335184+00:00
+
+Actualnew-targetICe869bd all15publiccases/all60attempts/82wholeJSON/2543guards,written1e65f0/twofaithfulbindings/57total/reportd1027f finalTWO69377-bytepages inspected. Genuine43d6ba/babda6 covers12wholecaptures+12wholeindices+wholePDF25objects13S3+12Git;hold07 releasedafterexactFF/all3455guards+linktypes. Newsource/checkpointnowprepared;normalpublication/full730/14CIpending. [pcc:unverified]
+
+| Priority | Task | Next discriminating action |
+| --- | --- | --- |
+| 1 | Independent current-source replay | Normalpublishsource;cleanphysical730full/fouractualadmission2/nooutput/restored/ninephasepairs/oneunfilteredtest/all82wholeJSON exceptdeclaredrawwalls/both2declgates/2canonicalbindings;collectALL14workflows190native57digests. [pcc:unverified] |
+| 2 | Same-origin compatibility and costs | Freshnativebridge against originalrandomP0/legacy affine triple;alloriginals/failures retained. Cover FpR,source/model/maps/admission/verification and cold+online allphases before measuring. [pcc:unverified] |
+| 3 | Original S3 checkpoint admission | Materiallydifferent dataonlyCI runs ORIGINALpinneduploader oncleancommittedstate/actualresume with credentialsonlytrustedstep;retain success/IAMdenial. Restore onlygenuine exactstate receipt and let ORIGINALgate decide. No tokenexport/gateedit;budget/capacity/references stillrequired. [pcc:unverified] |
+| 4 | Complete odddegree coordinates | Matched(1,0) globalwrittenbeta degree13^3/polarization13/both13/F=2beta;completecoordinate/divisor map remainsopen. All3current52kernels nonfree C52^3. [pcc:unverified] |
+| 5 | Original root and merge/formal | Rootfull124/unknowntotals;633ab0 identifies twoexact101failures atmissingmandatorynamespacefiles beforepublicationassertions. Futureoriginalregression oncapableLinuxhost;no unchangedwhole retry. Mainledger/signing/reviews/conflict/actualgeometry/vaultlocked/KBecdb remain. [pcc:unverified] |
+
+Refinementfb9ee fullb38c7f703/own12CI65dd08108native55digests settled;actualJacobian52 source45ee full417921676/11CI0ba3a0101native52digests settled. No settledscience redispatch. Actualrootfixture restored1ea795/67ef1d/2293097bytes/SHA8970667e/originalverify0/samebinarytargetedpass. Originalbenchmarkadmission separate;no measuredcostoradvantageclaim. [pcc:unverified]
+
+---
+
 # Current research queue — 2026-11-13T22:02:13.214833+00:00
 
 Refinementfb9ee is settled:clean physical full02/b38c7f ALL703guards/10phasepairs/7wholeJSON/bothoriginal3declgates/3canonicalbindings/fouractualcontrols pass. OwnTWELVE workflows65dd08 ALLSUCCESS/108native55canonicaldigests. First caller setup74ee remains preserved. Standing unsigned,geometrypartial,no computational advantage. [pcc:unverified]

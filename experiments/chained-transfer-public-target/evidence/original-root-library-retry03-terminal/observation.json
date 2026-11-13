@@ -1,0 +1,23 @@
+{
+  "original_exit": 124,
+  "guard_exit": 0,
+  "guards": 2137,
+  "timeout_s": 1800,
+  "command": [
+    "cargo",
+    "test",
+    "--release",
+    "--lib",
+    "--offline",
+    "--locked"
+  ],
+  "unfiltered_original_scope": true,
+  "visible_failure_labels_before_timeout": [
+    "cryptanalysis::ecbench::runner::diagnostic_reap_publication_regression_tests::ok_without_observed_reap_cannot_mark_or_read_sidecars",
+    "cryptanalysis::ecbench::runner::diagnostic_reap_publication_regression_tests::publication_collision_preserves_previous_bytes_and_pending_failure"
+  ],
+  "full_suite_totals": "unknown;not completed",
+  "authentic_fixture_targeted": "1ea795 pass1/6329filtered does not make fullgreen",
+  "raw": "closed-ct69-root-library-timeout/whole-raw.tar.xz",
+  "next": "exact original diagnostics for two visible failure labels;no unchanged whole-suite rerun"
+}

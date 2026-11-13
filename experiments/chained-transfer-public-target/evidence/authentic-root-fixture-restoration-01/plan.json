@@ -1,0 +1,18 @@
+{
+  "at": "2026-11-13T22:12:44.932268+00:00",
+  "protocol": "708cb8/ROOT_FIXTURE_REGRESSION_GUARD_PROTOCOL_02 before run",
+  "command": [
+    "/workspace/scratch/ct55-g3-root-regression-01-build-cache/release/deps/crypto_lib-0f5740d1cfe22c09",
+    "--exact",
+    "cryptanalysis::ecbench::band::tests::default_band_differs_from_the_committed_file_by_the_insert_term_only",
+    "--nocapture",
+    "--test-threads=1"
+  ],
+  "timeout_s": 120,
+  "original_binary_sha256": "82029f639d326548a7d44ea0f55477880f0c50cf358edeec3a6827f22591a9bd",
+  "original_binary_bytes": 263182248,
+  "guard_count": 2137,
+  "source": "all2131 originalnonexceptioninputs exact;2 currentconsumerWF+2 historicalsnapshotWF separatelyguarded;binary+fixture guarded;noRust/Cargo/test/science exception",
+  "fixture": "43516010720/14081195285/wholeZIP+members/originalverify0",
+  "scope": "exactformerlyfailing originalmetadatafixturetest;not globalrootacceptance or performance"
+}
