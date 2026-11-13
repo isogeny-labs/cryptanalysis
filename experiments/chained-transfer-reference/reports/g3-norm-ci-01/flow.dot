@@ -1,0 +1,18 @@
+digraph CI {
+graph [rankdir=LR,bgcolor="transparent",nodesep=.25,ranksep=.35];
+node [shape=box,style="rounded,filled",fillcolor="#edf5fb",fontname="DejaVu Sans",fontsize=11];
+edge [fontname="DejaVu Sans",fontsize=10];
+S [label="Frozen sources
+consumer 069644bf
+producer 3d49af7f"];
+L [label="Local full02
+438 source guards
+7b231c"];
+C [label="Own run 43400864083
+all seven jobs SUCCESS
+168c99, unsigned"];
+B [label="Remaining research
+public-target IC bridge
+complete cost comparison",fillcolor="#fff3df"];
+S -> L; S -> C; L -> B; C -> B;
+}
