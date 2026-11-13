@@ -1,3 +1,19 @@
+# Current research queue — 2026-11-13T21:56:35.376030+00:00
+
+Published refinementfb9ee1d6/134paths/treeb3ed0a15/3d6caf normalpush0. Clean physical full02 runs from that exact source/original3d,703guards and FOUR actual controls2/nooutput/restored;whole fixture originalverify0. First setup01 failed before native on a corrupted negative-control revision and is preserved74ee4e. Own12 workflow events are in progress;terminal full/108native55canonical audit pending. [pcc:unverified]
+
+| Priority | Task | Next discriminating action |
+| --- | --- | --- |
+| 1 | Actual new-target IC | Freeze/publish98c6f0 BEFOREcode;new typed generic class-input originalIC,actualP0/fb0 anchor,all3 x public5 x FB30/36/48/64/all60attempts,actualJacobian and independentoriginalsource checks,no recovery-toECDLP/lookup/witness. Complete costs remain unknown. [pcc:unverified] |
+| 2 | Authenticated original root fixture | Freeze/publish708cb8 BEFORE dataonlyworkflow;pinned originaltool/config/manifest,literal2293097byteSHA8970667e fixture,GitHubCIauthenticatedpull/verify/hash and wholeartifact;then originalexacttargetedregression/guards. Globalroot gate remains separate. [pcc:unverified] |
+| 3 | Refinement terminal full/CI | Let physical703full02 finish within2100s;collect12sourceworkflows/108native55canonicaldigests/wholelogs,retain failures. No unchanged redispatch. [pcc:unverified] |
+| 4 | Whole-data publication and beta coordinates | ct65 full/CI,ct66 native,ct67 failedsetup/full/CI wholecaptures+completeindices through unchanged genuinepublisher;NEWguard07 beforebotFF. Matched global beta13^3/both13 exists written;complete coordinates not implemented. [pcc:unverified] |
+| 5 | Admission/formal/merge | Original S3 checkpoint/livebudget/capacity/completecold+online counters/strongest IC/rho references;55partialbindings/signedexecution/actualgeometryopen;mainledger/signing/reviews/conflict/vault/KBecdb remain. [pcc:unverified] |
+
+Native147b66 actual transported d3,2,1/nonefree52/wronguntransportedfalsefree;identical-sourceAPIall3/32odd+zero/public5. Activewritten03f46ce2/3faithfulbindings/55total/report1ca98b inspectedTWO63907-bytePDFpages. Existing702inputs/prior675/engines/verifiers/workflows immutable. Continue after each rung. [pcc:unverified]
+
+---
+
 # Current research queue — 2026-11-13T21:47:47.317718+00:00
 
 Source parentc37ad390. Actual refinement147b66/all2514guards/prospective579e08 beforecode;active written03f46ce2,3faithfulbindings/55total,report1ca98b/TWO63907-byte finalpagesinspected. New702input/703outer strict replay is prepared;its own clean full/12CI remain pending. Standing unsigned;no computational advantage. [pcc:unverified]
