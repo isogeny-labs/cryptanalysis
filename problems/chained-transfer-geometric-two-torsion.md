@@ -76,3 +76,13 @@ map exists. [pcc:unverified]
 2026-11-13: native510d03, written65f7a4, exact partial bindings
 4e7bfe/cc7273/abcfec/5facfe; two-page reportce9a6d. Unresolved.
 [pcc:unverified]
+
+## 2026-11-13T16:04:05.044771+00:00 — actual bitangents, faithful algebra and independent integration
+
+Nativee887a9 passesoneunfilteredtest/all2338selectedhashes unchanged. All28actualWlines(12zero+16generic) haveall5square-restrictioncoefficients/bothchartgradientchecks;28wrongcontactcertificatesreject. ActualFrobeniuscycles1+3+4x6/fixedF,F2,F3,F6=1,1,4,28;16splitand12nonsplitcontactquadratics retained. OriginalRabinFpR(w6-3),Kembeddingz=w2,all15Mooretransportcoefficients pass. ActualL0C0branch0/notclaimedexercised;noJac2basis/Weilpairing/kernelcount/newnondualmap. [pcc:unverified]
+
+FourfaithfulpartialLeanlemmas passbothunchangedoriginal4.35/4.34.1gates andexactoriginalPCCa01f8f/5288a0/6cd1a8/d79edc. Threegeneralringfactor/resultantimplications plusliteral28permutationorder6,actualgeometricbridgesopen. Wholeproofcaptures27da63/49ae01;finalTWO48422bytePDFpagesALLinspected/1efca5. Earlier998cec editable-filenamemetadataerrorretainedimmutable/correctedassets/unchangedPDF. New5a8e82 independentCIplan precedesci_bitangents/separateworkflow;522portableinputs,11positivephasepairs/all4wholeJSON/bothoriginal4gates/4bindings;fouractualadmission/cleanfull/ownCI remainpending. [pcc:unverified]
+
+Parentec826/72paths/e62645 normalpublished0;full25fdf5 all503guards/11phases/fouractualcontrols andallFIVEcurrentCIc225d2SUCCESS/all46native21canonicalPCCdigests match. TENpriorclosedtrees/all20objectsgenuinelypublished f824e8/39084d:13S3(9archives4indices)+7smallGit(1archive6indices),run43453551818/job13198171488913replaysbeforebot32c51/directcbab/exact15paths/all2334then-currenthashes+dirtybytespreserved. Rootfinalmetadatab023747f/53paths/55b40b normalpush0;parser-onlycommandfailureab8cda retained. Guard04released;futurehandoffneedsnewactualcompleteversionincludingbitangents. [pcc:unverified]
+
+Queue: normalpublishthissource+CI522;materialize522+self cleanphysicalGitclones/pinned3dproducer,fouradmissionchecks,launchoriginalfull. ThenindependentfiniteSp6 calculationagainstactual28Frobeniuspermutation andoriginal135Lagrangianenumerator beforeinferringstablekernelcount;actualkernel/divisor/codomainconstructionremainsdownstream. Newtwo-primaryfull/CI/bitangentrawtreesneedfuturegenuinewholedatahandoff. Originalbenchmarkcheckpoint/livebudget/capacity/completecost/strongestrefs andmain/globalfixture/fullformal/vault/KB gapsremain. Nextglobalroutine17:45UTCunlessmaterialsignal. Continueaftereachrung. [pcc:unverified]
