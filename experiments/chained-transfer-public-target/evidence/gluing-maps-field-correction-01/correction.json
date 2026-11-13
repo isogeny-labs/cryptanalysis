@@ -1,0 +1,12 @@
+{
+  "original_compile_exit": 0,
+  "original_native_exit": 101,
+  "all2401_source_hashes_unchanged": true,
+  "actual_failure": "first candidate0,0 trace-origin Picard rank22>16",
+  "cause": "new adapter mistakenly used default Kf::new(223), whose lexicographic cubic is x3+b, rather than pinned source x3-3; polynomial coefficients were misinterpreted in trace arithmetic",
+  "evidence": "original Kf::new docs/implementation and unchanged V2 explicit field constructor",
+  "proposed_fix": "fresh explicit pinned Kf modulus x3-3 and recompute original Frobenius; reject unless all9basisproducts/all3Frobenius images match independent original FpR",
+  "before_sha256": "99bc8cc08f13698204ab3864fef2ed3d2de935b3012446e03a1f5912db4394f7",
+  "proposed_after_sha256": "640cff7430105ec9694ae72f0a3590eaeac6c7df878e2c95122a38f3bdf9263a",
+  "scope": "fix wrong field representation; preserve every native panel/model/threshold/originalengine/protocol626d84; no fittedorigin orscalar"
+}

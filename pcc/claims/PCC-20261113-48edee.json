@@ -1,0 +1,93 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-13T17:37:47Z",
+ "id": "PCC-20261113-48edee",
+ "kind": "statement",
+ "producer": {
+  "commit": "5b459ecae1fc469bf9c3bd5fdfe26a0ac0a09d86",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/kernel-own-CI-01/P1-whole-job.log.xz",
+    "sha256": "319982365bb23420cf318a6948e7b22790cc524132bd19d1016bff8da69fb6b9"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/kernel-own-CI-01/PCC-whole-job.log.xz",
+    "sha256": "f74da01b442ee66af082672b64ad7eee81b0ac792be8c4380001c9719fe4596c"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/kernel-own-CI-01/V2-whole-job.log.xz",
+    "sha256": "6d9c8b4cd41c881318f53b269431d8821e30673bad99bda652178416649a6a7b"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/kernel-own-CI-01/all-native-records.json.xz",
+    "sha256": "42a13325adcd87c0f6974887148a47fa635ead569eb0d2ac01b74679f4e2480e"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/kernel-own-CI-01/all30-exact-verdicts.json.xz",
+    "sha256": "faf7f665f12d7f2784d6e3649b15ebf8d20569dd0f6246ff61334c318bfc521d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/kernel-own-CI-01/bitangents-whole-job.log.xz",
+    "sha256": "8ae2d0d78a0e9137e2ae9fe08a96d3ad1a863c0ddcb1d9278ad58fe834ca875a"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/kernel-own-CI-01/completed-whole-job.log.xz",
+    "sha256": "2dd7d0be56df46ea666be328e6fd9ef9b569a937bc8da7eb0bb63aab1fd176df"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/kernel-own-CI-01/kernels-whole-job.log.xz",
+    "sha256": "0c2087814e5f74a5aadebb04d543cdfbb2ef1d419320a21af0623cbd10f6b765"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/kernel-own-CI-01/observation.json",
+    "sha256": "72d9520987e4bbef65fa4dd29f14bb135428a4553bfef4dc75b8470dd6531b33"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/kernel-own-CI-01/original-PCC-canonical-digests.json.xz",
+    "sha256": "555e739faf5f6a1356d2ec9ae4f62c7d1cc210c5cad0dd141a0eaf96fd1c66a5"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/kernel-own-CI-01/two-primary-whole-job.log.xz",
+    "sha256": "1a1740109434201a8a06cbc07f0c2ed8ae33bd3f4e56d504bd50d0ca742e466e"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Exact5b459ec ownCI allSEVENunique workflowsSUCCESS: kernels43471359141/132043803670;bitangents43471358837/132043802530;two-primary43471358849/132043803153;completed43471358592/132043802389;V2rho43471358988/132043805247;P143471358650/132043802189;PCC43471358501/132043803275. All58nativeJSON match originals(ONLYcandidate/P1recordedwallwalltotalexcluded/rawintact);all30exactlocalPCCverdictspass/source5b/originalcanonicaldigests. KernelTWOunfiltered/all8wholeJSON/13MBbinary originaldrivercomparison/bothoriginal8auditedgates/5bindings. PCCallowsnotcovered2/signlegitskipped. Whole7logs/API/555sourcesretained;successfuloriginalsteps+markersscope/no downloadedstandaloneexitfilesorZIP;separatelocalfullb9cd55all555guards. No signed/fullformal/newmap/costclaim."
+}

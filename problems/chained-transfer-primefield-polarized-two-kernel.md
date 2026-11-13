@@ -63,3 +63,8 @@ admission remains separate. [pcc:unverified]
 2026-11-13: preservec88589/907dfc/c2270b, exact five bindings and first
 Lean failure6956b2; three-page report documents the route limit and next
 proposal. Unresolved for the broader research goal. [pcc:unverified]
+
+
+## 2026-11-13 — actual alternative route and remaining validation
+
+Nativef33c42/7c9bf4 and written5f7e4c now supplyALLsixclassicalHLPproductgluings/fourcompletePhiPrime/NPrime/both2+both4/allfivepublictargets/threeendpointsdifferentfromoldoverF223. Literaloriginalcontrol/twononsquaretwists/allC4cofactornegative retained. ElevennewfaithfulpartialLeanbindings/bothoriginalgates;fullgeometry/signedexecution/costremainopen. Kernelindependentfullb9cd55/CI48edee settled;newgluingci596/21phases/owncleanfull597+8workflowauditpending. This advances the broader route without removing the fixed-J polarized-degree obstruction or constructing an actual geometric divisor basis for its fullJ[2]. See GLUING_CHAIN_DERIVATION_01.md/GLUING_PROOF_MAP_01.md and reports/alternative-gluing-01. Next publishsource,cleanfull+CI,wholedatahandoff,thenchainkernelstructure and collapse-aware furtherwalks;originalbenchmarkadmissionstillrequired. [pcc:unverified]

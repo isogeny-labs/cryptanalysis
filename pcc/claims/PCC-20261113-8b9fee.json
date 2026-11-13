@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-13T17:39:55Z",
+ "id": "PCC-20261113-8b9fee",
+ "kind": "theorem",
+ "producer": {
+  "commit": "5b459ecae1fc469bf9c3bd5fdfe26a0ac0a09d86",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "f27614d7d16461d961a6fe2d4f03525b407f73ba52f1830994b0c06bc679b1cc",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/gluing-models/lean/GluingModels.lean",
+   "theorem": "GluingModels223.adjugate_diagonal_from_Delta"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Faithful partial generalCommRing identities for actual sixHLPmodelsf33c42:sourcextranslate/adjdiag/det/cofactor/pairdiscriminant/evenquarticJacobiandiscriminant/\u03baresidual/oncurveimplication. Bothunchangedoriginal4.35/4.34.1 gatesPASS8/0trusted;exactaxioms inaudit. No holes/customaxioms/nativeeval. Actualgeometry/Galois/quotientidentification/Picardhomomorphisms/endpointdistinctness remainwritten/open; no fullformal/newmap/costclaim;localbindingsunsigned.",
+ "statement": "theorem adjugate_diagonal_from_Delta {K : Type} [CommRing K] (h2 h3 A B : K) (delta : h2*h3=A^2-4*B) : h2*h3-A^2 = -4*B"
+}

@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-13T18:02:33Z",
+ "id": "PCC-20261113-eb286e",
+ "kind": "theorem",
+ "producer": {
+  "commit": "5b459ecae1fc469bf9c3bd5fdfe26a0ac0a09d86",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "6da950387cb4594b4137974376fe562f8905638a27e80f95a24e87512495bdd9",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/gluing-maps/lean/GluingChain.lean",
+   "theorem": "GluingChain223.two_dual_pairs_give_both_four"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Faithful partialstructural implications foractualgluingnative7c9bf4/written5f7e4c: bothdual2pairs implyboth4 withoutassumingchainconclusion; injectivityfromactualdoublinginverse onodddomain; positiveintegerdegreecolumnsum1. Bothunchangedoriginal4.35/4.34.1gatesPASS3/0trusted;functionallemmasnoaxioms,degreecolumnpropext/Classical.choice/Quot.sound. Actualgeometry/V4/Picard/Galois/halving/polarizationdegree interpretation remainwritten/open. Localbindingsunsigned;notfullformal/cost.",
+ "statement": "theorem two_dual_pairs_give_both_four {A J L : Type} (phi : A \u2192 J) (norm : J \u2192 A) (phiPrime : A \u2192 L) (normPrime : L \u2192 A) (doubleA : A \u2192 A) (doubleJ : J \u2192 J) (doubleL : L \u2192 L) (oldA : \u2200 a, norm (phi a) = doubleA a) (oldJ : \u2200 x, phi (norm x) = doubleJ x) (newA : \u2200 a, normPrime (phiPrime a) = doubleA a) (newL : \u2200 y, phiPrime (normPrime y) = doubleL y) : (\u2200 x, phi (normPrime (phiPrime (norm x))) = doubleJ (doubleJ x)) \u2227 (\u2200 y, phiPrime (norm (phi (normPrime y))) = doubleL (doubleL y))"
+}
