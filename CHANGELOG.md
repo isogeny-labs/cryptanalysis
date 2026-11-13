@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.1.3](https://github.com/isogeny-labs/cryptanalysis/compare/cryptanalysis-v0.1.2...cryptanalysis-v0.1.3) (2026-11-13)
+
+
+### Features
+
+* **cli:** ca m4gb runs the external M4GB Gröbner solver ([e082a0e](https://github.com/isogeny-labs/cryptanalysis/commit/e082a0e0008ac1becd1228ceb349d6fb8dde4e8a))
+* **cli:** ca m4gb runs the external M4GB Groebner solver ([955f31d](https://github.com/isogeny-labs/cryptanalysis/commit/955f31d60a75de1c24c3ff663b67fd3e3201528e))
+
+
+### Performance
+
+* WALL-only pass over precomp/BSGS/grumpy, linalg, kangaroo/Cheon/Pohlig/modarith, ec_tau and the Rust suite ([0d69fc5](https://github.com/isogeny-labs/cryptanalysis/commit/0d69fc5526c02c4071db896d8800be74929f4ff7))
+
 ## [0.1.2](https://github.com/isogeny-labs/cryptanalysis/compare/cryptanalysis-v0.1.1...cryptanalysis-v0.1.2) (2026-11-07)
 
 
