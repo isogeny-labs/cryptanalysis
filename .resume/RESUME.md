@@ -1,3 +1,31 @@
+# Whole fixed-twist and negative-census bytes genuinely published through transport20
+
+Actualpcc/claims/PCC-20261114-ccd0a6.json/pcc/claims/PCC-20261114-0ed674.json: original43652162428/job132622813840SUCCESS/SEVENremote replays BEFORE52a6443b5/direct88345729/exact9paths. ALL40443heldinputs/150links/ownedbytes preserved, fetch-FF-artifact-wiring0, exacttwo-bytepart reassembly retains original150067144B/archiveSHA/all7359members. HOLD20RELEASED. Original925a2b44/GH001 attempt19 staysFAILED/singleobjectcriterionUNMET; completefailedcommit/archive/claimedsubjects/rejection retained, no publishedhistory rewrite/force/rebase. [pcc:unverified]
+
+## What was done
+Published allclosedct78-ct80sources/actualbinaries/librarycopies/failures/proofs/reports/checkpoints/full147memberCI; canonicalTHREEoriginalentrydicts plusONE56644BexactGitpartialvector/FOURrelativealiases. Original2a0549 supportedseparateinstance and215bcc conditionalobstruction plusb3a1bc14oldwholepacketparity/c4fbde fullcoldnegative remainunchanged. [pcc:unverified]
+
+## Decisions made
+Keep rejected single-object19 separate from accepted exactbyte transport20; no fakefullarchiveS3entry or failedcensusacceptance. No newscientific/signed/performance promotion. [pcc:unverified]
+
+## Open threads
+Strictadditive23rdpairreplay/physicalownsourceCI; NEWpairedfixedfourth-edge protocol BEFOREcode; actualoriginalJacchain-or-separateinstanceextension, completeJacpointmap/direct-vs-chaincosts. FuturedatahandoffNEW21. [pcc:unverified]
+
+## Errors
+Original19push rejected143.12MiB>GitHub100MiB; originalsamearchive retained and exact80MiB+63.12MiBparts accepted. Fullcold04actual124/18complete102missing andbothreuse0 remainnegative/fullgates101. Root124-clock101/mainledger-signing-reviews-conflicts/globalgeometry-program/livebenchmarkcapacity-image-strongestrefs/vault8edec422/KB gapsremain. No paidlaunch/waiver/novelty/advantage. [pcc:unverified]
+
+---
+
+# Whole twisted-pair/census custody19 prepared; all scientific source and ledger held
+
+Publishedconsumer2850df06 contains supported separate-instance pair2a0549, conditionaloldprime215bcc andring/inverseproofs, TWOinspected61121BresultPDFpages; originalD12/D24 negatives staynegative. Fullcold04actual124/18complete andbothreuse0 isnegativef0f3ae; originalpartial/full14oldpacketdiagnosisb3a1bc0/control101 andONEinspected64187BnegativePDFc4fbde retaincomplete/incomplete/missingcases, no prices/time/gain. [pcc:unverified]
+
+NEW19 retains every declared closedct78-ct80 run/source/binary/failedbuild/control/proof/checkpoint/whole147memberCI/full6.66Mlog/firstandfinalreport capture plusallnormalpublicationreceipts, currenttracked scientificsource hashes andimmutable2850Gitbase+pending4metadata delta. ALL24853prior18keys/23priorlinks/ownedbytes andoldb77ledgerprefix preserved; onlysixreleasedmetadataupdates. Holdsource/raw/aliases/ownedbytes/consumerledger until originalremote-byte replays BEFOREbot/exactFF/terminal19release. No ownlivecaller/privateDownloadAPI captured; derivedcachesexcluded, allactualexes/preparedlibrarycopieskept. [pcc:unverified]
+
+Afterrelease canonical new9recordfixture/stdout andpartialdatasets, additive23rdpairreplay/CI thenNEWpaired fixedfourth-edge protocol beforecode. Originalcomposite may skipunsupportedJac intermediates; fixednu12 isseparateinstance andneveroriginal-logtransport. No fourth-edge code/outcome, completeJacpoint evaluator orcalibratedadvantage. Main/root/globalgeometry/program/signed/benchmark/vault/KB gaps remain; no paidlaunch/waiver/force/rechain/novelty. [pcc:unverified]
+
+---
+
 # Retrospective diagnosis complete; close whole-data publication19 before new science
 
 At published4378aef5 after exact originalcheckpoint15aa68 (43648364070/job132611114516/art14135500155/257220B/SHAfb43c05e283ebc7853f2ee0118d72d3f6fd06a662420541ffbb9d8a2e580adf5/all28/localgate0), nativeb3a1bc passes originalpartialanalyzer0:18complete cold packets/102missing-incomplete, allwhole mathematicaloutputs/canonicalmonotoneledgers, both60-output reuse streams. Separate strict RETROSPECTIVEold-observation checker0 proves ALL12oldcold+BOTHold60-output streams WHOLEequal/everycumulativeledger/no masks/dedup; actualcompleteREUSED_DIRECT packetomission101/nooutput. Full_cold_population_accepted remainsFALSE and both unchanged fullgates remain101 fromactual04cold124. Full compiler/runtime source and oldguard18held analyzer bytes match. No math/control/panel reruns needed. [pcc:unverified]
