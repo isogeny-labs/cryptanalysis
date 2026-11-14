@@ -175,7 +175,7 @@ impl TwistedPair {
             f.inv(f.pow(thirteen, 3)),
         );
         let recipe_forward =
-            compare_rationals(f, &forward_map, &twist_rational(f, &old_forward, v));
+            compare_degree13_recipe(f, &forward_map, &twist_rational(f, &old_forward, v));
         let recipe_dual = compare_degree13_recipe(f, &dual_map, &twist_rational(f, &old_dual, v));
         let mut identities = vec![];
         for (dom, cod, map, kernel, expected_eigenvalue) in [
