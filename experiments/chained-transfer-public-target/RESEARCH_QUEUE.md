@@ -1,3 +1,13 @@
+# Beta replay path correction prospective — 2026-11-14T08:18:15.122289+00:00
+
+Source9aa96da6 normalpublication0. Own beta CI43574466194 actual1 after native2/all3exact/IDC0+101/consumer21: original producer gate uses caller cwd and rejects producer-staged paths from consumer cwd. Preserve full44member83397B ZIP+exact log and original current-source checkpoint43574466024/138029B/28members/alloriginalexits0; custody evidence beta-own-CI-path-failure-01. No claims of full beta CI success. [pcc:unverified]
+
+BETA_REPLAY_PATH_CORRECTION_PROTOCOL_02 freezes new check02/reference02 and same original gate called from producer cwd; oldcheck01/ref01/native fixture/scientific source unchanged. Acceptance17phases/2unfiltered/3wholeJSON/no masks/IDCnegative101/bothoriginal21/6bindings unchanged. Then publish corrected source, fresh physical full and own19CI; update GitHub; whole custody NEWguard12; continue StageC in NEW sibling beta-complete-evaluator per32283c. All66partialbindings unsigned; no calibrated speedup/globalclosedform/rootgreen/mergewaiver. [pcc:unverified]
+
+Large captures ca9full/CInegative/helpercontrol/398CI/allct73 attempts still retained pending guard12. Main/ledger/signing/reviews/rootclock/admission/vaultKB restrictions remain recorded. Local science runs none. [pcc:unverified]
+
+---
+
 # Rational lifting and quadratic Picard components ready — 2026-11-14T08:09:26.197582+00:00
 
 ## Goal
