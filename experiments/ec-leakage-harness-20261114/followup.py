@@ -14,12 +14,16 @@
               mutual information between x mod m and the class c = min(k* mod q,
               -k* mod q), and gradient boosting on bits of x, x mod m and the
               Legendre symbol of x, both against permutation nulls.
-  mov         4. MOV positive control: supersingular y^2 = x^3 + x over F_p,
-              p = 3 mod 4, embedding degree 2, prime r | p + 1 of about 2^70.
-              The Weil pairing with the distortion map (x, y) -> (-x, i y) moves
-              x([k]P) into F_{p^2}, where PARI's fflog recovers k*.  Negative
-              control: an ordinary curve with a prime subgroup of the same size,
-              where PARI's ellog (generic) is given the same time budget.
+  mov         4. MOV positive control with embedding degree 1: y^2 = x^3 + A x over
+              F_p with Frobenius pi = 1 + r(c + d i), so all of E[r] is rational
+              and r | p - 1 (r about 2^60, p about 2^122).  The Weil pairing with a
+              second independent r-torsion point moves x([k]P) into F_p*, where
+              PARI's znlog (index calculus) recovers k*.  Negative control: an
+              ordinary curve with a prime subgroup of the same size, where PARI's
+              generic elllog gets a fixed time budget.  (Embedding degree 2 into
+              F_{p^2} was tried first: PARI's fflog on a prime-order subgroup there
+              scaled like a generic method, 4 s at r ~ 2^48 and 68 s at 2^56, so
+              that transfer gave no advantage at these sizes.)
 
 Results go to results/followup_<name>.json and .png.  Deterministic from seeds.
 """
@@ -336,34 +340,45 @@ def cmd_mov(args):
     pari = cypari2.Pari()
     pari.allocatemem(1 << 31)
     rng = random.Random(SEED + 4)
-    # supersingular y^2 = x^3 + x, p = 3 mod 4: #E(F_p) = p + 1
+    # Embedding degree 1 with full rational r-torsion: CM by Z[i], Frobenius
+    # pi = 1 + r(c + d i), so r | pi - 1, E[r] is in E(F_p), and r | p - 1.
+    # p = N(pi); one quartic twist of y^2 = x^3 + A x has trace 2(1 + r c).
     while True:
         r = rng.randrange(1 << (args.rbits - 1), 1 << args.rbits) | 1
         if not L.is_probable_prime(r):
             continue
-        h = 4 * rng.randrange(1, 1 << (args.pbits - args.rbits - 2))
-        p = h * r - 1
-        if p % 4 == 3 and L.is_probable_prime(p):
+        c, d = rng.randrange(1, 1 << 4), rng.randrange(1, 1 << 4)
+        p = (1 + r * c) ** 2 + (r * d) ** 2
+        if L.is_probable_prime(p):
             break
-    E = L.Curve(p, 1, 0)
+    want = p + 1 - 2 * (1 + r * c)
     while True:
-        P = E.mul(h, E.random_point(rng))
-        if P is not None:
+        A = rng.randrange(1, p)
+        N = int(pari(f"ellcard(ellinit([{A},0],{p}))"))
+        if N == want:
             break
-    assert E.mul(r, P) is None
+    grp = [int(v) for v in pari(f"ellgroup(ellinit([{A},0],{p}))")]
+    assert N % (r * r) == 0 and len(grp) == 2 and grp[1] % r == 0, (N, grp)
+    E = L.Curve(p, A, 0)
+    cof = grp[0] // r
+    while True:
+        P = E.mul(cof, E.random_point(rng))
+        R = E.mul(cof, E.random_point(rng))
+        if P is None or R is None:
+            continue
+        pari(f"EE=ellinit([{A},0],{p}); P=[{P[0]},{P[1]}]; R=[{R[0]},{R[1]}]; r={r};"
+             f"e1=ellweilpairing(EE,P,R,r);")
+        if not int(pari("e1==1")):
+            break
+    assert E.mul(r, P) is None and int(pari("e1^r==1"))
     k_emb = L.embedding_degree(r, p)
-    gp_setup = (f"p={p}; r={r}; g=ffgen(p^2,'w); EE=ellinit([1,0],g); i=sqrt(-1+0*g);"
-                f"P=[{P[0]}+0*g,{P[1]}+0*g]; D=[-{P[0]}+0*g,i*{P[1]}];"
-                f"e1=ellweilpairing(EE,P,D,r);")
-    pari(gp_setup)
-    assert int(pari("e1^r==1")) and not int(pari("e1==1"))
     trials = []
     for t in range(args.trials):
         k = rng.randrange(1, r)
         Q = E.mul(k, P)
-        Ql = E.lift_x(Q[0])  # only x is used
+        Ql = E.lift_x(Q[0])  # only x([k]P) is used
         t0 = time.time()
-        kk = int(pari(f"fflog(ellweilpairing(EE,[{Ql[0]}+0*g,{Ql[1]}+0*g],D,r),e1,r)"))
+        kk = int(pari(f"znlog(ellweilpairing(EE,[{Ql[0]},{Ql[1]}],R,r),e1,r)"))
         dt = time.time() - t0
         ok = L.canonical(kk % r, r) == L.canonical(k, r) and E.mul(kk, P)[0] == Q[0]
         trials.append({"k": k, "recovered": kk, "ok": bool(ok), "seconds": dt})
@@ -371,7 +386,7 @@ def cmd_mov(args):
     # negative control: ordinary curve over a prime of the same size with a prime
     # subgroup of the same size; PARI ellog (generic) gets the same time budget.
     while True:
-        q = rng.randrange(1 << (args.pbits - 1), 1 << args.pbits) | 1
+        q = rng.randrange(1 << (args.rbits + 3), 1 << (args.rbits + 6)) | 1
         if not L.is_probable_prime(q):
             continue
         a, b = rng.randrange(q), rng.randrange(q)
@@ -392,8 +407,9 @@ def cmd_mov(args):
     except AlarmInterrupt:
         neg = {"finished": False, "seconds": time.time() - t0}
     out = {
-        "supersingular": {"p": p, "pbits": p.bit_length(), "r": r, "rbits": r.bit_length(), "h": h,
-                          "P": list(P), "embedding_degree": k_emb},
+        "mov_curve": {"p": p, "pbits": p.bit_length(), "A": A, "B": 0, "N": N, "group": grp,
+                      "r": r, "rbits": r.bit_length(), "c": c, "d": d, "P": list(P), "R": list(R),
+                      "embedding_degree": k_emb},
         "trials": trials, "recovered": sum(t["ok"] for t in trials),
         "median_seconds": float(np.median([t["seconds"] for t in trials])),
         "rho_expected_group_ops": math.sqrt(math.pi * r / 4),
@@ -403,7 +419,7 @@ def cmd_mov(args):
     dump("mov", out)
     p_ = plt()
     fig, ax = p_.subplots(figsize=(6, 2.8))
-    ax.bar(["MOV (supersingular)\nmedian per k", "generic ellog\n(ordinary, same r)"],
+    ax.bar(["MOV, embedding degree 1\nmedian per k", "generic ellog\n(ordinary, same r)"],
            [out["median_seconds"], neg["seconds"]], color=["#55A868", "#C44E52"])
     ax.set_ylabel("seconds")
     ax.set_title(f"r ≈ 2^{args.rbits}: MOV {out['recovered']}/{len(trials)} k* recovered; "
@@ -426,8 +442,7 @@ def main():
     po.add_argument("--gperm", type=int, default=20)
     po.add_argument("--procs", type=int, default=os.cpu_count())
     mv = sp.add_parser("mov")
-    mv.add_argument("--pbits", type=int, default=80)
-    mv.add_argument("--rbits", type=int, default=70)
+    mv.add_argument("--rbits", type=int, default=60)
     mv.add_argument("--trials", type=int, default=10)
     mv.add_argument("--budget", type=float, default=600.0, help="seconds for generic ellog")
     a = ap.parse_args()
