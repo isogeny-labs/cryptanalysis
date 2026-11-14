@@ -6436,7 +6436,7 @@ static uint16_t tau3_radix27_solve(const ca_tau3_sparse_precomp *pre, tau3_radix
 {
     if (!a && !b) return 0;
     if (block >= pre->blocks || memo->overflow) return CA_TAU3_RADIX27_INF;
-    tau3_radix27_state *cached = tau3_radix27_find(memo, a, b, block, NULL);
+    const tau3_radix27_state *cached = tau3_radix27_find(memo, a, b, block, NULL);
     if (cached) return cached->cost;
     unsigned residue = 27 * (unsigned)tau3_residue(a, 27) + (unsigned)tau3_residue(b, 27);
     unsigned first = ca_tau3_radix27_offsets[residue];
