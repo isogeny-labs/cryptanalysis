@@ -1,3 +1,13 @@
+# Fixed third-edge source compiled; native execution pending original checkpoint
+
+Prospectivebbfd74 was published9038f2b9 BEFORE additive nondual13-next-preflight source. Build1e2e54: edge/test/control and same-kernel model compile0 within120s bounds; actualsource andTHREEexecutables copied/versioned. Priorpreflightguard pins20trackedfiles; original929 and21workflows unchanged. Literaloriginalengines/existingSecondHop/model/source/even/torsion andpreviousBappendices retained. No native run orE3/matchedJ3resultyet. [pcc:unverified]
+
+Immediate next: publishimplementation, retrieve originalautomatic exact clean-source checkpoint artifact/wholemember/sourceResume/tool/receipt equality and localgate0. Then nativeedgeONEunfiltered900s2GiB andseparateactualolddual101; ifedgepasses runONEunfilteredmodelphase900s2GiB. Keepallsourcehashes frozen/captureactualCargocompiler-runtimepaths andbinarycopies. Do not modifytrackedmetadata between cleancheckpoint andnativephases. Modelwholedata must retain both actualpriorconstructor kernel-record occurrences; no deduplication/masks. Interpret unique fixedG3matchedcase, retainall6 andexistingE2D12negative. [pcc:unverified]
+
+Raw /workspace/scratch/ct77-next-edge-build-01 andct77-next-model-build-01. Native notstarted. Old negative27fb3a/source5ea2ab3c/inspectedreport14b605 retained. WholeoldB217960BXZ/150556BXZ plusnewraw needNEWgenuine18;17historicalreleased. Afterpositiveornegative recordclaims/reports/proofs/queue andstrictwholecomparators. Supportednewmodel stillneeds separatecompleteJacobianmap/direct-compositecomparison protocol. Root/main/benchmark/vault/KB constraints remain; no paidlaunch/waiver/noveltyclaim. Continue unblockedresearch. [pcc:unverified]
+
+---
+
 # Prospective next fixed edge frozen; no third-edge implementation yet
 
 Protocol PCC-20261114-bbfd74 / NONDUAL13_NEXT_EDGE_PROTOCOL_01.md freezes exactlyone lambda2 E2→E3 edge and samefullG2→G3kernel beforemodeladmissibility, wholemiddle169/gcd12vsolddual168/control101, all64/4096/135/sixmodels, oldE0E1E2parity,120sbuild/900s2GiBpernativephase. ONE40067BproposalPDFpage inspected. PublishBEFOREcode; no E3 orsuccessorresultyet. Preserve modelnegative27fb3a/source5ea2ab3c/report14b605 and original23ab48failedendpoint. [pcc:unverified]
