@@ -553,9 +553,7 @@ static void lz_spmv(const lz_ctx *z, const lz_gat *g, uint32_t r0, uint32_t rows
                     const uint64_t *Dp, const uint64_t *DR, const uint64_t *DRp)
 {
     const uint32_t *ptr = g->ptr + r0, *ue = g->ue + r0;
-    if (D && yn)
-        spmv_body(z, ptr, ue, g, rows, vv, y, yn, D, Dp, DR, DRp);
-    else if (!D && !yn)
+    if (!D && !yn)
         spmv_body(z, ptr, ue, g, rows, vv, y, NULL, NULL, NULL, NULL, NULL);
     else
         spmv_body(z, ptr, ue, g, rows, vv, y, yn, D, Dp, DR, DRp);
