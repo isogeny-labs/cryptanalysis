@@ -1,3 +1,19 @@
+# Current research queue — 2026-11-14T01:08:31.657199+00:00
+
+Common-origin native8a77f3/3304guards/ALL20pairs40reports51JSON/15correcteach/ALL20outcomesmatch/fouractualP0/fullFB/RNG/1004raw92triples/1004wrongorigincontrols is complete. Written8ffc9c reusesEXISTING01efbf671d42/57total;report6271ce TWO79399-bytefinalpagesinspected. Genuinef5a805/4fda8d all7captures+7indices+wholePDF15objects8S3+7Git;hold08released/all4230inputs+dirtybytes+linktypes preserved. [pcc:unverified]
+
+| Priority | Task | Next action |
+| --- | --- | --- |
+| 1 | Published-source independent validation | Normalcommit/publishthenfresh755full/fouractual2nooutputcontrols/ninephasepairs/oneunfiltered/51wholeJSONexceptdeclaredrawwalls/both2gates2bindings;all16workflows241native57canonical. [pcc:unverified] |
+| 2 | Complete operation coverage | Inventory/countFpR andotherarithmeticbackends/source-model/maps/admission/solver/independentverify forbothcoldandonline;unknownsremainexplicitbeforemeasuring. [pcc:unverified] |
+| 3 | Admission andmatchedreferences | Originaltransportffe675demonstratesremote/localgate0forexactclean39e9;lateralstatechangesneedfreshoriginalcheckpoint. Livebudget/capacity/isolation/strongestmatchedICrho/precomputerefs remainrequired. [pcc:unverified] |
+| 4 | Complete odddegreecoordinates | Genuinebeta coordinates formatched(1,0)/degree13^3/polarization13/both13/F=2beta;currentthree52kernelsnonfree. [pcc:unverified] |
+| 5 | Root/formal/merge | Originalrootfull124/unknowntotals/twoexact101clockinitfailuresbeforepublicationassertions;capablehostrequired. Geometry/logextension/mainledger/signing/reviews/conflict/vault/KB gapsremain. [pcc:unverified] |
+
+Scientific1816 newtargetIC e869bdall15cases/60attempts/full3f52fc730/own14CId53e33190native57canonical settled;no manualredispatch. Current754strictCIprepared/own755full16CIpending. Whole94fileunpublishedsourcecheckpoint/base0a+patch is genuinelybackedupinthe7tharchive;normalconsumercommitnext. FuturedataFF MUSTfreezeNEWguard09;08historical/released. Continueaftereachrung. [pcc:unverified]
+
+---
+
 # Current research queue — 2026-11-13T23:41:10.246548+00:00
 
 Scientific1816c3b9 is settled:full3f52fc/all730guards/ninephasepairs/82wholeJSONexceptdeclaredwalls/both2gates2bindings/fouractualadmissioncontrols;own14CI d53e33/all190native57canonicaldigests exact/15eventsincludeextraPCCeditedbody. Nativee869bd all15publiccases/60attempts/57partialbindings/reportd1027f/genuinewholedata43d6ba/babda6. [pcc:unverified]

@@ -1,10 +1,10 @@
 # New Jacobian IC compatibility and complete cost coverage
 
-- **Status:** open
+- **Status:** partial;finite native compatibility supplied,cost/formal gaps open
 - **Kind:** implementation/compatibility gap,measurement gap,formal bridge gap
 - **Affected work:** [protocol](../experiments/chained-transfer-public-target/NEW_TARGET_IC_PROTOCOL_01.md),[derivation](../experiments/chained-transfer-public-target/NEW_TARGET_IC_DERIVATION_01.md),[proof map](../experiments/chained-transfer-public-target/NEW_TARGET_IC_PROOF_MAP_01.md)
 - **Next action owner:** continuing Chained ECDLP Transfers research
-- **Last updated:**2026-11-13
+- **Last updated:**2026-11-14
 
 ## Problem
 
@@ -38,9 +38,11 @@ passes actual target group and independent original source checks.
 
 ## What would unblock it
 
-- [ ] Supply a fresh native common-origin/class-input compatibility
-  construction against the original affine-transfer pipeline,preserving
-  both originals and every rejected/failing outcome. [pcc:unverified]
+- [x] Supply the declared finite native common-origin/class-input control.
+  8a77f3/3304guards/20pairs/alloutcomesagree/15correcteach;allfouractualP0s/
+  fullFB/RNG/1004rawpoints/92triples/1004omitted-origin controls. Both originals
+  and allsharedFB30failures remain. General geometry/log-extension and
+  computational costs remain separate. [pcc:unverified]
 - [ ] Cover all setup/transport/solver/verification operations on baseline
   and candidate,including currently unpriced FpR/extension arithmetic,
   with matched cold and online accounting. [pcc:unverified]
@@ -65,3 +67,5 @@ performance gate remains separate. [pcc:unverified]
 Unresolved.2026-11-13:actual all15 public IC cases succeed over the three
 new targets,with all60 settings retained. Exact compatibility,costs and
 full formal interpretation remain open. [pcc:unverified]
+
+2026-11-14 update:finite same-origin control8a77f3/written8ffc9c/report6271ce now supplied underprospective2dd807/0a3412cd beforecode. Existingfaithful01efbf671d42 reused/57total. Strict754CI/self755/16workflow241native57canonical prepared,ownsourcefullCI next. Genuinewholepublicationf5a805/4fda8d completes7captures+7indices+whole79399-bytePDF15objects8S3+7Git/all4230guard08+linktypes preserved/hold08released. Originalcheckpointtransportffe675 passesremote/localORIGINALgatesforexactclean39e9;laterchangesstaleandrequirefreshstate. Livebudget/capacity/isolation/fullcosts/strongestreferencesandformalbridges remainopen. Nextcompleteoperationcoverage afterstrictindependentreplay. [pcc:unverified]
