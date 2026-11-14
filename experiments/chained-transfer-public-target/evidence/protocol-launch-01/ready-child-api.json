@@ -1,0 +1,47 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Action completed."
+    }
+  ],
+  "structuredContent": {
+    "url": "https://github.com/isogeny-labs/cryptanalysis/pull/1523",
+    "number": 1523,
+    "state": "open",
+    "merged": false,
+    "mergeable": false,
+    "draft": false,
+    "body": "The completed forward transfer and independent canonical norm in parent [#1521](https://github.com/isogeny-labs/cryptanalysis/pull/1521) do not yet supply a public-target destination IC interface with explicit representation bridges. This prospective continuation reuses the existing complete N4/B2 solver. Its legacy scalar parameter only constructs Q inside the counted body;subsequent solving does not use that parameter. Moving construction outside both IC/rho intervals is an accounting change,not an algorithmic gain. [pcc:unverified]\n\nProtocol7e016c is committed in [f888bd5f](https://github.com/isogeny-labs/cryptanalysis/commit/f888bd5fe50262d0d74d85ff4caaf4e4af96c81d),parent1e4f1292/treeb3f444fe,53paths/governance24bb30,and was actually published by normal nonforce Git BEFORE any new case or native implementation. This ready PR targets the immediate parent branch;main auto-merge applies only after the parent lands. [pcc:unverified]\n\n- P1:literal public-Q derivative of both original solver bodies,strict witness-free public inputs,original arithmetic verification,and five fixed q223seed1 correctness targets with the original six-attempt B2 retry cap. All five IC solves must succeed before that smoke is accepted;every retry/wrong answer/exhaustion remains evidence. No generic-DLP fallback in IC.\n- P2:additive V2 constructor and explicit field,elliptic/plane model,basepoint,completed-fibre and canonical-norm bridges. Keep V1 frozen admission,private normal forms/origin and all old source/control/proof subjects unchanged. Written proofs and feasible faithful Lean bindings are required;actual-geometry gaps stay explicit.\n- Twelve whole primary sources match the catalog in parentb992d8/actual5327f4. ONE inspected35,418-byte proposal PDFpagead4849 has editable DOT/SVG/Typst/JSON. Dashed diagram edges are proposals. No new curve identity exists yet;candidate_id is null. Parent437 inputs and whole seven-job workflow are unchanged. Extra prospective-protocol prose lint1 is preserved6f4d8a;future proof/solve instructions are not achieved claims. Required claim surfaces and original gates pass. [pcc:unverified]\n\nNo new case,solver,proof or benchmark has run in this PR yet. Legacy N4/B2 cost tables are not newly adopted;withdrawn subgroup-enumeration IC smokes remain negative evidence. Comparative work still needs actual S3checkpoint/live budget/capacity admission,strongest applicable references and all material cold phases. Root fixture access and main conflict/frozenledger/signing/reviews remain separate. Queue:[crypto#3904](https://github.com/isogeny-labs/crypto/issues/3904). Next:implement and test P1,then advance to P2. [pcc:unverified]\n",
+    "title": "Public-target N4 integration for completed genus-three transfers",
+    "base": "research/chained-transfer-g3-norm-20261113",
+    "base_sha": "1e4f1292d473a9c01821d946c0ec846b17f8ae1a",
+    "head": "research/chained-transfer-public-target-20261113",
+    "head_sha": "f888bd5fe50262d0d74d85ff4caaf4e4af96c81d",
+    "head_repo_id": 1376761927,
+    "head_repo_full_name": "isogeny-labs/cryptanalysis",
+    "merge_commit_sha": null,
+    "user": {
+      "login": "aburan28",
+      "name": "aburan28",
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/1086874?v=4",
+      "id": 1086874
+    },
+    "requested_reviewers": null,
+    "requested_team_reviewers": null,
+    "diff": null,
+    "comments": null,
+    "created_at": "2026-11-13T10:53:01Z",
+    "updated_at": "2026-11-13T10:53:01Z",
+    "closed_at": null,
+    "merged_at": null,
+    "commits": 1,
+    "changed_files": 53,
+    "additions": 2919,
+    "deletions": 322,
+    "display_url": "https://github.com/isogeny-labs/cryptanalysis/pull/1523",
+    "display_title": "Public-target N4 integration for completed genus-three transfers"
+  },
+  "isError": false
+}

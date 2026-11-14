@@ -1,0 +1,39 @@
+"""Checkpoint the accepted source through unchanged repository governance."""
+from pathlib import Path
+import subprocess,json,hashlib,lzma,shutil
+r=Path('/workspace/cryptanalysis');s=r/'experiments/chained-transfer-public-target';base='7cf45856e7cb019702e3a14fb3961761babb48d7'
+assert subprocess.check_output(['git','rev-parse','HEAD'],cwd=r,text=True).strip()==base
+d=s/'evidence/chain-kernel-source-governance-01';d.mkdir();shutil.copyfile(__file__,d/'original-command.py')
+scope=[str(s.relative_to(r)),'.github/workflows/chained-transfer-chain-kernels.yml','pcc/claims','pcc/ledger.jsonl','problems/chained-transfer-public-target-destination-bridge.md','problems/chained-transfer-geometric-two-torsion.md','problems/chained-transfer-primefield-polarized-two-kernel.md','problems/README.md','docs/session-logs/2026-11-13.md','.resume/RESUME.md']
+def paths():return sorted((set(subprocess.check_output(['git','ls-files','--modified','--others','--exclude-standard','-z','--',*scope],cwd=r).split(b'\0'))|set(subprocess.check_output(['git','diff','--cached','--name-only','-z'],cwd=r).split(b'\0')))-{b''})
+def run(name,cmd):
+ p=subprocess.run(cmd,cwd=r,capture_output=True);raw=p.stdout+p.stderr
+ (d/(name+'.txt.xz'if len(raw)>60000 else name+'.txt')).write_bytes(lzma.compress(raw)if len(raw)>60000 else raw)
+ (d/(name+'.exit')).write_text(str(p.returncode)+'\n');print(name,p.returncode,flush=True);assert p.returncode==0,raw.decode(errors='replace')[:2000]
+guard=json.loads(Path('/workspace/scratch/ct61-chain-kernel-native-01/before.json').read_text());assert len(guard)==2432 and all(hashlib.sha256(Path(p).read_bytes()).hexdigest()==h for p,h in guard.items())
+protected=['tools','suite','.github/workflows','experiments/chained-transfer-reference']+[str((s/name).relative_to(r))for name in ['native','v2','rho-accessor','prime-field','completed-descent','ci_v2','ci_completed','ci_two_primary','two-primary','ci_bitangents','bitangents','kernel-census','kernel-replay','ci_kernels','PROTOCOL-01.md','COMPLETED_DESCENT_PROTOCOL_02.md','V2_MAPS_01.md','DERIVATION.md','PROOF_MAP.md','README.md','KERNEL_CENSUS_PROTOCOL_01.md','KERNEL_REPLAY_PROTOCOL_01.md','KERNEL_OBSTRUCTION_DERIVATION_01.md','GLUING_CHAIN_PROPOSAL_01.md']]
+assert not subprocess.check_output(['git','diff','--name-only',base,'--',*protected],cwd=r)
+for name,ref in [('parent437','experiments/chained-transfer-reference/g3-norm-reference-01.sha256'),('P1434',str((s/'reference-02.sha256').relative_to(r))),('V2468',str((s/'ci_v2/reference-01.sha256').relative_to(r))),('completed483',str((s/'ci_completed/reference-01.sha256').relative_to(r))),('two502',str((s/'ci_two_primary/reference-01.sha256').relative_to(r))),('bit522',str((s/'ci_bitangents/reference-01.sha256').relative_to(r))),('kernels554',str((s/'ci_kernels/reference-01.sha256').relative_to(r))),('gluing596',str((s/'ci_gluing/reference-01.sha256').relative_to(r))),('chain616',str((s/'ci_chain/reference-01.sha256').relative_to(r)))]:run(name,['sha256sum','--check',ref])
+run('shell',['bash','-n',str(s/'ci_chain/check.sh')]);run('actionlint',['/workspace/scratch/actionlint-bin/actionlint','.github/workflows/chained-transfer-chain-kernels.yml'])
+run('format',['/home/agent/.cargo/bin/rustfmt','--edition','2021','--config','skip_children=true','--check',str(s/'chain-kernels/src/lib.rs')])
+run('ledger',['python3','tools/pcc/pcc.py','ledger','verify','--base',base]);run('prose',['python3','tools/pcc/pcc.py','lint-prose',*[p.decode()for p in paths()if p.endswith(b'.md')]])
+run('whitespace',['git','diff','--check','--',*scope]);run('wiring',['python3','tools/artifacts/wire_workflows.py','--check']);run('benchrec',['python3','tools/benchrec.py','gate'])
+for name in ['chain-kernels']:subprocess.run(['git','add','--sparse','-f','--',str((s/name/'Cargo.lock').relative_to(r))],cwd=r,check=True)
+def stage():
+ ps=paths();f=Path('/workspace/scratch/ct61-chain-kernel-source.paths0');f.write_bytes(b'\0'.join(p for p in ps if p!=b'.resume/RESUME.md')+b'\0')
+ subprocess.run(['git','add','--sparse','--pathspec-from-file='+str(f),'--pathspec-file-nul'],cwd=r,check=True);subprocess.run(['git','add','--sparse','-u','--','.resume/RESUME.md'],cwd=r,check=True)
+ selected=set(subprocess.check_output(['git','diff','--cached','--name-only','-z'],cwd=r).split(b'\0'))-{b''};assert selected==set(ps)
+ for p in ps:
+  if p.startswith(b'pcc/claims/'):
+   for proof in json.loads((r/p.decode()).read_text()).get('proofs',[]):
+    if proof.get('kind')=='attestation':
+     x=proof['subject'];assert hashlib.sha256((r/x['path']).read_bytes()).hexdigest()==x['sha256'],x['path']
+     assert x['path'].encode()in selected or subprocess.run(['git','cat-file','-e',base+':'+x['path']],cwd=r,capture_output=True).returncode==0,x['path']
+ return selected
+stage();run('cached-whitespace',['git','diff','--cached','--check']);tree=subprocess.check_output(['git','write-tree'],cwd=r,text=True).strip();run('artifact',['python3','tools/artifacts/artifacts.py','check',base,tree])
+meta=dict(base=base,all2432_native_inputs_unchanged=True,all_original_reference_manifests_pass=True,new_reference=616,new_outer_self=617,old_workflows_native_sources_verifiers_frozen_protocols_unchanged=True,ledger_prose_whitespace_cached_whitespace_wiring_benchrec_artifact_format_shell_actionlint=0,all_new_subject_hashes_and_staging=True,native='29830a',written='2e21d5',formal='3 new faithful partial bindings;44 total;both original gates;zero trusted;geometry partial',report='dda668;TWO60785-byte final pages ALL inspected',settled='gluing06b112/aefb67 and17 genuinee5f4c5/74b399 captures',next='normal publish;617-input physical full/four controls/nine workflows/80 native44 digests;different product via actual odd source isogeny;cost admission open')
+(d/'custody.json').write_text(json.dumps(meta,indent=2)+'\n')
+cmd=['python3','tools/pcc/pcc.py','claim','new','--kind','statement','--claim-type','data','--statement','Chain-kernel source governance own7cf: all2432 native inputs and all old437/434/468/483/502/522/554/596/new616 manifests unchanged. Prior eight workflows, engines, verifiers and frozen protocols unchanged; ledger/all changedMD prose/working+cached whitespace/wiring/benchrec/artifact/format/actionlint/shell0; all new subject hashes/staging covered. Native29830a all135 intersections/128 repeated routes; written2e21d5 geometric free4 cases and same-product collapse;three partial exact Lean bindings/44 total;both original gates/zero trusted. Whole proofsa37330/a81a8a;TWO60785-byte inspected PDF pagesdda668. Gluingfull06b112/CIaefb67 and seventeen genuine captures e5f4c5/74b399 settled. New616 published-source full/CI pending;different-product odd source route next. Unsigned/geometry partial/no computational advantage or global-root pass.']
+for p in sorted(d.iterdir()):cmd+=['--proof','attestation:'+str(p.relative_to(r))]
+cl=subprocess.check_output(cmd,cwd=r,text=True).strip();selected=stage();subprocess.run(['git','diff','--cached','--check'],cwd=r,check=True);subprocess.run(['git','commit','--quiet','-m','research: classify chained kernels and preserve repeated-product collapse'],cwd=r,check=True)
+print(cl,subprocess.check_output(['git','log','-1','--format=%H %T %P'],cwd=r,text=True).strip(),len(selected),flush=True)

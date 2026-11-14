@@ -1,0 +1,58 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-13T13:29:24Z",
+ "id": "PCC-20261113-a5a143",
+ "kind": "statement",
+ "producer": {
+  "commit": "68d22cee01126c9a03a2222687b0faf62113489d",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/independent-CI-02/exact-PCC-verdicts.json",
+    "sha256": "6b317b202dd334264073897a11e682c94dbb2a8c59fa6b2820332d0f04ed17b1"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/independent-CI-02/failed01-whole-job.log.xz",
+    "sha256": "520bcecc18446be1e99b5d3adc507cb932c68eaddd3ee86c01ee5a85ecacbbae"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/independent-CI-02/native-records.json",
+    "sha256": "12643362f38133da96514402c4ebbd089ef5fc93ee8e5554448324db509368a7"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/independent-CI-02/observation.json",
+    "sha256": "e616a9160a953356d5e4b9b0b460df14d652e3af0087801e63f2bb61cea2c79f"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/independent-CI-02/original-PCC-digests.json",
+    "sha256": "90b1f8ab0782ab99734de9a1c62f79deab308b2ebbffe14c401a73842f6f9107"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/independent-CI-02/success02-whole-job.log.xz",
+    "sha256": "a0cc1886716a1b320124fd1bcc29f3077ebedb36b8c9d1ac9c2599354679000d"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "P1 ownCI exact68d run43432174569/job131908108813SUCCESS;original43phase marker/all3native/fiveIC14controls/both9+5originalproofgates/14exactPCCverdicts pass. All original canonical claim digests and source68d match;all13native records retained,non-timing whole equality=True,ONLYwall+wall_totalexcluded from comparison/raw intact. Whole priorfailed01 andsuccess02UTF8logs/API+435sources retained. No artifactZIP/standalone CIexitfiles downloaded;successfulstep/driver marker guard scope explicit. Local full02actual435guards/all43pairs0orintentional2 separatelyaccepted. Unsigned execution/correctness,not speedup."
+}

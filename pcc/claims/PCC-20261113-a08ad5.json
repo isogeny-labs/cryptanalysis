@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-13T21:38:33Z",
+ "id": "PCC-20261113-a08ad5",
+ "kind": "theorem",
+ "producer": {
+  "commit": "c37ad390a4e2ec21bc4e54a005c2642767099199",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "0aa27f77dece48ec5cf5dbe5da24b41c1187d2f6f32f56a131b7c8531cb92d33",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/odd-product-refinements/lean/OddProductRefinement.lean",
+   "theorem": "OddProductRefinement223.killed_fiftytwo_primary_projectors"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Faithful structural implications for actual native147b66/writtenf4eb22:52-primary projectors13/40 plus trivial4/13 intersection;global quotient universal property and genuine transported-kernel containment derive beta existence and F=beta double without assuming beta;old dual2 pair eliminates redundant source PhiNorm with identical outputs. Three exact declarations,both unchanged original4.35/4.34.1 gatesPASS3/0trusted/noaxioms. Actual etale/geometric kernel classification,quotient category,degree/polarization,Picard/scalar interpretations remain written/open. No complete beta coordinate implementation or performance/signedexecution claim",
+ "statement": "theorem killed_fiftytwo_primary_projectors {A : Type} (act : Nat \u2192 A \u2192 A) (plus : A \u2192 A \u2192 A) (zero : A) (mul : \u2200 m n x, act (m*n) x=act m (act n x)) (sum : \u2200 m n x, act (m+n) x=plus (act m x) (act n x)) (one : \u2200 x, act 1 x=x) (zeroStable : \u2200 n, act n zero=zero) (addZero : \u2200 x, plus x zero=x) (x : A) (killed : act 52 x=zero) : x=plus (act 13 x) (act 40 x) \u2227 act 4 (act 13 x)=zero \u2227 act 13 (act 40 x)=zero \u2227 (\u2200 z, act 4 z=zero \u2192 act 13 z=zero \u2192 z=zero)"
+}

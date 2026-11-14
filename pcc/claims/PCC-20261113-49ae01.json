@@ -1,0 +1,37 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-13T15:59:00Z",
+ "id": "PCC-20261113-49ae01",
+ "kind": "statement",
+ "producer": {
+  "commit": "ec826815ff1c65dbba2dda9c8a2648876b68a36a",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/bitangent-proof-consumer-01/custody.json",
+    "sha256": "18497e1f1503146239febfeb5a3be7d11ab17a297915c5503a245b07c0a52ee1"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/bitangent-proof-consumer-01/members.json.xz",
+    "sha256": "b232741c7fad10e68704577ca14d9981ec4cc9fe9f03d58089d5c5491e689bea"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/bitangent-proof-consumer-01/whole-raw.tar.xz",
+    "sha256": "9ee0d7b9ee51d10de9b2d7116b60ea4c18c7228a439c180451c5ba20db848655"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Whole original bitangent Lean consumer-01 closedcapture/PASS4/0trusted/all9selectedhashesunchanged;ONEstandardtarXZ/everymember/raw/archivehashroundtrip. Closedliteralpermutation nofoundations;threeCommRingproofs propext/Classical.choice/Quot.sound. Standardwrittenactualgeometrybridgesopen;notfullformal/signedexecution."
+}

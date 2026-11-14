@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-13T22:30:07Z",
+ "id": "PCC-20261113-671d42",
+ "kind": "theorem",
+ "producer": {
+  "commit": "3baa6d0a44973ecbb5dd1db0b5a724e235727e78",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "e8d87d363b0031acc46ed64e4131d9a6d9131c5b0803642f8536162a9cdf66e8",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/new-target-ic/lean/NewTargetIC.lean",
+   "theorem": "NewTargetIC223.common_offset_log_ratio"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Faithful structural implications for actuale869bd/written1e65f0:targetsolution[k]H(G)=H(Q) reflects to original source through genuine scalar equivariance and leftinverse,without an assumed sourceanswer;common affine offset cancels in IC log ratio from genuine additive/scalar log,actualQ=kG and denominatorunit. Both unchanged original4.35/4.34.1 gatesPASS2/zero trusted;reflectionnoaxioms,ringratio only standardpropext/Classical.choice/Quot.sound. No customaxiom/holes/nativeeval. ActualPicard/scalar/recovery interpretation,relationvector global-log extension,completeness and exact same-origin nativecompatibility remainwritten/open;no completecost/S/ratio/advantage/signedexecution claim",
+ "statement": "theorem common_offset_log_ratio {J K : Type} [CommRing K] (addJ : J \u2192 J \u2192 J) (scalar : K \u2192 J \u2192 J) (log : J \u2192 K) (addLog : \u2200 x y, log (addJ x y)=log x+log y) (scalarLog : \u2200 c x, log (scalar c x)=c*log x) (R G Q : J) (k offset inverse : K) (target : Q=scalar k G) (unit : ((log (addJ R G)-offset)-(log R-offset))*inverse=1) : ((log (addJ R Q)-offset)-(log R-offset))*inverse=k"
+}

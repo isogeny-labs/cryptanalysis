@@ -1,0 +1,30 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-13T19:49:03Z",
+ "id": "PCC-20261113-78ddb7",
+ "kind": "statement",
+ "producer": {
+  "commit": "a7ea5998b4482c99469185119d1acbc5b60921a4",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/odd-source-bindings-01/cleared_rational_curve_map-verdict-01-not-covered.exit",
+    "sha256": "53c234e5e8472b6ac51c1ae1cab3fe06fad053beb8ebfd8977b010655bfdd3c3"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/odd-source-bindings-01/cleared_rational_curve_map-verdict-01-not-covered.json",
+    "sha256": "fafbc682120e0d8c0dc2b71451679b1820ee7793106dee7558a829f9356728e0"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Original odd-source first binding c6dca4 returns not_covered: lake/lean not on caller PATH, exact statement binding and hole scan only. Whole original verdict/exit retained. Producer and consumer unchanged proof gates separately PASS6/zero trusted; no theorem statement/proof/gate change. Next correct only caller PATH, reverify SAME first claim, then remaining bindings; no promotion of not-covered to pass without actual original check."
+}

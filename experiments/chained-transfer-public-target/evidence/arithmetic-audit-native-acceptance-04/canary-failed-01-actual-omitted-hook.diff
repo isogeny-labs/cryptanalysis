@@ -1,0 +1,11 @@
+--- /workspace/scratch/ct72-arithmetic-hook-canaries-01/positive/src/fpr.rs	2026-11-14 04:23:37.198572450 +0000
++++ /workspace/scratch/ct72-arithmetic-hook-canaries-01/negative/src/fpr.rs	2026-11-14 04:23:37.219819348 +0000
+@@ -351,7 +351,7 @@
+             }
+             let ai = a[i] as u128;
+             for j in 0..r {
+-                n4_arithmetic_taps::hit("FpR.coefficient", self.p, "mul", 1); n4_arithmetic_taps::hit("FpR.coefficient", self.p, "add", 1);
++                n4_arithmetic_taps::hit("FpR.coefficient", self.p, "add", 1);
+                 if self.lazy {
+                     acc[i + j] += ai * b[j] as u128;
+                 } else {

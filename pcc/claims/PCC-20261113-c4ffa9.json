@@ -1,0 +1,51 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-13T20:35:46Z",
+ "id": "PCC-20261113-c4ffa9",
+ "kind": "statement",
+ "producer": {
+  "commit": "3de8c174cf65e6b34bf8579d97b817b8f5dc2ded",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/odd-product-Lean-failed-01/guards.json",
+    "sha256": "9abc4f2e7d8a5c53a228211c46982ecf99b66484c8d87e3115985932bc6c4e5f"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/odd-product-Lean-failed-01/native.log",
+    "sha256": "ec88da82f18deb0dcb8ce8c37775010c3503690f15aca7d2fccb9f38d2705a27"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/odd-product-Lean-failed-01/original-OddProductChain.lean",
+    "sha256": "57764b32ae65d5c80a3d4eea2703b2522eb88c04ca208d1ba9b8c520adbeaa03"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/odd-product-Lean-failed-01/original-command.sh",
+    "sha256": "74322f7adfb65bfe3abc15fa429c95b404aa2fd017751b18c1981e8d179daead"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/odd-product-Lean-failed-01/plan.json",
+    "sha256": "ef9f4a73631a0a462c936878668e03adda8c4f754025a3107ffacc96d68cdce4"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "First odd-product global52 Lean producer gate fails build1/all9 selected hashes unchanged:three redundant rfl tactics report no goals after rw already closes the goals. Whole exact original statement/source/log/command/guard retained. Correct ONLY deleting those three redundant tactics;both statements and all hypotheses remain byteexact;no weakened conclusion or custom axiom. Native9561ce/written1fd6e7 unchanged;not a failed mathematical composition."
+}

@@ -1,0 +1,37 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-13T14:08:49Z",
+ "id": "PCC-20261113-3202e2",
+ "kind": "statement",
+ "producer": {
+  "commit": "68d22cee01126c9a03a2222687b0faf62113489d",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/V2-source-format-correction-01/adapter.rs.whole-before.xz",
+    "sha256": "24f19d423270bcf0a46239bcd1adb33f026d0640c14f32289e60b0d81af33381"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/V2-source-format-correction-01/norm.rs.whole-before.xz",
+    "sha256": "1a1806af37a1adac6f8f96c862dd49ec31a9a26af9ce8e9be057334486e73f3b"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/V2-source-format-correction-01/plan.json",
+    "sha256": "5a003de019a867b886a9c997ff82a2180c39c64abde43d855a2453fae7e73389"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Freeze V2 source-format correction BEFOREedits:governance02cachedwhitespace2 ONLYnewadapter/norm extraEOFblanklines. Whole exacttested originals XZ/hash plusnative03beforemap/genuineoldnative02 retained. ONLYrstrip extraLF andretainoneLF,no Rust token/statement/algorithm/assertion change;oldV1/P1/verifier unchanged. RegenerateunpublishednewCIref andrequire finalcommitted full/CI;notrewrite oldnative results orclaimbyteidenticaltestednewsource."
+}

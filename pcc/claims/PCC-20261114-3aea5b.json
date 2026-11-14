@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-14T12:40:21Z",
+ "id": "PCC-20261114-3aea5b",
+ "kind": "theorem",
+ "producer": {
+  "commit": "d5db7698edcb966a6b0b9edf330aba742b7c6dbf",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "2469dc1c036a9eb784f3e0c0ba0de5b8df8dad0fadbde5dc5d6f4254ff4d5c31",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/norm-halving-evaluator/lean/NormHalving.lean",
+   "theorem": "NormHalving.preimage_from_odd_and_cofactor"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Faithful ordinary Lean.Grind commutative-ring and IntModule algebra under prospective6dc948. Universal cleared ordinate polynomial identity; halving differences2torsion andFrobenius square underexplicit rational2torsion hypotheses; oddnormlift andfullpreimage fromodd+actualcofactor decomposition, no full rational-lift conclusion assumed; actualcorrection andexplicit quotientcommuting square implyevaluatorequalsbeta/liftindependence; strongestscalarbaseline identity. Both ORIGINAL gates pass10declarations0trusted, all10namedroots onlystandardpropext/Classical.choice/Quot.sound, no holes/customaxioms/native_decide. Originalabscissaidentity isreused andNOTcountedasnewbinding; these9distinctadditionalheaders bringpublictargetpartialunique count73to82, not82formalgeometricconstructions. Actualgeometry/field/order/Picard/finitecofactordictionary/nativecode bridgesremainwritten/native. FailedLean01/02 proofs retained; source03 unchangedstatements/hypotheses withexplicitgroupcancellation. Unsignedlocalpass, no execution orperformance standing.",
+ "statement": "theorem preimage_from_odd_and_cofactor {A J : Type} [IntModule A] [IntModule J] (phi : A \u2192 J) (norm : J \u2192 A) (phi_add : \u2200 a b, phi (a+b)=phi a+phi b) (phi_linear : \u2200 n : Int, \u2200 a, phi (n \u2022 a)=n \u2022 phi a) (phi_norm : \u2200 x, phi (norm x)=(2 : Int) \u2022 x) (norm_phi : \u2200 a, norm (phi a)=(2 : Int) \u2022 a) (x odd cofactor : J) (lift_cofactor : A) (decomposition : x=odd+cofactor) (odd_order : (2773073 : Int) \u2022 odd=0) (actual_cofactor_lift : phi lift_cofactor=cofactor) : \u2203 a0, phi a0=x \u2227 (2 : Int) \u2022 a0=norm x"
+}

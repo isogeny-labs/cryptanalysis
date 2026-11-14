@@ -1,0 +1,165 @@
+   Compiling serde_core v1.0.228
+   Compiling proc-macro2 v1.0.107
+   Compiling unicode-ident v1.0.27
+   Compiling quote v1.0.47
+   Compiling serde_json v1.0.145
+   Compiling itoa v1.0.19
+   Compiling ryu v1.0.23
+   Compiling crossbeam-utils v0.8.23
+   Compiling memchr v2.8.3
+   Compiling crossbeam-epoch v0.9.21
+   Compiling serde v1.0.228
+   Compiling syn v2.0.119
+   Compiling crossbeam-deque v0.8.8
+   Compiling rayon-core v1.13.0
+   Compiling either v1.18.0
+   Compiling rayon v1.12.0
+   Compiling serde_derive v1.0.228
+   Compiling n4-arithmetic-taps v0.1.0 (/workspace/scratch/ct72-arithmetic-full-01-layout/derived-layout/n4-arithmetic-taps)
+   Compiling isogeny_algos v0.1.0 (/workspace/scratch/ct72-arithmetic-full-01-layout/derived-layout/crypto/isogeny_algos)
+   Compiling ghs-original-engines v0.1.0 (/workspace/scratch/ct72-arithmetic-full-01-layout/derived-layout/crypto/research/chained_jacobian_transfers_20261110/genus3-prime-descent/engine)
+   Compiling chained-original-smith-engine v0.1.0 (/workspace/scratch/ct72-arithmetic-full-01-layout/derived-layout/cryptanalysis/experiments/chained-transfer-public-target/kernel-census/engine)
+   Compiling chained-n4-public-target v0.1.0 (/workspace/scratch/ct72-arithmetic-full-01-layout/derived-layout/cryptanalysis/experiments/chained-transfer-public-target/native)
+warning: unused import: `crate::ghs::*`
+ --> /workspace/scratch/ct72-arithmetic-full-01-layout/derived-layout/cryptanalysis/experiments/chained-transfer-public-target/native/src/../original/ic.rs:6:5
+  |
+6 | use crate::ghs::*;
+  |     ^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused variable: `rng`
+   --> /workspace/scratch/ct72-arithmetic-full-01-layout/derived-layout/cryptanalysis/experiments/chained-transfer-public-target/native/src/../original/ic.rs:283:46
+    |
+283 | pub fn find_relations(cv: &Curve, fb: &[P3], rng: &mut Rng) -> RelOut {
+    |                                              ^^^ help: if this is intentional, prefix it with an underscore: `_rng`
+    |
+    = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: variable does not need to be mutable
+   --> /workspace/scratch/ct72-arithmetic-full-01-layout/derived-layout/cryptanalysis/experiments/chained-transfer-public-target/native/src/../original/ic.rs:986:17
+    |
+986 |             let mut add_f = |fp: &mut Vec<(u32, u8)>, k: u32| {
+    |                 ----^^^^^
+    |                 |
+    |                 help: remove this `mut`
+    |
+    = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused variable: `c2`
+   --> /workspace/scratch/ct72-arithmetic-full-01-layout/derived-layout/cryptanalysis/experiments/chained-transfer-public-target/native/src/../original/ic.rs:938:17
+    |
+938 |             let c2 = f.mul(f.add(s_, t_), inv2);
+    |                 ^^ help: if this is intentional, prefix it with an underscore: `_c2`
+
+warning: variable does not need to be mutable
+   --> /workspace/scratch/ct72-arithmetic-full-01-layout/derived-layout/cryptanalysis/experiments/chained-transfer-public-target/native/src/../derived/public_solver.rs:495:9
+    |
+495 |     let mut picks: Vec<EP> = Vec::new();
+    |         ----^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: unused variable: `picks`
+   --> /workspace/scratch/ct72-arithmetic-full-01-layout/derived-layout/cryptanalysis/experiments/chained-transfer-public-target/native/src/../derived/public_solver.rs:495:9
+    |
+495 |     let mut picks: Vec<EP> = Vec::new();
+    |         ^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_picks`
+
+warning: value assigned to `mark` is never read
+   --> /workspace/scratch/ct72-arithmetic-full-01-layout/derived-layout/cryptanalysis/experiments/chained-transfer-public-target/native/src/../derived/public_solver.rs:104:13
+    |
+104 |             mark = (now, std::time::Instant::now());
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+577 |     phase!("verify");
+    |     ---------------- in this macro invocation
+    |
+    = help: maybe it is overwritten before being read?
+    = note: `#[warn(unused_assignments)]` (part of `#[warn(unused)]`) on by default
+    = note: this warning originates in the macro `phase` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: `chained-n4-public-target` (lib) generated 7 warnings (run `cargo fix --lib -p chained-n4-public-target` to apply 6 suggestions)
+   Compiling chained-n4-completed-v2 v0.1.0 (/workspace/scratch/ct72-arithmetic-full-01-layout/derived-layout/cryptanalysis/experiments/chained-transfer-public-target/v2)
+warning: unused imports: `BTreeMap`, `HashMap`, and `VecDeque`
+  --> /workspace/scratch/ct72-arithmetic-full-01-layout/derived-layout/cryptanalysis/experiments/chained-transfer-public-target/v2/src/norm.rs:11:24
+   |
+11 | use std::collections::{BTreeMap, BTreeSet, HashMap, VecDeque};
+   |                        ^^^^^^^^            ^^^^^^^  ^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: `chained-n4-completed-v2` (lib) generated 1 warning (run `cargo fix --lib -p chained-n4-completed-v2` to apply 1 suggestion)
+   Compiling chained-n4-gluing-models v0.1.0 (/workspace/scratch/ct72-arithmetic-full-01-layout/derived-layout/cryptanalysis/experiments/chained-transfer-public-target/gluing-models)
+   Compiling chained-n4-odd-source v0.1.0 (/workspace/scratch/ct72-arithmetic-full-01-layout/derived-layout/cryptanalysis/experiments/chained-transfer-public-target/odd-source)
+warning: unused import: `ghs::EP`
+ --> /workspace/scratch/ct72-arithmetic-full-01-layout/derived-layout/cryptanalysis/experiments/chained-transfer-public-target/odd-source/src/lib.rs:4:32
+  |
+4 | use chained_n4_public_target::{ghs::EP, CheckedInstance};
+  |                                ^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `Rng`
+ --> /workspace/scratch/ct72-arithmetic-full-01-layout/derived-layout/cryptanalysis/experiments/chained-transfer-public-target/odd-source/src/lib.rs:7:20
+  |
+7 |     field::{Field, Rng},
+  |                    ^^^
+
+warning: `chained-n4-odd-source` (lib) generated 2 warnings (run `cargo fix --lib -p chained-n4-odd-source` to apply 2 suggestions)
+   Compiling chained-n4-odd-product-models v0.1.0 (/workspace/scratch/ct72-arithmetic-full-01-layout/derived-layout/cryptanalysis/experiments/chained-transfer-public-target/odd-product-models)
+   Compiling chained-n4-odd-product-maps v0.1.0 (/workspace/scratch/ct72-arithmetic-full-01-layout/derived-layout/cryptanalysis/experiments/chained-transfer-public-target/odd-product-maps)
+warning: unused import: `back6`
+ --> /workspace/scratch/ct72-arithmetic-full-01-layout/derived-layout/cryptanalysis/experiments/chained-transfer-public-target/odd-product-maps/src/adapter.rs:6:12
+  |
+6 |     even::{back6, lift6},
+  |            ^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused imports: `BTreeMap`, `HashMap`, and `VecDeque`
+  --> /workspace/scratch/ct72-arithmetic-full-01-layout/derived-layout/cryptanalysis/experiments/chained-transfer-public-target/odd-product-maps/src/norm.rs:11:24
+   |
+11 | use std::collections::{BTreeMap, BTreeSet, HashMap, VecDeque};
+   |                        ^^^^^^^^            ^^^^^^^  ^^^^^^^^
+
+warning: unused import: `field::Field`
+  --> /workspace/scratch/ct72-arithmetic-full-01-layout/derived-layout/cryptanalysis/experiments/chained-transfer-public-target/odd-product-maps/src/chain.rs:10:5
+   |
+10 |     field::Field,
+   |     ^^^^^^^^^^^^
+
+warning: `chained-n4-odd-product-maps` (lib) generated 3 warnings (run `cargo fix --lib -p chained-n4-odd-product-maps` to apply 2 suggestions)
+   Compiling chained-n4-odd-product-refinements v0.1.0 (/workspace/scratch/ct72-arithmetic-full-01-layout/derived-layout/cryptanalysis/experiments/chained-transfer-public-target/odd-product-refinements)
+   Compiling chained-n4-new-target-ic v0.1.0 (/workspace/scratch/ct72-arithmetic-full-01-layout/derived-layout/cryptanalysis/experiments/chained-transfer-public-target/new-target-ic)
+warning: value assigned to `mark` is never read
+   --> /workspace/scratch/ct72-arithmetic-full-01-layout/derived-layout/cryptanalysis/experiments/chained-transfer-public-target/new-target-ic/src/../arithmetic-derived/class_solver.rs:103:13
+    |
+103 |             mark = (now, std::time::Instant::now());
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+553 |     phase!("verify");
+    |     ---------------- in this macro invocation
+    |
+    = help: maybe it is overwritten before being read?
+    = note: `#[warn(unused_assignments)]` (part of `#[warn(unused)]`) on by default
+    = note: this warning originates in the macro `phase` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: `chained-n4-new-target-ic` (lib) generated 1 warning
+   Compiling chained-n4-norm-assisted-ic v0.1.0 (/workspace/scratch/ct72-arithmetic-full-01-layout/derived-layout/cryptanalysis/experiments/chained-transfer-public-target/norm-assisted-ic)
+warning: value assigned to `mark` is never read
+   --> src/../arithmetic-derived/class_solver.rs:103:13
+    |
+103 |             mark = (now, std::time::Instant::now());
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+553 |     phase!("verify");
+    |     ---------------- in this macro invocation
+    |
+    = help: maybe it is overwritten before being read?
+    = note: `#[warn(unused_assignments)]` (part of `#[warn(unused)]`) on by default
+    = note: this warning originates in the macro `phase` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: `chained-n4-norm-assisted-ic` (lib test) generated 1 warning
+    Finished `release` profile [optimized] target(s) in 4m 22s
+  Executable unittests src/lib.rs (/workspace/scratch/ct72-arithmetic-full-01-build-cache/release/deps/chained_n4_norm_assisted_ic-c412cfe08ef56e6a)

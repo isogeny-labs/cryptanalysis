@@ -1,0 +1,67 @@
+experiments/chained-transfer-public-target/beta-complete-evaluator/lean/CompleteRationalBeta.lean:44:14: error: unsolved goals
+case succ
+A : Type
+g : Abelian A
+m : Nat
+x : A
+n : Nat
+ih : nsmul g (m + n) x = g.add (nsmul g m x) (nsmul g n x)
+⊢ g.add (nsmul g (m.add n) x) x = g.add (nsmul g m x) (g.add (nsmul g n x) x)
+experiments/chained-transfer-public-target/beta-complete-evaluator/lean/CompleteRationalBeta.lean:44:28: warning: This simp argument is unused:
+  Nat.add_succ
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [nsmul, ih, g.assoc]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+experiments/chained-transfer-public-target/beta-complete-evaluator/lean/CompleteRationalBeta.lean:44:49: warning: This simp argument is unused:
+  ih
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Nat.add_succ, nsmul, g.assoc]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+experiments/chained-transfer-public-target/beta-complete-evaluator/lean/CompleteRationalBeta.lean:44:53: warning: This simp argument is unused:
+  g.assoc
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Nat.add_succ, nsmul, ih]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+experiments/chained-transfer-public-target/beta-complete-evaluator/lean/CompleteRationalBeta.lean:113:9: error: unknown tactic
+experiments/chained-transfer-public-target/beta-complete-evaluator/lean/CompleteRationalBeta.lean:112:56: error: unsolved goals
+A : Type
+g : Abelian A
+ell m : Nat
+ell_form : ell = 4 * m + 1
+x : A
+annihilated : nsmul g (4 * ell) x = g.zero
+x2 : A := nsmul g ell x
+four : nsmul g 4 x2 = g.zero
+killed_multiple : nsmul g (4 * m) x2 = g.zero
+⊢ nsmul g ell x2 = g.add (nsmul g (4 * m) x2) x2
+experiments/chained-transfer-public-target/beta-complete-evaluator/lean/CompleteRationalBeta.lean:110:40: error: unsolved goals
+case calc.step
+A : Type
+g : Abelian A
+ell m : Nat
+ell_form : ell = 4 * m + 1
+x : A
+annihilated : nsmul g (4 * ell) x = g.zero
+x2 : A := nsmul g ell x
+four : nsmul g 4 x2 = g.zero
+killed_multiple : nsmul g (4 * m) x2 = g.zero
+⊢ g.add (nsmul g (4 * m) x2) x2 = x2
+experiments/chained-transfer-public-target/beta-complete-evaluator/lean/CompleteRationalBeta.lean:102:67: error: unsolved goals
+A : Type
+g : Abelian A
+ell m : Nat
+ell_form : ell = 4 * m + 1
+x : A
+annihilated : nsmul g (4 * ell) x = g.zero
+x2 : A := nsmul g ell x
+four : nsmul g 4 x2 = g.zero
+killed_multiple : nsmul g (4 * m) x2 = g.zero
+ell_two : nsmul g ell x2 = x2
+⊢ nsmul g 4 (nsmul g ell x) = g.zero ∧
+    nsmul g ell (g.add x (g.neg (nsmul g ell x))) = g.zero ∧ g.add (g.add x (g.neg (nsmul g ell x))) (nsmul g ell x) = x

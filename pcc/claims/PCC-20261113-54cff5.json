@@ -1,0 +1,37 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-13T20:40:56Z",
+ "id": "PCC-20261113-54cff5",
+ "kind": "statement",
+ "producer": {
+  "commit": "3de8c174cf65e6b34bf8579d97b817b8f5dc2ded",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/odd-product-proof-consumer-01/custody.json",
+    "sha256": "a1c92719b105b6a6aaed1db3f95793370e9c4f4af6b1101561e37ab808bc9676"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/odd-product-proof-consumer-01/members.json.xz",
+    "sha256": "a8e668c4d6a4ec18fbc44404e3c9aaa842d9724d71f797cb724c20dd51b4372a"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/odd-product-proof-consumer-01/whole-raw.tar.xz",
+    "sha256": "3a3c2bf75a3c97c67478057ceb35ad8613430e65028ac193e775638a7caf1765"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Whole odd-product52 Lean consumer-01 original exit0/PASS2/0trusted/all9 selected hashes unchanged;ONE standard tarXZ/every member/raw/archive hash roundtrip. Failed01 c4ffa9 redundant rfl preserved before02;both statement signatures unchanged. Successful gates audit2named/zero trusted/no axioms;exact4d1338/95d4e6 bindings pass. Actual geometric map/scalar-action/Picard/Galois/polarization bridges remain written;no signed execution or computational advantage."
+}

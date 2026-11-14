@@ -1,0 +1,32 @@
+digraph norm_halving {
+ graph [rankdir=TB,bgcolor="white",fontname="DejaVu Sans",nodesep=.22,ranksep=.32];
+ node [shape=box,style="rounded",fontname="DejaVu Sans",fontsize=12,margin=.10];
+ edge [fontname="DejaVu Sans",fontsize=9,color="#5d6770",style=dashed];
+ x [label="J0(F223) input\nCiani-Jac-pi0-v2-3ba99ad5742ad62540f\n8addbbe153572696d2e595f64cd2c1b0b52e\n51ff351a4\nshared admission counted",color="#295477"];
+ n [label="N0(x) = Q in E(K)
+K=F223[z]/(z^3-3)"];
+ b [label="STRONG SCALAR BASELINE
+[1386537]Q on E(K)
+CRT x2=[ell]x on J0",color="#966122"];
+ h [label="NORM-HALVING CANDIDATE
+all four [2]a=Q in E(L)
+L=F223[w]/(w^6-3)",color="#486d54"];
+ bp [label="Phi1 gamma([1386537]Q)
+subtract beta(x2)"];
+ hp [label="d=x-Phi0(a)=Phi0(t)
+t in actual E[2](K)
+return Psi(a)+Psi(t)"];
+ y [label="J1(F223) output\nCiani-Jac-odd-product-v1-7ea9d0f9d1a\n48a48489425beab48274fca7bd0848e47a0b\nac3a027c01601e2c4\nmatched degree13 beta",color="#295477"];
+ ref [label="FROZEN COMPLETE-C REFERENCE
+all448 exceptional classes
+public/cofactor/addition controls",shape=note];
+ x -> n [label="actual norm"];
+ x -> b [label="same admitted input"];
+ n -> b;
+ n -> h;
+ b -> bp;
+ h -> hp;
+ bp -> y;
+ hp -> y;
+ ref -> y [label="whole-output equality required"];
+}

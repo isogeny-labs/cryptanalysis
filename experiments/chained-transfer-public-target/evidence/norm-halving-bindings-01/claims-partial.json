@@ -1,0 +1,92 @@
+[
+  {
+    "theorem": "NormHalving.halving_ordinate_identity",
+    "claim_path": "pcc/claims/PCC-20261114-7cfb9f.json",
+    "statement": "theorem halving_ordinate_identity {R : Type} [CommRing R] (x a b u : R) : (x^3-3*u*x^2-a*x-a*u-2*b)^2 - 4*(u^3+a*u+b)*(x^3+a*x+b) = (x^4-4*u*x^3-2*a*x^2-4*(a*u+2*b)*x+a^2-4*b*u)*(x-u)^2",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/norm-halving-evaluator/lean/NormHalving.lean",
+      "theorem": "NormHalving.halving_ordinate_identity",
+      "decl_sha256": "65f90f738c92bfe872aabe40eb0a317371cee9d632fb889cfd1a69c0f0f6e3b3"
+    }
+  },
+  {
+    "theorem": "NormHalving.halves_differ_by_two_torsion",
+    "claim_path": "pcc/claims/PCC-20261114-0e81c2.json",
+    "statement": "theorem halves_differ_by_two_torsion {A : Type} [IntModule A] (q a b : A) (ha : (2 : Int) \u2022 a=q) (hb : (2 : Int) \u2022 b=q) : (2 : Int) \u2022 (a-b)=0",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/norm-halving-evaluator/lean/NormHalving.lean",
+      "theorem": "NormHalving.halves_differ_by_two_torsion",
+      "decl_sha256": "0f3c87cf27bf5d7f600255c03e52126db1155832609cbc1aa9e22dbef8372d23"
+    }
+  },
+  {
+    "theorem": "NormHalving.halves_fixed_by_frobenius_square",
+    "claim_path": "pcc/claims/PCC-20261114-03c69b.json",
+    "statement": "theorem halves_fixed_by_frobenius_square {A : Type} [IntModule A] (sigma : A \u2192 A) (sub_map : \u2200 a b, sigma (a-b)=sigma a-sigma b) (linear : \u2200 n : Int, \u2200 a, sigma (n \u2022 a)=n \u2022 sigma a) (two_fixed : \u2200 t, (2 : Int) \u2022 t=0 \u2192 sigma t=t) (q a : A) (rational_q : sigma q=q) (half : (2 : Int) \u2022 a=q) : sigma (sigma a)=a",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/norm-halving-evaluator/lean/NormHalving.lean",
+      "theorem": "NormHalving.halves_fixed_by_frobenius_square",
+      "decl_sha256": "651bf39cac587591c791ffaf356b2f9407c40e70a564128ee46367a86a5cf209"
+    }
+  },
+  {
+    "theorem": "NormHalving.odd_class_has_explicit_norm_lift",
+    "claim_path": "pcc/claims/PCC-20261114-4127df.json",
+    "statement": "theorem odd_class_has_explicit_norm_lift {A J : Type} [IntModule A] [IntModule J] (phi : A \u2192 J) (norm : J \u2192 A) (phi_linear : \u2200 n : Int, \u2200 a, phi (n \u2022 a)=n \u2022 phi a) (twice : \u2200 x, phi (norm x)=(2 : Int) \u2022 x) (x : J) (odd : (2773073 : Int) \u2022 x=0) : phi ((1386537 : Int) \u2022 norm x)=x",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/norm-halving-evaluator/lean/NormHalving.lean",
+      "theorem": "NormHalving.odd_class_has_explicit_norm_lift",
+      "decl_sha256": "562417184488253504782e72f90f9e0f938c2bc5217df0566af2d45404381d81"
+    }
+  },
+  {
+    "theorem": "NormHalving.preimage_from_odd_and_cofactor",
+    "claim_path": "pcc/claims/PCC-20261114-3aea5b.json",
+    "statement": "theorem preimage_from_odd_and_cofactor {A J : Type} [IntModule A] [IntModule J] (phi : A \u2192 J) (norm : J \u2192 A) (phi_add : \u2200 a b, phi (a+b)=phi a+phi b) (phi_linear : \u2200 n : Int, \u2200 a, phi (n \u2022 a)=n \u2022 phi a) (phi_norm : \u2200 x, phi (norm x)=(2 : Int) \u2022 x) (norm_phi : \u2200 a, norm (phi a)=(2 : Int) \u2022 a) (x odd cofactor : J) (lift_cofactor : A) (decomposition : x=odd+cofactor) (odd_order : (2773073 : Int) \u2022 odd=0) (actual_cofactor_lift : phi lift_cofactor=cofactor) : \u2203 a0, phi a0=x \u2227 (2 : Int) \u2022 a0=norm x",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/norm-halving-evaluator/lean/NormHalving.lean",
+      "theorem": "NormHalving.preimage_from_odd_and_cofactor",
+      "decl_sha256": "2469dc1c036a9eb784f3e0c0ba0de5b8df8dad0fadbde5dc5d6f4254ff4d5c31"
+    }
+  },
+  {
+    "theorem": "NormHalving.correction_exists_for_every_half",
+    "claim_path": "pcc/claims/PCC-20261114-e582c4.json",
+    "statement": "theorem correction_exists_for_every_half {A J : Type} [IntModule A] [IntModule J] (phi : A \u2192 J) (norm : J \u2192 A) (phi_sub : \u2200 a b, phi (a-b)=phi a-phi b) (x : J) (a a0 : A) (correct_preimage : phi a0=x) (preimage_norm : (2 : Int) \u2022 a0=norm x) (half : (2 : Int) \u2022 a=norm x) : \u2203 t, (2 : Int) \u2022 t=0 \u2227 phi t=x-phi a",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/norm-halving-evaluator/lean/NormHalving.lean",
+      "theorem": "NormHalving.correction_exists_for_every_half",
+      "decl_sha256": "bade53d1cad09b47b061d68282c3eae38fa165c4037cb06e7a09a1afb650cace"
+    }
+  },
+  {
+    "theorem": "NormHalving.corrected_evaluator_matches_beta",
+    "claim_path": "pcc/claims/PCC-20261114-442f34.json",
+    "statement": "theorem corrected_evaluator_matches_beta {A J B : Type} [IntModule A] [IntModule J] [IntModule B] (phi : A \u2192 J) (psi : A \u2192 B) (beta : J \u2192 B) (phi_add : \u2200 a b, phi (a+b)=phi a+phi b) (psi_add : \u2200 a b, psi (a+b)=psi a+psi b) (quotient_square : \u2200 a, beta (phi a)=psi a) (x : J) (a t : A) (actual_correction : phi t=x-phi a) : psi a+psi t=beta x",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/norm-halving-evaluator/lean/NormHalving.lean",
+      "theorem": "NormHalving.corrected_evaluator_matches_beta",
+      "decl_sha256": "569144b33d4992beda4f446c7e10ebabbed0e1cb47cd0af459d8c8b0ac269b99"
+    }
+  },
+  {
+    "theorem": "NormHalving.corrected_lift_independent",
+    "claim_path": "pcc/claims/PCC-20261114-22b021.json",
+    "statement": "theorem corrected_lift_independent {A J B : Type} [IntModule A] [IntModule J] [IntModule B] (phi : A \u2192 J) (psi : A \u2192 B) (beta : J \u2192 B) (phi_add : \u2200 a b, phi (a+b)=phi a+phi b) (psi_add : \u2200 a b, psi (a+b)=psi a+psi b) (quotient_square : \u2200 a, beta (phi a)=psi a) (x : J) (a t b u : A) (first : phi t=x-phi a) (second : phi u=x-phi b) : psi a+psi t=psi b+psi u",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/norm-halving-evaluator/lean/NormHalving.lean",
+      "theorem": "NormHalving.corrected_lift_independent",
+      "decl_sha256": "553f08474ca4f839f69794f8c10fa15b3bb64e644aec51512b384ea3ef50f449"
+    }
+  },
+  {
+    "theorem": "NormHalving.strongest_scalar_baseline_identity",
+    "claim_path": "pcc/claims/PCC-20261114-508ce1.json",
+    "statement": "theorem strongest_scalar_baseline_identity {A J B : Type} [IntModule A] [IntModule J] [IntModule B] (norm : J \u2192 A) (psi : A \u2192 B) (beta : J \u2192 B) (psi_linear : \u2200 n : Int, \u2200 a, psi (n \u2022 a)=n \u2022 psi a) (beta_linear : \u2200 n : Int, \u2200 x, beta (n \u2022 x)=n \u2022 beta x) (twice : \u2200 x, psi (norm x)=(2 : Int) \u2022 beta x) (x : J) : psi ((1386537 : Int) \u2022 norm x)-beta ((2773073 : Int) \u2022 x)=beta x",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/norm-halving-evaluator/lean/NormHalving.lean",
+      "theorem": "NormHalving.strongest_scalar_baseline_identity",
+      "decl_sha256": "85555e4c74a840a468a8e7dc3dfcf34da9f33843564ef389aa5bf7a0479ce522"
+    }
+  }
+]

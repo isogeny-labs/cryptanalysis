@@ -1,0 +1,37 @@
+{
+  "protocol": "74e00a/actualpublished093/7823d2 boundary BEFOREcode",
+  "original_path": "experiments/chained-transfer-public-target/native/derived/public_solver.rs",
+  "original_sha256": "02a15bb04b6d8a59ae5d80c62b02f993aba740621d7ff94f463db82525e44d9f",
+  "candidate_sha256": "727da83b72ba13764ce9e660598b63ed3783785c70b03dc5dc14afc189e2d06e",
+  "literal_substitutions": [
+    [
+      "pub fn ic_solve_target(inst: &Inst, prm: &Params, target: EP, seed: u64, verify_rel: bool) -> Report {",
+      "pub fn ic_solve_target(checked: &chained_n4_public_target::CheckedInstance, prm: &Params, target: EP, seed: u64, verify_rel: bool) -> Report {\n    let inst = &checked.inst;"
+    ],
+    [
+      "    // pick r0 with all of r0, r0+G, r0+Q valid transfers",
+      "    let completed = match crate::AdapterV2::with_base_point(checked, Some(cv.base_point())) {\n        Ok(adapter) => adapter,\n        Err(error) => { rep.fail = format!(\"completed adapter: {error}\"); return rep; }\n    };\n    rep.stat(\"completed_adapter_ready\", 1.0);\n    // Complete fibres admit the first r0/r0+G/r0+Q triple; no split-transfer fallback."
+    ],
+    [
+      "            match inst.transfer_cubics(&p) {\n                Some(c) => rows3.push(c),\n                None => continue 'outer,\n            }",
+      "            match crate::completed_legacy_space(checked, &completed, p) {\n                Ok(space) => rows3.push(space),\n                Err(error) => { rep.fail = format!(\"completed transfer: {error}\"); return rep; }\n            }"
+    ],
+    [
+      "        // descend each\n",
+      "        rep.stat(\"completed_map_calls\", rows3.len() as f64);\n        // descend each\n"
+    ],
+    [
+      "        for rows in rows3 {",
+      "        for space in rows3 {"
+    ],
+    [
+      "cv.reduce_deg6(&pic::Gen { k: 3, rows })",
+      "cv.reduce_deg6(&space)"
+    ]
+  ],
+  "substitution_count": 6,
+  "diff_raw_sha256": "4935d3bd2f54358f28e074eeb9948e77c31e262ed10f98fb82f7bf6530983550",
+  "diff_XZ_sha256": "9baacd5655f14e4f0b801f5c4a9cfac6dc265562470a3182a1847163cba28dad",
+  "scope": "CheckedInstance argument binding plus actualcompletedadapter/threeGenadmission/reduction/statwiring ONLY;allotherbytesincludingrelationLA/descentwalk/recovery/rho unchanged",
+  "counter_scope": "originalcommon counters omit separatecompletedcover arithmetic;no totalcost ratio"
+}

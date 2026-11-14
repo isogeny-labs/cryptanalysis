@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-14T01:52:10Z",
+ "id": "PCC-20261114-789d94",
+ "kind": "theorem",
+ "producer": {
+  "commit": "b57b1024d45dd87821ad6b8ba4cf4169ac12a1bb",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "ec46dac02b35b2db642192fd6d2fa7cc755c2edcaf6bc27e839509ddb01f73d4",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/norm-assisted-ic/lean/NormAssistedSampling.lean",
+   "theorem": "NormAssistedSampling223.norm_half_roundtrip"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Faithful conditional norm-assisted sampling for native9bc5e6:scalar equivariance/PhiNorm=[2]/ell2773073-torsion and genuine scalar action laws derive Phi(inv2NormG)=G using2*1386537=ell+1;actual prepared Phi(u)=G plus scalar equivariance derives exactallr samples;genuine groupcancellation/nonzeroG excludesomittedinverse2. Both unchanged original4.35/4.34.1 gatesPASS3/zero trusted;no customaxioms/holes/nativeevaluation. ActualPicard/ellsubtypes/groupactions/geometricPhiNorm/scalar-equivalence remainexplicitwritten-nativebridges;no completecost/formalgeometry/signedexecution claim.",
+ "statement": "theorem norm_half_roundtrip {A J : Type} (Phi : A \u2192 J) (N : J \u2192 A) (actA : Nat \u2192 A \u2192 A) (actJ : Nat \u2192 J \u2192 J) (addJ : J \u2192 J \u2192 J) (zeroJ : J) (equivariant : \u2200 n a, Phi (actA n a) = actJ n (Phi a)) (compose : \u2200 m n x, actJ m (actJ n x) = actJ (m*n) x) (add_action : \u2200 m n x, actJ (m+n) x = addJ (actJ m x) (actJ n x)) (one_action : \u2200 x, actJ 1 x = x) (zero_left : \u2200 x, addJ zeroJ x = x) (G : J) (torsion : actJ 2773073 G = zeroJ) (norm_two : Phi (N G) = actJ 2 G) : Phi (actA 1386537 (N G)) = G"
+}

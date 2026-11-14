@@ -1,0 +1,33 @@
+experiments/chained-transfer-public-target/beta-rational-lift/lean/QuadraticRationalLift.lean:99:13: error: Type mismatch
+  ↑a.snd
+has type
+  Nat
+but is expected to have type
+  Fin 4
+experiments/chained-transfer-public-target/beta-rational-lift/lean/QuadraticRationalLift.lean:99:38: error: Type mismatch
+  ↑a.fst
+has type
+  Nat
+but is expected to have type
+  Fin 2
+experiments/chained-transfer-public-target/beta-rational-lift/lean/QuadraticRationalLift.lean:100:32: error: Type mismatch
+  ↑a.fst
+has type
+  Nat
+but is expected to have type
+  Fin 2
+experiments/chained-transfer-public-target/beta-rational-lift/lean/QuadraticRationalLift.lean:116:56: error: failed to synthesize
+  Decidable
+    ((∀ (a b c : Toy), toyAdd (toyAdd a b) c = toyAdd a (toyAdd b c)) ∧
+      (∀ (a b : Toy), toyAdd a b = toyAdd b a) ∧
+        (∀ (a : Toy), toyAdd a (0, 0) = a) ∧
+          (∀ (a : Toy), ∃ b, toyAdd a b = (0, 0)) ∧
+            (∀ (a b : Toy), toyF (toyAdd a b) = toyAdd (toyF a) (toyF b)) ∧
+              (∀ (b : Toy), ∃ a, toyF a = b) ∧
+                (∀ (x : Fin 2), ∃ a, toyPhi a = x) ∧
+                  (∀ (a b : Toy), toyPhi (toyAdd a b) = toyPhi a + toyPhi b) ∧
+                    (∀ (a : Toy), toyPhi (toyF a) = toyPhi a) ∧
+                      (∀ (c : Toy), toyPhi c = 0 → toyAdd c c = (0, 0)) ∧
+                        (∃ c, toyPhi c = 0 ∧ toyF (toyF (toyF c)) ≠ c) ∧ ∀ (a : Toy), toyPhi a = 1 → toyF (toyF a) ≠ a)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.

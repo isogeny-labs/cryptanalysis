@@ -1,0 +1,32 @@
+[
+  {
+    "theorem": "ChainKernels223.kernel_type_from_order_and_two_torsion",
+    "claim_path": "pcc/claims/PCC-20261113-cbaaa0.json",
+    "statement": "theorem kernel_type_from_order_and_two_torsion (a b d : Nat) (order : 2*a+b=6) (twoTorsion : a+b=3+d) : a=3-d \u2227 b=2*d \u2227 d\u22643",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/chain-kernels/lean/ChainKernels.lean",
+      "theorem": "ChainKernels223.kernel_type_from_order_and_two_torsion",
+      "decl_sha256": "8d6fe21b383010a8f72d264963789f3d3f72e6eee605ad9983d9a3174e0ca6a9"
+    }
+  },
+  {
+    "theorem": "ChainKernels223.free_four_kernel_iff_disjoint",
+    "claim_path": "pcc/claims/PCC-20261113-580339.json",
+    "statement": "theorem free_four_kernel_iff_disjoint (a b d : Nat) (order : 2*a+b=6) (twoTorsion : a+b=3+d) : (a=3 \u2227 b=0) \u2194 d=0",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/chain-kernels/lean/ChainKernels.lean",
+      "theorem": "ChainKernels223.free_four_kernel_iff_disjoint",
+      "decl_sha256": "280517381c08d20a627ddda04e15c0e9b9fa914f59e8f2a4ae86e6dbe10898fb"
+    }
+  },
+  {
+    "theorem": "ChainKernels223.same_product_two_steps_collapse",
+    "claim_path": "pcc/claims/PCC-20261113-0cc751.json",
+    "statement": "theorem same_product_two_steps_collapse {A J B C : Type} (normOld : J \u2192 A) (phiB : A \u2192 B) (normB : B \u2192 A) (phiC : A \u2192 C) (normC : C \u2192 A) (doubleA : A \u2192 A) (doubleC : C \u2192 C) (pairB : \u2200 a, normB (phiB a) = doubleA a) (pairCA : \u2200 a, normC (phiC a) = doubleA a) (pairCC : \u2200 y, phiC (normC y) = doubleC y) : \u2200 x, phiC (normB (phiB (normOld x))) = doubleC (phiC (normOld x))",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/chain-kernels/lean/ChainKernels.lean",
+      "theorem": "ChainKernels223.same_product_two_steps_collapse",
+      "decl_sha256": "a2e66798c73f2c3b56619ac5b081a9725f0755b089da28709664f72412680200"
+    }
+  }
+]

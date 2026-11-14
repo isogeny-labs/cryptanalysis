@@ -1,0 +1,7 @@
+# Preserve the whole report PNG through original artifact publication
+
+Source governance01 passed all recorded checks except artifact1, which rejects the151899B complete-diagram.png under the unchanged data-file policy. The entirefailedgov/indexpatch andPNG are preserved; f4a048 pins its exact bytes. Do not resize, re-encode, split, drop or directly commit it through a policy exception. [pcc:unverified]
+
+Use the existing genuine publisher with NEWguard12 for the entire PNG and a whole checkpoint of ALL current pending consumer files/PCCledger/resume/source/CI/report, withcomplete member indices. Hold current transitive882inputs/actualproofstages/originalrootdiagnosticbinary+fixture/bothrepositoriesownedbytes anddeclaredlinktypes until actual remote byte replays andexactbotfastforward. No scientific source changes during the hold. Project the actual successful originalmanifest into the consumer report only afterrelease, preserving the physical PNG/hash and the originalPCCsubject path. [pcc:unverified]
+
+Then complete consumer sourcecommit andfreshphysical882guardfull/own20automaticCI. All otherwholeclosedcaptures from ca9full/negativeCI/helpercontrol/398CI/allct73 attempts/cacheobjects/checkpoints/reports andnewcompletefull/CI remain retained for a subsequent NEWguard13 wholebatch. This ordering unblocks publication without claiming that pendingcaptures are already genuine. No permission, trust, threshold, validator, solver or scientific-golden change. [pcc:unverified]

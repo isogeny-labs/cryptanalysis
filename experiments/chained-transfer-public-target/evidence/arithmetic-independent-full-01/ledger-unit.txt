@@ -1,0 +1,17 @@
+   Compiling serde_core v1.0.229
+   Compiling serde_json v1.0.145
+   Compiling n4-arithmetic-taps v0.1.0 (/workspace/scratch/ct72-arithmetic-full-01-layout/derived-layout/n4-arithmetic-taps)
+    Finished `release` profile [optimized] target(s) in 6.69s
+     Running unittests src/lib.rs (/workspace/scratch/ct72-arithmetic-full-01-build-cache/release/deps/n4_arithmetic_taps-4b979e5ddb257048)
+
+running 1 test
+test tests::nested_scopes_checked_counts_and_foreign_thread_rejection ... 
+thread '<unnamed>' (340613) panicked at src/lib.rs:20:5:
+assertion `left == right` failed: unexpected arithmetic thread
+  left: ThreadId(2)
+ right: ThreadId(3)
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

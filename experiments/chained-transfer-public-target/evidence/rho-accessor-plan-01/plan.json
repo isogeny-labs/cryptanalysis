@@ -1,0 +1,14 @@
+{
+  "source": "f5d6c92a4eb53fc838ab8bf2665887e12522cbd9",
+  "question": "Expose the scalar actually recovered by the unchanged public-target rho and check every answer with the original independent engine",
+  "change": "Additive rho-accessor crate: whole public_solver.rs copy, exactly three substitutions: one output field, collision Some(k), exhausted None. No walk/collision/random/point/arithmetic/verification change",
+  "originals": "All four original N4 files and frozen P1 native crate remain byte-identical",
+  "inputs": "Original actual public-five.json requests only; witnesses remain outside requests and solver. Each target gets a new original independent rho table",
+  "controls": "One unfiltered serial test: all five public targets; original scalar-taking rho and frozen public rho match candidate ok/steps/dps and counters on identical seeds; candidate recovered scalar independently checked; constructor/parser reused",
+  "actual_CLI": "New solve command reads the same strict public request; all five answers independently checked. Actual unknown-scalar and unknown-witness requests must exit2 without output",
+  "limits": {"compile_timeout_s": 900, "native_timeout_s": 900, "native_address_limit_KiB": 2097152, "threads": 1},
+  "cache": "Reuse completed P1 unit outside cache; development correctness only, never a cold comparison",
+  "capture": "Complete sources and before/after hashes; whole logs/commands/outputs/native status; whole standard tarXZ and complete member index. Preserve failures unchanged",
+  "falsification": "Any mismatch, failed answer, altered original algorithm/input, nonzero original process, guard failure or ignored/filtered test rejects acceptance",
+  "scope": "Routine bounded implementation correctness, not a performance experiment or speedup; public rho is a correctness baseline, not a strongest published reference"
+}

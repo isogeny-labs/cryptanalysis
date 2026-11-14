@@ -1,0 +1,17 @@
+digraph T {
+graph [rankdir=LR,bgcolor="transparent",ranksep=.35];
+node [shape=box,style="rounded,filled",fillcolor="#edf5fb",fontname="DejaVu Sans",fontsize=10];
+edge [fontname="DejaVu Sans",fontsize=9];
+E [label="Fixed N4 q223 / seed1
+E(K), K=F223[z]/(z^3-3)
+ell=2773073, order=11092292
+rational 2-Sylow: C2 x C2"];
+J [label="Same fixed Ciani C / F223
+J=Jac(C), genus3
+ell=2773073, order=11092292
+rational 2-Sylow: C4"];
+E -> J [label="Original completed Phi
+rational cofactor kernel2 / image2"];
+J -> E [label="Original canonical Norm
+rational cofactor kernel2 / image2"];
+}

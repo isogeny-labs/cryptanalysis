@@ -11,4 +11,34 @@ experiments/shifted-base-geometry/solver-smoke.json linguist-generated=true
 # The generated hashed-ECDL report contains PDF binary streams.
 docs/hashed-ecdl.pdf binary
 
+# Immutable Git protocol byte captures pinned by PCC-20261113-0aa36b.
+# Their original space/tab records and server trailing spaces are data.
+experiments/chained-transfer-public-target/evidence/chain-kernel-normal-publication-01/consumer-push.log binary
+experiments/chained-transfer-public-target/evidence/chain-kernel-normal-publication-01/root-push.log binary
+# Frozen whitespace diagnostics quote those same raw protocol records.
+experiments/chained-transfer-public-target/evidence/odd-source-raw-log-classification-01/original-cached-whitespace.txt binary
+experiments/chained-transfer-public-target/evidence/odd-source-source-governance-01/cached-whitespace.txt binary
+experiments/chained-transfer-public-target/evidence/odd-source-source-governance-03/cached-whitespace.txt binary
+
 experiments/hashed-ecdl-ecbench-metrics/*.pdf binary
+
+# Immutable raw arithmetic full-replay output, HELPER_RAW_CAPTURE_FORMAT_01.
+experiments/chained-transfer-public-target/evidence/arithmetic-independent-full-01/derived-registry-lock-blocks.txt whitespace=-blank-at-eof,-blank-at-eol
+experiments/chained-transfer-public-target/evidence/arithmetic-independent-full-01/ledger-unit.txt whitespace=-blank-at-eof,-blank-at-eol
+experiments/chained-transfer-public-target/evidence/arithmetic-independent-full-01/original-registry-lock-blocks.txt whitespace=-blank-at-eof,-blank-at-eol
+experiments/chained-transfer-public-target/evidence/arithmetic-helper-fetch-source-governance-01/cached-whitespace.txt whitespace=-blank-at-eof,-blank-at-eol
+
+# Immutable beta native/source captures and final renderer output; BETA_CAPTURE_FORMAT_01.
+experiments/chained-transfer-public-target/evidence/beta-quadratic-Picard-acceptance-02/executed-source/quadratic-picard-engine/Cargo.toml whitespace=-blank-at-eof,-blank-at-eol
+experiments/chained-transfer-public-target/evidence/beta-quadratic-Picard-acceptance-02/executed-source/quadratic-picard-engine/src/lib.rs whitespace=-blank-at-eof,-blank-at-eol
+experiments/chained-transfer-public-target/evidence/beta-quadratic-Picard-acceptance-02/native.txt whitespace=-blank-at-eof,-blank-at-eol
+experiments/chained-transfer-public-target/evidence/beta-rational-lift-native-01/native.txt whitespace=-blank-at-eof,-blank-at-eol
+experiments/chained-transfer-public-target/reports/beta-rational-lift-01/inverse-coverage.svg whitespace=-blank-at-eof,-blank-at-eol
+experiments/chained-transfer-public-target/reports/beta-rational-lift-01/report.pdf binary
+experiments/chained-transfer-public-target/evidence/beta-complete-fibres-native-01/native.txt -whitespace
+experiments/chained-transfer-public-target/reports/norm-halving-proposal-01/report.pdf binary
+experiments/chained-transfer-public-target/reports/norm-halving-results-01/report.pdf binary
+
+# Preserve exact inspected Matplotlib path bytes and original rejected diagnostic.
+experiments/chained-transfer-public-target/reports/norm-halving-results-01/selected-calls.svg whitespace=-blank-at-eof,-blank-at-eol
+experiments/chained-transfer-public-target/evidence/beta-norm-halving-source-governance-01/cached-whitespace.txt -whitespace

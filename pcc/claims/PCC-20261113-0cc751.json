@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-13T18:52:06Z",
+ "id": "PCC-20261113-0cc751",
+ "kind": "theorem",
+ "producer": {
+  "commit": "7cf45856e7cb019702e3a14fb3961761babb48d7",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "a2e66798c73f2c3b56619ac5b081a9725f0755b089da28709664f72412680200",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/chain-kernels/lean/ChainKernels.lean",
+   "theorem": "ChainKernels223.same_product_two_steps_collapse"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Faithful partialNat equations/order64/twotorsion/dimension andfree4iffdisjoint,plusgeneralfunctional sameA two-stepcollapse from actualdual2pairs. Native29830a/written2e21d5. Bothunchangedoriginal4.35/4.34.1gatesPASS3/0trusted;arithmeticstandardpropext/Classical.choice/Quot.sound,functionalcollapse noaxioms. Actualetale/exacttorsion/finiteabelianclassification/polarization/Picardbridgesremainwritten/open;notactualJ4divisorbasis orsignedexecution/cost.",
+ "statement": "theorem same_product_two_steps_collapse {A J B C : Type} (normOld : J \u2192 A) (phiB : A \u2192 B) (normB : B \u2192 A) (phiC : A \u2192 C) (normC : C \u2192 A) (doubleA : A \u2192 A) (doubleC : C \u2192 C) (pairB : \u2200 a, normB (phiB a) = doubleA a) (pairCA : \u2200 a, normC (phiC a) = doubleA a) (pairCC : \u2200 y, phiC (normC y) = doubleC y) : \u2200 x, phiC (normB (phiB (normOld x))) = doubleC (phiC (normOld x))"
+}

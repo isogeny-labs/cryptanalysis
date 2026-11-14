@@ -1,0 +1,20 @@
+--- 39b/new-target-ic/derived/class_solver.rs
++++ norm-assisted-ic/derived/class_solver.rs
+@@ -87,7 +87,7 @@
+     [p[0] as u32, p[1] as u32, p[2] as u32]
+ }
+ 
+-pub fn solve_class(inst: &crate::TargetContext<'_>, prm: &Params, generator: &pic::PicClass, target: &pic::PicClass, seed: u64, verify_rel: bool) -> Report {
++pub fn solve_class(inst: &crate::SamplerContext<'_>, prm: &Params, generator: &pic::PicClass, target: &pic::PicClass, seed: u64, verify_rel: bool) -> Report {
+     let mut rep = Report::default();
+     let q = inst.q;
+     let ell = inst.ell;
+@@ -484,7 +484,7 @@
+     let mut desc_ok = true;
+     'outer: loop {
+         let r = rng.below(ell - 1) + 1;
+-        let r0 = pc(&cv, || cv.mul_scalar(generator, r as u128));
++        let r0 = inst.sample(r).expect("prepared exact-generator sampler");
+         let r1 = pc(&cv, || cv.add(&r0, generator));
+         let r2 = pc(&cv, || cv.add(&r0, target));
+         ys.clear();

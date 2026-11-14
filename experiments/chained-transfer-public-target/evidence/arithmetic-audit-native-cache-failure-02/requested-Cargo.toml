@@ -1,0 +1,21 @@
+[package]
+name = "chained-n4-norm-assisted-ic"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[workspace]
+
+[dependencies]
+n4-arithmetic-taps = { path = "/workspace/scratch/ct72-arithmetic-native-layout-03/derived-layout/n4-arithmetic-taps" }
+chained-n4-public-target = { path = "/workspace/scratch/ct72-arithmetic-native-layout-03/derived-layout/cryptanalysis/experiments/chained-transfer-public-target/native" }
+chained-n4-completed-v2 = { path = "/workspace/scratch/ct72-arithmetic-native-layout-03/derived-layout/cryptanalysis/experiments/chained-transfer-public-target/v2" }
+chained-n4-odd-product-models = { path = "/workspace/scratch/ct72-arithmetic-native-layout-03/derived-layout/cryptanalysis/experiments/chained-transfer-public-target/odd-product-models" }
+chained-n4-odd-product-maps = { path = "/workspace/scratch/ct72-arithmetic-native-layout-03/derived-layout/cryptanalysis/experiments/chained-transfer-public-target/odd-product-maps" }
+chained-n4-odd-product-refinements = { path = "/workspace/scratch/ct72-arithmetic-native-layout-03/derived-layout/cryptanalysis/experiments/chained-transfer-public-target/odd-product-refinements" }
+chained-n4-odd-source = { path = "/workspace/scratch/ct72-arithmetic-native-layout-03/derived-layout/cryptanalysis/experiments/chained-transfer-public-target/odd-source" }
+chained-n4-new-target-ic = { path = "/workspace/scratch/ct72-arithmetic-native-layout-03/derived-layout/cryptanalysis/experiments/chained-transfer-public-target/new-target-ic" }
+ghs-original-engines = { path = "/workspace/scratch/ct72-arithmetic-native-layout-03/derived-layout/crypto/research/chained_jacobian_transfers_20261110/genus3-prime-descent/engine" }
+isogeny_algos = { path = "/workspace/scratch/ct72-arithmetic-native-layout-03/derived-layout/crypto/isogeny_algos" }
+serde = { version = "=1.0.228", features = ["derive"] }
+serde_json = "=1.0.145"

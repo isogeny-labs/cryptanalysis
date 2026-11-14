@@ -1,0 +1,84 @@
+{
+  "upstream": "3d49af7f3d0a28e76b79e4825c9d2324e85853d2",
+  "path": "src/cryptanalysis/plane_quartic_pic.rs",
+  "original_SHA256": "e6cf9d5337f1ba3d6b2bc22b1d4f29f4093831817721452e1702a055cf3d1c37",
+  "derived_SHA256": "7e46b02eeb7f3d31d85ac162b0fc1802640cec6834fc3d3f8d950ebeac993dea",
+  "entire_original_test_suffix_SHA256_unchanged": "1fe65a7b7da3498856bd4c296aaaa7ff6bb625ee9174f70b96523948afd564c9",
+  "original_test_suffix_retained_verbatim": "in original immutable producer Git blob/full original source, not linked into this experimental dependency; main-driver independent field/prime-class/extension tests compile and run",
+  "literal_changes": [
+    {
+      "old": "struct Fq {\n    q: u64,",
+      "new": "struct Fq {\n    q: u64,\n    quadratic_nu: Option<u32>,"
+    },
+    {
+      "all_exact_initializers": "three q:q as u64 initializers receive quadratic_nu:None"
+    },
+    {
+      "old": "        self.c_mul.set(self.c_mul.get() + 1);\n        ((a as u64 * b as u64) % self.q) as u32",
+      "new": "        self.c_mul.set(self.c_mul.get() + 1);\n        self.mulu(a, b)"
+    },
+    {
+      "old": "    fn mulu(&self, a: u32, b: u32) -> u32 {\n        ((a as u64 * b as u64) % self.q) as u32\n    }",
+      "new": "    fn mulu(&self, a: u32, b: u32) -> u32 {\n        if let Some(nu) = self.quadratic_nu {\n            let p = self.q;\n            let (a0, a1) = (a as u64 % p, a as u64 / p);\n            let (b0, b1) = (b as u64 % p, b as u64 / p);\n            assert!(a1 < p && b1 < p);\n            let real = (a0*b0 + nu as u64*a1*b1) % p;\n            let imag = (a0*b1 + a1*b0) % p;\n            return (real + p*imag) as u32;\n        }\n        ((a as u64 * b as u64) % self.q) as u32\n    }\n    fn add_nc(&self, a: u32, b: u32) -> u32 {\n        if self.quadratic_nu.is_some() {\n            let p = self.q;\n            return (((a as u64 % p + b as u64 % p) % p)\n                + p*((a as u64 / p + b as u64 / p) % p)) as u32;\n        }\n        let s = a as u64 + b as u64;\n        (if s >= self.q { s - self.q } else { s }) as u32\n    }"
+    },
+    {
+      "old": "        self.c_add.set(self.c_add.get() + 1);\n        let s = a as u64 + b as u64;\n        (if s >= self.q { s - self.q } else { s }) as u32",
+      "new": "        self.c_add.set(self.c_add.get() + 1);\n        self.add_nc(a, b)"
+    },
+    {
+      "old": "        self.c_add.set(self.c_add.get() + 1);\n        if a >= b {\n            a - b\n        } else {\n            (a as u64 + self.q - b as u64) as u32\n        }",
+      "new": "        self.c_add.set(self.c_add.get() + 1);\n        self.sub_nc(a, b)"
+    },
+    {
+      "old": "    fn neg(&self, a: u32) -> u32 {\n        if a == 0 {",
+      "new": "    fn neg(&self, a: u32) -> u32 {\n        if self.quadratic_nu.is_some() {\n            return self.sub_nc(0, a);\n        }\n        if a == 0 {"
+    },
+    {
+      "old": "    fn invu(&self, a: u32) -> u32 {\n        // extended Euclid on (q, a)",
+      "new": "    fn invu(&self, a: u32) -> u32 {\n        if let Some(nu) = self.quadratic_nu {\n            let p = self.q;\n            let (a0, a1) = (a as u64 % p, a as u64 / p);\n            assert!(a1 < p);\n            let norm = (a0*a0 + p - (nu as u64*a1*a1) % p) % p;\n            assert!(norm != 0, \"quadratic field inversion of zero\");\n            let inv_norm = self.base_invu(norm as u32) as u64;\n            return ((a0*inv_norm) % p + p*((p-a1)*inv_norm % p)) as u32;\n        }\n        self.base_invu(a)\n    }\n    fn base_invu(&self, a: u32) -> u32 {\n        // extended Euclid on (q, a)"
+    },
+    {
+      "old": "    fn sub_nc(&self, a: u32, b: u32) -> u32 {\n        if a >= b {",
+      "new": "    fn sub_nc(&self, a: u32, b: u32) -> u32 {\n        if self.quadratic_nu.is_some() {\n            let p = self.q;\n            return (((a as u64 % p + p - b as u64 % p) % p)\n                + p*((a as u64 / p + p - b as u64 / p) % p)) as u32;\n        }\n        if a >= b {"
+    },
+    {
+      "old": "s = (s as u64 + self.fq.mulu(t, self.f[i]) as u64).rem_euclid(self.q as u64) as u32;",
+      "new": "s = self.fq.add_nc(s, self.fq.mulu(t, self.f[i]));"
+    },
+    {
+      "old": "grad[0] = ((grad[0] as u64 + t as u64) % self.q as u64) as u32;",
+      "new": "grad[0] = self.fq.add_nc(grad[0], t);"
+    },
+    {
+      "old": "grad[1] = ((grad[1] as u64 + t as u64) % self.q as u64) as u32;",
+      "new": "grad[1] = self.fq.add_nc(grad[1], t);"
+    },
+    {
+      "old": "grad[2] = ((grad[2] as u64 + t as u64) % self.q as u64) as u32;",
+      "new": "grad[2] = self.fq.add_nc(grad[2], t);"
+    },
+    {
+      "old": "let mut d = 0u64;",
+      "new": "let mut d = 0u32;"
+    },
+    {
+      "old": "d += t as u64;",
+      "new": "d = self.fq.add_nc(d, t);"
+    },
+    {
+      "old": "r2[i] = (d % self.q as u64) as u32;",
+      "new": "r2[i] = d;"
+    },
+    {
+      "old": "    /// Order of the base field.\n",
+      "new": "    /// Scalar extension of a validated prime curve. Encodings are a+p*b in\n    /// F_p[v]/(v^2-nu), never integers modulo p^2. The base curve, P0 and\n    /// prime normal-form caches stay fixed; all caches have coefficients in F_p.\n    pub fn base_change_quadratic(p: u32, nu: u32, f: [u32; 15], p0: Pt) -> Result<Self, PicError> {\n        if ![5, 7, 11, 223].contains(&p) || nu == 0 || nu >= p\n            || p0.iter().any(|&x| x >= p) {\n            return Err(PicError::BadField);\n        }\n        let mut out = Self::new(p, f, p0)?;\n        if out.fq.powu(nu, (p as u64-1)/2) != p-1 {\n            return Err(PicError::BadField);\n        }\n        let cached = (out.p0_vals.clone(), out.lines_p0.rows.clone(), out.cons2p0.rows.clone());\n        out.fq.quadratic_nu = Some(nu);\n        out.q = p*p;\n        out.setup_base_point();\n        assert_eq!(cached, (out.p0_vals.clone(), out.lines_p0.rows.clone(), out.cons2p0.rows.clone()),\n            \"actual scalar-extension base-point caches must be identical\");\n        Ok(out)\n    }\n    pub fn coefficient_add(&self, a: u32, b: u32) -> u32 { self.fq.add_nc(a,b) }\n    pub fn coefficient_sub(&self, a: u32, b: u32) -> u32 { self.fq.sub_nc(a,b) }\n    pub fn coefficient_mul(&self, a: u32, b: u32) -> u32 { self.fq.mulu(a,b) }\n    pub fn coefficient_inv(&self, a: u32) -> u32 { self.fq.invu(a) }\n    pub fn coefficient_frobenius(&self, a: u32) -> u32 {\n        if self.fq.quadratic_nu.is_none() { return a; }\n        let p=self.fq.q as u32;\n        a%p + p*((p-a/p)%p)\n    }\n    /// Frobenius preserves normalized pivots, hence the canonical class form.\n    pub fn frobenius_class(&self, x: &PicClass) -> PicClass {\n        match x {\n            PicClass::Exc(p) => PicClass::Exc(p.map(|a|self.coefficient_frobenius(a))),\n            PicClass::Typ(m) => PicClass::Typ(m.map(|row|row.map(|a|self.coefficient_frobenius(a)))),\n        }\n    }\n\n    /// Order of the base field.\n"
+    }
+  ],
+  "scope": "explicit quadratic scalar-extension backend, original production file and tests unchanged",
+  "formatted_derived_SHA256": "b93f2515f72b5c71dc0b702d4db080409e647765daa1ac67a557e3d7c4251511",
+  "production_prefix_only": "compile the same production part that is active when original engine is a dependency; full original tests remain byte-identical in pinned producer3d49 blob and every original785 closure; no original tests/gates changed",
+  "compiled_production_prefix_SHA256": "e3c2113ba6adfda2ccfedd04d53242725106f1b9fe1728202d284cae0b4b02cd",
+  "reason_for_source_boundary": "original cfg(test) suffix uses fixture paths for original repository and contains its existing ignored cost sweep; its tests remain in original repository, with original root regression status unchanged",
+  "published_production_SHA256": "9975a014b8163bfca121090e00e8045b797cf8255dec2efb0e5685593ed70b40",
+  "post_native_source_format": "rustfmt normalizes trailing EOF blank after production-prefix extraction only; actual executed raw prefix/source snapshot remains immutable in native02 evidence"
+}

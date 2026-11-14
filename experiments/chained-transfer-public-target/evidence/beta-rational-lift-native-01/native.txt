@@ -1,0 +1,115 @@
+warning: unused import: `crate::ghs::*`
+ --> /workspace/cryptanalysis/experiments/chained-transfer-public-target/native/src/../original/ic.rs:6:5
+  |
+6 | use crate::ghs::*;
+  |     ^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused variable: `rng`
+   --> /workspace/cryptanalysis/experiments/chained-transfer-public-target/native/src/../original/ic.rs:283:46
+    |
+283 | pub fn find_relations(cv: &Curve, fb: &[P3], rng: &mut Rng) -> RelOut {
+    |                                              ^^^ help: if this is intentional, prefix it with an underscore: `_rng`
+    |
+    = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: variable does not need to be mutable
+   --> /workspace/cryptanalysis/experiments/chained-transfer-public-target/native/src/../original/ic.rs:983:17
+    |
+983 |             let mut add_f = |fp: &mut Vec<(u32, u8)>, k: u32| {
+    |                 ----^^^^^
+    |                 |
+    |                 help: remove this `mut`
+    |
+    = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused variable: `c2`
+   --> /workspace/cryptanalysis/experiments/chained-transfer-public-target/native/src/../original/ic.rs:935:17
+    |
+935 |             let c2 = f.mul(f.add(s_, t_), inv2);
+    |                 ^^ help: if this is intentional, prefix it with an underscore: `_c2`
+
+warning: variable does not need to be mutable
+   --> /workspace/cryptanalysis/experiments/chained-transfer-public-target/native/src/../derived/public_solver.rs:495:9
+    |
+495 |     let mut picks: Vec<EP> = Vec::new();
+    |         ----^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: unused variable: `picks`
+   --> /workspace/cryptanalysis/experiments/chained-transfer-public-target/native/src/../derived/public_solver.rs:495:9
+    |
+495 |     let mut picks: Vec<EP> = Vec::new();
+    |         ^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_picks`
+
+warning: value assigned to `mark` is never read
+   --> /workspace/cryptanalysis/experiments/chained-transfer-public-target/native/src/../derived/public_solver.rs:104:13
+    |
+104 |             mark = (now, std::time::Instant::now());
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+577 |     phase!("verify");
+    |     ---------------- in this macro invocation
+    |
+    = help: maybe it is overwritten before being read?
+    = note: `#[warn(unused_assignments)]` (part of `#[warn(unused)]`) on by default
+    = note: this warning originates in the macro `phase` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: `chained-n4-public-target` (lib) generated 7 warnings (run `cargo fix --lib -p chained-n4-public-target` to apply 6 suggestions)
+warning: unused imports: `BTreeMap`, `HashMap`, and `VecDeque`
+  --> /workspace/cryptanalysis/experiments/chained-transfer-public-target/v2/src/norm.rs:11:24
+   |
+11 | use std::collections::{BTreeMap, BTreeSet, HashMap, VecDeque};
+   |                        ^^^^^^^^            ^^^^^^^  ^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `ghs::EP`
+ --> /workspace/cryptanalysis/experiments/chained-transfer-public-target/odd-source/src/lib.rs:4:32
+  |
+4 | use chained_n4_public_target::{ghs::EP, CheckedInstance};
+  |                                ^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `Rng`
+ --> /workspace/cryptanalysis/experiments/chained-transfer-public-target/odd-source/src/lib.rs:7:20
+  |
+7 |     field::{Field, Rng},
+  |                    ^^^
+
+warning: `chained-n4-completed-v2` (lib) generated 1 warning (run `cargo fix --lib -p chained-n4-completed-v2` to apply 1 suggestion)
+warning: `chained-n4-odd-source` (lib) generated 2 warnings (run `cargo fix --lib -p chained-n4-odd-source` to apply 2 suggestions)
+warning: unused import: `back6`
+ --> /workspace/cryptanalysis/experiments/chained-transfer-public-target/odd-product-maps/src/adapter.rs:6:12
+  |
+6 |     even::{back6, lift6},
+  |            ^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused imports: `BTreeMap`, `HashMap`, and `VecDeque`
+  --> /workspace/cryptanalysis/experiments/chained-transfer-public-target/odd-product-maps/src/norm.rs:11:24
+   |
+11 | use std::collections::{BTreeMap, BTreeSet, HashMap, VecDeque};
+   |                        ^^^^^^^^            ^^^^^^^  ^^^^^^^^
+
+warning: unused import: `field::Field`
+  --> /workspace/cryptanalysis/experiments/chained-transfer-public-target/odd-product-maps/src/chain.rs:10:5
+   |
+10 |     field::Field,
+   |     ^^^^^^^^^^^^
+
+warning: `chained-n4-odd-product-maps` (lib) generated 3 warnings (run `cargo fix --lib -p chained-n4-odd-product-maps` to apply 2 suggestions)
+    Finished `release` profile [optimized] target(s) in 0.05s
+     Running unittests src/lib.rs (/workspace/scratch/ct57-n4-unit-01-build-cache/release/deps/chained_n4_beta_rational_lift-30d6a240c9c45e01)
+
+running 1 test
+test tests::actual_four_torsion_and_frobenius_hypothesis_controls ... N4_BETA_ACTUAL_E4 {"K_embedding":"z=w^2","K_modulus":[220,0,0,1],"L_modulus":[220,0,0,0,0,0,1],"ell":2773073,"panels":[{"F3_is_the_base_Frobenius":true,"a":[214,144,205],"all16_four_torsion_and_both13_compositions":true,"all16_points":[{"base_Frobenius_F3":null,"both_composition_13":true,"double":null,"odd_isogeny_image":null,"point":null},{"base_Frobenius_F3":[[89,0,36,0,102,0],[0,0,0,0,0,0]],"both_composition_13":true,"double":null,"odd_isogeny_image":[[154,0,115,0,176,0],[0,0,0,0,0,0]],"point":[[89,0,36,0,102,0],[0,0,0,0,0,0]]},{"base_Frobenius_F3":[[89,181,36,102,102,208],[17,74,219,181,215,127]],"both_composition_13":true,"double":[[89,0,36,0,102,0],[0,0,0,0,0,0]],"odd_isogeny_image":[[154,140,115,92,176,121],[62,94,107,205,27,157]],"point":[[89,42,36,121,102,15],[17,149,219,42,215,96]]},{"base_Frobenius_F3":[[89,181,36,102,102,208],[206,149,4,42,8,96]],"both_composition_13":true,"double":[[89,0,36,0,102,0],[0,0,0,0,0,0]],"odd_isogeny_image":[[154,140,115,92,176,121],[161,129,116,18,196,66]],"point":[[89,42,36,121,102,15],[206,74,4,181,8,127]]},{"base_Frobenius_F3":[[89,42,36,121,102,15],[17,149,219,42,215,96]],"both_composition_13":true,"double":[[89,0,36,0,102,0],[0,0,0,0,0,0]],"odd_isogeny_image":[[154,83,115,131,176,102],[62,129,107,18,27,66]],"point":[[89,181,36,102,102,208],[17,74,219,181,215,127]]},{"base_Frobenius_F3":[[89,42,36,121,102,15],[206,74,4,181,8,127]],"both_composition_13":true,"double":[[89,0,36,0,102,0],[0,0,0,0,0,0]],"odd_isogeny_image":[[154,83,115,131,176,102],[161,94,116,205,196,157]],"point":[[89,181,36,102,102,208],[206,149,4,42,8,96]]},{"base_Frobenius_F3":[[136,0,144,0,75,0],[0,0,0,0,0,0]],"both_composition_13":true,"double":null,"odd_isogeny_image":[[46,0,199,0,124,0],[0,0,0,0,0,0]],"point":[[136,0,144,0,75,0],[0,0,0,0,0,0]]},{"base_Frobenius_F3":[[136,146,144,0,75,118],[44,49,159,162,153,27]],"both_composition_13":true,"double":[[136,0,144,0,75,0],[0,0,0,0,0,0]],"odd_isogeny_image":[[46,37,199,31,124,178],[62,147,127,104,197,59]],"point":[[136,77,144,0,75,105],[44,174,159,61,153,196]]},{"base_Frobenius_F3":[[136,146,144,0,75,118],[179,174,64,61,70,196]],"both_composition_13":true,"double":[[136,0,144,0,75,0],[0,0,0,0,0,0]],"odd_isogeny_image":[[46,37,199,31,124,178],[161,76,96,119,26,164]],"point":[[136,77,144,0,75,105],[179,49,64,162,70,27]]},{"base_Frobenius_F3":[[136,77,144,0,75,105],[44,174,159,61,153,196]],"both_composition_13":true,"double":[[136,0,144,0,75,0],[0,0,0,0,0,0]],"odd_isogeny_image":[[46,186,199,192,124,45],[62,76,127,119,197,164]],"point":[[136,146,144,0,75,118],[44,49,159,162,153,27]]},{"base_Frobenius_F3":[[136,77,144,0,75,105],[179,49,64,162,70,27]],"both_composition_13":true,"double":[[136,0,144,0,75,0],[0,0,0,0,0,0]],"odd_isogeny_image":[[46,186,199,192,124,45],[161,147,96,104,26,59]],"point":[[136,146,144,0,75,118],[179,174,64,61,70,196]]},{"base_Frobenius_F3":[[221,0,43,0,46,0],[0,0,0,0,0,0]],"both_composition_13":true,"double":null,"odd_isogeny_image":[[23,0,132,0,146,0],[0,0,0,0,0,0]],"point":[[221,0,43,0,46,0],[0,0,0,0,0,0]]},{"base_Frobenius_F3":[[221,222,43,10,46,25],[28,75,8,139,168,122]],"both_composition_13":true,"double":[[221,0,43,0,46,0],[0,0,0,0,0,0]],"odd_isogeny_image":[[23,96,132,127,146,176],[30,55,160,147,44,138]],"point":[[221,1,43,213,46,198],[28,148,8,84,168,101]]},{"base_Frobenius_F3":[[221,222,43,10,46,25],[195,148,215,84,55,101]],"both_composition_13":true,"double":[[221,0,43,0,46,0],[0,0,0,0,0,0]],"odd_isogeny_image":[[23,96,132,127,146,176],[193,168,63,76,179,85]],"point":[[221,1,43,213,46,198],[195,75,215,139,55,122]]},{"base_Frobenius_F3":[[221,1,43,213,46,198],[28,148,8,84,168,101]],"both_composition_13":true,"double":[[221,0,43,0,46,0],[0,0,0,0,0,0]],"odd_isogeny_image":[[23,127,132,96,146,47],[30,168,160,76,44,85]],"point":[[221,222,43,10,46,25],[28,75,8,139,168,122]]},{"base_Frobenius_F3":[[221,1,43,213,46,198],[195,75,215,139,55,122]],"both_composition_13":true,"double":[[221,0,43,0,46,0],[0,0,0,0,0,0]],"odd_isogeny_image":[[23,127,132,96,146,47],[193,55,63,147,179,138]],"point":[[221,222,43,10,46,25],[195,148,215,84,55,101]]}],"all256_addition_table":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,1,0,3,2,5,4,11,9,10,7,8,6,15,14,13,12,2,3,1,0,6,11,5,12,14,15,13,4,9,8,10,7,3,2,0,1,11,6,4,15,13,12,14,5,7,10,8,9,4,5,6,11,1,0,3,13,15,14,12,2,8,9,7,10,5,4,11,6,0,1,2,14,12,13,15,3,10,7,9,8,6,11,5,4,3,2,0,8,7,10,9,1,14,15,12,13,7,9,12,15,13,14,8,6,0,11,1,10,5,3,2,4,8,10,14,13,15,12,7,0,6,1,11,9,2,4,5,3,9,7,15,12,14,13,10,11,1,6,0,8,4,2,3,5,10,8,13,14,12,15,9,1,11,0,6,7,3,5,4,2,11,6,4,5,2,3,1,10,9,8,7,0,13,12,15,14,12,15,9,7,8,10,14,5,2,4,3,13,11,0,1,6,13,14,8,10,9,7,15,3,4,2,5,12,0,11,6,1,14,13,10,8,7,9,12,2,5,3,4,15,1,6,11,0,15,12,7,9,10,8,13,4,3,5,2,14,6,1,0,11],"b":[137,218,9],"naive_coordinate_F_offcurve_count":15,"side":0},{"F3_is_the_base_Frobenius":true,"a":[196,168,69],"all16_four_torsion_and_both13_compositions":true,"all16_points":[{"base_Frobenius_F3":null,"both_composition_13":true,"double":null,"odd_isogeny_image":null,"point":null},{"base_Frobenius_F3":[[23,0,132,0,146,0],[0,0,0,0,0,0]],"both_composition_13":true,"double":null,"odd_isogeny_image":[[221,0,43,0,46,0],[0,0,0,0,0,0]],"point":[[23,0,132,0,146,0],[0,0,0,0,0,0]]},{"base_Frobenius_F3":[[23,127,132,96,146,47],[30,168,160,76,44,85]],"both_composition_13":true,"double":[[23,0,132,0,146,0],[0,0,0,0,0,0]],"odd_isogeny_image":[[221,1,43,213,46,198],[28,148,8,84,168,101]],"point":[[23,96,132,127,146,176],[30,55,160,147,44,138]]},{"base_Frobenius_F3":[[23,127,132,96,146,47],[193,55,63,147,179,138]],"both_composition_13":true,"double":[[23,0,132,0,146,0],[0,0,0,0,0,0]],"odd_isogeny_image":[[221,1,43,213,46,198],[195,75,215,139,55,122]],"point":[[23,96,132,127,146,176],[193,168,63,76,179,85]]},{"base_Frobenius_F3":[[23,96,132,127,146,176],[30,55,160,147,44,138]],"both_composition_13":true,"double":[[23,0,132,0,146,0],[0,0,0,0,0,0]],"odd_isogeny_image":[[221,222,43,10,46,25],[28,75,8,139,168,122]],"point":[[23,127,132,96,146,47],[30,168,160,76,44,85]]},{"base_Frobenius_F3":[[23,96,132,127,146,176],[193,168,63,76,179,85]],"both_composition_13":true,"double":[[23,0,132,0,146,0],[0,0,0,0,0,0]],"odd_isogeny_image":[[221,222,43,10,46,25],[195,148,215,84,55,101]],"point":[[23,127,132,96,146,47],[193,55,63,147,179,138]]},{"base_Frobenius_F3":[[46,0,199,0,124,0],[0,0,0,0,0,0]],"both_composition_13":true,"double":null,"odd_isogeny_image":[[136,0,144,0,75,0],[0,0,0,0,0,0]],"point":[[46,0,199,0,124,0],[0,0,0,0,0,0]]},{"base_Frobenius_F3":[[46,186,199,192,124,45],[62,76,127,119,197,164]],"both_composition_13":true,"double":[[46,0,199,0,124,0],[0,0,0,0,0,0]],"odd_isogeny_image":[[136,77,144,0,75,105],[44,174,159,61,153,196]],"point":[[46,37,199,31,124,178],[62,147,127,104,197,59]]},{"base_Frobenius_F3":[[46,186,199,192,124,45],[161,147,96,104,26,59]],"both_composition_13":true,"double":[[46,0,199,0,124,0],[0,0,0,0,0,0]],"odd_isogeny_image":[[136,77,144,0,75,105],[179,49,64,162,70,27]],"point":[[46,37,199,31,124,178],[161,76,96,119,26,164]]},{"base_Frobenius_F3":[[46,37,199,31,124,178],[62,147,127,104,197,59]],"both_composition_13":true,"double":[[46,0,199,0,124,0],[0,0,0,0,0,0]],"odd_isogeny_image":[[136,146,144,0,75,118],[44,49,159,162,153,27]],"point":[[46,186,199,192,124,45],[62,76,127,119,197,164]]},{"base_Frobenius_F3":[[46,37,199,31,124,178],[161,76,96,119,26,164]],"both_composition_13":true,"double":[[46,0,199,0,124,0],[0,0,0,0,0,0]],"odd_isogeny_image":[[136,146,144,0,75,118],[179,174,64,61,70,196]],"point":[[46,186,199,192,124,45],[161,147,96,104,26,59]]},{"base_Frobenius_F3":[[154,0,115,0,176,0],[0,0,0,0,0,0]],"both_composition_13":true,"double":null,"odd_isogeny_image":[[89,0,36,0,102,0],[0,0,0,0,0,0]],"point":[[154,0,115,0,176,0],[0,0,0,0,0,0]]},{"base_Frobenius_F3":[[154,140,115,92,176,121],[62,94,107,205,27,157]],"both_composition_13":true,"double":[[154,0,115,0,176,0],[0,0,0,0,0,0]],"odd_isogeny_image":[[89,181,36,102,102,208],[17,74,219,181,215,127]],"point":[[154,83,115,131,176,102],[62,129,107,18,27,66]]},{"base_Frobenius_F3":[[154,140,115,92,176,121],[161,129,116,18,196,66]],"both_composition_13":true,"double":[[154,0,115,0,176,0],[0,0,0,0,0,0]],"odd_isogeny_image":[[89,181,36,102,102,208],[206,149,4,42,8,96]],"point":[[154,83,115,131,176,102],[161,94,116,205,196,157]]},{"base_Frobenius_F3":[[154,83,115,131,176,102],[62,129,107,18,27,66]],"both_composition_13":true,"double":[[154,0,115,0,176,0],[0,0,0,0,0,0]],"odd_isogeny_image":[[89,42,36,121,102,15],[17,149,219,42,215,96]],"point":[[154,140,115,92,176,121],[62,94,107,205,27,157]]},{"base_Frobenius_F3":[[154,83,115,131,176,102],[161,94,116,205,196,157]],"both_composition_13":true,"double":[[154,0,115,0,176,0],[0,0,0,0,0,0]],"odd_isogeny_image":[[89,42,36,121,102,15],[206,74,4,181,8,127]],"point":[[154,140,115,92,176,121],[161,129,116,18,196,66]]}],"all256_addition_table":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,1,0,3,2,5,4,11,10,9,8,7,6,14,15,12,13,2,3,1,0,11,6,4,13,14,12,15,5,8,10,9,7,3,2,0,1,6,11,5,15,12,14,13,4,9,7,8,10,4,5,11,6,1,0,2,14,13,15,12,3,7,9,10,8,5,4,6,11,0,1,3,12,15,13,14,2,10,8,7,9,6,11,4,5,2,3,0,8,7,10,9,1,15,14,13,12,7,10,13,15,14,12,8,6,0,1,11,9,3,4,2,5,8,9,14,12,13,15,7,0,6,11,1,10,5,2,4,3,9,8,12,14,15,13,10,1,11,6,0,7,4,3,5,2,10,7,15,13,12,14,9,11,1,0,6,8,2,5,3,4,11,6,5,4,3,2,1,9,10,7,8,0,13,12,15,14,12,14,8,9,7,10,15,3,5,4,2,13,11,0,6,1,13,15,10,7,9,8,14,4,2,3,5,12,0,11,1,6,14,12,9,8,10,7,13,2,4,5,3,15,6,1,11,0,15,13,7,10,8,9,12,5,3,2,4,14,1,6,0,11],"b":[8,82,207],"naive_coordinate_F_offcurve_count":15,"side":1}],"q":223,"quadratic_subfield":"v=w^3,v^2=3","scope":"actual finite coordinates and subgroup maps; no Picard-basechange/beta coordinates yet","source_order":11092292}
+N4_BETA_KERNEL_HYPOTHESIS_CONTROL {"F":"(a+2b mod4,b+a mod2)","all4_lifts_of_nonzero_target_reject_F2_fixed":true,"all8_source_points":[[0,0],[0,1],[1,0],[1,1],[2,0],[2,1],[3,0],[3,1]],"kernel_F3_counterexamples":[[0,1],[2,1]],"phi":"a mod2","scope":"abstract finite-group control only, not abelian-variety counterexample","source":"C4xC2"}
+ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.31s
+

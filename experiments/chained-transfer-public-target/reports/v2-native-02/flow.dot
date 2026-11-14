@@ -1,0 +1,23 @@
+digraph V2 {
+graph [rankdir=LR,bgcolor="transparent",nodesep=.25,ranksep=.35];
+node [shape=box,style="rounded,filled",fillcolor="#edf5fb",fontname="DejaVu Sans",fontsize=10];
+edge [fontname="DejaVu Sans",fontsize=9];
+E [label="Original E(K)
+K = F223[z] / (z^3 - 3)
+ell = 2773073"];
+S [label="Short source E'(K)
+S(v,w) = -(v + a2/3,w)
+actual common quartic sign"];
+J [label="Jac(C)(F223)
+all15 actual N4 coefficients
+P0 = [1,74,153]"];
+T [label="Complete old raw origin
+fibre at T = kappa(infinity-)
+nonzero at actual legacy P0",fillcolor="#fff3da"];
+E -> S [label="signed source isomorphism"];
+S -> J [label="complete Phi
+three conjugate fibre ideals"];
+J -> S [label="canonical Norm
+R2/R4 length3 algebra",color="#18794e"];
+T -> J [label="subtract geometric origin",style=dashed];
+}

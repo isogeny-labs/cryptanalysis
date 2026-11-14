@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-13T19:49:12Z",
+ "id": "PCC-20261113-796f92",
+ "kind": "theorem",
+ "producer": {
+  "commit": "a7ea5998b4482c99469185119d1acbc5b60921a4",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "0da08ea8c19832cab0722538bfb9a7fcc3821156dbf6adaba93bd3a54ed82923",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/odd-source/lean/OddSource.lean",
+   "theorem": "OddSource223.normalized_scaling_residual"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Faithful partial universal rational-map coefficient clearing and normalized scaling, scalar recovery DERIVED from scalar-action/composition/torsion axioms plus explicit Bezout; exact odd13/full13/proposed52 integer certificates. Actual de87bd and written b9a91f;both unchanged original4.35/4.34.1 gates PASS6/zero trusted; standard Lean foundations recorded. Geometry/curve extension/O preservation/morphism degree/dual/finite K-group and ppav-product interpretations remain written, future Jacobian52 maps unconstructed. No signed execution or computational advantage",
+ "statement": "theorem normalized_scaling_residual {K : Type} [CommRing K] (u x y a b : K) : (u^3*y)^2-(u^2*x)^3-(u^4*a)*(u^2*x)-u^6*b = u^6*(y^2-x^3-a*x-b)"
+}

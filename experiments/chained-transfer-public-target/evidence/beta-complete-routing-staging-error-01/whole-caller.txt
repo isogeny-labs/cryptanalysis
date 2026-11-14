@@ -1,0 +1,22 @@
+norm784 0
+arithmetic22 0
+beta-reference 0
+complete-reference 0
+complete-shell 0
+complete-actionlint 0
+complete-rustfmt 0
+ledger 0
+prose 0
+whitespace 0
+actionlint 0
+wiring 0
+benchrec 0
+reportPython 0
+Traceback (most recent call last):
+  File "/workspace/scratch/ct73_commit_complete_checkpoint_03.py", line 38, in <module>
+    stage();run('cached-whitespace',['git','diff','--cached','--check']);tree=subprocess.check_output(['git','write-tree'],cwd=r,text=True).strip();run('artifact',['python3','tools/artifacts/artifacts.py','check',base,tree])
+    ^^^^^^^
+  File "/workspace/scratch/ct73_commit_complete_checkpoint_03.py", line 24, in stage
+    selected=set(subprocess.check_output(['git','diff','--cached','--name-only','-z'],cwd=r).split(b'\0'))-{b''};assert selected==set(ps)
+                                                                                                                        ^^^^^^^^^^^^^^^^^
+AssertionError

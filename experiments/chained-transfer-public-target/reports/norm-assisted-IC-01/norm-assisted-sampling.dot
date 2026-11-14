@@ -1,0 +1,20 @@
+digraph S {
+graph[rankdir=TB,bgcolor="transparent",nodesep=.25,ranksep=.28];
+node[shape=box,style="rounded,filled",fillcolor="#edf3f9",fontname="DejaVu Sans",fontsize=9];
+edge[fontname="DejaVu Sans",fontsize=8];
+G[label="Public tagged G in J(F223)
+nonzero ell-torsion"];
+B[label="Original Picard scalar
+[r]G"];
+U[label="Prepare u = inv2 Norm(G)
+check actual Phi(u) = G"];
+E[label="Original Eprime(K) scalar
+[r]u"];
+P[label="One completed Phi
+exact same R = [r]G"];
+D[label="Unchanged R+G, R+Q
+relation / LA / descent"];
+V[label="Unchanged final Picard check
+AND independent source check",fillcolor="#e4f1e8"];
+G->B[label="baseline"];G->U[label="candidate setup"];U->E[label="public r"];E->P;P->D;B->D;D->V;
+}

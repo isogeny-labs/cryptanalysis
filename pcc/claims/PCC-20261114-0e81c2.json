@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-14T12:40:09Z",
+ "id": "PCC-20261114-0e81c2",
+ "kind": "theorem",
+ "producer": {
+  "commit": "d5db7698edcb966a6b0b9edf330aba742b7c6dbf",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "0f3c87cf27bf5d7f600255c03e52126db1155832609cbc1aa9e22dbef8372d23",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/norm-halving-evaluator/lean/NormHalving.lean",
+   "theorem": "NormHalving.halves_differ_by_two_torsion"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Faithful ordinary Lean.Grind commutative-ring and IntModule algebra under prospective6dc948. Universal cleared ordinate polynomial identity; halving differences2torsion andFrobenius square underexplicit rational2torsion hypotheses; oddnormlift andfullpreimage fromodd+actualcofactor decomposition, no full rational-lift conclusion assumed; actualcorrection andexplicit quotientcommuting square implyevaluatorequalsbeta/liftindependence; strongestscalarbaseline identity. Both ORIGINAL gates pass10declarations0trusted, all10namedroots onlystandardpropext/Classical.choice/Quot.sound, no holes/customaxioms/native_decide. Originalabscissaidentity isreused andNOTcountedasnewbinding; these9distinctadditionalheaders bringpublictargetpartialunique count73to82, not82formalgeometricconstructions. Actualgeometry/field/order/Picard/finitecofactordictionary/nativecode bridgesremainwritten/native. FailedLean01/02 proofs retained; source03 unchangedstatements/hypotheses withexplicitgroupcancellation. Unsignedlocalpass, no execution orperformance standing.",
+ "statement": "theorem halves_differ_by_two_torsion {A : Type} [IntModule A] (q a b : A) (ha : (2 : Int) \u2022 a=q) (hb : (2 : Int) \u2022 b=q) : (2 : Int) \u2022 (a-b)=0"
+}

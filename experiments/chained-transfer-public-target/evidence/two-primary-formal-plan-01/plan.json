@@ -1,0 +1,11 @@
+{
+  "at": "2026-11-13T15:11:00Z",
+  "standing": "prospective unsigned plan, before Lean source",
+  "question": "Derive the actual geometric two-torsion splitting field from the recorded rational C4 cofactor and Ciani Weil polynomial, with feasible faithful conditional formal lemmas.",
+  "inputs": "510d03 native02: C4 over F223; q223, ell2773073, order11092292; written CianiResisogeny in V2_MAPS_01.md",
+  "written_argument": "Ciani isogeny gives P(T)=T^6+2724*T^3+223^3. On geometric J[2], Cayley-Hamilton gives F^6=1. Rational C4 implies exactly2 fixed geometric2torsion points. If F^3=1, all other orbits have size3, but64-2 is not divisible by3. If F^2=1, minimal polynomial divides(T+1)^2 and characteristic polynomial must be(T+1)^6, different from T^6+1. Hence F order exactly6 and full J[2] field F223^6, not F223^3.",
+  "feasible_Lean": "Exact trace/parity; no Nat orbit partition64=2+3*c; annihilating polynomial on arbitrary exponent2 IntModule implies sixth iterate identity; divisor6 with neither divisor2 nor divisor3 forces6.",
+  "formal_bridges_open": "Actual Jacobian and geometric J[2] definitions, Ciani isogeny/Weil polynomial, Cayley-Hamilton, fixed point count, Frobenius finite orbit partition, minimal/characteristic polynomial and minimal splitting field correspondence remain written, not replaced by integer lemmas.",
+  "checks": "Unchanged original producer4.35 and consumer4.34.1 gates, #print axioms, exact original PCC statement bindings; no custom axioms/sorry/native_decide; fresh checker only if available.",
+  "limits": "No geometric basis/action matrix, stable Lagrangian census, second nondual map or computational advantage inferred. In particular do not assume semisimple order3 Frobenius from Weil polynomial."
+}

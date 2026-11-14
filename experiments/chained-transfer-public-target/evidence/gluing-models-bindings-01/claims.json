@@ -1,0 +1,82 @@
+[
+  {
+    "theorem": "GluingModels223.translated_source_cubic",
+    "claim_path": "pcc/claims/PCC-20261113-bdeb78.json",
+    "statement": "theorem translated_source_cubic {K : Type} [CommRing K] (a b r u : K) : (u+r)^3+a*(u+r)+b - (u^3+3*r*u^2+(3*r^2+a)*u) = r^3+a*r+b",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/gluing-models/lean/GluingModels.lean",
+      "theorem": "GluingModels223.translated_source_cubic",
+      "decl_sha256": "10c275eb29bc82779e2f83438a54da8752d53b5e6d28d81554b16da381172f07"
+    }
+  },
+  {
+    "theorem": "GluingModels223.adjugate_diagonal_from_Delta",
+    "claim_path": "pcc/claims/PCC-20261113-8b9fee.json",
+    "statement": "theorem adjugate_diagonal_from_Delta {K : Type} [CommRing K] (h2 h3 A B : K) (delta : h2*h3=A^2-4*B) : h2*h3-A^2 = -4*B",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/gluing-models/lean/GluingModels.lean",
+      "theorem": "GluingModels223.adjugate_diagonal_from_Delta",
+      "decl_sha256": "f27614d7d16461d961a6fe2d4f03525b407f73ba52f1830994b0c06bc679b1cc"
+    }
+  },
+  {
+    "theorem": "GluingModels223.symmetric_adjugate_determinant",
+    "claim_path": "pcc/claims/PCC-20261113-e63dbc.json",
+    "statement": "theorem symmetric_adjugate_determinant {K : Type} [CommRing K] (h1 h2 h3 A1 A2 A3 : K) : let p",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/gluing-models/lean/GluingModels.lean",
+      "theorem": "GluingModels223.symmetric_adjugate_determinant",
+      "decl_sha256": "dc762092db32bea20ba185ce13c0e78c0bfe34ef14be4048dbdd22e69f83ad60"
+    }
+  },
+  {
+    "theorem": "GluingModels223.symmetric_adjugate_cofactor",
+    "claim_path": "pcc/claims/PCC-20261113-6a6967.json",
+    "statement": "theorem symmetric_adjugate_cofactor {K : Type} [CommRing K] (h1 h2 h3 A1 A2 A3 : K) : (A1*A2+h3*A3)*(A1*A3+h2*A2)-(h2*h3-A1^2)*(A2*A3+h1*A1) = -A1*(h1*h2*h3-h1*A1^2-h2*A2^2-h3*A3^2-2*A1*A2*A3)",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/gluing-models/lean/GluingModels.lean",
+      "theorem": "GluingModels223.symmetric_adjugate_cofactor",
+      "decl_sha256": "aae1aa7153f18306dc9945a93b9c304333e82ba8f4163ad553d7d4fba599d425"
+    }
+  },
+  {
+    "theorem": "GluingModels223.symmetric_adjugate_pair_discriminant",
+    "claim_path": "pcc/claims/PCC-20261113-408de8.json",
+    "statement": "theorem symmetric_adjugate_pair_discriminant {K : Type} [CommRing K] (h1 h2 h3 A1 A2 A3 : K) : 4*(A1*A2+h3*A3)^2-4*(h2*h3-A1^2)*(h1*h3-A2^2) = -4*h3*(h1*h2*h3-h1*A1^2-h2*A2^2-h3*A3^2-2*A1*A2*A3)",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/gluing-models/lean/GluingModels.lean",
+      "theorem": "GluingModels223.symmetric_adjugate_pair_discriminant",
+      "decl_sha256": "ac564f58457d8f40f847d23312f88004ca7bb1f6c2d703cc20405007412fc7b0"
+    }
+  },
+  {
+    "theorem": "GluingModels223.even_quartic_discriminant",
+    "claim_path": "pcc/claims/PCC-20261113-fcb523.json",
+    "statement": "theorem even_quartic_discriminant {K : Type} [CommRing K] (a b c d e f : K) : (2*d*f-4*a*e)^2-4*(d^2-4*a*b)*(f^2-4*a*c) = -16*a*(4*a*b*c+d*e*f-a*e^2-b*f^2-c*d^2)",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/gluing-models/lean/GluingModels.lean",
+      "theorem": "GluingModels223.even_quartic_discriminant",
+      "decl_sha256": "71d8b8a43c2b42760f81f237591b5abcd235975175825551748a063fb28514f1"
+    }
+  },
+  {
+    "theorem": "GluingModels223.even_quartic_map_residual",
+    "claim_path": "pcc/claims/PCC-20261113-df1c13.json",
+    "statement": "theorem even_quartic_map_residual {K : Type} [CommRing K] (alpha beta gamma s t v : K) (square : s^2=alpha) : let x",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/gluing-models/lean/GluingModels.lean",
+      "theorem": "GluingModels223.even_quartic_map_residual",
+      "decl_sha256": "1d2e97c37dac64cb0ed8b1452ab7d941a3f736fb88e7af6a5bc8ae85e014d555"
+    }
+  },
+  {
+    "theorem": "GluingModels223.even_quartic_map_on_jacobian",
+    "claim_path": "pcc/claims/PCC-20261113-02dc7d.json",
+    "statement": "theorem even_quartic_map_on_jacobian {K : Type} [CommRing K] (alpha beta gamma s t v : K) (square : s^2=alpha) (point : v^2=alpha*t^4+beta*t^2+gamma) : let x",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/gluing-models/lean/GluingModels.lean",
+      "theorem": "GluingModels223.even_quartic_map_on_jacobian",
+      "decl_sha256": "2a70b60948c7f92c2c9bb588e2cd4bf8b55fe646df4d6e2ebfd9660f7576e796"
+    }
+  }
+]

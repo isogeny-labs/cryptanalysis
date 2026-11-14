@@ -1,0 +1,18 @@
+digraph Complete {
+graph [rankdir=LR,bgcolor="transparent",nodesep=.2,ranksep=.25];
+node [shape=box,style="rounded,filled",fillcolor="#edf5fb",fontname="DejaVu Sans",fontsize=10];
+edge [fontname="DejaVu Sans",fontsize=9];
+Q [label="Strict public Q
+original instance / no witness"];
+R [label="Original relation collection
+original linear algebra"];
+M [label="Changed admission only
+3 complete Gen spaces
+actual P0 / geometric origin",fillcolor="#fff3da"];
+D [label="Original class descent
+three-point differences
+original scalar recovery"];
+V [label="Original independent
+source answer check"];
+Q -> R;R -> M;M -> D;D -> V;
+}

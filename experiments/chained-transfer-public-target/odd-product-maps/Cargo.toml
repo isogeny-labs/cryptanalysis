@@ -1,0 +1,18 @@
+[package]
+name = "chained-n4-odd-product-maps"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[workspace]
+
+[dependencies]
+chained-n4-public-target = { path = "../native" }
+chained-n4-completed-v2 = { path = "../v2" }
+chained-n4-odd-product-models = { path = "../odd-product-models" }
+ghs-original-engines = { path = "../../../../crypto/research/chained_jacobian_transfers_20261110/genus3-prime-descent/engine" }
+isogeny_algos = { path = "../../../../crypto/isogeny_algos" }
+serde = { version = "=1.0.228", features = ["derive"] }
+serde_json = "=1.0.145"
+
+chained-n4-odd-source = { path = "../odd-source" }

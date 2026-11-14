@@ -1,0 +1,33 @@
+{
+  "at": "2026-11-13T17:16:45.920861+00:00",
+  "failed_source_governance": "kernel-source-governance-01",
+  "original_prose_exit": 1,
+  "original_findings": 3,
+  "frozen_subjects_preserved": [
+    {
+      "frozen": "GLUING_CHAIN_PROPOSAL_01.md",
+      "frozen_sha256": "cafc3aa64767d28a637e29f08529851203bd8cecf83a21b5847ae6afb09c069e",
+      "reading_copy": "GLUING_CHAIN_PROPOSAL_02.md",
+      "reading_sha256": "fde6c51169785a5cf2c5be6d4db41793824a02c6da4741d3b45b48dd5d5f04d6",
+      "only_change": "append [pcc:unverified] on original line 96"
+    },
+    {
+      "frozen": "KERNEL_OBSTRUCTION_DERIVATION_01.md",
+      "frozen_sha256": "8505a72382755953972c5769e6ec407690c742add1787da835c05ef828e8f8d5",
+      "reading_copy": "KERNEL_OBSTRUCTION_DERIVATION_02.md",
+      "reading_sha256": "433421145d7f4714e983c076e0335b7374798925edcb888ae6390d398134046d",
+      "only_change": "append [pcc:unverified] on original line 73"
+    },
+    {
+      "frozen": "reports/kernel-census-01/REPORT.md",
+      "frozen_sha256": "798ee2d3c45ee229b065e6769802a37166beca4522cec79e3c690c41ba03062a",
+      "reading_copy": "reports/kernel-census-01/REPORT-02.md",
+      "reading_sha256": "063ed6f5443b881a79a38a5a192cb14d6b078c5e99a5108d52f96a92809f2ecf",
+      "only_change": "append [pcc:unverified] on original line 33"
+    }
+  ],
+  "original_PCC_workflow_sha256": "03bcb807933377080970454cd2e459fe4190f7aa3f452c2acba1a55c5760206d",
+  "original_workflow_report_lint": "advisory continue-on-error:true; lines77-83",
+  "required_PR_body_and_ledger": "unchanged; must pass independently",
+  "scope": "tag placement only; no scientific statement or acceptance criterion changed; frozen original documents and CI554 manifest remain byte exact; active reading copies lint separately; all-document lint retains three historical findings"
+}

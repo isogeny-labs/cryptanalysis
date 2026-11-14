@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-13T16:37:13Z",
+ "id": "PCC-20261113-039ca3",
+ "kind": "theorem",
+ "producer": {
+  "commit": "85b799ec5d7f3a8e81168af11fbf4ba36007be28",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "bcae04a7c594b6d7caff7b71207187f5ad13bb732648042cde9b522b62363a5a",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/kernel-census/lean/KernelStructure.lean",
+   "theorem": "Kernel223.conjugacy_transports_stability"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Faithful partial structural implications for actualq223kernelargument:5nameddecls/8auditedincl3trueCounthelpers,zero trusted;closedcounts,conjugacy-stabilitytransport,isometry-isotropytransport,generalfiniteBoolcountmonotone andinclusion+equalcount=>equalmembership. Bothunchangedoriginal4.35/4.34.1 gatesPASS8;actualnativeexecution/Sp6cardinality/theta/Galois/Frobenius/Weilpairing/Normpolarization/Jacobiangeometry remainwritten/open. Originalproducer01redundantgeneralizing error preserved6956b2,proof-only02all5statementhashes unchanged. Exactlocalbindingsunsigned/notfullformal,newmaporcost.",
+ "statement": "theorem conjugacy_transports_stability {V : Type} (f g h inverse : V \u2192 V) (left_inverse : \u2200 x, inverse (h x)=x) (right_inverse : \u2200 y, h (inverse y)=y) (intertwines : \u2200 x, h (f x)=g (h x)) (S : V \u2192 Prop) : Stable f S \u2194 Stable g (Transport inverse S)"
+}

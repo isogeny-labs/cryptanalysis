@@ -1,0 +1,32 @@
+[
+  {
+    "theorem": "NoBaseFieldCurve223.hasse_radius_integer_bounds",
+    "claim_path": "pcc/claims/PCC-20261113-d8f845.json",
+    "statement": "theorem hasse_radius_integer_bounds : (29 : Nat)^2 \u2264 4*223 \u2227 4*223 < (30 : Nat)^2",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/prime-field/NoBaseFieldCurve.lean",
+      "theorem": "NoBaseFieldCurve223.hasse_radius_integer_bounds",
+      "decl_sha256": "83b1593a8153545a35796c117fb9cc666c3c90c6f3507002b6414b4beace6589"
+    }
+  },
+  {
+    "theorem": "NoBaseFieldCurve223.all_hasse_candidates_fail_divisibility",
+    "claim_path": "pcc/claims/PCC-20261113-180a3c.json",
+    "statement": "theorem all_hasse_candidates_fail_divisibility : \u2200 k : Fin 59, \u00ac (195+k.val) \u2223 (11092292 : Nat)",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/prime-field/NoBaseFieldCurve.lean",
+      "theorem": "NoBaseFieldCurve223.all_hasse_candidates_fail_divisibility",
+      "decl_sha256": "6b64068e00868c1b042d7218610b2e027c8eb7531eb03ca5cdfff2b52abd1383"
+    }
+  },
+  {
+    "theorem": "NoBaseFieldCurve223.no_hasse_count_divides_extension_count",
+    "claim_path": "pcc/claims/PCC-20261113-7c5dfe.json",
+    "statement": "theorem no_hasse_count_divides_extension_count (m : Nat) (lower : 195 \u2264 m) (upper : m \u2264 253) : \u00ac m \u2223 (11092292 : Nat)",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/prime-field/NoBaseFieldCurve.lean",
+      "theorem": "NoBaseFieldCurve223.no_hasse_count_divides_extension_count",
+      "decl_sha256": "94ecfd36cc72f26101ea0fef18ade679967193dc6b6aa3dbc00b55b57dbbce4b"
+    }
+  }
+]

@@ -1,0 +1,14 @@
+digraph Complete {
+ graph[rankdir=TB,bgcolor="white",nodesep=.35,ranksep=.35];
+ node[shape=box,style="rounded,filled",fillcolor="#edf4fa",fontname="DejaVu Sans",fontsize=10,margin=".14,.10"];
+ edge[fontname="DejaVu Sans",fontsize=9,color="#275875"];
+ j0[label="J0(F223), order 11092292\nCiani-Jac-pi0-v2-3ba99ad5742ad62540f8addbbe15357\n2696d2e595f64cd2c1b0b52e51ff351a4"];
+ xo[label="xo = x - [ell]x\n[ell]xo = 0"];
+ x2[label="x2 = [ell]x\n[4]x2 = 0"];
+ odd[label="[1386537] F(xo)\nF = Phi1 gamma N0 = [2] beta"];
+ table[label="Actual 4-entry cofactor table\nBoth choices of lift give the same image",fillcolor="#e8f3e7"];
+ pre[label="Precompute on ALL 16 E[4](L), each side\nComplete quadratic fibre ideals + actual origins\n8 images:4 rational;2 lifts per rational class\n32 torsion fibre +2 origin traces\n16 source-isogeny evaluations",fillcolor="#f6f0df"];
+ j1[label="Sum = beta(x) in J1(F223)\nCiani-Jac-odd-product-v1-7ea9d0f9d1a48a48489425b\neab48274fca7bd0848e47a0bac3a027c01601e2c4",fillcolor="#e8f3e7"];
+ {rank=same;xo;x2;} {rank=same;odd;table;}
+ j0->xo;j0->x2;xo->odd;x2->table;pre->table[label="explicit setup",style=dotted];odd->j1;table->j1;
+}

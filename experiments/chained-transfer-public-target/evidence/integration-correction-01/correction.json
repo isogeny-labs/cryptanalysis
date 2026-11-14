@@ -1,0 +1,18 @@
+{
+  "source": "f5d6c92a4eb53fc838ab8bf2665887e12522cbd9",
+  "native_exit": "1",
+  "outer_guard": "0",
+  "outer_guards": 434,
+  "driver_original": "1",
+  "driver_guard": "0",
+  "driver_clean": "0",
+  "phase_count": 29,
+  "observed": "all3native/fiveIC/14rejections/outputbytes and producer9+5 passed;consumer original gate FAIL_build before Lean due absolute target joined twice to its repository root",
+  "cause": "The consumer original proof-gate.sh accepts repo-relative targets; producer newer original gate handles absolute. Caller passed same absolute args to both",
+  "correction_BEFORE_edit": "Only consumer invocation uses explicit repo-relative module paths; no Lean/source/verifier/gate/trust change. Preserve reference01 and whole rejected run; additive reference02/new generator for corrected driver; new exact-source full02 and ownCI required",
+  "no_completed_bindings_in_full01": true,
+  "whole_failure": "/workspace/scratch/ct58-public-full-01",
+  "old_reference_sha256": "b15881fd58aee0ab4bc07252c0b162576ddba99febc3323e7a3931f5f17e9aa7",
+  "old_driver_sha256": "6ae9345daedeb4926e53613b13d89b5ef5171289782883db70287d0272824daa",
+  "scope": "orchestration failure,not evidence of invalid theorem or nativealgorithm"
+}

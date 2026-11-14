@@ -1,0 +1,21 @@
+{
+  "original_governance02_cached_whitespace_exit": 2,
+  "findings": [
+    {
+      "path": "experiments/chained-transfer-public-target/v2/src/adapter.rs",
+      "before_bytes": 16315,
+      "before_sha256": "527015a2babbef037ddce19f4f32d065d6acab2cc73221291c3ef39796bc7cbc",
+      "correction": "ONLY remove extra blank EOF lines;exact original contents equal after rstrip newline,one final newline retained"
+    },
+    {
+      "path": "experiments/chained-transfer-public-target/v2/src/norm.rs",
+      "before_bytes": 25680,
+      "before_sha256": "436ec4e023c0caca5ce1194510d51534e851664ec596f737c370c55f45a95bfd",
+      "correction": "ONLY remove extra blank EOF lines;exact original contents equal after rstrip newline,one final newline retained"
+    }
+  ],
+  "native03_beforemap_and_wholeoldnative02_genuine_archive": "preserve original tested bytes;native03all2203guards0 before formatting",
+  "semantic_scope": "No token/statement/algorithm/assertion change;newindependentfull+CI runs finalcommitted bytes. OldV1/P1/native/proofs unchanged",
+  "new_manifest": "regenerate unpublished ci_v2reference01 afterEOF-only correction;no priorfull/CI onthis new manifest",
+  "current_source_holds": "none;old2283publisherhold released after exactFF before Native03"
+}

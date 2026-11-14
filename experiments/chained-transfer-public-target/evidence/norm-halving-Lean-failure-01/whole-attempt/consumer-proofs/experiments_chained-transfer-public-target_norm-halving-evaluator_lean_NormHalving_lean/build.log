@@ -1,0 +1,153 @@
+/workspace/cryptanalysis/experiments/chained-transfer-public-target/norm-halving-evaluator/lean/NormHalving.lean:40:2: error: `grind` failed
+case grind.2
+A : Type
+inst : IntModule A
+sigma : A → A
+sub_map : ∀ (a b : A), sigma (a - b) = sigma a - sigma b
+linear : ∀ (n : Int) (a : A), sigma (n • a) = n • sigma a
+two_fixed : ∀ (t : A), 2 • t = 0 → sigma t = t
+q a : A
+rational_q : sigma q = q
+half : 2 • a = q
+hsa : 2 • sigma a = q
+ht : 2 • (sigma a - a) = 0
+hs : sigma (sigma a) - sigma a = sigma a - a
+h : ¬sigma (sigma a) = a
+h_1 : ¬2 • a = 0
+⊢ False
+[grind] Goal diagnostics
+  [facts] Asserted facts
+    [prop] ∀ (a b : A), sigma (a - b) = sigma a - sigma b
+    [prop] ∀ (n : Int) (a : A), sigma (n • a) = n • sigma a
+    [prop] ∀ (t : A), 2 • t = 0 → sigma t = t
+    [prop] sigma q = q
+    [prop] 2 • a = q
+    [prop] 2 • sigma a = q
+    [prop] 2 • (sigma a - a) = 0
+    [prop] sigma (sigma a) - sigma a = sigma a - a
+    [prop] ¬sigma (sigma a) = a
+    [prop] sigma (2 • a) = 2 • sigma a
+    [prop] sigma (2 • sigma a) = 2 • sigma (sigma a)
+    [prop] 2 • sigma a = 0 → sigma (sigma a) = sigma a
+    [prop] 2 • a = 0 → sigma a = a
+    [prop] 2 • q = 0 → sigma q = q
+    [prop] sigma (2 • sigma (sigma a)) = 2 • sigma (sigma (sigma a))
+    [prop] sigma (2 • sigma (sigma (sigma a))) = 2 • sigma (sigma (sigma (sigma a)))
+    [prop] 2 • sigma (sigma a) = 0 → sigma (sigma (sigma a)) = sigma (sigma a)
+    [prop] sigma (2 • sigma (sigma (sigma (sigma a)))) = 2 • sigma (sigma (sigma (sigma (sigma a))))
+    [prop] 2 • sigma (sigma (sigma a)) = 0 → sigma (sigma (sigma (sigma a))) = sigma (sigma (sigma a))
+    [prop] sigma (2 • sigma (sigma (sigma (sigma (sigma a))))) = 2 • sigma (sigma (sigma (sigma (sigma (sigma a)))))
+    [prop] 2 • sigma (sigma (sigma (sigma a))) = 0 →
+          sigma (sigma (sigma (sigma (sigma a)))) = sigma (sigma (sigma (sigma a)))
+    [prop] ¬2 • a = 0
+    [prop] sigma (2 • sigma (sigma (sigma (sigma (sigma (sigma a)))))) =
+          2 • sigma (sigma (sigma (sigma (sigma (sigma (sigma a))))))
+    [prop] 2 • sigma (sigma (sigma (sigma (sigma a)))) = 0 →
+          sigma (sigma (sigma (sigma (sigma (sigma a))))) = sigma (sigma (sigma (sigma (sigma a))))
+    [prop] sigma (2 • sigma (sigma (sigma (sigma (sigma (sigma (sigma a))))))) =
+          2 • sigma (sigma (sigma (sigma (sigma (sigma (sigma (sigma a)))))))
+    [prop] 2 • sigma (sigma (sigma (sigma (sigma (sigma a))))) = 0 →
+          sigma (sigma (sigma (sigma (sigma (sigma (sigma a)))))) = sigma (sigma (sigma (sigma (sigma (sigma a)))))
+    [prop] sigma (2 • sigma (sigma (sigma (sigma (sigma (sigma (sigma (sigma a)))))))) =
+          2 • sigma (sigma (sigma (sigma (sigma (sigma (sigma (sigma (sigma a))))))))
+    [prop] 2 • sigma (sigma (sigma (sigma (sigma (sigma (sigma a)))))) = 0 →
+          sigma (sigma (sigma (sigma (sigma (sigma (sigma (sigma a))))))) =
+            sigma (sigma (sigma (sigma (sigma (sigma (sigma a))))))
+  [eqc] True propositions
+    [prop] ∀ (a b : A), sigma (a - b) = sigma a - sigma b
+    [prop] ∀ (t : A), 2 • t = 0 → sigma t = t
+    [prop] ∀ (n : Int) (a : A), sigma (n • a) = n • sigma a
+    [prop] sigma q = q
+    [prop] 2 • q = 0 → sigma q = q
+    [prop] 2 • a = 0 → sigma a = a
+    [prop] 2 • sigma a = 0 → sigma (sigma a) = sigma a
+    [prop] 2 • sigma (sigma a) = 0 → sigma (sigma (sigma a)) = sigma (sigma a)
+    [prop] 2 • sigma (sigma (sigma a)) = 0 → sigma (sigma (sigma (sigma a))) = sigma (sigma (sigma a))
+    [prop] 2 • sigma (sigma (sigma (sigma a))) = 0 →
+          sigma (sigma (sigma (sigma (sigma a)))) = sigma (sigma (sigma (sigma a)))
+    [prop] 2 • sigma (sigma (sigma (sigma (sigma a)))) = 0 →
+          sigma (sigma (sigma (sigma (sigma (sigma a))))) = sigma (sigma (sigma (sigma (sigma a))))
+    [prop] 2 • sigma (sigma (sigma (sigma (sigma (sigma a))))) = 0 →
+          sigma (sigma (sigma (sigma (sigma (sigma (sigma a)))))) = sigma (sigma (sigma (sigma (sigma (sigma a)))))
+    [prop] 2 • sigma (sigma (sigma (sigma (sigma (sigma (sigma a)))))) = 0 →
+          sigma (sigma (sigma (sigma (sigma (sigma (sigma (sigma a))))))) =
+            sigma (sigma (sigma (sigma (sigma (sigma (sigma a))))))
+  [eqc] False propositions
+    [prop] sigma (sigma a) = a
+    [prop] 2 • a = 0
+    [prop] 2 • sigma a = 0
+    [prop] 2 • sigma (sigma a) = 0
+    [prop] 2 • sigma (sigma (sigma a)) = 0
+    [prop] 2 • sigma (sigma (sigma (sigma a))) = 0
+    [prop] 2 • sigma (sigma (sigma (sigma (sigma a)))) = 0
+    [prop] 2 • sigma (sigma (sigma (sigma (sigma (sigma a))))) = 0
+    [prop] 2 • sigma (sigma (sigma (sigma (sigma (sigma (sigma a)))))) = 0
+  [eqc] Equivalence classes
+    [eqc] {q,
+        sigma q,
+        2 • a,
+        2 • sigma a,
+        sigma (2 • a),
+        sigma (2 • sigma a),
+        2 • sigma (sigma a),
+        sigma (2 • sigma (sigma a)),
+        2 • sigma (sigma (sigma a)),
+        sigma (2 • sigma (sigma (sigma a))),
+        2 • sigma (sigma (sigma (sigma a))),
+        sigma (2 • sigma (sigma (sigma (sigma a)))),
+        2 • sigma (sigma (sigma (sigma (sigma a)))),
+        sigma (2 • sigma (sigma (sigma (sigma (sigma a))))),
+        2 • sigma (sigma (sigma (sigma (sigma (sigma a))))),
+        sigma (2 • sigma (sigma (sigma (sigma (sigma (sigma a)))))),
+        2 • sigma (sigma (sigma (sigma (sigma (sigma (sigma a)))))),
+        sigma (2 • sigma (sigma (sigma (sigma (sigma (sigma (sigma a))))))),
+        2 • sigma (sigma (sigma (sigma (sigma (sigma (sigma (sigma a))))))),
+        sigma (2 • sigma (sigma (sigma (sigma (sigma (sigma (sigma (sigma a)))))))),
+        2 • sigma (sigma (sigma (sigma (sigma (sigma (sigma (sigma (sigma a))))))))}
+    [eqc] {0, 2 • (sigma a - a)}
+    [eqc] {sigma a - a, sigma (sigma a) - sigma a}
+  [cases] Case analyses
+    [cases] [2/2]: 2 • a = 0
+      [cases] source: E-matching `two_fixed`
+  [ematch] E-matching patterns
+    [thm] sub_map: [sigma (@HSub.hSub `[A] `[A] `[A] `[instHSub] #1 #0)]
+    [thm] linear: [sigma (@HSMul.hSMul `[Int] `[A] `[A] `[instHSMul] #1 #0)]
+    [thm] two_fixed: [sigma #1]
+  [linarith] Linarith assignment for `A`
+    [assign] q := 2
+    [assign] a := 1
+    [assign] sigma q := 2
+    [assign] sigma a := 1
+    [assign] sigma (sigma a) := 1
+    [assign] sigma (2 • a) := 2
+    [assign] sigma (2 • sigma a) := 2
+    [assign] sigma (sigma (sigma a)) := 1
+    [assign] sigma (2 • sigma (sigma a)) := 2
+    [assign] sigma (sigma (sigma (sigma a))) := 1
+    [assign] sigma (2 • sigma (sigma (sigma a))) := 2
+    [assign] sigma (sigma (sigma (sigma (sigma a)))) := 1
+    [assign] sigma (2 • sigma (sigma (sigma (sigma a)))) := 2
+    [assign] sigma (sigma (sigma (sigma (sigma (sigma a))))) := 1
+    [assign] sigma (2 • sigma (sigma (sigma (sigma (sigma a))))) := 2
+    [assign] sigma (sigma (sigma (sigma (sigma (sigma (sigma a)))))) := 1
+    [assign] sigma (2 • sigma (sigma (sigma (sigma (sigma (sigma a)))))) := 2
+    [assign] sigma (sigma (sigma (sigma (sigma (sigma (sigma (sigma a))))))) := 1
+    [assign] sigma (2 • sigma (sigma (sigma (sigma (sigma (sigma (sigma a))))))) := 2
+    [assign] sigma (sigma (sigma (sigma (sigma (sigma (sigma (sigma (sigma a)))))))) := 1
+    [assign] sigma (2 • sigma (sigma (sigma (sigma (sigma (sigma (sigma (sigma a)))))))) := 2
+  [limits] Thresholds reached
+    [limit] maximum term generation has been reached, threshold: `(gen := 8)`
+[grind] Diagnostics
+  [thm] E-Matching instances
+    [thm] linear ↦ 9
+    [thm] two_fixed ↦ 9
+'NormHalving.halving_abscissa_identity' depends on axioms: [propext, Classical.choice, Quot.sound]
+'NormHalving.halving_ordinate_identity' depends on axioms: [propext, Classical.choice, Quot.sound]
+'NormHalving.halves_differ_by_two_torsion' depends on axioms: [propext, Classical.choice, Quot.sound]
+'NormHalving.halves_fixed_by_frobenius_square' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'NormHalving.odd_class_has_explicit_norm_lift' depends on axioms: [propext, Classical.choice, Quot.sound]
+'NormHalving.preimage_from_odd_and_cofactor' depends on axioms: [propext, Classical.choice, Quot.sound]
+'NormHalving.correction_exists_for_every_half' depends on axioms: [propext, Classical.choice, Quot.sound]
+'NormHalving.corrected_evaluator_matches_beta' depends on axioms: [propext, Classical.choice, Quot.sound]
+'NormHalving.corrected_lift_independent' depends on axioms: [propext, Classical.choice, Quot.sound]
+'NormHalving.strongest_scalar_baseline_identity' depends on axioms: [propext, Classical.choice, Quot.sound]

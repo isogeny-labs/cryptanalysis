@@ -1,0 +1,72 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-13T15:10:34Z",
+ "id": "PCC-20261113-a42f6a",
+ "kind": "statement",
+ "producer": {
+  "commit": "68febd868af86da068d0ef906065a57d9faaa2c5",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/completed-own-CI-01/P1-whole-job.log.xz",
+    "sha256": "c3398240f1ce16ef84df3aedaddeb1a16dd5a528b675961911e28a1cfc1396af"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/completed-own-CI-01/PCC-whole-job.log.xz",
+    "sha256": "0d2c946fef9324689ccef1a8883fa0da14a179a2edf8278fddf74ac1bc772ac6"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/completed-own-CI-01/V2-whole-job.log.xz",
+    "sha256": "e135493bdfaaf9668e69b577ba253076325dbac469f3c7f93a16d3f58310e06c"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/completed-own-CI-01/all-native-records.json.xz",
+    "sha256": "9bbf8f8409ca32c869ece61c65abc2a1fce3a91632823e87a7e6b819f170346e"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/completed-own-CI-01/all17-exact-verdicts.json.xz",
+    "sha256": "6deae007952dd325e7aedc35887acebfbdf8180f577c6a2608f65f6cf00525d1"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/completed-own-CI-01/completed-whole-job.log.xz",
+    "sha256": "43813e6c5f1f4f97e30468b48691405d735d460259b16cc7b7bde177e795d3bd"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/completed-own-CI-01/observation.json",
+    "sha256": "6e326207f1b64439071e9afecb7126df4161cebccab5680f12cbf1d656c25798"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/completed-own-CI-01/original-PCC-canonical-digests.json.xz",
+    "sha256": "3c700563a6c261b206933bfaccd9d034ac7ba7a28fee09a63a3612d91a47585f"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Exact68feb independent CI: completed43445565169/131953969628, V2rho43445564907/131953968270, P143445564904/131953968746, PCC43445565067/131953969401 all SUCCESS. All42 native JSON match originals; ONLY candidate/P1 phases.wall and stats.wall_total excluded from equality, raw intact. All17 exact localPCC verdicts pass/currentcommit/original canonicaldigests. PCC gate explicitly allowsnotcovered2; sign legitimately skipped featurebranch. Whole4logs/API/484sources retained; CIguard inference successful original steps+complete markers, not downloaded standalone exitfiles/ZIP. Separate localfull484guards0/b40fec. No signed execution/fullformalgeometry/costadvantage."
+}

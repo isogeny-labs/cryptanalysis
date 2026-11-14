@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-13T12:18:19Z",
+ "id": "PCC-20261113-d1a2d4",
+ "kind": "theorem",
+ "producer": {
+  "commit": "f888bd5fe50262d0d74d85ff4caaf4e4af96c81d",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "96a1203ba859eeb5a454ca00e9272cf588cde967bd1ea7b836e17db91330aa78",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/formal/PublicOriginConvention.lean",
+   "theorem": "PublicOriginConvention.transported_forward_double"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Additional conditional degree-six reference two-delta, infinity-origin sign, transported forward and reverse double compositions, common-sign affine log ratio. Actual divisor/Picard groups, hyperelliptic-involution infinity-origin identity, N4 solver kernel, completed V2 maps/norm and model/basepoint identification remain written/native obligations. SAME5 source declarations accepted by ORIGINALproducer4.35 and ORIGINALconsumer4.34.1 gates,zero trusted;no verifier/trust change. Exact local bindings remain unsigned until main CI verdict;no full formal geometry or computational advantage.",
+ "statement": "theorem transported_forward_double {E F J : Type} [IntModule E] [IntModule F] [IntModule J] (source : E \u2192 F) (inverse : F \u2192 E) (pullOld : E \u2192 J) (pullNew : F \u2192 J) (normNew : J \u2192 F) (map_bridge : \u2200 x, pullOld x=pullNew (source x)) (new_diagonal : \u2200 y, normNew (pullNew y)=(2 : Int) \u2022 y) (inverse_two : \u2200 y, inverse ((2 : Int) \u2022 y)=(2 : Int) \u2022 inverse y) (left_inverse : \u2200 x, inverse (source x)=x) (x : E) : inverse (normNew (pullOld x))=(2 : Int) \u2022 x"
+}

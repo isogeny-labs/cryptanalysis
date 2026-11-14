@@ -1,0 +1,58 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-13T19:40:18Z",
+ "id": "PCC-20261113-1ea2d5",
+ "kind": "statement",
+ "producer": {
+  "commit": "a7ea5998b4482c99469185119d1acbc5b60921a4",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/odd-source-failed-01/compile.log.xz",
+    "sha256": "2314136267efb26086cee5c98ab23e829b2999750be4f00312f0f59061a979ad"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/odd-source-failed-01/guards.json",
+    "sha256": "8bb5eb54531f3e474a78c38d74bf6d0e28f225c5686f9fad99a25079cfd78a57"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/odd-source-failed-01/native.log.xz",
+    "sha256": "2314136267efb26086cee5c98ab23e829b2999750be4f00312f0f59061a979ad"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/odd-source-failed-01/original-command.sh",
+    "sha256": "797b38c849ba1b856398e32ef296428a42dfb887ace2ebf416bc975dc5b0d82d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/odd-source-failed-01/original-lib.rs",
+    "sha256": "6bcb037051f264fead6941b1aa13511ec834eff9e2dff83e36622c4256a79a01"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/odd-source-failed-01/plan.json",
+    "sha256": "29efa71212ca46d5c778432b096405dab286774f544d7fd6276e50c1cf51d229"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Odd-source first build01 original101/all2452 selected hashes unchanged. Seven compile errors call nonexistent original poly::sqr; no native test executed. Whole original source/compile/native logs/commands/plan/guards retained before correction. Prospectivee9234b unchanged; replace only polynomial-square API calls with existing original polynomial multiplication, no mathematical criterion or engine change; no isogeny/result/advantage claim."
+}

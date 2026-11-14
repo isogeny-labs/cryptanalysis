@@ -1,0 +1,37 @@
+{
+  "at": "2026-11-14T10:36:52.849691+00:00",
+  "consumer": "b691714c8c6f7b157f9ec832ccc91413c624c541",
+  "producer": "3d49af7f3d0a28e76b79e4825c9d2324e85853d2",
+  "protocols": "5be5e0/32283c/b4cde5/complete-replay02; source published before full",
+  "source_inputs": 881,
+  "source_plus_manifest": 882,
+  "driver_output": "/workspace/scratch/ct73-complete-driver-01",
+  "derived_cache": "/workspace/scratch/ct73-complete-driver-01-build-cache",
+  "cache_scope": "fresh target outside BOTH captured output roots; ordinary registry shared, not benchmark",
+  "timeout_s": 2400,
+  "phases": "20ordered:17zero/threeactual101;everytee0",
+  "acceptance": "native3/all3wholeJSON/no masks/exact3accounting-path audit/two unchanged original44+1 gates/sevenbindings/all finalguards",
+  "admissions": [
+    {
+      "name": "missing-tool",
+      "actual_exit": 2,
+      "output_created": false
+    },
+    {
+      "name": "wrong-producer-head",
+      "actual_exit": 2,
+      "output_created": false
+    },
+    {
+      "name": "output-in-source",
+      "actual_exit": 2,
+      "output_created": false
+    },
+    {
+      "name": "existing-cache",
+      "actual_exit": 2,
+      "output_created": false
+    }
+  ],
+  "scope": "bounded correctness development/independent fresh source replay; no performance measurement"
+}

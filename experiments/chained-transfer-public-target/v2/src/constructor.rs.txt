@@ -1,0 +1,56 @@
+    /// Fresh q223 field/plane/P0/normal forms/origin. No V1 state is reused.
+    pub fn new(checked: &chained_n4_public_target::CheckedInstance) -> Result<Self> {
+        Self::with_base_point(checked, None)
+    }
+
+    pub fn with_base_point(
+        checked: &chained_n4_public_target::CheckedInstance,
+        base_point: Option<[u32; 3]>,
+    ) -> Result<Self> {
+        checked.check_field_basis()?;
+        let inst = &checked.inst;
+        let q = inst.q;
+        if q != 223 { return Err("unsupported V2 constructor".into()); }
+        let modulus = vec![q-inst.kf.c, 0, 0, 1];
+        let _checked = FpR::from_modulus(q, &modulus);
+        let mut field = Kf { f: Fq::new(q), a: 0, b: q-inst.kf.c, gq: [0;3], gq2: [0;3] };
+        field.gq = field.pow([0,1,0], q as u128);
+        field.gq2 = field.mul(&field.gq, &field.gq);
+        for a in [[1,0,0],[0,1,0],[0,0,1]] {
+            if field.frob(&a) != inst.kf.frob(&a) { return Err("actual Frobenius basis mismatch".into()); }
+            for b in [[1,0,0],[0,1,0],[0,0,1]] {
+                if field.mul(&a,&b) != inst.kf.mul(&a,&b) { return Err("actual product basis mismatch".into()); }
+            }
+        }
+        let (ub, uc) = (inst.u[1], inst.u[0]);
+        let core = cover::build_core(&field, &ub, &uc).map_err(|e|format!("original core rejects:{e:?}"))?;
+        if core.quartic.map(|v|v as u32) != inst.f { return Err("actual all15 quartic mismatch".into()); }
+        if core.ea != checked.independent_curve.a[..3] || core.eb != checked.independent_curve.b[..3] {
+            return Err("actual independent short-model mismatch".into());
+        }
+        let coeffs = core.quartic.map(|x|x as u32);
+        let p0 = match base_point {
+            Some(p) => p,
+            None => pic::first_rational_point_canonical(q as u32, &coeffs).ok_or("no actual canonical base point")?,
+        };
+        let pic = PlaneQuartic::new(q as u32, coeffs, p0).map_err(|e|format!("original Picard rejects:{e:?}"))?;
+        let mut normal6 = Vec::new();
+        for (a,b,c) in pic::mons_of_degree(6) {
+            let mut v = vec![1u32];
+            let mut degree = 0;
+            for (axis,n) in [a,b,c].into_iter().enumerate() {
+                for _ in 0..n {
+                    let mut x = vec![0;3]; x[axis] = 1;
+                    v = pic.mul_forms(degree,&v,1,&x); degree += 1;
+                }
+            }
+            normal6.push(v);
+        }
+        let field_tag = checked.field_tag.clone();
+        let model_tag = format!("Ciani-E0-completed-v2-{}",sha(format!("{q}:{ub:?}:{uc:?}:{:?}:{:?}:{:?}:{p0:?}",core.ea,core.eb,core.quartic).as_bytes()));
+        let origin = pic.zero();
+        let mut adapter = Self { q,field,core,pic,ub,uc,expected_order:inst.order as u64,ell:inst.ell,
+            field_tag,model_tag,modulus,moore_shift:0,transport_scale:1,historical_record:checked.description(),normal6,origin };
+        adapter.origin = adapter.pic.reduce_deg6(&adapter.trace_space(&None)?);
+        Ok(adapter)
+    }

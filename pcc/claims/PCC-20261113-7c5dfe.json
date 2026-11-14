@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-13T13:47:21Z",
+ "id": "PCC-20261113-7c5dfe",
+ "kind": "theorem",
+ "producer": {
+  "commit": "68d22cee01126c9a03a2222687b0faf62113489d",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "94ecfd36cc72f26101ea0fef18ade679967193dc6b6aa3dbc00b55b57dbbce4b",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/prime-field/NoBaseFieldCurve.lean",
+   "theorem": "NoBaseFieldCurve223.no_hasse_count_divides_extension_count"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Exactinteger q223Hasse radiusbounds/all59candidatecounts faildivisibility/conditionalNatno-small-divisor. Actual elliptic groups, Hasse theorem, rationalpoint inclusion/Lagrange and isogeny point-count invariance remain standardwritten bridges,not formalizedhere. SAME3decls ORIGINALproducer4.35 andconsumer4.34.1PASS3/0trusted;no customaxioms/sorry/native_decide/verifierchange. Excludes onlyprime-field elliptic model/isogenyshortcut foractualsource,not positiveJac(F223)transfer. Exact localbindings unsigned/no fullformalgeometry orcostclaim.",
+ "statement": "theorem no_hasse_count_divides_extension_count (m : Nat) (lower : 195 \u2264 m) (upper : m \u2264 253) : \u00ac m \u2223 (11092292 : Nat)"
+}
