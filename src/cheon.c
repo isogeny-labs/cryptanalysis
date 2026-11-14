@@ -76,7 +76,7 @@ uint64_t ca_cheon_best_divisor(uint64_t p, double *cost_exps)
  * w[l]^e (Montgomery form), the residue ca_mont_pow computes for each. */
 #    define CHEON_LANES 4
 #    define CHEON_SEG   128
-#    define CHEON_BLOCK (CHEON_LANES * CHEON_SEG)
+#    define CHEON_BLOCK ((uint64_t)CHEON_LANES * CHEON_SEG)
 
 static void cheon_pow4(const ca_mont *m, uint64_t w[CHEON_LANES], uint64_t e)
 {
@@ -137,7 +137,6 @@ static ca_status orbit_bsgs(const ca_group *g, const ca_elem *base, const ca_ele
      * segments of the orbit at once (same table, same insertion order, same
      * charges).  Anything else takes the serial loops below. */
     int fast = 0;
-    uint64_t pw[CHEON_LANES + 1], step_ops = 0;
     if (g->kind == CA_GROUP_ZP && ca_zp_group_is_native(g) && eta != 0 && m >= CHEON_BLOCK) {
         ca_elem t1, t2;
         ca_group_mul(g, &t1, base, p, NULL);
@@ -145,8 +144,10 @@ static ca_status orbit_bsgs(const ca_group *g, const ca_elem *base, const ca_ele
         fast = ca_group_is_identity(g, &t1) && ca_group_is_identity(g, &t2);
     }
     if (fast) {
+        uint64_t pw[CHEON_LANES + 1];
         for (int l = 0; l <= CHEON_LANES; l++) pw[l] = ca_powmod(eta, (uint64_t)l * CHEON_SEG, p);
-        step_ops = (uint64_t)__builtin_popcountll(eta) + (uint64_t)(63 - __builtin_clzll(eta));
+        const uint64_t step_ops =
+            (uint64_t)__builtin_popcountll(eta) + (uint64_t)(63 - __builtin_clzll(eta));
         uint64_t hb[CHEON_BLOCK], ej = 1;
         for (; m - j0 >= CHEON_BLOCK; j0 += CHEON_BLOCK) {
             cheon_orbit_hashes(g, base, eta, ej, pw, p, hb);
