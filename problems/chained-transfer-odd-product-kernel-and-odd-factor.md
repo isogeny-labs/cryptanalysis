@@ -8,6 +8,20 @@
 
 ## Problem
 
+The prospectively fixed additional lambda2 edge bbfd74 also has an
+unsupported matched model: actual E3 a=(99,74,32),b=(192,90,87), same
+full kernel transported before admissibility, unique HLP(0,0), smooth
+with nonsquare D24. Native6d2c97 preserves all old/new panels and actual
+controls, including whole-record omission101. Supplemental68cd8c has
+both original Lean gates/one finite-residue theorem/zero trusted and
+local exact bindingee88e7; field/extension/geometry remain separate.
+[The new derivation](../experiments/chained-transfer-public-target/NONDUAL13_NEXT_NEGATIVE_DERIVATION_01.md)
+keeps both negatives and does not assert universal nonexistence. After
+whole publication/replay, the next mechanism is the incomplete cold
+arithmetic census under a new observer protocol; a fourth edge is not
+part of this study. All original map/measurement exit conditions below
+remain open. [pcc:unverified]
+
 The fixed nondual second-hop continuation has an additional observed
 supplied-source model obstruction: actual full kernel transport uniquely
 matches HLP(2,1), smooth with D=12 and no square root in the cubic field.
