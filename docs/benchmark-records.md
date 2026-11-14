@@ -39,7 +39,52 @@ file that already lives elsewhere in S3 (an isolab results prefix) is recorded
 with `--s3-uri`. A raw file counts as stored when it is in Git (small files),
 in a `.artifacts.json` manifest, or marked `uploaded` by `benchrec.py upload`
 (which needs AWS credentials: CI has them, a session usually does not). CI
-with `--verify-s3` HEADs every object.
+with `--verify-s3` confirms that every raw object is in S3 at its recorded
+size. When at least 16 of the wanted keys sit under one prefix (the
+content-addressed store always does), it lists that prefix once, keys and
+sizes, instead of starting one `head-object` process per object. Fewer keys,
+or a listing that S3 refuses (no `s3:ListBucket`), fall back to per-object
+HEADs, 16 at a time. Every `aws` call names the bucket region (`us-east-2`,
+override `BENCHREC_S3_REGION` or `region` in `.benchrec.json`) and carries
+`--cli-connect-timeout`/`--cli-read-timeout` plus a hard wall-clock limit
+(120 s for sts and HEAD, 300 s for a listing, GET or upload). A call that
+outruns its limit fails the check with `FAIL: S3 could not be verified: ...`,
+naming the command and the limit, so the job never runs into its own timeout.
+The serial HEAD loop took 0.7 s (bucket region) to 1.0 s (us-west-2) per
+object, which passed the job's 15-minute limit once the records named about
+1,000 raw objects (1,561 on 2026-11-11).
+
+### Closed raw data when a checkout path is reused
+
+`living_paths` remains an accepted configuration field for evolving catalogs.
+It never waives byte verification: configured and other changed paths follow
+the same strict archival checks below.
+
+The record and its original hashes, byte counts, URI, metrics and status stay
+immutable. A newer generated file at the same checkout path is not the raw
+data of the historical run. For a closed record only, the checker can verify
+the original bytes from its existing canonical content-addressed store URI.
+Online verification requires both the recorded length and a fresh bounded GET
+whose complete SHA-256 matches the original pin; HEAD alone, the filename and
+the `uploaded` flag are insufficient. Denied, missing, truncated, oversized or
+corrupt archive reads fail the check. Open runs never use this fallback.
+Closing an open record also cannot use the fallback: its current raw bytes must
+match the original capture before the closed record is written. The fallback
+only verifies records that were already closed before the command.
+
+For offline checking, exact original bytes may be staged at
+`.benchrec/raw-archive-cache/<sha256>` (inside the checkout). The checker
+recomputes both length and digest and rejects symlinks or escapes. This proves
+the recorded bytes locally, not their availability in S3. `--verify-s3` still
+performs a fresh archive GET even when that cache is populated, and retains
+the per-object presence and size checks. Missing cache bytes do not relax an
+offline failure. `upload` never uploads the differing newer file or marks it
+uploaded; it accepts only the independently verified existing archive.
+
+These checks concern the old recorded bytes only. They do not validate the
+different current file, change a closed record, promote a measurement or
+replace any current-source/scientific validation gate. Prefer immutable raw
+output paths for new runs so this compatibility handling is unnecessary.
 
 ## One unit vocabulary
 
