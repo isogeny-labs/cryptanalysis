@@ -15,7 +15,7 @@
              "--", "--backend", "cuda", "--device", "0"],
     "setup": [
       ["cmake", "-S", ".", "-B", "build/taskq-cuda-sm120", "-DCMAKE_BUILD_TYPE=Release",
-       "-DCA_BUILD_TESTS=OFF", "-DCA_BUILD_SHARED=OFF",
+       "-DCA_BUILD_TESTS=OFF", "-DCA_BUILD_SHARED=OFF", "-DCA_ARCH=x86-64-v3",
        "-DCA_CUDA=ON", "-DCA_CUDA_ARCHITECTURES=120",
        "-DCMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc"],
       ["cmake", "--build", "build/taskq-cuda-sm120", "--target", "ca", "-j", "8"],
