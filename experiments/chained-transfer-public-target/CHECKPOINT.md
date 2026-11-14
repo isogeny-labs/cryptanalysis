@@ -1,3 +1,51 @@
+# Arithmetic fresh replay complete; locked helper hydration correction — 2026-11-14T06:14:06.083340+00:00
+
+## Goal
+Continue nontrivial DLP-preserving transfers, chained Jacobian maps, prime-field descent and computational comparisons; advance after each result. [pcc:unverified]
+
+## State
+Scientific source ca9b0626 normally published0 (governance eeea8a). Native8d0c27, vectors8c2406 and final three-page92135B report03cfb7 remain immutable. Fresh independent386296 checks source02/21+self22, original785 and all derived guards0; all14 ordered native+tee0/0, one unfiltered pass, all86 records exact under only frozen walls, entire7113-row census+all metadata exact with no masks, actual omitted-hook positive0/negative101 same algebra. Whole raw sources/results/binaries retained. All claims unsigned. [pcc:unverified]
+
+Own ca9 CI5523a3: other17 workflows success/sign skipped; new18th run43563844912/job132353228514 actual1 before compilation, helper offline metadata101/tee0 missing separately locked serde1.0.229. Complete5293826B ZIP/all1555members and whole log retained. Prospective7b2367 before source remedy/control; focused34e2c1 genuinely empty CARGO_HOME offline101/locked fetch0/same offline0/all copied source+lock guards0. [pcc:unverified]
+
+## Spec and next action
+This correction adds only `fetch-taps` using unchanged helper Cargo.lock before offline `lock-taps`:15 ordered phases total, all existing14 criteria retained. Current reference03 has22 sources+self23, including the new protocol; historical01 and02 bytes unchanged. Taps, algebra, controls, solver, all86 comparisons, whole7113-row golden and every old17 workflow remain unchanged. Commit/push normally, then inspect automatic own-source18 CI full15-phase replay. Do not manually redispatch settled workflows. No second unchanged local science replay is needed: the ca9 full and focused clean-cache control address this dependency-only change; complete new CI must still pass. [pcc:unverified]
+
+## Custody
+Genuine92a00d/420904: eight remote replays before a0c/direct0a,14wholeobjects/8S3+6Git,guard10released. Genuine1f4cbc/877d0e: one remote replay before14fa/direct245, whole75764B control archive,guard11released. Future artifact FF requires NEWguard12. Fresh ca9 full/CI/empty-cache control large whole captures await that batch; complete local evidence preserved. Root14fa has pending latest-publication metadata; checkpoint it and update PR3877/1523/issue3904. [pcc:unverified]
+
+## Next research
+Review actual matched HLP(1,0) beta quotient and Frobenius/rational lifting before implementing complete rational-point evaluation or global coordinates. Continue admitted cold/online calibration and strongest references when live budget/capacity and matching image are established. Existing unpriced vectors show more products/fewer inversions. Root124/clock101/main ledger/signing/reviews/conflict, actual geometry/formal bridges and global log extension remain open. Vault8edec422 locked/KB unavailable, no novelty inference. [pcc:unverified]
+
+## Runs in flight
+No local science run. All14 ca9 phases and focused helper control terminal; automatic own-source18 CI will follow this normal publication. Raw /workspace/scratch/ct72-arithmetic-full-01, ct72-ca9-own-CI-01 and ct72-helper-empty-cache-control-01. Actual binaries/source/raw retained; only closed compiler incremental636495620B removed with whole580-file hash receipt. [pcc:unverified]
+
+---
+
+# Arithmetic fresh replay complete; locked helper hydration correction — 2026-11-14T06:13:01.578057+00:00
+
+## Goal
+Continue nontrivial DLP-preserving transfers, chained Jacobian maps, prime-field descent and computational comparisons; advance after each result. [pcc:unverified]
+
+## State
+Scientific source ca9b0626 normally published0 (governance eeea8a). Native8d0c27, vectors8c2406 and final three-page92135B report03cfb7 remain immutable. Fresh independent386296 checks source02/21+self22, original785 and all derived guards0; all14 ordered native+tee0/0, one unfiltered pass, all86 records exact under only frozen walls, entire7113-row census+all metadata exact with no masks, actual omitted-hook positive0/negative101 same algebra. Whole raw sources/results/binaries retained. All claims unsigned. [pcc:unverified]
+
+Own ca9 CI5523a3: other17 workflows success/sign skipped; new18th run43563844912/job132353228514 actual1 before compilation, helper offline metadata101/tee0 missing separately locked serde1.0.229. Complete5293826B ZIP/all1555members and whole log retained. Prospective7b2367 before source remedy/control; focused34e2c1 genuinely empty CARGO_HOME offline101/locked fetch0/same offline0/all copied source+lock guards0. [pcc:unverified]
+
+## Spec and next action
+This correction adds only `fetch-taps` using unchanged helper Cargo.lock before offline `lock-taps`:15 ordered phases total, all existing14 criteria retained. Current reference03 has22 sources+self23, including the new protocol; historical01 and02 bytes unchanged. Taps, algebra, controls, solver, all86 comparisons, whole7113-row golden and every old17 workflow remain unchanged. Commit/push normally, then inspect automatic own-source18 CI full15-phase replay. Do not manually redispatch settled workflows. No second unchanged local science replay is needed: the ca9 full and focused clean-cache control address this dependency-only change; complete new CI must still pass. [pcc:unverified]
+
+## Custody
+Genuine92a00d/420904: eight remote replays before a0c/direct0a,14wholeobjects/8S3+6Git,guard10released. Genuine1f4cbc/877d0e: one remote replay before14fa/direct245, whole75764B control archive,guard11released. Future artifact FF requires NEWguard12. Fresh ca9 full/CI/empty-cache control large whole captures await that batch; complete local evidence preserved. Root14fa has pending latest-publication metadata; checkpoint it and update PR3877/1523/issue3904. [pcc:unverified]
+
+## Next research
+Review actual matched HLP(1,0) beta quotient and Frobenius/rational lifting before implementing complete rational-point evaluation or global coordinates. Continue admitted cold/online calibration and strongest references when live budget/capacity and matching image are established. Existing unpriced vectors show more products/fewer inversions. Root124/clock101/main ledger/signing/reviews/conflict, actual geometry/formal bridges and global log extension remain open. Vault8edec422 locked/KB unavailable, no novelty inference. [pcc:unverified]
+
+## Runs in flight
+No local science run. All14 ca9 phases and focused helper control terminal; automatic own-source18 CI will follow this normal publication. Raw /workspace/scratch/ct72-arithmetic-full-01, ct72-ca9-own-CI-01 and ct72-helper-empty-cache-control-01. Actual binaries/source/raw retained; only closed compiler incremental636495620B removed with whole580-file hash receipt. [pcc:unverified]
+
+---
+
 # Public-target N4 — native/API/partial formal result; independent CI and V2 next
 
 ## Goal

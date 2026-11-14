@@ -15,7 +15,7 @@ mkdir "$out"
 export RUSTUP_TOOLCHAIN=1.99.1
 export CARGO_TARGET_DIR=$cache
 study=experiments/chained-transfer-public-target
-reference=$audit/reference-02.sha256
+reference=$audit/reference-03.sha256
 solver=$layout/derived-layout/cryptanalysis/$study/norm-assisted-ic/Cargo.toml
 taps=$layout/derived-layout/n4-arithmetic-taps/Cargo.toml
 phase() {
@@ -63,6 +63,7 @@ cp "$reference" "$out/audit-source-manifest-original.sha256"
 phase materialize bash "$audit/materialize.sh" "$consumer" "$producer" "$layout"
 phase fetch-original cargo fetch --locked --manifest-path "$layout/original-layout/cryptanalysis/$study/norm-assisted-ic/Cargo.toml"
 phase lock-solver cargo metadata --offline --format-version 1 --manifest-path "$solver"
+phase fetch-taps cargo fetch --locked --manifest-path "$taps"
 phase lock-taps cargo metadata --offline --locked --format-version 1 --manifest-path "$taps"
 # Preserve all registry blocks exactly, including names/versions/checksums/dependencies.
 for arm in original derived; do
