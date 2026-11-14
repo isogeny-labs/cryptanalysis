@@ -79,11 +79,110 @@ about 0.05 sits at the permutation floor. That curve leaks k* completely in
 any case. The item needs more permutations and an explanation before anyone
 reads it as structure.
 
+## Follow-ups 1–4 (`followup.py`) [pcc:unverified]
+
+The numbers in this section come from this session's own runs and no
+independent verifier has checked them yet. Each command below writes
+`results/followup_<name>.json` and a matching `.png`.
+
+- `python3 followup.py tiny`
+- `python3 followup.py population`
+- `python3 followup.py mov`
+
+### 1. The linear advantage on the 12-bit curve is an artifact
+
+On the 12-bit curve, 21,992 samples take only 1,374 distinct x-values, so each
+x-value turns up in both the training and test sets. Three nulls separate what
+the linear fit learns about the curve from what it simply memorises:
+
+- **Sample-level label permutation** (5,000 permutations, as in the base run).
+  Accuracy is at chance, 0.500 on the low bits.
+- **x-consistent null.** A random bijection of the distinct x-values: labels
+  stay a function of x but lose any curve structure. Accuracy is 0.534–0.537 on
+  the low bits, which accounts for most of the observed 0.537–0.571.
+- **Disjoint-x split.** The test x-values never occur in training; 50 random
+  splits, 1,000 label permutations. On bits 0–8 accuracy is 0.476–0.539 against
+  nulls of 0.497–0.534, which is chance. Bits 9–11 match their nulls exactly,
+  because the labels are lopsided and both guess the majority.
+
+Bits 1 and 2 sit above the x-consistent null with p = 0.010 and 0.015. Neither
+survives a correction for testing 12 bits, and the disjoint split shows nothing
+on either bit.
+
+**Conclusion.** The base run's ±0.05 is the linear fit memorising x-values
+that occur in both training and test. It says nothing about the curve.
+
+### 2. Twenty curves per class at 40 bits
+
+Each class has 20 curves, with 2,000 samples per curve. The z-score of each bit
+of k\* is measured against 100 permutations; bits that are constant (the top
+bit of k\*, which is always below n/2) are excluded. Group orders come from
+PARI's SEA algorithm (`ellcard`), cross-checked against the harness's own BSGS
+on one curve per class; all three matched.
+
+| class | bits | mean z | sd z | fraction with \|z\| > 3 | max z (familywise p) | structured attack |
+|---|---|---|---|---|---|---|
+| smooth | 780 | +0.06 | 0.97 | 0.38% | 3.74 (0.07) | Pohlig–Hellman ±k mod q: 1.000 on 20/20 curves |
+| anomalous | 769 | −0.01 | 1.04 | 0.39% | 3.47 (0.20) | Smart: 400/400 |
+| prime | 780 | −0.05 | 1.00 | 0.13% | 2.98 (1.0) | none |
+
+Every class matches N(0,1), which puts about 0.27% beyond |z| = 3.
+
+### 3. Stronger generic predictors
+
+These predictors ran on the same 60 curves. The target is
+c = min(k\* mod q, −k\* mod q), where q is the smallest odd prime factor of n
+on smooth curves and q = 3 otherwise.
+
+- **Gradient boosting** (scikit-learn `HistGradientBoostingClassifier`) on the
+  bits of x, x mod 2…16, the Legendre symbol of x and x/p, predicting c mod 2,
+  with 20 permutations per curve.
+  - Mean advantage on c mod 2: −0.001 (smooth), +0.001 (anomalous), −0.001
+    (prime).
+  - Mean advantage on bit 0 of k\*: +0.007, −0.001, −0.005.
+  - On the smooth curves, Pohlig–Hellman predicts the same target with
+    accuracy 1.000.
+- **Mutual information** between x mod m (m = 2, 3, 4, 5, 7, 8, 16, q) and c,
+  with 200 permutations. About 140 tests were run per class, and the smallest
+  p-value was 0.005, which is what chance gives at that many tests.
+
+**Conclusion.** Neither generic learner sees leakage that a structured attack
+reads off exactly. A clean result from a generic learner is not evidence of
+security.
+
+### 4. MOV positive control
+
+**Attempt with embedding degree 2 (abandoned).** The first version used the
+supersingular curve y² = x³ + x with embedding degree 2. It did not work at
+these sizes. PARI's discrete log on a prime-order subgroup of F_{p²}* scaled
+like a generic method: 4 s at r ≈ 2^48 and 68 s at r ≈ 2^56, about 16 times
+slower for 8 more bits. At r ≈ 2^70 a single 80-bit trial had not finished
+after 10 minutes. This confirms that transferring to F_{p²} gains nothing
+unless the target field has an index-calculus solver.
+
+**Control used: embedding degree 1.**
+
+- **Curve.** y² = x³ + Ax over F_p, with CM by Z[i] and Frobenius
+  π = 1 + r(c + di). Then all of E[r] is rational and r | p − 1. The run used
+  r ≈ 2^60, p ≈ 2^127 (c = 1, d = 13) and E(F_p) ≅ Z/n₁ × Z/n₂ with r dividing
+  both.
+- **Attack.** Start from x([k]P) only. The Weil pairing with a second,
+  independent r-torsion point gives a value in F_p*, and PARI's `znlog`, which
+  uses index calculus there, recovers ±k.
+  - 10 of 10 trials recovered k\*, with a median of 28 s per scalar.
+  - The independent check that [k]P has the original x-coordinate passed on
+    every trial.
+- **Negative control.** An ordinary curve with a 60-bit prime subgroup and an
+  embedding degree above 200. PARI's generic `elllog` did not finish within
+  the 600 s budget; rho there needs about 2^29.7 group operations.
+
+**Scope.** This shows the transfer working and beating the generic method at
+the same subgroup size, on one machine and one seed. It is not a benchmark row.
+
 ## Limits and next steps
 
-- The run uses 200 permutations, so the smallest reachable p-value is 0.005.
-- The experiment covers one seed and one curve per control. It is not a
-  population study, and the next step is several curves per class.
-- The only blind predictor is a linear model on the bits of x. Possible
-  additions are nonlinear learners (for example gradient boosting on x and
-  x mod small numbers) and targets of k mod m for m that do not divide n.
+- Permutation counts set the p-value floors: 0.005 at 200 permutations, and
+  0.048 for the 20-permutation gradient-boosting nulls.
+- The population covers 40-bit curves only, with 20 curves per class.
+- The MOV timings come from one machine and one seed, with no isolation, so
+  they are indicative only.
