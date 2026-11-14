@@ -4,9 +4,29 @@
 - **Kind:** bounded mathematical obstruction; implementation gap; measurement gap
 - **Affected work:** [refinement protocol](../experiments/chained-transfer-public-target/ODD_PRODUCT_REFINEMENT_PROTOCOL_01.md),[active derivation03](../experiments/chained-transfer-public-target/ODD_PRODUCT_REFINEMENT_DERIVATION_03.md),[proof map](../experiments/chained-transfer-public-target/ODD_PRODUCT_REFINEMENT_PROOF_MAP_01.md)
 - **Next action owner:** continuing Chained ECDLP Transfers research
-- **Last updated:**2026-11-13
+- **Last updated:**2026-11-14
 
 ## Problem
+
+The fixed nondual second-hop continuation has an additional observed
+supplied-source model obstruction: actual full kernel transport uniquely
+matches HLP(2,1), smooth with D=12 and no square root in the cubic field.
+The smooth F223 quartic exists, but its required identification with the
+specified E2 product is unsupported. Native27fb3a retains every case and
+the negative controls; [the derivation](../experiments/chained-transfer-public-target/NONDUAL13_MODEL_NEGATIVE_DERIVATION_01.md)
+states the exact scope. This is not a universal nonexistence theorem.
+[pcc:unverified]
+
+For this continuation, an unblocking construction must provide the required
+F223 polarized quotient/Jacobian identification and complete DLP-preserving
+maps for the original fixed kernel, or a separately prospectively frozen
+different continuation with its own source, kernel and descent checks.
+Retwisting or selecting a different square case does not satisfy the
+original23ab48 endpoint requirement. A single further fixed elliptic edge,
+transporting the same full kernel, is the next discriminating experiment;
+supported/unsupported/infrastructure outcomes must all be retained under
+its new protocol. Complete maps and computational comparisons remain
+separate even after any positive model preflight. [pcc:unverified]
 
 None of the three implemented F223 Jacobian targets for the fixed actual
 degree13 Eprime product has a free C52^3 kernel; the matched target gives
