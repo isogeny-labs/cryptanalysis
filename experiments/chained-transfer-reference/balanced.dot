@@ -1,0 +1,15 @@
+digraph balanced {
+ graph [rankdir=LR,bgcolor="white",fontname="DejaVu Sans",pad=0.2];
+ node [shape=box,style="rounded,filled",fillcolor="#eef3fa",fontname="DejaVu Sans",fontsize=11];
+ edge [fontname="DejaVu Sans",fontsize=10];
+ E [label="E/F101, full order109\ny²=x³+x+46\nG=(2,37)"];
+ J [label="Balanced Jac(C)/F101\ny²=x⁶+x²+46\n11,663 rational classes"];
+ E -> J [label="whole quadratic fiber\n(u=x²-U, v=V, n=0)",color="#2255aa"];
+ J -> E [label="arbitrary-class norm\n109 images;107 preimages each",color="#247044"];
+ recovery [shape=note,fillcolor="#fff6df",label="N f*=[2]; inverse55 mod109\nBoth infinities map to O\nNo rational Weierstrass point needed"];
+ J -> recovery [style=dotted,arrowhead=none];
+ reference [label="Old x⁶+1 / shifted model\n10,404 classes each\nFull chart bijections and paired operations"];
+ reference -> J [style=dashed,label="arithmetic controls\nshared Cantor lineage"];
+ next [fillcolor="#fff6df",label="Next: non-split Richelot descent\nNo actual correspondence yet\nNo cost or cross-prime result"];
+ J -> next [style=dashed,color="#996020"];
+}

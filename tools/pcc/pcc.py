@@ -38,6 +38,7 @@ import json
 import os
 import re
 import secrets
+import shlex
 import shutil
 import socket
 import subprocess
@@ -124,6 +125,28 @@ def git(repo: Path, *args: str) -> str | None:
                                        stderr=subprocess.DEVNULL).strip()
     except (OSError, subprocess.CalledProcessError):
         return None
+
+
+def base_ledger_text(repo: Path, base: str) -> str | None:
+    """Read the base ledger through the vault filter when Git stores ciphertext."""
+    try:
+        blob = subprocess.check_output(["git", "-C", str(repo), "show", f"{base}:{LEDGER_PATH}"],
+                                       stderr=subprocess.DEVNULL)
+    except (OSError, subprocess.CalledProcessError):
+        return None
+    if blob.startswith(b"VLT1"):
+        command = git(repo, "config", "--get", "filter.vault.smudge")
+        if not command:
+            raise PccError("ledger: vault smudge filter is not configured for the base ledger")
+        try:
+            blob = subprocess.run(shlex.split(command), input=blob, capture_output=True,
+                                  check=True).stdout
+        except (OSError, ValueError, subprocess.CalledProcessError) as exc:
+            raise PccError("ledger: could not decrypt the base ledger") from exc
+    try:
+        return blob.decode("utf-8")
+    except UnicodeDecodeError as exc:
+        raise PccError("ledger: base ledger is not UTF-8") from exc
 
 
 def head_commit(repo: Path) -> str:
@@ -589,17 +612,55 @@ def lean_sources(target: Path) -> list[Path]:
 
 
 def lean_find_declaration(sources: list[Path], name: str) -> tuple[Path, str] | None:
-    """The normalized statement text of `theorem|lemma <name> ... :=` (the
-    name may be qualified; the last component is matched)."""
+    """Bind a unique declaration, respecting explicit namespace/section scopes.
+
+    Qualified requests never fall back to another namespace's short name.
+    Unqualified requests must be unique. This remains a source binding scan,
+    not a Lean elaborator; the existing kernel gate is still required.
+    """
     short = re.escape(name.split(".")[-1])
-    pat = re.compile(r"(?<![\w.'])(theorem|lemma)\s+(?:[\w'.]*\.)?" + short + r"(?![\w'])(.*?)(?<![:])(:=|\bby\b|\|)",
+    pat = re.compile(r"(?<![\w.'])(theorem|lemma)\s+((?:[\w'.]*\.)?" + short + r")(?![\w'])(.*?)(?<![:])(:=|\bby\b|\|)",
                      re.S)
+    scope_pat = re.compile(
+        r"^[ \t]*(?:(?:public|private|noncomputable)[ \t]+)*"
+        r"(namespace|section|end)(?:[ \t]+([\w'.]+))?[ \t]*$", re.M)
+    requested = name.removeprefix("_root_.")
+    qualified = "." in name
+    matches: list[tuple[Path, str]] = []
     for src in sources:
         text = strip_lean_comments_and_strings(src.read_text(encoding="utf-8", errors="replace"))
+        scope_events = list(scope_pat.finditer(text))
+        # Unsupported scope syntax must not silently turn a nested theorem
+        # into a root declaration. Prefer no binding to a guessed binding.
+        keywords = re.finditer(r"(?<![\w.'])(?:namespace|section|end)(?![\w'])", text)
+        if any(not any(e.start() <= k.start() < e.end() for e in scope_events) for k in keywords):
+            return None
+        scopes = iter(scope_events)
+        event = next(scopes, None)
+        namespace = ""
+        parents: list[str] = []
         for m in pat.finditer(text):
-            stmt = m.group(1) + " " + name.split(".")[-1] + " " + m.group(2)
-            return src, re.sub(r"\s+", " ", stmt).strip()
-    return None
+            while event is not None and event.start() < m.start():
+                kind, scope_name = event.group(1), event.group(2)
+                if kind == "end":
+                    if parents:
+                        namespace = parents.pop()
+                else:
+                    parents.append(namespace)
+                    if kind == "namespace" and scope_name:
+                        namespace = (scope_name.removeprefix("_root_.")
+                                     if scope_name.startswith("_root_.") else
+                                     ".".join(filter(None, [namespace, scope_name])))
+                event = next(scopes, None)
+            declared = m.group(2)
+            full = (declared.removeprefix("_root_.") if declared.startswith("_root_.") else
+                    ".".join(filter(None, [namespace, declared])))
+            if qualified and full != requested:
+                continue
+            # Preserve the established short-name statement digest format.
+            stmt = m.group(1) + " " + name.split(".")[-1] + " " + m.group(3)
+            matches.append((src, re.sub(r"\s+", " ", stmt).strip()))
+    return matches[0] if len(matches) == 1 else None
 
 
 def verify_lean(proof: dict[str, Any], repo: Path, reasons: list[str], notes: list[str]) -> str:
@@ -1946,7 +2007,7 @@ def main(argv: list[str] | None = None) -> int:
         head = read_ledger(path)
         check_chain(head, errors)
         if a.base and not errors:
-            text = git(repo, "show", f"{a.base}:{LEDGER_PATH}")
+            text = base_ledger_text(repo, a.base)
             if text is None:
                 print(f"ledger: {a.base} has no {LEDGER_PATH}; nothing to compare", file=out)
             else:

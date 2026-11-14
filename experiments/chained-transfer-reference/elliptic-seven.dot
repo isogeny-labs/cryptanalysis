@@ -1,0 +1,14 @@
+digraph seven {
+ graph [rankdir=LR,bgcolor="white",fontname="DejaVu Sans",pad=0.2];
+ node [shape=box,style="rounded,filled",fillcolor="#eef3fa",fontname="DejaVu Sans",fontsize=11];
+ edge [fontname="DejaVu Sans",fontsize=10];
+ E1 [label="E109/F101\n(A,B)=(1,46),j12"];
+ E2 [label="E113/F101\n(A,B)=(44,21),j58\nLong-to-short shift38"];
+ A [fillcolor="#e7f5ea",label="E109 targets\n(5,39),j91 / (26,58),j87"];
+ B [fillcolor="#e7f5ea",label="E113 targets\n(69,50),j92 / (13,42),j89"];
+ J [fillcolor="#fff4d9",label="Next:compatible genus2 gluing\nNo Jacobian7-hop accepted yet"];
+ E1 -> A [label="two actual degree7 maps\nduals[7],inverse78"];
+ E2 -> B [label="two actual degree7 maps\nduals[7],inverse97"];
+ A -> J [label="paired two-torsion images",style=dashed];
+ B -> J [style=dashed];
+}

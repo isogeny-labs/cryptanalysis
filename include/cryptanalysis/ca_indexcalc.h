@@ -46,7 +46,7 @@ typedef struct ca_ic_params {
     ca_ic_method method;
     uint32_t factor_base_bound;  /* B; 0 => auto from the size of p */
     uint32_t sieve_radius;       /* C (linear sieve only); 0 => auto */
-    uint32_t threads;            /* relation collection threads; 0 => 1 */
+    uint32_t threads;            /* relation collection and Lanczos threads; 0 => 1 */
     uint32_t extra_relations;    /* relations beyond #unknowns; 0 => auto */
     uint64_t seed;               /* 0 => random */
     uint64_t max_relation_tries; /* random-exponent method: abort bound (0 = none) */

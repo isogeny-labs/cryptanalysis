@@ -1,0 +1,12 @@
+digraph operational {
+ graph [rankdir=LR,bgcolor="white",fontname="DejaVu Sans",pad=0.2];
+ node [shape=box,style="rounded,filled",fillcolor="#eef3fa",fontname="DejaVu Sans",fontsize=11];
+ edge [fontname="DejaVu Sans",fontsize=10];
+ E [label="E/F17\ny²=x³+2x+2\nFull prime order19"];
+ J [label="Jac(C)/F17\ny²=x⁶+2x²+2\n285 rational classes"];
+ T [fillcolor="#e7f5ea",label="Jac(Ct)/F17\nCoefficients[3,12,11,4,7,3,1]\n285 rational classes"];
+ E -> J [label="whole quadratic\npullback"];
+ J -> E [label="source norm\nN f*=[2]",color="#247044"];
+ J -> T [label="non-split Richelot\nδ11;285-image bijection",color="#2255aa"];
+ T -> J [label="sign-corrected dual\nboth compositions[2]",color="#247044"];
+}

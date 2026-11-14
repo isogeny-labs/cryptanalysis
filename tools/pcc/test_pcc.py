@@ -10,6 +10,7 @@ from __future__ import annotations
 import io
 import json
 import os
+import shlex
 import subprocess
 import sys
 import tempfile
@@ -167,6 +168,37 @@ class RoundTripTests(unittest.TestCase):
         self.assertEqual(r.returncode, 1)
         self.assertIn("history removed", r.stdout)
 
+    def test_ledger_prefix_decrypts_vaulted_base_and_fails_closed(self):
+        filter_script = self.repo / "vault_filter.py"
+        filter_script.write_text(
+            "import sys\n"
+            "data = sys.stdin.buffer.read()\n"
+            "if sys.argv[1] == 'clean':\n"
+            "    sys.stdout.buffer.write(b'VLT1' + data)\n"
+            "elif data.startswith(b'VLT1'):\n"
+            "    sys.stdout.buffer.write(data[4:])\n"
+            "else:\n"
+            "    sys.exit(1)\n"
+        )
+        command = f"{shlex.quote(sys.executable)} {shlex.quote(str(filter_script))}"
+        for direction in ("clean", "smudge"):
+            subprocess.run(["git", "-C", str(self.repo), "config", f"filter.vault.{direction}",
+                            f"{command} {direction}"], check=True)
+        (self.repo / ".gitattributes").write_text("pcc/ledger.jsonl filter=vault\n")
+        cid = self.make_solve()
+        self.commit("vaulted claim")
+        stored = subprocess.check_output(["git", "-C", str(self.repo), "show", "main:pcc/ledger.jsonl"])
+        self.assertTrue(stored.startswith(b"VLT1"))
+        subprocess.run(["git", "-C", str(self.repo), "checkout", "-q", "-b", "work"], check=True)
+        self.assertEqual(run(["verdict", cid, "--sign-key", str(self.key), "--key-id", "ci-main"],
+                             self.repo).returncode, 0)
+        verified = run(["ledger", "verify", "--base", "main"], self.repo)
+        self.assertEqual(verified.returncode, 0, verified.stdout + verified.stderr)
+        subprocess.run(["git", "-C", str(self.repo), "config", "filter.vault.smudge", "false"], check=True)
+        rejected = run(["ledger", "verify", "--base", "main"], self.repo)
+        self.assertEqual(rejected.returncode, 3)
+        self.assertIn("could not decrypt", rejected.stderr)
+
     def test_lint_prose_uses_ledger_standings(self):
         cid = self.make_solve()
         bad = f"This proves the log [pcc:{cid}].\n"
@@ -291,6 +323,36 @@ class ClaimTypeTests(unittest.TestCase):
 
 
 class LeanScanTests(unittest.TestCase):
+    def test_qualified_declarations_do_not_bind_another_namespace(self):
+        with tempfile.TemporaryDirectory() as td:
+            a, b = Path(td) / "A.lean", Path(td) / "B.lean"
+            a.write_text("namespace First\ntheorem same (n : Nat) : n = n := rfl\nend First\n")
+            b.write_text("namespace Second\nsection Local\ntheorem same (n : Nat) : n + 0 = n := by simp\nend Local\nend Second\n")
+            self.assertEqual(pcc.lean_find_declaration([a, b], "Second.same")[0], b)
+            self.assertEqual(pcc.lean_find_declaration([a, b], "First.same")[0], a)
+            self.assertIsNone(pcc.lean_find_declaration([a, b], "Missing.same"))
+            self.assertIsNone(pcc.lean_find_declaration([a, b], "_root_.same"))
+            self.assertIsNone(pcc.lean_find_declaration([a, b], "same"))
+
+    def test_nested_namespaces_sections_and_root_qualified_names(self):
+        with tempfile.TemporaryDirectory() as td:
+            p = Path(td) / "Names.lean"
+            p.write_text("namespace Outer\npublic section\nnamespace Inner\n"
+                         "theorem one : True := by trivial\nend Inner\nend\n"
+                         "theorem two : True := by trivial\n"
+                         "theorem _root_.Elsewhere.three : True := by trivial\nend Outer\n"
+                         "theorem Explicit.four : True := by trivial\n")
+            for name in ["Outer.Inner.one", "Outer.two", "Elsewhere.three", "Explicit.four"]:
+                self.assertIsNotNone(pcc.lean_find_declaration([p], name), name)
+            for name in ["Outer.one", "Outer.Inner.two", "Outer.Elsewhere.three", "Wrong.four"]:
+                self.assertIsNone(pcc.lean_find_declaration([p], name), name)
+
+    def test_unsupported_scope_layout_fails_closed(self):
+        with tempfile.TemporaryDirectory() as td:
+            p = Path(td) / "Inline.lean"
+            p.write_text("namespace Hidden theorem rootLooking : True := by trivial\nend Hidden\n")
+            self.assertIsNone(pcc.lean_find_declaration([p], "_root_.rootLooking"))
+
     def test_comment_and_string_lookalikes_are_not_holes(self):
         src = "theorem t : 1 = 1 := rfl\n-- sorry here is a comment\n/- block sorry -/\ndef s := \"sorry\"\n"
         text = pcc.strip_lean_comments_and_strings(src)

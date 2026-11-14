@@ -1,0 +1,39 @@
+diff --git a/lib/parser.hpp b/lib/parser.hpp
+index 92517be..162a400 100644
+--- a/lib/parser.hpp
++++ b/lib/parser.hpp
+@@ -95,6 +95,9 @@ namespace gb {
+ 				add_var_name(vn);
+ 		}
+ 
++		// number of variable names declared or seen so far
++		std::size_t nr_var_names() const { return _var_names.size(); }
++
+ 		std::string var_name(unsigned i)
+ 		{
+ 			if (i >= max_vars)
+diff --git a/src/m4gb.hpp b/src/m4gb.hpp
+index 61fb357..b022704 100644
+--- a/src/m4gb.hpp
++++ b/src/m4gb.hpp
+@@ -1465,7 +1465,19 @@ namespace gb
+ #endif
+ 
+ #ifdef GB_ADD_FIELDEQUATIONS
+-			for (unsigned i = 0; i < polynomial_t::max_vars; ++i)
++#ifndef M4GB_FIELDEQ_DECLARED_ONLY
++#define M4GB_FIELDEQ_DECLARED_ONLY 1
++#endif
++			// Field equations x_i^q - x_i for the variables the input declares
++			// (or uses), not for all MAXVARS: a binary compiled for more
++			// variables than the input has would otherwise carry every unused
++			// variable through the whole computation.
++			unsigned nr_field_vars = polynomial_t::max_vars;
++#if M4GB_FIELDEQ_DECLARED_ONLY
++			if (this->parser.nr_var_names() > 0 && this->parser.nr_var_names() < nr_field_vars)
++				nr_field_vars = (unsigned)(this->parser.nr_var_names());
++#endif
++			for (unsigned i = 0; i < nr_field_vars; ++i)
+ 			{
+ 				typename polynomial_t::term_t terms[2];
+ 				terms[0] = typename polynomial_t::term_t(1, typename polynomial_t::monomial_t::pair_t(i, 1));
