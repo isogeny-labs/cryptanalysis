@@ -1,0 +1,21 @@
+CT17 pre-execution correctness proposal. 2026-11-11.
+Inputs same accepted sources: p17,cubic[2,2,0,1],quotient orders19/15;
+p101 shifted109,cubic[56,13,6,1],quotient orders109/113.
+For C:y²=x6+a2*x4+a4*x2+b with square b=s²,use reciprocal
+T=s/x,Y=b*y/x³. Its monic model is
+Y²=T6+a4*T4+a2*b*T²+b²,so second elliptic quotient is
+v²=u³+a4*u²+a2*b*u+b² via u=T².
+Derive a checked balanced-class coordinate map including x=0,old infinities,
+lost support multiplicity,raw ordinate scale and K transport. Check explicit
+inverse x=s/T,y=s*Y/T³; no silent twist or support omission.
+Test every285/12317 rational class,both reciprocal compositions,paired
+additivity,both elliptic quotient norms,cross-norm zero and
+pull1*norm1+pull2*norm2=[2]. With odd quotient orders,invert2 on each
+elliptic component and reconstruct every class. No DLP scalar read.
+Then evaluate original source r19/r109 scalar images in accepted target:
+reversed Richelot/source norms should give first component[4] and second0.
+This produces direct solver controls,not a novel algorithm or measured gain.
+Existing primary inputs: bielliptic involutions and degree2 pull/push;
+Galbraith corrected ch8§8.3,ch10 balanced/projective completion;
+prior cover family Enge. KB/ecdb unavailable upstream,no novelty claim.
+No benchmark,collector,solver or paid allocation; bounded unit tests only.

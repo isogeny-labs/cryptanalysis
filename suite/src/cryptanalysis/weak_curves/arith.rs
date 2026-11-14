@@ -26,6 +26,7 @@
 
 use crate::ecc::curve::CurveParams;
 use crate::ecc::point::Point;
+use super::fixed::{Limbs, ModN};
 use num_bigint::{BigUint, RandBigInt};
 use num_integer::Integer;
 use num_traits::{One, Zero};
@@ -571,6 +572,18 @@ impl Ec {
         let AffinePoint::Affine(px, py) = pt else {
             return AffinePoint::Infinity;
         };
+        // The same ladder on fixed-width limbs when `p` has at most four
+        // (one allocation-free Montgomery product per field product).
+        let fast = match self.p.iter_u64_digits().len() {
+            1 => self.mul_fixed::<1>(px, py, k),
+            2 => self.mul_fixed::<2>(px, py, k),
+            3 => self.mul_fixed::<3>(px, py, k),
+            4 => self.mul_fixed::<4>(px, py, k),
+            _ => None,
+        };
+        if let Some(r) = fast {
+            return r;
+        }
         let p = &self.p;
         let m = |a: &BigUint, b: &BigUint| (a * b) % p;
         // Accumulator (X, Y, Z); Z = 0 encodes the identity.
@@ -618,6 +631,142 @@ impl Ec {
         }
     }
 
+    /// [`Self::mul`] on `[u64; N]` limbs: the identical formulas, so the
+    /// identical residues.  `None` when the modulus or a coordinate does
+    /// not fit [`ModN`]'s contract (the caller then uses `BigUint`s).
+    fn mul_fixed<const N: usize>(
+        &self,
+        px: &BigUint,
+        py: &BigUint,
+        k: &BigUint,
+    ) -> Option<AffinePoint> {
+        type J<const N: usize> = (Limbs<N>, Limbs<N>, Limbs<N>);
+        let m = ModN::<N>::new(&self.p)?;
+        let (px_l, py_l, a_l) = (m.load(px)?, m.load(py)?, m.load(&self.a)?);
+        let mut one = [0u64; N];
+        one[0] = 1;
+        let double = |j: &J<N>| -> Option<J<N>> {
+            let (x, y, z) = j;
+            if ModN::<N>::is_zero(y) {
+                return None;
+            }
+            let xx = m.mul(x, x);
+            let yy = m.mul(y, y);
+            let yyyy = m.mul(&yy, &yy);
+            let zz = m.mul(z, z);
+            let s = m.dbl(&m.dbl(&m.mul(x, &yy)));
+            let mm = m.add(&m.add(&m.dbl(&xx), &xx), &m.mul(&a_l, &m.mul(&zz, &zz)));
+            let x3 = m.sub(&m.mul(&mm, &mm), &m.dbl(&s));
+            let y3 = m.sub(
+                &m.mul(&mm, &m.sub(&s, &x3)),
+                &m.dbl(&m.dbl(&m.dbl(&yyyy))),
+            );
+            let z3 = m.dbl(&m.mul(y, z));
+            Some((x3, y3, z3))
+        };
+        let mut acc: Option<J<N>> = None;
+        for i in (0..k.bits()).rev() {
+            if let Some(j) = acc.take() {
+                acc = double(&j);
+            }
+            if k.bit(i) {
+                acc = match acc.take() {
+                    None => Some((px_l, py_l, one)),
+                    Some(j1) => {
+                        let (x1, y1, z1) = j1;
+                        let z1z1 = m.mul(&z1, &z1);
+                        let u2 = m.mul(&px_l, &z1z1);
+                        let s2 = m.mul(&py_l, &m.mul(&z1, &z1z1));
+                        let h = m.sub(&u2, &x1);
+                        let r = m.sub(&s2, &y1);
+                        if ModN::<N>::is_zero(&h) {
+                            if ModN::<N>::is_zero(&r) {
+                                double(&j1)
+                            } else {
+                                None
+                            }
+                        } else {
+                            let hh = m.mul(&h, &h);
+                            let hhh = m.mul(&h, &hh);
+                            let v = m.mul(&x1, &hh);
+                            let x3 = m.sub(&m.sub(&m.mul(&r, &r), &hhh), &m.dbl(&v));
+                            let y3 = m.sub(&m.mul(&r, &m.sub(&v, &x3)), &m.mul(&y1, &hhh));
+                            let z3 = m.mul(&z1, &h);
+                            Some((x3, y3, z3))
+                        }
+                    }
+                };
+            }
+        }
+        let p = &self.p;
+        Some(match acc {
+            None => AffinePoint::Infinity,
+            Some((x, y, z)) => {
+                let zi = m.store(&z).modinv(p).expect("Z is a unit");
+                let zi2 = (&zi * &zi) % p;
+                AffinePoint::Affine(
+                    (m.store(&x) * &zi2) % p,
+                    (m.store(&y) * ((&zi2 * &zi) % p)) % p,
+                )
+            }
+        })
+    }
+
+    /// [`Self::add_batch`] on limbs.  Returns `false`, having changed
+    /// nothing, when the modulus or a coordinate is outside [`ModN`]'s
+    /// contract.
+    fn add_batch_fixed<const N: usize>(&self, xs: &mut [AffinePoint], ys: &[&AffinePoint]) -> bool {
+        let Some(m) = ModN::<N>::new(&self.p) else {
+            return false;
+        };
+        let p = &self.p;
+        let mut generic: Vec<usize> = Vec::with_capacity(xs.len());
+        let mut rest: Vec<usize> = Vec::new();
+        let mut co: Vec<[Limbs<N>; 4]> = Vec::with_capacity(xs.len());
+        let mut dens: Vec<Limbs<N>> = Vec::with_capacity(xs.len());
+        for i in 0..xs.len() {
+            match (&xs[i], ys[i]) {
+                (AffinePoint::Affine(x1, y1), AffinePoint::Affine(x2, y2)) if x1 != x2 => {
+                    let (Some(a), Some(b), Some(c), Some(d)) =
+                        (m.load(x1), m.load(y1), m.load(x2), m.load(y2))
+                    else {
+                        return false;
+                    };
+                    generic.push(i);
+                    dens.push(m.sub(&c, &a));
+                    co.push([a, b, c, d]);
+                }
+                _ => rest.push(i),
+            }
+        }
+        for i in rest {
+            xs[i] = self.add(&xs[i], ys[i]);
+        }
+        if generic.is_empty() {
+            return true;
+        }
+        let mut one = [0u64; N];
+        one[0] = 1;
+        let mut prefix: Vec<Limbs<N>> = Vec::with_capacity(dens.len());
+        let mut acc = one;
+        for d in &dens {
+            acc = m.mul(&acc, d);
+            prefix.push(acc);
+        }
+        let inv_big = m.store(&acc).modinv(p).expect("product of units");
+        let mut inv = m.load(&inv_big).expect("inverse is reduced");
+        for j in (0..generic.len()).rev() {
+            let inv_j = if j == 0 { inv } else { m.mul(&inv, &prefix[j - 1]) };
+            inv = m.mul(&inv, &dens[j]);
+            let [x1, y1, x2, y2] = co[j];
+            let lam = m.mul(&m.sub(&y2, &y1), &inv_j);
+            let x3 = m.sub(&m.sub(&m.mul(&lam, &lam), &x1), &x2);
+            let y3 = m.sub(&m.mul(&lam, &m.sub(&x1, &x3)), &y1);
+            xs[generic[j]] = AffinePoint::Affine(m.store(&x3), m.store(&y3));
+        }
+        true
+    }
+
     /// Jacobian doubling; `None` for the identity (a 2-torsion input).
     fn jac_double(
         &self,
@@ -660,6 +809,16 @@ impl Ec {
     /// `xs[i] ← xs[i] + ys[i]` for every `i`, sharing one modular
     /// inversion across all generic additions (Montgomery's trick).
     pub fn add_batch(&self, xs: &mut [AffinePoint], ys: &[&AffinePoint]) {
+        let done = match self.p.iter_u64_digits().len() {
+            1 => self.add_batch_fixed::<1>(xs, ys),
+            2 => self.add_batch_fixed::<2>(xs, ys),
+            3 => self.add_batch_fixed::<3>(xs, ys),
+            4 => self.add_batch_fixed::<4>(xs, ys),
+            _ => false,
+        };
+        if done {
+            return;
+        }
         let p = &self.p;
         let n = xs.len();
         // Indices handled by the generic chord formula.
