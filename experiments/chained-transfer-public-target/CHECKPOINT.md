@@ -1,3 +1,27 @@
+# Publication17 settled; full torsion/matched-model source ready for native checks
+
+Genuine ddd7a6/0088c2:43620392810/job132524568207success/FIVEremote replays BEFOREb9616569e/direct3f528b7c/EXACT7paths/all24445guards23links+ownedbytes/FF-artifact-wiring0/HOLD17RELEASED. Whole38closedroots/6577members/allactualbinaries/failedattempts/nativeA100644BXZ/wholepositive67256BXZ/currentmap/index/pending4metadatafiles+immutable186942f2base retained. Preparationlink-count1 preserved671d4b; all23targets kept. Canonicaldocs exactoriginaltwoentries+TWOtransparentlinks; originalverify2hydrated0problems aftermanifeststaging (first0entries was not verification). FuturedatahandoffNEW18. [pcc:unverified]
+
+Full product/model phaseB d0bb60 has additive nondual13-preflight/models source, literal original generic/source/even/torsion helper bodies, appended actualE2 constructor and original Hasse/prime-generator checks. Scratch01/portable02/currentJ1-strengthened03 allcompile0, nativeNOTRUN.03 actualsource+binary retained;02 historicalbinary/source-location closure not separately snapshotted, no exact02closure claim (addendum). StartingJ1 fulltag is checked by originalAdapter/NormNew. BotholdE0/E1modelpanels exact, actualall64gamma2conjugate coordinates/Frobenius/all4096addition+pairings/135kernels implemented. Transportedfullmask fixed/printed BEFOREE2builder, all6newmodels/unsupportedoutcomes retained. No observedmatchedJ2yet. [pcc:unverified]
+
+Immediate next: commit/pushimplementation+canonicaldatarouting, getexactclean-head originalcheckpoint viaexistingautomaticworkflow andcomparewholeartifact/receipt/sourceResume/tool, localgate0. ThenONEunfiltered modelphaseB test,900s/2GiB, wholeoutput/actualCargopaths/binary/source/hashcustody. Interpretactualmatchedeligibility, nottestexit alone. Ifunsupported, preservefailureofendpointrequirement anddo notreselect/retwist. Ifsupported, recordfullfield/model/origin andfreeze separatecompleteJacobianmapprotocol. Addstrictwhole-record controls/replay/CI andfeasiblefaithfulproofs. [pcc:unverified]
+
+No runsactive. ActualA252fd8 passed1unfiltered0/olddual168gcd101/fourwholeJSONexact/missingpublic101, bothoriginalnormcompositiongates+2bindingsff888c/onlypropext andinspected46015Breport7c153a. ActualE2(12,143,39),(115,82,144)/2088c9... jorbitsdisjointE0/E1; geometriccyclic169proof remainswrittenunderdegree/pole/torsion/classificationbridges. NoJ2orsecondJacobianmapyet. Priorarithmetic12cold108missing900s124/two60reuseprocesses0/unpricedproduct-inversiontradeoff remain; completecold/calibratedadvantageopen. [pcc:unverified]
+
+Rawcurrentmodel builds at /workspace/scratch/ct77-nondual-model-{prototype-01,build-01,build-02,build-03}; finalactualsource03 andCargotest executable copied. Originalnative/proof/report captures nowgenuine17. Root124/clock101/mainledger/signing/reviews/conflicts/fullgeometry/livebenchmarkadmission/matchedrefs/vault8edec422/KB127 remain. No paidlaunch/waiver/noveltyinference; continueunblockedresearch. [pcc:unverified]
+
+---
+
+# Genuine whole-data handoff17 prepared; hold before further source edits
+
+Consumer186942f2 publishesactualnondual phaseA252fd8, bothoriginalcompositiongates/twobindingsff888c andONEinspected46015Breport7c153a. E2 a(12,143,39)b(115,82,144)/2088c9...; bothnew13identities/whole169curve/separable/nondual12gcd versusolddual168/control101/fourwholeJSON/no masks. Full64torsion/matchedF223J2 andsecondJacobianmaps remainopen. Priorpartialarithmetic12cold/108missing/two60reuse/unpricedtradeoff preserved; no calibratedadvantage. [pcc:unverified]
+
+NEW17 wholearchives includeallclosedfresh02/ownCI/allnative binaries/source/primary/failedcanary/ledger/proof/report/partialcounts/nativeA andcompleteconsumer plusprior16rootpendingmetadata. All17911priorpaths retained; onlysixreleasedconsumer metadataupdates declared, ledgeroldbytes remainexactprefix andwholeoldarchive. Preserveallsource/raw/elevenlinktargets/ownedbytes untiloriginalgenuine remote-byte replays, exactpublisherFF andterminal17checks releasehold. No ownlivecaller captured. No code orconsumerledger editsduringhold. [pcc:unverified]
+
+AfterreleaseprojectoriginalnativeA100644Bfixture and67256BwholepositiveXZ into canonicaldocswithtransparentlinks, checkpoint normally, thenimplementalreadyprospective23ab48 full64actualgamma2conjugate producttransport/matchedkernel/HLPmodel, preservingunsupportedmatchedoutcome. Root124/clock101/mainledger/signing/reviews/conflicts/fullgeometry/livebenchmarkadmission/matchedrefs/lockedvault8edec422/KB127 remain. No paidlaunch orwaiver. [pcc:unverified]
+
+---
+
 # Genuine second elliptic hop validated locally; full torsion/model phase next
 
 Native252fd8 on published9a afterexact checkpoint9a75e6 passesONEunfiltered0 andactualolddual168gcd rejection101/sourceguards0. NewE2 a(12,143,39)b(115,82,144), fullID N4-E13x13-short-2088c9e2bd44dfea66094a767e22a1f2ebffdd4e963244cb320d93408e58b4b5. Bothnew[13] rational identities/complete169curve+derivative/coprime169/168/gcd12 vsolddual168;36source36target/1024additioneach/four2torsion/fiveoriginalpublic/primeell/sourceanswers pass. FOURwhole native records exact/no masks, wholepublicrecord omission101/no output. This is elliptic phaseA only; no J2/secondJacobianmap/costgain. [pcc:unverified]
