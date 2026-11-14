@@ -1,3 +1,28 @@
+# Rational lifting and quadratic Picard components ready — 2026-11-14T08:09:26.197582+00:00
+
+## Goal
+Continue DLP-preserving transfers, chained Jacobian maps, prime-field descent and admitted computational comparisons. Advance after each completed component. [pcc:unverified]
+
+## State
+Prospective5be5e0/primary622871 published3422ccb4 BEFOREcode. Nativefb21de checks actual16E4 each oldsource+degree13target/all256additionseach/both13/F3baseaction/F6fixed/naiveFnegative/all8finitegroupcontrol. Lean7f5766 BOTHoriginal4.34.1/4.35 gatesPASS20declincluding7named+helpers/0trusted;6structuralnamedrootsNOaxioms/finitecontrolpropext+Quot.sound. Fivefaithfulea1776/59b526/1706b2/8ffe1f/42dab6 originalPCC localpassunsigned. [pcc:unverified]
+
+Nativeb28edc: metadata/compile/native0/TWOunfilteredpasses0fail0ignored0filtered; actualFp2fields5,7,11,223/allnonzero inverses24/48/120/49728 andallFrobeniusencodings/oraclepairs625/2401/14641/1024. Completeprimeclassclosures148/356/1324/all888/2848/15888generatingedges matchoriginal/copiedprime/extension. SmallfieldscompleteC(Fp2)count+genuinenonbaseclasses/64Frobeniuspairs512tripleseach. At223 only17orderedbaseinputs289pairs,notfullgroup. Newsource/original784/arithmetic22guards0. OriginalentirePicardfile/tests untouched; experimentalproductionport inventories17literalchanges. [pcc:unverified]
+
+Norm637454 exactInttheorem/originalgates1decl0trusted/propext+Quot.sound. Nativee6bc3f IDC1hd724979553e97e07/originalissuer64sealed+32extra/exactZexpansion/actualpositive0+missingterm101/proofpointerhashactualsource; originalcheckerdoesnotrunLean. SIXnewfaithfulbindings/66partialunique, notfullgeometry. Reportfd1abc finalTWO53029BPDFpagesALLviewed/SHAbcb605f8/fullmodels/P0/source-linked diagram+recordedcoverageplot. Allunsigned/no timingorcostgain. [pcc:unverified]
+
+## Spec / next
+ci_beta_lift reference01:839selected+self840, includesoriginal784+arithmetic22 unchanged/newcode+sixbindings/extraoriginalIDCmodule/new19thworkflow. Required17orderedphases:16expected0/ONEactualnegative101/everytee0; exactly2unfilteredtests/all3wholeJSON NOMASKS; twooriginalproofgates20+1/0trusted; sixexactbindings/finalguards. Firstsource normalcommit/push, thenfreshphysicalfull andown19automaticCI. No manualredispatch. [pcc:unverified]
+
+ThenimplementcompleteFp2fibre maps/beta in NEWsibling beta-complete-evaluator per32283c; preserve completedsource/fixtures/CI. Original5be5e0 criteria remain: actualcompleteideals+origins/allF2conjugates/Kagreement/F3equivariance/allevensectors/publictargets/both13/F=2beta. Completeglobalclosedcoordinates andactualgeometricformalbridges remainopen. [pcc:unverified]
+
+## Custody / runs
+No localscienceinflight. Wholeactualsource/binaries/Leanobjects/allattempts/reportdrafts retained underct73-beta-* andct73-quadratic-*. LargewholecustodypendingNEWguard12 alongwithca9freshfull,negativeCI,helperemptycachecontrol,corrected398CI. Old92a00d420904 and1f4cbc877d0e genuine/holds10and11released. Root556c5ddb metadata normalpublished. Vault8edec422locked/KB127/no noveltyinference. [pcc:unverified]
+
+## Constraints and failures
+Preserveb1e193 firstLeanencoding build1,4ad5ee produceroutside-rootreject,af90a4 workspace101, literal-editor inventoryassert, auxiliaryIDCAPI/hexbuild101 andallprototypes. d0ae4f exactraw/rendererattributes preservebytes; liveunpublishedEOF format normalizationonly/acceptedsourcecopyimmutable. Old18workflows/originalsources/tests/verifiers unchanged. Root124clock101/mainledger/signing/reviews/conflict persist; livebudget/capacity/matchingimage/completecoldonlinecost/strongestrefs remainbeforepaidperformance. Continueunblockedmath. [pcc:unverified]
+
+---
+
 # Arithmetic scope settled; matched beta rational lifting active — 2026-11-14T06:40:43.502770+00:00
 
 Current source398d591b: fresh386296 ca9full/all14phasepairs0/oneunfilteredpass/all86frozenwalls/whole7113census+metadata EXACT/no masks/finalguards0. Own4ff6d8 ALL18distinctworkflows/19automaticruns SUCCESS/extraPCCbodyevent/signskipped2; Rustaudit0/ALL413whole native records match(old327+new86)/60originalcanonicaldigests62actualverdicts/all15phasepairs0/0/final22+self/original785/derivedguards0. Whole5732494BZIP/all1611members andall19APIlogs retained. Allunsigned. [pcc:unverified]

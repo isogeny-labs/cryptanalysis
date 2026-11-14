@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-14T06:57:00Z",
+ "id": "PCC-20261114-42dab6",
+ "kind": "theorem",
+ "producer": {
+  "commit": "3422ccb4239e9901f526d3c538728ce201ece889",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "f1e5f29dbbae24f119a882146c7a7a5ad1f639a702eaabc4e12420afda283504",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/beta-rational-lift/lean/QuadraticRationalLift.lean",
+   "theorem": "QuadraticRationalLift.finite_group_hypothesis_control"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Faithful conditional general abelian-group/Frobenius lift: surjective geometric additive Phi commuting with F, exponent2 kernel and F^3=1 on kernel derive existence of F^2-fixed lift for every F-fixed target; ordinary laws explicit. Other declarations prove image independence from kernel containment, four-torsion bound from NPhi=2 and exponent2Nx, and F2+F3 fixed kernel implies F fixed. Fin8 explicitly encodes C4xC2 and checks every stated group/hom/automorphism/surjectivity/kernel2 condition plus failure of F3 and absence of quadratic lifts; finite abstract group control only. Both ORIGINAL gates PASS20 total declarations/zero trusted; six named structural roots no axioms, finite control kernel-decide onlypropext+Quot.sound. Actual Picard/Weil-restriction/Frobenius/quotient/norm bridges remain written/native; not full formal geometry or signed execution.",
+ "statement": "theorem finite_group_hypothesis_control : (\u2200 a b c : Toy, toyAdd (toyAdd a b) c = toyAdd a (toyAdd b c)) \u2227 (\u2200 a b : Toy, toyAdd a b = toyAdd b a) \u2227 (\u2200 a : Toy, toyAdd a 0 = a) \u2227 (\u2200 a : Toy, \u2203 b, toyAdd a b = 0) \u2227 (\u2200 a b : Toy, toyF (toyAdd a b) = toyAdd (toyF a) (toyF b)) \u2227 (\u2200 b : Toy, \u2203 a, toyF a = b) \u2227 (\u2200 x : Fin 2, \u2203 a : Toy, toyPhi a = x) \u2227 (\u2200 a b : Toy, toyPhi (toyAdd a b) = toyPhi a + toyPhi b) \u2227 (\u2200 a : Toy, toyPhi (toyF a) = toyPhi a) \u2227 (\u2200 c : Toy, toyPhi c = 0 \u2192 toyAdd c c = 0) \u2227 (\u2203 c : Toy, toyPhi c = 0 \u2227 toyF (toyF (toyF c)) \u2260 c) \u2227 (\u2200 a : Toy, toyPhi a = 1 \u2192 toyF (toyF a) \u2260 a)"
+}

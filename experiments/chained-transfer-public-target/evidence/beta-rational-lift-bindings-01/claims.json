@@ -1,0 +1,52 @@
+[
+  {
+    "theorem": "QuadraticRationalLift.quadratic_fixed_lift",
+    "claim_path": "pcc/claims/PCC-20261114-ea1776.json",
+    "statement": "theorem quadratic_fixed_lift {A J : Type} (g : Abelian A) (h : Abelian J) (phi : Hom g h) (FA : Hom g g) (FJ : Hom h h) (commutes : \u2200 a, phi.toFun (FA.toFun a) = FJ.toFun (phi.toFun a)) (surjective : \u2200 x, \u2203 a, phi.toFun a = x) (kernel_two : \u2200 c, phi.toFun c = h.zero \u2192 g.add c c = g.zero) (kernel_cube : \u2200 c, phi.toFun c = h.zero \u2192 FA.toFun (FA.toFun (FA.toFun c)) = c) (x : J) (fixed : FJ.toFun x = x) : \u2203 b, phi.toFun b = x \u2227 FA.toFun (FA.toFun b) = b",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/beta-rational-lift/lean/QuadraticRationalLift.lean",
+      "theorem": "QuadraticRationalLift.quadratic_fixed_lift",
+      "decl_sha256": "f90d1e83b663aa66fb95677217bd60eb9b0f99fad8e9f30ad3d2a8835d03f2df"
+    }
+  },
+  {
+    "theorem": "QuadraticRationalLift.lift_images_equal",
+    "claim_path": "pcc/claims/PCC-20261114-59b526.json",
+    "statement": "theorem lift_images_equal {A J T : Type} (g : Abelian A) (h : Abelian J) (t : Abelian T) (phi : Hom g h) (psi : Hom g t) (kernel_containment : \u2200 c, phi.toFun c = h.zero \u2192 psi.toFun c = t.zero) (a b : A) (same : phi.toFun a = phi.toFun b) : psi.toFun a = psi.toFun b",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/beta-rational-lift/lean/QuadraticRationalLift.lean",
+      "theorem": "QuadraticRationalLift.lift_images_equal",
+      "decl_sha256": "4f47a766e4e85572e8bac11717c2760c551450024a49744d6482c6987423c6d7"
+    }
+  },
+  {
+    "theorem": "QuadraticRationalLift.four_torsion_lift_bound",
+    "claim_path": "pcc/claims/PCC-20261114-1706b2.json",
+    "statement": "theorem four_torsion_lift_bound {A J : Type} (g : Abelian A) (phi : A \u2192 J) (N : J \u2192 A) (norm_pullback : \u2200 a, N (phi a) = g.add a a) (x : J) (norm_exponent_two : g.add (N x) (N x) = g.zero) (a : A) (lift : phi a = x) : g.add (g.add a a) (g.add a a) = g.zero",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/beta-rational-lift/lean/QuadraticRationalLift.lean",
+      "theorem": "QuadraticRationalLift.four_torsion_lift_bound",
+      "decl_sha256": "6f6f1a9bbc88c5b7f37d46fc2d5af4aaef6bc5229af973dc6a2fb705138a4582"
+    }
+  },
+  {
+    "theorem": "QuadraticRationalLift.quadratic_kernel_fixed_is_rational",
+    "claim_path": "pcc/claims/PCC-20261114-8ffe1f.json",
+    "statement": "theorem quadratic_kernel_fixed_is_rational {A : Type} (F : A \u2192 A) (c : A) (cube : F (F (F c)) = c) (quadratic : F (F c) = c) : F c = c",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/beta-rational-lift/lean/QuadraticRationalLift.lean",
+      "theorem": "QuadraticRationalLift.quadratic_kernel_fixed_is_rational",
+      "decl_sha256": "2df50ccd518efa7b5ffc3d8ed0266e5d03aff4c04c19b4ac1812b187dd31f8e6"
+    }
+  },
+  {
+    "theorem": "QuadraticRationalLift.finite_group_hypothesis_control",
+    "claim_path": "pcc/claims/PCC-20261114-42dab6.json",
+    "statement": "theorem finite_group_hypothesis_control : (\u2200 a b c : Toy, toyAdd (toyAdd a b) c = toyAdd a (toyAdd b c)) \u2227 (\u2200 a b : Toy, toyAdd a b = toyAdd b a) \u2227 (\u2200 a : Toy, toyAdd a 0 = a) \u2227 (\u2200 a : Toy, \u2203 b, toyAdd a b = 0) \u2227 (\u2200 a b : Toy, toyF (toyAdd a b) = toyAdd (toyF a) (toyF b)) \u2227 (\u2200 b : Toy, \u2203 a, toyF a = b) \u2227 (\u2200 x : Fin 2, \u2203 a : Toy, toyPhi a = x) \u2227 (\u2200 a b : Toy, toyPhi (toyAdd a b) = toyPhi a + toyPhi b) \u2227 (\u2200 a : Toy, toyPhi (toyF a) = toyPhi a) \u2227 (\u2200 c : Toy, toyPhi c = 0 \u2192 toyAdd c c = 0) \u2227 (\u2203 c : Toy, toyPhi c = 0 \u2227 toyF (toyF (toyF c)) \u2260 c) \u2227 (\u2200 a : Toy, toyPhi a = 1 \u2192 toyF (toyF a) \u2260 a)",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/beta-rational-lift/lean/QuadraticRationalLift.lean",
+      "theorem": "QuadraticRationalLift.finite_group_hypothesis_control",
+      "decl_sha256": "f1e5f29dbbae24f119a882146c7a7a5ad1f639a702eaabc4e12420afda283504"
+    }
+  }
+]

@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-14T07:28:41Z",
+ "id": "PCC-20261114-637454",
+ "kind": "theorem",
+ "producer": {
+  "commit": "3422ccb4239e9901f526d3c538728ce201ece889",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "63cefb072fafd0694c267d9fdbcebb06adb156e7bca25b72f109473356a2ee49",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/beta-rational-lift/lean/QuadraticNormIdentity.lean",
+   "theorem": "QuadraticNormIdentity.norm_multiplicative"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Exact integer polynomial identity for quadratic norm multiplicativity with arbitrary a,b,c,d,n:Int. Explicit finite-field reduction and nonsquare/nonzero-norm hypotheses remain separate; this theorem does not prove actual Picard arithmetic, field inverses or geometry. Both original Lean4.34.1/4.35 gatesPASS1declaration/zero trusted; actualaxiomsrecord retained. SupportsIDC1hd724979553e97e07 certificate plus nativeexactcoefficientexpansion/originalissuer64sealed+32extra; certificate proofpointerchecked separately from native checker. Unsigned localstanding.",
+ "statement": "theorem norm_multiplicative (a b c d n : Int) : (a*c+n*b*d)*(a*c+n*b*d) - n*((a*d+b*c)*(a*d+b*c)) = (a*a-n*b*b)*(c*c-n*d*d)"
+}
