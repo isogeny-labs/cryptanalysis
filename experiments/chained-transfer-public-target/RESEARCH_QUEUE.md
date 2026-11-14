@@ -1,3 +1,11 @@
+# Prospective next fixed edge frozen; no third-edge implementation yet
+
+Protocol PCC-20261114-bbfd74 / NONDUAL13_NEXT_EDGE_PROTOCOL_01.md freezes exactlyone lambda2 E2→E3 edge and samefullG2→G3kernel beforemodeladmissibility, wholemiddle169/gcd12vsolddual168/control101, all64/4096/135/sixmodels, oldE0E1E2parity,120sbuild/900s2GiBpernativephase. ONE40067BproposalPDFpage inspected. PublishBEFOREcode; no E3 orsuccessorresultyet. Preserve modelnegative27fb3a/source5ea2ab3c/report14b605 and original23ab48failedendpoint. [pcc:unverified]
+
+Immediate next after normalpublication: additive nondual13-next-preflight source using literaloriginalengine plus existingSecondHop/reconstructedgamma2coefficients, no priorinput/workflow edits. Compile/versionedactualsourcebinarycustody; checkpoint cleanpublishedsource through exactoriginalautomatictransport/localgate0 before native. Wholedata needNEWgenuine18 (17historicalreleased). Then samekernel primefieldmodelpreflight; a positive still requires separatecompleteJacobianmap/direct-compositecomparisonprotocol. Continuequeue withoutwaiver/paidlaunch. [pcc:unverified]
+
+---
+
 # Fixed second-hop model negative; continue the same kernel on a new protocol
 
 Source87b61e80 native27fb3a after exact originalcheckpoint492150: ONEunfiltered phaseB test0/sourceguards0 and actual03compile/runtime binaries equal. StartingJ1 originalAdapter/NormNew entiretag checked. Both old full model panels exact; actual64 producttorsion coordinates, threeconjugatemaps/Frobenius,4096addition+originalalternatingpairing rows,135independentoriginalmasks retained. This is not a Miller implementation. [pcc:unverified]
