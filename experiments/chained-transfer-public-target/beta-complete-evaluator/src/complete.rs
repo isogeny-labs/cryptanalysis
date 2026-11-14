@@ -37,6 +37,16 @@ pub struct CompleteBeta {
     ell: u64,
     order: u64,
     source_field: FpR,
+    preprocessing: PreprocessingCalls,
+}
+
+/// Actual selected entry calls. Original context/setup/validation work remains
+/// included in the implementation and unpriced; this is not a complete cost ledger.
+#[derive(Clone, Debug, PartialEq, Eq, serde::Serialize)]
+pub struct PreprocessingCalls {
+    pub torsion_phi_evaluations: [u64; 2],
+    pub quadratic_origin_traces: [u64; 2],
+    pub torsion_source_isogeny_evaluations: [u64; 2],
 }
 impl CompleteBeta {
     pub fn construct(c: &CheckedInstance) -> Result<Self> {
@@ -95,12 +105,14 @@ impl CompleteBeta {
         let delta = Rational6::new(&iso.certificate["actual_dual"]);
         let mut cofactor = [BTreeMap::new(), BTreeMap::new()];
         let mut counts = [BTreeMap::<[u32; 19], usize>::new(), BTreeMap::new()];
+        let mut torsion_source_isogeny_evaluations = [0u64; 2];
         for (side, a, map) in [(0, &old2, &gamma), (1, &new2, &delta)] {
             for (i, &p) in points[side].iter().enumerate() {
                 let x = &images[side][i];
                 if x.key().0.iter().any(|&x| x >= 223) {
                     continue;
                 }
+                torsion_source_isogeny_evaluations[side] += 1;
                 let q = map.eval(&a.f, p);
                 let j = points[1 - side]
                     .iter()
@@ -119,6 +131,11 @@ impl CompleteBeta {
                 return Err("actual rational four-torsion lift coverage is incomplete".into());
             }
         }
+        let preprocessing = PreprocessingCalls {
+            torsion_phi_evaluations: [old2.transfer_calls(), new2.transfer_calls()],
+            quadratic_origin_traces: [old2.origin_trace_calls(), new2.origin_trace_calls()],
+            torsion_source_isogeny_evaluations,
+        };
         let out = Self {
             old,
             new,
@@ -129,6 +146,7 @@ impl CompleteBeta {
             ell: c.inst.ell,
             order: c.inst.order as u64,
             source_field: c.independent_field.clone(),
+            preprocessing,
         };
         if 2 * 1386537 % out.ell != 1 || 26 * 319970 % out.ell != 1 || 13 * 3413013 % out.order != 1
         {
@@ -185,6 +203,9 @@ impl CompleteBeta {
     }
     pub fn old(&self) -> &NormV2 {
         &self.old
+    }
+    pub fn preprocessing_calls(&self) -> &PreprocessingCalls {
+        &self.preprocessing
     }
     pub fn new(&self) -> &NormNew {
         &self.new

@@ -17,6 +17,12 @@ fn complete_rational_beta_all_sectors_both13_and_public_targets() {
     assert!(CompleteBeta::with_candidate(&c, (1, 1)).is_err());
     assert!(CompleteBeta::with_candidate(&c, (2, 1)).is_err());
     let b = CompleteBeta::construct(&c).unwrap();
+    assert_eq!(b.preprocessing_calls().torsion_phi_evaluations, [16, 16]);
+    assert_eq!(b.preprocessing_calls().quadratic_origin_traces, [1, 1]);
+    assert_eq!(
+        b.preprocessing_calls().torsion_source_isogeny_evaluations,
+        [8, 8]
+    );
     let old = &b.old().a.pic;
     let new = &b.new().a.pic;
     let source = SourceE::original(&c);
@@ -214,6 +220,6 @@ fn complete_rational_beta_all_sectors_both13_and_public_targets() {
     assert!(b.inverse(&wrong).is_err());
     println!(
         "N4_BETA_COMPLETE_RATIONAL {}",
-        json!({"protocol":"5be5e0/32283c","candidate":[1,0],"ell":2773073,"rational_order":11092292,"old_model":b.old().model_tag,"new_model":b.new().model_tag,"old_quartic":b.old().a.core.quartic,"old_P0":old.base_point(),"new_quartic":b.new().a.core.quartic,"new_P0":new.base_point(),"both4entry_cofactor_maps":cof.iter().map(|v|v.iter().map(|(x,y)|json!({"input":x.key().0.to_vec(),"image":y.key().0.to_vec()})).collect::<Vec<_>>()).collect::<Vec<_>>(),"all48_mixed_sector_rows":panels,"all96_addition_rows":addition,"all5publics_times4sectors":publics,"unmatched_kernel_rejections":2,"field_model_noncanonical_and_unknown_tag_rejections":6,"full_rational_inverse_scalar":3413013,"source_recovery_inverse26modell":319970,"inverse_identities_checked_in_constructor":true,"explicit_preprocessing":"32completeFp2fibre evaluations/32rational13isogenyevaluations on actualE4/eachside4entrytable; original prime andquadratic setup included in implementation, not cost-free","scope":"native finite controls and reusable full-rational evaluator under written geometric/order/kernel hypotheses; global closed coordinates/formalgeometry/calibratedcost remain open; no speedup or DLP attack claimed"})
+        json!({"protocol":"5be5e0/32283c","candidate":[1,0],"ell":2773073,"rational_order":11092292,"old_model":b.old().model_tag,"new_model":b.new().model_tag,"old_quartic":b.old().a.core.quartic,"old_P0":old.base_point(),"new_quartic":b.new().a.core.quartic,"new_P0":new.base_point(),"both4entry_cofactor_maps":cof.iter().map(|v|v.iter().map(|(x,y)|json!({"input":x.key().0.to_vec(),"image":y.key().0.to_vec()})).collect::<Vec<_>>()).collect::<Vec<_>>(),"all48_mixed_sector_rows":panels,"all96_addition_rows":addition,"all5publics_times4sectors":publics,"unmatched_kernel_rejections":2,"field_model_noncanonical_and_unknown_tag_rejections":6,"full_rational_inverse_scalar":3413013,"source_recovery_inverse26modell":319970,"inverse_identities_checked_in_constructor":true,"record_version":2,"preprocessing_call_counts":b.preprocessing_calls(),"explicit_preprocessing":"selected constructor calls:32torsionPhi evaluations +2separatequadraticorigintraces +16torsion source-isogeny evaluations; original/contextsetup andvalidation remain included in implementation andunpriced, not a complete primitive-cost ledger","scope":"native finite controls and reusable full-rational evaluator under written geometric/order/kernel hypotheses; global closed coordinates/formalgeometry/calibratedcost remain open; no speedup or DLP attack claimed"})
     );
 }

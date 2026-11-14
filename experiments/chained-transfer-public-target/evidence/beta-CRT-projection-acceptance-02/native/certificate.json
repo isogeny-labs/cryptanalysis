@@ -1,0 +1,141 @@
+{
+  "schema": "identity.certificate/v1",
+  "id": "IDC1h2576687cb0806346",
+  "statement": {
+    "name": "Cofactor projection scalar identity for ell=4m+1",
+    "source": "BETA_COMPLETE_RATIONAL_DERIVATION_01 and CompleteRationalBeta.rational_decomposition; elementary exact coefficient identity, not a certificate of actual group maps or geometry",
+    "variables": [
+      "m"
+    ],
+    "degree_bound": 2,
+    "lhs": {
+      "op": "add",
+      "args": [
+        {
+          "op": "mul",
+          "args": [
+            {
+              "op": "add",
+              "args": [
+                {
+                  "op": "mul",
+                  "args": [
+                    {
+                      "op": "const",
+                      "args": 4
+                    },
+                    {
+                      "op": "var",
+                      "args": "m"
+                    }
+                  ]
+                },
+                {
+                  "op": "const",
+                  "args": 1
+                }
+              ]
+            },
+            {
+              "op": "add",
+              "args": [
+                {
+                  "op": "mul",
+                  "args": [
+                    {
+                      "op": "const",
+                      "args": 4
+                    },
+                    {
+                      "op": "var",
+                      "args": "m"
+                    }
+                  ]
+                },
+                {
+                  "op": "const",
+                  "args": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "op": "neg",
+          "args": {
+            "op": "add",
+            "args": [
+              {
+                "op": "mul",
+                "args": [
+                  {
+                    "op": "const",
+                    "args": 4
+                  },
+                  {
+                    "op": "var",
+                    "args": "m"
+                  }
+                ]
+              },
+              {
+                "op": "const",
+                "args": 1
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "rhs": {
+      "op": "mul",
+      "args": [
+        {
+          "op": "mul",
+          "args": [
+            {
+              "op": "const",
+              "args": 4
+            },
+            {
+              "op": "var",
+              "args": "m"
+            }
+          ]
+        },
+        {
+          "op": "add",
+          "args": [
+            {
+              "op": "mul",
+              "args": [
+                {
+                  "op": "const",
+                  "args": 4
+                },
+                {
+                  "op": "var",
+                  "args": "m"
+                }
+              ]
+            },
+            {
+              "op": "const",
+              "args": 1
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "modulus": 2305843009213693951,
+  "points": 64,
+  "seed": 1933791828,
+  "value_digest": "38e98a7dda54fe8a38dcdc7b6e403e7386bdf2b9a9556e54db54e1cbae5fa687",
+  "independence": "unchanged producer3d49 native issuer/checker; exact integer coefficient expansion in caller; Lean source pointer checked separately; unsigned process evidence",
+  "proof": {
+    "kind": "lean4",
+    "path": "experiments/chained-transfer-public-target/beta-complete-evaluator/lean/CRTProjectionIdentity.lean",
+    "sha256": "e81b24ac4e8a082595de1109c5d3915c5cbefd69536b424f34e5e26d8722bdfa"
+  }
+}

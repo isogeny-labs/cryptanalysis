@@ -1,0 +1,2 @@
+import CRTProjectionIdentity
+#print axioms CRTProjectionIdentity.projection_scalar_identity

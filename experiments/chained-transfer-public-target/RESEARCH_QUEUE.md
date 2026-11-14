@@ -1,3 +1,57 @@
+# Genuine PNG publication settled; complete source publication next
+
+Rootactuald5c9e9/consumer31881e: original43584794085/job132416863439SUCCESS/THREEwhole remoteretrievals BEFOREe149ba385/directd748/EXACT5paths; normalFF/artifact/wiring0/all6210guard12+bothrepoownedbytes+SIXlinks unchanged/hold12RELEASED. WholePNG151899B/checkpoint7964660B631members(allpendingconsumer+17wholeStageCdirs)/wholeguardmap137336B genuinelypublished; whole427604BUTF8log/API/controlplane preserved. Consumerphysical f4a048PNGbytes unchanged, actualmanifestentry+ignore/index-onlyunstage/originalartifactverify0/PCC2notcovered/current881guards0. [pcc:unverified]
+
+Native3f1ade/threeunfilteredpasses/all448exceptionals/selectedcounts32Phi+2origins+16torsionisogenies/exact3accountingchanges-onlyaudit/legacy32+oldfixture+omittedrecord101; group1e2420 original44/Intd0400f original1/sevenbindings73partialunique; reportf4a048 TWO48469BpagesALLviewed/frozen. Newci_beta_complete881+self882/20phases17zero+THREEactual101/alltee0/native3/all3wholeJSONNOMASKS/exactaccountingchangeaudit/bothoriginal44+1/sevenbindings. Original19workflows/844sources unchanged. [pcc:unverified]
+
+Nextsourcegov02 permits ONLYthisgenuinePNGsubject outsideGitwithactualpublisherentry/exacthash andmanifest+ignorestaged; other subjectsstaged/orparent. No originaltool/policy/verifier change. Normalcommit/pushsource, freshphysical882guardfull/freshoutsidecache/admissions andown20automaticCI/currentoriginalcheckpoint. AllpriorA-B/ca9/helper/398/C77captures andnewcompletefullCI underNEWguard13. No scienceinflight. Main/root124clock101/ledger/signing/reviews/conflict/admission/globalclosedcoords/actualgeometry gaps persist; no paidcompute/mergewaiver. [pcc:unverified]
+
+---
+
+# Whole report PNG and source checkpoint publication active — 2026-11-14T10:09:46.899356+00:00
+
+Native3f1ade/threeunfilteredpasses/all845guards0/all448exceptionals; conditionalgroup1e2420/original44declgates andIntd0400f/original1declgates/sevenbindings73partialunique; correctedreal-sitecounts[16,16]Phi/[1,1]origins/[8,8]isogenies withlegacy32actual101/fullthree-accounting-pathaudit/noothermathchanges. Reportf4a048 finalTWO48469BpagesALLviewed/frozen. [pcc:unverified]
+
+Sourcegov582599 passesallrecordedgates exceptartifact1 onwhole151899BPNG. NEWguard12: unchangedgenuinepublisher forwholePNG,completeALLpendingconsumer-source+StageC-runcheckpoint,andwholecurrentguardmap. Preserve PNG/PCCsubjects/nativegoldens/no policyexceptions. HOLD scientificcurrent881+self882/previous5268paths+latestphysicalreplay/stagedproofs andbothrepoownedbytes untilactualremotereplays/exactbotFF/terminalguards. No sourceedits duringhold. [pcc:unverified]
+
+Afterrelease projectgenuinePNGentryinto consumerreportmanifest/preservephysicalbytes; commitcompleteC20source; freshphysical882guardfull/freshoutsidecache andown20automaticCI/currentoriginalcheckpoint. UseCargo-reported executablepaths rather thanoldhardcodedunitname. ThenALLotherclosedcaptures ca9full/CInegative/helpercontrol/398CI/A-Bcomponents/C77fullcache+ownCI andnewcompletefull/CI underNEWguard13. CurrentStageC source/proof/native/reportattempts areincludedwholeinthischeckpoint. [pcc:unverified]
+
+Source consumerparent44df/rootparent556. No localscienceinflight. Root124clock101/mainledger/signing/reviews/conflict andlivebudgetcapacity/matchingimage/calibratedcost gates persist. Vault8edec422locked/KB127. Continueaftereachrung; no mergewaiver orpaidcompute. [pcc:unverified]
+
+---
+
+# Whole report PNG and source checkpoint publication active — 2026-11-14T10:08:21.951459+00:00
+
+Native3f1ade/threeunfilteredpasses/all845guards0/all448exceptionals; conditionalgroup1e2420/original44declgates andIntd0400f/original1declgates/sevenbindings73partialunique; correctedreal-sitecounts[16,16]Phi/[1,1]origins/[8,8]isogenies withlegacy32actual101/fullthree-accounting-pathaudit/noothermathchanges. Reportf4a048 finalTWO48469BpagesALLviewed/frozen. [pcc:unverified]
+
+Sourcegov582599 passesallrecordedgates exceptartifact1 onwhole151899BPNG. NEWguard12: unchangedgenuinepublisher forwholePNG,completeALLpendingconsumer-source+StageC-runcheckpoint,andwholecurrentguardmap. Preserve PNG/PCCsubjects/nativegoldens/no policyexceptions. HOLD scientificcurrent881+self882/previous5268paths+latestphysicalreplay/stagedproofs andbothrepoownedbytes untilactualremotereplays/exactbotFF/terminalguards. No sourceedits duringhold. [pcc:unverified]
+
+Afterrelease projectgenuinePNGentryinto consumerreportmanifest/preservephysicalbytes; commitcompleteC20source; freshphysical882guardfull/freshoutsidecache andown20automaticCI/currentoriginalcheckpoint. UseCargo-reported executablepaths rather thanoldhardcodedunitname. ThenALLotherclosedcaptures ca9full/CInegative/helpercontrol/398CI/A-Bcomponents/C77fullcache+ownCI andnewcompletefull/CI underNEWguard13. CurrentStageC source/proof/native/reportattempts areincludedwholeinthischeckpoint. [pcc:unverified]
+
+Source consumerparent44df/rootparent556. No localscienceinflight. Root124clock101/mainledger/signing/reviews/conflict andlivebudgetcapacity/matchingimage/calibratedcost gates persist. Vault8edec422locked/KB127. Continueaftereachrung; no mergewaiver orpaidcompute. [pcc:unverified]
+
+---
+
+# Complete rational beta formal/native source checkpoint ready — 2026-11-14T09:45:59.732723+00:00
+
+Native3f1ade: THREEunfilteredpasses/native0/845oldguards0; all32E4inputs/512additionpairs/F3/Kagreement/bothkappas/liftindependence;48mixedsectorclasses/96additionpairs/all5publicsx4sectors/all448rationalexceptionalinputs/both13/fullinverse/F=2beta/source recovery. Exactfull-tree Rust audit checks ONLY three accounting changes; everyother nativeclass/scalar/control field unchanged. Actual selectedcalls torsionPhi[16,16],origins[1,1],torsionisogenies[8,8]; old32label false/legacyactual101, strictoldfixture101, omittedrecord101. Original/context setup andvalidation implemented/unpriced; no costadvantage. Old450b7a/3fad90/raw04/47783Bwrongsetupdraft preserved. Actual05binary correctlycaptured frommatchingCargo compile/runtime7a5path; firstmisnamedlegacybinary kept/disqualified. [pcc:unverified]
+
+ConditionalLean1e2420: bothoriginal44declarationgates0trusted/all19namedroots onlypropext/sixexactbindings3237be5098ee15a9e4a9221607e7e39e1fdf. Intd0400f/originalIDC1h2576687cb0806346 buildissue/replay0/missinglinear101/64sealed+32extra; original1declgates0trusted/Intbinding4036be. Total73partialunique bindings, notactualgeometryformalizations. FormalAispreimageofrationalJinsideA(Fp2). Fullglobalclosedcoordinates/actualgeometricbridges remainopen. [pcc:unverified]
+
+Reportf4a048: finalTWO48469BPDFpages BOTHviewed; diagram/fullmodels/P0/fieldidentity/actualexceptionalhistogram/SVGPNGTypst/editablefresh-outputrenderer. Frozen; DO NOT rerenderinplace. Drafts1/2 andrenderKeyError1 preserved; stalePDFneveraccepted. Derivation02correctscostonly/01preserved, proofmapexplicitconditionalgeometry. Newci_beta_complete reference01=881inputs+self882, allprior844unchanged, wholecorrectedfixture02/wholelegacy04, no masks.20orderedphases17zero+threeactual101/alltee0, native3/all3wholeJSON/exactaccountingchangeaudit/twooriginal44+1gates/sevenbindings/finalguards. New20thworkflow only; original19unchanged. [pcc:unverified]
+
+Next normalcommit/push source; freshphysical Git-file882guard full withfreshcache/admissioncontrols; originalcurrent-sourcecheckpoint andown20automaticCI collectcompleteAPI/logs/allZIPmembers. UpdateGitHub PR1523/3877/queue3904 androotmetadata; publishALLwholecaptures underNEWguard12 unchanged genuinepublisher, then nextprospectivelyreviewedoptimization/genuinechain. C77e750e4/cd2e03 all19CI/416wholeJSON/7113census/66digests68verdicts settled; main398arithmeticCI4ff6d8 settled. Largeca9full+CInegative/helpercontrol/398CI/ALLct73science/proofs/callers/drafts/checkpoints pendingguard12. [pcc:unverified]
+
+Local science in flight NONE. Source44df parentpublished; branchresearch/chained-transfer-public-target-20261113. Root556c5ddb cleantrackedexceptignoredproofstages, producer scientificpin3d49 unchanged. Vault8edec422locked/KB127/no noveltyinference. Root124clock101/mainledger/signing/reviews/conflict/livebudgetcapacity/matchingimage/growingcomparativecost gates persist; no paidcompute/no mergewaiver. [pcc:unverified]
+
+---
+
+# Setup accounting audit active — 2026-11-14T09:23:14.737715+00:00
+
+pcc/claims/PCC-20261114-b4cde5.json: preserve old completeNative450b7a/3fad90/golden04 and47783B reportdraft; constructor filters rational lift inputs, so old32source-isogeny preprocessing label appears to count full verification panel. Protocol02 BEFOREcountercode predicts16actualiso+32torsionPhi+2origin; require real-site counters/legacy32actual101/full scientific-field exact diff/new fixture02 no masks. Existing theorem proofs1e2420/Intd0400f and73partialbindings remain unsigned; math checks unaffected. CI20 code not yet written; source44df published/GitHubPRs+queue updated. Nextinstrument, boundednative/correctedreport/new20phase driver, sourcepublish/freshfull/own20CI, NEWguard12 wholecustody, next optimization review. No local science in flight. [pcc:unverified]
+
+---
+
 # Complete rational beta native checkpoint — 2026-11-14T08:45:54.425684+00:00
 
 Completed sourcec77f95dc: fresh e750e4 all17phases16expected0+actualnegative101/alltee0/native2/all3wholeJSONno masks/twooriginal21declgates/sixbindings/all845guards0. Own cd2e03 ALL19distinctworkflows/19automaticrunsSUCCESS/signskipped1; Rustaudit0/416whole records under ONLY oldfrozenwalls/beta3NOmasks/whole7113census+metadata exact/66canonicaldigests68actualverdicts/15arithphasepairs0/17betaphases/allfinalguards0. Whole19logs7558979B/arith5732406B1611members/beta96388B64members/currentcheckpoint141329B28members alloriginalexits0 retained pendingguard12. [pcc:unverified]

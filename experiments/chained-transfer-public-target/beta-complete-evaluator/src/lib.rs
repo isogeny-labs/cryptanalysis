@@ -11,7 +11,7 @@ use isogeny_algos::{
     field::Field,
     fpr::{FpR, ER},
 };
-use std::collections::BTreeMap;
+use std::{cell::Cell, collections::BTreeMap};
 
 pub mod complete;
 
@@ -107,6 +107,8 @@ pub struct BaseChanged {
     pub field: String,
     pub origin: PicClass,
     normal6: Vec<Vec<u32>>,
+    transfer_calls: Cell<u64>,
+    origin_trace_calls: Cell<u64>,
 }
 impl BaseChanged {
     pub fn old(a: AdapterV2) -> Result<Self> {
@@ -164,7 +166,10 @@ impl BaseChanged {
             field,
             origin,
             normal6,
+            transfer_calls: Cell::new(0),
+            origin_trace_calls: Cell::new(0),
         };
+        out.origin_trace_calls.set(out.origin_trace_calls.get() + 1);
         out.origin = out.pic.reduce_deg6(&out.trace_space(Pt::Inf, false)?);
         Ok(out)
     }
@@ -372,8 +377,16 @@ impl BaseChanged {
         Ok(Gen { k: 6, rows })
     }
     pub fn transfer(&self, p: Pt<ER>) -> Result<PicClass> {
+        self.transfer_calls.set(self.transfer_calls.get() + 1);
         let raw = self.pic.reduce_deg6(&self.trace_space(p, false)?);
         Ok(self.pic.sub(&raw, &self.origin))
+    }
+    /// Selected call inventory only; includes no primitive-operation or timing price.
+    pub fn transfer_calls(&self) -> u64 {
+        self.transfer_calls.get()
+    }
+    pub fn origin_trace_calls(&self) -> u64 {
+        self.origin_trace_calls.get()
     }
     pub fn transfer_negative(&self, p: Pt<ER>) -> Result<PicClass> {
         let origin = self.pic.reduce_deg6(&self.trace_space(Pt::Inf, true)?);
@@ -387,3 +400,6 @@ mod tests;
 
 #[cfg(test)]
 mod complete_tests;
+
+#[cfg(test)]
+mod exceptional_tests;
