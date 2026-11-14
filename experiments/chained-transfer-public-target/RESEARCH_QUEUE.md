@@ -1,3 +1,25 @@
+# Current norm-assisted source checkpoint — 2026-11-14T02:29:42.389485+00:00
+
+Native9bc5e6/all4082guards/225exactscalarpairs1125triples60ICpairs120reports/all15publiccases THREEcommoncorrectsettings/45correcteach/all15FB30failures retained. Writtene7a860/faithful789d94a9a7afed533b/bothoriginal3gates0trusted/60partialunique/report510c8c TWOfinal75055-bytepagesALLviewed. StrictCIa2feab784portable+self785/tenphases/86wholeJSON exceptONLYwalls/17workflows327native60unique62actualchecks prepared. [pcc:unverified]
+
+ACTUALdata243bb9/genuineconsumer9a7cf7:43545769748/job132296598789/EIGHTremote replays BEFORE18633f0ba/direct97b05738/EXACT10paths;15wholeobjects8genuineS3+7smallGit/all5030guard09+BOTHereposdirtybytes+THREEreportlinktypes preserved/hold09RELEASED. Whole428357-byteUTF8log/allAPIlosslessXZ/controlplaneDIRECT. IncludesALL115ownedpendingfiles+baseb57+patch/PCCledger/resume/784CI/reportalias checkpoint119members;transport84filenonsecretclosureALL28ZIPmembers/ONEprivate temporarydownloadAPIexcludedwithhash/fulloriginalkeptlocal. OriginalcanonicalPDFverify0/PCCreport2notcovered/no perproof failures/all784inputs0. [pcc:unverified]
+
+NEXTnormalconsumercommit/push,thenfreshphysicalsource/original3d siblings/785guards/fouractualadmission2nooutputrestored/tenphasepairs/ONEunfiltered86JSON/all3faithfulbindings;all17ownCI327native60unique62actualchecks. Thenisolatedcompletearithmetictaps/coldonlineboundaries/admittedmatchedrefs/completeodddegreebeta coordinates. FuturedataFF MUSTfreezeNEWguard10;09historicalreleased. Originalcheckpointb08916 remote+localORIGINALgate0exactclean39b/laterstatechangesstale. Root124/clock101/formal/cost/mainledger/signing/reviews/conflict/vault8edec422/KB absent remain. [pcc:unverified]
+
+---
+
+# Current norm-assisted sampling checkpoint — 2026-11-14T02:10:01.765954+00:00
+
+Native9bc5e6 passes ONEunfilteredtest/all4082guards/86wholeJSON/225exactscalarpairs1125triples/all60ICpairs120reports/45correcteach/all15publiccasesTHREEcommoncorrectsettings. All15sharedFB30failures retained:fiveeta-unanchored,tenwrongtentatives rejected byORIGINALPicard+independentsource. Writtene7a860;faithful789d94/a9a7af/ed533b BOTHoriginal3gates0trusted/60uniquepartialbindings,unsigned. Report510c8c TWO75055-bytefinalpagesALLviewed/SHA087681bc...;canonicaldocswholePDF+relativealiasunder26c263/originalPCCpin2/notcovered/no perproof failures/f7a1f9. [pcc:unverified]
+
+pcc/claims/PCC-20261114-a2feab.json:newci_norm_sampling784portable+self785/tenphases/86JSONONLYwalls/both3gates/3bindings/17threadonlyworkflow. Copiedcontrols32bbef exact0wall0/allfourmutations1. Ownsource785full/fouractualcontrols/17CI327native60uniquedigests62actualchecks pendingpublication. Prior754/16workflows/engines/verifiers stayimmutable. [pcc:unverified]
+
+Next:wholeclosedct70physical755full/16CI/exact39b originalcheckpoint(nonsecretclosure,private temporarydownloadAPI excludedwithhash) plusct71native/JSONcontrols/reportdraftinspection andTHISunpublishedsource snapshot;wholecompleteindices+finalPDFthroughunchanged genuinepublisherwithNEWguard09. Thennormalconsumercommit/push,cleanphysical785full/fouractualadmission/17ownCI. Aftervalidation continueisolatedarithmetic taps/completecoldonlineaccounting/admittedmatchedrefs/completebeta coordinates. Guard08historicalreleased. [pcc:unverified]
+
+Originalcheckpointb08916remote+localORIGINALgate0onlyexactclean39b/laterchangesstale. Root8a85ba2normalpub0;rootunfiltered124/unknowntotals/two exactclock101 failures633ab0 unchanged/capablehostrequired. No benchmark/Sratio/stagewin. ActualPicard/scalar/geometry/logextension/mainledger/signing/reviews/conflict/vault8edec422/KB absent gapsremain. [pcc:unverified]
+
+---
+
 # Current research queue — 2026-11-14T01:32:44.420186+00:00
 
 Exact39b source is settled: native8a77f3,independent755full82290d,own16CI11815a/all241nativeJSON/57uniquecanonicaldigests(59actualverdictrecords,reuseonly). Originalcheckpointb08916 remote+local ORIGINALgate0 for exactclean39b;metadata changesstaleit. Root8a85ba2 normalpublished0. All observations unsigned. [pcc:unverified]

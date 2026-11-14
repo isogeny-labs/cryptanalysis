@@ -1,3 +1,47 @@
+# Current norm-assisted source checkpoint — 2026-11-14T02:29:42.389485+00:00
+
+Native9bc5e6/all4082guards/225exactscalarpairs1125triples60ICpairs120reports/all15publiccases THREEcommoncorrectsettings/45correcteach/all15FB30failures retained. Writtene7a860/faithful789d94a9a7afed533b/bothoriginal3gates0trusted/60partialunique/report510c8c TWOfinal75055-bytepagesALLviewed. StrictCIa2feab784portable+self785/tenphases/86wholeJSON exceptONLYwalls/17workflows327native60unique62actualchecks prepared. [pcc:unverified]
+
+ACTUALdata243bb9/genuineconsumer9a7cf7:43545769748/job132296598789/EIGHTremote replays BEFORE18633f0ba/direct97b05738/EXACT10paths;15wholeobjects8genuineS3+7smallGit/all5030guard09+BOTHereposdirtybytes+THREEreportlinktypes preserved/hold09RELEASED. Whole428357-byteUTF8log/allAPIlosslessXZ/controlplaneDIRECT. IncludesALL115ownedpendingfiles+baseb57+patch/PCCledger/resume/784CI/reportalias checkpoint119members;transport84filenonsecretclosureALL28ZIPmembers/ONEprivate temporarydownloadAPIexcludedwithhash/fulloriginalkeptlocal. OriginalcanonicalPDFverify0/PCCreport2notcovered/no perproof failures/all784inputs0. [pcc:unverified]
+
+NEXTnormalconsumercommit/push,thenfreshphysicalsource/original3d siblings/785guards/fouractualadmission2nooutputrestored/tenphasepairs/ONEunfiltered86JSON/all3faithfulbindings;all17ownCI327native60unique62actualchecks. Thenisolatedcompletearithmetictaps/coldonlineboundaries/admittedmatchedrefs/completeodddegreebeta coordinates. FuturedataFF MUSTfreezeNEWguard10;09historicalreleased. Originalcheckpointb08916 remote+localORIGINALgate0exactclean39b/laterstatechangesstale. Root124/clock101/formal/cost/mainledger/signing/reviews/conflict/vault8edec422/KB absent remain. [pcc:unverified]
+
+---
+
+# Resume: Chained ECDLP Transfers — 2026-11-14T02:10:01.765954+00:00
+
+## Goal
+Continue DLP-preserving chained Jacobian transfers,prime-field descent and admitted computational comparisons;advance after each rung. [pcc:unverified]
+
+## Lead / hypothesis
+PublicG-only norm-assisted scalar sampling supplies exactsame Rclasses in finite9bc5e6 panel. Complete operationcoverage is next for deciding actual cost;APIcalls andoldpartialcounterchanges arenot a stagewin. [pcc:unverified]
+
+## Spec
+NORM_ASSISTED_SAMPLING_PROTOCOL_01.md/4a6745 normallypublishedb57BEFOREcode;NORM_SAMPLING_REPLAY_STORAGE_PROTOCOL_01.md/26c263 precedesCIandcanonicalstorage. Preservefrozen784CIinputs+manifestself/785outer/tenphasepairs/ONEunfiltered86JSON/both3gates/3faithfulbindings. [pcc:unverified]
+
+## State
+# Current norm-assisted sampling checkpoint — 2026-11-14T02:10:01.765954+00:00
+
+Native9bc5e6 passes ONEunfilteredtest/all4082guards/86wholeJSON/225exactscalarpairs1125triples/all60ICpairs120reports/45correcteach/all15publiccasesTHREEcommoncorrectsettings. All15sharedFB30failures retained:fiveeta-unanchored,tenwrongtentatives rejected byORIGINALPicard+independentsource. Writtene7a860;faithful789d94/a9a7af/ed533b BOTHoriginal3gates0trusted/60uniquepartialbindings,unsigned. Report510c8c TWO75055-bytefinalpagesALLviewed/SHA087681bc...;canonicaldocswholePDF+relativealiasunder26c263/originalPCCpin2/notcovered/no perproof failures/f7a1f9. [pcc:unverified]
+
+pcc/claims/PCC-20261114-a2feab.json:newci_norm_sampling784portable+self785/tenphases/86JSONONLYwalls/both3gates/3bindings/17threadonlyworkflow. Copiedcontrols32bbef exact0wall0/allfourmutations1. Ownsource785full/fouractualcontrols/17CI327native60uniquedigests62actualchecks pendingpublication. Prior754/16workflows/engines/verifiers stayimmutable. [pcc:unverified]
+
+Next:wholeclosedct70physical755full/16CI/exact39b originalcheckpoint(nonsecretclosure,private temporarydownloadAPI excludedwithhash) plusct71native/JSONcontrols/reportdraftinspection andTHISunpublishedsource snapshot;wholecompleteindices+finalPDFthroughunchanged genuinepublisherwithNEWguard09. Thennormalconsumercommit/push,cleanphysical785full/fouractualadmission/17ownCI. Aftervalidation continueisolatedarithmetic taps/completecoldonlineaccounting/admittedmatchedrefs/completebeta coordinates. Guard08historicalreleased. [pcc:unverified]
+
+Originalcheckpointb08916remote+localORIGINALgate0onlyexactclean39b/laterchangesstale. Root8a85ba2normalpub0;rootunfiltered124/unknowntotals/two exactclock101 failures633ab0 unchanged/capablehostrequired. No benchmark/Sratio/stagewin. ActualPicard/scalar/geometry/logextension/mainledger/signing/reviews/conflict/vault8edec422/KB absent gapsremain. [pcc:unverified]
+
+
+## Next steps
+Preparewholepublicclosedcaptures/sourcecheckpoint,packstandardtarXZ+completeindices,freezeNEWguard09,normalrootpayloadpush/actualunchangedpublisherremote-byte replays/exactFF/allguards+dirtybytes+linktypes/genuineconsumerprojections. Thencommitnormalconsumersource andlaunchfreshphysical785full/17CI. Continue completearithmetictaps/admission/matchedrefs aftervalidation. [pcc:unverified]
+
+## Runs in flight
+NONE local scientific. Native01 andbothLean gates/3bindings/JSONcontrols terminal. Currentraw /workspace/scratch/ct71-norm-assisted-native-01,/workspace/scratch/ct71-norm-sampling-JSON-controls-01;ct70full/CI/transport unchanged. Private temporarydownloadAPI remainsoutside publictransportcapture. No paidbenchmark. SourceHEADstillb57 withownedpendingcode/evidence;wholependingcheckpoint makesitrestorablebeforeconsumercommit. [pcc:unverified]
+
+## Stop and success conditions
+Do noteditselectedscience/reportbytesduringfresh09hold. Requiregenuinewholepublication/bothowneddirtypreservation+linktypes/strictfull+CI atdeclaredscope. No pricingbeforecompletecoldonlinecost,originalfreshcheckpoint/livebudget/capacity/isolation/strongestrefs. Root124clock101/globalformal/mainledger/signing/reviews/conflict/vaultKB remain;continueusefulauthorizedwork. [pcc:unverified]
+
+---
+
 # Resume: Chained ECDLP Transfers — 2026-11-14T01:40:27.687025+00:00
 
 ## Goal
