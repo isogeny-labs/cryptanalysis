@@ -1,3 +1,31 @@
+# Arithmetic audit continuation — 2026-11-14T03:38:21.921614+00:00
+
+Settled source21afb40f: native9bc5e6, independent785full333af1, own17CI42073d/327native/60unique62actualcanonical checks. Originalcheckpoint66da4b remote+localgate0 exactclean21af/all28members; latermetadata stale. All15FB30failedpairs preserved. Genuine243bb9/9a7cf7 all15objects8S3+7Git/guard09released; nextartifactFF fresh10. All claims unsigned. [pcc:unverified]
+
+Next implement ARITHMETIC_AUDIT_PROTOCOL_01.md, prospective pcc/claims/PCC-20261114-c20aaf.json, after normalpublication: isolated original785blobclosure and purehookderivative, unchanged classsolvers, Rust primitive controls/native JSON comparator, ALL86records only existingwalls masked. Budget900sbuild900snative2GiB;120scontrols; dedicatedoutsidecache. Originalcheckpoint before experiment; unit checks development/no timingclaim. Currentdisk296MiB. No tap code yet. [pcc:unverified]
+
+Livebudget/capacity unknown; fixedhistoricaldiagnosis andunrelatedisolabimageworkflows do not provide generaladmission. No paidlaunch. Needmatched testedimagebindingBOTHrepos/strongestICrho-precomp-fixedbase/coldonlinecost beforegain. Root124clock101/mainledger/signing/reviews/conflict/formalgeometry/logextension/vault8edec422locked/KB127 remain. Raw333/420/66 closedawaitnextgenuinebatch. Continueafterrung. [pcc:unverified]
+
+---
+
+# Current research queue — 2026-11-14T03:04:59.874710+00:00
+
+Published source21afb40f is settled: native9bc5e6,independent785full333af1 andown17CI42073d/all327nativeJSON/60uniqueoriginalcanonicaldigests/62actualverdictrecords(twooldbindingsreused). All225scalarpairs/1125triples/60ICpairs120reports/all15publiccases/15sharedFB30failures retained. Writtene7a860/60partialunique/report510c8c TWOfinal75055-bytepagesviewed. Allobservationsunsigned. [pcc:unverified]
+
+Originalcheckpoint66da4b succeedsremote+localORIGINALgateforexactCLEAN21af:43547710178/job132302784079/artifact14094547986/whole111985B/SHA311c253a/all28members/exactoriginalreceipt/Gitstatusunchanged. Subsequentmetadatachangesstaleit. Genuine243bb9/9a7cf7 all15wholeobjects8S3+7Git/all5030guard09+THREElinktypes preserved/hold09released;futuredataFFNEWguard10. Current785full/17CI/21aftransport rawcapturesawaitnextgenuinebatch. [pcc:unverified]
+
+| Priority | Task | Next discriminating action |
+| --- | --- | --- |
+| 1 | Complete arithmetic coverage | Review exactbackends/primarycostmethods/KB;freeze isolated-source-mirror tap protocol;preserveoriginals/literaldiff andall86nativeoutputs. CountFpRcoefficient/fold/Frobenius/inverse+constructorZp/nativecoverPicard/scalar operations withoutdoublecountingoldpcaggregates. No pricefromAPIcounts. [pcc:unverified] |
+| 2 | Admission andmatchedreferences | Read originalEKSworkflow/skill forsafe readonlylivebudget/capacity/isolation admission;freshS3statecheckpoint beforeperformance. Freeze strongestIC/rho/precomputation andfixed-base scalar references;allcoldonlinecosts beforeclaiminggain. [pcc:unverified] |
+| 3 | Complete odddegreebeta coordinates | Actual globalcorrespondence/quotient coordinates;odd-subgrouphalving doesnotprovidecompletebeta. Preserve allnonfree52/nonsquare cases. [pcc:unverified] |
+| 4 | Whole-data custody | Nextgenuinearchive includesclosed785full/17CI/21aftransport withcompleteindices;private temporarydownloadreference excludedwithhash/fulloriginalprivatecapturelocal. NEWguard10beforeFF. [pcc:unverified] |
+| 5 | Formal/root/merge |60conditionalbindingsunsigned/actualgeometry bridgesopen. Root124/two exactclock101 failures633ab0 requirecapablehost. Mainledger/signing/reviews/conflict preserved;vault8edec422locked/KB absent. [pcc:unverified] |
+
+Continueaftereachrung;no manualredispatchofsettledscientificCI. [pcc:unverified]
+
+---
+
 # Current norm-assisted source checkpoint — 2026-11-14T02:29:42.389485+00:00
 
 Native9bc5e6/all4082guards/225exactscalarpairs1125triples60ICpairs120reports/all15publiccases THREEcommoncorrectsettings/45correcteach/all15FB30failures retained. Writtene7a860/faithful789d94a9a7afed533b/bothoriginal3gates0trusted/60partialunique/report510c8c TWOfinal75055-bytepagesALLviewed. StrictCIa2feab784portable+self785/tenphases/86wholeJSON exceptONLYwalls/17workflows327native60unique62actualchecks prepared. [pcc:unverified]

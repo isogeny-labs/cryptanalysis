@@ -1,0 +1,30 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-14T03:39:04Z",
+ "id": "PCC-20261114-3fdb79",
+ "kind": "statement",
+ "producer": {
+  "commit": "21afb40f425f89774fe3eaf77695f5f30342a186",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/arithmetic-audit-protocol-stage-recovery-01/observed-caller-failure.json",
+    "sha256": "7029460f002f2da6f09e484d6c248ff417dcf83f4d13b5a8a84ae8ade561c5fb"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/arithmetic-audit-protocol-stage-recovery-01/recovery-command.py",
+    "sha256": "fb81fedac6d05d9bea788a5ed3fa32a85692f2927db02fedb865606c5fea93d7"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Arithmetic protocol commit caller failed after all actual governance checks0: secondpathset9 omitted111already-staged files, yielding assertion(120,9). No commit/scientificrun. Preserve originalcaller andobservedtool-return diagnosis; recovery unions existingownedindex plusnewpaths andchecks allsubjects withoutchanging scientificsource/verifier."
+}
