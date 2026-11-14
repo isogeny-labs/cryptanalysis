@@ -1,3 +1,37 @@
+
+
+## Whole PCC failure publication settled; consumer routing commit next
+
+Actual d1f056/consumeraf2fcb:43587977449/job132426467408SUCCESS/THREEwhole remotebytereplays BEFOREd2389ee6f/directeda98ab8/EXACT5paths. Whole68044Bfailurelog,7880556Bpending-source/fullCfull-driver-own20CIcheckpoint2101members(all20logs/fourZIPs/everymember),141364Bwholeguardmap genuinelypublished. All7093guard13paths/ownedbytes/SEVENlinktypes preserved/FF-artifact-wiring0/hold13RELEASED. Originalrootd5c9e9 priorPNGpublication metadata isalso committed ineda98ab8. [pcc:unverified]
+
+The genuine wholefailurelog isnowcanonicaldocs plus eighthrelative evidence link, keeping allold423f66/8397absubjects unchanged. Originalartifactverify0/oldPCCcontrols2notcovered/no perprooffailures/881scienceguards0; all20workflows unchanged. Commit/publish data-path correction andcollectits own20automaticCI; no repeatfreshb691full forunchanged881scienceinputs. [pcc:unverified]
+
+B691 audit retained all419native/whole7113census(no newmasks)/73canonical75actualpassverdicts/all15+17+20phasepairs/allproof/source/checkpointcontrols; overall19success+EXACTonePCCfailure. Firstaggregate audit101 wronglycomparedsource4vsremote3manifest schemas; correctedRust0 checks everyoriginalsource/remotehash using unchangedoriginalRustSHA256, keepsmathcomparisons, negativecapturedwhole. Freshfull666cb7 remains20expectedphases/threeactual101/882unchanged. Allunsigned/noexecution-standing/performance inference. [pcc:unverified]
+
+NEWguard14 mustincludeolderca9/398/A-B/C77captures/sealedBfullcache/firsthandoffpreparationarchive andbothb691audits plus correctedsourceCI, andallEIGHTlinktypes. Then primary/KB review +prospective directNormhalving vsstrongestnorm-assistedellipticbaseline. Existingroot124/clock101/mainledger/reviews/signing/conflict/fullgeometry/cost/admission/vaultKB blockerspersist; no waiver/paidlaunch. Continueunblockedwork. [pcc:unverified]
+
+---
+
+# Complete replay and blocking whole-log publication — 2026-11-14T10:58:24.849069+00:00
+
+Complete b691 physical replay666cb7 passes20expectedphases/threeactual101controls/882unchangedguards/whole3nativeJSONNOmasks/bothoriginal44+1proofgates/sevenbindings. Automatic b691CI has19success+onePCCmissingPNGfailure423f66; newcomplete43585724236 succeeded. No all20greenclaim. Data routing8397ab preserves allreport subjects/workflows/881scienceinputs using canonicaldocsPNG+seventhrelativeGitlink. Originalartifactgate1 nowrequires genuinepublication ofwhole68044Bfailurelog (7b651f); no policy exception. All unsigned. [pcc:unverified]
+
+NEWguard13 publication covers unchangedwholePCCfailurelog, completependingconsumer/baseb691/patch/ledger/resume plusWHOLE freshCfull/driver/own20CIcaptures(all20logs/fourwholeZIPs/everymember) checkpoint, andwholecurrentinputmap. HOLD allcurrent scientificpaths/actualproofsources andbothrepoownedbytes until original remote-byte replays/exactpublisherFF/terminalguards. ALL6210guard12 paths remainpresent andbyte-identical; report manifest/ignore were never inthatmap, andtheir priorbytes arealso retained in the failure capture. Existingsevenlinktypes pinned. No scienceedit duringhold. [pcc:unverified]
+
+Afterrelease projectlogentryinto canonicaldocs plusrelative evidence link, preserve alloldclaims, completeconsumer datafixcommit andownautomatic20CI/audit419native/73canonical75actualverdicts/whole7113census/allphaseguards. Freshb691full remainsvalid forbyte-identical881inputs. Remainingwholeca9/398/A-B/C77largecaptures (includingsealedBfullcache) move toNEWguard14; do notdrop them. Then prospectiveprimary/KB-reviewed directNormhalving vsstrongnorm-assistedbaseline, no newcodeorperformanceclaimyet. Rootclock124/101/mainledger/reviews/signing/conflict/fullformalgeometry/globalclosedcoords/calibratedcost/livebudgetcapacity/vaultKB remainopen. Continueunblockedwork/no paidlaunch/nowaiver. [pcc:unverified]
+
+---
+
+# Complete replay and blocking whole-log publication — 2026-11-14T10:56:43.045332+00:00
+
+Complete b691 physical replay666cb7 passes20expectedphases/threeactual101controls/882unchangedguards/whole3nativeJSONNOmasks/bothoriginal44+1proofgates/sevenbindings. Automatic b691CI has19success+onePCCmissingPNGfailure423f66; newcomplete43585724236 succeeded. No all20greenclaim. Data routing8397ab preserves allreport subjects/workflows/881scienceinputs using canonicaldocsPNG+seventhrelativeGitlink. Originalartifactgate1 nowrequires genuinepublication ofwhole68044Bfailurelog (7b651f); no policy exception. All unsigned. [pcc:unverified]
+
+NEWguard13 publication covers unchangedwholePCCfailurelog, completependingconsumer/baseb691/patch/ledger/resume plusWHOLE freshCfull/driver/own20CIcaptures(all20logs/fourwholeZIPs/everymember) checkpoint, andwholecurrentinputmap. HOLD allcurrent scientificpaths/actualproofsources andbothrepoownedbytes until original remote-byte replays/exactpublisherFF/terminalguards. Prior6210guard12 scope retained withONLYtwo removedreportmetadata files relocated to exactpreservedfailure copies afterrelease12; everyoldbyte accounted. Existingsevenlinktypes pinned. No scienceedit duringhold. [pcc:unverified]
+
+Afterrelease projectlogentryinto canonicaldocs plusrelative evidence link, preserve alloldclaims, completeconsumer datafixcommit andownautomatic20CI/audit419native/73canonical75actualverdicts/whole7113census/allphaseguards. Freshb691full remainsvalid forbyte-identical881inputs. Remainingwholeca9/398/A-B/C77largecaptures (includingsealedBfullcache) move toNEWguard14; do notdrop them. Then prospectiveprimary/KB-reviewed directNormhalving vsstrongnorm-assistedbaseline, no newcodeorperformanceclaimyet. Rootclock124/101/mainledger/reviews/signing/conflict/fullformalgeometry/globalclosedcoords/calibratedcost/livebudgetcapacity/vaultKB remainopen. Continueunblockedwork/no paidlaunch/nowaiver. [pcc:unverified]
+
+---
+
 # Genuine PNG publication settled; complete source publication next
 
 Rootactuald5c9e9/consumer31881e: original43584794085/job132416863439SUCCESS/THREEwhole remoteretrievals BEFOREe149ba385/directd748/EXACT5paths; normalFF/artifact/wiring0/all6210guard12+bothrepoownedbytes+SIXlinks unchanged/hold12RELEASED. WholePNG151899B/checkpoint7964660B631members(allpendingconsumer+17wholeStageCdirs)/wholeguardmap137336B genuinelypublished; whole427604BUTF8log/API/controlplane preserved. Consumerphysical f4a048PNGbytes unchanged, actualmanifestentry+ignore/index-onlyunstage/originalartifactverify0/PCC2notcovered/current881guards0. [pcc:unverified]

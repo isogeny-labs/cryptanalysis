@@ -1,0 +1,25 @@
+norm784 0
+arithmetic22 0
+beta-reference 0
+complete-reference 0
+complete-shell 0
+complete-actionlint 0
+complete-rustfmt 0
+ledger 0
+prose 0
+whitespace 0
+actionlint 0
+wiring 0
+benchrec 0
+reportPython 0
+fatal: pathspec 'experiments/chained-transfer-public-target/reports/beta-complete-rational-01/.artifacts.json' did not match any files
+Traceback (most recent call last):
+  File "/workspace/scratch/ct73_commit_complete_checkpoint_04.py", line 38, in <module>
+    stage();run('cached-whitespace',['git','diff','--cached','--check']);tree=subprocess.check_output(['git','write-tree'],cwd=r,text=True).strip();run('artifact',['python3','tools/artifacts/artifacts.py','check',base,tree])
+    ^^^^^^^
+  File "/workspace/scratch/ct73_commit_complete_checkpoint_04.py", line 23, in stage
+    ps=paths();p=Path('/workspace/scratch/ct73-'+label+'.paths0');p.write_bytes(b'\0'.join(x for x in ps if x!=b'.resume/RESUME.md')+b'\0');subprocess.run(['git','add','--sparse','--pathspec-from-file='+str(p),'--pathspec-file-nul'],cwd=r,check=True);subprocess.run(['git','add','--sparse','-u','--','.resume/RESUME.md'],cwd=r,check=True)
+                                                                                                                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['git', 'add', '--sparse', '--pathspec-from-file=/workspace/scratch/ct73-complete-PNG-routing-02.paths0', '--pathspec-file-nul']' returned non-zero exit status 128.
