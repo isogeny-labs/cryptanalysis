@@ -16,7 +16,7 @@ study=experiments/chained-transfer-public-target
 mkdir "$out"
 export RUSTUP_TOOLCHAIN=1.99.1
 export CARGO_TARGET_DIR=$cache
-reference=$ci/reference-02.sha256
+reference=$ci/reference-03.sha256
 cd "$repo"
 cp "$reference" "$out/original-reference.sha256"
 cp "$ci/check.sh" "$out/original-command.sh"
@@ -58,7 +58,13 @@ for i in 0 1 2 3; do
  phase "$label-materialize" 0 python3 "$pkg/materialize.py"
  cp "$pkg/generated/custody.json" "$out/$label-literal-custody.json"
  phase "$label-fetch" 0 timeout 120 cargo fetch --locked --manifest-path "$pkg/Cargo.toml"
+ if [[ $i == 0 ]]; then
+  # Explicit prospective protocol f99312/108b7e97; old full cold120 remains unmet.
+  phase original-engine-preparation 0 timeout 900 cargo build --release --locked --offline --manifest-path "$pkg/Cargo.toml" --package isogeny_algos --message-format=json
+  python3 "$ci/capture_engine.py" "$out" "$producer" prepared
+ fi
  phase "$label-compile" 0 timeout 120 cargo test --release --locked --offline --manifest-path "$pkg/Cargo.toml" --lib --no-run --message-format=json
+ if [[ $i == 0 ]]; then python3 "$ci/capture_engine.py" "$out" "$producer" reused; fi
  python3 "$ci/capture_executable.py" "$out" "$label" compiled
  phase "$label-native" 0 bash -c 'ulimit -v 2097152; exec timeout 900 cargo test --release --locked --offline --manifest-path "$1" --lib -- --nocapture --test-threads=1' _ "$pkg/Cargo.toml"
  grep -Eq '^test result: ok\. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out;' "$out/$label-native.txt"
