@@ -1,3 +1,17 @@
+# Partial census preserved; genuine second-hop implementation ready for native checks
+
+Published prototype5c9 and prospective nondual23ab48/cf9 precede code. Actual census b5fd45: cold900s124/fullcomparator101/no accepted output;12 complete cold records and108 missing/incomplete. BOTH reused processes complete all60 cases0, whole packets exact/no masks and ledgers complete/monotone under retrospective471848. Native vectors ee232d: reused transfer source mul16792793/91064595 andatomic inv97858/24422 baseline/direct. Setup and all admission/output/fullinverse costs retained. This is an unpriced tradeoff, no cold extrapolation or ECDLP gain. One45005BresultsPDF page inspected20258f/whole54,948BXZ committed with native render data. All failures retained. [pcc:unverified]
+
+Nondual phaseA prototype5d6fef builds0 after published23ab48; exact12036B original odd-source prefix plus appendedRust. Both original build01 and02 with explicit whole169curve/derivative identity and both actual binaries/source snapshots retained at /workspace/scratch/ct76-nondual13-build-01. Native POSITIVE/CONTROL NOT RUN. PhaseB full64conjugate product transport/matched F223 J2 is not implemented; no E2/J2/secondJacobian result. [pcc:unverified]
+
+Immediate next: normalcommit/push this implementation; retrieve exact clean-head original checkpoint via existing automatic transport, compare whole artifact/source/resume and original receipt, then original local gate0. Native ONEunfiltered serial library test at900s/2GiB, separate old-dual control101 with actual168gcd/rejectedgate/expectedmessage, full Cargo compile/runtime paths and actualbinarycustody. Preserve any newfailure; inspect whole polynomial/point/public outputs before interpretation. Then actual full64torsion/matchedHLP model preflight under the same protocol, feasible faithful proof/replay/CI. [pcc:unverified]
+
+No runs currently active. Source arithmetic panel closed andfrozen at /workspace/scratch/ct75-norm-arithmetic-panels-01; partial analysis and source projection at ct75-norm-arithmetic-partial-analysis-01; actualanalyzer binaries retained. Future complete cold census may optimize only observer storage/owner bookkeeping with strict whole-ledger/canary controls, never arithmetic/panel/limits. Prototype parity87af78 and all controls remain accepted only unsigned. [pcc:unverified]
+
+Whole current fresh02/ownCI/primary/prototype/allfailedcanary/ledger/proof/report/compiledsource captures need NEWgenuine17;16 settled17911paths/eightpriorlinks andallscientificsubjects preserved. Closedexternal derived cleanup06/publicdependencies01 have whole hash receipts, reclaimed only incremental/library artifacts; every actual executable/source/raw and sealedBcache intact. Root124/clock101/mainledger/signing/reviews/conflicts/fullgeometry/livebenchmarkadmission/strongestrefs/vault8edec422/KB127 remain. Continue unblocked research; no paid launch or waiver. [pcc:unverified]
+
+---
+
 # Enabled census in flight; genuine second-hop preflight frozen
 
 Prototype5c9a5559 published. Quadratic omission03 positive0/negative101 (3da93a) and old FpR/mode1430fd controls pass locally; both earlier builds124 and corrected dependency diagnosis76b940 retained. Genuine original checkpoint93464c:43612223554/job132499525668/whole183372B artifact14119999782/all28members/exact source5c9 and original Resume/tool/remote pack equality; local originalgate0 before census launch. Later metadata changes stale that receipt. [pcc:unverified]
