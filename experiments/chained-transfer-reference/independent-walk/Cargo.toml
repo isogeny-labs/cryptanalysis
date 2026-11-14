@@ -1,0 +1,16 @@
+[package]
+name = "chained-seven-reference"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[workspace]
+
+[lib]
+path = "lib.rs"
+
+[dependencies]
+num-bigint = "=0.4.8"
+num-traits = "=0.2.19"
+serde = { version = "=1.0.229", features = ["derive"] }
+rand = { version = "=0.8.8", features = ["small_rng"] }

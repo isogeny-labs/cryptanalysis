@@ -1,0 +1,37 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-11T14:18:45Z",
+ "id": "PCC-20261111-2f70a0",
+ "kind": "statement",
+ "producer": {
+  "commit": "29c4d720660297b30eff74ba735160b99b0d18da",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/elliptic-seven-04.txt",
+    "sha256": "d95b87ca2464a98ddf750e7769879c86b753335c3c080b62171333ab36a38e68"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/independent-seven-ci-03.txt",
+    "sha256": "6d0a6bd7f75331568e9f15d6a831438e1ea834b7308f6a39c005ad1ff1c6c3b5"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/elliptic-seven-clippy-final-01.txt",
+    "sha256": "801fa391402780d7dc8530a9ee6bfa7f91bcbee13bfa7861e2a72f81ad17a854"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Final degree7 targeted producer and independent consumer replay pass with explicit smoothness checks on every source/codomain/raw dual model,corrected j/coefficient equivalence controls and all prior kernel/global polynomial/full point certificates. Strict Clippy passes;unchanged arithmetic sources remain under separate guards. This is scoped local validation,not current full CI or a Jacobian7-hop/performance result."
+}

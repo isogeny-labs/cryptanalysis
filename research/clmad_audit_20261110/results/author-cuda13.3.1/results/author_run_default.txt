@@ -1,0 +1,61 @@
+nvcc: Cuda compilation tools, release 13.3, V13.3.73
+cuobjdump: Cuda compilation tools, release 13.3, V13.3.73
+NVIDIA RTX PRO 6000 Blackwell Server Edition, 595.91.07, 12.0
+== ptxas -O3
+step  0: got 83362acc3167fa23 7d49bf6b24b0c5ec, want 8b5868123167fa23 7d49bf6b24b0c5ec
+step  1: got e9bd0331ee4d4623 ed20effac606c624, want fbd30bef8cdaf685 565f33273835ce1c
+step  2: got 45f0c7940e8d42c2 70d542c891bddc06, want 7ce753dea4bf87f1 e9c84c0ea81effe6
+step  3: got 5f74dd6d84899c5a 10e7022556c7d9c4, want 084dceeec2a89616 208da5a54507d626
+step  4: got 2bbf0ec9c874f501 a72eb77b66f8e370, want 5dd0b99ced66ed80 efcc1e61ab64d520
+step  5: got 618f7af3e72eed01 5ba3d3ffe14bb0ce, want 0a444b0c28b595cb ca22830f80d2ca28
+step  6: got 849c7492ab26436e e0224661a2e99a88, want d5b5ecd381c8883c 3f728a23a75cf26e
+step  7: got ad627b9263d51b01 6490cac675506b36, want 5ab3e0f37b4155fc 4e7324646f5b22ba
+step  8: got 265cd4416d2e437b d8b7c0b71974cde0, want b785bc875fbe0b52 25007549c9cbd4fa
+step  9: got 22476d4c6a61dfa6 16c055084009b53a, want 0143bebc59f4fb11 f00dc8db88049ab2
+step 10: got 8f4ea26a3ad6d640 77010ed0c9dd119a, want 57ab734b0215bf1c 63ffce2cf3630b36
+step 11: got ae81ce7e77b1466d e59eaa35ae622d7e, want 49d0750e7b0e158b fdc9aaeed7269644
+step 12: got 90ed28c1fdc76824 a520cf20ffc84f12, want 1032f2ef3d0636c3 12ca56612a4c1fba
+step 13: got 1b6db7137165cd51 52662e336fb75f76, want 4f616e1cb372c136 4ea22b1af3660a18
+14 of 14 steps wrong
+exit 1
+== ptxas -O2
+step  0: got 83360c8c3167fa23 7d49bf6b24b0c5ec, want 8b5868123167fa23 7d49bf6b24b0c5ec
+step  1: got dbd67392d3122496 4657599a7bbdaa6a, want fbd30bef8cdaf685 565f33273835ce1c
+step  2: got cacc3c52e8583bde ab44cac9a240b190, want 7ce753dea4bf87f1 e9c84c0ea81effe6
+step  3: got 742eebe60f086498 75a3a74d521a3656, want 084dceeec2a89616 208da5a54507d626
+step  4: got 81844c20e39d26c5 331b80e90f036736, want 5dd0b99ced66ed80 efcc1e61ab64d520
+step  5: got 96b7566b4ec75c10 9315de9cdf41379a, want 0a444b0c28b595cb ca22830f80d2ca28
+step  6: got 034c0ba73aee1572 c4b4c0624a17b1b6, want d5b5ecd381c8883c 3f728a23a75cf26e
+step  7: got c280bfa3c30366eb d3cdb49e9558d38e, want 5ab3e0f37b4155fc 4e7324646f5b22ba
+step  8: got 784cdf04819e7af8 9d3530fb4e0c702c, want b785bc875fbe0b52 25007549c9cbd4fa
+step  9: got ea4c48d5d2fd190d b3df0e5ae83ab16e, want 0143bebc59f4fb11 f00dc8db88049ab2
+step 10: got 9445cf7ad0ffa80c 9e09a07b07184452, want 57ab734b0215bf1c 63ffce2cf3630b36
+step 11: got 016837956184038a afdad979a1b5209e, want 49d0750e7b0e158b fdc9aaeed7269644
+step 12: got b423401f3459a9a4 a15008799dad7c76, want 1032f2ef3d0636c3 12ca56612a4c1fba
+step 13: got f50f975ca5f8f51b e40259e5bd081ef2, want 4f616e1cb372c136 4ea22b1af3660a18
+14 of 14 steps wrong
+exit 1
+== ptxas -O1
+0 of 14 steps wrong
+exit 0
+== ptxas -O0
+0 of 14 steps wrong
+exit 0
+== PTX only, JIT-compiled by the driver
+step  0: got 83162ecc3167fa23 7d49bf6b24b0c5ec, want 8b5868123167fa23 7d49bf6b24b0c5ec
+step  1: got 2b702265b0167d77 5b37c0c1cd19ca8e, want fbd30bef8cdaf685 565f33273835ce1c
+step  2: got 77ea50b2fb2b1295 4161c3c969d48b8c, want 7ce753dea4bf87f1 e9c84c0ea81effe6
+step  3: got 092bb566b72809e0 9503e5c19620a032, want 084dceeec2a89616 208da5a54507d626
+step  4: got 9001c79349f1f123 3f2fb149ca468258, want 5dd0b99ced66ed80 efcc1e61ab64d520
+step  5: got f5aa5bb74d12f0bc c5a4eb96ef381de6, want 0a444b0c28b595cb ca22830f80d2ca28
+step  6: got 3909841dd7e4a278 67b2a69875e2a208, want d5b5ecd381c8883c 3f728a23a75cf26e
+step  7: got 06c3622b4544290e 61f510b022cca91c, want 5ab3e0f37b4155fc 4e7324646f5b22ba
+step  8: got 8d1f5e3919b2ade8 5d127452c69aec9e, want b785bc875fbe0b52 25007549c9cbd4fa
+step  9: got ae329a314d6b0e54 e8e2d103fd003a2c, want 0143bebc59f4fb11 f00dc8db88049ab2
+step 10: got 3bf70263b4d139bf 050b48e26e80a5ba, want 57ab734b0215bf1c 63ffce2cf3630b36
+step 11: got 7e38db9c97ffa65e 67cec3312901a3b4, want 49d0750e7b0e158b fdc9aaeed7269644
+step 12: got 5713f03328738b9b b91437cbbc7d180a, want 1032f2ef3d0636c3 12ca56612a4c1fba
+step 13: got 5853eed85618a170 1f39cb22105d0986, want 4f616e1cb372c136 4ea22b1af3660a18
+14 of 14 steps wrong
+exit 1
+exit=0
