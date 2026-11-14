@@ -1,3 +1,15 @@
+# Replay CI launcher failure preserved; corrected guard02 source ready
+
+Source6c9c251f new22ndCI43629182513/job132551752640FAILS beforeinitialguards/native because cp "$0" aftercdrepo misresolves relativeworkflowargv0. Actual12665d preservesWHOLE63222charlog/44015BZIP14127109757/everymember; this is alauncherdefect, no mathematicaltestoutcome. Originalcheckpoint43629182451/job132551752491/artifact14127560593 succeeded at6c, but no localnativeexecutionusedit. [pcc:unverified]
+
+Correction748f1d usesabsolute$ci/check.sh; focusedsame relativepath/cd/copy reproducer1before/0after/exactsourcebytes. Versionreference02 pins976inputs, preservesoriginal975-rowreference01 anditsdigest, changesonlydriverhash/addspriorrefdigest; original929/prior21/mathmatrix/native900s2GiB/build120s/fixturebytes unchanged. Shell/actionlint/reference02guard0. Correctedfullfreshphysical/own22CI NOTRUN. [pcc:unverified]
+
+Immediate next normalcommit/pushfix, get exactclean-source originalcheckpoint transport/wholeartifact/sourceResume/toolreceipt/localgate0, thenfreshphysical975+priorref976input replay fromnewconsumerhead andoriginal3d49producer withgenuinecanonicalfixtures. Preserveevery actualphase/exit/tee/binary/wholepacket/olddual101/wholeomission101/Lean/localbinding result. Followfirstnewhead22CI/logs/artifacts andfixactualfailures withoutwaivers orfastpoll. Afterstrictreplay, newprospectiveobserver-bookkeepingprotocol/coldcensusremedy. [pcc:unverified]
+
+Genuine18settled0e8aa2/85aac5:8remote replays BEFORE3a689cf8b/exact10paths/all24853guards23linksownedbytes/holdreleased; all20roots416members/sourcebinariesfailures preserved. SIXcanonicaldocentries+links exact/originalverifier6hydrated0problems. D12/D24 negatives27fb3a/6d2c97/finiteproof68cd8c/ee88e7/inspected14b605+a1ee6b unchanged. Futurelarge dataNEW19. Root/main/globalgeometry/completeJacobianmap/benchmarkadmission/matchedrefs/vault/KB constraints remain; no paidlaunch/waiver/calibratedadvantage/novelty. Continueunblockedqueue. [pcc:unverified]
+
+---
+
 # Genuine18 released; additive22nd strict preflight replay source ready
 
 Actual0e8aa2/consumer85aac5:43627710330/job132547213547SUCCESS/EIGHTremoteobjects replayed BEFORE3a689cf8b/directc350/EXACT10paths; ninth134690BmemberindexexactGitblob. All24853inputs/all24445priorkeys/23links/ownedbytes preserved, originalfetch-FF-artifact-wiring0/HOLD18RELEASED. All20wholeclosedroots416members/allactualsource-binaries-failures/oldB+thirdedge/model6fixtures-stdoutobjects genuinelypublished. SIXcanonicaldocentrydicts/SIXtransparentrelative links exact; originalverifier afterstaging reports6entries6hydrated0notpulled0problems. Rootsettled4b0871aa/af600e normalpublished; firstcachedwhitespace2 rawpushlog classification failure eef743 retained/exactdataonly. Futurelarge dataNEW19. [pcc:unverified]

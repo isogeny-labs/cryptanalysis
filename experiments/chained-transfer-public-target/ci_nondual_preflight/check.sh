@@ -16,10 +16,10 @@ study=experiments/chained-transfer-public-target
 mkdir "$out"
 export RUSTUP_TOOLCHAIN=1.99.1
 export CARGO_TARGET_DIR=$cache
-reference=$ci/reference-01.sha256
+reference=$ci/reference-02.sha256
 cd "$repo"
 cp "$reference" "$out/original-reference.sha256"
-cp "$0" "$out/original-command.sh"
+cp "$ci/check.sh" "$out/original-command.sh"
 phase() {
  local name=$1 expected=$2; shift 2
  set +e
