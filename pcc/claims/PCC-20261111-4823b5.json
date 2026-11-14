@@ -1,0 +1,30 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-11T12:48:33Z",
+ "id": "PCC-20261111-4823b5",
+ "kind": "statement",
+ "producer": {
+  "commit": "767c945a0a832c4f9d2827add8aefce3a16d2371",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/target-frobenius-02.txt",
+    "sha256": "e023c4f5e20b957c9043dd516426f7d6ce5b1aff6e74343c250f05f247c31fd3"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/target-frobenius-clippy-01.txt",
+    "sha256": "40f081966f051d2351c353ffe59a1d5f131dd479b29026f6493001ee8c604d25"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Target-Frobenius regression repeats both exact17/101 inventories and verifies all256 additions on geometric2-torsion plus Frobenius-equivariant completed branch images. Both targets have6-cycle/only previous-dual stable matching and source/targetFp3-fixed torsion16/4; kernel4/image4. Targeted test and strict Clippy pass. Standard branch-pair geometry remains a written input; unsigned producer-run evidence,not general nonbacktracking impossibility or computational advantage."
+}

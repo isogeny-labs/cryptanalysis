@@ -1,0 +1,44 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-11T14:13:31Z",
+ "id": "PCC-20261111-45f608",
+ "kind": "statement",
+ "producer": {
+  "commit": "29c4d720660297b30eff74ba735160b99b0d18da",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/elliptic-seven-02.txt",
+    "sha256": "3faab452051e7e53adcef47ab06a7a7b8d86575c62f6e05424fa035d7d611ea2"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/elliptic-seven-03.txt",
+    "sha256": "d22b7b534ed051b34629c43a8731cc23fa7eecafc7d9c703e40cdab6867407bc"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/independent-seven-ci-02.txt",
+    "sha256": "33753fa600070ec1e865f90b736147277da9dba6dfaa5c1290d256d046eea84d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/elliptic-seven-clippy-05.txt",
+    "sha256": "6497852cab2bc1ebc0a7f514aaa92f939e417b385c209d45d7414f3ccfbe8002"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Corrected degree7 equivalence controls pass: E109sourcej12 has targetj91/87;E113sourcej58 has targetj92/89. All source-target and cross-target pairs have distinct j and explicit coefficient-scale isomorphism checks reject;independent Montgomery verifier also checks distinct j/coefficient equations and full prior kernel/map certificates. Development attempt02 had mislabeled unchecked iso_exists_over scale candidates as isomorphism verdicts;its raw receipt is preserved and superseded by03 plus independent02. Engine arithmetic unchanged;no wrong equivalence accepted or frozen claim rewritten. Strict Clippy passes;still no Jacobian7-map or computational benefit."
+}

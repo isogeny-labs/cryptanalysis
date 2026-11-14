@@ -21,7 +21,11 @@ typedef __int128 ca_i128;
 /* Diagnostic builds only (-DCA_GLV_FIELD_COUNT): deterministic counts of the
  * field multiplications, squarings and inversions (and the division steps of
  * the inversions' extended Euclid), booked by the phase glv_rho_solve is in.
- * Single-threaded use; the arithmetic itself is unchanged. */
+ * Single-threaded use; the arithmetic itself is unchanged.  CA_FC_EUCLID
+ * counts extended-Euclid division steps: since 2026-11-10 ca_invmod uses a
+ * division-free binary xgcd for odd moduli in normal builds, and these
+ * diagnostic builds keep the Euclid path so the counter's meaning and counts
+ * are unchanged (the inverse itself is the same either way). */
 #    define CA_FC_PHASES 6
 enum { CA_FC_OUTSIDE, CA_FC_SETUP, CA_FC_BATCH, CA_FC_POST, CA_FC_ESCAPE, CA_FC_RESTART };
 enum { CA_FC_MUL, CA_FC_SQR, CA_FC_INV, CA_FC_EUCLID, CA_FC_KINDS };
