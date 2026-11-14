@@ -122,15 +122,26 @@ static void rel_free(rel_list *l)
 /* Empty the list and keep its buffers (a worker's per-unit list). */
 static void rel_clear(rel_list *l) { l->n = 0; }
 
+/* Bounds on the list, checked before every allocation: a resumed journal or
+ * snapshot supplies these counts, so they are file data, not trusted sizes. */
+#define REL_MAX_ROWS    (UINT32_C(1) << 28)
+#define REL_MAX_ENTRIES (UINT32_C(1) << 31)
+
 /* Room for cap relations (the off/rhs arrays).  realloc: glibc moves a large
  * block with mremap, so growing the list never holds two copies of it. */
+
 static int rel_grow_rows(rel_list *l, uint32_t cap)
 {
     if (cap <= l->cap) return 0;
+    if (cap > REL_MAX_ROWS) return -1;
+    /* Bounded above (REL_MAX_*); the analyzer does not carry that bound through the multiply. */
+    // NOLINTNEXTLINE(clang-analyzer-optin.taint.TaintedAlloc)
     uint32_t *no = realloc(l->off, ((size_t)cap + 1) * sizeof(uint32_t));
     if (!no) return -1;
     if (!l->off) no[0] = 0;
     l->off = no;
+    /* Bounded above (REL_MAX_*); the analyzer does not carry that bound through the multiply. */
+    // NOLINTNEXTLINE(clang-analyzer-optin.taint.TaintedAlloc)
     uint64_t *nr = realloc(l->rhs, (size_t)cap * sizeof(uint64_t));
     if (!nr) return -1;
     l->rhs = nr;
@@ -141,9 +152,14 @@ static int rel_grow_rows(rel_list *l, uint32_t cap)
 static int rel_grow_entries(rel_list *l, uint32_t ecap)
 {
     if (ecap <= l->ecap) return 0;
+    if (ecap > REL_MAX_ENTRIES) return -1;
+    /* Bounded above (REL_MAX_*); the analyzer does not carry that bound through the multiply. */
+    // NOLINTNEXTLINE(clang-analyzer-optin.taint.TaintedAlloc)
     uint32_t *nc = realloc(l->col, (size_t)ecap * sizeof(uint32_t));
     if (!nc) return -1;
     l->col = nc;
+    /* Bounded above (REL_MAX_*); the analyzer does not carry that bound through the multiply. */
+    // NOLINTNEXTLINE(clang-analyzer-optin.taint.TaintedAlloc)
     int32_t *nv = realloc(l->val, (size_t)ecap * sizeof(int32_t));
     if (!nv) return -1;
     l->val = nv;
