@@ -279,6 +279,12 @@ static int rexp_v2_to_v1(const char *path)
         free(in);
         return 0;
     }
+    /* A v2 record is at least 12 bytes, which bounds the count by the file. */
+    if (h.count > (len - sizeof(h)) / 12) {
+        free(in);
+        return 0;
+    }
+    // NOLINTNEXTLINE(clang-analyzer-optin.taint.TaintedAlloc): bounded by the file length above
     v1_relation *rels = calloc(h.count ? h.count : 1, sizeof(*rels));
     int ok = rels && v2_to_v1(in + sizeof(h), len - sizeof(h), h.count, rels) == len - sizeof(h);
     if (ok) {
