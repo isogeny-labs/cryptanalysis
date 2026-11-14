@@ -1,0 +1,124 @@
+name: Actual arithmetic coverage of norm-assisted sampling
+on:
+  pull_request:
+    paths:
+      - 'experiments/chained-transfer-public-target/arithmetic-audit/**'
+      - 'experiments/chained-transfer-public-target/ARITHMETIC_*.md'
+      - '.github/workflows/chained-transfer-arithmetic-audit.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'experiments/chained-transfer-public-target/arithmetic-audit/**'
+      - 'experiments/chained-transfer-public-target/ARITHMETIC_*.md'
+      - '.github/workflows/chained-transfer-arithmetic-audit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  arithmetic-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      RUSTUP_TOOLCHAIN: 1.99.1
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          path: audit-source
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            experiments/chained-transfer-public-target/arithmetic-audit
+            experiments/chained-transfer-public-target/ARITHMETIC_AUDIT_PROTOCOL_01.md
+            experiments/chained-transfer-public-target/ARITHMETIC_AUDIT_PROTOCOL_02.md
+            experiments/chained-transfer-public-target/ARITHMETIC_REPLAY_STORAGE_PROTOCOL_01.md
+            experiments/chained-transfer-public-target/ARITHMETIC_REPLAY_COUNTER_BINDING_01.md
+            .github/workflows/chained-transfer-arithmetic-audit.yml
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          repository: isogeny-labs/cryptanalysis
+          ref: 21afb40f425f89774fe3eaf77695f5f30342a186
+          persist-credentials: false
+          path: cryptanalysis-original
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            experiments/chained-transfer-public-target
+            tools
+            pcc
+            scripts
+            .github/workflows
+            .artifacts/config.json
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          repository: isogeny-labs/crypto
+          ref: 3d49af7f3d0a28e76b79e4825c9d2324e85853d2
+          persist-credentials: false
+          path: crypto-original
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            research/chained_jacobian_transfers_20261110/genus3-prime-descent
+            research/chained_jacobian_transfers_20261110/evidence/genus3-primary-01/cases.json
+            research/chained_jacobian_transfers_20261110/evidence/genus3-cli-fixtures-01
+            research/chained_jacobian_transfers_20261110/evidence/genus3-ramification-panel-01/all-historical-cases.json
+            research/chained_jacobian_transfers_20261110/evidence/genus3-lean-bindings-01/claims.json
+            research/chained_jacobian_transfers_20261110/G3_DESCENT_PROTOCOL.md
+            research/chained_jacobian_transfers_20261110/G3_DESCENT_DERIVATION.md
+            research/chained_jacobian_transfers_20261110/G3_MODEL_TRANSPORT_ADDENDUM.md
+            research/chained_jacobian_transfers_20261110/G3_RAMIFICATION_COVERAGE_ADDENDUM.md
+            research/chained_jacobian_transfers_20261110/G3_PROOF_MAP.md
+            research/quartic_n4_la_20261021/common.rs
+            research/quartic_n4_la_20261021/ghs.rs
+            research/quartic_n4_la_20261021/ic.rs
+            research/quartic_n4_la_20261021/solver.rs
+            isogeny_algos
+            src/cryptanalysis/diem_quartic.rs
+            src/cryptanalysis/plane_quartic_pic.rs
+            src/cryptanalysis/smith_kernel_coverage.rs
+            src/hash/sha256.rs
+            tools/lean
+            tools/pcc
+            pcc/keyring.json
+            pcc/claims
+            .github/workflows/genus3-prime-descent.yml
+      - name: Checkout immutable original artifact tool and policy
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          repository: isogeny-labs/cryptanalysis
+          ref: 3de8c174cf65e6b34bf8579d97b817b8f5dc2ded
+          persist-credentials: false
+          path: artifact-tools
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            tools/artifacts/artifacts.py
+            .artifacts/config.json
+      - name: Hydrate the complete native fixture with the pinned original tool
+        working-directory: cryptanalysis-original
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+        run: |
+          set -euo pipefail
+          cmp ../artifact-tools/.artifacts/config.json .artifacts/config.json
+          cmp ../artifact-tools/tools/artifacts/artifacts.py tools/artifacts/artifacts.py
+          if ! command -v aws >/dev/null; then
+            python3 -m venv "$RUNNER_TEMP/odd-product-artifacts-awscli"
+            "$RUNNER_TEMP/odd-product-artifacts-awscli/bin/python" -m pip install --disable-pip-version-check awscli==1.46.2
+            export ARTIFACTS_AWS="$RUNNER_TEMP/odd-product-artifacts-awscli/bin/aws"
+          fi
+          python3 ../artifact-tools/tools/artifacts/artifacts.py pull --jobs 4 experiments/chained-transfer-public-target/evidence/odd-product-maps-acceptance-02/all-native-records.json.xz
+      - name: Install the pinned Rust toolchain
+        run: rustup toolchain install 1.99.1 --profile minimal --component rustfmt
+      - name: Replay the complete isolated arithmetic audit
+        run: |
+          set -euo pipefail
+          timeout 2400 bash audit-source/experiments/chained-transfer-public-target/arithmetic-audit/check.sh cryptanalysis-original crypto-original "$RUNNER_TEMP/n4-arithmetic-output"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: arithmetic-audit-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            ${{ runner.temp }}/n4-arithmetic-output
+            ${{ runner.temp }}/n4-arithmetic-output-layout
+            ${{ runner.temp }}/n4-arithmetic-output-canaries
+          if-no-files-found: ignore

@@ -1,0 +1,163 @@
+warning: unused import: `crate::ghs::*`
+ --> /workspace/scratch/ct72-arithmetic-native-layout-03/derived-layout/cryptanalysis/experiments/chained-transfer-public-target/native/src/../original/ic.rs:6:5
+  |
+6 | use crate::ghs::*;
+  |     ^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused variable: `rng`
+   --> /workspace/scratch/ct72-arithmetic-native-layout-03/derived-layout/cryptanalysis/experiments/chained-transfer-public-target/native/src/../original/ic.rs:283:46
+    |
+283 | pub fn find_relations(cv: &Curve, fb: &[P3], rng: &mut Rng) -> RelOut {
+    |                                              ^^^ help: if this is intentional, prefix it with an underscore: `_rng`
+    |
+    = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: variable does not need to be mutable
+   --> /workspace/scratch/ct72-arithmetic-native-layout-03/derived-layout/cryptanalysis/experiments/chained-transfer-public-target/native/src/../original/ic.rs:986:17
+    |
+986 |             let mut add_f = |fp: &mut Vec<(u32, u8)>, k: u32| {
+    |                 ----^^^^^
+    |                 |
+    |                 help: remove this `mut`
+    |
+    = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused variable: `c2`
+   --> /workspace/scratch/ct72-arithmetic-native-layout-03/derived-layout/cryptanalysis/experiments/chained-transfer-public-target/native/src/../original/ic.rs:938:17
+    |
+938 |             let c2 = f.mul(f.add(s_, t_), inv2);
+    |                 ^^ help: if this is intentional, prefix it with an underscore: `_c2`
+
+warning: variable does not need to be mutable
+   --> /workspace/scratch/ct72-arithmetic-native-layout-03/derived-layout/cryptanalysis/experiments/chained-transfer-public-target/native/src/../derived/public_solver.rs:495:9
+    |
+495 |     let mut picks: Vec<EP> = Vec::new();
+    |         ----^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: unused variable: `picks`
+   --> /workspace/scratch/ct72-arithmetic-native-layout-03/derived-layout/cryptanalysis/experiments/chained-transfer-public-target/native/src/../derived/public_solver.rs:495:9
+    |
+495 |     let mut picks: Vec<EP> = Vec::new();
+    |         ^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_picks`
+
+warning: value assigned to `mark` is never read
+   --> /workspace/scratch/ct72-arithmetic-native-layout-03/derived-layout/cryptanalysis/experiments/chained-transfer-public-target/native/src/../derived/public_solver.rs:104:13
+    |
+104 |             mark = (now, std::time::Instant::now());
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+577 |     phase!("verify");
+    |     ---------------- in this macro invocation
+    |
+    = help: maybe it is overwritten before being read?
+    = note: `#[warn(unused_assignments)]` (part of `#[warn(unused)]`) on by default
+    = note: this warning originates in the macro `phase` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: `chained-n4-public-target` (lib) generated 7 warnings (run `cargo fix --lib -p chained-n4-public-target` to apply 6 suggestions)
+warning: unused imports: `BTreeMap`, `HashMap`, and `VecDeque`
+  --> /workspace/scratch/ct72-arithmetic-native-layout-03/derived-layout/cryptanalysis/experiments/chained-transfer-public-target/v2/src/norm.rs:11:24
+   |
+11 | use std::collections::{BTreeMap, BTreeSet, HashMap, VecDeque};
+   |                        ^^^^^^^^            ^^^^^^^  ^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `ghs::EP`
+ --> /workspace/scratch/ct72-arithmetic-native-layout-03/derived-layout/cryptanalysis/experiments/chained-transfer-public-target/odd-source/src/lib.rs:4:32
+  |
+4 | use chained_n4_public_target::{ghs::EP, CheckedInstance};
+  |                                ^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `Rng`
+ --> /workspace/scratch/ct72-arithmetic-native-layout-03/derived-layout/cryptanalysis/experiments/chained-transfer-public-target/odd-source/src/lib.rs:7:20
+  |
+7 |     field::{Field, Rng},
+  |                    ^^^
+
+warning: `chained-n4-completed-v2` (lib) generated 1 warning (run `cargo fix --lib -p chained-n4-completed-v2` to apply 1 suggestion)
+warning: `chained-n4-odd-source` (lib) generated 2 warnings (run `cargo fix --lib -p chained-n4-odd-source` to apply 2 suggestions)
+warning: unused import: `back6`
+ --> /workspace/scratch/ct72-arithmetic-native-layout-03/derived-layout/cryptanalysis/experiments/chained-transfer-public-target/odd-product-maps/src/adapter.rs:6:12
+  |
+6 |     even::{back6, lift6},
+  |            ^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused imports: `BTreeMap`, `HashMap`, and `VecDeque`
+  --> /workspace/scratch/ct72-arithmetic-native-layout-03/derived-layout/cryptanalysis/experiments/chained-transfer-public-target/odd-product-maps/src/norm.rs:11:24
+   |
+11 | use std::collections::{BTreeMap, BTreeSet, HashMap, VecDeque};
+   |                        ^^^^^^^^            ^^^^^^^  ^^^^^^^^
+
+warning: unused import: `field::Field`
+  --> /workspace/scratch/ct72-arithmetic-native-layout-03/derived-layout/cryptanalysis/experiments/chained-transfer-public-target/odd-product-maps/src/chain.rs:10:5
+   |
+10 |     field::Field,
+   |     ^^^^^^^^^^^^
+
+warning: `chained-n4-odd-product-maps` (lib) generated 3 warnings (run `cargo fix --lib -p chained-n4-odd-product-maps` to apply 2 suggestions)
+warning: value assigned to `mark` is never read
+   --> /workspace/scratch/ct72-arithmetic-native-layout-03/derived-layout/cryptanalysis/experiments/chained-transfer-public-target/new-target-ic/src/../arithmetic-derived/class_solver.rs:103:13
+    |
+103 |             mark = (now, std::time::Instant::now());
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+553 |     phase!("verify");
+    |     ---------------- in this macro invocation
+    |
+    = help: maybe it is overwritten before being read?
+    = note: `#[warn(unused_assignments)]` (part of `#[warn(unused)]`) on by default
+    = note: this warning originates in the macro `phase` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: `chained-n4-new-target-ic` (lib) generated 1 warning
+warning: value assigned to `mark` is never read
+   --> src/../arithmetic-derived/class_solver.rs:103:13
+    |
+103 |             mark = (now, std::time::Instant::now());
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+553 |     phase!("verify");
+    |     ---------------- in this macro invocation
+    |
+    = help: maybe it is overwritten before being read?
+    = note: `#[warn(unused_assignments)]` (part of `#[warn(unused)]`) on by default
+    = note: this warning originates in the macro `phase` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: `chained-n4-norm-assisted-ic` (lib test) generated 1 warning
+    Finished `release` profile [optimized] target(s) in 0.02s
+     Running unittests src/lib.rs (/workspace/scratch/ct72-arithmetic-native-01-build-cache/release/deps/chained_n4_norm_assisted_ic-088d2c5cef52a3d8)
+
+running 1 test
+test tests::exact_scalar_samples_and_all_sixty_original_candidate_ic_pairs ... N4_ARITHMETIC_BUILD {"controls_sha256":"f5743b644beca323d7eb2f96c677d049ddf743ceaab842a929ea426945d436e1","literal_scalar_taps_checked_below":true,"manifest_dir":"/workspace/scratch/ct72-arithmetic-small-root-layout-03/cryptanalysis/experiments/chained-transfer-public-target/norm-assisted-ic"}
+N4_ARITHMETIC_FIELD_CONTROL {"all_results_equal":true,"full_derived_debug":"FpR { p: 223, r: 3, nz: [(0, 3)], lazy: true, frob: [[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 183, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 39, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]] }","full_reference_debug":"FpR { p: 223, r: 3, nz: [(0, 3)], lazy: true, frob: [[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 183, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 39, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]] }","inputs":70,"label":"q223-r3","modulus":[220,0,0,1],"p":223,"r":3,"reference_scope":"untouched original FpR body; instrumented Zp/fpm dependencies shared and disclosed"}
+N4_ARITHMETIC_FIELD_CONTROL {"all_results_equal":true,"full_derived_debug":"FpR { p: 223, r: 1, nz: [], lazy: true, frob: [] }","full_reference_debug":"FpR { p: 223, r: 1, nz: [], lazy: true, frob: [] }","inputs":68,"label":"q223-r1","modulus":[0,1],"p":223,"r":1,"reference_scope":"untouched original FpR body; instrumented Zp/fpm dependencies shared and disclosed"}
+N4_ARITHMETIC_FIELD_CONTROL {"all_results_equal":true,"full_derived_debug":"FpR { p: 223, r: 6, nz: [(0, 3)], lazy: true, frob: [[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 184, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 183, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 222, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 39, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]] }","full_reference_debug":"FpR { p: 223, r: 6, nz: [(0, 3)], lazy: true, frob: [[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 184, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 183, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 222, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 39, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]] }","inputs":73,"label":"q223-r6","modulus":[220,0,0,0,0,0,1],"p":223,"r":6,"reference_scope":"untouched original FpR body; instrumented Zp/fpm dependencies shared and disclosed"}
+
+thread 'tests::exact_scalar_samples_and_all_sixty_original_candidate_ic_pairs' (330408) panicked at /workspace/scratch/ct72-arithmetic-native-layout-03/derived-layout/crypto/isogeny_algos/src/field.rs:396:9:
+assertion failed: p > 3 && p < (1u64 << 62)
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+thread 'tests::exact_scalar_samples_and_all_sixty_original_candidate_ic_pairs' (330408) panicked at /workspace/scratch/ct72-arithmetic-native-layout-03/derived-layout/crypto/isogeny_algos/src/field.rs:396:9:
+assertion failed: p > 3 && p < (1u64 << 62)
+N4_ARITHMETIC_CONSTRUCTOR_REJECTION {"derived_rejected":true,"not_an_impossibility_claim":true,"original_rejected":true,"p":9223372036854775783,"prospective_addendum":"cda454/584ba997 BEFORE this code and native execution","r":2,"reason_from_original_source":"Zp::new requires p<2^62"}
+N4_ARITHMETIC_FIELD_CONTROL {"all_results_equal":true,"full_derived_debug":"FpR { p: 4611686018427387847, r: 3, nz: [(0, 2)], lazy: false, frob: [[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 654667280544682955, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 3957018737882704891, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]] }","full_reference_debug":"FpR { p: 4611686018427387847, r: 3, nz: [(0, 2)], lazy: false, frob: [[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 654667280544682955, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 3957018737882704891, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]] }","inputs":70,"label":"q62-r3-nonlazy","modulus":[4611686018427387845,0,0,1],"p":4611686018427387847,"r":3,"reference_scope":"untouched original FpR body; instrumented Zp/fpm dependencies shared and disclosed"}
+
+thread 'tests::exact_scalar_samples_and_all_sixty_original_candidate_ic_pairs' (330408) panicked at src/../../../../../arithmetic-controls.rs:390:5:
+assertion failed: curve.counter().mul > 0
+FAILED
+
+failures:
+
+failures:
+    tests::exact_scalar_samples_and_all_sixty_original_candidate_ic_pairs
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+error: test failed, to rerun pass `--lib`

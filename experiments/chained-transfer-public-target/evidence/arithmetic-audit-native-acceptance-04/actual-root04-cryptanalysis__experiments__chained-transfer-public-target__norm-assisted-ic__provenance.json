@@ -1,0 +1,20 @@
+{
+  "published_prospective": "4a6745/b57b1024 NORMALpublication0 BEFOREcode",
+  "original_source": "39b932dddb9d655d7d35b058aa796af5c6941b8c",
+  "original_path": "new-target-ic/derived/class_solver.rs",
+  "original_sha256": "9dcfe8b3e14ed446d595675415d73d74f8f04654a91e79858c96011a21e4de24",
+  "derivative_sha256": "533d330843c41336c3263881d5ba4e42447a5efba6be73444ce1eb8b42fc1626",
+  "literal_substitutions": [
+    [
+      "crate::TargetContext<'_>",
+      "crate::SamplerContext<'_>"
+    ],
+    [
+      "let r0 = pc(&cv, || cv.mul_scalar(generator, r as u128));",
+      "let r0 = inst.sample(r).expect(\"prepared exact-generator sampler\");"
+    ]
+  ],
+  "all_other_bytes_unchanged": true,
+  "final_original_Picard_verification_unchanged": true,
+  "no_source_DLP_or_witness": true
+}

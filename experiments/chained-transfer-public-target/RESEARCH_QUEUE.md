@@ -1,3 +1,75 @@
+# Arithmetic audit source ready — 2026-11-14T05:55:12.824113+00:00
+
+## Goal
+Continue DLP-preserving transfers, chained Jacobian maps, prime-field descent and admitted computational comparisons; advance after each result. [pcc:unverified]
+
+## Lead / hypothesis
+Norm-assisted sampling is exact at the fixed native panel but trades MORE source products for FEWER inversions. All recorded costs remain unpriced. Complete source-operation census and strongest calibrated cold/online references decide whether this becomes an actual advantage. [pcc:unverified]
+
+## Spec
+ARITHMETIC_AUDIT_PROTOCOL_01/c20aaf/2c beforeinitialtaps;02/cda454/584 beforeseparatelycompiledscalarbodies;REPLAY_STORAGE/da6dab before18thworkflow/canonicalstorage;COUNTER_BINDING beforefullgoldenfixture/callerchanges afterhold10release. Newcurrentreference02 has21sources+self22. Historicalreference01/19inputs isunchanged. Original785inputs andall17oldworkflows remain unchanged. New14orderedpositivephases0/0/ONEunfilteredunit/all86wholeJSONONLYexistingwalls/whole7113-rowcensus+metadata EXACT/NOMASKS/actualomittedhook0+101 are required. [pcc:unverified]
+
+## State
+Native8d0c27:actualcompile0/ONEunfiltered1pass/all225scalarpairs1125triples60ICpairs120reports/all15publiccases45acceptedcorrectperarm/ALL15FB30failedpairs retained including10wrongtentatives rejectedbyORIGINALPicard+source. Counterunit0/281FpRreferenceinputs/lazy-nonlazy-degree1/6/privatePicard/resetcontrols; actualcopiedsourceomissionpositive0negative101 SAMEalgebra11vs2products. All785original/backendderivative/19smallrootguards0. CorrectedRustcomparisonALL86exact; native04originalcaller101 isONLYoldcomparator'sinvalidwallpresence assumption; correctedpost0withoutnative rerun. Vectors8c2406 conserve7113source rows. Report03cfb7 THREEfinal92135BPDFpagesALLviewed/SHAeb814265...; partial60Leanbindings unchanged,unsigned. [pcc:unverified]
+
+Whole-census58d3bb actualnativeprocess0/count+1reject101/schema-change101; FULL7113rows+metadata,NO masks. Whole75764Bcapture+completeindex preserved; actualbinarieskept. GoldenONEcomplete29960BXZ isderivedfixture,notreplacementfororiginalWHOLE71856BnativeXZ. [pcc:unverified]
+
+ACTUAL92a00d/420904:43560832504/job132343907574/EIGHTremote replays BEFOREa0c2ca10e/direct0a531f1d/exact10paths/14wholeobjects8S3+6Git/guard10ALL5263+ownedbytes+FIVElinktypes/hold10released. ACTUAL1f4cbc/877d0e:43562661682/job132349568879/ONEremote replay BEFORE14fae863c/direct245ee752/exact3paths/WHOLE75764Bcontrolarchive/guard11ALL5268+ownedbytes+SIXlinktypes/hold11released. Originalartifactlocalverify0/PCCdata2notcovered/no perprooffailures/new21inputs0. FutureartifactFFNEWguard12. Whole221pendingcorefiles+base584+patch/PCCledger/resume/old19+self20/reportnativealiases snapshot225members isgenuine; laterfullcensus-bindingdelta is inthissourcecheckpoint. AllcontrolplaneAPI/loglosslessXZ/DIRECT. [pcc:unverified]
+
+## Next steps
+Commit/publishthissource bynormalGit. Then freshphysical Git-blob original785+purehookderivative/new21+self22/freshoutsidecache: PATH=/home/agent/.cargo/bin:$PATH bash experiments/chained-transfer-public-target/arithmetic-audit/check.sh /workspace/cryptanalysis /workspace/crypto /workspace/scratch/ct72-arithmetic-full-01 . Build900s/native900s2GiB/aux120s/outer2400s. Auditexactsource18automaticworkflows; no manualredispatchofsettledscience. Preservefailures/goldenmismatches withoutmasks. Then completecoldonlinecalibration/strongestfixedbase-IC-rho-precomprefs/admission oradvanceunblockedglobalbeta/primefielddescent work. [pcc:unverified]
+
+## Runs in flight
+NONE local scientific. Native04/whole-censuscontrols/canaries/report allterminal. Raw /workspace/scratch/ct72-arithmetic-native-04 andnative-layout03/smallroot04; actualsource/binaries/failures nowgenuinewholecaptures. RootHEAD14fae863... withpendingfinalpublicationmetadata. ConsumerHEAD584 beforethiscommit. Encryptedvault8edec422 untouched. Onlyclosedderivedcachesreclaimed; originalwarmct57 and263MBrootbinarykept; everyoriginalsource/rawpathkept. [pcc:unverified]
+
+## Stop and success conditions
+Fullsourcechecks/14phasepairs/whole86+7113census/actualnegativecontrols mustpass beforeauditedscope completion. This isunitdevelopment,notbenchmarkadmission. Livebudget/capacityunknown/matchingimagebindingbothrepos/completeunpricedhashallocationBig/RNG-integerwork/independentcoldarms/strongestrefs remainbeforegain. Root124/clock101/mainledger/signing/reviews/conflict/actualgeometry-logextension/globalbeta/vaultKB gapsremain. Continueaftereachrung; preserveallnegatives. [pcc:unverified]
+
+---
+
+# Arithmetic audit source ready — 2026-11-14T05:47:18.398968+00:00
+
+## Goal
+Continue DLP-preserving transfers, chained Jacobian maps, prime-field descent and admitted computational comparisons; advance after each result. [pcc:unverified]
+
+## Lead / hypothesis
+Norm-assisted sampling is exact at the fixed native panel but trades MORE source products for FEWER inversions. All recorded costs remain unpriced. Complete source-operation census and strongest calibrated cold/online references decide whether this becomes an actual advantage. [pcc:unverified]
+
+## Spec
+ARITHMETIC_AUDIT_PROTOCOL_01/c20aaf/2c beforeinitialtaps;02/cda454/584 beforeseparatelycompiledscalarbodies;REPLAY_STORAGE/da6dab before18thworkflow/canonicalstorage;COUNTER_BINDING beforefullgoldenfixture/callerchanges afterhold10release. Newcurrentreference02 has21sources+self22. Historicalreference01/19inputs isunchanged. Original785inputs andall17oldworkflows remain unchanged. New14orderedpositivephases0/0/ONEunfilteredunit/all86wholeJSONONLYexistingwalls/whole7113-rowcensus+metadata EXACT/NOMASKS/actualomittedhook0+101 are required. [pcc:unverified]
+
+## State
+Native8d0c27:actualcompile0/ONEunfiltered1pass/all225scalarpairs1125triples60ICpairs120reports/all15publiccases45acceptedcorrectperarm/ALL15FB30failedpairs retained including10wrongtentatives rejectedbyORIGINALPicard+source. Counterunit0/281FpRreferenceinputs/lazy-nonlazy-degree1/6/privatePicard/resetcontrols; actualcopiedsourceomissionpositive0negative101 SAMEalgebra11vs2products. All785original/backendderivative/19smallrootguards0. CorrectedRustcomparisonALL86exact; native04originalcaller101 isONLYoldcomparator'sinvalidwallpresence assumption; correctedpost0withoutnative rerun. Vectors8c2406 conserve7113source rows. Report03cfb7 THREEfinal92135BPDFpagesALLviewed/SHAeb814265...; partial60Leanbindings unchanged,unsigned. [pcc:unverified]
+
+Whole-census58d3bb actualnativeprocess0/count+1reject101/schema-change101; FULL7113rows+metadata,NO masks. Whole75764Bcapture+completeindex preserved; actualbinarieskept. GoldenONEcomplete29960BXZ isderivedfixture,notreplacementfororiginalWHOLE71856BnativeXZ. [pcc:unverified]
+
+ACTUAL92a00d/420904:43560832504/job132343907574/EIGHTremote replays BEFOREa0c2ca10e/direct0a531f1d/exact10paths/14wholeobjects8S3+6Git/guard10ALL5263+ownedbytes+FIVElinktypes/hold10released. ACTUAL1f4cbc/877d0e:43562661682/job132349568879/ONEremote replay BEFORE14fae863c/direct245ee752/exact3paths/WHOLE75764Bcontrolarchive/guard11ALL5268+ownedbytes+SIXlinktypes/hold11released. Originalartifactlocalverify0/PCCdata2notcovered/no perprooffailures/new21inputs0. FutureartifactFFNEWguard12. Whole221pendingcorefiles+base584+patch/PCCledger/resume/old19+self20/reportnativealiases snapshot225members isgenuine; laterfullcensus-bindingdelta is inthissourcecheckpoint. AllcontrolplaneAPI/loglosslessXZ/DIRECT. [pcc:unverified]
+
+## Next steps
+Commit/publishthissource bynormalGit. Then freshphysical Git-blob original785+purehookderivative/new21+self22/freshoutsidecache: PATH=/home/agent/.cargo/bin:$PATH bash experiments/chained-transfer-public-target/arithmetic-audit/check.sh /workspace/cryptanalysis /workspace/crypto /workspace/scratch/ct72-arithmetic-full-01 . Build900s/native900s2GiB/aux120s/outer2400s. Auditexactsource18automaticworkflows; no manualredispatchofsettledscience. Preservefailures/goldenmismatches withoutmasks. Then completecoldonlinecalibration/strongestfixedbase-IC-rho-precomprefs/admission oradvanceunblockedglobalbeta/primefielddescent work. [pcc:unverified]
+
+## Runs in flight
+NONE local scientific. Native04/whole-censuscontrols/canaries/report allterminal. Raw /workspace/scratch/ct72-arithmetic-native-04 andnative-layout03/smallroot04; actualsource/binaries/failures nowgenuinewholecaptures. RootHEAD14fae863... withpendingfinalpublicationmetadata. ConsumerHEAD584 beforethiscommit. Encryptedvault8edec422 untouched. Onlyclosedderivedcachesreclaimed; originalwarmct57 and263MBrootbinarykept; everyoriginalsource/rawpathkept. [pcc:unverified]
+
+## Stop and success conditions
+Fullsourcechecks/14phasepairs/whole86+7113census/actualnegativecontrols mustpass beforeauditedscope completion. This isunitdevelopment,notbenchmarkadmission. Livebudget/capacityunknown/matchingimagebindingbothrepos/completeunpricedhashallocationBig/RNG-integerwork/independentcoldarms/strongestrefs remainbeforegain. Root124/clock101/mainledger/signing/reviews/conflict/actualgeometry-logextension/globalbeta/vaultKB gapsremain. Continueaftereachrung; preserveallnegatives. [pcc:unverified]
+
+---
+
+# Arithmetic audit complete at native scope — 2026-11-14T05:01:05.935913+00:00
+
+Native8d0c27:actual04compile0/ONEunfiltered1pass0fail0ignored0filtered; ALL225scalarpairs1125triples60ICpairs120reports/45acceptedcorrecteach/all15publiccases/ALL15FB30failures retained. PostRustcomparator0 matchesALL86records ONLYfrozenATTEMPTwalls/allcountersclassesfailurescallstentativeanswers exact. ALL785original/backendderivative/19freshsmallrootguards0; frozenclassfiles andstrip-onlytwo declaredtapinsertions plusoldtwo-substitutionchecks pass. Counterunit0/actualforeignthreadrejection;281FpRreferenceinputs/degree1,3,6/nonlazy and63bitconstructorreject/privatePicard/resetseparation. Actualcopiedsourcecanary03 positive0/negative101/SAMEcorrectalgebra/11vs2sourceproducts. Allunsigned. [pcc:unverified]
+
+Vectors8c2406 conserveall7113rows. EACH75-scalar candidatepanel usesmoreproducts andfewerbaseinverses; rawper-backendvectors remainunpriced,notstagewin/S/computationaladvantage. Reportpcc/claims/PCC-20261114-03cfb7.json:THREEfinal92135-bytePDFpagesALLviewed/editableflow+quantitativeplot/fullidentities. Canonicaldocsreport+native71856B-XZ have transparentrelativeGitlinks; original8d0c27nativeproofSHA unchanged. Wholelargeobjects awaitgenuinepublisher NEWguard10. [pcc:unverified]
+
+Prospectivec20aaf/2c beforetaps,cda454/584 beforecompiledscalarcopies,da6dab before18thworkflow/canonicalstorage. Newread-onlyarithmeticworkflow/check.sh underassembly:19newsourceinputs+self20/785originals/14orderedpositivephases0/0required/freshoutsidecache/900build900native2GiB120aux/40mincommand45minjob. Prior17workflows/originalengines/verifiers unchanged; existing60conditionalbindingspartialunsigned. CodeHEAD584ba997; auditcode/results notyetcommitted; root2b8a1e55 metadata normallypublished. [pcc:unverified]
+
+Next:wholeclosed785full/17CI/exact21af nonsecretcheckpoint transport plusALLarithmeticattempts/source-layouts/binaries/callerfailures/reportdrafts/pending-sourcecheckpoint; wholearchives+completeindices andcanonicalPDF/nativeXZ throughUNCHANGEDgenuinepublisher. FreezeNEWguard10beforebotFF/holdallscience+ownedbytes+FIVEcurrentreport/native-linktypes. Thencommitpublishsource/strictfreshphysicalfull/own18CI;no manualredispatchofsettledscience. [pcc:unverified]
+
+Failurespreserved:280fe8falseconstructorcounterexpectation;b30095staleCargoartifact;8c131aunitcoefficientshortcut;firstcomparator101invalidwall-totalpresence;canaryPATH127/build124-serdefeaturemismatch;materializer128externalfixtureasGit. Currentactualbinarieskept; ONLYclosedderivedcache173101323Breclaimed/allsourceguardsstill0. Originalwarmct57cache and263MBrootbinarykept. Root124clock101/mainledger/signing/reviews/conflict/globalgeometry/logextension/beta/coldonlinecost/strongestrefs/livebudgetcapacity/vault8edec422locked/KB127 remain. [pcc:unverified]
+
+---
+
 # Arithmetic audit continuation — 2026-11-14T03:38:21.921614+00:00
 
 Settled source21afb40f: native9bc5e6, independent785full333af1, own17CI42073d/327native/60unique62actualcanonical checks. Originalcheckpoint66da4b remote+localgate0 exactclean21af/all28members; latermetadata stale. All15FB30failedpairs preserved. Genuine243bb9/9a7cf7 all15objects8S3+7Git/guard09released; nextartifactFF fresh10. All claims unsigned. [pcc:unverified]
