@@ -1,0 +1,20 @@
+   Compiling autocfg v1.5.1
+    Checking chained-jacobian-transfer v0.1.0 (/workspace/crypto/research/chained_jacobian_transfers_20261110/native)
+   Compiling num-traits v0.2.19
+    Checking num-integer v0.1.47
+    Checking num-bigint v0.4.8
+    Checking chained-transfer-reference v0.1.0 (/workspace/cryptanalysis/experiments/chained-transfer-reference)
+error: methods called `from_*` usually take no `self`
+   --> src/../../../suite/src/prime_hyperelliptic/fp2.rs:180:20
+    |
+180 |     pub fn from_fp(&self, x: u64) -> Fp2 {
+    |                    ^^^^^
+    |
+    = help: consider choosing a less ambiguous name
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#wrong_self_convention
+    = note: `-D clippy::wrong-self-convention` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::wrong_self_convention)]`
+
+error: could not compile `chained-transfer-reference` (bin "chained-transfer-reference") due to 1 previous error
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `chained-transfer-reference` (bin "chained-transfer-reference" test) due to 1 previous error

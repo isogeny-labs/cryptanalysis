@@ -1,0 +1,44 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-11T14:05:17Z",
+ "id": "PCC-20261111-beeac7",
+ "kind": "statement",
+ "producer": {
+  "commit": "75e5064d1d089b917b068e7ca15b124ec0bcae37",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/independent-seven-ci-01.txt",
+    "sha256": "df7b1bb49e45d41e39a25f883bf14c3bea4968375f4f35d81e820199579b333d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/elliptic-seven-clippy-02.txt",
+    "sha256": "54ccab031c63d40bd9cfdb30077c0b951a12ed82202b9bf096a6f63361388960"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/seven-source-guards-01.txt",
+    "sha256": "8d5f08214d2999705cc5660e218d6b98cf5e506178f4c53db9a0058fa748a37f"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/seven-independent.sha256",
+    "sha256": "c8a8880b13de632d724e2b74c24c3d558eb7811e6e8346644036c6ec149840a8"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "The same independently implemented Montgomery field/poly/kernel certificate harness now passes as a consumer Cargo integration test on all4 degree7 map/dual witnesses;strict Clippy and separate102-file construction/five-file verifier plus seven-native-input guards pass against unchanged crypto75a737b8. No engine arithmetic edited. Normal dependency adapter excludes its nested workspace from parent membership;original upstream cfg unchanged. Full current matrix/CI remains pending;not a second independent verifier or signed scientific verdict. No new Jacobian7-map/solver/speed claim."
+}

@@ -22,6 +22,35 @@
  * BSGS_LANES - 1 elements past the last one used, which are not counted. */
 #define BSGS_LANES 64
 
+/* hs[k] = the group's hash of e[k], and request its table slot.  On the
+ * native curve and the native (Z/pZ)^* group the hash is computed inline
+ * (ec_hash and zp_hash are these same functions, so every value agrees)
+ * instead of through the vtable once per element. */
+static void bsgs_hash_block(const ca_group *g, const ca_htab1 *tab, uint64_t *hs, const ca_elem *e,
+                            uint64_t n)
+{
+    /* The table's base and mask go into locals: the stores to hs[] are
+     * uint64_t lvalues, so through tab the compiler would reload both at
+     * every prefetch.  The slot is ca_htab1_prefetch's (key 0 probes 1). */
+    const ca_htab1_entry *ep = tab->e;
+    const size_t mask = tab->cap - 1;
+    const int pf = tab->cap != 0;
+#define BSGS_HASH_LOOP(HASH)                                                                       \
+    for (uint64_t k = 0; k < n; k++) {                                                             \
+        const uint64_t h = (HASH);                                                                 \
+        hs[k] = h;                                                                                 \
+        if (pf) __builtin_prefetch(&ep[(size_t)(h ? h : 1) & mask], 0, 1);                         \
+    }
+    if (ca_ec_group_is_native(g)) {
+        BSGS_HASH_LOOP(ca_ec_hash_words(e[k].w[0], e[k].w[1], e[k].w[2]))
+    } else if (ca_zp_group_is_native(g)) {
+        BSGS_HASH_LOOP(ca_zp_hash_word(e[k].w[0]))
+    } else {
+        BSGS_HASH_LOOP(ca_group_hash(g, &e[k]))
+    }
+#undef BSGS_HASH_LOOP
+}
+
 /* Fill 0, base, ..., (count - 1) * base.  Doubling the filled prefix
  * lets each level share one inversion on elliptic curves. */
 static void bsgs_multiples(const ca_group *g, ca_elem *out, const ca_elem *base,
@@ -212,10 +241,7 @@ ca_status ca_bsgs_table_new(const ca_group *g, const ca_elem *base, uint64_t m, 
         /* hash the block first and request its slots together, so the
          * table's cache misses overlap instead of queueing one by one */
         uint64_t hs[BSGS_LANES];
-        for (uint64_t c = 0; c < n; c++) {
-            hs[c] = ca_group_hash(g, &lane[c]);
-            ca_htab1_prefetch(&t->tab, hs[c]);
-        }
+        bsgs_hash_block(g, &t->tab, hs, lane, n);
         for (uint64_t c = 0; c < n; c++) {
             int rc = ca_htab1_insert(&t->tab, hs[c], j0 + c, NULL);
             if (rc < 0) {
@@ -277,10 +303,7 @@ static ca_status bsgs_table_solve_impl(const ca_bsgs_table *t, const ca_elem *ta
         for (uint64_t k = 0; k < n; k++) Rrep[k] = R;
         ca_group_batch_op(g, Rs, Rrep, t->giant, n, scratch);
         uint64_t hs[BSGS_LANES];
-        for (uint64_t k = 0; k < n; k++) {
-            hs[k] = ca_group_hash(g, &Rs[k]);
-            ca_htab1_prefetch(&t->tab, hs[k]);
-        }
+        bsgs_hash_block(g, &t->tab, hs, Rs, n);
         for (uint64_t k = 0; k < n; k++) {
             const uint64_t i = i0 + k;
             uint64_t j;
@@ -429,10 +452,7 @@ ca_status ca_bsgs_solve_checkpointed(
             uint64_t nblock = requested_m - baby_next < BSGS_LANES ?
                               requested_m - baby_next : BSGS_LANES;
             uint64_t hs[BSGS_LANES];
-            for (uint64_t c = 0; c < nblock; c++) {
-                hs[c] = ca_group_hash(g, &lane[c]);
-                ca_htab1_prefetch(&t.tab, hs[c]);
-            }
+            bsgs_hash_block(g, &t.tab, hs, lane, nblock);
             int duplicate = 0;
             for (uint64_t c = 0; c < nblock; c++) {
                 int ir = ca_htab1_insert(&t.tab, hs[c], baby_next + c, NULL);
@@ -525,10 +545,7 @@ ca_status ca_bsgs_solve_checkpointed(
             for (uint64_t k = 0; k < nblock; k++) Rrep[k] = R;
             ca_group_batch_op(g, Rs, Rrep, t.giant, nblock, scratch);
             uint64_t hs[BSGS_LANES];
-            for (uint64_t k = 0; k < nblock; k++) {
-                hs[k] = ca_group_hash(g, &Rs[k]);
-                ca_htab1_prefetch(&t.tab, hs[k]);
-            }
+            bsgs_hash_block(g, &t.tab, hs, Rs, nblock);
             for (uint64_t k = 0; k < nblock; k++) {
                 uint64_t i = giant_next + k, j;
                 if (ca_htab1_find(&t.tab, hs[k], &j)) {
