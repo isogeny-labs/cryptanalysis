@@ -607,7 +607,7 @@ def plot(r, out):
         ax.legend(fontsize=7, loc="upper right")
     axes[-1].set_xlabel("bit index of scalar")
     fig.tight_layout()
-    fig.savefig(os.path.join(out, "per_bit_advantage.png"), dpi=130)
+    fig.savefig(os.path.join(out, "per_bit_advantage.png"), dpi=70)
 
     fig, ax = plt.subplots(figsize=(9, 3))
     for kind in kinds:
