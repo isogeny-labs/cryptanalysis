@@ -1,0 +1,7 @@
+# Prospective norm-halving transfer evaluator
+
+This is the source-linked proposal for [NORM_HALVING_PROTOCOL_01.md](../../NORM_HALVING_PROTOCOL_01.md), before new implementation. The original complete elliptic-halving quartic, native selector and Lean ring proof already exist in the project; the candidate applies norm-halving and actual E[2](K) correction to the matched degree13 beta and compares the strongest norm-assisted elliptic-scalar baseline. Native correctness, additional proofs, complete cost and performance outcomes are pending. [pcc:unverified]
+
+[PDF](report.pdf), [editable diagram](flow.dot), [diagram metadata](flow.diagram.json), [SVG](flow.svg), [primary/code review](../../evidence/norm-halving-primary-review-01/sources.json). Full field/model identities, formulas, common admission, all448 exceptional controls, proof hypotheses, resource limits and retained negatives are specified by the protocol. No quantitative plot is supplied because no new comparable measurements exist. [pcc:unverified]
+
+Canonical graphs checked: the accepted complete-C flow and historical A/B report remain correct at their original scope; their pinned subjects are unchanged. This proposal adds a separate dashed flow. The KB fallback was unavailable127 and the autoresearcher vault remains locked; no novelty or absence inference. Timing requires existing admission and matched references; no cost advantage is claimed. [pcc:unverified]
