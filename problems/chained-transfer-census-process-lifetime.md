@@ -1,6 +1,6 @@
 # Census supervisor ends before terminal panel receipts
 
-- **Status:** investigating
+- **Status:** resolved for the declared detached continuation; old cause unknown
 - **Kind:** observed execution interruption; cause unknown
 - **Affected work:** Chained ECDLP Transfers, observer-storage protocol02
 - **Next action owner:** continuing research session
@@ -45,4 +45,15 @@ and bounds. Preserve the interruption and every new terminal outcome.
 If the detached supervisor also disappears, record the actual missing
 receipts and investigate the host lifetime without changing the census
 criterion. No time ratio, paid launch or waiver follows.
+[pcc:unverified]
+
+## Dated continuation result
+
+Detached04 survives the original900-second cold bound and records actual
+cold124 and both reuse streams0; final original785 and complete derived
+source guards pass. The unchanged full analyzer and strict full-population
+parity still reject101, and the worker/supervisor correctly return1 because
+full120cold is incomplete. This satisfies the supervisor-recording exit
+condition, while the separate full-census resource requirement stays open.
+The prior03 interruption and its unknown cause remain unchanged.
 [pcc:unverified]
