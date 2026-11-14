@@ -1,0 +1,17 @@
+[
+  {
+    "name": "NormArithmetic.conjugate_product",
+    "claim": "pcc/claims/PCC-20261114-36febb.json",
+    "statement": "theorem conjugate_product {R : Type} [CommRing R] (n a b : R) : a*a+n*b*(-b) = a^2-n*b^2 \u2227 a*(-b)+b*a = 0"
+  },
+  {
+    "name": "NormArithmetic.scaled_conjugate_inverse",
+    "claim": "pcc/claims/PCC-20261114-42c97c.json",
+    "statement": "theorem scaled_conjugate_inverse {R : Type} [CommRing R] (n a b t : R) (h : (a^2-n*b^2)*t = 1) : a*(a*t)+n*b*(-(b*t)) = 1 \u2227 a*(-(b*t))+b*(a*t) = 0"
+  },
+  {
+    "name": "NormArithmetic.inverse_pair_norm",
+    "claim": "pcc/claims/PCC-20261114-204b98.json",
+    "statement": "theorem inverse_pair_norm {R : Type} [CommRing R] (n a b t : R) (h : (a^2-n*b^2)*t = 1) : (a*t)^2-n*(-(b*t))^2 = t"
+  }
+]

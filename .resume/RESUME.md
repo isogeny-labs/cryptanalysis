@@ -1,3 +1,17 @@
+# Enabled census in flight; genuine second-hop preflight frozen
+
+Prototype5c9a5559 published. Quadratic omission03 positive0/negative101 (3da93a) and old FpR/mode1430fd controls pass locally; both earlier builds124 and corrected dependency diagnosis76b940 retained. Genuine original checkpoint93464c:43612223554/job132499525668/whole183372B artifact14119999782/all28members/exact source5c9 and original Resume/tool/remote pack equality; local originalgate0 before census launch. Later metadata changes stale that receipt. [pcc:unverified]
+
+Current actual run: bash norm-arithmetic-audit/run-panels.sh frozen4,282,464-byte census executable plus untouched60fixture; output /workspace/scratch/ct75-norm-arithmetic-panels-01, caller /workspace/scratch/ct75-norm-arithmetic-panel-caller-01.txt; unified session26361, parent OS374120. Started15:52:18UTC; original cold900s then reused900s,2GiB. Preserve incomplete/timeout outcomes; no full panel accepted yet. Analyzer build0/actual binary /workspace/scratch/ct75-norm-arithmetic-analyzer-build-01/actual-analyzer.bin; no accepted analysis yet. Do not rerun or shrink the live panel. [pcc:unverified]
+
+Inverse proof3775ef: three exact local statement bindings36febb/42c97c/204b98, both original3declaration gates0trusted; wrong435 consumer auditor invocation1 and caller correction434 preserved. Genuine norm-inverse hypothesis explicit; encoding/nonzero/counter/program/global geometry remain separate. Old norm-product reused, no new aggregate uniqueness claim. [pcc:unverified]
+
+Next genuine chain proposal pcc/claims/PCC-20261114-23ab48.json: NONDUAL13_PREFLIGHT_PROTOCOL_01.md and one inspected44126BPDF page, source/primary448588. Protocol before code, E1lambda2 vsdual4/full rational maps/169kernel control/all64 actual torsion and transported matched HLPmask before square/admissibility. No new implementation or E2/J2 result yet. After census closes, preserve whole vectors/failures, pursue a faster exact observer only if needed, and start this nondual elliptic/model preflight. Full secondJacobianmap follows separate protocol. [pcc:unverified]
+
+Whole new full02/CI/prototype/primary/proof/report captures need NEWgenuine publication17;16 settled17911paths/eightpriorlinks. All scientific raw/actual exes retained, only closed external derived incrementals reclaimed with whole receipt06. Root124/clock101/mainledger/signing/review/conflicts/livebenchmarkadmission/matchedrefs/vault8edec422/KB127 remain. No price, calibrated computational gain, signed execution, waiver or paid launch. [pcc:unverified]
+
+---
+
 # Active primitive census checkpoint
 
 Protocol e7f4befa/PCC-20261114-01e617 published before implementation. Prototype native ledger ad41ae, expected untapped60 fixture bd5df9, original plus quadratic all49728 inverse primitive controls e70b64, and FOUR full production mathematical tests with all4 wholeJSON exact/no masks 87af78 have recorded unsigned evidence. Current code is uncommitted under norm-arithmetic-audit; checkpoints must publish next. [pcc:unverified]
