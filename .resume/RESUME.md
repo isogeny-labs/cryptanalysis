@@ -1,3 +1,13 @@
+# Versioned beta replay correction ready — 2026-11-14T08:20:23.295834+00:00
+
+c08810d5 published path protocol BEFORE edits. Paired original-gate cwd control pcc/claims/PCC-20261114-13ef7e.json: SAME module/SHA and SAME original producer gate, consumer cwd actual1/path rejection, producer cwd actual0/PASS1decl0trusted. Versioned check02/reference02 now844inputs+self845; ALLoriginal839keys retained, only revised19thworkflow hash replaced; oldcheck01/reference01/native fixture/scientific source unchanged. Required17phase/2unfiltered/3wholeJSON no masks/IDC0+101/twooriginal21declgates/sixbindings/finalguards unchanged. [pcc:unverified]
+
+Next normalpublish correctedsource, fresh physical Git-file full and own19automaticCI; collect all automaticruns, whole original checkpoint and allZIPmembers. Then GitHub updates and whole custody NEWguard12; continue NEW sibling beta-complete-evaluator completeFp2fibres/allrationalbeta per32283c. Existing66partialbindings unsigned; no calibrated improvement/globalclosedcoordinates/rootgreen/mainmerge waiver. [pcc:unverified]
+
+Source9aa negative67a5aa/whole117579Bexactlog and83397BZIP44members preserved; original checkpoint43574466024/138029BZIP28members alloriginalexits0 retained. Large ca9full/CInegative/helpercontrol/398CI/allct73 captures pendingguard12. Root/main/admission/vaultKB blockers recorded. Local science runs none. [pcc:unverified]
+
+---
+
 # Beta replay path correction prospective — 2026-11-14T08:18:15.122289+00:00
 
 Source9aa96da6 normalpublication0. Own beta CI43574466194 actual1 after native2/all3exact/IDC0+101/consumer21: original producer gate uses caller cwd and rejects producer-staged paths from consumer cwd. Preserve full44member83397B ZIP+exact log and original current-source checkpoint43574466024/138029B/28members/alloriginalexits0; custody evidence beta-own-CI-path-failure-01. No claims of full beta CI success. [pcc:unverified]

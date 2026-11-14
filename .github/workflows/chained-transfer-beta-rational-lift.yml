@@ -135,7 +135,7 @@ jobs:
           CARGO_TARGET_DIR: ${{ runner.temp }}/n4-beta-lift-build-cache
         run: |
           set -euo pipefail
-          timeout 2400 bash cryptanalysis/experiments/chained-transfer-public-target/ci_beta_lift/check.sh crypto "$RUNNER_TEMP/n4-beta-lift-output"
+          timeout 2400 bash cryptanalysis/experiments/chained-transfer-public-target/ci_beta_lift/check-02.sh crypto "$RUNNER_TEMP/n4-beta-lift-output"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
