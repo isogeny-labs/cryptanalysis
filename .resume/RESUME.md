@@ -1,3 +1,28 @@
+# Resume: Chained ECDLP Transfers — 2026-11-14T00:00:25.664646+00:00
+
+## Goal
+Continue DLP-preserving transfers,chained Jacobians,prime-field descent and admitted computational comparisons across the workspace. Continue after each rung. [pcc:unverified]
+
+## Lead / hypothesis
+ActualnewtargetIC solvesall15publiccases. Nextnativecontrol comparesoriginalsource-boundIC andborrowed-Picard class-inputIC atTHEsameactualrandomFBP0,withthegenuineaffineorigin bridge. No path/counter/costequivalence assumed. [pcc:unverified]
+
+## Spec
+COMMON_ORIGIN_IC_PROTOCOL_01.md/2dd807 isprospectiveBEFOREcommon-origin-iccode;all20pairedattempts/public5xFB30,36,48,64/seeds102..105 explicitzeroindices/actualclassr0..32/rawavailableH+T/differences/foreignP0/independentanswers. ONEunfiltered/900build900native/2GiB/warmoutsidecache. Scientific1816/newICe869bd/57partialbindings/reportd1027f/full3f52fc730/14CId53e33190native57canonical settled. [pcc:unverified]
+
+## State
+Originalcheckpointtransport ffe675 PASSES forexactclean39e9:43530006697/job132245064560/artifact14087750072/87453bytes/SHA19053dfd/all28members;originalremote gate/readback0,exactoriginalreceipt/matchingcleanlocaloriginalgate0/Gitstatusunchanged. Latermetadatachangesstaleoldreceipt;neworiginalcheckpoint requiredbeforeexperiment. Existingdata-onlyworkflowwillcheckpointnewcommittedhead whenitsdocschange. Genuineolder25objects43d6ba/babda6 complete;new730full/14CI/transportwholecapturesawaitnextgenuinepublication/NEWguard08. [pcc:unverified]
+
+## Next steps
+Normalpublishthisprotocolcheckpoint BEFOREnewcratecode,thenimplementcommon-origin-ic/candidatecontexttype+picaccessONLY/literalbodies/originalbaselineunchanged. Usewarmct57cache andfresh /workspace/scratch/ct70-common-origin-native-01 capture/guards. Requireallreportedanswersactualtarget+independentsource andoneCOMMONcorrectsettingperpublicQ;retainall20pairs andallfailures/availabilitycounts. Thenactualoutputs/proofscope/report/checkpoint,countercoverage/completeodddegreecoordinates. RefreshPR1523/root3877/queue3904. [pcc:unverified]
+
+## Runs in flight
+No localscientificprocess. Source39e9 ordinaryCIisautomatic;itsoriginalcheckpointdatajobisalreadyterminalsuccess. NewprotocolpublicationmaytriggerrepositoryCI;collectexactsource/workflow IDsfromGitHubwithoutmanualredispatch. Transportcaptureraw /workspace/scratch/ct69-original-checkpoint-transport-01;full /workspace/scratch/ct69-new-target-IC-full-01;ownCI /workspace/scratch/ct69-new-target-IC-own-CI-raw-01. No paidbenchmark. [pcc:unverified]
+
+## Stop and success conditions
+Followprospective2dd807 nativeacceptance/literalprovenance/allguards;failuresremain scopedandnextdiagnosed. OriginalS3gatepass forexactstatealone doesnotprovidelivebudget/capacity/isolation/fullcounters/strongestrefs/performanceadmission. Rootfull124/twoexact101clockfailuresrequirescapablehost;actualgeometry/logextension/mainledger/signing/reviews/conflict/vault/KB gapsremain. Continuewhileusefulauthorizedworkavailable. [pcc:unverified]
+
+---
+
 # Resume: Chained ECDLP Transfers — 2026-11-13T23:47:27.717648+00:00
 
 ## Goal
@@ -256,3 +281,31 @@ NormalpublishprotocolBEFOREworkflow;addboundeddataonlyCI/collectactualgate/readb
 
 ### Errors (what went wrong, how it was handled)
 Allnative/sourcegovernance/reportdraft/setup/citation/root124/twoexact101clock failuresretained;rootrequirescapablehost. Actualgeometry/global-logextension/costs/admission/mainledger/signing/reviews/conflict/vault/KB gapsremain. [pcc:unverified]
+
+## 2026-11-13T23:54:44.743990+00:00 — original remote and local checkpoint gates pass
+
+### What was done (commands, files, features)
+pcc/claims/PCC-20261113-ffe675.json:exactclean39e9 source/originalconsumer3de8gate0 on43530006697/job132245064560;genuineS3checkpointpack/Resume/meta readback0/wholebyteandheadmatches. Authenticatedwholeartifact14087750072/87453bytes/SHA19053dfd/ALL28members;exactoriginalreceipt importedonlyaftermatchingcleanlocalHEAD/resume/tool. UNCHANGEDlocaloriginalstatus0/current andgate0/unchangedsince;Gitstatusbyteunchanged beforecreatingthismetadata. No key/tokenexport/gate/statehash/IAMchange. [pcc:unverified]
+
+### Decisions made (and why)
+The materiallydifferentoriginalCIcredentialroute restores checkpointtransport forthatexactrecordedstate. Latermetadata/sourcechanges stale thereceipt andrequirefreshoriginalcheckpoint beforeexperiments. CI namespace readsall0 showcapablehostonly;rootregressionstillnotrunthere. Livebudget/capacity/isolation/completecosts/strongestrefsremainindependent requirements. [pcc:unverified]
+
+### Open threads (unfinished, pick up next time)
+Committransportoutcome/GitHubcheckpoints;thenfreshnativecommon-originbridge againstoriginalrandomP0/affinetriples,countercoverage/completebeta coordinates. Nextwholecapturedatahandoffincludescurrent730full/14CI/transportwholeartifact withNEWguard08. [pcc:unverified]
+
+### Errors (what went wrong, how it was handled)
+Oldlocalno-profile/token failuresandroot124/twoexactclock101 retained. Sourcegeometry/logextension/fullcost/globalroot/mainledger/signing/reviews/conflict/vault/KB gapsremain;no performanceadmission ormergewaiver. [pcc:unverified]
+
+## 2026-11-13T23:58:51.340132+00:00 — common-origin native compatibility protocol before code
+
+### What was done (commands, files, features)
+pcc/claims/PCC-20261113-2dd807.json freezes originalquartic/actualrandomFBP0/20pairedICattempts(public5xFB4,seeds102..105 explicitzeroindices)/allfailures;separateborrowed-Picard context changesONLYtype+picaccess inliteralclasssolver. Allr0..32 actualcomplete/raworigin/sign/difference/foreignP0controls;ALLreportedanswers target+independentsource;oneCOMMONcorrectsettingperpublicQ required. ExistingconditionalLeanlog/soundnessbindings retainbridges. [pcc:unverified]
+
+### Decisions made (and why)
+ReadV2_MAPS/sameP0rawaffinecontrols/originalsolvers/newICderivation/exactLeanstatements;KBstatus/twoqueries/theoremwrapperunavailable recorded. Thisextendsoneexistingwinningorigincontrol toall4actualorigins andpairedwholeIC,not operational/costequivalence. Preserve729oldinputs/oldcontexts/engines/workflows. [pcc:unverified]
+
+### Open threads (unfinished, pick up next time)
+Normalpublishprotocol BEFOREnewcratecode;implement/runboundedunfilterednative/readactualoutputs/proofscope/report/checkpoint. Currenttransportffe675 passesexactclean39e9;latermetadatachangesstaleit andneedfreshoriginalcheckpoint beforeexperiments. Completecountercoverage/odddegreecoordinates/admittedmatchedreferencesnext. [pcc:unverified]
+
+### Errors (what went wrong, how it was handled)
+Allpriorfailuresremain;originalroot124/clock101 requirescapablehost/global-logextension/costs/mainmerge/vault/KB gapsremain. No assumednativecompatibilitysuccess orperformanceadmission. [pcc:unverified]
