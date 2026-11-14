@@ -246,10 +246,13 @@ static void gr_lanes_fill(const ca_group *g, gr_lanes *ls, const ca_elem walk[3]
     for (int t = 0; t < 3; t++) {
         off[t][0] = step[t];
         for (int k = 1; k <= GR_LOG; k++) ca_group_dbl(g, &off[t][k], &off[t][k - 1]);
-        ls->lane[t * GR_LANES] = walk[t];
+        ls->lane[(size_t)t * GR_LANES] = walk[t];
         for (int c = 0; c < GR_LANES; c++) ls->stride[t * GR_LANES + c] = off[t][GR_LOG];
     }
-    ca_elem A[3 * GR_LANES / 2], Bv[3 * GR_LANES / 2], R[3 * GR_LANES / 2];
+    /* Zeroed so no batch input is ever indeterminate; the loops below fill
+     * the first 3 * span entries before each batch reads them. */
+    ca_elem A[3 * GR_LANES / 2] = {{{0}}}, Bv[3 * GR_LANES / 2] = {{{0}}};
+    ca_elem R[3 * GR_LANES / 2];
     int k = 0;
     for (int span = 1; span < GR_LANES; span *= 2, k++) {
         /* lanes span .. 2 span - 1 = lanes 0 .. span - 1 + span * step */
