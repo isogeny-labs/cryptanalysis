@@ -1,3 +1,17 @@
+# Arithmetic scope settled; matched beta rational lifting active — 2026-11-14T06:40:43.502770+00:00
+
+Current source398d591b: fresh386296 ca9full/all14phasepairs0/oneunfilteredpass/all86frozenwalls/whole7113census+metadata EXACT/no masks/finalguards0. Own4ff6d8 ALL18distinctworkflows/19automaticruns SUCCESS/extraPCCbodyevent/signskipped2; Rustaudit0/ALL413whole native records match(old327+new86)/60originalcanonicaldigests62actualverdicts/all15phasepairs0/0/final22+self/original785/derivedguards0. Whole5732494BZIP/all1611members andall19APIlogs retained. Allunsigned. [pcc:unverified]
+
+Nextprospective BETA_RATIONAL_LIFT_PROTOCOL_01/5be5e0 andprimaryreview622871 BEFOREnewLean/Rust code. StageA: general Frobenius quadratic-lift lemma with explicit ordinary abelian-group/surjectivity/kernel2/F^3 assumptions, faithfulLean4.34.1+axiomaudit, finiteC4×C2 control droppingF^3, actualall16E4/F2236 andgamma/delta/F^3 action. StageB genuinequadraticPicardbackend/direct-bypassinventory/base-field andextensioncontrols. StageC completeactualfibreidealbasechange/2primarylifts/allrationalbeta sectors; globalclosedcoordinatesremainseparate. OnlymatchedHLP10 quotient; do notgeneralize to11/21. [pcc:unverified]
+
+Sourceschecked: committedwritten03/chain/two-primary/originaltwoadapters andprimePicard; Milne2008I7/Theorem7.2/Remark8.12 printed39; HLP4.1/Lemma13/Proposition15 withtwistrequirements. KB MCPabsent/wrapperstatus3queries+theorem127; vault8edec422locked/atlasnotopened/no noveltyorabsenceinference. [pcc:unverified]
+
+Currentarithmeticreference03/22+self23 andALLoriginal785/old18workflows remainfrozen. Native8d0c27/vectors8c2406/report03cfb7 fixed, allnativefailuresretained. Existing60conditionalbindingspartialunsigned. No paidcompute; livebudget/capacity/matchingimage/completecoldonlinecost andstrongestrefs remain. Root556c5ddb normallypublished metadata/85dc6a+a5c65f; knownroot124clock101/mainledger/signing/reviews/conflict unchanged. [pcc:unverified]
+
+Custody:92a00d420904+1f4cbc877d0e genuinelycomplete/holds10and11released; nextartifactFFNEWguard12. Freshca9full,ca9CInegative,emptycachecontrol,corrected398CI andRustcollector wholelargecaptureslocallycompletependinggenuinebatch. Preserveall sources/binaries/completeindices/privateFileService-only exclusions. RunsinflightNONE local. Continueaftereachrung. [pcc:unverified]
+
+---
+
 # Arithmetic fresh replay complete; locked helper hydration correction — 2026-11-14T06:14:06.083340+00:00
 
 ## Goal
