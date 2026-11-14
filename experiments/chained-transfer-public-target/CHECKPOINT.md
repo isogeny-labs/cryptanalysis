@@ -1,3 +1,15 @@
+# Norm arithmetic prototype checkpoint
+
+The prospective protocol was published as e7f4befa before new code. New ledger/materializer ad41ae, untouched-reference60 packet fixture bd5df9, all original primitive controls plus quadratic4900-pair/49728-inverse controls e70b64, and FOUR production tests/all4 wholeJSON without masks 87af78 have unsigned local evidence. No accepted source arithmetic census exists yet. [pcc:unverified]
+
+Quadratic omission controls01 and02 hit their120s build limit before native execution (6e15fa,76b940). The earlier large-source hypothesis is incomplete: literal slices also stalled compiling isogeny_algos, and Cargo metadata exposes serde229 versus passing228/derive graph. Version03 pins that graph with unchanged120s limits and is not run yet. Old FpR omission0/101 and disabled mode2 are separately retained. [pcc:unverified]
+
+Local original checkpoint gate now fails without an upload credential. Normal commit/publish this prototype and retrieve the existing original CI checkpoint transport for that exact clean head before the120cold/two reused-context census. Keep gates and prior21workflows unchanged. Analyzer source has not compiled or run; it rejects incomplete panels. After accepted counts, create the results graph/PDF and additive replay/CI. Whole fresh02/ownCI and all prototype attempts need NEWgenuine publication17;16 remains settled. No price, timing, ECDLP advantage, signed standing or full geometric/formal bridge. [pcc:unverified]
+
+Next scientific task after the census is the reviewed genuine nondual second13 elliptic/model preflight, all64torsion transport and matched prime-field HLP model, under a separate prospective protocol. Continue the research queue; root124/clock101, main ledger/signing/reviews/conflicts, live benchmark admission/matched references, locked vault8edec422 and KB127 remain. [pcc:unverified]
+
+---
+
 # Norm-halving source/full/own-CI settled; primitive census next
 
 Source5ac59843 ispublished. Fresh18d2a0:21phases19zero/twoactual101/alltee0/FOURunfiltered/all4wholeJSONNOmasks/both10gates/ninebindings/all930logicalguards/threeactualbinarycustody. Oldlayoutalias1/6d562c andadmissionddfec3 preserved. Own071fdc:ALL21distinctworkflows/22automaticrunsSUCCESS/twosignskips/Rustaudit0 ALL423native pluswhole7113census/82canonical84actualverdicts/all15+17+20+21phases/sourceproof/checkpoint4source3remotehashes; all22wholelogs/FIVEwholeZIPs/every1611+73+64+28+70filemembers retained. Allunsigned/noexecution orcomputationaladvantage. [pcc:unverified]

@@ -1,3 +1,15 @@
+# Active primitive census checkpoint
+
+Protocol e7f4befa/PCC-20261114-01e617 published before implementation. Prototype native ledger ad41ae, expected untapped60 fixture bd5df9, original plus quadratic all49728 inverse primitive controls e70b64, and FOUR full production mathematical tests with all4 wholeJSON exact/no masks 87af78 have recorded unsigned evidence. Current code is uncommitted under norm-arithmetic-audit; checkpoints must publish next. [pcc:unverified]
+
+Immediate next command: ct75_run_quadratic_canary_03.sh. Paired actual hook omission, literal Fq/control bodies, same120s compile/native bound, serde228 derive pinned to passing old control and frontend graph. Prior01/02 compile124 preserved whole; first source-size explanation incomplete, dependency diagnosis recorded. Whole roots /workspace/scratch/ct75-norm-arithmetic-{layout-01,quad-canaries-01,quad-canaries-02}; stock CARGO_TARGET_DIR=/workspace/scratch/ct57-n4-unit-01-build-cache. No runs currently active. [pcc:unverified]
+
+Then record mode rejection2 and old/quadratic omission0/101 when actual, run frozen120cold/two reused-context census bounded900s per panel using run-panels.sh and exact60 frozen fixture. Preserve partial/timeouts, no weakened acceptance. Rust analyzer source not yet compiled. Keep all raw/native executables. NEWguard17 pending whole-data publication;16 settled17911paths/eight oldlinks. No timing price, ECDLP win or signed standing. [pcc:unverified]
+
+After current census, protocol/review genuine nondual13 elliptic and64torsion/HLP preflight before second Jacobian map. Root124/clock101, global geometric/formal bridges, main ledger/signing/reviews/conflicts, benchmark live admission/matched references and locked vault8edec422/KB127 remain. No paid compute or waivers. [pcc:unverified]
+
+---
+
 # Norm-halving source/full/own-CI settled; primitive census next
 
 Source5ac59843 ispublished. Fresh18d2a0:21phases19zero/twoactual101/alltee0/FOURunfiltered/all4wholeJSONNOmasks/both10gates/ninebindings/all930logicalguards/threeactualbinarycustody. Oldlayoutalias1/6d562c andadmissionddfec3 preserved. Own071fdc:ALL21distinctworkflows/22automaticrunsSUCCESS/twosignskips/Rustaudit0 ALL423native pluswhole7113census/82canonical84actualverdicts/all15+17+20+21phases/sourceproof/checkpoint4source3remotehashes; all22wholelogs/FIVEwholeZIPs/every1611+73+64+28+70filemembers retained. Allunsigned/noexecution orcomputationaladvantage. [pcc:unverified]
