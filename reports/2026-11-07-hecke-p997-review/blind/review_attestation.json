@@ -1,0 +1,69 @@
+{
+  "record_type": "review_attestation",
+  "task": "T-1791",
+  "reviewer": "/root/p997_blind_algebra",
+  "review_date": "2026-11-07",
+  "review_kind": "independent blind arithmetic derivation and exhaustive finite verification",
+  "sources_read": [
+    {
+      "path": "/var/tmp/cryptanalysis-p997-review-20261107/reports/2026-11-07-hecke-p997-review/blind-input.md",
+      "sha256": "4f46b7c9675eb35cfff1b42eed67baef4b16255b1687dbc68283eecaea4359f9",
+      "revision_identifier_supplied_by_parent": "639fb3de7",
+      "revision_binding_independently_verified": false,
+      "revision_verification_note": "Git was not accessed under the blind-review restriction.",
+      "role": "sole research input: five statements and requested negative controls"
+    }
+  ],
+  "joints_owned": [
+    "A1: natural-number cap-24 rigidity at sum 72",
+    "A2: a positive coordinate below 24 at sum 12",
+    "A3: two positive coordinates at capped sum 48",
+    "A4: literal weighted arithmetic",
+    "A5: bounds for natural subtraction on F in [79,217]",
+    "NC1: A1 at sum 71",
+    "NC3: A3 without the cap",
+    "NC2: A2 at sum zero"
+  ],
+  "sibling_access": false,
+  "sibling_output_accessed": false,
+  "sibling_communication": false,
+  "producer_source_accessed": false,
+  "producer_proof_accessed": false,
+  "producer_results_accessed": false,
+  "git_accessed": false,
+  "other_repository_paths_read": false,
+  "repository_modified": false,
+  "memory_accessed": false,
+  "external_sources_accessed": false,
+  "blind_compliance": true,
+  "blind_compliance_detail": "Read only the authorized blind input as a research source; derived all statements independently; generated and executed an independent verifier outside the repository; did not read producer or sibling material.",
+  "natural_number_convention": "nonnegative integers including zero",
+  "natural_subtraction_convention": "max(x-y,0) over integer subtraction",
+  "per_claim": {
+    "A1": {"verdict": "holds", "proof": "The three nonnegative deficits from 24 sum to zero.", "eligible_triples_checked": 1},
+    "A2": {"verdict": "holds", "proof": "A positive sum forces a positive coordinate, which is at most 12 and hence below 24.", "eligible_triples_checked": 91},
+    "A3": {"verdict": "holds", "proof": "At most one positive coordinate together with the caps would force sum at most 24, contradicting 48.", "eligible_triples_checked": 325},
+    "A4": {"verdict": "holds", "proof": "6+60+12=78.", "evaluated_lhs": 78},
+    "A5": {"verdict": "holds", "proof": "F<=217<1008 prevents truncation; subtracting the endpoint bounds gives [791,929].", "eligible_F_values_checked": 139, "endpoint_pairs": [[79,929],[217,791]]}
+  },
+  "negative_controls": {
+    "A1_at_sum_71": {"verdict": "breaks", "all_counterexample_tuples": [[23,24,24],[24,23,24],[24,24,23]]},
+    "A3_without_cap": {"verdict": "breaks", "all_counterexample_tuples": [[48,0,0],[0,48,0],[0,0,48]]},
+    "A2_at_sum_zero": {"verdict": "breaks", "all_counterexample_tuples": [[0,0,0]]}
+  },
+  "additional_false_strengthenings": {
+    "A2_all_three_coordinates_interior": {"verdict": "breaks", "counterexample_tuple": [12,0,0]},
+    "A3_all_three_coordinates_positive": {"verdict": "breaks", "counterexample_tuple": [24,24,0]},
+    "A5_allow_F_78": {"verdict": "breaks", "counterexample_F_and_difference": [78,930]},
+    "A5_allow_F_218": {"verdict": "breaks", "counterexample_F_and_difference": [218,790]}
+  },
+  "geometric_census_hypotheses": "unassessed: explicitly assigned to separate source review",
+  "verification": {
+    "command": "python3 -I -S /var/tmp/p997-blind-review-output/check_arithmetic.py",
+    "exit_code": 0,
+    "all_assertions_passed": true,
+    "output": "/var/tmp/p997-blind-review-output/verification.json"
+  },
+  "report_path": "/var/tmp/p997-blind-review-output/report.md",
+  "overall_verdict": "All five original assertions hold; all three requested altered assertions break."
+}

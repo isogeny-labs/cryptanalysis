@@ -1,0 +1,88 @@
+{
+ "arms": {
+  "M38": {
+   "all_solved_no_rank_failures": true,
+   "cold_index_build_ms_mean": 4579.096863666667,
+   "cold_online_ms_mean": 404.72540300000003,
+   "cold_runs": 3,
+   "cold_selftest_ms_mean": 1539.7966626666666,
+   "columns": 16,
+   "label": "M38",
+   "orbits": 608,
+   "rank_process_total_ms_mean": 9669.3814646,
+   "rank_process_total_ms_sd": 879.3407511993433,
+   "rank_runs": 10,
+   "rank_stage_ms_mean": 3318.5048970000003,
+   "table_entries": 30366551
+  },
+  "a_K8_624": {
+   "all_solved_no_rank_failures": true,
+   "cold_index_build_ms_mean": 4539.596722333333,
+   "cold_online_ms_mean": 133.38321033333332,
+   "cold_runs": 3,
+   "cold_selftest_ms_mean": 1006.8467666666667,
+   "columns": 8,
+   "label": "header a (K'=8, 624 orbits)",
+   "orbits": 624,
+   "rank_process_total_ms_mean": 7430.5647751999995,
+   "rank_process_total_ms_sd": 513.206053520509,
+   "rank_runs": 10,
+   "rank_stage_ms_mean": 1293.9952977,
+   "table_entries": 31552545
+  },
+  "b_K4_612": {
+   "all_solved_no_rank_failures": true,
+   "cold_index_build_ms_mean": 4372.296208333333,
+   "cold_online_ms_mean": 248.04679600000003,
+   "cold_runs": 3,
+   "cold_selftest_ms_mean": 1141.9318456666665,
+   "columns": 4,
+   "label": "header b (K'=4, 612 orbits)",
+   "orbits": 612,
+   "rank_process_total_ms_mean": 6651.179798,
+   "rank_process_total_ms_sd": 420.3383927747627,
+   "rank_runs": 10,
+   "rank_stage_ms_mean": 627.7637962,
+   "table_entries": 29431077
+  },
+  "c_K8_448": {
+   "all_solved_no_rank_failures": true,
+   "cold_index_build_ms_mean": 2220.653097666667,
+   "cold_online_ms_mean": 531.8525933333334,
+   "cold_runs": 3,
+   "cold_selftest_ms_mean": 192.95132166666667,
+   "columns": 8,
+   "label": "header c (K'=8, 448 orbits)",
+   "orbits": 448,
+   "rank_process_total_ms_mean": 6406.6711359,
+   "rank_process_total_ms_sd": 1708.7544499944147,
+   "rank_runs": 10,
+   "rank_stage_ms_mean": 3054.7915967,
+   "table_entries": 16285405
+  },
+  "d_K4_400": {
+   "all_solved_no_rank_failures": true,
+   "cold_index_build_ms_mean": 1826.7033403333332,
+   "cold_online_ms_mean": 973.311051,
+   "cold_runs": 3,
+   "cold_selftest_ms_mean": 206.97895333333332,
+   "columns": 4,
+   "label": "D4 (header d)",
+   "orbits": 400,
+   "rank_process_total_ms_mean": 5220.5539819,
+   "rank_process_total_ms_sd": 594.6109812198858,
+   "rank_runs": 10,
+   "rank_stage_ms_mean": 1953.8434822,
+   "table_entries": 12618968
+  }
+ },
+ "label": "LOCAL DIAGNOSTIC: loaded shared 4-core VM, one pinned core; sizing only",
+ "modelled": {
+  "index_build_factor": 0.398922188090736,
+  "local_e2e_ratio_M38_over_D4": 1.8521753626385962,
+  "note": "measured cold self-test ratio 0.134 is not used (see the docstring)",
+  "selftest_factor": 0.25
+ },
+ "schema": 1,
+ "source": "inputs/local_prototype_rows.jsonl (65 runs), profile/prototype_driver.py"
+}

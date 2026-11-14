@@ -1,0 +1,76 @@
+nvcc: Cuda compilation tools, release 13.4, V13.4.92
+cuobjdump: Cuda compilation tools, release 13.4, V13.4.92
+NVIDIA RTX PRO 6000 Blackwell Server Edition, 595.91.07, 12.0
+== ptxas -O3
+step  0: got 6d8daef93167fa23 7d49bf6b24b0c5ec, want 8b5868123167fa23 7d49bf6b24b0c5ec
+step  1: got c2c234b5d8c6226e f106543610de612c, want fbd30bef8cdaf685 565f33273835ce1c
+step  2: got 698bb2d8ca0ddc49 515d1deba347eba8, want 7ce753dea4bf87f1 e9c84c0ea81effe6
+step  3: got 2b23b5a7fa3ff3be f891fee7e8cc2a94, want 084dceeec2a89616 208da5a54507d626
+step  4: got 8b5006d7c1fe2957 856918db27c76b32, want 5dd0b99ced66ed80 efcc1e61ab64d520
+step  5: got 284d0f9680c19835 03a04ec1517d37e4, want 0a444b0c28b595cb ca22830f80d2ca28
+step  6: got cf48ca93148ff049 1c96a057b3c9e77a, want d5b5ecd381c8883c 3f728a23a75cf26e
+step  7: got 40f31e146bb6a36b 5109319af0addc88, want 5ab3e0f37b4155fc 4e7324646f5b22ba
+step  8: got ed611c640b8ca079 2c823bddb35adc6c, want b785bc875fbe0b52 25007549c9cbd4fa
+step  9: got f5a7c77616d94be6 e3a4449ece42c20e, want 0143bebc59f4fb11 f00dc8db88049ab2
+step 10: got 2871b9a39d1ada2e 25d64c2a43883e5a, want 57ab734b0215bf1c 63ffce2cf3630b36
+step 11: got 4abbf44114ed661a 5ca9a03df2c1eba0, want 49d0750e7b0e158b fdc9aaeed7269644
+step 12: got d14a498af19ea6ae bc2cba1d2c2e52ba, want 1032f2ef3d0636c3 12ca56612a4c1fba
+step 13: got d5a86c1276e40af0 1ea01054c21641dc, want 4f616e1cb372c136 4ea22b1af3660a18
+step 14: got 695c26e7e0e8acef 175f4792f65c10c2, want 3657f90d8d66aed0 219d1409074b1496
+step 15: got 2a4c339e96f8ae9c 35512b7175dd00b6, want 15833916bd97a91a 57b52d4deb0ba52e
+step 16: got 5b803a879d985876 3025010dc31b3d0a, want ccf2d31b5278cac8 0465eaf8dc9081e4
+step 17: got cc5e6f24e4d9b5bb a1d4ae8716bea08e, want ea8bf2bfd7d7eca1 0c87051aa610a5a8
+step 18: got 08d475b085579fbf 6a234fed1c3b02f2, want 529319ad3bac8952 75c176d808ca079e
+19 of 19 steps wrong
+exit 1
+== ptxas -O2
+step  0: got 6d89acf93167fa23 7d49bf6b24b0c5ec, want 8b5868123167fa23 7d49bf6b24b0c5ec
+step  1: got cfe618c8c9ea8523 3b3696bbd3b55c2e, want fbd30bef8cdaf685 565f33273835ce1c
+step  2: got 9a45b8543749e4a1 af075dcb88502534, want 7ce753dea4bf87f1 e9c84c0ea81effe6
+step  3: got 0ab90e0768eaa1ba b30c4fe32e0412da, want 084dceeec2a89616 208da5a54507d626
+step  4: got a349673c39198d77 10521f6de7a26050, want 5dd0b99ced66ed80 efcc1e61ab64d520
+step  5: got c6dd3bea8e4d69dd 56b3ebcb576366b0, want 0a444b0c28b595cb ca22830f80d2ca28
+step  6: got d89356ae744c7834 d2b50132aa16cb3c, want d5b5ecd381c8883c 3f728a23a75cf26e
+step  7: got dd0e389604bb0d8c 4db64b66c2bd7f14, want 5ab3e0f37b4155fc 4e7324646f5b22ba
+step  8: got 8e1fb6c6f6c7dd0a 1b682a58764245b2, want b785bc875fbe0b52 25007549c9cbd4fa
+step  9: got 96ddd1841babcf25 3b34e423eefc34aa, want 0143bebc59f4fb11 f00dc8db88049ab2
+step 10: got e474468748d87ffb 8ed54429742f09e2, want 57ab734b0215bf1c 63ffce2cf3630b36
+step 11: got 7cb71cf100c83a59 a7a4e9b2c383c404, want 49d0750e7b0e158b fdc9aaeed7269644
+step 12: got d958ef2df0e54eea 6cc1fbe7f5b7f038, want 1032f2ef3d0636c3 12ca56612a4c1fba
+step 13: got c669ecfe9325688e bacbb47c39e38b1e, want 4f616e1cb372c136 4ea22b1af3660a18
+step 14: got 6f87fd2110194cea bdafe5d6fd8afa76, want 3657f90d8d66aed0 219d1409074b1496
+step 15: got e6fd6b469ebe6338 5985a9d58b27ea2c, want 15833916bd97a91a 57b52d4deb0ba52e
+step 16: got 94bd9bddd452912f 94cea1e57c400796, want ccf2d31b5278cac8 0465eaf8dc9081e4
+step 17: got b092fdd0a812ee38 791fb6e32d1491b6, want ea8bf2bfd7d7eca1 0c87051aa610a5a8
+step 18: got efd4c1d4f44f6b51 a8b005722f2958b0, want 529319ad3bac8952 75c176d808ca079e
+19 of 19 steps wrong
+exit 1
+== ptxas -O1
+0 of 19 steps wrong
+exit 0
+== ptxas -O0
+0 of 19 steps wrong
+exit 0
+== PTX only, JIT-compiled by the driver
+step  0: got 6d8faef93167fa23 7d49bf6b24b0c5ec, want 8b5868123167fa23 7d49bf6b24b0c5ec
+step  1: got 599d8d57a16ca48b 66d5dcb4b03b8d5a, want fbd30bef8cdaf685 565f33273835ce1c
+step  2: got 676bc7a40acfa103 8b1d1dfbbec2ce74, want 7ce753dea4bf87f1 e9c84c0ea81effe6
+step  3: got 3f64cbc884ea305d 2cb53400f8204086, want 084dceeec2a89616 208da5a54507d626
+step  4: got 069a5308d2040650 4c10279fe594c754, want 5dd0b99ced66ed80 efcc1e61ab64d520
+step  5: got 92581f20dca9d4e7 40084847115208d0, want 0a444b0c28b595cb ca22830f80d2ca28
+step  6: got ee35ba35f79fbc51 f7f2c2d47ec0f5d0, want d5b5ecd381c8883c 3f728a23a75cf26e
+step  7: got b4f78f1dd8e9dba4 b8a259508c9b9662, want 5ab3e0f37b4155fc 4e7324646f5b22ba
+step  8: got 558238a714a68bd5 6151daefc8eb4848, want b785bc875fbe0b52 25007549c9cbd4fa
+step  9: got 307823fd55c185e0 0c9b8b2782bbc5de, want 0143bebc59f4fb11 f00dc8db88049ab2
+step 10: got 3f78c28c6005072a 727c1d034cdc0f9e, want 57ab734b0215bf1c 63ffce2cf3630b36
+step 11: got fce6aeb464479d46 0f06d343d5732514, want 49d0750e7b0e158b fdc9aaeed7269644
+step 12: got a07b823caa0e9a92 ca613c235fdb796e, want 1032f2ef3d0636c3 12ca56612a4c1fba
+step 13: got 520b7decfb4268fe 4bbf4dee62bcf1e4, want 4f616e1cb372c136 4ea22b1af3660a18
+step 14: got 2e126c21fb9de648 91e44b36a19c85d2, want 3657f90d8d66aed0 219d1409074b1496
+step 15: got 0e86fa96169bf9e5 bffe3da866298fbc, want 15833916bd97a91a 57b52d4deb0ba52e
+step 16: got ac6518bba76040d6 b211cb1c941d234a, want ccf2d31b5278cac8 0465eaf8dc9081e4
+step 17: got 811e862a45ec82e1 e091802259cc0142, want ea8bf2bfd7d7eca1 0c87051aa610a5a8
+step 18: got be8f02397925dce9 a00ffcfb0ebb6fe4, want 529319ad3bac8952 75c176d808ca079e
+19 of 19 steps wrong
+exit 1
+exit=0

@@ -1,0 +1,30 @@
+# Lean check receipt
+date: 2026-11-08T19:15:20Z
+toolchain (lean-toolchain): leanprover/lean4:v4.34.1
+lean --version: Lean (version 4.34.1, x86_64-unknown-linux-gnu, commit 5045d0056413266e57c625dcd7c365b10e377c52, Release)
+sha256 BasePointIndependence/Core.lean: 09ec555b36dd89631e30d983ef02d16ad953dd394fbd27e69f1bfd4652fb231d
+command: lake build && lake env lean BasePointIndependence/Core.lean
+--- output (every '#print axioms' line; an unfinished proof would list the sorry axiom here) ---
+'AddCommGroupLite.add_zero' does not depend on any axioms
+'AddCommGroupLite.add_neg_cancel' does not depend on any axioms
+'AddCommGroupLite.add_left_cancel' does not depend on any axioms
+'AddCommGroupLite.add_right_cancel' does not depend on any axioms
+'AddCommGroupLite.succ_smul' does not depend on any axioms
+'AddCommGroupLite.add_smul' depends on axioms: [propext]
+'AddCommGroupLite.one_smul' does not depend on any axioms
+'AddCommGroupLite.smul_zero' does not depend on any axioms
+'AddCommGroupLite.smul_add' depends on axioms: [propext]
+'AddCommGroupLite.mul_smul' depends on axioms: [propext]
+'AddCommGroupLite.smul_mul_annihilates' depends on axioms: [propext]
+'AddCommGroupLite.smul_mod' depends on axioms: [propext]
+'AddCommGroupLite.transfer' depends on axioms: [propext]
+'AddCommGroupLite.transfer_back' depends on axioms: [propext]
+'AddCommGroupLite.transfer_roundtrip' depends on axioms: [propext]
+'AddCommGroupLite.smul_sub_eq_zero' depends on axioms: [propext]
+'AddCommGroupLite.log_unique' depends on axioms: [propext]
+'AddCommGroupLite.ap_const_diff' depends on axioms: [propext]
+'AddCommGroupLite.ap_log_shift' depends on axioms: [propext]
+'AddCommGroupLite.ap_diff_indep_of_start' depends on axioms: [propext]
+'AddCommGroupLite.ap_sumset_bound' depends on axioms: [propext, Quot.sound]
+'AddCommGroupLite.ap_base_sum_mem' depends on axioms: [propext, Quot.sound]
+--- exit: 0 ---

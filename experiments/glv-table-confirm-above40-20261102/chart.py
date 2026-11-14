@@ -25,7 +25,8 @@ rows.append(("both pooled", {a: (R["primary"][a]["geomean_over_main"], *R["prima
 for i, (name, d) in enumerate(rows):
     y = 72 + i * 32
     bold = "pooled" in name
-    o.append(f'<text x="{x0 - 8}" y="{y + 10}" text-anchor="end"{" font-weight=\"bold\"" if bold else ""}>{name}</text>')
+    weight = ' font-weight="bold"' if bold else ''
+    o.append(f'<text x="{x0 - 8}" y="{y + 10}" text-anchor="end"{weight}>{name}</text>')
     for j, (a, col, _) in enumerate(ARMS):
         p, lo, hi = d[a]
         yy = y + j * 10

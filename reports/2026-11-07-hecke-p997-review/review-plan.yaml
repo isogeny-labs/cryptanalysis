@@ -1,0 +1,56 @@
+review_plan: p997-fiber-20261107-v1
+archival_task: T-1791
+reviewed_revision: 927d1eada55ff51e87b89930cad48672147e0929
+claim_under_review: >-
+  At p=997 the archived Hecke degree-432 source census has 1800 noncuspidal
+  sources, a projected E image of 72 with the stated fiber histogram, and
+  a full B image bounded by 79 and 217 out of 1008. The five named Lean
+  declarations prove only the stated conditional three-lift and arithmetic
+  implications; determine exactly which observed quantities and bridges
+  the archived run supports.
+coordinator_prior: >-
+  The finite arithmetic lemmas look plausible and the source notes mark
+  their limited scope. I do not yet know whether the archived census and
+  audit establish their concrete hypotheses or whether the selected bounds
+  are tight and reproducible.
+joint_owners:
+  - joint: theorem statements, arithmetic, nonvacuity, nearby false cases
+    owner: blind_algebra
+    attack: Derive each implication from the statement alone and enumerate bounded counterexamples after removing one load-bearing assumption.
+    breaking_artifact: A tuple that satisfies the actual assumptions but falsifies a conclusion, or a widened proposition with a checked counterexample.
+  - joint: source-to-statement map, source census, audit, hashes, provenance
+    owner: source_fidelity
+    attack: Trace every claimed count to raw rows and audit code, inspect the geometric-to-arithmetic bridge and replay in a scratch copy.
+    breaking_artifact: An exact input row or source path contradicting a reported count, or a missing/assumed bridge identified by source line.
+mutual_blindness:
+  reviewers_may_read_sibling_reports_before_filing: false
+  coordinator_composes_after_both_file: true
+blind_rederivation:
+  required: true
+  owner: blind_algebra
+  permitted: reports/2026-11-07-hecke-p997-review/blind-input.md
+  forbidden: producer source, proof, reports, receipts, Git history, sibling output
+  quantities: [72-under-three-cap-24, 12-partial-lift, 48-two-lifts, projected-histogram-78, complement-791-to-929]
+proves_too_much_controls:
+  - object: a+b+c=71 with a,b,c at most 24
+    expected: saturation of all three at 24 must fail
+    owner: blind_algebra
+  - object: a+b+c=48 with no upper cap
+    expected: two positive lifts need not follow
+    owner: blind_algebra
+  - object: a+b+c=0
+    expected: positive partial lift must fail
+    owner: blind_algebra
+  - object: histogram counts considered without a source-to-lift map
+    expected: arithmetic alone cannot certify the concrete B image
+    owner: source_fidelity
+inputs:
+  result_sha256: c1cefcaac33e5a7ebc46bb38a303a7dafdd0c973dc23008fee59e48a1d06e059
+  protocol_sha256: 9f5f9461310e955f6a3c4e3a3b8499c343e5b1767f3be371fed297d6a02ce9c2
+  census_sha256: 3633892432afdce27e4d35ddb08633e8d94b21e54f2b341c7da3852e7047cba4
+  image_sha256: 2d4c96722eb06a4b7e2c9ea3d0e764840a305a25a09464f6b43acb092c455350
+  lean_sha256: 6d99b3ac863eb2fd9c5f7a9be71e14a681341b6c9d9cb70e95b36971c72a1a06
+  dependencies_sha256: 92389a9e94cce4614bcfe64c22ad4ae07d2144649200b6aca4325c5934554921
+  archived_build_sha256: 99e979b2da0fe5b3f56c459bcbad52a4dab21c2aae2de3e79287fa99a163df34
+machine_replay: Run the pinned current-corpus gate in an isolated workspace with resource ownership; retain exact command, input hashes, output, axioms, and exit code.
+procedure_deviations: []

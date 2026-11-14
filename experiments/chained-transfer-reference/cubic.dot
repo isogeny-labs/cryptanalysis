@@ -1,0 +1,14 @@
+digraph cubic {
+ graph [rankdir=LR,bgcolor="white",fontname="DejaVu Sans",pad=0.2];
+ node [shape=box,style="rounded,filled",fillcolor="#eef3fa",fontname="DejaVu Sans",fontsize=11];
+ edge [fontname="DejaVu Sans",fontsize=10];
+ E [label="E / F101\ny²=x³+x+46\n#E=109, G=(2,37)"];
+ J4 [label="Jac(C9), genus 4\ny²=x⁹+x³+46\nArbitrary-class norm implemented"];
+ J13 [label="Jac(C27), genus 13\ny²=x²⁷+x⁹+46\nGlobal norm remains open"];
+ E -> J4 [label="whole pullback\nu(X³), v(X³)",color="#2255aa"];
+ J4 -> J13 [label="whole pullback\ndegree ≤12",color="#2255aa"];
+ J4 -> E [label="closed-point Frobenius trace\nN₁f₁*=[3]",color="#247044"];
+ J13 -> J4 [label="deflation on exact image only\nrestricted norm=3·deflate",style=dashed,color="#996020"];
+ status [shape=note,fillcolor="#fff6df",label="130 norm witnesses independently replayed\nSecondary prime-order19 / F17 control\nUnsigned development; no cost result"];
+ J4 -> status [style=dotted,arrowhead=none];
+}

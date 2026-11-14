@@ -20,6 +20,20 @@ Sections from "Which producer" to "The band script" describe the producer and
 the local diagnostics from the cloud-agent VM (4 vCPU Intel Xeon guest,
 rustc 1.97.0).
 
+**Corrections (2026-11-06, sheriff case SHF-20261106-a114e7: CAN-1 to
+CAN-5, CAX-1 to CAX-3, K2, K-N1).** Disclosures only; no number of the band
+changed. See [CORRECTIONS-20261106.md](CORRECTIONS-20261106.md) and
+[`disclosures-20261106/`](disclosures-20261106/disclosures.md). In short:
+the band's IC costs are lower bounds (factor-base construction and the rank
+process's linear algebra are not charged); its intervals exclude rank-seed
+variance, so "S cheaper than P" at w = 0 is a single-seed order and the
+bounds hold to 3 significant figures; every counter, the field-kind
+sensitivity and the crossover weights are now listed; memory is reported
+beside the band (rT is undominated); the v2 analysis was reproduced byte
+for byte on 2026-11-06 with hashes committed; and since 2026-11-04 the
+current n = 83 baseline is the field-ops producer, with the rank-finder
+producer the former one. `[pcc:unverified]`
+
 ## Question
 
 AGENTS.md (crypto, section 5a) prices every arm's unpriced native work at
@@ -156,7 +170,11 @@ python3 experiments/koblitz-n83-opcounts-20261023/analyze_v2.py \
 
 Its outputs are in [`run_github_39882571652/analysis_v2/`](run_github_39882571652/analysis_v2/)
 (`band-v2.md`, `counts-v2.json`, `opcounts_result-v2.json`, stdout). A second
-run reproduced every output byte for byte.
+run reproduced every output byte for byte. *(Corrected 2026-11-06, CAX-3:
+that 2026-10-23 second run left no committed output, hash or log, so this
+sentence cited nothing. Two runs on 2026-11-06 reproduce all four outputs
+byte for byte; their hashes are in
+[`analysis_v2-reproduction-20261106/`](analysis_v2-reproduction-20261106/REPRODUCTION.md).)*
 
 **v2 verdict: `counts_identical`** (exit 0, no mismatches):
 
@@ -187,7 +205,10 @@ Pair rulings (ranked only where the order holds at every weight and both
 rho bounds):
 
 - S vs P: **S is cheaper than P at every weight** (S / P 0.9973 at w = 0,
-  0.6600 at 0.1, 0.6599 at 1).
+  0.6600 at 0.1, 0.6599 at 1). *(Qualified 2026-11-06, CAN-3: at w = 0 this
+  rests on a 272-group-operation difference between one kS and one kP rank
+  draw (seed 101); the intervals carry no rank-seed variance, so it is an
+  order at one rank seed.)*
 - S vs rT: **unresolved**: S is about 88x cheaper at w = 0 and 29x to 116x
   dearer at w = 0.1 and 1; the order flips inside the band.
 - P vs rT: **unresolved**, the same flip.
@@ -202,6 +223,20 @@ The distance remaining to rho for the stacked row is thus a factor of about
 operations (root solves, canonicalizations, root-index probes and Frobenius
 rotations) against ~1.0e5 group operations. This is accounting of an
 existing producer, not an improvement, and no baseline row changes.
+
+*Added 2026-11-06 (CAN-2, CAN-3, CAN-5, CAX-2):* the IC costs above are
+lower bounds, because the unit charges neither factor-base construction
+(every IC process loads the base) nor the rank process's linear algebra
+(179,700 `la_mulmods`); the intervals exclude rank-seed variance and their
+bounds are Monte-Carlo-dependent at the third significant figure; the field
+kinds (7.20e9 per S target) are counted but not priced, and charging them
+at w gives S / rT 96.43 / 384.2 and P / rT 146.4 / 583.3 at w = 0.1 / 1,
+moving the crossover weight from 0.00286 to 0.00085 (S) and from 0.00188 to
+0.00056 (P); and peak RSS is 1.876 GB (S) and 5.81 GB (P) against a median
+18.6 MB for rT, so rT is undominated at every weight. Every counter with its
+mean count, and the numbers behind each statement, are in
+[`disclosures-20261106/disclosures.md`](disclosures-20261106/disclosures.md)
+`[pcc:unverified]`.
 
 ![Gap to matched rho against the GAE weight, run 39882571652, v2 analysis
 (log axis; solid: band, dashed: Frobenius-at-1-GAE sensitivity; bars: 95%
@@ -218,7 +253,15 @@ intervals). Source: [figures/band_gap_39882571652.tex](figures/band_gap_39882571
    later index-lift, closure, index-build and rank-finder edits). Its band
    needs the same counters on that derivation (the edits here are anchored
    on text that later derivations may have changed) and its own counting
-   run.
+   run. *(Status 2026-11-06, CAX-1: item 2 is dated 2026-10-23. Since
+   2026-11-04 the current n = 83 baseline row is the field-ops producer
+   (`koblitz-n83-fieldops-20261104`, `docs/ic/baselines.json` baselines[4]);
+   the rank-finder producer is the former baseline (other_records[20]).
+   Neither has a band; both need the counters ported and their own counting
+   run. Not started.)*
+4. *(Added 2026-11-06.)* Count factor-base construction in the unit (a
+   counted run that constructs the base in process) and a second rank seed
+   for kS and kP (CORRECTIONS-20261106.md, "Runs needed").
 3. The rho's scalar multiplications stay a bound until its producer
    decomposes them.
 

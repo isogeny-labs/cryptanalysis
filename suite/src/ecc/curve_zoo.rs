@@ -1,4 +1,4 @@
-//! **Curve zoo** — every standardised short-Weierstrass prime-field
+//! **Curve zoo** — standardised and public synthetic short-Weierstrass prime-field
 //! curve we know about, exposed as [`CurveParams`] constructors.
 //!
 //! The cheat-sheet for who-uses-what:
@@ -26,6 +26,22 @@ use super::curve::CurveParams;
 use num_bigint::BigUint;
 
 impl CurveParams {
+    /// Public synthetic S56 fixture (reported SHA-1 counter 1841).
+    /// Seed provenance is unverified; see the S56 integration report.
+    pub fn s56() -> Self {
+        use super::s56;
+        Self {
+            name: s56::NAME,
+            p: BigUint::from(s56::P),
+            a: BigUint::from(s56::A),
+            b: BigUint::from(s56::B),
+            gx: BigUint::from(s56::GX),
+            gy: BigUint::from(s56::GY),
+            n: BigUint::from(s56::N),
+            h: 1,
+        }
+    }
+
     // ── Historical low-security SECG/NIST curves ───────────────────────────
 
     /// **secp112r1** (SEC 2 v1 §2.2.1).

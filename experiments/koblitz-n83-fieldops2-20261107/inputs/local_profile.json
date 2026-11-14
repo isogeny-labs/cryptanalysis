@@ -1,0 +1,151 @@
+{
+ "identities": {
+  "cold_layout_and_index_digests_equal_A_B": true,
+  "rank_relations_probes_roots_equal_A_B": true
+ },
+ "label": "LOCAL DIAGNOSTIC: shared cloud-agent VM, one pinned CPU (taskset -c 2); ranks and sizes only, not evidence",
+ "means_ms": {
+  "cold_process": {
+   "A": 6626.75542875,
+   "B": 6488.6413115
+  },
+  "index_build": {
+   "A": 4240.098009,
+   "B": 4067.24842425
+  },
+  "online": {
+   "A": 861.4125435,
+   "B": 819.85545075
+  },
+  "rank_stage": {
+   "A": 3530.7219576666666,
+   "B": 3474.227386666667
+  },
+  "scan_selftest": {
+   "A": 1171.363814,
+   "B": 1248.17855625
+  }
+ },
+ "modelled": {
+  "index_build_factor": 0.959234530809639,
+  "online_factor": 0.9517570378286465,
+  "rank_stage_factor": 0.9839991447422456,
+  "selftest_factor": 1.065577185612121
+ },
+ "notes": [
+  "online is timing_ms.target_median of the cold process (one target); the Tier 1 rows use the target record's online_ms."
+ ],
+ "rounds": {
+  "cold": {
+   "A": [
+    {
+     "index_build": 4579.098121999999,
+     "online": 917.253236,
+     "process_total": 7392.768282999999,
+     "rank_stage": 0.043319,
+     "scan_selftest": 1523.4309289999999
+    },
+    {
+     "index_build": 4173.898932,
+     "online": 785.525986,
+     "process_total": 6537.664529,
+     "rank_stage": 0.036856,
+     "scan_selftest": 1234.457688
+    },
+    {
+     "index_build": 4171.5294460000005,
+     "online": 990.652739,
+     "process_total": 6516.035772,
+     "rank_stage": 0.032843,
+     "scan_selftest": 1002.779936
+    },
+    {
+     "index_build": 4035.8655360000002,
+     "online": 752.218213,
+     "process_total": 6060.553131,
+     "rank_stage": 0.030997,
+     "scan_selftest": 924.786703
+    }
+   ],
+   "B": [
+    {
+     "index_build": 4333.744119,
+     "online": 886.213633,
+     "process_total": 7096.399561,
+     "rank_stage": 0.035247,
+     "scan_selftest": 1522.081644
+    },
+    {
+     "index_build": 3913.539739,
+     "online": 768.150675,
+     "process_total": 6101.6300980000005,
+     "rank_stage": 0.031118999999999997,
+     "scan_selftest": 1058.466518
+    },
+    {
+     "index_build": 4238.608781,
+     "online": 851.577037,
+     "process_total": 6890.359976,
+     "rank_stage": 0.045724,
+     "scan_selftest": 1443.6440639999998
+    },
+    {
+     "index_build": 3783.1010579999997,
+     "online": 773.480458,
+     "process_total": 5866.175611,
+     "rank_stage": 0.041100000000000005,
+     "scan_selftest": 968.521999
+    }
+   ]
+  },
+  "rank": {
+   "A": [
+    {
+     "index_build": 4398.589642,
+     "online": 924.4613820000001,
+     "process_total": 10952.354649,
+     "rank_stage": 3669.219953,
+     "scan_selftest": 1606.211834
+    },
+    {
+     "index_build": 4134.371714,
+     "online": 750.551595,
+     "process_total": 9628.104759,
+     "rank_stage": 3403.190177,
+     "scan_selftest": 1000.148928
+    },
+    {
+     "index_build": 4188.896801,
+     "online": 820.927118,
+     "process_total": 10071.879329,
+     "rank_stage": 3519.755743,
+     "scan_selftest": 1189.483136
+    }
+   ],
+   "B": [
+    {
+     "index_build": 4330.612167,
+     "online": 880.610559,
+     "process_total": 10680.341332,
+     "rank_stage": 3618.6344670000003,
+     "scan_selftest": 1493.5274060000002
+    },
+    {
+     "index_build": 4219.842858,
+     "online": 739.1787549999999,
+     "process_total": 9876.366435,
+     "rank_stage": 3383.289911,
+     "scan_selftest": 1175.442728
+    },
+    {
+     "index_build": 4204.7261929999995,
+     "online": 709.900408,
+     "process_total": 9763.453381,
+     "rank_stage": 3420.757782,
+     "scan_selftest": 1075.543
+    }
+   ]
+  }
+ },
+ "source": "profile/run_local_profile.py: A = ic_online_fieldops_r770 (online/), B = ic_online_fieldops2_r770 (online-b/), both +pclmulqdq, fresh process each, alternating A then B; cold 4 rounds (seed 7), rank 3 rounds (rank seed 1501); raw summaries in profile/raw/"
+}
