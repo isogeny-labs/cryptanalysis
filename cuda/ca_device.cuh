@@ -82,7 +82,73 @@ CA_DEV uint64_t ca_dev_submod(uint64_t a, uint64_t b, uint64_t p)
     return a >= b ? a - b : a + (p - b);
 }
 
-/* Montgomery product a*b*R^-1 mod p for any odd p < 2^64. */
+/* Montgomery product a*b*R^-1 mod p for any odd p < 2^64.
+ *
+ * The result is the canonical residue in [0, p) whenever a*b < p*R (one
+ * operand <= p), so every correct implementation returns the same word.
+ * CA_GPU_PTX_MONT (CMake option, default OFF; device code only) selects a
+ * product on 32-bit limbs with PTX carry chains (mad.lo.cc / madc.hi.cc), two
+ * word-by-word reduction rounds and a branch-free final subtraction.  It is
+ * not compiled for the host, so the emulator always runs the portable body
+ * below; the limb sequence is checked instruction by instruction against it
+ * by a C model (docs/perf/20261112-build-flags-and-cuda.md).  Untested on a
+ * GPU. */
+#if defined(__CUDA_ARCH__) && defined(CA_GPU_PTX_MONT)
+CA_DEV uint64_t ca_dev_mont_mul(uint64_t a, uint64_t b, uint64_t p, uint64_t pinv)
+{
+    const uint32_t a0 = (uint32_t)a, a1 = (uint32_t)(a >> 32);
+    const uint32_t b0 = (uint32_t)b, b1 = (uint32_t)(b >> 32);
+    const uint32_t p0 = (uint32_t)p, p1 = (uint32_t)(p >> 32);
+    const uint32_t q = (uint32_t)pinv; /* -p^-1 mod 2^32 */
+    uint32_t r0, r1, r2, r3, r4, s0, s1, bw;
+    asm("{\n\t"
+        ".reg .u32 m;\n\t"
+        "mov.u32        %4, 0;\n\t"
+        /* r3:r2:r1:r0 = a * b */
+        "mul.lo.u32     %0, %5, %7;\n\t"
+        "mul.hi.u32     %1, %5, %7;\n\t"
+        "mad.lo.cc.u32  %1, %6, %7, %1;\n\t"
+        "madc.hi.u32    %2, %6, %7, 0;\n\t"
+        "mad.lo.cc.u32  %1, %5, %8, %1;\n\t"
+        "madc.hi.cc.u32 %2, %5, %8, %2;\n\t"
+        "madc.hi.u32    %3, %6, %8, 0;\n\t"
+        "mad.lo.cc.u32  %2, %6, %8, %2;\n\t"
+        "addc.u32       %3, %3, 0;\n\t"
+        /* round 1: add m*p, m = r0 * q, so that r0 becomes 0 */
+        "mul.lo.u32     m, %0, %11;\n\t"
+        "mad.lo.cc.u32  %0, m, %9, %0;\n\t"
+        "madc.lo.cc.u32 %1, m, %10, %1;\n\t"
+        "addc.cc.u32    %2, %2, 0;\n\t"
+        "addc.cc.u32    %3, %3, 0;\n\t"
+        "addc.u32       %4, %4, 0;\n\t"
+        "mad.hi.cc.u32  %1, m, %9, %1;\n\t"
+        "madc.hi.cc.u32 %2, m, %10, %2;\n\t"
+        "addc.cc.u32    %3, %3, 0;\n\t"
+        "addc.u32       %4, %4, 0;\n\t"
+        /* round 2: m = r1 * q, one word up */
+        "mul.lo.u32     m, %1, %11;\n\t"
+        "mad.lo.cc.u32  %1, m, %9, %1;\n\t"
+        "madc.lo.cc.u32 %2, m, %10, %2;\n\t"
+        "addc.cc.u32    %3, %3, 0;\n\t"
+        "addc.u32       %4, %4, 0;\n\t"
+        "mad.hi.cc.u32  %2, m, %9, %2;\n\t"
+        "madc.hi.cc.u32 %3, m, %10, %3;\n\t"
+        "addc.u32       %4, %4, 0;\n\t"
+        "}"
+        : "=&r"(r0), "=&r"(r1), "=&r"(r2), "=&r"(r3), "=&r"(r4)
+        : "r"(a0), "r"(a1), "r"(b0), "r"(b1), "r"(p0), "r"(p1), "r"(q));
+    (void)r0;
+    (void)r1;
+    /* t = r4:r3:r2 < 2p; subtract p and keep t if that borrows */
+    asm("sub.cc.u32     %0, %3, %5;\n\t"
+        "subc.cc.u32    %1, %4, %6;\n\t"
+        "subc.u32       %2, %7, 0;"
+        : "=r"(s0), "=r"(s1), "=r"(bw)
+        : "r"(r2), "r"(r3), "r"(p0), "r"(p1), "r"(r4));
+    const uint64_t t = ((uint64_t)r3 << 32) | r2, d = ((uint64_t)s1 << 32) | s0;
+    return bw ? t : d;
+}
+#else
 CA_DEV uint64_t ca_dev_mont_mul(uint64_t a, uint64_t b, uint64_t p, uint64_t pinv)
 {
     uint64_t lo = a * b, hi = ca_dev_mulhi(a, b);
@@ -97,6 +163,7 @@ CA_DEV uint64_t ca_dev_mont_mul(uint64_t a, uint64_t b, uint64_t p, uint64_t pin
     if (c2 || r >= p) r -= p;
     return r;
 }
+#endif
 
 CA_DEV uint64_t ca_dev_mont_pow(uint64_t a, uint64_t e, uint64_t p, uint64_t pinv, uint64_t one)
 {
@@ -218,9 +285,36 @@ CA_DEV int ca_dev_canon(const ca_gpu_rho_args *g, uint64_t x, uint64_t *y)
     return 0;
 }
 
+/* Multiplier index of a hash: (h >> 32) mod r.  h >> 32 fits in 32 bits, so
+ * the remainder is taken in 32-bit arithmetic (a 64-bit % is a long software
+ * routine on the GPU), and a power-of-two r - which is what gpu_rho.c's
+ * automatic table size always is (8, doubled up to the cap) - is a mask.  An
+ * explicit r from ca_gpu_rho_params may be any value >= 4, so the general
+ * remainder stays.  r is the same for every thread of a launch, so the
+ * test does not diverge.  The value is (h >> 32) % r in every case. */
 CA_DEV uint32_t ca_dev_index(const ca_gpu_rho_args *g, uint64_t h)
 {
-    return (uint32_t)((h >> 32) % g->r);
+    const uint32_t hi = (uint32_t)(h >> 32), r = g->r;
+    return (r & (r - 1)) == 0 ? (hi & (r - 1)) : hi % r;
+}
+
+/* (i + 1) % r for an index i < r, without a division. */
+CA_DEV uint32_t ca_dev_next_index(const ca_gpu_rho_args *g, uint32_t i)
+{
+    return i + 1 == g->r ? 0 : i + 1;
+}
+
+/* Word j of multiplier i (x, y, alpha, beta for j = 0..3).  On the device the
+ * table is read-only for the whole launch, so it goes through the read-only
+ * data cache (__ldg); with CA_GPU_SMEM_TABLE the kernel may point mult at
+ * shared memory, where __ldg must not be used. */
+CA_DEV uint64_t ca_dev_mult(const ca_gpu_rho_args *g, uint32_t i, uint32_t j)
+{
+#if defined(__CUDA_ARCH__) && !defined(CA_GPU_SMEM_TABLE)
+    return __ldg((const unsigned long long *)g->mult + 4 * (size_t)i + j);
+#else
+    return g->mult[4 * (size_t)i + j];
+#endif
 }
 
 /* ---- walk state helpers ------------------------------------------------ */
@@ -267,16 +361,16 @@ CA_DEV void ca_dev_walk_step_single(const ca_gpu_rho_args *g, ca_dev_walk *w)
     uint32_t i = w->retry ? w->pend : ca_dev_index(g, ca_dev_hash(g->kind, w->x, w->y, g->p));
     for (;;) {
         uint64_t nx = w->x, ny = w->y;
-        ca_dev_op(g, &nx, &ny, g->mult[4 * (size_t)i], g->mult[4 * (size_t)i + 1]);
+        ca_dev_op(g, &nx, &ny, ca_dev_mult(g, i, 0), ca_dev_mult(g, i, 1));
         int neg = ca_dev_canon(g, nx, &ny);
         if (g->negmap && ca_dev_index(g, ca_dev_hash(g->kind, nx, ny, g->p)) == i) {
-            i = (i + 1) % g->r;
+            i = ca_dev_next_index(g, i);
             continue;
         }
         w->x = nx;
         w->y = ny;
-        w->a = ca_dev_addmod(w->a, g->mult[4 * (size_t)i + 2], g->n);
-        w->b = ca_dev_addmod(w->b, g->mult[4 * (size_t)i + 3], g->n);
+        w->a = ca_dev_addmod(w->a, ca_dev_mult(g, i, 2), g->n);
+        w->b = ca_dev_addmod(w->b, ca_dev_mult(g, i, 3), g->n);
         if (neg) ca_dev_walk_negate_exps(g, w);
         w->retry = 0;
         return;
@@ -385,10 +479,10 @@ CA_DEV void ca_dev_rho_thread(const ca_gpu_rho_args *g, uint32_t tid)
         if (g->kind == CA_GPU_KIND_ZP) {
             for (int k = 0; k < CA_GPU_W; k++) {
                 uint32_t i = idx[k];
-                uint64_t nx = ca_dev_mont_mul(w[k].x, g->mult[4 * (size_t)i], p, pinv);
+                uint64_t nx = ca_dev_mont_mul(w[k].x, ca_dev_mult(g, i, 0), p, pinv);
                 w[k].x = nx;
-                w[k].a = ca_dev_addmod(w[k].a, g->mult[4 * (size_t)i + 2], g->n);
-                w[k].b = ca_dev_addmod(w[k].b, g->mult[4 * (size_t)i + 3], g->n);
+                w[k].a = ca_dev_addmod(w[k].a, ca_dev_mult(g, i, 2), g->n);
+                w[k].b = ca_dev_addmod(w[k].b, ca_dev_mult(g, i, 3), g->n);
                 w[k].since_dp++;
                 uint64_t h = ca_dev_hash(g->kind, nx, 0, p);
                 if ((h & g->dp_mask) == 0) {
@@ -411,7 +505,7 @@ CA_DEV void ca_dev_rho_thread(const ca_gpu_rho_args *g, uint32_t tid)
         /* elliptic curve: batched affine addition */
         for (int k = 0; k < CA_GPU_W; k++) {
             uint32_t i = idx[k];
-            uint64_t bx = g->mult[4 * (size_t)i], by = g->mult[4 * (size_t)i + 1];
+            uint64_t bx = ca_dev_mult(g, i, 0), by = ca_dev_mult(g, i, 1);
             uint64_t d;
             if (w[k].x == p || bx == p)
                 d = one;
@@ -427,7 +521,7 @@ CA_DEV void ca_dev_rho_thread(const ca_gpu_rho_args *g, uint32_t tid)
             uint64_t di = k ? ca_dev_mont_mul(inv, pre[k - 1], p, pinv) : inv;
             inv = ca_dev_mont_mul(inv, den[k], p, pinv);
             uint32_t i = idx[k];
-            uint64_t bx = g->mult[4 * (size_t)i], by = g->mult[4 * (size_t)i + 1];
+            uint64_t bx = ca_dev_mult(g, i, 0), by = ca_dev_mult(g, i, 1);
             uint64_t nx, ny;
             if (w[k].x == p) {
                 nx = bx;
@@ -459,15 +553,15 @@ CA_DEV void ca_dev_rho_thread(const ca_gpu_rho_args *g, uint32_t tid)
             int neg = ca_dev_canon(g, nx, &ny);
             uint64_t h = ca_dev_hash(g->kind, nx, ny, p);
             if (g->negmap && ca_dev_index(g, h) == i) {
-                w[k].pend = (i + 1) % g->r;
+                w[k].pend = ca_dev_next_index(g, i);
                 w[k].retry = 1;
                 continue;
             }
             w[k].retry = 0;
             w[k].x = nx;
             w[k].y = ny;
-            w[k].a = ca_dev_addmod(w[k].a, g->mult[4 * (size_t)i + 2], g->n);
-            w[k].b = ca_dev_addmod(w[k].b, g->mult[4 * (size_t)i + 3], g->n);
+            w[k].a = ca_dev_addmod(w[k].a, ca_dev_mult(g, i, 2), g->n);
+            w[k].b = ca_dev_addmod(w[k].b, ca_dev_mult(g, i, 3), g->n);
             if (neg) ca_dev_walk_negate_exps(g, &w[k]);
             w[k].since_dp++;
             if (g->negmap) {
