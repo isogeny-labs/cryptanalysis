@@ -1,0 +1,15 @@
+digraph nonsplit {
+ graph [rankdir=LR,bgcolor="white",fontname="DejaVu Sans",pad=0.2];
+ node [shape=box,style="rounded,filled",fillcolor="#eef3fa",fontname="DejaVu Sans",fontsize=11];
+ edge [fontname="DejaVu Sans",fontsize=10];
+ source [label="C/F17: y²=x⁶+2x²+2\nFrobenius(3,3); Jac285\n3 stable pairings among15"];
+ product [fillcolor="#fff6df",label="Opposite pairs\nδ=0: product case"];
+ target1 [label="Raw B1: [10,6,14,2,12,10,9]\nδ=11; monic divide by9\nSmooth; Jac285"];
+ target2 [label="Raw B2: [10,11,14,15,12,7,9]\nδ=6; smooth; Jac285"];
+ source -> product [label="retained negative",style=dashed];
+ source -> target1 [label="kernel/codomain only\nactual map is next",style=dashed,color="#2255aa"];
+ source -> target2 [label="kernel/codomain only",style=dashed,color="#2255aa"];
+ target1 -> target2 [dir=both,label="z↦−z, w↦w\none curve destination",color="#247044"];
+ control [fillcolor="#fff6df",label="E109/F101 quadratic cover\nFrobenius6-cycle:1 stable pairing\nOpposite roots => δ=0 only"];
+ source -> control [style=dotted,arrowhead=none,label="fixed control"];
+}

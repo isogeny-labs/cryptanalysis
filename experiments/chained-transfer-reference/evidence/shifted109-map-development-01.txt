@@ -1,0 +1,14 @@
+   Compiling chained-transfer-reference v0.1.0 (/workspace/cryptanalysis/experiments/chained-transfer-reference)
+    Finished `release` profile [optimized] target(s) in 6.66s
+     Running unittests src/main.rs (experiments/chained-transfer-reference/target/release/deps/chained_transfer_reference-d352df790eb46e3d)
+
+running 1 test
+retained degenerate pairing[(0, 3), (1, 4), (2, 5)], delta0
+stable pairing[(0, 4), (1, 5), (2, 3)], delta63, target[56, 41, 62, 78, 24, 57, 80]
+stable pairing[(0, 5), (1, 3), (2, 4)], delta38, target[56, 60, 62, 23, 24, 44, 80]
+test nonsplit::map::shifted_prime109_full_domains_and_source_recovery has been running for over 60 seconds
+PASS frozen shifted E109/F101, delta63, raw scale22; all12317 source/target classes both dual norms[2], bijection/additivity/coefficient descent; all109 scalar/recovery[4]/inverse82 relations, no scalar labels in maps
+test nonsplit::map::shifted_prime109_full_domains_and_source_recovery ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 45 filtered out; finished in 496.31s
+

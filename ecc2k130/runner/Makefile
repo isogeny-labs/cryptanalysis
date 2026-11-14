@@ -45,6 +45,19 @@ CXX     ?= g++
 OMPFLAGS ?= -fopenmp
 CLANG   ?= clang
 PTXAS   ?= ptxas
+# Toolkit gate, as in ../Makefile (research/clmad_audit_20261110): a
+# PACKED_CLMAD=1 build on a BAD_PTXAS version is refused unless
+# ALLOW_BAD_PTXAS=1.  Empty by default: the ptxas constant-fold defect
+# (NVIDIA bug 6955062) reproduces on 13.3.73 and 13.4.92 with the public
+# reproducer, but test-packed-cuda passes on both with these kernels.
+NVCC_VERSION := $(shell $(NVCC) --version 2>/dev/null | sed -n 's/.*V\([0-9][0-9.]*\).*/\1/p' | tail -1)
+BAD_PTXAS ?=
+define check-ptxas
+	@if [ "$(PACKED_CLMAD)" = "1" ]; then v="$(NVCC_VERSION)"; for b in $(BAD_PTXAS); do \
+	  if [ "$$v" = "$$b" ] && [ "$(ALLOW_BAD_PTXAS)" != "1" ]; then \
+	    echo "refusing a clmad build with nvcc/ptxas $$v: listed in BAD_PTXAS ($(BAD_PTXAS));" \
+	         "see research/clmad_audit_20261110; override with ALLOW_BAD_PTXAS=1" >&2; exit 1; fi; done; fi
+endef
 PTX     ?= /tmp/autolab.ptx
 CUDAPATH ?= /usr/local/cuda
 BATCH   ?= 32
@@ -260,6 +273,7 @@ ecc2k130-cpu: src/main.cu $(HDRS) $(GEN)
 gpu: ecc2k130
 
 ecc2k130: src/main.cu $(HDRS) $(GEN)
+	$(check-ptxas)
 	$(NVCC) -O3 -std=c++17 $(ARCH) $(DEFS) $(GPUFLAGS) -lineinfo -Xcompiler -O3 \
 	    -Xcompiler -fopenmp src/main.cu -o $@ -lgomp
 
@@ -436,6 +450,7 @@ test-karat3:
 
 test-packed-cuda:
 	mkdir -p build
+	$(check-ptxas)
 	$(NVCC) -O3 -std=c++17 $(ARCH) $(DEFS) src/testpackedcuda.cu -o build/test-packed-cuda
 	./build/test-packed-cuda
 

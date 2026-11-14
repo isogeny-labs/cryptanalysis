@@ -1,0 +1,30 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-11T13:24:16Z",
+ "id": "PCC-20261111-afecb5",
+ "kind": "statement",
+ "producer": {
+  "commit": "da66ab9d953d2ba96c4ac9d6e8379c3478b3f277",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/odd-kernels-02.txt",
+    "sha256": "c01d2e783166b40a311d6450200a1da570563ca558d0b203b86425e21927b057"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/odd-kernels-clippy-02.txt",
+    "sha256": "b1f0d80ed96fa31dd1a0cf79d4362ad93a212d28de7750efba6d1bc7bb6f2509"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Frozen CT18 regression repeats every fixed17/101 ell3/5/7 module count and all nonzero pairing-scale controls with explicit expected0/4 assertions; targeted correctness and strict Clippy pass. No new geometric isogeny or actual repeated Jordan identification; initial discovery receipt retained separately."
+}
