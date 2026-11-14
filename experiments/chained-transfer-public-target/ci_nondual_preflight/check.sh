@@ -16,7 +16,7 @@ study=experiments/chained-transfer-public-target
 mkdir "$out"
 export RUSTUP_TOOLCHAIN=1.99.1
 export CARGO_TARGET_DIR=$cache
-reference=$ci/reference-03.sha256
+reference=$ci/reference-04.sha256
 cd "$repo"
 cp "$reference" "$out/original-reference.sha256"
 cp "$ci/check.sh" "$out/original-command.sh"
@@ -64,8 +64,8 @@ for i in 0 1 2 3; do
   python3 "$ci/capture_engine.py" "$out" "$producer" prepared
  fi
  phase "$label-compile" 0 timeout 120 cargo test --release --locked --offline --manifest-path "$pkg/Cargo.toml" --lib --no-run --message-format=json
- if [[ $i == 0 ]]; then python3 "$ci/capture_engine.py" "$out" "$producer" reused; fi
  python3 "$ci/capture_executable.py" "$out" "$label" compiled
+ if [[ $i == 0 ]]; then python3 "$ci/capture_engine.py" "$out" "$producer" reused; fi
  phase "$label-native" 0 bash -c 'ulimit -v 2097152; exec timeout 900 cargo test --release --locked --offline --manifest-path "$1" --lib -- --nocapture --test-threads=1' _ "$pkg/Cargo.toml"
  grep -Eq '^test result: ok\. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out;' "$out/$label-native.txt"
  python3 "$ci/capture_executable.py" "$out" "$label" runtime
