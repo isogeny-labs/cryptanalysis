@@ -367,6 +367,7 @@ struct AOutcome {
 /// positive (a carry into the next byte) but never a false negative, so
 /// callers re-check the bytes.  Same test as the NFS line siever's.
 #[inline]
+#[cfg_attr(not(test), allow(dead_code))]
 fn any_byte_ge(x: u64, t: u8) -> bool {
     const H: u64 = 0x8080_8080_8080_8080;
     if t > 128 {
@@ -374,6 +375,17 @@ fn any_byte_ge(x: u64, t: u8) -> bool {
     }
     let k = (128 - t as u64) * 0x0101_0101_0101_0101;
     (x.wrapping_add(k) | x) & H != 0
+}
+
+/// `(x + y) mod p` for `x, y < p < 2^63`: one conditional subtraction.
+#[inline(always)]
+fn add_mod_lt(x: u64, y: u64, p: u64) -> u64 {
+    let s = x + y;
+    if s >= p {
+        s - p
+    } else {
+        s
+    }
 }
 
 fn sieve_a(ctx: &SieveCtx, ap: &APoly) -> AOutcome {
@@ -440,19 +452,23 @@ fn sieve_a(ctx: &SieveCtx, ap: &APoly) -> AOutcome {
                     continue;
                 }
                 let d = bainv2[v][i];
+                // soln < p and d < p, so one conditional subtraction
+                // replaces the `% p` of the sum.
                 if sign > 0 {
-                    soln1[i] = (soln1[i] + d) % p;
-                    soln2[i] = (soln2[i] + d) % p;
+                    soln1[i] = add_mod_lt(soln1[i], d, p);
+                    soln2[i] = add_mod_lt(soln2[i], d, p);
                 } else {
-                    soln1[i] = (soln1[i] + p - d) % p;
-                    soln2[i] = (soln2[i] + p - d) % p;
+                    soln1[i] = add_mod_lt(soln1[i], p - d, p);
+                    soln2[i] = add_mod_lt(soln2[i], p - d, p);
                 }
             }
         }
         out.polys += 1;
-        // c = (b² − kn) / a.
-        let c = (&b * &b - &kn_big) / &a_big;
+        // c = (b² − kn) / a, needed only by the survivors' trial division
+        // and so computed on the first of them.
+        let mut c_cache: Option<BigInt> = None;
         sieve.fill(0);
+        let sv = &mut sieve[..len];
         for i in 1..nfb {
             let p = fb.primes[i];
             if p < ctx.min_sieve_prime || ainv[i] == 0 {
@@ -460,11 +476,11 @@ fn sieve_a(ctx: &SieveCtx, ap: &APoly) -> AOutcome {
             }
             let lg = fb.logs[i];
             let pu = p as usize;
-            let mut j1 = ((soln1[i] + m_mod[i]) % p) as usize;
-            let mut j2 = ((soln2[i] + m_mod[i]) % p) as usize;
+            let mut j1 = add_mod_lt(soln1[i], m_mod[i], p) as usize;
+            let mut j2 = add_mod_lt(soln2[i], m_mod[i], p) as usize;
             if j1 == j2 {
                 while j1 < len {
-                    sieve[j1] = sieve[j1].wrapping_add(lg);
+                    sv[j1] = sv[j1].wrapping_add(lg);
                     j1 += pu;
                 }
                 continue;
@@ -472,42 +488,54 @@ fn sieve_a(ctx: &SieveCtx, ap: &APoly) -> AOutcome {
             if j1 > j2 {
                 std::mem::swap(&mut j1, &mut j2);
             }
-            // Walk both progressions together.
+            // Walk both progressions together.  `j1 < j2` always holds in
+            // the loop, so testing `j2 < len` bounds both indices; the
+            // pointer form drops the two per-step bounds checks.
             while j2 < len {
-                sieve[j1] = sieve[j1].wrapping_add(lg);
-                sieve[j2] = sieve[j2].wrapping_add(lg);
+                // SAFETY: j1 < j2 < len == sv.len().
+                unsafe {
+                    let a = sv.get_unchecked_mut(j1);
+                    *a = a.wrapping_add(lg);
+                    let b = sv.get_unchecked_mut(j2);
+                    *b = b.wrapping_add(lg);
+                }
                 j1 += pu;
                 j2 += pu;
             }
             if j1 < len {
-                sieve[j1] = sieve[j1].wrapping_add(lg);
+                sv[j1] = sv[j1].wrapping_add(lg);
             }
         }
         // Survivors in ascending order, eight bytes at a time: a word
         // with no byte at or above the threshold (almost all of them) is
         // skipped whole.
+        let thr = ctx.threshold;
         let mut survivor = |idx: usize| {
             out.candidates += 1;
             let x = idx as i64 - m;
-            if let Some(rel) = trial_divide(ctx, ap, &in_a, &b, &c, x, &soln1, &soln2) {
+            let c = c_cache.get_or_insert_with(|| (&b * &b - &kn_big) / &a_big);
+            if let Some(rel) = trial_divide(ctx, ap, &in_a, &b, c, x, &soln1, &soln2) {
                 out.rels.push(rel);
             }
         };
-        let words = sieve.chunks_exact(8);
-        let tail = words.remainder();
-        for (w, chunk) in words.enumerate() {
-            let word = u64::from_le_bytes(chunk.try_into().expect("8 bytes"));
-            if any_byte_ge(word, ctx.threshold) {
+        // 32-byte blocks are tested by a vectorised byte maximum; a block
+        // with no byte at or above the threshold (almost all of them) is
+        // skipped whole, and a hit block is re-read byte by byte, so the
+        // survivors come out in the same ascending order.
+        let blocks = sv.chunks_exact(32);
+        let tail = blocks.remainder();
+        for (w, chunk) in blocks.enumerate() {
+            if chunk.iter().fold(0u8, |mx, &v| mx.max(v)) >= thr {
                 for (k, &v) in chunk.iter().enumerate() {
-                    if v >= ctx.threshold {
-                        survivor(w * 8 + k);
+                    if v >= thr {
+                        survivor(w * 32 + k);
                     }
                 }
             }
         }
         let tail_start = len - tail.len();
         for (k, &v) in tail.iter().enumerate() {
-            if v >= ctx.threshold {
+            if v >= thr {
                 survivor(tail_start + k);
             }
         }
@@ -552,12 +580,11 @@ fn trial_divide(
         if !divides {
             continue;
         }
-        loop {
-            let (q, r) = v.div_rem(&BigUint::from(p));
-            if !r.is_zero() {
-                break;
-            }
-            v = q;
+        // `v mod p` allocates nothing and `v /= p` divides in place; the
+        // old `div_rem(&BigUint::from(p))` allocated a quotient, a
+        // remainder and a divisor each pass, including the failing one.
+        while big_mod_u64(&v, p) == 0 {
+            v /= p;
             fbi.push(i as u32);
         }
     }

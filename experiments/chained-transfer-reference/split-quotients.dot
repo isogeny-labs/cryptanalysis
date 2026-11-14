@@ -1,0 +1,12 @@
+digraph split {
+ graph [rankdir=LR,bgcolor="white",fontname="DejaVu Sans",pad=0.2];
+ node [shape=box,style="rounded,filled",fillcolor="#eef3fa",fontname="DejaVu Sans",fontsize=11];
+ edge [fontname="DejaVu Sans",fontsize=10];
+ P [label="E1(Fp) × E2(Fp)\n19×15 / 109×113\nFull odd rational groups"];
+ J [label="Jac(C)(Fp)\n285 / 12,317 classes\nBoth reciprocal charts completed"];
+ T [fillcolor="#e7f5ea",label="Accepted Jac(Ct)(Fp)\nFp-nonisomorphic to Jac(C)\nSource subgroup coordinates([4]P,0)"];
+ P -> J [label="P1+P2\nquarter/half component controls"];
+ J -> P [label="both norms N\nNP=PN=[2]",color="#247044"];
+ J -> T [label="Richelot R"];
+ T -> J [label="dual Rhat\nboth compositions[2]",color="#247044"];
+}

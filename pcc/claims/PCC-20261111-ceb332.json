@@ -1,0 +1,23 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-11T13:48:46Z",
+ "id": "PCC-20261111-ceb332",
+ "kind": "statement",
+ "producer": {
+  "commit": "75e5064d1d089b917b068e7ca15b124ec0bcae37",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/odd-kernels-focused-ci-01.txt",
+    "sha256": "377fc7db20099ab0b55c279856bf07c3d0e58c531d0b1ff60558be6d14de45ef"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Odd-kernel producer75e5064d1d089b917b068e7ca15b124ec0bcae37 passes exact-head focused43030710539:native25/reference50 unit tests plus1 separately authored integration test,one existing benchmark ignored,formatting/strict Clippy/unchanged runtime guards. Frozen raw log retained. CI correctness execution,not signed scientific validation,performance evidence or all-workflow success."
+}

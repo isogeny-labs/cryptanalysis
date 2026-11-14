@@ -1,0 +1,23 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-13T10:16:53Z",
+ "id": "PCC-20261113-e77ee3",
+ "kind": "statement",
+ "producer": {
+  "commit": "2933ddf62028b65bb0a69b8efaea27faafadb2ab",
+  "model": "",
+  "session": "pcc-qualified-rollout-20261113"
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "docs/shared-code-rollouts/20261113-pcc-qualified/checks.json",
+    "sha256": "07b48038f4a830fff8ba80baae86f575087847083cfac94a7bbefed3330a439b"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Software mirror and development-test provenance only; unsigned, no scientific measurement or cryptanalytic conclusion.",
+ "statement": "The cryptanalysis rollout files match the canonical crypto owner PCC source/test bytes and the local PCC software suite completes25 tests with exit0."
+}
