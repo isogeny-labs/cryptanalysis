@@ -135,6 +135,17 @@ fn check(phase: &str, raw: &str, r: &[Record]) {
 fn main() {
     let a: Vec<_> = std::env::args().collect();
     match a.get(1).map(String::as_str) {
+        Some("--old-control") => {
+            assert_eq!(a.len(), 4);
+            let r = records(&a[2]);
+            assert_eq!(r.len(), 1);
+            assert_eq!(r[0].kind, EDGE[0]);
+            assert_eq!(r[0].data["actual_gcd_degree"], 168);
+            assert_eq!(r[0].data["accepted_nondual"], false);
+            assert!(fs::read_to_string(&a[2]).unwrap().contains("old dual must fail actual nondual kernel acceptance"));
+            save(&a[3], &r);
+            println!("actual old first dual: full168gcd and rejected gate retained");
+        }
  Some("--freeze")=>{assert_eq!(a.len(),5);let r=records(&a[3]);check(&a[2],&a[3],&r);save(&a[4],&r);println!("{}: all{} ordered whole records frozen, NO masks, every occurrence retained",a[2],r.len());},
  Some("--compare")=>{assert_eq!(a.len(),6);let expected=load(&a[3]);let actual=records(&a[4]);check(&a[2],&a[4],&actual);assert_eq!(expected,actual,"whole record mismatch, NO masks");save(&a[5],&actual);println!("{}: all{} whole records exact, NO masks",a[2],actual.len());},
  Some("--control")=>{assert_eq!(a.len(),4);let r=records(&a[2]);assert_eq!(r.len(),2);assert_eq!(r[0].kind,EDGE[0]);assert_eq!(r[1].kind,EDGE[1]);assert_eq!(r[1].data["actual_gcd_degree"],168);assert_eq!(r[1].data["accepted_nondual"],false);assert!(fs::read_to_string(&a[2]).unwrap().contains("old second dual must fail next nondual kernel acceptance"));save(&a[3],&r);println!("actual old-second-dual control:168gcd/rejected gate retained");},

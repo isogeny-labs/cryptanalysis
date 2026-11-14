@@ -1,3 +1,25 @@
+# Genuine18 released; additive22nd strict preflight replay source ready
+
+Actual0e8aa2/consumer85aac5:43627710330/job132547213547SUCCESS/EIGHTremoteobjects replayed BEFORE3a689cf8b/directc350/EXACT10paths; ninth134690BmemberindexexactGitblob. All24853inputs/all24445priorkeys/23links/ownedbytes preserved, originalfetch-FF-artifact-wiring0/HOLD18RELEASED. All20wholeclosedroots416members/allactualsource-binaries-failures/oldB+thirdedge/model6fixtures-stdoutobjects genuinelypublished. SIXcanonicaldocentrydicts/SIXtransparentrelative links exact; originalverifier afterstaging reports6entries6hydrated0notpulled0problems. Rootsettled4b0871aa/af600e normalpublished; firstcachedwhitespace2 rawpushlog classification failure eef743 retained/exactdataonly. Futurelarge dataNEW19. [pcc:unverified]
+
+Source518b06 implements additive22nd chained-transfer-nondual-preflight workflow and ci_nondual_preflight/check.sh; original929plus975logicalinputs guard, prior21workflows unchanged. Fourunfiltered originalsecondedge/model andthirdedge/model tests, all4/6/5/9wholeJSON/NOMASKS/NODEDUP, FOURactualwhole-record omissions101/nooutput andTWOactualolddual101/168gcd controls, bothoriginalproofgates/threebindings andactualCargocompiler-runtimepath/binarycustody. Shell/actionlint/rustfmt/sourceguard0, fullfreshphysical/own22CI NOTRUN. No newmathematicalresult. [pcc:unverified]
+
+Immediate next: normalcommit/publishthis driver+canonicalrouting; obtain exactclean-source originalcheckpoint/wholeartifact/sourceResume/toolreceipt/localgate0 BEFOREfreshphysicalrun. Buildfullynew sparse originalconsumer/producer layout at publishedhead andoriginal3d49producer, locallyverifiedoriginalgenuinefixtures; runfull22nddriver allbounds/sourceguards/nativebinaries/controls/proofs/bindings. Preserveall failures. Collectown22automaticCI at exactsource withwholelogs/artifacts/independentaudit, no fastpoll/waiver. ThenpublishNEWobserver-bookkeepingprotocol beforecode tofinishcoldcensus: preserveold12cold/two60reuse/allwholeledgers/hooks/modes/ownership andunchangedmath/panels900s2GiB. [pcc:unverified]
+
+Negatives27fb3a and6d2c97 atD12/D24 staynegative: smoothcurvesexist butrequiredsuppliedsourceidentificationsunsupported, no retwist/reselection/fourth-edge/newJacobianmap/globalnonexistence orcalibratedadvantage. Finiteproof68cd8c/ee88e7 scope223residues only, field/towerlaw/geometry/programbridges separate; reports14b605/a1ee6b inspected. Originalcold900s124/12actual108missing/two60reuse0/unpricedtradeoff androot124/clock101/mainledger/signing/review/conflicts/benchmarkadmission/matchedrefs/vault8edec422/KB127 retained. No paidlaunch/waiver; continuequeue. [pcc:unverified]
+
+---
+
+# Whole model/third-edge custody18 prepared; scientific source held
+
+Consumerb77e7f7f publishes actual oldmatched modelnegative27fb3a andthird-edge6d2c97 (middle169positive, matchedHLP00D24unsupported), finite-residue68cd8c/ee88e7 andinspectedreporta1ee6b. Fullsamekernel/all64/4096/135/wholeoldparity/strict5+9orderedrecords andactualomissioncontrols retained; no newJacobianmap/retwist/reselection oradvantage. [pcc:unverified]
+
+NEW18 includes every declared closed model/build/native/auditor/checkpoint/proof/report root and closedcontrols, complete pending4-filemetadata delta plusimmutableb77e7f7fGitbase. ALL24445 prior inputs/23links remain withONLYsixdeclaredreleasedmetadataupdates andoldledgerexactprefix. Holdallsource/raw/aliases/ownedbytes andconsumerledger until original remote-byte replays/exactpublisherFF/terminal18checks release. Nevercaptureownlivepreparationcaller. [pcc:unverified]
+
+Afterrelease project sixwholefixtures/stdouts into original canonicaldocs and transparentlinks, addstrict22ndpreflightreplay/CI andfreshphysical/ownsource checks. Then freeze a new observer-bookkeeping protocol for incompletecoldcensus, unchangedmath/panel/bounds/wholeledgercontrols. No fourth elliptic edge orobservercodeyet; all global/main/benchmark/vault/KB constraints remain. No paidlaunch/waiver. [pcc:unverified]
+
+---
+
 # Third fixed edge also unsupported; whole publication/replay then cold-census remedy
 
 Native6d2c97 atpublishedf0167e43 after exactoriginalcheckpoint43625626244/job132540664473/208396Bart14125982634/all28members/sourceResume/tool/receipt/localgate0. ONEunfilterededge0/model0/allprior+original929/finalsourceguards0/actualcompile-runtimebinariesequal. ActualE3 a(99,74,32)b(192,90,87), fullIDN4-E13x13x13-short-5a8415bfa6d76cb096d0baa1f2d623d04552cc70068c72d54656632fc933aa86; bothnew13identities/wholemiddle169/separability/gcd12 versusactualoldseconddual168/control101.36+36points/1024additioneach/fiveunchangedpublic/sequentialreversed2197 pass, no whole2197rationalexpansion. [pcc:unverified]
