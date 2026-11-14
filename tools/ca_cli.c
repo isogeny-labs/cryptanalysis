@@ -2525,7 +2525,8 @@ static int m4gb_detect(const char *path, uint64_t *field, uint64_t *vars)
                     *vars = n;
                 } else {
                     uint64_t count = 0;
-                    for (char *tok = strtok(rest, " \t\r\n#"); tok; tok = strtok(NULL, " \t\r\n#"))
+                    for (const char *tok = strtok(rest, " \t\r\n#"); tok;
+                         tok = strtok(NULL, " \t\r\n#"))
                         count++;
                     *vars = count;
                 }
@@ -2536,9 +2537,9 @@ static int m4gb_detect(const char *path, uint64_t *field, uint64_t *vars)
                 const char *gf = strstr(s, "GF(");
                 if (gf) {
                     unsigned long long ch = strtoull(gf + 3, NULL, 10), q = ch;
-                    const char *caret = strchr(gf, '^');
                     if (strstr(gf, "[x]")) {
                         /* GF(2)[x] / x^e + ...: the first exponent is the extension degree */
+                        const char *caret = strchr(gf, '^');
                         if (caret) {
                             unsigned long long e = strtoull(caret + 1, NULL, 10);
                             for (unsigned long long i = 1; i < e; i++) q *= ch;
@@ -2566,6 +2567,8 @@ static int m4gb_pick(const char *dir, uint64_t field, uint64_t vars, char *out, 
     while ((e = readdir(d))) {
         unsigned long long n = 0, q = 0;
         char tail = 0;
+        /* a file-name pattern match: the count test rejects every non-match */
+        // NOLINTNEXTLINE(cert-err34-c)
         if (sscanf(e->d_name, "solver_m4gb_n%llu_gf%llu%c", &n, &q, &tail) != 2) continue;
         if (q != field || n < vars) continue;
         if (!best || n < best) {
@@ -2681,7 +2684,7 @@ static int cmd_m4gb(void)
             timed_out = 1;
             break;
         }
-        struct timespec ts = {0, 20 * 1000 * 1000};
+        struct timespec ts = {0, 20L * 1000 * 1000};
         nanosleep(&ts, NULL);
     }
     double wall = ca_now() - t0;
@@ -2737,9 +2740,9 @@ static int cmd_m4gb(void)
     json_print_string(binary);
     printf(",\"field\":%" PRIu64 ",\"vars\":%" PRIu64 ",\"unit_ideal\":%s", field, vars,
            unit_ideal ? "true" : "false");
-    size_t basis_size = 0;
-    int all_points = 1;
     if (!unit_ideal) {
+        size_t basis_size = 0;
+        int all_points = 1;
         FILE *bf = fopen(basis_path, "r");
         if (!bf) die("M4GB wrote no basis file");
         /* pass 1: size and shape */
@@ -2773,7 +2776,9 @@ static int cmd_m4gb(void)
         }
         if (!basis_size) all_points = 0;
         printf(",\"basis_size\":%zu", basis_size);
-        rewind(bf);
+        /* rewind(bf), spelled as the standard defines it */
+        (void)fseek(bf, 0L, SEEK_SET);
+        clearerr(bf);
         /* pass 2: the lines (capped) and the solution */
         printf(",\"basis\":[");
         size_t shown = 0;
@@ -2792,7 +2797,8 @@ static int cmd_m4gb(void)
         }
         printf("],\"basis_truncated\":%s", shown > cap ? "true" : "false");
         if (all_points) {
-            rewind(bf);
+            (void)fseek(bf, 0L, SEEK_SET);
+            clearerr(bf);
             printf(",\"solution\":{");
             size_t k = 0;
             while (fgets(line, sizeof line, bf)) {
@@ -2845,8 +2851,14 @@ static int cmd_m4gb(void)
             /* across filesystems: copy */
             FILE *src = fopen(basis_path, "r"), *dst = fopen(out_path, "w");
             if (!src || !dst) die("cannot write --out");
-            size_t n;
-            while ((n = fread(line, 1, sizeof line, src)) > 0) fwrite(line, 1, n, dst);
+            /* Stop at the first short read (end of file or error): a further
+             * fread would return 0 anyway, and this keeps it off a stream in
+             * the EOF or error state (clang-analyzer unix.Stream). */
+            for (;;) {
+                const size_t n = fread(line, 1, sizeof line, src);
+                if (n) fwrite(line, 1, n, dst);
+                if (n < sizeof line) break;
+            }
             fclose(src);
             fclose(dst);
             if (!keep) unlink(basis_path);
