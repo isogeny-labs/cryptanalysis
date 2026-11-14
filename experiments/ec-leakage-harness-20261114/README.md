@@ -179,6 +179,50 @@ unless the target field has an index-calculus solver.
 **Scope.** This shows the transfer working and beating the generic method at
 the same subgroup size, on one machine and one seed. It is not a benchmark row.
 
+### 5. Larger training sets (`scale.py`) [pcc:unverified]
+
+**Question.** Follow-up 3 trained each learner on 1,000 samples. Does a
+thousand times more data let a generic learner find a leak?
+
+**Setup.**
+
+- **Curves:** the first three curves of each class from
+  `followup_population.json`.
+- **Data:** 1.1 million samples per curve. PARI computes them with `ellmul`,
+  and 1,000 per curve are re-derived with this harness's own arithmetic; all
+  matched.
+- **Train and test:** the last 100,000 samples are a fixed test set. Each
+  learner trains on the first 10^3, 10^4, 10^5 and 10^6 samples.
+- **Targets:**
+  - the lowest bit of k\*;
+  - a high bit of k\* (bit nb − 3);
+  - c mod 2, where c = min(k\* mod q, −k\* mod q). On smooth curves
+    Pohlig–Hellman computes c exactly.
+- **Learners:** the linear classifier and gradient boosting, given the bits of
+  x, x mod 2…32, the Legendre symbol of x and x/p.
+- **Null:** the test labels are independent of training, so under no leakage
+  test accuracy is binomial. Its mean is set by the label prevalence and the
+  classifier's predicted-class rate; the z-score is measured against it.
+
+**Results** (`results/scale.json`, `results/scale.png`):
+
+- 216 fits; the largest z is +1.50, the smallest −2.67, and no fit has
+  |z| > 3.
+- Per training size, the mean z is −0.09, −0.13, +0.07 and −0.04.
+- At 10^6 samples, 34 of 54 fits learn nothing and predict the majority class
+  for every test point: accuracy equals the null exactly, z = 0.
+- On the smooth curves, the target c mod 2 behaves like this:
+
+| | accuracy on c mod 2 |
+|---|---|
+| Pohlig–Hellman | 1.000 on all three curves |
+| linear and gradient boosting, 10^6 samples | 0.600, 0.601, 0.666 |
+| majority-class baseline | 0.600, 0.601, 0.666 |
+
+**Conclusion.** A thousand times more data does not help these learners. They
+converge to the majority-class baseline, while the structured attack reads
+the same bit off exactly.
+
 ## Limits and next steps
 
 - Permutation counts set the p-value floors: 0.005 at 200 permutations, and
