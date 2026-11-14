@@ -9,8 +9,8 @@
 ## Problem
 
 Actual IC solves exist for all15 public cases in the three new F223
-Jacobians,but the exact same-origin native compatibility control and
-complete cold+online cost comparison are not established. [pcc:unverified]
+Jacobians,and the finite same-origin compatibility control is now supplied.
+Complete cold+online cost comparison remains open. [pcc:unverified]
 
 Keep original q223/seed1,K=F223[z]/(z^3-3),ell2773073 and allfive
 unchanged public targets;actual HLP(1,0),(1,1),(2,1) and based class tags
@@ -24,9 +24,9 @@ passes actual target group and independent original source checks.
 - Original IC relation/LA/inner-descent bodies are reused with an actual
   P0/fb[0] anchor and class-input R,R+G,R+Q. The original source-bound
   solver instead chooses random P0 and affine legacy-transfer triples.
-  The exact same-origin/same-input native bridge remains open. General
-  common-offset cancellation is written/partially formal,not that native
-  compatibility check. [pcc:unverified]
+  The finite same-origin/same-input bridge is recorded in8a77f3,
+  independently replayed82290d and source-CI audited11815a. General
+  geometry and global-log extension remain conditional. [pcc:unverified]
 - FpR exposes no operation counters. Existing IC/wrapped Picard counts
   omit source/model construction,map setup/evaluation,input admission
   and independent source verification. Their cost is unknown,not zero;
@@ -56,9 +56,9 @@ does not establish a speedup or prove relation-generation completeness.
 
 ## Next discriminating step
 
-Finish source/report/strict independent replay/CI and genuine whole-data
-publication for e869bd. Then freeze the common-origin native bridge and
-complete operation-coverage implementation before measuring. Retain the
+The finite common-origin control and its strict independent replay/CI
+are settled. Review actual arithmetic backends and freeze complete
+operation-coverage implementation before measuring. Retain the
 existing900s build/native and2GiB serial correctness bounds;the original
 performance gate remains separate. [pcc:unverified]
 
@@ -69,3 +69,5 @@ new targets,with all60 settings retained. Exact compatibility,costs and
 full formal interpretation remain open. [pcc:unverified]
 
 2026-11-14 update:finite same-origin control8a77f3/written8ffc9c/report6271ce now supplied underprospective2dd807/0a3412cd beforecode. Existingfaithful01efbf671d42 reused/57total. Strict754CI/self755/16workflow241native57canonical prepared,ownsourcefullCI next. Genuinewholepublicationf5a805/4fda8d completes7captures+7indices+whole79399-bytePDF15objects8S3+7Git/all4230guard08+linktypes preserved/hold08released. Originalcheckpointtransportffe675 passesremote/localORIGINALgatesforexactclean39e9;laterchangesstaleandrequirefreshstate. Livebudget/capacity/isolation/fullcosts/strongestreferencesandformalbridges remainopen. Nextcompleteoperationcoverage afterstrictindependentreplay. [pcc:unverified]
+
+2026-11-14 settlement:82290d independently replays exact39b/755guards/ninephasepairs/51wholeJSON;11815a audits16sourceworkflows/241native/57uniquecanonicaldigests(59actualchecks,reusedtwo). Originalcheckpointb08916 succeedsremote/localforexactclean39b;latermetadatachangesstaleit. Nextcompleteoperationcoverage and admitted matchedreferences. [pcc:unverified]

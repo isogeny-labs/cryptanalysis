@@ -1,3 +1,19 @@
+# Current research queue — 2026-11-14T01:32:44.420186+00:00
+
+Exact39b source is settled: native8a77f3,independent755full82290d,own16CI11815a/all241nativeJSON/57uniquecanonicaldigests(59actualverdictrecords,reuseonly). Originalcheckpointb08916 remote+local ORIGINALgate0 for exactclean39b;metadata changesstaleit. Root8a85ba2 normalpublished0. All observations unsigned. [pcc:unverified]
+
+| Priority | Task | Next discriminating action |
+| --- | --- | --- |
+| 1 | Complete arithmetic coverage and same-output sampling | Review actual Fp/Kf/FpR/Picard/scalar-LA backends and primary literature;freeze instrumentation boundaries,overlap exclusions and controls before isolated source-fork taps. Investigate norm-assisted scalar sampling without source DLP fallback. No benchmark launch before admission. [pcc:unverified] |
+| 2 | Genuine whole-capture publication | Closedct70 physical755full,16CI and exact39b originalcheckpoint completecaptures/indices through unchanged trusted publisher. Freeze NEWguard09 before anyartifactbotFF;08historical/released. Keep private temporarydownload reference outside public archive. [pcc:unverified] |
+| 3 | Complete odd-degree beta coordinates | Actual quotient/correspondence coordinates;written matchedcase degree13^3 refinement does not supply complete beta coordinates. Preserve all nonsquare/free52 negativecases. [pcc:unverified] |
+| 4 | Admission and matched references | OriginalS3 capability demonstrated on39b;freshstatecheckpoint/livebudget/capacity/isolation/fullcold+online costs/strongestIC and rho references still required for performance. [pcc:unverified] |
+| 5 | Formal/global/merge | Existing57partialconditionalbindings unsigned;actualgeometry/logextension bridges open. Root124/two clock101 diagnostics retained;no unchanged retry here. Preserve mainledger/signing/reviews/conflict;vault8edec422 locked/KB absent. [pcc:unverified] |
+
+Continue after each rung. Do not manually redispatch settled scientific workflows or edit frozen inputs/verifiers. [pcc:unverified]
+
+---
+
 # Current research queue — 2026-11-14T01:08:31.657199+00:00
 
 Common-origin native8a77f3/3304guards/ALL20pairs40reports51JSON/15correcteach/ALL20outcomesmatch/fouractualP0/fullFB/RNG/1004raw92triples/1004wrongorigincontrols is complete. Written8ffc9c reusesEXISTING01efbf671d42/57total;report6271ce TWO79399-bytefinalpagesinspected. Genuinef5a805/4fda8d all7captures+7indices+wholePDF15objects8S3+7Git;hold08released/all4230inputs+dirtybytes+linktypes preserved. [pcc:unverified]
