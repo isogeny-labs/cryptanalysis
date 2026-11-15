@@ -32,7 +32,7 @@ In (K=\mathbb F_5), (L=K[u]/(u^2-2)), (E:y^2=x^3+1), take (Z=(4+u,3)). Frobenius
 
 These can also be verified by hand: ((4+u)^2=3+3u), ((4+u)^3=3); the doubling slope is (4+4u), giving ([2]Z=(0,1)). The trace secant has slope zero and gives ((2,2)).
 
-`python3 experiments/chained-transfer-public-target/norm-point-reuse-01/ct145_frobenius_trace_canary.py` and `python3 -O .../ct145_frobenius_trace_canary.py` enumerate **all 36 points** of (E(\mathbb F_{25})), check point-trace identities and find six nonrational points whose doubles descend but differ from their traces. Development-sandbox checks passed normal and optimized Python. Source file is independently added to this PR; no original Rust, fixtures or PCC ledger are changed.
+`python3 experiments/chained-transfer-public-target/norm-point-reuse-01/ct145_frobenius_trace_canary.py` and `python3 -O .../ct145_frobenius_trace_canary.py` enumerate **all 36 points** of (E(\mathbb F_{25})), check point-trace identities and find six nonrational points whose doubles descend but differ from their traces. The exact point-order census is 1 identity, 3 points of order 2, 8 of order 3 and 24 of order 6. All 9 odd-order points pass the strengthened rational-double implication. Development-sandbox checks passed normal and optimized Python. Source file is independently added to this PR; no original Rust, fixtures or PCC ledger are changed.
 
 ## Applicability boundary to CT125
 
