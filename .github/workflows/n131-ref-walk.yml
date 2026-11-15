@@ -89,7 +89,9 @@ jobs:
         run: python3 run.py check "$OUT"
       - name: Decision rules (analyze.py)
         if: always()
-        run: python3 analyze.py "$OUT" | tee "$OUT/analysis_stdout.txt"
+        run: |
+          set -o pipefail
+          python3 analyze.py "$OUT" | tee "$OUT/analysis_stdout.txt"
       - name: Figures from the receipts
         if: always()
         run: python3 make_figures.py "$OUT" || echo "figures failed"

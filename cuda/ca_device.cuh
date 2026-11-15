@@ -140,10 +140,11 @@ CA_DEV uint64_t ca_dev_mont_mul(uint64_t a, uint64_t b, uint64_t p, uint64_t pin
     (void)r0;
     (void)r1;
     /* t = r4:r3:r2 < 2p; subtract p and keep t if that borrows */
+    /* Each output may be written before later input operands are consumed. */
     asm("sub.cc.u32     %0, %3, %5;\n\t"
         "subc.cc.u32    %1, %4, %6;\n\t"
         "subc.u32       %2, %7, 0;"
-        : "=r"(s0), "=r"(s1), "=r"(bw)
+        : "=&r"(s0), "=&r"(s1), "=&r"(bw)
         : "r"(r2), "r"(r3), "r"(p0), "r"(p1), "r"(r4));
     const uint64_t t = ((uint64_t)r3 << 32) | r2, d = ((uint64_t)s1 << 32) | s0;
     return bw ? t : d;

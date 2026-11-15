@@ -67,6 +67,24 @@ class BenchrecTest(unittest.TestCase):
         self.br(*close)
         return rec
 
+    def test_one_record_has_no_self_comparison(self):
+        self.make_record(value=100.0)
+        progress = json.loads((self.root / "benchmarks/progress/progress.json").read_text())
+        for series in progress["series"]:
+            self.assertEqual(len(series["points"]), 1)
+            self.assertNotIn("improvement_vs_first_percent", series["points"][0]["derived"])
+        graphic = (self.root / "benchmarks/progress/progress.svg").read_text()
+        self.assertIn("No comparable observations within a metric yet", graphic)
+
+    def test_single_record_retains_real_reference(self):
+        self.make_record(value=100.0, reference=50.0)
+        progress = json.loads((self.root / "benchmarks/progress/progress.json").read_text())
+        series = next(s for s in progress["series"] if s["metric"] == "ir_per_op")
+        self.assertNotIn("improvement_vs_first_percent", series["points"][0]["derived"])
+        self.assertEqual(series["points"][0]["derived"]["value_over_reference"], 2.0)
+        graphic = (self.root / "benchmarks/progress/progress.svg").read_text()
+        self.assertIn("Distance remaining: value / reference", graphic)
+
     def test_full_lifecycle_and_progress(self):
         rec1 = self.make_record(value=100.0, reference=50.0)
         rec2 = self.make_record(slug="rho-step-2", value=80.0, reference=50.0)
@@ -86,6 +104,185 @@ class BenchrecTest(unittest.TestCase):
         r = self.br("metric", rec1, "--name", "x", "--value", "1", "--unit", "S", check=False)
         self.assertNotEqual(r.returncode, 0)
         self.assertIn(rec2, (self.root / rec2).as_posix())
+
+    def test_metric_rejects_invalid_numeric_metadata_without_writing(self):
+        rec = self.br("init", "--slug", "numeric", "--problem", "p:q").stdout.strip()
+        path = self.root / rec
+        before = path.read_bytes()
+        for args in (["--value", "nan"], ["--value", "inf"],
+                     ["--reference", "nan"], ["--baseline", "inf"],
+                     ["--n", "0"], ["--n", "-1"],
+                     ["--spread-low", "1"], ["--spread-high", "2"],
+                     ["--spread-low", "3", "--spread-high", "2"],
+                     ["--spread-low", "nan", "--spread-high", "2"]):
+            with self.subTest(args=args):
+                r = self.br("metric", rec, "--name", "m", "--unit", "S",
+                            "--value", "1", *args, check=False)
+                self.assertNotEqual(r.returncode, 0, r.stdout + r.stderr)
+                self.assertEqual(path.read_bytes(), before)
+
+    def test_report_rejects_tampered_measurement_and_preserves_outputs(self):
+        rec = self.make_record()
+        path = self.root / rec
+        original = json.loads(path.read_text())
+        progress = self.root / "benchmarks/progress/progress.json"
+        before = progress.read_bytes()
+        for field, value in (("value", float("nan")), ("reference", True),
+                             ("reference", "50"), ("baseline", float("inf")),
+                             ("n", True), ("spread", [3, 2])):
+            with self.subTest(field=field, value=value):
+                body = json.loads(json.dumps(original))
+                body["metrics"][0][field] = value
+                path.write_text(json.dumps(body))
+                r = self.br("report", check=False)
+                self.assertNotEqual(r.returncode, 0)
+                self.assertNotIn("Traceback", r.stderr)
+                self.assertEqual(progress.read_bytes(), before)
+
+    def test_failed_command_cannot_close_as_measured(self):
+        rec = self.make_record()
+        path = self.root / rec
+        body = json.loads(path.read_text())
+        body["status"] = "open"
+        body["commands"][0]["exit"] = 1
+        path.write_text(json.dumps(body))
+        r = self.br("close", rec, "--status", "measured", check=False)
+        self.assertNotEqual(r.returncode, 0)
+        self.assertEqual(json.loads(path.read_text())["status"], "open")
+        self.br("close", rec, "--status", "invalid", "--summary", "failed command")
+        prog = json.loads((self.root / "benchmarks/progress/progress.json").read_text())
+        self.assertEqual(prog["series"], [])
+
+    def test_direction_drift_rejected_before_progress_write(self):
+        self.make_record()
+        rec = self.make_record(slug="second", value=80)
+        path = self.root / rec
+        body = json.loads(path.read_text())
+        body["metrics"][0]["better"] = "neutral"
+        path.write_text(json.dumps(body))
+        progress = self.root / "benchmarks/progress/progress.json"
+        before = progress.read_bytes()
+        r = self.br("report", check=False)
+        self.assertNotEqual(r.returncode, 0)
+        self.assertIn("direction", r.stderr)
+        self.assertNotIn("Traceback", r.stderr)
+        self.assertEqual(progress.read_bytes(), before)
+
+    def test_pinned_exclusion_is_visible_and_does_not_waive_raw_integrity(self):
+        import hashlib
+        rec = self.make_record()
+        path = self.root / rec
+        body = json.loads(path.read_text())
+        body["commands"][0]["exit"] = None
+        path.write_text(json.dumps(body))
+        exclusions = {"schema": "bench.integrity-exclusions/v1", "records": {
+            rec: {"sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+                  "reason": "Documentary command; execution exit not captured."}}}
+        exclusion_path = self.root / "benchmarks/integrity-exclusions.json"
+        exclusion_path.write_text(json.dumps(exclusions))
+        self.br("report")
+        prog = json.loads((self.root / "benchmarks/progress/progress.json").read_text())
+        self.assertEqual(prog["series"], [])
+        self.assertEqual(prog["records"]["measured"], 1)
+        self.assertEqual(prog["integrity_exclusions"][0]["record"], rec)
+        self.assertIn(rec, (self.root / "benchmarks/progress/PROGRESS.md").read_text())
+        self.br("check")
+        raw = self.root / body["raw"][0]["path"]
+        raw.write_text("corrupt")
+        self.assertNotEqual(self.br("check", check=False).returncode, 0)
+        body["summary"] = "changed after exclusion"
+        path.write_text(json.dumps(body))
+        r = self.br("report", check=False)
+        self.assertNotEqual(r.returncode, 0)
+        self.assertIn("exclusion", r.stderr)
+
+    def test_raw_byte_count_must_match_even_when_hash_matches(self):
+        rec = self.make_record()
+        path = self.root / rec
+        original = json.loads(path.read_text())
+        for size in (True, -1, original["raw"][0]["bytes"] + 1):
+            with self.subTest(size=size):
+                body = json.loads(json.dumps(original))
+                body["raw"][0]["bytes"] = size
+                path.write_text(json.dumps(body))
+                r = self.br("check", check=False)
+                self.assertNotEqual(r.returncode, 0)
+                self.assertIn("bytes", r.stdout + r.stderr)
+
+    def test_exclusions_fail_closed_on_bad_pin_reason_or_record_status(self):
+        import hashlib
+        rec = self.make_record()
+        path = self.root / rec
+        original = path.read_bytes()
+        manifest = self.root / "benchmarks/integrity-exclusions.json"
+        for status, digest, reason in (("measured", "0" * 64, "bad pin"),
+                                       ("measured", None, ""),
+                                       ("open", None, "cannot hide open run"),
+                                       ("censored", None, "cannot relabel status")):
+            with self.subTest(status=status, digest=digest, reason=reason):
+                body = json.loads(original)
+                body["status"] = status
+                path.write_text(json.dumps(body))
+                manifest.write_text(json.dumps({"schema": "bench.integrity-exclusions/v1", "records": {
+                    rec: {"sha256": digest or hashlib.sha256(path.read_bytes()).hexdigest(), "reason": reason}}}))
+                result = self.br("report", check=False)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn("exclusion", result.stderr)
+
+    def test_missing_or_boolean_command_exit_rejected(self):
+        rec = self.make_record()
+        path = self.root / rec
+        original = json.loads(path.read_text())
+        for exit_code in (None, False, "0", 1):
+            with self.subTest(exit_code=exit_code):
+                body = json.loads(json.dumps(original))
+                body["commands"][0]["exit"] = exit_code
+                path.write_text(json.dumps(body))
+                self.assertNotEqual(self.br("report", check=False).returncode, 0)
+
+    def test_derived_overflow_cannot_publish_nonfinite_json(self):
+        rec = self.make_record(value=1e308, reference=1e308)
+        path = self.root / rec
+        body = json.loads(path.read_text())
+        body["metrics"][0]["reference"] = 1e-308
+        path.write_text(json.dumps(body))
+        progress = self.root / "benchmarks/progress/progress.json"
+        before = progress.read_bytes()
+        r = self.br("report", check=False)
+        self.assertNotEqual(r.returncode, 0)
+        self.assertIn("overflow", r.stderr)
+        self.assertNotIn("Traceback", r.stderr)
+        self.assertEqual(progress.read_bytes(), before)
+
+    def test_previous_gain_survives_zero_first_observation(self):
+        self.make_record(slug="zero", value=0)
+        self.make_record(slug="positive", value=100)
+        rec = self.make_record(slug="later", value=80)
+        # Avoid timestamp ties: record order is intentionally pinned here.
+        for i, path in enumerate(sorted((self.root / "benchmarks/records").glob("*.json"),
+                                        key=lambda p: {"zero": 0, "positive": 1, "later": 2}[json.loads(p.read_text())["slug"]])):
+            body = json.loads(path.read_text())
+            body["closed_utc"] = f"2026-11-07T00:00:0{i}+00:00"
+            path.write_text(json.dumps(body))
+        self.br("report")
+        prog = json.loads((self.root / "benchmarks/progress/progress.json").read_text())
+        point = next(s for s in prog["series"] if s["metric"] == "ir_per_op")["points"][-1]
+        self.assertEqual(point["record"], Path(rec).stem)
+        self.assertEqual(point["derived"]["improvement_vs_previous_percent"], 20)
+        self.assertNotIn("improvement_vs_first_percent", point["derived"])
+
+    def test_incompatible_close_leaves_record_open(self):
+        self.make_record()
+        rec = self.make_record(slug="second", value=80)
+        path = self.root / rec
+        body = json.loads(path.read_text())
+        body["status"] = "open"
+        body["metrics"][0]["better"] = "neutral"
+        path.write_text(json.dumps(body))
+        before = path.read_bytes()
+        r = self.br("close", rec, "--status", "measured", check=False)
+        self.assertNotEqual(r.returncode, 0)
+        self.assertEqual(path.read_bytes(), before)
 
     def test_store_backed_report_accepted_via_manifest(self):
         """A report kept in the artifact store (listed in a .artifacts.json, absent from the
@@ -157,6 +354,84 @@ class BenchrecTest(unittest.TestCase):
         r = self.br("check", "--base", "main", check=False)
         self.assertEqual(r.returncode, 1)
         self.assertIn("closed record is immutable", r.stdout)
+
+    def test_invalid_base_does_not_become_an_empty_change_set(self):
+        self.make_record()
+        self.commit_all("record")
+        for base in ("missing-base-branch", ""):
+            with self.subTest(base=base):
+                result = self.br("check", "--base", base, check=False)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn("base", result.stderr)
+
+    def test_unrelated_base_history_is_a_failure(self):
+        self.make_record()
+        self.commit_all("record")
+        sh("git", "checkout", "--orphan", "unrelated", cwd=self.root)
+        sh("git", "rm", "-rf", ".", cwd=self.root)
+        (self.root / "anchor").write_text("independent history\n")
+        self.commit_all("unrelated root")
+        sh("git", "checkout", "main", cwd=self.root)
+        result = self.br("check", "--base", "unrelated", check=False)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("merge-base", result.stderr)
+
+    def test_closed_record_deletion_rename_and_type_change_are_rejected(self):
+        rec = self.make_record()
+        self.commit_all("closed record")
+        base = sh("git", "rev-parse", "HEAD", cwd=self.root).stdout.strip()
+        sh("git", "checkout", "-qb", "feature", cwd=self.root)
+        path = self.root / rec
+        for action in ("delete", "rename", "symlink"):
+            with self.subTest(action=action):
+                sh("git", "reset", "--hard", base, cwd=self.root)
+                if action == "rename":
+                    renamed = path.with_name(path.stem + "-renamed.json")
+                    doc = json.loads(path.read_text())
+                    doc["id"] = renamed.stem
+                    renamed.write_text(json.dumps(doc))
+                elif action == "symlink":
+                    saved = self.root / "saved" / path.name
+                    saved.parent.mkdir(exist_ok=True)
+                    saved.write_bytes(path.read_bytes())
+                path.unlink()
+                if action == "symlink":
+                    path.symlink_to(saved)
+                self.br("report")
+                self.commit_all("changed closed record representation")
+                result = self.br("check", "--base", "main", check=False)
+                self.assertEqual(result.returncode, 1)
+                self.assertIn("closed record is immutable", result.stdout)
+
+    def test_closed_record_base_uses_required_git_filter(self):
+        import shlex
+        filter_script = self.root / 'record_filter.py'
+        filter_script.write_text(
+            'import os,sys\n'
+            'data=sys.stdin.buffer.read()\n'
+            'if sys.argv[1]=="smudge" and os.environ.get("BENCHREC_FILTER_REJECT"): sys.exit(1)\n'
+            'sys.stdout.buffer.write(b"VLT1"+data if sys.argv[1]=="clean" else data[4:] if data.startswith(b"VLT1") else data)\n')
+        command = f'{shlex.quote(sys.executable)} {shlex.quote(str(filter_script))}'
+        sh('git', 'config', 'filter.control.clean', command+' clean', cwd=self.root)
+        sh('git', 'config', 'filter.control.smudge', command+' smudge', cwd=self.root)
+        sh('git', 'config', 'filter.control.required', 'true', cwd=self.root)
+        (self.root / '.gitattributes').write_text('*.json filter=control\n')
+        rec = self.make_record()
+        self.commit_all('filtered closed record')
+        sh('git', 'checkout', '-qb', 'feature', cwd=self.root)
+        path = self.root / rec
+        value = json.loads(path.read_text())
+        value['summary'] = 'changed in feature'
+        path.write_text(json.dumps(value))
+        self.br('report')
+        self.commit_all('changed record')
+        result = self.br('check', '--base', 'main', check=False)
+        self.assertEqual(result.returncode, 1)
+        self.assertIn('closed record is immutable', result.stdout)
+        self.env['BENCHREC_FILTER_REJECT'] = '1'
+        result = self.br('check', '--base', 'main', check=False)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('cannot read committed base record', result.stderr)
 
     def test_stale_progress_detected(self):
         self.make_record()
