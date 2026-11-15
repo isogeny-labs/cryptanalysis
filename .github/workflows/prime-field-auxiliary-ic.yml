@@ -1,0 +1,37 @@
+name: prime-field-auxiliary-ic
+# artifact-store: no-pull (only source and policy-small fixtures committed here)
+on:
+  pull_request:
+    paths:
+      - experiments/prime-field-auxiliary-ic/**
+      - .github/workflows/prime-field-auxiliary-ic.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  implementation-checks:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: experiments/prime-field-auxiliary-ic
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Original snapshot byte inventory
+        run: python experiments/prime-field-auxiliary-ic/check_snapshot.py
+      - name: Implementation dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends singular
+          python -m pip install -r experiments/prime-field-auxiliary-ic/snapshot/algebraic/requirements.txt
+      - name: Regression checks in a temporary copy
+        env:
+          SNAPSHOT_SOURCE: ${{ github.workspace }}/experiments/prime-field-auxiliary-ic/snapshot
+        run: |
+          cp -a "$SNAPSHOT_SOURCE" "$RUNNER_TEMP/prime-field-ic"
+          cd "$RUNNER_TEMP/prime-field-ic/algebraic"
+          python -m unittest test_solver test_resultants test_optimized optimized.test_v2 -v

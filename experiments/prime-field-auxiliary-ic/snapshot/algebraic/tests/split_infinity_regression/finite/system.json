@@ -1,0 +1,42 @@
+{
+  "curve": {
+    "p": 127,
+    "a": 1,
+    "b": 0
+  },
+  "target": [
+    0,
+    0
+  ],
+  "m": 3,
+  "encoding": "plain",
+  "summation": "split",
+  "variables": [
+    "w",
+    "x3",
+    "x2",
+    "x1"
+  ],
+  "equations": [
+    "1*x1^1",
+    "1*x2^1",
+    "1*x3^1",
+    "((x1)-(x2))^2*(w)^2-2*(((x1)+(x2))*((x1)*(x2)+(curveA))+2*(curveB))*(w)+((x1)*(x2)-(curveA))^2-4*(curveB)*((x1)+(x2))",
+    "((w)-(x3))^2*(targetX)^2-2*(((w)+(x3))*((w)*(x3)+(curveA))+2*(curveB))*(targetX)+((w)*(x3)-(curveA))^2-4*(curveB)*((w)+(x3))"
+  ],
+  "auxiliary": null,
+  "roots": [
+    0
+  ],
+  "paths": [
+    [
+      "x1"
+    ],
+    [
+      "x2"
+    ],
+    [
+      "x3"
+    ]
+  ]
+}
