@@ -39,7 +39,7 @@ python3 ct130_validate.py run1.json run2.json run3.json rho.json
 python3 -O ct130_validate.py run1.json run2.json run3.json rho.json
 ```
 
-Exact committed Python Git blobs: `ct130_experiment.py 2afbf58346040b44e92d040619e91d9ad4c23c23`, `ct130_rho.py d139b99b2515ab08470e9209611f0e613f5a1289`, `ct130_validate.py 7912a6e70b773af2489c9e4567152d0326e15499`. The final scripts were run locally in normal/optimized mode; **eight real-input mutations** (drop row/block, wrong q/source point/codomain/sequence/standing, zero timing) rejected in both modes. The verifier does not import producer arithmetic, but it is a producer-written audit, not independently signed PCC.
+Exact committed Python Git blobs: `ct130_experiment.py 2afbf58346040b44e92d040619e91d9ad4c23c23`, `ct130_rho.py d139b99b2515ab08470e9209611f0e613f5a1289`, `ct130_validate.py 7912a6e70b773af2489c9e4567152d0326e15499`. The final producer was executed under optimized Python with explicit invariant checks; the validator was executed under normal and optimized Python with byte-identical output; **eight real-input mutations** (drop row/block, wrong q/source point/codomain/sequence/standing, zero timing) rejected in both modes. The verifier does not import producer arithmetic, but it is a producer-written audit, not independently signed PCC.
 
 Local raw-data SHA256 for the four final checked-source processes:
 - run1 `8bddbde7da4f716554a8b9ac3c9f9a0c59b942973e96cb96eddf1f51e5a96991`
