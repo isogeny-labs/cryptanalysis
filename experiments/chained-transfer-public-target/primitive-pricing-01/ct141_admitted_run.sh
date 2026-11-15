@@ -79,4 +79,11 @@ python3 -S "$base/check_pair.py" "$out/audit-normal" > "$out/audit-normal.stdout
 python3 -O -S "$base/check_pair.py" "$out/audit-optimized" > "$out/audit-optimized.stdout.json"
 cmp "$out/audit-normal/diagnostic.json" "$out/audit-optimized/diagnostic.json"
 sha256sum "$out"/audit-{normal,optimized}/diagnostic.json "$out"/*stdout.json > "$out/audit-sha256.txt"
-printf '%s\n' 'CT141 BOUNDED PRIMITIVE-PRICE DIAGNOSTIC COMPLETED [pcc:unverified]' > "$out/standing.txt"
+# CT142 is an additive *independent process-receipt* gate, not another solver.
+# It rejects hash/exit/RSS/A-A drift defects. It cannot authorize native compute.
+python3 -S "$base/ct142_receipt_gate.py" --self-test > "$out/ct142-selftest-normal.json"
+python3 -O -S "$base/ct142_receipt_gate.py" --self-test > "$out/ct142-selftest-optimized.json"
+cmp "$out/ct142-selftest-normal.json" "$out/ct142-selftest-optimized.json"
+python3 -S "$base/ct142_receipt_gate.py" "$out" --out "$out/ct142-receipt-report.json" > "$out/ct142-audit.stdout.json"
+sha256sum "$base/ct142_receipt_gate.py" "$out/ct142-receipt-report.json" > "$out/ct142-receipt-sha256.txt"
+printf '%s\n' 'CT141+CT142 BOUNDED PRIMITIVE-PRICE DIAGNOSTIC COMPLETED [pcc:unverified]' > "$out/standing.txt"
