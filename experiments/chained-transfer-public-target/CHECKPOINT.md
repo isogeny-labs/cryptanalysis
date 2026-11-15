@@ -1,3 +1,21 @@
+# Additive25 strict replay source ready; own fresh CI pending
+
+pcc/claims/PCC-20261115-65dc1f.json: newci_fixed_chain driver/workflow/reference1139 includesALLold24referenceinputs unchanged; all13geometry+695completechainwhole records/sixactualentireomissions/both33rootproofgates/all33bindings required. NewI/O-onlygeometryauditor compiled0 andactualgenuine22wholepositive0/oldparity-wholegeometry omissions101/noacceptedoutputs/compiled-runtimebytes equal. Localshell/actionlint/rustfmt/originalwiring0/canonical4entries4hydrated0problems. Fullnew25native replay NOT RUN. [pcc:unverified]
+
+## What was done
+Genuine22 issettledb9e9d7/de10d7 atrootcbd4d232/consumerecaa6027: original43670176697/job1326782689217remote replays BEFOREaec16d11/direct2e572cfb/exact9paths, all44386guards165linksownedbytes/whole55440900Barchive564members14roots/normalFF-artifact-wiring0/HOLD22RELEASED; fourexactcanonicalentries/fouraliases stagedoriginalverify0. Nativeed33ef/fullpopulation/13rootproofs/24CI/reports/negativecomparison unchanged. [pcc:unverified]
+
+## Decisions made
+Normalpublish replay source andcollectown new25actualfulljoblog/artifact/allmembers/auditor controls, no CIpassinferencefromlocalI/Oauditor or old24. Thenadditive norm-pointreuseunderpublished25d29e withwhole695parity exceptpredeclared48countertransforms, sameallnativecriteria/resourcebounds, compiledsource/exactcheckpoint beforemath. No optimizedcodewrittenyet. [pcc:unverified]
+
+## Open threads
+New25freshCI scientificreplay andall33proofbindings; source-derived norm-pointreuse andcompleteprimitive setup/reusecensus. Strengthen fullECDLP comparisons withpublic-known-ellipticlift baseline separatelyfromopaque-Jacobian-class routes; no calibratedprice untilmatchedadmission/references. Separate primefieldendpoint/factorbase andoriginal-prime primaryleads remainqueued. FuturelargecustodyNEW23. [pcc:unverified]
+
+## Errors
+All oldscientific/cold/root-main/signing-ledger-review/KB-vault/admission gaps and source/proofpath/PDFwhitespace/logdownload failures preserved; no paidlaunch/waiver/novelty/signedpromotion. [pcc:unverified]
+
+---
+
 # Genuine22 settled; strict replay and published norm-point reuse next
 
 pcc/claims/PCC-20261115-b9e9d7.json/pcc/claims/PCC-20261115-de10d7.json: original43670176697/job132678268921SUCCESS/SEVENremote replays BEFOREaec16d11/direct2e572cfb/exact9paths. ALL44386guards/165links/ownedbytes/whole55440900Barchive/all564members/14wholeclosedscientificroots preserved; normalfetch-FF-artifact-wiring0/HOLD22RELEASED. All42866prior keys/162oldlinks/c031ledgerprefix retained withdeclaredmetadataupdates, prior21genuinepayloadexactwithoutrecursivecapture. FOURexactcanonicalmanifestentries/FOURtransparentrelativealiases. [pcc:unverified]
