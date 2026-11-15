@@ -1,3 +1,21 @@
+# Versioned25 CI path repair; norm-reuse source next
+
+pcc/claims/PCC-20261115-0acc7c.json: original new25 job failed before mathematics from relative self-copy after cd; whole artifact/log preserved. Additive check02 and reference02 pass local syntax/actionlint/all1141 guards. Full replay awaits next actual CI. Norm reuse25d29e remains prospective; source not yet written. [pcc:unverified]
+
+## What was done
+Genuine22 is settled and old complete-chain ed33ef/geometry f81cbf/proofs/reports are immutable. Original25 path failure is infrastructure, not a mathematical negative. [pcc:unverified]
+
+## Decisions made
+Normal-publish versioned repair without changing frozen math. Then materialize additive evaluator02 and Rust whole695 expected-counter derivation under published25d29e; compile, publish, import exact original checkpoint before one bounded native. [pcc:unverified]
+
+## Open threads
+Actual complete25 replay/33 bindings; norm-point reuse; complete primitive setup/reuse and known initial elliptic lift comparator; prime-field endpoint and original-prime primary leads. Future large custodyNEW23. [pcc:unverified]
+
+## Errors
+All original path/staging/19GH001/scientific/cold/root-main negatives retained. No paid launch/waiver/signed promotion; calibrated measurement admission and KB/vault access remain blocked. [pcc:unverified]
+
+---
+
 # Additive25 strict replay source ready; own fresh CI pending
 
 pcc/claims/PCC-20261115-65dc1f.json: newci_fixed_chain driver/workflow/reference1139 includesALLold24referenceinputs unchanged; all13geometry+695completechainwhole records/sixactualentireomissions/both33rootproofgates/all33bindings required. NewI/O-onlygeometryauditor compiled0 andactualgenuine22wholepositive0/oldparity-wholegeometry omissions101/noacceptedoutputs/compiled-runtimebytes equal. Localshell/actionlint/rustfmt/originalwiring0/canonical4entries4hydrated0problems. Fullnew25native replay NOT RUN. [pcc:unverified]
