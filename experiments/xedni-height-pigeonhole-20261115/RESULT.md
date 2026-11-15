@@ -1,0 +1,20 @@
+# A checked pigeonhole bridge to bounded xedni witnesses
+
+The Lean theorem `XedniHeightPigeonhole.bounded_relation_of_card_lt` proves the finite collision step in the bounded-witness argument. Let `box` be a finite set of integer coefficient vectors, each with coordinate magnitude at most `K`. Let `values` contain every lifted sum `Σ_i a_i P_i` for `a ∈ box`. If `|box| > |values|`, then two different vectors have the same sum. Their difference is a nontrivial relation with every coefficient bounded by `2K`.
+
+The companion theorem `bounded_witness_of_card_lt_on_dependence` packages the same result when the cardinal inequality is available only for dependent lifted tuples. Its conclusion has the existential bounded-witness shape used by the corrected xedni reduction obstruction.
+
+## Proof and mathematical inputs
+
+The proof applies `Finset.exists_ne_map_eq_of_card_lt_of_maps_to` to the finite evaluation map `a ↦ Σ_i a_i P_i`. The collision gives `a ≠ b` and equal sums. Function extensionality supplies a coordinate at which `a_i − b_i ≠ 0`; integer scalar and sum subtraction give `Σ_i (a_i − b_i)P_i = 0`; `Int.natAbs_sub_le` bounds each new coefficient by `2K`. These are structural implications, checked in Lean for arbitrary additive abelian groups and any finite number of lifted points.
+
+For the [original xedni analysis](https://pages.cpsc.ucalgary.ca/~jacobs/PDF/xedni.pdf), Lemma 4.1 uses canonical height, the regulator, the discriminant comparison, Lang's lower-height conjecture, and a torsion bound to make the number of possible lifted sums smaller than the number of short coefficient vectors. The present theorem takes the resulting finite value set and strict cardinal inequality as explicit hypotheses. Formalizing those arithmetic estimates for the paper's lift family is the next proof step. The fixed-list finite-field sample count is separately checked in [the sampled-witness extension](../xedni-sampled-witness-20261115/RESULT.md).
+
+## Proof map and verification
+
+| Result | Lean declaration | Exact hypotheses |
+| --- | --- | --- |
+| A finite image collision gives a bounded relation | `bounded_relation_of_card_lt` | `values.card < box.card`, all box sums in `values`, all box vectors bounded by `K` |
+| Dependence supplies a bounded witness when it gives the count inequality | `bounded_witness_of_card_lt_on_dependence` | Dependence-conditional count inequality and the same box/value hypotheses |
+
+The project pins Lean `v4.35.0-rc4` and Mathlib `021c46bdd042f67b538b9f9871d556a93713a9a9`. The saved `lake build HeightPigeonhole` output and `#print axioms` records are sealed by SHA-256 hashes and checked by `verify.py`. Both declarations use only `propext`, `Classical.choice`, and `Quot.sound`. The source has no admitted proof, custom axiom, native evaluation, or kernel bypass. `lean4checker --fresh` was unavailable on this host.
