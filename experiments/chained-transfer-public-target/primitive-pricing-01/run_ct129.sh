@@ -21,7 +21,7 @@ manifest="$base/Cargo.toml"
   sha256sum "$base/src/bin/ct129-cold-bsgs.rs" "$base/ct129_check.py" "$manifest"
 } > "$out/host.txt"
 # Offline build; the actual solve process is separately bounded at 900s and 2GiB.
-cargo build --release --offline --locked --manifest-path "$manifest" --bin ct129-cold-bsgs \
+cargo build --release --offline --manifest-path "$manifest" --bin ct129-cold-bsgs \
   > "$out/build.stdout" 2> "$out/build.stderr"
 bin="$base/target/release/ct129-cold-bsgs"
 sha256sum "$bin" >> "$out/host.txt"
