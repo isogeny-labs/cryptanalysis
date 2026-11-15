@@ -1,3 +1,64 @@
+# Preserve whole checkpoint sidecars selected by the original store policy
+
+## What was done
+pcc/claims/PCC-20261115-37044c.json: all source and metadata checks0 through cached whitespace; original artifact check1 selects exactly three complete101396B ResumeXZ sidecars. Complete rejected attempt retained. [pcc:unverified]
+
+## Decisions made
+Checkpoint exact source and keep all three byte-identical objects for genuine original migration. No exception, rename, split or fabricated manifest. This remains pending storage acceptance while independent LP code and proof development advances. [pcc:unverified]
+
+## Open threads
+Original migration of these three metadata objects; LP foundation proofs/identities/graph tests; Root transport02; complete-source CI03; full scientific NEW28. [pcc:unverified]
+
+## Errors
+I compressed entire checkpoint Markdown as data without accounting for the original64KiB data threshold. The policy rejection is preserved and handled through the original store. [pcc:unverified]
+
+---
+# Preserve metadata staging assertion and correct path enumeration
+
+## What was done
+pcc/claims/PCC-20261115-231b60.json records governor02 staging rejection; all preceding checks0 and no commit/push. [pcc:unverified]
+
+## Decisions made
+Use union of modified, untracked and cached paths in governor03, preserving previous raw evidence. [pcc:unverified]
+
+## Open threads
+Commit current custody, then LP native/Lean development, Root transport02 and source-complete CI03. [pcc:unverified]
+
+## Errors
+The new helper omitted already-staged new paths when deriving its expected set. The full failed attempt is retained. [pcc:unverified]
+
+---
+# Retain literal Git publication whitespace rejection
+
+## What was done
+pcc/claims/PCC-20261115-2a8185.json preserves metadata governor01 cached-whitespace2 after source guards and other gates0; no commit or publication reached. Full source/output/caller retained. [pcc:unverified]
+
+## Decisions made
+Keep literal porcelain bytes and original diagnostic, adding exact-path whitespace metadata; use new governor02. [pcc:unverified]
+
+## Open threads
+Commit custody, then implement LP proofs and native units; CI03 exact generated sources and Root02 publication. [pcc:unverified]
+
+## Errors
+The raw push log contains Git's space-tab porcelain prefix. No raw bytes are trimmed. [pcc:unverified]
+
+---
+# Resume published LP protocol and preserve fresh CI02 failure
+
+## What was done
+pcc/claims/PCC-20261115-3b1515.json: protocol source71ce and genuinely new tag published normally, ready PR1587. pcc/claims/PCC-20261115-5b4dae.json: complete CI02 failed artifact14182693363 retained, all75 members checked against whole ZIP and CRC; full log, checkpoint metadata and original missing-path guard output preserved. Original checkpoint gate/final status and all three remote readbacks are0; initial mathematical source guard is1 before arithmetic. [pcc:unverified]
+
+## Decisions made
+Continue the published LP component with Rust/Lean local development and meaningful synthetic graph units. Separately author CI03 to materialize the exact old generated/derived bytes before all unchanged guards. Do not rerun unchanged CI02 or change its pinned criterion. No fixed60call LP run or paid build/job before original EKS admission and known live budget/capacity. [pcc:unverified]
+
+## Open threads
+Generic cancellation/projection proof and native identity certificates; complete LP certificates and independent replay; source-fixed CI03; Root transport02 exact-source clone prepared952files and workflow publication; full scientific NEW28 and original frozen-ledger merge blockers. [pcc:unverified]
+
+## Errors
+CI02 reached the next real obstruction: 21 generated/derived source files were absent before its initial guard (exact list in whole-custody.json). Checkpoint final-status failure is no longer observed in02. New mathematical diagnostics have not run; preserve the failure and materialize rather than drop any protected path. KB remains unavailable and locked atlas unread. [pcc:unverified]
+
+---
+
 # Freeze complete LP presentation audit before new relation collection
 
 ## What was done
