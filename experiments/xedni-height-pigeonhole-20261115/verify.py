@@ -8,8 +8,11 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 FORMAL = HERE / "formal"
 NAMES = (
+    "coefficientBox_card",
+    "coefficientBox_bounded",
     "bounded_relation_of_card_lt",
     "bounded_witness_of_card_lt_on_dependence",
+    "bounded_relation_of_height_ball_count",
 )
 STANDARD_AXIOMS = {"propext", "Classical.choice", "Quot.sound"}
 
