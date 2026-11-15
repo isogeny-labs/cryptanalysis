@@ -1,0 +1,3 @@
+Command: CARGO_BUILD_JOBS=1 CARGO_TARGET_DIR=/workspace/crypto/target timeout 900 cargo test --release --locked --manifest-path research/binary_subtract_frontier_20261115/check/Cargo.toml -- --nocapture
+Exit:124
+Compilation of the crypto dependency exceeded the local build bound; no new tests ran. Earlier actual-library controls passed before canonical test relocation, with identical test bodies and production behavior. Canonical tests pass in the full cryptanalysis suite. No timing result follows.
