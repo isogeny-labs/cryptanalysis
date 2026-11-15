@@ -135,6 +135,7 @@ static ca_status dense_solve_rowops(uint64_t *M, uint32_t n, uint64_t *rhs, uint
             uint64_t t = rhs[c]; rhs[c] = rhs[piv]; rhs[piv] = t;
         }
         uint64_t inv = ca_invmod(A(c, c), q);
+        if (!inv) return CA_ERR_SINGULAR; /* q is not prime: the pivot is a zero divisor */
         A(c, c) = 1;
         for (uint32_t j = c + 1; j < n; j++) A(c, j) = ca_mulmod(A(c, j), inv, q);
         rhs[c] = ca_mulmod(rhs[c], inv, q);
@@ -241,6 +242,10 @@ ca_status ca_dense_solve_mod_prime(uint64_t *M, uint32_t n, uint64_t *rhs, uint6
             rhs[piv] = t;
         }
         const uint64_t inv = ca_invmod(A(c, c), q), invp = shoup_pre(inv, q);
+        if (!inv) { /* q is not prime: the pivot is a zero divisor */
+            rc = CA_ERR_SINGULAR;
+            break;
+        }
         /* row c of U right of the diagonal, and the right-hand side */
         for (uint32_t j = c + 1; j < n; j++) {
             uint64_t t = ca_submod(

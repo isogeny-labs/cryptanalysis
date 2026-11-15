@@ -1,5 +1,6 @@
 //! Actual second nondual seven-transfer on the accepted C1/C2 models.
 //! Written global construction: upstream SUCCESSOR_GLOBAL_PROOF.md.
+use super::super::direct_norms::DirectNorms;
 use super::super::{
     checked_quotient_chart, long_point, points, scale_point, short_point, QuotientChart,
     SevenTransfer,
@@ -17,6 +18,7 @@ mod geometric;
 struct SevenSuccessor {
     old: SevenTransfer,
     target: SplitQuotients,
+    norms: DirectNorms,
     beta: [SevenEdge; 2],
     charts: [QuotientChart; 2],
 }
@@ -36,6 +38,7 @@ impl SevenSuccessor {
         assert_eq!((beta[0].map.cod.a, beta[0].map.cod.b), (59, 27));
         assert_eq!((beta[1].map.cod.a, beta[1].map.cod.b), (23, 7));
         let target = SplitQuotients::new(101, [19, 10, 22]).unwrap();
+        let norms = DirectNorms::successor().unwrap();
         let cubics = [[19, 10, 22, 1], [58, 14, 10, 1]];
         let destinations = [&beta[0].map.cod, &beta[1].map.cod];
         let charts = cubics.map(|c| checked_quotient_chart(&old.fp, &c, destinations));
@@ -46,6 +49,7 @@ impl SevenSuccessor {
         Self {
             old,
             target,
+            norms,
             beta,
             charts,
         }
@@ -72,6 +76,20 @@ impl SevenSuccessor {
 
     fn target_coordinates(&self, d: &Class) -> Result<[Pt<u64>; 2]> {
         let f = &self.old.fp;
+        let mut out = [Pt::Inf; 2];
+        for (c, p) in self.charts.into_iter().zip(self.norms.norms(d)?) {
+            out[c.destination] = scale_point(f, p, c.scale);
+            assert!(curve::on_curve(
+                f,
+                &self.beta[c.destination].map.cod,
+                &out[c.destination]
+            ));
+        }
+        Ok(out)
+    }
+
+    fn target_coordinates_generic(&self, d: &Class) -> Result<[Pt<u64>; 2]> {
+        let f = &self.old.fp;
         let (a, b) = self.target.norms(d)?;
         let internal = [
             short_point(f, &self.target.first.base, &a, self.charts[0].shift),
@@ -90,8 +108,15 @@ impl SevenSuccessor {
     }
 
     fn forward(&self, d: &Class) -> Result<Class> {
+        self.forward_points(self.old.target_coordinates(d)?)
+    }
+
+    fn forward_generic(&self, d: &Class) -> Result<Class> {
+        self.forward_points(self.old.target_coordinates_generic(d)?)
+    }
+
+    fn forward_points(&self, coordinates: [Pt<u64>; 2]) -> Result<Class> {
         let f = &self.old.fp;
-        let coordinates = self.old.target_coordinates(d)?;
         let actual = std::array::from_fn(|i| {
             let e = &self.beta[i];
             let n = [109_u64, 113][i];
@@ -106,8 +131,15 @@ impl SevenSuccessor {
     }
 
     fn dual(&self, d: &Class) -> Result<Class> {
+        self.dual_points(self.target_coordinates(d)?)
+    }
+
+    fn dual_generic(&self, d: &Class) -> Result<Class> {
+        self.dual_points(self.target_coordinates_generic(d)?)
+    }
+
+    fn dual_points(&self, coordinates: [Pt<u64>; 2]) -> Result<Class> {
         let f = &self.old.fp;
-        let coordinates = self.target_coordinates(d)?;
         let actual = std::array::from_fn(|i| {
             let e = &self.beta[i];
             let n = [109_u64, 113][i];
@@ -191,8 +223,24 @@ fn successor_seven_both_full_domains_duals_and_additions() {
     super::chain::assert_full_graph_pair(
         &s.old.target.first.balanced,
         &s.target.first.balanced,
-        |d| s.forward(d),
-        |d| s.dual(d),
+        |d| {
+            let image = s.forward(d)?;
+            assert_eq!(
+                image,
+                s.forward_generic(d)?,
+                "Phi2 direct/generic all-source"
+            );
+            Ok(image)
+        },
+        |d| {
+            let image = s.dual(d)?;
+            assert_eq!(
+                image,
+                s.dual_generic(d)?,
+                "Phi2Hat direct/generic all-target"
+            );
+            Ok(image)
+        },
         7,
     );
     assert!(s.forward(&s.target.first.balanced.zero()).is_err());

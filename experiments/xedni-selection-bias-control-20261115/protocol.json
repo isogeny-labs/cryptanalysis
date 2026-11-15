@@ -1,0 +1,28 @@
+{
+  "schema": "xedni-selection-bias-control-protocol-v1",
+  "curve": {
+    "base_field": "Q",
+    "weierstrass_a_invariants": [0, 0, 1, -1, 0],
+    "generator": [0, 0],
+    "reduction_prime": 127,
+    "expected_reduced_generator_order": 127
+  },
+  "sample": {
+    "r": 3,
+    "selected_lift_multipliers": [-3, -2, -1, 1, 2, 3],
+    "selection_law": "ordered triples of pairwise distinct nonidentity rational points mP from the frozen multiplier list, each with equal weight",
+    "uniform_reference": "ordered triples of pairwise distinct nonidentity points in the full prime-order subgroup, each with equal weight",
+    "relation_vector": [1, 1, -1],
+    "xedni_sample_map_s": [1, 2, 3],
+    "xedni_sample_map_w": 7
+  },
+  "frozen_predictions": {
+    "selected_total": 120,
+    "selected_relation_count": 16,
+    "uniform_total": 1953000,
+    "uniform_relation_count": 15624,
+    "selected_fraction": "2/15",
+    "uniform_fraction": "1/125"
+  },
+  "interpretation": "Exact selected-versus-uniform event control on one fixed rational rank-one curve, without a varying-curve selection claim"
+}

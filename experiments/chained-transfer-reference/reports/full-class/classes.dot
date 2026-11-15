@@ -1,0 +1,14 @@
+digraph Classes {
+ rankdir=LR;
+ graph [bgcolor="white",pad="0.15",ranksep="0.4",nodesep="0.4"];
+ node [shape=box,style="rounded,filled",fillcolor="#edf5fc",color="#315c83",fontname="DejaVu Sans",fontsize=11];
+ edge [fontname="DejaVu Sans",fontsize=10,color="#315c83"];
+ source [label="Frozen T0 / T1 producer corpora\n12,317 classes each\nnegation + double + paired indices"];
+ parse [label="Strict semantic decoder\nactual field / curve / schema\nvalidity + canonical shapes"];
+ finite [label="Finite chart to monic quintic\ndegree0 / 1 / 2\nall u(a) nonzero"];
+ infinity [label="Actual balanced correction\nFclass + (2n+m-2)Q\nQ=(w0,V=+L²)-W",fillcolor="#fff2df",color="#a46b25"];
+ old [label="One unchanged old Cantor engine\nsource-extraction guards\nno producer arithmetic import"];
+ pass [label="Both complete corpora\nvalid + distinct + identity\nall negations/doubles/paired sums",fillcolor="#e6f4e8",color="#39734b"];
+ source -> parse -> finite -> infinity -> old -> pass;
+ source -> pass [style=dashed,label="frozen expected indices"];
+}
