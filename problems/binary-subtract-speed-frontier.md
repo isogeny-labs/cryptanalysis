@@ -2,7 +2,7 @@
 
 - **Status:** open
 - **Kind:** access/tool limit; measurement and external-comparison gap; broader test qualification
-- **Affected work:** [production study](../research/binary_subtract_frontier_20261115/README.md), [prospective protocol](../research/binary_subtract_frontier_20261115/PROTOCOL.md), crypto PR 4335 and its paired cryptanalysis PR
+- **Affected work:** [production study](../research/binary_subtract_frontier_20261115/README.md), [prospective protocol](../research/binary_subtract_frontier_20261115/PROTOCOL.md), crypto PR 4344 and cryptanalysis PR 1575 (earlier baseline PR 4335 retained)
 - **Next action owner:** continuing baseline task; existing EKS/checkpoint operator for access prerequisites
 - **Last updated:** 2026-11-15
 
