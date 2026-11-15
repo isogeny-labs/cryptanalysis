@@ -2183,3 +2183,22 @@ Its automatic CI closed19success/onePCCfailure: newcomplete43585724236 succeeded
 Next: normal publish this data-path correction and collect its ownautomatic20CI; retain/audit alloriginal joblogs andallartifactmembers,73canonical/75actualproofverdicts,419whole native records/7113census withonlyalreadyfrozenoldwallmasks, new20phase allcontrols. Keep b691whole CI failure asnegative; do not infer all20green from19mathpasses. Downloaded b691complete ZIP326123B73members andsourcecheckpoint153850B28members remainwhole. Existing b691freshfull remains valid forbyte-identical881source inputs; no duplicate localfull needed. [pcc:unverified]
 
 NEWguard13 must publish allclosed ca9/398/A-B/C77/fullC/ownCI captures withcompleteindices, including sealed Bfull derivedcache andnew seventh PNGlink; neverreuse releasedguard12. Then primary/KB review andprospective protocol fordirectNorm-halving versus strongest norm-assisted elliptic-scalar baseline, before any code/claim. Rootclock124/101,main append-onlyledger/reviews/signing/conflict,fullformalgeometry/globalclosedcoordinates andadmittedcalibratedcost gates remainopen; lockedvault8edec422/KB127 andno paidcompute. Continue nextunblocked task. [pcc:unverified]
+
+
+# Whole passive relation capture and report parity
+
+## What was done
+
+pcc/claims/PCC-20261115-d118b9.json: normallypublished6d823770/originalcheckpoint22 genuine28member download and exact remote/local originalgates0; full native0/28phases/all100original records/60calls/660journal events. All complete input/scalar/check/non-time reports and counters agree under elapsed-onlyb5e431. Four entire capture-stage omissions actual101/nooutput. All1503prior17compiled2driver guards and three runtime images/fullprepared copies hold. Whole raw trace/journal/controls retained at scratch/ct101-original-relation-kernel-native-01; exact source/build/import retained. [pcc:unverified]
+
+## Decisions made
+
+Strict passive-parity boundary passed as unsigned evidence. Begin full60call exact RREF certificates and separate replay without changing compiled observer or production solver. Retain all original failed FB30 candidates; no rank attribution yet. [pcc:unverified]
+
+## Open threads
+
+Rank/full-active column certificates, independent row-operation replay and conditional Lean implications, then separate post-solver actual norm/BSGS character and descent checks under published8e7e1c. GenuineNEW27 must preserve all post26 source/build/raw/failed control/fullprepared/CI-artifact/joblog/proposal roots; Overlay capacity requires RAM staging for any large fetch. Root/ec632 and GitHub persistent queue need current exact consumer acceptance and observer updates. [pcc:unverified]
+
+## Errors
+
+No native capture failure. Earlier compiled-governance inherited EOF whitespace failure remains preserved; exact per-path whitespace attribute preserved original bytes. All historical failures and unsigned standing remain. [pcc:unverified]
