@@ -1,0 +1,5 @@
+# Complete paired result and known-point limit
+
+Native4fd903 atd0b0d41 passes all225 scalar samples,1125 triples,60 pairs/120 reports,15 joint cases,45 verified pairs and15 retained shared rejected FB30 pairs. Whole101 records/all33phases/eight entire-class omissions101-no output/1487 guards/actual binaries/full preparation/exact original checkpoint21 pass. Allthree prepared points equal independently known transported G points; no new advantage over that source-sampling reference is established. [pcc:unverified]
+
+See [whole evidence](../evidence/original-fixed-model-sampler-native-01/REPORT.md) and [inspected editable report](../reports/original-fixed-model-sampler-result-01/REPORT.md). Both full69,112B PDF pages were inspected; original artifact migration is pending before its canonical alias. Full raw and rejected reports are intact. Conditional proof/program/complete cost/live admission obligations remain explicit, with no calibrated ECDLP advantage or signed promotion. [pcc:unverified]

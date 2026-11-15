@@ -1,0 +1,27 @@
+[
+  {
+    "claim": "pcc/claims/PCC-20261115-fd41f7.json",
+    "theorem": "FullGroupNorm.two_pair_norm",
+    "statement": "theorem two_pair_norm {A B C : Type} [IntModule A] [IntModule B] [IntModule C] (f : A \u2192 B) (fh : B \u2192 A) (g : B \u2192 C) (gh : C \u2192 B) (n m : Int) (hf : \u2200 a, fh (f a)=n \u2022 a) (hfh : \u2200 b, f (fh b)=n \u2022 b) (hg : \u2200 b, gh (g b)=m \u2022 b) (hgh : \u2200 c, g (gh c)=m \u2022 c) (fh_linear : \u2200 z : Int, \u2200 b, fh (z \u2022 b)=z \u2022 fh b) (g_linear : \u2200 z : Int, \u2200 b, g (z \u2022 b)=z \u2022 g b) : (\u2200 a, fh (gh (g (f a)))=(n*m) \u2022 a) \u2227 (\u2200 c, g (f (fh (gh c)))=(n*m) \u2022 c)"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-7f6e66.json",
+    "theorem": "FullGroupNorm.inverse_on_full_annihilator",
+    "statement": "theorem inverse_on_full_annihilator {A B : Type} [IntModule A] (f : A \u2192 B) (fh : B \u2192 A) (n order inverse quotient : Int) (dual_norm : \u2200 a, fh (f a)=n \u2022 a) (bezout : inverse*n+quotient*order=1) (a : A) (annihilated : order \u2022 a=0) : inverse \u2022 fh (f a)=a"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-e35eaa.json",
+    "theorem": "FullGroupNorm.actual_full_group_witnesses",
+    "statement": "theorem actual_full_group_witnesses : (13*5117005 : Nat)=6*11086844+1 \u2227 (169*7216289 : Nat)=110*11086844+1 \u2227 (8*346464 : Nat)=2771711+1 \u2227 1385856 % 4=0"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-6089d0.json",
+    "theorem": "FullGroupNorm.full_group_coprime",
+    "statement": "theorem full_group_coprime : Nat.gcd 13 11086844=1 \u2227 Nat.gcd 169 11086844=1"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-d34810.json",
+    "theorem": "FullGroupNorm.retained_lift_chain",
+    "statement": "theorem retained_lift_chain {A B C J K L : Type} (pa : A \u2192 J) (pb : B \u2192 K) (pc : C \u2192 L) (g : A \u2192 B) (h : B \u2192 C) (first : J \u2192 K) (second : K \u2192 L) (first_square : \u2200 a, first (pa a)=pb (g a)) (second_square : \u2200 b, second (pb b)=pc (h b)) (a : A) : second (first (pa a))=pc (h (g a))"
+  }
+]

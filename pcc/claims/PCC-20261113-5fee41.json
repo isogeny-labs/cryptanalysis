@@ -1,0 +1,121 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-13T20:15:10Z",
+ "id": "PCC-20261113-5fee41",
+ "kind": "statement",
+ "producer": {
+  "commit": "3de8c174cf65e6b34bf8579d97b817b8f5dc2ded",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/odd-source-own-CI-01/P1-whole-job.log.xz",
+    "sha256": "193f54e5c4d05155de2c47af01aebfe65705c771a8b752dd5112de8827a01e3c"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/odd-source-own-CI-01/PCC-whole-job.log.xz",
+    "sha256": "b5bb7d7094f56d47f5a9951f676cc910d23a4fc5b0339e1038127f7668887bd4"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/odd-source-own-CI-01/V2-whole-job.log.xz",
+    "sha256": "a741ed6502cf0ed3b92faeee8bb396cfcd5708a7ca13259c80341926b5967367"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/odd-source-own-CI-01/all-native-records.json.hash.json",
+    "sha256": "ed7d6766268acae8ae8a5f40576578e2d104e38c8d49a3cafbc8f024b29128f3"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/odd-source-own-CI-01/all50-exact-verdicts.json.xz",
+    "sha256": "fed9e92d0abc10706d1555c057e64a48cc653f2b88bae3ebbaee718c50e25797"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/odd-source-own-CI-01/bitangents-whole-job.log.xz",
+    "sha256": "ed55680b0a5203940733899594bcc5334dd8575f500a89b5780f3b869890620e"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/odd-source-own-CI-01/chain-whole-job.log.xz",
+    "sha256": "a44608cb5d2fc801106817bb9755e294bc9610476b1955651e275c0fed8c8171"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/odd-source-own-CI-01/completed-whole-job.log.xz",
+    "sha256": "c0a894a1a4d2645e2ccf32b23f94f32db1915b9cedda4c37208ae228aa526453"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/odd-source-own-CI-01/gluing-whole-job.log.hash.json",
+    "sha256": "2fb795f5f77c0591079d7889352a7f374d3c4d100a5d7ec25e5ba36954f9444e"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/odd-source-own-CI-01/kernels-whole-job.log.xz",
+    "sha256": "a6bc15ba1d49adccf4f032c0001f5f57c9da50b69d920be2d7dd9d4f62e17b7e"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/odd-source-own-CI-01/observation.json",
+    "sha256": "e2c3a7067ab86cbf701981863acbdb5824cd66f4351be28ef8e9824c58297559"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/odd-source-own-CI-01/odd-whole-job.log.xz",
+    "sha256": "d0026853728fc1a0f705fcfab78498ee1c1a0d8b1e44b7678ded5780de6b3c4e"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/odd-source-own-CI-01/original-PCC-canonical-digests.json.xz",
+    "sha256": "948291a2aead86c99bec315507bc96108b583141b0c3ee480e3ddc980784afff"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/odd-source-own-CI-01/two-primary-whole-job.log.xz",
+    "sha256": "0c5cdbbc5e2f7405497a20c61ed5055f7bfd9e36023d7d5460641d51d849412a"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/odd-source-own-CI-01/whole-object-catalog.json",
+    "sha256": "6ba2ad0307e33cb10697c425d0395459a212af1a301da107240f8a08208fe5f6"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Exact3de8c174 ownCI all TEN unique workflows SUCCESS;duplicate PCC43498185689 also success in run inventory,latest43498589813/132138099580 captured once. ALL84 native JSON match originals(ONLY old candidate/P1 wall and wall_total omitted/raw retained),all50 exact local PCC verdicts pass/current source/original canonical digests. New odd-source one unfiltered/ALL4 whole JSON exact/both original6-declaration gates/6 bindings. Whole10 logs/API/640 source snapshots retained;large combined records/gluing log catalogued for next genuine whole archive,small whole objects Git,no remote availability claim. PCC notcovered2/sign legitimately skipped;CI guard scope successful original steps/markers,not downloaded standalone artifact ZIP;separate localfull640 b2b04d terminal guards0. Unsigned/partial geometry/no computational advantage/global-root claim."
+}

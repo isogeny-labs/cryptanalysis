@@ -1,0 +1,155 @@
+{
+  "compiled_source_members": {
+    ".gitattributes": {
+      "bytes": 36,
+      "sha256": "f214d5530eeb62b28fdca84c831f80e312eb87843cf236181fa84230e20ef17a"
+    },
+    "Cargo.lock": {
+      "bytes": 7865,
+      "sha256": "271fa72044b9de7f4bcde7b3c580e342966b49700ffcab4cc20587c248845e94"
+    },
+    "Cargo.toml": {
+      "bytes": 715,
+      "sha256": "a31ef2178a862308cea4c343037b2e9b66b41fb099420ad497990a2a466ff285"
+    },
+    "README.md": {
+      "bytes": 1603,
+      "sha256": "f564f0cfafd5c956bfdec7d0aab1885b82e5b69c54465292b0466a187a8bac5d"
+    },
+    "build-only-01.sh": {
+      "bytes": 1854,
+      "sha256": "7eb8bf1a2e838411d26589eb9a6ae6d3f6f91590ad691d32fe39d4e7a95fdb72"
+    },
+    "capture_binary.py": {
+      "bytes": 889,
+      "sha256": "4d0261a9622d1a6049760ddffe35682ce5ac2d89debce56d06d5a30de7450a0e"
+    },
+    "capture_engine.py": {
+      "bytes": 2855,
+      "sha256": "d6ad2b6626e8e2cc7feef5ec32d6544adc6be040ceca9cf150a2b5f5a25b178d"
+    },
+    "derived/class_solver.rs": {
+      "bytes": 19036,
+      "sha256": "9dcfe8b3e14ed446d595675415d73d74f8f04654a91e79858c96011a21e4de24"
+    },
+    "frozen-prior-inputs-01.sha256": {
+      "bytes": 200762,
+      "sha256": "54e63ef842db10a83690d99bff4713ec85f96834639e464ae14d0fb850185fd3"
+    },
+    "inherit_prepared.py": {
+      "bytes": 2105,
+      "sha256": "883613805995362d55b012eb2eec3cebd2ccb898332c52ac69df0171efd3d52e"
+    },
+    "literal-source-provenance.json": {
+      "bytes": 1041,
+      "sha256": "dd15db962a869da8f25d38318d2a3fac2664cfb94c18903ebe6e52d6b4ef6086"
+    },
+    "materialize-support.py": {
+      "bytes": 2861,
+      "sha256": "1a6a64bd9d5c38abd4d4cecf58b63ae246674e930b8cb17d71bbf8e0a9e4550b"
+    },
+    "runtime_custody.py": {
+      "bytes": 1998,
+      "sha256": "b6f4f8d70c40079fdf2ef5ad002f877c67e3c96b38f80167f4764a464a27a3cc"
+    },
+    "src/bin/audit_records.rs": {
+      "bytes": 4144,
+      "sha256": "cad88268b9136f9edeb2982913c802496e4dc83792ca7c1c7ee6690263d86315"
+    },
+    "src/lib.rs": {
+      "bytes": 2485,
+      "sha256": "d59b6f832c1d51b7fbe1c789c5f9ac5ae4ea893d8228fee2d6bcd2b2b88bd4c3"
+    },
+    "src/tests.rs": {
+      "bytes": 9980,
+      "sha256": "1c85e9f6935780b0c07ab742099eee08bfd3b1d396ecefa6021617920b91d1e0"
+    }
+  },
+  "binaries": {
+    "chain": {
+      "Cargo_artifact": {
+        "reason": "compiler-artifact",
+        "package_id": "path+file:///workspace/cryptanalysis/experiments/chained-transfer-public-target/original-fixed-model-ic-01#chained-n4-original-fixed-model-ic@0.1.0",
+        "manifest_path": "/workspace/cryptanalysis/experiments/chained-transfer-public-target/original-fixed-model-ic-01/Cargo.toml",
+        "target": {
+          "kind": [
+            "lib"
+          ],
+          "crate_types": [
+            "lib"
+          ],
+          "name": "chained_n4_original_fixed_model_ic",
+          "src_path": "/workspace/cryptanalysis/experiments/chained-transfer-public-target/original-fixed-model-ic-01/src/lib.rs",
+          "edition": "2021",
+          "doc": true,
+          "doctest": true,
+          "test": true
+        },
+        "profile": {
+          "opt_level": "3",
+          "debuginfo": 0,
+          "debug_assertions": false,
+          "overflow_checks": false,
+          "test": true
+        },
+        "features": [],
+        "filenames": [
+          "/workspace/scratch/ct80-twisted-pair-build-01-cache/release/deps/chained_n4_original_fixed_model_ic-961a833e77ff6290"
+        ],
+        "executable": "/workspace/scratch/ct80-twisted-pair-build-01-cache/release/deps/chained_n4_original_fixed_model_ic-961a833e77ff6290",
+        "fresh": false
+      },
+      "actual_path": "/workspace/scratch/ct80-twisted-pair-build-01-cache/release/deps/chained_n4_original_fixed_model_ic-961a833e77ff6290",
+      "copy": "/workspace/scratch/ct96-original-fixed-model-IC-build-02/chain-original-compiled.bin",
+      "bytes": 4799976,
+      "sha256": "bcc0046bcc2b603f3c124efb109a1318db9ac060b56f452acae72bb462f1ce83"
+    },
+    "auditor": {
+      "Cargo_artifact": {
+        "reason": "compiler-artifact",
+        "package_id": "path+file:///workspace/cryptanalysis/experiments/chained-transfer-public-target/original-fixed-model-ic-01#chained-n4-original-fixed-model-ic@0.1.0",
+        "manifest_path": "/workspace/cryptanalysis/experiments/chained-transfer-public-target/original-fixed-model-ic-01/Cargo.toml",
+        "target": {
+          "kind": [
+            "bin"
+          ],
+          "crate_types": [
+            "bin"
+          ],
+          "name": "audit-original-fixed-model-ic",
+          "src_path": "/workspace/cryptanalysis/experiments/chained-transfer-public-target/original-fixed-model-ic-01/src/bin/audit_records.rs",
+          "edition": "2021",
+          "doc": true,
+          "doctest": false,
+          "test": true
+        },
+        "profile": {
+          "opt_level": "3",
+          "debuginfo": 0,
+          "debug_assertions": false,
+          "overflow_checks": false,
+          "test": false
+        },
+        "features": [],
+        "filenames": [
+          "/workspace/scratch/ct80-twisted-pair-build-01-cache/release/audit-original-fixed-model-ic"
+        ],
+        "executable": "/workspace/scratch/ct80-twisted-pair-build-01-cache/release/audit-original-fixed-model-ic",
+        "fresh": false
+      },
+      "actual_path": "/workspace/scratch/ct80-twisted-pair-build-01-cache/release/audit-original-fixed-model-ic",
+      "copy": "/workspace/scratch/ct96-original-fixed-model-IC-build-02/auditor-original-compiled.bin",
+      "bytes": 640792,
+      "sha256": "c19def8e3ce42d2a92cb28a4c84e0357e9ca1d0bac09f2190d6a11b09d5dd3ff"
+    }
+  },
+  "all_original_field_prepared_bytes_equal": true,
+  "old16": {
+    "source": "/workspace/cryptanalysis/experiments/chained-transfer-public-target/paired-fourth-preflight/expected-native-01.json.xz",
+    "compressed_sha256": "b9f8b5751384059e79c537a6bb5ee29c9a1a12af28bd9f32c452c06597f4474b",
+    "bytes": 43111384,
+    "sha256": "f8c77d8aa6a0a134aa7836fc9d4f2be662bb5eee9da6bf33770a934d11296312",
+    "whole_decompression_comparison_before_closed_link": true
+  },
+  "scope": "unsigned complete source/binary/fixture/prepared-byte custody; no mathematical projection"
+}

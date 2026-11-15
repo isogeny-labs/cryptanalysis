@@ -1,0 +1,37 @@
+[
+  {
+    "claim": "pcc/claims/PCC-20261115-c5ec84.json",
+    "theorem": "PrimeReprojection.inverse_two",
+    "statement": "theorem inverse_two {A : Type} [IntModule A] (a ell quotient : Int) (bezout : a*2+quotient*ell=1) (x : A) (annihilated : ell \u2022 x=0) : a \u2022 ((2 : Int) \u2022 x)=x"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-fc42be.json",
+    "theorem": "PrimeReprojection.normalized_norm_pair",
+    "statement": "theorem normalized_norm_pair {A J : Type} [IntModule A] [IntModule J] (phi : A \u2192 J) (norm : J \u2192 A) (a ell quotient : Int) (source_dual : \u2200 p, norm (phi p)=(2 : Int) \u2022 p) (target_dual : \u2200 x, phi (norm x)=(2 : Int) \u2022 x) (phi_linear : \u2200 z : Int, \u2200 p, phi (z \u2022 p)=z \u2022 phi p) (source_ann : \u2200 p : A, ell \u2022 p=0) (target_ann : \u2200 x : J, ell \u2022 x=0) (bezout : a*2+quotient*ell=1) : (\u2200 p, a \u2022 norm (phi p)=p) \u2227 (\u2200 x, phi (a \u2022 norm x)=x)"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-dfa181.json",
+    "theorem": "PrimeReprojection.reprojection_dual_norm",
+    "statement": "theorem reprojection_dual_norm {A B J K : Type} [IntModule A] [IntModule B] [IntModule J] [IntModule K] (pi : A \u2192 J) (pj : B \u2192 K) (ni : J \u2192 A) (nj : K \u2192 B) (g : A \u2192 B) (gh : B \u2192 A) (a ell quotient n : Int) (ni_pi : \u2200 p, ni (pi p)=(2 : Int) \u2022 p) (pi_ni : \u2200 x, pi (ni x)=(2 : Int) \u2022 x) (nj_pj : \u2200 p, nj (pj p)=(2 : Int) \u2022 p) (pj_nj : \u2200 x, pj (nj x)=(2 : Int) \u2022 x) (pi_linear : \u2200 z : Int, \u2200 p, pi (z \u2022 p)=z \u2022 pi p) (pj_linear : \u2200 z : Int, \u2200 p, pj (z \u2022 p)=z \u2022 pj p) (annA : \u2200 p : A, ell \u2022 p=0) (annB : \u2200 p : B, ell \u2022 p=0) (annJ : \u2200 x : J, ell \u2022 x=0) (annK : \u2200 x : K, ell \u2022 x=0) (bezout : a*2+quotient*ell=1) (source_elliptic_dual : \u2200 p, gh (g p)=n \u2022 p) (target_elliptic_dual : \u2200 p, g (gh p)=n \u2022 p) : (\u2200 x, transfer pi gh nj a (transfer pj g ni a x)=n \u2022 x) \u2227 (\u2200 y, transfer pj g ni a (transfer pi gh nj a y)=n \u2022 y)"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-5da496.json",
+    "theorem": "PrimeReprojection.reprojection_chain",
+    "statement": "theorem reprojection_chain {A B C J K L : Type} [IntModule A] [IntModule B] (pj : B \u2192 K) (pc : C \u2192 L) (ni : J \u2192 A) (nj : K \u2192 B) (g : A \u2192 B) (h : B \u2192 C) (a ell quotient : Int) (middle_dual : \u2200 p, nj (pj p)=(2 : Int) \u2022 p) (annB : \u2200 p : B, ell \u2022 p=0) (bezout : a*2+quotient*ell=1) (x : J) : transfer pc h nj a (transfer pj g ni a x)= transfer pc (fun p => h (g p)) ni a x"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-cbd44d.json",
+    "theorem": "PrimeReprojection.known_initial_point",
+    "statement": "theorem known_initial_point {A B J K : Type} [IntModule A] (pi : A \u2192 J) (pj : B \u2192 K) (ni : J \u2192 A) (g : A \u2192 B) (a ell quotient : Int) (source_dual : \u2200 p, ni (pi p)=(2 : Int) \u2022 p) (annA : \u2200 p : A, ell \u2022 p=0) (bezout : a*2+quotient*ell=1) (p : A) : transfer pj g ni a (pi p)=pj (g p)"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-1c4eb7.json",
+    "theorem": "PrimeReprojection.transfer_integer_linear",
+    "statement": "theorem transfer_integer_linear {A B J K : Type} [IntModule A] [IntModule B] [IntModule J] [IntModule K] (phi : B \u2192 K) (g : A \u2192 B) (norm : J \u2192 A) (a : Int) (norm_linear : \u2200 z : Int, \u2200 x, norm (z \u2022 x)=z \u2022 norm x) (g_linear : \u2200 z : Int, \u2200 p, g (z \u2022 p)=z \u2022 g p) (phi_linear : \u2200 z : Int, \u2200 p, phi (z \u2022 p)=z \u2022 phi p) (z : Int) (x : J) : transfer phi g norm a (z \u2022 x)=z \u2022 transfer phi g norm a x"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-287578.json",
+    "theorem": "PrimeReprojection.actual_original_witnesses",
+    "statement": "theorem actual_original_witnesses : (2*1386537 : Nat)=2773073+1 \u2227 Nat.gcd 13 2773073=1 \u2227 Nat.gcd 169 2773073=1 \u2227 Nat.gcd 2197 2773073=1 \u2227 Nat.gcd 28561 2773073=1 \u2227 (10*10 : Nat)%223=100 \u2227 (40*40 : Nat)%223=39 \u2227 (22*22 : Nat)%223=38"
+  }
+]

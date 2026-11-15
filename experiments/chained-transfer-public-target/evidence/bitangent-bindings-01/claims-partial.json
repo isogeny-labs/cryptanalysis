@@ -1,0 +1,42 @@
+[
+  {
+    "theorem": "Bitangent223.denominator_factor",
+    "claim_path": "pcc/claims/PCC-20261113-a01f8f.json",
+    "statement": "theorem denominator_factor {K : Type} [CommRing K] (a b d u : K) : let A",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/bitangents/lean/BitangentAlgebra.lean",
+      "theorem": "Bitangent223.denominator_factor",
+      "decl_sha256": "d34b71409c4741f83b2a07fb4091fdf65d20d4fdc3ff1879a640efa685db698f"
+    }
+  },
+  {
+    "theorem": "Bitangent223.constant_factor",
+    "claim_path": "pcc/claims/PCC-20261113-5288a0.json",
+    "statement": "theorem constant_factor {K : Type} [CommRing K] (a b d e f u : K) : let A",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/bitangents/lean/BitangentAlgebra.lean",
+      "theorem": "Bitangent223.constant_factor",
+      "decl_sha256": "87cf4e77c8a89ca30f6110735bb1bc2327ceb62b8e550f703ad534ff02b2a8bc"
+    }
+  },
+  {
+    "theorem": "Bitangent223.resultant_is_necessary",
+    "claim_path": "pcc/claims/PCC-20261113-6cd1a8.json",
+    "statement": "theorem resultant_is_necessary {K : Type} [CommRing K] (A C D E L b c e v : K) (linear : C+L*v=0) (contact : 4*A^3*(c+e*v+b*v^2)-(D+E*v)^2=0) : 4*A^3*(c*L^2-e*C*L+b*C^2)-(D*L-E*C)^2=0",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/bitangents/lean/BitangentAlgebra.lean",
+      "theorem": "Bitangent223.resultant_is_necessary",
+      "decl_sha256": "0ea1f30112c40093bce95faeb14f0759cd4a0cfa0d06f41e7e70b5c05dfa828d"
+    }
+  },
+  {
+    "theorem": "Bitangent223.actual_permutation_order_six",
+    "claim_path": "pcc/claims/PCC-20261113-d79edc.json",
+    "statement": "theorem actual_permutation_order_six : (\u2200 i : Fin 28, iterate actualPermutation 6 i = i) \u2227 \u00ac (\u2200 i : Fin 28, iterate actualPermutation 2 i = i) \u2227 \u00ac (\u2200 i : Fin 28, iterate actualPermutation 3 i = i)",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/bitangents/lean/BitangentAlgebra.lean",
+      "theorem": "Bitangent223.actual_permutation_order_six",
+      "decl_sha256": "d1cecdb2a8b9c7e7755f281b7259fecf8b2b61e3e7885ffb53448e738fe567a6"
+    }
+  }
+]

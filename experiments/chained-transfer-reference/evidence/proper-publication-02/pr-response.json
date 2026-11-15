@@ -1,0 +1,47 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Action completed."
+    }
+  ],
+  "structuredContent": {
+    "url": "https://github.com/isogeny-labs/cryptanalysis/pull/1517",
+    "number": 1517,
+    "state": "open",
+    "merged": false,
+    "mergeable": false,
+    "draft": false,
+    "body": "The consumer previously replayed the older partial-Frobenius component. This adds a separate source pin for the proper C20→T20 maps at crypto `030ea125bf66d98e9365cc9bc7126480d829bfae` and independently encoded kernel-record checks.\n\nNew consumer head `807207e1cb7787807c7d32d9402b2cb3bc0ee189` (treed519f5b0,parent748e;116paths) preserves all35 old Rust/check/pin inputs and the three complete existing CI jobs/trigger prefix byte-identically. It adds check-proper.sh,proper-upstream-commit.txt,a standalone Rust checker with pinned lock,and a fourth CI job. The checker rebuilds psi49 through calls6/7/8 and function composition,checks the composed denominator=h49²/exact quotient/DDF3+21,and reconstructs49 actual E7 points/independent C0 Mumford pulls/all2401 additions/seven kernel records/all49 global-index sum entries/Frobenius5. Existing field/poly/elliptic/Kohel/Cantor engines are reused. The full R20 replay runs the producer's R20 implementation;it is distinct from the independently encoded kernel checks. All scientific standing is unsigned. [pcc:unverified]\n\n**Local acceptance:** complete full02/400f38 passes41native/23algebra/ten exact identity outputs/both kernel24475-byte and geometry6141-byte JSON comparisons/39proofmodules224compiled198written0trusted/checker4+16mutants+CLI. All719 upstream,82 consumer and184 original input hashes remain unchanged;the always-failing rg shim is never invoked;original start/finish/exit0 and all final guards exist. WrongHEADc7,modifiedgeometryJSON and missinggrep reject2 before allocating outputs (a5bf9e). Old reference98+5 is retained in CI rather than repeated locally after its exact748e own success3ea63d. [pcc:unverified]\n\n**Reports:** [main reporta5bc14](https://github.com/isogeny-labs/cryptanalysis/blob/807207e1cb7787807c7d32d9402b2cb3bc0ee189/experiments/chained-transfer-reference/reports/proper-t20-replay/REPORT.md),editable DOT/SVG/recorded mutant counts/Typst and inspected50,510-byte two-page PDF;[retained failures7d49ad](https://github.com/isogeny-labs/cryptanalysis/blob/807207e1cb7787807c7d32d9402b2cb3bc0ee189/experiments/chained-transfer-reference/reports/proper-t20-failures/REPORT.md),inspected38,464-byte one-page PDF. Protocol75eacc and additive build notes71036e state the function-divisor/normalization argument and the native/written/formal boundary. Upstream Lean does not formalize every Picard/polarization/function bridge. Existing identity v1 checks stay at fixed2^61−1,not arbitrary-characteristic F101 identities. [pcc:unverified]\n\n**Failures retained:** checker01/f0c793 misreads wire sum indices as positions in seven rows;the corrected checker requires global49 bounds,actual kernel membership and every actual divisor sum. Pre-execution shell syntaxf956ff is preserved. Full01/4a80d5 times out in its checker5-minute cold dependency build before checker tests/CLI/final driver guards,so it is NOT accepted;late719/81 checks are labeled late. Full02 shares the exact engine dependency from the same fresh isolated native Cargo target and retains every30/15/10/5-minute limit and scientific criterion. Cached-check failure8abc63 flags a final blank line in literal recorded stdout;the existing fixture-scoped whitespace convention preserves its exact PCC-pinned bytes while retaining code/other checks. Governance2a1946 passes own748e prefix186/prose0/cached0,with the earlier findings immutable. Artifact check after commit is0. [pcc:unverified]\n\n**Raw-publication gate:** the whole159-file failed archive is79,644 bytes (SHA256 a921d348b5cdeddffadfc8341709afe55df9a80518e38ce3706930cdd575cabe);the whole158-file positive archive is80,516 bytes (201254e7774ee90b49d7a17dd723dccc3918c01ab10cac4d1dcf0c4064072f19). Both are intact standardtar.xz with member/raw/archive hashes and exact roundtrip,including original receipts and owned source snapshots. They exceed64KiB and remain locally retained,with metadata in this commit;raw remote availability is PENDING. Use the documented trusted-base crypto3877 artifact-autofix route,then link actual canonical manifests/objects here. The prior automation job was a no-op,not an observed new transfer (root3eeb2e). No splitting,pruning,fake S3 pointer,policy change or bypass label. [pcc:unverified]\n\n**Own CI:** pending one dispatch on this exact published head;the trigger remains main-only. Require all four complete jobs:\n\n| Job | Frozen source / acceptance |\n| --- | --- |\n| reference | Existing native25/reference98+5integration/one old ignored test |\n| independent | Existing0796:32native/23algebra/two outputs/32proofmodules186compiled160written0trusted |\n| partial-frobenius | Existing338d:35native/23algebra/seven outputs/35proofmodules203compiled177written0trusted |\n| proper-t20 | New030e:41native/23algebra/ten outputs/bothJSONcmp/39proofmodules224compiled198written0trusted/checker4+CLI |\n\nThe old748e CI43268001587/3ea63d is settled success at its old three-job scope. Root030e own43299283518/94f85a is settled all4 success at25/41/23ten/bothJSONcmp/39modules224compiled198written0trusted. Neither is this new consumer's own four-job CI. [pcc:unverified]\n\nThis ready PR is stacked on [#1513](https://github.com/isogeny-labs/cryptanalysis/pull/1513),whose head remains748e. Retarget to main and enable normal auto-merge after its parent lands;feature-base auto-merge is unavailable. All review,ledger,archive and scientific-signing requirements remain. No force/rebase/rechain/lineage choice. Local Linuxx86_64/Rust1.99.1/Lean4.35.0 correctness checks,no benchmark or cost claim. Sources:Galbraith9.8.5–7,BD§4,root063773/720a59/b24be8 and prior replay protocol9653c3;KB127 fallback receipts retained. Persistent project queue [crypto#3904](https://github.com/isogeny-labs/crypto/issues/3904).\n",
+    "title": "Chained transfer: proper T20 replay and independent kernel checks",
+    "base": "research/chained-transfer-partial-frobenius-20261112",
+    "base_sha": "748e44e22bdf60439c3af7da90298c6644669908",
+    "head": "research/chained-transfer-proper-t20-20261112",
+    "head_sha": "807207e1cb7787807c7d32d9402b2cb3bc0ee189",
+    "head_repo_id": 1376761927,
+    "head_repo_full_name": "isogeny-labs/cryptanalysis",
+    "merge_commit_sha": null,
+    "user": {
+      "login": "aburan28",
+      "name": "aburan28",
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/1086874?v=4",
+      "id": 1086874
+    },
+    "requested_reviewers": null,
+    "requested_team_reviewers": null,
+    "diff": null,
+    "comments": null,
+    "created_at": "2026-11-12T21:55:50Z",
+    "updated_at": "2026-11-12T21:55:50Z",
+    "closed_at": null,
+    "merged_at": null,
+    "commits": 1,
+    "changed_files": 116,
+    "additions": 9058,
+    "deletions": 0,
+    "display_url": "https://github.com/isogeny-labs/cryptanalysis/pull/1517",
+    "display_title": "Chained transfer: proper T20 replay and independent kernel checks"
+  },
+  "isError": false
+}

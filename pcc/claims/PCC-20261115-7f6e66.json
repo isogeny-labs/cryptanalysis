@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-15T02:00:23Z",
+ "id": "PCC-20261115-7f6e66",
+ "kind": "theorem",
+ "producer": {
+  "commit": "70ec53e5a297a47e8c933dad1b58e870211b16fa",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "5f8d493fa91384934cd5e3ab3aa18d57df0009fa131a5fa4a25dd3621cde6015",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/fixed-jacobian-chain-evaluator-01/lean/FullGroupNorm.lean",
+   "theorem": "FullGroupNorm.inverse_on_full_annihilator"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Conditional IntModule two-pair composite norms derived from individual dual identities, full-annihilator inverse recovery with explicit Bezout witness, fixed integer13/169 inverses modulo11086844 and prime-source recovery arithmetic, coprimality and retained-lift composition. Both original gates5roots0trusted. Actual HLP polarized varieties, norms, finite fields/Frobenius, kernel transport, Picard/program bridges remain open. Native complete chain not run; no cost or signed promotion.",
+ "statement": "theorem inverse_on_full_annihilator {A B : Type} [IntModule A] (f : A \u2192 B) (fh : B \u2192 A) (n order inverse quotient : Int) (dual_norm : \u2200 a, fh (f a)=n \u2022 a) (bezout : inverse*n+quotient*order=1) (a : A) (annihilated : order \u2022 a=0) : inverse \u2022 fh (f a)=a"
+}

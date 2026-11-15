@@ -1,0 +1,7 @@
+# Preserve completed lifting/field components while implementing beta
+
+Prospective before any StageC implementation. Protocol5be5e0 and its acceptance criteria remain intact. Completed group/four-torsion/field components live in beta-rational-lift and ci_beta_lift/reference01; their first nineteen-workflow source replay will check two unfiltered tests/allthree whole native records with no masks, original identity positive0/negative101, both unchanged proof gates20+1 declarations/zero trusted, six exact bindings and final source guards. The phase panel has17 ordered phases:16expected0 andONEactual expected101, eachtee0. [pcc:unverified]
+
+Implement the complete base-changed fibre maps and rational beta in a NEW sibling crate, beta-complete-evaluator. Depend on the completed field/coordinate components without changing their source, tests, golden records, verifiers or first replay workflow. New evaluator fixtures, proof modules and CI have their own versioned manifests. This keeps completed stages replayable while extending coverage. [pcc:unverified]
+
+StageC still requires genuine complete line/conic ideals and actual origins, allF2conjugates and coefficient traces overFp2, originalKagreement, Frobenius andalltorsion/additioncontrols, allcofactorsectors/publictargets/both13/F=2beta, and preserved unmatched/invalidcases. Completeglobalclosedcoordinates and calibratedcosts remain explicit separate requirements. No algorithmic acceptance criterion or original gate changes. [pcc:unverified]

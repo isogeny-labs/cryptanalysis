@@ -1,0 +1,44 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-15T05:30:29Z",
+ "id": "PCC-20261115-891a3c",
+ "kind": "statement",
+ "producer": {
+  "commit": "48262e0a83edc271e78e2a2eee90f510de335757",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/closed-root-derived-cache-cleanup-09/ct86-closed-root-cleanup-09-preflight-failure.txt",
+    "sha256": "fb5d14cef980fb34fe94412681bc5e96dcecc9ddbb6c8dee5d675b4e15301115"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/closed-root-derived-cache-cleanup-09/ct86-closed-root-dependency-cache-cleanup-09.json.xz",
+    "sha256": "7f931f7546658e34104fbbda18e95ada0df8faa0358b3222fbe211643248fa30"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/closed-root-derived-cache-cleanup-09/ct86_cleanup_closed_root_dependencies_09.py",
+    "sha256": "692783c2846c794da04ec0f1de9cc006427962fbf0b897a3fe99515caca64891"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/closed-root-derived-cache-cleanup-09/ct86_cleanup_closed_root_dependencies_09b.py",
+    "sha256": "c031cccaaf34ad24879030cc1000ad56781f59dd40be1d00eb8abc0ab5d8a236"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Closed root dependency cache cleanup09: only obsolete unheld Root target/release RLIB/RMETA/object paths removed after excluding ALL44386 genuine22 guard paths/every modern+legacy currentPCCattestation/rootisogeny library, with no active compiler. Exact Root andScratch263MB diagnostic executables and all three Git statuses remainunchanged. Allsource/raw/executables/fullpreparedcopies/currentct57andct80caches retained. Complete digest/inode/size/allocatedbytes inventory retained. Rebuildable dependency cache only; no science/globalCI/cold/signing promotion."
+}

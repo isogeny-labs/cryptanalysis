@@ -1,0 +1,52 @@
+[
+  {
+    "theorem": "Kernel223.closed_cardinality_arithmetic",
+    "claim_path": "pcc/claims/PCC-20261113-392a95.json",
+    "statement": "theorem closed_cardinality_arithmetic : (63*32*15*8*3*2 : Nat)=1451520 \u2227 (2+1)*(4+1)*(8+1)=135 \u2227 (120960*12 : Nat)=1451520",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/kernel-census/lean/KernelStructure.lean",
+      "theorem": "Kernel223.closed_cardinality_arithmetic",
+      "decl_sha256": "4c0c1d9816b68bad1da5b1f26c23ebe110e30a1d0f8974356f4bf46948a11c00"
+    }
+  },
+  {
+    "theorem": "Kernel223.conjugacy_transports_stability",
+    "claim_path": "pcc/claims/PCC-20261113-039ca3.json",
+    "statement": "theorem conjugacy_transports_stability {V : Type} (f g h inverse : V \u2192 V) (left_inverse : \u2200 x, inverse (h x)=x) (right_inverse : \u2200 y, h (inverse y)=y) (intertwines : \u2200 x, h (f x)=g (h x)) (S : V \u2192 Prop) : Stable f S \u2194 Stable g (Transport inverse S)",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/kernel-census/lean/KernelStructure.lean",
+      "theorem": "Kernel223.conjugacy_transports_stability",
+      "decl_sha256": "bcae04a7c594b6d7caff7b71207187f5ad13bb732648042cde9b522b62363a5a"
+    }
+  },
+  {
+    "theorem": "Kernel223.isometry_transports_isotropy",
+    "claim_path": "pcc/claims/PCC-20261113-9f99f1.json",
+    "statement": "theorem isometry_transports_isotropy {V : Type} (h inverse : V \u2192 V) (left_inverse : \u2200 x, inverse (h x)=x) (right_inverse : \u2200 y, h (inverse y)=y) (orthogonal : V \u2192 V \u2192 Prop) (preserves : \u2200 x y, orthogonal (h x) (h y) \u2194 orthogonal x y) (S : V \u2192 Prop) : Isotropic orthogonal S \u2194 Isotropic orthogonal (Transport inverse S)",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/kernel-census/lean/KernelStructure.lean",
+      "theorem": "Kernel223.isometry_transports_isotropy",
+      "decl_sha256": "819cc72267c3352e5631a697b468674ff4cd2575cff0a1953702348a998ba96d"
+    }
+  },
+  {
+    "theorem": "Kernel223.true_count_monotone",
+    "claim_path": "pcc/claims/PCC-20261113-e7e736.json",
+    "statement": "theorem true_count_monotone (n : Nat) (p q : Fin n \u2192 Bool) (inclusion : \u2200 i, p i=true \u2192 q i=true) : trueCount n p \u2264 trueCount n q",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/kernel-census/lean/KernelStructure.lean",
+      "theorem": "Kernel223.true_count_monotone",
+      "decl_sha256": "c1e365f5459721622efe70dd25fe3d5c329694ba327c0219ba359c0a62a8bc8f"
+    }
+  },
+  {
+    "theorem": "Kernel223.equal_count_and_inclusion_give_equal_membership",
+    "claim_path": "pcc/claims/PCC-20261113-ea637d.json",
+    "statement": "theorem equal_count_and_inclusion_give_equal_membership (n : Nat) (p q : Fin n \u2192 Bool) (inclusion : \u2200 i, p i=true \u2192 q i=true) (equal_count : trueCount n p=trueCount n q) : \u2200 i, p i=q i",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/kernel-census/lean/KernelStructure.lean",
+      "theorem": "Kernel223.equal_count_and_inclusion_give_equal_membership",
+      "decl_sha256": "e3db714bb1fd19cd933925d89c4f2875be957f589f9e9fd5be1519db6aa151ae"
+    }
+  }
+]

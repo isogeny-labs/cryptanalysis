@@ -1,0 +1,13 @@
+digraph actual {
+ graph [rankdir=LR,bgcolor="white",fontname="DejaVu Sans",nodesep=.19,ranksep=.25];
+ node [shape=box,style="rounded",fontname="DejaVu Sans",fontsize=10,margin=.08];
+ edge [fontname="DejaVu Sans",fontsize=8,color="#566970"];
+ x[label="J0(F223): admitted x\nshared full norm + ORDER scalar",color="#295477"];
+ q[label="Q=N0(x) in E(K)"];
+ b[label="Strong scalar baseline\n[1386537]Q and x2=[ell]x",color="#a57535"];
+ bp[label="Psi([1386537]Q)\nsubtract beta(x2)"];
+ h[label="Direct norm-halving\nall four [2]a=Q in E(L)",color="#366c68"];
+ c[label="actual E[2](K) correction t\nPhi0(t)=x-Phi0(a)\nreturn Psi(a)+Psi(t)"];
+ y[label="J1(F223): beta(x)\nwhole outputs equal complete-C",color="#295477"];
+ x->q; q->b; q->h; b->bp; h->c; bp->y; c->y;
+}

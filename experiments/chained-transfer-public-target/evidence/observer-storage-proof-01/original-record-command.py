@@ -1,0 +1,15 @@
+"""Original Lean/PCC binding custody for conditional indexed-counter properties."""
+from pathlib import Path
+import hashlib,importlib.util,json,os,shutil,subprocess,sys
+r=Path('/workspace/cryptanalysis');s=r/'experiments/chained-transfer-public-target';e=s/'evidence/observer-storage-proof-01';e.mkdir();raw=Path('/workspace/scratch/ct79-counter-storage-proof-01');shutil.copytree(raw,e/'original-gates');shutil.copyfile(__file__,e/'original-record-command.py')
+spec=importlib.util.spec_from_file_location('original_pcc',r/'tools/pcc/pcc.py');m=importlib.util.module_from_spec(spec);sys.modules[spec.name]=m;spec.loader.exec_module(m)
+path=s/'norm-arithmetic-storage-02/lean/CounterStorage.lean';env=dict(os.environ,PATH='/home/agent/.elan/toolchains/leanprover--lean4---v4.34.1/bin:'+os.environ['PATH']);bindings=[]
+for short in ['resolve_index','checked_update']:
+ name='CounterStorage.'+short;_,statement=m.lean_find_declaration([path],name);proof=dict(path=path.relative_to(r).as_posix(),theorem=name,decl_sha256=hashlib.sha256(statement.encode()).hexdigest())
+ cmd=['python3','tools/pcc/pcc.py','claim','new','--kind','theorem','--claim-type','interpretive','--statement',statement,'--scope','Structural functions on CURRENTLY INDEXED keys and Nat counters, conditional on injective canonical index, representation consistency and sound cached pair. Proves cache resolution and both bounded-add guard/canonical bump equivalence. Dynamic insertion, Vec bounds, actual u64/checked_add, TLS, bucket algorithm and full Rust program/observer semantics remain native/written bridges. Both original434/435 gates audit6declarations:2namedroots+4generatedhelpers, zero trusted. No aggregate novelty/performance/signedexecution claim.','--proof','lean:'+json.dumps(proof)]
+ claim=subprocess.check_output(cmd,cwd=r,text=True).strip();q=subprocess.run(['python3','tools/pcc/pcc.py','verify',claim,'--json'],cwd=r,env=env,capture_output=True);(e/(short+'-binding.json')).write_bytes(q.stdout);(e/(short+'-binding.stderr.txt')).write_bytes(q.stderr);(e/(short+'-binding.exit')).write_text(str(q.returncode)+'\n');assert q.returncode==0 and json.loads(q.stdout)['verdict']=='pass';bindings.append(dict(claim=claim,theorem=name,statement=statement));print(claim,'local binding pass;unsigned',flush=True)
+(e/'bindings.json').write_text(json.dumps(bindings,indent=2)+'\n')
+cmd=['python3','tools/pcc/pcc.py','claim','new','--kind','statement','--claim-type','data','--statement','Observer storageconditionalproof: BOTHoriginal434/435gates PASS6declarations (2namedcache-resolution/guard-and-canonical-update roots+4generatedhelpers), 0trusted; BOTH exactoriginalPCC localbindings pass. DomaincurrentlyindexedNatcounters underexplicitinjective-index/representation/cache soundness hypotheses. No dynamicinsertion/Vec/u64/TLS/bucket/Rustprogram proof; nativeunit/mathparity/oldwholeledger/census stillNOTRUN. No novelaggregate/performance/signedexecution standing.']
+for p in sorted(e.rglob('*')):
+ if p.is_file():cmd+=['--proof','attestation:'+p.relative_to(r).as_posix()]
+print(subprocess.check_output(cmd,cwd=r,text=True).strip(),flush=True)

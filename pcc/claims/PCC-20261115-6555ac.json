@@ -1,0 +1,37 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-15T11:06:47Z",
+ "id": "PCC-20261115-6555ac",
+ "kind": "statement",
+ "producer": {
+  "commit": "5417e9d1e6fcb99c205ab0cee405338294b3b70f",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/unheld-pip-download-cache-cleanup-13/original-command.py",
+    "sha256": "223f4f62f3ebbba8bbf16adb63d4a171ff098cfa66db5359923402935e5c6d91"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/unheld-pip-download-cache-cleanup-13/outcome.json",
+    "sha256": "ed687438bb511612b82d093f6a49b0ff0cdecf2fd31aac7ec1cbab4bc5965815"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/unheld-pip-download-cache-cleanup-13/whole-removed-download-cache-inventory.json.xz",
+    "sha256": "aa3f52b3007c322198f6d76a5d7f5a29181884da7b12a103b52750f841a12602"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Storage13 removes126unheld pip HTTP downloadcache entries only:67063462logicalB/67354624allocatedB; free98832384to166178816B. All51583guard paths/everyPCC subject excluded, allthreeGitstatuses unchanged. Fullremoved-file hashinventory retained; no installedtool/package/source/researchraw/actualexecutable/fullpreparedlibrary removed. Unsignedstorageonly/no cold orperformanceacceptance."
+}
