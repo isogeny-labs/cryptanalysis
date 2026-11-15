@@ -1382,7 +1382,9 @@ bytes. No paid compute is configured. Resume experimental work only after
 scripts/checkpoint.sh push and scripts/checkpoint.sh gate both succeed.
 Original-prime C169/C13a/C13b/D and full 695/701-chain costs remain required;
 the selected toy subgroup cannot substitute for that acceptance condition.
-Synthetic development tests passed (16), producer-only; PCC-20261115-466075
+Synthetic development tests passed (18), producer-only; PCC-20261115-466075
 has unverified standing. Other tracks reside in /workspace/ml-cryptanalysis,
 /workspace/fp3-combined and /workspace/lfd-summation-systems.
 No transfer experiment is in flight.
+Guarded phase-instrumented native widths 4 and 16 compiled without execution;
+the generated code and row-binding adapter are in the transfer-cold-cost report.
