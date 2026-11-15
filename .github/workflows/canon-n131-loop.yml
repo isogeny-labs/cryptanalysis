@@ -79,6 +79,7 @@ jobs:
         run: python3 receipt.py "$OUT/receipt_post.json"
       - name: Decision rule (analyze.py)
         run: |
+          set -o pipefail
           python3 analyze.py "$OUT/rows.jsonl" "$OUT/analysis.json" "$OUT/isolated_ir.json" | tee "$OUT/analysis.txt"
       - name: Keep the receipts as an artifact
         if: always()

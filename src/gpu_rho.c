@@ -352,6 +352,13 @@ static ca_status gpu_rho_solve(const ca_group *g, const ca_elem *base,
     } else {
         nthreads = (uint64_t)params->blocks * tpb;
     }
+    /* Kernel walk IDs are uint32_t; reject dimensions before truncation or
+     * any per-walk allocation. The largest buffer has CA_GPU_AUX words. */
+    if (nthreads > UINT32_MAX / CA_GPU_W ||
+        nthreads > SIZE_MAX / CA_GPU_W / CA_GPU_AUX / sizeof(uint64_t)) {
+        ca_set_error("GPU rho launch exceeds 32-bit walk IDs or host buffer sizes");
+        return CA_ERR_INVALID;
+    }
     a.nthreads = (uint32_t)nthreads;
     uint64_t nwalks = (uint64_t)a.nthreads * CA_GPU_W;
     /* distinguished points: ~32 per walk over the expected run, at most 2^24 total */
