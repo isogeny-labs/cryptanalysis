@@ -1,0 +1,26 @@
+{
+  "schema": "xedni-shear-metric-control-v1",
+  "instance": {
+    "group": "Z^2",
+    "height": "x^2+y^2",
+    "points": [[1, 0], [0, 1], [1, 1]],
+    "coefficient_radius": 1,
+    "known_relation": [1, 1, -1],
+    "shear_parameters": [0, 1, 2, 5, 10, 100]
+  },
+  "count_boundaries": {
+    "coefficient_box": "all ordered triples in [-L,L]^3",
+    "distinct_values": "exact distinct sums in Z^2",
+    "metric_cover": "ambient centers in [-2L,2L]^2 with radius zero",
+    "coordinate_cover": "symmetric square [-K_N,K_N]^2 in inverse shear coordinates, K_N measured by exhaustive enumeration",
+    "torsion_labels": 1
+  },
+  "frozen_predictions": {
+    "coefficient_box_count": 27,
+    "metric_center_count": 25,
+    "metric_collision_condition": true,
+    "coordinate_collision_condition_for_N_ge_2": false,
+    "known_relation_value": [0, 0]
+  },
+  "interpretation": "Exact integer-lattice control for the Lean metric-cover and rank-gap bounds; no elliptic-curve lift or timing claim"
+}
