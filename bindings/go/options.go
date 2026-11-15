@@ -40,7 +40,7 @@ func (s Solver) String() string {
 type Options struct {
 	Threads uint32 // rho: worker threads (0 => 1)
 	Seed    uint64 // 0 => random
-	MaxOps  uint64 // 0 => unlimited; exceeding it yields ErrLimit
+	MaxOps  uint64 // 0 => no caller limit (rho and kangaroo then stop at a built-in runaway guard with ErrNotFound); exceeding it yields ErrLimit
 
 	BSGSTableSize uint64 // 0 => sqrt(width)
 

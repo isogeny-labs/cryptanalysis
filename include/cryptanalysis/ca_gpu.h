@@ -48,7 +48,12 @@ typedef struct ca_gpu_rho_params {
     int32_t dp_bits;
     int32_t negation_map; /* 1 => use on curves */
     uint64_t seed;        /* 0 => random */
-    uint64_t max_ops;     /* 0 => unlimited */
+    /* Abort with CA_ERR_LIMIT once this many group ops are done (checked
+     * between launches).  0 sets no limit and keeps the built-in runaway
+     * guard, 64 * (sqrt(n) + walks * (2^dp_bits + steps_per_launch)) + 2^20;
+     * a run that reaches it returns CA_ERR_NOT_FOUND (the target is not a
+     * power of the base). */
+    uint64_t max_ops;
 } ca_gpu_rho_params;
 
 CA_API void ca_gpu_rho_params_default(ca_gpu_rho_params *p);
