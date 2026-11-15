@@ -20,15 +20,17 @@ candidate union bound then control that event.
 The theorem `XedniObstruction.dependent_lift_sample_count` takes an additive
 map `red : H →+ ZMod q`, a lift-selection function
 `lifts : (Fin r → ZMod q) → Fin r → H`, and compatibility
-`red(lifts(t,i)) = sᵢw−tᵢ`. It assumes a **uniform** natural-number bound
-`B<q`: for every sampled `t`, any nontrivial integer relation among
-`lifts(t)` has each coefficient's absolute value at most `B`. The fixed
-finite set `S` must cover every nontrivial vector in that box, and every
-member of `S` must itself be nontrivial and bounded. These cover conditions
-are independent of the sampled `t`.
+`red(lifts(t,i)) = sᵢw−tᵢ`. It assumes a **uniform short-witness bound**
+`B<q`: whenever `lifts(t)` is dependent, at least one nontrivial integer
+relation has each coefficient's absolute value at most `B`. The fixed finite
+set `S` must cover every nontrivial vector in that box, and every member of
+`S` must itself be nontrivial and bounded. These cover conditions are
+independent of the sampled `t`. The assumption concerns one short witness,
+not every multiple of a relation.
 
-If `t` has a lifted relation, the uniform bound places its coefficient
-vector in `S`. Reduction transports the relation to `ZMod q`; compatibility
+If `t` has a lifted relation, the short-witness hypothesis supplies a
+bounded relation whose coefficient vector lies in `S`. Reduction transports
+that relation to `ZMod q`; compatibility
 turns it into a zero-fiber event for `sᵢw−tᵢ`. Consequently, the set of
 dependent-lift samples is contained in the preimage of the fixed union of
 zero fibers. The previously checked `xedni_sample_event_card` and
@@ -41,10 +43,12 @@ inequality without assuming the conclusion.
 | A sampled dependent lift lies in the fixed reduced relation event, giving the stated count bound | `XedniObstruction.dependent_lift_sample_count` | Pinned `lake build XedniDependentLift` passed; `#print axioms` reports `propext`, `Classical.choice`, `Quot.sound`. Exact hypotheses are in the theorem signature above. |
 | Reduction of any integer lift relation | `XedniObstruction.relation_reduces` in the pinned base module | Rebuilt from the identified mainline source in this package. |
 | Fixed finite candidate sample bound | `XedniObstruction.sampled_integer_candidate_union_count` in the pinned base module | Rebuilt from the identified mainline source in this package. |
-| Arithmetic height-to-coefficient bound for a specific rational lift family | Open bridge | Requires the chosen curve family, height/discriminant conditions, and a uniform bound `B<q` for every selected lift. The theorem exposes that obligation as `height_bound`. |
+| Arithmetic short-relation witness bound for a specific rational lift family | Open bridge | Requires the chosen curve family and height/discriminant conditions to show every dependent selected lift has at least one relation bounded by the same `B<q`. The theorem exposes that obligation as `short_relation_witness`. |
 | Good-reduction realization of `red` for a specific lift family | Open bridge | Requires a specified elliptic model, good reduction, and proof that its point reduction is the additive map used here. |
 
 `SOURCE.json` identifies the exact mainline base module copied into this
 versioned formalization addition. The pinned Lean toolchain and Mathlib
 manifest, build output, verifier, and file seal are retained. The current
 module introduces no custom axiom, `sorry`, `admit`, or native proof step.
+The older base module's universal relation-bound declaration is rebuilt for
+source fidelity but is not used by this new theorem.

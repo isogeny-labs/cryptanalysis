@@ -11,7 +11,7 @@ noncomputable def dependentLiftSamples {H : Type*} [AddCommGroup H] [Fact q.Prim
   exact Finset.univ.filter (fun t =>
     ∃ coeff, Nontrivial coeff ∧ Relation (lifts t) coeff)
 
-/-- A uniform finite coefficient bound over the sampled lifts transports
+/-- A uniform short-relation witness bound over the sampled lifts transports
 the fixed-candidate reduced relation bound to the dependent-lift event. -/
 theorem dependent_lift_sample_count {H : Type*} [AddCommGroup H]
     [Fact q.Prime] (red : H →+ ZMod q)
@@ -19,8 +19,10 @@ theorem dependent_lift_sample_count {H : Type*} [AddCommGroup H]
     (lifts : (Fin r → ZMod q) → Fin r → H)
     (hcompat : ∀ t i, red (lifts t i) = xedniSampleMap s w t i)
     (bound : ℕ) (hbound : bound < q)
-    (height_bound : ∀ t coeff, Nontrivial coeff →
-      Relation (lifts t) coeff → Bounded bound coeff)
+    (short_relation_witness : ∀ t,
+      (∃ coeff, Nontrivial coeff ∧ Relation (lifts t) coeff) →
+      ∃ coeff, Nontrivial coeff ∧ Relation (lifts t) coeff ∧
+        Bounded bound coeff)
     (candidates : Finset (Fin r → ℤ))
     (hcover : ∀ coeff, Nontrivial coeff → Bounded bound coeff →
       coeff ∈ candidates)
@@ -40,8 +42,8 @@ theorem dependent_lift_sample_count {H : Type*} [AddCommGroup H]
     have ht' : t ∈ Finset.univ.filter (fun t : Fin r → ZMod q =>
         ∃ coeff, Nontrivial coeff ∧ Relation (lifts t) coeff) := by
       simpa [dependentLiftSamples] using ht
-    obtain ⟨coeff, hnon, hrel⟩ := (Finset.mem_filter.mp ht').2
-    have hsmall := height_bound t coeff hnon hrel
+    obtain ⟨coeff, hnon, hrel, hsmall⟩ :=
+      short_relation_witness t (Finset.mem_filter.mp ht').2
     have hmem : (fun i => (coeff i : ZMod q)) ∈
         reducedCandidates (q := q) candidates :=
       Finset.mem_image.mpr ⟨coeff, hcover coeff hnon hsmall, rfl⟩
