@@ -23,6 +23,7 @@ pub mod finite;
 pub mod metrics;
 pub mod network;
 pub mod partial;
+pub mod prepared;
 pub mod primality;
 pub mod reduction;
 pub mod ring;
