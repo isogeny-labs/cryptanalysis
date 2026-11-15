@@ -22,6 +22,9 @@ static inline uint64_t mulmod_lt(uint64_t a, uint64_t b, uint64_t m)
 #endif
 }
 
+/* base^exp mod m; 0 when m is 0 or 1.  (Contract notes for a zero or
+ * composite modulus live here, not in ca_modarith.h: that header is pinned
+ * byte for byte by verification/pqc-assay/sources.sha256.) */
 uint64_t ca_powmod(uint64_t base, uint64_t exp, uint64_t m)
 {
     if (m <= 1) return 0; /* m == 0 is not a modulus: 0, as ca_invmod answers it */
@@ -222,6 +225,7 @@ uint64_t ca_iroot(uint64_t n, unsigned k)
     return lo;
 }
 
+/* Legendre symbol; 0 when p is 0. */
 int ca_legendre(uint64_t a, uint64_t p)
 {
     if (p == 0) return 0;
@@ -233,6 +237,9 @@ int ca_legendre(uint64_t a, uint64_t p)
     return 0; /* p not prime */
 }
 
+/* Returns 0 when a is a non-residue or p is 0.  A composite p is outside the
+ * contract: the call terminates, and returns 0 unless p passes for a prime at
+ * the bases tried. */
 int ca_sqrtmod_prime(uint64_t a, uint64_t p, uint64_t *root)
 {
     if (p == 0) return 0;
@@ -521,6 +528,7 @@ ca_status ca_factorize(uint64_t n, ca_factorization *out)
     return CA_OK;
 }
 
+/* 0 when p divides a or p is 0. */
 uint64_t ca_mult_order(uint64_t a, uint64_t p)
 {
     if (p == 0) return 0;
