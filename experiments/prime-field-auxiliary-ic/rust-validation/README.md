@@ -1,5 +1,12 @@
 # Native integration check receipt
 
+The [post-merge integration receipt](field-fibers-20261115/integration-checks.json),
+claim `PCC-20261115-92610e`, retains the inherited getrandom API failure and
+subsequent four-test CLI/locked-consumer checks, canonical ledger resolution,
+and publication gates. The exact live ledger stays in Git as required by its
+reader; the report PDF/PNG meet the ordinary size policy. These are unsigned
+producer integration checks and add no timing claim. [pcc:unverified]
+
 The latest [field-fiber report](field-fibers-20261115/REPORT.md) and
 [PDF](field-fibers-20261115/REPORT.pdf), claim `PCC-20261115-82ccdd`, pin source
 `facaac33` and unsigned producer checks: 20 core tests on each toolchain and
