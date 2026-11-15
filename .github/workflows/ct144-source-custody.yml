@@ -1,0 +1,41 @@
+name: CT144 projective BSGS source custody (no native benchmark)
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/ct144-source-custody.yml'
+      - 'experiments/chained-transfer-public-target/ct130-prime31/ct144*'
+      - 'experiments/chained-transfer-public-target/ct130-prime31/CT144*'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            experiments/chained-transfer-public-target/ct130-prime31/
+      - name: Source SHA and syntax only; no benchmark, no EKS, no paid execution
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd experiments/chained-transfer-public-target/ct130-prime31
+          python3 -S ct144_source_check.py > /tmp/ct144-source-normal
+          python3 -O -S ct144_source_check.py > /tmp/ct144-source-optimized
+          cmp /tmp/ct144-source-normal /tmp/ct144-source-optimized
+          python3 -m py_compile ct144_verify.py ct144_source_check.py
+          g++ -std=c++17 -O3 -DNDEBUG -fsyntax-only -I. ct144_projective_bsgs.cpp
+          cp -r . /tmp/ct144-corrupt
+          printf '\nCONTROL-ALTERED\n' >> /tmp/ct144-corrupt/CT144_FROZEN_TARGETS.csv
+          set +e
+          python3 -O -S /tmp/ct144-corrupt/ct144_source_check.py >/tmp/ct144-corrupt.log 2>&1
+          status=$?
+          set -e
+          test "$status" != 0
+          grep -q 'CT144 invalid original' /tmp/ct144-corrupt.log
+          echo 'CT144 source-only controls passed; native cold execution NOT run. [pcc:unverified]'
