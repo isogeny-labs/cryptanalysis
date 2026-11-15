@@ -95,6 +95,13 @@ def selftest():
             'equality must fail strict bound')
     require(not envelope(100,20,30,5,46)['net_positive_under_assumption'],
             'above margin must fail')
+    # Separate source/candidate environments cannot be inferred from one arm.
+    require(envelope(100,20,30,5)['best_original_optimistic_ns'] -
+            envelope(100,20,30,50)['best_reuse_optimistic_ns'] == 0,
+            'cross-arm cost differs when reuse doubling is slower')
+    require(envelope(100,20,30,5)['best_original_optimistic_ns'] -
+            envelope(100,20,30,5)['best_reuse_optimistic_ns'] == 45,
+            'cross-arm same-cost reference')
     q = envelope(Fraction(3,2),Fraction(4,3),Fraction(1,6),Fraction(1,4))
     require(q['gross_headroom_ns'] == Fraction(5,4), 'exact fractions')
     require(not q['additional_cold_overhead_known'], 'unknown cold overhead stays unknown')
@@ -112,7 +119,7 @@ def selftest():
         except ValueError:
             continue
         raise ValueError('CT143 SELFTEST: bad cost accepted: ' + repr(bad))
-    return {'positive': 'passed', 'checks': 16, 'invalid_inputs_rejected': 6,
+    return {'positive': 'passed', 'checks': 18, 'invalid_inputs_rejected': 6,
             'standing': '[pcc:unverified]'}
 
 
@@ -122,6 +129,7 @@ def inspect(out: Path, extra: int | None):
     require(custody['schema'] == 'ct142-receipts-and-paired-deltas/v1', 'receipt gate missing')
     rows = []
     signs = Counter()
+    blocks = {}
     output_hashes = custody['output_hashes']
     for arm in ARMS:
         path = out / (arm + '.json')
@@ -134,9 +142,30 @@ def inspect(out: Path, extra: int | None):
         for block in range(12):
             v = envelope(*(values[op][block] for op in OPS), extra=extra)
             rows.append({'arm': arm, 'block': block, **v})
+            blocks[(arm, block)] = v
             signs['positive' if v['gross_positive'] else
                   'zero' if v['gross_headroom_ns'] == 0 else 'negative'] += 1
     require(len(rows) == 48, 'must report all 48 blocks')
+    cross_pairs = []
+    cross_signs = Counter()
+    for source_arm, reuse_arm in (('original-1', 'reuse-1'),
+                                  ('original-2', 'reuse-2')):
+        for block in range(12):
+            source_best = blocks[(source_arm, block)]['best_original_optimistic_ns']
+            reuse_best = blocks[(reuse_arm, block)]['best_reuse_optimistic_ns']
+            cross_gap = source_best - reuse_best
+            pair = {'original_arm': source_arm, 'reuse_arm': reuse_arm,
+                    'block': block, 'original_best_optimistic_ns': source_best,
+                    'reuse_best_optimistic_ns': reuse_best,
+                    'gross_cross_arm_gap_ns': cross_gap,
+                    'gross_cross_arm_positive': cross_gap > 0}
+            if extra is not None:
+                pair['net_cross_arm_gap_ns'] = cross_gap-extra
+                pair['net_cross_arm_positive_under_assumption'] = cross_gap > extra
+            cross_pairs.append(pair)
+            cross_signs['positive' if cross_gap > 0 else
+                        'zero' if cross_gap == 0 else 'negative'] += 1
+    require(len(cross_pairs) == 24, 'must report 24 ABBA cross-arm positions')
     return encode({
         'schema': 'ct143-selected-call-cost-envelope/v1',
         'standing': '[pcc:unverified]',
@@ -146,6 +175,10 @@ def inspect(out: Path, extra: int | None):
         'extra_cold_overhead': 'unknown' if extra is None else str(extra),
         'block_count': len(rows),
         'gross_signs': dict(sorted(signs.items())),
+        'cross_arm_scope': '24 ABBA-position-matched same-block cost diagnostics, NOT synchronized process timings',
+        'cross_arm_count': len(cross_pairs),
+        'cross_arm_signs': dict(sorted(cross_signs.items())),
+        'cross_arm_records': cross_pairs,
         'source_sha256_roster': custody['source_hashes'],
         'binary_sha256_roster': custody['binary_hashes'],
         'records': rows,
@@ -171,7 +204,9 @@ def main():
         require(not args.out.exists(), 'refuse to overwrite existing evidence')
         args.out.write_text(payload)
     print(json.dumps({'schema': report['schema'], 'block_count': report['block_count'],
-                      'gross_signs': report['gross_signs'], 'standing': report['standing']}, sort_keys=True))
+                      'gross_signs': report['gross_signs'], 'cross_arm_count': report['cross_arm_count'],
+                      'cross_arm_signs': report['cross_arm_signs'],
+                      'standing': report['standing']}, sort_keys=True))
 
 
 if __name__ == '__main__':
