@@ -1,0 +1,8 @@
+PREREGISTRATION (written before any N=3e5 data was taken; only a 2e4-sample smoke run to check the binary ran)
+Routine under test: ca_group_mul(EC, p=2^61-1, y^2=x^3+x+7, 63-bit scalar) -> ca_ec_group_mul (src/group_ec.c), Jacobian double-and-add.
+Prediction (as assigned): IF the production routine is constant-time, |t|<4.5 for fixed-vs-random and A/A; planted-leak control |t|>>4.5.
+Author's code-reading prior (stated for honesty): ca_ec_group_mul branches on each scalar bit and ec_jac_add_affine early-returns, so I EXPECT the
+production routine NOT to be constant-time; the low-HW vs random test should give |t| >> 4.5. This is a measurable prediction too.
+Kill criterion: planted-leak control |t|<=4.5 (all of raw Welch and best crop) => instrument too noisy; report and do not interpret the production numbers.
+Also: A/A (aa_fixed, aa_rand) and 'const' routine (ignores scalar) must give |t|<4.5, else the instrument has a false-positive problem.
+Pass threshold: |t|>4.5 on raw or any percentile-cropped statistic (dudect), 3e5 samples/arm in total (random class assignment, ~1.5e5 per class).

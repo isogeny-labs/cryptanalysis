@@ -295,6 +295,41 @@ int main(void)
             }
         }
     }
+    /* ca_addmod_sel (the walks' branch-free coefficient add) equals
+     * ca_addmod for every input, reduced or not: edge values paired every
+     * way, then random words and random reduced pairs. */
+    {
+        const uint64_t ev[] = {0,
+                               1,
+                               2,
+                               3,
+                               23729779,
+                               53624256071278747ULL,
+                               ((uint64_t)1 << 62) + 135,
+                               ((uint64_t)1 << 63) - 1,
+                               (uint64_t)1 << 63,
+                               ((uint64_t)1 << 63) + 1,
+                               UINT64_MAX - 58,
+                               UINT64_MAX - 1,
+                               UINT64_MAX};
+        const size_t ne = sizeof(ev) / sizeof(ev[0]);
+        for (size_t i = 0; i < ne; i++)
+            for (size_t j = 0; j < ne; j++)
+                for (size_t k = 0; k < ne; k++)
+                    CHECK_EQ_U64(ca_addmod_sel(ev[i], ev[j], ev[k]),
+                                 ca_addmod(ev[i], ev[j], ev[k]));
+        ca_rng arng;
+        ca_rng_seed(&arng, 0xadd5e1);
+        for (int t = 0; t < 300000; t++) {
+            uint64_t m = ca_rng_next(&arng) >> (t % 64);
+            uint64_t a = ca_rng_next(&arng), b = ca_rng_next(&arng);
+            if (m > 1 && (t & 1)) {
+                a = ca_rng_below(&arng, m);
+                b = ca_rng_below(&arng, m);
+            }
+            CHECK_EQ_U64(ca_addmod_sel(a, b, m), ca_addmod(a, b, m));
+        }
+    }
     /* sieve */
     uint32_t pr[200];
     CHECK_EQ_U64(ca_sieve_primes(100, pr, 200), 25);
