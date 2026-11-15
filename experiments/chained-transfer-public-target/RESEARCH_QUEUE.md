@@ -1,3 +1,21 @@
+# Original-kernel census compiled; publish source and exact checkpoint before native
+
+pcc/claims/PCC-20261115-4fde50.json: protocol0158c5 publishedc1cbc188 before code. Locked offline graph, both compilations andall1172prior hashes pass. Whole compiledsource andactual test/auditor bytes retained. No research native test ornewmask/path result has run. [pcc:unverified]
+
+## What was done
+Additive original-kernel-census-01 implements the complete18/72/216 finitefamily and311orderedwhole records, every original row/transport field, bitset-versus-basis check, six actual malformedinput controls andfour actual whole-class omissions. Original helper bodies are literal; no field-engine dependency orpreparation. [pcc:unverified]
+
+## Decisions made
+Publish this exactcompiledsource, collect originalcheckpoint16 for its cleanHEAD/Resume/tool/all28members, then run original-kernel-census-01/run-native-01.sh EXACTHEAD /workspace/scratch/ct87-original-kernel-native-01 /workspace/scratch/ct87-original-kernel-build-01. Original immediate gate,900s/2GiB test/120s auditors, all311records/four actual omissions/1172guards/actualbinarycustody required. After outcome, actual finite-data Lean coverage/verdict underbothoriginal gates andresultvisual. [pcc:unverified]
+
+## Open threads
+Exactsource publication/checkpoint/native, then formal actualfinite verdict, inspected report, next separate implementation protocol ifsupportedchain exists or materially different lead iffinite negative. Prime-only976f50/report1f3c4c remain published7a600a2/root mirrorea9174/e440710. Full source/raw/executables/checkpoints/reportdrafts/failures futurecustodyNEW24. [pcc:unverified]
+
+## Errors
+Initial rustfmt source parse caught extra brace beforefirstcompile; original failedsource retained. Protocol exact-excerpt EOF whitespace2/86dfaa andall prior scientific/infrastructure failures preserved. No performance orsignedpromotion. [pcc:unverified]
+
+---
+
 # Prospective full-group kernel census ready before implementation
 
 pcc/claims/PCC-20261115-0158c5.json: all18 existing original model vertices,72 candidate pairs and216 triples; preserve every whole row and both full original coordinate transports. Exactly311 ordered records andfour actual whole-class omissions required. No new mask/path result has been calculated. [pcc:unverified]
