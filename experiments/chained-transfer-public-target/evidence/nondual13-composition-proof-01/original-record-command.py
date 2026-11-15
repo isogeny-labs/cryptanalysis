@@ -1,0 +1,20 @@
+"""Original statement binding and custody; no mathematical calculations."""
+from pathlib import Path
+import hashlib,importlib.util,json,shutil,subprocess,sys,os
+r=Path('/workspace/cryptanalysis');s=r/'experiments/chained-transfer-public-target';e=s/'evidence/nondual13-composition-proof-01';e.mkdir();raw=Path('/workspace/scratch/ct76-nondual-composition-proof-02');failed=Path('/workspace/scratch/ct76-nondual-composition-proof-01')
+for name,root in [('failed01',failed),('accepted02',raw)]:shutil.copytree(root,e/name)
+shutil.copyfile(__file__,e/'original-record-command.py')
+cmd=['python3','tools/pcc/pcc.py','claim','new','--kind','statement','--claim-type','data','--statement','Nondual composition proof01 generic variable-scalar grind fails both original builds1 and is retained, including compiler sorryAx placeholders in REJECTED failed source. Accepted02 keeps exact statements/hypotheses, uses original IntModule.mul_zsmul and Int commutation explicitly; BOTH original434/435 gates audit2theorems0trusted with only propext. General norm-product and169 specialization are structural conditional consequences, actual geometry/cyclic kernel classification remain written; old scalar recovery and F101degree7 prior work reused, no new aggregate novelty count. Unsigned local proof custody.']
+for p in sorted(e.rglob('*')):
+ if p.is_file():cmd+=['--proof','attestation:'+p.relative_to(r).as_posix()]
+print(subprocess.check_output(cmd,cwd=r,text=True).strip(),flush=True)
+spec=importlib.util.spec_from_file_location('original_pcc',r/'tools/pcc/pcc.py');m=importlib.util.module_from_spec(spec);sys.modules[spec.name]=m;spec.loader.exec_module(m)
+path=s/'nondual13-preflight/lean/NondualComposition.lean';env=dict(os.environ,PATH='/home/agent/.elan/toolchains/leanprover--lean4---v4.34.1/bin:'+os.environ['PATH']);bindings=[]
+for short in ['both_composite_norms','both_composite_169']:
+ name='NondualComposition.'+short;_,statement=m.lean_find_declaration([path],name);proof={'path':path.relative_to(r).as_posix(),'theorem':name,'decl_sha256':hashlib.sha256(statement.encode()).hexdigest()}
+ cmd=['python3','tools/pcc/pcc.py','claim','new','--kind','theorem','--claim-type','interpretive','--statement',statement,'--scope','Functions on IntModules under individual dual-pair norm identities and explicit scalar-linearity laws; derives both composite norms. Actual curves/field/projective extension/degree/poles/geometric torsion/cyclic kernel classification/J2/program bridges remain written/native. General statement and numeric specialization not promoted as separate research discoveries or aggregate novelty count. Both original gates pass2theorems0trusted, onlypropext; failed first proof preserved.','--proof','lean:'+json.dumps(proof)];claim=subprocess.check_output(cmd,cwd=r,text=True).strip();q=subprocess.run(['python3','tools/pcc/pcc.py','verify',claim,'--json'],cwd=r,env=env,capture_output=True);(e/(short+'-binding.json')).write_bytes(q.stdout);(e/(short+'-binding.stderr.txt')).write_bytes(q.stderr);(e/(short+'-binding.exit')).write_text(str(q.returncode)+'\n');assert q.returncode==0 and json.loads(q.stdout)['verdict']=='pass',(q.stdout+q.stderr)[:1000];bindings.append({'claim':claim,'theorem':name,'statement':statement});print(claim,name,'local pass',flush=True)
+(e/'bindings.json').write_text(json.dumps(bindings,indent=2)+'\n')
+cmd=['python3','tools/pcc/pcc.py','claim','new','--kind','statement','--claim-type','data','--statement','BOTH original proof gates and TWO exact original PCC local bindings pass for NondualComposition general dual-pair norm-product and169 specialization, zero trusted onlypropext. Failed01 and accepted02 source/gate logs and full binding records retained. Exact quantitative/native scopes remain252fd8; complete global geometric/cyclic-kernel proof formalization and matched J2 model open. Unsigned, no novelty count or performance standing.']
+for p in sorted(e.rglob('*')):
+ if p.is_file():cmd+=['--proof','attestation:'+p.relative_to(r).as_posix()]
+print(subprocess.check_output(cmd,cwd=r,text=True).strip(),flush=True)

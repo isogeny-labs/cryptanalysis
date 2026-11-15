@@ -1,0 +1,8 @@
+import QuadraticRationalLift
+#print axioms QuadraticRationalLift.zero_left
+#print axioms QuadraticRationalLift.neg_left
+#print axioms QuadraticRationalLift.quadratic_fixed_lift
+#print axioms QuadraticRationalLift.lift_images_equal
+#print axioms QuadraticRationalLift.four_torsion_lift_bound
+#print axioms QuadraticRationalLift.quadratic_kernel_fixed_is_rational
+#print axioms QuadraticRationalLift.finite_group_hypothesis_control

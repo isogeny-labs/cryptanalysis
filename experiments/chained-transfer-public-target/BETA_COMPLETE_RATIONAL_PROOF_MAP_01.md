@@ -1,0 +1,24 @@
+# Proof map for complete rational beta evaluation
+
+The mathematical statement is conditional: under the explicit geometric quotient, norm, rational order and cofactor-lift hypotheses, the implemented odd/cofactor expression equals beta on every rational class and preserves a DLP in both directions. The actual Picard/Cartier/Weil-restriction/reducer bridges are written and native; they are not supplied by the algebra module. Native450b7a, conditional Lean1e2420 and the six exact original bindings below are unsigned. [pcc:unverified]
+
+In the formal model take J=J0(F223), T=J1(F223), and A to be the preimage of J0(F223) under Phi0 inside A_geometry(F2232). This is an additive subgroup. It includes the chosen quadratic cofactor lifts. It is not all of A_geometry(F2232): the complete native panel has eight distinct quadratic images, only four rational. Phi0 restricts to this preimage, and the written descended quotient ensures Psi=Phi1 gamma maps it into T. This interpretation avoids incorrectly giving every quadratic source point a rational image. Reverse the roles for betaDual. [pcc:unverified]
+
+The module defines natural scalar multiplication from ordinary addition and proves its addition, multiplication, negation and homomorphism laws. Config explicitly lists the ordinary groups/maps, ell=4m+1,2inv=ell+1, the4ell annihilator, quotient beta Phi=Psi, F=2beta, and correctness of the chosen lift on rational four-torsion. The evaluation expression calls F and Psi on the lifted cofactor; it does not call beta. No field assumes that evaluation equals beta. The cofactor-lift hypothesis is supplied in the implementation by the actual complete sixteen-point E4 panel and its four rational image classes; this bridge remains written/native. [pcc:unverified]
+
+| Declaration | What the ordinary-group proof establishes | Exact binding |
+|---|---|---|
+| rational_decomposition | x2=[ell]x is killed by4, xo=x−x2 is killed byell, and xo+x2=x | PCC-20261114-3237be |
+| odd_half | [inv]F(xo)=beta(xo) from F=2beta and2inv=ell+1 | PCC-20261114-5098ee |
+| evaluate_matches_beta | The complete split-and-lift expression equals beta for every class, with the explicit quotient/lift hypotheses | PCC-20261114-15a9e4 |
+| dlp_preservation | Evaluation commutes with every natural scalar | PCC-20261114-a92216 |
+| full_rational_inverse13 | Dual composition13 and annihilator11092292 yield the full-group inverse scalar3413013 | PCC-20261114-07e7e3 |
+| dlp_equivalence | For ell2773073, evaluate(Q)=[n]evaluate(G) iff Q=[n]G, using the explicit dual13 hypothesis | PCC-20261114-9e1fdf |
+
+Both unchanged original proof gates, Lean4.34.1 and4.35.0, accept44 audited declarations with zero trusted declarations. All19 named theorem roots have no axioms beyond propext. There is no native_decide, user axiom or proof hole. The initial Lean attempt5f5a15 failed on an induction simplification and an unavailable Std tactic; its entire module was rejected and retained. Revised proof scripts preserve the statements and hypotheses. Exact source and declaration hashes come from the original PCC binding tool. The six additions bring the partial unique binding count to72, not72 formalizations of the actual geometry. [pcc:unverified]
+
+The complete fibre and runtime checks are independent native controls: actual origins and line/conic ideals, all three F2 conjugates, real F2232 coefficient traces, original K agreement, all16 E4 inputs and256 addition pairs each, both kappa branches, Frobenius equivariance, both lift choices, every cofactor sector, both13 compositions, full inverse and literal public targets. These checks do not prove the geometric hypotheses for arbitrary symbolic curves or enumerate every rational Jacobian class. [pcc:unverified]
+
+The full closed-coordinate description of the global degree13^3 isogeny, its actual geometric formalization, calibrated costs and strongest ECDLP comparisons remain separate requirements. A complete rational-point evaluator does not by itself establish a computational advantage. [pcc:unverified]
+
+The separate scalar polynomial e²−e=4me with e=4m+1 is proved for every Int m in CRTProjectionIdentity.projection_scalar_identity, exact bindingPCC-20261114-4036be. Both original gates accept one declaration/zero trusted; printaxioms lists onlypropext/Quot.sound. Original native certificateIDC1h2576687cb0806346 has exactZ coefficient expansion,64sealed+32extra checks and actual omitted-linear-term rejection101 (d0400f). It covers the scalar polynomial, not actual group maps. The total partial unique binding count is73 after this seventh addition. Accounting correction3f1ade changes only selected setup-call metadata, not these theorem statements or the native class/scalar results; derivation02 gives the corrected inventory. [pcc:unverified]

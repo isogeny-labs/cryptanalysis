@@ -1,0 +1,17 @@
+[
+  {
+    "claim": "pcc/claims/PCC-20261115-bb43e2.json",
+    "theorem": "NormPointReuse.corrected_lift_doubles",
+    "statement": "theorem corrected_lift_doubles {A : Type} [IntModule A] (p t q : A) (half : (2 : Int) \u2022 p = q) (correction_two_torsion : (2 : Int) \u2022 t = 0) : (2 : Int) \u2022 (p + t) = q"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-ff6c64.json",
+    "theorem": "NormPointReuse.corrected_norm_reuse",
+    "statement": "theorem corrected_norm_reuse {A B J : Type} [IntModule A] [IntModule B] (g : A \u2192 B) (phi : B \u2192 J) (norm : J \u2192 B) (duality : \u2200 z, norm (phi z) = (2 : Int) \u2022 z) (linear_two : \u2200 a, g ((2 : Int) \u2022 a) = (2 : Int) \u2022 g a) (p t q : A) (half : (2 : Int) \u2022 p = q) (correction_two_torsion : (2 : Int) \u2022 t = 0) : norm (phi (g (p + t))) = (2 : Int) \u2022 g (p + t) \u2227 (2 : Int) \u2022 g (p + t) = g q"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-a97a91.json",
+    "theorem": "NormPointReuse.factored_norm_reuse",
+    "statement": "theorem factored_norm_reuse {A B C J : Type} [IntModule A] [IntModule B] [IntModule C] (g : A \u2192 B) (h : B \u2192 C) (phi : C \u2192 J) (norm : J \u2192 C) (duality : \u2200 z, norm (phi z) = (2 : Int) \u2022 z) (g_linear_two : \u2200 a, g ((2 : Int) \u2022 a) = (2 : Int) \u2022 g a) (h_linear_two : \u2200 b, h ((2 : Int) \u2022 b) = (2 : Int) \u2022 h b) (p t q : A) (half : (2 : Int) \u2022 p = q) (correction_two_torsion : (2 : Int) \u2022 t = 0) : norm (phi (h (g (p + t)))) = (2 : Int) \u2022 h (g (p + t)) \u2227 (2 : Int) \u2022 h (g (p + t)) = h (g q)"
+  }
+]
