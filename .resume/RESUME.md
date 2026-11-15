@@ -1,3 +1,83 @@
+# External Consumer main merge and preserved local CI02/review lineage
+
+## What was done
+pcc/claims/PCC-20261115-f9150d.json: sharedConsumerremote69590ba6 mergesf136/cbd5e31c at21:32:28Z. Wholeimmutableledgers/originalPCCchecks/pathdiff/cache retained; localf136ledgerprefix unchanged. Actualfetch0/headandrefsunchanged; finalstatusguardfailed onthissession's concurrent243e85 metadataedits. Completefailurekept; alreadyfetchedinspection closed separatelywithoutnetworkretry andwithout claiming unchangedstatus. [pcc:unverified]
+
+## Decisions made
+Preserve pendingCI02/review/allnegativeevidence onnew append-only continuation with immutablef136base. No merge/rechain/sidepick/forced sharedpublication. Keep Root4347metadatahold independent. Future guarded read-only inspections must be sequential with metadatawrites. [pcc:unverified]
+
+## Open threads
+NewConsumerpreservedbranchrefs/governanceretry/sourcepublication/readyPR and actualfreshCI02; unassistedprospectiveprotocol beforecode; fullNEW28 andoriginalPR1573/Root3877 externalledger reconciliation gates. [pcc:unverified]
+
+## Errors
+I wrote owned metadata while a read-only fetch helper was guarding the entire status. Its guard correctly failed; no scientificinput was changed andno networkfetchretry wasneeded. Oldsource-governance cachedSVGwhitespace failure243e85 preserved andexactattributeadded. [pcc:unverified]
+
+---
+
+# Preserve CI02/review cached-whitespace rejection of unchanged generated SVG
+
+## What was done
+pcc/claims/PCC-20261115-243e85.json: fullsource/static/ledger/prose/workingwhitespace/wiring/benchrec/reportPython/canonicalchecks0, then cachedwhitespace2 on the byteidentical copied frozenSVG atitsnewreportpath. Completecode/output/caller/stagedfilenames retained; no sourcecommit/push occurred. [pcc:unverified]
+
+## Decisions made
+One exact-path -whitespace attribute preserves the literal generatedSVG, matching originalreportmetadata. Retrywith newgovernance directory; do not trim or regenerate pinnedbytes. [pcc:unverified]
+
+## Open threads
+Consumerremote also moved to externalmainmerge69590 at21:32:28Z while sourcechecksran; fetchcompleteimmutableledgers/metadata and inspectprefix before any sharedbranch publication. Preserve pendinglocalCI02/review/failedCI evidence onisolated append-only continuation, then actualfreshCI02. Root4347holdc019 andNEW28remain. [pcc:unverified]
+
+## Errors
+The copiedSVG's exact originalwhitespace metadata was not extended to itsnewpath beforestaging. Itis corrected without changing any data/source. No newmath or executionacceptance. [pcc:unverified]
+
+---
+
+# Complete source02 uses original full-history checkpoint checkout; source01 retained
+
+## What was done
+pcc/claims/PCC-20261115-f4fe0c.json: separate diagnosticCI02/newworkflow02 uses originalfetch-depth0 setup and captured originalfinalstatus requiring0. All b1f07d/5c5c9b source01subjects and1598guards unchanged; extended reference1605files. Identical99phaseplan/prefixvalidator and fullinherited102phases/math-historicalcontrols/proofs/caps/wholecustody. Old/newguards/shell/actionlint/operationalsyntax/wiring0. Namedcheckpointstatusproblem indexed; liveproblemnotpinned. [pcc:unverified]
+
+## Decisions made
+Publishsource02 before a newrun. The actual exact-source checkpoint/readbacks/status0 plus every fullscientific/control/proof/final exit remain required; no originaltool change orstatusbypass. Old01 and bothwholefailedattemptsce239f retained. Group sourcefix with inspectedreviewb76887 and completefailurerecords inonepublication. [pcc:unverified]
+
+## Open threads
+Governance/sourcepublication andactual02CI; freezeunassisted wholepopulation successorprotocol beforecode; fullNEW28; Root4347originalartifacttransport sourcec019hold and original3877ledgerprefixblock; existingmath/cost/reference/admission gates. [pcc:unverified]
+
+## Errors
+Original01 omitted originaltransportfetch-depth0; two metadata-only failuresremain. Source02fixhypothesis not accepteduntilactualrun. No new mathematical outcome. [pcc:unverified]
+
+---
+
+# Preserve two fresh CI checkpoint-status failures; all native diagnostics skipped
+
+## What was done
+pcc/claims/PCC-20261115-ce239f.json: run43761331865/source8a3/job132956587334/art14181021949 andrun43761567486/sourcef136/job132957304868/art14180614455 eachretain whole199MBZIP/all28members/fullpack/logs/CRC/extraction. Genuineoriginalgate0/all3readbacks0/source-Resume-pack-metaexact, then originalstatus1 afterspec listing; native/proofstep skipped. No freshmathematical result. Fullraw RAMct123 and metadataevidence retained. [pcc:unverified]
+
+## Decisions made
+Inspect original spec_files directpipeline/errexit and shallowcheckout's1unpushed against successfuloriginaltransport fetch-depth0/0unpushed. Prospectivefix is separatelyversionedworkflow02/driver02/reference02/acceptor02 with exactoriginalfetch-depth0 requirement and capturedoriginalstatus actualexit requiring0. Keep b1f07d/source01 bytes, oldworkflows, originaltool and allwholemathcriteria unchanged; do not bypassstatus or omitfailedruns. [pcc:unverified]
+
+## Open threads
+Newversioned CI source/checks/publication and actualwhole diagnosticexecution; publishinspectedreviewb76887 then freezeunassisted successorprotocol beforecode; fullscientificNEW28; Root4347 onepayloadoriginalartifacttransport holdc019 and original3877frozenledgerblock. [pcc:unverified]
+
+## Errors
+Newworkflow omitted originalcheckpoint transport's fetch-depth0 setup. Both runs failed at operationalstatus after successful checkpoint/readbacks, not at solver/rank/character/proofs. Hypothesis awaits actual02run; no cap/criterion relaxed. Fulltwo failedarchives count in resourcecustody: RAM nowholds about800MB additional complete bytes. [pcc:unverified]
+
+---
+
+# Primary-reviewed unassisted completion proposal and inspected report
+
+## What was done
+pcc/claims/PCC-20261115-b76887.json: reviewed Diem2012pp640-641/653-654 and exactnative Pic/decomposition/LPgraph/character-audit code. Whole2pageMD/Typst/SVG/data/PDF/source-KB/inspection receipts now in reports/unassisted-relation-completion-review-01. Both finalpages actually opened and legible; firstoverflowed diagramdraft retained separately. Existing rank/character plot is byteexact; no newalgorithm/trial/result/costclaim. [pcc:unverified]
+
+## Decisions made
+Next prospectivecomponent is a zero-start publicFBclasswalk, canonicalsplit, fullgraphsymbolicLP substitution and directzero-classaudit plus independentrankreplay. Keep native D_inf/etaoffset as a proofobligation. Genericdecomposition classification and EKS actualtrial admission/budget/capacity/sourceimage requirements explicit. First inspect complete freshCI feedback before implementation. [pcc:unverified]
+
+## Open threads
+Fresh diagnosticCI actuallogs/artifacts; separatelypublished wholepopulation successorprotocol beforecode; sourceoffset/symbolicsubstitution proofs, fullNEW28, actualEKS budget/capacity/image and originalcost/reference/mergegates. Root4347 metadataarchive originaltransport/sourcec019 held; shared3877 ledgerprefix conflict unchanged. [pcc:unverified]
+
+## Errors
+KB unavailable: allsix wrapperattempts127, no loadedMCP; vaultatlaslocked andunread. No absenceinference. Firstreportdiagramlabeloverflow corrected onlyinnewdraft02; bothoriginaldrafts retained. No newnumerical or globalproof claimed. [pcc:unverified]
+
+---
+
 # Full diagnostic CI source published; follow-up PR1573 replaces merged1564
 
 ## What was done

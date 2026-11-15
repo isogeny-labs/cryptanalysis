@@ -9,6 +9,7 @@ explain the gap and what would let the work move past it.
 
 | Problem | Status | What it blocks | What would unblock it |
 | --- | --- | --- | --- |
+| [Diagnostic checkpoint sparse status](chained-transfer-diagnostic-checkpoint-sparse-status.md) | investigating | Original checkpoint/readbacks0 then finalstatus1; native step skipped | Version02 exact original fetch-depth0 setup, actualstatus0 and complete whole diagnostic run; failuresce239f retained. [pcc:unverified] |
 | [Whole comparator memory envelope and schema updates](chained-transfer-whole-comparator-memory-bound-updates.md) | resolved for fixed historical comparator03 | Original allocation134, then false rank-count rejection1; both preserved | All26 phases, whole positive and elapsed-only0, eight negatives1/no accepted output, original constrained-coordinate audit101; unchanged2GiB cap. Fresh diagnostic CI remains open. [pcc:unverified] |
 | [Original FB30 character extension](chained-transfer-original-FB30-character-extension-02.md) | investigating | Collected FB30 constraints admit a finite noncharacter functional | Prospective unassisted actual-relation completion, full-population checks and separately admitted matched costs. [pcc:unverified] |
 | [Cold preflight build envelope update](chained-transfer-cold-preflight-build-budget-update-20261114.md) | partial | Original full cold120 compile remains unmet | Explicit900setup/full39phase replay e6f380 completes locally; preserve earlier124, audit whole CI artifact; no cold120 waiver. [pcc:unverified] |

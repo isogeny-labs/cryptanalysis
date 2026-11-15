@@ -1,0 +1,49 @@
+{
+  "actual_attempts": [
+    {
+      "source": "8a3bc795bbb9d6359d63c75dd6e8e4c2ce0cc073",
+      "run": 43761331865,
+      "job": 132956587334,
+      "artifact": 14181021949,
+      "whole_zip_bytes": 199611419,
+      "whole_zip_sha256": "b775c0d202f97e1e394175a94f8791dc9c651fe05b2a5b1bf312409496620c0b",
+      "all28members_CRC_and_entire_extraction": true,
+      "original_gate": 0,
+      "all_three_entire_S3_readbacks": 0,
+      "Resume_pack_meta_exact": true,
+      "original_final_status_process_failure": 1,
+      "original_final_status_stops_after_spec_listing": true,
+      "actual_unpushed_commits": 1,
+      "whole_math_and_proof_step": "skipped",
+      "no_scientific_result_generated": true,
+      "entire_raw_root": "/dev/shm/ct123-whole-diagnostic-CI-failures-01/14181021949",
+      "entire_source_gate_scope": "genuine checkpoint and exact-source readbacks succeed; entire workflow still fails before native diagnostics",
+      "scope": "unsigned failed CI infrastructure attempt; not an accepted full diagnostic run"
+    },
+    {
+      "source": "f136ae5ae32e10b380bc3bb4f2339468ff43e65a",
+      "run": 43761567486,
+      "job": 132957304868,
+      "artifact": 14180614455,
+      "whole_zip_bytes": 199619442,
+      "whole_zip_sha256": "a7cd0106ef341b1c50b1e0439a19af27fcb9d50e1377c0220e956c46d062b215",
+      "all28members_CRC_and_entire_extraction": true,
+      "original_gate": 0,
+      "all_three_entire_S3_readbacks": 0,
+      "Resume_pack_meta_exact": true,
+      "original_final_status_process_failure": 1,
+      "original_final_status_stops_after_spec_listing": true,
+      "actual_unpushed_commits": 1,
+      "whole_math_and_proof_step": "skipped",
+      "no_scientific_result_generated": true,
+      "entire_raw_root": "/dev/shm/ct123-whole-diagnostic-CI-failures-01/14180614455",
+      "entire_source_gate_scope": "genuine checkpoint and exact-source readbacks succeed; entire workflow still fails before native diagnostics",
+      "scope": "unsigned failed CI infrastructure attempt; not an accepted full diagnostic run"
+    }
+  ],
+  "original_tool_sha256": "3c4192168bbc390bf94be46c765914a419a4eff8c30e3f52f5b94ea432738056",
+  "code_observation": "Original spec_files pipeline can return1 under errexit if its final candidate is absent in a sparse checkout; cmd_status invokes it directly. Both current shallow detached-source checkouts report1unpushed and traverse whole source tree; old successful original checkpoint transport uses fetch-depth0 and reports0unpushed.",
+  "hypothesis": "Copy exact original fetch-depth0 checkout requirement to a separate workflow02. Genuine remote-tracking history should eliminate the phantom unpushed whole-tree scan; require original status0 and all full diagnostic phases, not a bypass.",
+  "preservation": "Keep old workflow01/driver/reference/acceptor and b1f07d proofs byteexact; newversion02 adds complete reference and actual final status exit capture. Full failed ZIPs/packs/logs/allmembers retained in RAM and scratch for NEW28.",
+  "no_criterion_or_tool_change": true
+}
