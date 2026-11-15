@@ -113,7 +113,7 @@ def audit(root):
         out['by_width'][str(w)]={'source_ns':so[0],'source_arm':so[1],
             'transferred_ns':ta[0],'target_arm':ta[1],
             'source_over_transfer':so[0]/ta[0],
-            'extra_headroom_ms_per_target':(so[0]-ta[0])/len(targets)}
+            'extra_headroom_ms_per_target':(so[0]-ta[0])/len(targets)/1e6}
     return out
 
 def negative():
