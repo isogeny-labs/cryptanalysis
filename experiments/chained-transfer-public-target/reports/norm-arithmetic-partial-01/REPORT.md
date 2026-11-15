@@ -1,0 +1,9 @@
+# Actual source arithmetic: complete reuse, incomplete cold
+
+The prospective01e617 experiment has an incomplete cold population and two complete fixed60-case reuse processes. Cold124 and strict full comparator101 remain explicit; the separate Rust partial report checks12 actual complete cold records, lists108 missing/incomplete, and checks every whole packet/cumulative ledger in both complete reuse sequences. [pcc:unverified]
+
+The complete reused transfer sequence uses more q223 source mul events and fewer atomic inv events for the direct map:16,792,793/91,064,595 mul and97,858/24,422 inv, baseline/direct (ee232d). Context construction differs. All common admission, output validation, full inverse and diagnostics remain included and separately keyed. No calibrated cost, runtime ratio, extrapolation or ECDLP gain follows. [pcc:unverified]
+
+[PDF](report.pdf) · [exact native render data](data.json) · [whole partial unit record](all-partial-vectors.json.xz) · [source vector graph](source-vectors.svg) · [editable actual process diagram](flow.dot) · [metadata](flow.diagram.json) · [prospective protocol](../../NORM_HALVING_ARITHMETIC_PROTOCOL_01.md). Numerical grouping and comparisons are Rust; Python only renders native fields. [pcc:unverified]
+
+Prior norm-halving mathematical flow, selected-API chart and census proposal were checked and stay frozen at their stated scope. This adds a quantitative source-operation graph. Primitive leaves, atomic inverse, API and auxiliary work remain distinct; all excluded rows are retained. Remaining requirements include complete cold census, faithful actual geometric/program bridges, original live benchmark admission and strongest matched references. The genuine nondual13 preflight is a separate authorized successor under23ab48. [pcc:unverified]

@@ -1,0 +1,29 @@
+{
+  "original_verifier": "unchanged tools/pcc/pcc.py",
+  "copied_isolated_repo": "/workspace/scratch/ct69-original-PCC-report-fixture-01",
+  "controls": [
+    {
+      "control": "copied-exact-symlink-and-bytes",
+      "original_exit": 2,
+      "verdict": "not_covered"
+    },
+    {
+      "control": "missing-canonical-PDF",
+      "original_exit": 1,
+      "verdict": "fail"
+    },
+    {
+      "control": "substituted-canonical-PDF",
+      "original_exit": 1,
+      "verdict": "fail"
+    },
+    {
+      "control": "restored-exact-copy",
+      "original_exit": 2,
+      "verdict": "not_covered"
+    }
+  ],
+  "real_report_subjects_never_mutated": true,
+  "original_kind_reason": "statement claims remain not_covered even with matching bytes",
+  "genuine_remote": "pending actual publisher;local copy is not remote evidence"
+}

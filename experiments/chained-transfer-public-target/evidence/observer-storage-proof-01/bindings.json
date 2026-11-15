@@ -1,0 +1,12 @@
+[
+  {
+    "claim": "pcc/claims/PCC-20261114-5997e5.json",
+    "theorem": "CounterStorage.resolve_index",
+    "statement": "theorem resolve_index {K : Type} [DecidableEq K] (index : K \u2192 Nat) (cache : Option (K \u00d7 Nat)) (key : K) (sound : \u2200 a i, cache = some (a, i) \u2192 i = index a) : resolve index cache key = index key"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261114-00280b.json",
+    "theorem": "CounterStorage.checked_update",
+    "statement": "theorem checked_update {K : Type} [DecidableEq K] (index : K \u2192 Nat) (values : Nat \u2192 Nat) (canonical : K \u2192 Nat) (cache : Option (K \u00d7 Nat)) (key : K) (amount limit : Nat) (injective : \u2200 a b, index a = index b \u2192 a = b) (consistent : \u2200 a, values (index a) = canonical a) (sound : \u2200 a i, cache = some (a, i) \u2192 i = index a) : ((values (resolve index cache key) + amount \u2264 limit) \u2194 (canonical key + amount \u2264 limit)) \u2227 (\u2200 a, bump values (resolve index cache key) amount (index a) = bump canonical key amount a)"
+  }
+]

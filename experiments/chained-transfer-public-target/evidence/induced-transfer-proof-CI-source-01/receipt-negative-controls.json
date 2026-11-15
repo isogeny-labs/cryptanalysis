@@ -1,0 +1,46 @@
+[
+  {
+    "case": "missing-named-root",
+    "actual_exit": 1,
+    "no_accepted_output": true,
+    "command": [
+      "python3",
+      "/workspace/cryptanalysis/experiments/chained-transfer-public-target/ci_induced_transfer/validate_receipts_01.py",
+      "/workspace/scratch/ct95-induced-proof-driver-local-01/cryptanalysis",
+      "/workspace/scratch/ct95-induced-proof-driver-local-01/negative-missing-named-root"
+    ]
+  },
+  {
+    "case": "missing-structural-declaration",
+    "actual_exit": 1,
+    "no_accepted_output": true,
+    "command": [
+      "python3",
+      "/workspace/cryptanalysis/experiments/chained-transfer-public-target/ci_induced_transfer/validate_receipts_01.py",
+      "/workspace/scratch/ct95-induced-proof-driver-local-01/cryptanalysis",
+      "/workspace/scratch/ct95-induced-proof-driver-local-01/negative-missing-structural-declaration"
+    ]
+  },
+  {
+    "case": "missing-exact-binding",
+    "actual_exit": 1,
+    "no_accepted_output": true,
+    "command": [
+      "python3",
+      "/workspace/cryptanalysis/experiments/chained-transfer-public-target/ci_induced_transfer/validate_receipts_01.py",
+      "/workspace/scratch/ct95-induced-proof-driver-local-01/cryptanalysis",
+      "/workspace/scratch/ct95-induced-proof-driver-local-01/negative-missing-exact-binding"
+    ]
+  },
+  {
+    "case": "altered-binding-verdict",
+    "actual_exit": 1,
+    "no_accepted_output": true,
+    "command": [
+      "python3",
+      "/workspace/cryptanalysis/experiments/chained-transfer-public-target/ci_induced_transfer/validate_receipts_01.py",
+      "/workspace/scratch/ct95-induced-proof-driver-local-01/cryptanalysis",
+      "/workspace/scratch/ct95-induced-proof-driver-local-01/negative-altered-binding-verdict"
+    ]
+  }
+]
