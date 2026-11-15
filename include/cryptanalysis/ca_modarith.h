@@ -69,6 +69,7 @@ static inline uint64_t ca_mulmod(uint64_t a, uint64_t b, uint64_t m)
     return (uint64_t)(((ca_u128)a * b) % m);
 }
 
+/* base^exp mod m; 0 when m is 0 or 1. */
 CA_API uint64_t ca_powmod(uint64_t base, uint64_t exp, uint64_t m);
 /* Modular inverse; returns 0 if gcd(a, m) != 1. */
 CA_API uint64_t ca_invmod(uint64_t a, uint64_t m);
@@ -76,9 +77,12 @@ CA_API uint64_t ca_gcd(uint64_t a, uint64_t b);
 /* Extended gcd on unsigned inputs: returns g and x with a*x == g (mod m). */
 CA_API uint64_t ca_isqrt(uint64_t n);          /* floor(sqrt(n)) */
 CA_API uint64_t ca_iroot(uint64_t n, unsigned k); /* floor(n^(1/k)) */
-/* Square root modulo an odd prime p (Tonelli-Shanks). Returns 1 on success. */
+/* Square root modulo an odd prime p (Tonelli-Shanks). Returns 1 on success,
+ * 0 when a is a non-residue or p is 0.  A composite p is outside the
+ * contract: the call terminates, and returns 0 unless p passes for a prime
+ * at the bases tried. */
 CA_API int ca_sqrtmod_prime(uint64_t a, uint64_t p, uint64_t *root);
-/* Legendre symbol a^((p-1)/2): returns 0, 1 or -1. */
+/* Legendre symbol a^((p-1)/2): returns 0, 1 or -1; 0 when p is 0. */
 CA_API int ca_legendre(uint64_t a, uint64_t p);
 
 /* Chinese remainder theorem for two coprime moduli. Result mod m1*m2. */
@@ -160,7 +164,8 @@ typedef struct ca_factorization {
 /* Full factorisation of a 64-bit integer (trial division + Pollard-Brent). */
 CA_API ca_status ca_factorize(uint64_t n, ca_factorization *out);
 
-/* Multiplicative order of a modulo prime p (p-1 factored internally). */
+/* Multiplicative order of a modulo prime p (p-1 factored internally); 0 when
+ * p divides a or p is 0. */
 CA_API uint64_t ca_mult_order(uint64_t a, uint64_t p);
 /* Smallest primitive root modulo prime p, or 0 if p is not prime. */
 CA_API uint64_t ca_primitive_root(uint64_t p);
