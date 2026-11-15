@@ -37,7 +37,10 @@ The implementation includes these optimization choices:
   fields, 126 divides `p-1`; this is an additional encoding to compare.
 - `FactorBase::torus` builds complete fibers of iterated `x^2-2` using a
   primitive trace of the norm-one group of order `p+1`. Each intermediate
-  quadratic update uses four field multiplications. Depth is bounded by
+  quadratic update uses four field multiplications. A trace-orbit recurrence
+  generates the complete raw fiber with one square root instead of the
+  inverse tree's `2^depth-2` extractions (none is needed at depth one).
+  Every generated root still receives a forward membership check. Depth is bounded by
   `min(20, field_bits-2)` to avoid ramified terminal fibers.
 - Scalar and packed backends share the same homogeneous coefficient kernel;
   no step divides by the quadratic leading coefficient, including when it is

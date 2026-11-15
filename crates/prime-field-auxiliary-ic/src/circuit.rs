@@ -409,14 +409,39 @@ impl<const B: u32> FactorBase<B> {
         }
         let value = F::<B>::sub(F::<B>::sq(last_root), 2);
         let left = last_root.min(p - last_root);
-        let mut roots = vec![left, p - left];
-        for _ in 1..depth {
-            let mut previous = Vec::with_capacity(roots.len() * 2);
-            for root in roots {
-                let r = Self::nonzero_sqrt(F::<B>::add(root, 2))?;
-                previous.extend([r, p - r]);
-            }
-            roots = previous;
+        // Let xi have primitive order p+1 with trace a, and zeta have
+        // order 2^depth with trace b. tr(xi*zeta) is a root of
+        // X^2-a*b*X+(a^2+b^2-4), whose discriminant is
+        // (a^2-4)*(b^2-4). Either root chooses an orbit orientation.
+        // x_(i+1)=b*x_i-x_(i-1) then enumerates the entire coset fiber.
+        // This replaces the inverse tree's 2^depth-2 square roots with
+        // one square root (none at depth one); forward checks remain below.
+        let mut step_trace = trace;
+        for _ in 0..B - u32::from(depth) {
+            step_trace = F::<B>::sub(F::<B>::sq(step_trace), 2);
+        }
+        let second = if depth == 1 {
+            F::<B>::sub(0, trace)
+        } else {
+            let discriminant = F::<B>::mul(
+                F::<B>::sub(F::<B>::sq(trace), 4),
+                F::<B>::sub(F::<B>::sq(step_trace), 4),
+            );
+            let sqrt = Self::nonzero_sqrt(discriminant)?;
+            F::<B>::mul(
+                F::<B>::add(F::<B>::mul(trace, step_trace), sqrt),
+                p.div_ceil(2),
+            )
+        };
+        let count = 1usize << depth;
+        let mut roots = Vec::with_capacity(count);
+        roots.extend([trace, second]);
+        while roots.len() < count {
+            let i = roots.len();
+            roots.push(F::<B>::sub(
+                F::<B>::mul(step_trace, roots[i - 1]),
+                roots[i - 2],
+            ));
         }
         let circuit = Circuit {
             first_pole: 0,

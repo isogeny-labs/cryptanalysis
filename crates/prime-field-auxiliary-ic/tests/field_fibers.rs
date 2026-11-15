@@ -200,6 +200,14 @@ fn power_fibers_match_explicit_products_and_direct_rows_in_both_fields() {
 }
 #[test]
 fn torus_fibers_match_explicit_products_and_direct_rows_in_both_fields() {
+    let toy = Curve::<7>::new(2, 51).unwrap();
+    for depth in [1, 2, 5] {
+        let base = FactorBase::torus(toy, depth, Some(3), Backend::Scalar).unwrap();
+        let roots = torus_roots(&base);
+        compare(toy, &roots, |backend| {
+            FactorBase::torus(toy, depth, Some(3), backend)
+        });
+    }
     fn check<const B: u32>(curve: Curve<B>) {
         for depth in [3, 5, 7] {
             let base = FactorBase::torus(curve, depth, None, Backend::Scalar).unwrap();

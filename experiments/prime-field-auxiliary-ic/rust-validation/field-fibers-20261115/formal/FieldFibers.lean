@@ -25,6 +25,11 @@ theorem terminal_pair (d c h u v : R) :
     (d*u^2-c*u+h)*(d*v^2-c*v+h) =
     h^2-h*c*(u+v)+h*d*((u+v)^2-2*u*v)+c^2*(u*v)-c*d*(u*v)*(u+v)+d^2*(u*v)^2 := by ring
 
+theorem orbit_discriminant (u v s t : R) :
+    ((u+v)*(s+t)-2*(u*s+v*t))^2 =
+    ((u+v)^2-4*u*v)*((s+t)^2-4*s*t) := by ring
+
+#print axioms orbit_discriminant
 #print axioms opposite_pair
 #print axioms cube_trace
 #print axioms seventh_trace
