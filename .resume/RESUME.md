@@ -1,3 +1,19 @@
+# Full fresh diagnostic CI source integrated; execution pending publication
+
+## What was done
+pcc/claims/PCC-20261115-b1f07d.json: new whole diagnostic driver/static99-phase plan/operational validators/single workflow and complete1598-file guard reference, preserving every inherited guard. Shell/actionlint/operational Python syntax/whole source reference/old comparator guards/workflow wiring0. Exact original pre-native checkpoint transport/readbacks are before any math; entire inherited102-phase IC/sampler, native/rank/character controls, strict historical comparison, both27-declaration gates/ninebindings and full partial-output retention remain required. Fresh CI is unexecuted. [pcc:unverified]
+
+## Decisions made
+Publish this exact source with unchanged original algorithms, tools, checkpoint script, artifact policy and old workflows. Then execute the new workflow at its exact head and inspect complete outputs, including failures. The completed-run acceptor requires the entire ordered plan, all process/tee exits, original.exit0 and final guards; the internal validator explicitly leaves its own/final exits to the caller. [pcc:unverified]
+
+## Open threads
+Source governance/publication and actual fresh diagnosticCI; full scientificNEW28 including draft/build/failed/control/runtime/proof/CI archives; reviewed prospective unassisted completion and all existing math/cost/reference/admission/merge gates. [pcc:unverified]
+
+## Errors
+No new execution outcome. Historical memory134 and false rank-count1 remain frozen and resolved only for historical comparator03 by241ee2. Conductor/KB runtime unavailability and primary reviewed fallback remain recorded; no novelty claim. [pcc:unverified]
+
+---
+
 # Complete historical comparator03 controls and original constrained-coordinate audit
 
 ## What was done
