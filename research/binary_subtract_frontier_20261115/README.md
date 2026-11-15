@@ -9,8 +9,8 @@ Five targeted controls pass in each repository: 12,900 exact first-witness compa
 | User requirement | Status and evidence |
 | --- | --- |
 | Continue beyond the fixture baseline | Production implementation and both CLI dispatches added; targeted native controls pass. [pcc:unverified] |
-| PR in crypto | Extends https://github.com/isogeny-labs/crypto/pull/4335 |
-| PR in cryptanalysis | Paired source on codex/binary-subtract-frontier-20261115; PR linked in the session log after publication |
+| PR in crypto | Production continuation published separately because the older PR 4335 remote branch automatically rechained the frozen PCC fork; link in session log |
+| PR in cryptanalysis | https://github.com/isogeny-labs/cryptanalysis/pull/1575 |
 | Preserve orientation/correctness | Exact scalar first witness, full-point membership, x=0/O/inverse/doubling and repeated-label controls; evidence/production-controls.log. [pcc:unverified] |
 | Reach the speed frontier | **Open.** Protocol names native and external incumbents; no admitted timing result or fastest claim. |
 | Broader tests/CI | Recorded separately from the five targeted controls; see session log and evidence. |
