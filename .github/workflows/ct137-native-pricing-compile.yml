@@ -1,0 +1,80 @@
+name: CT137 native CT126 compile and original/reuse source custody
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/ct137-native-pricing-compile.yml'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/CT137_NATIVE_COMPILE_PROTOCOL.md'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native-price-compile:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact cryptanalysis head, never merge ref
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Checkout pinned sibling crypto graph
+        uses: actions/checkout@v4
+        with:
+          repository: isogeny-labs/crypto
+          ref: 4de29a113dfc1b9d32c1809820b8caa2975042a8
+          path: _ct137_crypto
+          persist-credentials: false
+      - name: Record exact source identities and stage sibling path
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p ct137-evidence
+          {
+            echo "cryptanalysis_head=$(git rev-parse HEAD)"
+            echo "crypto_head=$(git -C _ct137_crypto rev-parse HEAD)"
+            echo "timestamp=$(date -u '+%FT%TZ')"
+            uname -a
+            grep -m1 'model name' /proc/cpuinfo || true
+            cat /sys/fs/cgroup/memory.max 2>/dev/null || true
+            cat /sys/fs/cgroup/cpu.max 2>/dev/null || true
+          } | tee ct137-evidence/host.txt
+          test "$(git -C _ct137_crypto rev-parse HEAD)" = 4de29a113dfc1b9d32c1809820b8caa2975042a8
+          test "$(git hash-object experiments/chained-transfer-public-target/fixed-jacobian-chain-evaluator-01/src/lib.rs)" = 8016634385d76207b23a3eb3a4dae9b0366ac68d
+          test -d _ct137_crypto/isogeny_algos
+          test -d _ct137_crypto/research/chained_jacobian_transfers_20261110/genus3-prime-descent/engine
+          ln -s "$GITHUB_WORKSPACE/_ct137_crypto" "$(dirname "$GITHUB_WORKSPACE")/crypto"
+          readlink -f "$(dirname "$GITHUB_WORKSPACE")/crypto/isogeny_algos" | tee ct137-evidence/crypto-path.txt
+      - name: Prepare seven unchanged literal helpers and guarded CT125 derivative
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -S experiments/chained-transfer-public-target/fixed-jacobian-chain-evaluator-01/materialize.py | tee ct137-evidence/materialize.txt
+          python3 -S experiments/chained-transfer-public-target/norm-point-reuse-01/build_norm_reuse.py \
+            --original experiments/chained-transfer-public-target/fixed-jacobian-chain-evaluator-01 \
+            --out experiments/chained-transfer-public-target/fixed-jacobian-chain-reuse-01 \
+            | tee ct137-evidence/derivative.json
+          python3 -S experiments/chained-transfer-public-target/norm-point-reuse-01/compare_norm_reuse.py --self-test \
+            | tee ct137-evidence/reuse-self-test.txt
+          sha256sum experiments/chained-transfer-public-target/fixed-jacobian-chain-{evaluator,reuse}-01/src/lib.rs \
+            | tee ct137-evidence/source-sha256.txt
+      - name: Pinned Rust toolchain and both native Cargo graph checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.99.1 --profile minimal
+          rustup default 1.99.1
+          { rustc -Vv; cargo -V; } | tee ct137-evidence/rust-toolchain.txt
+          timeout 360s cargo check --release --manifest-path \
+            experiments/chained-transfer-public-target/primitive-pricing-01/Cargo.toml \
+            2>&1 | tee ct137-evidence/original-cargo-check.log
+          timeout 360s cargo check --release --manifest-path \
+            experiments/chained-transfer-public-target/primitive-pricing-01/reuse/Cargo.toml \
+            2>&1 | tee ct137-evidence/reuse-cargo-check.log
+          echo "Both native compilation graphs passed; no benchmark was run." | tee ct137-evidence/verdict.txt
+      - name: Preserve source custody, compiler output and failures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ct137-original-reuse-native-compile-evidence
+          path: ct137-evidence/
+          retention-days: 30
