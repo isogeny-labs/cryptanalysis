@@ -77,3 +77,27 @@ measurements or an independent full audit. [pcc:unverified]
 The original selector oracle already derives the final point, so this feature
 investigates preparation/membership reuse rather than claiming to replace a
 quadratic scan in that baseline. [pcc:unverified]
+
+## Joint public-coefficient target generation
+
+`prepared::solve_joint` / `solve-hashed-joint` uses a reusable three-point
+table for the existing public `uG+vQ` relation target. HAC Algorithm14.88
+(additive notation, two bases) shares one doubling chain. The table is
+created lazily after the collector's original subgroup validation, reused
+across attempts and fresh base trials, and remains bound to that solve's
+curve/generator/target. Preparation costs and all checked affine additions
+consume the same meter; no unchecked formula or scalar reduction is added.
+
+Standalone `joint::JointTable::new` validates both subgroup points. Its
+`evaluate` handles zero/mixed-width scalars and identity/equal/opposite
+points. It is variable-time public-coefficient arithmetic. The table owns
+three points plus its curve; this storage and its one-time sum must be
+included in a cold comparison. Cloning/hashing and the meter remain unpriced.
+
+The existing `solve-hashed` path still uses two separate multiplications,
+and both paths use the same pair search and final certificate verifier.
+No relation coefficient is passed to the point-decomposition oracle.
+Complete seeded certificate, RNG and search-event equality are development
+controls. A reduced addition count is not a runtime speedup. [pcc:unverified]
+
+Source: [HAC14.88 and14.90, pp617–618](https://cacr.uwaterloo.ca/hac/about/chap14.pdf).
