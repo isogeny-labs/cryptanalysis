@@ -15,6 +15,8 @@ on:
       - 'suite/vendor/crypto-analysis-core/**'
       - 'tools/bootstrap_crypto_analysis_core.sh'
       - 'suite/Cargo.lock'
+      - 'crates/prime-field-auxiliary-ic/**'
+      - 'bindings/rust/cryptanalysis/**'
       - 'research/binary_genus2_cover_20261014/**'
       - '.github/workflows/binary-genus2-cover.yml'
   workflow_dispatch:

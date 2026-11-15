@@ -219,6 +219,7 @@ version = "0.1.0"
 dependencies = [
  "cryptanalysis-sys",
  "hashed-ecdl-tensor 0.1.0",
+ "prime-field-auxiliary-ic",
 ]
 
 [[package]]
@@ -237,6 +238,7 @@ dependencies = [
  "num-integer",
  "num-rational",
  "num-traits",
+ "prime-field-auxiliary-ic",
  "rand",
  "rayon",
  "serde",
@@ -467,6 +469,10 @@ checksum = "85eae3c4ed2f50dcfe72643da4befc30deadb458a9b590d720cde2f2b1e97da9"
 dependencies = [
  "zerocopy",
 ]
+
+[[package]]
+name = "prime-field-auxiliary-ic"
+version = "0.1.0"
 
 [[package]]
 name = "proc-macro2"

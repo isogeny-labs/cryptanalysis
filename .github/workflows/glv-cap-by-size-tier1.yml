@@ -103,7 +103,7 @@ jobs:
             name=${arm%%:*}; commit=${arm#*:}
             src="$RUNNER_TEMP/src-$name"
             git worktree add --no-checkout --detach "$src" "$commit"
-            git -C "$src" sparse-checkout set --cone src include cmake bindings cuda tools tests usecases
+            git -C "$src" sparse-checkout set --cone src include cmake bindings crates cuda tools tests usecases
             git -C "$src" checkout --detach "$commit"
             df -h "$RUNNER_TEMP" | tail -1
             cmake -S "$src" -B "$RUNNER_TEMP/build-$name" -DCMAKE_BUILD_TYPE=Release -DCA_CUPQC=OFF

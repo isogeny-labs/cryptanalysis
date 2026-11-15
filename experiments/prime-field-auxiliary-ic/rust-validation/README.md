@@ -1,5 +1,11 @@
 # Native integration check receipt
 
+The follow-up [consumer check receipt](consumer-checks.json), claim
+`PCC-20261115-dc9cae`, retains the locked dependency graph diagnostics for the
+safe bindings and binary-genus2 tool. It addresses the two early integration
+CI failures by updating the tool's transitive lockfile and the sparse checkout
+consumers. No registry package version was changed. [pcc:unverified]
+
 [producer-checks.json](producer-checks.json) and its raw logs record unsigned
 producer checks. Claim `PCC-20261115-c2f013` has no signed standing or execution
 proof. The tested source bytes are retained in commit `073d5e4`; the following
