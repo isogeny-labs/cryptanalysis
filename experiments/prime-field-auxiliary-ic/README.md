@@ -55,6 +55,8 @@ older explicitly scoped fixtures; they do not establish a full 61-bit attack.
   are excluded.
 - [Unsigned headline recomputation](producer-recompute.json) and
   [public group-equation certificate](solve-certificate.json).
+- [Retrospective benchmark-record index](BENCHMARK_RECORDS.json) and
+  [import report PDF](IMPORT_REPORT.pdf).
 
 The snapshot retains unsuccessful and superseded experiments. A historical
 filename, boolean, report, or known-scalar correctness fixture is not evidence
@@ -88,3 +90,5 @@ The next research step is to freeze a compliant target panel and exclusive
 online accounting, register the exact candidates and bases, and replay IC and
 the repository's strong rho reference through the admitted measurement
 harness. This PR imports the existing work; it does not schedule that run.
+The outstanding obligations are tracked in
+[the validation problem record](../../problems/prime-field-auxiliary-ic-validation.md).

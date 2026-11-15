@@ -9,6 +9,7 @@ explain the gap and what would let the work move past it.
 
 | Problem | Status | What it blocks | What would unblock it |
 | --- | --- | --- | --- |
+| [Prime-field auxiliary-map IC measurement qualification](prime-field-auxiliary-ic-validation.md) | open | Promoting the retrospective CPU timings to a qualified IC comparison | Fresh frozen target panel, admitted online measurement, and signed independent replay |
 | [Xedni affine-CVP checkpoint access](xedni-affine-cvp-checkpoint-access.md) | open | Frozen p=67 exact-discriminant comparison for the new coefficient-coset optimizer | Valid checkpoint upload and a passing gate, then the four frozen rows |
 | [Prime IC Jacobian timing checkpoint access](prime-ic-jacobian-checkpoint-access.md) | open | Measured relation-collection speedup claim for the new Jacobian lane backend | Successful checkpoint gate plus a retained paired run on an isolation-qualified host |
 | [Prime-field arity-three CDCL(T) implementation](prime-field-m3-cdclt-implementation.md) | open, narrowed | Freezing and running the corrected `m=3`, `s=6..14` prime-field PDP exponent screen | Development oracle and representation sizing now pass; still need the production typed IR, source-bound `F_p` theory and explanation/proof checker, matched exporters, complete accounting, power/preflight and immutable freeze |
