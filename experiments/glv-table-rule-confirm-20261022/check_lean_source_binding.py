@@ -3,7 +3,8 @@
 
 The default mode checks the two historical sources (divisor 48 and 12, cap 32).
 `--live` checks the size-dependent-cap selector in the working tree against its
-pinned commit, and re-checks the previous live pin (divisor 12, cap 32).
+pinned commit, and re-checks the previous live pins (divisor 12, cap 32; and the
+first size-dependent-cap source).
 """
 
 from __future__ import annotations
@@ -22,8 +23,22 @@ BASE_COMMIT = "7cb3dce4cac9176d74afb6403048b5fabbaab834"
 BASE_SHA256 = "e504bb18f0e80134c9ccf9abc1b7a825097286a759075090d2693ef82b406975"
 PRIOR_LIVE_SOURCE_COMMIT = "8bf648dcbefe7b8131e5fb26909c77e68778332a"
 PRIOR_LIVE_SHA256 = "60796724ef7d7c5b3b7dfd89c29db85d5e188deb247b5d9d0bd69b84551afe20"
-LIVE_SOURCE_COMMIT = "e71ebecaf3a076590ddd3affa4878b4c80d85095"
-LIVE_SHA256 = "e1d624e58c54f25f9225be97481b50c0ed406cedcfdffa8ba66f01a5fbed7f63"
+PREVIOUS_LIVE_SOURCE_COMMIT = "e71ebecaf3a076590ddd3affa4878b4c80d85095"
+PREVIOUS_LIVE_SHA256 = "e1d624e58c54f25f9225be97481b50c0ed406cedcfdffa8ba66f01a5fbed7f63"
+# 2026-11-10: src/curve.c changed outside the selector (factored j0 orbit hash
+# by default, index mask, Shoup coefficient products; PR #1464). The live pin
+# moves to that commit; the previous sized-cap pin is still re-checked.
+# 2026-11-12: src/curve.c changed outside the selector again (GLV walk hot
+# path: kept point hash, inlined reducer, fused batch, history ring,
+# branch-free coefficient updates, joint start ladder;
+# docs/perf/20261112-c-hotpath-audit.md). The live pin moves from
+# bf76110326b5c843cb88135810cb5c1d955321fc to bed518be1.
+# 2026-11-12: src/curve.c changed outside the selector again (static-analysis
+# fixes: a zero-aut_order guard before the selector, #elif for the second j0
+# representative). The live pin moves from
+# bed518be10a24cfb841e1e1dc84d8539defdba95 to 748b44c14.
+LIVE_SOURCE_COMMIT = "748b44c142b62063d91e9b3ac81287bb9b21ef56"
+LIVE_SHA256 = "135522915374e403705e43bd2fac2af8d50c8c0b24ca61996366556d55b42d3c"
 CAP_THRESHOLD_LG = 40
 CAP_BELOW = 32
 CAP_FROM = 128
@@ -103,7 +118,14 @@ def main() -> None:
             check=True,
             capture_output=True,
         ).stdout
+        previous_live = subprocess.run(
+            ["git", "show", f"{PREVIOUS_LIVE_SOURCE_COMMIT}:src/curve.c"],
+            cwd=ROOT,
+            check=True,
+            capture_output=True,
+        ).stdout
         require_selector(prior_live, PRIOR_LIVE_SHA256, 12)
+        require_selector(previous_live, PREVIOUS_LIVE_SHA256, 12, sized_cap=True)
         require_selector(current, LIVE_SHA256, 12, sized_cap=True)
         if current != pinned_live:
             raise ValueError("live source differs from its pinned commit")
@@ -158,6 +180,8 @@ def main() -> None:
             "prior_live_source_commit": PRIOR_LIVE_SOURCE_COMMIT,
             "prior_live_source_sha256": sha256(prior_live),
             "prior_live_loop_cap": 32,
+            "previous_live_source_commit": PREVIOUS_LIVE_SOURCE_COMMIT,
+            "previous_live_source_sha256": sha256(previous_live),
             "historical_source_commit": CURRENT_SOURCE_COMMIT,
             "historical_source_sha256": sha256(pinned_current),
             "divisor": 12,

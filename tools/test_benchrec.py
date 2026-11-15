@@ -67,6 +67,24 @@ class BenchrecTest(unittest.TestCase):
         self.br(*close)
         return rec
 
+    def test_one_record_has_no_self_comparison(self):
+        self.make_record(value=100.0)
+        progress = json.loads((self.root / "benchmarks/progress/progress.json").read_text())
+        for series in progress["series"]:
+            self.assertEqual(len(series["points"]), 1)
+            self.assertNotIn("improvement_vs_first_percent", series["points"][0]["derived"])
+        graphic = (self.root / "benchmarks/progress/progress.svg").read_text()
+        self.assertIn("No comparable observations within a metric yet", graphic)
+
+    def test_single_record_retains_real_reference(self):
+        self.make_record(value=100.0, reference=50.0)
+        progress = json.loads((self.root / "benchmarks/progress/progress.json").read_text())
+        series = next(s for s in progress["series"] if s["metric"] == "ir_per_op")
+        self.assertNotIn("improvement_vs_first_percent", series["points"][0]["derived"])
+        self.assertEqual(series["points"][0]["derived"]["value_over_reference"], 2.0)
+        graphic = (self.root / "benchmarks/progress/progress.svg").read_text()
+        self.assertIn("Distance remaining: value / reference", graphic)
+
     def test_full_lifecycle_and_progress(self):
         rec1 = self.make_record(value=100.0, reference=50.0)
         rec2 = self.make_record(slug="rho-step-2", value=80.0, reference=50.0)
@@ -336,6 +354,84 @@ class BenchrecTest(unittest.TestCase):
         r = self.br("check", "--base", "main", check=False)
         self.assertEqual(r.returncode, 1)
         self.assertIn("closed record is immutable", r.stdout)
+
+    def test_invalid_base_does_not_become_an_empty_change_set(self):
+        self.make_record()
+        self.commit_all("record")
+        for base in ("missing-base-branch", ""):
+            with self.subTest(base=base):
+                result = self.br("check", "--base", base, check=False)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn("base", result.stderr)
+
+    def test_unrelated_base_history_is_a_failure(self):
+        self.make_record()
+        self.commit_all("record")
+        sh("git", "checkout", "--orphan", "unrelated", cwd=self.root)
+        sh("git", "rm", "-rf", ".", cwd=self.root)
+        (self.root / "anchor").write_text("independent history\n")
+        self.commit_all("unrelated root")
+        sh("git", "checkout", "main", cwd=self.root)
+        result = self.br("check", "--base", "unrelated", check=False)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("merge-base", result.stderr)
+
+    def test_closed_record_deletion_rename_and_type_change_are_rejected(self):
+        rec = self.make_record()
+        self.commit_all("closed record")
+        base = sh("git", "rev-parse", "HEAD", cwd=self.root).stdout.strip()
+        sh("git", "checkout", "-qb", "feature", cwd=self.root)
+        path = self.root / rec
+        for action in ("delete", "rename", "symlink"):
+            with self.subTest(action=action):
+                sh("git", "reset", "--hard", base, cwd=self.root)
+                if action == "rename":
+                    renamed = path.with_name(path.stem + "-renamed.json")
+                    doc = json.loads(path.read_text())
+                    doc["id"] = renamed.stem
+                    renamed.write_text(json.dumps(doc))
+                elif action == "symlink":
+                    saved = self.root / "saved" / path.name
+                    saved.parent.mkdir(exist_ok=True)
+                    saved.write_bytes(path.read_bytes())
+                path.unlink()
+                if action == "symlink":
+                    path.symlink_to(saved)
+                self.br("report")
+                self.commit_all("changed closed record representation")
+                result = self.br("check", "--base", "main", check=False)
+                self.assertEqual(result.returncode, 1)
+                self.assertIn("closed record is immutable", result.stdout)
+
+    def test_closed_record_base_uses_required_git_filter(self):
+        import shlex
+        filter_script = self.root / 'record_filter.py'
+        filter_script.write_text(
+            'import os,sys\n'
+            'data=sys.stdin.buffer.read()\n'
+            'if sys.argv[1]=="smudge" and os.environ.get("BENCHREC_FILTER_REJECT"): sys.exit(1)\n'
+            'sys.stdout.buffer.write(b"VLT1"+data if sys.argv[1]=="clean" else data[4:] if data.startswith(b"VLT1") else data)\n')
+        command = f'{shlex.quote(sys.executable)} {shlex.quote(str(filter_script))}'
+        sh('git', 'config', 'filter.control.clean', command+' clean', cwd=self.root)
+        sh('git', 'config', 'filter.control.smudge', command+' smudge', cwd=self.root)
+        sh('git', 'config', 'filter.control.required', 'true', cwd=self.root)
+        (self.root / '.gitattributes').write_text('*.json filter=control\n')
+        rec = self.make_record()
+        self.commit_all('filtered closed record')
+        sh('git', 'checkout', '-qb', 'feature', cwd=self.root)
+        path = self.root / rec
+        value = json.loads(path.read_text())
+        value['summary'] = 'changed in feature'
+        path.write_text(json.dumps(value))
+        self.br('report')
+        self.commit_all('changed record')
+        result = self.br('check', '--base', 'main', check=False)
+        self.assertEqual(result.returncode, 1)
+        self.assertIn('closed record is immutable', result.stdout)
+        self.env['BENCHREC_FILTER_REJECT'] = '1'
+        result = self.br('check', '--base', 'main', check=False)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('cannot read committed base record', result.stderr)
 
     def test_stale_progress_detected(self):
         self.make_record()
@@ -661,12 +757,210 @@ raise SystemExit(99)
         rec, old_record, raw, data, archive = self.archived_fixture()
         module = self.canonical_module()
         cfg = module.load_config(self.root)
+        # A timeout is not "absent": it raises S3Error so the check fails
+        # closed with the command and the limit named, never silently.
         with patch.object(module.subprocess, "run", side_effect=subprocess.TimeoutExpired("aws", 180)):
-            self.assertFalse(module.archived_raw_matches(self.root, cfg, raw, remote=True))
+            with self.assertRaisesRegex(module.S3Error, "head-object .* did not finish within"):
+                module.archived_raw_matches(self.root, cfg, raw, remote=True)
         for size in (-1, True, 3.5, "12"):
             with self.subTest(size=size):
                 malformed = dict(raw, bytes=size)
                 self.assertFalse(module.archived_raw_matches(self.root, cfg, malformed, remote=True))
+
+
+FAKE_STORE_AWS = r'''#!/usr/bin/env python3
+import json, os, sys, time
+from pathlib import Path
+a = sys.argv[1:]
+with Path(os.environ["FAKE_AWS_LOG"]).open("a") as f:
+    f.write(json.dumps(a) + "\n")
+store = json.loads(Path(os.environ["FAKE_STORE"]).read_text())
+def opt(name):
+    return a[a.index(name) + 1] if name in a else None
+if a[:2] == ["sts", "get-caller-identity"]:
+    raise SystemExit(0)
+if a[:2] == ["s3api", "list-objects-v2"]:
+    mode = os.environ.get("FAKE_LIST_MODE", "ok")
+    if mode == "hang":
+        time.sleep(60)
+    if mode == "denied":
+        print("An error occurred (AccessDenied) when calling the ListObjectsV2 operation", file=sys.stderr)
+        raise SystemExit(254)
+    rows = [[k, n] for k, n in sorted(store.items()) if k.startswith(opt("--prefix"))]
+    print(json.dumps(rows or None))
+    raise SystemExit(0)
+if a[:2] == ["s3api", "head-object"]:
+    if os.environ.get("FAKE_HEAD_MODE") == "hang":
+        time.sleep(60)
+    key = opt("--key")
+    if key not in store:
+        raise SystemExit(254)
+    print(store[key])
+    raise SystemExit(0)
+raise SystemExit(99)
+'''
+
+
+class VerifyS3InventoryTest(unittest.TestCase):
+    """--verify-s3 over many raw objects: one listing, bounded calls, same coverage."""
+
+    # The same throwaway repository and helpers, without re-running those tests.
+    setUp = BenchrecTest.setUp
+    tearDown = BenchrecTest.tearDown
+    br = BenchrecTest.br
+    commit_all = BenchrecTest.commit_all
+    make_record = BenchrecTest.make_record
+    canonical_module = BenchrecTest.canonical_module
+
+    N_RAW = 20
+
+    def many_raw_fixture(self):
+        rec = self.br("init", "--slug", "many", "--problem", "kernel:many").stdout.strip()
+        self.br("run", rec, "--", sys.executable, "-c", "print('ran')")
+        out = self.root / "out"
+        out.mkdir(exist_ok=True)
+        for i in range(self.N_RAW):
+            f = out / f"part-{i:02d}.json"
+            f.write_text(json.dumps({"i": i}))
+            self.br("add-raw", rec, str(f))
+        self.br("metric", rec, "--name", "cost", "--value", "1.5", "--unit", "S")
+        pdf = self.root / "report.pdf"
+        pdf.write_bytes(b"%PDF-1.4\n")
+        self.br("close", rec, "--status", "measured", "--summary", "many raws", "--report", str(pdf))
+        body = json.loads((self.root / rec).read_text())
+        store = {r["s3_uri"].split("/", 3)[3]: r["bytes"] for r in body["raw"]}
+        # Unrelated objects under the same store prefix are listed and ignored.
+        store["store/sha256/ff/" + "f" * 64] = 7
+        fake = self.root / "fake-bin"
+        fake.mkdir()
+        (fake / "aws").write_text(FAKE_STORE_AWS)
+        (fake / "aws").chmod(0o755)
+        self.store_file = self.root / "fake-store.json"
+        self.store_file.write_text(json.dumps(store))
+        self.env.update(PATH=str(fake) + os.pathsep + self.env["PATH"],
+                        FAKE_STORE=str(self.store_file),
+                        FAKE_AWS_LOG=str(self.root / "aws-calls.jsonl"),
+                        # The CI job exports the wrong region for this bucket.
+                        AWS_REGION="us-west-2", AWS_DEFAULT_REGION="us-west-2")
+        self.env.pop("BENCHREC_S3_REGION", None)
+        self.commit_all()
+        return rec, body, store
+
+    def calls(self, op=None):
+        p = self.root / "aws-calls.jsonl"
+        rows = [json.loads(x) for x in p.read_text().splitlines()] if p.exists() else []
+        return [r for r in rows if op is None or r[:2] == ["s3api", op]]
+
+    def test_one_listing_replaces_per_object_heads(self):
+        self.many_raw_fixture()
+        p = self.br("check", "--verify-s3", check=False)
+        self.assertEqual(p.returncode, 0, p.stdout + p.stderr)
+        self.assertEqual(len(self.calls("list-objects-v2")), 1)
+        self.assertEqual(self.calls("head-object"), [])
+        self.assertIn("1 prefix listing(s)", p.stdout)
+        self.assertEqual(self.calls("list-objects-v2")[0][self.calls("list-objects-v2")[0].index("--prefix") + 1],
+                         "store/sha256/")
+
+    def test_every_call_is_bounded_and_names_the_bucket_region(self):
+        self.many_raw_fixture()
+        self.store_file.write_text("{}")
+        self.env["FAKE_LIST_MODE"] = "denied"
+        self.br("check", "--verify-s3", check=False)
+        calls = self.calls()
+        self.assertTrue(calls)
+        for c in calls:
+            with self.subTest(call=c[:2]):
+                self.assertEqual(c[c.index("--region") + 1], "us-east-2")
+                self.assertIn("--cli-connect-timeout", c)
+                self.assertIn("--cli-read-timeout", c)
+
+    def test_missing_object_fails_with_listing(self):
+        rec, body, store = self.many_raw_fixture()
+        gone = body["raw"][3]
+        del store[gone["s3_uri"].split("/", 3)[3]]
+        self.store_file.write_text(json.dumps(store))
+        p = self.br("check", "--verify-s3", check=False)
+        self.assertEqual(p.returncode, 1)
+        self.assertIn(f"raw {gone['path']} is not at {gone['s3_uri']}", p.stdout)
+        self.assertEqual(p.stdout.count(" is not at "), 1)
+
+    def test_wrong_size_object_fails(self):
+        rec, body, store = self.many_raw_fixture()
+        k = body["raw"][5]["s3_uri"].split("/", 3)[3]
+        store[k] += 1
+        self.store_file.write_text(json.dumps(store))
+        p = self.br("check", "--verify-s3", check=False)
+        self.assertEqual(p.returncode, 1)
+        self.assertIn("the record says", p.stdout)
+
+    def test_listing_denied_falls_back_to_heads_with_same_coverage(self):
+        rec, body, store = self.many_raw_fixture()
+        self.env["FAKE_LIST_MODE"] = "denied"
+        p = self.br("check", "--verify-s3", check=False)
+        self.assertEqual(p.returncode, 0, p.stdout + p.stderr)
+        self.assertEqual(len(self.calls("head-object")), self.N_RAW)
+        self.assertIn("falling back", p.stderr)
+        del store[body["raw"][0]["s3_uri"].split("/", 3)[3]]
+        self.store_file.write_text(json.dumps(store))
+        p = self.br("check", "--verify-s3", check=False)
+        self.assertEqual(p.returncode, 1)
+        self.assertIn(" is not at ", p.stdout)
+
+    def test_few_objects_use_heads_not_a_store_listing(self):
+        rec = self.make_record()
+        body = json.loads((self.root / rec).read_text())
+        fake = self.root / "fake-bin"
+        fake.mkdir()
+        (fake / "aws").write_text(FAKE_STORE_AWS)
+        (fake / "aws").chmod(0o755)
+        store = self.root / "fake-store.json"
+        store.write_text(json.dumps({r["s3_uri"].split("/", 3)[3]: r["bytes"] for r in body["raw"]}))
+        self.env.update(PATH=str(fake) + os.pathsep + self.env["PATH"], FAKE_STORE=str(store),
+                        FAKE_AWS_LOG=str(self.root / "aws-calls.jsonl"))
+        self.commit_all()
+        p = self.br("check", "--verify-s3", check=False)
+        self.assertEqual(p.returncode, 0, p.stdout + p.stderr)
+        self.assertEqual(self.calls("list-objects-v2"), [])
+        self.assertEqual(len(self.calls("head-object")), 1)
+
+    def run_in_process(self, **limits):
+        import contextlib, io, time
+        from unittest.mock import patch
+        module = self.canonical_module()
+        old = dict(os.environ)
+        os.environ.update(self.env)
+        out = io.StringIO()
+        try:
+            with contextlib.ExitStack() as stack:
+                for k, v in limits.items():
+                    stack.enter_context(patch.object(module, k, v))
+                stack.enter_context(contextlib.redirect_stdout(out))
+                stack.enter_context(contextlib.redirect_stderr(io.StringIO()))
+                t = time.monotonic()
+                rc = module.main(["--root", str(self.root), "check", "--verify-s3"])
+                return rc, out.getvalue(), time.monotonic() - t
+        finally:
+            os.environ.clear()
+            os.environ.update(old)
+
+    def test_hung_listing_fails_fast_with_a_clear_error(self):
+        self.many_raw_fixture()
+        self.env["FAKE_LIST_MODE"] = "hang"
+        rc, out, elapsed = self.run_in_process(AWS_LIST_TIMEOUT_S=1)
+        self.assertEqual(rc, 1)
+        self.assertIn("FAIL: S3 could not be verified", out)
+        self.assertIn("list-objects-v2", out)
+        self.assertIn("did not finish within 1s", out)
+        self.assertLess(elapsed, 20)
+
+    def test_hung_head_fails_fast_with_a_clear_error(self):
+        self.many_raw_fixture()
+        self.env.update(FAKE_LIST_MODE="denied", FAKE_HEAD_MODE="hang")
+        rc, out, elapsed = self.run_in_process(AWS_CALL_TIMEOUT_S=1)
+        self.assertEqual(rc, 1)
+        self.assertIn("head-object", out)
+        self.assertIn("did not finish within 1s", out)
+        self.assertLess(elapsed, 30)
 
 
 if __name__ == "__main__":

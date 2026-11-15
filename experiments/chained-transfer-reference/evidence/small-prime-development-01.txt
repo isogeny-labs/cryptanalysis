@@ -1,0 +1,18 @@
+   Compiling chained-jacobian-transfer v0.1.0 (/workspace/crypto/research/chained_jacobian_transfers_20261110/native)
+   Compiling chained-transfer-reference v0.1.0 (/workspace/cryptanalysis/experiments/chained-transfer-reference)
+    Finished `release` profile [optimized] target(s) in 7.82s
+     Running unittests src/main.rs (experiments/chained-transfer-reference/target/release/deps/chained_transfer_reference-d352df790eb46e3d)
+
+running 1 test
+PASS BigUint family p=13, root=1, #J=180, self-inverse=4, independent elliptic orders=[10, 18]; all paired additions and dual norm
+PASS BigUint family p=13, root=2, #J=180, self-inverse=4, independent elliptic orders=[10, 18]; all paired additions and dual norm
+PASS BigUint family p=29, root=1, #J=960, self-inverse=4, independent elliptic orders=[40, 24]; all paired additions and dual norm
+PASS BigUint family p=29, root=2, #J=960, self-inverse=16, independent elliptic orders=[40, 24]; all paired additions and dual norm
+PASS BigUint family p=31, root=1, #J=1008, self-inverse=16, independent elliptic orders=[28, 36]; all paired additions and dual norm
+PASS BigUint family p=31, root=2, #J=1008, self-inverse=4, independent elliptic orders=[28, 36]; all paired additions and dual norm
+PASS BigUint family p=101, root=1, #J=9216, self-inverse=4, independent elliptic orders=[96, 96]; all paired additions and dual norm
+PASS BigUint family p=101, root=2, #J=9216, self-inverse=16, independent elliptic orders=[96, 96]; all paired additions and dual norm
+test small_prime_oracle::four_fields_complete_models_against_biguint ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 29 filtered out; finished in 15.61s
+

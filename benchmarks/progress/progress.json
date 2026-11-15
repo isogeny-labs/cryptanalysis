@@ -2,27 +2,32 @@
   "headline_unit": "S",
   "integrity_exclusions": [
     {
-      "reason": "Record includes failed commands without a machine-readable command-to-metric attribution. Conservative aggregate exclusion retains successful and failed attempts; review individual raw outputs before comparison.",
+      "reason": "Historical receipt lacks current comparison-eligibility metadata: command 3 has no successful integer exit code; use invalid/censored or an explicit pinned historical exclusion; command 4 has no successful integer exit code; use invalid/censored or an explicit pinned historical exclusion. Original record and successful/failed/uncertain arms are preserved. This excludes automated comparisons; it does not decide the validity of every underlying measurement.",
       "record": "benchmarks/records/20261104T0352Z-descent-walks-k0n53.json",
       "sha256": "7e975bbe687aa714fbb9286b8e6dec08a43be4d1e00160970b515756bf0eb0d6"
     },
     {
-      "reason": "Record includes failed commands without a machine-readable command-to-metric attribution. Conservative aggregate exclusion retains successful and failed attempts; review individual raw outputs before comparison.",
+      "reason": "Historical receipt lacks current comparison-eligibility metadata: command 1 has no successful integer exit code; use invalid/censored or an explicit pinned historical exclusion. Original record and successful/failed/uncertain arms are preserved. This excludes automated comparisons; it does not decide the validity of every underlying measurement.",
       "record": "benchmarks/records/20261104T1632Z-pair-filter-two-bit.json",
       "sha256": "eeb0f0329f396e4f1081122af856e61e5fa7c902a50eb692550b43b308a45459"
     },
     {
-      "reason": "Documentary retrospective commands have no captured successful exit status. Values remain historical quotations; execution provenance is incomplete.",
+      "reason": "Historical receipt lacks current comparison-eligibility metadata: command 1 has no successful integer exit code; use invalid/censored or an explicit pinned historical exclusion; command 2 has no successful integer exit code; use invalid/censored or an explicit pinned historical exclusion; command 3 has no successful integer exit code; use invalid/censored or an explicit pinned historical exclusion. Original record and successful/failed/uncertain arms are preserved. This excludes automated comparisons; it does not decide the validity of every underlying measurement.",
       "record": "benchmarks/records/20261105T0736Z-rho-plain-negmap-retrospective.json",
       "sha256": "7ad301d9901de249c73c90073aa5e552748f135a166a142638b75a317054bcd3"
+    },
+    {
+      "reason": "Historical receipt lacks current comparison-eligibility metadata: command 1 has no successful integer exit code; use invalid/censored or an explicit pinned historical exclusion; command 2 has no successful integer exit code; use invalid/censored or an explicit pinned historical exclusion. Original record and successful/failed/uncertain arms are preserved. This excludes automated comparisons; it does not decide the validity of every underlying measurement.",
+      "record": "benchmarks/records/20261110T0408Z-clmad-audit.json",
+      "sha256": "c36443b17548a2f9c4f2843635fbaed6abe04788a259585f38605f7447f11349"
     }
   ],
-  "latest_record": "20261104T1757Z-n83-fieldops",
-  "note": "Every value is quoted from the record it names, in that record's unit. Percentages and ratios under 'derived' are computed here from those values and are not measurements. Series in different units are never compared. 3 digest-pinned historical measured records are excluded from all series and derived comparisons; recorded status counts retain them. See integrity_exclusions in progress.json and PROGRESS.md for reasons.",
+  "latest_record": "20261112T2333Z-xedni-p67-frozen-comparison",
+  "note": "Every value is quoted from the record it names, in that record's unit. Percentages and ratios under 'derived' are computed here from those values and are not measurements. Series in different units are never compared. 4 digest-pinned historical measured records are excluded from all series and derived comparisons; recorded status counts retain them. See integrity_exclusions in progress.json and PROGRESS.md for reasons.",
   "records": {
     "censored": 0,
     "invalid": 0,
-    "measured": 11,
+    "measured": 18,
     "open": 0
   },
   "repo": "cryptanalysis",
@@ -31,10 +36,11 @@
     {
       "better": "lower",
       "first": 8.976,
-      "latest": 8.976,
+      "latest": 5.027997,
       "latest_derived": {
-        "improvement_vs_first_percent": 0.0,
-        "value_over_reference": 4.094891
+        "improvement_vs_first_percent": 43.984,
+        "improvement_vs_previous_percent": 5.978,
+        "value_over_reference": 2.042631
       },
       "metric": "e2e_cold_wall_b",
       "points": [
@@ -52,6 +58,54 @@
           "spread": null,
           "summary": "n=83 field ops Tier 1 run 41869146827: end-to-end cold A/B 1.2610 [1.2541, 1.2681], exact (identical relations, probes, digests); in-run gap to rT770 4.096 for B",
           "value": 8.976
+        },
+        {
+          "commit": "4734da1274a3",
+          "date": "2026-11-08",
+          "derived": {
+            "improvement_vs_first_percent": 3.7112,
+            "improvement_vs_previous_percent": 3.7112,
+            "value_over_reference": 3.165364
+          },
+          "n": 36,
+          "record": "20261108T0023Z-n83-fieldops2",
+          "reference": 2.730455,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "n=83 field ops 2 (R1) Tier 1 run 42424680756: end-to-end cold A/B 1.0256 [1.0236, 1.0278], exact (identical relations, probes, digests); in-run gap to rT770 3.165 for B (3.246 for A)",
+          "value": 8.642885
+        },
+        {
+          "commit": "a28148a61337",
+          "date": "2026-11-08",
+          "derived": {
+            "improvement_vs_first_percent": 40.4225,
+            "improvement_vs_previous_percent": 38.1262,
+            "value_over_reference": 2.0485
+          },
+          "n": 60,
+          "record": "20261108T0044Z-n83-k4c400",
+          "reference": 2.610534,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "n=83 D4 (K'=4, 400 orbits) vs M38 on the field-ops producer, Tier 1 run 42425640847: end-to-end cold A/B 2.0014 [1.8777, 2.1308], every gate and control passes; in-run gap to rT770 2.049 for D4 (4.100 for M38); not stacked on R1",
+          "value": 5.34768
+        },
+        {
+          "commit": "bca22e9f9fac",
+          "date": "2026-11-08",
+          "derived": {
+            "improvement_vs_first_percent": 43.984,
+            "improvement_vs_previous_percent": 5.978,
+            "value_over_reference": 2.042631
+          },
+          "n": 36,
+          "record": "20261108T0611Z-n83-fo2d4",
+          "reference": 2.46153,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "n=83 field-ops-2 (R1) vs field-ops, both on D4, Tier 1 run 42450569196: end-to-end cold A/B 1.0504 [1.0467, 1.0541], every gate and control passes; in-run gap to rT770 2.043 for R1 (2.146 for field-ops); section 5a is a labelled model band (no counted band)",
+          "value": 5.027997
         }
       ],
       "problem": "ecdlp:EC1N83Ce1h35c7ced6b497",
@@ -60,9 +114,10 @@
     {
       "better": "higher",
       "first": 1.261015,
-      "latest": 1.261015,
+      "latest": 1.05038,
       "latest_derived": {
-        "improvement_vs_first_percent": -0.0
+        "improvement_vs_first_percent": -16.7036,
+        "improvement_vs_previous_percent": -47.5185
       },
       "metric": "e2e_paired_a_over_b",
       "points": [
@@ -82,6 +137,60 @@
           ],
           "summary": "n=83 field ops Tier 1 run 41869146827: end-to-end cold A/B 1.2610 [1.2541, 1.2681], exact (identical relations, probes, digests); in-run gap to rT770 4.096 for B",
           "value": 1.261015
+        },
+        {
+          "commit": "4734da1274a3",
+          "date": "2026-11-08",
+          "derived": {
+            "improvement_vs_first_percent": -18.6689,
+            "improvement_vs_previous_percent": -18.6689
+          },
+          "n": 36,
+          "record": "20261108T0023Z-n83-fieldops2",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            1.023615,
+            1.027769
+          ],
+          "summary": "n=83 field ops 2 (R1) Tier 1 run 42424680756: end-to-end cold A/B 1.0256 [1.0236, 1.0278], exact (identical relations, probes, digests); in-run gap to rT770 3.165 for B (3.246 for A)",
+          "value": 1.025597
+        },
+        {
+          "commit": "a28148a61337",
+          "date": "2026-11-08",
+          "derived": {
+            "improvement_vs_first_percent": 58.7156,
+            "improvement_vs_previous_percent": 95.1476
+          },
+          "n": 60,
+          "record": "20261108T0044Z-n83-k4c400",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            1.877732,
+            2.13079
+          ],
+          "summary": "n=83 D4 (K'=4, 400 orbits) vs M38 on the field-ops producer, Tier 1 run 42425640847: end-to-end cold A/B 2.0014 [1.8777, 2.1308], every gate and control passes; in-run gap to rT770 2.049 for D4 (4.100 for M38); not stacked on R1",
+          "value": 2.001428
+        },
+        {
+          "commit": "bca22e9f9fac",
+          "date": "2026-11-08",
+          "derived": {
+            "improvement_vs_first_percent": -16.7036,
+            "improvement_vs_previous_percent": -47.5185
+          },
+          "n": 36,
+          "record": "20261108T0611Z-n83-fo2d4",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            1.046744,
+            1.054052
+          ],
+          "summary": "n=83 field-ops-2 (R1) vs field-ops, both on D4, Tier 1 run 42450569196: end-to-end cold A/B 1.0504 [1.0467, 1.0541], every gate and control passes; in-run gap to rT770 2.043 for R1 (2.146 for field-ops); section 5a is a labelled model band (no counted band)",
+          "value": 1.05038
         }
       ],
       "problem": "ecdlp:EC1N83Ce1h35c7ced6b497",
@@ -90,10 +199,11 @@
     {
       "better": "lower",
       "first": 0.39219,
-      "latest": 0.39219,
+      "latest": 0.213153,
       "latest_derived": {
-        "improvement_vs_first_percent": 0.0,
-        "value_over_reference": 4.095509
+        "improvement_vs_first_percent": 45.6506,
+        "improvement_vs_previous_percent": -1.7243,
+        "value_over_reference": 2.042635
       },
       "metric": "s_e2e_cold",
       "points": [
@@ -111,6 +221,54 @@
           "spread": null,
           "summary": "n=83 field ops Tier 1 run 41869146827: end-to-end cold A/B 1.2610 [1.2541, 1.2681], exact (identical relations, probes, digests); in-run gap to rT770 4.096 for B",
           "value": 0.39219
+        },
+        {
+          "commit": "4734da1274a3",
+          "date": "2026-11-08",
+          "derived": {
+            "improvement_vs_first_percent": 3.1551,
+            "improvement_vs_previous_percent": 3.1551,
+            "value_over_reference": 3.165371
+          },
+          "n": 36,
+          "record": "20261108T0023Z-n83-fieldops2",
+          "reference": 0.119991,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "n=83 field ops 2 (R1) Tier 1 run 42424680756: end-to-end cold A/B 1.0256 [1.0236, 1.0278], exact (identical relations, probes, digests); in-run gap to rT770 3.165 for B (3.246 for A)",
+          "value": 0.379816
+        },
+        {
+          "commit": "a28148a61337",
+          "date": "2026-11-08",
+          "derived": {
+            "improvement_vs_first_percent": 46.5718,
+            "improvement_vs_previous_percent": 44.8312,
+            "value_over_reference": 2.04849
+          },
+          "n": 60,
+          "record": "20261108T0044Z-n83-k4c400",
+          "reference": 0.10229,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "n=83 D4 (K'=4, 400 orbits) vs M38 on the field-ops producer, Tier 1 run 42425640847: end-to-end cold A/B 2.0014 [1.8777, 2.1308], every gate and control passes; in-run gap to rT770 2.049 for D4 (4.100 for M38); not stacked on R1",
+          "value": 0.20954
+        },
+        {
+          "commit": "bca22e9f9fac",
+          "date": "2026-11-08",
+          "derived": {
+            "improvement_vs_first_percent": 45.6506,
+            "improvement_vs_previous_percent": -1.7243,
+            "value_over_reference": 2.042635
+          },
+          "n": 36,
+          "record": "20261108T0611Z-n83-fo2d4",
+          "reference": 0.104352,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "n=83 field-ops-2 (R1) vs field-ops, both on D4, Tier 1 run 42450569196: end-to-end cold A/B 1.0504 [1.0467, 1.0541], every gate and control passes; in-run gap to rT770 2.043 for R1 (2.146 for field-ops); section 5a is a labelled model band (no counted band)",
+          "value": 0.213153
         }
       ],
       "problem": "ecdlp:EC1N83Ce1h35c7ced6b497",
@@ -119,9 +277,10 @@
     {
       "better": "lower",
       "first": 0.007481,
-      "latest": 0.007481,
+      "latest": 0.028801,
       "latest_derived": {
-        "improvement_vs_first_percent": 0.0
+        "improvement_vs_first_percent": -284.9886,
+        "improvement_vs_previous_percent": -59.7748
       },
       "metric": "s_online",
       "points": [
@@ -138,6 +297,51 @@
           "spread": null,
           "summary": "n=83 field ops Tier 1 run 41869146827: end-to-end cold A/B 1.2610 [1.2541, 1.2681], exact (identical relations, probes, digests); in-run gap to rT770 4.096 for B",
           "value": 0.007481
+        },
+        {
+          "commit": "4734da1274a3",
+          "date": "2026-11-08",
+          "derived": {
+            "improvement_vs_first_percent": -138.3371,
+            "improvement_vs_previous_percent": -138.3371
+          },
+          "n": 36,
+          "record": "20261108T0023Z-n83-fieldops2",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "n=83 field ops 2 (R1) Tier 1 run 42424680756: end-to-end cold A/B 1.0256 [1.0236, 1.0278], exact (identical relations, probes, digests); in-run gap to rT770 3.165 for B (3.246 for A)",
+          "value": 0.01783
+        },
+        {
+          "commit": "a28148a61337",
+          "date": "2026-11-08",
+          "derived": {
+            "improvement_vs_first_percent": -140.9571,
+            "improvement_vs_previous_percent": -1.0993
+          },
+          "n": 60,
+          "record": "20261108T0044Z-n83-k4c400",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "n=83 D4 (K'=4, 400 orbits) vs M38 on the field-ops producer, Tier 1 run 42425640847: end-to-end cold A/B 2.0014 [1.8777, 2.1308], every gate and control passes; in-run gap to rT770 2.049 for D4 (4.100 for M38); not stacked on R1",
+          "value": 0.018026
+        },
+        {
+          "commit": "bca22e9f9fac",
+          "date": "2026-11-08",
+          "derived": {
+            "improvement_vs_first_percent": -284.9886,
+            "improvement_vs_previous_percent": -59.7748
+          },
+          "n": 36,
+          "record": "20261108T0611Z-n83-fo2d4",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "n=83 field-ops-2 (R1) vs field-ops, both on D4, Tier 1 run 42450569196: end-to-end cold A/B 1.0504 [1.0467, 1.0541], every gate and control passes; in-run gap to rT770 2.043 for R1 (2.146 for field-ops); section 5a is a labelled model band (no counted band)",
+          "value": 0.028801
         }
       ],
       "problem": "ecdlp:EC1N83Ce1h35c7ced6b497",
@@ -146,9 +350,10 @@
     {
       "better": "higher",
       "first": 1.306917,
-      "latest": 1.306917,
+      "latest": 1.074528,
       "latest_derived": {
-        "improvement_vs_first_percent": -0.0
+        "improvement_vs_first_percent": -17.7815,
+        "improvement_vs_previous_percent": -55.0936
       },
       "metric": "stage_index_build_a_over_b",
       "points": [
@@ -168,6 +373,60 @@
           ],
           "summary": "n=83 field ops Tier 1 run 41869146827: end-to-end cold A/B 1.2610 [1.2541, 1.2681], exact (identical relations, probes, digests); in-run gap to rT770 4.096 for B",
           "value": 1.306917
+        },
+        {
+          "commit": "4734da1274a3",
+          "date": "2026-11-08",
+          "derived": {
+            "improvement_vs_first_percent": -19.6573,
+            "improvement_vs_previous_percent": -19.6573
+          },
+          "n": 36,
+          "record": "20261108T0023Z-n83-fieldops2",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            1.048387,
+            1.051482
+          ],
+          "summary": "n=83 field ops 2 (R1) Tier 1 run 42424680756: end-to-end cold A/B 1.0256 [1.0236, 1.0278], exact (identical relations, probes, digests); in-run gap to rT770 3.165 for B (3.246 for A)",
+          "value": 1.050012
+        },
+        {
+          "commit": "a28148a61337",
+          "date": "2026-11-08",
+          "derived": {
+            "improvement_vs_first_percent": 83.0888,
+            "improvement_vs_previous_percent": 127.8848
+          },
+          "n": 60,
+          "record": "20261108T0044Z-n83-k4c400",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            2.379372,
+            2.406501
+          ],
+          "summary": "n=83 D4 (K'=4, 400 orbits) vs M38 on the field-ops producer, Tier 1 run 42425640847: end-to-end cold A/B 2.0014 [1.8777, 2.1308], every gate and control passes; in-run gap to rT770 2.049 for D4 (4.100 for M38); not stacked on R1",
+          "value": 2.392818
+        },
+        {
+          "commit": "bca22e9f9fac",
+          "date": "2026-11-08",
+          "derived": {
+            "improvement_vs_first_percent": -17.7815,
+            "improvement_vs_previous_percent": -55.0936
+          },
+          "n": 36,
+          "record": "20261108T0611Z-n83-fo2d4",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            1.07211,
+            1.077158
+          ],
+          "summary": "n=83 field-ops-2 (R1) vs field-ops, both on D4, Tier 1 run 42450569196: end-to-end cold A/B 1.0504 [1.0467, 1.0541], every gate and control passes; in-run gap to rT770 2.043 for R1 (2.146 for field-ops); section 5a is a labelled model band (no counted band)",
+          "value": 1.074528
         }
       ],
       "problem": "ecdlp:EC1N83Ce1h35c7ced6b497",
@@ -176,9 +435,10 @@
     {
       "better": "higher",
       "first": 1.405339,
-      "latest": 1.405339,
+      "latest": 1.023227,
       "latest_derived": {
-        "improvement_vs_first_percent": -0.0
+        "improvement_vs_first_percent": -27.19,
+        "improvement_vs_previous_percent": 57.745
       },
       "metric": "stage_online_a_over_b",
       "points": [
@@ -198,6 +458,60 @@
           ],
           "summary": "n=83 field ops Tier 1 run 41869146827: end-to-end cold A/B 1.2610 [1.2541, 1.2681], exact (identical relations, probes, digests); in-run gap to rT770 4.096 for B",
           "value": 1.405339
+        },
+        {
+          "commit": "4734da1274a3",
+          "date": "2026-11-08",
+          "derived": {
+            "improvement_vs_first_percent": -29.0271,
+            "improvement_vs_previous_percent": -29.0271
+          },
+          "n": 36,
+          "record": "20261108T0023Z-n83-fieldops2",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.992023,
+            1.003772
+          ],
+          "summary": "n=83 field ops 2 (R1) Tier 1 run 42424680756: end-to-end cold A/B 1.0256 [1.0236, 1.0278], exact (identical relations, probes, digests); in-run gap to rT770 3.165 for B (3.246 for A)",
+          "value": 0.99741
+        },
+        {
+          "commit": "a28148a61337",
+          "date": "2026-11-08",
+          "derived": {
+            "improvement_vs_first_percent": -53.8432,
+            "improvement_vs_previous_percent": -34.9657
+          },
+          "n": 60,
+          "record": "20261108T0044Z-n83-k4c400",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.33468,
+            1.139527
+          ],
+          "summary": "n=83 D4 (K'=4, 400 orbits) vs M38 on the field-ops producer, Tier 1 run 42425640847: end-to-end cold A/B 2.0014 [1.8777, 2.1308], every gate and control passes; in-run gap to rT770 2.049 for D4 (4.100 for M38); not stacked on R1",
+          "value": 0.648659
+        },
+        {
+          "commit": "bca22e9f9fac",
+          "date": "2026-11-08",
+          "derived": {
+            "improvement_vs_first_percent": -27.19,
+            "improvement_vs_previous_percent": 57.745
+          },
+          "n": 36,
+          "record": "20261108T0611Z-n83-fo2d4",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            1.009118,
+            1.031424
+          ],
+          "summary": "n=83 field-ops-2 (R1) vs field-ops, both on D4, Tier 1 run 42450569196: end-to-end cold A/B 1.0504 [1.0467, 1.0541], every gate and control passes; in-run gap to rT770 2.043 for R1 (2.146 for field-ops); section 5a is a labelled model band (no counted band)",
+          "value": 1.023227
         }
       ],
       "problem": "ecdlp:EC1N83Ce1h35c7ced6b497",
@@ -206,9 +520,10 @@
     {
       "better": "higher",
       "first": 1.199575,
-      "latest": 1.199575,
+      "latest": 1.050525,
       "latest_derived": {
-        "improvement_vs_first_percent": -0.0
+        "improvement_vs_first_percent": -12.4252,
+        "improvement_vs_previous_percent": -39.9189
       },
       "metric": "stage_rank_stage_a_over_b",
       "points": [
@@ -228,6 +543,60 @@
           ],
           "summary": "n=83 field ops Tier 1 run 41869146827: end-to-end cold A/B 1.2610 [1.2541, 1.2681], exact (identical relations, probes, digests); in-run gap to rT770 4.096 for B",
           "value": 1.199575
+        },
+        {
+          "commit": "4734da1274a3",
+          "date": "2026-11-08",
+          "derived": {
+            "improvement_vs_first_percent": -16.1269,
+            "improvement_vs_previous_percent": -16.1269
+          },
+          "n": 36,
+          "record": "20261108T0023Z-n83-fieldops2",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            1.001765,
+            1.01081
+          ],
+          "summary": "n=83 field ops 2 (R1) Tier 1 run 42424680756: end-to-end cold A/B 1.0256 [1.0236, 1.0278], exact (identical relations, probes, digests); in-run gap to rT770 3.165 for B (3.246 for A)",
+          "value": 1.006121
+        },
+        {
+          "commit": "a28148a61337",
+          "date": "2026-11-08",
+          "derived": {
+            "improvement_vs_first_percent": 45.761,
+            "improvement_vs_previous_percent": 73.7875
+          },
+          "n": 60,
+          "record": "20261108T0044Z-n83-k4c400",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            1.503876,
+            2.028689
+          ],
+          "summary": "n=83 D4 (K'=4, 400 orbits) vs M38 on the field-ops producer, Tier 1 run 42425640847: end-to-end cold A/B 2.0014 [1.8777, 2.1308], every gate and control passes; in-run gap to rT770 2.049 for D4 (4.100 for M38); not stacked on R1",
+          "value": 1.748513
+        },
+        {
+          "commit": "bca22e9f9fac",
+          "date": "2026-11-08",
+          "derived": {
+            "improvement_vs_first_percent": -12.4252,
+            "improvement_vs_previous_percent": -39.9189
+          },
+          "n": 36,
+          "record": "20261108T0611Z-n83-fo2d4",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            1.046105,
+            1.054966
+          ],
+          "summary": "n=83 field-ops-2 (R1) vs field-ops, both on D4, Tier 1 run 42450569196: end-to-end cold A/B 1.0504 [1.0467, 1.0541], every gate and control passes; in-run gap to rT770 2.043 for R1 (2.146 for field-ops); section 5a is a labelled model band (no counted band)",
+          "value": 1.050525
         }
       ],
       "problem": "ecdlp:EC1N83Ce1h35c7ced6b497",
@@ -236,9 +605,10 @@
     {
       "better": "higher",
       "first": 1.316541,
-      "latest": 1.316541,
+      "latest": 1.00268,
       "latest_derived": {
-        "improvement_vs_first_percent": -0.0
+        "improvement_vs_first_percent": -23.8398,
+        "improvement_vs_previous_percent": -79.8209
       },
       "metric": "stage_scan_selftest_a_over_b",
       "points": [
@@ -258,6 +628,60 @@
           ],
           "summary": "n=83 field ops Tier 1 run 41869146827: end-to-end cold A/B 1.2610 [1.2541, 1.2681], exact (identical relations, probes, digests); in-run gap to rT770 4.096 for B",
           "value": 1.316541
+        },
+        {
+          "commit": "4734da1274a3",
+          "date": "2026-11-08",
+          "derived": {
+            "improvement_vs_first_percent": -24.2259,
+            "improvement_vs_previous_percent": -24.2259
+          },
+          "n": 36,
+          "record": "20261108T0023Z-n83-fieldops2",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.992171,
+            1.002737
+          ],
+          "summary": "n=83 field ops 2 (R1) Tier 1 run 42424680756: end-to-end cold A/B 1.0256 [1.0236, 1.0278], exact (identical relations, probes, digests); in-run gap to rT770 3.165 for B (3.246 for A)",
+          "value": 0.997597
+        },
+        {
+          "commit": "a28148a61337",
+          "date": "2026-11-08",
+          "derived": {
+            "improvement_vs_first_percent": 277.4214,
+            "improvement_vs_previous_percent": 398.0877
+          },
+          "n": 60,
+          "record": "20261108T0044Z-n83-k4c400",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            4.893423,
+            5.060173
+          ],
+          "summary": "n=83 D4 (K'=4, 400 orbits) vs M38 on the field-ops producer, Tier 1 run 42425640847: end-to-end cold A/B 2.0014 [1.8777, 2.1308], every gate and control passes; in-run gap to rT770 2.049 for D4 (4.100 for M38); not stacked on R1",
+          "value": 4.968908
+        },
+        {
+          "commit": "bca22e9f9fac",
+          "date": "2026-11-08",
+          "derived": {
+            "improvement_vs_first_percent": -23.8398,
+            "improvement_vs_previous_percent": -79.8209
+          },
+          "n": 36,
+          "record": "20261108T0611Z-n83-fo2d4",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.994746,
+            1.010784
+          ],
+          "summary": "n=83 field-ops-2 (R1) vs field-ops, both on D4, Tier 1 run 42450569196: end-to-end cold A/B 1.0504 [1.0467, 1.0541], every gate and control passes; in-run gap to rT770 2.043 for R1 (2.146 for field-ops); section 5a is a labelled model band (no counted band)",
+          "value": 1.00268
         }
       ],
       "problem": "ecdlp:EC1N83Ce1h35c7ced6b497",
@@ -524,17 +948,13 @@
       "better": "lower",
       "first": 0.6661,
       "latest": 0.6661,
-      "latest_derived": {
-        "improvement_vs_first_percent": 0.0
-      },
+      "latest_derived": {},
       "metric": "group_ops_ratio_20",
       "points": [
         {
           "commit": "8d711d0d55bb",
           "date": "2026-10-30",
-          "derived": {
-            "improvement_vs_first_percent": 0.0
-          },
+          "derived": {},
           "n": 2000,
           "record": "20261030T1200Z-rho-plain-negmap",
           "reference": null,
@@ -551,17 +971,13 @@
       "better": "lower",
       "first": 0.6296,
       "latest": 0.6296,
-      "latest_derived": {
-        "improvement_vs_first_percent": 0.0
-      },
+      "latest_derived": {},
       "metric": "group_ops_ratio_24",
       "points": [
         {
           "commit": "8d711d0d55bb",
           "date": "2026-10-30",
-          "derived": {
-            "improvement_vs_first_percent": 0.0
-          },
+          "derived": {},
           "n": 2000,
           "record": "20261030T1200Z-rho-plain-negmap",
           "reference": null,
@@ -578,17 +994,13 @@
       "better": "lower",
       "first": 0.5875,
       "latest": 0.5875,
-      "latest_derived": {
-        "improvement_vs_first_percent": 0.0
-      },
+      "latest_derived": {},
       "metric": "group_ops_ratio_28",
       "points": [
         {
           "commit": "8d711d0d55bb",
           "date": "2026-10-30",
-          "derived": {
-            "improvement_vs_first_percent": 0.0
-          },
+          "derived": {},
           "n": 2000,
           "record": "20261030T1200Z-rho-plain-negmap",
           "reference": null,
@@ -605,17 +1017,13 @@
       "better": "lower",
       "first": 0.8612,
       "latest": 0.8612,
-      "latest_derived": {
-        "improvement_vs_first_percent": 0.0
-      },
+      "latest_derived": {},
       "metric": "group_ops_ratio_32",
       "points": [
         {
           "commit": "8d711d0d55bb",
           "date": "2026-10-30",
-          "derived": {
-            "improvement_vs_first_percent": 0.0
-          },
+          "derived": {},
           "n": 2000,
           "record": "20261030T1200Z-rho-plain-negmap",
           "reference": null,
@@ -632,17 +1040,13 @@
       "better": "lower",
       "first": 0.8856,
       "latest": 0.8856,
-      "latest_derived": {
-        "improvement_vs_first_percent": 0.0
-      },
+      "latest_derived": {},
       "metric": "group_ops_ratio_36",
       "points": [
         {
           "commit": "8d711d0d55bb",
           "date": "2026-10-30",
-          "derived": {
-            "improvement_vs_first_percent": 0.0
-          },
+          "derived": {},
           "n": 2000,
           "record": "20261030T1200Z-rho-plain-negmap",
           "reference": null,
@@ -659,17 +1063,13 @@
       "better": "lower",
       "first": 0.9345,
       "latest": 0.9345,
-      "latest_derived": {
-        "improvement_vs_first_percent": 0.0
-      },
+      "latest_derived": {},
       "metric": "group_ops_ratio_40",
       "points": [
         {
           "commit": "8d711d0d55bb",
           "date": "2026-10-30",
-          "derived": {
-            "improvement_vs_first_percent": 0.0
-          },
+          "derived": {},
           "n": 2000,
           "record": "20261030T1200Z-rho-plain-negmap",
           "reference": null,
@@ -686,17 +1086,13 @@
       "better": "lower",
       "first": 0.7483,
       "latest": 0.7483,
-      "latest_derived": {
-        "improvement_vs_first_percent": 0.0
-      },
+      "latest_derived": {},
       "metric": "group_ops_ratio_pooled",
       "points": [
         {
           "commit": "8d711d0d55bb",
           "date": "2026-10-30",
-          "derived": {
-            "improvement_vs_first_percent": 0.0
-          },
+          "derived": {},
           "n": 12000,
           "record": "20261030T1200Z-rho-plain-negmap",
           "reference": null,
@@ -714,7 +1110,6 @@
       "first": 1.441,
       "latest": 1.441,
       "latest_derived": {
-        "improvement_vs_first_percent": 0.0,
         "value_over_reference": 0.665282
       },
       "metric": "mean_s_20",
@@ -723,7 +1118,6 @@
           "commit": "8d711d0d55bb",
           "date": "2026-10-30",
           "derived": {
-            "improvement_vs_first_percent": 0.0,
             "value_over_reference": 0.665282
           },
           "n": 2000,
@@ -743,7 +1137,6 @@
       "first": 1.149,
       "latest": 1.149,
       "latest_derived": {
-        "improvement_vs_first_percent": 0.0,
         "value_over_reference": 0.6289
       },
       "metric": "mean_s_24",
@@ -752,7 +1145,6 @@
           "commit": "8d711d0d55bb",
           "date": "2026-10-30",
           "derived": {
-            "improvement_vs_first_percent": 0.0,
             "value_over_reference": 0.6289
           },
           "n": 2000,
@@ -772,7 +1164,6 @@
       "first": 1.033,
       "latest": 1.033,
       "latest_derived": {
-        "improvement_vs_first_percent": 0.0,
         "value_over_reference": 0.5876
       },
       "metric": "mean_s_28",
@@ -781,7 +1172,6 @@
           "commit": "8d711d0d55bb",
           "date": "2026-10-30",
           "derived": {
-            "improvement_vs_first_percent": 0.0,
             "value_over_reference": 0.5876
           },
           "n": 2000,
@@ -801,7 +1191,6 @@
       "first": 0.98,
       "latest": 0.98,
       "latest_derived": {
-        "improvement_vs_first_percent": 0.0,
         "value_over_reference": 0.860404
       },
       "metric": "mean_s_32",
@@ -810,7 +1199,6 @@
           "commit": "8d711d0d55bb",
           "date": "2026-10-30",
           "derived": {
-            "improvement_vs_first_percent": 0.0,
             "value_over_reference": 0.860404
           },
           "n": 2000,
@@ -830,7 +1218,6 @@
       "first": 0.95,
       "latest": 0.95,
       "latest_derived": {
-        "improvement_vs_first_percent": 0.0,
         "value_over_reference": 0.885368
       },
       "metric": "mean_s_36",
@@ -839,7 +1226,6 @@
           "commit": "8d711d0d55bb",
           "date": "2026-10-30",
           "derived": {
-            "improvement_vs_first_percent": 0.0,
             "value_over_reference": 0.885368
           },
           "n": 2000,
@@ -859,7 +1245,6 @@
       "first": 0.909,
       "latest": 0.909,
       "latest_derived": {
-        "improvement_vs_first_percent": 0.0,
         "value_over_reference": 0.934224
       },
       "metric": "mean_s_40",
@@ -868,7 +1253,6 @@
           "commit": "8d711d0d55bb",
           "date": "2026-10-30",
           "derived": {
-            "improvement_vs_first_percent": 0.0,
             "value_over_reference": 0.934224
           },
           "n": 2000,
@@ -887,17 +1271,13 @@
       "better": "lower",
       "first": 12.29,
       "latest": 12.29,
-      "latest_derived": {
-        "improvement_vs_first_percent": 0.0
-      },
+      "latest_derived": {},
       "metric": "filter_admit_rate",
       "points": [
         {
           "commit": "fe79ec13a9eb",
           "date": "2026-11-04",
-          "derived": {
-            "improvement_vs_first_percent": 0.0
-          },
+          "derived": {},
           "n": 8000000,
           "record": "20261104T0723Z-descent-phases-k0n53",
           "reference": null,
@@ -914,17 +1294,13 @@
       "better": "lower",
       "first": 573015816.0,
       "latest": 573015816.0,
-      "latest_derived": {
-        "improvement_vs_first_percent": 0.0
-      },
+      "latest_derived": {},
       "metric": "ir.koblitz_descent_k0n53_m2_x4",
       "points": [
         {
           "commit": "dfa95aaed0cc",
           "date": "2026-11-04",
-          "derived": {
-            "improvement_vs_first_percent": 0.0
-          },
+          "derived": {},
           "n": 1,
           "record": "20261104T0557Z-proj-orbit-fast",
           "reference": null,
@@ -941,17 +1317,13 @@
       "better": "lower",
       "first": 202615780.0,
       "latest": 202615780.0,
-      "latest_derived": {
-        "improvement_vs_first_percent": 0.0
-      },
+      "latest_derived": {},
       "metric": "ir.koblitz_rung_k0n31",
       "points": [
         {
           "commit": "dfa95aaed0cc",
           "date": "2026-11-04",
-          "derived": {
-            "improvement_vs_first_percent": 0.0
-          },
+          "derived": {},
           "n": 1,
           "record": "20261104T0557Z-proj-orbit-fast",
           "reference": null,
@@ -968,17 +1340,13 @@
       "better": "lower",
       "first": 38.5,
       "latest": 38.5,
-      "latest_derived": {
-        "improvement_vs_first_percent": 0.0
-      },
+      "latest_derived": {},
       "metric": "share.add_many_lazy",
       "points": [
         {
           "commit": "fe79ec13a9eb",
           "date": "2026-11-04",
-          "derived": {
-            "improvement_vs_first_percent": 0.0
-          },
+          "derived": {},
           "n": 3,
           "record": "20261104T0723Z-descent-phases-k0n53",
           "reference": null,
@@ -998,17 +1366,13 @@
       "better": "lower",
       "first": 35.3,
       "latest": 35.3,
-      "latest_derived": {
-        "improvement_vs_first_percent": 0.0
-      },
+      "latest_derived": {},
       "metric": "share.contains_key_loop",
       "points": [
         {
           "commit": "fe79ec13a9eb",
           "date": "2026-11-04",
-          "derived": {
-            "improvement_vs_first_percent": 0.0
-          },
+          "derived": {},
           "n": 3,
           "record": "20261104T0723Z-descent-phases-k0n53",
           "reference": null,
@@ -1028,17 +1392,13 @@
       "better": "lower",
       "first": 10.6,
       "latest": 10.6,
-      "latest_derived": {
-        "improvement_vs_first_percent": 0.0
-      },
+      "latest_derived": {},
       "metric": "share.keys_of",
       "points": [
         {
           "commit": "fe79ec13a9eb",
           "date": "2026-11-04",
-          "derived": {
-            "improvement_vs_first_percent": 0.0
-          },
+          "derived": {},
           "n": 3,
           "record": "20261104T0723Z-descent-phases-k0n53",
           "reference": null,
@@ -1081,17 +1441,13 @@
       "better": "higher",
       "first": 1.254,
       "latest": 1.254,
-      "latest_derived": {
-        "improvement_vs_first_percent": -0.0
-      },
+      "latest_derived": {},
       "metric": "wall_ratio.koblitz_descent_k0n53_m2_x4",
       "points": [
         {
           "commit": "dfa95aaed0cc",
           "date": "2026-11-04",
-          "derived": {
-            "improvement_vs_first_percent": -0.0
-          },
+          "derived": {},
           "n": 15,
           "record": "20261104T0557Z-proj-orbit-fast",
           "reference": null,
@@ -1111,17 +1467,13 @@
       "better": "higher",
       "first": 1.151,
       "latest": 1.151,
-      "latest_derived": {
-        "improvement_vs_first_percent": -0.0
-      },
+      "latest_derived": {},
       "metric": "wall_ratio.koblitz_rung_k0n31",
       "points": [
         {
           "commit": "dfa95aaed0cc",
           "date": "2026-11-04",
-          "derived": {
-            "improvement_vs_first_percent": -0.0
-          },
+          "derived": {},
           "n": 15,
           "record": "20261104T0557Z-proj-orbit-fast",
           "reference": null,
@@ -1141,17 +1493,13 @@
       "better": "higher",
       "first": 0.794,
       "latest": 0.794,
-      "latest_derived": {
-        "improvement_vs_first_percent": -0.0
-      },
+      "latest_derived": {},
       "metric": "wall_ratio.gf2_n53_mul_sqr_1m",
       "points": [
         {
           "commit": "72581544e602",
           "date": "2026-11-04",
-          "derived": {
-            "improvement_vs_first_percent": -0.0
-          },
+          "derived": {},
           "n": 9,
           "record": "20261104T1538Z-gf2-penta-fold",
           "reference": null,
@@ -1171,17 +1519,13 @@
       "better": "higher",
       "first": 0.865,
       "latest": 0.865,
-      "latest_derived": {
-        "improvement_vs_first_percent": -0.0
-      },
+      "latest_derived": {},
       "metric": "wall_ratio.koblitz_collect_k0n53_w477_u1024",
       "points": [
         {
           "commit": "72581544e602",
           "date": "2026-11-04",
-          "derived": {
-            "improvement_vs_first_percent": -0.0
-          },
+          "derived": {},
           "n": 9,
           "record": "20261104T1538Z-gf2-penta-fold",
           "reference": null,
@@ -1198,20 +1542,108 @@
       "unit": "ratio"
     },
     {
+      "better": "higher",
+      "first": 1.0425,
+      "latest": 1.0425,
+      "latest_derived": {},
+      "metric": "local_index_build_a_over_b",
+      "points": [
+        {
+          "commit": "12d419499d1f",
+          "date": "2026-11-07",
+          "derived": {},
+          "n": 4,
+          "record": "20261107T2050Z-n83-fieldops2-local",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "LOCAL DIAGNOSTIC (shared VM, one pinned CPU, not evidence): R1 vs the field-ops row, identical index, layout, relation, probe and root-call digests on 4 cold and 3 rank rounds; sizes the Tier 1 power check",
+          "value": 1.0425
+        }
+      ],
+      "problem": "kernel:n83_fieldops2_local_diag",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 1.0507,
+      "latest": 1.0507,
+      "latest_derived": {},
+      "metric": "local_online_a_over_b",
+      "points": [
+        {
+          "commit": "12d419499d1f",
+          "date": "2026-11-07",
+          "derived": {},
+          "n": 4,
+          "record": "20261107T2050Z-n83-fieldops2-local",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "LOCAL DIAGNOSTIC (shared VM, one pinned CPU, not evidence): R1 vs the field-ops row, identical index, layout, relation, probe and root-call digests on 4 cold and 3 rank rounds; sizes the Tier 1 power check",
+          "value": 1.0507
+        }
+      ],
+      "problem": "kernel:n83_fieldops2_local_diag",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 1.0163,
+      "latest": 1.0163,
+      "latest_derived": {},
+      "metric": "local_rank_stage_a_over_b",
+      "points": [
+        {
+          "commit": "12d419499d1f",
+          "date": "2026-11-07",
+          "derived": {},
+          "n": 3,
+          "record": "20261107T2050Z-n83-fieldops2-local",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "LOCAL DIAGNOSTIC (shared VM, one pinned CPU, not evidence): R1 vs the field-ops row, identical index, layout, relation, probe and root-call digests on 4 cold and 3 rank rounds; sizes the Tier 1 power check",
+          "value": 1.0163
+        }
+      ],
+      "problem": "kernel:n83_fieldops2_local_diag",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.9385,
+      "latest": 0.9385,
+      "latest_derived": {},
+      "metric": "local_scan_selftest_a_over_b",
+      "points": [
+        {
+          "commit": "12d419499d1f",
+          "date": "2026-11-07",
+          "derived": {},
+          "n": 4,
+          "record": "20261107T2050Z-n83-fieldops2-local",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "LOCAL DIAGNOSTIC (shared VM, one pinned CPU, not evidence): R1 vs the field-ops row, identical index, layout, relation, probe and root-call digests on 4 cold and 3 rank rounds; sizes the Tier 1 power check",
+          "value": 0.9385
+        }
+      ],
+      "problem": "kernel:n83_fieldops2_local_diag",
+      "unit": "ratio"
+    },
+    {
       "better": "lower",
       "first": 19775530.0,
       "latest": 19775530.0,
-      "latest_derived": {
-        "improvement_vs_first_percent": 0.0
-      },
+      "latest_derived": {},
       "metric": "ir.gf2_n53_inv_16k",
       "points": [
         {
           "commit": "796825b49768",
           "date": "2026-11-04",
-          "derived": {
-            "improvement_vs_first_percent": 0.0
-          },
+          "derived": {},
           "n": 1,
           "record": "20261104T0342Z-suite-gf2-inv-chain",
           "reference": null,
@@ -1228,17 +1660,13 @@
       "better": "lower",
       "first": 314744546.0,
       "latest": 314744546.0,
-      "latest_derived": {
-        "improvement_vs_first_percent": 0.0
-      },
+      "latest_derived": {},
       "metric": "ir.koblitz_collect_k0n41_w164_u4096",
       "points": [
         {
           "commit": "796825b49768",
           "date": "2026-11-04",
-          "derived": {
-            "improvement_vs_first_percent": 0.0
-          },
+          "derived": {},
           "n": 1,
           "record": "20261104T0342Z-suite-gf2-inv-chain",
           "reference": null,
@@ -1255,17 +1683,13 @@
       "better": "lower",
       "first": 326059256.0,
       "latest": 326059256.0,
-      "latest_derived": {
-        "improvement_vs_first_percent": 0.0
-      },
+      "latest_derived": {},
       "metric": "ir.koblitz_collect_k0n53_w477_u1024",
       "points": [
         {
           "commit": "796825b49768",
           "date": "2026-11-04",
-          "derived": {
-            "improvement_vs_first_percent": 0.0
-          },
+          "derived": {},
           "n": 1,
           "record": "20261104T0342Z-suite-gf2-inv-chain",
           "reference": null,
@@ -1282,17 +1706,13 @@
       "better": "lower",
       "first": 54008142.0,
       "latest": 54008142.0,
-      "latest_derived": {
-        "improvement_vs_first_percent": 0.0
-      },
+      "latest_derived": {},
       "metric": "ir.koblitz_curve_mul_n53_1k",
       "points": [
         {
           "commit": "796825b49768",
           "date": "2026-11-04",
-          "derived": {
-            "improvement_vs_first_percent": 0.0
-          },
+          "derived": {},
           "n": 1,
           "record": "20261104T0342Z-suite-gf2-inv-chain",
           "reference": null,
@@ -1309,17 +1729,13 @@
       "better": "lower",
       "first": 731162666.0,
       "latest": 731162666.0,
-      "latest_derived": {
-        "improvement_vs_first_percent": 0.0
-      },
+      "latest_derived": {},
       "metric": "ir.koblitz_descent_k0n53_m2_x4",
       "points": [
         {
           "commit": "796825b49768",
           "date": "2026-11-04",
-          "derived": {
-            "improvement_vs_first_percent": 0.0
-          },
+          "derived": {},
           "n": 1,
           "record": "20261104T0342Z-suite-gf2-inv-chain",
           "reference": null,
@@ -1336,17 +1752,13 @@
       "better": "lower",
       "first": 231419594.0,
       "latest": 231419594.0,
-      "latest_derived": {
-        "improvement_vs_first_percent": 0.0
-      },
+      "latest_derived": {},
       "metric": "ir.koblitz_rung_k0n31",
       "points": [
         {
           "commit": "796825b49768",
           "date": "2026-11-04",
-          "derived": {
-            "improvement_vs_first_percent": 0.0
-          },
+          "derived": {},
           "n": 1,
           "record": "20261104T0342Z-suite-gf2-inv-chain",
           "reference": null,
@@ -1363,17 +1775,13 @@
       "better": "lower",
       "first": 336396040.0,
       "latest": 336396040.0,
-      "latest_derived": {
-        "improvement_vs_first_percent": 0.0
-      },
+      "latest_derived": {},
       "metric": "ir.koblitz_signed_rho_k0_n41",
       "points": [
         {
           "commit": "796825b49768",
           "date": "2026-11-04",
-          "derived": {
-            "improvement_vs_first_percent": 0.0
-          },
+          "derived": {},
           "n": 1,
           "record": "20261104T0342Z-suite-gf2-inv-chain",
           "reference": null,
@@ -1390,17 +1798,13 @@
       "better": "higher",
       "first": 1.2148,
       "latest": 1.2148,
-      "latest_derived": {
-        "improvement_vs_first_percent": -0.0
-      },
+      "latest_derived": {},
       "metric": "perfindex_wall_index",
       "points": [
         {
           "commit": "796825b49768",
           "date": "2026-11-04",
-          "derived": {
-            "improvement_vs_first_percent": -0.0
-          },
+          "derived": {},
           "n": 7,
           "record": "20261104T0342Z-suite-gf2-inv-chain",
           "reference": null,
@@ -1420,17 +1824,13 @@
       "better": "higher",
       "first": 4.143610769084613,
       "latest": 4.143610769084613,
-      "latest_derived": {
-        "improvement_vs_first_percent": -0.0
-      },
+      "latest_derived": {},
       "metric": "wall_ratio.gf2_n53_inv_16k",
       "points": [
         {
           "commit": "796825b49768",
           "date": "2026-11-04",
-          "derived": {
-            "improvement_vs_first_percent": -0.0
-          },
+          "derived": {},
           "n": 7,
           "record": "20261104T0342Z-suite-gf2-inv-chain",
           "reference": null,
@@ -1450,17 +1850,13 @@
       "better": "higher",
       "first": 1.1932737924369219,
       "latest": 1.1932737924369219,
-      "latest_derived": {
-        "improvement_vs_first_percent": -0.0
-      },
+      "latest_derived": {},
       "metric": "wall_ratio.koblitz_collect_k0n41_w164_u4096",
       "points": [
         {
           "commit": "796825b49768",
           "date": "2026-11-04",
-          "derived": {
-            "improvement_vs_first_percent": -0.0
-          },
+          "derived": {},
           "n": 7,
           "record": "20261104T0342Z-suite-gf2-inv-chain",
           "reference": null,
@@ -1480,17 +1876,13 @@
       "better": "higher",
       "first": 1.011643446989867,
       "latest": 1.011643446989867,
-      "latest_derived": {
-        "improvement_vs_first_percent": -0.0
-      },
+      "latest_derived": {},
       "metric": "wall_ratio.koblitz_collect_k0n53_w477_u1024",
       "points": [
         {
           "commit": "796825b49768",
           "date": "2026-11-04",
-          "derived": {
-            "improvement_vs_first_percent": -0.0
-          },
+          "derived": {},
           "n": 7,
           "record": "20261104T0342Z-suite-gf2-inv-chain",
           "reference": null,
@@ -1510,17 +1902,13 @@
       "better": "higher",
       "first": 1.4638246850749566,
       "latest": 1.4638246850749566,
-      "latest_derived": {
-        "improvement_vs_first_percent": -0.0
-      },
+      "latest_derived": {},
       "metric": "wall_ratio.koblitz_curve_mul_n53_1k",
       "points": [
         {
           "commit": "796825b49768",
           "date": "2026-11-04",
-          "derived": {
-            "improvement_vs_first_percent": -0.0
-          },
+          "derived": {},
           "n": 7,
           "record": "20261104T0342Z-suite-gf2-inv-chain",
           "reference": null,
@@ -1540,17 +1928,13 @@
       "better": "higher",
       "first": 1.2538920670090716,
       "latest": 1.2538920670090716,
-      "latest_derived": {
-        "improvement_vs_first_percent": -0.0
-      },
+      "latest_derived": {},
       "metric": "wall_ratio.koblitz_descent_k0n53_m2_x4",
       "points": [
         {
           "commit": "796825b49768",
           "date": "2026-11-04",
-          "derived": {
-            "improvement_vs_first_percent": -0.0
-          },
+          "derived": {},
           "n": 7,
           "record": "20261104T0342Z-suite-gf2-inv-chain",
           "reference": null,
@@ -1570,17 +1954,13 @@
       "better": "higher",
       "first": 1.107795036117005,
       "latest": 1.107795036117005,
-      "latest_derived": {
-        "improvement_vs_first_percent": -0.0
-      },
+      "latest_derived": {},
       "metric": "wall_ratio.koblitz_rung_k0n31",
       "points": [
         {
           "commit": "796825b49768",
           "date": "2026-11-04",
-          "derived": {
-            "improvement_vs_first_percent": -0.0
-          },
+          "derived": {},
           "n": 7,
           "record": "20261104T0342Z-suite-gf2-inv-chain",
           "reference": null,
@@ -1600,17 +1980,13 @@
       "better": "higher",
       "first": 1.198554122022555,
       "latest": 1.198554122022555,
-      "latest_derived": {
-        "improvement_vs_first_percent": -0.0
-      },
+      "latest_derived": {},
       "metric": "wall_ratio.koblitz_signed_rho_k0_n41",
       "points": [
         {
           "commit": "796825b49768",
           "date": "2026-11-04",
-          "derived": {
-            "improvement_vs_first_percent": -0.0
-          },
+          "derived": {},
           "n": 7,
           "record": "20261104T0342Z-suite-gf2-inv-chain",
           "reference": null,
@@ -1625,6 +2001,265 @@
       ],
       "problem": "kernel:suite_gf2_koblitz",
       "unit": "ratio"
+    },
+    {
+      "better": "neutral",
+      "first": 56.0,
+      "latest": 56.0,
+      "latest_derived": {},
+      "metric": "discriminant_bits_babai_radius0",
+      "points": [
+        {
+          "commit": "0d69fc5526c0",
+          "date": "2026-11-12",
+          "derived": {},
+          "n": null,
+          "record": "20261112T2333Z-xedni-p67-frozen-comparison",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "Frozen p=67 xedni affine-lift comparison under the owner's 2026-11-12 checkpoint waiver: all 4 radii pass acceptance; exact neighbourhood search gives no gain over Babai (56 discriminant bits from 1114 raw) [pcc:unverified]",
+          "value": 56.0
+        }
+      ],
+      "problem": "xedni:affine-cvp-p67-frozen",
+      "unit": "count"
+    },
+    {
+      "better": "neutral",
+      "first": 56.0,
+      "latest": 56.0,
+      "latest_derived": {},
+      "metric": "discriminant_bits_best_radius4",
+      "points": [
+        {
+          "commit": "0d69fc5526c0",
+          "date": "2026-11-12",
+          "derived": {},
+          "n": null,
+          "record": "20261112T2333Z-xedni-p67-frozen-comparison",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "Frozen p=67 xedni affine-lift comparison under the owner's 2026-11-12 checkpoint waiver: all 4 radii pass acceptance; exact neighbourhood search gives no gain over Babai (56 discriminant bits from 1114 raw) [pcc:unverified]",
+          "value": 56.0
+        }
+      ],
+      "problem": "xedni:affine-cvp-p67-frozen",
+      "unit": "count"
+    },
+    {
+      "better": "neutral",
+      "first": 1114.0,
+      "latest": 1114.0,
+      "latest_derived": {},
+      "metric": "discriminant_bits_raw",
+      "points": [
+        {
+          "commit": "0d69fc5526c0",
+          "date": "2026-11-12",
+          "derived": {},
+          "n": null,
+          "record": "20261112T2333Z-xedni-p67-frozen-comparison",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "Frozen p=67 xedni affine-lift comparison under the owner's 2026-11-12 checkpoint waiver: all 4 radii pass acceptance; exact neighbourhood search gives no gain over Babai (56 discriminant bits from 1114 raw) [pcc:unverified]",
+          "value": 1114.0
+        }
+      ],
+      "problem": "xedni:affine-cvp-p67-frozen",
+      "unit": "count"
+    },
+    {
+      "better": "higher",
+      "first": 1.165,
+      "latest": 1.165,
+      "latest_derived": {},
+      "metric": "pooled_c0_hat_beta_fixed_minus1",
+      "points": [
+        {
+          "commit": "0d69fc5526c0",
+          "date": "2026-11-12",
+          "derived": {},
+          "n": 191,
+          "record": "20261112T2257Z-xedni-lift-success-sweep",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "Xedni lift success over p=31..65521 (500,242 trials, 572 certified successes): pooled slope -1.17 [-1.34,-1.01]; no family bounded away from 1/p; mostly collinear-lift events [pcc:unverified]",
+          "value": 1.165
+        }
+      ],
+      "problem": "xedni:lift-success-toy-primes",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": -1.174,
+      "latest": -1.174,
+      "latest_derived": {},
+      "metric": "pooled_slope_beta_p_ge_127",
+      "points": [
+        {
+          "commit": "0d69fc5526c0",
+          "date": "2026-11-12",
+          "derived": {},
+          "n": 191,
+          "record": "20261112T2257Z-xedni-lift-success-sweep",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            -1.337,
+            -1.012
+          ],
+          "summary": "Xedni lift success over p=31..65521 (500,242 trials, 572 certified successes): pooled slope -1.17 [-1.34,-1.01]; no family bounded away from 1/p; mostly collinear-lift events [pcc:unverified]",
+          "value": -1.174
+        }
+      ],
+      "problem": "xedni:lift-success-toy-primes",
+      "unit": "ratio"
+    },
+    {
+      "better": "lower",
+      "first": 1.326,
+      "latest": 1.326,
+      "latest_derived": {},
+      "metric": "success_rate_p127",
+      "points": [
+        {
+          "commit": "0d69fc5526c0",
+          "date": "2026-11-12",
+          "derived": {},
+          "n": 5959,
+          "record": "20261112T2257Z-xedni-lift-success-sweep",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            1.05,
+            1.65
+          ],
+          "summary": "Xedni lift success over p=31..65521 (500,242 trials, 572 certified successes): pooled slope -1.17 [-1.34,-1.01]; no family bounded away from 1/p; mostly collinear-lift events [pcc:unverified]",
+          "value": 1.326
+        }
+      ],
+      "problem": "xedni:lift-success-toy-primes",
+      "unit": "percent"
+    },
+    {
+      "better": "lower",
+      "first": 0.0,
+      "latest": 0.0,
+      "latest_derived": {},
+      "metric": "success_rate_p65521",
+      "points": [
+        {
+          "commit": "0d69fc5526c0",
+          "date": "2026-11-12",
+          "derived": {},
+          "n": 150057,
+          "record": "20261112T2257Z-xedni-lift-success-sweep",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "Xedni lift success over p=31..65521 (500,242 trials, 572 certified successes): pooled slope -1.17 [-1.34,-1.01]; no family bounded away from 1/p; mostly collinear-lift events [pcc:unverified]",
+          "value": 0.0
+        }
+      ],
+      "problem": "xedni:lift-success-toy-primes",
+      "unit": "percent"
+    },
+    {
+      "better": "neutral",
+      "first": 572.0,
+      "latest": 572.0,
+      "latest_derived": {},
+      "metric": "successes_certified",
+      "points": [
+        {
+          "commit": "0d69fc5526c0",
+          "date": "2026-11-12",
+          "derived": {},
+          "n": null,
+          "record": "20261112T2257Z-xedni-lift-success-sweep",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "Xedni lift success over p=31..65521 (500,242 trials, 572 certified successes): pooled slope -1.17 [-1.34,-1.01]; no family bounded away from 1/p; mostly collinear-lift events [pcc:unverified]",
+          "value": 572.0
+        }
+      ],
+      "problem": "xedni:lift-success-toy-primes",
+      "unit": "count"
+    },
+    {
+      "better": "neutral",
+      "first": 96.0,
+      "latest": 96.0,
+      "latest_derived": {},
+      "metric": "successes_non_line",
+      "points": [
+        {
+          "commit": "0d69fc5526c0",
+          "date": "2026-11-12",
+          "derived": {},
+          "n": null,
+          "record": "20261112T2257Z-xedni-lift-success-sweep",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "Xedni lift success over p=31..65521 (500,242 trials, 572 certified successes): pooled slope -1.17 [-1.34,-1.01]; no family bounded away from 1/p; mostly collinear-lift events [pcc:unverified]",
+          "value": 96.0
+        }
+      ],
+      "problem": "xedni:lift-success-toy-primes",
+      "unit": "count"
+    },
+    {
+      "better": "neutral",
+      "first": 500242.0,
+      "latest": 500242.0,
+      "latest_derived": {},
+      "metric": "trials_ok",
+      "points": [
+        {
+          "commit": "0d69fc5526c0",
+          "date": "2026-11-12",
+          "derived": {},
+          "n": null,
+          "record": "20261112T2257Z-xedni-lift-success-sweep",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "Xedni lift success over p=31..65521 (500,242 trials, 572 certified successes): pooled slope -1.17 [-1.34,-1.01]; no family bounded away from 1/p; mostly collinear-lift events [pcc:unverified]",
+          "value": 500242.0
+        }
+      ],
+      "problem": "xedni:lift-success-toy-primes",
+      "unit": "count"
+    },
+    {
+      "better": "lower",
+      "first": 2152.0,
+      "latest": 2152.0,
+      "latest_derived": {},
+      "metric": "wall",
+      "points": [
+        {
+          "commit": "0d69fc5526c0",
+          "date": "2026-11-12",
+          "derived": {},
+          "n": null,
+          "record": "20261112T2257Z-xedni-lift-success-sweep",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "Xedni lift success over p=31..65521 (500,242 trials, 572 certified successes): pooled slope -1.17 [-1.34,-1.01]; no family bounded away from 1/p; mostly collinear-lift events [pcc:unverified]",
+          "value": 2152.0
+        }
+      ],
+      "problem": "xedni:lift-success-toy-primes",
+      "unit": "wall_s"
     }
   ],
   "units": {

@@ -1,0 +1,600 @@
+reference	Set up job	﻿2026-11-11T13:36:56.4377734Z Current runner version: '2.338.2'
+reference	Set up job	2026-11-11T13:36:56.4403870Z ##[group]Runner Image Provisioner
+reference	Set up job	2026-11-11T13:36:56.4404836Z Hosted Compute Agent
+reference	Set up job	2026-11-11T13:36:56.4405517Z Version: 20261028.624
+reference	Set up job	2026-11-11T13:36:56.4406246Z Commit: 54898b74c23fde5556c9b3c3a2290865feef0dfe
+reference	Set up job	2026-11-11T13:36:56.4406961Z Build Date: 2026-10-28T21:51:42Z
+reference	Set up job	2026-11-11T13:36:56.4407694Z Worker ID: {d6652605-fc0a-4648-a937-a89a16943618}
+reference	Set up job	2026-11-11T13:36:56.4408396Z Region: westus
+reference	Set up job	2026-11-11T13:36:56.4409172Z Cloud: Azure
+reference	Set up job	2026-11-11T13:36:56.4409791Z ##[endgroup]
+reference	Set up job	2026-11-11T13:36:56.4411257Z ##[group]Operating System
+reference	Set up job	2026-11-11T13:36:56.4411999Z Ubuntu
+reference	Set up job	2026-11-11T13:36:56.4412531Z 26.04.1
+reference	Set up job	2026-11-11T13:36:56.4413021Z LTS
+reference	Set up job	2026-11-11T13:36:56.4413686Z ##[endgroup]
+reference	Set up job	2026-11-11T13:36:56.4414239Z ##[group]Runner Image
+reference	Set up job	2026-11-11T13:36:56.4414887Z Image: ubuntu-26.04
+reference	Set up job	2026-11-11T13:36:56.4415464Z Version: 20261101.186.1
+reference	Set up job	2026-11-11T13:36:56.4416510Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261101.186/images/ubuntu/Ubuntu2604-Readme.md
+reference	Set up job	2026-11-11T13:36:56.4418325Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261101.186
+reference	Set up job	2026-11-11T13:36:56.4419513Z ##[endgroup]
+reference	Set up job	2026-11-11T13:36:56.4420602Z ##[group]GITHUB_TOKEN Permissions
+reference	Set up job	2026-11-11T13:36:56.4423139Z Contents: read
+reference	Set up job	2026-11-11T13:36:56.4423782Z Metadata: read
+reference	Set up job	2026-11-11T13:36:56.4424326Z ##[endgroup]
+reference	Set up job	2026-11-11T13:36:56.4426431Z Secret source: Actions
+reference	Set up job	2026-11-11T13:36:56.4427442Z Cache mode: write
+reference	Set up job	2026-11-11T13:36:56.4428236Z Prepare workflow directory
+reference	Set up job	2026-11-11T13:36:56.4771204Z Prepare all required actions
+reference	Set up job	2026-11-11T13:36:56.4820746Z Getting action download info
+reference	Set up job	2026-11-11T13:36:56.8391356Z Download action repository 'actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803' (SHA:d23441a48e516b6c34aea4fa41551a30e30af803)
+reference	Set up job	2026-11-11T13:36:56.9641974Z Download action repository 'actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+reference	Set up job	2026-11-11T13:36:57.1578432Z Complete job name: reference
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	﻿2026-11-11T13:36:57.2449525Z ##[group]Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.2450661Z with:
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.2451147Z   persist-credentials: false
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.2451672Z   path: cryptanalysis
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.2452438Z   sparse-checkout: experiments/chained-transfer-reference
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	suite/src/prime_hyperelliptic
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.2453334Z   repository: isogeny-labs/cryptanalysis
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.2457373Z   token: ***
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.2457814Z   ssh-strict: true
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.2458241Z   ssh-user: git
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.2458666Z   clean: true
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.2459256Z   sparse-checkout-cone-mode: true
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.2459775Z   fetch-depth: 1
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.2460197Z   fetch-tags: false
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.2460640Z   show-progress: true
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.2461089Z   lfs: false
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.2461495Z   submodules: false
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.2461945Z   set-safe-directory: true
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.2462447Z   allow-unsafe-pr-checkout: false
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.2463274Z ##[endgroup]
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.5753886Z Syncing repository: isogeny-labs/cryptanalysis
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.5756540Z ##[group]Getting Git version info
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.5757556Z Working directory is '/home/runner/work/cryptanalysis/cryptanalysis/cryptanalysis'
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.5759386Z [command]/usr/bin/git version
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.5804224Z git version 2.56.0
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.5833152Z ##[endgroup]
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.5857182Z Temporarily overriding HOME='/home/runner/work/_temp/4efe7482-040a-4753-87cb-9751b9efb712' before making global git config changes
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.5860001Z Adding repository directory to the temporary git global config as a safe directory
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.5862450Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/cryptanalysis/cryptanalysis/cryptanalysis
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.5941570Z ##[group]Determining repository object format
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.5944063Z ##[endgroup]
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.5950672Z ##[group]Initializing the repository
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.5958452Z [command]/usr/bin/git init /home/runner/work/cryptanalysis/cryptanalysis/cryptanalysis
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.6092428Z hint: Using 'master' as the name for the initial branch. This default branch name
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.6094104Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.6095376Z hint: to use in all of your new repositories, which will suppress this warning,
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.6096414Z hint: call:
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.6097020Z hint:
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.6097763Z hint: 	git config --global init.defaultBranch <name>
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.6098625Z hint:
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.6100248Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.6101813Z hint: 'development'. The just-created branch can be renamed via this command:
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.6102822Z hint:
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.6103478Z hint: 	git branch -m <name>
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.6104179Z hint:
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.6105071Z hint: Disable this message with "git config set advice.defaultBranchName false"
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.6108431Z Initialized empty Git repository in /home/runner/work/cryptanalysis/cryptanalysis/cryptanalysis/.git/
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.6122302Z [command]/usr/bin/git remote add origin https://github.com/isogeny-labs/cryptanalysis
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.6179167Z ##[endgroup]
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.6180963Z ##[group]Disabling automatic garbage collection
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.6184880Z [command]/usr/bin/git config --local gc.auto 0
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.6223436Z ##[endgroup]
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.6225170Z ##[group]Setting up auth
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.6226943Z Removing SSH command configuration
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.6229938Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.6269235Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.6816197Z Removing HTTP extra header
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.6823343Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.6859653Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.7126238Z Removing includeIf entries pointing to credentials config files
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.7133116Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.7170653Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.7446348Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-a1aade0a-4d3c-4485-b7b6-18ab82832e44.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.7491752Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/cryptanalysis/.git.path /home/runner/work/_temp/git-credentials-a1aade0a-4d3c-4485-b7b6-18ab82832e44.config
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.7525584Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/cryptanalysis/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-a1aade0a-4d3c-4485-b7b6-18ab82832e44.config
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.7583766Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/cryptanalysis/.git.path /github/runner_temp/git-credentials-a1aade0a-4d3c-4485-b7b6-18ab82832e44.config
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.7616265Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/cryptanalysis/.git/worktrees/*.path /github/runner_temp/git-credentials-a1aade0a-4d3c-4485-b7b6-18ab82832e44.config
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.7644477Z ##[endgroup]
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.7645327Z ##[group]Fetching the repository
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:57.7657320Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --filter=blob:none --depth=1 origin +75e5064d1d089b917b068e7ca15b124ec0bcae37:refs/remotes/origin/research/chained-transfer-odd-kernels-20261111
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:58.3145292Z From https://github.com/isogeny-labs/cryptanalysis
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:58.3147729Z  * [new ref]         75e5064d1d089b917b068e7ca15b124ec0bcae37 -> origin/research/chained-transfer-odd-kernels-20261111
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:58.3155846Z [command]/usr/bin/git branch --list --remote origin/research/chained-transfer-odd-kernels-20261111
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:58.3183794Z   origin/research/chained-transfer-odd-kernels-20261111
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:58.3193690Z [command]/usr/bin/git rev-parse refs/remotes/origin/research/chained-transfer-odd-kernels-20261111
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:58.3216117Z 75e5064d1d089b917b068e7ca15b124ec0bcae37
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:58.3223298Z ##[endgroup]
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:58.3225563Z ##[group]Determining the checkout info
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:58.3228358Z ##[endgroup]
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:58.3231081Z ##[group]Setting up sparse checkout
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:58.3234321Z [command]/usr/bin/git sparse-checkout set experiments/chained-transfer-reference suite/src/prime_hyperelliptic
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:58.3291988Z ##[endgroup]
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:58.3294344Z ##[group]Checking out the ref
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:58.3298817Z [command]/usr/bin/git checkout --progress --force -B research/chained-transfer-odd-kernels-20261111 refs/remotes/origin/research/chained-transfer-odd-kernels-20261111
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:58.9566708Z Switched to a new branch 'research/chained-transfer-odd-kernels-20261111'
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:58.9572523Z branch 'research/chained-transfer-odd-kernels-20261111' set up to track 'origin/research/chained-transfer-odd-kernels-20261111'.
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:58.9590376Z ##[endgroup]
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:58.9639273Z [command]/usr/bin/git log -1 --format=%H
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:58.9665710Z 75e5064d1d089b917b068e7ca15b124ec0bcae37
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:58.9675470Z ##[group]Removing auth
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:58.9676022Z Removing SSH command configuration
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:58.9679568Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:58.9712785Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.0090241Z Removing HTTP extra header
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.0096230Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.0134066Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.0504606Z Removing includeIf entries pointing to credentials config files
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.0508692Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.0536204Z includeif.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/cryptanalysis/.git.path
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.0537495Z includeif.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/cryptanalysis/.git/worktrees/*.path
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.0538300Z includeif.gitdir:/github/workspace/cryptanalysis/.git.path
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.0539537Z includeif.gitdir:/github/workspace/cryptanalysis/.git/worktrees/*.path
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.0550081Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/cryptanalysis/.git.path
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.0577269Z /home/runner/work/_temp/git-credentials-a1aade0a-4d3c-4485-b7b6-18ab82832e44.config
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.0589826Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/cryptanalysis/.git.path /home/runner/work/_temp/git-credentials-a1aade0a-4d3c-4485-b7b6-18ab82832e44.config
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.0630135Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/cryptanalysis/.git/worktrees/*.path
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.0657425Z /home/runner/work/_temp/git-credentials-a1aade0a-4d3c-4485-b7b6-18ab82832e44.config
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.0669342Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/cryptanalysis/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-a1aade0a-4d3c-4485-b7b6-18ab82832e44.config
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.0707343Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/cryptanalysis/.git.path
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.0735567Z /github/runner_temp/git-credentials-a1aade0a-4d3c-4485-b7b6-18ab82832e44.config
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.0745774Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/cryptanalysis/.git.path /github/runner_temp/git-credentials-a1aade0a-4d3c-4485-b7b6-18ab82832e44.config
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.0788297Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/cryptanalysis/.git/worktrees/*.path
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.0811347Z /github/runner_temp/git-credentials-a1aade0a-4d3c-4485-b7b6-18ab82832e44.config
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.0819573Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/cryptanalysis/.git/worktrees/*.path /github/runner_temp/git-credentials-a1aade0a-4d3c-4485-b7b6-18ab82832e44.config
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.0855280Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.1222339Z Removing credentials config '/home/runner/work/_temp/git-credentials-a1aade0a-4d3c-4485-b7b6-18ab82832e44.config'
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.1232258Z ##[endgroup]
+reference	Read the committed source revision	﻿2026-11-11T13:36:59.1443750Z ##[group]Run pin=$(cat cryptanalysis/experiments/chained-transfer-reference/upstream-commit.txt)
+reference	Read the committed source revision	2026-11-11T13:36:59.1444663Z [36;1mpin=$(cat cryptanalysis/experiments/chained-transfer-reference/upstream-commit.txt)[0m
+reference	Read the committed source revision	2026-11-11T13:36:59.1445233Z [36;1m[[ $pin =~ ^[0-9a-f]{40}$ ]] || exit 2[0m
+reference	Read the committed source revision	2026-11-11T13:36:59.1445651Z [36;1mecho "revision=$pin" >> "$GITHUB_OUTPUT"[0m
+reference	Read the committed source revision	2026-11-11T13:36:59.1501080Z shell: /usr/bin/bash -e {0}
+reference	Read the committed source revision	2026-11-11T13:36:59.1501444Z ##[endgroup]
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	﻿2026-11-11T13:36:59.1825233Z ##[group]Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.1825728Z with:
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.1825995Z   repository: isogeny-labs/crypto
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.1826337Z   ref: 75a737b8366ec6c78ed8672886423fcbe69853a2
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.1826693Z   persist-credentials: false
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.1826986Z   path: crypto
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.1827459Z   sparse-checkout: research/chained_jacobian_transfers_20261110/native
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	src/prime_hyperelliptic
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.1830876Z   token: ***
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.1831156Z   ssh-strict: true
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.1831413Z   ssh-user: git
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.1831654Z   clean: true
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.1831915Z   sparse-checkout-cone-mode: true
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.1832228Z   fetch-depth: 1
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.1832500Z   fetch-tags: false
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.1832755Z   show-progress: true
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.1833013Z   lfs: false
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.1833243Z   submodules: false
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.1833503Z   set-safe-directory: true
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.1833838Z   allow-unsafe-pr-checkout: false
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.1834144Z ##[endgroup]
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.2675503Z Syncing repository: isogeny-labs/crypto
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.2690077Z ##[group]Getting Git version info
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.2690993Z Working directory is '/home/runner/work/cryptanalysis/cryptanalysis/crypto'
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.2720606Z [command]/usr/bin/git version
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.2768679Z git version 2.56.0
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.2796312Z ##[endgroup]
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.2811279Z Temporarily overriding HOME='/home/runner/work/_temp/b514a76f-7837-46c6-a548-e3138739279e' before making global git config changes
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.2812686Z Adding repository directory to the temporary git global config as a safe directory
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.2816685Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/cryptanalysis/cryptanalysis/crypto
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.2853613Z ##[group]Determining repository object format
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.2856165Z ##[endgroup]
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.2857127Z ##[group]Initializing the repository
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.2861859Z [command]/usr/bin/git init /home/runner/work/cryptanalysis/cryptanalysis/crypto
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.2915645Z hint: Using 'master' as the name for the initial branch. This default branch name
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.2927077Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.2939163Z hint: to use in all of your new repositories, which will suppress this warning,
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.2939990Z hint: call:
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.2940354Z hint:
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.2940825Z hint: 	git config --global init.defaultBranch <name>
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.2941419Z hint:
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.2942067Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.2943151Z hint: 'development'. The just-created branch can be renamed via this command:
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.2943919Z hint:
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.2944368Z hint: 	git branch -m <name>
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.2944853Z hint:
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.2945577Z hint: Disable this message with "git config set advice.defaultBranchName false"
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.2946963Z Initialized empty Git repository in /home/runner/work/cryptanalysis/cryptanalysis/crypto/.git/
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.2949479Z [command]/usr/bin/git remote add origin https://github.com/isogeny-labs/crypto
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.2976546Z ##[endgroup]
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.2977348Z ##[group]Disabling automatic garbage collection
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.2978048Z [command]/usr/bin/git config --local gc.auto 0
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.3013680Z ##[endgroup]
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.3014174Z ##[group]Setting up auth
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.3019812Z Removing SSH command configuration
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.3023670Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.3059689Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.3362352Z Removing HTTP extra header
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.3372825Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.3414579Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.3719267Z Removing includeIf entries pointing to credentials config files
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.3727598Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.3763300Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.4040277Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-59eaa03e-2aef-4e77-84bb-92510e736801.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.4114380Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/crypto/.git.path /home/runner/work/_temp/git-credentials-59eaa03e-2aef-4e77-84bb-92510e736801.config
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.4146578Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/crypto/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-59eaa03e-2aef-4e77-84bb-92510e736801.config
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.4180441Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/crypto/.git.path /github/runner_temp/git-credentials-59eaa03e-2aef-4e77-84bb-92510e736801.config
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.4212740Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/crypto/.git/worktrees/*.path /github/runner_temp/git-credentials-59eaa03e-2aef-4e77-84bb-92510e736801.config
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.4249168Z ##[endgroup]
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.4249966Z ##[group]Fetching the repository
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:36:59.4257346Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --filter=blob:none --depth=1 origin 75a737b8366ec6c78ed8672886423fcbe69853a2
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:00.9329288Z From https://github.com/isogeny-labs/crypto
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:00.9330124Z  * branch              75a737b8366ec6c78ed8672886423fcbe69853a2 -> FETCH_HEAD
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:00.9342002Z [command]/usr/bin/git rev-parse --verify --quiet 75a737b8366ec6c78ed8672886423fcbe69853a2^{object}
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:00.9370563Z 75a737b8366ec6c78ed8672886423fcbe69853a2
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:00.9376487Z ##[endgroup]
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:00.9377107Z ##[group]Determining the checkout info
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:00.9378317Z ##[endgroup]
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:00.9379179Z ##[group]Setting up sparse checkout
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:00.9383806Z [command]/usr/bin/git sparse-checkout set research/chained_jacobian_transfers_20261110/native src/prime_hyperelliptic
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:00.9420229Z ##[endgroup]
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:00.9421002Z ##[group]Checking out the ref
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:00.9425177Z [command]/usr/bin/git checkout --progress --force 75a737b8366ec6c78ed8672886423fcbe69853a2
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:02.0597790Z Note: switching to '75a737b8366ec6c78ed8672886423fcbe69853a2'.
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:02.0598500Z 
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:02.0599247Z You are in 'detached HEAD' state. You can look around, make experimental
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:02.0600057Z changes and commit them, and you can discard any commits you make in this
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:02.0600814Z state without impacting any branches by switching back to a branch.
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:02.0601298Z 
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:02.0601621Z If you want to create a new branch to retain commits you create, you may
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:02.0602382Z do so (now or later) by using -c with the switch command. Example:
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:02.0602829Z 
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:02.0603005Z   git switch -c <new-branch-name>
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:02.0603331Z 
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:02.0603520Z Or undo this operation with:
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:02.0603838Z 
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:02.0604006Z   git switch -
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:02.0604203Z 
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:02.0604917Z Turn off this advice by setting config variable advice.detachedHead to false
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:02.0605448Z 
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:02.0605937Z HEAD is now at 75a737b8 research: add checked small-prime transfers and algebraic endpoint shortcut
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:02.0654597Z ##[endgroup]
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:02.0700832Z [command]/usr/bin/git log -1 --format=%H
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:02.0729290Z 75a737b8366ec6c78ed8672886423fcbe69853a2
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:02.0739588Z ##[group]Removing auth
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:02.0740137Z Removing SSH command configuration
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:02.0744130Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:02.0777155Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:02.1523421Z Removing HTTP extra header
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:02.1527879Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:02.1563480Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:02.2304722Z Removing includeIf entries pointing to credentials config files
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:02.2309748Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:02.2338428Z includeif.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/crypto/.git.path
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:02.2339832Z includeif.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/crypto/.git/worktrees/*.path
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:02.2340772Z includeif.gitdir:/github/workspace/crypto/.git.path
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:02.2341900Z includeif.gitdir:/github/workspace/crypto/.git/worktrees/*.path
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:02.2349138Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/crypto/.git.path
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:02.2372961Z /home/runner/work/_temp/git-credentials-59eaa03e-2aef-4e77-84bb-92510e736801.config
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:02.2385126Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/crypto/.git.path /home/runner/work/_temp/git-credentials-59eaa03e-2aef-4e77-84bb-92510e736801.config
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:02.2423242Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/crypto/.git/worktrees/*.path
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:02.2447300Z /home/runner/work/_temp/git-credentials-59eaa03e-2aef-4e77-84bb-92510e736801.config
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:02.2458017Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/crypto/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-59eaa03e-2aef-4e77-84bb-92510e736801.config
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:02.2492612Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/crypto/.git.path
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:02.2515472Z /github/runner_temp/git-credentials-59eaa03e-2aef-4e77-84bb-92510e736801.config
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:02.2524254Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/crypto/.git.path /github/runner_temp/git-credentials-59eaa03e-2aef-4e77-84bb-92510e736801.config
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:02.2561639Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/crypto/.git/worktrees/*.path
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:02.2587234Z /github/runner_temp/git-credentials-59eaa03e-2aef-4e77-84bb-92510e736801.config
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:02.2619674Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/crypto/.git/worktrees/*.path /github/runner_temp/git-credentials-59eaa03e-2aef-4e77-84bb-92510e736801.config
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:02.2678314Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:02.3510166Z Removing credentials config '/home/runner/work/_temp/git-credentials-59eaa03e-2aef-4e77-84bb-92510e736801.config'
+reference	Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:37:02.3521662Z ##[endgroup]
+reference	Run digest guards and development comparisons	﻿2026-11-11T13:37:02.3663482Z ##[group]Run set -euo pipefail
+reference	Run digest guards and development comparisons	2026-11-11T13:37:02.3663805Z [36;1mset -euo pipefail[0m
+reference	Run digest guards and development comparisons	2026-11-11T13:37:02.3664260Z [36;1mrustup toolchain install 1.99.1 --profile minimal --component rustfmt --component clippy[0m
+reference	Run digest guards and development comparisons	2026-11-11T13:37:02.3665006Z [36;1mcryptanalysis/experiments/chained-transfer-reference/check.sh 2>&1 | tee "$RUNNER_TEMP/differential.txt"[0m
+reference	Run digest guards and development comparisons	2026-11-11T13:37:02.3716880Z shell: /usr/bin/bash -e {0}
+reference	Run digest guards and development comparisons	2026-11-11T13:37:02.3717220Z env:
+reference	Run digest guards and development comparisons	2026-11-11T13:37:02.3717418Z   RUSTUP_TOOLCHAIN: 1.99.1
+reference	Run digest guards and development comparisons	2026-11-11T13:37:02.3717647Z ##[endgroup]
+reference	Run digest guards and development comparisons	2026-11-11T13:37:02.4364291Z info: syncing channel updates for 1.99.1-x86_64-unknown-linux-gnu
+reference	Run digest guards and development comparisons	2026-11-11T13:37:02.5457110Z info: latest update on 2026-10-15 for version 1.99.1 (58cf8f9c3 2026-10-13)
+reference	Run digest guards and development comparisons	2026-11-11T13:37:02.5459791Z info: downloading 5 components
+reference	Run digest guards and development comparisons	2026-11-11T13:37:11.0001014Z 
+reference	Run digest guards and development comparisons	2026-11-11T13:37:11.0069436Z   1.99.1-x86_64-unknown-linux-gnu installed - rustc 1.99.1 (58cf8f9c3 2026-10-13)
+reference	Run digest guards and development comparisons	2026-11-11T13:37:11.0069913Z 
+reference	Run digest guards and development comparisons	2026-11-11T13:37:11.0476513Z research/chained_jacobian_transfers_20261110/native/Cargo.lock: OK
+reference	Run digest guards and development comparisons	2026-11-11T13:37:11.0477421Z research/chained_jacobian_transfers_20261110/native/Cargo.toml: OK
+reference	Run digest guards and development comparisons	2026-11-11T13:37:11.0478117Z research/chained_jacobian_transfers_20261110/native/src/lib.rs: OK
+reference	Run digest guards and development comparisons	2026-11-11T13:37:11.0479051Z research/chained_jacobian_transfers_20261110/native/src/richelot/model.rs: OK
+reference	Run digest guards and development comparisons	2026-11-11T13:37:11.0479831Z research/chained_jacobian_transfers_20261110/native/src/richelot.rs: OK
+reference	Run digest guards and development comparisons	2026-11-11T13:37:11.0480560Z research/chained_jacobian_transfers_20261110/native/src/small_prime.rs: OK
+reference	Run digest guards and development comparisons	2026-11-11T13:37:11.0481157Z src/prime_hyperelliptic/fp2.rs: OK
+reference	Run digest guards and development comparisons	2026-11-11T13:37:11.0508533Z suite/src/prime_hyperelliptic/curve.rs: OK
+reference	Run digest guards and development comparisons	2026-11-11T13:37:11.0509364Z suite/src/prime_hyperelliptic/fp2.rs: OK
+reference	Run digest guards and development comparisons	2026-11-11T13:37:11.0509894Z suite/src/prime_hyperelliptic/fp_poly.rs: OK
+reference	Run digest guards and development comparisons	2026-11-11T13:37:11.0510404Z suite/src/prime_hyperelliptic/mod.rs: OK
+reference	Run digest guards and development comparisons	2026-11-11T13:37:11.0600867Z cargo 1.99.1 (5f94df478 2026-08-27)
+reference	Run digest guards and development comparisons	2026-11-11T13:37:11.2032792Z     Checking chained-jacobian-transfer v0.1.0 (/home/runner/work/cryptanalysis/cryptanalysis/crypto/research/chained_jacobian_transfers_20261110/native)
+reference	Run digest guards and development comparisons	2026-11-11T13:37:11.5533090Z     Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.38s
+reference	Run digest guards and development comparisons	2026-11-11T13:37:11.5910258Z    Compiling chained-jacobian-transfer v0.1.0 (/home/runner/work/cryptanalysis/cryptanalysis/crypto/research/chained_jacobian_transfers_20261110/native)
+reference	Run digest guards and development comparisons	2026-11-11T13:37:15.3454291Z     Finished `release` profile [optimized] target(s) in 3.78s
+reference	Run digest guards and development comparisons	2026-11-11T13:37:15.3458763Z      Running unittests src/lib.rs (crypto/research/chained_jacobian_transfers_20261110/native/target/release/deps/chained_jacobian_transfer-0185ca336a44ea2a)
+reference	Run digest guards and development comparisons	2026-11-11T13:37:15.3469629Z 
+reference	Run digest guards and development comparisons	2026-11-11T13:37:15.3469804Z running 25 tests
+reference	Run digest guards and development comparisons	2026-11-11T13:37:15.3529594Z successor complete 96-point endpoint shortcuts tau(X,Y)=(sX+t,kY): [(100, 80, 91)]
+reference	Run digest guards and development comparisons	2026-11-11T13:37:15.3537806Z test richelot::model::tests::successor_complete_elliptic_route_deduplication ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:37:15.3549796Z test richelot::model::tests::original_fixture_agrees_and_curve_tags_reject_mixing ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:37:15.3602574Z test richelot::tests::complete_elliptic_domain_route_deduplication_control ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:37:15.7729928Z test richelot::model::tests::successor_both_norms_on_arbitrary_classes ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:37:15.7759422Z Richelot endpoint F=Some((F2(91, 0), F2(84, 0))), G=None
+reference	Run digest guards and development comparisons	2026-11-11T13:37:15.7969474Z test richelot::tests::entire_order_17_image_and_both_endpoint_projections ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:37:16.1539840Z test richelot::tests::dual_norm_and_order_17_point_recovery ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:37:16.1599286Z test richelot::tests::fixed_models_and_sign ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:37:17.0569979Z test richelot::tests::full_model_isomorphism_and_target_dual_norm ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:37:17.0589831Z test small_prime::field_reference::tests::checked_context_rejects_composites_and_forged_nonresidues ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:37:17.0619440Z test small_prime::field_reference::tests::fp2_basic_arithmetic ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:37:17.0649466Z test small_prime::field_reference::tests::fp2_inv_roundtrip ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:37:17.0650199Z test small_prime::field_reference::tests::fp2_qr_half_split ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:37:17.0650896Z test small_prime::field_reference::tests::fp2_qr_test_consistency ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:37:17.0651803Z test small_prime::field_reference::tests::public_element_fields_are_canonicalized_before_arithmetic ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:37:17.2500144Z successor: #J=9216, two-torsion source=4 target=16, #E=96, r=3, P=Some((F2(48, 0), F2(20, 0))), normF=Some((F2(2, 0), F2(72, 0))), normG=None
+reference	Run digest guards and development comparisons	2026-11-11T13:37:17.2540844Z test richelot::model::tests::successor_full_domain_and_nonisomorphic_rational_two_torsion ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:37:17.2569747Z test small_prime::tests::field_bounds_domains_and_bad_models_fail_closed ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:37:17.3089434Z p=13, selected odd subgroup r=5, P=Some((10, 6)), target class=([8, 6, 1], [7, 3])
+reference	Run digest guards and development comparisons	2026-11-11T13:37:17.3179270Z p=13, nonresidue=2, #J=180, rational2-torsion=4/4, #E=10
+reference	Run digest guards and development comparisons	2026-11-11T13:37:17.6179497Z p=29, selected odd subgroup r=5, P=Some((24, 15)), target class=([6, 24, 1], [17, 25])
+reference	Run digest guards and development comparisons	2026-11-11T13:37:17.6669737Z p=29, nonresidue=2, #J=960, rational2-torsion=4/16, #E=40
+reference	Run digest guards and development comparisons	2026-11-11T13:37:17.9929796Z p=31, selected odd subgroup r=7, P=Some((19, 2)), target class=([21, 22, 1], [20, 3])
+reference	Run digest guards and development comparisons	2026-11-11T13:37:18.0419502Z p=31, nonresidue=3, #J=1008, rational2-torsion=16/4, #E=28
+reference	Run digest guards and development comparisons	2026-11-11T13:37:18.2041845Z second hop: delta=67, source #J=9216, target #J=9216, target sextic=[38, 9, 29, 62, 86, 17, 8], target2-torsion=8, intersection(kerR2,kerDualR1)=1, rational composite kernel=8, r=3, image=([27, 86, 1], [7, 34])
+reference	Run digest guards and development comparisons	2026-11-11T13:37:18.2099569Z test richelot::model::tests::predeclared_second_hop_full_domain_and_nonbacktracking ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:37:18.2129825Z PASS p=13 successor rational shortcut: 12 affine curve points plus both infinities, actual base norm(1/125,0), all whole elliptic fibers
+reference	Run digest guards and development comparisons	2026-11-11T13:37:18.2131432Z PASS p=29 successor rational shortcut: 32 affine curve points plus both infinities, actual base norm(1/125,0), all whole elliptic fibers
+reference	Run digest guards and development comparisons	2026-11-11T13:37:18.2159709Z PASS p=31 successor rational shortcut: 30 affine curve points plus both infinities, actual base norm(1/125,0), all whole elliptic fibers
+reference	Run digest guards and development comparisons	2026-11-11T13:37:18.2249732Z PASS p=101 successor rational shortcut: 88 affine curve points plus both infinities, actual base norm(1/125,0), all whole elliptic fibers
+reference	Run digest guards and development comparisons	2026-11-11T13:37:18.2279498Z test small_prime::tests::successor_shortcut_on_all_curve_points_and_whole_fibers ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:37:18.3039473Z test tests::all_elliptic_inputs_including_exceptions ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:37:18.3436580Z test richelot::tests::every_rational_class_kernel_fibers_and_additivity ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:37:18.3463692Z test tests::field_and_model ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:37:18.3489610Z test tests::order_17_dlp_chain_and_rejections ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:37:18.8055827Z test tests::arbitrary_rational_classes_and_norm_homomorphisms ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:37:20.0076609Z test small_prime::tests::both_f101_hops_match_the_frozen_model_backend ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:37:20.5718138Z p=101, selected odd subgroup r=3, P=Some((48, 20)), target class=([65, 58, 1], [63, 82])
+reference	Run digest guards and development comparisons	2026-11-11T13:37:20.9052594Z p=101, nonresidue=2, #J=9216, rational2-torsion=4/16, #E=96
+reference	Run digest guards and development comparisons	2026-11-11T13:37:20.9077417Z test small_prime::tests::fixed_fields_complete_domains_and_source_norm ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:37:20.9078062Z 
+reference	Run digest guards and development comparisons	2026-11-11T13:37:20.9078636Z test result: ok. 25 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.56s
+reference	Run digest guards and development comparisons	2026-11-11T13:37:20.9079469Z 
+reference	Run digest guards and development comparisons	2026-11-11T13:37:20.9087138Z    Doc-tests chained_jacobian_transfer
+reference	Run digest guards and development comparisons	2026-11-11T13:37:20.9450478Z 
+reference	Run digest guards and development comparisons	2026-11-11T13:37:20.9450974Z running 0 tests
+reference	Run digest guards and development comparisons	2026-11-11T13:37:20.9451221Z 
+reference	Run digest guards and development comparisons	2026-11-11T13:37:20.9451711Z test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+reference	Run digest guards and development comparisons	2026-11-11T13:37:20.9452240Z 
+reference	Run digest guards and development comparisons	2026-11-11T13:37:21.1108238Z     Updating crates.io index
+reference	Run digest guards and development comparisons	2026-11-11T13:37:21.1450206Z  Downloading crates ...
+reference	Run digest guards and development comparisons	2026-11-11T13:37:21.1780432Z   Downloaded autocfg v1.5.1
+reference	Run digest guards and development comparisons	2026-11-11T13:37:21.1803671Z   Downloaded num-integer v0.1.47
+reference	Run digest guards and development comparisons	2026-11-11T13:37:21.1819247Z   Downloaded num-bigint v0.4.8
+reference	Run digest guards and development comparisons	2026-11-11T13:37:21.1865378Z   Downloaded num-traits v0.2.19
+reference	Run digest guards and development comparisons	2026-11-11T13:37:21.1997319Z    Compiling autocfg v1.5.1
+reference	Run digest guards and development comparisons	2026-11-11T13:37:21.1998789Z     Checking chained-jacobian-transfer v0.1.0 (/home/runner/work/cryptanalysis/cryptanalysis/crypto/research/chained_jacobian_transfers_20261110/native)
+reference	Run digest guards and development comparisons	2026-11-11T13:37:21.3746516Z    Compiling num-traits v0.2.19
+reference	Run digest guards and development comparisons	2026-11-11T13:37:21.8105052Z     Checking num-integer v0.1.47
+reference	Run digest guards and development comparisons	2026-11-11T13:37:21.9195746Z     Checking num-bigint v0.4.8
+reference	Run digest guards and development comparisons	2026-11-11T13:37:22.5000245Z     Checking chained-transfer-reference v0.1.0 (/home/runner/work/cryptanalysis/cryptanalysis/cryptanalysis/experiments/chained-transfer-reference)
+reference	Run digest guards and development comparisons	2026-11-11T13:37:23.1114414Z     Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.02s
+reference	Run digest guards and development comparisons	2026-11-11T13:37:23.1550343Z    Compiling autocfg v1.5.1
+reference	Run digest guards and development comparisons	2026-11-11T13:37:23.1551480Z    Compiling chained-jacobian-transfer v0.1.0 (/home/runner/work/cryptanalysis/cryptanalysis/crypto/research/chained_jacobian_transfers_20261110/native)
+reference	Run digest guards and development comparisons	2026-11-11T13:37:23.3111496Z    Compiling num-traits v0.2.19
+reference	Run digest guards and development comparisons	2026-11-11T13:37:24.2645665Z    Compiling num-integer v0.1.47
+reference	Run digest guards and development comparisons	2026-11-11T13:37:24.7626949Z    Compiling num-bigint v0.4.8
+reference	Run digest guards and development comparisons	2026-11-11T13:37:26.6504285Z    Compiling chained-transfer-reference v0.1.0 (/home/runner/work/cryptanalysis/cryptanalysis/cryptanalysis/experiments/chained-transfer-reference)
+reference	Run digest guards and development comparisons	2026-11-11T13:37:32.9761282Z     Finished `release` profile [optimized] target(s) in 9.85s
+reference	Run digest guards and development comparisons	2026-11-11T13:37:32.9768173Z      Running unittests src/main.rs (cryptanalysis/experiments/chained-transfer-reference/target/release/deps/chained_transfer_reference-80f8d56ebbe6d35c)
+reference	Run digest guards and development comparisons	2026-11-11T13:37:32.9781019Z 
+reference	Run digest guards and development comparisons	2026-11-11T13:37:32.9781207Z running 51 tests
+reference	Run digest guards and development comparisons	2026-11-11T13:37:33.4660060Z PASS general monic sextic F37 associativity on 1211 fixed triples, infinity control and malformed/foreign domains
+reference	Run digest guards and development comparisons	2026-11-11T13:37:33.4689510Z test balanced::tests::published_example_tags_smoothness_and_associativity ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:37:36.5230597Z PASS all10404 translated-sextic classes and paired additions/inverses against old engine; nonzero infinity polynomial x³+3x²+3x+1
+reference	Run digest guards and development comparisons	2026-11-11T13:37:36.5329718Z test balanced::tests::translated_sextic_full_nonzero_infinity_expansion ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:37:36.6149744Z PASS all 289 Richelot target subgroup additions against pre-existing BigUint arithmetic
+reference	Run digest guards and development comparisons	2026-11-11T13:37:36.6199555Z test compares_all_richelot_target_subgroup_additions ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:37:37.3661202Z PASS F17 all285 reciprocal classes/inverse/bijection/paired additions,zero-support multiplicities0/1/2,both elliptic norm additions,cross norms0,pull1 norm1+pull2 norm2=[2],odd reconstruction; full elliptic product orders[19, 15]; no scalar labels or solver
+reference	Run digest guards and development comparisons	2026-11-11T13:37:40.9910772Z PASS 10404 canonical additions and inverses against pre-existing cryptanalysis BigUint implementation
+reference	Run digest guards and development comparisons	2026-11-11T13:37:40.9949659Z Development correctness only; no timing or independent signed verification
+reference	Run digest guards and development comparisons	2026-11-11T13:37:40.9959742Z test compares_every_canonical_source_class ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:37:44.5178724Z PASS all 10404 rational Richelot source images plus fixed-translation addition against BigUint
+reference	Run digest guards and development comparisons	2026-11-11T13:37:44.5180584Z test compares_full_rational_richelot_image ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:37:46.7071091Z PASS130 arbitrary genus4 norms with fixed translation, closed support degrees{1, 2, 3, 4}, coefficient-image round trips; no scalar labels used by norm
+reference	Run digest guards and development comparisons	2026-11-11T13:37:46.7119511Z test cubic_transfer::tests::arbitrary_genus_four_norm_and_witnesses ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:37:47.8020732Z PASS all109 source scalars, complete cubic fibers, genera4/13 chain, actual first norm[3] and image-restricted second norm/composed[9]; point recovery only
+reference	Run digest guards and development comparisons	2026-11-11T13:37:47.8029548Z test cubic_transfer::tests::every_source_scalar_whole_fibers_and_chain_recovery ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:37:47.8930856Z PASS full source order109, no finite2-torsion, no rational branch point or quadratic divisor of f(x²); this restricts individually rational Richelot factors, not all Galois-stable kernels
+reference	Run digest guards and development comparisons	2026-11-11T13:37:47.8964615Z test cubic_transfer::tests::prime_order_source_and_quadratic_constructor_obstruction ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:37:48.3710287Z PASS all361 ordered prime19 subgroup pairs through both pullbacks, ramification/multiplicity controls and degree12 target representatives
+reference	Run digest guards and development comparisons	2026-11-11T13:37:48.3729705Z test cubic_transfer::tests::secondary_prime19_additivity_and_ramification ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:37:48.3849394Z test independent_point_count_orders_of_both_models ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:37:48.5139367Z retained degenerate pairing[(0, 3), (1, 4), (2, 5)], delta0
+reference	Run digest guards and development comparisons	2026-11-11T13:37:48.5159450Z stable pairing[(0, 4), (1, 5), (2, 3)], delta63, target[56, 41, 62, 78, 24, 57, 80]
+reference	Run digest guards and development comparisons	2026-11-11T13:37:48.5169375Z stable pairing[(0, 5), (1, 3), (2, 4)], delta38, target[56, 60, 62, 23, 24, 44, 80]
+reference	Run digest guards and development comparisons	2026-11-11T13:37:49.0119721Z shifted109 source counts(120, 10436, 12317), elliptic quotient orders109/113, stable3 degenerate1 targets2
+reference	Run digest guards and development comparisons	2026-11-11T13:37:49.0179466Z shifted109 target[56, 41, 62, 78, 24, 57, 80], counts(120, 10436, 12317), leading_rootSome(22)
+reference	Run digest guards and development comparisons	2026-11-11T13:37:49.4530009Z shifted109 supported monic target[31, 75, 74, 54, 71, 55, 1], raw ordinate scale22
+reference	Run digest guards and development comparisons	2026-11-11T13:37:49.4599464Z shifted109 target[56, 60, 62, 23, 24, 44, 80], counts(120, 10436, 12317), leading_rootSome(22)
+reference	Run digest guards and development comparisons	2026-11-11T13:37:49.8000480Z PASS all10404 balanced classes biject with old chart; paired additions/inverses/identity/infinity translations and arbitrary-class norms agree; all6 degree/infinity patterns, delta order3
+reference	Run digest guards and development comparisons	2026-11-11T13:37:49.8089717Z test balanced::tests::all_old_classes_chart_addition_infinity_and_norm ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:37:49.8129377Z retained degenerate pairing[(0, 3), (1, 4), (2, 5)], delta0
+reference	Run digest guards and development comparisons	2026-11-11T13:37:49.8159437Z stable pairing[(0, 4), (1, 5), (2, 3)], delta11, target[10, 6, 14, 2, 12, 10, 9]
+reference	Run digest guards and development comparisons	2026-11-11T13:37:49.8179442Z stable pairing[(0, 5), (1, 3), (2, 4)], delta6, target[10, 11, 14, 15, 12, 7, 9]
+reference	Run digest guards and development comparisons	2026-11-11T13:37:49.8239408Z target split infinity sqrt3; monic[3, 12, 11, 4, 7, 3, 1], rationalJac285
+reference	Run digest guards and development comparisons	2026-11-11T13:37:49.8329447Z target split infinity sqrt3; monic[3, 5, 11, 13, 7, 14, 1], rationalJac285
+reference	Run digest guards and development comparisons	2026-11-11T13:37:49.8359901Z PASS15 complete pairings,3 Frobenius-stable,1 degenerate/2 smooth base-field targets, shared rationalJac285; divisor correspondence is not implemented
+reference	Run digest guards and development comparisons	2026-11-11T13:37:49.8361405Z test nonsplit::complete_stable_pairings_and_descended_targets ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:37:49.8362162Z retained degenerate pairing[(0, 3), (1, 4), (2, 5)], delta0
+reference	Run digest guards and development comparisons	2026-11-11T13:37:49.8389460Z stable pairing[(0, 4), (1, 5), (2, 3)], delta11, target[10, 6, 14, 2, 12, 10, 9]
+reference	Run digest guards and development comparisons	2026-11-11T13:37:49.8419316Z stable pairing[(0, 5), (1, 3), (2, 4)], delta6, target[10, 11, 14, 15, 12, 7, 9]
+reference	Run digest guards and development comparisons	2026-11-11T13:37:49.8839827Z shifted109 supported monic target[31, 26, 74, 47, 71, 46, 1], raw ordinate scale22
+reference	Run digest guards and development comparisons	2026-11-11T13:37:49.8850664Z PASS checked cubic square roots/invalid fields, frozen shift2 source all109 coordinate/pullback/norm controls and complete stable-kernel/codomain inventory; no shifted Richelot map evaluated
+reference	Run digest guards and development comparisons	2026-11-11T13:37:49.8852637Z test nonsplit::checked_cubic_roots_and_frozen_shifted109_inventory ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:37:49.8899395Z retained degenerate pairing[(0, 3), (1, 4), (2, 5)], delta0
+reference	Run digest guards and development comparisons	2026-11-11T13:37:49.8913575Z stable pairing[(0, 4), (1, 5), (2, 3)], delta11, target[10, 6, 14, 2, 12, 10, 9]
+reference	Run digest guards and development comparisons	2026-11-11T13:37:49.8959318Z stable pairing[(0, 5), (1, 3), (2, 4)], delta6, target[10, 11, 14, 15, 12, 7, 9]
+reference	Run digest guards and development comparisons	2026-11-11T13:37:49.9319501Z PGL2 curve audit0->0: 2 base-field quotient maps with square y-scale (4896 matrices checked)
+reference	Run digest guards and development comparisons	2026-11-11T13:37:50.0299559Z PGL2 curve audit0->1: 0 base-field quotient maps with square y-scale (4896 matrices checked)
+reference	Run digest guards and development comparisons	2026-11-11T13:37:50.1299859Z PGL2 curve audit0->2: 0 base-field quotient maps with square y-scale (4896 matrices checked)
+reference	Run digest guards and development comparisons	2026-11-11T13:37:50.2289542Z PGL2 curve audit1->1: 1 base-field quotient maps with square y-scale (4896 matrices checked)
+reference	Run digest guards and development comparisons	2026-11-11T13:37:50.3309894Z PGL2 curve audit1->2: 1 base-field quotient maps with square y-scale (4896 matrices checked)
+reference	Run digest guards and development comparisons	2026-11-11T13:37:50.4010333Z PASS F17 target full r19 source subgroup has elliptic coordinates([4]P,0) after reversed Richelot/both norms,inverse5 recovers P,all scalar/reconstruction controls,no scalar labels or solver
+reference	Run digest guards and development comparisons	2026-11-11T13:37:50.4029479Z retained degenerate pairing[(0, 3), (1, 4), (2, 5)], delta0
+reference	Run digest guards and development comparisons	2026-11-11T13:37:50.4059316Z stable pairing[(0, 4), (1, 5), (2, 3)], delta63, target[56, 41, 62, 78, 24, 57, 80]
+reference	Run digest guards and development comparisons	2026-11-11T13:37:50.4089332Z stable pairing[(0, 5), (1, 3), (2, 4)], delta38, target[56, 60, 62, 23, 24, 44, 80]
+reference	Run digest guards and development comparisons	2026-11-11T13:37:50.4310488Z PGL2 curve audit2->2: 1 base-field quotient maps with square y-scale (4896 matrices checked)
+reference	Run digest guards and development comparisons	2026-11-11T13:37:50.4329409Z test nonsplit::full_curve_equivalence_audit ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:37:50.4359353Z retained degenerate pairing[(0, 3), (1, 4), (2, 5)], delta0
+reference	Run digest guards and development comparisons	2026-11-11T13:37:50.4362277Z stable pairing[(0, 4), (1, 5), (2, 3)], delta11, target[10, 6, 14, 2, 12, 10, 9]
+reference	Run digest guards and development comparisons	2026-11-11T13:37:50.4382557Z stable pairing[(0, 5), (1, 3), (2, 4)], delta6, target[10, 11, 14, 15, 12, 7, 9]
+reference	Run digest guards and development comparisons	2026-11-11T13:37:52.1341832Z F17 target discriminant characters[-1, -1, -1], branch Frobenius[1, 2, 3, 4, 5, 0], next stable[[(0, 3), (1, 4), (2, 5)]], previous dual[(0, 3), (1, 4), (2, 5)]; source/target2-torsion over Fp³ 16/4; full geometric2-torsion16 each, map kernel4/image4; all256 torsion additions and Frobenius-equivariant branch images pass
+reference	Run digest guards and development comparisons	2026-11-11T13:37:52.1369421Z retained degenerate pairing[(0, 3), (1, 4), (2, 5)], delta0
+reference	Run digest guards and development comparisons	2026-11-11T13:37:52.1389760Z stable pairing[(0, 4), (1, 5), (2, 3)], delta63, target[56, 41, 62, 78, 24, 57, 80]
+reference	Run digest guards and development comparisons	2026-11-11T13:37:52.1419445Z stable pairing[(0, 5), (1, 3), (2, 4)], delta38, target[56, 60, 62, 23, 24, 44, 80]
+reference	Run digest guards and development comparisons	2026-11-11T13:37:53.8970737Z PASS F101 target full r109 source subgroup has elliptic coordinates([4]P,0) after reversed Richelot/both norms,inverse82 recovers P,all scalar/reconstruction controls,no scalar labels or solver
+reference	Run digest guards and development comparisons	2026-11-11T13:37:53.8972557Z test nonsplit::map::accepted_target_elliptic_components_on_full_source_subgroups ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:37:53.8989533Z retained degenerate pairing[(0, 3), (1, 4), (2, 5)], delta0
+reference	Run digest guards and development comparisons	2026-11-11T13:37:53.9019412Z stable pairing[(0, 4), (1, 5), (2, 3)], delta11, target[10, 6, 14, 2, 12, 10, 9]
+reference	Run digest guards and development comparisons	2026-11-11T13:37:53.9020202Z stable pairing[(0, 5), (1, 3), (2, 4)], delta6, target[10, 11, 14, 15, 12, 7, 9]
+reference	Run digest guards and development comparisons	2026-11-11T13:37:53.9151999Z F101 target discriminant characters[-1, -1, -1], branch Frobenius[1, 2, 3, 4, 5, 0], next stable[[(0, 3), (1, 4), (2, 5)]], previous dual[(0, 3), (1, 4), (2, 5)]; source/target2-torsion over Fp³ 16/4; full geometric2-torsion16 each, map kernel4/image4; all256 torsion additions and Frobenius-equivariant branch images pass
+reference	Run digest guards and development comparisons	2026-11-11T13:37:53.9160170Z test nonsplit::map::accepted_targets_frobenius_two_torsion_and_next_kernels ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:37:54.3210982Z PASS F17² embeddings on289 pairs and128 compositum inverse/Frobenius controls, wide_seeds=false, using irreducible cubic and nonsquare quadratic adjunction
+reference	Run digest guards and development comparisons	2026-11-11T13:37:54.3212978Z test nonsplit::map::compositum_embeddings_inverses_and_frobenius ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:37:54.3219972Z retained degenerate pairing[(0, 3), (1, 4), (2, 5)], delta0
+reference	Run digest guards and development comparisons	2026-11-11T13:37:54.3242310Z stable pairing[(0, 4), (1, 5), (2, 3)], delta11, target[10, 6, 14, 2, 12, 10, 9]
+reference	Run digest guards and development comparisons	2026-11-11T13:37:54.3248971Z stable pairing[(0, 5), (1, 3), (2, 4)], delta6, target[10, 11, 14, 15, 12, 7, 9]
+reference	Run digest guards and development comparisons	2026-11-11T13:37:54.7571091Z PASS nonzero full prime19 source through quadratic pullback/non-split Richelot, all19 scalar relations, reversed-chain/source norm[4] and inverse5 recovery; no scalar label in map
+reference	Run digest guards and development comparisons	2026-11-11T13:37:54.7669173Z test nonsplit::map::full_prime19_subgroup_and_source_recovery ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:37:55.6330906Z PASS F101² embeddings on10201 pairs and128 compositum inverse/Frobenius controls, wide_seeds=true, using irreducible cubic and nonsquare quadratic adjunction
+reference	Run digest guards and development comparisons	2026-11-11T13:37:55.6332436Z test nonsplit::map::shifted101_compositum_reference_witnesses ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:37:55.6369377Z retained degenerate pairing[(0, 3), (1, 4), (2, 5)], delta0
+reference	Run digest guards and development comparisons	2026-11-11T13:37:55.6379653Z stable pairing[(0, 4), (1, 5), (2, 3)], delta63, target[56, 41, 62, 78, 24, 57, 80]
+reference	Run digest guards and development comparisons	2026-11-11T13:37:55.6419459Z stable pairing[(0, 5), (1, 3), (2, 4)], delta38, target[56, 60, 62, 23, 24, 44, 80]
+reference	Run digest guards and development comparisons	2026-11-11T13:38:12.2740301Z PASS all285 source/target rational classes, both dual norms[2],285-image bijection, paired additivity, balanced infinities and coefficientwise F17 descent
+reference	Run digest guards and development comparisons	2026-11-11T13:38:12.2741804Z test nonsplit::map::complete_rational_domains_duals_and_additivity ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:38:12.2760282Z PASS E109 quadratic sextic irreducible6-cycle and unique stable opposite pairing; its zero linear column is degenerate. This is a fixture-specific control, not a universal obstruction
+reference	Run digest guards and development comparisons	2026-11-11T13:38:12.2799350Z test nonsplit::prime109_cycle_and_unique_degenerate_control ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:38:12.2820201Z F17,ell3: coprime factors[2, 1, 1]/[2, 0, 1],roots[[], [1, 2]],all2-planes130,maximal-isotropic40,stable0 across all2 nonzero pairing-scale ratios; companion is a finite model,actual repeated Jordan type not assumed
+reference	Run digest guards and development comparisons	2026-11-11T13:38:12.2822665Z F17,ell5: coprime factors[2, 1, 1]/[2, 2, 1],roots[[], [1, 2]],all2-planes806,maximal-isotropic156,stable0 across all4 nonzero pairing-scale ratios; companion is a finite model,actual repeated Jordan type not assumed
+reference	Run digest guards and development comparisons	2026-11-11T13:38:12.2825053Z F17,ell7: coprime factors[3, 1, 1]/[3, 4, 1],roots[[], [4, 6]],all2-planes2850,maximal-isotropic400,stable0 across all6 nonzero pairing-scale ratios; companion is a finite model,actual repeated Jordan type not assumed
+reference	Run digest guards and development comparisons	2026-11-11T13:38:12.2827426Z F101,ell3: coprime factors[2, 1, 1]/[2, 2, 1],roots[[], []],all2-planes130,maximal-isotropic40,stable0 across all2 nonzero pairing-scale ratios; companion is a finite model,actual repeated Jordan type not assumed
+reference	Run digest guards and development comparisons	2026-11-11T13:38:12.2830258Z F101,ell5: coprime factors[1, 2, 1]/[1, 1, 1],roots[[4], []],all2-planes806,maximal-isotropic156,stable0 across all4 nonzero pairing-scale ratios; companion is a finite model,actual repeated Jordan type not assumed
+reference	Run digest guards and development comparisons	2026-11-11T13:38:12.2832660Z F101,ell7: coprime factors[3, 0, 1]/[3, 4, 1],roots[[2, 5], [4, 6]],all2-planes2850,maximal-isotropic400,stable4 across all6 nonzero pairing-scale ratios; companion is a finite model,actual repeated Jordan type not assumed
+reference	Run digest guards and development comparisons	2026-11-11T13:38:12.2859352Z test odd_kernels::fixed_odd_prime_invariant_isotropic_planes ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:38:18.7110567Z PASS second-hop target: independent point-count order9216, 9216 paired additions/dual norms, self-inverse count8; rational composite kernel8 with4 self-inverse elements
+reference	Run digest guards and development comparisons	2026-11-11T13:38:18.7129747Z test predeclared_second_hop_target_against_biguint ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:38:18.7149406Z test reference::curve::tests::benchmark_fast_vs_slow_p251 ... ignored
+reference	Run digest guards and development comparisons	2026-11-11T13:38:18.8049557Z test reference::curve::tests::brute_force_consistency_small ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:38:18.8059546Z test reference::curve::tests::checked_curve_construction_rejects_wrong_models ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:38:18.8089560Z test reference::curve::tests::checked_divisor_construction_rejects_malformed_inputs ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:38:18.8119307Z test reference::curve::tests::double_equals_add_self ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:38:21.6710711Z PASS full prime109 subgroup in balanced genus2 without rational Weierstrass; all109 scalar/norm[2]/inverse55 checks, 11663 arbitrary-class paired norm additions; quotient orders109/107, norm image109 with equal107 fibers
+reference	Run digest guards and development comparisons	2026-11-11T13:38:21.6769569Z test balanced::tests::prime109_cover_without_weierstrass_point ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:38:21.6799377Z test reference::curve::tests::fast_counter_matches_slow ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:38:21.6809541Z test reference::curve::tests::identity_arithmetic ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:38:21.7695546Z test reference::curve::tests::lpoly_matches_brute_force ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:38:21.7703451Z test reference::curve::tests::neg_then_add_is_identity ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:38:21.7725392Z test reference::curve::tests::weierstrass_and_shared_support_cases_are_checked ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:38:21.7734511Z test reference::fp2::tests::checked_context_rejects_composites_and_forged_nonresidues ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:38:21.7740033Z test reference::fp2::tests::fp2_basic_arithmetic ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:38:21.7750725Z test reference::fp2::tests::fp2_inv_roundtrip ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:38:21.7770756Z test reference::fp2::tests::fp2_qr_half_split ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:38:21.7780703Z test reference::fp2::tests::fp2_qr_test_consistency ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:38:21.7791256Z test reference::fp2::tests::public_element_fields_are_canonicalized_before_arithmetic ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:38:21.7800775Z test reference::fp_poly::tests::divrem_invariant_small_prime ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:38:21.7807228Z test reference::fp_poly::tests::equality_includes_the_coefficient_field ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:38:21.7810359Z test reference::fp_poly::tests::eval_horner_mod_p ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:38:21.7830516Z test reference::fp_poly::tests::ext_gcd_bezout ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:38:21.7854773Z test reference::fp_poly::tests::fp_inv_roundtrip ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:38:21.7860485Z test reference::fp_poly::tests::monic_makes_leading_one ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:38:21.9110265Z PASS BigUint family p=13, root=1, #J=180, self-inverse=4, independent elliptic orders=[10, 18]; all paired additions and dual norm
+reference	Run digest guards and development comparisons	2026-11-11T13:38:22.0229979Z PASS BigUint family p=13, root=2, #J=180, self-inverse=4, independent elliptic orders=[10, 18]; all paired additions and dual norm
+reference	Run digest guards and development comparisons	2026-11-11T13:38:22.6860172Z PASS BigUint family p=29, root=1, #J=960, self-inverse=4, independent elliptic orders=[40, 24]; all paired additions and dual norm
+reference	Run digest guards and development comparisons	2026-11-11T13:38:23.3450326Z PASS BigUint family p=29, root=2, #J=960, self-inverse=16, independent elliptic orders=[40, 24]; all paired additions and dual norm
+reference	Run digest guards and development comparisons	2026-11-11T13:38:24.0313477Z PASS BigUint family p=31, root=1, #J=1008, self-inverse=16, independent elliptic orders=[28, 36]; all paired additions and dual norm
+reference	Run digest guards and development comparisons	2026-11-11T13:38:24.1490573Z test reference::curve::tests::exhaustive_small_field_group_law_matches_point_count_reference ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:38:24.7160147Z PASS BigUint family p=31, root=2, #J=1008, self-inverse=4, independent elliptic orders=[28, 36]; all paired additions and dual norm
+reference	Run digest guards and development comparisons	2026-11-11T13:38:30.1260512Z PASS successor root=1: 9216 classes, Fp/Fp² Jacobian order9216, BigUint self-inverse count4, paired additions and dual norm
+reference	Run digest guards and development comparisons	2026-11-11T13:38:31.3415059Z PASS BigUint family p=101, root=1, #J=9216, self-inverse=4, independent elliptic orders=[96, 96]; all paired additions and dual norm
+reference	Run digest guards and development comparisons	2026-11-11T13:38:32.9800059Z test balanced::tests::complete_split_quotients_reciprocal_and_reconstruction has been running for over 60 seconds
+reference	Run digest guards and development comparisons	2026-11-11T13:38:36.1070679Z PASS successor root=2: 9216 classes, Fp/Fp² Jacobian order9216, BigUint self-inverse count16, paired additions and dual norm
+reference	Run digest guards and development comparisons	2026-11-11T13:38:36.1109850Z test successor_both_complete_models_against_biguint ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:38:37.9629250Z PASS BigUint family p=101, root=2, #J=9216, self-inverse=16, independent elliptic orders=[96, 96]; all paired additions and dual norm
+reference	Run digest guards and development comparisons	2026-11-11T13:38:37.9645939Z test small_prime_oracle::four_fields_complete_models_against_biguint ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:38:55.6331907Z test nonsplit::map::shifted_prime109_full_domains_and_source_recovery has been running for over 60 seconds
+reference	Run digest guards and development comparisons	2026-11-11T13:40:35.9593839Z PASS F101 all12317 reciprocal classes/inverse/bijection/paired additions,zero-support multiplicities0/1/2,both elliptic norm additions,cross norms0,pull1 norm1+pull2 norm2=[2],odd reconstruction; full elliptic product orders[109, 113]; no scalar labels or solver
+reference	Run digest guards and development comparisons	2026-11-11T13:40:35.9692251Z test balanced::tests::complete_split_quotients_reciprocal_and_reconstruction ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:45:05.6590623Z PASS frozen shifted E109/F101, delta63, raw scale22; all12317 source/target classes both dual norms[2], bijection/additivity/coefficient descent; all109 scalar/recovery[4]/inverse82 relations, no scalar labels in maps
+reference	Run digest guards and development comparisons	2026-11-11T13:45:05.6673926Z test nonsplit::map::shifted_prime109_full_domains_and_source_recovery ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:45:05.6674944Z 
+reference	Run digest guards and development comparisons	2026-11-11T13:45:05.6675415Z test result: ok. 50 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 452.69s
+reference	Run digest guards and development comparisons	2026-11-11T13:45:05.6676080Z 
+reference	Run digest guards and development comparisons	2026-11-11T13:45:05.6682910Z      Running tests/frobenius_independent.rs (cryptanalysis/experiments/chained-transfer-reference/target/release/deps/frobenius_independent-3acf6fa4b6af02e5)
+reference	Run digest guards and development comparisons	2026-11-11T13:45:05.6694597Z 
+reference	Run digest guards and development comparisons	2026-11-11T13:45:05.6694772Z running 1 test
+reference	Run digest guards and development comparisons	2026-11-11T13:45:05.6698728Z test ct16_frobenius_and_unpolarized_jacobian_obstruction ... ok
+reference	Run digest guards and development comparisons	2026-11-11T13:45:05.6699374Z 
+reference	Run digest guards and development comparisons	2026-11-11T13:45:05.6699753Z test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+reference	Run digest guards and development comparisons	2026-11-11T13:45:05.6700203Z 
+reference	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	﻿2026-11-11T13:45:05.6814146Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+reference	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-11-11T13:45:05.6814592Z with:
+reference	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-11-11T13:45:05.6814936Z   name: chained-transfer-reference-75e5064d1d089b917b068e7ca15b124ec0bcae37
+reference	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-11-11T13:45:05.6815410Z   path: /home/runner/work/_temp/differential.txt
+reference	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-11-11T13:45:05.6815725Z   if-no-files-found: ignore
+reference	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-11-11T13:45:05.6815960Z   compression-level: 6
+reference	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-11-11T13:45:05.6816177Z   overwrite: false
+reference	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-11-11T13:45:05.6816387Z   include-hidden-files: false
+reference	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-11-11T13:45:05.6816636Z ##[endgroup]
+reference	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-11-11T13:45:05.8502213Z (node:3475) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+reference	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-11-11T13:45:05.8503078Z (Use `node --trace-deprecation ...` to show where the warning was created)
+reference	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-11-11T13:45:05.8550650Z With the provided path, there will be 1 file uploaded
+reference	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-11-11T13:45:05.8557268Z Artifact name is valid!
+reference	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-11-11T13:45:05.8558368Z Root directory input is valid!
+reference	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-11-11T13:45:06.2659505Z Beginning upload of artifact content to blob storage
+reference	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-11-11T13:45:06.2910148Z (node:3475) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+reference	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-11-11T13:45:06.5834393Z Uploaded bytes 5342
+reference	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-11-11T13:45:06.6648167Z Finished uploading artifact content to blob storage!
+reference	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-11-11T13:45:06.6649457Z SHA256 digest of uploaded artifact zip is 7c6b2e947ead5f7ad262c8d015cb4405e6c23f44fd167cd29bf8e6cb5ee0ea17
+reference	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-11-11T13:45:06.6651692Z Finalizing artifact upload
+reference	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-11-11T13:45:07.0651895Z Artifact chained-transfer-reference-75e5064d1d089b917b068e7ca15b124ec0bcae37.zip successfully finalized. Artifact ID 13860719779
+reference	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-11-11T13:45:07.0654281Z Artifact chained-transfer-reference-75e5064d1d089b917b068e7ca15b124ec0bcae37 has been successfully uploaded! Final size is 5342 bytes. Artifact ID is 13860719779
+reference	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-11-11T13:45:07.0658799Z Artifact download URL: https://github.com/isogeny-labs/cryptanalysis/actions/runs/43030710539/artifacts/13860719779
+reference	Post Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	﻿2026-11-11T13:45:07.0872947Z Post job cleanup.
+reference	Post Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:45:07.1763431Z [command]/usr/bin/git version
+reference	Post Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:45:07.1807769Z git version 2.56.0
+reference	Post Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:45:07.1848460Z Temporarily overriding HOME='/home/runner/work/_temp/2130ad9a-fbbc-4ee4-bd07-64b032c84c11' before making global git config changes
+reference	Post Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:45:07.1850111Z Adding repository directory to the temporary git global config as a safe directory
+reference	Post Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:45:07.1855221Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/cryptanalysis/cryptanalysis/crypto
+reference	Post Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:45:07.1891159Z Removing SSH command configuration
+reference	Post Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:45:07.1897823Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+reference	Post Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:45:07.1935471Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+reference	Post Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:45:07.2788708Z Removing HTTP extra header
+reference	Post Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:45:07.2794957Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+reference	Post Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:45:07.2841504Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+reference	Post Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:45:07.3590388Z Removing includeIf entries pointing to credentials config files
+reference	Post Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:45:07.3597739Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+reference	Post Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:45:07.3638179Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+reference	Post Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	﻿2026-11-11T13:45:07.4590799Z Post job cleanup.
+reference	Post Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:45:07.5458056Z [command]/usr/bin/git version
+reference	Post Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:45:07.5502470Z git version 2.56.0
+reference	Post Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:45:07.5554116Z Temporarily overriding HOME='/home/runner/work/_temp/1c65ea1c-e457-4e18-8df5-221dae0dbf84' before making global git config changes
+reference	Post Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:45:07.5557418Z Adding repository directory to the temporary git global config as a safe directory
+reference	Post Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:45:07.5559014Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/cryptanalysis/cryptanalysis/cryptanalysis
+reference	Post Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:45:07.5610101Z Removing SSH command configuration
+reference	Post Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:45:07.5640795Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+reference	Post Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:45:07.5690559Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+reference	Post Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:45:07.6063134Z Removing HTTP extra header
+reference	Post Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:45:07.6068795Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+reference	Post Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:45:07.6110865Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+reference	Post Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:45:07.6525061Z Removing includeIf entries pointing to credentials config files
+reference	Post Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:45:07.6549741Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+reference	Post Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803	2026-11-11T13:45:07.6575772Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+reference	Complete job	﻿2026-11-11T13:45:07.7100759Z Cleaning up orphan processes
+reference	Complete job	2026-11-11T13:45:07.7593224Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

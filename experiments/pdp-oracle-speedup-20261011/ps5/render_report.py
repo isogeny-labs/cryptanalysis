@@ -114,7 +114,8 @@ if os.path.exists(l11p):
     s11p = os.path.join(RAW, "sass_hist_l11_sm_80.txt")
     if os.path.exists(s11p):
         s11 = open(s11p).read()
-        extra += f"SASS (static): {re.search(r'sass instructions: (\\d+)', s11).group(1)} instructions; see raw/sass_hist_l11_sm_80.txt.\n"
+        sass_count = re.search(r'sass instructions: (\d+)', s11).group(1)
+        extra += f"SASS (static): {sass_count} instructions; see raw/sass_hist_l11_sm_80.txt.\n"
 
 model_txt = "Not run in this report."
 if model:

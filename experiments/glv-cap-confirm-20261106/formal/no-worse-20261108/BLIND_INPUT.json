@@ -1,0 +1,14 @@
+{
+  "schema": "glv-cap-no-worse-blind-input/v1",
+  "scale": 10000000000000000,
+  "rule": "pooled-size check passes exactly when every supplied pooled-size lower endpoint is at most scale",
+  "pooled_size_intervals": {
+    "40": [9633305383496846, 10206439763276927],
+    "41": [9607939208626060, 10185748136395380],
+    "42": [9539100281038944, 10106357048268606],
+    "43": [9495902517552110, 10071181450938511]
+  },
+  "separate_family_interval": [9860137324692078, 10186699532206690],
+  "separate_family_point_estimate": 10019840110118106,
+  "question": "From these numbers and this rule alone, determine whether the pooled check passes, whether every interval is well formed, whether the separate family interval lies wholly at or below scale, and whether pooled passage logically implies that separate upper bound. Give a counterexample if it does not. State exactly what is not established about empirical measurement or statistical coverage."
+}
