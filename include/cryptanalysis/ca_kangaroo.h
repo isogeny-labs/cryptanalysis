@@ -27,7 +27,12 @@ typedef struct ca_kangaroo_params {
     int32_t dp_bits;      /* distinguished point bits, -1 => auto, clamped to 62 */
     uint32_t jumps;       /* number of jump sizes (powers of two), 0 => auto */
     uint64_t seed;        /* 0 => random */
-    uint64_t max_ops;     /* 0 => none */
+    /* Abort with CA_ERR_LIMIT after this many group ops.  0 sets no limit
+     * and keeps the built-in runaway guard, 256 * sqrt(width) + 64 * kangaroos
+     * * 2^dp_bits + 2^20 hops (plus 4 * width when `jumps` is set), far above
+     * the cost of a logarithm that lies in the interval; a run that reaches
+     * it returns CA_ERR_NOT_FOUND. */
+    uint64_t max_ops;
 } ca_kangaroo_params;
 
 CA_API void ca_kangaroo_params_default(ca_kangaroo_params *p);

@@ -1,0 +1,30 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-12T00:18:55Z",
+ "id": "PCC-20261112-0355ab",
+ "kind": "statement",
+ "producer": {
+  "commit": "43a8e80ea4d01c564499e678751f44c51dae5243",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct25-c2-norms-01.txt",
+    "sha256": "e50c701f8d92bd1d96d08969e3a9164596409b0feaa7057ebed73502dbcdae5d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct25-direct-norms-source-01.rs",
+    "sha256": "7500cf3e9d749809bdf929ef2dcc52905f49530d6263f64906bfbea8e7779921"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Unsigned CT25 explicit C2 direct-norm factory01 passes BOTH norms vs generic onALL12317 classes,all paired additions/orders/wrongmodel,disjoint degree/A0B0 categories[3,4,232,2,216,232,11628],118 repeated supports,238 infinity corrections. Actual shifts41/37,shortmodels(17,91)/(48,48);old C0/C1 constructor still rejectsC2. Exact source01/receipt retained. This is pre-integration correctness only,no endpoint full-graph or timing acceptance."
+}

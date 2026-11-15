@@ -22,9 +22,12 @@ static inline uint64_t mulmod_lt(uint64_t a, uint64_t b, uint64_t m)
 #endif
 }
 
+/* base^exp mod m; 0 when m is 0 or 1.  (Contract notes for a zero or
+ * composite modulus live here, not in ca_modarith.h: that header is pinned
+ * byte for byte by verification/pqc-assay/sources.sha256.) */
 uint64_t ca_powmod(uint64_t base, uint64_t exp, uint64_t m)
 {
-    if (m == 1) return 0;
+    if (m <= 1) return 0; /* m == 0 is not a modulus: 0, as ca_invmod answers it */
     /* Odd modulus and more than a few squarings: Montgomery form, whose
      * multiply has no 128-bit division.  Setting it up costs three, so
      * short exponents stay on the plain ladder.  Same residue either way. */
@@ -222,8 +225,10 @@ uint64_t ca_iroot(uint64_t n, unsigned k)
     return lo;
 }
 
+/* Legendre symbol; 0 when p is 0. */
 int ca_legendre(uint64_t a, uint64_t p)
 {
+    if (p == 0) return 0;
     a %= p;
     if (a == 0) return 0;
     uint64_t r = ca_powmod(a, (p - 1) / 2, p);
@@ -232,8 +237,12 @@ int ca_legendre(uint64_t a, uint64_t p)
     return 0; /* p not prime */
 }
 
+/* Returns 0 when a is a non-residue or p is 0.  A composite p is outside the
+ * contract: the call terminates, and returns 0 unless p passes for a prime at
+ * the bases tried. */
 int ca_sqrtmod_prime(uint64_t a, uint64_t p, uint64_t *root)
 {
+    if (p == 0) return 0;
     a %= p;
     if (a == 0) { *root = 0; return 1; }
     if (p == 2) { *root = a & 1; return 1; }
@@ -246,8 +255,16 @@ int ca_sqrtmod_prime(uint64_t a, uint64_t p, uint64_t *root)
     uint64_t q = p - 1;
     unsigned s = 0;
     while ((q & 1) == 0) { q >>= 1; s++; }
+    /* A prime p has a non-residue below p.  A composite p may have none, but
+     * its symbol is 0 at the first z sharing a factor with p (and at z = p),
+     * so stopping there bounds the search for every modulus. */
     uint64_t z = 2;
-    while (ca_legendre(z, p) != -1) z++;
+    for (;;) {
+        int l = ca_legendre(z, p);
+        if (l == -1) break;
+        if (l == 0) return 0; /* p is not prime */
+        z++;
+    }
     uint64_t c = ca_powmod(z, q, p);
     uint64_t r = ca_powmod(a, (q + 1) / 2, p);
     uint64_t t = ca_powmod(a, q, p);
@@ -258,7 +275,7 @@ int ca_sqrtmod_prime(uint64_t a, uint64_t p, uint64_t *root)
         while (tt != 1) {
             tt = mulmod_lt(tt, tt, p);
             i++;
-            if (i == m) return 0;
+            if (i >= m) return 0;
         }
         uint64_t b = c;
         for (unsigned j = 0; j + i + 1 < m; j++) b = mulmod_lt(b, b, p);
@@ -511,8 +528,10 @@ ca_status ca_factorize(uint64_t n, ca_factorization *out)
     return CA_OK;
 }
 
+/* 0 when p divides a or p is 0. */
 uint64_t ca_mult_order(uint64_t a, uint64_t p)
 {
+    if (p == 0) return 0;
     a %= p;
     if (a == 0) return 0;
     ca_factorization f;

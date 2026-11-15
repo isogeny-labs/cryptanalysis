@@ -1,0 +1,30 @@
+digraph Chain {
+  rankdir=LR;
+  graph [bgcolor="white",pad="0.18",nodesep="0.44",ranksep="0.5"];
+  node [shape=box,style="rounded,filled",fillcolor="#edf5fc",color="#315c83",fontname="DejaVu Sans",fontsize=11];
+  edge [color="#315c83",fontname="DejaVu Sans",fontsize=10];
+  a0 [label="A0: E109 × E113\nj12 / j58"];
+  a1 [label="A1: E109' × E113'\nj87 / j92"];
+  a2 [label="A2: E109'' × E113''\nj47 / j89"];
+  j0 [label="J0: C0(56,13,6)"];
+  j1 [label="J1: C1(68,42,26)"];
+  j2 [label="J2: C2(19,10,22)"];
+  t0 [label="T0: scale22\naccepted target"];
+  t1 [label="T1: scale47\naccepted target"];
+  t2 [label="T2: scale50\nnew transported quotient"];
+  a0 -> a1 [label="α;degree49"];
+  a1 -> a2 [label="β;degree49;nondual"];
+  a0 -> j0 [label="P0;degree4"];
+  a1 -> j1 [label="P1;degree4"];
+  a2 -> j2 [label="P2;degree4"];
+  j0 -> j1 [label="Φ1;degree49"];
+  j1 -> j2 [label="Φ2;degree49"];
+  j0 -> t0 [label="R0;degree4"];
+  j1 -> t1 [label="R1;degree4"];
+  j2 -> t2 [label="R2;degree4"];
+  t0 -> t1 [label="Ψ1;degree49"];
+  t1 -> t2 [label="Ψ2;degree49"];
+  {rank=same;a0;j0;t0;}
+  {rank=same;a1;j1;t1;}
+  {rank=same;a2;j2;t2;}
+}
