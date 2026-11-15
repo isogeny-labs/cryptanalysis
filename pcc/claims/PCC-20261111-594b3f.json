@@ -1,0 +1,30 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-11T23:33:59Z",
+ "id": "PCC-20261111-594b3f",
+ "kind": "statement",
+ "producer": {
+  "commit": "5d5dc81faa442de6d9a4ee8144806ab89cf9a3b8",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/successor-chain-geometric-08.txt",
+    "sha256": "419dcf742f6e8c620c7eeb9c32cdea8af9fa031990089b9ef1a7c9dabf0b8596"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/successor-chain-source-08.rs",
+    "sha256": "12ee58b95999f42531f06582e692481988686dd80f48a8549b3459c68adfa1ac"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Unsigned actual R1/R2 geometric forward/dual tables cover all16 two-classes,all256 additions/Frobenius;R2 Phi2 R1Hat and adjoint kill all16;all12 nonzero elliptic2-intersection controls retain embeddings. Exact source08 and complete receipt08 retained. Regular quotient/degree/polarization/descent require separate written proof."
+}

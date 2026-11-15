@@ -1,4 +1,41 @@
+# CT24: two consecutive nondual Jacobian transfers
+
+[Written proof](SUCCESSOR_CHAIN_V2.md),[current checkpoint](SUCCESSOR_CHECKPOINT.md)
+and [inspected report](reports/successor-chain/chain-report.pdf) describe
+actual Phi2:C1→C2 and transported Psi2:T1→T2. Both complete12317-class
+domains for eachPhi2/R2/Psi2 pass component checks,with all109/113 source
+relations/reverse196/inverses104/64/direct4 beta alpha,full geometric
+two-kernel and explicit49-class Psi2 kernel. Independent T2 branch oracle
+and separate flat validity/Frobenius replay pass. Written global geometry
+and five new conditional Lean helpers are distinguished from runtime tests.
+Full changed guard15 passes25native/80reference unit+five integrations,
+one old ignored benchmark,PCC5383d3;final-head CI remains separate. No timing
+or computational advantage claim;all standing unsigned. [pcc:unverified]
+
+# CT23: closed Richelot fibres and explicit Psi kernel
+
+[CLOSED_FIBRES.md](CLOSED_FIBRES.md), [current status](CLOSED_FIBRES_STATUS.md)
+and [report](closed-fibres-report.pdf) describe the resultant evaluator and
+actual49-class T0 kernel witness. All four12317-class R0/R1 domains match
+pointwise evaluation,including dual2/bijections/paired sums and geometric
+chart boundaries. Integrated complete guard07 passes25native/70reference
+unit plus three integrations,one old ignored benchmark,all guards/fmt/
+strictClippy (PCC1f1423). The original pointwise and naive routes remain.
+Independent flat-field replay checks the exported divisor validity and
+Frobenius only. Full scientific standing remains unsigned. [pcc:unverified]
+
 # Chained transfer differential reference
+
+Current [direct elliptic norms](DIRECT_NORMS.md) evaluate both C0/C1
+quotients using base-field formulas with repeated/zero support and every
+balanced infinity term. Both norms match the unchanged generic route on
+all12317 classes ofeach model. Integrated complete guard passes25native/
+66reference unit+three integrations,one old benchmark ignored;all Phi/
+PhiHat classes agree with retained generic evaluation and all Psi/source
+controls pass. Seven new partial Lean lemmas bring the source census97;
+geometry remains written and standing unsigned. [DIRECT_NORMS_STATUS.md](DIRECT_NORMS_STATUS.md)
+retains exact receipts,limits and the inspected two-page report. No timing,
+solver or broader catalog claim. [pcc:unverified]
 
 Current [transported seven-chain](SEVEN_CHAIN.md) constructs actual global
 Psi between the accepted T0 and a distinct unpolarized F101 Jacobian T1.

@@ -1,0 +1,30 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-11T20:56:10Z",
+ "id": "PCC-20261111-2c9f2c",
+ "kind": "statement",
+ "producer": {
+  "commit": "7c1f32ecb24daffce449703075573c824dd1f241",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/direct-norms-all-models-02.txt",
+    "sha256": "51535125980a609df71e070c8702709fb4cde8ea6a7eacc3530f86612e25c038"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/direct-norms-source-02.rs",
+    "sha256": "d0e2148a134a2603d0434794643de8d64cbe64efaac3cb5c653aeb246bfe50cd"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "CT22 direct base-field elliptic quotient norms match BOTH unchanged generic norms on ALL12317 C0 and ALL12317 C1 rational balanced classes. Bothquotients satisfy all12317 deterministic paired additions permodel,curvevalidity,actual109/113order checks,identity/wrongmodel rejection. Eachmodel disjointdegree/zero categories are[3,4,232,2,216,232,11628],with118 repeated supports and238 nonzero balanced-infinity corrections,including zero-coordinate and quadratic repeated cases. Only existingZp/elliptic/cubic_to_short/Balanced engines are reused. Prototype not yet integrated into Phi/Psi;globalnorm proof/Lean helpers/whole changedmap guard and computational advantage remain separate. InitialAPI-negation compilefailure preserved. Producer-run bounded correctness,unsigned."
+}

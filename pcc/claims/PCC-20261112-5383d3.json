@@ -1,0 +1,79 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-12T00:09:09Z",
+ "id": "PCC-20261112-5383d3",
+ "kind": "statement",
+ "producer": {
+  "commit": "5d5dc81faa442de6d9a4ee8144806ab89cf9a3b8",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/successor-complete-15.txt.xz",
+    "sha256": "e82dd6b969618b946ddf40f83c5d87812d24151d9ac81825fc50a13f4558c6ce"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/successor-complete-15.txt.sha256",
+    "sha256": "360761c685617bbbcb4119772ce0beacbc36ff39b27c9d988caef5291cdabb01"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/successor-source-15.sha256",
+    "sha256": "b4b7c834d61eb3a4803b461d48d382c2622a9655fcdd2fe3ead111c589e8cd66"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/seven_successor-source-15.rs",
+    "sha256": "5f2b120d2fe4c76904ec291786077f7a6a0de6c0ed4fb8d1b0c9393920599a55"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/seven_successor_torsion-source-15.rs",
+    "sha256": "6c5712786e5892143cd898c8d00b14ad4ffd1b007a3891daf83e0323f513bd9a"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/seven_successor_chain-source-15.rs",
+    "sha256": "176d4968e057308043302f399681883f65c23053ebb8c342ce4b63ed11df93e5"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/seven_torsion-source-15.rs",
+    "sha256": "7e05ac4b30a45e942e9af1c4976a0326b05c7a5803804dd1372d3d4f66e7cb19"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/seven_chain-source-15.rs",
+    "sha256": "a82bb8c6aad821fc8ab5812cb578fd52af53bc28d7cf49334fcf5942f37eed51"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/successor-automorphisms-source-06.rs",
+    "sha256": "ddba75a9d6425574ec63eb5ec840d0e8f8f0b7c6c3e929be7d7c9ff077f8b001"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Unsigned COMPLETE changed guard15 passes25native/80reference unit+5integration tests,1pre-existing ignored benchmark,all source guards/fmt/strictClippy. Exact source15 snapshots/hashes match final arithmetic. Both Phi2/R2/Psi2 full12317 domains,all old Phi/Psi/generic/pointwise/closed/source controls,all109/113 two-hop recovery196/direct4,geometric two-kernel/49-kernel and independent branch oracle pass. Full raw receipt standard-xz archived with raw/archive hashes/exact roundtrip. No signed scientific verification or measured advantage."
+}
