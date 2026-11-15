@@ -219,8 +219,38 @@ static void run_solver(const ca_group *g, const ca_elem *gen, ca_gpu_backend be,
     printf("%-28s ops/sqrt(n) = %.2f\n", label, tot / reps / sqrt((double)g->order));
 }
 
+static void test_launch_dimension_overflow(void)
+{
+    ca_group g;
+    ca_elem gen, target;
+    fx_zp_safe(&g, &gen, 2000000579ULL);
+    fx_instance(&g, &gen, 7, &target);
+    const uint32_t dimensions[][2] = {
+        {1u << 25, 128},       /* thread count would truncate to zero */
+        {(1u << 25) + 1, 128}, /* thread count would truncate to 128 */
+        {1u << 22, 128},       /* thread count fits, walk IDs do not */
+        {UINT32_MAX, UINT32_MAX},
+    };
+    for (size_t i = 0; i < sizeof(dimensions) / sizeof(dimensions[0]); i++) {
+        ca_gpu_rho_params p;
+        ca_gpu_rho_params_default(&p);
+        p.backend = CA_GPU_BACKEND_EMULATE;
+        p.blocks = dimensions[i][0];
+        p.threads_per_block = dimensions[i][1];
+        p.dp_bits = 0;
+        p.steps_per_launch = 1;
+        p.max_ops = 1;
+        uint64_t got = UINT64_MAX;
+        ca_status rc = ca_gpu_rho_solve(&g, &gen, &target, &p, &got, NULL);
+        CHECK(rc == CA_ERR_INVALID);
+        CHECK_EQ_U64(got, UINT64_MAX);
+        if (rc != CA_ERR_INVALID) return; /* a broken guard must not attempt larger allocations */
+    }
+}
+
 int main(void)
 {
+    test_launch_dimension_overflow();
     test_device_arith();
     ca_group g;
     ca_elem gen;
