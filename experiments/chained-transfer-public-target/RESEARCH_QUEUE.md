@@ -1,3 +1,13 @@
+# Actual character separator; whole custody27 next
+
+Unsigned3a7d56: exactsource5408b9db/checkpoint24 full22phase native/60calls/13200norm-cofactor4-BSGS witnesses/15125relation occurrences. Every actualsource scalar witness and relation holds; all canonical/source-character descent decompositions hold. FB30candidate differs on29active columns/179-171-174known logs byside/all45computedY values; all45largerFBcalls agree throughout. All60postsolver source ratios pass actual target-group checks. No oracle entered solver and no globalcharacter/causal/cost theorem is inferred. Full scalar mutation101/nooutput. [pcc:unverified]
+
+Rankc0479c/proof19c467 normallypublished4ec3401:360certificates/1440470rowoperations, FB30nullities6-10-13/largerFBnullity1; both originalgates27declarations0trusted/allnineexactbindings. Prior passive d118b9/all100native60calls660events/non-time report-counter parity and acceptedGitHubCI0b4ddb retain allfailures and explicit bridges. Rootmirrors719d74/governance36196a normallypublished4cea0760. [pcc:unverified]
+
+NEXT: source-linked result visual/PDF, updateGitHub3904/bothPRs/currentRootcharacter evidence, then genuineNEW27 for every completepost26 source/build/runtime/fullprepared/raw/control/failure/wholeCIartifact-log/reportdraft. Currentfullrawroot scratch/ct103-original-relation-character-native-01; fullRustreporting scratch/ct103-character-summary-native-01. Preserveallwholepositive-negativeJSONLs/7.9MBverdict and prior48MBcertificates. Need new prior-art review/prospective addendum before relation-completion solver changes. Vault8edec422locked/VLT1 only, KB127; numericalLean/globalmodel/program and calibratedliveadmission/reference/merge obligations remain. [pcc:unverified]
+
+---
+
 # Passive relation observer compiled; publish/exact checkpoint before capture
 
 pcc/claims/PCC-20261115-add9e6.json: firstbuild0/1503prior17current2driverguards/original entire field-engine closure/full preparedRLIB-RMETA/freshreuse/test andbothauditors compile. Sevenpassiveinsertions/context-testreverseprojection exact; purecanonicalkeybytecopies reviewed. Native/full60call reportparity/660journal events/rank-character measurements NOTRUN. [pcc:unverified]
