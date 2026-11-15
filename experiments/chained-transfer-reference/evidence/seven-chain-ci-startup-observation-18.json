@@ -1,0 +1,294 @@
+{
+  "format": "github-api-observation-v1",
+  "observed_at": "2026-11-11T21:39:11Z",
+  "description": "GitHub connector responses retained as source metadata; not an execution proof. Both additional check-suite endpoints were rejected by the connector URL allowlist; cause of startup failure is not inferred.",
+  "run": {
+    "id": 43097723254,
+    "name": "Chained transfer differential reference",
+    "node_id": "WFR_kwLOUg-4R88AAAAKCNMRdg",
+    "head_branch": "research/chained-transfer-seven-torsion-20261111",
+    "head_sha": "7c1f32ecb24daffce449703075573c824dd1f241",
+    "path": ".github/workflows/chained-transfer-reference.yml",
+    "display_title": "Chained transfer differential reference",
+    "run_number": 27,
+    "event": "workflow_dispatch",
+    "status": "completed",
+    "conclusion": "startup_failure",
+    "workflow_id": 414361272,
+    "check_suite_id": 116712158809,
+    "check_suite_node_id": "CS_kwDOUg-4R88AAAAbLJY2WQ",
+    "url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/actions/runs/43097723254",
+    "html_url": "https://github.com/isogeny-labs/cryptanalysis/actions/runs/43097723254",
+    "pull_requests": [
+      {
+        "url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/pulls/1488",
+        "id": 5266499370,
+        "number": 1488,
+        "head": {
+          "ref": "research/chained-transfer-seven-torsion-20261111",
+          "sha": "7c1f32ecb24daffce449703075573c824dd1f241",
+          "repo": {
+            "id": 1376761927,
+            "url": "https://api.github.com/repos/isogeny-labs/cryptanalysis",
+            "name": "cryptanalysis"
+          }
+        },
+        "base": {
+          "ref": "research/chained-transfer-seven-glue-20261111",
+          "sha": "2450815e2a3b84687b405ef8498dae9dc2663fe1",
+          "repo": {
+            "id": 1376761927,
+            "url": "https://api.github.com/repos/isogeny-labs/cryptanalysis",
+            "name": "cryptanalysis"
+          }
+        }
+      }
+    ],
+    "created_at": "2026-11-11T20:43:24Z",
+    "updated_at": "2026-11-11T20:46:31Z",
+    "actor": {
+      "login": "aburan28",
+      "id": 1086874,
+      "node_id": "MDQ6VXNlcjEwODY4NzQ=",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1086874?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/aburan28",
+      "html_url": "https://github.com/aburan28",
+      "followers_url": "https://api.github.com/users/aburan28/followers",
+      "following_url": "https://api.github.com/users/aburan28/following{/other_user}",
+      "gists_url": "https://api.github.com/users/aburan28/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/aburan28/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/aburan28/subscriptions",
+      "organizations_url": "https://api.github.com/users/aburan28/orgs",
+      "repos_url": "https://api.github.com/users/aburan28/repos",
+      "events_url": "https://api.github.com/users/aburan28/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/aburan28/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "run_attempt": 1,
+    "referenced_workflows": [],
+    "run_started_at": "2026-11-11T20:43:24Z",
+    "triggering_actor": {
+      "login": "aburan28",
+      "id": 1086874,
+      "node_id": "MDQ6VXNlcjEwODY4NzQ=",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1086874?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/aburan28",
+      "html_url": "https://github.com/aburan28",
+      "followers_url": "https://api.github.com/users/aburan28/followers",
+      "following_url": "https://api.github.com/users/aburan28/following{/other_user}",
+      "gists_url": "https://api.github.com/users/aburan28/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/aburan28/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/aburan28/subscriptions",
+      "organizations_url": "https://api.github.com/users/aburan28/orgs",
+      "repos_url": "https://api.github.com/users/aburan28/repos",
+      "events_url": "https://api.github.com/users/aburan28/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/aburan28/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "jobs_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/actions/runs/43097723254/jobs",
+    "logs_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/actions/runs/43097723254/logs",
+    "check_suite_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/check-suites/116712158809",
+    "artifacts_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/actions/runs/43097723254/artifacts",
+    "cancel_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/actions/runs/43097723254/cancel",
+    "rerun_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/actions/runs/43097723254/rerun",
+    "previous_attempt_url": null,
+    "workflow_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/actions/workflows/414361272",
+    "head_commit": {
+      "id": "7c1f32ecb24daffce449703075573c824dd1f241",
+      "tree_id": "4bf9cd229c395d7976a27a4428ce262a730ea0c8",
+      "message": "research: transport the seven-isogeny across Richelot targets",
+      "timestamp": "2026-11-11T20:38:32Z",
+      "author": {
+        "name": "Adam Buran",
+        "email": "adam@isogenylabs.io"
+      },
+      "committer": {
+        "name": "Adam Buran",
+        "email": "adam@isogenylabs.io"
+      }
+    },
+    "repository": {
+      "id": 1376761927,
+      "node_id": "R_kgDOUg-4Rw",
+      "name": "cryptanalysis",
+      "full_name": "isogeny-labs/cryptanalysis",
+      "private": false,
+      "owner": {
+        "login": "isogeny-labs",
+        "id": 347052081,
+        "node_id": "O_kgDOFK-YMQ",
+        "avatar_url": "https://avatars.githubusercontent.com/u/347052081?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/isogeny-labs",
+        "html_url": "https://github.com/isogeny-labs",
+        "followers_url": "https://api.github.com/users/isogeny-labs/followers",
+        "following_url": "https://api.github.com/users/isogeny-labs/following{/other_user}",
+        "gists_url": "https://api.github.com/users/isogeny-labs/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/isogeny-labs/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/isogeny-labs/subscriptions",
+        "organizations_url": "https://api.github.com/users/isogeny-labs/orgs",
+        "repos_url": "https://api.github.com/users/isogeny-labs/repos",
+        "events_url": "https://api.github.com/users/isogeny-labs/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/isogeny-labs/received_events",
+        "type": "Organization",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "html_url": "https://github.com/isogeny-labs/cryptanalysis",
+      "description": null,
+      "fork": false,
+      "url": "https://api.github.com/repos/isogeny-labs/cryptanalysis",
+      "forks_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/forks",
+      "keys_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/keys{/key_id}",
+      "collaborators_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/collaborators{/collaborator}",
+      "teams_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/teams",
+      "hooks_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/hooks",
+      "issue_events_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/issues/events{/number}",
+      "events_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/events",
+      "assignees_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/assignees{/user}",
+      "branches_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/branches{/branch}",
+      "tags_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/tags",
+      "blobs_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/git/blobs{/sha}",
+      "git_tags_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/git/tags{/sha}",
+      "git_refs_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/git/refs{/sha}",
+      "trees_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/git/trees{/sha}",
+      "statuses_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/statuses/{sha}",
+      "languages_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/languages",
+      "stargazers_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/stargazers",
+      "contributors_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/contributors",
+      "subscribers_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/subscribers",
+      "subscription_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/subscription",
+      "commits_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/commits{/sha}",
+      "git_commits_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/git/commits{/sha}",
+      "comments_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/comments{/number}",
+      "issue_comment_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/issues/comments{/number}",
+      "contents_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/contents/{+path}",
+      "compare_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/compare/{base}...{head}",
+      "merges_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/merges",
+      "archive_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/{archive_format}{/ref}",
+      "downloads_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/downloads",
+      "issues_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/issues{/number}",
+      "pulls_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/pulls{/number}",
+      "milestones_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/milestones{/number}",
+      "notifications_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/notifications{?since,all,participating}",
+      "labels_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/labels{/name}",
+      "releases_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/releases{/id}",
+      "deployments_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/deployments"
+    },
+    "head_repository": {
+      "id": 1376761927,
+      "node_id": "R_kgDOUg-4Rw",
+      "name": "cryptanalysis",
+      "full_name": "isogeny-labs/cryptanalysis",
+      "private": false,
+      "owner": {
+        "login": "isogeny-labs",
+        "id": 347052081,
+        "node_id": "O_kgDOFK-YMQ",
+        "avatar_url": "https://avatars.githubusercontent.com/u/347052081?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/isogeny-labs",
+        "html_url": "https://github.com/isogeny-labs",
+        "followers_url": "https://api.github.com/users/isogeny-labs/followers",
+        "following_url": "https://api.github.com/users/isogeny-labs/following{/other_user}",
+        "gists_url": "https://api.github.com/users/isogeny-labs/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/isogeny-labs/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/isogeny-labs/subscriptions",
+        "organizations_url": "https://api.github.com/users/isogeny-labs/orgs",
+        "repos_url": "https://api.github.com/users/isogeny-labs/repos",
+        "events_url": "https://api.github.com/users/isogeny-labs/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/isogeny-labs/received_events",
+        "type": "Organization",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "html_url": "https://github.com/isogeny-labs/cryptanalysis",
+      "description": null,
+      "fork": false,
+      "url": "https://api.github.com/repos/isogeny-labs/cryptanalysis",
+      "forks_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/forks",
+      "keys_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/keys{/key_id}",
+      "collaborators_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/collaborators{/collaborator}",
+      "teams_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/teams",
+      "hooks_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/hooks",
+      "issue_events_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/issues/events{/number}",
+      "events_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/events",
+      "assignees_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/assignees{/user}",
+      "branches_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/branches{/branch}",
+      "tags_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/tags",
+      "blobs_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/git/blobs{/sha}",
+      "git_tags_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/git/tags{/sha}",
+      "git_refs_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/git/refs{/sha}",
+      "trees_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/git/trees{/sha}",
+      "statuses_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/statuses/{sha}",
+      "languages_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/languages",
+      "stargazers_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/stargazers",
+      "contributors_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/contributors",
+      "subscribers_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/subscribers",
+      "subscription_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/subscription",
+      "commits_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/commits{/sha}",
+      "git_commits_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/git/commits{/sha}",
+      "comments_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/comments{/number}",
+      "issue_comment_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/issues/comments{/number}",
+      "contents_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/contents/{+path}",
+      "compare_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/compare/{base}...{head}",
+      "merges_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/merges",
+      "archive_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/{archive_format}{/ref}",
+      "downloads_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/downloads",
+      "issues_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/issues{/number}",
+      "pulls_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/pulls{/number}",
+      "milestones_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/milestones{/number}",
+      "notifications_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/notifications{?since,all,participating}",
+      "labels_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/labels{/name}",
+      "releases_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/releases{/id}",
+      "deployments_url": "https://api.github.com/repos/isogeny-labs/cryptanalysis/deployments"
+    }
+  },
+  "jobs": {
+    "jobs": []
+  },
+  "checks": {
+    "total_count": 0,
+    "check_runs": []
+  },
+  "suite_endpoint_attempts": [
+    {
+      "status": "fulfilled",
+      "value": {
+        "content": [
+          {
+            "type": "text",
+            "text": "HTTPError: 400: GitHub Fetch URL is not an allowed public GitHub repository or search endpoint. (Response: None)"
+          }
+        ],
+        "structuredContent": {
+          "error": "HTTPError: 400: GitHub Fetch URL is not an allowed public GitHub repository or search endpoint. (Response: None)",
+          "error_code": "INVALID_ARGUMENT"
+        },
+        "isError": true
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "content": [
+          {
+            "type": "text",
+            "text": "HTTPError: 400: GitHub Fetch URL is not an allowed public GitHub repository or search endpoint. (Response: None)"
+          }
+        ],
+        "structuredContent": {
+          "error": "HTTPError: 400: GitHub Fetch URL is not an allowed public GitHub repository or search endpoint. (Response: None)",
+          "error_code": "INVALID_ARGUMENT"
+        },
+        "isError": true
+      }
+    }
+  ]
+}
