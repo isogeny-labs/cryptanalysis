@@ -114,6 +114,9 @@ typedef struct rho_shared {
     const char *checkpoint_path;
 
     pthread_mutex_t lock;
+    /* 1 when the one walker runs on the calling thread with no monitor:
+     * nothing else touches tab, so the DP insert takes no lock */
+    int single;
     ca_htab tab;
     atomic_int done;
     atomic_uint_fast64_t total_ops;
@@ -135,9 +138,10 @@ typedef struct rho_walk {
     uint64_t since_dp;
     ca_elem saved;
     uint32_t win;
-    ca_elem hist[4]; /* the last committed points, newest first */
+    ca_elem hist[4]; /* the last committed points, a ring: newest at hist_pos */
     uint64_t hist_h[4];
     uint32_t hist_n;
+    uint32_t hist_pos;
 #ifdef CA_RHO_TRACE
     uint64_t ring[RHO_RING];
     uint64_t ring_n;   /* committed points since the walk start or the last escape */
@@ -412,6 +416,13 @@ static inline uint32_t rho_index(const rho_shared *sh, uint64_t h)
     return (uint32_t)(((ca_u128)low * sh->r) >> 64);
 }
 
+/* The look-ahead's next multiplier, (i + 1) mod r, without a division when
+ * r is a power of two. */
+static inline uint32_t rho_next_index(const rho_shared *sh, uint32_t i)
+{
+    return sh->r_mask ? (i + 1) & sh->r_mask : (i + 1) % sh->r;
+}
+
 static inline void exp_add(uint64_t n, uint64_t *a, uint64_t d) { *a = ca_addmod(*a, d, n); }
 
 /* k * (the base the table was built from) as the sum of the stored
@@ -444,16 +455,30 @@ static void rho_start_mul(const rho_shared *sh, ca_elem *t1, ca_elem *t2, uint64
     }
 }
 
+/* a * base + b * target, the point of a walk start or a multiplier, charged
+ * as rho_start_mul and one ca_group_op charge it: one operation per set bit
+ * of a and of b, and one for the sum.  The native curve adds the fixed-base
+ * points in Jacobian coordinates and inverts once (ca_ec_fb_sum), instead
+ * of one inversion per set bit; the affine sum is the same point. */
+static void rho_start_point(const rho_shared *sh, ca_elem *Y, uint64_t a, uint64_t b, uint64_t *ops)
+{
+    if (sh->fb_base && ca_ec_fb_sum(sh->g, Y, sh->fb_base, a, sh->fb_target, b)) {
+        *ops += (uint64_t)__builtin_popcountll(a) + (uint64_t)__builtin_popcountll(b) + 1;
+        return;
+    }
+    ca_elem t1, t2;
+    rho_start_mul(sh, &t1, &t2, a, b, ops);
+    ca_group_op(sh->g, Y, &t1, &t2);
+    (*ops)++;
+}
+
 // cppcheck-suppress constParameterPointer ; CA_RHO_TRACE builds write through sh (trail_counter)
 static void walk_restart(rho_shared *sh, rho_walk *w, ca_rng *rng, uint64_t *ops)
 {
     const ca_group *g = sh->g;
     w->a = ca_rng_below(rng, sh->n);
     w->b = ca_rng_below(rng, sh->n);
-    ca_elem t1, t2;
-    rho_start_mul(sh, &t1, &t2, w->a, w->b, ops);
-    ca_group_op(g, &w->Y, &t1, &t2);
-    (*ops)++;
+    rho_start_point(sh, &w->Y, w->a, w->b, ops);
     if (sh->negmap && ca_group_canonicalize(g, &w->Y)) {
         w->a = w->a ? sh->n - w->a : 0;
         w->b = w->b ? sh->n - w->b : 0;
@@ -475,8 +500,8 @@ static void walk_restart(rho_shared *sh, rho_walk *w, ca_rng *rng, uint64_t *ops
 static inline void walk_apply(const rho_shared *sh, rho_walk *w, uint32_t i, int negated)
 {
     const uint64_t n = sh->n;
-    uint64_t a = ca_addmod(w->a, sh->alpha[i], n);
-    uint64_t b = ca_addmod(w->b, sh->beta[i], n);
+    uint64_t a = ca_addmod_sel(w->a, sh->alpha[i], n);
+    uint64_t b = ca_addmod_sel(w->b, sh->beta[i], n);
     if (sh->negmap) {
         /* With the negation map, `negated` is a coin flip on walk data, so
          * the negated coefficients are formed unconditionally and selected:
@@ -511,7 +536,7 @@ static void walk_step_single(rho_shared *sh, rho_walk *w, uint64_t *ops)
          * it is; the 2-cycle it makes is caught by the window test.  The
          * choice depends on the point alone, so merged walks stay merged. */
         if (sh->negmap && rho_index(sh, h) == i && rejected + 1 < sh->r) {
-            i = (i + 1) % sh->r;
+            i = rho_next_index(sh, i);
             rejected++;
             continue;
         }
@@ -552,6 +577,26 @@ static uint32_t walk_escape_cycle(rho_shared *sh, rho_walk *w, uint64_t *ops)
     w->win = 0;
     w->hist_n = 0;
     return cycle_len;
+}
+
+/* The distinguished-point insert.  sh->single is set before the walker
+ * starts and never changes; with one walker on the calling thread and no
+ * monitor thread nothing else reads or writes the table, so the mutex is
+ * skipped.  The same entry is inserted either way. */
+static inline int rho_dp_insert(rho_shared *sh, uint64_t h, uint64_t a, uint64_t b, uint64_t *oa,
+                                uint64_t *ob, size_t *entries)
+{
+    int rc;
+    if (sh->single) {
+        rc = ca_htab_insert(&sh->tab, h, a, b, oa, ob);
+        *entries = sh->tab.count;
+        return rc;
+    }
+    pthread_mutex_lock(&sh->lock);
+    rc = ca_htab_insert(&sh->tab, h, a, b, oa, ob);
+    *entries = sh->tab.count;
+    pthread_mutex_unlock(&sh->lock);
+    return rc;
 }
 
 /* Try to solve from a collision between stored (a1,b1) and new (a2,b2) at
@@ -600,10 +645,8 @@ static __attribute__((noinline)) int rho_zp_dp(rho_shared *sh, rho_walk *wk, uin
 {
     uint64_t oa, ob;
     int rc;
-    pthread_mutex_lock(&sh->lock);
-    rc = ca_htab_insert(&sh->tab, h, wk->a, wk->b, &oa, &ob);
-    size_t entries = sh->tab.count;
-    pthread_mutex_unlock(&sh->lock);
+    size_t entries;
+    rc = rho_dp_insert(sh, h, wk->a, wk->b, &oa, &ob, &entries);
     atomic_fetch_add(&sh->total_dps, 1);
     if (rc < 0) {
         pthread_mutex_lock(&sh->lock);
@@ -671,8 +714,8 @@ static void rho_zp_round(rho_shared *sh, rho_walk *walks, uint32_t W, ca_rng *rn
         wk->Y.w[0] = y;
         wk->h = h;
         wk->idx = i;
-        wk->a = ca_addmod(wk->a, al[i], N);
-        wk->b = ca_addmod(wk->b, be[i], N);
+        wk->a = ca_addmod_sel(wk->a, al[i], N);
+        wk->b = ca_addmod_sel(wk->b, be[i], N);
         uint64_t sd = wk->since_dp + 1;
         wk->since_dp = sd;
         if ((h & dpm) == 0) {
@@ -831,7 +874,7 @@ static void *rho_thread_main(void *arg)
                 h = ca_group_hash(g, &Yn[w]);
             }
             if (sh->negmap && rho_index(sh, h) == wk->idx && wk->retry + 1 < sh->r) {
-                wk->idx = (wk->idx + 1) % sh->r;
+                wk->idx = rho_next_index(sh, wk->idx);
                 wk->retry++; /* bounded as in walk_step_single */
 #ifdef CA_RHO_TRACE
                 sh->tr.retry_slots++;
@@ -861,17 +904,19 @@ static void *rho_thread_main(void *arg)
 
             if (sh->negmap) {
                 /* a repeat of the point two or four steps back is a 2- or 4-cycle */
-                int in_cycle = (wk->hist_n >= 2 && h == wk->hist_h[1] &&
-                                ca_group_equal(g, &wk->Y, &wk->hist[1])) ||
-                               (wk->hist_n >= 4 && h == wk->hist_h[3] &&
-                                ca_group_equal(g, &wk->Y, &wk->hist[3]));
+                /* hist is a ring with the newest point at hist_pos, so the
+                 * point j steps back is at (hist_pos - j) & 3 and a commit
+                 * writes one slot instead of shifting all four */
+                const uint32_t p1 = (wk->hist_pos - 1) & 3, p3 = (wk->hist_pos - 3) & 3;
+                int in_cycle = (wk->hist_n >= 2 && h == wk->hist_h[p1] &&
+                                ca_group_equal(g, &wk->Y, &wk->hist[p1])) ||
+                               (wk->hist_n >= 4 && h == wk->hist_h[p3] &&
+                                ca_group_equal(g, &wk->Y, &wk->hist[p3]));
                 if (!in_cycle) {
-                    for (int k = 3; k > 0; k--) {
-                        wk->hist[k] = wk->hist[k - 1];
-                        wk->hist_h[k] = wk->hist_h[k - 1];
-                    }
-                    wk->hist[0] = wk->Y;
-                    wk->hist_h[0] = h;
+                    const uint32_t p0 = (wk->hist_pos + 1) & 3;
+                    wk->hist_pos = p0;
+                    wk->hist[p0] = wk->Y;
+                    wk->hist_h[p0] = h;
                     if (wk->hist_n < 4) wk->hist_n++;
                     if (wk->win == 0) {
                         wk->saved = wk->Y;
@@ -923,10 +968,8 @@ static void *rho_thread_main(void *arg)
             if ((h & sh->dp_mask) == 0) {
                 uint64_t oa, ob;
                 int rc;
-                pthread_mutex_lock(&sh->lock);
-                rc = ca_htab_insert(&sh->tab, h, wk->a, wk->b, &oa, &ob);
-                size_t entries = sh->tab.count;
-                pthread_mutex_unlock(&sh->lock);
+                size_t entries;
+                rc = rho_dp_insert(sh, h, wk->a, wk->b, &oa, &ob, &entries);
                 atomic_fetch_add(&sh->total_dps, 1);
                 if (rc < 0) {
                     pthread_mutex_lock(&sh->lock);
@@ -1162,10 +1205,7 @@ static ca_status rho_solve_impl(const ca_group *g, const ca_elem *base, const ca
     for (uint32_t i = 0; i < sh.r; i++) {
         sh.alpha[i] = ca_rng_below(&rng, n);
         sh.beta[i] = ca_rng_below(&rng, n);
-        ca_elem t1, t2;
-        rho_start_mul(&sh, &t1, &t2, sh.alpha[i], sh.beta[i], &setup_ops);
-        ca_group_op(g, &sh.M[i], &t1, &t2);
-        setup_ops++;
+        rho_start_point(&sh, &sh.M[i], sh.alpha[i], sh.beta[i], &setup_ops);
     }
     sh.setup_ops = setup_ops;
 #ifdef CA_RHO_TRACE
@@ -1223,6 +1263,7 @@ static ca_status rho_solve_impl(const ca_group *g, const ca_elem *base, const ca
         return CA_ERR_NOMEM;
     }
     uint32_t started = 0;
+    sh.single = threads == 1 && !monitored;
     for (uint32_t t = 0; t < threads; t++) {
         ths[t].sh = &sh;
         ths[t].id = t;
