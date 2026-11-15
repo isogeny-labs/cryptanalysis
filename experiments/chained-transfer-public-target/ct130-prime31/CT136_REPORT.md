@@ -52,3 +52,18 @@ Separate [CT136 scope-specific GitHub Actions](../../../.github/workflows/ct136-
 The degree-two isogeny retains q exactly. A fourfold target orbit yields at best a **constant-factor generic-rho improvement**, not a new subexponential ECDLP algorithm. The source is a specially chosen CM-neighbor; the isogeny-search/construction cost and faster source endomorphism/projection methods are **not charged**. CT136 is stronger than CT135's original affine comparison but still lacks strongest projective/batched source and independently matched index calculus from crypto #4178; most importantly it is **not** the 695/701 original-prime Jacobian chain. Native C169, C13a, C13b and D, correction/halving classes, complete original-prime cold setup+LA+memory and signed PCC remain outstanding in #1534/#1523 and crypto #3877. Without those, there is **no accepted complete ECDLP advantage**. No paid compute, EKS/Spot job, protected merge or PCC signing.
 
 **Next:** independently hosted exact-code CT136 replay with A/A; then original-prime #1534 native primitive pricing/full cold references, or strongest projective source rho if it challenges the CM toy. A slower outcome gets recorded and shifted to the next expected-value index-calculus lead. Related: cryptanalysis #1546 (CT135), #1545 (CM source control); crypto #4215/#3877; GPU IC #4178's S remains much greater than rho.
+
+
+## Independently hosted exact-head reproduction — 2026-11-15 13:09 UTC [pcc:unverified]
+
+[GitHub Actions run #43717455264](https://github.com/isogeny-labs/cryptanalysis/actions/runs/43717455264), job **132821955085**, completed **success** on exact PR source/report head `ff498825bba6c6ff1f00638388c1b418e925d38d` (not a synthetic merge). The complete 360-line decoded job log was inspected: fixed CT135 blob guard, C++17 compilation, four preregistered 64-target panels, two byte-identical independent Python arithmetic audits (normal and optimized), **2,560** correct complete cold DLP recoveries, and **11/11** corrupted-record rejections. Exact hosted transcript is not interchangeable with producer-local raw timings.
+
+| Hosted prospective panel | Source batch32 total ns | Target batch32 total ns | ratio |
+|---|---:|---:|---:|
+| 20261230 | 225396314 | 165128549 | 1.364975 |
+| 20261231 | 202738964 | 170548841 | 1.188744 |
+| 20261232 | 216651790 | 177080495 | 1.223465 |
+| 20261233 | 200465358 | 169592161 | 1.182044 |
+| **Pooled** | **845252426** | **682350046** | **1.238737** |
+
+Hosted fixed-cohort descriptive bootstrap [1.151869,1.331273]. All panels favor mapped batch32 rho relative to the **best of the three tested source arms**; this is scoped constant-factor evidence, not original-prime full-Jacobian owner acceptance. The [13-file GitHub artifact #14162348665](https://github.com/isogeny-labs/cryptanalysis/actions/runs/43717455264/artifacts/14162348665) retains independently generated CSVs, both audit modes, code hashes, host and RSS/time receipts (30-day retention). Uploaded artifact SHA256 `d88f48e2440cb27a9442ba6a8ae71cd7783f96036d74d51e6b10e07445b0e6e6`. GitHub runner Ubuntu 24.04/g++ environment was independent of producer-local Debian 14.2. Signed PCC, complete strongest source rho/IC, actual CT126 original-prime C169/C13a/C13b/D and full Jacobian cold solves remain unverified. [pcc:unverified].
