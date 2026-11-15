@@ -410,6 +410,19 @@ static ca_status gpu_rho_solve(const ca_group *g, const ca_elem *base,
     }
     a.steps = steps;
     identity.resolved_steps = steps;
+    /* Work limit: the caller's max_ops (CA_ERR_LIMIT), else the runaway
+     * guard of the CPU solver (rho.c), which ends a search whose target is
+     * not a power of the base with CA_ERR_NOT_FOUND.  It allows 64 times the
+     * sqrt(n) of a solvable run, the 2^dp steps each walk takes to a
+     * distinguished point, and whole launches (the limit is only checked
+     * between them). */
+    uint64_t op_limit = params->max_ops;
+    const ca_status limit_rc = op_limit ? CA_ERR_LIMIT : CA_ERR_NOT_FOUND;
+    if (op_limit == 0) {
+        double guard = 64.0 * (double)sqrt_n +
+                       64.0 * (double)nwalks * ((double)(1ULL << dp) + (double)steps) + 1048576.0;
+        op_limit = guard < 0x1p63 ? (uint64_t)guard : UINT64_MAX;
+    }
     /* DP buffer for one launch: twice the expected count plus slack, and
      * hard-capped so that a large group cannot ask for a huge allocation.
      * Overflowing the buffer is safe by construction: the kernel drops the
@@ -478,8 +491,8 @@ static ca_status gpu_rho_solve(const ca_group *g, const ca_elem *base,
                                       elapsed_prior + ca_now() - t0, total_ops,
                                       launches, dps_total, restarts, tab.count, verbose))
         goto finish;
-    if (params->max_ops && total_ops > params->max_ops) {
-        rc = CA_ERR_LIMIT;
+    if (total_ops > op_limit) {
+        rc = limit_rc;
         goto finish;
     }
     for (;;) {
@@ -544,8 +557,8 @@ static ca_status gpu_rho_solve(const ca_group *g, const ca_elem *base,
             }
             next_checkpoint = now + (checkpoint_interval ? checkpoint_interval : 60);
         }
-        if (params->max_ops && total_ops > params->max_ops) {
-            rc = CA_ERR_LIMIT;
+        if (total_ops > op_limit) {
+            rc = limit_rc;
             break;
         }
     }

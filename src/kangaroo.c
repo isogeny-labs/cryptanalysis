@@ -323,6 +323,16 @@ static ca_status k_solve_impl(const ca_group *g, const ca_elem *base, const ca_e
         while (per_roo >= 2.0 && dp < 40) { per_roo /= 2; dp++; }
     }
     uint64_t dp_mask = dp ? ((1ULL << dp) - 1) : 0;
+    /* Runaway guard for a caller that set no max_ops: a logarithm outside
+     * [lo, hi] is never met by a tame/wild collision that verifies.  A
+     * solvable instance costs about 2 sqrt(width) hops plus, per kangaroo,
+     * the 2^dp hops to its next distinguished point; a caller's own jump
+     * table may have a mean far below the tuned one, where crossing the
+     * interval takes up to `width` hops.  Ending here reports
+     * CA_ERR_NOT_FOUND; a caller's own max_ops reports CA_ERR_LIMIT. */
+    double guard_d = 256.0 * (double)sqrt_w + 64.0 * (double)total * (double)(1ULL << dp) +
+                     (params->jumps ? 4.0 * (double)width : 0.0) + 1048576.0;
+    const uint64_t guard = guard_d < 0x1p63 ? (uint64_t)guard_d : UINT64_MAX;
     k_checkpoint_header identity, saved = {0};
     k_identity(&identity, g, base, target, lo, hi, herd, nj, dp);
     int existing = k_probe(checkpoint_path, &identity, &saved, params->seed);
@@ -519,6 +529,11 @@ static ca_status k_solve_impl(const ca_group *g, const ca_elem *base, const ca_e
         }
         if (running && params->max_ops && ops > params->max_ops) {
             rc = CA_ERR_LIMIT; running = 0;
+        }
+        if (running && !params->max_ops && ops > guard) {
+            ca_set_error("kangaroo: no logarithm found in the interval (runaway guard)");
+            rc = CA_ERR_NOT_FOUND;
+            running = 0;
         }
         if (monitored && running && ((++batches & 255u) == 0)) {
             double now = ca_now();
