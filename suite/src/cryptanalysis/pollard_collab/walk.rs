@@ -114,13 +114,13 @@ pub fn step(
     let n = &ctx.n;
     let idx = branch_index(r, ctx.branches.len());
     let br = &ctx.branches[idx];
-    let mut np = r.add(&br.point, &ctx.a);
+    let mut np = r.add_vartime(&br.point, &ctx.a);
     let mut na = (a + &br.u) % n;
     let mut nb = (b + &br.v) % n;
     if ctx.spec.negation_map {
         if last == Some(&np) {
             // Fruitless 2-cycle A→B→A: break symmetry by doubling.
-            np = r.double(&ctx.a);
+            np = r.double_vartime(&ctx.a);
             na = (a << 1) % n;
             nb = (b << 1) % n;
         }

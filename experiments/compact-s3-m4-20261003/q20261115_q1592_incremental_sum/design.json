@@ -1,0 +1,17 @@
+{
+  "proposal_id": "Q1592",
+  "candidate_id": null,
+  "run_id": null,
+  "isogeny": "none",
+  "question": "Does incremental normal-basis coefficient updating reduce fixed-midpoint S3 inverse work on the exact archived Q1480 ordinary N53/N83 states?",
+  "states_per_degree": 16,
+  "degrees": [53, 83],
+  "repetitions": 7,
+  "order": "Alternate baseline/candidate and candidate/baseline by repetition for each degree",
+  "sum_cap": 16384,
+  "pair_cap": 16384,
+  "exactness_gate": "Both kernels equal direct enumerated pair sets in every state, and all non-performance state fields equal between kernels",
+  "primary_diagnostic": "Sum of native basis XOR counts over all 16 states per degree",
+  "secondary_diagnostic": "Median of seven total kernel steady-clock intervals per degree; shared-host exploratory",
+  "claim_boundary": "Component kernel screen only; complete solver and N131 work remain unknown"
+}
