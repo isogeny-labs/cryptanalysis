@@ -1,0 +1,97 @@
+[
+  {
+    "claim": "pcc/claims/PCC-20261115-1373de.json",
+    "theorem": "ChainDescent.square_cube_fixed",
+    "statement": "theorem square_cube_fixed {X : Type} (sigma : X \u2192 X) (x : X) (square : sigma (sigma x)=x) (cube : sigma (sigma (sigma x))=x) : sigma x=x"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-a0549a.json",
+    "theorem": "ChainDescent.image_fixed",
+    "statement": "theorem image_fixed {A J : Type} (sa : A \u2192 A) (sj : J \u2192 J) (phi : A \u2192 J) (equivariant : \u2200 a, phi (sa a)=sj (phi a)) (a : A) (cube : sa (sa (sa a))=a) (square : sj (sj (phi a))=phi a) : sj (phi a)=phi a"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-79e370.json",
+    "theorem": "ChainDescent.rational_two_torsion_average",
+    "statement": "theorem rational_two_torsion_average {A J : Type} [IntModule A] [IntModule J] (sa : A \u2192 A) (sj : J \u2192 J) (phi : A \u2192 J) (sa_add : \u2200 a b, sa (a+b)=sa a+sa b) (sa_linear : \u2200 n : Int, \u2200 a, sa (n \u2022 a)=n \u2022 sa a) (sa_zero : sa 0=0) (phi_add : \u2200 a b, phi (a+b)=phi a+phi b) (phi_linear : \u2200 n : Int, \u2200 a, phi (n \u2022 a)=n \u2022 phi a) (phi_zero : phi 0=0) (equivariant : \u2200 a, phi (sa a)=sj (phi a)) (a : A) (two : (2 : Int) \u2022 a=0) (cube : sa (sa (sa a))=a) (rational_image : sj (phi a)=phi a) : \u2203 b, (2 : Int) \u2022 b=0 \u2227 sa b=b \u2227 phi b=phi a"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-eb2c9a.json",
+    "theorem": "ChainDescent.norm_half_difference_in_kernel",
+    "statement": "theorem norm_half_difference_in_kernel {A J : Type} [IntModule A] [IntModule J] (phi : A \u2192 J) (norm : J \u2192 A) (norm_sub : \u2200 x y, norm (x-y)=norm x-norm y) (dual : \u2200 a, norm (phi a)=(2 : Int) \u2022 a) (x : J) (p : A) (half : (2 : Int) \u2022 p=norm x) : norm (x-phi p)=0"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-a9249a.json",
+    "theorem": "ChainDescent.equal_images_equal_targets",
+    "statement": "theorem equal_images_equal_targets {A J B : Type} [IntModule A] [IntModule J] [IntModule B] (phi : A \u2192 J) (psi : A \u2192 B) (phi_sub : \u2200 a b, phi (a-b)=phi a-phi b) (psi_sub : \u2200 a b, psi (a-b)=psi a-psi b) (kernel_transport : \u2200 a, phi a=0 \u2192 psi a=0) (a b : A) (same : phi a=phi b) : psi a=psi b"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-82c51b.json",
+    "theorem": "ChainDescent.corrected_half_choice_independent",
+    "statement": "theorem corrected_half_choice_independent {A J B : Type} [IntModule A] [IntModule J] [IntModule B] (phi : A \u2192 J) (psi : A \u2192 B) (phi_add : \u2200 a b, phi (a+b)=phi a+phi b) (phi_sub : \u2200 a b, phi (a-b)=phi a-phi b) (psi_add : \u2200 a b, psi (a+b)=psi a+psi b) (psi_sub : \u2200 a b, psi (a-b)=psi a-psi b) (kernel_transport : \u2200 a, phi a=0 \u2192 psi a=0) (x : J) (p t q u : A) (first : phi t=x-phi p) (second : phi u=x-phi q) : psi p+psi t=psi q+psi u"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-5b9550.json",
+    "theorem": "ChainDescent.corrected_output_fixed",
+    "statement": "theorem corrected_output_fixed {A J B : Type} [IntModule A] [IntModule J] [IntModule B] (sa : A \u2192 A) (sj : J \u2192 J) (sb : B \u2192 B) (phi : A \u2192 J) (psi : A \u2192 B) (phi_sub : \u2200 a b, phi (a-b)=phi a-phi b) (psi_sub : \u2200 a b, psi (a-b)=psi a-psi b) (kernel_transport : \u2200 a, phi a=0 \u2192 psi a=0) (phi_equivariant : \u2200 a, phi (sa a)=sj (phi a)) (psi_equivariant : \u2200 a, psi (sa a)=sb (psi a)) (x : J) (rational : sj x=x) (a : A) (preimage : phi a=x) : sb (psi a)=psi a"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-1c924e.json",
+    "theorem": "ChainDescent.rational_correction_complete",
+    "statement": "theorem rational_correction_complete {A J : Type} [IntModule A] [IntModule J] (sa : A \u2192 A) (sj : J \u2192 J) (phi : A \u2192 J) (norm : J \u2192 A) (sa_add : \u2200 a b, sa (a+b)=sa a+sa b) (sa_linear : \u2200 n : Int, \u2200 a, sa (n \u2022 a)=n \u2022 sa a) (sa_zero : sa 0=0) (phi_add : \u2200 a b, phi (a+b)=phi a+phi b) (phi_linear : \u2200 n : Int, \u2200 a, phi (n \u2022 a)=n \u2022 phi a) (phi_zero : phi 0=0) (equivariant : \u2200 a, phi (sa a)=sj (phi a)) (cube_on_two : \u2200 a, (2 : Int) \u2022 a=0 \u2192 sa (sa (sa a))=a) (kernel_description : \u2200 d, norm d=0 \u2192 \u2203 a, (2 : Int) \u2022 a=0 \u2227 phi a=d) (delta : J) (in_kernel : norm delta=0) (square : sj (sj delta)=delta) : \u2203 t, (2 : Int) \u2022 t=0 \u2227 sa t=t \u2227 phi t=delta"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-b884ae.json",
+    "theorem": "FullGroupNorm.two_pair_norm",
+    "statement": "theorem two_pair_norm {A B C : Type} [IntModule A] [IntModule B] [IntModule C] (f : A \u2192 B) (fh : B \u2192 A) (g : B \u2192 C) (gh : C \u2192 B) (n m : Int) (hf : \u2200 a, fh (f a)=n \u2022 a) (hfh : \u2200 b, f (fh b)=n \u2022 b) (hg : \u2200 b, gh (g b)=m \u2022 b) (hgh : \u2200 c, g (gh c)=m \u2022 c) (fh_linear : \u2200 z : Int, \u2200 b, fh (z \u2022 b)=z \u2022 fh b) (g_linear : \u2200 z : Int, \u2200 b, g (z \u2022 b)=z \u2022 g b) : (\u2200 a, fh (gh (g (f a)))=(n*m) \u2022 a) \u2227 (\u2200 c, g (f (fh (gh c)))=(n*m) \u2022 c)"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-427731.json",
+    "theorem": "FullGroupNorm.inverse_on_full_annihilator",
+    "statement": "theorem inverse_on_full_annihilator {A B : Type} [IntModule A] (f : A \u2192 B) (fh : B \u2192 A) (n order inverse quotient : Int) (dual_norm : \u2200 a, fh (f a)=n \u2022 a) (bezout : inverse*n+quotient*order=1) (a : A) (annihilated : order \u2022 a=0) : inverse \u2022 fh (f a)=a"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-fc05cc.json",
+    "theorem": "FullGroupNorm.actual_full_group_witnesses",
+    "statement": "theorem actual_full_group_witnesses : (13*5117005 : Nat)=6*11086844+1 \u2227 (169*7216289 : Nat)=110*11086844+1 \u2227 (8*346464 : Nat)=2771711+1 \u2227 1385856 % 4=0"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-d0e0b2.json",
+    "theorem": "FullGroupNorm.full_group_coprime",
+    "statement": "theorem full_group_coprime : Nat.gcd 13 11086844=1 \u2227 Nat.gcd 169 11086844=1"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-3c8cb2.json",
+    "theorem": "FullGroupNorm.retained_lift_chain",
+    "statement": "theorem retained_lift_chain {A B C J K L : Type} (pa : A \u2192 J) (pb : B \u2192 K) (pc : C \u2192 L) (g : A \u2192 B) (h : B \u2192 C) (first : J \u2192 K) (second : K \u2192 L) (first_square : \u2200 a, first (pa a)=pb (g a)) (second_square : \u2200 b, second (pb b)=pc (h b)) (a : A) : second (first (pa a))=pc (h (g a))"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-5f33d0.json",
+    "theorem": "NormPointReuse.corrected_lift_doubles",
+    "statement": "theorem corrected_lift_doubles {A : Type} [IntModule A] (p t q : A) (half : (2 : Int) \u2022 p = q) (correction_two_torsion : (2 : Int) \u2022 t = 0) : (2 : Int) \u2022 (p + t) = q"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-3ea7ed.json",
+    "theorem": "NormPointReuse.corrected_norm_reuse",
+    "statement": "theorem corrected_norm_reuse {A B J : Type} [IntModule A] [IntModule B] (g : A \u2192 B) (phi : B \u2192 J) (norm : J \u2192 B) (duality : \u2200 z, norm (phi z) = (2 : Int) \u2022 z) (linear_two : \u2200 a, g ((2 : Int) \u2022 a) = (2 : Int) \u2022 g a) (p t q : A) (half : (2 : Int) \u2022 p = q) (correction_two_torsion : (2 : Int) \u2022 t = 0) : norm (phi (g (p + t))) = (2 : Int) \u2022 g (p + t) \u2227 (2 : Int) \u2022 g (p + t) = g q"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-1f8aaa.json",
+    "theorem": "NormPointReuse.factored_norm_reuse",
+    "statement": "theorem factored_norm_reuse {A B C J : Type} [IntModule A] [IntModule B] [IntModule C] (g : A \u2192 B) (h : B \u2192 C) (phi : C \u2192 J) (norm : J \u2192 C) (duality : \u2200 z, norm (phi z) = (2 : Int) \u2022 z) (g_linear_two : \u2200 a, g ((2 : Int) \u2022 a) = (2 : Int) \u2022 g a) (h_linear_two : \u2200 b, h ((2 : Int) \u2022 b) = (2 : Int) \u2022 h b) (p t q : A) (half : (2 : Int) \u2022 p = q) (correction_two_torsion : (2 : Int) \u2022 t = 0) : norm (phi (h (g (p + t)))) = (2 : Int) \u2022 h (g (p + t)) \u2227 (2 : Int) \u2022 h (g (p + t)) = h (g q)"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-b3e35f.json",
+    "theorem": "OriginalFullChain.known_point_representation",
+    "statement": "theorem known_point_representation {A J : Type} [IntModule A] [IntModule J] (phi : A \u2192 J) (norm : J \u2192 A) (duality : \u2200 a, norm (phi a)=(2 : Int) \u2022 a) (phi_zero : phi 0=0) (p : A) : (2 : Int) \u2022 p=norm (phi p) \u2227 phi 0=phi p-phi p"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-b7fc13.json",
+    "theorem": "OriginalFullChain.known_point_corrected_output",
+    "statement": "theorem known_point_corrected_output {A J B : Type} [IntModule A] [IntModule J] [IntModule B] (phi : A \u2192 J) (psi : A \u2192 B) (phi_add : \u2200 a b, phi (a+b)=phi a+phi b) (phi_sub : \u2200 a b, phi (a-b)=phi a-phi b) (psi_add : \u2200 a b, psi (a+b)=psi a+psi b) (psi_sub : \u2200 a b, psi (a-b)=psi a-psi b) (phi_zero : phi 0=0) (psi_zero : psi 0=0) (kernel_transport : \u2200 a, phi a=0 \u2192 psi a=0) (h t p : A) (correction : phi t=phi p-phi h) : psi h+psi t=psi p"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-28ceb8.json",
+    "theorem": "OriginalFullChain.actual_original_full_witnesses",
+    "statement": "theorem actual_original_full_witnesses : (4*2773073 : Nat)=11092292 \u2227 Nat.gcd 13 11092292=1 \u2227 Nat.gcd 169 11092292=1 \u2227 (89*89 : Nat)%223=116 \u2227 (40*40 : Nat)%223=39 \u2227 (6*6 : Nat)%223=36 \u2227 (13*3413013 : Nat)=4*11092292+1 \u2227 (169*9648325 : Nat)=147*11092292+1 \u2227 (3413013*13+(-4)*11092292 : Int)=1 \u2227 (9648325*169+(-147)*11092292 : Int)=1"
+  }
+]

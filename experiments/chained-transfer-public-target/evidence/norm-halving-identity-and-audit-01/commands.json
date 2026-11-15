@@ -1,0 +1,58 @@
+[
+  {
+    "label": "identity-issue",
+    "argv": [
+      "/workspace/scratch/ct74-norm-halving-auxiliary-01/halving_identity.bin"
+    ],
+    "cwd": "/workspace/cryptanalysis",
+    "stdout": "identity-certificates.json",
+    "stderr": "identity-issue.stderr.txt"
+  },
+  {
+    "label": "identity-replay",
+    "argv": [
+      "/workspace/scratch/ct74-norm-halving-auxiliary-01/halving_identity.bin",
+      "--verify",
+      "/workspace/scratch/ct74-norm-halving-auxiliary-01/identity-certificates.json"
+    ],
+    "cwd": "/workspace/cryptanalysis",
+    "stdout": "identity-replay.txt",
+    "stderr": "identity-replay.stderr.txt"
+  },
+  {
+    "label": "identity-missing-term",
+    "argv": [
+      "/workspace/scratch/ct74-norm-halving-auxiliary-01/halving_identity.bin",
+      "--missing-linear-term"
+    ],
+    "cwd": "/workspace/cryptanalysis",
+    "stdout": "identity-missing-term.txt",
+    "stderr": "identity-missing-term.stderr.txt"
+  },
+  {
+    "label": "whole-record-positive",
+    "argv": [
+      "/workspace/scratch/ct74-norm-halving-auxiliary-01/audit_native.bin",
+      "--compare",
+      "/workspace/scratch/ct74-norm-halving-auxiliary-01/expected-native-04.json",
+      "/workspace/scratch/ct74-norm-halving-native-04/native.txt",
+      "/workspace/scratch/ct74-norm-halving-auxiliary-01/compare-native-04.json"
+    ],
+    "cwd": "/workspace/cryptanalysis",
+    "stdout": "whole-record-positive.txt",
+    "stderr": "whole-record-positive.stderr.txt"
+  },
+  {
+    "label": "whole-record-negative",
+    "argv": [
+      "/workspace/scratch/ct74-norm-halving-auxiliary-01/audit_native.bin",
+      "--compare",
+      "/workspace/scratch/ct74-norm-halving-auxiliary-01/expected-native-04.json",
+      "/workspace/scratch/ct74-norm-halving-auxiliary-01/omit-whole-coordinate-record.txt",
+      "/workspace/scratch/ct74-norm-halving-auxiliary-01/must-not-exist.json"
+    ],
+    "cwd": "/workspace/cryptanalysis",
+    "stdout": "whole-record-negative.txt",
+    "stderr": "whole-record-negative.stderr.txt"
+  }
+]
