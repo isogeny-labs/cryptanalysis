@@ -1,3 +1,21 @@
+# Additive original full-group CI source03 ready; fresh remote replay next
+
+pcc/claims/PCC-20261115-18e6cf.json: oldworkflow/driver02/reference01-02/33bindings unchanged, allold1141guards retained in1331authored/1440complete references. Source/helpercontrols pass0; actualforeignenginefeature rejects1/nooutput. CI NOTRUN. [pcc:unverified]
+
+## What was done
+Newworkflow chained-transfer-original-full.yml andversioned ci_fixed_chain/check-03.sh retainoldphases andappendnormpoint695/originalprime1077/kernel311/originalgeometry16/originalfull701 toold13+695. Plan7unfilteredtests/24actualwholeclassomissions/bothoriginal70-root gates/all70exactbindings, repeatedoldcopies explicit.21captured derivativefiles exactclosedcompiledbytes, alloriginalmaterializers/formulas/workflows/references immutable. CompleteCargoengineclosure/actualcache-fullpreparedbytes/reuse required; no newmathpopulation oralgorithm. [pcc:unverified]
+
+## Decisions made
+Publish exactsource thenonefreshCIworkflow run; initialemptydiscoveryisnotpermissiontoduplicatedispatch. Requireentireartifact/membership/allphases/source-runtimefullpreparedbytechecks/wholeauditors/actualomissions/bothgates/allbindings beforeacceptance. Originalcensuspublished_compiled_source is811395 origin, actualCIrevision separatelyconsumer-head.txt. One900sengineprep/120scompile-auditors/900s2GiBnative bounds remain. [pcc:unverified]
+
+## Open threads
+NormalCI-sourcepublication/freshadditive replay; nextconditionalinduced-map linearity/individual13norm derivation fromquotientsections/kerneltransport/ellipticduality, pluscompleteprimitive/setup/reference/prime-fieldICdescent usingexistingIC/norm-assistedsampler. Source notes ct92-next-proof-task-notes-01.md. Actualgeometric/program/cost/signing/globalmerge requirements remainexplicit. [pcc:unverified]
+
+## Errors
+Genuine25fullysettled/rootd93b64d/consumer6343025, HOLD25released/all51583inputs176linksownedbytes/whole22035092Barchive540members22roots. Nativee245d0/conditional7b5f49-da2fe7/report761003 andfailed99d448/all693 preserved. No currentCIresult/advantage/globalCI/signedpromotion. [pcc:unverified]
+
+---
+
 # Genuine25 settled; canonical whole701 published, fresh additive CI next
 
 pcc/claims/PCC-20261115-f38b01.json/pcc/claims/PCC-20261115-e2952d.json: original43698195189/job132763282137SUCCESS, threeobjects replayed BEFOREbot5683a83683/direct1d40fe0/exact5paths/twoplainGitobjects unchanged. All51583heldinputs/176links/ownedbytes, whole22035092Barchive/540members/22closedroots survive; normalFF-artifact-wiring0/HOLD25RELEASED. All49753prior24keys/172links/bothledgerprefixes/prior24archive retained. Oneexactcanonicalentry/relativealias, wholelosslessXZequalsactual701, no newconsumerremoteread. [pcc:unverified]
