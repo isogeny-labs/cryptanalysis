@@ -1,3 +1,39 @@
+# Latest result and active research queue — 2026-11-15
+
+Norm-point reuse has full finite parity in unsigned claim46008b at published51dff2bb: one unfiltered test0, all14 expected phases, all695 whole records and four actual entire-class omissions101/no output. Only the preregistered48 selected counter vectors change; all mathematical data and original independent checks remain exact. Both original Lean gates and all3 exact bindings pass under compiled claim36f906. The visually inspected two-page reportf8d381 is [available here](reports/norm-point-reuse-result-01/report.pdf). [pcc:unverified]
+
+| Priority | Task | Status and next acceptance |
+| --- | --- | --- |
+| 1 | Preserve this result and mirror the root checkpoint | Commit report/raw inventories/claims; normal publication; all343 producer sources unchanged |
+| 2 | Actual strict25 CI for the original complete chain | Versioned path repair77a26ca; run43674526503 initially in progress. At recorded cadence collect all job/artifact bytes, both tests, all13/695 records, six omissions, both33-root gates/all33 bindings |
+| 3 | Complete primitive costs and stronger known-initial-point baseline | Selected entries stay unpriced. Freeze source instrumentation and standalone/reused populations before counts; retain the old incomplete cold120 outcome |
+| 4 | Original-prime and prime-field successors | Read all existing HLP kernel rows before choosing any new model. Keep fixed-source D12/D24/D67 failures and the twist-prime obstruction intact; preregister any separate prime-subgroup reprojection |
+| 5 | Genuine NEW23 and candidate replay | Capture all whole new scientific roots/source/binaries/prepared copies/failures/reports/checkpoint13; actual original publication and exact FF required before canonical candidate fixture or new replay |
+
+Storage cleanupb72f12 removes only one415,311,792-byte obsolete derived root Cargo RLIB, after checking all44,386 genuine22 guards, every current and legacy PCC attestation subject, no active compilers, the exact retained diagnostic executable and all unchanged Git statuses. All source/raw/executables/full prepared-library copies/current caches remain intact. The before-unlink legacy-schema failure is retained. [pcc:unverified]
+
+Calibrated measurement admission, strongest matched references, full actual geometry/program bridges, signing/main-ledger/reviews/conflicts and original root124/clock101/cold120 gaps remain open. The autoresearcher vault remains unchanged and inaccessible; no paid launch, merge waiver, history rewrite, novelty or signed promotion. [pcc:unverified]
+
+---
+
+# Norm-point reuse full695 parity passed; preserve and advance cost baseline
+
+pcc/claims/PCC-20261115-46008b.json: published51dff2bb/build01/exact originalcheckpoint13/all28/immediategate0, oneunfiltered native0, worker/supervisor0, all14phases expected. Original whole auditor acceptsALL695 ordered records against prospective Rust clone transformation of entire genuine baseline; onlyexact48counterchanges, every mathematical field/occurrence unchanged. Fourentire-class omissions101/nooutput, actual3binarybytes/all1099guards exact. [pcc:unverified]
+
+## What was done
+Same672exceptionals underbothoutgoing/all4halves/duplicatecorrections/fourcofactors/144mixed120public96additions perpair/full13-169norm-inverses/oldindependentellipticchecks. Direct169calls2to1+1doubling; literal13calls4to2+2doublings; retained13calls4to2+1doubling. Allotherselectedcounters exact. Both originalLean gates3roots0trusted/all3bindings remain36f906. All selectedvectorsunpriced, no footer-time ratio. [pcc:unverified]
+
+## Decisions made
+Preserve actualnative/fixture/control/source/compiler/proof/checkpoint bytes, result report/visual, publish and mirror root. No new canonical candidatefixture/replayCI before genuineNEW23. Then completeprimitive setup/reuse census including stronger public-known-initial-lift ECDLP comparator; keep actualcold120 negative and calibratedadmission obligations open. [pcc:unverified]
+
+## Open threads
+Actual strict25 replay43674526503 atrecordedcadence; costobserver/whole primitive protocol; knowninitiallift baseline; endpoint/factorbase/original-prime primary leads. Disk58MiB afternewraw requires narrowly protected cleanup ofobsoleteunheldderivedcache beforefurtherlarge CI/custody. No source/raw/executables/preparedfullcopies removed. [pcc:unverified]
+
+## Errors
+All previous path/staging/authoring/mathematical/cold/root-main failures retained. Unsigned conditional finite correctness only; no paid launch/waiver/force/rebase/novelty/signed promotion. [pcc:unverified]
+
+---
+
 # Norm-point evaluator02 compiled; exact checkpoint then full native
 
 pcc/claims/PCC-20261115-36f906.json: published25d29e precedes additive code. All recorded build phases/1099 guards/whole engine reuse0; both original Lean toolchains3roots0trusted and all3 bindings0. All source/compiler/runtime-ready binaries/full prepared bytes retained. Native NOT RUN. [pcc:unverified]
