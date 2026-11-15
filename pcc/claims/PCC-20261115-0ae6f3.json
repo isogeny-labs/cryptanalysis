@@ -1,0 +1,30 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-15T20:56:43Z",
+ "id": "PCC-20261115-0ae6f3",
+ "kind": "statement",
+ "producer": {
+  "commit": "ae370a90742d69e0b8c06fc875b48827cbee4150",
+  "model": "Codex",
+  "session": "prepared-point-tables-20261115"
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prepared-point-tables-20261115/source.sha256",
+    "sha256": "ca0b820167bf28fcd5a0d0dfdd7f22466dd8e5915e96fdf0e1b72eda67814ecb"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prepared-point-tables-20261115/qualification.json",
+    "sha256": "7cd312a36b88d4030a7b6ecd5a8906a92cc01763c38b9bc7df9099f379061574"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Two-slot native prime-field PairTable and solve-hashed integration; source and producer qualification artifact custody",
+ "statement": "Prepared-pair collector implementation and producer development artifacts are recorded; no signed execution, independent audit or runtime-gain verdict is asserted."
+}
