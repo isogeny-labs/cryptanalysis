@@ -9,6 +9,7 @@ explain the gap and what would let the work move past it.
 
 | Problem | Status | What it blocks | What would unblock it |
 | --- | --- | --- | --- |
+| [Original FB30 character extension](chained-transfer-original-FB30-character-extension-02.md) | investigating | Collected FB30 constraints admit a finite noncharacter functional | Prospective unassisted actual-relation completion, full-population checks and separately admitted matched costs. [pcc:unverified] |
 | [Cold preflight build envelope update](chained-transfer-cold-preflight-build-budget-update-20261114.md) | partial | Original full cold120 compile remains unmet | Explicit900setup/full39phase replay e6f380 completes locally; preserve earlier124, audit whole CI artifact; no cold120 waiver. [pcc:unverified] |
 | [Census supervisor lifetime](chained-transfer-census-process-lifetime.md) | resolved for detached04 | Old03 remains interrupted/unknown | Detached04 records actualcold124/reuse0/sourceguards0; original fullcensus requirement remains open. [pcc:unverified] |
 | [Incomplete cold arithmetic census](chained-transfer-incomplete-cold-arithmetic-census.md) | open | Complete120cold900 requirement unmet after actual04cold124/18success receipts; bothreuse0 | Whole partial-data parity/control audit then preserve all negatives; any new optimization must meet unchanged full criterion. [pcc:unverified] |
