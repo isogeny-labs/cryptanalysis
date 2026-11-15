@@ -428,10 +428,7 @@ static ca_status gpu_rho_solve(const ca_group *g, const ca_elem *base,
      * Overflowing the buffer is safe by construction: the kernel drops the
      * excess (it only writes slots below dp_cap) and the host clamps the
      * count, so an overflow costs work, never correctness. */
-    double exp_dps = (double)nwalks * steps / (double)(1ULL << dp);
-    uint64_t cap = (uint64_t)(exp_dps * 2) + 4096;
-    if (cap > (1u << 20)) cap = 1u << 20;
-    a.dp_cap = (uint32_t)cap;
+    a.dp_cap = ca_gpu_dp_capacity((uint32_t)nwalks, steps, (uint32_t)dp);
 
     /* multipliers (host) */
     uint64_t *mult = malloc((size_t)a.r * 4 * sizeof(uint64_t));
