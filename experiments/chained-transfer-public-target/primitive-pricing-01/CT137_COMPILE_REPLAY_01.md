@@ -23,3 +23,20 @@ The two genuine symlink blobs are Git `46a2e766` and `f6d47eef` and point to `do
 Commit `4269ae3454d8848545b1c3fe040e0cc7929f0e39` repairs only the additive CI: it checks out the immutable original artifact tool at `3de8c174`, compares the checked-out policy/tool bytes, uses the **existing repo-approved manifest hydration procedure** under the existing workflow secrets, then checks both SHA256, byte lengths and symlink resolution before running the unchanged predecessor materializer. That is the same restoration mechanism already used by the standing `chained-transfer-fixed-chain.yml` and `chained-transfer-paired-fourth.yml` workflows, with only the necessary original `nondual-models-18` class selected. No private keys are read into logs; hydration is capped at 180 seconds and does not authorize EKS/Spot or any benchmark. [pcc:unverified]
 
 **Next gate:** inspect an exact-head CT137 run after this repair. Success requires the genuine model bytes to match the two manifest hashes, both source derivatives to materialize without mutation, and `cargo check --release` to complete on **both** original and norm-reuse Rust graphs at pinned Rust 1.99.1. If another dependency or type failure occurs, preserve the first compiler diagnostic and repair only that failure. Passing `cargo check` is not a (C_{169}, C_{13a}, C_{13b}, D) timing, parity or full cold ECDLP speedup, and PCC remains unverified.
+
+
+## Third replay: first Rust compilation reaches the fixed-chain nominal modules
+
+[Run 43721405143](https://github.com/isogeny-labs/cryptanalysis/actions/runs/43721405143), job `132833984378` at exact input commit `4269ae3454d8848545b1c3fe040e0cc7929f0e39`, **reproduced the complete original-artifact hydration** and passed both original manifest checks, both symlink resolutions, literal paired-fourth source assembly, seven literal CT126 helper assembly and guarded CT125 derivative generation. The reviewed complete job log confirms Rust 1.99.1 entered the actual original Cargo graph; it failed when the pre-existing fixed-Jacobian predecessor's nominal-type derivative had not been materialized:
+
+```text
+Checking chained-n4-fixed-jacobian-chain v0.1.0
+error: couldn't find file .../fixed-jacobian-chain-01/src/../generated/adapter.rs
+  --> .../fixed-jacobian-chain-01/src/lib.rs:5:1
+  5 | pub mod adapter;
+error: could not compile chained-n4-fixed-jacobian-chain (lib) due to 1 previous error
+```
+
+This is a **new upstream generated-source dependency**, not yet a CT126 source type error. The raw CI artifact [#14163879404](https://github.com/isogeny-labs/cryptanalysis/actions/runs/43721405143/artifacts/14163879404) includes compile stdout and all custody receipts. The source original fixed-chain CI's `ci_fixed_chain/check.sh` names the deterministic materialization order `paired-fourth-preflight`, `fixed-jacobian-chain-01`, `fixed-jacobian-chain-evaluator-01`; CT137 had only the first and third. [pcc:unverified]
+
+Commit `cbdf45e61944e4350dc57d012cc4b32273627e86` adds the unchanged `fixed-jacobian-chain-01/materialize.py` between its two predecessors, corresponding exactly to the original fixed-chain CI sequence. Its three generated modules derive literally from original `odd-product-maps` and `beta-complete-evaluator` with the previously declared nominal type substitutions only; neither stored source nor mathematical formulas were changed. The new CI will be inspected separately, and no native benchmark, full cold solve, original-prime solver timing or signed PCC claim follows from a compilation gate. [pcc:unverified]
