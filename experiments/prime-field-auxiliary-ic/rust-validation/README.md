@@ -1,0 +1,36 @@
+# Native integration check receipt
+
+[producer-checks.json](producer-checks.json) and its raw logs record unsigned
+producer checks. Claim `PCC-20261115-c2f013` has no signed standing or execution
+proof. The tested source bytes are retained in commit `073d5e4`; the following
+manifest cleanup removes only an extra terminal blank line. No Rust algorithm
+source or frozen snapshot changes in that cleanup. [pcc:unverified]
+
+| Requested deliverable | Current status |
+|---|---|
+| Native Rust API and suite CLI | Implemented; safe re-exports and `ca-ic auxiliary` producer checked |
+| Optimize polynomial/GCD stage | Centered exact resultant circuit ported; the complete known-root case avoids generic GCD construction; no new stage timing |
+| Optimize relation recovery | Signed gain graph and certificate DAG implemented; compared with dense elimination in correctness tests |
+| IC with and without auxiliary maps | Both implemented, with matching rows/certificates on matched small-field walks; arbitrary direct bases accepted |
+| Compare against rho | Repository C batched negation-map reference exposed; small-field public-key check passes; new timing panel not run |
+| Both requested prime fields | Arithmetic and exact relation circuits checked for `2^31-1` and `2^61-1`; fresh full Rust recoveries at those sizes not run |
+| End-to-end speedup | Not established for the Rust integration; checkpoint upload access and compliant measurement allocation/panel remain outstanding |
+
+The checks include 13 native tests including the documentation example on
+stable and on Rust 1.78, two comparisons with C Montgomery arithmetic, three
+CLI tests, and 26 archived Python tests. Core/bindings/suite lints and MSRV
+builds are recorded separately. These are implementation checks on an ordinary
+CPU host, not an admitted IC performance panel. [pcc:unverified]
+
+The checkpoint upload gate reports no configured token or AWS profile. No new
+research benchmark was launched; the original measurement requirement remains
+open in [the problem record](../../../problems/prime-field-auxiliary-ic-validation.md).
+[pcc:unverified]
+
+The import's previous head also has three CodeQL clear-text-storage alerts at
+`snapshot/prepare.py:193`, `snapshot/prepare61.py:57`, and
+`snapshot/algebraic/end_to_end/prepare_runs.py:63`. These scripts intentionally
+write public known-answer scalar fixtures to verification sidecars excluded
+from solver input. The code-scanning API returned HTTP 403, so no alert was
+dismissed or check disabled. Maintainer classification of those fixture alerts
+remains necessary before merging. [pcc:unverified]
