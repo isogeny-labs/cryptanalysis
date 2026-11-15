@@ -1,4 +1,49 @@
 #include "test_fixtures.h"
+#include "ic_trial.h"
+
+static void check_remove(uint64_t v, uint32_t q, const ca_ic_divisor *d)
+{
+    uint64_t expected = v, got = v;
+    int32_t exponent = 0;
+    while (expected % q == 0) { expected /= q; ++exponent; }
+    CHECK(ca_ic_remove_prime(&got, q, d) == exponent);
+    CHECK_EQ_U64(got, expected);
+}
+
+static void test_fixed_divisors(void)
+{
+    uint32_t primes[1600];
+    size_t n = ca_sieve_primes(13000, primes, 1600);
+    CHECK(n <= 1600);
+    /* Include the largest 32-bit prime, beyond the normal IC base. */
+    primes[n++] = UINT32_C(4294967291);
+    ca_rng rng;
+    ca_rng_seed(&rng, 0x1c20261115ULL);
+    for (size_t i = 0; i < n; ++i) {
+        uint32_t q = primes[i];
+        ca_ic_divisor d = ca_ic_divisor_init(q);
+        if (q & 1) CHECK_EQ_U64(d.inverse * q, 1);
+        uint64_t power = 1;
+        for (;;) {
+            check_remove(power, q, &d);
+            if (power > 1) check_remove(power - 1, q, &d);
+            if (power < UINT64_MAX) check_remove(power + 1, q, &d);
+            if (power > UINT64_MAX / q) break;
+            power *= q;
+        }
+        uint64_t top = (UINT64_MAX / q) * q;
+        check_remove(top, q, &d);
+        check_remove(top - 1, q, &d);
+        if (top < UINT64_MAX) check_remove(top + 1, q, &d);
+        check_remove(UINT64_MAX, q, &d);
+        for (unsigned j = 0; j < 128; ++j) {
+            uint64_t v = ca_rng_next(&rng) | 1;
+            check_remove(v, q, &d);
+            v = (v / q) * q;
+            if (v) check_remove(v, q, &d);
+        }
+    }
+}
 
 static void run(uint64_t p, ca_ic_method method, uint32_t threads, int nlogs)
 {
@@ -48,6 +93,7 @@ static void run(uint64_t p, ca_ic_method method, uint32_t threads, int nlogs)
 
 int main(void)
 {
+    test_fixed_divisors();
     /* small primes with a large prime factor in p-1 (safe primes) and
      * primes with smooth p-1 (Pohlig-Hellman path) */
     run(1000003, CA_IC_LINEAR_SIEVE, 1, 5);           /* 20 bits, p-1 = 2*3*166667 */

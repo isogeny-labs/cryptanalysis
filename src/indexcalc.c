@@ -6,6 +6,7 @@
 #include "cryptanalysis/ca_pohlig.h"
 #include "linalg.h"
 #include "ca_internal.h"
+#include "ic_trial.h"
 
 #include <math.h>
 #include <pthread.h>
@@ -23,6 +24,7 @@ struct ca_ic_ctx {
     uint64_t ord_g;
     uint32_t nfb;
     uint32_t *fb;                 /* factor base primes */
+    ca_ic_divisor *fb_div;         /* fixed-divisor smoothness arithmetic */
     uint64_t *fb_log;             /* logs mod p-1 */
     uint8_t *fb_known;
     ca_ic_params params;
@@ -98,11 +100,24 @@ static int rel_push(rel_list *l, const relation *r)
 
 /* Factor v over the primes fb[0..nfb) ; writes exponents to (col,val) with
  * column offset col0.  Returns 1 if fully smooth. */
-static int trial_factor(uint64_t v, const uint32_t *fb, uint32_t nfb, uint32_t col0,
+static int trial_factor(uint64_t v, const uint32_t *fb, const ca_ic_divisor *div,
+                        uint32_t nfb, uint32_t col0,
                         relation *rel, uint32_t *cnt)
 {
     uint32_t n = *cnt;
     for (uint32_t i = 0; i < nfb && v > 1; i++) {
+        /* Most large residuals miss several consecutive primes. Test four
+         * independent products together so the CPU can overlap them and
+         * retire one branch per block. The largest square preserves the
+         * prime-residual shortcut; any hit falls through to exact removal.
+         * q=2 has inverse zero and therefore cannot be skipped here. */
+        if (nfb - i >= 4 && (uint64_t)fb[i + 3] * fb[i + 3] <= v) {
+            unsigned miss = (v * div[i].inverse > div[i].limit)
+                          & (v * div[i + 1].inverse > div[i + 1].limit)
+                          & (v * div[i + 2].inverse > div[i + 2].limit)
+                          & (v * div[i + 3].inverse > div[i + 3].limit);
+            if (miss) { i += 3; continue; }
+        }
         uint32_t q = fb[i];
         if ((uint64_t)q * q > v) {
             /* v is prime: in the base iff <= fb[nfb-1] */
@@ -125,9 +140,8 @@ static int trial_factor(uint64_t v, const uint32_t *fb, uint32_t nfb, uint32_t c
             *cnt = n;
             return 0;
         }
-        if (v % q == 0) {
-            int32_t e = 0;
-            do { v /= q; e++; } while (v % q == 0);
+        int32_t e = ca_ic_remove_prime(&v, q, &div[i]);
+        if (e) {
             if (n >= IC_MAX_REL_COLS) return 0;
             rel->col[n] = col0 + i;
             rel->val[n] = e;
@@ -144,6 +158,7 @@ typedef struct sieve_shared {
     uint64_t p, H, J;             /* H = ceil(sqrt p), J = H^2 - p */
     uint32_t B, C;
     const uint32_t *fb;
+    const ca_ic_divisor *fb_div;
     uint32_t nfb;
     const uint8_t *fb_log2;       /* rounded log2 of each prime */
     uint32_t col_prime0, col_h0;  /* column layout: factor base, then H+c */
@@ -225,7 +240,7 @@ static void *sieve_thread(void *arg)
             relation rel;
             memset(&rel, 0, sizeof(rel));
             uint32_t cnt = 0;
-            if (!trial_factor(av, s->fb, s->nfb, s->col_prime0, &rel, &cnt)) continue;
+            if (!trial_factor(av, s->fb, s->fb_div, s->nfb, s->col_prime0, &rel, &cnt)) continue;
             /* (H+c1)(H+c2) == sign * prod q^e  =>
              *   log(H+c1) + log(H+c2) - sum e log q = log(sign) */
             for (uint32_t i = 0; i < cnt; i++) rel.val[i] = -rel.val[i];
@@ -269,6 +284,7 @@ static void *sieve_thread(void *arg)
 typedef struct rexp_shared {
     uint64_t p, zeta;
     const uint32_t *fb;
+    const ca_ic_divisor *fb_div;
     uint32_t nfb;
     uint32_t col_prime0;
     uint32_t target_rels;
@@ -303,7 +319,7 @@ static void *rexp_thread(void *arg)
         relation rel;
         memset(&rel, 0, sizeof(rel));
         uint32_t cnt = 0;
-        if (trial_factor(v, s->fb, s->nfb, s->col_prime0, &rel, &cnt)) {
+        if (trial_factor(v, s->fb, s->fb_div, s->nfb, s->col_prime0, &rel, &cnt)) {
             rel.n = cnt;
             rel.rhs = e; /* sum e_q log q == e */
             rel_push(&local, &rel);
@@ -483,13 +499,17 @@ ca_status ca_ic_precompute(uint64_t p, uint64_t g, const ca_ic_params *params, c
     /* factor base */
     size_t nfb = ca_sieve_primes(B, NULL, 0);
     ctx->fb = malloc(nfb * sizeof(uint32_t));
+    ctx->fb_div = malloc(nfb * sizeof(ca_ic_divisor));
     ctx->fb_log = calloc(nfb, sizeof(uint64_t));
     ctx->fb_known = calloc(nfb, 1);
     uint8_t *fb_log2 = malloc(nfb);
-    if (!ctx->fb || !ctx->fb_log || !ctx->fb_known || !fb_log2) { free(fb_log2); ca_ic_free(ctx); return CA_ERR_NOMEM; }
+    if (!ctx->fb || !ctx->fb_div || !ctx->fb_log || !ctx->fb_known || !fb_log2) { free(fb_log2); ca_ic_free(ctx); return CA_ERR_NOMEM; }
     ca_sieve_primes(B, ctx->fb, nfb);
     ctx->nfb = (uint32_t)nfb;
-    for (size_t i = 0; i < nfb; i++) fb_log2[i] = (uint8_t)(log2((double)ctx->fb[i]) + 0.5);
+    for (size_t i = 0; i < nfb; i++) {
+        fb_log2[i] = (uint8_t)(log2((double)ctx->fb[i]) + 0.5);
+        ctx->fb_div[i] = ca_ic_divisor_init(ctx->fb[i]);
+    }
     st->factor_base_size = ctx->nfb;
 
     /* column layout: [primes][H+c ...] ; -1 handled on the rhs */
@@ -509,7 +529,7 @@ ca_status ca_ic_precompute(uint64_t p, uint64_t g, const ca_ic_params *params, c
         relation rel;
         memset(&rel, 0, sizeof(rel));
         uint32_t cnt = 0;
-        if (trial_factor(ctx->zeta, ctx->fb, ctx->nfb, col_prime0, &rel, &cnt)) {
+        if (trial_factor(ctx->zeta, ctx->fb, ctx->fb_div, ctx->nfb, col_prime0, &rel, &cnt)) {
             rel.n = cnt;
             rel.rhs = 1;
             rel_push(&rels, &rel);
@@ -534,6 +554,7 @@ ca_status ca_ic_precompute(uint64_t p, uint64_t g, const ca_ic_params *params, c
         s.B = B;
         s.C = C;
         s.fb = ctx->fb;
+        s.fb_div = ctx->fb_div;
         s.nfb = ctx->nfb;
         s.fb_log2 = fb_log2;
         s.col_prime0 = col_prime0;
@@ -563,6 +584,7 @@ ca_status ca_ic_precompute(uint64_t p, uint64_t g, const ca_ic_params *params, c
         s.p = p;
         s.zeta = ctx->zeta;
         s.fb = ctx->fb;
+        s.fb_div = ctx->fb_div;
         s.nfb = ctx->nfb;
         s.col_prime0 = col_prime0;
         s.target_rels = target;
@@ -692,6 +714,7 @@ void ca_ic_free(ca_ic_ctx *ctx)
 {
     if (!ctx) return;
     free(ctx->fb);
+    free(ctx->fb_div);
     free(ctx->fb_log);
     free(ctx->fb_known);
     pthread_mutex_destroy(&ctx->rng_lock);
@@ -719,7 +742,7 @@ static ca_status individual_log_zeta(ca_ic_ctx *ctx, uint64_t h, uint64_t *out, 
         relation rel;
         uint32_t cnt = 0;
         (*tries)++;
-        if (trial_factor(v, ctx->fb, ctx->nfb, 0, &rel, &cnt)) {
+        if (trial_factor(v, ctx->fb, ctx->fb_div, ctx->nfb, 0, &rel, &cnt)) {
             /* h zeta^e = prod q^a  =>  log h = sum a log q - e */
             int ok = 1;
             uint64_t acc = 0;
