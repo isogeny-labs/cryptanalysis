@@ -10,12 +10,12 @@ expected={
  'CT144_FROZEN_TARGETS.csv':'ea17d4ae6d39bbc61f834d50967cceae37f69fdf04806bfd80ff2750c439a7e3'
 }
 for path,digest in expected.items():
- assert hashlib.sha256((root/path).read_bytes()).hexdigest()==digest, 'changed original '+path
+ if hashlib.sha256((root/path).read_bytes()).hexdigest()!=digest: raise SystemExit('CT144 invalid original '+path)
 raw=(root/'ct136_native.cpp').read_text()
 snip=raw.split('constexpr int LANES=32;',1)[1].split('int main(int argc,char**argv)',1)[0]
 for w in (4,16):
  s='constexpr int LANES='+str(w)+';'+snip
  s=s.replace('6250;round++',str(200000//w)+';round++')
  for old,new in [('LANES',f'LANES{w}'),('StateArray',f'StateArray{w}'),('batch_plus',f'batch_plus{w}'),('rho_batch',f'rho_batch{w}')]:s=s.replace(old,new)
- assert (root/f'ct144_batch{w}.inc').read_text()==s, 'altered generated comparator '+str(w)
+ if (root/f'ct144_batch{w}.inc').read_text()!=s: raise SystemExit('CT144 altered generated comparator '+str(w)
 print('CT144 source, include and 128-point manifest hashes and full contents: OK [pcc:unverified]')
