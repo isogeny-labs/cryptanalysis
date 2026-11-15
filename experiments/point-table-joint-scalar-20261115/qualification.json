@@ -1,0 +1,135 @@
+{
+  "schema": "point-table-joint.development-qualification/v1",
+  "recorded_at": "2026-11-15T21:41:39.201526+00:00",
+  "scope": "Established joint public-coefficient target generation integrated into prepared pair collection; public F17 and p5 correctness/diagnostic controls only",
+  "standing": "Producer observations; no signed execution, independent audit, calibrated cost or runtime-gain verdict",
+  "dependency_parent": "7893dc931c6f691a57b428d16f7cf8df193082ad",
+  "source_manifest": {
+    "path": "source.sha256",
+    "sha256": "7d85d231b133a7e8d0cb92d8f2161378aab1f5057481031b4c260c7f3edb025f",
+    "includes": "All native Rust source/tests, JSON fixtures, native manifest/lock, API document and parent Rust workspace manifest/lock when applicable"
+  },
+  "checks": [
+    {
+      "phase": "final",
+      "check": "clippy",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--release",
+        "--manifest-path",
+        "bindings/rust/hashed-ecdl-tensor/Cargo.toml",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "at": "2026-11-15T21:37:22.690175+00:00",
+      "stdout": "cryptanalysis.final.clippy.stdout.log",
+      "stderr": "cryptanalysis.final.clippy.stderr.log"
+    },
+    {
+      "phase": "final",
+      "check": "fmt",
+      "argv": [
+        "rustfmt",
+        "--check",
+        "--edition",
+        "2021",
+        "bindings/rust/hashed-ecdl-tensor/src/joint.rs",
+        "bindings/rust/hashed-ecdl-tensor/src/prepared.rs",
+        "bindings/rust/hashed-ecdl-tensor/src/reduction.rs",
+        "bindings/rust/hashed-ecdl-tensor/src/bin/hashed-ecdl.rs",
+        "bindings/rust/hashed-ecdl-tensor/tests/joint_targets.rs",
+        "bindings/rust/hashed-ecdl-tensor/src/lib.rs"
+      ],
+      "exit_code": 0,
+      "at": "2026-11-15T21:37:16.674195+00:00",
+      "stdout": "cryptanalysis.final.fmt.stdout.log",
+      "stderr": "cryptanalysis.final.fmt.stderr.log"
+    },
+    {
+      "phase": "final",
+      "check": "fmt",
+      "argv": [
+        "rustfmt",
+        "--check",
+        "--edition",
+        "2021",
+        "bindings/rust/hashed-ecdl-tensor/src/joint.rs",
+        "bindings/rust/hashed-ecdl-tensor/src/prepared.rs",
+        "bindings/rust/hashed-ecdl-tensor/src/reduction.rs",
+        "bindings/rust/hashed-ecdl-tensor/src/bin/hashed-ecdl.rs",
+        "bindings/rust/hashed-ecdl-tensor/tests/joint_targets.rs",
+        "bindings/rust/hashed-ecdl-tensor/src/lib.rs"
+      ],
+      "exit_code": 1,
+      "at": "2026-11-15T21:36:57.445648+00:00",
+      "stdout": "cryptanalysis.final.fmt.stdout.log",
+      "stderr": "cryptanalysis.final.fmt.stderr.log"
+    },
+    {
+      "repo": "/workspace/cryptanalysis-point-joint",
+      "source_manifest": "cryptanalysis.source.initial.sha256",
+      "source_manifest_sha256": "4bdc5412c6664e1da868f45abd4091df357b0cad4063b3163c77caa42ed58188",
+      "phase": "initial",
+      "check": "tests",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "--release",
+        "--manifest-path",
+        "bindings/rust/hashed-ecdl-tensor/Cargo.toml",
+        "--all-targets"
+      ],
+      "exit_code": 0,
+      "at": "2026-11-15T21:39:21.429096+00:00",
+      "stdout": "cryptanalysis.initial.tests.stdout.log",
+      "stderr": "cryptanalysis.initial.tests.stderr.log"
+    },
+    {
+      "phase": "final",
+      "check": "targets",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "--release",
+        "--manifest-path",
+        "bindings/rust/hashed-ecdl-tensor/Cargo.toml",
+        "--test",
+        "joint_targets",
+        "--test",
+        "prepared_pairs",
+        "--",
+        "--show-output"
+      ],
+      "exit_code": 0,
+      "stdout": "cryptanalysis.final.targets.stdout.log",
+      "stderr": "cryptanalysis.final.targets.stderr.log"
+    }
+  ],
+  "initial_all_target_passing_cases": 121,
+  "source_transition": "Initial full all-target suite uses archived initial source. Only lib.rs module declaration ordering then changed; final targeted tests and all-target clippy compile current source. Both versions and full source manifests retained. No algorithm body changed after the initial full suite.",
+  "shared_files": [
+    "src/joint.rs",
+    "src/prepared.rs",
+    "tests/joint_targets.rs",
+    "PREPARED_PAIRS.md"
+  ],
+  "archive": {
+    "path": "development.tar.xz",
+    "bytes": 30412,
+    "sha256": "6088c85147f9765f661eec83fdc90b4729800a956f3cb8b4fe793120617a3316",
+    "extraction": "tar -xJf development.tar.xz; cd development; sha256sum -c SHA256SUMS",
+    "contents": "Original complete command logs, failed first formatting check, command/exit receipts, full initial source manifest, touched initial/final snapshots, launch preflight. Unchanged source is pinned by dependency_parent + complete manifests."
+  },
+  "scientific_runs": 0,
+  "runtime_gain_established": false,
+  "original_point_table_pilot": "Separate PR2984 unchanged, unsubmitted; no fixture substituted",
+  "msrv": "Existing getrandom0.4.3 edition2024 manifest prevents inherited Rust1.78 check; see problems/hashed-ecdl-rust-msrv.md; not changed or passed here",
+  "toolchain": "rustc 1.99.1 (58cf8f9c3 2026-10-13)\nbinary: rustc\ncommit-hash: 58cf8f9c35b355199727627d07ae34a4e2846d67\ncommit-date: 2026-10-13\nhost: x86_64-unknown-linux-gnu\nrelease: 1.99.1\nLLVM version: 23.1.1\n"
+}
