@@ -51,6 +51,14 @@ JSONL files preserve the operation counts and exact witness lists.
 | 83 | Q1461 baseline | 24,512,444 | 29,976,208 | 1,488 / 2,672 / 16 | 155.959 ms | 147.285 ms |
 | 83 | Q1592 incremental | 8,698,948 | 29,976,208 | 1,488 / 2,672 / 16 | 134.478 ms | 147.586 ms |
 
+For a fixed N131 yardstick, [Q1416's exact W≤6 full pair-index
+model](../runs/n131_q1416_exact_base_pair_index_screen.json) costs
+`2^89.356` logical pair actions, `28.356` exponent bits above `2^61`
+under its uniform-key and one-novel-row assumptions. Q1592 improves a
+different fixed-midpoint kernel, so this modeled gap is unchanged. A
+fully charged N131 exponent is still `null` pending successful ordinary
+decomposition, relation yield and rank, matrix work, and target descent.
+
 The audit compares all 224 paired ordinary state records, including
 pair candidates, trace rejections, linear solutions, field operation
 counts and witness lists. It also checks the N53 and N83 positive pair
