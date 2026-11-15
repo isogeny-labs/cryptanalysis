@@ -537,6 +537,39 @@ fn solve_using(
     oracle: &mut impl FnMut(&Curve, &[FactorBase], &Point, &mut Meter) -> Result<Option<Vec<Point>>>,
     meter: &mut Meter,
 ) -> Result<Certificate> {
+    solve_with_preparation(
+        curve,
+        target,
+        config,
+        rng,
+        |_, _, _, _| Ok(()),
+        |c, bases, _, query, work| oracle(c, bases, query, work),
+        meter,
+    )
+}
+
+// The indexes are complete enumerations owned by this reduction, never a
+// caller-supplied partial table. Prepare only once per nonempty fresh trial.
+pub(crate) fn solve_with_preparation<State>(
+    curve: &Curve,
+    target: &Point,
+    config: &Config,
+    rng: &mut impl RandomSource,
+    mut prepare: impl FnMut(
+        &Curve,
+        &[FactorBase],
+        &[BTreeMap<Point, usize>],
+        &mut Meter,
+    ) -> Result<State>,
+    mut oracle: impl FnMut(
+        &Curve,
+        &[FactorBase],
+        &mut State,
+        &Point,
+        &mut Meter,
+    ) -> Result<Option<Vec<Point>>>,
+    meter: &mut Meter,
+) -> Result<Certificate> {
     if config.slots < 2 || config.trials == 0 {
         return Err(invalid("reduction input"));
     }
@@ -606,6 +639,7 @@ fn solve_using(
             .ok_or_else(|| overflow("relation attempts"))?;
         let mut relations = Vec::with_capacity(required);
         let mut matrix = Vec::with_capacity(required);
+        let mut oracle_state = prepare(curve, &bases, &indexes, meter)?;
         // Initial bases/indexes and row capacity are reusable preparation.
         // Start per-target accounting before the subgroup multiplication;
         // later seed/base retries stay inside the same online interval.
@@ -624,7 +658,7 @@ fn solve_using(
             let right = curve.mul(target, &v, meter)?;
             let point = curve.add(&left, &right, meter)?;
             crate::metrics::phase("relation_search")?;
-            if let Some(points) = oracle(curve, &bases, &point, meter)? {
+            if let Some(points) = oracle(curve, &bases, &mut oracle_state, &point, meter)? {
                 crate::metrics::phase("matrix_build")?;
                 let relation = Relation { u, v, points };
                 matrix.push(matrix_row(&relation, &indexes, columns)?);
