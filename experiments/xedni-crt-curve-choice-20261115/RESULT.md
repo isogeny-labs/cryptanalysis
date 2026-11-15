@@ -47,6 +47,13 @@ points and satisfy the same relation. Its reductions at 7 and 11 have 4 and
 6 points respectively. The sign-related witness has `a₁=987` and negated
 y-coordinates.
 
+The pinned Lean module `formal/RationalWitness.lean` derives the rational
+relation on the exact Weierstrass curve using Mathlib's affine elliptic-curve
+group law, after checking the discriminant and both point equations. Its
+`#print axioms` output lists only `propext`, `Classical.choice`, and
+`Quot.sound`. The finite-field reduction and auxiliary order calculations
+remain in the exact Sage and independent arithmetic audits.
+
 ## Construction and boundary
 
 For each pair, center the finite-field affine coordinates in `[-23,23]`.

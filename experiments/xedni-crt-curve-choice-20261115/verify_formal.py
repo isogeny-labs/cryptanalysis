@@ -21,21 +21,28 @@ def main():
     assert mathlib["rev"] == deps["mathlib_revision"]
     assert deps["mathlib_revision"] in (HERE / "lakefile.toml").read_text()
     assert (HERE / "lean-toolchain").read_text().strip() == deps["lean_toolchain"]
-    source = (HERE / "TargetRecovery.lean").read_text()
-    for forbidden in (r"\bsorry\b", r"\badmit\b", r"\bsorryAx\b", r"\baxiom\b", r"native_decide"):
-        assert not re.search(forbidden, source), forbidden
+    sources = [(HERE / name).read_text() for name in ("TargetRecovery.lean", "RationalWitness.lean")]
+    for source in sources:
+        for forbidden in (r"\bsorry\b", r"\badmit\b", r"\bsorryAx\b", r"\baxiom\b", r"native_decide"):
+            assert not re.search(forbidden, source), forbidden
     output = (HERE / "build-output.txt").read_text()
     assert "Build completed successfully" in output
     assert "error:" not in output
     assert "sorryAx" not in output
     declarations = deps["audited_declarations"]
     for declaration in declarations:
-        assert f"#print axioms {declaration}" in source
+        assert f"#print axioms {declaration}" in sources[0]
         line = next(line for line in output.splitlines()
                     if f"'XedniCrtTargetRecovery.{declaration}' depends on axioms:" in line)
         assert "[propext, Classical.choice, Quot.sound]" in line
     assert len(declarations) == 3
-    print(json.dumps({"status": "PASS", "checked_theorems": len(declarations),
+    for declaration in deps["audited_rational_declarations"]:
+        assert f"#print axioms {declaration}" in sources[1]
+        line = next(line for line in output.splitlines()
+                    if f"'XedniCrtRationalWitness.{declaration}' depends on axioms:" in line)
+        assert "[propext, Classical.choice, Quot.sound]" in line
+    assert len(deps["audited_rational_declarations"]) == 1
+    print(json.dumps({"status": "PASS", "checked_theorems": len(declarations) + len(deps["audited_rational_declarations"]),
                       "mathlib_revision": deps["mathlib_revision"],
                       "lean_toolchain": deps["lean_toolchain"]}, sort_keys=True, indent=2))
 
