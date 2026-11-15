@@ -144,7 +144,15 @@ fn assert_public_case(
     let prime = m.prime.a.transfer_point(&kp(point)).unwrap();
     let class = m.prime.a.pic.add(&prime, &cofactors[from][sector]);
     let input = runtime.admit(from, &runtime.encode(from, &class)).unwrap();
-    let recovered = curve::pmul(m.source.field(), m.source.curve(), &input.norm, 1_385_856);
+    let prime_recovery_scalar = 4 * inverse_original_prime(8);
+    assert_eq!(prime_recovery_scalar % 4, 0);
+    assert_eq!(2 * prime_recovery_scalar % ELL as u128, 1);
+    let recovered = curve::pmul(
+        m.source.field(),
+        m.source.curve(),
+        &input.norm,
+        prime_recovery_scalar,
+    );
     assert_eq!(
         recovered, point,
         "independent prime-source recovery must include all cofactor sectors"
@@ -161,7 +169,7 @@ fn assert_public_case(
         target.source.field(),
         target.source.curve(),
         &output.norm,
-        1_385_856,
+        prime_recovery_scalar,
     );
     assert_eq!(recovered_target, independent);
     // Exercise the actual complete public interface and full-group inverse.

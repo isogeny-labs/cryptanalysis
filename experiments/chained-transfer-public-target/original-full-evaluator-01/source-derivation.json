@@ -15,5 +15,12 @@
     "one whole original-public andone whole48-known-point record"
   ],
   "full_halving_correction_admission_norm_inverse_bodies_unchanged": true,
-  "all_prior_crates_immutable": true
+  "all_prior_crates_immutable": true,
+  "post_native01_narrow_test_oracle_fix": {
+    "failed_source": "e633524f33e62c4ffa273ffefd4a8ea3915ef93d",
+    "failure": "old nu12 recovery scalar retained in two original-prime public test checks",
+    "replace": "both literals ->4*inverse_original_prime(8), mod4 andinverse2modoriginalELL assertions",
+    "runtime_math": "unchanged",
+    "models_population_criteria": "unchanged"
+  }
 }
