@@ -21,6 +21,24 @@ relation rate within accepted pairs is `2/1344 = 1/672`. The two rational
 relation pairs are sign-related and share one underlying curve shape; these
 finite-panel fractions are exact counts, not independent-trial estimates.
 
+## Fixed public-point replay
+
+The frozen public input `G=(2,2)`, `Q=(26,8)` has subgroup order 43.
+With `s=(1,1)`, the replay enumerates every ordered pair
+`(t₁,t₂)∈{0,...,42}²` and forms `Pᵢ=sᵢQ−tᵢG`. It runs the CRT coefficient
+search afresh for each admissible pair; the saved census is used as an
+independent row-by-row crosscheck. Of 1,849 queries, 1,722 have distinct
+nonidentity sampled points, 1,344 pass the CRT gates, 34 have the reduced
+relation, and two have the rational relation. Those two occur at
+`t=(5,23)` and `t=(29,11)`. Each yields
+`(t₁+2t₂)/3 = 17 (mod 43)`, and scalar multiplication reproduces `Q`.
+
+The target scalar 17 was used only to construct and independently check the
+fixture. The exhaustive target run is a correctness control with its own
+frozen input law and complete compressed query statuses in
+`target-rows.jsonl.gz`. It is not an online wall-time comparison; the
+curve search and all 1,849 queries must be charged in any future cost study.
+
 One checked witness uses the rational curve with Weierstrass coefficients
 `[a₁,a₂,a₃,a₄,a₆]=[-987,-1034,0,7660,-3997]` and lifted points
 `Q₁=(14,7)`, `Q₂=(17,10)`. The Sage run and an independent exact-rational
@@ -62,7 +80,7 @@ and sampling theorems in the existing Lean modules apply only with their
 stated bounded-witness and sampling hypotheses.
 
 `PROOF_MAP.md` records the existing abstract reduction theorem, the exact
-Sage/arithmetic witness, and the open faithful Lean elliptic-curve
+Sage/arithmetic witness and fixed-target recovery, and the open faithful Lean elliptic-curve
 formalization. The current shared checkout failed its existing Lean source
 hash verifier, so this PR does not report a fresh checked Lean build.
 
@@ -80,6 +98,8 @@ record the accepted Sage source and native binary manifest.
 ./sage -python experiments/xedni-crt-curve-choice-20261115/run.py > experiments/xedni-crt-curve-choice-20261115/result.json 2> experiments/xedni-crt-curve-choice-20261115/run.stderr
 ./sage --runtime-info > experiments/xedni-crt-curve-choice-20261115/sage-runtime-info-v2.json
 ./sage -python experiments/xedni-crt-curve-choice-20261115/run_v2.py > experiments/xedni-crt-curve-choice-20261115/result-v2.json 2> experiments/xedni-crt-curve-choice-20261115/run-v2.stderr
+./sage --runtime-info > experiments/xedni-crt-curve-choice-20261115/sage-runtime-info-target.json
+./sage -python experiments/xedni-crt-curve-choice-20261115/target_replay.py > experiments/xedni-crt-curve-choice-20261115/result-target.json 2> experiments/xedni-crt-curve-choice-20261115/target.stderr
 python3 experiments/xedni-crt-curve-choice-20261115/audit.py
 ```
 
@@ -88,6 +108,8 @@ The large raw row streams are committed as `rows.jsonl.gz` and
 retain their uncompressed SHA-256 values. The independent `audit.py` checks
 both source and runtime receipts, all
 1,722 input pairs, every accepted curve equation and finite-field order,
-the reduced group relation, and the rational relation by an exact doubling
+the reduced group relation, the rational relation by an exact doubling
 formula. It preserves all failed construction statuses and checks the
-two rational witnesses. `SEAL.sha256` seals the complete artifact set.
+two rational witnesses. It also independently recomputes all 1,849 target
+queries and both scalar recoveries using a separate finite-field group law.
+`SEAL.sha256` seals the complete artifact set.

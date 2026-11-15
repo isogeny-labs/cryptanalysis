@@ -43,6 +43,20 @@ def add_short(P, Q, a, p):
     return x3, y3
 
 
+def mul_short(n, P, a, p):
+    result = None
+    while n:
+        if n & 1:
+            result = add_short(result, P, a, p)
+        P = add_short(P, P, a, p)
+        n //= 2
+    return result
+
+
+def neg_short(P, p):
+    return None if P is None else (P[0], -P[1] % p)
+
+
 def curve_order(coeffs, p):
     a1, a2, a3, a4, a6 = coeffs
     return 1 + sum((y * y + a1 * x * y + a3 * y - x ** 3 - a2 * x * x - a4 * x - a6) % p == 0
@@ -84,6 +98,65 @@ def check_receipt(suffix, source):
     rows = [json.loads(line) for line in data_bytes(rows_name).decode().splitlines()]
     assert len(rows) == result["total_ordered_pairs"] == 1722
     return rows, result
+
+
+def check_target(catalog):
+    protocol = json.loads((HERE / "protocol-target.json").read_text())
+    result = json.loads((HERE / "result-target.json").read_text())
+    compressed = (HERE / "target-rows.jsonl.gz").read_bytes()
+    raw = gzip.decompress(compressed)
+    assert result["status"] == "PASS"
+    assert result["protocol_sha256"] == sha("protocol-target.json")
+    assert result["source_sha256"] == sha("target_replay.py")
+    assert result["parent_source_sha256"] == protocol["parent_source_sha256"] == sha("run_v2.py")
+    assert result["parent_rows_sha256"] == protocol["parent_census_rows_sha256"] == sha("rows-v2.jsonl")
+    assert result["runtime_sha256"] == sha("sage-runtime-info-target.json")
+    assert result["target_rows_sha256"] == hashlib.sha256(raw).hexdigest()
+    assert result["target_rows_gzip_sha256"] == hashlib.sha256(compressed).hexdigest()
+    assert (HERE / "target.stderr").stat().st_size == 0
+    target_rows = [json.loads(line) for line in raw.decode().splitlines()]
+    assert len(target_rows) == result["target_queries"] == 43 * 43
+    lookup = {tuple(tuple(point) for point in row["reduced_points"]): row for row in catalog}
+    assert len(lookup) == 1722
+    G, Q = tuple(result["generator"]), tuple(result["public_target"])
+    assert G == (2, 2) and Q == (26, 8)
+    assert mul_short(43, G, -1, 47) is None
+    assert mul_short(17, G, -1, 47) == Q
+    counts = Counter()
+    accepted = reduced = rational = 0
+    hits = []
+    for index, row in enumerate(target_rows):
+        t1, t2 = divmod(index, 43)
+        assert row["t"] == [t1, t2]
+        P1 = add_short(Q, neg_short(mul_short(t1, G, -1, 47), 47), -1, 47)
+        P2 = add_short(Q, neg_short(mul_short(t2, G, -1, 47), 47), -1, 47)
+        if P1 is None or P2 is None:
+            assert row["status"] == "identity"
+        elif P1 == P2:
+            assert row["status"] == "duplicate"
+        else:
+            prior = lookup[(P1, P2)]
+            assert row["reduced_points"] == [list(P1), list(P2)]
+            assert row["status"] == prior["status"]
+            assert row["accepted"] == prior["accepted"]
+            assert row["reduced_relation"] == prior["reduced_relation"]
+            assert row["rational_relation"] == prior["rational_relation"]
+            accepted += int(row["accepted"])
+            reduced += int(row["accepted"] and row["reduced_relation"])
+            rational += int(row["rational_relation"])
+            if row["rational_relation"]:
+                scalar = (t1 + 2 * t2) * pow(3, -1, 43) % 43
+                assert scalar == row["recovered_scalar"] == 17
+                assert mul_short(scalar, G, -1, 47) == Q
+                hits.append({"t": row["t"], "scalar": scalar})
+        counts[row["status"]] += 1
+    assert counts == result["status_counts"]
+    assert (accepted, reduced, rational) == (
+        result["crt_accepted_pairs"], result["accepted_reduced_relations"],
+        result["accepted_rational_relations"])
+    assert [item["scalar"] for item in hits] == result["recovered_scalars"]
+    return {"target_queries": len(target_rows), "target_hits": hits,
+            "target_status": "PASS"}
 
 
 def main():
@@ -153,11 +226,13 @@ def main():
     assert len(rational_examples) == 2
     assert (HERE / "run-failed.stderr").stat().st_size > 0
     assert (HERE / "rows-failed.jsonl").stat().st_size == 0
+    target_audit = check_target(rows)
     print(json.dumps({"status": "PASS", "audited_pairs": len(rows),
                       "accepted_pairs": accepted, "distinct_accepted_curves": len(curves),
                       "accepted_reduced_relation_pairs": accepted_reduced,
                       "accepted_rational_relation_pairs": accepted_rational,
                       "rational_relation_examples": rational_examples,
+                      **target_audit,
                       "initial_producer_failure_preserved": True}, sort_keys=True, indent=2))
 
 
