@@ -7,7 +7,7 @@ use num_traits::{One, Zero};
 use std::collections::BTreeSet;
 
 /// Canonical point representation; the identity has no affine coordinates.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Point {
     /// The identity.
     Infinity,

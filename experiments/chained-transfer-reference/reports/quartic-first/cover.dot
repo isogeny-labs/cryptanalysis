@@ -1,0 +1,15 @@
+digraph Cover {
+  graph [rankdir=LR, bgcolor="white", fontname="DejaVu Sans", nodesep=0.25, ranksep=0.35];
+  node [shape=box, style="rounded,filled", fillcolor="#eef5ff", color="#355b83", fontname="DejaVu Sans", fontsize=11];
+  edge [fontname="DejaVu Sans", fontsize=9, color="#355b83"];
+  t [label="T0 balanced class\n12,317 rational inputs"];
+  c [label="C0 class\nretained reference", fillcolor="#fff2df", color="#a56825"];
+  e [label="E109 / F101\ny^2 = x^3 + x + 46", fillcolor="#e8f5e9", color="#3e7846"];
+  direct [label="Direct quartic finite-algebra trace\nQ=x^2+63; all operations in F101\nplus (2n+m-2)q; q=(14,73)"];
+  t -> c [label="old R0 dual\nextension-field evaluator", color="#a56825"];
+  c -> e [label="old N0", color="#a56825"];
+  t -> direct [label="new evaluator of H=N0 R0 dual"];
+  direct -> e [label="all 12,317 outputs agree"];
+  certificate [label="Exact curve identity + degree4\n118 point witnesses; difference degree <=16\nindependent flat-field/pole replay", fillcolor="#f4edfc", color="#735397"];
+  certificate -> direct [style=dashed, label="global identification\nwritten geometry", color="#735397"];
+}
