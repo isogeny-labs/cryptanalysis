@@ -1,5 +1,60 @@
 # Curve25519 torus/S4: Rust qualification and route criteria
 
+## Current native recovery and four-point scope
+
+See the current [source-linked report](reports/recovery-v4/REPORT.md),
+[diagram](reports/recovery-v4/pipeline.svg) and
+[PDF](reports/recovery-v4/report.pdf). The bounded native four-point M=1
+controls match the complete oracle for member/nonmember targets; final
+consumer tests report nine unit tests and one process-level test passing.
+PCC-20261115-47a01f. [pcc:unverified]
+
+Bounded native root recovery is implemented: structured Singular output,
+gcd(f,X^p-X), bounded splitting and triangular assignments, followed by
+the original equations, rational membership/lifts and actual signed point
+sums. `prepare-tree` and `recover-tree` accept public summation-tree cards
+of arity 2–8 with one or four membership branches. Errors, malformed frames
+and exhausted recovery limits are inconclusive; empty output is not an
+absence certificate.
+
+The preserved [three-point native controls](evidence/native-recovery-v3/)
+match their complete M=1 oracle. Actual-field four-point tests also exercise
+a synthetic basis isolating a known assignment, membership/sign validation
+and mutations. A synthetic basis tests recovery, not discovery by a solver.
+PCC-20261115-ec9f29 records the earlier three-point controls; later logs and
+records are linked by the current report. [pcc:unverified]
+
+The [route criteria](ROUTE_CRITERIA_V3.md) explicitly separate the four-point
+collision theorem, finite solver promise and asymptotic cost claim. A failure
+of one does not disprove all representations or index calculus. The shared
+[proof/cost obstruction](https://github.com/isogeny-labs/crypto/blob/98b6b736a53412ef86f02f9e789edc393af1fc20/problems/curve25519-torus-four-point-decomposition.md)
+tracks gamma<1 and the still-open family/phase assumptions.
+The original `ROUTE_CRITERIA.md` remains byte-identical for its published PCC
+record; the extension has its own immutable snapshot and record
+PCC-20261115-13362e. [pcc:unverified]
+
+New commands, after freezing an immutable qualifier:
+
+```sh
+qualifier prepare-tree PUBLIC_TREE.json NEW_DIRECTORY
+qualifier recover-tree PUBLIC_TREE.json NATIVE_TRANSCRIPT NEW_DIRECTORY
+qualifier native-tree-controls /absolute/path/to/Singular NEW_DIRECTORY
+```
+
+The last command is restricted to constructed actual-field M=1 diagnostics,
+four summands, four CPU seconds/five wall seconds/768 MiB per native process.
+It cannot dispatch full-base jobs. A full-base solve has not been run.
+Current reproduction also requires the tree source pin in TREE_DEPENDENCY.json;
+the older DEPENDENCY.json pins the unchanged three-leaf library.
+Check out the TREE_DEPENDENCY revision for both current crates; the historical
+three-leaf source hashes still match at that revision. Shared source is in
+[crypto PR #4364](https://github.com/isogeny-labs/crypto/pull/4364).
+
+## Historical qualification, revision 2
+
+The original qualification and report below remain historical evidence.
+Their pending-root-recovery statements describe that earlier revision.
+
 This study consumes the reusable Rust circuit compiler in the adjacent
 `isogeny-labs/crypto` checkout, `tools/torus-s4`. It freezes a native qualifier,
 serializes solver inputs, and checks known triples after compilation. The

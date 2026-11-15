@@ -1,0 +1,26 @@
+   Compiling curve25519-torus-qualification v0.1.0 (/workspace/isogeny-labs/cryptanalysis/research/curve25519_torus_native_20261115)
+    Finished `release` profile [optimized] target(s) in 2.02s
+     Running unittests src/main.rs (research/curve25519_torus_native_20261115/target/release/build/curve25519-torus-qualification/6814d1498e657a06/out/curve25519_torus_qualification-6814d1498e657a06)
+
+running 9 tests
+test recovery::tests::limits_and_zero_are_inconclusive ... ok
+test recovery::tests::protocol_rejects_incomplete_and_invalid_shapes ... ok
+test tests::rejects_bad_candidate_shape ... ok
+test recovery::tests::triangular_assignments_and_missing_constraint ... ok
+test tests::rejects_unsafe_names ... ok
+test recovery::tests::exhaustive_cubic_roots_match_direct_evaluation ... ok
+test tree_recovery::tests::actual_four_public_point_certificate_and_mutations ... ok
+test recovery::tests::actual_prime_repeated_and_nonrational_factors ... ok
+test tree_recovery::tests::actual_four_known_assignment_exercises_recovery_without_solver_claim ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 17.24s
+
+     Running tests/qualification.rs (research/curve25519_torus_native_20261115/target/release/build/curve25519-torus-qualification/5ef0a5345921295f/out/qualification-5ef0a5345921295f)
+
+running 1 test
+/tmp/torus-native-27940-1794783109047566360/out/qualification-post-call.json
+File exists (os error 17)
+test immutable_qualification_and_no_overwrite ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s
+
