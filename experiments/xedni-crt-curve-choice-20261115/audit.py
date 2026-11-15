@@ -1,6 +1,7 @@
 """Independent exact audit of the restricted and full CRT curve censuses."""
 
 import hashlib
+import gzip
 import json
 from collections import Counter
 from fractions import Fraction
@@ -9,8 +10,16 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 
 
+def data_bytes(name):
+    path = HERE / name
+    if path.exists():
+        return path.read_bytes()
+    assert name.endswith(".jsonl")
+    return gzip.decompress((HERE / (name + ".gz")).read_bytes())
+
+
 def sha(name):
-    return hashlib.sha256((HERE / name).read_bytes()).hexdigest()
+    return hashlib.sha256(data_bytes(name)).hexdigest()
 
 
 def centered(n, p):
@@ -72,7 +81,7 @@ def check_receipt(suffix, source):
     assert result["sage_runtime_sha256"] == sha(f"sage-runtime-info{suffix}.json")
     assert result["rows_sha256"] == sha(rows_name)
     assert (HERE / f"run{suffix}.stderr").stat().st_size == 0
-    rows = [json.loads(line) for line in (HERE / rows_name).read_text().splitlines()]
+    rows = [json.loads(line) for line in data_bytes(rows_name).decode().splitlines()]
     assert len(rows) == result["total_ordered_pairs"] == 1722
     return rows, result
 

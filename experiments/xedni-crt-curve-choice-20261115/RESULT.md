@@ -83,8 +83,11 @@ record the accepted Sage source and native binary manifest.
 python3 experiments/xedni-crt-curve-choice-20261115/audit.py
 ```
 
-The independent `audit.py` checks both source and runtime receipts, all
+The large raw row streams are committed as `rows.jsonl.gz` and
+`rows-v2.jsonl.gz` under the repository data-file limit; the result records
+retain their uncompressed SHA-256 values. The independent `audit.py` checks
+both source and runtime receipts, all
 1,722 input pairs, every accepted curve equation and finite-field order,
 the reduced group relation, and the rational relation by an exact doubling
-formula. It preserves all failed construction statuses and verifies the
+formula. It preserves all failed construction statuses and checks the
 two rational witnesses. `SEAL.sha256` seals the complete artifact set.
