@@ -54,6 +54,7 @@ jobs:
           python3 tools/artifacts/artifacts.py pull --jobs 16 experiments/volcano-ic/rho-arm-20261014
       - name: Runtime receipt (outside every timed interval)
         run: |
+          set -o pipefail
           mkdir -p "$OUT"
           {
             echo "image: $IMAGE_REF"
@@ -67,7 +68,9 @@ jobs:
       - name: Pure-Python rho validation (correctness and step counts)
         run: sage -python "$EXP/validate_rho.py" --reps 8 --out "$OUT/ci-validation.json"
       - name: Sage backend agrees with the pure-Python backend
-        run: sage "$EXP/arms.sage" selftest | tee "$OUT/selftest.json"
+        run: |
+          set -o pipefail
+          sage "$EXP/arms.sage" selftest | tee "$OUT/selftest.json"
       - name: Interleaved arms (frozen protocol)
         run: sage "$EXP/arms.sage" run --out "$OUT"
       - name: Analysis, report, figures and PDF

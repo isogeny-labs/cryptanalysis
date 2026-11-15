@@ -69,6 +69,7 @@ jobs:
         run: python experiments/groebner-perf-20260924/round121/build.py --reference-root "$GITHUB_WORKSPACE"
       - name: Check exact field pairs and final proofs
         run: |
+          set -o pipefail
           python experiments/groebner-perf-20260924/round121/test_guard.py | tee f4-obstruction-evidence/oracle.log
           python experiments/groebner-perf-20260924/round121/panel.py --reference-report f4-obstruction-evidence/reference/panel/report.json --output f4-obstruction-evidence/panel
           python experiments/groebner-perf-20260924/round119/test_large.py --output f4-obstruction-evidence/large-proof.json
