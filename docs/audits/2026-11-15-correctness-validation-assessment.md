@@ -87,7 +87,13 @@ Limits that apply throughout:
 | Python tool tests | pcc 25, benchrec 54, task_card 12, loss_ledger 6, validation-JSON 4: all pass. `test_validation_gate.py`: 63/64. `test_result_switches.py`: see V-19 | identical copies |
 
 Rust library unit tests (`cargo test --lib`, debug build, 6,595 tests):
-**not completed at the time of this commit.** A first run was killed by the container's memory limit after 1,074 tests had passed and none had failed; a second run on its own is in progress and this line will be updated with its result.
+**not completed.** Two runs were made. The first was killed by the container's
+memory limit after 1,074 passes and no failures. The second, run alone, was
+stopped after 1,226 passes and 5 failures, having reached about 11 GB in the
+`ecbench::challenge` and `ecbench::db` tests; a debug build of the suite does
+not finish in this container in reasonable time. The 5 failures are exactly
+the five tests of R-5 (missing `records.jsonl`). About 5,360 tests were not
+reached.
 
 Previously recorded state of the same suite (session log 2026-11-15, source
 `2fd16de7ca`): 6,406 passed, 48 failed, 139 ignored. The list of the 48 is not
@@ -186,11 +192,12 @@ rho as distance remaining. `[pcc:unverified]`
 
 | Id | Finding | Tag |
 |---|---|---|
-| E-1 | Closed record `benchmarks/records/20261105T1826Z-ic-aimed-gather-registry-binding-20261105.json` pins `docs/curves/registry.json` at SHA-256 `1edbd0d…`; the committed file is now `33a16da…` (regenerated 2026-11-13), `uploaded: false`, not a declared living path. `benchrec gate` fails on it | O |
+| E-1 | Closed record `benchmarks/records/20261105T1826Z-ic-aimed-gather-registry-binding-20261105.json` pins `docs/curves/registry.json` at SHA-256 `1edbd0d…`; the committed file is now `33a16da…` (regenerated 2026-11-13). `benchrec gate` fails on it offline. Corrected after the first CI run: the `records` job has the original bytes in the S3 archive and passes this record, so this is a limit of an offline checkout, not a failing record | O |
 | E-2 | `benchmarks/records/20261115T0609Z-genus-ladder-sge-scale.json` is on main with `status: open` and empty content. `benchrec gate` fails on it; it would fail the `bench-records` check on every PR | O |
 | E-3 | `reproduction.lock.json` is stale: of 115 pinned files, 1 is missing and 9 mismatch, including `tools/backend-leaderboard/src/{main,evidence,reproduction}.rs` and `src/cryptanalysis/ecbench/{band,canonical,methods,stats}.rs`. Root `LEADERBOARD.md` cites this lock as its reproduction basis | O |
 | E-4 | Rows rendered `validated` whose recorded sweep verdict is `validated_with_caveats`, `pricing_ok=False` (Table A also `rho_reference_ok=partial`). By design and shown in the cell, but the headline word and the caveat disagree (`docs/ic/LEADERBOARD.md:240-269`) | O |
 | E-5 | `pcc lint-prose` over the repositories reports 212 uncited strong statements in crypto and 27 in cryptanalysis, mostly in root `RESEARCH_*.md`; example `RESEARCH_SEMAEV_ROOTFIND_VS_GROEBNER.md:286`. None is a leaderboard or benchmarks row | O |
+| E-7 | `docs/session-logs/2026-11-15.md` on main contains stray conflict-marker lines (`=======` and `>>>>>>> origin/main`) left by an earlier merge; they make later merges of that file error-prone | O |
 | E-6 | Stale references: `docs/VALIDATION_GATE.md:181` names rule `v7` where the board cites `v9`; `benchmarks/README.md:29-30` gives 2026-10-24 counts | O |
 
 ## 6. Continuous integration
@@ -312,6 +319,21 @@ SIMD paths, hyperelliptic and isogeny class-group code, `crates/*`, and all of
    (R-3), sealed ids for legacy admission (R-2), Serpent (R-4).
 8. **Extend the canary** with one class per hole closed above (V-22), kept
    outside the file under test.
+
+## 8a. Repair status
+
+Updated as repairs land; the finding text above is left as first written.
+
+| Item | Status |
+|---|---|
+| V-1 keyring read from the PR tree | Repaired: the gate reads the base branch's keyring (`--keyring-ref`), fails a keyring that differs from base unless it matches the owner's pin `PCC_KEYRING_SHA256`, and has canary classes for it. Owner action left: set the repository variable when a key is added |
+| V-10 unresolvable base ref exits 0 | Repaired: `ledger verify --base` fails on a ref that is not a commit; pushes to main are checked against the previous tip. An anchor outside the repository (signed tag or store object) is not done |
+| V-3 sweep verdict line validates with no artefacts | Repaired: a passing verdict validates only when each named artefact is a repository file that passes the same checks as a `VALIDATION.json` artefact; verdict files are append-only against the base |
+| V-4 self-attested `VALIDATION.json` | Partly repaired: NaN, infinite, negative and non-numeric tolerances are refused; `order_holds_across_band` is recomputed from the band; an optional `row_digest` binding is checked when present; a pinned artefact must be a JSON object. **Open, owner decision:** a cap of 1e-6 on a report's own tolerance is implemented but switched off, because enforcing it fails 22 admitted benchmarks rows whose headlines were rounded for display (three state 5e299) |
+| V-18 unresolvable base in the validation gate | Repaired: `check --base` exits non-zero when the ref is not a commit. The freeze still has no expiry |
+| V-2 no signing key | Owner action: generate the CI key, add it to `pcc/keyring.json`, set `PCC_KEYRING_SHA256` and `PCC_SIGNING_KEY` |
+| V-8, V-9, V-11, V-14 | Not started here: `tools/benchrec.py`, `tools/task_card.py` and `benchrec-hook.sh` are owned by `crypto-autoresearcher` under the shared-code lock, and that repository is not in this session's scope |
+| pcc copy in `crypto-autoresearcher` | Needs the same `tools/pcc/pcc.py`, `test_pcc.py`, `docs/SABOTAGE_RESISTANCE.md` and lock digests; until then its copy differs from the owner copy in crypto |
 
 ## 9. Reproducing this assessment
 
