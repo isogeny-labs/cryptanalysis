@@ -163,6 +163,53 @@ theorem bounded_relation_of_lattice_representation {d : ℕ}
     exact Finset.mem_image.mpr
       ⟨(τ, a), Finset.mem_product.mpr ⟨hτ, ha⟩, rfl⟩
 
+/-- An explicit rank-gap threshold: if the lattice coordinate radius is at
+most `c * L`, then `L > T(2c+1)^d` suffices for the strict count whenever
+`d < r`. -/
+theorem rank_gap_count (T d r c K L : ℕ)
+    (hdegree : d < r) (hcoord : K ≤ c * L)
+    (hlarge : T * (2 * c + 1) ^ d < L) :
+    T * (2 * K + 1) ^ d < (2 * L + 1) ^ r := by
+  have hL : 0 < L := by omega
+  have hbase : 2 * K + 1 ≤ (2 * c + 1) * L := by
+    calc
+      2 * K + 1 ≤ 2 * (c * L) + 1 := by omega
+      _ ≤ (2 * c + 1) * L := by
+        calc
+          2 * (c * L) + 1 ≤ 2 * (c * L) + L := by omega
+          _ = (2 * c + 1) * L := by simp [add_mul, mul_assoc]
+  have hpow : (2 * K + 1) ^ d ≤ ((2 * c + 1) * L) ^ d := by
+    gcongr <;> omega
+  have hstrict : (T * (2 * c + 1) ^ d) * L ^ d < L * L ^ d :=
+    Nat.mul_lt_mul_of_pos_right hlarge (pow_pos hL d)
+  have hexp : L ^ (d + 1) ≤ (2 * L + 1) ^ r := by
+    calc
+      L ^ (d + 1) ≤ (2 * L + 1) ^ (d + 1) := by gcongr <;> omega
+      _ ≤ (2 * L + 1) ^ r := pow_le_pow_right₀ (by omega) (by omega)
+  calc
+    T * (2 * K + 1) ^ d ≤ T * ((2 * c + 1) * L) ^ d :=
+      Nat.mul_le_mul_left T hpow
+    _ = (T * (2 * c + 1) ^ d) * L ^ d := by rw [mul_pow]; ac_rfl
+    _ < L * L ^ d := hstrict
+    _ = L ^ (d + 1) := by rw [pow_succ]; ac_rfl
+    _ ≤ (2 * L + 1) ^ r := hexp
+
+/-- A rank drop and linear coordinate bound produce a bounded relation at
+the explicit radius in `rank_gap_count`. -/
+theorem bounded_relation_of_rank_gap {d : ℕ}
+    (points : Fin r → H) (basis : Fin d → H)
+    (torsion : Finset H) (L K c : ℕ)
+    (hdegree : d < r)
+    (hcoord : K ≤ c * L)
+    (hlarge : torsion.card * (2 * c + 1) ^ d < L)
+    (hrep : ∀ coeff ∈ coefficientBox r L,
+      ∃ τ ∈ torsion, ∃ a ∈ coefficientBox d K,
+        (∑ i, coeff i • points i) = τ + ∑ j, a j • basis j) :
+    ∃ coeff, Nontrivial coeff ∧ Bounded (2 * L) coeff ∧
+      Relation points coeff := by
+  exact bounded_relation_of_lattice_representation points basis torsion L K
+    hrep (rank_gap_count torsion.card d r c K L hdegree hcoord hlarge)
+
 end XedniHeightPigeonhole
 
 #print axioms XedniHeightPigeonhole.coefficientBox_card
@@ -172,3 +219,5 @@ end XedniHeightPigeonhole
 #print axioms XedniHeightPigeonhole.bounded_relation_of_height_ball_count
 #print axioms XedniHeightPigeonhole.latticeValues_card_le
 #print axioms XedniHeightPigeonhole.bounded_relation_of_lattice_representation
+#print axioms XedniHeightPigeonhole.rank_gap_count
+#print axioms XedniHeightPigeonhole.bounded_relation_of_rank_gap
