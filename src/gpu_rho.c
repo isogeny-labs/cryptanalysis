@@ -352,6 +352,13 @@ static ca_status gpu_rho_solve(const ca_group *g, const ca_elem *base,
     } else {
         nthreads = (uint64_t)params->blocks * tpb;
     }
+    /* Kernel walk IDs are uint32_t; reject dimensions before truncation or
+     * any per-walk allocation. The largest buffer has CA_GPU_AUX words. */
+    if (nthreads > UINT32_MAX / CA_GPU_W ||
+        nthreads > SIZE_MAX / CA_GPU_W / CA_GPU_AUX / sizeof(uint64_t)) {
+        ca_set_error("GPU rho launch exceeds 32-bit walk IDs or host buffer sizes");
+        return CA_ERR_INVALID;
+    }
     a.nthreads = (uint32_t)nthreads;
     uint64_t nwalks = (uint64_t)a.nthreads * CA_GPU_W;
     /* distinguished points: ~32 per walk over the expected run, at most 2^24 total */
@@ -403,15 +410,25 @@ static ca_status gpu_rho_solve(const ca_group *g, const ca_elem *base,
     }
     a.steps = steps;
     identity.resolved_steps = steps;
+    /* Work limit: the caller's max_ops (CA_ERR_LIMIT), else the runaway
+     * guard of the CPU solver (rho.c), which ends a search whose target is
+     * not a power of the base with CA_ERR_NOT_FOUND.  It allows 64 times the
+     * sqrt(n) of a solvable run, the 2^dp steps each walk takes to a
+     * distinguished point, and whole launches (the limit is only checked
+     * between them). */
+    uint64_t op_limit = params->max_ops;
+    const ca_status limit_rc = op_limit ? CA_ERR_LIMIT : CA_ERR_NOT_FOUND;
+    if (op_limit == 0) {
+        double guard = 64.0 * (double)sqrt_n +
+                       64.0 * (double)nwalks * ((double)(1ULL << dp) + (double)steps) + 1048576.0;
+        op_limit = guard < 0x1p63 ? (uint64_t)guard : UINT64_MAX;
+    }
     /* DP buffer for one launch: twice the expected count plus slack, and
      * hard-capped so that a large group cannot ask for a huge allocation.
      * Overflowing the buffer is safe by construction: the kernel drops the
      * excess (it only writes slots below dp_cap) and the host clamps the
      * count, so an overflow costs work, never correctness. */
-    double exp_dps = (double)nwalks * steps / (double)(1ULL << dp);
-    uint64_t cap = (uint64_t)(exp_dps * 2) + 4096;
-    if (cap > (1u << 20)) cap = 1u << 20;
-    a.dp_cap = (uint32_t)cap;
+    a.dp_cap = ca_gpu_dp_capacity((uint32_t)nwalks, steps, (uint32_t)dp);
 
     /* multipliers (host) */
     uint64_t *mult = malloc((size_t)a.r * 4 * sizeof(uint64_t));
@@ -471,8 +488,8 @@ static ca_status gpu_rho_solve(const ca_group *g, const ca_elem *base,
                                       elapsed_prior + ca_now() - t0, total_ops,
                                       launches, dps_total, restarts, tab.count, verbose))
         goto finish;
-    if (params->max_ops && total_ops > params->max_ops) {
-        rc = CA_ERR_LIMIT;
+    if (total_ops > op_limit) {
+        rc = limit_rc;
         goto finish;
     }
     for (;;) {
@@ -537,8 +554,8 @@ static ca_status gpu_rho_solve(const ca_group *g, const ca_elem *base,
             }
             next_checkpoint = now + (checkpoint_interval ? checkpoint_interval : 60);
         }
-        if (params->max_ops && total_ops > params->max_ops) {
-            rc = CA_ERR_LIMIT;
+        if (total_ops > op_limit) {
+            rc = limit_rc;
             break;
         }
     }
