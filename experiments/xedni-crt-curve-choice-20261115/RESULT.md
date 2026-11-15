@@ -65,6 +65,10 @@ the exact group law. The earlier plain-`decide` attempt stopped at repeated
 point addition; its compiler output remains in
 `formal/public-scalar-attempt.txt`. The Sage target replay and independent
 arithmetic audit separately check the scalar identity and relation rows.
+The `target_row_29_11` theorem additionally checks that the saved reduced
+points satisfy `P₁=Q−29G` and `P₂=Q−11G` on that curve. Together with the
+formal reduced relation and the `ZMod 43` recovery calculation, this gives
+an exact checked chain for the `(29,11)` row.
 
 ## Construction and boundary
 

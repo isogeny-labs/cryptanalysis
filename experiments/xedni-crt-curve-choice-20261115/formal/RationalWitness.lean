@@ -103,4 +103,16 @@ theorem public_scalar : (17 : ℕ) • G = Q := by
 
 #print axioms public_scalar
 
+theorem target_row_29_11 :
+    P₁ = Q - (29 : ℕ) • G ∧ P₂ = Q - (11 : ℕ) • G := by
+  constructor
+  · change P₁ = Q + -(nsmulBinRec 29 G)
+    unfold P₁ Q G
+    decide +kernel
+  · change P₂ = Q + -(nsmulBinRec 11 G)
+    unfold P₂ Q G
+    decide +kernel
+
+#print axioms target_row_29_11
+
 end XedniCrtRationalWitness
