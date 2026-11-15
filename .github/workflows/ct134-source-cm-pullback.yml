@@ -1,0 +1,54 @@
+name: CT134 source CM pullback scoped checks
+on:
+  pull_request:
+    paths:
+      - 'experiments/chained-transfer-public-target/ct130-prime31/ct134_pullback.py'
+      - 'experiments/chained-transfer-public-target/ct130-prime31/CT134_*'
+      - '.github/workflows/ct134-source-cm-pullback.yml'
+  workflow_dispatch:
+jobs:
+  cm-pullback:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Exact source math and bounded output under normal and optimized Python
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p ct134-artifacts
+          p=experiments/chained-transfer-public-target/ct130-prime31/ct134_pullback.py
+          python3 -S "$p" > ct134-artifacts/normal.json
+          python3 -O -S "$p" > ct134-artifacts/optimized.json
+          python3 - <<'PY'
+          import json, pathlib
+          for name in ('normal', 'optimized'):
+              d=json.loads(pathlib.Path(f'ct134-artifacts/{name}.json').read_text())
+              if d['schema']!='ct134-source-cm-pullback/v1' or d['standing']!='[pcc:unverified]':
+                  raise SystemExit('Unexpected scope or standing')
+              if (d['p'],d['q'],d['validated_scalars'])!=(2147483033,536857417,23):
+                  raise SystemExit('Curve/validation scope changed')
+              if (d['beta_eigenvalue'],d['beta_squared_eigenvalue'],d['source_alpha_eigenvalue'])!=(243660267,536857413,390258842):
+                  raise SystemExit('The dual/endomorphism identity changed')
+              rows=d['samples']
+              if len(rows)!=16: raise SystemExit('Incomplete ABBA blocks')
+              for i,r in enumerate(rows):
+                  b=i//4
+                  expected=('source','target','target','source') if b%2==0 else ('target','source','source','target')
+                  if (r['block'],r['arm'],r['calls'])!=(b,expected[i%4],368):
+                      raise SystemExit('Unexpected sample sequence')
+                  if r['ns']<=0: raise SystemExit('Missing timing')
+                  if r['arm']=='source' and (r['curve_adds'],r['field_inversions'])!=(18032,18400):
+                      raise SystemExit('Source pullback cost mismatch')
+                  if r['arm']=='target' and (r['curve_adds'],r['field_inversions'])!=(0,0):
+                      raise SystemExit('Target automorphism cost mismatch')
+              print(name,'scope and exact counted map operations pass')
+          PY
+          sha256sum "$p" ct134-artifacts/normal.json ct134-artifacts/optimized.json > ct134-artifacts/SHA256SUMS
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ct134-scope-source-runs
+          path: ct134-artifacts/
+          retention-days: 30
