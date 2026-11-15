@@ -71,9 +71,9 @@ jobs:
           cargo clippy --locked --all-targets -- -D warnings
           cargo test --locked --release --lib --test structured_cli
       - name: Install the declared minimum Rust version
-        run: rustup toolchain install 1.78.0 --profile minimal
+        run: rustup toolchain install 1.85.0 --profile minimal
       - name: Declared minimum Rust version
-        run: cargo +1.78.0 check --locked -p hashed-ecdl-tensor -p cryptanalysis --all-targets
+        run: cargo +1.85.0 check --locked -p hashed-ecdl-tensor -p cryptanalysis --all-targets
       - name: Suite structured consumer minimum Rust version
         working-directory: crates/hashed-ecdl-tensor
-        run: cargo +1.78.0 check --locked --all-targets
+        run: cargo +1.85.0 check --locked --all-targets
