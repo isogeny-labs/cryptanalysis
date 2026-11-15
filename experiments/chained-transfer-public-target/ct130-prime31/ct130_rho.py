@@ -1,5 +1,4 @@
-import random,time,json,sys
-sys.path.insert(0,'/mnt/data')
+import random,time,json
 from ct130_experiment import Curve,transfer,P,bsgs
 
 def rho(c,G,Q,q,seed,max_steps=400_000,distinguished_bits=9):
