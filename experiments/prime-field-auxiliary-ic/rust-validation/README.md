@@ -1,5 +1,11 @@
 # Native integration check receipt
 
+The [structured-consumer follow-up](ci-consumer-followup-20261115/README.md),
+claim `PCC-20261115-113f0f`, corrects the remaining consumer lock while retaining
+all prior package versions and locked validation. Its local checks pass in
+the documented source scopes; full CI remains blocked by inherited GLV
+source-pin drift and the native Rust-floor gap. [pcc:unverified]
+
 The [native proof-admission follow-up](field-fibers-20261115/FORMAL_ADMISSION.md),
 claims `PCC-20261115-8cb342` and `PCC-20261115-496600`, supersedes the earlier
 missing-Lean status. Six ring identities now compile and print standard
