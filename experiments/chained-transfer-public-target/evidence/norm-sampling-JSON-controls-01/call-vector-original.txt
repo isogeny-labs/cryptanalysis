@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/workspace/cryptanalysis/experiments/chained-transfer-public-target/ci_norm_sampling/replay_io.py", line 29, in <module>
+    assert len(rows)==86 and canonical(rows)==canonical(json.loads(lzma.decompress((ci/'expected-native.json.xz').read_bytes())))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

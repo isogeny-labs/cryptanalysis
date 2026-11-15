@@ -1,0 +1,3 @@
+# Complete bounded IC launch and lossless control inputs
+
+The new launcher uses the unchanged compiled02 Rust at03769fb/f9e8c9. It requires the exact current original checkpoint gate, clean source, complete compiler/runtime/prepared custody, all1465 guards, one900s/2GiB unfiltered native run, whole freeze/compare, seven actual class omissions101/no output and final binaries/guards. Each complete omission input is retained as lossless XZ, with producer pipefail0 and whole XZ integrity0 before the Rust auditor consumes its entire decompression. This changes storage representation only; no scientific record is removed. All30 expected phases are explicit. Native acceptance remains pending. [pcc:unverified]

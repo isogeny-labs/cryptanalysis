@@ -1,0 +1,37 @@
+"""Record original publication and exact canonical projection, I/O only."""
+from pathlib import Path
+import hashlib,json,lzma,os,shutil,subprocess
+r=Path('/workspace/crypto');s=r/'research/chained_jacobian_transfers_20261110';c=Path('/workspace/cryptanalysis');cs=c/'experiments/chained-transfer-public-target';scratch=Path('/workspace/scratch')
+ff=scratch/'ct78-handoff18-artifact-ff-01';actual=scratch/'ct78-handoff18-actual-publication-01';control=scratch/'ct77-whole-model-and-third-handoff-18'
+bot='3a689cf8bb2a60355f8a909d74f42e8e6dd3187b';source='c35045cefbaf48048858a6783133ddd1ec133a77'
+assert subprocess.check_output(['git','rev-parse','HEAD'],cwd=r,text=True).strip()==bot
+receipt=json.loads((ff/'dirty-preservation.json').read_text());assert receipt['guard18_count']==24853 and receipt['all24853paths_unchanged']and receipt['all_owned_bytes_unchanged']
+assert all((ff/(x+'.exit')).read_text().strip()=='0'for x in ['fetch','exact-ff','artifact','wiring'])
+jobs=json.loads((actual/'jobs-final-api.json').read_text())['structuredContent']['jobs'];assert len(jobs)==1 and jobs[0]['id']==132547213547 and jobs[0]['conclusion']=='success'
+log=(actual/'whole-job.log').read_bytes();assert log.index(b'8 remote objects replayed')<log.index(b'[detached HEAD 3a689cf8b]')
+e=s/'evidence/public-n4-model-third-publication-18';e.mkdir()
+for name in ['dirty-preservation.json','canonical-manifests.json','fetch.txt','fetch.exit','exact-ff.txt','exact-ff.exit','artifact.txt','artifact.exit','wiring.txt','wiring.exit']:shutil.copyfile(ff/name,e/name)
+for name in ['jobs-api.json','jobs-final-api.json','whole-log-api.json','publisher-bot-commit-api.json','branch-search-api.json']:shutil.copyfile(actual/name,e/name)
+(e/'whole-job.log.xz').write_bytes(lzma.compress(log))
+for sourcefile,name in [(scratch/'ct78_handoff18_fast_forward_01.py','original-FF-command.py'),(scratch/'ct78_handoff18_owned_baseline_01.py','original-owned-command.py'),(control/'owned-before.json','owned-before.json'),(scratch/'ct78-root18-payload-publication-01/receipt.json','normal-push-receipt.json'),(scratch/'ct78-root18-payload-publication-01/push.log','normal-push.log')]:shutil.copyfile(sourcefile,e/name)
+(e/'publication.json').write_text(json.dumps(dict(run=43627710330,job=132547213547,source=source,bot=bot,eight_genuine_remote_replays_before_bot_commit=True,exact_changed_paths=receipt['exact_changed_paths'],all24853guards_all23links_allownedbytes=True,one134690Bwholememberindex_plainGit_unchanged=True,hold18='RELEASED',consumer_checkpoint='complete4filependingmetadata delta+immutableb77Gitbase',archive='all20wholeclosedroots/416members/no filtering',scope='unsigned byte custody only, no mathematical/runtime/merge standing'),indent=2)+'\n')
+shutil.copyfile(__file__,e/'original-record-command.py')
+cmd=['python3','tools/pcc/pcc.py','claim','new','--kind','statement','--claim-type','data','--statement','Actual ORIGINAL handoff18 publisher43627710330/job132547213547SUCCESS: EIGHTwhole remote objects replayed BEFOREbot3a689cf8b/directparentc35045ce/EXACT10paths; ninth134690Bcomplete memberindex stays exactGitblob underoriginalpolicy. ALL24853guards/all24445priorkeys/23links/ownedbytes preserved; originalfetch-FF-artifact-wiring0/HOLD18RELEASED. All20wholeclosedroots/416members/currentpending4metadatafiles+b77Gitbase/actualbinaries/source/failures/native6fixtures-stdout objects genuinelypublished. No truncation/repack/prune/waiver/math-CI-cost promotion; negatives27fb3a/6d2c97 andfiniteproof68cd8c remainunsigned. Strict22ndreplay then coldcensusobserverremedy next.']
+for p in sorted(e.iterdir()):cmd+=['--proof','attestation:'+p.relative_to(r).as_posix()]
+root_claim=subprocess.check_output(cmd,cwd=r,text=True).strip();print(root_claim,flush=True)
+origin=s/'evidence/public-n4-model-third-handoff-18/.artifacts.json';manifest=json.loads(origin.read_text())
+names=['second-model-expected-native-01.json.xz','second-model-whole-native-01.txt.xz','third-edge-expected-native-01.json.xz','third-edge-whole-native-01.txt.xz','third-model-expected-native-01.json.xz','third-model-whole-native-01.txt.xz']
+docs=c/'docs/research-artifacts/chained-transfer/nondual-models-18';docs.mkdir();projection=dict(manifest);projection['files']={name:manifest['files'][name]for name in names};(docs/'.artifacts.json').write_text(json.dumps(projection,indent=2)+'\n');(docs/'.gitignore').write_text(''.join(name+'\n'for name in names))
+objects={Path(x['path']).name:x for x in json.loads((s/'evidence/public-n4-model-third-handoff-18/objects.json').read_text())}
+for name in names:
+ p=docs/name;shutil.copyfile(objects[name]['local_original'],p);assert projection['files'][name]==dict(bytes=p.stat().st_size,sha256=hashlib.sha256(p.read_bytes()).hexdigest());assert subprocess.run(['git','check-ignore','-q',p.relative_to(c).as_posix()],cwd=c).returncode==0
+aliases=['nondual13-preflight/models/expected-native-01.json.xz','evidence/nondual13-model-native-01/whole-positive-native.txt.xz','nondual13-next-preflight/expected-native-01.json.xz','evidence/nondual13-next-native-01/edge-whole-positive-native.txt.xz','nondual13-next-preflight/models/expected-native-01.json.xz','evidence/nondual13-next-native-01/model-whole-positive-native.txt.xz']
+links=[]
+for name,alias in zip(names,aliases):
+ p=cs/alias;target=docs/name;assert not p.exists()and not p.is_symlink();p.symlink_to(os.path.relpath(target,p.parent));assert p.read_bytes()==target.read_bytes();links.append((p,target))
+e=cs/'evidence/genuine-model-third-publication-18';e.mkdir();shutil.copyfile(origin,e/'original-root-manifest.json');shutil.copyfile(docs/'.artifacts.json',e/'canonical-projection-manifest.json');shutil.copyfile(ff/'dirty-preservation.json',e/'original-terminal-guard-receipt.json');shutil.copyfile(__file__,e/'original-command.py')
+(e/'projection.json').write_text(json.dumps(dict(root_claim=root_claim,run=43627710330,job=132547213547,source=source,bot=bot,original_entries_unchanged=projection['files'],canonical_docs=docs.relative_to(c).as_posix(),relative_links={p.relative_to(c).as_posix():os.readlink(p)for p,_ in links},original_raw_bytes_unchanged=True,new_remote_read_claimed=False,hold18_released=True,future_data_handoff='NEW19 required;18historical',scope='unsigned original genuine byte publication/projection only; no scientific or signed execution promotion'),indent=2)+'\n')
+cmd=['python3','tools/pcc/pcc.py','claim','new','--kind','statement','--claim-type','data','--statement','Consumer projection of actual ORIGINAL18/43627710330/job132547213547:8genuine replays before3a689cf8b/directc350/exact10paths/all24853guards23linksownedbytes/holdreleased; complete134690BmemberindexremainsGit. SIXcanonicaldoc entries EXACToriginaldicts andSIXtransparentrelative links byteequal, all217960/150556/150136/88312/326200/211464B wholedata ignoredoutsideGit. Native27fb3a/6d2c97/proof68cd8c/allpriorclaimsubjects unchanged. All20wholeclosedroots416members/actualsourcebinaries/failures genuinelypublished. No newremote-read/mathCIcost standing; strict22ndreplay/coldcensusobserverremedy next, futuredatahandoffNEW19. Unsigned.']
+for p in sorted(e.iterdir()):cmd+=['--proof','attestation:'+p.relative_to(c).as_posix()]
+consumer_claim=subprocess.check_output(cmd,cwd=c,text=True).strip();print(consumer_claim,flush=True)
+(control/'actual-publication.claims.json').write_text(json.dumps(dict(root=root_claim,consumer=consumer_claim),indent=2)+'\n')

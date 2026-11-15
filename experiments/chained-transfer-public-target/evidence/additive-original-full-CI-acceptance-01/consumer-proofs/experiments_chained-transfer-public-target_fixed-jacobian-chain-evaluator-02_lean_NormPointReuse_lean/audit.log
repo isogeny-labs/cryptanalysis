@@ -1,0 +1,10 @@
+/home/runner/work/cryptanalysis/cryptanalysis/cryptanalysis/tools/lean/AuditAxioms.lean:49:37: warning: `String.trim` has been deprecated: Use `String.trimAscii` instead
+
+Note: The updated constant has a different type:
+  String → String.Slice
+instead of
+  String → String
+ok    NormPointReuse.corrected_lift_doubles  [propext, Classical.choice, Quot.sound]
+ok    NormPointReuse.corrected_norm_reuse  [propext, Classical.choice, Quot.sound]
+ok    NormPointReuse.factored_norm_reuse  [propext, Classical.choice, Quot.sound]
+audited 3 theorems in [NormPointReuse]; 0 failing, 0 trusted (native_decide)

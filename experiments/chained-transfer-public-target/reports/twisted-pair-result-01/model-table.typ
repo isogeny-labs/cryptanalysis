@@ -1,0 +1,53 @@
+#grid(columns:(1fr,1fr),gutter:8pt,
+[#text(size:9pt,weight:"bold")[Source endpoint: allsix]
+#v(4pt)
+#set text(size:8pt)
+#table(columns:(1fr,1fr,1fr),inset:4pt,align:center,stroke:.3pt+gray,
+[Old case / D],
+[New case / D],
+[Fixed kernel],
+table.cell(fill:rgb("#dcebdc"))[(0,0) / 100],
+table.cell(fill:rgb("#f0dddd"))[(0,1) / 198],
+[],
+table.cell(fill:rgb("#dcebdc"))[(0,1) / 47],
+table.cell(fill:rgb("#f0dddd"))[(0,0) / 44],
+[],
+table.cell(fill:rgb("#f0dddd"))[(1,0) / 10],
+table.cell(fill:rgb("#dcebdc"))[(2,0) / 109],
+[],
+table.cell(fill:rgb("#dcebdc"))[(1,1) / 109],
+table.cell(fill:rgb("#f0dddd"))[(2,1) / 140],
+[],
+table.cell(fill:rgb("#dcebdc"))[(2,0) / 116],
+table.cell(fill:rgb("#f0dddd"))[(1,0) / 194],
+[],
+table.cell(fill:rgb("#f0dddd"))[(2,1) / 12],
+table.cell(fill:rgb("#dcebdc"))[(1,1) / 220],
+[*MATCH*])],
+[#text(size:9pt,weight:"bold")[Target endpoint: allsix]
+#v(4pt)
+#set text(size:8pt)
+#table(columns:(1fr,1fr,1fr),inset:4pt,align:center,stroke:.3pt+gray,
+[Old case / D],
+[New case / D],
+[Fixed kernel],
+table.cell(fill:rgb("#f0dddd"))[(0,0) / 24],
+table.cell(fill:rgb("#dcebdc"))[(2,0) / 217],
+[*MATCH*],
+table.cell(fill:rgb("#dcebdc"))[(0,1) / 39],
+table.cell(fill:rgb("#f0dddd"))[(2,1) / 46],
+[],
+table.cell(fill:rgb("#dcebdc"))[(1,0) / 116],
+table.cell(fill:rgb("#f0dddd"))[(0,0) / 194],
+[],
+table.cell(fill:rgb("#f0dddd"))[(1,1) / 193],
+table.cell(fill:rgb("#dcebdc"))[(0,1) / 119],
+[],
+table.cell(fill:rgb("#f0dddd"))[(2,0) / 173],
+table.cell(fill:rgb("#dcebdc"))[(1,1) / 124],
+[],
+table.cell(fill:rgb("#f0dddd"))[(2,1) / 88],
+table.cell(fill:rgb("#dcebdc"))[(1,0) / 201],
+[])])
+#v(3pt)
+#text(size:7.5pt)[Green: square D. Red: nonsquare D. All correspondences and fixed-kernel matches come from the whole native records.]

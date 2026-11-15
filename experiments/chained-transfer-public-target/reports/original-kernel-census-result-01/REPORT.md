@@ -1,0 +1,9 @@
+# One supported compatible triple in the original finite family
+
+The [two-page report](report.pdf) retains every one of the18 model vertices and12 compatible edges, including ineligible endpoints. Exactly one of216 triples has both supported compatible edges: indices[4,1,4], cases(2,0)/(0,1)/(2,0), D116/39/36. All72 candidate pairs andevery rejected triple/reason remain in native88f828. All311 whole records, six actual malformed-input controls, four entire-class omission rejections,1172 prior hashes andactual executable custody pass. [pcc:unverified]
+
+The separate finite-data Lean proof29e535 independently recomputes eligibility andall64 membership tests per pair; both original gates pass six roots withzero trusted assumptions, andall six exact local statement bindings pass. The first array-reduction proof failure69d82d is retained. Both final report pages were opened andinspected; PDF52,223B. [pcc:unverified]
+
+This identifies a candidate for full-group original-source Jacobian construction; no complete evaluator for these models is claimed yet. The next implementation receives its own prospective protocol. Current prime-only976f50 models andfixed D12/D24/D67 negatives remain frozen. No calibrated cost orspeed result is inferred. [pcc:unverified]
+
+Sources: [native outcome](../../evidence/original-kernel-census-native-01/outcome.json), [whole raw inventory](../../evidence/original-kernel-census-native-01/whole-unfiltered-raw-inventory.json), [proof map](../../original-kernel-census-01/PROOF_MAP.md), [protocol](../../ORIGINAL_KERNEL_COMPATIBILITY_PROTOCOL_01.md), [literal render inputs](render-inputs.json), andHLP math/9809210v1 section4.1/Lemma13/Propositions14-15 withfield qualification. All raw/source/executable/proof/reportdraft/failure bytes await genuineNEW24. [pcc:unverified]

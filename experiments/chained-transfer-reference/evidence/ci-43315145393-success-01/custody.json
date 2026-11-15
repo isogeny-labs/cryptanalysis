@@ -1,0 +1,90 @@
+{
+  "at": "2026-11-12T22:55:57.170296+00:00",
+  "head": "807207e1cb7787807c7d32d9402b2cb3bc0ee189",
+  "run": 43315145393,
+  "conclusion": "success",
+  "scopes": {
+    "reference": {
+      "native": 25,
+      "reference": 98,
+      "old_ignored": 1,
+      "integration": 5
+    },
+    "independent": {
+      "native": 32,
+      "algebra": 23,
+      "identity_outputs": 2,
+      "proof_modules": 32,
+      "compiled": 186,
+      "written": 160,
+      "trusted": 0,
+      "checker_tests": null
+    },
+    "proper-t20": {
+      "native": 41,
+      "algebra": 23,
+      "identity_outputs": 10,
+      "proof_modules": 39,
+      "compiled": 224,
+      "written": 198,
+      "trusted": 0,
+      "checker_tests": 4
+    },
+    "partial-frobenius": {
+      "native": 35,
+      "algebra": 23,
+      "identity_outputs": 7,
+      "proof_modules": 35,
+      "compiled": 203,
+      "written": 177,
+      "trusted": 0,
+      "checker_tests": null
+    }
+  },
+  "logs": [
+    {
+      "name": "reference",
+      "job": 131521087506,
+      "file": "job-131521087506.log.xz",
+      "raw_bytes": 248899,
+      "raw_sha256": "b6ed38c3f997d70367b6dc6565c79fd9d54e8a43f4a4db384a827db963bac342",
+      "archive_bytes": 30776,
+      "archive_sha256": "4fa837d66d2eb444632ba3ddc416be38ef764688ec33923b2780100bf3704470",
+      "exact_roundtrip": true
+    },
+    {
+      "name": "independent",
+      "job": 131521087801,
+      "file": "job-131521087801.log.xz",
+      "raw_bytes": 115151,
+      "raw_sha256": "cc8a64b14a3a62e77006b815cbf024829c0dcdd163bbe1ab80cf65614b62776b",
+      "archive_bytes": 17844,
+      "archive_sha256": "60447c1aedd5f8595a42a95b9dd23e653e1dc9dac852903c311b8a868d62a175",
+      "exact_roundtrip": true
+    },
+    {
+      "name": "proper-t20",
+      "job": 131521087887,
+      "file": "job-131521087887.log.xz",
+      "raw_bytes": 233406,
+      "raw_sha256": "9417de01b51deb693026c8ca01bd19a72390410966e103d0d612cf9a06011290",
+      "archive_bytes": 23940,
+      "archive_sha256": "b261a87576218e271329dc6b0332681b4d9234eab7d8ba1b6ae5882752d07ab9",
+      "exact_roundtrip": true
+    },
+    {
+      "name": "partial-frobenius",
+      "job": 131521087905,
+      "file": "job-131521087905.log.xz",
+      "raw_bytes": 153697,
+      "raw_sha256": "ebe0182334cdd6a17f4ec231945a919e272c21c8e193d01de97581c1189fb1b4",
+      "archive_bytes": 20264,
+      "archive_sha256": "e0a41d1c9ade4e9627ded6a1fba08b574600a97676acfe6ae273a257336407b2",
+      "exact_roundtrip": true
+    }
+  ],
+  "proper_scope": "producerpropermapreplayplusindependentlyencodedkernelchecker;bothnativeJSONcomparesandallfinalguardscompletedbyexactpublisheddriver;notanindependentR20implementation",
+  "metadata_child": "c0b8allscienceinputsandfourjobsbyteunchanged",
+  "standing": "unsigned CI observation,not scientific signature",
+  "settled": "NO repoll"
+}

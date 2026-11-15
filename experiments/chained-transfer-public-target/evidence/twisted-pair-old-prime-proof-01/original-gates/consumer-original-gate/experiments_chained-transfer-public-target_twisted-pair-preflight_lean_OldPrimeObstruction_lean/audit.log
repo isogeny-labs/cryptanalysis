@@ -1,0 +1,10 @@
+/workspace/cryptanalysis/tools/lean/AuditAxioms.lean:49:37: warning: `String.trim` has been deprecated: Use `String.trimAscii` instead
+
+Note: The updated constant has a different type:
+  String → String.Slice
+instead of
+  String → String
+ok    OldPrimeObstruction.coprime_annihilators  [propext, Classical.choice, Quot.sound]
+ok    OldPrimeObstruction.fixed_orders_coprime  []
+ok    OldPrimeObstruction.old_prime_point_zero  [propext, Classical.choice, Quot.sound]
+audited 3 theorems in [OldPrimeObstruction]; 0 failing, 0 trusted (native_decide)

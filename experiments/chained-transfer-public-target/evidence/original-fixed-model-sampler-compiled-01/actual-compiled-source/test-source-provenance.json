@@ -1,0 +1,58 @@
+{
+  "original_harness": "norm-assisted-ic/src/tests.rs",
+  "accepted_point_helpers": "original-fixed-model-ic-01/src/tests.rs",
+  "comparison_report_and_parameter_helpers_literal": true,
+  "exact_substitutions": [
+    {
+      "old": "fn exact_scalar_samples_and_all_sixty_original_candidate_ic_pairs()",
+      "new": "fn all_original_fixed_models_all_scalar_triples_and_sixty_paired_attempts()"
+    },
+    {
+      "old": "\"protocol\":\"4a6745/b57 published beforecode\"",
+      "new": "\"protocol\":\"abf432/80631ad before new Rust\""
+    },
+    {
+      "old": "    let c = CheckedInstance::construct().unwrap();\n    let old = NormV2::new(AdapterV2::new(&c).unwrap()).unwrap();\n    let isogeny = OddSourceIsogeny::construct(&c);\n    let source = SourceE::degree13_target(&c, &isogeny);\n    let (models, _) = construct_all(&source, &old.a);\n",
+      "new": "    let c = CheckedInstance::construct().unwrap();\n    let old = AdapterV2::new(&c).unwrap();\n    let runtime = Runtime::construct(&c).unwrap();\n    let pair = ThirdHop::construct(&c);\n    let twisted_pair = TwistedPair::construct(&c);\n    let fourth = PairedFourth::construct(&c, &twisted_pair);\n    let known_generator_points = source_points(&c, &pair, &fourth, c.inst.g);\n    let generators = packets(&runtime, known_generator_points);\n"
+    },
+    {
+      "old": "    let (mut pairs, mut scalar_pairs, mut triples, mut solved_cases, mut models_seen) =",
+      "new": "    let public_packets: Vec<_> = public.iter().map(|&q|packets(&runtime, source_points(&c, &pair, &fourth, q))).collect();\n    println!(\"N4_ORIGINAL_FIXED_SAMPLER_SETUP {}\",json!({\"whole_original_runtime_setup\":runtime.setup,\"actual_input_transfer_calls\":runtime.calls(),\"scope\":\"complete original setup retained, not minimal or priced\"}));\n    let (mut pairs, mut scalar_pairs, mut triples, mut solved_cases, mut models_seen) ="
+    },
+    {
+      "old": "    for model in models {\n        if model.square_root.is_none() {\n            continue;\n        }\n        let id = [model.root_index, model.sign_index];\n        let norm = NormNew::new(Adapter::new(&source, &old.a, model).unwrap()).unwrap();\n        let chain = FastSourceChain::new(&c, &norm, &isogeny).unwrap();\n        let g = chain\n            .from_source(&chain.encode_source(short(&c, c.inst.g)))\n            .unwrap();\n        let gc = norm.decode(&g).unwrap();\n        let prepared = SamplerContext::new(&norm, &g).unwrap();\n        let baseline_context = TargetContext::new(&norm).unwrap();\n        let pic = &norm.a.pic;\n",
+      "new": "    for side in 0..3 {\n        let model = &runtime.geometry.models[side];\n        let source = &model.source;\n        let id = [CASES[side].0, CASES[side].1];\n        let norm = &model.prime;\n        let g = generators[side].clone();\n        let gc = norm.decode(&g).unwrap();\n        let prepared = SamplerContext::new(&runtime.geometry, side, &g).unwrap();\n        let baseline_context = TargetContext::new(&runtime.geometry, side).unwrap();\n        let pic = &norm.a.pic;\n        assert_eq!(prepared.prepared_source(), kp(known_generator_points[side]), \"public norm preparation differs from independently transported known generator point\");\n"
+    },
+    {
+      "old": "        for &raw in &public {\n            let q = chain\n                .from_source(&chain.encode_source(short(&c, raw)))\n                .unwrap();",
+      "new": "        for (public_index, _) in public.iter().enumerate() {\n            let q = public_packets[public_index][side].clone();"
+    },
+    {
+      "old": "\"prepared_public_source\":prepared.prepared_source(),",
+      "new": "\"prepared_public_source\":prepared.prepared_source(),\"independent_already_known_source_point\":kp(known_generator_points[side]),\"strong_known_point_reference_exact\":true,"
+    },
+    {
+      "old": "    let mut foreign: Option<EncodedClass> = None;\n",
+      "new": ""
+    },
+    {
+      "old": "        if let Some(ref bad) = foreign {\n            assert!(SamplerContext::new(&runtime.geometry, side, bad).is_err());\n            assert!(prepared.solve(bad, &g, &candidate_params(36), 103).is_err());\n            assert!(prepared.solve(&g, bad, &candidate_params(36), 103).is_err());\n            controls.push(\"actual-foreign-Jacobian-and-P0\");\n        }\n",
+      "new": "        let bad = &generators[(side+1)%3];\n        assert!(SamplerContext::new(&runtime.geometry, side, bad).is_err());\n        assert!(prepared.solve(bad, &g, &candidate_params(36), 103).is_err());\n        assert!(prepared.solve(&g, bad, &candidate_params(36), 103).is_err());\n        controls.push(\"actual-foreign-Jacobian-and-P0\");\n        assert!(SamplerContext::new(&runtime.geometry, 3, &g).is_err());\n        controls.push(\"invalid-fixed-side\");\n        for kind in 0..5 {\n            let mut bad = candidate_params(36);\n            match kind { 0=>bad.nfb=3, 1=>bad.nfb=225, 2=>bad.max_desc=0, 3=>bad.rows_mult=f64::NAN, 4=>bad.rows_mult=0.0, _=>unreachable!() }\n            assert!(prepared.solve(&g,&g,&bad,103).is_err());\n        }\n        controls.push(\"five-invalid-bounded-parameters\");\n"
+    },
+    {
+      "old": "        let (alternate_models, _) = construct_all(&source, &old.a);\n        let alternate_model = alternate_models\n            .into_iter()\n            .find(|m| [m.root_index, m.sign_index] == id)\n            .unwrap();\n",
+      "new": "        let (mut alternate_models, _) = construct_all(source, &old);\n        let alternate_model = take_fixed_model(&mut alternate_models, side, chained_n4_original_full_geometry::MASKS[side]).unwrap();\n"
+    },
+    {
+      "old": "Adapter::with_base_point(&source, &old.a, alternate_model, Some(alternate))",
+      "new": "Adapter::with_base_point(source, &old, alternate_model, Some(alternate))"
+    },
+    {
+      "old": "        foreign = Some(g.clone());\n",
+      "new": ""
+    }
+  ],
+  "additional_controls": "allthree actual cross-target packets, exact fixed side/params, independently transported known initial point equality",
+  "all_old75_scalar_list_rng_and225_1125_60_120_15_criteria_unchanged": true,
+  "no_scalar_answers_in_solver_context": true
+}

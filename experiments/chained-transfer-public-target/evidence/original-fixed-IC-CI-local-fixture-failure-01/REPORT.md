@@ -1,0 +1,3 @@
+# Local CI fixture-copy failure before compilation
+
+The actual new driver returned1 at its first unchanged original guard: the isolated local setup omitted the existing120752B odd-product-maps-acceptance-02/all-native-records.json.xz fixture. The GitHub workflow already hydrates this exact path. No compiler, native test or mathematical phase ran. Whole source manifest, setup source, driver/final-guard outputs and actual exits are retained. Copy only the whole existing fixture after original manifest/hash/byte verification, then retry with a distinct empty output/Cargo target. No guard, source, fixture or scientific criterion changes. [pcc:unverified]

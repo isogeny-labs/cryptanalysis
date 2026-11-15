@@ -1,0 +1,107 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-14T19:47:01Z",
+ "id": "PCC-20261114-c32949",
+ "kind": "statement",
+ "producer": {
+  "commit": "a50fe267f3debf8c835bbad1efc988b44bb8c5d0",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/nondual22-Cargo-alias-failure-03/actual-engine-prepared.json",
+    "sha256": "6cefe83e994b344206189297807e7694192321489c2eb3f3bd66710e125979fb"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/nondual22-Cargo-alias-failure-03/artifacts-api.json",
+    "sha256": "085d12d32a2a749d2e0da814f994e4656231a679029f71811986af2411e27585"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/nondual22-Cargo-alias-failure-03/diagnosis.json",
+    "sha256": "bd60c94195e93691294cbff9a882cf6c08f1971a062e9cb87373e69b402be66d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/nondual22-Cargo-alias-failure-03/initial-guards.pipe-exits",
+    "sha256": "0ccdb5a77ba5bf7687f2565a8ed97dfb9c1af45503c496fb646312239fab5101"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/nondual22-Cargo-alias-failure-03/jobs-api.json",
+    "sha256": "ede27f7de647e570f198b8327e59f513ec0455b85edca84dab519f8d7dcca4a2"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/nondual22-Cargo-alias-failure-03/original-engine-preparation.pipe-exits",
+    "sha256": "0ccdb5a77ba5bf7687f2565a8ed97dfb9c1af45503c496fb646312239fab5101"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/nondual22-Cargo-alias-failure-03/second-edge-compile.pipe-exits",
+    "sha256": "0ccdb5a77ba5bf7687f2565a8ed97dfb9c1af45503c496fb646312239fab5101"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/nondual22-Cargo-alias-failure-03/second-edge-fetch.pipe-exits",
+    "sha256": "0ccdb5a77ba5bf7687f2565a8ed97dfb9c1af45503c496fb646312239fab5101"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/nondual22-Cargo-alias-failure-03/second-edge-materialize.pipe-exits",
+    "sha256": "0ccdb5a77ba5bf7687f2565a8ed97dfb9c1af45503c496fb646312239fab5101"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/nondual22-Cargo-alias-failure-03/whole-ZIP-custody.json",
+    "sha256": "7abad7ba13fdb3c1f0df49a7dc345e9284a220d0592bf5ede772e9c5c9cc720d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/nondual22-Cargo-alias-failure-03/whole-compile.jsonl.xz",
+    "sha256": "7be10065335635f9f38246421ff78d51a4c93a1b723a4c581d42cd2a6566c06a"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/nondual22-Cargo-alias-failure-03/whole-job.log.xz",
+    "sha256": "1b779d48b98a6ac0559022c6920dd8d4489e16f2ae073c9795f3fdb467796129"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/nondual22-Cargo-alias-failure-03/whole-members.json",
+    "sha256": "84f9023a3b42d593cd088d926fdfdb64512d60c8572638c5f551882aad89e354"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Replay03/a50 CI43632431402/job132561796938: explicitoriginalengine900preparation0 andfirstwrapper120compile0, Cargo fresh=true; oldcustodyadapter fails1 at literalfilenamearraycomparison beforebytecheck/native. BareprimaryRLIB vs hasheddependencyRLIB paths differ; wholebyteequivalence remainsunestablished forfailedCI03. Whole211046charlog/17171679BZIP14128926813/all25members/exact49,805,778BRLIB+8,316,356BRMETA snapshots retained. Actualcompiledtestbinary emitted butNOTcopied beforeassert/notinZIP; NOsurvivingCItestexe/runtimeclaim. Remedy comparefullartifactbytes withuniqueextension/package/profile/fresh checks andretainactualaliaspaths; copytestexe beforemetadataassert. No mathcriterion/recordmask/profile/fixture change orfullreplay/ECDLPstandingclaim; unsigned."
+}
