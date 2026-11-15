@@ -1,0 +1,10 @@
+/workspace/cryptanalysis/tools/lean/AuditAxioms.lean:49:37: warning: `String.trim` has been deprecated: Use `String.trimAscii` instead
+
+Note: The updated constant has a different type:
+  String → String.Slice
+instead of
+  String → String
+ok    ThreePairNorm.fixed_scalar_gcd  []
+ok    ThreePairNorm.norm_injective_on_annihilator  [propext, Classical.choice, Quot.sound]
+ok    ThreePairNorm.three_pair_norms  [propext, Quot.sound]
+audited 3 theorems in [ThreePairNorm]; 0 failing, 0 trusted (native_decide)
