@@ -8,7 +8,7 @@ use isogeny_algos::poly;
 use num_traits::ToPrimitive;
 type Result<T> = std::result::Result<T, String>;
 
-struct DirectQuartic {
+pub(super) struct DirectQuartic {
     fp: Zp,
     source: Balanced,
     curve: Curve<u64>,
@@ -19,7 +19,7 @@ struct DirectQuartic {
 }
 
 impl DirectQuartic {
-    fn first() -> Self {
+    pub(super) fn first() -> Self {
         Self {
             fp: Zp::new(101),
             source: Balanced::new(101, &[31, 75, 74, 54, 71, 55, 1]).unwrap(),
@@ -28,6 +28,46 @@ impl DirectQuartic {
             q: vec![63, 0, 1],
             m: vec![41, 40, 69, 73],
             infinity: Pt::Aff(14, 73),
+        }
+    }
+
+    pub(super) fn second() -> Self {
+        Self {
+            curve: Curve::new(44, 21),
+            n: vec![5, 49, 31, 0, 87],
+            q: vec![35, 0, 1],
+            m: vec![87, 1, 82, 87],
+            infinity: Pt::Aff(87, 87),
+            ..Self::first()
+        }
+    }
+
+    pub(super) fn t1(component: usize) -> Self {
+        let (curve, n, q, m, infinity) = match component {
+            0 => (
+                Curve::new(26, 58),
+                vec![8, 60, 36, 0, 84],
+                vec![47, 0, 1],
+                vec![98, 45, 84, 37],
+                Pt::Aff(84, 37),
+            ),
+            1 => (
+                Curve::new(69, 50),
+                vec![3, 0, 76, 42, 46],
+                vec![70, 0, 1],
+                vec![4, 76, 75, 41],
+                Pt::Aff(46, 41),
+            ),
+            _ => panic!("two fixed T1 components only"),
+        };
+        Self {
+            source: Balanced::new(101, &[95, 26, 19, 27, 94, 91, 1]).unwrap(),
+            curve,
+            n,
+            q,
+            m,
+            infinity,
+            ..Self::first()
         }
     }
 
@@ -108,7 +148,7 @@ impl DirectQuartic {
         }
     }
 
-    fn norm(&self, d: &Class) -> Result<(Pt<u64>, usize)> {
+    pub(super) fn norm(&self, d: &Class) -> Result<(Pt<u64>, usize)> {
         self.source.check(d)?;
         let (u, v, n) = d.components();
         let coefficients = |p: &crate::reference::FpPoly| {
@@ -136,10 +176,13 @@ impl DirectQuartic {
     }
 }
 
-#[test]
-fn complete_first_t0_e109_direct_quartic_norm() {
+fn complete_t0_component(component: usize) {
     let c = SevenChain::new();
-    let direct = DirectQuartic::first();
+    let direct = if component == 0 {
+        DirectQuartic::first()
+    } else {
+        DirectQuartic::second()
+    };
     let all = c.r0.target.classes().unwrap();
     assert_eq!(all.len(), 12317);
     let mut counts = [0_usize; 7];
@@ -149,7 +192,7 @@ fn complete_first_t0_e109_direct_quartic_norm() {
         let (image, route) = direct.norm(d).unwrap();
         let expected =
             c.t.source_coordinates(&c.r0.dual_closed(d).unwrap())
-                .unwrap()[0];
+                .unwrap()[component];
         assert_eq!(image, expected, "complete T0 class{i},route{route}");
         counts[route] += 1;
         let (u, _, _) = d.components();
@@ -192,5 +235,89 @@ fn complete_first_t0_e109_direct_quartic_norm() {
         direct.norm(&c.r0.target.delta()).unwrap().0,
         curve::pmul(&direct.fp, &direct.curve, &direct.infinity, 2)
     );
-    println!("PASS first T0/E109 directquarticnorm ALL12317 original H=N0R0Hat outputs/all negations/paired sums;routes{counts:?},repeated{repeated},all three degree0/infinity classes,actual closed poles/coincident-X/foreign model;existing arithmetic only,no timing claim");
+    println!("PASS T0/component{component} directquarticnorm ALL12317 original H=NiR0Hat outputs/all negations/paired sums;routes{counts:?},repeated{repeated},all three degree0/infinity classes,actual closed poles/coincident-X/foreign model;existing arithmetic only,no timing claim");
+}
+
+#[test]
+fn complete_first_t0_e109_direct_quartic_norm() {
+    complete_t0_component(0);
+}
+
+#[test]
+fn complete_second_t0_e113_direct_quartic_norm() {
+    complete_t0_component(1);
+}
+
+#[test]
+fn complete_both_t1_direct_quartic_norms() {
+    let c = SevenChain::new();
+    let source = &c.r1.target;
+    let all = source.classes().unwrap();
+    assert_eq!(all.len(), 12317);
+    for component in 0..2 {
+        let direct = DirectQuartic::t1(component);
+        assert_eq!(direct.curve, c.t.edges[component].map.cod);
+        let mut counts = [0_usize; 7];
+        let mut repeated = 0;
+        let mut linear_poles = 0;
+        let mut images = Vec::new();
+        for (i, d) in all.iter().enumerate() {
+            let (image, route) = direct.norm(d).unwrap();
+            let expected =
+                c.t.target_coordinates(&c.r1.dual_closed(d).unwrap())
+                    .unwrap()[component];
+            assert_eq!(
+                image, expected,
+                "T1/component{component}/class{i}/route{route}"
+            );
+            counts[route] += 1;
+            let (u, _, _) = d.components();
+            if u.degree() == Some(1) {
+                let x = direct.fp.neg(u.coeffs[0].to_u64().unwrap());
+                if poly::eval(&direct.fp, &direct.q, x) == 0 {
+                    linear_poles += 1;
+                }
+            }
+            if u.degree() == Some(2) {
+                let a = u.coeffs[1].to_u64().unwrap();
+                let b = u.coeffs[0].to_u64().unwrap();
+                if direct.fp.sq(a) == direct.fp.mul(4, b) {
+                    repeated += 1;
+                }
+            }
+            images.push(image);
+        }
+        assert_eq!(counts[0], 3);
+        assert_eq!(counts[1], 236);
+        assert_eq!(counts[2], 2);
+        assert_eq!(
+            linear_poles, 4,
+            "two rational poles/two infinity counts each"
+        );
+        assert_eq!(
+            counts[3], 232,
+            "one of two rational poles plus one of116 other finite points"
+        );
+        assert_eq!(repeated, 118);
+        assert!(counts[4] + counts[5] > 0);
+        for (i, d) in all.iter().enumerate() {
+            let j = (37 * i + 7) % all.len();
+            let sum = source.add(d, &all[j]).unwrap();
+            assert_eq!(
+                direct.norm(&sum).unwrap().0,
+                curve::padd(&direct.fp, &direct.curve, &images[i], &images[j])
+            );
+            assert_eq!(
+                direct.norm(&source.neg(d).unwrap()).unwrap().0,
+                curve::neg(&direct.fp, &images[i])
+            );
+        }
+        assert!(direct.norm(&c.r0.target.zero()).is_err());
+        assert_eq!(direct.norm(&source.zero()).unwrap().0, Pt::Inf);
+        assert_eq!(
+            direct.norm(&source.delta()).unwrap().0,
+            curve::pmul(&direct.fp, &direct.curve, &direct.infinity, 2)
+        );
+        println!("PASS T1/component{component} directquarticnorm ALL12317 old H1 outputs/negations/paired sums/infinities/model controls;routes{counts:?},linear_poles{linear_poles},repeated{repeated};predicted4linear-pole and232partial-pole cases retained,existing arithmetic only,no timing claim");
+    }
 }

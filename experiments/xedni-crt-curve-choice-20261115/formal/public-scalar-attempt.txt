@@ -1,0 +1,79 @@
+✖ [3155/3156] Building RationalWitness (12s)
+warning: RationalWitness.lean: imports `Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Point` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: RationalWitness.lean: imports `Mathlib.Tactic` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+trace: .> LEAN_PATH=/Volumes/SSD990-2/cryptanalysis-hecke-D3783-f6-20261022/formal/.lake/packages/Cli/.lake/build/lib/lean:/Volumes/SSD990-2/cryptanalysis-hecke-D3783-f6-20261022/formal/.lake/packages/batteries/.lake/build/lib/lean:/Volumes/SSD990-2/cryptanalysis-hecke-D3783-f6-20261022/formal/.lake/packages/Qq/.lake/build/lib/lean:/Volumes/SSD990-2/cryptanalysis-hecke-D3783-f6-20261022/formal/.lake/packages/aesop/.lake/build/lib/lean:/Volumes/SSD990-2/cryptanalysis-hecke-D3783-f6-20261022/formal/.lake/packages/proofwidgets/.lake/build/lib/lean:/Volumes/SSD990-2/cryptanalysis-hecke-D3783-f6-20261022/formal/.lake/packages/importGraph/.lake/build/lib/lean:/Volumes/SSD990-2/cryptanalysis-hecke-D3783-f6-20261022/formal/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Volumes/SSD990-2/cryptanalysis-hecke-D3783-f6-20261022/formal/.lake/packages/plausible/.lake/build/lib/lean:/Volumes/SSD990-2/cryptanalysis-hecke-D3783-f6-20261022/formal/.lake/packages/mathlib/.lake/build/lib/lean:/Volumes/SSD990/cryptanalysis/experiments/xedni-crt-curve-choice-20261115/formal/.lake/build/lib/lean /Users/adamburan/.elan/toolchains/leanprover--lean4---v4.35.0-rc4/bin/lean /Volumes/SSD990/cryptanalysis/experiments/xedni-crt-curve-choice-20261115/formal/RationalWitness.lean -o /Volumes/SSD990/cryptanalysis/experiments/xedni-crt-curve-choice-20261115/formal/.lake/build/lib/lean/RationalWitness.olean -i /Volumes/SSD990/cryptanalysis/experiments/xedni-crt-curve-choice-20261115/formal/.lake/build/lib/lean/RationalWitness.ilean -c /Volumes/SSD990/cryptanalysis/experiments/xedni-crt-curve-choice-20261115/formal/.lake/build/ir/RationalWitness.c --setup /Volumes/SSD990/cryptanalysis/experiments/xedni-crt-curve-choice-20261115/formal/.lake/build/ir/RationalWitness.setup.json --json
+info: RationalWitness.lean:15:0: 'XedniCrtRationalWitness.rational_model' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RationalWitness.lean:43:0: 'XedniCrtRationalWitness.rational_relation' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RationalWitness.lean:53:0: 'XedniCrtRationalWitness.reduced_model' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RationalWitness.lean:57:67: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: RationalWitness.lean:57:67: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RationalWitness.lean:62:55: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: RationalWitness.lean:62:55: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RationalWitness.lean:65:55: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: RationalWitness.lean:65:55: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RationalWitness.lean:80:49: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: RationalWitness.lean:80:49: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+info: RationalWitness.lean:85:0: 'XedniCrtRationalWitness.reduced_relation' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RationalWitness.lean:88:55: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: RationalWitness.lean:88:59: Unused tactic linter: `decide` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: RationalWitness.lean:88:59: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: RationalWitness.lean:91:55: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: RationalWitness.lean:91:55: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+error: RationalWitness.lean:99:2: Tactic `decide` failed to reduce
+  @decide (nsmulBinRec 17 (WeierstrassCurve.Affine.Point.mk eqG) = WeierstrassCurve.Affine.Point.mk eqQ)
+    (WeierstrassCurve.Affine.instDecidableEqPoint (nsmulBinRec 17 (WeierstrassCurve.Affine.Point.mk eqG))
+      (WeierstrassCurve.Affine.Point.mk eqQ))
+to `true` or `false`.
+
+After unfolding the instances `instDecidableAnd`, `instDecidableEqBool`, `instDecidableEqFin`, `instDecidableEqNat`, `Bool.decEq`, `Int.decLe`, `Int.decNonneg`, `Nat.decEq`, `ZMod.decidableEq`, `WeierstrassCurve.Affine.instDecidableEqPoint`, `ZMod.decidableEq._aux_3`, and `WeierstrassCurve.Affine.instDecidableEqPoint.decEq`, reduction got stuck at
+  match nsmulBinRec 17 (WeierstrassCurve.Affine.Point.mk eqG), WeierstrassCurve.Affine.Point.mk eqQ with
+  | WeierstrassCurve.Affine.Point.zero, WeierstrassCurve.Affine.Point.zero => isTrue ⋯
+  | WeierstrassCurve.Affine.Point.zero, WeierstrassCurve.Affine.Point.some x y h => isFalse ⋯
+  | WeierstrassCurve.Affine.Point.some x y h, WeierstrassCurve.Affine.Point.zero => isFalse ⋯
+  | WeierstrassCurve.Affine.Point.some a a_1 a_2, WeierstrassCurve.Affine.Point.some b b_1 b_2 =>
+    if h : a = b then
+      Eq.ndrec (motive := fun b =>
+        (b_3 : W₄₇.Nonsingular b b_1) →
+          Decidable (WeierstrassCurve.Affine.Point.some a a_1 a_2 = WeierstrassCurve.Affine.Point.some b b_1 b_3))
+        (fun b =>
+          if h : a_1 = b_1 then
+            Eq.ndrec (motive := fun b =>
+              (b_3 : W₄₇.Nonsingular a b) →
+                Decidable (WeierstrassCurve.Affine.Point.some a a_1 a_2 = WeierstrassCurve.Affine.Point.some a b b_3))
+              (fun b =>
+                have h := ⋯;
+                h ▸ isTrue ⋯)
+              h b
+          else isFalse ⋯)
+        h b_2
+    else isFalse ⋯
+info: RationalWitness.lean:101:0: 'XedniCrtRationalWitness.public_scalar' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+Some required targets logged failures:
+- RationalWitness
+error: build failed
