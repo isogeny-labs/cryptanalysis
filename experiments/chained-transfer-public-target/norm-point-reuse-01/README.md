@@ -12,21 +12,21 @@ or crypto-autoresearcher.
 ## What changed and what is held fixed
 
 The original complete-chain evaluator is
-\`fixed-jacobian-chain-evaluator-01/src/lib.rs\`, Git blob
-\`8016634385d76207b23a3eb3a4dae9b0366ac68d\`. The published
+`fixed-jacobian-chain-evaluator-01/src/lib.rs`, Git blob
+`8016634385d76207b23a3eb3a4dae9b0366ac68d`. The published
 [NORM_POINT_REUSE_PROTOCOL_01.md](../NORM_POINT_REUSE_PROTOCOL_01.md) precedes
 this derivative. The prior full-population output and all original fixture
 bytes stay immutable.
 
 The new generator copies that package into sibling
-\`fixed-jacobian-chain-reuse-01\` (never overwrites), then modifies exactly
-four guarded source locations. Its \`norm_from_target_point(to,Z)\` evaluates
-\`Z+Z\` on the actual target quadratic elliptic curve, checks admissibility
+`fixed-jacobian-chain-reuse-01` (never overwrites), then modifies exactly
+four guarded source locations. Its `norm_from_target_point(to,Z)` evaluates
+`Z+Z` on the actual target quadratic elliptic curve, checks admissibility
 and descent to the prime-field target, and counts the one doubling. The
-existing \`check_final\` **still recomputes the actual target Jacobian norm**
-and verifies \`N(class) == transported_norm\`; it is not replaced by a claimed
+existing `check_final` **still recomputes the actual target Jacobian norm**
+and verifies `N(class) == transported_norm`; it is not replaced by a claimed
 identity. The literal two-hop route uses the optimized one-hop function twice.
-The complete \`diagnose_half\` routine, all original source/cofactor/exceptional
+The complete `diagnose_half` routine, all original source/cofactor/exceptional
 cases, and the original source-to-target map code remain untouched.
 
 The generator refuses a changed Git blob, missing source blocks, changed
@@ -36,17 +36,17 @@ and derivative Git blob hashes, exact changes and standing.
 ## Reproduction without paid compute
 
 From the *cryptanalysis* repository root (after the original
-\`fixed-jacobian-chain-evaluator-01/materialize.py\` has prepared literal
+`fixed-jacobian-chain-evaluator-01/materialize.py` has prepared literal
 helpers, as required by its existing README):
 
-\`\`\`sh
+```sh
 python3 -S experiments/chained-transfer-public-target/norm-point-reuse-01/build_norm_reuse.py \
   --original experiments/chained-transfer-public-target/fixed-jacobian-chain-evaluator-01 \
   --out experiments/chained-transfer-public-target/fixed-jacobian-chain-reuse-01
 
 python3 -S experiments/chained-transfer-public-target/norm-point-reuse-01/compare_norm_reuse.py --self-test
 python3 -O -S experiments/chained-transfer-public-target/norm-point-reuse-01/compare_norm_reuse.py --self-test
-\`\`\`
+```
 
 Native evaluation must then use the existing pinned Rust 1.99.1 source and
 prepared-library/custody protocol with separately captured **original and
@@ -54,11 +54,11 @@ optimized** unfiltered logs, retained failures, and a strict 900-second/2 GiB
 attempt cap. Do not run a new EKS job without budget and isolation admission.
 The additive comparison is:
 
-\`\`\`sh
+```sh
 python3 -S experiments/chained-transfer-public-target/norm-point-reuse-01/compare_norm_reuse.py \
   --original /path/to/original-native.txt \
   --optimized /path/to/reuse-native.txt
-\`\`\`
+```
 
 Only the original 48 selected-call vectors may change, with exact counts:
 direct map169 2→1 and norm doubling 0→1; literal map13 4→2 and
@@ -73,7 +73,7 @@ substitute for running the actual native evaluator.
 
 1. Exact-source derivative: static generator + six negative comparator
    controls pass. Native compilation and full 695-record parity **pending**.
-2. Same-host prices for \`C169\`, \`C13\` and elliptic norm doubling \`D\`;
+2. Same-host prices for `C169`, `C13` and elliptic norm doubling `D`;
    cold setup, Jacobian corrections/Phi/halving, memory, and complete primitive
    counters **not yet measured**.
 3. Matched cold source ECDLP: optimize against the strongest same-curve
