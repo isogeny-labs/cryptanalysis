@@ -58,9 +58,9 @@ def main():
         assert sha(ROOT / 'ecc2k130/codegen' / name) == digest
     getcontext().prec = 35
     r = Decimal(int(p['subgroup_order']))
-    assert Decimal(16536)**9 / (4*r) < Decimal('0.034')
-    assert Decimal('561.53') < Decimal(16536)**10 / (4*r) < Decimal('561.54')
-    assert Decimal(8268)**12 / (4*r) > Decimal('37486611')
+    assert Decimal('0.13583') < Decimal(16536)**9 / r < Decimal('0.13584')
+    assert Decimal('2246.13') < Decimal(16536)**10 / r < Decimal('2246.14')
+    assert Decimal('149946445') < Decimal(8268)**12 / r < Decimal('149946446')
     print('PASS_ADJACENT_EXPANDED_BASE_SCREEN', c['union_point_count'])
 
 

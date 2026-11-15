@@ -39,17 +39,23 @@ specified and measured.
 
 ## Shorter-chain screen
 
-Each current position supplies 8,268 signed point lifts. Adding the
-disjoint image supplies **16,536** per position. If independent ordered
-leaf sums were uniform over the full curve of order `4r`, the mean number
-of assignments per exact endpoint would be **0.03396** for nine leaves and
-**561.53** for ten leaves; four target fibers would have a ten-leaf mean
-of **2,246.13**. The current twelve-leaf base has a per-endpoint mean of
-37,486,611.34 under the same model. These are **derived combinatorial
-heuristics**, not measured decomposition yield or SAT runtime. The ten-leaf
-design trades fewer S3 links and 140 source-selector bits for ten
-adjacent-image selector/map gates; its actual formula and solver cost remain
-unmeasured. The nine-leaf mean is too low to select as the first test.
+Each current position supplies 8,268 signed **projected subgroup points**.
+Adding the disjoint image supplies **16,536** per position. If independent
+ordered sums of these projected points were uniform in the prime-order
+subgroup, the mean number of assignments for one target would be **0.13583**
+for nine leaves and **2,246.13** for ten leaves. The current twelve-leaf
+base has a corresponding mean of **149,946,445.36**. These are **derived
+combinatorial heuristics**, not measured decomposition yield or SAT runtime.
+The ten-leaf design trades fewer S3 links and 140 source-selector bits for
+ten adjacent-image selector/map gates; its actual formula and solver cost
+remain unmeasured. The nine-leaf mean is too low to select as the first test.
+
+The current SAT construction searches raw curve lifts and four cofactor
+preimages of a subgroup target. Applying the adjacent map to a raw lift may
+change its cofactor component. Thus the projected-subgroup mean cannot be
+assigned equally to four raw fibers without an additional distribution
+argument. An exact raw-fiber and sign audit is a prerequisite for any
+ten-leaf SAT model-count claim or frozen N131 solver run.
 
 The adjacent map and its plus-only SAT leaf were previously checked on
 [N41 and N131](../n41_n131_adjacent_frob_leaf_20261017/RESULT.md), and the
@@ -61,7 +67,8 @@ not this union-base ten-leaf result.
 
 ## Next falsifier
 
-Build the exact union-base source gate on a smaller-field full pipeline,
+Audit the raw-lift/cofactor bridge, then build the exact union-base source
+gate on a smaller-field full pipeline,
 with an unpinned ordinary relation and independent point/log replay.
 Compare its complete search cost and useful rank with the corresponding
 original-base chain on the same target. Only then freeze an N131 ten-leaf
