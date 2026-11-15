@@ -158,6 +158,25 @@ def main():
                                 "twice_P2_mod7": two_P2,
                                 "relation_sum_mod7": relation_sum})
     assert len(local_witnesses) == 2
+    third_protocol = json.loads((HERE / "protocol-v3.json").read_text())
+    third = json.loads((HERE / "result-v3.json").read_text())
+    sage_third = json.loads((HERE / "sage-audit-v3.json").read_text())
+    assert third["status"] == sage_third["status"] == "PASS"
+    assert third["protocol_sha256"] == sha("protocol-v3.json")
+    assert third["source_sha256"] == sha("run_v3.py")
+    assert third["input_rows_sha256"] == third_protocol["input"]["rows_sha256"] == sha("rows-v2.jsonl")
+    assert third["rows_sha256"] == sage_third["rows_sha256"] == sha("rows-v3.jsonl")
+    assert sage_third["source_sha256"] == sha("sage_audit_v3.py")
+    assert sage_third["runtime_sha256"] == sha("sage-runtime-info-v3.json")
+    assert (HERE / "run-v3.stderr").stat().st_size == 0
+    assert (HERE / "sage-audit-v3.stderr").stat().st_size == 0
+    third_rows = [json.loads(line) for line in (HERE / "rows-v3.jsonl").read_text().splitlines()]
+    assert len(third_rows) == third["input_pairs"] == sage_third["checked_rows"] == len(accepted)
+    assert Counter(row["status"] for row in third_rows) == third["status_counts"]
+    assert Counter(row["aux_order"] for row in third_rows) == {int(k): v for k, v in third["auxiliary_curve_order_counts"].items()}
+    assert sum(row["strict_accepted"] for row in third_rows) == third["strict_accepted_pairs"]
+    assert sum(row["weak_accepted"] for row in third_rows) == third["weak_accepted_pairs"]
+    assert sum(row["local_relation"] for row in third_rows) == third["good_reduction_local_relation_count"]
     print(json.dumps({
         "status": "PASS",
         "v1_rows": len(old),
@@ -166,6 +185,9 @@ def main():
         "v2_accepted_curves": len({(rec["A"], rec["B"]) for rec in accepted}),
         "v2_accepted_unordered_pairs": len({tuple(sorted(map(tuple, rec["reduced_points"]))) for rec in accepted}),
         "v2_accepted_reduced_event_local_witnesses": local_witnesses,
+        "v3_second_prime_checked_rows": len(third_rows),
+        "v3_strict_accepted_pairs": third["strict_accepted_pairs"],
+        "v3_weak_accepted_pairs": third["weak_accepted_pairs"],
     }, sort_keys=True, indent=2))
 
 

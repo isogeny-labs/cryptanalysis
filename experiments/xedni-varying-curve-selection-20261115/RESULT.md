@@ -21,6 +21,16 @@ are sign mirrors and give the same local certificate.
 | Strict auxiliary gate, `#E(F₇)=3` | 0 | 0 | 0 |
 | Weak auxiliary gate, `#E(F₇)=4` | 20 | 2 | 0 |
 
+The frozen second-prime extension tests those same 20 pairs at 11 without
+changing their rational coefficients. The curves for all 20 pairs have good reduction at
+11; 16 pairs retain rank-two incidence rows. Their curve orders are 8
+(four rows), 12 (eight), and 14 (eight). Thus the strict reverse-Mestre
+order 6 and the `ε=1` order 7 each accept zero pairs. The two pairs with
+the reduced relation at 47 also satisfy that relation modulo 11, so the
+second-prime exclusion comes from its required curve order. `protocol-v3.json`
+freezes both order arms and the SHA-256 of the prior 20-pair input before
+this extension was run.
+
 The finite-field curve has 43 points, all in its prime-order group. The
 `42/1722 = 1/41` reduced event rate is also exact by group counting: for
 each nonidentity second point, `P₁=-2P₂` gives one distinct nonidentity
@@ -43,9 +53,10 @@ short-Weierstrass reconstruction and one auxiliary prime. The original
 [xedni algorithm](https://pages.cpsc.ucalgary.ca/~jacobs/PDF/xedni.pdf)
 allows more curve coefficients, CRT conditions across several primes, and
 curve optimization. The exact 1,722-pair census therefore measures this
-specified selection rule. Its next falsifier is to add a second auxiliary
-prime and an explicit coefficient-choice policy, then repeat the same
-reduced-event and rational-relation accounting.
+specified selection rule. The second-prime extension keeps the original
+coefficients; a full CRT coefficient-choice policy can move to other
+rational curves through the same lifted points. That policy is the next
+experiment, with the same reduced-event and rational-relation accounting.
 
 The complete per-pair rows, including failed construction and gate statuses,
 are in `rows.jsonl` and `rows-v2.jsonl`. The independent `audit.py` verifies
@@ -56,10 +67,18 @@ passed for all 3,444 saved rows. Both checked Sage runs exited zero with
 empty stderr. Runtime receipts pin the accepted Sage source and native
 binary manifest.
 
+`rows-v3.jsonl` retains all 20 second-prime outcomes, including the four
+rank failures and both zero-yield order arms. A separate checked Sage replay
+recomputes all 20 curve orders, point-incidence ranks and local group
+relations at 11; `audit.py` validates its source and runtime receipts.
+
 Reproduce from the repository root using the checked launcher:
 
 ```sh
 ./sage --runtime-info > experiments/xedni-varying-curve-selection-20261115/sage-runtime-info-v2.json
 ./sage -python experiments/xedni-varying-curve-selection-20261115/run_v2.py > experiments/xedni-varying-curve-selection-20261115/result-v2.json 2> experiments/xedni-varying-curve-selection-20261115/run-v2.stderr
+python3 experiments/xedni-varying-curve-selection-20261115/run_v3.py > experiments/xedni-varying-curve-selection-20261115/result-v3.json 2> experiments/xedni-varying-curve-selection-20261115/run-v3.stderr
+./sage --runtime-info > experiments/xedni-varying-curve-selection-20261115/sage-runtime-info-v3.json
+./sage -python experiments/xedni-varying-curve-selection-20261115/sage_audit_v3.py > experiments/xedni-varying-curve-selection-20261115/sage-audit-v3.json 2> experiments/xedni-varying-curve-selection-20261115/sage-audit-v3.stderr
 python3 experiments/xedni-varying-curve-selection-20261115/audit.py
 ```
