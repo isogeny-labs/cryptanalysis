@@ -1,0 +1,44 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-11T19:58:05Z",
+ "id": "PCC-20261111-afd0a9",
+ "kind": "statement",
+ "producer": {
+  "commit": "2450815e2a3b84687b405ef8498dae9dc2663fe1",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/seven-chain-source-06.txt",
+    "sha256": "a2d711e2becc02aee53ef03aa7cef8e71826085d1c8b115b709321ff97b8e923"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/seven-chain-source-snapshot-05.rs",
+    "sha256": "34493ebf4730f29a13281e87ba8d8b5f7874ba93d603584d3adadd71f50fbce0"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/seven-torsion-source-snapshot-05.rs",
+    "sha256": "bcee74197382d00e9508ff65091f62746b24acc7857fa64c59ebca0d6707e1cf"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/seven-richelot-source-snapshot-03.rs",
+    "sha256": "ea8fab7a26aa03496e5045fe2ab9b19f7ce26c8d179d83917eafd95a27b7b3f3"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Actual T0-to-T1 seven-chain Psi evaluator passes all109 original E109 source scalars,nonzero image,order109 and full scalar preservation. Quarter-coordinate and independent direct rational-halving evaluators agree both ways on this source;actual commuting square passes. Reversed Jacobian norm[7]/inverse78,full source reverse[28]/inverse74 and direct target coordinates([4]alpha1(P),0) pass. Both complete12317-class Psi rational corpora remain unexecuted at registration;no global geometry,solver or cost verdict is inferred from the source corpus. Producer-run bounded correctness,unsigned."
+}
