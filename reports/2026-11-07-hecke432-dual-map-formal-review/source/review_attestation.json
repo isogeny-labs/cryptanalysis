@@ -1,0 +1,31 @@
+{
+  "reviewer": "source_fidelity",
+  "review_plan": "/var/tmp/cryptanalysis-hecke432-review-20261107/reports/2026-11-07-hecke432-dual-map-formal-review/review-plan.yaml",
+  "reviewed_revision": "06335430add4198a2b82efe8db3f0f5c75f03043",
+  "archived_base": "890de0357",
+  "joints_owned": ["source-to-statement fidelity, original formula, archived scope, build and proof surface"],
+  "sources_read": [
+    "/var/lib/spot-codex/home/skills/review-evidence/SKILL.md",
+    "/var/lib/spot-codex/home/skills/review-evidence/references/lean-review.md",
+    "/var/tmp/cryptanalysis-hecke432-review-20261107/reports/2026-11-07-hecke432-dual-map-formal-review/review-plan.yaml",
+    "/var/tmp/cryptanalysis-hecke432-dual-20261107/experiments/hecke-432-dual-map-formalization-20261107/formal/DualCurveEquation.lean",
+    "/var/tmp/cryptanalysis-hecke432-dual-20261107/experiments/hecke-432-dual-map-formalization-20261107/README.md",
+    "/var/tmp/cryptanalysis-hecke432-dual-20261107/experiments/hecke-432-dual-map-formalization-20261107/formal/DEPENDENCIES.json",
+    "/var/tmp/cryptanalysis-hecke432-dual-20261107/experiments/hecke-432-dual-map-formalization-20261107/formal/lean-toolchain",
+    "/var/tmp/cryptanalysis-hecke432-dual-20261107/experiments/hecke-432-map-identity-20261025/RESULT.md",
+    "/var/tmp/cryptanalysis-hecke432-dual-20261107/experiments/hecke-432-map-identity-20261025/compare_qseries_sage.py",
+    "/var/tmp/cryptanalysis-hecke432-dual-20261107/experiments/hecke-432-formal-ci-20261025/lakefile.toml",
+    "/var/tmp/cryptanalysis-hecke432-dual-20261107/.github/workflows/lean-proof-gate.yml"
+  ],
+  "sibling_reports_read_before_filing": false,
+  "blind_rederivation_owned": false,
+  "blind_rederivation_compliance": "not_applicable; assigned to blind_algebra",
+  "verdicts": [
+    {"joint": "polynomial numerator source fidelity", "verdict": "holds", "machine_status": "not_verified", "reason": "Exact coefficients, powers and subtraction order match the archived formula; no circular premise."},
+    {"joint": "conditional affine target equation source fidelity", "verdict": "holds", "machine_status": "not_verified", "reason": "Exact source and target equations, rational coordinates, field quantifiers and x-nonzero exception match the stated algebraic scope."},
+    {"joint": "global isogeny and modular-map identity", "verdict": "inconclusive", "machine_status": "not_verified", "reason": "Exceptional-point extension, group law, degree, modular maps, q-series and Sturm bridges are absent from the addendum."},
+    {"joint": "pinned kernel and axiom audit", "verdict": "inconclusive", "machine_status": "not_verified", "reason": "No fresh exact Lean build or axiom-audit output was obtained in this source review; CI was pending."}
+  ],
+  "breaks": [],
+  "report": "/var/tmp/hecke432-dual-source-output/source-fidelity-review.md"
+}
