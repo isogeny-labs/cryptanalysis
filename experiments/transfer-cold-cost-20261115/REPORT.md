@@ -22,6 +22,28 @@ advantage. This is a software control, not a measurement or DLP result.
 Command: `/workspace/.venv/bin/python -m pytest -q experiments/chained-transfer-public-target/ct130-prime31/test_cold_cost_audit.py`.
 [pcc:unverified]
 
+## Native phase instrumentation, software-only continuation
+
+`instrument_toy.py` now produces separate guarded source variants for CT140's
+selected widths 4 and 16. It pins both the original generator and its native
+include, preserves the original frozen files, and adds disjoint timestamps
+for setup, generator preparation, target transport, solve and source check.
+Its adapter binds each phase line to the corresponding original timed row
+before handing normalized rows to the unchanged arithmetic auditor. This
+does not turn the toy program into the original-prime 695/701 chain.
+[pcc:unverified]
+
+The generated sources compiled with `g++ -std=c++17 -O3 -DNDEBUG -c` and the
+original include directory; neither native program was executed. All 18
+synthetic development tests passed. These are producer development checks,
+with no new timing, DLP or execution-proof claim. The added CI job performs
+only synthetic tests and compilation, using no secrets. [pcc:unverified]
+
+Generated source digests: width 4
+`4cf229ab19d345f46e846e78c38bbb8442934278da6368710720a4cfb21d64b4`;
+width 16 `b6df289090fc230c55b061c6a20a721f71a322d2c6a095d0670bddaca86524a7`.
+These name code, not measured data or native-run receipts. [pcc:unverified]
+
 The original checkpoint gate failed with no AWS profile or upload token.
 The existing CI-only transport was inspected; it pins another exact source,
 tool digest and branch identity. Its historical receipt cannot authorize a

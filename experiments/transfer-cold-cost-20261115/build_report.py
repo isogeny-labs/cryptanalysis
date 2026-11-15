@@ -28,7 +28,7 @@ with PdfPages(HERE/'REPORT.pdf') as pdf:
         '',
         'Implementation: cold_cost_audit.py requires every setup, generator, target-transport, solver and original-source verification phase. It rejects missing or nested phases, wrong units, incomplete/failed panels, missing memory and source/binary digests. Selection is one fixed arm over the cohort, never one arm per target.',
         '',
-        'Development checks: 16 synthetic unit tests passed. These checks establish no timing, DLP, transfer gain, isolation, provenance or signed scientific standing.',
+        'Development checks: 18 synthetic unit tests passed. Guarded CT140 widths 4 and 16 now export disjoint native phase timestamps and bind them to timed rows. Both generated C++ sources compiled; neither was executed. No timing, DLP, transfer gain, provenance or signed scientific standing is established.',
         '',
         'Execution blocker: the mandatory checkpoint gate reports no AWS profile or upload token. No new transfer experiment was launched. The KB wrapper is unavailable. The shared lab contract endpoint returned unreadable VLT10 content.',
         '',
