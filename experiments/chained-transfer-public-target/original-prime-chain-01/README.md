@@ -53,3 +53,5 @@ before one900s/2GiB unfiltered native attempt. run-native-01.sh requires an
 exact clean head, the original immediate gate and compiler/runtime whole-byte
 custody. Do not create a canonical new fixture/replay before genuine NEW23.
 [pcc:unverified]
+
+First native attempt e62fb2 at48262e0/exact checkpoint14 fails101 before the first source-model record is emitted: the cubic diagnostic formatter receives degree6 line-offset coordinates. All seven original constructor records and setup are retained; whole1077 parity is unmet and omission controls did not run. The corrected test preserves the entire six-coordinate diagnostic encoding, with zero checks on higher slots, while all runtime mathematics/instances/masks/samples/populations remain unchanged. A new published compiled source and exact checkpoint are required before a full new attempt. [pcc:unverified]

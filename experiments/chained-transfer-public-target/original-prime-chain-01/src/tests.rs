@@ -4,6 +4,13 @@ use std::collections::BTreeMap;
 fn emit(tag: &str, value: Value) {
     println!("{tag} {value}")
 }
+fn offset_json(p: Pt<ER>) -> Value {
+    use chained_n4_paired_fourth_preflight::models::six;
+    match p {
+        Pt::Inf => Value::Null,
+        Pt::Aff(x, y) => json!([six(x), six(y)]),
+    }
+}
 fn two_points(g: &Geometry) -> Vec<Pt<ER>> {
     let roots: Vec<[u64; 3]> =
         serde_json::from_value(g.summary["actual_source_2torsion_roots"].clone()).unwrap();
@@ -189,7 +196,7 @@ fn complete_original_prime_reprojection() {
         }
         emit(
             "N4_ORIGINAL_PRIME_SOURCE_MODEL",
-            json!({"domain":domain,"case":CASES[domain],"mask":MASKS[domain],"actual_source_identity":g.source.identity(),"all_six_whole_original_rows":g.all_six,"whole_original_summary":g.summary,"all224_line_offsets":offsets.into_iter().map(point_json).collect::<Vec<_>>(),"all_actual_norm_phi_controls":norm_controls}),
+            json!({"domain":domain,"case":CASES[domain],"mask":MASKS[domain],"actual_source_identity":g.source.identity(),"all_six_whole_original_rows":g.all_six,"whole_original_summary":g.summary,"all224_line_offsets":offsets.into_iter().map(offset_json).collect::<Vec<_>>(),"all_actual_norm_phi_controls":norm_controls}),
         );
         cofactors.push(cofactor_panel(&rt, domain));
         let mut descriptors = g.prime.a.pic.rational_points_bruteforce();
