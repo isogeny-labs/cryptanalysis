@@ -1,5 +1,25 @@
 # Native integration check receipt
 
+The [CI follow-up receipt](ci-followup-20261115/producer-checks.json), claim
+`PCC-20261115-2a4d0d`, records the subsequent CI results and remaining blockers.
+Both dependency-consumer jobs passed. The auxiliary workflow never started:
+repository policy rejected `dtolnay/rust-toolchain@master`. The replacement
+installs the same toolchains directly with `rustup`; local actionlint and both
+toolchain checks pass, with the corrected remote workflow still pending.
+[pcc:unverified]
+
+CodeQL now reports 23 annotations: three archived scalar fixtures and 20 sinks
+for the CLI's mathematical recovery-witness output. Alert-management access
+still returns HTTP 403, so maintainer classification remains necessary. No
+check or alert was disabled and the snapshot remains unchanged.
+[pcc:unverified]
+
+The follow-up receipt's failed local tooling attempt records the overall
+install-and-lint exit code 127: `/usr/bin/go` was a board-game executable and
+did not produce actionlint. The subsequent invocation of the missing binary
+returned 127. The successful check used the official actionlint v1.7.7 release
+after comparing its archive with the published checksum. [pcc:unverified]
+
 The follow-up [consumer check receipt](consumer-checks.json), claim
 `PCC-20261115-dc9cae`, retains the locked dependency graph diagnostics for the
 safe bindings and binary-genus2 tool. It addresses the two early integration

@@ -29,10 +29,12 @@ jobs:
       - uses: actions/checkout@v4
         with:
           sparse-checkout: crates/prime-field-auxiliary-ic
-      - uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: ${{ matrix.rust }}
-          components: clippy, rustfmt
+      - name: Install the selected Rust toolchain
+        env:
+          AUXILIARY_IC_TOOLCHAIN: ${{ matrix.rust }}
+        run: |
+          rustup toolchain install "$AUXILIARY_IC_TOOLCHAIN" --profile minimal --component clippy --component rustfmt
+          printf 'RUSTUP_TOOLCHAIN=%s\n' "$AUXILIARY_IC_TOOLCHAIN" >> "$GITHUB_ENV"
       - name: Check complete IC pipeline and scalar/SIMD parity
         run: cargo test --release
       - name: Formatting and lints

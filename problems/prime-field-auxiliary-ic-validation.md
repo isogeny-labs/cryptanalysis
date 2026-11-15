@@ -58,6 +58,21 @@ protocol exist. No such run is launched by this import PR.
 
 ## Resolution and history
 
+2026-11-15, CI follow-up: the native dependency-consumer checks passed, but
+the auxiliary workflow failed before any job started because repository action
+policy rejected `dtolnay/rust-toolchain@master`. The replacement uses direct
+`rustup` installation and retains the Rust 1.78/stable matrix, tests, lints and
+documentation checks. Local workflow/toolchain checks passed; the corrected
+remote workflow remains pending. See [the follow-up receipt](../experiments/prime-field-auxiliary-ic/rust-validation/ci-followup-20261115/producer-checks.json),
+claim `PCC-20261115-2a4d0d`. [pcc:unverified]
+
+Merge also requires maintainer classification of the current 23 CodeQL
+annotations: three archived scalar fixtures and 20 logging sinks for the CLI's
+mathematical recovery-witness data. The code-scanning API still returns HTTP
+403. No alert was dismissed, check disabled or frozen evidence changed.
+Successful CI would address repository integration; it would not discharge
+the independent replay or measurement requirements above. [pcc:unverified]
+
 2026-11-15, native integration: added a dependency-free Rust circuit and
 bounded complete solver, a direct batched-subtraction IC control, safe Rust
 re-exports, and `ca-ic auxiliary` with optional repository C rho. Correctness
