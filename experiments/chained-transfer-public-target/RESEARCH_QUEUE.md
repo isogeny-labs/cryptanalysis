@@ -1,3 +1,29 @@
+# Complete original fixed-prime IC result and inspected report ready to publish
+
+Native7df2ae/all60attempts/all15publiccases/45verifiedanswers/15FB30rejectedreports/whole100records/all30phases/sevenactualwholeomissions/all1465guards/actualruntime-preparedcustody/exactoriginalcheckpoint20 pass. pcc/claims/PCC-20261115-ab5c32.json: BOTH63791BresultPDFpagesopened; literalRust all12settinggroup diagnostics includeallfiveattemptsperrow; editabletables/opaquechain-independence diagram/sourcehashlinks retained. [pcc:unverified]
+
+Nextnormalpublishwithoriginalgovernance, mirrorRootandupdateGitHubqueue; thenexistingnormassistedsamplertoexactsameD116-39-36models andcompleteprimitive/setup/knownpoint/strongreferenceadmissiontask. WholeNEW26 beforecanonicalfixtures/additiveICCI. No modelreselections/prunedfailures/calibratedratio/newasymptotic/ECDLPadvantage/globalCI/signedpromotion. Alloldcold12018complete102missing/124/root124/clock101/vaultlocked/KB127/mainledger/liveadmission/review/signinggapsunchanged. [pcc:unverified]
+
+---
+
+# Original fixed-prime IC passes all15 public cases; preserve15 rejected FB30 reports
+
+pcc/claims/PCC-20261115-7df2ae.json: exact0cb4ab3/prospective3da7fe/compiledf9e8c9-build02. Oneunfilteredtest0/all30phasesexpected/whole100records(86new+14priorconstructors)/all60attempts/all15publiccasesverified. FB36-48-64all45accepted, FB30all15candidatesrejectedbyactualfinalgroupcheck andwholefailurereportsretained. Sevenactualentireclassomissions101/nooutput/fullwholeXZdecompressedbyteequality; all1465guards/exactbinaries/fullpreparedreuse/checkpoint20all28+remote-localgate0. [pcc:unverified]
+
+## What was done
+ActualopaqueJacobianchainpacketsexactindependentpoint-Phi outputs onallfixedmodels/publicinputs. Solverentireexistingclassbodyliteral/contextonlytypeadapter/no runtimescalar-witness-lift-DLPfallback. Rustwhole-recordaggregation/all12settinggroups/partialcounterdiagnostics retained. ConditionalNewTargetIC2roots0trusted/twoexactbindings andpriorInduced21/allninebindings stayexplicitaboutgeometric-model-program-order-logextension/completeness-costbridges. [pcc:unverified]
+
+## Decisions made
+Retainall100wholedecodedrecords/wholeNative/fullsetup/14constructorrecords/all60reports/15rejections/allsource-exes-preparedcopies-firstCargo101failure forNEW26. Additionalall85compactIC-recordexportdoesnotreplacewholedata. Renderandinspectsource-linkedresult, normalpublishandcheckpointGitHub; nextadaptoldnormassistedsamplertoexactsamemodels, preservepairedfailures andcompleteprimitive/setup/knownpoint/strongreferencecensus. [pcc:unverified]
+
+## Open threads
+Inspectedresultreport/genuineNEW26wholepublication/canonicalwholefixture/additiveICCI; prospectivepairedsampler/costtask. FullCI43707728514at41successmetadatahasseparateuncollectedfullartifact, olda93f80at258andproofCI39bb46at41 scopesunchanged. Root66bc048/vault8edec422 unchanged. Cold12018complete102missing/124/root124/clock101/global-mainledger/livebudget-capacity-isolation-image/review/signingremainopen. No calibratedratio/ECDLPadvantage/globalCI/signedpromotion. [pcc:unverified]
+
+## Errors
+All15FB30wrongcandidatesareoriginalsolver-rejected reports, notacceptedwronganswers; no model/kernel/parameterswerereselected. Firstcompiledtypeerrors/alloldprojection-transport-governance-publisher-source-coldnegativeactualprefixes remainintact. [pcc:unverified]
+
+---
+
 # Exact bounded original-model IC launch ready
 
 Launchad4030 preservescompiledf9e8c9/03769fb Rustbytes; complete30phase driver isready. Wholeomissioninputs retainedlosslesslyasXZ withproducerpipefail/CRCchecked beforeunchangedRustauditor; allsevenactualclassesmustreject101-nooutput. Source-compiledbinaries/1465guards/originalcheckpointgate/900s2GiB/fullrecordfreezecompare/finalcustody mandatory. Nativehasnotrun. [pcc:unverified]
