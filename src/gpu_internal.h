@@ -11,8 +11,7 @@
 /* Twice the expected distinguished points plus slack, saturated before any
  * narrowing. Validated walk IDs and steps are each at most UINT32_MAX, so
  * their product fits uint64_t. dp_bits is clamped to [0, 63] by the driver. */
-static inline uint32_t ca_gpu_dp_capacity(uint32_t nwalks, uint32_t steps,
-                                          uint32_t dp_bits)
+static inline uint32_t ca_gpu_dp_capacity(uint32_t nwalks, uint32_t steps, uint32_t dp_bits)
 {
     const uint32_t limit = 1u << 20, slack = 4096;
     uint64_t work = (uint64_t)nwalks * steps;
