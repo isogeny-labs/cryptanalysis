@@ -36,6 +36,8 @@ typedef struct ca_gpu_rho_params {
     ca_gpu_backend backend;
     int32_t device;             /* CUDA device ordinal */
     uint32_t threads_per_block; /* 0 => 128 */
+    /* The effective walk count must fit 32-bit walk IDs and host buffers;
+     * oversized launches return CA_ERR_INVALID. */
     uint32_t blocks;            /* 0 => auto from the group size (and the device) */
     uint32_t steps_per_launch;  /* 0 => auto */
     uint32_t r;                 /* adding-walk multipliers, 0 => auto */

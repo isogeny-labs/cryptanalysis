@@ -18,7 +18,8 @@ implementation, so a verdict verifies the same way on every host.
     pcc verify-all [--json]
     pcc verdict --sign-key KEYFILE --key-id ID CLAIM # verify, sign, append
     pcc sign --sign-key KEYFILE --key-id ID ARTIFACT # ARTIFACT.sig.json
-    pcc ledger verify [--base GITREF]
+    pcc ledger verify [--base GITREF]                # also: the keyring is GITREF's, or the owner's pin
+    pcc --keyring-ref GITREF standing|verify-all|lint-prose ...   # trust the base keyring, not the tree's
     pcc ledger append-bypass --reason R --command C
     pcc standing CLAIM-ID
     pcc standing-by-type [--json]                    # standings per claim_type
@@ -32,8 +33,10 @@ not be checked), 3 usage or infrastructure error.
 from __future__ import annotations
 
 import argparse
+import contextlib
 import datetime as _dt
 import hashlib
+import io
 import json
 import os
 import re
@@ -85,6 +88,9 @@ PCC_DIR = "pcc"
 CLAIMS_DIR = "pcc/claims"
 LEDGER_PATH = "pcc/ledger.jsonl"
 KEYRING_PATH = "pcc/keyring.json"
+# Commands that read no verdict and no signature: they run without a keyring,
+# so a pin or a keyring ref meant for the gate does not stop them.
+NO_TRUST_CMDS = ("keygen", "claim", "sign", "canary")
 
 
 # ----------------------------------------------------------------------------
@@ -127,22 +133,38 @@ def git(repo: Path, *args: str) -> str | None:
         return None
 
 
-def base_ledger_text(repo: Path, base: str) -> str | None:
-    """Read the base ledger through the vault filter when Git stores ciphertext."""
+def ref_is_commit(repo: Path, ref: str) -> bool:
+    """Whether a git ref resolves to a commit.  A ref that does not resolve is
+    never the same thing as a ref whose tree lacks a file: the first means the
+    comparison cannot be made, and a gate that cannot compare must fail."""
+    return bool(git(repo, "rev-parse", "--verify", "--quiet", f"{ref}^{{commit}}"))
+
+
+def file_at_ref(repo: Path, ref: str, rel: str, what: str) -> bytes | None:
+    """A file's bytes at a git ref, through the vault filter when Git stores
+    ciphertext; None when the ref has no such file."""
     try:
-        blob = subprocess.check_output(["git", "-C", str(repo), "show", f"{base}:{LEDGER_PATH}"],
+        blob = subprocess.check_output(["git", "-C", str(repo), "show", f"{ref}:{rel}"],
                                        stderr=subprocess.DEVNULL)
     except (OSError, subprocess.CalledProcessError):
         return None
     if blob.startswith(b"VLT1"):
         command = git(repo, "config", "--get", "filter.vault.smudge")
         if not command:
-            raise PccError("ledger: vault smudge filter is not configured for the base ledger")
+            raise PccError(f"{what}: vault smudge filter is not configured for the base {what}")
         try:
             blob = subprocess.run(shlex.split(command), input=blob, capture_output=True,
                                   check=True).stdout
         except (OSError, ValueError, subprocess.CalledProcessError) as exc:
-            raise PccError("ledger: could not decrypt the base ledger") from exc
+            raise PccError(f"{what}: could not decrypt the base {what}") from exc
+    return blob
+
+
+def base_ledger_text(repo: Path, base: str) -> str | None:
+    """Read the base ledger through the vault filter when Git stores ciphertext."""
+    blob = file_at_ref(repo, base, LEDGER_PATH, "ledger")
+    if blob is None:
+        return None
     try:
         return blob.decode("utf-8")
     except UnicodeDecodeError as exc:
@@ -287,15 +309,69 @@ def empty_keyring() -> dict[str, Any]:
     return {"schema": KEYRING_SCHEMA, "keys": [], "trusted_verifiers": []}
 
 
-def load_keyring(path: Path | None) -> dict[str, Any]:
-    if path is None or not path.is_file():
-        return empty_keyring()
-    kr = load_json(path)
+def parse_keyring(raw: bytes, label: str) -> dict[str, Any]:
+    try:
+        kr = json.loads(raw.decode("utf-8"))
+    except (UnicodeDecodeError, ValueError) as exc:
+        raise PccError(f"{label}: not a {KEYRING_SCHEMA} keyring") from exc
     if not isinstance(kr, dict) or kr.get("schema") != KEYRING_SCHEMA:
-        raise PccError(f"{path}: not a {KEYRING_SCHEMA} keyring")
+        raise PccError(f"{label}: not a {KEYRING_SCHEMA} keyring")
     kr.setdefault("keys", [])
     kr.setdefault("trusted_verifiers", [])
     return kr
+
+
+def load_keyring(path: Path | None) -> dict[str, Any]:
+    if path is None or not path.is_file():
+        return empty_keyring()
+    return parse_keyring(path.read_bytes(), str(path))
+
+
+def load_keyring_at_ref(repo: Path, ref: str) -> dict[str, Any]:
+    """The keyring as a git ref has it.  This is the trust anchor of a pull
+    request: a key the request adds to its own tree is not in the base keyring,
+    so a verdict it signs does not count."""
+    if not ref_is_commit(repo, ref):
+        raise PccError(f"keyring: {ref} does not resolve to a commit, so there is no keyring to trust")
+    raw = file_at_ref(repo, ref, KEYRING_PATH, "keyring")
+    return empty_keyring() if raw is None else parse_keyring(raw, f"{ref}:{KEYRING_PATH}")
+
+
+def keyring_pin(value: str | None) -> str | None:
+    """The owner's out-of-repository pin of the keyring: the SHA-256 of
+    pcc/keyring.json, held where a pull request cannot write (a repository
+    variable).  Empty means no pin."""
+    pin = (value or "").strip().lower()
+    if not pin:
+        return None
+    if not HEX64_RE.match(pin):
+        raise PccError("keyring pin is not a SHA-256 (64 hex digits)")
+    return pin
+
+
+def check_keyring_pin(path: Path, pin: str) -> None:
+    got = sha256_file(path) if path.is_file() else "absent"
+    if got != pin:
+        raise PccError(f"keyring: {path.name} is {got}, the pinned keyring is {pin}")
+
+
+def check_keyring_unchanged(repo: Path, base: str, pin: str | None, errors: list[str]) -> None:
+    """The keyring decides whose verdicts count, so a change to it is the
+    owner's alone.  Relative to the base ref it must be byte-identical, unless
+    it matches the owner's pin; an empty keyring may be introduced."""
+    path = repo / KEYRING_PATH
+    head_raw = path.read_bytes() if path.is_file() else None
+    base_raw = file_at_ref(repo, base, KEYRING_PATH, "keyring")
+    if head_raw == base_raw:
+        return
+    if pin is not None and head_raw is not None and sha256_bytes(head_raw) == pin:
+        return
+    if base_raw is None and head_raw is not None:
+        kr = parse_keyring(head_raw, KEYRING_PATH)
+        if not kr["keys"] and not kr["trusted_verifiers"]:
+            return
+    errors.append(f"keyring: {KEYRING_PATH} differs from {base}. A producer cannot change whose verdicts "
+                  f"count: the owner pins the new keyring's SHA-256 (PCC_KEYRING_SHA256) before it merges")
 
 
 def keyring_public(kr: dict[str, Any], key_id: str) -> bytes | None:
@@ -612,17 +688,55 @@ def lean_sources(target: Path) -> list[Path]:
 
 
 def lean_find_declaration(sources: list[Path], name: str) -> tuple[Path, str] | None:
-    """The normalized statement text of `theorem|lemma <name> ... :=` (the
-    name may be qualified; the last component is matched)."""
+    """Bind a unique declaration, respecting explicit namespace/section scopes.
+
+    Qualified requests never fall back to another namespace's short name.
+    Unqualified requests must be unique. This remains a source binding scan,
+    not a Lean elaborator; the existing kernel gate is still required.
+    """
     short = re.escape(name.split(".")[-1])
-    pat = re.compile(r"(?<![\w.'])(theorem|lemma)\s+(?:[\w'.]*\.)?" + short + r"(?![\w'])(.*?)(?<![:])(:=|\bby\b|\|)",
+    pat = re.compile(r"(?<![\w.'])(theorem|lemma)\s+((?:[\w'.]*\.)?" + short + r")(?![\w'])(.*?)(?<![:])(:=|\bby\b|\|)",
                      re.S)
+    scope_pat = re.compile(
+        r"^[ \t]*(?:(?:public|private|noncomputable)[ \t]+)*"
+        r"(namespace|section|end)(?:[ \t]+([\w'.]+))?[ \t]*$", re.M)
+    requested = name.removeprefix("_root_.")
+    qualified = "." in name
+    matches: list[tuple[Path, str]] = []
     for src in sources:
         text = strip_lean_comments_and_strings(src.read_text(encoding="utf-8", errors="replace"))
+        scope_events = list(scope_pat.finditer(text))
+        # Unsupported scope syntax must not silently turn a nested theorem
+        # into a root declaration. Prefer no binding to a guessed binding.
+        keywords = re.finditer(r"(?<![\w.'])(?:namespace|section|end)(?![\w'])", text)
+        if any(not any(e.start() <= k.start() < e.end() for e in scope_events) for k in keywords):
+            return None
+        scopes = iter(scope_events)
+        event = next(scopes, None)
+        namespace = ""
+        parents: list[str] = []
         for m in pat.finditer(text):
-            stmt = m.group(1) + " " + name.split(".")[-1] + " " + m.group(2)
-            return src, re.sub(r"\s+", " ", stmt).strip()
-    return None
+            while event is not None and event.start() < m.start():
+                kind, scope_name = event.group(1), event.group(2)
+                if kind == "end":
+                    if parents:
+                        namespace = parents.pop()
+                else:
+                    parents.append(namespace)
+                    if kind == "namespace" and scope_name:
+                        namespace = (scope_name.removeprefix("_root_.")
+                                     if scope_name.startswith("_root_.") else
+                                     ".".join(filter(None, [namespace, scope_name])))
+                event = next(scopes, None)
+            declared = m.group(2)
+            full = (declared.removeprefix("_root_.") if declared.startswith("_root_.") else
+                    ".".join(filter(None, [namespace, declared])))
+            if qualified and full != requested:
+                continue
+            # Preserve the established short-name statement digest format.
+            stmt = m.group(1) + " " + name.split(".")[-1] + " " + m.group(3)
+            matches.append((src, re.sub(r"\s+", " ", stmt).strip()))
+    return matches[0] if len(matches) == 1 else None
 
 
 def verify_lean(proof: dict[str, Any], repo: Path, reasons: list[str], notes: list[str]) -> str:
@@ -1640,6 +1754,70 @@ def _ledger_canaries(fx: Fixture) -> list[tuple[str, str, str, list[str]]]:
     return rows
 
 
+def _cli(args: list[str]) -> tuple[int, str]:
+    """Run the real command line in-process: (exit status, stdout).  The trust
+    canaries go through `main`, so they exercise the path the gate runs, and the
+    caller's own keyring settings are kept out of it."""
+    saved = {k: os.environ.pop(k) for k in ("PCC_KEYRING_REF", "PCC_KEYRING_SHA256", "PCC_REPO") if k in os.environ}
+    buf = io.StringIO()
+    try:
+        with contextlib.redirect_stdout(buf):
+            rc = main(args)
+    except PccError as exc:
+        rc = 3
+        buf.write(f"pcc: {exc}\n")
+    finally:
+        os.environ.update(saved)
+    return rc, buf.getvalue()
+
+
+def _trust_canaries(fx: Fixture) -> list[tuple[str, str, str, list[str]]]:
+    """A producer that controls its own tree: it adds a key to the keyring,
+    signs its own verdict, or points the gate at a base that is not there."""
+    rows: list[tuple[str, str, str, list[str]]] = []
+    root = fx.root
+    led = root / LEDGER_PATH
+    claim = fx.claims["solve"]
+    repo = ["--repo", str(root)]
+
+    def commit(msg: str) -> str:
+        ident = ["-c", "user.name=canary", "-c", "user.email=canary@example.invalid"]
+        subprocess.run(["git", "-C", str(root), "add", "-A"], check=True)
+        subprocess.run(["git", "-C", str(root), *ident, "commit", "-q", "--no-verify", "-m", msg], check=True)
+        return git(root, "rev-parse", "HEAD") or ""
+
+    def row(name: str, expected: str, args: list[str]) -> None:
+        rc, text = _cli(repo + args)
+        got = {0: "pass", 2: "unverified"}.get(rc, "fail")
+        rows.append((name, expected, got, text.splitlines()[-4:]))
+
+    if led.exists():
+        led.unlink()
+    _cli(repo + ["ledger", "init"])
+    append_entry(led, "claim", {"claim_id": claim["id"], "claim_sha256": claim_digest(claim)})
+    base = commit("base: the keyring the owner merged")
+    row("trust:unchanged keyring against the base", "pass", ["ledger", "verify", "--base", base])
+
+    # The producer adds its own key and signs its own verdict.
+    evil = secrets.token_bytes(32)
+    kr = load_json(root / KEYRING_PATH)
+    kr["keys"].append({"id": "evil", "algo": "ed25519", "public_key": ed25519_public(evil).hex(), "role": "verifier"})
+    fx.write(KEYRING_PATH, kr)
+    verdict = verify_claim(claim, root, load_keyring(root / KEYRING_PATH))
+    append_entry(led, "verdict", verdict, make_signature(evil, "evil", "verdict", verdict_subject(verdict)))
+    pinned = sha256_file(root / KEYRING_PATH)
+
+    row("trust:self-added key under the base keyring", "unverified", ["--keyring-ref", base, "standing", claim["id"]])
+    row("trust:keyring changed relative to the base", "fail", ["ledger", "verify", "--base", base])
+    row("trust:keyring change the owner pinned", "pass",
+        ["--keyring-sha256", pinned, "ledger", "verify", "--base", base])
+    row("trust:keyring that does not match the pin", "fail", ["--keyring-sha256", "0" * 64, "standing", claim["id"]])
+    row("trust:base ref that does not resolve", "fail", ["ledger", "verify", "--base", "refs/heads/no-such-base"])
+    row("trust:keyring ref that does not resolve", "fail",
+        ["--keyring-ref", "refs/heads/no-such-base", "standing", claim["id"]])
+    return rows
+
+
 def _prose_canaries() -> list[tuple[str, str, str, list[str]]]:
     rows = []
     st = {"PCC-20260101-aaaaaa": "verified", "PCC-20260101-bbbbbb": "unverified"}
@@ -1661,7 +1839,7 @@ def _prose_canaries() -> list[tuple[str, str, str, list[str]]]:
 def run_canary(out) -> int:
     with tempfile.TemporaryDirectory() as td:
         fx = Fixture(Path(td) / "fixture")
-        rows = _run_canaries(fx) + _ledger_canaries(fx) + _prose_canaries()
+        rows = _run_canaries(fx) + _ledger_canaries(fx) + _prose_canaries() + _trust_canaries(fx)
     bad = 0
     for name, expected, got, reasons in rows:
         ok = (got == expected) or (expected == "pass_or_not_covered" and got in ("pass", "not_covered"))
@@ -1811,6 +1989,11 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(prog="pcc", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--repo", type=Path, default=None, help="repository root (default: the enclosing git root)")
     ap.add_argument("--keyring", type=Path, default=None, help=f"keyring (default: {KEYRING_PATH})")
+    ap.add_argument("--keyring-ref", default=None, metavar="GITREF",
+                    help=f"trust the keyring of this git ref instead of the working tree's (a pull request "
+                         f"gate passes its base branch; default: $PCC_KEYRING_REF)")
+    ap.add_argument("--keyring-sha256", default=None, metavar="HEX",
+                    help="the owner's pin of the working-tree keyring (default: $PCC_KEYRING_SHA256)")
     sub = ap.add_subparsers(dest="cmd", required=True)
 
     s = sub.add_parser("keygen")
@@ -1880,7 +2063,18 @@ def main(argv: list[str] | None = None) -> int:
     a = ap.parse_args(argv)
     out = sys.stdout
     repo = (a.repo or repo_root()).resolve()
-    kr = load_keyring(a.keyring or repo / KEYRING_PATH)
+    keyring_ref = a.keyring_ref or os.environ.get("PCC_KEYRING_REF") or None
+    pin = keyring_pin(a.keyring_sha256 or os.environ.get("PCC_KEYRING_SHA256"))
+    if a.cmd in NO_TRUST_CMDS:
+        kr = empty_keyring()
+    elif keyring_ref:
+        if a.keyring:
+            raise PccError("--keyring and --keyring-ref are exclusive")
+        kr = load_keyring_at_ref(repo, keyring_ref)
+    else:
+        if pin is not None:
+            check_keyring_pin(a.keyring or repo / KEYRING_PATH, pin)
+        kr = load_keyring(a.keyring or repo / KEYRING_PATH)
 
     if a.cmd == "keygen":
         secret = secrets.token_bytes(32)
@@ -1968,14 +2162,19 @@ def main(argv: list[str] | None = None) -> int:
         errors: list[str] = []
         head = read_ledger(path)
         check_chain(head, errors)
-        if a.base and not errors:
-            text = base_ledger_text(repo, a.base)
-            if text is None:
-                print(f"ledger: {a.base} has no {LEDGER_PATH}; nothing to compare", file=out)
-            else:
-                base = read_ledger_text(text)
-                check_chain(base, errors)
-                check_prefix(base, head, errors)
+        if a.base and not ref_is_commit(repo, a.base):
+            errors.append(f"ledger: base ref {a.base} does not resolve to a commit; the prefix and the "
+                          f"keyring cannot be compared (fetch the base before the gate)")
+        elif a.base:
+            check_keyring_unchanged(repo, a.base, pin, errors)
+            if not errors:
+                text = base_ledger_text(repo, a.base)
+                if text is None:
+                    print(f"ledger: {a.base} has no {LEDGER_PATH}; nothing to compare", file=out)
+                else:
+                    base = read_ledger_text(text)
+                    check_chain(base, errors)
+                    check_prefix(base, head, errors)
         if not errors:
             check_claim_types(repo, head, errors)
         for err in errors:
