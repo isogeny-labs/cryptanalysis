@@ -50,7 +50,7 @@ impl PrimeFieldPsi {
     }
 }
 
-fn key(d: &Class) -> (Vec<u64>, Vec<u64>, u8) {
+pub(super) fn key(d: &Class) -> (Vec<u64>, Vec<u64>, u8) {
     let (u, v, n) = d.components();
     let coefficients =
         |p: &crate::reference::FpPoly| p.coeffs.iter().map(|c| c.to_u64().unwrap()).collect();
