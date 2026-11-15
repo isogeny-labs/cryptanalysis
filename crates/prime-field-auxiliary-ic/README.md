@@ -176,4 +176,4 @@ even multiplicative degrees, multiple cosets, and torus depths spanning SIMD
 tiles. Full small-field recoveries use matched walks and identical recovery
 certificates. These are additional implementation leads; their effect on
 relation yield, cold setup and end-to-end time remains unmeasured.
-[pcc:unverified]
+`[pcc:unverified]`
