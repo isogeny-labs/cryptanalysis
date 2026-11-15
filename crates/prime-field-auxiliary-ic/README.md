@@ -26,6 +26,14 @@ The implementation includes these optimization choices:
 - Precomputed coordinate squares and map constants, a folded terminal map,
   and three interleaved SIMD vectors. AVX2/AVX-512 are selected only after CPU
   feature checks, for fields up to 31 bits. The 61-bit path is scalar `u128`.
+- Each intermediate map reuses `t = delta*nd` across its coefficient updates:
+  `h = norm + delta*(cd+t)` and `c = cd+t+t`. This replaces one field
+  multiplication with one addition per intermediate coefficient update in
+  the scalar and SIMD paths.
+- SIMD comparison masks collect zero indices while the final vectors are in
+  registers; padding bits are discarded before index extraction. The scalar
+  path collects indices during evaluation. All exact circuit values remain
+  available in the workspace, without a second scan to find the zeros.
 - Fixed addition-chain inverses and a configurable number of target walks
   sharing one inversion. Scratch buffers are reused between queries.
 - Signed graph elimination with a certificate DAG, instead of a dense
@@ -130,3 +138,8 @@ inputs, compare both IC paths on matched walks, and replay historical public
 31-bit rows. Binding tests compare point operations with the C Montgomery
 implementation. These are producer correctness checks, not independent signed
 verification or performance measurements. `[pcc:unverified]`
+
+Additional cases cover zero/mixed center shifts and a 128-root fixture with 58
+usable coordinates, spanning multiple SIMD tiles and a partially padded final
+tile. The arithmetic rewrite and fused zero collection have no fresh timing
+result yet. `[pcc:unverified]`

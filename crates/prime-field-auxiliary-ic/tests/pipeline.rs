@@ -189,6 +189,121 @@ fn nonzero_first_pole_and_root_order_are_supported() {
 }
 
 #[test]
+fn zero_and_mixed_center_shifts_match_the_explicit_polynomial() {
+    fn zero_shifts<const B: u32>(curve: Curve<B>) {
+        let p = curve.modulus();
+        // (x - 2/x) - 1/(x - 2/x) = 0 has exactly these four roots.
+        exact_circuit(
+            curve,
+            &[
+                AuxiliaryMap {
+                    r: 0,
+                    offset: 0,
+                    residue: p - 2,
+                },
+                AuxiliaryMap {
+                    r: 0,
+                    offset: 0,
+                    residue: p - 1,
+                },
+            ],
+            0,
+            &[1, 2, p - 2, p - 1],
+        );
+    }
+    zero_shifts(Curve::<31>::new(2, 14).unwrap());
+    zero_shifts(Curve::<61>::new(0, 3).unwrap());
+    let curve = Curve::<7>::new(2, 14).unwrap();
+    // Nonzero intermediate shift, zero terminal shift.
+    exact_circuit(
+        curve,
+        &[
+            AuxiliaryMap {
+                r: 0,
+                offset: 0,
+                residue: 125,
+            },
+            AuxiliaryMap {
+                r: 2,
+                offset: 0,
+                residue: 126,
+            },
+        ],
+        0,
+        &[2, 59, 71, 126],
+    );
+    // Zero intermediate shift, nonzero terminal shift.
+    exact_circuit(
+        curve,
+        &[
+            AuxiliaryMap {
+                r: 0,
+                offset: 0,
+                residue: 125,
+            },
+            AuxiliaryMap {
+                r: 0,
+                offset: 0,
+                residue: 126,
+            },
+        ],
+        3,
+        &[6, 42, 104, 105],
+    );
+}
+
+#[test]
+fn zero_masks_cross_vector_tiles_and_discard_padding() {
+    let curve = Curve::<31>::new(2, 14).unwrap();
+    for backend in [
+        Backend::Scalar,
+        Backend::Auto,
+        Backend::Avx2,
+        Backend::Avx512,
+    ] {
+        let base = match FactorBase::new(
+            curve,
+            MAPS31_MULTI.to_vec(),
+            TERMINAL31_MULTI,
+            &ROOTS31_MULTI,
+            backend,
+        ) {
+            Ok(base) => base,
+            Err(Error::UnsupportedBackend) => continue,
+            Err(error) => panic!("{error}"),
+        };
+        let points = base.representatives();
+        assert!(points.len() > 48); // At least three AVX-512 tiles.
+        assert_ne!(points.len() % 24, 0); // Exercise the final partial tile.
+        let mut targets = BTreeSet::from([0, 1, curve.modulus() - 1]);
+        for i in [0, 3, 11, 12, 23, 24, 47, 48, points.len() - 1] {
+            for j in [0, points.len() - 1] {
+                for point in [points[j], curve.negate(points[j]).unwrap()] {
+                    if let Some(sum) = curve.add(Some(points[i]), Some(point)).unwrap() {
+                        targets.insert(sum.x());
+                    }
+                }
+            }
+        }
+        let mut workspace = base.workspace();
+        for target in targets {
+            base.candidates(target, &mut workspace).unwrap();
+            let expected: Vec<_> = points
+                .iter()
+                .map(|point| product_reference(&base, &ROOTS31_MULTI, point.x(), target))
+                .collect();
+            assert_eq!(workspace.values(), expected);
+            let zeros: Vec<_> = expected
+                .iter()
+                .enumerate()
+                .filter_map(|(i, &v)| (v == 0).then_some(i))
+                .collect();
+            assert_eq!(workspace.indices(), zeros);
+        }
+    }
+}
+
+#[test]
 fn complete_small_solves_use_distinct_nontrivial_rows() {
     let curve = Curve::<7>::new(2, 51).unwrap();
     let generator = curve.point(3, 46).unwrap();

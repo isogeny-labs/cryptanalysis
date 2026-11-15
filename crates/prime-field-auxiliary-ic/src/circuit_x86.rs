@@ -12,6 +12,7 @@ trait Packed<const B: u32> {
     fn add(a: Self::V, b: Self::V) -> Self::V;
     fn sub(a: Self::V, b: Self::V) -> Self::V;
     fn mul(a: Self::V, b: Self::V) -> Self::V;
+    fn zero_bits(a: Self::V) -> u32;
 }
 
 macro_rules! arch {
@@ -69,6 +70,13 @@ impl<const B: u32> Packed<B> for A256 {
             _mm256_sub_epi64(folded, _mm256_and_si256(mask, p))
         }
     }
+    #[inline(always)]
+    fn zero_bits(a: Self::V) -> u32 {
+        arch! {
+            let mask = _mm256_cmpeq_epi64(a, _mm256_setzero_si256());
+            _mm256_movemask_pd(_mm256_castsi256_pd(mask)) as u32
+        }
+    }
 }
 
 #[cfg(auxiliary_ic_avx512)]
@@ -119,6 +127,13 @@ impl<const B: u32> Packed<B> for A512 {
             _mm512_mask_sub_epi64(folded, _mm512_cmp_epu64_mask::<5>(folded, p), folded, p)
         }
     }
+    #[inline(always)]
+    fn zero_bits(a: Self::V) -> u32 {
+        arch!(u32::from(_mm512_cmpeq_epi64_mask(
+            a,
+            _mm512_setzero_si512()
+        )))
+    }
 }
 
 #[inline(always)]
@@ -129,7 +144,7 @@ fn group<const B: u32, O: Packed<B>>(
     target: u64,
     target_squared: u64,
     output: &mut [u64],
-) {
+) -> u32 {
     let zero = O::splat(0);
     let mut d = [zero; 3];
     let mut c = [zero; 3];
@@ -163,8 +178,6 @@ fn group<const B: u32, O: Packed<B>>(
     for (j, map) in base.centered.iter().enumerate() {
         let residue = O::splat(map.residue);
         let delta = O::splat(map.delta);
-        let delta_squared = O::splat(map.delta_squared);
-        let twice_delta = O::splat(map.twice_delta);
         let last = j + 1 == base.centered.len();
         for k in 0..3 {
             let bd = if map.residue == 1 {
@@ -185,16 +198,38 @@ fn group<const B: u32, O: Packed<B>>(
             );
             let cd = O::mul(c[k], O::add(h[k], bd));
             if last {
+                let delta_squared = O::splat(map.delta_squared);
                 h[k] = O::add(O::add(norm, O::mul(delta, cd)), O::mul(delta_squared, nd));
             } else {
-                c[k] = O::add(cd, O::mul(twice_delta, nd));
-                h[k] = O::sub(O::add(norm, O::mul(delta, c[k])), O::mul(delta_squared, nd));
+                let t = O::mul(delta, nd);
+                h[k] = O::add(norm, O::mul(delta, O::add(cd, t)));
+                c[k] = O::add(cd, O::add(t, t));
                 d[k] = nd;
             }
         }
     }
+    let mut zero_bits = 0;
     for k in 0..3 {
+        zero_bits |= O::zero_bits(h[k]) << (k * O::WIDTH);
         O::store(&mut output[k * O::WIDTH..], h[k]);
+    }
+    zero_bits
+}
+
+#[inline]
+fn append_indices(mut mask: u32, first: usize, active: usize, indices: &mut Vec<usize>) {
+    if mask == 0 {
+        return;
+    }
+    // A tile covers at most 24 coordinates. Discard the padded copies of
+    // the first coordinate before extracting the remaining zero positions.
+    let remaining = active - first;
+    if remaining < 32 {
+        mask &= (1u32 << remaining) - 1;
+    }
+    while mask != 0 {
+        indices.push(first + mask.trailing_zeros() as usize);
+        mask &= mask - 1;
     }
 }
 
@@ -204,9 +239,10 @@ pub(super) unsafe fn evaluate_avx2<const B: u32>(
     target: u64,
     target_squared: u64,
     output: &mut [u64],
+    indices: &mut Vec<usize>,
 ) {
     for i in (0..base.xs.len()).step_by(12) {
-        group::<B, A256>(
+        let mask = group::<B, A256>(
             base,
             &base.xs[i..],
             &base.squares[i..],
@@ -214,6 +250,7 @@ pub(super) unsafe fn evaluate_avx2<const B: u32>(
             target_squared,
             &mut output[i..],
         );
+        append_indices(mask, i, base.points.len(), indices);
     }
 }
 
@@ -224,9 +261,10 @@ pub(super) unsafe fn evaluate_avx512<const B: u32>(
     target: u64,
     target_squared: u64,
     output: &mut [u64],
+    indices: &mut Vec<usize>,
 ) {
     for i in (0..base.xs.len()).step_by(24) {
-        group::<B, A512>(
+        let mask = group::<B, A512>(
             base,
             &base.xs[i..],
             &base.squares[i..],
@@ -234,5 +272,6 @@ pub(super) unsafe fn evaluate_avx512<const B: u32>(
             target_squared,
             &mut output[i..],
         );
+        append_indices(mask, i, base.points.len(), indices);
     }
 }

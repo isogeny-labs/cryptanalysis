@@ -78,7 +78,6 @@ struct Center {
     residue: u64,
     delta: u64,
     delta_squared: u64,
-    twice_delta: u64,
 }
 
 /// Reusable target-independent circuit and signed factor-base representatives.
@@ -224,7 +223,6 @@ impl<const B: u32> FactorBase<B> {
                     residue: m.residue,
                     delta,
                     delta_squared: F::<B>::sq(delta),
-                    twice_delta: F::<B>::add(delta, delta),
                 }
             })
             .collect();
@@ -346,34 +344,47 @@ impl<const B: u32> FactorBase<B> {
             return Err(Error::Invalid("workspace belongs to a smaller base"));
         }
         let x2 = F::<B>::sq(target_x);
+        workspace.indices.clear();
         match self.backend {
             #[cfg(target_arch = "x86_64")]
             Backend::Avx2 => {
                 // SAFETY: selection checked CPU support; preparation pads all
                 // arrays to complete three-vector tiles, and workspace fits.
-                unsafe { x86::evaluate_avx2(self, target_x, x2, &mut workspace.values) };
+                unsafe {
+                    x86::evaluate_avx2(
+                        self,
+                        target_x,
+                        x2,
+                        &mut workspace.values,
+                        &mut workspace.indices,
+                    )
+                };
             }
             #[cfg(all(target_arch = "x86_64", auxiliary_ic_avx512))]
             Backend::Avx512 => {
                 // SAFETY: same checked feature and array-length invariants.
-                unsafe { x86::evaluate_avx512(self, target_x, x2, &mut workspace.values) };
+                unsafe {
+                    x86::evaluate_avx512(
+                        self,
+                        target_x,
+                        x2,
+                        &mut workspace.values,
+                        &mut workspace.indices,
+                    )
+                };
             }
             Backend::Scalar => {
                 for i in 0..self.points.len() {
-                    workspace.values[i] =
-                        self.scalar_value(self.xs[i], self.squares[i], target_x, x2);
+                    let value = self.scalar_value(self.xs[i], self.squares[i], target_x, x2);
+                    workspace.values[i] = value;
+                    if value == 0 {
+                        workspace.indices.push(i);
+                    }
                 }
             }
             _ => return Err(Error::UnsupportedBackend),
         }
         workspace.active = self.points.len();
-        workspace.indices.clear();
-        workspace.indices.extend(
-            workspace.values[..workspace.active]
-                .iter()
-                .enumerate()
-                .filter_map(|(i, &v)| (v == 0).then_some(i)),
-        );
         Ok(())
     }
     fn scalar_value(&self, x: u64, x_squared: u64, target: u64, target_squared: u64) -> u64 {
@@ -423,11 +434,14 @@ impl<const B: u32> FactorBase<B> {
                     F::<B>::mul(map.delta_squared, nd),
                 );
             }
-            c = F::<B>::add(cd, F::<B>::mul(map.twice_delta, nd));
-            h = F::<B>::sub(
-                F::<B>::add(norm, F::<B>::mul(map.delta, c)),
-                F::<B>::mul(map.delta_squared, nd),
-            );
+            // t = delta*nd shares the shift between both state updates:
+            // norm + delta*(cd + 2*t) - delta^2*nd
+            //      = norm + delta*(cd + t).
+            // Two multiplications replace the previous three; doubling t
+            // uses an addition.
+            let t = F::<B>::mul(map.delta, nd);
+            h = F::<B>::add(norm, F::<B>::mul(map.delta, F::<B>::add(cd, t)));
+            c = F::<B>::add(cd, F::<B>::add(t, t));
             d = nd;
         }
         unreachable!("nonempty centered circuit")

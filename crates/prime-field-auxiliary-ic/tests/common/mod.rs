@@ -1,4 +1,6 @@
 // Public correctness fixtures; source is the frozen standalone experiment.
+mod multi_tile;
+pub use multi_tile::{MAPS31_MULTI, ROOTS31_MULTI, TERMINAL31_MULTI};
 use prime_field_auxiliary_ic::{AuxiliaryMap, Relation, SignedRelation};
 pub const ROOTS31: [u64; 32] = [
     3, 308768278, 1213058799, 1950178058, 1620095117, 1685732321, 845665662, 1760557235,
