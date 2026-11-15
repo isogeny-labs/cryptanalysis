@@ -1,24 +1,119 @@
+# CT28: direct first F101 elliptic quartic norm
+
+[Written proof](QUARTIC_COVER.md),[acceptance/resume](QUARTIC_STATUS.md) and [inspected report](reports/quartic-first/complete-report.pdf) record complete25native/85reference unit+five integrations,all source guards/fmt/strictClippy,301fbe. Every12317 first T0/E109 norm matches the retained route,with all actual poles/repeated/infinity cases. Scientific standing unsigned,geometric formalization partial;no measured cost ratio. [pcc:unverified]
+
+Previous CT27 complete-class acceptance and resume: [FULL_CLASS_STATUS.md](FULL_CLASS_STATUS.md). [pcc:unverified]
+
+# CT26: lazy canonical roots for the Richelot reference
+
+[Written proof](ROOT_TABLE.md), [current status](ROOT_TABLE_STATUS.md) and
+[inspected report](reports/reference-roots/roots-report.pdf) describe deferred
+root-table construction and exact first-root preservation by axis enumeration.
+Every base discriminant at17/101 matches the original exhaustive builder.
+Allsix complete12317-class R0/R1/R2 domains match pointwise evaluation,
+with separate instances proving closed production caches stay empty while
+quadratic references initialize theirs. Full guard02 passes25native/
+82reference unit+five integrations, one old ignored benchmark, all guards/
+fmt/strictClippy, PCC3c6362. Parent1496 exact65a CI succeeds25/81+five,
+e2187d; own final-head CI remains separate. Scientific standing unsigned,
+formalization partial, no measured advantage. [pcc:unverified]
+
+# CT25: direct C2 successor norms
+
+[Written specialization](SUCCESSOR_NORMS.md),
+[current status](SUCCESSOR_NORMS_STATUS.md) and
+[inspected report](reports/successor-norms/norms-report.pdf) describe both
+direct C2 elliptic norms and their Phi2/Psi2 integration. All12317 classes
+match both retained generic norms, including every degree/zero category,
+repeated support and balanced infinity correction. Both complete forward/
+dual transfer graphs agree with genuine generic references. Full changed
+guard04 passes25native/81reference unit plus five integrations, one old
+ignored benchmark, all guards/fmt/strictClippy, PCC03b76b. Parent1494 exact43a
+CI succeeds25/80+five, PCCd942e6; this child's own CI remains separate.
+Scientific standing unsigned, formalization partial, no measured advantage.
+[pcc:unverified]
+
+# CT24: two consecutive nondual Jacobian transfers
+
+[Written proof](SUCCESSOR_CHAIN_V2.md),[current checkpoint](SUCCESSOR_CHECKPOINT.md)
+and [inspected report](reports/successor-chain/chain-report.pdf) describe
+actual Phi2:C1→C2 and transported Psi2:T1→T2. Both complete12317-class
+domains for eachPhi2/R2/Psi2 pass component checks,with all109/113 source
+relations/reverse196/inverses104/64/direct4 beta alpha,full geometric
+two-kernel and explicit49-class Psi2 kernel. Independent T2 branch oracle
+and separate flat validity/Frobenius replay pass. Written global geometry
+and five new conditional Lean helpers are distinguished from runtime tests.
+Full changed guard15 passes25native/80reference unit+five integrations,
+one old ignored benchmark,PCC5383d3;final-head CI remains separate. No timing
+or computational advantage claim;all standing unsigned. [pcc:unverified]
+
+# CT23: closed Richelot fibres and explicit Psi kernel
+
+[CLOSED_FIBRES.md](CLOSED_FIBRES.md), [current status](CLOSED_FIBRES_STATUS.md)
+and [report](closed-fibres-report.pdf) describe the resultant evaluator and
+actual49-class T0 kernel witness. All four12317-class R0/R1 domains match
+pointwise evaluation,including dual2/bijections/paired sums and geometric
+chart boundaries. Integrated complete guard07 passes25native/70reference
+unit plus three integrations,one old ignored benchmark,all guards/fmt/
+strictClippy (PCC1f1423). The original pointwise and naive routes remain.
+Independent flat-field replay checks the exported divisor validity and
+Frobenius only. Full scientific standing remains unsigned. [pcc:unverified]
+
 # Chained transfer differential reference
 
-Current [elliptic degree7 checkpoint](ELLIPTIC_SEVEN.md) constructs four
-actual maps/duals on the109/113 elliptic factors. Exact cleared curve/both
-globalx[7],all source/codomain points,pair additions,scalars and recovery
-pass;another unchanged arithmetic/kernel engine replays the frozen
-certificates locally and in the consumer CI layout. Separate102/five-input
-guards keep construction and verifier custody distinct. Four Lean helpers
-compile,total72. Prior50-unit-plus1-integration CI passes/1482 merged;
-current51-unit-plus2-integration replay pending. Genuine compatible Jacobian
-gluing/7-hop remains CT20;no solver/cost gain accepted. [pcc:unverified]
+Current [direct elliptic norms](DIRECT_NORMS.md) evaluate both C0/C1
+quotients using base-field formulas with repeated/zero support and every
+balanced infinity term. Both norms match the unchanged generic route on
+all12317 classes ofeach model. Integrated complete guard passes25native/
+66reference unit+three integrations,one old benchmark ignored;all Phi/
+PhiHat classes agree with retained generic evaluation and all Psi/source
+controls pass. Seven new partial Lean lemmas bring the source census97;
+geometry remains written and standing unsigned. [DIRECT_NORMS_STATUS.md](DIRECT_NORMS_STATUS.md)
+retains exact receipts,limits and the inspected two-page report. No timing,
+solver or broader catalog claim. [pcc:unverified]
+
+Current [transported seven-chain](SEVEN_CHAIN.md) constructs actual global
+Psi between the accepted T0 and a distinct unpolarized F101 Jacobian T1.
+Both complete12317-class domains pass dual[7],bijections,paired additions,
+coefficient descent and all109 source/reverse28/inverse74/direct4 controls.
+Actual49-kernel/64-lift action,full geometric two-kernel inclusion and a
+complete target-automorphism/sign proof support the written construction.
+Local guard passes25native/65reference unit+two integrations;the additional
+third integration and strict all-target Clippy also pass. Source helpers90,
+formal geometry partial,standing unsigned. [SEVEN_CHAIN_STATUS.md](SEVEN_CHAIN_STATUS.md)
+retains exact records,corrections,report and the new consumer ledger fork.
+Final-head focused CI is a separate pending obligation. [pcc:unverified]
+
+Current [degree49 Jacobian transfer](SEVEN_TRANSFER.md) supplies actual
+Phi/PhiHat between the fixed F101 Jacobians C0/C1. Full geometric2-kernel
+certificates and a written quotient/polarization proof give a genuine(7,7)
+map. Both entire12317-class rational domains,dual[7],bijections,paired
+additions and all109 original source controls pass. New eight Lean helpers
+bring the project to80 written lemmas;actual geometry remains written.
+The full local guard passes native25/reference57 unit+two integrations,
+one old benchmark ignored;exact2450815e2 CI43085588914 later succeeds.
+Parent1484 now has a frozen-ledger conflict with main. See the diagram,
+inspected two-page PDF and immutable receipts. All standing unsigned.
+[pcc:unverified]
+
+Prior [elliptic degree7 checkpoint](ELLIPTIC_SEVEN.md) constructs four
+actual maps/duals on the109/113 elliptic factors with exact polynomial and
+complete group checks. A separate unchanged Montgomery engine replays
+frozen certificates. Separate102/five-input guards and seven native
+inputs remain distinct at75a737b8. PR1483 merged52fe5eba0 after exact-head
+43038507853 passed native25/reference51+two integrations. The old report's
+pending-CI/root-receipt gaps are historical:original root records/receipts
+are restored unchanged in crypto dcd324f35. [pcc:unverified]
 
 Current [odd-kernel assessment](ODD_KERNELS.md) closes rational3/5
 maximal-isotropic kernels for the accepted17/101 examples,also7 for17.
-Shifted101 has four abstract7 candidates;actual kernels/codomains/maps remain
-next. Every fixed finite plane/pairing ratio and six upstream Lean algebra/
+Shifted101 has four abstract7 candidates;one now has an actual Jacobian
+map above. Every fixed finite plane/pairing ratio and six upstream Lean algebra/
 root certificates pass. Separately authored closedPR3918 polynomial Rust
 oracle now compiles unchanged and passes;formatting-only integration enters
-CI without importing producer field/Richelot/Cantor code. Prior49-test CI
-passes/PR1481 merged;current50-unit-plus1-integration replay pending.
-Standing unsigned,no odd-prime transfer or solver advantage accepted.
+CI without importing producer field/Richelot/Cantor code. PR1481/1482 and
+their exact49/50-unit-plus1-integration receipts remain historical.
+Standing unsigned;solving-cost comparisons remain open.
 [pcc:unverified]
 
 Current [split-quotient checkpoint](SPLIT_QUOTIENTS.md) makes both elliptic

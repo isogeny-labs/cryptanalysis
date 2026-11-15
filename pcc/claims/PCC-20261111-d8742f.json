@@ -1,0 +1,44 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-11T23:44:02Z",
+ "id": "PCC-20261111-d8742f",
+ "kind": "statement",
+ "producer": {
+  "commit": "5d5dc81faa442de6d9a4ee8144806ab89cf9a3b8",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/successor-flat-complete-14.txt",
+    "sha256": "c66bf332076d46576b6752d9657c063420f037ba1771f4c06b63497ddb96d7fd"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/successor-flat-clippy-14.txt",
+    "sha256": "692d255c8fc14a50618e9ba8379b7bcb350b418e7a183a824cfc968586e5761d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/psi2-flat-replay-source-14.rs",
+    "sha256": "85870a2996f618c8a4adbd6a8dc85ab20534dc0f349ba1b86dbae98dd8dd575b"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/explicit-psi2-kernel-12.tsv",
+    "sha256": "091abc74fb08479d9bf5a82be994443936017d14a0e68a44c8f2b1e0fd81907f"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Unsigned separate upstream flat replay14 of actual49 Psi2 TSV classes passes semantic T/S basis,actualT1 divisor validity,distinctness,Frobenius5/6 and fixed counts1/7/1/49. Same accepted flatFpR/poly engine with curve/header/column metadata;standalone6tests/strictClippy passes,root78b6c4. Scope excludes independent Jacobian addition and kernel membership;producer tower/map/elliptic generator not imported."
+}

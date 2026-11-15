@@ -58,7 +58,8 @@ typedef struct ca_ffi_options {
     uint32_t threads;            /* rho: worker threads (0 => 1) */
     uint32_t reserved0;
     uint64_t seed;               /* 0 => random */
-    uint64_t max_ops;            /* 0 => unlimited */
+    uint64_t max_ops;            /* 0 => no limit; rho and kangaroo keep their
+                                    runaway guards (ca_rho.h, ca_kangaroo.h) */
     /* bsgs */
     uint64_t bsgs_table_size;    /* 0 => sqrt(width) */
     /* rho */

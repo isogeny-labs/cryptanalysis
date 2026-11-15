@@ -263,3 +263,6 @@ fn predeclared_second_hop_target_against_biguint() {
     assert_eq!((kernel.len(), two_kernel), (8, 4));
     println!("PASS second-hop target: independent point-count order9216, 9216 paired additions/dual norms, self-inverse count8; rational composite kernel8 with4 self-inverse elements");
 }
+
+#[cfg(test)]
+mod full_class_fixtures;

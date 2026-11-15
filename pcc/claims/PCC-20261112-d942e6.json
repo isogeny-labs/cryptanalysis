@@ -1,0 +1,37 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-12T01:20:48Z",
+ "id": "PCC-20261112-d942e6",
+ "kind": "statement",
+ "producer": {
+  "commit": "43a8e80ea4d01c564499e678751f44c51dae5243",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct24-ci-observation-05.json",
+    "sha256": "22d24187c4e2226977cbb929203849183673ce8da9525f3dbef3192d109b55b7"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct24-ci-43125719626.log.xz",
+    "sha256": "5f1b8226a8c2f1608912926fb7cfa6a61720ccf8b8c30b1df95d2702def80e6c"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct24-ci-43125719626.log.sha256",
+    "sha256": "e1dd67acb46c02edf808cc18b2576cb0624f8b323a954f1f1c8f9b3a4fdede57"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Unsigned exact43a8e80ea4d01c564499e678751f44c51dae5243 CT24 CI43125719626 succeeds25native/80reference unit+5integrations,1old ignored benchmark. Full decoded job/API/check metadata archive has raw/archive SHA256 and exact standard-xz roundtrip. Gatepasses/signskipped;scientific standing unsigned. LaterCT25 code not covered;ready1494 remains stacked on1493."
+}
