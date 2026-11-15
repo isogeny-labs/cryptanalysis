@@ -79,10 +79,12 @@ height conditions as the field grows. The previously checked conditional reducti
 and sampling theorems in the existing Lean modules apply only with their
 stated bounded-witness and sampling hypotheses.
 
-`PROOF_MAP.md` records the existing abstract reduction theorem, the exact
-Sage/arithmetic witness and fixed-target recovery, and the open faithful Lean elliptic-curve
-formalization. The current shared checkout failed its existing Lean source
-hash verifier, so this PR does not report a fresh checked Lean build.
+`PROOF_MAP.md` maps the scalar-recovery implication and both saved
+`t`-pairs to three checked declarations in `formal/TargetRecovery.lean`.
+The pinned build and `#print axioms` audit passed. The elliptic-curve
+instantiation of the rational witness remains open in Lean. The current
+shared checkout failed the older obstruction module's source-hash verifier,
+so that module is not reported as freshly built here.
 
 ## Reproduction
 
@@ -101,6 +103,8 @@ record the accepted Sage source and native binary manifest.
 ./sage --runtime-info > experiments/xedni-crt-curve-choice-20261115/sage-runtime-info-target.json
 ./sage -python experiments/xedni-crt-curve-choice-20261115/target_replay.py > experiments/xedni-crt-curve-choice-20261115/result-target.json 2> experiments/xedni-crt-curve-choice-20261115/target.stderr
 python3 experiments/xedni-crt-curve-choice-20261115/audit.py
+(cd experiments/xedni-crt-curve-choice-20261115/formal && lake build TargetRecovery)
+python3 experiments/xedni-crt-curve-choice-20261115/verify_formal.py
 ```
 
 The large raw row streams are committed as `rows.jsonl.gz` and
