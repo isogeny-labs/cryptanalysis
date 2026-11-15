@@ -1,3 +1,39 @@
+# Genuine21 settled; complete fixed Jacobian-chain implementation next
+
+pcc/claims/PCC-20261115-2e7b0f.json/pcc/claims/PCC-20261115-991276.json: original43661406081/job132651320244SUCCESS/FIVEremote replays BEFOREdb435e1b/direct43996852/exact7paths. ALL42866guards/162links/ownedbytes andwhole61501328Barchive/all1662members/14declaredwholesci roots preserved; normalfetch-FF-artifact-wiring0/HOLD21RELEASED. All40443prior keys/150oldlinks/old2850ledgerprefix retained withdeclaredmetadataupdates, prior20genuinepayloads remainexactwithoutrecursivecapture. TWOexactcanonicalmanifestentries/ONEplainGitwholefive-recordcontrol/THREErelativealiases. [pcc:unverified]
+
+## What was done
+Genuinelypublishedclosedct81sources/actualbinaries/librarycopies/failures/fullCI/checkpoints/proofs/reports/native16recordfixture-stdout-control plusc031Gitbase/fourpendingmetadatafiles. Native75338a originalD67negative/separateD39positive, proofs/report andnew5caf67protocol remainunchanged. [pcc:unverified]
+
+## Decisions made
+ImplementTHREEfixedgenericAdapter-NormNew-quadraticmodels andcompletefullgroupJacchainunderpublished5caf67; preserveall672exceptionaldescriptors/bothoutgoingmaps/fourhalves/cofactors/fullinverses/direct-sequentialscope. Keeporiginal-primefuturecontinuationreviewdistinct. No newevaluatorcode/outcome existsyet, no oldlogtwisttransferorpricedadvantage. [pcc:unverified]
+
+## Open threads
+Normalpublishsettlementmetadata; additive24thfull16record/20bindingpreflightCI withold23unchanged, andnewgeometryconstructorimplementation/oldknown-answerparity/compiledsource/checkpoint/native. ContinuecompleteJacpointmaps/direct-chainactualvectors, futurelargecustodyNEW22. [pcc:unverified]
+
+## Errors
+Original19GH001/materialization-disk/PATH-Typst failures andoldfullcold/root-main/geometry-program/benchmarkadmission/vaultKB gaps retained. No paidlaunch/waiver/novelty/advantage; continuequeue. [pcc:unverified]
+
+---
+
+# Whole scientific handoff21 prepared: source/raw/aliases/consumer ledger HELD
+
+Consumerc031/native75338a preserves originalD67negative andsamefixednu12D39positive, all16whole/firstnineunchanged/11phases/actualomissions-olddual101/source1028-runtimebytes0. ThreePairNorm2735b3 andFourthObstruction5d647c eachbothoriginalgates3roots0trusted/threebindings; TWOinspected55235BPDFpages e26218. CompleteJacchainprotocol5caf67 ispublished BEFOREnewgeometry/evaluatorcode; no such newcode exists. [pcc:unverified]
+
+## What was done
+NEW21 captures every member of14 explicitlydeclared wholeclosedct81 scientificroots, allclosedct81controls, actualproofstages, fullnewreportroots, currentownedscience hashes andpublishedc031Gitbase+pending4metadata delta. Prior40443keys/150oldlinks/declaredreleasedmetadata/old2850ledgerprefix preserved. Alreadygenuine20archive/parts stayheld/exact and arereferencedthroughoriginalmanifest/publication metadata; excludedfromnewarchive recursion, notpruned. Completearchive isbyte-segmented BEFOREGitcommit into32MiBparts underoriginalpolicy. [pcc:unverified]
+
+## Decisions made
+HOLD every scientificinput/raw/source/alias/ownedbyte andconsumerledger until ORIGINALremote-byte replay BEFOREactualpublisherbot/exactFF/orderedarchive reconstruction/terminal21 checks. Allcurrentlinks captured; no private-downloadAPI orliveowncaller included. Exactimmutablehardlinkdedup retainsallpaths/bytes/SHA/sizes/modes. [pcc:unverified]
+
+## Open threads
+Genuinepublication21/exactFF/release, canonical16recordfixture/stdout/control, thenimplementTHREEfixedgenericAdapter-NormNew-quadraticmodels andcompletefullgroupJacchainunder5caf67; preserve672exceptionaldescriptors/fullhalves-cofactors-inverses/direct-sequentialscope. No benchmarkprice orcurrentall23CI inference. [pcc:unverified]
+
+## Errors
+Original19GH001, materializer countguard, diskENOSPC, firstPATH/Typst failures andoldfullcold/root-main limits remainpreserved. No originallogtwisttransfer, newJacpointmap, paidlaunch/waiver/novelty/advantage. [pcc:unverified]
+
+---
+
 # Fourth-edge result/proof report complete; next complete-chain protocol frozen before code
 
 Native75338a/source4c: originalE4HLP(2,1)D67smooth/sourceunsupported; SAME-nu12E4nuHLP(0,1)D39sqrt40smooth/sourceeligible. All16wholeorderedrecords/firstnineunchanged/all11phaseexits/twoactualwholeomissions101/actualoldthirddual101+fullfivecontrols/all1028guards/compiler-runtimebytes/worker-supervisor0. NewC2nu-C3nu-C4nu supportedmodelchain; completeJacpointmaps/two-hopexecutionstillunimplemented. [pcc:unverified]
