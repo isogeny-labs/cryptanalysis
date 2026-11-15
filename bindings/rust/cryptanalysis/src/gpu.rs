@@ -68,7 +68,7 @@ pub struct GpuOptions {
     pub negation_map: bool,
     /// RNG seed (0 => random).
     pub seed: u64,
-    /// Work limit in group operations (0 => unlimited).
+    /// Work limit in group operations (0 => no caller limit; the solver then stops at a built-in runaway guard).
     pub max_ops: u64,
 }
 
