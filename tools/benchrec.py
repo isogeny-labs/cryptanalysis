@@ -36,6 +36,7 @@ import argparse
 import datetime as dt
 import hashlib
 import json
+import math
 import os
 import platform
 import re
@@ -116,6 +117,29 @@ def git(root: Path, *args: str, check: bool = True) -> str:
     return p.stdout
 
 
+
+def committed_record(root: Path, ref: str, path: str) -> str | None:
+    """Plaintext base record; an unreadable existing object is a hard failure."""
+    spec = f"{ref}:{path}"
+    result = subprocess.run(["git", "-C", str(root), "cat-file", "--filters", spec],
+                            capture_output=True)
+    if result.returncode:
+        if "\n" not in spec:
+            query = spec.encode("utf-8", "surrogateescape")
+            probe = subprocess.run(["git", "-C", str(root), "cat-file", "--batch-check"],
+                                   input=query + b"\n", capture_output=True)
+            if (probe.returncode == 0 and not probe.stderr
+                    and probe.stdout == query + b" missing\n"):
+                return None
+        raise SystemExit(f"benchrec: cannot read committed base record {path}")
+    if result.stdout.startswith(b"VLT1"):
+        raise SystemExit("benchrec: base record remains encrypted; configure the required vault filter")
+    try:
+        return result.stdout.decode("utf-8")
+    except UnicodeDecodeError as error:
+        raise SystemExit(f"benchrec: base record is not UTF-8: {path}") from error
+
+
 def repo_root(start: Path | None = None) -> Path:
     start = (start or Path.cwd()).resolve()
     out = subprocess.run(["git", "-C", str(start), "rev-parse", "--show-toplevel"],
@@ -183,7 +207,7 @@ def host_info() -> dict:
 def write_json(path: Path, obj) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_suffix(path.suffix + ".tmp")
-    tmp.write_text(json.dumps(obj, indent=2, sort_keys=True) + "\n")
+    tmp.write_text(json.dumps(obj, indent=2, sort_keys=True, allow_nan=False) + "\n")
     os.replace(tmp, path)
 
 
@@ -334,12 +358,15 @@ def cmd_metric(a, root: Path, cfg: dict) -> int:
         "unit": a.unit,
         "better": better,
         "n": a.n,
-        "spread": [a.spread_low, a.spread_high] if a.spread_low is not None else None,
+        "spread": [a.spread_low, a.spread_high] if a.spread_low is not None or a.spread_high is not None else None,
         "baseline": a.baseline,
         "reference": a.reference,
         "reference_kind": a.reference_kind if a.reference is not None else None,
         "note": a.note or "",
     }
+    errors = metric_errors(m, a.record)
+    if errors:
+        raise ValueError("; ".join(errors))
     if any(x["name"] == a.name for x in rec["metrics"]):
         raise SystemExit(f"benchrec: metric {a.name} already recorded; a rerun is a new record")
     rec["metrics"].append(m)
@@ -622,6 +649,8 @@ def cmd_close(a, root: Path, cfg: dict) -> int:
         for e in errors:
             print(f"benchrec: {e}", file=sys.stderr)
         return 1
+    # Check cross-record comparisons before making this record immutable.
+    build_progress(root, cfg, replacement=(rel(root, path), rec))
     write_json(path, rec)
     items = [i for i in open_list(root) if i["record"] != rel(root, path)]
     set_open_list(root, items)
@@ -632,9 +661,88 @@ def cmd_close(a, root: Path, cfg: dict) -> int:
 
 # ---------------------------------------------------------------------- checks
 
+def finite_number(value) -> bool:
+    if type(value) not in (int, float):
+        return False
+    try:
+        return math.isfinite(value)
+    except OverflowError:
+        return False
+
+
+def metric_errors(m: dict, name: str) -> list[str]:
+    prefix = f"{name}: metric {m.get('name')}"
+    errors = []
+    if not isinstance(m.get("name"), str) or not re.fullmatch(r"[a-z0-9][a-z0-9_./-]{0,80}", m["name"]):
+        errors.append(f"{prefix} name must be a stable lowercase key")
+    if m.get("unit") not in UNITS:
+        errors.append(f"{prefix} has unknown unit {m.get('unit')!r}")
+    for key in ("value", "baseline", "reference"):
+        if (key == "value" or m.get(key) is not None) and not finite_number(m.get(key)):
+            errors.append(f"{prefix} {key} must be a finite number (not boolean)")
+    if m.get("better") not in ("lower", "higher", "neutral"):
+        errors.append(f"{prefix} better must be lower|higher|neutral")
+    if m.get("reference") is not None and m.get("reference_kind") not in REFERENCE_KINDS:
+        errors.append(f"{prefix} reference_kind must be one of {REFERENCE_KINDS}")
+    if m.get("n") is not None and (type(m["n"]) is not int or m["n"] <= 0):
+        errors.append(f"{prefix} n must be a positive integer")
+    spread = m.get("spread")
+    if spread is not None and (not isinstance(spread, list) or len(spread) != 2
+                               or not all(finite_number(v) for v in spread)
+                               or spread[0] > spread[1]):
+        errors.append(f"{prefix} spread must have two finite ordered endpoints")
+    return errors
+
+
+def measurement_errors(rec: dict, name: str) -> list[str]:
+    """Metadata needed before a measured record contributes to comparisons."""
+    errors = []
+    commands = rec.get("commands")
+    if not isinstance(commands, list) or not commands:
+        errors.append(f"{name}: no command recorded")
+    else:
+        for i, command in enumerate(commands):
+            if not isinstance(command, dict) or type(command.get("exit")) is not int or command["exit"] != 0:
+                errors.append(f"{name}: command {i + 1} has no successful integer exit code; "
+                              "use invalid/censored or an explicit pinned historical exclusion")
+    metrics = rec.get("metrics")
+    if not isinstance(metrics, list) or not metrics:
+        errors.append(f"{name}: a measured record needs at least one metric")
+        return errors
+    seen = set()
+    for metric in metrics:
+        if not isinstance(metric, dict):
+            errors.append(f"{name}: metric must be an object")
+            continue
+        errors.extend(metric_errors(metric, name))
+        key = str(metric.get("name"))
+        if key in seen:
+            errors.append(f"{name}: metric {key} listed twice")
+        seen.add(key)
+    return errors
+
+
+def integrity_exclusions(root: Path, cfg: dict, recs: list[tuple[str, dict]]) -> dict:
+    """Explicit, digest-pinned historical exclusions never waive raw-file checks."""
+    path = root / Path(cfg["records_dir"]).parent / "integrity-exclusions.json"
+    if not path.exists():
+        return {}
+    data = json.loads(path.read_text())
+    if not isinstance(data, dict) or data.get("schema") != "bench.integrity-exclusions/v1" or not isinstance(data.get("records"), dict):
+        raise ValueError(f"{rel(root, path)}: invalid integrity exclusion manifest")
+    records = dict(recs)
+    for name, pin in data["records"].items():
+        rec = records.get(name)
+        if (rec is None or rec.get("status") != "measured" or not isinstance(pin, dict)
+                or not isinstance(pin.get("reason"), str) or not pin["reason"].strip()
+                or pin.get("sha256") != sha256_file(root / name)):
+            raise ValueError(f"{name}: integrity exclusion needs an exact measured-record digest and reason")
+    return data["records"]
+
+
 def record_errors(root: Path, cfg: dict, rec: dict, name: str, *, require_closed: bool,
                   verify_s3: bool = False, manifests: dict | None = None,
-                  allow_archived_raw: bool = True,
+                  allow_archived_raw: bool = True, excluded: bool = False,
                   inventory: S3Inventory | None = None) -> list[str]:
     e: list[str] = []
     if verify_s3 and inventory is None:
@@ -672,19 +780,17 @@ def record_errors(root: Path, cfg: dict, rec: dict, name: str, *, require_closed
                 e.append(f"{name}: a measured record carries a one-line summary")
         if rec["status"] in ("invalid", "censored") and not rec.get("summary"):
             e.append(f"{name}: say why the run is {rec['status']} in --summary")
-    seen = set()
-    for m in rec["metrics"]:
-        if m.get("unit") not in UNITS:
-            e.append(f"{name}: metric {m.get('name')} has unknown unit {m.get('unit')!r}")
-        if not isinstance(m.get("value"), (int, float)) or isinstance(m.get("value"), bool):
-            e.append(f"{name}: metric {m.get('name')} value is not a number")
-        if m.get("better") not in ("lower", "higher", "neutral"):
-            e.append(f"{name}: metric {m.get('name')} better must be lower|higher|neutral")
-        if m.get("reference") is not None and m.get("reference_kind") not in REFERENCE_KINDS:
-            e.append(f"{name}: metric {m.get('name')} reference_kind must be one of {REFERENCE_KINDS}")
-        if m.get("name") in seen:
-            e.append(f"{name}: metric {m.get('name')} listed twice")
-        seen.add(m.get("name"))
+    if rec["status"] == "measured":
+        if not excluded:
+            e.extend(measurement_errors(rec, name))
+    else:
+        seen = set()
+        for m in rec["metrics"]:
+            e.extend(metric_errors(m, name))
+            key = str(m.get("name"))
+            if key in seen:
+                e.append(f"{name}: metric {key} listed twice")
+            seen.add(key)
     for r in rec["raw"]:
         for k in ("path", "sha256", "bytes", "s3_uri"):
             if k not in r:
@@ -693,9 +799,11 @@ def record_errors(root: Path, cfg: dict, rec: dict, name: str, *, require_closed
             e.append(f"{name}: raw {r.get('path')} sha256 malformed")
         if not str(r.get("s3_uri", "")).startswith("s3://"):
             e.append(f"{name}: raw {r.get('path')} has no s3:// location")
+        if type(r.get("bytes")) is not int or r["bytes"] < 0:
+            e.append(f"{name}: raw {r.get('path')} bytes must be a nonnegative integer")
         local = root / r.get("path", "")
         if local.is_file():
-            if sha256_file(local) != r.get("sha256"):
+            if sha256_file(local) != r.get("sha256") or local.stat().st_size != r.get("bytes"):
                 if (allow_archived_raw
                         and rec["status"] in ("measured", "invalid", "censored")
                         and archived_raw_matches(root, cfg, r, remote=verify_s3)):
@@ -703,7 +811,7 @@ def record_errors(root: Path, cfg: dict, rec: dict, name: str, *, require_closed
                     print(f"benchrec: {name}: original raw bytes verified from {source} "
                           f"for {r['path']}; differing checkout bytes are not validated here")
                 else:
-                    e.append(f"{name}: raw {r['path']} differs from its recorded sha256")
+                    e.append(f"{name}: raw {r['path']} differs from its recorded sha256 or bytes")
         else:
             covered = manifests is not None and manifests.get(r.get("path")) == r.get("sha256")
             if not covered and not r.get("uploaded"):
@@ -777,10 +885,28 @@ def all_records(root: Path, cfg: dict) -> list[tuple[str, dict]]:
     return out
 
 
+def _comparison_snapshot(root: Path, base: str) -> tuple[str, list[tuple[str, str]]]:
+    """Pin both commits; failed or unrelated comparisons are never empty diffs."""
+    if not base:
+        raise SystemExit("benchrec: empty comparison base")
+    head = git(root, "rev-parse", "--verify", "--end-of-options", "HEAD^{commit}").strip()
+    requested = git(root, "rev-parse", "--verify", "--end-of-options", f"{base}^{{commit}}").strip()
+    merge_base = git(root, "merge-base", requested, head).strip()
+    fields = git(root, "diff", "--no-ext-diff", "--name-status", "-z", "--no-renames",
+                 merge_base, head).split("\0")
+    if fields.pop() != "" or len(fields) % 2:
+        raise SystemExit("benchrec: incomplete Git change inventory")
+    changes = list(zip(fields[::2], fields[1::2]))
+    if any(status not in {"A", "M", "D", "T"} for status, _ in changes):
+        raise SystemExit("benchrec: unexpected Git change status")
+    return merge_base, changes
+
+
 def changed_paths(root: Path, base: str) -> list[str]:
-    merge_base = git(root, "merge-base", base, "HEAD", check=False).strip() or base
-    out = git(root, "diff", "--name-only", "--diff-filter=ACMR", f"{merge_base}...HEAD", check=False)
-    return [l for l in out.splitlines() if l]
+    # New entries retain their prior add/modify semantics. Disabling rename
+    # detection represents a move as an addition and a deletion.
+    _, changes = _comparison_snapshot(root, base)
+    return [path for status, path in changes if status in {"A", "M"}]
 
 
 def new_entries(root: Path, cfg: dict, paths: list[str]) -> set[str]:
@@ -801,11 +927,13 @@ def new_entries(root: Path, cfg: dict, paths: list[str]) -> set[str]:
 
 def cmd_check(a, root: Path, cfg: dict) -> int:
     problems: list[str] = []
+    comparison = _comparison_snapshot(root, a.base) if a.base is not None else None
     if a.verify_s3 and not aws_available(cfg):
         print("FAIL: --verify-s3 asked for but no AWS credentials or aws CLI here; "
               "the S3 side of the records cannot be verified")
         return 1
     recs = all_records(root, cfg)
+    exclusions = integrity_exclusions(root, cfg, recs)
     manifests = artifact_manifests(root)
     inventory = S3Inventory(cfg) if a.verify_s3 else None
     if inventory is not None:
@@ -824,23 +952,29 @@ def cmd_check(a, root: Path, cfg: dict) -> int:
             continue
         problems += record_errors(root, cfg, rec, name, require_closed=True,
                                   verify_s3=a.verify_s3, manifests=manifests,
+                                  excluded=name in exclusions,
                                   inventory=inventory)
         referenced.update(rec.get("entries", []))
-    if a.base:
-        changed = changed_paths(root, a.base)
+    if comparison is not None:
+        base_ref, changes = comparison
+        changed = [path for status, path in changes if status in {"A", "M"}]
         for d in sorted(new_entries(root, cfg, changed)):
             if d not in referenced:
                 problems.append(f"{d}: benchmark entry added without a {SCHEMA} record naming it "
                                 f"(benchrec.py init --entry {d} ...)")
-        touched_records = [p for p in changed if p.startswith(cfg["records_dir"].rstrip("/") + "/")]
-        base_ref = git(root, "merge-base", a.base, "HEAD", check=False).strip() or a.base
+        touched_records = [p for _, p in changes
+                           if p.startswith(cfg["records_dir"].rstrip("/") + "/")]
         for p in touched_records:
-            old = git(root, "show", f"{base_ref}:{p}", check=False)
-            if old.strip():
+            old = committed_record(root, base_ref, p)
+            if old is not None:
                 try:
                     o = json.loads(old)
                 except ValueError:
-                    o = {}
+                    problems.append(f"{p}: committed base benchmark record is invalid JSON")
+                    continue
+                if not isinstance(o, dict):
+                    problems.append(f"{p}: committed base benchmark record is not an object")
+                    continue
                 if o.get("status") in ("measured", "invalid", "censored"):
                     problems.append(f"{p}: a closed record is immutable; a rerun is a new record")
     if a.local:
@@ -874,15 +1008,28 @@ def cmd_open(a, root: Path, cfg: dict) -> int:
 
 # ------------------------------------------------------------------- progress
 
-def series_key(rec: dict, m: dict) -> str:
-    return f"{rec['problem']}|{m['name']}|{m['unit']}"
+def series_key(rec: dict, m: dict) -> tuple[str, str, str]:
+    return rec['problem'], m['name'], m['unit']
 
 
-def build_progress(root: Path, cfg: dict) -> dict:
-    recs = [r for _, r in all_records(root, cfg) if r.get("schema") == SCHEMA]
-    closed = [r for r in recs if r.get("status") == "measured"]
+def build_progress(root: Path, cfg: dict, *, replacement: tuple[str, dict] | None = None) -> dict:
+    records = all_records(root, cfg)
+    exclusions = integrity_exclusions(root, cfg, records)
+    if replacement:
+        records = [(name, replacement[1] if name == replacement[0] else r) for name, r in records]
+    recs = [r for _, r in records if r.get("schema") == SCHEMA]
+    closed = []
+    for name, r in records:
+        if r.get("schema") != SCHEMA:
+            raise ValueError(f"{name}: not a readable {SCHEMA} record")
+        if r.get("status") != "measured" or name in exclusions:
+            continue
+        errors = measurement_errors(r, name)
+        if errors:
+            raise ValueError("; ".join(errors))
+        closed.append(r)
     closed.sort(key=lambda r: (r.get("closed_utc") or r["created_utc"], r["id"]))
-    series: dict[str, dict] = {}
+    series: dict[tuple[str, str, str], dict] = {}
     for r in closed:
         for m in r["metrics"]:
             k = series_key(r, m)
@@ -890,6 +1037,9 @@ def build_progress(root: Path, cfg: dict) -> dict:
                 "problem": r["problem"], "metric": m["name"], "unit": m["unit"],
                 "better": m["better"], "points": [],
             })
+            if s["better"] != m["better"]:
+                raise ValueError(f"{r['id']}: direction for {k!r} differs from "
+                                 f"{s['points'][0]['record']}; use a distinct metric identity")
             s["points"].append({
                 "record": r["id"], "date": (r.get("closed_utc") or r["created_utc"])[:10],
                 "value": m["value"], "n": m.get("n"), "spread": m.get("spread"),
@@ -897,7 +1047,8 @@ def build_progress(root: Path, cfg: dict) -> dict:
                 "commit": r["commit"][:12], "summary": r.get("summary", ""),
             })
     out_series = []
-    for k in sorted(series):
+    # Keep the established display order while using collision-free identities.
+    for k in sorted(series, key=lambda key: "|".join(key)):
         s = series[k]
         pts = s["points"]
         first = pts[0]["value"]
@@ -905,20 +1056,25 @@ def build_progress(root: Path, cfg: dict) -> dict:
         for p in pts:
             v = p["value"]
             p["derived"] = {}
-            if s["better"] in ("lower", "higher") and first not in (0, None):
+            # A first observation alone is not a comparison with itself.
+            # Keep its zero anchor only when another record exists.
+            if len(pts) > 1 and s["better"] in ("lower", "higher") and first not in (0, None):
                 sign = 1.0 if s["better"] == "lower" else -1.0
                 p["derived"]["improvement_vs_first_percent"] = round(sign * (first - v) / abs(first) * 100.0, 4)
-                if prev not in (0, None):
-                    p["derived"]["improvement_vs_previous_percent"] = round(sign * (prev - v) / abs(prev) * 100.0, 4)
+            if s["better"] in ("lower", "higher") and prev not in (0, None):
+                sign = 1.0 if s["better"] == "lower" else -1.0
+                p["derived"]["improvement_vs_previous_percent"] = round(sign * (prev - v) / abs(prev) * 100.0, 4)
             if p.get("reference") not in (0, None):
                 p["derived"]["value_over_reference"] = round(v / p["reference"], 6)
+            if any(not finite_number(value) for value in p["derived"].values()):
+                raise ValueError(f"{p['record']}: derived comparison overflow for {k!r}")
             prev = v
         s["first"] = first
         s["latest"] = pts[-1]["value"]
         s["latest_derived"] = pts[-1]["derived"]
         out_series.append(s)
     counts = {st: len([r for r in recs if r.get("status") == st]) for st in STATUSES}
-    return {
+    result = {
         "schema": PROGRESS_SCHEMA,
         "repo": repo_name(root),
         "headline_unit": HEADLINE_UNIT,
@@ -930,6 +1086,12 @@ def build_progress(root: Path, cfg: dict) -> dict:
                  "Percentages and ratios under 'derived' are computed here from those values "
                  "and are not measurements. Series in different units are never compared."),
     }
+    if exclusions:
+        result["integrity_exclusions"] = [{"record": name, **pin} for name, pin in sorted(exclusions.items())]
+        result["note"] += (f" {len(exclusions)} digest-pinned historical measured records are excluded "
+                           "from all series and derived comparisons; recorded status counts retain them. "
+                           "See integrity_exclusions in progress.json and PROGRESS.md for reasons.")
+    return result
 
 
 def progress_paths(root: Path, cfg: dict) -> dict[str, Path]:
@@ -940,7 +1102,7 @@ def progress_paths(root: Path, cfg: dict) -> dict[str, Path]:
 
 def render_all(prog: dict) -> dict[str, bytes]:
     return {
-        "json": (json.dumps(prog, indent=2, sort_keys=True) + "\n").encode(),
+        "json": (json.dumps(prog, indent=2, sort_keys=True, allow_nan=False) + "\n").encode(),
         "md": render_md(prog).encode(),
         "svg": render_svg(prog).encode(),
         "pdf": render_pdf(prog),
@@ -1031,6 +1193,12 @@ def render_md(prog: dict) -> str:
                      f"{fmt(p['derived'].get('value_over_reference'))} | {p['summary'][:120]} |")
         L.append("")
     L += ["", prog["note"], ""]
+    if prog.get("integrity_exclusions"):
+        L += ["## Historical records excluded from comparisons", "",
+              "Recorded statuses above are preserved. These records contribute no points or gains.", ""]
+        for item in prog["integrity_exclusions"]:
+            L += [f"- `{item['record']}` (SHA-256 `{item['sha256']}`): {item['reason']}"]
+        L.append("")
     return "\n".join(L)
 
 
@@ -1120,6 +1288,9 @@ def render_svg(prog: dict) -> str:
         message = ("No comparable observations within a metric yet; see PROGRESS.md for measured values."
                    if prog["records"].get("measured", 0) else "No measured records yet.")
         o.append(f'<text x="{M}" y="100">{_esc(message)}</text>')
+    if prog.get("integrity_exclusions"):
+        o.append(f'<text x="{M}" y="67" fill="#a03030">'
+                 f'{len(prog["integrity_exclusions"])} historical measured records excluded from comparisons; see PROGRESS.md.</text>')
     top = 70
     for panel, span in zip(panels, spans):
         geom = panel_geometry(panel)
@@ -1380,6 +1551,19 @@ def render_pdf(prog: dict) -> bytes:
             y = 60
         pdf.text(M, y, line, 8, "#555555")
         y += 11
+    if prog.get("integrity_exclusions"):
+        pdf.new_page()
+        y = 60
+        pdf.text(M, y, "Historical records excluded from comparisons", 14, bold=True)
+        y += 24
+        for item in prog["integrity_exclusions"]:
+            for line in _wrap(f"{item['record']}: {item['reason']}", 105):
+                if y > H - M:
+                    pdf.new_page()
+                    y = 60
+                pdf.text(M, y, line, 8)
+                y += 12
+            y += 8
     return pdf.render()
 
 
@@ -1480,6 +1664,9 @@ def main(argv=None) -> int:
     except S3Error as exc:
         print(f"FAIL: S3 could not be verified: {exc}")
         print(f"benchrec: S3 error: {exc}", file=sys.stderr)
+        return 1
+    except (ValueError, OverflowError) as error:
+        print(f"benchrec: {error}", file=sys.stderr)
         return 1
 
 
