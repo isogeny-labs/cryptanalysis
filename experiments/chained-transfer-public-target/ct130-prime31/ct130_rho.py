@@ -42,7 +42,7 @@ def run():
                 recovered,n,entries,coll=rho(curve,g,qq,q,1000+7*m+j)
             except Exception as exc:
                 print('FAIL',m,name,j,str(exc),flush=True);continue
-            assert recovered==m and c.mul(G,recovered)==Q
+            if not (recovered==m and c.mul(G,recovered)==Q): raise ValueError("CT130 ct130_rho.py check at line 45")
             elapsed.append(time.perf_counter_ns()-now);iters.append(n);mem.append(entries)
         rows.append(dict(scalar=m,arm=name,elapsed_ns=elapsed,walk_steps=iters,stored_distinguished=mem))
  print(json.dumps(rows))
