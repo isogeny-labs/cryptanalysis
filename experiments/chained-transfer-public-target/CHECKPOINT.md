@@ -1,3 +1,21 @@
+# Full-group original-source successor protocol ready before code
+
+pcc/claims/PCC-20261115-1539b6.json: uniquecensus88f828/proof29e535/reportcd8173 publishedfb40449/rootd3f7124/mirror83885c fixes cases(2,0)/(0,1)/(2,0), D116/39/36/roots89/40/6 andoriginalell2773073/order11092292. Newgeometry/evaluator notwritten, native notrun. [pcc:unverified]
+
+## What was done
+Reviewed literaloldgeometry/fullruntime/normpointreuse/originalprime/maps/tests/auditors andHLPfieldqualification. Fullproofmodule/literaldata already pinned inroot83885c export. ProspectivephaseA16whole records/phaseB701 records freeze every fullcofactor-half-correction-exceptional-public-addition-vector/control requirement; add48knownpoint vectors and15originalpublictransfers. [pcc:unverified]
+
+## Decisions made
+Publish protocol before additiveoriginal-full-geometry-01/original-full-evaluator-01 code. Useoriginalbranch/actualsourcegenerators andorders, completequadraticno13polecondition, genuinelyforeignprime controls. Reuseactualpolynomials forstrong cubicfieldknownpointdirect/factored route. Publishedcompiledsource/freshoriginalcheckpoint precedephaseA thenB, each900s/2GiB,120sauditors; recordeveryfailure withoutmodel reselection orcriteria reduction. [pcc:unverified]
+
+## Open threads
+Normalprotocolpublication thengeometry/runtime/materialization/fullpreparedlibrary-custody/conditionalproof/compile/publication/checkpoint/native. Preserveoldworkflows andfollowwithnewadditiveCIafteractualcanonicalcustodyNEW24. Completeprimitive/setup/reference andprime-fielddescent leads continue. [pcc:unverified]
+
+## Errors
+All priornative/source/proof/format/infrastructure/mathematical failures retained. fullnormoldinversevalues belongtodifferentorder andmustnotbereused; computeactualinversewitnesses inRust/Lean. KB/vault remainunavailable, no novelty/absence/signedpromotion. [pcc:unverified]
+
+---
+
 # Unique original full-group candidate: native, independent finite proof and report ready
 
 Native88f828/proof29e535/pcc/claims/PCC-20261115-cd8173.json: complete finite18-vertex/72-pair/216-triple census finds exactlyone supportedcompatible triple4-1-4, cases(2,0)/(0,1)/(2,0), D116/39/36. All311 orderedwhole records, actualmalformedinputs/fourentire-class omissions/all1172hashes/actual binaries pass. Both originalLean gates6roots0trusted andall6exactlocalbindings pass. Inspected two-page graphreport retains all18models/all12compatibleedges includingineligible endpoints. [pcc:unverified]
