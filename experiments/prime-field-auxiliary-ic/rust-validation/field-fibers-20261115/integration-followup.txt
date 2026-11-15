@@ -1,0 +1,10 @@
+Integration follow-up after the producer claim was recorded:
+- The current canonical main ledger has advanced. Its exact prefix must be
+  preserved when integrating the owner's concurrent PR merge. The producer
+  claim records and proof hashes remain unchanged.
+- The artifact policy classifies PDF/PNG as data and rejected the first large
+  renderings. The PDF now embeds vector drawing/text with standard fonts;
+  the supplementary PNG uses 72 DPI. Both are below 64 KiB, with readable
+  vector SVG/PDF retained. No artifact policy exemption was added.
+- A publication attempt was rejected as non-fast-forward after a concurrent
+  owner update. No remote bytes were overwritten.

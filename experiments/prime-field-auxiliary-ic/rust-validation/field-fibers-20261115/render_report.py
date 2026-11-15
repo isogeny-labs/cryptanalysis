@@ -5,26 +5,23 @@ from reportlab.graphics import renderSVG
 from reportlab.graphics.shapes import Drawing,Rect,String
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.ttfonts import TTFont
+from svglib.svglib import svg2rlg
 from reportlab.platypus import SimpleDocTemplate,Paragraph,Spacer,Image,Preformatted,Table,TableStyle,KeepTogether
 
 folder=Path(__file__).resolve().parent
-pdfmetrics.registerFont(TTFont('DejaVu','/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf'))
-pdfmetrics.registerFont(TTFont('DejaVuBold','/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf'))
 x=json.loads((folder/'source-operations.json').read_text())['terminal']
 d=Drawing(500,165)
-d.add(String(0,150,'Terminal evaluation: source multiplication calls',fontName='DejaVuBold',fontSize=11))
+d.add(String(0,150,'Terminal evaluation: source multiplication calls',fontName='Helvetica-Bold',fontSize=11))
 for i,(label,key) in enumerate([('Old general','old_general'),('Split general','new_general'),('Split opposite','new_opposite'),('Split unit opposite','new_unit_opposite')]):
  y=120-i*28;v=x[key]
- d.add(String(0,y,label,fontName='DejaVu',fontSize=10))
+ d.add(String(0,y,label,fontName='Helvetica',fontSize=10))
  d.add(Rect(145,y-2,29*v,15,fillColor=colors.HexColor('#357b8e'),strokeColor=None))
- d.add(String(153+29*v,y,str(v),fontName='DejaVu',fontSize=10))
-d.add(String(0,0,'Derived counts; excludes setup and initialization. No timings.',fontName='DejaVu',fontSize=9))
+ d.add(String(153+29*v,y,str(v),fontName='Helvetica',fontSize=10))
+d.add(String(0,0,'Derived counts; excludes setup and initialization. No timings.',fontName='Helvetica',fontSize=9))
 renderSVG.drawToFile(d,str(folder/'operations.svg'))
 styles=getSampleStyleSheet()
 for key in ['Normal','BodyText','Title','Heading1','Heading2','Heading3']:
- styles[key].fontName='DejaVuBold' if key.startswith('Heading') or key=='Title' else 'DejaVu'
+ styles[key].fontName='Helvetica-Bold' if key.startswith('Heading') or key=='Title' else 'Helvetica'
  styles[key].fontSize=10 if key in ['Normal','BodyText'] else styles[key].fontSize
  styles[key].leading=14 if key in ['Normal','BodyText'] else styles[key].leading
  styles[key].spaceAfter=7
@@ -43,7 +40,8 @@ while i<len(lines):
   while i<len(lines) and not lines[i].startswith('```'):code.append(lines[i]);i+=1
   story.append(Preformatted('\n'.join(code),styles['Code']));i+=1;continue
  if line.startswith('!['):
-  story.append(Image(str(folder/'pipeline.png'),width=500,height=320,kind='proportional'))
+  diagram=svg2rlg(str(folder/'pipeline.svg'));ratio=min(500/diagram.width,320/diagram.height)
+  diagram.scale(ratio,ratio);diagram.width*=ratio;diagram.height*=ratio;story.append(diagram)
   i+=1;continue
  if line.startswith('|'):
   rows=[]
@@ -63,6 +61,6 @@ while i<len(lines):
   paragraph.append(lines[i]);i+=1
  story.append(Paragraph(prose(' '.join(paragraph)),styles['BodyText']))
 def footer(canvas,doc):
- canvas.setFont('DejaVu',8);canvas.drawString(44,23,'Auxiliary IC field fibers · unsigned producer report · timing unestablished')
+ canvas.setFont('Helvetica',8);canvas.drawString(44,23,'Auxiliary IC field fibers · unsigned producer report · timing unestablished')
  canvas.drawRightString(550,23,str(doc.page))
 SimpleDocTemplate(str(folder/'REPORT.pdf'),pagesize=(595,842),leftMargin=44,rightMargin=44,topMargin=40,bottomMargin=42,title='Compiled field fibers and terminal factors').build(story,onFirstPage=footer,onLaterPages=footer)
