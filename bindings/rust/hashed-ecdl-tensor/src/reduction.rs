@@ -201,17 +201,7 @@ fn derived_last_slot_network(
         });
     }
     let sum = sum.ok_or_else(|| invalid("decomposition target or arity"))?;
-    let width = curve.modulus().bits() as usize;
-    let negated = PointWords {
-        infinity: sum.infinity.clone(),
-        x: sum.x.clone(),
-        y: encoder.modular_subtract(
-            &Encoder::constant(width, &BigUint::zero())?,
-            &sum.y,
-            curve.modulus(),
-            meter,
-        )?,
-    };
+    let negated = encoder.negate_point(curve, &sum, meter)?;
     let point = encoder.point_add(
         curve,
         &Encoder::constant_point(curve, target)?,
