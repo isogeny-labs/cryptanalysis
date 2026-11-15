@@ -144,6 +144,20 @@ def main():
                a["A"] == b["A"] and a["B"] == b["B"]
                for a, b in zip(old, new) if "A" in a and "A" in b)
     accepted = [rec for rec in new if rec["accepted"]]
+    accepted_reduced = [rec for rec in accepted if rec["reduced_relation"]]
+    local_witnesses = []
+    for rec in accepted_reduced:
+        A = Fraction(rec["A"])
+        a = A.numerator * pow(A.denominator, -1, 7) % 7
+        P1 = tuple(x % 7 for x in rec["lifted_points"][0])
+        P2 = tuple(x % 7 for x in rec["lifted_points"][1])
+        two_P2 = add(P2, P2, a, 7)
+        relation_sum = add(P1, two_P2, a, 7)
+        assert relation_sum is not None
+        local_witnesses.append({"P1_mod7": P1, "P2_mod7": P2,
+                                "twice_P2_mod7": two_P2,
+                                "relation_sum_mod7": relation_sum})
+    assert len(local_witnesses) == 2
     print(json.dumps({
         "status": "PASS",
         "v1_rows": len(old),
@@ -151,6 +165,7 @@ def main():
         "v2_accepted_ordered_pairs": len(accepted),
         "v2_accepted_curves": len({(rec["A"], rec["B"]) for rec in accepted}),
         "v2_accepted_unordered_pairs": len({tuple(sorted(map(tuple, rec["reduced_points"]))) for rec in accepted}),
+        "v2_accepted_reduced_event_local_witnesses": local_witnesses,
     }, sort_keys=True, indent=2))
 
 

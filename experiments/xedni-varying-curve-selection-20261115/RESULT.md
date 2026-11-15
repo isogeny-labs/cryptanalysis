@@ -9,6 +9,12 @@ with `42/1722` in the full ordered point-pair law: an exact enrichment of
 reconstructed rational curves. Neither accepted relation pair satisfies
 `Q₁+2Q₂=O` on its rational curve.
 
+The auxiliary prime gives an explicit certificate for both rejected rational
+relations. Their accepted reconstructed curve reduces at 7 to
+`y²=x³+6`; the lifted points reduce to `Q₁=(4,0)` and `Q₂=(1,0)`.
+Here `2Q₂=O`, so `Q₁+2Q₂=(4,0)≠O` modulo 7. The two ordered input pairs
+are sign mirrors and give the same local certificate.
+
 | Frozen census arm | Ordered pairs | Reduced `P₁+2P₂=O` | Rational `Q₁+2Q₂=O` |
 | --- | ---: | ---: | ---: |
 | Full distinct nonidentity input law | 1,722 | 42 | 2 |
@@ -45,7 +51,7 @@ The complete per-pair rows, including failed construction and gate statuses,
 are in `rows.jsonl` and `rows-v2.jsonl`. The independent `audit.py` verifies
 the receipt hashes, reconstructs every rational curve coefficient,
 recomputes finite-field and rational group relations, recounts the auxiliary
-curve orders and incidence ranks, and checks both result summaries. It
+curve orders and incidence ranks, checks the local obstruction, and checks both result summaries. It
 passed for all 3,444 saved rows. Both checked Sage runs exited zero with
 empty stderr. Runtime receipts pin the accepted Sage source and native
 binary manifest.
