@@ -126,7 +126,7 @@ def timing(c,d,G,q,scalars):
     for z in scalars:
         Q=c.mul(G,z)
         S=transfer(c,d,Q)
-        assert d.on(S) and d.mul(H,z)==S
+        if not (d.on(S) and d.mul(H,z)==S): raise ValueError("CT130 ct130_experiment.py check at line 129")
         block=[]
         for ix in range(4):
             arms=('source','target','target','source') if ix%2==0 else ('target','source','source','target')
@@ -136,9 +136,9 @@ def timing(c,d,G,q,scalars):
                 if arm=='source':found,bs=bsgs(c,G,Q,q)
                 else:
                     H2=transfer(c,d,G);S2=transfer(c,d,Q)
-                    assert H2==H and S2==S
+                    if not (H2==H and S2==S): raise ValueError("CT130 ct130_experiment.py check at line 139")
                     found,bs=bsgs(d,H2,S2,q)
-                assert found==z and c.mul(G,found)==Q
+                if not (found==z and c.mul(G,found)==Q): raise ValueError("CT130 ct130_experiment.py check at line 141")
                 delta=time.perf_counter_ns()-t0
                 ctr=(c if arm=='source' else d).ops-ops0
                 vals.append(dict(arm=arm,ns=delta,baby_entries=bs,
