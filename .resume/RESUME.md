@@ -1,3 +1,19 @@
+# Full diagnostic CI source published; follow-up PR1573 replaces merged1564
+
+## What was done
+Root pcc/claims/PCC-20261115-379d7c.json and Consumer pcc/claims/PCC-20261115-1aa62b.json: source8a3bc795/b1f07d/5c5c9b normallypublished, complete99-phase/1598-file guarded diagnosticCI source retained. OriginalGitHubAPI shows1564mergedonly1e426e19 at20:47:32Z, mergef41f7594, before e73eb11e result and8a3bc795 CI source. Newready PR1573 now carries those two commits; closed1564body/queue3904/Root3877 corrected. Fresh diagnosticCI pending. [pcc:unverified]
+
+## Decisions made
+Follow exactsource8a3bc795 runs from1573; do not assume closed1564 provides newCI coverage. Feature-base auto-merge remains unavailable. Preserve actual source/runtime/prepared/raw/proof/partial outputs and original checkpoint readbacks; inspect actual exits before reporting fresh results. [pcc:unverified]
+
+## Open threads
+Actual newCI completion/failures, complete scientificNEW28, reviewed prospective unassisted relation completion and unchanged numerical Lean/global-character/cost/reference/admission/merge obligations. Root3877 remains open with frozenledger/conflict/review gates. [pcc:unverified]
+
+## Errors
+The previous ready/open1564 descriptions became stale because it merged before resultpublication. Corrected using exact originalAPI/source/merge/time, no scientific history rewritten. Earlier769560/f19383 negative runs and all oldsources remain frozen. [pcc:unverified]
+
+---
+
 # Full fresh diagnostic CI source integrated; execution pending publication
 
 ## What was done
