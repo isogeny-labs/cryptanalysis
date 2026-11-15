@@ -4,6 +4,8 @@
 """
 
 import base64
+from unittest import mock
+import shlex
 import hashlib
 import json
 import os
@@ -255,6 +257,57 @@ class RoundTrip(unittest.TestCase):
         self.assertEqual(result.returncode, 1, result.stderr)
         self.assertIn("outside/new.jsonl", result.stdout)
         self.assertIn("data file(s) belong in the store", result.stderr)
+
+    def install_content_filter(self):
+        # Public reversible fixture exercises Git's filter contract, not AES.
+        script = Path(self.tmp.name) / "content_filter.py"
+        script.write_text("import sys\nraw=sys.stdin.buffer.read()\n"
+                          "if sys.argv[1]=='clean': out=b'FILTERED:'+raw.hex().encode()\n"
+                          "else: out=bytes.fromhex(raw[9:].decode()) if raw.startswith(b'FILTERED:') else raw\n"
+                          "sys.stdout.buffer.write(out)\n")
+        command = shlex.quote(sys.executable) + " " + shlex.quote(str(script))
+        self.git("config", "filter.fixture.clean", command + " clean")
+        self.git("config", "filter.fixture.smudge", command + " smudge")
+        self.git("config", "filter.fixture.required", "true")
+        (self.repo / '.gitattributes').write_text('research/** filter=fixture\n')
+        self.git('add', '.gitattributes')
+        self.git('add', '--renormalize', 'research')
+        self.git('commit', '-qm', 'public filter fixture')
+
+    def test_sparse_offload_uses_filtered_plaintext_size_and_preserves_ignore(self):
+        (self.repo / 'research/r1/runs/.gitignore').write_text('/keep-me/\n')
+        self.git('add', '-A')
+        self.git('commit', '-qm', 'ignore fixture')
+        self.install_content_filter()
+        self.git('sparse-checkout', 'set', '--no-cone', '/*', '!/research/')
+        self.art('push', 'research/r1/runs/a.jsonl')
+        digest = hashlib.sha256(self.big).hexdigest()
+        self.assertEqual((self.remote/'sha256'/digest[:2]/digest).read_bytes(), self.big)
+        manifest=json.loads((self.repo/'research/r1/runs/.artifacts.json').read_text())
+        self.assertEqual(manifest['files']['a.jsonl'], {'sha256':digest,'bytes':len(self.big)})
+        self.assertTrue((self.repo/'research/r1/runs/.gitignore').read_text().startswith('/keep-me/\n'))
+
+    def test_required_filter_failure_cannot_upload_raw_staged_bytes(self):
+        self.install_content_filter()
+        self.git('sparse-checkout', 'set', '--no-cone', '/*', '!/research/')
+        self.git('config', 'filter.fixture.smudge', 'false')
+        result=self.art('push', 'research/r1/runs/a.jsonl', check=False)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertFalse((self.repo/'research/r1/runs/.artifacts.json').exists())
+        self.assertFalse(list(self.remote.rglob('*')) if self.remote.exists() else [])
+        self.assertFalse(list((self.cache/'tmp').glob('*')))
+
+    def test_staged_metadata_filter_failure_is_not_absence(self):
+        (self.repo / 'research/r1/runs/.gitignore').write_text('/keep-me/\n')
+        self.git('add', '-A')
+        self.git('commit', '-qm', 'ignore fixture')
+        self.install_content_filter()
+        self.git('sparse-checkout', 'set', '--no-cone', '/*', '!/research/')
+        self.git('config', 'filter.fixture.smudge', 'false')
+        with mock.patch.object(artifacts, 'repo_root', return_value=self.repo):
+            with self.assertRaises(subprocess.CalledProcessError):
+                artifacts.read_text_or_index(self.repo/'research/r1/runs/.gitignore')
+
 
 
 class Policy(unittest.TestCase):

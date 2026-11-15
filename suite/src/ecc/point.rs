@@ -28,6 +28,19 @@ pub enum Point {
 }
 
 impl Point {
+    /// [`Point::add`] with the field inversion done by the extended Euclid
+    /// recurrence on machine words when the modulus is an odd prime word,
+    /// and [`Point::add`] otherwise.  The result is the same point.
+    /// Variable time -- never for secret operands.
+    pub fn add_vartime(&self, other: &Point, a: &FieldElement) -> Point {
+        word::add_pts(self, other, a).unwrap_or_else(|| self.add(other, a))
+    }
+
+    /// [`Point::double`] on words, as [`Point::add_vartime`].
+    pub fn double_vartime(&self, a: &FieldElement) -> Point {
+        word::double(self, a).unwrap_or_else(|| self.double(a))
+    }
+
     /// Add two curve points. `a` is the curve coefficient from y²=x³+ax+b.
     pub fn add(&self, other: &Point, a: &FieldElement) -> Point {
         match (self, other) {
@@ -274,6 +287,126 @@ impl Jacobian {
     }
 }
 
+
+/// Word-sized affine arithmetic for [`Point::add_vartime`] and
+/// [`Point::double_vartime`].
+///
+/// For an odd modulus `p < 2^64` the affine law of [`Point::add`] /
+/// [`Point::double`] runs on `u64` residues: the same branches, the same
+/// slope and coordinates (an inverse is unique, so the Fermat
+/// exponentiation and the Euclid recurrence agree for a prime `p`, which
+/// every curve here has), with no `BigUint` allocation per field
+/// operation.  Variable time: for public or attack-side operands only.
+pub(crate) mod word {
+    use super::{FieldElement, Point};
+    use num_bigint::BigUint;
+    use num_traits::ToPrimitive;
+
+    #[inline]
+    pub fn mul(a: u64, b: u64, p: u64) -> u64 {
+        ((a as u128 * b as u128) % p as u128) as u64
+    }
+    #[inline]
+    pub fn add(a: u64, b: u64, p: u64) -> u64 {
+        let (s, c) = a.overflowing_add(b);
+        if c || s >= p {
+            s.wrapping_sub(p)
+        } else {
+            s
+        }
+    }
+    #[inline]
+    pub fn sub(a: u64, b: u64, p: u64) -> u64 {
+        if a >= b {
+            a - b
+        } else {
+            a.wrapping_sub(b).wrapping_add(p)
+        }
+    }
+
+    /// A coordinate below `p` as a word.
+    #[inline]
+    pub fn coord(f: &FieldElement, p: u64) -> Option<u64> {
+        let mut d = f.value.iter_u64_digits();
+        let v = d.next().unwrap_or(0);
+        (d.next().is_none() && v < p).then_some(v)
+    }
+
+    #[inline]
+    pub fn point(x: u64, y: u64, p: &BigUint) -> Point {
+        Point::Affine {
+            x: FieldElement {
+                value: BigUint::from(x),
+                modulus: p.clone(),
+            },
+            y: FieldElement {
+                value: BigUint::from(y),
+                modulus: p.clone(),
+            },
+        }
+    }
+
+    /// The word modulus, if `f`'s modulus is an odd word.
+    #[inline]
+    fn modulus(f: &FieldElement) -> Option<u64> {
+        f.modulus.to_u64().filter(|&p| p >= 3 && p & 1 == 1)
+    }
+
+    /// `P + Q` finished from the slope `λ`.
+    #[inline]
+    pub fn finish(l: u64, x1: u64, y1: u64, x2: u64, p: u64) -> (u64, u64) {
+        let x3 = sub(sub(mul(l, l, p), x1, p), x2, p);
+        let y3 = sub(mul(l, sub(x1, x3, p), p), y1, p);
+        (x3, y3)
+    }
+
+    pub fn double(pt: &Point, a: &FieldElement) -> Option<Point> {
+        match pt {
+            Point::Infinity => Some(Point::Infinity),
+            Point::Affine { x, y } => {
+                let p = modulus(x)?;
+                let (xw, yw) = (coord(x, p)?, coord(y, p)?);
+                if yw == 0 {
+                    return Some(Point::Infinity);
+                }
+                let aw = a.value.to_u64()? % p;
+                let x2 = mul(xw, xw, p);
+                let num = add(mul(3 % p, x2, p), aw, p);
+                let den = mul(2, yw, p);
+                let l = mul(num, crate::utils::mod_inverse_u64(den, p)?, p);
+                let x3 = sub(mul(l, l, p), mul(2, xw, p), p);
+                let y3 = sub(mul(l, sub(xw, x3, p), p), yw, p);
+                Some(point(x3, y3, &x.modulus))
+            }
+        }
+    }
+
+    pub fn add_pts(pp: &Point, qq: &Point, a: &FieldElement) -> Option<Point> {
+        match (pp, qq) {
+            (Point::Infinity, r) | (r, Point::Infinity) => Some(r.clone()),
+            (Point::Affine { x: fx1, y: fy1 }, Point::Affine { x: fx2, y: fy2 }) => {
+                let p = modulus(fx1)?;
+                let (x1, y1, x2, y2) = (
+                    coord(fx1, p)?,
+                    coord(fy1, p)?,
+                    coord(fx2, p)?,
+                    coord(fy2, p)?,
+                );
+                if x1 == x2 {
+                    if y1 == y2 {
+                        return double(pp, a);
+                    }
+                    return Some(Point::Infinity);
+                }
+                let inv = crate::utils::mod_inverse_u64(sub(x2, x1, p), p)?;
+                let l = mul(sub(y2, y1, p), inv, p);
+                let (x3, y3) = finish(l, x1, y1, x2, p);
+                Some(point(x3, y3, &fx1.modulus))
+            }
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use num_traits::{One, Zero};
@@ -416,5 +549,32 @@ mod tests {
         // P + (-P) = ∞
         let sum = g.add(&neg_g, &a());
         assert_eq!(sum, Point::Infinity);
+    }
+}
+
+#[cfg(test)]
+mod vartime_tests {
+    use super::*;
+    use crate::cryptanalysis::bsgs_fast::toy40_params;
+
+    /// The word-path additions and doublings agree with the `BigUint`
+    /// ones on generic, doubling, opposite and identity operands.
+    #[test]
+    fn add_vartime_matches_add() {
+        let c = toy40_params();
+        let a = c.a_fe();
+        let g = c.generator();
+        let mut pts = vec![Point::Infinity, g.clone(), g.neg()];
+        let mut k = 0x9e37_79b9u64;
+        for _ in 0..40 {
+            k = k.wrapping_mul(6364136223846793005).wrapping_add(1442695040888963407) >> 8;
+            pts.push(g.scalar_mul(&BigUint::from(k | 1), &a));
+        }
+        for p in &pts {
+            assert_eq!(p.double_vartime(&a), p.double(&a));
+            for q in &pts {
+                assert_eq!(p.add_vartime(q, &a), p.add(q, &a));
+            }
+        }
     }
 }

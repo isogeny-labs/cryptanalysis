@@ -24,8 +24,16 @@ import pcc  # noqa: E402
 PCC = [sys.executable, str(HERE / "pcc.py")]
 
 
-def run(args: list[str], cwd: Path, env: dict[str, str] | None = None) -> subprocess.CompletedProcess:
+def scratch_env(cwd: Path) -> dict[str, str]:
     e = dict(os.environ, PCC_REPO=str(cwd))
+    # The gate's own keyring settings do not belong to the scratch repositories.
+    e.pop("PCC_KEYRING_REF", None)
+    e.pop("PCC_KEYRING_SHA256", None)
+    return e
+
+
+def run(args: list[str], cwd: Path, env: dict[str, str] | None = None) -> subprocess.CompletedProcess:
+    e = scratch_env(cwd)
     if env:
         e.update(env)
     return subprocess.run(PCC + args, cwd=cwd, capture_output=True, text=True, env=e)
@@ -199,16 +207,96 @@ class RoundTripTests(unittest.TestCase):
         self.assertEqual(rejected.returncode, 3)
         self.assertIn("could not decrypt", rejected.stderr)
 
+    def add_own_key(self, cid: str) -> None:
+        """What a producer that controls its tree can do: add a key, sign its own verdict."""
+        evil = self.repo / "evil.key"
+        r = run(["keygen", "--out", str(evil), "--key-id", "evil"], self.repo)
+        kr = json.loads((self.repo / pcc.KEYRING_PATH).read_text())
+        kr["keys"].append(json.loads(r.stdout))
+        (self.repo / pcc.KEYRING_PATH).write_text(json.dumps(kr))
+        r = run(["verdict", cid, "--sign-key", str(evil), "--key-id", "evil"], self.repo)
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+
+    def test_self_added_key_counts_in_the_tree_but_not_under_the_base_keyring(self):
+        cid = self.make_solve()
+        self.commit("claim")
+        subprocess.run(["git", "-C", str(self.repo), "checkout", "-q", "-b", "work"], check=True)
+        self.add_own_key(cid)
+        # Read from the working tree, the producer's key is as good as the owner's ...
+        self.assertEqual(run(["standing", cid], self.repo).returncode, 0)
+        # ... read from the base, it is nobody's.
+        r = run(["--keyring-ref", "main", "standing", cid, "--json"], self.repo)
+        self.assertEqual(r.returncode, 2, r.stdout + r.stderr)
+        self.assertEqual(json.loads(r.stdout)["standing"], "unverified")
+        r = run(["standing", cid], self.repo, env={"PCC_KEYRING_REF": "main"})
+        self.assertEqual(r.returncode, 2, r.stdout + r.stderr)
+        # A citation of it does not pass the prose lint either.
+        r = subprocess.run(PCC + ["--keyring-ref", "main", "lint-prose", "--stdin"],
+                           input=f"This proves the log [pcc:{cid}].\n", cwd=self.repo, capture_output=True,
+                           text=True, env=scratch_env(self.repo))
+        self.assertEqual(r.returncode, 1, r.stdout)
+        # The owner's own key still counts under the base keyring.
+        run(["verdict", cid, "--sign-key", str(self.key), "--key-id", "ci-main"], self.repo)
+        self.assertEqual(run(["--keyring-ref", "main", "standing", cid], self.repo).returncode, 0)
+
+    def test_keyring_change_fails_ledger_verify_unless_the_owner_pinned_it(self):
+        cid = self.make_solve()
+        self.commit("claim")
+        subprocess.run(["git", "-C", str(self.repo), "checkout", "-q", "-b", "work"], check=True)
+        self.assertEqual(run(["ledger", "verify", "--base", "main"], self.repo).returncode, 0)
+        self.add_own_key(cid)
+        r = run(["ledger", "verify", "--base", "main"], self.repo)
+        self.assertEqual(r.returncode, 1, r.stdout)
+        self.assertIn("keyring", r.stdout)
+        digest = pcc.sha256_file(self.repo / pcc.KEYRING_PATH)
+        r = run(["ledger", "verify", "--base", "main"], self.repo, env={"PCC_KEYRING_SHA256": digest})
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        r = run(["ledger", "verify", "--base", "main"], self.repo, env={"PCC_KEYRING_SHA256": "0" * 64})
+        self.assertEqual(r.returncode, 3, r.stdout + r.stderr)
+        self.assertIn("pinned keyring", r.stderr)
+        # Reformatting the same keys is a change too: bytes, not meaning.
+        subprocess.run(["git", "-C", str(self.repo), "checkout", "-q", "main", "--", pcc.KEYRING_PATH], check=True)
+        self.assertEqual(run(["ledger", "verify", "--base", "main"], self.repo).returncode, 0)
+        kr = json.loads((self.repo / pcc.KEYRING_PATH).read_text())
+        (self.repo / pcc.KEYRING_PATH).write_text(json.dumps(kr, indent=2))
+        r = run(["ledger", "verify", "--base", "main"], self.repo)
+        self.assertEqual(r.returncode, 1, r.stdout)
+        self.assertIn("keyring", r.stdout)
+
+    def test_a_base_or_keyring_ref_that_does_not_resolve_fails(self):
+        cid = self.make_solve()
+        r = run(["ledger", "verify", "--base", "origin/no-such-branch"], self.repo)
+        self.assertEqual(r.returncode, 1, r.stdout)
+        self.assertIn("does not resolve", r.stdout)
+        r = run(["--keyring-ref", "origin/no-such-branch", "standing", cid], self.repo)
+        self.assertEqual(r.returncode, 3)
+        self.assertIn("does not resolve", r.stderr)
+        # A base that resolves but has no ledger is still "nothing to compare".
+        subprocess.run(["git", "-C", str(self.repo), "checkout", "-q", "--orphan", "empty"], check=True)
+        subprocess.run(["git", "-C", str(self.repo), "rm", "-rqf", "--cached", "."], check=True)
+        (self.repo / "note.txt").write_text("x")
+        subprocess.run(["git", "-C", str(self.repo), "add", "note.txt"], check=True)
+        subprocess.run(["git", "-C", str(self.repo), "commit", "-q", "-m", "no pcc here"], check=True)
+        (self.repo / pcc.KEYRING_PATH).unlink()
+        r = run(["ledger", "verify", "--base", "empty"], self.repo)
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertIn("nothing to compare", r.stdout)
+
+    def test_keygen_and_canary_ignore_the_gate_keyring_settings(self):
+        env = {"PCC_KEYRING_SHA256": "0" * 64, "PCC_KEYRING_REF": "origin/no-such-branch"}
+        r = run(["keygen", "--out", str(self.repo / "k2.key"), "--key-id", "k2"], self.repo, env=env)
+        self.assertEqual(r.returncode, 0, r.stderr)
+
     def test_lint_prose_uses_ledger_standings(self):
         cid = self.make_solve()
         bad = f"This proves the log [pcc:{cid}].\n"
         r = subprocess.run(PCC + ["lint-prose", "--stdin"], input=bad, cwd=self.repo, capture_output=True,
-                           text=True, env=dict(os.environ, PCC_REPO=str(self.repo)))
+                           text=True, env=scratch_env(self.repo))
         self.assertEqual(r.returncode, 1, r.stdout)
         self.assertIn("unverified", r.stdout)
         run(["verdict", cid, "--sign-key", str(self.key), "--key-id", "ci-main"], self.repo)
         r = subprocess.run(PCC + ["lint-prose", "--stdin"], input=bad, cwd=self.repo, capture_output=True,
-                           text=True, env=dict(os.environ, PCC_REPO=str(self.repo)))
+                           text=True, env=scratch_env(self.repo))
         self.assertEqual(r.returncode, 0, r.stdout)
 
     def test_bypass_is_a_ledger_entry(self):
@@ -323,6 +411,36 @@ class ClaimTypeTests(unittest.TestCase):
 
 
 class LeanScanTests(unittest.TestCase):
+    def test_qualified_declarations_do_not_bind_another_namespace(self):
+        with tempfile.TemporaryDirectory() as td:
+            a, b = Path(td) / "A.lean", Path(td) / "B.lean"
+            a.write_text("namespace First\ntheorem same (n : Nat) : n = n := rfl\nend First\n")
+            b.write_text("namespace Second\nsection Local\ntheorem same (n : Nat) : n + 0 = n := by simp\nend Local\nend Second\n")
+            self.assertEqual(pcc.lean_find_declaration([a, b], "Second.same")[0], b)
+            self.assertEqual(pcc.lean_find_declaration([a, b], "First.same")[0], a)
+            self.assertIsNone(pcc.lean_find_declaration([a, b], "Missing.same"))
+            self.assertIsNone(pcc.lean_find_declaration([a, b], "_root_.same"))
+            self.assertIsNone(pcc.lean_find_declaration([a, b], "same"))
+
+    def test_nested_namespaces_sections_and_root_qualified_names(self):
+        with tempfile.TemporaryDirectory() as td:
+            p = Path(td) / "Names.lean"
+            p.write_text("namespace Outer\npublic section\nnamespace Inner\n"
+                         "theorem one : True := by trivial\nend Inner\nend\n"
+                         "theorem two : True := by trivial\n"
+                         "theorem _root_.Elsewhere.three : True := by trivial\nend Outer\n"
+                         "theorem Explicit.four : True := by trivial\n")
+            for name in ["Outer.Inner.one", "Outer.two", "Elsewhere.three", "Explicit.four"]:
+                self.assertIsNotNone(pcc.lean_find_declaration([p], name), name)
+            for name in ["Outer.one", "Outer.Inner.two", "Outer.Elsewhere.three", "Wrong.four"]:
+                self.assertIsNone(pcc.lean_find_declaration([p], name), name)
+
+    def test_unsupported_scope_layout_fails_closed(self):
+        with tempfile.TemporaryDirectory() as td:
+            p = Path(td) / "Inline.lean"
+            p.write_text("namespace Hidden theorem rootLooking : True := by trivial\nend Hidden\n")
+            self.assertIsNone(pcc.lean_find_declaration([p], "_root_.rootLooking"))
+
     def test_comment_and_string_lookalikes_are_not_holes(self):
         src = "theorem t : 1 = 1 := rfl\n-- sorry here is a comment\n/- block sorry -/\ndef s := \"sorry\"\n"
         text = pcc.strip_lean_comments_and_strings(src)

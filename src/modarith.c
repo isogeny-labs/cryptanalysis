@@ -7,6 +7,21 @@
 #include <stdlib.h>
 #include <string.h>
 
+/* a*b mod m for a, b < m (so the high word of the product is < m and the
+ * quotient fits 64 bits): one hardware 128/64 division on x86-64 instead of
+ * the __umodti3 call the compiler emits for a 128-bit '%'.  Same residue. */
+static inline uint64_t mulmod_lt(uint64_t a, uint64_t b, uint64_t m)
+{
+#if defined(__x86_64__) && defined(__GNUC__)
+    const ca_u128 t = (ca_u128)a * b;
+    uint64_t q = (uint64_t)t, rem = (uint64_t)(t >> 64);
+    __asm__("divq %2" : "+a"(q), "+d"(rem) : "r"(m) : "cc");
+    return rem;
+#else
+    return (uint64_t)(((ca_u128)a * b) % m);
+#endif
+}
+
 uint64_t ca_powmod(uint64_t base, uint64_t exp, uint64_t m)
 {
     if (m == 1) return 0;
@@ -21,8 +36,8 @@ uint64_t ca_powmod(uint64_t base, uint64_t exp, uint64_t m)
     uint64_t r = 1;
     base %= m;
     while (exp) {
-        if (exp & 1) r = ca_mulmod(r, base, m);
-        base = ca_mulmod(base, base, m);
+        if (exp & 1) r = mulmod_lt(r, base, m);
+        base = mulmod_lt(base, base, m);
         exp >>= 1;
     }
     return r;
@@ -241,15 +256,15 @@ int ca_sqrtmod_prime(uint64_t a, uint64_t p, uint64_t *root)
         unsigned i = 0;
         uint64_t tt = t;
         while (tt != 1) {
-            tt = ca_mulmod(tt, tt, p);
+            tt = mulmod_lt(tt, tt, p);
             i++;
             if (i == m) return 0;
         }
         uint64_t b = c;
-        for (unsigned j = 0; j + i + 1 < m; j++) b = ca_mulmod(b, b, p);
-        r = ca_mulmod(r, b, p);
-        c = ca_mulmod(b, b, p);
-        t = ca_mulmod(t, c, p);
+        for (unsigned j = 0; j + i + 1 < m; j++) b = mulmod_lt(b, b, p);
+        r = mulmod_lt(r, b, p);
+        c = mulmod_lt(b, b, p);
+        t = mulmod_lt(t, c, p);
         m = i;
     }
     *root = r;
@@ -278,9 +293,9 @@ int ca_mont_init(ca_mont *m, uint64_t p)
     for (int i = 0; i < 6; i++) inv *= 2 - p * inv;
     m->pinv = (uint64_t)0 - inv;
     /* R mod p where R = 2^64 */
-    m->r1 = (uint64_t)((((ca_u128)1) << 64) % p);
-    m->r2 = (uint64_t)(((ca_u128)m->r1 * m->r1) % p);
-    m->r3 = (uint64_t)(((ca_u128)m->r2 * m->r1) % p);
+    m->r1 = ((uint64_t)0 - p) % p; /* 2^64 mod p, in 64-bit arithmetic */
+    m->r2 = mulmod_lt(m->r1, m->r1, p);
+    m->r3 = mulmod_lt(m->r2, m->r1, p);
     return 1;
 }
 
@@ -308,10 +323,9 @@ uint64_t ca_mont_inv(const ca_mont *m, uint64_t a)
 
 /* One Miller-Rabin round in Montgomery form: 1 is r1 = R mod n there, and
  * n - 1 is n - r1. */
-static int mr_witness(const ca_mont *m, uint64_t a, uint64_t d, unsigned s)
+static int mr_after_pow(const ca_mont *m, uint64_t x, unsigned s)
 {
     const uint64_t one = m->r1, minus_one = m->p - m->r1;
-    uint64_t x = ca_mont_pow(m, ca_mont_to(m, a), d);
     if (x == one || x == minus_one) return 0;
     for (unsigned r = 1; r < s; r++) {
         x = ca_mont_sqr(m, x);
@@ -319,6 +333,29 @@ static int mr_witness(const ca_mont *m, uint64_t a, uint64_t d, unsigned s)
     }
     return 1; /* composite */
 }
+
+static int mr_witness(const ca_mont *m, uint64_t a, uint64_t d, unsigned s)
+{
+    return mr_after_pow(m, ca_mont_pow(m, ca_mont_to(m, a), d), s);
+}
+
+#ifndef CA_GLV_FIELD_COUNT
+/* Four ladders with the shared exponent d, interleaved: each is a chain of
+ * dependent Montgomery squarings, so four in lockstep keep the multiplier
+ * busy.  w[l] becomes w[l]^d (the same residue ca_mont_pow returns). */
+static void mont_pow4(const ca_mont *m, uint64_t w[4], uint64_t e)
+{
+    uint64_t r[4] = {m->r1, m->r1, m->r1, m->r1};
+    while (e) {
+        if (e & 1)
+            for (int l = 0; l < 4; l++) r[l] = ca_mont_mul(m, r[l], w[l]);
+        e >>= 1;
+        if (e)
+            for (int l = 0; l < 4; l++) w[l] = ca_mont_sqr(m, w[l]);
+    }
+    for (int l = 0; l < 4; l++) w[l] = r[l];
+}
+#endif
 
 int ca_is_prime(uint64_t n)
 {
@@ -334,9 +371,26 @@ int ca_is_prime(uint64_t n)
     /* n is odd here.  These 12 bases are deterministic for all n < 2^64. */
     ca_mont m;
     ca_mont_init(&m, n);
-    for (size_t i = 0; i < sizeof(small) / sizeof(small[0]); i++) {
+    const size_t nb = sizeof(small) / sizeof(small[0]);
+#ifdef CA_GLV_FIELD_COUNT
+    for (size_t i = 0; i < nb; i++) {
         if (mr_witness(&m, small[i], d, s)) return 0;
     }
+#else
+    /* Base 2 alone first: it already rejects nearly every composite.  A
+     * number that passes (a prime, almost always) needs all the other bases,
+     * which then run four at a time.  The verdict is the same: n is
+     * composite iff some base is a witness. */
+    if (mr_witness(&m, small[0], d, s)) return 0;
+    for (size_t i = 1; i < nb; i += 4) {
+        uint64_t w[4];
+        size_t cnt = nb - i < 4 ? nb - i : 4;
+        for (size_t l = 0; l < 4; l++) w[l] = ca_mont_to(&m, small[i + (l < cnt ? l : cnt - 1)]);
+        mont_pow4(&m, w, d);
+        for (size_t l = 0; l < cnt; l++)
+            if (mr_after_pow(&m, w[l], s)) return 0;
+    }
+#endif
     return 1;
 }
 
