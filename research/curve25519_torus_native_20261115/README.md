@@ -9,6 +9,10 @@ controls match the complete oracle for member/nonmember targets; final
 consumer tests report nine unit tests and one process-level test passing.
 PCC-20261115-47a01f. [pcc:unverified]
 
+The report's shared-store pointer is tracked by the
+[publishing handoff](reports/recovery-v4/PUBLISHING.md); its upload receipt
+and current-head artifact check remain required before landing.
+
 Bounded native root recovery is implemented: structured Singular output,
 gcd(f,X^p-X), bounded splitting and triangular assignments, followed by
 the original equations, rational membership/lifts and actual signed point
