@@ -48,9 +48,13 @@ is integral. Equivalently, if `m=A/B` is reduced with positive `B`, then
 `a₁,a₂,x₁,x₂∈ℤ`; the remaining coefficients cancel from the duplication
 `x`-coordinate.
 
-The Lean module `formal/IntegralChord.lean` checks the monic-root implication
-and the algebraic chord/tangent bridge under its exact hypotheses. The proof
-map identifies the separate elliptic-curve group-law bridge and its status.
+The Lean module `formal/IntegralChord.lean` checks the monic-root implication,
+the algebraic chord/tangent bridge, and the full implication from the
+elliptic-curve group relation to an integral chord slope. The central theorem
+`integer_slope_of_group_relation` requires nonsingular points, distinct x
+coordinates, and integral `a₁,a₂,x₁,x₂`; it allows rational y coordinates
+and rational remaining coefficients. `PROOF_MAP.md` gives its exact
+hypotheses and verification status.
 
 ## Replay and boundary
 

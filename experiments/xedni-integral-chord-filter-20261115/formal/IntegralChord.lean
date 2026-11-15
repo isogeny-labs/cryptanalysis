@@ -68,8 +68,79 @@ theorem integer_slope_of_tangent
   exact integer_slope_of_monic_relation m a₁ (a₂ + x₁ + 2 * x₂)
     (by exact_mod_cast hquad)
 
+/-- The affine group relation itself yields the monic slope equation. -/
+theorem monic_relation_of_group_relation
+    (W : WeierstrassCurve.Affine ℚ) [W.IsElliptic]
+    (x₁ y₁ x₂ y₂ : ℚ)
+    (h₁ : W.Nonsingular x₁ y₁) (h₂ : W.Nonsingular x₂ y₂)
+    (hx : x₁ ≠ x₂)
+    (hrel : WeierstrassCurve.Affine.Point.some x₁ y₁ h₁ + WeierstrassCurve.Affine.Point.some x₂ y₂ h₂ +
+      WeierstrassCurve.Affine.Point.some x₂ y₂ h₂ = 0) :
+    let m := (y₁ - y₂) / (x₁ - x₂)
+    m ^ 2 + W.a₁ * m = W.a₂ + x₁ + 2 * x₂ := by
+  let U : W.Point := WeierstrassCurve.Affine.Point.some x₁ y₁ h₁
+  let V : W.Point := WeierstrassCurve.Affine.Point.some x₂ y₂ h₂
+  have hdouble : V + V = -U := by
+    apply eq_neg_of_add_eq_zero_left
+    simpa only [U, V, add_assoc, add_comm, add_left_comm] using hrel
+  have hne : y₂ ≠ W.negY x₂ y₂ := by
+    intro heq
+    have hz := WeierstrassCurve.Affine.Point.add_self_of_Y_eq (h₁ := h₂) heq
+    rw [hz] at hdouble
+    exact WeierstrassCurve.Affine.Point.some_ne_zero h₁ (neg_eq_zero.mp hdouble.symm)
+  have hformula := WeierstrassCurve.Affine.Point.add_self_of_Y_ne' (h₁ := h₂) hne
+  have hpoint := neg_injective (hformula.symm.trans hdouble)
+  have hxcoord := (WeierstrassCurve.Affine.Point.some.inj hpoint).1
+  have hycoord := (WeierstrassCurve.Affine.Point.some.inj hpoint).2
+  let lam := W.slope x₂ x₂ y₂ y₂
+  have hchord : y₁ - y₂ = lam * (x₁ - x₂) := by
+    change W.negAddY x₂ x₂ y₂ lam = y₁ at hycoord
+    change W.addX x₂ x₂ lam = x₁ at hxcoord
+    change lam * (W.addX x₂ x₂ lam - x₂) + y₂ = y₁ at hycoord
+    rw [hxcoord] at hycoord
+    linarith [hycoord]
+  have hm : (y₁ - y₂) / (x₁ - x₂) = lam := by
+    apply (div_eq_iff (sub_ne_zero.mpr hx)).2
+    rw [hchord]
+  have hquad : lam ^ 2 + W.a₁ * lam = W.a₂ + x₁ + 2 * x₂ := by
+    change W.addX x₂ x₂ lam = x₁ at hxcoord
+    change lam ^ 2 + W.a₁ * lam - W.a₂ - x₂ - x₂ = x₁ at hxcoord
+    linarith [hxcoord]
+  simpa [hm] using hquad
+
+/-- A two-point relation on the elliptic-curve group forces an integral chord slope
+when the first two curve coefficients and both x coordinates are integral. -/
+theorem integer_slope_of_group_relation
+    (W : WeierstrassCurve.Affine ℚ) [W.IsElliptic]
+    (x₁ y₁ x₂ y₂ : ℚ)
+    (h₁ : W.Nonsingular x₁ y₁) (h₂ : W.Nonsingular x₂ y₂)
+    (hx : x₁ ≠ x₂)
+    (hrel : WeierstrassCurve.Affine.Point.some x₁ y₁ h₁ +
+      WeierstrassCurve.Affine.Point.some x₂ y₂ h₂ +
+      WeierstrassCurve.Affine.Point.some x₂ y₂ h₂ = 0)
+    (ha₁ : ∃ a : ℤ, (a : ℚ) = W.a₁)
+    (ha₂ : ∃ a : ℤ, (a : ℚ) = W.a₂)
+    (hx₁ : ∃ x : ℤ, (x : ℚ) = x₁)
+    (hx₂ : ∃ x : ℤ, (x : ℚ) = x₂) :
+    ∃ z : ℤ, (z : ℚ) = (y₁ - y₂) / (x₁ - x₂) := by
+  obtain ⟨a₁, ha₁⟩ := ha₁
+  obtain ⟨a₂, ha₂⟩ := ha₂
+  obtain ⟨n₁, hn₁⟩ := hx₁
+  obtain ⟨n₂, hn₂⟩ := hx₂
+  let m : ℚ := (y₁ - y₂) / (x₁ - x₂)
+  have hquad := monic_relation_of_group_relation W x₁ y₁ x₂ y₂ h₁ h₂ hx hrel
+  change m ^ 2 + W.a₁ * m = W.a₂ + x₁ + 2 * x₂ at hquad
+  have hcast : m ^ 2 + (a₁ : ℚ) * m = ((a₂ + n₁ + 2 * n₂ : ℤ) : ℚ) := by
+    push_cast
+    rw [ha₁, ha₂, hn₁, hn₂]
+    exact hquad
+  simpa only [m] using integer_slope_of_monic_relation m a₁
+    (a₂ + n₁ + 2 * n₂) hcast
+
 #print axioms monic_relation_of_tangent
 #print axioms integer_slope_of_monic_relation
 #print axioms integer_slope_of_tangent
+#print axioms monic_relation_of_group_relation
+#print axioms integer_slope_of_group_relation
 
 end XedniIntegralChord
