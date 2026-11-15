@@ -4,6 +4,9 @@ on:
     paths:
       - '.github/workflows/ct137-native-pricing-compile.yml'
       - 'experiments/chained-transfer-public-target/primitive-pricing-01/CT137_NATIVE_COMPILE_PROTOCOL.md'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/src/main.rs'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/Cargo.toml'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/reuse/Cargo.toml'
   workflow_dispatch:
 permissions:
   contents: read
