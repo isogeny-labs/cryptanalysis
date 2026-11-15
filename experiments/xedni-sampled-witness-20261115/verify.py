@@ -15,7 +15,7 @@ NAMES = (
     "bounded_intVector_cast_nonzero", "integer_candidate_union_count",
     "xedniSampleMap_involutive", "xedniSampleMap_bijective",
     "xedni_sample_event_card", "sampled_integer_candidate_union_count",
-    "dependent_lift_sample_count",
+    "dependent_lift_sample_count", "selected_dependent_lift_sample_count",
 )
 
 

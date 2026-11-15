@@ -298,6 +298,61 @@ theorem dependent_lift_sample_count {H : Type*} [AddCommGroup H]
     candidates hvalid s w
   exact (Nat.mul_le_mul_right _ hcard).trans hcount
 
+/-- Inputs admitted by a selection rule whose chosen lift is dependent. -/
+noncomputable def selectedDependentLiftSamples {H : Type*} [AddCommGroup H]
+    [Fact q.Prime] (admissible : Finset (Fin r → ZMod q))
+    (lifts : (Fin r → ZMod q) → Fin r → H) :
+    Finset (Fin r → ZMod q) := by
+  classical
+  exact admissible.filter (fun t =>
+    ∃ coeff, Nontrivial coeff ∧ Relation (lifts t) coeff)
+
+/-- The same absolute count applies to any selected sample set. The
+compatibility and witness hypotheses are required only on admitted inputs. -/
+theorem selected_dependent_lift_sample_count {H : Type*} [AddCommGroup H]
+    [Fact q.Prime] (red : H →+ ZMod q)
+    (s : Fin r → ZMod q) (w : ZMod q)
+    (admissible : Finset (Fin r → ZMod q))
+    (lifts : (Fin r → ZMod q) → Fin r → H)
+    (hcompat : ∀ t ∈ admissible, ∀ i,
+      red (lifts t i) = xedniSampleMap s w t i)
+    (bound : ℕ) (hbound : bound < q)
+    (bounded_witness : ∀ t ∈ admissible,
+      (∃ coeff, Nontrivial coeff ∧ Relation (lifts t) coeff) →
+      ∃ small, Nontrivial small ∧ Bounded bound small ∧ Relation (lifts t) small)
+    (candidates : Finset (Fin r → ℤ))
+    (hcover : ∀ coeff, Nontrivial coeff → Bounded bound coeff →
+      coeff ∈ candidates)
+    (hvalid : ∀ coeff ∈ candidates,
+      Nontrivial coeff ∧ Bounded bound coeff) :
+    (selectedDependentLiftSamples admissible lifts).card * Nat.card (ZMod q) ≤
+      candidates.card * Nat.card (Fin r → ZMod q) := by
+  classical
+  let event := (reducedCandidates (q := q) candidates).biUnion
+    (zeroFiber (F := ZMod q))
+  have hsubset : selectedDependentLiftSamples admissible lifts ⊆
+      event.preimage (xedniSampleMap s w)
+        (xedniSampleMap_bijective s w).1.injOn := by
+    intro t ht
+    have hselected := Finset.mem_filter.mp ht
+    obtain ⟨small, hnon, hsmall, hrel⟩ :=
+      bounded_witness t hselected.1 hselected.2
+    have hmem : (fun i => (small i : ZMod q)) ∈
+        reducedCandidates (q := q) candidates :=
+      Finset.mem_image.mpr ⟨small, hcover small hnon hsmall, rfl⟩
+    have hred := relation_reduces red (lifts t) small hrel
+    have hdot : dotHom (fun i => (small i : ZMod q))
+        (xedniSampleMap s w t) = 0 := by
+      simpa [Relation, dotHom, hcompat t hselected.1, zsmul_eq_mul] using hred
+    apply Finset.mem_preimage.mpr
+    apply Finset.mem_biUnion.mpr
+    refine ⟨fun i => (small i : ZMod q), hmem, ?_⟩
+    simpa [zeroFiber] using hdot
+  have hcard := Finset.card_le_card hsubset
+  have hcount := sampled_integer_candidate_union_count bound hbound
+    candidates hvalid s w
+  exact (Nat.mul_le_mul_right _ hcard).trans hcount
+
 end XedniObstruction
 
 #print axioms XedniObstruction.relation_reduces
@@ -315,3 +370,4 @@ end XedniObstruction
 #print axioms XedniObstruction.xedni_sample_event_card
 #print axioms XedniObstruction.sampled_integer_candidate_union_count
 #print axioms XedniObstruction.dependent_lift_sample_count
+#print axioms XedniObstruction.selected_dependent_lift_sample_count
