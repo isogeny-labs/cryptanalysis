@@ -246,7 +246,7 @@ pub trait RandomSource {
 pub struct OsRandom;
 impl RandomSource for OsRandom {
     fn fill(&mut self, bytes: &mut [u8]) -> Result<()> {
-        getrandom::fill(bytes).map_err(|e| Error::Invalid(format!("OS randomness: {e}")))
+        getrandom::getrandom(bytes).map_err(|e| Error::Invalid(format!("OS randomness: {e}")))
     }
 }
 
