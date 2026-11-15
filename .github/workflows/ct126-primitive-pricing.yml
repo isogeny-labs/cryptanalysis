@@ -31,6 +31,7 @@ jobs:
           cd experiments/chained-transfer-public-target/primitive-pricing-01
           python3 -m py_compile check_pair.py
           python3 -S check_pair.py --self-test
+          python3 -O -S check_pair.py --self-test
           bash -n run_pair.sh
           rustfmt --emit stdout src/main.rs >/dev/null
           echo "SOURCE-ONLY PASS: no native execution or timing claim"
