@@ -1,3 +1,21 @@
+# Next active task: original-prime alternative-kernel reprojection
+
+pcc/claims/PCC-20261115-38b827.json: all18 existing original six-model rows reviewed whole. Stored eligible alternatives fixed retrospectively by admissibility before NEW implementation: originalE2case(0,0)/D100/root10, E3case(0,1)/D39/root40, E4case(1,0)/D38/root22. This extends the prior strong scalar baseline on the original ell=2,773,073 subgroup; no twist transport. The inspected two-page proposal/diagram and exact full population/bounds are frozen. New runtime/theorem code NOT WRITTEN and no new native outcome. [pcc:unverified]
+
+## What was done
+Norm-point native46008b and reportf8d381 are published consumer69ce10b/governance371c89 and mirrored root99d36bcc/21c9c3/governance22c662. Full695 parity with only48 counter changes, all14 phases/four whole omissions/1099 guards/three binaries and both3-root proofs remain exact. Old all18 source rows contain alternatives; fixed D12/D24/D67 negatives are retained rather than redefined. [pcc:unverified]
+
+## Decisions made
+Publish this protocol BEFORE additive original-prime-chain-01 code. Then implement conditional Lean norm/recovery/chain/known-initial-point implications and actual three supported prime-field models with strict prime admission. Preserve entire declared672 projected exceptionals, all384 public points, all228 cofactor attempts/domain and nonprime rejection,64 additions/pair,15 original public transfers and12 matched scalar cases. Compiled source/exact original checkpoint precedes one900s2GiB native; original literal source and all whole omission criteria remain mandatory. [pcc:unverified]
+
+## Open threads
+Actual strict25 run43674526503 at next recorded cadence; original-prime reprojection under this new protocol; full primitive setup/reuse and known-initial-point baseline; genuineNEW23 before canonical candidatefixture/new replay; original full geometry/program, old fullcofactor endpoint/kernel and calibrated-reference obligations. [pcc:unverified]
+
+## Errors
+KBstatus127; lead atlas VLT1 encrypted; vault unchanged/no keys. Original fullcold120/root124/clock101/CIpath/staging/authoring/legacycleanup preflight failures retained. Source-only cache cleanupb72f12 cleared headroom without touching raw/source/exes/prepared copies. No paid launch/force/rebase/waiver/novelty/signed promotion. [pcc:unverified]
+
+---
+
 # Latest result and active research queue — 2026-11-15
 
 Norm-point reuse has full finite parity in unsigned claim46008b at published51dff2bb: one unfiltered test0, all14 expected phases, all695 whole records and four actual entire-class omissions101/no output. Only the preregistered48 selected counter vectors change; all mathematical data and original independent checks remain exact. Both original Lean gates and all3 exact bindings pass under compiled claim36f906. The visually inspected two-page reportf8d381 is [available here](reports/norm-point-reuse-result-01/report.pdf). [pcc:unverified]
