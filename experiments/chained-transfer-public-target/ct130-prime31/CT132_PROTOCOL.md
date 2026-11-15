@@ -14,7 +14,7 @@ Primary diagnostic: *per-process* total(A+B sources? No): the best source cold c
 
 ## Gates before interpretating numbers
 
-Require exact public curve/subgroup/isogeny/CM checks, 24 distinct public Q per panel, three arms per target, exact ABCCBA/CB AABC order as listed without editing, two repeats per arm, same scalar returned and checked against original G for every solve, 4*baby_step entries consistent with isqrt(q-1)+1 for each BSGS run, bounded rho iterations, positive timing samples, no use of Python assert in the evidence verifier. Preserve complete raw JSON and hashes; independent validator must reject mutations under regular Python and Python -O.
+Require exact public curve/subgroup/isogeny/CM checks, 24 distinct public Q per panel, three arms per target, exact ABCCBA/CBAABC order as listed without editing, two repeats per arm, same scalar returned and checked against original G for every solve, baby-table entries equal to isqrt(q-1)+1 for each BSGS run, bounded rho iterations, positive timing samples, no use of Python assert in the evidence verifier. Preserve complete raw JSON and hashes; independent validator must reject mutations under regular Python and Python -O.
 
 The produced observation remains [pcc:unverified] until a signed independent PCC verdict, exact-source CI and matched native repeat. All native C169, C13a, C13b, D, original 701 and full Jacobian/IC/LA costs are outside this small portable test. If C loses or is unstable against either source method, log that as an explicit negative and return to CT126 pricing; if C wins, test native strongest rho/BSGS/IC on an uncorrelated curve set.
 
