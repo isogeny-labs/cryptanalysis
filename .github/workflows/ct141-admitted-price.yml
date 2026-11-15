@@ -68,7 +68,7 @@ jobs:
           import json
           with open('/tmp/ct143-normal.json', encoding='utf-8') as f:
               result = json.load(f)
-          if result['positive'] != 'passed' or result['checks'] != 16 or result['invalid_inputs_rejected'] != 6:
+          if result['positive'] != 'passed' or result['checks'] != 18 or result['invalid_inputs_rejected'] != 6:
               raise SystemExit('CT143 cost identity checks failed')
           print('CT143 rational cost-envelope synthetic controls passed')
           PY
