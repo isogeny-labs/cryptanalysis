@@ -1,3 +1,13 @@
+# Exact bounded original-model IC launch ready
+
+Launchad4030 preservescompiledf9e8c9/03769fb Rustbytes; complete30phase driver isready. Wholeomissioninputs retainedlosslesslyasXZ withproducerpipefail/CRCchecked beforeunchangedRustauditor; allsevenactualclassesmustreject101-nooutput. Source-compiledbinaries/1465guards/originalcheckpointgate/900s2GiB/fullrecordfreezecompare/finalcustody mandatory. Nativehasnotrun. [pcc:unverified]
+
+Cleanup14recovers18,759,680allocatedB from2unheldregistrylibraries only; all98protectedexecutables/bothdifferentdiagnostics/source-dependencyrecords/51583heldpaths/everyPCCsubject/allGitstatuses protected. Wholehashinventory retained. Workspace~77MiBfree; compressedwholeomissions avoid84MBduplicatedraw whilepreservingallinputbytes. [pcc:unverified]
+
+Next:normalpublishthislauncher, collectexactoriginalcheckpointtransport atthatcleanhead, runfullpanel withoutsourceedits; preserveanyactualfailureprefix. CurrentfullCI43707728514at41 job132792341318SUCCESS metadataobserved; secondfullscientificartifact acceptance pendingresource-awarecompletecollection, originala93f80at258 scopeunchanged. NewproofCI39bb46/conditionaleddc37/prospective3da7fe at755 remainacceptedwiththeirstatedlimits. WholeNEW26 andprimitive-cost/sampler/reference/admission obligationsopen. [pcc:unverified]
+
+---
+
 # Fixed original-prime IC compiled02; native experiment next
 
 pcc/claims/PCC-20261115-f9e8c9.json: prospective3da7fe published7550409 BEFOREnewRust; entireoldclasssolver literalunchanged/fixedD116-39-36context/all60attempts15cases/actualopaquechainindependentpoint-Phi equality/controls/wholeRustI-Oauditor. Build02driver0/test4799976B/auditor640792B/exactoldpreparedclosure-fullbytes-freshreuse/1465guards. BothoriginalreusedNewTargetICgates2roots0trusted/twooriginalbindings01efbf-671d42pass. No nativeexperimenthasrun. [pcc:unverified]
