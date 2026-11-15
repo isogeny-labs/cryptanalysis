@@ -149,7 +149,7 @@ jobs:
       - name: Replay both whole fixed-model and complete-chain populations with all original proofs
         run: |
           set -euo pipefail
-          # Invoke with an absolute path: the frozen script cd\x27s to its repo before copying "$0".
+          # Invoke with an absolute path: the frozen script changes directory before copying "$0".
           timeout 3900 bash "$GITHUB_WORKSPACE/cryptanalysis/experiments/chained-transfer-public-target/ci_fixed_chain/check.sh" "$GITHUB_WORKSPACE/crypto" "$RUNNER_TEMP/n4-fixed-chain-output"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
