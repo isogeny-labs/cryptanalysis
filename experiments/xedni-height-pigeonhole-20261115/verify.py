@@ -15,6 +15,8 @@ NAMES = (
     "bounded_relation_of_height_ball_count",
     "latticeValues_card_le",
     "bounded_relation_of_lattice_representation",
+    "rank_gap_count",
+    "bounded_relation_of_rank_gap",
 )
 STANDARD_AXIOMS = {"propext", "Classical.choice", "Quot.sound"}
 
