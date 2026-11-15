@@ -1,0 +1,344 @@
+{
+  "prereg": {
+    "prediction": "x-only ladder leaks k mod each small twist factor on the weak-twist curve (full k recovery via CRT+short search); no advantage on the twist-secure control.",
+    "kill_criterion": "If recovered PH residues do not match k mod q_i exactly on the weak curve, the implementation is wrong; debug before reporting."
+  },
+  "smooth_bound": 65536,
+  "weak_curve": {
+    "p": 1095770551103,
+    "A": 945790977153,
+    "d": 677885399510,
+    "n": 1095771260588,
+    "q": 273942815147,
+    "twist_order": 1095769841620,
+    "twist_factors": {
+      "2": 2,
+      "5": 1,
+      "197": 1,
+      "6703": 1,
+      "41491": 1
+    },
+    "tries": 753
+  },
+  "secure_curve": {
+    "p": 767933589691,
+    "A": 409243423677,
+    "d": 317452840650,
+    "n": 767932846684,
+    "q": 191983211671,
+    "twist_order": 767934332700,
+    "twist_factors": {
+      "2": 2,
+      "3": 1,
+      "5": 2,
+      "11579": 1,
+      "221071": 1
+    },
+    "tries": 80
+  },
+  "positive_control": {
+    "seed": 777,
+    "n_trials": 5,
+    "n_success": 5,
+    "trials": [
+      {
+        "success": true,
+        "used_factors": [
+          5,
+          197,
+          6703,
+          41491
+        ],
+        "M": 273942460405,
+        "search_tries": 42,
+        "exhausted": false,
+        "k_true": 490611254148,
+        "k_recovered": 490611254148,
+        "n_candidates": 16,
+        "search_space_n_over_M": 4,
+        "time_s": 0.2224419116973877
+      },
+      {
+        "success": true,
+        "used_factors": [
+          5,
+          197,
+          6703,
+          41491
+        ],
+        "M": 273942460405,
+        "search_tries": 26,
+        "exhausted": false,
+        "k_true": 133114593045,
+        "k_recovered": 133114593045,
+        "n_candidates": 8,
+        "search_space_n_over_M": 4,
+        "time_s": 0.24746298789978027
+      },
+      {
+        "success": true,
+        "used_factors": [
+          5,
+          197,
+          6703,
+          41491
+        ],
+        "M": 273942460405,
+        "search_tries": 2,
+        "exhausted": false,
+        "k_true": 340203023575,
+        "k_recovered": 340203023575,
+        "n_candidates": 8,
+        "search_space_n_over_M": 4,
+        "time_s": 0.45386409759521484
+      },
+      {
+        "success": true,
+        "used_factors": [
+          5,
+          197,
+          6703,
+          41491
+        ],
+        "M": 273942460405,
+        "search_tries": 13,
+        "exhausted": false,
+        "k_true": 578002174253,
+        "k_recovered": 578002174253,
+        "n_candidates": 16,
+        "search_space_n_over_M": 4,
+        "time_s": 0.3276207447052002
+      },
+      {
+        "success": true,
+        "used_factors": [
+          5,
+          197,
+          6703,
+          41491
+        ],
+        "M": 273942460405,
+        "search_tries": 14,
+        "exhausted": false,
+        "k_true": 889822707202,
+        "k_recovered": 889822707202,
+        "n_candidates": 16,
+        "search_space_n_over_M": 4,
+        "time_s": 0.005288600921630859
+      }
+    ]
+  },
+  "negative_control": {
+    "seed": 888,
+    "n_trials": 5,
+    "n_success": 0,
+    "trials": [
+      {
+        "success": false,
+        "used_factors": [
+          3,
+          5,
+          11579
+        ],
+        "M": 173685,
+        "search_tries": 200000,
+        "exhausted": true,
+        "k_true": 184729526231,
+        "k_recovered": null,
+        "n_candidates": 8,
+        "search_space_n_over_M": 4421411,
+        "time_s": 8.921273231506348
+      },
+      {
+        "success": false,
+        "used_factors": [
+          3,
+          5,
+          11579
+        ],
+        "M": 173685,
+        "search_tries": 200000,
+        "exhausted": true,
+        "k_true": 487044951620,
+        "k_recovered": null,
+        "n_candidates": 4,
+        "search_space_n_over_M": 4421411,
+        "time_s": 8.647748231887817
+      },
+      {
+        "success": false,
+        "used_factors": [
+          3,
+          5,
+          11579
+        ],
+        "M": 173685,
+        "search_tries": 200000,
+        "exhausted": true,
+        "k_true": 568474137500,
+        "k_recovered": null,
+        "n_candidates": 4,
+        "search_space_n_over_M": 4421411,
+        "time_s": 8.888306856155396
+      },
+      {
+        "success": false,
+        "used_factors": [
+          3,
+          5,
+          11579
+        ],
+        "M": 173685,
+        "search_tries": 200000,
+        "exhausted": true,
+        "k_true": 675173901813,
+        "k_recovered": null,
+        "n_candidates": 4,
+        "search_space_n_over_M": 4421411,
+        "time_s": 8.586913585662842
+      },
+      {
+        "success": false,
+        "used_factors": [
+          3,
+          5,
+          11579
+        ],
+        "M": 173685,
+        "search_tries": 200000,
+        "exhausted": true,
+        "k_true": 276891632352,
+        "k_recovered": null,
+        "n_candidates": 4,
+        "search_space_n_over_M": 4421411,
+        "time_s": 8.650648355484009
+      }
+    ]
+  },
+  "repeat_control": {
+    "seed": 31415,
+    "n_trials": 5,
+    "n_success": 5,
+    "trials": [
+      {
+        "success": true,
+        "used_factors": [
+          5,
+          197,
+          6703,
+          41491
+        ],
+        "M": 273942460405,
+        "search_tries": 74,
+        "exhausted": false,
+        "k_true": 870117368881,
+        "k_recovered": 870117368881,
+        "n_candidates": 16,
+        "search_space_n_over_M": 4
+      },
+      {
+        "success": true,
+        "used_factors": [
+          5,
+          197,
+          6703,
+          41491
+        ],
+        "M": 273942460405,
+        "search_tries": 79,
+        "exhausted": false,
+        "k_true": 887587993626,
+        "k_recovered": 887587993626,
+        "n_candidates": 16,
+        "search_space_n_over_M": 4
+      },
+      {
+        "success": true,
+        "used_factors": [
+          5,
+          197,
+          6703,
+          41491
+        ],
+        "M": 273942460405,
+        "search_tries": 76,
+        "exhausted": false,
+        "k_true": 230803082303,
+        "k_recovered": 230803082303,
+        "n_candidates": 16,
+        "search_space_n_over_M": 4
+      },
+      {
+        "success": true,
+        "used_factors": [
+          5,
+          197,
+          6703,
+          41491
+        ],
+        "M": 273942460405,
+        "search_tries": 28,
+        "exhausted": false,
+        "k_true": 807059928515,
+        "k_recovered": 807059928515,
+        "n_candidates": 8,
+        "search_space_n_over_M": 4
+      },
+      {
+        "success": true,
+        "used_factors": [
+          5,
+          197,
+          6703,
+          41491
+        ],
+        "M": 273942460405,
+        "search_tries": 37,
+        "exhausted": false,
+        "k_true": 333921337718,
+        "k_recovered": 333921337718,
+        "n_candidates": 16,
+        "search_space_n_over_M": 4
+      }
+    ]
+  },
+  "census": {
+    "bounds": [
+      4096,
+      65536,
+      1048576
+    ],
+    "population_summary": {
+      "smooth_le_4096": 2,
+      "smooth_le_65536": 10,
+      "smooth_le_1048576": 23
+    },
+    "population_n": 60,
+    "population_by_kind": {
+      "anomalous": {
+        "smooth_le_4096": 1,
+        "smooth_le_65536": 5,
+        "smooth_le_1048576": 12,
+        "n": 20
+      },
+      "prime": {
+        "smooth_le_4096": 0,
+        "smooth_le_65536": 3,
+        "smooth_le_1048576": 7,
+        "n": 20
+      },
+      "smooth": {
+        "smooth_le_4096": 1,
+        "smooth_le_65536": 2,
+        "smooth_le_1048576": 4,
+        "n": 20
+      }
+    },
+    "fresh_summary": {
+      "smooth_le_4096": 0,
+      "smooth_le_65536": 2,
+      "smooth_le_1048576": 16
+    },
+    "fresh_n": 60
+  }
+}
