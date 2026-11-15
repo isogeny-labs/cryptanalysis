@@ -1009,6 +1009,22 @@ def check_core_lean_projects(paths: set[str]) -> dict[str, str]:
 # research/xedni_lift_optimizer_20261101 landed with #1376 (2026-11-02) under
 # its own workflow and left this gate red on main until it was admitted here.
 RECEIPT_BOUND_SOURCES = {
+    # Pinned Mathlib project: check every identity, and compile its exact Lake
+    # configuration through the same native checker. No frozen corpus pin changes.
+    "experiments/prime-field-auxiliary-ic/rust-validation/field-fibers-20261115/formal/FieldFibers.lean": {
+        "sha256": "4619833d39918f1387ff09df786b2893ba8bf68b07ae26e0f5a7ea3ed73d340c",
+        "checker": "experiments/prime-field-auxiliary-ic/rust-validation/field-fibers-20261115/formal/check_native.py",
+        "checker_sha256": "0cd21c9fe29b575cd7d0b99f18ed9aca283664b72a5d3786dd6aaed9fc702564",
+        "namespace": "AuxiliaryIC.FieldFibers",
+        "theorems": frozenset({"opposite_pair", "cube_trace", "seventh_trace", "torus_push", "terminal_pair", "orbit_discriminant"}),
+    },
+    "experiments/prime-field-auxiliary-ic/rust-validation/field-fibers-20261115/formal/lakefile.lean": {
+        "sha256": "f16d28347a1566ca7a1dc14afd7b1ef9cd1cb52a9892dabe6a8558aba82ba141",
+        "checker": "experiments/prime-field-auxiliary-ic/rust-validation/field-fibers-20261115/formal/check_config.py",
+        "checker_sha256": "c2f2391896f6001d865444436c9d491a1eb54f4b73f2360386194604df5aebd6",
+        "namespace": "AuxiliaryIC.FieldFibers.Build",
+        "theorems": frozenset(set()),
+    },
     "experiments/glv-cap-confirm-20261106/formal/no-worse-20261108/NoWorseLogic.lean": {
         "sha256": "613d9eb1ca98ee95418984b5dac2b8bfcbcd6b705c20b38289bfc93e90a7f2d6",
         "checker": "experiments/glv-cap-confirm-20261106/formal/no-worse-20261108/check_native.py",
