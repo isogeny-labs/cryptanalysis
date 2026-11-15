@@ -1,3 +1,19 @@
+# Complete local CI03; prospective relation-kernel protocol ready for publication
+
+## What was done
+Localf5b20f passes all102actual phases/1503guards/finalguards, two unfiltered tests/whole100-101 populations, literal same-run equality and all-counter/non-time historical equality under publishedb5e431. Fifteen actual omissions101/nooutput, eight whole historical negatives1/nooutput, two timing positives0, runtime/full prepared/dependency closure and both original26declaration gates/all5+9bindings pass. Persisted whole IOverdict independently reproduces byte-for-byte. Source is producer3d49/consumerparent5493385 plus explicit precommit untracked CI source manifest; no fresh GitHub result yet. [pcc:unverified]
+
+## Decisions made
+Normal-publish the validated independent IC/sampler CI workflow and8e7e1c prospective relation-kernel protocol/proposal BEFORE instrumentation or measurements. Both53395Bfinal proposal pages actually opened. Keep all60 original IC calls, passive observations only, exact rank certificates/independent replay and post-solver norm/BSGS checks without oracle injection; finite/null/negative outcomes retained. No diagnostic implementation/result yet. [pcc:unverified]
+
+## Open threads
+Collect fresh GitHub CI at the eventual exact source commit, while implementing the now-published diagnostic protocol. GenuineNEW27 must retain allct99post-custody/ct100CI source/build/native/failure/runtime/fullprepared/control roots andct101primary/proposal/all drafts. Producer remains7242bb7 until exact new consumer mirror; vault8edec422 locked/KB127 and live calibrated admission/reference gaps remain. [pcc:unverified]
+
+## Errors
+Local01 existing-fixture copy omission, local02 historical same-run timing misuse, partial-governor staged-path assertion and control-authoring syntax error preserved. Prospectiveb5e431 published549 before the separate verifier source; all original science/solvers/auditors/fixtures unchanged. [pcc:unverified]
+
+---
+
 # Cross-run comparison contract02 published next; CI retries preserved
 
 ## What was done
