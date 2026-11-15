@@ -58,8 +58,9 @@ ca_status ca_linsolve_mod_prime_mt(const ca_spmat *A, const uint64_t *b, uint64_
                                    ca_linsolve_report *rep);
 
 /* Dense Gaussian elimination mod q on an n x n (+rhs) system given as a
- * row-major array; returns CA_ERR_SINGULAR if not uniquely solvable.  Used
- * as a fallback and for tests. */
+ * row-major array; returns CA_ERR_SINGULAR if not uniquely solvable, or if
+ * q is composite and a pivot has no inverse modulo q.  Used as a fallback
+ * and for tests. */
 ca_status ca_dense_solve_mod_prime(uint64_t *M, uint32_t n, uint64_t *rhs, uint64_t q, uint64_t *x);
 
 #endif

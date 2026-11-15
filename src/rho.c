@@ -104,6 +104,7 @@ typedef struct rho_shared {
     uint32_t walks;
     uint64_t seed;
     uint64_t max_ops, max_table;
+    int runaway; /* max_ops is the built-in guard, not the caller's limit */
     uint64_t setup_ops;
     uint64_t setup_prior;
     /* Elliptic curves: 2^b * base and 2^b * target, so that a walk start or a
@@ -1032,7 +1033,8 @@ static void *rho_thread_main(void *arg)
             uint64_t tot = atomic_load_explicit(&sh->total_ops, memory_order_relaxed) + ops;
             if (tot > sh->max_ops) {
                 pthread_mutex_lock(&sh->lock);
-                if (!atomic_load(&sh->done)) sh->status = CA_ERR_LIMIT;
+                if (!atomic_load(&sh->done))
+                    sh->status = sh->runaway ? CA_ERR_NOT_FOUND : CA_ERR_LIMIT;
                 atomic_store(&sh->done, 1);
                 pthread_mutex_unlock(&sh->lock);
             }
@@ -1163,6 +1165,19 @@ static ca_status rho_solve_impl(const ca_group *g, const ca_elem *base, const ca
     }
     sh.dp_bits = dp;
     sh.dp_mask = dp ? ((1ULL << dp) - 1) : 0;
+    if (sh.max_ops == 0) {
+        /* Runaway guard, as in the GLV solver (curve.c): a target outside
+         * the subgroup the base generates passes the n * P = O membership
+         * test when n is composite, and then no collision ever solves.  A
+         * solvable walk needs about 1.25 sqrt(n) steps plus, per walk, the
+         * 2^dp steps to its next distinguished point; 64 times both is out
+         * of reach of any run that has a solution.  Ending here reports
+         * CA_ERR_NOT_FOUND; a caller's own max_ops reports CA_ERR_LIMIT. */
+        double guard = 64.0 * (double)sqrt_n +
+                       64.0 * (double)threads * (double)W * (double)(1ULL << dp) + 1048576.0;
+        sh.max_ops = guard < 0x1p63 ? (uint64_t)guard : UINT64_MAX;
+        sh.runaway = 1;
+    }
 
     rho_checkpoint_header saved = {0};
     int existing = rho_checkpoint_probe(&sh, &saved);
@@ -1320,6 +1335,9 @@ static ca_status rho_solve_impl(const ca_group *g, const ca_elem *base, const ca
 
     ca_status rc = storage_failed ? CA_ERR_INTERNAL : sh.status;
     if (rc == CA_OK) *x = sh.result;
+    if (rc == CA_ERR_NOT_FOUND && sh.runaway)
+        ca_set_error(
+            "rho: no logarithm found; the target is not a power of the base (runaway guard)");
 #ifdef CA_RHO_TRACE
     {
         rho_trace *tr = &sh.tr;
