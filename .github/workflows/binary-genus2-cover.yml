@@ -127,6 +127,7 @@ jobs:
       - name: Build and audit actual theorem declarations
         working-directory: research/binary_genus2_cover_20261014/lean
         run: |
+          set -o pipefail
           lake build
           lean BinaryGenusTwo.lean | tee axioms.log
-          if rg 'sorryAx|sorry|admit' axioms.log; then exit 1; fi
+          if grep -E 'sorryAx|sorry|admit' axioms.log; then exit 1; fi

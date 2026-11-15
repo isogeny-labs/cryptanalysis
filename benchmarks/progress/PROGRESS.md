@@ -17,12 +17,12 @@ Headline unit: `S` (group operations / sqrt(n); the ECDLP cost unit, every phase
 | ecdlp:ca-bench-generic-ec | kangaroo_s_ec40 | S | 1.2201 | 1.2201 | 0% | 0% | 0.7123 (matched_rho) | 2 |
 | ecdlp:ca-bench-generic-ec | rho1_s_ec40 | S | 1.7129 | 1.7129 | 0% | 0% | – | 2 |
 | ecdlp:ca-bench-generic-ec | rhot_s_ec40 | S | 1.2415 | 1.3402 | -7.9508% | -7.9508% | 0.7824 (matched_rho) | 2 |
-| ecdlp:rho-plain-negmap | mean_s_20 | S | 1.441 | 1.441 | 0% | –% | 0.6653 (matched_rho) | 1 |
-| ecdlp:rho-plain-negmap | mean_s_24 | S | 1.149 | 1.149 | 0% | –% | 0.6289 (matched_rho) | 1 |
-| ecdlp:rho-plain-negmap | mean_s_28 | S | 1.033 | 1.033 | 0% | –% | 0.5876 (matched_rho) | 1 |
-| ecdlp:rho-plain-negmap | mean_s_32 | S | 0.98 | 0.98 | 0% | –% | 0.8604 (matched_rho) | 1 |
-| ecdlp:rho-plain-negmap | mean_s_36 | S | 0.95 | 0.95 | 0% | –% | 0.8854 (matched_rho) | 1 |
-| ecdlp:rho-plain-negmap | mean_s_40 | S | 0.909 | 0.909 | 0% | –% | 0.9342 (matched_rho) | 1 |
+| ecdlp:rho-plain-negmap | mean_s_20 | S | 1.441 | 1.441 | –% | –% | 0.6653 (matched_rho) | 1 |
+| ecdlp:rho-plain-negmap | mean_s_24 | S | 1.149 | 1.149 | –% | –% | 0.6289 (matched_rho) | 1 |
+| ecdlp:rho-plain-negmap | mean_s_28 | S | 1.033 | 1.033 | –% | –% | 0.5876 (matched_rho) | 1 |
+| ecdlp:rho-plain-negmap | mean_s_32 | S | 0.98 | 0.98 | –% | –% | 0.8604 (matched_rho) | 1 |
+| ecdlp:rho-plain-negmap | mean_s_36 | S | 0.95 | 0.95 | –% | –% | 0.8854 (matched_rho) | 1 |
+| ecdlp:rho-plain-negmap | mean_s_40 | S | 0.909 | 0.909 | –% | –% | 0.9342 (matched_rho) | 1 |
 
 ## Other series, each in its own unit
 
@@ -42,74 +42,60 @@ Headline unit: `S` (group operations / sqrt(n); the ECDLP cost unit, every phase
 | ecdlp:prime31aux-retrospective | v2_batch_reported_cpu | cpu_s | 9.6793 | 11.6562 | -20.4239% | -125.7924% | – | 3 |
 | ecdlp:prime31aux-retrospective | v2_chain_reported_cold_wall | wall_s | 14.419 | 15.0837 | -4.6095% | 32.3395% | 823.4146 (matched_rho) | 3 |
 | ecdlp:prime31aux-retrospective | v2_chain_reported_cpu | cpu_s | 14.3908 | 15.0806 | -4.7934% | 32.2969% | – | 3 |
-| ecdlp:rho-plain-negmap | group_ops_ratio_20 | ratio | 0.6661 | 0.6661 | 0% | –% | – | 1 |
-| ecdlp:rho-plain-negmap | group_ops_ratio_24 | ratio | 0.6296 | 0.6296 | 0% | –% | – | 1 |
-| ecdlp:rho-plain-negmap | group_ops_ratio_28 | ratio | 0.5875 | 0.5875 | 0% | –% | – | 1 |
-| ecdlp:rho-plain-negmap | group_ops_ratio_32 | ratio | 0.8612 | 0.8612 | 0% | –% | – | 1 |
-| ecdlp:rho-plain-negmap | group_ops_ratio_36 | ratio | 0.8856 | 0.8856 | 0% | –% | – | 1 |
-| ecdlp:rho-plain-negmap | group_ops_ratio_40 | ratio | 0.9345 | 0.9345 | 0% | –% | – | 1 |
-| ecdlp:rho-plain-negmap | group_ops_ratio_pooled | ratio | 0.7483 | 0.7483 | 0% | –% | – | 1 |
-| ic:N53 | cost_per_trial_ratio.aa | ratio | 0.9918 | 0.9918 | -0% | –% | – | 1 |
-| ic:N53 | cost_per_trial_ratio.w128 | ratio | 1.0391 | 1.0391 | -0% | –% | – | 1 |
-| ic:N53 | cost_per_trial_ratio.w256 | ratio | 1.0834 | 1.0834 | -0% | –% | – | 1 |
-| ic:N53 | cost_per_trial_ratio.w512 | ratio | 1.0946 | 1.0946 | -0% | –% | – | 1 |
-| ic:N53 | descents_verified | count | 3,840 | 3,840 | –% | –% | – | 1 |
-| ic:N53 | filter_admit_rate | percent | 12.29 | 12.29 | 0% | –% | – | 1 |
-| ic:N53 | ir.koblitz_descent_k0n53_m2_x4 | ir | 5.73e+08 | 5.73e+08 | 0% | –% | – | 1 |
-| ic:N53 | ir.koblitz_rung_k0n31 | ir | 2.026e+08 | 2.026e+08 | 0% | –% | – | 1 |
-| ic:N53 | ir_per_trial.w512 | ir_per_op | 692.5 | 692.5 | 0% | –% | – | 1 |
-| ic:N53 | ir_per_trial.w64 | ir_per_op | 735.3 | 735.3 | 0% | –% | – | 1 |
-| ic:N53 | perfbench_descent_k0n53_ratio | ratio | 1.2224 | 1.2224 | -0% | –% | – | 1 |
-| ic:N53 | share.add_many_lazy | percent | 38.5 | 38.5 | 0% | –% | – | 1 |
-| ic:N53 | share.contains_key_loop | percent | 35.3 | 35.3 | 0% | –% | – | 1 |
-| ic:N53 | share.keys_of | percent | 10.6 | 10.6 | 0% | –% | – | 1 |
+| ecdlp:rho-plain-negmap | group_ops_ratio_20 | ratio | 0.6661 | 0.6661 | –% | –% | – | 1 |
+| ecdlp:rho-plain-negmap | group_ops_ratio_24 | ratio | 0.6296 | 0.6296 | –% | –% | – | 1 |
+| ecdlp:rho-plain-negmap | group_ops_ratio_28 | ratio | 0.5875 | 0.5875 | –% | –% | – | 1 |
+| ecdlp:rho-plain-negmap | group_ops_ratio_32 | ratio | 0.8612 | 0.8612 | –% | –% | – | 1 |
+| ecdlp:rho-plain-negmap | group_ops_ratio_36 | ratio | 0.8856 | 0.8856 | –% | –% | – | 1 |
+| ecdlp:rho-plain-negmap | group_ops_ratio_40 | ratio | 0.9345 | 0.9345 | –% | –% | – | 1 |
+| ecdlp:rho-plain-negmap | group_ops_ratio_pooled | ratio | 0.7483 | 0.7483 | –% | –% | – | 1 |
+| ic:N53 | filter_admit_rate | percent | 12.29 | 12.29 | –% | –% | – | 1 |
+| ic:N53 | ir.koblitz_descent_k0n53_m2_x4 | ir | 5.73e+08 | 5.73e+08 | –% | –% | – | 1 |
+| ic:N53 | ir.koblitz_rung_k0n31 | ir | 2.026e+08 | 2.026e+08 | –% | –% | – | 1 |
+| ic:N53 | share.add_many_lazy | percent | 38.5 | 38.5 | –% | –% | – | 1 |
+| ic:N53 | share.contains_key_loop | percent | 35.3 | 35.3 | –% | –% | – | 1 |
+| ic:N53 | share.keys_of | percent | 10.6 | 10.6 | –% | –% | – | 1 |
 | ic:N53 | trials | count | 1.207e+07 | 1.207e+07 | –% | –% | – | 1 |
-| ic:N53 | wall_ratio.koblitz_collect_k0n53_w477_u1024 | ratio | 1.136 | 1.136 | -0% | –% | – | 1 |
-| ic:N53 | wall_ratio.koblitz_descent_k0n53_m2_x4 | ratio | 1.254 | 1.085 | -13.4769% | -13.4769% | – | 2 |
-| ic:N53 | wall_ratio.koblitz_rung_k0n31 | ratio | 1.151 | 1.151 | -0% | –% | – | 1 |
-| kernel:clmad_sm120 | clmad_lo_chain_latency_rtx5090 | cycles_per_op | 55.084 | 55.084 | 0% | –% | – | 1 |
-| kernel:clmad_sm120 | clmad_lo_chain_latency_rtxpro6000 | cycles_per_op | 63.528 | 63.528 | 0% | –% | – | 1 |
-| kernel:clmad_sm120 | clmad_lo_chain_occupancy_rtx5090 | cycles_per_op | 255.86 | 255.86 | 0% | –% | – | 1 |
-| kernel:clmad_sm120 | clmad_lo_chain_occupancy_rtxpro6000 | cycles_per_op | 255.901 | 255.901 | 0% | –% | – | 1 |
-| kernel:gf2_n53 | wall_ratio.gf2_n53_mul_sqr_1m | ratio | 0.794 | 0.794 | -0% | –% | – | 1 |
-| kernel:gf2_n53 | wall_ratio.koblitz_collect_k0n53_w477_u1024 | ratio | 0.865 | 0.865 | -0% | –% | – | 1 |
-| kernel:n83_fieldops2_local_diag | local_index_build_a_over_b | ratio | 1.0425 | 1.0425 | -0% | –% | – | 1 |
-| kernel:n83_fieldops2_local_diag | local_online_a_over_b | ratio | 1.0507 | 1.0507 | -0% | –% | – | 1 |
-| kernel:n83_fieldops2_local_diag | local_rank_stage_a_over_b | ratio | 1.0163 | 1.0163 | -0% | –% | – | 1 |
-| kernel:n83_fieldops2_local_diag | local_scan_selftest_a_over_b | ratio | 0.9385 | 0.9385 | -0% | –% | – | 1 |
-| kernel:prime31aux-circuit-retrospective | v1_reported_stage_median | wall_s | 0.0012 | 0.0012 | 0% | –% | – | 1 |
-| kernel:prime31aux-circuit-retrospective | v2_reported_stage_median | wall_s | 0.0004062 | 0.0004062 | 0% | –% | – | 1 |
-| kernel:prime31aux-gcd-retrospective | blocked_gcd_reported_stage_median | wall_s | 0.1957 | 0.1957 | 0% | –% | – | 1 |
-| kernel:prime31aux-gcd-retrospective | flint_gcd_reported_stage_median | wall_s | 0.2844 | 0.2844 | 0% | –% | – | 1 |
-| kernel:prime31aux-gcd-retrospective | lifted_blocked_gcd_reported_stage_median | wall_s | 0.1019 | 0.1019 | 0% | –% | – | 1 |
-| kernel:prime31aux-gcd-retrospective | native_circuit_reported_stage_median | wall_s | 0.0012 | 0.0012 | 0% | –% | – | 1 |
-| kernel:suite_gf2_koblitz | ir.gf2_n53_inv_16k | ir | 1.978e+07 | 1.978e+07 | 0% | –% | – | 1 |
-| kernel:suite_gf2_koblitz | ir.koblitz_collect_k0n41_w164_u4096 | ir | 3.147e+08 | 3.147e+08 | 0% | –% | – | 1 |
-| kernel:suite_gf2_koblitz | ir.koblitz_collect_k0n53_w477_u1024 | ir | 3.261e+08 | 3.261e+08 | 0% | –% | – | 1 |
-| kernel:suite_gf2_koblitz | ir.koblitz_curve_mul_n53_1k | ir | 5.401e+07 | 5.401e+07 | 0% | –% | – | 1 |
-| kernel:suite_gf2_koblitz | ir.koblitz_descent_k0n53_m2_x4 | ir | 7.312e+08 | 7.312e+08 | 0% | –% | – | 1 |
-| kernel:suite_gf2_koblitz | ir.koblitz_rung_k0n31 | ir | 2.314e+08 | 2.314e+08 | 0% | –% | – | 1 |
-| kernel:suite_gf2_koblitz | ir.koblitz_signed_rho_k0_n41 | ir | 3.364e+08 | 3.364e+08 | 0% | –% | – | 1 |
-| kernel:suite_gf2_koblitz | perfindex_wall_index | ratio | 1.2148 | 1.2148 | -0% | –% | – | 1 |
-| kernel:suite_gf2_koblitz | wall_ratio.gf2_n53_inv_16k | ratio | 4.1436 | 4.1436 | -0% | –% | – | 1 |
-| kernel:suite_gf2_koblitz | wall_ratio.koblitz_collect_k0n41_w164_u4096 | ratio | 1.1933 | 1.1933 | -0% | –% | – | 1 |
-| kernel:suite_gf2_koblitz | wall_ratio.koblitz_collect_k0n53_w477_u1024 | ratio | 1.0116 | 1.0116 | -0% | –% | – | 1 |
-| kernel:suite_gf2_koblitz | wall_ratio.koblitz_curve_mul_n53_1k | ratio | 1.4638 | 1.4638 | -0% | –% | – | 1 |
-| kernel:suite_gf2_koblitz | wall_ratio.koblitz_descent_k0n53_m2_x4 | ratio | 1.2539 | 1.2539 | -0% | –% | – | 1 |
-| kernel:suite_gf2_koblitz | wall_ratio.koblitz_rung_k0n31 | ratio | 1.1078 | 1.1078 | -0% | –% | – | 1 |
-| kernel:suite_gf2_koblitz | wall_ratio.koblitz_signed_rho_k0_n41 | ratio | 1.1986 | 1.1986 | -0% | –% | – | 1 |
-| rho-plain-negmap-counts-20261030 | quoted_pooled_candidate_over_main | ratio | 0.7483 | 0.7483 | 0% | –% | – | 1 |
+| ic:N53 | wall_ratio.koblitz_descent_k0n53_m2_x4 | ratio | 1.254 | 1.254 | –% | –% | – | 1 |
+| ic:N53 | wall_ratio.koblitz_rung_k0n31 | ratio | 1.151 | 1.151 | –% | –% | – | 1 |
+| kernel:gf2_n53 | wall_ratio.gf2_n53_mul_sqr_1m | ratio | 0.794 | 0.794 | –% | –% | – | 1 |
+| kernel:gf2_n53 | wall_ratio.koblitz_collect_k0n53_w477_u1024 | ratio | 0.865 | 0.865 | –% | –% | – | 1 |
+| kernel:n83_fieldops2_local_diag | local_index_build_a_over_b | ratio | 1.0425 | 1.0425 | –% | –% | – | 1 |
+| kernel:n83_fieldops2_local_diag | local_online_a_over_b | ratio | 1.0507 | 1.0507 | –% | –% | – | 1 |
+| kernel:n83_fieldops2_local_diag | local_rank_stage_a_over_b | ratio | 1.0163 | 1.0163 | –% | –% | – | 1 |
+| kernel:n83_fieldops2_local_diag | local_scan_selftest_a_over_b | ratio | 0.9385 | 0.9385 | –% | –% | – | 1 |
+| kernel:prime31aux-circuit-retrospective | v1_reported_stage_median | wall_s | 0.0012 | 0.0012 | –% | –% | – | 1 |
+| kernel:prime31aux-circuit-retrospective | v2_reported_stage_median | wall_s | 0.0004062 | 0.0004062 | –% | –% | – | 1 |
+| kernel:prime31aux-gcd-retrospective | blocked_gcd_reported_stage_median | wall_s | 0.1957 | 0.1957 | –% | –% | – | 1 |
+| kernel:prime31aux-gcd-retrospective | flint_gcd_reported_stage_median | wall_s | 0.2844 | 0.2844 | –% | –% | – | 1 |
+| kernel:prime31aux-gcd-retrospective | lifted_blocked_gcd_reported_stage_median | wall_s | 0.1019 | 0.1019 | –% | –% | – | 1 |
+| kernel:prime31aux-gcd-retrospective | native_circuit_reported_stage_median | wall_s | 0.0012 | 0.0012 | –% | –% | – | 1 |
+| kernel:suite_gf2_koblitz | ir.gf2_n53_inv_16k | ir | 1.978e+07 | 1.978e+07 | –% | –% | – | 1 |
+| kernel:suite_gf2_koblitz | ir.koblitz_collect_k0n41_w164_u4096 | ir | 3.147e+08 | 3.147e+08 | –% | –% | – | 1 |
+| kernel:suite_gf2_koblitz | ir.koblitz_collect_k0n53_w477_u1024 | ir | 3.261e+08 | 3.261e+08 | –% | –% | – | 1 |
+| kernel:suite_gf2_koblitz | ir.koblitz_curve_mul_n53_1k | ir | 5.401e+07 | 5.401e+07 | –% | –% | – | 1 |
+| kernel:suite_gf2_koblitz | ir.koblitz_descent_k0n53_m2_x4 | ir | 7.312e+08 | 7.312e+08 | –% | –% | – | 1 |
+| kernel:suite_gf2_koblitz | ir.koblitz_rung_k0n31 | ir | 2.314e+08 | 2.314e+08 | –% | –% | – | 1 |
+| kernel:suite_gf2_koblitz | ir.koblitz_signed_rho_k0_n41 | ir | 3.364e+08 | 3.364e+08 | –% | –% | – | 1 |
+| kernel:suite_gf2_koblitz | perfindex_wall_index | ratio | 1.2148 | 1.2148 | –% | –% | – | 1 |
+| kernel:suite_gf2_koblitz | wall_ratio.gf2_n53_inv_16k | ratio | 4.1436 | 4.1436 | –% | –% | – | 1 |
+| kernel:suite_gf2_koblitz | wall_ratio.koblitz_collect_k0n41_w164_u4096 | ratio | 1.1933 | 1.1933 | –% | –% | – | 1 |
+| kernel:suite_gf2_koblitz | wall_ratio.koblitz_collect_k0n53_w477_u1024 | ratio | 1.0116 | 1.0116 | –% | –% | – | 1 |
+| kernel:suite_gf2_koblitz | wall_ratio.koblitz_curve_mul_n53_1k | ratio | 1.4638 | 1.4638 | –% | –% | – | 1 |
+| kernel:suite_gf2_koblitz | wall_ratio.koblitz_descent_k0n53_m2_x4 | ratio | 1.2539 | 1.2539 | –% | –% | – | 1 |
+| kernel:suite_gf2_koblitz | wall_ratio.koblitz_rung_k0n31 | ratio | 1.1078 | 1.1078 | –% | –% | – | 1 |
+| kernel:suite_gf2_koblitz | wall_ratio.koblitz_signed_rho_k0_n41 | ratio | 1.1986 | 1.1986 | –% | –% | – | 1 |
 | xedni:affine-cvp-p67-frozen | discriminant_bits_babai_radius0 | count | 56 | 56 | –% | –% | – | 1 |
 | xedni:affine-cvp-p67-frozen | discriminant_bits_best_radius4 | count | 56 | 56 | –% | –% | – | 1 |
 | xedni:affine-cvp-p67-frozen | discriminant_bits_raw | count | 1,114 | 1,114 | –% | –% | – | 1 |
-| xedni:lift-success-toy-primes | pooled_c0_hat_beta_fixed_minus1 | ratio | 1.165 | 1.165 | -0% | –% | – | 1 |
-| xedni:lift-success-toy-primes | pooled_slope_beta_p_ge_127 | ratio | -1.174 | -1.174 | -0% | –% | – | 1 |
-| xedni:lift-success-toy-primes | success_rate_p127 | percent | 1.326 | 1.326 | 0% | –% | – | 1 |
+| xedni:lift-success-toy-primes | pooled_c0_hat_beta_fixed_minus1 | ratio | 1.165 | 1.165 | –% | –% | – | 1 |
+| xedni:lift-success-toy-primes | pooled_slope_beta_p_ge_127 | ratio | -1.174 | -1.174 | –% | –% | – | 1 |
+| xedni:lift-success-toy-primes | success_rate_p127 | percent | 1.326 | 1.326 | –% | –% | – | 1 |
 | xedni:lift-success-toy-primes | success_rate_p65521 | percent | 0 | 0 | –% | –% | – | 1 |
 | xedni:lift-success-toy-primes | successes_certified | count | 572 | 572 | –% | –% | – | 1 |
 | xedni:lift-success-toy-primes | successes_non_line | count | 96 | 96 | –% | –% | – | 1 |
 | xedni:lift-success-toy-primes | trials_ok | count | 500,242 | 500,242 | –% | –% | – | 1 |
-| xedni:lift-success-toy-primes | wall | wall_s | 2,152 | 2,152 | 0% | –% | – | 1 |
+| xedni:lift-success-toy-primes | wall | wall_s | 2,152 | 2,152 | –% | –% | – | 1 |
 
 ## Every point
 
@@ -288,163 +274,115 @@ Headline unit: `S` (group operations / sqrt(n); the ECDLP cost unit, every phase
 
 | date | record | commit | value | n | spread | gain vs first | value/ref | summary |
 |:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-10-30 | `20261030T1200Z-rho-plain-negmap` | `8d711d0d55bb` | 0.6661 | 2000 | – | 0% | – | Plain negation-map rho: pooled held-out group_ops ratio 0.7483 [0.7413, 0.7556] over 12000 paired solves at 20-40 bits;  |
+| 2026-10-30 | `20261030T1200Z-rho-plain-negmap` | `8d711d0d55bb` | 0.6661 | 2000 | – | –% | – | Plain negation-map rho: pooled held-out group_ops ratio 0.7483 [0.7413, 0.7556] over 12000 paired solves at 20-40 bits;  |
 
 ### ecdlp:rho-plain-negmap · group_ops_ratio_24 [ratio]
 
 | date | record | commit | value | n | spread | gain vs first | value/ref | summary |
 |:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-10-30 | `20261030T1200Z-rho-plain-negmap` | `8d711d0d55bb` | 0.6296 | 2000 | – | 0% | – | Plain negation-map rho: pooled held-out group_ops ratio 0.7483 [0.7413, 0.7556] over 12000 paired solves at 20-40 bits;  |
+| 2026-10-30 | `20261030T1200Z-rho-plain-negmap` | `8d711d0d55bb` | 0.6296 | 2000 | – | –% | – | Plain negation-map rho: pooled held-out group_ops ratio 0.7483 [0.7413, 0.7556] over 12000 paired solves at 20-40 bits;  |
 
 ### ecdlp:rho-plain-negmap · group_ops_ratio_28 [ratio]
 
 | date | record | commit | value | n | spread | gain vs first | value/ref | summary |
 |:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-10-30 | `20261030T1200Z-rho-plain-negmap` | `8d711d0d55bb` | 0.5875 | 2000 | – | 0% | – | Plain negation-map rho: pooled held-out group_ops ratio 0.7483 [0.7413, 0.7556] over 12000 paired solves at 20-40 bits;  |
+| 2026-10-30 | `20261030T1200Z-rho-plain-negmap` | `8d711d0d55bb` | 0.5875 | 2000 | – | –% | – | Plain negation-map rho: pooled held-out group_ops ratio 0.7483 [0.7413, 0.7556] over 12000 paired solves at 20-40 bits;  |
 
 ### ecdlp:rho-plain-negmap · group_ops_ratio_32 [ratio]
 
 | date | record | commit | value | n | spread | gain vs first | value/ref | summary |
 |:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-10-30 | `20261030T1200Z-rho-plain-negmap` | `8d711d0d55bb` | 0.8612 | 2000 | – | 0% | – | Plain negation-map rho: pooled held-out group_ops ratio 0.7483 [0.7413, 0.7556] over 12000 paired solves at 20-40 bits;  |
+| 2026-10-30 | `20261030T1200Z-rho-plain-negmap` | `8d711d0d55bb` | 0.8612 | 2000 | – | –% | – | Plain negation-map rho: pooled held-out group_ops ratio 0.7483 [0.7413, 0.7556] over 12000 paired solves at 20-40 bits;  |
 
 ### ecdlp:rho-plain-negmap · group_ops_ratio_36 [ratio]
 
 | date | record | commit | value | n | spread | gain vs first | value/ref | summary |
 |:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-10-30 | `20261030T1200Z-rho-plain-negmap` | `8d711d0d55bb` | 0.8856 | 2000 | – | 0% | – | Plain negation-map rho: pooled held-out group_ops ratio 0.7483 [0.7413, 0.7556] over 12000 paired solves at 20-40 bits;  |
+| 2026-10-30 | `20261030T1200Z-rho-plain-negmap` | `8d711d0d55bb` | 0.8856 | 2000 | – | –% | – | Plain negation-map rho: pooled held-out group_ops ratio 0.7483 [0.7413, 0.7556] over 12000 paired solves at 20-40 bits;  |
 
 ### ecdlp:rho-plain-negmap · group_ops_ratio_40 [ratio]
 
 | date | record | commit | value | n | spread | gain vs first | value/ref | summary |
 |:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-10-30 | `20261030T1200Z-rho-plain-negmap` | `8d711d0d55bb` | 0.9345 | 2000 | – | 0% | – | Plain negation-map rho: pooled held-out group_ops ratio 0.7483 [0.7413, 0.7556] over 12000 paired solves at 20-40 bits;  |
+| 2026-10-30 | `20261030T1200Z-rho-plain-negmap` | `8d711d0d55bb` | 0.9345 | 2000 | – | –% | – | Plain negation-map rho: pooled held-out group_ops ratio 0.7483 [0.7413, 0.7556] over 12000 paired solves at 20-40 bits;  |
 
 ### ecdlp:rho-plain-negmap · group_ops_ratio_pooled [ratio]
 
 | date | record | commit | value | n | spread | gain vs first | value/ref | summary |
 |:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-10-30 | `20261030T1200Z-rho-plain-negmap` | `8d711d0d55bb` | 0.7483 | 12000 | – | 0% | – | Plain negation-map rho: pooled held-out group_ops ratio 0.7483 [0.7413, 0.7556] over 12000 paired solves at 20-40 bits;  |
+| 2026-10-30 | `20261030T1200Z-rho-plain-negmap` | `8d711d0d55bb` | 0.7483 | 12000 | – | –% | – | Plain negation-map rho: pooled held-out group_ops ratio 0.7483 [0.7413, 0.7556] over 12000 paired solves at 20-40 bits;  |
 
 ### ecdlp:rho-plain-negmap · mean_s_20 [S]
 
 | date | record | commit | value | n | spread | gain vs first | value/ref | summary |
 |:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-10-30 | `20261030T1200Z-rho-plain-negmap` | `8d711d0d55bb` | 1.441 | 2000 | – | 0% | 0.6653 | Plain negation-map rho: pooled held-out group_ops ratio 0.7483 [0.7413, 0.7556] over 12000 paired solves at 20-40 bits;  |
+| 2026-10-30 | `20261030T1200Z-rho-plain-negmap` | `8d711d0d55bb` | 1.441 | 2000 | – | –% | 0.6653 | Plain negation-map rho: pooled held-out group_ops ratio 0.7483 [0.7413, 0.7556] over 12000 paired solves at 20-40 bits;  |
 
 ### ecdlp:rho-plain-negmap · mean_s_24 [S]
 
 | date | record | commit | value | n | spread | gain vs first | value/ref | summary |
 |:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-10-30 | `20261030T1200Z-rho-plain-negmap` | `8d711d0d55bb` | 1.149 | 2000 | – | 0% | 0.6289 | Plain negation-map rho: pooled held-out group_ops ratio 0.7483 [0.7413, 0.7556] over 12000 paired solves at 20-40 bits;  |
+| 2026-10-30 | `20261030T1200Z-rho-plain-negmap` | `8d711d0d55bb` | 1.149 | 2000 | – | –% | 0.6289 | Plain negation-map rho: pooled held-out group_ops ratio 0.7483 [0.7413, 0.7556] over 12000 paired solves at 20-40 bits;  |
 
 ### ecdlp:rho-plain-negmap · mean_s_28 [S]
 
 | date | record | commit | value | n | spread | gain vs first | value/ref | summary |
 |:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-10-30 | `20261030T1200Z-rho-plain-negmap` | `8d711d0d55bb` | 1.033 | 2000 | – | 0% | 0.5876 | Plain negation-map rho: pooled held-out group_ops ratio 0.7483 [0.7413, 0.7556] over 12000 paired solves at 20-40 bits;  |
+| 2026-10-30 | `20261030T1200Z-rho-plain-negmap` | `8d711d0d55bb` | 1.033 | 2000 | – | –% | 0.5876 | Plain negation-map rho: pooled held-out group_ops ratio 0.7483 [0.7413, 0.7556] over 12000 paired solves at 20-40 bits;  |
 
 ### ecdlp:rho-plain-negmap · mean_s_32 [S]
 
 | date | record | commit | value | n | spread | gain vs first | value/ref | summary |
 |:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-10-30 | `20261030T1200Z-rho-plain-negmap` | `8d711d0d55bb` | 0.98 | 2000 | – | 0% | 0.8604 | Plain negation-map rho: pooled held-out group_ops ratio 0.7483 [0.7413, 0.7556] over 12000 paired solves at 20-40 bits;  |
+| 2026-10-30 | `20261030T1200Z-rho-plain-negmap` | `8d711d0d55bb` | 0.98 | 2000 | – | –% | 0.8604 | Plain negation-map rho: pooled held-out group_ops ratio 0.7483 [0.7413, 0.7556] over 12000 paired solves at 20-40 bits;  |
 
 ### ecdlp:rho-plain-negmap · mean_s_36 [S]
 
 | date | record | commit | value | n | spread | gain vs first | value/ref | summary |
 |:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-10-30 | `20261030T1200Z-rho-plain-negmap` | `8d711d0d55bb` | 0.95 | 2000 | – | 0% | 0.8854 | Plain negation-map rho: pooled held-out group_ops ratio 0.7483 [0.7413, 0.7556] over 12000 paired solves at 20-40 bits;  |
+| 2026-10-30 | `20261030T1200Z-rho-plain-negmap` | `8d711d0d55bb` | 0.95 | 2000 | – | –% | 0.8854 | Plain negation-map rho: pooled held-out group_ops ratio 0.7483 [0.7413, 0.7556] over 12000 paired solves at 20-40 bits;  |
 
 ### ecdlp:rho-plain-negmap · mean_s_40 [S]
 
 | date | record | commit | value | n | spread | gain vs first | value/ref | summary |
 |:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-10-30 | `20261030T1200Z-rho-plain-negmap` | `8d711d0d55bb` | 0.909 | 2000 | – | 0% | 0.9342 | Plain negation-map rho: pooled held-out group_ops ratio 0.7483 [0.7413, 0.7556] over 12000 paired solves at 20-40 bits;  |
-
-### ic:N53 · cost_per_trial_ratio.aa [ratio]
-
-| date | record | commit | value | n | spread | gain vs first | value/ref | summary |
-|:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-11-04 | `20261104T0352Z-descent-walks-k0n53` | `20228687b467` | 0.9918 | 768 | 0.9746–1.0092 | -0% | – | k0n53 walked descent, frozen protocol: 512 walks per shared inversion lower cost per trial 1.095x (CI 1.080-1.109, A/A + |
-
-### ic:N53 · cost_per_trial_ratio.w128 [ratio]
-
-| date | record | commit | value | n | spread | gain vs first | value/ref | summary |
-|:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-11-04 | `20261104T0352Z-descent-walks-k0n53` | `20228687b467` | 1.0391 | 768 | 1.0081–1.0641 | -0% | – | k0n53 walked descent, frozen protocol: 512 walks per shared inversion lower cost per trial 1.095x (CI 1.080-1.109, A/A + |
-
-### ic:N53 · cost_per_trial_ratio.w256 [ratio]
-
-| date | record | commit | value | n | spread | gain vs first | value/ref | summary |
-|:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-11-04 | `20261104T0352Z-descent-walks-k0n53` | `20228687b467` | 1.0834 | 768 | 1.0637–1.1021 | -0% | – | k0n53 walked descent, frozen protocol: 512 walks per shared inversion lower cost per trial 1.095x (CI 1.080-1.109, A/A + |
-
-### ic:N53 · cost_per_trial_ratio.w512 [ratio]
-
-| date | record | commit | value | n | spread | gain vs first | value/ref | summary |
-|:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-11-04 | `20261104T0352Z-descent-walks-k0n53` | `20228687b467` | 1.0946 | 768 | 1.0802–1.1086 | -0% | – | k0n53 walked descent, frozen protocol: 512 walks per shared inversion lower cost per trial 1.095x (CI 1.080-1.109, A/A + |
-
-### ic:N53 · descents_verified [count]
-
-| date | record | commit | value | n | spread | gain vs first | value/ref | summary |
-|:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-11-04 | `20261104T0352Z-descent-walks-k0n53` | `20228687b467` | 3,840 | – | – | –% | – | k0n53 walked descent, frozen protocol: 512 walks per shared inversion lower cost per trial 1.095x (CI 1.080-1.109, A/A + |
+| 2026-10-30 | `20261030T1200Z-rho-plain-negmap` | `8d711d0d55bb` | 0.909 | 2000 | – | –% | 0.9342 | Plain negation-map rho: pooled held-out group_ops ratio 0.7483 [0.7413, 0.7556] over 12000 paired solves at 20-40 bits;  |
 
 ### ic:N53 · filter_admit_rate [percent]
 
 | date | record | commit | value | n | spread | gain vs first | value/ref | summary |
 |:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-11-04 | `20261104T0723Z-descent-phases-k0n53` | `fe79ec13a9eb` | 12.29 | 8000000 | – | 0% | – | Diagnostic native phase profile of the k0n53 walked descent at 512 walks (main fe79ec13a): batched add 38-39%, filter pr |
+| 2026-11-04 | `20261104T0723Z-descent-phases-k0n53` | `fe79ec13a9eb` | 12.29 | 8000000 | – | –% | – | Diagnostic native phase profile of the k0n53 walked descent at 512 walks (main fe79ec13a): batched add 38-39%, filter pr |
 
 ### ic:N53 · ir.koblitz_descent_k0n53_m2_x4 [ir]
 
 | date | record | commit | value | n | spread | gain vs first | value/ref | summary |
 |:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-11-04 | `20261104T0557Z-proj-orbit-fast` | `dfa95aaed0cc` | 5.73e+08 | 1 | – | 0% | – | Cofactor projection of the factor base by one scalar product per Frobenius orbit: Callgrind Ir k0n53 descent 1.276x, k0n |
+| 2026-11-04 | `20261104T0557Z-proj-orbit-fast` | `dfa95aaed0cc` | 5.73e+08 | 1 | – | –% | – | Cofactor projection of the factor base by one scalar product per Frobenius orbit: Callgrind Ir k0n53 descent 1.276x, k0n |
 
 ### ic:N53 · ir.koblitz_rung_k0n31 [ir]
 
 | date | record | commit | value | n | spread | gain vs first | value/ref | summary |
 |:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-11-04 | `20261104T0557Z-proj-orbit-fast` | `dfa95aaed0cc` | 2.026e+08 | 1 | – | 0% | – | Cofactor projection of the factor base by one scalar product per Frobenius orbit: Callgrind Ir k0n53 descent 1.276x, k0n |
-
-### ic:N53 · ir_per_trial.w512 [ir_per_op]
-
-| date | record | commit | value | n | spread | gain vs first | value/ref | summary |
-|:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-11-04 | `20261104T0352Z-descent-walks-k0n53` | `20228687b467` | 692.5 | 8 | – | 0% | – | k0n53 walked descent, frozen protocol: 512 walks per shared inversion lower cost per trial 1.095x (CI 1.080-1.109, A/A + |
-
-### ic:N53 · ir_per_trial.w64 [ir_per_op]
-
-| date | record | commit | value | n | spread | gain vs first | value/ref | summary |
-|:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-11-04 | `20261104T0352Z-descent-walks-k0n53` | `20228687b467` | 735.3 | 8 | – | 0% | – | k0n53 walked descent, frozen protocol: 512 walks per shared inversion lower cost per trial 1.095x (CI 1.080-1.109, A/A + |
-
-### ic:N53 · perfbench_descent_k0n53_ratio [ratio]
-
-| date | record | commit | value | n | spread | gain vs first | value/ref | summary |
-|:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-11-04 | `20261104T0352Z-descent-walks-k0n53` | `20228687b467` | 1.2224 | 7 | 1.088–1.362 | -0% | – | k0n53 walked descent, frozen protocol: 512 walks per shared inversion lower cost per trial 1.095x (CI 1.080-1.109, A/A + |
+| 2026-11-04 | `20261104T0557Z-proj-orbit-fast` | `dfa95aaed0cc` | 2.026e+08 | 1 | – | –% | – | Cofactor projection of the factor base by one scalar product per Frobenius orbit: Callgrind Ir k0n53 descent 1.276x, k0n |
 
 ### ic:N53 · share.add_many_lazy [percent]
 
 | date | record | commit | value | n | spread | gain vs first | value/ref | summary |
 |:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-11-04 | `20261104T0723Z-descent-phases-k0n53` | `fe79ec13a9eb` | 38.5 | 3 | 37.8–38.7 | 0% | – | Diagnostic native phase profile of the k0n53 walked descent at 512 walks (main fe79ec13a): batched add 38-39%, filter pr |
+| 2026-11-04 | `20261104T0723Z-descent-phases-k0n53` | `fe79ec13a9eb` | 38.5 | 3 | 37.8–38.7 | –% | – | Diagnostic native phase profile of the k0n53 walked descent at 512 walks (main fe79ec13a): batched add 38-39%, filter pr |
 
 ### ic:N53 · share.contains_key_loop [percent]
 
 | date | record | commit | value | n | spread | gain vs first | value/ref | summary |
 |:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-11-04 | `20261104T0723Z-descent-phases-k0n53` | `fe79ec13a9eb` | 35.3 | 3 | 33.8–36 | 0% | – | Diagnostic native phase profile of the k0n53 walked descent at 512 walks (main fe79ec13a): batched add 38-39%, filter pr |
+| 2026-11-04 | `20261104T0723Z-descent-phases-k0n53` | `fe79ec13a9eb` | 35.3 | 3 | 33.8–36 | –% | – | Diagnostic native phase profile of the k0n53 walked descent at 512 walks (main fe79ec13a): batched add 38-39%, filter pr |
 
 ### ic:N53 · share.keys_of [percent]
 
 | date | record | commit | value | n | spread | gain vs first | value/ref | summary |
 |:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-11-04 | `20261104T0723Z-descent-phases-k0n53` | `fe79ec13a9eb` | 10.6 | 3 | 10.1–10.9 | 0% | – | Diagnostic native phase profile of the k0n53 walked descent at 512 walks (main fe79ec13a): batched add 38-39%, filter pr |
+| 2026-11-04 | `20261104T0723Z-descent-phases-k0n53` | `fe79ec13a9eb` | 10.6 | 3 | 10.1–10.9 | –% | – | Diagnostic native phase profile of the k0n53 walked descent at 512 walks (main fe79ec13a): batched add 38-39%, filter pr |
 
 ### ic:N53 · trials [count]
 
@@ -452,216 +390,179 @@ Headline unit: `S` (group operations / sqrt(n); the ECDLP cost unit, every phase
 |:--|:--|:--|--:|--:|:--|--:|--:|:--|
 | 2026-11-04 | `20261104T0723Z-descent-phases-k0n53` | `fe79ec13a9eb` | 1.207e+07 | – | – | –% | – | Diagnostic native phase profile of the k0n53 walked descent at 512 walks (main fe79ec13a): batched add 38-39%, filter pr |
 
-### ic:N53 · wall_ratio.koblitz_collect_k0n53_w477_u1024 [ratio]
-
-| date | record | commit | value | n | spread | gain vs first | value/ref | summary |
-|:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-11-04 | `20261104T1632Z-pair-filter-two-bit` | `1011c46a8754` | 1.136 | 15 | 1.093–1.162 | -0% | – | Two-bit presence filter for CPU-built folded pair tables: k0n53 relation collection 1.136x (CI 1.093-1.162) vs main a08c |
-
 ### ic:N53 · wall_ratio.koblitz_descent_k0n53_m2_x4 [ratio]
 
 | date | record | commit | value | n | spread | gain vs first | value/ref | summary |
 |:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-11-04 | `20261104T0557Z-proj-orbit-fast` | `dfa95aaed0cc` | 1.254 | 15 | 1.118–1.371 | -0% | – | Cofactor projection of the factor base by one scalar product per Frobenius orbit: Callgrind Ir k0n53 descent 1.276x, k0n |
-| 2026-11-04 | `20261104T1632Z-pair-filter-two-bit` | `1011c46a8754` | 1.085 | 15 | 0.996–1.159 | -13.4769% | – | Two-bit presence filter for CPU-built folded pair tables: k0n53 relation collection 1.136x (CI 1.093-1.162) vs main a08c |
+| 2026-11-04 | `20261104T0557Z-proj-orbit-fast` | `dfa95aaed0cc` | 1.254 | 15 | 1.118–1.371 | –% | – | Cofactor projection of the factor base by one scalar product per Frobenius orbit: Callgrind Ir k0n53 descent 1.276x, k0n |
 
 ### ic:N53 · wall_ratio.koblitz_rung_k0n31 [ratio]
 
 | date | record | commit | value | n | spread | gain vs first | value/ref | summary |
 |:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-11-04 | `20261104T0557Z-proj-orbit-fast` | `dfa95aaed0cc` | 1.151 | 15 | 1.088–1.396 | -0% | – | Cofactor projection of the factor base by one scalar product per Frobenius orbit: Callgrind Ir k0n53 descent 1.276x, k0n |
-
-### kernel:clmad_sm120 · clmad_lo_chain_latency_rtx5090 [cycles_per_op]
-
-| date | record | commit | value | n | spread | gain vs first | value/ref | summary |
-|:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-11-10 | `20261110T0408Z-clmad-audit` | `fe751b09b08b` | 55.084 | 100 | 55.084–55.092 | 0% | – | clmad on sm_120: third-party reproducer shows the ptxas constant-fold defect on both 13.3.73 and 13.4.92 (N=14,15,18,19  |
-
-### kernel:clmad_sm120 · clmad_lo_chain_latency_rtxpro6000 [cycles_per_op]
-
-| date | record | commit | value | n | spread | gain vs first | value/ref | summary |
-|:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-11-10 | `20261110T0408Z-clmad-audit` | `fe751b09b08b` | 63.528 | 100 | 63.528–63.54 | 0% | – | clmad on sm_120: third-party reproducer shows the ptxas constant-fold defect on both 13.3.73 and 13.4.92 (N=14,15,18,19  |
-
-### kernel:clmad_sm120 · clmad_lo_chain_occupancy_rtx5090 [cycles_per_op]
-
-| date | record | commit | value | n | spread | gain vs first | value/ref | summary |
-|:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-11-10 | `20261110T0408Z-clmad-audit` | `fe751b09b08b` | 255.86 | 50 | 255.842–255.881 | 0% | – | clmad on sm_120: third-party reproducer shows the ptxas constant-fold defect on both 13.3.73 and 13.4.92 (N=14,15,18,19  |
-
-### kernel:clmad_sm120 · clmad_lo_chain_occupancy_rtxpro6000 [cycles_per_op]
-
-| date | record | commit | value | n | spread | gain vs first | value/ref | summary |
-|:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-11-10 | `20261110T0408Z-clmad-audit` | `fe751b09b08b` | 255.901 | 50 | 255.896–255.928 | 0% | – | clmad on sm_120: third-party reproducer shows the ptxas constant-fold defect on both 13.3.73 and 13.4.92 (N=14,15,18,19  |
+| 2026-11-04 | `20261104T0557Z-proj-orbit-fast` | `dfa95aaed0cc` | 1.151 | 15 | 1.088–1.396 | –% | – | Cofactor projection of the factor base by one scalar product per Frobenius orbit: Callgrind Ir k0n53 descent 1.276x, k0n |
 
 ### kernel:gf2_n53 · wall_ratio.gf2_n53_mul_sqr_1m [ratio]
 
 | date | record | commit | value | n | spread | gain vs first | value/ref | summary |
 |:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-11-04 | `20261104T1538Z-gf2-penta-fold` | `72581544e602` | 0.794 | 9 | 0.557–0.86 | -0% | – | Negative result: shift-xor fold for the n=53 pentanomial, faster in isolation, was 0.794x on gf2_n53_mul_sqr_1m and 0.99 |
+| 2026-11-04 | `20261104T1538Z-gf2-penta-fold` | `72581544e602` | 0.794 | 9 | 0.557–0.86 | –% | – | Negative result: shift-xor fold for the n=53 pentanomial, faster in isolation, was 0.794x on gf2_n53_mul_sqr_1m and 0.99 |
 
 ### kernel:gf2_n53 · wall_ratio.koblitz_collect_k0n53_w477_u1024 [ratio]
 
 | date | record | commit | value | n | spread | gain vs first | value/ref | summary |
 |:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-11-04 | `20261104T1538Z-gf2-penta-fold` | `72581544e602` | 0.865 | 9 | 0.644–0.99 | -0% | – | Negative result: shift-xor fold for the n=53 pentanomial, faster in isolation, was 0.794x on gf2_n53_mul_sqr_1m and 0.99 |
+| 2026-11-04 | `20261104T1538Z-gf2-penta-fold` | `72581544e602` | 0.865 | 9 | 0.644–0.99 | –% | – | Negative result: shift-xor fold for the n=53 pentanomial, faster in isolation, was 0.794x on gf2_n53_mul_sqr_1m and 0.99 |
 
 ### kernel:n83_fieldops2_local_diag · local_index_build_a_over_b [ratio]
 
 | date | record | commit | value | n | spread | gain vs first | value/ref | summary |
 |:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-11-07 | `20261107T2050Z-n83-fieldops2-local` | `12d419499d1f` | 1.0425 | 4 | – | -0% | – | LOCAL DIAGNOSTIC (shared VM, one pinned CPU, not evidence): R1 vs the field-ops row, identical index, layout, relation,  |
+| 2026-11-07 | `20261107T2050Z-n83-fieldops2-local` | `12d419499d1f` | 1.0425 | 4 | – | –% | – | LOCAL DIAGNOSTIC (shared VM, one pinned CPU, not evidence): R1 vs the field-ops row, identical index, layout, relation,  |
 
 ### kernel:n83_fieldops2_local_diag · local_online_a_over_b [ratio]
 
 | date | record | commit | value | n | spread | gain vs first | value/ref | summary |
 |:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-11-07 | `20261107T2050Z-n83-fieldops2-local` | `12d419499d1f` | 1.0507 | 4 | – | -0% | – | LOCAL DIAGNOSTIC (shared VM, one pinned CPU, not evidence): R1 vs the field-ops row, identical index, layout, relation,  |
+| 2026-11-07 | `20261107T2050Z-n83-fieldops2-local` | `12d419499d1f` | 1.0507 | 4 | – | –% | – | LOCAL DIAGNOSTIC (shared VM, one pinned CPU, not evidence): R1 vs the field-ops row, identical index, layout, relation,  |
 
 ### kernel:n83_fieldops2_local_diag · local_rank_stage_a_over_b [ratio]
 
 | date | record | commit | value | n | spread | gain vs first | value/ref | summary |
 |:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-11-07 | `20261107T2050Z-n83-fieldops2-local` | `12d419499d1f` | 1.0163 | 3 | – | -0% | – | LOCAL DIAGNOSTIC (shared VM, one pinned CPU, not evidence): R1 vs the field-ops row, identical index, layout, relation,  |
+| 2026-11-07 | `20261107T2050Z-n83-fieldops2-local` | `12d419499d1f` | 1.0163 | 3 | – | –% | – | LOCAL DIAGNOSTIC (shared VM, one pinned CPU, not evidence): R1 vs the field-ops row, identical index, layout, relation,  |
 
 ### kernel:n83_fieldops2_local_diag · local_scan_selftest_a_over_b [ratio]
 
 | date | record | commit | value | n | spread | gain vs first | value/ref | summary |
 |:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-11-07 | `20261107T2050Z-n83-fieldops2-local` | `12d419499d1f` | 0.9385 | 4 | – | -0% | – | LOCAL DIAGNOSTIC (shared VM, one pinned CPU, not evidence): R1 vs the field-ops row, identical index, layout, relation,  |
+| 2026-11-07 | `20261107T2050Z-n83-fieldops2-local` | `12d419499d1f` | 0.9385 | 4 | – | –% | – | LOCAL DIAGNOSTIC (shared VM, one pinned CPU, not evidence): R1 vs the field-ops row, identical index, layout, relation,  |
 
 ### kernel:prime31aux-circuit-retrospective · v1_reported_stage_median [wall_s]
 
 | date | record | commit | value | n | spread | gain vs first | value/ref | summary |
 |:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-11-15 | `20261115T0646Z-prime31-retro-circuit-v1` | `4551d77ae4a8` | 0.0012 | 16 | – | 0% | – | Retrospective unverified producer observations; Stage-only extraction: 16 fixed targets, 8 repetitions each; no end-to-e |
+| 2026-11-15 | `20261115T0646Z-prime31-retro-circuit-v1` | `4551d77ae4a8` | 0.0012 | 16 | – | –% | – | Retrospective unverified producer observations; Stage-only extraction: 16 fixed targets, 8 repetitions each; no end-to-e |
 
 ### kernel:prime31aux-circuit-retrospective · v2_reported_stage_median [wall_s]
 
 | date | record | commit | value | n | spread | gain vs first | value/ref | summary |
 |:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-11-15 | `20261115T0646Z-prime31-retro-circuit-v2` | `4551d77ae4a8` | 0.0004062 | 16 | – | 0% | – | Retrospective unverified producer observations; Stage-only extraction: 16 fixed targets, 8 repetitions each; no end-to-e |
+| 2026-11-15 | `20261115T0646Z-prime31-retro-circuit-v2` | `4551d77ae4a8` | 0.0004062 | 16 | – | –% | – | Retrospective unverified producer observations; Stage-only extraction: 16 fixed targets, 8 repetitions each; no end-to-e |
 
 ### kernel:prime31aux-gcd-retrospective · blocked_gcd_reported_stage_median [wall_s]
 
 | date | record | commit | value | n | spread | gain vs first | value/ref | summary |
 |:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-11-15 | `20261115T0646Z-prime31-retro-gcd-blocked-gcd` | `4551d77ae4a8` | 0.1957 | 16 | – | 0% | – | Retrospective unverified producer observations; Stage-only extraction, original 32768-root workload; unsigned producer o |
+| 2026-11-15 | `20261115T0646Z-prime31-retro-gcd-blocked-gcd` | `4551d77ae4a8` | 0.1957 | 16 | – | –% | – | Retrospective unverified producer observations; Stage-only extraction, original 32768-root workload; unsigned producer o |
 
 ### kernel:prime31aux-gcd-retrospective · flint_gcd_reported_stage_median [wall_s]
 
 | date | record | commit | value | n | spread | gain vs first | value/ref | summary |
 |:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-11-15 | `20261115T0646Z-prime31-retro-gcd-flint-gcd` | `4551d77ae4a8` | 0.2844 | 16 | – | 0% | – | Retrospective unverified producer observations; Stage-only extraction, original 32768-root workload; unsigned producer o |
+| 2026-11-15 | `20261115T0646Z-prime31-retro-gcd-flint-gcd` | `4551d77ae4a8` | 0.2844 | 16 | – | –% | – | Retrospective unverified producer observations; Stage-only extraction, original 32768-root workload; unsigned producer o |
 
 ### kernel:prime31aux-gcd-retrospective · lifted_blocked_gcd_reported_stage_median [wall_s]
 
 | date | record | commit | value | n | spread | gain vs first | value/ref | summary |
 |:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-11-15 | `20261115T0646Z-prime31-retro-gcd-lifted-blocked-gcd` | `4551d77ae4a8` | 0.1019 | 16 | – | 0% | – | Retrospective unverified producer observations; Stage-only extraction, original 32768-root workload; unsigned producer o |
+| 2026-11-15 | `20261115T0646Z-prime31-retro-gcd-lifted-blocked-gcd` | `4551d77ae4a8` | 0.1019 | 16 | – | –% | – | Retrospective unverified producer observations; Stage-only extraction, original 32768-root workload; unsigned producer o |
 
 ### kernel:prime31aux-gcd-retrospective · native_circuit_reported_stage_median [wall_s]
 
 | date | record | commit | value | n | spread | gain vs first | value/ref | summary |
 |:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-11-15 | `20261115T0646Z-prime31-retro-gcd-native-circuit` | `4551d77ae4a8` | 0.0012 | 16 | – | 0% | – | Retrospective unverified producer observations; Stage-only extraction, original 32768-root workload; unsigned producer o |
+| 2026-11-15 | `20261115T0646Z-prime31-retro-gcd-native-circuit` | `4551d77ae4a8` | 0.0012 | 16 | – | –% | – | Retrospective unverified producer observations; Stage-only extraction, original 32768-root workload; unsigned producer o |
 
 ### kernel:suite_gf2_koblitz · ir.gf2_n53_inv_16k [ir]
 
 | date | record | commit | value | n | spread | gain vs first | value/ref | summary |
 |:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-11-04 | `20261104T0342Z-suite-gf2-inv-chain` | `796825b49768` | 1.978e+07 | 1 | – | 0% | – | Rust suite Gf2 inversion chain by nibble tables, trinomial shift fold, shared tables, IFMA CSR rows: perfindex wall inde |
+| 2026-11-04 | `20261104T0342Z-suite-gf2-inv-chain` | `796825b49768` | 1.978e+07 | 1 | – | –% | – | Rust suite Gf2 inversion chain by nibble tables, trinomial shift fold, shared tables, IFMA CSR rows: perfindex wall inde |
 
 ### kernel:suite_gf2_koblitz · ir.koblitz_collect_k0n41_w164_u4096 [ir]
 
 | date | record | commit | value | n | spread | gain vs first | value/ref | summary |
 |:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-11-04 | `20261104T0342Z-suite-gf2-inv-chain` | `796825b49768` | 3.147e+08 | 1 | – | 0% | – | Rust suite Gf2 inversion chain by nibble tables, trinomial shift fold, shared tables, IFMA CSR rows: perfindex wall inde |
+| 2026-11-04 | `20261104T0342Z-suite-gf2-inv-chain` | `796825b49768` | 3.147e+08 | 1 | – | –% | – | Rust suite Gf2 inversion chain by nibble tables, trinomial shift fold, shared tables, IFMA CSR rows: perfindex wall inde |
 
 ### kernel:suite_gf2_koblitz · ir.koblitz_collect_k0n53_w477_u1024 [ir]
 
 | date | record | commit | value | n | spread | gain vs first | value/ref | summary |
 |:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-11-04 | `20261104T0342Z-suite-gf2-inv-chain` | `796825b49768` | 3.261e+08 | 1 | – | 0% | – | Rust suite Gf2 inversion chain by nibble tables, trinomial shift fold, shared tables, IFMA CSR rows: perfindex wall inde |
+| 2026-11-04 | `20261104T0342Z-suite-gf2-inv-chain` | `796825b49768` | 3.261e+08 | 1 | – | –% | – | Rust suite Gf2 inversion chain by nibble tables, trinomial shift fold, shared tables, IFMA CSR rows: perfindex wall inde |
 
 ### kernel:suite_gf2_koblitz · ir.koblitz_curve_mul_n53_1k [ir]
 
 | date | record | commit | value | n | spread | gain vs first | value/ref | summary |
 |:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-11-04 | `20261104T0342Z-suite-gf2-inv-chain` | `796825b49768` | 5.401e+07 | 1 | – | 0% | – | Rust suite Gf2 inversion chain by nibble tables, trinomial shift fold, shared tables, IFMA CSR rows: perfindex wall inde |
+| 2026-11-04 | `20261104T0342Z-suite-gf2-inv-chain` | `796825b49768` | 5.401e+07 | 1 | – | –% | – | Rust suite Gf2 inversion chain by nibble tables, trinomial shift fold, shared tables, IFMA CSR rows: perfindex wall inde |
 
 ### kernel:suite_gf2_koblitz · ir.koblitz_descent_k0n53_m2_x4 [ir]
 
 | date | record | commit | value | n | spread | gain vs first | value/ref | summary |
 |:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-11-04 | `20261104T0342Z-suite-gf2-inv-chain` | `796825b49768` | 7.312e+08 | 1 | – | 0% | – | Rust suite Gf2 inversion chain by nibble tables, trinomial shift fold, shared tables, IFMA CSR rows: perfindex wall inde |
+| 2026-11-04 | `20261104T0342Z-suite-gf2-inv-chain` | `796825b49768` | 7.312e+08 | 1 | – | –% | – | Rust suite Gf2 inversion chain by nibble tables, trinomial shift fold, shared tables, IFMA CSR rows: perfindex wall inde |
 
 ### kernel:suite_gf2_koblitz · ir.koblitz_rung_k0n31 [ir]
 
 | date | record | commit | value | n | spread | gain vs first | value/ref | summary |
 |:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-11-04 | `20261104T0342Z-suite-gf2-inv-chain` | `796825b49768` | 2.314e+08 | 1 | – | 0% | – | Rust suite Gf2 inversion chain by nibble tables, trinomial shift fold, shared tables, IFMA CSR rows: perfindex wall inde |
+| 2026-11-04 | `20261104T0342Z-suite-gf2-inv-chain` | `796825b49768` | 2.314e+08 | 1 | – | –% | – | Rust suite Gf2 inversion chain by nibble tables, trinomial shift fold, shared tables, IFMA CSR rows: perfindex wall inde |
 
 ### kernel:suite_gf2_koblitz · ir.koblitz_signed_rho_k0_n41 [ir]
 
 | date | record | commit | value | n | spread | gain vs first | value/ref | summary |
 |:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-11-04 | `20261104T0342Z-suite-gf2-inv-chain` | `796825b49768` | 3.364e+08 | 1 | – | 0% | – | Rust suite Gf2 inversion chain by nibble tables, trinomial shift fold, shared tables, IFMA CSR rows: perfindex wall inde |
+| 2026-11-04 | `20261104T0342Z-suite-gf2-inv-chain` | `796825b49768` | 3.364e+08 | 1 | – | –% | – | Rust suite Gf2 inversion chain by nibble tables, trinomial shift fold, shared tables, IFMA CSR rows: perfindex wall inde |
 
 ### kernel:suite_gf2_koblitz · perfindex_wall_index [ratio]
 
 | date | record | commit | value | n | spread | gain vs first | value/ref | summary |
 |:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-11-04 | `20261104T0342Z-suite-gf2-inv-chain` | `796825b49768` | 1.2148 | 7 | 1.1757–1.2847 | -0% | – | Rust suite Gf2 inversion chain by nibble tables, trinomial shift fold, shared tables, IFMA CSR rows: perfindex wall inde |
+| 2026-11-04 | `20261104T0342Z-suite-gf2-inv-chain` | `796825b49768` | 1.2148 | 7 | 1.1757–1.2847 | –% | – | Rust suite Gf2 inversion chain by nibble tables, trinomial shift fold, shared tables, IFMA CSR rows: perfindex wall inde |
 
 ### kernel:suite_gf2_koblitz · wall_ratio.gf2_n53_inv_16k [ratio]
 
 | date | record | commit | value | n | spread | gain vs first | value/ref | summary |
 |:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-11-04 | `20261104T0342Z-suite-gf2-inv-chain` | `796825b49768` | 4.1436 | 7 | 4.0955–4.3122 | -0% | – | Rust suite Gf2 inversion chain by nibble tables, trinomial shift fold, shared tables, IFMA CSR rows: perfindex wall inde |
+| 2026-11-04 | `20261104T0342Z-suite-gf2-inv-chain` | `796825b49768` | 4.1436 | 7 | 4.0955–4.3122 | –% | – | Rust suite Gf2 inversion chain by nibble tables, trinomial shift fold, shared tables, IFMA CSR rows: perfindex wall inde |
 
 ### kernel:suite_gf2_koblitz · wall_ratio.koblitz_collect_k0n41_w164_u4096 [ratio]
 
 | date | record | commit | value | n | spread | gain vs first | value/ref | summary |
 |:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-11-04 | `20261104T0342Z-suite-gf2-inv-chain` | `796825b49768` | 1.1933 | 7 | 0.8439–1.2267 | -0% | – | Rust suite Gf2 inversion chain by nibble tables, trinomial shift fold, shared tables, IFMA CSR rows: perfindex wall inde |
+| 2026-11-04 | `20261104T0342Z-suite-gf2-inv-chain` | `796825b49768` | 1.1933 | 7 | 0.8439–1.2267 | –% | – | Rust suite Gf2 inversion chain by nibble tables, trinomial shift fold, shared tables, IFMA CSR rows: perfindex wall inde |
 
 ### kernel:suite_gf2_koblitz · wall_ratio.koblitz_collect_k0n53_w477_u1024 [ratio]
 
 | date | record | commit | value | n | spread | gain vs first | value/ref | summary |
 |:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-11-04 | `20261104T0342Z-suite-gf2-inv-chain` | `796825b49768` | 1.0116 | 7 | 0.9702–1.0542 | -0% | – | Rust suite Gf2 inversion chain by nibble tables, trinomial shift fold, shared tables, IFMA CSR rows: perfindex wall inde |
+| 2026-11-04 | `20261104T0342Z-suite-gf2-inv-chain` | `796825b49768` | 1.0116 | 7 | 0.9702–1.0542 | –% | – | Rust suite Gf2 inversion chain by nibble tables, trinomial shift fold, shared tables, IFMA CSR rows: perfindex wall inde |
 
 ### kernel:suite_gf2_koblitz · wall_ratio.koblitz_curve_mul_n53_1k [ratio]
 
 | date | record | commit | value | n | spread | gain vs first | value/ref | summary |
 |:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-11-04 | `20261104T0342Z-suite-gf2-inv-chain` | `796825b49768` | 1.4638 | 7 | 1.46–1.4749 | -0% | – | Rust suite Gf2 inversion chain by nibble tables, trinomial shift fold, shared tables, IFMA CSR rows: perfindex wall inde |
+| 2026-11-04 | `20261104T0342Z-suite-gf2-inv-chain` | `796825b49768` | 1.4638 | 7 | 1.46–1.4749 | –% | – | Rust suite Gf2 inversion chain by nibble tables, trinomial shift fold, shared tables, IFMA CSR rows: perfindex wall inde |
 
 ### kernel:suite_gf2_koblitz · wall_ratio.koblitz_descent_k0n53_m2_x4 [ratio]
 
 | date | record | commit | value | n | spread | gain vs first | value/ref | summary |
 |:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-11-04 | `20261104T0342Z-suite-gf2-inv-chain` | `796825b49768` | 1.2539 | 7 | 1.1568–1.3707 | -0% | – | Rust suite Gf2 inversion chain by nibble tables, trinomial shift fold, shared tables, IFMA CSR rows: perfindex wall inde |
+| 2026-11-04 | `20261104T0342Z-suite-gf2-inv-chain` | `796825b49768` | 1.2539 | 7 | 1.1568–1.3707 | –% | – | Rust suite Gf2 inversion chain by nibble tables, trinomial shift fold, shared tables, IFMA CSR rows: perfindex wall inde |
 
 ### kernel:suite_gf2_koblitz · wall_ratio.koblitz_rung_k0n31 [ratio]
 
 | date | record | commit | value | n | spread | gain vs first | value/ref | summary |
 |:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-11-04 | `20261104T0342Z-suite-gf2-inv-chain` | `796825b49768` | 1.1078 | 7 | 1.091–1.1604 | -0% | – | Rust suite Gf2 inversion chain by nibble tables, trinomial shift fold, shared tables, IFMA CSR rows: perfindex wall inde |
+| 2026-11-04 | `20261104T0342Z-suite-gf2-inv-chain` | `796825b49768` | 1.1078 | 7 | 1.091–1.1604 | –% | – | Rust suite Gf2 inversion chain by nibble tables, trinomial shift fold, shared tables, IFMA CSR rows: perfindex wall inde |
 
 ### kernel:suite_gf2_koblitz · wall_ratio.koblitz_signed_rho_k0_n41 [ratio]
 
 | date | record | commit | value | n | spread | gain vs first | value/ref | summary |
 |:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-11-04 | `20261104T0342Z-suite-gf2-inv-chain` | `796825b49768` | 1.1986 | 7 | 1.1713–1.3358 | -0% | – | Rust suite Gf2 inversion chain by nibble tables, trinomial shift fold, shared tables, IFMA CSR rows: perfindex wall inde |
-
-### rho-plain-negmap-counts-20261030 · quoted_pooled_candidate_over_main [ratio]
-
-| date | record | commit | value | n | spread | gain vs first | value/ref | summary |
-|:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-11-05 | `20261105T0736Z-rho-plain-negmap-retrospective` | `0df3e3e0c537` | 0.7483 | 240 | 0.7413–0.7556 | 0% | – | Retrospective index of October 30 group_ops measurements, not a new trial; historical environment and execution details  |
+| 2026-11-04 | `20261104T0342Z-suite-gf2-inv-chain` | `796825b49768` | 1.1986 | 7 | 1.1713–1.3358 | –% | – | Rust suite Gf2 inversion chain by nibble tables, trinomial shift fold, shared tables, IFMA CSR rows: perfindex wall inde |
 
 ### xedni:affine-cvp-p67-frozen · discriminant_bits_babai_radius0 [count]
 
@@ -685,19 +586,19 @@ Headline unit: `S` (group operations / sqrt(n); the ECDLP cost unit, every phase
 
 | date | record | commit | value | n | spread | gain vs first | value/ref | summary |
 |:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-11-12 | `20261112T2257Z-xedni-lift-success-sweep` | `0d69fc5526c0` | 1.165 | 191 | – | -0% | – | Xedni lift success over p=31..65521 (500,242 trials, 572 certified successes): pooled slope -1.17 [-1.34,-1.01]; no fami |
+| 2026-11-12 | `20261112T2257Z-xedni-lift-success-sweep` | `0d69fc5526c0` | 1.165 | 191 | – | –% | – | Xedni lift success over p=31..65521 (500,242 trials, 572 certified successes): pooled slope -1.17 [-1.34,-1.01]; no fami |
 
 ### xedni:lift-success-toy-primes · pooled_slope_beta_p_ge_127 [ratio]
 
 | date | record | commit | value | n | spread | gain vs first | value/ref | summary |
 |:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-11-12 | `20261112T2257Z-xedni-lift-success-sweep` | `0d69fc5526c0` | -1.174 | 191 | -1.337–-1.012 | -0% | – | Xedni lift success over p=31..65521 (500,242 trials, 572 certified successes): pooled slope -1.17 [-1.34,-1.01]; no fami |
+| 2026-11-12 | `20261112T2257Z-xedni-lift-success-sweep` | `0d69fc5526c0` | -1.174 | 191 | -1.337–-1.012 | –% | – | Xedni lift success over p=31..65521 (500,242 trials, 572 certified successes): pooled slope -1.17 [-1.34,-1.01]; no fami |
 
 ### xedni:lift-success-toy-primes · success_rate_p127 [percent]
 
 | date | record | commit | value | n | spread | gain vs first | value/ref | summary |
 |:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-11-12 | `20261112T2257Z-xedni-lift-success-sweep` | `0d69fc5526c0` | 1.326 | 5959 | 1.05–1.65 | 0% | – | Xedni lift success over p=31..65521 (500,242 trials, 572 certified successes): pooled slope -1.17 [-1.34,-1.01]; no fami |
+| 2026-11-12 | `20261112T2257Z-xedni-lift-success-sweep` | `0d69fc5526c0` | 1.326 | 5959 | 1.05–1.65 | –% | – | Xedni lift success over p=31..65521 (500,242 trials, 572 certified successes): pooled slope -1.17 [-1.34,-1.01]; no fami |
 
 ### xedni:lift-success-toy-primes · success_rate_p65521 [percent]
 
@@ -727,7 +628,16 @@ Headline unit: `S` (group operations / sqrt(n); the ECDLP cost unit, every phase
 
 | date | record | commit | value | n | spread | gain vs first | value/ref | summary |
 |:--|:--|:--|--:|--:|:--|--:|--:|:--|
-| 2026-11-12 | `20261112T2257Z-xedni-lift-success-sweep` | `0d69fc5526c0` | 2,152 | – | – | 0% | – | Xedni lift success over p=31..65521 (500,242 trials, 572 certified successes): pooled slope -1.17 [-1.34,-1.01]; no fami |
+| 2026-11-12 | `20261112T2257Z-xedni-lift-success-sweep` | `0d69fc5526c0` | 2,152 | – | – | –% | – | Xedni lift success over p=31..65521 (500,242 trials, 572 certified successes): pooled slope -1.17 [-1.34,-1.01]; no fami |
 
 
-Every value is quoted from the record it names, in that record's unit. Percentages and ratios under 'derived' are computed here from those values and are not measurements. Series in different units are never compared.
+Every value is quoted from the record it names, in that record's unit. Percentages and ratios under 'derived' are computed here from those values and are not measurements. Series in different units are never compared. 4 digest-pinned historical measured records are excluded from all series and derived comparisons; recorded status counts retain them. See integrity_exclusions in progress.json and PROGRESS.md for reasons.
+
+## Historical records excluded from comparisons
+
+Recorded statuses above are preserved. These records contribute no points or gains.
+
+- `benchmarks/records/20261104T0352Z-descent-walks-k0n53.json` (SHA-256 `7e975bbe687aa714fbb9286b8e6dec08a43be4d1e00160970b515756bf0eb0d6`): Historical receipt lacks current comparison-eligibility metadata: command 3 has no successful integer exit code; use invalid/censored or an explicit pinned historical exclusion; command 4 has no successful integer exit code; use invalid/censored or an explicit pinned historical exclusion. Original record and successful/failed/uncertain arms are preserved. This excludes automated comparisons; it does not decide the validity of every underlying measurement.
+- `benchmarks/records/20261104T1632Z-pair-filter-two-bit.json` (SHA-256 `eeb0f0329f396e4f1081122af856e61e5fa7c902a50eb692550b43b308a45459`): Historical receipt lacks current comparison-eligibility metadata: command 1 has no successful integer exit code; use invalid/censored or an explicit pinned historical exclusion. Original record and successful/failed/uncertain arms are preserved. This excludes automated comparisons; it does not decide the validity of every underlying measurement.
+- `benchmarks/records/20261105T0736Z-rho-plain-negmap-retrospective.json` (SHA-256 `7ad301d9901de249c73c90073aa5e552748f135a166a142638b75a317054bcd3`): Historical receipt lacks current comparison-eligibility metadata: command 1 has no successful integer exit code; use invalid/censored or an explicit pinned historical exclusion; command 2 has no successful integer exit code; use invalid/censored or an explicit pinned historical exclusion; command 3 has no successful integer exit code; use invalid/censored or an explicit pinned historical exclusion. Original record and successful/failed/uncertain arms are preserved. This excludes automated comparisons; it does not decide the validity of every underlying measurement.
+- `benchmarks/records/20261110T0408Z-clmad-audit.json` (SHA-256 `c36443b17548a2f9c4f2843635fbaed6abe04788a259585f38605f7447f11349`): Historical receipt lacks current comparison-eligibility metadata: command 1 has no successful integer exit code; use invalid/censored or an explicit pinned historical exclusion; command 2 has no successful integer exit code; use invalid/censored or an explicit pinned historical exclusion. Original record and successful/failed/uncertain arms are preserved. This excludes automated comparisons; it does not decide the validity of every underlying measurement.

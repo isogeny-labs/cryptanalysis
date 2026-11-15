@@ -98,17 +98,22 @@ jobs:
         if: inputs.suite == 'batch'
         working-directory: experiments/ic-bench
         run: |
+          set -o pipefail
           python amortize.py broad-out/batch.jsonl --require-max-power 16 | tee broad-out/batch-amortization.md >> "$GITHUB_STEP_SUMMARY"
 
       - name: Standard report
         if: inputs.suite != 'batch' && inputs.suite != 'prime'
         working-directory: experiments/ic-bench
-        run: python report.py "broad-out/${{ inputs.suite }}.csv" | tee "broad-out/${{ inputs.suite }}-report.md" >> "$GITHUB_STEP_SUMMARY"
+        run: |
+          set -o pipefail
+          python report.py "broad-out/${{ inputs.suite }}.csv" | tee "broad-out/${{ inputs.suite }}-report.md" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Prime normalized report
         if: inputs.suite == 'prime'
         working-directory: experiments/ic-bench
-        run: python cross_report.py broad-out/prime.jsonl | tee broad-out/prime-report.md >> "$GITHUB_STEP_SUMMARY"
+        run: |
+          set -o pipefail
+          python cross_report.py broad-out/prime.jsonl | tee broad-out/prime-report.md >> "$GITHUB_STEP_SUMMARY"
 
       - uses: actions/upload-artifact@v7
         if: always()
