@@ -1,3 +1,21 @@
+# Original-prime native02: complete finite reprojection checks passed
+
+pcc/claims/PCC-20261115-976f50.json: source2a1a8e5/build03 and exact original checkpoint15. One unfiltered native test and worker/supervisor return0. All13 phases have their required exits. All1,077 ordered records freeze and compare whole; four actual entire-class omissions reject101 without accepted output. All1,131 prior hashes and actual test/auditor bytes remain exact. [pcc:unverified]
+
+## What was done
+The original ell2,773,073/order11,092,292 instance passes the frozen18-row, three-model,672 projected exceptional,384 public-point, cofactor, addition, original-public-control and12-vector/five-route population. The previously failed run e62fb2 is retained; build03 changes only the degree6 diagnostic formatter. Seven conditional proof roots remain6d8c42, with explicit geometric and program bridges. The known initial elliptic point avoids the initial norm and inverse-two; selected source counters remain unpriced. [pcc:unverified]
+
+## Decisions made
+Publish the result and an inspected visual report. Preserve all raw/source/executable/full prepared-copy/checkpoint bytes, with future large custody NEW24. Next publish a prospective finite census of18 model vertices,72 adjacent candidate pairs and216 triples before computing new transported masks. Preserve the fixed D12/D24/D67 negative results and the frozen prime-only choices. [pcc:unverified]
+
+## Open threads
+Result report and normal publication; then the full-group kernel-compatibility census, complete primitive/setup/known-point comparison and prime-field descent leads. Sources checked for the next census: HLP math/9809210v1 section4.1/Lemma13/Propositions14-15 and field qualification; original full18-row/64-coordinate/4096-pair tables. KB status and three searches exit127; vault remains locked and unchanged. [pcc:unverified]
+
+## Errors
+Native01 diagnostic101 and all prior implementation/infrastructure/mathematical negatives remain recorded. A metadata inspection command had a syntax error before I/O and was corrected. No new calibrated performance or signed standing is asserted. [pcc:unverified]
+
+---
+
 # Genuine23 settled; corrected original-prime source ready for checkpoint
 
 pcc/claims/PCC-20261115-e722f6.json/pcc/claims/PCC-20261115-845245.json: original43683583068/job132719230311SUCCESS, sevenremoteobjects replayed BEFOREbotf55ad14c/direct38344f9/exact9paths. All47225heldinputs/169links/ownedbytes and ordered89375812Barchive/all1100nonsecretmembers/23closedroots preserved; normalFF-artifact-wiring0/HOLD23RELEASED. All44386prior22keys/165links and67a90fd7ledgerprefix retained. Three exact canonicalmanifestentries andthree transparentrelativealiases; no new consumerremote read claimed. [pcc:unverified]
