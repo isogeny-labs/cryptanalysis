@@ -69,6 +69,12 @@ The `target_row_29_11` theorem additionally checks that the saved reduced
 points satisfy `P₁=Q−29G` and `P₂=Q−11G` on that curve. Together with the
 formal reduced relation and the `ZMod 43` recovery calculation, this gives
 an exact checked chain for the `(29,11)` row.
+The `target_row_5_23` and `mirror_reduced_relation` theorems check the
+sign-related row. A second rational elliptic-curve theorem checks
+`Q₁+2Q₂=O` for coefficients `[987,-1034,0,7660,-3997]` and points
+`(14,-7)`, `(17,-10)`; its integral model also reduces to the exact
+mod-47 curve. Thus both saved relation hits have checked curve, row, and
+scalar-recovery components.
 
 ## Construction and boundary
 

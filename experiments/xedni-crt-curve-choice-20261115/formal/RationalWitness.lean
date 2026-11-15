@@ -115,4 +115,66 @@ theorem target_row_29_11 :
 
 #print axioms target_row_29_11
 
+theorem target_row_5_23 :
+    -P₁ = Q - (5 : ℕ) • G ∧ -P₂ = Q - (23 : ℕ) • G := by
+  constructor
+  · change -P₁ = Q + -(nsmulBinRec 5 G)
+    unfold P₁ Q G
+    decide +kernel
+  · change -P₂ = Q + -(nsmulBinRec 23 G)
+    unfold P₂ Q G
+    decide +kernel
+
+#print axioms target_row_5_23
+
+theorem mirror_reduced_relation : -P₁ + -P₂ + -P₂ = 0 := by
+  have h : -P₁ + -P₂ + -P₂ = -(P₁ + P₂ + P₂) := by abel
+  rw [h, reduced_relation, neg_zero]
+
+#print axioms mirror_reduced_relation
+
+def WℤMirror : WeierstrassCurve ℤ :=
+  ⟨987, -1034, 0, 7660, -3997⟩
+
+def WMirror : WeierstrassCurve.Affine ℚ :=
+  ⟨987, -1034, 0, 7660, -3997⟩
+
+theorem mirror_rational_model : WℤMirror.map (Int.castRingHom ℚ) = WMirror := by
+  ext <;> norm_num [WℤMirror, WMirror, WeierstrassCurve.map]
+
+theorem mirror_reduced_model :
+    WℤMirror.map (Int.castRingHom (ZMod 47)) = W₄₇ := by
+  ext <;> norm_num [WℤMirror, W₄₇, WeierstrassCurve.map] <;> decide
+
+private theorem mirror_nonsingular : WMirror.Δ ≠ 0 := by
+  norm_num [WMirror, WeierstrassCurve.Δ, WeierstrassCurve.b₂,
+    WeierstrassCurve.b₄, WeierstrassCurve.b₆, WeierstrassCurve.b₈]
+
+private instance : WMirror.IsElliptic :=
+  ⟨isUnit_iff_ne_zero.mpr mirror_nonsingular⟩
+
+private theorem mirror_eq₁ : WMirror.Equation 14 (-7) := by
+  norm_num [WMirror, WeierstrassCurve.Affine.equation_iff]
+
+private theorem mirror_eq₂ : WMirror.Equation 17 (-10) := by
+  norm_num [WMirror, WeierstrassCurve.Affine.equation_iff]
+
+def Q₁Mirror : WMirror.Point := WeierstrassCurve.Affine.Point.mk mirror_eq₁
+def Q₂Mirror : WMirror.Point := WeierstrassCurve.Affine.Point.mk mirror_eq₂
+
+private theorem mirror_double : Q₂Mirror + Q₂Mirror = -Q₁Mirror := by
+  norm_num [Q₁Mirror, Q₂Mirror, WeierstrassCurve.Affine.Point.mk,
+    WeierstrassCurve.Affine.Point.add_def, WeierstrassCurve.Affine.Point.add,
+    WeierstrassCurve.Affine.Point.neg_def, WeierstrassCurve.Affine.Point.neg,
+    WeierstrassCurve.Affine.slope, WeierstrassCurve.Affine.addX,
+    WeierstrassCurve.Affine.addY, WeierstrassCurve.Affine.negAddY,
+    WeierstrassCurve.Affine.negY, WMirror]
+
+theorem mirror_rational_relation : Q₁Mirror + Q₂Mirror + Q₂Mirror = 0 := by
+  rw [add_assoc, mirror_double, add_neg_cancel]
+
+#print axioms mirror_rational_model
+#print axioms mirror_reduced_model
+#print axioms mirror_rational_relation
+
 end XedniCrtRationalWitness
