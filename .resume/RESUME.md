@@ -1,3 +1,35 @@
+# Versioned whole comparator02 compiled at unchanged criteria and limits
+
+## What was done
+pcc/claims/PCC-20261115-a6e5ea.json: separate ci_original_relation/audit-02 keeps original174696/audit01 bytes unchanged; complete JSONL records are decoded/compared sequentially with full raw/input-hash retention and exact count/order/value rules. Build01 source1532/rustfmt/metadata/release/all13 originalSHA tests/finalsource0. Newdriver02 and frozeninputs02 preserve oldsource hashes and the unchanged9aad0c/5f23dd29 contract. No version02 whole comparison/control execution yet. [pcc:unverified]
+
+## Decisions made
+Publish compiled02 source and obtain exact original checkpoint26 before run. Use new scratch/ct112-whole-relation-comparator-native-02 and RAM/dev-shm/ct112-whole-relation-comparator-controls-02 with build scratch/ct112-whole-relation-comparator-build-01. Keep fixed2GiBVM/120seconds, full positive/eightnegative/elapsed controls and whole archive/runtime/sourceguard criteria. No scientific equivalence changed. [pcc:unverified]
+
+## Open threads
+Sourcegovernance/normalpublication/checkpoint26, then version02 controls and full diagnosticCI; update draft to acceptedcomparatorversion after actualcontrols. FullscientificcustodyNEW28 and prior unassisted-successor/proof/global/calibrated/reference/admission/merge obligations remain. [pcc:unverified]
+
+## Errors
+Native01 allocation abort134/driver1 preserved by769560/2b4297 with full4.4MiB inputarchive/CRC/every-original-byte comparison0 and postfailure source/runtime0. New named problem isolates this resource/implementation gap; no mathematical result was invalidated or accepted. No cap was raised and no old pinned file altered. [pcc:unverified]
+
+---
+
+# Whole comparator01 allocation failure retained; versioned streaming repair next
+
+## What was done
+pcc/claims/PCC-20261115-769560.json / pcc/claims/PCC-20261115-2b4297.json: exacta9f16019/compiled174696/originalcheckpoint25 gate0. Whole historical byte materialization0, positive comparison abort134 with an allocation failure under the fixed2GiBVM/120-second cap; driver1, no accepted output, no negative controls executed. Full source/runtime/logs/inputs retained at scratch/ct107-whole-relation-comparator-native-01 and ct112-comparator-memory-failure-custody-01; complete positive archive CRC/full original-byte compare0 and postfailure source/runtime guards0. [pcc:unverified]
+
+## Decisions made
+Preserve all old audit01 source and174696 subjects. Implement VERSIONED audit-02, native driver02 and source guards02 with sequential complete JSONL record-pair parsing and the existing exact metadata bindings. Every value/order/count and all six complete historical fixture byte pins remain mandatory; resource caps and prospective9aad0c contract unchanged. Review uses actual allocation failure, existing original SHA streaming interface/tests and Rust standard file/JSON iteration, not a new DLP method. [pcc:unverified]
+
+## Open threads
+Versioned streaming build/source publication/originalcheckpoint26, then full positive/eightnegative/elapsed controls. Full diagnosticCI draft in scratch/ct111 remains unexecuted; adapt it to the accepted comparator version after controls. Preserve future fullscientificcustodyNEW28, then reviewed/prospective unassisted relation completion. All global/model/numericLean/calibrated/reference/admission/merge gaps remain. [pcc:unverified]
+
+## Errors
+Whole-record parse plus normalization copies cannot complete this run inside the existing virtual-memory envelope. The exact allocation point/peak is not profiled; buffering is the implementation hypothesis. This is not evidence against the mathematical input data. Keep the failed source and run, and use a new version/output without weakening complete comparisons or raising caps. [pcc:unverified]
+
+---
+
 # Complete metadata sidecar genuinely published; hold released
 
 ## What was done
