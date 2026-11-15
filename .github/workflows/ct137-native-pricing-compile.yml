@@ -87,6 +87,12 @@ jobs:
           set -euo pipefail
           python3 -S experiments/chained-transfer-public-target/paired-fourth-preflight/materialize.py \
             | tee ct137-evidence/paired-fourth-materialize.txt
+      - name: Prepare unchanged fixed-Jacobian predecessor nominal modules
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -S experiments/chained-transfer-public-target/fixed-jacobian-chain-01/materialize.py \
+            | tee ct137-evidence/fixed-chain-materialize.txt
       - name: Prepare seven unchanged literal helpers and guarded CT125 derivative
         shell: bash
         run: |
