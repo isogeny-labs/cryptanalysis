@@ -1,3 +1,13 @@
+# Fixed-model paired sampler compiled01; full native next
+
+pcc/claims/PCC-20261115-033a84.json: firstattemptcompile0/entireoldclassbodyliteral/originalgeometrycontextonly;225samples1125triples60pairs120fullreports15jointcases frozen. BothoriginalNormAssistedSampling3roots0trusted/allthreeexact20261114bindingspass; helperunusedwrongdatemetadata explicitlycorrectedwithoutmath-claim-verifieredit. New33phasewhole900s2GiB/losslessfullcontrols/eightactualomissions/finalcustody launcherready; nativepending. [pcc:unverified]
+
+Prospectiveabf432 published80631ad BEFOREsource; acceptedbaseline7df2ae/reportab5c32 atba1fae2/Root4de29a1 unchanged/all343producer sciencehashes stable. Actualpreparedsource-versus-knowninitialGpoint/samequarticactualalternateP0/allthreecross-target/omittedinverse2 controls required. Allfullsource/raw/exes/preparedcopies/failures awaitNEW26. [pcc:unverified]
+
+Nextnormalpublishcompiledsource, exactoriginalcheckpoint21 once, boundedwholepairpanel; preserveanyrealfailure. Workspace~42MiBfree; UVTypst81MBsharesinstalledinode anddoesnotfreedata, Rootunheldregistrycandidateassessment0. Cargoarchivecache28MB/readonlyarchiveview orsafeimmutableGitobjectpacking arecapacityalternatives; no researchdata/source/exe/prepareddeletion. Completeprimitive/setup/knownpoint/strongreference/liveadmission andcold12018complete102missing/124/root124/clock101/globalmainledger/review/signing gaps remain/no calibratedratio-ECDLPadvantage-signedpromotion. [pcc:unverified]
+
+---
+
 # Paired sampler prospect frozen after complete fixed original IC result
 
 pcc/claims/PCC-20261115-abf432.json BEFOREnewRust: allsameD116-39-36models/originalprime/publicpackets; entireoldnormassistedsamplerclassbodyliteral. All225scalarpairs1125triples/60pairedattempts120fullreports/15jointcorrectcases/oldseedsparams/comparisonprojection withallrawfieldsretained. Actualstrongknowninitialpoint equalityreference, samequarticdifferentP0/allthreecross-target/omittedinverse2 controls frozen. No outcomeinferred. [pcc:unverified]
