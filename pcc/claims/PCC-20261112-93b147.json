@@ -1,0 +1,51 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-12T04:42:06Z",
+ "id": "PCC-20261112-93b147",
+ "kind": "statement",
+ "producer": {
+  "commit": "25fd0be7cea37cefd298d3ac38b6f863bb9105d5",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct27-complete-observation-05.json",
+    "sha256": "1e737a9ccb8c816fd77a2b0d8616c3286f4a5900bbee74099e8357efcfd25237"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct27-complete-05.txt.xz",
+    "sha256": "59ce80d77e6a65e9b4529ec207de3bcb3b7655dc1ce792f715b79c81a6cc374f"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct27-complete-05.sha256",
+    "sha256": "957fdc07e793475ec4bba98894c1e7196217be82aa53e6003f33b3ff90a451e7"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct27-integrated-source-04.sha256",
+    "sha256": "685cdaa007974d989bd95de14666b6fbb0de795c1aaed64721682e3b92a6d814"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct27-fixtures-final-04.sha256",
+    "sha256": "3c148e9df54d4fcf1b39c7bdf9b9c54d6fb131114195885f144261900a423cf8"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Unsigned complete CT27 changed guard05 passes25native/83reference unit tests plus five integration tests,one pre-existing ignored benchmark,all source guards/fmt/strictClippy. Both T0/T1 all12317 class/negation/doubling/paired37i+7 fixtures reproduce exactly under unchanged Balanced arithmetic. Complete101216-byte raw standard-XZ archived with raw/archive hashes/exact roundtrip;post-run source04/fixture04 hashes unchanged. Root independent existing-Cantor12-test replay is separately recorded4b2aa9. No all151M-pair,isogeny-evaluation/kernel-membership independence or measured advantage."
+}

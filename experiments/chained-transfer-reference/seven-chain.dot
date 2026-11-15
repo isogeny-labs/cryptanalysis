@@ -1,0 +1,21 @@
+digraph Chain {
+  graph [rankdir=TB,bgcolor="white",pad="0.18",nodesep="1.0",ranksep="0.6"];
+  node [shape=box,style="rounded,filled",fontname="DejaVu Sans",fontsize=12,color="#3b617d",fillcolor="#edf4fb",margin="0.16,0.10"];
+  edge [fontname="DejaVu Sans",fontsize=11,color="#3b617d"];
+  E [label="E1 / F101\norder109, j12"];
+  Ep [label="E1' / F101\norder109, j87",fillcolor="#e9f5ed"];
+  J0 [label="J0 = Jac(C0)"];
+  J1 [label="J1 = Jac(C1)",fillcolor="#e9f5ed"];
+  T0 [label="T0: accepted Richelot target"];
+  T1 [label="T1: distinct F101 Jacobian",fillcolor="#e9f5ed"];
+  {rank=same;E;Ep}
+  {rank=same;J0;J1}
+  {rank=same;T0;T1}
+  E -> Ep [label="alpha1: degree7"];
+  E -> J0 [label="j0: quadratic pull"];
+  Ep -> J1 [label="j1': quadratic pull"];
+  J0 -> J1 [label="Phi: (7,7), degree49"];
+  J0 -> T0 [label="R0: (2,2)"];
+  J1 -> T1 [label="R1: (2,2)"];
+  T0 -> T1 [label="Psi: (7,7), degree49\nPsi R0 = R1 Phi",penwidth=2,color="#28724a"];
+}

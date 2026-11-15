@@ -7,6 +7,11 @@ use crate::reference::{Fp2, Fp2Ctx, FpPoly};
 use num_bigint::BigUint;
 use num_traits::ToPrimitive;
 use std::collections::BTreeMap;
+use std::sync::OnceLock;
+#[path = "closed_fibres.rs"]
+mod closed_fibres;
+#[path = "seven_glue.rs"]
+mod seven_glue;
 type Result<T> = std::result::Result<T, String>;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -276,6 +281,12 @@ impl<'a> Jacobian<'a> {
         );
         let v = k.divrem(&k.exact(&numerator, &d)?, &u).1;
         let plus = i64::from(a.plus) + i64::from(b.plus) + d.len() as i64 - 2;
+        self.reduce(u, v, plus)
+    }
+    // Shared existing reduction, also used for a four-point closed fibre.
+    // A raw finite4-2K divisor has signed plus=-1 before reduction.
+    fn reduce(&self, u: Poly, v: Poly, plus: i64) -> Result<Divisor> {
+        let k = self.k;
         let m = u.len() - 1;
         if m <= 2 && plus >= 0 && plus <= 2 - m as i64 {
             return self.pair(u, v, plus as u8);
@@ -334,15 +345,13 @@ struct RichelotMap {
     h: [Poly; 3],
     target_scale: u64,
     quadratic: Fp2Ctx,
-    square_roots: BTreeMap<(u64, u64), Fp2>,
+    square_roots: OnceLock<BTreeMap<(u64, u64), Fp2>>,
 }
 impl RichelotMap {
     fn new() -> Self {
         Self::from_assessment(construct()).unwrap()
     }
     fn from_assessment(a: Assessment) -> Result<Self> {
-        let p = a.field.p;
-        let k = Field::new(a.field);
         let pairing = a
             .pairs
             .iter()
@@ -350,15 +359,59 @@ impl RichelotMap {
                 let g = std::array::from_fn(|i| {
                     let (u, v) = p[i];
                     vec![
-                        k.k.mul(&a.roots[u], &a.roots[v]),
+                        a.field.mul(&a.roots[u], &a.roots[v]),
                         a.roots[u].add(&a.roots[v]).neg(),
-                        k.k.c(1),
+                        a.field.c(1),
                     ]
                 });
-                !k.k.determinant(&g).is_zero()
+                !a.field.determinant(&g).is_zero()
             })
+            .copied()
             .ok_or("no nondegenerate stable kernel")?;
-        assert_eq!(*pairing, [(0, 4), (1, 5), (2, 3)]);
+        // Preserve the frozen old-model choice; transported kernels use the
+        // separately validated explicit constructor below.
+        assert_eq!(pairing, [(0, 4), (1, 5), (2, 3)]);
+        Self::from_selected_pairing(a, pairing)
+    }
+    fn from_selected_pairing(a: Assessment, pairing: super::Pairing) -> Result<Self> {
+        let p = a.field.p;
+        if a.roots.len() != 6 || a.source.len() != 7 {
+            return Err("selected Richelot chart requires six branch roots and a sextic".into());
+        }
+        let mut used = [false; 6];
+        for (u, v) in pairing {
+            for i in [u, v] {
+                if i >= 6 || used[i] {
+                    return Err("selected kernel is not a disjoint six-root matching".into());
+                }
+                used[i] = true;
+            }
+        }
+        if super::canonical_pairing(pairing) != pairing || !a.pairs.contains(&pairing) {
+            return Err("selected kernel is not an inventoried canonical stable matching".into());
+        }
+        for (i, root) in a.roots.iter().enumerate() {
+            if root.p != a.field.q.p
+                || root.degree().is_some_and(|d| d >= 3)
+                || a.roots[..i].contains(root)
+            {
+                return Err(
+                    "branch roots are not six distinct canonical elements of the field".into(),
+                );
+            }
+        }
+        let mut permutation = [0; 6];
+        for (i, root) in a.roots.iter().enumerate() {
+            permutation[i] = a
+                .roots
+                .iter()
+                .position(|r| *r == a.field.pow(root, p))
+                .ok_or("branch roots are not Frobenius stable")?;
+        }
+        if !super::stable(&pairing, &permutation) {
+            return Err("selected kernel is not Frobenius stable".into());
+        }
+        let k = Field::new(a.field);
         let raw_g = std::array::from_fn(|i| {
             let (u, v) = pairing[i];
             vec![
@@ -367,16 +420,21 @@ impl RichelotMap {
                 k.k.c(1),
             ]
         });
+        if k.k.product(&raw_g) != a.source.iter().map(|c| k.k.c(*c)).collect::<Vec<_>>() {
+            return Err("selected factor product does not equal the source sextic".into());
+        }
         let delta = k.k.determinant(&raw_g);
-        assert!(!delta.is_zero());
+        if delta.is_zero() {
+            return Err("selected Richelot determinant is zero".into());
+        }
         let raw_h = k.k.dual_factors(&raw_g, &delta);
         let g = std::array::from_fn(|i| raw_g[i].iter().map(|c| k.lift3(c)).collect());
         let h = std::array::from_fn(|i| raw_h[i].iter().map(|c| k.lift3(c)).collect());
-        let raw_target =
-            k.k.product(&raw_h)
-                .iter()
-                .map(|c| k.k.base(c))
-                .collect::<Vec<_>>();
+        let product = k.k.product(&raw_h);
+        if product.iter().any(|c| c.degree().is_some_and(|d| d > 0)) {
+            return Err("selected Richelot target coefficients do not descend".into());
+        }
+        let raw_target = product.iter().map(|c| k.k.base(c)).collect::<Vec<_>>();
         if raw_target.len() != 7 {
             return Err("odd target chart requires explicit coordinate conversion".into());
         }
@@ -392,14 +450,6 @@ impl RichelotMap {
         let source = Balanced::new(p, &a.source)?;
         let target = Balanced::new(p, &normalized)?;
         let quadratic = Fp2Ctx::try_new(p).map_err(|e| e.to_string())?;
-        let mut square_roots = BTreeMap::new();
-        for aa in 0..p {
-            for bb in 0..p {
-                let value = quadratic.element(aa, bb);
-                let square = quadratic.square(value);
-                square_roots.entry((square.a, square.b)).or_insert(value);
-            }
-        }
         Ok(Self {
             k,
             source,
@@ -408,7 +458,7 @@ impl RichelotMap {
             h,
             target_scale,
             quadratic,
-            square_roots,
+            square_roots: OnceLock::new(),
         })
     }
     fn fiber(
@@ -505,6 +555,7 @@ impl RichelotMap {
         let discriminant = ctx.sub(ctx.square(a), ctx.mul(ctx.from_fp(4), b));
         let root = self
             .square_roots
+            .get_or_init(|| base_discriminant_root_table(ctx))
             .get(&(discriminant.a, discriminant.b))
             .ok_or("source quadratic discriminant did not split")?;
         let half = ctx.from_fp(self.k.k.p.div_ceil(2));
@@ -568,6 +619,74 @@ impl RichelotMap {
     }
     fn dual(&self, d: &Class) -> Result<Class> {
         self.evaluate(d, true)
+    }
+}
+
+/// The typed root API queries only base-field discriminants. In odd
+/// characteristic, (a+b*s)^2 is real only if a=0 or b=0. These axes occur
+/// in this order in the old lexicographic enumeration, preserving its
+/// first root. This is deliberately not a general Fp2 root table.
+fn base_discriminant_root_table(ctx: Fp2Ctx) -> BTreeMap<(u64, u64), Fp2> {
+    let p = ctx.modulus();
+    let mut roots = BTreeMap::new();
+    for value in (0..p)
+        .map(|b| ctx.element(0, b))
+        .chain((1..p).map(|a| ctx.element(a, 0)))
+    {
+        let square = ctx.square(value);
+        roots.entry((square.a, square.b)).or_insert(value);
+    }
+    roots
+}
+
+#[test]
+fn lazy_base_discriminant_table_matches_original_exhaustive_roots() {
+    for (p, coefficients) in [(17_u64, [2, 2, 0]), (101, [56, 13, 6])] {
+        let r = RichelotMap::from_assessment(construct_for(p, coefficients).unwrap()).unwrap();
+        let ctx = r.quadratic;
+        let polynomial = |coefficients: &[u64]| {
+            FpPoly::from_coeffs(
+                coefficients.iter().copied().map(BigUint::from).collect(),
+                BigUint::from(p),
+            )
+        };
+        assert!(r.square_roots.get().is_none());
+        assert!(r.roots(&polynomial(&[1])).unwrap().is_empty());
+        assert_eq!(r.roots(&polynomial(&[0, 1])).unwrap(), [ctx.zero()]);
+        assert!(r.roots(&polynomial(&[])).is_err());
+        assert!(r.roots(&polynomial(&[1, 0, 0, 1])).is_err());
+        assert!(r.square_roots.get().is_none());
+
+        // Unchanged original exhaustive builder, including first-insertion
+        // semantics and all nonreal square keys absent from the candidate.
+        let mut original = BTreeMap::new();
+        for aa in 0..p {
+            for bb in 0..p {
+                let value = ctx.element(aa, bb);
+                let square = ctx.square(value);
+                original.entry((square.a, square.b)).or_insert(value);
+            }
+        }
+        assert_eq!(original.len() as u64, p.pow(2).div_ceil(2));
+        let half = ctx.inv(ctx.from_fp(2)).unwrap();
+        let quarter = ctx.square(half);
+        for d in 0..p {
+            let b = ctx.neg(ctx.mul(ctx.from_fp(d), quarter));
+            let roots = r.roots(&polynomial(&[b.a, 0, 1])).unwrap();
+            let first = original[&(d, 0)];
+            assert_eq!(roots, [ctx.mul(first, half), ctx.neg(ctx.mul(first, half))]);
+            for x in roots {
+                assert_eq!(ctx.add(ctx.square(x), b), ctx.zero());
+            }
+            let table = r.square_roots.get().unwrap();
+            assert_eq!(table.len() as u64, p);
+            assert_eq!(table[&(d, 0)], first, "canonical first root p{p} d{d}");
+        }
+        for (&(a, b), &root) in r.square_roots.get().unwrap() {
+            assert_eq!(b, 0);
+            assert_eq!(ctx.square(root), ctx.from_fp(a));
+        }
+        println!("PASS p{p}:every{p} base discriminants/canonical roots match original exhaustive table;degree0/1/error calls leave cache empty,quadratic initializes;candidate{} axis squares,original{} squares;correctness metadata only",2*p-1,p*p);
     }
 }
 
