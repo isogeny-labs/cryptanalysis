@@ -1,5 +1,11 @@
 # Native integration check receipt
 
+The [native proof-admission follow-up](field-fibers-20261115/FORMAL_ADMISSION.md),
+claims `PCC-20261115-8cb342` and `PCC-20261115-496600`, supersedes the earlier
+missing-Lean status. Six ring identities now compile and print standard
+foundations; exact-source corpus admissions and six refusal controls pass.
+The full finite-field bridge and measured speedup remain open. [pcc:unverified]
+
 The [post-merge integration receipt](field-fibers-20261115/integration-checks.json),
 claim `PCC-20261115-92610e`, retains the inherited getrandom API failure and
 subsequent four-test CLI/locked-consumer checks, canonical ledger resolution,

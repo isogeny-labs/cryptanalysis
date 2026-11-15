@@ -58,6 +58,14 @@ protocol exist. No such run is launched by this import PR.
 
 ## Resolution and history
 
+2026-11-15, native proof admission: Lean 4.35.0 was installed and six ring
+identities compiled with standard foundation printouts. Source-bound corpus
+admissions and six refusal/plumbing controls pass. See the
+[additive proof note](../experiments/prime-field-auxiliary-ic/rust-validation/field-fibers-20261115/FORMAL_ADMISSION.md),
+claims `PCC-20261115-8cb342` and `PCC-20261115-496600`. This supersedes the
+missing-toolchain part of the history below; the structural finite-field
+proof and measurement qualification remain open. [pcc:unverified]
+
 2026-11-15, field-fiber leads: source `facaac33` pre-splits the terminal and
 implements power fibers from p-1 and norm-one trace fibers from p+1, with
 trace-orbit preparation and exact same-column direct IC controls. The
