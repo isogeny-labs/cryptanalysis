@@ -10,9 +10,12 @@
 mod circuit;
 mod field;
 mod graph;
+mod kernel;
 mod solve;
 
-pub use circuit::{AuxiliaryMap, Backend, CandidateWorkspace, FactorBase, SignedRelation};
+pub use circuit::{
+    AuxiliaryMap, Backend, CandidateWorkspace, FactorBase, FactorBaseEncoding, SignedRelation,
+};
 pub use field::{BatchScratch, Curve, Point};
 pub use solve::{
     solve, verify_certificate, Certificate, Config, PreparedSolver, Relation, SearchStats,

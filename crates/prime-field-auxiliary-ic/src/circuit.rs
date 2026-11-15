@@ -1,4 +1,5 @@
 use crate::field::F;
+use crate::kernel::{Circuit, Scalar, Step, Terminal};
 use crate::{BatchScratch, Curve, Error, Point, Result};
 use std::collections::BTreeSet;
 
@@ -73,18 +74,33 @@ impl Backend {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
-struct Center {
-    residue: u64,
-    delta: u64,
-    delta_squared: u64,
+/// Source of the factor-base membership encoding.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum FactorBaseEncoding {
+    /// Arbitrary coordinates and direct point subtraction.
+    Direct,
+    /// Complete fiber of the supplied auxiliary-curve maps.
+    Auxiliary,
+    /// Fiber of x^degree = coset^degree in the multiplicative group.
+    Multiplicative {
+        /// Cardinality of the complete raw fiber.
+        degree: u32,
+        /// Nonzero canonical coset representative.
+        coset: u64,
+    },
+    /// Fiber of iterated x^2-2 on primitive norm-one traces.
+    Torus {
+        /// Number of doubling maps; the raw fiber has 2^depth roots.
+        depth: u8,
+        /// Primitive trace used to choose the terminal fiber.
+        trace: u64,
+    },
 }
 
 /// Reusable target-independent circuit and signed factor-base representatives.
 ///
-/// Construction checks the entire root fiber. The input must contain exactly
-/// `2^maps.len()` distinct roots of the composed membership polynomial.
-/// Nonliftable coordinates are discarded only after that completeness check.
+/// Circuit constructors check complete raw fibers before discarding
+/// nonliftable target coordinates. Direct controls accept arbitrary coordinates.
 #[derive(Clone, Debug)]
 pub struct FactorBase<const B: u32> {
     pub(crate) curve: Curve<B>,
@@ -92,8 +108,8 @@ pub struct FactorBase<const B: u32> {
     xs: Vec<u64>,
     squares: Vec<u64>,
     maps: Vec<AuxiliaryMap>,
-    centered: Vec<Center>,
-    terminal: u64,
+    circuit: Option<Circuit>,
+    encoding: FactorBaseEncoding,
     roots: usize,
     backend: Backend,
     direct_steps: Vec<Option<Point>>,
@@ -199,45 +215,262 @@ impl<const B: u32> FactorBase<B> {
                 points.push(point);
             }
         }
+        let last = maps.last().expect("nonempty maps");
+        let delta = F::<B>::sub(last.offset, terminal);
+        let discriminant = F::<B>::sub(F::<B>::sq(delta), F::<B>::mul(4, last.residue));
+        let sqrt = Self::nonzero_sqrt(discriminant)?;
+        let inv2 = p.div_ceil(2);
+        let left = F::<B>::mul(F::<B>::sub(sqrt, delta), inv2);
+        let right = F::<B>::mul(F::<B>::sub(F::<B>::sub(0, sqrt), delta), inv2);
+        let circuit = Circuit {
+            first_pole: maps[0].r,
+            steps: maps
+                .windows(2)
+                .map(|pair| Step::Rational {
+                    residue: pair[0].residue,
+                    delta: F::<B>::sub(pair[0].offset, pair[1].r),
+                })
+                .collect(),
+            terminal: Terminal::split::<B>(left.min(right), left.max(right)),
+            value: terminal,
+        };
+        Self::assemble(
+            curve,
+            points,
+            roots.len(),
+            maps,
+            Some(circuit),
+            FactorBaseEncoding::Auxiliary,
+            backend,
+        )
+    }
+    fn nonzero_sqrt(value: u64) -> Result<u64> {
+        let root = F::<B>::pow(value, (F::<B>::P + 1) / 4);
+        if root == 0 || F::<B>::sq(root) != value {
+            return Err(Error::Invalid("fiber must split without repeated roots"));
+        }
+        Ok(root.min(F::<B>::P - root))
+    }
+    fn assemble(
+        curve: Curve<B>,
+        mut points: Vec<Point>,
+        roots: usize,
+        maps: Vec<AuxiliaryMap>,
+        circuit: Option<Circuit>,
+        encoding: FactorBaseEncoding,
+        requested: Backend,
+    ) -> Result<Self> {
         if points.is_empty() {
             return Err(Error::Invalid(
                 "factor base contains no rational target points",
             ));
         }
         points.sort_unstable_by_key(|p| p.x());
-        let backend = backend.select::<B>()?;
-        let mut xs: Vec<u64> = points.iter().map(|p| p.x()).collect();
+        let backend = requested.select::<B>()?;
+        let mut xs: Vec<_> = points.iter().map(|p| p.x()).collect();
         if backend != Backend::Scalar {
             let tile = 3 * backend.width();
-            let padded = xs.len().div_ceil(tile) * tile;
-            xs.resize(padded, xs[0]);
+            xs.resize(xs.len().div_ceil(tile) * tile, xs[0]);
         }
         let squares = xs.iter().map(|&x| F::<B>::sq(x)).collect();
-        let centered = maps
-            .iter()
-            .enumerate()
-            .map(|(i, m)| {
-                let next = maps.get(i + 1).map_or(terminal, |next| next.r);
-                let delta = F::<B>::sub(m.offset, next);
-                Center {
-                    residue: m.residue,
-                    delta,
-                    delta_squared: F::<B>::sq(delta),
-                }
-            })
-            .collect();
+        let direct_steps = if circuit.is_none() {
+            points
+                .iter()
+                .flat_map(|&p| [Some(curve.neg_inner(p)), Some(p)])
+                .collect()
+        } else {
+            Vec::new()
+        };
         Ok(Self {
             curve,
             points,
             xs,
             squares,
             maps,
-            centered,
-            terminal,
-            roots: roots.len(),
+            circuit,
+            encoding,
+            roots,
             backend,
-            direct_steps: Vec::new(),
+            direct_steps,
         })
+    }
+    /// Construct x^degree=coset^degree with degree dividing p-1 and only
+    /// prime factors 2, 3 and 7. The complete fiber is generated and checked.
+    pub fn multiplicative(
+        curve: Curve<B>,
+        degree: u32,
+        coset: u64,
+        backend: Backend,
+    ) -> Result<Self> {
+        let p = F::<B>::P;
+        if !(2..=1 << 20).contains(&degree)
+            || (p - 1) % u64::from(degree) != 0
+            || coset == 0
+            || coset >= p
+        {
+            return Err(Error::Invalid(
+                "degree must divide p-1 and coset must be canonical nonzero",
+            ));
+        }
+        let mut remaining = degree;
+        let even = remaining % 2 == 0;
+        if even {
+            remaining /= 2;
+        }
+        let mut steps = Vec::new();
+        for (prime, step) in [(3, Step::Cube), (7, Step::Septic)] {
+            while remaining % prime == 0 {
+                remaining /= prime;
+                steps.push(step);
+            }
+        }
+        if remaining != 1 {
+            return Err(Error::Invalid(
+                "degree supports at most one 2 and otherwise factors 3 and 7",
+            ));
+        }
+        let degree64 = u64::from(degree);
+        let generator = (2..p.min(4096))
+            .map(|g| F::<B>::pow(g, (p - 1) / degree64))
+            .find(|&g| {
+                [2, 3, 7]
+                    .iter()
+                    .all(|&q| degree64 % q != 0 || F::<B>::pow(g, degree64 / q) != 1)
+            })
+            .ok_or(Error::ResourceLimit(
+                "bounded multiplicative generator search exhausted",
+            ))?;
+        let value = F::<B>::pow(coset, degree64);
+        let terminal = if even {
+            let r = F::<B>::pow(coset, degree64 / 2);
+            Terminal::split::<B>(r.min(p - r), r.max(p - r))
+        } else {
+            Terminal::Linear {
+                value,
+                squared: F::<B>::sq(value),
+            }
+        };
+        let mut roots = Vec::with_capacity(degree as usize);
+        let mut root = coset;
+        for _ in 0..degree {
+            roots.push(root);
+            root = F::<B>::mul(root, generator);
+        }
+        let circuit = Circuit {
+            first_pole: 0,
+            steps,
+            terminal,
+            value,
+        };
+        Self::generated(
+            curve,
+            roots,
+            circuit,
+            FactorBaseEncoding::Multiplicative { degree, coset },
+            backend,
+        )
+    }
+    /// Construct a complete fiber of depth iterates of x^2-2. The selected
+    /// trace has primitive order p+1 in the norm-one torus. No auxiliary
+    /// elliptic curve or quadratic-extension arithmetic is needed.
+    pub fn torus(curve: Curve<B>, depth: u8, trace: Option<u64>, backend: Backend) -> Result<Self> {
+        let p = F::<B>::P;
+        if depth == 0 || u32::from(depth) > 20.min(B - 2) {
+            return Err(Error::Invalid(
+                "torus depth must be 1..=min(20, field_bits-2)",
+            ));
+        }
+        let primitive = |a: u64| {
+            if a >= p {
+                return false;
+            }
+            let mut v = a;
+            for _ in 0..B - 1 {
+                v = F::<B>::sub(F::<B>::sq(v), 2);
+            }
+            v == p - 2
+        };
+        let trace = match trace {
+            Some(a) if primitive(a) => a,
+            Some(_) => {
+                return Err(Error::Invalid(
+                    "trace must have primitive norm-one order p+1",
+                ))
+            }
+            None => (0..p.min(4096))
+                .find(|&a| primitive(a))
+                .ok_or(Error::ResourceLimit(
+                    "bounded primitive trace search exhausted",
+                ))?,
+        };
+        let mut last_root = trace;
+        for _ in 1..depth {
+            last_root = F::<B>::sub(F::<B>::sq(last_root), 2);
+        }
+        let value = F::<B>::sub(F::<B>::sq(last_root), 2);
+        let left = last_root.min(p - last_root);
+        let mut roots = vec![left, p - left];
+        for _ in 1..depth {
+            let mut previous = Vec::with_capacity(roots.len() * 2);
+            for root in roots {
+                let r = Self::nonzero_sqrt(F::<B>::add(root, 2))?;
+                previous.extend([r, p - r]);
+            }
+            roots = previous;
+        }
+        let circuit = Circuit {
+            first_pole: 0,
+            steps: vec![Step::TorusSquare; usize::from(depth) - 1],
+            terminal: Terminal::split::<B>(left, p - left),
+            value,
+        };
+        Self::generated(
+            curve,
+            roots,
+            circuit,
+            FactorBaseEncoding::Torus { depth, trace },
+            backend,
+        )
+    }
+    fn generated(
+        curve: Curve<B>,
+        roots: Vec<u64>,
+        circuit: Circuit,
+        encoding: FactorBaseEncoding,
+        backend: Backend,
+    ) -> Result<Self> {
+        let mut seen = BTreeSet::new();
+        let mut points = Vec::new();
+        for &root in &roots {
+            let value = match encoding {
+                FactorBaseEncoding::Multiplicative { degree, .. } => {
+                    F::<B>::pow(root, u64::from(degree))
+                }
+                FactorBaseEncoding::Torus { depth, .. } => {
+                    let mut v = root;
+                    for _ in 0..depth {
+                        v = F::<B>::sub(F::<B>::sq(v), 2);
+                    }
+                    v
+                }
+                _ => unreachable!("generated field encoding"),
+            };
+            if root >= F::<B>::P || !seen.insert(root) || value != circuit.value {
+                return Err(Error::Invalid("generated fiber is incomplete or repeated"));
+            }
+            if let Some(point) = curve.lift_x(root)? {
+                points.push(point);
+            }
+        }
+        Self::assemble(
+            curve,
+            points,
+            roots.len(),
+            Vec::new(),
+            Some(circuit),
+            encoding,
+            backend,
+        )
     }
     /// Build a direct-search control from arbitrary canonical x coordinates.
     /// No auxiliary curve, membership maps, or table of point pairs is used.
@@ -260,34 +493,40 @@ impl<const B: u32> FactorBase<B> {
                 points.push(point);
             }
         }
-        if points.is_empty() {
-            return Err(Error::Invalid(
-                "factor base contains no rational target points",
-            ));
-        }
-        points.sort_unstable_by_key(|p| p.x());
-        let xs: Vec<_> = points.iter().map(|p| p.x()).collect();
-        let squares = xs.iter().map(|&x| F::<B>::sq(x)).collect();
-        let direct_steps = points
-            .iter()
-            .flat_map(|&p| [Some(curve.neg_inner(p)), Some(p)])
-            .collect();
-        Ok(Self {
+        Self::assemble(
             curve,
             points,
-            xs,
-            squares,
-            maps: Vec::new(),
-            centered: Vec::new(),
-            terminal: 0,
-            roots: roots.len(),
-            backend: Backend::Scalar,
-            direct_steps,
-        })
+            roots.len(),
+            Vec::new(),
+            None,
+            FactorBaseEncoding::Direct,
+            Backend::Scalar,
+        )
     }
-    /// Whether decomposition uses a complete auxiliary-map fiber.
+    /// Direct subtraction control with exactly the same signed columns and
+    /// raw-root accounting. No maps or polynomial circuit are retained.
+    pub fn direct_control(&self) -> Result<Self> {
+        Self::assemble(
+            self.curve,
+            self.points.clone(),
+            self.roots,
+            Vec::new(),
+            None,
+            FactorBaseEncoding::Direct,
+            Backend::Scalar,
+        )
+    }
+    /// Whether decomposition uses the supplied auxiliary-curve maps.
     pub fn uses_auxiliary_maps(&self) -> bool {
-        !self.maps.is_empty()
+        self.encoding == FactorBaseEncoding::Auxiliary
+    }
+    /// Whether decomposition evaluates a polynomial circuit (any encoding).
+    pub fn uses_circuit(&self) -> bool {
+        self.circuit.is_some()
+    }
+    /// Actual encoding and reproducible generation parameters.
+    pub fn encoding(&self) -> FactorBaseEncoding {
+        self.encoding
     }
     /// The target curve, distinct from the auxiliary curve supplying the maps.
     pub fn curve(&self) -> Curve<B> {
@@ -318,7 +557,7 @@ impl<const B: u32> FactorBase<B> {
     }
     /// Terminal coordinate of the complete membership fiber.
     pub fn terminal_coordinate(&self) -> u64 {
-        self.terminal
+        self.circuit.as_ref().map_or(0, |c| c.value)
     }
     /// Allocate reusable scratch for this base, including private SIMD padding.
     pub fn workspace(&self) -> CandidateWorkspace {
@@ -332,9 +571,9 @@ impl<const B: u32> FactorBase<B> {
     }
     /// Evaluate the exact circuit at all usable coordinates, without a GCD.
     pub fn candidates(&self, target_x: u64, workspace: &mut CandidateWorkspace) -> Result<()> {
-        if !self.uses_auxiliary_maps() {
+        if !self.uses_circuit() {
             return Err(Error::Invalid(
-                "direct factor base has no auxiliary circuit",
+                "direct factor base has no polynomial circuit",
             ));
         }
         if target_x >= F::<B>::P {
@@ -390,7 +629,7 @@ impl<const B: u32> FactorBase<B> {
     fn scalar_value(&self, x: u64, x_squared: u64, target: u64, target_squared: u64) -> u64 {
         let product = F::<B>::mul(x, target);
         let sum = F::<B>::add(x, target);
-        let mut d = F::<B>::sub(
+        let d = F::<B>::sub(
             F::<B>::add(x_squared, target_squared),
             F::<B>::add(product, product),
         );
@@ -403,7 +642,8 @@ impl<const B: u32> FactorBase<B> {
             F::<B>::sq(F::<B>::sub(product, self.curve.a)),
             F::<B>::mul(F::<B>::mul(4, self.curve.b), sum),
         );
-        let r = self.maps[0].r;
+        let circuit = self.circuit.as_ref().expect("compiled circuit");
+        let r = circuit.first_pole;
         if r != 0 {
             h = F::<B>::add(
                 F::<B>::sub(h, F::<B>::mul(r, c)),
@@ -411,40 +651,9 @@ impl<const B: u32> FactorBase<B> {
             );
             c = F::<B>::sub(c, F::<B>::mul(F::<B>::add(r, r), d));
         }
-        for (i, map) in self.centered.iter().enumerate() {
-            let bd = if map.residue == 1 {
-                d
-            } else {
-                F::<B>::mul(map.residue, d)
-            };
-            let nd = F::<B>::mul(h, d);
-            let cc = F::<B>::sq(c);
-            let norm = F::<B>::add(
-                F::<B>::sq(F::<B>::sub(h, bd)),
-                if map.residue == 1 {
-                    cc
-                } else {
-                    F::<B>::mul(map.residue, cc)
-                },
-            );
-            let cd = F::<B>::mul(c, F::<B>::add(h, bd));
-            if i + 1 == self.centered.len() {
-                return F::<B>::add(
-                    F::<B>::add(norm, F::<B>::mul(map.delta, cd)),
-                    F::<B>::mul(map.delta_squared, nd),
-                );
-            }
-            // t = delta*nd shares the shift between both state updates:
-            // norm + delta*(cd + 2*t) - delta^2*nd
-            //      = norm + delta*(cd + t).
-            // Two multiplications replace the previous three; doubling t
-            // uses an addition.
-            let t = F::<B>::mul(map.delta, nd);
-            h = F::<B>::add(norm, F::<B>::mul(map.delta, F::<B>::add(cd, t)));
-            c = F::<B>::add(cd, F::<B>::add(t, t));
-            d = nd;
-        }
-        unreachable!("nonempty centered circuit")
+        let (mut d, mut c, mut h) = ([d], [c], [h]);
+        circuit.evaluate::<B, Scalar, 1>(&mut d, &mut c, &mut h);
+        h[0]
     }
     /// Find the first verified signed decomposition; no pair table is stored.
     pub fn decompose(
@@ -462,7 +671,7 @@ impl<const B: u32> FactorBase<B> {
         target: Point,
         workspace: &mut CandidateWorkspace,
     ) -> Result<Option<SignedRelation>> {
-        if !self.uses_auxiliary_maps() {
+        if !self.uses_circuit() {
             return self.decompose_direct(target, workspace);
         }
         self.candidates(target.x(), workspace)?;

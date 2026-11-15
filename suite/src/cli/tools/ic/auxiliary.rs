@@ -41,6 +41,18 @@ pub struct AuxiliaryArgs {
     /// for a same-base control, or supply arbitrary roots without an auxiliary block.
     #[arg(long)]
     pub without_auxiliary: bool,
+    /// Generate a power-map fiber of this degree (divides p-1; factors 2,3,7).
+    #[arg(long, conflicts_with = "torus_depth", value_parser = clap::value_parser!(u32).range(2..=1_048_576))]
+    pub multiplicative_degree: Option<u32>,
+    /// Nonzero coset representative for --multiplicative-degree (default 1).
+    #[arg(long, requires = "multiplicative_degree")]
+    pub coset: Option<u64>,
+    /// Generate a norm-one trace fiber of iterated x^2-2, with 2^depth roots.
+    #[arg(long, conflicts_with = "multiplicative_degree", value_parser = clap::value_parser!(u8).range(1..=20))]
+    pub torus_depth: Option<u8>,
+    /// Explicit primitive norm-one trace; otherwise use bounded deterministic search.
+    #[arg(long, requires = "torus_depth")]
+    pub torus_trace: Option<u64>,
     /// Public coefficient sampler seed; never a target logarithm.
     #[arg(long, default_value_t = 0)]
     pub seed: u64,
@@ -104,7 +116,7 @@ struct Encoding {
 struct Input {
     public: Public,
     auxiliary: Option<Encoding>,
-    #[serde(alias = "roots")]
+    #[serde(default, alias = "roots")]
     structured_roots: Vec<u64>,
 }
 #[derive(Deserialize)]
@@ -173,6 +185,19 @@ pub fn run(args: AuxiliaryArgs) -> Result<Value, String> {
     }
 }
 
+fn encoding_json(encoding: aux::FactorBaseEncoding) -> Value {
+    match encoding {
+        aux::FactorBaseEncoding::Direct => json!({"kind":"direct"}),
+        aux::FactorBaseEncoding::Auxiliary => json!({"kind":"auxiliary"}),
+        aux::FactorBaseEncoding::Multiplicative { degree, coset } => {
+            json!({"kind":"multiplicative","degree":degree,"coset":coset})
+        }
+        aux::FactorBaseEncoding::Torus { depth, trace } => {
+            json!({"kind":"torus","depth":depth,"trace":trace})
+        }
+    }
+}
+
 fn execute<const B: u32>(
     args: &AuxiliaryArgs,
     input: &Input,
@@ -187,10 +212,14 @@ fn execute<const B: u32>(
     let target = curve
         .point(public.target[0], public.target[1])
         .map_err(|e| e.to_string())?;
-    let base = if args.without_auxiliary {
-        if !matches!(args.backend, BackendArg::Auto | BackendArg::Scalar) {
-            return Err("direct control uses scalar group arithmetic".into());
-        }
+    if args.without_auxiliary && !matches!(args.backend, BackendArg::Auto | BackendArg::Scalar) {
+        return Err("direct control uses scalar group arithmetic".into());
+    }
+    let base = if let Some(degree) = args.multiplicative_degree {
+        aux::FactorBase::multiplicative(curve, degree, args.coset.unwrap_or(1), args.backend.into())
+    } else if let Some(depth) = args.torus_depth {
+        aux::FactorBase::torus(curve, depth, args.torus_trace, args.backend.into())
+    } else if args.without_auxiliary {
         aux::FactorBase::without_maps(curve, &input.structured_roots)
     } else {
         let encoding = input
@@ -215,11 +244,20 @@ fn execute<const B: u32>(
         )
     }
     .map_err(|e| e.to_string())?;
+    let selection_encoding = encoding_json(base.encoding());
+    let terminal_coordinate = base.terminal_coordinate();
+    let base = if args.without_auxiliary && base.uses_circuit() {
+        base.direct_control().map_err(|e| e.to_string())?
+    } else {
+        base
+    };
     let mut report = json!({
         "schema_version":1,"operation":"auxiliary-prime-field-ic","field_bits":B,"execution_class":"cpu-only",
         "input_blake3":input_hash,"binary_blake3":binary_hash(),"source_commit":git_commit(),
         "public":{"p":public.p,"a":public.a,"b":public.b,"n":public.n,"P":public.generator,"Q":public.target},
         "factor_base":{"raw_roots":base.raw_root_count(),"affine_points":base.affine_point_count(),"uses_auxiliary_maps":base.uses_auxiliary_maps(),
+            "uses_circuit":base.uses_circuit(),"encoding":encoding_json(base.encoding()),
+            "selection_encoding":selection_encoding,"terminal_coordinate":terminal_coordinate,
             "folded_columns":base.representatives().len(),"backend":base.backend().name()},
         "qualification":"unverified producer diagnostic; no signed independent replay or admitted performance tier",
         "online_exclusive_phases":null,"qualified_speedup":null,"gpu":{"devices":[]}
@@ -419,6 +457,59 @@ mod tests {
         let incomplete = execute::<7>(&args, &input, "fixture".into(), Instant::now()).unwrap();
         assert_eq!(incomplete["status"], "incomplete");
         assert_eq!(incomplete["certificate"], Value::Null);
+    }
+
+    #[test]
+    fn generated_field_fibers_have_matched_direct_cli_controls() {
+        let curve = aux::Curve::<7>::new(2, 51).unwrap();
+        let generator = curve.point(3, 46).unwrap();
+        let target = curve.mul(Some(generator), 37).unwrap().unwrap();
+        let input: Input = serde_json::from_value(json!({
+            "public":{"p":127,"a":2,"b":51,"n":109,"P":[3,46],"Q":[target.x(),target.y()]}
+        }))
+        .unwrap();
+        for flags in [["--multiplicative-degree", "18"], ["--torus-depth", "3"]] {
+            let mut args = TestCli::parse_from([
+                "test",
+                "--input",
+                "unused",
+                "--max-queries",
+                "10000",
+                flags[0],
+                flags[1],
+            ])
+            .args;
+            let circuit = execute::<7>(&args, &input, "fixture".into(), Instant::now()).unwrap();
+            args.without_auxiliary = true;
+            let direct = execute::<7>(&args, &input, "fixture".into(), Instant::now()).unwrap();
+            assert_eq!(circuit["status"], "solved");
+            assert_eq!(circuit["certificate"], direct["certificate"]);
+            assert_eq!(circuit["work"]["queries"], direct["work"]["queries"]);
+            assert_eq!(
+                circuit["factor_base"]["raw_roots"],
+                direct["factor_base"]["raw_roots"]
+            );
+            assert_eq!(
+                circuit["factor_base"]["selection_encoding"],
+                direct["factor_base"]["selection_encoding"]
+            );
+            assert_eq!(circuit["factor_base"]["uses_circuit"], true);
+            assert_eq!(circuit["factor_base"]["uses_auxiliary_maps"], false);
+            assert_eq!(direct["factor_base"]["uses_circuit"], false);
+            assert_eq!(direct["factor_base"]["encoding"]["kind"], "direct");
+        }
+        assert!(TestCli::try_parse_from([
+            "test",
+            "--input",
+            "x",
+            "--multiplicative-degree",
+            "18",
+            "--torus-depth",
+            "3"
+        ])
+        .is_err());
+        assert!(TestCli::try_parse_from(["test", "--input", "x", "--coset", "1"]).is_err());
+        assert!(TestCli::try_parse_from(["test", "--input", "x", "--torus-trace", "4"]).is_err());
     }
 
     #[test]

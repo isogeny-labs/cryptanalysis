@@ -358,7 +358,7 @@ impl<'a, const B: u32> PreparedSolver<'a, B> {
                 let Some(query) = points[i] else {
                     continue;
                 };
-                stats.circuit_queries += u64::from(self.base.uses_auxiliary_maps());
+                stats.circuit_queries += u64::from(self.base.uses_circuit());
                 let Some(decomposition) = self.base.decompose_inner(query, &mut workspace)? else {
                     continue;
                 };

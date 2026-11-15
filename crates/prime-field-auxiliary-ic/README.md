@@ -23,9 +23,27 @@ multivariate Gröbner solver.
 
 The implementation includes these optimization choices:
 
-- Precomputed coordinate squares and map constants, a folded terminal map,
+- Precomputed coordinate squares and map constants, a pre-split terminal quadratic,
   and three interleaved SIMD vectors. AVX2/AVX-512 are selected only after CPU
   feature checks, for fields up to 31 bits. The 61-bit path is scalar `u128`.
+- The final map is split once during preparation. Evaluation then uses
+  `q(u)*q(v)`, with five general field multiplications instead of eight for
+  the previous general terminal formula. Opposite roots share their square;
+  unit opposite roots require only the final product. These are source-level
+  counts, excluding preparation and the initial Semaev coefficients.
+- `FactorBase::multiplicative` builds complete `x^S=coset^S` fibers for
+  `S | p-1`, with factors 2, 3 and 7 (at most one 2). Cube/seventh-power
+  coefficient recurrences avoid auxiliary elliptic curves. In both main
+  fields, 126 divides `p-1`; this is an additional encoding to compare.
+- `FactorBase::torus` builds complete fibers of iterated `x^2-2` using a
+  primitive trace of the norm-one group of order `p+1`. Each intermediate
+  quadratic update uses four field multiplications. Depth is bounded by
+  `min(20, field_bits-2)` to avoid ramified terminal fibers.
+- Scalar and packed backends share the same homogeneous coefficient kernel;
+  no step divides by the quadratic leading coefficient, including when it is
+  zero. Both field families generate/check every raw root before lifting.
+  Empty target-curve lifts fail explicitly; a split fiber alone does not
+  guarantee a usable factor base.
 - Each intermediate map reuses `t = delta*nd` across its coefficient updates:
   `h = norm + delta*(cd+t)` and `c = cd+t+t`. This replaces one field
   multiplication with one addition per intermediate coefficient update in
@@ -41,7 +59,8 @@ The implementation includes these optimization choices:
   certificate coefficients are expanded only for a useful dependency.
 - `FactorBase::without_maps` provides IC with batched direct subtraction,
   arbitrary coordinates, and no auxiliary curve or quadratic pair table.
-  It shares target generation, distinct-row handling, recovery, and public
+  `base.direct_control()` reuses exactly the same columns and raw-root count
+  for any encoding. It shares target generation, distinct-row handling, recovery, and public
   certificate checks with the auxiliary path.
 
 Rust 1.78 supports the portable/AVX2 paths. AVX-512 is compiled on Rust 1.89
@@ -104,6 +123,13 @@ the archived public manifest:
 - `--without-auxiliary` selects the direct IC control on the same roots.
   Independent arbitrary roots may also be supplied with this flag, without
   an `auxiliary` block. `roots` aliases `structured_roots`.
+- `--multiplicative-degree 126 [--coset 1]` or `--torus-depth 7
+  [--torus-trace TRACE]` generates a field-based fiber. Only the `public`
+  object is required in the JSON input. The modes are mutually exclusive;
+  the selected degree/coset or depth/trace appears in the report.
+  Add `--without-auxiliary` to run direct IC on exactly the generated columns.
+  `uses_circuit` distinguishes these encodings from direct search;
+  `uses_auxiliary_maps` is true only for supplied auxiliary-curve maps.
 - `--rho` additionally invokes the repository C batched negation-map rho
   reference on the same target. It uses Montgomery arithmetic, so this is
   explicitly a different arithmetic backend. `--rho-max-ops` bounds it.
@@ -143,3 +169,11 @@ Additional cases cover zero/mixed center shifts and a 128-root fixture with 58
 usable coordinates, spanning multiple SIMD tiles and a partially padded final
 tile. The arithmetic rewrite and fused zero collection have no fresh timing
 result yet. `[pcc:unverified]`
+
+The field-fiber checks compare explicit Semaev products, zero indices and
+signed rows against direct subtraction in both requested fields, with odd and
+even multiplicative degrees, multiple cosets, and torus depths spanning SIMD
+tiles. Full small-field recoveries use matched walks and identical recovery
+certificates. These are additional implementation leads; their effect on
+relation yield, cold setup and end-to-end time remains unmeasured.
+[pcc:unverified]

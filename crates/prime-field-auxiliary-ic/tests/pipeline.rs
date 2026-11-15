@@ -176,6 +176,25 @@ fn scalar_and_simd_are_exact_products_in_both_fields() {
 }
 
 #[test]
+fn split_terminal_handles_one_map_and_symmetric_unit_roots() {
+    fn check<const B: u32>(curve: Curve<B>) {
+        let p = curve.modulus();
+        exact_circuit(
+            curve,
+            &[AuxiliaryMap {
+                r: 0,
+                offset: 0,
+                residue: p - 1,
+            }],
+            0,
+            &[1, p - 1],
+        );
+    }
+    check(Curve::<31>::new(2, 14).unwrap());
+    check(Curve::<61>::new(0, 3).unwrap());
+}
+
+#[test]
 fn nonzero_first_pole_and_root_order_are_supported() {
     let curve = Curve::<31>::new(2, 14).unwrap();
     let mut maps = MAPS31;

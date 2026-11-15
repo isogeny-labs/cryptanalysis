@@ -1,17 +1,13 @@
 //! Private runtime-dispatched kernels. All loads/stores cover padded tiles.
 use super::FactorBase;
 use crate::field::F;
+use crate::kernel::Arithmetic;
 use std::arch::x86_64::*;
 
-trait Packed<const B: u32> {
-    type V: Copy;
+trait Packed<const B: u32>: Arithmetic<B> {
     const WIDTH: usize;
-    fn splat(a: u64) -> Self::V;
     fn load(a: &[u64]) -> Self::V;
     fn store(a: &mut [u64], v: Self::V);
-    fn add(a: Self::V, b: Self::V) -> Self::V;
-    fn sub(a: Self::V, b: Self::V) -> Self::V;
-    fn mul(a: Self::V, b: Self::V) -> Self::V;
     fn zero_bits(a: Self::V) -> u32;
 }
 
@@ -24,23 +20,13 @@ macro_rules! arch {
 }
 
 struct A256;
-impl<const B: u32> Packed<B> for A256 {
+impl<const B: u32> Arithmetic<B> for A256 {
     type V = __m256i;
-    const WIDTH: usize = 4;
     #[inline(always)]
     fn splat(a: u64) -> Self::V {
         arch!(_mm256_set1_epi64x(a as i64))
     }
-    #[inline(always)]
-    fn load(a: &[u64]) -> Self::V {
-        debug_assert!(a.len() >= 4);
-        arch!(_mm256_loadu_si256(a.as_ptr().cast()))
-    }
-    #[inline(always)]
-    fn store(a: &mut [u64], v: Self::V) {
-        debug_assert!(a.len() >= 4);
-        arch!(_mm256_storeu_si256(a.as_mut_ptr().cast(), v));
-    }
+
     #[inline(always)]
     fn add(a: Self::V, b: Self::V) -> Self::V {
         arch! {
@@ -70,6 +56,20 @@ impl<const B: u32> Packed<B> for A256 {
             _mm256_sub_epi64(folded, _mm256_and_si256(mask, p))
         }
     }
+}
+
+impl<const B: u32> Packed<B> for A256 {
+    const WIDTH: usize = 4;
+    #[inline(always)]
+    fn load(a: &[u64]) -> Self::V {
+        debug_assert!(a.len() >= 4);
+        arch!(_mm256_loadu_si256(a.as_ptr().cast()))
+    }
+    #[inline(always)]
+    fn store(a: &mut [u64], v: Self::V) {
+        debug_assert!(a.len() >= 4);
+        arch!(_mm256_storeu_si256(a.as_mut_ptr().cast(), v));
+    }
     #[inline(always)]
     fn zero_bits(a: Self::V) -> u32 {
         arch! {
@@ -83,23 +83,13 @@ impl<const B: u32> Packed<B> for A256 {
 struct A512;
 #[cfg(auxiliary_ic_avx512)]
 #[clippy::msrv = "1.89"]
-impl<const B: u32> Packed<B> for A512 {
+impl<const B: u32> Arithmetic<B> for A512 {
     type V = __m512i;
-    const WIDTH: usize = 8;
     #[inline(always)]
     fn splat(a: u64) -> Self::V {
         arch!(_mm512_set1_epi64(a as i64))
     }
-    #[inline(always)]
-    fn load(a: &[u64]) -> Self::V {
-        debug_assert!(a.len() >= 8);
-        arch!(_mm512_loadu_si512(a.as_ptr().cast()))
-    }
-    #[inline(always)]
-    fn store(a: &mut [u64], v: Self::V) {
-        debug_assert!(a.len() >= 8);
-        arch!(_mm512_storeu_si512(a.as_mut_ptr().cast(), v));
-    }
+
     #[inline(always)]
     fn add(a: Self::V, b: Self::V) -> Self::V {
         arch! {
@@ -126,6 +116,22 @@ impl<const B: u32> Packed<B> for A512 {
             let folded = _mm512_add_epi64(_mm512_and_si512(product, p), high);
             _mm512_mask_sub_epi64(folded, _mm512_cmp_epu64_mask::<5>(folded, p), folded, p)
         }
+    }
+}
+
+#[cfg(auxiliary_ic_avx512)]
+#[clippy::msrv = "1.89"]
+impl<const B: u32> Packed<B> for A512 {
+    const WIDTH: usize = 8;
+    #[inline(always)]
+    fn load(a: &[u64]) -> Self::V {
+        debug_assert!(a.len() >= 8);
+        arch!(_mm512_loadu_si512(a.as_ptr().cast()))
+    }
+    #[inline(always)]
+    fn store(a: &mut [u64], v: Self::V) {
+        debug_assert!(a.len() >= 8);
+        arch!(_mm512_storeu_si512(a.as_mut_ptr().cast(), v));
     }
     #[inline(always)]
     fn zero_bits(a: Self::V) -> u32 {
@@ -165,7 +171,8 @@ fn group<const B: u32, O: Packed<B>>(
         c[k] = O::add(mid, mid);
         h[k] = O::sub(O::mul(t, t), O::mul(b4, sum));
     }
-    let first_r = base.maps[0].r;
+    let circuit = base.circuit.as_ref().expect("compiled circuit");
+    let first_r = circuit.first_pole;
     if first_r != 0 {
         let r = O::splat(first_r);
         let r2 = O::splat(F::<B>::sq(first_r));
@@ -175,39 +182,7 @@ fn group<const B: u32, O: Packed<B>>(
             c[k] = O::sub(c[k], O::mul(twice_r, d[k]));
         }
     }
-    for (j, map) in base.centered.iter().enumerate() {
-        let residue = O::splat(map.residue);
-        let delta = O::splat(map.delta);
-        let last = j + 1 == base.centered.len();
-        for k in 0..3 {
-            let bd = if map.residue == 1 {
-                d[k]
-            } else {
-                O::mul(residue, d[k])
-            };
-            let nd = O::mul(h[k], d[k]);
-            let diff = O::sub(h[k], bd);
-            let cc = O::mul(c[k], c[k]);
-            let norm = O::add(
-                O::mul(diff, diff),
-                if map.residue == 1 {
-                    cc
-                } else {
-                    O::mul(residue, cc)
-                },
-            );
-            let cd = O::mul(c[k], O::add(h[k], bd));
-            if last {
-                let delta_squared = O::splat(map.delta_squared);
-                h[k] = O::add(O::add(norm, O::mul(delta, cd)), O::mul(delta_squared, nd));
-            } else {
-                let t = O::mul(delta, nd);
-                h[k] = O::add(norm, O::mul(delta, O::add(cd, t)));
-                c[k] = O::add(cd, O::add(t, t));
-                d[k] = nd;
-            }
-        }
-    }
+    circuit.evaluate::<B, O, 3>(&mut d, &mut c, &mut h);
     let mut zero_bits = 0;
     for k in 0..3 {
         zero_bits |= O::zero_bits(h[k]) << (k * O::WIDTH);
