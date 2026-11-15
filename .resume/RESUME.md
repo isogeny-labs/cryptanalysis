@@ -1,3 +1,39 @@
+# Unique original full-group candidate: native, independent finite proof and report ready
+
+Native88f828/proof29e535/pcc/claims/PCC-20261115-cd8173.json: complete finite18-vertex/72-pair/216-triple census finds exactlyone supportedcompatible triple4-1-4, cases(2,0)/(0,1)/(2,0), D116/39/36. All311 orderedwhole records, actualmalformedinputs/fourentire-class omissions/all1172hashes/actual binaries pass. Both originalLean gates6roots0trusted andall6exactlocalbindings pass. Inspected two-page graphreport retains all18models/all12compatibleedges includingineligible endpoints. [pcc:unverified]
+
+## What was done
+Independent Lean literals retainall18masks/D/smoothnessvectors andtwo64tables; recompute F223eligibility, all64membershiptests perpair, coverage andunique verdict. Sixbindings38af16/5142e9/952d21/0123e7/13289e/4ecfa5 pass. Whole source/raw/executables/first Array reductionfailure69d82d/reportdrafts retained forNEW24. [pcc:unverified]
+
+## Decisions made
+Publish native/proof/report, then freeze the unique full-group candidate undera separate implementation protocol before any newJacobian runtime code. Target actualprime/quadratic backends/fullcofactor-halves-corrections/norm13-169/inverse recovery andstronger knowninitialpoint route. Fixed D12/D24/D67 negatives andseparate prime-only976f50 choices stayunchanged. [pcc:unverified]
+
+## Open threads
+Normalresultpublication/rootmirror/GitHubqueue; prospectivefulloriginalgroup construction; complete primitive setup/online costs andprime-fielddescent leads. No full-group evaluator fornewmodels, geometric/program bridge orcalibratedperformance result claimed. [pcc:unverified]
+
+## Errors
+Original proof01 Array.all reductionFAIL_build retained; successor same data usesLists/ordinarykerneldecide. Literal whole selectedvertex projection1,071,623B was losslesslyXZcompressed34,032B after exactroundtrip; completeuncompressed/rawcopies retained. All prior mathematical/infrastructure/format failures preserved. [pcc:unverified]
+
+---
+
+# Full original kernel census: one supported compatible triple
+
+pcc/claims/PCC-20261115-88f828.json: published8113951/build01/exact originalcheckpoint16/all28/immediategate0. One unfilterednative0/worker0/supervisor0/all13phases expected; all311whole ordered records pass basis-span reconstruction, fouractual whole-class omissions101/nooutput, all1172hashes andactual binaries exact. [pcc:unverified]
+
+## What was done
+Exhausted all18original vertices/72pairs/216triples withcomplete oldrows/two64-4096-135certificates andevery failedreason. Eligiblevertices4/2/2; compatiblepairs6/6; supplied-source eligible compatiblepairs1/1; exactlyone supportedcompatibletriple [4,1,4], cases(2,0)/(0,1)/(2,0), D116/39/36. Sixactualmalformedinput controls reject. All oldfixed D12/D24/D67 negatives andprime-only976f50 choices remain unchanged. [pcc:unverified]
+
+## Decisions made
+First independently encode actualfinite masks/transports inLean, runbothoriginal proofgates andlocalbindings, produce inspected resultvisual andpublish. Then freeze unique full-group original-source triple in a separate implementation protocol before porting thecomplete evaluator; no full-group map is claimed constructed yet. [pcc:unverified]
+
+## Open threads
+Independent actual-data Lean coverage/verdict, visualreport, normalpublication; nextprospective full-group evaluator for originalell2773073/order11092292 withallfullcofactor/halves-corrections/population criteria, strongestknown-point andcompleteprimitive comparison retained. FuturewholecustodyNEW24. [pcc:unverified]
+
+## Errors
+No censusnativefailure. KB theorem andformal-source queries exit127; originalhelpers arebyteexact. Metadata inspection syntaxerror was corrected beforeI/O. All historical failednative/source/format/infrastructure andmathematical negatives retained. Unsignedfinite scope; actualgeometry/program bridges andcost obligations remain. [pcc:unverified]
+
+---
+
 # Original-kernel census compiled; publish source and exact checkpoint before native
 
 pcc/claims/PCC-20261115-4fde50.json: protocol0158c5 publishedc1cbc188 before code. Locked offline graph, both compilations andall1172prior hashes pass. Whole compiledsource andactual test/auditor bytes retained. No research native test ornewmask/path result has run. [pcc:unverified]
