@@ -1,5 +1,20 @@
 # Native integration check receipt
 
+The [kernel-fusion receipt](kernel-fusion-20261115/producer-checks.json), claim
+`PCC-20261115-d2f58b`, records the subsequent arithmetic and candidate-index
+changes in source commit `27fc983`. The intermediate shift uses two field
+multiplications and four additions/subtractions, replacing three of each;
+SIMD zero masks and inline scalar collection remove the second result scan.
+The explicit-product controls include a 128-root, 58-coordinate fixture and
+mixed/zero shifts. Fifteen core checks pass on stable and Rust 1.78, together
+with three CLI checks. These are producer correctness checks and source-level
+operation counts; a runtime improvement remains unmeasured. [pcc:unverified]
+
+The timing-access checks still find no expected local checkpoint or Runpod
+credentials. A read-only dispatch of the existing Cloud ECC2K-130 status action
+returned HTTP 422 because that workflow is manually disabled. No runner or
+benchmark job was started. The access question remains open. [pcc:unverified]
+
 The [CI follow-up receipt](ci-followup-20261115/producer-checks.json), claim
 `PCC-20261115-2a4d0d`, records the subsequent CI results and remaining blockers.
 Both dependency-consumer jobs passed. The auxiliary workflow never started:

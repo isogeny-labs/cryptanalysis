@@ -58,6 +58,21 @@ protocol exist. No such run is launched by this import PR.
 
 ## Resolution and history
 
+2026-11-15, continued optimization: source commit `27fc983` shares the center
+shift product and extracts candidate indices during evaluation. Explicit
+polynomial-product checks cover mixed/zero shifts and a 128-root fixture across
+multiple SIMD tiles with tail padding. The retained [kernel-fusion receipt](../experiments/prime-field-auxiliary-ic/rust-validation/kernel-fusion-20261115/producer-checks.json),
+claim `PCC-20261115-d2f58b`, reports 15 core checks on each toolchain and three
+CLI checks passing. This implements further arithmetic/indexing changes; it
+does not establish a measured runtime improvement. [pcc:unverified]
+
+Access probes found no expected local checkpoint credentials or Runpod API
+key. The existing cloud-status workflow is `disabled_manually`, and its
+read-only dispatch returned HTTP 422 without starting a job. Timing still
+requires usable checkpoint/runner access and the admitted protocol; the
+resource question has been sent to the user while code work proceeds.
+[pcc:unverified]
+
 2026-11-15, CI follow-up: the native dependency-consumer checks passed, but
 the auxiliary workflow failed before any job started because repository action
 policy rejected `dtolnay/rust-toolchain@master`. The replacement uses direct
