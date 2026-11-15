@@ -58,6 +58,24 @@ protocol exist. No such run is launched by this import PR.
 
 ## Resolution and history
 
+2026-11-15, native integration: added a dependency-free Rust circuit and
+bounded complete solver, a direct batched-subtraction IC control, safe Rust
+re-exports, and `ca-ic auxiliary` with optional repository C rho. Correctness
+checks cover both requested fields, complete small-field recoveries, public
+31-bit row replay, and separate dense/C arithmetic controls. These are producer
+checks; they do not resolve the empirical-qualification gap. [pcc:unverified]
+
+Exact Rust-stage commands, source pins, logs and failures are retained in
+[the producer check report](../experiments/prime-field-auxiliary-ic/rust-validation/producer-checks.json),
+claim `PCC-20261115-c2f013` (unsigned). [pcc:unverified]
+
+The checkpoint gate was retried for the Rust stage. It reported no AWS profile
+`ecc-challenges-new`, no `CHECKPOINT_UPLOAD_TOKEN`, and no local checkpoint token
+file. No checkpoint was uploaded, so no new research benchmark was launched.
+Fresh-panel execution also still requires an admitted GPU allocation. The Rust
+CLI leaves `qualified_speedup` and `online_exclusive_phases` null; replay mode
+also leaves attack time and query counts null. [pcc:unverified]
+
 2026-11-15: retained the existing implementation and raw evidence, explicitly
 corrected the producer/independence distinction, and registered retrospective
 benchmark records. Unresolved; merging the import does not qualify the timing

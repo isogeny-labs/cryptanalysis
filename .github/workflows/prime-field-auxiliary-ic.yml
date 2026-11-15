@@ -4,6 +4,9 @@ on:
   pull_request:
     paths:
       - experiments/prime-field-auxiliary-ic/**
+      - crates/prime-field-auxiliary-ic/**
+      - suite/src/cli/tools/ic/auxiliary.rs
+      - bindings/rust/cryptanalysis/tests/auxiliary_ic.rs
       - .github/workflows/prime-field-auxiliary-ic.yml
   workflow_dispatch:
 
@@ -11,6 +14,36 @@ permissions:
   contents: read
 
 jobs:
+  native-rust:
+    name: Auxiliary IC Rust ${{ matrix.rust }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        rust: ['1.78.0', stable]
+    defaults:
+      run:
+        working-directory: crates/prime-field-auxiliary-ic
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: crates/prime-field-auxiliary-ic
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ matrix.rust }}
+          components: clippy, rustfmt
+      - name: Check complete IC pipeline and scalar/SIMD parity
+        run: cargo test --release
+      - name: Formatting and lints
+        if: matrix.rust == 'stable'
+        run: |
+          cargo fmt --check
+          cargo clippy --all-targets -- -D warnings
+      - name: Public documentation
+        run: cargo doc --no-deps
+        env:
+          RUSTDOCFLAGS: -D warnings
   implementation-checks:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
@@ -31,7 +64,18 @@ jobs:
       - name: Regression checks in a temporary copy
         env:
           SNAPSHOT_SOURCE: ${{ github.workspace }}/experiments/prime-field-auxiliary-ic/snapshot
+          # The historical SymPy environment loaded before the locally
+          # vendored FLINT module. Global FLINT changes SymPy's factor sorting
+          # to nmod comparisons, which that SymPy version does not support.
+          SYMPY_GROUND_TYPES: python
         run: |
           cp -a "$SNAPSHOT_SOURCE" "$RUNNER_TEMP/prime-field-ic"
           cd "$RUNNER_TEMP/prime-field-ic/algebraic"
           python -m unittest test_solver test_resultants test_optimized optimized.test_v2 -v
+      - name: Retain extraction diagnostics on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: prime-field-ic-extraction-diagnostics
+          path: ${{ runner.temp }}/prime-field-ic/algebraic/tests/**/extraction.log
+          if-no-files-found: ignore

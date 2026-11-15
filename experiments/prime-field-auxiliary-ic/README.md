@@ -1,5 +1,16 @@
 # Retrospective prime-field auxiliary-map index calculus import
 
+The maintained native implementation now lives in
+[the Rust crate](../../crates/prime-field-auxiliary-ic/README.md), with safe
+bindings and `ca-ic auxiliary` integration. It adds signed graph elimination
+and a batched direct IC control without changing the frozen snapshot. No new
+qualified timing claim is made. [pcc:unverified]
+
+The [Rust implementation-check report](rust-validation/producer-checks.json)
+pins the source files, exact commands, raw outputs, and unsuccessful setup
+attempts. Claim `PCC-20261115-c2f013` records the unsigned producer checks;
+it is not an execution proof or signed independent replay. [pcc:unverified]
+
 This imports the implementation, public fixtures, and historical outputs from
 the standalone `index_calculus_demo` workspace. The snapshot includes the
 quadratic-resultant solver, known-root GCD tree, centered SIMD circuit, batched
@@ -69,6 +80,12 @@ C++17 compiler, and Singular, then run from `snapshot/algebraic`:
 python -m unittest test_solver test_resultants test_optimized optimized.test_v2 -v
 ```
 
+Set `SYMPY_GROUND_TYPES=python` when python-flint is globally installed. The
+archived SymPy extraction code otherwise attempts to sort FLINT `nmod` values,
+which raises `TypeError: nmods cannot be ordered` in that dependency combination.
+The CI environment pins this setting and retains extraction logs on failure;
+the archive itself remains byte-for-byte unchanged. [pcc:unverified]
+
 The dedicated CI job runs those checks in a temporary copy so that outputs
 cannot overwrite the frozen snapshot. The historical standalone benchmark
 commands remain in the archive for inspection; any new research run must first
@@ -80,6 +97,7 @@ snapshot identity, not as a commit that existed at execution time.
 
 | Requirement | Import status |
 |---|---|
+| Native Rust API, CLI, auxiliary/direct IC controls, sparse certificate solver | Implemented and producer checked; timings unqualified |
 | Source, public parameters, seeds, raw successes/failures, source hashes | Retained in the snapshot and import inventory |
 | Arithmetic and relation checks | Implemented; archived producer reports retained |
 | Independent scalar certificate check | Submitted to the repository PCC checker; signed standing pending |
