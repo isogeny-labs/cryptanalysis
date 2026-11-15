@@ -1,3 +1,27 @@
+# Corrected compiled manifest; original failed whitespace gate retained
+
+pcc/claims/PCC-20261115-966899.json: build02 is the current exact compiled source at /workspace/scratch/ct82-fixed-chain-geometry-build-02, all phases0. Only Cargo EOF whitespace correction plus native driver added; original build01 and actual cached-whitespace2 remain preserved. Native NOT RUN. Publish corrected source, obtain exact original checkpoint, then run one unfiltered900s/2GiB PhaseA test. Published5caf67 complete PhaseB-D workload unchanged. [pcc:unverified]
+
+---
+
+# Complete fixed-instance chain: Phase A compiled, native pending
+
+pcc/claims/PCC-20261115-d6973d.json: generic three-model geometry source compiles without mathematical execution; all1060 prior source guards and original metadata/engine preparation/wrapper/final checks0, exact original full-library reuse and whole actual binary/source retained at /workspace/scratch/ct82-fixed-chain-geometry-build-01. The old known-answer parity and all-three geometry test are compiled; no native outcome is asserted. Additive24th replay source requires all16 whole records, firstnine exact, both entire omissions101, realolddual101/allfiveexact and both original gates/all20bindings. Old23 unchanged; genuine21 settled991276/2e7b0f. [pcc:unverified]
+
+## What was done
+Implemented literal Adapter/NormNew/quadratic nominal derivatives under published5caf67, retaining every original formula and explicit identity-description difference. All three fixed masks/cases/actual source certificates are required; test retains224lineorigins permodel/separatequadraticorigins/allfourE2/twotwo-pointfibres/actualforeigncontrols. Completecompiledsource/raw/source/binary/librarycopies remain local for NEW22. [pcc:unverified]
+
+## Decisions made
+Publish compiled source and exact original checkpoint before one900s/2GiB unfiltered PhaseA test. A geometry or correction failure stays a full retained obligation with no model reselection. PhasesB-D retain all672exceptionaldescriptors/twooutgoingmaps/fullgroupinverses/fourhalves/fourcofactors/directsequentialcomparison and unpriced complete accounting. [pcc:unverified]
+
+## Open threads
+Obtain the exact source originalcheckpoint; run fixed-jacobian-chain-01/run-native-01.sh against its actual compiled source. Add complete map implementation and correction-completeness/half-choice/Frobenius proofs; capture additive24CI at its own source without repeated status polling. FuturelargecustodyNEW22. [pcc:unverified]
+
+## Errors
+No new build failure. Historical materialization/ENOSPC/PATH/Typst/publication19 failures and original supplied-source/coldcensus negatives remain preserved. Root-main CI/ledger/signing/review, live calibrated benchmark admission and locked KB/vault restrictions unchanged. [pcc:unverified]
+
+---
+
 # Genuine21 settled; complete fixed Jacobian-chain implementation next
 
 pcc/claims/PCC-20261115-2e7b0f.json/pcc/claims/PCC-20261115-991276.json: original43661406081/job132651320244SUCCESS/FIVEremote replays BEFOREdb435e1b/direct43996852/exact7paths. ALL42866guards/162links/ownedbytes andwhole61501328Barchive/all1662members/14declaredwholesci roots preserved; normalfetch-FF-artifact-wiring0/HOLD21RELEASED. All40443prior keys/150oldlinks/old2850ledgerprefix retained withdeclaredmetadataupdates, prior20genuinepayloads remainexactwithoutrecursivecapture. TWOexactcanonicalmanifestentries/ONEplainGitwholefive-recordcontrol/THREErelativealiases. [pcc:unverified]
