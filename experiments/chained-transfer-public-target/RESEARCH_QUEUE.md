@@ -1,3 +1,21 @@
+# Three fixed Jacobian models accepted; full evaluator compiled, native next
+
+pcc/claims/PCC-20261115-89f255.json: full evaluator build02 compiles after preserved build01 fourE0599 test-return errors. PhaseA f81cbf on published70ec53e5/exact checkpoint11 passes oneunfilteredtest/allthree actual generic geometries,224lineorigins each/separatequadratic origins/allfourE2/two-two-pointcorrectionfibres/actualrejections. Fullchain native is NOT RUN. [pcc:unverified]
+
+## What was done
+Both original gates/ALL13 exact local bindings pass across ChainDescent8roots/e89f97 and FullGroupNorm5roots/3805e2, zero trusted assumptions. Rational correction completeness, half-choice and Frobenius-fixed output are derived from explicit kernel/Frobenius inputs; no desired beta assumed. Full-group inverse witnesses13→5117005 and169→7216289 modulo11086844 and retained-lift comparison proved conditionally. Additive24 CI ab17f7: own43663258742/job132657012367SUCCESS/whole35654567BZIP182members/all37phases/all1077guards/both20rootgates/all20bindingverdicts/full8972686Bjoblog/all15runlogmembers and actualCI Rustauditor0/twoentireomissions101/wholefivecontrol0. Original23 unchanged. [pcc:unverified]
+
+## Decisions made
+Fixed5caf67 source/mask/population preserved. Native must keep ALL672exceptionaldescriptors underBOTHoutgoingmaps/all4halves/all4cofactorsectors/144mixed/120public/96additionpairs perundirectedpair/fullgroupnorm-inverses/independentellipticchecks/all695wholeorderedrecords. Retain completed descriptor streaming before domainwholepacket. Compare direct169 with BOTHliteralJacchain and STRONGERretainedellipticlift chain, sharingoneexternaladmission/finalnorm+orderchecks. Record48unpricedSELECTEDcallvectors; completeprimitivecensus remainsopen. [pcc:unverified]
+
+## Open threads
+Publish exactcompiledsource/currentmetadata, collect ORIGINALcheckpoint12, then run fixed-jacobian-chain-evaluator-01/run-native-01.sh at that exactcleanhead with /workspace/scratch/ct82-fixed-chain-evaluator-build-02; one900s/2GiBunfilteredtest. Fullraw/archive/binaries/logs/failures/proofs/reports toNEW22; no canonicalnewfixture/replayCI before genuine22. Afterattempt retain outcome, improve implementation oradvance original-prime anti-Frobenius primaryreview; no modelreselection. [pcc:unverified]
+
+## Errors
+Retained EOFcached-whitespace2/oldproofabsolute-pathFAIL_build/fourE0599compile101. CI logconnectorTransportClosed twice andjobredirect403 preservedsafely; run-logZIP endpoint0 recoveredWHOLEjoblog. Exactclosedrawhardlinkdedup preservesbytes andmodes; obsolete root thirdpartyrmeta-only cleanup outsideall42866guards+PCCsubjects, currentct57/ct80/raw/exes/preparedcopies retained. Earlier ct54/ct56 release-path probe failed before mutation (they are debug). Historicalscientific/root-main/coldcensus negatives, signing/ledger/reviews/conflicts/livebenchmarkadmission/KB/vault gaps remainopen. [pcc:unverified]
+
+---
+
 # Corrected compiled manifest; original failed whitespace gate retained
 
 pcc/claims/PCC-20261115-966899.json: build02 is the current exact compiled source at /workspace/scratch/ct82-fixed-chain-geometry-build-02, all phases0. Only Cargo EOF whitespace correction plus native driver added; original build01 and actual cached-whitespace2 remain preserved. Native NOT RUN. Publish corrected source, obtain exact original checkpoint, then run one unfiltered900s/2GiB PhaseA test. Published5caf67 complete PhaseB-D workload unchanged. [pcc:unverified]
