@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-15T10:03:05Z",
+ "id": "PCC-20261115-936200",
+ "kind": "theorem",
+ "producer": {
+  "commit": "a0ec881c2917ad91a7009625fdbfd2b2f47a0478",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "0f19a5200dc620dbd5bdf6420abd582977d0894d12df4783c652478e9f88bf2a",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/original-induced-transfer-01/lean/InducedFullTransfer.lean",
+   "theorem": "InducedFullTransfer.induced_reverse_norms"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Conditional quotient algebra on geometric IntModules. Presentation explicitly supplies sourcePhi homomorphism identities and an arbitrary section withPhi(liftx)=x; CompatibleEdge explicitly supplies source elliptic homomorphism identities and full kernel transport. No induced transfer linearity/commuting square/dual norm/recovery/injectivity is a field or hypothesis. Both induced reverse norms derive from source elliptic dual identities; recovery/injectivity require annihilation only on the stated inputs and Bezout. No rational/linear/equivariant section or finite annihilation of every geometric point is assumed. Both unchanged original434/435 gates audit21declarations: nine planned named conclusions plus12 structural declarations, all0trusted; exact localbindings for allnine. ActualHLP/field/Frobenius/Picard/order/program/lift bridges remainexplicit. Standardquotientalgebra formalization, unsigned/no newcurve-DLP/cost/novelty/signedstanding.",
+ "statement": "theorem induced_reverse_norms {A J B K : Type} [IntModule A] [IntModule J] [IntModule B] [IntModule K] (source : Presentation A J) (target : Presentation B K) (forward : CompatibleEdge source target) (reverse : CompatibleEdge target source) (n : Int) (source_elliptic_dual : \u2200 a, reverse.map (forward.map a)=n \u2022 a) (target_elliptic_dual : \u2200 b, forward.map (reverse.map b)=n \u2022 b) : (\u2200 x, transfer reverse (transfer forward x)=n \u2022 x) \u2227 (\u2200 y, transfer forward (transfer reverse y)=n \u2022 y)"
+}
