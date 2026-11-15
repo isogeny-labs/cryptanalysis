@@ -52,9 +52,11 @@ relation on the exact Weierstrass curve using Mathlib's affine elliptic-curve
 group law, after checking the discriminant and both point equations. Its
 companion `reduced_relation` theorem checks the relation on the exact
 `ZMod 47` curve with the same reduced affine coordinates. The
-`#print axioms` results for both list only `propext`, `Classical.choice`, and
-`Quot.sound`. The coefficient-reduction and auxiliary order calculations
-remain in the exact Sage and independent arithmetic audits.
+`rational_model` and `reduced_model` theorems map one integer-coefficient
+Weierstrass model to those two exact curves. All four `#print axioms`
+results list only `propext`, `Classical.choice`, and `Quot.sound`.
+The point-reduction and auxiliary order calculations remain in the exact
+Sage and independent arithmetic audits.
 
 ## Construction and boundary
 

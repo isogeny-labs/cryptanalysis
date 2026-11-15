@@ -1,32 +1,34 @@
 ⚠ [9038/9042] Replayed RationalWitness
 warning: RationalWitness.lean: imports `Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Point` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
 warning: RationalWitness.lean: imports `Mathlib.Tactic` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
-info: RationalWitness.lean:35:0: 'XedniCrtRationalWitness.rational_relation' depends on axioms: [propext, Classical.choice, Quot.sound]
-warning: RationalWitness.lean:44:67: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+info: RationalWitness.lean:15:0: 'XedniCrtRationalWitness.rational_model' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RationalWitness.lean:43:0: 'XedniCrtRationalWitness.rational_relation' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RationalWitness.lean:53:0: 'XedniCrtRationalWitness.reduced_model' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RationalWitness.lean:57:67: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
 
 Note: This linter can be disabled with `set_option linter.unusedTactic false`
-warning: RationalWitness.lean:44:67: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+warning: RationalWitness.lean:57:67: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
 
 Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
-warning: RationalWitness.lean:49:55: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+warning: RationalWitness.lean:62:55: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
 
 Note: This linter can be disabled with `set_option linter.unusedTactic false`
-warning: RationalWitness.lean:49:55: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+warning: RationalWitness.lean:62:55: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
 
 Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
-warning: RationalWitness.lean:52:55: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+warning: RationalWitness.lean:65:55: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
 
 Note: This linter can be disabled with `set_option linter.unusedTactic false`
-warning: RationalWitness.lean:52:55: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+warning: RationalWitness.lean:65:55: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
 
 Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
-warning: RationalWitness.lean:67:49: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+warning: RationalWitness.lean:80:49: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
 
 Note: This linter can be disabled with `set_option linter.unusedTactic false`
-warning: RationalWitness.lean:67:49: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+warning: RationalWitness.lean:80:49: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
 
 Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
-info: RationalWitness.lean:72:0: 'XedniCrtRationalWitness.reduced_relation' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RationalWitness.lean:85:0: 'XedniCrtRationalWitness.reduced_relation' depends on axioms: [propext, Classical.choice, Quot.sound]
 ⚠ [9041/9042] Replayed TargetRecovery
 warning: TargetRecovery.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
 info: TargetRecovery.lean:35:0: 'XedniCrtTargetRecovery.recover_of_relation' depends on axioms: [propext, Classical.choice, Quot.sound]

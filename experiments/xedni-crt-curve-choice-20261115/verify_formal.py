@@ -41,7 +41,7 @@ def main():
         line = next(line for line in output.splitlines()
                     if f"'XedniCrtRationalWitness.{declaration}' depends on axioms:" in line)
         assert "[propext, Classical.choice, Quot.sound]" in line
-    assert len(deps["audited_rational_declarations"]) == 2
+    assert len(deps["audited_rational_declarations"]) == 4
     print(json.dumps({"status": "PASS", "checked_theorems": len(declarations) + len(deps["audited_rational_declarations"]),
                       "mathlib_revision": deps["mathlib_revision"],
                       "lean_toolchain": deps["lean_toolchain"]}, sort_keys=True, indent=2))

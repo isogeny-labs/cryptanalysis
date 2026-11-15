@@ -3,8 +3,16 @@ import Mathlib.Tactic
 
 namespace XedniCrtRationalWitness
 
+def Wℤ : WeierstrassCurve ℤ :=
+  ⟨-987, -1034, 0, 7660, -3997⟩
+
 def W : WeierstrassCurve.Affine ℚ :=
   ⟨-987, -1034, 0, 7660, -3997⟩
+
+theorem rational_model : Wℤ.map (Int.castRingHom ℚ) = W := by
+  ext <;> norm_num [Wℤ, W, WeierstrassCurve.map]
+
+#print axioms rational_model
 
 private theorem nonsingular : W.Δ ≠ 0 := by
   norm_num [W, WeierstrassCurve.Δ, WeierstrassCurve.b₂,
@@ -38,6 +46,11 @@ private instance : Fact (Nat.Prime 47) := ⟨by norm_num⟩
 
 def W₄₇ : WeierstrassCurve.Affine (ZMod 47) :=
   ⟨0, 0, 0, -1, -2⟩
+
+theorem reduced_model : Wℤ.map (Int.castRingHom (ZMod 47)) = W₄₇ := by
+  ext <;> norm_num [Wℤ, W₄₇, WeierstrassCurve.map] <;> decide
+
+#print axioms reduced_model
 
 private theorem nonsingular₄₇ : W₄₇.Δ ≠ 0 := by
   norm_num [W₄₇, WeierstrassCurve.Δ, WeierstrassCurve.b₂,
