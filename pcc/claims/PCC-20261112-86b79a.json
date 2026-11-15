@@ -1,0 +1,65 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-12T05:04:43Z",
+ "id": "PCC-20261112-86b79a",
+ "kind": "statement",
+ "producer": {
+  "commit": "5ceb1db026898a07a1dcbda8ba186c9d1741f1e8",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct28-integrated-source-05.sha256",
+    "sha256": "67ea815107d2471426efd95d55cc5ad02a56ef5838ce6ccb7083d973d040329a"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct28-quartic_cover-source-05.rs",
+    "sha256": "40f68966a2f3f51827d5313c4d4210d73eb1511e46f4a7384ca7722c0fe985f5"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct28-quartic_lagrange-source-05.rs",
+    "sha256": "426204397c2da50028c32e16c3b5ce28d9a8433c4eb32dabc0b6899572282fc6"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct28-quartic_norm-source-05.rs",
+    "sha256": "b618257b5ddd8600266bfaab38e8f17372fc82f63e607eb3bc97206b51c0d62d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct28-seven_chain-source-05.rs",
+    "sha256": "4903ecf17fa46c83f04d67d1c5903ef098e129c1f556bd623f47667b3a5c5729"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct28-integrated-native-05.txt",
+    "sha256": "b18e7a1aa2026901c983db51b8c544d23965db25ead60d8251bbdb215920518b"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct28-integrated-clippy-05.txt",
+    "sha256": "be95afa3133d1b8fb1853bcea9f6a2421b981f307789e90fe6bd04011b60e1ae"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Unsigned actual first-component CT28 integration05 passes two targeted tests/strictClippy:exact T0/E109 construction identity/degree/all118 finite points and ALL12317 original H outputs/all negations/paired additions,including2closed-pole classes/118repeated supports/126double-image/108opposite-image cases,all degree0/infinity/wrong-model controls. Existing arithmetic and original chain bodies unchanged;four source snapshots/hashmanifest/full receipts frozen. Upstream independent flat-field04/5ab2bd and written6afa9c separate. Complete changed guard remains pending;no whole-prime-field Psi or measured gain."
+}

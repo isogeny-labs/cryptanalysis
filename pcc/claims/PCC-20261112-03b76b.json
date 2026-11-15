@@ -1,0 +1,58 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-12T01:24:15Z",
+ "id": "PCC-20261112-03b76b",
+ "kind": "statement",
+ "producer": {
+  "commit": "43a8e80ea4d01c564499e678751f44c51dae5243",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct25-complete-04.txt.xz",
+    "sha256": "3e5483290a712580e3dc713acaf30f6528d655182b047adbd81bf6dcab85cc34"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct25-complete-04.txt.sha256",
+    "sha256": "52878e33eea785d2810f094bc181162ccfd5371af47d3ef079155b6eb7351c25"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct25-source-04.sha256",
+    "sha256": "8cec671593e1ba331003529e294b3c78eca59596896173a82915ca6c57543460"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct25-direct_norms-source-04.rs",
+    "sha256": "1606aad7f907ef6212e1cfa5b32078a4b20d012bc9f2159e51907c7ca3497b70"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct25-seven_successor-source-04.rs",
+    "sha256": "928f871a4d897a9e710ed7a591292fe75e9aca53f41941296e9c71a5ff6132d9"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct25-seven_successor_chain-source-04.rs",
+    "sha256": "c505836004ba20ee1865d61d666aa41824e21fd745e76890492c0e8b87e95f8f"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Unsigned COMPLETE CT25 changed guard04 passes25native/81reference unit+5integrations,1pre-existing ignored benchmark,all source guards/fmt/strictClippy. Exact3 finalsource04 hashes match. Both direct C2 norms agree with generic onALL12317,all Phi2/Psi2 forward/dual graphs agree with genuine generic references,and all prior/source109/113/naive/closed/pointwise/geometric controls pass. Whole raw/xz/hash/exact roundtrip retained. No signed standing or measured stage/pipeline/algorithm advantage."
+}

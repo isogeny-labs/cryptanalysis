@@ -163,13 +163,32 @@ def belongs_in_store(path: str, size: int, policy: dict) -> bool:
 # Manifests and the managed .gitignore block
 
 
+def staged_content(root: Path, relative: str, *, missing_ok: bool = False, output=None) -> bytes | None:
+    """Apply required filters, streaming payloads to output when supplied."""
+    spec = f":{relative}"
+    result = subprocess.run(["git", "-C", str(root), "cat-file", "--filters",
+                             f"--path={relative}", spec],
+                            stdout=subprocess.PIPE if output is None else output,
+                            stderr=subprocess.PIPE)
+    if result.returncode:
+        if missing_ok and "\n" not in spec:
+            request = spec.encode("utf-8", "surrogateescape")
+            probe = subprocess.run(["git", "-C", str(root), "cat-file", "--batch-check"],
+                                   input=request + b"\n", capture_output=True)
+            if (probe.returncode == 0 and not probe.stderr
+                    and probe.stdout == request + b" missing\n"):
+                return None
+        result.check_returncode()
+    return result.stdout
+
+
 def read_text_or_index(p: Path) -> str | None:
-    """A file's text, or its staged copy when a sparse checkout left it off disk."""
+    """A file's text, or filtered staged bytes when sparse checkout omitted it."""
     if p.exists():
         return p.read_text()
-    r = subprocess.run(["git", "-C", str(p.parent if p.parent.exists() else repo_root()), "show",
-                        f":{rel(repo_root(), p)}"], capture_output=True, text=True)
-    return r.stdout if r.returncode == 0 else None
+    root = repo_root()
+    data = staged_content(root, rel(root, p), missing_ok=True)
+    return None if data is None else data.decode("utf-8")
 
 
 def read_manifest(d: Path) -> dict[str, dict]:
@@ -521,14 +540,15 @@ def cmd_push(cfg: Config, args) -> int:
         f, size = item
         path = cfg.root / f
         tmp = None
-        if not path.exists():
-            # Tracked but not on disk (a sparse checkout): read the committed blob.
-            (cfg.cache / "tmp").mkdir(parents=True, exist_ok=True)
-            fd, tmp = tempfile.mkstemp(dir=cfg.cache / "tmp")
-            with os.fdopen(fd, "wb") as out:
-                subprocess.run(["git", "-C", str(cfg.root), "cat-file", "blob", f":{f}"], stdout=out, check=True)
-            path = Path(tmp)
         try:
+            if not path.exists():
+                # The worktree path and staged path must offload the same bytes.
+                (cfg.cache / "tmp").mkdir(parents=True, exist_ok=True)
+                fd, tmp = tempfile.mkstemp(dir=cfg.cache / "tmp")
+                with os.fdopen(fd, "wb") as out:
+                    staged_content(cfg.root, f, output=out)
+                path = Path(tmp)
+            size = path.stat().st_size
             digest = sha256_file(path)
             sent = remote.put(digest, path, size)
             cache_insert(cfg, path, digest)
@@ -649,14 +669,27 @@ def changed_candidates(cfg: Config, base: str, head: str) -> list[tuple[str, int
     # 7-character raw id is not a valid object name when that blob is absent.
     out = git(cfg.root, "diff", "--raw", "--no-abbrev", "-z", "--no-renames", "--diff-filter=AM", base, head)
     fields = out.decode(errors="surrogateescape").split("\0")
-    offenders = []
+    entries = []
     for meta, path in zip(fields[0::2], fields[1::2]):
         if not meta:
             continue
         _, mode, _, blob, _ = meta.lstrip(":").split()
         if mode == "160000":
             continue
-        size = int(git(cfg.root, "cat-file", "-s", blob))
+        entries.append((path, blob))
+    # One batch avoids a process (and, in blobless clones, a lazy-fetch setup)
+    # for every changed path. Git returns one answer per input, in order.
+    request = "".join(f"{blob}\n" for _, blob in entries).encode()
+    replies = (git(cfg.root, "cat-file", "--batch-check=%(objectname) %(objecttype) %(objectsize)", input=request)
+               .decode().splitlines() if entries else [])
+    if len(replies) != len(entries):
+        die("git cat-file returned the wrong number of blob sizes")
+    offenders = []
+    for (path, blob), reply in zip(entries, replies):
+        answer = reply.split()
+        if len(answer) != 3 or answer[0] != blob or answer[1] != "blob":
+            die(f"git cat-file could not size blob {blob} for {path}")
+        size = int(answer[2])
         if belongs_in_store(path, size, cfg.policy):
             offenders.append((path, size))
     return offenders

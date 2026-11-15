@@ -11,6 +11,9 @@ use isogeny_algos::{genus2, poly};
 use num_bigint::BigUint;
 use num_traits::ToPrimitive;
 use std::collections::HashSet;
+#[path = "direct_norms.rs"]
+mod direct_norms;
+use direct_norms::DirectNorms;
 #[path = "seven_torsion.rs"]
 mod torsion;
 
@@ -288,6 +291,7 @@ struct SevenTransfer {
     source: SplitQuotients,
     target: SplitQuotients,
     edges: [SevenEdge; 2],
+    direct: [DirectNorms; 2],
 }
 impl SevenTransfer {
     fn new() -> Self {
@@ -313,17 +317,31 @@ impl SevenTransfer {
             ],
         )
         .unwrap();
+        let direct = [
+            DirectNorms::new([56, 13, 6]).unwrap(),
+            DirectNorms::new([
+                model.coefficients[0],
+                model.coefficients[2],
+                model.coefficients[4],
+            ])
+            .unwrap(),
+        ];
         Self {
             fp,
             model,
             source,
             target,
             edges: [first, second],
+            direct,
         }
     }
 
     /// Coordinates ordered by the original elliptic factors109,113.
     fn source_coordinates(&self, d: &Class) -> super::Result<[Pt<u64>; 2]> {
+        self.direct[0].norms(d)
+    }
+
+    fn source_coordinates_generic(&self, d: &Class) -> super::Result<[Pt<u64>; 2]> {
         let (a, b) = self.source.norms(d)?;
         Ok([
             short_point(&self.fp, &self.source.first.base, &a, 2),
@@ -333,13 +351,31 @@ impl SevenTransfer {
 
     /// Actual Kohel target coordinates,ordered by109,113 despite quotient swap.
     fn target_coordinates(&self, d: &Class) -> super::Result<[Pt<u64>; 2]> {
+        self.match_target_coordinates(self.direct[1].norms(d)?)
+    }
+
+    fn target_coordinates_generic(&self, d: &Class) -> super::Result<[Pt<u64>; 2]> {
         let (a, b) = self.target.norms(d)?;
-        let ds = [a, b];
-        let bases = [&self.target.first.base, &self.target.second.base];
+        let internal = [
+            short_point(
+                &self.fp,
+                &self.target.first.base,
+                &a,
+                self.model.charts[0].shift,
+            ),
+            short_point(
+                &self.fp,
+                &self.target.second.base,
+                &b,
+                self.model.charts[1].shift,
+            ),
+        ];
+        self.match_target_coordinates(internal)
+    }
+
+    fn match_target_coordinates(&self, internal: [Pt<u64>; 2]) -> super::Result<[Pt<u64>; 2]> {
         let mut out = [Pt::Inf; 2];
-        for i in 0..2 {
-            let c = self.model.charts[i];
-            let p = short_point(&self.fp, bases[i], &ds[i], c.shift);
+        for (c, p) in self.model.charts.into_iter().zip(internal) {
             out[c.destination] = scale_point(&self.fp, p, c.scale);
             assert!(curve::on_curve(
                 &self.fp,
@@ -351,8 +387,20 @@ impl SevenTransfer {
     }
 
     fn forward(&self, d: &Class) -> super::Result<Class> {
+        self.forward_using(d, false)
+    }
+
+    fn forward_generic(&self, d: &Class) -> super::Result<Class> {
+        self.forward_using(d, true)
+    }
+
+    fn forward_using(&self, d: &Class, generic: bool) -> super::Result<Class> {
         let f = &self.fp;
-        let points = self.source_coordinates(d)?;
+        let points = if generic {
+            self.source_coordinates_generic(d)?
+        } else {
+            self.source_coordinates(d)?
+        };
         let images: [Pt<u64>; 2] = std::array::from_fn(|i| {
             let n = [109_u64, 113][i];
             let e = &self.edges[i];
@@ -373,8 +421,20 @@ impl SevenTransfer {
     }
 
     fn dual(&self, d: &Class) -> super::Result<Class> {
+        self.dual_using(d, false)
+    }
+
+    fn dual_generic(&self, d: &Class) -> super::Result<Class> {
+        self.dual_using(d, true)
+    }
+
+    fn dual_using(&self, d: &Class, generic: bool) -> super::Result<Class> {
         let f = &self.fp;
-        let points = self.target_coordinates(d)?;
+        let points = if generic {
+            self.target_coordinates_generic(d)?
+        } else {
+            self.target_coordinates(d)?
+        };
         let images: [Pt<u64>; 2] = std::array::from_fn(|i| {
             let n = [109_u64, 113][i];
             let e = &self.edges[i];
@@ -446,6 +506,20 @@ fn seven_transfer_both_full_rational_domains_duals_and_additions() {
     assert_eq!((xs.len(), ys.len()), (12317, 12317));
     let images = xs.iter().map(|d| t.forward(d).unwrap()).collect::<Vec<_>>();
     let duals = ys.iter().map(|d| t.dual(d).unwrap()).collect::<Vec<_>>();
+    for (d, image) in xs.iter().zip(&images) {
+        assert_eq!(
+            t.forward_generic(d).unwrap(),
+            *image,
+            "all-class generic/direct Phi norm agreement"
+        );
+    }
+    for (d, image) in ys.iter().zip(&duals) {
+        assert_eq!(
+            t.dual_generic(d).unwrap(),
+            *image,
+            "all-class generic/direct PhiHat norm agreement"
+        );
+    }
     assert_eq!(
         images.iter().map(class_key).collect::<HashSet<_>>(),
         ys.iter().map(class_key).collect()

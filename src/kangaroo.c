@@ -323,6 +323,16 @@ static ca_status k_solve_impl(const ca_group *g, const ca_elem *base, const ca_e
         while (per_roo >= 2.0 && dp < 40) { per_roo /= 2; dp++; }
     }
     uint64_t dp_mask = dp ? ((1ULL << dp) - 1) : 0;
+    /* Runaway guard for a caller that set no max_ops: a logarithm outside
+     * [lo, hi] is never met by a tame/wild collision that verifies.  A
+     * solvable instance costs about 2 sqrt(width) hops plus, per kangaroo,
+     * the 2^dp hops to its next distinguished point; a caller's own jump
+     * table may have a mean far below the tuned one, where crossing the
+     * interval takes up to `width` hops.  Ending here reports
+     * CA_ERR_NOT_FOUND; a caller's own max_ops reports CA_ERR_LIMIT. */
+    double guard_d = 256.0 * (double)sqrt_w + 64.0 * (double)total * (double)(1ULL << dp) +
+                     (params->jumps ? 4.0 * (double)width : 0.0) + 1048576.0;
+    const uint64_t guard = guard_d < 0x1p63 ? (uint64_t)guard_d : UINT64_MAX;
     k_checkpoint_header identity, saved = {0};
     k_identity(&identity, g, base, target, lo, hi, herd, nj, dp);
     int existing = k_probe(checkpoint_path, &identity, &saved, params->seed);
@@ -427,20 +437,35 @@ static ca_status k_solve_impl(const ca_group *g, const ca_elem *base, const ca_e
         goto cleanup;
     }
     uint64_t batches = 0;
+    const int zp = ca_zp_group_is_native(g);
     while (running) {
-        for (uint32_t i = 0; i < total; i++) {
-            jidx[i] = (uint32_t)(((ca_u128)(nj_magic * (hs[i] >> 32)) * nj) >> 64);
-            B[i] = J[jidx[i]];
-            Yn[i] = roos[i].Y;
+        if (!zp) {
+            for (uint32_t i = 0; i < total; i++) {
+                jidx[i] = (uint32_t)(((ca_u128)(nj_magic * (hs[i] >> 32)) * nj) >> 64);
+                B[i] = J[jidx[i]];
+                Yn[i] = roos[i].Y;
+            }
+            ca_group_batch_op(g, Yn, Yn, B, total, scratch);
         }
-        ca_group_batch_op(g, Yn, Yn, B, total, scratch);
         ops += total;
         for (uint32_t i = 0; i < total; i++) {
             roo *r = &roos[i];
-            r->Y = Yn[i];
-            r->dist += jsz[jidx[i]];
+            uint64_t h;
+            if (zp) {
+                /* Z_p: the hop is one Montgomery product on lane i alone, so
+                 * it is done here in place (no element copies, no indirect
+                 * batch/hash calls).  Same words, same order of effects as
+                 * the batch path: later lanes are untouched on a break. */
+                const uint32_t ji = (uint32_t)(((ca_u128)(nj_magic * (hs[i] >> 32)) * nj) >> 64);
+                r->Y.w[0] = ca_mont_mul(&g->mont, r->Y.w[0], J[ji].w[0]);
+                r->dist += jsz[ji];
+                h = ca_zp_hash_word(r->Y.w[0]);
+            } else {
+                r->Y = Yn[i];
+                r->dist += jsz[jidx[i]];
+                h = ca_group_hash(g, &r->Y);
+            }
             r->since_dp++;
-            uint64_t h = ca_group_hash(g, &r->Y);
             hs[i] = h;
             int tame = (i & 1) == 0;
             if ((h & dp_mask) == 0) {
@@ -504,6 +529,11 @@ static ca_status k_solve_impl(const ca_group *g, const ca_elem *base, const ca_e
         }
         if (running && params->max_ops && ops > params->max_ops) {
             rc = CA_ERR_LIMIT; running = 0;
+        }
+        if (running && !params->max_ops && ops > guard) {
+            ca_set_error("kangaroo: no logarithm found in the interval (runaway guard)");
+            rc = CA_ERR_NOT_FOUND;
+            running = 0;
         }
         if (monitored && running && ((++batches & 255u) == 0)) {
             double now = ca_now();
