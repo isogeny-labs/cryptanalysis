@@ -1,0 +1,65 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-11T20:10:40Z",
+ "id": "PCC-20261111-2b4435",
+ "kind": "statement",
+ "producer": {
+  "commit": "2450815e2a3b84687b405ef8498dae9dc2663fe1",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "pcc/claims/PCC-20261111-9b9e0a.json",
+    "sha256": "40e9f44277a6976b5b3a00fc34ad0a5e26e7ebca8c7b5e10935128e5fc5e0fe7"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/seven-chain-identity-source-10.txt",
+    "sha256": "e5b1e432591846f4e96233941c3a15c3d6561ab1c33509b0a81c2012af5bfd7e"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/seven-chain-full-08.txt",
+    "sha256": "43d772ff407af1b507fde13aaa8f634ce89bc5808c546d34ac3147140b5dd47b"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/seven-chain-source-snapshot-08.rs",
+    "sha256": "14cdd09acbb3490cd4e8dd385a1df30dc4731f07e80fae84176aabb68ffcd7b6"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/seven-chain-source-snapshot-10.rs",
+    "sha256": "90d9e2c1892e8b1222851fbd663c98e2f09b49cc9ef9daac41c493e781f040af"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/seven-torsion-source-snapshot-10.rs",
+    "sha256": "675ecdd6cbf1b9430efc34eecf8a254e3da8bdc6aa3740f1a39b88b272f2a268"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/seven-richelot-source-snapshot-03.rs",
+    "sha256": "ea8fab7a26aa03496e5045fe2ab9b19f7ce26c8d179d83917eafd95a27b7b3f3"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Correction of unsigned PCC-20261111-9b9e0a:its prose typed T0 coefficients[31,22,69,54,71,55,1] incorrectly. The actual unchanged R0 constructor and both complete12317-class Psi tests use T0=[31,75,74,54,71,55,1],not that erroneous equation;retain9b9e0a unchanged as a negative provenance record and do not cite its source-equation assertion. Fresh native receipt10 prints/asserts actual T0 and T1=[95,26,19,27,94,91,1] and all109source controls pass again. Receipt08 on both complete actual domains passes full bijections,both dual[7],12317 paired additions eachdirection,canonical descent and wrong-curve rejection;everyclass is evaluated once perimmutable map and only test graph assertions use lookup. Global quotient/polarization proof,completeguard,independent signed standing and computational advantage remain separate obligations. All claims producer-run,unsigned."
+}

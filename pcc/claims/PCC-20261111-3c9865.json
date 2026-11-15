@@ -1,0 +1,37 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-11T23:38:45Z",
+ "id": "PCC-20261111-3c9865",
+ "kind": "statement",
+ "producer": {
+  "commit": "5d5dc81faa442de6d9a4ee8144806ab89cf9a3b8",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/closed-fibres-ci-observation-13.json",
+    "sha256": "789cc6fe7d4b9c4d3abd1b157b65034687ee23234f2f8cc3758a0e81c50c50cf"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/closed-fibres-ci-43114643386.log.xz",
+    "sha256": "d13b5bd113a8a60e0581fbe0f5e5d8615295e6ff8da8e94ff4662a562615ecd2"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/closed-fibres-ci-43114643386.log.sha256",
+    "sha256": "b0cf695889e6b368c2cc67823928e5ba5d000df15ff1722078e08f1d9102fad9"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Unsigned exact5d5dc81faa442de6d9a4ee8144806ab89cf9a3b8 CT23 focused43114643386 CI succeeds25native/70reference unit+3integrations,1pre-existing ignored benchmark. Full metadata/decoded job log standard-xz archive and raw/archive hashes retained with exact roundtrip. Excludes later Phi2/Psi2 child and signed scientific verification."
+}

@@ -1,0 +1,44 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-11T19:57:16Z",
+ "id": "PCC-20261111-c1b585",
+ "kind": "statement",
+ "producer": {
+  "commit": "2450815e2a3b84687b405ef8498dae9dc2663fe1",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/seven-chain-geometric-05.txt",
+    "sha256": "bf5331e777cc5fe1b73c3edfc9611b99f27c30da858ca02e6fe8cc2cca01c179"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/seven-chain-source-snapshot-05.rs",
+    "sha256": "34493ebf4730f29a13281e87ba8d8b5f7874ba93d603584d3adadd71f50fbce0"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/seven-torsion-source-snapshot-05.rs",
+    "sha256": "bcee74197382d00e9508ff65091f62746b24acc7857fa64c59ebca0d6707e1cf"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/seven-richelot-source-snapshot-03.rs",
+    "sha256": "ea8fab7a26aa03496e5045fe2ab9b19f7ce26c8d179d83917eafd95a27b7b3f3"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Actual R0,R1 and dualR0 actions are evaluated on all16 geometric two-torsion classes each,with all256 additions each,image4/four preimages. Exact kernel transport via the actual Phi2 table is checked,and R1 Phi R0Hat kills ALL16 geometric T0[2] classes. Twelve nonzero elliptic2-torsion intersection controls show both Richelot cross-kernels meet the two embedded elliptic factors trivially. This supplies native geometric certificates for a global quotient proof and unpolarized F101-Jacobian distinction;regular geometry and type/degree remain written,not fully Lean formalized. No next Psi full rational/cost result is accepted yet. Producer-run certificates,unsigned."
+}
