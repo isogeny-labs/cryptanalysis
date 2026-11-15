@@ -1,0 +1,47 @@
+{
+  "schema": "semantic-audit/software-controls/v1",
+  "base_commit": "58c86ef41974ae33aff4b1b6cbd2b7c31ee3592e",
+  "scope": "GPU rho checkpoint metadata and cumulative internal operation counters",
+  "wire_layout": {
+    "unchanged_declaration_sha256": "cee7ff902d6b06b6d6e9cfa4205182ffad5fa9b27ea9b0488f28adf78847e9f4",
+    "magic": "CAGPUDP1",
+    "changed": false
+  },
+  "reproduced_before_fix": {
+    "nonfinite_elapsed_and_flag": "2 failing controls",
+    "resume_operations_overflow": "1 failing control",
+    "impossible_cumulative_counters": "3 failing controls"
+  },
+  "controls": "checksums recomputed for each malformed fixture; valid cached solution and exact counter-capacity stopping retained",
+  "counter_invariants": [
+    "launches <= charged operations",
+    "distinguished points <= charged operations",
+    "restarts <= distinguished points",
+    "resume setup plus saved operations must fit uint64",
+    "next launch charge must fit remaining uint64 capacity"
+  ],
+  "validation": {
+    "first_full_sanitizer_replay": "20 pass; before operation extension",
+    "second_full_sanitizer_replay": "20 pass; before cumulative invariant extension",
+    "final_integrated_replay": "20 C tests pass under ASan/UBSan; 314.39 seconds",
+    "pcc_tests": 29,
+    "pcc_canary_classes": 69,
+    "ledger_prefix_entries": 144,
+    "changed_translation_unit_analysis": "Apple Clang static analyzer exits 0 without diagnostics"
+  },
+  "hardware": {
+    "cuda_compiled": false,
+    "devices_reported": 0,
+    "execution": "host and emulator only"
+  },
+  "limitations": [
+    "Caller-supplied prepopulated aggregate ca_stats overflow is outside this checkpoint change.",
+    "No performance measurement.",
+    "No frozen experiment inputs or outputs changed."
+  ],
+  "source_sha256": {
+    "src/gpu_rho.c": "6837026ea3e2103c6d7ba1af74f3dc24cc2915bdccd82a7dab642e3e9cf710ad",
+    "src/gpu_internal.h": "d63ebddc2b953126b8ae69d69e45180107fbe60167c469ff1056b8b129bd3c1a",
+    "tests/test_gpu.c": "37266d1e97f0b3981df8b2adbc21dff13a8a2b8373784b7390f8f21e4dde5c60"
+  }
+}
