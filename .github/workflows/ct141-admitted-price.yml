@@ -1,0 +1,153 @@
+name: CT141 admitted original/reuse native pricing (manual only)
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/ct141-admitted-price.yml'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/ct141_admitted_run.sh'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/CT141_ADMITTED_NATIVE_PROTOCOL.md'
+  workflow_dispatch:
+    inputs:
+      admission:
+        description: 'Separate owner/budget approval is required; select explicitly'
+        required: true
+        type: choice
+        options:
+          - DENIED
+          - APPROVED_CPU_ONLY_CT141
+        default: DENIED
+permissions:
+  contents: read
+jobs:
+  source-guard:
+    if: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            experiments/chained-transfer-public-target/primitive-pricing-01/
+      - name: Run syntax and deny-without-admission controls only; never benchmark
+        shell: bash
+        run: |
+          set -euo pipefail
+          p=experiments/chained-transfer-public-target/primitive-pricing-01/ct141_admitted_run.sh
+          bash -n "$p"
+          env -u CT141_BENCH_ADMITTED -u CT126_BENCH_ADMITTED bash "$p" --self-test
+          set +e
+          env -u CT141_BENCH_ADMITTED -u CT126_BENCH_ADMITTED bash "$p" /tmp/ct141-not-admitted
+          status=$?
+          set -e
+          test "$status" = 77
+          test ! -e /tmp/ct141-not-admitted
+          echo 'SOURCE GATE ONLY: no Cargo execution or scientific result'
+  admitted-native-price:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.admission == 'APPROVED_CPU_ONLY_CT141' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    steps:
+      - name: Require owner-controlled approval before any checkout
+        shell: bash
+        env:
+          CT141_OWNER_APPROVAL: ${{ secrets.CT141_OWNER_APPROVAL }}
+        run: |
+          set -euo pipefail
+          test "$CT141_OWNER_APPROVAL" = 'CT141_NATIVE_CPU_APPROVED_20261115' || {
+            echo 'CT141 owner approval secret absent or incorrect; native execution refused' >&2
+            exit 77
+          }
+      - name: Checkout exact cryptanalysis ref
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Checkout frozen sibling crypto graph
+        uses: actions/checkout@v4
+        with:
+          repository: isogeny-labs/crypto
+          ref: 4de29a113dfc1b9d32c1809820b8caa2975042a8
+          path: _ct141_crypto
+          persist-credentials: false
+      - name: Record source identity and stage sibling
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir ct141-evidence
+          git rev-parse HEAD > ct141-evidence/consumer-sha.txt
+          git -C _ct141_crypto rev-parse HEAD > ct141-evidence/producer-sha.txt
+          test "$(cat ct141-evidence/producer-sha.txt)" = 4de29a113dfc1b9d32c1809820b8caa2975042a8
+          test "$(git hash-object experiments/chained-transfer-public-target/fixed-jacobian-chain-evaluator-01/src/lib.rs)" = 8016634385d76207b23a3eb3a4dae9b0366ac68d
+          test -d _ct141_crypto/isogeny_algos
+          ln -s "$GITHUB_WORKSPACE/_ct141_crypto" "$(dirname "$GITHUB_WORKSPACE")/crypto"
+          realpath "$(dirname "$GITHUB_WORKSPACE")/crypto/isogeny_algos" > ct141-evidence/crypto-path.txt
+      - name: Checkout immutable artifact tools (same as CT137)
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          repository: isogeny-labs/cryptanalysis
+          ref: 3de8c174cf65e6b34bf8579d97b817b8f5dc2ded
+          persist-credentials: false
+          path: _ct141_artifact_tools
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            tools/artifacts/artifacts.py
+            .artifacts/config.json
+      - name: Hydrate and independently hash the two original frozen models
+        shell: bash
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+        run: |
+          set -euo pipefail
+          cmp _ct141_artifact_tools/.artifacts/config.json .artifacts/config.json
+          cmp _ct141_artifact_tools/tools/artifacts/artifacts.py tools/artifacts/artifacts.py
+          if ! command -v aws >/dev/null; then
+            python3 -m venv "$RUNNER_TEMP/ct141-awscli"
+            "$RUNNER_TEMP/ct141-awscli/bin/python" -m pip install --disable-pip-version-check awscli==1.46.2
+            export ARTIFACTS_AWS="$RUNNER_TEMP/ct141-awscli/bin/aws"
+          fi
+          timeout 180s python3 _ct141_artifact_tools/tools/artifacts/artifacts.py pull --jobs 2 \
+            docs/research-artifacts/chained-transfer/nondual-models-18 \
+            | tee ct141-evidence/nondual18-hydration.txt
+          b=docs/research-artifacts/chained-transfer/nondual-models-18
+          test "$(sha256sum "$b/second-model-expected-native-01.json.xz" | cut -d' ' -f1)" = 22225094b7e3727332a761593b47ac44a2efd2f04bbdb1b1865abf3c35ba7267
+          test "$(sha256sum "$b/third-model-expected-native-01.json.xz" | cut -d' ' -f1)" = 1a7c90c81310a9d1a329b830c9c7b9f52a6c4504152c26162fb46f7fc5184787
+          test "$(stat -c%s "$b/second-model-expected-native-01.json.xz")" = 217960
+          test "$(stat -c%s "$b/third-model-expected-native-01.json.xz")" = 326200
+          realpath experiments/chained-transfer-public-target/nondual13-preflight/models/expected-native-01.json.xz > ct141-evidence/second-path.txt
+          realpath experiments/chained-transfer-public-target/nondual13-next-preflight/models/expected-native-01.json.xz > ct141-evidence/third-path.txt
+      - name: Materialize three unchanged predecessor trees and guarded reuse derivative
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -S experiments/chained-transfer-public-target/paired-fourth-preflight/materialize.py > ct141-evidence/paired-fourth.log
+          python3 -S experiments/chained-transfer-public-target/fixed-jacobian-chain-01/materialize.py > ct141-evidence/fixed-chain.log
+          python3 -S experiments/chained-transfer-public-target/fixed-jacobian-chain-evaluator-01/materialize.py > ct141-evidence/original-materialize.log
+          python3 -S experiments/chained-transfer-public-target/norm-point-reuse-01/build_norm_reuse.py \
+            --original experiments/chained-transfer-public-target/fixed-jacobian-chain-evaluator-01 \
+            --out experiments/chained-transfer-public-target/fixed-jacobian-chain-reuse-01 > ct141-evidence/derivative.json
+          python3 -S experiments/chained-transfer-public-target/norm-point-reuse-01/compare_norm_reuse.py --self-test \
+            > ct141-evidence/reuse-self-test.txt
+      - name: Pinned toolchain and admitted bounded four-process native pricing
+        shell: bash
+        env:
+          CT141_BENCH_ADMITTED: 'yes'
+          CT126_BENCH_ADMITTED: 'yes'
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.99.1 --profile minimal
+          rustup default 1.99.1
+          p="$GITHUB_WORKSPACE/experiments/chained-transfer-public-target/primitive-pricing-01/ct141_admitted_run.sh"
+          bash -n "$p"
+          bash "$p" "$GITHUB_WORKSPACE/ct141-evidence/native"
+          cat ct141-evidence/native/standing.txt
+      - name: Archive all successful and failed raw evidence; no scientific PCC signature
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ct141-original-reuse-native-pricing-unsigned
+          path: ct141-evidence/
+          retention-days: 30
