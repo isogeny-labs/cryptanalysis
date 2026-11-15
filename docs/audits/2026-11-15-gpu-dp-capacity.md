@@ -20,7 +20,7 @@ The GPU test compares2,304 boundary combinations over all64 DP-bit values
 against an independent128-bit expression and adds explicit saturation-boundary
 checks. Existing GPU emulator arithmetic, group-law and solve controls pass
 under ASan/UBSan. This is a correctness fix and removal of floating-point
-capacity arithmetic; no wall-time speedup is claimed.
+capacity arithmetic; no timing claim is made.
 
 Hardware discovery is read-only. Local Apple M4 Pro has no CUDA toolchain or
 NVIDIA device. Two configured RunPod SSH endpoints refuse connections and the
