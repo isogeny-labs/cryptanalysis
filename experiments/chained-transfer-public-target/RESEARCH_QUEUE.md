@@ -1,3 +1,19 @@
+# Prospective whole diagnostic CI contract01 authored before code
+
+## What was done
+pcc/claims/PCC-20261115-9aad0c.json: ci_original_relation/PROTOCOL_01.md freezes all six whole genuine27 fixtures and exact historical capture receipt, complete strict scientific equality, explicitly bound elapsed/hash/path locations, whole comparator/mathematical controls, original proof gates, single preparation and complete runtime/library custody. Sources checked (KB): primary-review-01 status/four queries/theorem query all127; primary protocols, original CI/auditors and previously retained Diem paper used. GitHub queue3904 and both PR bodies now record published producer173db1a5/consumer8e638ee7 and genuine27 release. [pcc:unverified]
+
+## Decisions made
+Normally publish this exact prospective contract and inputs BEFORE new comparator, control generator, driver or diagnostic execution. Preserve all strict failures; any new equivalence needs a later prospective amendment. Existing observer/rank/character code and scientific protocols remain unchanged. [pcc:unverified]
+
+## Open threads
+Contract governance/normal publication, then implement whole Rust comparator/controls and full diagnostic CI; primary review and prospective unassisted relation-completion successor remain queued. Future whole custody NEW28. Existing global/numericLean/calibrated/reference/admission/merge requirements stay open. [pcc:unverified]
+
+## Errors
+KB tools unavailable127 and conductor unavailable127. GitHub draft tooling initially used unavailable TextEncoder in the orchestration isolate; text had been retained in tool stores, was written with ordinary strings and passed unchanged original prose lint0 before all three actual GitHub updates. No publication or scientific failure was hidden. Locked autoresearcher remains four-byte-header-only. [pcc:unverified]
+
+---
+
 # Genuine27 settled; whole diagnostic fixtures published
 
 ## What was done
