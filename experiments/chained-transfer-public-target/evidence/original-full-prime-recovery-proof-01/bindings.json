@@ -1,0 +1,12 @@
+[
+  {
+    "claim": "pcc/claims/PCC-20261115-ba9e4c.json",
+    "theorem": "OriginalFullPrimeRecovery.recover_prime_summand",
+    "statement": "theorem recover_prime_summand {A : Type} [IntModule A] (p t : A) (ell r m quotient : Int) (prime_ann : ell \u2022 p=0) (cofactor_ann : (4 : Int) \u2022 t=0) (inverse_two : r*2+quotient*ell=1) (multiple_four : r=4*m) : r \u2022 ((2 : Int) \u2022 p+t)=p"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-2bd338.json",
+    "theorem": "OriginalFullPrimeRecovery.actual_original_prime_recovery_witnesses",
+    "statement": "theorem actual_original_prime_recovery_witnesses : (8*2426439 : Nat)=7*2773073+1 \u2227 (4*2426439 : Nat)=9705756 \u2227 (9705756 : Nat)%4=0 \u2227 (2*9705756 : Nat)%2773073=1 \u2227 (9705756*2+(-7)*2773073 : Int)=1"
+  }
+]

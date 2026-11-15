@@ -1,0 +1,18 @@
+digraph {
+ graph [rankdir=TB,bgcolor="white",pad="0.15",ranksep="0.3"];
+ node [shape=box,style="rounded,filled",fontname="DejaVu Sans",fontsize=12,color="#456273",fillcolor="#edf4f4"];
+ edge [fontname="DejaVu Sans",fontsize=11,color="#397b64"];
+ T [label="Jac(T20)/F101 · 12317 rational classes
+y²=z⁶+46z⁵+6z⁴+50z³+74z²+12z+100"];
+ A [label="E2 × F0 / F101 · orders109 × 113
+E2:Y²=X³+59X+27; F0:Y²=X³+44X+21",fillcolor="#e4f2e8"];
+ T -> A [label="M:two degree4 curve norms
+Independent image-Mumford + existing genus1 Cantor
+F101 runtime · global norm-pair degree16 (producer)"];
+ A -> T [label="Mdag:completed quartic fibre + old balanced reducer
+Keep repeated finite support and signed infinity multiplicity"];
+ check [label="Local four-test acceptance204440
+All12317 · F101² pointwise oracle · both[4]
+9238 recovery or component82/85 before pullback",fillcolor="#f4f0de"];
+ A -> check [style=dashed,label="unsigned local correctness;no cost inference"];
+}

@@ -1,27 +1,15 @@
-# CURRENT — actual raw publication complete; consumer addendum commit next
+# CURRENT — c0b8 published; exact8072ownCIall4SUCCESSb3c8f1
 
-Rootbot5bec/trusted-base43319185494/job131535060041SUCCESS/twofullremote
-objectsreplayed/realmanifests/full425602UTF8→XZ43028/roota651bc. Canonical
-5becmanifest+S3keyslinkedbyadditiveconsumerreceiptpcc/claims/PCC-20261112-71c03a.json;onepage34856PDF
-inspected/copyidentical. Full01stillNOTaccepted/full02LOCAL400f38 unchanged.
-Old35inputs/threejobs+new8072scienceunchanged;metadataonlychild8072commit/
-publishnext,no duplicatedispatch. Own8072fourjob43315145393next22:51UTC.
-Rootnextnormprotocol/codefromreconciled5bec;no newnativecodeyet.
-[pcc:unverified]
-
-# CURRENT — published8072/ready1517; own43315145393next22:51UTC
-
-LOCAL/REMOTE807207e1cb7787807c7d32d9402b2cb3bc0ee189/treed519f5b0/parent748e/
-116paths/artifact0/exactoriginalobjects+dates/ready1517base1513/publication894ebf.
-Ownfourjob43315145393initialinprogress,next22:51UTC,dispatchedonce204,
-completionnotclaimed. FullLOCAL400f38complete719+82+184guards/reportsa5bc14
-7d49adPDFsinspected/gov2a1946. Whole79644+80516rawarchivesintactlocal
-pendingactualroottrusted-baseS3migration/manifests. No activeprocess/source
-freezeended. Publishedcodeimmutable;appendpublicationreceiptafterrealS3
-objects,do notoverwriteoldclaims/reports. FirstCLI4017eec53preserved,
-workingBearerRESTpublisherpreserves8072identity. AlloldCIjobs/pinsunchanged.
-RawarchivesarenotCIreplayinputs;linkcanonicalrootmanifestreceiptafter
-migrationwithoutchangingoldthreejobs. No scientificsignature. [pcc:unverified]
+LOCAL/REMOTEc0b8c791ec35577bbae4af5cbcbc7ed34d2ee8a7/tree1aec6fe2/parent8072/
+54paths/archiveaddendum71c03a/publication5c3d74;allscience+4jobsunchanged.
+Exact8072own43315145393SUCCESSall4/b3c8f1/rootmirror1cb363/allwholelogs/
+allscopes/0trusted/settledNOrepoll. Actualrawarchivespublishedroota651bc/
+realbot5beccanonicalmanifest;failed01stillNOTaccepted/full02LOCAL400f38.
+RootNEWLOCALdirectFpT20normsfull43PASS85436f/all628hashes/botholdJSONcmp;
+formal/IDC/reportpackagingfromroot5bec. New43notcoveredbyold8072CI.
+Nextconsumernewsourcepin/replay/independentFpcheckerafterrootpublishes;
+keepalloldpins/jobsimmutable. Consumerb3c8f1CIreceiptsDIRTYafterc0b8;
+checkpointwithnextownedcommit. No pendingfocusedCIpoll. [pcc:unverified]
 
 ---
 # Proper T20 consumer checkpoint

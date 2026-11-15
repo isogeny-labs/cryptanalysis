@@ -1,0 +1,6 @@
+digraph proposed {graph[rankdir=TB,bgcolor="white",ranksep=.34,nodesep=.35];node[shape=box,style=rounded,fontname="DejaVu Sans",fontsize=10];edge[fontname="DejaVu Sans",fontsize=9];
+old[label="Original arithmetic and hooks: FROZEN\nconsumer5ac / producer3d49\nsame40forward-dual +20inverse cases",color="#295477"];
+store[label="PROPOSED observer storage only\nthread-local first-entry owner check\ncanonical key index + Vec counters + small cache\nsame checked increments and v2 schema",style="rounded,dashed",color="#a57535"];
+parity[label="Required whole-data parity\nall12 observed old cold packets\nboth complete60-case reuse streams\n4 unfiltered math tests / actual omission controls",color="#295477"];
+full[label="Required NEW full cold result: UNKNOWN\n120 separate processes within900s\nthen original combined reuse900s\n2GiB per process; no time/price/gain claim",style="rounded,dashed",color="#a57535"];
+old->store[label="no field/map/panel/validation changes",style=dashed];store->parity[label="preserve every field and canonical ledger",style=dashed];parity->full[label="accept only complete unchanged analyzer",style=dashed];}

@@ -1,0 +1,15 @@
+digraph C {graph[rankdir=TB,bgcolor="transparent",nodesep=.2,ranksep=.28];node[shape=box,style="rounded,filled",fillcolor="#edf3f9",fontname="DejaVu Sans",fontsize=9];edge[fontname="DejaVu Sans",fontsize=8];
+E[label="Original E(K) / public G,Q\nK=F223[z]/(z^3-3), ell=2773073"];
+P[label="Same actual P0 and entire factor base\n(1,74,153), (1,59,13), (1,66,1), (1,92,137)"];
+A[label="Original source-bound solver\nraw affine A(P)=H(P)+T"];
+H[label="Genuine completed H(P)=PhiNew(SP)\nS=-I; actual T from old infinity fibre"];
+B[label="Class-input IC in that SAME based Jacobian\npublic H(G),H(Q); no source DLP fallback"];
+V[label="Returned k checked in actual target\nAND independent original source"];
+E->A[label="original transfer"];
+E->H[label="completed map"];
+H->B[label="public canonical classes"];
+P->A[label="same P0 / fb0"];
+P->B[label="same P0 / fb0"];
+A->V[label="retain every outcome"];
+B->V[label="retain every outcome"];
+}

@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# Compile only. The unfiltered mathematical test waits for a published checkpoint.
+set -euo pipefail
+[[ $# == 3 ]] || exit 2
+pkg=$(cd -- "$(dirname -- "$0")" && pwd -P)
+repo=$(git -C "$pkg" rev-parse --show-toplevel)
+producer=$(cd -- "$1" && pwd -P)
+cache=$(realpath -m "$2")
+out=$(realpath -m "$3")
+[[ ! -e $out && -d $cache && $(realpath -m "$repo/../crypto") == "$producer" ]] || exit 2
+mkdir "$out"
+export PATH=/home/agent/.cargo/bin:/home/agent/.elan/bin:$PATH
+export RUSTUP_TOOLCHAIN=1.99.1
+export CARGO_TARGET_DIR=$cache
+cd "$repo"
+finish(){ local status=$?; trap - EXIT; printf '%s\n' "$status" > "$out/original.exit"; date -u +%FT%TZ > "$out/finish.txt"; exit "$status"; }
+trap finish EXIT
+date -u +%FT%TZ > "$out/start.txt"
+cp "$0" "$out/original-command.sh"
+cp -aL "$pkg" "$out/actual-source"
+phase(){
+ local name=$1;shift
+ set +e
+ "$@" > "$out/$name.txt" 2> "$out/$name.stderr.txt"
+ local status=$?
+ set -e
+ printf '%s\n' "$status" > "$out/$name.exit"
+ [[ $status == 0 ]]
+}
+phase prior-inputs sha256sum --check "$pkg/frozen-prior-inputs-01.sha256"
+phase metadata timeout 120 cargo metadata --locked --offline --format-version=1 --manifest-path "$pkg/Cargo.toml"
+phase original-engine-preparation timeout 900 cargo build --release --locked --offline --manifest-path "$pkg/Cargo.toml" --package isogeny_algos --lib --message-format=json
+python3 "$pkg/capture_engine.py" "$out" "$producer" prepared
+phase chain-compile timeout 120 cargo test --release --locked --offline --manifest-path "$pkg/Cargo.toml" --lib --no-run --message-format=json
+python3 "$repo/experiments/chained-transfer-public-target/ci_twisted_pair/capture_executable.py" "$out" chain compiled
+python3 "$pkg/capture_engine.py" "$out" "$producer" reused
+phase auditor-compile timeout 120 cargo build --release --locked --offline --manifest-path "$pkg/Cargo.toml" --bin audit-fixed-jacobian-chain --message-format=json
+python3 "$pkg/capture_auditor.py" "$out" compiled
+phase final-prior-inputs sha256sum --check "$pkg/frozen-prior-inputs-01.sha256"

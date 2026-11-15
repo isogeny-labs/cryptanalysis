@@ -1,0 +1,22 @@
+{
+  "at": "2026-11-14T03:38:21.921614+00:00",
+  "sources": {
+    ".github/workflows/isolab-failure-diagnosis.yml": {
+      "sha256": "820c3e0d56b725875bd3d93893e7d68e81f1f5a23330ba15f1d42f3935115703",
+      "bytes": 3686
+    },
+    ".github/workflows/isolab.yml": {
+      "sha256": "d756dc531c1eac069354fe23d19a9efe560d2a79eab20596adf6d02a25d7052b",
+      "bytes": 7108
+    },
+    "taskq/deploy/eks-karpenter/budget-change-20261103.json": {
+      "sha256": "0433e770b190ce764fd8c2c2e59043eb99a4eda012b56ea573ef19b3bac39365",
+      "bytes": 1890
+    }
+  },
+  "observation": "fixed diagnosis only names three historical jobs; no generic budget/capacity route; ordinary isolab builds unrelated images",
+  "live_budget_remainder": "unknown",
+  "live_capacity": "unknown",
+  "paid_builds_or_jobs_launched": 0,
+  "local_development_only": true
+}

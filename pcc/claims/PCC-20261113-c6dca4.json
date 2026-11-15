@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-13T19:48:36Z",
+ "id": "PCC-20261113-c6dca4",
+ "kind": "theorem",
+ "producer": {
+  "commit": "a7ea5998b4482c99469185119d1acbc5b60921a4",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "74658cbfbb616e7b41e6c87a3fe414da835cb796c3b7b807a5028bfab58fbfa5",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/odd-source/lean/OddSource.lean",
+   "theorem": "OddSource223.cleared_rational_curve_map"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Faithful partial universal rational-map coefficient clearing and normalized scaling, scalar recovery DERIVED from scalar-action/composition/torsion axioms plus explicit Bezout; exact odd13/full13/proposed52 integer certificates. Actual de87bd and written b9a91f;both unchanged original4.35/4.34.1 gates PASS6/zero trusted; standard Lean foundations recorded. Geometry/curve extension/O preservation/morphism degree/dual/finite K-group and ppav-product interpretations remain written, future Jacobian52 maps unconstructed. No signed execution or computational advantage",
+ "statement": "theorem cleared_rational_curve_map {K : Type} [CommRing K] (S T N D a b y d : K) (curve : S*T^2=N^3*D+a*N*D^3+b*D^4) (point : y^2=S) (unit : D*d=1) : (y*T*d^2)^2=(N*d)^3+a*(N*d)+b"
+}

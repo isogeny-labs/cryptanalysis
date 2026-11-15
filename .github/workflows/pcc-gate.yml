@@ -43,7 +43,11 @@ jobs:
             "$artifacts_cli_python" -m pip install --disable-pip-version-check awscli==1.46.2
             export ARTIFACTS_AWS="$artifacts_cli_aws"
           fi
-          python3 tools/artifacts/artifacts.py pull --jobs 16 docs
+          python3 tools/artifacts/artifacts.py pull --jobs 16 docs experiments/chained-transfer-reference/evidence/fp-chain-admissions-01/whole-raw.tar.xz experiments/chained-transfer-reference/evidence/fp-chain-unit-01/whole-raw.tar.xz experiments/chained-transfer-reference/evidence/g3-norm-destination-primary-01/whole-primary.tar.xz
+      - name: Restore frozen public-target diagnostic data
+        run: |
+          set -euo pipefail
+          xz --decompress --stdout experiments/chained-transfer-public-target/evidence/native-diff-encoding-correction-01/cached-whitespace.txt.xz > experiments/chained-transfer-public-target/evidence/native-diff-encoding-correction-01/cached-whitespace.txt
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -115,7 +119,11 @@ jobs:
             "$artifacts_cli_python" -m pip install --disable-pip-version-check awscli==1.46.2
             export ARTIFACTS_AWS="$artifacts_cli_aws"
           fi
-          python3 tools/artifacts/artifacts.py pull --jobs 16 docs
+          python3 tools/artifacts/artifacts.py pull --jobs 16 docs experiments/chained-transfer-reference/evidence/fp-chain-admissions-01/whole-raw.tar.xz experiments/chained-transfer-reference/evidence/fp-chain-unit-01/whole-raw.tar.xz experiments/chained-transfer-reference/evidence/g3-norm-destination-primary-01/whole-primary.tar.xz
+      - name: Restore frozen public-target diagnostic data
+        run: |
+          set -euo pipefail
+          xz --decompress --stdout experiments/chained-transfer-public-target/evidence/native-diff-encoding-correction-01/cached-whitespace.txt.xz > experiments/chained-transfer-public-target/evidence/native-diff-encoding-correction-01/cached-whitespace.txt
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'

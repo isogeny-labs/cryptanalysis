@@ -1,0 +1,12 @@
+[
+  {
+    "claim": "pcc/claims/PCC-20261114-e90222.json",
+    "theorem": "NondualComposition.both_composite_norms",
+    "statement": "theorem both_composite_norms {A B C : Type} [IntModule A] [IntModule B] [IntModule C] (f : A \u2192 B) (fh : B \u2192 A) (g : B \u2192 C) (gh : C \u2192 B) (n m : Int) (hf : \u2200 a, fh (f a) = n \u2022 a) (hfh : \u2200 b, f (fh b) = n \u2022 b) (hg : \u2200 b, gh (g b) = m \u2022 b) (hgh : \u2200 c, g (gh c) = m \u2022 c) (hfl : \u2200 k : Int, \u2200 b, fh (k \u2022 b) = k \u2022 fh b) (hgl : \u2200 k : Int, \u2200 b, g (k \u2022 b) = k \u2022 g b) : (\u2200 a, fh (gh (g (f a))) = (n*m) \u2022 a) \u2227 (\u2200 c, g (f (fh (gh c))) = (n*m) \u2022 c)"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261114-a76c1b.json",
+    "theorem": "NondualComposition.both_composite_169",
+    "statement": "theorem both_composite_169 {A B C : Type} [IntModule A] [IntModule B] [IntModule C] (f : A \u2192 B) (fh : B \u2192 A) (g : B \u2192 C) (gh : C \u2192 B) (hf : \u2200 a, fh (f a) = (13 : Int) \u2022 a) (hfh : \u2200 b, f (fh b) = (13 : Int) \u2022 b) (hg : \u2200 b, gh (g b) = (13 : Int) \u2022 b) (hgh : \u2200 c, g (gh c) = (13 : Int) \u2022 c) (hfl : \u2200 k : Int, \u2200 b, fh (k \u2022 b) = k \u2022 fh b) (hgl : \u2200 k : Int, \u2200 b, g (k \u2022 b) = k \u2022 g b) : (\u2200 a, fh (gh (g (f a))) = (169 : Int) \u2022 a) \u2227 (\u2200 c, g (f (fh (gh c))) = (169 : Int) \u2022 c)"
+  }
+]
