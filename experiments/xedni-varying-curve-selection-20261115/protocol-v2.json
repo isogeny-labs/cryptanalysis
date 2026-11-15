@@ -1,0 +1,37 @@
+{
+  "schema": "xedni-varying-curve-selection-protocol-v2",
+  "amends": "protocol.json",
+  "amendment_reason": "The strict order-3 auxiliary gate admitted zero curves in the frozen deterministic lift pool; apply the paper's epsilon=1 weak reverse-Mestre alternative while preserving v1",
+  "source": "Jacobson et al., Analysis of the Xedni Calculus Attack (2000), section 3.2 Remark 1",
+  "finite_field_curve": {
+    "prime": 47,
+    "short_weierstrass_A": -1,
+    "short_weierstrass_B": -2,
+    "expected_group_order": 43,
+    "point_law": "all ordered pairs of distinct nonidentity E(F_47) points"
+  },
+  "rational_lift": {
+    "coordinate_rule": "centered integer representative in [-23,23] for each affine x and y coordinate",
+    "curve_rule": "unique short Weierstrass y^2=x^3+A*x+B through the two lifted affine points when their integer x coordinates differ",
+    "coefficient_check": "A,B reduce to -1,-2 modulo 47"
+  },
+  "auxiliary_condition": {
+    "prime": 7,
+    "condition": "coefficients integral at 7, good reduction, rank-two point-incidence matrix modulo 7, and #E(F_7)=4",
+    "reverse_mestre_count": 4,
+    "epsilon": 1
+  },
+  "relation": {
+    "vector": [1, 2],
+    "reduced_event": "P1+2*P2=O on E(F_47)",
+    "rational_event": "lifted P1+2*lifted P2=O on reconstructed E(Q)"
+  },
+  "frozen_predictions": {
+    "total_ordered_pairs": 1722,
+    "reduced_relation_count_in_all_pairs": 42,
+    "eligible_aux_order_4_rows_seen_in_v1": 24,
+    "eligible_aux_order_4_rank_2_rows_seen_in_v1": 20
+  },
+  "run_cap": "complete 1722-pair census; no wall-time performance claim",
+  "interpretation": "Amended deterministic r=2 varying-curve lift with one auxiliary weak reverse-Mestre prime; it does not include CRT over multiple auxiliary primes or curve optimization"
+}

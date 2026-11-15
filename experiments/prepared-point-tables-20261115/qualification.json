@@ -1,0 +1,282 @@
+{
+  "schema": "prepared-point-tables.development-qualification/v1",
+  "recorded_at": "2026-11-15T20:51:58.353999+00:00",
+  "scope": "Native two-slot prime-field point-table integration; development correctness only",
+  "standing": "Producer observations only; no signed execution or independent audit verdict",
+  "dependency_base_commit": "9f467175fd5a0fe8fe6623a8715f9cb80e987305",
+  "source_manifest": {
+    "path": "source.sha256",
+    "sha256": "ca0b820167bf28fcd5a0d0dfdd7f22466dd8e5915e96fdf0e1b72eda67814ecb",
+    "scope": "Complete native Rust source/test set and JSON fixtures, native manifest/lock and parent mirror workspace manifest/lock"
+  },
+  "toolchain": "rustc 1.99.1 (58cf8f9c3 2026-10-13)\nbinary: rustc\ncommit-hash: 58cf8f9c35b355199727627d07ae34a4e2846d67\ncommit-date: 2026-10-13\nhost: x86_64-unknown-linux-gnu\nrelease: 1.99.1\nLLVM version: 23.1.1\n",
+  "checks": [
+    {
+      "stage": "baseline",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "--release",
+        "--manifest-path",
+        "bindings/rust/hashed-ecdl-tensor/Cargo.toml",
+        "--lib"
+      ],
+      "exit_code": 101,
+      "source": "baseline main",
+      "logs": [
+        {
+          "member": "development/cryptanalysis.baseline.stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "member": "development/cryptanalysis.baseline.stderr.log",
+          "sha256": "8953fbef1d50c96184cc804998bdde8711c78859b605891d8e0ff83aacc5e7d9"
+        }
+      ]
+    },
+    {
+      "stage": "initial",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "--release",
+        "--manifest-path",
+        "bindings/rust/hashed-ecdl-tensor/Cargo.toml",
+        "--lib",
+        "--test",
+        "prepared_pairs"
+      ],
+      "exit_code": 101,
+      "source": "source.initial",
+      "logs": [
+        {
+          "member": "development/cryptanalysis.initial.stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "member": "development/cryptanalysis.initial.stderr.log",
+          "sha256": "77f428641374209229e39a0752000721109b22ac553f9c5a9ca07eff9245866d"
+        }
+      ]
+    },
+    {
+      "stage": "corrected",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "--release",
+        "--manifest-path",
+        "bindings/rust/hashed-ecdl-tensor/Cargo.toml",
+        "--all-targets"
+      ],
+      "exit_code": 0,
+      "source": "source.corrected",
+      "logs": [
+        {
+          "member": "development/cryptanalysis.corrected.stdout.log",
+          "sha256": "42197b7eeca2ca9e9b16959bde961af28d46a0dd8b038cd631f65dd165282635"
+        },
+        {
+          "member": "development/cryptanalysis.corrected.stderr.log",
+          "sha256": "a8a049333662bde1b220441c0c6cf2ce9dcef604b2753b70d65ca08a441c177a"
+        }
+      ]
+    },
+    {
+      "stage": "final",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "--release",
+        "--manifest-path",
+        "bindings/rust/hashed-ecdl-tensor/Cargo.toml",
+        "--lib",
+        "--bin",
+        "hashed-ecdl",
+        "--test",
+        "finite_extensions",
+        "--test",
+        "prepared_pairs",
+        "--test",
+        "strict_json"
+      ],
+      "exit_code": 0,
+      "source": "source.final",
+      "logs": [
+        {
+          "member": "development/cryptanalysis.final.stdout.log",
+          "sha256": "9671f01a1512b67cf621e6f9239f7485dd4a673dc9ff40fd451a4ee34a965ac9"
+        },
+        {
+          "member": "development/cryptanalysis.final.stderr.log",
+          "sha256": "31115c94c9ca3a68ff2fb0be6c2dd8cee87397c3ab5b14b51a31042ad4648418"
+        }
+      ]
+    },
+    {
+      "stage": "clippy.initial",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--manifest-path",
+        "bindings/rust/hashed-ecdl-tensor/Cargo.toml",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 101,
+      "source": "source.corrected",
+      "logs": [
+        {
+          "member": "development/cryptanalysis.clippy.initial.stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "member": "development/cryptanalysis.clippy.initial.stderr.log",
+          "sha256": "b138f1fc2cab47332aee749d6bd87e087e85882057a1be7aa33aef25fbb8f4f1"
+        }
+      ]
+    },
+    {
+      "stage": "clippy.final",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--manifest-path",
+        "bindings/rust/hashed-ecdl-tensor/Cargo.toml",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "source": "source.final",
+      "logs": [
+        {
+          "member": "development/cryptanalysis.clippy.final.stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "member": "development/cryptanalysis.clippy.final.stderr.log",
+          "sha256": "1fac65beb46eeaf7a5c3057ce9f8a36e345acf7c724c68df19e215c42ac69835"
+        }
+      ]
+    },
+    {
+      "stage": "msrv",
+      "argv": [
+        "cargo",
+        "+1.78.0",
+        "check",
+        "--locked",
+        "--manifest-path",
+        "bindings/rust/hashed-ecdl-tensor/Cargo.toml",
+        "--all-targets"
+      ],
+      "exit_code": 101,
+      "source": "source.final",
+      "logs": [
+        {
+          "member": "development/cryptanalysis.msrv.stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "member": "development/cryptanalysis.msrv.stderr.log",
+          "sha256": "46c69d705c63c6d6c571dc5000fa8a056f5774d4f032751861185932a81397d1"
+        }
+      ]
+    },
+    {
+      "stage": "fmt",
+      "argv": [
+        "rustfmt",
+        "--edition",
+        "2021",
+        "--check",
+        "bindings/rust/hashed-ecdl-tensor/src/prepared.rs",
+        "bindings/rust/hashed-ecdl-tensor/src/reduction.rs",
+        "bindings/rust/hashed-ecdl-tensor/src/curve.rs",
+        "bindings/rust/hashed-ecdl-tensor/src/arithmetic.rs",
+        "bindings/rust/hashed-ecdl-tensor/src/bin/hashed-ecdl.rs",
+        "bindings/rust/hashed-ecdl-tensor/tests/prepared_pairs.rs"
+      ],
+      "exit_code": 0,
+      "source": "source.final",
+      "logs": [
+        {
+          "member": "development/cryptanalysis.fmt.stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "member": "development/cryptanalysis.fmt.stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    }
+  ],
+  "final_test_groups": [
+    {
+      "status": "ok",
+      "passed": 67,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "status": "ok",
+      "passed": 5,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "status": "ok",
+      "passed": 12,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "status": "ok",
+      "passed": 5,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "status": "ok",
+      "passed": 3,
+      "failed": 0,
+      "ignored": 0
+    }
+  ],
+  "shared_files": {
+    "src/prepared.rs": "d3ce4544bf6cd5cea03965eed7e011b6ff6446afecd15e4c330e8314a16e6233",
+    "tests/prepared_pairs.rs": "bcf6edc82b60ef61d01022a3edd383aa31512417452fb3efebf23a09c019eec8",
+    "PREPARED_PAIRS.md": "65e7aee17d7065408990ae632871bcbcc8cdcb39272bd0be61da585cb98ed64e"
+  },
+  "whole_crate_parity": "Not asserted: existing current-main differences are preserved; the new module/common controls/documentation match exactly",
+  "archive": {
+    "path": "development.tar.xz",
+    "sha256": "69bb5a376d3175f14a04030f39981556ed7160ca65c0e980121e43c712f60392",
+    "bytes": 34328,
+    "members": 48,
+    "member_manifest": "development/SHA256SUMS"
+  },
+  "failure_provenance": [
+    "Cryptanalysis baseline removed getrandom API; corrected to the current fill entry without dependency changes.",
+    "Initial mirrored test assumed an extra Crypto Meter field; moved root diagnostics to a separate Crypto control.",
+    "Initial unused import and strict-clippy struct update/range assertion failures are preserved.",
+    "Crypto corrected-stage Cargo summary printed success but wrapper completion was 1; direct final all-target invocation exits 0 and is retained."
+  ],
+  "compatibility": "Modern Rust passes; inherited getrandom 0.4.3 requires Rust 1.85/edition2024 and fails actual Cargo 1.78. See problems/hashed-ecdl-rust-msrv.md",
+  "scientific_or_benchmark_runs": 0,
+  "runtime_speedup_claimed": false,
+  "nonsecret_build_env": {
+    "PATH_prefix": "/home/agent/.cargo/bin",
+    "CARGO_TARGET_DIR": "/workspace/.task-cache/point-tables-cryptanalysis"
+  }
+}
