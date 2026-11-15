@@ -69,6 +69,8 @@ jobs:
         run: |
           set -euo pipefail
           base=experiments/chained-transfer-public-target/ct130-prime31
+          # Only applies to this manual native subprocess cohort; max virtual size 2 GiB.
+          ulimit -v 2097152
           mkdir -p ct138-evidence/results
           for width in 16 32 64; do
             g++ -O3 -std=c++17 -Wall -Wextra -Werror -I "$base" \
