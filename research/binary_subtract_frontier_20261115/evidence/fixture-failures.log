@@ -1,0 +1,51 @@
+   Compiling cryptanalysis-suite v0.1.0 (/workspace/cryptanalysis/suite)
+   Compiling binary-subtract-production-controls v0.1.0 (/workspace/cryptanalysis/research/binary_subtract_frontier_20261115/check)
+warning: unused import: `CountedGroup`
+ --> ../oracle_controls.rs:7:56
+  |
+7 |         koblitz_instance, BinaryGroup, BinaryInstance, CountedGroup, FactorBase, GroupOps,
+  |                                                        ^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: `binary-subtract-production-controls` (lib test) generated 1 warning
+warning: unused dependency `frontier_core`
+  --> Cargo.toml:10:1
+   |
+10 | frontier_core = { package = "cryptanalysis-suite", path = "../../../suite" }
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `cargo::unused_dependencies` is set to `warn` by default
+help: consider removing the dependency on `frontier_core`
+help: to still use for development builds, move to `dev-dependencies`
+warning: `binary-subtract-production-controls` (manifest) generated 1 warning
+    Finished `release` profile [optimized] target(s) in 4m 44s
+     Running unittests ../oracle_controls.rs (suite/target/release/build/binary-subtract-production-controls/5c2d792e6dd3f438/out/binary_subtract_production_controls-5c2d792e6dd3f438)
+
+running 4 tests
+
+thread 'tests::composed_pipeline_recovers_the_same_public_known_answer' (15848) panicked at ../oracle_controls.rs:285:44:
+called `Option::unwrap()` on a `None` value
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test tests::composed_pipeline_recovers_the_same_public_known_answer ... FAILED
+
+thread 'tests::native_fields_and_preparation_reuse_keep_scalar_answers' (15851) panicked at ../oracle_controls.rs:157:47:
+called `Option::unwrap()` on a `None` value
+test tests::native_fields_and_preparation_reuse_keep_scalar_answers ... FAILED
+
+thread 'tests::early_hit_charges_the_computed_block_and_failed_prepare_invalidates' (15849) panicked at ../oracle_controls.rs:219:9:
+assertion failed: base.points.len() > 2
+test tests::early_hit_charges_the_computed_block_and_failed_prepare_invalidates ... FAILED
+production first-witness comparisons against general pair enumeration: 12900
+test tests::first_witness_matches_independent_general_pair_enumeration ... ok
+
+failures:
+
+failures:
+    tests::composed_pipeline_recovers_the_same_public_known_answer
+    tests::early_hit_charges_the_computed_block_and_failed_prepare_invalidates
+    tests::native_fields_and_preparation_reuse_keep_scalar_answers
+
+test result: FAILED. 1 passed; 3 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+error: test failed, to rerun pass `--lib`

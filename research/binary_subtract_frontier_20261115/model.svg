@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="340" viewBox="0 0 1000 340">
+<rect width="1000" height="340" fill="#f8fafc"/><g font-family="sans-serif" fill="#0f172a" text-anchor="middle">
+<text x="500" y="30" font-size="22">Production binary two-point subtraction</text>
+<g fill="#e0f2fe" stroke="#0369a1"><rect x="20" y="65" width="220" height="115" rx="10"/><rect x="265" y="65" width="220" height="115" rx="10"/><rect x="510" y="65" width="220" height="115" rx="10"/><rect x="755" y="65" width="225" height="115" rx="10"/></g>
+<g font-size="17"><text x="130" y="95">Prepare negatives</text><text x="130" y="125">Reuse base indexes</text><text x="130" y="155">Retain signs and labels</text><text x="375" y="95">Native blocked kernel</text><text x="375" y="125">CLMUL / available SIMD</text><text x="375" y="155">Count every computed lane</text><text x="620" y="95">Abscissa filter</text><text x="620" y="125">Finish y only on a hit</text><text x="620" y="155">Explicit O / x=0 branches</text><text x="867" y="95">Full-point lookup</text><text x="867" y="125">Confirm orientation</text><text x="867" y="155">Preserve first witness</text></g>
+<path d="M242 123h20m-6 -5 6 5-6 5 M487 123h20m-6 -5 6 5-6 5 M732 123h20m-6 -5 6 5-6 5" fill="none" stroke="#0369a1" stroke-width="2"/>
+<text x="500" y="225" font-size="17">Correctness: general curve arithmetic + native scalar + OpenSSL-backed control</text>
+<text x="500" y="262" font-size="17">Speed frontier remains open: scalar / full batch / lazy / cold tables / external timing</text>
+<text x="500" y="308" font-size="14">Source: binary_subtract.rs and binary_subtract_tests.rs · producer checks, unverified</text>
+</g></svg>

@@ -62,6 +62,7 @@
 //! worked example of adding a solver, how to run a sweep, and how to
 //! report what comes out.
 
+pub mod binary_subtract;
 pub mod hashed;
 pub mod linalg;
 pub mod plugins;
