@@ -1,6 +1,7 @@
 """Independent arithmetic and gate audit of both varying-curve censuses."""
 
 import hashlib
+import gzip
 import json
 from collections import Counter
 from fractions import Fraction
@@ -9,8 +10,16 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 
 
+def data_bytes(name):
+    path = HERE / name
+    if path.exists():
+        return path.read_bytes()
+    assert name.endswith(".jsonl")
+    return gzip.decompress((HERE / (name + ".gz")).read_bytes())
+
+
 def sha(name):
-    return hashlib.sha256((HERE / name).read_bytes()).hexdigest()
+    return hashlib.sha256(data_bytes(name)).hexdigest()
 
 
 def centered(n, p):
@@ -60,7 +69,7 @@ def check(version):
     assert result["sage_runtime_sha256"] == sha(f"sage-runtime-info{suffix}.json")
     assert result["rows_sha256"] == sha(rows_name)
     assert (HERE / f"run{suffix}.stderr").stat().st_size == 0
-    rows = [json.loads(line) for line in (HERE / rows_name).read_text().splitlines()]
+    rows = [json.loads(line) for line in data_bytes(rows_name).decode().splitlines()]
     p = protocol["finite_field_curve"]["prime"]
     l = protocol["auxiliary_condition"]["prime"]
     gate_count = protocol["auxiliary_condition"]["reverse_mestre_count"]

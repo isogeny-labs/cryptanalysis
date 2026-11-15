@@ -59,7 +59,9 @@ rational curves through the same lifted points. That policy is the next
 experiment, with the same reduced-event and rational-relation accounting.
 
 The complete per-pair rows, including failed construction and gate statuses,
-are in `rows.jsonl` and `rows-v2.jsonl`. The independent `audit.py` verifies
+are in `rows.jsonl.gz` and `rows-v2.jsonl.gz`, compressed in Git under the
+repository data-file limit. Their uncompressed SHA-256 values remain in the
+result records. The independent `audit.py` checks
 the receipt hashes, reconstructs every rational curve coefficient,
 recomputes finite-field and rational group relations, recounts the auxiliary
 curve orders and incidence ranks, checks the local obstruction, and checks both result summaries. It

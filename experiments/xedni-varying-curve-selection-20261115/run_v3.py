@@ -1,6 +1,7 @@
 """Exact second-auxiliary-prime filter on the frozen v2 rational curves."""
 
 import hashlib
+import gzip
 import json
 from collections import Counter
 from fractions import Fraction
@@ -12,7 +13,12 @@ HERE = Path(__file__).resolve().parent
 
 
 def sha(path):
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+    return hashlib.sha256(data_bytes(path)).hexdigest()
+
+
+def data_bytes(path):
+    return path.read_bytes() if path.exists() else gzip.decompress(
+        path.with_name(path.name + ".gz").read_bytes())
 
 
 def main():
@@ -20,7 +26,7 @@ def main():
     protocol = json.loads(protocol_path.read_text())
     input_path = HERE / protocol["input"]["rows"]
     assert sha(input_path) == protocol["input"]["rows_sha256"]
-    selected = [json.loads(line) for line in input_path.read_text().splitlines()
+    selected = [json.loads(line) for line in data_bytes(input_path).decode().splitlines()
                 if json.loads(line)["accepted"]]
     frozen = protocol["frozen_predictions"]
     assert len(selected) == frozen["input_accepted_ordered_pairs"]
