@@ -1,3 +1,13 @@
+# Passive relation observer compiled; publish/exact checkpoint before capture
+
+pcc/claims/PCC-20261115-add9e6.json: firstbuild0/1503prior17current2driverguards/original entire field-engine closure/full preparedRLIB-RMETA/freshreuse/test andbothauditors compile. Sevenpassiveinsertions/context-testreverseprojection exact; purecanonicalkeybytecopies reviewed. Native/full60call reportparity/660journal events/rank-character measurements NOTRUN. [pcc:unverified]
+
+Nextnormalpublish compiledsource anddiscover/import exact ORIGINALcheckpoint, withone manualdispatch onlyifneeded. Then run-native-01.sh EXACTHEAD /workspace/scratch/ct101-original-relation-kernel-native-01 /workspace/scratch/ct101-original-relation-kernel-build-01 under900s2GiB; all28phases/60calls660events/full100native/strict all-counter reportparity/fourwhole-stageomissions101-nooutput required. Preserveeveryrawvalue andfailedFB30candidate. [pcc:unverified]
+
+FreshIC/samplerCI0b4ddb is normallypublished84bf460; consumerrequiredpccgate43728655252 nowSUCCESS afteroriginalPRbodytagfix. RootCBCmirror ec632f8. No rankdiagnosticresult yet; postcapture RREF-independent rowcertificates, conditional Lean implications and separate post-solver normBSGS character checks remain queued underpublished8e7e1c. FuturegenuineNEW27 mustholdallwhole newsource-build-runtime-control-failure-fullprepared-GitHubartifact-log-proposaldraftroots. [pcc:unverified]
+
+---
+
 # Fresh GitHub IC/sampler replay accepted; begin published rank protocol
 
 pcc/claims/PCC-20261115-0b4ddb.json: exactCBC/43726524795/job132849545337/art14166259090SUCCESS/whole43094388BZIP/all474members158742148Bdecoded/fulljoblog/all15runlogs. All102phases1503guards/two unfiltered tests/whole100-101populations/15actualomissions/eight negatives/two timing positives/runtime-fullpreparedclosure/both26declarationgates14bindings and independent actualIOverdict/host downloadedRust all29replays pass. Everywholemember retainsoriginalbytes. [pcc:unverified]

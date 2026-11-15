@@ -1,0 +1,7 @@
+# Passive original relation-kernel observer01
+
+Prospective8e7e1c was normally publishedCBC before source. This separate crate copies the entire original IC algorithm and inserts seven reversible passive observers. The context/test differences are explicit observer labels, truthful source provenance and post-report export. PicClass.key only copies fixed canonical bytes; no field/group operation, RNG call or production control-flow change is added by observers. Every event is synced to a whole journal. [pcc:unverified]
+
+The whole auditor requires all60fixed calls/660journal events and all100original native records. Full input/scalar/check/counter/report parity follows elapsed-onlyb5e431; the exact old/new solver-provenance strings are separately checked. It validates selected/remapped rows, all selected-kernel residuals, log-table completeness structure and three descent descriptions. No rank, RREF or independent norm/BSGS character interpretation has run. [pcc:unverified]
+
+Build-only first: reuse the exact original engine closure/prepared fullRLIB-RMETA and compile test plus both auditors. Publish compiled source and import its exact original checkpoint before the one900s2GiBwhole native capture. Original domain/final group controls and all failed FB30candidates remain mandatory. Whole stage-omission controls and actual runtime custody follow. Mathematical rank/row-certificate/character proofs and measurements are later phases of the full published protocol, not inferred from a source build. [pcc:unverified]
