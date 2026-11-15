@@ -44,7 +44,7 @@ jobs:
             export ARTIFACTS_AWS="$artifacts_cli_aws"
           fi
           python3 tools/artifacts/artifacts.py pull --jobs 16 docs
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.11'
       - name: Report and graph Python source syntax
@@ -116,7 +116,7 @@ jobs:
             export ARTIFACTS_AWS="$artifacts_cli_aws"
           fi
           python3 tools/artifacts/artifacts.py pull --jobs 16 docs
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.11'
       - name: Sign verdicts for claims without standing
