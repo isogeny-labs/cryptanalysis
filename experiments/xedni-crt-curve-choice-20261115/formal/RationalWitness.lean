@@ -34,4 +34,41 @@ theorem rational_relation : Q₁ + Q₂ + Q₂ = 0 := by
 
 #print axioms rational_relation
 
+private instance : Fact (Nat.Prime 47) := ⟨by norm_num⟩
+
+def W₄₇ : WeierstrassCurve.Affine (ZMod 47) :=
+  ⟨0, 0, 0, -1, -2⟩
+
+private theorem nonsingular₄₇ : W₄₇.Δ ≠ 0 := by
+  norm_num [W₄₇, WeierstrassCurve.Δ, WeierstrassCurve.b₂,
+    WeierstrassCurve.b₄, WeierstrassCurve.b₆, WeierstrassCurve.b₈] <;> decide
+
+private instance : W₄₇.IsElliptic := ⟨isUnit_iff_ne_zero.mpr nonsingular₄₇⟩
+
+private theorem eq₁₄₇ : W₄₇.Equation 14 7 := by
+  norm_num [W₄₇, WeierstrassCurve.Affine.equation_iff] <;> decide
+
+private theorem eq₂₄₇ : W₄₇.Equation 17 10 := by
+  norm_num [W₄₇, WeierstrassCurve.Affine.equation_iff] <;> decide
+
+def P₁ : W₄₇.Point := WeierstrassCurve.Affine.Point.mk eq₁₄₇
+def P₂ : W₄₇.Point := WeierstrassCurve.Affine.Point.mk eq₂₄₇
+
+private theorem double₄₇ : P₂ + P₂ = -P₁ := by
+  have hs : (866 : ZMod 47) / 20 = 1 := by
+    apply (div_eq_iff (by decide : (20 : ZMod 47) ≠ 0)).2
+    decide
+  have hnot : (10 : ZMod 47) ≠ -10 := by decide
+  norm_num [P₁, P₂, WeierstrassCurve.Affine.Point.mk,
+    WeierstrassCurve.Affine.Point.add_def, WeierstrassCurve.Affine.Point.add,
+    WeierstrassCurve.Affine.Point.neg_def, WeierstrassCurve.Affine.Point.neg,
+    WeierstrassCurve.Affine.slope, WeierstrassCurve.Affine.addX,
+    WeierstrassCurve.Affine.addY, WeierstrassCurve.Affine.negAddY,
+    WeierstrassCurve.Affine.negY, W₄₇, hs, hnot] <;> decide
+
+theorem reduced_relation : P₁ + P₂ + P₂ = 0 := by
+  rw [add_assoc, double₄₇, add_neg_cancel]
+
+#print axioms reduced_relation
+
 end XedniCrtRationalWitness
