@@ -2221,3 +2221,24 @@ Complete exact rank replay/controls; conditional Lean row-operation and finite-c
 ## Errors
 
 No compiler failure. First build01 contains producer/replay before the additional control bin; finalbuild02 contains unchanged compiler subjects plus control bin, all three0, and preserves both whole source snapshots. Historical failures remain preserved. [pcc:unverified]
+
+
+# Complete relation ranks and conditional kernel proofs
+
+## What was done
+
+pcc/claims/PCC-20261115-c0479c.json: exactd06ab02f/originalcheckpoint23 native0/all22phases; all60calls/360certificates/1440470independentlyreplayedrowoperations. FB30 full/active training/training+heldout/allavailable nullities6,10,13 by side for allfivepublictargets; FB36/48/64 nullity1 throughout. All full predescent stages equal across each group of five, with everycallretained. Both whole mathematical mutations101/nooutput. Allthreewhole48MBJSONL files persist losslesslyXZ/CRC/full decodedbytecompare; entire raw/runtime/source staysheldforNEW27. [pcc:unverified]
+
+pcc/claims/PCC-20261115-19c467.json: both original434/435gates27declarations0trusted, allnine named roots/eighteen generatedtheorems; allnine local exactstatementbindings0. Proofs derive literal row-operation/finite-trace kernel preservation and conditional RREF-one-free-column/character-ratio implications. Numeric certificates are Rust only; no concrete Lean specialization or global Picard character theorem. [pcc:unverified]
+
+## Decisions made
+
+The available FB30 constraints remain multidimensional even when all collected rows are used; this finite association is not causal proof for the wrong scalar. Next implement separate post-solver actual norm/cofactor4/BSGS witnesses, all known-log proportionality and all three descent checks under8e7e1c. No oracle enters solver, no production algorithm changed. [pcc:unverified]
+
+## Open threads
+
+Actual source-character/global extension and descent separators, scalar-witness negative control, full result visual/PDF, current Root mirror/GitHub queue and genuineNEW27. Calibrated/liveadmission/strongest-reference and original model-program bridge requirements remain. [pcc:unverified]
+
+## Errors
+
+Two Lean development failures preserved byte-for-byte as .lean.txt plus complete logs/actualexit1; fixes only simplification/elaboration, theorem statements unchanged. Finalthirdsource passed both originalgates. No rank native/independent replay failure; all existing earlier failures remain. [pcc:unverified]
