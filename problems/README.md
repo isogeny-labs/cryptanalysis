@@ -9,6 +9,7 @@ explain the gap and what would let the work move past it.
 
 | Problem | Status | What it blocks | What would unblock it |
 | --- | --- | --- | --- |
+| [Native hashed-EC Rust floor](hashed-ecdl-rust-msrv.md) | open | Rust 1.78 qualification of the current getrandom 0.4 native graph | approved compatible graph or reviewed minimum-version update, with locked checks at the stated floor |
 | [Chained-transfer frozen ledger synchronization](https://github.com/isogeny-labs/crypto/blob/research/chained-jacobian-transfer-20261110/problems/chained-transfer-admission-and-ledger-sync.md) | open | Merge1484 and its CT21 continuation after main61/frozenPhi60 diverged at row56 | Accepted reconciliation retaining both histories and passing actual prefix/hash-link/current-head CI/review;native evidence in chained-transfer-reference/evidence/seven-consumer-ledger-fork-01.json |
 | [Xedni affine-CVP checkpoint access](xedni-affine-cvp-checkpoint-access.md) | open | Frozen p=67 exact-discriminant comparison for the new coefficient-coset optimizer | Valid checkpoint upload and a passing gate, then the four frozen rows |
 | [Prime IC Jacobian timing checkpoint access](prime-ic-jacobian-checkpoint-access.md) | open | Measured relation-collection speedup claim for the new Jacobian lane backend | Successful checkpoint gate plus a retained paired run on an isolation-qualified host |
