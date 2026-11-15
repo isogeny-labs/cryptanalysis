@@ -1,0 +1,26 @@
+{
+  "source": "38d8971ed3da2478cc47ad9afa78a49fdb1003d5",
+  "compiled_claim": "a6e5ea",
+  "original_checkpoint": "46f5c5/43755426948",
+  "whole_raw_root": "/workspace/scratch/ct112-whole-relation-comparator-native-02",
+  "whole_positive_input_root": "/dev/shm/ct112-whole-relation-comparator-controls-02",
+  "whole_positive_archive": "/workspace/scratch/ct114-comparator-schema-failure-custody-02/whole-positive-inputs.tar.xz",
+  "archive_bytes": 4583672,
+  "archive_sha256": "a801f6212fc6ba424832dd81695e5278c9b053f33cbfa03e6eac176d929bf941",
+  "CRC_and_full_original_byte_roundtrip": 0,
+  "actual_original_exit": 1,
+  "actual_positive_exit": 1,
+  "no_accepted_output": true,
+  "no_negative_controls_executed": true,
+  "actual_schema": {
+    "rank_records": 62,
+    "rank_structure": "header+60calls+mandatorycompletefooter",
+    "character_records": 65
+  },
+  "original_source_evidence": [
+    "original-relation-rank-01/src/bin/produce.rs:239",
+    "original-relation-rank-01/src/bin/replay.rs:314-316"
+  ],
+  "correction": "audit01 and02 constant61 omitted mandatory completion record; correct version03guard/receipt to62 without dropping any record/value or changing prospective criteria",
+  "scope": "unsigned false-rejection implementation failure, oldsource/attempts retained, futurefullrawNEW28"
+}
