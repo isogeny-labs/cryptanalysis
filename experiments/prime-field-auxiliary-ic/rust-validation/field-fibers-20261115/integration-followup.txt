@@ -8,3 +8,15 @@ Integration follow-up after the producer claim was recorded:
   vector SVG/PDF retained. No artifact policy exemption was added.
 - A publication attempt was rejected as non-fast-forward after a concurrent
   owner update. No remote bytes were overwritten.
+
+The canonical append-only PCC ledger crossed the 64-KiB data threshold after
+main integration. It is a live, versioned verifier input required by AGENTS,
+not a bulk run log: externalizing or shrinking it would violate the ledger
+contract. An exact-path policy keep entry now retains pcc/ledger.jsonl in Git.
+No general JSONL exemption, threshold or artifact check was changed. All
+report PDF/PNG data were reduced below the ordinary threshold instead.
+
+Post-merge CLI compilation caught an inherited getrandom 0.4 API migration:
+OsRandom still called the removed getrandom::getrandom. It now calls
+getrandom::fill, with consumer lockfiles updated. The original failed build
+is retained in post-merge-cli.log. This correction does not change IC math.
