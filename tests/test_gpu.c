@@ -4,6 +4,26 @@
 #include "test_fixtures.h"
 #include "gpu_internal.h"
 
+static void test_dp_capacity(void)
+{
+    const uint32_t values[] = {0, 1, 522239, 522240, UINT32_MAX - 7u, UINT32_MAX};
+    for (unsigned d = 0; d < 64; d++) {
+        for (size_t i = 0; i < sizeof(values) / sizeof(values[0]); i++) {
+            for (size_t j = 0; j < sizeof(values) / sizeof(values[0]); j++) {
+                __uint128_t exact = ((__uint128_t)values[i] * values[j] * 2) >> d;
+                exact += 4096;
+                if (exact > (1u << 20)) exact = 1u << 20;
+                CHECK_EQ_U64(ca_gpu_dp_capacity(values[i], values[j], d), (uint64_t)exact);
+            }
+        }
+    }
+    /* Largest accepted walk herd and launch length: the previous double-to-
+     * uint64_t conversion overflowed before the intended saturation. */
+    CHECK_EQ_U64(ca_gpu_dp_capacity(UINT32_MAX - 7u, UINT32_MAX, 0), 1u << 20);
+    CHECK_EQ_U64(ca_gpu_dp_capacity(522239, 1, 0), (1u << 20) - 2);
+    CHECK_EQ_U64(ca_gpu_dp_capacity(522240, 1, 0), 1u << 20);
+}
+
 static void test_device_arith(void)
 {
     ca_rng rng;
@@ -251,6 +271,7 @@ static void test_launch_dimension_overflow(void)
 int main(void)
 {
     test_launch_dimension_overflow();
+    test_dp_capacity();
     test_device_arith();
     ca_group g;
     ca_elem gen;

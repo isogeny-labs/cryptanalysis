@@ -1,0 +1,28 @@
+{
+  "schema": "xedni-varying-curve-selection-protocol-v3",
+  "amends": "protocol-v2.json",
+  "source": "Jacobson et al., Analysis of the Xedni Calculus Attack (2000), section 3.2 Steps 1-2 and Remark 1",
+  "input": {
+    "rows": "rows-v2.jsonl",
+    "rows_sha256": "f8180c2d29368869f51528523e5f69da8552896826e476cdace47c2af23f017f",
+    "selection": "the 20 rows accepted at auxiliary prime 7 with #E(F_7)=4 and incidence rank 2"
+  },
+  "second_auxiliary_prime": {
+    "prime": 11,
+    "strict_order": 6,
+    "weak_epsilon_1_order": 7,
+    "common_gates": "coefficients integral at 11, good reduction, and two incidence rows of rank 2 modulo 11",
+    "count_both_order_arms": true
+  },
+  "relation": {
+    "vector": [1, 2],
+    "carry_reduced_and_rational_relation_flags": true,
+    "check_local_relation_at_11_for_every_good_reduction": true
+  },
+  "frozen_predictions": {
+    "input_accepted_ordered_pairs": 20,
+    "input_accepted_reduced_relation_pairs": 2,
+    "input_accepted_rational_relation_pairs": 0
+  },
+  "interpretation": "Second-prime filter on fixed coefficients from the deterministic r=2 reconstruction; no CRT choice of alternative rational coefficients"
+}
