@@ -1,0 +1,14 @@
+digraph Norms {
+  rankdir=LR;
+  graph [bgcolor="white",pad="0.15",nodesep="0.45",ranksep="0.5"];
+  node [shape=box,style="rounded,filled",fillcolor="#edf5fc",color="#315c83",fontname="DejaVu Sans",fontsize=11];
+  edge [fontname="DejaVu Sans",fontsize=10,color="#315c83"];
+  input [label="Arbitrary balanced C2 class\nu,v,plus;degree0/1/2\nall 12,317 classes"];
+  direct [label="Direct finite norm rules\nA0/B0/repeated support\nsecond infinity +(2n+m-2)Q"];
+  internal [label="Short quotients\n(17,91),order113\n(48,48),order109"];
+  actual [label="Matched scale18 + swap\nactual E109'' / E113''\nC2 endpoint coordinates"];
+  generic [label="Retained generic divisor norms\ncomplete equality + group controls",fillcolor="#e6f4e8",color="#39734b"];
+  input -> direct -> internal -> actual;
+  input -> generic [style=dashed];
+  generic -> actual [style=dashed,label="all-class reference"];
+}
