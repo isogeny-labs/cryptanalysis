@@ -1,0 +1,21 @@
+⚠ [967/968] Replayed BasisCoercivity
+warning: BasisCoercivity.lean: imports `Mathlib.Data.Real.Basic` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: BasisCoercivity.lean: imports `Mathlib.Data.Int.Interval` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: BasisCoercivity.lean: imports `Mathlib.Tactic.Ring` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: BasisCoercivity.lean:1:0: 'Mathlib.Data.Real.Basic' has been deprecated: please replace this import by
+
+import Mathlib.Basic.Real.Basic
+warning: BasisCoercivity.lean:58:36: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: BasisCoercivity.lean:58:36: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+info: BasisCoercivity.lean:97:0: 'XedniBasisCoercivity.coordinate_bounded_of_height' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: BasisCoercivity.lean:98:0: 'XedniBasisCoercivity.unshear_shear' depends on axioms: [propext]
+info: BasisCoercivity.lean:99:0: 'XedniBasisCoercivity.shear_unshear' depends on axioms: [propext]
+info: BasisCoercivity.lean:100:0: 'XedniBasisCoercivity.shear_add' depends on axioms: [propext]
+info: BasisCoercivity.lean:101:0: 'XedniBasisCoercivity.shearAddEquiv' depends on axioms: [propext]
+info: BasisCoercivity.lean:102:0: 'XedniBasisCoercivity.squareHeight_pos_of_ne_zero' depends on axioms: [propext]
+info: BasisCoercivity.lean:103:0: 'XedniBasisCoercivity.unbounded_coordinates_in_sheared_basis' depends on axioms: [propext, Classical.choice, Quot.sound]
+Build completed successfully (968 jobs).
