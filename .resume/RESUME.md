@@ -1369,3 +1369,20 @@ Its automatic CI closed19success/onePCCfailure: newcomplete43585724236 succeeded
 Next: normal publish this data-path correction and collect its ownautomatic20CI; retain/audit alloriginal joblogs andallartifactmembers,73canonical/75actualproofverdicts,419whole native records/7113census withonlyalreadyfrozenoldwallmasks, new20phase allcontrols. Keep b691whole CI failure asnegative; do not infer all20green from19mathpasses. Downloaded b691complete ZIP326123B73members andsourcecheckpoint153850B28members remainwhole. Existing b691freshfull remains valid forbyte-identical881source inputs; no duplicate localfull needed. [pcc:unverified]
 
 NEWguard13 must publish allclosed ca9/398/A-B/C77/fullC/ownCI captures withcompleteindices, including sealed Bfull derivedcache andnew seventh PNGlink; neverreuse releasedguard12. Then primary/KB review andprospective protocol fordirectNorm-halving versus strongest norm-assisted elliptic-scalar baseline, before any code/claim. Rootclock124/101,main append-onlyledger/reviews/signing/conflict,fullformalgeometry/globalclosedcoordinates andadmittedcalibratedcost gates remainopen; lockedvault8edec422/KB127 andno paidcompute. Continue nextunblocked task. [pcc:unverified]
+
+## Active continuation: complete cold-cost follow-up, 2026-11-15
+
+The user's request is to pursue all four research leads. This repository owns
+the CM/isogeny transfer track. Static code and synthetic unit tests are in
+experiments/chained-transfer-public-target/ct130-prime31/cold_cost_audit.py;
+no new timing or DLP experiment has run. The new plan is COLD_COST_PROTOCOL.md.
+The checkpoint gate failed because no upload token or AWS profile is present.
+The KB wrapper has no executable; the shared contract endpoint returned VLT10
+bytes. No paid compute is configured. Resume experimental work only after
+scripts/checkpoint.sh push and scripts/checkpoint.sh gate both succeed.
+Original-prime C169/C13a/C13b/D and full 695/701-chain costs remain required;
+the selected toy subgroup cannot substitute for that acceptance condition.
+Synthetic development tests passed (16), producer-only; PCC-20261115-466075
+has unverified standing. Other tracks reside in /workspace/ml-cryptanalysis,
+/workspace/fp3-combined and /workspace/lfd-summation-systems.
+No transfer experiment is in flight.
