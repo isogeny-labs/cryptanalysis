@@ -1,0 +1,36 @@
+{
+  "schema": "xedni-crt-prime-panel-protocol-v1",
+  "purpose": "Test finite-panel scaling of the fixed two-point CRT curve-choice policy across predetermined prime fields",
+  "base_field_primes": [47, 59, 71, 83, 101, 127],
+  "base_curve_coefficients": [0, 0, 0, -1, -2],
+  "parent_search_source_sha256": "e96e0ddee58a91e5da0815fb4eca524983531408056af75842584a6c8ed4e8aa",
+  "subgroup_policy": {
+    "order": "largest prime factor of the full base-curve group order",
+    "generator": "multiply the lexicographically first nonidentity base-curve point whose cofactor multiple is nonidentity by the cofactor",
+    "required_minimum_order": 5
+  },
+  "target_policy": {
+    "scalar": "17 if subgroup order exceeds 17, otherwise 1",
+    "public_point": "scalar times generator, constructed before the target scan",
+    "sample_coefficients": [1, 1],
+    "query_order": "all ordered (t1,t2) in [0,r)^2, lexicographic",
+    "sampled_points": "P_i=Q-t_i G",
+    "admission": "both sampled points nonidentity and distinct"
+  },
+  "curve_choice_policy": {
+    "auxiliary_primes": [7, 11],
+    "required_orders": [4, 6],
+    "point_lifts": "center each affine coordinate modulo the base field prime",
+    "free_coefficients": ["a1", "a2", "a3"],
+    "auxiliary_search_order": "increasing sum of centered absolute coefficient residues, then maximum absolute value, then centered lexicographic tuple",
+    "crt": "each free coefficient is zero mod base prime and is the selected residue mod 7 and 11; center modulo 77p",
+    "a4_a6": "solve both rational lifted-point equations exactly",
+    "acceptance": "nonsingular rational curve with good prescribed reductions at base prime, 7, and 11; no alternate order arm"
+  },
+  "relation_vector": [1, 2],
+  "recovery": "w=(t1+2t2)/3 mod r for a rational relation, followed by independent scalar replay",
+  "raw_rows": "deterministic gzip JSONL shards by blocks of eight t1 values; preserve every query and status",
+  "first_hit_rule": "first accepted rational relation in the frozen lexicographic query order",
+  "reference_arm": "p=47 must reproduce the earlier fixed-target census and coefficient probe counts",
+  "claim_boundary": "finite-panel correctness, yield, and candidate-probe counts; no wall-time, asymptotic, or rho comparison"
+}
