@@ -51,5 +51,6 @@ jobs:
           assert 'if ep(n.norm(&entry.class)?) != entry.norm {' in src
           print('exact Git blob guard and derivative call sites passed')
           PY
+          rustfmt --edition 2021 --config skip_children=true --emit stdout "$base/fixed-jacobian-chain-reuse-01/src/lib.rs" > /dev/null
       - name: Note scoped standing
         run: echo 'Static generated-source gate only. Native 695-record parity, full CPU primitive timing, paired rho/IC and signed PCC remain pending.'
