@@ -74,7 +74,17 @@ jobs:
             g++ -O3 -std=c++17 -Wall -Wextra -Werror -I "$base" \
               "$RUNNER_TEMP/ct138-generated/ct138_width$width.cpp" \
               -o "$RUNNER_TEMP/ct138-width$width"
-            for seed in 20261340 20261341 20261342 20261343; do
+          done
+          # Predeclared rotating-order same-host cohort: mitigate width/thermal drift.
+          for seed in 20261340 20261341 20261342 20261343; do
+            case "$seed" in
+              20261340) widths="16 32 64" ;;
+              20261341) widths="32 64 16" ;;
+              20261342) widths="64 16 32" ;;
+              20261343) widths="64 32 16" ;;
+            esac
+            for width in $widths; do
+              echo "$seed:$width" >> ct138-evidence/sequence.txt
               /usr/bin/time -f 'wall_seconds=%e maxrss_kb=%M' \
                 -o "ct138-evidence/results/width$width-$seed.time" \
                 timeout 120s "$RUNNER_TEMP/ct138-width$width" 32 "$seed" \
