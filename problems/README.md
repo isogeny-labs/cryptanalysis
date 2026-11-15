@@ -10,6 +10,7 @@ explain the gap and what would let the work move past it.
 | Problem | Status | What it blocks | What would unblock it |
 | --- | --- | --- | --- |
 | [Prime-field auxiliary-map IC measurement qualification](prime-field-auxiliary-ic-validation.md) | open | Qualified IC timing claims; new field-fiber circuits are producer checked, with timing and formal bridges open | Fresh frozen target panel, admitted online measurement, signed independent replay, and maintainer classification of the retained CI alerts |
+| [Live GLV source/proof binding drift](live-glv-source-pin-drift.md) | open | Corpus source-binding controls refuse current main and the IC PR before native proofs | Reviewed current-source binding, retained prior evidence, complete selector/native proof checks and a passing exact-head corpus gate |
 
 ---
 

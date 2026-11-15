@@ -47,3 +47,19 @@ experiment or new spending is required for that development check.
 
 Unresolved. Initial current-main API failure, modern API correction and actual
 1.78 dependency rejection remain retained; historical receipts are unchanged.
+
+
+2026-11-15, PR #1536 follow-up: the structured-consumer lockfile was
+synchronized without changing dependency versions or the declared floor.
+The local locked Rust 1.78 all-target check still rejects getrandom 0.4.3's
+edition2024 manifest. The hosted job stopped at the earlier stale-lock
+failure, so its later minimum-version steps have not been reported passing.
+The original graph qualification requirement remains open. See
+[the retained follow-up logs](../experiments/prime-field-auxiliary-ic/rust-validation/ci-consumer-followup-20261115/).
+[pcc:unverified]
+
+A proposed upstream minimum-version repair is tracked in
+[PR #1586](https://github.com/isogeny-labs/cryptanalysis/pull/1586); it was open
+at this check. This follow-up preserves the existing minimum-version tests
+and does not treat a modern-compiler pass as Rust 1.78 compatibility.
+[pcc:unverified]

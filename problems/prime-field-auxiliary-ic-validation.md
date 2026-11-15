@@ -58,6 +58,17 @@ protocol exist. No such run is launched by this import PR.
 
 ## Resolution and history
 
+2026-11-15, hosted CI follow-up: the dedicated Rust 1.78/stable and archived
+Python jobs passed on `54e4331a`. A separate structured-consumer job reached a
+stale wrapper lockfile after its earlier native checks. The lock was
+synchronized while preserving the locked validation commands and package
+versions. The corpus job instead stopped at inherited
+[live GLV source-pin drift](live-glv-source-pin-drift.md); the known
+[native Rust-floor gap](hashed-ecdl-rust-msrv.md) also remains reproducible.
+See [the follow-up evidence](../experiments/prime-field-auxiliary-ic/rust-validation/ci-consumer-followup-20261115/).
+These are integration observations, not a new performance result.
+[pcc:unverified]
+
 2026-11-15, native proof admission: Lean 4.35.0 was installed and six ring
 identities compiled with standard foundation printouts. Source-bound corpus
 admissions and six refusal/plumbing controls pass. See the
