@@ -1,0 +1,23 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-11T18:22:43Z",
+ "id": "PCC-20261111-ef4a7b",
+ "kind": "statement",
+ "producer": {
+  "commit": "52fe5eba0834358549ad88981510067a4b7f8c24",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/seven-glue-native-02.txt",
+    "sha256": "7be586b3e74a83e376f89c970e952d6872432959e5609b71b92ad3255db6f067"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Native Rust CT20 replay with unchanged pre-existing FpR/Kohel/HLP engines reproduces all four separately published F101 gluing sextics,descent,smoothness and L-polynomial/Jacobian order12317. Two nonsquare-leading charts retained unsupported;two monic charts68,42,26 and33,44,92 supported. Actual quotient component swap,coefficient-scale point-set bijections and all three matched2-torsion quadratic-support equalities pass. Predeclared lexicographic kernel selection chooses monic[68,0,42,0,26,0,1],scales21/raw33;external A/B labels differ. This corroborates existing cryptoPR3920/sourcecc3229d inventory;historical Python oracle not rerun. Bounded producer assertions,unsigned standing;global geometric factor,actual Jacobian7 map,duals and cost remain next."
+}

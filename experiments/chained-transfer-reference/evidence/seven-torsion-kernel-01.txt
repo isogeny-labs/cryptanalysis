@@ -1,0 +1,40 @@
+cargo 1.99.1 (5f94df478 2026-08-27)
+2918fd2d6ae6c06becfda5830fcf78acca250145bceaa29d4348045b0e582295  src/seven_torsion.rs
+7874d5092b8548701aad018307495b952e1fc818400effc27252eec2515909aa  src/seven_glue.rs
+   Compiling chained-transfer-reference v0.1.0 (/workspace/cryptanalysis/experiments/chained-transfer-reference)
+warning: unused import: `Curve`
+ --> src/seven_torsion.rs:9:34
+  |
+9 | use isogeny_algos::curve::{self, Curve, Isogeny, Pt, RatIsogeny};
+  |                                  ^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: `chained-transfer-reference` (bin "chained-transfer-reference" test) generated 1 warning (run `cargo fix --bin "chained-transfer-reference" -p chained-transfer-reference --tests` to apply 1 suggestion)
+    Finished `release` profile [optimized] target(s) in 12.04s
+     Running unittests src/main.rs (target/release/deps/chained_transfer_reference-157d0dc5fc6a5631)
+
+running 2 tests
+PASS exact fixedFp6 flat/tower primitive bridge,canonical tails,T/s inverse formulas,root equations and Frobenius3/6;unchanged independent128-witness receipt remains separate
+test nonsplit::map::seven_glue::torsion::common_flat_tower_bridge_and_frobenius ... ok
+retained gluing[0, 0] raw[38, 0, 48, 0, 9, 0, 46]:nonsquare leading unsupported,no retwist
+retained gluing[0, 1] raw[32, 0, 26, 0, 49, 0, 41]:nonsquare leading unsupported,no retwist
+gluing[1, 0] raw[19, 0, 86, 0, 34, 0, 79],rho33,monic[68, 0, 42, 0, 26, 0, 1],charts[QuotientChart { destination: 1, shift: 76, scale: 21 }, QuotientChart { destination: 0, shift: 14, scale: 21 }],LLPoly { c1: 18, c2: 279 };descent,smoothness,actual quotient109/113 bijections,matched2-kernel support pass
+gluing[1, 1] raw[87, 0, 15, 0, 13, 0, 21],rho18,monic[33, 0, 44, 0, 92, 0, 1],charts[QuotientChart { destination: 1, shift: 98, scale: 7 }, QuotientChart { destination: 0, shift: 82, scale: 7 }],LLPoly { c1: 18, c2: 279 };descent,smoothness,actual quotient109/113 bijections,matched2-kernel support pass
+PASS actual49 geometric Phi-kernel points=P0(Ker alpha),all7-annihilators/all2401 additions/Frobenius closure,eigenscalars[5, 6];degree49/prime-to2 quotient proof identifies the full kernel;not a solver or signed verdict
+test nonsplit::map::seven_glue::torsion::explicit_geometric_seven_kernel_all49_group_and_frobenius ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 58 filtered out; finished in 8.77s
+
+     Running tests/frobenius_independent.rs (target/release/deps/frobenius_independent-70dd63d42d874561)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/seven_independent.rs (target/release/deps/seven_independent-7557517fa72787fc)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
