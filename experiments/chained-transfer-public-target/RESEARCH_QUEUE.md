@@ -1,3 +1,23 @@
+# Complete native fixed Jacobian chain accepted; genuine22 and cost successor next
+
+Native ed33ef at published161c5bab/build02/exactoriginalcheckpoint12 passes ALL13phases/worker+supervisor0, oneunfilteredtest0, ALL695wholeorderedrecords frozen+compared, FOURactualentirerecord-class omissions101/noacceptedoutputs and all1080guards/actualbinarybytes0. ALL672exceptionaldescriptors underBOTHoutgoingmaps/all4halves/duplicatecorrections/all4cofactors from228attempts/domain/144mixed/120public/96additionpairs perundirectedpair/fullgroup13-169norms-inverses/independentellipticchecks pass. [pcc:unverified]
+
+## What was done
+Actual direct169/literalJacchain/retained-corrected-ellipticlift outputs all exact, all48 SELECTEDvectors retained. Retainedlift has onehalving/sourcePhi/targetPhi like direct; apparenthalvinggain againstliteralchain doesnot survive this comparator. Full primitive setup/reuse accounting and calibrated advantages remainopen. pcc/claims/PCC-20261115-7e4229.json is the visuallyinspected two-page58,309B actual-result report;67ab12 separately preserves the earlier two-page52,872B geometry/compiled-boundary snapshot. Conditional13roots/bothgates/allbindings e89f97/3805e2 and exact24thCIab17f7 remainaccepted only in their recorded unsigned scopes. [pcc:unverified]
+
+## Decisions made
+pcc/claims/PCC-20261115-25d29e.json freezes NORM_POINT_REUSE_PROTOCOL_01 BEFORE optimizedcode: derive finalnorm by doubling retained finalellipticpoint, fullwhole-record parity except exactpredeclared48countertransforms, allfiniteworkload unchanged. Actual norm scalar13/169 is ellipticdegree; conditional genus3 Jacobian geometricdegree13³/169³, HLP/descent/encoded-program bridges explicit. No oldprime twistlogtransfer or priced gain. [pcc:unverified]
+
+## Open threads
+1. Normalpublish this actual result/report/successor protocol, mirror rootqueue, then genuine NEW22: all14wholeclosedscientificroots (bothgeometrybuilds/native, descentproof01/02/fullgroupproof, complete24CI, bothevaluatorbuilds/native, exactcheckpoints11/12, bothreports/drafts), actualsources/exes/fullpreparedcopies/failures/all695fixture+stdout/controloutputs, newwholecurrentguard retaining all42866prior keys/162links withdeclared releasedmetadata+appendonlyledgerprefix. Ordered32MiBarchiveparts beforeGit100MiB cap; excludealreadygenuine21archive/parts fromrecursivecapture whilepreserving metadata. Originalpublisher replays BEFOREbot/exactpaths/wholeownedbytes/normalFF-artifact-wiring mustpass before releasinghold.
+2. Aftergenuine22, additive25strict complete-chain replay with old24unchanged, then implement additive norm-point reuse under publishedsuccessor protocol. Keep oldnative/source695fixture immutable; exactRustexpected-counter transformation only. Publish compiledsource/exactcheckpoint before native.
+3. Complete primitive source-operation census for standalone setup and reuse against direct/literal/retained routes; no calibrated pricing until liveadmission/matchedECDLP-ICrefs. Review endpoint distinction via actual geometric invariants or Frobenius bitangent frames, primefieldfactorbase relation profiles, and separate original-prime anti-Frobenius/Kummer lead underprospective primaryreview. [pcc:unverified]
+
+## Errors
+All original D12/D24/D67/oldprime/coldcensus/root-main negatives retained. Original EOFcached-whitespace2/proofabsolute-pathFAIL_build/fourE0599testAPI errors and all rawsources/logs preserved. CI connectorTransportClosed×2/jobredirect403 recovered through different whole-run-log ZIP endpoint0; privateURLs excluded. Exactclosed-copyhardlinks preservepaths/bytes/modes afterindependentchecks. Fiftyunheld thirdpartyrootrmeta derivedfiles removed under recordedreceipt, all42866guard/PCCsubjects/raw/exes/preparedcopies/currentct57/currentct80 retained. Signing/mainledger/review/conflicts/KB-vault/benchmarkadmission gaps remainopen. [pcc:unverified]
+
+---
+
 # Three fixed Jacobian models accepted; full evaluator compiled, native next
 
 pcc/claims/PCC-20261115-89f255.json: full evaluator build02 compiles after preserved build01 fourE0599 test-return errors. PhaseA f81cbf on published70ec53e5/exact checkpoint11 passes oneunfilteredtest/allthree actual generic geometries,224lineorigins each/separatequadratic origins/allfourE2/two-two-pointcorrectionfibres/actualrejections. Fullchain native is NOT RUN. [pcc:unverified]
