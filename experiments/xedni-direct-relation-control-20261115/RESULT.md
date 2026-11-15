@@ -49,6 +49,23 @@ recovery implication under their exact hypotheses. `PROOF_MAP.md` maps the
 abstract reduction-homomorphism step and its status. The earlier structural
 xedni development studies finite coefficient families more generally.
 
+## Finite coefficient-vector extension
+
+For any finite coefficient vector `cᵢ` and offsets `tᵢ`, put
+`C=Σcᵢ` and `S=Σcᵢtᵢ` in the scalar field. The checked theorem gives
+`Σcᵢ(w−tᵢ)=0` exactly when `Cw=S`. If `C≠0`, a reduced relation yields
+`w=S/C`. If `C=0`, the equation becomes `S=0` and is independent of `w`.
+The companion group theorem proves
+`Σcᵢ(Q−tᵢG)=(Cw−S)G` for integer coefficients and `Q=wG`.
+This applies to any *known* vector whose lifted relation reduces through an
+additive homomorphism. It does not bound the work of discovering a useful
+coefficient vector or establish a general complexity result.
+
+The next finite-panel experiment is to freeze a bounded primitive coefficient
+family, charge every public group test and every lift candidate under the
+same query order, and compare first-hit costs by coefficient sum. The current
+saved panel tests the fixed vector `(1,2)`.
+
 ## Reproduction
 
 `protocol.json` pins both input result digests, arithmetic sources, field

@@ -43,9 +43,60 @@ theorem relation_reduces {H A : Type*} [AddCommGroup H] [AddCommGroup A]
   have hρ := congrArg ρ h
   simpa using hρ
 
+/-- Every finite coefficient vector exposes its scalar dependence through its sum. -/
+theorem finite_relation_iff {ι R : Type*} [CommRing R]
+    (s : Finset ι) (c t : ι → R) (w : R) :
+    (∑ i ∈ s, c i * (w - t i)) = 0 ↔
+      (∑ i ∈ s, c i) * w = ∑ i ∈ s, c i * t i := by
+  simp only [mul_sub, Finset.sum_sub_distrib, Finset.sum_mul, sub_eq_zero]
+
+/-- A nonzero coefficient sum makes the reduced relation solve for the scalar. -/
+theorem finite_relation_recovers {ι F : Type*} [Field F]
+    (s : Finset ι) (c t : ι → F) (w : F)
+    (hC : (∑ i ∈ s, c i) ≠ 0) :
+    (∑ i ∈ s, c i * (w - t i)) = 0 ↔
+      w = (∑ i ∈ s, c i * t i) / (∑ i ∈ s, c i) := by
+  rw [finite_relation_iff]
+  constructor
+  · intro h
+    apply (eq_div_iff hC).2
+    simpa only [mul_comm] using h
+  · intro h
+    have hh := (eq_div_iff hC).1 h
+    simpa only [mul_comm] using hh
+
+/-- With zero coefficient sum, the reduced equation contains no target scalar. -/
+theorem finite_zero_sum_relation {ι R : Type*} [CommRing R]
+    (s : Finset ι) (c t : ι → R) (w : R)
+    (hC : (∑ i ∈ s, c i) = 0) :
+    (∑ i ∈ s, c i * (w - t i)) = 0 ↔
+      (∑ i ∈ s, c i * t i) = 0 := by
+  rw [finite_relation_iff, hC, zero_mul, eq_comm]
+
+/-- The public-group identity for any finite integer coefficient vector. -/
+theorem finite_group_identity {ι A : Type*} [AddCommGroup A]
+    (s : Finset ι) (c t : ι → ℤ) (w : ℤ) (G : A) :
+    (∑ i ∈ s, c i • (w • G - t i • G)) =
+      ((∑ i ∈ s, c i) * w - ∑ i ∈ s, c i * t i) • G := by
+  calc
+    (∑ i ∈ s, c i • (w • G - t i • G)) =
+        ∑ i ∈ s, (c i * w - c i * t i) • G := by
+      apply Finset.sum_congr rfl
+      intro i hi
+      simp only [smul_sub, mul_zsmul, sub_zsmul]
+      abel
+    _ = (∑ i ∈ s, (c i * w - c i * t i)) • G := by
+      rw [← Finset.sum_smul]
+    _ = ((∑ i ∈ s, c i) * w - ∑ i ∈ s, c i * t i) • G := by
+      simp only [Finset.sum_sub_distrib, Finset.sum_mul]
+
 #print axioms relation_iff_linear
 #print axioms relation_iff_recovery
 #print axioms group_relation_iff
 #print axioms relation_reduces
+#print axioms finite_relation_iff
+#print axioms finite_relation_recovers
+#print axioms finite_zero_sum_relation
+#print axioms finite_group_identity
 
 end XedniDirectRelation
