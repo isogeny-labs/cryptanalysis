@@ -45,6 +45,7 @@ jobs:
           python experiments/groebner-f6-prepared-20261009/build.py
       - name: Exhaustive, UBSan, and complete target replay
         run: |
+          set -o pipefail
           mkdir -p f6-prepared-evidence
           python experiments/groebner-f6-prepared-20261009/test_prepared.py | tee f6-prepared-evidence/tests.log
           python experiments/groebner-f6-prepared-20261009/semantic_replay.py --output f6-prepared-evidence/semantic.json

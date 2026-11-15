@@ -1,0 +1,38 @@
+{
+  "schema": "xedni-rational-height-cover-protocol-v1",
+  "curve": {
+    "base_field": "Q",
+    "weierstrass_a_invariants": [0, 0, 1, -1, 0],
+    "point": [0, 0],
+    "reduction_prime": 101
+  },
+  "sample": {
+    "lifted_point_multipliers": [1, 2, 3],
+    "coefficient_radius": 1,
+    "input_law": "complete ordered coefficient cube [-1,1]^3",
+    "known_relation": [1, 1, -1]
+  },
+  "height": {
+    "definition": "Sage normalized Neron-Tate height, point.height(precision=128)",
+    "primary_algorithm": "pari",
+    "crosscheck_algorithm": "sage",
+    "precision_bits": 128,
+    "quadratic_residual_cap": "1e-20",
+    "crosscheck_absolute_cap": "1e-12"
+  },
+  "cover": {
+    "metric": "sqrt(canonical_height(Q-R)) on generated subgroup",
+    "centers": "all distinct rational sums from the frozen coefficient cube",
+    "radius": 0,
+    "torsion_labels": "full rational torsion subgroup order",
+    "count_condition": "centers * torsion_labels < coefficient_box_count"
+  },
+  "frozen_controls": {
+    "coefficient_box_count": 27,
+    "known_relation_value": "identity",
+    "distinct_sum_count": 13,
+    "reduction_compatibility": "every coefficient tuple",
+    "good_reduction": true
+  },
+  "interpretation": "Exact rational-curve control of height and reduction identities for the xedni metric-cover bridge; no selected lift distribution or performance comparison"
+}

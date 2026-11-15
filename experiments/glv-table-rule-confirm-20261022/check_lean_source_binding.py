@@ -28,8 +28,22 @@ PREVIOUS_LIVE_SHA256 = "e1d624e58c54f25f9225be97481b50c0ed406cedcfdffa8ba66f01a5
 # 2026-11-10: src/curve.c changed outside the selector (factored j0 orbit hash
 # by default, index mask, Shoup coefficient products; PR #1464). The live pin
 # moves to that commit; the previous sized-cap pin is still re-checked.
-LIVE_SOURCE_COMMIT = "bf76110326b5c843cb88135810cb5c1d955321fc"
-LIVE_SHA256 = "7a59212a15cbb80db00abb371900b696e4cd8aabbcd6dec175e166508ce1d70e"
+# 2026-11-12: src/curve.c changed outside the selector again (GLV walk hot
+# path: kept point hash, inlined reducer, fused batch, history ring,
+# branch-free coefficient updates, joint start ladder;
+# docs/perf/20261112-c-hotpath-audit.md). The live pin moves from
+# bf76110326b5c843cb88135810cb5c1d955321fc to bed518be1.
+# 2026-11-12: src/curve.c changed outside the selector again (static-analysis
+# fixes: a zero-aut_order guard before the selector, #elif for the second j0
+# representative). The live pin moves from
+# bed518be10a24cfb841e1e1dc84d8539defdba95 to 748b44c14.
+# 2026-11-15: src/curve.c changed outside the selector again (curve_enable
+# takes the negation-only path for a composite subgroup order, so
+# ca_sqrtmod_prime is never called with a non-prime modulus;
+# docs/audits/2026-11-15-correctness-validation-assessment.md, S-1). The live
+# pin moves from 748b44c142b62063d91e9b3ac81287bb9b21ef56 to 77fb8819d.
+LIVE_SOURCE_COMMIT = "77fb8819d2729beb0842c3954dbfcd471e143ca8"
+LIVE_SHA256 = "6d120872c2020870a7fed1f8c28af644a7e31667e7b202986dddbca34772125b"
 CAP_THRESHOLD_LG = 40
 CAP_BELOW = 32
 CAP_FROM = 128

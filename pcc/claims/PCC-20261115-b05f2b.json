@@ -1,0 +1,15 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-15T19:02:09Z",
+ "id": "PCC-20261115-b05f2b",
+ "kind": "statement",
+ "producer": {
+  "commit": "c021359ce7b5f4f5b867ffc50b4873769bde6f9a",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [],
+ "schema": "pcc.claim/v1",
+ "scope": "experiments/ec-leakage-harness-20261114",
+ "statement": "Generic learners trained on up to 1e6 samples per curve (3 curves each of smooth, anomalous, prime order, 40 bits) found no leakage of k* bits or (+-k* mod q) mod 2: 216 fits, max z +1.50, none with |z|>3; on smooth curves they match the majority baseline (0.600/0.601/0.666) where Pohlig-Hellman gets 1.000. Evidence: experiments/ec-leakage-harness-20261114/results/scale.json"
+}
