@@ -6,6 +6,13 @@ bindings and `ca-ic auxiliary` integration. It adds signed graph elimination
 and a batched direct IC control without changing the frozen snapshot. No new
 qualified timing claim is made. [pcc:unverified]
 
+The subsequent [field-fiber implementation report](rust-validation/field-fibers-20261115/REPORT.md)
+and [PDF](rust-validation/field-fibers-20261115/REPORT.pdf), claim
+`PCC-20261115-82ccdd`, add multiplicative and norm-one trace encodings,
+trace-orbit preparation, a pre-split terminal, and same-column direct controls.
+Twenty core checks on each toolchain and four CLI checks pass; these are
+unsigned producer checks, with no new timing conclusion. [pcc:unverified]
+
 The [Rust implementation-check report](rust-validation/producer-checks.json)
 pins the source files, exact commands, raw outputs, and unsuccessful setup
 attempts. Claim `PCC-20261115-c2f013` records the unsigned producer checks;

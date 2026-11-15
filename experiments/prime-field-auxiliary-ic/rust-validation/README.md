@@ -1,5 +1,18 @@
 # Native integration check receipt
 
+The latest [field-fiber report](field-fibers-20261115/REPORT.md) and
+[PDF](field-fibers-20261115/REPORT.pdf), claim `PCC-20261115-82ccdd`, pin source
+`facaac33` and unsigned producer checks: 20 core tests on each toolchain and
+four CLI tests. This adds power and norm-one trace encodings, an orbit-based
+raw-fiber generator, pre-split terminals, and same-column direct controls.
+The general terminal uses five field multiplication calls instead of eight;
+torus preparation uses one square root instead of the inverse tree's
+`2^depth-2` (none at depth one). These are source-operation counts; a runtime
+improvement is unmeasured. Six Lean identity sources are supplied but unbuilt;
+the finite-field structural proof and atlas update remain open.
+[pcc:unverified]
+
+
 The [kernel-fusion receipt](kernel-fusion-20261115/producer-checks.json), claim
 `PCC-20261115-d2f58b`, records the subsequent arithmetic and candidate-index
 changes in source commit `27fc983`. The intermediate shift uses two field

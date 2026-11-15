@@ -58,6 +58,26 @@ protocol exist. No such run is launched by this import PR.
 
 ## Resolution and history
 
+2026-11-15, field-fiber leads: source `facaac33` pre-splits the terminal and
+implements power fibers from p-1 and norm-one trace fibers from p+1, with
+trace-orbit preparation and exact same-column direct IC controls. The
+[field-fiber report](../experiments/prime-field-auxiliary-ic/rust-validation/field-fibers-20261115/REPORT.md)
+and [receipt](../experiments/prime-field-auxiliary-ic/rust-validation/field-fibers-20261115/producer-checks.json),
+claim `PCC-20261115-82ccdd`, retain 20 core checks on each toolchain and four
+CLI checks, plus failures and the empty 61-bit degree-nine coset fixture.
+These support implementation correctness only as unsigned producer evidence.
+The requested runtime gain remains unestablished. [pcc:unverified]
+
+The trace-orbit and homogeneous coefficient arguments have readable proofs
+and six Lean identity sources, but no local Lean/lake toolchain is available;
+no formal theorem or axiom audit is reported checked. Completing the formal
+bridge requires the cyclic norm-one construction, primitive-trace criterion,
+complete-fiber/orbit proofs and the target-group relation bridge. The shared
+KB is unavailable and the relevant owning lead-atlas files are encrypted;
+an owner checkout is needed to review/update those dispositions. These are
+named tool/access and proof gaps, not mathematical obstructions.
+[pcc:unverified]
+
 2026-11-15, continued optimization: source commit `27fc983` shares the center
 shift product and extracts candidate indices during evaluation. Explicit
 polynomial-product checks cover mixed/zero shifts and a 128-root fixture across
