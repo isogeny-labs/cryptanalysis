@@ -28,11 +28,18 @@ The frozen [ONB census](audit_result.json) checked both branches for all
 distinct image phi outputs, and no zero denominator. It completed in
 5.418 seconds with 26,001,408 peak RSS bytes. The prior independently
 checked Sage raw-fiber census established the same adjacent group map on
-all selectors. A new independent polynomial-field replay in this directory
-reached its frozen 180-second cap while scanning all 8,191 nonzero
-subspace codes; its stdout, stderr, source, and protocol are retained with
-status `CAPPED_180_SECONDS`. A replay restricted to the already enumerated
-4,134 valid selectors is the next finite check of the new chart digest.
+all selectors. A first independent Sage chart replay reached its frozen
+180-second cap while scanning all 8,191 nonzero subspace codes. The exact
+selector [enumeration](valid_codes_result.json) then recovered the same
+4,134 source phi values and froze their ordered list. A second replay over
+that list also reached its 180-second cap while reconstructing and adding
+curve points. Both capped attempts and their protocols remain here.
+
+The amended [polynomial-field chart replay](audit_sage_v3_result.json)
+checked all 4,134 frozen selectors in 0.754 seconds and 239,714,304 peak
+RSS bytes. Its source and image phi digests match the ONB census exactly.
+The earlier all-selector Sage raw-fiber audit establishes the adjacent group
+map; this amended pass independently checks the chart conversion and digest.
 
 For the sparse product, write `phi=sum(c_j*basis_j)` with 13 selector bits.
 Then `y=sum(c_j*(basis_j²+basis_j))`. Form `d_j=b*c_j` using 13 AND gates;

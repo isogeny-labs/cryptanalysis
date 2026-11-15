@@ -4,7 +4,8 @@
 | --- | --- | --- | --- |
 | One polynomial equation selects the original or image phi chart | `BranchEquation.branch_equation` | Any commutative ring, Boolean branch, and `y=phi*phi+phi` | Lean 4.34.1 checked; `#print axioms` lists only `propext`, `Classical.choice`, `Quot.sound` |
 | Image phi output is unique | `BranchEquation.image_unique` | Any field, same branch equation, and `1+y != 0` | Lean 4.34.1 checked; same standard foundations |
-| Adjacent image point has reciprocal x-coordinate `y=phi²+phi` | Earlier `Adjacent.lean` polynomial proof and `n131_d13_phi_raw_fiber_20261115/audit_sage.py`; current `audit.py` | The exact curve `y²+xy=x³+1`, `x=1+1/phi`, nonexceptional valid d13 selectors | Group-law bridge to Lean remains partial; prior independent Sage replay covers all 4,134 selectors; new chart-specific Sage pass capped at 180 seconds |
+| Adjacent image point has reciprocal x-coordinate `y=phi²+phi` | Earlier `Adjacent.lean` polynomial proof and `n131_d13_phi_raw_fiber_20261115/audit_sage.py`; current `audit.py` | The exact curve `y²+xy=x³+1`, `x=1+1/phi`, nonexceptional valid d13 selectors | Group-law bridge to Lean remains partial; prior independent Sage replay covers all 4,134 selectors |
+| Polynomial-field conversion from reciprocal image x to image phi | `audit_sage_v3.py` | Frozen ordered 4,134 valid source selectors; prior all-selector Sage group-map replay | Independent Sage chart digest matches ONB census on every selector; two broader point-reconstruction attempts retain capped status |
 | Image denominator is nonzero | Written trace argument and both finite audits | In `GF(2^131)`, `Tr(phi²+phi)=0` and `Tr(1)=1` | Written proof plus exact 4,134-selector checks; full Lean finite-field trace bridge open |
 | Sparse branch-product gate count | Constructive expansion in `RESULT.md` | 13 source bits, 131 field bits, ten leaves | Derived Boolean circuit bound; no generated ten-leaf formula yet |
 
@@ -19,8 +20,10 @@ original source and one for the image. The equation
 The Lean file proves the branch algebra and uniqueness without axioms that
 encode the research result. The existing adjacent-x polynomial proof and
 the prior exact Sage curve replay support the concrete characteristic-two group
-identity. The current chart-specific Sage attempt is capped as recorded in
-`audit_sage_status.json`. Building a full Lean elliptic-curve group law, Frobenius map, and
+identity. The first two chart-specific Sage point-reconstruction attempts
+are capped as recorded in `audit_sage_status.json` and
+`audit_sage_v2_status.json`. The amended all-selector polynomial-field chart
+replay passes. Building a full Lean elliptic-curve group law, Frobenius map, and
 `GF(2^131)` trace bridge remains the specific open formalization obligation.
 
 Build command: `lean BranchEquation.lean` from this directory. The pinned
