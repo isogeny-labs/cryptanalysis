@@ -1,0 +1,37 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-11T22:42:28Z",
+ "id": "PCC-20261111-7a86d3",
+ "kind": "statement",
+ "producer": {
+  "commit": "994869034bbc9cc882db826cdabf73d2befb97cc",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/psi-kernel-flat-replay-02.txt",
+    "sha256": "b1b2f4979d0b5f5c1c397c11eb831d88222f3e55dec33c19358527136092739e"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/psi-kernel-flat-replay-source-02.rs",
+    "sha256": "9b472e4c917f06daeea826b43c9037d1c22de2cca7b1de02e40e050ae0e50998"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/explicit-psi-kernel-07.tsv",
+    "sha256": "1c86cf06a14e822512525ecf13398be7cfacd9cc0acbdb5c0c70c2f13f8ee893"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Cross-repository independent flatFpR/poly replay02/root4a98a7 passes all49 frozen explicitPsiKernel rows:semantic basis,canonical coefficient/shape/actualT0 curve validity/distinctness and full Frobenius5/6 permutation,fixed counts1/7/1/49 for degrees1/2/3/6. The replay imports no producer tower/closed-map or elliptic generator. It checks field/polynomial validity/Frobenius only; Jacobian additions and kernel membership retain separate producer/native/written evidence. Exact replay source/raw receipt/TSV retained; unsigned standing."
+}

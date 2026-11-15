@@ -1,0 +1,44 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-11T22:14:22Z",
+ "id": "PCC-20261111-e2a427",
+ "kind": "statement",
+ "producer": {
+  "commit": "994869034bbc9cc882db826cdabf73d2befb97cc",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct-closed-fibres-integrated-source-05.txt",
+    "sha256": "ae754cd0b4942feff6ff646a11159243986cd529c3d56e9c15a6003230d299fc"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct-closed-fibres-clippy-06.txt",
+    "sha256": "39497d49d2e6dc644a22b0570543e17f9f0502673cd1fbc5ca7a6d17f8048c66"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/closed-fibres-source-05.rs",
+    "sha256": "7fbfca66e3ff8a30082b62868d47678bcb76e49144f51b29fb313c8ebced1ece"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/closed-fibres-chain-source-05.rs",
+    "sha256": "a10630a82f578bcc0a291a7805f268a3fc6e2de1ed9a5a7b905d3175c801f79c"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "CT23 integrated-source test05 passes all109 original source scalar relations, unchanged naive pointwise/generic comparisons, commuting square, reverse28/inverse74 recovery and direct target4 coordinates after switching SevenChain R0/R1 calls to the new closed adapters. Original pointwise maps and naive route remain unchanged; strictClippy06 passes. Exact source05 snapshots retained; full changed guard is still separate and pending. No timing or signed verification claimed."
+}

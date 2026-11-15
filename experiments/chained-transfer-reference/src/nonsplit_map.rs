@@ -7,6 +7,8 @@ use crate::reference::{Fp2, Fp2Ctx, FpPoly};
 use num_bigint::BigUint;
 use num_traits::ToPrimitive;
 use std::collections::BTreeMap;
+#[path = "closed_fibres.rs"]
+mod closed_fibres;
 #[path = "seven_glue.rs"]
 mod seven_glue;
 type Result<T> = std::result::Result<T, String>;
@@ -278,6 +280,12 @@ impl<'a> Jacobian<'a> {
         );
         let v = k.divrem(&k.exact(&numerator, &d)?, &u).1;
         let plus = i64::from(a.plus) + i64::from(b.plus) + d.len() as i64 - 2;
+        self.reduce(u, v, plus)
+    }
+    // Shared existing reduction, also used for a four-point closed fibre.
+    // A raw finite4-2K divisor has signed plus=-1 before reduction.
+    fn reduce(&self, u: Poly, v: Poly, plus: i64) -> Result<Divisor> {
+        let k = self.k;
         let m = u.len() - 1;
         if m <= 2 && plus >= 0 && plus <= 2 - m as i64 {
             return self.pair(u, v, plus as u8);
