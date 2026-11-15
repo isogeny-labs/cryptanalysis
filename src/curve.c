@@ -82,7 +82,11 @@ static void curve_enable(ca_group *g, ca_curve_info *info)
 
     uint64_t n = g->order;
     if (n == 0) return; /* structure only; no lambda without an order */
-    if ((kind == CA_CURVE_ENDO_J0 && n % 3 != 1) || (kind == CA_CURVE_ENDO_J1728 && n % 4 != 1)) {
+    /* The eigenvalue is a square root modulo n, and the GLV walk inverts
+     * modulo n: both need a prime order.  A composite order takes the
+     * negation-only path. */
+    if (!ca_is_prime(n) || (kind == CA_CURVE_ENDO_J0 && n % 3 != 1) ||
+        (kind == CA_CURVE_ENDO_J1728 && n % 4 != 1)) {
         info->endo = CA_CURVE_ENDO_NONE;
         info->beta = 0;
         info->aut_order = 2;
