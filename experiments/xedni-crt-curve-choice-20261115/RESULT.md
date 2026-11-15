@@ -39,6 +39,31 @@ frozen input law and complete compressed query statuses in
 `target-rows.jsonl.gz`. It is not an online wall-time comparison; the
 curve search and all 1,849 queries must be charged in any future cost study.
 
+## Coefficient-search work on the fixed target
+
+The saved target order first reaches a rational relation at `(t₁,t₂)=(5,23)`.
+The probe-accounting extension joins every target query to the frozen parent
+census and counts each coefficient candidate inspected by the deterministic
+auxiliary search. An independent pure-Python audit replays the 7 and 11
+finite-field searches for all 1,344 accepted pairs and matches every saved
+attempt count and selected residue.
+
+| Stop | Target queries | Admissible pairs | Accepted pairs | Reduced relations | Rational relations | Coefficient probes at 7 | Coefficient probes at 11 | Both primes |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| First rational relation | 239 | 227 | 183 | 6 | 1 | 14,082 | 27,384 | 41,466 |
+| Complete target scan | 1,849 | 1,722 | 1,344 | 34 | 2 | 106,612 | 201,702 | 308,314 |
+
+These are exact candidate-probe counts for this fixed finite panel, not
+elapsed time. They exclude reduced-point generation, CRT assembly, rational
+group checks, and startup, so they are a lower bound on complete work. The
+full-scan descriptive ratio is 154,157 coefficient probes per rational
+relation; the two relations are sign-related and are not independent trials.
+`cost-protocol.json`, `cost-result.json`, and `cost-audit.json` retain the
+input hashes, ordered stopping rule, counts, and independent replay. Run
+`python3 experiments/xedni-crt-curve-choice-20261115/cost_account.py --verify`
+and `python3 experiments/xedni-crt-curve-choice-20261115/cost_audit.py` to
+recheck them without Sage.
+
 One checked witness uses the rational curve with Weierstrass coefficients
 `[a₁,a₂,a₃,a₄,a₆]=[-987,-1034,0,7660,-3997]` and lifted points
 `Q₁=(14,7)`, `Q₂=(17,10)`. The Sage run and an independent exact-rational
