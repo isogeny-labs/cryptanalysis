@@ -133,12 +133,15 @@ height conditions as the field grows. The previously checked conditional reducti
 and sampling theorems in the existing Lean modules apply only with their
 stated bounded-witness and sampling hypotheses.
 
-`PROOF_MAP.md` maps the scalar-recovery implication and both saved
-`t`-pairs to three checked declarations in `formal/TargetRecovery.lean`.
-The pinned build and `#print axioms` audit passed. The elliptic-curve
-instantiation of the rational witness remains open in Lean. The current
-shared checkout failed the older obstruction module's source-hash verifier,
-so that module is not reported as freshly built here.
+`PROOF_MAP.md` maps both rational elliptic-curve relations, their reduced
+relations, the fixed public point, both saved `t`-pairs, and scalar recovery
+to checked declarations in `formal/RationalWitness.lean` and
+`formal/TargetRecovery.lean`. The pinned build and `#print axioms` audit
+passed. The point-reduction homomorphism and auxiliary group-order gates
+remain checked by the Sage replay and independent arithmetic audit; their
+Lean bridge remains open. The current shared checkout failed the older
+obstruction module's source-hash verifier, so that separate module is not
+reported as freshly built here.
 
 ## Reproduction
 
