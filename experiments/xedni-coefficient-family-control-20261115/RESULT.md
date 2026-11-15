@@ -43,10 +43,12 @@ minimum subgroup order 43. Two such lines meet only at the excluded point
 observed union size is exactly `13(r−1)` in each field.
 
 The pinned Lean module proves that two relations with nonzero determinant
-force both sampled scalars to zero, and that a zero-sum vector cannot relate
-distinct sampled scalars. The full finite-cardinality statement remains a
-written proof plus exhaustive audit; `PROOF_MAP.md` records its missing Lean
-cardinality bridge.
+force both sampled scalars to zero, that a zero-sum vector cannot relate
+distinct sampled scalars, and that each nonzero-sum direction with nonzero
+coefficients has exactly `|F|−1` admissible hits over any finite field `F`.
+It constructs an explicit bijection from hits to first offsets other than
+`w`, then proves the remaining line points satisfy both admission tests.
+`PROOF_MAP.md` gives the precise statements and hypotheses.
 
 ## Interpretation and reproduction
 
