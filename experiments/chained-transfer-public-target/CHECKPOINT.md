@@ -1,3 +1,21 @@
+# Norm-point evaluator02 compiled; exact checkpoint then full native
+
+pcc/claims/PCC-20261115-36f906.json: published25d29e precedes additive code. All recorded build phases/1099 guards/whole engine reuse0; both original Lean toolchains3roots0trusted and all3 bindings0. All source/compiler/runtime-ready binaries/full prepared bytes retained. Native NOT RUN. [pcc:unverified]
+
+## What was done
+Original evaluator01/tests/rational/auditor and all695 records immutable under genuine22. Six declared runtime/counter rewrites retain final elliptic point and double for norm. Rustderiver pins entire original123633074B fixture and rejects unexpected schema/counts before exact48 transformation. CI25 path failure0acc7c and governance empty-stageac1152 preserved; path repair published77a26ca, actual replay43674526503 first collected in progress. [pcc:unverified]
+
+## Decisions made
+Normal-publish exact compiled candidate. Collect its ORIGINAL checkpoint artifact and run immediate originalgate before fixed-jacobian-chain-evaluator-02/run-native-01.sh EXACTHEAD /workspace/scratch/ct86-norm-point-reuse-native-01 /workspace/scratch/ct86-norm-point-reuse-build-01. One900s2GiB unfiltered test; full695 parity except declared48 transformations and all four whole omissions101/no output. [pcc:unverified]
+
+## Open threads
+Native norm reuse; actual strict25 replay and33bindings at recorded cadence; complete primitive standalone/reused cost and known initial elliptic lift comparator; prime-field endpoint and original-prime primary review. Future whole large custodyNEW23. [pcc:unverified]
+
+## Errors
+Original authoring01 nested string SyntaxError happened before execution; source/error preserved and delimiter-only successor02 succeeded. All earlier CI/path/staging/mathematical/cold/root-main negatives retained. No paid launch/waiver/signed promotion; KB/vault/live benchmark admission gaps remain. [pcc:unverified]
+
+---
+
 # Versioned25 CI path repair; norm-reuse source next
 
 pcc/claims/PCC-20261115-0acc7c.json: original new25 job failed before mathematics from relative self-copy after cd; whole artifact/log preserved. Additive check02 and reference02 pass local syntax/actionlint/all1141 guards. Full replay awaits next actual CI. Norm reuse25d29e remains prospective; source not yet written. [pcc:unverified]
