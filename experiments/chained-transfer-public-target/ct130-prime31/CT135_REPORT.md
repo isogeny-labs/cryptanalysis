@@ -108,3 +108,31 @@ curves or claim a generic asymptotic improvement.
 Prior art/read: CT133/CT134 reports, cryptanalysis #1534/#1523, root #3877,
 GPU IC #4178; classical Vélu, GLV and rho folding. Shared KB/lead atlas
 checkout unavailable here; no novelty or exhaustion claim. [pcc:unverified].
+
+
+## Exact-PR-head independent-host replay (2026-11-15; still [pcc:unverified])
+
+[CT135 Actions run 43711469850](https://github.com/isogeny-labs/cryptanalysis/actions/runs/43711469850),
+job 132803744261, **succeeded** on exact original PR commit `54a9ec00` (all measurement
+source bytes identical to local: C++ blob `4d94fc91`, Python blob `34a171a7`).
+I retrieved and inspected the decoded job log after completion. Independent hosted
+`g++ -O3 -std=c++17 -Wall -Wextra -Werror` compiled the code, ran all prospective
+20261220–23 panels, and its independent Python auditor in normal and optimized modes
+confirmed **1,536 source-verified complete logarithm recoveries** and rejected all
+**nine** synthetic mutations with byte-equal audit output. Hosted raw artifact
+[#14160995145](https://github.com/isogeny-labs/cryptanalysis/actions/runs/43711469850/artifacts/14160995145)
+retains 13 files for 30 days (artifact zip SHA256
+`6ce50fe70c1e604cdda73cdd8ef39051eda86373f0eae4ecfac49e2f81f5cee9`).
+
+| Independent-host seed | source neg-rho (ns) | mapped target rho (ns) | source/target |
+|---|---:|---:|---:|
+| 20261220 | 458600621 | 390639583 | 1.173974 |
+| 20261221 | 508475659 | 328686219 | 1.546994 |
+| 20261222 | 505305191 | 356129618 | 1.418880 |
+| 20261223 | 494919188 | 359286157 | 1.377507 |
+
+Hosted pooled best tested source / target = **1.371188×** (descriptive paired-target
+bootstrap 95% range 1.255–1.495, fixed cohort). Hosted values are **not pooled**
+with producer-local 1.352558× due different hosts. Independent host confirms only
+this limited three-arm CM-neighbor cold comparator, not a complete general-prime
+or original full-Jacobian speedup. Signed PCC and stronger rho/IC admission absent.
