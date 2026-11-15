@@ -57,6 +57,33 @@ def audit_directory(directory):
     paths = { (w,s): directory/f"width{w}-{s}.csv"
              for w in WIDTHS for s in SEEDS }
     need(all(p.is_file() for p in paths.values()), "missing width or cohort")
+    need({p.name for p in directory.glob("*.csv")} ==
+         {p.name for p in paths.values()}, "extra raw CSV")
+    expected_sequence=(
+        "20261340:16", "20261340:32", "20261340:64",
+        "20261341:32", "20261341:64", "20261341:16",
+        "20261342:64", "20261342:16", "20261342:32",
+        "20261343:64", "20261343:32", "20261343:16")
+    need(tuple((directory.parent/"sequence.txt").read_text().splitlines()) ==
+         expected_sequence, "rotating width order or missing processes")
+    host_bytes=(directory.parent/"host.txt").read_bytes()
+    need(b"g++" in host_bytes,
+         "missing native host/compiler receipt")
+    peak_kb={}
+    for (width,seed), path in paths.items():
+        need(path.with_suffix(".stderr").is_file(), "missing stderr capture")
+        time_path=path.with_suffix(".time")
+        need(time_path.is_file(), "missing process resource receipt")
+        words=dict(token.split("=",1) for token in time_path.read_text().split()
+                   if "=" in token)
+        need(set(words)=={"wall_seconds","maxrss_kb"}, "resource receipt schema")
+        try:
+            wall=float(words["wall_seconds"])
+            rss=int(words["maxrss_kb"])
+        except (ValueError,OverflowError) as exc:
+            raise ValueError("invalid resource receipt") from exc
+        need(0 <= wall < 120 and 0 < rss < 2097152, "resource bounds")
+        peak_kb[f"{width}:{seed}"]=rss
     reports = []
     per_target = {}
     aa = { (w,arm): [] for w in WIDTHS for arm in ARMS}
@@ -137,6 +164,8 @@ def audit_directory(directory):
       "public_target_count":len(ids),
       "complete_recoveries":len(WIDTHS)*len(ids)*10,
       "reports":reports,
+      "peak_process_rss_kb":peak_kb,
+      "host_sha256":hashlib.sha256(host_bytes).hexdigest(),
       "total_ns":totals,
       "per_width_best_source_over_target":ratios,
       "best_source_ns_width_arm":list(best_source),
