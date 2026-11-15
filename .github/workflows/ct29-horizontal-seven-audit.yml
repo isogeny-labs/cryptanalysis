@@ -8,6 +8,7 @@ on:
       - 'experiments/chained-transfer-reference/ct32/**'
       - 'experiments/chained-transfer-reference/ct33/**'
       - 'experiments/chained-transfer-reference/ct34/**'
+      - 'experiments/chained-transfer-reference/ct35/**'
       - '.github/workflows/ct29-horizontal-seven-audit.yml'
   pull_request:
     paths:
@@ -15,6 +16,7 @@ on:
       - 'experiments/chained-transfer-reference/ct32/**'
       - 'experiments/chained-transfer-reference/ct33/**'
       - 'experiments/chained-transfer-reference/ct34/**'
+      - 'experiments/chained-transfer-reference/ct35/**'
       - '.github/workflows/ct29-horizontal-seven-audit.yml'
   workflow_dispatch:
 permissions:
@@ -42,3 +44,8 @@ jobs:
           go run experiments/chained-transfer-reference/ct33/ct33_cyclic49_independent.go
           python3 -B experiments/chained-transfer-reference/ct34/ct34_direct49_audit.py
           python3 -O -B experiments/chained-transfer-reference/ct34/ct34_direct49_audit.py
+          python3 -B experiments/chained-transfer-reference/ct35/ct35_cost_oracle.py > /tmp/ct35.stdout
+          python3 -O -B experiments/chained-transfer-reference/ct35/ct35_cost_oracle.py > /tmp/ct35.optimized
+          diff -u /tmp/ct35.stdout /tmp/ct35.optimized
+          cat /tmp/ct35.stdout
+          go run experiments/chained-transfer-reference/ct35/ct35_analytic_independent.go
