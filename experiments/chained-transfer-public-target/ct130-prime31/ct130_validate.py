@@ -50,7 +50,12 @@ def audit():
   if not (U==mul(H,k,at,bt)): raise ValueError("CT130 ct130_validate.py check at line 50")
  per_run=[];per_scalar=[]
  for idx,p in enumerate(sys.argv[1:4],1):
-  data=json.load(open(p));assert data['source_prime']==P and data['subgroup_prime']==Q
+  data=json.load(open(p))
+  if not (data.get('schema')=='ct130-prime31-isogeny-screen/v1' and data.get('standing')=='[pcc:unverified]'): raise ValueError('schema/standing')
+  if not (len(data.get('rows',[]))==3 and data.get('selection_seed')==137 and data.get('attempts')==13 and data.get('isogeny_degree')==2): raise ValueError('frozen cases')
+  if not (data.get('curve_coefficients')=={'a':A,'b':B} and data.get('codomain_coefficients')=={'a':(-2*A)%P,'b':(A*A-4*B)%P}): raise ValueError('curve identity')
+  if not (data.get('setup_ns',0)>0 and data.get('peak_rss_kb',0)>0): raise ValueError('setup/memory missing')
+  if not (data['source_prime']==P and data['subgroup_prime']==Q): raise ValueError('field and subgroup')
   if not (data['curve_order']==N and data['source_generator']==list(G)): raise ValueError("CT130 ct130_validate.py check at line 54")
   ratios=[]
   for row,k in zip(data['rows'],(17,12345,456789)):
@@ -61,7 +66,8 @@ def audit():
    for j,b in enumerate(row['blocks']):
     expected=['source','target','target','source'] if j%2==0 else ['target','source','source','target']
     if not (b['order']==expected): raise ValueError("CT130 ct130_validate.py check at line 63")
-    samples=b['observations'];assert [x['arm'] for x in samples]==expected
+    samples=b['observations']
+    if not ([x['arm'] for x in samples]==expected): raise ValueError('arm sequence')
     if not (all(x['ns']>0 and x['baby_entries']==math.isqrt(Q-1)+1 for x in samples)): raise ValueError("CT130 ct130_validate.py check at line 65")
     if not (all(x['field_inversions']<=x['group_add_calls'] for x in samples)): raise ValueError("CT130 ct130_validate.py check at line 66")
     s=stats.mean(x['ns'] for x in samples if x['arm']=='source')
