@@ -59,6 +59,7 @@ pub mod experiment;
 mod experiment_store;
 pub mod graph;
 pub mod secp256k1_analysis;
+pub mod stable_three;
 pub mod velu;
 pub mod volcano;
 
@@ -67,6 +68,7 @@ pub use class_group::{class_number, BinaryQuadraticForm, ClassGroup};
 pub use cm::{cm_discriminant, frobenius_trace, CmData, EndomorphismRing};
 pub use experiment::{run_experiment, ExperimentConfig, ExperimentReport};
 pub use graph::{IsogenyGraph, IsogenyNode};
+pub use stable_three::{three_isogenies_over_fp_small, StableThreeError, StableThreeIsogeny};
 pub use velu::{velu_isogeny_2, velu_isogeny_odd, VeluIsogeny};
 pub use volcano::{VolcanoLevel, VolcanoMap};
 

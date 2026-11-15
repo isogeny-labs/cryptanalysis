@@ -74,6 +74,7 @@ jobs:
           python experiments/groebner-f6-bitplane-target-20261009/build.py
       - name: Exhaustive controls and 512-target replay
         run: |
+          set -o pipefail
           mkdir -p f6-bitplane-evidence
           python experiments/groebner-f6-bitplane-target-20261009/test_bitplane.py | tee f6-bitplane-evidence/tests.log
           python experiments/groebner-f6-bitplane-target-20261009/semantic_replay.py --output f6-bitplane-evidence/semantic.json

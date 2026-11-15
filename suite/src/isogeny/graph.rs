@@ -4,9 +4,9 @@
 //! curve `E_0/F_p`, the **`S`-isogeny graph** has vertices the
 //! j-invariants of curves reachable from `E_0` by composing
 //! `ℓ`-isogenies for `ℓ ∈ S`, and edges labelled by which `ℓ` was
-//! used.  Connected components of this graph are precisely the
-//! isogeny classes of `E_0` (the set of `F_p`-curves with the
-//! same `#E(F_p) = p + 1 − t`).
+//! used. Components of a **complete** S-graph lie within Fp-isogeny
+//! classes, but need not exhaust a class unless S generates its
+//! connectivity. This implementation also omits some rational kernels.
 //!
 //! Computationally:
 //!
@@ -18,8 +18,10 @@
 //!   such Cayley graph per maximal-conductor curve plus the
 //!   descending trees underneath.
 //!
-//! This module builds the graph by BFS using Vélu walks (a simple
-//! but correct algorithm), records the graph structure, and
+//! This module builds a *partial sampled* graph by BFS using
+//! pointwise-rational Vélu walks; Galois-stable kernels without rational
+//! nonzero points are omitted. This can miss edges and connected components.
+//! It records the sampled graph structure, and
 //! exposes path-finding and statistics.
 
 use super::velu::{velu_isogeny_2, velu_isogeny_odd, VeluIsogeny};

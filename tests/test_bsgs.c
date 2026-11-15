@@ -63,7 +63,10 @@ int main(void)
         CHECK(ca_bsgs_solve_checkpointed(&g, &gen, &target, 0, 1u << 20,
             &cp, path, 1, 1, 0, &answer, NULL) == CA_ERR_INVALID);
         cp.table_size = 0;
-        cp.max_ops = 2400;
+        /* A limit inside the giant phase: the 1024 baby steps and the two
+         * set-ups end near 1180 operations, the solve near 1600.  (2400
+         * before baby steps stopped being counted twice.) */
+        cp.max_ops = 1300;
         CHECK(ca_bsgs_solve_checkpointed(&g, &gen, &target, 0, 1u << 20,
             &cp, path, 1, 1, 0, &answer, &giant) == CA_ERR_LIMIT);
         CHECK(giant.iterations > 0);
