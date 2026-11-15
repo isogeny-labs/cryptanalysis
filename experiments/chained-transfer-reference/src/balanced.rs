@@ -171,8 +171,31 @@ impl Balanced {
         self.check(a)?;
         self.check(b)?;
         let (u, v, removed) = self.compose(a, b)?;
-        let m = u.degree().ok_or("zero composed support")?;
         let plus = i64::from(a.plus) + i64::from(b.plus) + removed as i64 - 1;
+        self.reduce_composed(u, v, plus)
+    }
+
+    /// Checked entry for an existing semireduced fibre of finite degree<=4.
+    /// The reduction body below is extracted unchanged from the old add.
+    pub(super) fn reduce_support(&self, u: FpPoly, v: FpPoly, plus: i64) -> Result<Class> {
+        let m = u.degree().ok_or("zero semireduced support")?;
+        if m > 4
+            || !(-1..=3).contains(&plus)
+            || u.lead() != BigUint::one()
+            || !canonical(&u, &self.f.p)
+            || !canonical(&v, &self.f.p)
+            || v.degree().is_some_and(|r| r >= m)
+        {
+            return Err("unsupported semireduced fibre shape/field".into());
+        }
+        if !self.f.sub(&v.mul(&v)).rem(&u).is_zero() {
+            return Err("semireduced fibre is off curve".into());
+        }
+        self.reduce_composed(u, v, plus)
+    }
+
+    fn reduce_composed(&self, u: FpPoly, v: FpPoly, plus: i64) -> Result<Class> {
+        let m = u.degree().ok_or("zero composed support")?;
         if m <= 2 && plus >= 0 && plus <= 2 - m as i64 {
             return self.wrap(u, v, plus as u8);
         }

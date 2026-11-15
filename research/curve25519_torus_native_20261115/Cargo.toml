@@ -1,0 +1,12 @@
+[package]
+name = "curve25519-torus-qualification"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[workspace]
+
+[dependencies]
+torus-s4 = { path = "../../../crypto/tools/torus-s4" }
+num-bigint = "0.4"
+serde_json = { version = "1", features = ["arbitrary_precision"] }

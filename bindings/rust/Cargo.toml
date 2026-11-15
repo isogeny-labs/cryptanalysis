@@ -5,8 +5,11 @@ members = ["cryptanalysis-sys", "cryptanalysis", "cryptanalysis-cuda", "curve-au
 [workspace.package]
 version = "0.1.0"
 edition = "2021"
-# Verified floor: the committed Cargo.lock is lockfile v4, which Cargo only
-# understands from 1.78 on.  cryptanalysis-cuda raises its own floor to 1.88.
-rust-version = "1.78"
+# Floor: hashed-ecdl-tensor depends on getrandom 0.4, which declares
+# rust-version 1.85 (edition 2024), and cryptanalysis depends on that crate,
+# so the core crates build from 1.85 on.  (Before the getrandom 0.4 bump the
+# floor was 1.78, the oldest Cargo that reads the lockfile v4.)
+# cryptanalysis-cuda raises its own floor to 1.88.
+rust-version = "1.85"
 license = "MIT"
 repository = "https://github.com/aburan28/cryptanalysis"
