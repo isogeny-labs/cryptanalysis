@@ -3,7 +3,7 @@ import Mathlib.Tactic.Ring
 /- Algebraic identities for the compiled kernel, over arbitrary commutative
 rings. They do not prove finite-field fiber completeness, primitive torus trace
 selection, target-curve lifting, Semaev relation sufficiency, or runtime cost.
-Build/axiom-audit status is recorded in the adjacent report. -/
+Build/foundation-audit status is recorded in the adjacent report. -/
 namespace AuxiliaryIC.FieldFibers
 variable {R : Type*} [CommRing R]
 
