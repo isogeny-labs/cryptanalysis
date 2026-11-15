@@ -1,3 +1,39 @@
+# Genuine25 settled; canonical whole701 published, fresh additive CI next
+
+pcc/claims/PCC-20261115-f38b01.json/pcc/claims/PCC-20261115-e2952d.json: original43698195189/job132763282137SUCCESS, threeobjects replayed BEFOREbot5683a83683/direct1d40fe0/exact5paths/twoplainGitobjects unchanged. All51583heldinputs/176links/ownedbytes, whole22035092Barchive/540members/22closedroots survive; normalFF-artifact-wiring0/HOLD25RELEASED. All49753prior24keys/172links/bothledgerprefixes/prior24archive retained. Oneexactcanonicalentry/relativealias, wholelosslessXZequalsactual701, no newconsumerremoteread. [pcc:unverified]
+
+## What was done
+Completeoriginalfullcofactor nativee245d0/sourcec8490c7/build03/all14phases/all701whole/fiveactualomissions/1270hashes/actualbinaries; conditional7b5f49-da2fe7/bothoriginalgates19+2roots0trusted/all21bindings; inspected58175Breport761003; failed99d448/all693 andallsource-executable-fullpreparedcopies/checkpoints/proofs/reportdrafts/cleanup11inventory preserved. Onlytwo private signed-download metadata filesexcluded/retainedlocally. [pcc:unverified]
+
+## Decisions made
+Normalpublish rootsettlement/consumerprojection withoriginalartifactverify AFTERSTAGING, thenfreshadditiveCI preservingoldworkflows/references andcoveringallnewworkloads/proofs. Newcanonical alias original-full-evaluator-01/expected-native-02.json.xz points to docs/research-artifacts/chained-transfer/original-full-group-25. FuturecustodyNEW26. [pcc:unverified]
+
+## Open threads
+FreshadditiveCI replay; thenconditionalfullinduced-map integerlinearity/individual13norms fromsections/kerneltransport/ellipticduality withoutassumingdesiredtransferidentities (ct92-next-proof-task-notes-01.md), andstrongprimitive/setup/reference/prime-fieldICdescent study usingexistingIC/norm-assistedsampler. ActualHLP/field/geometry/Frobenius/Picard/order/program bridges/costadmissions remainexplicit. [pcc:unverified]
+
+## Errors
+Allfailed693/source/proof/format/importer/launch/reportdraft/cold/root-main/mathnegatives retained. No native02failure, calibratedadvantage/globalCI/signing/mergepromotion. [pcc:unverified]
+
+---
+
+# Whole original full-group custody25 preparing; science and consumer ledger HELD
+
+Nativee245d0/full701/proofs7b5f49-da2fe7/all21bindings/report761003 complete atconsumer675cbc9; rootmirror27a680b/c66350. All14phases/fiveactualwholeclassomissions/1270hashes/actualbinaries pass, bothoriginalLean gates19+2roots0trusted. Wholefailed99d448/693records andeveryoldnegative retained. [pcc:unverified]
+
+## What was done
+NEW25 preserves every nonsecret ct90science/control root, allactualsource/executable/fullpreparedcopies/checkpoints18-19/proofs/reportdrafts/primaryreviews, pluscleanup11/fullinventory/ALLpendingconsumerbytes. All49753prior24keys/172links/both exactledgerprefixes remain; prior24archive24881096B/parts stayheld/exact/alreadygenuine withoutrecursivecopy. [pcc:unverified]
+
+## Decisions made
+HOLDallscience/source/raw/aliases/ownedbytes/consumerledger untiloriginalremote replays BEFOREactualbot/exactnormalFF/wholearchive/terminal25guards-links-ownedbytes. Onlyprivate signed-download metadata excluded andretainedlocally; no scientific/control/negative/source bytes filtered. Canonicalpositive701fixture onlyafteractualoriginalpublication. [pcc:unverified]
+
+## Open threads
+Genuine25publication/release/canonical701, thenfreshadditiveCI preservingoldworkflows/references/allnewworkloads/proofs. Nextstrongprimitive/setup/reference andprime-fieldICdescentstudy usingexistingIC/norm-assistedsampler. ActualHLP/field/geometric/Frobenius/Picard/order/program bridges andcostadmissions remainexplicit. [pcc:unverified]
+
+## Errors
+Failednative693, literalsource/panicwhitespace, importer/producerlaunch/reportmetadata-render-raster andallhistoricalnegatives retained. No calibrated/globalCI/signing/mergepromotion. [pcc:unverified]
+
+---
+
 # Full original chain result/report ready; whole custody and additive CI next
 
 Nativee245d0/proofs7b5f49-da2fe7/pcc/claims/PCC-20261115-761003.json: sourcec8490c7/build03/exactoriginalcheckpoint19, oneunfilteredtest0/worker0/all14phases, all701whole records/fiveactualwholeclassomissions101-nooutput/1270hashes/actualbinaries pass. BothoriginalLean gates19+2roots0trusted/all21localbindings; both final58175BPDF pages inspected. Allstanding unsigned. [pcc:unverified]
