@@ -116,6 +116,53 @@ theorem bounded_relation_of_height_ball_count
   · intro coeff hc
     exact coefficientBox_bounded hc
 
+/-- Values expressible with one of the recorded torsion elements and a
+bounded coordinate vector in a rank-`d` free part. The basis need not be
+independent for the upper bound. -/
+noncomputable def latticeValues {d : ℕ} (basis : Fin d → H)
+    (torsion : Finset H) (K : ℕ) : Finset H := by
+  classical
+  exact (torsion.product (coefficientBox d K)).image
+    (fun pair => pair.1 + ∑ j, pair.2 j • basis j)
+
+theorem latticeValues_card_le {d : ℕ} (basis : Fin d → H)
+    (torsion : Finset H) (K : ℕ) :
+    (latticeValues basis torsion K).card ≤
+      torsion.card * (2 * K + 1) ^ d := by
+  classical
+  unfold latticeValues
+  calc
+    ((torsion.product (coefficientBox d K)).image
+      (fun pair => pair.1 + ∑ j, pair.2 j • basis j)).card ≤
+        (torsion.product (coefficientBox d K)).card := Finset.card_image_le
+    _ = torsion.card * (2 * K + 1) ^ d := by
+      simp [coefficientBox_card]
+
+/-- A bounded-coordinate representation of all short lifted sums, together
+with a strict rank-and-torsion count, yields a bounded relation. The
+arithmetic height argument must establish `hrep` and `hcount` for its lift
+family. -/
+theorem bounded_relation_of_lattice_representation {d : ℕ}
+    (points : Fin r → H) (basis : Fin d → H)
+    (torsion : Finset H) (L K : ℕ)
+    (hrep : ∀ coeff ∈ coefficientBox r L,
+      ∃ τ ∈ torsion, ∃ a ∈ coefficientBox d K,
+        (∑ i, coeff i • points i) = τ + ∑ j, a j • basis j)
+    (hcount : torsion.card * (2 * K + 1) ^ d <
+      (2 * L + 1) ^ r) :
+    ∃ coeff, Nontrivial coeff ∧ Bounded (2 * L) coeff ∧
+      Relation points coeff := by
+  classical
+  apply bounded_relation_of_height_ball_count points
+    (latticeValues basis torsion K)
+  · exact (latticeValues_card_le basis torsion K).trans_lt hcount
+  · intro coeff hc
+    obtain ⟨τ, hτ, a, ha, heq⟩ := hrep coeff hc
+    rw [heq]
+    unfold latticeValues
+    exact Finset.mem_image.mpr
+      ⟨(τ, a), Finset.mem_product.mpr ⟨hτ, ha⟩, rfl⟩
+
 end XedniHeightPigeonhole
 
 #print axioms XedniHeightPigeonhole.coefficientBox_card
@@ -123,3 +170,5 @@ end XedniHeightPigeonhole
 #print axioms XedniHeightPigeonhole.bounded_relation_of_card_lt
 #print axioms XedniHeightPigeonhole.bounded_witness_of_card_lt_on_dependence
 #print axioms XedniHeightPigeonhole.bounded_relation_of_height_ball_count
+#print axioms XedniHeightPigeonhole.latticeValues_card_le
+#print axioms XedniHeightPigeonhole.bounded_relation_of_lattice_representation

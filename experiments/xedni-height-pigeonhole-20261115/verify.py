@@ -13,6 +13,8 @@ NAMES = (
     "bounded_relation_of_card_lt",
     "bounded_witness_of_card_lt_on_dependence",
     "bounded_relation_of_height_ball_count",
+    "latticeValues_card_le",
+    "bounded_relation_of_lattice_representation",
 )
 STANDARD_AXIOMS = {"propext", "Classical.choice", "Quot.sound"}
 

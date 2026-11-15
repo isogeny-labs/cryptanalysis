@@ -6,6 +6,8 @@ The companion theorem `bounded_witness_of_card_lt_on_dependence` packages the sa
 
 The extension counts the full coefficient box exactly: `coefficientBox_card` gives `(2K+1)^r` vectors. `bounded_relation_of_height_ball_count` therefore states a concrete threshold: if all box sums lie in a certified finite set with fewer than `(2K+1)^r` elements, a nontrivial relation exists with coefficients bounded by `2K`. The theorem does not assume dependence separately.
 
+The rank-and-torsion extension makes that finite value set concrete. `latticeValues_card_le` counts values represented by one of `T` listed torsion elements plus a rank-`d` coordinate vector of radius `K`, obtaining at most `T(2K+1)^d` values. `bounded_relation_of_lattice_representation` then yields a relation of coefficient radius `2L` whenever every radius-`L` sum of the lifted points has such a representation and `T(2K+1)^d < (2L+1)^r`. The count is valid even if the listed basis is redundant; in an arithmetic application, `d` must be linked to the subgroup rank and the coordinate radius `K` must follow from height bounds.
+
 ## Proof and mathematical inputs
 
 The proof applies `Finset.exists_ne_map_eq_of_card_lt_of_maps_to` to the finite evaluation map `a ↦ Σ_i a_i P_i`. The collision gives `a ≠ b` and equal sums. Function extensionality supplies a coordinate at which `a_i − b_i ≠ 0`; integer scalar and sum subtraction give `Σ_i (a_i − b_i)P_i = 0`; `Int.natAbs_sub_le` bounds each new coefficient by `2K`. These are structural implications, checked in Lean for arbitrary additive abelian groups and any finite number of lifted points.
@@ -21,5 +23,7 @@ For the [original xedni analysis](https://pages.cpsc.ucalgary.ca/~jacobs/PDF/xed
 | Exact short-vector count | `coefficientBox_card` | All `r` integer coordinates range from `-K` to `K` |
 | Box entries obey the declared radius | `coefficientBox_bounded` | Membership in the full coefficient box |
 | Concrete height-ball threshold | `bounded_relation_of_height_ball_count` | Every box sum belongs to `values`; `values.card < (2K+1)^r` |
+| Rank-and-torsion value count | `latticeValues_card_le` | `T` listed torsion elements and radius-`K` coordinate vectors of length `d` |
+| Collision from bounded lattice coordinates | `bounded_relation_of_lattice_representation` | Every radius-`L` lifted sum has a listed torsion-plus-coordinate representation; `T(2K+1)^d < (2L+1)^r` |
 
-The project pins Lean `v4.35.0-rc4` and Mathlib `021c46bdd042f67b538b9f9871d556a93713a9a9`. The saved `lake build HeightPigeonhole` output and `#print axioms` records are sealed by SHA-256 hashes and checked by `verify.py`. All five declarations use only `propext`, `Classical.choice`, and `Quot.sound`. The source has no admitted proof, custom axiom, native evaluation, or kernel bypass. `lean4checker --fresh` was unavailable on this host.
+The project pins Lean `v4.35.0-rc4` and Mathlib `021c46bdd042f67b538b9f9871d556a93713a9a9`. The saved `lake build HeightPigeonhole` output and `#print axioms` records are sealed by SHA-256 hashes and checked by `verify.py`. All seven declarations use only `propext`, `Classical.choice`, and `Quot.sound`. The source has no admitted proof, custom axiom, native evaluation, or kernel bypass. `lean4checker --fresh` was unavailable on this host.
