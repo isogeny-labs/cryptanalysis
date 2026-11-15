@@ -127,3 +127,13 @@ partial-relation elimination and odd-degree binary/Frobenius support. The file
 runner adds `solve-selectors` and `solve-width`; the original `solve` remains
 available. Exact limits return unknown-result errors. Small-parameter source
 packet recursion and scientific performance validation remain open.
+
+## Reusable two-point relation tables
+
+`prepared::PairTable` and `prepared::solve` reuse validated factor-base points
+across relation attempts. `solve-hashed` runs that collector with full-point
+hash lookup and original arithmetic/certificate replay. It requires two slots;
+the other solver commands retain their existing behavior. Construction, memory
+and hash work remain part of any full comparison. See [PREPARED_PAIRS.md](PREPARED_PAIRS.md)
+for the lifecycle, exactness, limits and development controls. No measured
+runtime improvement is asserted by this implementation. [pcc:unverified]
