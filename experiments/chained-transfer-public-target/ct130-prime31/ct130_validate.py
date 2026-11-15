@@ -32,50 +32,50 @@ def iso(T):
  return ((x+A+B*z)%P, y*(1-B*z*z)%P)
 
 def audit():
- assert prime(P) and prime(Q)
- assert B%P and (A*A-4*B)%P
- assert abs(N-(P+1))<=math.isqrt(4*P)
- assert mul(G,Q) is None and G is not None
+ if not (prime(P) and prime(Q)): raise ValueError("CT130 ct130_validate.py check at line 35")
+ if not (B%P and (A*A-4*B)%P): raise ValueError("CT130 ct130_validate.py check at line 36")
+ if not (abs(N-(P+1))<=math.isqrt(4*P)): raise ValueError("CT130 ct130_validate.py check at line 37")
+ if not (mul(G,Q) is None and G is not None): raise ValueError("CT130 ct130_validate.py check at line 38")
  # Rational 2-torsion (0,0) plus odd prime-order G forces #E multiple 2Q.
  # Hasse interval width <2Q: it determines #E exactly.
- assert 2*math.isqrt(4*P)<2*Q
+ if not (2*math.isqrt(4*P)<2*Q): raise ValueError("CT130 ct130_validate.py check at line 41")
  at=(-2*A)%P;bt=(A*A-4*B)%P
- assert (at,bt)==(488910027,790354208)
- assert iso((0,0)) is None
+ if not ((at,bt)==(488910027,790354208)): raise ValueError("CT130 ct130_validate.py check at line 43")
+ if not (iso((0,0)) is None): raise ValueError("CT130 ct130_validate.py check at line 44")
  H=iso(G)
- assert H is not None and mul(H,Q,at,bt) is None
+ if not (H is not None and mul(H,Q,at,bt) is None): raise ValueError("CT130 ct130_validate.py check at line 46")
  for k in (1,2,17,12345,456789,Q-1):
   T=mul(G,k);U=iso(T)
-  assert U is None or (U[1]*U[1]-(U[0]**3+at*U[0]**2+bt*U[0]))%P==0
-  assert U==mul(H,k,at,bt)
+  if not (U is None or (U[1]*U[1]-(U[0]**3+at*U[0]**2+bt*U[0]))%P==0): raise ValueError("CT130 ct130_validate.py check at line 49")
+  if not (U==mul(H,k,at,bt)): raise ValueError("CT130 ct130_validate.py check at line 50")
  per_run=[];per_scalar=[]
  for idx,p in enumerate(sys.argv[1:4],1):
   data=json.load(open(p));assert data['source_prime']==P and data['subgroup_prime']==Q
-  assert data['curve_order']==N and data['source_generator']==list(G)
+  if not (data['curve_order']==N and data['source_generator']==list(G)): raise ValueError("CT130 ct130_validate.py check at line 54")
   ratios=[]
   for row,k in zip(data['rows'],(17,12345,456789)):
-   assert row['fixture_scalar']==k
-   assert row['source_public']==list(mul(G,k))
-   assert row['target_public']==list(mul(H,k,at,bt))
-   assert len(row['blocks'])==4
+   if not (row['fixture_scalar']==k): raise ValueError("CT130 ct130_validate.py check at line 57")
+   if not (row['source_public']==list(mul(G,k))): raise ValueError("CT130 ct130_validate.py check at line 58")
+   if not (row['target_public']==list(mul(H,k,at,bt))): raise ValueError("CT130 ct130_validate.py check at line 59")
+   if not (len(row['blocks'])==4): raise ValueError("CT130 ct130_validate.py check at line 60")
    for j,b in enumerate(row['blocks']):
     expected=['source','target','target','source'] if j%2==0 else ['target','source','source','target']
-    assert b['order']==expected
+    if not (b['order']==expected): raise ValueError("CT130 ct130_validate.py check at line 63")
     samples=b['observations'];assert [x['arm'] for x in samples]==expected
-    assert all(x['ns']>0 and x['baby_entries']==math.isqrt(Q-1)+1 for x in samples)
-    assert all(x['field_inversions']<=x['group_add_calls'] for x in samples)
+    if not (all(x['ns']>0 and x['baby_entries']==math.isqrt(Q-1)+1 for x in samples)): raise ValueError("CT130 ct130_validate.py check at line 65")
+    if not (all(x['field_inversions']<=x['group_add_calls'] for x in samples)): raise ValueError("CT130 ct130_validate.py check at line 66")
     s=stats.mean(x['ns'] for x in samples if x['arm']=='source')
     t=stats.mean(x['ns'] for x in samples if x['arm']=='target')
     ratios.append(s/t)
     per_scalar.append((k,s,t))
   per_run.append(stats.median(ratios))
  rho=json.load(open(sys.argv[4]))
- assert len(rho)==6
+ if not (len(rho)==6): raise ValueError("CT130 ct130_validate.py check at line 73")
  for row in rho:
-  assert row['scalar'] in (17,12345,456789)
-  assert row['arm'] in ('source-rho','transfer-rho')
-  assert len(row['elapsed_ns'])==len(row['walk_steps'])==len(row['stored_distinguished'])==2
-  assert all(x>0 for x in row['walk_steps']+row['elapsed_ns'])
+  if not (row['scalar'] in (17,12345,456789)): raise ValueError("CT130 ct130_validate.py check at line 75")
+  if not (row['arm'] in ('source-rho','transfer-rho')): raise ValueError("CT130 ct130_validate.py check at line 76")
+  if not (len(row['elapsed_ns'])==len(row['walk_steps'])==len(row['stored_distinguished'])==2): raise ValueError("CT130 ct130_validate.py check at line 77")
+  if not (all(x>0 for x in row['walk_steps']+row['elapsed_ns'])): raise ValueError("CT130 ct130_validate.py check at line 78")
  print(json.dumps({'arithmetical_checks':'pass','hasse_order_proof':'#E(Fp)=2q (prime q, rational 2-torsion, Hasse interval)',
   'verified_public_scalars':[1,2,17,12345,456789,Q-1],
   'run_median_source_over_transferred_bsgs':per_run,
