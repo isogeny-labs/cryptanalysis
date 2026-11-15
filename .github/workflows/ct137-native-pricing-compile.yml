@@ -44,6 +44,12 @@ jobs:
           test -d _ct137_crypto/research/chained_jacobian_transfers_20261110/genus3-prime-descent/engine
           ln -s "$GITHUB_WORKSPACE/_ct137_crypto" "$(dirname "$GITHUB_WORKSPACE")/crypto"
           readlink -f "$(dirname "$GITHUB_WORKSPACE")/crypto/isogeny_algos" | tee ct137-evidence/crypto-path.txt
+      - name: Prepare unchanged paired-fourth predecessor literal sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -S experiments/chained-transfer-public-target/paired-fourth-preflight/materialize.py \
+            | tee ct137-evidence/paired-fourth-materialize.txt
       - name: Prepare seven unchanged literal helpers and guarded CT125 derivative
         shell: bash
         run: |
