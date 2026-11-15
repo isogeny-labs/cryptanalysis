@@ -41,6 +41,7 @@ jobs:
         run: python experiments/groebner-f6-packed-20261009/build.py
       - name: Exhaustive and S3-chain exactness
         run: |
+          set -o pipefail
           mkdir -p f6-packed-evidence
           python experiments/groebner-f6-packed-20261009/test_packed.py | tee f6-packed-evidence/tests.log
           python experiments/groebner-f6-packed-20261009/panel.py --output f6-packed-evidence/panel

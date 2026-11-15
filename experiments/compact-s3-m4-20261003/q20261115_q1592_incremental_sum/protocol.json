@@ -1,0 +1,57 @@
+{
+  "baseline_weight": {
+    "53": 4,
+    "83": 6
+  },
+  "build_commands": [
+    [
+      "c++",
+      "-std=c++17",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "/private/tmp/cryptanalysis-q1592-pr/experiments/compact-s3-m4-20261003/q1461_sparse_sum_inverse/probe.cpp",
+      "-o",
+      "/private/tmp/cryptanalysis-q1592-pr/experiments/compact-s3-m4-20261003/q20261115_q1592_incremental_sum/baseline_probe"
+    ],
+    [
+      "c++",
+      "-std=c++17",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "/private/tmp/cryptanalysis-q1592-pr/experiments/compact-s3-m4-20261003/q20261115_q1592_incremental_sum/probe.cpp",
+      "-o",
+      "/private/tmp/cryptanalysis-q1592-pr/experiments/compact-s3-m4-20261003/q20261115_q1592_incremental_sum/probe"
+    ]
+  ],
+  "candidate_id": null,
+  "claim_boundary": "Component kernel screen only; complete solver and N131 work remain unknown",
+  "compiler_version": "Apple clang version 21.0.0 (clang-2100.4.1.1)",
+  "isogeny": "none",
+  "pair_cap": 16384,
+  "proposal_id": "Q1592",
+  "repetitions": 7,
+  "run_id": null,
+  "source_sha256": {
+    "baseline_binary": "51d3257a30813464c570b4ebc32f5d4931f443a9f5796784e84f9e83db59d0ac",
+    "baseline_header": "33028bbec6be47bdb51af43b43fd4d2ae7f781ee186de730e89e67e6cf339bca",
+    "baseline_probe_source": "dd52e0f4e43be33f182e504d35fa411c250057fa516fc186fa5c82ba82f2198d",
+    "candidate_binary": "d3278874348037d4ae780fa1bb1f4cbd9fccf07d3b317f1c188863a0c1dbb40c",
+    "candidate_header": "85df6cc6c2c79eae84a4fee8ee8ea6b628a047e4217a287542c54c5ef67faf4a",
+    "candidate_probe_source": "909ba63167552217263a99208c2e442cc343e8800c5e34868e9b761c2c3cad03",
+    "design": "3fef81ff81f6dc7f52ab81ecb83a42bcb3230f47d89b87e660b42d88e6e5ae3e",
+    "driver": "28c22bed75c88fc82b385e17cf9dabe68bd6f684c47c45d65f73927e778e8caa",
+    "field_header": "e66d208a889a6fafcd98023398cc736dcd67b1a3049b1275ed1bc32478930828",
+    "lift_header": "133b664cea13569f744a379c0437cb901a219672db63fb71c51f925c57998e1a",
+    "n53_field": "08143e828d5a7611fbf46b5831295172ac797b3d6d88ced9d478cde6df4d647a",
+    "n53_q1480_receipt": "68140a96c2a739e1acf99cf612fe726c002937baebcdd7eea45b43b8ba9fb1f4",
+    "n53_states": "c0010f8e78b2fa6222fdc94478dbe8c0bb4837521cff3304754c88dd8fd1077f",
+    "n83_field": "c21f87b8b311e39b8c2ca944693aa6373264fd0bbba70cb82f45791adde5b4df",
+    "n83_q1480_receipt": "d92754a3293100e99848d724e0a888915b9313cfe730fd59acdbb152242a51f4",
+    "n83_states": "905ff654b0904d48c8991c912c72be5ee459f47e2bc9d806a3ab59582a612267"
+  },
+  "sum_cap": 16384
+}

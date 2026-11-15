@@ -91,9 +91,12 @@ pub fn j_invariant(curve: &SmallCurve) -> u64 {
     ((num * inv_u) % p) as u64
 }
 
-/// Enumerate the `ℓ`-isogenous neighbours of `curve` via Vélu's
-/// formulas.  Returns one `VeluIsogeny` per cyclic order-`ℓ`
-/// subgroup; the codomains' j-invariants are the neighbours.
+/// Sample neighbours via pointwise-rational Vélu kernels.
+/// For odd ℓ this is incomplete for Fp-defined isogenies with
+/// nonrational kernel generators. An empty result does not prove
+/// there is no rational ℓ-isogeny; the graph may omit edges.
+/// For complete degree-3 enumeration over small Fp, use
+/// `super::stable_three::three_isogenies_over_fp_small` instead.
 pub fn neighbors_ell(curve: &SmallCurve, ell: u64) -> Vec<VeluIsogeny> {
     if ell == 2 {
         // 2-isogenies: kernel = order-2 subgroup = {O, T}, with

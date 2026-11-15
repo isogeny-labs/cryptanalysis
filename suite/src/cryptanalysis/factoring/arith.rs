@@ -156,7 +156,15 @@ pub fn gcd_i64(a: i64, b: i64) -> u64 {
 /// `x mod p` for a big integer and a word-size modulus.
 #[inline]
 pub fn big_mod_u64(x: &BigUint, p: u64) -> u64 {
-    (x % p).to_u64().unwrap_or(0)
+    // Horner over the 64-bit digits, most significant first: the running
+    // remainder is below `p < 2^64`, so `(r << 64) | d` fits a `u128`.
+    // No intermediate `BigUint` is allocated.
+    let p = p as u128;
+    let mut r = 0u128;
+    for d in x.iter_u64_digits().rev() {
+        r = ((r << 64) | d as u128) % p;
+    }
+    r as u64
 }
 
 /// `x mod p` for a signed big integer, in `[0, p)`.
