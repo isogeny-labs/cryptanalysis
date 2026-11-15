@@ -8,6 +8,23 @@
 #include "cryptanalysis/ca_gpu.h"
 #include "../cuda/ca_device.cuh"
 
+/* Twice the expected distinguished points plus slack, saturated before any
+ * narrowing. Validated walk IDs and steps are each at most UINT32_MAX, so
+ * their product fits uint64_t. dp_bits is clamped to [0, 63] by the driver. */
+static inline uint32_t ca_gpu_dp_capacity(uint32_t nwalks, uint32_t steps, uint32_t dp_bits)
+{
+    const uint32_t limit = 1u << 20, slack = 4096;
+    uint64_t work = (uint64_t)nwalks * steps;
+    uint64_t twice_expected;
+    if (dp_bits == 0) {
+        if (work >= (limit - slack) / 2) return limit;
+        twice_expected = work * 2;
+    } else {
+        twice_expected = work >> (dp_bits - 1);
+    }
+    return twice_expected >= limit - slack ? limit : (uint32_t)twice_expected + slack;
+}
+
 typedef struct ca_gpu_backend_ops {
     const char *name;
     /* Allocate device resources for args (host pointers in args->mult

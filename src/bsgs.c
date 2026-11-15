@@ -463,7 +463,6 @@ ca_status ca_bsgs_solve_checkpointed(
                     duplicate = 1;
                     break;
                 }
-                ops++;
             }
             if (!duplicate) baby_next += nblock;
             if (duplicate || baby_next == requested_m) {
@@ -503,7 +502,10 @@ ca_status ca_bsgs_solve_checkpointed(
             }
             if (baby_next < requested_m) {
                 ca_group_batch_op(g, lane, lane, stride, BSGS_LANES, scratch);
-                ops += BSGS_LANES;
+                /* the baby steps this block computed, charged here and not
+                 * again at their insertion; the elements past the last one
+                 * used are not counted (see BSGS_LANES) */
+                ops += requested_m - baby_next < BSGS_LANES ? requested_m - baby_next : BSGS_LANES;
             }
         }
     }
