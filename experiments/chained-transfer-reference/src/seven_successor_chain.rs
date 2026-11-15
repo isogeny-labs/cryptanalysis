@@ -468,12 +468,16 @@ fn successor_richelot_both_full_domains_closed_reference_and_controls() {
     let s = SevenSuccessor::new();
     let b = Bridge::new();
     let r = successor_richelot(&s, &b);
+    let old = successor_richelot(&s, &b);
+    assert!(r.square_roots.get().is_none());
+    assert!(old.square_roots.get().is_none());
     let counts = RefCell::new([[0_usize; 5]; 2]);
     let evaluate = |d: &Class, reverse: bool| {
         let (image, route) = r.evaluate_closed(d, reverse)?;
+        assert!(r.square_roots.get().is_none(), "closed R2 used table");
         assert_eq!(
             image,
-            r.evaluate(d, reverse)?,
+            old.evaluate(d, reverse)?,
             "R2 closed/pointwise reverse={reverse}"
         );
         counts.borrow_mut()[usize::from(reverse)][route as usize] += 1;
@@ -492,5 +496,7 @@ fn successor_richelot_both_full_domains_closed_reference_and_controls() {
     }
     assert!(r.evaluate_closed(&r.target.zero(), false).is_err());
     assert!(r.evaluate_closed(&r.source.zero(), true).is_err());
+    assert!(r.square_roots.get().is_none());
+    assert!(old.square_roots.get().is_some());
     println!("PASS R2 BOTH complete12317 C2/T2 domains,closed/pointwise exact equality,both dual2,bijections,paired additions,descent,wrong-model rejection;route counts{:?}", counts.borrow());
 }
