@@ -1,3 +1,21 @@
+# Original-prime reprojection compiled; publish and exact checkpoint next
+
+pcc/claims/PCC-20261115-aa8d72.json: prospective38b827 was publishedbd603d0 BEFORE code. Corrected02 build all1131 guards/metadata/inherited exact original preparation/test no-run/auditor/finalguards0. Failed01 two E0433 missing imports/source/raw retained; only curve::self nominal import changed. No second engine build. Seven conditional proof roots/both original gates/all7 bindings6d8c42 remain exact. Native NOT RUN. [pcc:unverified]
+
+## What was done
+Original-prime runtime implements strict class/norm prime admission and cofactor rejection, norm-assisted reprojection, explicit recovery and five matched opaque/retained/known-point expanded/factored routes. Tests require all18 oldrows/3models/672 projected exceptionals bothways/384public/all228 cofactor attempts-domain/all4classes/64 additions perpair/15 original public endpoint transfers/12vectors and all1077 whole records with four actual class omissions101. Extra correctness preflights are exposed, not minimal setup or a price. [pcc:unverified]
+
+## Decisions made
+Publish compiled source and import its exact ORIGINAL checkpoint before original-prime-chain-01/run-native-01.sh EXACTHEAD /workspace/scratch/ct86-original-prime-native-01 /workspace/scratch/ct86-original-prime-build-02. One900s2GiB unfiltered test, whole1077 freeze/compare and four omissions required; preserve any failure without model/population reselection. [pcc:unverified]
+
+## Open threads
+Exact strict25 acceptance0f3ea8 is now complete: 43674526503/job132691640180/art14146271228/44978600B/all294members/all58phases/whole13+695/sixwholeomissions/both33rootgates/all33bindings/all1141guards; actualCIauditor positives0/sixomissions101 and full15runlog members retained. Original-prime native; complete primitive/minimal setup/known-point baseline and calibratedrefs; genuineNEW23 of whole new roots before canonical fixtures/replay. [pcc:unverified]
+
+## Errors
+All D12/D24/D67, oldtwistprime, fullcold120/root124/clock101/CIpath/staging/authoring/import/legacycleanup failures retained. Source/math contexts remain unsigned/conditional; no paidlaunch/force/rebase/waiver/novelty/signedpromotion. Vault unchanged, KB127. [pcc:unverified]
+
+---
+
 # Next active task: original-prime alternative-kernel reprojection
 
 pcc/claims/PCC-20261115-38b827.json: all18 existing original six-model rows reviewed whole. Stored eligible alternatives fixed retrospectively by admissibility before NEW implementation: originalE2case(0,0)/D100/root10, E3case(0,1)/D39/root40, E4case(1,0)/D38/root22. This extends the prior strong scalar baseline on the original ell=2,773,073 subgroup; no twist transport. The inspected two-page proposal/diagram and exact full population/bounds are frozen. New runtime/theorem code NOT WRITTEN and no new native outcome. [pcc:unverified]
