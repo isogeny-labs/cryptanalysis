@@ -1,0 +1,13 @@
+/workspace/cryptanalysis/tools/lean/AuditAxioms.lean:49:37: warning: `String.trim` has been deprecated: Use `String.trimAscii` instead
+
+Note: The updated constant has a different type:
+  String → String.Slice
+instead of
+  String → String
+ok    CounterStorage.bump.eq_1  []
+ok    CounterStorage.checked_update  [propext]
+ok    CounterStorage.resolve.congr_simp  [Quot.sound]
+ok    CounterStorage.resolve.eq_1  []
+ok    CounterStorage.resolve.eq_2  []
+ok    CounterStorage.resolve_index  [propext]
+audited 6 theorems in [CounterStorage]; 0 failing, 0 trusted (native_decide)

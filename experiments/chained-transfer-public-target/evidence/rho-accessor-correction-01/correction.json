@@ -1,0 +1,17 @@
+{
+  "first_compile_exit": 0,
+  "first_native_exit": 101,
+  "first_guard_exit": 0,
+  "first_guards": 2202,
+  "first_targets_completed": 1,
+  "first_test_filtered_or_ignored": 0,
+  "observation": "target1 legacy/public same ok/steps/dps;legacy counters exceed public exactly78mul1inv84add;first target0 counters match",
+  "cause": "Original legacy rho snapshots/time BEFORE known-target ec.mul; public rho omits target construction. Bare legacy/public counter equality was the wrong expected accounting boundary",
+  "correction_BEFORE_edit": "KEEP exact public/accessor counters; compare legacy/public ok steps dps exactly; independently run original ec.mul(G,witness) outside solver, assert Q equality, require legacy counters=public counters+exact original construction delta for all7 counters/all5 targets. No adjusted measured ratio or fitted delta",
+  "launcher_failure": "date and rustc lines accidentally concatenated; original date diagnostic preserved; first attempt has no valid start timestamp; correct literal newline in new02 launcher",
+  "original_accessor_and_all_original_walks_unchanged": true,
+  "whole_first_attempt": "/workspace/scratch/ct58-rho-unit-cli-01",
+  "result": "first attempt rejected; no claim of all5 rho success",
+  "source_before_sha256": "e81cdcb356085b9c5f480692064684154e2af0b0da9dae873094327cfc0c884b",
+  "preparer_before_sha256": "cc2e6e14509163693109160b49b0b586305a97930654bc12334b205ce50b40ff"
+}

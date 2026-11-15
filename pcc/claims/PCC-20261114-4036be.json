@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-14T09:14:12Z",
+ "id": "PCC-20261114-4036be",
+ "kind": "theorem",
+ "producer": {
+  "commit": "44df3f0ab0c06ba7bc6d5aaab3e3fe22236bfcb7",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "639ed89d6f97fcf1a1262623b3250d6debdd6700a6f1194fd0b6a074c8c4a682",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/beta-complete-evaluator/lean/CRTProjectionIdentity.lean",
+   "theorem": "CRTProjectionIdentity.projection_scalar_identity"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Faithful exact Int polynomial scalar identity for every integer m: with e=4m+1, e*e-e=4m*e. Supports cofactor projection in rational split; does not prove group/geometric maps or point counts. Both unchanged original proof gates Lean4.34.1/4.35.0 PASS1 declaration0trusted; printaxioms onlypropext+Quot.sound. Native original issuer/checker supplies separate identity.certificate/v1/64sealed+32extra and actual omitted-linear-term rejection101; certificate does not execute Lean. This is the seventh new complete-evaluator binding,73partialunique overall, unsigned.",
+ "statement": "theorem projection_scalar_identity (m : Int) : (4 * m + 1) * (4 * m + 1) - (4 * m + 1) = 4 * m * (4 * m + 1)"
+}

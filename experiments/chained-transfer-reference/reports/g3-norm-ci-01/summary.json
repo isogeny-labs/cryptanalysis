@@ -1,0 +1,68 @@
+{
+  "at": "2026-11-13T10:31:38.915630+00:00",
+  "run": 43400864083,
+  "consumer": "069644bf59499e4172eb8bcdce5de8a6665da93f",
+  "producer": "3d49af7f3d0a28e76b79e4825c9d2324e85853d2",
+  "jobs": [
+    {
+      "name": "reference",
+      "id": 131803081700,
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "independent",
+      "id": 131803082018,
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "partial-frobenius",
+      "id": 131803082091,
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "proper-t20",
+      "id": 131803082098,
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "fp-chain",
+      "id": 131803082237,
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "prime-norms",
+      "id": 131803082243,
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "g3-canonical-norm",
+      "id": 131803082298,
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "whole_logs": 7,
+  "source_snapshots": 438,
+  "new_job_native_records": 36,
+  "consumer_records_equal_unit02": 12,
+  "producer_records_equal_unit03": 24,
+  "exact_original_PCC_verdicts": 24,
+  "all_original_canonical_claim_digests_match": true,
+  "all_verdicts_pass": true,
+  "artifact_ZIPs_downloaded": 0,
+  "exit_and_guard_scope": "original unchanged driver terminal marker and successful job step; actual job artifacts/standalone exit files NOT downloaded",
+  "observation_plan": "collect all seven terminal jobs and WHOLE logs, compare all new-job native records and 24 original exact bindings; append correction rather than rewrite partial raw01",
+  "settled": true,
+  "next": "publish whole archive, checkpoint PR/queue, then public-target N4/V2 pre-code protocol",
+  "standing": "unsigned CI observations, not a signed execution/performance/math verdict",
+  "whole_custody_claim": "PCC-20261113-8f9f11",
+  "partial_collector_custody": "PCC-20261113-d82dd3",
+  "collector_correction": "PCC-20261113-b15b45",
+  "optional_artifact_access": "PCC-20261113-963670"
+}

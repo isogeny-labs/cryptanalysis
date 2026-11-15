@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-13T16:37:19Z",
+ "id": "PCC-20261113-9f99f1",
+ "kind": "theorem",
+ "producer": {
+  "commit": "85b799ec5d7f3a8e81168af11fbf4ba36007be28",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "819cc72267c3352e5631a697b468674ff4cd2575cff0a1953702348a998ba96d",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/kernel-census/lean/KernelStructure.lean",
+   "theorem": "Kernel223.isometry_transports_isotropy"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Faithful partial structural implications for actualq223kernelargument:5nameddecls/8auditedincl3trueCounthelpers,zero trusted;closedcounts,conjugacy-stabilitytransport,isometry-isotropytransport,generalfiniteBoolcountmonotone andinclusion+equalcount=>equalmembership. Bothunchangedoriginal4.35/4.34.1 gatesPASS8;actualnativeexecution/Sp6cardinality/theta/Galois/Frobenius/Weilpairing/Normpolarization/Jacobiangeometry remainwritten/open. Originalproducer01redundantgeneralizing error preserved6956b2,proof-only02all5statementhashes unchanged. Exactlocalbindingsunsigned/notfullformal,newmaporcost.",
+ "statement": "theorem isometry_transports_isotropy {V : Type} (h inverse : V \u2192 V) (left_inverse : \u2200 x, inverse (h x)=x) (right_inverse : \u2200 y, h (inverse y)=y) (orthogonal : V \u2192 V \u2192 Prop) (preserves : \u2200 x y, orthogonal (h x) (h y) \u2194 orthogonal x y) (S : V \u2192 Prop) : Isotropic orthogonal S \u2194 Isotropic orthogonal (Transport inverse S)"
+}
