@@ -1,0 +1,56 @@
+name: CT28 bounded native direct-norm differential
+
+on:
+  push:
+    branches:
+      - research/ct28-native-direct-quotient-norm-20261111
+    paths:
+      - 'experiments/chained-transfer-reference/src/ct28_direct_norm.rs'
+      - 'experiments/chained-transfer-reference/src/main.rs'
+      - 'experiments/chained-transfer-reference/ct28/**'
+      - '.github/workflows/ct28-direct-norm.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native-direct-quotient:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+          path: cryptanalysis
+          sparse-checkout: |
+            experiments/chained-transfer-reference
+            suite/src/prime_hyperelliptic
+      - name: Read pinned upstream revision
+        id: pin
+        run: |
+          set -euo pipefail
+          pin=$(cat cryptanalysis/experiments/chained-transfer-reference/upstream-commit.txt)
+          [[ $pin =~ ^[0-9a-f]{40}$ ]] || exit 2
+          echo "revision=$pin" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          repository: isogeny-labs/crypto
+          ref: ${{ steps.pin.outputs.revision }}
+          persist-credentials: false
+          path: crypto
+          sparse-checkout: |
+            research/chained_jacobian_transfers_20261110/native
+            src/prime_hyperelliptic
+            isogeny_algos
+            src/cryptanalysis/isogeny_walk
+      - name: Pin Rust and run focused native differential
+        env:
+          RUSTUP_TOOLCHAIN: 1.99.1
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.99.1 --profile minimal --component rustfmt --component clippy
+          cd cryptanalysis/experiments/chained-transfer-reference
+          cargo fmt -- --check
+          cargo test --release --locked ct28_complete_direct_norms_vs_frozen_generic_norms -- --nocapture
+          cargo clippy --locked --all-targets -- -D warnings
