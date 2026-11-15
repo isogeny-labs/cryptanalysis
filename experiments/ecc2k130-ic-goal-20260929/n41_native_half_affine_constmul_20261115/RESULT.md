@@ -30,8 +30,9 @@ and group-replayed witness for all three native arms.
 
 The median query-loop ratio is **2.30** for prior affine over the table arm
 and **1.84** for direct rank over the table arm in this panel. The table arm's
-setup intervals were 10.2 and 6.3 ms; its sampled raw peak RSS was about
-2.34–2.36 MiB, versus about 2.13–2.15 MiB in the reference arms. The run
+setup intervals were 10.2 and 6.3 ms. Its macOS `getrusage` peak-RSS
+values were 2,359,296 and 2,342,912 in the recorded raw units, versus
+2,129,920–2,146,304 in the reference arms. The run
 used one native process at a time on the ordinary macOS arm64 host, while
 other work was live. These are exploratory component timings with no CPU
 isolation tier and no complete IC or matched-rho timing.
