@@ -1,3 +1,19 @@
+# Cross-run comparison contract02 published next; CI retries preserved
+
+## What was done
+Genuine26 remains settled at producer7242bb7/consumer2920181. Fresh local CI02 passes1498guards/fresh engine/full prepared reuse/closure and the entire original IC native test; the newly added historical check fails101 because it used a same-run auditor on independently timed reports. Whole480literal differences and all raw/source/executable/prepared bytes are retained; no completed CI pass is claimed. [pcc:unverified]
+
+## Decisions made
+Publish this separate prospective cross-run contract before new verifier code/retry03. Keep original same-run auditors/fixtures/native sources unchanged. Compare all whole historical/fresh non-time fields/counters exactly and retain every raw time. Four actual whole-input negative controls and one timing-only positive are required. Unfinished CI source remains uncommitted until tested. [pcc:unverified]
+
+## Open threads
+Implement/test the new Rust verifier under the published contract; retry full CI in a new isolated fresh output/cache, then normal-publish complete CI source and collect GitHub replay. FB30 relation-rank protocol not implemented; primary review ct101 records KB127/actual source assumptions. Future whole custodyNEW27. [pcc:unverified]
+
+## Errors
+Local setup01 missing existing fixture and CI02 historical timing-contract error are preserved separately, including actual native/cross-comparator outcomes. [pcc:unverified]
+
+---
+
 ## Current RAM cache recovery receipts
 
 Regenerable remote promisor cache packs retain original paths as RAM symlinks. Full bytes/modes/ref-HEAD-status checks and exact restart recipes are in /workspace/scratch/ct99-remote-cache-relocation-02/outcome.json and /workspace/scratch/ct99-remote-cache-relocation-03/outcome.json, with earlier ct98 receipt retained. No local/nonpromisor objects or scientific files were removed. Automatic repacking is disabled. Genuine26HOLD released; publish settlement and projection, then fresh IC/samplerCI. [pcc:unverified]
