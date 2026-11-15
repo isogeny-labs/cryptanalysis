@@ -1,3 +1,35 @@
+# Genuine27 settled; whole diagnostic fixtures published
+
+## What was done
+pcc/claims/PCC-20261115-cef18c.json / pcc/claims/PCC-20261115-277e77.json: original run43745805865/job132908716494 replayed eleven remote objects BEFORE actual bot0b2bee203a, direct parent00800a2b, exact thirteen changed paths. All 65,886 content keys and 179 literal links/full target states/owned bytes/ledger checks retained; exact normal FF and original artifact/wiring checks exit0. HOLD27 RELEASED. Whole 125,663,108-byte archive, 7,005 members, 59 closed roots, all 3,578 consumer/622 producer delta paths retained. Five exact original canonical entry dictionaries and six relative aliases roundtrip the complete passive/rank/character fixtures; small rank verdict and full inspected PDF retain ordinary Git policy. [pcc:unverified]
+
+## Decisions made
+Publish custody settlement, then freeze and normally publish the whole diagnostic CI comparison contract BEFORE comparator/driver code. Require the entire population, all mathematical controls, both original conditional Lean gates, original engine/runtime/fullprepared custody and complete artifacts. Future whole custody is NEW28. [pcc:unverified]
+
+## Open threads
+Whole diagnostic CI; primary-source/KB review and prospective unassisted relation-completion successor. The finite character separator3a7d56, exact rankc0479c and conditional proof19c467 retain their original scope. Actual global character/program/numeric Lean bridges, complete setup/primitive/strongest-reference calibrated costs and original merge gates remain open. Vault8edec422 remains locked with four-byte VLT1 checks only; KB127 remains an availability gap. [pcc:unverified]
+
+## Errors
+All prior archive/governance/source/native/proof/control/report/transport failures remain complete. Conductor is unavailable (actual127). An initial broad AGENTS read accidentally included the locked autoresearcher ciphertext, repeating the recorded access error; no plaintext/key/decryption/execution or file modification occurred. No emitted ciphertext is republished. Future reads obey the exact four-byte-only restriction. [pcc:unverified]
+
+---
+
+# Whole relation-character custody27: inputs HELD
+
+## What was done
+Source consumerfe914417/producer69abf112: passive d118b9 full100native/60calls660events/strict report-counter parity; rankc0479c all360certificates1440470operations/FB30nullities6-10-13/largerFBnullity1; proof19c467 both27declarationgates/allninebindings; character3a7d56 full60calls13200actualnorm-cofactor4-BSGSwitnesses15125rows/all180canonical-characterdecompositions/all60postsolver targetchecks. Final2fd6b0report53962B/twoactuallyopenedpages and allfailed metadata/source/report/CI/transport specimens retained. Prior58919keys/177links and exact genuine26/current ledger prefixes checked. [pcc:unverified]
+
+## Decisions made
+HOLD all science/source/raw/aliases/consumer owned bytes and consumer ledger until actual original remote replays BEFORE the actual publisher/bot, exact normalFF, whole reassembly and terminal27 file/link-state checks. Include every declared complete nonsecret post26root and both repository deltas; keep alreadygenuine archivepayloads referenced without recursive copies. Preserve dangling failed-layout symlinks exactly, with complete literal-target/target-state guards; never hydrate or omit them. Archive/parts initially inRAM; allregularpayloadbytes and anynewGitblobcache require full custody/recovery receipts. No force/rechain/policy exemption/synthetic manifest. [pcc:unverified]
+
+## Open threads
+Complete genuine27 and exact wholefixture projection, then prospectively publish whole diagnosticCI comparison contract and review/freeze an unassisted relation-completion successor before code. All numericLean/globalmodel-program-character/causal/calibratedliveadmission/primitive/strongest-reference/merge requirements remain explicit. Vault8edec422/VLT1 only, KB127. [pcc:unverified]
+
+## Errors
+All original failures remain complete. Historicalct95staginglist bytes were restored exactly from genuine26; its later overwritten transient list is preserved and newRoot governors use unique staginglist filenames. Consumerproblem-index updates are declared released metadata. No scientificresult or pinned render/source byte changed. [pcc:unverified]
+
+---
+
 # Passive relation observer compiled; publish/exact checkpoint before capture
 
 pcc/claims/PCC-20261115-add9e6.json: firstbuild0/1503prior17current2driverguards/original entire field-engine closure/full preparedRLIB-RMETA/freshreuse/test andbothauditors compile. Sevenpassiveinsertions/context-testreverseprojection exact; purecanonicalkeybytecopies reviewed. Native/full60call reportparity/660journal events/rank-character measurements NOTRUN. [pcc:unverified]
