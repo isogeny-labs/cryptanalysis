@@ -96,4 +96,11 @@ def Q : W₄₇.Point := WeierstrassCurve.Affine.Point.mk eqQ
 #print axioms eqG
 #print axioms eqQ
 
+theorem public_scalar : (17 : ℕ) • G = Q := by
+  change nsmulBinRec 17 G = Q
+  unfold G Q
+  decide +kernel
+
+#print axioms public_scalar
+
 end XedniCrtRationalWitness

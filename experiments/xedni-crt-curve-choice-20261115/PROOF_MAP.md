@@ -10,7 +10,8 @@
 | The rational witness has the stated point reductions and auxiliary curve orders | — | The two relation theorems use corresponding integer coordinates and the proven integral model. The point-reduction homomorphism and auxiliary group orders are checked by the Sage launcher and independent finite-field arithmetic in `audit.py`; their Lean bridge remains open. |
 | If `(w-t₁)+2(w-t₂)=0` in `ZMod 43`, recover `w=(t₁+2t₂)/3` | `XedniCrtTargetRecovery.recover_of_relation` | Prime field `ZMod 43`, nonzero divisor 3 supplied by the field arithmetic. Pinned Lean build passed; `#print axioms` lists only `propext`, `Classical.choice`, `Quot.sound`. |
 | The saved pairs `(29,11)` and `(5,23)` give scalar 17 | `XedniCrtTargetRecovery.recovered_scalar_29_11`, `recovered_scalar_5_23` | Exact `ZMod 43` arithmetic. Pinned Lean build passed with the same standard axiom list. |
-| The fixed public input obeys `17 • G = Q` and the rational relation rows recover scalar 17 | — | Checked by exhaustive Sage target replay and independent exact finite-field arithmetic in `audit.py`. The Lean point definitions and equations compile. A direct `decide` proof of the 17-fold group operation failed to reduce; the exact failed build is retained in `formal/public-scalar-attempt.txt`. A kernel-checked scalar replay and row-to-lift bridge remain open. |
+| The fixed public input obeys `17 • G = Q` | `XedniCrtRationalWitness.public_scalar` | Exact Mathlib affine point group over `ZMod 47`. `decide +kernel` checks the finite computation in Lean's kernel; pinned build and `#print axioms` pass with standard foundations. The prior plain-`decide` failure is retained in `formal/public-scalar-attempt.txt`. |
+| The rational relation rows recover scalar 17 from that public input | `XedniCrtTargetRecovery.recovered_scalar_29_11`, `recovered_scalar_5_23` | Lean checks the two `ZMod 43` arithmetic certificates; exhaustive Sage target replay and independent finite-field arithmetic in `audit.py` check the row-to-lift construction. A Lean row-to-lift bridge remains open. |
 | Any full-field asymptotic bound for the original xedni curve-selection law | — | Requires a formalized height/discriminant premise and the actual coefficient/point selection distribution. Open. |
 
 The current shared checkout's `xedni-lattice-obstruction-20261028/verify.py`
@@ -23,6 +24,6 @@ claiming a fresh result for that separate module.
 The new `formal/TargetRecovery.lean` and `formal/RationalWitness.lean` use Lean
 `leanprover/lean4:v4.35.0-rc4` and Mathlib
 `021c46bdd042f67b538b9f9871d556a93713a9a9`. The actual
-`lake build TargetRecovery RationalWitness` output, source hashes and all nine
+`lake build TargetRecovery RationalWitness` output, source hashes and all ten
 `#print axioms` results are retained in `formal/`; `verify_formal.py`
 checks them. `lean4checker --fresh` is unavailable on this host.

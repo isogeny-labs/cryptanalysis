@@ -60,10 +60,11 @@ Sage and independent arithmetic audits.
 
 The Lean module also constructs the fixed public points `G=(2,2)` and
 `Q=(26,8)` on that finite-field curve and checks both point equations.
-The `17 • G = Q` proof obligation remains open in Lean: a direct reduction
-attempt stopped at the repeated point addition, with its exact compiler
-output retained in `formal/public-scalar-attempt.txt`. The Sage target replay
-and independent arithmetic audit check the scalar identity.
+Its `public_scalar` theorem checks `17 • G = Q` with kernel evaluation of
+the exact group law. The earlier plain-`decide` attempt stopped at repeated
+point addition; its compiler output remains in
+`formal/public-scalar-attempt.txt`. The Sage target replay and independent
+arithmetic audit separately check the scalar identity and relation rows.
 
 ## Construction and boundary
 
