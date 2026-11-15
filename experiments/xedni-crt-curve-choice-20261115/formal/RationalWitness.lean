@@ -84,4 +84,16 @@ theorem reduced_relation : P₁ + P₂ + P₂ = 0 := by
 
 #print axioms reduced_relation
 
+theorem eqG : W₄₇.Equation 2 2 := by
+  norm_num [W₄₇, WeierstrassCurve.Affine.equation_iff] <;> decide
+
+theorem eqQ : W₄₇.Equation 26 8 := by
+  norm_num [W₄₇, WeierstrassCurve.Affine.equation_iff] <;> decide
+
+def G : W₄₇.Point := WeierstrassCurve.Affine.Point.mk eqG
+def Q : W₄₇.Point := WeierstrassCurve.Affine.Point.mk eqQ
+
+#print axioms eqG
+#print axioms eqQ
+
 end XedniCrtRationalWitness
