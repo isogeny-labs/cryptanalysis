@@ -1,3 +1,39 @@
+## Current RAM cache recovery receipts
+
+Regenerable remote promisor cache packs retain original paths as RAM symlinks. Full bytes/modes/ref-HEAD-status checks and exact restart recipes are in /workspace/scratch/ct99-remote-cache-relocation-02/outcome.json and /workspace/scratch/ct99-remote-cache-relocation-03/outcome.json, with earlier ct98 receipt retained. No local/nonpromisor objects or scientific files were removed. Automatic repacking is disabled. Genuine26HOLD released; publish settlement and projection, then fresh IC/samplerCI. [pcc:unverified]
+
+# Genuine26 settled; whole100/101 fixtures and complete PDF published
+
+## What was done
+pcc/claims/PCC-20261115-0c13e6.json / pcc/claims/PCC-20261115-86ddc2.json: original43720549312/job132831389944SUCCESS, nine remote objects replayed BEFORE actualbotb7bc54fcba/direct99cb2b204d/exact11paths; two plain Git objects unchanged. All58919heldinputs177linksownedbytes and whole136572156Barchive7357members68roots/3777consumerdeltafiles preserved. NormalFF-artifact-wiring0/HOLD26RELEASED. All51583prior25keys176links/both exactledgerprefixes/oldarchives held. Two exact original manifest entry dictionaries and two relative aliases roundtrip to the entire actualIC100/sampler101 populations. Full69112BPDF unchanged in ordinary producer Git; additive publication link replaces pending status without rewriting prior attested receipts. [pcc:unverified]
+
+## Decisions made
+Normal-publish custody settlement and consumer fixture projection, then add a fresh CI workflow covering the two new native populations with exact source/runtime/prepared custody and actual whole-class omissions. Preserve all prior source guards, workflows, reports, proofs and failed controls. Future whole custody is NEW27. [pcc:unverified]
+
+## Open threads
+Fresh IC/sampler CI; prospective FB30 relation-matrix/kernel-rank discriminator after primary-source/KB review; complete primitive/setup/known-point/strongest-reference cost census and live admission. All three norm-prepared points equal already available sourceGpoints; preserve the stronger-reference negative result. [pcc:unverified]
+
+## Errors
+First custody governor EOF-whitespace failure and FF01 lazy-fetch128 before merge; exact three-blob hydration preserves refs/HEAD/status, then explicit no-rename path comparison and FF02. Earlier ENOSPC/FUSE/history-inventory and every build/proof/recorder/import/native/control failure retained. FullCI41 artifact remains separate/uncollected, while a93f80 is exact258 and proofCI39bb46 exact41. [pcc:unverified]
+
+---
+
+# Whole IC, paired sampler and induced-proof custody26: inputs HELD
+
+## What was done
+At consumer41247ff and producer a0004ee, original IC7df2ae retains all100records/60attempts/45verified15rejected, pairedsampler4fd903 all101records/60pairs120reports/45verified15rejectedpairs, and inducedproofeddc37/freshproofCI39bb46 plus fullCIa93f80 all749members/logs. Both native phase sets, all prior51583keys/176links and exact ledger prefixes were checked before preparation. [pcc:unverified]
+
+## Decisions made
+HOLD all science, source, raw, aliases, consumer owned bytes and consumer ledger until actual original remote replays BEFORE the actual publisher, exact normal FF, archive reassembly and terminal26 held-byte/link checks. Archive every declared closed nonsecret ct92–99 root, additional uncaptured publication metadata and all consumer deltas since genuine25. Original crypto PDF keep policy differs from cryptanalysis: retain full69112B PDF in producer Git and whole archive, without a fabricated canonical PDF entry. [pcc:unverified]
+
+## Open threads
+Complete genuine26, project exact whole100/101-record fixture entries, link full producer PDF and add CI. Then prospectively investigate FB30 relation-kernel rank and complete strong-reference primitive/setup cost coverage. [pcc:unverified]
+
+## Errors
+All failed builds, proofs, recorders, transport/control attempts, ENOSPC and FUSE EPERM evidence remains intact. Only private transport authorization metadata is withheld from publication and retained locally. RAM cache relocation preserves all research and refs; follow ct99-remote-cache-relocation-02 recovery receipt if RAM is replaced. [pcc:unverified]
+
+---
+
 # Paired sampler native and inspected report sources complete; original migration next
 
 Native4fd903 all225samples1125triples60pairs120reports15jointcases45correctpairs90answers15sharedrejectedFB30pairs30reports/whole101records87new14prior/all33phases/8omissions/1487guards/exactruntime-preparedcustody/checkpoint21 pass. pcc/claims/PCC-20261115-346f08.json checkpointsinspected2pagePDFsources/whole69112BPDFhash; fullPDFselectedbyoriginalpolicyandretainedunchangedforNEW26 beforecanonicalalias. [pcc:unverified]
