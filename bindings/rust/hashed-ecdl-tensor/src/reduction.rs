@@ -623,6 +623,26 @@ pub(crate) fn solve_with_preparation<State>(
     target: &Point,
     config: &Config,
     rng: &mut impl RandomSource,
+    prepare: impl FnMut(&Curve, &[FactorBase], &[BTreeMap<Point, usize>], &mut Meter) -> Result<State>,
+    oracle: impl FnMut(
+        &Curve,
+        &[FactorBase],
+        &mut State,
+        &Point,
+        &mut Meter,
+    ) -> Result<Option<Vec<Point>>>,
+    meter: &mut Meter,
+) -> Result<Certificate> {
+    solve_with_target_preparation(curve, target, config, rng, prepare, oracle, false, meter)
+}
+
+// Joint targets are an explicit alternative; the original collector stays the
+// control. Coefficients never enter the decomposition oracle.
+pub(crate) fn solve_with_target_preparation<State>(
+    curve: &Curve,
+    target: &Point,
+    config: &Config,
+    rng: &mut impl RandomSource,
     mut prepare: impl FnMut(
         &Curve,
         &[FactorBase],
@@ -636,6 +656,7 @@ pub(crate) fn solve_with_preparation<State>(
         &Point,
         &mut Meter,
     ) -> Result<Option<Vec<Point>>>,
+    joint_targets: bool,
     meter: &mut Meter,
 ) -> Result<Certificate> {
     if config.slots < 2 || config.trials == 0 {
@@ -660,6 +681,7 @@ pub(crate) fn solve_with_preparation<State>(
         });
     }
     let mut target_validated = false;
+    let mut joint_table = None;
     for _ in 0..config.trials {
         crate::metrics::phase("factor_base")?;
         meter.charge(1, "fresh-seed trial")?;
@@ -722,9 +744,24 @@ pub(crate) fn solve_with_preparation<State>(
             crate::metrics::phase("relation_target")?;
             let u = random_below(curve.order(), rng, meter)?;
             let v = random_below(curve.order(), rng, meter)?;
-            let left = curve.mul(curve.generator(), &u, meter)?;
-            let right = curve.mul(target, &v, meter)?;
-            let point = curve.add(&left, &right, meter)?;
+            let point = if joint_targets {
+                if joint_table.is_none() {
+                    joint_table = Some(crate::joint::JointTable::from_subgroup_points(
+                        curve,
+                        curve.generator(),
+                        target,
+                        meter,
+                    )?);
+                }
+                joint_table
+                    .as_ref()
+                    .expect("initialized joint table")
+                    .evaluate(&u, &v, meter)?
+            } else {
+                let left = curve.mul(curve.generator(), &u, meter)?;
+                let right = curve.mul(target, &v, meter)?;
+                curve.add(&left, &right, meter)?
+            };
             crate::metrics::phase("relation_search")?;
             if let Some(points) = oracle(curve, &bases, &mut oracle_state, &point, meter)? {
                 crate::metrics::phase("matrix_build")?;
