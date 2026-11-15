@@ -1,0 +1,16 @@
+Traceback (most recent call last):
+  File "/Volumes/SSD990/cryptanalysis/experiments/xedni-crt-prime-panel-20261115/run.py", line 174, in <module>
+    main()
+    ~~~~^^
+  File "/Volumes/SSD990/cryptanalysis/experiments/xedni-crt-prime-panel-20261115/run.py", line 162, in main
+    results = [run_prime(p, protocol, orders, characters)
+               ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/SSD990/cryptanalysis/experiments/xedni-crt-prime-panel-20261115/run.py", line 49, in run_prime
+    group_order, r, generator = base_subgroup(
+                                ~~~~~~~~~~~~~^
+        curve, protocol["subgroup_policy"]["required_minimum_order"])
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/SSD990/cryptanalysis/experiments/xedni-crt-prime-panel-20261115/run.py", line 35, in base_subgroup
+    r = max(int(factor) for factor, _ in order.factor())
+                                         ^^^^^^^^^^^^
+AttributeError: 'int' object has no attribute 'factor'
