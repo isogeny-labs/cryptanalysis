@@ -49,6 +49,16 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 50
     steps:
+      - name: Require owner-controlled approval before any checkout
+        shell: bash
+        env:
+          CT141_OWNER_APPROVAL: ${{ secrets.CT141_OWNER_APPROVAL }}
+        run: |
+          set -euo pipefail
+          test "$CT141_OWNER_APPROVAL" = 'CT141_NATIVE_CPU_APPROVED_20261115' || {
+            echo 'CT141 owner approval secret absent or incorrect; native execution refused' >&2
+            exit 77
+          }
       - name: Checkout exact cryptanalysis ref
         uses: actions/checkout@v4
         with:
