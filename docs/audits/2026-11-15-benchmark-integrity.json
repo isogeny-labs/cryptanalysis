@@ -1,0 +1,100 @@
+{
+  "kind": "conservative historical comparison eligibility disposition",
+  "producer_reported": true,
+  "source_commit": "1927bf58c7f1da978e93dd7113b68e524bbd89f4",
+  "guard_owner": "crypto-autoresearcher",
+  "guard_commit": "ee6aebdc2b44213712533e3731376dcbc4765310",
+  "guard_sha256": "ff34f07196b1d1ae5b08a2db8b4178a37be5d7c6a85085e2eeede73d0610de0e",
+  "records": [
+    {
+      "record": "benchmarks/records/20261104T0352Z-descent-walks-k0n53.json",
+      "sha256": "7e975bbe687aa714fbb9286b8e6dec08a43be4d1e00160970b515756bf0eb0d6",
+      "eligibility_errors": [
+        "command 3 has no successful integer exit code; use invalid/censored or an explicit pinned historical exclusion",
+        "command 4 has no successful integer exit code; use invalid/censored or an explicit pinned historical exclusion"
+      ],
+      "non_success_terminal_metadata": [
+        {
+          "command": 3,
+          "exit": 1
+        },
+        {
+          "command": 4,
+          "exit": 1
+        }
+      ],
+      "successful_integer_zero_exit_count": 2
+    },
+    {
+      "record": "benchmarks/records/20261104T1632Z-pair-filter-two-bit.json",
+      "sha256": "eeb0f0329f396e4f1081122af856e61e5fa7c902a50eb692550b43b308a45459",
+      "eligibility_errors": [
+        "command 1 has no successful integer exit code; use invalid/censored or an explicit pinned historical exclusion"
+      ],
+      "non_success_terminal_metadata": [
+        {
+          "command": 1,
+          "exit": 1
+        }
+      ],
+      "successful_integer_zero_exit_count": 1
+    },
+    {
+      "record": "benchmarks/records/20261105T0736Z-rho-plain-negmap-retrospective.json",
+      "sha256": "7ad301d9901de249c73c90073aa5e552748f135a166a142638b75a317054bcd3",
+      "eligibility_errors": [
+        "command 1 has no successful integer exit code; use invalid/censored or an explicit pinned historical exclusion",
+        "command 2 has no successful integer exit code; use invalid/censored or an explicit pinned historical exclusion",
+        "command 3 has no successful integer exit code; use invalid/censored or an explicit pinned historical exclusion"
+      ],
+      "non_success_terminal_metadata": [
+        {
+          "command": 1,
+          "exit": null
+        },
+        {
+          "command": 2,
+          "exit": null
+        },
+        {
+          "command": 3,
+          "exit": null
+        }
+      ],
+      "successful_integer_zero_exit_count": 0
+    },
+    {
+      "record": "benchmarks/records/20261110T0408Z-clmad-audit.json",
+      "sha256": "c36443b17548a2f9c4f2843635fbaed6abe04788a259585f38605f7447f11349",
+      "eligibility_errors": [
+        "command 1 has no successful integer exit code; use invalid/censored or an explicit pinned historical exclusion",
+        "command 2 has no successful integer exit code; use invalid/censored or an explicit pinned historical exclusion"
+      ],
+      "non_success_terminal_metadata": [
+        {
+          "command": 1,
+          "exit": 3
+        },
+        {
+          "command": 2,
+          "exit": 3
+        }
+      ],
+      "successful_integer_zero_exit_count": 2
+    }
+  ],
+  "scope": "Exact plaintext record digests only. Closed records, status counts, all raw inputs, and per-arm failures remain intact. Raw/report/entry integrity checks still apply.",
+  "limits": "A nonzero exit can be a producer failure or a deliberate comparison verdict; this disposition does not infer which without the original protocol and evidence. Mixed successful/failed records are conservatively excluded as a whole from automated comparisons. No new measurement or widened baseline is introduced.",
+  "generated_progress_control": {
+    "eligible_points_preserved": 96,
+    "record_files_unchanged": 18,
+    "excluded_records": 4,
+    "progress_sha256": {
+      "PROGRESS.md": "92880f0483a98928d40ad733dc58013fd3069bed5e1a6a1427349a9c3a3953b6",
+      "progress.json": "ad652a0a6e48b7857b3d2eb2c3bbf95f92696fd94f9292569e9ad825a61041ad",
+      "progress.svg": "cc79a552eb38867d00c76bbe9a06295647facbd884533220d1f6664986505f9e",
+      "progress.pdf": "35e1da513855d133f869dcae8d3b0fb660c41a2a7e7f53140b7bf26bbc6954fe"
+    },
+    "scope": "producer data-preservation checks; no independent scientific verdict"
+  }
+}

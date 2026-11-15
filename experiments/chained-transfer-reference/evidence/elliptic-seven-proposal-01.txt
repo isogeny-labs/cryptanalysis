@@ -1,0 +1,24 @@
+CT19 pre-execution correctness proposal. 2026-11-11.
+Fixedp101,degree7:original E1:y²=X³+X+46,order109;
+E2:y²=x³+13x²+33x+5,order113. Translate E2X=x+13/3 inRust.
+Reuse unchanged isogeny_algos crate from crypto75a737b8;separate manifest
+and CIcheckoutclosure,seven native runtime inputs remain unchanged.
+Use existing division-polynomial factorization/Kohel maps,no new kernel
+engine. Its heuristic random-x filtering is not final acceptance.
+Require actual squarefree degree3 kernels,source-curve coprimality,coprime
+rational map numerator/denominator,exact cleared target-curve identity,
+actual normalized dual kernel/codomain scaling,u=1/7,and both global
+rational-x compositions=[7] using division-polynomial multiplication map.
+Check all109/113 rational source/codomain points,all group additions and
+scalar relations,both dual norms[7],inverse7 point recovery. No map reads
+unknown scalar or runsDLP solver. Freeze small TSV maps/kernel witnesses.
+Independent unchanged isogeny_walk verifier must replay kernels/codomains
+and cleared polynomial identities with another arithmetic implementation.
+Prior review:existing code references Velu1971/Kohel1996 and Silverman;
+Milne I Remark8.12 quotient and I§13 pairing/duality primary read upstream.
+Direct Kohel thesis URL unavailable;do not claim thesis primary reviewed.
+New algebra is independently verified by exact polynomial identities and
+written nonconstant pointed elliptic morphism→isogeny bridge,not a novel
+isogeny algorithm. No benchmark,sweep,paid job or computational advantage.
+CT20 compatible genus2 gluing/global kernel factor proof is a separate next
+obligation;abstract7-plane count is not an accepted Jacobian map.

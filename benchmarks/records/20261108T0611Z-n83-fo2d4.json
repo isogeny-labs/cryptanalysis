@@ -1,0 +1,246 @@
+{
+  "branch": "claude/n83-fo2d4",
+  "closed_utc": "2026-11-08T06:12:14+00:00",
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "experiments/koblitz-n83-fo2d4-20261108/verify_receipt.py",
+        "/tmp/claude-0/-home-user/db62bab2-798a-5439-886c-764eafc92fd6/scratchpad/rv/panel"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "started_utc": "2026-11-08T06:12:04+00:00",
+      "wall_s": 7.874
+    },
+    {
+      "argv": [
+        "python3",
+        "experiments/koblitz-n83-fo2d4-20261108/band_model.py",
+        "--receipt-dir",
+        "/tmp/claude-0/-home-user/db62bab2-798a-5439-886c-764eafc92fd6/scratchpad/rv/panel",
+        "--out-dir",
+        "/tmp/claude-0/-home-user/db62bab2-798a-5439-886c-764eafc92fd6/scratchpad/rv/band3"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "started_utc": "2026-11-08T06:12:12+00:00",
+      "wall_s": 1.309
+    }
+  ],
+  "commit": "bca22e9f9fac82cd8accb3ef1008b56332b50cd7",
+  "commit_dirty": true,
+  "created_utc": "2026-11-08T06:11:52+00:00",
+  "curve_uid": "EC1N83Ce1h35c7ced6b497",
+  "entries": [
+    "benchmarks/20261108-n83-fo2d4"
+  ],
+  "host": {
+    "cpu": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+    "cpus_online": 4,
+    "hostname": "vm",
+    "isolation": "unstated",
+    "platform": "Linux-6.18.44-fc-v310-x86_64-with-glibc2.39"
+  },
+  "id": "20261108T0611Z-n83-fo2d4",
+  "metrics": [
+    {
+      "baseline": 0.223892,
+      "better": "lower",
+      "n": 36,
+      "name": "s_e2e_cold",
+      "note": "R1 on D4 (side B), end-to-end cold = rank stage + cold; baseline = the field-ops producer on D4 (side A) in the same run; Tier 1 run 42450569196 (Intel Xeon Platinum 8573C); S in this run's rT770 steps (254.81 ns) per sqrt(r); S compares only within one run",
+      "reference": 0.104352,
+      "reference_kind": "matched_rho",
+      "spread": null,
+      "unit": "S",
+      "value": 0.213153
+    },
+    {
+      "baseline": 0.02947,
+      "better": "lower",
+      "n": 36,
+      "name": "s_online",
+      "note": "one-target online, side B (R1); baseline = side A; A / B 1.0232 [1.0091, 1.0314]; Tier 1 run 42450569196; S per rT770 step",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "S",
+      "value": 0.028801
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 36,
+      "name": "e2e_paired_a_over_b",
+      "note": "primary: sum E2E(A) / sum E2E(B) over 36 alternating pairs, 95 percent two-stage paired bootstrap; above 1 = side B (R1) faster; Tier 1 run 42450569196 (Intel Xeon Platinum 8573C)",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.046744,
+        1.054052
+      ],
+      "unit": "ratio",
+      "value": 1.05038
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 36,
+      "name": "stage_index_build_a_over_b",
+      "note": "labelled stage secondary, A / B; does not decide",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.07211,
+        1.077158
+      ],
+      "unit": "ratio",
+      "value": 1.074528
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 36,
+      "name": "stage_scan_selftest_a_over_b",
+      "note": "labelled stage secondary, A / B; does not decide",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.994746,
+        1.010784
+      ],
+      "unit": "ratio",
+      "value": 1.00268
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 36,
+      "name": "stage_rank_stage_a_over_b",
+      "note": "labelled stage secondary, A / B; does not decide",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.046105,
+        1.054966
+      ],
+      "unit": "ratio",
+      "value": 1.050525
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 36,
+      "name": "stage_online_a_over_b",
+      "note": "labelled stage secondary, A / B; does not decide",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.009118,
+        1.031424
+      ],
+      "unit": "ratio",
+      "value": 1.023227
+    },
+    {
+      "baseline": 5.281308,
+      "better": "lower",
+      "n": 36,
+      "name": "e2e_cold_wall_b",
+      "note": "end-to-end cold wall, side B (R1, mean over 36 primary pairs); baseline = side A (field-ops) in the same run; reference = this run's matched rT770 cold mean; Tier 1 run 42450569196 (Intel Xeon Platinum 8573C)",
+      "reference": 2.46153,
+      "reference_kind": "matched_rho",
+      "spread": null,
+      "unit": "wall_s",
+      "value": 5.027997
+    }
+  ],
+  "problem": "ecdlp:EC1N83Ce1h35c7ced6b497",
+  "raw": [
+    {
+      "bytes": 1464236,
+      "path": "experiments/koblitz-n83-fo2d4-20261108/run_github_42450569196/panel/runs.jsonl",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/0b/0b33a7476db5c7154a44695a015034cc10fe86c20e0abeddd92c637d39a0312e",
+      "sha256": "0b33a7476db5c7154a44695a015034cc10fe86c20e0abeddd92c637d39a0312e",
+      "uploaded": false
+    },
+    {
+      "bytes": 29977,
+      "path": "experiments/koblitz-n83-fo2d4-20261108/run_github_42450569196/panel/result.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/b3/b3c9e40c2a9c3373345df60fee4b4bd59af202bf6d63e22086930900e73e190a",
+      "sha256": "b3c9e40c2a9c3373345df60fee4b4bd59af202bf6d63e22086930900e73e190a",
+      "uploaded": false
+    },
+    {
+      "bytes": 5192,
+      "path": "experiments/koblitz-n83-fo2d4-20261108/run_github_42450569196/panel/result_table.md",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/11/116d8a3759727e50486fe2ccaec114b76f6b762769a585da63e58504c10e35e1",
+      "sha256": "116d8a3759727e50486fe2ccaec114b76f6b762769a585da63e58504c10e35e1",
+      "uploaded": false
+    },
+    {
+      "bytes": 10571,
+      "path": "experiments/koblitz-n83-fo2d4-20261108/run_github_42450569196/panel/runner_start.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/63/6353791061d55cc3b03ee3e19b20904e4cce1a5e1d033acf7174aae4b968dfc9",
+      "sha256": "6353791061d55cc3b03ee3e19b20904e4cce1a5e1d033acf7174aae4b968dfc9",
+      "uploaded": false
+    },
+    {
+      "bytes": 8419,
+      "path": "experiments/koblitz-n83-fo2d4-20261108/run_github_42450569196/panel/runner_end.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/6e/6edf7e707c49d56f2ebf71c64221b4cd0281ae00a466c7032623a89207782fa9",
+      "sha256": "6edf7e707c49d56f2ebf71c64221b4cd0281ae00a466c7032623a89207782fa9",
+      "uploaded": false
+    },
+    {
+      "bytes": 10061,
+      "path": "experiments/koblitz-n83-fo2d4-20261108/run_github_42450569196/band/band_model.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/a4/a463bb0a1a38f6036a513188b1a44f5115d1b11c155c001de7e6a2afde5f354b",
+      "sha256": "a463bb0a1a38f6036a513188b1a44f5115d1b11c155c001de7e6a2afde5f354b",
+      "uploaded": false
+    },
+    {
+      "bytes": 29321,
+      "path": "experiments/koblitz-n83-fo2d4-20261108/run_github_42450569196/runner-stdout.jsonl",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/83/838c9037557ad1f9ddc5f22473d6dca6132064791c490970c8caa43853d844f3",
+      "sha256": "838c9037557ad1f9ddc5f22473d6dca6132064791c490970c8caa43853d844f3",
+      "uploaded": false
+    },
+    {
+      "bytes": 789,
+      "path": "experiments/koblitz-n83-fo2d4-20261108/run_github_42450569196/allocation.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/43/4362968e3ffb1a6e24e2987a186a06f3eac0fac14a71599341273de667587cca",
+      "sha256": "4362968e3ffb1a6e24e2987a186a06f3eac0fac14a71599341273de667587cca",
+      "uploaded": false
+    },
+    {
+      "bytes": 376,
+      "path": "experiments/koblitz-n83-fo2d4-20261108/run_github_42450569196/binaries.sha256",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/52/52b8faac30e89b7f417bfb89d60a52f5c3db7a2a8e3aa1903615975450fd5141",
+      "sha256": "52b8faac30e89b7f417bfb89d60a52f5c3db7a2a8e3aa1903615975450fd5141",
+      "uploaded": false
+    },
+    {
+      "bytes": 2476,
+      "path": "experiments/koblitz-n83-fo2d4-20261108/run_github_42450569196/log-table-check.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/91/917b8eca5db17f56bfea65b2673a80bdea8890ca752d09651d107bee4bc0d484",
+      "sha256": "917b8eca5db17f56bfea65b2673a80bdea8890ca752d09651d107bee4bc0d484",
+      "uploaded": false
+    }
+  ],
+  "repo": "cryptanalysis",
+  "reports": {
+    "pdf": "benchmarks/20261108-n83-fo2d4/report.pdf",
+    "png": [],
+    "svg": [
+      "benchmarks/20261108-n83-fo2d4/result.svg"
+    ]
+  },
+  "schema": "bench.record/v1",
+  "session": null,
+  "slug": "n83-fo2d4",
+  "status": "measured",
+  "summary": "n=83 field-ops-2 (R1) vs field-ops, both on D4, Tier 1 run 42450569196: end-to-end cold A/B 1.0504 [1.0467, 1.0541], every gate and control passes; in-run gap to rT770 2.043 for R1 (2.146 for field-ops); section 5a is a labelled model band (no counted band)",
+  "validation": null
+}

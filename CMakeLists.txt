@@ -17,11 +17,30 @@ option(CA_BUILD_RHO_ORBIT_BENCH "Build the one-target j0 rho orbit workload" OFF
 option(CA_BUILD_JOINT_TAU_BENCH "Build the prepared public double-scalar tau workload" OFF)
 option(CA_BUILD_PAIRED_RHO_BENCH "Build the one-target paired-lattice rho workload" OFF)
 option(CA_RHO_J0_COORDINATE_ORBIT "Use the experimental coordinate j0 rho orbit representative" OFF)
-option(CA_RHO_J0_FACTORED_HASH "Use the experimental factored legacy j0 rho orbit hash" OFF)
-if(CA_RHO_J0_COORDINATE_ORBIT AND CA_RHO_J0_FACTORED_HASH)
-  message(FATAL_ERROR "Choose at most one experimental j0 rho orbit reducer")
-endif()
-option(CA_NATIVE "Compile with -march=native" OFF)
+# The factored j0 orbit hash picks the same representative as the legacy
+# loop of six ca_ec_endo + ca_group_hash calls (bitwise; tests/test_curve.c)
+# and is the default.  OFF builds the legacy loop (C macro
+# CA_RHO_J0_LEGACY_HASH).  CA_RHO_J0_COORDINATE_ORBIT, which changes the walk,
+# takes precedence over either when ON.
+option(CA_RHO_J0_FACTORED_HASH "Factored j0 rho orbit hash (same walk as the legacy loop); OFF = legacy loop" ON)
+# Instruction-set level for every C translation unit (library, tools, tests),
+# passed as -march=${CA_ARCH}.  Empty (the default) leaves the compiler's
+# baseline (x86-64 / armv8-a), which runs on every host of the class.  The
+# documented x86 values are x86-64-v2, x86-64-v3 (AVX2, BMI2, FMA; every
+# current EC2 x86 Spot family) and x86-64-v4 (AVX-512); "native" ties the
+# binary to the build host and must not be used for lab images that run on
+# mixed Spot families (docs/perf/20261112-build-flags-and-cuda.md).
+set(CA_ARCH "" CACHE STRING "-march= level: empty (baseline), x86-64-v2, x86-64-v3, x86-64-v4 or native")
+set_property(CACHE CA_ARCH PROPERTY STRINGS "" x86-64-v2 x86-64-v3 x86-64-v4 native)
+option(CA_NATIVE "Deprecated alias for -DCA_ARCH=native" OFF)
+option(CA_LTO "Link-time optimisation (INTERPROCEDURAL_OPTIMIZATION) for the library and executables" OFF)
+option(CA_CUDA_LINEINFO "CUDA: add -lineinfo and the ptxas register/spill report (-Xptxas -v)" OFF)
+# Two kernel variants for an A/B on a GPU.  Both leave the walk, the walk ids
+# and the DP output unchanged by construction, and neither is compiled into
+# the host emulator; both are untested on a GPU (see cuda/ca_device.cuh and
+# docs/perf/20261112-build-flags-and-cuda.md).
+option(CA_GPU_PTX_MONT "CUDA: Montgomery product on 32-bit limbs with PTX carry chains (untested on a GPU)" OFF)
+option(CA_GPU_SMEM_TABLE "CUDA: copy the multiplier table to shared memory per block (untested on a GPU)" OFF)
 # OFF, ON (= address,undefined), or an explicit -fsanitize= list such as
 # "thread" or "memory".  ON is kept so existing invocations keep working.
 set(CA_SANITIZE OFF CACHE STRING "Sanitizers: OFF, ON (address,undefined), or a -fsanitize= list")
@@ -43,6 +62,80 @@ option(CA_FUZZ "Build the libFuzzer harnesses in fuzz/ (needs clang)" OFF)
 set(CA_CUDA_ARCHITECTURES "70;80;89;90" CACHE STRING "CUDA architectures for CA_CUDA")
 
 find_package(Threads REQUIRED)
+
+# ---- code-generation flags that must not change any output ----------------
+# The sizing rules that pick r, dp_bits and W use double arithmetic
+# (src/rho.c, src/curve.c, src/gpu_rho.c).  GCC in GNU mode defaults to
+# -ffp-contract=fast, which fuses a*b+c into one FMA (one rounding instead of
+# two) as soon as -march enables FMA (x86-64-v3 and up, and every aarch64
+# build).  -ffp-contract=off keeps each product rounded, so the replayed walk
+# does not depend on the ISA level.  It is applied to every C (and CUDA host)
+# translation unit, whatever CA_ARCH says.
+include(CheckCCompilerFlag)
+set(CA_FP_CONTRACT_FLAG "")
+if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang|IntelLLVM")
+  set(CA_FP_CONTRACT_FLAG -ffp-contract=off)
+  add_compile_options($<$<COMPILE_LANGUAGE:C>:${CA_FP_CONTRACT_FLAG}>)
+endif()
+if(CA_NATIVE)
+  message(DEPRECATION "CA_NATIVE is deprecated; use -DCA_ARCH=native (lab images: -DCA_ARCH=x86-64-v3)")
+  if(CA_ARCH AND NOT CA_ARCH STREQUAL "native")
+    message(FATAL_ERROR "CA_NATIVE=ON conflicts with CA_ARCH=${CA_ARCH}")
+  endif()
+  set(CA_ARCH native)
+endif()
+if(CA_ARCH)
+  set(CMAKE_REQUIRED_QUIET ON)
+  check_c_compiler_flag(-march=${CA_ARCH} CA_ARCH_FLAG_OK_${CA_ARCH})
+  unset(CMAKE_REQUIRED_QUIET)
+  if(NOT CA_ARCH_FLAG_OK_${CA_ARCH})
+    message(FATAL_ERROR "CA_ARCH=${CA_ARCH}: ${CMAKE_C_COMPILER_ID} rejects -march=${CA_ARCH}")
+  endif()
+  add_compile_options($<$<COMPILE_LANGUAGE:C>:-march=${CA_ARCH}>)
+  set(CA_BUILD_ARCH "${CA_ARCH}")
+  # GCC 13.3 at -march=x86-64-v2 (any level with SSE4.1 but not AVX)
+  # vectorises digit_for() in src/ec_tau.c through an MMX register (movq to
+  # %mm0, movq2dq) and never issues EMMS.  The x87 stack is left tagged full,
+  # so the next long double operation - __builtin_sqrtl in ca_isqrt - returns
+  # the invalid-operation NaN and ca_isqrt counts down from 2^63: test_curve
+  # never finishes.  No C source here uses MMX, so forbid the registers.
+  if(CMAKE_C_COMPILER_ID STREQUAL "GNU" AND CMAKE_SYSTEM_PROCESSOR MATCHES "^(x86_64|AMD64|amd64)$")
+    add_compile_options($<$<COMPILE_LANGUAGE:C>:-mno-mmx>)
+  endif()
+else()
+  set(CA_BUILD_ARCH "baseline-${CMAKE_SYSTEM_PROCESSOR}")
+endif()
+if(CA_LTO)
+  include(CheckIPOSupported)
+  check_ipo_supported(RESULT CA_IPO_OK OUTPUT CA_IPO_MSG LANGUAGES C)
+  if(NOT CA_IPO_OK)
+    message(FATAL_ERROR "CA_LTO=ON but ${CMAKE_C_COMPILER_ID} cannot do IPO: ${CA_IPO_MSG}")
+  endif()
+  # Every target created below inherits INTERPROCEDURAL_OPTIMIZATION.
+  set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
+  if(CMAKE_C_COMPILER_ID STREQUAL "GNU" AND CA_BUILD_STATIC)
+    # The installed libcryptanalysis.a must stay linkable by consumers built
+    # without LTO (or with another GCC), so keep machine code beside the
+    # GIMPLE in each object.
+    add_compile_options($<$<COMPILE_LANGUAGE:C>:-ffat-lto-objects>)
+  endif()
+endif()
+# Recorded in the library as compile definitions (CA_BUILD_ARCH,
+# CA_BUILD_COMPILER, CA_BUILD_LTO, CA_BUILD_FP_CONTRACT) so that a
+# ca_build_info() in src/ can report them; see the note above.
+set(CA_BUILD_COMPILER "${CMAKE_C_COMPILER_ID} ${CMAKE_C_COMPILER_VERSION}")
+if(CA_LTO)
+  set(CA_BUILD_LTO 1)
+else()
+  set(CA_BUILD_LTO 0)
+endif()
+if(CA_FP_CONTRACT_FLAG)
+  set(CA_BUILD_FP_CONTRACT "off")
+else()
+  set(CA_BUILD_FP_CONTRACT "compiler-default")
+endif()
+message(STATUS "cryptanalysis: arch=${CA_BUILD_ARCH} compiler=\"${CA_BUILD_COMPILER}\" "
+               "lto=${CA_BUILD_LTO} fp-contract=${CA_BUILD_FP_CONTRACT}")
 
 set(CA_SANITIZE_FLAGS "")
 if(CA_SANITIZE)
@@ -101,47 +194,96 @@ if(CA_CUDA)
   set(CMAKE_CUDA_STANDARD 17)
   set(CMAKE_CUDA_ARCHITECTURES ${CA_CUDA_ARCHITECTURES})
   find_package(CUDAToolkit REQUIRED)
+  # The host half of every .cu file gets the same ISA level and FP rule as
+  # the C sources.  Device code has no floating point.
+  if(CMAKE_CUDA_COMPILER_ID STREQUAL "NVIDIA")
+    if(CA_FP_CONTRACT_FLAG)
+      add_compile_options($<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=${CA_FP_CONTRACT_FLAG}>)
+    endif()
+    if(CA_ARCH)
+      add_compile_options($<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=-march=${CA_ARCH}>)
+    endif()
+    if(CA_CUDA_LINEINFO)
+      add_compile_options($<$<COMPILE_LANGUAGE:CUDA>:-lineinfo> "$<$<COMPILE_LANGUAGE:CUDA>:SHELL:-Xptxas -v>")
+    endif()
+  elseif(CMAKE_CUDA_COMPILER_ID STREQUAL "Clang")
+    if(CA_FP_CONTRACT_FLAG)
+      add_compile_options($<$<COMPILE_LANGUAGE:CUDA>:${CA_FP_CONTRACT_FLAG}>)
+    endif()
+    if(CA_CUDA_LINEINFO)
+      add_compile_options($<$<COMPILE_LANGUAGE:CUDA>:-gline-tables-only>
+                          "$<$<COMPILE_LANGUAGE:CUDA>:SHELL:-Xcuda-ptxas -v>")
+    endif()
+  endif()
   list(APPEND CA_SOURCES cuda/rho_kernel.cu cuda/gpu_cuda.c)
 else()
   list(APPEND CA_SOURCES src/gpu_cuda_stub.c)
 endif()
 
+# Every translation unit is compiled once, into an OBJECT library, and the
+# shared and static libraries are both linked from those objects.  Compile-time
+# settings (definitions, warnings, -march, sanitizers, visibility, PIC) belong
+# here; the public interface (include dirs, usage requirements, link
+# libraries) is not carried by $<TARGET_OBJECTS:> and is set on the final
+# targets by ca_configure_target.
+add_library(cryptanalysis_objects OBJECT ${CA_SOURCES})
+target_include_directories(cryptanalysis_objects PRIVATE
+  ${CMAKE_CURRENT_SOURCE_DIR}/include
+  ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/cuda)
+if(CA_CUDA)
+  target_compile_definitions(cryptanalysis_objects PRIVATE CA_HAVE_CUDA=1)
+  set_target_properties(cryptanalysis_objects PROPERTIES CUDA_SEPARABLE_COMPILATION OFF)
+  if(CA_GPU_PTX_MONT)
+    target_compile_definitions(cryptanalysis_objects PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:CA_GPU_PTX_MONT>)
+  endif()
+  if(CA_GPU_SMEM_TABLE)
+    target_compile_definitions(cryptanalysis_objects PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:CA_GPU_SMEM_TABLE>)
+  endif()
+endif()
+target_compile_options(cryptanalysis_objects PRIVATE $<$<COMPILE_LANGUAGE:C>:${CA_WARNINGS}>)
+target_compile_definitions(cryptanalysis_objects PRIVATE CA_BUILDING _GNU_SOURCE
+  CA_BUILD_ARCH="${CA_BUILD_ARCH}" CA_BUILD_COMPILER="${CA_BUILD_COMPILER}"
+  CA_BUILD_LTO=${CA_BUILD_LTO} CA_BUILD_FP_CONTRACT="${CA_BUILD_FP_CONTRACT}")
+if(CA_BUILD_SHARED)
+  # Only affects Windows (dllexport in ca_types.h); a no-op elsewhere.
+  target_compile_definitions(cryptanalysis_objects PRIVATE CA_SHARED)
+endif()
+if(CA_RHO_J0_COORDINATE_ORBIT)
+  target_compile_definitions(cryptanalysis_objects PRIVATE CA_RHO_J0_COORDINATE_ORBIT=1)
+elseif(NOT CA_RHO_J0_FACTORED_HASH)
+  target_compile_definitions(cryptanalysis_objects PRIVATE CA_RHO_J0_LEGACY_HASH=1)
+endif()
+if(CA_J0_RHO_COORD_CANON)
+  target_compile_definitions(cryptanalysis_objects PRIVATE CA_J0_RHO_COORD_CANON=1)
+endif()
+if(CA_GLV_LOOKAHEAD_LEGACY)
+  target_compile_definitions(cryptanalysis_objects PRIVATE CA_GLV_LOOKAHEAD_LEGACY=1)
+endif()
+if(CA_GLV_CYCLE_ESCAPE)
+  target_compile_definitions(cryptanalysis_objects PRIVATE CA_GLV_CYCLE_ESCAPE=1)
+endif()
+if(CA_GLV_BATCH_ESCAPE)
+  target_compile_definitions(cryptanalysis_objects PRIVATE CA_GLV_BATCH_ESCAPE=1)
+endif()
+if(CA_GLV_FIELD_COUNT)
+  target_compile_definitions(cryptanalysis_objects PRIVATE CA_GLV_FIELD_COUNT=1)
+endif()
+ca_sanitize(cryptanalysis_objects)
+set_target_properties(cryptanalysis_objects PROPERTIES C_VISIBILITY_PRESET hidden
+                                                       POSITION_INDEPENDENT_CODE ON)
+
+# Public interface and link line of one final library built from the objects.
 function(ca_configure_target tgt)
   target_include_directories(${tgt} PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>)
-  target_include_directories(${tgt} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/cuda)
   if(CA_CUDA)
-    target_compile_definitions(${tgt} PRIVATE CA_HAVE_CUDA=1)
     target_link_libraries(${tgt} PUBLIC CUDA::cudart)
-    set_target_properties(${tgt} PROPERTIES CUDA_SEPARABLE_COMPILATION OFF)
-  endif()
-  target_compile_options(${tgt} PRIVATE $<$<COMPILE_LANGUAGE:C>:${CA_WARNINGS}>)
-  target_compile_definitions(${tgt} PRIVATE CA_BUILDING _GNU_SOURCE)
-  if(CA_RHO_J0_COORDINATE_ORBIT)
-    target_compile_definitions(${tgt} PRIVATE CA_RHO_J0_COORDINATE_ORBIT=1)
-  elseif(CA_RHO_J0_FACTORED_HASH)
-    target_compile_definitions(${tgt} PRIVATE CA_RHO_J0_FACTORED_HASH=1)
-  endif()
-  if(CA_J0_RHO_COORD_CANON)
-    target_compile_definitions(${tgt} PRIVATE CA_J0_RHO_COORD_CANON=1)
-  endif()
-  if(CA_GLV_LOOKAHEAD_LEGACY)
-    target_compile_definitions(${tgt} PRIVATE CA_GLV_LOOKAHEAD_LEGACY=1)
-  endif()
-  if(CA_GLV_CYCLE_ESCAPE)
-    target_compile_definitions(${tgt} PRIVATE CA_GLV_CYCLE_ESCAPE=1)
-  endif()
-  if(CA_GLV_BATCH_ESCAPE)
-    target_compile_definitions(${tgt} PRIVATE CA_GLV_BATCH_ESCAPE=1)
   endif()
   if(CA_GLV_FIELD_COUNT)
     target_compile_definitions(${tgt} PUBLIC CA_GLV_FIELD_COUNT=1)
   endif()
   target_link_libraries(${tgt} PUBLIC Threads::Threads m)
-  if(CA_NATIVE)
-    target_compile_options(${tgt} PRIVATE -march=native)
-  endif()
   ca_sanitize(${tgt})
   set_target_properties(${tgt} PROPERTIES C_VISIBILITY_PRESET hidden
                                           OUTPUT_NAME cryptanalysis)
@@ -149,7 +291,7 @@ endfunction()
 
 set(CA_PRIMARY_TARGET "")
 if(CA_BUILD_SHARED)
-  add_library(cryptanalysis SHARED ${CA_SOURCES})
+  add_library(cryptanalysis SHARED $<TARGET_OBJECTS:cryptanalysis_objects>)
   ca_configure_target(cryptanalysis)
   target_compile_definitions(cryptanalysis PUBLIC CA_SHARED)
   set_target_properties(cryptanalysis PROPERTIES VERSION ${PROJECT_VERSION}
@@ -157,7 +299,7 @@ if(CA_BUILD_SHARED)
   set(CA_PRIMARY_TARGET cryptanalysis)
 endif()
 if(CA_BUILD_STATIC)
-  add_library(cryptanalysis_static STATIC ${CA_SOURCES})
+  add_library(cryptanalysis_static STATIC $<TARGET_OBJECTS:cryptanalysis_objects>)
   ca_configure_target(cryptanalysis_static)
   set_target_properties(cryptanalysis_static PROPERTIES POSITION_INDEPENDENT_CODE ON)
   if(NOT CA_PRIMARY_TARGET)
@@ -253,161 +395,8 @@ if(CA_BUILD_RHO_ORBIT_BENCH)
   target_compile_options(ca_rho_orbit_bench PRIVATE ${CA_WARNINGS})
   if(CA_RHO_J0_COORDINATE_ORBIT)
     target_compile_definitions(ca_rho_orbit_bench PRIVATE CA_RHO_J0_COORDINATE_ORBIT=1)
-  elseif(CA_RHO_J0_FACTORED_HASH)
-    target_compile_definitions(ca_rho_orbit_bench PRIVATE CA_RHO_J0_FACTORED_HASH=1)
-  endif()
-  ca_sanitize(ca_rho_orbit_bench)
-endif()
-
-if(CA_BUILD_JOINT_TAU_BENCH)
-  add_executable(ca_joint_tau_bench experiments/prime-j0-joint-tau-stream/bench.c)
-  target_link_libraries(ca_joint_tau_bench PRIVATE ${CA_LINK_TARGET})
-  target_include_directories(ca_joint_tau_bench PRIVATE src)
-  target_compile_options(ca_joint_tau_bench PRIVATE ${CA_WARNINGS})
-  ca_sanitize(ca_joint_tau_bench)
-  add_executable(ca_joint_tau_hist experiments/prime-j0-hot-orbit-table/hist.c)
-  target_link_libraries(ca_joint_tau_hist PRIVATE ${CA_LINK_TARGET})
-  target_include_directories(ca_joint_tau_hist PRIVATE src)
-  target_compile_options(ca_joint_tau_hist PRIVATE ${CA_WARNINGS})
-  ca_sanitize(ca_joint_tau_hist)
-endif()
-
-if(CA_BUILD_PAIRED_RHO_BENCH)
-  add_executable(ca_paired_rho_bench experiments/prime-j0-paired-rho-startup/bench.c)
-  target_link_libraries(ca_paired_rho_bench PRIVATE ${CA_LINK_TARGET})
-  target_include_directories(ca_paired_rho_bench PRIVATE src)
-  target_compile_options(ca_paired_rho_bench PRIVATE ${CA_WARNINGS})
-  ca_sanitize(ca_paired_rho_bench)
-endif()
-
-if(CA_BUILD_TAU_CHAIN_BENCH)
-  add_executable(ca_tau_chain_bench
-                 experiments/prime-j0-cost-aware-chain/bench.c)
-  target_link_libraries(ca_tau_chain_bench PRIVATE ${CA_LINK_TARGET})
-  target_include_directories(ca_tau_chain_bench PRIVATE src)
-  target_compile_options(ca_tau_chain_bench PRIVATE ${CA_WARNINGS})
-  ca_sanitize(ca_tau_chain_bench)
-  add_executable(ca_tau_chain_design64
-                 experiments/prime-j0-cost-aware-chain/bench.c)
-  target_compile_definitions(ca_tau_chain_design64 PRIVATE SCALARS=64)
-  target_link_libraries(ca_tau_chain_design64 PRIVATE ${CA_LINK_TARGET})
-  target_include_directories(ca_tau_chain_design64 PRIVATE src)
-  target_compile_options(ca_tau_chain_design64 PRIVATE ${CA_WARNINGS})
-  ca_sanitize(ca_tau_chain_design64)
-endif()
-
-if(CA_BUILD_RHO_ORBIT_BENCH)
-  add_executable(ca_rho_orbit_bench
-                 experiments/prime-j0-cost-aware-chain/rho_orbit_one_target.c)
-  target_link_libraries(ca_rho_orbit_bench PRIVATE ${CA_LINK_TARGET})
-  target_include_directories(ca_rho_orbit_bench PRIVATE src)
-  target_compile_options(ca_rho_orbit_bench PRIVATE ${CA_WARNINGS})
-  if(CA_RHO_J0_COORDINATE_ORBIT)
-    target_compile_definitions(ca_rho_orbit_bench PRIVATE CA_RHO_J0_COORDINATE_ORBIT=1)
-  elseif(CA_RHO_J0_FACTORED_HASH)
-    target_compile_definitions(ca_rho_orbit_bench PRIVATE CA_RHO_J0_FACTORED_HASH=1)
-  endif()
-  ca_sanitize(ca_rho_orbit_bench)
-endif()
-
-if(CA_BUILD_JOINT_TAU_BENCH)
-  add_executable(ca_joint_tau_bench experiments/prime-j0-joint-tau-stream/bench.c)
-  target_link_libraries(ca_joint_tau_bench PRIVATE ${CA_LINK_TARGET})
-  target_include_directories(ca_joint_tau_bench PRIVATE src)
-  target_compile_options(ca_joint_tau_bench PRIVATE ${CA_WARNINGS})
-  ca_sanitize(ca_joint_tau_bench)
-  add_executable(ca_joint_tau_hist experiments/prime-j0-hot-orbit-table/hist.c)
-  target_link_libraries(ca_joint_tau_hist PRIVATE ${CA_LINK_TARGET})
-  target_include_directories(ca_joint_tau_hist PRIVATE src)
-  target_compile_options(ca_joint_tau_hist PRIVATE ${CA_WARNINGS})
-  ca_sanitize(ca_joint_tau_hist)
-endif()
-
-if(CA_BUILD_PAIRED_RHO_BENCH)
-  add_executable(ca_paired_rho_bench experiments/prime-j0-paired-rho-startup/bench.c)
-  target_link_libraries(ca_paired_rho_bench PRIVATE ${CA_LINK_TARGET})
-  target_include_directories(ca_paired_rho_bench PRIVATE src)
-  target_compile_options(ca_paired_rho_bench PRIVATE ${CA_WARNINGS})
-  ca_sanitize(ca_paired_rho_bench)
-endif()
-
-if(CA_BUILD_TAU_CHAIN_BENCH)
-  add_executable(ca_tau_chain_bench
-                 experiments/prime-j0-cost-aware-chain/bench.c)
-  target_link_libraries(ca_tau_chain_bench PRIVATE ${CA_LINK_TARGET})
-  target_include_directories(ca_tau_chain_bench PRIVATE src)
-  target_compile_options(ca_tau_chain_bench PRIVATE ${CA_WARNINGS})
-  ca_sanitize(ca_tau_chain_bench)
-  add_executable(ca_tau_chain_design64
-                 experiments/prime-j0-cost-aware-chain/bench.c)
-  target_compile_definitions(ca_tau_chain_design64 PRIVATE SCALARS=64)
-  target_link_libraries(ca_tau_chain_design64 PRIVATE ${CA_LINK_TARGET})
-  target_include_directories(ca_tau_chain_design64 PRIVATE src)
-  target_compile_options(ca_tau_chain_design64 PRIVATE ${CA_WARNINGS})
-  ca_sanitize(ca_tau_chain_design64)
-endif()
-
-if(CA_BUILD_RHO_ORBIT_BENCH)
-  add_executable(ca_rho_orbit_bench
-                 experiments/prime-j0-cost-aware-chain/rho_orbit_one_target.c)
-  target_link_libraries(ca_rho_orbit_bench PRIVATE ${CA_LINK_TARGET})
-  target_include_directories(ca_rho_orbit_bench PRIVATE src)
-  target_compile_options(ca_rho_orbit_bench PRIVATE ${CA_WARNINGS})
-  if(CA_RHO_J0_COORDINATE_ORBIT)
-    target_compile_definitions(ca_rho_orbit_bench PRIVATE CA_RHO_J0_COORDINATE_ORBIT=1)
-  elseif(CA_RHO_J0_FACTORED_HASH)
-    target_compile_definitions(ca_rho_orbit_bench PRIVATE CA_RHO_J0_FACTORED_HASH=1)
-  endif()
-  ca_sanitize(ca_rho_orbit_bench)
-endif()
-
-if(CA_BUILD_JOINT_TAU_BENCH)
-  add_executable(ca_joint_tau_bench experiments/prime-j0-joint-tau-stream/bench.c)
-  target_link_libraries(ca_joint_tau_bench PRIVATE ${CA_LINK_TARGET})
-  target_include_directories(ca_joint_tau_bench PRIVATE src)
-  target_compile_options(ca_joint_tau_bench PRIVATE ${CA_WARNINGS})
-  ca_sanitize(ca_joint_tau_bench)
-  add_executable(ca_joint_tau_hist experiments/prime-j0-hot-orbit-table/hist.c)
-  target_link_libraries(ca_joint_tau_hist PRIVATE ${CA_LINK_TARGET})
-  target_include_directories(ca_joint_tau_hist PRIVATE src)
-  target_compile_options(ca_joint_tau_hist PRIVATE ${CA_WARNINGS})
-  ca_sanitize(ca_joint_tau_hist)
-endif()
-
-if(CA_BUILD_PAIRED_RHO_BENCH)
-  add_executable(ca_paired_rho_bench experiments/prime-j0-paired-rho-startup/bench.c)
-  target_link_libraries(ca_paired_rho_bench PRIVATE ${CA_LINK_TARGET})
-  target_include_directories(ca_paired_rho_bench PRIVATE src)
-  target_compile_options(ca_paired_rho_bench PRIVATE ${CA_WARNINGS})
-  ca_sanitize(ca_paired_rho_bench)
-endif()
-
-if(CA_BUILD_TAU_CHAIN_BENCH)
-  add_executable(ca_tau_chain_bench
-                 experiments/prime-j0-cost-aware-chain/bench.c)
-  target_link_libraries(ca_tau_chain_bench PRIVATE ${CA_LINK_TARGET})
-  target_include_directories(ca_tau_chain_bench PRIVATE src)
-  target_compile_options(ca_tau_chain_bench PRIVATE ${CA_WARNINGS})
-  ca_sanitize(ca_tau_chain_bench)
-  add_executable(ca_tau_chain_design64
-                 experiments/prime-j0-cost-aware-chain/bench.c)
-  target_compile_definitions(ca_tau_chain_design64 PRIVATE SCALARS=64)
-  target_link_libraries(ca_tau_chain_design64 PRIVATE ${CA_LINK_TARGET})
-  target_include_directories(ca_tau_chain_design64 PRIVATE src)
-  target_compile_options(ca_tau_chain_design64 PRIVATE ${CA_WARNINGS})
-  ca_sanitize(ca_tau_chain_design64)
-endif()
-
-if(CA_BUILD_RHO_ORBIT_BENCH)
-  add_executable(ca_rho_orbit_bench
-                 experiments/prime-j0-cost-aware-chain/rho_orbit_one_target.c)
-  target_link_libraries(ca_rho_orbit_bench PRIVATE ${CA_LINK_TARGET})
-  target_include_directories(ca_rho_orbit_bench PRIVATE src)
-  target_compile_options(ca_rho_orbit_bench PRIVATE ${CA_WARNINGS})
-  if(CA_RHO_J0_COORDINATE_ORBIT)
-    target_compile_definitions(ca_rho_orbit_bench PRIVATE CA_RHO_J0_COORDINATE_ORBIT=1)
-  elseif(CA_RHO_J0_FACTORED_HASH)
-    target_compile_definitions(ca_rho_orbit_bench PRIVATE CA_RHO_J0_FACTORED_HASH=1)
+  elseif(NOT CA_RHO_J0_FACTORED_HASH)
+    target_compile_definitions(ca_rho_orbit_bench PRIVATE CA_RHO_J0_LEGACY_HASH=1)
   endif()
   ca_sanitize(ca_rho_orbit_bench)
 endif()
@@ -446,6 +435,14 @@ if(CA_BUILD_TESTS)
       add_test(NAME ${t} COMMAND test_${t})
     endif()
   endforeach()
+  # The ISA guard behind -mno-mmx above: no instruction in the library may
+  # name an MMX register (they alias the x87 stack, and nothing here issues
+  # EMMS).  Runs wherever objdump exists and the target is x86-64.
+  find_program(CA_OBJDUMP NAMES objdump)
+  if(CA_OBJDUMP AND CMAKE_SYSTEM_PROCESSOR MATCHES "^(x86_64|AMD64|amd64)$")
+    add_test(NAME isa-no-mmx
+             COMMAND sh -c "! '${CA_OBJDUMP}' -d '$<TARGET_FILE:${CA_LINK_TARGET}>' | grep -q '%mm[0-7]'")
+  endif()
   find_package(Python3 COMPONENTS Interpreter QUIET)
   if(Python3_Interpreter_FOUND)
     add_test(

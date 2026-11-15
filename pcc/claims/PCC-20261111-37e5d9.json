@@ -1,0 +1,23 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-11T06:25:55Z",
+ "id": "PCC-20261111-37e5d9",
+ "kind": "statement",
+ "producer": {
+  "commit": "68594c8874c75a0a6c04a3874adb1374088ca4f5",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/differential-01.txt",
+    "sha256": "0b502d54dd837ba041ba9d7f5175338b468f7ae32e2cd1452f3fe6083c4a8261"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "CT02 development differential test compares canonical additions and inverses for all 10404 F101 source classes with the pre-existing cryptanalysis BigUint implementation after a coordinate-faithful monic chart change; no timing claim and no independent signed verification."
+}

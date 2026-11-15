@@ -973,3 +973,23 @@ class ReceiptBoundSourceControls(unittest.TestCase):
     def test_only_the_registered_path_is_routed(self):
         self.assertIn(self.SOURCE, gate.RECEIPT_BOUND_SOURCES)
         self.assertNotIn("research/xedni_lift_optimizer_20261101/lean/Other.lean", gate.RECEIPT_BOUND_SOURCES)
+
+    def test_glv_cap_registration_requires_all_seven_native_axiom_outputs(self):
+        source = "experiments/glv-cap-confirm-20261106/formal/no-worse-20261108/NoWorseLogic.lean"
+        record = gate.RECEIPT_BOUND_SOURCES[source]
+        for relative in (source, record["checker"]):
+            target = self.root / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(REPOSITORY / relative, target)
+        printed = "".join(
+            f"'GLVCapNoWorse.{name}' does not depend on any axioms\n"
+            for name in sorted(record["theorems"])
+        ) + "GLV cap proof and published input binding verified\n"
+        with patch.object(gate, "run") as run, redirect_stdout(StringIO()):
+            run.return_value.stdout = printed
+            self.assertEqual(gate.check_receipt_bound_source(source), record["sha256"])
+            self.assertTrue(run.call_args.args[0][1].endswith("check_native.py"))
+            run.return_value.stdout = printed.replace(
+                "'GLVCapNoWorse.pooled_pass_does_not_bound_family_upper' does not depend on any axioms\n", "")
+            with self.assertRaisesRegex(ValueError, "incomplete native axiom output"):
+                gate.check_receipt_bound_source(source)

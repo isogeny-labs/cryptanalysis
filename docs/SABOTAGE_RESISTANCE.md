@@ -41,11 +41,37 @@ What a saboteur is assumed **not** to control:
 | CI on `main` with repository secrets the producer session never holds | the session cannot read `secrets.*` | a verifier identity (signing key) separate from the producer |
 | the Lean 4 kernel and `lake` from the pinned toolchain | kernel-checked | theorem validity, given statement fidelity |
 | a proof-system verifier pinned by SHA-256 **and listed in the keyring** (RISC Zero receipts, later) | reviewed release, digest-pinned | execution validity of a prescribed computation |
-| the owner's key and the CI key in `pcc/keyring.json` | the only keys that sign verdicts | "independent" becomes a signature, not a boolean |
+| the owner's key and the CI key in `pcc/keyring.json` **as the base branch has it** | the only keys that sign verdicts | "independent" becomes a signature, not a boolean |
+| the repository variable `PCC_KEYRING_SHA256` | a pull request cannot write repository variables | the keyring cannot be changed by the tree it judges |
 | an external, append-only anchor (S3 checkpoints under a presigned POST policy; later a transparency log) | the producer cannot delete or rewrite | pre-registration and bypass events survive a rewritten branch |
 
 Everything else, including every JSON field a producer writes and every
 sentence a model writes, is data.
+
+**Whose keys count.** The keyring in a producer's working tree is data too: a
+producer can add a key to it and sign its own verdict. So the gate never reads
+the keyring it is judging:
+
+- On a pull request, standings are computed with the keyring of the base
+  branch (`pcc --keyring-ref origin/<base> …`, or `PCC_KEYRING_REF`). A key
+  the request adds is not in it.
+- `pcc ledger verify --base REF` fails when `pcc/keyring.json` differs from
+  `REF` by a single byte, unless the file's SHA-256 equals the owner's pin
+  (`--keyring-sha256`, or `PCC_KEYRING_SHA256`, set from the repository
+  variable of that name). An empty keyring may be introduced where there was
+  none.
+- When the pin is set, every command that reads the working-tree keyring
+  refuses a keyring that does not match it.
+- A base or keyring ref that does not resolve to a commit is a failure, not
+  "nothing to compare".
+
+To add or rotate a key the owner runs `pcc keygen`, puts the public key in
+`pcc/keyring.json`, sets `PCC_KEYRING_SHA256` to `sha256sum pcc/keyring.json`,
+and merges that change; the secret goes in `PCC_SIGNING_KEY`. What this does
+not cover: a pull request that edits `tools/pcc/pcc.py` or the gate workflow
+itself. Those are guarded by review of `.github/` and `tools/pcc/`
+(CODEOWNERS, branch protection), which is hosting policy and not something
+the tool can enforce.
 
 ## 3. Invariants the harness enforces
 
@@ -139,7 +165,11 @@ trusted signature;
 claim: proof path outside the repository; pinned proof digest mismatch; a
 claim kind whose minimum proof kind is absent;
 prose: a strong-claim sentence with no citation; a citation to a claim that
-is not verified.
+is not verified;
+trust (run through the command line, as the gate runs it): a verdict signed by
+a key the producer added to its own keyring, read under the base keyring; a
+keyring that differs from the base; a keyring that does not match the pin; a
+base ref and a keyring ref that do not resolve.
 
 Look-alikes that must **not** be flagged: `sorry` inside a comment or string;
 a verified claim cited in prose; a sentence explicitly tagged
