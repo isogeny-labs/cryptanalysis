@@ -67,6 +67,7 @@ summary=dict(status='started',qualified=None,scope='whole-guest instruction attr
 try:
  doc=json.loads((HERE/'profile-input.json').read_text());prepared=doc['prepared']
  assert sha(HERE/'instances.json')==doc['instances_sha256']
+ assert sha(HERE/'workload.json')==doc['workload_sha256']
  for filename,pin in doc['candidates'].items():assert sha(ROOT/'experiments/ic-bench/candidates'/filename)==pin
  job=prepared['source_job'];metadata=(Path('/jobs')/job/'job.json').read_bytes()
  assert hashlib.sha256(metadata).hexdigest()==prepared['job_metadata_sha256']
@@ -100,6 +101,8 @@ try:
   if mode.startswith('rho-'):report=result['solver']
   else:
    report=result['report']['Ok'];native=report['decomposition']['setup']['native']
+   assert report['decomposition']['name']=='mitm-batched'
+   assert int(report['spec']['oracle_params']['vector_prepare'])==(2 if 'packed' in mode else 1) and int(report['spec']['oracle_params']['batch_size'])==1024
    assert native['mitm_vector_pairs']>0 and native['mitm_vector_pclmul128_pairs']==native['mitm_vector_pairs'] and native['mitm_vector_vpclmul_pairs']==0
    assert native['mitm_vector_packed_square_pairs']==(native['mitm_vector_pairs'] if 'packed' in mode else 0)
   assert report['verified'] and report['recovered']==target[0]
