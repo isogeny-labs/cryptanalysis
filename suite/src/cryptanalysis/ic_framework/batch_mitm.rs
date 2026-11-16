@@ -24,10 +24,16 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for BinaryBatchMitmOracle {
         "ordered negation-folded binary pair table with bounded batch inversions; complete native setup charged".into()
     }
     fn parameters(&self) -> &[(&str, &str)] {
-        &[(
-            "batch_size",
-            "bounded ordered preparation chunk (1..=65536, default1024)",
-        )]
+        &[
+            (
+                "batch_size",
+                "bounded ordered preparation chunk (1..=65536, default1024)",
+            ),
+            (
+                "x_only",
+                "0 or1, default0; omit unused ordinates during preparation",
+            ),
+        ]
     }
     fn prepare(
         &mut self,
@@ -43,10 +49,18 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for BinaryBatchMitmOracle {
         if !(1..=65536).contains(&size) {
             return Err("batch_size must be in1..=65536".into());
         }
+        let x_only = params.u64_or("x_only", 0)?;
+        if x_only > 1 {
+            return Err("x_only must be0 or1".into());
+        }
         let start = Instant::now();
         self.table = Some(
-            PairTable::build_negation_folded_binary_batched(ctx.group.0, fb, size as usize)
-                .map_err(str::to_string)?,
+            (if x_only == 1 {
+                PairTable::build_negation_folded_binary_abscissae(ctx.group.0, fb, size as usize)
+            } else {
+                PairTable::build_negation_folded_binary_batched(ctx.group.0, fb, size as usize)
+            })
+            .map_err(str::to_string)?,
         );
         self.setup_ns = self
             .setup_ns
@@ -121,6 +135,33 @@ mod tests {
         assert!(setup.get("mitm_batch_setup_ns") > 0);
         assert_eq!(setup.group_ops, GroupOps::default());
         assert_eq!(setup.gae, setup.get("mitm_batch_setup_ns") as f64);
+        spec.oracle_params.set("x_only", "1");
+        let x_report = run_pipeline(
+            &ctx,
+            &spec,
+            &BinarySubspaceBase { instance: &inst },
+            &mut BinaryBatchMitmOracle::default(),
+            planted,
+            &calib,
+            None,
+        )
+        .unwrap();
+        assert!(x_report.verified);
+        assert_eq!(x_report.recovered, Some(planted));
+        assert_eq!(
+            x_report.decomposition.targets_tried,
+            report.decomposition.targets_tried
+        );
+        assert_eq!(
+            x_report.decomposition.relations_found,
+            report.decomposition.relations_found
+        );
+        assert_eq!(x_report.linear_algebra.rank, report.linear_algebra.rank);
+        assert_eq!(x_report.decomposition.setup.group_ops, GroupOps::default());
+        assert_eq!(
+            x_report.decomposition.setup.gae,
+            x_report.decomposition.setup.get("mitm_batch_setup_ns") as f64
+        );
         let empty = FactorBase::<FastPoint>::empty("empty validation base".into());
         let table = PairTable::build_negation_folded_binary_batched(&inst.fast, &empty, 7).unwrap();
         assert_eq!(table.entries, 0);
@@ -133,7 +174,12 @@ mod tests {
                 inst.generator
             )
             .is_none());
-        for (key, value) in [("m", "3"), ("batch_size", "0"), ("batch_size", "65537")] {
+        for (key, value) in [
+            ("m", "3"),
+            ("batch_size", "0"),
+            ("batch_size", "65537"),
+            ("x_only", "2"),
+        ] {
             let mut params = Params::default();
             params.set(key, value);
             assert!(BinaryBatchMitmOracle::default()

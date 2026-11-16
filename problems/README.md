@@ -9,6 +9,7 @@ explain the gap and what would let the work move past it.
 
 | Problem | Status | What it blocks | What would unblock it |
 | --- | --- | --- | --- |
+| [IC probe lookup pricing](ic-probe-lookup-pricing.md) | observed; future repair | complete interpretation of archived partial model costs | positive shared calibration and a fresh panel; old raw records retained |
 | [Full IC pipeline build envelope](ic-pipeline-build-envelope.md) | resolved for preparation | original330-second build cap prevented algorithm execution | separate pinned binaries and complete frozen matrix retained; timing qualification remains open |
 | [Parallel PCC appends for native IC](pcc-parallel-append-ic-native.md) | open | PR1621 integration after main/branch append different suffixes at167 | accepted custody-preserving reconciliation and actual current-main prefix/hash-link checks |
 | [Native IC controlled timing qualification](native-ic-timing-qualification.md) | investigating | current-baseline timing promotion and independent claim standing | prepared host or equivalent v1-aware preflight, passing frozen controls, and signed evidence |

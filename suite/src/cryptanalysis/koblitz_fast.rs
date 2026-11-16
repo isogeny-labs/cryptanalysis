@@ -394,6 +394,68 @@ impl FastCurve {
         }
     }
 
+    /// Abscissae of `P_i + Q_i`, with one batch inversion. `None` is O.
+    /// Ordinary sums never compute an ordinate; exceptional pairs use the
+    /// exact existing addition. The caller must not treat an abscissa as a
+    /// full point or a verified decomposition.
+    pub fn add_pairwise_abscissae(
+        &self,
+        ps: &[FastPoint],
+        qs: &[FastPoint],
+        out: &mut Vec<Option<u64>>,
+        scratch: &mut BatchScratch,
+    ) {
+        assert_eq!(ps.len(), qs.len(), "pairwise addition needs equal slices");
+        #[cfg(target_arch = "x86_64")]
+        if self.field.has_clmul() {
+            // SAFETY: runtime detection covers the only enabled feature.
+            return unsafe { self.add_pairwise_abscissae_clmul(ps, qs, out, scratch) };
+        }
+        self.add_pairwise_abscissae_body(ps, qs, out, scratch);
+    }
+
+    #[cfg(target_arch = "x86_64")]
+    #[target_feature(enable = "pclmulqdq")]
+    unsafe fn add_pairwise_abscissae_clmul(
+        &self,
+        ps: &[FastPoint],
+        qs: &[FastPoint],
+        out: &mut Vec<Option<u64>>,
+        scratch: &mut BatchScratch,
+    ) {
+        self.add_pairwise_abscissae_body(ps, qs, out, scratch);
+    }
+
+    #[inline(always)]
+    fn add_pairwise_abscissae_body(
+        &self,
+        ps: &[FastPoint],
+        qs: &[FastPoint],
+        out: &mut Vec<Option<u64>>,
+        scratch: &mut BatchScratch,
+    ) {
+        let f = &self.field;
+        scratch.dens.clear();
+        scratch.dens.extend(ps.iter().zip(qs).map(|(p, q)| {
+            if p.infinity || q.infinity || p.x == q.x {
+                0
+            } else {
+                p.x ^ q.x
+            }
+        }));
+        f.batch_inv(&mut scratch.dens, &mut scratch.acc);
+        out.reserve(ps.len());
+        for ((p, q), &inv) in ps.iter().zip(qs).zip(&scratch.dens) {
+            if inv == 0 {
+                let sum = self.add(*p, *q);
+                out.push((!sum.infinity).then_some(sum.x));
+            } else {
+                let lambda = f.mul(p.y ^ q.y, inv);
+                out.push(Some(f.sqr(lambda) ^ lambda ^ p.x ^ q.x ^ self.a));
+            }
+        }
+    }
+
     /// `[k]P` by double-and-add.
     pub fn mul_u64(&self, p: FastPoint, k: u64) -> FastPoint {
         if k == 0 || p.infinity {
@@ -1622,6 +1684,50 @@ mod tests {
                     fc.mul_u64(fp, 0x9e37_79b9u64 + u64::from(n))
                 );
             }
+        }
+    }
+
+    #[test]
+    fn pairwise_abscissae_match_full_points_including_exceptions() {
+        for n in [7, 13, 19, 23, 31, 53, 61] {
+            let kc = KoblitzCurve::new(0, n).unwrap();
+            let fc = FastCurve::new(&kc.curve).unwrap();
+            let mut points: Vec<_> = random_points(&kc, 12, 29)
+                .iter()
+                .map(|p| fc.lift(p))
+                .collect();
+            points.extend([FastPoint::INFINITY, FastPoint::affine(0, 1)]);
+            let mut ps = Vec::new();
+            let mut qs = Vec::new();
+            for &p in &points {
+                for &q in &points {
+                    ps.push(p);
+                    qs.push(q);
+                }
+                for q in [p, fc.neg(p)] {
+                    ps.push(p);
+                    qs.push(q);
+                }
+            }
+            let mut scratch = BatchScratch::default();
+            let mut actual = vec![Some(123)];
+            fc.add_pairwise_abscissae(&ps, &qs, &mut actual, &mut scratch);
+            assert_eq!(actual[0], Some(123));
+            let expected: Vec<_> = ps
+                .iter()
+                .zip(&qs)
+                .map(|(&p, &q)| {
+                    let s = fc.add(p, q);
+                    (!s.infinity).then_some(s.x)
+                })
+                .collect();
+            assert_eq!(&actual[1..], &expected, "n={n}");
+            let mut portable = Vec::new();
+            fc.add_pairwise_abscissae_body(&ps, &qs, &mut portable, &mut scratch);
+            assert_eq!(portable, expected, "portable n={n}");
+            let mut empty = Vec::new();
+            fc.add_pairwise_abscissae(&[], &[], &mut empty, &mut scratch);
+            assert!(empty.is_empty());
         }
     }
 

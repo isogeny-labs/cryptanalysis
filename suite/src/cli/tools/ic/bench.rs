@@ -180,7 +180,7 @@ fn listing() -> Value {
                     {"name": "mitm-frobenius", "summands": "2 or 3", "regimes": ["koblitz"],
                      "parameters": [{"name": "m", "means": "summands, 2 or 3"}]},
                     {"name": "mitm-batched", "summands": "2", "regimes": ["char2", "koblitz"],
-                     "parameters": [{"name":"batch_size","means":"1..=65536, default1024; ordered batch preparation"}]},
+                     "parameters": [{"name":"x_only","means":"0 or1, default0; abscissa-only preparation"},{"name":"batch_size","means":"1..=65536, default1024; ordered batch preparation"}]},
                     {"name": "affine-s3", "summands": "2", "regimes": ["char2", "koblitz"],
                      "parameters": [{"name":"max_residual","means":"0..20, default12; complete subtraction fallback beyond it"},
                                     {"name":"column_solver","means":"0 or1, default0; direct projected column elimination"},

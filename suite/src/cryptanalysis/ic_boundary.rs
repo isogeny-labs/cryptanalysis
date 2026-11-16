@@ -3146,6 +3146,24 @@ impl PairTable {
         fb: &FactorBase<FastPoint>,
         chunk_size: usize,
     ) -> Result<Self, &'static str> {
+        Self::build_binary_batch(curve, fb, chunk_size, false)
+    }
+
+    /// Same ordered table, omitting ordinates unused by its abscissa keys.
+    pub fn build_negation_folded_binary_abscissae(
+        curve: &FastCurve,
+        fb: &FactorBase<FastPoint>,
+        chunk_size: usize,
+    ) -> Result<Self, &'static str> {
+        Self::build_binary_batch(curve, fb, chunk_size, true)
+    }
+
+    fn build_binary_batch(
+        curve: &FastCurve,
+        fb: &FactorBase<FastPoint>,
+        chunk_size: usize,
+        x_only: bool,
+    ) -> Result<Self, &'static str> {
         if !(1..=65536).contains(&chunk_size) {
             return Err("MITM batch size must be in1..=65536");
         }
@@ -3160,16 +3178,28 @@ impl PairTable {
             let mut ps = Vec::with_capacity(chunk_size);
             let mut qs = Vec::with_capacity(chunk_size);
             let mut indices = Vec::with_capacity(chunk_size);
-            let mut sums = Vec::with_capacity(chunk_size);
+            let mut sums = Vec::with_capacity(if x_only { 0 } else { chunk_size });
+            let mut abscissae = Vec::with_capacity(if x_only { chunk_size } else { 0 });
             let mut scratch = crate::cryptanalysis::koblitz_fast::BatchScratch::default();
             let mut flush = |ps: &mut Vec<FastPoint>,
                              qs: &mut Vec<FastPoint>,
                              indices: &mut Vec<(u32, u32)>| {
-                sums.clear();
-                curve.add_pairwise(ps, qs, &mut sums, &mut scratch);
-                for (sum, &pair) in sums.iter().zip(indices.iter()) {
-                    if !sum.infinity {
-                        map.entry(sum.pack() >> 1).or_insert(pair);
+                if x_only {
+                    abscissae.clear();
+                    curve.add_pairwise_abscissae(ps, qs, &mut abscissae, &mut scratch);
+                    for (x, &pair) in abscissae.iter().zip(indices.iter()) {
+                        if let Some(x) = x {
+                            // Match FastPoint::pack() >> 1: zero is reserved for O.
+                            map.entry(*x + 1).or_insert(pair);
+                        }
+                    }
+                } else {
+                    sums.clear();
+                    curve.add_pairwise(ps, qs, &mut sums, &mut scratch);
+                    for (sum, &pair) in sums.iter().zip(indices.iter()) {
+                        if !sum.infinity {
+                            map.entry(sum.pack() >> 1).or_insert(pair);
+                        }
                     }
                 }
                 ps.clear();
@@ -3195,7 +3225,11 @@ impl PairTable {
             map
         };
         Ok(Self {
-            kind: "negation_folded_batch",
+            kind: if x_only {
+                "negation_folded_batch_xonly"
+            } else {
+                "negation_folded_batch"
+            },
             entries: map.len() as u64,
             map,
             build_ops: GroupOps::default(),
@@ -3270,7 +3304,10 @@ impl PairTable {
             entries: self.entries,
             group_ops: self.build_ops,
             wall_ns: self.build_wall_ns,
-            native: if self.kind == "negation_folded_batch" {
+            native: if matches!(
+                self.kind,
+                "negation_folded_batch" | "negation_folded_batch_xonly"
+            ) {
                 vec![("mitm_batch_setup_ns", self.build_wall_ns)]
             } else {
                 Vec::new()

@@ -2,7 +2,7 @@
 use cryptanalysis_suite::binary_ecc::{BinaryCurve, BinaryPoint, IrreduciblePoly};
 use cryptanalysis_suite::cryptanalysis::ic_boundary::{
     binary_subspace_factor_base, calibrate_binary_instance, rho_reference, rho_reference_negation,
-    ArtinSchreier, BinaryGroup, BinaryInstance, CountedGroup, GroupOps,
+    ArtinSchreier, BinaryGroup, BinaryInstance, Calibration, CountedGroup, GroupOps, PairTable,
 };
 use cryptanalysis_suite::cryptanalysis::ic_framework::affine::AffineS3Oracle;
 use cryptanalysis_suite::cryptanalysis::ic_framework::batch_mitm::BinaryBatchMitmOracle;
@@ -80,6 +80,40 @@ fn instance(record: &Value) -> BinaryInstance {
     }
 }
 
+// A benchmark unit receipt, checked before reuse by every arm on this curve.
+fn frozen_calibration(path: &str, curve_id: &str) -> Calibration {
+    let receipt: Value = serde_json::from_slice(&std::fs::read(path).unwrap()).unwrap();
+    assert_eq!(receipt["curve_id"], curve_id);
+    let r = &receipt["calibration"];
+    let required = |key: &str| {
+        let x = r[key].as_f64().expect("missing calibration unit");
+        assert!(x.is_finite() && x > 0.0);
+        x
+    };
+    let optional = |key: &str| {
+        let value = r[key].as_f64();
+        if let Some(x) = value {
+            assert!(x.is_finite() && x >= 0.0);
+        }
+        value
+    };
+    Calibration {
+        ns_per_add: required("ns_per_add"),
+        ns_per_double: required("ns_per_double"),
+        ns_per_lookup: required("ns_per_lookup"),
+        ns_per_row_op: required("ns_per_row_op"),
+        ns_per_sqrt: optional("ns_per_sqrt"),
+        ns_per_as_solve: optional("ns_per_as_solve"),
+        ns_per_s4_pair: optional("ns_per_s4_pair"),
+        ns_per_word_xor: optional("ns_per_word_xor"),
+        ns_per_legendre: optional("ns_per_legendre"),
+        ns_per_inversion: optional("ns_per_inversion"),
+        ns_per_frobenius: optional("ns_per_frobenius"),
+        ns_per_canon: optional("ns_per_canon"),
+        pinned_units: serde_json::from_value(r["pinned_units"].clone()).unwrap(),
+    }
+}
+
 fn main() {
     let args: Vec<String> = std::env::args().collect();
     let records: Vec<Value> = serde_json::from_slice(&std::fs::read(&args[1]).unwrap()).unwrap();
@@ -122,6 +156,36 @@ fn main() {
         );
         return;
     }
+    if mode == "verify-xonly" {
+        let basis: Vec<_> = (0..dimension).map(|i| 1 << i).collect();
+        let fb = binary_subspace_factor_base(&inst, &basis);
+        let reference = PairTable::build_negation_folded(&group, &fb);
+        let mut checked = 0u64;
+        for chunk in [1, 7, 1024] {
+            let batch =
+                PairTable::build_negation_folded_binary_abscissae(&inst.fast, &fb, chunk).unwrap();
+            assert_eq!(reference.entries, batch.entries);
+            let mut check = |p| {
+                assert_eq!(
+                    reference.probe(&group, &fb, &mut GroupOps::default(), &mut 0, p),
+                    batch.probe(&group, &fb, &mut GroupOps::default(), &mut 0, p)
+                );
+                checked += 1;
+            };
+            check(FastPoint::INFINITY);
+            for x in 0..1u64 << inst.n {
+                for p in inst.points_with_x(x) {
+                    check(p);
+                }
+            }
+        }
+        assert_eq!(checked, inst.group_order * 3);
+        println!(
+            "{}",
+            json!({"curve_id":inst.name,"status":"pass","checks":checked,"has_clmul":inst.gf.has_clmul()})
+        );
+        return;
+    }
     let fixture: u64 = args[4].parse().unwrap();
     let mut rng =
         StdRng::seed_from_u64(0x5333_5049_5045 ^ fixture.wrapping_mul(0x9e37_79b9_7f4a_7c15));
@@ -141,14 +205,29 @@ fn main() {
     let started = Instant::now();
     let calibration = if mode == "workload" {
         Default::default()
+    } else if let Some(path) = args.get(5) {
+        frozen_calibration(path, &inst.name)
     } else {
-        calibrate_binary_instance(&inst)
+        let mut units = calibrate_binary_instance(&inst);
+        let basis: Vec<_> = (0..dimension).map(|i| 1 << i).collect();
+        let fb = binary_subspace_factor_base(&inst, &basis);
+        let table = PairTable::build_negation_folded(&group, &fb);
+        units.ns_per_lookup = table.calibrate_lookup(1_000_000);
+        assert!(units.ns_per_lookup.is_finite() && units.ns_per_lookup > 0.0);
+        units
     };
     let calibration_ns = started.elapsed().as_nanos() as u64;
     if mode == "workload" {
         println!(
             "{}",
             json!({"curve_id":inst.name,"fixture":fixture,"planted":planted,"target":[target.x,target.y],"target_seed":target_seed})
+        );
+        return;
+    }
+    if mode == "calibration" {
+        println!(
+            "{}",
+            json!({"curve_id":inst.name,"calibration":calibration,"calibration_ns":calibration_ns})
         );
         return;
     }
@@ -179,13 +258,13 @@ fn main() {
     }
     assert!(matches!(
         mode,
-        "mitm" | "mitm-batched" | "affine" | "affine-cached" | "affine-columns"
+        "mitm" | "mitm-batched" | "mitm-xonly" | "affine" | "affine-cached" | "affine-columns"
     ));
     let mut spec = PipelineSpec {
         factor_base: "binary-subspace".into(),
         oracle: match mode {
             "mitm" => "mitm",
-            "mitm-batched" => "mitm-batched",
+            "mitm-batched" | "mitm-xonly" => "mitm-batched",
             _ => "affine-s3",
         }
         .into(),
@@ -211,9 +290,11 @@ fn main() {
         "column_solver",
         if mode == "affine-columns" { "1" } else { "0" },
     );
+    spec.oracle_params
+        .set("x_only", if mode == "mitm-xonly" { "1" } else { "0" });
     let mut oracle: Box<dyn DecompositionOracle<BinaryGroup<'_>> + '_> = if mode == "mitm" {
         Box::new(MitmOracle::new(2))
-    } else if mode == "mitm-batched" {
+    } else if matches!(mode, "mitm-batched" | "mitm-xonly") {
         Box::new(BinaryBatchMitmOracle::default())
     } else {
         Box::new(AffineS3Oracle::new(&inst))

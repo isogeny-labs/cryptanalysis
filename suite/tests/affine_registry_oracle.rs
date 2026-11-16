@@ -164,9 +164,20 @@ fn batched_mitm_preserves_all_registered_curve_witnesses() {
         let basis: Vec<_> = (0..integer(&record["dimension"])).map(|i| 1 << i).collect();
         let fb = binary_subspace_factor_base(&inst, &basis);
         let reference = PairTable::build_negation_folded(&group, &fb);
-        for chunk in [1, 7, 1024] {
-            let batch =
-                PairTable::build_negation_folded_binary_batched(&inst.fast, &fb, chunk).unwrap();
+        for (chunk, x_only) in [
+            (1, false),
+            (7, false),
+            (1024, false),
+            (1, true),
+            (7, true),
+            (1024, true),
+        ] {
+            let batch = if x_only {
+                PairTable::build_negation_folded_binary_abscissae(&inst.fast, &fb, chunk)
+            } else {
+                PairTable::build_negation_folded_binary_batched(&inst.fast, &fb, chunk)
+            }
+            .unwrap();
             assert_eq!(batch.entries, reference.entries);
             assert_eq!(batch.build_ops.adds, 0);
             assert!(batch
@@ -178,7 +189,11 @@ fn batched_mitm_preserves_all_registered_curve_witnesses() {
             let mut check = |p| {
                 let a = reference.probe(&group, &fb, &mut GroupOps::default(), &mut 0, p);
                 let b = batch.probe(&group, &fb, &mut GroupOps::default(), &mut 0, p);
-                assert_eq!(a, b, "{} chunk={chunk} target={p:?}", inst.name);
+                assert_eq!(
+                    a, b,
+                    "{} chunk={chunk} x_only={x_only} target={p:?}",
+                    inst.name
+                );
                 checked += 1;
             };
             check(FastPoint::INFINITY);
@@ -189,7 +204,7 @@ fn batched_mitm_preserves_all_registered_curve_witnesses() {
             }
             assert_eq!(checked, inst.group_order);
             eprintln!(
-                "batch curve={} chunk={chunk} full_targets={checked}",
+                "batch curve={} chunk={chunk} x_only={x_only} full_targets={checked}",
                 inst.name
             );
         }
