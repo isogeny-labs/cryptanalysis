@@ -282,7 +282,10 @@ def build(n: int, family: str, l: int, seed: int, points: bool = True, strict_li
     import external
 
     extra = dict(extra or {})
-    if family == "heckecm":
+    if family == "registry-prefix":
+        from registry_prefix_archive import build as registry_build
+        doc = registry_build(n, l, seed, points, extra)
+    elif family == "heckecm":
         if extra:
             raise ValueError("heckecm takes no extra parameters")
         from hecke_source_archive import build as hecke_build
