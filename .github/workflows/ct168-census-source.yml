@@ -6,6 +6,8 @@ on:
       - 'experiments/chained-transfer-public-target/ct167-sextic-control/ct167_sextic_control.py'
       - '.github/workflows/ct168-census-source.yml'
   workflow_dispatch:
+permissions:
+  contents: read
 jobs:
   bounded-source-only:
     runs-on: ubuntu-latest
@@ -26,6 +28,8 @@ jobs:
           /tmp/ct168-generic > /tmp/ct168-generic.json
           python3 "$D/ct168_trace_audit.py" /tmp/ct168-direct.json /tmp/ct168-generic.json > /tmp/ct168-audit.json
           python3 -O "$D/ct168_trace_audit.py" /tmp/ct168-direct.json /tmp/ct168-generic.json > /tmp/ct168-audit-opt.json
+          python3 "$D/ct169_audit_mutation_test.py" /tmp/ct168-direct.json /tmp/ct168-generic.json
+          python3 -O "$D/ct169_audit_mutation_test.py" /tmp/ct168-direct.json /tmp/ct168-generic.json
           python3 - "$D" <<'PY'
           import json, pathlib, sys
           d=pathlib.Path(sys.argv[1])
