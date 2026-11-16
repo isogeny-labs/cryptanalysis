@@ -62,11 +62,20 @@ theorem relation_transfer {R F : Type*} [AddCommGroup R] [AddCommGroup F]
     a • U + b • V = reduce (a • P + b • Q) := by simp [map_zsmul, hP, hQ]
     _ = 0 := by simp [hrel]
 
+/-- A public nonrelation rules out the same relation for every pair of lifts with these reductions. -/
+theorem no_lift_relation_of_no_public {R F : Type*} [AddCommGroup R] [AddCommGroup F]
+    (reduce : R →+ F) (P Q : R) (U V : F) (a b : ℤ)
+    (hP : reduce P = U) (hQ : reduce Q = V)
+    (hpub : a • U + b • V ≠ 0) : a • P + b • Q ≠ 0 := by
+  intro hrel
+  exact hpub (relation_transfer reduce P Q U V a b hP hQ hrel)
+
 #print axioms first_point_equation
 #print axioms second_point_equation
 #print axioms interpA_eq_of_two_equations
 #print axioms interpB_eq_of_two_equations
 #print axioms same_x_opposite
 #print axioms relation_transfer
+#print axioms no_lift_relation_of_no_public
 
 end XedniTwoImagePrecommit

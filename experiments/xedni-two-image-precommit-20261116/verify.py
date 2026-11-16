@@ -26,7 +26,8 @@ assert not re.search(r'\b(sorry|admit|axiom|native_decide)\b',source)
 build=(H/'formal/build-output.txt').read_text()
 assert 'Build completed successfully (9040 jobs).' in build
 expected=['first_point_equation','second_point_equation','interpA_eq_of_two_equations',
-          'interpB_eq_of_two_equations','same_x_opposite','relation_transfer']
+          'interpB_eq_of_two_equations','same_x_opposite','relation_transfer',
+          'no_lift_relation_of_no_public']
 for name in expected:
     match=re.search(r"'XedniTwoImagePrecommit\."+name+r"' depends on axioms: \[([^]]*)\]",build)
     assert match,name
