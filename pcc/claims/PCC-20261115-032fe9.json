@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-15T23:20:38Z",
+ "id": "PCC-20261115-032fe9",
+ "kind": "theorem",
+ "producer": {
+  "commit": "6bb2516b64e7112356e58e45da590d60591c0461",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "381c791a3acbd1835ec7e7b4648d1e4a48e148bd33fd29c1d7cb2dc97893b9f7",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-lp-presentation-01/lean/LPProjection.lean",
+   "theorem": "LPProjection.combine_kernel"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Known ring cancellations and finite homogeneous linear-kernel projection under explicit full-projection-span, constraint-span, annihilation and valid-full-lift hypotheses. Both unchanged original gates audit13declarations: ten named substantive theorems and three generated dot equations, standard foundations only,0trusted. No new identity or novelty, no concrete numerical basis-completeness theorem, no q223 population, Picard character or solver/program bridge, solve/cost/complexity claim. Original native identity checker and SHA included unchanged; deterministic extra-point diagnostics are not signed independent execution proofs. Unsigned local theorem binding.",
+ "statement": "theorem combine_kernel {I R C K : Type} [CommRing K] (columns : List C) (matrix : R \u2192 C \u2192 K) (indices : List I) (coefficient : I \u2192 K) (vectors : I \u2192 C \u2192 K) (valid : \u2200 i, RowKernel columns matrix (vectors i)) : RowKernel columns matrix (combine indices coefficient vectors)"
+}

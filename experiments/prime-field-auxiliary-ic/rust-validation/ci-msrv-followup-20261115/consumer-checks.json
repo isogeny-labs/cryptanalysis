@@ -1,0 +1,67 @@
+{
+  "source_commit": "bbdf695dcd03b8c4730f10aaa17747f1072cdac1",
+  "scope": "crates/hashed-ecdl-tensor structured consumer",
+  "checks": [
+    {
+      "name": "consumer-format",
+      "command": [
+        "cargo",
+        "+stable",
+        "fmt",
+        "--check"
+      ],
+      "cwd": "crates/hashed-ecdl-tensor",
+      "exit_code": 0,
+      "log": "experiments/prime-field-auxiliary-ic/rust-validation/ci-msrv-followup-20261115/consumer-format.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "consumer-clippy",
+      "command": [
+        "cargo",
+        "+stable",
+        "clippy",
+        "--locked",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "cwd": "crates/hashed-ecdl-tensor",
+      "exit_code": 0,
+      "log": "experiments/prime-field-auxiliary-ic/rust-validation/ci-msrv-followup-20261115/consumer-clippy.log",
+      "sha256": "3ca5aa50286060abcb74b8c30e847d1b82a8b7bf317e5fc6f24f746aa64b0302"
+    },
+    {
+      "name": "consumer-tests",
+      "command": [
+        "cargo",
+        "+stable",
+        "test",
+        "--locked",
+        "--release",
+        "--lib",
+        "--test",
+        "structured_cli"
+      ],
+      "cwd": "crates/hashed-ecdl-tensor",
+      "exit_code": 0,
+      "log": "experiments/prime-field-auxiliary-ic/rust-validation/ci-msrv-followup-20261115/consumer-tests.log",
+      "sha256": "e5f0ed0aaed1c4c68af2b29e6c50e6e169b24b00c5500247417d5b86b9894796"
+    },
+    {
+      "name": "consumer-msrv",
+      "command": [
+        "cargo",
+        "+1.85.0",
+        "check",
+        "--locked",
+        "--all-targets"
+      ],
+      "cwd": "crates/hashed-ecdl-tensor",
+      "exit_code": 0,
+      "log": "experiments/prime-field-auxiliary-ic/rust-validation/ci-msrv-followup-20261115/consumer-msrv.log",
+      "sha256": "cea94a545a57e42d8a47f2e95243ebc1fa5ae5792ab661f9b8f0672c4823637c"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T17:04:49Z",
+ "id": "PCC-20261116-c05fcb",
+ "kind": "statement",
+ "producer": {
+  "commit": "bb451dc4c85e001cc7c3b629cdeff93a7235b6c9",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/genuine-docs-subject-verdict-schema-correction-15/ACTUAL_VERDICT_SCHEMA_CORRECTION.json",
+    "sha256": "3a90193c3a0e3f1671f3dc35c221af8635cc118617bc1c08ff1ba8ddebce282a"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/genuine-docs-original-source-and-subject-guards-14/original-affected-0.stdout.xz",
+    "sha256": "4484859cdfbaffafcb671c71e62c933195fb802a314c9fde519e07d917de19e2"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/genuine-docs-original-source-and-subject-guards-14/original-affected-0.exit",
+    "sha256": "53c234e5e8472b6ac51c1ae1cab3fe06fad053beb8ebfd8977b010655bfdd3c3"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Consumer original source guards1605/50/12/9 all0; first affected original PCC result is valid2/not_covered with every attestation byte-proof reason empty and expected overall statement-has-no-proof-kind reason. Metadata helper wrongly asserted overall reasons empty and stopped; full original result retained, no failed original subject or verified standing. Correct helper reads the stored first result without rerun, checks all per-proof reasons and exact expected overall data-only reason, then continues remaining original claims. Verifier/keyring/policy/frozen workflow/data unchanged, no native/paid/signed promotion."
+}

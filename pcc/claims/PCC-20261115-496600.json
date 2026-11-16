@@ -1,0 +1,24 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-15T21:28:13Z",
+ "id": "PCC-20261115-496600",
+ "kind": "theorem",
+ "producer": {
+  "commit": "df1564ab593d14a5dd75bfc0b819f9eb27f1b21c",
+  "model": "GPT-6",
+  "session": "codex-field-fiber-native-20261115"
+ },
+ "proofs": [
+  {
+   "decl_sha256": "ceb377ecedb780d66de871834990e15f06b05141a9eb7b755cbd15bf3055eae0",
+   "kind": "lean",
+   "path": "experiments/prime-field-auxiliary-ic/rust-validation/field-fibers-20261115/formal/FieldFibers.lean",
+   "project": "experiments/prime-field-auxiliary-ic/rust-validation/field-fibers-20261115/formal",
+   "sha256": "4619833d39918f1387ff09df786b2893ba8bf68b07ae26e0f5a7ea3ed73d340c",
+   "theorem": "AuxiliaryIC.FieldFibers.torus_push"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "The universal polynomial coefficient identity torus_push only; no finite-field completeness, relation yield, running time or DLP recovery conclusion.",
+ "statement": "For every commutative ring R and d,c,h,z in R: d^2*z^2-(c^2-2*d*h-4*d^2)*z+(h^2-2*(c^2-2*d*h)+4*d^2) = d^2*(z+2)^2-(c^2-2*d*h)*(z+2)+h^2."
+}

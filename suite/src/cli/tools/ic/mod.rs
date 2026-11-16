@@ -1,4 +1,5 @@
 //! Research CLI: read-only curve inspection and bounded known-answer experiments.
+mod auxiliary;
 mod bench;
 mod boundary;
 mod budget;
@@ -28,7 +29,7 @@ use std::{
     about = "Curve inspection and synthetic index-calculus research"
 )]
 #[command(
-    long_about = "Inspect named/custom curves, generate reproducible known-answer fixtures, run the toy index-calculus pipeline, compare factor-base candidates, or search for high-yield factor bases. Bare ic runs the default synthetic example. A bare curve name (for example ic ecc2k-130 or ic p224) performs inspection only. The fixed subcommand accepts explicit K_0 parameters and points with full-width coordinates. The prime subcommand runs prime-field index calculus by curve type (generic, as P-192/P-224; j0, as secp256k1) on a scaled-down curve of that type."
+    long_about = "Inspect named/custom curves, generate reproducible known-answer fixtures, run the toy index-calculus pipeline, compare factor-base candidates, or search for high-yield factor bases. Bare ic runs the default synthetic example. A bare curve name (for example ic ecc2k-130 or ic p224) performs inspection only. The fixed subcommand accepts explicit K_0 parameters and points with full-width coordinates. The prime subcommand runs prime-field index calculus by curve type (generic, as P-192/P-224; j0, as secp256k1) on a scaled-down curve of that type. The auxiliary subcommand accepts public Mersenne-prime instances with low-degree auxiliary maps, a direct IC control without maps, and an optional strong rho reference."
 )]
 pub struct Cli {
     #[command(subcommand)]
@@ -71,6 +72,8 @@ enum Action {
     Budget(budget::BudgetArgs),
     /// Prime-field index calculus by curve type (generic P-curves, j0 Koblitz such as secp256k1): a named curve's structure, then a verified run on a scaled-down curve of that type against rho.
     Prime(prime::PrimeArgs),
+    /// Bounded native Mersenne-prime IC with an auxiliary-map factor base and public certificates.
+    Auxiliary(auxiliary::AuxiliaryArgs),
     /// Price every index-calculus variant of the prime, generic-binary and Koblitz regimes in one unit against the generic floor and a counted Pollard rho, with fitted exponents.
     Boundary(boundary::BoundaryArgs),
     /// Write a benchmark corpus of Weil-descended Semaev S4 instances (Magma, DIMACS+XOR, CNF, ANF) with certified labels and planted witnesses.
@@ -132,6 +135,7 @@ fn execute(cli: &Cli) -> Result<Value, String> {
         Some(Action::Fixed(args)) => fixed::run(args.clone()),
         Some(Action::Budget(args)) => budget::run(args.clone(), cli.json),
         Some(Action::Prime(args)) => prime::run(args.clone(), cli.json),
+        Some(Action::Auxiliary(args)) => auxiliary::run(args.clone()),
         Some(Action::Boundary(args)) => boundary::run(args.clone(), cli.json),
         Some(Action::Corpus(args)) => corpus::run(args.clone()),
         Some(Action::Descent(args)) => descent::run(args.clone(), cli.json),

@@ -1,0 +1,155 @@
+{
+  "branch": "codex/ic-trial32-20261115",
+  "closed_utc": "2026-11-16T07:27:39+00:00",
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "cloud/modal_run.py",
+        "run",
+        "--image",
+        "cuda",
+        "--gpu",
+        "L4",
+        "--cpu",
+        "4",
+        "--memory",
+        "8",
+        "--timeout",
+        "900",
+        "--out",
+        "experiments/ic-mitm-batch-20261115/timing-001",
+        "--detach",
+        "--",
+        "python3",
+        "experiments/ic-mitm-batch-20261115/run_prepared.py"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "started_utc": "2026-11-16T07:13:51+00:00",
+      "wall_s": 11.13
+    }
+  ],
+  "commit": "b7f26d2917b59f7a64a13c5cc23105fdaf1d2e24",
+  "commit_dirty": false,
+  "created_utc": "2026-11-16T07:13:30+00:00",
+  "curve_uid": null,
+  "entries": [
+    "experiments/ic-mitm-batch-20261115"
+  ],
+  "host": {
+    "cpu": "arm",
+    "cpus_online": 14,
+    "hostname": "Mac.attlocal.net",
+    "isolation": "unstated",
+    "platform": "macOS-27.2-arm64-arm-64bit-Mach-O"
+  },
+  "id": "20261116T0713Z-ic-mitm-batch-fixed-pipeline-001",
+  "metrics": [
+    {
+      "baseline": 1.0,
+      "better": "higher",
+      "n": 6,
+      "name": "n15_batch_cold_mitm_ratio",
+      "note": "Raw full cold same-target paired ratio; unqualified gVisor",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ratio",
+      "value": 0.9657894621981736
+    },
+    {
+      "baseline": 1.0,
+      "better": "higher",
+      "n": 6,
+      "name": "n18_batch_cold_mitm_ratio",
+      "note": "Raw full cold same-target paired ratio; unqualified gVisor",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ratio",
+      "value": 1.21065231558093
+    }
+  ],
+  "problem": "ecdlp:binary_ic_batch_fixed_instances",
+  "raw": [
+    {
+      "bytes": 1260624,
+      "path": "experiments/ic-mitm-batch-20261115/timing-001/arms.jsonl",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/51/515e4585ecf63616047c4364772b21124e7751f5ae275967b4e3775a8430edd5",
+      "sha256": "515e4585ecf63616047c4364772b21124e7751f5ae275967b4e3775a8430edd5",
+      "uploaded": true
+    },
+    {
+      "bytes": 31396,
+      "path": "experiments/ic-mitm-batch-20261115/timing-001/host.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/68/68c9e0f8d67bab3ec719294d5c8b2ef8e46de40552634af6a62f8c81b9841658",
+      "sha256": "68c9e0f8d67bab3ec719294d5c8b2ef8e46de40552634af6a62f8c81b9841658",
+      "uploaded": true
+    },
+    {
+      "bytes": 2576,
+      "path": "experiments/ic-mitm-batch-20261115/timing-001/preparation-receipt.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/8e/8e751e496e08868544d6f65f985a75b6757028922a472bb508ec16d3fc169c3e",
+      "sha256": "8e751e496e08868544d6f65f985a75b6757028922a472bb508ec16d3fc169c3e",
+      "uploaded": true
+    },
+    {
+      "bytes": 2247336,
+      "path": "experiments/ic-mitm-batch-20261115/timing-001/probe",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/14/14bebd3c038da37180cec1a01c05e5276237a322ce215c21722dc76e180cf2f3",
+      "sha256": "14bebd3c038da37180cec1a01c05e5276237a322ce215c21722dc76e180cf2f3",
+      "uploaded": true
+    },
+    {
+      "bytes": 192288,
+      "path": "experiments/ic-mitm-batch-20261115/timing-001/references.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/17/1737557f10dd1cdfcd380309e0e3386981739b241d1a02960900675e858e8472",
+      "sha256": "1737557f10dd1cdfcd380309e0e3386981739b241d1a02960900675e858e8472",
+      "uploaded": true
+    },
+    {
+      "bytes": 105,
+      "path": "experiments/ic-mitm-batch-20261115/timing-001/summary.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/ef/ef56ef9ee3b527af42ca71556c0c203db9fe67bd8f8a37d79195929d96553d0e",
+      "sha256": "ef56ef9ee3b527af42ca71556c0c203db9fe67bd8f8a37d79195929d96553d0e",
+      "uploaded": true
+    },
+    {
+      "bytes": 1277701,
+      "path": "experiments/ic-mitm-batch-20261115/timing-001/triples.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/36/363eec9c3e68fe1f9c89d53eecc65f26896c4db97cac275e37339c0c956380c8",
+      "sha256": "363eec9c3e68fe1f9c89d53eecc65f26896c4db97cac275e37339c0c956380c8",
+      "uploaded": true
+    },
+    {
+      "bytes": 79302,
+      "path": "experiments/ic-mitm-batch-20261115/analysis.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/8f/8f93f1d2919688617118d6d2d553c5723daa6e3cd50bf74a6807da618521b920",
+      "sha256": "8f93f1d2919688617118d6d2d553c5723daa6e3cd50bf74a6807da618521b920",
+      "uploaded": true
+    },
+    {
+      "bytes": 11566,
+      "path": "experiments/ic-mitm-batch-20261115/independent-arithmetic-timing001.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/76/764ed95bf76d4dc3005f6e1630e5f37c771aad6a305be8c268d719ec5dd939fa",
+      "sha256": "764ed95bf76d4dc3005f6e1630e5f37c771aad6a305be8c268d719ec5dd939fa",
+      "uploaded": true
+    }
+  ],
+  "repo": "cryptanalysis",
+  "reports": {
+    "pdf": "experiments/ic-mitm-batch-20261115/REPORT.pdf",
+    "png": [],
+    "svg": [
+      "experiments/ic-mitm-batch-20261115/cold-costs.svg",
+      "experiments/ic-mitm-batch-20261115/flow.svg"
+    ]
+  },
+  "schema": "bench.record/v1",
+  "session": null,
+  "slug": "ic-mitm-batch-fixed-pipeline-001",
+  "status": "invalid",
+  "summary": "Complete12 triples;36 IC+24 rho answers replayed, original/batch query counters match. Raw cold MITM/batch ratios0.965789 N15,1.210652 N18; all A/A pass. Unqualified. Model S is partial because lookup calibration is zero; correction audit retained.",
+  "validation": "experiments/ic-mitm-batch-20261115/analysis.json"
+}

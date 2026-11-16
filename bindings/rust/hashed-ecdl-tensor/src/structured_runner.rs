@@ -131,7 +131,15 @@ fn coordinates(point: &Point) -> Result<[String; 2]> {
     }
 }
 fn digest(bytes: &[u8]) -> String {
-    format!("{:x}", Sha256::digest(bytes))
+    // sha2 0.11's output array does not implement LowerHex.
+    const HEX: &[u8; 16] = b"0123456789abcdef";
+    let bytes = Sha256::digest(bytes);
+    let mut text = String::with_capacity(2 * bytes.len());
+    for &byte in bytes.iter() {
+        text.push(char::from(HEX[(byte >> 4) as usize]));
+        text.push(char::from(HEX[(byte & 15) as usize]));
+    }
+    text
 }
 fn value<T: serde::Serialize>(record: &T) -> Result<Value> {
     serde_json::to_value(record).map_err(json_error)
@@ -323,4 +331,19 @@ pub fn command_line() -> Result<()> {
         serde_json::to_string_pretty(&output).map_err(json_error)?
     );
     Ok(())
+}
+
+#[cfg(test)]
+mod digest_tests {
+    #[test]
+    fn sha256_hex_matches_standard_vectors() {
+        assert_eq!(
+            super::digest(b""),
+            "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        );
+        assert_eq!(
+            super::digest(b"abc"),
+            "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+        );
+    }
 }

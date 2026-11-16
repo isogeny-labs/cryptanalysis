@@ -1,0 +1,89 @@
+{
+  "schema": "producer-ci-followup/v1",
+  "status": "pass",
+  "independent": false,
+  "scope": "Local workflow syntax/toolchain installation checks and recorded CI status; no research benchmark, performance claim, or signed replay. Remote corrected workflow is pending execution.",
+  "source_base_commit": "947a48e6f196989d46e54000f8d4f5811b513af1",
+  "source_dirty": true,
+  "workflow": {
+    "path": ".github/workflows/prime-field-auxiliary-ic.yml",
+    "sha256": "a26ad32a301dd13ea9639d62a654dcbd57e1ecb25635601781526c3f6f191df1"
+  },
+  "commands": [
+    {
+      "command": "actionlint .github/workflows/prime-field-auxiliary-ic.yml",
+      "version": "1.7.7",
+      "exit_code": 0
+    },
+    {
+      "command": "rustup toolchain install \"$AUXILIARY_IC_TOOLCHAIN\" --profile minimal --component clippy --component rustfmt; export selected RUSTUP_TOOLCHAIN through GITHUB_ENV; cargo/clippy/rustfmt --version",
+      "values": [
+        "1.78.0",
+        "stable"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "ci_observed": {
+    "head": "947a48e6f196989d46e54000f8d4f5811b513af1",
+    "check_counts": {
+      "success": 32,
+      "failure": 1,
+      "skipped": 2
+    },
+    "startup_failure_run": 43693488898,
+    "startup_jobs": 0,
+    "startup_error": "The action dtolnay/rust-toolchain@master is not allowed in isogeny-labs/cryptanalysis because all actions must be from a repository owned by your enterprise, created by GitHub, verified in the GitHub Marketplace, or match the pattern: googleapis/release-please-action@*.",
+    "codeql_annotations": 23,
+    "archive_scalar_fixture_alerts": 3,
+    "cli_recovery_witness_alerts": 20
+  },
+  "remaining_blocker": "CodeQL alert classification requires maintainer access; alert read API returned HTTP 403. No alert dismissed, no check disabled, no frozen snapshot bytes changed.",
+  "raw_data": [
+    {
+      "path": "codeql-annotations.json",
+      "sha256": "ee9732a78682e14cfd332a33698c35c69f03cf6ce31758a886d87438135beb48"
+    },
+    {
+      "path": "toolchain-check.log",
+      "sha256": "8955be578902f64d72cb28b997cab092291822cea937613ea9711b7195464edf"
+    },
+    {
+      "path": "actionlint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "alert-access.log",
+      "sha256": "67522825656fb8092ae4db6a436b2aad857054a3f7b587f46c1725d77df82871"
+    },
+    {
+      "path": "startup-policy-error.txt",
+      "sha256": "7fbb07eab27d82d9a7e1a61ed635a65b0e90b86a3dd4a81707eae1348b4c55a1"
+    },
+    {
+      "path": "checks-947a48e.json",
+      "sha256": "33e688797d2824327c3a6a4dfa245fafe0c6ec0c62c70a96b14f0a14a25468d2"
+    }
+  ],
+  "headline": [
+    {
+      "name": "retained-codeql-annotations",
+      "claimed": 23,
+      "recomputed": 23,
+      "rel_tol": 0
+    },
+    {
+      "name": "toolchains-with-cargo-clippy-rustfmt",
+      "claimed": 2,
+      "recomputed": 2,
+      "rel_tol": 0
+    }
+  ],
+  "failed_attempts": [
+    {
+      "command": "GOBIN=/workspace/pr1536-tools go install github.com/rhysd/actionlint/cmd/actionlint@v1.7.7",
+      "exit_code": 127,
+      "reason": "/usr/bin/go is the Go board-game program, not the Go language compiler; actionlint was not produced. Used the official v1.7.7 release binary after verifying its published archive checksum."
+    }
+  ]
+}

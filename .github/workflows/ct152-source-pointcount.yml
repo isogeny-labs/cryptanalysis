@@ -1,0 +1,60 @@
+name: CT152 independently count original q223 source points
+on:
+  pull_request:
+    paths:
+      - "experiments/chained-transfer-public-target/norm-point-reuse-01/ct152_*"
+      - "experiments/chained-transfer-public-target/norm-point-reuse-01/CT152_*"
+      - ".github/workflows/ct152-source-pointcount.yml"
+  push:
+    branches:
+      - research/ct146-correction-torsion-contract-20261115
+    paths:
+      - "experiments/chained-transfer-public-target/norm-point-reuse-01/ct152_*"
+      - "experiments/chained-transfer-public-target/norm-point-reuse-01/CT152_*"
+      - ".github/workflows/ct152-source-pointcount.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  bounded-source-census:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+      - name: Replay source field, generator and four mutations without assertions
+        shell: bash
+        run: |
+          set -euo pipefail
+          D=experiments/chained-transfer-public-target/norm-point-reuse-01
+          python3 "$D/ct152_reconstruct_original.py" --self-test-negative > /tmp/ct152-a.json
+          python3 -O "$D/ct152_reconstruct_original.py" --self-test-negative > /tmp/ct152-b.json
+          cmp /tmp/ct152-a.json /tmp/ct152-b.json
+          python3 - <<'PY'
+          import json
+          j=json.load(open('/tmp/ct152-a.json'))
+          assert j['selected_trial']==91 and j['source_order']==11092292
+          assert j['subgroup_order']==2773073 and j['negative_controls']==4
+          assert j['field']==[223,3,183] and j['a6']==[212,109,150]
+          PY
+      - name: Compile and exhaustively count eleven million x values twice
+        shell: bash
+        run: |
+          set -euo pipefail
+          D=experiments/chained-transfer-public-target/norm-point-reuse-01
+          g++ -std=c++17 -O3 -Wall -Wextra -Werror "$D/ct152_exhaustive_pointcount.cpp" -o /tmp/ct152-census
+          /tmp/ct152-census > /tmp/ct152-c1.json
+          /tmp/ct152-census > /tmp/ct152-c2.json
+          cmp /tmp/ct152-c1.json /tmp/ct152-c2.json
+          /tmp/ct152-census --mutated-a6 > /tmp/ct152-cmut.json
+          python3 - <<'PY'
+          import json
+          a=json.load(open('/tmp/ct152-c1.json'))
+          b=json.load(open('/tmp/ct152-cmut.json'))
+          assert (a['field_size'],a['square_residue_roster'])==(11089567,5544784)
+          assert (a['zero_rhs'],a['nonzero_square_rhs'],a['nonsquare_rhs'])==(3,5546144,5543420)
+          assert a['group_order']==11092292 and a['invariants_valid'] and not a['mutation']
+          assert b['group_order']==11087660 and b['mutation'] and b['invariants_valid']
+          PY
+          sha256sum /tmp/ct152-a.json /tmp/ct152-c1.json

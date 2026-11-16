@@ -1,0 +1,22 @@
+{
+  "source": "71ce8c85fd47b3144ce8e839a16bcfd51cc1426c",
+  "original_policy_actual_exit": 1,
+  "whole_objects": [
+    {
+      "path": "experiments/chained-transfer-relation-diagnostics-02/evidence/entire-CI02-source-guard-failure-01/entire-original-checkpoint-metadata/original-RESUME.md.xz",
+      "bytes": 101396,
+      "sha256": "98ae233b17a91e8fb71519441ef8be7a9d6af809ecea0206248ffbcac8b459e3"
+    },
+    {
+      "path": "experiments/chained-transfer-relation-diagnostics-02/evidence/entire-CI02-source-guard-failure-01/entire-original-checkpoint-metadata/pack-RESUME.md.xz",
+      "bytes": 101396,
+      "sha256": "98ae233b17a91e8fb71519441ef8be7a9d6af809ecea0206248ffbcac8b459e3"
+    },
+    {
+      "path": "experiments/chained-transfer-relation-diagnostics-02/evidence/entire-CI02-source-guard-failure-01/entire-original-checkpoint-metadata/remote-RESUME.md.xz",
+      "bytes": 101396,
+      "sha256": "98ae233b17a91e8fb71519441ef8be7a9d6af809ecea0206248ffbcac8b459e3"
+    }
+  ],
+  "decision": "Keep every complete immutable pinned checkpoint sidecar; original artifact migration must generate real manifest/ignore and replay entire remote bytes. No trimming/renaming/splitting or policy exception. Source checkpoint is pending artifact migration, not accepted CI or signed result."
+}

@@ -1,0 +1,21 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T00:00:47Z",
+ "id": "PCC-20261116-f7dd33",
+ "kind": "statement",
+ "producer": {
+  "commit": "bbdf695dcd03b8c4730f10aaa17747f1072cdac1",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "recompute",
+   "path": "experiments/prime-field-auxiliary-ic/rust-validation/ci-msrv-followup-20261115/msrv-integration-validator.json",
+   "sha256": "733bf6740b06ddfa0ed5bc6499ff8070b352c4b9e7279ddbc71b65b9adab8eea"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Producer integration checks only; native and consumer counts remain separate, on the exact pinned merged source. No runtime or cryptanalytic conclusion.",
+ "statement": "On source bbdf695d, integration of the reviewed upstream Rust 1.85 dependency floor passes both locked all-target minimum-version checks, formatting and strict lint checks; the native scope has 180 passing correctness checks and the structured-consumer scope has 33 library plus three CLI checks. The standalone IC core remains Rust 1.78, with no new local core run. The 2,473-file snapshot and earlier receipts are retained, canonical main ledger entries are preserved, and all claims remain unsigned. Exact-head hosted qualification, inherited GLV source binding and CodeQL classification remain open. No timing gain is established."
+}

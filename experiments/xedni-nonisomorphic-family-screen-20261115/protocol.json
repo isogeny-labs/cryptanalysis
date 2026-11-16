@@ -1,0 +1,14 @@
+{
+  "schema": "xedni-nonisomorphic-family-screen-protocol-v1",
+  "question": "Can distinct reduced generator images be lifted to nonisomorphic rank-one rational curves with good reduction on the eight-field panel?",
+  "input_selection_result_sha256": "b18127c392b904559ac12512642ab0322eaa3b9b72a61f45dacf4a2fb8c9a25c",
+  "fields": "all eight selected primes in frozen input order",
+  "generator": "G=m(2,2) mod p, m=ord((2,2) mod p)/q",
+  "candidate_reduced_points": "uG for u=1,2,3 in that order",
+  "lift": "center each affine x,y in [-p/2,p/2], then B=y^2-x^3+x and E/Q:y^2=x^3-x+B with P=(x,y)",
+  "rank_test": "Sage E.rank(proof=True), retaining errors and timeouts; torsion_subgroup().order() exact",
+  "per_candidate_cap_seconds": 12,
+  "max_concurrent_sage_workers": 2,
+  "candidate_count": 24,
+  "claim_boundary": "rank-one admission only for rows with proved rank one and verified generator status; other rows remain rank-unknown or higher-rank diagnostics"
+}

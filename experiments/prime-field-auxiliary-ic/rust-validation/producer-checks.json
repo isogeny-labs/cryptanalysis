@@ -1,0 +1,269 @@
+{
+  "schema": "producer-implementation-checks/v1",
+  "status": "pass",
+  "independent": false,
+  "scope": "Producer correctness/build/lint checks only. No benchmark, no execution-proof backend, no signed replay or qualified speedup.",
+  "source_base_commit": "be49786f93a401c1a88f8f2524798cc3b9cf0782",
+  "source_dirty": true,
+  "source_files": [
+    {
+      "path": ".github/workflows/prime-field-auxiliary-ic.yml",
+      "sha256": "622b0b437571ab31380e815032d860a1488c9ae837209d4cda65ab1b098abfe8"
+    },
+    {
+      "path": "bindings/rust/Cargo.lock",
+      "sha256": "7a4ed4692d89e36890a8cd5a89fe809164d5f598d97675353d4d428b66f06a96"
+    },
+    {
+      "path": "bindings/rust/cryptanalysis/Cargo.toml",
+      "sha256": "9c0756db4bc82e6860c61d84605787aea3f7d2e429340f3a077343e7a91a8fb3"
+    },
+    {
+      "path": "bindings/rust/cryptanalysis/src/lib.rs",
+      "sha256": "51f01bbf65010ddabc18956047e7537b7c1e1d2bcd5239c2dbbf6aa4a5340558"
+    },
+    {
+      "path": "bindings/rust/cryptanalysis/tests/auxiliary_ic.rs",
+      "sha256": "48757bc7c6785f81a42482c2df41fe1adfde35761c3002ced4d4e53090c7faf7"
+    },
+    {
+      "path": "crates/prime-field-auxiliary-ic/Cargo.toml",
+      "sha256": "3c8c2b02861e2d4167d1fad393404b5baeae1b9802f5a50c01eeacbb1d500e99"
+    },
+    {
+      "path": "crates/prime-field-auxiliary-ic/README.md",
+      "sha256": "18ffd6a09d1fb0889864a9e65026757d0b38f65f01229fe07e058d360ed90091"
+    },
+    {
+      "path": "crates/prime-field-auxiliary-ic/build.rs",
+      "sha256": "dd3298150d5d629e99ec941fa33b8f1bdb0a2da7a1689cd225ac8b27815393c8"
+    },
+    {
+      "path": "crates/prime-field-auxiliary-ic/src/circuit.rs",
+      "sha256": "8a288a6e09451c3a036c78f0e743c05c012de708f3127ff2215e664c2d2b2f68"
+    },
+    {
+      "path": "crates/prime-field-auxiliary-ic/src/circuit_x86.rs",
+      "sha256": "e2c4a5619d68b1c8b9ec14f4f77067c35cf41eec0e7001d167eaad657d47b361"
+    },
+    {
+      "path": "crates/prime-field-auxiliary-ic/src/field.rs",
+      "sha256": "19f18d1763842fdecfa2f14d600e249b6b1777f68065ec7f290c17e3178ae5e6"
+    },
+    {
+      "path": "crates/prime-field-auxiliary-ic/src/graph.rs",
+      "sha256": "e8b9a27ffadabba9351ef2fd47a1cb15ba9affb6ed0ba0bef1abf09cbe823f4f"
+    },
+    {
+      "path": "crates/prime-field-auxiliary-ic/src/lib.rs",
+      "sha256": "cb15086f7136bdb1ecaa7797b46af0ff3fbbd0b8df7b9d83d225fee15bfb734c"
+    },
+    {
+      "path": "crates/prime-field-auxiliary-ic/src/solve.rs",
+      "sha256": "34622b5fc8d0b4082c10ef239dd51688107c70c3f48c0cf110798e964cb7c66f"
+    },
+    {
+      "path": "crates/prime-field-auxiliary-ic/tests/common/mod.rs",
+      "sha256": "b877a001ca97af14bb053fdbc57f923aae57b7fb99012e5c6d0ee6feaee68c7f"
+    },
+    {
+      "path": "crates/prime-field-auxiliary-ic/tests/pipeline.rs",
+      "sha256": "69c74237ec6ffe51e6ce754885ee5b09e4203c0c3851d3836fe41adb5d92ad17"
+    },
+    {
+      "path": "suite/Cargo.lock",
+      "sha256": "39fd0b93e94113e068a11065ad63a3d9c877a5cabd17d27058564943d938b94e"
+    },
+    {
+      "path": "suite/Cargo.toml",
+      "sha256": "91164ab64808868309d92a3f9b50fd99794bd03d58366d8d4897f3e69e864a4b"
+    },
+    {
+      "path": "suite/src/cli/tools/ic/auxiliary.rs",
+      "sha256": "879d8a699d3f29338241cd8207b446011f1b2a89bb70f7a272d4b3f0b7851dad"
+    },
+    {
+      "path": "suite/src/cli/tools/ic/mod.rs",
+      "sha256": "b296ef86954a75bd6b0c8872f5442b6b53b42f75ba2ba01236714d49ceccf65b"
+    },
+    {
+      "path": "suite/src/cryptanalysis/mod.rs",
+      "sha256": "5035881247a0009380041028cc92a30f0b85d6039e908a88e0130b4204810676"
+    },
+    {
+      "path": "suite/src/cryptanalysis/weak_curves/fixed.rs",
+      "sha256": "81b0ba2e0977922992343e831df0b21f07f0ae98726f8b58d5c13f6c2f5216bf"
+    },
+    {
+      "path": "suite/src/ecc/s56.rs",
+      "sha256": "d27ad46d97857339aa2f1ac6b7b535cab06f71df62e0b77141c9e1b061d646f5"
+    }
+  ],
+  "environment": {
+    "rustc": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+    "msrv": "rustc 1.78.0",
+    "machine": "x86_64",
+    "execution": "ordinary CPU correctness checks; no GPU performance allocation",
+    "python_ground_types": "python",
+    "python_flint": "vendored module available on PYTHONPATH",
+    "singular": "vendored binary at /workspace/index_calculus_demo/algebraic/vendor/root/usr/bin/Singular; version not captured in test log"
+  },
+  "runs": [
+    {
+      "name": "core-stable",
+      "command": "cargo test --release --manifest-path crates/prime-field-auxiliary-ic/Cargo.toml",
+      "exit_code": 0,
+      "passed_tests": 13,
+      "raw_output": "core-stable.log"
+    },
+    {
+      "name": "core-msrv",
+      "command": "cargo +1.78.0 test --manifest-path crates/prime-field-auxiliary-ic/Cargo.toml",
+      "exit_code": 0,
+      "passed_tests": 13,
+      "raw_output": "core-msrv.log"
+    },
+    {
+      "name": "c-arithmetic-parity",
+      "command": "cargo test --manifest-path bindings/rust/Cargo.toml -p cryptanalysis --test auxiliary_ic",
+      "exit_code": 0,
+      "passed_tests": 2,
+      "raw_output": "c-arithmetic-parity.log"
+    },
+    {
+      "name": "cli",
+      "command": "cargo test --manifest-path suite/Cargo.toml --lib cli::tools::ic::auxiliary::tests -j 2",
+      "exit_code": 0,
+      "passed_tests": 3,
+      "raw_output": "cli.log"
+    },
+    {
+      "name": "suite-clippy",
+      "command": "cargo clippy --manifest-path suite/Cargo.toml --all-targets -- -D warnings",
+      "exit_code": 0,
+      "passed_tests": null,
+      "raw_output": "suite-clippy.log"
+    },
+    {
+      "name": "bindings-clippy",
+      "command": "cargo clippy --manifest-path bindings/rust/Cargo.toml -p cryptanalysis --all-targets -- -D warnings",
+      "exit_code": 0,
+      "passed_tests": null,
+      "raw_output": "bindings-clippy.log"
+    },
+    {
+      "name": "bindings-msrv",
+      "command": "cargo +1.78.0 check --manifest-path bindings/rust/Cargo.toml -p cryptanalysis --all-targets",
+      "exit_code": 0,
+      "passed_tests": null,
+      "raw_output": "bindings-msrv.log"
+    },
+    {
+      "name": "python-regression",
+      "command": "SYMPY_GROUND_TYPES=python python3 -m unittest test_solver test_resultants test_optimized optimized.test_v2 -v",
+      "exit_code": 0,
+      "passed_tests": 26,
+      "raw_output": "python-regression.log"
+    }
+  ],
+  "raw_data": [
+    {
+      "path": "core-stable.log",
+      "sha256": "1273a24d1deeb9dc0b7df572c537334f4e9ad9273a1a1b9179db83637c2290a7"
+    },
+    {
+      "path": "core-msrv.log",
+      "sha256": "ada9af6ace3b56542f2a89539c14e65b96fbb430d246aa904c8f241df54154f8"
+    },
+    {
+      "path": "c-arithmetic-parity.log",
+      "sha256": "33cb3cae4df87a9db9e5c8c26c60dd310841e94be714bb522564c38d1c02a467"
+    },
+    {
+      "path": "cli.log",
+      "sha256": "4ea0ccc51dc809535d8e451a044906fbf71ea49d206a1528b71836254e81ab56"
+    },
+    {
+      "path": "suite-clippy.log",
+      "sha256": "4d21e1a25335061cec7dd88c40d207395f4868dc6c84e7f0704078166959b4b5"
+    },
+    {
+      "path": "bindings-clippy.log",
+      "sha256": "b2bcea76dbedecbcf18078873a0901c4c573a9f9b4e66e4152daeba9646a9d29"
+    },
+    {
+      "path": "bindings-msrv.log",
+      "sha256": "d6e758f695b90e6a8477a6ffe226b6c4d8175b51f799ca1f9e0c87dd533c02a8"
+    },
+    {
+      "path": "python-regression.log",
+      "sha256": "4a201b36b814b253147dfa47b42035584b3eaac7acd9549dc7432411376b37b0"
+    }
+  ],
+  "headline": [
+    {
+      "name": "core-stable-passed-checks",
+      "claimed": 13,
+      "recomputed": 13,
+      "unit": "passed correctness tests",
+      "rel_tol": 0
+    },
+    {
+      "name": "core-msrv-passed-checks",
+      "claimed": 13,
+      "recomputed": 13,
+      "unit": "passed correctness tests",
+      "rel_tol": 0
+    },
+    {
+      "name": "c-arithmetic-parity-passed-checks",
+      "claimed": 2,
+      "recomputed": 2,
+      "unit": "passed correctness tests",
+      "rel_tol": 0
+    },
+    {
+      "name": "cli-passed-checks",
+      "claimed": 3,
+      "recomputed": 3,
+      "unit": "passed correctness tests",
+      "rel_tol": 0
+    },
+    {
+      "name": "python-regression-passed-checks",
+      "claimed": 26,
+      "recomputed": 26,
+      "unit": "passed correctness tests",
+      "rel_tol": 0
+    }
+  ],
+  "qualified_speedup": null,
+  "failed_attempts": [
+    {
+      "stage": "initial bindings/suite builds",
+      "reason": "Sparse checkout omitted C GPU headers and included suite fixture files; hydrated the existing files."
+    },
+    {
+      "stage": "initial full suite clippy",
+      "reason": "Existing unused_mut and manual_is_multiple_of test-code lints; corrected those test helpers and formatting."
+    },
+    {
+      "stage": "initial core rustdoc",
+      "reason": "PCC bracket tags in included README were parsed as intra-doc links; formatted tags as inline code."
+    },
+    {
+      "stage": "historical Python CI",
+      "reason": "SymPy selected FLINT ground types and attempted to order nmod values; SYMPY_GROUND_TYPES=python reproduces the historical backend and restores all 26 checks."
+    }
+  ],
+  "blocked_work": [
+    {
+      "action": "new research benchmark",
+      "reason": "Checkpoint upload gate: no AWS profile ecc-challenges-new, no CHECKPOINT_UPLOAD_TOKEN, no local token file. No new performance experiment launched."
+    },
+    {
+      "action": "CodeQL fixture-alert disposition",
+      "reason": "Three clear-text-storage alerts refer to public, known-answer scalar fixtures. Alert-list API returned HTTP 403 Resource not accessible by integration. No alert was dismissed or check disabled."
+    }
+  ]
+}

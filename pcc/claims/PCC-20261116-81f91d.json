@@ -1,0 +1,107 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T04:48:21Z",
+ "id": "PCC-20261116-81f91d",
+ "kind": "statement",
+ "producer": {
+  "commit": "c045dfdf2e682d0c98fba9a1bcd7824c00c649dd",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-original-defaults-success-04/actual-Consumer434.exit",
+    "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-original-defaults-success-04/actual-Root435.exit",
+    "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-original-defaults-success-04/compiler-bin/lean",
+    "sha256": "3790e5a9ef25675975c3fa2f7c3444ab6fabbe8b4fe8092bdce5c96a588ecbbd"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-original-defaults-success-04/entire-original-attempt04.lean",
+    "sha256": "be7537a2dfcaf2628d89e1763c3e9fbd0bd2496ed74c7a78c348d3986871a690"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-original-defaults-success-04/original-Consumer434/experiments_chained-transfer-lp-presentation-01_lean_LPGraphCases02_lean/audit.log.xz",
+    "sha256": "f029cea053a5d6f75d21caa1895703925019084914d3a302f8e1fafb38383478"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-original-defaults-success-04/original-Consumer434/experiments_chained-transfer-lp-presentation-01_lean_LPGraphCases02_lean/build.log.xz",
+    "sha256": "0040f94d11d0039505328a90b2ff48968db873e9e7967307631bf40ef5679275"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-original-defaults-success-04/original-Consumer434/experiments_chained-transfer-lp-presentation-01_lean_LPGraphCases02_lean/status.xz",
+    "sha256": "5f50d55c735bdd995760c477ef660eb2210dbe1a423caf2773fc474ed0cdbd40"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-original-defaults-success-04/original-Root435/experiments_chained-transfer-lp-presentation-01_lean_LPGraphCases02_lean/audit.log.xz",
+    "sha256": "91af3063608217b1f412f0c695377d5a4d243e49875d7fbce238236a3e64315a"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-original-defaults-success-04/original-Root435/experiments_chained-transfer-lp-presentation-01_lean_LPGraphCases02_lean/build.log.xz",
+    "sha256": "0040f94d11d0039505328a90b2ff48968db873e9e7967307631bf40ef5679275"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-original-defaults-success-04/original-Root435/experiments_chained-transfer-lp-presentation-01_lean_LPGraphCases02_lean/status.xz",
+    "sha256": "5f50d55c735bdd995760c477ef660eb2210dbe1a423caf2773fc474ed0cdbd40"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-original-defaults-success-04/whole-Consumer434-caller.txt.xz",
+    "sha256": "b15ebf016024e8adc9e2f2e4e758da028e3df1f7d479b12b5770a179fd2d062b"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-original-defaults-success-04/whole-Root435-caller.txt.xz",
+    "sha256": "b15ebf016024e8adc9e2f2e4e758da028e3df1f7d479b12b5770a179fd2d062b"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-original-defaults-success-04/whole-source-and-output-inventory.json",
+    "sha256": "1a2dbb96e3a57f6a34db6a49ec7573021b2958e0eff476dd942885ca53cdd5db"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Direct constructive scalar graph module LPGraphCases02 attempt04 passes both unchanged original Consumer4.34.1 and Root4.35.0 gates:7 named theorems plus2 generated defining equations,9 audited declarations,0 trusted. Original proof-workflow default virtual memory, single compiler worker -j1,120s per original gate; no2GiB VM compliance claimed. Whole source, both entire gate outputs/audits and command wrapper preserved. Standard propext/Classical.choice/Quot.sound only; lean4checker unavailable. Prior thread/resource and added managed-heap auditor failures are retained. This is scalar relation-system proof checking, not program-to-matrix/finite-field/geometry/historical numerical dimension or global ECDLP theorem; no signed standing."
+}

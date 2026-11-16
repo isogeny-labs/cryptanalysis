@@ -1,0 +1,135 @@
+{
+  "algorithm_and_cli_source": "5e3a420242277199b8784c0999a57d80ca117e1e",
+  "ci_job_source": "76a941c2658ac9520150f227a550478186c871d7",
+  "baseline_source": "8abb2b143bbf35ccce59aae6c79251350a3daaa0",
+  "snapshot_tree_oid": "2298425e1d3568a1687830e29a390f7c601dd6e8",
+  "snapshot_files": 2473,
+  "toolchains": {
+    "stable": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+    "1.78.0": "rustc 1.78.0 (9b00956e5 2024-04-29)"
+  },
+  "correctness_counts": {
+    "core-stable-tests": {
+      "passed": 25,
+      "groups": [
+        [
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "scope": "core tests including doctest"
+    },
+    "core-msrv-tests": {
+      "passed": 25,
+      "groups": [
+        [
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "scope": "core tests including doctest"
+    },
+    "cli-tests": {
+      "passed": 6,
+      "groups": [
+        [
+          6,
+          0,
+          0,
+          0,
+          3161
+        ]
+      ],
+      "scope": "targeted auxiliary CLI tests"
+    }
+  },
+  "source_files": [
+    {
+      "path": "crates/prime-field-auxiliary-ic/src/circuit.rs",
+      "sha256": "68f447e18f7308f56540a8c35ab337649b8dbcdda3a79332e32ba543aa9cea66"
+    },
+    {
+      "path": "crates/prime-field-auxiliary-ic/src/solve.rs",
+      "sha256": "c07ae1923b9ce332824c14b007402b830e480ce3cde270bb30d296b88cb972c6"
+    },
+    {
+      "path": "crates/prime-field-auxiliary-ic/src/lib.rs",
+      "sha256": "05511691fbb14417f477b8fcf07c52af67432a7f1372bb0482f4b95854284361"
+    },
+    {
+      "path": "crates/prime-field-auxiliary-ic/tests/random_control.rs",
+      "sha256": "7fe8b0509b45a2c0d0715556cb513734d6e8c3926b1a869c1f1a5276d229b81d"
+    },
+    {
+      "path": "suite/src/cli/tools/ic/auxiliary.rs",
+      "sha256": "0cac087d1d7963eb7b6f7576fb8eca98e9d0a9bc46fe8c006f04a1705e987974"
+    },
+    {
+      "path": ".github/workflows/prime-field-auxiliary-ic.yml",
+      "sha256": "7eaad36bc7a7b2112dfd0b4b7338179985a30d74a8e93d66dccabd992375eb64"
+    }
+  ],
+  "fresh_benchmark_launched": false
+}

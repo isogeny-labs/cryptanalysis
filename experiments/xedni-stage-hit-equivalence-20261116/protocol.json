@@ -1,0 +1,22 @@
+{
+  "schema": "xedni-stage-hit-equivalence-protocol-v1",
+  "field": "additive Z/7Z",
+  "scalar_law": "all seven scalars",
+  "encoding_law": "all 7! bijections from group elements to labels 0..6",
+  "program": [
+    "seed forms G=1 and Q=w",
+    "if label(G)<label(Q), append G+Q; else append G-Q",
+    "append G-G",
+    "append G-G again",
+    "append G+G"
+  ],
+  "stage_lengths": [2, 3, 4, 5],
+  "event": "old actual equality pattern agrees with symbolic form equality and next actual point equals a distinct old form",
+  "prediction": "scalar belongs to eligible old forms intersect next-candidate roots",
+  "falsifiers": [
+    "any actual point differs from its reconstructed affine evaluation",
+    "any stage has an actual/predicted event mismatch",
+    "any group prefix encoding fiber differs from its scalar prefix fiber"
+  ],
+  "claim_boundary": "exhaustive finite control for this fixed adaptive program and uniform bijective encoding law"
+}

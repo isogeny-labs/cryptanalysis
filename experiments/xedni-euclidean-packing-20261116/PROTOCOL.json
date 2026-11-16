@@ -1,0 +1,14 @@
+{
+  "schema": "xedni-euclidean-packing-protocol-v1",
+  "instance": "Z^2 plus torsion label of order T; points (1,0), (0,1), (1,1) with third-point torsion 1",
+  "K_range_inclusive": [0, 20],
+  "torsion_orders": [1, 2],
+  "exact_bound": "T*(1+4*sqrt(2)*K)^2",
+  "comparison_method": "signed integer difference and square comparison against 2*b^2; no floating point",
+  "falsifiers": [
+    "an enumerated distinct-value count exceeds the exact packing bound",
+    "the packing bound certifies a coefficient-box collision absent from exact enumeration",
+    "the independent integer count formula disagrees with enumeration"
+  ],
+  "status_law": "retain all 42 rows, including noncertifying bounds"
+}

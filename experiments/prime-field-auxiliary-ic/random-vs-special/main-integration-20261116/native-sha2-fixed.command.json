@@ -1,0 +1,19 @@
+{
+  "source_commit": "192a50d664b1eec74b781c579ac92b4ddc699dcc",
+  "argv": [
+    "/home/agent/.cargo/bin/cargo",
+    "+stable",
+    "test",
+    "--locked",
+    "--manifest-path",
+    "bindings/rust/Cargo.toml",
+    "-p",
+    "hashed-ecdl-tensor",
+    "--lib"
+  ],
+  "explicit_environment": {
+    "CARGO_BUILD_JOBS": "1"
+  },
+  "exit_code": 124,
+  "scope": "producer development correctness check; no benchmark"
+}

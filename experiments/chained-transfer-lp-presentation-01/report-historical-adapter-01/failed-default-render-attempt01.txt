@@ -1,0 +1,6 @@
+Default python3 import failed before the source-edit loop; no asset modified by that failed Python command.
+Traceback (most recent call last):
+  File "<stdin>", line 2, in <module>
+ModuleNotFoundError: No module named 'typst'
+The following pdftoppm in that shell invocation rendered the existing PDF; it did not demonstrate a new Typst render.
+Corrected retry uses the existing /workspace/scratch/report-venv/bin/python.
