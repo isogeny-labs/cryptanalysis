@@ -1,0 +1,48 @@
+Traceback (most recent call last):
+  File "sage/structure/category_object.pyx", line 858, in sage.structure.category_object.CategoryObject.getattr_from_category
+    return self._cached_methods[name]
+KeyError: 'point_homset'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Volumes/SSD990/cryptanalysis/third_party/sage-binary/local/var/lib/sage/venv-python3.14/lib/python3.14/site-packages/sage/schemes/projective/projective_subscheme.py", line 120, in point
+    return self._point(self.point_homset(), v, check=check)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/SSD990/cryptanalysis/third_party/sage-binary/local/var/lib/sage/venv-python3.14/lib/python3.14/site-packages/sage/schemes/elliptic_curves/ell_point.py", line 593, in __init__
+    point_homset = curve.point_homset()
+                   ^^^^^^^^^^^^^^^^^^
+  File "sage/structure/category_object.pyx", line 852, in sage.structure.category_object.CategoryObject.__getattr__
+    return self.getattr_from_category(name)
+  File "sage/structure/category_object.pyx", line 867, in sage.structure.category_object.CategoryObject.getattr_from_category
+    attr = getattr_from_other_class(self, cls, name)
+  File "sage/cpython/getattr.pyx", line 357, in sage.cpython.getattr.getattr_from_other_class
+    raise AttributeError(dummy_error_message)
+AttributeError: 'sage.rings.finite_rings.integer_mod.IntegerMod_int' object has no attribute '_SageObject__custom_name'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Volumes/SSD990/cryptanalysis/experiments/xedni-nonisomorphic-holdout-20261115/sage_audit.py", line 64, in <module>
+    assert E0(*map(int, U.xy())) == Q-t1*G
+           ~~^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/SSD990/cryptanalysis/third_party/sage-binary/local/var/lib/sage/venv-python3.14/lib/python3.14/site-packages/sage/schemes/elliptic_curves/ell_generic.py", line 601, in __call__
+    return plane_curve.ProjectivePlaneCurve.__call__(self, *args, **kwds)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/SSD990/cryptanalysis/third_party/sage-binary/local/var/lib/sage/venv-python3.14/lib/python3.14/site-packages/sage/schemes/generic/scheme.py", line 242, in __call__
+    return self.point(args)
+           ~~~~~~~~~~^^^^^^
+  File "/Volumes/SSD990/cryptanalysis/third_party/sage-binary/local/var/lib/sage/venv-python3.14/lib/python3.14/site-packages/sage/schemes/projective/projective_subscheme.py", line 122, in point
+    return self._point(self, v, check=check)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/SSD990/cryptanalysis/third_party/sage-binary/local/var/lib/sage/venv-python3.14/lib/python3.14/site-packages/sage/schemes/elliptic_curves/ell_point.py", line 600, in __init__
+    SchemeMorphism_point_abelian_variety_field.__init__(self, point_homset, v, check=check)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/SSD990/cryptanalysis/third_party/sage-binary/local/var/lib/sage/venv-python3.14/lib/python3.14/site-packages/sage/schemes/projective/projective_point.py", line 1171, in __init__
+    X.extended_codomain()._check_satisfies_equations(v)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^
+  File "/Volumes/SSD990/cryptanalysis/third_party/sage-binary/local/var/lib/sage/venv-python3.14/lib/python3.14/site-packages/sage/schemes/generic/algebraic_scheme.py", line 942, in _check_satisfies_equations
+    raise TypeError(
+        "Coordinates %s do not define a point on %s" % (coords, self)
+    )
+TypeError: Coordinates [1, 0, 1] do not define a point on Elliptic Curve defined by y^2 = x^3 + 772*x + 771 over Finite Field of size 773
