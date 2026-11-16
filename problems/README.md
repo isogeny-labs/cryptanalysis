@@ -9,6 +9,7 @@ explain the gap and what would let the work move past it.
 
 | Problem | Status | What it blocks | What would unblock it |
 | --- | --- | --- | --- |
+| [IC matrix candidate filenames](ic-candidate-matrix-filename-alias.md) | investigating; local repair passes | historical LA stage/name mismatch | source merge then paired strict-validator mirror |
 | [IC SIMD host capability](ic-simd-host-capability.md) | resolved for recorded CPU backends | vector performance admission across separate allocations | native dual-backend controls and same-allocation diagnostics in compatible panel |
 | [IC probe lookup pricing](ic-probe-lookup-pricing.md) | observed; future repair | complete interpretation of archived partial model costs | positive shared calibration and a fresh panel; old raw records retained |
 | [Full IC pipeline build envelope](ic-pipeline-build-envelope.md) | resolved for preparation | original330-second build cap prevented algorithm execution | separate pinned binaries and complete frozen matrix retained; timing qualification remains open |
