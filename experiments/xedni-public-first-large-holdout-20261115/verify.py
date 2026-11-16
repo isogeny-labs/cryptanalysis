@@ -240,6 +240,23 @@ def main():
     doubling_build_normalized=re.sub(r'\s+',' ',doubling_build)
     assert "'XedniPublicFirstLargeHoldout.panel313_good_prime' depends on axioms: [propext]" in doubling_build_normalized
     assert "'XedniPublicFirstLargeHoldout.panel313_double' depends on axioms: [propext, Classical.choice, Quot.sound]" in doubling_build_normalized
+    arithmetic2=(formal/'OrderArithmetic2.lean').read_text()
+    assert all(f'theorem {name}' in arithmetic2 for name in
+               ('mod313_second_tangent_slope','mod313_quadruple_x','mod313_quadruple_y'))
+    assert not any(token in arithmetic2 for token in ('sorry','admit','sorryAx','native_decide'))
+    arithmetic2_build=(formal/'order-arithmetic2-build-output.txt').read_text()
+    assert 'Build completed successfully (9054 jobs)' in arithmetic2_build
+    arithmetic2_build_normalized=re.sub(r'\s+',' ',arithmetic2_build)
+    for name in ('mod313_second_tangent_slope','mod313_quadruple_x','mod313_quadruple_y'):
+        assert f"'XedniPublicFirstLargeHoldout.{name}' depends on axioms: [propext, Classical.choice, Quot.sound]" in arithmetic2_build_normalized
+    doubling2=(formal/'PointDoubling2.lean').read_text()
+    assert 'theorem panel313_second_double' in doubling2
+    assert all(name in doubling2 for name in
+               ('mod313_second_tangent_slope','mod313_quadruple_x','mod313_quadruple_y'))
+    assert not any(token in doubling2 for token in ('sorry','admit','sorryAx','native_decide'))
+    doubling2_build=(formal/'point-doubling2-build-output.txt').read_text()
+    assert 'Build completed successfully (9055 jobs)' in doubling2_build
+    assert "'XedniPublicFirstLargeHoldout.panel313_second_double' depends on axioms: [propext, Classical.choice, Quot.sound]" in re.sub(r'\s+',' ',doubling2_build)
     recovery_protocol=json.loads((HERE/'public-recovery-protocol.json').read_text())
     recovery_result=json.loads((HERE/'public-recovery-result.json').read_text())
     recovery_audit_protocol=json.loads((HERE/'public-recovery-audit-protocol.json').read_text())
