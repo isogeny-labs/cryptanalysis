@@ -1,0 +1,15 @@
+digraph B {
+graph [rankdir=LR,bgcolor="transparent",ranksep=.25,nodesep=.15];
+node [shape=box,style="rounded,filled",fillcolor="#edf5fb",fontname="DejaVu Sans",fontsize=11];
+edge [fontname="DejaVu Sans",fontsize=10];
+C [label="C / F223
+fixed N4 q223 / seed1"];
+L [label="F223[w] / (w^6-3)
+original K: z=w^2
+original Rabin / field"];
+T [label="28 actual W lines
+contact / tangent certificates
+original quartic checked"];
+C -> L [label="original Moore"];
+L -> T [label="12 + 16 lines"];
+}

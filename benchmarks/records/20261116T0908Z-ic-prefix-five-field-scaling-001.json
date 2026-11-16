@@ -1,0 +1,334 @@
+{
+  "branch": "codex/ic-trial32-20261115",
+  "closed_utc": "2026-11-16T09:16:45+00:00",
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "cloud/modal_run.py",
+        "run",
+        "--image",
+        "cuda",
+        "--gpu",
+        "L4",
+        "--cpu",
+        "4",
+        "--memory",
+        "8",
+        "--timeout",
+        "900",
+        "--apt",
+        "time",
+        "--out",
+        "experiments/ic-prefix-scale-20261116/timing-001",
+        "--detach",
+        "--",
+        "python3",
+        "experiments/ic-prefix-scale-20261116/run_prepared.py"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "started_utc": "2026-11-16T09:09:00+00:00",
+      "wall_s": 10.356
+    }
+  ],
+  "commit": "10e2372ebf06263647cfc6ad276b052d8ffa143c",
+  "commit_dirty": false,
+  "created_utc": "2026-11-16T09:08:50+00:00",
+  "curve_uid": null,
+  "entries": [
+    "experiments/ic-prefix-scale-20261116"
+  ],
+  "host": {
+    "cpu": "arm",
+    "cpus_online": 14,
+    "hostname": "Mac.attlocal.net",
+    "isolation": "unstated",
+    "platform": "macOS-27.2-arm64-arm-64bit-Mach-O"
+  },
+  "id": "20261116T0908Z-ic-prefix-five-field-scaling-001",
+  "metrics": [
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n15_mitm-scalar_raw_paired_cold_ratio",
+      "note": "Exploratory container measurement, qualified null; raw all-target ratio including N24 fixture219 failed A/A; no trimming. Original/candidate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.010524761991296,
+        1.0325968527176685
+      ],
+      "unit": "ratio",
+      "value": 1.0176721879753448
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n15_mitm-prefix_raw_paired_cold_ratio",
+      "note": "Exploratory container measurement, qualified null; raw all-target ratio including N24 fixture219 failed A/A; no trimming. Original/candidate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.0509522406188383,
+        1.0813759414510828
+      ],
+      "unit": "ratio",
+      "value": 1.0667717351848345
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n15_mitm-auto_raw_paired_cold_ratio",
+      "note": "Exploratory container measurement, qualified null; raw all-target ratio including N24 fixture219 failed A/A; no trimming. Original/candidate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9999266703331501,
+        1.0370955157205957
+      ],
+      "unit": "ratio",
+      "value": 1.0140700593439802
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n18_mitm-scalar_raw_paired_cold_ratio",
+      "note": "Exploratory container measurement, qualified null; raw all-target ratio including N24 fixture219 failed A/A; no trimming. Original/candidate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9950748453988216,
+        1.0070441758680642
+      ],
+      "unit": "ratio",
+      "value": 1.003116466036623
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n18_mitm-prefix_raw_paired_cold_ratio",
+      "note": "Exploratory container measurement, qualified null; raw all-target ratio including N24 fixture219 failed A/A; no trimming. Original/candidate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.4199177137998915,
+        1.4463033951930169
+      ],
+      "unit": "ratio",
+      "value": 1.437772087049523
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n18_mitm-auto_raw_paired_cold_ratio",
+      "note": "Exploratory container measurement, qualified null; raw all-target ratio including N24 fixture219 failed A/A; no trimming. Original/candidate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.3914780371053437,
+        1.4328451441550738
+      ],
+      "unit": "ratio",
+      "value": 1.404233075431744
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n21_mitm-scalar_raw_paired_cold_ratio",
+      "note": "Exploratory container measurement, qualified null; raw all-target ratio including N24 fixture219 failed A/A; no trimming. Original/candidate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9981164618298506,
+        1.0145064401956319
+      ],
+      "unit": "ratio",
+      "value": 1.0081192310862503
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n21_mitm-prefix_raw_paired_cold_ratio",
+      "note": "Exploratory container measurement, qualified null; raw all-target ratio including N24 fixture219 failed A/A; no trimming. Original/candidate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.5191723566955002,
+        1.5957073021364148
+      ],
+      "unit": "ratio",
+      "value": 1.562143705672045
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n21_mitm-auto_raw_paired_cold_ratio",
+      "note": "Exploratory container measurement, qualified null; raw all-target ratio including N24 fixture219 failed A/A; no trimming. Original/candidate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.522163323868694,
+        1.6173162070615044
+      ],
+      "unit": "ratio",
+      "value": 1.5632924929826673
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n24_mitm-scalar_raw_paired_cold_ratio",
+      "note": "Exploratory container measurement, qualified null; raw all-target ratio including N24 fixture219 failed A/A; no trimming. Original/candidate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9987307337345649,
+        1.0086853203726343
+      ],
+      "unit": "ratio",
+      "value": 1.0055749597167924
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n24_mitm-prefix_raw_paired_cold_ratio",
+      "note": "Exploratory container measurement, qualified null; raw all-target ratio including N24 fixture219 failed A/A; no trimming. Original/candidate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        2.199570675092903,
+        2.3894867485407065
+      ],
+      "unit": "ratio",
+      "value": 2.2753414942167405
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n24_mitm-auto_raw_paired_cold_ratio",
+      "note": "Exploratory container measurement, qualified null; raw all-target ratio including N24 fixture219 failed A/A; no trimming. Original/candidate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        2.2079543935727237,
+        2.4440501518359614
+      ],
+      "unit": "ratio",
+      "value": 2.278170508953328
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n27_mitm-scalar_raw_paired_cold_ratio",
+      "note": "Exploratory container measurement, qualified null; raw all-target ratio including N24 fixture219 failed A/A; no trimming. Original/candidate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9829971972286573,
+        1.0068180689486121
+      ],
+      "unit": "ratio",
+      "value": 0.9996347939546508
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n27_mitm-prefix_raw_paired_cold_ratio",
+      "note": "Exploratory container measurement, qualified null; raw all-target ratio including N24 fixture219 failed A/A; no trimming. Original/candidate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        2.0891031188520213,
+        2.3211603802027305
+      ],
+      "unit": "ratio",
+      "value": 2.2013881157441233
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n27_mitm-auto_raw_paired_cold_ratio",
+      "note": "Exploratory container measurement, qualified null; raw all-target ratio including N24 fixture219 failed A/A; no trimming. Original/candidate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        2.0722728124558354,
+        2.3713699063083684
+      ],
+      "unit": "ratio",
+      "value": 2.148620740189803
+    }
+  ],
+  "problem": "ecdlp:binary_ic_registered_prefix_scaling",
+  "raw": [
+    {
+      "bytes": 2954976,
+      "path": "experiments/ic-prefix-scale-20261116/raw-timing-001.tar.gz",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/b6/b6f24b5105b79fa6fe4e9167204e7c58b55d0280272c35f3ed6b3473e7c93487",
+      "sha256": "b6f24b5105b79fa6fe4e9167204e7c58b55d0280272c35f3ed6b3473e7c93487",
+      "uploaded": true
+    },
+    {
+      "bytes": 261011,
+      "path": "experiments/ic-prefix-scale-20261116/raw-bundle-receipt.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/71/716fcaba4a33135691ac9bae5b80bc6255a89f4eac238e7ae93938a386259454",
+      "sha256": "716fcaba4a33135691ac9bae5b80bc6255a89f4eac238e7ae93938a386259454",
+      "uploaded": true
+    },
+    {
+      "bytes": 113392,
+      "path": "experiments/ic-prefix-scale-20261116/timing-001/.artifacts.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/e6/e6a9f639d7dc34d4f85f394c23c9976c974d92de3f7041be4da20a0ff60ac6bc",
+      "sha256": "e6a9f639d7dc34d4f85f394c23c9976c974d92de3f7041be4da20a0ff60ac6bc",
+      "uploaded": true
+    },
+    {
+      "bytes": 1147436,
+      "path": "experiments/ic-prefix-scale-20261116/analysis.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/bf/bffd306d1faa6c6ed0f567a8fe33da0ef39d12870bd1b48a456f3ed9ef67c910",
+      "sha256": "bffd306d1faa6c6ed0f567a8fe33da0ef39d12870bd1b48a456f3ed9ef67c910",
+      "uploaded": true
+    },
+    {
+      "bytes": 141080,
+      "path": "experiments/ic-prefix-scale-20261116/independent-arithmetic-timing001.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/00/00580e0a84efcd9be9994347f1416ba9a0e70c6ed564eec261bd2bef8271868e",
+      "sha256": "00580e0a84efcd9be9994347f1416ba9a0e70c6ed564eec261bd2bef8271868e",
+      "uploaded": true
+    }
+  ],
+  "repo": "cryptanalysis",
+  "reports": {
+    "pdf": "experiments/ic-prefix-scale-20261116/REPORT.pdf",
+    "png": [
+      "experiments/ic-prefix-scale-20261116/cold.png",
+      "experiments/ic-prefix-scale-20261116/ratios.png"
+    ],
+    "svg": [
+      "experiments/ic-prefix-scale-20261116/cold.svg",
+      "experiments/ic-prefix-scale-20261116/ratios.svg",
+      "experiments/ic-prefix-scale-20261116/flow.svg"
+    ]
+  },
+  "schema": "bench.record/v1",
+  "session": null,
+  "slug": "ic-prefix-five-field-scaling-001",
+  "status": "invalid",
+  "summary": "All120 quadruples completed;480IC+240fresh-process rho answers independently replayed. Prefix paired raw medians1.066772/1.437772/1.562144/2.275341/2.201388 for registered N15/18/21/24/27. One failed N24fixture219 A/A retained; zero process caps. Exposed resource limits differ from requested allocation, physical placement/throttle/OOM unavailable, qualifiednull and invalid for promotion. Complete setup priced once; phase model not instruction counts. Optimized IC remains above matched rho on this panel. Lossless bundle/inventory bind all977raw outputs.",
+  "validation": "experiments/ic-prefix-scale-20261116/analysis.json"
+}

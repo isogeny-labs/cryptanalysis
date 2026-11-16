@@ -1,0 +1,63 @@
+{
+    "Budget": {
+        "BudgetName": "spot-experiments-daily-25",
+        "BudgetLimit": {
+            "Amount": "200.0",
+            "Unit": "USD"
+        },
+        "TimeUnit": "DAILY",
+        "TimePeriod": {
+            "Start": "2026-10-25T07:00:00+00:00",
+            "End": "2087-06-15T00:00:00+00:00"
+        },
+        "CalculatedSpend": {
+            "ActualSpend": {
+                "Amount": "10.096",
+                "Unit": "USD"
+            }
+        },
+        "BudgetType": "COST",
+        "LastUpdatedTime": "2026-11-16T05:07:56.695000+00:00",
+        "FilterExpression": {
+            "And": [
+                {
+                    "Or": [
+                        {
+                            "Tags": {
+                                "Key": "SpotSystem",
+                                "Values": [
+                                    "spot-experiments"
+                                ]
+                            }
+                        },
+                        {
+                            "Tags": {
+                                "Key": "project",
+                                "Values": [
+                                    "isolab"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "Not": {
+                        "Tags": {
+                            "Key": "workload",
+                            "Values": [
+                                "github-actions"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        "Metrics": [
+            "UnblendedCost"
+        ],
+        "HealthStatus": {
+            "Status": "HEALTHY",
+            "LastUpdatedTime": "2026-11-16T05:07:56.483000+00:00"
+        }
+    }
+}

@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.1.5](https://github.com/isogeny-labs/cryptanalysis/compare/cryptanalysis-v0.1.4...cryptanalysis-v0.1.5) (2026-11-16)
+
+
+### Bug Fixes
+
+* **artifacts:** retain PCC ledger as the Git trust witness ([148d8b6](https://github.com/isogeny-labs/cryptanalysis/commit/148d8b66c6c6b36e15db469c5745085643c5dd0d))
+* **artifacts:** sync canonical source and enforce native parity ([f7dfc2a](https://github.com/isogeny-labs/cryptanalysis/commit/f7dfc2a55917a22780052384c33d91829c41196f))
+* **ci:** correct log proof classification and projection controls ([d9ee51f](https://github.com/isogeny-labs/cryptanalysis/commit/d9ee51f20644b412a909dffec37c94907e7eba86))
+* **ci:** pin PCC trust and ledger checks to the tested merge base ([5dfcf82](https://github.com/isogeny-labs/cryptanalysis/commit/5dfcf82e698db8d895452c7089f566d3e68d1337))
+* **ci:** retain claim history and harden projection controls ([a6ee96c](https://github.com/isogeny-labs/cryptanalysis/commit/a6ee96c4b0410097a72fc4405dd21ab7e5aca1db))
+* **ct157:** reject boolean/float aliases in 695-record parity [pcc:unverified] ([7a77cf0](https://github.com/isogeny-labs/cryptanalysis/commit/7a77cf046af8a80cbe8f3516260be66575d86233))
+* **ct159:** type-preserving native C169/C13/D pricing evidence audit ([8f26796](https://github.com/isogeny-labs/cryptanalysis/commit/8f267962f8d6992c5dda622fd4735a96fcd80b9b))
+* **ct159:** typed finite JSON and ABBA public identity price guards ([658dca5](https://github.com/isogeny-labs/cryptanalysis/commit/658dca512276c426d5e04c291193a49717824170))
+* **grumpy:** bound automatic floating step conversion ([c539cd1](https://github.com/isogeny-labs/cryptanalysis/commit/c539cd11aed992bf80b501b76296b9751c55485b))
+* **grumpy:** validate checkpoint counters before resume and iteration ([443641b](https://github.com/isogeny-labs/cryptanalysis/commit/443641b50c4a33fb128ea2b4319095cf7b46ab4a))
+
 ## [0.1.4](https://github.com/isogeny-labs/cryptanalysis/compare/cryptanalysis-v0.1.3...cryptanalysis-v0.1.4) (2026-11-16)
 
 

@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-14T20:23:19Z",
+ "id": "PCC-20261114-5997e5",
+ "kind": "theorem",
+ "producer": {
+  "commit": "a50fe267f3debf8c835bbad1efc988b44bb8c5d0",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "1131fd649de280bb225cbfc165ebc4f5a4d0e2b18f6467bad6261aca6c21ef9f",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/norm-arithmetic-storage-02/lean/CounterStorage.lean",
+   "theorem": "CounterStorage.resolve_index"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Structural functions on CURRENTLY INDEXED keys and Nat counters, conditional on injective canonical index, representation consistency and sound cached pair. Proves cache resolution and both bounded-add guard/canonical bump equivalence. Dynamic insertion, Vec bounds, actual u64/checked_add, TLS, bucket algorithm and full Rust program/observer semantics remain native/written bridges. Both original434/435 gates audit6declarations:2namedroots+4generatedhelpers, zero trusted. No aggregate novelty/performance/signedexecution claim.",
+ "statement": "theorem resolve_index {K : Type} [DecidableEq K] (index : K \u2192 Nat) (cache : Option (K \u00d7 Nat)) (key : K) (sound : \u2200 a i, cache = some (a, i) \u2192 i = index a) : resolve index cache key = index key"
+}

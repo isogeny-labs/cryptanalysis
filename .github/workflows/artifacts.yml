@@ -1,5 +1,4 @@
 name: artifacts
-# artifacts-scope: job
 # Data files live in S3 with a manifest in Git (docs/artifacts.md). This runs the
 # tool's own tests, fails a pull request that adds or modifies a file the policy
 # says belongs in the store, and checks that every workflow naming moved data
@@ -82,6 +81,7 @@ jobs:
             /.artifacts/
             /.github/workflows/
             **/.artifacts.json
+      # The tests, changed-file policy and workflow scan read manifests only.
       - name: Unit tests
         env:
           GIT_AUTHOR_NAME: ci
@@ -102,3 +102,18 @@ jobs:
           exit 1
       - name: Workflows that name moved data pull it
         run: python3 tools/artifacts/wire_workflows.py --check
+
+  # Preserve the canonical store check and expose the literal merge context.
+  required-artifacts:
+    name: artifacts
+    needs: [store]
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 1
+    permissions:
+      contents: read
+    steps:
+      - name: Require the canonical store job to succeed
+        env:
+          ARTIFACT_RESULT: ${{ needs.store.result }}
+        run: test "$ARTIFACT_RESULT" = success

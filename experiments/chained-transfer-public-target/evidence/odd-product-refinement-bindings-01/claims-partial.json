@@ -1,0 +1,32 @@
+[
+  {
+    "theorem": "OddProductRefinement223.killed_fiftytwo_primary_projectors",
+    "claim_path": "pcc/claims/PCC-20261113-a08ad5.json",
+    "statement": "theorem killed_fiftytwo_primary_projectors {A : Type} (act : Nat \u2192 A \u2192 A) (plus : A \u2192 A \u2192 A) (zero : A) (mul : \u2200 m n x, act (m*n) x=act m (act n x)) (sum : \u2200 m n x, act (m+n) x=plus (act m x) (act n x)) (one : \u2200 x, act 1 x=x) (zeroStable : \u2200 n, act n zero=zero) (addZero : \u2200 x, plus x zero=x) (x : A) (killed : act 52 x=zero) : x=plus (act 13 x) (act 40 x) \u2227 act 4 (act 13 x)=zero \u2227 act 13 (act 40 x)=zero \u2227 (\u2200 z, act 4 z=zero \u2192 act 13 z=zero \u2192 z=zero)",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/odd-product-refinements/lean/OddProductRefinement.lean",
+      "theorem": "OddProductRefinement223.killed_fiftytwo_primary_projectors",
+      "decl_sha256": "0aa27f77dece48ec5cf5dbe5da24b41c1187d2f6f32f56a131b7c8531cb92d33"
+    }
+  },
+  {
+    "theorem": "OddProductRefinement223.quotient_factor_and_twice_chain",
+    "claim_path": "pcc/claims/PCC-20261113-cc8b69.json",
+    "statement": "theorem quotient_factor_and_twice_chain {A B J L : Type} (phiOld : A \u2192 J) (normOld : J \u2192 A) (gamma : A \u2192 B) (phiNew : B \u2192 L) (doubleJ : J \u2192 J) (zeroJ : J) (zeroL : L) (admissible : (A \u2192 L) \u2192 Prop) (quotient : \u2200 f, admissible f \u2192 (\u2200 a, phiOld a=zeroJ \u2192 f a=zeroL) \u2192 \u2203 beta : J \u2192 L, \u2200 a, beta (phiOld a)=f a) (compositionHom : admissible (fun a => phiNew (gamma a))) (transportedKernel : \u2200 a, phiOld a=zeroJ \u2192 phiNew (gamma a)=zeroL) (oldJ : \u2200 x, phiOld (normOld x)=doubleJ x) : \u2203 beta : J \u2192 L, (\u2200 a, beta (phiOld a)=phiNew (gamma a)) \u2227 (\u2200 x, phiNew (gamma (normOld x))=beta (doubleJ x))",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/odd-product-refinements/lean/OddProductRefinement.lean",
+      "theorem": "OddProductRefinement223.quotient_factor_and_twice_chain",
+      "decl_sha256": "65cb73857d9c68e06da00ba2cd1007aed0786b19a6ac6852f816038ab7c3e0d5"
+    }
+  },
+  {
+    "theorem": "OddProductRefinement223.identical_source_pair_elimination",
+    "claim_path": "pcc/claims/PCC-20261113-f8b42f.json",
+    "statement": "theorem identical_source_pair_elimination {A B J L : Type} (phiOld : A \u2192 J) (normOld : J \u2192 A) (gamma : A \u2192 B) (phiNew : B \u2192 L) (doubleA : A \u2192 A) (oldA : \u2200 a, normOld (phiOld a)=doubleA a) : \u2200 a, phiNew (gamma (normOld (phiOld a)))=phiNew (gamma (doubleA a))",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/odd-product-refinements/lean/OddProductRefinement.lean",
+      "theorem": "OddProductRefinement223.identical_source_pair_elimination",
+      "decl_sha256": "450fcb41761c15ac742044f5b8375b13d99cfd61b817207660344b8672d32737"
+    }
+  }
+]

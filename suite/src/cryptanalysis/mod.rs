@@ -236,6 +236,7 @@ pub mod quantum_estimator;
 pub mod quasi_subfield;
 pub mod research_bench;
 pub mod residual_walk;
+pub mod s3_affine_projection;
 pub mod sat;
 pub mod sbox;
 pub mod semaev_corpus;

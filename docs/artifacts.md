@@ -42,6 +42,13 @@ python3 tools/artifacts/artifacts.py plan [PATH]            # what the policy wo
   although the policy would move them: 51 data files that code or CI outside the
   data trees names by path, and `docs/ic/*.pdf`, regenerated on most PRs. Add a
   path only with the reader that needs it in the same change.
+  `pcc/ledger.jsonl` is append-only governance metadata read at its stable Git
+  path by `tools/pcc/pcc.py ledger verify` and the PCC CI gate. It stays in Git
+  when it crosses the data-size threshold, as in the sibling `crypto` policy;
+  moving or splitting it would break prefix/history validation. This exact
+  path exception does not cover research logs or other JSONL files. The policy
+  regression test checks both the required ledger reader input and those
+  data-file controls.
 - The `artifacts` workflow runs `artifacts.py check` on every pull request and
   fails one that adds a file the policy assigns to the store. The
   `large-file-ok` label overrides it with a warning.

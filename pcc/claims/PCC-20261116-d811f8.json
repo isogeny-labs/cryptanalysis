@@ -1,0 +1,44 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T02:31:10Z",
+ "id": "PCC-20261116-d811f8",
+ "kind": "statement",
+ "producer": {
+  "commit": "b7b91903888ffa9dea85e643e5a86e828767e7c8",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/historical-static-cycle-style-and-type-Clippy-02/actual-Clippy.exit.xz",
+    "sha256": "3246e457abfbcdad9b15fd3e441fdcb4b89f5c51fb997d428ab0d77f17fa7409"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/historical-static-cycle-style-and-type-Clippy-02/entire-source-at-Clippy.tar.xz",
+    "sha256": "ea5fb1e856dcacba99315021d0fb49b52f8e171204604bbbd219bfc98862c0b9"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/historical-static-cycle-style-and-type-Clippy-02/whole-Cargo-messages.jsonl.xz",
+    "sha256": "5be08c4061b047f9cf00a9269612a06bae17e550a68543e584899809b9b07c9a"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/historical-static-cycle-style-and-type-Clippy-02/whole-compiler.stderr.xz",
+    "sha256": "ca010100f820efad87fd21a7e7b3ee63ad7a47debabca23ad3b0514c6127ae1d"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Historical adapter static Clippy02 actual101: new public raw-ground tuple type is flagged for type complexity, plus two style warnings in the byte-exact original cycle module (same original tuple type and original inv2 division). Preserve entire source and compiler output. Add a public tuple alias in new types and module-scoped style exceptions only for the unchanged literal original module; retain the exact original source assertions and all functional tests. This does not run or verify historical mathematics. Original SHA style diagnostics remain d8fccc, native execution remains pending615f00."
+}

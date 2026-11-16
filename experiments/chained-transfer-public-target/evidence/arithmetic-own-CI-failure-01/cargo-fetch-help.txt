@@ -1,0 +1,23 @@
+Fetch dependencies of a package from the network
+
+Usage: cargo fetch [OPTIONS]
+
+Options:
+  -v, --verbose...               Use verbose output (-vv very verbose/build.rs output)
+  -q, --quiet                    Do not print cargo log messages
+      --color <WHEN>             Coloring [possible values: auto, always, never]
+      --config <KEY=VALUE|PATH>  Override a configuration value
+  -Z <FLAG>                      Unstable (nightly-only) flags to Cargo, see 'cargo -Z help' for
+                                 details
+  -h, --help                     Print help
+
+Compilation Options:
+      --target [<TRIPLE>]  Fetch dependencies for the target triple
+
+Manifest Options:
+  -m, --manifest-path <PATH>  Path to Cargo.toml
+      --locked                Assert that `Cargo.lock` will remain unchanged
+      --offline               Run without accessing the network
+      --frozen                Equivalent to specifying both --locked and --offline
+
+Run `cargo help fetch` for more detailed information.

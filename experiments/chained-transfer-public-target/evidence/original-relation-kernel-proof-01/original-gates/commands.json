@@ -1,0 +1,34 @@
+[
+  {
+    "name": "consumer",
+    "command": [
+      "timeout",
+      "120",
+      "env",
+      "ELAN_TOOLCHAIN=leanprover/lean4:v4.34.1",
+      "bash",
+      "tools/lean/proof-gate.sh",
+      "--out",
+      "/workspace/scratch/ct102-rank-proof-gates-01/consumer-proofs",
+      "target/ct102-relation-kernel-proof-01/RelationKernel.lean"
+    ],
+    "actual_exit": 0,
+    "source_sha256": "249c3370c8d7111f799a029f03d9121c7a07f3664a63fc268a81cd75e9901291"
+  },
+  {
+    "name": "producer",
+    "command": [
+      "timeout",
+      "120",
+      "env",
+      "ELAN_TOOLCHAIN=leanprover/lean4:v4.35.0",
+      "bash",
+      "tools/lean/proof-gate.sh",
+      "--out",
+      "/workspace/scratch/ct102-rank-proof-gates-01/producer-proofs",
+      "target/ct102-relation-kernel-proof-01/RelationKernel.lean"
+    ],
+    "actual_exit": 0,
+    "source_sha256": "249c3370c8d7111f799a029f03d9121c7a07f3664a63fc268a81cd75e9901291"
+  }
+]

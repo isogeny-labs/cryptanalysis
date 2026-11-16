@@ -1,0 +1,229 @@
+{
+  "branch": "codex/ic-trial32-20261115",
+  "closed_utc": "2026-11-16T03:46:36+00:00",
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "cloud/modal_run.py",
+        "run",
+        "--image",
+        "cuda",
+        "--gpu",
+        "L4",
+        "--cpu",
+        "4",
+        "--memory",
+        "8",
+        "--timeout",
+        "900",
+        "--out",
+        "experiments/ic-f2m-three-limb-20261115/run-001",
+        "--detach",
+        "--",
+        "python3",
+        "experiments/ic-f2m-three-limb-20261115/run_panel.py"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "started_utc": "2026-11-16T03:43:31+00:00",
+      "wall_s": 8.11
+    }
+  ],
+  "commit": "1a77f086689a216aab1347e8f1869e68429e6d0d",
+  "commit_dirty": false,
+  "created_utc": "2026-11-16T03:43:11+00:00",
+  "curve_uid": null,
+  "entries": [],
+  "host": {
+    "cpu": "arm",
+    "cpus_online": 14,
+    "hostname": "Mac.attlocal.net",
+    "isolation": "unstated",
+    "platform": "macOS-27.2-arm64-arm-64bit-Mach-O"
+  },
+  "id": "20261116T0343Z-ic-f2m-three-limb-modal-001",
+  "metrics": [
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 5,
+      "name": "degree113-exploratory-component-ratio",
+      "note": "Exploratory field dependency chain only; timing qualification null; observed min/max, not confidence interval.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9993019415274097,
+        1.0059764785330858
+      ],
+      "unit": "ratio",
+      "value": 1.0019883581545943
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 5,
+      "name": "degree131-exploratory-component-ratio",
+      "note": "Exploratory field dependency chain only; timing qualification null; observed min/max, not confidence interval.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.0811952835117764,
+        1.088290724224434
+      ],
+      "unit": "ratio",
+      "value": 1.0831301271100044
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 5,
+      "name": "degree155-exploratory-component-ratio",
+      "note": "Exploratory field dependency chain only; timing qualification null; observed min/max, not confidence interval.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.0827263997851428,
+        1.0847007306105991
+      ],
+      "unit": "ratio",
+      "value": 1.0842143089177123
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 5,
+      "name": "degree163-exploratory-component-ratio",
+      "note": "Exploratory field dependency chain only; timing qualification null; observed min/max, not confidence interval.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.0810572199937698,
+        1.091294026094185
+      ],
+      "unit": "ratio",
+      "value": 1.0819661756365364
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 5,
+      "name": "degree233-exploratory-component-ratio",
+      "note": "Exploratory field dependency chain only; timing qualification null; observed min/max, not confidence interval.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.0187329233097213,
+        1.0254703368911542
+      ],
+      "unit": "ratio",
+      "value": 1.0235986446019807
+    }
+  ],
+  "problem": "ic-binary-field-component",
+  "raw": [
+    {
+      "bytes": 1048,
+      "path": "experiments/ic-f2m-three-limb-20261115/run-001/summary.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/33/33a8c3a3b4080a5618c1451ec5d010200e4a4c012ab71befab7ec8197220c8b1",
+      "sha256": "33a8c3a3b4080a5618c1451ec5d010200e4a4c012ab71befab7ec8197220c8b1",
+      "uploaded": true
+    },
+    {
+      "bytes": 163,
+      "path": "experiments/ic-f2m-three-limb-20261115/run-001/specialized-build.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/f4/f4eae2c076f516d9424f44f012e3f5cee990b834fb89d7e055013395d9ffba51",
+      "sha256": "f4eae2c076f516d9424f44f012e3f5cee990b834fb89d7e055013395d9ffba51",
+      "uploaded": true
+    },
+    {
+      "bytes": 25770,
+      "path": "experiments/ic-f2m-three-limb-20261115/run-001/host.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/ed/ed5971167ffab114789be0ef0ed0e6ec81432183951a4a0b0eac072f501b9bb9",
+      "sha256": "ed5971167ffab114789be0ef0ed0e6ec81432183951a4a0b0eac072f501b9bb9",
+      "uploaded": true
+    },
+    {
+      "bytes": 1903,
+      "path": "experiments/ic-f2m-three-limb-20261115/run-001/default-test.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/9d/9d0f08e52b8c44db3f37d545df1baa10454c02ecdebeb025e38594dcda0eda39",
+      "sha256": "9d0f08e52b8c44db3f37d545df1baa10454c02ecdebeb025e38594dcda0eda39",
+      "uploaded": true
+    },
+    {
+      "bytes": 1232611,
+      "path": "experiments/ic-f2m-three-limb-20261115/run-001/pairs.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/39/39a982ccea9661478049c81090cfcf737464c776ad99f0c9243e9f4cf354020e",
+      "sha256": "39a982ccea9661478049c81090cfcf737464c776ad99f0c9243e9f4cf354020e",
+      "uploaded": true
+    },
+    {
+      "bytes": 1182220,
+      "path": "experiments/ic-f2m-three-limb-20261115/run-001/arms.jsonl",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/ba/baba8c005a36d570dc2610a8bfa664418edc8aa0c8e43ed22577989b9878c749",
+      "sha256": "baba8c005a36d570dc2610a8bfa664418edc8aa0c8e43ed22577989b9878c749",
+      "uploaded": true
+    },
+    {
+      "bytes": 163,
+      "path": "experiments/ic-f2m-three-limb-20261115/run-001/default-build.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/f6/f66939f5c4830f2c8af4aca89bb54a9a77fa8d9ffe93f6cbb1b7bc1873db5eb4",
+      "sha256": "f66939f5c4830f2c8af4aca89bb54a9a77fa8d9ffe93f6cbb1b7bc1873db5eb4",
+      "uploaded": true
+    },
+    {
+      "bytes": 1805,
+      "path": "experiments/ic-f2m-three-limb-20261115/run-001/specialized-test.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/8f/8f3e1ef9223542c6df9faa1a53d51c241585f5689b97b3a55e1ba91e12560f2e",
+      "sha256": "8f3e1ef9223542c6df9faa1a53d51c241585f5689b97b3a55e1ba91e12560f2e",
+      "uploaded": true
+    },
+    {
+      "bytes": 579,
+      "path": "experiments/ic-f2m-three-limb-20261115/launch-001/ic-f2m-modal-fetch-001.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/23/23ea5e59d5088384c9771a93966231a8356ac7d26837377cb0efee36c38c59a0",
+      "sha256": "23ea5e59d5088384c9771a93966231a8356ac7d26837377cb0efee36c38c59a0",
+      "uploaded": true
+    },
+    {
+      "bytes": 1053,
+      "path": "experiments/ic-f2m-three-limb-20261115/launch-001/ic-f2m-modal-log-001.txt",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/5b/5b6c5ddef7567293c61bdb967f6cc8676abf1f96efb6824d602746b2ba47dd9c",
+      "sha256": "5b6c5ddef7567293c61bdb967f6cc8676abf1f96efb6824d602746b2ba47dd9c",
+      "uploaded": true
+    },
+    {
+      "bytes": 333,
+      "path": "experiments/ic-f2m-three-limb-20261115/launch-001/ic-f2m-modal-launch-001.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/00/0018e43b0582c7b39c9f9f2b0b3cd25a1e382be11c52a9349c28744ac71eada5",
+      "sha256": "0018e43b0582c7b39c9f9f2b0b3cd25a1e382be11c52a9349c28744ac71eada5",
+      "uploaded": true
+    },
+    {
+      "bytes": 180747,
+      "path": "experiments/ic-f2m-three-limb-20261115/assembly-001/specialized-arm64.s",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/8c/8cdaf2f80c6f57d4c838ac004cc76d0adb95322f7ccd2997a28cb7c1cc14af4e",
+      "sha256": "8cdaf2f80c6f57d4c838ac004cc76d0adb95322f7ccd2997a28cb7c1cc14af4e",
+      "uploaded": true
+    },
+    {
+      "bytes": 347,
+      "path": "experiments/ic-f2m-three-limb-20261115/assembly-001/build.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/b9/b9c7750bbfd66050b875ebdf942adf590367652b10651210c78458f44fc000af",
+      "sha256": "b9c7750bbfd66050b875ebdf942adf590367652b10651210c78458f44fc000af",
+      "uploaded": true
+    }
+  ],
+  "repo": "cryptanalysis",
+  "reports": {
+    "pdf": null,
+    "png": [],
+    "svg": []
+  },
+  "schema": "bench.record/v1",
+  "session": null,
+  "slug": "ic-f2m-three-limb-modal-001",
+  "status": "invalid",
+  "summary": "Exploratory field component panel completed; all25 checksums agree and all calibration bounds pass. Required placement/host evidence is incomplete; qualified fields remain null. Not full IC timing.",
+  "validation": null
+}

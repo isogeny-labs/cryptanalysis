@@ -1,0 +1,38 @@
+   Compiling n4-arithmetic-positive-hook-control v0.1.0 (/workspace/scratch/ct72-arithmetic-hook-canaries-03/positive)
+warning: associated items `new`, `modulus`, and `gen` are never used
+  --> src/fpr.rs:31:12
+   |
+29 | impl FpR {
+   | -------- associated items in this implementation
+30 |     /// F_{p^r} with a low-weight monic irreducible z^r - red(z) found by Rabin's test over F_p.
+31 |     pub fn new(p: u64, r: usize) -> FpR {
+   |            ^^^
+...
+83 |     pub fn modulus(&self) -> Vec<u64> {
+   |            ^^^^^^^
+...
+94 |     pub fn gen(&self) -> ER {
+   |            ^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `search_tail` is never used
+   --> src/fpr.rs:238:4
+    |
+238 | fn search_tail(zp: &Zp, r: usize, weight: usize) -> Option<ER> {
+    |    ^^^^^^^^^^^
+
+warning: methods `embed` and `project` are never used
+   --> src/fpr.rs:452:12
+    |
+450 | impl FpR {
+    | -------- methods in this implementation
+451 |     /// Embed a base-field element a in F_p as the constant a in F_{p^r}.
+452 |     pub fn embed(&self, a: u64) -> ER {
+    |            ^^^^^
+...
+456 |     pub fn project(&self, a: ER) -> Option<u64> {
+    |            ^^^^^^^
+
+warning: `n4-arithmetic-positive-hook-control` (bin "n4-arithmetic-positive-hook-control") generated 3 warnings
+    Finished `release` profile [optimized] target(s) in 1.67s

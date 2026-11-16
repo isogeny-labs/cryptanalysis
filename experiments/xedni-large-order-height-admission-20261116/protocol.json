@@ -1,0 +1,143 @@
+{
+  "caps_bits": [
+    32,
+    64,
+    96,
+    128,
+    160,
+    192,
+    256,
+    384,
+    512,
+    768,
+    1024
+  ],
+  "claim_boundary": "height admission conditional on public hit; charge public search and all lift candidates; no same-target online speedup inference",
+  "controls": "one first nonhit per target; all 27 variants retained",
+  "curve_coefficients": [
+    -1,
+    -2
+  ],
+  "falsifiers": [
+    "public relation disagrees with scalar congruence",
+    "curve singular or bad reduction",
+    "rational relation fails",
+    "second reduction match disagrees with public relation"
+  ],
+  "fields": [
+    {
+      "order": 331,
+      "p": 313,
+      "q": 331
+    },
+    {
+      "order": 439,
+      "p": 421,
+      "q": 439
+    },
+    {
+      "order": 419,
+      "p": 431,
+      "q": 419
+    },
+    {
+      "order": 571,
+      "p": 547,
+      "q": 571
+    },
+    {
+      "order": 599,
+      "p": 571,
+      "q": 599
+    },
+    {
+      "order": 626,
+      "p": 593,
+      "q": 313
+    },
+    {
+      "order": 586,
+      "p": 617,
+      "q": 293
+    },
+    {
+      "order": 706,
+      "p": 677,
+      "q": 353
+    }
+  ],
+  "generator_law": "first x ascending, y ascending, whose cofactor multiple has order q",
+  "lift_phase": "each public hit and first public nonhit per target: S=b^-1 U, centered x,y, shifts kx,ky,kA in {-1,0,1}; A=-1+kA*p; B=y^2-x^3-A*x; T=(x,y), P=b*T, R=-a*T",
+  "offsets": [
+    0,
+    1,
+    2,
+    3,
+    5,
+    8,
+    13,
+    21
+  ],
+  "public_phase": "test every vector on every query before lift selection; retain 6656 rows",
+  "query_law": "first 16 lexicographic ordered distinct offset pairs with U=Q-t1G and V=Q-t2G both nonidentity",
+  "run_cap_seconds": 1200,
+  "schema": "xedni-large-order-height-admission-protocol-v1",
+  "score": "max numerator or denominator bits of A,B,Px,Py,Rx,Ry",
+  "source": "experiments/xedni-large-order-admission-20261115/result.json",
+  "source_sha256": "b18127c392b904559ac12512642ab0322eaa3b9b72a61f45dacf4a2fb8c9a25c",
+  "target_law": "w=1+int(SHA256(xedni-large-height-v1|p|j),16) mod (q-1), j=0..3",
+  "vectors": [
+    [
+      1,
+      -6
+    ],
+    [
+      2,
+      -1
+    ],
+    [
+      6,
+      5
+    ],
+    [
+      5,
+      4
+    ],
+    [
+      6,
+      1
+    ],
+    [
+      5,
+      3
+    ],
+    [
+      4,
+      -5
+    ],
+    [
+      6,
+      -1
+    ],
+    [
+      5,
+      -1
+    ],
+    [
+      6,
+      -5
+    ],
+    [
+      1,
+      5
+    ],
+    [
+      4,
+      -1
+    ],
+    [
+      4,
+      1
+    ]
+  ]
+}

@@ -1,0 +1,3211 @@
+[
+  {
+    "kind": "N4_COMPLETED_CONTROL",
+    "data": {
+      "actual_P0": [
+        1,
+        74,
+        153
+      ],
+      "all_five_affine_difference_controls": 5,
+      "all_five_point_half_inverse_controls": 5,
+      "all_original_split_matches": 16,
+      "complete_points": 32,
+      "geometric_origin": [
+        1,
+        1,
+        0,
+        118,
+        0,
+        196,
+        191,
+        0,
+        1,
+        91,
+        0,
+        137,
+        202,
+        0,
+        0,
+        0,
+        1,
+        194,
+        7
+      ],
+      "origin_nonzero": true,
+      "ratio_base_nonzero": true,
+      "scope": "actual originalPicard/completeGen bridge;not performance"
+    }
+  },
+  {
+    "kind": "N4_COMPLETED_ATTEMPT",
+    "data": {
+      "attempt": 1,
+      "baseline": {
+        "counter_scope": "originalN4 counters omit arithmetic in separate completed-map engine;correctness only",
+        "fail": "too few relations: 26 rows for 30 columns",
+        "k_found": null,
+        "ok": false,
+        "phases": [
+          {
+            "add": 18383,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 202,
+            "ladd": 0,
+            "lmul": 0,
+            "mul": 19059,
+            "phase": "fb",
+            "wall": 0.0002867
+          },
+          {
+            "add": 21395,
+            "cmp": 0,
+            "hash": 868,
+            "inv": 239,
+            "ladd": 0,
+            "lmul": 0,
+            "mul": 60201,
+            "phase": "relations",
+            "wall": 0.000213553
+          }
+        ],
+        "stats": [
+          [
+            "n_fb",
+            30.0
+          ],
+          [
+            "graph_edges",
+            154.0
+          ],
+          [
+            "graph_ground",
+            66.0
+          ],
+          [
+            "pairs",
+            435.0
+          ],
+          [
+            "multi_lines",
+            154.0
+          ],
+          [
+            "rel_full",
+            12.0
+          ],
+          [
+            "rel_lp",
+            64.0
+          ],
+          [
+            "lp_distinct",
+            176.0
+          ],
+          [
+            "rel_unsure",
+            203.0
+          ],
+          [
+            "relations_verified",
+            80.0
+          ],
+          [
+            "relations_bad",
+            0.0
+          ],
+          [
+            "rows_cycle",
+            14.0
+          ],
+          [
+            "rows_full",
+            12.0
+          ],
+          [
+            "rows_lp_combined",
+            14.0
+          ],
+          [
+            "rows_used",
+            26.0
+          ],
+          [
+            "cols_active",
+            30.0
+          ],
+          [
+            "rows_full_total",
+            12.0
+          ]
+        ]
+      },
+      "c": 2.0,
+      "candidate": {
+        "counter_scope": "originalN4 counters omit arithmetic in separate completed-map engine;correctness only",
+        "fail": "too few relations: 26 rows for 30 columns",
+        "k_found": null,
+        "ok": false,
+        "phases": [
+          {
+            "add": 18383,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 202,
+            "ladd": 0,
+            "lmul": 0,
+            "mul": 19059,
+            "phase": "fb",
+            "wall": 0.000255215
+          },
+          {
+            "add": 21395,
+            "cmp": 0,
+            "hash": 868,
+            "inv": 239,
+            "ladd": 0,
+            "lmul": 0,
+            "mul": 60201,
+            "phase": "relations",
+            "wall": 0.000197763
+          }
+        ],
+        "stats": [
+          [
+            "n_fb",
+            30.0
+          ],
+          [
+            "graph_edges",
+            154.0
+          ],
+          [
+            "graph_ground",
+            66.0
+          ],
+          [
+            "pairs",
+            435.0
+          ],
+          [
+            "multi_lines",
+            154.0
+          ],
+          [
+            "rel_full",
+            12.0
+          ],
+          [
+            "rel_lp",
+            64.0
+          ],
+          [
+            "lp_distinct",
+            176.0
+          ],
+          [
+            "rel_unsure",
+            203.0
+          ],
+          [
+            "relations_verified",
+            80.0
+          ],
+          [
+            "relations_bad",
+            0.0
+          ],
+          [
+            "rows_cycle",
+            14.0
+          ],
+          [
+            "rows_full",
+            12.0
+          ],
+          [
+            "rows_lp_combined",
+            14.0
+          ],
+          [
+            "rows_used",
+            26.0
+          ],
+          [
+            "cols_active",
+            30.0
+          ],
+          [
+            "rows_full_total",
+            12.0
+          ]
+        ]
+      },
+      "independent_baseline_check": false,
+      "independent_candidate_check": false,
+      "nfb": 30,
+      "public_target": {
+        "coordinates": [
+          [
+            162,
+            197,
+            140
+          ],
+          [
+            45,
+            11,
+            207
+          ]
+        ],
+        "field": "K3-223-d9c024d6fb0b129b7ea9d1914c9c6c98e75db9e090311fbc32d96f7f56160213",
+        "model": "N4-E0-quadratic-v1-ea39671464a106703d154b1b34299e40dff57bb1fc4305ddc877691cd28c2238"
+      },
+      "scope": "paired correctness/all retries retained;no speed orcountercoverage claim",
+      "seed": 101,
+      "target_index": 0
+    }
+  },
+  {
+    "kind": "N4_COMPLETED_ATTEMPT",
+    "data": {
+      "attempt": 2,
+      "baseline": {
+        "counter_scope": "originalN4 counters omit arithmetic in separate completed-map engine;correctness only",
+        "fail": "",
+        "k_found": 1,
+        "ok": true,
+        "phases": [
+          {
+            "add": 27780,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 309,
+            "ladd": 0,
+            "lmul": 0,
+            "mul": 28807,
+            "phase": "fb",
+            "wall": 0.0005934
+          },
+          {
+            "add": 30580,
+            "cmp": 0,
+            "hash": 1171,
+            "inv": 358,
+            "ladd": 0,
+            "lmul": 0,
+            "mul": 86149,
+            "phase": "relations",
+            "wall": 0.000277734
+          },
+          {
+            "add": 0,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 0,
+            "ladd": 3400,
+            "lmul": 1740,
+            "mul": 0,
+            "phase": "matrix",
+            "wall": 0.027686964
+          },
+          {
+            "add": 0,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 0,
+            "ladd": 69189,
+            "lmul": 71921,
+            "mul": 0,
+            "phase": "linear_algebra",
+            "wall": 0.00048115
+          },
+          {
+            "add": 0,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 0,
+            "ladd": 686,
+            "lmul": 194,
+            "mul": 0,
+            "phase": "log_recovery",
+            "wall": 4.5405e-05
+          },
+          {
+            "add": 486773,
+            "cmp": 0,
+            "hash": 12,
+            "inv": 3820,
+            "ladd": 56,
+            "lmul": 0,
+            "mul": 459315,
+            "phase": "descent",
+            "wall": 0.003491228
+          },
+          {
+            "add": 0,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 0,
+            "ladd": 2,
+            "lmul": 1,
+            "mul": 0,
+            "phase": "verify",
+            "wall": 1.524e-06
+          }
+        ],
+        "stats": [
+          [
+            "n_fb",
+            36.0
+          ],
+          [
+            "graph_edges",
+            211.0
+          ],
+          [
+            "graph_ground",
+            91.0
+          ],
+          [
+            "pairs",
+            630.0
+          ],
+          [
+            "multi_lines",
+            211.0
+          ],
+          [
+            "rel_full",
+            9.0
+          ],
+          [
+            "rel_lp",
+            89.0
+          ],
+          [
+            "lp_distinct",
+            177.0
+          ],
+          [
+            "rel_unsure",
+            319.0
+          ],
+          [
+            "relations_verified",
+            79.0
+          ],
+          [
+            "relations_bad",
+            0.0
+          ],
+          [
+            "rows_cycle",
+            69.0
+          ],
+          [
+            "rows_full",
+            9.0
+          ],
+          [
+            "rows_lp_combined",
+            69.0
+          ],
+          [
+            "rows_used",
+            74.0
+          ],
+          [
+            "cols_active",
+            36.0
+          ],
+          [
+            "rows_full_total",
+            9.0
+          ],
+          [
+            "holdout_ok",
+            4.0
+          ],
+          [
+            "holdout_bad",
+            0.0
+          ],
+          [
+            "lp_known",
+            177.0
+          ],
+          [
+            "known_points",
+            213.0
+          ],
+          [
+            "descent_trials",
+            47.0
+          ],
+          [
+            "wall_total",
+            0.032579058
+          ]
+        ]
+      },
+      "c": 2.4,
+      "candidate": {
+        "counter_scope": "originalN4 counters omit arithmetic in separate completed-map engine;correctness only",
+        "fail": "",
+        "k_found": 1,
+        "ok": true,
+        "phases": [
+          {
+            "add": 27780,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 309,
+            "ladd": 0,
+            "lmul": 0,
+            "mul": 28807,
+            "phase": "fb",
+            "wall": 0.000286168
+          },
+          {
+            "add": 30580,
+            "cmp": 0,
+            "hash": 1171,
+            "inv": 358,
+            "ladd": 0,
+            "lmul": 0,
+            "mul": 86149,
+            "phase": "relations",
+            "wall": 0.000275924
+          },
+          {
+            "add": 0,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 0,
+            "ladd": 3400,
+            "lmul": 1740,
+            "mul": 0,
+            "phase": "matrix",
+            "wall": 0.039525745
+          },
+          {
+            "add": 0,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 0,
+            "ladd": 69189,
+            "lmul": 71921,
+            "mul": 0,
+            "phase": "linear_algebra",
+            "wall": 0.000496097
+          },
+          {
+            "add": 0,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 0,
+            "ladd": 686,
+            "lmul": 194,
+            "mul": 0,
+            "phase": "log_recovery",
+            "wall": 0.000101001
+          },
+          {
+            "add": 546635,
+            "cmp": 0,
+            "hash": 12,
+            "inv": 3831,
+            "ladd": 56,
+            "lmul": 0,
+            "mul": 516871,
+            "phase": "descent",
+            "wall": 0.004981961
+          },
+          {
+            "add": 0,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 0,
+            "ladd": 2,
+            "lmul": 1,
+            "mul": 0,
+            "phase": "verify",
+            "wall": 9.09e-07
+          }
+        ],
+        "stats": [
+          [
+            "n_fb",
+            36.0
+          ],
+          [
+            "graph_edges",
+            211.0
+          ],
+          [
+            "graph_ground",
+            91.0
+          ],
+          [
+            "pairs",
+            630.0
+          ],
+          [
+            "multi_lines",
+            211.0
+          ],
+          [
+            "rel_full",
+            9.0
+          ],
+          [
+            "rel_lp",
+            89.0
+          ],
+          [
+            "lp_distinct",
+            177.0
+          ],
+          [
+            "rel_unsure",
+            319.0
+          ],
+          [
+            "relations_verified",
+            79.0
+          ],
+          [
+            "relations_bad",
+            0.0
+          ],
+          [
+            "rows_cycle",
+            69.0
+          ],
+          [
+            "rows_full",
+            9.0
+          ],
+          [
+            "rows_lp_combined",
+            69.0
+          ],
+          [
+            "rows_used",
+            74.0
+          ],
+          [
+            "cols_active",
+            36.0
+          ],
+          [
+            "rows_full_total",
+            9.0
+          ],
+          [
+            "holdout_ok",
+            4.0
+          ],
+          [
+            "holdout_bad",
+            0.0
+          ],
+          [
+            "lp_known",
+            177.0
+          ],
+          [
+            "known_points",
+            213.0
+          ],
+          [
+            "completed_adapter_ready",
+            1.0
+          ],
+          [
+            "completed_map_calls",
+            3.0
+          ],
+          [
+            "descent_trials",
+            47.0
+          ],
+          [
+            "wall_total",
+            0.045669221
+          ]
+        ]
+      },
+      "independent_baseline_check": true,
+      "independent_candidate_check": true,
+      "nfb": 36,
+      "public_target": {
+        "coordinates": [
+          [
+            162,
+            197,
+            140
+          ],
+          [
+            45,
+            11,
+            207
+          ]
+        ],
+        "field": "K3-223-d9c024d6fb0b129b7ea9d1914c9c6c98e75db9e090311fbc32d96f7f56160213",
+        "model": "N4-E0-quadratic-v1-ea39671464a106703d154b1b34299e40dff57bb1fc4305ddc877691cd28c2238"
+      },
+      "scope": "paired correctness/all retries retained;no speed orcountercoverage claim",
+      "seed": 102,
+      "target_index": 0
+    }
+  },
+  {
+    "kind": "N4_COMPLETED_TARGET",
+    "data": {
+      "baseline_success": true,
+      "candidate_success": true,
+      "target_index": 0
+    }
+  },
+  {
+    "kind": "N4_COMPLETED_ATTEMPT",
+    "data": {
+      "attempt": 1,
+      "baseline": {
+        "counter_scope": "originalN4 counters omit arithmetic in separate completed-map engine;correctness only",
+        "fail": "too few relations: 26 rows for 30 columns",
+        "k_found": null,
+        "ok": false,
+        "phases": [
+          {
+            "add": 18383,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 202,
+            "ladd": 0,
+            "lmul": 0,
+            "mul": 19059,
+            "phase": "fb",
+            "wall": 0.000239983
+          },
+          {
+            "add": 21395,
+            "cmp": 0,
+            "hash": 868,
+            "inv": 239,
+            "ladd": 0,
+            "lmul": 0,
+            "mul": 60201,
+            "phase": "relations",
+            "wall": 0.000284038
+          }
+        ],
+        "stats": [
+          [
+            "n_fb",
+            30.0
+          ],
+          [
+            "graph_edges",
+            154.0
+          ],
+          [
+            "graph_ground",
+            66.0
+          ],
+          [
+            "pairs",
+            435.0
+          ],
+          [
+            "multi_lines",
+            154.0
+          ],
+          [
+            "rel_full",
+            12.0
+          ],
+          [
+            "rel_lp",
+            64.0
+          ],
+          [
+            "lp_distinct",
+            176.0
+          ],
+          [
+            "rel_unsure",
+            203.0
+          ],
+          [
+            "relations_verified",
+            80.0
+          ],
+          [
+            "relations_bad",
+            0.0
+          ],
+          [
+            "rows_cycle",
+            14.0
+          ],
+          [
+            "rows_full",
+            12.0
+          ],
+          [
+            "rows_lp_combined",
+            14.0
+          ],
+          [
+            "rows_used",
+            26.0
+          ],
+          [
+            "cols_active",
+            30.0
+          ],
+          [
+            "rows_full_total",
+            12.0
+          ]
+        ]
+      },
+      "c": 2.0,
+      "candidate": {
+        "counter_scope": "originalN4 counters omit arithmetic in separate completed-map engine;correctness only",
+        "fail": "too few relations: 26 rows for 30 columns",
+        "k_found": null,
+        "ok": false,
+        "phases": [
+          {
+            "add": 18383,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 202,
+            "ladd": 0,
+            "lmul": 0,
+            "mul": 19059,
+            "phase": "fb",
+            "wall": 0.000236808
+          },
+          {
+            "add": 21395,
+            "cmp": 0,
+            "hash": 868,
+            "inv": 239,
+            "ladd": 0,
+            "lmul": 0,
+            "mul": 60201,
+            "phase": "relations",
+            "wall": 0.0001987
+          }
+        ],
+        "stats": [
+          [
+            "n_fb",
+            30.0
+          ],
+          [
+            "graph_edges",
+            154.0
+          ],
+          [
+            "graph_ground",
+            66.0
+          ],
+          [
+            "pairs",
+            435.0
+          ],
+          [
+            "multi_lines",
+            154.0
+          ],
+          [
+            "rel_full",
+            12.0
+          ],
+          [
+            "rel_lp",
+            64.0
+          ],
+          [
+            "lp_distinct",
+            176.0
+          ],
+          [
+            "rel_unsure",
+            203.0
+          ],
+          [
+            "relations_verified",
+            80.0
+          ],
+          [
+            "relations_bad",
+            0.0
+          ],
+          [
+            "rows_cycle",
+            14.0
+          ],
+          [
+            "rows_full",
+            12.0
+          ],
+          [
+            "rows_lp_combined",
+            14.0
+          ],
+          [
+            "rows_used",
+            26.0
+          ],
+          [
+            "cols_active",
+            30.0
+          ],
+          [
+            "rows_full_total",
+            12.0
+          ]
+        ]
+      },
+      "independent_baseline_check": false,
+      "independent_candidate_check": false,
+      "nfb": 30,
+      "public_target": {
+        "coordinates": [
+          [
+            110,
+            108,
+            126
+          ],
+          [
+            18,
+            56,
+            16
+          ]
+        ],
+        "field": "K3-223-d9c024d6fb0b129b7ea9d1914c9c6c98e75db9e090311fbc32d96f7f56160213",
+        "model": "N4-E0-quadratic-v1-ea39671464a106703d154b1b34299e40dff57bb1fc4305ddc877691cd28c2238"
+      },
+      "scope": "paired correctness/all retries retained;no speed orcountercoverage claim",
+      "seed": 101,
+      "target_index": 1
+    }
+  },
+  {
+    "kind": "N4_COMPLETED_ATTEMPT",
+    "data": {
+      "attempt": 2,
+      "baseline": {
+        "counter_scope": "originalN4 counters omit arithmetic in separate completed-map engine;correctness only",
+        "fail": "",
+        "k_found": 2,
+        "ok": true,
+        "phases": [
+          {
+            "add": 27780,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 309,
+            "ladd": 0,
+            "lmul": 0,
+            "mul": 28807,
+            "phase": "fb",
+            "wall": 0.000318796
+          },
+          {
+            "add": 30580,
+            "cmp": 0,
+            "hash": 1171,
+            "inv": 358,
+            "ladd": 0,
+            "lmul": 0,
+            "mul": 86149,
+            "phase": "relations",
+            "wall": 0.000270557
+          },
+          {
+            "add": 0,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 0,
+            "ladd": 3400,
+            "lmul": 1740,
+            "mul": 0,
+            "phase": "matrix",
+            "wall": 0.026223723
+          },
+          {
+            "add": 0,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 0,
+            "ladd": 69189,
+            "lmul": 71921,
+            "mul": 0,
+            "phase": "linear_algebra",
+            "wall": 0.0005142
+          },
+          {
+            "add": 0,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 0,
+            "ladd": 686,
+            "lmul": 194,
+            "mul": 0,
+            "phase": "log_recovery",
+            "wall": 4.722e-05
+          },
+          {
+            "add": 189801,
+            "cmp": 0,
+            "hash": 9,
+            "inv": 1458,
+            "ladd": 24,
+            "lmul": 0,
+            "mul": 181576,
+            "phase": "descent",
+            "wall": 0.001166056
+          },
+          {
+            "add": 84,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 1,
+            "ladd": 2,
+            "lmul": 1,
+            "mul": 78,
+            "phase": "verify",
+            "wall": 1.296e-06
+          }
+        ],
+        "stats": [
+          [
+            "n_fb",
+            36.0
+          ],
+          [
+            "graph_edges",
+            211.0
+          ],
+          [
+            "graph_ground",
+            91.0
+          ],
+          [
+            "pairs",
+            630.0
+          ],
+          [
+            "multi_lines",
+            211.0
+          ],
+          [
+            "rel_full",
+            9.0
+          ],
+          [
+            "rel_lp",
+            89.0
+          ],
+          [
+            "lp_distinct",
+            177.0
+          ],
+          [
+            "rel_unsure",
+            319.0
+          ],
+          [
+            "relations_verified",
+            79.0
+          ],
+          [
+            "relations_bad",
+            0.0
+          ],
+          [
+            "rows_cycle",
+            69.0
+          ],
+          [
+            "rows_full",
+            9.0
+          ],
+          [
+            "rows_lp_combined",
+            69.0
+          ],
+          [
+            "rows_used",
+            74.0
+          ],
+          [
+            "cols_active",
+            36.0
+          ],
+          [
+            "rows_full_total",
+            9.0
+          ],
+          [
+            "holdout_ok",
+            4.0
+          ],
+          [
+            "holdout_bad",
+            0.0
+          ],
+          [
+            "lp_known",
+            177.0
+          ],
+          [
+            "known_points",
+            213.0
+          ],
+          [
+            "descent_trials",
+            15.0
+          ],
+          [
+            "wall_total",
+            0.028543244
+          ]
+        ]
+      },
+      "c": 2.4,
+      "candidate": {
+        "counter_scope": "originalN4 counters omit arithmetic in separate completed-map engine;correctness only",
+        "fail": "",
+        "k_found": 2,
+        "ok": true,
+        "phases": [
+          {
+            "add": 27780,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 309,
+            "ladd": 0,
+            "lmul": 0,
+            "mul": 28807,
+            "phase": "fb",
+            "wall": 0.000284464
+          },
+          {
+            "add": 30580,
+            "cmp": 0,
+            "hash": 1171,
+            "inv": 358,
+            "ladd": 0,
+            "lmul": 0,
+            "mul": 86149,
+            "phase": "relations",
+            "wall": 0.000290094
+          },
+          {
+            "add": 0,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 0,
+            "ladd": 3400,
+            "lmul": 1740,
+            "mul": 0,
+            "phase": "matrix",
+            "wall": 0.038427834
+          },
+          {
+            "add": 0,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 0,
+            "ladd": 69189,
+            "lmul": 71921,
+            "mul": 0,
+            "phase": "linear_algebra",
+            "wall": 0.000685988
+          },
+          {
+            "add": 0,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 0,
+            "ladd": 686,
+            "lmul": 194,
+            "mul": 0,
+            "phase": "log_recovery",
+            "wall": 0.000134634
+          },
+          {
+            "add": 596763,
+            "cmp": 0,
+            "hash": 15,
+            "inv": 4271,
+            "ladd": 63,
+            "lmul": 0,
+            "mul": 564018,
+            "phase": "descent",
+            "wall": 0.008066446
+          },
+          {
+            "add": 84,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 1,
+            "ladd": 2,
+            "lmul": 1,
+            "mul": 78,
+            "phase": "verify",
+            "wall": 1.694e-06
+          }
+        ],
+        "stats": [
+          [
+            "n_fb",
+            36.0
+          ],
+          [
+            "graph_edges",
+            211.0
+          ],
+          [
+            "graph_ground",
+            91.0
+          ],
+          [
+            "pairs",
+            630.0
+          ],
+          [
+            "multi_lines",
+            211.0
+          ],
+          [
+            "rel_full",
+            9.0
+          ],
+          [
+            "rel_lp",
+            89.0
+          ],
+          [
+            "lp_distinct",
+            177.0
+          ],
+          [
+            "rel_unsure",
+            319.0
+          ],
+          [
+            "relations_verified",
+            79.0
+          ],
+          [
+            "relations_bad",
+            0.0
+          ],
+          [
+            "rows_cycle",
+            69.0
+          ],
+          [
+            "rows_full",
+            9.0
+          ],
+          [
+            "rows_lp_combined",
+            69.0
+          ],
+          [
+            "rows_used",
+            74.0
+          ],
+          [
+            "cols_active",
+            36.0
+          ],
+          [
+            "rows_full_total",
+            9.0
+          ],
+          [
+            "holdout_ok",
+            4.0
+          ],
+          [
+            "holdout_bad",
+            0.0
+          ],
+          [
+            "lp_known",
+            177.0
+          ],
+          [
+            "known_points",
+            213.0
+          ],
+          [
+            "completed_adapter_ready",
+            1.0
+          ],
+          [
+            "completed_map_calls",
+            3.0
+          ],
+          [
+            "descent_trials",
+            54.0
+          ],
+          [
+            "wall_total",
+            0.047892379
+          ]
+        ]
+      },
+      "independent_baseline_check": true,
+      "independent_candidate_check": true,
+      "nfb": 36,
+      "public_target": {
+        "coordinates": [
+          [
+            110,
+            108,
+            126
+          ],
+          [
+            18,
+            56,
+            16
+          ]
+        ],
+        "field": "K3-223-d9c024d6fb0b129b7ea9d1914c9c6c98e75db9e090311fbc32d96f7f56160213",
+        "model": "N4-E0-quadratic-v1-ea39671464a106703d154b1b34299e40dff57bb1fc4305ddc877691cd28c2238"
+      },
+      "scope": "paired correctness/all retries retained;no speed orcountercoverage claim",
+      "seed": 102,
+      "target_index": 1
+    }
+  },
+  {
+    "kind": "N4_COMPLETED_TARGET",
+    "data": {
+      "baseline_success": true,
+      "candidate_success": true,
+      "target_index": 1
+    }
+  },
+  {
+    "kind": "N4_COMPLETED_ATTEMPT",
+    "data": {
+      "attempt": 1,
+      "baseline": {
+        "counter_scope": "originalN4 counters omit arithmetic in separate completed-map engine;correctness only",
+        "fail": "too few relations: 26 rows for 30 columns",
+        "k_found": null,
+        "ok": false,
+        "phases": [
+          {
+            "add": 18383,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 202,
+            "ladd": 0,
+            "lmul": 0,
+            "mul": 19059,
+            "phase": "fb",
+            "wall": 0.000255492
+          },
+          {
+            "add": 21395,
+            "cmp": 0,
+            "hash": 868,
+            "inv": 239,
+            "ladd": 0,
+            "lmul": 0,
+            "mul": 60201,
+            "phase": "relations",
+            "wall": 0.000369068
+          }
+        ],
+        "stats": [
+          [
+            "n_fb",
+            30.0
+          ],
+          [
+            "graph_edges",
+            154.0
+          ],
+          [
+            "graph_ground",
+            66.0
+          ],
+          [
+            "pairs",
+            435.0
+          ],
+          [
+            "multi_lines",
+            154.0
+          ],
+          [
+            "rel_full",
+            12.0
+          ],
+          [
+            "rel_lp",
+            64.0
+          ],
+          [
+            "lp_distinct",
+            176.0
+          ],
+          [
+            "rel_unsure",
+            203.0
+          ],
+          [
+            "relations_verified",
+            80.0
+          ],
+          [
+            "relations_bad",
+            0.0
+          ],
+          [
+            "rows_cycle",
+            14.0
+          ],
+          [
+            "rows_full",
+            12.0
+          ],
+          [
+            "rows_lp_combined",
+            14.0
+          ],
+          [
+            "rows_used",
+            26.0
+          ],
+          [
+            "cols_active",
+            30.0
+          ],
+          [
+            "rows_full_total",
+            12.0
+          ]
+        ]
+      },
+      "c": 2.0,
+      "candidate": {
+        "counter_scope": "originalN4 counters omit arithmetic in separate completed-map engine;correctness only",
+        "fail": "too few relations: 26 rows for 30 columns",
+        "k_found": null,
+        "ok": false,
+        "phases": [
+          {
+            "add": 18383,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 202,
+            "ladd": 0,
+            "lmul": 0,
+            "mul": 19059,
+            "phase": "fb",
+            "wall": 0.000235396
+          },
+          {
+            "add": 21395,
+            "cmp": 0,
+            "hash": 868,
+            "inv": 239,
+            "ladd": 0,
+            "lmul": 0,
+            "mul": 60201,
+            "phase": "relations",
+            "wall": 0.000216828
+          }
+        ],
+        "stats": [
+          [
+            "n_fb",
+            30.0
+          ],
+          [
+            "graph_edges",
+            154.0
+          ],
+          [
+            "graph_ground",
+            66.0
+          ],
+          [
+            "pairs",
+            435.0
+          ],
+          [
+            "multi_lines",
+            154.0
+          ],
+          [
+            "rel_full",
+            12.0
+          ],
+          [
+            "rel_lp",
+            64.0
+          ],
+          [
+            "lp_distinct",
+            176.0
+          ],
+          [
+            "rel_unsure",
+            203.0
+          ],
+          [
+            "relations_verified",
+            80.0
+          ],
+          [
+            "relations_bad",
+            0.0
+          ],
+          [
+            "rows_cycle",
+            14.0
+          ],
+          [
+            "rows_full",
+            12.0
+          ],
+          [
+            "rows_lp_combined",
+            14.0
+          ],
+          [
+            "rows_used",
+            26.0
+          ],
+          [
+            "cols_active",
+            30.0
+          ],
+          [
+            "rows_full_total",
+            12.0
+          ]
+        ]
+      },
+      "independent_baseline_check": false,
+      "independent_candidate_check": false,
+      "nfb": 30,
+      "public_target": {
+        "coordinates": [
+          [
+            142,
+            152,
+            95
+          ],
+          [
+            190,
+            38,
+            88
+          ]
+        ],
+        "field": "K3-223-d9c024d6fb0b129b7ea9d1914c9c6c98e75db9e090311fbc32d96f7f56160213",
+        "model": "N4-E0-quadratic-v1-ea39671464a106703d154b1b34299e40dff57bb1fc4305ddc877691cd28c2238"
+      },
+      "scope": "paired correctness/all retries retained;no speed orcountercoverage claim",
+      "seed": 101,
+      "target_index": 2
+    }
+  },
+  {
+    "kind": "N4_COMPLETED_ATTEMPT",
+    "data": {
+      "attempt": 2,
+      "baseline": {
+        "counter_scope": "originalN4 counters omit arithmetic in separate completed-map engine;correctness only",
+        "fail": "",
+        "k_found": 17,
+        "ok": true,
+        "phases": [
+          {
+            "add": 27780,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 309,
+            "ladd": 0,
+            "lmul": 0,
+            "mul": 28807,
+            "phase": "fb",
+            "wall": 0.000290416
+          },
+          {
+            "add": 30580,
+            "cmp": 0,
+            "hash": 1171,
+            "inv": 358,
+            "ladd": 0,
+            "lmul": 0,
+            "mul": 86149,
+            "phase": "relations",
+            "wall": 0.000292144
+          },
+          {
+            "add": 0,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 0,
+            "ladd": 3400,
+            "lmul": 1740,
+            "mul": 0,
+            "phase": "matrix",
+            "wall": 0.029403568
+          },
+          {
+            "add": 0,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 0,
+            "ladd": 69189,
+            "lmul": 71921,
+            "mul": 0,
+            "phase": "linear_algebra",
+            "wall": 0.000994675
+          },
+          {
+            "add": 0,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 0,
+            "ladd": 686,
+            "lmul": 194,
+            "mul": 0,
+            "phase": "log_recovery",
+            "wall": 4.7789e-05
+          },
+          {
+            "add": 422154,
+            "cmp": 0,
+            "hash": 9,
+            "inv": 3168,
+            "ladd": 43,
+            "lmul": 0,
+            "mul": 399748,
+            "phase": "descent",
+            "wall": 0.004104924
+          },
+          {
+            "add": 389,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 5,
+            "ladd": 2,
+            "lmul": 1,
+            "mul": 368,
+            "phase": "verify",
+            "wall": 7.5635e-05
+          }
+        ],
+        "stats": [
+          [
+            "n_fb",
+            36.0
+          ],
+          [
+            "graph_edges",
+            211.0
+          ],
+          [
+            "graph_ground",
+            91.0
+          ],
+          [
+            "pairs",
+            630.0
+          ],
+          [
+            "multi_lines",
+            211.0
+          ],
+          [
+            "rel_full",
+            9.0
+          ],
+          [
+            "rel_lp",
+            89.0
+          ],
+          [
+            "lp_distinct",
+            177.0
+          ],
+          [
+            "rel_unsure",
+            319.0
+          ],
+          [
+            "relations_verified",
+            79.0
+          ],
+          [
+            "relations_bad",
+            0.0
+          ],
+          [
+            "rows_cycle",
+            69.0
+          ],
+          [
+            "rows_full",
+            9.0
+          ],
+          [
+            "rows_lp_combined",
+            69.0
+          ],
+          [
+            "rows_used",
+            74.0
+          ],
+          [
+            "cols_active",
+            36.0
+          ],
+          [
+            "rows_full_total",
+            9.0
+          ],
+          [
+            "holdout_ok",
+            4.0
+          ],
+          [
+            "holdout_bad",
+            0.0
+          ],
+          [
+            "lp_known",
+            177.0
+          ],
+          [
+            "known_points",
+            213.0
+          ],
+          [
+            "descent_trials",
+            34.0
+          ],
+          [
+            "wall_total",
+            0.035223833
+          ]
+        ]
+      },
+      "c": 2.4,
+      "candidate": {
+        "counter_scope": "originalN4 counters omit arithmetic in separate completed-map engine;correctness only",
+        "fail": "",
+        "k_found": 17,
+        "ok": true,
+        "phases": [
+          {
+            "add": 27780,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 309,
+            "ladd": 0,
+            "lmul": 0,
+            "mul": 28807,
+            "phase": "fb",
+            "wall": 0.000486572
+          },
+          {
+            "add": 30580,
+            "cmp": 0,
+            "hash": 1171,
+            "inv": 358,
+            "ladd": 0,
+            "lmul": 0,
+            "mul": 86149,
+            "phase": "relations",
+            "wall": 0.000273566
+          },
+          {
+            "add": 0,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 0,
+            "ladd": 3400,
+            "lmul": 1740,
+            "mul": 0,
+            "phase": "matrix",
+            "wall": 0.028010716
+          },
+          {
+            "add": 0,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 0,
+            "ladd": 69189,
+            "lmul": 71921,
+            "mul": 0,
+            "phase": "linear_algebra",
+            "wall": 0.000612161
+          },
+          {
+            "add": 0,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 0,
+            "ladd": 686,
+            "lmul": 194,
+            "mul": 0,
+            "phase": "log_recovery",
+            "wall": 4.6199e-05
+          },
+          {
+            "add": 510805,
+            "cmp": 0,
+            "hash": 9,
+            "inv": 3488,
+            "ladd": 50,
+            "lmul": 0,
+            "mul": 483146,
+            "phase": "descent",
+            "wall": 0.005595653
+          },
+          {
+            "add": 389,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 5,
+            "ladd": 2,
+            "lmul": 1,
+            "mul": 368,
+            "phase": "verify",
+            "wall": 2.736e-06
+          }
+        ],
+        "stats": [
+          [
+            "n_fb",
+            36.0
+          ],
+          [
+            "graph_edges",
+            211.0
+          ],
+          [
+            "graph_ground",
+            91.0
+          ],
+          [
+            "pairs",
+            630.0
+          ],
+          [
+            "multi_lines",
+            211.0
+          ],
+          [
+            "rel_full",
+            9.0
+          ],
+          [
+            "rel_lp",
+            89.0
+          ],
+          [
+            "lp_distinct",
+            177.0
+          ],
+          [
+            "rel_unsure",
+            319.0
+          ],
+          [
+            "relations_verified",
+            79.0
+          ],
+          [
+            "relations_bad",
+            0.0
+          ],
+          [
+            "rows_cycle",
+            69.0
+          ],
+          [
+            "rows_full",
+            9.0
+          ],
+          [
+            "rows_lp_combined",
+            69.0
+          ],
+          [
+            "rows_used",
+            74.0
+          ],
+          [
+            "cols_active",
+            36.0
+          ],
+          [
+            "rows_full_total",
+            9.0
+          ],
+          [
+            "holdout_ok",
+            4.0
+          ],
+          [
+            "holdout_bad",
+            0.0
+          ],
+          [
+            "lp_known",
+            177.0
+          ],
+          [
+            "known_points",
+            213.0
+          ],
+          [
+            "completed_adapter_ready",
+            1.0
+          ],
+          [
+            "completed_map_calls",
+            3.0
+          ],
+          [
+            "descent_trials",
+            41.0
+          ],
+          [
+            "wall_total",
+            0.03502891
+          ]
+        ]
+      },
+      "independent_baseline_check": true,
+      "independent_candidate_check": true,
+      "nfb": 36,
+      "public_target": {
+        "coordinates": [
+          [
+            142,
+            152,
+            95
+          ],
+          [
+            190,
+            38,
+            88
+          ]
+        ],
+        "field": "K3-223-d9c024d6fb0b129b7ea9d1914c9c6c98e75db9e090311fbc32d96f7f56160213",
+        "model": "N4-E0-quadratic-v1-ea39671464a106703d154b1b34299e40dff57bb1fc4305ddc877691cd28c2238"
+      },
+      "scope": "paired correctness/all retries retained;no speed orcountercoverage claim",
+      "seed": 102,
+      "target_index": 2
+    }
+  },
+  {
+    "kind": "N4_COMPLETED_TARGET",
+    "data": {
+      "baseline_success": true,
+      "candidate_success": true,
+      "target_index": 2
+    }
+  },
+  {
+    "kind": "N4_COMPLETED_ATTEMPT",
+    "data": {
+      "attempt": 1,
+      "baseline": {
+        "counter_scope": "originalN4 counters omit arithmetic in separate completed-map engine;correctness only",
+        "fail": "too few relations: 26 rows for 30 columns",
+        "k_found": null,
+        "ok": false,
+        "phases": [
+          {
+            "add": 18383,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 202,
+            "ladd": 0,
+            "lmul": 0,
+            "mul": 19059,
+            "phase": "fb",
+            "wall": 0.000259136
+          },
+          {
+            "add": 21395,
+            "cmp": 0,
+            "hash": 868,
+            "inv": 239,
+            "ladd": 0,
+            "lmul": 0,
+            "mul": 60201,
+            "phase": "relations",
+            "wall": 0.000328275
+          }
+        ],
+        "stats": [
+          [
+            "n_fb",
+            30.0
+          ],
+          [
+            "graph_edges",
+            154.0
+          ],
+          [
+            "graph_ground",
+            66.0
+          ],
+          [
+            "pairs",
+            435.0
+          ],
+          [
+            "multi_lines",
+            154.0
+          ],
+          [
+            "rel_full",
+            12.0
+          ],
+          [
+            "rel_lp",
+            64.0
+          ],
+          [
+            "lp_distinct",
+            176.0
+          ],
+          [
+            "rel_unsure",
+            203.0
+          ],
+          [
+            "relations_verified",
+            80.0
+          ],
+          [
+            "relations_bad",
+            0.0
+          ],
+          [
+            "rows_cycle",
+            14.0
+          ],
+          [
+            "rows_full",
+            12.0
+          ],
+          [
+            "rows_lp_combined",
+            14.0
+          ],
+          [
+            "rows_used",
+            26.0
+          ],
+          [
+            "cols_active",
+            30.0
+          ],
+          [
+            "rows_full_total",
+            12.0
+          ]
+        ]
+      },
+      "c": 2.0,
+      "candidate": {
+        "counter_scope": "originalN4 counters omit arithmetic in separate completed-map engine;correctness only",
+        "fail": "too few relations: 26 rows for 30 columns",
+        "k_found": null,
+        "ok": false,
+        "phases": [
+          {
+            "add": 18383,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 202,
+            "ladd": 0,
+            "lmul": 0,
+            "mul": 19059,
+            "phase": "fb",
+            "wall": 0.000233886
+          },
+          {
+            "add": 21395,
+            "cmp": 0,
+            "hash": 868,
+            "inv": 239,
+            "ladd": 0,
+            "lmul": 0,
+            "mul": 60201,
+            "phase": "relations",
+            "wall": 0.000196894
+          }
+        ],
+        "stats": [
+          [
+            "n_fb",
+            30.0
+          ],
+          [
+            "graph_edges",
+            154.0
+          ],
+          [
+            "graph_ground",
+            66.0
+          ],
+          [
+            "pairs",
+            435.0
+          ],
+          [
+            "multi_lines",
+            154.0
+          ],
+          [
+            "rel_full",
+            12.0
+          ],
+          [
+            "rel_lp",
+            64.0
+          ],
+          [
+            "lp_distinct",
+            176.0
+          ],
+          [
+            "rel_unsure",
+            203.0
+          ],
+          [
+            "relations_verified",
+            80.0
+          ],
+          [
+            "relations_bad",
+            0.0
+          ],
+          [
+            "rows_cycle",
+            14.0
+          ],
+          [
+            "rows_full",
+            12.0
+          ],
+          [
+            "rows_lp_combined",
+            14.0
+          ],
+          [
+            "rows_used",
+            26.0
+          ],
+          [
+            "cols_active",
+            30.0
+          ],
+          [
+            "rows_full_total",
+            12.0
+          ]
+        ]
+      },
+      "independent_baseline_check": false,
+      "independent_candidate_check": false,
+      "nfb": 30,
+      "public_target": {
+        "coordinates": [
+          [
+            165,
+            46,
+            167
+          ],
+          [
+            109,
+            160,
+            146
+          ]
+        ],
+        "field": "K3-223-d9c024d6fb0b129b7ea9d1914c9c6c98e75db9e090311fbc32d96f7f56160213",
+        "model": "N4-E0-quadratic-v1-ea39671464a106703d154b1b34299e40dff57bb1fc4305ddc877691cd28c2238"
+      },
+      "scope": "paired correctness/all retries retained;no speed orcountercoverage claim",
+      "seed": 101,
+      "target_index": 3
+    }
+  },
+  {
+    "kind": "N4_COMPLETED_ATTEMPT",
+    "data": {
+      "attempt": 2,
+      "baseline": {
+        "counter_scope": "originalN4 counters omit arithmetic in separate completed-map engine;correctness only",
+        "fail": "",
+        "k_found": 1386536,
+        "ok": true,
+        "phases": [
+          {
+            "add": 27780,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 309,
+            "ladd": 0,
+            "lmul": 0,
+            "mul": 28807,
+            "phase": "fb",
+            "wall": 0.000289744
+          },
+          {
+            "add": 30580,
+            "cmp": 0,
+            "hash": 1171,
+            "inv": 358,
+            "ladd": 0,
+            "lmul": 0,
+            "mul": 86149,
+            "phase": "relations",
+            "wall": 0.000369834
+          },
+          {
+            "add": 0,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 0,
+            "ladd": 3400,
+            "lmul": 1740,
+            "mul": 0,
+            "phase": "matrix",
+            "wall": 0.029363806
+          },
+          {
+            "add": 0,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 0,
+            "ladd": 69189,
+            "lmul": 71921,
+            "mul": 0,
+            "phase": "linear_algebra",
+            "wall": 0.000650994
+          },
+          {
+            "add": 0,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 0,
+            "ladd": 686,
+            "lmul": 194,
+            "mul": 0,
+            "phase": "log_recovery",
+            "wall": 4.6888e-05
+          },
+          {
+            "add": 437702,
+            "cmp": 0,
+            "hash": 9,
+            "inv": 3381,
+            "ladd": 49,
+            "lmul": 0,
+            "mul": 413168,
+            "phase": "descent",
+            "wall": 0.002966693
+          },
+          {
+            "add": 1998,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 26,
+            "ladd": 2,
+            "lmul": 1,
+            "mul": 1896,
+            "phase": "verify",
+            "wall": 6.784e-06
+          }
+        ],
+        "stats": [
+          [
+            "n_fb",
+            36.0
+          ],
+          [
+            "graph_edges",
+            211.0
+          ],
+          [
+            "graph_ground",
+            91.0
+          ],
+          [
+            "pairs",
+            630.0
+          ],
+          [
+            "multi_lines",
+            211.0
+          ],
+          [
+            "rel_full",
+            9.0
+          ],
+          [
+            "rel_lp",
+            89.0
+          ],
+          [
+            "lp_distinct",
+            177.0
+          ],
+          [
+            "rel_unsure",
+            319.0
+          ],
+          [
+            "relations_verified",
+            79.0
+          ],
+          [
+            "relations_bad",
+            0.0
+          ],
+          [
+            "rows_cycle",
+            69.0
+          ],
+          [
+            "rows_full",
+            9.0
+          ],
+          [
+            "rows_lp_combined",
+            69.0
+          ],
+          [
+            "rows_used",
+            74.0
+          ],
+          [
+            "cols_active",
+            36.0
+          ],
+          [
+            "rows_full_total",
+            9.0
+          ],
+          [
+            "holdout_ok",
+            4.0
+          ],
+          [
+            "holdout_bad",
+            0.0
+          ],
+          [
+            "lp_known",
+            177.0
+          ],
+          [
+            "known_points",
+            213.0
+          ],
+          [
+            "descent_trials",
+            40.0
+          ],
+          [
+            "wall_total",
+            0.03369622
+          ]
+        ]
+      },
+      "c": 2.4,
+      "candidate": {
+        "counter_scope": "originalN4 counters omit arithmetic in separate completed-map engine;correctness only",
+        "fail": "",
+        "k_found": 1386536,
+        "ok": true,
+        "phases": [
+          {
+            "add": 27780,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 309,
+            "ladd": 0,
+            "lmul": 0,
+            "mul": 28807,
+            "phase": "fb",
+            "wall": 0.000285849
+          },
+          {
+            "add": 30580,
+            "cmp": 0,
+            "hash": 1171,
+            "inv": 358,
+            "ladd": 0,
+            "lmul": 0,
+            "mul": 86149,
+            "phase": "relations",
+            "wall": 0.000381872
+          },
+          {
+            "add": 0,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 0,
+            "ladd": 3400,
+            "lmul": 1740,
+            "mul": 0,
+            "phase": "matrix",
+            "wall": 0.026297005
+          },
+          {
+            "add": 0,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 0,
+            "ladd": 69189,
+            "lmul": 71921,
+            "mul": 0,
+            "phase": "linear_algebra",
+            "wall": 0.000491575
+          },
+          {
+            "add": 0,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 0,
+            "ladd": 686,
+            "lmul": 194,
+            "mul": 0,
+            "phase": "log_recovery",
+            "wall": 4.5207e-05
+          },
+          {
+            "add": 497357,
+            "cmp": 0,
+            "hash": 9,
+            "inv": 3391,
+            "ladd": 49,
+            "lmul": 0,
+            "mul": 470516,
+            "phase": "descent",
+            "wall": 0.005099242
+          },
+          {
+            "add": 1998,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 26,
+            "ladd": 2,
+            "lmul": 1,
+            "mul": 1896,
+            "phase": "verify",
+            "wall": 6.353e-06
+          }
+        ],
+        "stats": [
+          [
+            "n_fb",
+            36.0
+          ],
+          [
+            "graph_edges",
+            211.0
+          ],
+          [
+            "graph_ground",
+            91.0
+          ],
+          [
+            "pairs",
+            630.0
+          ],
+          [
+            "multi_lines",
+            211.0
+          ],
+          [
+            "rel_full",
+            9.0
+          ],
+          [
+            "rel_lp",
+            89.0
+          ],
+          [
+            "lp_distinct",
+            177.0
+          ],
+          [
+            "rel_unsure",
+            319.0
+          ],
+          [
+            "relations_verified",
+            79.0
+          ],
+          [
+            "relations_bad",
+            0.0
+          ],
+          [
+            "rows_cycle",
+            69.0
+          ],
+          [
+            "rows_full",
+            9.0
+          ],
+          [
+            "rows_lp_combined",
+            69.0
+          ],
+          [
+            "rows_used",
+            74.0
+          ],
+          [
+            "cols_active",
+            36.0
+          ],
+          [
+            "rows_full_total",
+            9.0
+          ],
+          [
+            "holdout_ok",
+            4.0
+          ],
+          [
+            "holdout_bad",
+            0.0
+          ],
+          [
+            "lp_known",
+            177.0
+          ],
+          [
+            "known_points",
+            213.0
+          ],
+          [
+            "completed_adapter_ready",
+            1.0
+          ],
+          [
+            "completed_map_calls",
+            3.0
+          ],
+          [
+            "descent_trials",
+            40.0
+          ],
+          [
+            "wall_total",
+            0.03260791
+          ]
+        ]
+      },
+      "independent_baseline_check": true,
+      "independent_candidate_check": true,
+      "nfb": 36,
+      "public_target": {
+        "coordinates": [
+          [
+            165,
+            46,
+            167
+          ],
+          [
+            109,
+            160,
+            146
+          ]
+        ],
+        "field": "K3-223-d9c024d6fb0b129b7ea9d1914c9c6c98e75db9e090311fbc32d96f7f56160213",
+        "model": "N4-E0-quadratic-v1-ea39671464a106703d154b1b34299e40dff57bb1fc4305ddc877691cd28c2238"
+      },
+      "scope": "paired correctness/all retries retained;no speed orcountercoverage claim",
+      "seed": 102,
+      "target_index": 3
+    }
+  },
+  {
+    "kind": "N4_COMPLETED_TARGET",
+    "data": {
+      "baseline_success": true,
+      "candidate_success": true,
+      "target_index": 3
+    }
+  },
+  {
+    "kind": "N4_COMPLETED_ATTEMPT",
+    "data": {
+      "attempt": 1,
+      "baseline": {
+        "counter_scope": "originalN4 counters omit arithmetic in separate completed-map engine;correctness only",
+        "fail": "too few relations: 26 rows for 30 columns",
+        "k_found": null,
+        "ok": false,
+        "phases": [
+          {
+            "add": 18383,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 202,
+            "ladd": 0,
+            "lmul": 0,
+            "mul": 19059,
+            "phase": "fb",
+            "wall": 0.000238318
+          },
+          {
+            "add": 21395,
+            "cmp": 0,
+            "hash": 868,
+            "inv": 239,
+            "ladd": 0,
+            "lmul": 0,
+            "mul": 60201,
+            "phase": "relations",
+            "wall": 0.000197278
+          }
+        ],
+        "stats": [
+          [
+            "n_fb",
+            30.0
+          ],
+          [
+            "graph_edges",
+            154.0
+          ],
+          [
+            "graph_ground",
+            66.0
+          ],
+          [
+            "pairs",
+            435.0
+          ],
+          [
+            "multi_lines",
+            154.0
+          ],
+          [
+            "rel_full",
+            12.0
+          ],
+          [
+            "rel_lp",
+            64.0
+          ],
+          [
+            "lp_distinct",
+            176.0
+          ],
+          [
+            "rel_unsure",
+            203.0
+          ],
+          [
+            "relations_verified",
+            80.0
+          ],
+          [
+            "relations_bad",
+            0.0
+          ],
+          [
+            "rows_cycle",
+            14.0
+          ],
+          [
+            "rows_full",
+            12.0
+          ],
+          [
+            "rows_lp_combined",
+            14.0
+          ],
+          [
+            "rows_used",
+            26.0
+          ],
+          [
+            "cols_active",
+            30.0
+          ],
+          [
+            "rows_full_total",
+            12.0
+          ]
+        ]
+      },
+      "c": 2.0,
+      "candidate": {
+        "counter_scope": "originalN4 counters omit arithmetic in separate completed-map engine;correctness only",
+        "fail": "too few relations: 26 rows for 30 columns",
+        "k_found": null,
+        "ok": false,
+        "phases": [
+          {
+            "add": 18383,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 202,
+            "ladd": 0,
+            "lmul": 0,
+            "mul": 19059,
+            "phase": "fb",
+            "wall": 0.00023275
+          },
+          {
+            "add": 21395,
+            "cmp": 0,
+            "hash": 868,
+            "inv": 239,
+            "ladd": 0,
+            "lmul": 0,
+            "mul": 60201,
+            "phase": "relations",
+            "wall": 0.000198102
+          }
+        ],
+        "stats": [
+          [
+            "n_fb",
+            30.0
+          ],
+          [
+            "graph_edges",
+            154.0
+          ],
+          [
+            "graph_ground",
+            66.0
+          ],
+          [
+            "pairs",
+            435.0
+          ],
+          [
+            "multi_lines",
+            154.0
+          ],
+          [
+            "rel_full",
+            12.0
+          ],
+          [
+            "rel_lp",
+            64.0
+          ],
+          [
+            "lp_distinct",
+            176.0
+          ],
+          [
+            "rel_unsure",
+            203.0
+          ],
+          [
+            "relations_verified",
+            80.0
+          ],
+          [
+            "relations_bad",
+            0.0
+          ],
+          [
+            "rows_cycle",
+            14.0
+          ],
+          [
+            "rows_full",
+            12.0
+          ],
+          [
+            "rows_lp_combined",
+            14.0
+          ],
+          [
+            "rows_used",
+            26.0
+          ],
+          [
+            "cols_active",
+            30.0
+          ],
+          [
+            "rows_full_total",
+            12.0
+          ]
+        ]
+      },
+      "independent_baseline_check": false,
+      "independent_candidate_check": false,
+      "nfb": 30,
+      "public_target": {
+        "coordinates": [
+          [
+            162,
+            197,
+            140
+          ],
+          [
+            178,
+            212,
+            16
+          ]
+        ],
+        "field": "K3-223-d9c024d6fb0b129b7ea9d1914c9c6c98e75db9e090311fbc32d96f7f56160213",
+        "model": "N4-E0-quadratic-v1-ea39671464a106703d154b1b34299e40dff57bb1fc4305ddc877691cd28c2238"
+      },
+      "scope": "paired correctness/all retries retained;no speed orcountercoverage claim",
+      "seed": 101,
+      "target_index": 4
+    }
+  },
+  {
+    "kind": "N4_COMPLETED_ATTEMPT",
+    "data": {
+      "attempt": 2,
+      "baseline": {
+        "counter_scope": "originalN4 counters omit arithmetic in separate completed-map engine;correctness only",
+        "fail": "",
+        "k_found": 2773072,
+        "ok": true,
+        "phases": [
+          {
+            "add": 27780,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 309,
+            "ladd": 0,
+            "lmul": 0,
+            "mul": 28807,
+            "phase": "fb",
+            "wall": 0.000285991
+          },
+          {
+            "add": 30580,
+            "cmp": 0,
+            "hash": 1171,
+            "inv": 358,
+            "ladd": 0,
+            "lmul": 0,
+            "mul": 86149,
+            "phase": "relations",
+            "wall": 0.000357068
+          },
+          {
+            "add": 0,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 0,
+            "ladd": 3400,
+            "lmul": 1740,
+            "mul": 0,
+            "phase": "matrix",
+            "wall": 0.027400935
+          },
+          {
+            "add": 0,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 0,
+            "ladd": 69189,
+            "lmul": 71921,
+            "mul": 0,
+            "phase": "linear_algebra",
+            "wall": 0.000479992
+          },
+          {
+            "add": 0,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 0,
+            "ladd": 686,
+            "lmul": 194,
+            "mul": 0,
+            "phase": "log_recovery",
+            "wall": 6.4266e-05
+          },
+          {
+            "add": 494467,
+            "cmp": 0,
+            "hash": 9,
+            "inv": 3907,
+            "ladd": 58,
+            "lmul": 0,
+            "mul": 466465,
+            "phase": "descent",
+            "wall": 0.003500165
+          },
+          {
+            "add": 2082,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 27,
+            "ladd": 2,
+            "lmul": 1,
+            "mul": 1974,
+            "phase": "verify",
+            "wall": 6.878e-06
+          }
+        ],
+        "stats": [
+          [
+            "n_fb",
+            36.0
+          ],
+          [
+            "graph_edges",
+            211.0
+          ],
+          [
+            "graph_ground",
+            91.0
+          ],
+          [
+            "pairs",
+            630.0
+          ],
+          [
+            "multi_lines",
+            211.0
+          ],
+          [
+            "rel_full",
+            9.0
+          ],
+          [
+            "rel_lp",
+            89.0
+          ],
+          [
+            "lp_distinct",
+            177.0
+          ],
+          [
+            "rel_unsure",
+            319.0
+          ],
+          [
+            "relations_verified",
+            79.0
+          ],
+          [
+            "relations_bad",
+            0.0
+          ],
+          [
+            "rows_cycle",
+            69.0
+          ],
+          [
+            "rows_full",
+            9.0
+          ],
+          [
+            "rows_lp_combined",
+            69.0
+          ],
+          [
+            "rows_used",
+            74.0
+          ],
+          [
+            "cols_active",
+            36.0
+          ],
+          [
+            "rows_full_total",
+            9.0
+          ],
+          [
+            "holdout_ok",
+            4.0
+          ],
+          [
+            "holdout_bad",
+            0.0
+          ],
+          [
+            "lp_known",
+            177.0
+          ],
+          [
+            "known_points",
+            213.0
+          ],
+          [
+            "descent_trials",
+            49.0
+          ],
+          [
+            "wall_total",
+            0.032096788
+          ]
+        ]
+      },
+      "c": 2.4,
+      "candidate": {
+        "counter_scope": "originalN4 counters omit arithmetic in separate completed-map engine;correctness only",
+        "fail": "",
+        "k_found": 2773072,
+        "ok": true,
+        "phases": [
+          {
+            "add": 27780,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 309,
+            "ladd": 0,
+            "lmul": 0,
+            "mul": 28807,
+            "phase": "fb",
+            "wall": 0.000286507
+          },
+          {
+            "add": 30580,
+            "cmp": 0,
+            "hash": 1171,
+            "inv": 358,
+            "ladd": 0,
+            "lmul": 0,
+            "mul": 86149,
+            "phase": "relations",
+            "wall": 0.000290444
+          },
+          {
+            "add": 0,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 0,
+            "ladd": 3400,
+            "lmul": 1740,
+            "mul": 0,
+            "phase": "matrix",
+            "wall": 0.031382893
+          },
+          {
+            "add": 0,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 0,
+            "ladd": 69189,
+            "lmul": 71921,
+            "mul": 0,
+            "phase": "linear_algebra",
+            "wall": 0.000637104
+          },
+          {
+            "add": 0,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 0,
+            "ladd": 686,
+            "lmul": 194,
+            "mul": 0,
+            "phase": "log_recovery",
+            "wall": 4.7857e-05
+          },
+          {
+            "add": 554304,
+            "cmp": 0,
+            "hash": 9,
+            "inv": 3917,
+            "ladd": 58,
+            "lmul": 0,
+            "mul": 523991,
+            "phase": "descent",
+            "wall": 0.007957869
+          },
+          {
+            "add": 2082,
+            "cmp": 0,
+            "hash": 0,
+            "inv": 27,
+            "ladd": 2,
+            "lmul": 1,
+            "mul": 1974,
+            "phase": "verify",
+            "wall": 7.262e-06
+          }
+        ],
+        "stats": [
+          [
+            "n_fb",
+            36.0
+          ],
+          [
+            "graph_edges",
+            211.0
+          ],
+          [
+            "graph_ground",
+            91.0
+          ],
+          [
+            "pairs",
+            630.0
+          ],
+          [
+            "multi_lines",
+            211.0
+          ],
+          [
+            "rel_full",
+            9.0
+          ],
+          [
+            "rel_lp",
+            89.0
+          ],
+          [
+            "lp_distinct",
+            177.0
+          ],
+          [
+            "rel_unsure",
+            319.0
+          ],
+          [
+            "relations_verified",
+            79.0
+          ],
+          [
+            "relations_bad",
+            0.0
+          ],
+          [
+            "rows_cycle",
+            69.0
+          ],
+          [
+            "rows_full",
+            9.0
+          ],
+          [
+            "rows_lp_combined",
+            69.0
+          ],
+          [
+            "rows_used",
+            74.0
+          ],
+          [
+            "cols_active",
+            36.0
+          ],
+          [
+            "rows_full_total",
+            9.0
+          ],
+          [
+            "holdout_ok",
+            4.0
+          ],
+          [
+            "holdout_bad",
+            0.0
+          ],
+          [
+            "lp_known",
+            177.0
+          ],
+          [
+            "known_points",
+            213.0
+          ],
+          [
+            "completed_adapter_ready",
+            1.0
+          ],
+          [
+            "completed_map_calls",
+            3.0
+          ],
+          [
+            "descent_trials",
+            49.0
+          ],
+          [
+            "wall_total",
+            0.040610864
+          ]
+        ]
+      },
+      "independent_baseline_check": true,
+      "independent_candidate_check": true,
+      "nfb": 36,
+      "public_target": {
+        "coordinates": [
+          [
+            162,
+            197,
+            140
+          ],
+          [
+            178,
+            212,
+            16
+          ]
+        ],
+        "field": "K3-223-d9c024d6fb0b129b7ea9d1914c9c6c98e75db9e090311fbc32d96f7f56160213",
+        "model": "N4-E0-quadratic-v1-ea39671464a106703d154b1b34299e40dff57bb1fc4305ddc877691cd28c2238"
+      },
+      "scope": "paired correctness/all retries retained;no speed orcountercoverage claim",
+      "seed": 102,
+      "target_index": 4
+    }
+  },
+  {
+    "kind": "N4_COMPLETED_TARGET",
+    "data": {
+      "baseline_success": true,
+      "candidate_success": true,
+      "target_index": 4
+    }
+  },
+  {
+    "kind": "N4_COMPLETED_FIVE",
+    "data": {
+      "all_retries_retained": true,
+      "candidate_successes": 5,
+      "no_DLP_fallback": true,
+      "no_measured_advantage": true,
+      "original_relation_LA_descent_walks_unchanged": true,
+      "required": 5
+    }
+  }
+]

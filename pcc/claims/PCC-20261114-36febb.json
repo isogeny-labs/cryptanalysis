@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-14T15:56:45Z",
+ "id": "PCC-20261114-36febb",
+ "kind": "theorem",
+ "producer": {
+  "commit": "5c9a5559d2dfff4abb54acdddd5f262157eec8ad",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "55458c5424cc91d2aabf38f95b67453da0185fc895038735df1eedb74ee7be8f",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/norm-arithmetic-audit/lean/QuadraticInverse.lean",
+   "theorem": "NormArithmetic.conjugate_product"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Universal commutative-ring cleared quadratic inverse-pair formula conditional on a norm inverse, not actual finite-field/integer-encoding/counter implementation or global Jacobian formalization. No inverse existence proof, nonzero norm theorem, finite field construction, integer bounds, counter correctness, program equivalence, global variety construction or cost advantage.",
+ "statement": "theorem conjugate_product {R : Type} [CommRing R] (n a b : R) : a*a+n*b*(-b) = a^2-n*b^2 \u2227 a*(-b)+b*a = 0"
+}
