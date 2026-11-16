@@ -4,7 +4,7 @@
 
 See the current [source-linked report](reports/recovery-v4/REPORT.md),
 [diagram](reports/recovery-v4/pipeline.svg) and
-[PDF](reports/recovery-v4/report.pdf). The bounded native four-point M=1
+[PDF hydration instructions](reports/recovery-v4/PUBLISHING.md). The bounded native four-point M=1
 controls match the complete oracle for member/nonmember targets; final
 consumer tests report nine unit tests and one process-level test passing.
 PCC-20261115-47a01f. [pcc:unverified]
