@@ -118,10 +118,27 @@ fn main() {
     let args: Vec<String> = std::env::args().collect();
     let records: Vec<Value> = serde_json::from_slice(&std::fs::read(&args[1]).unwrap()).unwrap();
     let index: usize = args[2].parse().unwrap();
-    let mode = args[3].as_str();
+    let requested_mode = args[3].as_str();
+    let euclidean = matches!(
+        requested_mode,
+        "mitm-euclid"
+            | "mitm-euclid-u32"
+            | "rho-plain-euclid"
+            | "rho-negation-euclid"
+            | "verify-table-euclid"
+    );
+    let mode = match requested_mode {
+        "mitm-euclid" | "mitm-euclid-u32" | "mitm-prefix-u32" => "mitm-prefix",
+        "rho-plain-euclid" => "rho-plain",
+        "rho-negation-euclid" => "rho-negation",
+        "verify-table-euclid" => "verify-table",
+        other => other,
+    };
     let record = &records[index];
     let started = Instant::now();
-    let inst = instance(record);
+    let mut inst = instance(record);
+    inst.gf.set_euclidean_inverse(euclidean);
+    inst.fast.field.set_euclidean_inverse(euclidean);
     let context_ns = started.elapsed().as_nanos() as u64;
     let group = BinaryGroup(&inst.fast);
     let dimension = integer(&record["dimension"]) as u32;
@@ -197,6 +214,18 @@ fn main() {
         let basis: Vec<_> = (0..dimension).map(|i| 1 << i).collect();
         let fb = binary_subspace_factor_base(&inst, &basis);
         let reference = PairTable::build_negation_folded(&group, &fb);
+        if euclidean {
+            let original = instance(record);
+            let original_group = BinaryGroup(&original.fast);
+            let original_fb = binary_subspace_factor_base(&original, &basis);
+            assert_eq!(fb.points, original_fb.points);
+            assert!(
+                reference.same_witness_map(&PairTable::build_negation_folded(
+                    &original_group,
+                    &original_fb,
+                ))
+            );
+        }
         let mut comparisons = 0;
         for chunk in [1, 7, 1024] {
             for candidate in [
@@ -211,7 +240,7 @@ fn main() {
         }
         println!(
             "{}",
-            json!({"curve_id":inst.name,"status":"pass","complete_map_comparisons":comparisons,"entries":reference.entries,"has_clmul":inst.gf.has_clmul()})
+            json!({"curve_id":inst.name,"status":"pass","euclidean_inverse":inst.gf.uses_euclidean_inverse(),"complete_map_comparisons":comparisons,"entries":reference.entries,"has_clmul":inst.gf.has_clmul()})
         );
         return;
     }
@@ -282,7 +311,7 @@ fn main() {
         };
         println!(
             "{}",
-            json!({"curve_id":inst.name,"fixture":fixture,"planted":planted,"target":[target.x,target.y],"target_seed":target_seed,"context_ns":context_ns,"calibration_ns":calibration_ns,"calibration":calibration,"solver":result,"rho_kind":mode})
+            json!({"curve_id":inst.name,"fixture":fixture,"planted":planted,"target":[target.x,target.y],"target_seed":target_seed,"context_ns":context_ns,"calibration_ns":calibration_ns,"calibration":calibration,"solver":result,"rho_kind":mode,"euclidean_inverse":inst.gf.uses_euclidean_inverse()})
         );
         return;
     }
@@ -337,6 +366,11 @@ fn main() {
         targets: Targets::Walk,
         max_trials: record.get("max_trials").map(integer).unwrap_or(50_000),
         seed: target_seed,
+        linalg: if matches!(requested_mode, "mitm-prefix-u32" | "mitm-euclid-u32") {
+            "incremental-gauss-u32".into()
+        } else {
+            "incremental-gauss".into()
+        },
         ..Default::default()
     };
     spec.factor_base_params
@@ -404,6 +438,6 @@ fn main() {
         "{}",
         json!({"curve_id":inst.name,"fixture":fixture,"planted":planted,"target":[target.x,target.y],
         "target_seed":target_seed,"context_ns":context_ns,"calibration_ns":calibration_ns,
-        "calibration":calibration,"mode":mode,"report":report})
+        "calibration":calibration,"mode":requested_mode,"euclidean_inverse":inst.gf.uses_euclidean_inverse(),"report":report})
     );
 }
