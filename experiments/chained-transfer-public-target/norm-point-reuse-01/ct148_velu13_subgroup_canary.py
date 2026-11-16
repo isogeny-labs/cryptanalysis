@@ -124,6 +124,9 @@ def main():
         return (y*y-x*x*x-A2*x*x) % P
     b = (residual(r)-residual(s))*inv(r[0]-s[0])%P
     c = (residual(r)-b*r[0])%P
+    discriminant = (A2*A2*b*b - 4*b*b*b - 4*A2*A2*A2*c
+                    - 27*c*c + 18*A2*b*c) % P
+    require(discriminant != 0, 'singular target curve')
     require(all(oncurve(q,A2,b,c) for q in mapped.values()),'image not on one target curve')
     target = [O] + [(x,y) for x in range(P) for y in range(P) if oncurve((x,y),A2,b,c)]
     require(len(target)==N,'isogeny target cardinality')
@@ -178,11 +181,14 @@ def main():
     return {'field':'F_229','source_curve':'y^2=x^3+x^2+x',
             'target_curve':f'y^2=x^3+x^2+{b}x+{c}',
             'source_cardinality':N,'target_cardinality':len(target),
+            'source_13_kernel_generator':torsion, 'target_discriminant':discriminant,
             'kernel_size':len(kernel),'image_size':len(set(mapped.values())),
             'all_group_homomorphism_pairs':additions,
-            'safe_subgroup_order':n_good,'safe_image_order':good_image_order,
+            'safe_subgroup_order':n_good,'safe_generator':good,
+            'safe_image_order':good_image_order,
             'safe_verified_public_dlps':safe_tests,
-            'unsafe_subgroup_order':n_bad,'unsafe_image_order':bad_image_order,
+            'unsafe_subgroup_order':n_bad,'unsafe_generator':bad,
+            'unsafe_image_order':bad_image_order,
             'unsafe_distinct_source_candidates_per_target':n_bad//bad_image_order,
             'unsafe_full_source_rejections':bad_source_rejections,
             'unsafe_indistinguishable_scalar_witness':witness[:2],
