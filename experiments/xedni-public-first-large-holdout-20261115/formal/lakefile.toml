@@ -1,6 +1,6 @@
 name = "xedniPublicFirstLargeHoldout"
 version = "0.1.0"
-defaultTargets = ["FamilyCount", "Panel", "AdmissiblePairs", "FamilyBound", "BoxBound", "PublicRecovery", "PublicGroupRecovery", "PrimeOrderRecovery"]
+defaultTargets = ["FamilyCount", "Panel", "AdmissiblePairs", "FamilyBound", "BoxBound", "PublicRecovery", "PublicGroupRecovery", "PrimeOrderRecovery", "ExceptionalRelation"]
 
 [[require]]
 name = "mathlib"
@@ -33,3 +33,6 @@ name = "PublicGroupRecovery"
 
 [[lean_lib]]
 name = "PrimeOrderRecovery"
+
+[[lean_lib]]
+name = "ExceptionalRelation"

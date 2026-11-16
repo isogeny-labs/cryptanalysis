@@ -165,6 +165,17 @@ def main():
                  'cyclic_public_relation_iff_recovered_scalar'):
         assert f"'XedniPublicFirstLargeHoldout.{name}' depends on axioms: [propext, Classical.choice, Quot.sound]" in prime_build_normalized
     assert "'XedniPublicFirstLargeHoldout.cyclic_torsion' depends on axioms: [propext]" in prime_build_normalized
+    exceptional_source=(formal/'ExceptionalRelation.lean').read_text()
+    assert all(f'theorem {name}' in exceptional_source for name in
+               ('zero_sum_scalar_relation_iff','zero_sum_scalar_relation_iff_equal_offsets',
+                'zero_sum_group_relation_iff_equal_offsets'))
+    assert not any(token in exceptional_source for token in ('sorry','admit','sorryAx','native_decide'))
+    exceptional_build=(formal/'exceptional-relation-build-output.txt').read_text()
+    assert 'Build completed successfully (9049 jobs)' in exceptional_build
+    exceptional_build_normalized=re.sub(r'\s+',' ',exceptional_build)
+    assert "'XedniPublicFirstLargeHoldout.zero_sum_scalar_relation_iff' depends on axioms: [propext, Quot.sound]" in exceptional_build_normalized
+    for name in ('zero_sum_scalar_relation_iff_equal_offsets','zero_sum_group_relation_iff_equal_offsets'):
+        assert f"'XedniPublicFirstLargeHoldout.{name}' depends on axioms: [propext, Classical.choice, Quot.sound]" in exceptional_build_normalized
     recovery_protocol=json.loads((HERE/'public-recovery-protocol.json').read_text())
     recovery_result=json.loads((HERE/'public-recovery-result.json').read_text())
     recovery_audit_protocol=json.loads((HERE/'public-recovery-audit-protocol.json').read_text())
