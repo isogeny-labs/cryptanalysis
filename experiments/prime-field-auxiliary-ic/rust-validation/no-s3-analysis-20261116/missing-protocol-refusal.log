@@ -1,0 +1,194 @@
+source-only audit guard active
+test_archive_mismatch_does_not_publish_band (__main__.PanelAcceptanceTests.test_archive_mismatch_does_not_publish_band) ... ERROR
+test_complete_matched_panel_publishes_both_bands (__main__.PanelAcceptanceTests.test_complete_matched_panel_publishes_both_bands) ... ERROR
+test_duplicate_replacing_a_target_cannot_pass (__main__.PanelAcceptanceTests.test_duplicate_replacing_a_target_cannot_pass) ... ERROR
+test_invalid_run_does_not_publish_band (__main__.PanelAcceptanceTests.test_invalid_run_does_not_publish_band) ... ERROR
+test_malformed_ledger_clears_stale_success_outputs (__main__.PanelAcceptanceTests.test_malformed_ledger_clears_stale_success_outputs) ... ok
+test_missing_last_target_cannot_pass (__main__.PanelAcceptanceTests.test_missing_last_target_cannot_pass) ... ERROR
+test_one_rank_row_cannot_pass (__main__.PanelAcceptanceTests.test_one_rank_row_cannot_pass) ... ERROR
+test_wrong_seed_cannot_pass (__main__.PanelAcceptanceTests.test_wrong_seed_cannot_pass) ... ERROR
+
+======================================================================
+ERROR: test_archive_mismatch_does_not_publish_band (__main__.PanelAcceptanceTests.test_archive_mismatch_does_not_publish_band)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/n83-source-only-kdxaoxf1/experiments/koblitz-n83-opcounts-20261023/test_analyze_v2.py", line 100, in test_archive_mismatch_does_not_publish_band
+    self.assert_rejected(corrupt_record=True)
+  File "/tmp/n83-source-only-kdxaoxf1/experiments/koblitz-n83-opcounts-20261023/test_analyze_v2.py", line 59, in assert_rejected
+    code, result, has_band, band_calls = self.run_panel(mutate, corrupt_record)
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/n83-source-only-kdxaoxf1/experiments/koblitz-n83-opcounts-20261023/test_analyze_v2.py", line 17, in run_panel
+    expected = checked.plan()
+               ^^^^^^^^^^^^^^
+  File "/tmp/n83-source-only-kdxaoxf1/experiments/koblitz-n83-opcounts-20261023/opcounts.py", line 75, in plan
+    _, k1, points, cold = stacked_inputs()
+                          ^^^^^^^^^^^^^^^^
+  File "/tmp/n83-source-only-kdxaoxf1/experiments/koblitz-n83-opcounts-20261023/opcounts.py", line 53, in stacked_inputs
+    protocol = json.loads((STACKED / "protocol.json").read_text())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py", line 1027, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py", line 1013, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/tmp/n83-source-only-kdxaoxf1/experiments/koblitz-n83-stacked-20261016/protocol.json'
+
+======================================================================
+ERROR: test_complete_matched_panel_publishes_both_bands (__main__.PanelAcceptanceTests.test_complete_matched_panel_publishes_both_bands)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/n83-source-only-kdxaoxf1/experiments/koblitz-n83-opcounts-20261023/test_analyze_v2.py", line 66, in test_complete_matched_panel_publishes_both_bands
+    code, result, has_band, calls = self.run_panel()
+                                    ^^^^^^^^^^^^^^^^
+  File "/tmp/n83-source-only-kdxaoxf1/experiments/koblitz-n83-opcounts-20261023/test_analyze_v2.py", line 17, in run_panel
+    expected = checked.plan()
+               ^^^^^^^^^^^^^^
+  File "/tmp/n83-source-only-kdxaoxf1/experiments/koblitz-n83-opcounts-20261023/opcounts.py", line 75, in plan
+    _, k1, points, cold = stacked_inputs()
+                          ^^^^^^^^^^^^^^^^
+  File "/tmp/n83-source-only-kdxaoxf1/experiments/koblitz-n83-opcounts-20261023/opcounts.py", line 53, in stacked_inputs
+    protocol = json.loads((STACKED / "protocol.json").read_text())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py", line 1027, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py", line 1013, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/tmp/n83-source-only-kdxaoxf1/experiments/koblitz-n83-stacked-20261016/protocol.json'
+
+======================================================================
+ERROR: test_duplicate_replacing_a_target_cannot_pass (__main__.PanelAcceptanceTests.test_duplicate_replacing_a_target_cannot_pass)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/n83-source-only-kdxaoxf1/experiments/koblitz-n83-opcounts-20261023/test_analyze_v2.py", line 91, in test_duplicate_replacing_a_target_cannot_pass
+    self.assert_rejected(lambda rows: rows.__setitem__(-1, copy.deepcopy(rows[-2])))
+  File "/tmp/n83-source-only-kdxaoxf1/experiments/koblitz-n83-opcounts-20261023/test_analyze_v2.py", line 59, in assert_rejected
+    code, result, has_band, band_calls = self.run_panel(mutate, corrupt_record)
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/n83-source-only-kdxaoxf1/experiments/koblitz-n83-opcounts-20261023/test_analyze_v2.py", line 17, in run_panel
+    expected = checked.plan()
+               ^^^^^^^^^^^^^^
+  File "/tmp/n83-source-only-kdxaoxf1/experiments/koblitz-n83-opcounts-20261023/opcounts.py", line 75, in plan
+    _, k1, points, cold = stacked_inputs()
+                          ^^^^^^^^^^^^^^^^
+  File "/tmp/n83-source-only-kdxaoxf1/experiments/koblitz-n83-opcounts-20261023/opcounts.py", line 53, in stacked_inputs
+    protocol = json.loads((STACKED / "protocol.json").read_text())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py", line 1027, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py", line 1013, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/tmp/n83-source-only-kdxaoxf1/experiments/koblitz-n83-stacked-20261016/protocol.json'
+
+======================================================================
+ERROR: test_invalid_run_does_not_publish_band (__main__.PanelAcceptanceTests.test_invalid_run_does_not_publish_band)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/n83-source-only-kdxaoxf1/experiments/koblitz-n83-opcounts-20261023/test_analyze_v2.py", line 97, in test_invalid_run_does_not_publish_band
+    self.assert_rejected(lambda rows: rows[3].__setitem__("status", "invalid"))
+  File "/tmp/n83-source-only-kdxaoxf1/experiments/koblitz-n83-opcounts-20261023/test_analyze_v2.py", line 59, in assert_rejected
+    code, result, has_band, band_calls = self.run_panel(mutate, corrupt_record)
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/n83-source-only-kdxaoxf1/experiments/koblitz-n83-opcounts-20261023/test_analyze_v2.py", line 17, in run_panel
+    expected = checked.plan()
+               ^^^^^^^^^^^^^^
+  File "/tmp/n83-source-only-kdxaoxf1/experiments/koblitz-n83-opcounts-20261023/opcounts.py", line 75, in plan
+    _, k1, points, cold = stacked_inputs()
+                          ^^^^^^^^^^^^^^^^
+  File "/tmp/n83-source-only-kdxaoxf1/experiments/koblitz-n83-opcounts-20261023/opcounts.py", line 53, in stacked_inputs
+    protocol = json.loads((STACKED / "protocol.json").read_text())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py", line 1027, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py", line 1013, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/tmp/n83-source-only-kdxaoxf1/experiments/koblitz-n83-stacked-20261016/protocol.json'
+
+======================================================================
+ERROR: test_missing_last_target_cannot_pass (__main__.PanelAcceptanceTests.test_missing_last_target_cannot_pass)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/n83-source-only-kdxaoxf1/experiments/koblitz-n83-opcounts-20261023/test_analyze_v2.py", line 88, in test_missing_last_target_cannot_pass
+    self.assert_rejected(lambda rows: rows.pop())
+  File "/tmp/n83-source-only-kdxaoxf1/experiments/koblitz-n83-opcounts-20261023/test_analyze_v2.py", line 59, in assert_rejected
+    code, result, has_band, band_calls = self.run_panel(mutate, corrupt_record)
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/n83-source-only-kdxaoxf1/experiments/koblitz-n83-opcounts-20261023/test_analyze_v2.py", line 17, in run_panel
+    expected = checked.plan()
+               ^^^^^^^^^^^^^^
+  File "/tmp/n83-source-only-kdxaoxf1/experiments/koblitz-n83-opcounts-20261023/opcounts.py", line 75, in plan
+    _, k1, points, cold = stacked_inputs()
+                          ^^^^^^^^^^^^^^^^
+  File "/tmp/n83-source-only-kdxaoxf1/experiments/koblitz-n83-opcounts-20261023/opcounts.py", line 53, in stacked_inputs
+    protocol = json.loads((STACKED / "protocol.json").read_text())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py", line 1027, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py", line 1013, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/tmp/n83-source-only-kdxaoxf1/experiments/koblitz-n83-stacked-20261016/protocol.json'
+
+======================================================================
+ERROR: test_one_rank_row_cannot_pass (__main__.PanelAcceptanceTests.test_one_rank_row_cannot_pass)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/n83-source-only-kdxaoxf1/experiments/koblitz-n83-opcounts-20261023/test_analyze_v2.py", line 85, in test_one_rank_row_cannot_pass
+    self.assert_rejected(lambda rows: rows.__delitem__(slice(1, None)))
+  File "/tmp/n83-source-only-kdxaoxf1/experiments/koblitz-n83-opcounts-20261023/test_analyze_v2.py", line 59, in assert_rejected
+    code, result, has_band, band_calls = self.run_panel(mutate, corrupt_record)
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/n83-source-only-kdxaoxf1/experiments/koblitz-n83-opcounts-20261023/test_analyze_v2.py", line 17, in run_panel
+    expected = checked.plan()
+               ^^^^^^^^^^^^^^
+  File "/tmp/n83-source-only-kdxaoxf1/experiments/koblitz-n83-opcounts-20261023/opcounts.py", line 75, in plan
+    _, k1, points, cold = stacked_inputs()
+                          ^^^^^^^^^^^^^^^^
+  File "/tmp/n83-source-only-kdxaoxf1/experiments/koblitz-n83-opcounts-20261023/opcounts.py", line 53, in stacked_inputs
+    protocol = json.loads((STACKED / "protocol.json").read_text())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py", line 1027, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py", line 1013, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/tmp/n83-source-only-kdxaoxf1/experiments/koblitz-n83-stacked-20261016/protocol.json'
+
+======================================================================
+ERROR: test_wrong_seed_cannot_pass (__main__.PanelAcceptanceTests.test_wrong_seed_cannot_pass)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/n83-source-only-kdxaoxf1/experiments/koblitz-n83-opcounts-20261023/test_analyze_v2.py", line 94, in test_wrong_seed_cannot_pass
+    self.assert_rejected(lambda rows: rows[3].__setitem__("seed", 99))
+  File "/tmp/n83-source-only-kdxaoxf1/experiments/koblitz-n83-opcounts-20261023/test_analyze_v2.py", line 59, in assert_rejected
+    code, result, has_band, band_calls = self.run_panel(mutate, corrupt_record)
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/n83-source-only-kdxaoxf1/experiments/koblitz-n83-opcounts-20261023/test_analyze_v2.py", line 17, in run_panel
+    expected = checked.plan()
+               ^^^^^^^^^^^^^^
+  File "/tmp/n83-source-only-kdxaoxf1/experiments/koblitz-n83-opcounts-20261023/opcounts.py", line 75, in plan
+    _, k1, points, cold = stacked_inputs()
+                          ^^^^^^^^^^^^^^^^
+  File "/tmp/n83-source-only-kdxaoxf1/experiments/koblitz-n83-opcounts-20261023/opcounts.py", line 53, in stacked_inputs
+    protocol = json.loads((STACKED / "protocol.json").read_text())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py", line 1027, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py", line 1013, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/tmp/n83-source-only-kdxaoxf1/experiments/koblitz-n83-stacked-20261016/protocol.json'
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.022s
+
+FAILED (errors=7)

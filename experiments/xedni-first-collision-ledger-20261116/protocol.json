@@ -1,0 +1,12 @@
+{
+  "schema": "xedni-first-collision-ledger-protocol-v1",
+  "parent_program_result_sha256": "930613a9f18c7094d1ac3485563ce65be3503ef271fd1f26e52a2f958615e359",
+  "parent_candidate_result_sha256": "2f497fd80c52bfa6fc370b418f3071ac4f2b0ab4b498ee63b0b09b9ae1c66395",
+  "input": "all 30,240 frozen scalar-encoding rows of the three-step Z/7 adaptive program",
+  "stage_law": "at step k=1,2,3 an execution is live iff its saved first collision step is absent or at least k; a first hit has saved step k",
+  "bucket_key": "visible label prefix before the next command; prefix lengths 2,3,4",
+  "weight_check": "each eligible scalar in a collision-free prefix has exactly (7-prefix_length)! bijective encodings",
+  "stage_bounds": "d=min eligible scalar count and c=max next-hit scalar count across observed buckets at that stage",
+  "raw_rows": "one deterministic gzip JSONL row per visible-prefix bucket, including all eligible and next-hit scalar counts",
+  "claim_boundary": "exact finite stopping ledger and conditional aggregation control; no asymptotic generic-group bound"
+}

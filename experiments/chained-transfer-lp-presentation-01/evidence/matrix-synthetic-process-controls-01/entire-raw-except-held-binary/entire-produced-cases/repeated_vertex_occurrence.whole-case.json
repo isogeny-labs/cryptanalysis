@@ -1,0 +1,155 @@
+{
+  "case": {
+    "baseline": {
+      "ncols": 1,
+      "rows": []
+    },
+    "expected_full_nullity": 1,
+    "expected_projection_dimension": 1,
+    "expected_zero_projections": 0,
+    "full": {
+      "ncols": 2,
+      "rows": [
+        [
+          2,
+          1
+        ]
+      ]
+    },
+    "lp_columns": 1,
+    "name": "repeated_vertex_occurrence",
+    "uncapped": {
+      "ncols": 1,
+      "rows": []
+    }
+  },
+  "certificate": {
+    "a": {
+      "input": {
+        "ncols": 2,
+        "rows": [
+          [
+            2,
+            1
+          ]
+        ]
+      },
+      "kernel": [
+        [
+          50,
+          1
+        ]
+      ],
+      "modulus": 101,
+      "operations": [
+        {
+          "coefficient": 51,
+          "inverse": 2,
+          "op": "scale",
+          "row": 0
+        }
+      ],
+      "pivots": [
+        0
+      ],
+      "rref": {
+        "ncols": 2,
+        "rows": [
+          [
+            1,
+            51
+          ]
+        ]
+      }
+    },
+    "c": {
+      "input": {
+        "ncols": 1,
+        "rows": []
+      },
+      "kernel": [
+        [
+          1
+        ]
+      ],
+      "modulus": 101,
+      "operations": [],
+      "pivots": [],
+      "rref": {
+        "ncols": 1,
+        "rows": []
+      }
+    },
+    "constraint_kernel_lifts": [
+      {
+        "full_vector": [
+          50,
+          1
+        ],
+        "image_coefficients": [
+          1
+        ],
+        "vector": [
+          1
+        ]
+      }
+    ],
+    "lp_columns": 1,
+    "p": {
+      "input": {
+        "ncols": 1,
+        "rows": [
+          [
+            1
+          ]
+        ]
+      },
+      "kernel": [],
+      "modulus": 101,
+      "operations": [
+        {
+          "coefficient": 1,
+          "inverse": 1,
+          "op": "scale",
+          "row": 0
+        }
+      ],
+      "pivots": [
+        0
+      ],
+      "rref": {
+        "ncols": 1,
+        "rows": [
+          [
+            1
+          ]
+        ]
+      }
+    },
+    "transformed_full_lifts": [
+      [
+        50,
+        1
+      ]
+    ],
+    "u": {
+      "input": {
+        "ncols": 1,
+        "rows": []
+      },
+      "kernel": [
+        [
+          1
+        ]
+      ],
+      "modulus": 101,
+      "operations": [],
+      "pivots": [],
+      "rref": {
+        "ncols": 1,
+        "rows": []
+      }
+    }
+  },
+  "schema": "chained.lp.synthetic-projection/v1"
+}

@@ -1,0 +1,62 @@
+{
+  "source_commit": "f748c746854479e3a04546b2f860026b345df8b7",
+  "scope": "Locked graph resolution only, not consumer build/test or runtime evidence",
+  "checks": [
+    {
+      "manifest": "bindings/rust/Cargo.toml",
+      "argv": [
+        "/home/agent/.cargo/bin/cargo",
+        "+stable",
+        "metadata",
+        "--locked",
+        "--format-version",
+        "1",
+        "--manifest-path",
+        "bindings/rust/Cargo.toml"
+      ],
+      "exit_code": 0
+    },
+    {
+      "manifest": "suite/Cargo.toml",
+      "argv": [
+        "/home/agent/.cargo/bin/cargo",
+        "+stable",
+        "metadata",
+        "--locked",
+        "--format-version",
+        "1",
+        "--manifest-path",
+        "suite/Cargo.toml"
+      ],
+      "exit_code": 0
+    },
+    {
+      "manifest": "crates/hashed-ecdl-tensor/Cargo.toml",
+      "argv": [
+        "/home/agent/.cargo/bin/cargo",
+        "+stable",
+        "metadata",
+        "--locked",
+        "--format-version",
+        "1",
+        "--manifest-path",
+        "crates/hashed-ecdl-tensor/Cargo.toml"
+      ],
+      "exit_code": 0
+    },
+    {
+      "manifest": "tools/binary-genus2-cover/Cargo.toml",
+      "argv": [
+        "/home/agent/.cargo/bin/cargo",
+        "+stable",
+        "metadata",
+        "--locked",
+        "--format-version",
+        "1",
+        "--manifest-path",
+        "tools/binary-genus2-cover/Cargo.toml"
+      ],
+      "exit_code": 0
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/home/agent/.cargo/bin/cargo",
+    "test",
+    "--manifest-path",
+    "suite/Cargo.toml",
+    "--lib",
+    "cli::tools::ic::auxiliary::tests",
+    "-j",
+    "2"
+  ],
+  "cwd": "/workspace/cryptanalysis-pr",
+  "exit_code": 101,
+  "output": "post-merge-cli.log"
+}

@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/home/agent/.cargo/bin/cargo",
+    "test",
+    "--release",
+    "--manifest-path",
+    "crates/prime-field-auxiliary-ic/Cargo.toml",
+    "--",
+    "--nocapture"
+  ],
+  "cwd": "/workspace/cryptanalysis-pr",
+  "exit_code": 0,
+  "output": "orbit-core.log"
+}

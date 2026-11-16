@@ -1,0 +1,72 @@
+{
+  "schema": "producer-consumer-checks/v1",
+  "status": "pass",
+  "independent": false,
+  "source_base_commit": "ec575260c33bac305189a317cd5230d6a9e0b836",
+  "source_dirty": true,
+  "scope": "Build-graph and formatting diagnostics only; no performance experiment or signed replay.",
+  "source_files": [
+    {
+      "path": ".github/workflows/binary-genus2-cover.yml",
+      "sha256": "508183e4cd3ef626564ab3f7aca8ce9b6b3ef68fdc28b6fdda454ce7098b99f3"
+    },
+    {
+      "path": ".github/workflows/glv-cap-by-size-tier1.yml",
+      "sha256": "d320386598fac1cd861b3d5359abf56a70b2bd2a30232caf3601af687d7fabd6"
+    },
+    {
+      "path": ".github/workflows/glv-table-walltime-above40-tier1.yml",
+      "sha256": "3f423b9d4a0a7ecb839d4e1d45623c30a8b2310389fd0cb46a7a4992cdf23f33"
+    },
+    {
+      "path": ".github/workflows/hashed-ecdl-tensor.yml",
+      "sha256": "f5a8a2fe7c67a2bae8603d537016669a469560ca5005145ceea47d4631cee3aa"
+    },
+    {
+      "path": ".github/workflows/rho-walltime-tier1.yml",
+      "sha256": "38e530be7ad007807090b4065a9c61a96024508fff575dcf850238dfc1d6891f"
+    },
+    {
+      "path": "tools/binary-genus2-cover/Cargo.lock",
+      "sha256": "46e889d4bdb85d9dd58a423963414e70091a6df89f58ece10e0d1ef8b10a0221"
+    }
+  ],
+  "raw_data": [
+    {
+      "path": "hashed-locked-resolution.json",
+      "sha256": "93244366dc796b823a0bc44b69c90b769a9d024424b1b73a7089af10bcf8e36e"
+    },
+    {
+      "path": "genus2-locked-resolution.json",
+      "sha256": "476de42ac773b544015601989f374792eb68c58b00328b9e3f14ec7ed16ba0e6"
+    }
+  ],
+  "headline": [
+    {
+      "name": "hashed-native-dependency-edges",
+      "claimed": 1,
+      "recomputed": 1,
+      "rel_tol": 0
+    },
+    {
+      "name": "genus2-native-dependency-edges",
+      "claimed": 2,
+      "recomputed": 2,
+      "rel_tol": 0
+    }
+  ],
+  "ci_failures_addressed": [
+    {
+      "job": "132746430074",
+      "run": "43692683498",
+      "cause": "binary-genus2-cover lockfile omitted the native path dependency"
+    },
+    {
+      "job": "132746429882",
+      "run": "43692683496",
+      "cause": "hashed tensor sparse checkout omitted the native crate"
+    }
+  ],
+  "package_versions_upgraded": false,
+  "new_research_benchmark": false
+}

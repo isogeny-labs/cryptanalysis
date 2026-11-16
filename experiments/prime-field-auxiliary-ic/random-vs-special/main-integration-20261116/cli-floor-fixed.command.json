@@ -1,0 +1,20 @@
+{
+  "source_commit": "5b9f7050c681614342e12d3becb6da0620d6f603",
+  "argv": [
+    "/home/agent/.cargo/bin/cargo",
+    "+stable",
+    "test",
+    "--locked",
+    "--manifest-path",
+    "suite/Cargo.toml",
+    "--lib",
+    "cli::tools::ic::auxiliary::tests"
+  ],
+  "explicit_environment": {
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_PROFILE_TEST_DEBUG": "0"
+  },
+  "timeout_seconds": 300,
+  "exit_code": 0,
+  "scope": "producer development correctness check; no benchmark"
+}

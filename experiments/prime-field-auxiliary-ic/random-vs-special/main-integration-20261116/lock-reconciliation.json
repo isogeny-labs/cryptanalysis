@@ -1,0 +1,130 @@
+{
+  "method": "cargo +stable update --offline --workspace --manifest-path MANIFEST; locked validation flags retained",
+  "changes": [
+    {
+      "path": "bindings/rust/Cargo.lock",
+      "before_source": "a175be78071ed9e702a3033e75bc34c447c05c76",
+      "before_sha256": "5ede6c29696f7295b61f5518dbdddbad2d05c259a35e46563478e02a12307161",
+      "after_sha256": "9a6d59f44be9c2ee6868b9ab3ed3dc91f43f89f5e92e935dfee32edc38a2cc75",
+      "added_packages": [],
+      "removed_orphan_packages": [
+        [
+          "version_check",
+          "0.9.5"
+        ],
+        [
+          "wasi",
+          "0.11.1+wasi-snapshot-preview1"
+        ]
+      ],
+      "retained_checksums_unchanged": true
+    },
+    {
+      "path": "suite/Cargo.lock",
+      "before_source": "a175be78071ed9e702a3033e75bc34c447c05c76",
+      "before_sha256": "12b6ab61b9e1b05bcb738c353748d01b3aaf5d2762ed2b9b171747b9cfcf5414",
+      "after_sha256": "6b70dc83b9bcd77f4d10171643fce9e66e1ce072a47b8fd9a7c0ee4e80bab6ab",
+      "added_packages": [
+        [
+          "block-buffer",
+          "0.12.1"
+        ],
+        [
+          "const-oid",
+          "0.10.2"
+        ],
+        [
+          "crypto-common",
+          "0.2.2"
+        ],
+        [
+          "digest",
+          "0.11.3"
+        ],
+        [
+          "hybrid-array",
+          "0.4.15"
+        ],
+        [
+          "sha2",
+          "0.11.1"
+        ]
+      ],
+      "removed_orphan_packages": [],
+      "retained_checksums_unchanged": true
+    },
+    {
+      "path": "crates/hashed-ecdl-tensor/Cargo.lock",
+      "before_source": "a175be78071ed9e702a3033e75bc34c447c05c76",
+      "before_sha256": "0a4f752acbc2d8bb3932dae0e8bedd3f187840b058eb9e140782aa593e7b6eb3",
+      "after_sha256": "bbadf7b4f124cfc5cc680b669550d421d475ea4cbda9f23fcc0c57e69bc8c91a",
+      "added_packages": [
+        [
+          "block-buffer",
+          "0.12.1"
+        ],
+        [
+          "const-oid",
+          "0.10.2"
+        ],
+        [
+          "cpufeatures",
+          "0.3.1"
+        ],
+        [
+          "crypto-common",
+          "0.2.2"
+        ],
+        [
+          "digest",
+          "0.11.3"
+        ],
+        [
+          "hybrid-array",
+          "0.4.15"
+        ],
+        [
+          "sha2",
+          "0.11.1"
+        ]
+      ],
+      "removed_orphan_packages": [],
+      "retained_checksums_unchanged": true
+    },
+    {
+      "path": "tools/binary-genus2-cover/Cargo.lock",
+      "before_source": "a175be78071ed9e702a3033e75bc34c447c05c76",
+      "before_sha256": "1165c75eee70bee69843920946b3bd506b4739fa88afcfe16c66be583c2eca3b",
+      "after_sha256": "c922d26955444dd232f60dc949ca7590643c2b2e2038a2f0daba0ceff37db320",
+      "added_packages": [
+        [
+          "block-buffer",
+          "0.12.1"
+        ],
+        [
+          "const-oid",
+          "0.10.2"
+        ],
+        [
+          "crypto-common",
+          "0.2.2"
+        ],
+        [
+          "digest",
+          "0.11.3"
+        ],
+        [
+          "hybrid-array",
+          "0.4.15"
+        ],
+        [
+          "sha2",
+          "0.11.1"
+        ]
+      ],
+      "removed_orphan_packages": [],
+      "retained_checksums_unchanged": true
+    }
+  ],
+  "scope": "dependency metadata reconciliation after main SHA-2 0.11 update; no runtime claim"
+}

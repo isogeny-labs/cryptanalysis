@@ -1,0 +1,72 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T11:33:24Z",
+ "id": "PCC-20261116-8c3f95",
+ "kind": "statement",
+ "producer": {
+  "commit": "adb8a8519990a3b85bf72267b23e984bdf9a57f2",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/draft-upload-proxy-connection-failure-02/actual-failure-state.json.xz",
+    "sha256": "2aa15c0c4911e8310551b8ac1caae48f4b648127658bade7d62b942e90611d9e"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/draft-upload-proxy-connection-failure-02/entire-actual-command.py.xz",
+    "sha256": "103c6f59c00d915863af9548d6dc6d480a00dd4c5df245c3a238905b82321f14"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/draft-upload-proxy-connection-failure-02/entire-actual-deterministic-archive-command.json.xz",
+    "sha256": "64e6af7182fee523e6c6d0a7c145fc6e2ac00dea37476086e8e1ed48be568aaf"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/draft-upload-proxy-connection-failure-02/entire-actual-incomplete-draft-after-transport-failure.json.xz",
+    "sha256": "7c3ca9265c23e8698daed9787afc38f096a2153fc82996db05ef78db8a4d0247"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/draft-upload-proxy-connection-failure-02/entire-corrected-draft-body-request.json.xz",
+    "sha256": "225f50e50e93842f6f034da5539c5e3db4c27ed11f5fb162cededa343614ccfb"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/draft-upload-proxy-connection-failure-02/entire-corrected-draft-body-response.json.xz",
+    "sha256": "6bc435029989b73ca95e75b16098cf7e06a721d564819a25b9f031d4652064d2"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/draft-upload-proxy-connection-failure-02/entire-existing-draft-before.json.xz",
+    "sha256": "5cfed3e11f26f45eb4a5a0d0f26288c73ec888800239d1e779ed3a1ed2670ded"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/draft-upload-proxy-connection-failure-02/entire-original-complete-context-prepass.json.xz",
+    "sha256": "b281a82e2170dedfe07f44182f028d9cd847caa69339d6d83e908c924b059305"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Distinct corrected whole-byte draft upload via ordinary existing HTTPS proxy/user identity fails at first39MB source upload with URLError/connection reset by peer; no asset replay completes. Actual post-failure API confirms draft446932614 remains unpublished with assets empty. Whole original clean context and both complete transport command/request/response/negative records remain, private diagnostic600 excluded from public data. No network/provider/identity/grant change or further upload retry; direct failure5ef5dc also intact. Use the repositories documented original artifact transport for complete source custody instead of claiming the draft is a backup. No paid build/job/native science/OCI or original S3/NEW28 promotion."
+}

@@ -1,0 +1,50 @@
+{
+  "source_before_correction": "b85bca1e27bde3b3b4d30f6037986c15f32d3a56",
+  "original_claim_byte_sha256": "3f26c04141cc196a9c4736e375bd19514268cf4f1ab900cf47f4088a21db4222",
+  "original_claim_digest": "2d26113869a92d732d06cb47ab33b067ffd8036dcb7aff119530f65ca8383fcf",
+  "corrected_claim_digest": "938c5b06a03b011f1efb1d353913c97fbd968614e629bfb2b228ed2287ed1c42",
+  "original_ledger_event_unchanged": {
+    "at": "2026-11-15T20:50:50Z",
+    "body": {
+      "claim_id": "PCC-20261115-8d2645",
+      "claim_sha256": "2d26113869a92d732d06cb47ab33b067ffd8036dcb7aff119530f65ca8383fcf",
+      "path": "pcc/claims/PCC-20261115-8d2645.json"
+    },
+    "hash": "dfc7911720479a777f86f8077971a2734632accf3b173249854dec92ff5e85aa",
+    "prev": "9dc0b2ab691ec60e8ba3b4cbb2e6ade629c89cc0cc3683cf9502f6ed9fdd2abc",
+    "schema": "pcc.ledger-entry/v1",
+    "seq": 162,
+    "type": "claim"
+  },
+  "appended_claim_event": {
+    "schema": "pcc.ledger-entry/v1",
+    "seq": 182,
+    "prev": "f8d02cf714faaf958b12d4d8ac0ea4afeaaa15b83840ba4d9cd0b17ba11a6258",
+    "type": "claim",
+    "at": "2026-11-16T01:27:40Z",
+    "body": {
+      "claim_id": "PCC-20261115-8d2645",
+      "claim_sha256": "938c5b06a03b011f1efb1d353913c97fbd968614e629bfb2b228ed2287ed1c42",
+      "path": "pcc/claims/PCC-20261115-8d2645.json"
+    },
+    "hash": "d6e56730208ae74601aa9a36fe7e9a1bb9e475cb01ab21dd998c1ca319995533"
+  },
+  "appended_note_event": {
+    "schema": "pcc.ledger-entry/v1",
+    "seq": 183,
+    "prev": "d6e56730208ae74601aa9a36fe7e9a1bb9e475cb01ab21dd998c1ca319995533",
+    "type": "note",
+    "at": "2026-11-16T01:27:40Z",
+    "body": {
+      "action": "claim-proof-metadata-correction",
+      "claim_id": "PCC-20261115-8d2645",
+      "previous_claim_sha256": "2d26113869a92d732d06cb47ab33b067ffd8036dcb7aff119530f65ca8383fcf",
+      "corrected_claim_sha256": "938c5b06a03b011f1efb1d353913c97fbd968614e629bfb2b228ed2287ed1c42",
+      "original_claim_path": "reports/courtois-getrandom-compat-20261115/original-claim-8d2645.json",
+      "reason": "Original recompute slots pointed to plain Cargo text, which is not a JSON validator. Preserve those bytes and the claim statement/scope/producer, and wrap only the reported counts in an admitted unsigned validator; no source/execution claim or outcome is promoted."
+    },
+    "hash": "0b2852052276497c5880d87615eb57114a6d84ec7726140949221755933588ef"
+  },
+  "statement_scope_and_producer_unchanged": true,
+  "original_raw_files_unchanged": true
+}

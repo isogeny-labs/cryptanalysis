@@ -1,0 +1,27 @@
+{
+  "named_theorems": 8,
+  "audited_declarations": 10,
+  "generated_defining_equations": 2,
+  "trusted": 0,
+  "toolchains": [
+    "leanprover/lean4:v4.34.1",
+    "leanprover/lean4:v4.35.0"
+  ],
+  "gate_files": {
+    "/workspace/cryptanalysis/tools/lean/proof-gate.sh": "a64f4010f3713653786e56ef7762b3e879720e2706ca78f979a0fefe2d53a7e2",
+    "/workspace/cryptanalysis/tools/lean/AuditAxioms.lean": "f97280b48f1846d13e7ed96d9691753811551864162086fb25e9fe05438aa7dc",
+    "/workspace/crypto/tools/lean/proof-gate.sh": "2fe88bb302db587bbb6ede217fc646cf8fa35f9b9a2980e4a15dae273b8df6eb",
+    "/workspace/crypto/tools/lean/AuditAxioms.lean": "b90d6b58c92138f4f4e4d4692a9c3152629c3aafa537e789248bebbf6ddb1929"
+  },
+  "compiler_worker_flag": "-j 1",
+  "memory": "original static proof-workflow defaults; no2GiB VM compliance claim",
+  "timeout_seconds_per_gate": 120,
+  "lean4checker": "unavailable",
+  "missing_bridges": [
+    "actual finite field instance/numerical dimension theorem",
+    "original program to raw matrix",
+    "curve and Picard membership",
+    "global character",
+    "cost advantage"
+  ]
+}

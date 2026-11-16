@@ -1,0 +1,10 @@
+{
+  "schema": "xedni-transcript-determinism-protocol-v1",
+  "parent_result_sha256": "930613a9f18c7094d1ac3485563ce65be3503ef271fd1f26e52a2f958615e359",
+  "input": "all six frozen gzip JSONL shards from xedni-adaptive-program-invariant-20261116",
+  "label_transcript": "encoding applied to each of the five saved group points",
+  "reconstruction": "start affine forms (1,w), then choose each add/sub command from the corresponding visible-label prefix only",
+  "comparison": "reconstructed forms and commands equal every saved run; identical complete label tuples have identical forms",
+  "output": "deterministic gzip JSONL row per distinct complete label transcript with multiplicity and scalar count",
+  "claim_boundary": "finite transcript determinism control; first-collision probability bound remains separate"
+}

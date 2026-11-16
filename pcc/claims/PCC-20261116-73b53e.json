@@ -1,0 +1,65 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T18:24:44Z",
+ "id": "PCC-20261116-73b53e",
+ "kind": "statement",
+ "producer": {
+  "commit": "febfa6e61af343210808b6fa2eb21aceaccad603",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/parent-PR-merged-before-genuine-handoff-correction-21/ACTUAL_PARENT_CLOSURE_AND_CORRECTION.json",
+    "sha256": "a49c0c8fd5a5e5b2035d76a0260e1c6d7971aee43d8db222142a9e3205a91407"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/parent-PR-merged-before-genuine-handoff-correction-21/authored_runs.json.xz",
+    "sha256": "8bd11a8be9f8bba9b2211acb5738c15dd3702fc62e2662ee8abe8d0157cc0b9b"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/parent-PR-merged-before-genuine-handoff-correction-21/checks.json.xz",
+    "sha256": "79cfadb9a107143ad545ac27618814483b31a2dcd9858415dd1b035d9e78c150"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/parent-PR-merged-before-genuine-handoff-correction-21/conversation.json.xz",
+    "sha256": "5b95beeb74877a6ec68c18442de766bab0a6d8c54244d5b971e622059f8a7332"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/parent-PR-merged-before-genuine-handoff-correction-21/pr.json.xz",
+    "sha256": "4b0b66251ec09942ceace922ac24c1c5020a4c741407054b2597a8183c86b65d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/parent-PR-merged-before-genuine-handoff-correction-21/review_comments.json.xz",
+    "sha256": "16559a841b621b07ce712f585f155e748a59f88b1f92f3d015c37c27e672bf8f"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/parent-PR-merged-before-genuine-handoff-correction-21/reviews.json.xz",
+    "sha256": "1e98c7be03febf9e4dcbd2624accd617cf67b81744c0cad0c41e68b9e9be10da"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Scheduled Consumer observation confirms parent1587 mergedbb451dc4 at17:17:46UTC as ef307ac66395a433f76df3543f98aa201daf9beb before later normalfebfa6 genuine-docs publication. Closed PR retainsoldheadbb, explaining earlier discrepancy; newfeb has0runs/0checks at18:15 while normal Git branch/tag readbacks remainfeb. Producer ignored state/merged fields and incorrectly called1587 ready/current; whole prior records/ledger preserved and interpretation corrected explicitly. First inline correction helper syntax error executed no statements and created no files/claims. Open fresh ready metadata successor on actual merged checkpoint and correct closed parent description to actualbb scope. Full original scientificNEW28/60/240/62/360/witness/controls/runtime/admission/cost remain separate, no standing from observed merge."
+}
