@@ -128,8 +128,15 @@ fn main() {
             | "verify-table-euclid"
     );
     let mode = match requested_mode {
-        "mitm-euclid" | "mitm-euclid-u32" | "mitm-prefix-u32" | "mitm-vector" | "mitm-vector64"
-        | "mitm-vector4096" | "mitm-prefix64" => "mitm-prefix",
+        "mitm-euclid"
+        | "mitm-euclid-u32"
+        | "mitm-prefix-u32"
+        | "mitm-vector"
+        | "mitm-vector64"
+        | "mitm-vector4096"
+        | "mitm-prefix64"
+        | "mitm-vector-packed"
+        | "mitm-vector-packed64" => "mitm-prefix",
         "rho-plain-euclid" => "rho-plain",
         "rho-negation-euclid" => "rho-negation",
         "verify-table-euclid" => "verify-table",
@@ -230,6 +237,7 @@ fn main() {
         let mut comparisons = 0;
         let mut vector_pairs = 0;
         let mut vector_pclmul128_pairs = 0;
+        let mut vector_packed_square_pairs = 0;
         for chunk in [1, 7, 64, 1024, 4096] {
             for candidate in [
                 PairTable::build_negation_folded_binary_batched(&inst.fast, &fb, chunk).unwrap(),
@@ -238,16 +246,21 @@ fn main() {
                     .unwrap(),
                 PairTable::build_negation_folded_binary_vector_cached(&inst.fast, &fb, chunk)
                     .unwrap(),
+                PairTable::build_negation_folded_binary_vector_packed_cached(
+                    &inst.fast, &fb, chunk,
+                )
+                .unwrap(),
             ] {
                 vector_pairs += candidate.vector_pairs;
                 vector_pclmul128_pairs += candidate.vector_pclmul128_pairs;
+                vector_packed_square_pairs += candidate.vector_packed_square_pairs;
                 assert!(reference.same_witness_map(&candidate));
                 comparisons += 1;
             }
         }
         println!(
             "{}",
-            json!({"curve_id":inst.name,"status":"pass","euclidean_inverse":inst.gf.uses_euclidean_inverse(),"vector_pclmul128_pairs":vector_pclmul128_pairs,"vector_backend":inst.fast.cached_vector_backend(),"vector_pairs":vector_pairs,"complete_map_comparisons":comparisons,"entries":reference.entries,"has_clmul":inst.gf.has_clmul()})
+            json!({"curve_id":inst.name,"status":"pass","euclidean_inverse":inst.gf.uses_euclidean_inverse(),"vector_packed_square_pairs":vector_packed_square_pairs,"vector_pclmul128_pairs":vector_pclmul128_pairs,"vector_backend":inst.fast.cached_vector_backend(),"vector_pairs":vector_pairs,"complete_map_comparisons":comparisons,"entries":reference.entries,"has_clmul":inst.gf.has_clmul()})
         );
         return;
     }
@@ -385,7 +398,7 @@ fn main() {
     spec.oracle_params.set(
         "batch_size",
         match requested_mode {
-            "mitm-vector64" | "mitm-prefix64" => "64",
+            "mitm-vector64" | "mitm-prefix64" | "mitm-vector-packed64" => "64",
             "mitm-vector4096" => "4096",
             _ => "1024",
         },
@@ -398,6 +411,11 @@ fn main() {
             "mitm-vector" | "mitm-vector64" | "mitm-vector4096"
         ) {
             "1"
+        } else if matches!(
+            requested_mode,
+            "mitm-vector-packed" | "mitm-vector-packed64"
+        ) {
+            "2"
         } else {
             "0"
         },

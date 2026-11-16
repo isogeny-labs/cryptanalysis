@@ -26,6 +26,8 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for BinaryBatchMitmOracle {
             "original scalar preparation, fixed-m2 queries"
         } else if params.flag("adaptive_prepare") {
             "scalar at <=64 abscissae, bounded prefix inverse reuse above64"
+        } else if params.u64_or("vector_prepare", 0).ok() == Some(2) {
+            "guarded vector preparation with packed characteristic-two squaring at <=32 bits, exact fallback"
         } else if params.flag("vector_prepare") {
             "guarded AVX2/PCLMUL (VPCLMUL when available) cached pair preparation, exact scalar fallback"
         } else if params.flag("prefix_inverse_cache") {
@@ -41,7 +43,7 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for BinaryBatchMitmOracle {
     }
     fn parameters(&self) -> &[(&str, &str)] {
         &[
-            ("vector_prepare", "0 or1, default0; AVX2/PCLMUL (VPCLMUL when available) cached preparation with complete scalar fallback"),
+            ("vector_prepare", "0 scalar default,1 vector,2 vector with packed squaring <=32 bits; guarded AVX2/PCLMUL with complete fallback"),
             ("scalar_prepare", "0 or1, default0; original scalar table with fixed-two-summand query dispatch"),
             ("adaptive_prepare", "0 or1, default0; scalar at <=64 abscissae, prefix-cached x-only above64; experimental policy"),
             (
@@ -81,11 +83,11 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for BinaryBatchMitmOracle {
         let scalar = params.u64_or("scalar_prepare", 0)?;
         let adaptive = params.u64_or("adaptive_prepare", 0)?;
         let vector = params.u64_or("vector_prepare", 0)?;
-        if scalar > 1 || adaptive > 1 || vector > 1 {
-            return Err("prepare strategy flags must be0 or1".into());
+        if scalar > 1 || adaptive > 1 || vector > 2 {
+            return Err("scalar/adaptive flags must be0 or1; vector_prepare must be0,1 or2".into());
         }
-        if (scalar == 1 && (adaptive == 1 || prefix_cache == 1 || x_only == 1 || vector == 1))
-            || (adaptive == 1 && (prefix_cache == 1 || x_only == 1 || vector == 1))
+        if (scalar == 1 && (adaptive == 1 || prefix_cache == 1 || x_only == 1 || vector != 0))
+            || (adaptive == 1 && (prefix_cache == 1 || x_only == 1 || vector != 0))
         {
             return Err(
                 "scalar/adaptive preparation cannot be combined with another strategy".into(),
@@ -95,12 +97,20 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for BinaryBatchMitmOracle {
         self.table = Some(
             (if self.used_scalar {
                 Ok(PairTable::build_negation_folded(ctx.group, fb))
-            } else if vector == 1 {
-                PairTable::build_negation_folded_binary_vector_cached(
-                    ctx.group.0,
-                    fb,
-                    size as usize,
-                )
+            } else if vector != 0 {
+                if vector == 2 {
+                    PairTable::build_negation_folded_binary_vector_packed_cached(
+                        ctx.group.0,
+                        fb,
+                        size as usize,
+                    )
+                } else {
+                    PairTable::build_negation_folded_binary_vector_cached(
+                        ctx.group.0,
+                        fb,
+                        size as usize,
+                    )
+                }
             } else if prefix_cache == 1 || adaptive == 1 {
                 PairTable::build_negation_folded_binary_prefix_cached(
                     ctx.group.0,
@@ -123,6 +133,12 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for BinaryBatchMitmOracle {
         BTreeMap::from([
             ("mitm_batch_setup_ns".into(), self.setup_ns),
             ("mitm_scalar_prepare".into(), u64::from(self.used_scalar)),
+            (
+                "mitm_vector_packed_square_pairs".into(),
+                self.table
+                    .as_ref()
+                    .map_or(0, |t| t.vector_packed_square_pairs as u64),
+            ),
             (
                 "mitm_vector_pairs".into(),
                 self.table.as_ref().map_or(0, |t| t.vector_pairs as u64),
@@ -307,11 +323,16 @@ mod tests {
         );
         spec.oracle_params.set("prefix_inverse_cache", "0");
         spec.oracle_params.set("x_only", "0");
-        for strategy in ["scalar_prepare", "adaptive_prepare", "vector_prepare"] {
+        for (strategy, value) in [
+            ("scalar_prepare", "1"),
+            ("adaptive_prepare", "1"),
+            ("vector_prepare", "1"),
+            ("vector_prepare", "2"),
+        ] {
             spec.oracle_params.set("vector_prepare", "0");
             spec.oracle_params.set("scalar_prepare", "0");
             spec.oracle_params.set("adaptive_prepare", "0");
-            spec.oracle_params.set(strategy, "1");
+            spec.oracle_params.set(strategy, value);
             let selected = run_pipeline(
                 &ctx,
                 &spec,
@@ -377,7 +398,7 @@ mod tests {
             ("batch_size", "65537"),
             ("x_only", "2"),
             ("prefix_inverse_cache", "2"),
-            ("vector_prepare", "2"),
+            ("vector_prepare", "3"),
             ("scalar_prepare", "2"),
             ("adaptive_prepare", "2"),
         ] {

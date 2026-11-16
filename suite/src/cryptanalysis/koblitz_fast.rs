@@ -462,15 +462,42 @@ impl FastCurve {
         scratch: &mut BatchScratch,
         cache: &PrefixInverseTable,
     ) -> Result<usize, &'static str> {
+        self.add_pairwise_abscissae_vector_cached_impl(ps, qs, out, scratch, cache, false)
+    }
+
+    /// Opt-in packed squaring for canonical fields of at most 32 bits.
+    /// Larger fields and unsupported hardware retain the original vector/scalar paths.
+    pub fn add_pairwise_abscissae_vector_packed_cached(
+        &self,
+        ps: &[FastPoint],
+        qs: &[FastPoint],
+        out: &mut Vec<Option<u64>>,
+        scratch: &mut BatchScratch,
+        cache: &PrefixInverseTable,
+    ) -> Result<usize, &'static str> {
+        self.add_pairwise_abscissae_vector_cached_impl(ps, qs, out, scratch, cache, true)
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn add_pairwise_abscissae_vector_cached_impl(
+        &self,
+        ps: &[FastPoint],
+        qs: &[FastPoint],
+        out: &mut Vec<Option<u64>>,
+        scratch: &mut BatchScratch,
+        cache: &PrefixInverseTable,
+        packed_square: bool,
+    ) -> Result<usize, &'static str> {
         if self.field.irr != cache.irr {
             return Err("prefix inverse cache belongs to another field");
         }
         assert_eq!(ps.len(), qs.len(), "pairwise addition needs equal slices");
+        let _ = packed_square; // Also used when the native SIMD module is compiled.
         #[cfg(all(target_arch = "x86_64", suite_avx512))]
         if let Some(kernel) = simd256::Simd256::new(&self.field) {
             // SAFETY: new() checks AVX2 and PCLMUL; its dispatcher guards VPCLMUL, field shape is checked,
             // and the kernel uses bounded four-element chunks.
-            return unsafe { kernel.add_cached(self, ps, qs, out, scratch, cache) };
+            return unsafe { kernel.add_cached(self, ps, qs, out, scratch, cache, packed_square) };
         }
         self.add_pairwise_abscissae_cached(ps, qs, out, scratch, cache)?;
         Ok(0)
@@ -1214,6 +1241,53 @@ mod simd256 {
             self.reduce_products(low, high)
         }
 
+        // For canonical n <= 32, pack a0 + a1*z^32 into each 128-bit half.
+        // In characteristic two its square is a0^2 + a1^2*z^64: no cross terms
+        // and each raw square fits in 64 bits. Shuffle 0xd8 selects words
+        // [0,2,1,3], placing the two field elements in the low 64-bit operand.
+        #[inline]
+        #[target_feature(enable = "avx2,vpclmulqdq")]
+        unsafe fn square_packed_wide(&self, a: __m256i) -> __m256i {
+            let packed = _mm256_shuffle_epi32::<0xd8>(a);
+            let raw = _mm256_clmulepi64_epi128::<0x00>(packed, packed);
+            self.reduce_products(raw, _mm256_setzero_si256())
+        }
+
+        #[inline]
+        #[target_feature(enable = "avx2,pclmulqdq")]
+        unsafe fn square_packed_narrow(&self, a: __m256i) -> __m256i {
+            let packed = _mm256_shuffle_epi32::<0xd8>(a);
+            let low = _mm256_castsi256_si128(packed);
+            let high = _mm256_extracti128_si256::<1>(packed);
+            let raw = _mm256_inserti128_si256::<1>(
+                _mm256_castsi128_si256(_mm_clmulepi64_si128::<0x00>(low, low)),
+                _mm_clmulepi64_si128::<0x00>(high, high),
+            );
+            self.reduce_products(raw, _mm256_setzero_si256())
+        }
+
+        #[cfg(test)]
+        pub(super) fn square4(&self, a: &[u64; 4], force_pclmul128: bool) -> [u64; 4] {
+            let mut out = [0u64; 4];
+            // SAFETY: new checks features; packed helpers require canonical n <= 32.
+            unsafe {
+                let av = _mm256_loadu_si256(a.as_ptr() as *const __m256i);
+                let value = if self.use_vpclmul && !force_pclmul128 {
+                    if self.n <= 32 {
+                        self.square_packed_wide(av)
+                    } else {
+                        self.mul_vpclmul(av, av)
+                    }
+                } else if self.n <= 32 {
+                    self.square_packed_narrow(av)
+                } else {
+                    self.mul_pclmul128(av, av)
+                };
+                _mm256_storeu_si256(out.as_mut_ptr() as *mut __m256i, value);
+            }
+            out
+        }
+
         pub(super) fn backend(&self) -> &'static str {
             if self.use_vpclmul {
                 "avx2-vpclmul"
@@ -1239,6 +1313,7 @@ mod simd256 {
             out
         }
 
+        #[allow(clippy::too_many_arguments)]
         pub(super) unsafe fn add_cached(
             &self,
             curve: &FastCurve,
@@ -1247,16 +1322,20 @@ mod simd256 {
             out: &mut Vec<Option<u64>>,
             scratch: &mut BatchScratch,
             cache: &PrefixInverseTable,
+            packed_square: bool,
         ) -> Result<usize, &'static str> {
-            if self.use_vpclmul {
-                self.add_cached_wide(curve, ps, qs, out, scratch, cache)
-            } else {
-                self.add_cached_narrow(curve, ps, qs, out, scratch, cache)
+            match (self.use_vpclmul, packed_square && self.n <= 32) {
+                (true, true) => self.add_cached_wide::<true>(curve, ps, qs, out, scratch, cache),
+                (true, false) => self.add_cached_wide::<false>(curve, ps, qs, out, scratch, cache),
+                (false, true) => self.add_cached_narrow::<true>(curve, ps, qs, out, scratch, cache),
+                (false, false) => {
+                    self.add_cached_narrow::<false>(curve, ps, qs, out, scratch, cache)
+                }
             }
         }
 
         #[target_feature(enable = "avx2,vpclmulqdq")]
-        unsafe fn add_cached_wide(
+        unsafe fn add_cached_wide<const PACKED: bool>(
             &self,
             curve: &FastCurve,
             ps: &[FastPoint],
@@ -1291,7 +1370,14 @@ mod simd256 {
                     _mm256_loadu_si256(inv.as_ptr() as *const __m256i),
                 );
                 let x = _mm256_xor_si256(
-                    _mm256_xor_si256(self.mul_vpclmul(lambda, lambda), lambda),
+                    _mm256_xor_si256(
+                        if PACKED {
+                            self.square_packed_wide(lambda)
+                        } else {
+                            self.mul_vpclmul(lambda, lambda)
+                        },
+                        lambda,
+                    ),
                     _mm256_loadu_si256(offset.as_ptr() as *const __m256i),
                 );
                 let mut xs = [0u64; 4];
@@ -1304,7 +1390,7 @@ mod simd256 {
         }
 
         #[target_feature(enable = "avx2,pclmulqdq")]
-        unsafe fn add_cached_narrow(
+        unsafe fn add_cached_narrow<const PACKED: bool>(
             &self,
             curve: &FastCurve,
             ps: &[FastPoint],
@@ -1339,7 +1425,14 @@ mod simd256 {
                     _mm256_loadu_si256(inv.as_ptr() as *const __m256i),
                 );
                 let x = _mm256_xor_si256(
-                    _mm256_xor_si256(self.mul_pclmul128(lambda, lambda), lambda),
+                    _mm256_xor_si256(
+                        if PACKED {
+                            self.square_packed_narrow(lambda)
+                        } else {
+                            self.mul_pclmul128(lambda, lambda)
+                        },
+                        lambda,
+                    ),
                     _mm256_loadu_si256(offset.as_ptr() as *const __m256i),
                 );
                 let mut xs = [0u64; 4];
@@ -2068,6 +2161,19 @@ mod tests {
                 let got = kernel.mul4(&a, &b, false);
                 let narrow = kernel.mul4(&a, &b, true);
                 assert_eq!(got, narrow, "native/narrow n={n}");
+                let squares = kernel.square4(&a, false);
+                assert_eq!(
+                    squares,
+                    kernel.square4(&a, true),
+                    "native/narrow square n={n}"
+                );
+                for lane in 0..4 {
+                    assert_eq!(
+                        squares[lane],
+                        field.mul(a[lane], a[lane]),
+                        "square n={n}, lane={lane}"
+                    );
+                }
                 for lane in 0..4 {
                     assert_eq!(got[lane], field.mul(a[lane], b[lane]), "n={n}, lane={lane}");
                 }
@@ -2127,6 +2233,18 @@ mod tests {
                 .unwrap();
             assert_eq!(vector, expected, "vector cached / exact fallback n={n}");
             assert!(count <= ps.len());
+            let mut packed = Vec::new();
+            let packed_count = fc
+                .add_pairwise_abscissae_vector_packed_cached(
+                    &ps,
+                    &qs,
+                    &mut packed,
+                    &mut scratch,
+                    &cache,
+                )
+                .unwrap();
+            assert_eq!(packed, expected, "packed square / exact fallback n={n}");
+            assert_eq!(packed_count, count);
 
             assert!(PrefixInverseTable::new(&fc.field, 0).is_err());
             assert!(PrefixInverseTable::new(&fc.field, 13).is_err());
