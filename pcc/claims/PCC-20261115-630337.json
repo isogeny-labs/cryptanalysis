@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-15T16:11:21Z",
+ "id": "PCC-20261115-630337",
+ "kind": "theorem",
+ "producer": {
+  "commit": "d06ab02f010c42bcd1ff036821676deb1317d3d2",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "94a1121f5aa092ba3e636db5d1135f25bb6e801db1a460009e46d9802507b7ee",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/original-relation-rank-01/lean/RelationKernel.lean",
+   "theorem": "RelationKernel.scale_kernel_iff"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Conditional finite row algebra over an arbitrary commutative ring with explicit unit inverse for scale and distinct source/destination rows; actual finite column dot, literal swap/scale/add interpreter and finite sequence kernel equivalence. One-free-column result assumes the explicit RREF coordinate equations and one invertible anchor. Ratio theorem assumes genuine additive/scalar character and allthree computed-value/model bridges, not supplied by a candidate kernel. Both unchanged original434/435 gates auditall27 declarations/nine named substantive roots/eighteen generated equation-congruence-injectivity-sizeOf theorems, zero trusted, standardfoundations only. Numeric360certificates are independent Rust replays, NOT concrete Lean specializations; finite Picard/norm/program/global-character bridges explicit; unsigned local statements, no novelty/cost/global/signed standing.",
+ "statement": "theorem scale_kernel_iff {I C K : Type} [DecidableEq I] [CommRing K] (columns : List C) (M : I \u2192 C \u2192 K) (z : C \u2192 K) (a : I) (u v : K) (unit : u * v = 1) : Kernel columns (scaleRow M a u) z \u2194 Kernel columns M z"
+}

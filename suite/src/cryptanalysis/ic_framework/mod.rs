@@ -62,11 +62,14 @@
 //! worked example of adding a solver, how to run a sweep, and how to
 //! report what comes out.
 
+pub mod affine;
+pub mod batch_mitm;
 pub mod hashed;
 pub mod linalg;
 pub mod plugins;
 pub mod solvers;
 pub mod stages;
+pub(crate) mod u32_reciprocal;
 
 use std::time::Instant;
 
@@ -90,7 +93,7 @@ pub struct PipelineSpec {
     pub solver: Option<String>,
     pub solver_params: Params,
     pub targets: Targets,
-    /// The relation matrix: `incremental-gauss` or `structured-gauss`.
+    /// Relation matrix name; `incremental-gauss-u32` opts into bounded reciprocal products.
     pub linalg: String,
     /// Cap on targets drawn before the run gives up.
     pub max_trials: u64,
@@ -234,6 +237,11 @@ pub struct RunReport {
     pub rho_s: Option<f64>,
     pub s_over_rho: Option<f64>,
     pub wall_seconds: f64,
+    /// Matrix construction through collector return and explicit matrix cleanup.
+    /// Excludes reusable base/oracle preparation and report serialization.
+    /// This is the one-target online computation window only when the oracle's
+    /// preparation is target-independent; callers must audit that condition.
+    pub collector_wall_seconds: f64,
     /// Set when the run did not recover the logarithm within
     /// `max_trials`.  A configuration that fails is reported, not
     /// dropped: the sweep column that matters most is often which
@@ -284,6 +292,7 @@ pub fn run_pipeline<G: CountedGroup>(
     // the collision guards and the verification are the audited ones,
     // so a framework row is comparable with a ledger row rather than
     // merely similar to it.
+    let collector_started = Instant::now();
     let linalg_name = if spec.linalg.is_empty() {
         "incremental-gauss"
     } else {
@@ -293,6 +302,10 @@ pub fn run_pipeline<G: CountedGroup>(
     let source = match spec.targets {
         Targets::Random => TargetSource::Random,
         Targets::Walk => TargetSource::Walk,
+        Targets::WalkBatch => TargetSource::WalkBatch,
+        Targets::WalkBatchScalar => TargetSource::WalkBatchScalar,
+        Targets::WalkBatchVector => TargetSource::WalkBatchVector,
+        Targets::WalkBatchVectorInverse => TargetSource::WalkBatchVectorInverse,
     };
     let mut outcome: PipelineOutcome = collect_and_solve_with(
         ctx.group,
@@ -308,6 +321,10 @@ pub fn run_pipeline<G: CountedGroup>(
         matrix.as_mut(),
         |ops, counters, point| oracle.decompose(ctx, &fb, ops, counters, point),
     );
+
+    let (work, work_unit) = matrix.work();
+    drop(matrix);
+    let collector_wall_seconds = collector_started.elapsed().as_secs_f64();
 
     for (name, value) in oracle.relation_counters() {
         outcome.relations.count(&name, value);
@@ -380,8 +397,6 @@ pub fn run_pipeline<G: CountedGroup>(
     let sqrt_r = (ctx.r as f64).sqrt();
     let s = total_gae / sqrt_r;
 
-    let (work, work_unit) = matrix.work();
-
     Ok(RunReport {
         instance: ctx.name.clone(),
         log2_r: (ctx.r as f64).log2(),
@@ -427,6 +442,7 @@ pub fn run_pipeline<G: CountedGroup>(
         rho_s,
         s_over_rho: rho_s.map(|rho| s / rho),
         wall_seconds: started.elapsed().as_secs_f64(),
+        collector_wall_seconds,
         exhausted: outcome.recovered.is_none(),
     })
 }
@@ -725,6 +741,9 @@ mod tests {
             .as_ref()
             .expect("an algebraic oracle reports its solver");
         assert_eq!(solver.name, "buchberger-f2");
+        let descent_ns = report.decomposition.cost.get("symbolic_descent_ns");
+        assert!(descent_ns > 0, "symbolic construction must be charged");
+        assert!(report.decomposition.cost.gae >= solver.gae + calib.gae(descent_ns, 1.0));
         assert!(solver.calls >= 1, "the solver was never called");
         assert_eq!(solver.priced_by, "measured");
         assert!(
@@ -1045,6 +1064,28 @@ mod tests {
             None,
         )
         .unwrap();
+
+        spec.linalg = "incremental-gauss-u32".into();
+        let mut oracle = MitmOracle::new(2);
+        let reciprocal = run_pipeline(
+            &ctx,
+            &spec,
+            &base,
+            &mut oracle,
+            planted,
+            &Calibration::default(),
+            None,
+        )
+        .unwrap();
+        assert!(reciprocal.verified);
+        assert_eq!(dense.recovered, reciprocal.recovered);
+        assert_eq!(dense.linear_algebra.rank, reciprocal.linear_algebra.rank);
+        assert_eq!(dense.linear_algebra.rows, reciprocal.linear_algebra.rows);
+        assert_eq!(dense.linear_algebra.work, reciprocal.linear_algebra.work);
+        assert_eq!(
+            dense.decomposition.cost.group_ops,
+            reciprocal.decomposition.cost.group_ops
+        );
 
         spec.linalg = "structured-gauss".into();
         let mut oracle = MitmOracle::new(2);

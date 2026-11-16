@@ -1,0 +1,58 @@
+{
+  "at": "2026-11-15T12:54:08.820624+00:00",
+  "compile_command": [
+    "/home/agent/.cargo/bin/rustc",
+    "--edition=2021",
+    "-O",
+    "/workspace/scratch/ct97_summarize_original_sampler_01.rs",
+    "--extern",
+    "serde_json=/workspace/scratch/ct80-twisted-pair-build-01-cache/release/deps/libserde_json-3a52710eb48b06f0.rlib",
+    "-L",
+    "dependency=/workspace/scratch/ct80-twisted-pair-build-01-cache/release/deps",
+    "-o",
+    "/workspace/scratch/ct97-original-sampler-result-analysis-01/actual-summary.bin"
+  ],
+  "run_command": [
+    "/workspace/scratch/ct97-original-sampler-result-analysis-01/actual-summary.bin",
+    "/workspace/scratch/ct97-original-fixed-model-sampler-native-01/all-whole-compared.json",
+    "/workspace/scratch/ct97-original-sampler-result-analysis-01/complete-record-diagnostics.json"
+  ],
+  "original_serde_artifact": {
+    "reason": "compiler-artifact",
+    "package_id": "registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.145",
+    "manifest_path": "/home/agent/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_json-1.0.145/Cargo.toml",
+    "target": {
+      "kind": [
+        "lib"
+      ],
+      "crate_types": [
+        "lib"
+      ],
+      "name": "serde_json",
+      "src_path": "/home/agent/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_json-1.0.145/src/lib.rs",
+      "edition": "2021",
+      "doc": true,
+      "doctest": true,
+      "test": true
+    },
+    "profile": {
+      "opt_level": "3",
+      "debuginfo": 0,
+      "debug_assertions": false,
+      "overflow_checks": false,
+      "test": false
+    },
+    "features": [
+      "default",
+      "std"
+    ],
+    "filenames": [
+      "/workspace/scratch/ct80-twisted-pair-build-01-cache/release/deps/libserde_json-3a52710eb48b06f0.rlib",
+      "/workspace/scratch/ct80-twisted-pair-build-01-cache/release/deps/libserde_json-3a52710eb48b06f0.rmeta"
+    ],
+    "executable": null,
+    "fresh": true
+  },
+  "actual_summary_sha256": "169c1f3c3d0843da3a378e86d6182dae77b0368c0a71f38d1e85e4a2d3c87a22",
+  "scope": "Rust whole-record aggregation/projection comparison only; no data trimmed"
+}

@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-13T02:11:51Z",
+ "id": "PCC-20261113-07b234",
+ "kind": "theorem",
+ "producer": {
+  "commit": "635bd2d2b57af89fb474039db6fcba72631bf681",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "4865d0ccf88947c83bffd1ea748fb332642221f802e04b023b006a0fe072736e",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-reference/fp-chain-checker/lean/ChainAdapter.lean",
+   "theorem": "PrimeFieldChain.actual_repeated_finite_fibre"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Fixed C0/T20 adapter:actual characteristic101 coefficients and conditional finite-group norm uniqueness/two-way inverse with nonuniform104/85. Actual curves/Picard/completion/reducer/chain normalizations and joint norm injectivity remain explicit written/native bridges;no global inverse isogeny/full formal geometry/scientific signature.",
+ "statement": "theorem actual_repeated_finite_fibre {K : Type} [CommRing K] (z : K) (characteristic : (101 : K)=0) : (z^2+2)-2=z^2 \u2227 z^6+6*z^4+13*z^2+56-37^2=z^2*(z^4+6*z^2+13) \u2227 (37 : K)^2=2^3+2+46 \u2227 (-37 : K)^2=2^3+2+46"
+}

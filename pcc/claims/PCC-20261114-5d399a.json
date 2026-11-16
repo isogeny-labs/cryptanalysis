@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-14T21:33:02Z",
+ "id": "PCC-20261114-5d399a",
+ "kind": "theorem",
+ "producer": {
+  "commit": "3fad107ab8112fff57febb89a287ca21b508d8a4",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "320e9b9e11a037a45eb9a62a0db03bd8eab7f48df3d50a0f0b061acdc26ab043",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/twisted-pair-preflight/lean/TwistingFactor.lean",
+   "theorem": "TwistingFactor.factor_equals_symmetric_determinant"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Ring model of primary HLP expression with explicit inverse witnesses: scaled denominator inverse, full factor homogeneity and equality to actual symmetric determinant polynomial under pair-product inverse hypotheses. BOTH original434/435gates3roots0trusted. Actual field encoding, provided inverses/constructor input matching/geometric quotient and Rust program remain bridges; no native new-source/model result or signed/novelty/performance standing.",
+ "statement": "theorem factor_equals_symmetric_determinant {R : Type} [CommRing R] (h0 h1 h2 a b c inverseD0 inverseD1 inverseD2 : R) (inverse0 : (h1*h2)*inverseD0=1) (inverse1 : (h0*h2)*inverseD1=1) (inverse2 : (h0*h1)*inverseD2=1) : factor (-(h0*h1*h2)) a b c inverseD0 inverseD1 inverseD2 = h0*h1*h2-h0*a^2-h1*b^2-h2*c^2-2*a*b*c"
+}

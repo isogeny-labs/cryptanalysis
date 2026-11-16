@@ -1,0 +1,30 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-14T05:55:10Z",
+ "id": "PCC-20261114-ff7f2c",
+ "kind": "statement",
+ "producer": {
+  "commit": "584ba997263904cc2b0f35f4dc1a2b5563eabb2a",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/arithmetic-audit-staged-workflow-preflight-02/observed.json",
+    "sha256": "7367bfcf09d47c244792570706d903d151ac75fa7be15201049d7d0a43b0da9d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/arithmetic-audit-source-governance-02/original-command.py",
+    "sha256": "6e92f51dd90943753d48d9b8ee18161e46c72a7dd70af8dc2e661191027005d2"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Sourcegov02 hashchecksoriginal784/new21 pass, thencallerassumedemptyworkflowdiff despiteintentionalnew18thfilealreadySTAGED bygov01. ExactdiffONLYnewchained-transfer-arithmetic-audit.yml; tools/suite/scripts andold17workflows unchanged. Preservefailure/caller; prospectivecorrectcheck requiresEXACTnewworkflowdiff plusnotools-scriptsdiff andfrozen784hashes;freshgov03rerunsallchecks. No source/verifier/acceptance relaxation orscientificfailure."
+}

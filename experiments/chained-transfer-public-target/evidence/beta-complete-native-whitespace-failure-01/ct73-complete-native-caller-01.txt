@@ -1,0 +1,19 @@
+norm784 0
+arithmetic22 0
+beta-reference 0
+ledger 0
+prose 0
+whitespace 0
+actionlint 0
+wiring 0
+benchrec 0
+reportPython 0
+cached-whitespace 2
+Traceback (most recent call last):
+  File "/workspace/scratch/ct73_commit_checkpoint.py", line 27, in <module>
+    stage();run('cached-whitespace',['git','diff','--cached','--check']);tree=subprocess.check_output(['git','write-tree'],cwd=r,text=True).strip();run('artifact',['python3','tools/artifacts/artifacts.py','check',base,tree])
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/ct73_commit_checkpoint.py", line 11, in run
+    q=subprocess.run(c,cwd=r,capture_output=True);raw=q.stdout+q.stderr;(g/(n+'.txt.xz'if len(raw)>60000 else n+'.txt')).write_bytes(lzma.compress(raw)if len(raw)>60000 else raw);(g/(n+'.exit')).write_text(str(q.returncode)+'\n');print(n,q.returncode,flush=True);assert q.returncode==0,raw[:2000]
+                                                                                                                                                                                                                                                                              ^^^^^^^^^^^^^^^
+AssertionError: b'experiments/chained-transfer-public-target/evidence/beta-complete-fibres-native-01/native.txt:152: new blank line at EOF.\n'

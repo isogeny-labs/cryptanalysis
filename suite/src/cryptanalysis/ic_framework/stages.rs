@@ -460,10 +460,9 @@ pub trait RelationSolver {
 
 /// **Stage 2 — where trial points come from.**
 ///
-/// Kept as a small enum rather than a trait: there are two designs that
-/// matter, the repository has measured both, and the difference between
-/// them is a documented result (§10.2 and §11.1 of the ledger note)
-/// rather than an extension point.
+/// The incumbent random and guarded-walk policies retain their historical
+/// behavior. The opt-in sixteen-state schedule has a scalar arithmetic control;
+/// it is a separate query law and must be compared on fresh frozen workloads.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize)]
 pub enum Targets {
     /// A fresh `[a]G + [b]Q` per trial: two scalar multiplications.
@@ -472,6 +471,14 @@ pub enum Targets {
     /// An r-adding walk: one group addition per trial, with the guard
     /// that no target is presented twice.
     Walk,
+    /// Guarded states of one target with native pairwise advancement.
+    WalkBatch,
+    /// Same sixteen-state schedule using scalar additions, for comparison.
+    WalkBatchScalar,
+    /// Identical schedule with vector full-point formulas after batch inversion.
+    WalkBatchVector,
+    /// Same full points with SIMD products in the shared inverse.
+    WalkBatchVectorInverse,
 }
 
 impl Targets {
@@ -479,6 +486,10 @@ impl Targets {
         match self {
             Targets::Random => "random",
             Targets::Walk => "walk",
+            Targets::WalkBatch => "walk-batch16",
+            Targets::WalkBatchScalar => "walk-batch16-scalar",
+            Targets::WalkBatchVector => "walk-batch16-vector",
+            Targets::WalkBatchVectorInverse => "walk-batch16-vector-inverse",
         }
     }
 
@@ -486,8 +497,12 @@ impl Targets {
         match s {
             "random" => Ok(Targets::Random),
             "walk" => Ok(Targets::Walk),
+            "walk-batch16" => Ok(Targets::WalkBatch),
+            "walk-batch16-scalar" => Ok(Targets::WalkBatchScalar),
+            "walk-batch16-vector" => Ok(Targets::WalkBatchVector),
+            "walk-batch16-vector-inverse" => Ok(Targets::WalkBatchVectorInverse),
             other => Err(format!(
-                "unknown target source `{other}`; try random or walk"
+                "unknown target source `{other}`; try random, walk, walk-batch16, walk-batch16-scalar, walk-batch16-vector or walk-batch16-vector-inverse"
             )),
         }
     }

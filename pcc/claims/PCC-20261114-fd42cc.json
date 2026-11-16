@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-14T22:03:08Z",
+ "id": "PCC-20261114-fd42cc",
+ "kind": "theorem",
+ "producer": {
+  "commit": "0db58cf0b8d8f8c3ea8536433d537bc9415916ac",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "0f5658cde1549d352cf4f9f8fb2afd6f935566fe588e78b77866794cea7067b6",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/twisted-pair-preflight/lean/OldPrimeObstruction.lean",
+   "theorem": "OldPrimeObstruction.coprime_annihilators"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Abstract IntModule annihilator/Bezout argument and exact NATURAL gcd of originalell2773073 versus new twisted-source order11086844. Proves target point zero if both integers annihilate it. BOTH original434/435gates3roots0trusted. Actual fixed Jacobian cardinality/annihilator requires HLP-Frobenius/isogeny-cardinality/Lagrange/field/program bridges; no unconditional encoded-Jacobian or general cryptographic reduction impossibility claim. All exact localbindings unsigned.",
+ "statement": "theorem coprime_annihilators {A : Type} [IntModule A] (a : A) (p n u v : Int) (relation : u*p+v*n=1) (primeAnnihilator : p \u2022 a=0) (targetAnnihilator : n \u2022 a=0) : a=0"
+}

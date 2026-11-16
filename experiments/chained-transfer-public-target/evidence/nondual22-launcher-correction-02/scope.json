@@ -1,0 +1,18 @@
+{
+  "first_failed_CI": "12665d, source6c9c251f, wholelog/ZIP retained",
+  "fix": "absolute resolved $ci/check.sh copy after cd; no source path depends on relative argv0",
+  "reproducer": {
+    "before": {
+      "exit": 1,
+      "copied": false
+    },
+    "after": {
+      "exit": 0,
+      "copied": true
+    }
+  },
+  "reproducer_scope": "minimal exact relative-copy behavior, not full mathematical replay",
+  "guard": "newreference02; original975-row reference01 unchanged, plus its digest and updated driver hash; original929/prior21/mathmatrix/fixturebytes/limits unchanged",
+  "full_replay": "NOT RUN",
+  "CI_corrected_head": "NOT RUN"
+}
