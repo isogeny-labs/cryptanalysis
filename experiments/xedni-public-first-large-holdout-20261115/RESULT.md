@@ -40,6 +40,8 @@ The direct Lean theorem `XedniPublicFirstLargeHoldout.family_event_count` in `fo
 
 The formal package pins Lean `v4.35.0-rc4` and Mathlib `021c46bdd042f67b538b9f9871d556a93713a9a9`. `cd experiments/xedni-public-first-large-holdout-20261115/formal && lake build FamilyCount` completed successfully (9,041 jobs); `#print axioms family_event_count` reported only `propext`, `Classical.choice`, and `Quot.sound`. `lean4checker --fresh` was unavailable on this host.
 
+The stronger checked declaration `XedniPublicFirstLargeHoldout.family_hit_pair_count` proves the same cardinality for **distinct public offset pairs** when every pair of distinct coefficient indices has nonzero determinant. Its dependency `eventToHitPair_injective` uses `distinct_directions_force_zero` and the admitted-pair rule to rule out two vectors sharing a pair. Both new declarations built successfully and their `#print axioms` output lists only the same three standard foundations. The particular panel values remain an independently checked finite premise in the post-analysis.
+
 The pinned Lean proof in `../xedni-vector-dependent-rank-one-lift-20261115/formal/VectorDependentRankOneLift.lean` proves the public-group rank-one preimage equivalence, the Bézout inverse on a `q`-torsion group, the rational rank-one relation, and the fixed finite model's ellipticity at every prime not dividing `1664`. Every prime in this larger panel meets that condition. Its exact source hash is frozen in `protocol.json`. The producer and independent Sage audit each checked finite-curve and rational-curve nonsingularity, point reductions, the group relation, and scalar replay. The formal good-reduction point map remains the next proof bridge.
 
 ## Independent replay and amendment

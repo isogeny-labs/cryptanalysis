@@ -90,11 +90,15 @@ def main():
     assert (formal/'lean-toolchain').read_text().strip()=='leanprover/lean4:v4.35.0-rc4'
     assert '021c46bdd042f67b538b9f9871d556a93713a9a9' in (formal/'lakefile.toml').read_text()
     proof=(formal/'FamilyCount.lean').read_text()
-    assert 'theorem family_event_count' in proof and 'admissible_hit_count' in proof
+    assert all(s in proof for s in ('theorem family_event_count','theorem eventToHitPair_injective',
+                                   'theorem family_hit_pair_count','admissible_hit_count',
+                                   'distinct_directions_force_zero'))
     assert not any(token in proof for token in ('sorry', 'admit', 'sorryAx', 'native_decide'))
     build=(formal/'build-output.txt').read_text()
     assert 'Build completed successfully (9041 jobs)' in build
     assert "'XedniPublicFirstLargeHoldout.family_event_count' depends on axioms: [propext, Classical.choice, Quot.sound]" in build
+    for name in ('eventToHitPair_injective','family_hit_pair_count'):
+        assert f"'XedniPublicFirstLargeHoldout.{name}' depends on axioms: [propext, Classical.choice, Quot.sound]" in build
     for old,row in zip(result['fields'],post['rows'],strict=True):
         q=old['subgroup_order']
         assert row['field_prime']==old['field_prime'] and row['subgroup_order']==q
