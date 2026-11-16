@@ -899,11 +899,105 @@ impl IncrementalGauss {
 
 /// The little a collision search and a relation loop need from a group,
 /// with every operation charged to a ledger.
+/// Reusable storage owned by a counted pair-addition caller. Generic groups
+/// ignore the backend buffers; the binary backend reuses them across batches.
+#[derive(Default)]
+pub struct GroupPairScratch {
+    binary: crate::cryptanalysis::koblitz_fast::BatchScratch,
+}
+
+mod batched_walk;
+
+/// One bounded diagnostic state, before the collector's matrix consumes it.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct WalkBatchFrame<E> {
+    pub point: E,
+    pub a: u64,
+    pub b: u64,
+    pub lane: usize,
+    pub identity: bool,
+    pub repeated: bool,
+    pub forced_restart: bool,
+}
+
+pub struct WalkBatchAudit<E> {
+    pub frames: Vec<WalkBatchFrame<E>>,
+    pub group_ops: GroupOps,
+    pub counters: std::collections::BTreeMap<String, u64>,
+}
+
+/// Bounded correctness trace of the new schedule, never a relation-yield sample.
+/// `forced_every=0` disables the controlled restart injection. The real collector
+/// shares the walker and identity/duplicate rules but never forces this cadence.
+#[allow(clippy::too_many_arguments)]
+pub fn trace_batched_walk<G: CountedGroup>(
+    g: &G,
+    generator: G::Elt,
+    target: G::Elt,
+    r: u64,
+    seed: u64,
+    cap: u64,
+    native: bool,
+    pool: RestartPool,
+    forced_every: u64,
+) -> WalkBatchAudit<G::Elt> {
+    assert!(cap <= 4096, "diagnostic trace is bounded to4096 states");
+    let mut ops = GroupOps::default();
+    let mut walker = batched_walk::BatchedWalker::new(
+        g, generator, target, r, seed, cap, native, pool, &mut ops,
+    );
+    let mut seen = fast_map(cap as usize);
+    let mut frames = Vec::with_capacity(cap as usize);
+    while let Some((point, a, b, lane)) = walker.next(g, &mut ops) {
+        let identity = g.is_identity(&point);
+        let repeated = !identity && seen.insert(g.key(&point), ()).is_some();
+        let forced_restart =
+            forced_every != 0 && (frames.len() as u64 + 1).is_multiple_of(forced_every);
+        if identity || repeated || forced_restart {
+            walker.restart(lane);
+        }
+        frames.push(WalkBatchFrame {
+            point,
+            a,
+            b,
+            lane,
+            identity,
+            repeated,
+            forced_restart,
+        });
+    }
+    WalkBatchAudit {
+        frames,
+        group_ops: ops,
+        counters: walker
+            .counters(g)
+            .into_iter()
+            .map(|(k, v)| (k.to_string(), v))
+            .collect(),
+    }
+}
+
 pub trait CountedGroup {
     type Elt: Copy + PartialEq + std::fmt::Debug;
     fn identity(&self) -> Self::Elt;
     fn is_identity(&self, p: &Self::Elt) -> bool;
     fn add(&self, ops: &mut GroupOps, p: Self::Elt, q: Self::Elt) -> Self::Elt;
+    /// One counted addition per pair, with a complete scalar default.
+    fn add_pairwise(
+        &self,
+        ops: &mut GroupOps,
+        ps: &[Self::Elt],
+        qs: &[Self::Elt],
+        out: &mut Vec<Self::Elt>,
+        _scratch: &mut GroupPairScratch,
+    ) {
+        assert_eq!(ps.len(), qs.len());
+        out.clear();
+        out.extend(ps.iter().zip(qs).map(|(&p, &q)| self.add(ops, p, q)));
+    }
+    fn has_native_pairwise(&self) -> bool {
+        false
+    }
     fn double(&self, ops: &mut GroupOps, p: Self::Elt) -> Self::Elt;
     fn neg(&self, p: Self::Elt) -> Self::Elt;
     /// A key that identifies the element (both walks must agree on it).
@@ -2671,6 +2765,22 @@ impl CountedGroup for BinaryGroup<'_> {
         ops.adds += 1;
         self.0.add(p, q)
     }
+    fn add_pairwise(
+        &self,
+        ops: &mut GroupOps,
+        ps: &[FastPoint],
+        qs: &[FastPoint],
+        out: &mut Vec<FastPoint>,
+        scratch: &mut GroupPairScratch,
+    ) {
+        assert_eq!(ps.len(), qs.len());
+        out.clear();
+        ops.adds += ps.len() as u64;
+        self.0.add_pairwise(ps, qs, out, &mut scratch.binary);
+    }
+    fn has_native_pairwise(&self) -> bool {
+        true
+    }
     fn double(&self, ops: &mut GroupOps, p: FastPoint) -> FastPoint {
         ops.doubles += 1;
         self.0.double(p)
@@ -4066,6 +4176,10 @@ pub enum TargetSource {
     /// every segment and no guard, so segments merge as rho's walks do.
     /// For the diagnostic of §10.2 only.
     WalkSharedJumps,
+    /// Sixteen guarded states for this same target, with native pair additions.
+    WalkBatch,
+    /// Exact same schedule using scalar additions; an arithmetic control.
+    WalkBatchScalar,
 }
 
 impl TargetSource {
@@ -4075,10 +4189,24 @@ impl TargetSource {
             TargetSource::RandomUnguarded => "random_unguarded",
             TargetSource::Walk => "walk",
             TargetSource::WalkSharedJumps => "walk_shared_jumps",
+            TargetSource::WalkBatch => "walk_batch16",
+            TargetSource::WalkBatchScalar => "walk_batch16_scalar",
         }
     }
     pub fn is_walk(&self) -> bool {
-        matches!(self, TargetSource::Walk | TargetSource::WalkSharedJumps)
+        matches!(
+            self,
+            TargetSource::Walk
+                | TargetSource::WalkSharedJumps
+                | TargetSource::WalkBatch
+                | TargetSource::WalkBatchScalar
+        )
+    }
+    pub fn is_batched(&self) -> bool {
+        matches!(
+            self,
+            TargetSource::WalkBatch | TargetSource::WalkBatchScalar
+        )
     }
     /// **Whether a target the run has already decomposed is skipped.**
     ///
@@ -4093,7 +4221,13 @@ impl TargetSource {
     /// search nothing.  The guard is one hash insert per target, counted
     /// and priced as a lookup.
     pub fn is_guarded(&self) -> bool {
-        matches!(self, TargetSource::Random | TargetSource::Walk)
+        matches!(
+            self,
+            TargetSource::Random
+                | TargetSource::Walk
+                | TargetSource::WalkBatch
+                | TargetSource::WalkBatchScalar
+        )
     }
 }
 
@@ -4289,7 +4423,7 @@ pub fn collect_and_solve_with<G: CountedGroup, L: RelationSolver + ?Sized>(
     let mut seen: FastMap<()> = fast_map(if guarded { 1 << 12 } else { 0 });
     let (mut walk_steps, mut walk_restarts, mut repeats_skipped, mut guard_probes, mut walk_jumps) =
         (0u64, 0u64, 0u64, 0u64, 0u64);
-    if targets.is_walk() {
+    if targets.is_walk() && !targets.is_batched() {
         jumps = draw_jumps(
             g,
             generator,
@@ -4316,7 +4450,21 @@ pub fn collect_and_solve_with<G: CountedGroup, L: RelationSolver + ?Sized>(
         }
     }
 
+    let mut batch_walk = targets.is_batched().then(|| {
+        batched_walk::BatchedWalker::new(
+            g,
+            generator,
+            target,
+            r,
+            seed,
+            max_trials,
+            targets == TargetSource::WalkBatch,
+            pool_mode,
+            &mut rel.group_ops,
+        )
+    });
     while trials < max_trials {
+        let mut active_lane = None;
         let (point, a, b) = match targets {
             TargetSource::Random | TargetSource::RandomUnguarded => {
                 let a = rng.gen_range(1..r);
@@ -4325,6 +4473,19 @@ pub fn collect_and_solve_with<G: CountedGroup, L: RelationSolver + ?Sized>(
                 let bq = g.mul(&mut rel.group_ops, target, b);
                 let point = g.add(&mut rel.group_ops, ag, bq);
                 if g.is_identity(&point) {
+                    direct_skipped += 1;
+                    continue;
+                }
+                (point, a, b)
+            }
+            TargetSource::WalkBatch | TargetSource::WalkBatchScalar => {
+                let walker = batch_walk.as_mut().expect("batch source has state");
+                let Some((point, a, b, lane)) = walker.next(g, &mut rel.group_ops) else {
+                    break;
+                };
+                active_lane = Some(lane);
+                if g.is_identity(&point) {
+                    walker.restart(lane);
                     direct_skipped += 1;
                     continue;
                 }
@@ -4397,6 +4558,9 @@ pub fn collect_and_solve_with<G: CountedGroup, L: RelationSolver + ?Sized>(
             guard_probes += 1;
             if seen.insert(g.key(&point), ()).is_some() {
                 repeats_skipped += 1;
+                if let (Some(walker), Some(lane)) = (batch_walk.as_mut(), active_lane) {
+                    walker.restart(lane);
+                }
                 walk_fresh = true;
                 continue;
             }
@@ -4469,7 +4633,11 @@ pub fn collect_and_solve_with<G: CountedGroup, L: RelationSolver + ?Sized>(
     rel.count("direct_relations_skipped", direct_skipped);
     rel.count("repeated_targets_skipped", repeats_skipped);
     rel.count("target_guard_probes", guard_probes);
-    if targets.is_walk() {
+    if let Some(walker) = &batch_walk {
+        for (name, value) in walker.counters(g) {
+            rel.count(name, value);
+        }
+    } else if targets.is_walk() {
         rel.count("walk_jumps", walk_jumps + pool.len() as u64);
         rel.count("walk_pool_offsets", pool.len() as u64);
         rel.count("walk_pool_ops", pool_ops.adds + pool_ops.doubles);

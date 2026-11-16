@@ -237,6 +237,11 @@ pub struct RunReport {
     pub rho_s: Option<f64>,
     pub s_over_rho: Option<f64>,
     pub wall_seconds: f64,
+    /// Matrix construction through collector return and explicit matrix cleanup.
+    /// Excludes reusable base/oracle preparation and report serialization.
+    /// This is the one-target online computation window only when the oracle's
+    /// preparation is target-independent; callers must audit that condition.
+    pub collector_wall_seconds: f64,
     /// Set when the run did not recover the logarithm within
     /// `max_trials`.  A configuration that fails is reported, not
     /// dropped: the sweep column that matters most is often which
@@ -287,6 +292,7 @@ pub fn run_pipeline<G: CountedGroup>(
     // the collision guards and the verification are the audited ones,
     // so a framework row is comparable with a ledger row rather than
     // merely similar to it.
+    let collector_started = Instant::now();
     let linalg_name = if spec.linalg.is_empty() {
         "incremental-gauss"
     } else {
@@ -296,6 +302,8 @@ pub fn run_pipeline<G: CountedGroup>(
     let source = match spec.targets {
         Targets::Random => TargetSource::Random,
         Targets::Walk => TargetSource::Walk,
+        Targets::WalkBatch => TargetSource::WalkBatch,
+        Targets::WalkBatchScalar => TargetSource::WalkBatchScalar,
     };
     let mut outcome: PipelineOutcome = collect_and_solve_with(
         ctx.group,
@@ -311,6 +319,10 @@ pub fn run_pipeline<G: CountedGroup>(
         matrix.as_mut(),
         |ops, counters, point| oracle.decompose(ctx, &fb, ops, counters, point),
     );
+
+    let (work, work_unit) = matrix.work();
+    drop(matrix);
+    let collector_wall_seconds = collector_started.elapsed().as_secs_f64();
 
     for (name, value) in oracle.relation_counters() {
         outcome.relations.count(&name, value);
@@ -383,8 +395,6 @@ pub fn run_pipeline<G: CountedGroup>(
     let sqrt_r = (ctx.r as f64).sqrt();
     let s = total_gae / sqrt_r;
 
-    let (work, work_unit) = matrix.work();
-
     Ok(RunReport {
         instance: ctx.name.clone(),
         log2_r: (ctx.r as f64).log2(),
@@ -430,6 +440,7 @@ pub fn run_pipeline<G: CountedGroup>(
         rho_s,
         s_over_rho: rho_s.map(|rho| s / rho),
         wall_seconds: started.elapsed().as_secs_f64(),
+        collector_wall_seconds,
         exhausted: outcome.recovered.is_none(),
     })
 }

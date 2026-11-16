@@ -137,6 +137,7 @@ fn main() {
         | "mitm-prefix64"
         | "mitm-vector-packed"
         | "mitm-vector-packed64" => "mitm-prefix",
+        "mitm-walk-incumbent" | "mitm-walk16-scalar" | "mitm-walk16-native" => "mitm-prefix",
         "rho-plain-euclid" => "rho-plain",
         "rho-negation-euclid" => "rho-negation",
         "verify-table-euclid" => "verify-table",
@@ -281,7 +282,7 @@ fn main() {
         field_degree: Some(inst.n),
     };
     let started = Instant::now();
-    let calibration = if mode == "workload" {
+    let calibration = if matches!(mode, "workload" | "verify-walkbatch") {
         Default::default()
     } else if let Some(path) = args.get(5) {
         frozen_calibration(path, &inst.name)
@@ -309,7 +310,59 @@ fn main() {
         );
         return;
     }
+    if mode == "verify-walkbatch" {
+        use cryptanalysis_suite::cryptanalysis::ic_boundary::{trace_batched_walk, RestartPool};
+        let native = trace_batched_walk(
+            &group,
+            inst.generator,
+            target,
+            inst.r,
+            target_seed,
+            512,
+            true,
+            RestartPool::Lazy,
+            11,
+        );
+        let scalar = trace_batched_walk(
+            &group,
+            inst.generator,
+            target,
+            inst.r,
+            target_seed,
+            512,
+            false,
+            RestartPool::Lazy,
+            11,
+        );
+        let eager = trace_batched_walk(
+            &group,
+            inst.generator,
+            target,
+            inst.r,
+            target_seed,
+            512,
+            true,
+            RestartPool::Eager,
+            11,
+        );
+        assert_eq!(native.frames, scalar.frames);
+        assert_eq!(native.frames, eager.frames);
+        assert_eq!(native.group_ops, scalar.group_ops);
+        for frame in &native.frames {
+            let mut ops = GroupOps::default();
+            let ag = group.mul(&mut ops, inst.generator, frame.a);
+            let bq = group.mul(&mut ops, target, frame.b);
+            assert_eq!(frame.point, group.add(&mut ops, ag, bq));
+        }
+        let frames: Vec<_> = native.frames.iter().map(|f|json!({"infinity":f.point.infinity,"x":f.point.x,"y":f.point.y,"a":f.a,"b":f.b,"lane":f.lane,"identity":f.identity,"repeated":f.repeated,"forced_restart":f.forced_restart})).collect();
+        println!(
+            "{}",
+            json!({"status":"pass","curve_id":inst.name,"fixture":fixture,"target":[target.x,target.y],"planted":planted,"target_seed":target_seed,"checks":frames.len(),"complete_stream_comparisons":2,"forced_restart_every":11,"native_counters":native.counters,"scalar_counters":scalar.counters,"group_ops":native.group_ops,"has_clmul":inst.gf.has_clmul(),"frames":frames})
+        );
+        return;
+    }
     if matches!(mode, "rho-plain" | "rho-negation") {
+        let reference_started = Instant::now();
         let result = if mode == "rho-plain" {
             rho_reference(
                 &group,
@@ -329,9 +382,10 @@ fn main() {
                 2_000_000,
             )
         };
+        let reference_compute_through_cleanup_ns = reference_started.elapsed().as_nanos() as u64;
         println!(
             "{}",
-            json!({"curve_id":inst.name,"fixture":fixture,"planted":planted,"target":[target.x,target.y],"target_seed":target_seed,"context_ns":context_ns,"calibration_ns":calibration_ns,"calibration":calibration,"solver":result,"rho_kind":mode,"euclidean_inverse":inst.gf.uses_euclidean_inverse()})
+            json!({"curve_id":inst.name,"fixture":fixture,"planted":planted,"target":[target.x,target.y],"target_seed":target_seed,"context_ns":context_ns,"calibration_ns":calibration_ns,"calibration":calibration,"reference_compute_through_cleanup_ns":reference_compute_through_cleanup_ns,"solver":result,"rho_kind":mode,"euclidean_inverse":inst.gf.uses_euclidean_inverse()})
         );
         return;
     }
@@ -383,7 +437,11 @@ fn main() {
             _ => "affine-s3",
         }
         .into(),
-        targets: Targets::Walk,
+        targets: match requested_mode {
+            "mitm-walk16-native" => Targets::WalkBatch,
+            "mitm-walk16-scalar" => Targets::WalkBatchScalar,
+            _ => Targets::Walk,
+        },
         max_trials: record.get("max_trials").map(integer).unwrap_or(50_000),
         seed: target_seed,
         linalg: if matches!(requested_mode, "mitm-prefix-u32" | "mitm-euclid-u32") {
@@ -398,6 +456,13 @@ fn main() {
     spec.oracle_params.set(
         "batch_size",
         match requested_mode {
+            "mitm-walk-incumbent" | "mitm-walk16-scalar" | "mitm-walk16-native" => {
+                if inst.n <= 21 {
+                    "64"
+                } else {
+                    "1024"
+                }
+            }
             "mitm-vector64" | "mitm-prefix64" | "mitm-vector-packed64" => "64",
             "mitm-vector4096" => "4096",
             _ => "1024",
@@ -408,7 +473,12 @@ fn main() {
         "vector_prepare",
         if matches!(
             requested_mode,
-            "mitm-vector" | "mitm-vector64" | "mitm-vector4096"
+            "mitm-vector"
+                | "mitm-vector64"
+                | "mitm-vector4096"
+                | "mitm-walk-incumbent"
+                | "mitm-walk16-scalar"
+                | "mitm-walk16-native"
         ) {
             "1"
         } else if matches!(
@@ -469,6 +539,7 @@ fn main() {
         } else {
             Box::new(AffineS3Oracle::new(&inst))
         };
+    let computation_started = Instant::now();
     let report = run_pipeline(
         &ctx,
         &spec,
@@ -478,10 +549,12 @@ fn main() {
         &calibration,
         None,
     );
+    drop(oracle);
+    let computation_through_cleanup_ns = computation_started.elapsed().as_nanos() as u64;
     println!(
         "{}",
         json!({"curve_id":inst.name,"fixture":fixture,"planted":planted,"target":[target.x,target.y],
-        "target_seed":target_seed,"context_ns":context_ns,"calibration_ns":calibration_ns,
+        "target_seed":target_seed,"context_ns":context_ns,"calibration_ns":calibration_ns,"computation_through_cleanup_ns":computation_through_cleanup_ns,
         "calibration":calibration,"mode":requested_mode,"euclidean_inverse":inst.gf.uses_euclidean_inverse(),"report":report})
     );
 }

@@ -409,4 +409,99 @@ mod tests {
                 .is_err());
         }
     }
+    #[test]
+    fn batched_walk_pipeline_matches_scalar_schedule_and_counts_unused_work() {
+        let inst = random_binary_instance(11, 3, 8).unwrap();
+        let group = BinaryGroup(&inst.fast);
+        let planted = 1 + 30_011 % (inst.r - 1);
+        let target = group.mul(&mut GroupOps::default(), inst.generator, planted);
+        let ctx = InstanceCtx {
+            group: &group,
+            generator: inst.generator,
+            target,
+            r: inst.r,
+            cofactor: inst.cofactor,
+            group_order: inst.group_order,
+            name: inst.name.clone(),
+            field_degree: Some(inst.n),
+        };
+        let mut spec = PipelineSpec {
+            factor_base: "binary-subspace".into(),
+            oracle: "mitm-batched".into(),
+            targets: Targets::WalkBatch,
+            seed: 7,
+            max_trials: 200_000,
+            ..Default::default()
+        };
+        spec.factor_base_params.set("dimension", "5");
+        spec.oracle_params.set("vector_prepare", "1");
+        let calib = Calibration {
+            ns_per_add: 1.0,
+            ..Default::default()
+        };
+        let native = run_pipeline(
+            &ctx,
+            &spec,
+            &BinarySubspaceBase { instance: &inst },
+            &mut BinaryBatchMitmOracle::default(),
+            planted,
+            &calib,
+            None,
+        )
+        .unwrap();
+        spec.targets = Targets::WalkBatchScalar;
+        let scalar = run_pipeline(
+            &ctx,
+            &spec,
+            &BinarySubspaceBase { instance: &inst },
+            &mut BinaryBatchMitmOracle::default(),
+            planted,
+            &calib,
+            None,
+        )
+        .unwrap();
+        assert!(native.verified && scalar.verified);
+        assert_eq!(native.recovered, Some(planted));
+        assert_eq!(native.recovered, scalar.recovered);
+        assert_eq!(
+            native.decomposition.targets_tried,
+            scalar.decomposition.targets_tried
+        );
+        assert_eq!(
+            native.decomposition.relations_found,
+            scalar.decomposition.relations_found
+        );
+        assert_eq!(native.linear_algebra.rank, scalar.linear_algebra.rank);
+        assert_eq!(native.linear_algebra.rows, scalar.linear_algebra.rows);
+        assert_eq!(native.linear_algebra.work, scalar.linear_algebra.work);
+        assert_eq!(
+            native.decomposition.cost.group_ops,
+            scalar.decomposition.cost.group_ops
+        );
+        for (key, value) in &native.decomposition.cost.native {
+            if !matches!(
+                key.as_str(),
+                "walk_batch_native_requested" | "walk_batch_native_backend"
+            ) {
+                assert_eq!(
+                    Some(value),
+                    scalar.decomposition.cost.native.get(key),
+                    "{key}"
+                );
+            }
+        }
+        let cost = &native.decomposition.cost;
+        assert_eq!(
+            cost.get("walk_batch_generated"),
+            cost.get("walk_batch_consumed") + cost.get("walk_batch_unused")
+        );
+        assert!(cost.get("walk_batch_generated") <= spec.max_trials);
+        assert!(cost.get("walk_batch_pair_calls") > 0);
+        assert_eq!(cost.get("walk_batch_native_backend"), 1);
+        assert_eq!(
+            scalar.decomposition.cost.get("walk_batch_native_backend"),
+            0
+        );
+        assert!(native.collector_wall_seconds > 0.0);
+    }
 }
