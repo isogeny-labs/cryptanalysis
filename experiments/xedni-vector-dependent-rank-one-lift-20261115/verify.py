@@ -61,7 +61,8 @@ def main():
             assert re.search(forbidden,source) is None
     build=(formal/'build-output.txt').read_text()
     assert 'Build completed successfully (3157 jobs).' in build
-    names=('public_factorization','rank_one_relation','rational_rank_one_relation',
+    names=('public_factorization','public_relation_iff_rank_one',
+           'rank_one_relation','rational_rank_one_relation',
            'rank_one_reduction_commutes','rank_one_reduced_relation',
            'reduced_generator_equation','reducedGenerator_coordinates',
            'XedniAdaptiveInverseLift.rational_model','XedniAdaptiveInverseLift.reduction_model')

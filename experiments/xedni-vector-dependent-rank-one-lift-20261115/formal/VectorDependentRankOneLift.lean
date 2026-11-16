@@ -25,6 +25,28 @@ theorem rank_one_relation {A : Type*} [AddCommGroup A]
       rw [add_smul, smul_smul, smul_smul]
     _ = 0 := by rw [show a * b + b * (-a) = 0 by ring, zero_smul]
 
+/-- In a public group where multiplication by `b` is bijective, the public
+relation is exactly the condition for a common rank-one preimage. -/
+theorem public_relation_iff_rank_one {A : Type*} [AddCommGroup A]
+    (a b : ℤ) (U V : A)
+    (hb : Function.Bijective (fun T : A => b • T)) :
+    a • U + b • V = 0 ↔
+      ∃ T : A, b • T = U ∧ (-a) • T = V := by
+  constructor
+  · intro hrel
+    obtain ⟨T, hT⟩ := hb.2 U
+    refine ⟨T, hT, ?_⟩
+    have hrel' : b • (a • T + V) = 0 := by
+      calc
+        b • (a • T + V) = a • U + b • V := by
+          rw [smul_add, ← hT, smul_smul, smul_smul, mul_comm]
+        _ = 0 := hrel
+    have hzero : a • T + V = 0 := hb.1 (by simpa using hrel')
+    simpa only [neg_smul] using neg_eq_of_add_eq_zero_right hzero
+  · rintro ⟨T, hU, hV⟩
+    rw [← hU, ← hV]
+    exact rank_one_relation T a b
+
 /-- Apply the group identity to the explicitly constructed rational point. -/
 theorem rational_rank_one_relation (x y a b : ℤ) :
     a • (b • XedniAdaptiveInverseLift.liftPos x y) +
@@ -78,6 +100,7 @@ theorem reducedGenerator_coordinates (p : ℕ) [Nontrivial (ZMod p)]
   rfl
 
 #print axioms public_factorization
+#print axioms public_relation_iff_rank_one
 #print axioms rank_one_relation
 #print axioms rational_rank_one_relation
 #print axioms rank_one_reduction_commutes

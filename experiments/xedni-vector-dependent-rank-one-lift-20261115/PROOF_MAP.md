@@ -5,6 +5,7 @@ Lean `v4.35.0-rc4` and Mathlib `021c46bdd042f67b538b9f9871d556a93713a9a9` are pi
 | Result | Lean declaration | Exact hypotheses | Status |
 | --- | --- | --- | --- |
 | Public relation supplies one common scalar preimage | `XedniVectorDependentRankOneLift.public_factorization` | Field `K`; `b≠0`; `aU+bV=0` | Checked |
+| Public-group relation is equivalent to one common rank-one preimage | `XedniVectorDependentRankOneLift.public_relation_iff_rank_one` | Additive commutative group `A`; integers `a,b`; multiplication by `b` is bijective on `A`; public points `U,V` | Checked |
 | Rank-one multiples satisfy the coefficient relation | `XedniVectorDependentRankOneLift.rank_one_relation` | Any additive commutative group; integers `a,b`; common point `P` | Checked |
 | Rational point specialization | `XedniVectorDependentRankOneLift.rational_rank_one_relation` | Exact `liftPos x y` on `modelRat x y`; all integer `x,y,a,b` | Checked |
 | Reduction commutes with both constructed multiples | `XedniVectorDependentRankOneLift.rank_one_reduction_commutes` | Additive commutative groups `H,A`; additive homomorphism `ρ : H →+ A`; point `P`; integers `a,b` | Checked |
