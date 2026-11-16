@@ -3,7 +3,7 @@
 - **Status:** investigating; explicit replacement clocks required before fresh timing
 - **Kind:** measurement-boundary implementation gap
 - **Affected work:** PR1621, ic_affine_pipeline_probe comparisons using context_ns plus RunReport.wall_seconds
-- **Next action owner:** T-6450
+- **Next action owner:** T-6777 (implementation), T-6450 (broader effort)
 - **Last updated:** 2026-11-16
 
 ## Problem
@@ -65,3 +65,25 @@ complete computation through cleanup separately. Preserve every cap/control.
 claim20c68d is unsigned. Previous complete-cold descriptions are corrected by this
 record and the linked erratum; original results stay immutable. Implementation
 and fresh measured intervals remain pending.
+
+2026-11-16: Replacement clocks implemented at46fc2df00. Source claim1cef04
+records local clock/framework controls; claim58892e covers batched-walker source
+controls. collector_wall_seconds starts before matrix creation and ends after
+collect_and_solve_with returns and explicit matrix destruction. The collector's
+owned walker/seen buffers destruct before its return; its scalar group check is
+inside. BinarySubspaceBase preparation uses field/base/G metadata and MITM prepare
+uses ctx.group plus fb/params, with no Q read. This audit applies to that MITM
+route; it is not a guarantee for every possible oracle implementation.
+computation_through_cleanup_ns spans run_pipeline and explicit oracle destruction;
+it excludes prior spec/oracle-box construction, fixture/input/calibration and
+process startup. Context construction is separate; context destruction and report
+serialization are outside this diagnostic. It is not a complete-process timer.
+Rho reference_compute_through_cleanup_ns spans the reference call through owned
+buffer cleanup. All clocks remain unpriced diagnostics. [pcc:unverified]
+
+Fresh protocol ic-walk-batching-20261116/PROTOCOL.md published before new workloads.
+Source claimb92576 records25local framework tests and exact metadata controls;
+native preparation20261116-125049-f932 remains in progress, with fresh target timing
+and independent replay still required. Exit criteria remain open until their native
+receipts are inspected; previous records retain the narrower-window correction.
+[pcc:unverified]

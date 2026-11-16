@@ -71,7 +71,7 @@ def arm(index,mode,fixture,role):
  with (OUT/'arms.jsonl').open('a') as f:f.write(json.dumps(row)+'\n')
  return row
 def report(row):return row.get('result',{}).get('report',{}).get('Ok')
-def cold(row):
+def online(row):
  r=report(row);return None if r is None else r['collector_wall_seconds']
 def save():
  (OUT/'triples.json').write_text(json.dumps(triples,indent=2)+'\n')
@@ -138,15 +138,15 @@ try:
     triple['all_verified']=all(report(runs[m])['verified'] for m in MODES)
     frozen=json.loads((OUT/f'calibration-{index}.json').read_text())['calibration']
     triple['same_calibration']=all(r['calibration']==frozen for r in results) and references[-1].get('result',{}).get('calibration')==frozen
-    triple['raw_collector_ratios']={m:cold(runs['mitm-walk-incumbent'])/cold(runs[m]) for m in MODES[1:]}
+    triple['raw_collector_ratios']={m:online(runs['mitm-walk-incumbent'])/online(runs[m]) for m in MODES[1:]}
     a,b=(report(runs[m]) for m in MODES[1:])
     triple['same_schedule_counts']=all(a[s][k]==b[s][k] for s,k in [('decomposition','targets_tried'),('decomposition','relations_found'),('linear_algebra','rank'),('linear_algebra','rows'),('linear_algebra','dependent'),('linear_algebra','work')])
     phases=lambda r:[r['decomposition']['cost'],r['linear_algebra']['cost'],r['verify']]
     excluded={'walk_batch_native_requested','walk_batch_native_backend'}
     signature=lambda p:(p['group_ops'],{k:v for k,v in p.get('native',{}).items() if not k.endswith('_ns') and k not in excluded})
     triple['same_schedule_counts'] &= [signature(p) for p in phases(a)]==[signature(p) for p in phases(b)]
-   if cold(pre) is not None and cold(post) is not None:
-    aa=cold(pre)/cold(post);triple.update(calibration_ratio=aa,calibration_within_bound=.85<=aa<=1.15 and all(report(q)['verified'] and q['result']['calibration']==frozen for q in [pre,post]))
+   if online(pre) is not None and online(post) is not None:
+    aa=online(pre)/online(post);triple.update(calibration_ratio=aa,calibration_within_bound=.85<=aa<=1.15 and all(report(q)['verified'] and q['result']['calibration']==frozen for q in [pre,post]))
    triples.append(triple);save()
  summary={'status':'matrix_completed_unqualified','triples':len(triples),'references':len(references),'qualified':None}
 except Exception as e:summary={'status':'failed_or_capped','error':repr(e),'triples':len(triples),'references':len(references),'qualified':None}
