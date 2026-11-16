@@ -59,6 +59,17 @@ on the accepted minimum. Preserve the earlier Rust 1.78 rejection as history.
 
 ## Resolution and history
 
+2026-11-16, auxiliary IC integration of main `d9ee51f2`: SHA-2 0.11.1
+requires Rust 1.88 and refuses the selected 1.85 graph. Compatible 0.11.0 is
+pinned explicitly in the native tensor and curve-audit packages; affected
+consumer locks and both uses of the removed digest formatter are corrected.
+The [integration receipt](../experiments/prime-field-auxiliary-ic/random-vs-special/main-integration-20261116/README.md),
+claim `PCC-20261116-62ae45` (unverified), retains the actual lock/API/MSRV
+failures and a timed-out native library run. Selected native all-target 1.85
+checking passes on `f748c746`, and wrapper checking passes on `5b9f7050`;
+neither changes the declared floor or establishes full hosted qualification.
+[pcc:unverified]
+
 Not fully resolved. Initial main API failure, modern API correction and actual
 1.78 dependency rejection remain retained; historical receipts are unchanged.
 

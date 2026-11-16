@@ -1,5 +1,14 @@
 # Additive proof-metadata correction
 
+Current state after main integration `a175be78`: the active record adopts
+reviewed main's attestation metadata. The branch JSON-repair record is retained
+as `branch-json-repair-8d2645-20261116.json`, alongside its unchanged validator
+and all previous ledger events. The explicit adoption note and
+[integration receipt](../../experiments/prime-field-auxiliary-ic/random-vs-special/main-integration-20261116/README.md),
+claim `PCC-20261116-62ae45` (unverified), preserve both histories. The account
+below describes the earlier branch repair and its source-scoped hosted result;
+it does not describe a new verification or native rerun. [pcc:unverified]
+
 The original `PCC-20261115-8d2645` used two plain Cargo logs as `recompute`
 proofs. That proof kind requires a JSON validator report, so both files were
 rejected before their reported outcomes could be considered. Main `66890bbe`

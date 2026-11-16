@@ -48,6 +48,14 @@ signed verdict, rewrite earlier ledger events, suppress failures or skip CI.
 
 ## Resolution and history
 
+2026-11-16, reviewed main integration: the active record now uses main's
+attestation correction rather than the branch's intermediate JSON repair.
+The branch claim bytes, JSON validator, original text logs and every claim/note
+event remain, with an explicit adoption note. Both variants are unsigned and
+uncovered; historical hosted observations remain scoped to their old sources.
+See [the integration receipt](../experiments/prime-field-auxiliary-ic/random-vs-special/main-integration-20261116/README.md),
+claim `PCC-20261116-62ae45` (unverified). [pcc:unverified]
+
 2026-11-16: the active claim references an admitted JSON report; its statement,
 scope and producer are unchanged. The original claim and raw logs remain,
 and only new claim/correction-note events were appended. Local verification

@@ -20,6 +20,12 @@ the core interval, while upstream/cold costs and independent replay remain
 outside it. No fresh benchmark or runtime gain is established. Historical
 observations below retain their original source scopes. [pcc:unverified]
 
+The [current-main integration](main-integration-20261116/README.md), claim
+`PCC-20261116-62ae45` (unverified), retains both ledger correction histories
+and fixes the incoming SHA-2 API/lock/compiler-floor issues. Selected 1.85
+checks and focused controls pass; the earlier native-library timeout remains
+explicitly incomplete. It supplies no benchmark or timing gain. [pcc:unverified]
+
 Algorithm/CLI source `5e3a4202` adds `FactorBase::random_control`, separate base
 and relation-search seeds, preparation rejection counters, and CLI
 `--random-base-columns K`. It checks the generator order and derives the
