@@ -29,6 +29,7 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for BinaryBatchMitmOracle {
                 "batch_size",
                 "bounded ordered preparation chunk (1..=65536, default1024)",
             ),
+            ("prefix_inverse_cache", "0 or1, default0; implies x-only, bounded prefix inverse reuse or complete generic fallback"),
             (
                 "x_only",
                 "0 or1, default0; omit unused ordinates during preparation",
@@ -53,9 +54,19 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for BinaryBatchMitmOracle {
         if x_only > 1 {
             return Err("x_only must be0 or1".into());
         }
+        let prefix_cache = params.u64_or("prefix_inverse_cache", 0)?;
+        if prefix_cache > 1 {
+            return Err("prefix_inverse_cache must be0 or1".into());
+        }
         let start = Instant::now();
         self.table = Some(
-            (if x_only == 1 {
+            (if prefix_cache == 1 {
+                PairTable::build_negation_folded_binary_prefix_cached(
+                    ctx.group.0,
+                    fb,
+                    size as usize,
+                )
+            } else if x_only == 1 {
                 PairTable::build_negation_folded_binary_abscissae(ctx.group.0, fb, size as usize)
             } else {
                 PairTable::build_negation_folded_binary_batched(ctx.group.0, fb, size as usize)
@@ -68,7 +79,15 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for BinaryBatchMitmOracle {
         Ok(())
     }
     fn setup_native(&self) -> BTreeMap<String, u64> {
-        BTreeMap::from([("mitm_batch_setup_ns".into(), self.setup_ns)])
+        BTreeMap::from([
+            ("mitm_batch_setup_ns".into(), self.setup_ns),
+            (
+                "mitm_prefix_inverse_bytes".into(),
+                self.table
+                    .as_ref()
+                    .map_or(0, |t| t.prefix_inverse_bytes as u64),
+            ),
+        ])
     }
     fn decompose(
         &mut self,
@@ -162,6 +181,68 @@ mod tests {
             x_report.decomposition.setup.gae,
             x_report.decomposition.setup.get("mitm_batch_setup_ns") as f64
         );
+        spec.oracle_params.set("prefix_inverse_cache", "1");
+        let cached_report = run_pipeline(
+            &ctx,
+            &spec,
+            &BinarySubspaceBase { instance: &inst },
+            &mut BinaryBatchMitmOracle::default(),
+            planted,
+            &calib,
+            None,
+        )
+        .unwrap();
+        assert!(cached_report.verified);
+        assert_eq!(cached_report.recovered, Some(planted));
+        assert_eq!(
+            cached_report
+                .decomposition
+                .setup
+                .get("mitm_prefix_inverse_bytes"),
+            256
+        );
+        assert_eq!(
+            cached_report.decomposition.setup.group_ops,
+            GroupOps::default()
+        );
+        assert_eq!(
+            cached_report.decomposition.setup.gae,
+            cached_report.decomposition.setup.get("mitm_batch_setup_ns") as f64
+        );
+        assert_eq!(
+            cached_report.decomposition.targets_tried,
+            report.decomposition.targets_tried
+        );
+        assert_eq!(
+            cached_report.linear_algebra.rank,
+            report.linear_algebra.rank
+        );
+        spec.oracle = "mitm".into();
+        spec.oracle_params.set("negation_folded", "1");
+        spec.oracle_params.set("native_setup_pricing", "1");
+        let reference = run_pipeline(
+            &ctx,
+            &spec,
+            &BinarySubspaceBase { instance: &inst },
+            &mut crate::cryptanalysis::ic_framework::plugins::MitmOracle::new(2),
+            planted,
+            &calib,
+            None,
+        )
+        .unwrap();
+        assert!(reference.verified);
+        let setup = &reference.decomposition.setup;
+        assert_eq!(setup.group_ops, GroupOps::default());
+        assert_eq!(setup.gae, setup.get("mitm_native_setup_ns") as f64);
+        assert!(setup.get("mitm_setup_observed_adds") > 0);
+        assert_eq!(
+            reference.decomposition.targets_tried,
+            cached_report.decomposition.targets_tried
+        );
+        assert_eq!(
+            reference.linear_algebra.rank,
+            cached_report.linear_algebra.rank
+        );
         let empty = FactorBase::<FastPoint>::empty("empty validation base".into());
         let table = PairTable::build_negation_folded_binary_batched(&inst.fast, &empty, 7).unwrap();
         assert_eq!(table.entries, 0);
@@ -179,6 +260,7 @@ mod tests {
             ("batch_size", "0"),
             ("batch_size", "65537"),
             ("x_only", "2"),
+            ("prefix_inverse_cache", "2"),
         ] {
             let mut params = Params::default();
             params.set(key, value);

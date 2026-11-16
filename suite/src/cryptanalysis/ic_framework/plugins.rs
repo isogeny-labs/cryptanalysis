@@ -257,11 +257,16 @@ impl<G: CountedGroup> DecompositionOracle<G> for SubtractOracle {
 pub struct MitmOracle {
     m: u32,
     table: Option<PairTable>,
+    native_setup_ns: u64,
 }
 
 impl MitmOracle {
     pub fn new(m: u32) -> Self {
-        Self { m, table: None }
+        Self {
+            m,
+            table: None,
+            native_setup_ns: 0,
+        }
     }
 }
 
@@ -289,7 +294,7 @@ impl<G: CountedGroup> DecompositionOracle<G> for MitmOracle {
         &[(
             "negation_folded",
             "1 to build only one of each ±pair, halving the table's additions",
-        )]
+        ), ("native_setup_pricing", "0 or1, default0; price whole preparation in nanoseconds and retain additions as diagnostics")]
     }
 
     fn prepare(
@@ -299,15 +304,43 @@ impl<G: CountedGroup> DecompositionOracle<G> for MitmOracle {
         params: &Params,
         ops: &mut GroupOps,
     ) -> Result<(), String> {
+        let native = params.u64_or("native_setup_pricing", 0)?;
+        if native > 1 {
+            return Err("native_setup_pricing must be0 or1".into());
+        }
+        let started = Instant::now();
         let table = if params.flag("negation_folded") {
             PairTable::build_negation_folded(ctx.group, fb)
         } else {
             PairTable::build(ctx.group, fb)
         };
         // The table's construction is part of the pipeline's cost.
-        ops.merge(table.build_ops);
+        if native == 0 {
+            ops.merge(table.build_ops);
+        }
         self.table = Some(table);
+        self.native_setup_ns = if native == 1 {
+            started.elapsed().as_nanos() as u64
+        } else {
+            0
+        };
         Ok(())
+    }
+
+    fn setup_native(&self) -> std::collections::BTreeMap<String, u64> {
+        if self.native_setup_ns == 0 {
+            return Default::default();
+        }
+        let observed = self.table.as_ref().unwrap().build_ops;
+        std::collections::BTreeMap::from([
+            ("mitm_native_setup_ns".into(), self.native_setup_ns),
+            ("mitm_setup_observed_adds".into(), observed.adds),
+            ("mitm_setup_observed_doubles".into(), observed.doubles),
+            (
+                "mitm_setup_observed_scalar_mults".into(),
+                observed.scalar_mults,
+            ),
+        ])
     }
 
     fn decompose(

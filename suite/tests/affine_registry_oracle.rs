@@ -162,23 +162,36 @@ fn batched_mitm_preserves_all_registered_curve_witnesses() {
         let inst = instance(&record);
         let group = BinaryGroup(&inst.fast);
         let basis: Vec<_> = (0..integer(&record["dimension"])).map(|i| 1 << i).collect();
-        let fb = binary_subspace_factor_base(&inst, &basis);
+        let mut fb = binary_subspace_factor_base(&inst, &basis);
         let reference = PairTable::build_negation_folded(&group, &fb);
-        for (chunk, x_only) in [
-            (1, false),
-            (7, false),
-            (1024, false),
-            (1, true),
-            (7, true),
-            (1024, true),
+        for (chunk, x_only, prefix_cache) in [
+            (1, false, false),
+            (7, false, false),
+            (1024, false, false),
+            (1, true, false),
+            (7, true, false),
+            (1024, true, false),
+            (1, true, true),
+            (7, true, true),
+            (1024, true, true),
         ] {
-            let batch = if x_only {
+            let batch = if prefix_cache {
+                PairTable::build_negation_folded_binary_prefix_cached(&inst.fast, &fb, chunk)
+            } else if x_only {
                 PairTable::build_negation_folded_binary_abscissae(&inst.fast, &fb, chunk)
             } else {
                 PairTable::build_negation_folded_binary_batched(&inst.fast, &fb, chunk)
             }
             .unwrap();
             assert_eq!(batch.entries, reference.entries);
+            assert_eq!(
+                batch.prefix_inverse_bytes,
+                if prefix_cache {
+                    (1 << basis.len()) * 8
+                } else {
+                    0
+                }
+            );
             assert_eq!(batch.build_ops.adds, 0);
             assert!(batch
                 .cost()
@@ -191,7 +204,7 @@ fn batched_mitm_preserves_all_registered_curve_witnesses() {
                 let b = batch.probe(&group, &fb, &mut GroupOps::default(), &mut 0, p);
                 assert_eq!(
                     a, b,
-                    "{} chunk={chunk} x_only={x_only} target={p:?}",
+                    "{} chunk={chunk} x_only={x_only} prefix_cache={prefix_cache} target={p:?}",
                     inst.name
                 );
                 checked += 1;
@@ -204,9 +217,22 @@ fn batched_mitm_preserves_all_registered_curve_witnesses() {
             }
             assert_eq!(checked, inst.group_order);
             eprintln!(
-                "batch curve={} chunk={chunk} x_only={x_only} full_targets={checked}",
+                "batch curve={} chunk={chunk} x_only={x_only} prefix_cache={prefix_cache} full_targets={checked}",
                 inst.name
             );
+        }
+        for unsupported in [None, Some(vec![1; 12]), Some(vec![1; 13]), Some(vec![1, 8])] {
+            fb.subspace_basis = unsupported;
+            let fallback =
+                PairTable::build_negation_folded_binary_prefix_cached(&inst.fast, &fb, 7).unwrap();
+            assert_eq!(fallback.prefix_inverse_bytes, 0);
+            assert_eq!(fallback.entries, reference.entries);
+            for p in [FastPoint::INFINITY, inst.generator] {
+                assert_eq!(
+                    fallback.probe(&group, &fb, &mut GroupOps::default(), &mut 0, p),
+                    reference.probe(&group, &fb, &mut GroupOps::default(), &mut 0, p)
+                );
+            }
         }
         assert!(PairTable::build_negation_folded_binary_batched(&inst.fast, &fb, 0).is_err());
         assert!(PairTable::build_negation_folded_binary_batched(&inst.fast, &fb, 65537).is_err());

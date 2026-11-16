@@ -3135,6 +3135,8 @@ pub struct PairTable {
     pub entries: u64,
     pub build_ops: GroupOps,
     pub build_wall_ns: u64,
+    /// Temporary inverse-cache allocation, freed before this table returns.
+    pub prefix_inverse_bytes: usize,
 }
 
 impl PairTable {
@@ -3146,7 +3148,7 @@ impl PairTable {
         fb: &FactorBase<FastPoint>,
         chunk_size: usize,
     ) -> Result<Self, &'static str> {
-        Self::build_binary_batch(curve, fb, chunk_size, false)
+        Self::build_binary_batch(curve, fb, chunk_size, false, false)
     }
 
     /// Same ordered table, omitting ordinates unused by its abscissa keys.
@@ -3155,7 +3157,17 @@ impl PairTable {
         fb: &FactorBase<FastPoint>,
         chunk_size: usize,
     ) -> Result<Self, &'static str> {
-        Self::build_binary_batch(curve, fb, chunk_size, true)
+        Self::build_binary_batch(curve, fb, chunk_size, true, false)
+    }
+
+    /// Bounded prefix inverse reuse. Unsupported bases retain the complete
+    /// ordinary abscissa-only batch path, with zero cache bytes reported.
+    pub fn build_negation_folded_binary_prefix_cached(
+        curve: &FastCurve,
+        fb: &FactorBase<FastPoint>,
+        chunk_size: usize,
+    ) -> Result<Self, &'static str> {
+        Self::build_binary_batch(curve, fb, chunk_size, true, true)
     }
 
     fn build_binary_batch(
@@ -3163,11 +3175,42 @@ impl PairTable {
         fb: &FactorBase<FastPoint>,
         chunk_size: usize,
         x_only: bool,
+        prefix_cache: bool,
     ) -> Result<Self, &'static str> {
         if !(1..=65536).contains(&chunk_size) {
             return Err("MITM batch size must be in1..=65536");
         }
         let start = Instant::now();
+        let cache = if prefix_cache {
+            fb.subspace_basis.as_deref().and_then(|basis| {
+                let d = basis.len();
+                if !(1..=12).contains(&d)
+                    || basis.iter().any(|v| v >> d != 0)
+                    || fb.points.iter().any(|p| p.x >> d != 0)
+                {
+                    return None;
+                }
+                let mut pivots = [0u64; 12];
+                for &value in basis {
+                    let mut x = value;
+                    while x != 0 {
+                        let bit = 63 - x.leading_zeros() as usize;
+                        if pivots[bit] == 0 {
+                            pivots[bit] = x;
+                            break;
+                        }
+                        x ^= pivots[bit];
+                    }
+                    if x == 0 {
+                        return None;
+                    }
+                }
+                crate::cryptanalysis::koblitz_fast::PrefixInverseTable::new(&curve.field, d).ok()
+            })
+        } else {
+            None
+        };
+        let prefix_inverse_bytes = cache.as_ref().map_or(0, |c| c.bytes());
         let map = {
             let groups: Vec<_> = fb
                 .abscissa_list
@@ -3186,7 +3229,19 @@ impl PairTable {
                              indices: &mut Vec<(u32, u32)>| {
                 if x_only {
                     abscissae.clear();
-                    curve.add_pairwise_abscissae(ps, qs, &mut abscissae, &mut scratch);
+                    if let Some(cache) = &cache {
+                        curve
+                            .add_pairwise_abscissae_cached(
+                                ps,
+                                qs,
+                                &mut abscissae,
+                                &mut scratch,
+                                cache,
+                            )
+                            .expect("cache was constructed for this exact field");
+                    } else {
+                        curve.add_pairwise_abscissae(ps, qs, &mut abscissae, &mut scratch);
+                    }
                     for (x, &pair) in abscissae.iter().zip(indices.iter()) {
                         if let Some(x) = x {
                             // Match FastPoint::pack() >> 1: zero is reserved for O.
@@ -3224,8 +3279,11 @@ impl PairTable {
             }
             map
         };
+        drop(cache);
         Ok(Self {
-            kind: if x_only {
+            kind: if prefix_inverse_bytes != 0 {
+                "negation_folded_prefix_cached"
+            } else if x_only {
                 "negation_folded_batch_xonly"
             } else {
                 "negation_folded_batch"
@@ -3234,6 +3292,7 @@ impl PairTable {
             map,
             build_ops: GroupOps::default(),
             build_wall_ns: start.elapsed().as_nanos() as u64,
+            prefix_inverse_bytes,
         })
     }
 
@@ -3257,6 +3316,7 @@ impl PairTable {
             map,
             build_ops: ops,
             build_wall_ns: start.elapsed().as_nanos() as u64,
+            prefix_inverse_bytes: 0,
         }
     }
 
@@ -3295,6 +3355,7 @@ impl PairTable {
             map,
             build_ops: ops,
             build_wall_ns: start.elapsed().as_nanos() as u64,
+            prefix_inverse_bytes: 0,
         }
     }
 
@@ -3306,7 +3367,9 @@ impl PairTable {
             wall_ns: self.build_wall_ns,
             native: if matches!(
                 self.kind,
-                "negation_folded_batch" | "negation_folded_batch_xonly"
+                "negation_folded_batch"
+                    | "negation_folded_batch_xonly"
+                    | "negation_folded_prefix_cached"
             ) {
                 vec![("mitm_batch_setup_ns", self.build_wall_ns)]
             } else {
@@ -4445,6 +4508,7 @@ pub fn price_phase(phase: &mut PhaseCost, calib: &Calibration) {
     gae += conv("symbolic_descent_ns", Some(1.0));
     gae += conv("affine_s3_ns", Some(1.0));
     gae += conv("mitm_batch_setup_ns", Some(1.0));
+    gae += conv("mitm_native_setup_ns", Some(1.0));
     phase.gae = gae;
 }
 

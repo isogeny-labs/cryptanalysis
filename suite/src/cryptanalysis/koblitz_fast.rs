@@ -30,6 +30,31 @@ pub struct FastPoint {
     pub infinity: bool,
 }
 
+/// Complete inverses of a bounded polynomial prefix, tied to its field.
+/// Construction is target-independent setup and must be charged by callers.
+pub struct PrefixInverseTable {
+    irr: u64,
+    inverses: Vec<u64>,
+}
+
+impl PrefixInverseTable {
+    pub fn new(field: &Gf2, dimension: usize) -> Result<Self, &'static str> {
+        if !(1..=12).contains(&dimension) || dimension > field.n as usize {
+            return Err("prefix inverse dimension must be in1..=min(12,n)");
+        }
+        let mut inverses: Vec<_> = (0..1u64 << dimension).collect();
+        field.batch_inv(&mut inverses, &mut Vec::new());
+        Ok(Self {
+            irr: field.irr,
+            inverses,
+        })
+    }
+
+    pub fn bytes(&self) -> usize {
+        self.inverses.len() * std::mem::size_of::<u64>()
+    }
+}
+
 impl FastPoint {
     /// The point at infinity.
     pub const INFINITY: Self = Self {
@@ -405,13 +430,42 @@ impl FastCurve {
         out: &mut Vec<Option<u64>>,
         scratch: &mut BatchScratch,
     ) {
+        self.add_pairwise_abscissae_dispatch(ps, qs, out, scratch, None);
+    }
+
+    /// Cached prefix denominators; values outside the prefix use exact
+    /// individual inversions. A cache from another field is rejected before
+    /// touching the output. Exceptional pairs keep the normal exact path.
+    pub fn add_pairwise_abscissae_cached(
+        &self,
+        ps: &[FastPoint],
+        qs: &[FastPoint],
+        out: &mut Vec<Option<u64>>,
+        scratch: &mut BatchScratch,
+        cache: &PrefixInverseTable,
+    ) -> Result<(), &'static str> {
+        if self.field.irr != cache.irr {
+            return Err("prefix inverse cache belongs to another field");
+        }
+        self.add_pairwise_abscissae_dispatch(ps, qs, out, scratch, Some(&cache.inverses));
+        Ok(())
+    }
+
+    fn add_pairwise_abscissae_dispatch(
+        &self,
+        ps: &[FastPoint],
+        qs: &[FastPoint],
+        out: &mut Vec<Option<u64>>,
+        scratch: &mut BatchScratch,
+        cache: Option<&[u64]>,
+    ) {
         assert_eq!(ps.len(), qs.len(), "pairwise addition needs equal slices");
         #[cfg(target_arch = "x86_64")]
         if self.field.has_clmul() {
             // SAFETY: runtime detection covers the only enabled feature.
-            return unsafe { self.add_pairwise_abscissae_clmul(ps, qs, out, scratch) };
+            return unsafe { self.add_pairwise_abscissae_clmul(ps, qs, out, scratch, cache) };
         }
-        self.add_pairwise_abscissae_body(ps, qs, out, scratch);
+        self.add_pairwise_abscissae_body(ps, qs, out, scratch, cache);
     }
 
     #[cfg(target_arch = "x86_64")]
@@ -422,8 +476,9 @@ impl FastCurve {
         qs: &[FastPoint],
         out: &mut Vec<Option<u64>>,
         scratch: &mut BatchScratch,
+        cache: Option<&[u64]>,
     ) {
-        self.add_pairwise_abscissae_body(ps, qs, out, scratch);
+        self.add_pairwise_abscissae_body(ps, qs, out, scratch, cache);
     }
 
     #[inline(always)]
@@ -433,6 +488,7 @@ impl FastCurve {
         qs: &[FastPoint],
         out: &mut Vec<Option<u64>>,
         scratch: &mut BatchScratch,
+        cache: Option<&[u64]>,
     ) {
         let f = &self.field;
         scratch.dens.clear();
@@ -440,10 +496,18 @@ impl FastCurve {
             if p.infinity || q.infinity || p.x == q.x {
                 0
             } else {
-                p.x ^ q.x
+                let denominator = p.x ^ q.x;
+                cache.map_or(denominator, |values| {
+                    values
+                        .get(denominator as usize)
+                        .copied()
+                        .unwrap_or_else(|| f.inv(denominator))
+                })
             }
         }));
-        f.batch_inv(&mut scratch.dens, &mut scratch.acc);
+        if cache.is_none() {
+            f.batch_inv(&mut scratch.dens, &mut scratch.acc);
+        }
         out.reserve(ps.len());
         for ((p, q), &inv) in ps.iter().zip(qs).zip(&scratch.dens) {
             if inv == 0 {
@@ -1723,8 +1787,23 @@ mod tests {
                 .collect();
             assert_eq!(&actual[1..], &expected, "n={n}");
             let mut portable = Vec::new();
-            fc.add_pairwise_abscissae_body(&ps, &qs, &mut portable, &mut scratch);
+            fc.add_pairwise_abscissae_body(&ps, &qs, &mut portable, &mut scratch, None);
             assert_eq!(portable, expected, "portable n={n}");
+            let cache = PrefixInverseTable::new(&fc.field, 3).unwrap();
+            assert_eq!(cache.bytes(), 64);
+            let mut cached = Vec::new();
+            fc.add_pairwise_abscissae_cached(&ps, &qs, &mut cached, &mut scratch, &cache)
+                .unwrap();
+            assert_eq!(cached, expected, "cached/inverse fallback n={n}");
+            assert!(PrefixInverseTable::new(&fc.field, 0).is_err());
+            assert!(PrefixInverseTable::new(&fc.field, 13).is_err());
+            let other = PrefixInverseTable::new(&nb_field(if n == 7 { 13 } else { 7 }), 3).unwrap();
+            let mut unchanged = vec![Some(99)];
+            assert!(fc
+                .add_pairwise_abscissae_cached(&ps, &qs, &mut unchanged, &mut scratch, &other)
+                .is_err());
+            assert_eq!(unchanged, vec![Some(99)]);
+
             let mut empty = Vec::new();
             fc.add_pairwise_abscissae(&[], &[], &mut empty, &mut scratch);
             assert!(empty.is_empty());

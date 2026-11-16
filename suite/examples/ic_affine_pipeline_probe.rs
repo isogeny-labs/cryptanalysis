@@ -156,14 +156,21 @@ fn main() {
         );
         return;
     }
-    if mode == "verify-xonly" {
+    if matches!(mode, "verify-xonly" | "verify-prefix") {
         let basis: Vec<_> = (0..dimension).map(|i| 1 << i).collect();
         let fb = binary_subspace_factor_base(&inst, &basis);
         let reference = PairTable::build_negation_folded(&group, &fb);
         let mut checked = 0u64;
         for chunk in [1, 7, 1024] {
-            let batch =
-                PairTable::build_negation_folded_binary_abscissae(&inst.fast, &fb, chunk).unwrap();
+            let batch = if mode == "verify-prefix" {
+                PairTable::build_negation_folded_binary_prefix_cached(&inst.fast, &fb, chunk)
+            } else {
+                PairTable::build_negation_folded_binary_abscissae(&inst.fast, &fb, chunk)
+            }
+            .unwrap();
+            if mode == "verify-prefix" {
+                assert_eq!(batch.prefix_inverse_bytes, (1usize << dimension) * 8);
+            }
             assert_eq!(reference.entries, batch.entries);
             let mut check = |p| {
                 assert_eq!(
@@ -258,13 +265,20 @@ fn main() {
     }
     assert!(matches!(
         mode,
-        "mitm" | "mitm-batched" | "mitm-xonly" | "affine" | "affine-cached" | "affine-columns"
+        "mitm"
+            | "mitm-native"
+            | "mitm-batched"
+            | "mitm-xonly"
+            | "mitm-prefix"
+            | "affine"
+            | "affine-cached"
+            | "affine-columns"
     ));
     let mut spec = PipelineSpec {
         factor_base: "binary-subspace".into(),
         oracle: match mode {
-            "mitm" => "mitm",
-            "mitm-batched" | "mitm-xonly" => "mitm-batched",
+            "mitm" | "mitm-native" => "mitm",
+            "mitm-batched" | "mitm-xonly" | "mitm-prefix" => "mitm-batched",
             _ => "affine-s3",
         }
         .into(),
@@ -290,15 +304,30 @@ fn main() {
         "column_solver",
         if mode == "affine-columns" { "1" } else { "0" },
     );
-    spec.oracle_params
-        .set("x_only", if mode == "mitm-xonly" { "1" } else { "0" });
-    let mut oracle: Box<dyn DecompositionOracle<BinaryGroup<'_>> + '_> = if mode == "mitm" {
-        Box::new(MitmOracle::new(2))
-    } else if matches!(mode, "mitm-batched" | "mitm-xonly") {
-        Box::new(BinaryBatchMitmOracle::default())
-    } else {
-        Box::new(AffineS3Oracle::new(&inst))
-    };
+    spec.oracle_params.set(
+        "x_only",
+        if matches!(mode, "mitm-xonly" | "mitm-prefix") {
+            "1"
+        } else {
+            "0"
+        },
+    );
+    spec.oracle_params.set(
+        "prefix_inverse_cache",
+        if mode == "mitm-prefix" { "1" } else { "0" },
+    );
+    spec.oracle_params.set(
+        "native_setup_pricing",
+        if mode == "mitm-native" { "1" } else { "0" },
+    );
+    let mut oracle: Box<dyn DecompositionOracle<BinaryGroup<'_>> + '_> =
+        if matches!(mode, "mitm" | "mitm-native") {
+            Box::new(MitmOracle::new(2))
+        } else if matches!(mode, "mitm-batched" | "mitm-xonly" | "mitm-prefix") {
+            Box::new(BinaryBatchMitmOracle::default())
+        } else {
+            Box::new(AffineS3Oracle::new(&inst))
+        };
     let report = run_pipeline(
         &ctx,
         &spec,
