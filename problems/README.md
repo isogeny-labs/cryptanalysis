@@ -9,7 +9,7 @@ explain the gap and what would let the work move past it.
 
 | Problem | Status | What it blocks | What would unblock it |
 | --- | --- | --- | --- |
-| [IC SIMD host capability](ic-simd-host-capability.md) | investigating | vector performance admission across separate allocations | actual timing backend diagnostics and guarded AVX2/PCLMUL coverage |
+| [IC SIMD host capability](ic-simd-host-capability.md) | resolved for recorded CPU backends | vector performance admission across separate allocations | native dual-backend controls and same-allocation diagnostics in compatible panel |
 | [IC probe lookup pricing](ic-probe-lookup-pricing.md) | observed; future repair | complete interpretation of archived partial model costs | positive shared calibration and a fresh panel; old raw records retained |
 | [Full IC pipeline build envelope](ic-pipeline-build-envelope.md) | resolved for preparation | original330-second build cap prevented algorithm execution | separate pinned binaries and complete frozen matrix retained; timing qualification remains open |
 | [Parallel PCC appends for native IC](pcc-parallel-append-ic-native.md) | open | PR1621 integration after main/branch append different suffixes at167 | accepted custody-preserving reconciliation and actual current-main prefix/hash-link checks |

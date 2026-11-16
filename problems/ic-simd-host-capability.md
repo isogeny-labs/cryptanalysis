@@ -1,6 +1,6 @@
 # IC SIMD capability differs between allocations
 
-- **Status:** investigating
+- **Status:** resolved for the recorded CPU backends
 - **Kind:** hardware capability / implementation gap
 - **Affected work:** [AVX2 protocol](../experiments/ic-prefix-avx2-20261116/PROTOCOL.md), [failed admission report](../experiments/ic-prefix-avx2-20261116/REPORT.md), PR1621
 - **Next action owner:** T-6450 implementer
@@ -39,9 +39,9 @@ the same standing. Raw records and source hashes remain immutable.
 
 ## What would unblock it
 
-- [ ] Native correctness exercises both VPCLMUL and ordinary128-bit PCLMUL plus
+- [x] Native correctness exercises both VPCLMUL and ordinary128-bit PCLMUL plus
   AVX2 reduction where supported, with exact scalar field and witness controls.
-- [ ] A fresh frozen full-pipeline panel requires positive actual vector counts
+- [x] A fresh frozen full-pipeline panel requires positive actual vector counts
   on the timing allocation, identifies the executed backend, preserves every
   failure/control, and replays all answers with existing independent arithmetic.
 
@@ -63,3 +63,19 @@ and timing backend diagnostics, not on a GPU label or a preparation receipt.
 2026-11-16: Named the allocation capability mismatch after admission failed.
 Original source2f74aafe134e, prepared binary18ef30c0b4cf21b6068f556952ca153f3535c8166baddeb20cf6520a87a9eb13.
 Existing failed-admission evidence is preserved; implementation repair pending.
+
+
+2026-11-16: Compatibility source fffb15eb5 adds guarded ordinary PCLMUL128
+products and AVX2 reduction while preserving VPCLMUL and scalar fallbacks.
+[pcc:unverified] Native preparation 20261116-103641-f757 exercises selected-native,
+forced PCLMUL128 and scalar products across 59 accepted field widths, 100 complete
+witness maps and 15 loader controls (unsigned claim 79b084). Fresh timing
+20261116-105146-0d5e passes five same-allocation map/capability preflights, then
+executes avx2-pclmul128 in all 240 vector arms. Existing independent Python
+arithmetic replays 480 IC and 240 rho answers. All 120 comparisons complete;
+four failed A/A controls remain, zero caps. Unsigned claim bee104 and
+[compatible panel](../experiments/ic-prefix-pclmul-20261116/REPORT.md) preserve
+the exact scope and raw evidence. The capability admission gap is resolved for
+these recorded backends; physical timing qualification, signed standing and
+the broader performance objective remain open. The failed original panel is
+preserved without retries or host filtering.
