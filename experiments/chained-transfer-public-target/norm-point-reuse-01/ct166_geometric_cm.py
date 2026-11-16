@@ -35,7 +35,7 @@ def reject_float(value):
 
 def read_census(folder):
     raw = (folder / "CT160_FULL_CENSUS.json").read_bytes()
-    blob = hashlib.sha1(b"blob " + str(len(raw)).encode("ascii") + b"\\0" + raw).hexdigest()
+    blob = hashlib.sha1(b"blob " + str(len(raw)).encode("ascii") + b"\0" + raw).hexdigest()
     require(blob == CENSUS_BLOB, "CT160 census blob changed")
     return json.loads(raw, object_pairs_hook=unique_pairs,
                       parse_constant=reject_constant, parse_float=reject_float)
