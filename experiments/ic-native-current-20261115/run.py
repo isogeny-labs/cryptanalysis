@@ -62,7 +62,7 @@ def build():
     entry = next(e for e in entries if e['file'].endswith('/src/indexcalc.c'))
     args = shlex.split(entry['command'])
     args[args.index('-o') + 1] = str(BUILD / 'reference.o')
-    args[args.index('-c') + 1] = str(HERE / 'baseline_indexcalc.c')
+    args[args.index('-c') + 1] = str(HERE / 'generated/baseline_indexcalc.c')
     proc = command(args)
     if proc.returncode:
         raise RuntimeError(proc.stderr)
@@ -109,7 +109,7 @@ def main():
             'source_sha256': {str(p.relative_to(ROOT)): digest(p) for p in
                               [ROOT/'src/indexcalc.c', ROOT/'src/linalg.c',
                                ROOT/'src/ic_rational.h', HERE/'pipeline.c',
-                               HERE/'references.c', HERE/'baseline_indexcalc.c', HERE/'run.py']}}
+                               HERE/'references.c', HERE/'generated/baseline_indexcalc.c', HERE/'run.py']}}
     (OUT/'host.json').write_text(json.dumps(host, indent=2)+'\n')
     if gpu.returncode or not gpu.stdout.strip():
         raise RuntimeError('CUDA-host requirement failed; no performance arms launched')
