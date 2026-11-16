@@ -45,11 +45,45 @@ theorem rank_one_reduced_relation {H A : Type*}
     a • ρ (b • P) + b • ρ ((-a) • P) = 0 := by
   simpa only [map_zsmul] using rank_one_relation (ρ P) a b
 
+/-- The centered integer coordinates satisfy the exact finite curve equation. -/
+theorem reduced_generator_equation {p : ℕ} (x y : ℤ)
+    (hpoint : (y : ZMod p) ^ 2 =
+      (x : ZMod p) ^ 3 - (x : ZMod p) - 2) :
+    (XedniAdaptiveInverseLift.baseModel p).Equation
+      (x : ZMod p) (y : ZMod p) := by
+  simp only [XedniAdaptiveInverseLift.baseModel,
+    WeierstrassCurve.Affine.equation_iff]
+  linear_combination hpoint
+
+/-- The public finite point named by the centered coordinates. -/
+def reducedGenerator (p : ℕ) [Nontrivial (ZMod p)]
+    [(XedniAdaptiveInverseLift.baseModel p).IsElliptic]
+    (x y : ℤ)
+    (hpoint : (y : ZMod p) ^ 2 =
+      (x : ZMod p) ^ 3 - (x : ZMod p) - 2) :
+    (XedniAdaptiveInverseLift.baseModel p).Point :=
+  WeierstrassCurve.Affine.Point.mk (reduced_generator_equation x y hpoint)
+
+/-- The named finite point has precisely the selected affine coordinates. -/
+theorem reducedGenerator_coordinates (p : ℕ) [Nontrivial (ZMod p)]
+    [(XedniAdaptiveInverseLift.baseModel p).IsElliptic]
+    (x y : ℤ)
+    (hpoint : (y : ZMod p) ^ 2 =
+      (x : ZMod p) ^ 3 - (x : ZMod p) - 2) :
+    WeierstrassCurve.Affine.pointEquiv
+      (XedniAdaptiveInverseLift.baseModel p)
+      (reducedGenerator p x y hpoint) =
+      .some ⟨((x : ZMod p), (y : ZMod p)),
+        reduced_generator_equation x y hpoint⟩ := by
+  rfl
+
 #print axioms public_factorization
 #print axioms rank_one_relation
 #print axioms rational_rank_one_relation
 #print axioms rank_one_reduction_commutes
 #print axioms rank_one_reduced_relation
+#print axioms reduced_generator_equation
+#print axioms reducedGenerator_coordinates
 #print axioms XedniAdaptiveInverseLift.rational_model
 #print axioms XedniAdaptiveInverseLift.reduction_model
 

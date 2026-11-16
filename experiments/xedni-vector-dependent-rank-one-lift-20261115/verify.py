@@ -63,14 +63,15 @@ def main():
     assert 'Build completed successfully (3157 jobs).' in build
     names=('public_factorization','rank_one_relation','rational_rank_one_relation',
            'rank_one_reduction_commutes','rank_one_reduced_relation',
+           'reduced_generator_equation','reducedGenerator_coordinates',
            'XedniAdaptiveInverseLift.rational_model','XedniAdaptiveInverseLift.reduction_model')
     for name in names:
         full_name=name if '.' in name else f'XedniVectorDependentRankOneLift.{name}'
-        lines=[line for line in build.splitlines() if f"'{full_name}' depends on axioms:" in line]
-        assert lines,name
-        for line in lines:
-            axioms=line.split('depends on axioms: [',1)[1].rstrip(']').split(', ')
-            assert set(axioms)<={'propext','Classical.choice','Quot.sound'}
+        matches=re.findall(re.escape(f"'{full_name}' depends on axioms: [")+r'([^\]]*)\]',build)
+        assert matches,name
+        for block in matches:
+            axioms={item.strip() for item in block.split(',')}
+            assert axioms<={'propext','Classical.choice','Quot.sound'},(name,axioms)
     assert (HERE/'run.stderr').read_bytes()==(HERE/'audit.stderr').read_bytes()==b''
     sealed=(HERE/'SEAL.sha256').read_text().splitlines()
     for line in sealed:
