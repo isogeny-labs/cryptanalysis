@@ -39,7 +39,10 @@ try:
   r=subprocess.run([str(binary),str(HERE/'instances.json'),str(index),'verify-table'],capture_output=True,text=True,timeout=30)
   (OUT/f'table-smoke-{index}.json').write_text(r.stdout);(OUT/f'table-smoke-{index}.stderr').write_text(r.stderr)
   if r.returncode:raise RuntimeError('native x-only smoke exit'+str(r.returncode))
-  check=json.loads(r.stdout);assert check['status']=='pass' and check['vector_pairs']>0 and check['complete_map_comparisons']==20;receipt['native_table_smoke'].append(check)
+  check=json.loads(r.stdout);assert check['status']=='pass' and check['vector_pairs']>0 and check['complete_map_comparisons']==20
+  assert check['vector_backend'] in ['avx2-pclmul128','avx2-vpclmul']
+  assert check['vector_pclmul128_pairs']==(check['vector_pairs'] if check['vector_backend']=='avx2-pclmul128' else 0)
+  receipt['native_table_smoke'].append(check)
  units=subprocess.run(['python3',str(HERE/'verify_frozen_units.py'),str(binary),'--out',str(OUT/'frozen-units.json')],capture_output=True,text=True,timeout=60)
  (OUT/'frozen-units.log').write_text(units.stdout+units.stderr)
  if units.returncode:raise RuntimeError('native unit receipt correctness exit'+str(units.returncode))
