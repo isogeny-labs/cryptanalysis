@@ -58,7 +58,8 @@ for p in pairs:
    assert ns>0 and setup['group_ops']==dict(adds=0,doubles=0,scalar_mults=0)
    assert abs(setup['gae']-ns/rdata['calibration']['ns_per_add'])<1e-7*max(setup['gae'],1)
    assert not rdata['euclidean_inverse']
-   if variant!='mitm-prefix':assert setup['native']['mitm_vector_pairs']>0, 'vector path not exercised'
+   value['vector_path_exercised']=setup['native']['mitm_vector_pairs']>0
+   if variant!='mitm-prefix' and not value['vector_path_exercised']:errors.append('vector-path-inactive '+value['run_id'])
    assert r['factor_base']['signed_points']==candidate['factor_base']['actual_usable_point_count']
    assert r['factor_base']['columns']==candidate['factor_base']['effective_columns']
    if r['verified'] and r['recovered']!=expected_scalar:errors.append('wrong scalar '+value['run_id'])
