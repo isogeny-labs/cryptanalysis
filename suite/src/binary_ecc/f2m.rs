@@ -461,7 +461,11 @@ impl F2mElement {
         let mut out = Self::zero(m);
         with_scratch(2 * nw + 1, |prod| {
             mul_words_into(&self.bits, &other.bits, prod);
-            reduce_words(prod, irreducible);
+            if self.m == other.m {
+                reduce_element_product(prod, irreducible, m);
+            } else {
+                reduce_words(prod, irreducible);
+            }
             let k = out.bits.len();
             out.bits.copy_from_slice(&prod[..k]);
         });
@@ -481,7 +485,7 @@ impl F2mElement {
                 sq[2 * i] = spread32(w);
                 sq[2 * i + 1] = spread32(w >> 32);
             }
-            reduce_words(sq, irreducible);
+            reduce_element_product(sq, irreducible, m);
             let k = out.bits.len();
             out.bits.copy_from_slice(&sq[..k]);
         });
@@ -503,7 +507,7 @@ impl F2mElement {
                     sq[2 * i] = spread32(w);
                     sq[2 * i + 1] = spread32(w >> 32);
                 }
-                reduce_words(sq, irreducible);
+                reduce_element_product(sq, irreducible, self.m);
                 acc.bits.copy_from_slice(&sq[..nw]);
             }
         });
@@ -885,6 +889,72 @@ unsafe fn mul_words_hw(a: &[u64], b: &[u64], out: &mut [u64]) {
             out[i + j + 1] ^= hi;
         }
     }
+}
+
+// Element products have degree at most 2m-2, unlike unrestricted reducer inputs.
+// For 128 < m < 192 and a one-word tail, H*r has degree < m+63; the
+// second overflow times r has degree < 126 and is already below m.
+#[cfg(all(
+    feature = "f2m-fixed-reduction",
+    any(target_arch = "x86_64", target_arch = "aarch64")
+))]
+#[cfg_attr(target_arch = "x86_64", target_feature(enable = "pclmulqdq"))]
+#[cfg_attr(target_arch = "aarch64", target_feature(enable = "aes"))]
+unsafe fn reduce_product3_hw<const B: u32, const R: u64>(value: &mut [u64]) {
+    let v = &mut value[..6];
+    let mask = (1u64 << B) - 1;
+    let h0 = (v[2] >> B) | (v[3] << (64 - B));
+    let h1 = (v[3] >> B) | (v[4] << (64 - B));
+    let h2 = (v[4] >> B) | (v[5] << (64 - B));
+    let d0 = clmul64_hw(h0, R);
+    let d1 = clmul64_hw(h1, R);
+    // For m=131, h2 has at most two bits for a bounded element product.
+    let d2 = if B == 3 {
+        (
+            (0u64.wrapping_sub(h2 & 1) & R) ^ (0u64.wrapping_sub((h2 >> 1) & 1) & (R << 1)),
+            0,
+        )
+    } else {
+        clmul64_hw(h2, R)
+    };
+    let middle = (v[2] & mask) ^ d1.1 ^ d2.0;
+    let overflow = (middle >> B) | (d2.1 << (64 - B));
+    let last = clmul64_hw(overflow, R);
+    v[0] ^= d0.0 ^ last.0;
+    v[1] ^= d0.1 ^ d1.0 ^ last.1;
+    v[2] = middle & mask;
+    v[3..].fill(0);
+    value[6..].fill(0);
+}
+
+#[inline]
+fn reduce_element_product(value: &mut [u64], irreducible: &IrreduciblePoly, m: u32) {
+    #[cfg(all(
+        feature = "f2m-fixed-reduction",
+        any(target_arch = "x86_64", target_arch = "aarch64")
+    ))]
+    if m == irreducible.degree && has_hw_clmul() {
+        // SAFETY: callers provide a product of two masked m-bit elements;
+        // each selected m has three limbs, and the CPU feature was checked.
+        match (m, irreducible.low_terms.as_slice()) {
+            (131, [0, 2, 3, 8]) => {
+                unsafe { reduce_product3_hw::<3, 0x10d>(value) };
+                return;
+            }
+            (155, [0, 62]) => {
+                unsafe { reduce_product3_hw::<27, 0x4000000000000001>(value) };
+                return;
+            }
+            (163, [0, 3, 6, 7]) => {
+                unsafe { reduce_product3_hw::<35, 0xc9>(value) };
+                return;
+            }
+            _ => {}
+        }
+    }
+    // Keep m used on every target and feature combination.
+    let _ = m;
+    reduce_words(value, irreducible);
 }
 
 /// Reduce `value` modulo `m(z)` in place, a whole word at a time.
@@ -1388,6 +1458,81 @@ mod tests {
                 d.add_assign(&b);
                 assert_eq!(d, a.add(&b));
                 assert_ne!(d, a, "b is non-zero with overwhelming probability");
+            }
+        }
+    }
+
+    #[cfg(all(
+        feature = "f2m-fixed-reduction",
+        any(target_arch = "x86_64", target_arch = "aarch64")
+    ))]
+    #[test]
+    fn fixed_product_reduction_matches_bitwise() {
+        if !has_hw_clmul() {
+            return;
+        }
+        let mut state = 0x3f20_2611_1500_0001u64;
+        for irr in [
+            IrreduciblePoly::deg_131(),
+            IrreduciblePoly::deg_155_oakley_group3(),
+            IrreduciblePoly::deg_163(),
+        ] {
+            let m = irr.degree;
+            // Every input monomial in the full degree <2m product space.
+            for bit in 0..2 * m - 1 {
+                let mut value = vec![0u64; 7];
+                value[bit as usize / 64] = 1 << (bit % 64);
+                let mut expected = value.clone();
+                reduce_bitwise(&mut expected, &irr);
+                reduce_element_product(&mut value, &irr, m);
+                assert_eq!(value, expected, "basis m={m} bit={bit}");
+            }
+            for _ in 0..4096 {
+                let mut value = vec![0u64; 7];
+                for bit in 0..2 * m - 1 {
+                    if xorshift(&mut state) & 1 != 0 {
+                        value[bit as usize / 64] |= 1 << (bit % 64);
+                    }
+                }
+                let mut expected = value.clone();
+                reduce_bitwise(&mut expected, &irr);
+                reduce_element_product(&mut value, &irr, m);
+                assert_eq!(value, expected, "random m={m}");
+            }
+        }
+    }
+
+    #[cfg(feature = "f2m-fixed-reduction")]
+    #[test]
+    fn fixed_product_reduction_keeps_generic_fallbacks() {
+        let mut reordered = IrreduciblePoly::deg_131();
+        reordered.low_terms.reverse();
+        let cases = [
+            (reordered, 131),
+            (IrreduciblePoly::deg_131(), 163),
+            (
+                IrreduciblePoly {
+                    degree: 129,
+                    low_terms: vec![0, 1, 64],
+                },
+                129,
+            ),
+            (
+                IrreduciblePoly {
+                    degree: 192,
+                    low_terms: vec![0, 1, 7],
+                },
+                192,
+            ),
+        ];
+        let mut state = 0x0026_1115_fa11_baccu64;
+        for (irr, m) in cases {
+            for _ in 0..64 {
+                let mut value: Vec<u64> = (0..8).map(|_| xorshift(&mut state)).collect();
+                let mut expected = value.clone();
+                reduce_bitwise(&mut expected, &irr);
+                reduce_element_product(&mut value, &irr, m);
+                assert_eq!(value, expected);
             }
         }
     }
