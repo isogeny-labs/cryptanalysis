@@ -52,7 +52,7 @@ const cmp=(a,b)=>{
   return 0
 };
 function solve(){
-  const all=rrefSubspaces(), lags=all.filter(iso);
+  const all=rrefSubspaces(), lags=all.filter(s=>iso(s));
   ensure(lags.length===135,"Lagrangian count");
   const selected=lags.filter(s=>stable(s)).sort(cmp);
   ensure(selected.length===9,"Galois-stable count");
@@ -79,7 +79,7 @@ function selfTest(o){
   ensure(!stable(span([1,4,32])),"accepted nonstable");
   const all=rrefSubspaces();
   ensure(all.filter(s=>iso(s,()=>0)).length!==135,"accepted wrong pairing");
-  ensure(all.filter(iso).filter(s=>stable(s,x=>x)).length!==9,"accepted wrong action");
+  ensure(all.filter(s=>iso(s)).filter(s=>stable(s,x=>x)).length!==9,"accepted wrong action");
   ensure({...o.assumption,nu12_full_two_torsion_size:2}.nu12_full_two_torsion_size!==4,
          "accepted false full two torsion");
   return 6
