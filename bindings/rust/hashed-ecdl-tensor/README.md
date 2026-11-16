@@ -21,7 +21,7 @@ languages. `Counter::witness` remains the deterministic relation oracle.
 ```sh
 cargo test --locked --release
 cargo clippy --locked --all-targets -- -D warnings
-cargo +1.78.0 check --locked --all-targets
+cargo +1.85.0 check --locked --all-targets
 cargo run --locked --release -- solve examples/fixture.json /tmp/hashed-receipt.json
 cargo run --locked --release -- verify /tmp/hashed-receipt.json
 ```

@@ -1,0 +1,34 @@
+name: CT26 independent seven-kernel oracle
+
+on:
+  pull_request:
+    paths:
+      - "experiments/chained-transfer-reference/ct26/**"
+      - ".github/workflows/ct26-independent-seven-kernel.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  seven-kernel:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          # For PR events, test the frozen proposal head, not an implicit merge.
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Verify the independently developed finite-field oracle
+        run: |
+          set -euo pipefail
+          sha256sum experiments/chained-transfer-reference/ct26/seven_kernel_oracle.py
+          python3 -S -B experiments/chained-transfer-reference/ct26/seven_kernel_oracle.py
+      - name: Reject Python runs with disabled assertions
+        run: |
+          set -euo pipefail
+          if python3 -O -S experiments/chained-transfer-reference/ct26/seven_kernel_oracle.py; then
+            echo "ERROR: disabled-assertion negative control passed" >&2
+            exit 1
+          fi

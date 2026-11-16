@@ -204,11 +204,57 @@ pub fn solve(
     statistics: &mut Statistics,
     meter: &mut Meter,
 ) -> Result<Certificate> {
+    solve_using(
+        curve,
+        target,
+        config,
+        rng,
+        smallest_first,
+        statistics,
+        false,
+        meter,
+    )
+}
+
+/// Use the same prepared pair search with a reusable joint target table.
+/// Only public coefficient arithmetic changes. Original subgroup validation,
+/// label randomness, witness selection and certificate replay remain in place.
+pub fn solve_joint(
+    curve: &Curve,
+    target: &Point,
+    config: &Config,
+    rng: &mut impl RandomSource,
+    smallest_first: bool,
+    statistics: &mut Statistics,
+    meter: &mut Meter,
+) -> Result<Certificate> {
+    solve_using(
+        curve,
+        target,
+        config,
+        rng,
+        smallest_first,
+        statistics,
+        true,
+        meter,
+    )
+}
+
+fn solve_using(
+    curve: &Curve,
+    target: &Point,
+    config: &Config,
+    rng: &mut impl RandomSource,
+    smallest_first: bool,
+    statistics: &mut Statistics,
+    joint_targets: bool,
+    meter: &mut Meter,
+) -> Result<Certificate> {
     if config.slots != 2 {
         return Err(invalid("prepared relation collection requires two slots"));
     }
     let statistics = RefCell::new(statistics);
-    reduction::solve_with_preparation(
+    reduction::solve_with_target_preparation(
         curve,
         target,
         config,
@@ -219,6 +265,7 @@ pub fn solve(
         |_, _, table, query, work| {
             table.decompose(query, smallest_first, &mut statistics.borrow_mut(), work)
         },
+        joint_targets,
         meter,
     )
 }

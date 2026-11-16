@@ -1,0 +1,128 @@
+{
+  "at": "2026-11-15T06:49:52.308268+00:00",
+  "prospective": "0158c5 publishedc1cbc188 before implementation",
+  "source": "811395139bbd33b75fd5697973202cd1dcc13bba",
+  "compiled_claim": "4fde50",
+  "exact_original_checkpoint": {
+    "run": 43686905905,
+    "job": 132729176127,
+    "artifact": 14150917768,
+    "all28_members": true,
+    "immediate_gate": 0
+  },
+  "unfiltered_native_exit": 0,
+  "worker_exit": 0,
+  "supervisor_exit": 0,
+  "all13phases": [
+    {
+      "name": "immediate-original-gate",
+      "expected_exit": 0,
+      "actual_exit": 0
+    },
+    {
+      "name": "runtime-custody",
+      "expected_exit": 0,
+      "actual_exit": 0
+    },
+    {
+      "name": "initial-prior",
+      "expected_exit": 0,
+      "actual_exit": 0
+    },
+    {
+      "name": "native",
+      "expected_exit": 0,
+      "actual_exit": 0
+    },
+    {
+      "name": "freeze311",
+      "expected_exit": 0,
+      "actual_exit": 0
+    },
+    {
+      "name": "compare311",
+      "expected_exit": 0,
+      "actual_exit": 0
+    },
+    {
+      "name": "N4_ORIGINAL_KERNEL_TRANSPORT-omission",
+      "expected_exit": 101,
+      "actual_exit": 101
+    },
+    {
+      "name": "N4_ORIGINAL_KERNEL_VERTEX-omission",
+      "expected_exit": 101,
+      "actual_exit": 101
+    },
+    {
+      "name": "N4_ORIGINAL_KERNEL_PAIR-omission",
+      "expected_exit": 101,
+      "actual_exit": 101
+    },
+    {
+      "name": "N4_ORIGINAL_KERNEL_TRIPLE-omission",
+      "expected_exit": 101,
+      "actual_exit": 101
+    },
+    {
+      "name": "final-test-bytes",
+      "expected_exit": 0,
+      "actual_exit": 0
+    },
+    {
+      "name": "final-auditor-bytes",
+      "expected_exit": 0,
+      "actual_exit": 0
+    },
+    {
+      "name": "final-prior",
+      "expected_exit": 0,
+      "actual_exit": 0
+    }
+  ],
+  "whole_ordered_records": 311,
+  "whole_freeze_compare_bytes_equal": true,
+  "four_actual_whole_class_omissions": "101/no accepted output",
+  "all1172_prior_hashes": 0,
+  "actual_compiler_runtime_test_auditor_bytes_equal": true,
+  "literal_summary": {
+    "accepted_triple_count": 1,
+    "adjacent_candidate_pairs": 72,
+    "all_accepted_triples_lexicographic": [
+      [
+        4,
+        1,
+        4
+      ]
+    ],
+    "eligible_vertices_per_domain": [
+      4,
+      2,
+      2
+    ],
+    "kernel_compatible_pairs_per_edge": [
+      6,
+      6
+    ],
+    "old_fixed_negatives_and_prime_only_cases_unchanged": true,
+    "ordered_whole_records": 311,
+    "scope": "exhaustive finite original six-model family only; geometric HLP/base-field/program bridges remain; no evaluator or cost result",
+    "supported_compatible_pairs_per_edge": [
+      1,
+      1
+    ],
+    "triples": 216,
+    "vertices": 18
+  },
+  "literal_rejections": {
+    "altered_eligibility_rejected": true,
+    "altered_kernel_rejected": true,
+    "altered_stored_pairing_rejected": true,
+    "duplicate_permutation_rejected": true,
+    "duplicated_coordinate_rejected": true,
+    "method": "actual cloned malformed inputs passed to original validation functions; each must panic",
+    "zero_kernel_rejected": true
+  },
+  "formal": "actual-data independent Lean verdict pending",
+  "scope": "unsigned finite family compatibility and supplied-source eligibility only; no full-group Jacobian evaluator or cost result"
+}
