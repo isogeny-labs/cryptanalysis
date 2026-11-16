@@ -1,0 +1,37 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-15T21:22:10Z",
+ "id": "PCC-20261115-ec9f29",
+ "kind": "statement",
+ "producer": {
+  "commit": "49d20e636df857d11436bc3de38c8cc04cade22d",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "research/curve25519_torus_native_20261115/recovery-development-v2.log",
+    "sha256": "c2aeeecf8376202a4b7f2c0d3999a1d3551fae842aae282cbec9903c45c6daca"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "research/curve25519_torus_native_20261115/evidence/native-recovery-v3/native-recovery-pre-call.json",
+    "sha256": "1303d41998142af273af0a1e63bf09f60582c9ab71db60f42fbbe4502596c8c7"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "research/curve25519_torus_native_20261115/evidence/native-recovery-v3/native-recovery-post-call.json",
+    "sha256": "44d87ed86c2519da8d72a3d3063aaa3811595a307530cfca24b5b3dc3a637487"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Producer Rust development controls report native finite-field root extraction and triangular recovery passing exhaustive monic degree-at-most-three tests over F5, actual-field known-root checks, limits and malformed-basis controls. Native Singular M1 controls over actual Curve25519 p recover one checked planted triple and no triple for the negative control, matching the complete withheld oracle. This is functional producer evidence, not a full-M decomposition, performance result or signed verification."
+}
