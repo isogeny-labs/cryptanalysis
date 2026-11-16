@@ -76,6 +76,7 @@ check_file 1eef55e7fa9dd799e77967e9425e6cd3400dfb51f469dade0d6e99d4f97130a2 1968
 cp "$capture" "$out/context/fixture-source/historical-passive-acceptance-01.json"
 cp "$recipe/Dockerfile" "$out/context/Dockerfile"
 cp "$recipe/assemble-context-01.sh" "$out/context/recipe/assemble-context-01.sh"
+cp "$recipe/materialize-source-01.sh" "$out/context/recipe/materialize-source-01.sh"
 cp "$recipe/source-01.sha256" "$out/context/recipe/OCI-source-01.sha256"
 cp "$pins" "$out/context/recipe/historical-whole-fixture-pins-01.json"
 cp "$repo/$component/runtime-01/manifest-01.json" "$repo/$component/runtime-01/selected-members-01.sha256" "$out/context/recipe/"
