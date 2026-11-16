@@ -18,6 +18,59 @@ IS_CRYPTANALYSIS = DIRECTORY.name == "ic-candidate-catalog"
 
 
 class SemanticValidatorTests(unittest.TestCase):
+    def test_historical_candidate_alias_requires_exact_pinned_canonical_copy(self):
+        import hashlib
+        directory = Path(self.temp.name)
+        original = directory / "IC1N13Cold.json"
+        canonical = directory / "IC1N13Ccanonical.json"
+        raw = b'{"frozen":true}\n'
+        original.write_bytes(raw)
+        canonical.write_bytes(raw)
+        alias = {original.stem: {"canonical_id": canonical.stem,
+                                 "sha256": hashlib.sha256(raw).hexdigest()}}
+        errors = []
+        self.assertEqual(gate.candidate_identity_stem(original, alias, errors), canonical.stem)
+        self.assertEqual(errors, [])
+        for change in ("changed_source", "changed_target", "missing_target", "bad_pin",
+                       "path_escape", "chained", "extra_field"):
+            with self.subTest(change=change):
+                original.write_bytes(raw)
+                canonical.write_bytes(raw)
+                altered = copy.deepcopy(alias)
+                if change == "changed_source": original.write_bytes(raw + b' ')
+                elif change == "changed_target": canonical.write_bytes(raw + b' ')
+                elif change == "missing_target": canonical.unlink()
+                elif change == "bad_pin": altered[original.stem]["sha256"] = "0" * 64
+                elif change == "path_escape": altered[original.stem]["canonical_id"] = "../outside"
+                elif change == "chained": altered[canonical.stem] = alias[original.stem]
+                elif change == "extra_field": altered[original.stem]["unchecked"] = True
+                errors = []
+                gate.candidate_identity_stem(original, altered, errors)
+                self.assertTrue(errors, change)
+
+    @unittest.skipUnless(IS_CRYPTANALYSIS, "IC1 archives live in cryptanalysis")
+    def test_alias_cannot_bypass_canonical_stage_and_hash_validation(self):
+        import hashlib
+        root = Path(self.temp.name) / "alias-repo"
+        directory = root / "experiments/ic-bench/candidates"
+        directory.mkdir(parents=True)
+        source = next((ROOT / "experiments/ic-bench/candidates").glob("IC1*.json"))
+        raw = source.read_bytes()
+        wrong_name = source.stem.rsplit("h", 1)[0] + "h" + "f" * 12
+        (directory / (wrong_name + ".json")).write_bytes(raw)
+        old = directory / "IC1N13Chistorical.json"
+        old.write_bytes(raw)
+        aliases = {old.stem: {"canonical_id": wrong_name,
+                              "sha256": hashlib.sha256(raw).hexdigest()}}
+        (directory.parent / "candidate_aliases.json").write_text(json.dumps(
+            {"schema": "ic-candidate-aliases/1", "aliases": aliases}))
+        archive = root / "experiments/fb-archive/index.csv"
+        archive.parent.mkdir(parents=True)
+        shutil.copyfile(ROOT / "experiments/fb-archive/index.csv", archive)
+        errors = []
+        gate.validate_candidates(root, {}, errors)
+        self.assertEqual(sum("IC1 name disagrees" in error for error in errors), 2)
+
     def test_original_half_trace_format_keeps_its_frozen_identity(self):
         pdp = {"stage_code": "PDP2ht", "summand_count": 2,
                "implementation": "experiments/pdp-degree-heuristics/htsolver.py"}

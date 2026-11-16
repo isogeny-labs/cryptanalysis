@@ -1,0 +1,177 @@
+{
+  "compiled_source_members": {
+    ".gitignore": {
+      "bytes": 9,
+      "sha256": "306fd52e74fca6746e12acc750f232de15e71da917756a1270d74c91f5eb7368"
+    },
+    "Cargo.lock": {
+      "bytes": 4893,
+      "sha256": "a15c94f8d6a833913edfa63540485a1b689ebda31a23db8a3a7ec224daf84e31"
+    },
+    "Cargo.toml": {
+      "bytes": 274,
+      "sha256": "a6c0c3448f4876f8ff973a1af7a2f740b249f1d834369780b9e9ae72d80becff"
+    },
+    "README.md": {
+      "bytes": 1873,
+      "sha256": "9f166d9505e08d9edca08fed41979de0e2b79f44e319cff04cdaaae11c032a2b"
+    },
+    "build-only-01.sh": {
+      "bytes": 1681,
+      "sha256": "a1f7b734ec38bacc874bbcedc693f2f9833320729de93630887eaf058c3e9b76"
+    },
+    "capture_binary.py": {
+      "bytes": 889,
+      "sha256": "4d0261a9622d1a6049760ddffe35682ce5ac2d89debce56d06d5a30de7450a0e"
+    },
+    "frozen-prior-inputs-01.sha256": {
+      "bytes": 156964,
+      "sha256": "ccb0a25966ea99c355d43b468ca78f78b55d762b858ac03ea408eb9458f849d1"
+    },
+    "generated/bits.rs": {
+      "bytes": 1378,
+      "sha256": "fbce6eb9d2fd573953a4129be7fd1fe325c4718fec1596a61e05efcba27fe81f"
+    },
+    "generated/custody.json": {
+      "bytes": 381,
+      "sha256": "eeeb5d2a2161563743ca779e344bbe8bb134e3d743c025150f43564fb2aa3173"
+    },
+    "input-pins.json": {
+      "bytes": 1328,
+      "sha256": "4faad7fa15cb67af2c34743c4043b42504ae9b5446220130f96b2d507028b076"
+    },
+    "materialize.py": {
+      "bytes": 770,
+      "sha256": "a70209dbcb1d69cb9005e38b8886e69935f19900ccf223c8d3b0232305202dc3"
+    },
+    "run-native-01.sh": {
+      "bytes": 2245,
+      "sha256": "bb777c207a9204dac38cf13526083fdfb2795a9ddc2f362ce44963db602dab3a"
+    },
+    "runtime_custody.py": {
+      "bytes": 1680,
+      "sha256": "3e65c5e024931f0164a026ac3cd20781664c2f3975f1b264891149660924e54f"
+    },
+    "src/bin/audit_records.rs": {
+      "bytes": 1913,
+      "sha256": "3cb6be78da1a6dd3f4370dee0f5c03696852b76cd432bee51308f8808de6aeaa"
+    },
+    "src/lib.rs": {
+      "bytes": 18962,
+      "sha256": "c2f8bbe574939f83068de99c4bcd2225badc80bb7598bfdd3421d877e1584422"
+    }
+  },
+  "binaries": {
+    "chain": {
+      "Cargo_artifact": {
+        "reason": "compiler-artifact",
+        "package_id": "path+file:///workspace/cryptanalysis/experiments/chained-transfer-public-target/original-kernel-census-01#chained-n4-original-kernel-census@0.1.0",
+        "manifest_path": "/workspace/cryptanalysis/experiments/chained-transfer-public-target/original-kernel-census-01/Cargo.toml",
+        "target": {
+          "kind": [
+            "lib"
+          ],
+          "crate_types": [
+            "lib"
+          ],
+          "name": "chained_n4_original_kernel_census",
+          "src_path": "/workspace/cryptanalysis/experiments/chained-transfer-public-target/original-kernel-census-01/src/lib.rs",
+          "edition": "2021",
+          "doc": true,
+          "doctest": true,
+          "test": true
+        },
+        "profile": {
+          "opt_level": "3",
+          "debuginfo": 0,
+          "debug_assertions": false,
+          "overflow_checks": false,
+          "test": true
+        },
+        "features": [],
+        "filenames": [
+          "/workspace/scratch/ct80-twisted-pair-build-01-cache/release/deps/chained_n4_original_kernel_census-75d1f654dba72bc2"
+        ],
+        "executable": "/workspace/scratch/ct80-twisted-pair-build-01-cache/release/deps/chained_n4_original_kernel_census-75d1f654dba72bc2",
+        "fresh": false
+      },
+      "actual_path": "/workspace/scratch/ct80-twisted-pair-build-01-cache/release/deps/chained_n4_original_kernel_census-75d1f654dba72bc2",
+      "copy": "/workspace/scratch/ct87-original-kernel-build-01/chain-original-compiled.bin",
+      "bytes": 1382032,
+      "sha256": "a8b88199887fed06c4433d1c1ac24fa0d3239688cbabaa6357d07d66307352f0"
+    },
+    "auditor": {
+      "Cargo_artifact": {
+        "reason": "compiler-artifact",
+        "package_id": "path+file:///workspace/cryptanalysis/experiments/chained-transfer-public-target/original-kernel-census-01#chained-n4-original-kernel-census@0.1.0",
+        "manifest_path": "/workspace/cryptanalysis/experiments/chained-transfer-public-target/original-kernel-census-01/Cargo.toml",
+        "target": {
+          "kind": [
+            "bin"
+          ],
+          "crate_types": [
+            "bin"
+          ],
+          "name": "audit-original-kernel-census",
+          "src_path": "/workspace/cryptanalysis/experiments/chained-transfer-public-target/original-kernel-census-01/src/bin/audit_records.rs",
+          "edition": "2021",
+          "doc": true,
+          "doctest": false,
+          "test": true
+        },
+        "profile": {
+          "opt_level": "3",
+          "debuginfo": 0,
+          "debug_assertions": false,
+          "overflow_checks": false,
+          "test": false
+        },
+        "features": [],
+        "filenames": [
+          "/workspace/scratch/ct80-twisted-pair-build-01-cache/release/audit-original-kernel-census"
+        ],
+        "executable": "/workspace/scratch/ct80-twisted-pair-build-01-cache/release/audit-original-kernel-census",
+        "fresh": false
+      },
+      "actual_path": "/workspace/scratch/ct80-twisted-pair-build-01-cache/release/audit-original-kernel-census",
+      "copy": "/workspace/scratch/ct87-original-kernel-build-01/auditor-original-compiled.bin",
+      "bytes": 907072,
+      "sha256": "4a24367e0a3afb279c9584592f6d7170017dae1d5180176897c8df9d16e424fd"
+    }
+  },
+  "all_whole_compressed_inputs": {
+    "original-E2.json.xz": {
+      "source": "nondual13-preflight/models/expected-native-01.json.xz",
+      "bytes": 217960,
+      "sha256": "22225094b7e3727332a761593b47ac44a2efd2f04bbdb1b1865abf3c35ba7267"
+    },
+    "original-E3.json.xz": {
+      "source": "nondual13-next-preflight/models/expected-native-01.json.xz",
+      "bytes": 326200,
+      "sha256": "1a7c90c81310a9d1a329b830c9c7b9f52a6c4504152c26162fb46f7fc5184787"
+    },
+    "original-E4.json.xz": {
+      "source": "paired-fourth-preflight/expected-native-01.json.xz",
+      "bytes": 947752,
+      "sha256": "b9f8b5751384059e79c537a6bb5ee29c9a1a12af28bd9f32c452c06597f4474b"
+    },
+    "curated-E2.json.xz": {
+      "source": "evidence/original-prime-alternative-kernel-review-01/originalE2-whole-six-rows.json.xz",
+      "bytes": 46384,
+      "sha256": "5312bd9420657fc7416e9aa209cbd24bb7d4739365bd61fb28510350f5c41c90"
+    },
+    "curated-E3.json.xz": {
+      "source": "evidence/original-prime-alternative-kernel-review-01/originalE3-whole-six-rows.json.xz",
+      "bytes": 27544,
+      "sha256": "d5132d7d29187dad3ba057cd39fb4b72e03827d85b6df2722fe47929b11cf5c4"
+    },
+    "curated-E4.json.xz": {
+      "source": "evidence/original-prime-alternative-kernel-review-01/originalE4-whole-six-rows.json.xz",
+      "bytes": 27848,
+      "sha256": "3344b03e670707a9f5fa2eb36e38d7c280c4f63559bb987cb37909924bc75ab4"
+    }
+  },
+  "whole_source_binary_and_input_copy_equality": true,
+  "field_engine": "none; finite revalidation of already genuine coordinate certificates",
+  "scope": "unsigned byte custody; no mathematical projection"
+}

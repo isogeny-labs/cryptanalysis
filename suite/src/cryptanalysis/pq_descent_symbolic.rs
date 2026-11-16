@@ -272,6 +272,19 @@ pub fn descend(
         ));
     }
     let n_vars = (summands * n_prime) as usize;
+    #[cfg(feature = "s3-direct-coefficients")]
+    if summands == 2 {
+        let (equations, field_monomials) = s3_direct_equations(gf, b, x_r, v_basis);
+        return Ok(SymbolicDescent {
+            n: gf.n,
+            n_prime,
+            summands,
+            n_vars,
+            equations,
+            v_basis: v_basis.to_vec(),
+            field_monomials,
+        });
+    }
     let poly = match summands {
         2 => s3_symbolic(gf, b, x_r, v_basis),
         _ => s4_symbolic(gf, b, x_r, v_basis),
@@ -285,6 +298,66 @@ pub fn descend(
         v_basis: v_basis.to_vec(),
         field_monomials: poly.len(),
     })
+}
+
+/// Direct coefficients of the same quadratic S3 polynomial. All cross masks
+/// precede the linear masks; within each degree ascending masks are canonical.
+#[cfg(any(test, feature = "s3-direct-coefficients"))]
+fn s3_direct_equations(gf: &Gf2, b: u64, x_r: u64, basis: &[u64]) -> (Vec<F2BoolPoly>, usize) {
+    let np = basis.len();
+    let n_vars = 2 * np;
+    let capacity = (np * np + 2 * np).div_ceil(2);
+    let mut equations: Vec<F2BoolPoly> = (0..gf.n)
+        .map(|_| F2BoolPoly {
+            terms: Vec::with_capacity(capacity),
+            n_vars,
+        })
+        .collect();
+    let mut count = 0;
+    let mut emit = |mask: u64, coefficient: u64| {
+        if coefficient == 0 {
+            return;
+        }
+        count += 1;
+        let monomial = F2BoolMono::from_mask(mask);
+        let mut bits = coefficient;
+        while bits != 0 {
+            let bit = bits.trailing_zeros();
+            if bit < gf.n {
+                equations[bit as usize].terms.push(monomial);
+            }
+            bits &= bits - 1;
+        }
+    };
+    let squares: Vec<u64> = basis.iter().map(|&v| gf.sqr(v)).collect();
+    let mut cross = vec![0u64; np * np];
+    // One coefficient per unordered basis pair, used for both cross masks.
+    for j in 0..np {
+        for i in 0..=j {
+            let product = if i == j {
+                squares[i]
+            } else {
+                gf.mul(basis[i], basis[j])
+            };
+            let coefficient = gf.mul(product, x_r) ^ gf.sqr(product);
+            cross[j * np + i] = coefficient;
+            cross[i * np + j] = coefficient;
+        }
+    }
+    for j in 0..np {
+        for i in 0..np {
+            emit((1u64 << i) | (1u64 << (np + j)), cross[j * np + i]);
+        }
+    }
+    let x_r_squared = gf.sqr(x_r);
+    let linear: Vec<u64> = squares.iter().map(|&v| gf.mul(v, x_r_squared)).collect();
+    for offset in [0, np] {
+        for (i, &coefficient) in linear.iter().enumerate() {
+            emit(1u64 << (offset + i), coefficient);
+        }
+    }
+    emit(0, b);
+    (equations, count)
 }
 
 /// `S_3(x_1, x_2, x_R)` with `x_1`, `x_2` linear forms, term for term
@@ -334,6 +407,45 @@ mod tests {
     use crate::cryptanalysis::pq_descent::{weil_descend_s3, weil_descend_s4};
     use rand::rngs::StdRng;
     use rand::{Rng, SeedableRng};
+
+    #[test]
+    fn direct_s3_matches_generic_coefficients_in_canonical_order() {
+        let mut rng = StdRng::seed_from_u64(0x5333_2026_1115);
+        for n in [7, 15, 31, 53, 63] {
+            let irr =
+                crate::cryptanalysis::koblitz_index_calculus::find_irreducible_sparse(n).unwrap();
+            let gf = Gf2::new(&irr);
+            for np in [1usize, 2, 4, 8, 16, 24, 32] {
+                for variant in 0..4 {
+                    let mut basis: Vec<u64> = (0..np).map(|_| rng.gen::<u64>() & gf.mask).collect();
+                    if variant == 1 {
+                        basis.fill(0);
+                    }
+                    if variant == 2 {
+                        basis.fill(1);
+                    }
+                    let x_r = if variant == 3 {
+                        0
+                    } else {
+                        rng.gen::<u64>() & gf.mask
+                    };
+                    let b = rng.gen::<u64>() & gf.mask;
+                    let reference = s3_symbolic(&gf, b, x_r, &basis);
+                    let expected = reference.split(n, 2 * np);
+                    let (actual, count) = s3_direct_equations(&gf, b, x_r, &basis);
+                    assert_eq!(count, reference.len(), "field monomial count n={n} np={np}");
+                    assert_eq!(actual.len(), expected.len());
+                    for (a, e) in actual.iter().zip(&expected) {
+                        assert_eq!(a.n_vars, e.n_vars);
+                        assert_eq!(
+                            a.terms, e.terms,
+                            "ordered coefficients n={n} np={np} variant={variant}"
+                        );
+                    }
+                }
+            }
+        }
+    }
 
     fn standard_basis(n_prime: u32) -> Vec<u64> {
         (0..n_prime).map(|k| 1u64 << k).collect()
@@ -558,16 +670,20 @@ mod tests {
         }
         let mut rng = StdRng::seed_from_u64(0x5011);
         for &(n, seed) in &[(7u32, 1u64), (11, 2), (17, 3), (23, 4), (31, 5)] {
-            let inst = random_binary_instance(n, seed, 1 << 20).expect("a curve");
-            let gf = &inst.gf;
+            // This compares field-polynomial splitting, not curve orders.
+            // Retain every field/dimension without enumerating a 31-bit curve.
+            let irr =
+                crate::cryptanalysis::koblitz_index_calculus::find_irreducible_sparse(n).unwrap();
+            let gf = &Gf2::new(&irr);
+            let b = (StdRng::seed_from_u64(seed).gen::<u64>() & gf.mask) | 2;
             for np in [1u32, 2, 3, 5, 6, 9, 16] {
                 let basis: Vec<u64> = (0..np).map(|_| rng.gen::<u64>() & gf.mask).collect();
                 let x_r = rng.gen::<u64>() & gf.mask;
-                let s3 = s3_symbolic(gf, inst.b, x_r, &basis);
+                let s3 = s3_symbolic(gf, b, x_r, &basis);
                 let n_vars = 2 * np as usize;
                 assert_eq!(s3.split(gf.n, n_vars), base_split(&s3, gf.n, n_vars));
                 if np <= 6 {
-                    let s4 = s4_symbolic(gf, inst.b, x_r, &basis);
+                    let s4 = s4_symbolic(gf, b, x_r, &basis);
                     let n_vars = 3 * np as usize;
                     assert_eq!(s4.split(gf.n, n_vars), base_split(&s4, gf.n, n_vars));
                 }

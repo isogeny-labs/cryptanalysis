@@ -1,0 +1,334 @@
+{
+  "branch": "codex/ic-trial32-20261115",
+  "closed_utc": "2026-11-16T09:44:18+00:00",
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "cloud/modal_run.py",
+        "run",
+        "--image",
+        "cuda",
+        "--gpu",
+        "L4",
+        "--cpu",
+        "4",
+        "--memory",
+        "8",
+        "--timeout",
+        "900",
+        "--apt",
+        "time",
+        "--out",
+        "experiments/ic-euclid-inversion-20261116/timing-001",
+        "--detach",
+        "--",
+        "python3",
+        "experiments/ic-euclid-inversion-20261116/run_prepared.py"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "started_utc": "2026-11-16T09:34:47+00:00",
+      "wall_s": 11.318
+    }
+  ],
+  "commit": "0fa83722d9d12d6a235bfd7e38960d9b7358527f",
+  "commit_dirty": false,
+  "created_utc": "2026-11-16T09:34:45+00:00",
+  "curve_uid": null,
+  "entries": [
+    "experiments/ic-euclid-inversion-20261116"
+  ],
+  "host": {
+    "cpu": "arm",
+    "cpus_online": 14,
+    "hostname": "Mac.attlocal.net",
+    "isolation": "unstated",
+    "platform": "macOS-27.2-arm64-arm-64bit-Mach-O"
+  },
+  "id": "20261116T0934Z-ic-euclid-matrix-factorial-001",
+  "metrics": [
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n15_mitm-prefix-u32_raw_paired_cold_ratio",
+      "note": "Exploratory prefix-baseline/candidate ratio;16 failed A/A controls retained across panel; no speedup promoted; qualifiednull.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9817772622471923,
+        1.098519957826868
+      ],
+      "unit": "ratio",
+      "value": 1.0237750435539843
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n15_mitm-euclid_raw_paired_cold_ratio",
+      "note": "Exploratory prefix-baseline/candidate ratio;16 failed A/A controls retained across panel; no speedup promoted; qualifiednull.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9529573630058811,
+        1.0399738672305223
+      ],
+      "unit": "ratio",
+      "value": 0.9960632534833292
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n15_mitm-euclid-u32_raw_paired_cold_ratio",
+      "note": "Exploratory prefix-baseline/candidate ratio;16 failed A/A controls retained across panel; no speedup promoted; qualifiednull.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9312272427360034,
+        0.9944026275394521
+      ],
+      "unit": "ratio",
+      "value": 0.9633207607348069
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n18_mitm-prefix-u32_raw_paired_cold_ratio",
+      "note": "Exploratory prefix-baseline/candidate ratio;16 failed A/A controls retained across panel; no speedup promoted; qualifiednull.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9633405462374918,
+        1.0389260267907352
+      ],
+      "unit": "ratio",
+      "value": 1.0099694096777538
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n18_mitm-euclid_raw_paired_cold_ratio",
+      "note": "Exploratory prefix-baseline/candidate ratio;16 failed A/A controls retained across panel; no speedup promoted; qualifiednull.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.8874984728128247,
+        0.9871781957331535
+      ],
+      "unit": "ratio",
+      "value": 0.9300561387378772
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n18_mitm-euclid-u32_raw_paired_cold_ratio",
+      "note": "Exploratory prefix-baseline/candidate ratio;16 failed A/A controls retained across panel; no speedup promoted; qualifiednull.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.900667070300806,
+        1.004703053794027
+      ],
+      "unit": "ratio",
+      "value": 0.9563774751469352
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n21_mitm-prefix-u32_raw_paired_cold_ratio",
+      "note": "Exploratory prefix-baseline/candidate ratio;16 failed A/A controls retained across panel; no speedup promoted; qualifiednull.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9929519123252255,
+        1.0855254236088918
+      ],
+      "unit": "ratio",
+      "value": 1.0238964424942973
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n21_mitm-euclid_raw_paired_cold_ratio",
+      "note": "Exploratory prefix-baseline/candidate ratio;16 failed A/A controls retained across panel; no speedup promoted; qualifiednull.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.8780831857289266,
+        0.9723688950552475
+      ],
+      "unit": "ratio",
+      "value": 0.9099800904195203
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n21_mitm-euclid-u32_raw_paired_cold_ratio",
+      "note": "Exploratory prefix-baseline/candidate ratio;16 failed A/A controls retained across panel; no speedup promoted; qualifiednull.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.874876205042059,
+        0.9935081930057931
+      ],
+      "unit": "ratio",
+      "value": 0.9105850008481164
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n24_mitm-prefix-u32_raw_paired_cold_ratio",
+      "note": "Exploratory prefix-baseline/candidate ratio;16 failed A/A controls retained across panel; no speedup promoted; qualifiednull.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9591434872625799,
+        1.0286964772041167
+      ],
+      "unit": "ratio",
+      "value": 0.9867672547174384
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n24_mitm-euclid_raw_paired_cold_ratio",
+      "note": "Exploratory prefix-baseline/candidate ratio;16 failed A/A controls retained across panel; no speedup promoted; qualifiednull.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9304094158588307,
+        1.0085764803772546
+      ],
+      "unit": "ratio",
+      "value": 0.9674583881640219
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n24_mitm-euclid-u32_raw_paired_cold_ratio",
+      "note": "Exploratory prefix-baseline/candidate ratio;16 failed A/A controls retained across panel; no speedup promoted; qualifiednull.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9333275977494985,
+        1.0026309089366034
+      ],
+      "unit": "ratio",
+      "value": 0.9899589827144322
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n27_mitm-prefix-u32_raw_paired_cold_ratio",
+      "note": "Exploratory prefix-baseline/candidate ratio;16 failed A/A controls retained across panel; no speedup promoted; qualifiednull.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9598020786423562,
+        1.0213823996765843
+      ],
+      "unit": "ratio",
+      "value": 0.9984810757601648
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n27_mitm-euclid_raw_paired_cold_ratio",
+      "note": "Exploratory prefix-baseline/candidate ratio;16 failed A/A controls retained across panel; no speedup promoted; qualifiednull.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.8395202740565013,
+        0.9527766554930908
+      ],
+      "unit": "ratio",
+      "value": 0.8974404878633189
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n27_mitm-euclid-u32_raw_paired_cold_ratio",
+      "note": "Exploratory prefix-baseline/candidate ratio;16 failed A/A controls retained across panel; no speedup promoted; qualifiednull.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.8703168134662485,
+        0.9222630182927571
+      ],
+      "unit": "ratio",
+      "value": 0.8998694922401498
+    }
+  ],
+  "problem": "ecdlp:binary_ic_arithmetic_factorial",
+  "raw": [
+    {
+      "bytes": 3075867,
+      "path": "experiments/ic-euclid-inversion-20261116/raw-timing-001.tar.gz",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/32/3290e5e16a6c297f30aa285f6beb263c55feda95d4d9465764ac2722595b2507",
+      "sha256": "3290e5e16a6c297f30aa285f6beb263c55feda95d4d9465764ac2722595b2507",
+      "uploaded": true
+    },
+    {
+      "bytes": 325092,
+      "path": "experiments/ic-euclid-inversion-20261116/raw-bundle-receipt.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/7d/7d6ae6ad1fd9e7a75621e82b9a51dba0e55f0000b3159bdf43f577daf910159d",
+      "sha256": "7d6ae6ad1fd9e7a75621e82b9a51dba0e55f0000b3159bdf43f577daf910159d",
+      "uploaded": true
+    },
+    {
+      "bytes": 141232,
+      "path": "experiments/ic-euclid-inversion-20261116/timing-001/.artifacts.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/7b/7bf0039898c12bc9a490ae805c7c76334df3f6a496481ea04fa6bb78217cf770",
+      "sha256": "7bf0039898c12bc9a490ae805c7c76334df3f6a496481ea04fa6bb78217cf770",
+      "uploaded": true
+    },
+    {
+      "bytes": 1158066,
+      "path": "experiments/ic-euclid-inversion-20261116/analysis.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/d0/d001b2cf816650179d559b5783aa0fa15520d406d1f9a491accc5996b257e587",
+      "sha256": "d001b2cf816650179d559b5783aa0fa15520d406d1f9a491accc5996b257e587",
+      "uploaded": true
+    },
+    {
+      "bytes": 186604,
+      "path": "experiments/ic-euclid-inversion-20261116/independent-arithmetic-timing001.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/46/468b8be5e5be041a9f093b7dd2273ca6d48c93b346b6225010b07eb69c76ffe4",
+      "sha256": "468b8be5e5be041a9f093b7dd2273ca6d48c93b346b6225010b07eb69c76ffe4",
+      "uploaded": true
+    }
+  ],
+  "repo": "cryptanalysis",
+  "reports": {
+    "pdf": "experiments/ic-euclid-inversion-20261116/REPORT.pdf",
+    "png": [
+      "experiments/ic-euclid-inversion-20261116/cold.png",
+      "experiments/ic-euclid-inversion-20261116/ratios.png"
+    ],
+    "svg": [
+      "experiments/ic-euclid-inversion-20261116/cold.svg",
+      "experiments/ic-euclid-inversion-20261116/ratios.svg",
+      "experiments/ic-euclid-inversion-20261116/flow.svg"
+    ]
+  },
+  "schema": "bench.record/v1",
+  "session": null,
+  "slug": "ic-euclid-matrix-factorial-001",
+  "status": "invalid",
+  "summary": "Negative arithmetic comparison: all120quadruples complete,480IC+480rho answers replay. Euclid and combined do not improve full cold cost; N27combined ratio0.899869 CI0.870317..0.922263. Matrix-only medians near1. Sixteen failed A/A controls retained; zero process caps. Unqualified placement/resource envelope, no promotion; defaults preserved. Both rho inverse backends measured in separate fresh processes. Raw1217outputs separately archived and losslessly bundled.",
+  "validation": "experiments/ic-euclid-inversion-20261116/analysis.json"
+}

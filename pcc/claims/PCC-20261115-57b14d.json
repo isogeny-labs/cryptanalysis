@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-15T10:03:22Z",
+ "id": "PCC-20261115-57b14d",
+ "kind": "theorem",
+ "producer": {
+  "commit": "a0ec881c2917ad91a7009625fdbfd2b2f47a0478",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "3093df8bd84439c02972b3415557efb0e42516821bcace08c5d16e6d70d5d55f",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/original-induced-transfer-01/lean/InducedFullTransfer.lean",
+   "theorem": "InducedFullTransfer.injective_on_annihilator"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Conditional quotient algebra on geometric IntModules. Presentation explicitly supplies sourcePhi homomorphism identities and an arbitrary section withPhi(liftx)=x; CompatibleEdge explicitly supplies source elliptic homomorphism identities and full kernel transport. No induced transfer linearity/commuting square/dual norm/recovery/injectivity is a field or hypothesis. Both induced reverse norms derive from source elliptic dual identities; recovery/injectivity require annihilation only on the stated inputs and Bezout. No rational/linear/equivariant section or finite annihilation of every geometric point is assumed. Both unchanged original434/435 gates audit21declarations: nine planned named conclusions plus12 structural declarations, all0trusted; exact localbindings for allnine. ActualHLP/field/Frobenius/Picard/order/program/lift bridges remainexplicit. Standardquotientalgebra formalization, unsigned/no newcurve-DLP/cost/novelty/signedstanding.",
+ "statement": "theorem injective_on_annihilator {A J B K : Type} [IntModule A] [IntModule J] [IntModule B] [IntModule K] (source : Presentation A J) (target : Presentation B K) (forward : CompatibleEdge source target) (reverse : CompatibleEdge target source) (n order inverse quotient : Int) (source_elliptic_dual : \u2200 a, reverse.map (forward.map a)=n \u2022 a) (target_elliptic_dual : \u2200 b, forward.map (reverse.map b)=n \u2022 b) (bezout : inverse*n+quotient*order=1) (x y : J) (annihilated_x : order \u2022 x=0) (annihilated_y : order \u2022 y=0) (same : transfer forward x=transfer forward y) : x=y"
+}

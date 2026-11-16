@@ -1,0 +1,5 @@
+# Passive original relation capture compiled01
+
+First build0 under prospectively published8e7e1c. All1503prior/17current source guards, exact original engine dependency/features/targets closure, full prepared RLIB/RMETA and actual fresh=true reuse pass. The test and both auditors compile within120second individual phases. Full source/Cargo metadata/binary/closure copies remain retained. Native NOT RUN; publish compiled source and import its exact original checkpoint first. [pcc:unverified]
+
+Seven passive insertions reverse to the entire original solver. Context/test observer labels, export and truthful provenance changes reverse exactly after declared formatting. Journaled raw values use no field/group/RNG operation; canonical key() was inspected as byte copying. Whole auditor requires60calls/660events, every100native record/full report/counter/input check, selected-kernel residuals and complete stages. Actual parity remains untested until native. Rank/row-certificate/character proofs and measurements remain subsequent work. [pcc:unverified]

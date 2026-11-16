@@ -1,6 +1,7 @@
 //! CT126: diagnostic actual-field C169/C13a/C13b/D and warm-transfer timings.
 //! NOT a complete ECDLP, PCC verification, or admitted benchmark.
 use chained_n4_fixed_jacobian_chain_evaluator as chain;
+use chained_n4_fixed_jacobian_chain::{ELL, ORDER};
 use chained_n4_beta_rational_lift::Rational6;
 use chained_n4_public_target::CheckedInstance;
 use isogeny_algos::curve::{self, Pt};
@@ -28,7 +29,7 @@ fn main() {
     let target = &runtime.geometry.models[2];
     let f = &source.quadratic.f;
     let e = &target.quadratic.curve;
-    let scalars = [1u128, 2, 17, 12_345, chain::ELL as u128 - 1];
+    let scalars = [1u128, 2, 17, 12_345, ELL as u128 - 1];
     let mut input_pts: Vec<Pt<_>> = Vec::new();
     let mut intermediate: Vec<Pt<_>> = Vec::new();
     let mut final_pts: Vec<Pt<_>> = Vec::new();
@@ -53,11 +54,14 @@ fn main() {
         let input = runtime.admit(0, &packet).expect("public admission");
         let d = runtime.transfer_entry(&input, 2).expect("direct route");
         let r = runtime.retained_lift_entry(&input, 2).expect("retained route");
-        assert_eq!(d.class, r.class);
-        assert_eq!(d.norm, r.norm);
+        // Entry's raw class and norm are intentionally private. check_final()
+        // independently verifies each actual Jacobian norm and full-group order;
+        // compare the complete canonical public class representations instead.
         let a = runtime.check_final(&d).expect("full norm/order verification");
         let b = runtime.check_final(&r).expect("full norm/order verification");
-        assert_eq!(a.key, b.key);
+        assert_eq!(a.field, b.field, "destination field mismatch");
+        assert_eq!(a.model, b.model, "destination model mismatch");
+        assert_eq!(a.key, b.key, "canonical target class mismatch");
         outputs.push(json!({"scalar_fixture_only":k,"source_public":packet.key,
                             "output_public":a.key,"direct_equals_retained":true}));
         input_pts.push(p);
@@ -118,8 +122,8 @@ fn main() {
         "standing":"[pcc:unverified]",
         "scope":"actual elliptic arithmetic in prebuilt geometry; NOT cold single-target ECDLP",
         "source_prime":223,
-        "subgroup_prime":chain::ELL,
-        "complete_group_order":chain::ORDER,
+        "subgroup_prime":ELL,
+        "complete_group_order":ORDER,
         "scalar_fixture_count":scalars.len(),
         "setup_construct_ns":setup_ns,
         "linux_vm_hwm_kb":rss_kb,
