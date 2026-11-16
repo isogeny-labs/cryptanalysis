@@ -753,6 +753,7 @@ pub enum RowStatus {
 /// is counted, so the linear algebra is priced in its own native unit.
 pub struct IncrementalGauss {
     modulus: u64,
+    reciprocal: Option<crate::cryptanalysis::ic_framework::u32_reciprocal::U32Reciprocal>,
     cols: usize,
     rows: Vec<Vec<u64>>,
     rhs: Vec<u64>,
@@ -768,6 +769,7 @@ impl IncrementalGauss {
     pub fn new(cols: usize, modulus: u64) -> Self {
         Self {
             modulus,
+            reciprocal: None,
             cols,
             rows: Vec::new(),
             rhs: Vec::new(),
@@ -779,6 +781,14 @@ impl IncrementalGauss {
         }
     }
 
+    /// Opt-in reciprocal reduction; unsupported moduli retain generic arithmetic.
+    pub fn new_u32_reciprocal(cols: usize, modulus: u64) -> Self {
+        let mut matrix = Self::new(cols, modulus);
+        matrix.reciprocal =
+            crate::cryptanalysis::ic_framework::u32_reciprocal::U32Reciprocal::new(modulus);
+        matrix
+    }
+
     pub fn rank(&self) -> usize {
         self.rows.len()
     }
@@ -788,8 +798,31 @@ impl IncrementalGauss {
     }
 
     /// Add one equation `Σ row[j]·x_j ≡ rhs (mod r)`.
-    pub fn add_row(&mut self, mut row: Vec<u64>, mut rhs: u64) -> RowStatus {
+    pub fn add_row(&mut self, row: Vec<u64>, rhs: u64) -> RowStatus {
+        let reciprocal = self.reciprocal;
+        if reciprocal.is_some() && rhs < self.modulus && row.iter().all(|&v| v < self.modulus) {
+            self.add_row_inner::<true>(row, rhs, reciprocal)
+        } else {
+            self.add_row_inner::<false>(row, rhs, None)
+        }
+    }
+
+    fn add_row_inner<const FAST: bool>(
+        &mut self,
+        mut row: Vec<u64>,
+        mut rhs: u64,
+        reciprocal: Option<crate::cryptanalysis::ic_framework::u32_reciprocal::U32Reciprocal>,
+    ) -> RowStatus {
         let m = self.modulus;
+        let multiply = |a: u64, b: u64| {
+            if FAST {
+                reciprocal
+                    .expect("validated reciprocal strategy")
+                    .mul(a as u32, b as u32)
+            } else {
+                mulmod(a, b, m)
+            }
+        };
         debug_assert_eq!(row.len(), self.cols);
         // Reduce against every existing pivot.
         for i in 0..self.rows.len() {
@@ -802,11 +835,11 @@ impl IncrementalGauss {
             for j in 0..self.cols {
                 let v = pivot[j];
                 if v != 0 {
-                    row[j] = submod(row[j], mulmod(f, v, m), m);
+                    row[j] = submod(row[j], multiply(f, v), m);
                     self.row_ops += 1;
                 }
             }
-            rhs = submod(rhs, mulmod(f, self.rhs[i], m), m);
+            rhs = submod(rhs, multiply(f, self.rhs[i]), m);
             self.row_ops += 1;
         }
         let Some(pc) = (0..self.cols).find(|&j| row[j] != 0) else {
@@ -821,11 +854,11 @@ impl IncrementalGauss {
         let inv = invmod(row[pc], m).expect("prime modulus");
         for v in row.iter_mut() {
             if *v != 0 {
-                *v = mulmod(*v, inv, m);
+                *v = multiply(*v, inv);
                 self.row_ops += 1;
             }
         }
-        rhs = mulmod(rhs, inv, m);
+        rhs = multiply(rhs, inv);
         self.row_ops += 1;
         // Eliminate the new pivot column from every existing row.
         let nnz: Vec<usize> = (0..self.cols).filter(|&j| row[j] != 0).collect();
@@ -835,11 +868,11 @@ impl IncrementalGauss {
                 continue;
             }
             for &j in &nnz {
-                let v = mulmod(f, row[j], m);
+                let v = multiply(f, row[j]);
                 self.rows[i][j] = submod(self.rows[i][j], v, m);
                 self.row_ops += 1;
             }
-            self.rhs[i] = submod(self.rhs[i], mulmod(f, rhs, m), m);
+            self.rhs[i] = submod(self.rhs[i], multiply(f, rhs), m);
             self.row_ops += 1;
         }
         self.row_of_pivot[pc] = Some(self.rows.len());
@@ -7661,5 +7694,73 @@ mod tests {
             .unwrap();
         assert!((total.alpha - 0.75).abs() < 1e-9, "{total:?}");
         assert!(total.r_squared > 0.999);
+    }
+}
+
+#[cfg(test)]
+mod reciprocal_gauss_tests {
+    use super::*;
+
+    fn equal_state(a: &IncrementalGauss, b: &IncrementalGauss) {
+        assert_eq!(a.rows, b.rows);
+        assert_eq!(a.rhs, b.rhs);
+        assert_eq!(a.pivot_of_row, b.pivot_of_row);
+        assert_eq!(a.row_of_pivot, b.row_of_pivot);
+        assert_eq!(
+            (a.row_ops, a.dependent, a.inconsistent),
+            (b.row_ops, b.dependent, b.inconsistent)
+        );
+        for col in 0..a.cols {
+            assert_eq!(a.pinned(col), b.pinned(col));
+        }
+    }
+
+    #[test]
+    fn reciprocal_rows_match_generic_complete_states_and_work() {
+        let mut state = 0xc5df9e2097b0153eu64;
+        for m in [
+            2,
+            3,
+            17,
+            65521,
+            1047281,
+            2097533,
+            22367531,
+            4294967291,
+            4294967311,
+            (1 << 61) - 1,
+        ] {
+            for cols in [0, 1, 2, 7, 19] {
+                let mut a = IncrementalGauss::new(cols, m);
+                let mut b = IncrementalGauss::new_u32_reciprocal(cols, m);
+                assert_eq!(b.reciprocal.is_some(), m <= u32::MAX as u64);
+                for k in 0..80 {
+                    let mut next = || {
+                        state ^= state << 13;
+                        state ^= state >> 7;
+                        state ^= state << 17;
+                        state % m
+                    };
+                    let mut row: Vec<_> = (0..cols).map(|_| next()).collect();
+                    if k % 7 == 0 {
+                        row.fill(0);
+                    }
+                    let rhs = if k % 11 == 0 { 0 } else { next() };
+                    assert_eq!(a.add_row(row.clone(), rhs), b.add_row(row, rhs));
+                    equal_state(&a, &b);
+                }
+            }
+        }
+        // Public callers with noncanonical input take the preserved generic path.
+        let mut a = IncrementalGauss::new(2, 17);
+        let mut b = IncrementalGauss::new_u32_reciprocal(2, 17);
+        assert_eq!(a.add_row(vec![18, 2], 19), b.add_row(vec![18, 2], 19));
+        equal_state(&a, &b);
+        // Explicit dependent/inconsistent rows remain distinguishable.
+        assert_eq!(a.add_row(vec![1, 2], 2), RowStatus::Dependent);
+        assert_eq!(b.add_row(vec![1, 2], 2), RowStatus::Dependent);
+        assert_eq!(a.add_row(vec![1, 2], 3), RowStatus::Inconsistent);
+        assert_eq!(b.add_row(vec![1, 2], 3), RowStatus::Inconsistent);
+        equal_state(&a, &b);
     }
 }

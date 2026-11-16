@@ -69,6 +69,7 @@ pub mod linalg;
 pub mod plugins;
 pub mod solvers;
 pub mod stages;
+pub(crate) mod u32_reciprocal;
 
 use std::time::Instant;
 
@@ -92,7 +93,7 @@ pub struct PipelineSpec {
     pub solver: Option<String>,
     pub solver_params: Params,
     pub targets: Targets,
-    /// The relation matrix: `incremental-gauss` or `structured-gauss`.
+    /// Relation matrix name; `incremental-gauss-u32` opts into bounded reciprocal products.
     pub linalg: String,
     /// Cap on targets drawn before the run gives up.
     pub max_trials: u64,
@@ -1050,6 +1051,28 @@ mod tests {
             None,
         )
         .unwrap();
+
+        spec.linalg = "incremental-gauss-u32".into();
+        let mut oracle = MitmOracle::new(2);
+        let reciprocal = run_pipeline(
+            &ctx,
+            &spec,
+            &base,
+            &mut oracle,
+            planted,
+            &Calibration::default(),
+            None,
+        )
+        .unwrap();
+        assert!(reciprocal.verified);
+        assert_eq!(dense.recovered, reciprocal.recovered);
+        assert_eq!(dense.linear_algebra.rank, reciprocal.linear_algebra.rank);
+        assert_eq!(dense.linear_algebra.rows, reciprocal.linear_algebra.rows);
+        assert_eq!(dense.linear_algebra.work, reciprocal.linear_algebra.work);
+        assert_eq!(
+            dense.decomposition.cost.group_ops,
+            reciprocal.decomposition.cost.group_ops
+        );
 
         spec.linalg = "structured-gauss".into();
         let mut oracle = MitmOracle::new(2);
