@@ -43,6 +43,67 @@ class BenchrecTest(unittest.TestCase):
         sh("git", "add", "-A", cwd=self.root)
         sh("git", "commit", "-qm", msg, cwd=self.root)
 
+    def test_finite_signed_extremes_have_finite_relative_changes(self):
+        first = self.make_record(slug="aa-large-first", value=1e308)
+        last = self.make_record(slug="zz-large-last", value=1e308)
+        for magnitude in (1e308, 10 ** 308):
+            with self.subTest(number_type=type(magnitude).__name__):
+                for name, value in ((first, magnitude), (last, -magnitude)):
+                    path = self.root / name
+                    record = json.loads(path.read_text())
+                    record["metrics"][0]["value"] = value
+                    path.write_text(json.dumps(record))
+                self.br("report")
+                progress = json.loads((self.root / "benchmarks/progress/progress.json").read_text())
+                series = next(s for s in progress["series"] if s["metric"] == "ir_per_op")
+                self.assertEqual(series["latest_derived"]["improvement_vs_first_percent"], 200.0)
+                self.assertEqual(series["latest_derived"]["improvement_vs_previous_percent"], 200.0)
+                self.assertEqual(series["points"][-1]["value"], -magnitude)
+
+    def test_extreme_finite_comparisons_have_finite_chart_coordinates(self):
+        import re
+        import zlib
+        names = [self.make_record(slug=slug, value=100.0)
+                 for slug in ("aa-anchor", "bb-positive", "zz-negative")]
+        for name, value in zip(names, (100.0, 1e308, -1e308)):
+            path = self.root / name
+            record = json.loads(path.read_text())
+            record["metrics"][0]["value"] = value
+            path.write_text(json.dumps(record))
+        self.br("report")
+        svg = (self.root / "benchmarks/progress/progress.svg").read_text()
+        self.assertNotRegex(svg, r"\b(?:nan|inf)\b")
+        pdf = (self.root / "benchmarks/progress/progress.pdf").read_bytes()
+        streams = re.findall(rb"stream\n(.*?)\nendstream", pdf, re.S)
+        self.assertTrue(streams)
+        for stream in streams:
+            self.assertNotRegex(zlib.decompress(stream), rb"\b(?:nan|inf)\b")
+
+    def test_extreme_finite_reference_axis_has_nonzero_finite_labels(self):
+        names = [self.make_record(slug=slug, value=100.0, reference=100.0)
+                 for slug in ("aa-reference", "zz-reference")]
+        for name, reference in zip(names, (1e308, 1.0)):
+            path = self.root / name
+            record = json.loads(path.read_text())
+            record["metrics"][0]["value"] = 1e308
+            record["metrics"][0]["reference"] = reference
+            path.write_text(json.dumps(record))
+        self.br("report")
+        svg = (self.root / "benchmarks/progress/progress.svg").read_text()
+        self.assertNotRegex(svg, r"\b(?:nan|inf)\b")
+        self.assertIn("10^", svg)
+
+    def test_truly_unrepresentable_relative_change_still_fails(self):
+        first = self.make_record(slug="aa-small-first", value=1e308)
+        self.make_record(slug="zz-large-last", value=1e308)
+        path = self.root / first
+        record = json.loads(path.read_text())
+        record["metrics"][0]["value"] = 1e-308
+        path.write_text(json.dumps(record))
+        result = self.br("report", check=False)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("derived comparison overflow", result.stdout + result.stderr)
+
     def make_record(self, slug="rho-step", value=100.0, reference=None, status="measured"):
         rec = self.br("init", "--slug", slug, "--problem", "kernel:rho_step").stdout.strip()
         self.assertTrue((self.root / rec).is_file())

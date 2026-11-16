@@ -1,0 +1,18 @@
+digraph Roots {
+ rankdir=LR;
+ graph [bgcolor="white",pad="0.15",ranksep="0.4",nodesep="0.4"];
+ node [shape=box,style="rounded,filled",fillcolor="#edf5fc",color="#315c83",fontname="DejaVu Sans",fontsize=11];
+ edge [fontname="DejaVu Sans",fontsize=10,color="#315c83"];
+ new [label="Existing Richelot constructor\nfields + correspondence unchanged\nOnceLock empty"];
+ closed [label="Closed resultant / lower degree\ncomplete production graphs\ncache state checked per call",fillcolor="#e6f4e8",color="#39734b"];
+ pointwise [label="Retained pointwise / fallback\nvalidated Fp support polynomial"];
+ lower [label="Degree0 / 1 / errors\nreturn before initialization"];
+ quadratic [label="Degree2: real discriminant\ninitialize once, 2p-1 axis candidates\nsame canonical first root"];
+ reference [label="Original exhaustive p^2 builder\nretained TEST reference\nevery discriminant at17/101",fillcolor="#fff2df",color="#a46b25"];
+ new -> closed;
+ new -> pointwise;
+ pointwise -> lower;
+ pointwise -> quadratic;
+ reference -> quadratic [style=dashed,label="exact ordered root equality"];
+ closed -> pointwise [style=dashed,label="existing boundary fallback"];
+}

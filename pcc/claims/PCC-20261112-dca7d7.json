@@ -1,0 +1,79 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-12T03:10:19Z",
+ "id": "PCC-20261112-dca7d7",
+ "kind": "statement",
+ "producer": {
+  "commit": "25fd0be7cea37cefd298d3ac38b6f863bb9105d5",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct27-producer-01.txt",
+    "sha256": "0f6dca50f022c485802c206e10d5aa7e81b88229fb4399c9b66d0f74d14496cb"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct27-producer-source-01.rs",
+    "sha256": "0b241bfef18b44f119fa32faeabd853d4b145078f201782fabf2af85fd2b039d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct27-producer-source-01.sha256",
+    "sha256": "c9cedfd20ad958bfc0b8d32d5c91de3f89e4c3a89cd3a0742d6b4a3828161544"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/ct27-fixtures-01.sha256",
+    "sha256": "06fa38c952935a15103c9ce4296c4d277e3783081c8d57f818d1d034bb159f2b"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/fixtures/full-class/t0-classes.bin",
+    "sha256": "ea3bf26d7dc074f6014419e138d022c35da2a590d3652c48b4c231fb68c7374e"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/fixtures/full-class/t0-negation.bin",
+    "sha256": "3704b8a077548c7e46f03374f5b107a32bb59d78e063726047ce815b25cf3557"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/fixtures/full-class/t0-doubling.bin",
+    "sha256": "27e5e76fdd0ea6ad91d2efcd483641348c49b42255e01aeeae0c98e516865657"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/fixtures/full-class/t0-pairs-37-7.bin",
+    "sha256": "3a1523b3cc16783429db7c55fc1af22e518921f052a3de49ecaa9a83abdb6cd0"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/fixtures/full-class/t0-manifest.txt",
+    "sha256": "50e2c68bd8f6fefbaa72ebcb6f46fa7f3aceffe7fedb6a02d1b79d691e20c568"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Unsigned CT27 isolated PRODUCER prototype01 passes:actual T0 all12317 balanced classes,degree counts[3,236,12078],infinity-correction counts[1,118,12079,118,1],complete negation/doubling/deterministic-pair37i+7 operator indices exported. Frozen model/schema/canonical-order manifest,whole semantic class corpus and three operator fixtures,source01/hash/raw retained. Existing Balanced enumeration/arithmetic unchanged;dependency paths adjusted only in isolated scratch package. This is producer fixture generation,not independent checking,integrated guard acceptance,map-kernel membership or a measured advantage. Each complete semantic fixture stays under64KiB;no chunking or relabeling."
+}

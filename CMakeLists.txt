@@ -424,7 +424,7 @@ endif()
 
 if(CA_BUILD_TESTS)
   enable_testing()
-  set(CA_TESTS modarith group bsgs rho kangaroo grumpy precomp curve sixclass joint_tau pohlig cheon linalg indexcalc ffi gpu coord glv_trace_accounting)
+  set(CA_TESTS modarith group bsgs rho kangaroo grumpy precomp curve sixclass joint_tau pohlig cheon linalg indexcalc ic_projection ffi gpu coord glv_trace_accounting robustness)
   foreach(t ${CA_TESTS})
     if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_${t}.c)
       add_executable(test_${t} tests/test_${t}.c)
@@ -435,6 +435,11 @@ if(CA_BUILD_TESTS)
       add_test(NAME ${t} COMMAND test_${t})
     endif()
   endforeach()
+  # test_robustness covers inputs that used to loop forever; it has its own
+  # SIGALRM watchdog, and this bounds a build where that signal is deferred.
+  if(TEST robustness)
+    set_tests_properties(robustness PROPERTIES TIMEOUT 600)
+  endif()
   # The ISA guard behind -mno-mmx above: no instruction in the library may
   # name an MMX register (they alias the x87 stack, and nothing here issues
   # EMMS).  Runs wherever objdump exists and the target is x86-64.

@@ -1,0 +1,4 @@
+# The manifests declare rust-version 1.85 because getrandom 0.4 requires it.
+# The sources are still written for 1.78 (and are mirrored in other crates),
+# so lints that suggest newer APIs stay at that level.
+msrv = "1.78"

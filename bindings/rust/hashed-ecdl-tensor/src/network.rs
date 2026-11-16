@@ -178,7 +178,7 @@ impl GraphBuilder {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub(crate) enum Bit {
     Constant(bool),
     Signal(usize),

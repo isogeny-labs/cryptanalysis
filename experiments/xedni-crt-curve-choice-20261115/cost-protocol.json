@@ -1,0 +1,15 @@
+{
+  "schema": "xedni-crt-search-probe-accounting-v1",
+  "question": "How many coefficient candidates does the frozen fixed-target CRT policy inspect through its first accepted rational relation and through the complete 43-by-43 target scan?",
+  "inputs": {
+    "target_rows": "target-rows.jsonl.gz",
+    "target_rows_uncompressed_sha256": "9b99508d9bf96fef22c2e0b893f91326e555c57cbe1d65bb47b9190394674eca",
+    "parent_rows": "rows-v2.jsonl.gz",
+    "parent_rows_uncompressed_sha256": "e103c4f2beb37639b60de0700e8011e3944f7c2961461862a65d52ad269ec34c"
+  },
+  "order": "saved lexicographic (t1,t2) target order, all 1849 rows",
+  "join": "match each admitted target row to exactly one parent row by its ordered pair of reduced affine points",
+  "counters": ["target_queries", "admissible_pairs", "attempts_7", "attempts_11_strict", "attempts_11_weak", "accepted_pairs", "accepted_reduced_relations", "accepted_rational_relations"],
+  "stops": ["first_accepted_rational_relation_in_saved_target_order", "complete_target_scan"],
+  "claim_boundary": "candidate-probe operation counts on one frozen finite panel; no wall-time or asymptotic comparison"
+}

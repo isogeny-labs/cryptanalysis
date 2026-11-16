@@ -11,18 +11,8 @@
 #include "dlog_internal.h"
 #include "dlog_checkpoint_internal.h"
 
+#include <math.h>
 #include <stdio.h>
-
-typedef struct gpu_rho_checkpoint_header {
-    char magic[8];
-    uint64_t p, a, b, order, cofactor, base[4], target[4];
-    uint32_t kind, negmap, r, nthreads, dp_bits, tpb, requested_steps;
-    uint32_t walks_per_thread, aux_words, entry_size, resolved_steps;
-    uint64_t seed, resumes, ops, launches, dps, restarts, entries, result;
-    double elapsed_seconds;
-    uint32_t solved;
-    uint64_t checksum;
-} gpu_rho_checkpoint_header;
 
 static void gpu_rho_checkpoint_identity(gpu_rho_checkpoint_header *h,
                                          const ca_group *g, const ca_elem *base,
@@ -72,9 +62,11 @@ static int gpu_rho_checkpoint_probe(const char *path,
     }
     int ok = fread(saved, 1, sizeof(*saved), f) == sizeof(*saved) &&
              gpu_rho_checkpoint_same_run(saved, identity) && saved->seed &&
-             (!requested_seed || saved->seed == requested_seed) &&
-             saved->resolved_steps && saved->entries <= SIZE_MAX / sizeof(ca_htab_entry) &&
-             saved->elapsed_seconds >= 0 && saved->resumes < UINT64_MAX;
+             (!requested_seed || saved->seed == requested_seed) && saved->resolved_steps &&
+             saved->entries <= SIZE_MAX / sizeof(ca_htab_entry) &&
+             isfinite(saved->elapsed_seconds) && saved->elapsed_seconds >= 0 &&
+             saved->solved <= 1 && saved->resumes < UINT64_MAX && saved->launches <= saved->ops &&
+             saved->dps <= saved->ops && saved->restarts <= saved->dps;
     fclose(f);
     if (!ok) ca_set_error("gpu rho: checkpoint identity, format or seed does not match");
     return ok ? 1 : -1;
@@ -410,15 +402,25 @@ static ca_status gpu_rho_solve(const ca_group *g, const ca_elem *base,
     }
     a.steps = steps;
     identity.resolved_steps = steps;
+    /* Work limit: the caller's max_ops (CA_ERR_LIMIT), else the runaway
+     * guard of the CPU solver (rho.c), which ends a search whose target is
+     * not a power of the base with CA_ERR_NOT_FOUND.  It allows 64 times the
+     * sqrt(n) of a solvable run, the 2^dp steps each walk takes to a
+     * distinguished point, and whole launches (the limit is only checked
+     * between them). */
+    uint64_t op_limit = params->max_ops;
+    const ca_status limit_rc = op_limit ? CA_ERR_LIMIT : CA_ERR_NOT_FOUND;
+    if (op_limit == 0) {
+        double guard = 64.0 * (double)sqrt_n +
+                       64.0 * (double)nwalks * ((double)(1ULL << dp) + (double)steps) + 1048576.0;
+        op_limit = guard < 0x1p63 ? (uint64_t)guard : UINT64_MAX;
+    }
     /* DP buffer for one launch: twice the expected count plus slack, and
      * hard-capped so that a large group cannot ask for a huge allocation.
      * Overflowing the buffer is safe by construction: the kernel drops the
      * excess (it only writes slots below dp_cap) and the host clamps the
      * count, so an overflow costs work, never correctness. */
-    double exp_dps = (double)nwalks * steps / (double)(1ULL << dp);
-    uint64_t cap = (uint64_t)(exp_dps * 2) + 4096;
-    if (cap > (1u << 20)) cap = 1u << 20;
-    a.dp_cap = (uint32_t)cap;
+    a.dp_cap = ca_gpu_dp_capacity((uint32_t)nwalks, steps, (uint32_t)dp);
 
     /* multipliers (host) */
     uint64_t *mult = malloc((size_t)a.r * 4 * sizeof(uint64_t));
@@ -464,6 +466,10 @@ static ca_status gpu_rho_solve(const ca_group *g, const ca_elem *base,
     if (existing) {
         if (!gpu_rho_checkpoint_load(checkpoint_path, &saved, &tab, g, base, target))
             goto finish;
+        if (saved.ops > UINT64_MAX - total_ops) {
+            ca_set_error("gpu rho: resumed operation count exceeds counter capacity");
+            goto finish;
+        }
         total_ops += saved.ops;
         launches = saved.launches;
         dps_total = saved.dps;
@@ -478,11 +484,18 @@ static ca_status gpu_rho_solve(const ca_group *g, const ca_elem *base,
                                       elapsed_prior + ca_now() - t0, total_ops,
                                       launches, dps_total, restarts, tab.count, verbose))
         goto finish;
-    if (params->max_ops && total_ops > params->max_ops) {
-        rc = CA_ERR_LIMIT;
+    if (total_ops > op_limit) {
+        rc = limit_rc;
         goto finish;
     }
     for (;;) {
+        /* Dimensions above bound this product below UINT64_MAX. Stop before
+         * launching work whose cumulative operation charge cannot be stored. */
+        if (nwalks * steps > UINT64_MAX - total_ops) {
+            ca_set_error("gpu rho: operation counter capacity reached");
+            rc = CA_ERR_LIMIT;
+            break;
+        }
         const uint64_t *dps;
         uint32_t count;
         ca_status lrc = ops->launch(ctx, &dps, &count);
@@ -544,8 +557,8 @@ static ca_status gpu_rho_solve(const ca_group *g, const ca_elem *base,
             }
             next_checkpoint = now + (checkpoint_interval ? checkpoint_interval : 60);
         }
-        if (params->max_ops && total_ops > params->max_ops) {
-            rc = CA_ERR_LIMIT;
+        if (total_ops > op_limit) {
+            rc = limit_rc;
             break;
         }
     }
