@@ -44,12 +44,36 @@ fn square_denominator(f: &Zp, d: &[u64]) -> Vec<u64> {
     q
 }
 
-#[test]
-fn reconstruct_first_t0_e109_quartic_cover() {
+struct Reconstructed {
+    n: Vec<u64>,
+    q: Vec<u64>,
+    m: Vec<u64>,
+    infinity: Pt<u64>,
+}
+
+fn reconstruct_t0_cover(component: usize) -> Reconstructed {
+    reconstruct_cover(0, component)
+}
+
+fn reconstruct_cover(model: usize, component: usize) -> Reconstructed {
+    assert!(model < 2 && component < 2);
     let c = SevenChain::new();
     let f = &c.t.fp;
-    let e = &c.t.edges[0].map.dom;
-    let all = c.r0.target.classes().unwrap();
+    let r = if model == 0 { &c.r0 } else { &c.r1 };
+    let e = if model == 0 {
+        &c.t.edges[component].map.dom
+    } else {
+        &c.t.edges[component].map.cod
+    };
+    let all = r.target.classes().unwrap();
+    let coordinates = |d: &crate::balanced::Class| {
+        let old = r.dual_closed(d).unwrap();
+        if model == 0 {
+            c.t.source_coordinates(&old).unwrap()
+        } else {
+            c.t.target_coordinates(&old).unwrap()
+        }
+    };
     assert_eq!(all.len(), 12317);
     let delta = all
         .iter()
@@ -58,10 +82,8 @@ fn reconstruct_first_t0_e109_quartic_cover() {
             u.degree() == Some(0) && n == 2
         })
         .unwrap();
-    let delta_image =
-        c.t.source_coordinates(&c.r0.dual_closed(delta).unwrap())
-            .unwrap()[0];
-    let q = curve::pmul(f, e, &delta_image, 55);
+    let delta_image = coordinates(delta)[component];
+    let q = curve::pmul(f, e, &delta_image, [55, 57][component]);
     assert_eq!(curve::pmul(f, e, &q, 2), delta_image);
     let minus_q = curve::neg(f, &q);
     let mut samples = BTreeMap::new();
@@ -75,9 +97,7 @@ fn reconstruct_first_t0_e109_quartic_cover() {
         let x = f.neg(u.coeffs[0].to_u64().unwrap());
         let y = v.coeffs[0].to_u64().unwrap();
         assert_ne!(y, 0);
-        let h =
-            c.t.source_coordinates(&c.r0.dual_closed(d).unwrap())
-                .unwrap()[0];
+        let h = coordinates(d)[component];
         let centred = curve::padd(f, e, &h, &minus_q);
         assert!(curve::on_curve(f, e, &centred));
         match centred {
@@ -108,7 +128,11 @@ fn reconstruct_first_t0_e109_quartic_cover() {
         (0..=3).contains(&poly::deg(f, &m)),
         "predicted ordinate degree failed: {m:?}"
     );
-    let sextic = vec![31, 75, 74, 54, 71, 55, 1];
+    let sextic = if model == 0 {
+        vec![31, 75, 74, 54, 71, 55, 1]
+    } else {
+        vec![95, 26, 19, 27, 94, 91, 1]
+    };
     let q2 = poly::mul(f, &qpoly, &qpoly);
     let q4 = poly::mul(f, &q2, &q2);
     let q6 = poly::mul(f, &q4, &q2);
@@ -142,10 +166,45 @@ fn reconstruct_first_t0_e109_quartic_cover() {
         assert_ne!(qx, 0);
         assert_eq!(f.div(poly::eval(f, &n, x), f.pow(qx, 2)), xe);
         assert_eq!(f.div(f.mul(y, poly::eval(f, &m, x)), f.pow(qx, 3)), ye);
-        println!("certificate {x} {y} {xe} {ye}");
+        println!("certificate {model} {component} {x} {y} {xe} {ye}");
     }
     for &(x, _) in &poles {
         assert_eq!(poly::eval(f, &qpoly, x), 0);
     }
-    println!("PASS firstT0/E109 quartic exactidentity/degree4/separable/gcd/smoothness;N{n:?},Q{qpoly:?},M{m:?},infinity+{q:?},finite{},poles{:?}. Global identification still requires the separate degree certificate and independent replay;no timing claim", finite.len(),poles);
+    println!("PASS T{model}/component{component} quartic exactidentity/degree4/separable/gcd/smoothness;N{n:?},Q{qpoly:?},M{m:?},infinity+{q:?},finite{},poles{:?}. Global identification still requires the separate degree certificate and independent replay;no timing claim", finite.len(),poles);
+    Reconstructed {
+        n,
+        q: qpoly,
+        m,
+        infinity: q,
+    }
+}
+
+#[test]
+fn reconstruct_first_t0_e109_quartic_cover() {
+    let result = reconstruct_t0_cover(0);
+    assert_eq!(result.n, [14, 0, 88, 97, 14]);
+    assert_eq!(result.q, [63, 0, 1]);
+    assert_eq!(result.m, [41, 40, 69, 73]);
+    assert_eq!(result.infinity, Pt::Aff(14, 73));
+}
+
+#[test]
+fn reconstruct_second_t0_e113_quartic_cover() {
+    let result = reconstruct_t0_cover(1);
+    println!(
+        "second cover frozen candidate N{:?} Q{:?} M{:?} infinity{:?}",
+        result.n, result.q, result.m, result.infinity
+    );
+}
+
+#[test]
+fn reconstruct_both_t1_elliptic_quartic_covers() {
+    for component in 0..2 {
+        let result = reconstruct_cover(1, component);
+        println!(
+            "T1 component{component} frozen candidate N{:?} Q{:?} M{:?} infinity{:?}",
+            result.n, result.q, result.m, result.infinity
+        );
+    }
 }

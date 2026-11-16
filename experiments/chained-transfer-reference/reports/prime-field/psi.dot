@@ -1,0 +1,17 @@
+digraph PrimePsi {
+  graph [rankdir=LR, bgcolor="white", nodesep=0.22, ranksep=0.32, fontname="DejaVu Sans"];
+  node [shape=box, style="rounded,filled", fillcolor="#eef5ff", color="#355b83", fontname="DejaVu Sans", fontsize=10];
+  edge [fontname="DejaVu Sans", fontsize=8, color="#355b83"];
+  input [label="J(T0)(F101)\n12,317 inputs"];
+  h0 [label="H0,109 = quartic norm\ncurve cover degree4"];
+  h1 [label="H0,113 = quartic norm\ncurve cover degree4"];
+  a0 [label="[82] then alpha109\nE(1,46) -> E(26,58)\nactual degree7 isogeny",fillcolor="#e8f5e9",color="#3e7846"];
+  a1 [label="[85] then alpha113\nE(44,21) -> E(69,50)\nactual degree7 isogeny",fillcolor="#e8f5e9",color="#3e7846"];
+  k0 [label="T1 quartic pullback\ncurve cover degree4",fillcolor="#f4edfc",color="#735397"];
+  k1 [label="T1 quartic pullback\ncurve cover degree4",fillcolor="#f4edfc",color="#735397"];
+  sum [label="Existing balanced addition\nJ(T1)(F101)",fillcolor="#fff2df",color="#a56825"];
+  input -> h0; input -> h1; h0 -> a0; h1 -> a1; a0 -> k0; a1 -> k1; k0 -> sum; k1 -> sum;
+  reference [label="Retained old R0 dual / norms / quarter / alpha / pulls / R1\nexact old forward reference; native comparison on every input",fillcolor="#f4f4f4",color="#777777"];
+  input -> reference [style=dashed,color="#777777"];
+  reference -> sum [style=dashed,label="same concrete output",color="#777777"];
+}

@@ -1,0 +1,51 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-12T09:21:45Z",
+ "id": "PCC-20261112-d2f0e5",
+ "kind": "statement",
+ "producer": {
+  "commit": "b2972eb51fd794e1a6061c41fd5f3828890c08e3",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/adjoint-pcc-prepack-01.jsonl.xz",
+    "sha256": "31c55131b281e26f436bb13d4a9f375f62cc35efe88e79507c74ca7ee2eaf18f"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/adjoint-ledger-01.txt",
+    "sha256": "76bf664c1e3a918796f41d67017531fa85bddc179641a93bb7818087208ac6fb"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/adjoint-benchrec-01.txt",
+    "sha256": "7051a21d735cddc23fab1e5014751262003de709ad60e272b523e90bdeaebeda"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/adjoint-prose-01.txt",
+    "sha256": "78860995516e3367bf95a303485b67d572a3b44e8a1165dc117ca264ddb7b3eb"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/adjoint-packaging-01.json",
+    "sha256": "8f98b52809e2cfd5e052d147ff41fa8cd2a81d9e8c792d976b25cfa2099e5679"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Unsigned actual adjoint packaging:parent b297 prefix-ledger140/benchrec16 current/prose0 pass;prepack PCC137records/135notcovered/2localpass/0fail exit2,complete106590-byte verdict stream archived standardXZ with raw/archive SHA256/exact roundtrip. Native full92d744cf/sourceccfb25/writteneceeb1/report8248ae retained;scientific signing separate."
+}

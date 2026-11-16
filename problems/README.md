@@ -9,6 +9,7 @@ explain the gap and what would let the work move past it.
 
 | Problem | Status | What it blocks | What would unblock it |
 | --- | --- | --- | --- |
+| [Prepared/joint collector runtime qualification](point-table-joint-runtime-qualification.md) | open | matched native point-table/joint runtime result | current-source S3 upload/readback, authenticated exact native image/execution, admitted matched comparison |
 | [Production binary-subtraction speed frontier](binary-subtract-speed-frontier.md) | open | admitted matched native/external speed-frontier result after production integration | existing EKS/budget/pool/checkpoint access, frozen binary/image, L2/A-A/replay, external timing and independent verification |
 
 ---

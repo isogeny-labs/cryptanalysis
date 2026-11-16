@@ -1,0 +1,46 @@
+name: CT49 non-split Richelot geometry
+on:
+  push:
+    paths:
+      - 'experiments/chained-transfer-reference/ct49/**'
+      - '.github/workflows/ct49-richelot.yml'
+  pull_request:
+    paths:
+      - 'experiments/chained-transfer-reference/ct49/**'
+      - '.github/workflows/ct49-richelot.yml'
+  workflow_dispatch:
+jobs:
+  ct49:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Independent Python exact finite-field and Frobenius audit
+        run: |
+          python3 -B experiments/chained-transfer-reference/ct49/ct49_branch_audit.py > /tmp/ct49-python-normal
+          python3 -O -B experiments/chained-transfer-reference/ct49/ct49_branch_audit.py > /tmp/ct49-python-opt
+          diff -u /tmp/ct49-python-normal /tmp/ct49-python-opt
+          cat /tmp/ct49-python-normal
+      - name: Independently coded JavaScript non-split Richelot codomains
+        run: |
+          node --check experiments/chained-transfer-reference/ct49/ct49_richelot.js
+          node experiments/chained-transfer-reference/ct49/ct49_richelot.js > /tmp/ct49-node-normal
+          node --no-opt experiments/chained-transfer-reference/ct49/ct49_richelot.js > /tmp/ct49-node-noopt
+          diff -u /tmp/ct49-node-normal /tmp/ct49-node-noopt
+          cat /tmp/ct49-node-normal
+      - name: Independent exhaustive PGL2 sextic isomorphism and twist controls
+        run: |
+          g++ -O0 -std=c++17 -Wall -Wextra -Werror experiments/chained-transfer-reference/ct49/ct49_pgl2.cpp -o /tmp/ct49-pgl2-O0
+          g++ -O3 -std=c++17 -Wall -Wextra -Werror experiments/chained-transfer-reference/ct49/ct49_pgl2.cpp -o /tmp/ct49-pgl2-O3
+          /tmp/ct49-pgl2-O0 > /tmp/ct49-pgl2-output-O0
+          /tmp/ct49-pgl2-O3 > /tmp/ct49-pgl2-output-O3
+          diff -u /tmp/ct49-pgl2-output-O0 /tmp/ct49-pgl2-output-O3
+          cat /tmp/ct49-pgl2-output-O3
+      - name: Second independent cubic-field construction in Python
+        run: |
+          python3 -B experiments/chained-transfer-reference/ct49/ct49_richelot.py > /tmp/ct49-pycubic
+          python3 -O -B experiments/chained-transfer-reference/ct49/ct49_richelot.py > /tmp/ct49-pycubic-opt
+          diff -u /tmp/ct49-pycubic /tmp/ct49-pycubic-opt
+          cat /tmp/ct49-pycubic
