@@ -20,6 +20,15 @@ reference. IC's observed total excludes that reference interval. Rho's native
 operation count excludes the Rust replay even though wall time includes it.
 [pcc:unverified]
 
+Follow-up merge `e8b78b11` integrates main `cf77e3a5` while retaining both
+Git parents, the canonical 171-entry ledger prefix and all 29 unmerged
+claim/note bodies. Reviewed active attestation metadata is unchanged. The
+timing/checker/core paths are byte-identical to `25049631`; ten targeted CLI
+checks pass after the incoming native C guard updates. The separate
+[main follow-up validator](main-followup-validator.json), claim
+`PCC-20261116-ca34fd` (unverified), retains that scope without relabeling the
+earlier checks. The original frozen snapshot remains unchanged. [pcc:unverified]
+
 Upstream auxiliary preparation, process start/exit and independent replay
 remain unknown; `cold_total` and qualified speedup stay null. The CLI interval
 ends before accounting serialization. It is not the full process or a fully
