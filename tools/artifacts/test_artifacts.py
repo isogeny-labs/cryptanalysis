@@ -18,6 +18,7 @@ from pathlib import Path
 TOOL = Path(__file__).resolve().parent / "artifacts.py"
 sys.path.insert(0, str(TOOL.parent))
 import artifacts  # noqa: E402
+import claim_inputs  # noqa: E402
 import wire_workflows  # noqa: E402
 
 
@@ -485,6 +486,27 @@ class WorkflowPaths(unittest.TestCase):
                          ["research/runs/result.jsonl"])
         self.assertEqual(wire_workflows.needed("run: cat research/runs/*", moved, dirs),
                          ["research/runs"])
+
+    def test_narrow_glob_does_not_pull_unrelated_docs_payloads(self):
+        moved = {"docs/one/report.pdf", "docs/one/transfer.png"}
+        dirs = {"docs", "docs/one"}
+        self.assertEqual(wire_workflows.needed("git diff -- 'docs/**/*.md'", moved, dirs), [])
+        self.assertEqual(wire_workflows.needed("cat docs/**/*.pdf", moved, dirs), ["docs"])
+        self.assertEqual(wire_workflows.needed("cat docs/one/*.pdf", moved, dirs), ["docs/one"])
+
+    def test_claim_inputs_select_only_referenced_store_files(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            claims = root / "pcc/claims"
+            claims.mkdir(parents=True)
+            docs = root / "docs/one"
+            docs.mkdir(parents=True)
+            (docs / ".artifacts.json").write_text(json.dumps({"files": {
+                "report.pdf": {"sha256": "0" * 64, "bytes": 1},
+                "unused.png": {"sha256": "1" * 64, "bytes": 1}}}))
+            (claims / "one.json").write_text(json.dumps({"proofs": [
+                {"path": "docs/one/report.pdf"}, {"path": "docs/one/tracked.json"}]}))
+            self.assertEqual(claim_inputs.claim_artifact_paths(root), ["docs/one/report.pdf"])
 
 
 

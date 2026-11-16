@@ -25,6 +25,7 @@ which is how CI keeps new workflows honest.
 from __future__ import annotations
 
 import argparse
+import fnmatch
 import re
 import sys
 from pathlib import Path
@@ -33,7 +34,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import artifacts  # noqa: E402
 
 STEP_NAME = "Pull store data this workflow reads (tools/artifacts)"
-PATH_RE = re.compile(r"(?<![A-Za-z0-9_./-])((?:[A-Za-z0-9_+-][A-Za-z0-9_.+-]*/)+[A-Za-z0-9_.+*-]*)")
+PATH_RE = re.compile(r"(?<![A-Za-z0-9_./-])((?:[A-Za-z0-9_+*-][A-Za-z0-9_.+*-]*/)+[A-Za-z0-9_.+*-]*)")
 
 
 def moved_paths(root: Path) -> set[str]:
@@ -48,7 +49,12 @@ def needed(text: str, moved: set[str], dirs: set[str]) -> list[str]:
     """Paths the workflow names that are, or contain, moved files; minimal cover."""
     found = set()
     for m in PATH_RE.finditer(text):
-        p = m.group(1).split("*", 1)[0].rstrip("/.")
+        named = m.group(1)
+        # A glob names stored data only when it can match an actual moved
+        # path. In particular, docs/**/*.md cannot read moved PDFs/PNGs.
+        if "*" in named and not any(fnmatch.fnmatchcase(path, named) for path in moved):
+            continue
+        p = named.split("*", 1)[0].rstrip("/.")
         # Manifests name individual moved files. A workflow naming an exact
         # moved file or an exact ancestor directory needs a pull. Merely
         # naming a different file below that ancestor (for example a CUDA
