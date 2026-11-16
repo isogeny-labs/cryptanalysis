@@ -5,6 +5,7 @@ use cryptanalysis_suite::cryptanalysis::ic_boundary::{
     ArtinSchreier, BinaryGroup, BinaryInstance, CountedGroup, GroupOps,
 };
 use cryptanalysis_suite::cryptanalysis::ic_framework::affine::AffineS3Oracle;
+use cryptanalysis_suite::cryptanalysis::ic_framework::batch_mitm::BinaryBatchMitmOracle;
 use cryptanalysis_suite::cryptanalysis::ic_framework::plugins::{BinarySubspaceBase, MitmOracle};
 use cryptanalysis_suite::cryptanalysis::ic_framework::stages::{
     DecompositionOracle, InstanceCtx, Targets,
@@ -178,11 +179,16 @@ fn main() {
     }
     assert!(matches!(
         mode,
-        "mitm" | "affine" | "affine-cached" | "affine-columns"
+        "mitm" | "mitm-batched" | "affine" | "affine-cached" | "affine-columns"
     ));
     let mut spec = PipelineSpec {
         factor_base: "binary-subspace".into(),
-        oracle: if mode == "mitm" { "mitm" } else { "affine-s3" }.into(),
+        oracle: match mode {
+            "mitm" => "mitm",
+            "mitm-batched" => "mitm-batched",
+            _ => "affine-s3",
+        }
+        .into(),
         targets: Targets::Walk,
         max_trials: 50_000,
         seed: target_seed,
@@ -207,6 +213,8 @@ fn main() {
     );
     let mut oracle: Box<dyn DecompositionOracle<BinaryGroup<'_>> + '_> = if mode == "mitm" {
         Box::new(MitmOracle::new(2))
+    } else if mode == "mitm-batched" {
+        Box::new(BinaryBatchMitmOracle::default())
     } else {
         Box::new(AffineS3Oracle::new(&inst))
     };
