@@ -1,0 +1,15 @@
+{
+  "schema": "xedni-direct-relation-control-protocol-v1",
+  "question": "In the frozen ordered two-point target queries, when does the publicly testable reduced relation P1+2P2=O first occur, compared with each rational-lift arm's first relation?",
+  "parent_band_result_sha256": "edbe3a808aa86054c00f15a5ae40814ed2f8452c4316abbe68f41a62f2219b49",
+  "shift_result_sha256": "b5262749615ab776239416c6324a7e95be741c8a4db9adb4cadf9890077920fc",
+  "arithmetic_audit_source_sha256": "28dd3e4553bfcedc3c646d5d8d284b137e5494ed3ebec5533d0961f1ea5337a8",
+  "shift_audit_source_sha256": "8cc1e43c01437ad993d54eaa04d6f66df2e7ba5e9d87ac46719d1df63d0bea66",
+  "fields": [47, 101, 191, 211, 251, 281, 347, 349],
+  "public_input": "same generator G and public point Q as both parent panels; P_i=Q-t_i G; no scalar is used by the direct relation test",
+  "query_order": "lexicographic t1,t2 in [0,r)^2",
+  "direct_test": "for every admissible pair compute P1+2P2 and check O, recording first one-based query index and t pair",
+  "comparison": "join first rational relation query index from each frozen parent result, keeping absent hits as null",
+  "max_queries": 30008,
+  "claim_boundary": "exact first-hit and group-operation control for the fixed two-point coefficient vector (1,2); no wall-time or general xedni complexity claim"
+}

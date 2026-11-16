@@ -1,0 +1,15 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T12:27:03Z",
+ "id": "PCC-20261116-1cef04",
+ "kind": "statement",
+ "producer": {
+  "commit": "53e6dc0c20dbd4a3a4d1123c8db501973fd7b869",
+  "model": "",
+  "session": "ic-rational-current-20261115"
+ },
+ "proofs": [],
+ "schema": "pcc.claim/v1",
+ "scope": "suite/examples/ic_affine_pipeline_probe.rs",
+ "statement": "Explicit timing source adds collector_wall_seconds from before matrix construction through collector return and matrix destruction, an outer IC computation_through_cleanup_ns after explicit oracle destruction, and symmetric standalone rho outer cleanup clock. New fields are diagnostic and do not alter primitive pricing.24 local ARM framework tests and strict library/probe Clippy pass; native x86 timing remains unmeasured. MITM preparation source uses group/field/base metadata, not Q, so its collector window is eligible for one-target computation only with that audited oracle. Historical raw clocks remain unchanged under erratum20c68d. Unsigned source/test evidence."
+}

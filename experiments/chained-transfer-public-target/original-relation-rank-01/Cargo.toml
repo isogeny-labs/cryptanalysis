@@ -1,0 +1,18 @@
+[package]
+name = "chained-n4-original-relation-rank"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[workspace]
+
+[dependencies]
+serde_json = "=1.0.145"
+
+[[bin]]
+name = "produce-original-relation-ranks"
+path = "src/bin/produce.rs"
+
+[[bin]]
+name = "replay-original-relation-ranks"
+path = "src/bin/replay.rs"

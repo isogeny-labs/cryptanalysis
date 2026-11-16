@@ -418,3 +418,17 @@ These writers keep their existing names and outputs. None mints an `IC1` ID.
 - `pdp-degree-heuristics/monitor.py collect` meters every phase, but it writes the
   unnamed `pdp-collection-run/2` record. `bench.py` wraps it, names the run, and
   prices it.
+
+## Historical candidate filename corrections
+
+`candidate_aliases.json` records exact SHA-256 pins from historical filenames
+whose stage labels were incomplete to canonical-name copies of the same bytes.
+The first ten aliases retain the 2026-11-16 inverse/matrix panel's archived
+`LAgauss` filenames while exposing the contents' `LAgaussu32` stage. Original
+candidate files, identities, raw runs and reports stay unchanged. These are
+filename aliases to the same candidate hash, not new measurements or changed
+algorithm configurations. New comparisons use canonical names.
+
+`validate_semantics.py` requires an existing canonical copy, identical bytes,
+a matching explicit SHA pin, no alias chain, and the ordinary canonical
+stage/curve/base/hash checks for both filenames. A missing or changed copy fails.

@@ -1,0 +1,40 @@
+[
+  {
+    "label": "inherit-three-entire-records",
+    "argv": [
+      "/workspace/scratch/ct74-norm-halving-audit-02/audit_native.bin",
+      "--inherit",
+      "/workspace/scratch/ct74-norm-halving-auxiliary-01/expected-native-04.json",
+      "/workspace/scratch/ct74-norm-halving-native-05/native.txt",
+      "/workspace/scratch/ct74-norm-halving-audit-02/inheritance.json"
+    ]
+  },
+  {
+    "label": "freeze-all-four",
+    "argv": [
+      "/workspace/scratch/ct74-norm-halving-audit-02/audit_native.bin",
+      "--freeze",
+      "/workspace/scratch/ct74-norm-halving-native-05/native.txt",
+      "/workspace/scratch/ct74-norm-halving-audit-02/expected-native-05.json"
+    ]
+  },
+  {
+    "label": "compare-all-four",
+    "argv": [
+      "/workspace/scratch/ct74-norm-halving-audit-02/audit_native.bin",
+      "--compare",
+      "/workspace/scratch/ct74-norm-halving-audit-02/expected-native-05.json",
+      "/workspace/scratch/ct74-norm-halving-native-05/native.txt",
+      "/workspace/scratch/ct74-norm-halving-audit-02/actual-native-05.json"
+    ]
+  },
+  {
+    "label": "report-inputs",
+    "argv": [
+      "/workspace/scratch/ct74-norm-halving-audit-02/audit_native.bin",
+      "--report-inputs",
+      "/workspace/scratch/ct74-norm-halving-native-05/native.txt",
+      "/workspace/scratch/ct74-norm-halving-audit-02/report-inputs-05.json"
+    ]
+  }
+]

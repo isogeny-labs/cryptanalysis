@@ -1,0 +1,8 @@
+Scoped paths 102
+experiments/chained-transfer-reference/evidence/proper-kernel-tests-02/ct48-kernel-tests-02.txt:16: new blank line at EOF.
+Traceback (most recent call last):
+  File "/workspace/scratch/ct48_proper_stage_commit.py", line 12, in <module>
+    subprocess.run(['git','diff','--cached','--check'],cwd=c,check=True)
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['git', 'diff', '--cached', '--check']' returned non-zero exit status 2.

@@ -400,9 +400,50 @@ def check_pdp_stage(pdp: dict, errors: list[str], where: str) -> None:
           errors, where, "PDP stage code disagrees with summands or solver family")
 
 
+def candidate_identity_stem(path: Path, aliases: dict, errors: list[str]) -> str:
+    """Resolve an explicit historical filename alias without changing its bytes.
+
+    The canonical copy must exist, match byte for byte and be independently
+    checked by the normal IC1 stage/hash rules. Aliases cannot chain.
+    """
+    alias = aliases.get(path.stem)
+    if alias is None:
+        return path.stem
+    where = str(path)
+    if not isinstance(alias, dict) or set(alias) != {"canonical_id", "sha256"}:
+        errors.append(f"{where}: invalid candidate alias record")
+        return path.stem
+    name, sha = alias["canonical_id"], alias["sha256"]
+    if (not isinstance(name, str) or not re.fullmatch(r"IC1[a-zA-Z0-9]+", name)
+            or name == path.stem or name in aliases
+            or not isinstance(sha, str) or not HEX64.fullmatch(sha)):
+        errors.append(f"{where}: invalid or chained candidate alias")
+        return path.stem
+    target = path.with_name(name + ".json")
+    raw = path.read_bytes()
+    check(hashlib.sha256(raw).hexdigest() == sha, errors, where,
+          "candidate alias source bytes differ from pin")
+    check(target.is_file() and target.read_bytes() == raw, errors, where,
+          "candidate alias canonical copy is missing or differs")
+    return name
+
+
 def validate_candidates(root: Path, routes: dict, errors: list[str]) -> None:
     base = root / "experiments/ic-bench"
     archive = root / "experiments/fb-archive/index.csv"
+    aliases_path = base / "candidate_aliases.json"
+    aliases = {}
+    if aliases_path.exists():
+        document = read_json(aliases_path)
+        if (not isinstance(document, dict) or document.get("schema") != "ic-candidate-aliases/1"
+                or not isinstance(document.get("aliases"), dict)):
+            errors.append(f"{aliases_path}: invalid candidate alias manifest")
+        else:
+            aliases = document["aliases"]
+            for name in aliases:
+                check(isinstance(name, str) and bool(re.fullmatch(r"IC1[a-zA-Z0-9]+", name))
+                      and (base / "candidates" / (name + ".json")).is_file(), errors,
+                      str(aliases_path), "candidate alias source is missing or invalid")
     indexed = set()
     if archive.exists():
         with archive.open(newline="", encoding="utf-8") as handle:
@@ -440,7 +481,8 @@ def validate_candidates(root: Path, routes: dict, errors: list[str]) -> None:
             check(route_id in routes and routes[route_id].get("status") == "verified", errors, where,
                   "ISO1 needs a verified route ID")
         prefix = f"IC1{m[1]}C{m[2]}fb{count}{''.join(stages)}ISO{iso}h" if m else ""
-        suffix = path.stem[len(prefix):] if path.stem.startswith(prefix) else ""
+        identity_stem = candidate_identity_stem(path, aliases, errors)
+        suffix = identity_stem[len(prefix):] if identity_stem.startswith(prefix) else ""
         check(bool(prefix) and 12 <= len(suffix) <= 64 and bool(re.fullmatch(r"[0-9a-f]+", suffix))
               and digest(item).startswith(suffix), errors, where,
               "IC1 name disagrees with stages, actual base size, or canonical hash")

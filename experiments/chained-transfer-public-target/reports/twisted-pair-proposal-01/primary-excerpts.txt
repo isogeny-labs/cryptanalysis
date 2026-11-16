@@ -1,0 +1,69 @@
+written G1 × G2 , with G1 ⊂ Ei [2](K) and G2 ⊂ j6=i Ej [2](K). There are 3 choices for G1 and
+(24 − 1)(23 − 2)/(22 − 1)(22 − 2) = 15 choices for G2 , so #Si = 45. The intersection of any two of
+the Si is the set S of subgroups of A[2](K) that can be written G1 × G2 × G3 , with Gi ⊂ Ei [2](K);
+clearly #S = 27. Thus there are #S1 + #S2 + #S3 − 2#S = 81 subgroups that split as in the
+statement of the lemma.
+   We are left with 135 − 81 = 54 subgroups to account for, and it is easy to see that there are
+exactly this many subgroups of the form described in the final sentence of the lemma: There are 3
+choices for each of the Qi , and given P1 and P2 , there are 2 choices for P3 .
+  Suppose now that k is a field of characteristic not 2 with separable closure K, and let E1 , E2 ,
+and E3 be elliptic curves over k. It is clear that a non-split sub-group-scheme of E1K × E2K × E3K
+will come from a sub-group-scheme of E1 × E2 × E3 if and only if we have both that all of the
+     3
+     The analogous statement is not necessarily true over a field that is not separably closed. See the remark following
+the proof of Proposition 15.
+
+                                 TORSION SUBGROUPS OF JACOBIANS                                       21
+
+
+points Qi are defined over k and that every k-automorphism of K that moves any of the Pi moves
+exactly two of them. Given the first condition, the second condition will hold if and only if the
+
+[Exact separate excerpt: Proposition15 and field qualification]
+
+∆i = 16, each Pi = (1, 0), and the curve C is defined by the two equations W 2 Z 2 = −18(X 4 +
+Y 4 + Z 4 ) and 0 = (1/3)(X 2 + Y 2 + Z 2 ).
+   Let Φ∗ denote the map ϕX∗ × ϕY ∗ × ϕZ∗ from J to A and recall that Φ∗ denotes the map
+ϕ∗X × ϕ∗Y × ϕ∗Z from A to J. An easy computation shows that Φ∗ Φ∗ is multiplication by 2 on J.
+Thus the image under Φ∗ of a 2-torsion element of J is in the kernel of Φ∗ . To complete the proof,
+we will show that (P1 , P2 , P3 ) ∈ A(K) is the image under Φ∗ of a 2-torsion point of J.
+   Let U1 and U2 be the Weierstrass points on C given in homogeneous coordinates [W : X : Y : Z]
+by [0 : ζ : ζ 2 : 1] and [0 : ζ 2 : ζ : 1], respectively, where ζ = e2πi/3 . Note that U1 − U2 represents
+a 2-torsion element of J. Under the specialization we have made, equation (7), which defines
+FX , becomes v 2 = −4y 4 − 4y 2 − 4, and in these (y, v) coordinates we have ϕX (U1 ) = (ζ 2 , 0) and
+ϕX (U2 ) = (ζ, 0). The curve EX , defined by equation (8), is given by y 2 = x3 + 2x2 − 3x, and under
+the isomorphism
+                                                                           
+                                              iv − y 2 − 2 −2v − 2iy 2 − 4i
+                                  (y, v) 7→               ,
+                                                   y2             y3
+                                                         √     √             √     √
+from FX to EX these two points on FX map to (i 3, 2ζ 3) and (−i 3, 2ζ 2 3), respectively. The
+difference of these two points on the elliptic curve EX is equal to the 2-torsion point (1, 0). Thus
+ϕX∗ (U1 − U2 ) = P1 . By symmetry, we find that ϕY ∗ (U1 − U2 ) = P2 and ϕZ∗ (U1 − U2 ) = P3 as well,
+so (P1 , P2 , P3 ) is in the image of J[2](K) under Φ∗ and hence in G′ (K). It is in G(K) as well, so
+G′ = G and the proposition is proved.
+
+Proposition 15. Let notation be as before Proposition 14, and suppose T 6= 0. Let C be the plane
+quartic over k defined by
+                      B1 X 4 + B2 Y 4 + B3 Z 4 + dX 2 Y 2 + eX 2 Z 2 + f Y 2 Z 2 = 0,
+where
+                                                           
+
+[Exact separate excerpt: following remark]
+
+                                                        µ
+                                                J     −→       Jb
+where Φ∗ = ϕ∗X × ϕ∗Y × ϕ∗Z is an isogeny of degree 8 whose kernel G′ is a non-split maximal isotropic
+sub-group-scheme of Ak′ [2]. Our task is to show that G′ = Gk′ .
+  Let K be an algebraic closure of ℓ′ . Rationality arguments as in the proof of Proposition 14 show
+that G′ (K) contains the subgroup
+                         H = {(0, 0, 0), (0, Q2 , Q3 ), (Q1 , 0, Q3 ), (Q1 , Q2 , 0)},
+and, as before, to show that G′ (K) = G(K) all we must do is show that the two groups contain a
+common element that is not in H. To show this, we once again specialize our universal example to
+a particular example.
+
+26                  EVERETT W. HOWE, FRANCK LEPRÉVOST, AND BJORN POONEN
+
+
+   Consider the specialization map ℓ → C that takes each di to 4 and each λi to −1/2; we will abuse

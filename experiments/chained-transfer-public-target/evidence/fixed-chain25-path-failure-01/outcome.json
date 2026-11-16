@@ -1,0 +1,33 @@
+{
+  "at": "2026-11-15T03:54:46.100444+00:00",
+  "source": "4ba7c50b955a0b9a2c0c0c0745fe329effbfcbaa",
+  "run": 43673764987,
+  "job": 132689306146,
+  "original_job_conclusion": "failure",
+  "original_step_exit": 1,
+  "whole_artifact": {
+    "id": 14145323382,
+    "bytes": 51348,
+    "sha256": "6462579dd140f5bdcce1e51b126a2ec70102504314bb05557ed13603a5388ece",
+    "all_members": 1
+  },
+  "whole_joblog_bytes": 64195,
+  "observed": "cp cannot stat relative cryptanalysis/experiments/chained-transfer-public-target/ci_fixed_chain/check.sh after cd into repository",
+  "mathematics_started": false,
+  "original_exit_file_present": false,
+  "repair": {
+    "source": "check-02.sh",
+    "changes": [
+      "reference filename01 to02",
+      "copy absolute resolved driver pathname"
+    ],
+    "workflow_invocation": "check-02.sh",
+    "old_driver_retained_exact": true,
+    "old_reference_retained_exact": true,
+    "reference_files": 1141,
+    "only_changed_existing_reference_path": [
+      ".github/workflows/chained-transfer-fixed-chain.yml"
+    ]
+  },
+  "scope": "unsigned observed CI path failure; no mathematical failure or replay acceptance"
+}

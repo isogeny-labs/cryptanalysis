@@ -1,0 +1,86 @@
+{
+  "schema": "maintenance.owner-consumer-sync/v1",
+  "repository": "isogeny-labs/cryptanalysis",
+  "parent": "9ab658ce17aa3e14d8f30709cc649ec80dda6786",
+  "owner_repository": "isogeny-labs/crypto-autoresearcher",
+  "owner_pr": 3052,
+  "owner_head": "11c34897890ef20516eb427eeb142d91d8fda697",
+  "owner_merge": "de345640d8251210f8efe467d7102d659f20162d",
+  "owner_source_bindings": {
+    "tools/benchrec.py": {
+      "bytes": 55140,
+      "sha256": "f6d5d773120ebb2c2a60028ed41ac6e019c8c1dd26c51873ae6746f806bdaee7",
+      "git_blob": "ca94b45c9e875d1a49fd9c4478ace13fea576617"
+    },
+    "tools/test_benchrec.py": {
+      "bytes": 25539,
+      "sha256": "1c38bb17690482b0fa41dbf26832875bc3e780bbad7a0cc5309cb38b68f62ed2",
+      "git_blob": "b6aace8dbebcc04bd0faacc3432f161dc1f77840"
+    },
+    "docs/benchmark-records.md": {
+      "bytes": 9243,
+      "sha256": "ddbc196d4b5d4c260a161dc931b64dacb5457648b1daf440a55dfb487c26e5cd",
+      "git_blob": "a21a0e895e22955412cf01839c79d03d6a2ff167"
+    }
+  },
+  "previous_consumer_blob_ids": {
+    "tools/benchrec.py": "0c42ba8addc63930e5159005f3c5b2a47f06cbb2",
+    "tools/test_benchrec.py": "525d78ff14933f207eaae591fcb95ed29b121fda",
+    "docs/benchmark-records.md": "a60f419d8a724fa50dd19142fbba86a15456f8b2"
+  },
+  "scope": "Exact landed owner source/test/contract; only3 shared-lock digests; complete journal prefix plus this entry; source-bound maintenance receipts. All other parent paths unchanged.",
+  "unit_tests": {
+    "count": 29,
+    "exit": 0,
+    "seconds": 33.02,
+    "kind": "synthetic infrastructure only; fake AWS CLI, no real local AWS/S3/scientific execution",
+    "log": "docs/maintenance/benchrec-owner-archive-sync-20261106/unit-tests.log",
+    "binding": {
+      "bytes": 4398,
+      "sha256": "b3c18d978a29687d4de835968f98d8aa0515f173b5411b5e1cd75960008d2aa1",
+      "git_blob": "c7d14f6f5207844dcd197d08d82be526b0ab7dc3"
+    }
+  },
+  "parity": {
+    "files": 16,
+    "exit": 0,
+    "command": "python3 -B tools/check_lab_parity.py --repo cryptanalysis --root <exact-byte-validation-copy>",
+    "log": "docs/maintenance/benchrec-owner-archive-sync-20261106/parity.log",
+    "binding": {
+      "bytes": 46,
+      "sha256": "0c604d0bf1f7127a2588846ce70f1a03567f65ce579ad2b170dd0d032b6efbcc",
+      "git_blob": "10d1b99b2ab4948e5751a7c4888b4016a3960065"
+    }
+  },
+  "changed_lock_entries": [
+    "tools/benchrec.py",
+    "tools/test_benchrec.py",
+    "docs/benchmark-records.md"
+  ],
+  "all_other_lock_fields_and_entries_retained": true,
+  "parent_journal": {
+    "blob": null,
+    "bytes": 0,
+    "entire_prefix_retained": true
+  },
+  "sources_checked": {
+    "KB": "unavailable: MCP tools and checked wrapper absent",
+    "primary": [
+      "owner:docs/lab-contract.md#7",
+      "owner merge source/tests/contract",
+      "consumer:.github/workflows/bench-records.yml",
+      "consumer:.github/workflows/artifacts.yml"
+    ]
+  },
+  "limitations": [
+    "Not full committed-record/native/scientific validation.",
+    "Consumer real online HEAD+boundedGET/fullSHA not yet observed; fail on denied/missing/corrupt/truncated/oversized archive.",
+    "No closed record/status/hash/metric/upload flag or progress edits.",
+    "Crypto3463 combined-source/provenance/custody hold remains.",
+    "No credential/settings/PCC/frozen side selection or other automation changes.",
+    "No existing CI jobs/steps/guards/assertions/timeouts removed or changed."
+  ],
+  "errors": {},
+  "ci": "PENDING; no early merge or whole-head pass claimed.",
+  "pcc_standing": "unverified producer assertion"
+}

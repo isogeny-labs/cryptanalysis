@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-15T06:57:54Z",
+ "id": "PCC-20261115-38af16",
+ "kind": "theorem",
+ "producer": {
+  "commit": "811395139bbd33b75fd5697973202cd1dcc13bba",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "458c66603c953bc2c3e800d9e0f3eb1bd3d89a751969ebadbb98901794944abb",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/original-kernel-census-01/lean/KernelCensus.lean",
+   "theorem": "OriginalKernelCensus.actual_data_shapes"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Actual finite original six-model data: all18 masks/D/smoothness vectors and two64 image tables are literal projections of entire native88f828 output. Lean independently recomputes F223 square/smoothness eligibility and compares all64 membership bits per pair; proves data shape, table bijections, all216 coverage, supported pairs(4,1)/(1,4), unique supported triple(4,1,4). Both original434/435 gates6roots0trusted. This does not establish actual field/HLP/geometry/quotient/program bridges or construct a full-group Jacobian evaluator; no cost/signing promotion.",
+ "statement": "theorem actual_data_shapes : masks.length = 3 \u2227 (masks.all (fun row => row.length == 6)) = true \u2227 stored_eligibility.length = 3 \u2227 (stored_eligibility.all (fun row => row.length == 6)) = true \u2227 D.length = 3 \u2227 (D.all (fun row => row.length == 6 && row.all (fun d => d.length == 3 && d[0]! < 223 && d[1]! == 0 && d[2]! == 0))) = true \u2227 factors.length = 3 \u2227 (factors.all (fun row => row.length == 6 && row.all (fun fs => fs.length == 7 && fs.all (fun f => f.length == 3)))) = true \u2227 transport_images.length = 2 \u2227 (transport_images.all (fun row => row.length == 64 && row.all (fun v => v < 64))) = true"
+}
