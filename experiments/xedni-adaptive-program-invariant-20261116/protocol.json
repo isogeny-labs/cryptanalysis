@@ -1,0 +1,14 @@
+{
+  "schema": "xedni-adaptive-program-invariant-protocol-v1",
+  "field_and_group": "Z/7Z under addition, generator G=1",
+  "target_law": "w in {0,2,3,4,5,6}; initial points (G,wG)",
+  "encoding_law": "all 7! bijections from group elements to labels 0..6, for each w",
+  "step_count": 3,
+  "strategies": [
+    "if label[0]<label[1], add indices (0,1); else subtract indices (1,0)",
+    "if last label repeats an older label, subtract (last,0); else add (last,1)",
+    "if (first label + last label) is even, add (last,last); else subtract (1,last)"
+  ],
+  "record": "deterministic gzip JSONL shard per scalar with every encoding, group trace, form trace, command history, and first-collision step",
+  "claim_boundary": "complete finite correctness control for the adaptive trace invariant; no probability lower bound"
+}

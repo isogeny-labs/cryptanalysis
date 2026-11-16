@@ -1,0 +1,30 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T11:54:54Z",
+ "id": "PCC-20261116-c6ee49",
+ "kind": "statement",
+ "producer": {
+  "commit": "adb8a8519990a3b85bf72267b23e984bdf9a57f2",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/identical-inactive-index-byte-custody-02/actual-identical-index-storage-receipt.json",
+    "sha256": "274ab8fc620108a04cd33a3cb2e8ee55fcaad88b1fec607d2c6d58d447bd62b4"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/identical-inactive-index-byte-custody-02/entire-before-identical-index-metadata.json",
+    "sha256": "870f2220ec9a0ddcc539aaa53a584c6fd07e8bda15b64fa9bb9b5740722867f8"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Storage recovery by exact-byte whole-file hardlinks for four inactive pre-governor Consumer index backups: each15940387B/SHA bff9d978, every original path/full byte/mode600 retained, complete original filesystem stat records preserved, all now share one immutable inode. No active index or research/source/raw/Git object/hold path deleted. Physical redundant47821161B avoided while keeping every whole backup; actual before/after free space recorded. This changes only duplicate backup storage representation, never scientific results/verifiers/policy or source trees. Allows continued original source-custody/runtime work; no paid/native execution or signed standing."
+}

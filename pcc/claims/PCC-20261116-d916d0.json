@@ -1,0 +1,723 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T10:55:57Z",
+ "id": "PCC-20261116-d916d0",
+ "kind": "statement",
+ "producer": {
+  "commit": "6ad0826722e91097cbb6feafcd99d3f625e08304",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/OCI-recipe-source-guard.argv.json.xz",
+    "sha256": "4e54ce71adbac76dead4f38059cee6d7386801c6332f63ae0143e4175a77fa8d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/OCI-recipe-source-guard.exit.xz",
+    "sha256": "f6ebd6f6f27ee66402036ad8c7d4cf1e86dfe3dcfd0125e9c1ecbefef91ece4d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/OCI-recipe-source-guard.stderr.xz",
+    "sha256": "0040f94d11d0039505328a90b2ff48968db873e9e7967307631bf40ef5679275"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/OCI-recipe-source-guard.stdout.xz",
+    "sha256": "34805208de81ad8c598a71b30e88e506afedb9d937348792f26143399d570de6"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/actual-final-own-source-context.json",
+    "sha256": "7538f53e40a61c0ae5d86cab5e2c1d3a5995280d7d988277d568eb5adfcc3234"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/actual-pure-compiler-source.argv.json.xz",
+    "sha256": "cebee1290f1a37c35e10b24faec2fb6cfec58044be2ef204d25c0525a6e6ca23"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/actual-pure-compiler-source.exit.xz",
+    "sha256": "f6ebd6f6f27ee66402036ad8c7d4cf1e86dfe3dcfd0125e9c1ecbefef91ece4d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/actual-pure-compiler-source.stderr.xz",
+    "sha256": "0040f94d11d0039505328a90b2ff48968db873e9e7967307631bf40ef5679275"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/actual-pure-compiler-source.stdout.xz",
+    "sha256": "6ab2414e108d19b8a69a5c07b0e3f50075352cefeb57fef30d29480bdc5f47dc"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/actual-recipe-checkout-head.txt.xz",
+    "sha256": "c45bfaae06dc48abfcd2853e674c611be41fe512718af33d78478338b15698cf"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/all-actual-byte-phases.txt.xz",
+    "sha256": "c746220348e396b2c83752ad537a3b07f21b26c9e086ff2cce63482f68f0295a"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/all-context-byte-check.argv.json.xz",
+    "sha256": "25af81c83c33a18271c3cfbcaade5a1e431844454b21f6b737892c3d1394cadf"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/all-context-byte-check.exit.xz",
+    "sha256": "f6ebd6f6f27ee66402036ad8c7d4cf1e86dfe3dcfd0125e9c1ecbefef91ece4d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/all-context-byte-check.stderr.xz",
+    "sha256": "0040f94d11d0039505328a90b2ff48968db873e9e7967307631bf40ef5679275"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/all-context-byte-check.stdout.xz",
+    "sha256": "82441b87d2a10399124cf18b38304d95d5af640a6390fc56d3a18cc1ca0153e6"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/all-context-byte-inventory.argv.json.xz",
+    "sha256": "52383b8ea89a924cbcfcedf2ce8f5f631f44e274cf33613d0bc3cd698085ba69"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/all-context-byte-inventory.exit.xz",
+    "sha256": "f6ebd6f6f27ee66402036ad8c7d4cf1e86dfe3dcfd0125e9c1ecbefef91ece4d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/all-context-byte-inventory.stderr.xz",
+    "sha256": "0040f94d11d0039505328a90b2ff48968db873e9e7967307631bf40ef5679275"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/all-context-byte-inventory.stdout.xz",
+    "sha256": "0040f94d11d0039505328a90b2ff48968db873e9e7967307631bf40ef5679275"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/all-whole-compressed-fixture-checks.txt.xz",
+    "sha256": "2693a575e1539f92d90bbd0bdaeaf0fd2c91fd4cb6ba00607cad5aa8427f8198"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/all3-actual-pure-build-pins.argv.json.xz",
+    "sha256": "608304a29c9667e6987d13db2fff66fb4f61504c57d522a861cc792350d1033c"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/all3-actual-pure-build-pins.exit.xz",
+    "sha256": "f6ebd6f6f27ee66402036ad8c7d4cf1e86dfe3dcfd0125e9c1ecbefef91ece4d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/all3-actual-pure-build-pins.stderr.xz",
+    "sha256": "0040f94d11d0039505328a90b2ff48968db873e9e7967307631bf40ef5679275"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/all3-actual-pure-build-pins.stdout.xz",
+    "sha256": "80c9efe2ca9c48b660cb53940bc533dc453a69efb23770131656ccf4e7669560"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/all56-original-selected-members.argv.json.xz",
+    "sha256": "37dd0c8a28972d7ecdaaa662706b981b8d50596b3207e205c440eb6fc60a3c16"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/all56-original-selected-members.exit.xz",
+    "sha256": "f6ebd6f6f27ee66402036ad8c7d4cf1e86dfe3dcfd0125e9c1ecbefef91ece4d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/all56-original-selected-members.stderr.xz",
+    "sha256": "0040f94d11d0039505328a90b2ff48968db873e9e7967307631bf40ef5679275"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/all56-original-selected-members.stdout.xz",
+    "sha256": "b508cf97c64db83da4a913de208a0edec939c57fd04a5fd86a25c45fd1bb0042"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/entire-actual-Dockerfile.txt",
+    "sha256": "16a18f73689b43725230ffbd829ccf3a05e14b801fa4784f8d3c94a487e143b2"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/entire-actual-assembly-command.sh.xz",
+    "sha256": "3537fe41aefe3500ab28ff1db3d8990106c1b834fd627400e6fbf62be2dd0e47"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/entire-actual-build-info.json.txt",
+    "sha256": "81395b02d364ee62afdab2a17783f940d9fc47482557a7c5c5990b50e3a4f289"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/entire-actual-recipe-checkout-status.txt.xz",
+    "sha256": "fd2e50948818fa400299a40564985f5f067e1a442068b4e26268c57634d4f0fd"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/entire-context-files.sha256.xz",
+    "sha256": "f6ce2063a522919a3ad1f4603ca197a9811b01b1c2767b97f39798c39aed6286"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/entire-transitive-source-manifest-refresh-error-and-correction/actual-metadata-only-change-receipt.json",
+    "sha256": "5d9e90cfb1a4aa32dad2c4dd59b0e8166e82c8f0dfb12675f0758d1835665a1f"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/entire-transitive-source-manifest-refresh-error-and-correction/entire-before-population12.sha256",
+    "sha256": "05768880c580543c7384d3fb247d6c4c009cb0490ea99cc279cbabbcafa4bed8"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/entire-transitive-source-manifest-refresh-error-and-correction/entire-observed-first-refresh-error.txt",
+    "sha256": "c226f1ba4197129fdd037745f9c34c2f49131c3ccc0c4362e7f57ba3efc2903f"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/final-OCI-recipe-source-guard.argv.json.xz",
+    "sha256": "4e54ce71adbac76dead4f38059cee6d7386801c6332f63ae0143e4175a77fa8d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/final-OCI-recipe-source-guard.exit.xz",
+    "sha256": "f6ebd6f6f27ee66402036ad8c7d4cf1e86dfe3dcfd0125e9c1ecbefef91ece4d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/final-OCI-recipe-source-guard.stderr.xz",
+    "sha256": "0040f94d11d0039505328a90b2ff48968db873e9e7967307631bf40ef5679275"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/final-OCI-recipe-source-guard.stdout.xz",
+    "sha256": "34805208de81ad8c598a71b30e88e506afedb9d937348792f26143399d570de6"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/final-original-native-check.txt.xz",
+    "sha256": "1e17d472250675de129d91e969111fd2170e2eb5ce0c8e15596ee3a4088221c9"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/final-original-selected-pins.argv.json.xz",
+    "sha256": "42eedfd7a2ba77ce3d78e48a3bb90ee07c3653820c0c603f86f308aa259c1d9e"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/final-original-selected-pins.exit.xz",
+    "sha256": "f6ebd6f6f27ee66402036ad8c7d4cf1e86dfe3dcfd0125e9c1ecbefef91ece4d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/final-original-selected-pins.stderr.xz",
+    "sha256": "0040f94d11d0039505328a90b2ff48968db873e9e7967307631bf40ef5679275"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/final-original-selected-pins.stdout.xz",
+    "sha256": "b508cf97c64db83da4a913de208a0edec939c57fd04a5fd86a25c45fd1bb0042"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/final-original1605-guard.argv.json.xz",
+    "sha256": "4c59315d6d4c3cd57e3d8e8fcc154a7e5ca7fcd876cf732c7a0c0204d0aadbdd"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/final-original1605-guard.exit.xz",
+    "sha256": "f6ebd6f6f27ee66402036ad8c7d4cf1e86dfe3dcfd0125e9c1ecbefef91ece4d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/final-original1605-guard.stderr.xz",
+    "sha256": "0040f94d11d0039505328a90b2ff48968db873e9e7967307631bf40ef5679275"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/final-original1605-guard.stdout.xz",
+    "sha256": "a53e44dbfc3a01177c1bda9d8ed2b7f1956da62bc541798e0c82673cf105d4ca"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/final-population12-guard.argv.json.xz",
+    "sha256": "515f63ce2d59d8d31d0305acb0fd4edae0916744918cc307eb00c07bc5f74a41"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/final-population12-guard.exit.xz",
+    "sha256": "f6ebd6f6f27ee66402036ad8c7d4cf1e86dfe3dcfd0125e9c1ecbefef91ece4d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/final-population12-guard.stderr.xz",
+    "sha256": "0040f94d11d0039505328a90b2ff48968db873e9e7967307631bf40ef5679275"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/final-population12-guard.stdout.xz",
+    "sha256": "c63385987c2a9c83ead7e54466b10df6887ddcae614338d91a10c490bc2466bb"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/final-pure-native-pins.argv.json.xz",
+    "sha256": "02bc9a43c4fb47fb830c3db70e1e93262cfb625247ee764c1276b6401ca222c7"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/final-pure-native-pins.exit.xz",
+    "sha256": "f6ebd6f6f27ee66402036ad8c7d4cf1e86dfe3dcfd0125e9c1ecbefef91ece4d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/final-pure-native-pins.stderr.xz",
+    "sha256": "0040f94d11d0039505328a90b2ff48968db873e9e7967307631bf40ef5679275"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/final-pure-native-pins.stdout.xz",
+    "sha256": "80c9efe2ca9c48b660cb53940bc533dc453a69efb23770131656ccf4e7669560"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/final-pure50-guard.argv.json.xz",
+    "sha256": "3567f362268517231ac559c1c0a90574c6d3b0f6c07c32e69f89afdb41ed44c0"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/final-pure50-guard.exit.xz",
+    "sha256": "f6ebd6f6f27ee66402036ad8c7d4cf1e86dfe3dcfd0125e9c1ecbefef91ece4d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/final-pure50-guard.stderr.xz",
+    "sha256": "0040f94d11d0039505328a90b2ff48968db873e9e7967307631bf40ef5679275"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/final-pure50-guard.stdout.xz",
+    "sha256": "08f6ddba908e9e8aecdac0b867140bd69f8be0abca82ac56a5ed70c491a3b407"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/final-whole-compressed-fixture-checks.txt.xz",
+    "sha256": "9ec3975f68a03fa23111ac350558e6bf5ae1adaa8bfe0c3572feadd537d264dd"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/final-whole-original-CI-check.txt.xz",
+    "sha256": "136cc1ed9548203a28890c0177d8a5a8f1d01ec51ff8809cb35ac284be1cd12d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/final-whole-pure-CI-check.txt.xz",
+    "sha256": "72ecb44be1aa2a90287be91f40d8fb9470eafec2dbc797f0d4cfa7b57232acde"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/final-whole-snapshot-check.txt.xz",
+    "sha256": "ac34edd7081c69b9cbb58c1a8eb61d16b0640e96fad2db84c930a759566fcc1e"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/finish.txt.xz",
+    "sha256": "885262092bab969337f1f835dacf586906b950a95506d4ef0ca02f46e758e901"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/link-whole-guarded-source.argv.json.xz",
+    "sha256": "5728ee47ed5b2815e91fee017ad9c9ae27f8de0dbc8bcbf32bacb51accc9015c"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/link-whole-guarded-source.exit.xz",
+    "sha256": "f6ebd6f6f27ee66402036ad8c7d4cf1e86dfe3dcfd0125e9c1ecbefef91ece4d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/link-whole-guarded-source.stderr.xz",
+    "sha256": "0040f94d11d0039505328a90b2ff48968db873e9e7967307631bf40ef5679275"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/link-whole-guarded-source.stdout.xz",
+    "sha256": "0040f94d11d0039505328a90b2ff48968db873e9e7967307631bf40ef5679275"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/link-whole-original-capsule.argv.json.xz",
+    "sha256": "ed230b94f9d8ebbb0375f1691436b19d666128dd862cd68fe11b25988db1426b"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/link-whole-original-capsule.exit.xz",
+    "sha256": "f6ebd6f6f27ee66402036ad8c7d4cf1e86dfe3dcfd0125e9c1ecbefef91ece4d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/link-whole-original-capsule.stderr.xz",
+    "sha256": "0040f94d11d0039505328a90b2ff48968db873e9e7967307631bf40ef5679275"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/link-whole-original-capsule.stdout.xz",
+    "sha256": "0040f94d11d0039505328a90b2ff48968db873e9e7967307631bf40ef5679275"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/link-whole-pure-CI.argv.json.xz",
+    "sha256": "7f46ca253856e6e2ab585bcb2e3499c324db1d3156f7039b244795ebed59b1fb"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/link-whole-pure-CI.exit.xz",
+    "sha256": "f6ebd6f6f27ee66402036ad8c7d4cf1e86dfe3dcfd0125e9c1ecbefef91ece4d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/link-whole-pure-CI.stderr.xz",
+    "sha256": "0040f94d11d0039505328a90b2ff48968db873e9e7967307631bf40ef5679275"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/link-whole-pure-CI.stdout.xz",
+    "sha256": "0040f94d11d0039505328a90b2ff48968db873e9e7967307631bf40ef5679275"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/link-whole-pure-build.argv.json.xz",
+    "sha256": "7953f22f507fce956f359200e01e92603dc166a29172f021ff8b91534746ba36"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/link-whole-pure-build.exit.xz",
+    "sha256": "f6ebd6f6f27ee66402036ad8c7d4cf1e86dfe3dcfd0125e9c1ecbefef91ece4d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/link-whole-pure-build.stderr.xz",
+    "sha256": "0040f94d11d0039505328a90b2ff48968db873e9e7967307631bf40ef5679275"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/link-whole-pure-build.stdout.xz",
+    "sha256": "0040f94d11d0039505328a90b2ff48968db873e9e7967307631bf40ef5679275"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/original.exit.xz",
+    "sha256": "f6ebd6f6f27ee66402036ad8c7d4cf1e86dfe3dcfd0125e9c1ecbefef91ece4d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/original1605-guard.argv.json.xz",
+    "sha256": "4c59315d6d4c3cd57e3d8e8fcc154a7e5ca7fcd876cf732c7a0c0204d0aadbdd"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/original1605-guard.exit.xz",
+    "sha256": "f6ebd6f6f27ee66402036ad8c7d4cf1e86dfe3dcfd0125e9c1ecbefef91ece4d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/original1605-guard.stderr.xz",
+    "sha256": "0040f94d11d0039505328a90b2ff48968db873e9e7967307631bf40ef5679275"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/original1605-guard.stdout.xz",
+    "sha256": "a53e44dbfc3a01177c1bda9d8ed2b7f1956da62bc541798e0c82673cf105d4ca"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/population12-guard.argv.json.xz",
+    "sha256": "515f63ce2d59d8d31d0305acb0fd4edae0916744918cc307eb00c07bc5f74a41"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/population12-guard.exit.xz",
+    "sha256": "f6ebd6f6f27ee66402036ad8c7d4cf1e86dfe3dcfd0125e9c1ecbefef91ece4d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/population12-guard.stderr.xz",
+    "sha256": "0040f94d11d0039505328a90b2ff48968db873e9e7967307631bf40ef5679275"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/population12-guard.stdout.xz",
+    "sha256": "c63385987c2a9c83ead7e54466b10df6887ddcae614338d91a10c490bc2466bb"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/published-pure-binary-check.txt.xz",
+    "sha256": "0bbb018f141ca5140a21759f991dabaa2a59d59aa284be625a5fb5a339778eae"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/pure50-guard.argv.json.xz",
+    "sha256": "3567f362268517231ac559c1c0a90574c6d3b0f6c07c32e69f89afdb41ed44c0"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/pure50-guard.exit.xz",
+    "sha256": "f6ebd6f6f27ee66402036ad8c7d4cf1e86dfe3dcfd0125e9c1ecbefef91ece4d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/pure50-guard.stderr.xz",
+    "sha256": "0040f94d11d0039505328a90b2ff48968db873e9e7967307631bf40ef5679275"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/pure50-guard.stdout.xz",
+    "sha256": "08f6ddba908e9e8aecdac0b867140bd69f8be0abca82ac56a5ed70c491a3b407"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/scope.txt.xz",
+    "sha256": "a2039b52f4f4d0f4a2cd7fc20919377a689cd89210d9f00cf7d7d705d38e5410"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/start.txt.xz",
+    "sha256": "d3566aab5c275e1a6341ca88a0765973c04c3f928fc32936d489a13e71095493"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/whole-original-CI-check.txt.xz",
+    "sha256": "51c40b805d5c5bb99265a0e06307cd012deea6adaa8818107740ea52c63c24a6"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/whole-pure-CI-check.txt.xz",
+    "sha256": "664cd3dc2fab7ab45f01301a5691b7fbf0199f0c0245053c271d396b2cd5f1bd"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/whole-runtime-context-own-source-guard-final-03/whole-snapshot-check.txt.xz",
+    "sha256": "d6e540354f6b7cb0c61b6ae2d7b7eefe149ed3abbe8a9d6342d6261a63a06350"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Final source-only LP packaging metadata context0 with own8-file recipe guard before/after, all19 actual byte phases0, complete309 whole files/575080214logical bytes retained in RAM. Complete old340729140B and pure53419171B CI archives,39331840B source tar, selected baseline/engine/new compiler/native/fixture/capture bytes remain whole. Final archived/native/fixture destinations checked against original external pins; readonlyUID1000 ownership/dirty recipe-source rejection and fail-fast nonempty inventory source fixes retained. Full first/second/third contexts remain immutable. CI now syntax-checks both exporters/context helper, checks exact8 recipe sources and uploads complete prospective OCI recipe source; exact workflow change refreshes pure50 and transitively population12 metadata only. Author first refresh expected an absent direct workflow pin in population12; stopped before writing that manifest, whole error/before/current correction retained, no old guard weakened. No Docker/AWS/compiler/science process/paid build/job, actual runtime Git/checkpoint/ABI/OCI/admission or signed standing."
+}

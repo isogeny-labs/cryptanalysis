@@ -1,0 +1,16 @@
+{
+  "schema": "xedni-finite-family-coverage-protocol-v1",
+  "question": "For the unchanged 14-vector family and the first lexicographic query row t1=0, how many nonzero target scalars admit a public relation by each frozen query cap?",
+  "family_protocol_sha256": "d28101f6869b012f8fd4f7e0c3208c6174597076c631e8f784d95e52e8f321a4",
+  "family_source_sha256": "ad0c3289321157ab998cf942f6a274cbd22269fa68c1d381ee8919598680cd52",
+  "field_selection_sha256": "abfd11c34823f59f0b1b38a57a948bb5723d5e9e4103d05cd8c006fca777e093",
+  "query_caps": [35, 64, 128, 256],
+  "full_row_cap": "q queries per field, reported separately",
+  "input_law": "Uniform d in {1,...,q-1}; the run exhaustively enumerates this finite support rather than sampling it",
+  "public_relation": "For R1=Q=dG and R2=Q-tG, vector (a,b) is a relation iff (a+b)d-bt=0 modulo prime q",
+  "admission": "t in [0,q), R1 and R2 nonidentity and distinct; t=0 and t=d are excluded",
+  "test_order": "At each admitted t, test the unchanged vectors in listed order and stop at the first relation with a+b nonzero modulo q",
+  "cost_boundary": "Count exact covered targets and earliest query indices by modular enumeration; no group-add or wall-time claim",
+  "falsifiers": ["a covered scalar has no replayed public relation", "a vector with zero coefficient sum is counted as scalar-recovering", "measured coverage exceeds the formal 13*(L-1) upper bound", "all-target full-row coverage fails"],
+  "claim_boundary": "Conditional fixed-family first-row coverage bound and exact counts; adaptive vector discovery and other query laws are outside this fixed schedule"
+}

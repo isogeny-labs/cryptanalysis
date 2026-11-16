@@ -1,0 +1,48 @@
+{
+  "admission_sha256": "b18127c392b904559ac12512642ab0322eaa3b9b72a61f45dacf4a2fb8c9a25c",
+  "audit_sha256": "59261b03d6a182743f5ced54e0095f3532a48ac5de96e49f91735c4d34c6a786",
+  "base_curve_coefficients": [
+    0,
+    0,
+    0,
+    -1,
+    -2
+  ],
+  "claim_boundary": "deterministic larger-order holdout and stage-operation census, with no wall-time or full IC speedup claim",
+  "construction": "only after a public hit, compute T=[b inverse mod q]U; center both coordinates; form B=y^2-x^3+x and E_B over Q; construct [b]P and [-a]P",
+  "coordinate_control_sha256": "c12c6216cb3e6e18a96c4671441b2d40eff5f6bed880dc10efe422353e13c54b",
+  "falsifiers": [
+    "an accepted public hit fails rational construction or reduction",
+    "a rational construction occurs before its public relation test",
+    "the independent audit disagrees on the query or relation census"
+  ],
+  "family_sha256": "82b340802ae37e8aaa3b1b0c2774911c27de88ef0e7d99e54fd9378b53f92894",
+  "field_panel": [
+    313,
+    421,
+    431,
+    547,
+    571,
+    593,
+    617,
+    677
+  ],
+  "producer_sha256": "6ffed1b116f7a4aa32155da894ac70f33973a1d95db0fc5f35bf10ef8fbd5118",
+  "public_test": "for every admitted pair, test all 13 frozen integer vectors by actual finite-curve group arithmetic; record every test and every hit",
+  "queries_per_field": 512,
+  "query_filter": "discard a pair if either Q-tG is identity or if the two public points coincide; record filtered queries",
+  "question": "On a larger-order holdout, how often does the selected public vector family hit on a frozen query schedule, and do all detected public hits admit the same deterministic rank-one rational construction?",
+  "rank_one_lean_source_sha256": "740c7decd3cc665eab6564ef7dfde5237e005b4212660dba04d342594694d600",
+  "rational_generator": [
+    2,
+    2
+  ],
+  "resource_cap": "512 scheduled queries per field and 13 vector tests per admitted query; no additional search after a public hit",
+  "schedule": "for field p, query i in [0,512), and axis 0 or 1, take SHA256 UTF-8 seed:p:i:axis as a big-endian integer modulo subgroup order q; retain duplicate pairs",
+  "schedule_seed": "xedni-public-first-large-holdout-v1",
+  "schema": "xedni-public-first-large-holdout-protocol-v1",
+  "subgroup_generator": "m times the reduction of (2,2), with m from the pinned coordinate-control result",
+  "target_fixture": "Q=17G is built outside all experimental stage counts",
+  "target_scalar": 17,
+  "verification": "check rational nonsingularity, good reduction, rational relation, both point reductions, and same-target scalar replay; retain each failed event"
+}

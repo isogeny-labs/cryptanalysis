@@ -1,0 +1,78 @@
+"""Repository metadata/custody only; no mathematical or native execution."""
+from pathlib import Path
+from datetime import datetime, timezone
+import hashlib, json, lzma, os, shutil, stat, subprocess
+
+r=Path('/workspace/cryptanalysis'); base='bb451dc4c85e001cc7c3b629cdeff93a7235b6c9'; frozen='82617f14fb48843585137f0310f7d1fa9a5d8ea6'
+p=r/'experiments/chained-transfer-lp-presentation-01'; h=Path('/workspace/scratch/ct465-Consumer-genuine-metadata-checkpoint'); h.mkdir()
+g=p/'evidence/genuine-docs-normal-source-checkpoint-16'; g.mkdir()
+shutil.copyfile(r/'.git/index',h/'entire-index-before'); shutil.copyfile(r/'.git/index',h/'actual-current-index')
+env={**os.environ,'GIT_OPTIONAL_LOCKS':'0','GIT_TERMINAL_PROMPT':'0','GIT_INDEX_FILE':str(h/'actual-current-index')}
+def git(*args): return ['git','-c','gc.auto=0','-c','splitIndex.maxPercentChange=100','-c','splitIndex.sharedIndexExpire=never',*args]
+def run(label,args,want=0):
+ q=subprocess.run(args,cwd=r,env=env,capture_output=True,timeout=120)
+ (g/(label+'.stdout.xz')).write_bytes(lzma.compress(q.stdout)); (g/(label+'.stderr.xz')).write_bytes(lzma.compress(q.stderr)); (g/(label+'.exit')).write_text(str(q.returncode)+'\n')
+ print(label,q.returncode,flush=True); assert q.returncode==want,(label,q.stdout[-500:],q.stderr[-500:]); return q.stdout
+assert subprocess.check_output(git('rev-parse','HEAD'),cwd=r,env=env,text=True).strip()==base
+run('canonical-cached-empty',['git','diff','--cached','--quiet'])
+provenance=json.loads((r/'docs/chained-transfer-byte-custody-20261116/STORE_PROVENANCE_04.json').read_text())
+manifest=json.loads((r/'docs/chained-transfer-byte-custody-20261116/payloads/.artifacts.json').read_text())
+def raw_state():
+ rows=[]
+ for x in provenance['all14_original_addresses']:
+  src=r/x['original']; dst=r/x['complete_regular_payload']; s=dst.lstat()
+  assert src.is_symlink() and stat.S_ISREG(s.st_mode) and not dst.is_symlink()
+  assert hashlib.sha256(src.read_bytes()).hexdigest()==hashlib.sha256(dst.read_bytes()).hexdigest()==x['sha256']
+  assert s.st_size==x['bytes'] and stat.S_IMODE(s.st_mode)==x['payload_mode']
+  rows.append(dict(path=x['original'],link=os.readlink(src),sha256=x['sha256'],bytes=s.st_size,payload=x['complete_regular_payload'],mode=stat.S_IMODE(s.st_mode)))
+ assert len(rows)==14 and len({x['payload'] for x in rows})==10
+ return rows
+before=raw_state(); (g/'ALL_FOURTEEN_ORIGINAL_ADDRESSES_AND_TEN_REGULAR_FILES.json').write_text(json.dumps(before,indent=2)+'\n')
+raws=['docs/chained-transfer-byte-custody-20261116/payloads/'+n for n in manifest['files']]
+tracked=subprocess.check_output(git('ls-files','-z','--',*raws),cwd=r,env=env).split(b'\0'); tracked=[x.decode() for x in tracked if x]
+assert len(tracked)==9
+run('remove-only-nine-raw-Git-entries',git('rm','--cached','--ignore-unmatch','--',*raws))
+assert raw_state()==before
+frozenfiles=['.github/workflows/pcc-gate.yml','tools/pcc/pcc.py','pcc/keyring.json','tools/artifacts/artifacts.py','.artifacts/config.json',
+ 'experiments/chained-transfer-relation-diagnostics-02/reference-02.sha256',
+ 'experiments/chained-transfer-lp-presentation-01/historical-01/source-01.sha256',
+ 'experiments/chained-transfer-lp-presentation-01/population-01/source-01.sha256',
+ 'experiments/chained-transfer-lp-presentation-01/runtime-01/oci-01/source-01.sha256']
+for name in frozenfiles: assert (r/name).read_bytes()==subprocess.check_output(git('show',base+':'+name),cwd=r,env=env)
+assert hashlib.sha256((r/'.github/workflows/pcc-gate.yml').read_bytes()).hexdigest()=='03bcb807933377080970454cd2e459fe4190f7aa3f452c2acba1a55c5760206d'
+scope=['experiments/chained-transfer-lp-presentation-01','docs/chained-transfer-byte-custody-20261116','docs/session-logs/2026-11-16.md','.resume/RESUME.md','pcc/claims','pcc/ledger.jsonl']
+def stage():
+ ns=sorted((set(subprocess.check_output(git('ls-files','--modified','--others','--exclude-standard','-z','--',*scope),cwd=r,env=env).split(b'\0'))|set(subprocess.check_output(git('diff','--cached','--name-only','-z'),cwd=r,env=env).split(b'\0')))-{b''})
+ chosen=[x for x in ns if x.decode() not in raws and x!=b'.resume/RESUME.md']
+ (h/'selected-paths0').write_bytes(b'\0'.join(chosen)+b'\0')
+ subprocess.run(git('add','--sparse','--pathspec-from-file='+str(h/'selected-paths0'),'--pathspec-file-nul'),cwd=r,env=env,check=True)
+ subprocess.run(git('add','--sparse','-u','--','.resume/RESUME.md'),cwd=r,env=env,check=True)
+ assert set(subprocess.check_output(git('diff','--cached','--name-only','-z'),cwd=r,env=env).split(b'\0'))-{b''}==set(ns)
+ return ns
+run('original-current-bb-prefix',['python3','tools/pcc/pcc.py','ledger','verify','--base',base])
+run('original-frozen826-prefix',['python3','tools/pcc/pcc.py','ledger','verify','--base',frozen])
+run('authored-journal-prose',['python3','tools/pcc/pcc.py','lint-prose','docs/session-logs/2026-11-16.md','.resume/RESUME.md'])
+run('unchanged-original-PCC-actionlint',['/workspace/scratch/actionlint-bin/actionlint','-shellcheck=','.github/workflows/pcc-gate.yml'])
+stage(); run('cached-whitespace',git('diff','--cached','--check'))
+tree=subprocess.check_output(git('write-tree'),cwd=r,env=env,text=True).strip()
+run('original-bb-artifact-policy',['python3','tools/artifacts/artifacts.py','check',base,tree])
+run('original-frozen826-artifact-policy',['python3','tools/artifacts/artifacts.py','check',frozen,tree])
+(g/'ACTUAL_STATIC_SOURCE_AND_METADATA_SCOPE.json').write_text(json.dumps(dict(time=datetime.now(timezone.utc).isoformat(),source_parent=base,frozen_base=frozen,source_guard_claim='0d2647',all_original_guards=[1605,50,12,9],all_eight_original_subjects='2/not_covered; no per-proof byte failures',raw_index_entries_removed=tracked,all_ten_raw_files_regular_and_all_fourteen_addresses_retained=True,exact_genuine_Root04e_metadata=True,frozen_PCC_workflow_unchanged=True,original_policy_both_bases=0,prefix_prose_cached_actionlint=0,native_invocations=0,new_own_source_CI='not yet published/collected',full_scientific_population_runtime_ABI_admission='still open; not executed'),indent=2)+'\n')
+args=['python3','tools/pcc/pcc.py','claim','new','--kind','statement','--claim-type','data','--statement','Normal authored Consumer genuine shared-store metadata checkpoint after eb2d01 and original four guards/all eight affected subjects0d2647. Exact original Root04e generated ten-object manifest/ignore retained byte-for-byte with provenance04; only nine formerly tracked raw payload entries removed from Git index while all ten complete regular files and all fourteen exact original addresses/SHA/modes/aliases remain unchanged. Original bb and frozen826 ledger prefixes, original artifact policy against both bases, authored journal prose/cached whitespace and unchanged original PCC actionlint all0. Frozen PCC workflow03bcb807, verifiers/keyring/policy and original1605/50/12/9 sources unchanged. Whole old own-source bb native compiler/PCC archive3e5411 and all earlier negative/source/schema records retained; actual inventory746 corrects historical log745. New publication/current original docs hydration/CI remain pending, no oldCI substituted. Full scientificNEW28/baseline340MB/full60/240/62/original360/witness/seven controls/feedback/post/runtime/ABI/admission/cold-engine and cost stay separate and unexecuted; no local native or paid launch or signed standing.']
+for f in sorted(g.iterdir()): args+=['--proof','attestation:'+str(f.relative_to(r))]
+claim=subprocess.check_output(args,cwd=r,env=env,text=True).strip()
+entry=f'''\n---\n\n{datetime.now(timezone.utc).isoformat()}\n# Commit genuine shared-store Consumer metadata with original guards\n\n## What was done\n{claim}: original1605/50/12/9 and eight affected subjects0d2647 complete. Exact genuine ten-object manifest/ignoreeb2d01; only nine raw Git entries removed, all ten complete regular files/fourteen original addresses retained. Both bb/frozen826 prefixes and original artifact policy, prose/cached/unchanged PCC actionlint0. Frozen PCC workflow/verifiers/keyring/policy/source pins unchanged. Whole old bb ownCI3e5411 retained, actual inventory746 corrects historical log745. [pcc:unverified]\n\n## Decisions made\nNormal authored childbb/expected-head FF/new immutable tag on existing1587, update readyPR and collect new original docs hydration/current source CI at spaced check-in. Conductor remains unavailable127; existing owned metadata/evidence scope. [pcc:unverified]\n\n## Open threads\nPublication/current hydration/CI, full scientificNEW28/baseline340MB/full historical60/240/62/original360/witness/controls/feedback/post/runtime/ABI/admission/cold qualification/cost remain open and separate. [pcc:unverified]\n\n## Errors\nAll earlier whole source/control/schema/transport/storage failures retained; no local native or paid execution, no signed standing or oldCI substitution. [pcc:unverified]\n'''
+for f in [r/'docs/session-logs/2026-11-16.md',r/'.resume/RESUME.md']:
+ with f.open('a') as out: out.write(entry)
+ns=stage()
+for name in ns:
+ if name.startswith(b'pcc/claims/'):
+  for proof in json.loads((r/name.decode()).read_text()).get('proofs',[]):
+   if proof.get('kind')=='attestation':
+    x=proof['subject']; assert hashlib.sha256((r/x['path']).read_bytes()).hexdigest()==x['sha256']
+subprocess.run(git('diff','--cached','--check'),cwd=r,env=env,check=True)
+subprocess.run(git('commit','--quiet','-m','research: preserve genuine Consumer store metadata and source custody'),cwd=r,env=env,check=True)
+head=subprocess.check_output(git('rev-parse','HEAD'),cwd=r,env=env,text=True).strip(); assert subprocess.check_output(git('rev-parse','HEAD^'),cwd=r,env=env,text=True).strip()==base
+shutil.copyfile(h/'actual-current-index',r/'.git/index'); assert (r/'.git/index').read_bytes()==(h/'actual-current-index').read_bytes(); assert raw_state()==before
+(h/'ACTUAL_COMMITTED_CHECKPOINT.json').write_text(json.dumps(dict(time=datetime.now(timezone.utc).isoformat(),head=head,parent=base,paths=len(ns),claim=claim,all_raw_files_addresses_retained=True),indent=2)+'\n')
+print(claim,head,'paths',len(ns),flush=True)

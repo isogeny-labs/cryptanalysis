@@ -1,0 +1,79 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T04:08:16Z",
+ "id": "PCC-20261116-bf5b6e",
+ "kind": "statement",
+ "producer": {
+  "commit": "c045dfdf2e682d0c98fba9a1bcd7824c00c649dd",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-thread-limit-failure-01/actual-Consumer434.exit",
+    "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-thread-limit-failure-01/actual-Root435.exit",
+    "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-thread-limit-failure-01/entire-original-attempt01.lean",
+    "sha256": "be7537a2dfcaf2628d89e1763c3e9fbd0bd2496ed74c7a78c348d3986871a690"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-thread-limit-failure-01/original-Consumer434/experiments_chained-transfer-lp-presentation-01_lean_LPGraphCases02_lean/build.log",
+    "sha256": "8359249f494db5081050f585a4c9d589f4edb85f31252481b841f195761fd4f1"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-thread-limit-failure-01/original-Consumer434/experiments_chained-transfer-lp-presentation-01_lean_LPGraphCases02_lean/status",
+    "sha256": "0c6532fbd1cb7b97b6781811241a4e7dcaebf0e3ff758f7054a3038de5d2281f"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-thread-limit-failure-01/original-Root435/experiments_chained-transfer-lp-presentation-01_lean_LPGraphCases02_lean/build.log",
+    "sha256": "8359249f494db5081050f585a4c9d589f4edb85f31252481b841f195761fd4f1"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-thread-limit-failure-01/original-Root435/experiments_chained-transfer-lp-presentation-01_lean_LPGraphCases02_lean/status",
+    "sha256": "0c6532fbd1cb7b97b6781811241a4e7dcaebf0e3ff758f7054a3038de5d2281f"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-thread-limit-failure-01/whole-Consumer434-caller.txt",
+    "sha256": "49d06d15967897ee3a9c6c0a9e82ebdb01a7d73cf9eb59605549ab29c243e903"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-thread-limit-failure-01/whole-Root435-caller.txt",
+    "sha256": "35c8ab34c5b9a4aec8a4a7163a0731aa1f1e5a7d7d3b014f32bc1df570d7e186"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Direct known graph projection Lean build attempt01: both unchanged original gates under4.34.1/4.35.0 exit1/FAIL_build before theorem checking because Lean cannot create its default worker threads under the declared2GiB VM bound. Entire source, callers, build diagnostics and statuses retained. No theorem audited or result inferred. Retry keeps the same memory/time limits and exact proof/gate sources, using only documented compiler -j1 resource selection; no trust, kernel, proof or acceptance change. This is static proof compilation, not local native or historical-population execution."
+}

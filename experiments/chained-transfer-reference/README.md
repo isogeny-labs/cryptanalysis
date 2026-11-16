@@ -1,3 +1,90 @@
+# Complete F101 chain checkpoint
+
+
+Scientific source a39fefaa084756d0a58386253651a667e2ad9de6 pins upstream
+927a4efe5fe68b4270ae5989f3cbab0b68852f4b. Local full147b9f is COMPLETE:
+original02:38:22–02:52:52UTC,outer/driver/original exits0,eleven phase pairs
+[0,0],all794 input hashes unchanged,cleanliness[0,0,0],failing rg shim never
+invoked. BOTH independently enumerated12,317-class domains,all old scopes,
+new four tests,bounded36-fibre CLI and eleven new Lean declarations pass.
+Written f97916/partial formalization e9bf81 retain their exact bridge limits.
+No native process is running. [pcc:unverified]
+
+Own CI43353278346 on exacta39 is COMPLETE ALL SIX SUCCESS,f507c9/root6321c6.
+Every whole job log/API/standardXZ/raw+archive hash/exact roundtrip remains.
+The new job TOTAL42 modules260 compiled includes40 upstream238 plus11 old
+and11 new consumer declarations,zero trusted axioms. Old five jobs remain;
+reference has25+98+five integration tests as1+1+1+2 and ONE OLD ignored test.
+Local no-rg instrumentation is separate from uninstrumented CI. These
+science CIs are SETTLED;do not repoll or redispatch. [pcc:unverified]
+
+All FOUR original native raw trees are actually remotely published with
+whole-byte replay BEFORE normal manifest bot commits:unit+CLI973bee/953892
+canonicalcee9;fullca8c22/505bd4 canonical9917;admission91f519/17f652
+canonical5048. Whole archives respectively2412572/SHA8ec2a0e4,
+2412084/SHA26c3048e,2451524/SHA9f0b2e6e,130472/SHA0250a35b.
+Actual full43356854601/job131660813332 and admission43358286544/
+job131665457719 receipts include exactFF0/artifact0/wiring0. Original
+c37d26/0556d8 claim subjects hydrate exact published bytes. Consumer1431777
+published108 metadata paths with scoped governance4e11ac;root5048 is the
+actual admission manifest bot. ONE later PCC data-read workflow change
+adds sorted admission hydration;other793 runtime/proof/focused-workflow
+inputs still match FULL01. Verifiers/trust policy are unchanged.
+[pcc:unverified]
+
+Additive report578f99 contains TWO final50,492-byte PDF pages,ALL visually
+inspected,with editable DOT/SVG/recorded data/renderer/Typst and source links:
+cryptanalysis:experiments/chained-transfer-reference/reports/fp-chain-ci-publication/REPORT.md.
+Original packaging0ed3e9,wiring d98424 and CI-collector07a92c failures remain;
+corrected collector matches frozen1+1+1+2 layout without changing native
+criteria. Earlier pending/active paragraphs below are HISTORICAL and
+superseded by this checkpoint. Scientific standing remains unsigned.
+[pcc:unverified]
+
+Current next actions are in `FP_CHAIN_CHECKPOINT.md`. Earlier components below retain historical scope.
+
+---
+
+# Independent prime-norm whole raw publication complete
+
+Actual rootb83ad3/[immutable9bc7 canonical manifest](https://github.com/isogeny-labs/crypto/blob/9bc7bb08b2465603cbaaf6648e85dd2568b80686/research/chained_jacobian_transfers_20261110/evidence/consumer-prime-norm-whole-archive-handoff-01/.artifacts.json) publishes both whole unit206-file506588-byte and full970-file2419924-byte archives. Trusted-base43340558886/job131607521223 records TWO whole remote byte replays before the normal bot commit;exactlocalFF0/artifact0/wiring0. Full log/API/stdXZ/hashes/roundtrips retained. [Inspected one-page35707 publication addendumb3ac97](reports/prime-norm-archive-publication/REPORT.md) is byte-identical to root. Earlier pending paragraphs are historical/additively superseded;no original claim/report/custody rewrite. Scientificstandingunsigned. [pcc:unverified]
+
+Replaymetadata400fbe is published7dfa6c;allscience/pins/FIVEwholejobs unchanged. CompleteLOCAL3043e8 and reportsf5c69e/6c3a4e retain full norm4/recovery/group/DLP/oracle/negativecontrols and43/24eleven/40module238compiled212written/oldkernel4CLI/newnorm4CLI/consumer11Lean/allguards. Ownsciencecd2fivejobCI43338033189 next01:24UTC;root6298all4CI3e89b6settled. No cost/solveradvantage. NextnewfrozenfullF101C0↔T20adapterprotocol. [pcc:unverified]
+
+---
+# Complete independent prime-norm integration replay
+
+Full01/3043e8 passes43native/24algebraelevenexactoutputs/botholdnativeJSONcomparisons/40upstreammodules238compiled212written0trusted/oldkernel4+CLI/newnorm4+CLI+exactnewIDC/11consumerLean/all722upstream+51consumerhashes/originalexits0/no-rg. [Inspected two-page replay reportf5c69e](reports/prime-norm-replay/REPORT.md) and[latest checkpoint](PRIME_NORM_CHECKPOINT.md) record full original receipts/custody/admissions and boundaries. Sciencecd2d564/readyPR1519;all implementation/pin/five jobs unchanged by this addendum. Scientificstandingunsigned;no cost/solveradvantage. [pcc:unverified]
+
+Whole206-file unit506588-byte archive and970-file full2419924-byte archive are intact with member/raw/archive hashes/exact roundtrips. Root handoff5643d0/exactcopies uses existing trusted-base artifact-autofix;actual S3 upload/whole readback/real manifests are PENDING,not inferred from metadata. Own consumer CI43338033189/5jobs pending next01:24UTC;root6298 own43330431536 SUCCESSall4/3e89b6 is settled. Earlier pendingfull paragraphs below are historical and superseded by this checkpoint. [pcc:unverified]
+
+---
+# New component: independent F101 T20 norms and completed pullback
+
+Four new native tests accept all12,317 rational classes:independent image-Mumford norm agrees with the F101² pointwise oracle,both actual[4],public recovery9238 and component82/85,group/Frobenius,all109+113 scalar images/exact orders. Full signed infinity/repeated fibres and negative controls pass,204440. Eleven exact Lean statements/localPCCpasses/zero trusted-native,380d2b;bounded36-fibre CLI/new universal IDC,fdd132. Scientific standing unsigned,no cost/solver advantage. [pcc:unverified]
+
+[Independent written proof](PRIME_NORM_INDEPENDENT_PROOF.md),[frozen protocolec2a8b](PRIME_NORM_REPLAY_PROTOCOL.md),[inspected three-page unit report6c3a4e](reports/prime-norm-independent-unit/REPORT.md),[active checkpoint](PRIME_NORM_CHECKPOINT.md). First manifest error101 preserved7f58bd;four bad infinity multiplicities and two squarefree fibres differ as required. All35 old source/check/pins and four complete CI jobs retained byte-identical;new fifth job/driver drafted. Full pinned6298 replay/admission controls pending. Whole506,588-byte unit raw archive intact local pending documented root trusted-base migration;remote availability not yet claimed. [pcc:unverified]
+
+Prior proper replay whole failed79,644-byte and positive80,516-byte archives ARE now remotely published at immutable root5bec canonical manifests;consumer71c03a addendum/c0b8 checkpoints this,actual trusted-base43319185494 full remote replay evidence retained. The old pending paragraphs below are historical and additively superseded. Consumer exact8072 own43315145393 succeeds all4 jobs,b3c8f1;no repoll. [pcc:unverified]
+
+---
+# New component: proper T20 replay and independent kernel checks
+
+CompleteLOCAL400f38 exactcrypto030e passes41native/23algebra/tenidentity
+comparisons/bothnativeJSONcmp/39modules224compiled198written0trusted/
+checker4+16mutants+CLI0/all719upstream82consumer184originalhashes/no-rg.
+Newindependentlyencodedkernelrecordchecksuseexistingengines;thefullR20
+suitereplaysproducerimplementation. Allscientificstandingunsigned.
+[pcc:unverified]
+
+Mainpcc/claims/PCC-20261112-a5bc14.json /[inspected2page50510PDF report](reports/proper-t20-replay/REPORT.md);
+failurepcc/claims/PCC-20261112-7d49ad.json /[inspected1page38464PDF report](reports/proper-t20-failures/REPORT.md).
+Wholefailed79644andpositive80516rawarchivesintactlocalpendingdocumented
+roottrusted-baseartifact-autofixS3upload/replay/realmanifests. Metadataisnot
+remoterawavailability. Allold35Rust/check/pins+3wholejobsunchanged;new
+fourthproperjobadditive,parent748e/immediate1513. [pcc:unverified]
+
+---
 # CT28: direct first F101 elliptic quartic norm
 
 [Written proof](QUARTIC_COVER.md),[acceptance/resume](QUARTIC_STATUS.md) and [inspected report](reports/quartic-first/complete-report.pdf) record complete25native/85reference unit+five integrations,all source guards/fmt/strictClippy,301fbe. Every12317 first T0/E109 norm matches the retained route,with all actual poles/repeated/infinity cases. Scientific standing unsigned,geometric formalization partial;no measured cost ratio. [pcc:unverified]

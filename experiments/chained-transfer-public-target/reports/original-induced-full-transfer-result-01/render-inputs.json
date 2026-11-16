@@ -1,0 +1,143 @@
+{
+  "bindings": [
+    {
+      "claim": "pcc/claims/PCC-20261115-592898.json",
+      "theorem": "InducedFullTransfer.representative_independence",
+      "statement": "theorem representative_independence {A J B K : Type} [IntModule A] [IntModule J] [IntModule B] [IntModule K] (source : Presentation A J) (target : Presentation B K) (edge : CompatibleEdge source target) (a b : A) (same : source.phi a=source.phi b) : target.phi (edge.map a)=target.phi (edge.map b)",
+      "label": "Representative independence",
+      "claim_id": "592898"
+    },
+    {
+      "claim": "pcc/claims/PCC-20261115-ea800e.json",
+      "theorem": "InducedFullTransfer.induced_on_source",
+      "statement": "theorem induced_on_source {A J B K : Type} [IntModule A] [IntModule J] [IntModule B] [IntModule K] (source : Presentation A J) (target : Presentation B K) (edge : CompatibleEdge source target) (a : A) : transfer edge (source.phi a)=target.phi (edge.map a)",
+      "label": "Derived source identity",
+      "claim_id": "ea800e"
+    },
+    {
+      "claim": "pcc/claims/PCC-20261115-0b07fa.json",
+      "theorem": "InducedFullTransfer.induced_additive",
+      "statement": "theorem induced_additive {A J B K : Type} [IntModule A] [IntModule J] [IntModule B] [IntModule K] (source : Presentation A J) (target : Presentation B K) (edge : CompatibleEdge source target) (x y : J) : transfer edge (x+y)=transfer edge x+transfer edge y",
+      "label": "Derived additivity",
+      "claim_id": "0b07fa"
+    },
+    {
+      "claim": "pcc/claims/PCC-20261115-11ccb9.json",
+      "theorem": "InducedFullTransfer.induced_integer_linear",
+      "statement": "theorem induced_integer_linear {A J B K : Type} [IntModule A] [IntModule J] [IntModule B] [IntModule K] (source : Presentation A J) (target : Presentation B K) (edge : CompatibleEdge source target) (z : Int) (x : J) : transfer edge (z \u2022 x)=z \u2022 transfer edge x",
+      "label": "Integer / DLP linearity",
+      "claim_id": "11ccb9"
+    },
+    {
+      "claim": "pcc/claims/PCC-20261115-936200.json",
+      "theorem": "InducedFullTransfer.induced_reverse_norms",
+      "statement": "theorem induced_reverse_norms {A J B K : Type} [IntModule A] [IntModule J] [IntModule B] [IntModule K] (source : Presentation A J) (target : Presentation B K) (forward : CompatibleEdge source target) (reverse : CompatibleEdge target source) (n : Int) (source_elliptic_dual : \u2200 a, reverse.map (forward.map a)=n \u2022 a) (target_elliptic_dual : \u2200 b, forward.map (reverse.map b)=n \u2022 b) : (\u2200 x, transfer reverse (transfer forward x)=n \u2022 x) \u2227 (\u2200 y, transfer forward (transfer reverse y)=n \u2022 y)",
+      "label": "Both derived reverse norms",
+      "claim_id": "936200"
+    },
+    {
+      "claim": "pcc/claims/PCC-20261115-ada574.json",
+      "theorem": "InducedFullTransfer.induced_chain_collapse",
+      "statement": "theorem induced_chain_collapse {A J B K C L : Type} [IntModule A] [IntModule J] [IntModule B] [IntModule K] [IntModule C] [IntModule L] (source : Presentation A J) (middle : Presentation B K) (target : Presentation C L) (first : CompatibleEdge source middle) (second : CompatibleEdge middle target) (x : J) : transfer second (transfer first x)= target.phi (second.map (first.map (source.lift x)))",
+      "label": "Two-edge chain collapse",
+      "claim_id": "ada574"
+    },
+    {
+      "claim": "pcc/claims/PCC-20261115-541344.json",
+      "theorem": "InducedFullTransfer.recover_on_annihilator",
+      "statement": "theorem recover_on_annihilator {A J B K : Type} [IntModule A] [IntModule J] [IntModule B] [IntModule K] (source : Presentation A J) (target : Presentation B K) (forward : CompatibleEdge source target) (reverse : CompatibleEdge target source) (n order inverse quotient : Int) (source_elliptic_dual : \u2200 a, reverse.map (forward.map a)=n \u2022 a) (target_elliptic_dual : \u2200 b, forward.map (reverse.map b)=n \u2022 b) (bezout : inverse*n+quotient*order=1) (x : J) (annihilated : order \u2022 x=0) : inverse \u2022 transfer reverse (transfer forward x)=x",
+      "label": "Per-input full recovery",
+      "claim_id": "541344"
+    },
+    {
+      "claim": "pcc/claims/PCC-20261115-57b14d.json",
+      "theorem": "InducedFullTransfer.injective_on_annihilator",
+      "statement": "theorem injective_on_annihilator {A J B K : Type} [IntModule A] [IntModule J] [IntModule B] [IntModule K] (source : Presentation A J) (target : Presentation B K) (forward : CompatibleEdge source target) (reverse : CompatibleEdge target source) (n order inverse quotient : Int) (source_elliptic_dual : \u2200 a, reverse.map (forward.map a)=n \u2022 a) (target_elliptic_dual : \u2200 b, forward.map (reverse.map b)=n \u2022 b) (bezout : inverse*n+quotient*order=1) (x y : J) (annihilated_x : order \u2022 x=0) (annihilated_y : order \u2022 y=0) (same : transfer forward x=transfer forward y) : x=y",
+      "label": "Carrier injectivity",
+      "claim_id": "57b14d"
+    },
+    {
+      "claim": "pcc/claims/PCC-20261115-a7d195.json",
+      "theorem": "InducedFullTransfer.actual_original_witnesses",
+      "statement": "theorem actual_original_witnesses : (3413013*13+(-4)*11092292 : Int)=1 \u2227 (9648325*169+(-147)*11092292 : Int)=1 \u2227 Nat.gcd 13 11092292=1 \u2227 Nat.gcd 169 11092292=1",
+      "label": "Original integer witnesses",
+      "claim_id": "a7d195"
+    }
+  ],
+  "exact_coverage": {
+    "coverage": {
+      "consumer": {
+        "actual_audited_declarations": 21,
+        "nine_planned_named_roots": [
+          "InducedFullTransfer.actual_original_witnesses",
+          "InducedFullTransfer.induced_additive",
+          "InducedFullTransfer.induced_chain_collapse",
+          "InducedFullTransfer.induced_integer_linear",
+          "InducedFullTransfer.induced_on_source",
+          "InducedFullTransfer.induced_reverse_norms",
+          "InducedFullTransfer.injective_on_annihilator",
+          "InducedFullTransfer.recover_on_annihilator",
+          "InducedFullTransfer.representative_independence"
+        ],
+        "additional_structure_declarations": [
+          "InducedFullTransfer.CompatibleEdge.kernel_transport",
+          "InducedFullTransfer.CompatibleEdge.map_add",
+          "InducedFullTransfer.CompatibleEdge.map_linear",
+          "InducedFullTransfer.CompatibleEdge.map_sub",
+          "InducedFullTransfer.CompatibleEdge.map_zero",
+          "InducedFullTransfer.CompatibleEdge.mk.sizeOf_spec",
+          "InducedFullTransfer.Presentation.lift_image",
+          "InducedFullTransfer.Presentation.mk.sizeOf_spec",
+          "InducedFullTransfer.Presentation.phi_add",
+          "InducedFullTransfer.Presentation.phi_linear",
+          "InducedFullTransfer.Presentation.phi_sub",
+          "InducedFullTransfer.Presentation.phi_zero"
+        ],
+        "zero_trusted": true,
+        "all_planned_roots_present": true
+      },
+      "producer": {
+        "actual_audited_declarations": 21,
+        "nine_planned_named_roots": [
+          "InducedFullTransfer.actual_original_witnesses",
+          "InducedFullTransfer.induced_additive",
+          "InducedFullTransfer.induced_chain_collapse",
+          "InducedFullTransfer.induced_integer_linear",
+          "InducedFullTransfer.induced_on_source",
+          "InducedFullTransfer.induced_reverse_norms",
+          "InducedFullTransfer.injective_on_annihilator",
+          "InducedFullTransfer.recover_on_annihilator",
+          "InducedFullTransfer.representative_independence"
+        ],
+        "additional_structure_declarations": [
+          "InducedFullTransfer.CompatibleEdge.kernel_transport",
+          "InducedFullTransfer.CompatibleEdge.map_add",
+          "InducedFullTransfer.CompatibleEdge.map_linear",
+          "InducedFullTransfer.CompatibleEdge.map_sub",
+          "InducedFullTransfer.CompatibleEdge.map_zero",
+          "InducedFullTransfer.CompatibleEdge.mk.sizeOf_spec",
+          "InducedFullTransfer.Presentation.lift_image",
+          "InducedFullTransfer.Presentation.mk.sizeOf_spec",
+          "InducedFullTransfer.Presentation.phi_add",
+          "InducedFullTransfer.Presentation.phi_linear",
+          "InducedFullTransfer.Presentation.phi_sub",
+          "InducedFullTransfer.Presentation.phi_zero"
+        ],
+        "zero_trusted": true,
+        "all_planned_roots_present": true
+      }
+    },
+    "interpretation": "Nine frozen substantive roots plus ten explicit proof-field projections and two generated sizeOf specifications; no root omitted, source criterion or gate weakened. Original gates audit all21; claim onlynine new named mathematical conclusions."
+  },
+  "source_custody": {
+    "all343_original_producer_science_hashes_unchanged": true,
+    "all1440_reference03_paths_unchanged": true,
+    "source_sha256": "1bf35217813e02804f7dc529b30779655a7ed6e988bcef597b6268a28d634587",
+    "source_bytes": 8528,
+    "actual_source_compiled_by_both_gates_equal": true,
+    "genInjectivity_false": "suppresses redundant constructor injectivity generation only; original gates unchanged and auditall21remainingtheorems including12structuraldeclarations",
+    "prospective": "2de4aa publisheada0ec881 beforemodule",
+    "future_custody": "NEW26"
+  },
+  "scope": "literal proof/binding/evidence projection only; no new scientific computation"
+}

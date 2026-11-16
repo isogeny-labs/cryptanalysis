@@ -1,0 +1,132 @@
+name: CT137 native CT126 compile and original/reuse source custody
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/ct137-native-pricing-compile.yml'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/CT137_NATIVE_COMPILE_PROTOCOL.md'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/src/main.rs'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/Cargo.toml'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/reuse/Cargo.toml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native-price-compile:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact cryptanalysis head, never merge ref
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Checkout pinned sibling crypto graph
+        uses: actions/checkout@v4
+        with:
+          repository: isogeny-labs/crypto
+          ref: 4de29a113dfc1b9d32c1809820b8caa2975042a8
+          path: _ct137_crypto
+          persist-credentials: false
+      - name: Record exact source identities and stage sibling path
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p ct137-evidence
+          {
+            echo "cryptanalysis_head=$(git rev-parse HEAD)"
+            echo "crypto_head=$(git -C _ct137_crypto rev-parse HEAD)"
+            echo "timestamp=$(date -u '+%FT%TZ')"
+            uname -a
+            grep -m1 'model name' /proc/cpuinfo || true
+            cat /sys/fs/cgroup/memory.max 2>/dev/null || true
+            cat /sys/fs/cgroup/cpu.max 2>/dev/null || true
+          } | tee ct137-evidence/host.txt
+          test "$(git -C _ct137_crypto rev-parse HEAD)" = 4de29a113dfc1b9d32c1809820b8caa2975042a8
+          test "$(git hash-object experiments/chained-transfer-public-target/fixed-jacobian-chain-evaluator-01/src/lib.rs)" = 8016634385d76207b23a3eb3a4dae9b0366ac68d
+          test -d _ct137_crypto/isogeny_algos
+          test -d _ct137_crypto/research/chained_jacobian_transfers_20261110/genus3-prime-descent/engine
+          ln -s "$GITHUB_WORKSPACE/_ct137_crypto" "$(dirname "$GITHUB_WORKSPACE")/crypto"
+          readlink -f "$(dirname "$GITHUB_WORKSPACE")/crypto/isogeny_algos" | tee ct137-evidence/crypto-path.txt
+      - name: Checkout immutable original artifact hydrating tool and config
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          repository: isogeny-labs/cryptanalysis
+          ref: 3de8c174cf65e6b34bf8579d97b817b8f5dc2ded
+          persist-credentials: false
+          path: _ct137_artifact_tools
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            tools/artifacts/artifacts.py
+            .artifacts/config.json
+      - name: Restore immutable nondual18 compressed model fixtures
+        shell: bash
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+        run: |
+          set -euo pipefail
+          cmp _ct137_artifact_tools/.artifacts/config.json .artifacts/config.json
+          cmp _ct137_artifact_tools/tools/artifacts/artifacts.py tools/artifacts/artifacts.py
+          if ! command -v aws >/dev/null; then
+            python3 -m venv "$RUNNER_TEMP/ct137-artifact-awscli"
+            "$RUNNER_TEMP/ct137-artifact-awscli/bin/python" -m pip install --disable-pip-version-check awscli==1.46.2
+            export ARTIFACTS_AWS="$RUNNER_TEMP/ct137-artifact-awscli/bin/aws"
+          fi
+          timeout 180s python3 _ct137_artifact_tools/tools/artifacts/artifacts.py pull --jobs 2 \
+            docs/research-artifacts/chained-transfer/nondual-models-18 \
+            | tee ct137-evidence/nondual18-hydration.txt
+          b=docs/research-artifacts/chained-transfer/nondual-models-18
+          test "$(sha256sum "$b/second-model-expected-native-01.json.xz" | cut -d' ' -f1)" = 22225094b7e3727332a761593b47ac44a2efd2f04bbdb1b1865abf3c35ba7267
+          test "$(sha256sum "$b/third-model-expected-native-01.json.xz" | cut -d' ' -f1)" = 1a7c90c81310a9d1a329b830c9c7b9f52a6c4504152c26162fb46f7fc5184787
+          test "$(stat -c%s "$b/second-model-expected-native-01.json.xz")" = 217960
+          test "$(stat -c%s "$b/third-model-expected-native-01.json.xz")" = 326200
+          realpath experiments/chained-transfer-public-target/nondual13-preflight/models/expected-native-01.json.xz | tee ct137-evidence/second-fixture-path.txt
+          realpath experiments/chained-transfer-public-target/nondual13-next-preflight/models/expected-native-01.json.xz | tee ct137-evidence/third-fixture-path.txt
+          echo "Both predecessor fixture symlinks resolve to exact original manifest-backed bytes." | tee ct137-evidence/fixture-verdict.txt
+      - name: Prepare unchanged paired-fourth predecessor literal sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -S experiments/chained-transfer-public-target/paired-fourth-preflight/materialize.py \
+            | tee ct137-evidence/paired-fourth-materialize.txt
+      - name: Prepare unchanged fixed-Jacobian predecessor nominal modules
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -S experiments/chained-transfer-public-target/fixed-jacobian-chain-01/materialize.py \
+            | tee ct137-evidence/fixed-chain-materialize.txt
+      - name: Prepare seven unchanged literal helpers and guarded CT125 derivative
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -S experiments/chained-transfer-public-target/fixed-jacobian-chain-evaluator-01/materialize.py | tee ct137-evidence/materialize.txt
+          python3 -S experiments/chained-transfer-public-target/norm-point-reuse-01/build_norm_reuse.py \
+            --original experiments/chained-transfer-public-target/fixed-jacobian-chain-evaluator-01 \
+            --out experiments/chained-transfer-public-target/fixed-jacobian-chain-reuse-01 \
+            | tee ct137-evidence/derivative.json
+          python3 -S experiments/chained-transfer-public-target/norm-point-reuse-01/compare_norm_reuse.py --self-test \
+            | tee ct137-evidence/reuse-self-test.txt
+          sha256sum experiments/chained-transfer-public-target/fixed-jacobian-chain-{evaluator,reuse}-01/src/lib.rs \
+            | tee ct137-evidence/source-sha256.txt
+      - name: Pinned Rust toolchain and both native Cargo graph checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.99.1 --profile minimal
+          rustup default 1.99.1
+          { rustc -Vv; cargo -V; } | tee ct137-evidence/rust-toolchain.txt
+          timeout 360s cargo check --release --manifest-path \
+            experiments/chained-transfer-public-target/primitive-pricing-01/Cargo.toml \
+            2>&1 | tee ct137-evidence/original-cargo-check.log
+          timeout 360s cargo check --release --manifest-path \
+            experiments/chained-transfer-public-target/primitive-pricing-01/reuse/Cargo.toml \
+            2>&1 | tee ct137-evidence/reuse-cargo-check.log
+          echo "Both native compilation graphs passed; no benchmark was run." | tee ct137-evidence/verdict.txt
+      - name: Preserve source custody, compiler output and failures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ct137-original-reuse-native-compile-evidence
+          path: ct137-evidence/
+          retention-days: 30

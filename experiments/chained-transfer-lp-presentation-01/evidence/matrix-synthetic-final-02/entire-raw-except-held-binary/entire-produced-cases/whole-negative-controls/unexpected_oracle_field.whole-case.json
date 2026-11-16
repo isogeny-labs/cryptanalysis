@@ -1,0 +1,629 @@
+{
+  "case": {
+    "baseline": {
+      "ncols": 4,
+      "rows": []
+    },
+    "expected_full_nullity": 4,
+    "expected_projection_dimension": 3,
+    "expected_zero_projections": 1,
+    "full": {
+      "ncols": 8,
+      "rows": [
+        [
+          1,
+          1,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          1,
+          0,
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          1,
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          1,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          1
+        ]
+      ]
+    },
+    "lp_columns": 4,
+    "name": "ungrounded_even_four_cycle",
+    "uncapped": {
+      "ncols": 4,
+      "rows": []
+    }
+  },
+  "certificate": {
+    "a": {
+      "input": {
+        "ncols": 8,
+        "rows": [
+          [
+            1,
+            1,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            1,
+            1,
+            0,
+            0,
+            1,
+            0
+          ],
+          [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            1
+          ]
+        ]
+      },
+      "kernel": [
+        [
+          100,
+          1,
+          100,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          100,
+          0,
+          0,
+          1,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          100,
+          0,
+          100,
+          0,
+          1,
+          0
+        ],
+        [
+          100,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          1
+        ]
+      ],
+      "modulus": 101,
+      "operations": [
+        {
+          "coefficient": 1,
+          "inverse": 1,
+          "op": "scale",
+          "row": 0
+        },
+        {
+          "coefficient": 100,
+          "dst": 3,
+          "op": "add",
+          "src": 0
+        },
+        {
+          "coefficient": 1,
+          "inverse": 1,
+          "op": "scale",
+          "row": 1
+        },
+        {
+          "coefficient": 100,
+          "dst": 0,
+          "op": "add",
+          "src": 1
+        },
+        {
+          "coefficient": 1,
+          "dst": 3,
+          "op": "add",
+          "src": 1
+        },
+        {
+          "coefficient": 1,
+          "inverse": 1,
+          "op": "scale",
+          "row": 2
+        },
+        {
+          "coefficient": 1,
+          "dst": 0,
+          "op": "add",
+          "src": 2
+        },
+        {
+          "coefficient": 100,
+          "dst": 1,
+          "op": "add",
+          "src": 2
+        },
+        {
+          "coefficient": 100,
+          "dst": 3,
+          "op": "add",
+          "src": 2
+        },
+        {
+          "coefficient": 100,
+          "inverse": 100,
+          "op": "scale",
+          "row": 3
+        },
+        {
+          "coefficient": 100,
+          "dst": 0,
+          "op": "add",
+          "src": 3
+        }
+      ],
+      "pivots": [
+        0,
+        1,
+        2,
+        4
+      ],
+      "rref": {
+        "ncols": 8,
+        "rows": [
+          [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            1
+          ],
+          [
+            0,
+            1,
+            0,
+            100,
+            0,
+            1,
+            100,
+            0
+          ],
+          [
+            0,
+            0,
+            1,
+            1,
+            0,
+            0,
+            1,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            1,
+            100,
+            1,
+            100
+          ]
+        ]
+      }
+    },
+    "c": {
+      "input": {
+        "ncols": 4,
+        "rows": [
+          [
+            100,
+            1,
+            100,
+            1
+          ]
+        ]
+      },
+      "kernel": [
+        [
+          1,
+          1,
+          0,
+          0
+        ],
+        [
+          100,
+          0,
+          1,
+          0
+        ],
+        [
+          1,
+          0,
+          0,
+          1
+        ]
+      ],
+      "modulus": 101,
+      "operations": [
+        {
+          "coefficient": 100,
+          "inverse": 100,
+          "op": "scale",
+          "row": 0
+        }
+      ],
+      "pivots": [
+        0
+      ],
+      "rref": {
+        "ncols": 4,
+        "rows": [
+          [
+            1,
+            100,
+            1,
+            100
+          ]
+        ]
+      }
+    },
+    "constraint_kernel_lifts": [
+      {
+        "full_vector": [
+          0,
+          100,
+          0,
+          0,
+          1,
+          1,
+          0,
+          0
+        ],
+        "image_coefficients": [
+          1,
+          1,
+          0
+        ],
+        "vector": [
+          1,
+          1,
+          0,
+          0
+        ]
+      },
+      {
+        "full_vector": [
+          0,
+          1,
+          100,
+          0,
+          100,
+          0,
+          1,
+          0
+        ],
+        "image_coefficients": [
+          100,
+          0,
+          1
+        ],
+        "vector": [
+          100,
+          0,
+          1,
+          0
+        ]
+      },
+      {
+        "full_vector": [
+          100,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          1
+        ],
+        "image_coefficients": [
+          1,
+          0,
+          0
+        ],
+        "vector": [
+          1,
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "lp_columns": 4,
+    "p": {
+      "input": {
+        "ncols": 4,
+        "rows": [
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            1,
+            0,
+            0
+          ],
+          [
+            100,
+            0,
+            1,
+            0
+          ],
+          [
+            1,
+            0,
+            0,
+            1
+          ]
+        ]
+      },
+      "kernel": [
+        [
+          100,
+          1,
+          100,
+          1
+        ]
+      ],
+      "modulus": 101,
+      "operations": [
+        {
+          "a": 1,
+          "b": 0,
+          "op": "swap"
+        },
+        {
+          "coefficient": 1,
+          "inverse": 1,
+          "op": "scale",
+          "row": 0
+        },
+        {
+          "coefficient": 1,
+          "dst": 2,
+          "op": "add",
+          "src": 0
+        },
+        {
+          "coefficient": 100,
+          "dst": 3,
+          "op": "add",
+          "src": 0
+        },
+        {
+          "a": 2,
+          "b": 1,
+          "op": "swap"
+        },
+        {
+          "coefficient": 1,
+          "inverse": 1,
+          "op": "scale",
+          "row": 1
+        },
+        {
+          "coefficient": 100,
+          "dst": 0,
+          "op": "add",
+          "src": 1
+        },
+        {
+          "coefficient": 1,
+          "dst": 3,
+          "op": "add",
+          "src": 1
+        },
+        {
+          "a": 3,
+          "b": 2,
+          "op": "swap"
+        },
+        {
+          "coefficient": 1,
+          "inverse": 1,
+          "op": "scale",
+          "row": 2
+        },
+        {
+          "coefficient": 1,
+          "dst": 0,
+          "op": "add",
+          "src": 2
+        },
+        {
+          "coefficient": 100,
+          "dst": 1,
+          "op": "add",
+          "src": 2
+        }
+      ],
+      "pivots": [
+        0,
+        1,
+        2
+      ],
+      "rref": {
+        "ncols": 4,
+        "rows": [
+          [
+            1,
+            0,
+            0,
+            1
+          ],
+          [
+            0,
+            1,
+            0,
+            100
+          ],
+          [
+            0,
+            0,
+            1,
+            1
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ]
+        ]
+      }
+    },
+    "transformed_full_lifts": [
+      [
+        100,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        1
+      ],
+      [
+        1,
+        100,
+        0,
+        0,
+        0,
+        1,
+        0,
+        100
+      ],
+      [
+        100,
+        1,
+        100,
+        0,
+        0,
+        0,
+        1,
+        1
+      ],
+      [
+        100,
+        1,
+        100,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    ],
+    "u": {
+      "input": {
+        "ncols": 4,
+        "rows": []
+      },
+      "kernel": [
+        [
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ]
+      ],
+      "modulus": 101,
+      "operations": [],
+      "pivots": [],
+      "rref": {
+        "ncols": 4,
+        "rows": []
+      }
+    }
+  },
+  "known_log": 37,
+  "schema": "chained.lp.synthetic-projection/v1"
+}

@@ -1,0 +1,10 @@
+digraph actual {graph[rankdir=TB,bgcolor="white",fontname="DejaVu Sans",nodesep=.17,ranksep=.35];node[shape=box,style="rounded",fontname="DejaVu Sans",fontsize=9,margin=.1];edge[fontname="DejaVu Sans",fontsize=8];
+E0 [label="E0 / K\nN4-E0-quadratic-v1-\nea39671464a106703d154b1b34299e40dff\n57bb1fc4305ddc877691cd28c2238:short",color="#295477"];
+E1 [label="E1 / K\nN4-E13-short-\n936b863521fdce08d2724c468f27979cb39\nd9443d082b4be14209bb08f408414",color="#295477"];
+E2 [label="E2 / K\nN4-E13x13-short-\n2088c9e2bd44dfea66094a767e22a1f2ebf\nfdd4e963244cb320d93408e58b4b5",color="#347d83"];
+ {rank=same;E0;E1;E2;}
+ E0->E1[constraint=false,dir=both,label="gamma1 / delta1\neach degree13; both[13]"];E1->E2[constraint=false,dir=both,label="gamma2 / delta2\neach degree13; both[13]"];
+ E0->E2[constraint=false,label="Gamma degree169; gcd12",color="#347d83"];
+ next[label="Phase B: all64 actual product2-torsion\ntransport full gluing kernel\nmatched F223 J2 UNKNOWN",color="#a57535"];
+ E2->next[style=dashed,label="proposed model preflight"];
+}

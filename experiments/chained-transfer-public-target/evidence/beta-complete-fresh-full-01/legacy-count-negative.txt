@@ -1,0 +1,19 @@
+gluing candidate root=0 sign=0 h1=[71, 135, 175]
+gluing candidate root=0 sign=1 h1=[152, 88, 48]
+gluing candidate root=1 sign=0 h1=[67, 106, 96]
+gluing candidate root=1 sign=1 h1=[156, 117, 127]
+gluing candidate root=2 sign=0 h1=[89, 23, 22]
+gluing candidate root=2 sign=1 h1=[134, 200, 201]
+gluing candidate root=0 sign=0 h1=[71, 135, 175]
+gluing candidate root=0 sign=1 h1=[152, 88, 48]
+gluing candidate root=1 sign=0 h1=[67, 106, 96]
+gluing candidate root=1 sign=1 h1=[156, 117, 127]
+gluing candidate root=2 sign=0 h1=[89, 23, 22]
+gluing candidate root=2 sign=1 h1=[134, 200, 201]
+ACTUAL_CONSTRUCTOR_CALLS {"torsion_phi_evaluations":[16,16],"quadratic_origin_traces":[1,1],"torsion_source_isogeny_evaluations":[8,8]}
+
+thread 'main' (353892) panicked at src/bin/legacy_count_control.rs:19:5:
+assertion `left == right` failed: the historical32-count metadata is false; real constructor calls are counted at executed sites
+  left: 16
+ right: 32
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

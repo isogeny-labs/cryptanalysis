@@ -1,0 +1,114 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-14T20:33:13Z",
+ "id": "PCC-20261114-6c487b",
+ "kind": "statement",
+ "producer": {
+  "commit": "a50fe267f3debf8c835bbad1efc988b44bb8c5d0",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/observer-storage-build-03/all-new-source.json",
+    "sha256": "06807287763b42a9fadcd0578bb3ec03eed3a3d536d9360955d2f14240c32c3b"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/observer-storage-build-03/comparator01-binary.json",
+    "sha256": "46f46ff3f48af64ec397934e595caba95b050f54f2c43b0f2dc61e16f28048e2"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/observer-storage-build-03/comparator01-compile.exit",
+    "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/observer-storage-build-03/comparator01-compile.txt",
+    "sha256": "e4e9dd1f2358439d4f2ee5638a4cf6079ce753b696c8344db36f3a0edbbb2f82"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/observer-storage-build-03/comparator01-lock.exit",
+    "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/observer-storage-build-03/comparator01-lock.txt",
+    "sha256": "224b920b751d9a8b1e7eb03820a04df124aac13b720c6bcfb31b6ccb48679659"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/observer-storage-build-03/literal-source-custody.json",
+    "sha256": "c32d0812c55611ca626e25fc4a51c6461d544e5ec638082ef1f6adc98e8c9bb8"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/observer-storage-build-03/original-record-command.py",
+    "sha256": "9803dc80253fc237cd1b9a318f35e1c27cba92dbe09846cdefe9520443f6baaa"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/observer-storage-build-03/scope.json",
+    "sha256": "8176fa3d5251930fd18f2b8f189f20593252231cc3f0cc79a6e36cc3164ee932"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/observer-storage-build-03/unit03-actual-binary.json",
+    "sha256": "73c6c8ab5b4d0ad36d54b6a20bbb7e5186dc2df4dd9319b19ddb40fd9468b64e"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/observer-storage-build-03/unit03-compile.exit",
+    "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/observer-storage-build-03/unit03-compile.jsonl",
+    "sha256": "0d982a4e0d83c595f7707e35e88ff5848e040462e36bc43f41c3975a68361a5c"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/observer-storage-build-03/unit03-compile.stderr.txt",
+    "sha256": "f4f5f12d1c8f2c2d6d0263f3d40f63a6d2732fe4b8330b749aeed30b48eedf01"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/observer-storage-build-03/unit03-original-command.sh",
+    "sha256": "a535a1c8ba52b8cbb51bdbb1c8324d07f85f185f6891f2e05c5122cb666bb3eb"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Observer-storage source03 and strict whole-packet comparator compile0; actual Cargo executable and comparator copies retained with complete byte hashes. Original24 source files unchanged; derivative22 are literal equal and only taps/README differ. Both source01 compiler failure and fixed02 binary retained; latest03 inlines only internal storage helpers. Unit/native math parity/hook controls/old whole-ledger parity/full cold panel NOTRUN. No signed execution or speedup standing."
+}

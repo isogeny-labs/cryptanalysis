@@ -1,0 +1,233 @@
+{
+  "branch": "codex/ic-rational-current-20261115",
+  "closed_utc": "2026-11-16T03:14:44+00:00",
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "cloud/modal_run.py",
+        "run",
+        "--image",
+        "cuda",
+        "--gpu",
+        "L4",
+        "--cpu",
+        "4",
+        "--memory",
+        "8",
+        "--timeout",
+        "900",
+        "--apt",
+        "numactl",
+        "--env",
+        "IC_RUN_ID=run-002",
+        "--out",
+        "experiments/ic-native-current-20261115/run-002",
+        "--detach",
+        "--",
+        "python3",
+        "experiments/ic-native-current-20261115/run.py"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "started_utc": "2026-11-16T02:51:58+00:00",
+      "wall_s": 10.72
+    }
+  ],
+  "commit": "660630b1c0a559ba93fb91651bb4100e3e61a5c5",
+  "commit_dirty": false,
+  "created_utc": "2026-11-16T02:49:45+00:00",
+  "curve_uid": null,
+  "entries": [],
+  "host": {
+    "cpu": "arm",
+    "cpus_online": 14,
+    "hostname": "Mac.attlocal.net",
+    "isolation": "unstated",
+    "platform": "macOS-27.2-arm64-arm-64bit-Mach-O"
+  },
+  "id": "20261116T0249Z-ic-native-current-modal-003",
+  "metrics": [
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 5,
+      "name": "p2000000579-method0-exploratory-primary-wall-ratio",
+      "note": "Unqualified first-call timing; all pairs rejected by frozen resource/placement gates. Spread is observed min/max, not a confidence interval.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.2150148872820077,
+        5.448775773195877
+      ],
+      "unit": "ratio",
+      "value": 1.810483870967742
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 5,
+      "name": "p1099511627791-method0-exploratory-primary-wall-ratio",
+      "note": "Unqualified first-call timing; all pairs rejected by frozen resource/placement gates. Spread is observed min/max, not a confidence interval.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.7473523518748213,
+        7.862932248474417
+      ],
+      "unit": "ratio",
+      "value": 3.5207744488411534
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 5,
+      "name": "p281474976710597-method0-exploratory-primary-wall-ratio",
+      "note": "Unqualified first-call timing; all pairs rejected by frozen resource/placement gates. Spread is observed min/max, not a confidence interval.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.15639628208317313,
+        39.25817533924372
+      ],
+      "unit": "ratio",
+      "value": 2.4212716551868083
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 5,
+      "name": "p14636773816760213-method0-exploratory-primary-wall-ratio",
+      "note": "Unqualified first-call timing; all pairs rejected by frozen resource/placement gates. Spread is observed min/max, not a confidence interval.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.20909975918430088,
+        14.420415405490031
+      ],
+      "unit": "ratio",
+      "value": 1.8659016393442622
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 5,
+      "name": "p2000000579-method1-exploratory-primary-wall-ratio",
+      "note": "Unqualified first-call timing; all pairs rejected by frozen resource/placement gates. Spread is observed min/max, not a confidence interval.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        2.0565693430656933,
+        6.302294197031039
+      ],
+      "unit": "ratio",
+      "value": 2.558974353268731
+    }
+  ],
+  "problem": "ic:zp-current-native",
+  "raw": [
+    {
+      "bytes": 2157,
+      "path": "experiments/ic-native-current-20261115/run-002/summary.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/03/03aab98becd11371b9ab18735f1edf7703c8ed61dfea854487e8dbbab4c8046e",
+      "sha256": "03aab98becd11371b9ab18735f1edf7703c8ed61dfea854487e8dbbab4c8046e",
+      "uploaded": false
+    },
+    {
+      "bytes": 23861,
+      "path": "experiments/ic-native-current-20261115/run-002/host.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/07/07cb72f01fef8d2e85639eb80f6e8dd7ae18e12b8326484b53490ad873d340c1",
+      "sha256": "07cb72f01fef8d2e85639eb80f6e8dd7ae18e12b8326484b53490ad873d340c1",
+      "uploaded": false
+    },
+    {
+      "bytes": 3367526,
+      "path": "experiments/ic-native-current-20261115/run-002/pairs.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/c2/c2af168ae7ef9aab15ce9f29a0e03ceab6c432c97363b4d98f683a0219ffa469",
+      "sha256": "c2af168ae7ef9aab15ce9f29a0e03ceab6c432c97363b4d98f683a0219ffa469",
+      "uploaded": false
+    },
+    {
+      "bytes": 2207392,
+      "path": "experiments/ic-native-current-20261115/run-002/arms.jsonl",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/56/569f5aee527611bd67f04154a766ed7cdc86f1d53ed9c624a2580911a604c5db",
+      "sha256": "569f5aee527611bd67f04154a766ed7cdc86f1d53ed9c624a2580911a604c5db",
+      "uploaded": false
+    },
+    {
+      "bytes": 2318,
+      "path": "experiments/ic-native-current-20261115/run-002/build-2.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/83/8349d1066d82d165cffc504235dd842352cad65fcc41f78c75d5b8466b25da63",
+      "sha256": "8349d1066d82d165cffc504235dd842352cad65fcc41f78c75d5b8466b25da63",
+      "uploaded": false
+    },
+    {
+      "bytes": 568,
+      "path": "experiments/ic-native-current-20261115/run-002/build-0.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/b0/b08c36870a7ec606511cf8e2cd9a1910f44e1fc39ed6a93463d3b4b0d1b27d52",
+      "sha256": "b08c36870a7ec606511cf8e2cd9a1910f44e1fc39ed6a93463d3b4b0d1b27d52",
+      "uploaded": false
+    },
+    {
+      "bytes": 4940,
+      "path": "experiments/ic-native-current-20261115/run-002/build-1.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/e7/e719940fbd378b4b658992c18ebedde98c9c8a38d1dd388a4d97d9bdffa5dc1f",
+      "sha256": "e719940fbd378b4b658992c18ebedde98c9c8a38d1dd388a4d97d9bdffa5dc1f",
+      "uploaded": false
+    },
+    {
+      "bytes": 2374,
+      "path": "experiments/ic-native-current-20261115/launch-003/remote.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/5f/5f709130206978e236a9bf81e63b40bd93946da8d381a9b0d63fa674c08e31fe",
+      "sha256": "5f709130206978e236a9bf81e63b40bd93946da8d381a9b0d63fa674c08e31fe",
+      "uploaded": false
+    },
+    {
+      "bytes": 1021,
+      "path": "experiments/ic-native-current-20261115/launch-003/provider.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/68/68f12b6cc1b3c0d89ab4e548f9560ff3b5163d1344d93f0da1f664a43af916ff",
+      "sha256": "68f12b6cc1b3c0d89ab4e548f9560ff3b5163d1344d93f0da1f664a43af916ff",
+      "uploaded": false
+    },
+    {
+      "bytes": 333,
+      "path": "experiments/ic-native-current-20261115/launch-003/launcher.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/f3/f34eb4ff2cb8c71e6a9c98f0e02e27e24f90a4dd716a6c813601d4a030f63341",
+      "sha256": "f34eb4ff2cb8c71e6a9c98f0e02e27e24f90a4dd716a6c813601d4a030f63341",
+      "uploaded": false
+    },
+    {
+      "bytes": 98761,
+      "path": "docs/ic-native-current-20261115/replay.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/0f/0f7cb2b6704a94ae4441419a284225fb7ed6670deeb7b396d24587cde470b549",
+      "sha256": "0f7cb2b6704a94ae4441419a284225fb7ed6670deeb7b396d24587cde470b549",
+      "uploaded": false
+    },
+    {
+      "bytes": 1120,
+      "path": "docs/ic-native-current-20261115/validator.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/ca/caf2c009d2f38d94084982c14efa831f7d402678fddb5cc1dba892a77cb66c34",
+      "sha256": "caf2c009d2f38d94084982c14efa831f7d402678fddb5cc1dba892a77cb66c34",
+      "uploaded": false
+    },
+    {
+      "bytes": 1255,
+      "path": "docs/ic-native-current-20261115/arithmetic-input.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/b0/b0f92d124f32e15932aa4c39ca0ccbb9ae00b69851f4102721b0cde07628668a",
+      "sha256": "b0f92d124f32e15932aa4c39ca0ccbb9ae00b69851f4102721b0cde07628668a",
+      "uploaded": false
+    }
+  ],
+  "repo": "cryptanalysis",
+  "reports": {
+    "pdf": null,
+    "png": [],
+    "svg": []
+  },
+  "schema": "bench.record/v1",
+  "session": null,
+  "slug": "ic-native-current-modal-003",
+  "status": "invalid",
+  "summary": "Panel completed with 22 native CTest checks and 5000 producer-replayed scalar answers. All 25 timing pairs rejected for missing placement/cgroup observations; 13 A/A checks failed. Preserve primary regressions and exploratory ratios; every qualified speedup remains unknown.",
+  "validation": null
+}

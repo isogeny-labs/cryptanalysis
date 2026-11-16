@@ -1,0 +1,44 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-14T18:04:42Z",
+ "id": "PCC-20261114-84f7ef",
+ "kind": "statement",
+ "producer": {
+  "commit": "87b61e80a62bc0ff6ee832f85e3c0826c74a1bb0",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/beta-nondual-model-negative-02-governance-01/original-command.py",
+    "sha256": "4579fa772dadab52e9478de8cecb03e7e62f86c19bd48c7fab8e05b26244b431"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/beta-nondual-model-negative-02-governance-01/cached-whitespace.txt",
+    "sha256": "db05015cc96c3a0153b41d48b1df974bf1501aa67430788c76942fd55fcc90ef"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/beta-nondual-model-negative-02-governance-01/cached-whitespace.exit",
+    "sha256": "53c234e5e8472b6ac51c1ae1cab3fe06fad053beb8ebfd8977b010655bfdd3c3"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/reports/nondual13-model-negative-01/report.pdf",
+    "sha256": "023273adbeaaa0fd6da82f45a98256931e423edb4b5e79cd032552bd94149134"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Second negative-model checkpoint governance attempt stops at original cached-whitespace2 because the exact51833B PDF was treated as text, with its PDF xref CRLF and binary stream bytes reported. Preserve raw rejected diagnostic and original PDF unchanged; exact-path binary and diagnostic whitespace classification only, same original gate rerun03. First EOFprose failure446d6b also retained. No code check waiver or scientific change; unsigned."
+}

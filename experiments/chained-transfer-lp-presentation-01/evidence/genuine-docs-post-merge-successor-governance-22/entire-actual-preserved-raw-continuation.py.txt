@@ -1,0 +1,60 @@
+"""Continue metadata checkpoint with exact immutable raw receipt diagnostics."""
+from pathlib import Path
+from datetime import datetime,timezone
+import hashlib,json,lzma,os,shutil,stat,subprocess
+r=Path('/workspace/cryptanalysis');p=r/'experiments/chained-transfer-lp-presentation-01';old='febfa6e61af343210808b6fa2eb21aceaccad603';merged='ef307ac66395a433f76df3543f98aa201daf9beb';h=Path('/workspace/scratch/ct494-Consumer-genuine-successor-checkpoint');gov=p/'evidence/genuine-docs-post-merge-successor-governance-22'
+env={**os.environ,'GIT_OPTIONAL_LOCKS':'0','GIT_TERMINAL_PROMPT':'0','GIT_INDEX_FILE':str(h/'actual-current-index')}
+def git(*a):return ['git','-c','gc.auto=0','-c','splitIndex.maxPercentChange=100','-c','splitIndex.sharedIndexExpire=never',*a]
+assert subprocess.check_output(git('rev-parse','HEAD'),cwd=r,env=env,text=True).strip()==old
+assert(r/'.git/index').read_bytes()==(h/'entire-index-before').read_bytes()
+for label in ['original-normal-fetch-merged-checkpoint','original-current-feb-ledger-prefix','original-actual-merged-base-ledger-prefix','authored-journal-prose']:assert(gov/(label+'.exit')).read_text().strip()=='0'
+raws=[]
+for cid in ['9e7a06','8cfe6d']:
+ v=json.loads((r/'pcc/claims'/('PCC-20261116-'+cid+'.json')).read_text())
+ for proof in v['proofs']:
+  x=proof.get('subject',{})
+  if x.get('path','').endswith('/push.log'):
+   f=r/x['path'];assert hashlib.sha256(f.read_bytes()).hexdigest()==x['sha256'];raws.append(dict(path=x['path'],sha256=x['sha256'],bytes=f.stat().st_size,mode=stat.S_IMODE(f.stat().st_mode),original_claim=cid))
+assert len(raws)==2
+diag=lzma.decompress((gov/'current-cached-whitespace.stdout.xz').read_bytes());assert(gov/'current-cached-whitespace.exit').read_text().strip()=='2'and diag.count(b'space before tab in indent.')==1 and raws[1]['path'].encode()in diag
+neg=p/'evidence/second-immutable-Git-receipt-whitespace-negative-23';neg.mkdir();shutil.copyfile('/workspace/scratch/ct494_consumer_parent_correction_and_successor.py',neg/'entire-original-failed-successor-caller.py.txt')
+(neg/'ACTUAL_TWO_IMMUTABLE_RAW_RECEIPTS.json').write_text(json.dumps(dict(time=datetime.now(timezone.utc).isoformat(),raws=raws,original_current_cached=2,newly_staged_diagnostic='only second receipt e21d7ab4, original first receipt already in parentfeb',cause='producer again expected immutable raw Git porcelain to meet authored-text whitespace',decision='retain both exact raw files and original2, check authored text excluding exactly these pinned paths, cumulative original diagnostic remains separately recorded'),indent=2)+'\n')
+args=['python3','tools/pcc/pcc.py','claim','new','--kind','statement','--claim-type','data','--statement','Consumer successor cached whitespace2 flags newly staged immutable Git push receipt e21d7ab4 from original8cfe6d, not source/code drift. Earlier original9e7a06 receiptde361d00 is also immutable in cumulative merged-base diff. Producer expected0 too broadly, full failed caller/current original2 retained; all source/prefix/prose checks completed before stop. Preserve both raw files byte-for-byte and their original claim SHA/modes, check authored text excluding exactly both pinned paths and never label the whole2 green. No verifier/source/policy or mathematical criterion change.']
+for f in sorted(neg.iterdir()):args+=['--proof','attestation:'+str(f.relative_to(r))]
+args+=['--proof','attestation:'+str((gov/'current-cached-whitespace.stdout.xz').relative_to(r)),'--proof','attestation:'+str((gov/'current-cached-whitespace.exit').relative_to(r))]
+negative=subprocess.check_output(args,cwd=r,env=env,text=True).strip()
+e=f'''\n---\n\n{datetime.now(timezone.utc).isoformat()}\n# Retain second immutable raw Git receipt whitespace diagnostic\n\n## What was done\n{negative}: current cached2 on unchanged e21d7ab4 raw receipt8cfe6d; cumulative diff also contains earlier de361d00/9e7a06. Both exact original bytes/modes/claim pins retained, failed caller/full diagnostic preserved. [pcc:unverified]\n\n## Decisions made\nCheck authored text excluding exactly these two immutable paths, preserve original current/cumulative2, continue actual merged-base artifact/prefix checks and normal successor. [pcc:unverified]\n\n## Open threads\nMetadata successor checkpoint/publication/ready PR/currentCI; original frozen science/runtime/admission/cost remain open. [pcc:unverified]\n\n## Errors\nProducer metadata expectation repeated the raw-porcelain whitespace mistake; no data formatting, original gate/source/verifier/policy waiver or native/paid execution. [pcc:unverified]\n'''
+for f in[r/'docs/session-logs/2026-11-16.md',r/'.resume/RESUME.md']:
+ with f.open('a')as out:out.write(e)
+shutil.copyfile(__file__,gov/'entire-actual-preserved-raw-continuation.py.txt')
+def run(n,args,want=0):
+ q=subprocess.run(args,cwd=r,env=env,capture_output=True,timeout=120);(gov/(n+'.stdout.xz')).write_bytes(lzma.compress(q.stdout));(gov/(n+'.stderr.xz')).write_bytes(lzma.compress(q.stderr));(gov/(n+'.exit')).write_text(str(q.returncode)+'\n');print(n,q.returncode,flush=True);assert q.returncode==want,(n,q.stdout[-500:],q.stderr[-500:]);return q.stdout+q.stderr
+scope=['experiments/chained-transfer-lp-presentation-01','docs/chained-transfer-byte-custody-20261116','pcc/claims','pcc/ledger.jsonl','docs/session-logs/2026-11-16.md','.resume/RESUME.md']
+def stage():
+ ns=sorted((set(subprocess.check_output(git('ls-files','--modified','--others','--exclude-standard','-z','--',*scope),cwd=r,env=env).split(b'\0'))|set(subprocess.check_output(git('diff','--cached','--name-only','-z'),cwd=r,env=env).split(b'\0')))-{b''})
+ (h/'selected-paths0').write_bytes(b'\0'.join(x for x in ns if x!=b'.resume/RESUME.md')+b'\0');subprocess.run(git('add','--sparse','--pathspec-from-file='+str(h/'selected-paths0'),'--pathspec-file-nul'),cwd=r,env=env,check=True);subprocess.run(git('add','--sparse','-u','--','.resume/RESUME.md'),cwd=r,env=env,check=True)
+ assert set(subprocess.check_output(git('diff','--cached','--name-only','-z'),cwd=r,env=env).split(b'\0'))-{b''}==set(ns)
+ return ns
+stage();exclusions=[':(exclude)'+x['path']for x in raws]
+run('continued-authored-cached-except-exact-two-raw-receipts',git('diff','--cached','--check','--','.',*exclusions))
+tree=subprocess.check_output(git('write-tree'),cwd=r,env=env,text=True).strip()
+run('original-current-feb-artifact-policy',['python3','tools/artifacts/artifacts.py','check',old,tree]);run('original-actual-merged-base-artifact-policy',['python3','tools/artifacts/artifacts.py','check',merged,tree])
+diag=run('original-cumulative-two-raw-receipt-whitespace',git('diff','--check',merged,tree),2);assert diag.count(b'space before tab in indent.')==2 and all(x['path'].encode()in diag for x in raws)
+run('cumulative-authored-except-exact-two-raw-receipts',git('diff','--check',merged,tree,'--','.',*exclusions))
+(gov/'ACTUAL_SUCCESSOR_SOURCE_SCOPE.json').write_text(json.dumps(dict(time=datetime.now(timezone.utc).isoformat(),parent_source=old,actual_merged_base=merged,parent_tree_equals_bb=True,source_original1605_50_12_9_and8subjects='retained0d2647, unchanged/not rerun',prefix_artifact_policy_prose=0,original_current_cached=2,original_cumulative_cached=2,exact_two_immutable_raw_receipts=raws,current_and_cumulative_authored_except_exact_raws=0,frozen_PCC_03bcb807_and_original_sources_verifiers_policy_unchanged=True,all14_addresses_10_whole_regular_payloads='retained/checked in original full manifest',full_scientific_runtime_admission_cost='separate/open/unexecuted'),indent=2)+'\n')
+args=['python3','tools/pcc/pcc.py','claim','new','--kind','statement','--claim-type','data','--statement','Consumer genuine-docs metadata successor after actual1587 mergedbb as ef307ac6 before feb handoff, explicit closure correction retained. Actual merged checkpoint fetched normally/tree equalsbb; original currentfeb/M ledger prefixes/artifact policies/prose0. Current cached2 and cumulative cached2 retain exact immutable Git receipts e21d7ab4/8cfe6d and de361d00/9e7a06, respectively one/two diagnostic lines; separately scoped authored checks0, never call whole2 green. All14 original addresses/10 regular whole payloads preserved; frozen03bcb807 PCC/verifiers/keyring/policy/original1605/50/12/9 pins unchanged, original0d2647 checks reused. Both raw-whitespace/helper failures preserved; normal childfeb/new ready metadata successor publication remains. Full scientificNEW28/60/240/62/360/witness/controls/runtime/admission/cost and paid STOP remain separate, no native/paid/signed result or waiver from external merge.']
+for f in sorted(gov.iterdir()):args+=['--proof','attestation:'+str(f.relative_to(r))]
+claim=subprocess.check_output(args,cwd=r,env=env,text=True).strip()
+e=f'''\n---\n\n{datetime.now(timezone.utc).isoformat()}\n# Check genuine docs successor against actual merged checkpoint\n\n## What was done\n{claim}: actualM ef307ac6 fetched normally/tree equalsbb; originalfeb/M prefixes/artifact policy/prose0. Original current/cumulative cached2 retain exact immutable raw receipts e21d7ab4/de361d00, scoped authored0. All original14 addresses/10 regular files/frozen03bcb807 workflow/verifiers/policy/1605/50/12/9 pins retained. [pcc:unverified]\n\n## Decisions made\nNormal authored childfeb/new branch/tag/fresh ready metadata PR on actual merged checkpoint; correct closed1587 body to actualbb scope. OriginalM tree equalsbb and ledger is a prefix, so no local merge is required. [pcc:unverified]\n\n## Open threads\nSuccessor publication/new ownCI, full original scientific/runtime/admission/cost remain separate and unexecuted. [pcc:unverified]\n\n## Errors\nClosure interpretation and two raw-whitespace expectations corrected additively. Original2 stays2; no source/verifier/policy/gate waiver, native/paid/signed promotion. [pcc:unverified]\n'''
+for f in[r/'docs/session-logs/2026-11-16.md',r/'.resume/RESUME.md']:
+ with f.open('a')as out:out.write(e)
+ns=stage()
+for n in ns:
+ if n.startswith(b'pcc/claims/'):
+  for proof in json.loads((r/n.decode()).read_text()).get('proofs',[]):
+   if proof.get('kind')=='attestation':x=proof['subject'];assert hashlib.sha256((r/x['path']).read_bytes()).hexdigest()==x['sha256']
+subprocess.run(git('diff','--cached','--check','--','.',*exclusions),cwd=r,env=env,check=True)
+subprocess.run(git('commit','--quiet','-m','research: preserve genuine evidence custody after LP parent merge'),cwd=r,env=env,check=True)
+head=subprocess.check_output(git('rev-parse','HEAD'),cwd=r,env=env,text=True).strip();assert subprocess.check_output(git('rev-parse','HEAD^'),cwd=r,env=env,text=True).strip()==old
+shutil.copyfile(h/'actual-current-index',r/'.git/index');assert(r/'.git/index').read_bytes()==(h/'actual-current-index').read_bytes()
+(h/'ACTUAL_COMMITTED_SUCCESSOR.json').write_text(json.dumps(dict(time=datetime.now(timezone.utc).isoformat(),head=head,parent=old,actual_base=merged,paths=len(ns),governance=claim,raw_negative=negative),indent=2)+'\n');print(claim,head,'paths',len(ns),flush=True)

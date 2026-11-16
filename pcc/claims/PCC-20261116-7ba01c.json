@@ -1,0 +1,79 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T01:47:39Z",
+ "id": "PCC-20261116-7ba01c",
+ "kind": "statement",
+ "producer": {
+  "commit": "fc52af709672e5503d78e322183da4ae72f16cde",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/cold-fixture-source-publication-01/new-source-tag/actual-push.exit",
+    "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/cold-fixture-source-publication-01/new-source-tag/actual-push.log.xz",
+    "sha256": "9110798f812dad3ba82682d14848864e5fadc590de528f8cfb101a16924369a8"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/cold-fixture-source-publication-01/new-source-tag/after.txt",
+    "sha256": "40e530cad18334cbc764f71f6722f460c10fb0e5aaafa04558e1cd09aa1df630"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/cold-fixture-source-publication-01/new-source-tag/before.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/cold-fixture-source-publication-01/new-source-tag/receipt.json",
+    "sha256": "750876ff0dbba5a2ccc9acf4fdbed1246e3951a45843874d3ec06a2b66b3e9d1"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/cold-fixture-source-publication-01/normal-branch/expected-head-lookup.log",
+    "sha256": "37e002d47d65f0afcb98b8e30a4ca4817700250af21ce4ed6da5333d8c7deb3b"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/cold-fixture-source-publication-01/normal-branch/push.log",
+    "sha256": "0b5877d52eb9a60f942d680e736e6b155cf7b2fbed50b9ee514604cdaceefb35"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/cold-fixture-source-publication-01/normal-branch/receipt.json",
+    "sha256": "8f8b2217379abef4cf457e64407f544faa306a45c2f92ef55c4892ca8fc581be"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/cold-fixture-source-publication-01/whole-source-governance-caller.txt.xz",
+    "sha256": "97d5e0141142d9950bea8a42d3f702e54637f131a79a46dcd7aa21dbb20dc8ff"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Cold identity fixture source fc52af709672e5503d78e322183da4ae72f16cde normal branch publication exit0 from exact prior66d2 and new tag chained-transfer-lp-cold-fixture-20261116-fc52af709672 publication0 with exact readback. Governor ef10a9 has all positive source checks0; original snapshot prose1 and failed governors4f9029,955e41,32b13e,fd1226 fully retained. Original checker/test/workflow source unchanged, exact fixture preparer only. Full cold24 test result and changed whole-fixture refusal remain4270a0. Fresh current-head CI remains unobserved and must be checked at the normal cadence; no fixed60 LP, solve, benchmark, paid job or signed promotion."
+}

@@ -21,9 +21,11 @@ use crate::cryptanalysis::ic_boundary::{
     calibrate_binary_instance, calibrate_group, calibrate_row_ops, calibrate_word_xor,
     find_prime_order_curve, generic_floor_ops, koblitz_instance, random_binary_instance,
     rho_reference, rho_reference_negation, roster_prime_instance, signed_frobenius_rho,
-    BinaryGroup, BinaryInstance, Calibration, CountedGroup, GroupOps, PinOutcome, PrimeInstance,
-    PrimeCurve, RhoResult,
+    BinaryGroup, BinaryInstance, Calibration, CountedGroup, GroupOps, PinOutcome, PrimeCurve,
+    PrimeInstance, RhoResult,
 };
+use crate::cryptanalysis::ic_framework::affine::AffineS3Oracle;
+use crate::cryptanalysis::ic_framework::batch_mitm::BinaryBatchMitmOracle;
 use crate::cryptanalysis::ic_framework::hashed::{HashedAffineBase, HashedTensorOracle};
 use crate::cryptanalysis::ic_framework::linalg::MATRIX_NAMES;
 use crate::cryptanalysis::ic_framework::plugins::{
@@ -72,7 +74,7 @@ pub struct BenchArgs {
     /// `random` or `walk`.
     #[arg(long, default_value = "walk")]
     pub targets: String,
-    /// The relation matrix: `incremental-gauss` or `structured-gauss`.
+    /// The relation matrix, including opt-in `incremental-gauss-u32` reciprocal arithmetic.
     #[arg(long, default_value = "incremental-gauss")]
     pub linalg: String,
     #[arg(long, default_value_t = 2_000_000)]
@@ -165,7 +167,7 @@ fn listing() -> Value {
                     {"name": "subtract", "summands": 2, "regimes": ["prime", "char2", "koblitz"],
                      "parameters": []},
                     {"name": "mitm", "summands": "2 or 3", "regimes": ["prime", "char2", "koblitz"],
-                     "parameters": [{"name": "negation_folded", "means": "1 to halve the table's additions"},
+                     "parameters": [{"name": "native_setup_pricing", "means": "0 or1, default0; whole native setup with observed arithmetic diagnostics"},{"name": "negation_folded", "means": "1 to halve the table's additions"},
                                     {"name": "m", "means": "summands, 2 or 3"}]},
                     {"name": "hashed-tensor", "summands": "2..8", "regimes": ["prime"],
                      "parameters": [
@@ -177,6 +179,13 @@ fn listing() -> Value {
                      "needs": "hashed-affine with identical slots, seed, tau and s; contraction primitive steps are uncalibrated, so do not read S as a priced end-to-end cost"},
                     {"name": "mitm-frobenius", "summands": "2 or 3", "regimes": ["koblitz"],
                      "parameters": [{"name": "m", "means": "summands, 2 or 3"}]},
+                    {"name": "mitm-batched", "summands": "2", "regimes": ["char2", "koblitz"],
+                     "parameters": [{"name":"vector_prepare","means":"0 scalar default,1 vector,2 vector with packed squaring <=32 bits; guarded AVX2/PCLMUL, exact fallback"},{"name":"scalar_prepare","means":"0 or1, default0; original preparation, fixed-m2 queries"},{"name":"adaptive_prepare","means":"0 or1, default0; scalar at <=64 abscissae, cached above"},{"name":"prefix_inverse_cache","means":"0 or1, default0; bounded inverse reuse, generic fallback"},{"name":"x_only","means":"0 or1, default0; abscissa-only preparation"},{"name":"batch_size","means":"1..=65536, default1024; ordered batch preparation"}]},
+                    {"name": "affine-s3", "summands": "2", "regimes": ["char2", "koblitz"],
+                     "parameters": [{"name":"max_residual","means":"0..20, default12; complete subtraction fallback beyond it"},
+                                    {"name":"column_solver","means":"0 or1, default0; direct projected column elimination"},
+                                    {"name":"inverse_cache","means":"0 or1, default0; prefix inverse-square preparation"}],
+                     "needs":"a subspace factor base; native affine projection and exact signed lifts"},
                     {"name": "descent-algebraic", "summands": "2 or 3", "regimes": ["char2", "koblitz"],
                      "parameters": [{"name": "m", "means": "summands, 2 (descends S3) or 3 (descends S4)"}],
                      "needs": "a subspace factor base (binary-subspace or koblitz-orbit) and --solver"},
@@ -510,6 +519,8 @@ fn run_binary(
         let mut subtract = SubtractOracle;
         let mut mitm = MitmOracle::new(m);
         let mut frob = FrobeniusMitmOracle::new(m, inst);
+        let mut affine = AffineS3Oracle::new(inst);
+        let mut batch_mitm = BinaryBatchMitmOracle::default();
         let mut algebraic = match or_name {
             "descent-algebraic" => {
                 let raw = spec.solver.as_deref().ok_or(
@@ -532,6 +543,8 @@ fn run_binary(
             "subtract" => &mut subtract,
             "mitm" => &mut mitm,
             "mitm-frobenius" => &mut frob,
+            "affine-s3" => &mut affine,
+            "mitm-batched" => &mut batch_mitm,
             "descent-algebraic" => algebraic.as_mut().expect("built above"),
             other => return Err(format!("oracle `{other}` is not available here")),
         };
