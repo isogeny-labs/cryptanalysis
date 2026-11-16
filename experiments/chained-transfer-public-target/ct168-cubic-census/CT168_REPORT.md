@@ -79,3 +79,36 @@ The three frozen JSON records and the CI workflow bind these source paths; a gre
 Sources and prior work: [CT167 report](../ct167-sextic-control/CT167_REPORT.md); CT160/161/166 endpoint arithmetic; crypto [root #3877](https://github.com/isogeny-labs/crypto/pull/3877), [queue #3904](https://github.com/isogeny-labs/crypto/issues/3904), [producer native norm reuse](../reports/norm-point-reuse-result-01/REPORT.md); Sage finite-field elliptic [twist/trace docs](https://doc.sagemath.org/html/en/reference/arithmetic_curves/sage/schemes/elliptic_curves/ell_finite_field.html); standard Tate finite-field isogeny criterion. Shared KB MCP unavailable and crypto-autoresearcher encrypted vault not read. No novelty or global absence inference.
 
 The full **producer** 695-record norm-point replay already exists. Independent raw whole-corpus replay/custody and qualified paired \(C_{169},C_{13a},C_{13b},D\) pricing are still absent. Original EKS paid budget STOP and storage failure conditions in queue #3904 were respected; no paid experiment, protected merge, original ledger rewrite or complete solver advantage is asserted. [pcc:unverified]
+
+## CT169 — fail-closed evidence hardening (follow-up, 2026-11-16)
+
+**[pcc:unverified].** Re-reading the CT168 auditor revealed that `zip()` silently
+ignored an extra fourth independent census row, and that Python equality admitted
+numerically equal but type-incompatible JSON values (notably `False == 0`,
+`0.0 == 0`, and floating field sizes). These allowed noncanonical evidence
+records to reach a successful result even though the intended input contract
+was exactly three integer-valued independent census rows.
+
+The updated `ct168_trace_audit.py` is fail-closed on exact primary and secondary
+schemas, exactly three secondary rows, exact keys, genuine JSON integers at
+all count positions, matching partitions and the original Frobenius conditions.
+The original CT168 census outputs and mathematical trace conclusions were **not**
+changed. A new `ct169_audit_mutation_test.py` applies 13 actual mutations to
+the source-derived JSON. Locally, normal Python and `python -O` both rejected
+13/13; the canonical outcome still gives extension degree 6 over K / 18 over
+F223. This is **producer-level testing**; exact-head hosted source CI and signed
+independent PCC must still be checked after publication.
+
+```sh
+D=experiments/chained-transfer-public-target/ct168-cubic-census
+python3 "$D/ct168_trace_audit.py" "$D/census.json" "$D/generic-crosscheck.json"
+python3 "$D/ct169_audit_mutation_test.py" "$D/census.json" "$D/generic-crosscheck.json"
+python3 -O "$D/ct169_audit_mutation_test.py" "$D/census.json" "$D/generic-crosscheck.json"
+```
+
+The CT168 workflow now uses a read-only GITHUB_TOKEN and executes both negative
+control suites on freshly recounted output. This is an evidence-integrity fix,
+**not** a new ECDLP performance improvement. Producer full-695 norm reuse already
+exists; independent original whole-corpus custody/replay and owner-admitted
+same-host C169/C13a/C13b/D and complete cold matched rho/BSGS/IC are still
+outstanding. No EKS/Spot/GPU resource was started.
