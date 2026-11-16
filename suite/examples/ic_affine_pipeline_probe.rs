@@ -242,8 +242,11 @@ fn main() {
         let mut vector_pairs = 0;
         let mut vector_pclmul128_pairs = 0;
         let mut vector_packed_square_pairs = 0;
+        let mut vector_const_pairs = 0;
         for chunk in [1, 7, 64, 1024, 4096] {
             for candidate in [
+                PairTable::build_negation_folded_binary_vector_const_cached(&inst.fast, &fb, chunk)
+                    .unwrap(),
                 PairTable::build_negation_folded_binary_batched(&inst.fast, &fb, chunk).unwrap(),
                 PairTable::build_negation_folded_binary_abscissae(&inst.fast, &fb, chunk).unwrap(),
                 PairTable::build_negation_folded_binary_prefix_cached(&inst.fast, &fb, chunk)
@@ -255,6 +258,7 @@ fn main() {
                 )
                 .unwrap(),
             ] {
+                vector_const_pairs += candidate.vector_const_pairs;
                 vector_pairs += candidate.vector_pairs;
                 vector_pclmul128_pairs += candidate.vector_pclmul128_pairs;
                 vector_packed_square_pairs += candidate.vector_packed_square_pairs;
@@ -264,7 +268,7 @@ fn main() {
         }
         println!(
             "{}",
-            json!({"curve_id":inst.name,"status":"pass","euclidean_inverse":inst.gf.uses_euclidean_inverse(),"vector_packed_square_pairs":vector_packed_square_pairs,"vector_pclmul128_pairs":vector_pclmul128_pairs,"vector_backend":inst.fast.cached_vector_backend(),"vector_pairs":vector_pairs,"complete_map_comparisons":comparisons,"entries":reference.entries,"has_clmul":inst.gf.has_clmul()})
+            json!({"curve_id":inst.name,"status":"pass","euclidean_inverse":inst.gf.uses_euclidean_inverse(),"vector_const_pairs":vector_const_pairs,"vector_packed_square_pairs":vector_packed_square_pairs,"vector_pclmul128_pairs":vector_pclmul128_pairs,"vector_backend":inst.fast.cached_vector_backend(),"vector_pairs":vector_pairs,"complete_map_comparisons":comparisons,"entries":reference.entries,"has_clmul":inst.gf.has_clmul()})
         );
         return;
     }

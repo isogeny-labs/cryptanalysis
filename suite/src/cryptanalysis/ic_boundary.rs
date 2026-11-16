@@ -3365,6 +3365,7 @@ pub struct PairTable {
     pub vector_pairs: usize,
     pub vector_pclmul128_pairs: usize,
     pub vector_packed_square_pairs: usize,
+    pub vector_const_pairs: usize,
 }
 
 impl PairTable {
@@ -3421,6 +3422,15 @@ impl PairTable {
         chunk_size: usize,
     ) -> Result<Self, &'static str> {
         Self::build_binary_batch(curve, fb, chunk_size, true, true, 2)
+    }
+
+    /// Same ordered first witnesses, with exact-field constant SIMD reduction.
+    pub fn build_negation_folded_binary_vector_const_cached(
+        curve: &FastCurve,
+        fb: &FactorBase<FastPoint>,
+        chunk_size: usize,
+    ) -> Result<Self, &'static str> {
+        Self::build_binary_batch(curve, fb, chunk_size, true, true, 3)
     }
 
     fn build_binary_batch(
@@ -3486,7 +3496,9 @@ impl PairTable {
                     abscissae.clear();
                     if let Some(cache) = &cache {
                         if vector_cached != 0 {
-                            let prepare = if vector_cached == 2 {
+                            let prepare = if vector_cached == 3 {
+                                FastCurve::add_pairwise_abscissae_vector_const_cached
+                            } else if vector_cached == 2 {
                                 FastCurve::add_pairwise_abscissae_vector_packed_cached
                             } else {
                                 FastCurve::add_pairwise_abscissae_vector_cached
@@ -3562,13 +3574,19 @@ impl PairTable {
             build_wall_ns: start.elapsed().as_nanos() as u64,
             prefix_inverse_bytes,
             vector_pclmul128_pairs: if vector_pairs != 0
-                && curve.cached_vector_backend() == "avx2-pclmul128"
+                && (curve.cached_vector_backend() == "avx2-pclmul128"
+                    || (vector_cached == 3 && curve.has_const_vector_field()))
             {
                 vector_pairs
             } else {
                 0
             },
             vector_packed_square_pairs: if vector_cached == 2 && curve.field.n <= 32 {
+                vector_pairs
+            } else {
+                0
+            },
+            vector_const_pairs: if vector_cached == 3 && curve.has_const_vector_field() {
                 vector_pairs
             } else {
                 0
@@ -3601,6 +3619,7 @@ impl PairTable {
             vector_pairs: 0,
             vector_pclmul128_pairs: 0,
             vector_packed_square_pairs: 0,
+            vector_const_pairs: 0,
         }
     }
 
@@ -3643,6 +3662,7 @@ impl PairTable {
             vector_pairs: 0,
             vector_pclmul128_pairs: 0,
             vector_packed_square_pairs: 0,
+            vector_const_pairs: 0,
         }
     }
 
