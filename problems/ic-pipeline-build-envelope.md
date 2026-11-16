@@ -1,6 +1,6 @@
 # Full IC pipeline build exceeds its measurement preparation cap
 
-- **Status:** investigating
+- **Status:** resolved for binary preparation
 - **Kind:** resource limit in experiment preparation
 - **Affected work:** [S3 fixed-instance protocol](../experiments/ic-s3-pipeline-20261115/PROTOCOL.md)
 - **Next action owner:** current IC optimization session
@@ -23,9 +23,9 @@ inferred from compilation time. No measurement is promoted.
 
 ## What would unblock it
 
-- [ ] Produce both default/direct release executables from the same pinned
+- [x] Produce both default/direct release executables from the same pinned
       source, lockfile and toolchain, with complete build logs and hashes.
-- [ ] Run the existing frozen matrix in a separate timing allocation, verifying
+- [x] Run the existing frozen matrix in a separate timing allocation, verifying
       hashes before execution and retaining caps, counts, answers and rho.
 
 [pcc:unverified] Successful compilation resolves preparation only. Host qualification and a
@@ -41,4 +41,14 @@ single-target runs with amortized repetitions.
 
 ## Resolution and history
 
-Unresolved. First build-only preparation and measured execution are pending.
+The original capped attempt is preserved. Both separate preparation and the
+frozen timing matrix subsequently completed; the evidence is appended below.
+
+2026-11-15: separate job20261116-054341-2b80 produced both binaries, matched
+the frozen source fingerprints and passed both archive smoke checks. Timing
+job20261116-055509-28d3 then completed48 pairs and12 same-target reference
+records with those exact hashes. See the prepared-input manifest and
+[complete diagnostic](../experiments/ic-s3-pipeline-20261115/REPORT-timing001.md).
+The preparation obstruction is resolved at producer-evidence scope. Host
+qualification and signed independent standing remain open; no broad algorithm
+performance objective is resolved by this infrastructure repair. [pcc:unverified]

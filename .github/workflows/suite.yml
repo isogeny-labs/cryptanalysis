@@ -88,6 +88,7 @@ jobs:
           cargo clippy --lib --features s3-direct-coefficients -- -D warnings
           cargo test --release --lib --features s3-direct-coefficients pq_descent_symbolic
           cargo test --release --lib --features s3-direct-coefficients ic_framework::tests::the_algebraic
+          cargo test --release --lib s3_affine_projection
       - name: GPU F4 kernel on the host emulator
         # The CUDA kernel's own source (cuda/f4_gf2_device.cuh), compiled as
         # C and held to the host kernel's decisions, caps and F5 rows, then

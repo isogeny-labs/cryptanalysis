@@ -63,3 +63,29 @@ Library clippy passes for the core. The latest native log records the exact
 completed check count. Claim PCC-20261116-646058 records this unsigned component
 result. No signed-point lifting, target-zero fallback, oracle registration,
 IC integration or performance comparison is supplied by this prototype.
+
+## Pipeline evidence guiding the next step
+
+[pcc:unverified] The complete generic/direct panel has48 valid pairs. MITM is
+the fastest tested pipeline on these exact bases; the constructor feature has
+no algorithmic effect on that control. On N18, reference median table setup is
+730056ns versus1172456.5ns median pipeline time. The algebraic methods remain
+much slower despite constructor savings. Claims ed23f0 and the replay/bottleneck
+claim record the unsigned observations; qualification remains null.
+
+Next implement a complete signed-point adapter for the native core, including
+explicit zero-abscissa handling and cap reporting. Measure target-independent
+preparation and native query/lifting cost separately. A prefix inverse-square
+cache with batch inversion is a candidate setup/query tradeoff: it could remove
+the per-candidate inversions without building a quadratic-size pair table.
+Compare cache off/on and the best tested MITM on new frozen targets; preserve
+setup, all failed queries, relation/rank outcomes and same-target rho. No gain
+for the native projection has yet been measured.
+
+A second native specialization to compare after complete lifting works: solve
+the projected affine system in column form (images plus coefficient witnesses),
+avoiding per-query row transposition. For a polynomial prefix subspace with
+2d-2<n, V² is the prefix through degree2d-2, so its quotient projection is a
+word shift. Keep a generic parity-check fallback for other bases and verify
+both against the current complete finite-field differential reference. This
+optimization is planned, not measured or implemented.
