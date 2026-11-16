@@ -86,3 +86,23 @@ smoothness to 32-bit words, with portable fallback and optional AVX2/NEON
 scanning. Its correctness must match the existing 64-bit factorizer before a
 new frozen timing panel. A prepared host or an equivalent v1-aware preflight
 is still required for timing promotion. No allocation is left running.
+
+## Validation follow-up
+
+PR #1612 merged at 5d4bcf089a. Its build, sanitizer and native test jobs passed,
+but analysis, artifact and PCC jobs reported failures. The follow-up corrects
+wide allocation/index arithmetic and initializes projected assignments, checks
+private-test input bounds and documents intentional inclusion of the private
+implementation. Live source formatting is retained; the byte-exact measured
+baseline snapshot now lives in generated/ under the existing snapshot rule.
+The opt-in SIMD arithmetic is a separate unmeasured candidate. Native tests
+and ASan/UBSan checks pass in both modes; Linux analysis is pending.
+Claim PCC-20261116-98e744 records these producer assertions. [pcc:unverified]
+
+The artifact policy now retains exactly pcc/ledger.jsonl as source metadata:
+PCC requires its Git base prefix and hash chain to remain reviewable. This
+follows docs/SABOTAGE_RESISTANCE.md invariant I3; moving it to object storage
+would break that independent ledger check. Raw run logs retain the existing
+object-store policy. The inherited PCC-20261115-8d2645 failure references plain
+text as recompute JSON; its source claim is outside this arithmetic change and
+remains unchanged. No signed standing is asserted by this follow-up.
