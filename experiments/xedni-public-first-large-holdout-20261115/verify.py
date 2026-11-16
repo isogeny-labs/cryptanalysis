@@ -112,6 +112,13 @@ def main():
     for q in (293,313,331,353,419,439,571,599):
         assert f'theorem count{q}' in panel
         assert f"'XedniPublicFirstLargeHoldout.count{q}' depends on axioms: [propext, Classical.choice, Quot.sound]" in panel_build
+    admissible=(formal/'AdmissiblePairs.lean').read_text()
+    assert all(name in admissible for name in ('theorem admissible_pair_count','theorem family_density_cross_mul'))
+    assert not any(token in admissible for token in ('sorry','admit','sorryAx','native_decide'))
+    admissible_build=(formal/'admissible-build-output.txt').read_text()
+    assert 'Build completed successfully (9043 jobs)' in admissible_build
+    for name in ('admissible_pair_count','family_density_cross_mul'):
+        assert f"'XedniPublicFirstLargeHoldout.{name}' depends on axioms: [propext, Classical.choice, Quot.sound]" in admissible_build
     for old,row in zip(result['fields'],post['rows'],strict=True):
         q=old['subgroup_order']
         assert row['field_prime']==old['field_prime'] and row['subgroup_order']==q
