@@ -65,6 +65,21 @@ def audit(primary,secondary):
         require(1+ca['zero_rhs_x']+2*ca['nonzero_square_x']==ca['points'],ai+' point partition')
         require(ca['nonzero_square_x']+ca['zero_rhs_x']+ca['nonsquare_x']==q,ai+' x partition')
     require(a['twist_cubic']['points']!=a['mutated_twist']['points'],'negative control')
+    # CT170: matching a second counter and recomputing point totals do not
+    # authenticate the frozen component census. In particular a zero/square
+    # tradeoff preserves #E and the Frobenius trace, and the mutant has no
+    # separately checked trace. Bind every bucket to the preregistered output.
+    frozen = {
+        'source_cubic': (11092788, 3, 5546392, 5543172),
+        'twist_cubic': (11086129, 0, 5543064, 5546503),
+        'mutated_twist': (11086348, 3, 5543172, 5546392),
+    }
+    for name, expected in frozen.items():
+        row = a[name]
+        actual = (row['points'], row['zero_rhs_x'],
+                  row['nonzero_square_x'], row['nonsquare_x'])
+        require(actual == expected, name + ' frozen component mismatch')
+
     ts=q+1-a['source_cubic']['points']
     td=q+1-a['twist_cubic']['points']
     require(ts==-3220 and td==3439,'frozen trace')
