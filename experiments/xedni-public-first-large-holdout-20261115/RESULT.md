@@ -19,10 +19,27 @@ The fixed curve is `Y²=X³−X−2`. For each field, `G` is the pinned subgroup
 
 The construction stage performed 142 modular inverses, 142 public scalar multiplications, 142 rational curve constructions, 284 rational scalar multiplications, 142 rational relation tests, 284 reduction checks, and 142 scalar replays. These are stage-operation counts. The deterministic query census does not estimate a random-input rate or a wall-time speedup.
 
+## Exact full-population relation count
+
+A frozen post-analysis enumerated every admissible ordered offset pair at the eight subgroup orders. The existing checked Lean declarations `XedniCoefficientFamily.admissible_hit_count` and `distinct_directions_force_zero` give the corresponding general argument: each vector contributes exactly `q−1` admissible pairs; two distinct coefficient directions can meet only at the excluded pair `(w,w)`. All 13 selected vectors have nonzero `a`, `b`, and `a+b` modulo every panel order. Their 78 pairwise determinants have absolute values 1–60, below the smallest subgroup order 293, so the hit sets are disjoint. Thus the full population contains exactly `13(q−1)` relation events among `(q−1)(q−2)` admissible pairs, a fraction `13/(q−2)`.
+
+| Field `p` | Full admissible pairs | Full relation events | Exact admitted-pair fraction | Frozen-schedule hits |
+| ---: | ---: | ---: | ---: | ---: |
+| 313 | 108,570 | 4,290 | 13/329 | 20 |
+| 421 | 191,406 | 5,694 | 13/437 | 18 |
+| 431 | 174,306 | 5,434 | 13/417 | 20 |
+| 547 | 324,330 | 7,410 | 13/569 | 15 |
+| 571 | 357,006 | 7,774 | 13/597 | 10 |
+| 593 | 97,032 | 4,056 | 13/311 | 21 |
+| 617 | 84,972 | 3,796 | 13/291 | 22 |
+| 677 | 123,552 | 4,576 | 13/351 | 16 |
+
+The exhaustive census counted **1,461,174** admissible pairs and **43,030** relation events, with zero overlapping hit pairs. `post-protocol.json` pins the earlier result and the Lean source before the census. `post_audit.py` independently derives every row from the checked line-count and disjointness hypotheses and compares it with the enumeration. If admitted pairs were independently uniform, the exact fractions would give 136.656 expected events across the eight 512-query schedules after the observed filters; that is a derived reference for the deterministic 142-event schedule, not a sampling inference.
+
 The pinned Lean proof in `../xedni-vector-dependent-rank-one-lift-20261115/formal/VectorDependentRankOneLift.lean` proves the public-group rank-one preimage equivalence, the Bézout inverse on a `q`-torsion group, the rational rank-one relation, and the fixed finite model's ellipticity at every prime not dividing `1664`. Every prime in this larger panel meets that condition. Its exact source hash is frozen in `protocol.json`. The producer and independent Sage audit each checked finite-curve and rational-curve nonsingularity, point reductions, the group relation, and scalar replay. The formal good-reduction point map remains the next proof bridge.
 
 ## Independent replay and amendment
 
 The independent checked-Sage audit regenerated all 4,096 SHA-256 scheduled pairs, used the scalar equation to identify every public relation, checked that equation against finite-curve group arithmetic, and reconstructed every saved rational point and reduction. It passed with empty stderr. The initial audit exited on a sparse-count reporting error in the `p=421` row: zero filtered queries omitted `filtered_queries` from the producer's count map. Its empty output and traceback are retained as `audit-v1.json` and `audit-v1.stderr`. `audit-amendment.json` pins that failure, the unchanged producer result, and the v2 audit source, which reads a missing count as zero. No query, vector, event, or mathematical check changed in the amendment.
 
-Reproduce from the repository root with `./sage --runtime-info`, `./sage -python experiments/xedni-public-first-large-holdout-20261115/run_sage.py`, `./sage -python experiments/xedni-public-first-large-holdout-20261115/audit_sage_v2.py`, and `python3 experiments/xedni-public-first-large-holdout-20261115/verify.py`. `SEAL.sha256` binds the protocol, both audit attempts, raw events, source, results, runtime receipt, and this report.
+Reproduce from the repository root with `./sage --runtime-info`, `./sage -python experiments/xedni-public-first-large-holdout-20261115/run_sage.py`, `./sage -python experiments/xedni-public-first-large-holdout-20261115/audit_sage_v2.py`, `python3 experiments/xedni-public-first-large-holdout-20261115/post.py`, `python3 experiments/xedni-public-first-large-holdout-20261115/post_audit.py`, and `python3 experiments/xedni-public-first-large-holdout-20261115/verify.py`. `SEAL.sha256` binds the protocols, both audit attempts, raw events, sources, results, runtime receipt, and this report.

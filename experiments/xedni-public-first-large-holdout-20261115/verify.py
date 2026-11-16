@@ -65,6 +65,33 @@ def main():
     assert totals==result['totals']
     assert totals['queries']==4096 and totals['public_vector_tests']==52936
     assert totals['public_hits']==totals['verified']==142
+    post_protocol=json.loads((HERE/'post-protocol.json').read_text())
+    post=json.loads((HERE/'post-result.json').read_text())
+    post_audit=json.loads((HERE/'post-audit.json').read_text())
+    assert post['status']==post_audit['status']=='PASS'
+    assert post_protocol['parent_protocol_sha256']==sha(HERE/'protocol.json')
+    assert post_protocol['parent_result_sha256']==sha(HERE/'result.json')
+    for key,path in (
+        ('family_sha256',ROOT/'xedni-coefficient-optimization-20261115/family-selection.json'),
+        ('lean_source_sha256',ROOT/'xedni-coefficient-family-control-20261115/formal/CoefficientFamily.lean'),
+        ('producer_sha256',HERE/'post.py'),('audit_sha256',HERE/'post_audit.py')):
+        assert post_protocol[key]==sha(path),key
+    assert post['post_protocol_sha256']==sha(HERE/'post-protocol.json')
+    assert post['source_sha256']==sha(HERE/'post.py')
+    assert post['vector_count']==13 and post['pairwise_determinants']==78
+    assert post['max_abs_determinant']==60
+    assert len(post['rows'])==8
+    assert (HERE/'post.stderr').read_bytes()==(HERE/'post-audit.stderr').read_bytes()==b''
+    assert post_audit['full_admissible_pairs']==1461174
+    assert post_audit['full_relation_events']==43030
+    assert post_audit['sample_hit_events']==142
+    for old,row in zip(result['fields'],post['rows'],strict=True):
+        q=old['subgroup_order']
+        assert row['field_prime']==old['field_prime'] and row['subgroup_order']==q
+        assert row['full_admissible_pairs']==(q-1)*(q-2)
+        assert row['full_relation_events']==row['full_hit_pairs']==13*(q-1)
+        assert row['overlap_pairs']==0
+        assert row['sample_hit_events']==old['counts']['public_hits']
     sealed=(HERE/'SEAL.sha256').read_text().splitlines()
     for line in sealed:
         digest,rel=line.split('  ',1)
