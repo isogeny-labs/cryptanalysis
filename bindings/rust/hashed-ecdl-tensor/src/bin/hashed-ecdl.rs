@@ -249,7 +249,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                 .create_new(true)
                 .open(Path::new(&args[4]))?;
             serde_json::to_writer_pretty(file, &receipt)?;
-            println!("verified scalar {}; receipt {}", receipt.certificate.scalar, args[4]);
+            println!("receipt written {}", args[4]);
         }
         Some("solve" | "solve-selectors" | "solve-hashed" | "solve-hashed-joint" | "solve-width") if args.len() == 4 => {
             let problem: Problem = serde_json::from_slice(&read(&args[2])?)?;

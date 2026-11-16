@@ -59,3 +59,9 @@ Mirror builds retain their existing optional phase and group-call observer.
 
 See the paired study `research/point_hash_five_leads_20261116` for source
 manifests, development logs, individual option files and pending measurement work.
+
+The optimized solve command prints only the receipt path on stdout. Its scalar
+remains in the explicitly requested receipt, available through normal replay;
+it is not echoed into routine command logs. The walk partition seed is public
+randomization, not a password salt or secret. Deterministic public seeds in
+correctness tests are intentional.

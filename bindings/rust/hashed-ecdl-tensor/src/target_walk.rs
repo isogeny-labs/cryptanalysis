@@ -5,7 +5,7 @@
 //! does not assume that successive targets or successful relations are iid.
 //! Its event counters are development diagnostics, not calibrated work or time.
 //!
-//! Setup consumes 32 caller-RNG bytes for the partition salt and two uniform
+//! Setup consumes 32 caller-RNG bytes for a public partition seed and two uniform
 //! public coefficients per sampled increment. Each block starts with two fresh
 //! caller-RNG coefficient samples; steps within a block consume no caller RNG.
 //! Thus this policy deliberately changes the baseline's coefficient stream.
@@ -53,7 +53,7 @@ pub struct Statistics {
     pub increment_points: u64,
     /// Constructed increment points equal to the group identity, retained.
     pub identity_increment_points: u64,
-    /// Caller bytes successfully supplied for partition-salt setup.
+    /// Caller bytes successfully supplied for public partition-seed setup.
     pub partition_seed_bytes: u64,
     /// Fresh coefficient-pair anchors actually emitted.
     pub anchors: u64,
@@ -147,12 +147,14 @@ fn partition_prefix(
     curve: &Curve,
     target: &Point,
     config: Config,
-    salt: &[u8; 32],
+    seed: &[u8; 32],
     meter: &mut Meter,
 ) -> Result<Sha256> {
     let mut hasher = Sha256::new();
     hasher.update(b"hashed-ecdl/anchored-adding-target/partition/v1\0");
-    hasher.update(salt);
+    // Public walk partition input, not a password/KDF salt or secret key.
+    // Deterministic seeds are intentional in correctness fixtures.
+    hasher.update(seed);
     hasher.update((config.table_size as u64).to_le_bytes());
     hasher.update((config.block_length as u64).to_le_bytes());
     for value in [
@@ -183,7 +185,7 @@ fn spans_two(labels: &[(BigUint, BigUint)], order: &BigUint, meter: &mut Meter) 
 }
 
 impl TargetWalk {
-    /// Validate public Q, prepare a bounded two-dimensional table and salt.
+    /// Validate public Q, prepare a bounded table and public partition seed.
     ///
     /// The curve already certified G. Every increment and anchor uses checked
     /// joint arithmetic, and identity increment points are deliberately kept.
@@ -215,12 +217,21 @@ impl TargetWalk {
         meter.vector(config.table_size, "target walk increment table")?;
         meter.charge(1, "target walk preparation")?;
         let joint = context.joint_table(&context.generator(), target, meter)?;
-        let mut salt = [0u8; 32];
-        meter.vector(salt.len(), "target walk partition salt")?;
+        let mut partition_seed = [0u8; 32];
+        meter.vector(partition_seed.len(), "target walk partition seed")?;
         meter.charge(1, "target walk partition seed")?;
-        rng.fill(&mut salt)?;
-        increase(&mut statistics.partition_seed_bytes, salt.len() as u64)?;
-        let prefix = partition_prefix(context.curve(), target.point(), config, &salt, meter)?;
+        rng.fill(&mut partition_seed)?;
+        increase(
+            &mut statistics.partition_seed_bytes,
+            partition_seed.len() as u64,
+        )?;
+        let prefix = partition_prefix(
+            context.curve(),
+            target.point(),
+            config,
+            &partition_seed,
+            meter,
+        )?;
 
         let mut labels = Vec::new();
         labels

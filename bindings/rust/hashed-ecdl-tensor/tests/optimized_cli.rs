@@ -71,7 +71,12 @@ fn default_options_match_the_old_joint_receipt_and_replay() {
     let options = fixture.path("options.json");
     let output = fixture.path("optimized.json");
     std::fs::write(&options, "{}").unwrap();
-    success(&fixture.solve(&options, &output));
+    let result = fixture.solve(&options, &output);
+    success(&result);
+    assert_eq!(
+        result.stdout,
+        format!("receipt written {}\n", output.display()).as_bytes()
+    );
     let bytes = std::fs::read(&output).unwrap();
     let receipt: Value = serde_json::from_slice(&bytes).unwrap();
     assert_eq!(receipt["schema"], "hashed-ecdl-tensor/v1");
@@ -113,7 +118,12 @@ fn all_five_options_produce_a_v1_receipt_with_effective_configuration() {
         "joint_targets": true
     });
     std::fs::write(&options, serde_json::to_vec(&configured).unwrap()).unwrap();
-    success(&fixture.solve(&options, &output));
+    let result = fixture.solve(&options, &output);
+    success(&result);
+    assert_eq!(
+        result.stdout,
+        format!("receipt written {}\n", output.display()).as_bytes()
+    );
     let receipt: Value = serde_json::from_slice(&std::fs::read(&output).unwrap()).unwrap();
     assert_eq!(receipt["certificate"]["version"], 1);
     assert_eq!(receipt["diagnostics"]["options"], configured);
