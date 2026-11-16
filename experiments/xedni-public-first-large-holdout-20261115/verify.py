@@ -145,6 +145,12 @@ def main():
     recovery_build_normalized=re.sub(r'\s+',' ',recovery_build)
     for name in ('public_relation_iff_recovered_scalar','public_relation_target_unique'):
         assert f"'XedniPublicFirstLargeHoldout.{name}' depends on axioms: [propext, Classical.choice, Quot.sound]" in recovery_build_normalized
+    group_source=(formal/'PublicGroupRecovery.lean').read_text()
+    assert 'theorem public_group_relation_iff_recovered_scalar' in group_source
+    assert not any(token in group_source for token in ('sorry','admit','sorryAx','native_decide'))
+    group_build=(formal/'public-group-recovery-build-output.txt').read_text()
+    assert 'Build completed successfully (9047 jobs)' in group_build
+    assert "'XedniPublicFirstLargeHoldout.public_group_relation_iff_recovered_scalar' depends on axioms: [propext, Classical.choice, Quot.sound]" in re.sub(r'\s+',' ',group_build)
     recovery_protocol=json.loads((HERE/'public-recovery-protocol.json').read_text())
     recovery_result=json.loads((HERE/'public-recovery-result.json').read_text())
     recovery_audit_protocol=json.loads((HERE/'public-recovery-audit-protocol.json').read_text())
