@@ -53,3 +53,19 @@ Replay2560statesfrombuild002; archivethenpublishbindingsbeforenativetiming.
 Thenbenchrecnew, checkpointgate, run_prepared.py usesnewbinding/build002 andfresh
 120pairs/240IC+240rho. Primarycontextpluspipelinecleanup; supplementalsetup/collector.
 KeepAAfails,caps,oldrecords; qualificationsnull, signedcustodyforkunresolved.
+
+
+Update15:41UTC: amendednative152859-d0d3 terminal0after609s,39outputs fetched.
+Binary1026bf749fbf8e4a1a266d9833b89a78bf3468956aa9e91eec1af9ffb84d0027;
+prepared-input-amended.json anddistinctmetadata bound.175maps15loaders,
+4walk2full1const26frameworkfilters(overlap,notuniquetotal),2560Pythonstatespass.
+AllfiveobservedordinaryPCLbackend;constantpairspositiveandordinary4xconst in
+aggregatefourvectorstrategies. Claim7c014dunsigned. Archive40objects complete
+beforebindingpublication. Inputs215cc5683published; source25be1116c unchanged.
+Nextbenchrecnew/checkpointgate/timingrun_prepared exactpublishedHEAD, freshpanel
+120pairs240IC240rho. MarkerforNEWstudyREPORT.pdf NOTcalledyet; render_report.py
+sourceprepared, callmarkerONCEbeforerender, inspectALLpages. OlderprofilePDFmarker
+done2pages. Recordrawlosslessbundle/perfileSHAURIinventory plusanalysis/replays/
+jobmetadata; allrawcaptures separatelyartifactstored. Uploadall beforeclosing.
+Do notrepeat915entryrecordbulk unnecessarily; losslessbundlecoversallrawbytes,
+recordpointerstobundle/manifest preserveprovenance andkeepsrecordcompact.
