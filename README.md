@@ -1,8 +1,10 @@
 # cryptanalysis
 
+[OpenResearch setup and agent integration](docs/openresearch.md).
+
 The native [prime-field auxiliary IC crate](crates/prime-field-auxiliary-ic/README.md)
 is available through the safe Rust bindings and `ca-ic auxiliary`, including a
-direct IC control without auxiliary maps and an optional repository rho reference.
+random-base and same-base direct controls, fixed-prefix relation collection, and an optional repository rho reference.
 
 A [retrospective prime-field auxiliary-map IC import](experiments/prime-field-auxiliary-ic/README.md)
 contains the standalone resultant/GCD/SIMD implementation and shared-arithmetic
