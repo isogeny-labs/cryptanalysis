@@ -175,6 +175,12 @@ preparation, collection, linear algebra and replay to the cold total; a warm
 comparison reports excluded setup separately. Existing CLI preparation times
 do not include offline auxiliary-curve discovery. The comparison specification
 is in `experiments/prime-field-auxiliary-ic/random-vs-special/COMPARISON.md`.
+Reports include `factor_base.columns_blake3` for the actual ordered columns.
+The companion `random-vs-special/compare_reports.py` checks three saved scalar
+yield reports and derives exact row/hit fractions only for matching completed
+prefixes. It refuses mismatched bases/settings, censored rows and replay/solve
+modes; it supplies no timing or end-to-end qualification. Full base archives
+and signed replay remain required for research measurements.
 
 Run research measurements only after the repository checkpoint and GPU-host
 requirements are met. CLI durations are producer diagnostics. Exclusive phase

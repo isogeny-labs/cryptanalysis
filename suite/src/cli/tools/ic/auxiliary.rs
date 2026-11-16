@@ -213,6 +213,27 @@ fn encoding_json(encoding: aux::FactorBaseEncoding) -> Value {
     }
 }
 
+fn columns_blake3<const B: u32>(base: &aux::FactorBase<B>, order: u64) -> String {
+    let curve = base.curve();
+    let (a, b) = curve.coefficients();
+    let mut hash = blake3::Hasher::new();
+    hash.update(b"auxiliary-ic-signed-columns/v1\0");
+    for value in [
+        curve.modulus(),
+        a,
+        b,
+        order,
+        base.representatives().len() as u64,
+    ] {
+        hash.update(&value.to_le_bytes());
+    }
+    for point in base.representatives() {
+        hash.update(&point.x().to_le_bytes());
+        hash.update(&point.y().to_le_bytes());
+    }
+    hash.finalize().to_hex().to_string()
+}
+
 fn execute<const B: u32>(
     args: &AuxiliaryArgs,
     input: &Input,
@@ -292,6 +313,7 @@ fn execute<const B: u32>(
         "input_blake3":input_hash,"binary_blake3":binary_hash(),"source_commit":git_commit(),
         "public":{"p":public.p,"a":public.a,"b":public.b,"n":public.n,"P":public.generator,"Q":public.target},
         "factor_base":{"raw_roots":base.raw_root_count(),"affine_points":base.affine_point_count(),"uses_auxiliary_maps":base.uses_auxiliary_maps(),
+            "columns_blake3":columns_blake3(&base, public.n),
             "uses_circuit":base.uses_circuit(),"encoding":encoding_json(base.encoding()),
             "selection_encoding":selection_encoding,"terminal_coordinate":terminal_coordinate,
             "folded_columns":base.representatives().len(),"backend":base.backend().name()},
@@ -676,9 +698,32 @@ mod tests {
         }
         assert_eq!(special["work"]["relations"], direct["work"]["relations"]);
         assert_eq!(
+            special["factor_base"]["columns_blake3"],
+            direct["factor_base"]["columns_blake3"]
+        );
+        assert_ne!(
+            special["factor_base"]["columns_blake3"],
+            random["factor_base"]["columns_blake3"]
+        );
+        assert_eq!(
             special["work"]["duplicate_rows"],
             direct["work"]["duplicate_rows"]
         );
+        if let Some(folder) = std::env::var_os("AUXILIARY_IC_REPORT_FIXTURE_DIR") {
+            let folder = PathBuf::from(folder);
+            std::fs::create_dir_all(&folder).unwrap();
+            for (name, report) in [
+                ("auxiliary", &special),
+                ("same_base", &direct),
+                ("random", &random),
+            ] {
+                std::fs::write(
+                    folder.join(format!("{name}.json")),
+                    serde_json::to_vec_pretty(report).unwrap(),
+                )
+                .unwrap();
+            }
+        }
         for flag in ["--rho", "--decompose-only"] {
             assert!(TestCli::try_parse_from([
                 "test",
@@ -698,6 +743,33 @@ mod tests {
             "rows"
         ])
         .is_err());
+    }
+
+    #[test]
+    fn column_identity_is_independent_of_encoding_and_binds_curve_order_and_points() {
+        let curve = aux::Curve::<7>::new(2, 51).unwrap();
+        let g = curve.point(3, 46).unwrap();
+        let power = aux::FactorBase::multiplicative(curve, 18, 1, aux::Backend::Scalar).unwrap();
+        let direct = power.direct_control().unwrap();
+        let (random, _) = aux::FactorBase::random_control(
+            curve,
+            109,
+            g,
+            power.representatives().len(),
+            701,
+            10000,
+        )
+        .unwrap();
+        assert_eq!(columns_blake3(&power, 109), columns_blake3(&direct, 109));
+        assert_ne!(columns_blake3(&power, 109), columns_blake3(&power, 107));
+        assert_ne!(columns_blake3(&power, 109), columns_blake3(&random, 109));
+        let mut roots: Vec<_> = direct.representatives().iter().map(|p| p.x()).collect();
+        roots.reverse();
+        let reordered = aux::FactorBase::without_maps(curve, &roots).unwrap();
+        assert_eq!(
+            columns_blake3(&direct, 109),
+            columns_blake3(&reordered, 109)
+        );
     }
 
     #[test]

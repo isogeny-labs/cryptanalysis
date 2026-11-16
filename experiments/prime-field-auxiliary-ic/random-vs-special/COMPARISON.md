@@ -68,6 +68,33 @@ distinct-row yield and hit count (`relations + duplicate_rows`). Do not
 compare yield on unequal processed prefixes or silently discard capped rows;
 only `complete`/`QueryBudget` rows completed the requested panel.
 
+The CLI now includes `factor_base.columns_blake3`: a domain-separated hash
+of the field, curve coefficients, subgroup order, usable-column count and
+ordered canonical `(x,y)` representatives (u64 little-endian). It excludes
+the target, encoding and sampler seed, so A and B can share an identity while
+using different decomposition methods. This is a reported identity, not a
+signed execution attestation or a substitute for archiving the actual base.
+
+Align three existing scalar yield reports with:
+
+```sh
+python3 experiments/prime-field-auxiliary-ic/random-vs-special/compare_reports.py \
+  --auxiliary auxiliary.json --same-base same-base.json --random random.json \
+  --output comparison.json
+```
+
+The helper launches no searches. It checks public inputs, source labels,
+binary identity, actual-column identity for A/B, usable sizes, sampler/limits,
+scalar arithmetic, unused-lane accounting and random preparation counters.
+It retains incomplete arms and input hashes while refusing derived comparisons
+for unmatched/censored prefixes, replay/full-solve modes, malformed counters,
+duplicate JSON keys and nonfinite constants. A random draw that legitimately
+produces the same base is flagged and retained. Only aligned fixed prefixes
+get exact row/hit fractions, with every processed query in the denominator.
+All outputs remain unsigned producer data; matching labels/hashes do not prove
+execution. No time ratio or qualified speedup is inferred. Native SIMD and
+full-solve cost comparisons require their own scopes and remain outstanding.
+
 For end-to-end cost, remove `--relation-yield-only` and run full collection,
 graph recovery and public certificate replay on the same fresh Q. Record
 queries and work until a checked recovery or explicit resource exhaustion.
