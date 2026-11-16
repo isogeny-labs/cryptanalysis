@@ -1,0 +1,35 @@
+
+running 1 test
+test tests::nested_scopes_checked_counts_and_foreign_thread_rejection ... 
+thread '<unnamed>' (392372) panicked at src/lib.rs:78:9:
+assertion `left == right` failed: unexpected arithmetic thread
+  left: ThreadId(2)
+ right: ThreadId(3)
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+thread '<unnamed>' (392373) panicked at src/lib.rs:78:9:
+assertion `left == right` failed: unexpected arithmetic thread
+  left: ThreadId(2)
+ right: ThreadId(4)
+
+thread '<unnamed>' (392374) panicked at src/lib.rs:78:9:
+assertion `left == right` failed: unexpected arithmetic thread
+  left: ThreadId(2)
+ right: ThreadId(5)
+
+thread '<unnamed>' (392375) panicked at src/lib.rs:78:9:
+assertion `left == right` failed: unexpected arithmetic thread
+  left: ThreadId(2)
+ right: ThreadId(6)
+
+thread '<unnamed>' (392376) panicked at src/lib.rs:78:9:
+assertion `left == right` failed: unexpected arithmetic thread
+  left: ThreadId(2)
+ right: ThreadId(7)
+
+thread 'tests::nested_scopes_checked_counts_and_foreign_thread_rejection' (392371) panicked at src/lib.rs:53:14:
+arithmetic census overflow
+ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+

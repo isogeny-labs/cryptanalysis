@@ -1,0 +1,15 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T06:02:40Z",
+ "id": "PCC-20261116-2d1adb",
+ "kind": "statement",
+ "producer": {
+  "commit": "d6bd907c6db654be06b868acf8bfbe58eb257d64",
+  "model": "",
+  "session": "ic-rational-current-20261115"
+ },
+ "proofs": [],
+ "schema": "pcc.claim/v1",
+ "scope": "s3-fixed-pipeline-replay-and-next-bottleneck",
+ "statement": "The completed fixed-instance panel was replayed with the existing pure-Python field/group implementation for all 96 pipeline answers and 24 plain/negation rho answers; all 120 scalar-to-point checks pass. For the N18 reference MITM runs, median table setup is 730056 ns versus median pipeline time 1172456.5 ns; this producer phase observation motivates testing a native affine oracle. These are unsigned producer checks and unqualified timings."
+}

@@ -1,0 +1,9 @@
+digraph fixedpair {
+graph[rankdir=TB,bgcolor="white",ranksep=.32,nodesep=.4];
+node[shape=box,style=rounded,fontname="DejaVu Sans",fontsize=10];edge[fontname="DejaVu Sans",fontsize=9];
+old[label="RETAINED: original matched-source negatives\nE2 / D12 and E3 / D24\nsmooth F223 quartics; source identifications unsupported",color="#8b3434"];
+fixed[label="PROPOSED NEW INSTANCE ONLY\nnu=12; exactly E2^nu -> E3^nu\nfixed old rational-map recipe; no alternate candidate",color="#a57535",style="rounded,dashed"];
+cert[label="REQUIRED before model acceptance\nnew order / nonzero prime-order point / Hasse certificate\nwhole rational identities + actual64-point transport\nfreeze rescaled G2/G3 BEFORE all12 model rows",color="#295477"];
+test[label="TEST, do not assume\nH'=nu H; adj'=nu^2 adj; D'=nu^3 D\nunique fixed-kernel matches + full old coefficient parity\nall controls / Lean / whole ordered records",color="#295477"];
+outcome[label="Outcome UNKNOWN\nsupported pair or preserved new negative\ncomplete Jacobian evaluator needs subsequent protocol\nNO old-to-twist logarithm transfer or cost claim",color="#a57535",style="rounded,dashed"];
+old->fixed[style=invis];fixed->cert[style=dashed];cert->test[style=dashed];test->outcome[style=dashed];}

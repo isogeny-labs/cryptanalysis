@@ -1,0 +1,10 @@
+digraph failure {
+ graph[rankdir=TB,bgcolor="white",ranksep=.25,pad=.15];
+ node[shape=box,style="rounded,filled",fillcolor="#e7f0e8",fontname="DejaVu Sans",fontsize=11];
+ reference[label="Original reference SUCCESS\n25 native / 98 reference + 5\none historical ignored"];
+ native[label="Independent source0796\n32 standalone PASS"];
+ error[label="rg absent on runner\ndriver exits127",fillcolor="#fce8e4"];
+ notrun[label="Algebra + proofs NOT RUN\nwhole independent job not accepted",fillcolor="#f2f2f2"];
+ {rank=same;reference;native}
+ native->error->notrun;
+}

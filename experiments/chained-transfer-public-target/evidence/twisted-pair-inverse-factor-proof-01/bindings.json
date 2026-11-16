@@ -1,0 +1,17 @@
+[
+  {
+    "claim": "pcc/claims/PCC-20261114-83cf5d.json",
+    "theorem": "TwistingFactor.scaled_delta_inverse",
+    "statement": "theorem scaled_delta_inverse {R : Type} [CommRing R] (v w delta inverseDelta : R) (inverseScale : v*w=1) (inverseDenominator : delta*inverseDelta=1) : (v^2*delta)*(w^2*inverseDelta)=1"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261114-d64f40.json",
+    "theorem": "TwistingFactor.factor_scale",
+    "statement": "theorem factor_scale {R : Type} [CommRing R] (v w r a b c inverseD0 inverseD1 inverseD2 : R) (inverseScale : v*w=1) : factor (v^3*r) (v*a) (v*b) (v*c) (w^2*inverseD0) (w^2*inverseD1) (w^2*inverseD2) = v^3 * factor r a b c inverseD0 inverseD1 inverseD2"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261114-5d399a.json",
+    "theorem": "TwistingFactor.factor_equals_symmetric_determinant",
+    "statement": "theorem factor_equals_symmetric_determinant {R : Type} [CommRing R] (h0 h1 h2 a b c inverseD0 inverseD1 inverseD2 : R) (inverse0 : (h1*h2)*inverseD0=1) (inverse1 : (h0*h2)*inverseD1=1) (inverse2 : (h0*h1)*inverseD2=1) : factor (-(h0*h1*h2)) a b c inverseD0 inverseD1 inverseD2 = h0*h1*h2-h0*a^2-h1*b^2-h2*c^2-2*a*b*c"
+  }
+]

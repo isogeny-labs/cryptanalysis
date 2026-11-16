@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-15T08:38:44Z",
+ "id": "PCC-20261115-2bd338",
+ "kind": "theorem",
+ "producer": {
+  "commit": "e633524f33e62c4ffa273ffefd4a8ea3915ef93d",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "2d7432e2e01d381c46d6e3dd2a9ee6660a550a979ad585ed7dbe96d2d93947ec",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/original-full-evaluator-01/lean/PrimeRecovery.lean",
+   "theorem": "OriginalFullPrimeRecovery.actual_original_prime_recovery_witnesses"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Conditional IntModule CRT recovery of the prime summand from2p plus arbitrary four-torsion; explicit ellannihilation andcofactor4annihilation. Ordinary Lean kernel checks actualoriginal scalar9705756=4*2426439, divisible4 andinverse2mod2773073, Bezout quotient-7. This repairs onlythe independent test oracle; not inverse2 onthefullgroup. Bothoriginalgates2roots0trusted; actualfield/HLP/program bridges explicit; unsigned.",
+ "statement": "theorem actual_original_prime_recovery_witnesses : (8*2426439 : Nat)=7*2773073+1 \u2227 (4*2426439 : Nat)=9705756 \u2227 (9705756 : Nat)%4=0 \u2227 (2*9705756 : Nat)%2773073=1 \u2227 (9705756*2+(-7)*2773073 : Int)=1"
+}

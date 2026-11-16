@@ -1,0 +1,203 @@
+[
+  {
+    "path": "cryptanalysis/experiments/chained-transfer-public-target/beta-rational-lift/quadratic-picard-engine/src/lib.rs",
+    "label": "quadratic multiplication: five written coefficient products",
+    "old": "    fn mulu(&self, a: u32, b: u32) -> u32 {\n        if let Some(nu) = self.quadratic_nu {\n",
+    "new": "    fn mulu(&self, a: u32, b: u32) -> u32 {\n        if let Some(nu) = self.quadratic_nu {\n        n4_arithmetic_taps::hit(\"quadratic.Picard.coefficient\", self.q, \"mul\", 5);\n        n4_arithmetic_taps::hit(\"quadratic.Picard.coefficient\", self.q, \"add\", 2);\n        n4_arithmetic_taps::hit(\"quadratic.Picard.coefficient\", self.q, \"rem_u64\", 2);\n        n4_arithmetic_taps::hit(\"quadratic.Picard.encoding\", self.q, \"decode_rem\", 2);\n        n4_arithmetic_taps::hit(\"quadratic.Picard.encoding\", self.q, \"decode_div\", 2);\n        n4_arithmetic_taps::hit(\"quadratic.Picard.encoding\", self.q, \"pack_mul\", 1);\n        n4_arithmetic_taps::hit(\"quadratic.Picard.encoding\", self.q, \"pack_add\", 1);\n"
+  },
+  {
+    "path": "cryptanalysis/experiments/chained-transfer-public-target/beta-rational-lift/quadratic-picard-engine/src/lib.rs",
+    "label": "nondelegating prime multiplication",
+    "old": "        ((a as u64 * b as u64) % self.q) as u32\n",
+    "new": "        n4_arithmetic_taps::hit(\"quadratic.Picard.prime\", self.q, \"mul\", 1);\n        n4_arithmetic_taps::hit(\"quadratic.Picard.prime\", self.q, \"rem_u64\", 1);\n        ((a as u64 * b as u64) % self.q) as u32\n"
+  },
+  {
+    "path": "cryptanalysis/experiments/chained-transfer-public-target/beta-rational-lift/quadratic-picard-engine/src/lib.rs",
+    "label": "quadratic addition",
+    "old": "    fn add_nc(&self, a: u32, b: u32) -> u32 {\n        if self.quadratic_nu.is_some() {\n",
+    "new": "    fn add_nc(&self, a: u32, b: u32) -> u32 {\n        if self.quadratic_nu.is_some() {\n        n4_arithmetic_taps::hit(\"quadratic.Picard.coefficient\", self.q, \"add\", 2);\n        n4_arithmetic_taps::hit(\"quadratic.Picard.coefficient\", self.q, \"rem_u64\", 2);\n        n4_arithmetic_taps::hit(\"quadratic.Picard.encoding\", self.q, \"decode_rem\", 2);\n        n4_arithmetic_taps::hit(\"quadratic.Picard.encoding\", self.q, \"decode_div\", 2);\n        n4_arithmetic_taps::hit(\"quadratic.Picard.encoding\", self.q, \"pack_mul\", 1);\n        n4_arithmetic_taps::hit(\"quadratic.Picard.encoding\", self.q, \"pack_add\", 1);\n"
+  },
+  {
+    "path": "cryptanalysis/experiments/chained-transfer-public-target/beta-rational-lift/quadratic-picard-engine/src/lib.rs",
+    "label": "prime addition",
+    "old": "        let s = a as u64 + b as u64;\n",
+    "new": "        n4_arithmetic_taps::hit(\"quadratic.Picard.prime\", self.q, \"add\", 1);\n        let s = a as u64 + b as u64;\n"
+  },
+  {
+    "path": "cryptanalysis/experiments/chained-transfer-public-target/beta-rational-lift/quadratic-picard-engine/src/lib.rs",
+    "label": "quadratic subtraction",
+    "old": "    fn sub_nc(&self, a: u32, b: u32) -> u32 {\n        if self.quadratic_nu.is_some() {\n",
+    "new": "    fn sub_nc(&self, a: u32, b: u32) -> u32 {\n        if self.quadratic_nu.is_some() {\n        n4_arithmetic_taps::hit(\"quadratic.Picard.coefficient\", self.q, \"sub\", 2);\n        n4_arithmetic_taps::hit(\"quadratic.Picard.coefficient\", self.q, \"rem_u64\", 2);\n        n4_arithmetic_taps::hit(\"quadratic.Picard.encoding\", self.q, \"decode_rem\", 2);\n        n4_arithmetic_taps::hit(\"quadratic.Picard.encoding\", self.q, \"decode_div\", 2);\n        n4_arithmetic_taps::hit(\"quadratic.Picard.encoding\", self.q, \"pack_mul\", 1);\n        n4_arithmetic_taps::hit(\"quadratic.Picard.encoding\", self.q, \"pack_add\", 1);\n        n4_arithmetic_taps::hit(\"quadratic.Picard.encoding\", self.q, \"modulus_adjust_add\", 2);\n"
+  },
+  {
+    "path": "cryptanalysis/experiments/chained-transfer-public-target/beta-rational-lift/quadratic-picard-engine/src/lib.rs",
+    "label": "prime subtraction",
+    "old": "        if a >= b {\n            a - b\n",
+    "new": "        n4_arithmetic_taps::hit(\"quadratic.Picard.prime\", self.q, \"sub\", 1);\n        if a >= b {\n            a - b\n"
+  },
+  {
+    "path": "cryptanalysis/experiments/chained-transfer-public-target/beta-rational-lift/quadratic-picard-engine/src/lib.rs",
+    "label": "nonzero prime negation; quadratic branch delegates",
+    "old": "        if a == 0 {\n            0\n        } else {\n            (self.q - a as u64) as u32\n",
+    "new": "        if a != 0 { n4_arithmetic_taps::hit(\"quadratic.Picard.prime\", self.q, \"neg\", 1); }\n        if a == 0 {\n            0\n        } else {\n            (self.q - a as u64) as u32\n"
+  },
+  {
+    "path": "cryptanalysis/experiments/chained-transfer-public-target/beta-rational-lift/quadratic-picard-engine/src/lib.rs",
+    "label": "quadratic inverse scaling; base inverse counted at delegated leaf",
+    "old": "    fn invu(&self, a: u32) -> u32 {\n        if let Some(nu) = self.quadratic_nu {\n",
+    "new": "    fn invu(&self, a: u32) -> u32 {\n        if let Some(nu) = self.quadratic_nu {\n        n4_arithmetic_taps::hit(\"quadratic.Picard.coefficient\", self.q, \"sq\", 1);\n        n4_arithmetic_taps::hit(\"quadratic.Picard.coefficient\", self.q, \"mul\", 4);\n        n4_arithmetic_taps::hit(\"quadratic.Picard.coefficient\", self.q, \"sub\", 2);\n        n4_arithmetic_taps::hit(\"quadratic.Picard.coefficient\", self.q, \"rem_u64\", 4);\n        n4_arithmetic_taps::hit(\"quadratic.Picard.encoding\", self.q, \"decode_rem\", 1);\n        n4_arithmetic_taps::hit(\"quadratic.Picard.encoding\", self.q, \"decode_div\", 1);\n        n4_arithmetic_taps::hit(\"quadratic.Picard.encoding\", self.q, \"pack_mul\", 1);\n        n4_arithmetic_taps::hit(\"quadratic.Picard.encoding\", self.q, \"pack_add\", 1);\n        n4_arithmetic_taps::hit(\"quadratic.Picard.encoding\", self.q, \"modulus_adjust_add\", 1);\n"
+  },
+  {
+    "path": "cryptanalysis/experiments/chained-transfer-public-target/beta-rational-lift/quadratic-picard-engine/src/lib.rs",
+    "label": "atomic Euclidean base inverse, internals unpriced",
+    "old": "    fn base_invu(&self, a: u32) -> u32 {\n",
+    "new": "    fn base_invu(&self, a: u32) -> u32 {\n        n4_arithmetic_taps::hit(\"quadratic.Picard.prime\", self.q, \"inv\", 1);\n"
+  },
+  {
+    "path": "cryptanalysis/experiments/chained-transfer-public-target/beta-rational-lift/quadratic-picard-engine/src/lib.rs",
+    "label": "actual coefficient Frobenius",
+    "old": "        a % p + p * ((p - a / p) % p)\n",
+    "new": "        n4_arithmetic_taps::hit(\"quadratic.Picard.coefficient\", self.fq.q, \"sub\", 1);\n        n4_arithmetic_taps::hit(\"quadratic.Picard.coefficient\", self.fq.q, \"rem_u64\", 1);\n        n4_arithmetic_taps::hit(\"quadratic.Picard.encoding\", self.fq.q, \"decode_rem\", 1);\n        n4_arithmetic_taps::hit(\"quadratic.Picard.encoding\", self.fq.q, \"decode_div\", 1);\n        n4_arithmetic_taps::hit(\"quadratic.Picard.encoding\", self.fq.q, \"pack_mul\", 1);\n        n4_arithmetic_taps::hit(\"quadratic.Picard.encoding\", self.fq.q, \"pack_add\", 1);\n        a % p + p * ((p - a / p) % p)\n"
+  },
+  {
+    "path": "cryptanalysis/experiments/chained-transfer-public-target/beta-rational-lift/quadratic-picard-engine/src/lib.rs",
+    "label": "constructor integer trial divisions",
+    "old": "    while d * d <= q {\n        if q.is_multiple_of(d) {\n",
+    "new": "    while d * d <= q {\n        n4_arithmetic_taps::hit(\"quadratic.Picard.primality.aux\", q, \"trial_divisibility\", 1);\n        if q.is_multiple_of(d) {\n"
+  },
+  {
+    "path": "cryptanalysis/experiments/chained-transfer-public-target/beta-rational-lift/quadratic-picard-engine/src/lib.rs",
+    "label": "unchanged original prime-polynomial and point-search hook block",
+    "old": "fn pmod_mul(q: u64, a: &[u64], b: &[u64]) -> Vec<u64> {\n    if a.is_empty() || b.is_empty() {\n        return vec![];\n    }\n    let mut r = vec![0u64; a.len() + b.len() - 1];\n    for (i, &x) in a.iter().enumerate() {\n        for (j, &y) in b.iter().enumerate() {\n            r[i + j] = (r[i + j] + x * y % q) % q;\n        }\n    }\n    pmod_trim(&mut r);\n    r\n}\n\nfn pinv(q: u64, a: u64) -> u64 {\n    let (mut r0, mut r1, mut t0, mut t1) = (q as i128, a as i128, 0i128, 1i128);\n    while r1 != 0 {\n        let d = r0 / r1;\n        (r0, r1) = (r1, r0 - d * r1);\n        (t0, t1) = (t1, t0 - d * t1);\n    }\n    t0.rem_euclid(q as i128) as u64\n}\n\nfn pmod_rem(q: u64, a: &[u64], g: &[u64]) -> Vec<u64> {\n    let mut r = a.to_vec();\n    pmod_trim(&mut r);\n    let ig = pinv(q, *g.last().unwrap());\n    while r.len() >= g.len() {\n        let c = r.last().copied().unwrap() * ig % q;\n        let sh = r.len() - g.len();\n        for (i, &gi) in g.iter().enumerate() {\n            r[sh + i] = (r[sh + i] + q - c * gi % q) % q;\n        }\n        pmod_trim(&mut r);\n    }\n    r\n}\n\nfn pmod_gcd(q: u64, a: &[u64], b: &[u64]) -> Vec<u64> {\n    let (mut a, mut b) = (a.to_vec(), b.to_vec());\n    pmod_trim(&mut a);\n    pmod_trim(&mut b);\n    while !b.is_empty() {\n        let r = pmod_rem(q, &a, &b);\n        a = b;\n        b = r;\n    }\n    if let Some(&l) = a.last() {\n        let il = pinv(q, l);\n        for c in a.iter_mut() {\n            *c = *c * il % q;\n        }\n    }\n    a\n}\n\nfn pmod_powx(q: u64, base: &[u64], mut e: u64, g: &[u64]) -> Vec<u64> {\n    let mut r = vec![1u64];\n    let mut b = pmod_rem(q, base, g);\n    while e > 0 {\n        if e & 1 == 1 {\n            r = pmod_rem(q, &pmod_mul(q, &r, &b), g);\n        }\n        b = pmod_rem(q, &pmod_mul(q, &b, &b), g);\n        e >>= 1;\n    }\n    r\n}\n\n/// All roots in `F_q` of the polynomial with ascending coefficients `c`\n/// (Cantor-Zassenhaus; setup only).\npub fn poly_roots(q: u32, c: &[u32], rng: &mut u64) -> Vec<u32> {\n    let q = q as u64;\n    let mut g: Vec<u64> = c.iter().map(|&x| x as u64).collect();\n    pmod_trim(&mut g);\n    if g.len() <= 1 {\n        return vec![];\n    }\n    // g1 = gcd(x^q - x, g)\n    let xq = pmod_powx(q, &[0, 1], q, &g);\n    let mut diff = xq.clone();\n    if diff.len() < 2 {\n        diff.resize(2, 0);\n    }\n    diff[1] = (diff[1] + q - 1) % q;\n    pmod_trim(&mut diff);\n    let g1 = if diff.is_empty() {\n        g.clone()\n    } else {\n        pmod_gcd(q, &g, &diff)\n    };\n    let mut roots = Vec::new();\n    let mut stack = vec![g1];\n    while let Some(h) = stack.pop() {\n        if h.len() <= 1 {\n            continue;\n        }\n        if h.len() == 2 {\n            roots.push(((q - h[0]) % q * pinv(q, h[1]) % q) as u32);\n            continue;\n        }\n        loop {\n            let a = xorshift_next(rng) % q;\n            let t = pmod_powx(q, &[a, 1], (q - 1) / 2, &h);\n            let mut t1 = t.clone();\n            if t1.is_empty() {\n                t1.push(0);\n            }\n            t1[0] = (t1[0] + q - 1) % q;\n            pmod_trim(&mut t1);\n            let d = if t1.is_empty() {\n                h.clone()\n            } else {\n                pmod_gcd(q, &h, &t1)\n            };\n            if d.len() > 1 && d.len() < h.len() {\n                // divide h by d\n                let mut quo = vec![0u64; h.len() - d.len() + 1];\n                let mut r = h.clone();\n                let id = pinv(q, *d.last().unwrap());\n                while r.len() >= d.len() {\n                    let cf = r.last().copied().unwrap() * id % q;\n                    let sh = r.len() - d.len();\n                    quo[sh] = cf;\n                    for (i, &di) in d.iter().enumerate() {\n                        r[sh + i] = (r[sh + i] + q - cf * di % q) % q;\n                    }\n                    pmod_trim(&mut r);\n                }\n                stack.push(d);\n                stack.push(quo);\n                break;\n            }\n        }\n    }\n    roots.sort();\n    roots\n}\n\n/// Find a rational point of the quartic `f` by random search on lines\n/// `(1 : y : z)`, `z` a root of `F(1,y,z)` (setup only).\npub fn find_rational_point(q: u32, f: &[u32; 15], rng: &mut u64, max_tries: usize) -> Option<Pt> {\n    let m4 = mons_of_degree(4);\n    let qq = q as u64;\n    for _ in 0..max_tries {\n        let y = xorshift_next(rng) % qq;\n        // F(1,y,z) = sum_c z^c * (sum coef * y^b)\n        let mut coef = vec![0u32; 5];\n        for (i, &(_a, b, c)) in m4.iter().enumerate() {\n            if f[i] == 0 {\n                continue;\n            }\n            let mut yp = 1u64;\n            for _ in 0..b {\n                yp = yp * y % qq;\n            }\n            coef[c as usize] = ((coef[c as usize] as u64 + f[i] as u64 * yp) % qq) as u32;\n        }\n        let roots = poly_roots(q, &coef, rng);\n        if let Some(&z) = roots.first() {\n            return Some([1, y as u32, z]);\n        }\n    }\n    None\n}\n\n",
+    "new": "fn pmod_mul(q: u64, a: &[u64], b: &[u64]) -> Vec<u64> {\n    if a.is_empty() || b.is_empty() {\n        return vec![];\n    }\n    let mut r = vec![0u64; a.len() + b.len() - 1];\n    for (i, &x) in a.iter().enumerate() {\n        for (j, &y) in b.iter().enumerate() {\n            n4_arithmetic_taps::hit(\"quadratic.Picard.polynomial\", q, \"mul\", 1); n4_arithmetic_taps::hit(\"quadratic.Picard.polynomial\", q, \"add\", 1); n4_arithmetic_taps::hit(\"quadratic.Picard.polynomial\", q, \"rem_u64\", 2);\n            r[i + j] = (r[i + j] + x * y % q) % q;\n        }\n    }\n    pmod_trim(&mut r);\n    r\n}\n\nfn pinv(q: u64, a: u64) -> u64 {\n        n4_arithmetic_taps::hit(\"quadratic.Picard.polynomial\", q, \"inv\", 1);\n    let (mut r0, mut r1, mut t0, mut t1) = (q as i128, a as i128, 0i128, 1i128);\n    while r1 != 0 {\n        let d = r0 / r1;\n        (r0, r1) = (r1, r0 - d * r1);\n        (t0, t1) = (t1, t0 - d * t1);\n    }\n    t0.rem_euclid(q as i128) as u64\n}\n\nfn pmod_rem(q: u64, a: &[u64], g: &[u64]) -> Vec<u64> {\n    let mut r = a.to_vec();\n    pmod_trim(&mut r);\n    let ig = pinv(q, *g.last().unwrap());\n    while r.len() >= g.len() {\n        n4_arithmetic_taps::hit(\"quadratic.Picard.polynomial\", q, \"mul\", 1); n4_arithmetic_taps::hit(\"quadratic.Picard.polynomial\", q, \"rem_u64\", 1);\n            let c = r.last().copied().unwrap() * ig % q;\n        let sh = r.len() - g.len();\n        for (i, &gi) in g.iter().enumerate() {\n            n4_arithmetic_taps::hit(\"quadratic.Picard.polynomial\", q, \"mul\", 1); n4_arithmetic_taps::hit(\"quadratic.Picard.polynomial\", q, \"sub\", 1); n4_arithmetic_taps::hit(\"quadratic.Picard.polynomial\", q, \"rem_u64\", 2);\n            r[sh + i] = (r[sh + i] + q - c * gi % q) % q;\n        }\n        pmod_trim(&mut r);\n    }\n    r\n}\n\nfn pmod_gcd(q: u64, a: &[u64], b: &[u64]) -> Vec<u64> {\n    let (mut a, mut b) = (a.to_vec(), b.to_vec());\n    pmod_trim(&mut a);\n    pmod_trim(&mut b);\n    while !b.is_empty() {\n        let r = pmod_rem(q, &a, &b);\n        a = b;\n        b = r;\n    }\n    if let Some(&l) = a.last() {\n        let il = pinv(q, l);\n        for c in a.iter_mut() {\n            n4_arithmetic_taps::hit(\"quadratic.Picard.polynomial\", q, \"mul\", 1); n4_arithmetic_taps::hit(\"quadratic.Picard.polynomial\", q, \"rem_u64\", 1);\n            *c = *c * il % q;\n        }\n    }\n    a\n}\n\nfn pmod_powx(q: u64, base: &[u64], mut e: u64, g: &[u64]) -> Vec<u64> {\n    let mut r = vec![1u64];\n    let mut b = pmod_rem(q, base, g);\n    while e > 0 {\n        if e & 1 == 1 {\n            r = pmod_rem(q, &pmod_mul(q, &r, &b), g);\n        }\n        b = pmod_rem(q, &pmod_mul(q, &b, &b), g);\n        e >>= 1;\n    }\n    r\n}\n\n/// All roots in `F_q` of the polynomial with ascending coefficients `c`\n/// (Cantor-Zassenhaus; setup only).\npub fn poly_roots(q: u32, c: &[u32], rng: &mut u64) -> Vec<u32> {\n    let q = q as u64;\n    let mut g: Vec<u64> = c.iter().map(|&x| x as u64).collect();\n    pmod_trim(&mut g);\n    if g.len() <= 1 {\n        return vec![];\n    }\n    // g1 = gcd(x^q - x, g)\n    let xq = pmod_powx(q, &[0, 1], q, &g);\n    let mut diff = xq.clone();\n    if diff.len() < 2 {\n        diff.resize(2, 0);\n    }\n    n4_arithmetic_taps::hit(\"quadratic.Picard.polynomial\", q, \"sub\", 1); n4_arithmetic_taps::hit(\"quadratic.Picard.polynomial\", q, \"rem_u64\", 1);\n            diff[1] = (diff[1] + q - 1) % q;\n    pmod_trim(&mut diff);\n    let g1 = if diff.is_empty() {\n        g.clone()\n    } else {\n        pmod_gcd(q, &g, &diff)\n    };\n    let mut roots = Vec::new();\n    let mut stack = vec![g1];\n    while let Some(h) = stack.pop() {\n        if h.len() <= 1 {\n            continue;\n        }\n        if h.len() == 2 {\n            n4_arithmetic_taps::hit(\"quadratic.Picard.polynomial\", q, \"neg\", 1); n4_arithmetic_taps::hit(\"quadratic.Picard.polynomial\", q, \"mul\", 1); n4_arithmetic_taps::hit(\"quadratic.Picard.polynomial\", q, \"rem_u64\", 2);\n            roots.push(((q - h[0]) % q * pinv(q, h[1]) % q) as u32);\n            continue;\n        }\n        loop {\n            let a = xorshift_next(rng) % q;\n            let t = pmod_powx(q, &[a, 1], (q - 1) / 2, &h);\n            let mut t1 = t.clone();\n            if t1.is_empty() {\n                t1.push(0);\n            }\n            n4_arithmetic_taps::hit(\"quadratic.Picard.polynomial\", q, \"sub\", 1); n4_arithmetic_taps::hit(\"quadratic.Picard.polynomial\", q, \"rem_u64\", 1);\n            t1[0] = (t1[0] + q - 1) % q;\n            pmod_trim(&mut t1);\n            let d = if t1.is_empty() {\n                h.clone()\n            } else {\n                pmod_gcd(q, &h, &t1)\n            };\n            if d.len() > 1 && d.len() < h.len() {\n                // divide h by d\n                let mut quo = vec![0u64; h.len() - d.len() + 1];\n                let mut r = h.clone();\n                let id = pinv(q, *d.last().unwrap());\n                while r.len() >= d.len() {\n                    n4_arithmetic_taps::hit(\"quadratic.Picard.polynomial\", q, \"mul\", 1); n4_arithmetic_taps::hit(\"quadratic.Picard.polynomial\", q, \"rem_u64\", 1);\n            let cf = r.last().copied().unwrap() * id % q;\n                    let sh = r.len() - d.len();\n                    quo[sh] = cf;\n                    for (i, &di) in d.iter().enumerate() {\n                        n4_arithmetic_taps::hit(\"quadratic.Picard.polynomial\", q, \"mul\", 1); n4_arithmetic_taps::hit(\"quadratic.Picard.polynomial\", q, \"sub\", 1); n4_arithmetic_taps::hit(\"quadratic.Picard.polynomial\", q, \"rem_u64\", 2);\n            r[sh + i] = (r[sh + i] + q - cf * di % q) % q;\n                    }\n                    pmod_trim(&mut r);\n                }\n                stack.push(d);\n                stack.push(quo);\n                break;\n            }\n        }\n    }\n    roots.sort();\n    roots\n}\n\n/// Find a rational point of the quartic `f` by random search on lines\n/// `(1 : y : z)`, `z` a root of `F(1,y,z)` (setup only).\npub fn find_rational_point(q: u32, f: &[u32; 15], rng: &mut u64, max_tries: usize) -> Option<Pt> {\n    let m4 = mons_of_degree(4);\n    let qq = q as u64;\n    for _ in 0..max_tries {\n        let y = xorshift_next(rng) % qq;\n        // F(1,y,z) = sum_c z^c * (sum coef * y^b)\n        let mut coef = vec![0u32; 5];\n        for (i, &(_a, b, c)) in m4.iter().enumerate() {\n            if f[i] == 0 {\n                continue;\n            }\n            let mut yp = 1u64;\n            for _ in 0..b {\n                n4_arithmetic_taps::hit(\"quadratic.Picard.point_search\", qq, \"mul\", 1); n4_arithmetic_taps::hit(\"quadratic.Picard.point_search\", qq, \"rem_u64\", 1);\n            yp = yp * y % qq;\n            }\n            n4_arithmetic_taps::hit(\"quadratic.Picard.point_search\", qq, \"mul\", 1); n4_arithmetic_taps::hit(\"quadratic.Picard.point_search\", qq, \"add\", 1); n4_arithmetic_taps::hit(\"quadratic.Picard.point_search\", qq, \"rem_u64\", 1);\n            coef[c as usize] = ((coef[c as usize] as u64 + f[i] as u64 * yp) % qq) as u32;\n        }\n        let roots = poly_roots(q, &coef, rng);\n        if let Some(&z) = roots.first() {\n            return Some([1, y as u32, z]);\n        }\n    }\n    None\n}\n\n"
+  },
+  {
+    "path": "cryptanalysis/experiments/chained-transfer-public-target/beta-rational-lift/quadratic-picard-engine/src/lib.rs",
+    "label": "polynomial random residue",
+    "old": "            let a = xorshift_next(rng) % q;\n",
+    "new": "        n4_arithmetic_taps::hit(\"quadratic.Picard.random.aux\", q, \"rng_residue\", 1);\n            let a = xorshift_next(rng) % q;\n"
+  },
+  {
+    "path": "cryptanalysis/experiments/chained-transfer-public-target/beta-rational-lift/quadratic-picard-engine/src/lib.rs",
+    "label": "point search random residue",
+    "old": "        let y = xorshift_next(rng) % qq;\n",
+    "new": "        n4_arithmetic_taps::hit(\"quadratic.Picard.random.aux\", qq, \"rng_residue\", 1);\n        let y = xorshift_next(rng) % qq;\n"
+  },
+  {
+    "path": "cryptanalysis/experiments/chained-transfer-public-target/beta-rational-lift/quadratic-picard-engine/src/lib.rs",
+    "label": "random curve coefficient residue",
+    "old": "            *c = (xorshift_next(rng) % q as u64) as u32;\n",
+    "new": "        n4_arithmetic_taps::hit(\"quadratic.Picard.random.aux\", q as u64, \"rng_residue\", 1);\n            *c = (xorshift_next(rng) % q as u64) as u32;\n"
+  },
+  {
+    "path": "cryptanalysis/experiments/chained-transfer-public-target/beta-rational-lift/quadratic-picard-engine/src/lib.rs",
+    "label": "delegating API mul",
+    "old": "    fn mul(&self, a: u32, b: u32) -> u32 {\n",
+    "new": "    fn mul(&self, a: u32, b: u32) -> u32 {\n        n4_arithmetic_taps::hit(\"quadratic.Picard.api\", self.q, \"mul\", 1);\n"
+  },
+  {
+    "path": "cryptanalysis/experiments/chained-transfer-public-target/beta-rational-lift/quadratic-picard-engine/src/lib.rs",
+    "label": "delegating API add",
+    "old": "    fn add(&self, a: u32, b: u32) -> u32 {\n",
+    "new": "    fn add(&self, a: u32, b: u32) -> u32 {\n        n4_arithmetic_taps::hit(\"quadratic.Picard.api\", self.q, \"add\", 1);\n"
+  },
+  {
+    "path": "cryptanalysis/experiments/chained-transfer-public-target/beta-rational-lift/quadratic-picard-engine/src/lib.rs",
+    "label": "delegating API sub",
+    "old": "    fn sub(&self, a: u32, b: u32) -> u32 {\n",
+    "new": "    fn sub(&self, a: u32, b: u32) -> u32 {\n        n4_arithmetic_taps::hit(\"quadratic.Picard.api\", self.q, \"sub\", 1);\n"
+  },
+  {
+    "path": "cryptanalysis/experiments/chained-transfer-public-target/beta-rational-lift/quadratic-picard-engine/src/lib.rs",
+    "label": "delegating API neg",
+    "old": "    fn neg(&self, a: u32) -> u32 {\n",
+    "new": "    fn neg(&self, a: u32) -> u32 {\n        n4_arithmetic_taps::hit(\"quadratic.Picard.api\", self.q, \"neg\", 1);\n"
+  },
+  {
+    "path": "cryptanalysis/experiments/chained-transfer-public-target/beta-rational-lift/quadratic-picard-engine/src/lib.rs",
+    "label": "delegating API inv",
+    "old": "    fn inv(&self, a: u32) -> u32 {\n",
+    "new": "    fn inv(&self, a: u32) -> u32 {\n        n4_arithmetic_taps::hit(\"quadratic.Picard.api\", self.q, \"inv\", 1);\n"
+  },
+  {
+    "path": "cryptanalysis/experiments/chained-transfer-public-target/beta-rational-lift/quadratic-picard-engine/src/lib.rs",
+    "label": "delegating API invu",
+    "old": "    fn invu(&self, a: u32) -> u32 {\n",
+    "new": "    fn invu(&self, a: u32) -> u32 {\n        n4_arithmetic_taps::hit(\"quadratic.Picard.api\", self.q, \"invu\", 1);\n"
+  },
+  {
+    "path": "cryptanalysis/experiments/chained-transfer-public-target/beta-rational-lift/quadratic-picard-engine/src/lib.rs",
+    "label": "anchor check",
+    "old": "\n/// First rational point in the canonical order",
+    "new": "\n/// First rational point in the canonical order"
+  },
+  {
+    "path": "cryptanalysis/experiments/chained-transfer-public-target/beta-rational-lift/quadratic-picard-engine/src/lib.rs",
+    "label": "test-only quadratic control access",
+    "old": "",
+    "new": "\n// Additive derivative-only control access; original arithmetic prefix is unchanged.\n#[cfg(feature = \"arithmetic-audit-controls\")]\n#[doc(hidden)]\npub fn norm_arithmetic_quadratic_controls() -> serde_json::Value {\n    use isogeny_algos::{arithmetic_audit_original_fpr::FpR, field::Field};\n    use n4_arithmetic_taps as tap;\n    assert!(\n        tap::observer_enabled(),\n        \"primitive controls require observation\"\n    );\n    let f = Fq {\n        q: 223,\n        quadratic_nu: Some(3),\n        c_mul: Cell::new(0),\n        c_inv: Cell::new(0),\n        c_add: Cell::new(0),\n    };\n    let prime = Fq {\n        q: 223,\n        quadratic_nu: None,\n        c_mul: Cell::new(0),\n        c_inv: Cell::new(0),\n        c_add: Cell::new(0),\n    };\n    let oracle = FpR::from_modulus(223, &[220, 0, 1]);\n    let lift = |a: u32| {\n        let mut r = [0; 16];\n        r[0] = (a % 223) as u64;\n        r[1] = (a / 223) as u64;\n        r\n    };\n    let down = |a: [u64; 16]| {\n        assert!(a[2..].iter().all(|x| *x == 0));\n        (a[0] + 223 * a[1]) as u32\n    };\n    let a = 224;\n    let b = 671;\n    let actual = tap::within(\"quad-dense-mulu\", || f.mulu(a, b));\n    let expected = down(oracle.mul(lift(a), lift(b)));\n    assert_eq!(actual, expected, \"unchanged original FpR algebra reference\");\n    let observed = tap::count(\n        \"quad-dense-mulu\",\n        \"quadratic.Picard.coefficient\",\n        223,\n        \"mul\",\n    );\n    println!(\n        \"N4_NORM_QPIC_HOOK_PROBE {}\",\n        serde_json::json!({\"all_algebra_equal\":true,\"a\":a,\"b\":b,\"actual\":actual,\"original_reference\":expected,\"observed_coefficient_mul\":observed,\"expected_coefficient_mul\":5,\"scope\":\"original FpR body shares instrumented Zp/fpm dependencies; no execution standing\"})\n    );\n    assert_eq!(\n        observed, 5,\n        \"actual omitted quadratic coefficient hook must reject\"\n    );\n    for (op, n) in [(\"add\", 2), (\"rem_u64\", 2)] {\n        assert_eq!(\n            tap::count(\"quad-dense-mulu\", \"quadratic.Picard.coefficient\", 223, op),\n            n\n        );\n    }\n    assert_eq!(f.c_mul.get(), 0, \"legacy mulu remains unchanged\");\n    assert_eq!(tap::within(\"quad-counted-mul\", || f.mul(a, b)), expected);\n    assert_eq!(f.c_mul.get(), 1);\n    assert_eq!(\n        tap::count(\n            \"quad-counted-mul\",\n            \"quadratic.Picard.coefficient\",\n            223,\n            \"mul\"\n        ),\n        5\n    );\n    let s = tap::within(\"quad-add\", || f.add_nc(a, b));\n    assert_eq!(s, down(oracle.add(lift(a), lift(b))));\n    assert_eq!(\n        tap::count(\"quad-add\", \"quadratic.Picard.coefficient\", 223, \"add\"),\n        2\n    );\n    let s = tap::within(\"quad-sub\", || f.sub_nc(a, b));\n    assert_eq!(s, down(oracle.sub(lift(a), lift(b))));\n    assert_eq!(\n        tap::count(\"quad-sub\", \"quadratic.Picard.coefficient\", 223, \"sub\"),\n        2\n    );\n    let s = tap::within(\"quad-neg\", || f.neg(a));\n    assert_eq!(s, down(oracle.neg(lift(a))));\n    assert_eq!(\n        tap::count(\"quad-neg\", \"quadratic.Picard.coefficient\", 223, \"sub\"),\n        2\n    );\n    let inv = tap::within(\"quad-inverse-one\", || f.invu(a));\n    assert_eq!(inv, down(oracle.inv(lift(a))));\n    for (op, n) in [(\"sq\", 1), (\"mul\", 4), (\"sub\", 2), (\"rem_u64\", 4)] {\n        assert_eq!(\n            tap::count(\"quad-inverse-one\", \"quadratic.Picard.coefficient\", 223, op),\n            n\n        );\n    }\n    assert_eq!(\n        tap::count(\"quad-inverse-one\", \"quadratic.Picard.prime\", 223, \"inv\"),\n        1\n    );\n    assert_eq!(f.c_inv.get(), 0, \"legacy invu remains unchanged\");\n    assert_eq!(f.inv(a), inv);\n    assert_eq!(f.c_inv.get(), 1);\n    let p = tap::within(\"quadratic-prime-mul\", || prime.mulu(7, 9));\n    assert_eq!(p, 63);\n    assert_eq!(\n        tap::count(\"quadratic-prime-mul\", \"quadratic.Picard.prime\", 223, \"mul\"),\n        1\n    );\n    assert_eq!(tap::within(\"quadratic-prime-inv\", || prime.invu(2)), 112);\n    assert_eq!(\n        tap::count(\"quadratic-prime-inv\", \"quadratic.Picard.prime\", 223, \"inv\"),\n        1\n    );\n    let ledger_before_reset = tap::total();\n    f.c_mul.set(0);\n    f.c_inv.set(0);\n    f.c_add.set(0);\n    assert_eq!(tap::total(), ledger_before_reset);\n    let mut corpus = vec![0, 1, 223, 224, 49728, 17 + 223 * 33];\n    let mut rng = isogeny_algos::field::Rng::new(0x75514950);\n    for _ in 0..64 {\n        corpus.push(rng.below(49729) as u32);\n    }\n    let mut pairs = Vec::new();\n    for &x in &corpus {\n        for &y in &corpus {\n            let outputs = [f.mulu(x, y), f.add_nc(x, y), f.sub_nc(x, y)];\n            let references = [\n                down(oracle.mul(lift(x), lift(y))),\n                down(oracle.add(lift(x), lift(y))),\n                down(oracle.sub(lift(x), lift(y))),\n            ];\n            assert_eq!(outputs, references);\n            pairs.push(serde_json::json!({\"a\":x,\"b\":y,\"actual\":outputs,\"original_FpR\":references}));\n        }\n    }\n    let mut inverses = Vec::new();\n    tap::within(\"quadratic-all-nonzero-inverses\", || {\n        for x in 1..49729u32 {\n            let y = f.invu(x);\n            let reference = down(oracle.inv(lift(x)));\n            assert_eq!(y, reference);\n            assert_eq!(f.mulu(x, y), 1);\n            inverses.push([x, y, reference]);\n        }\n    });\n    assert_eq!(inverses.len(), 49728);\n    tap::assert_no_unsupported();\n    serde_json::json!({\"p\":223,\"nu\":3,\"all_dense_sparse_zero_one_and_random_pairs\":pairs,\"all49728_nonzero_inverse_pairs\":inverses,\"delegation_and_legacy_reset_controls\":true,\"ledger\":tap::snapshot(),\"scope\":\"finite primitive parity and analytic source counts; original FpR body shares instrumented lower dependencies; no prices\"})\n}\n\n#[cfg(all(test, feature = \"arithmetic-audit-controls\"))]\nmod norm_arithmetic_primitive_unit {\n    #[test]\n    fn all_quadratic_leaves_counts_and_nonzero_inverses() {\n        println!(\n            \"N4_NORM_QPIC_PRIMITIVES {}\",\n            super::norm_arithmetic_quadratic_controls()\n        );\n    }\n}\n",
+    "append": true
+  },
+  {
+    "path": "cryptanalysis/experiments/chained-transfer-public-target/beta-rational-lift/quadratic-picard-engine/Cargo.toml",
+    "label": "observer/control dependencies",
+    "old": "",
+    "new": "\n[features]\narithmetic-audit-controls = [\"dep:isogeny_algos\"]\n[dependencies]\nn4-arithmetic-taps = { path = \"../../../../../n4-arithmetic-taps\" }\nserde_json = \"=1.0.145\"\nisogeny_algos = { path = \"../../../../../crypto/isogeny_algos\", optional = true }\n",
+    "append": true
+  },
+  {
+    "path": "cryptanalysis/experiments/chained-transfer-public-target/norm-halving-evaluator/Cargo.toml",
+    "label": "observer dependency",
+    "old": "[dependencies]\n",
+    "new": "[dependencies]\nn4-arithmetic-taps = { path = \"../../../../n4-arithmetic-taps\" }\n"
+  },
+  {
+    "path": "cryptanalysis/experiments/chained-transfer-public-target/norm-halving-evaluator/src/lib.rs",
+    "label": "strong.transfer",
+    "old": "        let (x, norm) = self.admit(side, field, model, key)?;\n",
+    "new": "        let _arithmetic_phase = n4_arithmetic_taps::phase(\"strong.transfer\");\n        let (x, norm) = self.admit(side, field, model, key)?;\n"
+  },
+  {
+    "path": "cryptanalysis/experiments/chained-transfer-public-target/norm-halving-evaluator/src/direct.rs",
+    "label": "direct.transfer",
+    "old": "    fn evaluate(&self, side: usize, field: &str, model: &str, key: &[u32; 19]) -> Result<PicClass> {\n",
+    "new": "    fn evaluate(&self, side: usize, field: &str, model: &str, key: &[u32; 19]) -> Result<PicClass> {\n        let _arithmetic_phase = n4_arithmetic_taps::phase(\"direct.transfer\");\n"
+  },
+  {
+    "path": "cryptanalysis/experiments/chained-transfer-public-target/norm-halving-evaluator/src/direct.rs",
+    "label": "halving",
+    "old": "    pub fn halves_of_norm(&self, side: usize, norm: Pt<ER>) -> Result<Vec<Pt<ER>>> {\n",
+    "new": "    pub fn halves_of_norm(&self, side: usize, norm: Pt<ER>) -> Result<Vec<Pt<ER>>> {\n        let _arithmetic_phase = n4_arithmetic_taps::phase(\"halving\");\n"
+  },
+  {
+    "path": "cryptanalysis/experiments/chained-transfer-public-target/norm-halving-evaluator/src/direct.rs",
+    "label": "half.ordinate",
+    "old": "pub fn generic_half(f: &FpR, e: &Curve<ER>, q: Pt<ER>, x: ER) -> Result<Pt<ER>> {\n",
+    "new": "pub fn generic_half(f: &FpR, e: &Curve<ER>, q: Pt<ER>, x: ER) -> Result<Pt<ER>> {\n        let _arithmetic_phase = n4_arithmetic_taps::phase(\"half.ordinate\");\n"
+  },
+  {
+    "path": "cryptanalysis/experiments/chained-transfer-public-target/norm-halving-evaluator/src/lib.rs",
+    "label": "common full input norm",
+    "old": "    let q = if side == 0 {\n        ep(old.norm(&x)?)\n    } else {\n        ep(new.norm(&x)?)\n    };\n",
+    "new": "    let q = { let _arithmetic_phase = n4_arithmetic_taps::phase(\"input.norm\");\nif side == 0 {\n        ep(old.norm(&x)?)\n    } else {\n        ep(new.norm(&x)?)\n    } };\n"
+  },
+  {
+    "path": "cryptanalysis/experiments/chained-transfer-public-target/norm-halving-evaluator/src/lib.rs",
+    "label": "common full group order admission",
+    "old": "    if !pic.is_zero(&pic.mul_scalar(&x, ORDER as u128)) {\n        return Err(\"class outside the written rational group order\".into());\n    }\n",
+    "new": "    { let _arithmetic_phase = n4_arithmetic_taps::phase(\"input.order\");\n    if !pic.is_zero(&pic.mul_scalar(&x, ORDER as u128)) {\n        return Err(\"class outside the written rational group order\".into());\n    }\n    }\n"
+  },
+  {
+    "path": "cryptanalysis/experiments/chained-transfer-public-target/norm-halving-evaluator/src/lib.rs",
+    "label": "value-level strongest baseline full inverse, declared protocol composition",
+    "old": "",
+    "new": "\nimpl StrongScalarBaseline {\n    pub fn arithmetic_audit_full_inverse(&self, packet: &NewPacket) -> Result<OldPacket> {\n        let _arithmetic_phase=n4_arithmetic_taps::phase(\"full.inverse\");\n        let y=self.evaluate(1,&packet.field,&packet.model,&packet.key,true)?;\n        Ok(self.reference.old().encode(&self.reference.old().a.pic.mul_scalar(&y,3413013)))\n    }\n}\n",
+    "append": true
+  },
+  {
+    "path": "cryptanalysis/experiments/chained-transfer-public-target/norm-halving-evaluator/src/direct.rs",
+    "label": "direct full inverse phase",
+    "old": "    pub fn inverse(&self, p: &NewPacket) -> Result<OldPacket> {\n",
+    "new": "    pub fn inverse(&self, p: &NewPacket) -> Result<OldPacket> {\n        let _arithmetic_phase = n4_arithmetic_taps::phase(\"full.inverse\");\n"
+  }
+]
