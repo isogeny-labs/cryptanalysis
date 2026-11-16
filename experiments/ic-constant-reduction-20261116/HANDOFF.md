@@ -38,3 +38,18 @@ anddistinctmetadata. Keep firstbuild/bindingsimmutable. No fresh432..455material
 After amendednativepass/bind/replay, checkpointgate andfreeze_inputs localprobe;
 publish10candidate120workloads+metadataaudit BEFOREtargettiming. rawuploadbeforeclose.
 NoCIbefore50minafterlatestpublication/PRactivity. PCCforkunchanged,broadgoalactive.
+
+
+Update15:32UTC: amendedsource/protocol/controllers published25be1116c0cc56f4d7be8a0932de7c6531cdf947.
+NEW native job152859-d0d3 actualstart15:29:46UTC, running build_amended.py900scap.
+NoRusteditsuntilcompileterminal. Fresh432..455manifests generated INDEPENDENTLY
+whilecompiling afterpublishedsource/protocol; no timingbeforeamendednativepass.
+10candidates120workloads globalmetadataPASS0errors, claim246200unsigned. All
+sourcehashescorrespondtoamendedpublishedcode. Publishtheseinputsnow; no tuning.
+NextfetchnativeONLYterminal, binderbind_amended_preparation.py afterpass to
+prepared-input-amended.json; firstprepared-input.json MUSTremainimmutable. Native
+controllerexpects35maps/field,26framework(confirmedARM26),4walk2full1const.
+Replay2560statesfrombuild002; archivethenpublishbindingsbeforenativetiming.
+Thenbenchrecnew, checkpointgate, run_prepared.py usesnewbinding/build002 andfresh
+120pairs/240IC+240rho. Primarycontextpluspipelinecleanup; supplementalsetup/collector.
+KeepAAfails,caps,oldrecords; qualificationsnull, signedcustodyforkunresolved.
