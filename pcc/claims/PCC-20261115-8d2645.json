@@ -3,6 +3,12 @@
  "created_at": "2026-11-15T20:50:50Z",
  "id": "PCC-20261115-8d2645",
  "kind": "statement",
+ "metadata_correction": {
+  "original_claim_digest": "2d26113869a92d732d06cb47ab33b067ffd8036dcb7aff119530f65ca8383fcf",
+  "original_record": "pcc/history/PCC-20261115-8d2645/v1.json",
+  "original_record_sha256": "3f26c04141cc196a9c4736e375bd19514268cf4f1ab900cf47f4088a21db4222",
+  "reason": "Plain-text build/test producer logs are attestation subjects, not JSON validator reports. This correction grants no verification or measured-result status."
+ },
  "producer": {
   "commit": "9f467175fd5a0fe8fe6623a8715f9cb80e987305",
   "model": "",
@@ -10,12 +16,12 @@
  },
  "proofs": [
   {
-   "kind": "recompute",
+   "kind": "attestation",
    "path": "reports/courtois-getrandom-compat-20261115/native-binary-tests.txt",
    "sha256": "dc1ac633b864f151ec95106d2c4adfac8754fe6c8be63e050ce49771c9e222ad"
   },
   {
-   "kind": "recompute",
+   "kind": "attestation",
    "path": "reports/courtois-getrandom-compat-20261115/build-before.txt",
    "sha256": "395dba239bf9832a9e5e6ee6d25db5288531fe056de52d5efbd3c50a09fefb9a"
   }
