@@ -160,6 +160,9 @@ fn solve_command(
     meter: &mut Meter,
 ) -> Result<Certificate, Error> {
     match command {
+        "solve-hashed-joint" => {
+            prepared::solve_joint(curve, target, config, rng, true, prepared_statistics, meter)
+        }
         "solve-hashed" => {
             prepared::solve(curve, target, config, rng, true, prepared_statistics, meter)
         }
@@ -212,7 +215,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                 "hash_prime":config.hash_prime.as_ref().map(ToString::to_string),
                 "challenge_solved":false}));
         }
-        Some("solve" | "solve-selectors" | "solve-hashed" | "solve-width") if args.len() == 4 => {
+        Some("solve" | "solve-selectors" | "solve-hashed" | "solve-hashed-joint" | "solve-width") if args.len() == 4 => {
             let problem: Problem = serde_json::from_slice(&read(&args[2])?)?;
             let (curve, target, config, mut meter) = prepare(&problem)?;
             let mut counter = Counter::default();
@@ -238,8 +241,8 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                 diagnostics["selector_decodes"] = json!(finite_statistics.decodes);
                 diagnostics["selector_cache_hits"] = json!(finite_statistics.cache_hits);
                 diagnostics["derived_checks"] = json!(finite_statistics.derived_checks);
-            } else if args[1] == "solve-hashed" {
-                diagnostics["backend"] = json!("PreparedPair");
+            } else if args[1] == "solve-hashed" || args[1] == "solve-hashed-joint" {
+                diagnostics["backend"] = json!(if args[1] == "solve-hashed-joint" { "PreparedPairJoint" } else { "PreparedPair" });
                 diagnostics["prepared_pair_builds"] = json!(prepared_statistics.preparations);
                 diagnostics["prepared_points"] = json!(prepared_statistics.prepared_points);
                 diagnostics["prepared_queries"] = json!(prepared_statistics.queries);
@@ -265,7 +268,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
             reduction::verify(&curve, &target, &receipt.certificate, &mut meter)?;
             println!("certificate verified: scalar {}", receipt.certificate.scalar);
         }
-        _ => return Err("usage: hashed-ecdl validate PROBLEM.json | hashed-ecdl solve|solve-selectors|solve-hashed|solve-width PROBLEM.json NEW_RECEIPT.json | hashed-ecdl verify RECEIPT.json".into()),
+        _ => return Err("usage: hashed-ecdl validate PROBLEM.json | hashed-ecdl solve|solve-selectors|solve-hashed|solve-hashed-joint|solve-width PROBLEM.json NEW_RECEIPT.json | hashed-ecdl verify RECEIPT.json".into()),
     }
     Ok(())
 }
