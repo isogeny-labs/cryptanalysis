@@ -1,0 +1,29 @@
+{
+  "schema": "grumpy-checkpoint-counter-bounds/v1",
+  "base_commit": "f7dfc2a55917a22780052384c33d91829c41196f",
+  "before": {
+    "checksum_valid": true,
+    "saved_operations": 18446744073709551615,
+    "returned_status": "CA_OK",
+    "known_control_scalar": 424242,
+    "reported_operations": 3470
+  },
+  "after": {
+    "overflowing_resume": "CA_ERR_INVALID",
+    "iteration_without_three_counter_slots": "CA_ERR_LIMIT",
+    "near_capacity_reported_operations": 18446744073709551613,
+    "counter_limit_advances_no_iteration": true,
+    "solved_marker_two": "CA_ERR_INVALID",
+    "cursor_beyond_interval_bound": "CA_ERR_INVALID",
+    "invalid_checkpoint_bytes_unchanged": true,
+    "cached_solution_positive_control": true
+  },
+  "wire_format": "CAGRMP01",
+  "layout_validation": "224 bytes and all field offsets equal before/after on the validation host",
+  "validation": {
+    "address_undefined_ctest_passed": 21,
+    "ctest_failed": 0,
+    "elapsed_seconds": 120.75
+  },
+  "frozen_artifacts_changed": false
+}

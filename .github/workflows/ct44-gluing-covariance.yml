@@ -1,0 +1,35 @@
+name: CT44 quartic gluing covariance and degree-seven pairing controls
+on:
+  pull_request:
+    paths:
+      - 'experiments/chained-transfer-reference/ct44/**'
+      - '.github/workflows/ct44-gluing-covariance.yml'
+  push:
+    branches:
+      - research/ct36-normalized-dual49-20261112
+    paths:
+      - 'experiments/chained-transfer-reference/ct44/**'
+      - '.github/workflows/ct44-gluing-covariance.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  transport:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - name: Independent matrix and norm-ring arithmetic, optimized and ordinary
+        run: |
+          python3 -B experiments/chained-transfer-reference/ct44/ct44_covariance.py >/tmp/ct44.normal
+          python3 -O -B experiments/chained-transfer-reference/ct44/ct44_covariance.py >/tmp/ct44.opt
+          diff -u /tmp/ct44.normal /tmp/ct44.opt
+          python3 -m py_compile experiments/chained-transfer-reference/ct44/ct44_covariance.py
+          cat /tmp/ct44.normal
+          node --check experiments/chained-transfer-reference/ct44/ct44_independent.js
+          node experiments/chained-transfer-reference/ct44/ct44_independent.js >/tmp/ct44.js
+          node --no-opt experiments/chained-transfer-reference/ct44/ct44_independent.js >/tmp/ct44.noopt
+          diff -u /tmp/ct44.js /tmp/ct44.noopt
+          cat /tmp/ct44.js
