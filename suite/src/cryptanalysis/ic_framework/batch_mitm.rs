@@ -26,6 +26,8 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for BinaryBatchMitmOracle {
             "original scalar preparation, fixed-m2 queries"
         } else if params.flag("adaptive_prepare") {
             "scalar at <=64 abscissae, bounded prefix inverse reuse above64"
+        } else if params.u64_or("vector_prepare", 0).ok() == Some(4) {
+            "ordinary PCLMUL dynamic reduction control, exact fallback"
         } else if params.u64_or("vector_prepare", 0).ok() == Some(3) {
             "exact-field constant polynomial PCLMUL preparation, general fallback"
         } else if params.u64_or("vector_prepare", 0).ok() == Some(2) {
@@ -45,7 +47,7 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for BinaryBatchMitmOracle {
     }
     fn parameters(&self) -> &[(&str, &str)] {
         &[
-            ("vector_prepare", "0 scalar default,1 vector,2 vector with packed squaring <=32 bits,3 exact-field constant reduction; guarded AVX2/PCLMUL with complete fallback"),
+            ("vector_prepare", "0 scalar default,1 vector,2 vector with packed squaring <=32 bits,3 exact-field constant reduction,4 ordinary PCLMUL dynamic control; guarded AVX2/PCLMUL with complete fallback"),
             ("scalar_prepare", "0 or1, default0; original scalar table with fixed-two-summand query dispatch"),
             ("adaptive_prepare", "0 or1, default0; scalar at <=64 abscissae, prefix-cached x-only above64; experimental policy"),
             (
@@ -85,9 +87,9 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for BinaryBatchMitmOracle {
         let scalar = params.u64_or("scalar_prepare", 0)?;
         let adaptive = params.u64_or("adaptive_prepare", 0)?;
         let vector = params.u64_or("vector_prepare", 0)?;
-        if scalar > 1 || adaptive > 1 || vector > 3 {
+        if scalar > 1 || adaptive > 1 || vector > 4 {
             return Err(
-                "scalar/adaptive flags must be0 or1; vector_prepare must be0,1,2 or3".into(),
+                "scalar/adaptive flags must be0 or1; vector_prepare must be0,1,2,3 or4".into(),
             );
         }
         if (scalar == 1 && (adaptive == 1 || prefix_cache == 1 || x_only == 1 || vector != 0))
@@ -102,7 +104,13 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for BinaryBatchMitmOracle {
             (if self.used_scalar {
                 Ok(PairTable::build_negation_folded(ctx.group, fb))
             } else if vector != 0 {
-                if vector == 3 {
+                if vector == 4 {
+                    PairTable::build_negation_folded_binary_vector_narrow_cached(
+                        ctx.group.0,
+                        fb,
+                        size as usize,
+                    )
+                } else if vector == 3 {
                     PairTable::build_negation_folded_binary_vector_const_cached(
                         ctx.group.0,
                         fb,
@@ -344,6 +352,8 @@ mod tests {
             ("adaptive_prepare", "1"),
             ("vector_prepare", "1"),
             ("vector_prepare", "2"),
+            ("vector_prepare", "3"),
+            ("vector_prepare", "4"),
         ] {
             spec.oracle_params.set("vector_prepare", "0");
             spec.oracle_params.set("scalar_prepare", "0");
@@ -414,7 +424,7 @@ mod tests {
             ("batch_size", "65537"),
             ("x_only", "2"),
             ("prefix_inverse_cache", "2"),
-            ("vector_prepare", "3"),
+            ("vector_prepare", "5"),
             ("scalar_prepare", "2"),
             ("adaptive_prepare", "2"),
         ] {

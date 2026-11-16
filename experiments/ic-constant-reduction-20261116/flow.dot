@@ -1,0 +1,22 @@
+digraph G {
+ graph [rankdir=LR, bgcolor="white", pad="0.2", nodesep="0.3", ranksep="0.35", label="Proposed arithmetic control: fixed table and one-target schedule", labelloc=t, fontname="Helvetica"];
+ node [shape=box,style="rounded,filled",fillcolor="#edf4f8",color="#658298",fontname="Helvetica",fontsize=11];
+ edge [color="#658298",fontname="Helvetica",fontsize=10];
+ input [label="Same field + archived base
+Same ordered point pairs"];
+ dynamic [label="Reference: ordinary PCLMUL
+Runtime polynomial reduction"];
+ constant [label="Candidate: ordinary PCLMUL
+Compile-time degree + polynomial",fillcolor="#e7f2eb"];
+ table [label="Identical complete table
+Same first witnesses"];
+ query [label="One public Q per solve
+Same vector16 query / coefficients
+Guards, matrix, scalar group check"];
+ fallback [label="Unsupported / exceptional / tail
+Complete general fallback",fillcolor="#fff2d9"];
+ input -> dynamic; input -> constant;
+ dynamic -> table; constant -> table;
+ constant -> fallback [style=dashed];fallback -> table [style=dashed];
+ table -> query;
+}

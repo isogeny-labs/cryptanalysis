@@ -140,7 +140,9 @@ fn main() {
         "mitm-walk-incumbent"
         | "mitm-walk16-scalar"
         | "mitm-walk16-native"
-        | "mitm-walk16-vector" => "mitm-prefix",
+        | "mitm-walk16-vector"
+        | "mitm-walk16-vector-const"
+        | "mitm-walk16-vector-narrow" => "mitm-prefix",
         "rho-plain-euclid" => "rho-plain",
         "rho-negation-euclid" => "rho-negation",
         "verify-table-euclid" => "verify-table",
@@ -245,6 +247,10 @@ fn main() {
         let mut vector_const_pairs = 0;
         for chunk in [1, 7, 64, 1024, 4096] {
             for candidate in [
+                PairTable::build_negation_folded_binary_vector_narrow_cached(
+                    &inst.fast, &fb, chunk,
+                )
+                .unwrap(),
                 PairTable::build_negation_folded_binary_vector_const_cached(&inst.fast, &fb, chunk)
                     .unwrap(),
                 PairTable::build_negation_folded_binary_batched(&inst.fast, &fb, chunk).unwrap(),
@@ -460,7 +466,9 @@ fn main() {
         .into(),
         targets: match requested_mode {
             "mitm-walk16-native" => Targets::WalkBatch,
-            "mitm-walk16-vector" => Targets::WalkBatchVector,
+            "mitm-walk16-vector" | "mitm-walk16-vector-const" | "mitm-walk16-vector-narrow" => {
+                Targets::WalkBatchVector
+            }
             "mitm-walk16-scalar" => Targets::WalkBatchScalar,
             _ => Targets::Walk,
         },
@@ -481,7 +489,9 @@ fn main() {
             "mitm-walk-incumbent"
             | "mitm-walk16-scalar"
             | "mitm-walk16-native"
-            | "mitm-walk16-vector" => {
+            | "mitm-walk16-vector"
+            | "mitm-walk16-vector-const"
+            | "mitm-walk16-vector-narrow" => {
                 if inst.n <= 21 {
                     "64"
                 } else {
@@ -496,7 +506,11 @@ fn main() {
     spec.oracle_params.set("m", "2");
     spec.oracle_params.set(
         "vector_prepare",
-        if matches!(
+        if requested_mode == "mitm-walk16-vector-const" {
+            "3"
+        } else if requested_mode == "mitm-walk16-vector-narrow" {
+            "4"
+        } else if matches!(
             requested_mode,
             "mitm-vector"
                 | "mitm-vector64"
@@ -505,6 +519,8 @@ fn main() {
                 | "mitm-walk16-scalar"
                 | "mitm-walk16-native"
                 | "mitm-walk16-vector"
+                | "mitm-walk16-vector-const"
+                | "mitm-walk16-vector-narrow"
         ) {
             "1"
         } else if matches!(

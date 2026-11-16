@@ -521,6 +521,19 @@ impl FastCurve {
         self.add_pairwise_abscissae_vector_cached_impl(ps, qs, out, scratch, cache, 2)
     }
 
+    /// Ordinary-PCLMUL dynamic reduction control, including on VPCLMUL hosts.
+    /// Unsupported hardware/field shapes retain the complete scalar fallback.
+    pub fn add_pairwise_abscissae_vector_narrow_cached(
+        &self,
+        ps: &[FastPoint],
+        qs: &[FastPoint],
+        out: &mut Vec<Option<u64>>,
+        scratch: &mut BatchScratch,
+        cache: &PrefixInverseTable,
+    ) -> Result<usize, &'static str> {
+        self.add_pairwise_abscissae_vector_cached_impl(ps, qs, out, scratch, cache, 3)
+    }
+
     /// Exact field guard; feature detection is separate.
     pub fn has_const_vector_field(&self) -> bool {
         matches!(
@@ -1518,6 +1531,9 @@ mod simd256 {
             cache: &PrefixInverseTable,
             strategy: u8,
         ) -> Result<usize, &'static str> {
+            if strategy == 3 {
+                return self.add_cached_narrow::<false, 0, 0>(curve, ps, qs, out, scratch, cache);
+            }
             if strategy == 2 {
                 // PCLMUL is available on every admitted host. Keep this narrow
                 // specialization explicit even on VPCLMUL-capable CPUs.
@@ -2548,6 +2564,18 @@ mod tests {
                         &cache,
                     )
                     .unwrap();
+                let mut dynamic = vec![Some(123)];
+                let dynamic_count = curve
+                    .add_pairwise_abscissae_vector_narrow_cached(
+                        &ps[..len],
+                        &qs[..len],
+                        &mut dynamic,
+                        &mut scratch,
+                        &cache,
+                    )
+                    .unwrap();
+                assert_eq!(dynamic, expected, "forced narrow n={n}, len={len}");
+                assert_eq!(dynamic_count, count);
                 assert_eq!(got, expected, "n={n}, len={len}");
                 if exact && len >= 4 && curve.cached_vector_backend() != "scalar" {
                     assert!(count >= 4, "specialized normal block must execute");

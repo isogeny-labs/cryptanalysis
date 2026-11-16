@@ -3433,6 +3433,15 @@ impl PairTable {
         Self::build_binary_batch(curve, fb, chunk_size, true, true, 3)
     }
 
+    /// Dynamic-reduction ordinary-PCLMUL control for the constant kernel.
+    pub fn build_negation_folded_binary_vector_narrow_cached(
+        curve: &FastCurve,
+        fb: &FactorBase<FastPoint>,
+        chunk_size: usize,
+    ) -> Result<Self, &'static str> {
+        Self::build_binary_batch(curve, fb, chunk_size, true, true, 4)
+    }
+
     fn build_binary_batch(
         curve: &FastCurve,
         fb: &FactorBase<FastPoint>,
@@ -3496,7 +3505,9 @@ impl PairTable {
                     abscissae.clear();
                     if let Some(cache) = &cache {
                         if vector_cached != 0 {
-                            let prepare = if vector_cached == 3 {
+                            let prepare = if vector_cached == 4 {
+                                FastCurve::add_pairwise_abscissae_vector_narrow_cached
+                            } else if vector_cached == 3 {
                                 FastCurve::add_pairwise_abscissae_vector_const_cached
                             } else if vector_cached == 2 {
                                 FastCurve::add_pairwise_abscissae_vector_packed_cached
@@ -3575,6 +3586,7 @@ impl PairTable {
             prefix_inverse_bytes,
             vector_pclmul128_pairs: if vector_pairs != 0
                 && (curve.cached_vector_backend() == "avx2-pclmul128"
+                    || vector_cached == 4
                     || (vector_cached == 3 && curve.has_const_vector_field()))
             {
                 vector_pairs
