@@ -291,6 +291,23 @@ def main():
     doubling4_build=(formal/'point-doubling4-build-output.txt').read_text()
     assert 'Build completed successfully (9059 jobs)' in doubling4_build
     assert "'XedniPublicFirstLargeHoldout.panel313_fourth_double' depends on axioms: [propext, Classical.choice, Quot.sound]" in re.sub(r'\s+',' ',doubling4_build)
+    remaining_arithmetic=(formal/'OrderArithmeticRemaining.lean').read_text()
+    remaining_arithmetic_build=(formal/'order-arithmetic-remaining-build-output.txt').read_text()
+    assert 'Build completed successfully (9060 jobs)' in remaining_arithmetic_build
+    assert not any(token in remaining_arithmetic for token in ('sorry','admit','sorryAx','native_decide'))
+    for label,name in (('fifth','thirtytwo'),('sixth','sixtyfour'),
+                       ('seventh','onetwentyeight'),('eighth','twofiftysix')):
+        for theorem in (f'mod313_{label}_tangent_slope',f'mod313_{name}_x',f'mod313_{name}_y'):
+            assert f'theorem {theorem}' in remaining_arithmetic
+            assert f"'XedniPublicFirstLargeHoldout.{theorem}' depends on axioms: [propext, Classical.choice, Quot.sound]" in remaining_arithmetic_build
+    remaining_points=(formal/'PointDoublingRemaining.lean').read_text()
+    remaining_points_build=(formal/'point-doubling-remaining-build-output.txt').read_text()
+    assert 'Build completed successfully (9061 jobs)' in remaining_points_build
+    assert not any(token in remaining_points for token in ('sorry','admit','sorryAx','native_decide'))
+    for label in ('fifth','sixth','seventh','eighth'):
+        theorem=f'panel313_{label}_double'
+        assert f'theorem {theorem}' in remaining_points
+        assert f"'XedniPublicFirstLargeHoldout.{theorem}' depends on axioms: [propext, Classical.choice, Quot.sound]" in remaining_points_build
     recovery_protocol=json.loads((HERE/'public-recovery-protocol.json').read_text())
     recovery_result=json.loads((HERE/'public-recovery-result.json').read_text())
     recovery_audit_protocol=json.loads((HERE/'public-recovery-audit-protocol.json').read_text())
