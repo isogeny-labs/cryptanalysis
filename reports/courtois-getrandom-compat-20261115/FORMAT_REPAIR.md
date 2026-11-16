@@ -24,3 +24,10 @@ Its `overall_ci_status: blocked` does not waive exact-head hosted checks,
 the separate GLV source-binding failure, CodeQL review or research admission.
 This report is unsigned producer data, not independent verification.
 [pcc:unverified]
+
+The hosted PCC job subsequently succeeds on exact source `df6d8afb`:
+[run 43789263534](https://github.com/isogeny-labs/cryptanalysis/actions/runs/43789263534/job/133043742308).
+The captured provider metadata is retained under `pcc-format-followup`, claim
+`PCC-20261116-537de4` (unverified). Only the proof-format obstruction is resolved;
+the original claim's standing and remaining validation requirements are unchanged.
+[pcc:unverified]

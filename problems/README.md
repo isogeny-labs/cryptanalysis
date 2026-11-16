@@ -9,7 +9,7 @@ explain the gap and what would let the work move past it.
 
 | Problem | Status | What it blocks | What would unblock it |
 | --- | --- | --- | --- |
-| [Plain logs used as recompute proofs](pcc-raw-log-recompute-proofs.md) | local repair; hosted pending | PCC gate on an inherited claim with two non-JSON proof inputs | Exact-head PCC acceptance of the additive unsigned report, preserving raw failures and original history |
+| [Plain logs used as recompute proofs](pcc-raw-log-recompute-proofs.md) | resolved for format | Former PCC refusal of two non-JSON proof inputs | Exact-head PCC gate accepts the additive unsigned report on df6d8afb; raw failures and original history retained |
 | [Prime-field auxiliary-map IC measurement qualification](prime-field-auxiliary-ic-validation.md) | open | Qualified IC timing claims; new field-fiber circuits are producer checked, with timing and formal bridges open | Fresh frozen target panel, admitted online measurement, signed independent replay, and maintainer classification of the retained CI alerts |
 | [Live GLV source/proof binding drift](live-glv-source-pin-drift.md) | open | Corpus source-binding controls refuse current main and the IC PR before native proofs | Reviewed current-source binding, retained prior evidence, complete selector/native proof checks and a passing exact-head corpus gate |
 | [Prepared/joint collector runtime qualification](point-table-joint-runtime-qualification.md) | open | matched native point-table/joint runtime result | current-source S3 upload/readback, authenticated exact native image/execution, admitted matched comparison |

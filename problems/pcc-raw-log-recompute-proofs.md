@@ -1,6 +1,6 @@
 # Plain logs used as JSON recompute proofs
 
-- **Status:** local metadata repair; exact-head hosted qualification pending
+- **Status:** resolved for proof format; independent verification remains open
 - **Kind:** inherited proof-input format mismatch
 - **Affected work:** PCC gate for PR #1536; claim `PCC-20261115-8d2645`
 - **Next action owner:** PR follow-up and original claim-maintenance lane
@@ -41,9 +41,9 @@ CI, mathematical or measurement requirement.
 
 ## Next discriminating step
 
-Inspect the next exact-head PCC run after the additive metadata correction.
-If it accepts the retained-data report, this format obstruction is resolved;
-retain any newly exposed failure with its own source scope. Do not infer a
+The exact-head PCC run on `df6d8afb` accepts the retained-data report. This
+format obstruction is resolved; retain any newly exposed failure with its
+own source scope. Do not infer a
 signed verdict, rewrite earlier ledger events, suppress failures or skip CI.
 
 ## Resolution and history
@@ -52,6 +52,13 @@ signed verdict, rewrite earlier ledger events, suppress failures or skip CI.
 scope and producer are unchanged. The original claim and raw logs remain,
 and only new claim/correction-note events were appended. Local verification
 returns `not_covered` and standing remains unverified. Hosted qualification
-remains pending. See
+was pending at that initial local correction. See
 [the correction note](../reports/courtois-getrandom-compat-20261115/FORMAT_REPAIR.md).
 [pcc:unverified]
+
+2026-11-16: [PCC job 133043742308](https://github.com/isogeny-labs/cryptanalysis/actions/runs/43789263534/job/133043742308)
+succeeds on exact source `df6d8afb`. The
+[captured provider receipt](../experiments/prime-field-auxiliary-ic/random-vs-special/pcc-format-followup/hosted-status-df6d8afb.json),
+claim `PCC-20261116-537de4` (unverified), meets the format acceptance criterion.
+The claim itself remains unverified, and the separate GLV/other-CI and
+measurement requirements remain open. [pcc:unverified]
