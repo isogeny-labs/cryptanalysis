@@ -1,0 +1,8 @@
+{
+  "build_exit": 101,
+  "native_not_started": true,
+  "all886guards_unchanged": true,
+  "error": "fixtureorder isu128, new ORDERconstant isu64; equalityneeds explicit exact widening",
+  "correction": "ORDER as u128 at the constructor comparison; mathematical values/runtime formula unchanged",
+  "scope": "Rusttype-boundaryfailure only, no mathematical negative"
+}

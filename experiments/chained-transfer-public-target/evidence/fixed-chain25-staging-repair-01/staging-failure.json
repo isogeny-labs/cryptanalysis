@@ -1,0 +1,15 @@
+{
+  "original_governance": "experiments/chained-transfer-public-target/evidence/beta-fixed-chain25-source-governance-01",
+  "actual_exception": "AssertionError: experiments/chained-transfer-public-target/evidence/fixed-chain25-source-controls-01/build/geometry-auditor-compile.exit",
+  "stage": "attestation subject missing from cached path set; before cached whitespace/artifact/commit",
+  "all_recorded_prior_governance_checks": 0,
+  "reason": "Original global build-directory ignore rule hid explicit small attestation subjects.",
+  "repair": "Explicitly stage only exact original small evidence files; no source, verifier, ignore policy or CI rule changed.",
+  "exact_original_subjects": [
+    "experiments/chained-transfer-public-target/evidence/fixed-chain25-source-controls-01/build/geometry-auditor-compile.exit",
+    "experiments/chained-transfer-public-target/evidence/fixed-chain25-source-controls-01/build/geometry-auditor-compile.stderr.txt",
+    "experiments/chained-transfer-public-target/evidence/fixed-chain25-source-controls-01/build/geometry-auditor-compiled-custody.json",
+    "experiments/chained-transfer-public-target/evidence/fixed-chain25-source-controls-01/build/geometry-auditor-runtime-custody.json",
+    "experiments/chained-transfer-public-target/evidence/fixed-chain25-source-controls-01/build/whole-local-raw-inventory.json"
+  ]
+}

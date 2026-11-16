@@ -1,0 +1,16 @@
+prior1487 0
+ledger 0
+prose 0
+whitespace 0
+wiring 0
+reportPython 0
+cached-whitespace 0
+artifact 0
+Traceback (most recent call last):
+  File "/workspace/scratch/ct100_publish_comparison_protocol_02.py", line 30, in <module>
+    claim=subprocess.check_output(cmd,cwd=r,text=True).strip();selected=stage();subprocess.run(['git','diff','--cached','--check'],cwd=r,check=True);subprocess.run(['git','commit','--quiet','-m','research: preserve CI comparison failures and freeze cross-run timing contract'],cwd=r,check=True)
+                                                                        ^^^^^^^
+  File "/workspace/scratch/ct100_publish_comparison_protocol_02.py", line 18, in stage
+    selected=set(subprocess.check_output(['git','diff','--cached','--name-only','-z'],cwd=r).split(b'\0'))-{b''};assert selected==set(ps)
+                                                                                                                        ^^^^^^^^^^^^^^^^^
+AssertionError

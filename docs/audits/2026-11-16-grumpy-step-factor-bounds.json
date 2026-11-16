@@ -1,0 +1,52 @@
+{
+  "schema": "grumpy-step-factor-bounds/v1",
+  "base_commit": "d9ee51f20644b412a909dffec37c94907e7eba86",
+  "before": {
+    "public_api": "ca_grumpy_solve",
+    "alpha": "positive_infinity",
+    "group": "multiplicative subgroup of order509 in F1019",
+    "interval": [
+      0,
+      31
+    ],
+    "known_scalar": 5,
+    "diagnostic": "UBSan: infinity outside range of unsigned long long at src/grumpy.c conversion",
+    "process_exit": 134
+  },
+  "after": {
+    "status": "CA_ERR_INVALID",
+    "answer_unchanged": true,
+    "group_operations_unchanged": true,
+    "nonfinite_or_unrepresentable": [
+      "positive_infinity",
+      "negative_infinity",
+      "NaN",
+      "DBL_MAX",
+      "2^64"
+    ],
+    "apis": [
+      "ca_grumpy_solve",
+      "ca_grumpy_solve_checkpointed"
+    ],
+    "finite_compatibility_controls": [
+      "zero_default",
+      "negative_default",
+      "0.7",
+      "DBL_MIN"
+    ],
+    "explicit_m_ignores_unused_alpha": true
+  },
+  "validation": {
+    "sanitizers": [
+      "address",
+      "undefined"
+    ],
+    "ctest_passed": 21,
+    "ctest_failed": 0,
+    "elapsed_seconds": 120.7,
+    "direct_float_cast_overflow_reproducer_after": "passes without sanitizer diagnostic"
+  },
+  "checkpoint_wire_format_changed": false,
+  "frozen_artifacts_changed": false,
+  "new_scientific_campaign": false
+}

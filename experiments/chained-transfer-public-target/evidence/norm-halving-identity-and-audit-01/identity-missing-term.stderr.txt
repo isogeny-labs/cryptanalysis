@@ -1,0 +1,5 @@
+FALSE_ORDINATE_EXACT_Z_DIFFERENCE [{"coefficient":-4,"powers":[0,0,2,0]},{"coefficient":-4,"powers":[0,1,1,1]},{"coefficient":-4,"powers":[1,1,1,0]},{"coefficient":-12,"powers":[2,0,1,1]},{"coefficient":4,"powers":[3,0,1,0]}]
+
+thread 'main' (362744) panicked at src/bin/halving_identity.rs:204:243:
+original issuer rejects a missing ordinate term: False(Counterexample { index: 0, assignment: [509463722649472643, 739892258461021523, 2008714643517037463, 1254316903083900973], lhs: 265477700662733436, rhs: 317597498983492877 })
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

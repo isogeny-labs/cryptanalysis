@@ -1,0 +1,28 @@
+digraph A {
+graph[rankdir=TB,bgcolor="transparent",nodesep=.27,ranksep=.28];
+node[shape=box,style="rounded,filled",fillcolor="#eef3f8",fontname="DejaVu Sans",fontsize=9];
+edge[fontname="DejaVu Sans",fontsize=8];
+F[label="Immutable original closure
+consumer21af + producer3d + genuine fixture
+785 checked inputs"];
+T[label="Separate pure-hook derivative
+24 literal file patches
+frozen solver bodies + compiled strip checks"];
+U[label="ONE unfiltered native unit
+225 exact scalar pairs / 1125 triples
+60 IC pairs / all15 FB30 failures retained"];
+P[label="Primitive controls
+281 original-FpR reference inputs
+lazy / nonlazy / degree1 / private Picard"];
+C[label="Copied FpR hook control
+correct algebra in both probes
+positive11 products; omission2 products"];
+J[label="All86 original records exact
+ONLY existing raw wall exclusions"];
+L[label="7113 scoped source rows
+Rust aggregation conserves all counts
+API / auxiliary rows stay separate"];
+O[label="Observed component tradeoff
+No calibrated cost or computational advantage",fillcolor="#f8edda"];
+F->T;T->U;T->P;T->C;U->J;U->L;P->L;C->L;L->O;J->O;
+}

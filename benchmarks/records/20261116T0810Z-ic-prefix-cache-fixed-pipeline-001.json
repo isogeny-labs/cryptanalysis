@@ -1,0 +1,199 @@
+{
+  "branch": "codex/ic-trial32-20261115",
+  "closed_utc": "2026-11-16T08:59:35+00:00",
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "cloud/modal_run.py",
+        "run",
+        "--image",
+        "cuda",
+        "--gpu",
+        "L4",
+        "--cpu",
+        "4",
+        "--memory",
+        "8",
+        "--timeout",
+        "900",
+        "--apt",
+        "time",
+        "--out",
+        "experiments/ic-mitm-prefix-cache-20261115/timing-001",
+        "--detach",
+        "--",
+        "python3",
+        "experiments/ic-mitm-prefix-cache-20261115/run_prepared.py"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "started_utc": "2026-11-16T08:11:09+00:00",
+      "wall_s": 26.71
+    }
+  ],
+  "commit": "cf0d66bf4eabd242906e5804b3cac54ceb68650d",
+  "commit_dirty": false,
+  "created_utc": "2026-11-16T08:10:11+00:00",
+  "curve_uid": null,
+  "entries": [
+    "experiments/ic-mitm-prefix-cache-20261115"
+  ],
+  "host": {
+    "cpu": "arm",
+    "cpus_online": 14,
+    "hostname": "Mac.attlocal.net",
+    "isolation": "unstated",
+    "platform": "macOS-27.2-arm64-arm-64bit-Mach-O"
+  },
+  "id": "20261116T0810Z-ic-prefix-cache-fixed-pipeline-001",
+  "metrics": [
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n15_mitm-batched_raw_paired_cold_ratio",
+      "note": "Exploratory unsigned container measurement; original/candidate paired ratios; no resource qualification.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9502005493154629,
+        1.0163700903912354
+      ],
+      "unit": "ratio",
+      "value": 0.9641604837953048
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n15_mitm-xonly_raw_paired_cold_ratio",
+      "note": "Exploratory unsigned container measurement; original/candidate paired ratios; no resource qualification.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9788207304211327,
+        1.0373002053084415
+      ],
+      "unit": "ratio",
+      "value": 0.9957561283376211
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n15_mitm-prefix_raw_paired_cold_ratio",
+      "note": "Exploratory unsigned container measurement; original/candidate paired ratios; no resource qualification.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9884142359171276,
+        1.0611299109430399
+      ],
+      "unit": "ratio",
+      "value": 1.0106264824979088
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n18_mitm-batched_raw_paired_cold_ratio",
+      "note": "Exploratory unsigned container measurement; original/candidate paired ratios; no resource qualification.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.2309971325688776,
+        1.2596364079478453
+      ],
+      "unit": "ratio",
+      "value": 1.243155098767398
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n18_mitm-xonly_raw_paired_cold_ratio",
+      "note": "Exploratory unsigned container measurement; original/candidate paired ratios; no resource qualification.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.2841176906243374,
+        1.3365465484344667
+      ],
+      "unit": "ratio",
+      "value": 1.3274464715875756
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n18_mitm-prefix_raw_paired_cold_ratio",
+      "note": "Exploratory unsigned container measurement; original/candidate paired ratios; no resource qualification.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.3909247094492168,
+        1.4284597776250207
+      ],
+      "unit": "ratio",
+      "value": 1.4056843098613672
+    }
+  ],
+  "problem": "ecdlp:binary_ic_prefix_fixed_instances",
+  "raw": [
+    {
+      "bytes": 1651722,
+      "path": "experiments/ic-mitm-prefix-cache-20261115/raw-timing-001.tar.gz",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/6c/6c92047429e21badf86b0684db7cd6a508f8f447634cb2d2639105a4e0216a48",
+      "sha256": "6c92047429e21badf86b0684db7cd6a508f8f447634cb2d2639105a4e0216a48",
+      "uploaded": true
+    },
+    {
+      "bytes": 92792,
+      "path": "experiments/ic-mitm-prefix-cache-20261115/raw-bundle-receipt.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/bd/bdd0e9dc39afa5ffb96523a019f7e56227aa7a014b33d8d40dfdc392dcbc9e5c",
+      "sha256": "bdd0e9dc39afa5ffb96523a019f7e56227aa7a014b33d8d40dfdc392dcbc9e5c",
+      "uploaded": true
+    },
+    {
+      "bytes": 40303,
+      "path": "experiments/ic-mitm-prefix-cache-20261115/timing-001/.artifacts.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/7c/7ced7e0e5c2bde58154816a0620831d161b08b1ebaf805c8bde022790aef6434",
+      "sha256": "7ced7e0e5c2bde58154816a0620831d161b08b1ebaf805c8bde022790aef6434",
+      "uploaded": true
+    },
+    {
+      "bytes": 446422,
+      "path": "experiments/ic-mitm-prefix-cache-20261115/analysis.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/be/be8266416ea6f14c8d52dc4e5de30f484e59a14c6459b70a0f4fad8b3cb5a009",
+      "sha256": "be8266416ea6f14c8d52dc4e5de30f484e59a14c6459b70a0f4fad8b3cb5a009",
+      "uploaded": true
+    },
+    {
+      "bytes": 53538,
+      "path": "experiments/ic-mitm-prefix-cache-20261115/independent-arithmetic-timing001.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/80/80e0661ebd54d98ab3e955041e97c1696c520bf782d54a6747e78cfba7c6cc47",
+      "sha256": "80e0661ebd54d98ab3e955041e97c1696c520bf782d54a6747e78cfba7c6cc47",
+      "uploaded": true
+    }
+  ],
+  "repo": "cryptanalysis",
+  "reports": {
+    "pdf": "experiments/ic-mitm-prefix-cache-20261115/REPORT.pdf",
+    "png": [
+      "experiments/ic-mitm-prefix-cache-20261115/cold-costs.png",
+      "experiments/ic-mitm-prefix-cache-20261115/paired-ratios.png"
+    ],
+    "svg": [
+      "experiments/ic-mitm-prefix-cache-20261115/cold-costs.svg",
+      "experiments/ic-mitm-prefix-cache-20261115/paired-ratios.svg",
+      "experiments/ic-mitm-prefix-cache-20261115/flow.svg"
+    ]
+  },
+  "schema": "bench.record/v1",
+  "session": null,
+  "slug": "ic-prefix-cache-fixed-pipeline-001",
+  "status": "invalid",
+  "summary": "All 48 quadruples and independent replay of 192 IC plus 96 rho answers pass unsigned producer checks. N18 original/prefix paired median 1.405684 (exploratory 95% interval 1.390925 to 1.428460), incremental x-only/prefix 1.070720. N15 interval includes one. Requested resource envelope unverified; qualified null and invalid for promotion. Rho negation follows plain in each process, preventing a first-solve cold-rho claim. Whole native setup charged; phase model is not instruction counts. Lossless bundle and inventory bind all 347 raw files.",
+  "validation": "experiments/ic-mitm-prefix-cache-20261115/analysis.json"
+}
