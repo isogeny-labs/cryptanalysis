@@ -1,0 +1,153 @@
+{
+  "schema": "source-only-analysis-control/v1",
+  "source_commit": "f7d0e2c8117b44e3c3952082c7d90ef2331ce1a3",
+  "independent": false,
+  "workflow": ".github/workflows/n83-opcounts.yml",
+  "inputs": [
+    {
+      "path": "experiments/koblitz-n83-opcounts-20261023/ANALYSIS_V2.sha256",
+      "sha256": "d2ad1d1fe2a648e9fbaf93ce04615a81cd441994f0ca3ba7248478522a556b15",
+      "bytes": 249
+    },
+    {
+      "path": "experiments/koblitz-n83-opcounts-20261023/analyze_v2.py",
+      "sha256": "426351930389235b0178ba00a2a762ab1533c3c2f1a9eeb40f021fed8a2c8493",
+      "bytes": 7715
+    },
+    {
+      "path": "experiments/koblitz-n83-opcounts-20261023/test_analyze_v2.py",
+      "sha256": "1516cad825427fa1d49807079523c27064d3f4a415ae87ba344c424d1cf1a5eb",
+      "bytes": 5101
+    },
+    {
+      "path": "experiments/koblitz-n83-opcounts-20261023/opcounts.py",
+      "sha256": "9aa4fccfac6d52f5665399c5ef40e8980c3e34f1370023dbaed4593f8c51eb41",
+      "bytes": 14238
+    },
+    {
+      "path": "experiments/koblitz-n83-opcounts-20261023/band.py",
+      "sha256": "4de78e408ce5bb6357f8a33a15475b55c2486e00703cc97dc093c6456dcb3619",
+      "bytes": 11510
+    },
+    {
+      "path": "experiments/koblitz-n83-stacked-20261016/run_schedule.py",
+      "sha256": "1f5614146acb450889763ad5b91089d31c1581e37a897f5ca02e25b0d903f6b0",
+      "bytes": 11332
+    },
+    {
+      "path": "experiments/koblitz-n83-stacked-20261016/protocol.json",
+      "sha256": "094f59931521bdaf4138d8e81fc165652500d771b555864be44a8408cddd1cc7",
+      "bytes": 14828
+    },
+    {
+      "path": "experiments/koblitz-n83-stacked-20261016/schedule.json",
+      "sha256": "79849500f357558478d84de73729b9256dff7df7f79ab050856aa9b63cfb0d22",
+      "bytes": 37276
+    },
+    {
+      "path": "scripts/isolated_bench.py",
+      "sha256": "48361f0d0a5138e9e2f1264ff3de689fddb9d1a5181afd089e70c153e3a089cc",
+      "bytes": 45856
+    }
+  ],
+  "commands_from_workflow": [
+    [
+      "sha256sum",
+      "-c",
+      "experiments/koblitz-n83-opcounts-20261023/ANALYSIS_V2.sha256"
+    ],
+    [
+      "python3",
+      "experiments/koblitz-n83-opcounts-20261023/test_analyze_v2.py",
+      "-v"
+    ]
+  ],
+  "results": [
+    {
+      "name": "source-checksums",
+      "argv": [
+        "sha256sum",
+        "-c",
+        "experiments/koblitz-n83-opcounts-20261023/ANALYSIS_V2.sha256"
+      ],
+      "expected_exit": 0,
+      "exit_code": 0,
+      "log": "source-checksums.log",
+      "log_sha256": "d1f45eff95f2278fdae148c772cdedcf147c3a346fc98bdc454fa06e10b72cf3"
+    },
+    {
+      "name": "source-analysis-tests",
+      "argv": [
+        "python3",
+        "experiments/koblitz-n83-opcounts-20261023/test_analyze_v2.py",
+        "-v"
+      ],
+      "expected_exit": 0,
+      "exit_code": 0,
+      "log": "source-analysis-tests.log",
+      "log_sha256": "f482ee9e3fc80742744c064e1c75d53d2367a95f45efaf0ac909131b2eb736ff"
+    },
+    {
+      "name": "network-refusal",
+      "argv": [
+        "python3",
+        "-c",
+        "import socket; socket.socket()"
+      ],
+      "expected_exit": 1,
+      "exit_code": 1,
+      "log": "network-refusal.log",
+      "log_sha256": "3b1e1feea1a62142cd65f1db4eecd62684c385050dafc0efabd57a5c3ae80735"
+    },
+    {
+      "name": "archive-refusal",
+      "argv": [
+        "python3",
+        "-c",
+        "open('.artifacts.json')"
+      ],
+      "expected_exit": 1,
+      "exit_code": 1,
+      "log": "archive-refusal.log",
+      "log_sha256": "2a02b965a8e4e202043181fc913c7a1a22ab30c87483179fd620a4d41bf45053"
+    },
+    {
+      "name": "missing-protocol-refusal",
+      "argv": [
+        "python3",
+        "experiments/koblitz-n83-opcounts-20261023/test_analyze_v2.py",
+        "-v"
+      ],
+      "expected_exit": 1,
+      "exit_code": 1,
+      "log": "missing-protocol-refusal.log",
+      "log_sha256": "154c5afdd5c78d0a8cac856df60220c7c7058aade5da01a4dcfb5ef36324443b"
+    },
+    {
+      "name": "changed-source-refusal",
+      "argv": [
+        "sha256sum",
+        "-c",
+        "experiments/koblitz-n83-opcounts-20261023/ANALYSIS_V2.sha256"
+      ],
+      "expected_exit": 1,
+      "exit_code": 1,
+      "log": "changed-source-refusal.log",
+      "log_sha256": "0505fab7e9f2ca5433774ffe6210b54129befce67aa2c0c2c098318b8e41987c"
+    }
+  ],
+  "python": "3.12.14",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "audit_guard_sha256": "32ade04ffe558b98cbf0c3ffcb455fddcf8ab5ce7a670608d80e51cdad8d539a",
+  "runner_sha256": "f99411662ae2a8d8ae0cbb2128f1b60e2f2679e9fd97753d308085ebcb34d682",
+  "environment_overrides": {
+    "PYTHONPATH": "<temporary audit guard>",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "removed_environment_prefixes": [
+    "AWS_",
+    "ARTIFACTS_",
+    "CHECKPOINT_"
+  ],
+  "scope": "Existing unit checks and intentional refusal controls only; no benchmark or independent replay."
+}

@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/home/agent/.cargo/bin/cargo",
+    "+1.78.0",
+    "test",
+    "--manifest-path",
+    "crates/prime-field-auxiliary-ic/Cargo.toml",
+    "--",
+    "--nocapture"
+  ],
+  "cwd": "/workspace/cryptanalysis-pr",
+  "exit_code": 0,
+  "output": "core-msrv-final.log"
+}

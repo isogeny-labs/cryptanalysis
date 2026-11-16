@@ -1,0 +1,95 @@
+# Current continuation state
+
+
+Latest 2026-11-16 15:09UTC: vector profile144118-ab03 completed sixcaptures,
+all totals agree,6Pythonanswers+512states pass; claim503112unsigned.92rawobjects
+S3uploaded BEFOREclose; record1441Zclosedinvalid,43recordgatepass. Separate
+REPORT-profile001.pdf2pages both inspected, markerONCEcalled. Profiletablebody/
+flush/cached sum57590428Ir (48.17percent); Irbatch/vector1.024187236 on oneN27
+DEVELOPMENTpoint. Not nativewall or primaryonline; source5cb/dab unchanged.
+
+Newsourceoptin vector_prepare3 constpolynomial reduction exactfields15/18/21/24/27
+in experiments/ic-constant-reduction-20261116. No newtiming or nativeexecutionyet.
+Portableunitpassed;firstcompilecfgfieldfailurepreserved. Strictx86muslClippy
+passed scopedRustup/Zig. ClaimedT6831 id591d3c61-9cfe-4f29-a4e6-b0b938823614
+attempt61be6327-1ec7-4677-875b-cab5ef8966ac epoch1. Sourceclaim79de9aunsigned.
+Next: publishsource/controls/prepprotocol, checkpointgate, launchsinglebounded
+L4nativepreparation900s CPU4/8GiB apttime using exactpublishedHEAD; noRustmutations
+untilcompilecompletes. Expect150maps,15loader,4walk+2full+1constunits,2560states,
+positiveconstantpairs. Preservefailedhost/caps,noretries. Thenfreeze freshpoint
+protocol andsamebinarydynamicconstantcontrol before any timing. PCCforkunchanged;
+no signedperformancebackend. Broadgoalactive; noCIbefore50minafterlatestpush.
+
+
+Update15:27UTC: first native150833-4f87 actual15:15:04UTC completedexit0after463s,
+38outputs fetched. Binary51a949dead8bca6418d2ec619bc9cbbf1f76711519cdc29e46aedd6ec4400ce2;
+firstbindingscapturedBEFOREsourceamendment, prepared-input.json preserved.150maps,
+15loaders,4walk+2full+1const nativeunits,2560Pythonstates pass. Claim8ec264unsigned.
+43native/control objects archived (including staticcodegen, no runtimeclaim).
+
+Amendedsourceadds ordinaryPCLcontrolvector_prepare4 andexplicitvector16const/narrow
+probe modes, fixesinvalidflag3testtoinvalid5, supports3/4inpipelinecontrols.
+Local26framework+1consttests pass,10fixture0ARMfallbackroutechecks,strictx86musl
+Clippy002pass. Original2pass1stalevalidationfailurepreserved. NoRustcompileactive.
+Nextpublishsourceprotocolcontrollersandallcontrols, checkpointgate, launchNEWnative
+build_amended.py exactHEAD; outputbuild-002. Expect175maps,26frameworkinaddition
+topriorunits; binderbind_amended_preparation.py producesprepared-input-amended.json
+anddistinctmetadata. Keep firstbuild/bindingsimmutable. No fresh432..455materialized.
+After amendednativepass/bind/replay, checkpointgate andfreeze_inputs localprobe;
+publish10candidate120workloads+metadataaudit BEFOREtargettiming. rawuploadbeforeclose.
+NoCIbefore50minafterlatestpublication/PRactivity. PCCforkunchanged,broadgoalactive.
+
+
+Update15:32UTC: amendedsource/protocol/controllers published25be1116c0cc56f4d7be8a0932de7c6531cdf947.
+NEW native job152859-d0d3 actualstart15:29:46UTC, running build_amended.py900scap.
+NoRusteditsuntilcompileterminal. Fresh432..455manifests generated INDEPENDENTLY
+whilecompiling afterpublishedsource/protocol; no timingbeforeamendednativepass.
+10candidates120workloads globalmetadataPASS0errors, claim246200unsigned. All
+sourcehashescorrespondtoamendedpublishedcode. Publishtheseinputsnow; no tuning.
+NextfetchnativeONLYterminal, binderbind_amended_preparation.py afterpass to
+prepared-input-amended.json; firstprepared-input.json MUSTremainimmutable. Native
+controllerexpects35maps/field,26framework(confirmedARM26),4walk2full1const.
+Replay2560statesfrombuild002; archivethenpublishbindingsbeforenativetiming.
+Thenbenchrecnew, checkpointgate, run_prepared.py usesnewbinding/build002 andfresh
+120pairs/240IC+240rho. Primarycontextpluspipelinecleanup; supplementalsetup/collector.
+KeepAAfails,caps,oldrecords; qualificationsnull, signedcustodyforkunresolved.
+
+
+Update15:41UTC: amendednative152859-d0d3 terminal0after609s,39outputs fetched.
+Binary1026bf749fbf8e4a1a266d9833b89a78bf3468956aa9e91eec1af9ffb84d0027;
+prepared-input-amended.json anddistinctmetadata bound.175maps15loaders,
+4walk2full1const26frameworkfilters(overlap,notuniquetotal),2560Pythonstatespass.
+AllfiveobservedordinaryPCLbackend;constantpairspositiveandordinary4xconst in
+aggregatefourvectorstrategies. Claim7c014dunsigned. Archive40objects complete
+beforebindingpublication. Inputs215cc5683published; source25be1116c unchanged.
+Nextbenchrecnew/checkpointgate/timingrun_prepared exactpublishedHEAD, freshpanel
+120pairs240IC240rho. MarkerforNEWstudyREPORT.pdf NOTcalledyet; render_report.py
+sourceprepared, callmarkerONCEbeforerender, inspectALLpages. OlderprofilePDFmarker
+done2pages. Recordrawlosslessbundle/perfileSHAURIinventory plusanalysis/replays/
+jobmetadata; allrawcaptures separatelyartifactstored. Uploadall beforeclosing.
+Do notrepeat915entryrecordbulk unnecessarily; losslessbundlecoversallrawbytes,
+recordpointerstobundle/manifest preserveprovenance andkeepsrecordcompact.
+
+
+Update15:52UTC: timing154152-55b7 exit0after72s,757rawoutputs. AnalysisPASS,
+240IC240rhoexistingPythonanswers and2560timingpreflightstates pass;120same-schedule
+semantic/workaudits. AlltimingprepbackendsordinaryPCL.8AAfailsretained0caps.
+Claimf2254cunsigned. PrimaryN15/18/21/24/27pairedratios1.01256/1.01241/1.02190/
+1.04379/1.05529; N15/18CIincludes1. N27primaryCI1.04714..1.07671, table1.09924,
+collector1.00247CIincludes1; means23.6532ms->22.3818ms. Setupgainmoveslargerscope,
+notcompleteprocesscold. Actualmatchingcontext-rhoneg/ICmedianN27 .05865; noBLreused
+setupclaim. All757raw separatelyartifactstored+losslessSHAURIbundle757files.
+Record1541ZclosedINVALID with23metrics/16uploadedrawrefs,18KB;44recordgatePASS.
+AllfourfinalREPORT.pdfpagesinspected; firstPDFmarkerforTHISstudyALREADYcalledONCE.
+Render001claimplaceholderdraft,002diagramlazy-sizingclipped,003correctedlayout;
+alllogsretained,nodatacriteriachanges. NoPDFmarkeragainforthisreport.
+
+Nextpublishresult/codeprogresssourceandPRbody. Progresshelperprior36metricschecks
+unchanged; aftercommitverifynew23exactvalues(59totalinhelper). NextsourceleadSIMD
+batch-inverse product lanes: currentGf2.batch_invALREADYhasfourindependentscalar
+accumulators andsingleinverse; optimizeproductswithSIMD, donotclaimnewbatching.
+Owningsourcehasidentitymultsforward/backward; peeled8..16stackkernelcanreduce
+unneededmuls, zero-safe,canonicalguard,fullfallback. NeedKB/atlas/primarysources,
+separateclaim/protocol/sourcecontrols beforefreshpoints. No newprototypeyet.
+PCCforkpreserved,nosignedverdict; broadgoalactive. EarliestCI50minafterlatestpush/
+PRactivity; noneinspectedthisturn. SharedcryptomirrorstillawaitingsourcePRmerge.

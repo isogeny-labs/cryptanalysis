@@ -1,0 +1,21 @@
+ring source=2147483647,(x2,x1),dp;
+short=0;
+poly targetX=81111477;
+option(redSB);
+ideal inputIdeal=1*x1^0+1677912357*x1^1+57108770*x1^2+241136258*x1^3+342652586*x1^4+241136258*x1^5+57108770*x1^6+1677912357*x1^7+1*x1^8,
+1*x2^0+1677912357*x2^1+57108770*x2^2+241136258*x2^3+342652586*x2^4+241136258*x2^5+57108770*x2^6+1677912357*x2^7+1*x2^8,
+((x1)-(x2))^2*(targetX)^2-2*(((x1)+(x2))*((x1)*(x2)+(2))+2*(14))*(targetX)+((x1)*(x2)-(2))^2-4*(14)*((x1)+(x2));
+ideal G=std(inputIdeal);
+print("@@GB_DONE@@");
+print("@@DIM@@"+string(dim(G)));
+ring result=2147483647,(x2,x1),lp;
+short=0;
+ideal H=fglm(source,G);
+int ii;
+for(ii=1;ii<=size(H);ii++){
+print("@@POLY_BEGIN@@");
+print(string(H[ii]));
+print("@@POLY_END@@");
+}
+print("@@DONE@@");
+quit;

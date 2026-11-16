@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-15T10:02:53Z",
+ "id": "PCC-20261115-0b07fa",
+ "kind": "theorem",
+ "producer": {
+  "commit": "a0ec881c2917ad91a7009625fdbfd2b2f47a0478",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "0c486fff9e181ff6af6816cc409540dbf6ce863138803e58c5ebee7527f55a2d",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/original-induced-transfer-01/lean/InducedFullTransfer.lean",
+   "theorem": "InducedFullTransfer.induced_additive"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Conditional quotient algebra on geometric IntModules. Presentation explicitly supplies sourcePhi homomorphism identities and an arbitrary section withPhi(liftx)=x; CompatibleEdge explicitly supplies source elliptic homomorphism identities and full kernel transport. No induced transfer linearity/commuting square/dual norm/recovery/injectivity is a field or hypothesis. Both induced reverse norms derive from source elliptic dual identities; recovery/injectivity require annihilation only on the stated inputs and Bezout. No rational/linear/equivariant section or finite annihilation of every geometric point is assumed. Both unchanged original434/435 gates audit21declarations: nine planned named conclusions plus12 structural declarations, all0trusted; exact localbindings for allnine. ActualHLP/field/Frobenius/Picard/order/program/lift bridges remainexplicit. Standardquotientalgebra formalization, unsigned/no newcurve-DLP/cost/novelty/signedstanding.",
+ "statement": "theorem induced_additive {A J B K : Type} [IntModule A] [IntModule J] [IntModule B] [IntModule K] (source : Presentation A J) (target : Presentation B K) (edge : CompatibleEdge source target) (x y : J) : transfer edge (x+y)=transfer edge x+transfer edge y"
+}

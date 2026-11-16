@@ -1,0 +1,20 @@
+{
+  "schema": "xedni-height-growth-obstruction-protocol-v2",
+  "parent_protocol": "PROTOCOL.json",
+  "amendment": "replace all rational-point multiplications with exact integer scalar-image enumeration after first attempt was interrupted",
+  "curve": "E/Q: y^2=x^3-x-2",
+  "generator": "P=(2,2)",
+  "selected_pairs": "(P,nP)",
+  "n_panel": [1, 2, 3, 5, 8, 13, 21, 34],
+  "K_law": "all integer radii from 0 through n inclusive, retained for every n",
+  "injection_gate": "checked Sage rank=1, torsion order=1, and P equals returned generator up to sign",
+  "exact_count": "cardinality of {a+n*b: -K<=a,b<=K}; rational-point cardinality derived through injection_gate",
+  "boundary_checks": "Sage verifies nP nonzero and (-n)P+nP=0 for each n",
+  "falsifiers": [
+    "injection gate or any boundary identity fails",
+    "a scalar-image collision occurs with 2K<n",
+    "packing inequality holds for positive K<n or fails at K=n",
+    "first scalar-image collision differs from ceil(n/2)"
+  ],
+  "status_law": "retain all n and K cells; preserve interrupted first attempt separately"
+}

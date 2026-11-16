@@ -1,0 +1,18 @@
+{
+  "schema": "xedni-transcript-fiber-equivalence-protocol-v1",
+  "field": "additive Z/7Z",
+  "scalar_law": "all seven scalars",
+  "encoding_law": "all 7! bijections from group elements to labels 0..6",
+  "program": [
+    "seed forms G=1 and Q=w",
+    "if label(G)<label(Q), append G+Q; else append G-Q",
+    "append G-G",
+    "append G-G again",
+    "append G+G"
+  ],
+  "labels": "all 7^6 proposed complete label tuples, including unreachable tuples",
+  "actual_fiber": "number of bijections whose actual adaptive run has the proposed labels",
+  "symbolic_fiber": "number of bijections giving those labels to the affine forms reconstructed from the proposed labels",
+  "falsifier": "any scalar-label tuple with unequal actual and symbolic encoding counts",
+  "claim_boundary": "exhaustive finite control of both transcript-fiber directions for this fixed adaptive program"
+}

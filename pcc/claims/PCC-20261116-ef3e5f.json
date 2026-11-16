@@ -1,0 +1,65 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T04:49:41Z",
+ "id": "PCC-20261116-ef3e5f",
+ "kind": "statement",
+ "producer": {
+  "commit": "c045dfdf2e682d0c98fba9a1bcd7824c00c649dd",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/resumed-static-tool-PATH-failure-01/ct213-direct-LP-graph-proof-final-05/actual-Consumer434.exit.xz",
+    "sha256": "653d209e0541c419bea9d331856d9de3801456d6da4c90a46cdcfebdc3cbcf44"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/resumed-static-tool-PATH-failure-01/ct213-direct-LP-graph-proof-final-05/compiler-bin/lean.xz",
+    "sha256": "c783bdad8560a4a72213f53a1fb23fc66120096d2d2ec4ee0d310e2b533c8022"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/resumed-static-tool-PATH-failure-01/ct213-direct-LP-graph-proof-final-05/entire-Consumer434-caller.txt.xz",
+    "sha256": "338c934178ef2bf8f3d07643ab8819cbf0efc83bcdc809697d17e2782e4225ff"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/resumed-static-tool-PATH-failure-01/ct213-direct-LP-graph-proof-final-05/entire-final-source.lean.xz",
+    "sha256": "dd4adc83f815c6c8d7ceef0859a3b854a29988646fb98ce24ec136b09d5054e9"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/resumed-static-tool-PATH-failure-01/ct213-independent-raw-reconstruction-Clippy-01/actual.exit.xz",
+    "sha256": "112d6f2a90912d902d022187c6c3dbaf30bf21beadfa2df1de17cde30e608d3a"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/resumed-static-tool-PATH-failure-01/ct213-independent-raw-reconstruction-Clippy-01/whole-original.stderr.xz",
+    "sha256": "1d854a784aa669cdedf9617c7261eaa3ac63031197b3d3dcc0d7849bd25ad81e"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/resumed-static-tool-PATH-failure-01/ct213-independent-raw-reconstruction-Clippy-01/whole-original.stdout.xz",
+    "sha256": "0040f94d11d0039505328a90b2ff48968db873e9e7967307631bf40ef5679275"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Resumed static commands failed before new proof checking/Clippy because the runtime PATH omits installed /home/agent/.elan/bin and /home/agent/.cargo/bin. Original proof gate3 lake absent and timeout cargo127; entire source/outputs retained. Installed original tools exist. Retry adds their explicit existing directories to PATH; no native mathematical caller or full historical population launched."
+}

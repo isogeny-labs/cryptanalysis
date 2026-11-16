@@ -1,0 +1,124 @@
+{
+  "branch": "codex/prime-field-auxiliary-ic-rho",
+  "closed_utc": "2026-11-15T06:46:57+00:00",
+  "commands": [
+    {
+      "argv": [
+        "/workspace/index_calculus_demo/algebraic/optimized/native31",
+        "/workspace/index_calculus_demo/algebraic/optimized/results/field31_s5_base0/chain.txt",
+        "chain_batch",
+        "/workspace/index_calculus_demo/algebraic/optimized/results/field31_s5_base0/v2_batch_seed0",
+        "0"
+      ],
+      "cwd": "/workspace/index_calculus_demo",
+      "exit": 0,
+      "retrospective": true,
+      "started_utc": null,
+      "wall_s": 9.683953282999937
+    }
+  ],
+  "commit": "4551d77ae4a87fdee717e69b8f90c46420f6cc35",
+  "commit_dirty": true,
+  "created_utc": "2026-11-15T06:46:57+00:00",
+  "curve_uid": null,
+  "entries": [],
+  "host": {
+    "cpu": "Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz",
+    "cpus_online": 5,
+    "hostname": "df634043e2f7",
+    "isolation": "exploratory-retrospective; no admitted tier",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+    "role": "import host; see original manifest for recorded execution environment"
+  },
+  "id": "20261115T0646Z-prime31-retro-v2-batch-seed0",
+  "metrics": [
+    {
+      "baseline": null,
+      "better": "lower",
+      "n": 1,
+      "name": "v2_batch_reported_cold_wall",
+      "note": "Already-known single target; cold wall interval; unsigned producer checks; no online speedup qualification.",
+      "reference": 0.007091595000019879,
+      "reference_kind": "matched_rho",
+      "spread": null,
+      "unit": "wall_s",
+      "value": 9.685107568999229
+    },
+    {
+      "baseline": null,
+      "better": "lower",
+      "n": 1,
+      "name": "v2_batch_reported_cpu",
+      "note": "Already-known single target; cold wall interval; unsigned producer checks; no online speedup qualification.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "cpu_s",
+      "value": 9.679338000000001
+    }
+  ],
+  "problem": "ecdlp:prime31aux-retrospective",
+  "raw": [
+    {
+      "bytes": 336,
+      "path": "experiments/prime-field-auxiliary-ic/snapshot/algebraic/optimized/results/field31_s5_base0/v2_batch_seed0.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/68/68a9bbac9c596fde925c96147da7186591c259aaeaba194d455288132eedeb68",
+      "sha256": "68a9bbac9c596fde925c96147da7186591c259aaeaba194d455288132eedeb68",
+      "uploaded": false
+    },
+    {
+      "bytes": 1029,
+      "path": "experiments/prime-field-auxiliary-ic/snapshot/algebraic/optimized/results/field31_s5_base0/v2_batch_seed0.audited.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/68/68afe03ebc83d0f85234eb534b64308b4f61ed88c9c9c2db8328add07844db0c",
+      "sha256": "68afe03ebc83d0f85234eb534b64308b4f61ed88c9c9c2db8328add07844db0c",
+      "uploaded": false
+    },
+    {
+      "bytes": 1670,
+      "path": "experiments/prime-field-auxiliary-ic/snapshot/algebraic/optimized/results/field31_s5_base0/v2_batch_seed0.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/df/df47df7c6b3047694b77200834ad6b04404b571958571dbe8e9566521c503abb",
+      "sha256": "df47df7c6b3047694b77200834ad6b04404b571958571dbe8e9566521c503abb",
+      "uploaded": false
+    },
+    {
+      "bytes": 3172,
+      "path": "experiments/prime-field-auxiliary-ic/snapshot/algebraic/optimized/results/field31_s5_base0/public.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/a5/a5fd508b6deacd2e2036a790946d7700929a822caf92e1fed699e6a7657fb9ca",
+      "sha256": "a5fd508b6deacd2e2036a790946d7700929a822caf92e1fed699e6a7657fb9ca",
+      "uploaded": false
+    },
+    {
+      "bytes": 480,
+      "path": "experiments/prime-field-auxiliary-ic/snapshot/algebraic/optimized/environment.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/89/89a5305b243ab7370509e27a9ac61230438fd5eb7b797f07a6801a660c95a885",
+      "sha256": "89a5305b243ab7370509e27a9ac61230438fd5eb7b797f07a6801a660c95a885",
+      "uploaded": false
+    },
+    {
+      "bytes": 881,
+      "path": "experiments/prime-field-auxiliary-ic/snapshot/algebraic/optimized/results/field31_s5_base0/v2_batch_seed0.relations.jsonl",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/be/be0aa4e965825b9dba2beadcd183ce33508edcbf283a5c79b513eb7a865aea24",
+      "sha256": "be0aa4e965825b9dba2beadcd183ce33508edcbf283a5c79b513eb7a865aea24",
+      "uploaded": false
+    }
+  ],
+  "repo": "cryptanalysis",
+  "reports": {
+    "pdf": "experiments/prime-field-auxiliary-ic/IMPORT_REPORT.pdf",
+    "png": [],
+    "svg": []
+  },
+  "retrospective_import": {
+    "execution_commit": null,
+    "preregistered": false,
+    "registration_commit": "4551d77ae4a87fdee717e69b8f90c46420f6cc35",
+    "scope": "Already-known single target; cold wall interval; unsigned producer checks; no online speedup qualification.",
+    "source_sha256": "52c20890f4c920742e339c5c66e04b76b819604d913160ee8b63967e6e0aa341"
+  },
+  "schema": "bench.record/v1",
+  "session": null,
+  "slug": "prime31-retro-v2-batch-seed0",
+  "status": "measured",
+  "summary": "Retrospective unverified producer observations; Already-known single target; cold wall interval; unsigned producer checks; no online speedup qualification.",
+  "validation": null
+}

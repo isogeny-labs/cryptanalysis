@@ -1,0 +1,14 @@
+{
+  "schema": "xedni-nonisomorphic-holdout-relation-protocol-v1",
+  "question": "Across the deterministic holdout fields, what relation yield follows from proved rank-one models and how early is the directly testable public relation?",
+  "selection": "base curve on each field plus every nonbase rank-one cell whose exact rank, trivial torsion, and signed generator are all proved by the frozen screen and generator audit",
+  "target": "Q=17G fixture on each prime-order field",
+  "query_law": "complete ordered (t1,t2) in [0,q)^2; R_i=Q-t_iG",
+  "relation_vector": [1,2],
+  "coordinate_cap": 4,
+  "admission": "both public points nonidentity and distinct, then both lie in one model's radius-four generator image",
+  "direct_control": "on the same ordered query law, test R1+2R2=O for every nonidentity distinct pair and stop at first hit",
+  "stopping_rule": "retain complete per-model statuses and all positive rational relation rows; report earliest direct and rational events separately",
+  "cost_boundary": "count every public query, per-model membership check, admitted rational group test, and direct public group test; retain all 40 rank attempts and three generator proofs as setup",
+  "claim_boundary": "exact finite-panel event and operation counts; no wall-time or same-target rho comparison"
+}

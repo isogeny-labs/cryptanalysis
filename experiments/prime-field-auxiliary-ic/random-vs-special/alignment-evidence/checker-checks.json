@@ -1,0 +1,62 @@
+{
+  "source_commit": "3ddc32380f9b59e40efd4e7bc44c43ebdd501f59",
+  "scope": "Synthetic refusal controls, documentation and workflow wiring; not performance",
+  "checks": [
+    {
+      "name": "checker-tests",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "experiments/prime-field-auxiliary-ic/random-vs-special",
+        "-p",
+        "test_compare_reports.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "log": "checker-tests.log",
+      "sha256": "bcc46b32f668d434e3d5e4d2bb4e589e2712341d961e513758d7f0f81f02ebb0"
+    },
+    {
+      "name": "rustdoc-stable",
+      "command": [
+        "cargo",
+        "+stable",
+        "doc",
+        "--manifest-path",
+        "crates/prime-field-auxiliary-ic/Cargo.toml",
+        "--no-deps"
+      ],
+      "exit_code": 0,
+      "log": "rustdoc-stable.log",
+      "sha256": "2a0e1272cb713b64a9ebb5f9711cbd9f944d3437a9749e940befbf9bf0ad0044"
+    },
+    {
+      "name": "rustdoc-msrv",
+      "command": [
+        "cargo",
+        "+1.78.0",
+        "doc",
+        "--manifest-path",
+        "crates/prime-field-auxiliary-ic/Cargo.toml",
+        "--no-deps"
+      ],
+      "exit_code": 0,
+      "log": "rustdoc-msrv.log",
+      "sha256": "50b158a401469835631cb5e26bd14fd75c00bddf5152b946470efb9f689a92ab"
+    },
+    {
+      "name": "workflow-wire",
+      "command": [
+        "python3",
+        "tools/artifacts/wire_workflows.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "log": "workflow-wire.log",
+      "sha256": "1ef0d99d3ba29c1c9dc4889fabbb41d82ce8d9bbbaaf8ebf5856c9bf077bce57"
+    }
+  ]
+}

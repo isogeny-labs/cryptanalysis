@@ -1,4 +1,5 @@
 name: N83 K1 block and cold panel with native work counted (section 5a band)
+# artifacts-scope: job
 
 # Runs experiments/koblitz-n83-opcounts-20261023/PROTOCOL.md, frozen in the
 # commit before this workflow. The analysis regression gate runs on every
@@ -29,12 +30,6 @@ concurrency:
   group: n83-opcounts-${{ github.ref }}
   cancel-in-progress: false
 
-env:
-  EXPERIMENT: experiments/koblitz-n83-stacked-20261016
-  OPCOUNTS: experiments/koblitz-n83-opcounts-20261023
-  RUSTUP_TOOLCHAIN: 1.99.0
-  CARGO_TERM_COLOR: never
-
 jobs:
   analysis-gate-tests:
     runs-on: ubuntu-24.04
@@ -45,42 +40,30 @@ jobs:
           filter: blob:none
           sparse-checkout-cone-mode: false
           sparse-checkout: |
-            /experiments/koblitz-n83-opcounts-20261023/
-            /experiments/koblitz-n83-stacked-20261016/*.py
-            /experiments/koblitz-n83-stacked-20261016/*.json
+            /experiments/koblitz-n83-opcounts-20261023/ANALYSIS_V2.sha256
+            /experiments/koblitz-n83-opcounts-20261023/analyze_v2.py
+            /experiments/koblitz-n83-opcounts-20261023/test_analyze_v2.py
+            /experiments/koblitz-n83-opcounts-20261023/opcounts.py
+            /experiments/koblitz-n83-opcounts-20261023/band.py
+            /experiments/koblitz-n83-stacked-20261016/run_schedule.py
+            /experiments/koblitz-n83-stacked-20261016/protocol.json
+            /experiments/koblitz-n83-stacked-20261016/schedule.json
             /scripts/isolated_bench.py
-            /tools/artifacts/
-            /.artifacts/
-      - name: Pull store data this workflow reads (tools/artifacts)
-        shell: bash
-        working-directory: ${{ github.workspace }}
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
-        run: |
-          if ! command -v aws >/dev/null; then
-            python3 -m venv "$RUNNER_TEMP/artifacts-awscli"
-            artifacts_cli_python="$RUNNER_TEMP/artifacts-awscli/bin/python"
-            artifacts_cli_aws="$RUNNER_TEMP/artifacts-awscli/bin/aws"
-            if [ -d "$RUNNER_TEMP/artifacts-awscli/Scripts" ]; then
-              artifacts_cli_python="$RUNNER_TEMP/artifacts-awscli/Scripts/python.exe"
-              artifacts_cli_aws="$RUNNER_TEMP/artifacts-awscli/Scripts/aws.exe"
-            fi
-            "$artifacts_cli_python" -m pip install --disable-pip-version-check awscli==1.46.2
-            export ARTIFACTS_AWS="$artifacts_cli_aws"
-          fi
-          python3 tools/artifacts/artifacts.py pull --jobs 16 experiments/koblitz-n83-opcounts-20261023 experiments/koblitz-n83-stacked-20261016
       - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
       - name: Verify and test complete-panel analysis gate
         run: |
-          sha256sum -c "$OPCOUNTS/ANALYSIS_V2.sha256"
-          python3 -m unittest discover -s "$OPCOUNTS" -p test_analyze_v2.py -v
+          sha256sum -c experiments/koblitz-n83-opcounts-20261023/ANALYSIS_V2.sha256
+          python3 experiments/koblitz-n83-opcounts-20261023/test_analyze_v2.py -v
   opcounts:
     if: github.event_name != 'pull_request'
     needs: analysis-gate-tests
+    env:
+      EXPERIMENT: experiments/koblitz-n83-stacked-20261016
+      OPCOUNTS: experiments/koblitz-n83-opcounts-20261023
+      RUSTUP_TOOLCHAIN: 1.99.0
+      CARGO_TERM_COLOR: never
     runs-on: ${{ inputs.runs_on || 'ubuntu-24.04' }}
     # Build about 15 min (two crates), kS about 5 min, kP about 16 min,
     # 20 x (cS 27 s + cP 51 s + rT 3 s) about 27 min on the stacked runner.

@@ -2,6 +2,16 @@
 
 [OpenResearch setup and agent integration](docs/openresearch.md).
 
+The native [prime-field auxiliary IC crate](crates/prime-field-auxiliary-ic/README.md)
+is available through the safe Rust bindings and `ca-ic auxiliary`, including a
+random-base and same-base direct controls, fixed-prefix relation collection, and an optional repository rho reference.
+
+A [retrospective prime-field auxiliary-map IC import](experiments/prime-field-auxiliary-ic/README.md)
+contains the standalone resultant/GCD/SIMD implementation and shared-arithmetic
+rho control. Its archived producer timings are exploratory CPU observations,
+with no signed independent performance verdict or baseline promotion.
+[pcc:unverified]
+
 The Rust API includes a [hashed-factor-base elliptic-curve tensor
 implementation](docs/hashed-ecdl.md) for the Bochum v0.2 paper: compact
 encodings, exact contraction and certificate replay. Correctness controls

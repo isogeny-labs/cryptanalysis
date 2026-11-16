@@ -1,0 +1,80 @@
+{
+  "protocol": "38b827 publishedbd603d0 before code",
+  "literal_sources": [
+    {
+      "source": "odd-product-maps/src/adapter.rs",
+      "source_sha256": "8529f13565dd8017d542c833b46020b80cb40266e81406fcc3e7008efc605579",
+      "destination": "adapter.rs",
+      "body_sha256": "89bf7d914b918b7607750ae22b82187c3df294f13c1c5bcb4c85f314b470d041",
+      "explicit_patches": [
+        [
+          "chained_n4_odd_product_models",
+          "chained_n4_paired_fourth_preflight::models",
+          3
+        ]
+      ]
+    },
+    {
+      "source": "odd-product-maps/src/norm.rs",
+      "source_sha256": "1badf36600c737dd68b5823102659f3e2dca7463b51c47a246dab7819e1283bd",
+      "destination": "norm.rs",
+      "body_sha256": "1badf36600c737dd68b5823102659f3e2dca7463b51c47a246dab7819e1283bd",
+      "explicit_patches": []
+    },
+    {
+      "source": "odd-source/src/lib.rs",
+      "source_sha256": "ec0f28e21b6d66c5c8c334f239089cdf0173ed396b9daf296d1fb6e9b04df333",
+      "start": "fn er(",
+      "end_before": "fn digest(",
+      "destination": "encoding.rs",
+      "body_sha256": "82604bce1992f8172d244ce0994aa7b0ff8510a6866517f8e6b942100d351de4",
+      "explicit_patches": []
+    },
+    {
+      "source": "odd-source/src/lib.rs",
+      "source_sha256": "ec0f28e21b6d66c5c8c334f239089cdf0173ed396b9daf296d1fb6e9b04df333",
+      "start": "fn cubic(",
+      "end_before": "fn identity_residual(",
+      "destination": "polynomial.rs",
+      "body_sha256": "782c0ee85216824242a36d097f1761d770e8f40654323a4b7c9fe740f8a2f049",
+      "explicit_patches": []
+    },
+    {
+      "source": "odd-source/src/lib.rs",
+      "source_sha256": "ec0f28e21b6d66c5c8c334f239089cdf0173ed396b9daf296d1fb6e9b04df333",
+      "start": "fn homogeneous(",
+      "end_before": "fn multiplication_13(",
+      "destination": "rational.rs",
+      "body_sha256": "fa332b8799f834ed2fddd175317a6a69194c8c30f8f360a8e4086b34452dfb2f",
+      "explicit_patches": []
+    },
+    {
+      "source": "nondual13-preflight/src/append.rs",
+      "source_sha256": "b515c9460a26a5f886146e899648195a32b421472cce69bd9fa7402fdaebadc2",
+      "start": "fn rational_curve_residual(",
+      "end_before": "pub struct SecondHop",
+      "destination": "curve_residual.rs",
+      "body_sha256": "ab29e27eb14658a0d409f18cf2b9be784cd9640b9f5273fba217863aa09374dd",
+      "explicit_patches": []
+    },
+    {
+      "source": "twisted-pair-preflight/src/twist_append.rs",
+      "source_sha256": "c85977fdb13fcafc2f8bcde02f74673efbaf33ef5fbe1e1292bed8a2141c5978",
+      "start": "fn eval_rational(",
+      "end_before": "fn compare_degree13_recipe(",
+      "destination": "eval_rational.rs",
+      "body_sha256": "7c901f0e1eb222395b6d28cb11e499097ca09dca8c4f0057bc6f5cb8b62d7f95",
+      "explicit_patches": []
+    },
+    {
+      "source": "norm-halving-evaluator/src/lib.rs",
+      "source_sha256": "b28f722f698ad841ef56f53e3ffd7c6733c3a86eddf30884e861c292af369cd1",
+      "start": "fn parse_packet(",
+      "end_before": "#[derive(Clone, Copy)]",
+      "destination": "parse_packet.rs",
+      "body_sha256": "22e2eeed7d63c5570a8e1a4b662307f97daa39c43f30195a631f20979f56a77b",
+      "explicit_patches": []
+    }
+  ],
+  "scope": "Two original geometry bodies and six literal helper sections; only three declared nominal import replacements"
+}

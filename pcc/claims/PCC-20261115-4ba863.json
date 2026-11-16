@@ -1,0 +1,65 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-15T14:33:03Z",
+ "id": "PCC-20261115-4ba863",
+ "kind": "statement",
+ "producer": {
+  "commit": "5493385305de052bc6e84cc9dc7fe7bf08596436",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/historical-comparison-contract02-controls-01/actual-compiled-source.rs",
+    "sha256": "63497f951eff551650780596199934737ce2208d27a29ea17420221bcf47d4f3"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/historical-comparison-contract02-controls-01/REPORT.md",
+    "sha256": "68dd6a1796305e0677cf7cba9406293f17db1951c941b71b69875bd4b23c083d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/historical-comparison-contract02-controls-01/whole-control-caller.exit",
+    "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/historical-comparison-contract02-controls-01/every-whole-control-file-inventory.json",
+    "sha256": "ba282e3f19f2eaf6b046cad390168330a85fa385d2fc3aed6c94178fc375f8f4"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/historical-comparison-contract02-controls-01/whole-control-caller.txt",
+    "sha256": "8baf1b809a1fb6c3d3fb41f2bfc59bc48dc24542142eda226c4d20a3ab47d44c"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/historical-comparison-contract02-controls-01/outcome.json",
+    "sha256": "c0aa0d73ef9fb5757ac789b3e8b48fbe6a273041aa3cdf05a3e47346911b404c"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/historical-comparison-contract02-controls-01/original-control-command.py",
+    "sha256": "da49473bea5672bc5b6c27b6b67b48028146f3e68d26c24f553fb8241f4f8c89"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Separate historical Rust verifier contract02 controls, sourceAFTERprospectiveb5e431-normal5493385: whole IC100historical-vs-completefresh02 exact non-time pass0; sampler101historical-vs-itself schema pass0, no freshsamplerexecution claimed. Two whole timing-only positive variations0; eight whole modified class/scalar/counter/unexpectedfield controls actual1/noacceptedoutput. Full inputs including all counters/times/source/actual executable before-after bytes/every subprocess output-exit retained and fully inventoried. Original same-run auditors/native/historical fixtures unchanged. Earlier Python control-authoring syntax failure occurred before execution and is retained in scratch. Full fresh driver03/GitHubCI pending. Unsigned comparison controls only."
+}
