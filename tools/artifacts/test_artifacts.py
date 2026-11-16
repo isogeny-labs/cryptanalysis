@@ -565,8 +565,9 @@ jobs:
         self.assertEqual(result, self.wired(result))
 
     def test_conditional_checkout_keeps_pull_condition(self):
-        source = self.SOURCE.replace("      - uses: actions/checkout@v7\n      - run: python3 replay.py",
-                                     "      - uses: actions/checkout@v7\n        if: needs.scope.outputs.replay == 'true'\n      - run: python3 replay.py")
+        source = self.SOURCE.replace("  replay:\n    steps:\n      - uses: actions/checkout@v7",
+                                     "  replay:\n    steps:\n      - uses: actions/checkout@v7\n        if: needs.scope.outputs.replay == 'true'")
+        self.assertEqual(source.count("if: needs.scope.outputs.replay == 'true'"), 1)
         result = self.wired(source)
         self.assertEqual(result.count("if: needs.scope.outputs.replay == 'true'"), 2)
 
