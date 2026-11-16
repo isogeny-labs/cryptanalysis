@@ -1,0 +1,43 @@
+{
+  "schema": "xedni-crt-curve-choice-protocol-v2",
+  "amends": "protocol.json",
+  "amendment_reason": "The one-free-coefficient family had no pair satisfying both frozen auxiliary orders; widen to monic Weierstrass a1,a2,a3 choices while preserving the first census",
+  "source": "Jacobson et al., Analysis of the Xedni Calculus Attack (2000), section 3.2 Steps 1-7 and Remark 1",
+  "base_curve": {
+    "field_prime": 47,
+    "weierstrass_coefficients": [0, 0, 0, -1, -2],
+    "expected_group_order": 43,
+    "ordered_pair_law": "all distinct nonidentity E(F_47) point pairs"
+  },
+  "lift_rule": {
+    "coordinates": "centered integer representatives in [-23,23]",
+    "rational_family": "y^2+a1*x*y+a3*y=x^3+a2*x^2+a4*x+a6",
+    "free_coefficients": ["a1", "a2", "a3"],
+    "free_coefficients_mod_47": [0, 0, 0],
+    "solved_coefficients": "a4,a6 uniquely determined over Q from the two lifted point equations when x1 differs from x2",
+    "expected_a4_a6_mod_47": [-1, -2]
+  },
+  "auxiliary_gates": {
+    "first": {"prime": 7, "required_order": 4, "epsilon": 1},
+    "second": {"prime": 11, "strict_order": 6, "weak_epsilon_1_order": 7},
+    "common": "x coordinates distinct modulo each auxiliary prime, integral coefficients, good reduction and rank-two Weierstrass incidence rows"
+  },
+  "coefficient_policy": {
+    "search": "at each auxiliary prime enumerate all residues of a1,a2,a3 in increasing (sum of absolute centered residues, maximum absolute centered residue, centered tuple), take the first good curve with the required group order",
+    "arm_priority": "at 11 search all strict order-6 candidates first, then weak order-7 candidates",
+    "crt": "combine each chosen auxiliary residue and the zero residue at 47 separately for a1,a2,a3; use the centered representative modulo 3619",
+    "rational_singularity_policy": "reject the pair if the selected rational curve is singular; do not search another coefficient tuple",
+    "crt_modulus": 3619
+  },
+  "relation": {
+    "vector": [1, 2],
+    "reduced_event": "P1+2*P2=O over F_47",
+    "rational_event": "Q1+2*Q2=O over Q on the chosen curve"
+  },
+  "frozen_predictions": {
+    "full_ordered_pairs": 1722,
+    "full_reduced_relation_pairs": 42
+  },
+  "run_cap": "complete finite census with all failed and accepted pair rows; no wall-time performance inference",
+  "interpretation": "Deterministic r=2 CRT curve choice within the monic Weierstrass family; no point CRT or discriminant optimization"
+}
