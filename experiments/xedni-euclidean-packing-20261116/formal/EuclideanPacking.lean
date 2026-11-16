@@ -124,6 +124,29 @@ theorem labelled_card_le_radius_ratio_pow
     _ ≤ (labels.card : ℝ) * (1 + 2 * R / δ) ^ finrank ℝ E :=
       mul_le_mul_of_nonneg_left hpack (Nat.cast_nonneg _)
 
+/-- A coefficient box and per-point norm cap give an explicit radius for
+every sum. This is the triangle-inequality part of the height application. -/
+theorem norm_coeff_sum_le
+    {r : ℕ} (points : Fin r → E) (coeff : Fin r → ℤ)
+    (K : ℕ) (B : ℝ) (hB : 0 ≤ B)
+    (hcoeff : ∀ i, (coeff i).natAbs ≤ K)
+    (hpoint : ∀ i, ‖points i‖ ≤ B) :
+    ‖∑ i, coeff i • points i‖ ≤ (r : ℝ) * (K : ℝ) * B := by
+  have hterm : ∀ i : Fin r, ‖coeff i • points i‖ ≤ (K : ℝ) * B := by
+    intro i
+    have hc : ‖coeff i‖ ≤ (K : ℝ) := by
+      have hcast : ((coeff i).natAbs : ℝ) ≤ (K : ℝ) := by exact_mod_cast hcoeff i
+      rw [Int.norm_eq_abs, ← Int.cast_abs, ← Int.natCast_natAbs]
+      exact hcast
+    calc
+      ‖coeff i • points i‖ ≤ ‖coeff i‖ * ‖points i‖ := norm_zsmul_le _ _
+      _ ≤ (K : ℝ) * B := mul_le_mul hc (hpoint i) (norm_nonneg _) (Nat.cast_nonneg _)
+  calc
+    ‖∑ i, coeff i • points i‖ ≤ ∑ i : Fin r, ‖coeff i • points i‖ :=
+      norm_sum_le _ _
+    _ ≤ ∑ _i : Fin r, (K : ℝ) * B := Finset.sum_le_sum (fun i _ => hterm i)
+    _ = (r : ℝ) * (K : ℝ) * B := by simp [mul_assoc]
+
 /-- All distinct lifted sums from the full coefficient box. -/
 noncomputable def liftedSums {H : Type*} [AddCommGroup H] {r : ℕ}
     (points : Fin r → H) (K : ℕ) : Finset H := by
@@ -164,6 +187,43 @@ theorem bounded_relation_of_euclidean_packing
   unfold liftedSums
   exact Finset.mem_image.mpr ⟨coeff, hc, rfl⟩
 
+/-- A homomorphic projection, a bound on each selected point, and a minimum
+nonzero projected norm supply the geometric inputs of the packing theorem. -/
+theorem bounded_relation_of_norm_gap
+    {H Label : Type*} [AddCommGroup H]
+    {r : ℕ} (points : Fin r → H) (K : ℕ)
+    (labels : Finset Label) (project : H →+ E) (label : H → Label)
+    (B δ : ℝ) (hB : 0 ≤ B) (hδ : 0 < δ)
+    (hlabel : ∀ y ∈ liftedSums points K, label y ∈ labels)
+    (hfaithful : ∀ y ∈ liftedSums points K,
+      ∀ z ∈ liftedSums points K,
+      project y = project z → label y = label z → y = z)
+    (hpoint : ∀ i, ‖project (points i)‖ ≤ B)
+    (hmin : ∀ z : H, project z ≠ 0 → δ ≤ ‖project z‖)
+    (hsmall : (labels.card : ℝ) *
+      (1 + 2 * ((r : ℝ) * (K : ℝ) * B) / δ) ^ finrank ℝ E <
+        ((2 * K + 1) ^ r : ℝ)) :
+    ∃ coeff, XedniHeightPigeonhole.Nontrivial coeff ∧
+      XedniHeightPigeonhole.Bounded (2 * K) coeff ∧
+      XedniHeightPigeonhole.Relation points coeff := by
+  classical
+  apply bounded_relation_of_euclidean_packing points K labels project label
+    ((r : ℝ) * (K : ℝ) * B) δ
+  · positivity
+  · exact hδ
+  · exact hlabel
+  · exact hfaithful
+  · intro y hy
+    obtain ⟨coeff, hc, rfl⟩ := Finset.mem_image.mp hy
+    have hcoeff := XedniHeightPigeonhole.coefficientBox_bounded hc
+    simpa only [map_sum, map_zsmul] using
+      (norm_coeff_sum_le (fun i => project (points i)) coeff K B hB hcoeff hpoint)
+  · intro y hy z hz hne
+    have hdiff : project (y - z) ≠ 0 := by
+      simpa only [map_sub] using (sub_ne_zero.mpr hne)
+    simpa only [map_sub] using hmin (y - z) hdiff
+  · exact hsmall
+
 end
 
 end XedniEuclideanPacking
@@ -171,4 +231,6 @@ end XedniEuclideanPacking
 #print axioms XedniEuclideanPacking.card_mul_half_sep_pow_le_radius_pow
 #print axioms XedniEuclideanPacking.card_le_radius_ratio_pow
 #print axioms XedniEuclideanPacking.labelled_card_le_radius_ratio_pow
+#print axioms XedniEuclideanPacking.norm_coeff_sum_le
 #print axioms XedniEuclideanPacking.bounded_relation_of_euclidean_packing
+#print axioms XedniEuclideanPacking.bounded_relation_of_norm_gap

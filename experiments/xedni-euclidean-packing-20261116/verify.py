@@ -35,7 +35,7 @@ for file in (formal / "EuclideanPacking.lean", formal / "HeightPigeonhole.lean")
     assert not re.search(r"\b(sorry|admit|sorryAx|native_decide)\b|^\s*axiom\s",
                          file.read_text())
 names = re.findall(r"^#print axioms ([A-Za-z0-9_.]+)$", source, re.M)
-assert len(names) == 4
+assert len(names) == 6
 for name in names:
     matches = re.findall(re.escape("'" + name + "'") +
                          r" depends on axioms: \[([^\]]+)\]", build, re.S)

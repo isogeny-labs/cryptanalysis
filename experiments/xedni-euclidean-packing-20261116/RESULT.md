@@ -12,6 +12,8 @@ The Lean proof constructs pairwise disjoint open balls of radius `δ/2` around t
 
 the theorem returns a nonzero integer relation among the `r` points with each coefficient of magnitude at most `2K`. Here `T` is the cardinality of the supplied label set and `d=finrank(ℝ,E)`.
 
+The stronger `bounded_relation_of_norm_gap` derives the radius and separation inputs from an additive projection `H →+ E`, point norms `||project(Pᵢ)||≤B`, and a minimum nonzero projected norm `δ`. Its checked radius lemma gives `||project(∑aᵢPᵢ)||≤rKB` for every coefficient vector in the box. Thus `T(1+2rKB/δ)^d<(2K+1)^r` suffices under the same faithful torsion-label hypothesis.
+
 For a canonical-height quotient, take `E` to be the real tensor of the torsion-free Mordell–Weil lattice, `||P||²=ĥ(P)`, `δ=√μ` for a lower bound `μ>0` on nonzero canonical height, and `R=K∑ᵢ√ĥ(Pᵢ)`. If `ĥ(Pᵢ)≤M`, then `R≤rK√M`. A finite torsion label set accounts for fibers. Thus the checked geometric theorem supplies the finite count `T(1+2rK√(M/μ))^d` once these arithmetic objects and inequalities are instantiated. The selected xedni lift family still requires a uniform height/discriminant premise and this canonical-height instantiation; those assumptions are visible in the theorem's radius, separation, and faithful-label hypotheses.
 
 ## Proof map
@@ -22,9 +24,11 @@ For a canonical-height quotient, take `E` to be the real tensor of the torsion-f
 | Explicit packing count | `XedniEuclideanPacking.card_le_radius_ratio_pow` | Same hypotheses; bound `(1+2R/δ)^d` |
 | Fiber-labelled count | `XedniEuclideanPacking.labelled_card_le_radius_ratio_pow` | Faithful projection and finite labels, plus radius and separation on projected values |
 | Bounded integer relation | `XedniEuclideanPacking.bounded_relation_of_euclidean_packing` | All coefficient-box sums satisfy the labelled projection conditions; strict packing count below `(2K+1)^r` |
+| Coefficient-box radius | `XedniEuclideanPacking.norm_coeff_sum_le` | Every coefficient magnitude `≤K`, every projected point norm `≤B` |
+| Norm-gap relation | `XedniEuclideanPacking.bounded_relation_of_norm_gap` | Additive projection, minimum nonzero projected norm `δ`, finite faithful labels, strict count |
 | Canonical-height instantiation | Open | Real Mordell–Weil quotient, torsion labeling, selected-lift height and minimum-height bounds |
 
-Lean `v4.35.0-rc4` and Mathlib `021c46bdd042f67b538b9f9871d556a93713a9a9` are pinned. `lake build EuclideanPacking` completed 2704 jobs. `#print axioms` for all four new theorems lists only `propext`, `Classical.choice`, and `Quot.sound`; the imported pigeonhole module has the same foundation record. `HeightPigeonhole.lean` is an exact source copy from the preceding checked experiment, pinned by hash. `lean4checker --fresh` was unavailable on this host.
+Lean `v4.35.0-rc4` and Mathlib `021c46bdd042f67b538b9f9871d556a93713a9a9` are pinned. `lake build EuclideanPacking` completed 2704 jobs. `#print axioms` for all six new theorems lists only `propext`, `Classical.choice`, and `Quot.sound`; the imported pigeonhole module has the same foundation record. `HeightPigeonhole.lean` is an exact source copy from the preceding checked experiment, pinned by hash. `lean4checker --fresh` was unavailable on this host.
 
 ## Exact control
 
