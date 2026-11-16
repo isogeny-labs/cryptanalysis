@@ -1,0 +1,162 @@
+{
+  "branch": "codex/ic-trial32-20261115",
+  "closed_utc": "2026-11-16T06:50:48+00:00",
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "cloud/modal_run.py",
+        "run",
+        "--image",
+        "cuda",
+        "--gpu",
+        "L4",
+        "--cpu",
+        "4",
+        "--memory",
+        "8",
+        "--timeout",
+        "900",
+        "--out",
+        "experiments/ic-affine-native-20261115/timing-001",
+        "--detach",
+        "--",
+        "python3",
+        "experiments/ic-affine-native-20261115/run_prepared.py"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "started_utc": "2026-11-16T06:47:12+00:00",
+      "wall_s": 11.479
+    }
+  ],
+  "commit": "b67f2bc8b32f87b7d1de6f90392a5e1af709ecbc",
+  "commit_dirty": false,
+  "created_utc": "2026-11-16T06:46:50+00:00",
+  "curve_uid": null,
+  "entries": [
+    "experiments/ic-affine-native-20261115"
+  ],
+  "host": {
+    "cpu": "arm",
+    "cpus_online": 14,
+    "hostname": "Mac.attlocal.net",
+    "isolation": "unstated",
+    "platform": "macOS-27.2-arm64-arm-64bit-Mach-O"
+  },
+  "id": "20261116T0646Z-ic-affine-fixed-pipeline-001",
+  "metrics": [
+    {
+      "baseline": 1.0,
+      "better": "higher",
+      "n": 6,
+      "name": "n15_cached_cold_mitm_ratio",
+      "note": "Raw median same-target paired MITM/cached cold ratio; unqualified gVisor; no promotion",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ratio",
+      "value": 0.6933468386384282
+    },
+    {
+      "baseline": 1.0,
+      "better": "higher",
+      "n": 6,
+      "name": "n18_cached_cold_mitm_ratio",
+      "note": "Raw median same-target paired MITM/cached cold ratio; unqualified gVisor; one A/A failure retained",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ratio",
+      "value": 1.0752026474444971
+    }
+  ],
+  "problem": "ecdlp:binary_ic_affine_fixed_instances",
+  "raw": [
+    {
+      "bytes": 1260706,
+      "path": "experiments/ic-affine-native-20261115/timing-001/arms.jsonl",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/a1/a12502af38ba20ea6b0692688fb53efc5b0e589f1bf9274aed62fe1606848b8c",
+      "sha256": "a12502af38ba20ea6b0692688fb53efc5b0e589f1bf9274aed62fe1606848b8c",
+      "uploaded": true
+    },
+    {
+      "bytes": 31412,
+      "path": "experiments/ic-affine-native-20261115/timing-001/host.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/00/00dcc7d324dbe4089e3e9c1c48a8a01bf8755d892df178c8368b930c6e9b1f92",
+      "sha256": "00dcc7d324dbe4089e3e9c1c48a8a01bf8755d892df178c8368b930c6e9b1f92",
+      "uploaded": true
+    },
+    {
+      "bytes": 2450,
+      "path": "experiments/ic-affine-native-20261115/timing-001/preparation-receipt.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/8b/8b4906c62c63b2ea3be6a7ee7231e9f7640d0e309b9e4bfc5f9e98880c7958cc",
+      "sha256": "8b4906c62c63b2ea3be6a7ee7231e9f7640d0e309b9e4bfc5f9e98880c7958cc",
+      "uploaded": true
+    },
+    {
+      "bytes": 2227912,
+      "path": "experiments/ic-affine-native-20261115/timing-001/probe",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/c4/c48907bbac972bfb613e5fd30a47b85556373f0f4107103cf38b8b38258901f1",
+      "sha256": "c48907bbac972bfb613e5fd30a47b85556373f0f4107103cf38b8b38258901f1",
+      "uploaded": true
+    },
+    {
+      "bytes": 192281,
+      "path": "experiments/ic-affine-native-20261115/timing-001/references.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/2c/2c587e03cb44601b15bafabb6da1829bf6d4397b181075e5958941cd48aa01c2",
+      "sha256": "2c587e03cb44601b15bafabb6da1829bf6d4397b181075e5958941cd48aa01c2",
+      "uploaded": true
+    },
+    {
+      "bytes": 105,
+      "path": "experiments/ic-affine-native-20261115/timing-001/summary.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/ef/ef56ef9ee3b527af42ca71556c0c203db9fe67bd8f8a37d79195929d96553d0e",
+      "sha256": "ef56ef9ee3b527af42ca71556c0c203db9fe67bd8f8a37d79195929d96553d0e",
+      "uploaded": true
+    },
+    {
+      "bytes": 1277999,
+      "path": "experiments/ic-affine-native-20261115/timing-001/triples.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/d5/d5f884ea3dc7ed2808d8a8fd10e1990ded570e93c0ed0bb1a29367a2e5f9197f",
+      "sha256": "d5f884ea3dc7ed2808d8a8fd10e1990ded570e93c0ed0bb1a29367a2e5f9197f",
+      "uploaded": true
+    },
+    {
+      "bytes": 81466,
+      "path": "experiments/ic-affine-native-20261115/analysis.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/74/7430e8b320ea5c743926d0d1a5c58afcc75b760b50c617102e63e4e915fff220",
+      "sha256": "7430e8b320ea5c743926d0d1a5c58afcc75b760b50c617102e63e4e915fff220",
+      "uploaded": true
+    },
+    {
+      "bytes": 11480,
+      "path": "experiments/ic-affine-native-20261115/independent-arithmetic-timing001.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/c5/c5678ea18112c245fff074384de317b449960d041561805f32eb8a60503535de",
+      "sha256": "c5678ea18112c245fff074384de317b449960d041561805f32eb8a60503535de",
+      "uploaded": true
+    },
+    {
+      "bytes": 810,
+      "path": "experiments/ic-affine-native-20261115/native-001/full-domains-001.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/93/936be2cdde47db88982f6100d866e53d855c30eb9589e449ff72bff1cef0369f",
+      "sha256": "936be2cdde47db88982f6100d866e53d855c30eb9589e449ff72bff1cef0369f",
+      "uploaded": true
+    }
+  ],
+  "repo": "cryptanalysis",
+  "reports": {
+    "pdf": "experiments/ic-affine-native-20261115/REPORT.pdf",
+    "png": [],
+    "svg": [
+      "experiments/ic-affine-native-20261115/cold-costs.svg",
+      "experiments/ic-affine-native-20261115/flow.svg"
+    ]
+  },
+  "schema": "bench.record/v1",
+  "session": null,
+  "slug": "ic-affine-fixed-pipeline-001",
+  "status": "invalid",
+  "summary": "Complete frozen twelve-triple native affine panel; all36 IC and24 rho answers replayed. Cached cold paired ratios0.693347 N15 and1.075203 N18; one A/A failure retained. gVisor unqualified, qualified null; no promotion.",
+  "validation": "experiments/ic-affine-native-20261115/analysis.json"
+}
