@@ -2,6 +2,7 @@
 
 import hashlib
 import json
+import re
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -19,6 +20,12 @@ def main():
     assert sha(FORMAL / "XedniObstruction.lean") == source["base_source_sha256"]
     blob = hashlib.sha1(b"blob " + str(len(base_bytes)).encode() + b"\0" + base_bytes).hexdigest()
     assert blob == source["base_git_blob"]
+    height_bytes = (FORMAL / "HeightPigeonhole.lean").read_bytes()
+    assert sha(FORMAL / "HeightPigeonhole.lean") == source["height_source_sha256"]
+    height_blob = hashlib.sha1(
+        b"blob " + str(len(height_bytes)).encode() + b"\0" + height_bytes
+    ).hexdigest()
+    assert height_blob == source["height_git_blob"]
     assert (FORMAL / "lean-toolchain").read_text().strip() == "leanprover/lean4:v4.35.0-rc4"
     manifest = json.loads((FORMAL / "lake-manifest.json").read_text())
     assert "021c46bdd042f67b538b9f9871d556a93713a9a9" in json.dumps(manifest)
@@ -29,18 +36,21 @@ def main():
     output = (FORMAL / "build-output.txt").read_text()
     assert "Build completed successfully" in output
     assert "sorryAx" not in output
-    axiom_lines = [row for row in output.splitlines() if "depends on axioms:" in row]
-    assert len(axiom_lines) == 20
-    allowed = ("[propext, Classical.choice, Quot.sound]", "[propext, Quot.sound]")
-    assert all(row.endswith(allowed) for row in axiom_lines)
+    axiom_lines = re.findall(r"'([^']+)' depends on axioms:\s*\[([^\]]*)\]", output)
+    assert len(axiom_lines) == 32
+    allowed = {"propext", "Classical.choice", "Quot.sound"}
+    assert all(set(axioms.replace("\n", "").split(", ")) <= allowed
+               for _, axioms in axiom_lines)
     expected = (
         "dependent_lift_sample_count", "mem_boundedCandidates",
         "nontrivial_iff_ne_zero", "boundedCandidates_card",
         "dependent_lift_box_count", "dependent_lift_explicit_count",
+        "dependent_lift_height_count", "no_uniform_small_height_cover",
+        "no_uniform_rank_gap_cover",
     )
-    assert all(any(f"'XedniObstruction.{name}' depends on axioms:" in row
-                   for row in axiom_lines) for name in expected)
-    print(json.dumps({"status": "PASS", "checked_declarations": 20,
+    assert all(any(decl == f"XedniObstruction.{name}"
+                   for decl, _ in axiom_lines) for name in expected)
+    print(json.dumps({"status": "PASS", "checked_declarations": 32,
                       "base_source_sha256": source["base_source_sha256"],
                       "extension_source_sha256": sha(FORMAL / "XedniDependentLift.lean")},
                      sort_keys=True))

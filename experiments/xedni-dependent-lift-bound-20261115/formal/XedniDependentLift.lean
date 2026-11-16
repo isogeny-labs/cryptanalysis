@@ -1,4 +1,5 @@
 import XedniObstruction
+import HeightPigeonhole
 import Mathlib.Data.Fintype.Pi
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Int.Interval
@@ -160,11 +161,125 @@ theorem dependent_lift_explicit_count {H : Type*} [AddCommGroup H]
     dependent_lift_box_count red s w lifts hcompat bound hbound
       short_relation_witness
 
+/-- A finite image count, checked for each selected lift tuple, supplies
+the short witness required by the dependent-lift sampling bound. -/
+theorem dependent_lift_height_count {H : Type*} [AddCommGroup H]
+    [Fact q.Prime] (red : H →+ ZMod q)
+    (s : Fin r → ZMod q) (w : ZMod q)
+    (lifts : (Fin r → ZMod q) → Fin r → H)
+    (hcompat : ∀ t i, red (lifts t i) = xedniSampleMap s w t i)
+    (radius : ℕ) (hsmall : 2 * radius < q)
+    (values : (Fin r → ZMod q) → Finset H)
+    (hvalues : ∀ t, ∀ coeff ∈ XedniHeightPigeonhole.coefficientBox r radius,
+      (∑ i, coeff i • lifts t i) ∈ values t)
+    (hcount : ∀ t,
+      (∃ coeff, Nontrivial coeff ∧ Relation (lifts t) coeff) →
+      (values t).card < (2 * radius + 1) ^ r) :
+    (dependentLiftSamples lifts).card * Nat.card (ZMod q) ≤
+      ((2 * (2 * radius) + 1) ^ r - 1) *
+        Nat.card (Fin r → ZMod q) := by
+  apply dependent_lift_explicit_count red s w lifts hcompat
+    (2 * radius) hsmall
+  intro t hdep
+  have hdep' : ∃ coeff,
+      XedniHeightPigeonhole.Nontrivial coeff ∧
+      XedniHeightPigeonhole.Relation (lifts t) coeff := by
+    simpa [XedniHeightPigeonhole.Nontrivial,
+      XedniHeightPigeonhole.Relation, Nontrivial, Relation] using hdep
+  have hw := XedniHeightPigeonhole.bounded_witness_of_card_lt_on_dependence
+    (lifts t) (XedniHeightPigeonhole.coefficientBox r radius)
+    (values t) (by
+      intro _
+      simpa [XedniHeightPigeonhole.coefficientBox_card] using hcount t hdep)
+    (hvalues t) (by
+      intro coeff hc
+      exact XedniHeightPigeonhole.coefficientBox_bounded hc) hdep'
+  obtain ⟨coeff, hnon, hbound, hrel⟩ := hw
+  refine ⟨coeff, ?_, ?_, ?_⟩
+  · simpa [XedniHeightPigeonhole.Nontrivial, Nontrivial] using hnon
+  · simpa [XedniHeightPigeonhole.Relation, Relation] using hrel
+  · simpa [XedniHeightPigeonhole.Bounded, Bounded] using hbound
+
+/-- A uniform finite height cover cannot be simultaneously compatible with
+all sampled offsets when its short-relation box has fewer than `q` vectors. -/
+theorem no_uniform_small_height_cover {H : Type*} [AddCommGroup H]
+    [Fact q.Prime] (red : H →+ ZMod q)
+    (s : Fin r → ZMod q) (w : ZMod q)
+    (lifts : (Fin r → ZMod q) → Fin r → H)
+    (hcompat : ∀ t i, red (lifts t i) = xedniSampleMap s w t i)
+    (radius : ℕ) (hsmall : 2 * radius < q)
+    (values : (Fin r → ZMod q) → Finset H)
+    (hvalues : ∀ t, ∀ coeff ∈ XedniHeightPigeonhole.coefficientBox r radius,
+      (∑ i, coeff i • lifts t i) ∈ values t)
+    (hcount : ∀ t, (values t).card < (2 * radius + 1) ^ r)
+    (hbudget : (2 * (2 * radius) + 1) ^ r - 1 < q) : False := by
+  have hbound := dependent_lift_height_count red s w lifts hcompat
+    radius hsmall values hvalues (fun t _ => hcount t)
+  have hall : dependentLiftSamples lifts = Finset.univ := by
+    apply Finset.eq_univ_iff_forall.mpr
+    intro t
+    simp only [dependentLiftSamples, Finset.mem_filter, Finset.mem_univ, true_and]
+    obtain ⟨coeff, hnon, _, hrel⟩ :=
+      XedniHeightPigeonhole.bounded_relation_of_height_ball_count
+        (lifts t) (values t) (hcount t) (hvalues t)
+    exact ⟨coeff, (by simpa [XedniHeightPigeonhole.Nontrivial,
+      Nontrivial] using hnon),
+      (by simpa [XedniHeightPigeonhole.Relation, Relation] using hrel)⟩
+  rw [hall] at hbound
+  have hcard : (Finset.univ : Finset (Fin r → ZMod q)).card =
+      Nat.card (Fin r → ZMod q) := Fintype.card_eq_nat_card
+  rw [hcard] at hbound
+  have hpos : 0 < Nat.card (Fin r → ZMod q) := Nat.card_pos
+  have hstrict := Nat.mul_lt_mul_of_pos_left hbudget hpos
+  have hcardq : Nat.card (ZMod q) = q := by simp
+  have hbound' : Nat.card (Fin r → ZMod q) * q ≤
+      Nat.card (Fin r → ZMod q) *
+        ((2 * (2 * radius) + 1) ^ r - 1) := by
+    simpa [hcardq, mul_comm] using hbound
+  exact (lt_irrefl _ (lt_of_le_of_lt hbound' hstrict))
+
+/-- A uniform rank gap, bounded lattice coordinates, and a sub-`q`
+coefficient box cannot all hold for compatible selected lifts. -/
+theorem no_uniform_rank_gap_cover {H : Type*} [AddCommGroup H]
+    [Fact q.Prime] {d : ℕ} (red : H →+ ZMod q)
+    (s : Fin r → ZMod q) (w : ZMod q)
+    (lifts : (Fin r → ZMod q) → Fin r → H)
+    (hcompat : ∀ t i, red (lifts t i) = xedniSampleMap s w t i)
+    (basis : (Fin r → ZMod q) → Fin d → H)
+    (torsion : (Fin r → ZMod q) → Finset H)
+    (L K c : ℕ) (hdegree : d < r) (hcoord : K ≤ c * L)
+    (hlarge : ∀ t, (torsion t).card * (2 * c + 1) ^ d < L)
+    (hrep : ∀ t, ∀ coeff ∈ XedniHeightPigeonhole.coefficientBox r L,
+      ∃ τ ∈ torsion t,
+        ∃ a ∈ XedniHeightPigeonhole.coefficientBox d K,
+          (∑ i, coeff i • lifts t i) =
+            τ + ∑ j, a j • basis t j)
+    (hsmall : 2 * L < q)
+    (hbudget : (2 * (2 * L) + 1) ^ r - 1 < q) : False := by
+  classical
+  apply no_uniform_small_height_cover red s w lifts hcompat L hsmall
+    (fun t => XedniHeightPigeonhole.latticeValues (basis t) (torsion t) K)
+  · intro t coeff hc
+    obtain ⟨τ, hτ, a, ha, heq⟩ := hrep t coeff hc
+    rw [heq]
+    unfold XedniHeightPigeonhole.latticeValues
+    exact Finset.mem_image.mpr
+      ⟨(τ, a), Finset.mem_product.mpr ⟨hτ, ha⟩, rfl⟩
+  · intro t
+    exact (XedniHeightPigeonhole.latticeValues_card_le
+      (basis t) (torsion t) K).trans_lt
+        (XedniHeightPigeonhole.rank_gap_count
+          (torsion t).card d r c K L hdegree hcoord (hlarge t))
+  · exact hbudget
+
 #print axioms dependent_lift_sample_count
 #print axioms mem_boundedCandidates
 #print axioms nontrivial_iff_ne_zero
 #print axioms boundedCandidates_card
 #print axioms dependent_lift_box_count
 #print axioms dependent_lift_explicit_count
+#print axioms dependent_lift_height_count
+#print axioms no_uniform_small_height_cover
+#print axioms no_uniform_rank_gap_cover
 
 end XedniObstruction
