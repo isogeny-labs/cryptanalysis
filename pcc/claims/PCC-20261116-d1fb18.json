@@ -1,0 +1,44 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T02:23:05Z",
+ "id": "PCC-20261116-d1fb18",
+ "kind": "statement",
+ "producer": {
+  "commit": "b7b91903888ffa9dea85e643e5a86e828767e7c8",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/historical-static-SHA-test-dependency-failure-02/actual-compiler.exit.xz",
+    "sha256": "3246e457abfbcdad9b15fd3e441fdcb4b89f5c51fb997d428ab0d77f17fa7409"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/historical-static-SHA-test-dependency-failure-02/entire-failed-source.tar.xz",
+    "sha256": "86a52ea5e1735b9a0f8c2527563d2a888d6f3d1f5065ee581139a90b1fd25dd1"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/historical-static-SHA-test-dependency-failure-02/whole-Cargo-messages.jsonl.xz",
+    "sha256": "4d6535ac11a8eb698e7e03718308a0596dca20a98e75841dcb3620345ae858df"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/historical-static-SHA-test-dependency-failure-02/whole-compiler.stderr.xz",
+    "sha256": "00ca1a0e45c861e97dd05677eefd3a335844903270df79bb7820cd9cba633bdb"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Historical adapter static compile02 actual101: unchanged original SHA module cfg(test) requires the original hex crate; the new crate omitted that dependency. Whole failed source and complete compiler messages/stderr/exit retained; no native test executed. Add pinned hex0.4.3 as a normal dependency, as in the existing identity foundation, without editing original SHA or its tests. Corrected privacy issue from7eb0e7 no longer appears. This is a repeated integration dependency oversight, not a mathematical outcome."
+}

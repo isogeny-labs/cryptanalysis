@@ -1,0 +1,186 @@
+name: Strict historical LP adapter synthetic native development01
+on:
+  pull_request:
+    paths:
+      - 'experiments/chained-transfer-lp-presentation-01/historical-01/**'
+      - 'experiments/chained-transfer-lp-presentation-01/matrix-01/**'
+      - '.github/workflows/chained-transfer-lp-historical-development-01.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  historical-adapter-development:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      RUSTUP_TOOLCHAIN: 1.99.1
+      SOURCE_REVISION: ${{ github.event.pull_request.head.sha || github.sha }}
+      SOURCE_BRANCH: ${{ github.head_ref || github.ref_name }}
+    steps:
+      - name: Initialize complete partial custody
+        run: |
+          mkdir "$RUNNER_TEMP/lp-historical-custody"
+          date -u +%FT%TZ > "$RUNNER_TEMP/lp-historical-custody/start.txt"
+          printf '%s\n' '${{ github.workflow_sha }}' > "$RUNNER_TEMP/lp-historical-custody/workflow-revision.txt"
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+          path: cryptanalysis
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /.gitignore
+            /.resume/RESUME.md
+            /scripts/checkpoint.sh
+            /docs/chained-transfer-checkpoint-transport/PROTOCOL_01.md
+            /experiments/chained-transfer-lp-presentation-01/historical-01/
+            /experiments/chained-transfer-lp-presentation-01/matrix-01/
+            /.github/workflows/chained-transfer-lp-historical-development-01.yml
+      - name: Checkout immutable original SHA dependency
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          repository: isogeny-labs/crypto
+          ref: 2d46258afc20188b8593b3a0693183d1282e0aaf
+          persist-credentials: false
+          path: crypto
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /src/hash/sha256.rs
+      - name: Retain the actually executing workflow
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          ref: ${{ github.workflow_sha }}
+          persist-credentials: false
+          path: executed-workflow
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /.github/workflows/chained-transfer-lp-historical-development-01.yml
+      - name: Checkout immutable original artifact tool and policy
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          repository: isogeny-labs/cryptanalysis
+          ref: 3de8c174cf65e6b34bf8579d97b817b8f5dc2ded
+          persist-credentials: false
+          path: artifact-tools
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            tools/artifacts/artifacts.py
+            scripts/checkpoint.sh
+            .artifacts/config.json
+      - name: Prepare the original pinned AWS CLI before the credential step
+        run: |
+          set -euo pipefail
+          if ! command -v aws >/dev/null; then
+            python3 -m venv "$RUNNER_TEMP/checkpoint-awscli"
+            "$RUNNER_TEMP/checkpoint-awscli/bin/python" -m pip install --disable-pip-version-check awscli==1.46.2
+            echo "$RUNNER_TEMP/checkpoint-awscli/bin" >> "$GITHUB_PATH"
+          fi
+      - name: Install declared native development toolchain
+        run: rustup toolchain install 1.99.1 --profile minimal --component rustfmt --component clippy
+      - name: Record exact source, original tool and host capability
+        working-directory: cryptanalysis
+        run: |
+          set -euo pipefail
+          [[ "$SOURCE_REVISION" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git rev-parse HEAD)" = "$SOURCE_REVISION"
+          git check-ref-format --branch "$SOURCE_BRANCH"
+          branch=$SOURCE_BRANCH
+          if git show-ref --verify --quiet "refs/heads/$branch"; then
+            test "$(git rev-parse "refs/heads/$branch")" = "$SOURCE_REVISION"
+            git switch "$branch"
+          else
+            git switch --create "$branch"
+          fi
+          test -z "$(git status --porcelain --untracked-files=all)"
+          cmp ../artifact-tools/scripts/checkpoint.sh scripts/checkpoint.sh
+          echo '3c4192168bbc390bf94be46c765914a419a4eff8c30e3f52f5b94ea432738056  ../artifact-tools/scripts/checkpoint.sh' | sha256sum --check
+          out="$RUNNER_TEMP/lp-historical-checkpoint"
+          mkdir "$out"
+          git rev-parse HEAD > "$out/source-head.txt"
+          git symbolic-ref --short HEAD > "$out/source-branch.txt"
+          sha256sum .gitignore scripts/checkpoint.sh .resume/RESUME.md docs/chained-transfer-checkpoint-transport/PROTOCOL_01.md > "$out/source-inputs.sha256"
+          cp .resume/RESUME.md "$out/original-RESUME.md"
+          uname -sr > "$out/kernel.txt"
+          set +e
+          cat /proc/sys/kernel/random/boot_id > "$out/boot-id.log" 2>&1
+          printf '%s\n' "$?" > "$out/boot-id.exit"
+          readlink /proc/self/ns/time > "$out/time-namespace.log" 2>&1
+          printf '%s\n' "$?" > "$out/time-namespace.exit"
+          cat /proc/self/timens_offsets > "$out/time-offsets.log" 2>&1
+          printf '%s\n' "$?" > "$out/time-offsets.exit"
+          set -e
+      - name: Run only the original gate and read back its exact checkpoint
+        working-directory: cryptanalysis
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+          CHECKPOINT_AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+          CHECKPOINT_SESSION: chained-transfer-${{ github.run_id }}-${{ github.run_attempt }}
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/lp-historical-checkpoint"
+          cmp ../artifact-tools/scripts/checkpoint.sh scripts/checkpoint.sh
+          set +e
+          timeout 120 bash ../artifact-tools/scripts/checkpoint.sh gate > "$out/original-gate.log" 2>&1
+          code=$?
+          set -e
+          printf '%s\n' "$code" > "$out/original-gate.exit"
+          cat "$out/original-gate.log"
+          test "$code" -eq 0 || exit "$code"
+          cp .resume/.last-push "$out/original-last-push.txt"
+          read -r state_hash stamp checkpoint_uri < "$out/original-last-push.txt"
+          [[ "$state_hash" =~ ^[0-9a-f]{64}$ ]]
+          [[ "$stamp" =~ ^[A-Za-z0-9._=-]+$ ]]
+          safe_branch=$(printf '%s' "$SOURCE_BRANCH" | sed 's#/#__#g; s#[^A-Za-z0-9._=-]#-#g')
+          [[ "$checkpoint_uri" == "s3://setec-astronomy-artifacts/checkpoints/cryptanalysis/$safe_branch/$stamp/" ]]
+          set +e
+          aws --region "$CHECKPOINT_AWS_REGION" s3 cp --only-show-errors "${checkpoint_uri}checkpoint.tar.gz" "$out/remote-checkpoint.tar.gz" > "$out/readback-pack.log" 2>&1
+          pack_code=$?
+          aws --region "$CHECKPOINT_AWS_REGION" s3 cp --only-show-errors "${checkpoint_uri}RESUME.md" "$out/remote-RESUME.md" > "$out/readback-resume.log" 2>&1
+          resume_code=$?
+          aws --region "$CHECKPOINT_AWS_REGION" s3 cp --only-show-errors "${checkpoint_uri}meta.json" "$out/remote-meta.json" > "$out/readback-meta.log" 2>&1
+          meta_code=$?
+          set -e
+          printf '%s\n' "$pack_code" > "$out/readback-pack.exit"
+          printf '%s\n' "$resume_code" > "$out/readback-resume.exit"
+          printf '%s\n' "$meta_code" > "$out/readback-meta.exit"
+          test "$pack_code" -eq 0 && test "$resume_code" -eq 0 && test "$meta_code" -eq 0
+          cmp .resume/RESUME.md "$out/remote-RESUME.md"
+          jq --exit-status --arg source "$SOURCE_REVISION" --arg branch "$SOURCE_BRANCH" '.head==$source and .repo=="cryptanalysis" and .branch==$branch' "$out/remote-meta.json"
+          tar -tzf "$out/remote-checkpoint.tar.gz" > "$out/remote-members.txt"
+          tar -xOzf "$out/remote-checkpoint.tar.gz" ./RESUME.md > "$out/pack-RESUME.md"
+          tar -xOzf "$out/remote-checkpoint.tar.gz" ./meta.json > "$out/pack-meta.json"
+          cmp "$out/pack-RESUME.md" "$out/remote-RESUME.md"
+          cmp "$out/pack-meta.json" "$out/remote-meta.json"
+          sha256sum "$out/remote-checkpoint.tar.gz" "$out/remote-RESUME.md" "$out/remote-meta.json" > "$out/remote-inputs.sha256"
+          test -z "$(git status --porcelain --untracked-files=all)"
+          set +e
+          bash ../artifact-tools/scripts/checkpoint.sh status > "$out/original-final-status.log" 2>&1
+          status_code=$?
+          set -e
+          printf '%s\n' "$status_code" > "$out/original-final-status.exit"
+          cat "$out/original-final-status.log"
+          exit "$status_code"
+      - name: Run only the complete synthetic native adapter development
+        working-directory: cryptanalysis
+        run: |
+          set -euo pipefail
+          custody="$RUNNER_TEMP/lp-historical-custody"
+          cp ../executed-workflow/.github/workflows/chained-transfer-lp-historical-development-01.yml "$custody/actual-workflow.yml"
+          set +e
+          timeout 1200 bash experiments/chained-transfer-lp-presentation-01/historical-01/run-development-01.sh "$custody/whole-native-development" "$RUNNER_TEMP/lp-historical-checkpoint"
+          code=$?
+          set -e
+          printf '%s\n' "$code" > "$custody/actual-driver.exit"
+          exit "$code"
+      - name: Retain every complete and partial source/checkpoint/native artifact
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: lp-historical-development-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/lp-historical-custody
+            ${{ runner.temp }}/lp-historical-checkpoint
+          if-no-files-found: error
