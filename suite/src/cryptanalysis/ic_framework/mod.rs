@@ -725,6 +725,9 @@ mod tests {
             .as_ref()
             .expect("an algebraic oracle reports its solver");
         assert_eq!(solver.name, "buchberger-f2");
+        let descent_ns = report.decomposition.cost.get("symbolic_descent_ns");
+        assert!(descent_ns > 0, "symbolic construction must be charged");
+        assert!(report.decomposition.cost.gae >= solver.gae + calib.gae(descent_ns, 1.0));
         assert!(solver.calls >= 1, "the solver was never called");
         assert_eq!(solver.priced_by, "measured");
         assert!(

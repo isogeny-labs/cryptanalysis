@@ -83,6 +83,11 @@ jobs:
           cargo clippy --lib --features f2m-karatsuba3,f2m-fixed-reduction -- -D warnings
           cargo test --release --lib --features f2m-karatsuba3 binary_ecc::f2m::tests
           cargo test --release --lib --features f2m-karatsuba3,f2m-fixed-reduction binary_ecc::f2m::tests
+      - name: Direct S3 coefficient construction
+        run: |
+          cargo clippy --lib --features s3-direct-coefficients -- -D warnings
+          cargo test --release --lib --features s3-direct-coefficients pq_descent_symbolic
+          cargo test --release --lib --features s3-direct-coefficients ic_framework::tests::the_algebraic
       - name: GPU F4 kernel on the host emulator
         # The CUDA kernel's own source (cuda/f4_gf2_device.cuh), compiled as
         # C and held to the host kernel's decisions, caps and F5 rows, then

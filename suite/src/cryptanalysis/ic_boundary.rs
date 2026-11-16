@@ -4334,6 +4334,9 @@ pub fn price_phase(phase: &mut PhaseCost, calib: &Calibration) {
     gae += conv("frobenius_maps", calib.ns_per_frobenius);
     gae += conv("canonicalisations", calib.ns_per_canon);
     gae += conv("target_guard_probes", Some(calib.ns_per_lookup));
+    // This counter is measured nanoseconds, disjoint from solver work and
+    // group operations; convert with one nanosecond per recorded unit.
+    gae += conv("symbolic_descent_ns", Some(1.0));
     phase.gae = gae;
 }
 
