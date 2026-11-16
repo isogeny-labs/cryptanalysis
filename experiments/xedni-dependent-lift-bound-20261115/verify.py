@@ -50,6 +50,13 @@ def main():
     )
     assert all(any(decl == f"XedniObstruction.{name}"
                    for decl, _ in axiom_lines) for name in expected)
+    gate = json.loads((HERE / "parameter_gate.json").read_text())
+    assert gate["schema"] == "xedni-dependent-lift-parameter-gate-v1"
+    assert [row["subgroup_order"] for row in gate["rows"][::2]] == \
+        [43, 53, 53, 79, 61, 73, 47, 71]
+    assert all(row["max_radius"] == (1 if row["arity"] == 2 else 0)
+               and not row["rank_gap_numerically_possible_with_nonempty_torsion"]
+               for row in gate["rows"])
     print(json.dumps({"status": "PASS", "checked_declarations": 32,
                       "base_source_sha256": source["base_source_sha256"],
                       "extension_source_sha256": sha(FORMAL / "XedniDependentLift.lean")},

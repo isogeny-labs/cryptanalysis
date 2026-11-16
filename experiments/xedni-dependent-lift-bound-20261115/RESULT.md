@@ -46,6 +46,24 @@ to a **uniform** low-rank, bounded-height lift rule; applying it to a
 particular rational curve construction requires its height-to-coordinate
 estimate and good-reduction map.
 
+## Numerical admission on the frozen two-point panel
+
+`parameter_gate.py` evaluates the theorem's strict inequalities using the
+eight recorded subgroup orders `43, 53, 53, 79, 61, 73, 47, 71`. Here the
+Lean arity `r` is **two lifted points**; the subgroup order is `q`. For every
+panel order, the largest admissible radius is `L=1`, yielding a witness box
+of `5²−1=24` vectors. At `L=2`, the box has `9²−1=80` vectors, exceeding
+even the largest panel order `79`. For arity three, no positive radius passes
+the box-size gate: already `5³−1=124>79`.
+
+With a nonempty torsion label set, the rank-gap left side
+`T(2c+1)^d` is at least one, so its strict requirement
+`T(2c+1)^d<L` needs `L≥2`. Consequently the rank-gap contradiction has
+**no numerically admitted configuration in this panel**. This does not
+invalidate the Lean implication; it identifies the larger-order experiment
+needed to test its arithmetic premises. The exact row-wise output is in
+`parameter_gate.json`.
+
 ## Exact hypotheses and proof
 
 The theorem `XedniObstruction.dependent_lift_sample_count` takes an additive
