@@ -5,6 +5,7 @@ No fresh target panel, timing result or speedup is established here.
 The implementation baseline is PR source `8abb2b14`; there is no qualified
 Rust timing baseline to ratchet. Final curve/workload/candidate identifiers
 and measured costs remain unset until the existing admission rules are met.
+[pcc:unverified]
 
 ## Three required IC arms
 
@@ -49,7 +50,7 @@ preparation failure, empty/invalid base, timeout and exhausted search.
 ## Two distinct comparisons
 
 For relation yield, run `--relation-yield-only` in all three arms with the
-same public `--seed`, `--walk-lanes`, `--max-queries` and limits. Their target
+same public `--seed`, `--walk-lanes`, positive `--max-queries` and limits. Their target
 walks depend on the public curve/G/Q and those sampler parameters, not the
 factor base. Recovery and graph elimination are disabled in this mode, so an
 early solution does not shorten one arm's query prefix. Include failed and

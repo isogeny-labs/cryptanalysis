@@ -19,7 +19,8 @@ polynomial at the known base coordinates and verifies surviving signed sums
 in the target group. This avoids constructing a high-degree resultant or
 running a generic polynomial GCD for this complete known-root case. It is an
 exact solver specialized to two-term decompositions (`m=2`), not a general
-multivariate Gröbner solver.
+multivariate Gröbner solver. These are producer implementation assertions.
+[pcc:unverified]
 
 The implementation includes these optimization choices:
 
@@ -76,6 +77,7 @@ unavailable backend fail. No architecture flags are required.
 use prime_field_auxiliary_ic::{AuxiliaryMap, Backend, Config, Curve,
     FactorBase, PreparedSolver, SolveOutcome, verify_certificate};
 
+// API example; local replay is not an independent verdict. [pcc:unverified]
 let curve = Curve::<7>::new(2, 51)?;
 let roots = [3, 111, 78, 67, 85, 119, 57, 91];
 let maps = vec![

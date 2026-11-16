@@ -58,6 +58,18 @@ protocol exist. No such run is launched by this import PR.
 
 ## Resolution and history
 
+2026-11-16, requested random-versus-special comparison: source `5e3a4202`
+adds ordinary random equal-column subgroup bases and fixed-prefix relation
+yield without early recovery, alongside the retained same-special-base direct
+control. It includes cofactor clearing for the archived 61-bit subgroup.
+The [comparison specification](../experiments/prime-field-auxiliary-ic/random-vs-special/COMPARISON.md)
+requires all three arms, matched public query prefixes and separate full cold
+recovery costs. The [scoped producer checks](../experiments/prime-field-auxiliary-ic/random-vs-special/README.md),
+claim `PCC-20261116-8d7a97`, cover the implementation; they do not meet the
+fresh timing admission criteria or demonstrate an auxiliary speedup. The
+actual frozen panel, cost accounting and independent signed replay remain
+open. [pcc:unverified]
+
 2026-11-16, reviewed native-floor integration: upstream PR #1586 has merged;
 source `bbdf695d` adopts its Rust 1.85 native/consumer floor. Both locked
 all-target minimum-version checks and the separate stable correctness scopes
