@@ -53,6 +53,18 @@ local source checks. The workflow wiring check emits its existing nonfatal
 Sage checkout note and exits zero; its raw output is retained. The snapshot's
 exact tree and 2,473 files are unchanged. [pcc:unverified]
 
+Additive hosted follow-up: on head `e24a3a3e`, both core jobs completed their
+test suites and then failed strict rustdoc because a newly added bare
+`[pcc:unverified]` marker was interpreted as an intra-doc link. Source
+`a4976ed5` renders that same marker literally. Strict documentation generation
+passes locally on stable and Rust 1.78, with all warning flags intact. Both
+exact decoded failure logs are retained as compressed files in
+[rustdoc-followup](rustdoc-followup/), along with source-scoped checks and
+validator. Claim `PCC-20261116-76c3e0` is unverified. Earlier passing rustdoc
+observations remain scoped to `5e3a4202`, before the later annotation; no
+earlier receipt is rewritten. Current-head hosted qualification remains
+separate. [pcc:unverified]
+
 No fresh benchmark was launched. Actual base/target freeze, checkpoint upload,
 admitted GPU/host, phase accounting, benchmark records and independent signed
 replay remain outstanding. The existing GLV binding and CodeQL merge blockers
