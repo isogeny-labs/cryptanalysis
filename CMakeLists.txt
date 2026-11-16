@@ -424,7 +424,7 @@ endif()
 
 if(CA_BUILD_TESTS)
   enable_testing()
-  set(CA_TESTS modarith group bsgs rho kangaroo grumpy precomp curve sixclass joint_tau pohlig cheon linalg indexcalc ffi gpu coord glv_trace_accounting robustness)
+  set(CA_TESTS modarith group bsgs rho kangaroo grumpy precomp curve sixclass joint_tau pohlig cheon linalg indexcalc ic_projection ffi gpu coord glv_trace_accounting robustness)
   foreach(t ${CA_TESTS})
     if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_${t}.c)
       add_executable(test_${t} tests/test_${t}.c)

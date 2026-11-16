@@ -1,0 +1,11 @@
+{
+  "schema": "xedni-constructive-doubling-lift-v1",
+  "source_rows": "experiments/xedni-vector-shift-lift-search-20261116/rows.jsonl",
+  "source_rows_sha256": "3c75b8f6aed964b99e3135cda848289669f7f6bf54a7a8c603ec37b9198e5b9e",
+  "source_registry": "experiments/xedni-crt-band-panel-20261115/result.json",
+  "source_registry_sha256": "edbe3a808aa86054c00f15a5ae40814ed2f8452c4316abbe68f41a62f2219b49",
+  "selection": "Take the first row for every distinct (field_prime,target_index,offsets) query in the archived selected vector (2,-1), preserving source order; this gives 512 distinct query events including every public doubling relation and every public nonrelation.",
+  "lift": "For U=(X,Y) on y^2=x^3-x-2 over F_p, choose centered integer x,y and centered integer s congruent to (3X^2-1)/(2Y) mod p. Define A=2ys-3x^2, B=y^2-x^3-Ax, u=s^2-2x, v=s(x-u)-y. Form P=(x,y), R=(u,v) on y^2=x^3+Ax+B. Compare R mod p with archived V and independently test 2P=R, curve reduction, and target scalar replay.",
+  "exception_policy": "Retain and count U at infinity, Y=0, singular rational curve, bad reduction, R-reduction mismatch, or audit failure; do not omit exceptional query events.",
+  "measurement": "exact construction and correctness counts, no wall-time comparison or performance claim"
+}

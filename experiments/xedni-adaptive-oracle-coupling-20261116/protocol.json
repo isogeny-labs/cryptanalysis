@@ -1,0 +1,10 @@
+{
+  "schema": "xedni-adaptive-oracle-coupling-v1",
+  "group": "Z/7Z under addition",
+  "encodings": "all 7! bijections from group elements to labels 0..6",
+  "traces": {"x": [1, 2], "y": [1, 3]},
+  "adaptive_command": "add indices (0,1) when first label is less than second; otherwise add (1,1)",
+  "event": "complete three-label tuple, including the branch choice",
+  "freshness": "both possible outputs are outside both old traces",
+  "claim_boundary": "finite adaptive fresh-step encoding census; first collisions and concrete coordinates are separate"
+}

@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-13T21:38:43Z",
+ "id": "PCC-20261113-f8b42f",
+ "kind": "theorem",
+ "producer": {
+  "commit": "c37ad390a4e2ec21bc4e54a005c2642767099199",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "450fcb41761c15ac742044f5b8375b13d99cfd61b817207660344b8672d32737",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/odd-product-refinements/lean/OddProductRefinement.lean",
+   "theorem": "OddProductRefinement223.identical_source_pair_elimination"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Faithful structural implications for actual native147b66/writtenf4eb22:52-primary projectors13/40 plus trivial4/13 intersection;global quotient universal property and genuine transported-kernel containment derive beta existence and F=beta double without assuming beta;old dual2 pair eliminates redundant source PhiNorm with identical outputs. Three exact declarations,both unchanged original4.35/4.34.1 gatesPASS3/0trusted/noaxioms. Actual etale/geometric kernel classification,quotient category,degree/polarization,Picard/scalar interpretations remain written/open. No complete beta coordinate implementation or performance/signedexecution claim",
+ "statement": "theorem identical_source_pair_elimination {A B J L : Type} (phiOld : A \u2192 J) (normOld : J \u2192 A) (gamma : A \u2192 B) (phiNew : B \u2192 L) (doubleA : A \u2192 A) (oldA : \u2200 a, normOld (phiOld a)=doubleA a) : \u2200 a, phiNew (gamma (normOld (phiOld a)))=phiNew (gamma (doubleA a))"
+}

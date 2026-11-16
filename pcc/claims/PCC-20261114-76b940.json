@@ -1,0 +1,65 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-14T15:46:04Z",
+ "id": "PCC-20261114-76b940",
+ "kind": "statement",
+ "producer": {
+  "commit": "e7f4befa0cf0772db6078aab5b8ee4a71a58ba4b",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/norm-arithmetic-canary-build-timeout-02/actual-command.sh",
+    "sha256": "b613a0d77a2c569e4aa86889ba0147561339e2a2dc189dc8873dcb65fd63d37c"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/norm-arithmetic-canary-build-timeout-02/dependency-diagnosis.json",
+    "sha256": "7cffb08092beef0ddec26e46fd1f491414a6e0fe65f06e5fbe58208e82a9fb5c"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/norm-arithmetic-canary-build-timeout-02/positive-build.exit",
+    "sha256": "ca2ebdf97d7469496b1f4b78958f9dc8447efdcb623953fee7b6996b762f6fff"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/norm-arithmetic-canary-build-timeout-02/positive-build.txt",
+    "sha256": "9af6b3708805155d5960d937755f0c1738bf3106d99d08e47470e11327f5c87f"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/norm-arithmetic-canary-build-timeout-02/positive-lock.txt",
+    "sha256": "e33689878256e8c71ce522222b4e36dedb646772d0e5b79443f4e06177c2ace5"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/norm-arithmetic-canary-build-timeout-02/result.json",
+    "sha256": "d1dc5b336b023be191eb51e7ffe5d857039496e744294425103f7f27ba37364c"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/norm-arithmetic-canary-build-timeout-02/source-omission.json",
+    "sha256": "eb86ae7f3af0d72ecb12f703dadea78dccbd53c2480dc704d73229522ed1a71f"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Quadratic omission control02 actual positive build124 within120s, before native or negative. Whole failed literal slices and source pair retained. Corrects earlier 6e15fa copied-library-size explanation: build log is compiling isogeny_algos; metadata selects serde229 without features while passing old control and frontend pin228 derive. Align exact dependency graph for03, same bounds; no mathematical or counter failure inferred. Unsigned diagnostic; whole roots pending publication17."
+}

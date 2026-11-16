@@ -1,0 +1,51 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-15T06:36:03Z",
+ "id": "PCC-20261115-86dfaa",
+ "kind": "statement",
+ "producer": {
+  "commit": "7a600a276ce5bfc9d8976aa5d71c376bfc3ab7ee",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/original-kernel-census-protocol-whitespace-failure-01/cached-whitespace.exit",
+    "sha256": "53c234e5e8472b6ac51c1ae1cab3fe06fad053beb8ebfd8977b010655bfdd3c3"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/original-kernel-census-protocol-whitespace-failure-01/cached-whitespace.txt",
+    "sha256": "3460520b799b4b33ea4f96ce64f534c15988b1e5a305e54676bdd499fffd52dc"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/original-kernel-census-protocol-whitespace-failure-01/original-command.py",
+    "sha256": "a32810270b24f5214a15b95a66a8ab2f30f39c66a919fdc099f05a5b5020da31"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/original-kernel-census-protocol-whitespace-failure-01/original-governance-caller.txt",
+    "sha256": "09fac5e87a61ad2245ea867e12826c185a81127e45e5b0cb61b79992c8007f92"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/original-kernel-census-protocol-whitespace-failure-01/repair.json",
+    "sha256": "f0644327fb25c210d1d6fd1180a6468a7cd6004843d8eaed944bca40324861df"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Prospective kernelcensus protocol governance originalcached-whitespace2 caught a finalblankline in exact primarysource excerpt beforecommit. Completefailedcaller/check/exit/source retained. File-specific Git -whitespace attribute preserves originalexcerpt bytes and0158c5subjecthash unchanged; no protocol/math/CI/verifiercriteria changed, no censusimplementation ornewcalculation yet. Rerun original governance withfresh evidence label. Unsigned formatting custody."
+}

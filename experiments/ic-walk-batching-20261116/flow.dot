@@ -1,0 +1,16 @@
+digraph BatchWalk {
+ graph [rankdir=LR,bgcolor="white",pad="0.25",nodesep="0.28",ranksep="0.35",fontname="Helvetica",fontsize=15,label="One public target; sixteen walk states",labelloc=t];
+ node [shape=box,style="rounded,filled",fillcolor="#eef4fa",color="#627e97",fontname="Helvetica",fontsize=11,margin="0.12,0.10"];
+ edge [color="#627e97",arrowsize=.7,fontname="Helvetica",fontsize=10];
+ input [label="Public G, Q, r\nNo fixture scalar"];
+ lanes [label="16 bounded states\nP_i = [a_i]G + [b_i]Q"];
+ batch [label="Choose per-state jumps\nBatch up to16 additions\nOne simultaneous inverse",fillcolor="#dcefe7",color="#3c826a"];
+ guard [label="Global identity / duplicate guard\nRestart affected lanes"];
+ oracle [label="Existing MITM oracle\nRows and rank\nScalar group check"];
+ caps [label="Generated <=500000\nCharge unused lookahead\nOwned cleanup included",fillcolor="#fff1d7",color="#a47e37"];
+ scalar [label="Scalar control\nIdentical state schedule\nSeparate inverse per pair",fillcolor="#f0eafa",color="#9275af"];
+ input -> lanes -> batch -> guard -> oracle;
+ guard -> lanes [label="restart",constraint=false];
+ lanes -> scalar;scalar -> guard;
+ batch -> caps [style=dashed,arrowhead=none];
+}

@@ -1,0 +1,21 @@
+{
+  "schema": "xedni-typed-prefix-program-protocol-v1",
+  "field": "additive Z/7Z",
+  "scalar_law": "all seven scalars",
+  "encoding_law": "all 7! bijections from group elements to labels 0..6",
+  "program": [
+    "seed forms G=1 and Q=w",
+    "if label(G)<label(Q), append G+Q; else append G-Q",
+    "append G-G",
+    "append G-G again",
+    "append G+G"
+  ],
+  "prefix_lengths": [2, 3, 4, 5, 6],
+  "proposed_labels": "all 7^6 complete tuples for form-causality checks; all 7^k tuples per prefix length k for fiber checks",
+  "falsifiers": [
+    "a truncated group run differs from the corresponding full run prefix",
+    "a truncated reconstructed form list differs from the corresponding full form prefix",
+    "an actual prefix fiber count differs from its symbolic prefix fiber count"
+  ],
+  "claim_boundary": "exhaustive finite control for this fixed adaptive program and uniform bijective encoding law"
+}

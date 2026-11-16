@@ -8,7 +8,14 @@ use isogeny_algos::curve::{self, Isogeny, Pt};
 use num_bigint::BigUint;
 use num_traits::ToPrimitive;
 
+#[path = "prime_field_pipeline.rs"]
+mod prime_field_pipeline;
+#[path = "t2_quartic_adapters.rs"]
+mod t2_quartic_adapters;
+
 struct SuccessorChain {
+    prime: prime_field_pipeline::PrimeFieldPipeline,
+    prime_dual: prime_field_pipeline::reverse_pipeline::ReversePipeline,
     s: SevenSuccessor,
     r1: RichelotMap,
     r2: RichelotMap,
@@ -20,7 +27,13 @@ impl SuccessorChain {
         let b = Bridge::new();
         let r1 = super::super::super::transported_richelot(&s.old, &b);
         let r2 = successor_richelot(&s, &b);
-        Self { s, r1, r2 }
+        Self {
+            s,
+            r1,
+            r2,
+            prime: prime_field_pipeline::PrimeFieldPipeline::second(),
+            prime_dual: prime_field_pipeline::reverse_pipeline::ReversePipeline::new(false),
+        }
     }
 
     /// P2 beta N1 /4 or its adjoint. Only the known odd elliptic group
@@ -79,11 +92,19 @@ impl SuccessorChain {
     }
 
     fn forward(&self, d: &Class) -> Result<Class, String> {
+        self.prime.evaluate(d)
+    }
+
+    fn forward_reference(&self, d: &Class) -> Result<Class, String> {
         self.r2
             .forward_closed(&self.quarter_phi(&self.r1.dual_closed(d)?, false)?)
     }
 
     fn dual(&self, d: &Class) -> Result<Class, String> {
+        self.prime_dual.evaluate(d)
+    }
+
+    fn dual_reference(&self, d: &Class) -> Result<Class, String> {
         self.r1
             .forward_closed(&self.quarter_phi(&self.r2.dual_closed(d)?, true)?)
     }

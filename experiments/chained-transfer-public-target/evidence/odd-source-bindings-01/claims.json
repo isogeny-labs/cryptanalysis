@@ -1,0 +1,62 @@
+[
+  {
+    "theorem": "OddSource223.cleared_rational_curve_map",
+    "claim_path": "pcc/claims/PCC-20261113-c6dca4.json",
+    "statement": "theorem cleared_rational_curve_map {K : Type} [CommRing K] (S T N D a b y d : K) (curve : S*T^2=N^3*D+a*N*D^3+b*D^4) (point : y^2=S) (unit : D*d=1) : (y*T*d^2)^2=(N*d)^3+a*(N*d)+b",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/odd-source/lean/OddSource.lean",
+      "theorem": "OddSource223.cleared_rational_curve_map",
+      "decl_sha256": "74658cbfbb616e7b41e6c87a3fe414da835cb796c3b7b807a5028bfab58fbfa5"
+    }
+  },
+  {
+    "theorem": "OddSource223.normalized_scaling_residual",
+    "claim_path": "pcc/claims/PCC-20261113-796f92.json",
+    "statement": "theorem normalized_scaling_residual {K : Type} [CommRing K] (u x y a b : K) : (u^3*y)^2-(u^2*x)^3-(u^4*a)*(u^2*x)-u^6*b = u^6*(y^2-x^3-a*x-b)",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/odd-source/lean/OddSource.lean",
+      "theorem": "OddSource223.normalized_scaling_residual",
+      "decl_sha256": "0da08ea8c19832cab0722538bfb9a7fcc3821156dbf6adaba93bd3a54ed82923"
+    }
+  },
+  {
+    "theorem": "OddSource223.recovery_from_scalar_composition",
+    "claim_path": "pcc/claims/PCC-20261113-7781ea.json",
+    "statement": "theorem recovery_from_scalar_composition {A B : Type} (F : A \u2192 B) (G : B \u2192 A) (act : Nat \u2192 A \u2192 A) (plus : A \u2192 A \u2192 A) (zero : A) (n inv ell c : Nat) (mul : \u2200 m k x, act (m*k) x=act m (act k x)) (sum : \u2200 m k x, act (m+k) x=plus (act m x) (act k x)) (one : \u2200 x, act 1 x=x) (zeroStable : \u2200 m, act m zero=zero) (addZero : \u2200 x, plus x zero=x) (torsion : \u2200 x, act ell x=zero) (composition : \u2200 x, G (F x)=act n x) (bezout : inv*n=1+c*ell) : \u2200 x, act inv (G (F x))=x",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/odd-source/lean/OddSource.lean",
+      "theorem": "OddSource223.recovery_from_scalar_composition",
+      "decl_sha256": "a18fef190b5ca111728afaaad0ed9279355976aaccc3b26c2b6628e661b53e3f"
+    }
+  },
+  {
+    "theorem": "OddSource223.thirteen_odd_bezout",
+    "claim_path": "pcc/claims/PCC-20261113-ee0e7e.json",
+    "statement": "theorem thirteen_odd_bezout : (639940 : Nat)*13=1+3*2773073",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/odd-source/lean/OddSource.lean",
+      "theorem": "OddSource223.thirteen_odd_bezout",
+      "decl_sha256": "3e3d5d81a7a4e9f1f5580337dfe689812f226e7f4217fdec8411f57f2027a955"
+    }
+  },
+  {
+    "theorem": "OddSource223.thirteen_full_rational_bezout",
+    "claim_path": "pcc/claims/PCC-20261113-82763b.json",
+    "statement": "theorem thirteen_full_rational_bezout : (3413013 : Nat)*13=1+4*11092292",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/odd-source/lean/OddSource.lean",
+      "theorem": "OddSource223.thirteen_full_rational_bezout",
+      "decl_sha256": "da9d75794ae50e3843b38f21dde9dddaf820124989a6d64201531498e1fd3059"
+    }
+  },
+  {
+    "theorem": "OddSource223.proposed_fiftytwo_odd_bezout",
+    "claim_path": "pcc/claims/PCC-20261113-caa2b3.json",
+    "statement": "theorem proposed_fiftytwo_odd_bezout : (159985 : Nat)*52=1+3*2773073",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/odd-source/lean/OddSource.lean",
+      "theorem": "OddSource223.proposed_fiftytwo_odd_bezout",
+      "decl_sha256": "29468de6759adfe054a464c8151fc250b9d48f2bdbc3fac387277e2eaaf09f20"
+    }
+  }
+]

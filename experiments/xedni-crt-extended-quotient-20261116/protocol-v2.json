@@ -1,0 +1,14 @@
+{
+  "schema": "xedni-crt-extended-quotient-v2",
+  "amends": "protocol.json",
+  "amendment_reason": "V1 retained 31 torsion-only rows through prime 499; an exploratory check found a quotient certificate between 503 and 733 for every one. Preserve v1 and fix a second ordered prime interval before the confirming run.",
+  "parent_v1_result": "result.json",
+  "parent_v1_result_sha256": "3e7a6c039fde12fdd01dcd52f8384c4684066867ba443d4dad2bc6fcc82c7277",
+  "parent_v1_rows_sha256": "2727083df958048ecea8cf5a805f1d4f50afe996947167329d776c9979bfd97f",
+  "population": "all 31 v1 torsion_only rows, with all 9688 original row identities retained by reference to the sealed parent and v1 outputs",
+  "second_prime_law": "all primes p with 503 <= p < 998 in increasing order",
+  "quotient_certificate": "For each of 31 rows, retain the inherited odd-order no-2-torsion certificate and test good integral primes until P, Q, and P+Q are all outside 2E(F_p); preserve every attempted-prime status and no-hit rows.",
+  "promotion_gate": "Cumulative independent count equals the 7887 parent certificates plus 1770 v1 new certificates plus only v2 quotient hits. All 31 must have a recorded first-hit prime for full finite-panel certification.",
+  "run_cap_seconds": 300,
+  "measurement": "exact arithmetic correctness diagnostic; no wall-time performance comparison"
+}

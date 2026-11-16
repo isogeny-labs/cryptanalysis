@@ -1,0 +1,454 @@
+{
+  "branch": "codex/ic-trial32-20261115",
+  "closed_utc": "2026-11-16T05:16:48+00:00",
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "cloud/modal_run.py",
+        "run",
+        "--image",
+        "cuda",
+        "--gpu",
+        "L4",
+        "--cpu",
+        "4",
+        "--memory",
+        "8",
+        "--timeout",
+        "900",
+        "--out",
+        "experiments/ic-s3-direct-coefficients-20261115/run-001",
+        "--detach",
+        "--",
+        "python3",
+        "experiments/ic-s3-direct-coefficients-20261115/run_panel.py"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "started_utc": "2026-11-16T05:06:17+00:00",
+      "wall_s": 9.761
+    }
+  ],
+  "commit": "84a7f723a197bf358f5b7abb93a3718d440ae21f",
+  "commit_dirty": false,
+  "created_utc": "2026-11-16T05:06:11+00:00",
+  "curve_uid": null,
+  "entries": [
+    "experiments/ic-s3-direct-coefficients-20261115"
+  ],
+  "host": {
+    "cpu": "arm",
+    "cpus_online": 14,
+    "hostname": "Mac.attlocal.net",
+    "isolation": "unstated",
+    "platform": "macOS-27.2-arm64-arm-64bit-Mach-O"
+  },
+  "id": "20261116T0506Z-ic-s3-direct-stage-001",
+  "metrics": [
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 6,
+      "name": "n31-np8-m2-raw_cold_median",
+      "note": "Raw paired reference/direct stage ratio; qualified null; incomplete placement receipt; excludes total IC.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ratio",
+      "value": 1.3955662426566193
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 6,
+      "name": "n31-np8-m2-raw_build_median",
+      "note": "Raw paired reference/direct stage ratio; qualified null; incomplete placement receipt; excludes total IC.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ratio",
+      "value": 4.066629439405056
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 6,
+      "name": "n31-np20-m2-raw_cold_median",
+      "note": "Raw paired reference/direct stage ratio; qualified null; incomplete placement receipt; excludes total IC.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ratio",
+      "value": 1.7115381778711134
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 6,
+      "name": "n31-np20-m2-raw_build_median",
+      "note": "Raw paired reference/direct stage ratio; qualified null; incomplete placement receipt; excludes total IC.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ratio",
+      "value": 2.21388930926004
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 6,
+      "name": "n53-np24-m2-raw_cold_median",
+      "note": "Raw paired reference/direct stage ratio; qualified null; incomplete placement receipt; excludes total IC.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ratio",
+      "value": 1.7707188858629253
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 6,
+      "name": "n53-np24-m2-raw_build_median",
+      "note": "Raw paired reference/direct stage ratio; qualified null; incomplete placement receipt; excludes total IC.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ratio",
+      "value": 2.071461731965625
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 6,
+      "name": "n63-np32-m2-raw_cold_median",
+      "note": "Raw paired reference/direct stage ratio; qualified null; incomplete placement receipt; excludes total IC.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ratio",
+      "value": 1.8936796915734915
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 6,
+      "name": "n63-np32-m2-raw_build_median",
+      "note": "Raw paired reference/direct stage ratio; qualified null; incomplete placement receipt; excludes total IC.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ratio",
+      "value": 2.0347694699264602
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 6,
+      "name": "n23-np6-m3-raw_cold_median",
+      "note": "Raw paired reference/direct stage ratio; qualified null; incomplete placement receipt; excludes total IC.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ratio",
+      "value": 1.0003643888391451
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 6,
+      "name": "n23-np6-m3-raw_build_median",
+      "note": "Raw paired reference/direct stage ratio; qualified null; incomplete placement receipt; excludes total IC.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ratio",
+      "value": 1.00110240049536
+    }
+  ],
+  "problem": "kernel:s3_symbolic_descent",
+  "raw": [
+    {
+      "bytes": 3487,
+      "path": "experiments/ic-s3-direct-coefficients-20261115/native-001/ic-s3-axiom-audit.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/53/5301547533d46b0c2a79a143652246c5e115e2d97694cd37142e47073ef66865",
+      "sha256": "5301547533d46b0c2a79a143652246c5e115e2d97694cd37142e47073ef66865",
+      "uploaded": true
+    },
+    {
+      "bytes": 0,
+      "path": "experiments/ic-s3-direct-coefficients-20261115/native-001/ic-s3-changed-fmt.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/e3/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uploaded": true
+    },
+    {
+      "bytes": 246,
+      "path": "experiments/ic-s3-direct-coefficients-20261115/native-001/ic-s3-clippy-2.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/42/4241af0ca7c6be18d2284c48f1e1b6393fa63af46f156a4b0438f0aca61c7f1f",
+      "sha256": "4241af0ca7c6be18d2284c48f1e1b6393fa63af46f156a4b0438f0aca61c7f1f",
+      "uploaded": true
+    },
+    {
+      "bytes": 745,
+      "path": "experiments/ic-s3-direct-coefficients-20261115/native-001/ic-s3-clippy.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/fd/fda7586ce1d5b6be1bfb23c7c9c5b50311b077b754533f716d273a2e0a5a403a",
+      "sha256": "fda7586ce1d5b6be1bfb23c7c9c5b50311b077b754533f716d273a2e0a5a403a",
+      "uploaded": true
+    },
+    {
+      "bytes": 1119,
+      "path": "experiments/ic-s3-direct-coefficients-20261115/native-001/ic-s3-combined-tests.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/4f/4f261c3716267b9a63d6dbc383c7776fe5a84ca1ffa43e1651559cc832e59b2e",
+      "sha256": "4f261c3716267b9a63d6dbc383c7776fe5a84ca1ffa43e1651559cc832e59b2e",
+      "uploaded": true
+    },
+    {
+      "bytes": 650,
+      "path": "experiments/ic-s3-direct-coefficients-20261115/native-001/ic-s3-default-framework-tests.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/bd/bd32f6bf799968282653366898e0d195e05bc4ce68dcc6771fe01f45b3122106",
+      "sha256": "bd32f6bf799968282653366898e0d195e05bc4ce68dcc6771fe01f45b3122106",
+      "uploaded": true
+    },
+    {
+      "bytes": 1119,
+      "path": "experiments/ic-s3-direct-coefficients-20261115/native-001/ic-s3-default-tests.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/9f/9f2350e483b2ac0fbec1b59dd0826540e3f481a8d000f40f6b2fd3eb847443dd",
+      "sha256": "9f2350e483b2ac0fbec1b59dd0826540e3f481a8d000f40f6b2fd3eb847443dd",
+      "uploaded": true
+    },
+    {
+      "bytes": 182,
+      "path": "experiments/ic-s3-direct-coefficients-20261115/native-001/ic-s3-direct-lean-check-001.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/fc/fc0bb3a4b8a1dd8c625877c42e6f4f3fe1b88464ad4dfe01d87823368a0512b2",
+      "sha256": "fc0bb3a4b8a1dd8c625877c42e6f4f3fe1b88464ad4dfe01d87823368a0512b2",
+      "uploaded": true
+    },
+    {
+      "bytes": 1889,
+      "path": "experiments/ic-s3-direct-coefficients-20261115/native-001/ic-s3-direct-lean-check-002.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/e5/e514726542251b40d8b0d66e66f00a5c2bdfdb9af94c9a22327efd9d935127fa",
+      "sha256": "e514726542251b40d8b0d66e66f00a5c2bdfdb9af94c9a22327efd9d935127fa",
+      "uploaded": true
+    },
+    {
+      "bytes": 1124,
+      "path": "experiments/ic-s3-direct-coefficients-20261115/native-001/ic-s3-direct-lean-check-003.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/da/daf5fc7b1a583dbf42e9776bb2a0d9e542ac6d4577813858a9560bcc6fdc4367",
+      "sha256": "daf5fc7b1a583dbf42e9776bb2a0d9e542ac6d4577813858a9560bcc6fdc4367",
+      "uploaded": true
+    },
+    {
+      "bytes": 149,
+      "path": "experiments/ic-s3-direct-coefficients-20261115/native-001/ic-s3-direct-lean-check-004.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/19/19e924382974ca4cb5a5a22f8cb9723f04f8ef865c1f60ae80454a78e27e18eb",
+      "sha256": "19e924382974ca4cb5a5a22f8cb9723f04f8ef865c1f60ae80454a78e27e18eb",
+      "uploaded": true
+    },
+    {
+      "bytes": 1669,
+      "path": "experiments/ic-s3-direct-coefficients-20261115/native-001/ic-s3-direct-lean-check-005.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/5f/5f4f31f13ba519583c66fa37204b65b3187c168024d44e123497ab2dcfbca88c",
+      "sha256": "5f4f31f13ba519583c66fa37204b65b3187c168024d44e123497ab2dcfbca88c",
+      "uploaded": true
+    },
+    {
+      "bytes": 149,
+      "path": "experiments/ic-s3-direct-coefficients-20261115/native-001/ic-s3-direct-lean-check-006.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/19/19e924382974ca4cb5a5a22f8cb9723f04f8ef865c1f60ae80454a78e27e18eb",
+      "sha256": "19e924382974ca4cb5a5a22f8cb9723f04f8ef865c1f60ae80454a78e27e18eb",
+      "uploaded": true
+    },
+    {
+      "bytes": 1291,
+      "path": "experiments/ic-s3-direct-coefficients-20261115/native-001/ic-s3-direct-tests-2.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/de/dea1b632a90a5bd5d2c7a012df4ec32addecc65b48a59c5b978804ae0acc8d4c",
+      "sha256": "dea1b632a90a5bd5d2c7a012df4ec32addecc65b48a59c5b978804ae0acc8d4c",
+      "uploaded": true
+    },
+    {
+      "bytes": 1119,
+      "path": "experiments/ic-s3-direct-coefficients-20261115/native-001/ic-s3-direct-tests-3.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/28/289f53f6163cb6d3b910b7659eae26151c4ee3b50cec0c9d8da9195ec574710f",
+      "sha256": "289f53f6163cb6d3b910b7659eae26151c4ee3b50cec0c9d8da9195ec574710f",
+      "uploaded": true
+    },
+    {
+      "bytes": 1076,
+      "path": "experiments/ic-s3-direct-coefficients-20261115/native-001/ic-s3-direct-tests.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/61/61106c15b39a3fd7a07f364efd379ea826afe0bd377f0bcea5fe6136e776f4e2",
+      "sha256": "61106c15b39a3fd7a07f364efd379ea826afe0bd377f0bcea5fe6136e776f4e2",
+      "uploaded": true
+    },
+    {
+      "bytes": 12392,
+      "path": "experiments/ic-s3-direct-coefficients-20261115/native-001/ic-s3-fmt.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/83/837643cc67b5b139428e961a66ef7ffd16ef0d846fe254a1f0231bfed547be58",
+      "sha256": "837643cc67b5b139428e961a66ef7ffd16ef0d846fe254a1f0231bfed547be58",
+      "uploaded": true
+    },
+    {
+      "bytes": 650,
+      "path": "experiments/ic-s3-direct-coefficients-20261115/native-001/ic-s3-framework-priced-tests.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/52/52c11485bc9be801b28f0c61907b62ff9757989e4351b87f5ca74a36ff20ce82",
+      "sha256": "52c11485bc9be801b28f0c61907b62ff9757989e4351b87f5ca74a36ff20ce82",
+      "uploaded": true
+    },
+    {
+      "bytes": 530,
+      "path": "experiments/ic-s3-direct-coefficients-20261115/native-001/ic-s3-framework-tests.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/ef/ef7a1d29403e28f715355577dbc1324882f8e89f61e3424fa740ea53637bf195",
+      "sha256": "ef7a1d29403e28f715355577dbc1324882f8e89f61e3424fa740ea53637bf195",
+      "uploaded": true
+    },
+    {
+      "bytes": 375,
+      "path": "experiments/ic-s3-direct-coefficients-20261115/native-001/ic-s3-local-audit-2.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/76/76cf20c9ed46218ec8cf054e4794a6bd79c7a32a55fe7f3bb4b5320a9eb7a65f",
+      "sha256": "76cf20c9ed46218ec8cf054e4794a6bd79c7a32a55fe7f3bb4b5320a9eb7a65f",
+      "uploaded": true
+    },
+    {
+      "bytes": 324,
+      "path": "experiments/ic-s3-direct-coefficients-20261115/native-001/ic-s3-local-audit-3.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/c3/c3fef83619b56fc576745031fd800a2fac36ef6a4e95383f0a9ecc0e640892fa",
+      "sha256": "c3fef83619b56fc576745031fd800a2fac36ef6a4e95383f0a9ecc0e640892fa",
+      "uploaded": true
+    },
+    {
+      "bytes": 367,
+      "path": "experiments/ic-s3-direct-coefficients-20261115/native-001/ic-s3-local-audit-4.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/4d/4d3dde13536523c9f9b3da4b8c11bdd0c3899b160ebc5efba9d1617e7fa930b1",
+      "sha256": "4d3dde13536523c9f9b3da4b8c11bdd0c3899b160ebc5efba9d1617e7fa930b1",
+      "uploaded": true
+    },
+    {
+      "bytes": 181,
+      "path": "experiments/ic-s3-direct-coefficients-20261115/native-001/ic-s3-local-audit.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/44/4426fde57d3be3b2cb532a41874330518b74ea5352a5eb88ea249c037061062e",
+      "sha256": "4426fde57d3be3b2cb532a41874330518b74ea5352a5eb88ea249c037061062e",
+      "uploaded": true
+    },
+    {
+      "bytes": 396,
+      "path": "experiments/ic-s3-direct-coefficients-20261115/native-001/ic-s3-pcc-source-verdict.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/3e/3e6f9826a26c66a1147923afe14667eb597eb744500439b8c0f6bcf954dc9105",
+      "sha256": "3e6f9826a26c66a1147923afe14667eb597eb744500439b8c0f6bcf954dc9105",
+      "uploaded": true
+    },
+    {
+      "bytes": 191,
+      "path": "experiments/ic-s3-direct-coefficients-20261115/native-001/ic-s3-probe-check-2.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/08/08644f569be1f2743faf16e1a18a6d01551bd774eaed75e981af59662d6c185c",
+      "sha256": "08644f569be1f2743faf16e1a18a6d01551bd774eaed75e981af59662d6c185c",
+      "uploaded": true
+    },
+    {
+      "bytes": 1969,
+      "path": "experiments/ic-s3-direct-coefficients-20261115/native-001/ic-s3-probe-check.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/9f/9feebd3f693ce747e3cbf6f387957924f755d545321c779e2a47069c5a3738b5",
+      "sha256": "9feebd3f693ce747e3cbf6f387957924f755d545321c779e2a47069c5a3738b5",
+      "uploaded": true
+    },
+    {
+      "bytes": 1547961,
+      "path": "experiments/ic-s3-direct-coefficients-20261115/run-001/arms.jsonl",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/aa/aad70337399eef9d334d7e8f1262daff919b096e4215c025942750f399f7fb2c",
+      "sha256": "aad70337399eef9d334d7e8f1262daff919b096e4215c025942750f399f7fb2c",
+      "uploaded": true
+    },
+    {
+      "bytes": 122,
+      "path": "experiments/ic-s3-direct-coefficients-20261115/run-001/direct-build.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/14/14d50076aa47515d3a16491f44267a927b1a01a2499f585047d0fb0db1d83940",
+      "sha256": "14d50076aa47515d3a16491f44267a927b1a01a2499f585047d0fb0db1d83940",
+      "uploaded": true
+    },
+    {
+      "bytes": 31540,
+      "path": "experiments/ic-s3-direct-coefficients-20261115/run-001/host.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/48/489852b087e5463da8331b5c815679e455c405ca3038fe1edc834a110de41193",
+      "sha256": "489852b087e5463da8331b5c815679e455c405ca3038fe1edc834a110de41193",
+      "uploaded": true
+    },
+    {
+      "bytes": 1651656,
+      "path": "experiments/ic-s3-direct-coefficients-20261115/run-001/pairs.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/a7/a754d9ebb3767154f9379067dcb7562c32f92cce19078bcefc6bd3c9dd19d484",
+      "sha256": "a754d9ebb3767154f9379067dcb7562c32f92cce19078bcefc6bd3c9dd19d484",
+      "uploaded": true
+    },
+    {
+      "bytes": 1845496,
+      "path": "experiments/ic-s3-direct-coefficients-20261115/run-001/probe-direct",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/ac/ac825e26f6bf6b63a0a5d41c8cd00985d144f267f435290a28bc48813ac5a84b",
+      "sha256": "ac825e26f6bf6b63a0a5d41c8cd00985d144f267f435290a28bc48813ac5a84b",
+      "uploaded": true
+    },
+    {
+      "bytes": 1834336,
+      "path": "experiments/ic-s3-direct-coefficients-20261115/run-001/probe-reference",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/79/7997bf3155de84441af0512bd00ae7a2a5e37dc4a56aa06ce3fa2e694b999213",
+      "sha256": "7997bf3155de84441af0512bd00ae7a2a5e37dc4a56aa06ce3fa2e694b999213",
+      "uploaded": true
+    },
+    {
+      "bytes": 5012,
+      "path": "experiments/ic-s3-direct-coefficients-20261115/run-001/reference-build.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/5d/5d8ee13337542410f4a4530eeed754a35dda6cbe2410fdd4ef964ed36ffb6dcd",
+      "sha256": "5d8ee13337542410f4a4530eeed754a35dda6cbe2410fdd4ef964ed36ffb6dcd",
+      "uploaded": true
+    },
+    {
+      "bytes": 1431,
+      "path": "experiments/ic-s3-direct-coefficients-20261115/run-001/summary.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/ad/adb8d0f459db13a76fe88bbda21938d5314856194095a0f9b051a93add91b6e9",
+      "sha256": "adb8d0f459db13a76fe88bbda21938d5314856194095a0f9b051a93add91b6e9",
+      "uploaded": true
+    },
+    {
+      "bytes": 599,
+      "path": "experiments/ic-s3-direct-coefficients-20261115/launch-001/job.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/3c/3cc179ca5e6b255234e442e69ac10f4182e94142d80a07a4fc8bbb531a7d2b67",
+      "sha256": "3cc179ca5e6b255234e442e69ac10f4182e94142d80a07a4fc8bbb531a7d2b67",
+      "uploaded": true
+    },
+    {
+      "bytes": 1355,
+      "path": "experiments/ic-s3-direct-coefficients-20261115/launch-001/output.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/e6/e6401959a7aca52cece0fc64dfeee03da6990ee15654fee35f007c5e84894210",
+      "sha256": "e6401959a7aca52cece0fc64dfeee03da6990ee15654fee35f007c5e84894210",
+      "uploaded": true
+    },
+    {
+      "bytes": 6515,
+      "path": "experiments/ic-s3-direct-coefficients-20261115/validation.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/c7/c783d62f69bb29d0549d63ab97ed6ff1505e381013b93351bec80ef464a82c2b",
+      "sha256": "c783d62f69bb29d0549d63ab97ed6ff1505e381013b93351bec80ef464a82c2b",
+      "uploaded": true
+    },
+    {
+      "bytes": 396,
+      "path": "experiments/ic-s3-direct-coefficients-20261115/native-001/measurement-claim-verdict.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/81/812cf52d81630982b6ac5e8292dc9f776fcc53671cb7782e42660eff0d160f0b",
+      "sha256": "812cf52d81630982b6ac5e8292dc9f776fcc53671cb7782e42660eff0d160f0b",
+      "uploaded": true
+    }
+  ],
+  "repo": "cryptanalysis",
+  "reports": {
+    "pdf": "experiments/ic-s3-direct-coefficients-20261115/REPORT.pdf",
+    "png": [],
+    "svg": [
+      "experiments/ic-s3-direct-coefficients-20261115/flow.svg",
+      "experiments/ic-s3-direct-coefficients-20261115/ratios.svg"
+    ]
+  },
+  "schema": "bench.record/v1",
+  "session": null,
+  "slug": "ic-s3-direct-stage-001",
+  "status": "invalid",
+  "summary": "30 fresh paired S3/S4 construction cases completed; all coefficient checksums match and no calibration bound fails. Raw cold ratios 1.396/1.712/1.771/1.894, build 4.067/2.214/2.071/2.035; S4 cold control 1.0004. Host placement unqualified; all qualified ratios null; no total IC comparison.",
+  "validation": "experiments/ic-s3-direct-coefficients-20261115/validation.json"
+}

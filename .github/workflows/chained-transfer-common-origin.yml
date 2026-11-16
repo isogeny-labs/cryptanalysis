@@ -1,0 +1,140 @@
+name: Actual common-origin IC compatibility replay
+on:
+  pull_request:
+    paths:
+      - 'experiments/chained-transfer-public-target/**'
+      - '.github/workflows/chained-transfer-common-origin.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'experiments/chained-transfer-public-target/**'
+      - '.github/workflows/chained-transfer-common-origin.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  common-origin:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      RUSTUP_TOOLCHAIN: 1.99.1
+      ELAN_TOOLCHAIN: leanprover/lean4:v4.35.0
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          path: cryptanalysis
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            experiments/chained-transfer-public-target
+            tools/lean
+            tools/pcc
+            pcc/keyring.json
+            pcc/claims
+            .github/workflows/chained-transfer-reference.yml
+            .github/workflows/chained-transfer-public-target.yml
+            .github/workflows/chained-transfer-common-origin.yml
+            .github/workflows/chained-transfer-new-target-ic.yml
+            .github/workflows/chained-transfer-checkpoint-transport.yml
+            .github/workflows/chained-transfer-odd-refinement.yml
+            .github/workflows/chained-transfer-original-root-fixture.yml
+            .github/workflows/chained-transfer-odd-product.yml
+            .github/workflows/chained-transfer-odd-source.yml
+            tools/artifacts/artifacts.py
+            .artifacts/config.json
+            .github/workflows/chained-transfer-chain-kernels.yml
+            .github/workflows/chained-transfer-gluing.yml
+            .github/workflows/chained-transfer-kernels.yml
+            .github/workflows/chained-transfer-bitangents.yml
+            .github/workflows/chained-transfer-two-primary.yml
+            .github/workflows/chained-transfer-completed-v2.yml
+            .github/workflows/chained-transfer-completed-descent.yml
+            .github/workflows/pcc-gate.yml
+      - id: producer_pin
+        name: Read the exact original producer revision
+        run: |
+          pin=$(cat cryptanalysis/experiments/chained-transfer-public-target/upstream-commit.txt)
+          [[ $pin =~ ^[0-9a-f]{40}$ ]] || exit 2
+          echo "revision=$pin" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          repository: isogeny-labs/crypto
+          ref: ${{ steps.producer_pin.outputs.revision }}
+          persist-credentials: false
+          path: crypto
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            research/chained_jacobian_transfers_20261110/genus3-prime-descent
+            research/chained_jacobian_transfers_20261110/evidence/genus3-primary-01/cases.json
+            research/chained_jacobian_transfers_20261110/evidence/genus3-cli-fixtures-01
+            research/chained_jacobian_transfers_20261110/evidence/genus3-ramification-panel-01/all-historical-cases.json
+            research/chained_jacobian_transfers_20261110/evidence/genus3-lean-bindings-01/claims.json
+            research/chained_jacobian_transfers_20261110/G3_DESCENT_PROTOCOL.md
+            research/chained_jacobian_transfers_20261110/G3_DESCENT_DERIVATION.md
+            research/chained_jacobian_transfers_20261110/G3_MODEL_TRANSPORT_ADDENDUM.md
+            research/chained_jacobian_transfers_20261110/G3_RAMIFICATION_COVERAGE_ADDENDUM.md
+            research/chained_jacobian_transfers_20261110/G3_PROOF_MAP.md
+            research/quartic_n4_la_20261021/common.rs
+            research/quartic_n4_la_20261021/ghs.rs
+            research/quartic_n4_la_20261021/ic.rs
+            research/quartic_n4_la_20261021/solver.rs
+            isogeny_algos
+            src/cryptanalysis/diem_quartic.rs
+            src/cryptanalysis/plane_quartic_pic.rs
+            src/cryptanalysis/smith_kernel_coverage.rs
+            src/hash/sha256.rs
+            tools/lean
+            tools/pcc
+            pcc/keyring.json
+            pcc/claims
+            .github/workflows/genus3-prime-descent.yml
+      - name: Checkout immutable original artifact tool and policy
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          repository: isogeny-labs/cryptanalysis
+          ref: 3de8c174cf65e6b34bf8579d97b817b8f5dc2ded
+          persist-credentials: false
+          path: artifact-tools
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            tools/artifacts/artifacts.py
+            .artifacts/config.json
+      - name: Hydrate the complete native fixture with the pinned original tool
+        working-directory: cryptanalysis
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+        run: |
+          set -euo pipefail
+          cmp ../artifact-tools/.artifacts/config.json .artifacts/config.json
+          cmp ../artifact-tools/tools/artifacts/artifacts.py tools/artifacts/artifacts.py
+          if ! command -v aws >/dev/null; then
+            python3 -m venv "$RUNNER_TEMP/odd-product-artifacts-awscli"
+            "$RUNNER_TEMP/odd-product-artifacts-awscli/bin/python" -m pip install --disable-pip-version-check awscli==1.46.2
+            export ARTIFACTS_AWS="$RUNNER_TEMP/odd-product-artifacts-awscli/bin/aws"
+          fi
+          python3 ../artifact-tools/tools/artifacts/artifacts.py pull --jobs 4 experiments/chained-transfer-public-target/evidence/odd-product-maps-acceptance-02/all-native-records.json.xz
+      - name: Install pinned native and original proof toolchains
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.99.1 --profile minimal --component rustfmt
+          curl -fsSL --connect-timeout 15 --max-time 120 https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o "$RUNNER_TEMP/elan-init.sh"
+          sh "$RUNNER_TEMP/elan-init.sh" -y --no-modify-path --default-toolchain "$ELAN_TOOLCHAIN"
+          "$HOME/.elan/bin/elan" toolchain install leanprover/lean4:v4.34.1
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Replay all20 exact-origin IC pairs and two existing conditional proofs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/n4-common-origin-build-cache
+        run: |
+          set -euo pipefail
+          timeout 2100 bash cryptanalysis/experiments/chained-transfer-public-target/ci_common_origin/check.sh crypto "$RUNNER_TEMP/n4-common-origin-output"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: common-origin-ic-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/n4-common-origin-output
+          if-no-files-found: ignore
