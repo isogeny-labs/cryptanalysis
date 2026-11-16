@@ -106,3 +106,5 @@ Flow assets and render_report.py are prepared; new report PDF marker has NOT run
 No report should imply inverse timing results before the panel actually runs.
 
 Continuation 17:21UTC: token gate rechecked once, exit1 HTTP403, log004 preserved. Same access obstruction; no live timing handle, no new samples, no changes to frozen source/binaries/inputs. This is the second consecutive goal turn with checkpoint access blocking timing; do not mark the goal blocked before the third consecutive turn unless a different explicit instruction applies. Prior turn was progress (published implementation/evidence), this continuation has no performance progress. Source review confirms existing single-inverse tree retained; product-pass speed remains unmeasured.
+
+Third consecutive goal-turn audit 17:22UTC: clean head305e91a20, supported checkpoint gate exit1 HTTP403, log005 preserved. No target job launched and no samples/metrics. Goal to be marked blocked pending working checkpoint transport; no additional unchanged retries. Resume from frozen run_prepared.py after gate success, retaining binary pins/fixtures/protocol. Completion remains unachieved.
