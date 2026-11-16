@@ -131,7 +131,27 @@ fn coordinates(point: &Point) -> Result<[String; 2]> {
     }
 }
 fn digest(bytes: &[u8]) -> String {
-    format!("{:x}", Sha256::digest(bytes))
+    // Byte formatting is stable across sha2's output-container versions.
+    const HEX: &[u8; 16] = b"0123456789abcdef";
+    let mut text = String::with_capacity(64);
+    for byte in Sha256::digest(bytes).iter() {
+        text.push(char::from(HEX[(byte >> 4) as usize]));
+        text.push(char::from(HEX[(byte & 15) as usize]));
+    }
+    text
+}
+
+#[cfg(test)]
+#[test]
+fn digest_hex_format_preserves_standard_vectors() {
+    assert_eq!(
+        digest(b""),
+        "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    );
+    assert_eq!(
+        digest(b"abc"),
+        "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+    );
 }
 fn value<T: serde::Serialize>(record: &T) -> Result<Value> {
     serde_json::to_value(record).map_err(json_error)

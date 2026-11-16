@@ -5,7 +5,7 @@ use hashed_ecdl_tensor::contraction::Counter;
 use hashed_ecdl_tensor::curve::{Curve, Point};
 use hashed_ecdl_tensor::primality::PrimeCertificate;
 use hashed_ecdl_tensor::reduction::{self, Certificate, Config};
-use hashed_ecdl_tensor::{finite, prepared, width};
+use hashed_ecdl_tensor::{finite, optimized, prepared, width};
 use hashed_ecdl_tensor::{BigUint, Error, Limits, Meter};
 use serde_json::{json, Value};
 use std::io::Read;
@@ -215,6 +215,42 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                 "hash_prime":config.hash_prime.as_ref().map(ToString::to_string),
                 "challenge_solved":false}));
         }
+        Some("solve-hashed-optimized") if args.len() == 5 => {
+            let problem: Problem = serde_json::from_slice(&read(&args[2])?)?;
+            let options: optimized::Options = serde_json::from_slice(&read(&args[3])?)?;
+            let (curve, target, config, mut meter) = prepare(&problem)?;
+            let mut statistics = optimized::Statistics::default();
+            let certificate = if let Some(seed) = problem.fixture_seed {
+                optimized::solve(
+                    &curve, &target, &config, &options, &mut Seeded(seed),
+                    &mut statistics, &mut meter,
+                )?
+            } else {
+                optimized::solve(
+                    &curve, &target, &config, &options, &mut OsRandom,
+                    &mut statistics, &mut meter,
+                )?
+            };
+            let diagnostics = json!({
+                "backend": "PreparedOptimized",
+                "options": options,
+                "statistics": statistics.diagnostics(),
+                "charged_steps": meter.used,
+                "scalar_decimal": certificate.scalar.to_string(),
+            });
+            let receipt = Receipt {
+                schema: "hashed-ecdl-tensor/v1".into(),
+                problem,
+                certificate,
+                diagnostics,
+            };
+            let file = std::fs::OpenOptions::new()
+                .write(true)
+                .create_new(true)
+                .open(Path::new(&args[4]))?;
+            serde_json::to_writer_pretty(file, &receipt)?;
+            println!("verified scalar {}; receipt {}", receipt.certificate.scalar, args[4]);
+        }
         Some("solve" | "solve-selectors" | "solve-hashed" | "solve-hashed-joint" | "solve-width") if args.len() == 4 => {
             let problem: Problem = serde_json::from_slice(&read(&args[2])?)?;
             let (curve, target, config, mut meter) = prepare(&problem)?;
@@ -268,7 +304,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
             reduction::verify(&curve, &target, &receipt.certificate, &mut meter)?;
             println!("certificate verified: scalar {}", receipt.certificate.scalar);
         }
-        _ => return Err("usage: hashed-ecdl validate PROBLEM.json | hashed-ecdl solve|solve-selectors|solve-hashed|solve-hashed-joint|solve-width PROBLEM.json NEW_RECEIPT.json | hashed-ecdl verify RECEIPT.json".into()),
+        _ => return Err("usage: hashed-ecdl validate PROBLEM.json | hashed-ecdl solve|solve-selectors|solve-hashed|solve-hashed-joint|solve-width PROBLEM.json NEW_RECEIPT.json | hashed-ecdl solve-hashed-optimized PROBLEM.json OPTIONS.json NEW_RECEIPT.json | hashed-ecdl verify RECEIPT.json".into()),
     }
     Ok(())
 }

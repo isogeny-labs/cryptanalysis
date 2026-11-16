@@ -98,10 +98,12 @@ fn structured_consumer_counts_replays_and_rejects_a_rehashed_forgery() {
     assert!(!output.status.success() && output.stdout.is_empty());
     let mut forged = receipt.clone();
     forged["semantic"]["answers"][0]["count"] = json!("999");
-    forged["semantic_sha256"] = json!(format!(
-        "{:x}",
-        Sha256::digest(serde_json::to_vec(&forged["semantic"]).unwrap())
-    ));
+    forged["semantic_sha256"] = json!(Sha256::digest(
+        serde_json::to_vec(&forged["semantic"]).unwrap()
+    )
+    .iter()
+    .map(|byte| format!("{byte:02x}"))
+    .collect::<String>());
     let output = run(&["replay", "-"], &forged.to_string());
     assert!(!output.status.success() && output.stdout.is_empty());
     assert!(String::from_utf8_lossy(&output.stderr).contains("semantic replay differs"));

@@ -47,3 +47,14 @@ experiment or new spending is required for that development check.
 
 Unresolved. Initial current-main API failure, modern API correction and actual
 1.78 dependency rejection remain retained; historical receipts are unchanged.
+
+## 2026-11-16 five-lead integration observation
+
+The current native manifest now declares Rust 1.85, but the inherited workspace
+lock selects sha2 0.11.1, whose declared floor is 1.88. The actual locked 1.85
+all-target check therefore still fails before native compilation. No dependency
+version was upgraded by the five-lead port; its generated lock repair removes
+only orphan version_check/wasi nodes. Current stable native tests and strict
+all-target clippy are separate development controls. The original compatibility
+problem stays open, with the declared-floor failure retained in
+`research/point_hash_five_leads_20261116/development.tar.xz`. [pcc:unverified]
