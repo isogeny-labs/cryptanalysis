@@ -136,9 +136,22 @@ for index in range(5):
      values=[r[v][metric] for r in valid if metric in r[v]]
      case[v+'_median_'+metric]=median(values) if len(values)==24 else None
   cases.append(case)
+matched_chunk64=[]
+for index in range(5):
+ selected=[r for r in rows if r['index']==index]
+ values=[r['mitm-vector64']['cold_wall_s']/r['mitm-vector-packed64']['cold_wall_s'] for r in selected
+         if r['valid_paired_answers']]
+ entry={'index':index,'pairs':len(values),'qualified':None,'diagnostic':'predeclared matched-chunk product64/packed64 cold ratio'}
+ if len(values)==24:
+  rng=random.Random(20261116)
+  boot=sorted(median(rng.choices(values,k=24)) for _ in range(10000))
+  def quantile64(q):
+   x=q*(len(boot)-1);i=int(x);return boot[i]+(boot[min(i+1,len(boot)-1)]-boot[i])*(x-i)
+  entry.update(median_ratio=median(values),bootstrap95=[quantile64(.025),quantile64(.975)])
+ matched_chunk64.append(entry)
 result={'schema':'ic-affine-pipeline-analysis/v1','status':'pass' if not errors else 'fail','errors':errors,
         'run_status':summary['status'],'pairs':len(rows),'references':len(references),
-        'timing_qualified':False,'qualified':None,'cases':cases,'rows':rows}
+        'timing_qualified':False,'qualified':None,'matched_chunk64':matched_chunk64,'cases':cases,'rows':rows}
 (HERE/(args.stem+'.json')).write_text(json.dumps(result,indent=2)+'\n')
 print(json.dumps({k:v for k,v in result.items() if k!='rows'},indent=2))
 if errors:raise SystemExit(1)
