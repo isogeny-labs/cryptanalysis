@@ -27,7 +27,9 @@
     "pcc_tests": 29,
     "pcc_canary_classes": 69,
     "ledger_prefix_entries": 144,
-    "changed_translation_unit_analysis": "Apple Clang static analyzer exits 0 without diagnostics"
+    "changed_translation_unit_analysis": "Apple Clang static analyzer exits 0 without diagnostics",
+    "after_main_merge": "20 C tests pass under ASan/UBSan; 146.91 seconds",
+    "current_ledger_prefix_entries": 166
   },
   "hardware": {
     "cuda_compiled": false,
@@ -53,6 +55,6 @@
     },
     "lock_changes": "only these two matching entries",
     "report_outputs": "JSON, Markdown, SVG and PDF byte-identical before/after on current records",
-    "validation": "58 utility tests pass; shared parity passes; current-base keyring synchronization follows before publication"
+    "validation": "58 utility tests pass; parity 16 files; all 18 records pass; main keyring aligned; 166-entry ledger chain and 69 canary classes pass; 29 PCC tests pass"
   }
 }
