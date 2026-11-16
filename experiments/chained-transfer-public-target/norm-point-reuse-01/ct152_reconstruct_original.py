@@ -58,6 +58,14 @@ def det(m):
  return add(sub(mul(m[0][0],sub(mul(m[1][1],m[2][2]),mul(m[1][2],m[2][1]))),
                 mul(m[0][1],sub(mul(m[1][0],m[2][2]),mul(m[1][2],m[2][0])))),
             mul(m[0][2],sub(mul(m[1][0],m[2][1]),mul(m[1][1],m[2][0]))))
+def nonsingular(a2,a4,a6):
+ disc=mul(mul(a2,a2),mul(a4,a4))
+ disc=sub(disc,scl(powk(a4,3),4))
+ disc=sub(disc,scl(mul(powk(a2,3),a6),4))
+ disc=sub(disc,scl(mul(a6,a6),27))
+ disc=add(disc,scl(mul(mul(a2,a4),a6),18))
+ return disc != O
+
 class Ec:
  def __init__(self,a2,a4,a6):self.a2,self.a4,self.a6=a2,a4,a6
  def right(self,x):
@@ -111,9 +119,13 @@ def validated_source(row):
  require(row['a2']==(127,56,199) and row['a4']==(152,35,36)
          and row['a6']==(212,109,150), "source model altered")
  require(row['g']==((162,197,140),(45,11,207)), "generator altered")
+ require(nonsingular(row['a2'],row['a4'],row['a6']),
+         "source singular")
  e=Ec(row['a2'],row['a4'],row['a6'])
  require(e.on(row['g']) and e.times(row['g'],row['ell']) is None,
          "selected generator not ell-torsion point on curve")
+ require(e.on(row['p2']) and e.times(row['p2'],row['order']) is None,
+         "second point order/on-curve failure")
  require(row['g'] is not None and prime(row['ell']) and row['order']==4*row['ell'],
          "non-prime or malformed order")
  size=q**3;rad=isqrt(4*size)
@@ -151,6 +163,7 @@ def main():
   break  # first qualified source; quartic continuation is verified separately
  require(len(candidates)==1,"seeded source candidate missing")
  row=candidates[0];validated_source(row)
+ require(not nonsingular(O,O,O),"singular negative field check")
  if '--self-test-negative' in sys.argv:
   controls=[dict(row,ell=104),dict(row,a6=(213,109,150)),
             dict(row,g=((162,197,140),(45,11,208))),dict(row,trial=90)]
