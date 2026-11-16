@@ -1,0 +1,22 @@
+{
+  "repository": "https://github.com/isogeny-labs/crypto",
+  "revision": "98b6b736a53412ef86f02f9e789edc393af1fc20",
+  "crates": [
+    "tools/torus-s4",
+    "tools/torus-s4-tree"
+  ],
+  "checkout_layout": "adjacent crypto and cryptanalysis directories",
+  "source_sha256": {
+    "tools/torus-s4-tree/Cargo.toml": "4b1a0bf001a8b15f8f8ef0a8e8679a1a08acdf17b14517b6c257ebcfad6a4c6d",
+    "tools/torus-s4-tree/Cargo.lock": "1eb8c32a44afd0b2fe01c8f7c6478d24f7b1e39af2b42cf0794b70130fe2a872",
+    "tools/torus-s4-tree/src/lib.rs": "5106cdebcead6c09b9b5192942382db7ea565687b543cd90e8fa47146c478ae3",
+    "tools/torus-s4-tree/src/main.rs": "f5eaf122d679b844ffbcf4301ea39e78b57b5250a100113322917b511129a0bd",
+    "tools/torus-s4-tree/src/energy.rs": "334d6ec43474c347ce17e0b033e67f8ea28b192599f129bbe88a4e04e22950b6",
+    "tools/torus-s4-tree/src/transport.rs": "b26a56ed09f803b77fceed7a7c482fc76bc16c78cf84dcd45c2380201c6878a4",
+    "src/cryptanalysis/identity_certificate.rs": "d81ee915ad769a87d7aac5d9664631239607f4a0deb27850cdb52cea84e34270",
+    "src/hash/sha256.rs": "2bafe271f1b2f6e6eb1a100f672f81e2b16bbe30b6db29ac579c0740dfe9eddf",
+    "tools/torus-s4/src/lib.rs": "403d139bf632604eb3e993de945384d7c7cadef350ecd8f63315a28538b24070",
+    "tools/torus-s4/Cargo.toml": "f91d0d01a8d17f13d3c5fd357ab782caf638c3ecf024987634838253c50472cb"
+  },
+  "note": "Current checkout pin for both crates. Historical DEPENDENCY.json records the older identical torus-s4 library; its hashes still match. Cargo.lock alone does not pin path-dependency source. No signed independent standing is asserted."
+}
