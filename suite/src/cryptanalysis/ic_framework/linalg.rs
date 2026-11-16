@@ -244,6 +244,7 @@ impl RelationSolver for StructuredGauss {
 
 /// The matrices the framework knows, by name.
 pub const MATRIX_NAMES: &[(&str, &str)] = &[
+    ("incremental-gauss-u32", "opt-in dense Gauss with exact precomputed reciprocal products for 32-bit moduli; generic fallback, same pivot order and work"),
     (
         "incremental-gauss",
         "dense reduced row echelon maintained as rows arrive, pivot on the leftmost non-zero; one row_op per non-zero multiply-subtract",
@@ -262,6 +263,9 @@ pub fn matrix_by_name(
 ) -> Result<Box<dyn RelationSolver>, String> {
     match name {
         "incremental-gauss" => Ok(Box::new(IncrementalGauss::new(cols, modulus))),
+        "incremental-gauss-u32" => Ok(Box::new(IncrementalGauss::new_u32_reciprocal(
+            cols, modulus,
+        ))),
         "structured-gauss" => Ok(Box::new(StructuredGauss::new(cols, modulus))),
         other => Err(format!(
             "unknown relation matrix `{other}`; known: {}",

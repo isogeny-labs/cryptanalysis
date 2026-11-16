@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/publish_normal_git_checkpoint.py", line 13, in <module>
+    assert subprocess.check_output(['git','rev-parse',head+'^'],text=True).strip()==expected
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

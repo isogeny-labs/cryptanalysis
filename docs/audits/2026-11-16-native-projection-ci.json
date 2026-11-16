@@ -1,0 +1,20 @@
+{
+  "schema": "native-ci-repair/v1",
+  "base": "5dfcf82e698db8d895452c7089f566d3e68d1337",
+  "scope": "explicit size_t index arithmetic and bounded projection test helper",
+  "production_lines_changed": 3,
+  "test_helper": "Reject invalid dimensions/bitset modulus and missing matrix inputs; initialize assignments; include private implementation intentionally with one named lint annotation.",
+  "before_sha256": {
+    "src/indexcalc.c": "65d555ac87db441243d05c5a700292ef874150fca3962ac07cdbca75d0a2864d",
+    "tests/test_ic_projection.c": "5e1c275ab7d07a4f19697de63a158ad033e518492f566ca68e7847ac1d61162b"
+  },
+  "after_sha256": {
+    "src/indexcalc.c": "e5e73fe1f8d885abaa77b7c7d659c875ad82ab4ccf4108ce4961e8d31742ff6d",
+    "tests/test_ic_projection.c": "ece003762d2d61447c45d02fcad049366cd24635ed125d0517cc77beebb0e8bf"
+  },
+  "apple_clang_analyzer": "exit0, no diagnostics",
+  "local_full_clang_tidy": "LLVM23 loads with existing Z3 5.1 runtime path, then flags unrelated new signed-bitwise diagnostics in unchanged headers; keep this failed log, hosted CI uses its own toolchain",
+  "focused_sanitizer_tests": 2,
+  "full_sanitizer_suite": "21/21 tests pass under ASan/UBSan in119.49seconds",
+  "targeted_clang_tidy": "LLVM23 exits0 for the exact hosted diagnostic classes (implicit index widening, suspicious include and core analyzer), using the installed5.1 Z3 runtime and explicit macOS SDK"
+}

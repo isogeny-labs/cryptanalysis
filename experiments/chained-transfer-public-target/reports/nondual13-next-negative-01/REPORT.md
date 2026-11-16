@@ -1,0 +1,7 @@
+# The additional fixed edge has another unsupported matched model
+
+Native6d2c97: actual third lambda2 map and its dual pass the middle169 rational/nondual controls and all point/public checks; all five elliptic whole records compare exactly. The same full kernel transports through actual64/4096/135 controls to HLP(0,0), smooth with D24 nonsquare. The required supplied-E3 identification fails; the intermediate E2,D12 negative remains retained. All nine model whole records compare without masks or deduplication; both actual entire-record omission controls reject101/no output. These are unsigned local observations. [pcc:unverified]
+
+[PDF](report.pdf) · [editable actual diagram](flow.dot) · [SVG](flow.svg) · [Rust projected data](data.json) · [written derivation](../../NONDUAL13_NEXT_NEGATIVE_DERIVATION_01.md) · [native scope](../../evidence/nondual13-next-native-01/scope.json). Whole raw/actual executables await new genuine18. No full2197 expansion, complete second Jacobian map, universal nonexistence, calibrated ECDLP advantage or novelty is established. The next mechanism is the incomplete cold arithmetic census, under a new prospective observer protocol. [pcc:unverified]
+
+Supplemental finite residue proof68cd8c has both original434/435 gates and exact local bindingee88e7 passing, zero trusted. It proves all223 canonical Nat residues square to neither12 nor24, using kernel decision. Field primality/encoding, the tower law and geometry remain separate. Failed default-recursion01 and accepted bounded02 preserve the same statement. [pcc:unverified]

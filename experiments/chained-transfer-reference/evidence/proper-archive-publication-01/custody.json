@@ -1,0 +1,42 @@
+{
+  "at": "2026-11-12T22:29:42.446375+00:00",
+  "handoff_commit": "5fcf411297ac3de273d857e1a553b4b6882e0197",
+  "bot_commit": "5bec81e36ac9b6f7b91ddc5437766248bf7aacfe",
+  "bot_tree": "430c025867acc3a02a542fa2d8e3c5c72c02fc76",
+  "bot_parent": "5fcf411297ac3de273d857e1a553b4b6882e0197",
+  "bot_changed_paths": 4,
+  "local_fast_forward": true,
+  "immutable_manifest_commit": "5bec81e36ac9b6f7b91ddc5437766248bf7aacfe",
+  "manifest_path": "research/chained_jacobian_transfers_20261110/evidence/consumer-proper-whole-archive-handoff-01/.artifacts.json",
+  "run": 43319185494,
+  "job": 131535060041,
+  "workflow_conclusion": "success",
+  "actual_remote_objects_replayed": 2,
+  "objects": [
+    {
+      "name": "failed-full-01.tar.xz",
+      "sha256": "a921d348b5cdeddffadfc8341709afe55df9a80518e38ce3706930cdd575cabe",
+      "bytes": 79644,
+      "object": "s3://setec-astronomy-artifacts/store/sha256/a9/a921d348b5cdeddffadfc8341709afe55df9a80518e38ce3706930cdd575cabe"
+    },
+    {
+      "name": "positive-full-02.tar.xz",
+      "sha256": "201254e7774ee90b49d7a17dd723dccc3918c01ab10cac4d1dcf0c4064072f19",
+      "bytes": 80516,
+      "object": "s3://setec-astronomy-artifacts/store/sha256/20/201254e7774ee90b49d7a17dd723dccc3918c01ab10cac4d1dcf0c4064072f19"
+    }
+  ],
+  "whole_log": {
+    "file": "whole-job.log.xz",
+    "raw_bytes": 425602,
+    "raw_sha256": "7061dc22dec0f7d35f4f11794aaf7c2a6090e08b30128d47c11042affa7ed234",
+    "archive_bytes": 43028,
+    "archive_sha256": "824886bf378e719a78c63dde8f24b279ffbc728605e3acbb14b5cd686be2e5b6",
+    "exact_roundtrip": true
+  },
+  "artifact_check_after_bot": 0,
+  "wiring_check": 0,
+  "wiring_notes": "six existing checkout-into-path informational notes;no edits",
+  "early_settlement_reason": "new bot head observed in PR mutation response,concrete branch movement supersedes initial23:12cadence",
+  "scientific_standing": "unsigned workflow/custody observation,not scientific signature"
+}

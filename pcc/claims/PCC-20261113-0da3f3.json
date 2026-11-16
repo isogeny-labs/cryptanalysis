@@ -1,0 +1,30 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-13T11:45:32Z",
+ "id": "PCC-20261113-0da3f3",
+ "kind": "statement",
+ "producer": {
+  "commit": "f888bd5fe50262d0d74d85ff4caaf4e4af96c81d",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/native-diff-encoding-correction-01/plan.json",
+    "sha256": "b70a2ff027c3d19e07a4178de29ff78cdd7bd49b1018e8e379a9bd6622600c92"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/native-diff-encoding-correction-01/cached-whitespace.txt",
+    "sha256": "ac315a63fe7288601a664ef29286f755f7489857dec4b115b36d366d0d5ff5aa"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Freeze publicN4 checkpoint whitespace-data correction BEFOREedit:originalcached-whitespace2 onrequiredblankcontextprefixes inliteralunifieddiff. Retain WHOLErawdiff unchanged locally/insideoriginalrawarchives;commit standardwholeXZ+rawSHA/pathmap/exactroundtrip,not stripcontext. Sourcealgorithm/4substitutiondiffcontents/nativeinputs/criteria unchanged;no native rerun neededfordataencoding. Originaldiagnosticretained;repeatunchangedrepositorygates innewgovernanceversion."
+}

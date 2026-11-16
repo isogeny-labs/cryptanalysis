@@ -1,0 +1,27 @@
+{
+  "at": "2026-11-12T23:55:02.505661+00:00",
+  "mcp_tools": "absent",
+  "queries": [
+    {
+      "command": "scripts/research-kb status",
+      "observed_exit": 127,
+      "observed_output": "research-kb: no executable found; set RESEARCH_KB_BIN or put research-kb on PATH"
+    },
+    {
+      "command": "scripts/research-kb search 'degree four elliptic cover pullback balanced genus2 infinity fibre n-Xq^2 Yq^3/m T20' --top-k 8",
+      "observed_exit": 127,
+      "observed_output": "research-kb: no executable found; set RESEARCH_KB_BIN or put research-kb on PATH"
+    },
+    {
+      "command": "scripts/research-kb search 'quartic pullback degree drop infinity multiplicity balanced reduce_support public inverse norm four' --top-k 8",
+      "observed_exit": 127,
+      "observed_output": "research-kb: no executable found; set RESEARCH_KB_BIN or put research-kb on PATH"
+    },
+    {
+      "command": "scripts/research-kb theorems 'QuarticFibre ReverseRecovery degree-four norm pullback'",
+      "observed_exit": 127,
+      "observed_output": "research-kb: no executable found; set RESEARCH_KB_BIN or put research-kb on PATH"
+    }
+  ],
+  "scope": "actual bounded calls observed in this session,no search result/absence inference"
+}

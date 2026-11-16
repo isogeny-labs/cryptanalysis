@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-13T08:53:31Z",
+ "id": "PCC-20261113-52df06",
+ "kind": "theorem",
+ "producer": {
+  "commit": "c3b8d74cb356be7a1a10ae8778831f1661d506cc",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "21a19a63a74ed0312b3ebf50fdc63d6749227c43340fb18eb69af7227bc17146",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-reference/g3-norm-checker/lean/CanonicalNorm.lean",
+   "theorem": "G3CanonicalNorm.odd_two_recovery"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Independent canonical-class norm conditional quotient pushforward/section choice/multiplicity/geometric surjectivity implication and odd subgroup recovery. Actual divisor groups, Picard functors, function-field norm/principal divisor bridge, quotient algebra identification, covers/reducers and geometric product-pullback surjectivity remain written/native bridges. SAME source accepted separately by original producer4.35 and matching consumer4.34.1 gates;no verifier/trust change. Local exact bindings remain unsigned until main CI verdict;no full formal geometry or computational advantage.",
+ "statement": "theorem odd_two_recovery {E : Type} [IntModule E] (ell u v : Int) (bezout : 2*u+ell*v=1) (x : E) (order : ell \u2022 x=0) : u \u2022 ((2 : Int) \u2022 x)=x"
+}

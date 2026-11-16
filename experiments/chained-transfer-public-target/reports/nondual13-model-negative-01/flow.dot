@@ -1,0 +1,12 @@
+digraph actual {graph[rankdir=TB,bgcolor="white",nodesep=.18,ranksep=.35];node[shape=box,fontname="DejaVu Sans",fontsize=8,style=rounded];edge[fontname="DejaVu Sans",fontsize=8];
+E1[label="E1 / K\nN4-E13-short-\n936b863521fdce08d2724c468f27979cb39d9\n443d082b4be14209bb08f408414"];
+E2[label="E2 / K\nN4-E13x13-short-\n2088c9e2bd44dfea66094a767e22a1f2ebffd\nd4e963244cb320d93408e58b4b5"];
+{rank=same; E1; E2;}
+{rank=same; J1; C2;}
+E1->E2[label="actual gamma2: degree13\nall64 product2-torsion transports",color="#287b80"];
+J1[label="current J1 / F223\nCiani-Jac-odd-product-v1-\n7ea9d0f9d1a48a48489425beab48274fca7bd\n0848e47a0bac3a027c01601e2c4",color="#295477"];
+C2[label="matched HLP(2,1) quartic / F223\nsmooth; rational P0=(1:0:181)\nD=12; no sqrt(D) in K\nno supplied-source transfer ID",color="#a14b35"];
+J1->C2[label="required second Jacobian map\nUNSUPPORTED",style=dashed,color="#a14b35"];
+E1->J1[style=dotted,label="original matched HLP(1,0)"];
+E2->C2[style=dotted,label="same transported kernel\nmask fixed BEFORE model builder"];
+}

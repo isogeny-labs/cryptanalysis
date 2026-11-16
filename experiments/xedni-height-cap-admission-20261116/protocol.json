@@ -1,0 +1,14 @@
+{
+  "schema": "xedni-height-cap-admission-v1",
+  "source_candidate_rows": "experiments/xedni-lift-height-search-20261116/rows.jsonl",
+  "source_candidate_rows_sha256": "63d2fc969879937d2528547e31c2f22ab8e20a46d1b26fe9803dd139101fb250",
+  "source_lifts": "experiments/xedni-common-preimage-lift-20261116/lifts.jsonl",
+  "source_lifts_sha256": "c2619d5a8f2b7d3831c68e2fcd56243ce436b69003105d65c2f87bd7235201a5",
+  "source_sage_audit": "experiments/xedni-lift-height-search-20261116/audit-sage.json",
+  "source_sage_audit_sha256": "3be9dcf1408734b76d295d289e528100d7740b85c9224c92cfed878b3b336e4f",
+  "height_metric": "Maximum numerator or denominator bit length among A,B,Px,Py,Rx,Ry, with integer denominators 1 and bit_length(0)=0.",
+  "caps_bits": [32,64,96,128,160,192,256,384,512],
+  "admission_rule": "A positive public-relation event is admitted at a cap if at least one of its 27 frozen candidates has full-witness height <= cap and both rational points reduce to its specified U,V. Record centered-baseline admission and all-candidate admission separately. A control with public nonrelation is never admitted even when a rational witness fits the cap; count such bounded mismatched candidates separately.",
+  "selection": "Preserve all 127 public-relation events and 32 preselected public nonrelation controls, their source order, all 27 candidates per event, and every cap result. The panel is a retrospective fixed-input height-cap analysis.",
+  "measurement": "exact bounded candidate admission counts only; no same-target online wall-time or public-relation search comparison"
+}

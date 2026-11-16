@@ -1,0 +1,22 @@
+digraph G {
+ graph [rankdir=LR,bgcolor="white",pad="0.2",nodesep="0.3",ranksep="0.35",fontname="Helvetica",label="Same target, states and full points; inverse-product arithmetic changes",labelloc=t];
+ node [shape=box,style="rounded,filled",fillcolor="#edf4f8",fontname="Helvetica",fontsize=11,color="#658298"];
+ edge [color="#658298",fontname="Helvetica",fontsize=10];
+ state [label="One public Q
+Same sixteen states
+Same denominators"];
+ anchor [label="Frozen binary anchor
+Scalar four-accumulator products"];
+ current [label="Current-source control
+Scalar four-accumulator products"];
+ vector [label="Candidate
+Four-lane PCLMUL products
+8..16 inputs, zero masks, padding",fillcolor="#e7f2eb"];
+ common [label="One inverse tree
+Same full-point formulas
+Same query / guards / rows / rank
+Scalar group check"];
+ fallback [label="Unsupported or short batch
+Existing complete inverse",fillcolor="#fff2d9"];
+ state->anchor;state->current;state->vector;anchor->common;current->common;vector->common;vector->fallback [style=dashed];fallback->common [style=dashed];
+}
