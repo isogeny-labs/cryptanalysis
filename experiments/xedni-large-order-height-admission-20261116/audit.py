@@ -15,9 +15,15 @@ assert hashlib.sha256((H/'protocol.json').read_bytes()).hexdigest()==R['protocol
 
 def read_rows(name,key):
     info=A['files'][name]
-    packed=(H/info['gzip_path']).read_bytes()
-    assert hashlib.sha256(packed).hexdigest()==info['gzip_sha256']
-    raw=gzip.decompress(packed)
+    chunks=[]
+    for part in info['parts']:
+        packed=(H/part['path']).read_bytes()
+        assert len(packed)==part['bytes']
+        assert hashlib.sha256(packed).hexdigest()==part['sha256']
+        chunk=gzip.decompress(packed)
+        assert chunk.count(b'\n')==part['lines']
+        chunks.append(chunk)
+    raw=b''.join(chunks)
     assert len(raw)==info['raw_bytes']
     assert hashlib.sha256(raw).hexdigest()==R[key]==info['raw_sha256']
     return [json.loads(line) for line in raw.decode('utf-8').splitlines()]
