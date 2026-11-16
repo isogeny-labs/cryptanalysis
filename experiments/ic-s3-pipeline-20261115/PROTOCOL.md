@@ -33,7 +33,7 @@ manifests and run each target in a fresh process. Never substitute target seeds
 or select only completed targets. Publish protocol/source before generating
 these frozen targets. Use fixture0 solely for baseline before/after A/A checks.
 
-For every curve/target, execute the repository plain and negation-map rho on
+[pcc:unverified] For every curve/target, execute the repository plain and negation-map rho on
 the same point and walk seed, retaining both. These generic binary curves have
 no Koblitz signed-Frobenius reference. Require actual verified completion before
 using a rho value. Keep missing/capped references explicit. Report counted S,
