@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/Volumes/SSD990/cryptanalysis/experiments/xedni-crt-prime-panel-20261115/audit.py", line 259, in <module>
+    main()
+    ~~~~^^
+  File "/Volumes/SSD990/cryptanalysis/experiments/xedni-crt-prime-panel-20261115/audit.py", line 244, in main
+    checked = [check_prime(record, protocol, orders, chars) for record in result["fields"]]
+               ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/SSD990/cryptanalysis/experiments/xedni-crt-prime-panel-20261115/audit.py", line 223, in check_prime
+    assert dict(counts) == record["counts"], (p, dict(counts), record["counts"])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: (59, {'target_queries': 25, 'admissible_pairs': 12, 'attempts_7': 452, 'attempts_11': 640, 'accepted_pairs': 8, 'accepted_reduced_relations': 4, 'accepted_rational_relations': 0, 'status_duplicate': 4, 'status_identity': 9, 'status_same_x_base': 4, 'status_accepted': 8}, {'accepted_pairs': 8, 'accepted_reduced_relations': 4, 'admissible_pairs': 12, 'attempts_11': 640, 'attempts_7': 452, 'status_accepted': 8, 'status_duplicate': 4, 'status_identity': 9, 'status_same_x_base': 4, 'target_queries': 25})
