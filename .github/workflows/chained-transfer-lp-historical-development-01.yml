@@ -228,7 +228,7 @@ jobs:
           set -euo pipefail
           custody="$RUNNER_TEMP/lp-historical-custody"
           component=experiments/chained-transfer-lp-presentation-01
-          for source in "$component"/population-01/*.sh "$component"/runtime-01/assemble-01.sh; do
+          for source in "$component"/population-01/*.sh "$component"/runtime-01/assemble-01.sh "$component"/runtime-01/export-guarded-bytes-01.sh "$component"/runtime-01/oci-01/assemble-context-01.sh; do
             bash -n "$source"
           done
           timeout 30 bash "$component/population-01/check-phase-metadata-01.sh" "$custody/offline-process-metadata-controls"
@@ -250,6 +250,8 @@ jobs:
           echo '2fe88bb302db587bbb6ede217fc646cf8fa35f9b9a2980e4a15dae273b8df6eb  ../crypto/tools/lean/proof-gate.sh' | sha256sum --check
           echo 'b90d6b58c92138f4f4e4d4692a9c3152629c3aafa537e789248bebbf6ddb1929  ../crypto/tools/lean/AuditAxioms.lean' | sha256sum --check
           cp -r "$component/lean" "$out/entire-proof-source"
+          sha256sum --check "$component/runtime-01/oci-01/source-01.sha256" > "$out/complete-OCI-recipe-source-guard.txt"
+          cp -r "$component/runtime-01/oci-01" "$out/entire-prospective-OCI-recipe-source"
           cp -r tools/lean "$out/entire-original-Consumer-proof-tools"
           cp -r ../crypto/tools/lean "$out/entire-original-Root-proof-tools"
           mkdir "$out/proof-compiler-bin"
