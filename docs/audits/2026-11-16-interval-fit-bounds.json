@@ -1,0 +1,48 @@
+{
+  "schema": "native-interval-fit-bounds/v1",
+  "base_commit": "1fefcf457288cc6bf9ae1cdc692773220a4e5e34",
+  "before": {
+    "order": 18446744073709551557,
+    "input": 0,
+    "lower": 18446744073709551558,
+    "upper": 18446744073709551615,
+    "returned_success": true,
+    "returned_value": 0,
+    "inside_interval": false,
+    "original_reference_assertions_failed": 3660,
+    "original_reference_assertions_total": 52138
+  },
+  "after": {
+    "returned_success": false,
+    "answer_unchanged": true,
+    "reference_random_cases": 20000,
+    "targeted_large_order_cases": 64,
+    "assertions_passed": 52138
+  },
+  "implementation": "Use delta/order plus a nonzero-remainder indicator; retain 128-bit final representative bound and write the output only on success.",
+  "validation": {
+    "address_undefined_ctest_passed": 21,
+    "ctest_failed": 0,
+    "elapsed_seconds": 128.17,
+    "post_format_focused_tests_passed": 2,
+    "configured_llvm21_clang_tidy_exit": 0,
+    "llvm23_unavailable_reason": "The installed binary could not load libz3.5.1.dylib. No host libraries were changed."
+  },
+  "sources": {
+    "src/dlog_internal.h": "533e58a52e3cee84f4c55192874987a41e3b048116ddee6e154cfba3283c9758",
+    "tests/test_robustness.c": "1db8d41c4f65ac883219b4866c4736188832d7dde858c681a1f13ff8b92af373",
+    "tests/test_grumpy.c": "fc803473e28025fe6d1ae715d3a187cf5a4d58f734186643f08b0f5f0c626684"
+  },
+  "evidence": {
+    "docs/audits/2026-11-16-interval-fit-evidence/after.log": "9ae8a9044d7bf359fc93479b68b7a6b78b5db395d990f800547940935228e4c5",
+    "docs/audits/2026-11-16-interval-fit-evidence/before.log": "3774cb52931da92fa662cd78a6d9cd9adb73f1fb89f149b09d8afa5755da40e4",
+    "docs/audits/2026-11-16-interval-fit-evidence/clang-tidy.log": "f483137d9962dce4d1130b982c523868b3a087f7f69331f86ce3b118cdf11457",
+    "docs/audits/2026-11-16-interval-fit-evidence/ctest.log": "a28f4c6ffe1dea583a949d96ea6c1e02fa8646938d23862f5b4e369de01c100d",
+    "docs/audits/2026-11-16-interval-fit-evidence/focused.log": "436474aa950810aa59589a97d11fc96813a825acee917a6198a416a2578ac91d",
+    "docs/audits/2026-11-16-interval-fit-evidence/original-controls.log.gz": "1ce34b28605f154f76dc3c78d53e2eb1f6206a58cc3286a688f55e28117b8d38",
+    "docs/audits/2026-11-16-interval-fit-evidence/reproduce.c": "fa97a9dec47cc12e2e8b1d050a2f11c26f62cacce16dc7c0784b2e6ba3955ee8"
+  },
+  "original_controls_uncompressed_sha256": "64d0cb50b6c5368ead84cc26f6702c9a198a69e1361b9cb8912bc09593cbf525",
+  "fixture_correction": "Stop reads after failure, check both seeks and the fixture read before consuming checkpoint bytes.",
+  "frozen_artifacts_changed": false
+}

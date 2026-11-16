@@ -43,7 +43,8 @@ static inline int ca_fit_interval(uint64_t n, uint64_t *x, uint64_t lo, uint64_t
     uint64_t v = *x % n;
     /* smallest v' = v + k n >= lo */
     if (v < lo) {
-        uint64_t k = (lo - v + n - 1) / n;
+        uint64_t delta = lo - v;
+        uint64_t k = delta / n + (delta % n != 0);
         ca_u128 vv = (ca_u128)v + (ca_u128)k * n;
         if (vv > UINT64_MAX) return 0;
         v = (uint64_t)vv;
