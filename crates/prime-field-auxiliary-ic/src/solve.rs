@@ -148,6 +148,17 @@ fn integer_sqrt(value: u128) -> u128 {
     }
 }
 
+// Requires a separately checked point of prime order `order` on the curve.
+pub(crate) fn hasse_cofactor(modulus: u64, order: u64) -> Option<u64> {
+    let p = u128::from(modulus);
+    let radius = integer_sqrt(4 * p);
+    let lo = p + 1 - radius;
+    let hi = p + 1 + radius;
+    let n = u128::from(order);
+    let lower = lo.div_ceil(n);
+    (lower == hi / n).then_some(lower as u64)
+}
+
 impl<'a, const B: u32> PreparedSolver<'a, B> {
     /// Check an odd prime subgroup, generator, and every usable base point.
     /// A unique full-order multiple in the Hasse interval avoids redundant
@@ -164,12 +175,7 @@ impl<'a, const B: u32> PreparedSolver<'a, B> {
                 "generator does not have the claimed prime order",
             ));
         }
-        let p = u128::from(curve.modulus());
-        let radius = integer_sqrt(4 * p);
-        let lo = p + 1 - radius;
-        let hi = p + 1 + radius;
-        let n = u128::from(order);
-        let full_group = lo.div_ceil(n) == 1 && hi / n == 1;
+        let full_group = hasse_cofactor(curve.modulus(), order) == Some(1);
         if !full_group
             && base
                 .representatives()
@@ -261,6 +267,25 @@ impl<'a, const B: u32> PreparedSolver<'a, B> {
     /// Collect exact algebraic relations and recover through distinct rows.
     /// The optional duration is a soft limit checked between lane batches.
     pub fn solve(&self, target: Point, config: &Config) -> Result<SolveOutcome> {
+        self.search(target, config, false)
+    }
+    /// Measure relation counts on the same public query prefix for every base.
+    /// This skips recovery and never stops because a logarithm became available.
+    /// Only `QueryBudget` completes the requested prefix; other stop reasons
+    /// retain partial counts. No elapsed-time or performance claim is implied.
+    pub fn relation_yield(
+        &self,
+        target: Point,
+        config: &Config,
+    ) -> Result<(StopReason, SearchStats)> {
+        match self.search(target, config, true)? {
+            SolveOutcome::Exhausted { reason, stats } => Ok((reason, stats)),
+            SolveOutcome::Solved { .. } => {
+                unreachable!("yield collection does not attempt recovery")
+            }
+        }
+    }
+    fn search(&self, target: Point, config: &Config, yield_only: bool) -> Result<SolveOutcome> {
         self.validate_target(target)?;
         if !(1..=1024).contains(&config.walk_lanes)
             || config.max_proof_nodes < 1
@@ -324,8 +349,9 @@ impl<'a, const B: u32> PreparedSolver<'a, B> {
         } else {
             config.max_relations
         };
-        let mut graph = GainGraph::new(columns, self.order, config.max_proof_nodes);
-        stats.proof_nodes = graph.proof_nodes();
+        let mut graph =
+            (!yield_only).then(|| GainGraph::new(columns, self.order, config.max_proof_nodes));
+        stats.proof_nodes = graph.as_ref().map_or(0, GainGraph::proof_nodes);
         let mut relations = Vec::new();
         let mut seen = BTreeSet::new();
         let mut batch = BatchScratch::default();
@@ -369,7 +395,7 @@ impl<'a, const B: u32> PreparedSolver<'a, B> {
                     stats.duplicate_rows += 1;
                     continue;
                 }
-                if relations.len() == row_limit {
+                if stats.relations == row_limit {
                     return Ok(SolveOutcome::Exhausted {
                         reason: StopReason::RelationBudget,
                         stats,
@@ -385,8 +411,11 @@ impl<'a, const B: u32> PreparedSolver<'a, B> {
                         "walk coefficient or point replay failed",
                     ));
                 }
+                stats.relations += 1;
+                let Some(graph) = graph.as_mut() else {
+                    continue;
+                };
                 relations.push(row);
-                stats.relations = relations.len();
                 let dependency =
                     match graph.insert(decomposition, row.a, row.b, relations.len() - 1) {
                         Ok(value) => value,
@@ -504,9 +533,9 @@ pub fn verify_certificate<const B: u32>(
     Ok(())
 }
 
-struct SplitMix64(u64);
+pub(crate) struct SplitMix64(pub(crate) u64);
 impl SplitMix64 {
-    fn next(&mut self) -> u64 {
+    pub(crate) fn next(&mut self) -> u64 {
         self.0 = self.0.wrapping_add(0x9e3779b97f4a7c15);
         let mut z = self.0;
         z = (z ^ (z >> 30)).wrapping_mul(0xbf58476d1ce4e5b9);

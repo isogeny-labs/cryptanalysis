@@ -1,5 +1,6 @@
-use crate::field::F;
+use crate::field::{is_prime, F};
 use crate::kernel::{Circuit, Scalar, Step, Terminal};
+use crate::solve::{hasse_cofactor, SplitMix64};
 use crate::{BatchScratch, Curve, Error, Point, Result};
 use std::collections::BTreeSet;
 
@@ -95,6 +96,25 @@ pub enum FactorBaseEncoding {
         /// Primitive trace used to choose the terminal fiber.
         trace: u64,
     },
+}
+
+/// Target-independent random-base preparation counters, not performance evidence.
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
+pub struct RandomBaseStats {
+    /// Public SplitMix64 seed, separate from the relation-search seed.
+    pub seed: u64,
+    /// Cofactor certified from the generator order and the Hasse interval.
+    pub cofactor: u64,
+    /// Raw 64-bit draws, including every rejected draw.
+    pub draws: u64,
+    /// Draws rejected to avoid reduction bias in field coordinates.
+    pub field_rejections: u64,
+    /// Canonical coordinates with no rational point on the target curve.
+    pub non_lifts: u64,
+    /// Rational lifts that become the identity after cofactor clearing.
+    pub cleared_to_identity: u64,
+    /// Repeated coordinates already present in the selected base.
+    pub duplicate_columns: u64,
 }
 
 /// Reusable target-independent circuit and signed factor-base representatives.
@@ -527,6 +547,100 @@ impl<const B: u32> FactorBase<B> {
             FactorBaseEncoding::Direct,
             Backend::Scalar,
         )
+    }
+    /// Sample an ordinary direct IC base with exactly `columns` negation classes.
+    /// Coordinates are sampled by rejection, lifted, and cofactor cleared; no
+    /// target or known factor-base logarithms enter construction. The generator
+    /// and Hasse interval must certify an exact cofactor coprime to `order`.
+    /// An uncertified cofactor is refused. All rejected draws count against
+    /// `max_draws`; duplicates are tested after clearing.
+    pub fn random_control(
+        curve: Curve<B>,
+        order: u64,
+        generator: Point,
+        columns: usize,
+        seed: u64,
+        max_draws: u64,
+    ) -> Result<(Self, RandomBaseStats)> {
+        if !(3..1u64 << 63).contains(&order) || !is_prime(order) {
+            return Err(Error::Invalid(
+                "odd prime subgroup order below 2^63 required",
+            ));
+        }
+        if columns == 0 || columns > 1 << 20 || columns as u64 > (order - 1) / 2 {
+            return Err(Error::Invalid(
+                "random base needs an attainable 1..=2^20 signed columns",
+            ));
+        }
+        if !curve.contains(Some(generator)) || curve.mul_inner(Some(generator), order).is_some() {
+            return Err(Error::Invalid(
+                "generator does not have the claimed prime order",
+            ));
+        }
+        let cofactor = hasse_cofactor(curve.modulus(), order)
+            .filter(|h| h % order != 0)
+            .ok_or(Error::Invalid(
+                "random base requires a Hasse-certified cofactor coprime to the subgroup order",
+            ))?;
+        let mut rng = SplitMix64(seed);
+        let threshold = curve.modulus().wrapping_neg() % curve.modulus();
+        let mut stats = RandomBaseStats {
+            seed,
+            cofactor,
+            ..RandomBaseStats::default()
+        };
+        let mut seen = BTreeSet::new();
+        let mut points = Vec::with_capacity(columns);
+        for _ in 0..max_draws {
+            stats.draws += 1;
+            let draw = rng.next();
+            if draw < threshold {
+                stats.field_rejections += 1;
+                continue;
+            }
+            let x = draw % curve.modulus();
+            if cofactor == 1 && seen.contains(&x) {
+                stats.duplicate_columns += 1;
+                continue;
+            }
+            let Some(point) = curve.lift_x(x)? else {
+                stats.non_lifts += 1;
+                continue;
+            };
+            let Some(point) = (if cofactor == 1 {
+                Some(point)
+            } else {
+                curve.mul_inner(Some(point), cofactor)
+            }) else {
+                stats.cleared_to_identity += 1;
+                continue;
+            };
+            if !seen.insert(point.x()) {
+                stats.duplicate_columns += 1;
+                continue;
+            }
+            let point = if point.y() > curve.modulus() - point.y() {
+                curve.neg_inner(point)
+            } else {
+                point
+            };
+            points.push(point);
+            if points.len() == columns {
+                let base = Self::assemble(
+                    curve,
+                    points,
+                    columns,
+                    Vec::new(),
+                    None,
+                    FactorBaseEncoding::Direct,
+                    Backend::Scalar,
+                )?;
+                return Ok((base, stats));
+            }
+        }
+        Err(Error::ResourceLimit(
+            "random factor-base draw budget exhausted",
+        ))
     }
     /// Direct subtraction control with exactly the same signed columns and
     /// raw-root accounting. No maps or polynomial circuit are retained.

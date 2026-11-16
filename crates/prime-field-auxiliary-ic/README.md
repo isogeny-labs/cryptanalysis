@@ -126,6 +126,17 @@ the archived public manifest:
 - `--without-auxiliary` selects the direct IC control on the same roots.
   Independent arbitrary roots may also be supplied with this flag, without
   an `auxiliary` block. `roots` aliases `structured_roots`.
+- `--random-base-columns K [--factor-base-seed 701]` selects ordinary IC on
+  a separately sampled random base with exactly K usable negation classes.
+  Match K to the special base's `folded_columns`, rather than its raw roots.
+  Construction uses rejection-sampled field coordinates and cofactor clearing,
+  without target access or known base logarithms. The cofactor must be
+  certified by the generator order and Hasse interval and coprime to the
+  subgroup order; other cases fail explicitly. Both archived requested-field
+  subgroups meet this condition. `--random-base-max-draws` bounds every draw,
+  including rejections; the default is 4,194,304. This mode requires only
+  `public` input and runs direct subtraction with the shared relation solver.
+  Its base seed is separate from the `--seed` relation-search seed.
 - `--multiplicative-degree 126 [--coset 1]` or `--torus-depth 7
   [--torus-trace TRACE]` generates a field-based fiber. Only the `public`
   object is required in the JSON input. The modes are mutually exclusive;
@@ -137,11 +148,31 @@ the archived public manifest:
   reference on the same target. It uses Montgomery arithmetic, so this is
   explicitly a different arithmetic backend. `--rho-max-ops` bounds it.
 - `--decompose-only` checks one target decomposition, without recovery.
+- `--relation-yield-only` processes a public query prefix without early
+  recovery or graph elimination. Compare the three arms below with identical
+  `--seed`, `--walk-lanes`, `--max-queries` and resource limits. Only a
+  `complete` report with `stop_reason: QueryBudget` completed the requested
+  prefix. Relation/storage/time caps retain explicitly incomplete reports.
+  `work.relations` counts distinct nonzero signed rows; `duplicate_rows`
+  counts repeated rows. Failed and infinity queries remain in `work.queries`.
+  This is a relation-collection stage, not an end-to-end solve measurement.
 - `--replay-relations rows.jsonl` replays public `a,b,i,j,si,sj` rows. The
   report identifies certificate replay and leaves attack-time/query fields
   null. It cannot be combined with `--rho`.
 - `--max-queries`, `--walk-lanes`, `--max-relations`, `--max-proof-nodes`,
   `--max-millis`, `--backend`, and `--seed` specify execution limits.
+
+The primary IC comparison has three arms: special auxiliary maps; direct IC
+on the same special base; and direct IC on an independent equal-size random
+base. The middle arm isolates the maps' effect; it cannot substitute for the
+random-base comparison. Freeze several base seeds before generating fresh
+targets. All arms use the same target subgroup and public query sampler.
+Run both fixed-prefix relation collection and full certificate-producing
+search. Charge base construction, auxiliary-curve discovery/counting/kernel
+preparation, collection, linear algebra and replay to the cold total; a warm
+comparison reports excluded setup separately. Existing CLI preparation times
+do not include offline auxiliary-curve discovery. The comparison specification
+is in `experiments/prime-field-auxiliary-ic/random-vs-special/COMPARISON.md`.
 
 Run research measurements only after the repository checkpoint and GPU-host
 requirements are met. CLI durations are producer diagnostics. Exclusive phase

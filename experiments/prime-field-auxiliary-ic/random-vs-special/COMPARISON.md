@@ -1,0 +1,102 @@
+# Random relations versus a special auxiliary curve
+
+Status: implementation/comparison specification, not a frozen benchmark.
+No fresh target panel, timing result or speedup is established here.
+The implementation baseline is PR source `8abb2b14`; there is no qualified
+Rust timing baseline to ratchet. Final curve/workload/candidate identifiers
+and measured costs remain unset until the existing admission rules are met.
+
+## Three required IC arms
+
+| Arm | Factor base | Relation decomposition |
+| --- | --- | --- |
+| A: special auxiliary | Complete auxiliary-map fiber lifted onto the target curve | Low-degree resultant circuit and checked signed sums |
+| B: same-base direct | Exactly A's signed columns | Optimized batched direct subtraction, no maps |
+| C: ordinary random | Independently sampled random subgroup points, exactly A's usable signed-column count | The same optimized direct subtraction as B |
+
+A versus C is the requested special-versus-random IC comparison. A versus B
+isolates the maps' contribution. B is not a random-base control. Power and
+torus encodings, if included, get separate named arms and the same controls;
+they are not relabeled as auxiliary elliptic curves. Rho remains an optional
+additional reference and does not replace the IC comparisons.
+
+Use both requested fields, `p=2^31-1` and `p=2^61-1`, on the same target
+curve, prime subgroup, generator and target for every arm in a paired row.
+The existing archived public parameters can define the curve choices, but
+their known-answer targets are correctness fixtures rather than fresh
+benchmark targets. For example, the archived 61-bit subgroup has cofactor
+14,627,932; random preparation must clear it, not attempt millions of
+subgroup-rejection trials per point.
+
+## Base and target law
+
+Match the actual `folded_columns` K and affine point count. Raw fiber size
+is not the random-base size. Record raw membership roots, rejected lifts,
+clearing to the identity, duplicate columns and every random draw separately.
+The random constructor receives curve, subgroup and generator, never Q or a
+target logarithm. It samples field coordinates with rejection before modular
+reduction, lifts, clears the Hasse-certified cofactor and folds point negation.
+It refuses uncertified/non-coprime cofactors and unattainable K. It does not
+generate points by selecting known multiples of the generator.
+
+Freeze all base seeds, actual point sets, auxiliary maps and search limits
+before fresh targets are generated. Use multiple independently prescribed
+base seeds, not the best seed after inspection. Archive the actual bases under
+the repository factor-base rules before publishing measurements. Keep the
+base seed separate from the public relation-search seed. Retain every
+preparation failure, empty/invalid base, timeout and exhausted search.
+
+## Two distinct comparisons
+
+For relation yield, run `--relation-yield-only` in all three arms with the
+same public `--seed`, `--walk-lanes`, `--max-queries` and limits. Their target
+walks depend on the public curve/G/Q and those sampler parameters, not the
+factor base. Recovery and graph elimination are disabled in this mode, so an
+early solution does not shorten one arm's query prefix. Include failed and
+infinity queries in the denominator. Record distinct valid nonzero signed
+rows, duplicate rows and total processed/generated targets. Report both
+distinct-row yield and hit count (`relations + duplicate_rows`). Do not
+compare yield on unequal processed prefixes or silently discard capped rows;
+only `complete`/`QueryBudget` rows completed the requested panel.
+
+For end-to-end cost, remove `--relation-yield-only` and run full collection,
+graph recovery and public certificate replay on the same fresh Q. Record
+queries and work until a checked recovery or explicit resource exhaustion.
+Relation-yield-only timings exclude recovery and cannot establish an
+end-to-end advantage. Match scalar field arithmetic first; report an additional
+native SIMD comparison separately with its selected backend recorded.
+
+Commands below are templates; K and other parameters must come from the
+frozen panel. They are not an authorization to bypass measurement gates.
+
+```sh
+# Shared suffix: --backend scalar --seed QUERY_SEED --walk-lanes LANES
+#                --max-queries QUERIES --max-relations ROW_CAP
+# A
+ca-ic auxiliary --input frozen-special.json --relation-yield-only
+# B
+ca-ic auxiliary --input frozen-special.json --without-auxiliary --relation-yield-only
+# C; only public curve/G/Q parameters are needed in this input
+ca-ic auxiliary --input frozen-public.json --random-base-columns K \
+  --factor-base-seed BASE_SEED --random-base-max-draws DRAW_CAP --relation-yield-only
+```
+
+## Accounting and outstanding admission
+
+Cold totals charge auxiliary-curve discovery, point counting/order evidence,
+smooth-kernel search, isogeny-map construction, fiber enumeration/lifting,
+random-base sampling/clearing/deduplication, circuit preparation, target walks,
+decomposition, row checks, graph recovery and final replay. Existing CLI
+preparation counters start at input loading; they do not account for earlier
+auxiliary discovery. The launcher must retain those additional phases and
+prevent overlap or double charging. Warm totals report excluded preparation,
+reuse count and amortization separately. All reported comparisons keep the
+same denominator, workload and successful-recovery requirement.
+
+Before a research timing run: successful checkpoint upload; admitted GPU/host
+allocation under the standing protocol; immutable candidate/base/target panel;
+isolation, A/A and positive controls; benchmark record/raw-data custody;
+exclusive phase accounting; independent signed replay. These remain open in
+[the qualification problem](../../../problems/prime-field-auxiliary-ic-validation.md).
+No timing run is launched by adding these controls. Correctness tests are
+development controls, not performance measurements or independent verdicts.

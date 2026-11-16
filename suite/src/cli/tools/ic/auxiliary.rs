@@ -41,6 +41,17 @@ pub struct AuxiliaryArgs {
     /// for a same-base control, or supply arbitrary roots without an auxiliary block.
     #[arg(long)]
     pub without_auxiliary: bool,
+    /// Ordinary random-base IC with exactly this many usable signed columns.
+    /// Match this to the special base's folded_columns, not its raw root count.
+    #[arg(long, conflicts_with_all = ["without_auxiliary", "multiplicative_degree", "torus_depth", "replay_relations"],
+        value_parser = clap::value_parser!(u32).range(1..=1_048_576))]
+    pub random_base_columns: Option<u32>,
+    /// Public random-base seed, independent of the --seed relation sampler.
+    #[arg(long, requires = "random_base_columns")]
+    pub factor_base_seed: Option<u64>,
+    /// Raw random-base draw budget, including rejections (default 4194304).
+    #[arg(long, requires = "random_base_columns", value_parser = clap::value_parser!(u64).range(1..))]
+    pub random_base_max_draws: Option<u64>,
     /// Generate a power-map fiber of this degree (divides p-1; factors 2,3,7).
     #[arg(long, conflicts_with = "torus_depth", value_parser = clap::value_parser!(u32).range(2..=1_048_576))]
     pub multiplicative_degree: Option<u32>,
@@ -78,6 +89,10 @@ pub struct AuxiliaryArgs {
     /// Find a signed decomposition of Q without starting relation collection.
     #[arg(long, conflicts_with = "rho")]
     pub decompose_only: bool,
+    /// Collect a fixed query prefix without early recovery or linear algebra.
+    /// Compare only completed prefixes with identical --seed and --walk-lanes.
+    #[arg(long, conflicts_with_all = ["decompose_only", "replay_relations", "rho"])]
+    pub relation_yield_only: bool,
     /// Also run the repository's bounded batched, negation-map rho on this Q.
     #[arg(long)]
     pub rho: bool,
@@ -212,10 +227,26 @@ fn execute<const B: u32>(
     let target = curve
         .point(public.target[0], public.target[1])
         .map_err(|e| e.to_string())?;
-    if args.without_auxiliary && !matches!(args.backend, BackendArg::Auto | BackendArg::Scalar) {
+    if (args.without_auxiliary || args.random_base_columns.is_some())
+        && !matches!(args.backend, BackendArg::Auto | BackendArg::Scalar)
+    {
         return Err("direct control uses scalar group arithmetic".into());
     }
-    let base = if let Some(degree) = args.multiplicative_degree {
+    let mut random_stats = None;
+    let base = if let Some(columns) = args.random_base_columns {
+        aux::FactorBase::random_control(
+            curve,
+            public.n,
+            generator,
+            columns as usize,
+            args.factor_base_seed.unwrap_or(0),
+            args.random_base_max_draws.unwrap_or(4_194_304),
+        )
+        .map(|(base, stats)| {
+            random_stats = Some(stats);
+            base
+        })
+    } else if let Some(degree) = args.multiplicative_degree {
         aux::FactorBase::multiplicative(curve, degree, args.coset.unwrap_or(1), args.backend.into())
     } else if let Some(depth) = args.torus_depth {
         aux::FactorBase::torus(curve, depth, args.torus_trace, args.backend.into())
@@ -244,7 +275,12 @@ fn execute<const B: u32>(
         )
     }
     .map_err(|e| e.to_string())?;
-    let selection_encoding = encoding_json(base.encoding());
+    let selection_encoding = if let Some(stats) = &random_stats {
+        json!({"kind":"random-subgroup","seed":stats.seed,"columns":base.representatives().len(),
+            "cofactor":stats.cofactor,"max_draws":args.random_base_max_draws.unwrap_or(4_194_304)})
+    } else {
+        encoding_json(base.encoding())
+    };
     let terminal_coordinate = base.terminal_coordinate();
     let base = if args.without_auxiliary && base.uses_circuit() {
         base.direct_control().map_err(|e| e.to_string())?
@@ -260,8 +296,18 @@ fn execute<const B: u32>(
             "selection_encoding":selection_encoding,"terminal_coordinate":terminal_coordinate,
             "folded_columns":base.representatives().len(),"backend":base.backend().name()},
         "qualification":"unverified producer diagnostic; no signed independent replay or admitted performance tier",
+        "configured_search":{"seed":args.seed,"max_queries":args.max_queries,"walk_lanes":args.walk_lanes,
+            "max_relations":args.max_relations,"max_proof_nodes":args.max_proof_nodes,"max_millis":args.max_millis},
         "online_exclusive_phases":null,"qualified_speedup":null,"gpu":{"devices":[]}
     });
+    if let Some(stats) = random_stats {
+        report["factor_base"]["random_preparation"] = json!({
+            "sampler":"splitmix64-rejection-field-coordinates-cofactor-clear-negation-fold",
+            "seed":stats.seed,"cofactor":stats.cofactor,"draws":stats.draws,
+            "field_rejections":stats.field_rejections,"non_lifts":stats.non_lifts,
+            "cleared_to_identity":stats.cleared_to_identity,"duplicate_columns":stats.duplicate_columns
+        });
+    }
     if args.decompose_only {
         let mut workspace = base.workspace();
         let row = base
@@ -333,6 +379,23 @@ fn execute<const B: u32>(
         max_duration: args.max_millis.map(Duration::from_millis),
     };
     let online = Instant::now();
+    if args.relation_yield_only {
+        let (reason, stats) = prepared
+            .relation_yield(target, &config)
+            .map_err(|e| e.to_string())?;
+        report["mode"] = json!("bounded-relation-yield");
+        report["sampler"] = json!("splitmix64-rejection-public-coefficient-walks");
+        report["status"] = json!(if reason == aux::StopReason::QueryBudget {
+            "complete"
+        } else {
+            "incomplete"
+        });
+        report["stop_reason"] = json!(format!("{reason:?}"));
+        report["work"] = stats_json(&stats);
+        report["online_wall_seconds"] = json!(online.elapsed().as_secs_f64());
+        report["certificate"] = Value::Null;
+        return Ok(report);
+    }
     let outcome = prepared.solve(target, &config).map_err(|e| e.to_string())?;
     let online_seconds = online.elapsed().as_secs_f64();
     report["mode"] = json!("bounded-single-target-search");
@@ -510,6 +573,131 @@ mod tests {
         .is_err());
         assert!(TestCli::try_parse_from(["test", "--input", "x", "--coset", "1"]).is_err());
         assert!(TestCli::try_parse_from(["test", "--input", "x", "--torus-trace", "4"]).is_err());
+    }
+
+    #[test]
+    fn random_base_control_is_distinct_reproducible_and_matches_usable_columns() {
+        let input: Input = serde_json::from_value(json!({
+            "public":{"p":127,"a":2,"b":51,"n":109,"P":[3,46],"Q":[6,122]}
+        }))
+        .unwrap();
+        let mut args = TestCli::parse_from([
+            "test",
+            "--input",
+            "unused",
+            "--random-base-columns",
+            "5",
+            "--factor-base-seed",
+            "701",
+            "--seed",
+            "43",
+            "--max-queries",
+            "10000",
+        ])
+        .args;
+        let report = execute::<7>(&args, &input, "fixture".into(), Instant::now()).unwrap();
+        assert_eq!(report["status"], "solved");
+        assert_eq!(report["factor_base"]["folded_columns"], 5);
+        assert_eq!(report["factor_base"]["affine_points"], 10);
+        assert_eq!(
+            report["factor_base"]["selection_encoding"]["kind"],
+            "random-subgroup"
+        );
+        assert_eq!(report["factor_base"]["random_preparation"]["seed"], 701);
+        assert_eq!(report["factor_base"]["uses_circuit"], false);
+        assert_eq!(report["qualified_speedup"], Value::Null);
+        let repeated = execute::<7>(&args, &input, "fixture".into(), Instant::now()).unwrap();
+        assert_eq!(report["certificate"], repeated["certificate"]);
+        assert_eq!(report["work"], repeated["work"]);
+        args.max_queries = 0;
+        let stopped = execute::<7>(&args, &input, "fixture".into(), Instant::now()).unwrap();
+        assert_eq!(stopped["status"], "incomplete");
+        assert_eq!(stopped["work"]["queries"], 0);
+        for flags in [
+            vec!["--without-auxiliary"],
+            vec!["--torus-depth", "3"],
+            vec!["--multiplicative-degree", "18"],
+            vec!["--replay-relations", "rows"],
+        ] {
+            let mut cmd = vec!["test", "--input", "x", "--random-base-columns", "5"];
+            cmd.extend(flags);
+            assert!(TestCli::try_parse_from(cmd).is_err());
+        }
+        assert!(
+            TestCli::try_parse_from(["test", "--input", "x", "--factor-base-seed", "1"]).is_err()
+        );
+    }
+
+    #[test]
+    fn relation_yield_compares_three_arms_on_the_identical_query_prefix() {
+        let input: Input = serde_json::from_value(json!({
+            "public":{"p":127,"a":2,"b":51,"n":109,"P":[3,46],"Q":[6,122]},
+            "auxiliary":{"p":127,"maps":[{"r":0,"A":0,"B":1},{"r":2,"A":6,"B":8},{"r":70,"A":71,"B":70}],"terminal_c":38},
+            "roots":[3,111,78,67,85,119,57,91]
+        })).unwrap();
+        let mut args = TestCli::parse_from([
+            "test",
+            "--input",
+            "unused",
+            "--backend",
+            "scalar",
+            "--seed",
+            "43",
+            "--walk-lanes",
+            "8",
+            "--max-queries",
+            "129",
+            "--max-relations",
+            "10000",
+            "--relation-yield-only",
+        ])
+        .args;
+        let special = execute::<7>(&args, &input, "fixture".into(), Instant::now()).unwrap();
+        args.without_auxiliary = true;
+        let direct = execute::<7>(&args, &input, "fixture".into(), Instant::now()).unwrap();
+        args.without_auxiliary = false;
+        args.random_base_columns =
+            Some(special["factor_base"]["folded_columns"].as_u64().unwrap() as u32);
+        args.factor_base_seed = Some(701);
+        let random = execute::<7>(&args, &input, "fixture".into(), Instant::now()).unwrap();
+        for report in [&special, &direct, &random] {
+            assert_eq!(report["mode"], "bounded-relation-yield");
+            assert_eq!(report["status"], "complete");
+            assert_eq!(report["work"]["queries"], 129);
+            assert_eq!(report["work"]["generated_targets"], 136);
+            assert_eq!(report["work"]["matrix_rank"], 0);
+            assert_eq!(report["work"]["proof_nodes"], 0);
+            assert_eq!(report["certificate"], Value::Null);
+            assert_eq!(
+                report["factor_base"]["folded_columns"],
+                special["factor_base"]["folded_columns"]
+            );
+            assert_eq!(report["configured_search"], special["configured_search"]);
+        }
+        assert_eq!(special["work"]["relations"], direct["work"]["relations"]);
+        assert_eq!(
+            special["work"]["duplicate_rows"],
+            direct["work"]["duplicate_rows"]
+        );
+        for flag in ["--rho", "--decompose-only"] {
+            assert!(TestCli::try_parse_from([
+                "test",
+                "--input",
+                "x",
+                "--relation-yield-only",
+                flag
+            ])
+            .is_err());
+        }
+        assert!(TestCli::try_parse_from([
+            "test",
+            "--input",
+            "x",
+            "--relation-yield-only",
+            "--replay-relations",
+            "rows"
+        ])
+        .is_err());
     }
 
     #[test]

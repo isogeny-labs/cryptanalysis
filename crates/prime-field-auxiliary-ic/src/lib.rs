@@ -14,7 +14,8 @@ mod kernel;
 mod solve;
 
 pub use circuit::{
-    AuxiliaryMap, Backend, CandidateWorkspace, FactorBase, FactorBaseEncoding, SignedRelation,
+    AuxiliaryMap, Backend, CandidateWorkspace, FactorBase, FactorBaseEncoding, RandomBaseStats,
+    SignedRelation,
 };
 pub use field::{BatchScratch, Curve, Point};
 pub use solve::{
