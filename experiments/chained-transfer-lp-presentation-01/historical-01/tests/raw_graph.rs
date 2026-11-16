@@ -93,6 +93,12 @@ fn complete_raw_fixture_family_and_independent_projection_replay() {
     let mut observations = Vec::new();
     for (name, available, expected_image, expected_uncapped) in cases {
         let p = assemble(&available, 101).unwrap();
+        let independently_reconstructed =
+            chained_transfer_lp_historical_01::reconstruct::reconstruct(&available, 101).unwrap();
+        assert_eq!(
+            p, independently_reconstructed,
+            "entire raw source reconstruction {name}"
+        );
         assert_eq!(
             p.row_map.len(),
             available.graph.full.len() + available.graph.ground.len() + available.graph.edges.len()

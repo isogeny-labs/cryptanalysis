@@ -1,7 +1,10 @@
 //! Strict public relation types and complete LP-first presentation assembly.
 //! No target logarithm, character, curve engine or original candidate is used.
 pub mod assembly;
+pub mod controls;
 pub mod public_view;
+pub mod reconstruct;
+pub mod stream;
 pub mod types;
 
 #[path = "../../../../../crypto/src/hash/sha256.rs"]

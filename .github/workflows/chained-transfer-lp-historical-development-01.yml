@@ -4,6 +4,8 @@ on:
     paths:
       - 'experiments/chained-transfer-lp-presentation-01/historical-01/**'
       - 'experiments/chained-transfer-lp-presentation-01/matrix-01/**'
+      - 'experiments/chained-transfer-lp-presentation-01/lean/LPGraphCases02.lean'
+      - 'experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-final-06/**'
       - '.github/workflows/chained-transfer-lp-historical-development-01.yml'
   workflow_dispatch:
 permissions:
@@ -36,6 +38,9 @@ jobs:
             /docs/chained-transfer-checkpoint-transport/PROTOCOL_01.md
             /experiments/chained-transfer-lp-presentation-01/historical-01/
             /experiments/chained-transfer-lp-presentation-01/matrix-01/
+            /experiments/chained-transfer-lp-presentation-01/lean/
+            /experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-final-06/
+            /tools/lean/
             /.github/workflows/chained-transfer-lp-historical-development-01.yml
       - name: Checkout immutable original SHA dependency
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
@@ -47,6 +52,7 @@ jobs:
           sparse-checkout-cone-mode: false
           sparse-checkout: |
             /src/hash/sha256.rs
+            /tools/lean/
       - name: Retain the actually executing workflow
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with:
@@ -78,6 +84,14 @@ jobs:
           fi
       - name: Install declared native development toolchain
         run: rustup toolchain install 1.99.1 --profile minimal --component rustfmt --component clippy
+      - name: Install original proof toolchains
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/lp-historical-custody"
+          curl -fsSL --connect-timeout 15 --max-time 120 https://raw.githubusercontent.com/leanprover/elan/v4.2.4/elan-init.sh -o "$out/actual-elan-init.sh"
+          sh "$out/actual-elan-init.sh" -y --no-modify-path --default-toolchain leanprover/lean4:v4.35.0
+          "$HOME/.elan/bin/elan" toolchain install leanprover/lean4:v4.34.1
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
       - name: Record exact source, original tool and host capability
         working-directory: cryptanalysis
         run: |
@@ -175,6 +189,38 @@ jobs:
           set -e
           printf '%s\n' "$code" > "$custody/actual-driver.exit"
           exit "$code"
+      - name: Check exact constructive graph statements with both original proof gates
+        working-directory: cryptanalysis
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/lp-historical-custody"
+          component=experiments/chained-transfer-lp-presentation-01
+          cmp "$component/lean/LPGraphCases02.lean" "$component/evidence/direct-graph-proof-final-06/LPGraphCases02.lean"
+          echo 'a64f4010f3713653786e56ef7762b3e879720e2706ca78f979a0fefe2d53a7e2  tools/lean/proof-gate.sh' | sha256sum --check
+          echo 'f97280b48f1846d13e7ed96d9691753811551864162086fb25e9fe05438aa7dc  tools/lean/AuditAxioms.lean' | sha256sum --check
+          echo '2fe88bb302db587bbb6ede217fc646cf8fa35f9b9a2980e4a15dae273b8df6eb  ../crypto/tools/lean/proof-gate.sh' | sha256sum --check
+          echo 'b90d6b58c92138f4f4e4d4692a9c3152629c3aafa537e789248bebbf6ddb1929  ../crypto/tools/lean/AuditAxioms.lean' | sha256sum --check
+          cp -r "$component/lean" "$out/entire-proof-source"
+          cp -r tools/lean "$out/entire-original-Consumer-proof-tools"
+          cp -r ../crypto/tools/lean "$out/entire-original-Root-proof-tools"
+          mkdir "$out/proof-compiler-bin"
+          cat > "$out/proof-compiler-bin/lean" <<'EOF'
+          #!/usr/bin/env sh
+          exec "$HOME/.elan/bin/lean" -j 1 "$@"
+          EOF
+          chmod +x "$out/proof-compiler-bin/lean"
+          export PATH="$out/proof-compiler-bin:$PATH"
+          for spec in Consumer434 Root435; do
+            if [[ $spec == Consumer434 ]]; then gate=tools/lean/proof-gate.sh; chain=leanprover/lean4:v4.34.1; else gate=../crypto/tools/lean/proof-gate.sh; chain=leanprover/lean4:v4.35.0; fi
+            set +e
+            ELAN_TOOLCHAIN=$chain timeout 120 bash "$gate" --out "$out/original-$spec-graph-proofs" "$component/lean/LPGraphCases02.lean" > "$out/entire-$spec-graph-proof-caller.txt" 2>&1
+            code=$?
+            set -e
+            printf '%s\n' "$code" > "$out/actual-$spec-graph-proof.exit"
+            cat "$out/entire-$spec-graph-proof-caller.txt"
+            test "$code" -eq 0 || exit "$code"
+          done
+          test -z "$(git status --porcelain --untracked-files=all)"
       - name: Retain every complete and partial source/checkpoint/native artifact
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

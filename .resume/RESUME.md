@@ -1,3 +1,71 @@
+# 2026-11-16 independent raw reconstruction / complete certificate source02
+
+Current published parent c045dfdf2e682d0c98fba9a1bcd7824c00c649dd, ready PR1587. New source is ready for governance/publication: independent raw reconstruction, streamed A/P/C/U certificates,7 whole control constructors, full private-feedback copy/body comparison; compile-only and strict Clippy0 (93a0b2). All new native tests remain pending, never run locally after original checkpoint615f00. CI must run original gate/all3 remote readbacks before native unit tests. Two additional stream unit cases use one synthetic F101 graph, not full60. Source guard now covers all exact new files and original proof gates.
+
+Direct graph proofs: be98f8,8 named results/10 audited/0 trusted on both unchanged original Lean4.34.1/4.35.0 gates; all8 exact PCC bindings to immutable whole LPGraphCases02 source. Source frozen. Readable8 written proofs/diagram/inspected two-page41499B report95396d. Generic scalar ring/lift statements only; no concrete finite-field/numerical/program/geometry/global/cost theorem. Earlier resources/PATH failures fully retained. Native original c04514-fixture success8af458 and b7 full diagnostics successfeca94 are separate earlier-source data.
+
+Next after publication: collect changed-source CI at ordinary cadence; finish original360/character post-audit integration and full60 EKS driver/config/admission. Full60/240/62, whole7 process controls/private feedback and NEW28 remain unexecuted. EKS budget/capacity/image unknown; no paid LP build/job. Root4396 genuinely merged40839 after current-head CI; completed-CI metadata successor is being normally published with trusted artifact-autofix needed for2 whole inputs. Preserve locked autoresearcher and all prior raw/holds; do not repeat accepted comparator03/custody terminals. [pcc:unverified]
+
+# Direct known graph projection Lean proof build02
+
+## What was done
+Native gated CI data8af458 supports the prescribed small raw graph cases. New LPGraphCases02.lean gives explicit existential LP elimination/lifts for even four-cycle, lone/shared/disconnected odd cycles, ordinary ground and half ground, plus an excluded unit vector. It asserts no original-program/geometric/numerical-field/global/advantage bridge. [pcc:unverified]
+
+## Decisions made
+Static proof compilation/audit only: run both unchanged original gates under exact Lean4.34.1 and4.35.0, separate RAM outputs,120s/2GiB bounds. No native experiment or historical population is launched locally. Preserve full proof attempts/source/audits, then bind statements and add direct written proof/report. Inverse-of-two hypotheses stay explicit; even-cycle statements use any commutative ring. [pcc:unverified]
+
+## Open threads
+Independent raw reconstruction/streaming full certificates, all60 EKS admission/whole controls/old360/post-character, fullNEW28; Root4396 required CI about04:40UTC. [pcc:unverified]
+
+## Errors
+Local native checkpoint615f00 remains unavailable; this command is static theorem compilation, not a substitute experiment. KB source review stays the existing published protocol/known large-prime identities; locked atlas and unavailable KB are not absence evidence. [pcc:unverified]
+
+---
+# Gated historical adapter native unit CI succeeds
+
+## What was done
+pcc/claims/PCC-20261116-8af458.json: sourcec045 run43793694178 succeeds after original checkpoint and all3 remote readbacks0. All14 synthetic F101 raw graph cases match predictions through literal original rooted routine and separate Euclidean replay; all5 integration controls/13 original SHA tests pass. Whole22434645-byte artifact/all257members exact and whole job log/binaries/source retained. [pcc:unverified]
+
+## Decisions made
+Advance to independently coded raw reconstruction/streaming certificates and direct known graph projection Lean statements. Synthetic ungrounded cycle constraints are known small-system behavior, not historical dimension results or an ECDLP advantage. Preserve whole original data and every pending full-population control. [pcc:unverified]
+
+## Open threads
+Complete historical extraction/certificates/whole feedback/360/post-character/EKS admission, fullNEW28; Rootdfeb successor PR4396 required CI next04:40UTC. Consumer original01 remains failing at its frozen checkpoint issue; original02/foundation CI succeed. [pcc:unverified]
+
+## Errors
+First artifact link expired before download and returned403; fresh link succeeds without changing any artifact. Local math caller remains unlaunched after615f00; all new native math execution was gated in CI. [pcc:unverified]
+
+---
+# Actual original diagnostic02 and development CI success
+
+## What was done
+pcc/claims/PCC-20261116-feca94.json: b7 original diagnostic02 run43789625223 succeeds with all99 ordered process/tee phases matching the frozen plan, final guard/driver/acceptor0; existing LP matrix/identity/proof development43789625236 also succeeds all phases0. Entire original340729140/1097635/201303822-byte artifacts retained in RAM, every1242/222/28 member streamed with complete CRC/hash inventory. Larger members remain complete in ZIPs; small members separately materialized. [pcc:unverified]
+
+## Decisions made
+The21 exact source dependencies and cold identity fixture preparation work at this CI scope. Keep old frozen01 checkpoint failure43789625110 unchanged and fully retained; no PR merge while required checks/review remain unresolved. Continue actual c045 historical unit CI at03:33UTC and independent historical matrix work. [pcc:unverified]
+
+## Open threads
+New historical LP population unexecuted, EKS admission/budget/source image unknown, full producer/replayer/whole controls/original360/post-character and NEW28. Root archive/source-data preparation remains separate. [pcc:unverified]
+
+## Errors
+Aggregate diagnostic public job log could not be obtained: connector TransportClosed twice and CLI redirect403. Whole native/per-phase logs remain in the complete original artifact. The URL-bearing raw CLI error stays private and is not published. Data observation is unsigned, not execution-verified. [pcc:unverified]
+
+---
+# Publish strict historical LP adapter and gated unit CI
+
+## What was done
+pcc/claims/PCC-20261116-c45c68.json: sourcec045dfdf2e68 published normally fromb7b919 and under its new immutable source tag. ff2c2a all positive governance exits0; source/static scopee48db4 and inspected one-page report2a71cb retain complete failures and native-execution limits. [pcc:unverified]
+
+## Decisions made
+Observe actual c045 unit CI at the ordinary50-minute cadence, about03:33UTC; it must run original checkpoint plus complete remote readback first. No native unit run was launched locally after615f00. Existingb7 original diagnostics check remains about02:53UTC. Continue Root archival data preparation without verifier/claim/keyring changes, then independent historical raw reconstruction/streaming integration. [pcc:unverified]
+
+## Open threads
+Actual unit/original full diagnostic CI; Root required PCC archive/source-version evidence addresses; independent historical row reconstruction/full certificates/whole controls/original360/post-character/EKS admission/fullNEW28. [pcc:unverified]
+
+## Errors
+All compiler, imported-style, local checkpoint and renderer failures remain. No full historical mathematical population or performance claim was substituted. [pcc:unverified]
+
+---
 # Historical public adapter static source and prospective gated unit CI
 
 ## What was done
@@ -3132,3 +3200,9 @@ pcc/claims/PCC-20261116-d811f8.json: second Clippy101 is retained. Factor the ne
 
 ## Historical adapter report
 pcc/claims/PCC-20261116-2a71cb.json: inspected one-page40289-byte report preserves implementation scope, all pending native/historical tests, original failure references and exact next obligations. Source-linked SVG/MD/Typst/PDF and first default-Python renderer failure retained. No scientific graph or measurement changes. [pcc:unverified]
+
+## Static Lean default worker failure
+pcc/claims/PCC-20261116-bf5b6e.json: both original gates abort before type checking because default compiler threads exceed the2GiB VM resource envelope. Full failures retained; retry uses only documented -j1, same bound and exact proof/gate bytes. No mathematical verdict is inferred from the resource failure. [pcc:unverified]
+
+## Static compiler VM dependency diagnostic
+pcc/claims/PCC-20261116-f7c1f5.json: minimal #check Nat reproduces2GiB-VM startup abort134, while original proof-workflow default VM with managed heap1024MB checks0. Static graph proof builds use that original workflow configuration; no bounded-VM proof compliance or native experiment is claimed. Native/historical experiment limits stay fixed. [pcc:unverified]

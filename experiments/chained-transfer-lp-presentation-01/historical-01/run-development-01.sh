@@ -54,7 +54,7 @@ phase no-field-engine-metadata bounded cargo metadata --locked --offline --manif
 phase exact-dependency-names jq --exit-status '([.packages[].name] - ["chained-transfer-lp-historical-01","chained-transfer-lp-finite-projection-01","serde","serde_core","serde_derive","serde_json","hex","proc-macro2","quote","syn","unicode-ident","itoa","ryu","memchr"]) == []' "$out/no-field-engine-metadata.stdout"
 phase compile-all-targets bounded cargo test --release --locked --offline --manifest-path "$component/Cargo.toml" --all-targets --no-run --message-format=json
 mapfile -t executables < <(jq --raw-output 'select(.reason=="compiler-artifact" and .profile.test==true and .executable!=null) | .executable' "$out/compile-all-targets.stdout")
-[[ ${#executables[@]} == 3 ]] || exit 2
+[[ ${#executables[@]} == 4 ]] || exit 2
 for index in "${!executables[@]}";do
  executable=${executables[$index]}
  cp "$executable" "$out/actual-native-$index.bin"
@@ -65,6 +65,12 @@ for index in "${!executables[@]}";do
  sha256sum "$executable" "$out/actual-native-$index.bin" > "$out/actual-native-$index.after.sha256"
 done
 phase strict-all-target-Clippy bounded cargo clippy --release --locked --offline --manifest-path "$component/Cargo.toml" --all-targets -- -D warnings
+phase compile-native-entrypoints bounded cargo build --release --locked --offline --manifest-path "$component/Cargo.toml" --bins
+for name in extract_public historical_certificates;do
+ cp "$CARGO_TARGET_DIR/release/$name" "$out/actual-$name.bin"
+ cp "$CARGO_TARGET_DIR/release/$name.d" "$out/actual-$name-dependency-closure.d"
+ sha256sum "$out/actual-$name.bin" > "$out/actual-$name.sha256"
+done
 git status --porcelain --untracked-files=all > "$out/final-source-status.txt"
 test ! -s "$out/final-source-status.txt"
 printf '%s\n' 'Complete native synthetic unit execution; full historical population and whole feedback/replay/character controls remain pending.' > "$out/scope.txt"
