@@ -8,7 +8,10 @@ import platform
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[2]
-OUT = Path(__file__).resolve().parent / 'validation-linux-005'
+run_id = os.environ.get('IC_VALIDATION_ID', 'validation-linux-005')
+if not run_id.replace('-', '').isalnum():
+    raise ValueError('invalid validation directory')
+OUT = Path(__file__).resolve().parent / run_id
 OUT.mkdir(exist_ok=False)
 BUILD = Path('/tmp/ic-simd-validation')
 
@@ -29,6 +32,9 @@ def run(name, args, mode=None):
 commands = []
 source_names = ['src/indexcalc.c', 'src/ic_trial32.h', 'src/ic_rational.h',
                 'tests/test_ic_projection.c', 'CMakeLists.txt', '.clang-tidy']
+if os.environ.get('IC_VALIDATE_F2M') == '1':
+    source_names += ['suite/src/binary_ecc/f2m.rs', 'suite/Cargo.toml',
+                     'experiments/ic-f2m-three-limb-20261115/Cargo.lock']
 receipt = {'system': platform.platform(), 'machine': platform.machine(),
            'sources': {p: hashlib.sha256((ROOT / p).read_bytes()).hexdigest()
                        for p in source_names}}
@@ -54,4 +60,11 @@ failed |= run('cppcheck', ['cppcheck', '--enable=warning,performance,portability
                           '--inline-suppr', '--std=c11', '--error-exitcode=1',
                           '--suppress=missingIncludeSystem', '-Iinclude', '-Isrc',
                           '--quiet', 'src/indexcalc.c', 'tests/test_ic_projection.c'])
+if os.environ.get('IC_VALIDATE_F2M') == '1':
+    manifest = 'experiments/ic-f2m-three-limb-20261115/Cargo.toml'
+    for feature in [False, True]:
+        args = ['cargo', 'test', '--locked', '--manifest-path', manifest]
+        if feature:
+            args += ['--features', 'f2m-karatsuba3']
+        failed |= run('f2m-' + ('specialized' if feature else 'default'), args)
 raise SystemExit(bool(failed))

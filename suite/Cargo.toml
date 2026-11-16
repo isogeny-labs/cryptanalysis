@@ -59,6 +59,8 @@ path = "src/bin/curves.rs"
 
 [features]
 default = []
+# Experimental six-product three-limb carryless multiply; timing not established.
+f2m-karatsuba3 = []
 # Back the algebra cache with a Redis server instead of the local directory.
 redis-cache = ["dep:redis"]
 # Compile the GPU F4 kernel's source (cuda/f4_gf2_device.cuh) as C and link

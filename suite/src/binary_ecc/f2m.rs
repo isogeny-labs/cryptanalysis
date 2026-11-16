@@ -824,9 +824,41 @@ fn mul_words_into(a: &[u64], b: &[u64], out: &mut [u64]) {
     }
 }
 
+// Six carryless products recover the five coefficients of a degree-two
+// polynomial product. The output contract is XOR accumulation, including
+// arbitrary pre-existing words; the caller detects the hardware feature.
+#[cfg(all(
+    feature = "f2m-karatsuba3",
+    any(target_arch = "x86_64", target_arch = "aarch64")
+))]
+#[cfg_attr(target_arch = "x86_64", target_feature(enable = "pclmulqdq"))]
+#[cfg_attr(target_arch = "aarch64", target_feature(enable = "aes"))]
+unsafe fn mul_words3_hw(a: &[u64], b: &[u64], out: &mut [u64]) {
+    let d0 = clmul64_hw(a[0], b[0]);
+    let d1 = clmul64_hw(a[1], b[1]);
+    let d2 = clmul64_hw(a[2], b[2]);
+    let p01 = clmul64_hw(a[0] ^ a[1], b[0] ^ b[1]);
+    let p02 = clmul64_hw(a[0] ^ a[2], b[0] ^ b[2]);
+    let p12 = clmul64_hw(a[1] ^ a[2], b[1] ^ b[2]);
+    let c1 = (p01.0 ^ d0.0 ^ d1.0, p01.1 ^ d0.1 ^ d1.1);
+    let c2 = (p02.0 ^ d0.0 ^ d1.0 ^ d2.0, p02.1 ^ d0.1 ^ d1.1 ^ d2.1);
+    let c3 = (p12.0 ^ d1.0 ^ d2.0, p12.1 ^ d1.1 ^ d2.1);
+    out[0] ^= d0.0;
+    out[1] ^= d0.1 ^ c1.0;
+    out[2] ^= c1.1 ^ c2.0;
+    out[3] ^= c2.1 ^ c3.0;
+    out[4] ^= c3.1 ^ d2.0;
+    out[5] ^= d2.1;
+}
+
 #[cfg(target_arch = "x86_64")]
 #[target_feature(enable = "pclmulqdq")]
 unsafe fn mul_words_hw(a: &[u64], b: &[u64], out: &mut [u64]) {
+    #[cfg(feature = "f2m-karatsuba3")]
+    if a.len() == 3 && b.len() == 3 {
+        mul_words3_hw(a, b, out);
+        return;
+    }
     for (i, &ai) in a.iter().enumerate() {
         for (j, &bj) in b.iter().enumerate() {
             let (lo, hi) = clmul64_hw(ai, bj);
@@ -839,6 +871,11 @@ unsafe fn mul_words_hw(a: &[u64], b: &[u64], out: &mut [u64]) {
 #[cfg(target_arch = "aarch64")]
 #[target_feature(enable = "aes")]
 unsafe fn mul_words_hw(a: &[u64], b: &[u64], out: &mut [u64]) {
+    #[cfg(feature = "f2m-karatsuba3")]
+    if a.len() == 3 && b.len() == 3 {
+        mul_words3_hw(a, b, out);
+        return;
+    }
     for (i, &ai) in a.iter().enumerate() {
         for (j, &bj) in b.iter().enumerate() {
             let (lo, hi) = clmul64_hw(ai, bj);
@@ -1069,6 +1106,60 @@ fn reduce_chunked(value: &mut [u64], irreducible: &IrreduciblePoly) {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[cfg(all(
+        feature = "f2m-karatsuba3",
+        any(target_arch = "x86_64", target_arch = "aarch64")
+    ))]
+    #[test]
+    fn three_limb_products_match_independent_shift_xor() {
+        if !has_hw_clmul() {
+            return;
+        }
+        fn check(a: [u64; 3], b: [u64; 3], initial: [u64; 7]) {
+            let mut expected = initial;
+            for i in 0..192 {
+                if a[i / 64] & (1u64 << (i % 64)) == 0 {
+                    continue;
+                }
+                for j in 0..192 {
+                    if b[j / 64] & (1u64 << (j % 64)) != 0 {
+                        expected[(i + j) / 64] ^= 1u64 << ((i + j) % 64);
+                    }
+                }
+            }
+            let mut actual = initial;
+            // SAFETY: the enclosing test checked the CPU feature.
+            unsafe { mul_words3_hw(&a, &b, &mut actual) };
+            assert_eq!(actual, expected);
+        }
+        for i in 0..192 {
+            let mut a = [0; 3];
+            a[i / 64] = 1u64 << (i % 64);
+            for j in 0..192 {
+                let mut b = [0; 3];
+                b[j / 64] = 1u64 << (j % 64);
+                check(a, b, [0x9e3779b97f4a7c15; 7]);
+            }
+        }
+        let mut state = 0x001c_2026_1115_u64;
+        for _ in 0..1024 {
+            let mut words = [0u64; 13];
+            for word in &mut words {
+                state ^= state << 13;
+                state ^= state >> 7;
+                state ^= state << 17;
+                *word = state;
+            }
+            check(
+                words[0..3].try_into().unwrap(),
+                words[3..6].try_into().unwrap(),
+                words[6..13].try_into().unwrap(),
+            );
+        }
+        check([u64::MAX; 3], [u64::MAX; 3], [u64::MAX; 7]);
+        check([0; 3], [u64::MAX; 3], [u64::MAX; 7]);
+    }
 
     /// Addition in `F_2^m` is XOR; verify on a small concrete case.
     #[test]

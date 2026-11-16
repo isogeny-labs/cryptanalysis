@@ -40,8 +40,8 @@ __attribute__((target("avx2"))) static uint32_t ca_ic_scan32_avx2(uint32_t value
         __m256i product = _mm256_mullo_epi32(v, inv);
         __m256i miss =
             _mm256_cmpgt_epi32(_mm256_xor_si256(product, sign), _mm256_xor_si256(lim, sign));
-        uint32_t hit = ~(uint32_t)_mm256_movemask_epi8(miss);
-        if (hit) return i + (uint32_t)__builtin_ctz(hit) / 4;
+        uint32_t hit = (uint32_t)_mm256_movemask_ps(_mm256_castsi256_ps(miss)) ^ 0xffu;
+        if (hit) return i + (uint32_t)__builtin_ctz(hit);
     }
     return ca_ic_scan32_portable(value, inverse, limit, i, stop);
 }
