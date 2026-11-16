@@ -1,0 +1,57 @@
+{
+  "standing": "producer byte comparison only",
+  "common": [
+    {
+      "path": "batch.rs",
+      "sha256": "314e9ea0752c4ee7951907367727ef7d0bc81662d24d946972fc9d1e9e804516"
+    },
+    {
+      "path": "subgroup.rs",
+      "sha256": "8ec986bbc69f3189cf8d6ebef7f216870ee88a0c727f62b65cca5fb29c870c45"
+    },
+    {
+      "path": "relation_graph.rs",
+      "sha256": "3c46bc77193c2975f1baa9b7b7dca1fa8942f082e8ab3ec81df51ed727c06e97"
+    },
+    {
+      "path": "witness_policy.rs",
+      "sha256": "5f46df8ed34dec23dc1efcc9b4629507a8efb4a5a4c89a8284ffd664fa049e7c"
+    },
+    {
+      "path": "target_walk.rs",
+      "sha256": "cc3fe341cfbe9f7581894ccb7d2a6cfda5767471ba21bd4c75a4d8b897c438b4"
+    },
+    {
+      "path": "optimized.rs",
+      "sha256": "67773d84a213f400bd7f8c31d0221aba91cbba553ac4014fdc95d5cc04ef92fd"
+    },
+    {
+      "path": "prepared.rs",
+      "sha256": "7179d879f32ac8ad270eb87a79991878d09a46aff8cf199ad2662dd726168d13"
+    },
+    {
+      "path": "bin/hashed-ecdl.rs",
+      "sha256": "79c68b925c461a9a5c5a3c70b0223230d7e5872c8321eca462924b061ac630d9"
+    },
+    {
+      "path": "structured_runner.rs",
+      "sha256": "40e8ac22280f5e97dddcce1d7085ef2eb9101dfc520e74103b197fe6cb6e47fa"
+    },
+    {
+      "path": "tests/five_leads.rs",
+      "sha256": "72f59beca4de18b534bbee9da5b1124f2fae874a176be5fab805ff2bd8fb9243"
+    },
+    {
+      "path": "tests/optimized_cli.rs",
+      "sha256": "6706967742fc561fb5166e605209421493a6cdd0b25ba731bc980abedbb84b90"
+    }
+  ],
+  "deliberate_differences": [
+    "collector_metrics.rs adapter",
+    "lib module registration and preexisting crate modules",
+    "reduction helper visibility with existing instrumentation",
+    "mirror-only optimized_metrics test",
+    "mirror structured_cli SHA compatibility test",
+    "existing dependency versions and workspace lock"
+  ]
+}

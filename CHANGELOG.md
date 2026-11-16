@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.6](https://github.com/isogeny-labs/cryptanalysis/compare/cryptanalysis-v0.1.5...cryptanalysis-v0.1.6) (2026-11-16)
+
+
+### Features
+
+* **ic:** native batched binary subtraction and frontier controls ([b96d797](https://github.com/isogeny-labs/cryptanalysis/commit/b96d797fd56019a7fa42e81b4bc9e035b1cd18dd))
+
 ## [0.1.5](https://github.com/isogeny-labs/cryptanalysis/compare/cryptanalysis-v0.1.4...cryptanalysis-v0.1.5) (2026-11-16)
 
 
