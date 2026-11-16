@@ -1,0 +1,25 @@
+{
+  "schema": "xedni-denominator-lift-protocol-v1",
+  "question": "How much additional rational-lift and relation yield does a frozen rational-x denominator search buy over the integer-x window?",
+  "input_selection_result_sha256": "b18127c392b904559ac12512642ab0322eaa3b9b72a61f45dacf4a2fb8c9a25c",
+  "parent_integer_window_result_sha256": "75ed6c9cdabcabbc1ae16f206d13f881723b2b4404578b93d9de930610a31b23",
+  "parent_arithmetic_source_sha256": "f053f8cfc20e35b253caaa05fa89665318e1c47af587beec69347c6e28026284",
+  "fields": "all eight selected fields in input order",
+  "base_curve_coefficients": [0, 0, 0, -1, -2],
+  "subgroup_generator": "same m times reduction of P=(2,2) as the parent window",
+  "target": "Q=17G, fixture scalar used only for replay",
+  "query_law": "complete t in [0,q), R_t=Q-tG; pair law is independent ordered t1,t2 in [0,q)^2",
+  "point_admission": "both reduced points nonidentity and distinct",
+  "lift_rule": {
+    "denominator_range_inclusive": [1, 25],
+    "shift_abs_limit": 50,
+    "shift_order": "0,-1,+1,-2,+2,...,-50,+50 for each denominator, denominators increasing",
+    "candidate": "a0 is the centered residue of x(R)*d^2 mod p; a=a0+shift*p; x_Q=a/d^2; b^2=a^3-a*d^4-2*d^6; y_Q=b/d^3",
+    "acceptance": "first coprime a,d with exact nonnegative square and b/d^3 reducing to public y",
+    "probe_charge": "every inspected (d,shift) pair, including gcd and square failures",
+    "max_point_probes": 2525
+  },
+  "relation_family": "all ordered (a,b) with 1<=a<=3, 1<=abs(b)<=3, gcd(a,abs(b))=1; lexicographic a,b",
+  "raw_rows": "one deterministic gzip JSONL file per field, including every failed point lift",
+  "claim_boundary": "bounded public-coordinate rational-x lift diagnostic, with point-wise reuse; no isolated timing or complete rational-lift claim"
+}
