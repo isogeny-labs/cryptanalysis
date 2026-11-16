@@ -6,6 +6,8 @@ on:
       - 'experiments/chained-transfer-lp-presentation-01/matrix-01/**'
       - 'experiments/chained-transfer-lp-presentation-01/post-character-01/**'
       - 'experiments/chained-transfer-lp-presentation-01/admission-01/**'
+      - 'experiments/chained-transfer-lp-presentation-01/population-01/**'
+      - 'experiments/chained-transfer-lp-presentation-01/runtime-01/**'
       - 'experiments/chained-transfer-lp-presentation-01/lean/LPGraphCases02.lean'
       - 'experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-final-06/**'
       - '.github/workflows/chained-transfer-lp-historical-development-01.yml'
@@ -42,6 +44,8 @@ jobs:
             /experiments/chained-transfer-lp-presentation-01/matrix-01/
             /experiments/chained-transfer-lp-presentation-01/post-character-01/
             /experiments/chained-transfer-lp-presentation-01/admission-01/
+            /experiments/chained-transfer-lp-presentation-01/population-01/
+            /experiments/chained-transfer-lp-presentation-01/runtime-01/
             /experiments/chained-transfer-lp-presentation-01/historical-whole-fixture-pins-01.json
             /experiments/chained-transfer-lp-presentation-01/lean/
             /experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-final-06/
@@ -210,6 +214,22 @@ jobs:
           code=$?
           set -e
           printf '%s\n' "$code" > "$custody/actual-driver.exit"
+          exit "$code"
+      - name: Check process metadata and cold-build prospective pure entrypoints without execution
+        working-directory: cryptanalysis
+        run: |
+          set -euo pipefail
+          custody="$RUNNER_TEMP/lp-historical-custody"
+          component=experiments/chained-transfer-lp-presentation-01
+          for source in "$component"/population-01/*.sh "$component"/runtime-01/assemble-01.sh; do
+            bash -n "$source"
+          done
+          timeout 30 bash "$component/population-01/check-phase-metadata-01.sh" "$custody/offline-process-metadata-controls"
+          set +e
+          timeout 600 bash "$component/population-01/build-pure-01.sh" "$PWD" "$SOURCE_REVISION" "$custody/entire-prospective-pure-native-build" > "$custody/entire-prospective-build-caller.stdout" 2> "$custody/entire-prospective-build-caller.stderr"
+          code=$?
+          set -e
+          printf '%s\n' "$code" > "$custody/actual-prospective-build.exit"
           exit "$code"
       - name: Check exact constructive graph statements with both original proof gates
         working-directory: cryptanalysis

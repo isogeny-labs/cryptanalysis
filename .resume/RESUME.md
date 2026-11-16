@@ -3231,3 +3231,20 @@ Full60/240/62, separate unchanged360 and witness auditor, seven whole controls/f
 
 ## Errors
 Earlier wrong-upstream metadata draft stopped before manifest creation, retained in the prior log. Original cold compile3m48 under900s is not a new120s pass. Current full science and price advantages remain unestablished. [pcc:unverified]
+
+---
+
+2026-11-16T07:21:06.893215+00:00
+# Prospective complete-population source and offline process controls
+
+## What was done
+pcc/claims/PCC-20261116-efa891.json: all8 shell process metadata controls have expected outcomes; full first missing-time failure/tool package/harness retained. Complete6 original compressed/decoded/capture byte preparation0 without math. Full first driver draft preserved; external function invocation and footer61→62 corrected before any population run. Shell/all50/all12/actionlint0. [pcc:unverified]
+
+## Decisions made
+Publish full driver/cold pure compiler source and original-checkpoint-adjacent CI metadata/cold-build integration. The build source executes no scientific binaries; source-built image/launch/config/external UID qualification remain open. No paid job/build under actual budget exhaustione42949. [pcc:unverified]
+
+## Open threads
+Actual prospective pure build in CI; full60/240/62/seven whole controls/feedback/fresh original360/witness auditor/separate post remains unexecuted. Source-built OCI/ABI, future actual live headroom/reservations/capacity, genuine all-rawNEW28 and current applicable checks/review before merge. Root5ae1 next checkpoint uses fresh branch. [pcc:unverified]
+
+## Errors
+First metadata native wrapper127 because /usr/bin/time absent, first harness exit1 preserved. Official Debian package retained; exact GNU time used only for offline shell metadata successor. No scientific run/phase limit change or local historical substitute. Prior source review issues are source observations, not executed failures. [pcc:unverified]
