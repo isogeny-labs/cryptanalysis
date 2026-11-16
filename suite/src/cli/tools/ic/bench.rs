@@ -25,6 +25,7 @@ use crate::cryptanalysis::ic_boundary::{
     PrimeInstance, RhoResult,
 };
 use crate::cryptanalysis::ic_framework::affine::AffineS3Oracle;
+use crate::cryptanalysis::ic_framework::batch_mitm::BinaryBatchMitmOracle;
 use crate::cryptanalysis::ic_framework::hashed::{HashedAffineBase, HashedTensorOracle};
 use crate::cryptanalysis::ic_framework::linalg::MATRIX_NAMES;
 use crate::cryptanalysis::ic_framework::plugins::{
@@ -178,6 +179,8 @@ fn listing() -> Value {
                      "needs": "hashed-affine with identical slots, seed, tau and s; contraction primitive steps are uncalibrated, so do not read S as a priced end-to-end cost"},
                     {"name": "mitm-frobenius", "summands": "2 or 3", "regimes": ["koblitz"],
                      "parameters": [{"name": "m", "means": "summands, 2 or 3"}]},
+                    {"name": "mitm-batched", "summands": "2", "regimes": ["char2", "koblitz"],
+                     "parameters": [{"name":"batch_size","means":"1..=65536, default1024; ordered batch preparation"}]},
                     {"name": "affine-s3", "summands": "2", "regimes": ["char2", "koblitz"],
                      "parameters": [{"name":"max_residual","means":"0..20, default12; complete subtraction fallback beyond it"},
                                     {"name":"column_solver","means":"0 or1, default0; direct projected column elimination"},
@@ -517,6 +520,7 @@ fn run_binary(
         let mut mitm = MitmOracle::new(m);
         let mut frob = FrobeniusMitmOracle::new(m, inst);
         let mut affine = AffineS3Oracle::new(inst);
+        let mut batch_mitm = BinaryBatchMitmOracle::default();
         let mut algebraic = match or_name {
             "descent-algebraic" => {
                 let raw = spec.solver.as_deref().ok_or(
@@ -540,6 +544,7 @@ fn run_binary(
             "mitm" => &mut mitm,
             "mitm-frobenius" => &mut frob,
             "affine-s3" => &mut affine,
+            "mitm-batched" => &mut batch_mitm,
             "descent-algebraic" => algebraic.as_mut().expect("built above"),
             other => return Err(format!("oracle `{other}` is not available here")),
         };

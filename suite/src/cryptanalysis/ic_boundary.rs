@@ -3138,6 +3138,71 @@ pub struct PairTable {
 }
 
 impl PairTable {
+    /// The identical ordered negation-folded table, using bounded batches of
+    /// native binary additions. Its complete preparation is priced in native
+    /// nanoseconds, not as hypothetical independent affine inversions.
+    pub fn build_negation_folded_binary_batched(
+        curve: &FastCurve,
+        fb: &FactorBase<FastPoint>,
+        chunk_size: usize,
+    ) -> Result<Self, &'static str> {
+        if !(1..=65536).contains(&chunk_size) {
+            return Err("MITM batch size must be in1..=65536");
+        }
+        let start = Instant::now();
+        let map = {
+            let groups: Vec<_> = fb
+                .abscissa_list
+                .iter()
+                .map(|x| fb.x_index.get(x).expect("every listed abscissa is indexed"))
+                .collect();
+            let mut map = fast_map(groups.len() * groups.len() + 1);
+            let mut ps = Vec::with_capacity(chunk_size);
+            let mut qs = Vec::with_capacity(chunk_size);
+            let mut indices = Vec::with_capacity(chunk_size);
+            let mut sums = Vec::with_capacity(chunk_size);
+            let mut scratch = crate::cryptanalysis::koblitz_fast::BatchScratch::default();
+            let mut flush = |ps: &mut Vec<FastPoint>,
+                             qs: &mut Vec<FastPoint>,
+                             indices: &mut Vec<(u32, u32)>| {
+                sums.clear();
+                curve.add_pairwise(ps, qs, &mut sums, &mut scratch);
+                for (sum, &pair) in sums.iter().zip(indices.iter()) {
+                    if !sum.infinity {
+                        map.entry(sum.pack() >> 1).or_insert(pair);
+                    }
+                }
+                ps.clear();
+                qs.clear();
+                indices.clear();
+            };
+            for (ai, group) in groups.iter().enumerate() {
+                let i = group[0];
+                for later in groups.iter().skip(ai) {
+                    for &j in later.iter() {
+                        ps.push(fb.points[i]);
+                        qs.push(fb.points[j]);
+                        indices.push((i as u32, j as u32));
+                        if ps.len() == chunk_size {
+                            flush(&mut ps, &mut qs, &mut indices);
+                        }
+                    }
+                }
+            }
+            if !ps.is_empty() {
+                flush(&mut ps, &mut qs, &mut indices);
+            }
+            map
+        };
+        Ok(Self {
+            kind: "negation_folded_batch",
+            entries: map.len() as u64,
+            map,
+            build_ops: GroupOps::default(),
+            build_wall_ns: start.elapsed().as_nanos() as u64,
+        })
+    }
+
     pub fn build<G: CountedGroup>(g: &G, fb: &FactorBase<G::Elt>) -> Self {
         let start = Instant::now();
         let n = fb.points.len();
@@ -3205,7 +3270,11 @@ impl PairTable {
             entries: self.entries,
             group_ops: self.build_ops,
             wall_ns: self.build_wall_ns,
-            native: Vec::new(),
+            native: if self.kind == "negation_folded_batch" {
+                vec![("mitm_batch_setup_ns", self.build_wall_ns)]
+            } else {
+                Vec::new()
+            },
         }
     }
 
@@ -4338,6 +4407,7 @@ pub fn price_phase(phase: &mut PhaseCost, calib: &Calibration) {
     // group operations; convert with one nanosecond per recorded unit.
     gae += conv("symbolic_descent_ns", Some(1.0));
     gae += conv("affine_s3_ns", Some(1.0));
+    gae += conv("mitm_batch_setup_ns", Some(1.0));
     phase.gae = gae;
 }
 

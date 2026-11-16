@@ -150,3 +150,50 @@ fn complete_registered_curve_domains_match_signed_pair_enumeration() {
         }
     }
 }
+
+#[test]
+fn batched_mitm_preserves_all_registered_curve_witnesses() {
+    use cryptanalysis_suite::cryptanalysis::ic_boundary::PairTable;
+    let records: Vec<Value> = serde_json::from_str(include_str!(
+        "../../experiments/ic-affine-native-20261115/instances.json"
+    ))
+    .unwrap();
+    for record in records {
+        let inst = instance(&record);
+        let group = BinaryGroup(&inst.fast);
+        let basis: Vec<_> = (0..integer(&record["dimension"])).map(|i| 1 << i).collect();
+        let fb = binary_subspace_factor_base(&inst, &basis);
+        let reference = PairTable::build_negation_folded(&group, &fb);
+        for chunk in [1, 7, 1024] {
+            let batch =
+                PairTable::build_negation_folded_binary_batched(&inst.fast, &fb, chunk).unwrap();
+            assert_eq!(batch.entries, reference.entries);
+            assert_eq!(batch.build_ops.adds, 0);
+            assert!(batch
+                .cost()
+                .native
+                .iter()
+                .any(|&(k, _)| k == "mitm_batch_setup_ns"));
+            let mut checked = 0u64;
+            let mut check = |p| {
+                let a = reference.probe(&group, &fb, &mut GroupOps::default(), &mut 0, p);
+                let b = batch.probe(&group, &fb, &mut GroupOps::default(), &mut 0, p);
+                assert_eq!(a, b, "{} chunk={chunk} target={p:?}", inst.name);
+                checked += 1;
+            };
+            check(FastPoint::INFINITY);
+            for x in 0..1u64 << inst.n {
+                for p in inst.points_with_x(x) {
+                    check(p);
+                }
+            }
+            assert_eq!(checked, inst.group_order);
+            eprintln!(
+                "batch curve={} chunk={chunk} full_targets={checked}",
+                inst.name
+            );
+        }
+        assert!(PairTable::build_negation_folded_binary_batched(&inst.fast, &fb, 0).is_err());
+        assert!(PairTable::build_negation_folded_binary_batched(&inst.fast, &fb, 65537).is_err());
+    }
+}

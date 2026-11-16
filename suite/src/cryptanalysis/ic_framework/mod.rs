@@ -63,6 +63,7 @@
 //! report what comes out.
 
 pub mod affine;
+pub mod batch_mitm;
 pub mod hashed;
 pub mod linalg;
 pub mod plugins;

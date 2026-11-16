@@ -91,6 +91,7 @@ jobs:
           cargo test --release --lib s3_affine_projection
           cargo test --release --lib s3_affine_projection --features s3-affine-columns
           cargo test --release --lib ic_framework::affine
+          cargo test --release --lib ic_framework::batch_mitm
           cargo test --release --test affine_registry_oracle
       - name: GPU F4 kernel on the host emulator
         # The CUDA kernel's own source (cuda/f4_gf2_device.cuh), compiled as
