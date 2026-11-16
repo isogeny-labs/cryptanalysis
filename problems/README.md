@@ -10,6 +10,9 @@ explain the gap and what would let the work move past it.
 | Problem | Status | What it blocks | What would unblock it |
 | --- | --- | --- | --- |
 | [Prepared/joint collector runtime qualification](point-table-joint-runtime-qualification.md) | open | matched native point-table/joint runtime result | current-source S3 upload/readback, authenticated exact native image/execution, admitted matched comparison |
+| [Diagnostic checkpoint sparse status](chained-transfer-diagnostic-checkpoint-sparse-status.md) | investigating | Original checkpoint/readbacks0 then finalstatus1; native step skipped | Version02 exact original fetch-depth0 setup, actualstatus0 and complete whole diagnostic run; failuresce239f retained. [pcc:unverified] |
+| [Whole comparator memory envelope and schema updates](chained-transfer-whole-comparator-memory-bound-updates.md) | resolved for fixed historical comparator03 | Original allocation134, then false rank-count rejection1; both preserved | All26 phases, whole positive and elapsed-only0, eight negatives1/no accepted output, original constrained-coordinate audit101; unchanged2GiB cap. Fresh diagnostic CI remains open. [pcc:unverified] |
+| [Original FB30 character extension](chained-transfer-original-FB30-character-extension-02.md) | investigating | Collected FB30 constraints admit a finite noncharacter functional | Prospective unassisted actual-relation completion, full-population checks and separately admitted matched costs. [pcc:unverified] |
 | [Cold preflight build envelope update](chained-transfer-cold-preflight-build-budget-update-20261114.md) | partial | Original full cold120 compile remains unmet | Explicit900setup/full39phase replay e6f380 completes locally; preserve earlier124, audit whole CI artifact; no cold120 waiver. [pcc:unverified] |
 | [Census supervisor lifetime](chained-transfer-census-process-lifetime.md) | resolved for detached04 | Old03 remains interrupted/unknown | Detached04 records actualcold124/reuse0/sourceguards0; original fullcensus requirement remains open. [pcc:unverified] |
 | [Incomplete cold arithmetic census](chained-transfer-incomplete-cold-arithmetic-census.md) | open | Complete120cold900 requirement unmet after actual04cold124/18success receipts; bothreuse0 | Whole partial-data parity/control audit then preserve all negatives; any new optimization must meet unchanged full criterion. [pcc:unverified] |
@@ -26,7 +29,7 @@ explain the gap and what would let the work move past it.
 | [Native hashed-EC Rust floor](hashed-ecdl-rust-msrv.md) | open | Rust 1.78 qualification of the current getrandom 0.4 native graph | approved compatible graph or reviewed minimum-version update, with locked checks at the stated floor |
 | [Chained-transfer frozen ledger synchronization](https://github.com/isogeny-labs/crypto/blob/research/chained-jacobian-transfer-20261110/problems/chained-transfer-admission-and-ledger-sync.md) | open | Merge1484 and its CT21 continuation after main61/frozenPhi60 diverged at row56 | Accepted reconciliation retaining both histories and passing actual prefix/hash-link/current-head CI/review;native evidence in chained-transfer-reference/evidence/seven-consumer-ledger-fork-01.json |
 | [Xedni affine-CVP checkpoint access](xedni-affine-cvp-checkpoint-access.md) | open | Frozen p=67 exact-discriminant comparison for the new coefficient-coset optimizer | Valid checkpoint upload and a passing gate, then the four frozen rows |
-| [Prime IC Jacobian timing checkpoint access](prime-ic-jacobian-checkpoint-access.md) | open | Jacobian relation timing and CM-transfer complete cold-cost follow-up | Successful checkpoint gate plus a retained paired run on an isolation-qualified host |
+| [Prime IC Jacobian timing checkpoint access](prime-ic-jacobian-checkpoint-access.md) | open | Measured relation-collection speedup claim for the new Jacobian lane backend | Successful checkpoint gate plus a retained paired run on an isolation-qualified host |
 | [Prime-field arity-three CDCL(T) implementation](prime-field-m3-cdclt-implementation.md) | open, narrowed | Freezing and running the corrected `m=3`, `s=6..14` prime-field PDP exponent screen | Development oracle and representation sizing now pass; still need the production typed IR, source-bound `F_p` theory and explanation/proof checker, matched exporters, complete accounting, power/preflight and immutable freeze |
 | [Xedni successor native proof qualification](xedni-successor-native-proof-qualification.md) | investigating | Qualifying the five bounded-witness declarations and resolving the original circular-hypothesis review | Exact-source native compilation and five foundation audits, with complete retained diagnostics and all applicable CI passing |
 | [Transfer audit completeness and geometric proof bridges](transfer-audit-completeness.md) | investigating | classification of all efficient transfers and cryptographic-size isogeny paths | explicit transfer universe, verified path provider, geometric Lean bridges and restored checkpoint transport |
@@ -111,7 +114,6 @@ existing review, archival, and claim-promotion rules.
 | [Prime-field auxiliary-map IC measurement qualification](prime-field-auxiliary-ic-validation.md) | open, narrowed | Qualified IC timing claims; core phases and projective row arithmetic are implemented with unsigned controls | Resumable Git/PR checkpoint (S3 waived by user), admitted fresh panel/execution, complete upstream/cold accounting, signed independent replay, and maintainer classification of retained CI alerts |
 | [Live GLV source/proof binding drift](live-glv-source-pin-drift.md) | open | Corpus source-binding controls refuse current main and the IC PR before native proofs | Reviewed current-source binding, retained prior evidence, complete selector/native proof checks and a passing exact-head corpus gate |
 | [Native hashed-EC Rust floor](hashed-ecdl-rust-msrv.md) | open, narrowed | Exact-head hosted and minimum-version correctness qualification after the reviewed Rust 1.85 update | Hosted locked checks and original correctness controls at the accepted minimum; local all-target minimum compilation now passes |
-| [Prime IC Jacobian timing checkpoint access](prime-ic-jacobian-checkpoint-access.md) | open | Measured relation-collection speedup claim for the new Jacobian lane backend | Successful checkpoint gate plus a retained paired run on an isolation-qualified host |
 
 
 
@@ -127,9 +129,6 @@ existing review, archival, and claim-promotion rules.
 
 
 | [Complete LP presentation projection](chained-transfer-full-large-prime-presentation.md) | investigating | Captured all_available rank is not complete raw-graph projection | Frozen sixty-call A/P/C/U certificates, full lifts and independent replay; compare captured/cap/full-graph dimensions without oracle feedback. [pcc:unverified] |
-| [Diagnostic checkpoint sparse status](chained-transfer-diagnostic-checkpoint-sparse-status.md) | investigating | Original checkpoint/readbacks0 then finalstatus1; native step skipped | Version02 exact original fetch-depth0 setup, actualstatus0 and complete whole diagnostic run; failuresce239f retained. [pcc:unverified] |
-| [Whole comparator memory envelope and schema updates](chained-transfer-whole-comparator-memory-bound-updates.md) | resolved for fixed historical comparator03 | Original allocation134, then false rank-count rejection1; both preserved | All26 phases, whole positive and elapsed-only0, eight negatives1/no accepted output, original constrained-coordinate audit101; unchanged2GiB cap. Fresh diagnostic CI remains open. [pcc:unverified] |
-| [Original FB30 character extension](chained-transfer-original-FB30-character-extension-02.md) | investigating | Collected FB30 constraints admit a finite noncharacter functional | Prospective unassisted actual-relation completion, full-population checks and separately admitted matched costs. [pcc:unverified] |
 
 
 
@@ -151,6 +150,67 @@ existing review, archival, and claim-promotion rules.
 | [Full IC pipeline build envelope](ic-pipeline-build-envelope.md) | resolved for preparation | original330-second build cap prevented algorithm execution | separate pinned binaries and complete frozen matrix retained; timing qualification remains open |
 | [Parallel PCC appends for native IC](pcc-parallel-append-ic-native.md) | open | PR1621 integration after main/branch append different suffixes at167 | accepted custody-preserving reconciliation and actual current-main prefix/hash-link checks |
 | [Native IC controlled timing qualification](native-ic-timing-qualification.md) | investigating | current-baseline timing promotion and independent claim standing | prepared host or equivalent v1-aware preflight, passing frozen controls, and signed evidence |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+| [Prime IC Jacobian timing checkpoint access](prime-ic-jacobian-checkpoint-access.md) | open | Jacobian relation timing and CM-transfer complete cold-cost follow-up | Successful checkpoint gate plus a retained paired run on an isolation-qualified host |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
