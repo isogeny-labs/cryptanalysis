@@ -87,7 +87,7 @@ the transformation needs no division by 2.
 | Case | Original columns | Reduced rows x columns | Reduced entries | Lanczos iterations, reference to candidate | Median setup CPU ratio |
 | --- | ---: | ---: | ---: | ---: | ---: |
 | 31-bit linear sieve | 323 | 282 x 49 | 4,660 | 230 to 49 | 2.63x |
-| 40-bit linear sieve | 1,094 | 638 x 144 | 13,386 | 543 to 144 | 6.66x |
+| 41-bit linear sieve | 1,094 | 638 x 144 | 13,386 | 543 to 144 | 6.66x |
 | 48-bit linear sieve | 2,504 | 1,324 x 304 | 30,537 | 1,162 to 304 | 4.60x |
 | 54-bit prime-power case | 5,166 | 2,526 x 566 | 61,138 | 2,241 to 566 | 4.44x |
 
