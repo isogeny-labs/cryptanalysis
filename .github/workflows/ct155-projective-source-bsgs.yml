@@ -1,0 +1,25 @@
+name: CT155 bounded public-Q projective BSGS arithmetic
+on:
+  pull_request:
+    paths:
+      - "experiments/chained-transfer-public-target/norm-point-reuse-01/ct155_*"
+      - ".github/workflows/ct155-projective-source-bsgs.yml"
+  workflow_dispatch:
+jobs:
+  source-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile exact source and baseline without paid compute
+        shell: bash
+        run: |
+          set -euo pipefail
+          D=experiments/chained-transfer-public-target/norm-point-reuse-01
+          g++ -std=c++17 -O3 -Wall -Wextra -Werror "$D/ct154_public_point_reference.cpp" -o /tmp/ct155-baseline
+          g++ -std=c++17 -O3 -Wall -Wextra -Werror "$D/ct155_projective_bsgs.cpp" -o /tmp/ct155-candidate
+          /tmp/ct155-candidate --self-test
+          python3 "$D/ct155_projective_audit.py" --candidate /tmp/ct155-candidate --baseline /tmp/ct155-baseline --quick
+          python3 -O "$D/ct155_projective_audit.py" --candidate /tmp/ct155-candidate --baseline /tmp/ct155-baseline --quick
