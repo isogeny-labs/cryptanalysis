@@ -1,0 +1,37 @@
+     Locking 12 packages to highest compatible versions
+      Adding serde v1.0.228 (available: v1.0.229)
+      Adding serde_core v1.0.228 (available: v1.0.229)
+      Adding serde_derive v1.0.228 (available: v1.0.229)
+      Adding serde_json v1.0.145 (available: v1.0.151)
+   Compiling proc-macro2 v1.0.107
+   Compiling unicode-ident v1.0.27
+   Compiling quote v1.0.47
+   Compiling serde_core v1.0.228
+   Compiling serde_json v1.0.145
+   Compiling serde v1.0.228
+   Compiling ryu v1.0.23
+   Compiling memchr v2.8.3
+   Compiling itoa v1.0.19
+   Compiling hex v0.4.3
+   Compiling syn v2.0.119
+   Compiling serde_derive v1.0.228
+   Compiling chained-transfer-lp-presentation-01 v0.1.0 (/workspace/cryptanalysis/experiments/chained-transfer-lp-presentation-01/native)
+error[E0433]: cannot find module or crate `hex` in this scope
+   --> src/../../../../../crypto/src/cryptanalysis/identity_certificate.rs:380:24
+    |
+380 |     format!("IDC1h{}", hex::encode(&h[..8]))
+    |                        ^^^ use of unresolved module or unlinked crate `hex`
+    |
+    = help: if you wanted to use a crate named `hex`, use `cargo add hex` to add it to your `Cargo.toml`
+
+error[E0433]: cannot find module or crate `hex` in this scope
+   --> src/../../../../../crypto/src/cryptanalysis/identity_certificate.rs:434:5
+    |
+434 |     hex::encode(sha256(&buf))
+    |     ^^^ use of unresolved module or unlinked crate `hex`
+    |
+    = help: if you wanted to use a crate named `hex`, use `cargo add hex` to add it to your `Cargo.toml`
+
+For more information about this error, try `rustc --explain E0433`.
+error: could not compile `chained-transfer-lp-presentation-01` (lib) due to 2 previous errors
+warning: build failed, waiting for other jobs to finish...

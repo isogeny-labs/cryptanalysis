@@ -1,0 +1,79 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-15T21:44:29Z",
+ "id": "PCC-20261115-f9150d",
+ "kind": "statement",
+ "producer": {
+  "commit": "f136ae5ae32e10b380bc3bb4f2339468ff43e65a",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/external-main-merge-consumer-ledger-divergence-01/before-HEAD.txt",
+    "sha256": "0378bad86fb45741e0d527094528d48f70f9ee7d7f8535edea768fcf3d233afd"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/external-main-merge-consumer-ledger-divergence-01/before-refs.txt",
+    "sha256": "c0f8b80078adc56803490584c5219c428da83b5f194873d8bc5c8cd9e1a8f169"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/external-main-merge-consumer-ledger-divergence-01/before-status.txt",
+    "sha256": "c3aeaad1bd926ecd15c133ea07c197fa3dc0e407528946f4b57bfcf542b1194a"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/external-main-merge-consumer-ledger-divergence-01/complete-immutable-inspection.json",
+    "sha256": "bac5044b384f530a56d3d68cd4eae645e3278cc8b6dbab08f71fa64a96621dd8"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/external-main-merge-consumer-ledger-divergence-01/entire-base-to-remote-paths.txt",
+    "sha256": "a2c11efeea68a9f44fc9e5f3222c85db13e857980a9f06cf6ebd884be838bc80"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/external-main-merge-consumer-ledger-divergence-01/fetch.exit",
+    "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/external-main-merge-consumer-ledger-divergence-01/fetch.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/external-main-merge-consumer-ledger-divergence-01/whole-failed-fetch-caller.txt.xz",
+    "sha256": "7d6f68f4316dce62f5ad815f9f96d6c340dda8d86b0fbd10a2ebfe5163de0854"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/external-main-merge-consumer-ledger-divergence-01/whole-remote-commit.txt",
+    "sha256": "3af132535804b1a056fb7a3be230b2f02868217616ee969aef19c6984a4db10b"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Consumeroriginalsharedbranch externallymovedf136 to69590ba6 mainmergeat21:32:28Z, parentsf136/cbd5e31c. Completeimmutablebase/remote/localledgers/originalPCCchain-prefixerrors/fullGitpathdiff/sourceobjectcache retained; local ledger remains exactappendonly of f136. Fetchactual0/HEAD-and-allrefsunchanged, but broadfinalstatusguardfailed because thissession concurrentlywrote243e85 SVGmetadata/failureclaim/log/Resume; wholefailedhelper/caller retained and no unchangedstatusreceipt claimed. Finishedalreadyfetchedinspection understablemetadata withoutnetworkretry; all originalremoteencodings/existinglocalobjects preserved. No sharedbranchpush/merge/rechain/sidepick. Preserve pendingCI02/review/failedCI resultson newappendonly continuation/stablef136base andcontinue independentfreshCI; sourceclassicalscience unchanged. Unsigned operationalhistory/negative data, fullrawNEW28pending."
+}

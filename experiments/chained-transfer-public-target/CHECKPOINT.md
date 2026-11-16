@@ -1,3 +1,163 @@
+# Version03 exact complete rank schema compiled; source/checkpoint next
+
+## What was done
+pcc/claims/PCC-20261115-dd4ee9.json: separateaudit03/driver03/guard03 retains all oldpinnedbytes and compares complete62record rank file(header60callsfooter) and65recordcharacter file under unchanged9aad0c criteria. Build01 source1532/rustfmt/metadata/release/all13originalSHA tests/finalsource0; fullcompiledbinary/source/lock/metadata retained at scratch/ct114-whole-relation-comparator-build-01/RAMtargetct114. Version03wholecontrols not yetrun. [pcc:unverified]
+
+## Decisions made
+Publishsource03, obtainexactoriginalcheckpoint27, runnew scratch/ct114-whole-relation-comparator-native-03 and RAM/dev-shm/ct114-whole-relation-comparator-controls-03 withsame2GiBVM120s/fullpositive-eightnegative-elapsed controls. Keep oldproblemfile pinned; liveproblem updates use newunfrozen updatefile. [pcc:unverified]
+
+## Open threads
+Sourcegovernance/normalpublication/checkpoint27 and completecontrols; then full diagnosticCI draftintegration/proofs/runtimecustody and futurewholeNEW28; reviewedunassisted successor andalloriginal math/calibration/reference/admission/merge gaps. PR1564ready/open,1523historicalmerged5f23. [pcc:unverified]
+
+## Errors
+Wrong61countinfirsttwoimplementations explicitlycorrected; originalmandatorycompletion recordalwayspart ofwholefixture. Firstmemory134 andsecondfalse-rejection1 remain completefrozenfailureclaims769560/f19383. No positivecomparison or negativecontrol accepted in eitherattempt. [pcc:unverified]
+
+---
+
+# Preserve version02 false rejection; original complete rank file has62records
+
+## What was done
+pcc/claims/PCC-20261115-f19383.json / pcc/claims/PCC-20261115-814040.json: exact38d/a6e5ea/checkpoint26, allsource/runtime/materialization0, positive comparison1 at wrongrank-count61guard; driver1/noacceptedoutput/no negatives. Originalproducer239/replay314-316 and completefile show header+60calls+mandatorycompletefooter=62records, character65. Fullsecondpositivearchive/CRC/everyoriginalbytecompare0 and postfailure source/runtime0 preserved under scratch/ct114-comparator-schema-failure-custody-02. [pcc:unverified]
+
+## Decisions made
+Correct the implementation and receipt count in NEWaudit-03/driver03/guard03, preserving old174696/a6e5ea sources and bothactualfailures. The originalprospective9aad0c entirefixture criterion alreadyrequires the completion record; no new equivalence, field omission or cap change. Explicitly correct previous61assertions rather than treating native02 as accepted. [pcc:unverified]
+
+## Open threads
+Build/sourcepublish03/exactoriginalcheckpoint27, then wholepositive/eightnegative/elapsed-only controls, full diagnosticCI, futureNEW28 and reviewed unassisted successor. All original mathematical/calibrated/reference/admission/merge obligations remain. PR1564open; previous1523merged5f23. [pcc:unverified]
+
+## Errors
+The verifier's count omitted the original mandatory completion record. Sourceproof/rank/character data were intact; this was a false rejection by newcode. No positive result or memory-envelope closure is claimed from the second failed comparison. [pcc:unverified]
+
+---
+
+# Versioned whole comparator02 compiled at unchanged criteria and limits
+
+## What was done
+pcc/claims/PCC-20261115-a6e5ea.json: separate ci_original_relation/audit-02 keeps original174696/audit01 bytes unchanged; complete JSONL records are decoded/compared sequentially with full raw/input-hash retention and exact count/order/value rules. Build01 source1532/rustfmt/metadata/release/all13 originalSHA tests/finalsource0. Newdriver02 and frozeninputs02 preserve oldsource hashes and the unchanged9aad0c/5f23dd29 contract. No version02 whole comparison/control execution yet. [pcc:unverified]
+
+## Decisions made
+Publish compiled02 source and obtain exact original checkpoint26 before run. Use new scratch/ct112-whole-relation-comparator-native-02 and RAM/dev-shm/ct112-whole-relation-comparator-controls-02 with build scratch/ct112-whole-relation-comparator-build-01. Keep fixed2GiBVM/120seconds, full positive/eightnegative/elapsed controls and whole archive/runtime/sourceguard criteria. No scientific equivalence changed. [pcc:unverified]
+
+## Open threads
+Sourcegovernance/normalpublication/checkpoint26, then version02 controls and full diagnosticCI; update draft to acceptedcomparatorversion after actualcontrols. FullscientificcustodyNEW28 and prior unassisted-successor/proof/global/calibrated/reference/admission/merge obligations remain. [pcc:unverified]
+
+## Errors
+Native01 allocation abort134/driver1 preserved by769560/2b4297 with full4.4MiB inputarchive/CRC/every-original-byte comparison0 and postfailure source/runtime0. New named problem isolates this resource/implementation gap; no mathematical result was invalidated or accepted. No cap was raised and no old pinned file altered. [pcc:unverified]
+
+---
+
+# Whole comparator01 allocation failure retained; versioned streaming repair next
+
+## What was done
+pcc/claims/PCC-20261115-769560.json / pcc/claims/PCC-20261115-2b4297.json: exacta9f16019/compiled174696/originalcheckpoint25 gate0. Whole historical byte materialization0, positive comparison abort134 with an allocation failure under the fixed2GiBVM/120-second cap; driver1, no accepted output, no negative controls executed. Full source/runtime/logs/inputs retained at scratch/ct107-whole-relation-comparator-native-01 and ct112-comparator-memory-failure-custody-01; complete positive archive CRC/full original-byte compare0 and postfailure source/runtime guards0. [pcc:unverified]
+
+## Decisions made
+Preserve all old audit01 source and174696 subjects. Implement VERSIONED audit-02, native driver02 and source guards02 with sequential complete JSONL record-pair parsing and the existing exact metadata bindings. Every value/order/count and all six complete historical fixture byte pins remain mandatory; resource caps and prospective9aad0c contract unchanged. Review uses actual allocation failure, existing original SHA streaming interface/tests and Rust standard file/JSON iteration, not a new DLP method. [pcc:unverified]
+
+## Open threads
+Versioned streaming build/source publication/originalcheckpoint26, then full positive/eightnegative/elapsed controls. Full diagnosticCI draft in scratch/ct111 remains unexecuted; adapt it to the accepted comparator version after controls. Preserve future fullscientificcustodyNEW28, then reviewed/prospective unassisted relation completion. All global/model/numericLean/calibrated/reference/admission/merge gaps remain. [pcc:unverified]
+
+## Errors
+Whole-record parse plus normalization copies cannot complete this run inside the existing virtual-memory envelope. The exact allocation point/peak is not profiled; buffering is the implementation hypothesis. This is not evidence against the mathematical input data. Keep the failed source and run, and use a new version/output without weakening complete comparisons or raising caps. [pcc:unverified]
+
+---
+
+# Complete metadata sidecar genuinely published; hold released
+
+## What was done
+pcc/claims/PCC-20261115-2625d2.json / pcc/claims/PCC-20261115-f2a4aa.json: original43750430453/job132922943345 two actual remote replays BEFORE bot67353d444b/direct00be7d54/exact4paths. All66706content185literal links538consumerowned/HEAD-status-ledger/Rootprefix terminal checks, full sourceblobs/XZintegrity/guarddecodedbytes/indexencoding and normalFF/originalartifact/wiring0 pass. Temporary sidecar HOLD RELEASED. Complete2,140,576-byte failedindex subject4a8f8f retains exact bytes via one exact original canonical entry and a transparent relative alias at the same path. Root two genuine ignored cache objects are restored from full retained originals; no new remote read claimed. [pcc:unverified]
+
+## Decisions made
+Finish comparator compiled-source governor03 with exact canonical artifact verification, source/byte/ledger/prose gates, then normalpublication and original exactsource checkpoint25 before whole controls. Preserve every failed build/source-governance/parser attempt and all pinned bytes. Full scientific custody NEW28 remains separate and pending. [pcc:unverified]
+
+## Open threads
+Comparator compiled-source checkpoint and originalreceipt25; run fullpositive/eightnegative/elapsed-only controls with whole archives and runtime/sourceguards; implement whole diagnosticCI under prospectively published9aad0c/5f23dd29; review/freeze unassisted relation-completion successor. Existing global/model/numericLean/calibrated/admission/reference/merge requirements persist. [pcc:unverified]
+
+## Errors
+Firstbuild missinghex testdependency32398d, immutable testlog whitespace4a8f8f, full index originalartifact selectioncdcaa2 and sidecar governor stdout-stderr parser5dca3c all retained. No source, mathematical gate, originalpolicy, pinned byte or historical failure changed. [pcc:unverified]
+
+---
+
+# Preserve the complete index sidecar; temporary publication hold
+
+## What was done
+pcc/claims/PCC-20261115-cdcaa2.json: second comparator source governor reaches original artifact gate1, which selects the entire2,140,576-byte failed staged-index XZ pinned by4a8f8f. All earlier scientific/source/prose/whitespace checks hold; full first and second failures retained. No whole comparator or fresh solver execution has occurred. [pcc:unverified]
+
+## Decisions made
+Publish this complete immutable metadata sidecar through the unchanged original producer policy and actual bot. HOLD consumer owned bytes/ledger and all current historical content/link states through the actual original replay-before-bot, exact normalFF and terminal guards; then copy the exact canonical entry and relative alias preserving every subject byte. This is a metadata sidecar, distinct from the future full scientific custody NEW28. No policy exemption, fake manifest, truncation or history rewrite. [pcc:unverified]
+
+## Open threads
+Finish genuine sidecar publication/projection, comparator sourcegovernance03/normalpublication, exact original checkpoint25, full comparator controls and diagnostic CI. Prospective unassisted successor, all original mathematical/calibrated/admission/reference/merge gaps remain open. [pcc:unverified]
+
+## Errors
+The first failure index snapshot is itself policy-selected data. Preserve the gate failure and publish the whole object; do not rename/split it to evade policy or drop the snapshot. Original test output remains byte-exact with narrow whitespace metadata. [pcc:unverified]
+
+---
+
+# Preserve first comparator source-governance whitespace failure
+
+## What was done
+pcc/claims/PCC-20261115-4a8f8f.json: first governor exits1 at cached-whitespace2 on one blank final line in the full immutable release-library-tests.txt pinned by174696. Complete caller, source, original finding, failed staged index and all earlier positive check logs retained; thirteen library tests and compiled source remain unchanged. [pcc:unverified]
+
+## Decisions made
+Add exact per-file whitespace-preservation metadata for this literal diagnostic, preserve all pinned bytes and retry02 with unique control paths. No test, scientific source, contract or mathematical gate changes. [pcc:unverified]
+
+## Open threads
+Compiled-source publication, genuine exact original checkpoint25, whole comparator positive/eightnegative/elapsed controls, full diagnostic CI, prospective unassisted successor; future custody NEW28 and all original gaps remain. [pcc:unverified]
+
+## Errors
+The new build-result export omitted literal test-output whitespace metadata. Do not trim or regenerate it; the complete first failure remains frozen. [pcc:unverified]
+
+---
+
+# Whole Rust comparator compiled; whole-input controls await exact checkpoint
+
+## What was done
+pcc/claims/PCC-20261115-174696.json: serde-only historical comparator/control code built under prospectively published9aad0c/5f23dd29. Build02 source1532/rustfmt/metadata/releasebuild/all13 original SHA256 library tests/finalsource0; entire first101 test-dependency failure32398d retained. Exact compiled executable/fullcopy/source/lock/metadata retained at scratch/ct107-whole-relation-comparator-build-02 and RAMtarget. No comparator control or fresh solver diagnostic has run. [pcc:unverified]
+
+## Decisions made
+Normally publish this compiled source and thin run-comparator-controls-01.sh with its frozen byte guards; obtain genuine exact-source original checkpoint25 before running the complete whole-input controls. Output plan: scratch/ct107-whole-relation-comparator-native-01 and RAM/dev-shm/ct107-whole-relation-comparator-controls-01, with complete tarXZ and byte-compare closure. Original engine/solver/rank/character code remains unchanged. [pcc:unverified]
+
+## Open threads
+Original checkpoint25 import/localgate0, then run the pinned clean-source thin driver with compiled build02 and new output paths; preserve strict failure if any. Next full diagnostic CI under published contract, then reviewed/prospective unassisted relation completion. All original proof/global/model/calibration/reference/admission/merge gaps and future custody NEW28 remain explicit. [pcc:unverified]
+
+## Errors
+Build01 library-test compilation101 required missing hex test dependency; fixed without skipping tests or changing original SHA code, complete firstfailure preserved. KB127/conductor127 and locked autoresearcher exact four-byte-only remain. [pcc:unverified]
+
+---
+
+# Comparator build01 retains a missing test dependency
+
+## What was done
+pcc/claims/PCC-20261115-32398d.json: new Rust comparator/control source compiles in release mode; required library-test compilation101 because the included unchanged original SHA256 tests refer to hex, absent from this new crate's development dependencies. All original1532guards/rustfmt/metadata/build0, complete source and diagnostics retained. No comparator population or new native diagnostic has executed. [pcc:unverified]
+
+## Decisions made
+Add the exact hex test dependency, keep the original SHA256 module and prospective9aad0c contract unchanged, and use a fresh build02 directory. Publish compiled source and obtain the exact original checkpoint receipt before whole-input comparator execution. [pcc:unverified]
+
+## Open threads
+Build02 and compiled-source checkpoint, whole positive/eight negative/elapsed-only controls, full diagnostic CI, unassisted relation-completion review. Existing proof/calibration/reference/merge obligations and future custody NEW28 persist. [pcc:unverified]
+
+## Errors
+Actual library-test compilation101, missing hex dependency; no test skipped or gate weakened. Complete first failure remains frozen. [pcc:unverified]
+
+---
+
+# Whole diagnostic CI contract normally published before code
+
+## What was done
+Prospective contract9aad0c/governance8cd2ad normally published consumer5f23dd29, actualpublisher0. All six fixture pins and exact historical capture receipt retained; Root literal mirror pcc/claims/PCC-20261115-fffb0f.json records this source and full original publication receipt. No new comparator, control generator or CI driver has yet been authored. [pcc:unverified]
+
+## Decisions made
+Implement the prospective strict whole Rust comparator and controls next, then the full diagnostic CI driver and original proof/runtime/prepared custody. Preserve every strict failure and publish any amendment before its code or rerun. [pcc:unverified]
+
+## Open threads
+Comparator/controls/full CI, prospective unassisted relation completion after primary review, all original model/global/numericLean/calibrated/admission/strongest-reference/merge requirements. Future whole custody NEW28. [pcc:unverified]
+
+## Errors
+KB all six calls127; conductor127; locked autoresearcher remains exact four-byte-header-only. Earlier GitHub draft TextEncoder error and accidental ciphertext read are recorded; emitted ciphertext is not republished. [pcc:unverified]
+
+---
+
 # Prospective whole diagnostic CI contract01 authored before code
 
 ## What was done

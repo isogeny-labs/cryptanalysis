@@ -1,0 +1,9 @@
+{
+  "time": "2026-11-16T17:18:51.579317+00:00",
+  "helper_exit": 1,
+  "cause": "cached-empty check inherited the already intentionally staged alternate index",
+  "actual_canonical_index": "unchanged; continuation compares original complete snapshot, then runs explicit canonical env",
+  "earlier_empty_check_exit": "initial0 in tool output; continuation reused same diagnostic path and replaced its empty output/exit with1; earlier full on-disk exit no longer retained; do not reconstruct",
+  "mutation_before_failure": false,
+  "decision": "retain failed caller/current1 and use explicit canonical environment; never require staged alternate to be empty"
+}

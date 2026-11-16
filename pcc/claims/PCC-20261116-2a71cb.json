@@ -1,0 +1,58 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T02:40:01Z",
+ "id": "PCC-20261116-2a71cb",
+ "kind": "statement",
+ "producer": {
+  "commit": "b7b91903888ffa9dea85e643e5a86e828767e7c8",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/report-historical-adapter-01/REPORT.md",
+    "sha256": "d39d0ce5686b5db19cda1d60f72128992de3d73a9d1cd9de1db2446adfa2b92c"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/report-historical-adapter-01/REPORT.pdf",
+    "sha256": "b7412ce119eb7d903d3702bc81280d06fda087b4d9420d784a2495f18d715840"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/report-historical-adapter-01/adapter.svg",
+    "sha256": "2f9570b3172ef86311d00f2175d1c20e4f806ff1aae85e368134f8c9e1b4fe5f"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/report-historical-adapter-01/failed-default-render-attempt01.txt",
+    "sha256": "27fb56197e1801e7aba52be84710c95484d658caa30bd8a8b6469e3d9a991a9b"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/report-historical-adapter-01/render-inspection.json",
+    "sha256": "95b85653db7d12089632d94e88dceb17c9bda828f882985253add4a14b4ff0a7"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/report-historical-adapter-01/report.typ",
+    "sha256": "d72f54c036e644a00e6805749bf61fcff79c86061c373518b15e37ca50a88400"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Historical adapter static checkpoint report01: source-linked Markdown/SVG/Typst and40289-byte one-page PDF generated with existing Typst0.15.1, actual final page rendered and opened; architecture/readable scope shows native14-case tests and historical60/whole feedback/360/character/EKS pending. Source/static datae48db4 only, no numerical or computational advantage claim. Earlier default-Python render-fix import failure is retained; it changed no asset before failure and the correct existing render venv retry succeeds. Canonical scientific graphs remain unchanged."
+}

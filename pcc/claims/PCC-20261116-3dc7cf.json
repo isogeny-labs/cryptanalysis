@@ -1,0 +1,44 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T18:29:11Z",
+ "id": "PCC-20261116-3dc7cf",
+ "kind": "statement",
+ "producer": {
+  "commit": "febfa6e61af343210808b6fa2eb21aceaccad603",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/second-immutable-Git-receipt-whitespace-negative-23/ACTUAL_TWO_IMMUTABLE_RAW_RECEIPTS.json",
+    "sha256": "0eecb0c49d765d7e3511a4ea9b84cb2b72318e0e77a69b9a5bd1c38725fa08f6"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/second-immutable-Git-receipt-whitespace-negative-23/entire-original-failed-successor-caller.py.txt",
+    "sha256": "741280da7855fa0350f6099a9589a5169dcbbdee0c448e974a130fb717b8bba6"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/genuine-docs-post-merge-successor-governance-22/current-cached-whitespace.stdout.xz",
+    "sha256": "973ac9ed91e0abdc5653c50d13dbd4dc20a8e53542f2affe624fd4f70d455a7d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/genuine-docs-post-merge-successor-governance-22/current-cached-whitespace.exit",
+    "sha256": "53c234e5e8472b6ac51c1ae1cab3fe06fad053beb8ebfd8977b010655bfdd3c3"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Consumer successor cached whitespace2 flags newly staged immutable Git push receipt e21d7ab4 from original8cfe6d, not source/code drift. Earlier original9e7a06 receiptde361d00 is also immutable in cumulative merged-base diff. Producer expected0 too broadly, full failed caller/current original2 retained; all source/prefix/prose checks completed before stop. Preserve both raw files byte-for-byte and their original claim SHA/modes, check authored text excluding exactly both pinned paths and never label the whole2 green. No verifier/source/policy or mathematical criterion change."
+}

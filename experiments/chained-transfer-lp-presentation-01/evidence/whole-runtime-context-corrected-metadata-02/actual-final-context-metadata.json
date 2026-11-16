@@ -1,0 +1,20 @@
+{
+  "at": "2026-11-16T10:42:13.065667+00:00",
+  "entire_context_hold": "/dev/shm/ct337-whole-LP-runtime-packaging-context-03",
+  "whole_context_files": 308,
+  "whole_logical_file_bytes": 575053199,
+  "whole_original_CI_bytes": 340729140,
+  "whole_pure_CI_bytes": 53419171,
+  "whole_source_snapshot_tar_bytes": 39331840,
+  "actual_byte_phases": "original1605-guard 0\npure50-guard 0\npopulation12-guard 0\nall56-original-selected-members 0\nall3-actual-pure-build-pins 0\nactual-pure-compiler-source 0\nlink-whole-original-capsule 0\nlink-whole-pure-build 0\nlink-whole-pure-CI 0\nlink-whole-guarded-source 0\nall-context-byte-inventory 0\nall-context-byte-check 0\nfinal-pure-native-pins 0\nfinal-original-selected-pins 0\nfinal-original1605-guard 0\nfinal-pure50-guard 0\nfinal-population12-guard 0\n",
+  "actual_helper_exit": 0,
+  "whole_context_inventory_sha256": "a7f96524b5dbbb0f3483c7a8416a4265a4bb9241370b3e3c1aa0b36ecdec304a",
+  "actual_Dockerfile_sha256": "16a18f73689b43725230ffbd829ccf3a05e14b801fa4784f8d3c94a487e143b2",
+  "source_review_corrections": [
+    "All explicit COPY paths chown to runtime1000 without chmod/modifying original holds",
+    "Actual source-status/40hex recipe revision binding required by future Docker build",
+    "Inventory pipeline fails on any tool error and requires >=300 files",
+    "Destination archives/native/fixtures rechecked against original external pins after inventory"
+  ],
+  "scope": "file I/O and source-only recipe; no image build/execution or runtime Git/ABI/Job/Pod/admission qualification"
+}

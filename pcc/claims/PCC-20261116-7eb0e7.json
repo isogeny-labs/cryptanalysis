@@ -1,0 +1,44 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T02:19:00Z",
+ "id": "PCC-20261116-7eb0e7",
+ "kind": "statement",
+ "producer": {
+  "commit": "b7b91903888ffa9dea85e643e5a86e828767e7c8",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/historical-static-private-field-failure-01/actual-compiler.exit.xz",
+    "sha256": "3246e457abfbcdad9b15fd3e441fdcb4b89f5c51fb997d428ab0d77f17fa7409"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/historical-static-private-field-failure-01/entire-failed-source.tar.xz",
+    "sha256": "55852e65debaef5e7a070dd55270035e9b437178ee67203d3b6472120dba7010"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/historical-static-private-field-failure-01/whole-Cargo-messages.jsonl.xz",
+    "sha256": "86e1ed2e3542b3806af03f99045ec8085e04fc16cde90879b0d9eb4aec3d4aba"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/historical-static-private-field-failure-01/whole-compiler.stderr.xz",
+    "sha256": "b370007eeaa402e192b4f74ea3cf7c6a2f15bb92fb467fde9bfc16ee94b87667"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Historical adapter static compilation attempt01 actual101 before native execution: two Rust E0603 errors because the frozen matrix producer Field type is crate-private. Whole source snapshot and complete compiler messages/stderr/exit retained; native tests were not launched after the separate checkpoint credential failure615f00. Do not change the frozen matrix producer visibility. Give the adapter its own small whitelisted-modulus additive assembly arithmetic, keeping future independent raw reconstruction separate, then repeat static compilation with changed source. No mathematical outcome or historical computation is claimed."
+}
