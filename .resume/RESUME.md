@@ -3214,3 +3214,20 @@ pcc/claims/PCC-20261116-bf5b6e.json: both original gates abort before type check
 
 ## Static compiler VM dependency diagnostic
 pcc/claims/PCC-20261116-f7c1f5.json: minimal #check Nat reproduces2GiB-VM startup abort134, while original proof-workflow default VM with managed heap1024MB checks0. Static graph proof builds use that original workflow configuration; no bounded-VM proof compliance or native experiment is claimed. Native/historical experiment limits stay fixed. [pcc:unverified]
+
+---
+
+2026-11-16T06:59:56.403714+00:00
+# Complete original baseline runtime byte capsule
+
+## What was done
+pcc/claims/PCC-20261116-1169c2.json: all12 metadata byte/profile/engine phases0; entire original340729140B archive and56 complete selected native/source/prepared members69693424B retained. No original binary executed or new compilation. Originalb7/upstream3d49af7 provenance is distinct from new pure tools2d46258. [pcc:unverified]
+
+## Decisions made
+Publish this finished custody component plus actual latest5e80 native/post/proof CI8db45c and budget-stope42949. Continue full-population driver source with exact earlier binaries; no paid launch under exhausted daily/monthly budgets. [pcc:unverified]
+
+## Open threads
+Full60/240/62, separate unchanged360 and witness auditor, seven whole controls/feedback/post, actual source-built OCI/UID/runtime qualification and genuineNEW28. Root4401 merged5ae1; later source checkpoint must use a fresh owned branch. [pcc:unverified]
+
+## Errors
+Earlier wrong-upstream metadata draft stopped before manifest creation, retained in the prior log. Original cold compile3m48 under900s is not a new120s pass. Current full science and price advantages remain unestablished. [pcc:unverified]
