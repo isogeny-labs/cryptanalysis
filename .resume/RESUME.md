@@ -3265,3 +3265,88 @@ Corrected-source actual compiler/CI qualification; frozen60/240/62/original360/w
 
 ## Errors
 Missing original protocol file is the actual failure, not timeout or scientific outcome. All prior failures retained, and source5e80 graph gates remain historical scope. Entire raw archive/runtime and new failure require genuine scientificNEW28 beyond GitHub/RAM holds. [pcc:unverified]
+
+---
+
+2026-11-16T09:15:11.507543+00:00
+# Current published norm source and corrected compiler source
+
+## What was done
+Root44a3db385da4 source/tag/readyPR4413 publishes cubic norm proof26ec43 with12 exact bindings/both original15 audited0 trusted and inspected reportb203ad. Root4411 actually merged a299 under expected16929 after complete currentCI/8634-key guarded FF14173e; stale copied branch prose4289e7 is corrected ebdd91. Consumer2c44ee2e normal publicationb72688 corrects040 source-closure failure97e351 without changing protocol/math/limits. Queue3904 and both PR descriptions are current; whole API/source-publication evidence279bec retained in Root working tree. [pcc:unverified]
+
+## Decisions made
+Next scheduled observations: Consumer2c44 about09:15UTC,Root4413 about09:45UTC. Continue full-driver cold input/source closure and source-built image design. Actual daily/monthly budgete42949 stops paid builds/jobs. No full60 population or new original360/witness execution has occurred. [pcc:unverified]
+
+## Open threads
+All1661 unique files named by original1605/pure50/population12 guards need a complete future runtime source materialization, including352 original Root dependencies; hashes agree where repeated. Unit CI/source-build archive is a narrower development artifact. Source/context/OCI/native/actual Job/Pod/ABI/checkpoint custody remains separate. Full scientificNEW28 and main-ledger reconciliation remain open; vault locked. [pcc:unverified]
+
+## Errors
+Current archive/metadata holds and Root split index remain inRAM; preserve every old hold. Root Git pack relocation7cb04a preserves complete object bytes and published HEAD/tree/ledger; missing volatile cache requires re-fetch of immutable published objects, not scientific reruns. Do not modify directly pinned version01 norm report/workflow/source. [pcc:unverified]
+
+---
+
+2026-11-16T09:29:13.853157+00:00
+# Corrected cold source closure and actual fresh pure compiler CI succeed
+
+## What was done
+pcc/claims/PCC-20261116-941dbe.json: current2c44 original checkpoint/all3 reads, early12-source guard/native development/8 metadata controls/fresh14/15-package pure release builds all0; original dual graph gates10/0. Whole53,419,171B archive/all740 complete uploaded members and full log retained, actual3 native byte pins/static readelf captured. Local executable invocation none. [pcc:unverified]
+
+## Decisions made
+Advance source-built OCI/runtime source materialization using actual newly compiled pure entrypoints and separately unchanged old baseline capsule. Preserve old040 failure; no source/limit waiver or local fixed population. Root norm source44a3db/PR4413 currentCI next09:45 remains separate. [pcc:unverified]
+
+## Open threads
+Full1661-file runtime source closure snapshotee0ca3, OCI/source/native/actual Job/Pod/ABI/checkpoint custody and genuine all-rawNEW28. Full60/240/62/original360/witness auditor/7 controls/feedback/post notrun, paid launches blocked by e42949. Compiler cache/upload membership is not a new original-engine cold qualification. [pcc:unverified]
+
+## Errors
+No current-source unit/compiler/proof failure. Prior040 protocol omission and all earlier negative/resource/source failures remain whole. Old01 unchanged checkpoint failure is not retried; repeated other suites are status-only unless full new artifacts explicitly collected. [pcc:unverified]
+
+---
+
+2026-11-16T10:14:31.303403+00:00
+# Preserve frozen-workflow source-guard rejection
+
+## What was done
+pcc/claims/PCC-20261116-7f4d7d.json: proposed five-path PCC hydration extension makes exactly frozen .github/workflows/pcc-gate.yml fail original1605 guard; governor stops before commit/push. Entire rejected workflow/command/logs/index retained, original exact2c bytes restored. [pcc:unverified]
+
+## Decisions made
+Do not alter original1605 guard or original pinned workflow. Publish finished941dbe/ee0ca3/10ced7 data and source-only exporter with original source bytes unchanged; retain the five whole metadata store/hydration and all-rawNEW28 prerequisites explicitly. [pcc:unverified]
+
+## Open threads
+A future reviewed source/runtime/store workflow must respect old1605 source closure. Full runtime checkout/OCI/ABI/checkpoint/admission and historical LP population remain prospective; paid stop e42949 unchanged. [pcc:unverified]
+
+## Errors
+This is a metadata source-guard failure, not a mathematical rejection. No source guard loosened or failed scientific result reclassified. [pcc:unverified]
+
+---
+
+2026-11-16T10:15:43.052613+00:00
+# Preserve whole readelf-output whitespace failure
+
+## What was done
+pcc/claims/PCC-20261116-67b94b.json: all original source/governance guards pass0 after exact frozen workflow restoration, cached whitespace2 points to six whole941dbe-pinned readelf outputs. No commit/push. [pcc:unverified]
+
+## Decisions made
+Preserve exact raw output and add only six exact-path whitespace attributes, then distinct successor governor. No artifact/source/protocol waiver. [pcc:unverified]
+
+## Open threads
+Publish finished pure compiler CI/source-snapshot checkpoint; genuine five metadata objects/all-rawNEW28 and runtime prep remain open. [pcc:unverified]
+
+## Errors
+Readelf trailing spaces are whole diagnostic bytes, not authored source edits or scientific failure. [pcc:unverified]
+
+---
+
+2026-11-16T10:16:50.279551+00:00
+# Correct artifact-selection assumption from the original tool
+
+## What was done
+pcc/claims/PCC-20261116-f5ca2d.json: original policy selects exactly three whole snapshot XZ plans/pins65844/70088/70840B; the543821B whole JSON is not selected at this size. All preceding original/scoped guards and cached whitespace pass0; author expected-one assertion stops commit/push. [pcc:unverified]
+
+## Decisions made
+Keep every raw/JSON byte; correct exact immediate3 and broader7 (three new plus four old RESUME) requirements using original policy output. Earlier713621 queue/proposed PR five-JSON prose is explicitly erroneous metadata, retained followed by this correction. [pcc:unverified]
+
+## Open threads
+Original frozen-workflow hydration constraint7f4d7d remains; genuine scientific store/NEW28 and runtime source/OCI/ABI/checkpoint/admission remain open. [pcc:unverified]
+
+## Errors
+This is an author policy-selection assumption failure, not original policy malfunction or scientific outcome. No policy weakening, raw deletion, commit/push or paid workload. [pcc:unverified]
