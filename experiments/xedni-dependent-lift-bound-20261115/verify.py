@@ -29,11 +29,18 @@ def main():
     output = (FORMAL / "build-output.txt").read_text()
     assert "Build completed successfully" in output
     assert "sorryAx" not in output
-    declaration = "'XedniObstruction.dependent_lift_sample_count' depends on axioms: "
-    line = next(row for row in output.splitlines() if declaration in row)
-    assert line.endswith("[propext, Classical.choice, Quot.sound]")
-    assert output.count("depends on axioms:") == 15
-    print(json.dumps({"status": "PASS", "checked_declarations": 15,
+    axiom_lines = [row for row in output.splitlines() if "depends on axioms:" in row]
+    assert len(axiom_lines) == 20
+    allowed = ("[propext, Classical.choice, Quot.sound]", "[propext, Quot.sound]")
+    assert all(row.endswith(allowed) for row in axiom_lines)
+    expected = (
+        "dependent_lift_sample_count", "mem_boundedCandidates",
+        "nontrivial_iff_ne_zero", "boundedCandidates_card",
+        "dependent_lift_box_count", "dependent_lift_explicit_count",
+    )
+    assert all(any(f"'XedniObstruction.{name}' depends on axioms:" in row
+                   for row in axiom_lines) for name in expected)
+    print(json.dumps({"status": "PASS", "checked_declarations": 20,
                       "base_source_sha256": source["base_source_sha256"],
                       "extension_source_sha256": sha(FORMAL / "XedniDependentLift.lean")},
                      sort_keys=True))

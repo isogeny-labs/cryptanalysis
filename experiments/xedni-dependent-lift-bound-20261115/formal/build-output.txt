@@ -1,4 +1,4 @@
-⚠ [1648/1650] Replayed XedniObstruction
+⚠ [1648/1651] Replayed XedniObstruction
 warning: XedniObstruction.lean: imports `Mathlib.LinearAlgebra.FiniteDimensional.Basic` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
 warning: XedniObstruction.lean: imports `Mathlib.GroupTheory.Index` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
 warning: XedniObstruction.lean: imports `Mathlib.Algebra.Order.BigOperators.Group.Finset` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
@@ -19,6 +19,14 @@ info: XedniObstruction.lean:260:0: 'XedniObstruction.xedniSampleMap_involutive' 
 info: XedniObstruction.lean:261:0: 'XedniObstruction.xedniSampleMap_bijective' depends on axioms: [propext, Quot.sound]
 info: XedniObstruction.lean:262:0: 'XedniObstruction.xedni_sample_event_card' depends on axioms: [propext, Classical.choice, Quot.sound]
 info: XedniObstruction.lean:263:0: 'XedniObstruction.sampled_integer_candidate_union_count' depends on axioms: [propext, Classical.choice, Quot.sound]
-ℹ [1649/1650] Built XedniDependentLift (12s)
-info: XedniDependentLift.lean:63:0: 'XedniObstruction.dependent_lift_sample_count' depends on axioms: [propext, Classical.choice, Quot.sound]
-Build completed successfully (1650 jobs).
+⚠ [1650/1651] Built XedniDependentLift (11s)
+warning: XedniDependentLift.lean: imports `Mathlib.Data.Fintype.Pi` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: XedniDependentLift.lean: imports `Mathlib.Data.Fintype.BigOperators` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: XedniDependentLift.lean: imports `Mathlib.Data.Int.Interval` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+info: XedniDependentLift.lean:163:0: 'XedniObstruction.dependent_lift_sample_count' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: XedniDependentLift.lean:164:0: 'XedniObstruction.mem_boundedCandidates' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: XedniDependentLift.lean:165:0: 'XedniObstruction.nontrivial_iff_ne_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: XedniDependentLift.lean:166:0: 'XedniObstruction.boundedCandidates_card' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: XedniDependentLift.lean:167:0: 'XedniObstruction.dependent_lift_box_count' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: XedniDependentLift.lean:168:0: 'XedniObstruction.dependent_lift_explicit_count' depends on axioms: [propext, Classical.choice, Quot.sound]
+Build completed successfully (1651 jobs).

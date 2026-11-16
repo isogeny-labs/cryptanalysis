@@ -15,6 +15,18 @@ step carries every lifted relation through the additive reduction map to a
 relation on the sampled reduced tuple. The existing bijection and finite
 candidate union bound then control that event.
 
+The new `boundedCandidates B` construction supplies the complete nonzero
+integer box, with membership equivalent to nontriviality and coefficient
+bound `B`. Lean proves its cardinality is `(2B+1)^r−1` and derives the
+explicit inequality
+
+`|{t : some nontrivial relation holds among lifts(t)}| · q
+ ≤ ((2B+1)^r−1) · q^r`.
+
+The resulting probability bound is `((2B+1)^r−1)/q`; it is informative when
+the box size is small relative to `q`. The fixed-candidate cover conditions
+are discharged by the construction in this corollary.
+
 ## Exact hypotheses and proof
 
 The theorem `XedniObstruction.dependent_lift_sample_count` takes an additive
@@ -41,6 +53,8 @@ inequality without assuming the conclusion.
 | Result | Lean declaration | Verification and scope |
 | --- | --- | --- |
 | A sampled dependent lift lies in the fixed reduced relation event, giving the stated count bound | `XedniObstruction.dependent_lift_sample_count` | Pinned `lake build XedniDependentLift` passed; `#print axioms` reports `propext`, `Classical.choice`, `Quot.sound`. Exact hypotheses are in the theorem signature above. |
+| The complete nonzero coefficient box has `(2B+1)^r−1` members | `XedniObstruction.mem_boundedCandidates`, `XedniObstruction.boundedCandidates_card` | Pinned build and axiom audit passed. |
+| Dependent-lift sample bound with the box constructed and counted | `XedniObstruction.dependent_lift_box_count`, `XedniObstruction.dependent_lift_explicit_count` | Pinned build and axiom audit passed; retains the uniform short-witness and reduction-map hypotheses. |
 | Reduction of any integer lift relation | `XedniObstruction.relation_reduces` in the pinned base module | Rebuilt from the identified mainline source in this package. |
 | Fixed finite candidate sample bound | `XedniObstruction.sampled_integer_candidate_union_count` in the pinned base module | Rebuilt from the identified mainline source in this package. |
 | Arithmetic short-relation witness bound for a specific rational lift family | Open bridge | Requires the chosen curve family and height/discriminant conditions to show every dependent selected lift has at least one relation bounded by the same `B<q`. The theorem exposes that obligation as `short_relation_witness`. |
