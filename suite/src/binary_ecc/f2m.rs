@@ -933,7 +933,7 @@ fn reduce_element_product(value: &mut [u64], irreducible: &IrreduciblePoly, m: u
         feature = "f2m-fixed-reduction",
         any(target_arch = "x86_64", target_arch = "aarch64")
     ))]
-    if m == irreducible.degree && has_hw_clmul() {
+    if (129..192).contains(&m) && m == irreducible.degree && has_hw_clmul() {
         // SAFETY: callers provide a product of two masked m-bit elements;
         // each selected m has three limbs, and the CPU feature was checked.
         match (m, irreducible.low_terms.as_slice()) {
