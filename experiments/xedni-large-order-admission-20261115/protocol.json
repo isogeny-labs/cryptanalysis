@@ -1,0 +1,20 @@
+{
+  "schema": "xedni-large-order-admission-protocol-v1",
+  "question": "Which first prime fields for the fixed public curve have a largest prime-order subgroup admitting the two-point rank-gap numerical gate at L=4, d=1, c=1, T=1?",
+  "base_curve_coefficients": [0, 0, 0, -1, -2],
+  "scan_primes_inclusive": [293, 5000],
+  "subgroup_order_band_inclusive": [289, 600],
+  "take": 8,
+  "selection_rule": "first eight prime fields in increasing order whose nonsingular base curve has largest prime factor of its group order in the frozen band",
+  "admission": {
+    "arity": 2,
+    "rank_d": 1,
+    "coordinate_slope_c": 1,
+    "torsion_label_count_T": 1,
+    "radius_L": 4,
+    "coordinate_radius_K": 4,
+    "required_inequalities": ["d<arity", "K<=cL", "T(2c+1)^d<L", "2L<q", "(4L+1)^arity-1<q"]
+  },
+  "measurement": "exact curve orders, subgroup factors, selection trace, and numerical theorem admission; no point lifting or timing",
+  "claim_boundary": "numerical admission does not establish a bounded-coordinate representation or a rational-lift success rate"
+}

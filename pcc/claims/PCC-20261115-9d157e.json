@@ -1,0 +1,37 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-15T20:22:00Z",
+ "id": "PCC-20261115-9d157e",
+ "kind": "statement",
+ "producer": {
+  "commit": "9f467175fd5a0fe8fe6623a8715f9cb80e987305",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "research/curve25519_torus_native_20261115/harness-final-tests.log",
+    "sha256": "8fda5145664be7eefc5e7304850caf8b3f58dd4811022065b89d3ac097d94b0f"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "research/curve25519_torus_native_20261115/evidence/qualification-v2/qualification-pre-call.json",
+    "sha256": "6bf6cd25ccc5d170a16808b3505e75911d71d2e19cc47e331ebc47518d171c8a"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "research/curve25519_torus_native_20261115/evidence/qualification-v2/qualification-post-call.json",
+    "sha256": "bdfef20ce66808732c844ba3a5a9f4ab4a36f9b9c78eb9f7996a1c2ba2c1796a"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Producer Rust harness tests and immutable qualifier report five actual-Curve25519-p cases compiled, two known-triple circuit and point-sum checks, and no solver invoked. The three full-M cases have 395 variables and 396 quadratic equations. These are unverified development observations, not decomposition or exponent results."
+}
