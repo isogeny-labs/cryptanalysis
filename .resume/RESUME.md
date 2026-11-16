@@ -1,3 +1,63 @@
+# Preserve source prose failure on immutable CI data
+
+## What was done
+pcc/claims/PCC-20261116-4f9029.json: governor01 ledger0 and prose1, four findings in two original READMEs captured with all85 failed CI artifact members. Full command, caller, logs and exits remain exact. [pcc:unverified]
+
+## Decisions made
+Keep captured original prose unchanged; successor runs all captured README prose expecting1 and newly authored prose expecting0. This corrects the check scope while retaining the complete negative result. [pcc:unverified]
+
+## Open threads
+Publish the cold fixture source, then check fresh CI at the normal cadence. Continue CI03 source preparation and historical LP extractor; full60 EKS admission remains blocked on known budget/capacity/source image. [pcc:unverified]
+
+## Errors
+The prior governor applied author-prose lint to verbatim upstream diagnostic data; it stopped before commit or publication. [pcc:unverified]
+
+---
+# Restore authentic original identity fixture in a cold native build
+
+## What was done
+pcc/claims/PCC-20261116-4270a0.json: cold isolated sparse checkout starts without the fixture; data-only native build preparation restores the exact immutable Root2d blob/SHA. All24 original/foundation tests pass under the same120s/2GiB bound and cold target. A whole changed-fixture control exits1 without overwriting its bytes. Full code/lock/authentic/bad input/runtime/logs retained. [pcc:unverified]
+
+## Decisions made
+Publish this new build prerequisite while preserving every existing native/Lean/matrix/workflow byte and original test. No historical population is run; actual new CI must confirm the fresh checkout path. [pcc:unverified]
+
+## Open threads
+Source checkpoint/fresh development CI, strict historical LP ingestion/original rooted routine, old360/canary/post-character/EKS admission; original CI03 and fullNEW28. [pcc:unverified]
+
+## Errors
+Original complete failed CI remainsbec33b. No source or acceptance criterion is relaxed; the missing authentic data dependency is prepared before compilation. [pcc:unverified]
+
+---
+# Preserve whole development CI failure: original identity test data absent
+
+## What was done
+pcc/claims/PCC-20261116-bec33b.json: whole116534B artifact/all85 members and full log retained. Immutable Root checkout and dependencies succeed; original identity module tests cannot compile because their include_str fixture is excluded by sparse checkout. No fresh matrix or proof phase ran. [pcc:unverified]
+
+## Decisions made
+Keep original native/Lean/workflow bytes. Add a data-only native build preparer that restores the exact fixture from immutable Root2d, validates its SHA and refuses mismatched existing data. Reproduce on a cold isolated checkout with the same memory bound before a new source publication. [pcc:unverified]
+
+## Open threads
+Cold preparation/replay and fresh source CI; strict historical LP input/original rooted routine, original CI03 generated-source preparation, EKS admission and NEW28. Root genuinebot/PCC-prep checkpoint remains separate. [pcc:unverified]
+
+## Errors
+The new CI checkout omitted an original checker's compile-time test-data dependency. The original checker and tests are not edited or weakened. [pcc:unverified]
+
+---
+# Publish complete synthetic matrix component and unit CI source
+
+## What was done
+pcc/claims/PCC-20261116-97ce06.json: source66d2b8664633 published normally and under new exact source tag. Source governanceb0963d passes every scoped check; c07ee3 retains full native matrices/controls and ef9da9 the inspected report/prospective CI. [pcc:unverified]
+
+## Decisions made
+Check actual development CI after the ordinary50-minute cadence, about01:00UTC. Continue separately to strict historical input/original cycle and original CI03 source hydration. No local historical population substitute. [pcc:unverified]
+
+## Open threads
+Actual unit/proof CI and source checkpoint metadata; full60call pipeline/EKS admission, old360/whole canary/post-character; Root532 genuine metadata bot integration and PCC data-address restoration, full NEW28. [pcc:unverified]
+
+## Errors
+PDF classification failureb90851 is preserved. No new source publication error; actual fresh CI outcome remains unobserved. [pcc:unverified]
+
+---
 # Preserve generated PDF text-classification rejection
 
 ## What was done
@@ -2964,3 +3024,12 @@ Report04publication, Rootcharacter mirror and genuineNEW27. [pcc:unverified]
 ## Errors
 
 The first followup classified the generatedSVG but omitted its verbatim diagnostic copies. Allfailures remain, with no truncated logs. [pcc:unverified]
+
+## Source governor02 metadata failure
+pcc/claims/PCC-20261116-955e41.json: an overly narrow captured-file count assertion stopped after ledger0; packet has three READMEs, two with the four upstream prose findings. Complete source/caller preserved. Governor03 will assert the exact three-path set without changing their bytes; no commit or publication occurred. [pcc:unverified]
+
+## Preserve original packet whitespace
+pcc/claims/PCC-20261116-32b13e.json: governor03 passes all seven source checks but cached Git whitespace exits2 on literal upstream corpus code and an intentional failed-build fixture. Exact-path attributes preserve those two source-data files; no original byte is edited. Full failure remains, then governor04 checks the complete staged publication. [pcc:unverified]
+
+## Governor04 staged-source assertion
+pcc/claims/PCC-20261116-fd1226.json: staged new build.rs triggered an overly broad assertion originally relying on its untracked state. Governor05 explicitly admits only that new data preparer at the exact4270a0 hash, with all existing protected source unchanged. No commit or publication occurred. [pcc:unverified]
