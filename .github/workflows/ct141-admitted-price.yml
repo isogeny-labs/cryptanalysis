@@ -5,6 +5,10 @@ on:
       - '.github/workflows/ct141-admitted-price.yml'
       - 'experiments/chained-transfer-public-target/primitive-pricing-01/ct141_admitted_run.sh'
       - 'experiments/chained-transfer-public-target/primitive-pricing-01/CT141_ADMITTED_NATIVE_PROTOCOL.md'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/CT142_RECEIPT_PROTOCOL.md'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/ct142_receipt_gate.py'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/CT143_COST_ENVELOPE_PROTOCOL.md'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/ct143_cost_envelope.py'
   workflow_dispatch:
     inputs:
       admission:
@@ -43,6 +47,31 @@ jobs:
           set -e
           test "$status" = 77
           test ! -e /tmp/ct141-not-admitted
+          # Independent CT142 receipt-custody self-test, synthetic data only.
+          python3 -S experiments/chained-transfer-public-target/primitive-pricing-01/ct142_receipt_gate.py --self-test > /tmp/ct142-normal.json
+          python3 -O -S experiments/chained-transfer-public-target/primitive-pricing-01/ct142_receipt_gate.py --self-test > /tmp/ct142-optimized.json
+          cmp /tmp/ct142-normal.json /tmp/ct142-optimized.json
+          python3 - <<'PY'
+          import json
+          with open('/tmp/ct142-normal.json', encoding='utf-8') as f:
+              report = json.load(f)
+          if report['negative_controls'] != 13 or report['positive'] != 'passed':
+              raise SystemExit('CT142 synthetic mutation gate failed')
+          print('CT142 synthetic: 13/13 corruptions rejected under normal and -O')
+          PY
+          # CT143 source-only rational cost-envelope controls; no benchmark.
+          p143=experiments/chained-transfer-public-target/primitive-pricing-01/ct143_cost_envelope.py
+          python3 -S "$p143" --self-test > /tmp/ct143-normal.json
+          python3 -O -S "$p143" --self-test > /tmp/ct143-optimized.json
+          cmp /tmp/ct143-normal.json /tmp/ct143-optimized.json
+          python3 - <<'PY'
+          import json
+          with open('/tmp/ct143-normal.json', encoding='utf-8') as f:
+              result = json.load(f)
+          if result['positive'] != 'passed' or result['checks'] != 18 or result['invalid_inputs_rejected'] != 6:
+              raise SystemExit('CT143 cost identity checks failed')
+          print('CT143 rational cost-envelope synthetic controls passed')
+          PY
           echo 'SOURCE GATE ONLY: no Cargo execution or scientific result'
   admitted-native-price:
     if: ${{ github.event_name == 'workflow_dispatch' && inputs.admission == 'APPROVED_CPU_ONLY_CT141' }}
