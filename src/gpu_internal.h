@@ -25,6 +25,18 @@ static inline uint32_t ca_gpu_dp_capacity(uint32_t nwalks, uint32_t steps, uint3
     return twice_expected >= limit - slack ? limit : (uint32_t)twice_expected + slack;
 }
 
+/* Existing checkpoint wire layout, shared with format controls. */
+typedef struct gpu_rho_checkpoint_header {
+    char magic[8];
+    uint64_t p, a, b, order, cofactor, base[4], target[4];
+    uint32_t kind, negmap, r, nthreads, dp_bits, tpb, requested_steps;
+    uint32_t walks_per_thread, aux_words, entry_size, resolved_steps;
+    uint64_t seed, resumes, ops, launches, dps, restarts, entries, result;
+    double elapsed_seconds;
+    uint32_t solved;
+    uint64_t checksum;
+} gpu_rho_checkpoint_header;
+
 typedef struct ca_gpu_backend_ops {
     const char *name;
     /* Allocate device resources for args (host pointers in args->mult

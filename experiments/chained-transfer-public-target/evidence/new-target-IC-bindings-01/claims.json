@@ -1,0 +1,22 @@
+[
+  {
+    "theorem": "NewTargetIC223.reflected_checked_target_solution",
+    "claim_path": "pcc/claims/PCC-20261113-01efbf.json",
+    "statement": "theorem reflected_checked_target_solution {A J : Type} (H : A \u2192 J) (recover : J \u2192 A) (actA : Nat \u2192 A \u2192 A) (actJ : Nat \u2192 J \u2192 J) (roundtrip : \u2200 a, recover (H a)=a) (equivariant : \u2200 n a, H (actA n a)=actJ n (H a)) (G Q : A) (k : Nat) (checked : actJ k (H G)=H Q) : actA k G=Q",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/new-target-ic/lean/NewTargetIC.lean",
+      "theorem": "NewTargetIC223.reflected_checked_target_solution",
+      "decl_sha256": "180391f01bbc85d0afbeb239a3b656424e41478e1a3776a9f6bea4b29aee829d"
+    }
+  },
+  {
+    "theorem": "NewTargetIC223.common_offset_log_ratio",
+    "claim_path": "pcc/claims/PCC-20261113-671d42.json",
+    "statement": "theorem common_offset_log_ratio {J K : Type} [CommRing K] (addJ : J \u2192 J \u2192 J) (scalar : K \u2192 J \u2192 J) (log : J \u2192 K) (addLog : \u2200 x y, log (addJ x y)=log x+log y) (scalarLog : \u2200 c x, log (scalar c x)=c*log x) (R G Q : J) (k offset inverse : K) (target : Q=scalar k G) (unit : ((log (addJ R G)-offset)-(log R-offset))*inverse=1) : ((log (addJ R Q)-offset)-(log R-offset))*inverse=k",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/new-target-ic/lean/NewTargetIC.lean",
+      "theorem": "NewTargetIC223.common_offset_log_ratio",
+      "decl_sha256": "e8d87d363b0031acc46ed64e4131d9a6d9131c5b0803642f8536162a9cdf66e8"
+    }
+  }
+]

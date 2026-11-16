@@ -1,0 +1,15 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T06:33:21Z",
+ "id": "PCC-20261116-e8ccf4",
+ "kind": "statement",
+ "producer": {
+  "commit": "159be06c7f37d1276eac5de566c7763909b468ae",
+  "model": "",
+  "session": "ic-rational-current-20261115"
+ },
+ "proofs": [],
+ "schema": "pcc.claim/v1",
+ "scope": "native-affine-oracle-integration",
+ "statement": "A complete native affine-S3 oracle is integrated into the framework and binary CLI. Producer tests compare every curve target against all signed base-point pairs on four small even/odd fields, including complete subtraction fallback for zero/identity and capped projections. Prefix inverse-square preparation preserves roots; an end-to-end scalar test includes cache setup and native query charges. Library/CLI/probe clippy and the local probe build pass. No performance gain is claimed before a new same-target MITM comparison."
+}

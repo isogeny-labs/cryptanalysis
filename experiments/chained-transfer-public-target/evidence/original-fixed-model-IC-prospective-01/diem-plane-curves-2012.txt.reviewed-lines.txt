@@ -1,0 +1,32 @@
+instances are not considered.
+   In this article, we study the complexity of the problem from a different
+point of view: We assume that the curve is given by a plane model, by
+which we mean a possibly singular plane curve which is birational to the
+curve in question. We then express the complexity in terms of the degree
+of the model and the cardinality of the ground field.
+   Our first result concerns non-hyperelliptic genus 3 curves. Via the canon-
+ical embedding, every such curve can be given as a plane curve of degree
+4. By using such a model, we obtain the following result:
+
+Theorem 1. The discrete logarithm problem in the degree 0 class groups
+of non-hyperelliptic curves of genus 3 can be solved in an expected time
+of Õ(q).
+                                                                            4
+   For comparison, the expected running time indicated in (1.1) is Õ(q 3 )
+in this case.
+   To state our second result, we need some notation: First, we set P2Fq :=
+Proj(Fq [X, Y, Z]). Let C be a curve over Fq , Cpm a plane model of C and
+π : C −→ Cpm a birational morphism. Let OC (1) := π ∗ (O(1)), and for a lin-
+ear form W ∈ Fq [X, Y, Z]1 = Γ(P2Fq , O(1)) let W|C := π ∗ (W ) ∈ Γ(C, OC (1)).
+Let div(W|C ) = π ∗ (div(W )) be the divisor of zeroes of W|C on C. Now let d
+be the linear system on C “cut out by lines” (more precisely: obtained by
+pull-back of lines), that is,
+
+           d := { div(W|C ) | W ∈ Fq [X, Y, Z]1 = Γ(P2Fq , O(1)) } .
+
+This is a 2-dimensional projective subspace of the complete linear system
+defined by OC (1).
+  We say that an effective divisor splits completely if its support contains
+only Fq -rational points.
+
+                On the discrete logarithm problem for plane curves         641

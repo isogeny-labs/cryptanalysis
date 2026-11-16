@@ -1,5 +1,39 @@
 # Native qualification and next solver gate
 
+## Revision 4 additions, 2026-11-15
+
+Use [version-three rejection criteria](ROUTE_CRITERIA_V3.md) for this follow-up.
+The original criteria file is preserved for its published hash binding.
+
+Native std(dp) then std(lp), structured basis parsing, bounded finite-field
+roots and triangular recovery are now implemented. The four-point consumer
+additionally checks union membership, rational lifts, all signs and the actual
+raw target sum. It does not infer absence from an empty recovered set.
+`prepare-tree` invokes no solver; `recover-tree` consumes an existing native
+transcript without generating targets or reading planted labels.
+
+Default recovery limits are degree 4096, 10,000,000 coefficient-loop units,
+4096 assignment branches and 128 split attempts. The loop proxy is an
+implementation limit, not admitted group-equivalent work or an end-to-end
+cost model. Missing constraints, incomplete/mixed protocol frames or limit
+exhaustion return an error. A standard basis is not an independently checked
+ideal-membership absence certificate.
+
+`native-tree-controls` constructs the complete M=1 rational base over actual
+p,A and four summands. Two public targets are [4]P and [5]P. The native call
+uses only serialized equations; after it returns, enumeration of all 16 signs
+of the sole rational base coordinate supplies the complete oracle. Pre-call
+records pin binary, engine, input and script hashes. Both native processes
+have separate four-CPU-second/five-wall-second/768-MiB limits. These diagnostics
+do not implement aggregate CPU accounting for the full-base campaign.
+
+The original full-M pilot and its resource envelope below remain pending.
+Four-coset/four-point solving requires a separate frozen experiment card,
+label-hidden target law, aggregate accounting and qualified isolated runner.
+No four-point timing, yield or exponent fit is asserted by development tests.
+
+## Historical protocol, revision 2
+
 Revision 2, 2026-11-15. Track: algebraic. Current deliverable is a Rust
 implementation and development qualification, with no timing comparison.
 The earlier Python system/measurements remain historical. Changing languages

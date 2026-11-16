@@ -1,0 +1,31 @@
+name: CT39 two-field genus-2 Frobenius spectrum
+on:
+  pull_request:
+    paths:
+      - 'experiments/chained-transfer-reference/ct39/**'
+      - '.github/workflows/ct39-zeta.yml'
+  push:
+    branches:
+      - research/ct36-normalized-dual49-20261112
+    paths:
+      - 'experiments/chained-transfer-reference/ct39/**'
+      - '.github/workflows/ct39-zeta.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  zeta-independent:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - name: Count all F101 and F101-squared points using two independent algorithms
+        run: |
+          python3 -B experiments/chained-transfer-reference/ct39/ct39_zeta_fingerprint.py > /tmp/ct39.normal
+          python3 -O -B experiments/chained-transfer-reference/ct39/ct39_zeta_fingerprint.py > /tmp/ct39.optimized
+          diff -u /tmp/ct39.normal /tmp/ct39.optimized
+          python3 -m py_compile experiments/chained-transfer-reference/ct39/ct39_zeta_fingerprint.py
+          go run experiments/chained-transfer-reference/ct39/ct39_zeta_independent.go
+          cat /tmp/ct39.normal

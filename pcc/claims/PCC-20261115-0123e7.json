@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-15T06:59:03Z",
+ "id": "PCC-20261115-0123e7",
+ "kind": "theorem",
+ "producer": {
+  "commit": "811395139bbd33b75fd5697973202cd1dcc13bba",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "11d2a77ad4e43f0f0ffa050faccefa455ca25cd5463aeadd8705c96b3752e414",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/original-kernel-census-01/lean/KernelCensus.lean",
+   "theorem": "OriginalKernelCensus.complete_triple_coverage"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Actual finite original six-model data: all18 masks/D/smoothness vectors and two64 image tables are literal projections of entire native88f828 output. Lean independently recomputes F223 square/smoothness eligibility and compares all64 membership bits per pair; proves data shape, table bijections, all216 coverage, supported pairs(4,1)/(1,4), unique supported triple(4,1,4). Both original434/435 gates6roots0trusted. This does not establish actual field/HLP/geometry/quotient/program bridges or construct a full-group Jacobian evaluator; no cost/signing promotion.",
+ "statement": "theorem complete_triple_coverage : triples.length = 216 \u2227 \u2200 i j k : Fin 6, (i.val,j.val,k.val) \u2208 triples"
+}
