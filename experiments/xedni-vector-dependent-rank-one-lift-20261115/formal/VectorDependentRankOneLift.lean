@@ -101,6 +101,36 @@ theorem rank_one_reduced_relation {H A : Type*}
     a • ρ (b • P) + b • ρ ((-a) • P) = 0 := by
   simpa only [map_zsmul] using rank_one_relation (ρ P) a b
 
+/-- The fixed reduced Weierstrass model has integral discriminant `-1664`. -/
+theorem baseModel_discriminant (p : ℕ) :
+    (XedniAdaptiveInverseLift.baseModel p).Δ = (-1664 : ZMod p) := by
+  norm_num [XedniAdaptiveInverseLift.baseModel,
+    WeierstrassCurve.Δ, WeierstrassCurve.b₂,
+    WeierstrassCurve.b₄, WeierstrassCurve.b₆,
+    WeierstrassCurve.b₈]
+
+/-- The fixed reduced model is elliptic at every prime not dividing `1664`. -/
+theorem baseModel_isElliptic (p : ℕ) [Fact p.Prime]
+    (hp : ¬ p ∣ 1664) :
+    (XedniAdaptiveInverseLift.baseModel p).IsElliptic := by
+  have hne : (1664 : ZMod p) ≠ 0 := by
+    intro h
+    exact hp ((ZMod.natCast_eq_zero_iff 1664 p).mp h)
+  refine ⟨isUnit_iff_ne_zero.mpr ?_⟩
+  rw [baseModel_discriminant]
+  exact neg_ne_zero.mpr hne
+
+/-- All eight frozen field primes give an elliptic reduced model. -/
+theorem panel_baseModel_isElliptic (p : ℕ)
+    (hpanel : p = 47 ∨ p = 101 ∨ p = 191 ∨ p = 211 ∨
+      p = 251 ∨ p = 281 ∨ p = 347 ∨ p = 349) :
+    (XedniAdaptiveInverseLift.baseModel p).IsElliptic := by
+  have hprime : p.Prime := by
+    rcases hpanel with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl <;> norm_num
+  letI : Fact p.Prime := ⟨hprime⟩
+  apply baseModel_isElliptic p
+  rcases hpanel with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl <;> norm_num
+
 /-- The centered integer coordinates satisfy the exact finite curve equation. -/
 theorem reduced_generator_equation {p : ℕ} (x y : ℤ)
     (hpoint : (y : ZMod p) ^ 2 =
@@ -141,6 +171,9 @@ theorem reducedGenerator_coordinates (p : ℕ) [Nontrivial (ZMod p)]
 #print axioms rational_rank_one_relation
 #print axioms rank_one_reduction_commutes
 #print axioms rank_one_reduced_relation
+#print axioms baseModel_discriminant
+#print axioms baseModel_isElliptic
+#print axioms panel_baseModel_isElliptic
 #print axioms reduced_generator_equation
 #print axioms reducedGenerator_coordinates
 #print axioms XedniAdaptiveInverseLift.rational_model

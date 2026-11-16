@@ -65,6 +65,8 @@ def main():
            'coefficient_bijective_of_torsion','torsion_public_relation_iff_rank_one',
            'rank_one_relation','rational_rank_one_relation',
            'rank_one_reduction_commutes','rank_one_reduced_relation',
+           'baseModel_discriminant','baseModel_isElliptic',
+           'panel_baseModel_isElliptic',
            'reduced_generator_equation','reducedGenerator_coordinates',
            'XedniAdaptiveInverseLift.rational_model','XedniAdaptiveInverseLift.reduction_model')
     for name in names:
