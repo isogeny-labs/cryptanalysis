@@ -1,0 +1,122 @@
+{
+  "arms": {
+    "auxiliary": {
+      "columns_blake3": "b2a2952cdac9af9111db4cfbd575c0c490b15cace6557677c2397589b8e07b5f",
+      "derived_counts": {
+        "distinct_rows_per_query": {
+          "denominator": 129,
+          "numerator": 8
+        },
+        "hits_per_query": {
+          "denominator": 129,
+          "numerator": 13
+        }
+      },
+      "status": "complete",
+      "stop_reason": "QueryBudget",
+      "work": {
+        "duplicate_rows": 5,
+        "generated_targets": 136,
+        "lane_rounds": 17,
+        "queries": 129,
+        "relations": 8
+      }
+    },
+    "random": {
+      "columns_blake3": "5e06bbcad403332214447048fc83a9e4469870ff396e5a54140946122898818b",
+      "derived_counts": {
+        "distinct_rows_per_query": {
+          "denominator": 129,
+          "numerator": 8
+        },
+        "hits_per_query": {
+          "denominator": 129,
+          "numerator": 19
+        }
+      },
+      "status": "complete",
+      "stop_reason": "QueryBudget",
+      "work": {
+        "duplicate_rows": 11,
+        "generated_targets": 136,
+        "lane_rounds": 17,
+        "queries": 129,
+        "relations": 8
+      }
+    },
+    "same_base": {
+      "columns_blake3": "b2a2952cdac9af9111db4cfbd575c0c490b15cace6557677c2397589b8e07b5f",
+      "derived_counts": {
+        "distinct_rows_per_query": {
+          "denominator": 129,
+          "numerator": 8
+        },
+        "hits_per_query": {
+          "denominator": 129,
+          "numerator": 13
+        }
+      },
+      "status": "complete",
+      "stop_reason": "QueryBudget",
+      "work": {
+        "duplicate_rows": 5,
+        "generated_targets": 136,
+        "lane_rounds": 17,
+        "queries": 129,
+        "relations": 8
+      }
+    }
+  },
+  "common": {
+    "binary_blake3": "766e4a6a99d25a7ca83579c2f8e7ee1fe632b19b8d2c1bf9f29af2c8af79f7e3",
+    "configured_search": {
+      "max_millis": null,
+      "max_proof_nodes": 4194304,
+      "max_queries": 129,
+      "max_relations": 10000,
+      "profile_phases": true,
+      "seed": 43,
+      "walk_lanes": 8
+    },
+    "field_bits": 7,
+    "public": {
+      "P": [
+        3,
+        46
+      ],
+      "Q": [
+        6,
+        122
+      ],
+      "a": 2,
+      "b": 51,
+      "n": 109,
+      "p": 127
+    },
+    "source_commit": "59524758ca320597cf8ea2b760a054904c2532ab"
+  },
+  "end_to_end_cost_comparison": null,
+  "issues": [],
+  "qualification": "unsigned producer alignment and derived counters only",
+  "qualified_speedup": null,
+  "random_base_coincides_with_special": false,
+  "raw_data": [
+    {
+      "arm": "auxiliary",
+      "path": "/workspace/cryptanalysis-pr/experiments/prime-field-auxiliary-ic/random-vs-special/phase-projective-20261116/public-test-fixture/auxiliary.json",
+      "sha256": "09cf1a5e6fffd3ebe3011b67791626b71f109dbdf2fd5bbdbd0a6ce12d1e8215"
+    },
+    {
+      "arm": "same_base",
+      "path": "/workspace/cryptanalysis-pr/experiments/prime-field-auxiliary-ic/random-vs-special/phase-projective-20261116/public-test-fixture/same_base.json",
+      "sha256": "c0b40f593a4d8fb8f19116cbbaa427d5bc7ad22ccc61c99643f0adb094b4bbac"
+    },
+    {
+      "arm": "random",
+      "path": "/workspace/cryptanalysis-pr/experiments/prime-field-auxiliary-ic/random-vs-special/phase-projective-20261116/public-test-fixture/random.json",
+      "sha256": "630a88d790399d1c42a0e455576fc4c1383ad0d8de3db2e2af93da46932a2ce8"
+    }
+  ],
+  "schema": "auxiliary-ic-relation-comparison/v1",
+  "status": "aligned"
+}

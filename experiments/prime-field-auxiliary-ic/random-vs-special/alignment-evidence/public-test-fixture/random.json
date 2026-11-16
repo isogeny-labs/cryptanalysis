@@ -1,0 +1,85 @@
+{
+  "binary_blake3": "d7693120bd3ab0a5c8c55cfd741a3b3ce567d96ebe5dc499a45f14b581b00e3e",
+  "certificate": null,
+  "configured_search": {
+    "max_millis": null,
+    "max_proof_nodes": 4194304,
+    "max_queries": 129,
+    "max_relations": 10000,
+    "seed": 43,
+    "walk_lanes": 8
+  },
+  "execution_class": "cpu-only",
+  "factor_base": {
+    "affine_points": 6,
+    "backend": "scalar",
+    "columns_blake3": "5e06bbcad403332214447048fc83a9e4469870ff396e5a54140946122898818b",
+    "encoding": {
+      "kind": "direct"
+    },
+    "folded_columns": 3,
+    "random_preparation": {
+      "cleared_to_identity": 0,
+      "cofactor": 1,
+      "draws": 6,
+      "duplicate_columns": 0,
+      "field_rejections": 0,
+      "non_lifts": 3,
+      "sampler": "splitmix64-rejection-field-coordinates-cofactor-clear-negation-fold",
+      "seed": 701
+    },
+    "raw_roots": 3,
+    "selection_encoding": {
+      "cofactor": 1,
+      "columns": 3,
+      "kind": "random-subgroup",
+      "max_draws": 4194304,
+      "seed": 701
+    },
+    "terminal_coordinate": 0,
+    "uses_auxiliary_maps": false,
+    "uses_circuit": false
+  },
+  "field_bits": 7,
+  "gpu": {
+    "devices": []
+  },
+  "input_blake3": "fixture",
+  "mode": "bounded-relation-yield",
+  "online_exclusive_phases": null,
+  "online_wall_seconds": 0.00044447,
+  "operation": "auxiliary-prime-field-ic",
+  "public": {
+    "P": [
+      3,
+      46
+    ],
+    "Q": [
+      6,
+      122
+    ],
+    "a": 2,
+    "b": 51,
+    "n": 109,
+    "p": 127
+  },
+  "qualification": "unverified producer diagnostic; no signed independent replay or admitted performance tier",
+  "qualified_speedup": null,
+  "sampler": "splitmix64-rejection-public-coefficient-walks",
+  "schema_version": 1,
+  "source_commit": "3ddc32380f9b59e40efd4e7bc44c43ebdd501f59",
+  "status": "complete",
+  "stop_reason": "QueryBudget",
+  "target_independent_preparation_seconds": 0.000053788,
+  "work": {
+    "backend": "scalar",
+    "circuit_queries": 0,
+    "duplicate_rows": 11,
+    "generated_targets": 136,
+    "lane_rounds": 17,
+    "matrix_rank": 0,
+    "proof_nodes": 0,
+    "queries": 129,
+    "relations": 8
+  }
+}

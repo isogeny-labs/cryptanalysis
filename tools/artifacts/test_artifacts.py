@@ -554,5 +554,76 @@ class WorkflowBootstrap(unittest.TestCase):
         self.assertIn("working-directory: ${{ github.workspace }}", once)
         self.assertIn('export ARTIFACTS_AWS="$artifacts_cli_aws"', once)
 
+class JobScopedWiring(unittest.TestCase):
+    MOVED = {"research/runs/result.jsonl"}
+    DIRS = {"research", "research/runs"}
+    SOURCE = """# artifacts-scope: job
+name: mixed workflow
+jobs:
+  source:
+    steps:
+      - uses: actions/checkout@v7
+      - run: python3 research/check.py
+  replay:
+    steps:
+      - uses: actions/checkout@v7
+
+      - run: python3 replay.py research/runs/result.jsonl
+"""
+
+    def wired(self, source=None):
+        return wire_workflows.wire_workflow(source or self.SOURCE, self.MOVED, self.DIRS)[0]
+
+    def test_only_data_consuming_job_gets_a_pull(self):
+        result = self.wired()
+        source, replay = result.split("  replay:\n")
+        self.assertNotIn(wire_workflows.STEP_NAME, source)
+        self.assertIn("pull --jobs 16 research/runs/result.jsonl", replay)
+        self.assertEqual(result.count(wire_workflows.STEP_NAME), 1)
+
+    def test_new_source_job_data_dependency_requires_a_pull(self):
+        changed = self.SOURCE.replace("research/check.py", "research/runs/result.jsonl")
+        result = self.wired(changed)
+        self.assertNotEqual(result, changed)
+        self.assertEqual(result.count(wire_workflows.STEP_NAME), 2)
+
+    def test_global_data_dependency_applies_to_every_job(self):
+        source = self.SOURCE.replace("jobs:", "env:\n  INPUT: research/runs\njobs:", 1)
+        self.assertEqual(self.wired(source).count(wire_workflows.STEP_NAME), 2)
+
+    def test_event_path_filters_are_not_runtime_inputs(self):
+        source = self.SOURCE.replace("jobs:", "on:\n  pull_request:\n    paths:\n      - research/runs/**\n  push:\n    paths-ignore: [research/runs/**]\n  workflow_dispatch:\n    inputs:\n      file:\n        default: research/check.py\njobs:", 1)
+        self.assertEqual(self.wired(source).count(wire_workflows.STEP_NAME), 1)
+        source = source.replace('default: research/check.py', 'default: research/runs/result.jsonl')
+        self.assertEqual(self.wired(source).count(wire_workflows.STEP_NAME), 2)
+
+    def test_stale_bootstrap_does_not_create_its_own_dependency(self):
+        stale = wire_workflows.wire(self.SOURCE, ["research/runs"])[0]
+        result = self.wired(stale)
+        self.assertEqual(result, self.wired())
+        self.assertEqual(result, self.wired(result))
+
+    def test_conditional_checkout_keeps_pull_condition(self):
+        source = self.SOURCE.replace("  replay:\n    steps:\n      - uses: actions/checkout@v7",
+                                     "  replay:\n    steps:\n      - uses: actions/checkout@v7\n        if: needs.scope.outputs.replay == 'true'")
+        self.assertEqual(source.count("if: needs.scope.outputs.replay == 'true'"), 1)
+        result = self.wired(source)
+        self.assertEqual(result.count("if: needs.scope.outputs.replay == 'true'"), 2)
+
+    def test_unmarked_workflows_keep_legacy_wiring(self):
+        source = self.SOURCE.replace("# artifacts-scope: job\n", "")
+        paths = wire_workflows.needed(source, self.MOVED, self.DIRS)
+        self.assertEqual(self.wired(source), wire_workflows.wire(source, paths)[0])
+        self.assertEqual(self.wired(source).count(wire_workflows.STEP_NAME), 2)
+
+    def test_unsupported_scope_structure_is_refused(self):
+        for source in (self.SOURCE.replace("jobs:", "jobz:", 1),
+                       self.SOURCE.replace("  source:", " source:"),
+                       self.SOURCE.replace("  replay:", '  "replay":'),
+                       self.SOURCE + "env:\n  INPUT: research/runs\n"):
+            with self.subTest(source=source), self.assertRaises(ValueError):
+                self.wired(source)
+
+
 if __name__ == "__main__":
     unittest.main()

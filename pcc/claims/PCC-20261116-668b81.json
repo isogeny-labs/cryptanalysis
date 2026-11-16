@@ -1,0 +1,21 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T01:32:55Z",
+ "id": "PCC-20261116-668b81",
+ "kind": "statement",
+ "producer": {
+  "commit": "2629e4f162443c3440d15d6c6d5294a51455914a",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "recompute",
+   "path": "experiments/prime-field-auxiliary-ic/random-vs-special/pcc-format-followup/format-repair-validator.json",
+   "sha256": "e9dc610b6d2e567311678b3ed0fbb1853694df6e99e8e83d709048aff7e36c93"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Unsigned proof-metadata format correction only; no stronger original-result, source/execution, CI or performance claim.",
+ "statement": "The inherited PCC-20261115-8d2645 used two plain Cargo logs as JSON recompute proofs. Actual base/head checker snapshots reproduce the same refusal on identical claim/log/checker bytes. The additive repair preserves the original claim bytes, statement, scope, producer, both raw logs and historical ledger event; a JSON validator records only their reported five selected tests and 59 filtered out, retaining the earlier compiler failure and unknown process/source attestations. Corrected local verification is not_covered and standing remains unverified. No native execution or research benchmark was rerun, and the full hosted gate remains pending."
+}

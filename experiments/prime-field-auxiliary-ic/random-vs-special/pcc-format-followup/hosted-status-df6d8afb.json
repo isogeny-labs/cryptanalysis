@@ -1,0 +1,118 @@
+{
+  "head": "df6d8afb2235f2c066e40903d4f362648ffab694",
+  "provider": "GitHub check-runs API",
+  "scope": "Captured initial hosted check metadata only; no independent execution or timing verdict",
+  "check_snapshot": {
+    "counts": [
+      {
+        "count": 1,
+        "state": "failure"
+      },
+      {
+        "count": 8,
+        "state": "in_progress"
+      },
+      {
+        "count": 1,
+        "state": "neutral"
+      },
+      {
+        "count": 2,
+        "state": "skipped"
+      },
+      {
+        "count": 29,
+        "state": "success"
+      }
+    ],
+    "failures": [
+      {
+        "details_url": "https://github.com/isogeny-labs/cryptanalysis/actions/runs/43789263537/job/133043742319",
+        "id": 133043742319,
+        "name": "corpus"
+      }
+    ],
+    "focus": [
+      {
+        "conclusion": "success",
+        "details_url": "https://github.com/isogeny-labs/cryptanalysis/actions/runs/43789263576/job/133043743043",
+        "id": 133043743043,
+        "name": "Auxiliary IC CLI comparison",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "details_url": "https://github.com/isogeny-labs/cryptanalysis/actions/runs/43789263576/job/133043743042",
+        "id": 133043743042,
+        "name": "Auxiliary IC Rust stable",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "details_url": "https://github.com/isogeny-labs/cryptanalysis/actions/runs/43789263576/job/133043742737",
+        "id": 133043742737,
+        "name": "Auxiliary IC Rust 1.78.0",
+        "status": "completed"
+      },
+      {
+        "conclusion": "failure",
+        "details_url": "https://github.com/isogeny-labs/cryptanalysis/actions/runs/43789263537/job/133043742319",
+        "id": 133043742319,
+        "name": "corpus",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "details_url": "https://github.com/isogeny-labs/cryptanalysis/actions/runs/43789263534/job/133043742308",
+        "id": 133043742308,
+        "name": "gate",
+        "status": "completed"
+      }
+    ],
+    "total_count": 41
+  },
+  "pr_snapshot": {
+    "autoMergeRequest": {
+      "authorEmail": null,
+      "commitBody": null,
+      "commitHeadline": null,
+      "mergeMethod": "MERGE",
+      "enabledAt": "2026-11-15T06:53:30Z",
+      "enabledBy": {
+        "id": "MDQ6VXNlcjEwODY4NzQ=",
+        "is_bot": false,
+        "login": "aburan28",
+        "name": "Adam Buran"
+      }
+    },
+    "headRefOid": "df6d8afb2235f2c066e40903d4f362648ffab694",
+    "mergeStateStatus": "BLOCKED",
+    "reviews": [
+      {
+        "id": "PRR_kwDOUg-4R88AAAABYDxQEA",
+        "author": {
+          "login": "github-advanced-security"
+        },
+        "authorAssociation": "NONE",
+        "body": "",
+        "submittedAt": "2026-11-15T06:58:58Z",
+        "includesCreatedEdit": false,
+        "reactionGroups": [],
+        "state": "COMMENTED",
+        "commit": {
+          "oid": "be49786f93a401c1a88f8f2524798cc3b9cf0782"
+        }
+      }
+    ],
+    "state": "OPEN"
+  },
+  "corpus_failure_excerpt": [
+    "2026-11-16T01:58:25.9515991Z     raise ValueError(\"src/curve.c SHA-256 differs from the pinned source\")",
+    "2026-11-16T01:58:25.9516962Z ValueError: src/curve.c SHA-256 differs from the pinned source",
+    "2026-11-16T01:58:25.9521605Z ValueError: src/curve.c SHA-256 differs from the pinned source",
+    "2026-11-16T01:58:25.9528437Z AssertionError: \"negative control admitted\" does not match \"src/curve.c SHA-256 differs from the pinned source\"",
+    "2026-11-16T01:58:25.9533047Z ValueError: src/curve.c SHA-256 differs from the pinned source",
+    "2026-11-16T01:58:25.9540027Z AssertionError: \"did not change the source\" does not match \"src/curve.c SHA-256 differs from the pinned source\"",
+    "2026-11-16T01:58:25.9553919Z FAILED (failures=3, errors=1)"
+  ]
+}

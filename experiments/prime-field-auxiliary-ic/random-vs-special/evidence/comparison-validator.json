@@ -1,0 +1,237 @@
+{
+  "schema": "producer-random-special-comparison-validator/v1",
+  "status": "pass",
+  "overall_ci_status": "pending",
+  "independent": false,
+  "source_commit": "5e3a420242277199b8784c0999a57d80ca117e1e",
+  "scope": "Three-arm comparison implementation and unsigned local correctness only. CI job definition is a separate later source; no timing panel or runtime advantage is established.",
+  "raw_data": [
+    {
+      "path": "cli-checks.json",
+      "sha256": "078307a2b98957456c9747dc37c9ad627d4e48b38e1cf5afcebc9d7f80bb2fe4",
+      "bytes": 1334
+    },
+    {
+      "path": "cli-clippy.log",
+      "sha256": "97974f0fe4d9d59ff0d4a0b3edef06f3917a819153f056745bba914d7c149ce0",
+      "bytes": 675
+    },
+    {
+      "path": "cli-format.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "cli-tests.log",
+      "sha256": "01c135975e9a288e8069ef2ed9642a1e1d23db73e5595ae0f2bdd8a0316a22f7",
+      "bytes": 1437
+    },
+    {
+      "path": "core-checks.json",
+      "sha256": "d16066bba4a38b8e3a309f363f3d6fdc2802974743cddf1cda9074f0f4eb366d",
+      "bytes": 1849
+    },
+    {
+      "path": "core-clippy.log",
+      "sha256": "bca41f95aa6ada5604e443a7f71d9da118a5c3cd34a1b81308498db5cddce439",
+      "bytes": 179
+    },
+    {
+      "path": "core-docs.log",
+      "sha256": "98b5d276347d2803a4c7376ed6f0d9149a0073fe621c3ba572827b69a9bb5338",
+      "bytes": 299
+    },
+    {
+      "path": "core-format.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "core-msrv-tests.log",
+      "sha256": "428187e83a209f9656e1da6d54e3d2dbcf06db28a8b0c877f6a3203035907224",
+      "bytes": 2885
+    },
+    {
+      "path": "core-stable-tests.log",
+      "sha256": "3689e243133ab7a81b904dcd37e33c3b03c680ab30eafba47cac8e0c262f4bad",
+      "bytes": 3073
+    },
+    {
+      "path": "source-and-checks.json",
+      "sha256": "9abb451ddc0b0727cc663eb85f700b6e00b8e29c547463131664f1c5218ddeff",
+      "bytes": 2777
+    }
+  ],
+  "headline": [
+    {
+      "name": "core-stable-tests-passed",
+      "claimed": 25,
+      "recomputed": 25,
+      "rel_tol": 0
+    },
+    {
+      "name": "core-msrv-tests-passed",
+      "claimed": 25,
+      "recomputed": 25,
+      "rel_tol": 0
+    },
+    {
+      "name": "cli-tests-passed",
+      "claimed": 6,
+      "recomputed": 6,
+      "rel_tol": 0
+    }
+  ],
+  "checks": [
+    {
+      "source_commit": "5e3a420242277199b8784c0999a57d80ca117e1e",
+      "scope": "core stable and Rust 1.78 correctness; not timing",
+      "checks": [
+        {
+          "name": "core-stable-tests",
+          "command": [
+            "cargo",
+            "+stable",
+            "test",
+            "--release"
+          ],
+          "cwd": "crates/prime-field-auxiliary-ic",
+          "exit_code": 0,
+          "log": "core-stable-tests.log",
+          "sha256": "3689e243133ab7a81b904dcd37e33c3b03c680ab30eafba47cac8e0c262f4bad"
+        },
+        {
+          "name": "core-msrv-tests",
+          "command": [
+            "cargo",
+            "+1.78.0",
+            "test",
+            "--release"
+          ],
+          "cwd": "crates/prime-field-auxiliary-ic",
+          "exit_code": 0,
+          "log": "core-msrv-tests.log",
+          "sha256": "428187e83a209f9656e1da6d54e3d2dbcf06db28a8b0c877f6a3203035907224"
+        },
+        {
+          "name": "core-format",
+          "command": [
+            "cargo",
+            "+stable",
+            "fmt",
+            "--check"
+          ],
+          "cwd": "crates/prime-field-auxiliary-ic",
+          "exit_code": 0,
+          "log": "core-format.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "core-clippy",
+          "command": [
+            "cargo",
+            "+stable",
+            "clippy",
+            "--all-targets",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "cwd": "crates/prime-field-auxiliary-ic",
+          "exit_code": 0,
+          "log": "core-clippy.log",
+          "sha256": "bca41f95aa6ada5604e443a7f71d9da118a5c3cd34a1b81308498db5cddce439"
+        },
+        {
+          "name": "core-docs",
+          "command": [
+            "cargo",
+            "+stable",
+            "doc",
+            "--no-deps"
+          ],
+          "cwd": "crates/prime-field-auxiliary-ic",
+          "exit_code": 0,
+          "log": "core-docs.log",
+          "sha256": "98b5d276347d2803a4c7376ed6f0d9149a0073fe621c3ba572827b69a9bb5338"
+        }
+      ]
+    },
+    {
+      "source_commit": "5e3a420242277199b8784c0999a57d80ca117e1e",
+      "scope": "targeted CLI correctness and locked strict library lint; not timing",
+      "checks": [
+        {
+          "name": "cli-tests",
+          "command": [
+            "cargo",
+            "+stable",
+            "test",
+            "--locked",
+            "--manifest-path",
+            "suite/Cargo.toml",
+            "--lib",
+            "cli::tools::ic::auxiliary::tests"
+          ],
+          "cwd": ".",
+          "exit_code": 0,
+          "log": "cli-tests.log",
+          "sha256": "01c135975e9a288e8069ef2ed9642a1e1d23db73e5595ae0f2bdd8a0316a22f7"
+        },
+        {
+          "name": "cli-format",
+          "command": [
+            "rustfmt",
+            "--edition",
+            "2021",
+            "--check",
+            "suite/src/cli/tools/ic/auxiliary.rs"
+          ],
+          "cwd": ".",
+          "exit_code": 0,
+          "log": "cli-format.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "cli-clippy",
+          "command": [
+            "cargo",
+            "+stable",
+            "clippy",
+            "--locked",
+            "--manifest-path",
+            "suite/Cargo.toml",
+            "--lib",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "cwd": ".",
+          "exit_code": 0,
+          "log": "cli-clippy.log",
+          "sha256": "97974f0fe4d9d59ff0d4a0b3edef06f3917a819153f056745bba914d7c149ce0"
+        }
+      ]
+    }
+  ],
+  "new_implementation": [
+    "target-independent seeded random factor bases with actual usable-column matching and Hasse-certified cofactor clearing",
+    "fixed-prefix relation yield without early recovery, and explicit incomplete caps",
+    "same-base direct control retained; all three arms share public query sampler and full solver",
+    "targeted CLI comparison CI job added without changing existing checks"
+  ],
+  "comparison": {
+    "fields": [
+      2147483647,
+      2305843009213693951
+    ],
+    "random_base_same_columns": true,
+    "sampler_seed_independent_of_base_seed": true,
+    "fixed_prefix_only_stage_not_end_to_end": true,
+    "fresh_measurement": null,
+    "qualified_speedup": null,
+    "remaining_admission": "checkpoint, admitted GPU/host, frozen actual bases/fresh targets, phase accounting and independent signed replay"
+  },
+  "counts_scopes_are_separate": true,
+  "pcc_standing": "unverified"
+}
