@@ -1,5 +1,6 @@
 #include "test_fixtures.h"
 #include <unistd.h>
+#include <float.h>
 
 static void run(const ca_group *g, const ca_elem *gen, uint64_t width, int reps, double alpha,
                 double *ratio)
@@ -26,8 +27,51 @@ static void run(const ca_group *g, const ca_elem *gen, uint64_t width, int reps,
     if (ratio) *ratio = tot / reps / sqrt((double)width);
 }
 
+static void test_step_factor_bounds(void)
+{
+    ca_group g;
+    ca_elem gen, target;
+    fx_zp_safe(&g, &gen, 1019);
+    fx_instance(&g, &gen, 5, &target);
+    const double invalid[] = {INFINITY, -INFINITY, NAN, DBL_MAX, 0x1p64};
+    for (size_t i = 0; i < sizeof(invalid) / sizeof(invalid[0]); i++) {
+        ca_grumpy_params p;
+        ca_grumpy_params_default(&p);
+        p.alpha = invalid[i];
+        p.max_ops = 1000;
+        uint64_t answer = 99;
+        ca_stats stats = {0};
+        CHECK(ca_grumpy_solve(&g, &gen, &target, 0, 31, &p, &answer, &stats) == CA_ERR_INVALID);
+        CHECK_EQ_U64(answer, 99);
+        CHECK_EQ_U64(stats.group_ops, 0);
+        CHECK(ca_grumpy_solve_checkpointed(&g, &gen, &target, 0, 31, &p, NULL, 0, 0, 0, &answer,
+                                           &stats) == CA_ERR_INVALID);
+        CHECK_EQ_U64(answer, 99);
+        CHECK_EQ_U64(stats.group_ops, 0);
+    }
+    const double valid[] = {0, -1, 0.7, DBL_MIN};
+    for (size_t i = 0; i < sizeof(valid) / sizeof(valid[0]); i++) {
+        ca_grumpy_params p;
+        ca_grumpy_params_default(&p);
+        p.alpha = valid[i];
+        p.max_ops = 1000;
+        uint64_t answer = 99;
+        CHECK(ca_grumpy_solve(&g, &gen, &target, 0, 31, &p, &answer, NULL) == CA_OK);
+        CHECK_EQ_U64(answer, 5);
+    }
+    ca_grumpy_params p;
+    ca_grumpy_params_default(&p);
+    p.m = 17;
+    p.alpha = INFINITY; /* unused when an explicit step is supplied */
+    p.max_ops = 1000;
+    uint64_t answer = 99;
+    CHECK(ca_grumpy_solve(&g, &gen, &target, 0, 31, &p, &answer, NULL) == CA_OK);
+    CHECK_EQ_U64(answer, 5);
+}
+
 int main(void)
 {
+    test_step_factor_bounds();
     ca_group g;
     ca_elem gen;
     double ratio;

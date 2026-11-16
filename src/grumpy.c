@@ -294,8 +294,18 @@ static ca_status grumpy_solve_impl(const ca_group *g, const ca_elem *base, const
     uint64_t sq = ca_isqrt(width) + 1;
     uint64_t m = params->m;
     if (m == 0) {
+        if (!isfinite(params->alpha)) {
+            ca_set_error("grumpy: alpha must be finite when choosing the giant step");
+            return CA_ERR_INVALID;
+        }
         double alpha = params->alpha > 0 ? params->alpha : 0.7;
-        m = (uint64_t)(alpha * (double)sq + 0.5);
+        double step = alpha * (double)sq + 0.5;
+        /* 2^64 is exactly representable; converting it or a larger value is undefined. */
+        if (!isfinite(step) || step >= 0x1p64) {
+            ca_set_error("grumpy: alpha produces an out-of-range giant step");
+            return CA_ERR_INVALID;
+        }
+        m = (uint64_t)step;
         if (m < 1) m = 1;
     }
     c.m = m;
