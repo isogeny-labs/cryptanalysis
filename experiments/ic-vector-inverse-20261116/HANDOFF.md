@@ -91,3 +91,16 @@ Panelcontrollerexplicitnew/anchorbinaryroutesandreceiptSHAchecks. Analyzerprimar
 through_cleanup_contrasts; contrastscollectorsecondary; build_controlanchor/current,
 kernelcurrent/candidate,vs_anchoranchor/candidate. Replays600targetanswersplus240AA.
 NativekernelalreadyPASSED/replayed/bound; no furthernativecompile/preparationneeded.
+
+Latest admission state: fresh manifests published in
+9d310eeb969f6a02da6434584fa548dc96ea37e9. Record
+benchmarks/records/20261116T1701Z-ic-vector-inverse-anchor-factorial-001.json is
+open, without timing commands or metrics. Required checkpoint gate failed via
+token HTTP403, ecc-challenges-new InvalidAccessKeyId, and authenticated default
+profile AllAccessDisabled. Three original logs are in admission-001/. No timing
+job was created and no replacement target sample was generated. See
+[checkpoint access problem](../../problems/ic-vector-inverse-checkpoint-access.md).
+Await a working supported upload transport, pass the gate, then launch the frozen
+run_prepared.py controller once. Do not skip the gate. No Rust compilation active.
+Flow assets and render_report.py are prepared; new report PDF marker has NOT run.
+No report should imply inverse timing results before the panel actually runs.
