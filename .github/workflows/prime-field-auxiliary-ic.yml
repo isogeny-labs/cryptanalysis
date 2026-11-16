@@ -46,6 +46,41 @@ jobs:
         run: cargo doc --no-deps
         env:
           RUSTDOCFLAGS: -D warnings
+  cli-comparison:
+    name: Auxiliary IC CLI comparison
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          filter: blob:none
+          sparse-checkout: |
+            suite
+            crates/prime-field-auxiliary-ic
+            crates/hashed-ecdl-tensor
+            bindings/rust
+            src
+            include
+            cuda
+            challenges/elliptic
+            experiments/prime-field-auxiliary-ic/snapshot
+      - name: Install stable Rust and formatting tools
+        run: |
+          rustup toolchain install stable --profile minimal --component rustfmt
+          echo 'RUSTUP_TOOLCHAIN=stable' >> "$GITHUB_ENV"
+      - uses: actions/cache@v6
+        with:
+          path: |
+            ~/.cargo/registry/index
+            ~/.cargo/registry/cache
+            ~/.cargo/git/db
+            suite/target
+          key: ${{ runner.os }}-auxiliary-cli-${{ hashFiles('suite/Cargo.lock', 'bindings/rust/Cargo.lock', 'crates/**/Cargo.toml') }}
+          restore-keys: ${{ runner.os }}-auxiliary-cli-
+      - name: Matched random, same-base and auxiliary relation controls
+        run: cargo test --locked --manifest-path suite/Cargo.toml --lib cli::tools::ic::auxiliary::tests
+      - name: CLI source formatting
+        run: rustfmt --edition 2021 --check suite/src/cli/tools/ic/auxiliary.rs
   implementation-checks:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
