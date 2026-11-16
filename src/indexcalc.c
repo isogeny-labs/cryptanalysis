@@ -1348,7 +1348,7 @@ static ca_status build_graph_matrix(const rel_list *rels, uint32_t ncols, uint32
     uint32_t nv = ncols - nfb;
     /* Bound the dense expression workspace; larger instances use CSR as
      * before. All persistent relation output remains sparse. */
-    if (!nv || !nfb || (size_t)nv > (64u * 1024u * 1024u) / sizeof(int32_t) / nfb ||
+    if (!nv || !nfb || (size_t)nv > ((size_t)64 * 1024 * 1024) / sizeof(int32_t) / nfb ||
         rels->n > UINT32_MAX / 2)
         return CA_ERR_INVALID;
     ca_status rc = CA_ERR_NOMEM;
@@ -1404,9 +1404,9 @@ static ca_status build_graph_matrix(const rel_list *rels, uint32_t ncols, uint32
             rc = CA_ERR_INVALID;
             goto done;
         }
-        next[2 * i] = head[u[i]];
+        next[(size_t)2 * i] = head[u[i]];
         head[u[i]] = 2 * i;
-        next[2 * i + 1] = head[v[i]];
+        next[(size_t)2 * i + 1] = head[v[i]];
         head[v[i]] = 2 * i + 1;
     }
     uint32_t nc = 0;

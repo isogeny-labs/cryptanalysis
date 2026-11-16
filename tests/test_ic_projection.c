@@ -1,20 +1,35 @@
 /* Exhaustive projected solution sets, independent of the Lanczos solver. */
+/* Include the implementation to compare private projection state directly. */
+// NOLINTNEXTLINE(bugprone-suspicious-include)
 #include "../src/indexcalc.c"
 #include <inttypes.h>
 
 static uint64_t projected(const rel_list *rels, const ca_spmat *A, const uint64_t *b,
                           uint32_t ncols, uint64_t modulus)
 {
+    /* The first two coordinates define the bit set: modulus^2 must fit64 bits.
+     * Reject bad test parameters instead of comparing two empty sentinels. */
+    if (ncols < 2 || ncols > 6 || modulus < 2 || modulus > 8 ||
+        (!rels && (!A || (A->rows && !b)))) {
+        fprintf(stderr, "invalid projection test parameters\n");
+        exit(5);
+    }
+    uint32_t rows;
+    if (rels)
+        rows = rels->n;
+    else {
+        if (!A) exit(5);
+        rows = A->rows;
+    }
     uint64_t count = 1, result = 0;
     for (uint32_t j = 0; j < ncols; ++j) count *= modulus;
     for (uint64_t code = 0; code < count; ++code) {
-        uint64_t digits = code, x[6];
+        uint64_t digits = code, x[6] = {0};
         for (uint32_t j = 0; j < ncols; ++j) {
             x[j] = digits % modulus;
             digits /= modulus;
         }
         int valid = 1;
-        uint32_t rows = rels ? rels->n : A->rows;
         for (uint32_t i = 0; valid && i < rows; ++i) {
             int64_t sum = 0;
             uint64_t rhs;
