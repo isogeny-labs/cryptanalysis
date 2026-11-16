@@ -535,6 +535,10 @@ def cmd_plan(cfg: Config, args) -> int:
 
 
 def cmd_push(cfg: Config, args) -> int:
+    # Offloading removes index entries. Never let that operation silently
+    # resolve a merge by deleting its base/ours/theirs stages.
+    if git(cfg.root, "ls-files", "--unmerged", "-z"):
+        die("unresolved Git index conflicts; resolve them before offloading")
     remote = None if args.dry_run else Remote(cfg)
     targets: list[tuple[str, int]] = []
     for raw in args.paths:
