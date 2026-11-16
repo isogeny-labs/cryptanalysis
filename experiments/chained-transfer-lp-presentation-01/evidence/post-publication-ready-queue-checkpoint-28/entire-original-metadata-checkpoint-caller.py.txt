@@ -1,0 +1,41 @@
+"""Metadata-only normal local commits/tags; keep active CI source branches unchanged."""
+from pathlib import Path
+from datetime import datetime,timezone
+import hashlib,json,lzma,os,shutil,subprocess
+cases=[('crypto','c91b4802af77e32d6821ba89a95715228e699b58','research/chained_jacobian_transfers_20261110','evidence/post-publication-ready-queue-checkpoint-40','Root4425 currentc91 ownCI19:20/original15 whole replay/store-startup blockers115681; completed norm55/0 andtrace17/0/31 bindings; metadata receiptscc4c3c/ace8e3/87bd87'),('cryptanalysis','12ccfae239a05d32b8a92ae128fb0db7f196c4bf','experiments/chained-transfer-lp-presentation-01','evidence/post-publication-ready-queue-checkpoint-28','Consumer1670 current12cc/base actualM ownCI19:30, genuine14 addresses/10 whole regular files and frozen workflow; publication63f3aa/ready328135/closed-parent correction2601d9/queue7fc043')]
+for repo,parent,study,folder,scope_text in cases:
+ r=Path('/workspace')/repo;p=r/study;h=Path('/workspace/scratch')/('ct501-'+repo+'-post-publication-checkpoint');h.mkdir()
+ env={**os.environ,'GIT_OPTIONAL_LOCKS':'0','GIT_TERMINAL_PROMPT':'0'}
+ def git(*a):return ['git','-c','gc.auto=0','-c','splitIndex.maxPercentChange=100','-c','splitIndex.sharedIndexExpire=never',*a]
+ assert subprocess.check_output(git('rev-parse','HEAD'),cwd=r,env=env,text=True).strip()==parent
+ assert subprocess.run(git('diff','--cached','--quiet'),cwd=r,env=env).returncode==0
+ shutil.copyfile(r/'.git/index',h/'entire-index-before');shutil.copyfile(r/'.git/index',h/'actual-current-index');env['GIT_INDEX_FILE']=str(h/'actual-current-index')
+ g=p/folder;g.mkdir();shutil.copyfile(__file__,g/'entire-original-metadata-checkpoint-caller.py.txt')
+ def run(n,args):
+  q=subprocess.run(args,cwd=r,env=env,capture_output=True,timeout=120);(g/(n+'.stdout.xz')).write_bytes(lzma.compress(q.stdout));(g/(n+'.stderr.xz')).write_bytes(lzma.compress(q.stderr));(g/(n+'.exit')).write_text(str(q.returncode)+'\n');print(repo,n,q.returncode,flush=True);assert q.returncode==0,(n,q.stdout[-400:],q.stderr[-400:])
+ scope=[study,'pcc/claims','pcc/ledger.jsonl','docs/session-logs/2026-11-16.md','.resume/RESUME.md']
+ def stage():
+  ns=sorted((set(subprocess.check_output(git('ls-files','--modified','--others','--exclude-standard','-z','--',*scope),cwd=r,env=env).split(b'\0'))|set(subprocess.check_output(git('diff','--cached','--name-only','-z'),cwd=r,env=env).split(b'\0')))-{b''});(h/'selected-paths0').write_bytes(b'\0'.join(x for x in ns if x!=b'.resume/RESUME.md')+b'\0')
+  subprocess.run(git('add','--sparse','--pathspec-from-file='+str(h/'selected-paths0'),'--pathspec-file-nul'),cwd=r,env=env,check=True);subprocess.run(git('add','--sparse','-u','--','.resume/RESUME.md'),cwd=r,env=env,check=True);assert set(subprocess.check_output(git('diff','--cached','--name-only','-z'),cwd=r,env=env).split(b'\0'))-{b''}==set(ns);return ns
+ run('original-current-parent-ledger-prefix',['python3','tools/pcc/pcc.py','ledger','verify','--base',parent]);run('current-owned-journal-prose',['python3','tools/pcc/pcc.py','lint-prose','docs/session-logs/2026-11-16.md','.resume/RESUME.md'])
+ for f in ['tools/pcc/pcc.py','pcc/keyring.json','tools/artifacts/artifacts.py','.artifacts/config.json','.github/workflows/pcc-gate.yml']:assert(r/f).read_bytes()==subprocess.check_output(git('show',parent+':'+f),cwd=r,env=env)
+ stage();run('current-cached-whitespace',git('diff','--cached','--check'));tree=subprocess.check_output(git('write-tree'),cwd=r,env=env,text=True).strip();run('original-parent-delta-artifact-policy',['python3','tools/artifacts/artifacts.py','check',parent,tree])
+ args=['python3','tools/pcc/pcc.py','claim','new','--kind','statement','--claim-type','data','--statement','Post-publication metadata-only continuity checkpoint for '+scope_text+'. Original current-parent ledger prefix/artifact policy/prose/cached0; original source/workflow/verifiers/keyring/policy unchanged. Normal local authored child and immutable GitHub tag retain full publication/ready/queue/parent-correction records while active PR source refs deliberately remain at their current CI heads until scheduled observation. No new native/proof result/currentCI/signed standing or paid launch; all original full scientific/runtime/admission/cost/paid STOP/vaultlock obligations remain open.']
+ for f in sorted(g.iterdir()):args+=['--proof','attestation:'+str(f.relative_to(r))]
+ claim=subprocess.check_output(args,cwd=r,env=env,text=True).strip();e=f'''\n---\n\n{datetime.now(timezone.utc).isoformat()}\n# Checkpoint post-publication records without moving active CI source\n\n## What was done\n{claim}: {scope_text}. Current parent prefix/artifact policy/prose/cached0, original sources/workflow/verifiers/keyring/policy unchanged. Whole publication/ready/correction/queue records committed with a new metadata tag. [pcc:unverified]\n\n## Decisions made\nKeep active PR source refs unchanged until spaced ownCI observation; metadata local child/tag retains continuity. Next native cofactor/counter review/preregistration precedes code/units; no benchmark or original population substitute. [pcc:unverified]\n\n## Open threads\nOriginal current-source CI/whole replay/final-head gates/reviews/guard/normal merge and all original full scientific/runtime/admission/cost obligations. [pcc:unverified]\n\n## Errors\nNo new scientific/CI/signed/native/paid promotion, no raw deletion or original criterion change. Earlier failed source/metadata/storage/closure interpretations remain retained/corrected. [pcc:unverified]\n'''
+ for f in[r/'docs/session-logs/2026-11-16.md',r/'.resume/RESUME.md']:
+  with f.open('a')as out:out.write(e)
+ ns=stage()
+ for n in ns:
+  if n.startswith(b'pcc/claims/'):
+   for proof in json.loads((r/n.decode()).read_text()).get('proofs',[]):
+    if proof.get('kind')=='attestation':x=proof['subject'];assert hashlib.sha256((r/x['path']).read_bytes()).hexdigest()==x['sha256']
+ subprocess.run(git('diff','--cached','--check'),cwd=r,env=env,check=True);subprocess.run(git('commit','--quiet','-m','research: retain publication, ready PR and queue checkpoints'),cwd=r,env=env,check=True)
+ head=subprocess.check_output(git('rev-parse','HEAD'),cwd=r,env=env,text=True).strip();assert subprocess.check_output(git('rev-parse','HEAD^'),cwd=r,env=env,text=True).strip()==parent;shutil.copyfile(h/'actual-current-index',r/'.git/index');assert(r/'.git/index').read_bytes()==(h/'actual-current-index').read_bytes()
+ (h/'ACTUAL_METADATA_COMMIT.json').write_text(json.dumps(dict(time=datetime.now(timezone.utc).isoformat(),head=head,parent=parent,paths=len(ns),claim=claim,active_PR_source_ref='intentionally unchanged; current ownCI remains scoped to parent'),indent=2)+'\n')
+ url='https://github.com/isogeny-labs/'+repo+'.git';ref='refs/tags/chained-transfer-post-publication-state-20261116-'+head[:12]
+ for label,args in [('before',git('ls-remote',url,ref)),('normal-new-tag',git('push','--no-force','--porcelain',url,head+':'+ref)),('after',git('ls-remote',url,ref))]:
+  q=subprocess.run(args,cwd=r,env=env,capture_output=True,timeout=180);(h/(label+'.stdout.xz')).write_bytes(lzma.compress(q.stdout));(h/(label+'.stderr.xz')).write_bytes(lzma.compress(q.stderr));(h/(label+'.exit')).write_text(str(q.returncode)+'\n');assert q.returncode==0
+  if label=='before':assert not q.stdout
+  if label=='after':assert q.stdout.decode().split()[0]==head
+ (h/'ACTUAL_NORMAL_METADATA_TAG.json').write_text(json.dumps(dict(time=datetime.now(timezone.utc).isoformat(),head=head,ref=ref,normal_new_push=0,exact_readback=True,active_PR_source_unchanged=parent),indent=2)+'\n');print(repo,claim,head,'paths',len(ns),flush=True)
