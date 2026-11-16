@@ -29,6 +29,14 @@ benchmark targets. For example, the archived 61-bit subgroup has cofactor
 14,627,932; random preparation must clear it, not attempt millions of
 subgroup-rejection trials per point.
 
+All three bases must pass the solver's target-subgroup validation before a
+paired row is admitted. A split auxiliary fiber alone does not establish
+usable subgroup columns. Random-base preparation at 61 bits is tested here;
+an eligible complete three-arm 61-bit benchmark panel is still unestablished.
+Do not cofactor-clear the special base and assume its old membership maps
+still describe the resulting coordinates. If a proposed special base fails,
+retain that refusal and qualify a valid base/target combination before freeze.
+
 ## Base and target law
 
 Match the actual `folded_columns` K and affine point count. Raw fiber size
