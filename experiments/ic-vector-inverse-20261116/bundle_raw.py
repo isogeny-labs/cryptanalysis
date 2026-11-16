@@ -6,7 +6,7 @@ P=Path(__file__).resolve().parent;D=P/'timing-001';files=sorted(p for p in D.ite
 assert all(p.is_file() and not p.is_symlink() for p in files)
 manifest={p.name:dict(bytes=p.stat().st_size,sha256=hashlib.sha256(p.read_bytes()).hexdigest()) for p in files}
 for pin in manifest.values():
- digest=pin['sha256'];pin['s3_uri']='s3://setec-astronomy-artifacts/store/sha256/'+digest[:2]+'/'+digest
+ digest=pin['sha256'];pin['s3_uri']='s3://crypto-autoresearcher/store/sha256/'+digest[:2]+'/'+digest
 bundle=P/'raw-timing-001.tar.gz'
 with bundle.open('wb') as f,gzip.GzipFile(fileobj=f,mode='wb',mtime=0) as z,tarfile.open(fileobj=z,mode='w') as t:
  for name,data in [('MANIFEST.json',json.dumps(manifest,sort_keys=True,indent=2).encode()),*[(p.name,p.read_bytes()) for p in files]]:
