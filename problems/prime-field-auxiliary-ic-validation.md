@@ -58,6 +58,16 @@ protocol exist. No such run is launched by this import PR.
 
 ## Resolution and history
 
+2026-11-16, report-alignment follow-up: source `3ddc3238` adds actual-column
+identities and an offline checker for matching scalar relation-yield reports.
+The [source-scoped development controls](../experiments/prime-field-auxiliary-ic/random-vs-special/README.md)
+include the actual three-arm hand-off on the existing p=127 fixture and
+synthetic refusal cases, claim `PCC-20261116-f8615b` (unverified). Incomplete
+or mismatched prefixes retain their data and yield no derived comparison.
+This narrows report-matching implementation work; it does not supply a fresh
+31/61-bit panel, timing, phase-accounting proof or independent signed replay.
+The original qualification requirement remains open. [pcc:unverified]
+
 2026-11-16, requested random-versus-special comparison: source `5e3a4202`
 adds ordinary random equal-column subgroup bases and fixed-prefix relation
 yield without early recovery, alongside the retained same-special-base direct

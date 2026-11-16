@@ -70,3 +70,35 @@ admitted GPU/host, phase accounting, benchmark records and independent signed
 replay remain outstanding. The existing GLV binding and CodeQL merge blockers
 are separate from these comparison controls. Earlier evidence is retained.
 [pcc:unverified]
+
+## Additive report-alignment controls
+
+Source `3ddc3238` adds `factor_base.columns_blake3` and the standard-library
+`compare_reports.py` helper. The fingerprint identifies actual canonical
+columns independently of the decomposition encoding or target. The helper
+checks reported public inputs, source labels, binary identity, matching A/B
+columns, base sizes, sampler/limits and lane/draw accounting. It retains
+incomplete arms but refuses derived fractions on mismatched or censored
+prefixes. Replay/full-solve modes, mixed arithmetic, malformed counters,
+duplicate JSON keys and nonfinite constants are refused. Matching metadata
+does not prove execution; no time ratio or qualified speedup is emitted.
+Claim `PCC-20261116-f8615b` remains unverified. [pcc:unverified]
+
+Seven targeted CLI checks and twelve checker test methods pass on that source,
+along with strict CLI formatting/lint, strict stable/1.78 documentation and
+workflow wiring. The CLI fixture exports its three actual public reports;
+the helper accepts them on identical 129-query prefixes at **p=127**. This
+existing correctness fixture is not a new 31/61-bit research panel. CI now
+exercises both the Rust-to-checker hand-off and the synthetic refusal cases.
+The [scoped validator](alignment-evidence/alignment-validator.json), source
+pins and complete logs are retained. [pcc:unverified]
+
+The first negative-test fixture shortened its query count while retaining
+larger circuit/hit counters. The checker correctly rejected it earlier than
+the test's expected diagnostic. The exact failed fixture and failing output
+are retained; its counters were corrected and every guard kept. This was
+pre-commit development, not a fully pinned research execution. The admission
+presence probe read no credential bytes and attempted no upload/allocation;
+it found no local checkpoint token or `nvidia-smi`. An admitted allocation,
+frozen actual bases/targets, exclusive phase accounting and independent signed
+replay remain outstanding. [pcc:unverified]

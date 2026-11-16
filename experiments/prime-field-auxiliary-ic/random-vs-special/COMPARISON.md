@@ -94,6 +94,7 @@ get exact row/hit fractions, with every processed query in the denominator.
 All outputs remain unsigned producer data; matching labels/hashes do not prove
 execution. No time ratio or qualified speedup is inferred. Native SIMD and
 full-solve cost comparisons require their own scopes and remain outstanding.
+[pcc:unverified]
 
 For end-to-end cost, remove `--relation-yield-only` and run full collection,
 graph recovery and public certificate replay on the same fresh Q. Record
