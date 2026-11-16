@@ -1012,6 +1012,17 @@ def series_key(rec: dict, m: dict) -> tuple[str, str, str]:
     return rec['problem'], m['name'], m['unit']
 
 
+def relative_gain(first, value, better: str) -> float:
+    """Retain ordinary rounding while avoiding overflowing finite differences."""
+    sign = 1.0 if better == "lower" else -1.0
+    difference = first - value
+    if finite_number(difference):
+        return round(sign * difference / abs(first) * 100.0, 4)
+    # Opposite-signed finite endpoints can have a finite relative change even
+    # when their difference cannot be represented as a float.
+    return round(sign * (first / abs(first) - value / abs(first)) * 100.0, 4)
+
+
 def build_progress(root: Path, cfg: dict, *, replacement: tuple[str, dict] | None = None) -> dict:
     records = all_records(root, cfg)
     exclusions = integrity_exclusions(root, cfg, records)
@@ -1059,11 +1070,9 @@ def build_progress(root: Path, cfg: dict, *, replacement: tuple[str, dict] | Non
             # A first observation alone is not a comparison with itself.
             # Keep its zero anchor only when another record exists.
             if len(pts) > 1 and s["better"] in ("lower", "higher") and first not in (0, None):
-                sign = 1.0 if s["better"] == "lower" else -1.0
-                p["derived"]["improvement_vs_first_percent"] = round(sign * (first - v) / abs(first) * 100.0, 4)
+                p["derived"]["improvement_vs_first_percent"] = relative_gain(first, v, s["better"])
             if s["better"] in ("lower", "higher") and prev not in (0, None):
-                sign = 1.0 if s["better"] == "lower" else -1.0
-                p["derived"]["improvement_vs_previous_percent"] = round(sign * (prev - v) / abs(prev) * 100.0, 4)
+                p["derived"]["improvement_vs_previous_percent"] = relative_gain(prev, v, s["better"])
             if p.get("reference") not in (0, None):
                 p["derived"]["value_over_reference"] = round(v / p["reference"], 6)
             if any(not finite_number(value) for value in p["derived"].values()):
@@ -1268,7 +1277,26 @@ def panel_geometry(panel: dict):
     if y0 == y1:
         y0, y1 = y0 - 1, y1 + 1
     pad = (y1 - y0) * 0.1
-    return x0, x1, y0 - pad, y1 + pad
+    low, high = y0 - pad, y1 + pad
+    if all(finite_number(v) for v in (low, high, high - low)) and low < high:
+        return x0, x1, low, high, 1.0
+    # Finite plotted values need not have a representable difference or padded
+    # range. Normalize only that exceptional case; keep labels in original units.
+    scale = max(abs(v) for v in ys)
+    low, high = min(ys) / scale, max(ys) / scale
+    pad = (high - low) * 0.1 if low != high else 0.1
+    return x0, x1, max(-1.0, low - pad), min(1.0, high + pad), scale
+
+
+def axis_label(value: float, logarithmic: bool, scale: float) -> str:
+    if logarithmic:
+        try:
+            linear = 10 ** value
+        except OverflowError:
+            linear = float("inf")
+        return f"{linear:.3g}" if finite_number(linear) and linear > 0 else f"10^{value:.3g}"
+    value = value if scale == 1.0 else max(-1.0, min(1.0, value)) * scale
+    return f"{value:.3g}"
 
 
 def render_svg(prog: dict) -> str:
@@ -1301,18 +1329,18 @@ def render_svg(prog: dict) -> str:
             o.append(f'<text x="{gx0 + 10}" y="{gy0 + 20}" fill="#555">no points</text>')
             top += span
             continue
-        x0, x1, y0, y1 = geom
+        x0, x1, y0, y1, scale = geom
 
         def X(d):
             return gx0 + (d - x0) / (x1 - x0) * gw
 
         def Y(v):
-            v = math.log10(v) if panel["log"] else v
+            v = (math.log10(v) if panel["log"] else v) / scale
             return gy0 + gh - (v - y0) / (y1 - y0) * gh
         for k in range(5):
             yv = y0 + (y1 - y0) * k / 4
             yy = gy0 + gh - gh * k / 4
-            lab = f"{10 ** yv:.3g}" if panel["log"] else f"{yv:.3g}"
+            lab = axis_label(yv, panel["log"], scale)
             o.append(f'<line x1="{gx0}" y1="{yy:.1f}" x2="{gx0 + gw}" y2="{yy:.1f}" stroke="#eee"/>')
             o.append(f'<text x="{gx0 - 6}" y="{yy + 4:.1f}" text-anchor="end" fill="#555">{lab}</text>')
         for k in range(4):
@@ -1464,18 +1492,18 @@ def render_pdf(prog: dict) -> bytes:
             pdf.text(gx0 + 8, gy0 + 16, "no points", 9, "#555555")
             y += PH
             continue
-        x0, x1, y0, y1 = geom
+        x0, x1, y0, y1, scale = geom
 
         def X(d):
             return gx0 + (d - x0) / (x1 - x0) * gw
 
         def Y(v):
-            v = math.log10(v) if panel["log"] else v
+            v = (math.log10(v) if panel["log"] else v) / scale
             return gy0 + gh - (v - y0) / (y1 - y0) * gh
         for k in range(5):
             yv = y0 + (y1 - y0) * k / 4
             yy = gy0 + gh - gh * k / 4
-            lab = f"{10 ** yv:.3g}" if panel["log"] else f"{yv:.3g}"
+            lab = axis_label(yv, panel["log"], scale)
             pdf.line(gx0, yy, gx0 + gw, yy, "#eeeeee")
             pdf.text(gx0 - 34, yy + 3, lab, 7, "#555555")
         for k in range(4):
