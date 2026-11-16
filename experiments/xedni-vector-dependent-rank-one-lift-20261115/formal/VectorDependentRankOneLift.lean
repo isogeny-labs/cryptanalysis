@@ -31,9 +31,25 @@ theorem rational_rank_one_relation (x y a b : ℤ) :
     b • ((-a) • XedniAdaptiveInverseLift.liftPos x y) = 0 := by
   exact rank_one_relation (XedniAdaptiveInverseLift.liftPos x y) a b
 
+/-- Every additive reduction map commutes with both constructed multiples. -/
+theorem rank_one_reduction_commutes {H A : Type*}
+    [AddCommGroup H] [AddCommGroup A]
+    (ρ : H →+ A) (P : H) (a b : ℤ) :
+    ρ (b • P) = b • ρ P ∧ ρ ((-a) • P) = (-a) • ρ P := by
+  constructor <;> simp
+
+/-- The reduced constructed pair retains the coefficient relation. -/
+theorem rank_one_reduced_relation {H A : Type*}
+    [AddCommGroup H] [AddCommGroup A]
+    (ρ : H →+ A) (P : H) (a b : ℤ) :
+    a • ρ (b • P) + b • ρ ((-a) • P) = 0 := by
+  simpa only [map_zsmul] using rank_one_relation (ρ P) a b
+
 #print axioms public_factorization
 #print axioms rank_one_relation
 #print axioms rational_rank_one_relation
+#print axioms rank_one_reduction_commutes
+#print axioms rank_one_reduced_relation
 #print axioms XedniAdaptiveInverseLift.rational_model
 #print axioms XedniAdaptiveInverseLift.reduction_model
 

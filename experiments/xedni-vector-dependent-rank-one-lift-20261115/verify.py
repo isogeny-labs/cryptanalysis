@@ -62,6 +62,7 @@ def main():
     build=(formal/'build-output.txt').read_text()
     assert 'Build completed successfully (3157 jobs).' in build
     names=('public_factorization','rank_one_relation','rational_rank_one_relation',
+           'rank_one_reduction_commutes','rank_one_reduced_relation',
            'XedniAdaptiveInverseLift.rational_model','XedniAdaptiveInverseLift.reduction_model')
     for name in names:
         full_name=name if '.' in name else f'XedniVectorDependentRankOneLift.{name}'
