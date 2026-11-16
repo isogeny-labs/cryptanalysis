@@ -1,0 +1,81 @@
+    Updating crates.io index
+   Compiling serde v1.0.229
+   Compiling libc v0.2.190
+   Compiling itoa v1.0.18
+   Compiling serde_json v1.0.154
+   Compiling getrandom v0.4.3
+   Compiling num-bigint v0.5.1
+   Compiling num-rational v0.4.2
+   Compiling hashed-ecdl-tensor v0.1.0 (/workspace/cryptanalysis/bindings/rust/hashed-ecdl-tensor)
+    Finished `release` profile [optimized] target(s) in 31.21s
+     Running unittests src/lib.rs (suite/target/release/build/hashed-ecdl-tensor/9e21c51eab1147ef/out/hashed_ecdl_tensor-9e21c51eab1147ef)
+
+running 64 tests
+test arithmetic::tests::checked_hash_selection_preserves_the_candidate_and_rng_stream ... ok
+test arithmetic::tests::limits_do_not_turn_unknown_primes_into_true_or_false ... ok
+test arithmetic::tests::reused_roots_preserve_failures_and_enforce_each_new_meter ... ok
+test arithmetic::tests::exact_small_primality_and_square_roots ... ok
+test arithmetic::tests::root_setup_is_lazy_reused_and_charged_only_when_performed ... ok
+test arithmetic::tests::three_mod_four_roots_fit_a_single_exponentiation_budget ... ok
+test binary::tests::binary_fields_check_irreducibility_inverse_and_official_131_polynomial ... ok
+test arithmetic::tests::reused_square_roots_match_independent_residue_tables_in_both_orders ... ok
+test binary::tests::both_koblitz_coefficients_and_derived_eigenvalues_have_pinned_fixture_identities ... ok
+test binary::tests::binary_group_roundtrip_full_cardinality_associativity_and_frobenius ... ok
+test binary::tests::orbit_coefficients_and_orbit_hash_enumeration_are_complete ... ok
+test binary::tests::xor_hash_inverse_and_binary_selector_search_match_exhaustive_domains ... ok
+test contraction::deformation::tests::packet_entries_keep_creation_time_representatives ... ok
+test contraction::packing::tests::conditional_expectations_do_not_assume_disjoint_ports ... ok
+test contraction::deformation::tests::integral_kernel_and_geometric_mode_series_match ... ok
+test arithmetic::tests::aks_cyclic_identity_and_large_prime_path ... ok
+test arithmetic::tests::prime_fast_paths_complete_within_the_old_aks_work_budget ... ok
+test contraction::recursive::coupled_controls::both_taper_levels_match_direct_counts_for_crossing_and_local_ports ... ok
+test contraction::recursive::tests::tapered_hermite_recovers_the_constant_without_rounding ... ok
+test contraction::recursive::tests::weighted_enumeration_has_no_missing_or_repeated_monomials ... ok
+test contraction::tests::counts_and_prefix_witnesses_match_truth_tables ... ok
+test contraction::tests::dependency_pruning_handles_constant_failures_and_no_free_digits ... ok
+test contraction::tests::dependency_pruning_preserves_derived_pins_aliases_and_multiplicity ... ok
+test contraction::tests::dependency_pruning_skips_only_rejected_input_blocks ... ok
+test contraction::tests::exact_sampling_uses_counts_and_preserves_auxiliary_multiplicity ... ok
+test contraction::tests::functional_derived_interfaces_match_prefixes_for_all_output_pins ... ok
+test contraction::tests::functional_input_witness_preserves_prefix_order_without_recounts ... ok
+test contraction::tests::functional_leaf_count_equals_complete_edge_enumeration ... ok
+test contraction::tests::functional_witness_aliases_empty_unsat_and_limits_are_exact ... ok
+test contraction::tests::sampling_respects_pins_empty_languages_and_failure_boundaries ... ok
+test curve::tests::prime_order_certificate_and_point_encoding ... ok
+test contraction::recursive::tests::forced_small_packet_recursion_matches_independent_direct_contraction ... ok
+test encoding::tests::hash_membership_and_cofactor_clear_are_coordinate_predicates ... ok
+test encoding::tests::modular_words_are_canonical_and_invalid_inputs_have_no_witness ... ok
+test contraction::recursive::coupled_controls::coupled_nested_contraction_preserves_old_packet_creation_precision ... ok
+test encoding::tests::ripple_arithmetic_and_shared_word_copies ... ok
+test factoring::tests::complete_factorization_handles_primes_powers_and_identity ... ok
+test factoring::tests::invalid_inputs_and_exhaustion_never_become_zero_counts_or_partial_success ... ok
+test factoring::tests::tensor_divisor_counts_match_independent_trial_division_for_every_prefix ... ok
+test metrics::tests::scoped_observer_keeps_exact_counters_separate_from_clocks_and_cleans_up ... ok
+test network::tests::incomplete_graphs_and_duplicate_interfaces_are_rejected ... ok
+test network::tests::parallel_edges_pins_and_isolated_scalars ... ok
+test primality::tests::automatic_proofs_enforce_caller_limits ... ok
+test encoding::tests::point_network_handles_every_pair_and_rejects_counterfeit_outputs ... ok
+test primality::tests::bounded_primality_matches_independent_sieve_and_handles_u64_edges ... ok
+test primality::tests::challenge_proofs_verify_in_any_order_with_exact_u64_leaves ... ok
+test primality::tests::forged_and_incomplete_pocklington_proofs_are_rejected ... ok
+test primality::tests::large_composites_are_rejected_and_missing_proofs_remain_unknown ... ok
+test primality::tests::official_curve_and_target_validate_within_original_budget ... ok
+test primality::tests::parsed_public_proofs_never_bypass_a_new_callers_limits ... ok
+test primality::tests::published_bound_is_strict_and_the_65bit_cliff_is_removed ... ok
+test primality::tests::automatic_proofs_replay_for_large_known_primes ... ok
+test reduction::tests::exhausted_tensor_work_is_unknown_and_identity_has_an_exact_certificate ... ok
+test reduction::tests::factor_base_enumeration_reuses_square_root_setup ... ok
+test reduction::tests::inverse_hash_enumeration_matches_independent_subgroup_scan ... ok
+test encoding::tests::fourier_products_match_independent_integer_products_and_size_bounds ... ok
+test ring::tests::creation_precision_lifts_are_not_silently_ring_homomorphisms ... ok
+test ring::tests::units_and_interpolation_over_nonfields ... ok
+test weighted::tests::constants_unsat_and_limits_have_distinct_outcomes ... ok
+test weighted::tests::parity_check_profile_retains_zero_word_and_positive_distance ... ok
+test weighted::tests::triangle_maxcut_profile_has_two_constant_and_six_optimal_assignments ... ok
+test reduction::tests::cofactor_tensor_projection_finds_only_subgroup_points ... ok
+test contraction::recursive::coupled_controls::coupled_packets_match_direct_counts_with_parallel_ports_and_quadratic_modes ... ok
+test reduction::tests::tensor_relation_pipeline_recovers_and_replays_without_scalar_leakage has been running for over 60 seconds
+test reduction::tests::tensor_relation_pipeline_recovers_and_replays_without_scalar_leakage ... ok
+
+test result: ok. 64 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 83.14s
+
