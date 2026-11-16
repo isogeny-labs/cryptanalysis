@@ -1,0 +1,52 @@
+name: CT148 finite degree-13 DLP-preservation canary
+on:
+  pull_request:
+    paths:
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT148_*'
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/ct148_velu13_subgroup_canary.py'
+      - '.github/workflows/ct148-degree13-dlp-preservation.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  finite-degree13-dlp:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - name: Exhaustive F229 degree-13 isogeny DLP-preservation and collision control
+        shell: bash
+        run: |
+          set -euo pipefail
+          testfile=experiments/chained-transfer-public-target/norm-point-reuse-01/ct148_velu13_subgroup_canary.py
+          python3 "$testfile" > /tmp/ct148-normal.json
+          python3 -O "$testfile" > /tmp/ct148-optimized.json
+          cmp /tmp/ct148-normal.json /tmp/ct148-optimized.json
+          python3 - <<'PY'
+          import json
+          with open('/tmp/ct148-normal.json', encoding='utf-8') as f:
+              got=json.load(f)
+          required={
+              'field':'F_229',
+              'source_cardinality':208, 'target_cardinality':208,
+              'kernel_size':13, 'image_size':16,
+              'source_13_kernel_generator':[49,65],
+              'target_curve':'y^2=x^3+x^2+223x+13',
+              'target_discriminant':148,
+              'all_group_homomorphism_pairs':43264,
+              'safe_subgroup_order':8, 'safe_generator':[69,12],
+              'safe_image_order':8, 'safe_verified_public_dlps':8,
+              'unsafe_subgroup_order':104, 'unsafe_generator':[2,48],
+              'unsafe_image_order':8,
+              'unsafe_distinct_source_candidates_per_target':13,
+              'unsafe_full_source_rejections':96,
+              'unsafe_indistinguishable_scalar_witness':[0,8],
+              'standing':'[pcc:unverified]',
+          }
+          for key,val in required.items():
+              if got.get(key)!=val:
+                  raise SystemExit(f'CT148 FAIL: {key}: got {got.get(key)} != {val}')
+          print('CT148 finite degree-13 map/collision canary passed [pcc:unverified]')
+          PY
