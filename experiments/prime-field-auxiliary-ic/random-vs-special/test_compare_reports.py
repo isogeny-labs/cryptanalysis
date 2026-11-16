@@ -40,6 +40,39 @@ def reports():
     return dict(zip(ARMS, (special, direct, random)))
 
 
+def version2_reports(profiled=True):
+    data = reports()
+    for r in data.values():
+        r["schema_version"] = 2
+        r["configured_search"]["profile_phases"] = profiled
+        r["online_wall_ns"] = 80
+        r["online_wall_seconds"] = r["online_call_wall_seconds"] = 80 / 1e9
+        r["online_exclusive_phases"] = {
+            "schema": "auxiliary-ic-online-phases/v1", "unit": "ns",
+            "scope": "core-search-including-local-replay", "clock": "std::time::Instant",
+            "clock_overhead": "included-not-subtracted", "clock_reads": 20,
+            "total": 60, "independent_replay": None,
+            "durations": dict(zip(PHASES, (10, 20, 15, 10, 0, 0, 5))),
+        } if profiled else None
+        r["online_accounting"] = {
+            "schema": "auxiliary-ic-online-call/v1", "unit": "ns",
+            "scope": "target-point-validation-through-local-replay",
+            "input_validation": 5, "core": 60 if profiled else None,
+            "call_overhead": 15 if profiled else None, "total": 80, "independent_replay": None,
+        }
+        r["target_independent_preparation_ns"] = 1000
+        r["target_independent_preparation_seconds"] = 1000 / 1e9
+        r["cli_accounting"] = {
+            "schema": "auxiliary-ic-cli-costs/v1", "unit": "ns",
+            "scope": "run-entry-through-resource-snapshot; excludes accounting serialization",
+            "preparation": 1000, "before_online": 20, "online": 80, "reporting": 100,
+            "reference": 0, "observed_total": 1200, "ic_observed_total": 1200,
+            "upstream_preparation": None, "process_start_exit": None,
+            "independent_replay": None, "cold_total": None,
+        }
+    return data
+
+
 class AlignmentTests(unittest.TestCase):
     def refused(self, data, expected=None):
         result = compare_reports(data)
@@ -91,6 +124,42 @@ class AlignmentTests(unittest.TestCase):
             changed = copy.deepcopy(data)
             mutate(changed["random"])
             self.refused(changed)
+
+    def test_version2_charges_validation_and_wrapper_overhead_without_inventing_cold_costs(self):
+        for profiled in (True, False):
+            result = compare_reports(version2_reports(profiled))
+            self.assertEqual(result["status"], "aligned", result["issues"])
+            self.assertIsNone(result["qualified_speedup"])
+            self.assertIsNone(result["end_to_end_cost_comparison"])
+        changes = [
+            lambda r: r.update(online_wall_ns=81),
+            lambda r: r.update(online_wall_seconds=60/1e9),
+            lambda r: r.update(target_independent_preparation_ns=999),
+            lambda r: r["online_accounting"].update(input_validation=81),
+            lambda r: r["online_accounting"].update(call_overhead=0),
+            lambda r: r["online_accounting"].update(core=True),
+            lambda r: r["online_accounting"].update(independent_replay=True),
+            lambda r: r["cli_accounting"].update(reporting=101),
+            lambda r: r["cli_accounting"].update(online=79, reporting=101),
+            lambda r: r["cli_accounting"].update(reference=1, reporting=99, ic_observed_total=1199),
+            lambda r: r["cli_accounting"].update(ic_observed_total=1199),
+            lambda r: r["cli_accounting"].update(cold_total=1200),
+            lambda r: r["cli_accounting"].pop("upstream_preparation"),
+        ]
+        for change in changes:
+            data = version2_reports(); change(data["random"]); self.refused(data)
+        data = version2_reports(False)
+        data["random"]["online_accounting"]["core"] = 0
+        self.refused(data, "unknown")
+
+    def test_timing_schema_versions_cannot_be_mixed_with_matching_other_labels(self):
+        data = version2_reports()
+        data["random"] = reports()["random"]
+        data["random"]["configured_search"]["profile_phases"] = True
+        data["random"]["online_exclusive_phases"] = version2_reports()["random"]["online_exclusive_phases"]
+        data["random"]["online_wall_seconds"] = 60 / 1e9
+        data["random"]["online_call_wall_seconds"] = 80 / 1e9
+        self.refused(data, "schema_version")
 
     def test_public_binary_and_sampler_mismatches_are_rejected(self):
         mutations = [("source_commit", "5" * 40), ("binary_blake3", "6" * 64),

@@ -15,6 +15,7 @@ ARMS = ("auxiliary", "same_base", "random")
 SAMPLER = "splitmix64-rejection-public-coefficient-walks"
 PHASES = ("initialization", "target_walk", "decomposition", "row_validation",
           "graph_recovery", "certificate_replay", "bookkeeping")
+CLI_PHASES = ("preparation", "before_online", "online", "reporting", "reference")
 
 
 class Mismatch(ValueError):
@@ -60,6 +61,8 @@ def check_phases(report, settings, name):
     phases = report.get("online_exclusive_phases")
     if not enabled:
         require(phases is None, name + ": phase accounting present without profiling")
+        if report["schema_version"] == 2:
+            check_call_costs(report, None, name)
         return
     phases = obj(phases, name + ".online_exclusive_phases")
     require(phases.get("schema") == "auxiliary-ic-online-phases/v1"
@@ -78,12 +81,62 @@ def check_phases(report, settings, name):
     require(durations["graph_recovery"] == durations["certificate_replay"] == 0,
             name + ": recovery time mixed into yield mode")
     integer(phases.get("clock_reads"), name + ".clock_reads", 2)
+    if report["schema_version"] == 2:
+        check_call_costs(report, total, name)
+        return
     wall, call_wall = report.get("online_wall_seconds"), report.get("online_call_wall_seconds")
     require(type(wall) in (int, float) and 0 <= wall < 2**64
             and type(call_wall) in (int, float) and 0 <= call_wall < 2**64,
             name + ": invalid online duration")
     require(math.isclose(wall, total / 1e9, rel_tol=1e-12, abs_tol=1e-12)
             and call_wall >= wall >= 0, name + ": online interval differs from its phase total")
+
+
+def seconds_match(seconds, ns, name):
+    require(type(seconds) in (int, float) and 0 <= seconds < 2**64
+            and math.isclose(seconds, ns / 1e9, rel_tol=1e-12, abs_tol=1e-12),
+            name + ": seconds differ from integer nanoseconds")
+
+
+def check_call_costs(report, core, name):
+    total = integer(report.get("online_wall_ns"), name + ".online_wall_ns")
+    call = obj(report.get("online_accounting"), name + ".online_accounting")
+    require(call.get("schema") == "auxiliary-ic-online-call/v1" and call.get("unit") == "ns"
+            and call.get("scope") == "target-point-validation-through-local-replay",
+            name + ": unknown caller accounting scope")
+    require(integer(call.get("total"), name + ".call.total") == total,
+            name + ": caller total differs from online wall")
+    validation = integer(call.get("input_validation"), name + ".call.input_validation")
+    require(validation <= total, name + ": target validation exceeds caller interval")
+    for key in ("independent_replay", "core", "call_overhead"):
+        require(key in call, name + ": missing caller declaration " + key)
+    require(call["independent_replay"] is None, name + ": caller cannot attest independent replay")
+    if core is None:
+        require(call["core"] is None and call["call_overhead"] is None,
+                name + ": unprofiled core costs must remain unknown")
+    else:
+        require(integer(call["core"], name + ".call.core") == core,
+                name + ": core interval differs from its phase partition")
+        overhead = integer(call["call_overhead"], name + ".call.overhead")
+        require(validation + core + overhead == total, name + ": target/core/caller costs do not partition online wall")
+    seconds_match(report.get("online_wall_seconds"), total, name + ".online_wall_seconds")
+    seconds_match(report.get("online_call_wall_seconds"), total, name + ".online_call_wall_seconds")
+    cli = obj(report.get("cli_accounting"), name + ".cli_accounting")
+    require(cli.get("schema") == "auxiliary-ic-cli-costs/v1" and cli.get("unit") == "ns"
+            and cli.get("scope") == "run-entry-through-resource-snapshot; excludes accounting serialization",
+            name + ": unknown CLI accounting scope")
+    values = {k: integer(cli.get(k), name + ".cli." + k) for k in CLI_PHASES}
+    observed = integer(cli.get("observed_total"), name + ".cli.observed_total")
+    require(sum(values.values()) == observed, name + ": CLI phases overlap or leave a gap")
+    require(integer(cli.get("ic_observed_total"), name + ".cli.ic_observed_total")
+            == observed - values["reference"], name + ": reference cost charged to IC")
+    require(values["reference"] == 0, name + ": rho reference mixed into yield collection")
+    require(values["online"] == total, name + ": CLI and online intervals differ")
+    prep = integer(report.get("target_independent_preparation_ns"), name + ".preparation_ns")
+    require(prep == values["preparation"], name + ": preparation cost differs")
+    seconds_match(report.get("target_independent_preparation_seconds"), prep, name + ".preparation_seconds")
+    for key in ("upstream_preparation", "process_start_exit", "independent_replay", "cold_total"):
+        require(key in cli and cli[key] is None, name + ": CLI cannot supply " + key)
 
 
 def compare_reports(reports):
@@ -95,7 +148,7 @@ def compare_reports(reports):
         require(set(reports) == set(ARMS), "exactly the auxiliary, same_base and random arms are required")
         for name in ARMS:
             report = obj(reports[name], name)
-            require(type(report.get("schema_version")) is int and report["schema_version"] == 1
+            require(type(report.get("schema_version")) is int and report["schema_version"] in (1, 2)
                     and report.get("operation") == "auxiliary-prime-field-ic",
                     name + ": unknown report schema")
             require(report.get("mode") == "bounded-relation-yield",
@@ -141,7 +194,7 @@ def compare_reports(reports):
             require("certificate" in report and report["certificate"] is None, name + ": missing yield-mode certificate declaration")
 
         special, direct, random = (reports[k] for k in ARMS)
-        for key in ("public", "field_bits", "source_commit", "binary_blake3", "configured_search"):
+        for key in ("schema_version", "public", "field_bits", "source_commit", "binary_blake3", "configured_search"):
             require(all(report.get(key) == special.get(key) for report in (direct, random)),
                     "arms disagree on " + key)
         bases = [report["factor_base"] for report in (special, direct, random)]

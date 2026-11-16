@@ -175,6 +175,41 @@ fn stats_json(stats: &aux::SearchStats) -> Value {
         "matrix_rank":stats.matrix_rank,"proof_nodes":stats.proof_nodes,"backend":stats.backend.name()})
 }
 
+fn nanos(duration: Duration) -> Result<u64, String> {
+    u64::try_from(duration.as_nanos()).map_err(|_| "duration exceeds u64 nanoseconds".into())
+}
+
+fn cli_costs_json(
+    prepared: Duration,
+    online_start: Duration,
+    online_end: Duration,
+    reference_start: Duration,
+    reference_end: Duration,
+    finished: Duration,
+) -> Result<Value, String> {
+    if !(prepared <= online_start
+        && online_start <= online_end
+        && online_end <= reference_start
+        && reference_start <= reference_end
+        && reference_end <= finished)
+    {
+        return Err("CLI accounting boundaries are not monotonic".into());
+    }
+    let reference = reference_end - reference_start;
+    Ok(json!({
+        "schema":"auxiliary-ic-cli-costs/v1","unit":"ns",
+        "scope":"run-entry-through-resource-snapshot; excludes accounting serialization",
+        "preparation":nanos(prepared)?,
+        "before_online":nanos(online_start - prepared)?,
+        "online":nanos(online_end - online_start)?,
+        "reporting":nanos((reference_start - online_end) + (finished - reference_end))?,
+        "reference":nanos(reference)?,"observed_total":nanos(finished)?,
+        "ic_observed_total":nanos(finished - reference)?,
+        "upstream_preparation":null,"process_start_exit":null,
+        "independent_replay":null,"cold_total":null
+    }))
+}
+
 fn phases_json(phases: &aux::SearchPhases) -> Result<Value, String> {
     let mut durations = serde_json::Map::new();
     for (name, duration) in [
@@ -186,11 +221,10 @@ fn phases_json(phases: &aux::SearchPhases) -> Result<Value, String> {
         ("certificate_replay", phases.certificate_replay),
         ("bookkeeping", phases.bookkeeping),
     ] {
-        let ns = u64::try_from(duration.as_nanos()).map_err(|_| "phase duration exceeds u64 ns")?;
+        let ns = nanos(duration)?;
         durations.insert(name.into(), json!(ns));
     }
-    let total =
-        u64::try_from(phases.total.as_nanos()).map_err(|_| "online duration exceeds u64 ns")?;
+    let total = nanos(phases.total)?;
     Ok(json!({
         "schema":"auxiliary-ic-online-phases/v1","unit":"ns",
         "scope":"core-search-including-local-replay",
@@ -203,10 +237,30 @@ fn phases_json(phases: &aux::SearchPhases) -> Result<Value, String> {
 fn record_online_time(
     report: &mut Value,
     call_wall: Duration,
+    input_validation: Duration,
     phases: Option<&aux::SearchPhases>,
 ) -> Result<(), String> {
     report["online_call_wall_seconds"] = json!(call_wall.as_secs_f64());
-    report["online_wall_seconds"] = json!(phases.map_or(call_wall, |p| p.total).as_secs_f64());
+    report["online_wall_seconds"] = json!(call_wall.as_secs_f64());
+    report["online_wall_ns"] = json!(nanos(call_wall)?);
+    let after_input = call_wall
+        .checked_sub(input_validation)
+        .ok_or("target validation exceeds the caller interval")?;
+    let overhead = phases
+        .map(|p| {
+            after_input
+                .checked_sub(p.total)
+                .ok_or("core phases exceed the target-dependent caller interval")
+        })
+        .transpose()?;
+    report["online_accounting"] = json!({
+        "schema":"auxiliary-ic-online-call/v1","unit":"ns",
+        "scope":"target-point-validation-through-local-replay",
+        "input_validation":nanos(input_validation)?,
+        "core":phases.map(|p| nanos(p.total)).transpose()?,
+        "call_overhead":overhead.map(nanos).transpose()?,
+        "total":nanos(call_wall)?,"independent_replay":null
+    });
     if let Some(phases) = phases {
         report["online_exclusive_phases"] = phases_json(phases)?;
     }
@@ -287,9 +341,6 @@ fn execute<const B: u32>(
     let generator = curve
         .point(public.generator[0], public.generator[1])
         .map_err(|e| e.to_string())?;
-    let target = curve
-        .point(public.target[0], public.target[1])
-        .map_err(|e| e.to_string())?;
     if (args.without_auxiliary || args.random_base_columns.is_some())
         && !matches!(args.backend, BackendArg::Auto | BackendArg::Scalar)
     {
@@ -351,7 +402,7 @@ fn execute<const B: u32>(
         base
     };
     let mut report = json!({
-        "schema_version":1,"operation":"auxiliary-prime-field-ic","field_bits":B,"execution_class":"cpu-only",
+        "schema_version":2,"operation":"auxiliary-prime-field-ic","field_bits":B,"execution_class":"cpu-only",
         "input_blake3":input_hash,"binary_blake3":binary_hash(),"source_commit":git_commit(),
         "public":{"p":public.p,"a":public.a,"b":public.b,"n":public.n,"P":public.generator,"Q":public.target},
         "factor_base":{"raw_roots":base.raw_root_count(),"affine_points":base.affine_point_count(),"uses_auxiliary_maps":base.uses_auxiliary_maps(),
@@ -363,7 +414,8 @@ fn execute<const B: u32>(
         "configured_search":{"seed":args.seed,"max_queries":args.max_queries,"walk_lanes":args.walk_lanes,
             "max_relations":args.max_relations,"max_proof_nodes":args.max_proof_nodes,"max_millis":args.max_millis,
             "profile_phases":args.profile_phases},
-        "online_exclusive_phases":null,"qualified_speedup":null,"gpu":{"devices":[]}
+        "online_exclusive_phases":null,"online_accounting":null,"online_wall_ns":null,
+        "cli_accounting":null,"qualified_speedup":null,"gpu":{"devices":[]}
     });
     if let Some(stats) = random_stats {
         report["factor_base"]["random_preparation"] = json!({
@@ -374,6 +426,9 @@ fn execute<const B: u32>(
         });
     }
     if args.decompose_only {
+        let target = curve
+            .point(public.target[0], public.target[1])
+            .map_err(|e| e.to_string())?;
         let mut workspace = base.workspace();
         let row = base
             .decompose(target, &mut workspace)
@@ -392,8 +447,14 @@ fn execute<const B: u32>(
     }
     let prepared =
         aux::PreparedSolver::new(&base, public.n, generator).map_err(|e| e.to_string())?;
-    report["target_independent_preparation_seconds"] = json!(begin.elapsed().as_secs_f64());
+    let prepared_at = Instant::now();
+    let preparation = prepared_at.duration_since(begin);
+    report["target_independent_preparation_seconds"] = json!(preparation.as_secs_f64());
+    report["target_independent_preparation_ns"] = json!(nanos(preparation)?);
     if let Some(path) = &args.replay_relations {
+        let target = curve
+            .point(public.target[0], public.target[1])
+            .map_err(|e| e.to_string())?;
         let raw = read_bounded(path)?;
         let mut rows = Vec::new();
         for (index, line) in raw
@@ -444,6 +505,11 @@ fn execute<const B: u32>(
         max_duration: args.max_millis.map(Duration::from_millis),
     };
     let online = Instant::now();
+    let target = curve
+        .point(public.target[0], public.target[1])
+        .map_err(|e| e.to_string())?;
+    let validated_at = Instant::now();
+    let input_validation = validated_at.duration_since(online);
     if args.relation_yield_only {
         let (reason, stats, phases) = if args.profile_phases {
             prepared
@@ -455,7 +521,13 @@ fn execute<const B: u32>(
                 .map(|(reason, stats)| (reason, stats, None))
         }
         .map_err(|e| e.to_string())?;
-        record_online_time(&mut report, online.elapsed(), phases.as_ref())?;
+        let online_end = Instant::now();
+        record_online_time(
+            &mut report,
+            online_end.duration_since(online),
+            input_validation,
+            phases.as_ref(),
+        )?;
         report["mode"] = json!("bounded-relation-yield");
         report["sampler"] = json!("splitmix64-rejection-public-coefficient-walks");
         report["status"] = json!(if reason == aux::StopReason::QueryBudget {
@@ -466,6 +538,15 @@ fn execute<const B: u32>(
         report["stop_reason"] = json!(format!("{reason:?}"));
         report["work"] = stats_json(&stats);
         report["certificate"] = Value::Null;
+        report["resources"] = experiment::resources();
+        report["cli_accounting"] = cli_costs_json(
+            preparation,
+            online.duration_since(begin),
+            online_end.duration_since(begin),
+            online_end.duration_since(begin),
+            online_end.duration_since(begin),
+            begin.elapsed(),
+        )?;
         return Ok(report);
     }
     let (outcome, phases) = if args.profile_phases {
@@ -478,7 +559,13 @@ fn execute<const B: u32>(
             .map(|outcome| (outcome, None))
     }
     .map_err(|e| e.to_string())?;
-    record_online_time(&mut report, online.elapsed(), phases.as_ref())?;
+    let online_end = Instant::now();
+    record_online_time(
+        &mut report,
+        online_end.duration_since(online),
+        input_validation,
+        phases.as_ref(),
+    )?;
     report["mode"] = json!("bounded-single-target-search");
     report["sampler"] = json!("splitmix64-rejection-public-coefficient-walks");
     report["work"] = stats_json(outcome.stats());
@@ -495,7 +582,10 @@ fn execute<const B: u32>(
             report["producer_check_passed"] = json!(false);
         }
     }
+    let mut reference_start = online_end;
+    let mut reference_end = online_end;
     if args.rho {
+        reference_start = Instant::now();
         let group =
             libca::Group::ec(public.p, public.a, public.b, public.n).map_err(|e| e.to_string())?;
         let options = libca::Options {
@@ -512,28 +602,46 @@ fn execute<const B: u32>(
             &libca::Elem::ec(public.target[0], public.target[1]),
             &options,
         );
-        let seconds = start.elapsed().as_secs_f64();
+        let recovered_at = Instant::now();
+        let search_wall = recovered_at.duration_since(start);
         report["rho"] = match result {
             Ok((scalar, stats)) => {
                 let replayed = curve
                     .mul(Some(generator), scalar)
                     .map_err(|e| e.to_string())?
                     == Some(target);
+                let checked_at = Instant::now();
                 if !replayed {
                     return Err("rho public-key replay failed".into());
                 }
-                json!({"status":"solved","scalar":scalar,"producer_check_passed":true,"online_wall_seconds":seconds,
+                let total = checked_at.duration_since(start);
+                json!({"status":"solved","scalar":scalar,"producer_check_passed":true,
+                    "online_wall_seconds":total.as_secs_f64(),"online_wall_ns":nanos(total)?,
+                    "online_accounting":{"unit":"ns","search":nanos(search_wall)?,
+                        "local_replay":nanos(checked_at.duration_since(recovered_at))?,"total":nanos(total)?,"independent_replay":null},
                     "group_ops":stats.group_ops,"seed":options.seed,"threads":1,
+                    "group_ops_scope":"native solver only; excludes Rust scalar replay",
                     "reference":"repository C batched negation-map rho; Montgomery arithmetic"})
             }
             Err(error) => {
-                json!({"status":"incomplete","error":error.to_string(),"online_wall_seconds":seconds,"seed":options.seed})
+                json!({"status":"incomplete","error":error.to_string(),"online_wall_seconds":search_wall.as_secs_f64(),
+                    "online_wall_ns":nanos(search_wall)?,"online_accounting":{"unit":"ns","search":nanos(search_wall)?,
+                        "local_replay":0,"total":nanos(search_wall)?,"independent_replay":null},"seed":options.seed})
             }
         };
+        reference_end = Instant::now();
         // Raw unqualified durations only. Complete cold accounting, admission
         // and independent replay belong to the frozen measurement harness.
     }
     report["resources"] = experiment::resources();
+    report["cli_accounting"] = cli_costs_json(
+        preparation,
+        online.duration_since(begin),
+        online_end.duration_since(begin),
+        reference_start.duration_since(begin),
+        reference_end.duration_since(begin),
+        begin.elapsed(),
+    )?;
     Ok(report)
 }
 
@@ -546,6 +654,93 @@ mod tests {
     struct TestCli {
         #[command(flatten)]
         args: AuxiliaryArgs,
+    }
+
+    fn check_cli_costs(report: &Value) {
+        let costs = &report["cli_accounting"];
+        let ns = |key: &str| costs[key].as_u64().unwrap();
+        assert_eq!(
+            ns("observed_total"),
+            [
+                "preparation",
+                "before_online",
+                "online",
+                "reporting",
+                "reference"
+            ]
+            .iter()
+            .map(|key| ns(key))
+            .sum::<u64>()
+        );
+        assert_eq!(
+            ns("ic_observed_total"),
+            ns("observed_total") - ns("reference")
+        );
+        assert_eq!(ns("online"), report["online_wall_ns"].as_u64().unwrap());
+        assert_eq!(
+            ns("preparation"),
+            report["target_independent_preparation_ns"]
+                .as_u64()
+                .unwrap()
+        );
+        for key in [
+            "cold_total",
+            "upstream_preparation",
+            "process_start_exit",
+            "independent_replay",
+        ] {
+            assert!(costs[key].is_null());
+        }
+    }
+
+    #[test]
+    fn cli_boundaries_partition_costs_without_charging_rho_to_ic() {
+        let ns = Duration::from_nanos;
+        let c = cli_costs_json(ns(10), ns(12), ns(50), ns(70), ns(90), ns(100)).unwrap();
+        assert_eq!(c["preparation"], 10);
+        assert_eq!(c["before_online"], 2);
+        assert_eq!(c["online"], 38);
+        assert_eq!(c["reporting"], 30);
+        assert_eq!(c["reference"], 20);
+        assert_eq!(c["observed_total"], 100);
+        assert_eq!(c["ic_observed_total"], 80);
+        let c = cli_costs_json(ns(10), ns(12), ns(50), ns(50), ns(50), ns(100)).unwrap();
+        assert_eq!(c["reference"], 0);
+        assert_eq!(c["ic_observed_total"], 100);
+        for positions in [
+            [13, 12, 50, 70, 90, 100],
+            [10, 51, 50, 70, 90, 100],
+            [10, 12, 71, 70, 90, 100],
+            [10, 12, 50, 91, 90, 100],
+            [10, 12, 50, 70, 101, 100],
+        ] {
+            let [a, b, c, d, e, f] = positions.map(ns);
+            assert!(cli_costs_json(a, b, c, d, e, f).is_err());
+        }
+        assert!(nanos(Duration::from_secs(u64::MAX)).is_err());
+    }
+
+    #[test]
+    fn caller_charges_target_validation_and_preserves_unknown_unprofiled_core_costs() {
+        let ns = Duration::from_nanos;
+        let core = aux::SearchPhases {
+            initialization: ns(80),
+            total: ns(80),
+            clock_reads: 2,
+            ..aux::SearchPhases::default()
+        };
+        let mut report = json!({});
+        record_online_time(&mut report, ns(100), ns(7), Some(&core)).unwrap();
+        assert_eq!(report["online_wall_ns"], 100);
+        assert_eq!(report["online_accounting"]["input_validation"], 7);
+        assert_eq!(report["online_accounting"]["core"], 80);
+        assert_eq!(report["online_accounting"]["call_overhead"], 13);
+        assert!(record_online_time(&mut report, ns(86), ns(7), Some(&core)).is_err());
+        assert!(record_online_time(&mut report, ns(6), ns(7), None).is_err());
+        let mut report = json!({});
+        record_online_time(&mut report, ns(100), ns(7), None).unwrap();
+        assert!(report["online_accounting"]["core"].is_null());
+        assert!(report["online_accounting"]["call_overhead"].is_null());
     }
 
     #[test]
@@ -592,6 +787,19 @@ mod tests {
         assert_eq!(direct["certificate"]["scalar"], 37);
         assert_eq!(direct["rho"]["status"], "solved");
         assert_eq!(direct["rho"]["scalar"], 37);
+        check_cli_costs(&auxiliary);
+        check_cli_costs(&direct);
+        let rho = &direct["rho"]["online_accounting"];
+        assert_eq!(
+            rho["total"].as_u64().unwrap(),
+            rho["search"].as_u64().unwrap() + rho["local_replay"].as_u64().unwrap()
+        );
+        assert_eq!(rho["total"], direct["rho"]["online_wall_ns"]);
+        assert!(
+            direct["cli_accounting"]["reference"].as_u64().unwrap()
+                >= rho["total"].as_u64().unwrap()
+        );
+        assert_eq!(auxiliary["cli_accounting"]["reference"], 0);
         assert_eq!(auxiliary["work"]["queries"], direct["work"]["queries"]);
         assert_eq!(direct["factor_base"]["uses_auxiliary_maps"], false);
         assert_eq!(direct["qualified_speedup"], Value::Null);
@@ -742,6 +950,7 @@ mod tests {
         args.factor_base_seed = Some(701);
         let random = execute::<7>(&args, &input, "fixture".into(), Instant::now()).unwrap();
         for report in [&special, &direct, &random] {
+            check_cli_costs(report);
             assert_eq!(report["mode"], "bounded-relation-yield");
             assert_eq!(report["status"], "complete");
             assert_eq!(report["work"]["queries"], 129);
@@ -831,6 +1040,7 @@ mod tests {
         assert_eq!(profiled["certificate"], unprofiled["certificate"]);
         assert_eq!(profiled["work"], unprofiled["work"]);
         let check = |report: &Value| {
+            check_cli_costs(report);
             let phases = &report["online_exclusive_phases"];
             assert_eq!(phases["scope"], "core-search-including-local-replay");
             let total = phases["total"].as_u64().unwrap();
@@ -841,13 +1051,21 @@ mod tests {
                 .map(|v| v.as_u64().unwrap())
                 .sum();
             assert_eq!(total, sum);
+            let call = &report["online_accounting"];
+            let online_ns = report["online_wall_ns"].as_u64().unwrap();
+            assert_eq!(
+                online_ns,
+                total
+                    + call["input_validation"].as_u64().unwrap()
+                    + call["call_overhead"].as_u64().unwrap()
+            );
             assert_eq!(
                 report["online_wall_seconds"].as_f64().unwrap(),
-                total as f64 / 1e9
+                Duration::from_nanos(online_ns).as_secs_f64()
             );
-            assert!(
-                report["online_call_wall_seconds"].as_f64().unwrap()
-                    >= report["online_wall_seconds"].as_f64().unwrap()
+            assert_eq!(
+                report["online_call_wall_seconds"],
+                report["online_wall_seconds"]
             );
             assert!(report["qualified_speedup"].is_null());
             assert!(phases["independent_replay"].is_null());

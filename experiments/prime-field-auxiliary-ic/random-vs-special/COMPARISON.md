@@ -132,10 +132,12 @@ Decomposition includes candidate evaluation/subtraction and signed-sum checks;
 row validation checks the distinct retained row's `aG+bQ` equation. Graph
 recovery includes row storage and dependency expansion. The remaining
 bookkeeping interval charges deduplication, counters, limits and cleanup.
-Clock overhead stays charged. A profiled report uses the exact core total
-for `online_wall_seconds` and retains the enclosing call duration separately
-as `online_call_wall_seconds`; an unprofiled report retains its old caller
-interval and a null partition. Profiling must match across arms. The offline
+Clock overhead stays charged. Version 2's `online_wall_ns` and both online
+seconds fields cover target-point validation plus the complete caller
+interval; `online_accounting` separates target-input validation, the core
+partition and caller overhead. Version 1's profiled online field covered only
+the core, with enclosing call time separate. An unprofiled core/overhead stays
+null. Profiling and schema versions must match across arms. The offline
 alignment helper checks phase types, exact sums and scope, and rejects any
 graph/replay time in yield-only mode. It still derives no time ratio.
 These are producer instrumentation assertions, not signed timing evidence.
@@ -144,6 +146,17 @@ These are producer instrumentation assertions, not signed timing evidence.
 Profiled timings describe the instrumented implementation. Include matched
 uninstrumented controls to expose instrumentation effects; never subtract an
 estimated overhead or combine unprofiled totals with phases from another run.
+
+Version 2's `cli_accounting` partitions the interval from `run` entry through
+the resource snapshot into preparation, pre-online bookkeeping, online,
+reporting and the optional rho reference. Each interval is charged once, and
+the IC observed total excludes the reference. Rho's own online duration now
+includes its final Rust scalar replay. Its native operation counter excludes
+that replay, so it does not supply a complete calibrated operation total.
+The checker refuses missing/double-counted intervals and any fabricated cold
+total. It continues accepting old version 1 reports only under their original
+timing semantics. These remain producer instrumentation assertions, with no
+qualified online or cold speedup inferred. [pcc:unverified]
 
 Cold totals charge auxiliary-curve discovery, point counting/order evidence,
 smooth-kernel search, isogeny-map construction, fiber enumeration/lifting,

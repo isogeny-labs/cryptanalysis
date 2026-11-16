@@ -162,6 +162,9 @@ the archived public manifest:
 - `--rho` additionally invokes the repository C batched negation-map rho
   reference on the same target. It uses Montgomery arithmetic, so this is
   explicitly a different arithmetic backend. `--rho-max-ops` bounds it.
+  Version 2 reports charge the Rust scalar replay to its online wall time,
+  with integer search/replay partitions. Its group-operation counter still
+  describes the native solver only, excluding the Rust replay.
 - `--decompose-only` checks one target decomposition, without recovery.
 - `--relation-yield-only` processes a public query prefix without early
   recovery or graph elimination. Compare the three arms below with identical
@@ -177,10 +180,12 @@ the archived public manifest:
   for initialization, target walks, decomposition (including signed-sum
   checks), new-row coefficient validation, graph recovery, local replay and
   bookkeeping. Their sum is exactly the core interval; clock overhead is
-  included, not estimated or subtracted. With profiling, `online_wall_seconds`
-  is that core interval; `online_call_wall_seconds` also retains the enclosing
-  caller interval. Without profiling, the original caller interval remains
-  `online_wall_seconds` and the partition is null. Match this flag across
+  included, not estimated or subtracted. In version 2 reports,
+  `online_wall_ns` and both online seconds fields cover the enclosing call,
+  beginning with construction/validation of the supplied target point and
+  ending after the search result and any local replay. `online_accounting`
+  splits that interval into target-input validation, core and caller overhead.
+  An unprofiled core/overhead stays null. Match profiling across
   controls. The library exposes `solve_profiled` and
   `relation_yield_profiled`, leaving the original APIs uninstrumented.
   Soft deadlines may be affected by instrumentation. Yield-only collection
@@ -209,6 +214,17 @@ yield reports and derives exact row/hit fractions only for matching completed
 prefixes. It refuses mismatched bases/settings, censored rows and replay/solve
 modes; it supplies no timing or end-to-end qualification. Full base archives
 and signed replay remain required for research measurements.
+
+Version 2 reports also expose a disjoint `cli_accounting` partition through
+the resource snapshot: preparation, pre-call bookkeeping, online call,
+reporting and optional rho reference. The IC observed total excludes the
+rho interval. Accounting serialization, process start/exit, upstream
+auxiliary preparation and independent replay are outside this observed
+interval, and cold total stays null. These are local producer diagnostics.
+Version 1 reports retain their historical meaning: profiled
+`online_wall_seconds` covered only the core. The checker accepts either
+version under its own rules and refuses mixed-version comparisons.
+`[pcc:unverified]`
 
 Run research measurements only after the repository checkpoint and GPU-host
 requirements are met. CLI durations and phase partitions are producer
