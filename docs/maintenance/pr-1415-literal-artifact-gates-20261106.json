@@ -1,0 +1,25 @@
+{
+  "schema": "maintenance.literal-artifact-gates/v1",
+  "pr": 1415,
+  "parent": "f5c3e7b0b9f8b8544ca9967c35b5f4f1d1993142",
+  "sources": [
+    ".github/workflows/artifacts.yml",
+    "tools/artifacts/artifacts.py",
+    "crypto-autoresearcher:.github/workflows/artifacts.yml@de345640"
+  ],
+  "change": {
+    "original_store_job_id_retained": true,
+    "original_store_job_all_steps_guards_timeouts_permissions_identical_except_display_name": true,
+    "new_store_display_name": "artifacts",
+    "new_size_policy_step_exact_original": true,
+    "all_other_workflow_fields_exact": true,
+    "source_tests_contract_lock_unchanged": true,
+    "old_current_head_actual_executed": 29,
+    "new_size_job_adds": 1,
+    "estimated_new_executed": 30,
+    "actual_new_budget": "UNVERIFIED; require complete fresh CI",
+    "protection_read": "403 Resource not accessible by integration; no protection changes/bypass attempted"
+  },
+  "limits": "All actual new-head checks/budget<=30/reviews/CLEAN required. Not scientific or storage/custody admission. No original validation removed.",
+  "pcc_standing": "unverified producer assertion"
+}
