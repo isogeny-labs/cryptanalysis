@@ -72,7 +72,7 @@ python3 -B "$P" --self-test
 python3 -B "$P" --paired >/tmp/ct168-publicQ.json
 ```
 
-The four frozen JSON records and the CI workflow bind these source paths; a green source job is **not** an independent signed scientific claim. Normal/optimized Python audit, direct/generic source agreement and negative inputs are the specified source-only gates.
+The three frozen JSON records and the CI workflow bind these source paths; a green source job is **not** an independent signed scientific claim. Normal/optimized Python audit, direct/generic source agreement and negative inputs are the specified source-only gates.
 
 ## Coordination and current ECDLP benchmark status
 
