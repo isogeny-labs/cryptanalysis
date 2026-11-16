@@ -2,19 +2,25 @@
 from collections import Counter, defaultdict
 from fractions import Fraction
 from pathlib import Path
-import hashlib, itertools, json, statistics
+import gzip, hashlib, itertools, json, statistics
 
 H=Path(__file__).resolve().parent
 P=json.loads((H/'protocol.json').read_text())
 S=H.parent/'xedni-large-order-admission-20261115'/'result.json'
 assert hashlib.sha256(S.read_bytes()).hexdigest()==P['source_sha256']
 R=json.loads((H/'run-result.json').read_text())
+A=json.loads((H/'storage-amendment.json').read_text())
+assert A['measurement_changed'] is False
 assert hashlib.sha256((H/'protocol.json').read_bytes()).hexdigest()==R['protocol_sha256']
 
 def read_rows(name,key):
-    path=H/name
-    assert hashlib.sha256(path.read_bytes()).hexdigest()==R[key]
-    return [json.loads(line) for line in path.open()]
+    info=A['files'][name]
+    packed=(H/info['gzip_path']).read_bytes()
+    assert hashlib.sha256(packed).hexdigest()==info['gzip_sha256']
+    raw=gzip.decompress(packed)
+    assert len(raw)==info['raw_bytes']
+    assert hashlib.sha256(raw).hexdigest()==R[key]==info['raw_sha256']
+    return [json.loads(line) for line in raw.decode('utf-8').splitlines()]
 public=read_rows('public.jsonl','public_sha256')
 lifts=read_rows('lifts.jsonl','lifts_sha256')
 assert len(public)==6656 and len(lifts)==R['counts']['lift_attempts']
