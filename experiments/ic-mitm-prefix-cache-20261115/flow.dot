@@ -1,0 +1,8 @@
+digraph G {rankdir=TB; node[shape=box,style="rounded,filled",fillcolor="#edf4f4",fontname="Helvetica"];
+ input[label="Frozen curve / base / target"];
+ cache[label="Prepare bounded prefix inverses\nCharge construction + cleanup"];
+ pairs[label="Ordered pair sums: denominator lookup\nExact fallback / exceptional addition"];
+ map[label="Abscissa x+1 key, first witness retained"];
+ query[label="Query + actual signed group-sum check"];
+ finish[label="Relations, matrix and scalar verification"];
+ input->cache->pairs->map->query->finish;}

@@ -1,0 +1,24 @@
+{
+  "source_commit": "5b9f7050c681614342e12d3becb6da0620d6f603",
+  "argv": [
+    "/home/agent/.cargo/bin/cargo",
+    "+1.85.0",
+    "check",
+    "--locked",
+    "--all-targets",
+    "--manifest-path",
+    "bindings/rust/Cargo.toml",
+    "-p",
+    "hashed-ecdl-tensor",
+    "-p",
+    "cryptanalysis",
+    "-p",
+    "ca-curve-audit"
+  ],
+  "explicit_environment": {
+    "CARGO_BUILD_JOBS": "1"
+  },
+  "timeout_seconds": 300,
+  "exit_code": 101,
+  "scope": "producer development correctness check; no benchmark"
+}

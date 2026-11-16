@@ -1,0 +1,279 @@
+name: Whole original relation diagnostics and historical replay
+on:
+  pull_request:
+    paths:
+      - 'experiments/chained-transfer-public-target/**'
+      - '.github/workflows/chained-transfer-original-relation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'experiments/chained-transfer-public-target/**'
+      - '.github/workflows/chained-transfer-original-relation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  original-relation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      RUSTUP_TOOLCHAIN: 1.99.1
+      SOURCE_REVISION: ${{ github.event.pull_request.head.sha || github.sha }}
+      SOURCE_BRANCH: ${{ github.head_ref || github.ref_name }}
+      ELAN_TOOLCHAIN: leanprover/lean4:v4.35.0
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          path: cryptanalysis
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            .gitignore
+            .resume/RESUME.md
+            scripts/checkpoint.sh
+            docs/chained-transfer-checkpoint-transport/PROTOCOL_01.md
+            experiments/chained-transfer-public-target
+            tools/lean
+            tools/pcc
+            pcc/keyring.json
+            pcc/claims
+            .github/workflows
+            .github/workflows/chained-transfer-reference.yml
+            .github/workflows/chained-transfer-public-target.yml
+            .github/workflows/chained-transfer-norm-sampling.yml
+            .github/workflows/chained-transfer-arithmetic-audit.yml
+            .github/workflows/chained-transfer-beta-complete.yml
+            .github/workflows/chained-transfer-fixed-chain.yml
+            docs/research-artifacts/chained-transfer/norm-halving-01
+            docs/research-artifacts/chained-transfer/nondual13-phaseA-01
+            docs/research-artifacts/chained-transfer/nondual-models-18
+            docs/research-artifacts/chained-transfer/fixed-twisted-pair-20
+            docs/research-artifacts/chained-transfer/paired-fourth-21
+            docs/research-artifacts/chained-transfer/complete-chain-22
+            docs/research-artifacts/chained-transfer/norm-point-original-prime-23
+            docs/research-artifacts/chained-transfer/original-prime-kernel-geometry-24
+            docs/research-artifacts/chained-transfer/original-full-group-25
+            docs/research-artifacts/chained-transfer/original-IC-sampler-26
+            docs/research-artifacts/chained-transfer/original-relation-rank-character-27
+            .github/workflows/chained-transfer-nondual-preflight.yml
+            .github/workflows/chained-transfer-beta-rational-lift.yml
+            .github/workflows/chained-transfer-common-origin.yml
+            .github/workflows/chained-transfer-new-target-ic.yml
+            .github/workflows/chained-transfer-checkpoint-transport.yml
+            .github/workflows/chained-transfer-odd-refinement.yml
+            .github/workflows/chained-transfer-original-root-fixture.yml
+            .github/workflows/chained-transfer-odd-product.yml
+            .github/workflows/chained-transfer-odd-source.yml
+            tools/artifacts/artifacts.py
+            .artifacts/config.json
+            .github/workflows/chained-transfer-chain-kernels.yml
+            .github/workflows/chained-transfer-gluing.yml
+            .github/workflows/chained-transfer-kernels.yml
+            .github/workflows/chained-transfer-bitangents.yml
+            .github/workflows/chained-transfer-two-primary.yml
+            .github/workflows/chained-transfer-completed-v2.yml
+            .github/workflows/chained-transfer-completed-descent.yml
+            .github/workflows/pcc-gate.yml
+      - id: producer_pin
+        name: Read the exact original producer revision
+        run: |
+          pin=$(cat cryptanalysis/experiments/chained-transfer-public-target/upstream-commit.txt)
+          [[ $pin =~ ^[0-9a-f]{40}$ ]] || exit 2
+          echo "revision=$pin" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          repository: isogeny-labs/crypto
+          ref: ${{ steps.producer_pin.outputs.revision }}
+          persist-credentials: false
+          path: crypto
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            research/chained_jacobian_transfers_20261110/genus3-prime-descent
+            research/chained_jacobian_transfers_20261110/evidence/genus3-primary-01/cases.json
+            research/chained_jacobian_transfers_20261110/evidence/genus3-cli-fixtures-01
+            research/chained_jacobian_transfers_20261110/evidence/genus3-ramification-panel-01/all-historical-cases.json
+            research/chained_jacobian_transfers_20261110/evidence/genus3-lean-bindings-01/claims.json
+            research/chained_jacobian_transfers_20261110/G3_DESCENT_PROTOCOL.md
+            research/chained_jacobian_transfers_20261110/G3_DESCENT_DERIVATION.md
+            research/chained_jacobian_transfers_20261110/G3_MODEL_TRANSPORT_ADDENDUM.md
+            research/chained_jacobian_transfers_20261110/G3_RAMIFICATION_COVERAGE_ADDENDUM.md
+            research/chained_jacobian_transfers_20261110/G3_PROOF_MAP.md
+            research/quartic_n4_la_20261021/common.rs
+            research/quartic_n4_la_20261021/ghs.rs
+            research/quartic_n4_la_20261021/ic.rs
+            research/quartic_n4_la_20261021/solver.rs
+            isogeny_algos
+            src/cryptanalysis/diem_quartic.rs
+            src/cryptanalysis/plane_quartic_pic.rs
+            src/cryptanalysis/identity_certificate.rs
+            src/cryptanalysis/smith_kernel_coverage.rs
+            src/hash/sha256.rs
+            tools/lean
+            tools/pcc
+            pcc/keyring.json
+            pcc/claims
+            .github/workflows/genus3-prime-descent.yml
+      - name: Checkout immutable original artifact tool and policy
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          repository: isogeny-labs/cryptanalysis
+          ref: 3de8c174cf65e6b34bf8579d97b817b8f5dc2ded
+          persist-credentials: false
+          path: artifact-tools
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            tools/artifacts/artifacts.py
+            scripts/checkpoint.sh
+            .artifacts/config.json
+      - name: Prepare the original pinned AWS CLI before the credential step
+        run: |
+          set -euo pipefail
+          if ! command -v aws >/dev/null; then
+            python3 -m venv "$RUNNER_TEMP/checkpoint-awscli"
+            "$RUNNER_TEMP/checkpoint-awscli/bin/python" -m pip install --disable-pip-version-check awscli==1.46.2
+            echo "$RUNNER_TEMP/checkpoint-awscli/bin" >> "$GITHUB_PATH"
+          fi
+      - name: Hydrate the complete native fixture with the pinned original tool
+        working-directory: cryptanalysis
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+        run: |
+          set -euo pipefail
+          cmp ../artifact-tools/.artifacts/config.json .artifacts/config.json
+          cmp ../artifact-tools/tools/artifacts/artifacts.py tools/artifacts/artifacts.py
+          if ! command -v aws >/dev/null; then
+            python3 -m venv "$RUNNER_TEMP/odd-product-artifacts-awscli"
+            "$RUNNER_TEMP/odd-product-artifacts-awscli/bin/python" -m pip install --disable-pip-version-check awscli==1.46.2
+            export ARTIFACTS_AWS="$RUNNER_TEMP/odd-product-artifacts-awscli/bin/aws"
+          fi
+          python3 ../artifact-tools/tools/artifacts/artifacts.py pull --jobs 4 experiments/chained-transfer-public-target/evidence/odd-product-maps-acceptance-02/all-native-records.json.xz
+          python3 ../artifact-tools/tools/artifacts/artifacts.py pull --jobs 4 docs/research-artifacts/chained-transfer/norm-halving-01
+          python3 ../artifact-tools/tools/artifacts/artifacts.py pull --jobs 4 docs/research-artifacts/chained-transfer/nondual13-phaseA-01
+          python3 ../artifact-tools/tools/artifacts/artifacts.py pull --jobs 4 docs/research-artifacts/chained-transfer/nondual-models-18
+          python3 ../artifact-tools/tools/artifacts/artifacts.py pull --jobs 4 docs/research-artifacts/chained-transfer/fixed-twisted-pair-20
+          python3 ../artifact-tools/tools/artifacts/artifacts.py pull --jobs 4 docs/research-artifacts/chained-transfer/paired-fourth-21
+          python3 ../artifact-tools/tools/artifacts/artifacts.py pull --jobs 4 docs/research-artifacts/chained-transfer/complete-chain-22
+          python3 ../artifact-tools/tools/artifacts/artifacts.py pull --jobs 4 docs/research-artifacts/chained-transfer/norm-point-original-prime-23
+          python3 ../artifact-tools/tools/artifacts/artifacts.py pull --jobs 4 docs/research-artifacts/chained-transfer/original-prime-kernel-geometry-24
+          python3 ../artifact-tools/tools/artifacts/artifacts.py pull --jobs 4 docs/research-artifacts/chained-transfer/original-full-group-25
+          python3 ../artifact-tools/tools/artifacts/artifacts.py pull --jobs 4 docs/research-artifacts/chained-transfer/original-IC-sampler-26
+          python3 ../artifact-tools/tools/artifacts/artifacts.py pull --jobs 4 docs/research-artifacts/chained-transfer/original-relation-rank-character-27
+      - name: Install pinned native and original proof toolchains
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.99.1 --profile minimal --component rustfmt
+          curl -fsSL --connect-timeout 15 --max-time 120 https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o "$RUNNER_TEMP/elan-init.sh"
+          sh "$RUNNER_TEMP/elan-init.sh" -y --no-modify-path --default-toolchain "$ELAN_TOOLCHAIN"
+          "$HOME/.elan/bin/elan" toolchain install leanprover/lean4:v4.34.1
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Record exact source, original tool and host capability
+        working-directory: cryptanalysis
+        run: |
+          set -euo pipefail
+          [[ "$SOURCE_REVISION" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git rev-parse HEAD)" = "$SOURCE_REVISION"
+          git check-ref-format --branch "$SOURCE_BRANCH"
+          branch=$SOURCE_BRANCH
+          if git show-ref --verify --quiet "refs/heads/$branch"; then
+            test "$(git rev-parse "refs/heads/$branch")" = "$SOURCE_REVISION"
+            git switch "$branch"
+          else
+            git switch --create "$branch"
+          fi
+          test -z "$(git status --porcelain --untracked-files=all)"
+          cmp ../artifact-tools/scripts/checkpoint.sh scripts/checkpoint.sh
+          echo '3c4192168bbc390bf94be46c765914a419a4eff8c30e3f52f5b94ea432738056  ../artifact-tools/scripts/checkpoint.sh' | sha256sum --check
+          out="$RUNNER_TEMP/n4-original-relation-checkpoint"
+          mkdir "$out"
+          git rev-parse HEAD > "$out/source-head.txt"
+          git symbolic-ref --short HEAD > "$out/source-branch.txt"
+          sha256sum .gitignore scripts/checkpoint.sh .resume/RESUME.md docs/chained-transfer-checkpoint-transport/PROTOCOL_01.md > "$out/source-inputs.sha256"
+          cp .resume/RESUME.md "$out/original-RESUME.md"
+          uname -sr > "$out/kernel.txt"
+          set +e
+          cat /proc/sys/kernel/random/boot_id > "$out/boot-id.log" 2>&1
+          printf '%s\n' "$?" > "$out/boot-id.exit"
+          readlink /proc/self/ns/time > "$out/time-namespace.log" 2>&1
+          printf '%s\n' "$?" > "$out/time-namespace.exit"
+          cat /proc/self/timens_offsets > "$out/time-offsets.log" 2>&1
+          printf '%s\n' "$?" > "$out/time-offsets.exit"
+          set -e
+      - name: Run only the original gate and read back its exact checkpoint
+        working-directory: cryptanalysis
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+          CHECKPOINT_AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+          CHECKPOINT_SESSION: chained-transfer-${{ github.run_id }}-${{ github.run_attempt }}
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/n4-original-relation-checkpoint"
+          cmp ../artifact-tools/scripts/checkpoint.sh scripts/checkpoint.sh
+          set +e
+          timeout 120 bash ../artifact-tools/scripts/checkpoint.sh gate > "$out/original-gate.log" 2>&1
+          code=$?
+          set -e
+          printf '%s\n' "$code" > "$out/original-gate.exit"
+          cat "$out/original-gate.log"
+          test "$code" -eq 0 || exit "$code"
+          cp .resume/.last-push "$out/original-last-push.txt"
+          read -r state_hash stamp checkpoint_uri < "$out/original-last-push.txt"
+          [[ "$state_hash" =~ ^[0-9a-f]{64}$ ]]
+          [[ "$stamp" =~ ^[A-Za-z0-9._=-]+$ ]]
+          safe_branch=$(printf '%s' "$SOURCE_BRANCH" | sed 's#/#__#g; s#[^A-Za-z0-9._=-]#-#g')
+          [[ "$checkpoint_uri" == "s3://setec-astronomy-artifacts/checkpoints/cryptanalysis/$safe_branch/$stamp/" ]]
+          set +e
+          aws --region "$CHECKPOINT_AWS_REGION" s3 cp --only-show-errors "${checkpoint_uri}checkpoint.tar.gz" "$out/remote-checkpoint.tar.gz" > "$out/readback-pack.log" 2>&1
+          pack_code=$?
+          aws --region "$CHECKPOINT_AWS_REGION" s3 cp --only-show-errors "${checkpoint_uri}RESUME.md" "$out/remote-RESUME.md" > "$out/readback-resume.log" 2>&1
+          resume_code=$?
+          aws --region "$CHECKPOINT_AWS_REGION" s3 cp --only-show-errors "${checkpoint_uri}meta.json" "$out/remote-meta.json" > "$out/readback-meta.log" 2>&1
+          meta_code=$?
+          set -e
+          printf '%s\n' "$pack_code" > "$out/readback-pack.exit"
+          printf '%s\n' "$resume_code" > "$out/readback-resume.exit"
+          printf '%s\n' "$meta_code" > "$out/readback-meta.exit"
+          test "$pack_code" -eq 0 && test "$resume_code" -eq 0 && test "$meta_code" -eq 0
+          cmp .resume/RESUME.md "$out/remote-RESUME.md"
+          jq --exit-status --arg source "$SOURCE_REVISION" --arg branch "$SOURCE_BRANCH" '.head==$source and .repo=="cryptanalysis" and .branch==$branch' "$out/remote-meta.json"
+          tar -tzf "$out/remote-checkpoint.tar.gz" > "$out/remote-members.txt"
+          tar -xOzf "$out/remote-checkpoint.tar.gz" ./RESUME.md > "$out/pack-RESUME.md"
+          tar -xOzf "$out/remote-checkpoint.tar.gz" ./meta.json > "$out/pack-meta.json"
+          cmp "$out/pack-RESUME.md" "$out/remote-RESUME.md"
+          cmp "$out/pack-meta.json" "$out/remote-meta.json"
+          sha256sum "$out/remote-checkpoint.tar.gz" "$out/remote-RESUME.md" "$out/remote-meta.json" > "$out/remote-inputs.sha256"
+          test -z "$(git status --porcelain --untracked-files=all)"
+          bash ../artifact-tools/scripts/checkpoint.sh status > "$out/original-final-status.log" 2>&1
+      - name: Replay all whole diagnostics, controls and original proof gates
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/n4-original-relation-output"
+          set +e
+          timeout 6300 bash cryptanalysis/experiments/chained-transfer-public-target/ci_original_relation/check-01.sh crypto "$out" "$RUNNER_TEMP/n4-original-relation-checkpoint"
+          code=$?
+          set -e
+          printf '%s\n' "$code" > "$RUNNER_TEMP/n4-original-relation-driver.exit"
+          test "$code" -eq 0 || exit "$code"
+          set +e
+          python3 cryptanalysis/experiments/chained-transfer-public-target/ci_original_relation/accept_completed_01.py cryptanalysis "$out" > "$out/completed-run-acceptance.txt" 2>&1
+          code=$?
+          set -e
+          printf '%s\n' "$code" > "$out/completed-run-acceptance.exit"
+          cat "$out/completed-run-acceptance.txt"
+          exit "$code"
+      - name: Retain complete and partial output on every outcome
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: original-relation-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            ${{ runner.temp }}/n4-original-relation-output
+            ${{ runner.temp }}/n4-original-relation-checkpoint
+            ${{ runner.temp }}/n4-original-relation-driver.exit
+          if-no-files-found: error

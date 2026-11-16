@@ -1,0 +1,45 @@
+name: CT158 cubic-source twist point census
+on:
+  push:
+    branches:
+      - research/ct146-correction-torsion-contract-20261115
+  pull_request:
+    paths:
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/ct158_*'
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT158_*'
+      - '.github/workflows/ct158-twist-census.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  independent-twist-census:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Independent coefficient audit and full exhaustive twist census
+        shell: bash
+        run: |
+          set -euo pipefail
+          D=experiments/chained-transfer-public-target/norm-point-reuse-01
+          python3 -B "$D/ct158_twist_coefficient_audit.py" > "$RUNNER_TEMP/ct158-a.json"
+          python3 -O -B "$D/ct158_twist_coefficient_audit.py" > "$RUNNER_TEMP/ct158-b.json"
+          cmp "$RUNNER_TEMP/ct158-a.json" "$RUNNER_TEMP/ct158-b.json"
+          c++ -std=c++17 -O3 -Wall -Wextra -Werror "$D/ct158_twist_pair_census.cpp" -o "$RUNNER_TEMP/ct158-census"
+          "$RUNNER_TEMP/ct158-census" > "$RUNNER_TEMP/ct158-census-a.json"
+          "$RUNNER_TEMP/ct158-census" > "$RUNNER_TEMP/ct158-census-b.json"
+          cmp "$RUNNER_TEMP/ct158-census-a.json" "$RUNNER_TEMP/ct158-census-b.json"
+          cmp "$RUNNER_TEMP/ct158-census-a.json" "$D/CT158_NOMINAL_COUNT.json"
+          "$RUNNER_TEMP/ct158-census" --mutate-twist-b > "$RUNNER_TEMP/ct158-mutated.json"
+          cmp "$RUNNER_TEMP/ct158-mutated.json" "$D/CT158_MUTATED_COUNT.json"
+          python3 - "$RUNNER_TEMP/ct158-a.json" "$RUNNER_TEMP/ct158-census-a.json" "$RUNNER_TEMP/ct158-mutated.json" <<'PY'
+          import json,sys
+          p,o,m=map(lambda path:json.load(open(path)),sys.argv[1:])
+          assert p['coefficient_mutations_rejected']==3
+          assert p['nonsquare_checked'] and p['coordinate_and_twist_tests']==128
+          assert o['field_cardinality']==223**3
+          assert o['original_short']['group_order']==11092292
+          assert o['twist12']['group_order']==11086844
+          assert o['twist_sum_identity'] and o['nominal_exact']
+          assert m['mutation'] and not m['twist_sum_identity'] and not m['nominal_exact']
+          PY

@@ -1,0 +1,32 @@
+{
+  "schema": "xedni-group-fiber-bound-protocol-v1",
+  "group": "additive Z/101Z with G=1",
+  "scalar_law": "all 101 scalars per fixed visible bucket",
+  "encoding_law": "all bijections from 101 group elements to labels 0..100, counted exactly by factorial of unused labels",
+  "program": [
+    "seed G=1 and Q=w",
+    "if label(G)<label(Q), append G+Q; else append G-Q",
+    "append G-G",
+    "append G-G again",
+    "append G+G"
+  ],
+  "buckets": {
+    "2": [[3, 7], [7, 3], [3, 3]],
+    "3": [[3, 7, 11], [7, 3, 11], [3, 3, 11]],
+    "4": [[3, 7, 11, 13], [7, 3, 11, 13], [3, 3, 11, 13]],
+    "5": [[3, 7, 11, 13, 13], [7, 3, 11, 13, 13], [3, 3, 11, 13, 13]]
+  },
+  "candidate_bound": "(101-k*k) times eligible next-candidate fiber mass <= k times eligible fiber mass",
+  "positive_control": {
+    "artifact": "experiments/xedni-bucket-fiber-partition-20261116/result.json",
+    "sha256": "c64477fdc232f3a17d4c7c0e9da76ee324546903dd515b058d800aac4421b365",
+    "status": "PASS",
+    "cells_checked": 137200
+  },
+  "falsifiers": [
+    "eligible scalars in one bucket have unequal exact group-encoding fiber weights",
+    "a distinct next-form equality lies outside the candidate-root set",
+    "the weighted candidate inequality fails in any frozen bucket"
+  ],
+  "claim_boundary": "exact finite arithmetic control for fixed buckets under uniform bijective group labels"
+}

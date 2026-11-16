@@ -1,0 +1,79 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T02:44:28Z",
+ "id": "PCC-20261116-c45c68",
+ "kind": "statement",
+ "producer": {
+  "commit": "c045dfdf2e682d0c98fba9a1bcd7824c00c649dd",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/historical-adapter-source-publication-01/new-source-tag/actual-push.exit",
+    "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/historical-adapter-source-publication-01/new-source-tag/actual-push.log.xz",
+    "sha256": "1f0eb2a9e2ecfdd59512bb17c9b5dfbe9e53c4b2b1374bbaca31010e148d383a"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/historical-adapter-source-publication-01/new-source-tag/after.txt",
+    "sha256": "1b77703b52f18697f43a88938438e9aef29856b3f37ef91aef60d2b657df882b"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/historical-adapter-source-publication-01/new-source-tag/before.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/historical-adapter-source-publication-01/new-source-tag/receipt.json",
+    "sha256": "b79d9a8d93b59252c4e5f4e50ad773b8b074755723f36cd3b0373b4dea2fe8bd"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/historical-adapter-source-publication-01/normal-branch/expected-head-lookup.log.xz",
+    "sha256": "613c123f4248dd87daad78effc7e16621e751b3bab5d1878c067d4aeede5cff0"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/historical-adapter-source-publication-01/normal-branch/push.log.xz",
+    "sha256": "16be68bb5b093bf77382913b6394836645679aaed03986b184c5b92569d37623"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/historical-adapter-source-publication-01/normal-branch/receipt.json",
+    "sha256": "2b5232ccb93e2a2e510b78818cc1e50b199447d7ef83915d87b68946513b36a9"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/historical-adapter-source-publication-01/whole-governor-caller.txt.xz",
+    "sha256": "970d86068ade671e9d67d8e63e0dbcae85d1c32cc3b86438177f01cc815140b1"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Historical LP adapter sourcec045dfdf2e682d0c98fba9a1bcd7824c00c649dd normally published0 fromb7b919 and new tag chained-transfer-lp-historical-source-20261116-c045dfdf2e68 publication0 with exact readback. Source governanceff2c2a all positive checks0; e48db4 source/static scope and2a71cb inspected report remain unverified data. Source-bound unit CI must pass original checkpoint and whole remote readback before native unit execution. Actual new CI unobserved, next spaced check about03:33UTC; originalb7 diagnostic source check remains about02:53UTC. No local native unit/historical population, EKS job, solve, cost or signed claim."
+}

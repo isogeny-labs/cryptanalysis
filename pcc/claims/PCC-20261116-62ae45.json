@@ -1,0 +1,21 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T06:21:31Z",
+ "id": "PCC-20261116-62ae45",
+ "kind": "statement",
+ "producer": {
+  "commit": "f748c746854479e3a04546b2f860026b345df8b7",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "recompute",
+   "path": "experiments/prime-field-auxiliary-ic/random-vs-special/main-integration-20261116/validator.json",
+   "sha256": "e2dbbcda778a6d8060b39b80020777903aff244c8b6cdb1f75ad1245d61da22e"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Current-main integration and bounded compatibility checks, retaining original failures/timeout and separate source scopes; original frozen snapshot unchanged.",
+ "statement": "Integration of main d9ee51f2 preserves both Git merge parents, its exact canonical PCC ledger prefix, all 26 unmerged claim/note bodies, historical branch JSON metadata and reviewed active attestation metadata. Stale locks, SHA-2 LowerHex compilation refusals and the Rust 1.88 requirement of SHA-2 0.11.1 are retained with source scopes. Compatible SHA-2 0.11.0 pins preserve the selected native/wrapper Rust 1.85 floors. On f748c746, native all-target MSRV checks, one digest-vector unit test, three structured CLI/forgery tests, two C arithmetic parity tests, one curve-audit digest test and strict lint/format commands pass; four locked graphs resolve. Source 5b9f7050 separately reports eight auxiliary CLI tests and wrapper all-target MSRV checks passing. The native library attempt on 192a50d6 timed out at 240 seconds and is not passing. Core/auxiliary CLI algorithm bytes remain those of d95d582c. These are unsigned producer controls, not independent execution, full CI qualification or timing improvement."
+}

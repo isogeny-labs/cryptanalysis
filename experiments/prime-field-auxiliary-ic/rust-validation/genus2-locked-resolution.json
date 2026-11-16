@@ -1,0 +1,371 @@
+{
+  "command": "cargo metadata --locked --format-version 1 --manifest-path tools/binary-genus2-cover/Cargo.toml",
+  "exit_code": 0,
+  "native_package": {
+    "name": "prime-field-auxiliary-ic",
+    "version": "0.1.0",
+    "id": "path+file:///workspace/cryptanalysis-pr/crates/prime-field-auxiliary-ic#0.1.0",
+    "license": "MIT",
+    "license_file": null,
+    "description": "Bounded prime-field elliptic-curve index calculus with auxiliary rational-map circuits",
+    "source": null,
+    "dependencies": [],
+    "targets": [
+      {
+        "kind": [
+          "lib"
+        ],
+        "crate_types": [
+          "lib"
+        ],
+        "name": "prime_field_auxiliary_ic",
+        "src_path": "/workspace/cryptanalysis-pr/crates/prime-field-auxiliary-ic/src/lib.rs",
+        "edition": "2021",
+        "doc": true,
+        "doctest": true,
+        "test": true
+      },
+      {
+        "kind": [
+          "test"
+        ],
+        "crate_types": [
+          "bin"
+        ],
+        "name": "pipeline",
+        "src_path": "/workspace/cryptanalysis-pr/crates/prime-field-auxiliary-ic/tests/pipeline.rs",
+        "edition": "2021",
+        "doc": false,
+        "doctest": false,
+        "test": true
+      },
+      {
+        "kind": [
+          "custom-build"
+        ],
+        "crate_types": [
+          "bin"
+        ],
+        "name": "build-script-build",
+        "src_path": "/workspace/cryptanalysis-pr/crates/prime-field-auxiliary-ic/build.rs",
+        "edition": "2021",
+        "doc": false,
+        "doctest": false,
+        "test": false
+      }
+    ],
+    "features": {
+      "default": []
+    },
+    "manifest_path": "/workspace/cryptanalysis-pr/crates/prime-field-auxiliary-ic/Cargo.toml",
+    "metadata": null,
+    "publish": [],
+    "authors": [],
+    "categories": [],
+    "keywords": [],
+    "readme": "README.md",
+    "repository": "https://github.com/isogeny-labs/cryptanalysis",
+    "homepage": null,
+    "documentation": null,
+    "edition": "2021",
+    "links": null,
+    "default_run": null,
+    "rust_version": "1.78"
+  },
+  "consumer_nodes": [
+    {
+      "id": "path+file:///workspace/cryptanalysis-pr/bindings/rust/cryptanalysis#0.1.0",
+      "dependencies": [
+        "path+file:///workspace/cryptanalysis-pr/bindings/rust/cryptanalysis-sys#0.1.0",
+        "path+file:///workspace/cryptanalysis-pr/bindings/rust/hashed-ecdl-tensor#0.1.0",
+        "path+file:///workspace/cryptanalysis-pr/crates/prime-field-auxiliary-ic#0.1.0"
+      ],
+      "deps": [
+        {
+          "name": "cryptanalysis_sys",
+          "pkg": "path+file:///workspace/cryptanalysis-pr/bindings/rust/cryptanalysis-sys#0.1.0",
+          "dep_kinds": [
+            {
+              "kind": null,
+              "target": null
+            }
+          ]
+        },
+        {
+          "name": "hashed_ecdl_tensor",
+          "pkg": "path+file:///workspace/cryptanalysis-pr/bindings/rust/hashed-ecdl-tensor#0.1.0",
+          "dep_kinds": [
+            {
+              "kind": null,
+              "target": null
+            }
+          ]
+        },
+        {
+          "name": "prime_field_auxiliary_ic",
+          "pkg": "path+file:///workspace/cryptanalysis-pr/crates/prime-field-auxiliary-ic#0.1.0",
+          "dep_kinds": [
+            {
+              "kind": null,
+              "target": null
+            }
+          ]
+        }
+      ],
+      "features": []
+    },
+    {
+      "id": "path+file:///workspace/cryptanalysis-pr/suite#cryptanalysis-suite@0.1.0",
+      "dependencies": [
+        "registry+https://github.com/rust-lang/crates.io-index#blake3@1.8.7",
+        "registry+https://github.com/rust-lang/crates.io-index#clap@4.6.7",
+        "path+file:///workspace/cryptanalysis-pr/bindings/rust/cryptanalysis#0.1.0",
+        "path+file:///workspace/cryptanalysis-pr/suite/vendor/crypto-analysis-core#0.1.0",
+        "registry+https://github.com/rust-lang/crates.io-index#fs2@0.4.3",
+        "path+file:///workspace/cryptanalysis-pr/crates/hashed-ecdl-tensor#0.1.1",
+        "registry+https://github.com/rust-lang/crates.io-index#hex@0.4.3",
+        "registry+https://github.com/rust-lang/crates.io-index#libc@0.2.190",
+        "registry+https://github.com/rust-lang/crates.io-index#num-bigint@0.4.8",
+        "registry+https://github.com/rust-lang/crates.io-index#num-integer@0.1.47",
+        "registry+https://github.com/rust-lang/crates.io-index#num-rational@0.4.2",
+        "registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19",
+        "path+file:///workspace/cryptanalysis-pr/crates/prime-field-auxiliary-ic#0.1.0",
+        "registry+https://github.com/rust-lang/crates.io-index#rand@0.8.8",
+        "registry+https://github.com/rust-lang/crates.io-index#rayon@1.12.0",
+        "registry+https://github.com/rust-lang/crates.io-index#serde@1.0.229",
+        "registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.151",
+        "registry+https://github.com/rust-lang/crates.io-index#sha1@0.10.7",
+        "registry+https://github.com/rust-lang/crates.io-index#sha2@0.10.9",
+        "registry+https://github.com/rust-lang/crates.io-index#sha3@0.10.9",
+        "registry+https://github.com/rust-lang/crates.io-index#streebog@0.10.2",
+        "registry+https://github.com/rust-lang/crates.io-index#subtle@2.6.1"
+      ],
+      "deps": [
+        {
+          "name": "blake3",
+          "pkg": "registry+https://github.com/rust-lang/crates.io-index#blake3@1.8.7",
+          "dep_kinds": [
+            {
+              "kind": null,
+              "target": null
+            }
+          ]
+        },
+        {
+          "name": "clap",
+          "pkg": "registry+https://github.com/rust-lang/crates.io-index#clap@4.6.7",
+          "dep_kinds": [
+            {
+              "kind": null,
+              "target": null
+            }
+          ]
+        },
+        {
+          "name": "libca",
+          "pkg": "path+file:///workspace/cryptanalysis-pr/bindings/rust/cryptanalysis#0.1.0",
+          "dep_kinds": [
+            {
+              "kind": null,
+              "target": null
+            }
+          ]
+        },
+        {
+          "name": "crypto_analysis_core",
+          "pkg": "path+file:///workspace/cryptanalysis-pr/suite/vendor/crypto-analysis-core#0.1.0",
+          "dep_kinds": [
+            {
+              "kind": null,
+              "target": null
+            }
+          ]
+        },
+        {
+          "name": "fs2",
+          "pkg": "registry+https://github.com/rust-lang/crates.io-index#fs2@0.4.3",
+          "dep_kinds": [
+            {
+              "kind": null,
+              "target": null
+            }
+          ]
+        },
+        {
+          "name": "hashed_ecdl_tensor",
+          "pkg": "path+file:///workspace/cryptanalysis-pr/crates/hashed-ecdl-tensor#0.1.1",
+          "dep_kinds": [
+            {
+              "kind": null,
+              "target": null
+            }
+          ]
+        },
+        {
+          "name": "hex",
+          "pkg": "registry+https://github.com/rust-lang/crates.io-index#hex@0.4.3",
+          "dep_kinds": [
+            {
+              "kind": null,
+              "target": null
+            }
+          ]
+        },
+        {
+          "name": "libc",
+          "pkg": "registry+https://github.com/rust-lang/crates.io-index#libc@0.2.190",
+          "dep_kinds": [
+            {
+              "kind": null,
+              "target": null
+            }
+          ]
+        },
+        {
+          "name": "num_bigint",
+          "pkg": "registry+https://github.com/rust-lang/crates.io-index#num-bigint@0.4.8",
+          "dep_kinds": [
+            {
+              "kind": null,
+              "target": null
+            }
+          ]
+        },
+        {
+          "name": "num_integer",
+          "pkg": "registry+https://github.com/rust-lang/crates.io-index#num-integer@0.1.47",
+          "dep_kinds": [
+            {
+              "kind": null,
+              "target": null
+            }
+          ]
+        },
+        {
+          "name": "num_rational",
+          "pkg": "registry+https://github.com/rust-lang/crates.io-index#num-rational@0.4.2",
+          "dep_kinds": [
+            {
+              "kind": null,
+              "target": null
+            }
+          ]
+        },
+        {
+          "name": "num_traits",
+          "pkg": "registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19",
+          "dep_kinds": [
+            {
+              "kind": null,
+              "target": null
+            }
+          ]
+        },
+        {
+          "name": "prime_field_auxiliary_ic",
+          "pkg": "path+file:///workspace/cryptanalysis-pr/crates/prime-field-auxiliary-ic#0.1.0",
+          "dep_kinds": [
+            {
+              "kind": null,
+              "target": null
+            }
+          ]
+        },
+        {
+          "name": "rand",
+          "pkg": "registry+https://github.com/rust-lang/crates.io-index#rand@0.8.8",
+          "dep_kinds": [
+            {
+              "kind": null,
+              "target": null
+            }
+          ]
+        },
+        {
+          "name": "rayon",
+          "pkg": "registry+https://github.com/rust-lang/crates.io-index#rayon@1.12.0",
+          "dep_kinds": [
+            {
+              "kind": null,
+              "target": null
+            }
+          ]
+        },
+        {
+          "name": "serde",
+          "pkg": "registry+https://github.com/rust-lang/crates.io-index#serde@1.0.229",
+          "dep_kinds": [
+            {
+              "kind": null,
+              "target": null
+            }
+          ]
+        },
+        {
+          "name": "serde_json",
+          "pkg": "registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.151",
+          "dep_kinds": [
+            {
+              "kind": null,
+              "target": null
+            }
+          ]
+        },
+        {
+          "name": "sha1",
+          "pkg": "registry+https://github.com/rust-lang/crates.io-index#sha1@0.10.7",
+          "dep_kinds": [
+            {
+              "kind": null,
+              "target": null
+            }
+          ]
+        },
+        {
+          "name": "sha2",
+          "pkg": "registry+https://github.com/rust-lang/crates.io-index#sha2@0.10.9",
+          "dep_kinds": [
+            {
+              "kind": null,
+              "target": null
+            }
+          ]
+        },
+        {
+          "name": "sha3",
+          "pkg": "registry+https://github.com/rust-lang/crates.io-index#sha3@0.10.9",
+          "dep_kinds": [
+            {
+              "kind": null,
+              "target": null
+            }
+          ]
+        },
+        {
+          "name": "streebog",
+          "pkg": "registry+https://github.com/rust-lang/crates.io-index#streebog@0.10.2",
+          "dep_kinds": [
+            {
+              "kind": null,
+              "target": null
+            }
+          ]
+        },
+        {
+          "name": "subtle",
+          "pkg": "registry+https://github.com/rust-lang/crates.io-index#subtle@2.6.1",
+          "dep_kinds": [
+            {
+              "kind": null,
+              "target": null
+            }
+          ]
+        }
+      ],
+      "features": [
+        "default"
+      ]
+    }
+  ],
+  "format_check": null
+}

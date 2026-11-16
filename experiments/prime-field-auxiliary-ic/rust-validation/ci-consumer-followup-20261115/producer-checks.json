@@ -1,0 +1,184 @@
+{
+  "schema": "producer-ci-consumer-followup/v1",
+  "status": "partial",
+  "independent": false,
+  "source_commit": "fcd78dcb5e7d86f8ca0336da6c0e38cee3439118",
+  "initial_hosted_head": "54e4331a6ab5bf35ca02786a83c095bb74100476",
+  "base_at_initial_read": "58c86ef41974ae33aff4b1b6cbd2b7c31ee3592e",
+  "merged_main": "53bb82ac",
+  "scope": "Dependency lock correction and software CI diagnosis only. Full CI/merge remain blocked; no research timing or independently signed validation.",
+  "source_files": [
+    {
+      "path": "crates/hashed-ecdl-tensor/Cargo.lock",
+      "sha256": "5c2cf5685e60a91c1978a7b56c7c7b2e31ec9371cd7811533b73e67815f4a891"
+    },
+    {
+      "path": "crates/hashed-ecdl-tensor/Cargo.toml",
+      "sha256": "5c3d3b56f5d671f5286693c24ad86c8e7593e93e5cd091c2b8c6e6e261ecad0b"
+    },
+    {
+      "path": "bindings/rust/hashed-ecdl-tensor/Cargo.toml",
+      "sha256": "1c893ca54f9643d442c3784beccb5d21e2dffcc368e922795884619d338abfca"
+    },
+    {
+      "path": "src/curve.c",
+      "sha256": "6d120872c2020870a7fed1f8c28af644a7e31667e7b202986dddbca34772125b"
+    },
+    {
+      "path": "tools/lean/current-corpus-gate.py",
+      "sha256": "03733f9f2a357baa51c15e188f096b88a0b344460fa6d0de18aca113a43b5edc"
+    }
+  ],
+  "raw_data": [
+    {
+      "path": "base-input-comparison.json",
+      "sha256": "bbd90673f16e9898efa96832e9aa3646684d1bb4d078a71bf844e5816f2b9254"
+    },
+    {
+      "path": "checks-initial.json",
+      "sha256": "453d93f6ea175dd06def3256e4e425e1c94f623da2dc3ed0e97ae533586dad89"
+    },
+    {
+      "path": "clippy-locked.log",
+      "sha256": "b687b20fc8034fd759e940d9b35f2cd52623a7ea145872ec116257166a8782f4"
+    },
+    {
+      "path": "consumer-current-head.log.gz",
+      "sha256": "d59191bed314450d8d722eb970ef39252f3af412d242e1036da913e35682abb8"
+    },
+    {
+      "path": "corpus-current-head.log.gz",
+      "sha256": "0cf24c22930bfcdc913abc2ca786850a10579c9df696c5896b7f088f89d3c865"
+    },
+    {
+      "path": "glv-base-reproduce.log",
+      "sha256": "5d7a4996e6ca7506774aeafce231a558dd482d5ab019aad7c6dcfac9aaa2888e"
+    },
+    {
+      "path": "glv-head-reproduce.log",
+      "sha256": "3a51cee975ecb33dd25532ad51c323924703ff38a8afe261b8af99da9c49b05a"
+    },
+    {
+      "path": "hosted-log-inventory.json",
+      "sha256": "bc5bc858b96a8b4a4de822424ed54eaacb6f62ac0270943478854d93273cbc49"
+    },
+    {
+      "path": "ledger-merge.json",
+      "sha256": "dfdb3d09e8ee1648a98651f40f0abab0c31f9ac35f12bcce6299beb610eb90e3"
+    },
+    {
+      "path": "post-merge-cli.log",
+      "sha256": "e89a703545c9772de246f6fcbd929f2614a4fec655c761fcf3044344992987f2"
+    },
+    {
+      "path": "post-merge-clippy.log",
+      "sha256": "842cf38920933d2733c124f0ae80f7a891ab34239410ae6d934e05061f7af958"
+    },
+    {
+      "path": "reproduce-locked.log",
+      "sha256": "ae896ec98d95558e0f6ca3377696a034c56191de18fd0882c926620d497900d2"
+    },
+    {
+      "path": "restore-libc-pin.log",
+      "sha256": "7cd9c8c362f407dc83a399f845a1dbb3d829b339f93fc20490f186e57045262d"
+    },
+    {
+      "path": "review-threads-initial.json",
+      "sha256": "c254ffee87bc56ddfc7fb929b95976149249c98526be0886b8cab3c7b5a9de1d"
+    },
+    {
+      "path": "reviews-initial.json",
+      "sha256": "44795097c10fe02ec75a128ec84f3b86e351dc56ab6b1dcb02c28b9c9918625e"
+    },
+    {
+      "path": "update-wrapper-lock.log",
+      "sha256": "9b4b0a5465271348872129ca2430126d2282e5cc887e2bc4ec03cdf7b961d55c"
+    },
+    {
+      "path": "workflow-runs-initial.json",
+      "sha256": "12802863bfb909ba26b65c94d8f0000ee5f1ec2209f01e451b80139714e8c169"
+    },
+    {
+      "path": "wrapper-msrv.log",
+      "sha256": "46c69d705c63c6d6c571dc5000fa8a056f5774d4f032751861185932a81397d1"
+    },
+    {
+      "path": "wrapper-tests.log",
+      "sha256": "f3451f9e0dc04db9429727a37e573d5406088a6d5cdd74e7a675d64a0ea4bd8a"
+    }
+  ],
+  "headline": [
+    {
+      "name": "wrapper-tests.log-passed-checks",
+      "claimed": 36,
+      "recomputed": 36,
+      "rel_tol": 0
+    },
+    {
+      "name": "post-merge-cli.log-passed-checks",
+      "claimed": 3,
+      "recomputed": 3,
+      "rel_tol": 0
+    }
+  ],
+  "changes": {
+    "path": "crates/hashed-ecdl-tensor/Cargo.lock",
+    "added_packages": [
+      {
+        "name": "getrandom",
+        "version": "0.4.3"
+      },
+      {
+        "name": "r-efi",
+        "version": "6.0.0"
+      }
+    ],
+    "all_prior_package_versions_and_checksums_retained": true,
+    "validation_flags_unchanged": true
+  },
+  "runs": [
+    {
+      "command": "cargo clippy --locked --manifest-path crates/hashed-ecdl-tensor/Cargo.toml --all-targets -- -D warnings",
+      "exit_code": 101,
+      "source": "54e4331a6ab5bf35ca02786a83c095bb74100476",
+      "raw_output": "reproduce-locked.log"
+    },
+    {
+      "command": "cargo clippy --locked --manifest-path crates/hashed-ecdl-tensor/Cargo.toml --all-targets -- -D warnings",
+      "exit_code": 0,
+      "source": "0f6f1045",
+      "raw_output": "clippy-locked.log"
+    },
+    {
+      "command": "cargo test --locked --release --manifest-path crates/hashed-ecdl-tensor/Cargo.toml --lib --test structured_cli",
+      "exit_code": 0,
+      "source": "0f6f1045",
+      "raw_output": "wrapper-tests.log"
+    },
+    {
+      "command": "cargo clippy --locked --manifest-path crates/hashed-ecdl-tensor/Cargo.toml --all-targets -- -D warnings",
+      "exit_code": 0,
+      "source": "fcd78dcb5e7d86f8ca0336da6c0e38cee3439118",
+      "raw_output": "post-merge-clippy.log"
+    },
+    {
+      "command": "cargo test --locked --release --manifest-path crates/hashed-ecdl-tensor/Cargo.toml --test structured_cli",
+      "exit_code": 0,
+      "source": "fcd78dcb5e7d86f8ca0336da6c0e38cee3439118",
+      "raw_output": "post-merge-cli.log"
+    },
+    {
+      "command": "cargo +1.78.0 check --locked --manifest-path crates/hashed-ecdl-tensor/Cargo.toml --all-targets --target-dir /tmp/pr1536-followup-minimum",
+      "exit_code": 101,
+      "source": "0f6f1045",
+      "raw_output": "wrapper-msrv.log",
+      "interpretation": "Inherited dependency floor incompatibility; not a passing minimum-version check."
+    }
+  ],
+  "blockers": {
+    "corpus": "The actual GLV binding checker refuses identical base/head C bytes against the same old expected pin. No pin was changed.",
+    "msrv": "getrandom 0.4.3 edition2024 manifest rejected by Cargo 1.78; existing problem and proposed PR #1586 remain upstream.",
+    "reviews": "Three existing CodeQL bot threads unresolved; no alert API retry."
+  },
+  "qualified_speedup": null
+}

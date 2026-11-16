@@ -1,0 +1,15 @@
+{
+  "schema": "xedni-nonisomorphic-expansion-relation-protocol-v1",
+  "question": "What bounded pair and rational (1,2) relation yield does the newly qualified u=5 curve add at p=313?",
+  "field_prime": 313,
+  "subgroup_order": 331,
+  "public_target": "Q=17G",
+  "query_law": "all ordered (t1,t2) in [0,331)^2, R_i=Q-t_iG",
+  "curve_family": "base rational curve with generator reducing to G plus new E:y^2=x^3-x+804408 with generator reducing to 5G",
+  "coordinate_cap": 4,
+  "relation_vector": [1, 2],
+  "admission": "nonidentity distinct points; per-model both coordinates in [-4,4] generator multiples",
+  "stopping_rule": "complete census, retaining every per-model status and all positive witnesses",
+  "status_order": ["identity", "duplicate", "outside_cap", "admitted_nonrelation", "rational_relation"],
+  "claim_boundary": "finite-panel relation and operation counts, including failed and capped rank cells; no wall-time comparison"
+}

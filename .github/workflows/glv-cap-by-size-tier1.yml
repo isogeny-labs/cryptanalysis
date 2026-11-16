@@ -103,7 +103,7 @@ jobs:
             name=${arm%%:*}; commit=${arm#*:}
             src="$RUNNER_TEMP/src-$name"
             git worktree add --no-checkout --detach "$src" "$commit"
-            git -C "$src" sparse-checkout set --cone src include cmake bindings cuda tools tests usecases
+            git -C "$src" sparse-checkout set --cone src include cmake bindings crates cuda tools tests usecases
             git -C "$src" checkout --detach "$commit"
             df -h "$RUNNER_TEMP" | tail -1
             cmake -S "$src" -B "$RUNNER_TEMP/build-$name" -DCMAKE_BUILD_TYPE=Release -DCA_CUPQC=OFF
@@ -146,7 +146,7 @@ jobs:
 
       - name: Preserve receipts, raw pairs and failures
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: glv-walltime-tier1-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/glv-walltime/

@@ -1,0 +1,74 @@
+{
+  "curve": {
+    "p": 127,
+    "a": 2,
+    "b": 51
+  },
+  "target": [
+    26,
+    91
+  ],
+  "m": 2,
+  "encoding": "expanded",
+  "summation": "direct",
+  "variables": [
+    "x2",
+    "x1"
+  ],
+  "equations": [
+    "1*x1^0+24*x1^1+1*x1^2+20*x1^3+99*x1^4+20*x1^5+1*x1^6+24*x1^7+1*x1^8",
+    "1*x2^0+24*x2^1+1*x2^2+20*x2^3+99*x2^4+20*x2^5+1*x2^6+24*x2^7+1*x2^8",
+    "((x1)-(x2))^2*(targetX)^2-2*(((x1)+(x2))*((x1)*(x2)+(curveA))+2*(curveB))*(targetX)+((x1)*(x2)-(curveA))^2-4*(curveB)*((x1)+(x2))"
+  ],
+  "auxiliary": {
+    "p": 127,
+    "auxiliary_order": 128,
+    "auxiliary_generator": [
+      3,
+      41
+    ],
+    "kernel_generator": [
+      82,
+      4
+    ],
+    "kernel_order": 8,
+    "maps": [
+      {
+        "r": 0,
+        "A": 0,
+        "B": 1
+      },
+      {
+        "r": 2,
+        "A": 6,
+        "B": 8
+      },
+      {
+        "r": 70,
+        "A": 71,
+        "B": 70
+      }
+    ],
+    "terminal_c": 38,
+    "root_count": 8,
+    "roots_checked": 8
+  },
+  "roots": [
+    3,
+    111,
+    78,
+    67,
+    85,
+    119,
+    57,
+    91
+  ],
+  "paths": [
+    [
+      "x1"
+    ],
+    [
+      "x2"
+    ]
+  ]
+}

@@ -1,0 +1,21 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T05:33:22Z",
+ "id": "PCC-20261116-c1df99",
+ "kind": "statement",
+ "producer": {
+  "commit": "d95d582ca01739e138b605db6279a906d0dd230b",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "recompute",
+   "path": "experiments/prime-field-auxiliary-ic/random-vs-special/joint-row-20261116/validator.json",
+   "sha256": "acf7f22a82e8c7669b77b446d829f48a8401f51946a958c39ff25ca91cbd0a2c"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Joint projective aG+bQ versus signed Fi+Fj validation without field inversion, retaining bounds, distinct rows and final scalar replay. Initial phase/projective evidence on 59524758 remains a separate source scope.",
+ "statement": "On source d95d582ca01739e138b605db6279a906d0dd230b, producer controls for joint projective IC row validation report 32 core checks on each of stable and Rust 1.78 and eight targeted CLI checks passing, including exhaustive small-group affine-equation comparisons, affine references in both requested fields and existing forged-certificate refusals. The retained p=127 three-arm correctness reports align with the exclusive core partition enabled. Strict core/CLI lint, formatting and warning-fatal documentation on both core toolchains pass. This is unsigned correctness evidence for common arithmetic in all arms, not execution verification, a research benchmark, fresh natural-yield evidence or a measured auxiliary advantage."
+}

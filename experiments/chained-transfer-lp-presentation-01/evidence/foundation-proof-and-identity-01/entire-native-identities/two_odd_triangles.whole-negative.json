@@ -1,0 +1,153 @@
+{
+  "actual_original_issuer": "False",
+  "certificate_issued": false,
+  "counterexample": {
+    "assignment": [
+      820409490778573175,
+      344912076750222427,
+      1759463288576158464,
+      166347584093887768,
+      435553605004721331
+    ],
+    "index": 0,
+    "lhs": 0,
+    "rhs": 1
+  },
+  "statement": {
+    "degree_bound": 1,
+    "lhs": {
+      "args": [
+        {
+          "args": [
+            {
+              "args": [
+                {
+                  "args": [
+                    {
+                      "args": "a",
+                      "op": "var"
+                    },
+                    {
+                      "args": "b",
+                      "op": "var"
+                    }
+                  ],
+                  "op": "add"
+                },
+                {
+                  "args": {
+                    "args": [
+                      {
+                        "args": "b",
+                        "op": "var"
+                      },
+                      {
+                        "args": "c",
+                        "op": "var"
+                      }
+                    ],
+                    "op": "add"
+                  },
+                  "op": "neg"
+                }
+              ],
+              "op": "add"
+            },
+            {
+              "args": [
+                {
+                  "args": "c",
+                  "op": "var"
+                },
+                {
+                  "args": "a",
+                  "op": "var"
+                }
+              ],
+              "op": "add"
+            }
+          ],
+          "op": "add"
+        },
+        {
+          "args": {
+            "args": [
+              {
+                "args": [
+                  {
+                    "args": [
+                      {
+                        "args": "a",
+                        "op": "var"
+                      },
+                      {
+                        "args": "d",
+                        "op": "var"
+                      }
+                    ],
+                    "op": "add"
+                  },
+                  {
+                    "args": {
+                      "args": [
+                        {
+                          "args": "d",
+                          "op": "var"
+                        },
+                        {
+                          "args": "e",
+                          "op": "var"
+                        }
+                      ],
+                      "op": "add"
+                    },
+                    "op": "neg"
+                  }
+                ],
+                "op": "add"
+              },
+              {
+                "args": [
+                  {
+                    "args": "e",
+                    "op": "var"
+                  },
+                  {
+                    "args": "a",
+                    "op": "var"
+                  }
+                ],
+                "op": "add"
+              }
+            ],
+            "op": "add"
+          },
+          "op": "neg"
+        }
+      ],
+      "op": "add"
+    },
+    "name": "negative_two_odd_triangles_plus_one",
+    "rhs": {
+      "args": [
+        {
+          "args": 0,
+          "op": "const"
+        },
+        {
+          "args": 1,
+          "op": "const"
+        }
+      ],
+      "op": "add"
+    },
+    "source": "Known cancellation; LPProjection.two_odd_triangles, ../lean/LPProjection.lean. Development only, no q223 population or novelty claim.",
+    "variables": [
+      "a",
+      "b",
+      "c",
+      "d",
+      "e"
+    ]
+  }
+}

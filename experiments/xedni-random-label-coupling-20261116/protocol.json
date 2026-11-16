@@ -1,0 +1,13 @@
+{
+  "schema": "xedni-random-label-coupling-protocol-v1",
+  "group_order": 5,
+  "group": "additive Z/5Z",
+  "label_space": [0, 1, 2, 3, 4],
+  "forms": [[0, 0], [1, 0], [1, 1]],
+  "target_scalars": [1, 2, 3, 4],
+  "encoding_law": "enumerate all 5! bijections from group elements to labels",
+  "observation": "ordered labels of the three evaluated forms",
+  "coupling": "for w=1 to w=2 and w=3, extend the trace-point map to a full group permutation by mapping sorted complements in order; pair encodings by precomposition with its inverse",
+  "boundary_control": "w=4 repeats group element 0 at positions 0 and 2, so the injective-trace hypothesis fails",
+  "measurement": "exact permutation census and histogram comparison"
+}

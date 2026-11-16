@@ -1,0 +1,15 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T09:27:01Z",
+ "id": "PCC-20261116-aa38d3",
+ "kind": "statement",
+ "producer": {
+  "commit": "a3f82382105400ad7a949a4b37c628d8773d600a",
+  "model": "",
+  "session": "ic-rational-current-20261115"
+ },
+ "proofs": [],
+ "schema": "pcc.claim/v1",
+ "scope": "suite/src/cryptanalysis/semaev_decomp.rs; suite/examples/ic_affine_pipeline_probe.rs; experiments/ic-euclid-inversion-20261116/PROTOCOL.md",
+ "statement": "Opt-in polynomial Euclidean inverse implemented for canonical one-word fields up to32bits; original Itoh-Tsujii defaults and wider-field fallback preserved. Local differential test passes against original chain, general arithmetic spot checks and batch inversions; library/probe clippy and probe build pass. Timing remains unmeasured. Unsigned producer checks only."
+}

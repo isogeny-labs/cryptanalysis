@@ -1,0 +1,127 @@
+{
+  "schema": "producer-native-field-identities/v1",
+  "status": "pass",
+  "independent": false,
+  "source_commit": "df1564ab593d14a5dd75bfc0b819f9eb27f1b21c",
+  "scope": "Native six-ring-identity compilation/standard-foundation printouts, exact-source corpus admission and six refusal/plumbing controls only. Finite-field structural bridges and performance remain open.",
+  "source_files": [
+    {
+      "path": "experiments/prime-field-auxiliary-ic/rust-validation/field-fibers-20261115/formal/FieldFibers.lean",
+      "sha256": "4619833d39918f1387ff09df786b2893ba8bf68b07ae26e0f5a7ea3ed73d340c"
+    },
+    {
+      "path": "experiments/prime-field-auxiliary-ic/rust-validation/field-fibers-20261115/formal/lakefile.lean",
+      "sha256": "f16d28347a1566ca7a1dc14afd7b1ef9cd1cb52a9892dabe6a8558aba82ba141"
+    },
+    {
+      "path": "experiments/prime-field-auxiliary-ic/rust-validation/field-fibers-20261115/formal/lean-toolchain",
+      "sha256": "ca5f1f601d34c49079e38d7e7041eb0f2a9c227fbc1df0f404820069a052330c"
+    },
+    {
+      "path": "experiments/prime-field-auxiliary-ic/rust-validation/field-fibers-20261115/formal/lake-manifest.json",
+      "sha256": "3313a5f8f828f1c8dc61a416d163da53d69b516766ff8d2e311dfb95d7a6d3b2"
+    },
+    {
+      "path": "experiments/prime-field-auxiliary-ic/rust-validation/field-fibers-20261115/formal/check_native.py",
+      "sha256": "0cd21c9fe29b575cd7d0b99f18ed9aca283664b72a5d3786dd6aaed9fc702564"
+    },
+    {
+      "path": "experiments/prime-field-auxiliary-ic/rust-validation/field-fibers-20261115/formal/check_config.py",
+      "sha256": "c2f2391896f6001d865444436c9d491a1eb54f4b73f2360386194604df5aebd6"
+    },
+    {
+      "path": "tools/lean/current-corpus-gate.py",
+      "sha256": "03733f9f2a357baa51c15e188f096b88a0b344460fa6d0de18aca113a43b5edc"
+    },
+    {
+      "path": "tools/lean/test_current_corpus_gate.py",
+      "sha256": "19b9556ad5df10195594ac8ec2dc4d8aa0fabc0c8e109dc64a62fe1281cd2eee"
+    }
+  ],
+  "raw_data": [
+    {
+      "path": "initial-cache-path-failure.log",
+      "sha256": "b22b815886231c719b14fef73f1402bf849e12a3effbf186f112b5c92a3c2282"
+    },
+    {
+      "path": "native-admission.log",
+      "sha256": "5bc866812d0bef0b91c04cd03d1a8c2f4198b8ac1a062ec9fba393f62afa8360"
+    },
+    {
+      "path": "evidence-relocation.json",
+      "sha256": "baf6de4a8227c2ba2fb67d103f72433d80252649caa412efedf2309dd876c89f"
+    },
+    {
+      "path": "admission-controls.log",
+      "sha256": "5bc8ef3b6fda80a22aef764900a194929d0dd80545bd6bf2c053359951ac514e"
+    },
+    {
+      "path": "native-identities.log",
+      "sha256": "515048bc239e53dfa4ca8c5f9fd4e15ceb70924deee6a48c6298ec474aa6952a"
+    },
+    {
+      "path": "source-metadata-audit.log",
+      "sha256": "5a7be63f18669435efac2e560243d6fa9d2983b9a49c64a061c9158c18e812d1"
+    },
+    {
+      "path": "corpus-evidence/command-by3cdfz8/stdout.bin",
+      "sha256": "eec9e9c6df4ac81ec3a5d56093af67f2c9f6b594c22efef847f89ad3e4094e9a"
+    },
+    {
+      "path": "corpus-evidence/command-by3cdfz8/record.json",
+      "sha256": "f11331158aa0e26b52a8d2bcf92bd2824845565a9178cccd582513847366d4bf"
+    },
+    {
+      "path": "corpus-evidence/command-by3cdfz8/stderr.bin",
+      "sha256": "ef7f92a9fcc9f35aa621094555fb16ad74c648d14a61f3b49439cf43f57ec48a"
+    },
+    {
+      "path": "corpus-evidence/command-eltd_ig4/stdout.bin",
+      "sha256": "515048bc239e53dfa4ca8c5f9fd4e15ceb70924deee6a48c6298ec474aa6952a"
+    },
+    {
+      "path": "corpus-evidence/command-eltd_ig4/record.json",
+      "sha256": "5324d67286a14eb1c0168f2e875910342285330c545a640ea91a6af83156ca21"
+    },
+    {
+      "path": "corpus-evidence/command-eltd_ig4/stderr.bin",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "headline": [
+    {
+      "name": "native-named-identities",
+      "claimed": 6,
+      "recomputed": 6,
+      "rel_tol": 0
+    },
+    {
+      "name": "admission-control-tests",
+      "claimed": 6,
+      "recomputed": 6,
+      "rel_tol": 0
+    }
+  ],
+  "native_theorems": [
+    "AuxiliaryIC.FieldFibers.orbit_discriminant",
+    "AuxiliaryIC.FieldFibers.opposite_pair",
+    "AuxiliaryIC.FieldFibers.cube_trace",
+    "AuxiliaryIC.FieldFibers.seventh_trace",
+    "AuxiliaryIC.FieldFibers.torus_push",
+    "AuxiliaryIC.FieldFibers.terminal_pair"
+  ],
+  "native_axioms": [
+    "propext",
+    "Quot.sound"
+  ],
+  "toolchain": "leanprover/lean4:v4.35.0",
+  "mathlib_commit": "cfc55fc58714a59dc06e6e79edc6d1d95140d3c2",
+  "remaining_formal_obligations": [
+    "cyclic norm-one construction",
+    "primitive-trace criterion",
+    "fiber completeness",
+    "trace-orbit enumeration",
+    "target-group relation bridge"
+  ],
+  "qualified_speedup": null
+}

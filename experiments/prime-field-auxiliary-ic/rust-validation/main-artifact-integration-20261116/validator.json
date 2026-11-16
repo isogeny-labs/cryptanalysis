@@ -1,0 +1,81 @@
+{
+  "status": "pass",
+  "independent": false,
+  "overall_ci_status": "pending",
+  "source_commit": "57573c770630e088c54246e3ff67de8ba930cc97",
+  "scope": "Two-parent current-main integration, artifact utility regression checks, canonical ledger replay and source-preservation controls only. No research benchmark, algorithmic improvement or independent execution/replay.",
+  "environment": {
+    "python": "3.12.14",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+    "git": "git version 2.52.0"
+  },
+  "raw_data": [
+    {
+      "path": "artifact-tests.command.json",
+      "sha256": "b8653f70dad2b9a9904f3a2c5427d3ecaae5e943d51d4fa8dc544209484594c8"
+    },
+    {
+      "path": "artifact-tests.log",
+      "sha256": "792b106aca1fa8d5e4a873040abc9fa943ccb9e3006d944f5539361efc7f3e88"
+    },
+    {
+      "path": "workflow-wiring.command.json",
+      "sha256": "67f01920277ed41d47f6eb6dba51d23ed5d308afa52e18986d84574999990e6c"
+    },
+    {
+      "path": "workflow-wiring.log",
+      "sha256": "1ef0d99d3ba29c1c9dc4889fabbb41d82ce8d9bbbaaf8ebf5856c9bf077bce57"
+    },
+    {
+      "path": "ledger-prefix.command.json",
+      "sha256": "c9ad899229deeddfff02528c390c77fdb727b16f4f25fa1766ca37890c02d401"
+    },
+    {
+      "path": "ledger-prefix.log",
+      "sha256": "000214b4a9a34234919a6ffffb8ef4a805dcb2d51b69f22869b67ec2f7ce76eb"
+    },
+    {
+      "path": "bench-record-gate.command.json",
+      "sha256": "66b949bfca26e7407da4f3dacfba724eaaac4ced5f73a45bc53564fba75a7c0a"
+    },
+    {
+      "path": "bench-record-gate.log",
+      "sha256": "0f748880b854bf84ff1d2b0de5680a307992c4d3310cdc08a98e0b595cc048a3"
+    },
+    {
+      "path": "artifact-gate.command.json",
+      "sha256": "3ebc00ad540fd0e9ca1e945fe2147c9c684ea5ce29f7ee1c774604c30626f9b4"
+    },
+    {
+      "path": "artifact-gate.log",
+      "sha256": "30a8346d1f9f41872ce54a60a20c0c053f57632ebd6e32f1e9be5529224fa934"
+    },
+    {
+      "path": "main-merge-df5156fc.json",
+      "sha256": "c2b1c0066a3daa5db0bf996f50a796caaebf5cc6ae1eaeb2cf8b12cc8a5ef7ad"
+    },
+    {
+      "path": "source-scope.json",
+      "sha256": "63466a4cfef18c3db82c15c328f0f8229ccd0a14aacc7f86de664c1196d54c29"
+    },
+    {
+      "path": "shared-artifact-pin.json",
+      "sha256": "23e6fcc869e7aed8fa3c77301b37f402143137fd63d4c552720a466c03013d15"
+    }
+  ],
+  "headline": [
+    {
+      "name": "artifact-regression-tests",
+      "claimed": 30,
+      "recomputed": 30,
+      "rel_tol": 0
+    }
+  ],
+  "notes": [
+    "Workflow wiring check exits zero and retains existing sage-compatibility.yml path-checkout diagnostic.",
+    "Check outputs are limited to source 57573c77. Earlier hosted CI and local/native timeout receipts keep their original source scopes.",
+    "Known corpus source-pin and CodeQL classification blockers are not changed or bypassed."
+  ],
+  "fresh_benchmark": false,
+  "qualified_speedup": null
+}

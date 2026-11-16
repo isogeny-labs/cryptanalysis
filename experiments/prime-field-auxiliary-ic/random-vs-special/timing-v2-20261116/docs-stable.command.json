@@ -1,0 +1,17 @@
+{
+  "source_commit": "25049631bc58ca848cbb00169eda193529d9fc87",
+  "argv": [
+    "/home/agent/.cargo/bin/cargo",
+    "+stable",
+    "doc",
+    "--no-deps",
+    "--manifest-path",
+    "crates/prime-field-auxiliary-ic/Cargo.toml"
+  ],
+  "explicit_environment": {
+    "RUSTDOCFLAGS": "-D warnings"
+  },
+  "exit_code": 0,
+  "timeout_seconds": 300,
+  "scope": "producer correctness/development check, not a benchmark"
+}

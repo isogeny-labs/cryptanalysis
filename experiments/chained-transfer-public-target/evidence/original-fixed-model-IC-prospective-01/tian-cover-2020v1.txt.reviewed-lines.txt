@@ -1,0 +1,41 @@
+                                         curves are indeed the generic algorithms. Additionally, it is easy to construct
+                                         curves which are suited for cryptographic applications. For this reason, elliptic
+                                         curve cryptography is now widely used in practice, in particular for high-security
+                                         applications.
+                                             On the other hand, there are now some classes of elliptic curves known for
+                                         which the elliptic curve discrete logarithm problem can be solved faster than
+                                         generic algorithms. In particular, it is well known that some elliptic curves over fi-
+                                         nite non-prime fields can be attacked with what is called cover attack by C. Diem
+                                         (see for example [4]).
+                                             Let E be an elliptic curve over an extension field Fqn . The idea of cover at-
+                                         tacks is to reduce the discrete logarithm problem to the corresponding problem
+                                         in the Jacobian of a curve C of genus g ≥ n over Fq , where it can be solved in
+                                         a time of Õ(q 2−2/g ) via the index calculus method [9]. In order that the attack
+                                         ⋆
+                                             Song Tian is supported by the National Natural Science Foundation of China under
+                                             Grant No. 61802401.
+
+is faster than generic attacks, one wants that the genus of C is small. For exam-
+ple, in the case that E(Fqn ) is prime (which is often the case in cryptographic
+applications), it is optimal if g is equal to the extension degree n.
+     The first application of this idea is the GHS attack [3,8,10]. This attack is
+only of relevance for relatively few curves. For example, if q is odd and n is prime
+and not 3, 5 or 7, the genus of the resulting curve is always so large that one
+can say that the attack fails. For n = 3, if we require C to be of genus 3, then
+a necessary condition is that the elliptic curve has three rational points of order
+2 [3,13]. This therefore raises the natural question whether elliptic curves over
+Fq3 with cofactor 1 or 2 can be attacked with cover attacks. A recent discussion
+in [19] shows that C needs to be non-hyperelliptic if the elliptic curve has prime
+order, and that when the cofactor is 2, it might be possible to construct a genus
+3 hyperelliptic curve C together with a degree 3 morphism C → E.
+     In this work, we give a new approach to the problem. The main idea is to
+attempt to compute (ℓ, ℓ, ℓ)-isogenies from the Weil restriction of an elliptic curve
+to the Jacobian of a genus 3 curve. This is motivated by the fact that principally
+polarized abelian varieties of dimension 3 are the generalized Jacobian varieties
+[15]. If we take such an isogeny for an elliptic curve E of prime order, we can
+transfer the discrete logarithm problem from E(Fq3 ) to the Jacobian of a non-
+hyperelliptic curve over Fq , and solve it there in a time of Õ(q) [5]. In contrast,
+if we apply the index-calculus method based on the summation polynomials to
+the discrete logarithm problem in E(Fq3 ), then the complexity is Õ(q 4/3 ) [7].
+     We note that the GHS attack [3,8] and the work [19] transfer the discrete
+logarithm problem in a way which relies on the covering map: The homomor-

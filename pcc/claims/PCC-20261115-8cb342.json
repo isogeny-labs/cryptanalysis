@@ -1,0 +1,21 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-15T21:28:13Z",
+ "id": "PCC-20261115-8cb342",
+ "kind": "statement",
+ "producer": {
+  "commit": "df1564ab593d14a5dd75bfc0b819f9eb27f1b21c",
+  "model": "GPT-6",
+  "session": "codex-field-fiber-native-20261115"
+ },
+ "proofs": [
+  {
+   "kind": "recompute",
+   "path": "experiments/prime-field-auxiliary-ic/rust-validation/field-fibers-20261115/formal-validation/producer-checks.json",
+   "sha256": "2554b5a6c61a6628562826be763854afd9d1ff1a284a6c561c048a0ebb44367a"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Only algebraic identity build/admission; supersedes the former missing-toolchain status, not the broader proof or measurement gaps.",
+ "statement": "Native Lean 4.35.0 builds at df1564ab check six field-fiber ring identities with transitive foundation printouts propext and Quot.sound; both source-bound corpus admissions and six refusal/plumbing controls pass. This is producer build evidence, with no independently signed verdict, full finite-field proof or speedup claim."
+}
