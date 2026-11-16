@@ -1,0 +1,19 @@
+[package]
+name = "ct126-actual-map-price"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[[bin]]
+name = "ct126-price"
+path = "src/main.rs"
+
+[workspace]
+
+[dependencies]
+chained-n4-fixed-jacobian-chain-evaluator = { path = "../fixed-jacobian-chain-evaluator-01" }
+chained-n4-fixed-jacobian-chain = { path = "../fixed-jacobian-chain-01" }
+chained-n4-beta-rational-lift = { path = "../beta-rational-lift" }
+chained-n4-public-target = { path = "../native" }
+isogeny_algos = { path = "../../../../crypto/isogeny_algos" }
+serde_json = "=1.0.145"

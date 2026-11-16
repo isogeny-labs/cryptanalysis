@@ -1,0 +1,124 @@
+{
+  "branch": "codex/ic-trial32-20261115",
+  "closed_utc": "2026-11-16T11:08:05+00:00",
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "cloud/modal_run.py",
+        "run",
+        "--image",
+        "cuda",
+        "--gpu",
+        "L4",
+        "--cpu",
+        "4",
+        "--memory",
+        "8",
+        "--timeout",
+        "900",
+        "--apt",
+        "time",
+        "--out",
+        "experiments/ic-prefix-pclmul-20261116/timing-001",
+        "--detach",
+        "--",
+        "python3",
+        "experiments/ic-prefix-pclmul-20261116/run_prepared.py"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "started_utc": "2026-11-16T10:51:41+00:00",
+      "wall_s": 12.267
+    }
+  ],
+  "commit": "11041bb4b7257ecdc97f2a2371a44ceae523a20e",
+  "commit_dirty": false,
+  "created_utc": "2026-11-16T10:51:39+00:00",
+  "curve_uid": null,
+  "entries": [
+    "experiments/ic-prefix-pclmul-20261116"
+  ],
+  "host": {
+    "cpu": "arm",
+    "cpus_online": 14,
+    "hostname": "Mac.attlocal.net",
+    "isolation": "unstated",
+    "platform": "macOS-27.2-arm64-arm-64bit-Mach-O"
+  },
+  "id": "20261116T1051Z-ic-prefix-pclmul-factorial-001",
+  "metrics": [
+    {
+      "baseline": null,
+      "better": "neutral",
+      "n": null,
+      "name": "replayed_answers",
+      "note": "Unsigned producer invocation of existing independent arithmetic; not signed standing",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "count",
+      "value": 720.0
+    },
+    {
+      "baseline": null,
+      "better": "neutral",
+      "n": null,
+      "name": "aa_control_failures",
+      "note": "All retained; exploratory qualified null",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "count",
+      "value": 4.0
+    }
+  ],
+  "problem": "ecdlp:binary_ic_vector_compatibility",
+  "raw": [
+    {
+      "bytes": 2878746,
+      "path": "experiments/ic-prefix-pclmul-20261116/raw-timing-001.tar.gz",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/ec/ec6539d22cd43340b22ee4a2978a44ab3e012bfdef031c1049b56c1ff06041a4",
+      "sha256": "ec6539d22cd43340b22ee4a2978a44ab3e012bfdef031c1049b56c1ff06041a4",
+      "uploaded": false
+    },
+    {
+      "bytes": 263681,
+      "path": "experiments/ic-prefix-pclmul-20261116/raw-bundle-receipt.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/5d/5d194771e919387b23c81266b18c5b99aa657a77ad182b6535e85d3bcbf8ff80",
+      "sha256": "5d194771e919387b23c81266b18c5b99aa657a77ad182b6535e85d3bcbf8ff80",
+      "uploaded": false
+    },
+    {
+      "bytes": 1208865,
+      "path": "experiments/ic-prefix-pclmul-20261116/analysis.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/28/289c1e229b2c67fe68449623ecbf30a122152e76a3c31f733f4af0073472b3a1",
+      "sha256": "289c1e229b2c67fe68449623ecbf30a122152e76a3c31f733f4af0073472b3a1",
+      "uploaded": false
+    },
+    {
+      "bytes": 141915,
+      "path": "experiments/ic-prefix-pclmul-20261116/independent-arithmetic-timing001.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/3e/3eeead934ff41a358d95766d11d6e24fade1e4a0485f44f96d41eeb5dd9f9fc7",
+      "sha256": "3eeead934ff41a358d95766d11d6e24fade1e4a0485f44f96d41eeb5dd9f9fc7",
+      "uploaded": false
+    }
+  ],
+  "repo": "cryptanalysis",
+  "reports": {
+    "pdf": "experiments/ic-prefix-pclmul-20261116/REPORT.pdf",
+    "png": [
+      "experiments/ic-prefix-pclmul-20261116/cold.png"
+    ],
+    "svg": [
+      "experiments/ic-prefix-pclmul-20261116/cold.svg",
+      "experiments/ic-prefix-pclmul-20261116/ratios.svg"
+    ]
+  },
+  "schema": "bench.record/v1",
+  "session": null,
+  "slug": "ic-prefix-pclmul-factorial-001",
+  "status": "invalid",
+  "summary": "Exploratory compatible PCLMUL128+AVX2 factorial: 120 comparisons, 480 IC plus 240 rho answers replay, 4 failed AA retained, 0 caps. All 240 vector arms execute narrow backend. Unsigned bee104; physical timing unqualified; invalid for promotion.",
+  "validation": null
+}

@@ -1,0 +1,30 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-13T14:28:28Z",
+ "id": "PCC-20261113-7176d7",
+ "kind": "statement",
+ "producer": {
+  "commit": "093134ba9fbdaa4fdb50fe4bc53cd29d809500d0",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/V2-CI-collector-correction-01/correction.json",
+    "sha256": "6f5e74d62d24ae9f3d613a41353ff8cc864d97f04e31c246fed656b6201580e6"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/V2-CI-collector-correction-01/original-failed-collector.py",
+    "sha256": "5e7687e482d910d1e88de128066ce1057517455d903ffca472eb64271ffc82eb"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Freeze V2 CI collector correction BEFOREretry:localfull0815f7accepted;raw01wholeAPI/logs retained. GenericN4_[A-Z_]+ parser wronglydropsdigit2 in7V2names,notmissingnative outputs;all17verdicts present. ONLYuse[A-Z0-9_]+ innewraw02 copiedfromwholepartial01;no native/test/verifier/CIrerun/sourcechange orfullreceipt rewrite."
+}

@@ -1,0 +1,44 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-14T10:51:57Z",
+ "id": "PCC-20261114-bfa725",
+ "kind": "statement",
+ "producer": {
+  "commit": "b691714c8c6f7b157f9ec832ccc91413c624c541",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/beta-complete-routing-staging-error-02/caller.exit",
+    "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/beta-complete-routing-staging-error-02/original-command.py",
+    "sha256": "702380cf5f0cc1e9c892e57e8739d288ac8744c4e5aefbb0d1596dc774e93e30"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/beta-complete-routing-staging-error-02/scope.json",
+    "sha256": "92e0a355e6cecacd7b566ef22d27300ec46b5ecc47b99d6a88c536e107dfd92c"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/beta-complete-routing-staging-error-02/whole-caller.txt",
+    "sha256": "034ca97555d786d1cae74a0ea0c67a8ca439fd178b84150aee28bb0022797ba0"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "CompletePNG routing second governance staging rejected beforecommit: already staged deletion absent from index cannot be re-added by pathspec (git128/caller1). Preserve wholecaller/command; filter only redundant add calls, keep exact selectedpathset including deletions. No reset or scientific edits."
+}

@@ -1,0 +1,20 @@
+import CompleteRationalBeta
+#print axioms CompleteRationalBeta.zero_left
+#print axioms CompleteRationalBeta.neg_left
+#print axioms CompleteRationalBeta.nsmul_zero
+#print axioms CompleteRationalBeta.nsmul_add
+#print axioms CompleteRationalBeta.nsmul_mul
+#print axioms CompleteRationalBeta.add_shuffle
+#print axioms CompleteRationalBeta.nsmul_addpoint
+#print axioms CompleteRationalBeta.inverse_unique
+#print axioms CompleteRationalBeta.neg_zero
+#print axioms CompleteRationalBeta.neg_add
+#print axioms CompleteRationalBeta.nsmul_neg
+#print axioms CompleteRationalBeta.hom_nsmul
+#print axioms CompleteRationalBeta.double_as_nsmul
+#print axioms CompleteRationalBeta.rational_decomposition
+#print axioms CompleteRationalBeta.odd_half
+#print axioms CompleteRationalBeta.evaluate_matches_beta
+#print axioms CompleteRationalBeta.dlp_preservation
+#print axioms CompleteRationalBeta.full_rational_inverse13
+#print axioms CompleteRationalBeta.dlp_equivalence

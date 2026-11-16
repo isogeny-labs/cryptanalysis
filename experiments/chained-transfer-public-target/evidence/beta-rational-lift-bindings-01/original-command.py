@@ -1,0 +1,15 @@
+"""Exact declaration binding through the unchanged original PCC tool."""
+from pathlib import Path
+import hashlib,importlib.util,json,os,subprocess,sys,shutil
+r=Path('/workspace/cryptanalysis');s=r/'experiments/chained-transfer-public-target';d=s/'evidence/beta-rational-lift-bindings-01';d.mkdir();shutil.copyfile(__file__,d/'original-command.py')
+spec=importlib.util.spec_from_file_location('original_pcc',r/'tools/pcc/pcc.py');pcc=importlib.util.module_from_spec(spec);sys.modules[spec.name]=pcc;spec.loader.exec_module(pcc)
+env=dict(os.environ,PATH='/home/agent/.elan/bin:/home/agent/.cargo/bin:'+os.environ['PATH'],ELAN_TOOLCHAIN='leanprover/lean4:v4.34.1');path=Path('experiments/chained-transfer-public-target/beta-rational-lift/lean/QuadraticRationalLift.lean');claims=[];verdicts=[]
+for name in ['quadratic_fixed_lift','lift_images_equal','four_torsion_lift_bound','quadratic_kernel_fixed_is_rational','finite_group_hypothesis_control']:
+ theorem='QuadraticRationalLift.'+name;found=pcc.lean_find_declaration([path],theorem);assert found;where,statement=found
+ proof=dict(path=str(where),theorem=theorem,decl_sha256=hashlib.sha256(statement.encode()).hexdigest())
+ scope='Faithful conditional general abelian-group/Frobenius lift: surjective geometric additive Phi commuting with F, exponent2 kernel and F^3=1 on kernel derive existence of F^2-fixed lift for every F-fixed target; ordinary laws explicit. Other declarations prove image independence from kernel containment, four-torsion bound from NPhi=2 and exponent2Nx, and F2+F3 fixed kernel implies F fixed. Fin8 explicitly encodes C4xC2 and checks every stated group/hom/automorphism/surjectivity/kernel2 condition plus failure of F3 and absence of quadratic lifts; finite abstract group control only. Both ORIGINAL gates PASS20 total declarations/zero trusted; six named structural roots no axioms, finite control kernel-decide onlypropext+Quot.sound. Actual Picard/Weil-restriction/Frobenius/quotient/norm bridges remain written/native; not full formal geometry or signed execution.'
+ cmd=['python3','tools/pcc/pcc.py','claim','new','--kind','theorem','--claim-type','interpretive','--statement',statement,'--scope',scope,'--proof','lean:'+json.dumps(proof)]
+ cl=subprocess.check_output(cmd,cwd=r,env=env,text=True).strip();claims.append(dict(theorem=theorem,claim_path=cl,statement=statement,proof=proof));(d/'claims-partial.json').write_text(json.dumps(claims,indent=2)+'\n')
+ v=subprocess.run(['python3','tools/pcc/pcc.py','verify',cl,'--json'],cwd=r,env=env,capture_output=True);(d/(name+'-verdict.json')).write_bytes(v.stdout+v.stderr);(d/(name+'-verdict.exit')).write_text(str(v.returncode)+'\n');assert v.returncode==0,(name,v.stdout,v.stderr)
+ parsed=json.loads(v.stdout);assert parsed['verdict']=='pass' and not parsed['reasons'];verdicts.append(parsed);print(name,cl,'localpass/unsigned',flush=True)
+(d/'claims.json').write_text(json.dumps(claims,indent=2)+'\n');(d/'local-verdicts.json').write_text(json.dumps(verdicts,indent=2)+'\n');Path('/workspace/scratch/ct73-beta-bound-claims.json').write_text(json.dumps(claims,indent=2)+'\n')

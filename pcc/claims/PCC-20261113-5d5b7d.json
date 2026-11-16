@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-13T02:12:35Z",
+ "id": "PCC-20261113-5d5b7d",
+ "kind": "theorem",
+ "producer": {
+  "commit": "635bd2d2b57af89fb474039db6fcba72631bf681",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "e905af5fd1233430a3695704b7035b58c61b96e61ff22569e5086da75d7eb9a9",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-reference/fp-chain-checker/lean/ChainAdapter.lean",
+   "theorem": "PrimeFieldChain.conditional_two_way_inverse"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Fixed C0/T20 adapter:actual characteristic101 coefficients and conditional finite-group norm uniqueness/two-way inverse with nonuniform104/85. Actual curves/Picard/completion/reducer/chain normalizations and joint norm injectivity remain explicit written/native bridges;no global inverse isogeny/full formal geometry/scientific signature.",
+ "statement": "theorem conditional_two_way_inverse {C T E E2 F : Type} [IntModule E] [IntModule E2] [IntModule F] (n0 : C \u2192 E) (n1 : C \u2192 F) (m0 : T \u2192 E2) (m1 : T \u2192 F) (alpha : E \u2192 E2) (beta : E2 \u2192 E) (forward : C \u2192 T) (reverse : T \u2192 C) (n_injective : \u2200 x y, n0 x=n0 y \u2192 n1 x=n1 y \u2192 x=y) (m_injective : \u2200 x y, m0 x=m0 y \u2192 m1 x=m1 y \u2192 x=y) (order_e : \u2200 x : E, (109 : Int) \u2022 x=0) (order_e2 : \u2200 x : E2, (109 : Int) \u2022 x=0) (order_f : \u2200 x : F, (113 : Int) \u2022 x=0) (alpha_linear : \u2200 (k : Int) x, alpha (k \u2022 x)=k \u2022 alpha x) (beta_linear : \u2200 (k : Int) x, beta (k \u2022 x)=k \u2022 beta x) (beta_alpha : \u2200 x, beta (alpha x)=(49 : Int) \u2022 x) (alpha_beta : \u2200 x, alpha (beta x)=(49 : Int) \u2022 x) (forward0 : \u2200 x, m0 (forward x)=(2 : Int) \u2022 alpha (n0 x)) (forward1 : \u2200 x, m1 (forward x)=(2 : Int) \u2022 n1 x) (reverse0 : \u2200 t, n0 (reverse t)=(2 : Int) \u2022 ((104 : Int) \u2022 beta (m0 t))) (reverse1 : \u2200 t, n1 (reverse t)=(2 : Int) \u2022 ((85 : Int) \u2022 m1 t)) : (\u2200 x, reverse (forward x)=x) \u2227 (\u2200 t, forward (reverse t)=t)"
+}

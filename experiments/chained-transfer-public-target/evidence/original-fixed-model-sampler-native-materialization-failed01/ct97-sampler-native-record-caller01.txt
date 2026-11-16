@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/ct97_record_original_sampler_native_01.py", line 40, in <module>
+    records=json.loads((raw/'all-whole-compared.json').read_text());selected=[v for v in records if v['kind'].startswith('N4_ORIGINAL_FIXED_SAMPLER_')and v['kind']!='N4_ORIGINAL_FIXED_SAMPLER_SETUP'];assert len(selected)==89
+                                                                                                                                                                                                               ^^^^^^^^^^^^^^^^^
+AssertionError

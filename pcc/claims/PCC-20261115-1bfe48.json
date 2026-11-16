@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-15T00:02:11Z",
+ "id": "PCC-20261115-1bfe48",
+ "kind": "theorem",
+ "producer": {
+  "commit": "fa3c50b50db034a36a82813917e42e6801554d6c",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "28f5509c5ef083953438e375cb250fe165afb57a3cfe9e531ff8a8e930165f31",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/paired-fourth-preflight/lean/ThreePairNorm.lean",
+   "theorem": "ThreePairNorm.norm_injective_on_annihilator"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Abstract IntModule three-pair dual norms derived from six individual identities/four linearity laws; Bezout recovery/injectivity on an explicit annihilator subgroup and fixed Nat gcd2197-oldell2773073/13-newell2771711. Both original gates3roots0trusted. No composite norm assumed. Actual curves/finite fields/projective maps/HLP-Frobenius Jacobians/polarizations/programs and cyclic kernel classification remain separate bridges; no native fourth-edge outcome or computational gain.",
+ "statement": "theorem norm_injective_on_annihilator {A B : Type} [IntModule A] (f : A \u2192 B) (fh : B \u2192 A) (n p u v : Int) (norm : \u2200 a, fh (f a) = n \u2022 a) (bezout : u*n+v*p=1) (a b : A) (ha : p \u2022 a=0) (hb : p \u2022 b=0) (same : f a=f b) : a=b"
+}

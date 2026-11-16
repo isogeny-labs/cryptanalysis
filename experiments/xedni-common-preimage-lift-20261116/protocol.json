@@ -1,0 +1,15 @@
+{
+  "schema": "xedni-common-preimage-lift-v1",
+  "source_rows": "experiments/xedni-vector-shift-lift-search-20261116/rows.jsonl",
+  "source_rows_sha256": "3c75b8f6aed964b99e3135cda848289669f7f6bf54a7a8c603ec37b9198e5b9e",
+  "source_registry": "experiments/xedni-crt-band-panel-20261115/result.json",
+  "source_registry_sha256": "edbe3a808aa86054c00f15a5ae40814ed2f8452c4316abbe68f41a62f2219b49",
+  "selected_family": "experiments/xedni-coefficient-optimization-20261115/family-selection.json",
+  "selected_family_sha256": "82b340802ae37e8aaa3b1b0c2774911c27de88ef0e7d99e54fd9378b53f92894",
+  "screen": "Deduplicate archived rows by (field_prime,target_index,offsets,vector), retaining the first shift only, in source order. Independently reconstruct U,V and test aU+bV=O for all 6656 events. Retain all screens.",
+  "lift_selection": "Construct every public relation event. Also construct the first four public nonrelation events per field as negative controls, in source order. Retain all exceptions and failed checks.",
+  "construction": "For prime subgroup order q and b nonzero mod q, compute S=(b^-1 mod q)U. Choose centered integer x,y lifting S on the public curve y^2=x^3-x-2. Set A=-1, B=y^2-x^3+x, E/Q:y^2=x^3+Ax+B, T=(x,y), P=bT, R=-aT. Check reductions of P and R separately against U,V and rational aP+bR=O.",
+  "scalar_replay": "For positive events with a+b nonzero mod q, derive w=(a*t1+b*t2)/(a+b) mod q from the public relation and independently replay wG against the target point.",
+  "run_cap_seconds": 900,
+  "measurement": "exact relation screen and constructive correctness panel; no wall-time comparison"
+}

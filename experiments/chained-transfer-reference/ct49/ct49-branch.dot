@@ -1,0 +1,14 @@
+digraph CT49 {
+  graph [rankdir=LR, bgcolor="white", pad="0.25", nodesep="0.35", ranksep="0.7"];
+  node [fontname="DejaVu Sans", fontsize=11, shape=box, style="rounded,filled", fillcolor="#eaf3f6", color="#49616c"];
+  edge [fontname="DejaVu Sans", fontsize=10, color="#345e76"];
+  T [label="T0 / T1 / T2\nirreducible sextic, 6-cycle\nJ[2](F101³): 4", fillcolor="#fff2e5"];
+  C [label="Cpi1 / Cpi2 / C10 / C20\ntwo irreducible cubics, 3+3\nJ[2](F101³): 16"];
+  A [label="Shift 1 target\nnonzero Richelot determinant\nirreducible sextic, 6-cycle", fillcolor="#ebf5eb"];
+  B [label="Shift 2 target\nnonzero Richelot determinant\nx ↦ -x isomorphism to shift 1", fillcolor="#ebf5eb"];
+  D [label="Shift 0 pairing\ndeterminant 0\nno smooth Richelot genus-2 codomain", fillcolor="#fff3e0"];
+  C -> A [label="degree 4 (2,2)\nF101-stable kernel"];
+  C -> B [label="degree 4 (2,2)\nF101-stable kernel"];
+  C -> D [style=dashed, color="#b56d25", label="degenerate"];
+  T -> C [style=dotted, dir=none, color="#bb5555", label="odd-degree map excluded\nby Frob³ on J[2]", constraint=false];
+}

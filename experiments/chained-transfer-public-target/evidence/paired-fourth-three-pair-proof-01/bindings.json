@@ -1,0 +1,17 @@
+[
+  {
+    "claim": "pcc/claims/PCC-20261115-d0768a.json",
+    "theorem": "ThreePairNorm.three_pair_norms",
+    "statement": "theorem three_pair_norms {A B C D : Type} [IntModule A] [IntModule B] [IntModule C] [IntModule D] (f : A \u2192 B) (fh : B \u2192 A) (g : B \u2192 C) (gh : C \u2192 B) (h : C \u2192 D) (hh : D \u2192 C) (n m k : Int) (hf : \u2200 a, fh (f a) = n \u2022 a) (hfh : \u2200 b, f (fh b) = n \u2022 b) (hg : \u2200 b, gh (g b) = m \u2022 b) (hgh : \u2200 c, g (gh c) = m \u2022 c) (hhf : \u2200 c, hh (h c) = k \u2022 c) (hhb : \u2200 d, h (hh d) = k \u2022 d) (hfl : \u2200 z : Int, \u2200 b, fh (z \u2022 b) = z \u2022 fh b) (hghl : \u2200 z : Int, \u2200 c, gh (z \u2022 c) = z \u2022 gh c) (hgl : \u2200 z : Int, \u2200 b, g (z \u2022 b) = z \u2022 g b) (hhl : \u2200 z : Int, \u2200 c, h (z \u2022 c) = z \u2022 h c) : (\u2200 a, fh (gh (hh (h (g (f a))))) = (n*m*k) \u2022 a) \u2227 (\u2200 d, h (g (f (fh (gh (hh d))))) = (n*m*k) \u2022 d)"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-1bfe48.json",
+    "theorem": "ThreePairNorm.norm_injective_on_annihilator",
+    "statement": "theorem norm_injective_on_annihilator {A B : Type} [IntModule A] (f : A \u2192 B) (fh : B \u2192 A) (n p u v : Int) (norm : \u2200 a, fh (f a) = n \u2022 a) (bezout : u*n+v*p=1) (a b : A) (ha : p \u2022 a=0) (hb : p \u2022 b=0) (same : f a=f b) : a=b"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-72c300.json",
+    "theorem": "ThreePairNorm.fixed_scalar_gcd",
+    "statement": "theorem fixed_scalar_gcd : Nat.gcd 2197 2773073 = 1 \u2227 Nat.gcd 13 2771711 = 1"
+  }
+]

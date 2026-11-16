@@ -1,0 +1,20 @@
+{
+  "schema": "xedni-vector-shift-lift-search-v1",
+  "question": "Can a precommitted vector-dependent search over rational curves through both lifted public points produce rational relations on fresh public queries, with every candidate and reject counted?",
+  "field_registry": "experiments/xedni-crt-band-panel-20261115/result.json",
+  "field_registry_sha256": "edbe3a808aa86054c00f15a5ae40814ed2f8452c4316abbe68f41a62f2219b49",
+  "selected_family": "experiments/xedni-coefficient-optimization-20261115/family-selection.json",
+  "selected_family_sha256": "82b340802ae37e8aaa3b1b0c2774911c27de88ef0e7d99e54fd9378b53f92894",
+  "base_curve": "E/F_p: y^2=x^3-x-2; exact G and prime subgroup q from pinned registry",
+  "target_law": "for j=0,1,2,3, w=1+SHA256('xedni-vector-shift-v1|p|j') interpreted big-endian modulo q-1; Q=wG; fixture construction is outside candidate search",
+  "target_scalars_by_field": {"47": [37,7,3,24], "101": [16,35,9,37], "191": [41,13,11,35], "211": [39,47,30,63], "251": [19,33,11,1], "281": [21,63,52,34], "347": [16,1,41,18], "349": [52,6,14,43]},
+  "query_law": "offsets [0,1,2,3,5,8,13,21]; first 16 lexicographic ordered distinct offsets per target with both U=Q-t1G and V=Q-t2G nonidentity",
+  "candidate_law": "for each query and selected vector (a,b), take centered affine coordinates (x1,y1),(x2,y2) of U,V and enumerate four vector-dependent shift tuples (dx1,dy1,dx2,dy2): (0,0,0,0), (a,0,0,0), (0,b,0,0), (a,b,-a,-b). Lift to (xi+p*dxi,yi+p*dyi). When lifted x differ, solve the two short-Weierstrass point equations exactly for rational A,B. Require nonsingularity and good integral reduction to A=-1,B=-2 at p. Test the rational relation aP+bQ=O only after both public points have been lifted.",
+  "workload": "8 fields times 4 targets times 16 queries times 13 vectors times 4 candidate shifts = 26624 construction attempts in fixed field,target,query,vector,shift order",
+  "controls": "for each field, separately test the exact rational curve y^2=x^3-x-2 with P=(2,2), Q=2P and vector (2,-1) as a positive relation control, and Q=3P as a negative relation control; these 16 controls are outside the candidate workload",
+  "statuses": "retain same_x, nonintegral, singular, invalid_point, bad_reduction, rational_relation, no_rational_relation and producer_failure with all attempted candidates; never drop failed or censored rows",
+  "diagnostic": "compute the public aU+bV=O event after each rational candidate test; compare the candidate success set with the public relation set and record both without using the diagnostic to select curves",
+  "run_cap_seconds": 900,
+  "measurement": "exact correctness and candidate-operation panel on local host; no isolated wall-time comparison",
+  "formal_goal": "for an arbitrary indexed family of rational additive groups, compatible reduction maps, points and coefficient vectors, show that existence of any rational relation implies a public relation in that same vector; retain exact map and point-matching hypotheses"
+}
