@@ -1,4 +1,37 @@
-# Exploratory field-component panel, source1a77f08668
+# Exploratory field-component panels
+
+## Latest candidate: source757c0b1a71, fresh fixtures25..29
+
+The output-extent candidate completed25 pairs at1m dependent field multiplies
+per arm. Every checksum agrees and every calibration meets the frozen bound.
+All qualified values remain null; the record is invalid for promotion.
+PCC-20261116-109e4d binds the unsigned arithmetic report. [pcc:unverified]
+
+| Degree | Limb width | Raw median default/candidate wall ratio | Observed five-input range |
+| --- | --- | ---: | ---: |
+|113|2(control)|0.97736|0.97009..1.20487|
+|131|3|1.06532|1.05377..1.08592|
+|155|3|1.06839|1.06513..1.07276|
+|163|3|1.06207|1.04715..1.07117|
+|233|4(control)|0.99325|0.99003..1.00019|
+
+Both control medians are below1 and remain in the data. The three-limb raw
+ratios are lower than the first panel's values. Fixtures and allocation also
+changed, so these panels do not isolate the effect of consolidating the bounds
+check. Fewer compiler-emitted checks do not establish lower wall time. The
+single-check candidate stays opt-in, with no claim of being the fastest variant.
+The benchmark protocol requires controlled timing before default activation.
+[pcc:unverified]
+
+Job20261116-035129-4194 completed with exit0 after31.2seconds. Its launcher
+receipt reports the L4 allocation and its source/binary hashes and every arm
+are retained under run-002 and launch-002. The isolated field tests are rerun
+for both binaries before timing. assembly-002 retains ARM64 compilation and
+unit/clippy logs: the three-limb branch contains six PMULL instructions and
+one output-extent comparison. This is compiler evidence, not timing standing.
+[pcc:unverified]
+
+## Earlier candidate: source1a77f08668, fixtures20..24
 
 The producer CUDA/L4-host panel completed25 paired dependency-chain runs,
 with1,000,000 field multiplications per arm and five fresh input fixtures per
