@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Recompute fixed-input pipeline diagnostics without granting timing standing."""
 import hashlib
+import argparse
 import json
 import math
 from pathlib import Path
@@ -8,7 +9,9 @@ import statistics
 
 HERE=Path(__file__).resolve().parent
 ROOT=HERE.parents[1]
-OUT=HERE/'run-001'
+parser=argparse.ArgumentParser();parser.add_argument('--run-id',default='run-001');parser.add_argument('--stem',default='analysis');args=parser.parse_args()
+assert args.run_id.replace('-','').isalnum() and args.stem.replace('-','').isalnum()
+OUT=HERE/args.run_id
 
 
 def canonical(v):return json.dumps(v,sort_keys=True,separators=(',',':'),ensure_ascii=False)
@@ -105,6 +108,6 @@ for index in [0,1]:
 result={'schema':'ic-s3-pipeline-analysis/v1','status':'pass' if not errors else 'fail','errors':errors,
         'run_status':summary['status'],'pairs':len(rows),'references':len(references),
         'timing_qualified':False,'qualified':None,'cases':cases,'rows':rows}
-(HERE/'analysis.json').write_text(json.dumps(result,indent=2)+'\n')
+(HERE/(args.stem+'.json')).write_text(json.dumps(result,indent=2)+'\n')
 print(json.dumps({k:v for k,v in result.items() if k!='rows'},indent=2))
 if errors:raise SystemExit(1)

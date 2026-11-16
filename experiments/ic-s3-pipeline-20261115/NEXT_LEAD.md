@@ -50,3 +50,16 @@ source:1ee3d510d5914c2f16a6bb31508af54b,
 crypto:papers/ecdlp-index-calculus-treatise/sections/falldegree.tex (general
 linear-section reformulation). Original current htsolver.py and candidate
 wiring were read. Search rankings confer no proof or performance standing.
+
+## Native prototype status,2026-11-15
+
+[pcc:unverified] suite/src/cryptanalysis/s3_affine_projection.rs now implements
+the prepared section, product-space parity checks, joint epsilon solve and
+Gray enumeration. Producer tests cover: exhaustive nonzero-target checks
+for degrees2..8, two basis forms, dimensions up to4 and three constants; and
+explicit invalid-input/residual-cap checks including the63-bit boundary.
+An additional dense-subspace differential check reaches degrees15/18/31/53/63.
+Library clippy passes for the core. The latest native log records the exact
+completed check count. Claim PCC-20261116-646058 records this unsigned component
+result. No signed-point lifting, target-zero fallback, oracle registration,
+IC integration or performance comparison is supplied by this prototype.
