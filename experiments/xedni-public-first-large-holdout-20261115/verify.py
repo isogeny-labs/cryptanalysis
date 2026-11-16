@@ -120,6 +120,14 @@ def main():
     assert 'Build completed successfully (9043 jobs)' in admissible_build
     for name in ('admissible_pair_count','family_density_cross_mul','family_exact_fraction','family_fraction_bound'):
         assert f"'XedniPublicFirstLargeHoldout.{name}' depends on axioms: [propext, Classical.choice, Quot.sound]" in admissible_build
+    family_bound=(formal/'FamilyBound.lean').read_text()
+    assert all(name in family_bound for name in ('theorem family_hit_card_le','theorem family_fraction_le',
+                                                'theorem family_size_needed'))
+    assert not any(token in family_bound for token in ('sorry','admit','sorryAx','native_decide'))
+    bound_build=(formal/'family-bound-build-output.txt').read_text()
+    assert 'Build completed successfully (9044 jobs)' in bound_build
+    for name in ('family_hit_card_le','family_fraction_le','family_size_needed'):
+        assert f"'XedniPublicFirstLargeHoldout.{name}' depends on axioms: [propext, Classical.choice, Quot.sound]" in bound_build
     for old,row in zip(result['fields'],post['rows'],strict=True):
         q=old['subgroup_order']
         assert row['field_prime']==old['field_prime'] and row['subgroup_order']==q
