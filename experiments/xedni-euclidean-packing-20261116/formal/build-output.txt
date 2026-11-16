@@ -1,0 +1,32 @@
+⚠ [2702/2704] Built HeightPigeonhole (6.9s)
+warning: HeightPigeonhole.lean: imports `Mathlib.Data.Finset.Card` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: HeightPigeonhole.lean: imports `Mathlib.Algebra.Order.BigOperators.Group.Finset` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: HeightPigeonhole.lean: imports `Mathlib.Data.ZMod.Basic` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: HeightPigeonhole.lean: imports `Mathlib.Data.Int.Interval` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: HeightPigeonhole.lean: imports `Mathlib.Data.Fintype.BigOperators` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: HeightPigeonhole.lean:182:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: HeightPigeonhole.lean:182:11: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+info: HeightPigeonhole.lean:215:0: 'XedniHeightPigeonhole.coefficientBox_card' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: HeightPigeonhole.lean:216:0: 'XedniHeightPigeonhole.coefficientBox_bounded' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: HeightPigeonhole.lean:217:0: 'XedniHeightPigeonhole.bounded_relation_of_card_lt' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: HeightPigeonhole.lean:218:0: 'XedniHeightPigeonhole.bounded_witness_of_card_lt_on_dependence' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: HeightPigeonhole.lean:219:0: 'XedniHeightPigeonhole.bounded_relation_of_height_ball_count' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: HeightPigeonhole.lean:220:0: 'XedniHeightPigeonhole.latticeValues_card_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: HeightPigeonhole.lean:221:0: 'XedniHeightPigeonhole.bounded_relation_of_lattice_representation' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: HeightPigeonhole.lean:222:0: 'XedniHeightPigeonhole.rank_gap_count' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: HeightPigeonhole.lean:223:0: 'XedniHeightPigeonhole.bounded_relation_of_rank_gap' depends on axioms: [propext, Classical.choice, Quot.sound]
+⚠ [2703/2704] Built EuclideanPacking (6.2s)
+warning: EuclideanPacking.lean: imports `Mathlib.MeasureTheory.Covering.BesicovitchVectorSpace` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+info: EuclideanPacking.lean:171:0: 'XedniEuclideanPacking.card_mul_half_sep_pow_le_radius_pow' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: EuclideanPacking.lean:172:0: 'XedniEuclideanPacking.card_le_radius_ratio_pow' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: EuclideanPacking.lean:173:0: 'XedniEuclideanPacking.labelled_card_le_radius_ratio_pow' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: EuclideanPacking.lean:174:0: 'XedniEuclideanPacking.bounded_relation_of_euclidean_packing' depends on axioms: [propext, Classical.choice, Quot.sound]
+Build completed successfully (2704 jobs).
