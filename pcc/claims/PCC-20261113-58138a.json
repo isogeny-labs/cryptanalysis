@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-13T12:18:11Z",
+ "id": "PCC-20261113-58138a",
+ "kind": "theorem",
+ "producer": {
+  "commit": "f888bd5fe50262d0d74d85ff4caaf4e4af96c81d",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "9349f7930906386a45f71b55cb041af91a6cbc40231cd54cd981e13ffc684e31",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/formal/PublicOriginConvention.lean",
+   "theorem": "PublicOriginConvention.degree_six_reference_has_two_deltas"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Additional conditional degree-six reference two-delta, infinity-origin sign, transported forward and reverse double compositions, common-sign affine log ratio. Actual divisor/Picard groups, hyperelliptic-involution infinity-origin identity, N4 solver kernel, completed V2 maps/norm and model/basepoint identification remain written/native obligations. SAME5 source declarations accepted by ORIGINALproducer4.35 and ORIGINALconsumer4.34.1 gates,zero trusted;no verifier/trust change. Exact local bindings remain unsigned until main CI verdict;no full formal geometry or computational advantage.",
+ "statement": "theorem degree_six_reference_has_two_deltas {D : Type} [IntModule D] (canonical oldP newP divisor : D) : (divisor-(canonical-newP)-(canonical-newP))- (divisor-(canonical-oldP)-(canonical-oldP)) = (newP-oldP)+(newP-oldP)"
+}

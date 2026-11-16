@@ -1,0 +1,37 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-15T08:42:50Z",
+ "id": "PCC-20261115-e411e8",
+ "kind": "statement",
+ "producer": {
+  "commit": "e633524f33e62c4ffa273ffefd4a8ea3915ef93d",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/original-full-evaluator-source-metadata-review-01/review.txt",
+    "sha256": "3480592791eb1d3e224c6107d2257d414fdca905969fbcde5935ac455969179d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/original-full-evaluator-source-metadata-review-01/whole-data-preservation.json",
+    "sha256": "610c8ceb5a094ad584db1d32ed4984b04acda4494c84f83c783c3e773417aa11"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/closed-byte-dedup-ct90-01/receipt.json",
+    "sha256": "b3b42edb43aba3fc0df78904c7d315b389f428365d4710249de90d8ea8d302e7"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Full-evaluator source metadata/storage review: preserveentire11,799,146B whole literal native setupfile inrawandclosedbuild02 actualsource; concise provenance retainsliteralinversevalues andexactwholefilehash/bytes/path beforefreshbuild03. No Rust/proof/binaryinput changed andno scientificrecord removed. Sevenclosed duplicatepairs wholebytes/mode compared before/after transparenthardlinks,35,118,092logicalduplicatebytes; everypath/fullbytecontent retained, no livecache or49753priorheldpath touched. Unsignedcustodyonly."
+}

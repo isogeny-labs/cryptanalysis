@@ -1,0 +1,101 @@
+{
+  "schema": "ic-bench-candidate/1",
+  "field": {
+    "characteristic": 2,
+    "degree": 15,
+    "representation": "polynomial",
+    "modulus_exponents": [
+      15,
+      1,
+      0
+    ],
+    "element_encoding": "hex polynomial coefficient bitset, least significant bit is constant"
+  },
+  "curve": {
+    "model": "binary Weierstrass",
+    "coefficients": [
+      1,
+      1,
+      0,
+      0,
+      21067
+    ],
+    "subgroup_order": "16319",
+    "cofactor": 2,
+    "generator": [
+      "0x7b33",
+      "0x6f56"
+    ],
+    "target_group": "prime-order subgroup",
+    "curve_id": "EC1N15Crbhe4e02575ec1c"
+  },
+  "factor_base": {
+    "actual_usable_point_count": 58,
+    "construction": {
+      "basis": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32
+      ],
+      "family": "registry-prefix",
+      "params": {
+        "exclude_x_zero": true,
+        "registry_alias": "icv1_f2m15_t131_ed7256f0"
+      },
+      "polynomial_constraint": "none",
+      "shifted_bases": "none"
+    },
+    "curve_id": "EC1N15Crbhe4e02575ec1c",
+    "effective_columns": 29,
+    "enumerated_set_sha256": "04e1ab378e13dd84dc8fe58c3092a25441694e66b2297067724ecd4ad5d13302",
+    "geometric_point_count": 58,
+    "nominal_dimension": 6,
+    "quotient_rule": "sign, with prime-order cofactor quotient logarithms",
+    "strict_subgroup_point_count": 26,
+    "subgroup_policy": "full curve lifts, relations reduced in the prime-order cofactor quotient; no pure torsion"
+  },
+  "point_decomposition": {
+    "summands": 2,
+    "solver_family": "f4f2",
+    "stage_code": "PDP2f4f2",
+    "oracle": "descent-algebraic",
+    "solver": "f4-f2",
+    "solver_budget_seconds": 1,
+    "constructor": "generic symbolic S3",
+    "negation_folded": true
+  },
+  "relation_collection": {
+    "stage_code": "RCwalk",
+    "targets": "walk",
+    "max_trials": 50000
+  },
+  "relation_linear_algebra": {
+    "stage_code": "LAgauss",
+    "implementation": "incremental-gauss"
+  },
+  "target_descent": {
+    "stage_code": "TDdirect",
+    "rule": "single target column in relation matrix"
+  },
+  "isogeny": "none",
+  "implementation": {
+    "entry_point": "suite/examples/ic_s3_pipeline_probe.rs -> run_pipeline",
+    "sources_sha256": {
+      "suite/examples/ic_s3_pipeline_probe.rs": "af216e78b37b50acdbfb733c8bd3f748343b179f01b37215d6187b7a1ca2f6b2",
+      "suite/Cargo.toml": "e6adbf31aabbf4e4e7439f90e7304280137a8bcb380e4d5cb665e2cb51b0bef0",
+      "suite/Cargo.lock": "78f383ad0a5e3977d94ddec4ee1312aed0b82cc48ac7096604b3fe40d3735edd",
+      "suite/src/cryptanalysis/pq_descent_symbolic.rs": "3cf0c067851b64eb533acb6416a8127fd96d04cd8918fb9a7f21b8d6b05d86d1",
+      "suite/src/cryptanalysis/ic_framework/mod.rs": "7e26e6e0b13dc92f8a6b492f0f2ed112508ec76b71625cab70f40a07b66b1079",
+      "suite/src/cryptanalysis/ic_framework/plugins.rs": "af52fe35466d9f3c980ebf0919a378c3d4c79d89f3d3dc4676b6cebe767cc54e",
+      "suite/src/cryptanalysis/ic_framework/solvers.rs": "69da7e8021327618440735119eb61fe991ce75e3eb6d2f7ddc0e58bb38de33a0",
+      "suite/src/cryptanalysis/ic_framework/linalg.rs": "16e0590659aeaa876591ec85b13be7bf448259924ef2f72339df90794cf22c8c",
+      "suite/src/cryptanalysis/ic_boundary.rs": "43ab8a55598b0d13f2c6eacdce88cabc42600673d1d84f7608cc17b269c5a8af",
+      "suite/src/cryptanalysis/koblitz_fast.rs": "8abd927a6bfe82c01d43843d0a3a474bca48df63fccc74d3a4445aa60423a4fb",
+      "suite/src/cryptanalysis/semaev_decomp.rs": "6fb36a13cedf62facd3572c054a9fc7dfc0f148a2f6f757f323160a7c539bf77"
+    },
+    "cargo_features": []
+  }
+}

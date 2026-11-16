@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-15T00:30:18Z",
+ "id": "PCC-20261115-c08ca0",
+ "kind": "theorem",
+ "producer": {
+  "commit": "4c708a8bbe1977fc747e36a62017908675c94d86",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "2af92f0f02eec31d670f4e2afdc402ca23d5f27cf3bd37790caed502685b948c",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/paired-fourth-preflight/lean/FourthObstruction.lean",
+   "theorem": "FourthObstruction.fixed_twist_witness"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Exact Nat/Fin223 residues: all223 square nonroots for67, fixed12-cubed67=39 modulo223/40square39/nonzero, and169 coprime2771711. BOTHoriginal434/435gates3roots0trusted. Field encoding, cubic tower law, actual HLP/Frobenius/Jacobian interpretation and Rust remain separate; native75338a independently observes originalD67negative/separateD39positive. No universal nonexistence/security or signed/performance claim.",
+ "statement": "theorem fixed_twist_witness : (12^3*67 : Nat) % 223 = 39 \u2227 (40 : Nat)^2 % 223 = 39 \u2227 40 % 223 \u2260 0"
+}

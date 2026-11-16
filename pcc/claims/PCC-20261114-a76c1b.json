@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-14T16:56:17Z",
+ "id": "PCC-20261114-a76c1b",
+ "kind": "theorem",
+ "producer": {
+  "commit": "9a30773a0763304f19effe523b010bf13300c47c",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "8310d89769a4c9830f664ce0a56e2096d463a8a8360d47a9dbc59f48df693f64",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/nondual13-preflight/lean/NondualComposition.lean",
+   "theorem": "NondualComposition.both_composite_169"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Functions on IntModules under individual dual-pair norm identities and explicit scalar-linearity laws; derives both composite norms. Actual curves/field/projective extension/degree/poles/geometric torsion/cyclic kernel classification/J2/program bridges remain written/native. General statement and numeric specialization not promoted as separate research discoveries or aggregate novelty count. Both original gates pass2theorems0trusted, onlypropext; failed first proof preserved.",
+ "statement": "theorem both_composite_169 {A B C : Type} [IntModule A] [IntModule B] [IntModule C] (f : A \u2192 B) (fh : B \u2192 A) (g : B \u2192 C) (gh : C \u2192 B) (hf : \u2200 a, fh (f a) = (13 : Int) \u2022 a) (hfh : \u2200 b, f (fh b) = (13 : Int) \u2022 b) (hg : \u2200 b, gh (g b) = (13 : Int) \u2022 b) (hgh : \u2200 c, g (gh c) = (13 : Int) \u2022 c) (hfl : \u2200 k : Int, \u2200 b, fh (k \u2022 b) = k \u2022 fh b) (hgl : \u2200 k : Int, \u2200 b, g (k \u2022 b) = k \u2022 g b) : (\u2200 a, fh (gh (g (f a))) = (169 : Int) \u2022 a) \u2227 (\u2200 c, g (f (fh (gh c))) = (169 : Int) \u2022 c)"
+}

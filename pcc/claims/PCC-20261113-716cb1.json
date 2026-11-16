@@ -1,0 +1,37 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-13T17:20:02Z",
+ "id": "PCC-20261113-716cb1",
+ "kind": "statement",
+ "producer": {
+  "commit": "5b459ecae1fc469bf9c3bd5fdfe26a0ac0a09d86",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/kernel-normal-publication-01/expected-head-lookup.log.xz",
+    "sha256": "80c4a8efde1617f45619483854a576bedaf75ec3732a2beab46e14d86330c4dd"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/kernel-normal-publication-01/push.log.xz",
+    "sha256": "81e698f796fc0cda33335da53e4f5087aa278d3051e285cab965b3318efc07da"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/kernel-normal-publication-01/receipt.json",
+    "sha256": "2345743b952b3224f25227616e285198c0b4dfb93dfc7e045518b6d63ac65fe8"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Kernel source5b459ec/tree347f60b3/parent85b799ec/220paths/governance79eec6 actuallynormalpublished0 with expectedhead andno force;wholeoriginalpush/lookup losslessXZ andreceipt retained. e2da08preservesfirstproselintfailure1/exact3historicalfrozenfindings/active02tagcopieslint0;allotheroriginalsourcegovernancegates0. No mainmerge/requiredreview/signingwaiver."
+}
