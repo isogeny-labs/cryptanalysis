@@ -408,6 +408,30 @@ class RoundTrip(unittest.TestCase):
         self.assertIn("outside the repository", result.stderr)
         self.assertFalse(target.exists())
 
+    def test_push_refuses_unmerged_index_without_changing_stages(self):
+        path = "research/r1/runs/a.jsonl"
+        oids = []
+        for payload in (self.big, self.big + b"ours\n", self.big + b"theirs\n"):
+            result = subprocess.run(["git", "hash-object", "-w", "--stdin"], cwd=self.repo,
+                                    input=payload, capture_output=True, check=True, env=self.env)
+            oids.append(result.stdout.decode().strip())
+        self.assertEqual(len(set(oids)), 3)
+        self.git("update-index", "--force-remove", path)
+        rows = "".join(f"100644 {oid} {stage}\t{path}\n" for stage, oid in enumerate(oids, 1))
+        subprocess.run(["git", "update-index", "--index-info"], cwd=self.repo,
+                       input=rows, text=True, check=True, env=self.env)
+        original_index = self.git("ls-files", "--stage")
+        for arguments in (("push", path), ("push", "research"), ("push", "--dry-run", path)):
+            with self.subTest(arguments=arguments):
+                result = self.art(*arguments, check=False)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn("unresolved Git index conflicts", result.stderr)
+                self.assertEqual(self.git("ls-files", "--stage"), original_index)
+                self.assertEqual((self.repo / path).read_bytes(), self.big)
+                self.assertFalse(self.remote.exists())
+                self.assertFalse((self.repo / "research/r1/runs/.artifacts.json").exists())
+
+
 
 
 
