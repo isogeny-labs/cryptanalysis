@@ -15,6 +15,7 @@
 #include "cryptanalysis/ca_grumpy.h"
 #include "dlog_internal.h"
 #include "dlog_checkpoint_internal.h"
+#include "grumpy_checkpoint_internal.h"
 
 #include <math.h>
 #include <stddef.h>
@@ -99,18 +100,6 @@ static int grumpy_collide(grumpy_ctx *c, int t1, uint64_t i1, int t2, uint64_t i
     return grumpy_candidate(c, (ca_i128)i1 * m + (ca_i128)i2 * (m + 1), 0, x);
 }
 
-typedef struct grumpy_checkpoint_header {
-    char magic[8];
-    uint64_t p, a, b, order, cofactor;
-    uint64_t base[4], target[4], lo, hi, m;
-    uint32_t kind, endo_kind, aut_order, entry_size;
-    uint64_t endo_lambda, endo_c_mont;
-    uint64_t next_i, ops, entries, result;
-    double elapsed_seconds;
-    uint32_t solved;
-    uint64_t checksum;
-} grumpy_checkpoint_header;
-
 static void grumpy_checkpoint_identity(grumpy_checkpoint_header *h, const grumpy_ctx *c)
 {
     memset(h, 0, sizeof(*h));
@@ -135,10 +124,13 @@ static int grumpy_checkpoint_probe(const char *path, const grumpy_checkpoint_hea
         ca_set_error("grumpy: cannot open checkpoint");
         return -1;
     }
+    uint64_t width = identity->hi - identity->lo;
+    uint64_t max_iter = width > UINT64_MAX - 2 ? UINT64_MAX : width + 2;
     int ok = fread(saved, 1, sizeof(*saved), f) == sizeof(*saved) &&
              memcmp(saved, identity, offsetof(grumpy_checkpoint_header, next_i)) == 0 &&
-             saved->ops >= saved->next_i && saved->entries <= saved->ops &&
-             saved->elapsed_seconds >= 0 && isfinite(saved->elapsed_seconds);
+             saved->solved <= 1 && saved->next_i <= max_iter && saved->ops >= saved->next_i &&
+             saved->entries <= saved->ops && saved->elapsed_seconds >= 0 &&
+             isfinite(saved->elapsed_seconds);
     fclose(f);
     if (!ok) { ca_set_error("grumpy: checkpoint identity or format does not match"); return -1; }
     return 1;
@@ -344,6 +336,11 @@ static ca_status grumpy_solve_impl(const ca_group *g, const ca_elem *base, const
     double elapsed_prior = 0;
     rc = CA_ERR_INTERNAL;
     if (existing) {
+        if (saved.ops > UINT64_MAX - ops) {
+            ca_set_error("grumpy: resumed operation count exceeds counter capacity");
+            rc = CA_ERR_INVALID;
+            goto out;
+        }
         if (!grumpy_checkpoint_load(checkpoint_path, &saved, g, walk, &tab)) {
             rc = CA_ERR_INVALID;
             goto out;
@@ -392,6 +389,11 @@ static ca_status grumpy_solve_impl(const ca_group *g, const ca_elem *base, const
         gr_lanes_fill(g, ls, walk, step);
     }
     for (; i < max_iter; i++) {
+        if (ops > UINT64_MAX - 3) {
+            ca_set_error("grumpy: operation counter has no capacity for another iteration");
+            rc = CA_ERR_LIMIT;
+            goto finalize;
+        }
         for (int tpe = 0; tpe < 3; tpe++) {
             const ca_elem *pt = laned ? &ls->lane[tpe * GR_LANES + lc] : &walk[tpe];
             uint64_t ot, oi;

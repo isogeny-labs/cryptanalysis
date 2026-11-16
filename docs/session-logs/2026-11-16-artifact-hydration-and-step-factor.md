@@ -19,3 +19,8 @@ PCC witness inputs omitted by the sparse checkout were materialized from unchang
 
 ## Evidence status and parity coverage
 PCC-20261116-be9601 pins the native receipts and raw test logs as unsigned attestation data; its status remains not_covered. The initial consumer snapshot records the prior 16-file parity surface. Adding cryptanalysis to the artifact-tool lock membership now enforces that existing copy as well, and current parity passes across 17 shared files. [pcc:unverified]
+
+## Checkpoint accounting boundaries
+A checksum-valid checkpoint with UINT64_MAX saved operations resumed with CA_OK and reported only 3,470 operations after unsigned wrap. Check resume-addition capacity, reserve three counter slots before another iteration, reject non-Boolean solved markers and cursors beyond the interval bound. Invalid checkpoints stay byte-identical. A checksum-valid cached-solution control passes; a near-capacity control stops without advancing and reports UINT64_MAX-2 operations. Move the unchanged private wire declaration to a shared internal header for format controls. Host layout checks retain 224 bytes and every field offset; all 21 ASan/UBSan controls pass after the accounting fix. [pcc:unverified]
+
+PCC-20261116-7a4c0f pins the new checkpoint-control receipts and remains not_covered unsigned data. Earlier alpha and artifact receipts are retained unchanged.
