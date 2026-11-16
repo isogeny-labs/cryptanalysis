@@ -1,6 +1,8 @@
 """Check frozen inputs, audit amendment, raw events, stage counts and seal."""
 import hashlib
 import json
+import ast
+import re
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -99,6 +101,17 @@ def main():
     assert "'XedniPublicFirstLargeHoldout.family_event_count' depends on axioms: [propext, Classical.choice, Quot.sound]" in build
     for name in ('eventToHitPair_injective','family_hit_pair_count'):
         assert f"'XedniPublicFirstLargeHoldout.{name}' depends on axioms: [propext, Classical.choice, Quot.sound]" in build
+    panel=(formal/'Panel.lean').read_text()
+    match=re.search(r'def selected .*?!\[(.*?)\]',panel,re.S)
+    assert match is not None
+    vectors=ast.literal_eval('['+match.group(1)+']')
+    assert [list(v) for v in vectors]==json.loads((ROOT/'xedni-coefficient-optimization-20261115/family-selection.json').read_text())['selected']
+    panel_build=(formal/'panel-build-output.txt').read_text()
+    assert 'Build completed successfully (9042 jobs)' in panel_build
+    assert not any(token in panel for token in ('sorry','admit','sorryAx','native_decide'))
+    for q in (293,313,331,353,419,439,571,599):
+        assert f'theorem count{q}' in panel
+        assert f"'XedniPublicFirstLargeHoldout.count{q}' depends on axioms: [propext, Classical.choice, Quot.sound]" in panel_build
     for old,row in zip(result['fields'],post['rows'],strict=True):
         q=old['subgroup_order']
         assert row['field_prime']==old['field_prime'] and row['subgroup_order']==q
