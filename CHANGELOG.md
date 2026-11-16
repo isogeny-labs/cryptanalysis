@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.1.7](https://github.com/isogeny-labs/cryptanalysis/compare/cryptanalysis-v0.1.6...cryptanalysis-v0.1.7) (2026-11-16)
+
+
+### Bug Fixes
+
+* **ct168:** exclude harness-only public Q construction from cold timing ([40568e4](https://github.com/isogeny-labs/cryptanalysis/commit/40568e4d6ef43a26f87ca5431fe357b7bde7ded1))
+* **ct168:** fail closed on truncated census, typed values and schema spoofing ([76a8077](https://github.com/isogeny-labs/cryptanalysis/commit/76a80779735476d0a48bc632b6b0fe85b9ceb2e9))
+* **ct168:** isolate public-Q timed solvers from known verifier scalar ([c06d255](https://github.com/isogeny-labs/cryptanalysis/commit/c06d2552139400ecb3fb78124aff8c12f390ffe0))
+* **ct168:** preserve exact 22-digit integer Frobenius traces in frozen JSON ([69daaa9](https://github.com/isogeny-labs/cryptanalysis/commit/69daaa9c4f8ecfc5f7e559f9b53557e0356630d9))
+
 ## [0.1.6](https://github.com/isogeny-labs/cryptanalysis/compare/cryptanalysis-v0.1.5...cryptanalysis-v0.1.6) (2026-11-16)
 
 
