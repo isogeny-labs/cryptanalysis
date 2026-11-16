@@ -1,0 +1,51 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-15T22:52:50Z",
+ "id": "PCC-20261115-47a01f",
+ "kind": "statement",
+ "producer": {
+  "commit": "60c94c0bea883b031a279876a46ca6d443f04663",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "research/curve25519_torus_native_20261115/recovery-final-v4.log",
+    "sha256": "c17f595bef868ba1ba876690eef826b95e141b902f7d1c50abcb92099a06e86b"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "research/curve25519_torus_native_20261115/evidence/native-four-controls-v1/native-tree-pre-call.json",
+    "sha256": "2f0b2c8ed5ee629c619275509092a60ab148c99bd3a5d8e04f1c56f75e47fad5"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "research/curve25519_torus_native_20261115/evidence/native-four-controls-v1/native-tree-post-call.json",
+    "sha256": "ff5dc07847aa4cadb8f63cb717932f995d314d71d67aca1d5f7a22a7359bf2e8"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "research/curve25519_torus_native_20261115/evidence/native-four-controls-v1/consumer-source-v4.tar.gz",
+    "sha256": "a5db72a8ba99f0e03708eb54c9c48a0ea0107bf57c5f3d5240d6189082523cbb"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "research/curve25519_torus_native_20261115/evidence/public-four-prepared-v1/tree-preparation-post-call.json",
+    "sha256": "5ef0699ea3093e13b3b02f92f6a101ed03acf4342cf0652aab0768137a53ea94"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Producer four-point native functional controls at actual Curve25519 p,A and M=1: std(dp), std(lp) and bounded native root recovery return one assignment and one checked signed sum for the member target, and a unit basis with no sums for the nonmember target, both matching the complete singleton-base oracle. Each native process is limited to four CPU seconds, five wall seconds and 768 MiB. Nine unit tests plus one process-level test pass, including actual four-coset known-assignment recovery, mutation and mixed-protocol controls. The 454-variable full-base public solver script was prepared without running it. No timing, absence certificate, uniform-yield, changed-exponent or geometric proof claim."
+}
