@@ -41,3 +41,5 @@ Successful checkpoint admission permits timing; it establishes no performance co
 2026-11-16 17:21 UTC: rechecked the supported token route at published head64ef14113. The gate again exited1 with HTTP403; original log004 is preserved under admission-001. No timing command or allocation was started. Access remains unresolved. [pcc:unverified]
 
 2026-11-16 17:22 UTC: the third consecutive goal-turn admission audit again returned exit1 HTTP403 at clean published head305e91a20. Log005 is preserved. No timing allocation exists. The performance objective is blocked pending a functioning supported checkpoint transport; the implementation and frozen panel remain ready. [pcc:unverified]
+
+2026-11-16 19:24–19:25 UTC: after explicit goal resumption, three fresh consecutive audits at clean head918259a0b again failed checkpoint admission with HTTP403. Original resumed-001/002/003 logs are retained under admission-001. Repository artifact configuration still names the same bucket; no migrated destination was supplied. Timing remains unstarted. The goal is blocked again pending a functioning supported checkpoint transport. [pcc:unverified]
