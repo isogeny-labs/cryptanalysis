@@ -34,3 +34,8 @@ Root #3877's 2026-11-15 session log **already reports** a separate 695-record na
 Highest-value next work: source-bind both claimed point/group orders and all q223 actual rational maps' degrees/homomorphism/descent; inspect original whole-695 parity and already existing evidence; then execute owner-admitted paired native ABBA primitive timing and complete same-target cold source/candidate rho/BSGS/IC, counting setup, norm, LA, verification, RSS and uncertainty. The original budget/CI/PCC/review gates stay unchanged. No paid compute, merge, or performance claim in CT149.
 
 Prior art and related work: crypto #3877 original root proofs/session logs, cryptanalysis #1537 CT129, #1533 CT125, #1589 CT146–148, crypto #4215, Silverman *Arithmetic of Elliptic Curves* III.4; research-KB and Conductor unavailable in this tool runtime, so no novelty or absence statement. [pcc:unverified]
+
+
+## Hosted source-only replay (inspected)
+
+[GitHub Actions CT149 #43788566220](https://github.com/isogeny-labs/cryptanalysis/actions/runs/43788566220), job 133041604902, completed successfully on the PR merge ref containing source head 1b11f5ec0b379e4935293c3bfb865a816818bb4a (merge SHA f6128470). The decoded job log confirms Python normal and -O output agreement, all three negative controls, expected integer-roster checks and the **same** source SHA-256 a08651a55d69a4c6f50b8f2d38223752f1afd6c6187d14f6ab4c69bb996805d3 / JSON SHA-256 b9e2ec3ee02b6cadc6bab78e2f455c962a77b1735cce7fff846fdbac0367604e as the developer-local execution. This is a hosted arithmetic/software replay, not independently signed PCC, native q223 group verification or a complete measured solve. Inherited whole-chain and PCC gates remain separate. [pcc:unverified]
