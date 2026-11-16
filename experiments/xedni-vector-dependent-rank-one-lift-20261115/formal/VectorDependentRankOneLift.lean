@@ -47,6 +47,40 @@ theorem public_relation_iff_rank_one {A : Type*} [AddCommGroup A]
     rw [← hU, ← hV]
     exact rank_one_relation T a b
 
+/-- A Bézout certificate gives an explicit inverse to multiplication by `b`
+on a group killed by `q`. -/
+theorem coefficient_bijective_of_torsion {A : Type*} [AddCommGroup A]
+    (q : ℕ) (b c d : ℤ)
+    (hbez : b * c + (q : ℤ) * d = 1)
+    (htors : ∀ X : A, (q : ℤ) • X = 0) :
+    Function.Bijective (fun X : A => b • X) := by
+  have hbc (X : A) : b • (c • X) = X := by
+    have h : (b * c + (q : ℤ) * d) • X = X := by rw [hbez, one_smul]
+    rw [add_smul, mul_smul, mul_smul, htors, add_zero] at h
+    exact h
+  have hcb (X : A) : c • (b • X) = X := by
+    simpa only [smul_smul, mul_comm] using hbc X
+  constructor
+  · intro X Y hXY
+    change b • X = b • Y at hXY
+    calc
+      X = c • (b • X) := (hcb X).symm
+      _ = c • (b • Y) := by rw [hXY]
+      _ = Y := hcb Y
+  · intro Y
+    exact ⟨c • Y, hbc Y⟩
+
+/-- In a `q`-torsion public group, a Bézout-invertible coefficient makes the
+public relation equivalent to the common rank-one preimage construction. -/
+theorem torsion_public_relation_iff_rank_one {A : Type*} [AddCommGroup A]
+    (q : ℕ) (a b c d : ℤ) (U V : A)
+    (hbez : b * c + (q : ℤ) * d = 1)
+    (htors : ∀ X : A, (q : ℤ) • X = 0) :
+    a • U + b • V = 0 ↔
+      ∃ T : A, b • T = U ∧ (-a) • T = V := by
+  exact public_relation_iff_rank_one a b U V
+    (coefficient_bijective_of_torsion q b c d hbez htors)
+
 /-- Apply the group identity to the explicitly constructed rational point. -/
 theorem rational_rank_one_relation (x y a b : ℤ) :
     a • (b • XedniAdaptiveInverseLift.liftPos x y) +
@@ -101,6 +135,8 @@ theorem reducedGenerator_coordinates (p : ℕ) [Nontrivial (ZMod p)]
 
 #print axioms public_factorization
 #print axioms public_relation_iff_rank_one
+#print axioms coefficient_bijective_of_torsion
+#print axioms torsion_public_relation_iff_rank_one
 #print axioms rank_one_relation
 #print axioms rational_rank_one_relation
 #print axioms rank_one_reduction_commutes
