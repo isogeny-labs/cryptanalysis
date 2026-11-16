@@ -1477,7 +1477,12 @@ mod simd256 {
             let mut vector_pairs = 0;
             let full = ps.len() / 4 * 4;
             out.reserve(ps.len());
-            for (pc, qc) in ps[..full].chunks_exact(4).zip(qs[..full].chunks_exact(4)) {
+            for (pc, qc) in ps[..full]
+                .as_chunks::<4>()
+                .0
+                .iter()
+                .zip(qs[..full].as_chunks::<4>().0.iter())
+            {
                 let mut inv = [0u64; 4];
                 let normal = (0..4).all(|i| {
                     if pc[i].infinity || qc[i].infinity || pc[i].x == qc[i].x {
@@ -1532,7 +1537,12 @@ mod simd256 {
             let mut vector_pairs = 0;
             let full = ps.len() / 4 * 4;
             out.reserve(ps.len());
-            for (pc, qc) in ps[..full].chunks_exact(4).zip(qs[..full].chunks_exact(4)) {
+            for (pc, qc) in ps[..full]
+                .as_chunks::<4>()
+                .0
+                .iter()
+                .zip(qs[..full].as_chunks::<4>().0.iter())
+            {
                 let mut inv = [0u64; 4];
                 let normal = (0..4).all(|i| {
                     if pc[i].infinity || qc[i].infinity || pc[i].x == qc[i].x {

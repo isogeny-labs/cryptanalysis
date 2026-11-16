@@ -195,22 +195,27 @@ def ghs_quartic_evidence(ref, since):
 
 def ic_native_walk_evidence(ref, since):
     """Committed raw diagnostics only; never label an invalid record promoted."""
-    path = "benchmarks/records/20261116T1302Z-ic-walk-batch16-factorial-001.json"
-    text = show(ref, path)
-    if not text:
-        return
-    record = json.loads(text)
-    day = record["created_utc"][:10]
-    if (day < since or record.get("schema") != "bench.record/v1"
-            or record.get("problem") != "binary-ic-one-target-walk-batching"
-            or record.get("status") != "invalid"):
-        return
-    for metric in record.get("metrics", []):
-        emit("ic.walk_batch16.exploratory." + metric["name"], metric["value"],
-             date=day, problem=record["problem"], unit=metric["unit"],
-             better=metric.get("better", "neutral"),
-             label="IC batch16 exploratory/unqualified (record invalid): " + metric["name"],
-             source=path)
+    sources = [
+        ("benchmarks/records/20261116T1302Z-ic-walk-batch16-factorial-001.json",
+         "binary-ic-one-target-walk-batching", "ic.walk_batch16.exploratory.", "IC batch16"),
+        ("benchmarks/records/20261116T1406Z-ic-vector-query-factorial-001.json",
+         "binary-ic-one-target-vector-query", "ic.vector_query.exploratory.", "IC vector formulas"),
+    ]
+    for path, problem, prefix, label in sources:
+        text = show(ref, path)
+        if not text:
+            continue
+        record = json.loads(text)
+        day = record["created_utc"][:10]
+        if (day < since or record.get("schema") != "bench.record/v1"
+                or record.get("problem") != problem or record.get("status") != "invalid"):
+            continue
+        for metric in record.get("metrics", []):
+            emit(prefix + metric["name"], metric["value"],
+                 date=day, problem=record["problem"], unit=metric["unit"],
+                 better=metric.get("better", "neutral"),
+                 label=label + " exploratory/unqualified (record invalid): " + metric["name"],
+                 source=path)
 
 
 def main():
