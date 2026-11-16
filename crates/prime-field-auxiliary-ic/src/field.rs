@@ -126,6 +126,104 @@ pub struct BatchScratch {
     denominators: Vec<u64>,
 }
 
+// Jacobian coordinates (X/Z^2, Y/Z^3); Z=0 denotes infinity.
+// Scalar multiplication keeps all intermediate points here, with at most
+// one field inversion at the final affine conversion. Affine addition stays
+// separate for the batched walker and as a correctness-test reference.
+#[derive(Clone, Copy)]
+struct Jacobian {
+    x: u64,
+    y: u64,
+    z: u64,
+}
+
+impl Jacobian {
+    const IDENTITY: Self = Self { x: 0, y: 1, z: 0 };
+
+    fn double<const B: u32>(self, curve: Curve<B>) -> Self {
+        if self.z == 0 || self.y == 0 {
+            return Self::IDENTITY;
+        }
+        let xx = F::<B>::sq(self.x);
+        let yy = F::<B>::sq(self.y);
+        let yyyy = F::<B>::sq(yy);
+        let xyy = F::<B>::mul(self.x, yy);
+        let twice_xyy = F::<B>::add(xyy, xyy);
+        let s = F::<B>::add(twice_xyy, twice_xyy);
+        let three_xx = F::<B>::add(xx, F::<B>::add(xx, xx));
+        let m = if curve.a == 0 {
+            three_xx
+        } else {
+            F::<B>::add(
+                three_xx,
+                F::<B>::mul(curve.a, F::<B>::sq(F::<B>::sq(self.z))),
+            )
+        };
+        let x = F::<B>::sub(F::<B>::sq(m), F::<B>::add(s, s));
+        let twice_yyyy = F::<B>::add(yyyy, yyyy);
+        let four_yyyy = F::<B>::add(twice_yyyy, twice_yyyy);
+        let y = F::<B>::sub(
+            F::<B>::mul(m, F::<B>::sub(s, x)),
+            F::<B>::add(four_yyyy, four_yyyy),
+        );
+        Self {
+            x,
+            y,
+            z: F::<B>::mul(F::<B>::add(self.y, self.y), self.z),
+        }
+    }
+
+    fn add_affine<const B: u32>(self, point: Point, curve: Curve<B>) -> Self {
+        if self.z == 0 {
+            return Self {
+                x: point.x,
+                y: point.y,
+                z: 1,
+            };
+        }
+        let zz = F::<B>::sq(self.z);
+        let u = F::<B>::mul(point.x, zz);
+        let s = F::<B>::mul(point.y, F::<B>::mul(self.z, zz));
+        let h = F::<B>::sub(u, self.x);
+        let r = F::<B>::sub(s, self.y);
+        if h == 0 {
+            return if r == 0 {
+                self.double(curve)
+            } else {
+                Self::IDENTITY
+            };
+        }
+        let hh = F::<B>::sq(h);
+        let hhh = F::<B>::mul(h, hh);
+        let v = F::<B>::mul(self.x, hh);
+        let x = F::<B>::sub(F::<B>::sub(F::<B>::sq(r), hhh), F::<B>::add(v, v));
+        let y = F::<B>::sub(F::<B>::mul(r, F::<B>::sub(v, x)), F::<B>::mul(self.y, hhh));
+        Self {
+            x,
+            y,
+            z: F::<B>::mul(self.z, h),
+        }
+    }
+
+    fn affine<const B: u32>(self) -> Option<Point> {
+        if self.z == 0 {
+            return None;
+        }
+        if self.z == 1 {
+            return Some(Point {
+                x: self.x,
+                y: self.y,
+            });
+        }
+        let inverse = F::<B>::inv(self.z);
+        let inverse_squared = F::<B>::sq(inverse);
+        Some(Point {
+            x: F::<B>::mul(self.x, inverse_squared),
+            y: F::<B>::mul(self.y, F::<B>::mul(inverse, inverse_squared)),
+        })
+    }
+}
+
 impl<const B: u32> Curve<B> {
     /// Validate the field, canonical coefficients, and discriminant.
     pub fn new(a: u64, b: u64) -> Result<Self> {
@@ -247,16 +345,23 @@ impl<const B: u32> Curve<B> {
         }
         Ok(self.mul_inner(point, scalar))
     }
-    pub(crate) fn mul_inner(self, mut point: Option<Point>, mut scalar: u64) -> Option<Point> {
-        let mut result = None;
-        while scalar != 0 {
-            if scalar & 1 != 0 {
-                result = self.add_inner(result, point);
-            }
-            point = self.add_inner(point, point);
-            scalar >>= 1;
+    pub(crate) fn mul_inner(self, point: Option<Point>, scalar: u64) -> Option<Point> {
+        let point = point?;
+        if scalar == 0 {
+            return None;
         }
-        result
+        let mut result = Jacobian {
+            x: point.x,
+            y: point.y,
+            z: 1,
+        };
+        for bit in (0..(u64::BITS - scalar.leading_zeros() - 1)).rev() {
+            result = result.double(self);
+            if scalar & (1u64 << bit) != 0 {
+                result = result.add_affine(point, self);
+            }
+        }
+        result.affine::<B>()
     }
     /// Advance independent points with one shared inversion and checked exceptions.
     pub fn batch_add(
@@ -380,6 +485,83 @@ pub(crate) fn is_prime(n: u64) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn affine_multiply<const B: u32>(
+        curve: Curve<B>,
+        mut point: Option<Point>,
+        mut scalar: u64,
+    ) -> Option<Point> {
+        let mut result = None;
+        while scalar != 0 {
+            if scalar & 1 != 0 {
+                result = curve.add(result, point).unwrap();
+            }
+            point = curve.add(point, point).unwrap();
+            scalar >>= 1;
+        }
+        result
+    }
+
+    fn exhaustive_multiplication<const B: u32>(curve: Curve<B>) {
+        assert_eq!(curve.mul(None, u64::MAX).unwrap(), None);
+        for x in 0..curve.modulus() {
+            let Some(point) = curve.lift_x(x).unwrap() else {
+                continue;
+            };
+            for point in [point, curve.negate(point).unwrap()] {
+                let mut expected = None;
+                // Repeated affine addition is independent of the projective
+                // formulas and crosses the group order at least once.
+                for scalar in 0..=2 * curve.modulus() + 3 {
+                    assert_eq!(curve.mul(Some(point), scalar).unwrap(), expected);
+                    expected = curve.add(expected, Some(point)).unwrap();
+                }
+                for scalar in [1u64 << 63, u64::MAX - 1, u64::MAX] {
+                    assert_eq!(
+                        curve.mul(Some(point), scalar).unwrap(),
+                        affine_multiply(curve, Some(point), scalar)
+                    );
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn projective_multiplication_matches_affine_addition_in_small_groups() {
+        // All nonsingular curves over F_7, including 2-torsion, inverses,
+        // intermediate infinity and equal-point mixed additions.
+        for a in 0..7 {
+            for b in 0..7 {
+                if let Ok(curve) = Curve::<3>::new(a, b) {
+                    exhaustive_multiplication(curve);
+                }
+            }
+        }
+        exhaustive_multiplication(Curve::<5>::new(1, 0).unwrap());
+        exhaustive_multiplication(Curve::<7>::new(2, 51).unwrap());
+    }
+
+    fn large_field_multiplication<const B: u32>(curve: Curve<B>) {
+        for x in 0..32 {
+            let Some(point) = curve.lift_x(x).unwrap() else {
+                continue;
+            };
+            for point in [point, curve.negate(point).unwrap()] {
+                for scalar in [0, 1, 2, 3, 31, 32, (1u64 << 31) - 1, 1u64 << 63, u64::MAX] {
+                    assert_eq!(
+                        curve.mul(Some(point), scalar).unwrap(),
+                        affine_multiply(curve, Some(point), scalar)
+                    );
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn projective_multiplication_matches_affine_reference_in_both_requested_fields() {
+        large_field_multiplication(Curve::<31>::new(2, 14).unwrap());
+        large_field_multiplication(Curve::<61>::new(0, 3).unwrap());
+    }
 
     fn reference_pow(mut a: u128, mut e: u64, modulus: u128) -> u64 {
         let mut result = 1;

@@ -11,6 +11,7 @@ mod circuit;
 mod field;
 mod graph;
 mod kernel;
+mod phases;
 mod solve;
 
 pub use circuit::{
@@ -18,6 +19,7 @@ pub use circuit::{
     SignedRelation,
 };
 pub use field::{BatchScratch, Curve, Point};
+pub use phases::SearchPhases;
 pub use solve::{
     solve, verify_certificate, Certificate, Config, PreparedSolver, Relation, SearchStats,
     SolveOutcome, StopReason,

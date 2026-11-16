@@ -13,6 +13,8 @@ import re
 
 ARMS = ("auxiliary", "same_base", "random")
 SAMPLER = "splitmix64-rejection-public-coefficient-walks"
+PHASES = ("initialization", "target_walk", "decomposition", "row_validation",
+          "graph_recovery", "certificate_replay", "bookkeeping")
 
 
 class Mismatch(ValueError):
@@ -50,6 +52,38 @@ def summary(report):
             "columns_blake3": base.get("columns_blake3"),
             "work": {k: work.get(k) for k in ("queries", "generated_targets", "lane_rounds",
                                                "relations", "duplicate_rows")}}
+
+
+def check_phases(report, settings, name):
+    enabled = settings.get("profile_phases", False)  # Older, unprofiled reports.
+    require(type(enabled) is bool, name + ": phase-profiling flag must be boolean")
+    phases = report.get("online_exclusive_phases")
+    if not enabled:
+        require(phases is None, name + ": phase accounting present without profiling")
+        return
+    phases = obj(phases, name + ".online_exclusive_phases")
+    require(phases.get("schema") == "auxiliary-ic-online-phases/v1"
+            and phases.get("unit") == "ns"
+            and phases.get("scope") == "core-search-including-local-replay"
+            and phases.get("clock") == "std::time::Instant"
+            and phases.get("clock_overhead") == "included-not-subtracted",
+            name + ": unknown phase accounting scope")
+    require("independent_replay" in phases and phases["independent_replay"] is None,
+            name + ": producer profiling cannot attest independent replay")
+    durations = obj(phases.get("durations"), name + ".phase durations")
+    require(set(durations) == set(PHASES), name + ": phase partition is incomplete")
+    total = integer(phases.get("total"), name + ".phase total")
+    require(sum(integer(durations[k], name + ".phase." + k) for k in PHASES) == total,
+            name + ": phase partition does not sum to the online interval")
+    require(durations["graph_recovery"] == durations["certificate_replay"] == 0,
+            name + ": recovery time mixed into yield mode")
+    integer(phases.get("clock_reads"), name + ".clock_reads", 2)
+    wall, call_wall = report.get("online_wall_seconds"), report.get("online_call_wall_seconds")
+    require(type(wall) in (int, float) and 0 <= wall < 2**64
+            and type(call_wall) in (int, float) and 0 <= call_wall < 2**64,
+            name + ": invalid online duration")
+    require(math.isclose(wall, total / 1e9, rel_tol=1e-12, abs_tol=1e-12)
+            and call_wall >= wall >= 0, name + ": online interval differs from its phase total")
 
 
 def compare_reports(reports):
@@ -94,6 +128,7 @@ def compare_reports(reports):
             require("max_millis" in settings, name + ": missing time-cap declaration")
             if settings["max_millis"] is not None:
                 integer(settings["max_millis"], name + ".max_millis")
+            check_phases(report, settings, name)
             work = obj(report.get("work"), name + ".work")
             for key in ("queries", "generated_targets", "lane_rounds", "relations", "duplicate_rows",
                         "circuit_queries", "matrix_rank", "proof_nodes"):

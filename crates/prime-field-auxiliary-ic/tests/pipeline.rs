@@ -29,6 +29,86 @@ fn toy(backend: Backend) -> Result<FactorBase<7>> {
     )
 }
 
+fn check_partition(phases: &SearchPhases) {
+    assert_eq!(
+        phases.total,
+        phases.initialization
+            + phases.target_walk
+            + phases.decomposition
+            + phases.row_validation
+            + phases.graph_recovery
+            + phases.certificate_replay
+            + phases.bookkeeping
+    );
+    assert!(phases.clock_reads >= 2);
+}
+
+#[test]
+fn optional_profiling_preserves_recovery_rows_and_all_resource_stops() {
+    let special = toy(Backend::Scalar).unwrap();
+    let direct = special.direct_control().unwrap();
+    let curve = special.curve();
+    let generator = curve.point(3, 46).unwrap();
+    let target = curve.point(6, 122).unwrap();
+    let (random, _) = FactorBase::random_control(
+        curve,
+        109,
+        generator,
+        special.representatives().len(),
+        701,
+        1000,
+    )
+    .unwrap();
+    for base in [&special, &direct, &random] {
+        let prepared = PreparedSolver::new(base, 109, generator).unwrap();
+        for config in [
+            Config {
+                max_queries: 0,
+                ..Config::default()
+            },
+            Config {
+                max_queries: 1,
+                ..Config::default()
+            },
+            Config {
+                seed: 43,
+                max_queries: 10_000,
+                ..Config::default()
+            },
+            Config {
+                max_relations: 1,
+                ..Config::default()
+            },
+            Config {
+                max_proof_nodes: 1,
+                ..Config::default()
+            },
+            Config {
+                max_duration: Some(Duration::ZERO),
+                ..Config::default()
+            },
+        ] {
+            let expected = prepared.solve(target, &config).unwrap();
+            let (actual, phases) = prepared.solve_profiled(target, &config).unwrap();
+            assert_eq!(actual, expected);
+            check_partition(&phases);
+            if matches!(actual, SolveOutcome::Exhausted { .. }) {
+                assert_eq!(phases.certificate_replay, Duration::ZERO);
+            }
+            if actual.stats().queries == 0 {
+                assert_eq!(phases.initialization, phases.total);
+            }
+            let expected = prepared.relation_yield(target, &config).unwrap();
+            let (reason, stats, phases) =
+                prepared.relation_yield_profiled(target, &config).unwrap();
+            assert_eq!((reason, stats), expected);
+            check_partition(&phases);
+            assert_eq!(phases.graph_recovery, Duration::ZERO);
+            assert_eq!(phases.certificate_replay, Duration::ZERO);
+        }
+    }
+}
+
 fn product_reference<const B: u32>(
     base: &FactorBase<B>,
     roots: &[u64],

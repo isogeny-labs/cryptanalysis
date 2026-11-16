@@ -1,6 +1,9 @@
 use crate::field::{add_mod, is_prime, mul_mod, sub_mod};
 use crate::graph::GainGraph;
-use crate::{Backend, BatchScratch, Error, FactorBase, Point, Result, SignedRelation};
+use crate::phases::{Phase, Profiler, Recorder};
+use crate::{
+    Backend, BatchScratch, Error, FactorBase, Point, Result, SearchPhases, SignedRelation,
+};
 use std::collections::BTreeSet;
 use std::time::{Duration, Instant};
 
@@ -267,7 +270,20 @@ impl<'a, const B: u32> PreparedSolver<'a, B> {
     /// Collect exact algebraic relations and recover through distinct rows.
     /// The optional duration is a soft limit checked between lane batches.
     pub fn solve(&self, target: Point, config: &Config) -> Result<SolveOutcome> {
-        self.search(target, config, false)
+        self.search(target, config, false, &mut ())
+    }
+    /// Search with an exclusive wall-clock partition, including local replay.
+    /// Clock overhead is charged and may affect soft time limits. Without a
+    /// time limit, this uses the same queries, rows and recovery as `solve`.
+    /// No reusable preparation, CLI work or independent replay is included.
+    pub fn solve_profiled(
+        &self,
+        target: Point,
+        config: &Config,
+    ) -> Result<(SolveOutcome, SearchPhases)> {
+        let mut recorder = Recorder::start();
+        let outcome = self.search(target, config, false, &mut recorder)?;
+        Ok((outcome, recorder.finish()))
     }
     /// Measure relation counts on the same public query prefix for every base.
     /// This skips recovery and never stops because a logarithm became available.
@@ -278,14 +294,35 @@ impl<'a, const B: u32> PreparedSolver<'a, B> {
         target: Point,
         config: &Config,
     ) -> Result<(StopReason, SearchStats)> {
-        match self.search(target, config, true)? {
+        match self.search(target, config, true, &mut ())? {
             SolveOutcome::Exhausted { reason, stats } => Ok((reason, stats)),
             SolveOutcome::Solved { .. } => {
                 unreachable!("yield collection does not attempt recovery")
             }
         }
     }
-    fn search(&self, target: Point, config: &Config, yield_only: bool) -> Result<SolveOutcome> {
+    /// Fixed-prefix collection with the same optional accounting as
+    /// `solve_profiled`. Graph/recovery and certificate replay remain absent.
+    pub fn relation_yield_profiled(
+        &self,
+        target: Point,
+        config: &Config,
+    ) -> Result<(StopReason, SearchStats, SearchPhases)> {
+        let mut recorder = Recorder::start();
+        match self.search(target, config, true, &mut recorder)? {
+            SolveOutcome::Exhausted { reason, stats } => Ok((reason, stats, recorder.finish())),
+            SolveOutcome::Solved { .. } => {
+                unreachable!("yield collection does not attempt recovery")
+            }
+        }
+    }
+    fn search<P: Profiler>(
+        &self,
+        target: Point,
+        config: &Config,
+        yield_only: bool,
+        profiler: &mut P,
+    ) -> Result<SolveOutcome> {
         self.validate_target(target)?;
         if !(1..=1024).contains(&config.walk_lanes)
             || config.max_proof_nodes < 1
@@ -356,6 +393,7 @@ impl<'a, const B: u32> PreparedSolver<'a, B> {
         let mut seen = BTreeSet::new();
         let mut batch = BatchScratch::default();
         let mut workspace = self.base.workspace();
+        profiler.enter(Phase::Bookkeeping);
         while stats.queries < config.max_queries {
             if expired() {
                 return Ok(SolveOutcome::Exhausted {
@@ -363,6 +401,7 @@ impl<'a, const B: u32> PreparedSolver<'a, B> {
                     stats,
                 });
             }
+            profiler.enter(Phase::TargetWalk);
             for i in 0..lanes {
                 let jump = (rng.next() & 31) as usize;
                 a[i] = add_mod(a[i], jump_a[jump], self.order);
@@ -376,6 +415,7 @@ impl<'a, const B: u32> PreparedSolver<'a, B> {
             }
             stats.generated_targets += lanes as u64;
             stats.lane_rounds += 1;
+            profiler.enter(Phase::Bookkeeping);
             for i in 0..lanes {
                 if stats.queries == config.max_queries {
                     break;
@@ -385,7 +425,10 @@ impl<'a, const B: u32> PreparedSolver<'a, B> {
                     continue;
                 };
                 stats.circuit_queries += u64::from(self.base.uses_circuit());
-                let Some(decomposition) = self.base.decompose_inner(query, &mut workspace)? else {
+                profiler.enter(Phase::Decomposition);
+                let decomposition = self.base.decompose_inner(query, &mut workspace)?;
+                profiler.enter(Phase::Bookkeeping);
+                let Some(decomposition) = decomposition else {
                     continue;
                 };
                 let Some(key) = decomposition.key() else {
@@ -406,7 +449,10 @@ impl<'a, const B: u32> PreparedSolver<'a, B> {
                     b: b[i],
                     decomposition,
                 };
-                if !self.check_row(target, row) {
+                profiler.enter(Phase::RowValidation);
+                let checked = self.check_row(target, row);
+                profiler.enter(Phase::Bookkeeping);
+                if !checked {
                     return Err(Error::InvalidCertificate(
                         "walk coefficient or point replay failed",
                     ));
@@ -415,20 +461,22 @@ impl<'a, const B: u32> PreparedSolver<'a, B> {
                 let Some(graph) = graph.as_mut() else {
                     continue;
                 };
+                profiler.enter(Phase::GraphRecovery);
                 relations.push(row);
-                let dependency =
-                    match graph.insert(decomposition, row.a, row.b, relations.len() - 1) {
-                        Ok(value) => value,
-                        Err(Error::ResourceLimit(_)) => {
-                            stats.matrix_rank = graph.rank();
-                            stats.proof_nodes = graph.proof_nodes();
-                            return Ok(SolveOutcome::Exhausted {
-                                reason: StopReason::ProofBudget,
-                                stats,
-                            });
-                        }
-                        Err(error) => return Err(error),
-                    };
+                let inserted = graph.insert(decomposition, row.a, row.b, relations.len() - 1);
+                profiler.enter(Phase::Bookkeeping);
+                let dependency = match inserted {
+                    Ok(value) => value,
+                    Err(Error::ResourceLimit(_)) => {
+                        stats.matrix_rank = graph.rank();
+                        stats.proof_nodes = graph.proof_nodes();
+                        return Ok(SolveOutcome::Exhausted {
+                            reason: StopReason::ProofBudget,
+                            stats,
+                        });
+                    }
+                    Err(error) => return Err(error),
+                };
                 stats.matrix_rank = graph.rank();
                 stats.proof_nodes = graph.proof_nodes();
                 if let Some(dependency) = dependency {
@@ -440,7 +488,9 @@ impl<'a, const B: u32> PreparedSolver<'a, B> {
                         relations,
                         weights: dependency.weights,
                     };
+                    profiler.enter(Phase::CertificateReplay);
                     verify_certificate(self.base, &certificate)?;
+                    profiler.enter(Phase::Bookkeeping);
                     return Ok(SolveOutcome::Solved { certificate, stats });
                 }
             }

@@ -93,6 +93,10 @@ pub struct AuxiliaryArgs {
     /// Compare only completed prefixes with identical --seed and --walk-lanes.
     #[arg(long, conflicts_with_all = ["decompose_only", "replay_relations", "rho"])]
     pub relation_yield_only: bool,
+    /// Partition the core online interval; clock overhead is included.
+    /// This is producer instrumentation, not a qualified timing result.
+    #[arg(long, conflicts_with_all = ["decompose_only", "replay_relations"])]
+    pub profile_phases: bool,
     /// Also run the repository's bounded batched, negation-map rho on this Q.
     #[arg(long)]
     pub rho: bool,
@@ -169,6 +173,44 @@ fn stats_json(stats: &aux::SearchStats) -> Value {
     json!({"queries":stats.queries,"generated_targets":stats.generated_targets,"circuit_queries":stats.circuit_queries,
         "lane_rounds":stats.lane_rounds,"relations":stats.relations,"duplicate_rows":stats.duplicate_rows,
         "matrix_rank":stats.matrix_rank,"proof_nodes":stats.proof_nodes,"backend":stats.backend.name()})
+}
+
+fn phases_json(phases: &aux::SearchPhases) -> Result<Value, String> {
+    let mut durations = serde_json::Map::new();
+    for (name, duration) in [
+        ("initialization", phases.initialization),
+        ("target_walk", phases.target_walk),
+        ("decomposition", phases.decomposition),
+        ("row_validation", phases.row_validation),
+        ("graph_recovery", phases.graph_recovery),
+        ("certificate_replay", phases.certificate_replay),
+        ("bookkeeping", phases.bookkeeping),
+    ] {
+        let ns = u64::try_from(duration.as_nanos()).map_err(|_| "phase duration exceeds u64 ns")?;
+        durations.insert(name.into(), json!(ns));
+    }
+    let total =
+        u64::try_from(phases.total.as_nanos()).map_err(|_| "online duration exceeds u64 ns")?;
+    Ok(json!({
+        "schema":"auxiliary-ic-online-phases/v1","unit":"ns",
+        "scope":"core-search-including-local-replay",
+        "clock":"std::time::Instant","clock_reads":phases.clock_reads,
+        "clock_overhead":"included-not-subtracted",
+        "durations":durations,"total":total,"independent_replay":null
+    }))
+}
+
+fn record_online_time(
+    report: &mut Value,
+    call_wall: Duration,
+    phases: Option<&aux::SearchPhases>,
+) -> Result<(), String> {
+    report["online_call_wall_seconds"] = json!(call_wall.as_secs_f64());
+    report["online_wall_seconds"] = json!(phases.map_or(call_wall, |p| p.total).as_secs_f64());
+    if let Some(phases) = phases {
+        report["online_exclusive_phases"] = phases_json(phases)?;
+    }
+    Ok(())
 }
 
 pub fn run(args: AuxiliaryArgs) -> Result<Value, String> {
@@ -319,7 +361,8 @@ fn execute<const B: u32>(
             "folded_columns":base.representatives().len(),"backend":base.backend().name()},
         "qualification":"unverified producer diagnostic; no signed independent replay or admitted performance tier",
         "configured_search":{"seed":args.seed,"max_queries":args.max_queries,"walk_lanes":args.walk_lanes,
-            "max_relations":args.max_relations,"max_proof_nodes":args.max_proof_nodes,"max_millis":args.max_millis},
+            "max_relations":args.max_relations,"max_proof_nodes":args.max_proof_nodes,"max_millis":args.max_millis,
+            "profile_phases":args.profile_phases},
         "online_exclusive_phases":null,"qualified_speedup":null,"gpu":{"devices":[]}
     });
     if let Some(stats) = random_stats {
@@ -402,9 +445,17 @@ fn execute<const B: u32>(
     };
     let online = Instant::now();
     if args.relation_yield_only {
-        let (reason, stats) = prepared
-            .relation_yield(target, &config)
-            .map_err(|e| e.to_string())?;
+        let (reason, stats, phases) = if args.profile_phases {
+            prepared
+                .relation_yield_profiled(target, &config)
+                .map(|(reason, stats, phases)| (reason, stats, Some(phases)))
+        } else {
+            prepared
+                .relation_yield(target, &config)
+                .map(|(reason, stats)| (reason, stats, None))
+        }
+        .map_err(|e| e.to_string())?;
+        record_online_time(&mut report, online.elapsed(), phases.as_ref())?;
         report["mode"] = json!("bounded-relation-yield");
         report["sampler"] = json!("splitmix64-rejection-public-coefficient-walks");
         report["status"] = json!(if reason == aux::StopReason::QueryBudget {
@@ -414,15 +465,22 @@ fn execute<const B: u32>(
         });
         report["stop_reason"] = json!(format!("{reason:?}"));
         report["work"] = stats_json(&stats);
-        report["online_wall_seconds"] = json!(online.elapsed().as_secs_f64());
         report["certificate"] = Value::Null;
         return Ok(report);
     }
-    let outcome = prepared.solve(target, &config).map_err(|e| e.to_string())?;
-    let online_seconds = online.elapsed().as_secs_f64();
+    let (outcome, phases) = if args.profile_phases {
+        prepared
+            .solve_profiled(target, &config)
+            .map(|(outcome, phases)| (outcome, Some(phases)))
+    } else {
+        prepared
+            .solve(target, &config)
+            .map(|outcome| (outcome, None))
+    }
+    .map_err(|e| e.to_string())?;
+    record_online_time(&mut report, online.elapsed(), phases.as_ref())?;
     report["mode"] = json!("bounded-single-target-search");
     report["sampler"] = json!("splitmix64-rejection-public-coefficient-walks");
-    report["online_wall_seconds"] = json!(online_seconds);
     report["work"] = stats_json(outcome.stats());
     match &outcome {
         aux::SolveOutcome::Solved { certificate, .. } => {
@@ -472,8 +530,8 @@ fn execute<const B: u32>(
                 json!({"status":"incomplete","error":error.to_string(),"online_wall_seconds":seconds,"seed":options.seed})
             }
         };
-        // Raw unqualified durations only. Qualification/phase accounting and
-        // an independent replay belong to the frozen measurement harness.
+        // Raw unqualified durations only. Complete cold accounting, admission
+        // and independent replay belong to the frozen measurement harness.
     }
     report["resources"] = experiment::resources();
     Ok(report)
@@ -672,6 +730,7 @@ mod tests {
             "--max-relations",
             "10000",
             "--relation-yield-only",
+            "--profile-phases",
         ])
         .args;
         let special = execute::<7>(&args, &input, "fixture".into(), Instant::now()).unwrap();
@@ -724,6 +783,7 @@ mod tests {
                 .unwrap();
             }
         }
+
         for flag in ["--rho", "--decompose-only"] {
             assert!(TestCli::try_parse_from([
                 "test",
@@ -743,6 +803,79 @@ mod tests {
             "rows"
         ])
         .is_err());
+    }
+
+    #[test]
+    fn phase_reports_partition_solve_and_exhausted_intervals_without_changing_work() {
+        let input: Input = serde_json::from_value(json!({
+            "public":{"p":127,"a":2,"b":51,"n":109,"P":[3,46],"Q":[6,122]},
+            "roots":[3,111,78,67,85,119,57,91]
+        }))
+        .unwrap();
+        let mut args = TestCli::parse_from([
+            "test",
+            "--input",
+            "unused",
+            "--without-auxiliary",
+            "--seed",
+            "43",
+            "--max-queries",
+            "10000",
+        ])
+        .args;
+        let unprofiled = execute::<7>(&args, &input, "fixture".into(), Instant::now()).unwrap();
+        assert!(unprofiled["online_exclusive_phases"].is_null());
+        args.profile_phases = true;
+        let profiled = execute::<7>(&args, &input, "fixture".into(), Instant::now()).unwrap();
+        assert_eq!(profiled["status"], "solved");
+        assert_eq!(profiled["certificate"], unprofiled["certificate"]);
+        assert_eq!(profiled["work"], unprofiled["work"]);
+        let check = |report: &Value| {
+            let phases = &report["online_exclusive_phases"];
+            assert_eq!(phases["scope"], "core-search-including-local-replay");
+            let total = phases["total"].as_u64().unwrap();
+            let sum: u64 = phases["durations"]
+                .as_object()
+                .unwrap()
+                .values()
+                .map(|v| v.as_u64().unwrap())
+                .sum();
+            assert_eq!(total, sum);
+            assert_eq!(
+                report["online_wall_seconds"].as_f64().unwrap(),
+                total as f64 / 1e9
+            );
+            assert!(
+                report["online_call_wall_seconds"].as_f64().unwrap()
+                    >= report["online_wall_seconds"].as_f64().unwrap()
+            );
+            assert!(report["qualified_speedup"].is_null());
+            assert!(phases["independent_replay"].is_null());
+        };
+        check(&profiled);
+        for (queries, rows, proof_nodes, millis, expected) in [
+            (0, 0, 1000, None, "QueryBudget"),
+            (1000, 1, 1000, None, "RelationBudget"),
+            (1000, 0, 1, None, "ProofBudget"),
+            (1000, 0, 1000, Some(0), "TimeBudget"),
+        ] {
+            args.max_queries = queries;
+            args.max_relations = rows;
+            args.max_proof_nodes = proof_nodes;
+            args.max_millis = millis;
+            let report = execute::<7>(&args, &input, "fixture".into(), Instant::now()).unwrap();
+            check(&report);
+            assert_eq!(report["stop_reason"], expected);
+            assert_eq!(
+                report["online_exclusive_phases"]["durations"]["certificate_replay"],
+                0
+            );
+        }
+        for flags in [vec!["--decompose-only"], vec!["--replay-relations", "rows"]] {
+            let mut cmd = vec!["test", "--input", "unused", "--profile-phases"];
+            cmd.extend(flags);
+            assert!(TestCli::try_parse_from(cmd).is_err());
+        }
     }
 
     #[test]

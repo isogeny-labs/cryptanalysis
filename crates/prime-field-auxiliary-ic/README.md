@@ -58,6 +58,12 @@ The implementation includes these optimization choices:
   available in the workspace, without a second scan to find the zeros.
 - Fixed addition-chain inverses and a configurable number of target walks
   sharing one inversion. Scratch buffers are reused between queries.
+- Scalar multiplication keeps intermediate points in Jacobian coordinates,
+  with at most one inversion when converting the result back to affine form.
+  This applies equally to generator/subgroup validation, random cofactor
+  clearing, sampler initialization, row checks and certificate replay in all
+  IC arms. Affine/batched addition is retained. No runtime gain is inferred
+  from the change in inversion placement. `[pcc:unverified]`
 - Signed graph elimination with a certificate DAG, instead of a dense
   matrix. Union by size and path compression track the two-column rows;
   certificate coefficients are expanded only for a useful dependency.
@@ -158,6 +164,21 @@ the archived public manifest:
   `work.relations` counts distinct nonzero signed rows; `duplicate_rows`
   counts repeated rows. Failed and infinity queries remain in `work.queries`.
   This is a relation-collection stage, not an end-to-end solve measurement.
+- `--profile-phases` opts into an exclusive partition of the core search
+  interval, from target validation through outcome construction and local
+  certificate replay. `online_exclusive_phases` reports integer nanoseconds
+  for initialization, target walks, decomposition (including signed-sum
+  checks), new-row coefficient validation, graph recovery, local replay and
+  bookkeeping. Their sum is exactly the core interval; clock overhead is
+  included, not estimated or subtracted. With profiling, `online_wall_seconds`
+  is that core interval; `online_call_wall_seconds` also retains the enclosing
+  caller interval. Without profiling, the original caller interval remains
+  `online_wall_seconds` and the partition is null. Match this flag across
+  controls. The library exposes `solve_profiled` and
+  `relation_yield_profiled`, leaving the original APIs uninstrumented.
+  Soft deadlines may be affected by instrumentation. Yield-only collection
+  has zero graph and certificate-replay phases. Replay/decomposition-only
+  modes cannot request these attack-search phases.
 - `--replay-relations rows.jsonl` replays public `a,b,i,j,si,sj` rows. The
   report identifies certificate replay and leaves attack-time/query fields
   null. It cannot be combined with `--rho`.
@@ -183,7 +204,9 @@ modes; it supplies no timing or end-to-end qualification. Full base archives
 and signed replay remain required for research measurements.
 
 Run research measurements only after the repository checkpoint and GPU-host
-requirements are met. CLI durations are producer diagnostics. Exclusive phase
+requirements are met. CLI durations and phase partitions are producer
+diagnostics. Upstream discovery/construction costs and independent replay are
+outside the core partition and remain explicitly unmeasured. Complete cold
 accounting, an admitted fresh-target panel, and independent signed replay are
 still needed for a qualified speedup. No new Rust-versus-C++ or
 IC-versus-rho speedup is established by this integration. `[pcc:unverified]`

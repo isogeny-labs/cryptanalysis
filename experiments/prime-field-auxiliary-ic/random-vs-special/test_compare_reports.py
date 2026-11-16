@@ -7,7 +7,7 @@ import sys
 import tempfile
 import unittest
 
-from compare_reports import ARMS, SAMPLER, compare_reports
+from compare_reports import ARMS, PHASES, SAMPLER, compare_reports
 
 
 def reports():
@@ -59,6 +59,38 @@ class AlignmentTests(unittest.TestCase):
         self.assertEqual(result["arms"]["random"]["derived_counts"]["hits_per_query"],
                          {"numerator": 9, "denominator": 17})
         self.assertIsNone(result["qualified_speedup"])
+
+    def test_profiled_reports_must_account_for_the_entire_core_interval(self):
+        data = reports()
+        for report in data.values():
+            report["configured_search"]["profile_phases"] = True
+            report["online_wall_seconds"] = 60 / 1e9
+            report["online_call_wall_seconds"] = 80 / 1e9
+            report["online_exclusive_phases"] = {
+                "schema": "auxiliary-ic-online-phases/v1", "unit": "ns",
+                "scope": "core-search-including-local-replay", "clock": "std::time::Instant",
+                "clock_overhead": "included-not-subtracted", "clock_reads": 20,
+                "total": 60, "independent_replay": None,
+                "durations": dict(zip(PHASES, (10, 20, 15, 10, 0, 0, 5))),
+            }
+        self.assertEqual(compare_reports(data)["status"], "aligned")
+        self.assertIsNone(compare_reports(data)["end_to_end_cost_comparison"])
+        for mutate in [
+            lambda r: r["configured_search"].update(profile_phases=False),
+            lambda r: r["configured_search"].update(profile_phases="true"),
+            lambda r: r["online_exclusive_phases"].update(total=61),
+            lambda r: r["online_exclusive_phases"].update(independent_replay=True),
+            lambda r: r["online_exclusive_phases"]["durations"].update(decomposition=True),
+            lambda r: r["online_exclusive_phases"]["durations"].update(graph_recovery=1),
+            lambda r: r["online_exclusive_phases"]["durations"].pop("bookkeeping"),
+            lambda r: r.update(online_wall_seconds=0.1),
+            lambda r: r.update(online_call_wall_seconds=0),
+            lambda r: r.update(online_wall_seconds=10**400),
+            lambda r: r.update(online_call_wall_seconds=float("inf")),
+        ]:
+            changed = copy.deepcopy(data)
+            mutate(changed["random"])
+            self.refused(changed)
 
     def test_public_binary_and_sampler_mismatches_are_rejected(self):
         mutations = [("source_commit", "5" * 40), ("binary_blake3", "6" * 64),

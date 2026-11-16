@@ -21,8 +21,10 @@ torus encodings, if included, get separate named arms and the same controls;
 they are not relabeled as auxiliary elliptic curves. Rho remains an optional
 additional reference and does not replace the IC comparisons.
 
-Use both requested fields, `p=2^31-1` and `p=2^61-1`, on the same target
+Support both requested fields, `p=2^31-1` and `p=2^61-1`, with the same target
 curve, prime subgroup, generator and target for every arm in a paired row.
+An admitted 31-bit panel can proceed independently; a missing eligible
+61-bit panel is not a reason to omit an otherwise admissible 31-bit run.
 The existing archived public parameters can define the curve choices, but
 their known-answer targets are correctness fixtures rather than fresh
 benchmark targets. For example, the archived 61-bit subgroup has cofactor
@@ -109,6 +111,7 @@ frozen panel. They are not an authorization to bypass measurement gates.
 ```sh
 # Shared suffix: --backend scalar --seed QUERY_SEED --walk-lanes LANES
 #                --max-queries QUERIES --max-relations ROW_CAP
+#                --profile-phases
 # A
 ca-ic auxiliary --input frozen-special.json --relation-yield-only
 # B
@@ -120,12 +123,31 @@ ca-ic auxiliary --input frozen-public.json --random-base-columns K \
 
 ## Accounting and outstanding admission
 
+`--profile-phases` now instruments the core target-dependent interval in
+all three arms, without changing their sampler or row order. Integer
+nanosecond intervals partition initialization, target walking, decomposition,
+new-row coefficient validation, graph recovery, local certificate replay and
+bookkeeping. Initialization includes target validation and jump/lane setup.
+Decomposition includes candidate evaluation/subtraction and signed-sum checks;
+row validation checks the distinct retained row's `aG+bQ` equation. Graph
+recovery includes row storage and dependency expansion. The remaining
+bookkeeping interval charges deduplication, counters, limits and cleanup.
+Clock overhead stays charged. A profiled report uses the exact core total
+for `online_wall_seconds` and retains the enclosing call duration separately
+as `online_call_wall_seconds`; an unprofiled report retains its old caller
+interval and a null partition. Profiling must match across arms. The offline
+alignment helper checks phase types, exact sums and scope, and rejects any
+graph/replay time in yield-only mode. It still derives no time ratio.
+These are producer instrumentation assertions, not signed timing evidence.
+[pcc:unverified]
+
 Cold totals charge auxiliary-curve discovery, point counting/order evidence,
 smooth-kernel search, isogeny-map construction, fiber enumeration/lifting,
 random-base sampling/clearing/deduplication, circuit preparation, target walks,
 decomposition, row checks, graph recovery and final replay. Existing CLI
 preparation counters start at input loading; they do not account for earlier
-auxiliary discovery. The launcher must retain those additional phases and
+auxiliary discovery. The core partition excludes all upstream preparation and
+any independent verifier. The launcher must retain those additional phases and
 prevent overlap or double charging. Warm totals report excluded preparation,
 reuse count and amortization separately. All reported comparisons keep the
 same denominator, workload and successful-recovery requirement.
