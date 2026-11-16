@@ -1,6 +1,6 @@
 # SIMD inverse timing checkpoint upload access
 
-- **Status:** open
+- **Status:** resolved
 - **Kind:** access/tool limit
 - **Affected work:** [frozen SIMD inverse panel](../experiments/ic-vector-inverse-20261116/PROTOCOL.md), [prepared inputs](../experiments/ic-vector-inverse-20261116/prepared-input.json)
 - **Next action owner:** environment operator for checkpoint upload access; T-6859 for the frozen panel
@@ -21,8 +21,8 @@ The prepared SIMD inverse comparison cannot start because the required checkpoin
 
 ## What would unblock it
 
-- [ ] `scripts/checkpoint.sh gate` exits zero and uploads the current branch checkpoint through the supported token or profile route.
-- [ ] Run the existing prepared controller once under the frozen protocol; retain every admission, control and replay outcome.
+- [x] `scripts/checkpoint.sh gate` exits zero and uploads the current branch checkpoint through the supported token or profile route.
+- [x] Run the existing prepared controller once under the frozen protocol; retain every admission, control and replay outcome.
 
 Successful checkpoint admission permits timing; it establishes no performance conclusion by itself. No gate bypass or credential-policy change is proposed.
 
@@ -43,3 +43,5 @@ Successful checkpoint admission permits timing; it establishes no performance co
 2026-11-16 17:22 UTC: the third consecutive goal-turn admission audit again returned exit1 HTTP403 at clean published head305e91a20. Log005 is preserved. No timing allocation exists. The performance objective is blocked pending a functioning supported checkpoint transport; the implementation and frozen panel remain ready. [pcc:unverified]
 
 2026-11-16 19:24–19:25 UTC: after explicit goal resumption, three fresh consecutive audits at clean head918259a0b again failed checkpoint admission with HTTP403. Original resumed-001/002/003 logs are retained under admission-001. Repository artifact configuration still names the same bucket; no migrated destination was supplied. Timing remains unstarted. The goal is blocked again pending a functioning supported checkpoint transport. [pcc:unverified]
+
+2026-11-16: checkpoint admission restored. User requested discovery from available buckets; default/ecc2k130 listed crypto-autoresearcher (us-west-2), containing existing lab checkpoint/store prefixes. The supported gate exited0 with scoped bucket/profile/region overrides, then frozen job20261116-200407-325c launched. Gate log migrated-002 and storage-transport.json retain evidence. This resolves launch access only; raw archive access and timing controls remain separate obligations. [pcc:unverified]
