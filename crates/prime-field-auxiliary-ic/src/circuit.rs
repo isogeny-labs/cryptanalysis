@@ -886,19 +886,23 @@ impl<const B: u32> FactorBase<B> {
             && self.relation_point(relation) == target
     }
     pub(crate) fn relation_point(&self, relation: SignedRelation) -> Option<Point> {
+        let (p, q) = self.signed_points(relation);
+        self.curve.add_inner(Some(p), Some(q))
+    }
+    pub(crate) fn signed_points(&self, relation: SignedRelation) -> (Point, Point) {
         let p = self.points[relation.i];
         let q = self.points[relation.j];
-        self.curve.add_inner(
-            Some(if relation.negative_i {
+        (
+            if relation.negative_i {
                 self.curve.neg_inner(p)
             } else {
                 p
-            }),
-            Some(if relation.negative_j {
+            },
+            if relation.negative_j {
                 self.curve.neg_inner(q)
             } else {
                 q
-            }),
+            },
         )
     }
 }

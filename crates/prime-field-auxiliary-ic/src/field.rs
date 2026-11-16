@@ -222,6 +222,17 @@ impl Jacobian {
             y: F::<B>::mul(self.y, F::<B>::mul(inverse, inverse_squared)),
         })
     }
+
+    fn equals<const B: u32>(self, other: Self) -> bool {
+        if self.z == 0 || other.z == 0 {
+            return self.z == other.z;
+        }
+        let zz = F::<B>::sq(self.z);
+        let other_zz = F::<B>::sq(other.z);
+        F::<B>::mul(self.x, other_zz) == F::<B>::mul(other.x, zz)
+            && F::<B>::mul(self.y, F::<B>::mul(other.z, other_zz))
+                == F::<B>::mul(other.y, F::<B>::mul(self.z, zz))
+    }
 }
 
 impl<const B: u32> Curve<B> {
@@ -362,6 +373,34 @@ impl<const B: u32> Curve<B> {
             }
         }
         result.affine::<B>()
+    }
+    // Simultaneously compute aG+bQ and compare with F+H, without affine
+    // normalization or field inversion on either side. All inputs are
+    // already checked by preparation and the caller's row-index bounds.
+    pub(crate) fn matches_linear_combination(
+        self,
+        left: (Point, u64),
+        right: (Point, u64),
+        sum: (Point, Point),
+    ) -> bool {
+        let ((g, a), (q, b)) = (left, right);
+        let mut result = Jacobian::IDENTITY;
+        for bit in (0..(u64::BITS - (a | b).leading_zeros())).rev() {
+            result = result.double(self);
+            if a & (1u64 << bit) != 0 {
+                result = result.add_affine(g, self);
+            }
+            if b & (1u64 << bit) != 0 {
+                result = result.add_affine(q, self);
+            }
+        }
+        let expected = Jacobian {
+            x: sum.0.x,
+            y: sum.0.y,
+            z: 1,
+        }
+        .add_affine(sum.1, self);
+        result.equals::<B>(expected)
     }
     /// Advance independent points with one shared inversion and checked exceptions.
     pub fn batch_add(
@@ -561,6 +600,97 @@ mod tests {
     fn projective_multiplication_matches_affine_reference_in_both_requested_fields() {
         large_field_multiplication(Curve::<31>::new(2, 14).unwrap());
         large_field_multiplication(Curve::<61>::new(0, 3).unwrap());
+    }
+
+    #[test]
+    fn joint_row_validation_matches_exhaustive_affine_equations() {
+        let curve = Curve::<3>::new(1, 0).unwrap();
+        let mut points = Vec::new();
+        for x in 0..7 {
+            for y in 0..7 {
+                if let Ok(point) = curve.point(x, y) {
+                    points.push(point);
+                }
+            }
+        }
+        let sums: Vec<_> = points
+            .iter()
+            .flat_map(|&p| {
+                points
+                    .iter()
+                    .map(move |&q| ((p, q), curve.add(Some(p), Some(q)).unwrap()))
+            })
+            .collect();
+        for &g in &points {
+            for &q in &points {
+                for a in 0..=8 {
+                    for b in 0..=8 {
+                        let expected = curve
+                            .add(
+                                affine_multiply(curve, Some(g), a),
+                                affine_multiply(curve, Some(q), b),
+                            )
+                            .unwrap();
+                        for &(sum, point) in &sums {
+                            assert_eq!(
+                                curve.matches_linear_combination((g, a), (q, b), sum),
+                                expected == point
+                            );
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fn large_field_joint_rows<const B: u32>(curve: Curve<B>, generator: Point) {
+        let target = affine_multiply(curve, Some(generator), 37).unwrap();
+        for (a, b) in [
+            (0, 0),
+            (0, 1),
+            (1, 0),
+            (1, 1),
+            (17, 23),
+            (u64::MAX, 0),
+            (0, u64::MAX),
+            (u64::MAX, u64::MAX),
+            (1u64 << 63, u64::MAX - 1),
+        ] {
+            let expected = curve
+                .add(
+                    affine_multiply(curve, Some(generator), a),
+                    affine_multiply(curve, Some(target), b),
+                )
+                .unwrap();
+            let mut first = generator;
+            let mut second = curve
+                .add(expected, Some(curve.negate(first).unwrap()))
+                .unwrap();
+            if second.is_none() {
+                first = curve.negate(first).unwrap();
+                second = curve
+                    .add(expected, Some(curve.negate(first).unwrap()))
+                    .unwrap();
+            }
+            let second = second.unwrap();
+            assert!(curve.matches_linear_combination((generator, a), (target, b), (first, second)));
+            assert!(!curve.matches_linear_combination(
+                (generator, a),
+                (target, b),
+                (first, curve.negate(second).unwrap())
+            ));
+        }
+    }
+
+    #[test]
+    fn joint_row_validation_matches_affine_reference_in_both_requested_fields() {
+        let curve = Curve::<31>::new(2, 14).unwrap();
+        large_field_joint_rows(curve, curve.point(1, 814455902).unwrap());
+        let curve = Curve::<61>::new(0, 3).unwrap();
+        large_field_joint_rows(
+            curve,
+            curve.point(78862349111012854, 1899276942447683421).unwrap(),
+        );
     }
 
     fn reference_pow(mut a: u128, mut e: u64, modulus: u128) -> u64 {

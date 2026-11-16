@@ -214,12 +214,11 @@ impl<'a, const B: u32> PreparedSolver<'a, B> {
             && relation.b < self.order
             && relation.decomposition.i < self.base.representatives().len()
             && relation.decomposition.j < self.base.representatives().len()
-            && self.base.curve().add_inner(
-                self.base
-                    .curve()
-                    .mul_inner(Some(self.generator), relation.a),
-                self.base.curve().mul_inner(Some(target), relation.b),
-            ) == self.base.relation_point(relation.decomposition)
+            && self.base.curve().matches_linear_combination(
+                (self.generator, relation.a),
+                (target, relation.b),
+                self.base.signed_points(relation.decomposition),
+            )
     }
     /// Replay public rows through the sparse solver, without a search or secret.
     /// This is useful for imported correctness certificates, not timing yield.

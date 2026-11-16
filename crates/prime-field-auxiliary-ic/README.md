@@ -64,6 +64,13 @@ The implementation includes these optimization choices:
   clearing, sampler initialization, row checks and certificate replay in all
   IC arms. Affine/batched addition is retained. No runtime gain is inferred
   from the change in inversion placement. `[pcc:unverified]`
+- New-row and certificate-row checks compute `aG+bQ` in one interleaved
+  projective scalar loop and compare it with the signed base-point sum by
+  cross multiplication. Neither side is normalized to affine coordinates;
+  the row-equation check itself uses no field inversion. Bounds, distinct-row
+  and final scalar checks remain. This is common arithmetic for all arms,
+  with an affine equation oracle retained in correctness tests; its runtime
+  benefit is unmeasured. `[pcc:unverified]`
 - Signed graph elimination with a certificate DAG, instead of a dense
   matrix. Union by size and path compression track the two-column rows;
   certificate coefficients are expanded only for a useful dependency.
