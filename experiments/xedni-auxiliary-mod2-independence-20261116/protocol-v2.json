@@ -1,0 +1,14 @@
+{
+  "schema": "xedni-auxiliary-mod2-independence-v2",
+  "amends": "protocol.json",
+  "amendment_reason": "The v1 auxiliary prime 7 certifies 16 of 20 rows; an exploratory exact search found prime 11 for the remaining four. Preserve v1 and test the fixed ordered prime list [7,11] on every archived accepted row.",
+  "parent_rows_sha256": "9a594d96f369fb14f1a4cf6270b1c811ceda515e1c2a7eccab4d011ca8f3f322",
+  "population": "all 1722 frozen ordered pairs with all 20 admitted rows retained",
+  "ordered_auxiliary_primes": [7, 11],
+  "certificate_rule": "For each admitted rational curve and ordered pair, take the first prime in the fixed list with good reduction, integral point coordinates, and pair classes independent in E(F_l)/2E(F_l). Exact criterion: P, Q, and P+Q each lie outside the doubled-point set 2E(F_l).",
+  "torsion_rule": "Enumerate rational roots of x^3+A*x+B for every distinct admitted curve; an empty list certifies no rational 2-torsion on the short Weierstrass model.",
+  "falsifier": "An admitted row with neither prime satisfying the quotient criterion, or a curve with a rational cubic root, remains uncertified and is reported without substitution.",
+  "proof_goal": "Apply the checked abstract mod-2 reduction and infinite-descent theorem to every row with a certificate; actual curve and reduction maps remain an explicit formalization bridge.",
+  "measurement": "exact correctness census, no performance comparison",
+  "run_cap": "one pass over the 1722 archived rows; E(F7) and E(F11) enumerated exactly for each of 20 admitted rows"
+}
