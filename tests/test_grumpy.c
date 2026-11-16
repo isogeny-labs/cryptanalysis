@@ -54,7 +54,7 @@ static int checkpoint_file_matches(const char *path, const unsigned char *expect
     if (!f) return 0;
     int ok = 1;
     for (size_t i = 0; ok && i < n; i++) ok = fgetc(f) == expected[i];
-    if (fgetc(f) != EOF || ferror(f)) ok = 0;
+    if (ok && (fgetc(f) != EOF || ferror(f))) ok = 0;
     if (fclose(f) != 0) ok = 0;
     return ok;
 }
