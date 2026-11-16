@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-15T16:11:43Z",
+ "id": "PCC-20261115-f5ee33",
+ "kind": "theorem",
+ "producer": {
+  "commit": "d06ab02f010c42bcd1ff036821676deb1317d3d2",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "f74f79155845f5611dcaa0ebc3610917a0a0329e3737b42ebfb699e23ec1f525",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/original-relation-rank-01/lean/RelationKernel.lean",
+   "theorem": "RelationKernel.conditional_three_descent_ratio"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Conditional finite row algebra over an arbitrary commutative ring with explicit unit inverse for scale and distinct source/destination rows; actual finite column dot, literal swap/scale/add interpreter and finite sequence kernel equivalence. One-free-column result assumes the explicit RREF coordinate equations and one invertible anchor. Ratio theorem assumes genuine additive/scalar character and allthree computed-value/model bridges, not supplied by a candidate kernel. Both unchanged original434/435 gates auditall27 declarations/nine named substantive roots/eighteen generated equation-congruence-injectivity-sizeOf theorems, zero trusted, standardfoundations only. Numeric360certificates are independent Rust replays, NOT concrete Lean specializations; finite Picard/norm/program/global-character bridges explicit; unsigned local statements, no novelty/cost/global/signed standing.",
+ "statement": "theorem conditional_three_descent_ratio {J K : Type} [CommRing K] (addJ : J \u2192 J \u2192 J) (scalar : K \u2192 J \u2192 J) (character : J \u2192 K) (additive : \u2200 x y, character (addJ x y) = character x + character y) (linear : \u2200 a x, character (scalar a x) = a * character x) (R G Q : J) (k multiplier offset y0 y1 y2 inverse : K) (target : Q = scalar k G) (first : y0 = multiplier * character R - offset) (second : y1 = multiplier * character (addJ R G) - offset) (third : y2 = multiplier * character (addJ R Q) - offset) (unit : (y1 - y0) * inverse = 1) : (y2 - y0) * inverse = k"
+}

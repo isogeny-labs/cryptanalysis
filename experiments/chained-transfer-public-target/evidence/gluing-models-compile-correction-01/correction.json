@@ -1,0 +1,11 @@
+{
+  "original_compile_exit": 101,
+  "original_native": "not executed; compiler errors retained",
+  "all2392_hashes_unchanged": true,
+  "cause": "four calls used FpR::new(p,modulus) but original API is new(p,degree)/from_modulus(p,&modulus)",
+  "only_fix": "two explicit from_modulus calls for pinnedK/L plus two new(p,1) calls; same exact fields and formulas",
+  "before_sha256": "8462d6718488ce5ee9b0e71ad8e8b99827cf26155b426f6c7ce963195d70f712",
+  "proposed_after_sha256": "c5655bdfde9377262a844b80d8811ecbcf51dd98820fb718c6f53390ad3f88ee",
+  "frozen_protocol": "27369d unchanged",
+  "scope": "API type correction; no mathematical predicate, candidate, input, threshold, test or engine change"
+}

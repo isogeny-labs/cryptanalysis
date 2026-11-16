@@ -1,0 +1,9 @@
+# Norm-point reuse, additive evaluator02
+
+Protocol25d29e was published at67a90fd7 before this source. materialize.py copies the whole frozen evaluator01 lib/tests/rational modules; materialize-helpers.py is the literal original helper copier. Six explicit guarded replacements add one counter, retain the final elliptic point, and double it for the norm in direct, retained-lift and full-half diagnostic routes. No original source, model, field, kernel, sign, test population or arithmetic body is changed. [pcc:unverified]
+
+The original dual identity N(Phi(Z))=[2]Z motivates the optimization. The new Lean module records its conditional algebraic bridge and derivation from half/correction and map linearity. Actual native descent/norm/inverse and independent original elliptic checks remain mandatory. Mathematical validity of the full encoded program is still conditional on the existing geometric/program bridges. [pcc:unverified]
+
+The Rust expected-fixture derivation pins the original whole123,633,074B fixture by SHA-256, requires all695 ordered records and exactly the48 selected vectors and their complete counter schema, and makes only the published2-to1/4-to2 evaluation changes plus new1/2/1 doubling counters. The literal original whole-record auditor compares all records; all four entire-record-class omissions must reject101 without output. Full native has not yet run. [pcc:unverified]
+
+One900s engine preparation on the declared warm cache,120s wrappers and one900s/2GiB unfiltered native attempt per published compiled source; original exact checkpoint and immediate gate are required. Preserve every source/compiler/runtime/prepared-library byte and failed attempt for NEW23. Selected calls are unpriced; complete setup/reuse primitive accounting and the stronger public-known-initial-lift ECDLP comparator remain open. No calibrated speed, ECDLP advantage or signed standing is inferred. [pcc:unverified]
