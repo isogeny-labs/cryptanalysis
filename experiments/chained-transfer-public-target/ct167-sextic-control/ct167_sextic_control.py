@@ -176,8 +176,8 @@ def paired():
     for i,k in enumerate((7,31,59,41)):
         order=('source','twist','twist','source') if i%2 else ('twist','source','source','twist')
         for name in order:
+            Qpub=mul(generator(),k,FP)  # harness-only verifier secret; not timed
             start=time.perf_counter_ns()
-            Qpub=mul(generator(),k,FP)  # harness-only verifier secret
             proc=subprocess.run([sys.executable,'-B',__file__,'--arm',name,
                                  '--qx',str(Qpub[0]),'--qy',str(Qpub[1])],
                 check=True,capture_output=True,text=True)
