@@ -20,6 +20,8 @@ cp "$reference" "$out/entire-source-reference.sha256"
 cp "$0" "$out/actual-command.sh"
 cp -r "$component" "$out/entire-historical-source"
 cp -r "$component/../matrix-01" "$out/entire-unchanged-matrix-source"
+cp -r "$component/../post-character-01" "$out/entire-post-character-source"
+cp "$component/../historical-whole-fixture-pins-01.json" "$out/entire-original-fixture-pins.json"
 cp "$repo/../crypto/src/hash/sha256.rs" "$out/original-SHA-module.rs"
 git rev-parse HEAD > "$out/actual-source-head.txt"
 rustc --version --verbose > "$out/actual-rustc.txt"
@@ -71,6 +73,20 @@ for name in extract_public historical_certificates;do
  cp "$CARGO_TARGET_DIR/release/$name.d" "$out/actual-$name-dependency-closure.d"
  sha256sum "$out/actual-$name.bin" > "$out/actual-$name.sha256"
 done
+post=$component/../post-character-01
+phase fetch-post-lock timeout 120 cargo fetch --locked --manifest-path "$post/Cargo.toml"
+phase post-no-field-engine-metadata bounded cargo metadata --locked --offline --manifest-path "$post/Cargo.toml" --format-version=1
+phase exact-post-dependency-names jq --exit-status '([.packages[].name] - ["chained-transfer-lp-post-character-01","chained-transfer-lp-historical-01","chained-transfer-lp-finite-projection-01","serde","serde_core","serde_derive","serde_json","hex","proc-macro2","quote","syn","unicode-ident","itoa","ryu","memchr"]) == [] and (.packages|length)==15' "$out/post-no-field-engine-metadata.stdout"
+phase compile-post-unit-target bounded cargo test --release --locked --offline --manifest-path "$post/Cargo.toml" --all-targets --no-run --message-format=json
+mapfile -t post_executables < <(jq --raw-output 'select(.reason=="compiler-artifact" and .profile.test==true and .executable!=null) | .executable' "$out/compile-post-unit-target.stdout")
+[[ ${#post_executables[@]} == 1 ]] || exit 2
+cp "${post_executables[0]}" "$out/actual-post-character-unit.bin"
+phase post-character-unit-tests bounded "$out/actual-post-character-unit.bin" --nocapture --test-threads=1
+phase post-strict-Clippy bounded cargo clippy --release --locked --offline --manifest-path "$post/Cargo.toml" --all-targets -- -D warnings
+phase build-post-native-entrypoint bounded cargo build --release --locked --offline --manifest-path "$post/Cargo.toml" --bin chained-transfer-lp-post-character-01
+cp "$CARGO_TARGET_DIR/release/chained-transfer-lp-post-character-01" "$out/actual-post-character.bin"
+cp "$CARGO_TARGET_DIR/release/chained-transfer-lp-post-character-01.d" "$out/actual-post-character-dependency-closure.d"
+sha256sum "$out/actual-post-character.bin" > "$out/actual-post-character.sha256"
 git status --porcelain --untracked-files=all > "$out/final-source-status.txt"
 test ! -s "$out/final-source-status.txt"
 printf '%s\n' 'Complete native synthetic unit execution; full historical population and whole feedback/replay/character controls remain pending.' > "$out/scope.txt"

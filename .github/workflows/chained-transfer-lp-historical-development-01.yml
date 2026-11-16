@@ -4,6 +4,8 @@ on:
     paths:
       - 'experiments/chained-transfer-lp-presentation-01/historical-01/**'
       - 'experiments/chained-transfer-lp-presentation-01/matrix-01/**'
+      - 'experiments/chained-transfer-lp-presentation-01/post-character-01/**'
+      - 'experiments/chained-transfer-lp-presentation-01/admission-01/**'
       - 'experiments/chained-transfer-lp-presentation-01/lean/LPGraphCases02.lean'
       - 'experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-final-06/**'
       - '.github/workflows/chained-transfer-lp-historical-development-01.yml'
@@ -38,6 +40,9 @@ jobs:
             /docs/chained-transfer-checkpoint-transport/PROTOCOL_01.md
             /experiments/chained-transfer-lp-presentation-01/historical-01/
             /experiments/chained-transfer-lp-presentation-01/matrix-01/
+            /experiments/chained-transfer-lp-presentation-01/post-character-01/
+            /experiments/chained-transfer-lp-presentation-01/admission-01/
+            /experiments/chained-transfer-lp-presentation-01/historical-whole-fixture-pins-01.json
             /experiments/chained-transfer-lp-presentation-01/lean/
             /experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-final-06/
             /tools/lean/
@@ -53,6 +58,7 @@ jobs:
           sparse-checkout: |
             /src/hash/sha256.rs
             /tools/lean/
+            /scripts/isolab_pool_check.sh
       - name: Retain the actually executing workflow
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with:
@@ -177,6 +183,22 @@ jobs:
           printf '%s\n' "$status_code" > "$out/original-final-status.exit"
           cat "$out/original-final-status.log"
           exit "$status_code"
+      - name: Read existing caller budget and pool availability without admission
+        working-directory: cryptanalysis
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+        run: |
+          set -euo pipefail
+          echo '887146b97a21c909808364cdbc23ef31fa0b40f4d05b8221e9d35ee7728c1d7f  ../crypto/scripts/isolab_pool_check.sh' | sha256sum --check
+          out="$RUNNER_TEMP/lp-historical-custody"
+          set +e
+          timeout 420 bash experiments/chained-transfer-lp-presentation-01/admission-01/read-only-01.sh "$out/read-only-admission" ../crypto/scripts/isolab_pool_check.sh > "$out/entire-read-only-admission-caller.stdout" 2> "$out/entire-read-only-admission-caller.stderr"
+          code=$?
+          set -e
+          printf '%s\n' "$code" > "$out/actual-read-only-admission-observer.exit"
+          exit "$code"
       - name: Run only the complete synthetic native adapter development
         working-directory: cryptanalysis
         run: |
