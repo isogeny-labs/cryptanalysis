@@ -1,0 +1,37 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T02:17:32Z",
+ "id": "PCC-20261116-615f00",
+ "kind": "statement",
+ "producer": {
+  "commit": "b7b91903888ffa9dea85e643e5a86e828767e7c8",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/historical-local-checkpoint-unavailable-01/actual-status.txt",
+    "sha256": "a1d52641a5f66b559878f2dc9b90b7120dc511ba1654f2b3d1cb21c8a991626a"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/historical-local-checkpoint-unavailable-01/unlaunched-native-unit-caller.py",
+    "sha256": "3f6c3881ce124a086db6a3c80b951e3390b41fdcbc0555888026e5354d843980"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/historical-local-checkpoint-unavailable-01/whole-original-gate.txt",
+    "sha256": "2f1014b06fd1d5dbb602d7aef98a2e484b85b75101c52555f59d783097048012"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Historical adapter local native attempt01 was not launched: original scripts/checkpoint.sh gate fails before any unit test because this runtime has no checkpoint upload token or AWS credentials/profile/CLI. Preserve the whole gate output and unlaunched caller. No synthetic or historical Gaussian computation ran. Continue static compiler checks and publish a source-bound unit-only CI using the original checkpoint gate and remote readback before native tests. This is an access/precondition gap, not a mathematical outcome or permission waiver."
+}

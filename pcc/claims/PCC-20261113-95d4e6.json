@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-13T20:37:06Z",
+ "id": "PCC-20261113-95d4e6",
+ "kind": "theorem",
+ "producer": {
+  "commit": "3de8c174cf65e6b34bf8579d97b817b8f5dc2ded",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "2a4580e1b9cf2ff60197b23fff95523c93cd5fdc89c672ca01de27656297d853",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/odd-product-maps/lean/OddProductChain.lean",
+   "theorem": "OddProductChain223.original_source_point_fiftytwo"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Faithful global functional52 implications derived from FOUR genuine old/new dual2 pairs,BOTH source13 pairs and explicit scalar-commutation/multiplication laws;original-point52 composite gives actual inverse159985 via prior Bezout/recovery lemmas. No assumed52/inverse conclusion,custom axioms or native evaluation. Actual9722d7/9561ce/written1fd6e7. Both unchanged original4.35/4.34.1 gates PASS2/zero trusted;no axioms. Actual geometry/Picard/Galois/polarization/degree and scalar-action interpretation remain written/open;unsigned/no cost claim",
+ "statement": "theorem original_source_point_fiftytwo {A B J L : Type} (phiOld : A \u2192 J) (normOld : J \u2192 A) (gamma : A \u2192 B) (delta : B \u2192 A) (phiNew : B \u2192 L) (normNew : L \u2192 B) (sA : Nat \u2192 A \u2192 A) (sB : Nat \u2192 B \u2192 B) (oldA : \u2200 a, normOld (phiOld a)=sA 2 a) (newB : \u2200 b, normNew (phiNew b)=sB 2 b) (sourceA : \u2200 a, delta (gamma a)=sA 13 a) (deltaScalar : \u2200 n b, delta (sB n b)=sA n (delta b)) (aMul : \u2200 m n a, sA (m*n) a=sA m (sA n a)) : \u2200 a, delta (normNew (phiNew (gamma (normOld (phiOld a)))))=sA 52 a"
+}

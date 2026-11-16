@@ -1,0 +1,87 @@
+{
+  "actual_original_issuer": "False",
+  "certificate_issued": false,
+  "counterexample": {
+    "assignment": [
+      54211832244053518,
+      1095177392333151196
+    ],
+    "index": 0,
+    "lhs": 2190354784666302392,
+    "rhs": 2190354784666302393
+  },
+  "statement": {
+    "degree_bound": 1,
+    "lhs": {
+      "args": [
+        {
+          "args": [
+            {
+              "args": 2,
+              "op": "const"
+            },
+            {
+              "args": [
+                {
+                  "args": "a",
+                  "op": "var"
+                },
+                {
+                  "args": "b",
+                  "op": "var"
+                }
+              ],
+              "op": "add"
+            }
+          ],
+          "op": "mul"
+        },
+        {
+          "args": {
+            "args": [
+              {
+                "args": 2,
+                "op": "const"
+              },
+              {
+                "args": "a",
+                "op": "var"
+              }
+            ],
+            "op": "mul"
+          },
+          "op": "neg"
+        }
+      ],
+      "op": "add"
+    },
+    "name": "negative_half_ground_edge_plus_one",
+    "rhs": {
+      "args": [
+        {
+          "args": [
+            {
+              "args": 2,
+              "op": "const"
+            },
+            {
+              "args": "b",
+              "op": "var"
+            }
+          ],
+          "op": "mul"
+        },
+        {
+          "args": 1,
+          "op": "const"
+        }
+      ],
+      "op": "add"
+    },
+    "source": "Known cancellation; LPProjection.half_ground_edge, ../lean/LPProjection.lean. Development only, no q223 population or novelty claim.",
+    "variables": [
+      "a",
+      "b"
+    ]
+  }
+}

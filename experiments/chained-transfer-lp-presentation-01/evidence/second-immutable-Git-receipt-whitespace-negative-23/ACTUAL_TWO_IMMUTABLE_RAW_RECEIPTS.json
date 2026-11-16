@@ -1,0 +1,23 @@
+{
+  "time": "2026-11-16T18:29:10.640496+00:00",
+  "raws": [
+    {
+      "path": "experiments/chained-transfer-lp-presentation-01/evidence/portable-source-whole-custody-normal-publication-10/normal-existing-branch-publication/push.log",
+      "sha256": "de361d00837ccd2b0f64aa4620d7f6a627ed47d5bfea49a4ca98c8c0c3664bc4",
+      "bytes": 184,
+      "mode": 384,
+      "original_claim": "9e7a06"
+    },
+    {
+      "path": "experiments/chained-transfer-lp-presentation-01/evidence/genuine-store-normal-publication-19/normal-existing-branch/push.log",
+      "sha256": "e21d7ab460247abc1a6a2142f6221ae860408ad8f9d6509f7eac105ba0599a6e",
+      "bytes": 184,
+      "mode": 384,
+      "original_claim": "8cfe6d"
+    }
+  ],
+  "original_current_cached": 2,
+  "newly_staged_diagnostic": "only second receipt e21d7ab4, original first receipt already in parentfeb",
+  "cause": "producer again expected immutable raw Git porcelain to meet authored-text whitespace",
+  "decision": "retain both exact raw files and original2, check authored text excluding exactly these pinned paths, cumulative original diagnostic remains separately recorded"
+}

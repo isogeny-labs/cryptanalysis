@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-15T23:20:32Z",
+ "id": "PCC-20261115-84566e",
+ "kind": "theorem",
+ "producer": {
+  "commit": "6bb2516b64e7112356e58e45da590d60591c0461",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "bfb441876f322a989651498684b5d80a5f55f6a7c8788f9f6c8cdea971f1a3d9",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-lp-presentation-01/lean/LPProjection.lean",
+   "theorem": "LPProjection.dot_scale"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Known ring cancellations and finite homogeneous linear-kernel projection under explicit full-projection-span, constraint-span, annihilation and valid-full-lift hypotheses. Both unchanged original gates audit13declarations: ten named substantive theorems and three generated dot equations, standard foundations only,0trusted. No new identity or novelty, no concrete numerical basis-completeness theorem, no q223 population, Picard character or solver/program bridge, solve/cost/complexity claim. Original native identity checker and SHA included unchanged; deterministic extra-point diagnostics are not signed independent execution proofs. Unsigned local theorem binding.",
+ "statement": "theorem dot_scale {C K : Type} [CommRing K] (columns : List C) (r v : C \u2192 K) (s : K) : dot columns r (fun c => s * v c) = s * dot columns r v"
+}

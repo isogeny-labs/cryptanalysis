@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-15T01:34:41Z",
+ "id": "PCC-20261115-c36189",
+ "kind": "theorem",
+ "producer": {
+  "commit": "70ec53e5a297a47e8c933dad1b58e870211b16fa",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "d9a86747364b6383e681484805f089a62178393161337b3c02e4b54b7b35585c",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/fixed-jacobian-chain-evaluator-01/lean/ChainDescent.lean",
+   "theorem": "ChainDescent.square_cube_fixed"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Conditional function and IntModule algebra for correction completeness: square/cube fixedness, equivariant image, rational two-torsion averaging, norm-half kernel membership, kernel transport, half-choice independence and Frobenius-fixed output. Both original gates8roots0trusted. No desired quotient beta or corrected evaluator assumed. Actual HLP norm-kernel identities, encoded fields/varieties/Frobenius, full fixed-kernel transport, Picard/program/descent remain explicit bridges; native PhaseA geometry is separate, complete chain/cost pending.",
+ "statement": "theorem square_cube_fixed {X : Type} (sigma : X \u2192 X) (x : X) (square : sigma (sigma x)=x) (cube : sigma (sigma (sigma x))=x) : sigma x=x"
+}

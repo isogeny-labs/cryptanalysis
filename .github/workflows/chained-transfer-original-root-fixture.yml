@@ -1,0 +1,91 @@
+name: Original root-regression fixture hydration
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/chained-transfer-original-root-fixture.yml'
+      - 'experiments/chained-transfer-public-target/ROOT_FIXTURE_HYDRATION_PROTOCOL_01.md'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/chained-transfer-original-root-fixture.yml'
+      - 'experiments/chained-transfer-public-target/ROOT_FIXTURE_HYDRATION_PROTOCOL_01.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  original-fixture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout immutable original artifact tool and fixture manifest
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          repository: isogeny-labs/crypto
+          ref: 3d49af7f3d0a28e76b79e4825c9d2324e85853d2
+          persist-credentials: false
+          path: original-producer
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            tools/artifacts/artifacts.py
+            .artifacts/config.json
+            research/curve25519_f1_targetwalk_20261108/sessions/k20-s0/.artifacts.json
+            research/curve25519_f1_targetwalk_20261108/sessions/k20-s0/.gitignore
+      - name: Freeze original source and data-read command
+        working-directory: original-producer
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/original-root-fixture"
+          mkdir "$out"
+          git rev-parse HEAD > "$out/producer-head.txt"
+          test "$(cat "$out/producer-head.txt")" = 3d49af7f3d0a28e76b79e4825c9d2324e85853d2
+          cp tools/artifacts/artifacts.py "$out/original-artifacts.py"
+          cp .artifacts/config.json "$out/original-config.json"
+          cp research/curve25519_f1_targetwalk_20261108/sessions/k20-s0/.artifacts.json "$out/original-manifest.json"
+          sha256sum tools/artifacts/artifacts.py .artifacts/config.json research/curve25519_f1_targetwalk_20261108/sessions/k20-s0/.artifacts.json > "$out/original-inputs.sha256"
+          printf '%s\n' 'python3 tools/artifacts/artifacts.py pull research/curve25519_f1_targetwalk_20261108/sessions/k20-s0/records.jsonl' 'python3 tools/artifacts/artifacts.py verify research/curve25519_f1_targetwalk_20261108/sessions/k20-s0/records.jsonl' > "$out/original-command.txt"
+      - name: Read and verify the exact original fixture with the original tool
+        working-directory: original-producer
+        shell: bash
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/original-root-fixture"
+          if ! command -v aws >/dev/null; then
+            python3 -m venv "$RUNNER_TEMP/original-root-fixture-awscli"
+            "$RUNNER_TEMP/original-root-fixture-awscli/bin/python" -m pip install --disable-pip-version-check awscli==1.46.2
+            export ARTIFACTS_AWS="$RUNNER_TEMP/original-root-fixture-awscli/bin/aws"
+          fi
+          date -u +%Y-%m-%dT%H:%M:%SZ > "$out/start.txt"
+          set +e
+          python3 tools/artifacts/artifacts.py pull research/curve25519_f1_targetwalk_20261108/sessions/k20-s0/records.jsonl > "$out/pull.log" 2>&1
+          status=$?
+          set -e
+          printf '%s\n' "$status" > "$out/pull.exit"
+          cat "$out/pull.log"
+          test "$status" -eq 0
+          set +e
+          python3 tools/artifacts/artifacts.py verify research/curve25519_f1_targetwalk_20261108/sessions/k20-s0/records.jsonl > "$out/verify.log" 2>&1
+          status=$?
+          set -e
+          printf '%s\n' "$status" > "$out/verify.exit"
+          cat "$out/verify.log"
+          test "$status" -eq 0
+          printf '%s\n' '8970667e2f18587eeb08d033123dab029b94042ac5c07c870b08988f1ee5b738  research/curve25519_f1_targetwalk_20261108/sessions/k20-s0/records.jsonl' | sha256sum --check - | tee "$out/independent-hash.log"
+          wc -c < research/curve25519_f1_targetwalk_20261108/sessions/k20-s0/records.jsonl > "$out/original-bytes.txt"
+          test "$(cat "$out/original-bytes.txt")" -eq 2293097
+          cp research/curve25519_f1_targetwalk_20261108/sessions/k20-s0/records.jsonl "$out/records.jsonl"
+          sha256sum --check "$out/original-inputs.sha256" > "$out/final-inputs.log"
+          date -u +%Y-%m-%dT%H:%M:%SZ > "$out/finish.txt"
+      - name: Preserve original data and complete terminal read evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: original-root-fixture-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/original-root-fixture
+          if-no-files-found: error

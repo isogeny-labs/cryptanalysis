@@ -1,0 +1,12 @@
+[package]
+name = "norm-halving-arithmetic-fixture"
+version = "0.1.0"
+edition = "2021"
+publish = false
+[workspace]
+[dependencies]
+chained-n4-beta-complete-evaluator = { path = "../cryptanalysis/experiments/chained-transfer-public-target/beta-complete-evaluator" }
+chained-n4-public-target = { path = "../cryptanalysis/experiments/chained-transfer-public-target/native" }
+chained-n4-completed-v2 = { path = "../cryptanalysis/experiments/chained-transfer-public-target/v2" }
+chained-n4-odd-product-maps = { path = "../cryptanalysis/experiments/chained-transfer-public-target/odd-product-maps" }
+serde_json = "=1.0.145"

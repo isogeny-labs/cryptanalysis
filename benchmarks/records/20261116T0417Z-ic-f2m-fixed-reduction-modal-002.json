@@ -1,0 +1,357 @@
+{
+  "branch": "codex/ic-trial32-20261115",
+  "closed_utc": "2026-11-16T04:23:19+00:00",
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "cloud/modal_run.py",
+        "run",
+        "--image",
+        "cuda",
+        "--gpu",
+        "L4",
+        "--cpu",
+        "4",
+        "--memory",
+        "8",
+        "--timeout",
+        "900",
+        "--env",
+        "IC_FIELD_RUN_ID=run-002",
+        "--env",
+        "IC_FIELD_FIXTURE_START=36",
+        "--out",
+        "experiments/ic-f2m-fixed-reduction-20261115/run-002",
+        "--detach",
+        "--",
+        "python3",
+        "experiments/ic-f2m-fixed-reduction-20261115/run_panel.py"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "started_utc": "2026-11-16T04:17:40+00:00",
+      "wall_s": 8.526
+    }
+  ],
+  "commit": "af339681594a2c39bf22c123b44b1c9f59444f4b",
+  "commit_dirty": true,
+  "created_utc": "2026-11-16T04:17:40+00:00",
+  "curve_uid": null,
+  "entries": [],
+  "host": {
+    "cpu": "arm",
+    "cpus_online": 14,
+    "hostname": "Mac.attlocal.net",
+    "isolation": "unstated",
+    "platform": "macOS-27.2-arm64-arm-64bit-Mach-O"
+  },
+  "id": "20261116T0417Z-ic-f2m-fixed-reduction-modal-002",
+  "metrics": [
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 6,
+      "name": "degree113-default-combined-exploratory-ratio",
+      "note": "Unqualified same-input field component diagnostic. Every triple/control regression retained; min/max is not confidence interval.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9443932096072092,
+        0.9511845631368726
+      ],
+      "unit": "ratio",
+      "value": 0.9453004597626415
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 6,
+      "name": "degree113-six-product-combined-exploratory-ratio",
+      "note": "Unqualified same-input field component diagnostic. Every triple/control regression retained; min/max is not confidence interval.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9709380610227671,
+        0.9799180715016288
+      ],
+      "unit": "ratio",
+      "value": 0.9720892215939507
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 6,
+      "name": "degree131-default-combined-exploratory-ratio",
+      "note": "Unqualified same-input field component diagnostic. Every triple/control regression retained; min/max is not confidence interval.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.3343159342828024,
+        1.3483556192179271
+      ],
+      "unit": "ratio",
+      "value": 1.3390181244976271
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 6,
+      "name": "degree131-six-product-combined-exploratory-ratio",
+      "note": "Unqualified same-input field component diagnostic. Every triple/control regression retained; min/max is not confidence interval.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.2396104919930218,
+        1.2548730106851225
+      ],
+      "unit": "ratio",
+      "value": 1.2430778364007875
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 6,
+      "name": "degree155-default-combined-exploratory-ratio",
+      "note": "Unqualified same-input field component diagnostic. Every triple/control regression retained; min/max is not confidence interval.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.2799505594556804,
+        1.2895860243936719
+      ],
+      "unit": "ratio",
+      "value": 1.2854559370667646
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 6,
+      "name": "degree155-six-product-combined-exploratory-ratio",
+      "note": "Unqualified same-input field component diagnostic. Every triple/control regression retained; min/max is not confidence interval.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.17056259938439,
+        1.1778883643894555
+      ],
+      "unit": "ratio",
+      "value": 1.1741059853848639
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 6,
+      "name": "degree163-default-combined-exploratory-ratio",
+      "note": "Unqualified same-input field component diagnostic. Every triple/control regression retained; min/max is not confidence interval.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.442841321309762,
+        1.4651746920119562
+      ],
+      "unit": "ratio",
+      "value": 1.4594401313291518
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 6,
+      "name": "degree163-six-product-combined-exploratory-ratio",
+      "note": "Unqualified same-input field component diagnostic. Every triple/control regression retained; min/max is not confidence interval.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.3053284934215899,
+        1.3262542010356606
+      ],
+      "unit": "ratio",
+      "value": 1.3210409052129797
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 6,
+      "name": "degree233-default-combined-exploratory-ratio",
+      "note": "Unqualified same-input field component diagnostic. Every triple/control regression retained; min/max is not confidence interval.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9534321841867159,
+        0.9614479459604168
+      ],
+      "unit": "ratio",
+      "value": 0.9595112705951405
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 6,
+      "name": "degree233-six-product-combined-exploratory-ratio",
+      "note": "Unqualified same-input field component diagnostic. Every triple/control regression retained; min/max is not confidence interval.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.95957771133826,
+        0.9678009944266625
+      ],
+      "unit": "ratio",
+      "value": 0.9611375935522982
+    }
+  ],
+  "problem": "ic-binary-field-component",
+  "raw": [
+    {
+      "bytes": 1309,
+      "path": "experiments/ic-f2m-fixed-reduction-20261115/run-002/summary.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/53/538bd6910f0bd42e506bbd407379ae3968ed48a40a2ef1984382ca589344d37d",
+      "sha256": "538bd6910f0bd42e506bbd407379ae3968ed48a40a2ef1984382ca589344d37d",
+      "uploaded": true
+    },
+    {
+      "bytes": 1935,
+      "path": "experiments/ic-f2m-fixed-reduction-20261115/run-002/combined-test.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/d6/d6f50f2e82d8ca2482623710f3069e6760d75165c80c135a7808e85bfcffbcc8",
+      "sha256": "d6f50f2e82d8ca2482623710f3069e6760d75165c80c135a7808e85bfcffbcc8",
+      "uploaded": true
+    },
+    {
+      "bytes": 163,
+      "path": "experiments/ic-f2m-fixed-reduction-20261115/run-002/specialized-build.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/5d/5dc1d643a99571a9b75916d97fb3aec1ec5679fdb71d08d7fa2e41bb56cda6f0",
+      "sha256": "5dc1d643a99571a9b75916d97fb3aec1ec5679fdb71d08d7fa2e41bb56cda6f0",
+      "uploaded": true
+    },
+    {
+      "bytes": 25299,
+      "path": "experiments/ic-f2m-fixed-reduction-20261115/run-002/host.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/3c/3c6fbd0fde108fb446578ced11a1c60860e9115f4c42eaf7274ae4c2b04dd361",
+      "sha256": "3c6fbd0fde108fb446578ced11a1c60860e9115f4c42eaf7274ae4c2b04dd361",
+      "uploaded": true
+    },
+    {
+      "bytes": 1902,
+      "path": "experiments/ic-f2m-fixed-reduction-20261115/run-002/default-test.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/56/56d2f2e46723cf770c912ae4ead42b535700302f72f6cf7acfd5f95f635f92cb",
+      "sha256": "56d2f2e46723cf770c912ae4ead42b535700302f72f6cf7acfd5f95f635f92cb",
+      "uploaded": true
+    },
+    {
+      "bytes": 1850080,
+      "path": "experiments/ic-f2m-fixed-reduction-20261115/run-002/pairs.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/6b/6b6b7830d7ebcd6078920131e5625b6bbdaff29bf6132770f72dc2ab66855844",
+      "sha256": "6b6b7830d7ebcd6078920131e5625b6bbdaff29bf6132770f72dc2ab66855844",
+      "uploaded": true
+    },
+    {
+      "bytes": 1774287,
+      "path": "experiments/ic-f2m-fixed-reduction-20261115/run-002/arms.jsonl",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/a7/a723eecf6761d81d2e44825ce2d8b2eeb260f969e5f5c1cffb3a1c1bfa905dc0",
+      "sha256": "a723eecf6761d81d2e44825ce2d8b2eeb260f969e5f5c1cffb3a1c1bfa905dc0",
+      "uploaded": true
+    },
+    {
+      "bytes": 163,
+      "path": "experiments/ic-f2m-fixed-reduction-20261115/run-002/default-build.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/c4/c4cc862eff62352c4b5f6642606b86db9f0dbbaebbf26306439fdc6012113cfd",
+      "sha256": "c4cc862eff62352c4b5f6642606b86db9f0dbbaebbf26306439fdc6012113cfd",
+      "uploaded": true
+    },
+    {
+      "bytes": 1805,
+      "path": "experiments/ic-f2m-fixed-reduction-20261115/run-002/specialized-test.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/d4/d4dce90aaf2ab572afb6b55bfbe75904bf342af4460ebf62db361cdaf7f47df8",
+      "sha256": "d4dce90aaf2ab572afb6b55bfbe75904bf342af4460ebf62db361cdaf7f47df8",
+      "uploaded": true
+    },
+    {
+      "bytes": 163,
+      "path": "experiments/ic-f2m-fixed-reduction-20261115/run-002/combined-build.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/df/df03d929b93771ecd6b69c5b729b1d6f07b842cc6a66c411c194d16844684807",
+      "sha256": "df03d929b93771ecd6b69c5b729b1d6f07b842cc6a66c411c194d16844684807",
+      "uploaded": true
+    },
+    {
+      "bytes": 1290,
+      "path": "experiments/ic-f2m-fixed-reduction-20261115/launch-002/ic-fixed-modal-log-002.txt",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/15/15f482c4c477a0121b72458912e4fd88644ebee2e354c09a2e4c1d829e443b00",
+      "sha256": "15f482c4c477a0121b72458912e4fd88644ebee2e354c09a2e4c1d829e443b00",
+      "uploaded": true
+    },
+    {
+      "bytes": 333,
+      "path": "experiments/ic-f2m-fixed-reduction-20261115/launch-002/ic-fixed-modal-launch-002.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/a4/a4f01285ed9415f9c96e335b92ad044bcfd09f4a16f3ac1fe2df38f1022e9cdb",
+      "sha256": "a4f01285ed9415f9c96e335b92ad044bcfd09f4a16f3ac1fe2df38f1022e9cdb",
+      "uploaded": true
+    },
+    {
+      "bytes": 780,
+      "path": "experiments/ic-f2m-fixed-reduction-20261115/launch-002/ic-fixed-modal-fetch-002.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/4b/4b961ef5fd594a8194d6883e76a7358f680bb5a2c83e7992b9192d70afc4b291",
+      "sha256": "4b961ef5fd594a8194d6883e76a7358f680bb5a2c83e7992b9192d70afc4b291",
+      "uploaded": true
+    },
+    {
+      "bytes": 4650,
+      "path": "experiments/ic-f2m-fixed-reduction-20261115/integration-001/ic-suite-integrated-binary-tests.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/71/711fb58a794780808ca4169ddc8deb59a9f2f41d996fe7bd0aac714d0f85a163",
+      "sha256": "711fb58a794780808ca4169ddc8deb59a9f2f41d996fe7bd0aac714d0f85a163",
+      "uploaded": true
+    },
+    {
+      "bytes": 3821,
+      "path": "experiments/ic-f2m-fixed-reduction-20261115/integration-001/ic-suite-integrated-field-tests.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/dc/dc7d2d705402b18f04f605dd2332ffec965a25da8fe8efe6d97c18d5abecf2e9",
+      "sha256": "dc7d2d705402b18f04f605dd2332ffec965a25da8fe8efe6d97c18d5abecf2e9",
+      "uploaded": true
+    },
+    {
+      "bytes": 1048,
+      "path": "experiments/ic-f2m-fixed-reduction-20261115/integration-001/ic-suite-integrated-field-clippy.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/af/affca68b4efe57b441043f95728e3a9e8817a40246ebbabc2fbe3ce1aaa3b3a2",
+      "sha256": "affca68b4efe57b441043f95728e3a9e8817a40246ebbabc2fbe3ce1aaa3b3a2",
+      "uploaded": true
+    },
+    {
+      "bytes": 729,
+      "path": "experiments/ic-f2m-fixed-reduction-20261115/integration-001/ic-suite-all-targets-clippy.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/a8/a82ce434eb0f3edd566ab39f77ab6bdef70ba41fd45abe84bf1273955458b137",
+      "sha256": "a82ce434eb0f3edd566ab39f77ab6bdef70ba41fd45abe84bf1273955458b137",
+      "uploaded": true
+    },
+    {
+      "bytes": 192,
+      "path": "experiments/ic-f2m-fixed-reduction-20261115/integration-001/ic-suite-all-targets-clippy-2.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/76/76e63ae656443afd27fe2074853a170552777ca698b663aab3938e2e2515506e",
+      "sha256": "76e63ae656443afd27fe2074853a170552777ca698b663aab3938e2e2515506e",
+      "uploaded": true
+    },
+    {
+      "bytes": 2151,
+      "path": "experiments/ic-f2m-fixed-reduction-20261115/integration-001/ic-suite-integrated-field-tests-2.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/e6/e6a31ded7538604353453783319a45bd6a7826721a3c47bdebdcf4f0d58e7808",
+      "sha256": "e6a31ded7538604353453783319a45bd6a7826721a3c47bdebdcf4f0d58e7808",
+      "uploaded": true
+    },
+    {
+      "bytes": 529,
+      "path": "experiments/ic-f2m-fixed-reduction-20261115/integration-001/ic-suite-digest-vectors.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/52/527f9f97199975df4795abe92a01d26a2927481b69bd0b3eec4350d355aec4c7",
+      "sha256": "527f9f97199975df4795abe92a01d26a2927481b69bd0b3eec4350d355aec4c7",
+      "uploaded": true
+    }
+  ],
+  "repo": "cryptanalysis",
+  "reports": {
+    "pdf": null,
+    "png": [],
+    "svg": []
+  },
+  "schema": "bench.record/v1",
+  "session": null,
+  "slug": "ic-f2m-fixed-reduction-modal-002",
+  "status": "invalid",
+  "summary": "Width-prefilter component diagnostic:30 matching triples,zero failed calibration bounds; all timing qualification null. Control regressions persist. Full-suite focused integration checks pass after compatibility repair; no full IC conclusion.",
+  "validation": null
+}

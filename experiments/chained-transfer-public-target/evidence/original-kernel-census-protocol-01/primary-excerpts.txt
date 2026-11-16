@@ -1,0 +1,168 @@
+Exact lines 1017-1107 from /workspace/scratch/ct59-HLP-Split-Jacobians.txt
+ψ : E[2] → F [2] be the isomorphism such that ψ(T1 ) = T2′ , ψ(T2 ) = T3′ , and ψ(T3 ) = T1′ . Hence ψ̃
+is the isomorphism Q × Q × Q → Q × Q × Q acting on the factors as the permutation (1 3 2). By
+Proposition 12, a point on E × F with double (T1 , T2′ ) maps to a new rational point on the quotient
+A if and only if we can find rational numbers y and z such that
+                                   2(t − 3) = (−1)y 2 ,
+                              (t + 3)(t − 5) = (8u2 − 1)(8u2 + 8u + 1)z 2 .
+If we solve the first equation for t, substitute into the second, and multiply both sides by 4, we
+obtain
+                          (y 2 − 12)(y 2 + 4) = 4(8u2 − 1)(8u2 + 8u + 1)z 2 .
+For y = 2/9, the resulting genus-1 curve has a rational point (u, z) = (1/3, 44/9), and is birational
+to the elliptic curve
+                                            Y 2 = X 3 − 1681X
+of conductor 53792 and rank 2. The new rational point on A is a 2-torsion point, since its double
+is the image of (T1 , T2′ ), which is in the graph of ψ. Hence we have produced a family of genus-2
+curves, parameterized by the points on a positive rank elliptic curve, whose Jacobians have torsion
+subgroup over Q containing Z/2Z × Z/2Z × Z/24Z.
+
+                                           4. Genus three
+4.1. Jacobians (2, 2, 2)-isogenous to a product of elliptic curves. In this section we will show
+how one can find a curve of genus 3 whose Jacobian is isogenous over a quadratic extension of the
+base field to a product of three given elliptic curves. Genus-3 curves of the sort we will see were
+used in [4].
+   We maintain the conventions of Section 3.1.
+
+20                     EVERETT W. HOWE, FRANCK LEPRÉVOST, AND BJORN POONEN
+
+
+   Suppose E1 , E2 , and E3 are elliptic curves over a separably closed field K, and let N be a positive
+integer not divisible by the characteristic of K. The product of the canonical polarizations on the
+Ei is a principal polarization λ on the abelian variety A = E1 × E2 × E3 , and the Weil pairings
+on the N -torsion subgroups of the Ei combine to give us a non-degenerate alternating pairing eN
+from A[N ] to the group scheme of N th roots of unity over K. Suppose G is a sub-group-scheme of
+A[N ] that is maximal isotropic with respect to the pairing eN . As in the similar situation we saw in
+Section 3.2, the polarization N λ on A reduces to a principal polarization µ on the quotient variety
+B = A/G. A result of Oort and Ueno [34] shows that the polarized variety (B, µ) either breaks
+up as a product of lower-dimensional polarized varieties or is the canonically polarized Jacobian
+of a curve C over K of genus 3.3 We would like to see which group-schemes G lead to curves in
+the case where N = 2. Since we will be working over a separably closed field, we will identify
+sub-group-schemes of A[2] with subgroups of A[2](K).
+Lemma 13. Let A = E1 × E2 × E3 and e2 be as above. There are exactly 135 maximal isotropic
+subgroups G of A[2](K). Exactly 81 of these group-schemes are of the form G1 × G2 , where G1
+is a maximal isotropic subgroup of Ei [2](K) for some i and G2 is a maximal isotropic subgroup of
+Q
+   j6=i Ej [2](K); for these G, the polarized variety (B, µ) splits into a product of lower-dimensional
+polarized varieties. If G is one of the remaining 54 groups, then for each i we may label the nonzero
+elements of Ei [2](K) by the symbols Pi , Qi , and Ri in such a way so that G is the group
+                      
+                        (0, 0, 0),(0, Q2 , Q3 ), (Q1 , 0, Q3 ), (Q1 , Q2 , 0),
+                                  (P1 , P2 , P3 ), (P1 , R2 , R3 ), (R1 , P2 , R3 ), (R1 , R2 , P3 ) .
+
+Remark . In fact, our constructions below will show that every group of the last type gives rise to
+a curve. This fact can also be proven by assuming that a G of the given type is the kernel of a map
+A → A1 × A2 of polarized varieties and obtaining a contradiction. In anticipation of this result, we
+will call maximal isotropic subgroups of A[2](K) (or sub-group-schemes of A[2]) non-split if they
+are of the latter type.
+Proof. In any group isomorphic to (Z/2Z)6 with a non-degenerate alternating pairing, there are
+(26 − 1)(25 − 2)(24 − 22 ) ways of choosing an ordered triple (v1 , v2 , v3 ) that generate a maximal
+isotropic subgroup, and each maximal isotropic subgroup has (23 − 1)(23 − 2)(23 − 22 ) such bases,
+so there are
+                                   (26 − 1)(25 − 2)(24 − 22 )
+                                                              = 135
+                                   (23 − 1)(23 − 2)(23 − 22 )
+such subgroups.
+   For i = 1, 2, 3 let Si denote the set of maximal Q isotropic subgroups of A[2](K) that can be
+written G1 × G2 , with G1 ⊂ Ei [2](K) and G2 ⊂ j6=i Ej [2](K). There are 3 choices for G1 and
+(24 − 1)(23 − 2)/(22 − 1)(22 − 2) = 15 choices for G2 , so #Si = 45. The intersection of any two of
+the Si is the set S of subgroups of A[2](K) that can be written G1 × G2 × G3 , with Gi ⊂ Ei [2](K);
+clearly #S = 27. Thus there are #S1 + #S2 + #S3 − 2#S = 81 subgroups that split as in the
+statement of the lemma.
+   We are left with 135 − 81 = 54 subgroups to account for, and it is easy to see that there are
+exactly this many subgroups of the form described in the final sentence of the lemma: There are 3
+choices for each of the Qi , and given P1 and P2 , there are 2 choices for P3 .
+  Suppose now that k is a field of characteristic not 2 with separable closure K, and let E1 , E2 ,
+and E3 be elliptic curves over k. It is clear that a non-split sub-group-scheme of E1K × E2K × E3K
+will come from a sub-group-scheme of E1 × E2 × E3 if and only if we have both that all of the
+     3
+     The analogous statement is not necessarily true over a field that is not separably closed. See the remark following
+the proof of Proposition 15.
+
+                                 TORSION SUBGROUPS OF JACOBIANS                                       21
+
+
+points Qi are defined over k and that every k-automorphism of K that moves any of the Pi moves
+exactly two of them. Given the first condition, the second condition will hold if and only if the
+product of the discriminants of the curves Ei is a square in k.
+   So suppose Ei is the elliptic curve over k given by the equation y 2 = x(x2 + Ai x + Bi ) where
+Bi 6= 0, and let Qi be the rational 2-torsion point (0, 0). The discriminant of Ei differs by a square
+factor from the number ∆i = A2i − 4Bi , so let us assume that ∆1 ∆2 ∆3 is a square in k. For each i
+let Pi be a nonzero element of Ei [2](K) different from Qi . Let G be the non-split sub-group-scheme
+of the product A = E1 × E2 × E3 corresponding to this choice of P ’s and Q’s. We are led to the
+question: Is the quotient polarized variety A/G the Jacobian of a curve over k, and if so, what
+
+Exact lines 1265-1310 from /workspace/scratch/ct59-HLP-Split-Jacobians.txt
+the proposition, the points Qi must actually be defined over k. However, because di is not in k,
+
+24                  EVERETT W. HOWE, FRANCK LEPRÉVOST, AND BJORN POONEN
+
+
+the curve Ei has only one nonzero k-defined 2-torsion point, namely Qi . Therefore Q′i = Qi . There
+are exactly two non-split maximal isotropic subgroups of A[2](K) that contain the subgroup
+                         H = {(0, 0, 0), (0, Q2 , Q3 ), (Q1 , 0, Q3 ), (Q1 , Q2 , 0)},
+and the intersection of these two groups is H. So to show that G′ (K) = G(K), all we must do
+is show that the two groups contain a common element that is not in H. To show this, we can
+specialize our universal example to a particular case, and show that the specialized groups G and
+G′ contain a common element not in H.
+   Consider the specialization map ℓ → C that takes each di to −4 and each λi to −1/2; we will
+abuse notation by saying that d1 = −4, and so on. We see that each Ai = 2, each Bi = −3, each
+∆i = 16, each Pi = (1, 0), and the curve C is defined by the two equations W 2 Z 2 = −18(X 4 +
+Y 4 + Z 4 ) and 0 = (1/3)(X 2 + Y 2 + Z 2 ).
+   Let Φ∗ denote the map ϕX∗ × ϕY ∗ × ϕZ∗ from J to A and recall that Φ∗ denotes the map
+ϕ∗X × ϕ∗Y × ϕ∗Z from A to J. An easy computation shows that Φ∗ Φ∗ is multiplication by 2 on J.
+Thus the image under Φ∗ of a 2-torsion element of J is in the kernel of Φ∗ . To complete the proof,
+we will show that (P1 , P2 , P3 ) ∈ A(K) is the image under Φ∗ of a 2-torsion point of J.
+   Let U1 and U2 be the Weierstrass points on C given in homogeneous coordinates [W : X : Y : Z]
+by [0 : ζ : ζ 2 : 1] and [0 : ζ 2 : ζ : 1], respectively, where ζ = e2πi/3 . Note that U1 − U2 represents
+a 2-torsion element of J. Under the specialization we have made, equation (7), which defines
+FX , becomes v 2 = −4y 4 − 4y 2 − 4, and in these (y, v) coordinates we have ϕX (U1 ) = (ζ 2 , 0) and
+ϕX (U2 ) = (ζ, 0). The curve EX , defined by equation (8), is given by y 2 = x3 + 2x2 − 3x, and under
+the isomorphism
+                                                                           
+                                              iv − y 2 − 2 −2v − 2iy 2 − 4i
+                                  (y, v) 7→               ,
+                                                   y2             y3
+                                                         √     √             √     √
+from FX to EX these two points on FX map to (i 3, 2ζ 3) and (−i 3, 2ζ 2 3), respectively. The
+difference of these two points on the elliptic curve EX is equal to the 2-torsion point (1, 0). Thus
+ϕX∗ (U1 − U2 ) = P1 . By symmetry, we find that ϕY ∗ (U1 − U2 ) = P2 and ϕZ∗ (U1 − U2 ) = P3 as well,
+so (P1 , P2 , P3 ) is in the image of J[2](K) under Φ∗ and hence in G′ (K). It is in G(K) as well, so
+G′ = G and the proposition is proved.
+
+Proposition 15. Let notation be as before Proposition 14, and suppose T 6= 0. Let C be the plane
+quartic over k defined by
+                      B1 X 4 + B2 Y 4 + B3 Z 4 + dX 2 Y 2 + eX 2 Z 2 + f Y 2 Z 2 = 0,
+where
+                                                           
+                                          1            A3 R
+                                       d=     −A1 A2 +
+                                          2            ∆3
+                                                           
+
+Exact lines 1350-1375 from /workspace/scratch/ct59-HLP-Split-Jacobians.txt
+Example 3.7 (pp. 293–294) of [36] shows that the Jacobian EX of FX is the elliptic curve over k′
+defined by y 2 = x3 +AX x2 +BX x, where AX = 2B1 f −de and BX = B1 (B1 f 2 +B2 e2 +B3 d2 −def −
+4B1 B2 B3 ). Using the formulas for d, e, and f given in the proposition, we find that AX = A1 T /4
+and BX = B1 T 2 /16. Thus we see that EX ∼   = E1k′ , and the double cover ϕX : Ck′ → FX gives us a
+map ϕ∗X from E1k′ to the Jacobian J of Ck′ .
+   If we define two more involutions ιY and ιZ of Ck′ in the obvious way, we get double covers
+ϕY : Ck′ → FY and ϕZ : Ck′ → FZ that give rise to homomorphisms ϕ∗Y : E2k′ → J and ϕ∗3 : E3k′ →
+J.
+   Let µ be the canonical polarization of J and let λ be the product polarization on A = E1 ×E2 ×E3 .
+As in the proof of Proposition 14, we get a commutative diagram
+                                                   2λ d
+                                              Ak′ −→ A k′
+                                                     x
+                                                ∗     c∗
+                                               yΦ     Φ
+                                                        µ
+                                                J     −→       Jb
+where Φ∗ = ϕ∗X × ϕ∗Y × ϕ∗Z is an isogeny of degree 8 whose kernel G′ is a non-split maximal isotropic
+sub-group-scheme of Ak′ [2]. Our task is to show that G′ = Gk′ .
+  Let K be an algebraic closure of ℓ′ . Rationality arguments as in the proof of Proposition 14 show
+that G′ (K) contains the subgroup
+                         H = {(0, 0, 0), (0, Q2 , Q3 ), (Q1 , 0, Q3 ), (Q1 , Q2 , 0)},
+and, as before, to show that G′ (K) = G(K) all we must do is show that the two groups contain a
+common element that is not in H. To show this, we once again specialize our universal example to
+a particular example.
+

@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-15T01:35:19Z",
+ "id": "PCC-20261115-0ecc05",
+ "kind": "theorem",
+ "producer": {
+  "commit": "70ec53e5a297a47e8c933dad1b58e870211b16fa",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "2e1768c76f95f4183992c148e49110d06cf0e4cb06325d3991dfc1e1bc784dc6",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/fixed-jacobian-chain-evaluator-01/lean/ChainDescent.lean",
+   "theorem": "ChainDescent.rational_correction_complete"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Conditional function and IntModule algebra for correction completeness: square/cube fixedness, equivariant image, rational two-torsion averaging, norm-half kernel membership, kernel transport, half-choice independence and Frobenius-fixed output. Both original gates8roots0trusted. No desired quotient beta or corrected evaluator assumed. Actual HLP norm-kernel identities, encoded fields/varieties/Frobenius, full fixed-kernel transport, Picard/program/descent remain explicit bridges; native PhaseA geometry is separate, complete chain/cost pending.",
+ "statement": "theorem rational_correction_complete {A J : Type} [IntModule A] [IntModule J] (sa : A \u2192 A) (sj : J \u2192 J) (phi : A \u2192 J) (norm : J \u2192 A) (sa_add : \u2200 a b, sa (a+b)=sa a+sa b) (sa_linear : \u2200 n : Int, \u2200 a, sa (n \u2022 a)=n \u2022 sa a) (sa_zero : sa 0=0) (phi_add : \u2200 a b, phi (a+b)=phi a+phi b) (phi_linear : \u2200 n : Int, \u2200 a, phi (n \u2022 a)=n \u2022 phi a) (phi_zero : phi 0=0) (equivariant : \u2200 a, phi (sa a)=sj (phi a)) (cube_on_two : \u2200 a, (2 : Int) \u2022 a=0 \u2192 sa (sa (sa a))=a) (kernel_description : \u2200 d, norm d=0 \u2192 \u2203 a, (2 : Int) \u2022 a=0 \u2227 phi a=d) (delta : J) (in_kernel : norm delta=0) (square : sj (sj delta)=delta) : \u2203 t, (2 : Int) \u2022 t=0 \u2227 sa t=t \u2227 phi t=delta"
+}
