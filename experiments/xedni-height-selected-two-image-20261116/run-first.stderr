@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/Users/adamburan/.codex-worktrees/xedni-height-selected-two-image-20261116/experiments/xedni-height-selected-two-image-20261116/run.py", line 120, in <module>
+    assert [mod(P1[0],p),mod(P1[1],p)]==u
+            ~~~^^^^^^^^^
+  File "/Users/adamburan/.codex-worktrees/xedni-height-selected-two-image-20261116/experiments/xedni-height-selected-two-image-20261116/run.py", line 20, in mod
+    if z.denominator%p==0: raise ValueError('nonintegral_reduction')
+       ~~~~~~~~~~~~~^~
+TypeError: unsupported operand type(s) for %: 'method' and 'int'
