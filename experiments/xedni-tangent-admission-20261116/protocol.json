@@ -1,0 +1,11 @@
+{
+  "schema": "xedni-tangent-admission-v1",
+  "source_rows": "experiments/xedni-vector-shift-lift-search-20261116/rows.jsonl",
+  "source_rows_sha256": "3c75b8f6aed964b99e3135cda848289669f7f6bf54a7a8c603ec37b9198e5b9e",
+  "source_protocol": "experiments/xedni-vector-shift-lift-search-20261116/protocol.json",
+  "selected_vector": [2, -1],
+  "criterion": "For distinct lifted x coordinates, test (y1+y2)^2=(x1-x2)^2(2*x1+x2); classify all selected-vector candidate attempts by archived status and public-relation diagnostic.",
+  "positive_controls": "Check every archived positive rational control against the criterion after clearing rational denominators.",
+  "negative_controls": "Check every archived negative rational control against the criterion after clearing rational denominators.",
+  "scope": "exact algebraic replay and candidate counts, not a wall-time comparison"
+}

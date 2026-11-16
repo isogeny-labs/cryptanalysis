@@ -1,0 +1,39 @@
+name: CT164 even-degree quotient 2-torsion source-only audit
+on:
+  pull_request:
+    paths:
+      - "experiments/chained-transfer-public-target/norm-point-reuse-01/ct164_*"
+      - "experiments/chained-transfer-public-target/norm-point-reuse-01/CT164_*"
+      - ".github/workflows/ct164-quotient-2torsion.yml"
+  workflow_dispatch:
+
+jobs:
+  mod4-lattice-vs-coset:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Exact CT163 source binding, Python/-O, independent Node cosets
+        shell: bash
+        run: |
+          set -euo pipefail
+          D=experiments/chained-transfer-public-target/norm-point-reuse-01
+          python3 -B "$D/ct164_quotient_two_torsion.py" --self-test > "$RUNNER_TEMP/ct164-python.json"
+          python3 -O -B "$D/ct164_quotient_two_torsion.py" --self-test > "$RUNNER_TEMP/ct164-opt.json"
+          node "$D/ct164_independent_coset.cjs" --self-test > "$RUNNER_TEMP/ct164-node.json"
+          cmp "$RUNNER_TEMP/ct164-python.json" "$RUNNER_TEMP/ct164-opt.json"
+          cmp "$RUNNER_TEMP/ct164-python.json" "$RUNNER_TEMP/ct164-node.json"
+          cmp "$RUNNER_TEMP/ct164-python.json" "$D/CT164_RESULT.json"
+          echo 'Expected frozen CT164 SHA256: eb7651dca724b5ef15707b4b32eb8f510ab8f713811586cc3228d30399020508'
+          printf '%s  %s\n' eb7651dca724b5ef15707b4b32eb8f510ab8f713811586cc3228d30399020508 "$RUNNER_TEMP/ct164-python.json" | sha256sum -c -
+          python3 -B - <<'PY'
+          import json, os, pathlib
+          data=json.loads((pathlib.Path(os.environ["RUNNER_TEMP"])/"ct164-python.json").read_text())
+          assert len(data["kernels"])==9 and data["negative_controls_rejected"]==5
+          assert all(k["rational_2_torsion_size_by_m"]==[2,2] for k in data["kernels"])
+          assert data["hyperelliptic_genus3_necessary_orbits"]==[[1,1,6],[2,3,3]]
+          print("CT164 finite source check passed; no native maps, PCC or complete DLP cost")
+          PY

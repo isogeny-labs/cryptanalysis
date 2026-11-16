@@ -1,0 +1,70 @@
+ok    expected pass          got pass          clean:solve
+ok    expected pass          got pass          clean:zk
+ok    expected pass          got pass          clean:measurement
+ok    expected pass          got pass          clean:execution
+ok    expected pass_or_not_covered got not_covered   clean:lean
+ok    expected not_covered   got not_covered   clean:attestation(statement claim never verifies)
+ok    expected fail          got fail          certificate:wrong k
+ok    expected fail          got fail          certificate:Q off the curve
+ok    expected fail          got fail          certificate:composite n
+ok    expected fail          got fail          certificate:[n]P != O
+ok    expected fail          got fail          claim:pinned digest mismatch
+ok    expected fail          got fail          claim:proof path outside the repository
+ok    expected fail          got fail          claim:minimum proof kind absent
+ok    expected fail          got fail          zk-certificate:tampered s
+ok    expected fail          got fail          zk-certificate:proof transplanted to another Q
+ok    expected fail          got fail          lean:sorry
+ok    expected fail          got fail          lean:native_decide
+ok    expected fail          got fail          lean:user axiom
+ok    expected fail          got fail          lean:skipKernelTC
+ok    expected fail          got fail          lean:#exit before the theorem
+ok    expected fail          got fail          lean:statement edited after pinning
+ok    expected fail          got fail          lean:conclusion True
+ok    expected fail          got fail          lean:theorem renamed away
+ok    expected not_covered   got not_covered   replay:no signature (unsigned is uncovered, never verified)
+ok    expected fail          got fail          replay:signature by an untrusted key
+ok    expected fail          got fail          replay:signature over a different subject
+ok    expected fail          got fail          replay:empty runs (even when signed)
+ok    expected not_covered   got not_covered   replay:independent:true written by the producer, unsigned
+ok    expected not_covered   got not_covered   recompute:raw data without a sha256 pin
+ok    expected fail          got fail          recompute:raw data path outside the repository
+ok    expected fail          got fail          recompute:headline claimed != recomputed
+ok    expected fail          got fail          recompute:raw data digest mismatch
+ok    expected fail          got fail          execution:dev-mode receipt
+ok    expected fail          got fail          execution:wrong image id
+ok    expected fail          got fail          execution:journal does not commit to the raw result
+ok    expected fail          got fail          execution:verifier binary digest mismatch
+ok    expected not_covered   got not_covered   execution:verifier not in keyring
+ok    expected fail          got fail          execution:verifier reports not verified
+ok    expected fail          got fail          attestation:wrong key
+ok    expected fail          got fail          attestation:subject edited after signing
+ok    expected not_covered   got not_covered   attestation:legacy flat pin remains scoped
+ok    expected fail          got fail          attestation:legacy corrupt pin
+ok    expected fail          got fail          attestation:canonical corrupt pin cannot fall back
+ok    expected pass          got pass          ledger:clean chain, signed verdict
+ok    expected fail          got fail          ledger:entry edited
+ok    expected fail          got fail          ledger:entry deleted
+ok    expected fail          got fail          ledger:history rewritten (base not a prefix)
+ok    expected fail          got fail          ledger:history removed below base
+ok    expected unverified    got unverified    ledger:verdict without a trusted signature
+ok    expected unverified    got unverified    ledger:stale verdict after the claim changed
+ok    expected unverified    got unverified    ledger:verdict key not in keyring
+ok    expected failed        got failed        ledger:signed failing verdict
+ok    expected fail          got fail          ledger:new claim without claim_type
+ok    expected fail          got fail          ledger:claim_type exemption by backdated created_at
+ok    expected pass          got pass          ledger:legacy claim without claim_type counts as data
+ok    expected fail          got fail          prose:strong claim with no citation
+ok    expected fail          got fail          prose:citation to an unverified claim
+ok    expected fail          got fail          prose:citation to an unknown claim
+ok    expected pass          got pass          prose:verified citation
+ok    expected pass          got pass          prose:explicit unverified tag
+ok    expected pass          got pass          prose:code block is not prose
+ok    expected pass          got pass          prose:no strong word
+ok    expected pass          got pass          trust:unchanged keyring against the base
+ok    expected unverified    got unverified    trust:self-added key under the base keyring
+ok    expected fail          got fail          trust:keyring changed relative to the base
+ok    expected pass          got pass          trust:keyring change the owner pinned
+ok    expected fail          got fail          trust:keyring that does not match the pin
+ok    expected fail          got fail          trust:base ref that does not resolve
+ok    expected fail          got fail          trust:keyring ref that does not resolve
+canary: 69/69 classes behave as required

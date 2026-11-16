@@ -22,26 +22,24 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Pull store data this workflow reads (tools/artifacts)
+      - name: Pull storage-backed PCC claim inputs
         shell: bash
-        working-directory: ${{ github.workspace }}
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
         run: |
+          mapfile -t claim_inputs < <(python3 tools/artifacts/claim_inputs.py)
+          if [ "${#claim_inputs[@]}" -eq 0 ]; then
+            echo "No storage-backed claim inputs"
+            exit 0
+          fi
           if ! command -v aws >/dev/null; then
             python3 -m venv "$RUNNER_TEMP/artifacts-awscli"
-            artifacts_cli_python="$RUNNER_TEMP/artifacts-awscli/bin/python"
-            artifacts_cli_aws="$RUNNER_TEMP/artifacts-awscli/bin/aws"
-            if [ -d "$RUNNER_TEMP/artifacts-awscli/Scripts" ]; then
-              artifacts_cli_python="$RUNNER_TEMP/artifacts-awscli/Scripts/python.exe"
-              artifacts_cli_aws="$RUNNER_TEMP/artifacts-awscli/Scripts/aws.exe"
-            fi
-            "$artifacts_cli_python" -m pip install --disable-pip-version-check awscli==1.46.2
-            export ARTIFACTS_AWS="$artifacts_cli_aws"
+            "$RUNNER_TEMP/artifacts-awscli/bin/python" -m pip install --disable-pip-version-check awscli==1.46.2
+            export ARTIFACTS_AWS="$RUNNER_TEMP/artifacts-awscli/bin/aws"
           fi
-          python3 tools/artifacts/artifacts.py pull --jobs 16 docs
+          python3 tools/artifacts/artifacts.py pull --jobs 16 "${claim_inputs[@]}"
       - uses: actions/setup-python@v7
         with:
           python-version: '3.11'
@@ -111,26 +109,24 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Pull store data this workflow reads (tools/artifacts)
+      - name: Pull storage-backed PCC claim inputs
         shell: bash
-        working-directory: ${{ github.workspace }}
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
         run: |
+          mapfile -t claim_inputs < <(python3 tools/artifacts/claim_inputs.py)
+          if [ "${#claim_inputs[@]}" -eq 0 ]; then
+            echo "No storage-backed claim inputs"
+            exit 0
+          fi
           if ! command -v aws >/dev/null; then
             python3 -m venv "$RUNNER_TEMP/artifacts-awscli"
-            artifacts_cli_python="$RUNNER_TEMP/artifacts-awscli/bin/python"
-            artifacts_cli_aws="$RUNNER_TEMP/artifacts-awscli/bin/aws"
-            if [ -d "$RUNNER_TEMP/artifacts-awscli/Scripts" ]; then
-              artifacts_cli_python="$RUNNER_TEMP/artifacts-awscli/Scripts/python.exe"
-              artifacts_cli_aws="$RUNNER_TEMP/artifacts-awscli/Scripts/aws.exe"
-            fi
-            "$artifacts_cli_python" -m pip install --disable-pip-version-check awscli==1.46.2
-            export ARTIFACTS_AWS="$artifacts_cli_aws"
+            "$RUNNER_TEMP/artifacts-awscli/bin/python" -m pip install --disable-pip-version-check awscli==1.46.2
+            export ARTIFACTS_AWS="$RUNNER_TEMP/artifacts-awscli/bin/aws"
           fi
-          python3 tools/artifacts/artifacts.py pull --jobs 16 docs
+          python3 tools/artifacts/artifacts.py pull --jobs 16 "${claim_inputs[@]}"
       - uses: actions/setup-python@v7
         with:
           python-version: '3.11'

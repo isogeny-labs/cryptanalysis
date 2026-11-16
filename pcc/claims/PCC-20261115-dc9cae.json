@@ -1,0 +1,21 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-15T08:11:19Z",
+ "id": "PCC-20261115-dc9cae",
+ "kind": "statement",
+ "producer": {
+  "commit": "ec575260c33bac305189a317cd5230d6a9e0b836",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "recompute",
+   "path": "experiments/prime-field-auxiliary-ic/rust-validation/consumer-checks.json",
+   "sha256": "8aa52c26bd647ad1fdd1b35c5b01c660465b348f31b255b2e49e0d3803df47d1"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Unsigned build-graph diagnostic; no new performance result, signed replay or execution proof.",
+ "statement": "The producer consumer-resolution receipt reports that locked Cargo metadata resolves the native auxiliary-IC dependency for the safe bindings and the binary-genus2 tool, after repairing its lockfile and sparse checkout consumers; no package versions were upgraded."
+}

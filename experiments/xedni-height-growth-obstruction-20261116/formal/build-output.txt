@@ -1,0 +1,16 @@
+⚠ [9039/9040] Built HeightGrowthObstruction (23s)
+warning: HeightGrowthObstruction.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: HeightGrowthObstruction.lean:92:6: `push_neg` has been deprecated. Prefer using `push Not` instead.
+If you'd rather continue using `push_neg` in your project, you can implement it as follows:
+```
+open Lean.Parser.Tactic in
+macro "push_neg" cfg:optConfig loc:(location)? : tactic =>
+  `(tactic| push $cfg:optConfig Not $[$loc]?)
+```
+info: HeightGrowthObstruction.lean:116:0: 'XedniHeightGrowthObstruction.integer_pair_relation_lower_bound' depends on axioms: [propext, Quot.sound]
+info: HeightGrowthObstruction.lean:117:0: 'XedniHeightGrowthObstruction.group_pair_relation_lower_bound' depends on axioms: [propext, Quot.sound]
+info: HeightGrowthObstruction.lean:118:0: 'XedniHeightGrowthObstruction.group_pair_relation_attained' depends on axioms: [propext]
+info: HeightGrowthObstruction.lean:119:0: 'XedniHeightGrowthObstruction.packing_criterion_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: HeightGrowthObstruction.lean:120:0: 'XedniHeightGrowthObstruction.no_relation_below_half' depends on axioms: [propext, Quot.sound]
+info: HeightGrowthObstruction.lean:121:0: 'XedniHeightGrowthObstruction.integer_pair_box_collision_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+Build completed successfully (9040 jobs).

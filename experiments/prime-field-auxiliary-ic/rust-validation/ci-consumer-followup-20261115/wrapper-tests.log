@@ -1,0 +1,76 @@
+   Compiling version_check v0.9.5
+   Compiling autocfg v1.5.1
+   Compiling serde_core v1.0.229
+   Compiling typenum v1.20.1
+   Compiling libc v0.2.191
+   Compiling generic-array v0.14.7
+   Compiling num-traits v0.2.19
+   Compiling zmij v1.0.23
+   Compiling serde v1.0.229
+   Compiling cfg-if v1.0.5
+   Compiling block-buffer v0.10.4
+   Compiling num-integer v0.1.47
+   Compiling crypto-common v0.1.7
+   Compiling serde_json v1.0.154
+   Compiling getrandom v0.4.3
+   Compiling digest v0.10.7
+   Compiling memchr v2.8.3
+   Compiling itoa v1.0.18
+   Compiling cpufeatures v0.2.17
+   Compiling sha2 v0.10.9
+   Compiling num-rational v0.4.2
+   Compiling getrandom v0.2.17
+   Compiling num-bigint v0.5.1
+   Compiling hashed-ecdl-tensor v0.1.0 (/workspace/cryptanalysis-pr/bindings/rust/hashed-ecdl-tensor)
+   Compiling hashed-ecdl-tensor v0.1.1 (/workspace/cryptanalysis-pr/crates/hashed-ecdl-tensor)
+    Finished `release` profile [optimized] target(s) in 27.17s
+     Running unittests src/lib.rs (crates/hashed-ecdl-tensor/target/release/build/hashed-ecdl-tensor/5278277aea6f771e/out/hashed_ecdl_tensor-5278277aea6f771e)
+
+running 33 tests
+test arithmetic::tests::limits_do_not_turn_unknown_primes_into_true_or_false ... ok
+test contraction::deformation::tests::packet_entries_keep_creation_time_representatives ... ok
+test contraction::packing::tests::conditional_expectations_do_not_assume_disjoint_ports ... ok
+test arithmetic::tests::exact_small_primality_and_square_roots ... ok
+test contraction::deformation::tests::integral_kernel_and_geometric_mode_series_match ... ok
+test arithmetic::tests::aks_cyclic_identity_and_large_prime_path ... ok
+test contraction::recursive::tests::tapered_hermite_recovers_the_constant_without_rounding ... ok
+test contraction::recursive::tests::weighted_enumeration_has_no_missing_or_repeated_monomials ... ok
+test contraction::tests::counts_and_prefix_witnesses_match_truth_tables ... ok
+test contraction::tests::functional_leaf_count_equals_complete_edge_enumeration ... ok
+test curve::tests::prime_order_certificate_and_point_encoding ... ok
+test contraction::recursive::tests::forced_small_packet_recursion_matches_independent_direct_contraction ... ok
+test encoding::tests::hash_membership_and_cofactor_clear_are_coordinate_predicates ... ok
+test encoding::tests::modular_words_are_canonical_and_invalid_inputs_have_no_witness ... ok
+test encoding::tests::point_network_handles_every_pair_and_rejects_counterfeit_outputs ... ok
+test encoding::tests::ripple_arithmetic_and_shared_word_copies ... ok
+test factoring::tests::complete_factorization_handles_primes_powers_and_identity ... ok
+test factoring::tests::invalid_inputs_and_exhaustion_never_become_zero_counts_or_partial_success ... ok
+test contraction::recursive::coupled_controls::coupled_nested_contraction_preserves_old_packet_creation_precision ... ok
+test network::tests::incomplete_graphs_and_duplicate_interfaces_are_rejected ... ok
+test network::tests::parallel_edges_pins_and_isolated_scalars ... ok
+test factoring::tests::tensor_divisor_counts_match_independent_trial_division_for_every_prefix ... ok
+test reduction::tests::exhausted_tensor_work_is_unknown_and_identity_has_an_exact_certificate ... ok
+test reduction::tests::inverse_hash_enumeration_matches_independent_subgroup_scan ... ok
+test encoding::tests::fourier_products_match_independent_integer_products_and_size_bounds ... ok
+test ring::tests::creation_precision_lifts_are_not_silently_ring_homomorphisms ... ok
+test ring::tests::units_and_interpolation_over_nonfields ... ok
+test weighted::tests::constants_unsat_and_limits_have_distinct_outcomes ... ok
+test weighted::tests::parity_check_profile_retains_zero_word_and_positive_distance ... ok
+test weighted::tests::triangle_maxcut_profile_has_two_constant_and_six_optimal_assignments ... ok
+test contraction::recursive::coupled_controls::coupled_packets_match_direct_counts_with_parallel_ports_and_quadratic_modes ... ok
+test reduction::tests::cofactor_tensor_projection_finds_only_subgroup_points has been running for over 60 seconds
+test reduction::tests::tensor_relation_pipeline_recovers_and_replays_without_scalar_leakage has been running for over 60 seconds
+test reduction::tests::cofactor_tensor_projection_finds_only_subgroup_points ... ok
+test reduction::tests::tensor_relation_pipeline_recovers_and_replays_without_scalar_leakage ... ok
+
+test result: ok. 33 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 203.57s
+
+     Running tests/structured_cli.rs (crates/hashed-ecdl-tensor/target/release/build/hashed-ecdl-tensor/56debb7bebed0e15/out/structured_cli-56debb7bebed0e15)
+
+running 3 tests
+test malformed_requests_and_resource_failures_emit_no_receipt ... ok
+test both_membership_paths_preserve_exact_empty_fibre_results ... ok
+test structured_consumer_counts_replays_and_rejects_a_rehashed_forgery ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 26.02s
+

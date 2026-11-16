@@ -1,0 +1,21 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T15:54:18Z",
+ "id": "PCC-20261116-d1cfbe",
+ "kind": "statement",
+ "producer": {
+  "commit": "25049631bc58ca848cbb00169eda193529d9fc87",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "recompute",
+   "path": "experiments/prime-field-auxiliary-ic/random-vs-special/timing-v2-20261116/validator.json",
+   "sha256": "74d402b918ba7654bcd11df7545a044af6b72c9af7e2720db45a99aa4083ddad"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Timing boundary/schema migration and producer consistency only; core arithmetic, native consumers and frozen snapshot unchanged.",
+ "statement": "On source 25049631bc58ca848cbb00169eda193529d9fc87, producer controls for version 2 auxiliary IC timing report ten targeted CLI tests and fifteen Python report-checker methods passing. Actual existing p=127 three-arm v2 reports and archived v1 reports align separately; format, strict CLI lint and fatal-warning core documentation on stable and Rust 1.78 pass. The v2 caller interval charges target-point validation and core/caller overhead once, rho charges its local scalar replay, and observed CLI costs separate the reference interval. Unknown upstream/process/independent replay/cold costs remain null. This is an unsigned accounting correction, not evidence of runtime improvement, a fresh 31/61-bit benchmark, independent execution or a qualified speedup."
+}

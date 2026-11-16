@@ -1,0 +1,23 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T12:04:36Z",
+ "id": "PCC-20261116-cdb264",
+ "kind": "statement",
+ "producer": {
+  "commit": "adb8a8519990a3b85bf72267b23e984bdf9a57f2",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/identical-committed-index-byte-custody-03/actual-complete-identical-inactive-index-records.json",
+    "sha256": "58eacfe433821b307685a97efb57e37c14698fc7fffe8b770f93f723ac022c42"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Two additional inactive whole committed Consumer index backups are byte-identical to already retained immutable before/original indices. Every old path/full bytes/mode preserved via whole hardlinks; original inode/mtime/size/SHA metadata retained. No current active index or source/raw/artifact/hold path deleted. Physical duplicate31990208B avoided in addition to earlierc6ee49; all old whole byte backups remain readable at original paths. Metadata storage only, no native/paid/scientific execution or standing promotion."
+}

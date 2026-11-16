@@ -1,0 +1,34 @@
+name: CT161 fixed-nu12 Weil polynomial obstruction
+on:
+  push:
+    branches:
+      - research/ct146-correction-torsion-contract-20261115
+    paths:
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/ct161_*'
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT160_FULL_CENSUS.json'
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT161_*'
+      - '.github/workflows/ct161-weil-simple.yml'
+  pull_request:
+    paths:
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/ct161_*'
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT160_FULL_CENSUS.json'
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT161_*'
+      - '.github/workflows/ct161-weil-simple.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  finite-certificate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@v4
+      - name: Recompute fixed CT160-bound Rabin certificate and negative controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          D=experiments/chained-transfer-public-target/norm-point-reuse-01
+          python3 -B "$D/ct161_weil_simple_certificate.py" > "$RUNNER_TEMP/ct161-normal.json"
+          python3 -O -B "$D/ct161_weil_simple_certificate.py" > "$RUNNER_TEMP/ct161-optimized.json"
+          cmp "$RUNNER_TEMP/ct161-normal.json" "$RUNNER_TEMP/ct161-optimized.json"
+          cat "$RUNNER_TEMP/ct161-normal.json"

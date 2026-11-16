@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/home/agent/.cargo/bin/cargo",
+    "test",
+    "--manifest-path",
+    "suite/Cargo.toml",
+    "--lib",
+    "cli::tools::ic::auxiliary::tests",
+    "-j",
+    "2"
+  ],
+  "exit_code": 0,
+  "output": "cli.log"
+}

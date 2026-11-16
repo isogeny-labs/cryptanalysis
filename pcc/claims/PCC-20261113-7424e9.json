@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-13T18:02:41Z",
+ "id": "PCC-20261113-7424e9",
+ "kind": "theorem",
+ "producer": {
+  "commit": "5b459ecae1fc469bf9c3bd5fdfe26a0ac0a09d86",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "8398fdcc028600f1c0d85e0fda122ae01f752d752f4de7f08ffe29e7a43daae1",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/gluing-maps/lean/GluingChain.lean",
+   "theorem": "GluingChain223.pullback_injective_from_actual_double_inverse"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Faithful partialstructural implications foractualgluingnative7c9bf4/written5f7e4c: bothdual2pairs implyboth4 withoutassumingchainconclusion; injectivityfromactualdoublinginverse onodddomain; positiveintegerdegreecolumnsum1. Bothunchangedoriginal4.35/4.34.1gatesPASS3/0trusted;functionallemmasnoaxioms,degreecolumnpropext/Classical.choice/Quot.sound. Actualgeometry/V4/Picard/Galois/halving/polarizationdegree interpretation remainwritten/open. Localbindingsunsigned;notfullformal/cost.",
+ "statement": "theorem pullback_injective_from_actual_double_inverse {A J : Type} (phi : A \u2192 J) (norm : J \u2192 A) (double half : A \u2192 A) (composition : \u2200 a, norm (phi a) = double a) (inverseOnDomain : \u2200 a, half (double a) = a) : \u2200 a b, phi a = phi b \u2192 a = b"
+}

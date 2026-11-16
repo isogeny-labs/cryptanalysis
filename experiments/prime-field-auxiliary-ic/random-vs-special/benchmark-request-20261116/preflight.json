@@ -1,0 +1,31 @@
+{
+  "request": "Run the matched random-versus-special auxiliary-curve benchmarks for p=2^31-1 and p=2^61-1",
+  "source_commit": "55170020a4e676378f302cdbc945eeb0aca47f6d",
+  "checkpoint_gate": {
+    "command": "bash scripts/checkpoint.sh gate",
+    "exit_code": 1,
+    "output": "checkpoint: no way to upload: no AWS profile 'ecc-challenges-new', no CHECKPOINT_UPLOAD_TOKEN, no /home/agent/.config/checkpoint/upload-token\ncheckpoint: cannot upload, so nothing was checkpointed\n"
+  },
+  "compute_probe": {
+    "command": "python3 cloud/fleet.py status",
+    "observed_exit_code": 1,
+    "observed_error": "RUNPOD_API_KEY is not set",
+    "scope": "Normal read-only client; no pod allocated or benchmark started"
+  },
+  "other_observations": {
+    "github_secret_listing_http_status": 403,
+    "modal_credentials_or_config_present": false,
+    "ssh_runner_configuration_present": false,
+    "configured_cloud_secrets": 0,
+    "cloud_and_cairn_workflows": "disabled_manually; not re-enabled",
+    "openresearch_route": "Evidence navigation, not a compute/admission replacement"
+  },
+  "remaining_preparation": {
+    "phase_accounting": "unimplemented",
+    "complete_eligible_61_bit_three_arm_panel": "unestablished",
+    "frozen_fresh_research_panel": "not admitted"
+  },
+  "benchmark_processes_launched": 0,
+  "measurements": null,
+  "qualified_speedup": null
+}

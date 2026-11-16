@@ -1,0 +1,47 @@
+name: CT145 Frobenius norm-point source canary
+on:
+  pull_request:
+    paths:
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/ct145_frobenius_trace_canary.py'
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT145_FROBENIUS_TRACE_AUDIT.md'
+      - '.github/workflows/ct145-frobenius-source.yml'
+  workflow_dispatch:
+
+jobs:
+  source-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - name: Check complete F25 witness, every point and Python -O parity
+        shell: bash
+        run: |
+          set -euo pipefail
+          target='experiments/chained-transfer-public-target/norm-point-reuse-01/ct145_frobenius_trace_canary.py'
+          python3 "$target" > /tmp/ct145-normal.json
+          python3 -O "$target" > /tmp/ct145-optimized.json
+          cmp /tmp/ct145-normal.json /tmp/ct145-optimized.json
+          python3 - <<'PY'
+          import json
+          with open('/tmp/ct145-normal.json', encoding='utf-8') as f:
+              x = json.load(f)
+          expected = {
+              'all_extension_points_checked': 36,
+              'counterexamples_with_rational_double': 6,
+              'point_order_distribution': {'1':1, '2':3, '3':8, '6':24},
+              'odd_order_safe_points': 9,
+              'point': [[4,1],[3,0]],
+              'twice': [[0,0],[1,0]],
+              'trace': [[2,0],[2,0]],
+              'nonzero_two_torsion_defect': [[4,0],[0,0]],
+              'standing': '[pcc:unverified]',
+          }
+          for k,v in expected.items():
+              if x.get(k) != v:
+                  raise SystemExit('CT145 fail-closed expected ' + k)
+          print('CT145 F25 exhaustive source checks passed; no q223 execution')
+          PY

@@ -1,0 +1,42 @@
+{
+  "accounting": "charge all 6656 source public-vector tests, 49 selected events and all 3969 rational candidate attempts; no same-target online-speed inference",
+  "caps_bits": [
+    32,
+    64,
+    96,
+    128,
+    160,
+    192,
+    256,
+    384,
+    512,
+    768,
+    1024
+  ],
+  "checks": [
+    "curve nonsingular",
+    "A,B p-integral and reduce to -1,-2",
+    "both rational points reduce to the frozen public U,V",
+    "rational aP+bR=O agrees with recorded status and implies public relation",
+    "centered shift equals parent precommitted curve",
+    "all failures and controls retained"
+  ],
+  "curve_rule": "for distinct finite x residues, f_i=y_i^2-x_i^3, A=(f1-f2)/(x1-x2), B=f1-A*x1; P=(x1,y1), R=(x2,y2) on E:y^2=x^3+Ax+B",
+  "event_rule": "all 17 source public-relation attempts plus first public nonrelation attempt per field,target pair (32 controls); one event per row; sort in source order",
+  "falsifiers": [
+    "rational relation on any of 17 positive events",
+    "any control rational relation",
+    "construction or reduction failure",
+    "independent replay discrepancy"
+  ],
+  "full_witness_score": "maximum numerator or denominator bit length of A,B,x1,y1,x2,y2",
+  "question": "Does a fixed 81-variant integer coordinate-shift grid produce a rational relation for any of the 17 public-hit vectors under two-image interpolation?",
+  "run_cap_seconds": 1200,
+  "schema": "xedni-two-image-shift-grid-protocol-v1",
+  "shift_rule": "for each selected event, lexicographic product (-1,0,1)^4 on x1,y1,x2,y2; add coordinate shift times p; 81 candidates per event",
+  "source_precommit_query_sha256": "d0505a62b5a651b63f35f026e4d3737c03878ebe989b419df62e2a9b1d037b25",
+  "source_precommit_result_sha256": "1b79f8998172276669f2309d56afe1f67a13a42b63cdd5d6e020886385500814",
+  "source_public": "experiments/xedni-large-order-height-admission-20261116/public.jsonl.gz",
+  "source_public_run_sha256": "cfaf591cd82e8b1a64c6551681faa18193bf6af2052d11b0a45bdaaded82668c",
+  "source_public_sha256": "5562631c1c073c3e21bd3c5f7dbeeeed2959ce3ff778d196369d1ec8da794b75"
+}

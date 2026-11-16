@@ -1,0 +1,16 @@
+{
+  "schema": "xedni-nonisomorphic-relation-protocol-v1",
+  "question": "What rational (1,2) relation yield follows from the qualified fixed rank-one nonisomorphic curve family under the complete ordered public-pair law?",
+  "screen_result_sha256": "f4a1f26f46bf5da81b23bce5092228abe846ba1100e478309ba8c08d5da0d0b4",
+  "post_result_sha256": "bd6c33d2db2e7c04f16362c0dc518de027ff89cbcbcf1fbe1744269d0401dd70",
+  "post_audit_sha256": "49ab10e1b864fd3ac2b18c43cb3bda63e5405bd71d0b6edddd9c3a4568e06580",
+  "direct_relation_theorem_sha256": "ab7e93ecca78edab04edb9047bd181bf830e686e4470aba3b602272dd857bf53",
+  "relation_vector": [1, 2],
+  "family": "base rational rank-one curve on all eight fields, plus post-screen proved rank-one nonbase curves (571,3) and (677,3)",
+  "coordinate_cap": 4,
+  "query_law": "all ordered (t1,t2) in [0,q)^2, R_i=Q-t_iG, Q=17G fixture",
+  "status_order": ["identity", "duplicate", "outside_cap", "admitted_nonrelation", "rational_relation"],
+  "stopping_rule": "complete census; retain each per-model status and all positive witnesses",
+  "accounting": "charge every candidate model membership check, all admitted distinct rational relation tests and matched public-vector tests; retain prior 24 rank-screen and two generator-proof setup attempts separately",
+  "claim_boundary": "retrospective finite-panel relation yield on qualified curves; public (1,2) test is directly available and no wall-time comparison is made"
+}

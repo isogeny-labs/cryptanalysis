@@ -1,0 +1,71 @@
+{
+  "source_commit": "3ddc32380f9b59e40efd4e7bc44c43ebdd501f59",
+  "scope": "Rust CLI and report hand-off on the existing public p=127 correctness fixture, not a research benchmark",
+  "checks": [
+    {
+      "name": "cli-tests",
+      "command": [
+        "cargo",
+        "+stable",
+        "test",
+        "--locked",
+        "--manifest-path",
+        "suite/Cargo.toml",
+        "--lib",
+        "cli::tools::ic::auxiliary::tests"
+      ],
+      "exit_code": 0,
+      "log": "cli-tests.log",
+      "sha256": "5b3c1945ab797299e124b0f9cced49c497c5c886903ccee043bd4ec6e4f9221b"
+    },
+    {
+      "name": "actual-report-alignment",
+      "command": [
+        "python3",
+        "experiments/prime-field-auxiliary-ic/random-vs-special/compare_reports.py",
+        "--auxiliary",
+        "/workspace/cryptanalysis-pr/experiments/prime-field-auxiliary-ic/random-vs-special/alignment-evidence/public-test-fixture/auxiliary.json",
+        "--same-base",
+        "/workspace/cryptanalysis-pr/experiments/prime-field-auxiliary-ic/random-vs-special/alignment-evidence/public-test-fixture/same_base.json",
+        "--random",
+        "/workspace/cryptanalysis-pr/experiments/prime-field-auxiliary-ic/random-vs-special/alignment-evidence/public-test-fixture/random.json",
+        "--output",
+        "/workspace/cryptanalysis-pr/experiments/prime-field-auxiliary-ic/random-vs-special/alignment-evidence/public-test-fixture/comparison.json"
+      ],
+      "exit_code": 0,
+      "log": "actual-report-alignment.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "cli-format",
+      "command": [
+        "rustfmt",
+        "--edition",
+        "2021",
+        "--check",
+        "suite/src/cli/tools/ic/auxiliary.rs"
+      ],
+      "exit_code": 0,
+      "log": "cli-format.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "cli-clippy",
+      "command": [
+        "cargo",
+        "+stable",
+        "clippy",
+        "--locked",
+        "--manifest-path",
+        "suite/Cargo.toml",
+        "--lib",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "log": "cli-clippy.log",
+      "sha256": "ec1ac19f2c2828c4e022d07394efc692265f271f5048f19bc92d9d5fcf99b33c"
+    }
+  ]
+}

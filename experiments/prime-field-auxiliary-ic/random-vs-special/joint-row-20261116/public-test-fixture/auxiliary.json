@@ -1,0 +1,91 @@
+{
+  "binary_blake3": "285753de50fdcce03e33dc38d965a5bcf081c581242ba284969b9aeaf89c3b76",
+  "certificate": null,
+  "configured_search": {
+    "max_millis": null,
+    "max_proof_nodes": 4194304,
+    "max_queries": 129,
+    "max_relations": 10000,
+    "profile_phases": true,
+    "seed": 43,
+    "walk_lanes": 8
+  },
+  "execution_class": "cpu-only",
+  "factor_base": {
+    "affine_points": 6,
+    "backend": "scalar",
+    "columns_blake3": "b2a2952cdac9af9111db4cfbd575c0c490b15cace6557677c2397589b8e07b5f",
+    "encoding": {
+      "kind": "auxiliary"
+    },
+    "folded_columns": 3,
+    "raw_roots": 8,
+    "selection_encoding": {
+      "kind": "auxiliary"
+    },
+    "terminal_coordinate": 38,
+    "uses_auxiliary_maps": true,
+    "uses_circuit": true
+  },
+  "field_bits": 7,
+  "gpu": {
+    "devices": []
+  },
+  "input_blake3": "fixture",
+  "mode": "bounded-relation-yield",
+  "online_call_wall_seconds": 0.000564265,
+  "online_exclusive_phases": {
+    "clock": "std::time::Instant",
+    "clock_overhead": "included-not-subtracted",
+    "clock_reads": 311,
+    "durations": {
+      "bookkeeping": 29097,
+      "certificate_replay": 0,
+      "decomposition": 244451,
+      "graph_recovery": 0,
+      "initialization": 203262,
+      "row_validation": 20187,
+      "target_walk": 65774
+    },
+    "independent_replay": null,
+    "schema": "auxiliary-ic-online-phases/v1",
+    "scope": "core-search-including-local-replay",
+    "total": 562771,
+    "unit": "ns"
+  },
+  "online_wall_seconds": 0.000562771,
+  "operation": "auxiliary-prime-field-ic",
+  "public": {
+    "P": [
+      3,
+      46
+    ],
+    "Q": [
+      6,
+      122
+    ],
+    "a": 2,
+    "b": 51,
+    "n": 109,
+    "p": 127
+  },
+  "qualification": "unverified producer diagnostic; no signed independent replay or admitted performance tier",
+  "qualified_speedup": null,
+  "sampler": "splitmix64-rejection-public-coefficient-walks",
+  "schema_version": 1,
+  "source_commit": "d95d582ca01739e138b605db6279a906d0dd230b",
+  "status": "complete",
+  "stop_reason": "QueryBudget",
+  "target_independent_preparation_seconds": 0.00007181,
+  "work": {
+    "backend": "scalar",
+    "circuit_queries": 129,
+    "duplicate_rows": 5,
+    "generated_targets": 136,
+    "lane_rounds": 17,
+    "matrix_rank": 0,
+    "proof_nodes": 0,
+    "queries": 129,
+    "relations": 8
+  }
+}

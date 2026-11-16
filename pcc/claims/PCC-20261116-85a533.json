@@ -1,0 +1,21 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T18:16:22Z",
+ "id": "PCC-20261116-85a533",
+ "kind": "statement",
+ "producer": {
+  "commit": "57573c770630e088c54246e3ff67de8ba930cc97",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "recompute",
+   "path": "experiments/prime-field-auxiliary-ic/rust-validation/main-artifact-integration-20261116/validator.json",
+   "sha256": "8aef74c61ed788354bd970197df5800eb9907ea9064e9121d53fb8179e93f63c"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "prime-field-auxiliary-ic-main-artifact-integration-20261116",
+ "statement": "On merge source 57573c770630e088c54246e3ff67de8ba930cc97, recorded 30 passing artifact regressions and successful wiring/ledger/artifact/bench-record checks, with the canonical 172-entry main ledger prefix followed by all 30 unmerged unsigned branch claim/note bodies. Git-object controls retain the Rust IC/timing source, prior evidence and frozen 2473-file snapshot. This is unsigned producer integration evidence only; no fresh benchmark or runtime advantage is claimed."
+}

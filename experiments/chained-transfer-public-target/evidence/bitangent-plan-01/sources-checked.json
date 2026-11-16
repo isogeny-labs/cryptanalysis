@@ -1,0 +1,70 @@
+{
+  "at": "2026-11-13T15:37:46.595736+00:00",
+  "sources": [
+    {
+      "source_id": "crypto@cbab2b5d:src/cryptanalysis/diem_quartic.rs",
+      "repo": "isogeny-labs/crypto",
+      "path": "src/cryptanalysis/diem_quartic.rs",
+      "commit": "cbab2b5d619ff489d4dea4148daf94adb46917d8",
+      "bytes": 108527,
+      "sha256": "afac324f3da5a35c051d6808a506e92bfc8a8f74ce4a544bb7ac20ca694b75ad",
+      "whole_source": "experiments/chained-transfer-public-target/evidence/bitangent-plan-01/primary-sources/src__cryptanalysis__diem_quartic.rs"
+    },
+    {
+      "source_id": "crypto@cbab2b5d:src/cryptanalysis/smith_kernel_coverage.rs",
+      "repo": "isogeny-labs/crypto",
+      "path": "src/cryptanalysis/smith_kernel_coverage.rs",
+      "commit": "cbab2b5d619ff489d4dea4148daf94adb46917d8",
+      "bytes": 27785,
+      "sha256": "20532f46ac68eb89643318a3ab66a39e64d5cfcc86b64eb36eab4b125fb86c0d",
+      "whole_source": "experiments/chained-transfer-public-target/evidence/bitangent-plan-01/primary-sources/src__cryptanalysis__smith_kernel_coverage.rs"
+    },
+    {
+      "source_id": "crypto@cbab2b5d:isogeny_algos/src/fpr.rs",
+      "repo": "isogeny-labs/crypto",
+      "path": "isogeny_algos/src/fpr.rs",
+      "commit": "cbab2b5d619ff489d4dea4148daf94adb46917d8",
+      "bytes": 13196,
+      "sha256": "3c47be46a2145a01a5060e1ea715f2d00aa4407fce53ac2881f38d4c37115f75",
+      "whole_source": "experiments/chained-transfer-public-target/evidence/bitangent-plan-01/primary-sources/isogeny_algos__src__fpr.rs"
+    },
+    {
+      "source_id": "crypto@cbab2b5d:isogeny_algos/src/field.rs",
+      "repo": "isogeny-labs/crypto",
+      "path": "isogeny_algos/src/field.rs",
+      "commit": "cbab2b5d619ff489d4dea4148daf94adb46917d8",
+      "bytes": 33559,
+      "sha256": "2ef63932b77597df24ddc6d1af2b5de39892379d8cb735418ec1b45c8def2047",
+      "whole_source": "experiments/chained-transfer-public-target/evidence/bitangent-plan-01/primary-sources/isogeny_algos__src__field.rs"
+    },
+    {
+      "source_id": "crypto@cbab2b5d:isogeny_algos/src/poly.rs",
+      "repo": "isogeny-labs/crypto",
+      "path": "isogeny_algos/src/poly.rs",
+      "commit": "cbab2b5d619ff489d4dea4148daf94adb46917d8",
+      "bytes": 36350,
+      "sha256": "615b2c306e2fd2a014de3f00984f56b6aa99e7e85121385944c47e3e01d7e005",
+      "whole_source": "experiments/chained-transfer-public-target/evidence/bitangent-plan-01/primary-sources/isogeny_algos__src__poly.rs"
+    }
+  ],
+  "scope": "Original CianiCore/Moore map, original Rabin-checked FpR and generic polynomialroots; Smith lagrangians are a hyperelliptic S8 representation, not an actual plane-quartic torsion-coordinate API",
+  "KB": {
+    "tools_discovery": "no research-kb/ecdb tools",
+    "actual_fallbacks": [
+      {
+        "cwd": "/workspace/crypto",
+        "command": "scripts/research-kb search 'Ciani quartic bitangent geometric two torsion'",
+        "exit": 127,
+        "whole_tool_output": "research-kb: no executable found; set RESEARCH_KB_BIN or put research-kb on PATH\n"
+      },
+      {
+        "cwd": "/workspace/cryptanalysis",
+        "command": "scripts/research-kb search 'Frobenius stable maximal isotropic genus three two isogeny'",
+        "exit": 127,
+        "whole_tool_output": "research-kb: no executable found; set RESEARCH_KB_BIN or put research-kb on PATH\n"
+      }
+    ],
+    "scope": "access limit only; no absence or novelty inference"
+  },
+  "atlas": "locked AGENTSVLT1/8edec422; no key/unlock/read/write"
+}

@@ -1,0 +1,19 @@
+{
+  "source_commit": "25049631bc58ca848cbb00169eda193529d9fc87",
+  "argv": [
+    "python3",
+    "experiments/prime-field-auxiliary-ic/random-vs-special/compare_reports.py",
+    "--auxiliary",
+    "experiments/prime-field-auxiliary-ic/random-vs-special/timing-v2-20261116/public-test-fixture/auxiliary.json",
+    "--same-base",
+    "experiments/prime-field-auxiliary-ic/random-vs-special/timing-v2-20261116/public-test-fixture/same_base.json",
+    "--random",
+    "experiments/prime-field-auxiliary-ic/random-vs-special/timing-v2-20261116/public-test-fixture/random.json",
+    "--output",
+    "experiments/prime-field-auxiliary-ic/random-vs-special/timing-v2-20261116/public-test-fixture/comparison.json"
+  ],
+  "explicit_environment": {},
+  "exit_code": 0,
+  "timeout_seconds": 300,
+  "scope": "producer correctness/development check, not a benchmark"
+}

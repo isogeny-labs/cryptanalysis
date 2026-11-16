@@ -1,0 +1,23 @@
+ring source=(integer,2305843009213693951),(z1j2,z1j3,z2j2,z2j3,x2,x1),dp;
+short=0;
+poly targetX=43598074954396689;
+option(redSB);
+ideal inputIdeal=(x1-(0))*((z1j2)-(x1-(0))-(0))-(1),
+(z1j2-(2))*((z1j3)-(z1j2-(2))-(6))-(8),
+(z1j3-(8589934598))*((1222397198013728658)-(z1j3-(8589934598))-(25769803782))-(103079215168),
+(x2-(0))*((z2j2)-(x2-(0))-(0))-(1),
+(z2j2-(2))*((z2j3)-(z2j2-(2))-(6))-(8),
+(z2j3-(8589934598))*((1222397198013728658)-(z2j3-(8589934598))-(25769803782))-(103079215168),
+((x1)-(x2))^2*(targetX)^2-2*(((x1)+(x2))*((x1)*(x2)+(0))+2*(3))*(targetX)+((x1)*(x2)-(0))^2-4*(3)*((x1)+(x2));
+ideal G=std(inputIdeal);
+print("@@GB_DONE@@");
+print("@@DIM@@"+string(dim(G)));
+ideal H=G;
+int ii;
+for(ii=1;ii<=size(H);ii++){
+print("@@POLY_BEGIN@@");
+print(string(H[ii]));
+print("@@POLY_END@@");
+}
+print("@@DONE@@");
+quit;

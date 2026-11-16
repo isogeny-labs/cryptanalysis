@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-14T01:52:16Z",
+ "id": "PCC-20261114-a9a7af",
+ "kind": "theorem",
+ "producer": {
+  "commit": "b57b1024d45dd87821ad6b8ba4cf4169ac12a1bb",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "449ac50c42cc267be962e7f410f299e2df4f7afc4f667e9919e55dc5bea2a6a6",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/norm-assisted-ic/lean/NormAssistedSampling.lean",
+   "theorem": "NormAssistedSampling223.prepared_sample_exact"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Faithful conditional norm-assisted sampling for native9bc5e6:scalar equivariance/PhiNorm=[2]/ell2773073-torsion and genuine scalar action laws derive Phi(inv2NormG)=G using2*1386537=ell+1;actual prepared Phi(u)=G plus scalar equivariance derives exactallr samples;genuine groupcancellation/nonzeroG excludesomittedinverse2. Both unchanged original4.35/4.34.1 gatesPASS3/zero trusted;no customaxioms/holes/nativeevaluation. ActualPicard/ellsubtypes/groupactions/geometricPhiNorm/scalar-equivalence remainexplicitwritten-nativebridges;no completecost/formalgeometry/signedexecution claim.",
+ "statement": "theorem prepared_sample_exact {A J : Type} (Phi : A \u2192 J) (actA : Nat \u2192 A \u2192 A) (actJ : Nat \u2192 J \u2192 J) (equivariant : \u2200 n a, Phi (actA n a) = actJ n (Phi a)) (u : A) (G : J) (prepared : Phi u = G) (r : Nat) : Phi (actA r u) = actJ r G"
+}

@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+[[ ${1:-} == get ]] || exit 2
+case ${2:-} in nodepool.karpenter.sh|nodes|pods|resourcequota) ;; *) exit 2;; esac
+case_dir=$(mktemp -d "$LP_ADMISSION_CAPTURE/call.XXXXXXXX") || exit 3
+printf '%s\0' "$@" > "$case_dir/entire-argv.paths0"
+"$LP_ADMISSION_ACTUAL_KUBECTL" "$@" > "$case_dir/entire.stdout" 2> "$case_dir/entire.stderr"
+code=$?
+printf '%s\n' "$code" > "$case_dir/actual.exit"
+cat "$case_dir/entire.stdout"
+cat "$case_dir/entire.stderr" >&2
+exit "$code"

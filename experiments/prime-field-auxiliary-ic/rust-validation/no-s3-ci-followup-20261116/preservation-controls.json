@@ -1,0 +1,81 @@
+{
+  "source_commit": "ad063e04e14d721ae1263a63c7c2ed5e07c2932e",
+  "base": "77c4a3110ac4967abe06934bf6c4cd725fb4e285",
+  "independent": false,
+  "workflow_preservation": [
+    {
+      "path": ".github/workflows/analysis.yml",
+      "normalized_non_bootstrap_configuration_sha256": "88a1b00358815194af8da8c655c2d27cdb455bee0a0a181cf2dc63b601150c64",
+      "preserved": true,
+      "only_command_change": "Existing exclusion regexp moved byte-exact to tracked file."
+    },
+    {
+      "path": ".github/workflows/artifacts.yml",
+      "normalized_non_bootstrap_configuration_sha256": "e05798fe2569ae11ba26cc3d74f4b53a00ef865d754d4336c802c87690cfc523",
+      "preserved": true,
+      "only_command_change": null
+    },
+    {
+      "path": ".github/workflows/binary-genus2-cover.yml",
+      "normalized_non_bootstrap_configuration_sha256": "ed1a9e31dc3cd86e174bbc9d9431d9b9589e25026dd17e6ce67d724bc94a6988",
+      "preserved": true,
+      "only_command_change": null
+    }
+  ],
+  "format_selection": {
+    "tracked_paths": 70624,
+    "extra_examples": 12,
+    "output_sha256": "e732d2f8a602dc48febe33bfcece67bc0b896d1bd45f7974ec4ea75883995c2e",
+    "byte_identical": true,
+    "argv_before": [
+      "grep",
+      "-Ev",
+      "(^|/)generated/|^experiments/sage-ic-campaign/[^/]+/(source|baseline|candidate-v1)/|^experiments/koblitz-pair-claw-20260929/runs/([^/]+/)*(sources[-a-z0-9]*|control-sources|full-sources)/"
+    ],
+    "argv_after": [
+      "grep",
+      "-Ev",
+      "-f",
+      ".clang-format-exclusions"
+    ]
+  },
+  "unchanged_source_objects": [
+    {
+      "path": "crates/prime-field-auxiliary-ic",
+      "git_object": "eff8d1a8c2910e34fd6ccd70aea52f4dc456c31b"
+    },
+    {
+      "path": "suite/src/cli/tools/ic",
+      "git_object": "b4b2ef3d8591cecc2387b85daa9872c59a3f8855"
+    },
+    {
+      "path": "src/curve.c",
+      "git_object": "89c4813615aeacc7b4a4b814cab77e592e8506e0"
+    },
+    {
+      "path": "experiments/prime-field-auxiliary-ic/snapshot",
+      "git_object": "2298425e1d3568a1687830e29a390f7c601dd6e8"
+    },
+    {
+      "path": "experiments/prime-field-auxiliary-ic/random-vs-special",
+      "git_object": "40c1dd6c0987e7b6e272cddbf96b95af066a6e53"
+    },
+    {
+      "path": "research/binary_genus2_cover_20261014",
+      "git_object": "3621d762892fbf37ee75f3c97a47ebbb806c5834"
+    },
+    {
+      "path": "tools/binary-genus2-cover",
+      "git_object": "5162a0a6823d693a1dc36ee28c248fe75462222f"
+    },
+    {
+      "path": "tools/ecdlp-surfaces",
+      "git_object": "e72393c36274b75455e1c575e345532ec1f4ea96"
+    }
+  ],
+  "native_comparison_input": {
+    "path": "research/binary_genus2_cover_20261014/runs/run-20261014T1442Z/identities/map_identity.json",
+    "tracked_git_blob_sha256": "aa4b5be68a800b7eb9ba783bb7009c5f8ef3772ea83b457ee166995100496614"
+  },
+  "scope": "Configuration/source preservation and actual grep equivalence only; native/Lean/static-analysis executions await hosted CI. No benchmark."
+}

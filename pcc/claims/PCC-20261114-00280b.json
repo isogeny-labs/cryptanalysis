@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-14T20:23:26Z",
+ "id": "PCC-20261114-00280b",
+ "kind": "theorem",
+ "producer": {
+  "commit": "a50fe267f3debf8c835bbad1efc988b44bb8c5d0",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "fa2efd5db6632f63dc452014f2622e08865db735c6917e8c8bbe51896bacfcf6",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/norm-arithmetic-storage-02/lean/CounterStorage.lean",
+   "theorem": "CounterStorage.checked_update"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Structural functions on CURRENTLY INDEXED keys and Nat counters, conditional on injective canonical index, representation consistency and sound cached pair. Proves cache resolution and both bounded-add guard/canonical bump equivalence. Dynamic insertion, Vec bounds, actual u64/checked_add, TLS, bucket algorithm and full Rust program/observer semantics remain native/written bridges. Both original434/435 gates audit6declarations:2namedroots+4generatedhelpers, zero trusted. No aggregate novelty/performance/signedexecution claim.",
+ "statement": "theorem checked_update {K : Type} [DecidableEq K] (index : K \u2192 Nat) (values : Nat \u2192 Nat) (canonical : K \u2192 Nat) (cache : Option (K \u00d7 Nat)) (key : K) (amount limit : Nat) (injective : \u2200 a b, index a = index b \u2192 a = b) (consistent : \u2200 a, values (index a) = canonical a) (sound : \u2200 a i, cache = some (a, i) \u2192 i = index a) : ((values (resolve index cache key) + amount \u2264 limit) \u2194 (canonical key + amount \u2264 limit)) \u2227 (\u2200 a, bump values (resolve index cache key) amount (index a) = bump canonical key amount a)"
+}
