@@ -29,6 +29,13 @@ python3 -O experiments/chained-transfer-public-target/norm-point-reuse-01/ct151_
 cmp /tmp/ct151-normal.json /tmp/ct151-opt.json
 ```
 
+
+## Conditional quotient-Jacobian corollary
+
+If the root chain's **proposed degree-eight polarized quotient** is in fact a **k-defined isogeny** `A -> J` to the complete destination Jacobian `J/k`, then the zero-Hom obstruction extends to **the whole J**, not merely to one named elliptic factor: `Hom_k(E,J)=0` for every elliptic `E/k`. A k-isogeny becomes invertible in `Hom^0=Hom tensor Q`; hence `Hom^0(E,J) = Hom^0(E,A)=0`, and torsion-freeness yields the integral Hom result. Equivalently compose any purported nonzero E->J map with a k-defined quasi-inverse isogeny J->A to get a forbidden nonzero E->A map.
+
+This corollary **requires independent certification of the actual k-defined A~J isogeny and both reported E'/K group counts**. If the purported quotient is only a K-map, lacks the claimed source, or the target is a genuinely different Jacobian isogeny class, this corollary does **not** apply. Nonhomomorphic algorithms with fully proved inverse semantics are also outside its scope. None of those missing hypotheses was certified by CT151. [pcc:unverified]
+
 ## Still necessary for the owner's complete-solve goal
 
 The q223 source is over K, not the prime field; neither current conditional factor can be used as a direct prime-field elliptic *homomorphic* target via Res without contradicting the Frobenius certificate. Verify real q223 point counts and K/k identification independently; do not infer correctness from reported integer counts. Independently replay 695/701 original/reuse Jacobian outputs, and run the existing separately admitted C169/C13a/C13b/D cold benchmark with setup, transfer, LA, verification, peak RSS, uncertainty, full rho/BSGS/IC references and signed PCC. In parallel, choose an **actual E/Fp source** (p31/NIST route), prove a nonzero subgroup-injective explicit transfer to a valid destination and measure complete cold single-target cost. A genuine prime-field bridge is not yet exhibited here.
