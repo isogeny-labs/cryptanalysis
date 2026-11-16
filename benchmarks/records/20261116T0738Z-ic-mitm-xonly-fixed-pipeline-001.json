@@ -1,0 +1,169 @@
+{
+  "branch": "codex/ic-trial32-20261115",
+  "closed_utc": "2026-11-16T07:53:33+00:00",
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "cloud/modal_run.py",
+        "run",
+        "--image",
+        "cuda",
+        "--gpu",
+        "L4",
+        "--cpu",
+        "4",
+        "--memory",
+        "8",
+        "--timeout",
+        "900",
+        "--out",
+        "experiments/ic-mitm-xonly-20261115/timing-001",
+        "--detach",
+        "--",
+        "python3",
+        "experiments/ic-mitm-xonly-20261115/run_prepared.py"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "started_utc": "2026-11-16T07:39:34+00:00",
+      "wall_s": 10.76
+    }
+  ],
+  "commit": "9e8ac0d520eb57cbf5f962d5b9ff46520a927d80",
+  "commit_dirty": true,
+  "created_utc": "2026-11-16T07:38:39+00:00",
+  "curve_uid": null,
+  "entries": [
+    "experiments/ic-mitm-xonly-20261115"
+  ],
+  "host": {
+    "cpu": "arm",
+    "cpus_online": 14,
+    "hostname": "Mac.attlocal.net",
+    "isolation": "unstated",
+    "platform": "macOS-27.2-arm64-arm-64bit-Mach-O"
+  },
+  "id": "20261116T0738Z-ic-mitm-xonly-fixed-pipeline-001",
+  "metrics": [
+    {
+      "baseline": 1.0,
+      "better": "higher",
+      "n": 6,
+      "name": "n15_xonly_cold_mitm_ratio",
+      "note": "Raw same-target paired full cold ratio; unqualified gVisor",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ratio",
+      "value": 1.0136998393700327
+    },
+    {
+      "baseline": 1.0,
+      "better": "higher",
+      "n": 6,
+      "name": "n18_xonly_cold_mitm_ratio",
+      "note": "Raw same-target paired full cold ratio; unqualified gVisor",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ratio",
+      "value": 1.2967009905945448
+    }
+  ],
+  "problem": "ecdlp:binary_ic_batch_fixed_instances",
+  "raw": [
+    {
+      "bytes": 1444030,
+      "path": "experiments/ic-mitm-xonly-20261115/timing-001/arms.jsonl",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/ae/ae0f0d35e821fb8ca6ea552956f9f5ee77fe582bb396abcccf4e12f18645785d",
+      "sha256": "ae0f0d35e821fb8ca6ea552956f9f5ee77fe582bb396abcccf4e12f18645785d",
+      "uploaded": true
+    },
+    {
+      "bytes": 500,
+      "path": "experiments/ic-mitm-xonly-20261115/timing-001/calibration-0.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/5f/5f2b7edfe85465053568f31179a3a1529fd137a64721c9f5c71f1eab416f4346",
+      "sha256": "5f2b7edfe85465053568f31179a3a1529fd137a64721c9f5c71f1eab416f4346",
+      "uploaded": true
+    },
+    {
+      "bytes": 497,
+      "path": "experiments/ic-mitm-xonly-20261115/timing-001/calibration-1.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/45/455440d873c0178fecaca22a757186db3234d1067006b1bb6fbe1bd5ed34e933",
+      "sha256": "455440d873c0178fecaca22a757186db3234d1067006b1bb6fbe1bd5ed34e933",
+      "uploaded": true
+    },
+    {
+      "bytes": 33722,
+      "path": "experiments/ic-mitm-xonly-20261115/timing-001/host.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/2d/2d87743f2d44ca877513b35ddb764da2dc1204ff28c14f1674ca5bb7e3070d9d",
+      "sha256": "2d87743f2d44ca877513b35ddb764da2dc1204ff28c14f1674ca5bb7e3070d9d",
+      "uploaded": true
+    },
+    {
+      "bytes": 2895,
+      "path": "experiments/ic-mitm-xonly-20261115/timing-001/preparation-receipt.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/ec/ec2343a98f1a0aabceeaf45ca06fb482f4eec915f299d26505f9ae9b1a0c1cc4",
+      "sha256": "ec2343a98f1a0aabceeaf45ca06fb482f4eec915f299d26505f9ae9b1a0c1cc4",
+      "uploaded": true
+    },
+    {
+      "bytes": 2298352,
+      "path": "experiments/ic-mitm-xonly-20261115/timing-001/probe",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/39/3938dbe7a93c4616bfd111ece580c334005e0422dd4f7c785bae3fb1d11a5ccc",
+      "sha256": "3938dbe7a93c4616bfd111ece580c334005e0422dd4f7c785bae3fb1d11a5ccc",
+      "uploaded": true
+    },
+    {
+      "bytes": 220268,
+      "path": "experiments/ic-mitm-xonly-20261115/timing-001/references.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/4f/4fea39874ef6c7c63dfd3345f5b9c0a23c58054db77829f17036639cfb64dd85",
+      "sha256": "4fea39874ef6c7c63dfd3345f5b9c0a23c58054db77829f17036639cfb64dd85",
+      "uploaded": true
+    },
+    {
+      "bytes": 105,
+      "path": "experiments/ic-mitm-xonly-20261115/timing-001/summary.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/ef/ef56ef9ee3b527af42ca71556c0c203db9fe67bd8f8a37d79195929d96553d0e",
+      "sha256": "ef56ef9ee3b527af42ca71556c0c203db9fe67bd8f8a37d79195929d96553d0e",
+      "uploaded": true
+    },
+    {
+      "bytes": 1422128,
+      "path": "experiments/ic-mitm-xonly-20261115/timing-001/triples.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/d8/d814f8d8222e6ca90e136f756b554f05c07c8bfc1b4faa2e9b21f1db64be5e6e",
+      "sha256": "d814f8d8222e6ca90e136f756b554f05c07c8bfc1b4faa2e9b21f1db64be5e6e",
+      "uploaded": true
+    },
+    {
+      "bytes": 75435,
+      "path": "experiments/ic-mitm-xonly-20261115/analysis.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/a3/a3dc403c878507b1a908b1eee2cd416848626079f99428e3b30e855b423c784f",
+      "sha256": "a3dc403c878507b1a908b1eee2cd416848626079f99428e3b30e855b423c784f",
+      "uploaded": true
+    },
+    {
+      "bytes": 11483,
+      "path": "experiments/ic-mitm-xonly-20261115/independent-arithmetic-timing001.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/86/86249d1aef1444294d6447e13caac4fa87dbfde48429daa3819a5abecabb677d",
+      "sha256": "86249d1aef1444294d6447e13caac4fa87dbfde48429daa3819a5abecabb677d",
+      "uploaded": true
+    }
+  ],
+  "repo": "cryptanalysis",
+  "reports": {
+    "pdf": "experiments/ic-mitm-xonly-20261115/REPORT.pdf",
+    "png": [],
+    "svg": [
+      "experiments/ic-mitm-xonly-20261115/cold-costs.svg",
+      "experiments/ic-mitm-xonly-20261115/flow.svg"
+    ]
+  },
+  "schema": "bench.record/v1",
+  "session": null,
+  "slug": "ic-mitm-xonly-fixed-pipeline-001",
+  "status": "invalid",
+  "summary": "All12 triples/36 IC+24 rho replayed; shared positive calibration and query/matrix counts match, all A/A pass. Raw original/x-only cold ratios1.013700 N15,1.296701 N18. Unqualified. Original model counts setup additions while native arms price full setup; do not treat modeled ratios as equivalent complete-cost comparisons.",
+  "validation": "experiments/ic-mitm-xonly-20261115/analysis.json"
+}
