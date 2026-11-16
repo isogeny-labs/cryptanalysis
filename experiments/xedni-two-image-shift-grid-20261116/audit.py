@@ -18,11 +18,23 @@ public=[json.loads(line) for line in gzip.decompress((S/'public.jsonl.gz').read_
 parent=[json.loads(line) for line in gzip.decompress((PRE/'queries.jsonl.gz').read_bytes()).splitlines()]
 parent_map={(r['p'],r['target_index'],r['query_index']):r for r in parent}
 assert len(public)==6656 and len(parent)==512
-blob=(H/'candidates.jsonl.gz').read_bytes()
-assert len(blob)==R['candidate_gzip_bytes']
-assert hashlib.sha256(blob).hexdigest()==R['candidate_gzip_sha256']
-raw=gzip.decompress(blob)
+amendment=json.loads((H/'storage-amendment.json').read_text())
+assert amendment['measurement_changed'] is False
+assert amendment['raw_sha256']==R['candidate_raw_sha256']
+assert amendment['original_gzip_sha256']==R['candidate_gzip_sha256']
+chunks=[]
+for part in amendment['parts']:
+    packed=(H/part['path']).read_bytes()
+    assert len(packed)==part['bytes']
+    assert hashlib.sha256(packed).hexdigest()==part['sha256']
+    chunk=gzip.decompress(packed)
+    assert chunk.count(b'\n')==part['lines']
+    chunks.append(chunk)
+raw=b''.join(chunks)
 assert hashlib.sha256(raw).hexdigest()==R['candidate_raw_sha256']
+original=gzip.compress(raw,compresslevel=9,mtime=0)
+assert len(original)==R['candidate_gzip_bytes']
+assert hashlib.sha256(original).hexdigest()==R['candidate_gzip_sha256']
 rows=[json.loads(line) for line in raw.splitlines()]
 assert len(rows)==3969
 
