@@ -1,0 +1,15 @@
+digraph VectorPoint {
+ graph [rankdir=LR,bgcolor="white",pad=.2,nodesep=.35,ranksep=.4,fontname="Helvetica",fontsize=14,label="Identical batch16 states and inverse values; different point formulas",labelloc=t];
+ node [shape=box,style="rounded,filled",fillcolor="#eef4fa",color="#627e97",fontname="Helvetica",fontsize=11];
+ edge [color="#627e97",arrowsize=.7,fontname="Helvetica",fontsize=10];
+ states [label="One public Q\n16 coefficient states\nP_i = [a_i]G + [b_i]Q"];
+ inverse [label="Each method independently\nbatch-inverts the denominators\nSame initialization and query law"];
+ scalar [label="Batch16 reference\nScalar lambda, x and y formulas",fillcolor="#e6edf6"];
+ vector [label="Vector16 candidate\nFour-lane lambda, x and y\nAVX2 + ordinary PCLMUL",fillcolor="#dcefe7",color="#3c826a"];
+ check [label="Same full points and guards\nSame rows, rank and work\nScalar group check"];
+ fallback [label="Exceptional / unsupported / tail\nComplete ordinary fallback\nActual vector-pair counts",fillcolor="#fff1d7",color="#a47e37"];
+ states -> inverse;
+ inverse -> scalar;inverse -> vector;
+ scalar -> check;vector -> check;
+ vector -> fallback [style=dashed,arrowhead=none];
+}

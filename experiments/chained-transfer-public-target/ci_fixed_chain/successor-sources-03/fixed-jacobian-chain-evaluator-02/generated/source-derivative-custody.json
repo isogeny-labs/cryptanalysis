@@ -1,0 +1,55 @@
+{
+  "protocol": "25d29e published67a90fd7 before code",
+  "literal_source_members": [
+    {
+      "source": "fixed-jacobian-chain-evaluator-01/src/lib.rs",
+      "sha256": "71e12fc1d1737d768978914c68d787403cf0479ee4d15944717274dc46f2df48",
+      "destination": "derived/lib.rs",
+      "explicit_changes": [
+        {
+          "before": "    pub degree169_elliptic_evaluation: u64,",
+          "after": "    pub degree169_elliptic_evaluation: u64,\n    pub transported_norm_doubling: u64,",
+          "occurrences": 1
+        },
+        {
+          "before": "    pub fn transfer_entry(&self, input: &Entry, to: usize) -> Result<Entry> {",
+          "after": "    fn norm_point(&self, to: usize, point: Pt<ER>) -> Pt<ER> {\n        self.bump(|c| c.transported_norm_doubling += 1);\n        let target = &self.geometry.models[to].quadratic;\n        descend_point(curve::pmul(&target.f, &target.curve, &point, 2))\n    }\n    pub fn transfer_entry(&self, input: &Entry, to: usize) -> Result<Entry> {",
+          "occurrences": 1
+        },
+        {
+          "before": "        let class = self.target_phi(to, self.gamma(input.domain, to, lifted)?)?;\n        let norm = descend_point(self.gamma(input.domain, to, lift(input.norm))?);",
+          "after": "        let point = self.gamma(input.domain, to, lifted)?;\n        let class = self.target_phi(to, point)?;\n        let norm = self.norm_point(to, point);",
+          "occurrences": 1
+        },
+        {
+          "before": "        let norm =\n            descend_point(self.gamma(1, to, self.gamma(input.domain, 1, lift(input.norm))?)?);",
+          "after": "        let norm = self.norm_point(to, point);",
+          "occurrences": 1
+        },
+        {
+          "before": "        let corrected_class = self.target_phi(to, self.gamma(from, to, lifted)?)?;",
+          "after": "        let point = self.gamma(from, to, lifted)?;\n        let corrected_class = self.target_phi(to, point)?;",
+          "occurrences": 1
+        },
+        {
+          "before": "        let norm = descend_point(self.gamma(from, to, lift(input.norm))?);",
+          "after": "        let norm = self.norm_point(to, point);",
+          "occurrences": 1
+        }
+      ]
+    },
+    {
+      "source": "fixed-jacobian-chain-evaluator-01/src/rational.rs",
+      "sha256": "d8f2693fb8d835ce197d9d10c79e8cefb7e62dc370a4d8bda6a61482c0cdfe9c",
+      "destination": "derived/rational.rs",
+      "explicit_changes": []
+    },
+    {
+      "source": "fixed-jacobian-chain-evaluator-01/src/tests.rs",
+      "sha256": "ea271e9a0ad9c95a1c84f3c76a7c7194c9a663ffe6e12a2ef1b60e2410eb2723",
+      "destination": "derived/tests.rs",
+      "explicit_changes": []
+    }
+  ],
+  "scope": "Only the six declared source replacements; rational composition and entire unfiltered test body literal unchanged."
+}

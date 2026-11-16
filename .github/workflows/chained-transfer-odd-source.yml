@@ -1,0 +1,105 @@
+name: Actual odd degree13 source-isogeny replay
+on:
+  pull_request:
+    paths:
+      - 'experiments/chained-transfer-public-target/**'
+      - '.github/workflows/chained-transfer-odd-source.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'experiments/chained-transfer-public-target/**'
+      - '.github/workflows/chained-transfer-odd-source.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  odd-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      RUSTUP_TOOLCHAIN: 1.99.1
+      ELAN_TOOLCHAIN: leanprover/lean4:v4.35.0
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          path: cryptanalysis
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            experiments/chained-transfer-public-target
+            tools/lean
+            tools/pcc
+            pcc/keyring.json
+            pcc/claims
+            .github/workflows/chained-transfer-reference.yml
+            .github/workflows/chained-transfer-public-target.yml
+            .github/workflows/chained-transfer-odd-source.yml
+            .github/workflows/chained-transfer-chain-kernels.yml
+            .github/workflows/chained-transfer-gluing.yml
+            .github/workflows/chained-transfer-kernels.yml
+            .github/workflows/chained-transfer-bitangents.yml
+            .github/workflows/chained-transfer-two-primary.yml
+            .github/workflows/chained-transfer-completed-v2.yml
+            .github/workflows/chained-transfer-completed-descent.yml
+            .github/workflows/pcc-gate.yml
+      - id: producer_pin
+        name: Read the exact original producer revision
+        run: |
+          pin=$(cat cryptanalysis/experiments/chained-transfer-public-target/upstream-commit.txt)
+          [[ $pin =~ ^[0-9a-f]{40}$ ]] || exit 2
+          echo "revision=$pin" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          repository: isogeny-labs/crypto
+          ref: ${{ steps.producer_pin.outputs.revision }}
+          persist-credentials: false
+          path: crypto
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            research/chained_jacobian_transfers_20261110/genus3-prime-descent
+            research/chained_jacobian_transfers_20261110/evidence/genus3-primary-01/cases.json
+            research/chained_jacobian_transfers_20261110/evidence/genus3-cli-fixtures-01
+            research/chained_jacobian_transfers_20261110/evidence/genus3-ramification-panel-01/all-historical-cases.json
+            research/chained_jacobian_transfers_20261110/evidence/genus3-lean-bindings-01/claims.json
+            research/chained_jacobian_transfers_20261110/G3_DESCENT_PROTOCOL.md
+            research/chained_jacobian_transfers_20261110/G3_DESCENT_DERIVATION.md
+            research/chained_jacobian_transfers_20261110/G3_MODEL_TRANSPORT_ADDENDUM.md
+            research/chained_jacobian_transfers_20261110/G3_RAMIFICATION_COVERAGE_ADDENDUM.md
+            research/chained_jacobian_transfers_20261110/G3_PROOF_MAP.md
+            research/quartic_n4_la_20261021/common.rs
+            research/quartic_n4_la_20261021/ghs.rs
+            research/quartic_n4_la_20261021/ic.rs
+            research/quartic_n4_la_20261021/solver.rs
+            isogeny_algos
+            src/cryptanalysis/diem_quartic.rs
+            src/cryptanalysis/plane_quartic_pic.rs
+            src/cryptanalysis/smith_kernel_coverage.rs
+            src/hash/sha256.rs
+            tools/lean
+            tools/pcc
+            pcc/keyring.json
+            pcc/claims
+            .github/workflows/genus3-prime-descent.yml
+      - name: Install pinned native and original proof toolchains
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.99.1 --profile minimal --component rustfmt
+          curl -fsSL --connect-timeout 15 --max-time 120 https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o "$RUNNER_TEMP/elan-init.sh"
+          sh "$RUNNER_TEMP/elan-init.sh" -y --no-modify-path --default-toolchain "$ELAN_TOOLCHAIN"
+          "$HOME/.elan/bin/elan" toolchain install leanprover/lean4:v4.34.1
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Replay exact degree13 maps, both13 compositions and six partial proofs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/n4-odd-source-build-cache
+        run: |
+          set -euo pipefail
+          timeout 2100 bash cryptanalysis/experiments/chained-transfer-public-target/ci_odd/check.sh crypto "$RUNNER_TEMP/n4-odd-source-output"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: odd-source-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/n4-odd-source-output
+          if-no-files-found: ignore

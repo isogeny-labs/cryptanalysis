@@ -1,0 +1,13 @@
+digraph chain {
+  graph [rankdir=LR,bgcolor="transparent",nodesep="0.30",ranksep="0.35",pad="0.10"];
+  node [shape=box,style="rounded,filled",fillcolor="#e8f1fa",color="#285b88",fontname="DejaVu Sans",fontsize=11];
+  edge [color="#285b88",fontname="DejaVu Sans",fontsize=10,arrowsize=0.7];
+  a [label="Jac(T0)\n12,317 classes"];
+  b [label="Jac(T1)\n12,317 classes"];
+  c [label="Jac(T2)\n12,317 classes"];
+  a -> b [label="Psi1 / adjoint\nnorm 7",dir=both];
+  b -> c [label="Psi2 / adjoint\nnorm 7",dir=both];
+  outer [label="Compressed forward / reverse\nouter norms → one quarter → elliptic chain → outer pulls\nboth full roundtrips [49]",fillcolor="#e8f5e9",color="#397449"];
+  a -> outer [style=dashed,color="#397449"];
+  outer -> c [style=dashed,color="#397449",dir=both];
+}

@@ -1,0 +1,6 @@
+{
+  "failed_first_binding_actual_exit": 1,
+  "cause": "Consumer original auditor is pinned to4.34.1 and uses Lean.ofReduceBool/Lean.trustCompiler/String.trim absent under4.35.0. Module itself builds under both versions, root original435 gate passes. First canonical pin435 was wrong for the consumer auditor.",
+  "correction": "Canonical module pin4.34.1; caller uses original434 toolchain. No gate/audit/source theorem mutation. Both gate baselines retained.",
+  "scope": "caller/version mismatch, not a rejected mathematical theorem"
+}

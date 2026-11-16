@@ -1,0 +1,15 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T12:12:48Z",
+ "id": "PCC-20261116-20c68d",
+ "kind": "statement",
+ "producer": {
+  "commit": "9f036d8815bbb29c151c7e9ee378cf3026629744",
+  "model": "",
+  "session": "ic-rational-current-20261115"
+ },
+ "proofs": [],
+ "schema": "pcc.claim/v1",
+ "scope": "suite/examples/ic_affine_pipeline_probe.rs",
+ "statement": "Source timing audit finds that existing probe context_ns plus RunReport.wall_seconds excludes part of scope-exit teardown: RunReport wall is read before local factor-base/matrix drop, and the boxed oracle is dropped after probe serialization. RhoResult.wall_ns is also read before its local DP/jump-table teardown. Earlier raw plots labelled complete cold therefore cover a narrower recorded computation window; complete cold and primary online timing are not established by those fields. Preserve all frozen results and fix explicit timing windows before a fresh comparison. Whole-guest Callgrind Ir includes process teardown and is unaffected. Unsigned source audit."
+}

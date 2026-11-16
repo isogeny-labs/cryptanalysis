@@ -1,0 +1,51 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T10:35:34Z",
+ "id": "PCC-20261116-8447f9",
+ "kind": "execution",
+ "producer": {
+  "commit": "1fefcf457288cc6bf9ae1cdc692773220a4e5e34",
+  "model": "",
+  "session": "01a1dc01-cc02-7381-a21c-3b12d7b79441"
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "docs/audits/2026-11-16-interval-fit-bounds.json",
+    "sha256": "767ce7a33aeb6987d263eacb31ed75716aecb8cc166178971f7a8ff63b44b305"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "docs/audits/2026-11-16-interval-fit-evidence/before.log",
+    "sha256": "3774cb52931da92fa662cd78a6d9cd9adb73f1fb89f149b09d8afa5755da40e4"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "docs/audits/2026-11-16-interval-fit-evidence/after.log",
+    "sha256": "9ae8a9044d7bf359fc93479b68b7a6b78b5db395d990f800547940935228e4c5"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "docs/audits/2026-11-16-interval-fit-evidence/ctest.log",
+    "sha256": "a28f4c6ffe1dea583a949d96ea6c1e02fa8646938d23862f5b4e369de01c100d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "docs/audits/2026-11-16-interval-fit-evidence/original-controls.log.gz",
+    "sha256": "1ce34b28605f154f76dc3c78d53e2eb1f6206a58cc3286a688f55e28117b8d38"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "native-interval-fit-bounds",
+ "statement": "Recorded native interval-fitting boundary reproducer, independent arithmetic controls and sanitizer validation; unsigned evidence only."
+}

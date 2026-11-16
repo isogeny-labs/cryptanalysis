@@ -1,0 +1,37 @@
+{
+  "at": "2026-11-14T13:31:26.438723+00:00",
+  "consumer": "5ac59843a0cc6546b0f007c0bd2f79212d169c43",
+  "producer": "3d49af7f3d0a28e76b79e4825c9d2324e85853d2",
+  "protocols": "6dc948 andNORM_HALVING_REPLAY_PROTOCOL_01; source5ac59843 published beforefull",
+  "source_inputs": 929,
+  "source_plus_manifest": 930,
+  "driver_output": "/workspace/scratch/ct74-norm-halving-driver-02",
+  "derived_cache": "/workspace/scratch/ct74-norm-halving-driver-02-build-cache",
+  "cache_scope": "fresh target outside BOTH captured output roots; ordinary registry shared, not benchmark",
+  "timeout_s": 2400,
+  "phases": "21ordered:19zero/twoactual101;everytee0",
+  "acceptance": "native4/all4wholeJSON/no masks/two unchanged original10gates/ninebindings/all finalguards",
+  "admissions": [
+    {
+      "name": "missing-tool",
+      "actual_exit": 2,
+      "output_created": false
+    },
+    {
+      "name": "wrong-producer-head",
+      "actual_exit": 2,
+      "output_created": false
+    },
+    {
+      "name": "output-in-source",
+      "actual_exit": 2,
+      "output_created": false
+    },
+    {
+      "name": "existing-cache",
+      "actual_exit": 2,
+      "output_created": false
+    }
+  ],
+  "scope": "bounded correctness development/independent fresh source replay; no performance measurement"
+}

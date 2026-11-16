@@ -1,0 +1,49 @@
+{
+  "protocol": "ORIGINAL_FULL_GROUP_CHAIN_PROTOCOL_01, claim1539b6, publishedd4f9d6b before code",
+  "literal_sources": [
+    {
+      "source": "odd-product-maps/src/adapter.rs",
+      "whole_source_sha256": "8529f13565dd8017d542c833b46020b80cb40266e81406fcc3e7008efc605579",
+      "explicit_nominal_or_module_patches": [
+        [
+          "chained_n4_odd_product_models",
+          "chained_n4_paired_fourth_preflight::models",
+          3
+        ]
+      ],
+      "generated": "adapter.rs",
+      "generated_sha256": "89bf7d914b918b7607750ae22b82187c3df294f13c1c5bcb4c85f314b470d041"
+    },
+    {
+      "source": "odd-product-maps/src/norm.rs",
+      "whole_source_sha256": "1badf36600c737dd68b5823102659f3e2dca7463b51c47a246dab7819e1283bd",
+      "explicit_nominal_or_module_patches": [],
+      "generated": "norm.rs",
+      "generated_sha256": "1badf36600c737dd68b5823102659f3e2dca7463b51c47a246dab7819e1283bd"
+    },
+    {
+      "source": "beta-complete-evaluator/src/lib.rs",
+      "whole_source_sha256": "190939a81ecdd4564aa44d94a8dac23c99c9782a4ba6a584764b1e1b2164a383",
+      "explicit_nominal_or_module_patches": [
+        [
+          "use chained_n4_odd_product_maps::Adapter;",
+          "use crate::Adapter;",
+          1
+        ],
+        [
+          "pub mod complete;\n",
+          "",
+          1
+        ],
+        [
+          "\n#[cfg(test)]\nmod tests;\n\n#[cfg(test)]\nmod complete_tests;\n\n#[cfg(test)]\nmod exceptional_tests;\n",
+          "\n",
+          1
+        ]
+      ],
+      "generated": "quadratic.rs",
+      "generated_sha256": "e4d6e9302a00ea6b148bb630764aef54cabdc091b58d8da42e886574bfa877e2"
+    }
+  ],
+  "scope": "No mathematical formula changed. Old variant retained; old tests and complete wrapper remain in their original crate."
+}

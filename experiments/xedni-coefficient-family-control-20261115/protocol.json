@@ -1,0 +1,16 @@
+{
+  "schema": "xedni-coefficient-family-control-protocol-v1",
+  "question": "For a frozen primitive two-point coefficient family on the same ordered public-point panels, how many admissible reduced relations occur, how do vectors overlap, and when does the first relation occur?",
+  "parent_band_result_sha256": "edbe3a808aa86054c00f15a5ae40814ed2f8452c4316abbe68f41a62f2219b49",
+  "parent_arithmetic_source_sha256": "28dd3e4553bfcedc3c646d5d8d284b137e5494ed3ebec5533d0961f1ea5337a8",
+  "reference_fixed_vector_result_sha256": "60b20179d8f9ce74db573cb577eb5e460024ff4e25dd84a20bc83b2ec4b95265",
+  "fields": [47, 101, 191, 211, 251, 281, 347, 349],
+  "base_curve_coefficients": [0, 0, 0, -1, -2],
+  "query_order": "lexicographic t1,t2 in [0,r)^2; P_i=Q-t_i G",
+  "admissibility": "P1 and P2 are nonidentity and distinct, matching the parent panels",
+  "coefficient_family": "all ordered (a,b) with 1<=a<=3, 1<=abs(b)<=3, gcd(a,abs(b))=1; lexicographic a,b order; includes (1,-1) as zero-sum control",
+  "max_queries": 30008,
+  "outputs": "per-vector relation counts and first events, union count and first event, per-query hit multiplicity, public group tests, independent modular-equation audit",
+  "falsifiers": ["a nonzero-sum vector fails scalar replay", "a zero-sum vector yields target-scalar information under the frozen law", "distinct primitive directions overlap on an admissible query", "the fixed (1,2) count or first event disagrees with the earlier control"],
+  "claim_boundary": "exact finite-panel public-group control; this protocol does not execute rational-lift searches for new coefficient vectors or compare wall time"
+}
