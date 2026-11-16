@@ -136,6 +136,30 @@ def main():
     assert 'Build completed successfully (9045 jobs)' in box_build
     for name in ('coeff_box_card','bounded_vector_card_le','bounded_vector_fraction_le','coefficient_height_needed'):
         assert f"'XedniPublicFirstLargeHoldout.{name}' depends on axioms: [propext, Classical.choice, Quot.sound]" in box_build
+    recovery_source=(formal/'PublicRecovery.lean').read_text()
+    assert all(name in recovery_source for name in ('theorem public_relation_iff_recovered_scalar',
+                                                   'theorem public_relation_target_unique'))
+    assert not any(token in recovery_source for token in ('sorry','admit','sorryAx','native_decide'))
+    recovery_build=(formal/'public-recovery-build-output.txt').read_text()
+    assert 'Build completed successfully (9046 jobs)' in recovery_build
+    recovery_build_normalized=re.sub(r'\s+',' ',recovery_build)
+    for name in ('public_relation_iff_recovered_scalar','public_relation_target_unique'):
+        assert f"'XedniPublicFirstLargeHoldout.{name}' depends on axioms: [propext, Classical.choice, Quot.sound]" in recovery_build_normalized
+    recovery_protocol=json.loads((HERE/'public-recovery-protocol.json').read_text())
+    recovery_result=json.loads((HERE/'public-recovery-result.json').read_text())
+    recovery_audit_protocol=json.loads((HERE/'public-recovery-audit-protocol.json').read_text())
+    recovery_audit=json.loads((HERE/'public-recovery-audit.json').read_text())
+    assert recovery_protocol['parent_result_sha256']==sha(HERE/'result.json')
+    assert recovery_protocol['lean_source_sha256']==sha(formal/'PublicRecovery.lean')
+    assert recovery_protocol['source_sha256']==sha(HERE/'public_recovery.py')
+    assert recovery_result['protocol_sha256']==sha(HERE/'public-recovery-protocol.json')
+    assert recovery_result['status']=='PASS' and recovery_result['total_public_hits_replayed']==142
+    assert recovery_result['fixture_used_for_recovery'] is False
+    assert recovery_audit_protocol['recovery_result_sha256']==sha(HERE/'public-recovery-result.json')
+    assert recovery_audit_protocol['audit_source_sha256']==sha(HERE/'public_recovery_audit.py')
+    assert recovery_audit['protocol_sha256']==sha(HERE/'public-recovery-audit-protocol.json')
+    assert recovery_audit['status']=='PASS' and recovery_audit['total_unique_solutions_checked']==142
+    assert [r['unique_solutions_checked'] for r in recovery_audit['rows']]==[f['counts']['public_hits'] for f in result['fields']]
     for old,row in zip(result['fields'],post['rows'],strict=True):
         q=old['subgroup_order']
         assert row['field_prime']==old['field_prime'] and row['subgroup_order']==q
