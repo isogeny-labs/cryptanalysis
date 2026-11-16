@@ -1,0 +1,22 @@
+{
+  "schema": "xedni-public-coordinate-lift-protocol-v1",
+  "question": "How often does a bounded public-x search lift subgroup points to the fixed rational curve, and which short two-point relations survive?",
+  "input_selection_result_sha256": "b18127c392b904559ac12512642ab0322eaa3b9b72a61f45dacf4a2fb8c9a25c",
+  "fields": "all eight selected fields in input order",
+  "base_curve_coefficients": [0, 0, 0, -1, -2],
+  "rational_point": [2, 2],
+  "subgroup_generator": "m times reduction of (2,2), m=ord((2,2) mod p)/q",
+  "target": "Q=17G, fixture scalar used only for replay",
+  "query_law": "complete t in [0,q), R_t=Q-tG; pair law is independent ordered t1,t2 in [0,q)^2",
+  "point_admission": "both R_t nonidentity and distinct",
+  "lift_rule": {
+    "centered_x": "x if x<=floor(p/2) else x-p",
+    "shift_order": [0, -1, 1, -2, 2, -3, 3, -4, 4, -5, 5, -6, 6, -7, 7, -8, 8, -9, 9, -10, 10],
+    "candidate_x": "centered_x + shift*p",
+    "acceptance": "first candidate with x^3-x-2 a nonnegative integer square and integer y sign reducing to public y",
+    "probe_charge": "each inspected candidate x, including negative values and failed squares"
+  },
+  "relation_family": "all ordered (a,b) with 1<=a<=3, 1<=abs(b)<=3, gcd(a,abs(b))=1; lexicographic a,b",
+  "raw_rows": "one deterministic gzip JSONL file per field, including every failed point lift",
+  "claim_boundary": "public-coordinate fixed-window lift yield and short-relation diagnostics; no timing or claim of complete rational lifting"
+}
