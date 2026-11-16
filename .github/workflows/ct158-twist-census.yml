@@ -1,11 +1,16 @@
 name: CT158 cubic-source twist point census
 on:
+  push:
+    branches:
+      - research/ct146-correction-torsion-contract-20261115
   pull_request:
     paths:
       - 'experiments/chained-transfer-public-target/norm-point-reuse-01/ct158_*'
       - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT158_*'
       - '.github/workflows/ct158-twist-census.yml'
   workflow_dispatch:
+permissions:
+  contents: read
 jobs:
   independent-twist-census:
     runs-on: ubuntu-latest
