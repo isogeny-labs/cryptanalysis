@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-13T08:53:08Z",
+ "id": "PCC-20261113-69969a",
+ "kind": "theorem",
+ "producer": {
+  "commit": "c3b8d74cb356be7a1a10ae8778831f1661d506cc",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "57ceac487a0889367d9657e901a703df94a7228ef9dc46965357fbeea8a74f3f",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-reference/g3-norm-checker/lean/CanonicalNorm.lean",
+   "theorem": "G3CanonicalNorm.reduced_cycle_changes_nonzero_repeated_point"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Independent canonical-class norm conditional quotient pushforward/section choice/multiplicity/geometric surjectivity implication and odd subgroup recovery. Actual divisor groups, Picard functors, function-field norm/principal divisor bridge, quotient algebra identification, covers/reducers and geometric product-pullback surjectivity remain written/native bridges. SAME source accepted separately by original producer4.35 and matching consumer4.34.1 gates;no verifier/trust change. Local exact bindings remain unsigned until main CI verdict;no full formal geometry or computational advantage.",
+ "statement": "theorem reduced_cycle_changes_nonzero_repeated_point {E : Type} [IntModule E] (p q : E) (nonzero : p\u22600) : (2 : Int) \u2022 p+q\u2260p+q"
+}

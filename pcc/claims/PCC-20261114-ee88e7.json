@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-14T18:27:22Z",
+ "id": "PCC-20261114-ee88e7",
+ "kind": "theorem",
+ "producer": {
+  "commit": "f0167e430befd4304b170689e8caebcbdabbc6ad",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "95c5e1b009df8c826fa44af834c038a7e7d27c09134975747863f4bd463a6231",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/nondual13-next-preflight/lean/NonsquareResidues.lean",
+   "theorem": "NonsquareResidues.base_square_nonroots"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "For each canonical residue x:Fin223, its Nat square modulo223 is neither12 nor24. Explicit finite residue arithmetic only; primality/field encoding/odd-degree tower law/polarized Jacobian geometry and program correspondence are separate. Both unmodified434/435 gates pass1theorem0trusted. Failed01 default-recursion attempt preserved. No novel aggregate claim.",
+ "statement": "theorem base_square_nonroots : \u2200 x : Fin 223, (x.val * x.val) % 223 \u2260 12 \u2227 (x.val * x.val) % 223 \u2260 24"
+}

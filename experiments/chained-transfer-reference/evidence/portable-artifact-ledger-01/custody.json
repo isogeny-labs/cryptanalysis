@@ -1,0 +1,21 @@
+{
+  "at": "2026-11-12T15:14:16.990516+00:00",
+  "failed_local_head": "1f13482f034362e02b8878c68648e09d78ee5f87",
+  "failed_tree": "c0ddc63cb3aad7a7046bf894f7db9120e17484a1",
+  "blocked_path": "pcc/ledger.jsonl",
+  "bytes_at_failed_head": 66660,
+  "threshold": 65536,
+  "objects_published_before_failure": false,
+  "refs_moved_before_failure": false,
+  "config_fix": "exact keep path pcc/ledger.jsonl;all other config fields/keep entries preserved",
+  "sibling_crypto_existing_policy": "already keeps this exact ledger path",
+  "required_reader": "tools/pcc/pcc.py ledger verify and PCC gate read Git history prefix at stable path",
+  "data_controls": "otherpccjsonl/researchjsonl/log/archive still requirestore above64KiB",
+  "policy_unit_tests": 2,
+  "tests_exit": 0,
+  "ledger_chain_prefix": "pass",
+  "append_only_ledger_unmodified_except_newclaims": true,
+  "retain_failed_commit_as_parent": true,
+  "no_crypto_or_driver_source_change": true,
+  "standing": "unsigned governance/inputclassification;notartifactgatebypassornewmath"
+}

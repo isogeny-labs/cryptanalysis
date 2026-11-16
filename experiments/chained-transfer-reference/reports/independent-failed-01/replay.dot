@@ -1,0 +1,1 @@
+digraph run { graph[rankdir=LR,bgcolor="white",pad=.2]; node[shape=box,style="rounded,filled",fillcolor="#edf3f7",fontname="DejaVu Sans",fontsize=11]; a[label="32 standalone tests\nPASS"]; b[label="Missing committed Cargo.lock\nexit101",fillcolor="#fbe7e5"]; c[label="Algebra tests + proofs\nNOT RUN",fillcolor="#f2f2f2"]; a->b->c; }

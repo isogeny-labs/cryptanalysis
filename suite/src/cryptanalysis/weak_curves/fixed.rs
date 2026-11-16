@@ -189,15 +189,23 @@ mod tests {
     fn check<const N: usize>(p: &BigUint) {
         let m = ModN::<N>::new(p).expect("odd modulus of N limbs");
         let mut rng = StdRng::seed_from_u64(0xf1_0ed_u64 ^ N as u64);
-        let mut draw = |rng: &mut StdRng| {
+        let draw = |rng: &mut StdRng| {
             let mut bytes = vec![0u8; 8 * N + 8];
             rng.fill_bytes(&mut bytes);
             BigUint::from_bytes_le(&bytes) % p
         };
         let edge = [BigUint::from(0u32), BigUint::one(), p - 1u32, p - 2u32];
         for i in 0..400 {
-            let a = if i < 16 { edge[i % 4].clone() } else { draw(&mut rng) };
-            let b = if i < 16 { edge[i / 4].clone() } else { draw(&mut rng) };
+            let a = if i < 16 {
+                edge[i % 4].clone()
+            } else {
+                draw(&mut rng)
+            };
+            let b = if i < 16 {
+                edge[i / 4].clone()
+            } else {
+                draw(&mut rng)
+            };
             let (la, lb) = (m.load(&a).unwrap(), m.load(&b).unwrap());
             assert_eq!(m.store(&m.mul(&la, &lb)), (&a * &b) % p, "mul");
             assert_eq!(m.store(&m.add(&la, &lb)), (&a + &b) % p, "add");

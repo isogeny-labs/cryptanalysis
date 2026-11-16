@@ -1,0 +1,12 @@
+digraph recovery {
+ graph [rankdir=TB,bgcolor="white",fontname="Helvetica",ranksep=0.24];
+ node [shape=box,style="rounded,filled",fillcolor="#edf5ff",fontname="Helvetica",fontsize=11,margin="0.15,0.10"];
+ edge [color="#526277",fontname="Helvetica",fontsize=9];
+ input [label="Frozen public tree card + native script\nInput/binary/engine hashes before call\nNo generating tuple passed to solver"];
+ native [label="Native std(dp), then std(lp)\nM=1 actual-field four-point controls only\n4 CPU s / 5 wall s / 768 MiB per process"];
+ recover [label="Strict structured transcript\nRational roots + bounded triangular assignments\nOriginal equations + membership + signed affine sum"];
+ check [label="Complete singleton-base oracle\nMember: 1 checked sum; nonmember: 0\nBoth controls match; absence not certified"];
+ full [label="454-variable four-coset system\nPublic native script prepared; solve not run\nNeeds isolated runner and live budget readback",style="rounded,filled,dashed",fillcolor="#fff4d7",color="#a36d00"];
+ input -> native; native -> recover; recover -> check;
+ input -> full [style=dashed,label="separate full-base experiment"];
+}

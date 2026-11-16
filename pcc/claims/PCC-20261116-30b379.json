@@ -1,0 +1,15 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T11:44:41Z",
+ "id": "PCC-20261116-30b379",
+ "kind": "statement",
+ "producer": {
+  "commit": "6423536055233d63fa25ccb62097823317c8cc94",
+  "model": "",
+  "session": "ic-rational-current-20261115"
+ },
+ "proofs": [],
+ "schema": "pcc.claim/v1",
+ "scope": "experiments/ic-native-profile-20261116",
+ "statement": "Instruction profile20261116-114025-772f stops before capability preflight or target profiling because callgrind_annotate --version prints3.22.0 but returns255 while the driver requires0. The1.7-second attempt has11raw outputs and zero target captures. This is a version-metadata admission error, not an arithmetic result or native performance observation. Preserve failed record and change only version-recording/attempt output handling in a new attempt."
+}

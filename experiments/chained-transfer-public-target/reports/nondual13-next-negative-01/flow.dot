@@ -1,0 +1,5 @@
+digraph actual {graph[rankdir=TB,bgcolor="white",ranksep=.35,nodesep=.3];node[shape=box,style=rounded,fontname="DejaVu Sans",fontsize=9];edge[fontname="DejaVu Sans",fontsize=9];
+E2[label="E2 / K\nN4-E13x13-short-\n2088c9e2bd44dfea66094a767e22a1f2ebffd\nd4e963244cb320d93408e58b4b5"];E3[label="E3 / K\nN4-E13x13x13-short-\n5a8415bfa6d76cb096d0baa1f2d623d04552c\nc70068c72d54656632fc933aa86"];{rank=same;E2;E3;}E2->E3[label="actual gamma3 / delta3: each degree13\nboth signed[13] identities",dir=both,color="#287b80"];
+G2[label="same G2 / original fixed route\nHLP(2,1): D12 nonsquare\nsupplied-source identification unsupported",color="#a14b35"];
+G3[label="transported G3 / new fixed route\nHLP(0,0): D24 nonsquare\nsupplied-source identification unsupported",color="#a14b35"];
+{rank=same;G2;G3;}E2->G2[style=dotted,label="retained intermediate negative"];E3->G3[style=dotted,label="mask fixed BEFORE model builder"];G2->G3[style=dashed,label="same kernel transported\nno Jacobian map constructed",color="#a14b35"];}

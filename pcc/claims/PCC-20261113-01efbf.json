@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-13T22:29:55Z",
+ "id": "PCC-20261113-01efbf",
+ "kind": "theorem",
+ "producer": {
+  "commit": "3baa6d0a44973ecbb5dd1db0b5a724e235727e78",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "180391f01bbc85d0afbeb239a3b656424e41478e1a3776a9f6bea4b29aee829d",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/new-target-ic/lean/NewTargetIC.lean",
+   "theorem": "NewTargetIC223.reflected_checked_target_solution"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Faithful structural implications for actuale869bd/written1e65f0:targetsolution[k]H(G)=H(Q) reflects to original source through genuine scalar equivariance and leftinverse,without an assumed sourceanswer;common affine offset cancels in IC log ratio from genuine additive/scalar log,actualQ=kG and denominatorunit. Both unchanged original4.35/4.34.1 gatesPASS2/zero trusted;reflectionnoaxioms,ringratio only standardpropext/Classical.choice/Quot.sound. No customaxiom/holes/nativeeval. ActualPicard/scalar/recovery interpretation,relationvector global-log extension,completeness and exact same-origin nativecompatibility remainwritten/open;no completecost/S/ratio/advantage/signedexecution claim",
+ "statement": "theorem reflected_checked_target_solution {A J : Type} (H : A \u2192 J) (recover : J \u2192 A) (actA : Nat \u2192 A \u2192 A) (actJ : Nat \u2192 J \u2192 J) (roundtrip : \u2200 a, recover (H a)=a) (equivariant : \u2200 n a, H (actA n a)=actJ n (H a)) (G Q : A) (k : Nat) (checked : actJ k (H G)=H Q) : actA k G=Q"
+}

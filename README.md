@@ -1,5 +1,7 @@
 # cryptanalysis
 
+[OpenResearch setup and agent integration](docs/openresearch.md).
+
 The Rust API includes a [hashed-factor-base elliptic-curve tensor
 implementation](docs/hashed-ecdl.md) for the Bochum v0.2 paper: compact
 encodings, exact contraction and certificate replay. Correctness controls
