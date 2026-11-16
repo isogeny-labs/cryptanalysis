@@ -1,0 +1,15 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T10:30:01Z",
+ "id": "PCC-20261116-cc0f2e",
+ "kind": "statement",
+ "producer": {
+  "commit": "d4e3ef64685445c640bb01553589ca03a3fb4ee8",
+  "model": "",
+  "session": "ic-rational-current-20261115"
+ },
+ "proofs": [],
+ "schema": "pcc.claim/v1",
+ "scope": "suite/src/cryptanalysis/koblitz_fast.rs; suite/src/cryptanalysis/ic_boundary.rs; suite/src/cryptanalysis/ic_framework/batch_mitm.rs; experiments/ic-prefix-pclmul-20261116/PROTOCOL.md",
+ "statement": "Compatibility repair adds ordinary128-bit PCLMUL products with four-lane AVX2 reduction and retains separately guarded VPCLMUL loops. Explicit backend pair counters added. Local ARM pipeline test, library/probe clippy and probe build pass; new x86 narrow execution and timing remain untested. New frozen scalar/vector by64/1024 chunk factorial protocol includes same-allocation native preflight before target comparisons. Unsigned producer checks only."
+}

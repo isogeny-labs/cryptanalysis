@@ -1,0 +1,15 @@
+    Checking chained-transfer-reference v0.1.0 (/workspace/cryptanalysis/experiments/chained-transfer-reference)
+error[E0433]: cannot find `reverse_pipeline` in `prime_field_pipeline`
+  --> src/seven_successor_chain.rs:18:39
+   |
+18 |     prime_dual: prime_field_pipeline::reverse_pipeline::ReversePipeline,
+   |                                       ^^^^^^^^^^^^^^^^ could not find `reverse_pipeline` in `prime_field_pipeline`
+
+error[E0433]: cannot find `reverse_pipeline` in `prime_field_pipeline`
+  --> src/seven_successor_chain.rs:35:47
+   |
+35 |             prime_dual: prime_field_pipeline::reverse_pipeline::ReversePipeline::new(false),
+   |                                               ^^^^^^^^^^^^^^^^ could not find `reverse_pipeline` in `prime_field_pipeline`
+
+For more information about this error, try `rustc --explain E0433`.
+error: could not compile `chained-transfer-reference` (bin "chained-transfer-reference" test) due to 2 previous errors

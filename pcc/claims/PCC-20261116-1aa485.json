@@ -1,0 +1,15 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T15:27:42Z",
+ "id": "PCC-20261116-1aa485",
+ "kind": "statement",
+ "producer": {
+  "commit": "38f54eb69ada2a28cb4e6eada4bd143721b88630",
+  "model": "",
+  "session": "ic-rational-current-20261115"
+ },
+ "proofs": [],
+ "schema": "pcc.claim/v1",
+ "scope": "constant reduction comparison-interface amendment; local controls only",
+ "statement": "Added explicit constant and ordinary-PCLMUL dynamic control modes with the same vector16 query schedule; supported option tests include3/4 and reject5. Preserved prior2pass1stale validation-test failure. Amended local26framework tests and1constant/narrow equivalence test passed,10development-fixture ARM fallback routing controls passed, strict x86musl library/probe Clippy passed. No new native performance result; first native kernel preparation remains binary51a949de with separate bindings. New timing requires an amended frozen native binary."
+}

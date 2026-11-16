@@ -1,0 +1,16 @@
+[package]
+name = "ic-f2m-three-limb-validation"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[features]
+f2m-karatsuba3 = []
+f2m-fixed-reduction = []
+
+[dependencies]
+num-bigint = "=0.4.8"
+
+[lints.clippy]
+# Match the existing suite policy for indexed field/linear-algebra loops.
+needless_range_loop = "allow"

@@ -1,0 +1,80 @@
+import Init.Grind.Ring.Basic
+import Init.Grind.Module.Basic
+
+/-! Algebra for the public-target and representation bridges. These statements
+do not define the actual divisor/Picard groups, prove correctness of N4's
+relation solver, or identify the completed finite-cover maps with these
+modules. The concrete geometric bridges remain written/native obligations.
+No scalar witness is an argument of the runtime public-target API. -/
+set_option autoImplicit false
+namespace PublicTargetBridge
+open Lean.Grind
+
+theorem raw_reference_change
+    {D : Type} [IntModule D] (canonical oldP newP divisor : D) :
+    (divisor-(canonical-newP))-(divisor-(canonical-oldP))=newP-oldP := by
+  grind
+
+theorem same_actual_class_translation
+    {D : Type} [IntModule D] (canonical oldP newP divisor : D) :
+    (divisor-(canonical-newP))-(newP-oldP)=divisor-(canonical-oldP) := by
+  grind
+
+theorem exceptional_basepoint_translation
+    {D : Type} [IntModule D] (oldP newP point : D) :
+    (newP-point)-(newP-oldP)=oldP-point := by
+  grind
+
+theorem translated_key_bridge_addition
+    {D : Type} [IntModule D] (x y delta : D) :
+    ((x+delta)-delta)+((y+delta)-delta)=x+y := by
+  grind
+
+theorem affine_offset_cancels_in_two_differences
+    {K : Type} [CommRing K] (a b d k : K) :
+    (a+d+b)-(a+b)=d ∧ (a+k*d+b)-(a+b)=k*d := by
+  grind
+
+theorem three_affine_log_ratio
+    {K : Type} [CommRing K] (a b d k inverse : K)
+    (unit : d*inverse=1) :
+    ((a+k*d+b)-(a+b))*inverse=k := by
+  grind
+
+theorem short_model_cleared_polynomial
+    {K : Type} [CommRing K] (v a2 a4 a6 : K) :
+    27*(v^3+a2*v^2+a4*v+a6) =
+      (3*v+a2)^3+3*(3*a4-a2^2)*(3*v+a2)+
+        (27*a6-9*a2*a4+2*a2^3) := by
+  grind
+
+theorem short_model_with_unit_three
+    {K : Type} [CommRing K] (v y a2 a4 a6 inverse3 : K)
+    (three_unit : 3*inverse3=1)
+    (source : y^2=v^3+a2*v^2+a4*v+a6) :
+    y^2=(v+a2*inverse3)^3+
+      (a4-a2^2*inverse3)*(v+a2*inverse3)+
+      (a6-a2*a4*inverse3+2*a2^3*inverse3^3) := by
+  grind
+
+theorem quartic_ordinate_sign_bridge
+    {K : Type} [CommRing K] (t y a b c B s alpha v x oldY newY : K)
+    (half_a : 2*B=a) (half_b : 2*s=b-B^2)
+    (alpha_law : alpha=c-2*B*s)
+    (old_x : v=2*t^2+a*t-2*y)
+    (new_x : x=2*(-y+t^2+B*t+s))
+    (old_y : oldY=2*t*(v+2*s)+c+B*v)
+    (new_y : newY=2*x*t+B*x+alpha) :
+    x=v+2*s ∧ newY=oldY ∧ 3*x+B^2-4*s=3*v+b := by
+  have hx : x=v+2*s := by
+    rw [new_x, old_x, ← half_a]
+    grind
+  constructor
+  · exact hx
+  constructor
+  · rw [new_y, old_y, hx, alpha_law]
+    grind
+  · rw [hx]
+    grind
+
+end PublicTargetBridge

@@ -1,0 +1,108 @@
+{
+  "branch": "codex/ic-trial32-20261115",
+  "closed_utc": "2026-11-16T10:20:26+00:00",
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "cloud/modal_run.py",
+        "run",
+        "--image",
+        "cuda",
+        "--gpu",
+        "L4",
+        "--cpu",
+        "4",
+        "--memory",
+        "8",
+        "--timeout",
+        "900",
+        "--apt",
+        "time",
+        "--out",
+        "experiments/ic-prefix-avx2-20261116/timing-001",
+        "--detach",
+        "--",
+        "python3",
+        "experiments/ic-prefix-avx2-20261116/run_prepared.py"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "started_utc": "2026-11-16T10:07:34+00:00",
+      "wall_s": 9.804
+    }
+  ],
+  "commit": "196662dbe8103285ffa4c55802d2d56853cc249d",
+  "commit_dirty": false,
+  "created_utc": "2026-11-16T10:07:32+00:00",
+  "curve_uid": null,
+  "entries": [
+    "experiments/ic-prefix-avx2-20261116"
+  ],
+  "host": {
+    "cpu": "arm",
+    "cpus_online": 14,
+    "hostname": "Mac.attlocal.net",
+    "isolation": "unstated",
+    "platform": "macOS-27.2-arm64-arm-64bit-Mach-O"
+  },
+  "id": "20261116T1007Z-ic-prefix-avx2-fixed-pipeline-001",
+  "metrics": [],
+  "problem": "ecdlp:binary_ic_prefix_vector",
+  "raw": [
+    {
+      "bytes": 2856548,
+      "path": "experiments/ic-prefix-avx2-20261116/raw-timing-001.tar.gz",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/3e/3efe0dbd62172822f651c6125ddf89ae70ee95c063b3ec544f89f198d60e27b1",
+      "sha256": "3efe0dbd62172822f651c6125ddf89ae70ee95c063b3ec544f89f198d60e27b1",
+      "uploaded": true
+    },
+    {
+      "bytes": 261011,
+      "path": "experiments/ic-prefix-avx2-20261116/raw-bundle-receipt.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/f4/f45a3bba4fd2620f04a2cd6d9e458ce5528cb1149321aa24e1d42dff5960b857",
+      "sha256": "f45a3bba4fd2620f04a2cd6d9e458ce5528cb1149321aa24e1d42dff5960b857",
+      "uploaded": true
+    },
+    {
+      "bytes": 113392,
+      "path": "experiments/ic-prefix-avx2-20261116/timing-001/.artifacts.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/15/15e63f85c3ebb583c13ab663320bb94df7290bc09685ce0492cc98c2a771fb64",
+      "sha256": "15e63f85c3ebb583c13ab663320bb94df7290bc09685ce0492cc98c2a771fb64",
+      "uploaded": true
+    },
+    {
+      "bytes": 1232480,
+      "path": "experiments/ic-prefix-avx2-20261116/analysis.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/31/31918cc6621fff5b98cf725ef3903658ad61adffe3a2674065683188fbe2fcba",
+      "sha256": "31918cc6621fff5b98cf725ef3903658ad61adffe3a2674065683188fbe2fcba",
+      "uploaded": true
+    },
+    {
+      "bytes": 142081,
+      "path": "experiments/ic-prefix-avx2-20261116/independent-arithmetic-timing001.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/ca/caa2855d376a78398d0c89cc258d442f6743a98c71543b5ae5cd88ba156ee303",
+      "sha256": "caa2855d376a78398d0c89cc258d442f6743a98c71543b5ae5cd88ba156ee303",
+      "uploaded": true
+    }
+  ],
+  "repo": "cryptanalysis",
+  "reports": {
+    "pdf": "experiments/ic-prefix-avx2-20261116/REPORT.pdf",
+    "png": [
+      "experiments/ic-prefix-avx2-20261116/cold.png",
+      "experiments/ic-prefix-avx2-20261116/ratios.png"
+    ],
+    "svg": [
+      "experiments/ic-prefix-avx2-20261116/cold.svg",
+      "experiments/ic-prefix-avx2-20261116/ratios.svg",
+      "experiments/ic-prefix-avx2-20261116/flow.svg"
+    ]
+  },
+  "schema": "bench.record/v1",
+  "session": null,
+  "slug": "ic-prefix-avx2-fixed-pipeline-001",
+  "status": "invalid",
+  "summary": "SIMD capability admission failed: timing L4 CPU lacksVPCLMULQDQ; all360 requestedvector arms execute exactscalarfallback. NoSIMD performance admitted. All120quadruples completed,480IC+240rho answers replay;2failedA/A retained,zero processcaps. Nativepreparation on earlierallocation passed59fieldwidths/100maps but CPUcapability doesnottransfer. All977raw outputs individuallystored and losslesslybundled. Nohostretry/filtering; qualifiednull.",
+  "validation": "experiments/ic-prefix-avx2-20261116/analysis.json"
+}

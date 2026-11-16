@@ -1,0 +1,79 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-14T00:30:18Z",
+ "id": "PCC-20261114-720e90",
+ "kind": "statement",
+ "producer": {
+  "commit": "0a3412cd8e59abcd2eba8240371ad3ad394990a4",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/common-origin-JSON-controls-01/class-witness-substitution.exit",
+    "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/common-origin-JSON-controls-01/class-witness-substitution.log.xz",
+    "sha256": "5fb3e2a99992fa17502d6de67b991fb6cd4ed96e6e240619a827e7692a183c7d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/common-origin-JSON-controls-01/counter-substitution.exit",
+    "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/common-origin-JSON-controls-01/counter-substitution.log.xz",
+    "sha256": "5fb3e2a99992fa17502d6de67b991fb6cd4ed96e6e240619a827e7692a183c7d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/common-origin-JSON-controls-01/exact.exit",
+    "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/common-origin-JSON-controls-01/exact.log.xz",
+    "sha256": "cb7cbcff2ea8d980a1278ad679ead1c35b8e88f4b665e7de352e5aea4c75f8d6"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/common-origin-JSON-controls-01/observation.json",
+    "sha256": "68b243665ba13dc87d54ef78686988bd00dba7d627e7e080bc37ea30f9b4a36c"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/common-origin-JSON-controls-01/wall-only.exit",
+    "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/common-origin-JSON-controls-01/wall-only.log.xz",
+    "sha256": "cb7cbcff2ea8d980a1278ad679ead1c35b8e88f4b665e7de352e5aea4c75f8d6"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Strictcommonorigin JSONfidelity controls onCOPIEDscratchlogs:exactoriginal0/declaredphasewallonlymutation0/counter+1substitution1/actualclasswitness+1substitution1. Originalnativebytes/source/goldens NEVERmutated;all51JSON/includingduplicatedSCOPEreports compared,onlydeclaredreportwalls excluded. TheseareI/Oequalitycontrols,not mathematical/native replay/signedverification. Completecopiedlogs/exits retained;actualfouradmissioncontrols/full755/16CI241native57digests pendingsourcepublication."
+}

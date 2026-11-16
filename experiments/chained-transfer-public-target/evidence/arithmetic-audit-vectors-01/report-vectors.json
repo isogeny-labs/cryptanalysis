@@ -1,0 +1,614 @@
+{
+  "scalar_panels": [
+    {
+      "arm": "original",
+      "q223": {
+        "stacks": [
+          {
+            "all_operations": {
+              "add": 3281201,
+              "inv": 98996,
+              "mul": 9564379,
+              "neg": 338641,
+              "rem_u64": 9564379,
+              "sub": 7027565
+            },
+            "backend": "Picard.Fq",
+            "inv": 98996,
+            "inv_bottom": 0,
+            "mul": 9564379,
+            "mul_bottom": 0
+          }
+        ],
+        "totals": {
+          "add": 3281201,
+          "inv": 98996,
+          "mul": 9564379,
+          "neg": 338641,
+          "rem_u64": 9564379,
+          "sub": 7027565
+        }
+      },
+      "samples": 75,
+      "target": "[1, 0]"
+    },
+    {
+      "arm": "candidate",
+      "q223": {
+        "stacks": [
+          {
+            "all_operations": {
+              "add": 248446,
+              "const_two": 674,
+              "mul": 241355,
+              "rem_u128": 125040,
+              "rem_u64": 1540,
+              "sq": 674,
+              "sub": 32232
+            },
+            "backend": "FpR.coefficient",
+            "inv": 0,
+            "inv_bottom": 0,
+            "mul": 241355,
+            "mul_bottom": 0
+          },
+          {
+            "all_operations": {
+              "add": 482960,
+              "inv": 9678,
+              "mul": 2411745,
+              "neg": 38778,
+              "rem_u64": 2411745,
+              "sub": 2005263
+            },
+            "backend": "Picard.Fq",
+            "inv": 9678,
+            "inv_bottom": 0,
+            "mul": 2411745,
+            "mul_bottom": 241355
+          },
+          {
+            "all_operations": {
+              "add": 6433485,
+              "mul": 8161305,
+              "neg": 450,
+              "rem_u64": 8161305,
+              "sub": 884490
+            },
+            "backend": "cover.Fq",
+            "inv": 0,
+            "inv_bottom": 9678,
+            "mul": 8161305,
+            "mul_bottom": 2653100
+          },
+          {
+            "all_operations": {
+              "inv": 2255
+            },
+            "backend": "fpm.base",
+            "inv": 2255,
+            "inv_bottom": 9678,
+            "mul": 0,
+            "mul_bottom": 10814405
+          }
+        ],
+        "totals": {
+          "add": 7164891,
+          "const_two": 674,
+          "inv": 11933,
+          "mul": 10814405,
+          "neg": 39228,
+          "rem_u128": 125040,
+          "rem_u64": 10574590,
+          "sq": 674,
+          "sub": 2921985
+        }
+      },
+      "samples": 75,
+      "target": "[1, 0]"
+    },
+    {
+      "arm": "original",
+      "q223": {
+        "stacks": [
+          {
+            "all_operations": {
+              "add": 3333865,
+              "inv": 99685,
+              "mul": 9738438,
+              "neg": 342858,
+              "rem_u64": 9738438,
+              "sub": 7162611
+            },
+            "backend": "Picard.Fq",
+            "inv": 99685,
+            "inv_bottom": 0,
+            "mul": 9738438,
+            "mul_bottom": 0
+          }
+        ],
+        "totals": {
+          "add": 3333865,
+          "inv": 99685,
+          "mul": 9738438,
+          "neg": 342858,
+          "rem_u64": 9738438,
+          "sub": 7162611
+        }
+      },
+      "samples": 75,
+      "target": "[1, 1]"
+    },
+    {
+      "arm": "candidate",
+      "q223": {
+        "stacks": [
+          {
+            "all_operations": {
+              "add": 286246,
+              "const_two": 674,
+              "mul": 279155,
+              "rem_u128": 125040,
+              "rem_u64": 1540,
+              "sq": 674,
+              "sub": 32232
+            },
+            "backend": "FpR.coefficient",
+            "inv": 0,
+            "inv_bottom": 0,
+            "mul": 279155,
+            "mul_bottom": 0
+          },
+          {
+            "all_operations": {
+              "add": 481540,
+              "inv": 9675,
+              "mul": 2405172,
+              "neg": 38684,
+              "rem_u64": 2405172,
+              "sub": 2000604
+            },
+            "backend": "Picard.Fq",
+            "inv": 9675,
+            "inv_bottom": 0,
+            "mul": 2405172,
+            "mul_bottom": 279155
+          },
+          {
+            "all_operations": {
+              "add": 6435292,
+              "mul": 8163541,
+              "neg": 449,
+              "rem_u64": 8163541,
+              "sub": 884698
+            },
+            "backend": "cover.Fq",
+            "inv": 0,
+            "inv_bottom": 9675,
+            "mul": 8163541,
+            "mul_bottom": 2684327
+          },
+          {
+            "all_operations": {
+              "inv": 2255
+            },
+            "backend": "fpm.base",
+            "inv": 2255,
+            "inv_bottom": 9675,
+            "mul": 0,
+            "mul_bottom": 10847868
+          }
+        ],
+        "totals": {
+          "add": 7203078,
+          "const_two": 674,
+          "inv": 11930,
+          "mul": 10847868,
+          "neg": 39133,
+          "rem_u128": 125040,
+          "rem_u64": 10570253,
+          "sq": 674,
+          "sub": 2917534
+        }
+      },
+      "samples": 75,
+      "target": "[1, 1]"
+    },
+    {
+      "arm": "original",
+      "q223": {
+        "stacks": [
+          {
+            "all_operations": {
+              "add": 3289500,
+              "inv": 98914,
+              "mul": 9587529,
+              "neg": 339360,
+              "rem_u64": 9587529,
+              "sub": 7043730
+            },
+            "backend": "Picard.Fq",
+            "inv": 98914,
+            "inv_bottom": 0,
+            "mul": 9587529,
+            "mul_bottom": 0
+          }
+        ],
+        "totals": {
+          "add": 3289500,
+          "inv": 98914,
+          "mul": 9587529,
+          "neg": 339360,
+          "rem_u64": 9587529,
+          "sub": 7043730
+        }
+      },
+      "samples": 75,
+      "target": "[2, 1]"
+    },
+    {
+      "arm": "candidate",
+      "q223": {
+        "stacks": [
+          {
+            "all_operations": {
+              "add": 286157,
+              "const_two": 675,
+              "mul": 279065,
+              "rem_u128": 125040,
+              "rem_u64": 1540,
+              "sq": 675,
+              "sub": 32232
+            },
+            "backend": "FpR.coefficient",
+            "inv": 0,
+            "inv_bottom": 0,
+            "mul": 279065,
+            "mul_bottom": 0
+          },
+          {
+            "all_operations": {
+              "add": 482045,
+              "inv": 9604,
+              "mul": 2407913,
+              "neg": 38770,
+              "rem_u64": 2407913,
+              "sub": 2002792
+            },
+            "backend": "Picard.Fq",
+            "inv": 9604,
+            "inv_bottom": 0,
+            "mul": 2407913,
+            "mul_bottom": 279065
+          },
+          {
+            "all_operations": {
+              "add": 6435987,
+              "mul": 8164401,
+              "neg": 450,
+              "rem_u64": 8164401,
+              "sub": 884778
+            },
+            "backend": "cover.Fq",
+            "inv": 0,
+            "inv_bottom": 9604,
+            "mul": 8164401,
+            "mul_bottom": 2686978
+          },
+          {
+            "all_operations": {
+              "inv": 2255
+            },
+            "backend": "fpm.base",
+            "inv": 2255,
+            "inv_bottom": 9604,
+            "mul": 0,
+            "mul_bottom": 10851379
+          }
+        ],
+        "totals": {
+          "add": 7204189,
+          "const_two": 675,
+          "inv": 11859,
+          "mul": 10851379,
+          "neg": 39220,
+          "rem_u128": 125040,
+          "rem_u64": 10573854,
+          "sq": 675,
+          "sub": 2919802
+        }
+      },
+      "samples": 75,
+      "target": "[2, 1]"
+    }
+  ],
+  "schema": "n4-arithmetic-report-v1",
+  "solver_and_preparation": [
+    {
+      "group": "solver-original",
+      "q223": {
+        "stacks": [
+          {
+            "all_operations": {
+              "add": 12906400,
+              "const_two": 6684,
+              "mul": 10491844,
+              "neg": 4856,
+              "rem_u128": 5692980,
+              "rem_u64": 43840,
+              "sq": 6684,
+              "sub": 53160
+            },
+            "backend": "FpR.coefficient",
+            "inv": 0,
+            "inv_bottom": 0,
+            "mul": 10491844,
+            "mul_bottom": 0
+          },
+          {
+            "all_operations": {
+              "add": 86718271,
+              "inv": 2215613,
+              "mul": 229224316,
+              "neg": 6811160,
+              "rem_u64": 229224316,
+              "sub": 155203394
+            },
+            "backend": "Picard.Fq",
+            "inv": 2215613,
+            "inv_bottom": 0,
+            "mul": 229224316,
+            "mul_bottom": 10491844
+          },
+          {
+            "all_operations": {
+              "rem_u64": 81000
+            },
+            "backend": "coefficient.encoding",
+            "inv": 0,
+            "inv_bottom": 2215613,
+            "mul": 0,
+            "mul_bottom": 239716160
+          },
+          {
+            "all_operations": {
+              "add": 3835080,
+              "inv": 55080,
+              "mul": 4000320,
+              "neg": 146140,
+              "rem_u64": 4000320
+            },
+            "backend": "cover.Fq",
+            "inv": 55080,
+            "inv_bottom": 2215613,
+            "mul": 4000320,
+            "mul_bottom": 239716160
+          },
+          {
+            "all_operations": {
+              "inv": 4296
+            },
+            "backend": "fpm.base",
+            "inv": 4296,
+            "inv_bottom": 2270693,
+            "mul": 0,
+            "mul_bottom": 243716480
+          },
+          {
+            "all_operations": {
+              "add": 4326125,
+              "inv": 62530,
+              "mul": 11483233,
+              "neg": 102076,
+              "rem_u64": 11483233,
+              "sub": 1292032
+            },
+            "backend": "native.Fp",
+            "inv": 62530,
+            "inv_bottom": 2274989,
+            "mul": 11483233,
+            "mul_bottom": 243716480
+          }
+        ],
+        "totals": {
+          "add": 107785876,
+          "const_two": 6684,
+          "inv": 2337519,
+          "mul": 255199713,
+          "neg": 7064232,
+          "rem_u128": 5692980,
+          "rem_u64": 244832709,
+          "sq": 6684,
+          "sub": 156548586
+        }
+      }
+    },
+    {
+      "group": "solver-candidate",
+      "q223": {
+        "stacks": [
+          {
+            "all_operations": {
+              "add": 13124960,
+              "const_two": 7179,
+              "mul": 10704554,
+              "neg": 4856,
+              "rem_u128": 5792055,
+              "rem_u64": 45100,
+              "sq": 7179,
+              "sub": 79200
+            },
+            "backend": "FpR.coefficient",
+            "inv": 0,
+            "inv_bottom": 0,
+            "mul": 10704554,
+            "mul_bottom": 0
+          },
+          {
+            "all_operations": {
+              "add": 84332491,
+              "inv": 2140763,
+              "mul": 222993681,
+              "neg": 6558145,
+              "rem_u64": 222993681,
+              "sub": 150791634
+            },
+            "backend": "Picard.Fq",
+            "inv": 2140763,
+            "inv_bottom": 0,
+            "mul": 222993681,
+            "mul_bottom": 10704554
+          },
+          {
+            "all_operations": {
+              "rem_u64": 81000
+            },
+            "backend": "coefficient.encoding",
+            "inv": 0,
+            "inv_bottom": 2140763,
+            "mul": 0,
+            "mul_bottom": 233698235
+          },
+          {
+            "all_operations": {
+              "add": 8558390,
+              "inv": 55080,
+              "mul": 9991985,
+              "neg": 146470,
+              "rem_u64": 9991985,
+              "sub": 649250
+            },
+            "backend": "cover.Fq",
+            "inv": 55080,
+            "inv_bottom": 2140763,
+            "mul": 9991985,
+            "mul_bottom": 233698235
+          },
+          {
+            "all_operations": {
+              "inv": 6126
+            },
+            "backend": "fpm.base",
+            "inv": 6126,
+            "inv_bottom": 2195843,
+            "mul": 0,
+            "mul_bottom": 243690220
+          },
+          {
+            "all_operations": {
+              "add": 4326125,
+              "inv": 62530,
+              "mul": 11483233,
+              "neg": 102076,
+              "rem_u64": 11483233,
+              "sub": 1292032
+            },
+            "backend": "native.Fp",
+            "inv": 62530,
+            "inv_bottom": 2201969,
+            "mul": 11483233,
+            "mul_bottom": 243690220
+          }
+        ],
+        "totals": {
+          "add": 110341966,
+          "const_two": 7179,
+          "inv": 2264499,
+          "mul": 255173453,
+          "neg": 6811547,
+          "rem_u128": 5792055,
+          "rem_u64": 244594999,
+          "sq": 7179,
+          "sub": 152812116
+        }
+      }
+    },
+    {
+      "group": "public-G-preparation",
+      "q223": {
+        "stacks": [
+          {
+            "all_operations": {
+              "add": 664407,
+              "const_two": 357,
+              "mul": 544074,
+              "neg": 244,
+              "rem_u128": 293956,
+              "rem_u64": 2359,
+              "sq": 357,
+              "sub": 5052
+            },
+            "backend": "FpR.coefficient",
+            "inv": 0,
+            "inv_bottom": 0,
+            "mul": 544074,
+            "mul_bottom": 0
+          },
+          {
+            "all_operations": {
+              "add": 186392,
+              "inv": 11704,
+              "mul": 585459,
+              "neg": 22247,
+              "rem_u64": 585459,
+              "sub": 425767
+            },
+            "backend": "Picard.Fq",
+            "inv": 11704,
+            "inv_bottom": 0,
+            "mul": 585459,
+            "mul_bottom": 544074
+          },
+          {
+            "all_operations": {
+              "rem_u64": 4050
+            },
+            "backend": "coefficient.encoding",
+            "inv": 0,
+            "inv_bottom": 11704,
+            "mul": 0,
+            "mul_bottom": 1129533
+          },
+          {
+            "all_operations": {
+              "add": 435675,
+              "inv": 2760,
+              "mul": 513147,
+              "neg": 6774,
+              "rem_u64": 513147,
+              "sub": 35418
+            },
+            "backend": "cover.Fq",
+            "inv": 2760,
+            "inv_bottom": 11704,
+            "mul": 513147,
+            "mul_bottom": 1129533
+          },
+          {
+            "all_operations": {
+              "inv": 393
+            },
+            "backend": "fpm.base",
+            "inv": 393,
+            "inv_bottom": 14464,
+            "mul": 0,
+            "mul_bottom": 1642680
+          }
+        ],
+        "totals": {
+          "add": 1286474,
+          "const_two": 357,
+          "inv": 14857,
+          "mul": 1642680,
+          "neg": 29265,
+          "rem_u128": 293956,
+          "rem_u64": 1105015,
+          "sq": 357,
+          "sub": 466237
+        }
+      }
+    }
+  ],
+  "source_rows": 7113,
+  "unit": "raw q223 source-operation vectors; API and aux excluded; mul/sq/const_two remain distinct; no prices, ratios or cold pipeline claim"
+}

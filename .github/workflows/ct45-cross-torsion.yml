@@ -1,0 +1,59 @@
+name: CT45-46 cross-factor torsion and extension-field lifting
+on:
+  pull_request:
+    paths:
+      - 'experiments/chained-transfer-reference/ct45/**'
+      - 'experiments/chained-transfer-reference/ct46/**'
+      - '.github/workflows/ct45-cross-torsion.yml'
+  push:
+    branches:
+      - research/ct45-cross-factor-torsion-20261112
+    paths:
+      - 'experiments/chained-transfer-reference/ct45/**'
+      - 'experiments/chained-transfer-reference/ct46/**'
+      - '.github/workflows/ct45-cross-torsion.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  finite-cross-torsion:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - name: Independently enumerate Frobenius intertwiners and controls
+        run: |
+          python3 -B experiments/chained-transfer-reference/ct45/ct45_cross_torsion.py >/tmp/ct45.py
+          python3 -O -B experiments/chained-transfer-reference/ct45/ct45_cross_torsion.py >/tmp/ct45.opt
+          diff -u /tmp/ct45.py /tmp/ct45.opt
+          python3 -m py_compile experiments/chained-transfer-reference/ct45/ct45_cross_torsion.py
+          node --check experiments/chained-transfer-reference/ct45/ct45_cross_torsion.js
+          node experiments/chained-transfer-reference/ct45/ct45_cross_torsion.js >/tmp/ct45.js
+          node --no-opt experiments/chained-transfer-reference/ct45/ct45_cross_torsion.js >/tmp/ct45.noopt
+          diff -u /tmp/ct45.js /tmp/ct45.noopt
+          node experiments/chained-transfer-reference/ct45/ct45_report.js /tmp/CT45_Report.pdf
+          cmp /tmp/CT45_Report.pdf experiments/chained-transfer-reference/ct45/CT45_Report.pdf
+          cat /tmp/ct45.py /tmp/ct45.js
+      - name: Verify CT45 invariant checks remain active under python -O
+        run: |
+          if python3 -O -c 'import runpy; runpy.run_path("experiments/chained-transfer-reference/ct45/ct45_cross_torsion.py")["verify"](False)' >/tmp/ct45.negative 2>&1; then
+            echo "CT45 optimized verifier improperly accepted a false check"; exit 1
+          fi
+          grep -q 'CT45 finite-ring oracle invariant failed' /tmp/ct45.negative
+      - name: Replay extension-field 8- to 64-torsion certificates independently
+        run: |
+          python3 -B experiments/chained-transfer-reference/ct46/ct46_extension_torsion.py >/tmp/ct46.py
+          python3 -O -B experiments/chained-transfer-reference/ct46/ct46_extension_torsion.py >/tmp/ct46.opt
+          diff -u /tmp/ct46.py /tmp/ct46.opt
+          python3 -m py_compile experiments/chained-transfer-reference/ct46/ct46_extension_torsion.py
+          if python3 -O -c 'import runpy; runpy.run_path("experiments/chained-transfer-reference/ct46/ct46_extension_torsion.py")["verify"](False)' >/tmp/ct46.negative 2>&1; then
+            echo "CT46 optimized verifier improperly accepted a false check"; exit 1
+          fi
+          grep -q 'CT46 invariant failed' /tmp/ct46.negative
+          node --check experiments/chained-transfer-reference/ct46/ct46_extension_torsion.js
+          node experiments/chained-transfer-reference/ct46/ct46_extension_torsion.js >/tmp/ct46.js
+          node --no-opt experiments/chained-transfer-reference/ct46/ct46_extension_torsion.js >/tmp/ct46.noopt
+          diff -u /tmp/ct46.js /tmp/ct46.noopt
+          cat /tmp/ct46.py /tmp/ct46.js
