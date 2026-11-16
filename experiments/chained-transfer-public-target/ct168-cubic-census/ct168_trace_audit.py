@@ -21,28 +21,59 @@ def strict_load(path):
     return json.loads(Path(path).read_text(),object_pairs_hook=pairs,
         parse_constant=lambda x: (_ for _ in ()).throw(ValueError(x)))
 
+def require(ok, message):
+    if not ok:
+        raise ValueError('CT168 validation failed: ' + message)
+
+def exact_keys(value, keys, where):
+    require(type(value) is dict, where + ' must be an object')
+    require(set(value) == set(keys), where + ' has missing or extra keys')
+
+def exact_int(value, where):
+    require(type(value) is int, where + ' must be a JSON integer')
+    return value
+
 def audit(primary,secondary):
     a=strict_load(primary)
     b=strict_load(secondary)
-    if not (a['field_size']==q and a['x_enumerations_each']==q and a['y_square_enumerations']==q): raise ValueError("CT168 validation failed")
-    if not (a['source_prime_order']==219 and a['d_sixth_character']==40): raise ValueError("CT168 validation failed")
+    top=('schema','p','field_size','x_enumerations_each',
+         'y_square_enumerations','source_prime_order','d_sixth_character',
+         'source_cubic','twist_cubic','mutated_twist','producer_standing')
+    exact_keys(a,top,'primary')
+    exact_keys(b,('schema','counts'),'secondary')
+    require(type(a['schema']) is str and a['schema']=='ct168-complete-census-v1','primary schema')
+    require(type(b['schema']) is str and b['schema']=='ct168-generic-independent-crosscheck-v1','secondary schema')
+    require(type(a['producer_standing']) is str and a['producer_standing']=='pcc:unverified','standing')
+    for key,expected in [('p',p),('field_size',q),('x_enumerations_each',q),
+                         ('y_square_enumerations',q),('source_prime_order',219),
+                         ('d_sixth_character',40)]:
+        require(exact_int(a[key],'primary '+key)==expected,'primary '+key)
+    # zip() alone ignores trailing independent records: reject any missing or extra rows.
+    require(type(b['counts']) is list and len(b['counts'])==3,'secondary counts length')
     for ai,bi in zip(('source_cubic','twist_cubic','mutated_twist'),b['counts']):
         ca=a[ai]
-        if not (type(ca['points']) is int and ca['points']==bi['n']): raise ValueError("CT168 validation failed")
-        if not (ca['zero_rhs_x']==bi['zero']): raise ValueError("CT168 validation failed")
-        if not (ca['nonzero_square_x']==bi['nonzero_square']): raise ValueError("CT168 validation failed")
-        if not (1+ca['zero_rhs_x']+2*ca['nonzero_square_x']==ca['points']): raise ValueError("CT168 validation failed")
-        if not (ca['nonzero_square_x']+ca['zero_rhs_x']+ca['nonsquare_x']==q): raise ValueError("CT168 validation failed")
-    if not (a['twist_cubic']['points']!=a['mutated_twist']['points']): raise ValueError("CT168 validation failed")
+        exact_keys(ca,('points','zero_rhs_x','nonzero_square_x','nonsquare_x'),ai)
+        exact_keys(bi,('n','zero','nonzero_square'),ai+' secondary')
+        for key in ('points','zero_rhs_x','nonzero_square_x','nonsquare_x'):
+            exact_int(ca[key],ai+' '+key)
+            require(ca[key]>=0,ai+' '+key+' negative')
+        for key in ('n','zero','nonzero_square'):
+            exact_int(bi[key],ai+' secondary '+key)
+        require(ca['points']==bi['n'],ai+' points mismatch')
+        require(ca['zero_rhs_x']==bi['zero'],ai+' zero mismatch')
+        require(ca['nonzero_square_x']==bi['nonzero_square'],ai+' square mismatch')
+        require(1+ca['zero_rhs_x']+2*ca['nonzero_square_x']==ca['points'],ai+' point partition')
+        require(ca['nonzero_square_x']+ca['zero_rhs_x']+ca['nonsquare_x']==q,ai+' x partition')
+    require(a['twist_cubic']['points']!=a['mutated_twist']['points'],'negative control')
     ts=q+1-a['source_cubic']['points']
     td=q+1-a['twist_cubic']['points']
-    if not (ts==-3220 and td==3439): raise ValueError("CT168 validation failed")
-    if not (219==3*73): raise ValueError("CT168 validation failed")
-    if not ((q+1-ts)%73==0): raise ValueError("CT168 validation failed")
+    require(ts==-3220 and td==3439,'frozen trace')
+    require(219==3*73 and (q+1-ts)%73==0,'source subgroup')
     S,D=rec(ts),rec(td)
-    if not (all(S[r]!=D[r] for r in range(1,6))): raise ValueError("CT168 validation failed")
-    if not (S[6]==D[6]): raise ValueError("CT168 validation failed")
-    if not ((q+1-td)%73!=0 and (q*q+1-D[2])%73==0): raise ValueError("CT168 validation failed")
+    require(all(S[r]!=D[r] for r in range(1,6)),'short-field isogeny obstruction')
+    require(S[6]==D[6],'extension-six equality')
+    require((q+1-td)%73!=0,'twist K subgroup control')
+    require((q*q+1-D[2])%73==0,'twist K2 subgroup control')
     return {'schema':'ct168-minimal-isogeny-degree-v1','base_prime':p,'K_cardinality':q,
             'source_trace_K':ts,'twist_trace_K':td,
             'isogenous_extension_degrees_1_through_6':[r for r in range(1,7) if S[r]==D[r]],
