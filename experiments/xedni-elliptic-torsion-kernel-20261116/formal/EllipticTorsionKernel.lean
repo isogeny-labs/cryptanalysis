@@ -2,6 +2,8 @@ import FiniteKernelPacking
 import Mathlib.NumberTheory.Height.EllipticCurve
 import Mathlib.NumberTheory.Height.NumberField
 
+set_option linter.style.haveILetI false
+
 /-!
 Under Northcott's property, the finite torsion subgroup of an elliptic curve
 supplies the finite kernel set in the packing theorem. The projection into a

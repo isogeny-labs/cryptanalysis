@@ -1,4 +1,4 @@
-⚠ [2701/2891] Replayed HeightPigeonhole
+⚠ [2701/2913] Replayed HeightPigeonhole
 warning: HeightPigeonhole.lean: imports `Mathlib.Data.Finset.Card` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
 warning: HeightPigeonhole.lean: imports `Mathlib.Algebra.Order.BigOperators.Group.Finset` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
 warning: HeightPigeonhole.lean: imports `Mathlib.Data.ZMod.Basic` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
@@ -23,7 +23,7 @@ info: HeightPigeonhole.lean:221:0: 'XedniHeightPigeonhole.bounded_relation_of_la
  Quot.sound]
 info: HeightPigeonhole.lean:222:0: 'XedniHeightPigeonhole.rank_gap_count' depends on axioms: [propext, Classical.choice, Quot.sound]
 info: HeightPigeonhole.lean:223:0: 'XedniHeightPigeonhole.bounded_relation_of_rank_gap' depends on axioms: [propext, Classical.choice, Quot.sound]
-⚠ [2702/2891] Replayed EuclideanPacking
+⚠ [2702/2913] Replayed EuclideanPacking
 warning: EuclideanPacking.lean: imports `Mathlib.MeasureTheory.Covering.BesicovitchVectorSpace` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
 warning: EuclideanPacking.lean:129:0: automatically included section variable(s) unused in theorem `XedniEuclideanPacking.norm_coeff_sum_le`:
   [NormedSpace ℝ E]
@@ -44,7 +44,7 @@ info: EuclideanPacking.lean:233:0: 'XedniEuclideanPacking.labelled_card_le_radiu
 info: EuclideanPacking.lean:234:0: 'XedniEuclideanPacking.norm_coeff_sum_le' depends on axioms: [propext, Classical.choice, Quot.sound]
 info: EuclideanPacking.lean:235:0: 'XedniEuclideanPacking.bounded_relation_of_euclidean_packing' depends on axioms: [propext, Classical.choice, Quot.sound]
 info: EuclideanPacking.lean:236:0: 'XedniEuclideanPacking.bounded_relation_of_norm_gap' depends on axioms: [propext, Classical.choice, Quot.sound]
-⚠ [2703/2891] Replayed FiniteKernelPacking
+⚠ [2703/2913] Replayed FiniteKernelPacking
 warning: FiniteKernelPacking.lean:26:0: automatically included section variable(s) unused in theorem `XedniFiniteKernelPacking.finite_kernel_card_le_projected_card`:
   [NormedSpace ℝ E]
   [FiniteDimensional ℝ E]
@@ -64,44 +64,12 @@ info: FiniteKernelPacking.lean:139:0: 'XedniFiniteKernelPacking.bounded_relation
 ⚠ [3506/3507] Built EllipticTorsionKernel (15s)
 warning: EllipticTorsionKernel.lean: imports `Mathlib.NumberTheory.Height.EllipticCurve` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
 warning: EllipticTorsionKernel.lean: imports `Mathlib.NumberTheory.Height.NumberField` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
-warning: EllipticTorsionKernel.lean:32:2: Try this: 
-  letI̵
-
-The goal is a proposition, so `let` is preferred over `letI`.
-The difference between `let` and `letI` is that `letI` inlines the value.
-But this is not relevant for proofs because of proof irrelevance.
-
-Note: This linter can be disabled with `set_option linter.style.haveILetI false`
-warning: EllipticTorsionKernel.lean:34:2: Try this: 
-  letI̵
-
-The goal is a proposition, so `let` is preferred over `letI`.
-The difference between `let` and `letI` is that `letI` inlines the value.
-But this is not relevant for proofs because of proof irrelevance.
-
-Note: This linter can be disabled with `set_option linter.style.haveILetI false`
-warning: EllipticTorsionKernel.lean:41:2: Try this: 
-  letI̵
-
-The goal is a proposition, so `let` is preferred over `letI`.
-The difference between `let` and `letI` is that `letI` inlines the value.
-But this is not relevant for proofs because of proof irrelevance.
-
-Note: This linter can be disabled with `set_option linter.style.haveILetI false`
-warning: EllipticTorsionKernel.lean:43:2: Try this: 
-  letI̵
-
-The goal is a proposition, so `let` is preferred over `letI`.
-The difference between `let` and `letI` is that `letI` inlines the value.
-But this is not relevant for proofs because of proof irrelevance.
-
-Note: This linter can be disabled with `set_option linter.style.haveILetI false`
-info: EllipticTorsionKernel.lean:98:0: 'XedniEllipticTorsionKernel.mem_torsionKernel' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: EllipticTorsionKernel.lean:99:0: 'XedniEllipticTorsionKernel.torsionKernel_card' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: EllipticTorsionKernel.lean:100:0: 'XedniEllipticTorsionKernel.bounded_relation_of_elliptic_torsion_norm_gap' depends on axioms: [propext,
+info: EllipticTorsionKernel.lean:100:0: 'XedniEllipticTorsionKernel.mem_torsionKernel' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: EllipticTorsionKernel.lean:101:0: 'XedniEllipticTorsionKernel.torsionKernel_card' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: EllipticTorsionKernel.lean:102:0: 'XedniEllipticTorsionKernel.bounded_relation_of_elliptic_torsion_norm_gap' depends on axioms: [propext,
  Classical.choice,
  Quot.sound]
-info: EllipticTorsionKernel.lean:101:0: 'XedniEllipticTorsionKernel.bounded_relation_of_rational_curve_norm_gap' depends on axioms: [propext,
+info: EllipticTorsionKernel.lean:103:0: 'XedniEllipticTorsionKernel.bounded_relation_of_rational_curve_norm_gap' depends on axioms: [propext,
  Classical.choice,
  Quot.sound]
 Build completed successfully (3507 jobs).
