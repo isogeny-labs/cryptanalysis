@@ -32,6 +32,7 @@ pub struct S3AffineProjection {
     trace_one: u64,
     membership: [u64; 64],
     prefix: bool,
+    inverse_squares: Option<Vec<u64>>,
 }
 
 fn parity(x: u64) -> u64 {
@@ -145,7 +146,29 @@ impl S3AffineProjection {
             trace_one,
             membership,
             prefix,
+            inverse_squares: None,
         })
+    }
+
+    /// Target-independent prefix cache. Its caller must charge this setup.
+    /// One batch inversion prepares all nonzero sums; dimension is bounded.
+    pub fn prepare_prefix_inverse_cache(&mut self) -> Result<(), &'static str> {
+        if !self.prefix || self.basis.len() > 12 {
+            return Err("inverse cache requires a prefix subspace of dimension at most12");
+        }
+        let mut values: Vec<u64> = (0..1u64 << self.basis.len()).collect();
+        self.gf.batch_inv(&mut values, &mut Vec::new());
+        for v in &mut values {
+            *v = self.gf.sqr(*v);
+        }
+        self.inverse_squares = Some(values);
+        Ok(())
+    }
+
+    pub fn inverse_cache_bytes(&self) -> usize {
+        self.inverse_squares
+            .as_ref()
+            .map_or(0, |v| v.len() * std::mem::size_of::<u64>())
     }
 
     fn section(&self, c: u64) -> u64 {
@@ -244,7 +267,11 @@ impl S3AffineProjection {
             let x = if sum == 0 {
                 self.gf.sqr_k(product, self.gf.n - 1)
             } else {
-                let c = self.gf.mul(product, self.gf.inv(self.gf.sqr(sum)));
+                let inverse_square = self.inverse_squares.as_ref().map_or_else(
+                    || self.gf.inv(self.gf.sqr(sum)),
+                    |cache| cache[sum as usize],
+                );
+                let c = self.gf.mul(product, inverse_square);
                 let Some(root) = self.ash.solve(c) else {
                     continue;
                 };
@@ -329,6 +356,26 @@ mod tests {
                     "n={n} fixture={fixture}"
                 );
             }
+        }
+    }
+
+    #[test]
+    fn prefix_inverse_cache_preserves_all_roots() {
+        for n in [5, 6, 7, 8] {
+            let gf = Gf2::new(&find_irreducible_sparse(n).unwrap());
+            let basis = [1, 2, 4];
+            let plain = S3AffineProjection::new(&gf, 3, &basis).unwrap();
+            let mut cached = S3AffineProjection::new(&gf, 3, &basis).unwrap();
+            cached.prepare_prefix_inverse_cache().unwrap();
+            assert_eq!(cached.inverse_cache_bytes(), 8 * 8);
+            for z in 1..=gf.mask {
+                assert_eq!(
+                    plain.roots(z, 12).unwrap().pairs,
+                    cached.roots(z, 12).unwrap().pairs
+                );
+            }
+            let mut other = S3AffineProjection::new(&gf, 3, &[1, 8]).unwrap();
+            assert!(other.prepare_prefix_inverse_cache().is_err());
         }
     }
 

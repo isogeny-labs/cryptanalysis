@@ -21,9 +21,10 @@ use crate::cryptanalysis::ic_boundary::{
     calibrate_binary_instance, calibrate_group, calibrate_row_ops, calibrate_word_xor,
     find_prime_order_curve, generic_floor_ops, koblitz_instance, random_binary_instance,
     rho_reference, rho_reference_negation, roster_prime_instance, signed_frobenius_rho,
-    BinaryGroup, BinaryInstance, Calibration, CountedGroup, GroupOps, PinOutcome, PrimeInstance,
-    PrimeCurve, RhoResult,
+    BinaryGroup, BinaryInstance, Calibration, CountedGroup, GroupOps, PinOutcome, PrimeCurve,
+    PrimeInstance, RhoResult,
 };
+use crate::cryptanalysis::ic_framework::affine::AffineS3Oracle;
 use crate::cryptanalysis::ic_framework::hashed::{HashedAffineBase, HashedTensorOracle};
 use crate::cryptanalysis::ic_framework::linalg::MATRIX_NAMES;
 use crate::cryptanalysis::ic_framework::plugins::{
@@ -177,6 +178,10 @@ fn listing() -> Value {
                      "needs": "hashed-affine with identical slots, seed, tau and s; contraction primitive steps are uncalibrated, so do not read S as a priced end-to-end cost"},
                     {"name": "mitm-frobenius", "summands": "2 or 3", "regimes": ["koblitz"],
                      "parameters": [{"name": "m", "means": "summands, 2 or 3"}]},
+                    {"name": "affine-s3", "summands": "2", "regimes": ["char2", "koblitz"],
+                     "parameters": [{"name":"max_residual","means":"0..20, default12; complete subtraction fallback beyond it"},
+                                    {"name":"inverse_cache","means":"0 or1, default0; prefix inverse-square preparation"}],
+                     "needs":"a subspace factor base; native affine projection and exact signed lifts"},
                     {"name": "descent-algebraic", "summands": "2 or 3", "regimes": ["char2", "koblitz"],
                      "parameters": [{"name": "m", "means": "summands, 2 (descends S3) or 3 (descends S4)"}],
                      "needs": "a subspace factor base (binary-subspace or koblitz-orbit) and --solver"},
@@ -510,6 +515,7 @@ fn run_binary(
         let mut subtract = SubtractOracle;
         let mut mitm = MitmOracle::new(m);
         let mut frob = FrobeniusMitmOracle::new(m, inst);
+        let mut affine = AffineS3Oracle::new(inst);
         let mut algebraic = match or_name {
             "descent-algebraic" => {
                 let raw = spec.solver.as_deref().ok_or(
@@ -532,6 +538,7 @@ fn run_binary(
             "subtract" => &mut subtract,
             "mitm" => &mut mitm,
             "mitm-frobenius" => &mut frob,
+            "affine-s3" => &mut affine,
             "descent-algebraic" => algebraic.as_mut().expect("built above"),
             other => return Err(format!("oracle `{other}` is not available here")),
         };
