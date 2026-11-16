@@ -1,0 +1,18 @@
+{
+  "schema": "xedni-coefficient-optimization-protocol-v1",
+  "question": "Can a target-independent 13-vector family selected for early coverage improve exact public-relation yield per charged group-add call on fresh prime-order fields?",
+  "parent_family_protocol_sha256": "d28101f6869b012f8fd4f7e0c3208c6174597076c631e8f784d95e52e8f321a4",
+  "parent_coverage_protocol_sha256": "cc5a34c8eebcdacc850aec092897f49193af60cb73935e59d328d335a65be901",
+  "parent_coverage_result_sha256": "f8f0b48e52c9e003859cd9412fcf922a7308472ea7bd0690d60ca72dabc1c29f",
+  "calibration_orders": [751,883,983,1103],
+  "candidate_vectors": "All primitive integer (a,b) with 1<=a<=6, -6<=b<=6, b!=0, a+b!=0; sort lexicographically",
+  "selection": "Greedy 13 rounds; each round pick the unchosen vector maximizing the sum of newly covered nonzero scalars by first-row offsets t=1..34 over the four calibration orders; ties break by lexicographic (a,b); preserve selected order as test order",
+  "baseline": "The 13 nonzero-coefficient-sum vectors of the parent family in their original order",
+  "validation_selection": "From prime p in [1501,10000] ascending, take the first eight with E:y^2=x^3-x-2 over F_p of prime cardinality q and nonidentity G=(2,2); all failures and checked p count retained",
+  "query_cap": 35,
+  "target_law": "Exhaustive uniform nonzero scalar support d=1..q-1 for each validation field",
+  "query_law": "First lexicographic row t1=0, t2=0..34, R1=Q, R2=Q-t2G; exclude identity or duplicate points; stop at first scalar-recovering relation",
+  "cost_boundary": "For each target count tested vectors and abstract group-add calls from lazy t2 advancement plus each mul(a,R1), mul(b,R2), and combination through hit or cap; exclude target fixture construction and replay",
+  "falsifiers": ["selected vectors fail independent public group replay", "optimized coverage advantage vanishes on fresh fields", "coverage gain is outweighed by charged group-add work", "selection exceeds the 13*34 finite-family coverage bound"],
+  "claim_boundary": "Group-only exact finite-field diagnostics for fixed target-independent vectors; no rational-lift search, CPU wall-time, or matched-rho comparison"
+}

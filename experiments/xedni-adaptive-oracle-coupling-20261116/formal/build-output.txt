@@ -1,0 +1,19 @@
+⚠ [3137/3140] Replayed RandomLabelCoupling
+warning: RandomLabelCoupling.lean: imports `Mathlib.Logic.Equiv.Fintype` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: RandomLabelCoupling.lean: imports `Mathlib.Data.Fintype.Card` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: RandomLabelCoupling.lean: imports `Mathlib.Tactic` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+info: RandomLabelCoupling.lean:90:0: 'XedniRandomLabelCoupling.relabelEquiv' depends on axioms: [propext, Quot.sound]
+info: RandomLabelCoupling.lean:91:0: 'XedniRandomLabelCoupling.injective_trace_label_coupling' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RandomLabelCoupling.lean:92:0: 'XedniRandomLabelCoupling.label_event_card_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RandomLabelCoupling.lean:93:0: 'XedniRandomLabelCoupling.affine_trace_label_event_card_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+⚠ [3138/3140] Replayed OracleStep
+warning: OracleStep.lean: imports `Mathlib.Data.Fin.Tuple.Basic` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+info: OracleStep.lean:66:0: 'XedniRandomLabelOracleStep.fresh_snoc_injective' depends on axioms: [propext, Quot.sound]
+info: OracleStep.lean:67:0: 'XedniRandomLabelOracleStep.fresh_oracle_step_coupling' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: OracleStep.lean:68:0: 'XedniRandomLabelOracleStep.fresh_oracle_step_event_count' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: OracleStep.lean:69:0: 'XedniRandomLabelOracleStep.fresh_add_oracle_step' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [3139/3140] Built AdaptiveOracleCoupling (20s)
+info: AdaptiveOracleCoupling.lean:57:0: 'XedniAdaptiveOracleCoupling.branchCount' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AdaptiveOracleCoupling.lean:58:0: 'XedniAdaptiveOracleCoupling.fresh_branch_count_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AdaptiveOracleCoupling.lean:59:0: 'XedniAdaptiveOracleCoupling.adaptive_fresh_event_count_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+Build completed successfully (3140 jobs).
