@@ -118,4 +118,4 @@ collector code and atlas closed_known batching lead. This is known engineering.
 Prior small-field batch results motivate a successor, not a transferred performance
 claim. Larger registered baselines use different bases/collection and require a
 separate controlled study. No curve/isogeny fact changes; canonical graph set
-remains current. New study PDF marker has not yet been called.
+remains current. At protocol freeze, the new study PDF marker has not yet been called.
