@@ -25,6 +25,10 @@ pub(super) struct BatchedWalker<E: Copy> {
     native: bool,
     vector: bool,
     vector_pairs: u64,
+    vector_inverse: bool,
+    inverse_elements: u64,
+    inverse_batches: u64,
+    inverse_padded: u64,
     rng: StdRng,
     pool_rng: StdRng,
     jumps: Vec<(E, u64, u64)>,
@@ -68,6 +72,10 @@ impl<E: Copy> BatchedWalker<E> {
             native,
             vector: false,
             vector_pairs: 0,
+            vector_inverse: false,
+            inverse_elements: 0,
+            inverse_batches: 0,
+            inverse_padded: 0,
             rng: StdRng::seed_from_u64(seed),
             pool_rng: StdRng::seed_from_u64(seed ^ 0x504F_4F4C_5F4F_4646),
             jumps: Vec::new(),
@@ -144,9 +152,28 @@ impl<E: Copy> BatchedWalker<E> {
         self.vector = true;
     }
 
+    pub(super) fn enable_vector_inverse(&mut self) {
+        self.vector = true;
+        self.vector_inverse = true;
+    }
+
     fn add_pairs<G: CountedGroup<Elt = E>>(&mut self, g: &G, ops: &mut GroupOps) {
         self.output.clear();
-        if self.vector {
+        if self.vector_inverse {
+            let (pairs, elements) = g.add_pairwise_vector_inverse(
+                ops,
+                &self.left,
+                &self.right,
+                &mut self.output,
+                &mut self.scratch,
+            );
+            self.vector_pairs += pairs as u64;
+            self.inverse_elements += elements as u64;
+            if elements != 0 {
+                self.inverse_batches += 1;
+                self.inverse_padded += (elements.div_ceil(4) * 4 - elements) as u64;
+            }
+        } else if self.vector {
             self.vector_pairs += g.add_pairwise_vector(
                 ops,
                 &self.left,
@@ -240,7 +267,7 @@ impl<E: Copy> BatchedWalker<E> {
         self.lanes[lane].fresh = true;
     }
 
-    pub(super) fn counters<G: CountedGroup<Elt = E>>(&self, g: &G) -> [(&'static str, u64); 18] {
+    pub(super) fn counters<G: CountedGroup<Elt = E>>(&self, g: &G) -> [(&'static str, u64); 23] {
         [
             ("walk_jumps", (self.jumps.len() + self.pool.len()) as u64),
             ("walk_pool_offsets", self.pool.len() as u64),
@@ -254,6 +281,20 @@ impl<E: Copy> BatchedWalker<E> {
             ("walk_batch_unused", self.generated - self.consumed),
             ("walk_batch_pair_calls", self.pair_calls),
             ("walk_batch_pair_adds", self.pair_adds),
+            (
+                "walk_batch_inverse_vector_requested",
+                u64::from(self.vector_inverse),
+            ),
+            ("walk_batch_inverse_vector_elements", self.inverse_elements),
+            ("walk_batch_inverse_vector_batches", self.inverse_batches),
+            (
+                "walk_batch_inverse_vector_padded_lanes",
+                self.inverse_padded,
+            ),
+            (
+                "walk_batch_inverse_vector_backend",
+                u64::from(self.inverse_batches != 0),
+            ),
             ("walk_batch_vector_requested", u64::from(self.vector)),
             ("walk_batch_vector_pairs", self.vector_pairs),
             (
@@ -290,6 +331,7 @@ mod tests {
         let mut native_ops = GroupOps::default();
         let mut scalar_ops = GroupOps::default();
         let mut vector_ops = GroupOps::default();
+        let mut inverse_ops = GroupOps::default();
         let mut native = BatchedWalker::new(
             g,
             generator,
@@ -324,6 +366,18 @@ mod tests {
             &mut vector_ops,
         );
         vector.enable_vector();
+        let mut inverse = BatchedWalker::new(
+            g,
+            generator,
+            target,
+            r,
+            71,
+            cap,
+            true,
+            pool,
+            &mut inverse_ops,
+        );
+        inverse.enable_vector_inverse();
         let mut seen = HashSet::new();
         let mut rows = Vec::new();
         loop {
@@ -331,6 +385,7 @@ mod tests {
             let s = scalar.next(g, &mut scalar_ops);
             assert_eq!(n, s);
             assert_eq!(n, vector.next(g, &mut vector_ops));
+            assert_eq!(n, inverse.next(g, &mut inverse_ops));
             let Some((point, a, b, lane)) = n else {
                 break;
             };
@@ -342,6 +397,7 @@ mod tests {
                 native.restart(lane);
                 scalar.restart(lane);
                 vector.restart(lane);
+                inverse.restart(lane);
             }
             rows.push((point, a, b));
             assert!(rows.len() as u64 <= cap);
@@ -349,6 +405,7 @@ mod tests {
         assert_eq!(rows.len() as u64, cap);
         assert_eq!(native_ops, scalar_ops);
         assert_eq!(native_ops, vector_ops);
+        assert_eq!(native_ops, inverse_ops);
         let nc = native.counters(g);
         let sc = scalar.counters(g);
         for ((name, nv), (sname, sv)) in nc.iter().zip(&sc) {
@@ -364,6 +421,14 @@ mod tests {
             assert_eq!(*name, vname);
             if !name.starts_with("walk_batch_vector_") {
                 assert_eq!(*value, vvalue, "{name}");
+            }
+        }
+        for ((name, value), (iname, ivalue)) in nc.iter().zip(inverse.counters(g)) {
+            assert_eq!(*name, iname);
+            if !name.starts_with("walk_batch_vector_")
+                && !name.starts_with("walk_batch_inverse_vector_")
+            {
+                assert_eq!(*value, ivalue, "{name}");
             }
         }
         rows

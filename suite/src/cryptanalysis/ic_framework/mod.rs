@@ -305,6 +305,7 @@ pub fn run_pipeline<G: CountedGroup>(
         Targets::WalkBatch => TargetSource::WalkBatch,
         Targets::WalkBatchScalar => TargetSource::WalkBatchScalar,
         Targets::WalkBatchVector => TargetSource::WalkBatchVector,
+        Targets::WalkBatchVectorInverse => TargetSource::WalkBatchVectorInverse,
     };
     let mut outcome: PipelineOutcome = collect_and_solve_with(
         ctx.group,

@@ -429,6 +429,30 @@ impl FastCurve {
         out: &mut Vec<FastPoint>,
         scratch: &mut BatchScratch,
     ) -> usize {
+        self.add_pairwise_vector_impl(ps, qs, out, scratch, false).0
+    }
+
+    /// Same full points with opt-in SIMD inverse product passes for8..16 inputs.
+    /// Returns (vector point pairs, inverse input elements executed by SIMD).
+    pub fn add_pairwise_vector_inverse(
+        &self,
+        ps: &[FastPoint],
+        qs: &[FastPoint],
+        out: &mut Vec<FastPoint>,
+        scratch: &mut BatchScratch,
+    ) -> (usize, usize) {
+        self.add_pairwise_vector_impl(ps, qs, out, scratch, true)
+    }
+
+    fn add_pairwise_vector_impl(
+        &self,
+        ps: &[FastPoint],
+        qs: &[FastPoint],
+        out: &mut Vec<FastPoint>,
+        scratch: &mut BatchScratch,
+        vector_inverse: bool,
+    ) -> (usize, usize) {
+        let _ = vector_inverse;
         assert_eq!(ps.len(), qs.len(), "pairwise addition needs equal slices");
         #[cfg(all(target_arch = "x86_64", suite_avx512))]
         if let Some(kernel) = simd256::Simd256::new(&self.field) {
@@ -440,13 +464,25 @@ impl FastCurve {
                     p.x ^ q.x
                 }
             }));
-            self.field.batch_inv(&mut scratch.dens, &mut scratch.acc);
+            // SAFETY: the constructor checked AVX2/PCLMUL. The bounded helper
+            // rejects unsupported lengths and noncanonical values unchanged.
+            let inverse_elements = if vector_inverse {
+                unsafe { kernel.batch_inverse_narrow(&self.field, &mut scratch.dens) }
+            } else {
+                0
+            };
+            if inverse_elements == 0 {
+                self.field.batch_inv(&mut scratch.dens, &mut scratch.acc);
+            }
             // SAFETY: the constructor checks AVX2/PCLMUL, and the helper
             // dispatches VPCLMUL only when independently detected.
-            return unsafe { kernel.add_full(self, ps, qs, &scratch.dens, out, false) };
+            return (
+                unsafe { kernel.add_full(self, ps, qs, &scratch.dens, out, false) },
+                inverse_elements,
+            );
         }
         self.add_pairwise(ps, qs, out, scratch);
-        0
+        (0, 0)
     }
 
     /// Abscissae of `P_i + Q_i`, with one batch inversion. `None` is O.
@@ -1456,6 +1492,65 @@ mod simd256 {
                 _mm256_storeu_si256(out.as_mut_ptr() as *mut __m256i, value);
             }
             out
+        }
+
+        /// Lane-wise version of Gf2's existing four accumulators. Padding
+        /// contributes only identities; the original zero mask is restored.
+        /// Return0 without mutation whenever the complete scalar path is needed.
+        #[target_feature(enable = "avx2,pclmulqdq")]
+        pub(super) unsafe fn batch_inverse_narrow(&self, field: &Gf2, xs: &mut [u64]) -> usize {
+            if !(8..=16).contains(&xs.len())
+                || xs.iter().any(|x| x & !self.mask != 0)
+                || xs.iter().all(|&x| x == 0)
+            {
+                return 0;
+            }
+            let blocks = xs.len().div_ceil(4);
+            let mut input = [[1u64; 4]; 4];
+            for (dst, &x) in input.iter_mut().flatten().zip(xs.iter()) {
+                *dst = if x == 0 { 1 } else { x };
+            }
+            let mut prefix = [_mm256_setzero_si256(); 4];
+            prefix[0] = _mm256_loadu_si256(input[0].as_ptr().cast());
+            for i in 1..blocks {
+                prefix[i] =
+                    self.mul_pclmul128(prefix[i - 1], _mm256_loadu_si256(input[i].as_ptr().cast()));
+            }
+            let mut products = [0u64; 4];
+            _mm256_storeu_si256(products.as_mut_ptr().cast(), prefix[blocks - 1]);
+            // Exactly the original four-product inversion tree; one inverse.
+            let p01 = field.mul(products[0], products[1]);
+            let p23 = field.mul(products[2], products[3]);
+            let inv_all = field.inv(field.mul(p01, p23));
+            let i01 = field.mul(inv_all, p23);
+            let i23 = field.mul(inv_all, p01);
+            let inverses = [
+                field.mul(i01, products[1]),
+                field.mul(i01, products[0]),
+                field.mul(i23, products[3]),
+                field.mul(i23, products[2]),
+            ];
+            let mut acc = _mm256_loadu_si256(inverses.as_ptr().cast());
+            for i in (1..blocks).rev() {
+                let value = self.mul_pclmul128(acc, prefix[i - 1]);
+                acc = self.mul_pclmul128(acc, _mm256_loadu_si256(input[i].as_ptr().cast()));
+                let mut values = [0u64; 4];
+                _mm256_storeu_si256(values.as_mut_ptr().cast(), value);
+                let end = xs.len().min(4 * i + 4);
+                for (x, inv) in xs[4 * i..end].iter_mut().zip(values) {
+                    if *x != 0 {
+                        *x = inv;
+                    }
+                }
+            }
+            let mut first = [0u64; 4];
+            _mm256_storeu_si256(first.as_mut_ptr().cast(), acc);
+            for (x, inv) in xs[..4].iter_mut().zip(first) {
+                if *x != 0 {
+                    *x = inv;
+                }
+            }
+            xs.len()
         }
 
         fn append_full_scalar(
@@ -2617,6 +2712,108 @@ mod tests {
             assert_eq!(out.len(), qs.len());
             for (q, sum) in qs.iter().zip(&out) {
                 assert_eq!(*sum, fc.add(p, *q));
+            }
+        }
+    }
+
+    #[cfg(all(target_arch = "x86_64", suite_avx512))]
+    #[test]
+    fn vector_inverse_products_match_existing_across_widths_zeros_and_lengths() {
+        if !(is_x86_feature_detected!("avx2") && is_x86_feature_detected!("pclmulqdq")) {
+            eprintln!("skipped: no AVX2/PCLMUL inverse product kernel");
+            return;
+        }
+        let mut rng = StdRng::seed_from_u64(0x01A7_E256);
+        let mut accepted = 0;
+        for n in 2..=FastCurve::MAX_DEGREE {
+            let field = nb_field(n);
+            let Some(kernel) = simd256::Simd256::new(&field) else {
+                continue;
+            };
+            accepted += 1;
+            for len in [0, 1, 3, 4, 7, 8, 9, 12, 15, 16, 17, 31] {
+                for pattern in 0..16 {
+                    let mut xs: Vec<_> = (0..len)
+                        .map(|i| {
+                            if pattern == 0
+                                || (pattern == 1 && i % 2 == 0)
+                                || (pattern == 2 && i + 1 != len)
+                            {
+                                0
+                            } else {
+                                rng.gen::<u64>() & field.mask
+                            }
+                        })
+                        .collect();
+                    let original = xs.clone();
+                    let mut expected = xs.clone();
+                    field.batch_inv(&mut expected, &mut Vec::new());
+                    // SAFETY: constructor checks features and the helper validates length/inputs.
+                    let count = unsafe { kernel.batch_inverse_narrow(&field, &mut xs) };
+                    if (8..=16).contains(&len) && original.iter().any(|&x| x != 0) {
+                        assert_eq!(count, len);
+                        assert_eq!(xs, expected, "n={n}, len={len}, pattern={pattern}");
+                    } else {
+                        assert_eq!(count, 0);
+                        assert_eq!(xs, original);
+                    }
+                }
+            }
+            let mut invalid = vec![field.mask + 1; 16];
+            let before = invalid.clone();
+            assert_eq!(
+                unsafe { kernel.batch_inverse_narrow(&field, &mut invalid) },
+                0
+            );
+            assert_eq!(invalid, before);
+        }
+        assert!(accepted >= 50);
+        eprintln!("SIMD inverse products accepted {accepted} field widths");
+    }
+
+    #[test]
+    fn vector_inverse_points_preserve_valid_curve_outputs_append_and_scratch() {
+        for n in [7, 13, 19, 23, 31, 53, 61] {
+            let kc = KoblitzCurve::new(0, n).unwrap();
+            let curve = FastCurve::new(&kc.curve).unwrap();
+            let points: Vec<_> = random_points(&kc, 40, 0x1A7E + u64::from(n))
+                .iter()
+                .map(|p| curve.lift(p))
+                .collect();
+            let ps: Vec<_> = (0..37).map(|i| points[i % points.len()]).collect();
+            let mut qs: Vec<_> = ps
+                .iter()
+                .map(|p| *points.iter().find(|q| q.x != p.x).unwrap())
+                .collect();
+            qs[0] = FastPoint::INFINITY;
+            qs[1] = ps[1];
+            qs[2] = curve.neg(ps[2]);
+            let mut scratch = BatchScratch::default();
+            for len in [0, 1, 3, 4, 7, 8, 9, 12, 15, 16, 17, 37] {
+                let mut expected = vec![FastPoint::INFINITY];
+                expected.extend(
+                    ps[..len]
+                        .iter()
+                        .zip(&qs[..len])
+                        .map(|(&p, &q)| curve.add(p, q)),
+                );
+                let mut ordinary = vec![FastPoint::INFINITY];
+                let old_count =
+                    curve.add_pairwise_vector(&ps[..len], &qs[..len], &mut ordinary, &mut scratch);
+                let mut actual = vec![FastPoint::INFINITY];
+                let (points_count, inverses_count) = curve.add_pairwise_vector_inverse(
+                    &ps[..len],
+                    &qs[..len],
+                    &mut actual,
+                    &mut scratch,
+                );
+                assert_eq!(actual, expected, "n={n},len={len}");
+                assert_eq!(actual, ordinary);
+                assert_eq!(points_count, old_count);
+                assert_eq!(
+                    inverses_count > 0,
+                    (8..=16).contains(&len) && curve.cached_vector_backend() != "scalar"
+                );
             }
         }
     }

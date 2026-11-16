@@ -142,7 +142,8 @@ fn main() {
         | "mitm-walk16-native"
         | "mitm-walk16-vector"
         | "mitm-walk16-vector-const"
-        | "mitm-walk16-vector-narrow" => "mitm-prefix",
+        | "mitm-walk16-vector-narrow"
+        | "mitm-walk16-vector-inverse" => "mitm-prefix",
         "rho-plain-euclid" => "rho-plain",
         "rho-negation-euclid" => "rho-negation",
         "verify-table-euclid" => "verify-table",
@@ -325,7 +326,8 @@ fn main() {
     }
     if mode == "verify-walkbatch" {
         use cryptanalysis_suite::cryptanalysis::ic_boundary::{
-            trace_batched_walk, trace_batched_walk_vector, RestartPool,
+            trace_batched_walk, trace_batched_walk_vector, trace_batched_walk_vector_inverse,
+            RestartPool,
         };
         let native = trace_batched_walk(
             &group,
@@ -370,6 +372,18 @@ fn main() {
             RestartPool::Lazy,
             11,
         );
+        let inverse_vector = trace_batched_walk_vector_inverse(
+            &group,
+            inst.generator,
+            target,
+            inst.r,
+            target_seed,
+            512,
+            RestartPool::Lazy,
+            11,
+        );
+        assert_eq!(native.frames, inverse_vector.frames);
+        assert_eq!(native.group_ops, inverse_vector.group_ops);
         assert_eq!(native.frames, vector.frames);
         assert_eq!(native.group_ops, vector.group_ops);
         assert_eq!(native.frames, scalar.frames);
@@ -384,7 +398,7 @@ fn main() {
         let frames: Vec<_> = native.frames.iter().map(|f|json!({"infinity":f.point.infinity,"x":f.point.x,"y":f.point.y,"a":f.a,"b":f.b,"lane":f.lane,"identity":f.identity,"repeated":f.repeated,"forced_restart":f.forced_restart})).collect();
         println!(
             "{}",
-            json!({"status":"pass","curve_id":inst.name,"fixture":fixture,"target":[target.x,target.y],"planted":planted,"target_seed":target_seed,"checks":frames.len(),"complete_stream_comparisons":3,"forced_restart_every":11,"vector_counters":vector.counters,"native_counters":native.counters,"scalar_counters":scalar.counters,"group_ops":native.group_ops,"has_clmul":inst.gf.has_clmul(),"frames":frames})
+            json!({"status":"pass","curve_id":inst.name,"fixture":fixture,"target":[target.x,target.y],"planted":planted,"target_seed":target_seed,"checks":frames.len(),"complete_stream_comparisons":4,"inverse_vector_counters":inverse_vector.counters,"forced_restart_every":11,"vector_counters":vector.counters,"native_counters":native.counters,"scalar_counters":scalar.counters,"group_ops":native.group_ops,"has_clmul":inst.gf.has_clmul(),"frames":frames})
         );
         return;
     }
@@ -466,6 +480,7 @@ fn main() {
         .into(),
         targets: match requested_mode {
             "mitm-walk16-native" => Targets::WalkBatch,
+            "mitm-walk16-vector-inverse" => Targets::WalkBatchVectorInverse,
             "mitm-walk16-vector" | "mitm-walk16-vector-const" | "mitm-walk16-vector-narrow" => {
                 Targets::WalkBatchVector
             }
@@ -491,7 +506,8 @@ fn main() {
             | "mitm-walk16-native"
             | "mitm-walk16-vector"
             | "mitm-walk16-vector-const"
-            | "mitm-walk16-vector-narrow" => {
+            | "mitm-walk16-vector-narrow"
+            | "mitm-walk16-vector-inverse" => {
                 if inst.n <= 21 {
                     "64"
                 } else {
@@ -506,7 +522,10 @@ fn main() {
     spec.oracle_params.set("m", "2");
     spec.oracle_params.set(
         "vector_prepare",
-        if requested_mode == "mitm-walk16-vector-const" {
+        if matches!(
+            requested_mode,
+            "mitm-walk16-vector-const" | "mitm-walk16-vector-inverse"
+        ) {
             "3"
         } else if requested_mode == "mitm-walk16-vector-narrow" {
             "4"

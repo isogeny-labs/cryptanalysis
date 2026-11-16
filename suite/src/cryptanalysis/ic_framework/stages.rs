@@ -477,6 +477,8 @@ pub enum Targets {
     WalkBatchScalar,
     /// Identical schedule with vector full-point formulas after batch inversion.
     WalkBatchVector,
+    /// Same full points with SIMD products in the shared inverse.
+    WalkBatchVectorInverse,
 }
 
 impl Targets {
@@ -487,6 +489,7 @@ impl Targets {
             Targets::WalkBatch => "walk-batch16",
             Targets::WalkBatchScalar => "walk-batch16-scalar",
             Targets::WalkBatchVector => "walk-batch16-vector",
+            Targets::WalkBatchVectorInverse => "walk-batch16-vector-inverse",
         }
     }
 
@@ -497,8 +500,9 @@ impl Targets {
             "walk-batch16" => Ok(Targets::WalkBatch),
             "walk-batch16-scalar" => Ok(Targets::WalkBatchScalar),
             "walk-batch16-vector" => Ok(Targets::WalkBatchVector),
+            "walk-batch16-vector-inverse" => Ok(Targets::WalkBatchVectorInverse),
             other => Err(format!(
-                "unknown target source `{other}`; try random, walk, walk-batch16, walk-batch16-scalar or walk-batch16-vector"
+                "unknown target source `{other}`; try random, walk, walk-batch16, walk-batch16-scalar, walk-batch16-vector or walk-batch16-vector-inverse"
             )),
         }
     }

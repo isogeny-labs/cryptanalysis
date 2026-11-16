@@ -1,0 +1,47 @@
+# Current continuation
+
+Active broadgoal remains aggressive specialized IC arithmetic and novelperformance;
+no newgoalcomplete/blockstatus. Userphrasingbans stillapply. Noagentsauthorized.
+
+Latestpublishedf49291db45545796337a026ae01f352d9fbac917 constantpolynomialresults:
+record1541Zclosedinvalid,44records gatepass;23metrics compact16rawrefs alluploaded,
+757rawseparatelystored+bundle;REPORT.pdf4pagesALLinspectedmarkerDONEonce. Claim
+f2254cunsigned. PrimaryN27dynamic/const1.055293CI1.04714..1.07671; table1.09924,
+collectorNS. N15/18primaryNS,8AAfailsretained0caps,480answers2560states. PR1621body
+rewrittenwithlatestscope/erratum/fork; doNOTassertCI/signedstanding. Current
+progresshelper59metrics(36prior+23new) exactvaluesaftercommitconfirmedinlocal-log.
+
+WorkingnewSIMDinverseprototype:7Rustfilesdirty; newtargetWalkBatchVectorInverse,
+probe mitm-walk16-vector-inverse usesconstanttable3. ExistingGf2ALREADYfourSCALAR
+accumulators; new8..16stackkernel packsproducts4lanes ordinaryPCL, zero-safe,
+peelsidentity/terminalupdates,canonical/length/CPUfallback. Actualrequested/batches/
+elements/paddedlanes/backendcounters. Initunchangedordinary; pointformulasunchanged.
+
+Local2vector-inversefiltertests,27framework,5walkfilters PASS (overlap). Strict
+x86musllib/probeClippy002PASS;001redundantprobeTargetspatternFAILpreserved. Local
+10devfixture0routes and5fieldsx512statesx4streamcomparisonsPASS (ARMfallbackonly).
+Nativeactualinversekernelnotexecutedyet. Cargocompilesallterminal; noRusteditsduring
+nextnativecompile. ConductorT6859idb5c1c28d-aa63-4be0-b69b-f7801c58268d,
+attempt2411f801-c87c-4c46-9542-9c0e6e2b516c epoch1claimsnewstudy+7Rustpaths.
+
+Nextpublishnewsource+localartifacts+nativeprepcontract,checkpointgate,launchNEW
+L4CPU4/8GiB900s--apttime build_only.py --source-commit EXACTHEAD outputbuild001.
+Expect175maps15loader5walk2full1const27framework3inverse(filtersoverlap),4stream
+traces512states/all5actualinversebackendpositive,58ishqualifiedfieldwidths.
+Bindnewprep(source_manifestcurrentmustmatch),replay2560states/archivebeforetiming.
+
+Nextprotocol3methods: frozenprevious1026binary/vector16const anchor (anchor-input
+andmetadataalreadycopiedimmutable), newbinary/vector16const control, newbinary/
+vector16inverse candidate. Samequerylaw forALL3; alltablemode3; sourcealiasnames
+mustmapactualCLIandbinaryexplicitly. Primarycontext+pipeline-through-oraclecleanup
+candidatevsFROZENanchor; secondarycollectorandown-binarykernelcontrast; include
+newcontrol/anchorcontrasttorevealcodegenregression. Noresultmultiplication.
+Fresh456..479,all6ordersx4/field=120triples,360IC240rho. Publishprotocol/source
+BEFOREfreshmaterialization. OldanchorcandidateIDsreusedfromconstantstudy; new10
+methodcandidateswithcurrenthashes. Inputsregeneratedwhilecompilingallowedindependent
+preparationafterpublishedfrozencode; NOTtiminguntilactualnativepassandpins.
+
+PCCforkat167retained; noledgerrewrite/waiver/signatureforgery. Existingproblemfiles
+remain. Global.resume/RESUME.md conflictT6814: DO NOTedit; useTHISscopedhandoff.
+NoCIuntil50minafterLATESTpush/PRactivity,then4h; noneinspectedinthisturn. Shared
+cryptomirrorstillwaitingsourcePRmergebeforebytecopy. NoGPUexecution/speedclaim.

@@ -950,6 +950,7 @@ pub fn trace_batched_walk<G: CountedGroup>(
         cap,
         native,
         false,
+        false,
         pool,
         forced_every,
     )
@@ -976,6 +977,34 @@ pub fn trace_batched_walk_vector<G: CountedGroup>(
         cap,
         true,
         true,
+        false,
+        pool,
+        forced_every,
+    )
+}
+
+/// Same trace with SIMD inverse products and ordinary shared-inverse initialization.
+#[allow(clippy::too_many_arguments)]
+pub fn trace_batched_walk_vector_inverse<G: CountedGroup>(
+    g: &G,
+    generator: G::Elt,
+    target: G::Elt,
+    r: u64,
+    seed: u64,
+    cap: u64,
+    pool: RestartPool,
+    forced_every: u64,
+) -> WalkBatchAudit<G::Elt> {
+    trace_batched_walk_impl(
+        g,
+        generator,
+        target,
+        r,
+        seed,
+        cap,
+        true,
+        true,
+        true,
         pool,
         forced_every,
     )
@@ -991,6 +1020,7 @@ fn trace_batched_walk_impl<G: CountedGroup>(
     cap: u64,
     native: bool,
     vector: bool,
+    vector_inverse: bool,
     pool: RestartPool,
     forced_every: u64,
 ) -> WalkBatchAudit<G::Elt> {
@@ -999,7 +1029,9 @@ fn trace_batched_walk_impl<G: CountedGroup>(
     let mut walker = batched_walk::BatchedWalker::new(
         g, generator, target, r, seed, cap, native, pool, &mut ops,
     );
-    if vector {
+    if vector_inverse {
+        walker.enable_vector_inverse();
+    } else if vector {
         walker.enable_vector();
     }
     let mut seen = fast_map(cap as usize);
@@ -1063,6 +1095,17 @@ pub trait CountedGroup {
     ) -> usize {
         self.add_pairwise(ops, ps, qs, out, scratch);
         0
+    }
+    /// Optional SIMD inverse products; returns point and inverse element counts.
+    fn add_pairwise_vector_inverse(
+        &self,
+        ops: &mut GroupOps,
+        ps: &[Self::Elt],
+        qs: &[Self::Elt],
+        out: &mut Vec<Self::Elt>,
+        scratch: &mut GroupPairScratch,
+    ) -> (usize, usize) {
+        (self.add_pairwise_vector(ops, ps, qs, out, scratch), 0)
     }
     fn has_native_pairwise(&self) -> bool {
         false
@@ -2860,6 +2903,20 @@ impl CountedGroup for BinaryGroup<'_> {
         ops.adds += ps.len() as u64;
         self.0.add_pairwise_vector(ps, qs, out, &mut scratch.binary)
     }
+    fn add_pairwise_vector_inverse(
+        &self,
+        ops: &mut GroupOps,
+        ps: &[FastPoint],
+        qs: &[FastPoint],
+        out: &mut Vec<FastPoint>,
+        scratch: &mut GroupPairScratch,
+    ) -> (usize, usize) {
+        assert_eq!(ps.len(), qs.len());
+        out.clear();
+        ops.adds += ps.len() as u64;
+        self.0
+            .add_pairwise_vector_inverse(ps, qs, out, &mut scratch.binary)
+    }
     fn has_native_pairwise(&self) -> bool {
         true
     }
@@ -4296,6 +4353,8 @@ pub enum TargetSource {
     WalkBatchScalar,
     /// Same schedule and shared inverse with opt-in vector point formulas.
     WalkBatchVector,
+    /// Same vector points with SIMD product passes in the shared inverse.
+    WalkBatchVectorInverse,
 }
 
 impl TargetSource {
@@ -4308,6 +4367,7 @@ impl TargetSource {
             TargetSource::WalkBatch => "walk_batch16",
             TargetSource::WalkBatchScalar => "walk_batch16_scalar",
             TargetSource::WalkBatchVector => "walk_batch16_vector",
+            TargetSource::WalkBatchVectorInverse => "walk_batch16_vector_inverse",
         }
     }
     pub fn is_walk(&self) -> bool {
@@ -4318,12 +4378,16 @@ impl TargetSource {
                 | TargetSource::WalkBatch
                 | TargetSource::WalkBatchScalar
                 | TargetSource::WalkBatchVector
+                | TargetSource::WalkBatchVectorInverse
         )
     }
     pub fn is_batched(&self) -> bool {
         matches!(
             self,
-            TargetSource::WalkBatch | TargetSource::WalkBatchScalar | TargetSource::WalkBatchVector
+            TargetSource::WalkBatch
+                | TargetSource::WalkBatchScalar
+                | TargetSource::WalkBatchVector
+                | TargetSource::WalkBatchVectorInverse
         )
     }
     /// **Whether a target the run has already decomposed is skipped.**
@@ -4346,6 +4410,7 @@ impl TargetSource {
                 | TargetSource::WalkBatch
                 | TargetSource::WalkBatchScalar
                 | TargetSource::WalkBatchVector
+                | TargetSource::WalkBatchVectorInverse
         )
     }
 }
@@ -4579,12 +4644,16 @@ pub fn collect_and_solve_with<G: CountedGroup, L: RelationSolver + ?Sized>(
             max_trials,
             matches!(
                 targets,
-                TargetSource::WalkBatch | TargetSource::WalkBatchVector
+                TargetSource::WalkBatch
+                    | TargetSource::WalkBatchVector
+                    | TargetSource::WalkBatchVectorInverse
             ),
             pool_mode,
             &mut rel.group_ops,
         );
-        if targets == TargetSource::WalkBatchVector {
+        if targets == TargetSource::WalkBatchVectorInverse {
+            walker.enable_vector_inverse();
+        } else if targets == TargetSource::WalkBatchVector {
             walker.enable_vector();
         }
         walker
@@ -4606,7 +4675,8 @@ pub fn collect_and_solve_with<G: CountedGroup, L: RelationSolver + ?Sized>(
             }
             TargetSource::WalkBatch
             | TargetSource::WalkBatchScalar
-            | TargetSource::WalkBatchVector => {
+            | TargetSource::WalkBatchVector
+            | TargetSource::WalkBatchVectorInverse => {
                 let walker = batch_walk.as_mut().expect("batch source has state");
                 let Some((point, a, b, lane)) = walker.next(g, &mut rel.group_ops) else {
                     break;
