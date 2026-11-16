@@ -66,14 +66,24 @@ static void test_checkpoint_counter_bounds(const char *original_path, const char
     FILE *f = fopen(original_path, "rb");
     CHECK(f != NULL);
     if (!f) return;
-    CHECK(fseek(f, 0, SEEK_END) == 0);
+    int seek_ok = fseek(f, 0, SEEK_END) == 0;
+    CHECK(seek_ok);
+    if (!seek_ok) {
+        fclose(f);
+        return;
+    }
     long size = ftell(f);
     CHECK(size >= (long)sizeof(grumpy_checkpoint_header));
     if (size < (long)sizeof(grumpy_checkpoint_header)) {
         fclose(f);
         return;
     }
-    rewind(f);
+    seek_ok = fseek(f, 0, SEEK_SET) == 0;
+    CHECK(seek_ok);
+    if (!seek_ok) {
+        fclose(f);
+        return;
+    }
     size_t n = (size_t)size;
     unsigned char *original = malloc(n), *expected = malloc(n);
     CHECK(original != NULL && expected != NULL);
@@ -83,8 +93,14 @@ static void test_checkpoint_counter_bounds(const char *original_path, const char
         fclose(f);
         return;
     }
-    CHECK(fread(original, 1, n, f) == n);
+    int read_ok = fread(original, 1, n, f) == n;
+    CHECK(read_ok);
     CHECK(fclose(f) == 0);
+    if (!read_ok) {
+        free(original);
+        free(expected);
+        return;
+    }
     grumpy_checkpoint_header saved;
     memcpy(&saved, original, sizeof(saved));
     char path[160], progress[192];
