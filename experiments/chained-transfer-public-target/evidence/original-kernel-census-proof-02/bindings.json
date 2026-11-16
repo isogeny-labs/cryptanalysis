@@ -1,0 +1,32 @@
+[
+  {
+    "claim": "pcc/claims/PCC-20261115-38af16.json",
+    "theorem": "OriginalKernelCensus.actual_data_shapes",
+    "statement": "theorem actual_data_shapes : masks.length = 3 \u2227 (masks.all (fun row => row.length == 6)) = true \u2227 stored_eligibility.length = 3 \u2227 (stored_eligibility.all (fun row => row.length == 6)) = true \u2227 D.length = 3 \u2227 (D.all (fun row => row.length == 6 && row.all (fun d => d.length == 3 && d[0]! < 223 && d[1]! == 0 && d[2]! == 0))) = true \u2227 factors.length = 3 \u2227 (factors.all (fun row => row.length == 6 && row.all (fun fs => fs.length == 7 && fs.all (fun f => f.length == 3)))) = true \u2227 transport_images.length = 2 \u2227 (transport_images.all (fun row => row.length == 64 && row.all (fun v => v < 64))) = true"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-5142e9.json",
+    "theorem": "OriginalKernelCensus.actual_transport_bijections",
+    "statement": "theorem actual_transport_bijections : ((transport_images[0]!).eraseDups).length = 64 \u2227 ((transport_images[1]!).eraseDups).length = 64"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-952d21.json",
+    "theorem": "OriginalKernelCensus.all18_eligibility_checks",
+    "statement": "theorem all18_eligibility_checks : \u2200 d : Fin 3, \u2200 i : Fin 6, computedEligible d.val i.val = (stored_eligibility[d.val]!)[i.val]!"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-0123e7.json",
+    "theorem": "OriginalKernelCensus.complete_triple_coverage",
+    "statement": "theorem complete_triple_coverage : triples.length = 216 \u2227 \u2200 i j k : Fin 6, (i.val,j.val,k.val) \u2208 triples"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-13289e.json",
+    "theorem": "OriginalKernelCensus.actual_supported_verdict",
+    "statement": "theorem actual_supported_verdict : pairs 0 = [(4,1)] \u2227 pairs 1 = [(1,4)] \u2227 acceptedTriples = [(4,1,4)]"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-4ecfa5.json",
+    "theorem": "OriginalKernelCensus.actual_path_unique",
+    "statement": "theorem actual_path_unique : \u2200 i j k : Fin 6, accepted i.val j.val k.val = true \u2194 i.val = 4 \u2227 j.val = 1 \u2227 k.val = 4"
+  }
+]

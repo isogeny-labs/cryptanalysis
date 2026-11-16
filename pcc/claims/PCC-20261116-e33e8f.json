@@ -1,0 +1,15 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T14:22:15Z",
+ "id": "PCC-20261116-e33e8f",
+ "kind": "statement",
+ "producer": {
+  "commit": "026ef4821a94fe6c1d0029a7b486656bc1223567",
+  "model": "",
+  "session": "ic-rational-current-20261115"
+ },
+ "proofs": [],
+ "schema": "pcc.claim/v1",
+ "scope": "koblitz_fast add_cached_wide/add_cached_narrow, ic-vector-query postprocess cross-Clippy003",
+ "statement": "After the immutable full-point SIMD timing capture, the existing cached table helpers replaced constant-size chunks_exact iteration with typed as_chunks iteration over the same multiple-of-four prefix. The task-local matching Rust1.99 x86musl library/probe Clippy check then passed with warnings denied. This source-only lint/control result does not alter or reprice the already captured5cb366343 binary measurements and is unsigned."
+}

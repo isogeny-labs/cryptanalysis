@@ -1,0 +1,58 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-12T12:54:21Z",
+ "id": "PCC-20261112-85d7c0",
+ "kind": "statement",
+ "producer": {
+  "commit": "c7128485f23c8977635bc5776071d23a37c2db14",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/independent-admission-01/check-independent.sh.txt",
+    "sha256": "1d4ec572ade69f8e1045316cdc770906be0650a9b81dec65fb9ec99a3e9ac2e8"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/independent-admission-01/workflow.yml.txt",
+    "sha256": "6f26e92b96f5da8e850aeab9387cadf9c9d82ca62d665f56cc17a1931b9da003"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/independent-admission-01/source-pin.txt",
+    "sha256": "405143efe915fa4579e5729651b4657a104a7d69d4bc5e04bb4d74b739ea020c"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/independent-admission-01/wrong-head.txt",
+    "sha256": "3616a9ae22a0a0b4cb8f32ff1e7dc7730187e2262be92f98f46281a291b9cfbf"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/independent-admission-01/dirty-source.txt",
+    "sha256": "304c694d39adbfa2e622f84d60445d78a9378396f34c76c076ffd13c4a341a1e"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/independent-admission-01/status.json",
+    "sha256": "6b2d684924000e992c1438a5a7c90bcc90deb3e6836637c4bad74704df7f2601"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Unsigned newconsumerindependentreplay admissionnegatives:isolatedwrongcryptoHEAD4e insteadpinned16c rejects2/specificHEADreason;correctHEADwithdeliberatelydirtynewRustinput rejects2/protectedinputreason.No output/build directorycreated for either.Controlledclonefile restored beforepositive20minrun.Fullscript/workflow/pins/rawstatus snapshots retained;oldreference98/13sources/check.sh/pin unchanged.Positiveintegration launchedseparately,notassertedcomplete."
+}

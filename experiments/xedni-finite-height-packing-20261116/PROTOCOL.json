@@ -1,0 +1,9 @@
+{
+  "schema": "xedni-finite-height-packing-protocol-v1",
+  "input": "integer lattice Z^2 with points (1,0), (0,1), (1,1) and optional third-point torsion bit",
+  "coefficient_radii": [0, 16],
+  "torsion_orders": [1, 2],
+  "bound": "T*(1+7*K)^2",
+  "falsifier": "any exact distinct-value count above the bound, or any bound-certified collision absent from exact count",
+  "status_law": "all cells retained, including K=0 and bounds that do not certify a collision"
+}

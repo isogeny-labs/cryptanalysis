@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-14T21:11:10Z",
+ "id": "PCC-20261114-61efa9",
+ "kind": "theorem",
+ "producer": {
+  "commit": "3fad107ab8112fff57febb89a287ca21b508d8a4",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "3801095d3302d72616009740339e49e71818fc13e16972adc66ac61dd6faee9d",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/twisted-pair-preflight/lean/TwistHomogeneity.lean",
+   "theorem": "TwistHomogeneity.adjugate_minor_scale"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Polynomial ring identities for twist curve residual, Delta, all generic adjugate minors, determinant, cleared HLP numerator and Ciani coefficient scaling; inverse-hypothesis zero equivalence, plus finite NATURAL residue witnesses. BOTH original434/435gates8namedroots0trusted. Encoded finite field, nonzero denominators, actual HLP constructor equality, geometric quotient and full Rust/program/map bridges remain open; no native new-instance/order/model result, signed standing or novelty aggregate.",
+ "statement": "theorem adjugate_minor_scale {R : Type} [CommRing R] (v a b c d : R) : (v*a)*(v*d) - (v*b)*(v*c) = v^2*(a*d-b*c)"
+}

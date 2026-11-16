@@ -1,0 +1,72 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-15T14:10:00Z",
+ "id": "PCC-20261115-27191b",
+ "kind": "statement",
+ "producer": {
+  "commit": "2920181e2a8bcae3238f14007660d1a61480555f",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/original-fixed-IC-CI-local-fixture-failure-01/REPORT.md",
+    "sha256": "9af2c344780184e9a70ac6e766009027843f6f098a12730322de49d08e86260e"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/original-fixed-IC-CI-local-fixture-failure-01/actual-driver.exit",
+    "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/original-fixed-IC-CI-local-fixture-failure-01/whole-driver.txt.xz",
+    "sha256": "df9cb0eba3207a4a4bee79e741b6e338ea87e145a3a6bcd0c63711781c11ce68"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/original-fixed-IC-CI-local-fixture-failure-01/whole-final-guards.txt.xz",
+    "sha256": "bbc54c2ab323ece95b0344e0895ef0a982a60e3325958707508f2abf8e1e5b96"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/original-fixed-IC-CI-local-fixture-failure-01/phases.txt",
+    "sha256": "ae5710d5fb0076675565351c7a83d6761776cc8598a0a83453de779b05fb8391"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/original-fixed-IC-CI-local-fixture-failure-01/exact-precommit-driver-source.json",
+    "sha256": "6974969a2ab17f06eefe272e3bc151df01d7ee98b15e7afc74be2b1d99faa390"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/original-fixed-IC-CI-local-fixture-failure-01/original-command.py",
+    "sha256": "e4e601c6126c42a26d53a9819907bc4135cd7285db8d99185957129d819854d9"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/original-fixed-IC-CI-local-fixture-failure-01/outcome.json",
+    "sha256": "a74cee7e16c450edacd95c8d2089d05a8f97d2e6b3994d2c1c037114abc5e807"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Local fresh IC/sampler CI driver01 failed at first original guard before any compilation/native/mathematics: isolated setup omitted the existing120752B original odd-product fixture, while actual GitHub workflow already hydrates that path. Actual driver1/initialguard1/finalguard1, whole output/source manifest/setup code preserved. Retry only after whole original-manifest hash/byte checked fixture copy, with distinct empty output/cache; no source, scientific criterion, model, seed, fixture or guard changes. Unsigned failure custody."
+}

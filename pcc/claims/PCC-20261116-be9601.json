@@ -1,0 +1,51 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T09:19:05Z",
+ "id": "PCC-20261116-be9601",
+ "kind": "execution",
+ "producer": {
+  "commit": "c539cd11aed992bf80b501b76296b9751c55485b",
+  "model": "codex",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "docs/audits/2026-11-16-grumpy-step-factor-bounds.json",
+    "sha256": "b219fb11dd47bba31e71e00624512c18844717693efe0bea389cd9978a80fd58"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "docs/audits/2026-11-16-grumpy-step-factor-evidence/before.log",
+    "sha256": "f3dac4b88456651befbdd40848a0bf24310fd391b2759773bde829cde3f92e77"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "docs/audits/2026-11-16-grumpy-step-factor-evidence/after.log",
+    "sha256": "eb0f5a093e4fbedee013b3bb00600f290aeacdbe7b87dee3267d607048cc9132"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "docs/audits/2026-11-16-grumpy-step-factor-evidence/ctest.log",
+    "sha256": "4d5cedabbb42e98afeee089f802c0297e7e556c6e5562c3444641219f5698f94"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "docs/audits/2026-11-16-artifact-owner-sync.json",
+    "sha256": "dbaa360b9e1c1677a43e11f15e8fc001a1ce6b27eb5d332729f5c8c2132497be"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Native C automatic step-factor control and pinned shared artifact consumer",
+ "statement": "The retained receipts report rejection of nonfinite and unrepresentable automatic grumpy step factors, finite/default compatibility, 21 passing ASan/UBSan controls and 29 artifact controls. Consumer merge requires the canonical owner PR to land first."
+}

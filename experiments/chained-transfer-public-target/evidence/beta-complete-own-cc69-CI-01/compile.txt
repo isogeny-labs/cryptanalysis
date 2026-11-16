@@ -1,0 +1,57 @@
+   Compiling n4-ci-evidence-audit v0.1.0 (/workspace/scratch/ct73-cc69-CI-audit-01/audit-cli)
+warning: function `sha224` is never used
+   --> src/original_sha256.rs:147:8
+    |
+147 | pub fn sha224(data: &[u8]) -> [u8; 28] {
+    |        ^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: struct `Sha256` is never constructed
+   --> src/original_sha256.rs:172:12
+    |
+172 | pub struct Sha256 {
+    |            ^^^^^^
+
+warning: associated items `new`, `update`, and `finalize` are never used
+   --> src/original_sha256.rs:186:12
+    |
+185 | impl Sha256 {
+    | ----------- associated items in this implementation
+186 |     pub fn new() -> Self {
+    |            ^^^
+...
+195 |     pub fn update(&mut self, mut data: &[u8]) {
+    |            ^^^^^^
+...
+214 |     pub fn finalize(mut self) -> [u8; 32] {
+    |            ^^^^^^^^
+
+warning: function `compress_blocks` is never used
+   --> src/original_sha256.rs:230:4
+    |
+230 | fn compress_blocks(state: &mut [u32; 8], blocks: &[u8]) {
+    |    ^^^^^^^^^^^^^^^
+
+warning: function `available` is never used
+   --> src/original_sha256.rs:256:19
+    |
+256 |     pub(super) fn available() -> bool {
+    |                   ^^^^^^^^^
+
+warning: function `compress` is never used
+   --> src/original_sha256.rs:268:26
+    |
+268 |     pub(super) unsafe fn compress(state: &mut [u32; 8], blocks: &[u8]) {
+    |                          ^^^^^^^^
+
+warning: variable `is_PCC` should have a snake case name
+  --> src/main.rs:11:354
+   |
+11 | ...skipped");skipped+=1;continue;}let is_PCC=job["name"]=="gate";assert_eq!(job["conclusion"],"success");let id=job["id"].as_u64().u...
+   |                                       ^^^^^^ help: convert the identifier to snake case: `is_pcc`
+   |
+   = note: `#[warn(non_snake_case)]` (part of `#[warn(nonstandard_style)]`) on by default
+
+warning: `n4-ci-evidence-audit` (bin "n4-ci-evidence-audit") generated 7 warnings
+    Finished `release` profile [optimized] target(s) in 2.42s

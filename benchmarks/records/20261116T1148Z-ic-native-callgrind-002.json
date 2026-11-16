@@ -1,0 +1,142 @@
+{
+  "branch": "codex/ic-trial32-20261115",
+  "closed_utc": "2026-11-16T12:16:55+00:00",
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "cloud/modal_run.py",
+        "run",
+        "--image",
+        "cuda",
+        "--gpu",
+        "L4",
+        "--cpu",
+        "4",
+        "--memory",
+        "8",
+        "--timeout",
+        "900",
+        "--apt",
+        "time",
+        "--apt",
+        "valgrind",
+        "--apt",
+        "binutils",
+        "--out",
+        "experiments/ic-native-profile-20261116/profile-002",
+        "--detach",
+        "--",
+        "python3",
+        "experiments/ic-native-profile-20261116/run_profile.py",
+        "--run-id",
+        "profile-002"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "started_utc": "2026-11-16T11:48:22+00:00",
+      "wall_s": 10.951
+    }
+  ],
+  "commit": "9f036d8815bbb29c151c7e9ee378cf3026629744",
+  "commit_dirty": false,
+  "created_utc": "2026-11-16T11:48:10+00:00",
+  "curve_uid": null,
+  "entries": [
+    "experiments/ic-native-profile-20261116"
+  ],
+  "host": {
+    "cpu": "arm",
+    "cpus_online": 14,
+    "hostname": "Mac.attlocal.net",
+    "isolation": "unstated",
+    "platform": "macOS-27.2-arm64-arm-64bit-Mach-O"
+  },
+  "id": "20261116T1148Z-ic-native-callgrind-002",
+  "metrics": [
+    {
+      "baseline": null,
+      "better": "neutral",
+      "n": null,
+      "name": "completed_target_profiles",
+      "note": "Four IC ABBA and two same-point rho captures; all six answers replay",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "count",
+      "value": 6.0
+    },
+    {
+      "baseline": null,
+      "better": "lower",
+      "n": null,
+      "name": "product_whole_guest_ir",
+      "note": "Median of two complete guest-process instrumented instruction-read counts; not native time/hardware retirement/online interval",
+      "reference": 11334958.0,
+      "reference_kind": "matched_rho",
+      "spread": null,
+      "unit": "ir",
+      "value": 148334923.0
+    },
+    {
+      "baseline": null,
+      "better": "lower",
+      "n": null,
+      "name": "packed_whole_guest_ir",
+      "note": "Median of two complete guest-process instrumented instruction-read counts; unsigned/unqualified",
+      "reference": 11334958.0,
+      "reference_kind": "matched_rho",
+      "spread": null,
+      "unit": "ir",
+      "value": 147915626.0
+    }
+  ],
+  "problem": "profile:binary_ic_guest_ir",
+  "raw": [
+    {
+      "bytes": 2996107,
+      "path": "experiments/ic-native-profile-20261116/raw-profile-002.tar.gz",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/fa/fa0d754e0af41a5360167fd1631831c12fd46b9e4dae3a052a57654f52a1ec75",
+      "sha256": "fa0d754e0af41a5360167fd1631831c12fd46b9e4dae3a052a57654f52a1ec75",
+      "uploaded": false
+    },
+    {
+      "bytes": 22042,
+      "path": "experiments/ic-native-profile-20261116/raw-profile002-bundle-receipt.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/5b/5bbd2b66cb50e4c2d24803bb8c6ec7bd25d7c707f1bdb6da59ad84c8db2d5180",
+      "sha256": "5bbd2b66cb50e4c2d24803bb8c6ec7bd25d7c707f1bdb6da59ad84c8db2d5180",
+      "uploaded": false
+    },
+    {
+      "bytes": 608265,
+      "path": "experiments/ic-native-profile-20261116/analysis-profile-002.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/07/07de907cbc15fcd3b3b1288e09996b83de4be056e4f9456193a7fa8ba0ea673f",
+      "sha256": "07de907cbc15fcd3b3b1288e09996b83de4be056e4f9456193a7fa8ba0ea673f",
+      "uploaded": false
+    },
+    {
+      "bytes": 1533,
+      "path": "experiments/ic-native-profile-20261116/replay-profile-002.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/5f/5fafc61a659dcb4e8cfc9d6302626dcacad0a8b72d893ae0a8c19ad8282a154f",
+      "sha256": "5fafc61a659dcb4e8cfc9d6302626dcacad0a8b72d893ae0a8c19ad8282a154f",
+      "uploaded": false
+    }
+  ],
+  "repo": "cryptanalysis",
+  "reports": {
+    "pdf": "experiments/ic-native-profile-20261116/REPORT-profile002.pdf",
+    "png": [
+      "experiments/ic-native-profile-20261116/profile002-exclusive.png"
+    ],
+    "svg": [
+      "experiments/ic-native-profile-20261116/profile002-totals.svg",
+      "experiments/ic-native-profile-20261116/profile002-exclusive.svg"
+    ]
+  },
+  "schema": "bench.record/v1",
+  "session": null,
+  "slug": "ic-native-callgrind-002",
+  "status": "invalid",
+  "summary": "Six Callgrind captures with25map PCL/packed preflight and six independent-arithmetic replay checks. Ir self sums/raw/tool totals agree;0e7008unsigned. Complete guest Ir only, not hardware retirement/native wall/online. Timing-window erratum20c68d preserves earlier narrower raw clock values. All78raw outputs archived; invalid for promotion.",
+  "validation": null
+}
