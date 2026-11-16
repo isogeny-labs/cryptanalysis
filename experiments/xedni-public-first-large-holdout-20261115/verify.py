@@ -187,6 +187,18 @@ def main():
     for name in ('distinct_offset_public_hit_recovers_scalar',
                  'distinct_offset_public_relation_iff_recovery'):
         assert f"'XedniPublicFirstLargeHoldout.{name}' depends on axioms: [propext, Classical.choice, Quot.sound]" in distinct_build_normalized
+    curve_source=(formal/'ConcreteCurveRecovery.lean').read_text()
+    assert all(f'theorem {name}' in curve_source for name in
+               ('panelCurve_discriminant','panelCurve_isElliptic',
+                'panelGenerator_nonzero','panel_curve_public_relation_iff_recovery'))
+    assert 'q • panelGenerator p hp = 0' in curve_source
+    assert not any(token in curve_source for token in ('sorry','admit','sorryAx','native_decide'))
+    curve_build=(formal/'concrete-curve-recovery-build-output.txt').read_text()
+    assert 'Build completed successfully (9051 jobs)' in curve_build
+    curve_build_normalized=re.sub(r'\s+',' ',curve_build)
+    for name in ('panelCurve_discriminant','panelCurve_isElliptic',
+                 'panelGenerator_nonzero','panel_curve_public_relation_iff_recovery'):
+        assert f"'XedniPublicFirstLargeHoldout.{name}' depends on axioms: [propext, Classical.choice, Quot.sound]" in curve_build_normalized
     recovery_protocol=json.loads((HERE/'public-recovery-protocol.json').read_text())
     recovery_result=json.loads((HERE/'public-recovery-result.json').read_text())
     recovery_audit_protocol=json.loads((HERE/'public-recovery-audit-protocol.json').read_text())
