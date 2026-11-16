@@ -172,7 +172,7 @@ def self_test(fixture):
             rejects += 1
     # Reducible: X^6+1 over F5 has factor X^2+1.
     try:
-        certificate(trace=0, field=Q)
+        certificate(trace=0, field=1)
     except ValueError:
         rejects += 1
     require(rejects == 5, 'mutation control escaped')
