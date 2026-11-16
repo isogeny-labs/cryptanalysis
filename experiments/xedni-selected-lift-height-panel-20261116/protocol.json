@@ -1,0 +1,13 @@
+{
+  "schema": "xedni-selected-lift-height-panel-v1",
+  "parent": "experiments/xedni-varying-curve-selection-20261115/protocol-v2.json",
+  "parent_rows_sha256": "9a594d96f369fb14f1a4cf6270b1c811ceda515e1c2a7eccab4d011ca8f3f322",
+  "population": "all 1722 ordered distinct nonidentity pairs under the parent p47 centered-lift law",
+  "admission": "inherit each frozen parent row status; compute heights for every accepted row, including both reduced-relation and non-relation rows",
+  "height": "Sage rational elliptic point canonical height at precision 128, algorithm pari; record decimal strings and computational status",
+  "discriminant": "record the exact discriminant of each reconstructed short Weierstrass model; this is not the minimal discriminant",
+  "ratio": "For each admitted curve take M=max height among selected points and m=min strictly positive height among selected points. The observed ratio M/m is a lower bound on M/mu_E only if mu_E denotes the least positive canonical height on the same rational curve. No equality with mu_E is inferred.",
+  "rank_arm": "For each distinct admitted curve try Sage rank(proof=True) and gens() in an isolated checked-Sage process with a 30-second wall cap; retain timeout and failure states. Basis data are diagnostic and do not establish mu_E without proof of completeness.",
+  "measurement": "Correctness and arithmetic diagnostic on the local host; no wall-time performance comparison",
+  "run_cap": "complete 1722-row parent replay and 20 admitted-row heights; three capped rank arms"
+}

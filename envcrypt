@@ -1,0 +1,252 @@
+#!/usr/bin/env python3
+"""envcrypt - encrypt .env files for git storage using AES-256-GCM + Threefish-512.
+
+Key material comes from the ENVC_KEY environment variable. The encrypted
+file (default .env.enc) is safe to commit to git.
+
+Layout of .env.enc:
+    magic(4) "ENVC" | version(1) | scrypt salt(16) | threefish tweak(16)
+    | AES-GCM nonce(12) | AES-GCM tag(16) | ciphertext
+
+Ciphertext = AES-256-GCM( Threefish-512-ECB( random_prefix(64) || PKCS#7(plaintext) ) )
+
+Usage:
+  envcrypt encrypt [FILE]        encrypt FILE (default .env) -> FILE.enc
+  envcrypt decrypt [FILE]        decrypt FILE (default .env.enc) -> stdout
+  envcrypt run -- CMD [ARGS...]  run CMD with the decrypted secrets in its env
+  envcrypt edit [FILE]           decrypt, open $EDITOR, re-encrypt on save
+
+Environment:
+  ENVC_KEY          passphrase (required)
+  EDITOR            editor used by `edit` (default: vi)
+"""
+
+import argparse
+import hashlib
+import os
+import secrets
+import subprocess
+import sys
+import tempfile
+
+MAGIC = b"ENVC"
+VERSION = 1
+SALT_LEN, TWEAK_LEN, NONCE_LEN, TAG_LEN = 16, 16, 12, 16
+BLOCK = 64
+M64 = (1 << 64) - 1
+C240 = 0x1BD11BDAA9FC1A22
+ROT = [
+    (46, 36, 19, 37),
+    (33, 27, 14, 42),
+    (17, 49, 36, 39),
+    (44, 9, 54, 56),
+    (39, 30, 34, 24),
+    (13, 50, 10, 17),
+    (25, 29, 39, 43),
+    (8, 35, 56, 22),
+]
+PAIRS = (
+    ((0, 1), (2, 3), (4, 5), (6, 7)),
+    ((2, 1), (4, 7), (6, 5), (0, 3)),
+    ((4, 1), (6, 3), (0, 5), (2, 7)),
+    ((6, 1), (0, 7), (2, 5), (4, 3)),
+)
+
+
+def _words(data):
+    return [int.from_bytes(data[i:i + 8], "little") for i in range(0, len(data), 8)]
+
+
+def _bytes(words):
+    return b"".join(w.to_bytes(8, "little") for w in words)
+
+
+def _subkeys(key, tweak):
+    kx = C240
+    for w in key:
+        kx ^= w
+    kw = list(key) + [kx]
+    t = list(tweak)
+    t.append(t[0] ^ t[1])
+    out = []
+    for s in range(19):
+        sub = [kw[(s + i) % 9] for i in range(8)]
+        sub[5] = (sub[5] + t[s % 3]) & M64
+        sub[6] = (sub[6] + t[(s + 1) % 3]) & M64
+        sub[7] = (sub[7] + s) & M64
+        out.append(sub)
+    return out
+
+
+def threefish_encrypt_block(key, tweak, block):
+    ks = _subkeys(key, tweak)
+    v = list(block)
+    for r in range(72):
+        if r % 4 == 0:
+            s = r // 4
+            for i in range(8):
+                v[i] = (v[i] + ks[s][i]) & M64
+        for (x, y), rot in zip(PAIRS[r % 4], ROT[r % 8]):
+            vx = (v[x] + v[y]) & M64
+            vy = (((v[y] << rot) | (v[y] >> (64 - rot))) & M64) ^ vx
+            v[x] = vx
+            v[y] = vy
+    return [(v[i] + ks[18][i]) & M64 for i in range(8)]
+
+
+def threefish_decrypt_block(key, tweak, block):
+    ks = _subkeys(key, tweak)
+    v = [(block[i] - ks[18][i]) & M64 for i in range(8)]
+    for r in range(71, -1, -1):
+        for (x, y), rot in zip(reversed(PAIRS[r % 4]), reversed(ROT[r % 8])):
+            vy = (v[y] ^ v[x])
+            vy = ((vy >> rot) | (vy << (64 - rot))) & M64
+            v[y] = vy
+            v[x] = (v[x] - vy) & M64
+        if r % 4 == 0:
+            s = r // 4
+            for i in range(8):
+                v[i] = (v[i] - ks[s][i]) & M64
+    return v
+
+
+def threefish_ecb(key, tweak, data, decrypt=False):
+    fn = threefish_decrypt_block if decrypt else threefish_encrypt_block
+    out = b""
+    for i in range(0, len(data), BLOCK):
+        out += _bytes(fn(key, tweak, _words(data[i:i + BLOCK])))
+    return out
+
+
+def _derive_keys(passphrase, salt):
+    dk = hashlib.scrypt(passphrase.encode(), salt=salt, n=2 ** 15, r=8, p=1,
+                       maxmem=128 * 1024 * 1024, dklen=96)
+    return dk[:32], dk[32:]
+
+
+def _pad(data):
+    n = BLOCK - (len(data) % BLOCK)
+    return data + bytes([n]) * n
+
+
+def _unpad(data):
+    n = data[-1]
+    if not 1 <= n <= BLOCK or data[-n:] != bytes([n]) * n:
+        raise ValueError("bad padding")
+    return data[:-n]
+
+
+def encrypt_file(path, out_path):
+    passphrase = _get_key()
+    with open(path, "rb") as f:
+        plaintext = f.read()
+    salt = secrets.token_bytes(SALT_LEN)
+    tweak = secrets.token_bytes(TWEAK_LEN)
+    nonce = secrets.token_bytes(NONCE_LEN)
+    aes_key, tf_key = _derive_keys(passphrase, salt)
+    inner = threefish_ecb(_words(tf_key), _words(tweak),
+                          secrets.token_bytes(BLOCK) + _pad(plaintext))
+    from Crypto.Cipher import AES
+    cipher = AES.new(aes_key, AES.MODE_GCM, nonce=nonce)
+    ct, tag = cipher.encrypt_and_digest(inner)
+    blob = MAGIC + bytes([VERSION]) + salt + tweak + nonce + tag + ct
+    with open(out_path, "wb") as f:
+        f.write(blob)
+    print(f"encrypted {path} -> {out_path} ({len(blob)} bytes)")
+
+
+def decrypt_file(path):
+    passphrase = _get_key()
+    with open(path, "rb") as f:
+        blob = f.read()
+    hdr = SALT_LEN + TWEAK_LEN + NONCE_LEN + TAG_LEN
+    if len(blob) < 4 + 1 + hdr or blob[:4] != MAGIC or blob[4] != VERSION:
+        raise ValueError(f"{path}: not a valid envcrypt v{VERSION} file")
+    off = 5
+    salt = blob[off:off + SALT_LEN]; off += SALT_LEN
+    tweak = blob[off:off + TWEAK_LEN]; off += TWEAK_LEN
+    nonce = blob[off:off + NONCE_LEN]; off += NONCE_LEN
+    tag = blob[off:off + TAG_LEN]; off += TAG_LEN
+    ct = blob[off:]
+    aes_key, tf_key = _derive_keys(passphrase, salt)
+    from Crypto.Cipher import AES
+    cipher = AES.new(aes_key, AES.MODE_GCM, nonce=nonce)
+    inner = cipher.decrypt_and_verify(ct, tag)
+    plain = _unpad(threefish_ecb(_words(tf_key), _words(tweak), inner, decrypt=True))[BLOCK:]
+    return plain
+
+
+def _get_key():
+    val = os.environ.get("ENVC_KEY")
+    if not val:
+        sys.exit("error: ENVC_KEY environment variable is not set")
+    return val
+
+
+def parse_env(plain):
+    env = {}
+    for line in plain.decode().splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        k, _, v = line.partition("=")
+        env[k.strip()] = v.strip().strip('"').strip("'")
+    return env
+
+
+def main():
+    p = argparse.ArgumentParser(prog="envcrypt", description=__doc__,
+                                formatter_class=argparse.RawDescriptionHelpFormatter)
+    sub = p.add_subparsers(dest="cmd", required=True)
+    pe = sub.add_parser("encrypt", help="encrypt FILE (default .env) -> FILE.enc")
+    pe.add_argument("file", nargs="?", default=".env")
+    pe.add_argument("-o", "--output")
+    pd = sub.add_parser("decrypt", help="decrypt FILE (default .env.enc) -> stdout")
+    pd.add_argument("file", nargs="?", default=".env.enc")
+    pr = sub.add_parser("run", help="run CMD with decrypted secrets in its env")
+    pr.add_argument("file", nargs="?", default=".env.enc")
+    pr.add_argument("argv", nargs=argparse.REMAINDER)
+    px = sub.add_parser("export", help="print `export KEY=...` lines for sourcing")
+    px.add_argument("file", nargs="?", default=".env.enc")
+    pm = sub.add_parser("edit", help="decrypt, edit in $EDITOR, re-encrypt")
+    pm.add_argument("file", nargs="?", default=".env")
+    args = p.parse_args()
+
+    if args.cmd == "encrypt":
+        out = args.output or (args.file + ".enc")
+        encrypt_file(args.file, out)
+    elif args.cmd == "decrypt":
+        sys.stdout.buffer.write(decrypt_file(args.file))
+    elif args.cmd == "run":
+        cmd = args.argv
+        if cmd and cmd[0] == "--":
+            cmd = cmd[1:]
+        if not cmd:
+            sys.exit("error: run requires a command after --")
+        env = dict(os.environ)
+        env.update(parse_env(decrypt_file(args.file)))
+        os.execvpe(cmd[0], cmd, env)
+    elif args.cmd == "export":
+        for k, v in parse_env(decrypt_file(args.file)).items():
+            print("export %s='%s'" % (k, v.replace("'", "'\\''")))
+    elif args.cmd == "edit":
+        enc = args.file + ".enc"
+        plain = decrypt_file(enc) if os.path.exists(enc) else b""
+        with tempfile.NamedTemporaryFile("wb", suffix=".env", delete=False) as tf:
+            tf.write(plain)
+            tmp = tf.name
+        if subprocess.call([os.environ.get("EDITOR", "vi"), tmp]) != 0:
+            sys.exit("error: editor failed")
+        with open(tmp, "rb") as f:
+            new = f.read()
+        os.unlink(tmp)
+        if new == plain:
+            print("unchanged, not re-encrypting")
+            return
+        with open(args.file, "wb") as f:
+            f.write(new)
+        encrypt_file(args.file, enc)
+
+
+if __name__ == "__main__":
+    main()

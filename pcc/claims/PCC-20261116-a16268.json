@@ -1,0 +1,86 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T05:32:26Z",
+ "id": "PCC-20261116-a16268",
+ "kind": "statement",
+ "producer": {
+  "commit": "7b1cdfc62650ffcfcee1e4227c46f4021f3eb587",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/post-character-and-fixture-IO-static-02/actual-Clippy.exit.xz",
+    "sha256": "f6ebd6f6f27ee66402036ad8c7d4cf1e86dfe3dcfd0125e9c1ecbefef91ece4d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/post-character-and-fixture-IO-static-02/actual-compile.exit.xz",
+    "sha256": "f6ebd6f6f27ee66402036ad8c7d4cf1e86dfe3dcfd0125e9c1ecbefef91ece4d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/post-character-and-fixture-IO-static-02/entire-static-source/Cargo.lock.xz",
+    "sha256": "e8664b14bca42746e1eb3008a39a0d77a679e75dcac3d4a0efd7e8d188e5b920"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/post-character-and-fixture-IO-static-02/entire-static-source/Cargo.toml.xz",
+    "sha256": "0c64885b2a936a651228ebf7ee7eaf6a86cda5fd73dc58e0eabe653c509b8b5a"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/post-character-and-fixture-IO-static-02/entire-static-source/DESIGN_01.md.xz",
+    "sha256": "16b1e72c33ffe8eadd9b35294fc8b131ef5f57d5589b1979f5abbc1ded7647a1"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/post-character-and-fixture-IO-static-02/entire-static-source/src/main.rs.xz",
+    "sha256": "7526004ccd1ff7167887d9a8b33f74063dd47421f23e57eb28f94fed238b782e"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/post-character-and-fixture-IO-static-02/whole-Clippy.stderr.xz",
+    "sha256": "014d9203f4bb9c953fd1893946f4b12d259671b378cac45296ba4d0ce9486b64"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/post-character-and-fixture-IO-static-02/whole-Clippy.stdout.xz",
+    "sha256": "0040f94d11d0039505328a90b2ff48968db873e9e7967307631bf40ef5679275"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/post-character-and-fixture-IO-static-02/whole-compile.stderr.xz",
+    "sha256": "576706a745bba4965783cebdb08535aeabd827464a7fd5a1b4886cf8653e6a6c"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/post-character-and-fixture-IO-static-02/whole-compile.stdout.xz",
+    "sha256": "929919338ef7265cd08c56052a04b054132f55c27b5ba6927869354fe94a811e"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Post-character source02 adds streaming whole-file byte/SHA validation for all six compressed/decoded original fixtures and complete passive capture acceptance. All-target compile-only/strict Clippy0 under120s/2GiB; exact entire source/output retained. Updated CI actionlint/shell syntax and exact15-total-package metadata filter0; new gated post unit/native binary phases remain prospective. Character/raw/certificate checks fromdac3e6 remain, no native or historical population run locally and no new field engine/BSGS input to public producer."
+}

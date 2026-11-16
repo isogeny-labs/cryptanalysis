@@ -1,0 +1,124 @@
+{
+  "branch": "codex/ic-trial32-20261115",
+  "closed_utc": "2026-11-16T11:35:16+00:00",
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "cloud/modal_run.py",
+        "run",
+        "--image",
+        "cuda",
+        "--gpu",
+        "L4",
+        "--cpu",
+        "4",
+        "--memory",
+        "8",
+        "--timeout",
+        "900",
+        "--apt",
+        "time",
+        "--out",
+        "experiments/ic-packed-square-20261116/timing-001",
+        "--detach",
+        "--",
+        "python3",
+        "experiments/ic-packed-square-20261116/run_prepared.py"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "started_utc": "2026-11-16T11:27:32+00:00",
+      "wall_s": 10.096
+    }
+  ],
+  "commit": "dbb619d7a487a6f878de1ebce0dea9ab7624cada",
+  "commit_dirty": false,
+  "created_utc": "2026-11-16T11:27:15+00:00",
+  "curve_uid": null,
+  "entries": [
+    "experiments/ic-packed-square-20261116"
+  ],
+  "host": {
+    "cpu": "arm",
+    "cpus_online": 14,
+    "hostname": "Mac.attlocal.net",
+    "isolation": "unstated",
+    "platform": "macOS-27.2-arm64-arm-64bit-Mach-O"
+  },
+  "id": "20261116T1127Z-ic-packed-square-factorial-001",
+  "metrics": [
+    {
+      "baseline": null,
+      "better": "neutral",
+      "n": null,
+      "name": "replayed_answers",
+      "note": "Unsigned existing independent arithmetic invocation",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "count",
+      "value": 720.0
+    },
+    {
+      "baseline": null,
+      "better": "neutral",
+      "n": null,
+      "name": "aa_control_failures",
+      "note": "All retained; exploratory qualified null",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "count",
+      "value": 4.0
+    }
+  ],
+  "problem": "ecdlp:binary_ic_packed_square",
+  "raw": [
+    {
+      "bytes": 2881009,
+      "path": "experiments/ic-packed-square-20261116/raw-timing-001.tar.gz",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/22/2250cfff5a7fa72c3eed8e0fb55022b9ea1faa2e4738ca222d38b4cd2de026f9",
+      "sha256": "2250cfff5a7fa72c3eed8e0fb55022b9ea1faa2e4738ca222d38b4cd2de026f9",
+      "uploaded": false
+    },
+    {
+      "bytes": 263681,
+      "path": "experiments/ic-packed-square-20261116/raw-bundle-receipt.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/62/62a14dda3957e212363eeb5e55842a960afd4161ec0a30364dc54e92173e1db5",
+      "sha256": "62a14dda3957e212363eeb5e55842a960afd4161ec0a30364dc54e92173e1db5",
+      "uploaded": false
+    },
+    {
+      "bytes": 1246353,
+      "path": "experiments/ic-packed-square-20261116/analysis.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/91/91e0578f97a5fa85ae213b88e4ffcb188049addd8551a2e18e7dae6a2f9e2324",
+      "sha256": "91e0578f97a5fa85ae213b88e4ffcb188049addd8551a2e18e7dae6a2f9e2324",
+      "uploaded": false
+    },
+    {
+      "bytes": 143493,
+      "path": "experiments/ic-packed-square-20261116/independent-arithmetic-timing001.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/e9/e9e7889f21c402d05b16b98a4d708cbd4cbadf4ecc0007cf165d2798b3b3b119",
+      "sha256": "e9e7889f21c402d05b16b98a4d708cbd4cbadf4ecc0007cf165d2798b3b3b119",
+      "uploaded": false
+    }
+  ],
+  "repo": "cryptanalysis",
+  "reports": {
+    "pdf": "experiments/ic-packed-square-20261116/REPORT.pdf",
+    "png": [
+      "experiments/ic-packed-square-20261116/cold.png"
+    ],
+    "svg": [
+      "experiments/ic-packed-square-20261116/cold.svg",
+      "experiments/ic-packed-square-20261116/ratios.svg"
+    ]
+  },
+  "schema": "bench.record/v1",
+  "session": null,
+  "slug": "ic-packed-square-factorial-001",
+  "status": "invalid",
+  "summary": "Packed-square panel: all120 quadruples complete;480IC+240rho replay,4 failed AA retained,0caps. All primary exploratory intervals include1. Unsigned78806a; narrow PCLMUL128 actual backend, unqualified physical timing, invalid for promotion.",
+  "validation": null
+}

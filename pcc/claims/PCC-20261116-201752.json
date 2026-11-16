@@ -1,0 +1,100 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T04:22:30Z",
+ "id": "PCC-20261116-201752",
+ "kind": "statement",
+ "producer": {
+  "commit": "c045dfdf2e682d0c98fba9a1bcd7824c00c649dd",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-auditor-heap-limit-failure-03/actual-Consumer434.exit",
+    "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-auditor-heap-limit-failure-03/actual-Root435.exit",
+    "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-auditor-heap-limit-failure-03/compiler-bin/lean",
+    "sha256": "2e8434445492a5f2e3df181554cce2d50881ccaacb36f6853391e44d6baf8fd6"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-auditor-heap-limit-failure-03/entire-original-attempt03.lean",
+    "sha256": "be7537a2dfcaf2628d89e1763c3e9fbd0bd2496ed74c7a78c348d3986871a690"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-auditor-heap-limit-failure-03/original-Consumer434/experiments_chained-transfer-lp-presentation-01_lean_LPGraphCases02_lean/audit.log",
+    "sha256": "0a1aa926328fbb0547dee69a5914b6def6e45f1a5d7c7916578dfd797d6777c5"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-auditor-heap-limit-failure-03/original-Consumer434/experiments_chained-transfer-lp-presentation-01_lean_LPGraphCases02_lean/build.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-auditor-heap-limit-failure-03/original-Consumer434/experiments_chained-transfer-lp-presentation-01_lean_LPGraphCases02_lean/status",
+    "sha256": "2ef57c800da5387a600b819c0a0702c44be5ef87669f17b0cb9ffa4e8ce29b8b"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-auditor-heap-limit-failure-03/original-Root435/experiments_chained-transfer-lp-presentation-01_lean_LPGraphCases02_lean/audit.log",
+    "sha256": "aed95f1ece40ddf2ce9e41b0a55a977d1af64f1cc70efec2b9cb81eb66b4c786"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-auditor-heap-limit-failure-03/original-Root435/experiments_chained-transfer-lp-presentation-01_lean_LPGraphCases02_lean/build.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-auditor-heap-limit-failure-03/original-Root435/experiments_chained-transfer-lp-presentation-01_lean_LPGraphCases02_lean/status",
+    "sha256": "2ef57c800da5387a600b819c0a0702c44be5ef87669f17b0cb9ffa4e8ce29b8b"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-auditor-heap-limit-failure-03/whole-Consumer434-caller.txt",
+    "sha256": "fb1a42bc074806e48171ab143b47bbc957e1778a802d3708a6ae35691cd1e4a8"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-auditor-heap-limit-failure-03/whole-Root435-caller.txt",
+    "sha256": "4fad1c1fbd5f9d83bb93034842bae0f6d1651c4c447344fba2d527702761af12"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Direct graph static build attempt03: unchanged source compiles under both4.34.1/4.35.0 at original default VM, but original AuditAxioms source cannot compile under the additional1024MB managed-memory flag; both gates correctly returnFAIL_audit/1 and no accepted audited theorem count. Entire proof/source/flags/build/audit/caller/status retained. Remove only this extra cap for the static compiler/auditor to match the existing original proof-workflow configuration, keep one worker and120s; retain all failed bounded-resource outcomes. No VM compliance, numerical-field instantiation, original-program/global theorem, native workload or signed standing claimed. No mathematical, trust or gate source changed."
+}

@@ -1,0 +1,11 @@
+{
+  "schema": "xedni-auxiliary-mod2-independence-v1",
+  "parent_rows": "experiments/xedni-varying-curve-selection-20261115/rows-v2.jsonl.gz",
+  "parent_rows_sha256": "9a594d96f369fb14f1a4cf6270b1c811ceda515e1c2a7eccab4d011ca8f3f322",
+  "population": "all 1722 frozen ordered pairs; preserve each parent admission and relation status",
+  "primary_test": "For every one of the 20 accepted rows, reconstruct E/Q and E/F7, check good reduction and #E(F7)=4, and compute the exact orders and distinctness of the two reduced lifted points. Also check #E(F47)=43 and the parent reduction coordinates.",
+  "falsifier": "Any accepted row with either mod7 point not of order 2, or with equal mod7 reductions, breaks the proposed pair-independence argument; retain the row and its status.",
+  "proof_goal": "Under good reduction at 7 and 47, mod7 independent order-2 images and absence of rational 2-torsion imply Z-linear independence of the rational pair. Formalize the abstract infinite-descent implication in Lean and keep the reduction and torsion bridges explicit.",
+  "measurement": "exact correctness census, no performance comparison",
+  "run_cap": "one pass over the 1722 archived rows and exact finite-field arithmetic on all 20 admitted rows"
+}

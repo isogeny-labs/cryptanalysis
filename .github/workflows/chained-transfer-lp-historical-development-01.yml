@@ -1,0 +1,283 @@
+name: Strict historical LP adapter synthetic native development01
+on:
+  pull_request:
+    paths:
+      - 'experiments/chained-transfer-lp-presentation-01/historical-01/**'
+      - 'experiments/chained-transfer-lp-presentation-01/matrix-01/**'
+      - 'experiments/chained-transfer-lp-presentation-01/post-character-01/**'
+      - 'experiments/chained-transfer-lp-presentation-01/admission-01/**'
+      - 'experiments/chained-transfer-lp-presentation-01/population-01/**'
+      - 'experiments/chained-transfer-lp-presentation-01/runtime-01/**'
+      - 'experiments/chained-transfer-lp-presentation-01/lean/LPGraphCases02.lean'
+      - 'experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-final-06/**'
+      - '.github/workflows/chained-transfer-lp-historical-development-01.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  historical-adapter-development:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      RUSTUP_TOOLCHAIN: 1.99.1
+      SOURCE_REVISION: ${{ github.event.pull_request.head.sha || github.sha }}
+      SOURCE_BRANCH: ${{ github.head_ref || github.ref_name }}
+    steps:
+      - name: Initialize complete partial custody
+        run: |
+          mkdir "$RUNNER_TEMP/lp-historical-custody"
+          date -u +%FT%TZ > "$RUNNER_TEMP/lp-historical-custody/start.txt"
+          printf '%s\n' '${{ github.workflow_sha }}' > "$RUNNER_TEMP/lp-historical-custody/workflow-revision.txt"
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+          path: cryptanalysis
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /.gitignore
+            /.resume/RESUME.md
+            /scripts/checkpoint.sh
+            /docs/chained-transfer-checkpoint-transport/PROTOCOL_01.md
+            /experiments/chained-transfer-lp-presentation-01/historical-01/
+            /experiments/chained-transfer-lp-presentation-01/matrix-01/
+            /experiments/chained-transfer-lp-presentation-01/post-character-01/
+            /experiments/chained-transfer-lp-presentation-01/admission-01/
+            /experiments/chained-transfer-lp-presentation-01/population-01/
+            /experiments/chained-transfer-lp-presentation-01/runtime-01/
+            /experiments/chained-transfer-lp-presentation-01/PROTOCOL_01.md
+            /experiments/chained-transfer-lp-presentation-01/historical-whole-fixture-pins-01.json
+            /experiments/chained-transfer-lp-presentation-01/lean/
+            /experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-final-06/
+            /tools/lean/
+            /.github/workflows/chained-transfer-lp-historical-development-01.yml
+      - name: Checkout immutable original SHA dependency
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          repository: isogeny-labs/crypto
+          ref: 2d46258afc20188b8593b3a0693183d1282e0aaf
+          persist-credentials: false
+          path: crypto
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /src/hash/sha256.rs
+            /tools/lean/
+            /scripts/isolab_pool_check.sh
+      - name: Retain the actually executing workflow
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          ref: ${{ github.workflow_sha }}
+          persist-credentials: false
+          path: executed-workflow
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /.github/workflows/chained-transfer-lp-historical-development-01.yml
+      - name: Checkout immutable original artifact tool and policy
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          repository: isogeny-labs/cryptanalysis
+          ref: 3de8c174cf65e6b34bf8579d97b817b8f5dc2ded
+          persist-credentials: false
+          path: artifact-tools
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            tools/artifacts/artifacts.py
+            scripts/checkpoint.sh
+            .artifacts/config.json
+      - name: Prepare the original pinned AWS CLI before the credential step
+        run: |
+          set -euo pipefail
+          if ! command -v aws >/dev/null; then
+            python3 -m venv "$RUNNER_TEMP/checkpoint-awscli"
+            "$RUNNER_TEMP/checkpoint-awscli/bin/python" -m pip install --disable-pip-version-check awscli==1.46.2
+            echo "$RUNNER_TEMP/checkpoint-awscli/bin" >> "$GITHUB_PATH"
+          fi
+      - name: Install declared native development toolchain
+        run: rustup toolchain install 1.99.1 --profile minimal --component rustfmt --component clippy
+      - name: Install original proof toolchains
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/lp-historical-custody"
+          curl -fsSL --connect-timeout 15 --max-time 120 https://raw.githubusercontent.com/leanprover/elan/v4.2.4/elan-init.sh -o "$out/actual-elan-init.sh"
+          sh "$out/actual-elan-init.sh" -y --no-modify-path --default-toolchain leanprover/lean4:v4.35.0
+          "$HOME/.elan/bin/elan" toolchain install leanprover/lean4:v4.34.1
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Record exact source, original tool and host capability
+        working-directory: cryptanalysis
+        run: |
+          set -euo pipefail
+          [[ "$SOURCE_REVISION" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git rev-parse HEAD)" = "$SOURCE_REVISION"
+          git check-ref-format --branch "$SOURCE_BRANCH"
+          branch=$SOURCE_BRANCH
+          if git show-ref --verify --quiet "refs/heads/$branch"; then
+            test "$(git rev-parse "refs/heads/$branch")" = "$SOURCE_REVISION"
+            git switch "$branch"
+          else
+            git switch --create "$branch"
+          fi
+          test -z "$(git status --porcelain --untracked-files=all)"
+          set +e
+          sha256sum --check experiments/chained-transfer-lp-presentation-01/population-01/source-01.sha256 > "$RUNNER_TEMP/lp-historical-custody/early-complete-population-source-guard.txt" 2>&1
+          source_code=$?
+          set -e
+          printf '%s\n' "$source_code" > "$RUNNER_TEMP/lp-historical-custody/early-complete-population-source-guard.exit"
+          test "$source_code" -eq 0 || exit "$source_code"
+          cmp ../artifact-tools/scripts/checkpoint.sh scripts/checkpoint.sh
+          echo '3c4192168bbc390bf94be46c765914a419a4eff8c30e3f52f5b94ea432738056  ../artifact-tools/scripts/checkpoint.sh' | sha256sum --check
+          out="$RUNNER_TEMP/lp-historical-checkpoint"
+          mkdir "$out"
+          git rev-parse HEAD > "$out/source-head.txt"
+          git symbolic-ref --short HEAD > "$out/source-branch.txt"
+          sha256sum .gitignore scripts/checkpoint.sh .resume/RESUME.md docs/chained-transfer-checkpoint-transport/PROTOCOL_01.md > "$out/source-inputs.sha256"
+          cp .resume/RESUME.md "$out/original-RESUME.md"
+          uname -sr > "$out/kernel.txt"
+          set +e
+          cat /proc/sys/kernel/random/boot_id > "$out/boot-id.log" 2>&1
+          printf '%s\n' "$?" > "$out/boot-id.exit"
+          readlink /proc/self/ns/time > "$out/time-namespace.log" 2>&1
+          printf '%s\n' "$?" > "$out/time-namespace.exit"
+          cat /proc/self/timens_offsets > "$out/time-offsets.log" 2>&1
+          printf '%s\n' "$?" > "$out/time-offsets.exit"
+          set -e
+      - name: Run only the original gate and read back its exact checkpoint
+        working-directory: cryptanalysis
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+          CHECKPOINT_AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+          CHECKPOINT_SESSION: chained-transfer-${{ github.run_id }}-${{ github.run_attempt }}
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/lp-historical-checkpoint"
+          cmp ../artifact-tools/scripts/checkpoint.sh scripts/checkpoint.sh
+          set +e
+          timeout 120 bash ../artifact-tools/scripts/checkpoint.sh gate > "$out/original-gate.log" 2>&1
+          code=$?
+          set -e
+          printf '%s\n' "$code" > "$out/original-gate.exit"
+          cat "$out/original-gate.log"
+          test "$code" -eq 0 || exit "$code"
+          cp .resume/.last-push "$out/original-last-push.txt"
+          read -r state_hash stamp checkpoint_uri < "$out/original-last-push.txt"
+          [[ "$state_hash" =~ ^[0-9a-f]{64}$ ]]
+          [[ "$stamp" =~ ^[A-Za-z0-9._=-]+$ ]]
+          safe_branch=$(printf '%s' "$SOURCE_BRANCH" | sed 's#/#__#g; s#[^A-Za-z0-9._=-]#-#g')
+          [[ "$checkpoint_uri" == "s3://setec-astronomy-artifacts/checkpoints/cryptanalysis/$safe_branch/$stamp/" ]]
+          set +e
+          aws --region "$CHECKPOINT_AWS_REGION" s3 cp --only-show-errors "${checkpoint_uri}checkpoint.tar.gz" "$out/remote-checkpoint.tar.gz" > "$out/readback-pack.log" 2>&1
+          pack_code=$?
+          aws --region "$CHECKPOINT_AWS_REGION" s3 cp --only-show-errors "${checkpoint_uri}RESUME.md" "$out/remote-RESUME.md" > "$out/readback-resume.log" 2>&1
+          resume_code=$?
+          aws --region "$CHECKPOINT_AWS_REGION" s3 cp --only-show-errors "${checkpoint_uri}meta.json" "$out/remote-meta.json" > "$out/readback-meta.log" 2>&1
+          meta_code=$?
+          set -e
+          printf '%s\n' "$pack_code" > "$out/readback-pack.exit"
+          printf '%s\n' "$resume_code" > "$out/readback-resume.exit"
+          printf '%s\n' "$meta_code" > "$out/readback-meta.exit"
+          test "$pack_code" -eq 0 && test "$resume_code" -eq 0 && test "$meta_code" -eq 0
+          cmp .resume/RESUME.md "$out/remote-RESUME.md"
+          jq --exit-status --arg source "$SOURCE_REVISION" --arg branch "$SOURCE_BRANCH" '.head==$source and .repo=="cryptanalysis" and .branch==$branch' "$out/remote-meta.json"
+          tar -tzf "$out/remote-checkpoint.tar.gz" > "$out/remote-members.txt"
+          tar -xOzf "$out/remote-checkpoint.tar.gz" ./RESUME.md > "$out/pack-RESUME.md"
+          tar -xOzf "$out/remote-checkpoint.tar.gz" ./meta.json > "$out/pack-meta.json"
+          cmp "$out/pack-RESUME.md" "$out/remote-RESUME.md"
+          cmp "$out/pack-meta.json" "$out/remote-meta.json"
+          sha256sum "$out/remote-checkpoint.tar.gz" "$out/remote-RESUME.md" "$out/remote-meta.json" > "$out/remote-inputs.sha256"
+          test -z "$(git status --porcelain --untracked-files=all)"
+          set +e
+          bash ../artifact-tools/scripts/checkpoint.sh status > "$out/original-final-status.log" 2>&1
+          status_code=$?
+          set -e
+          printf '%s\n' "$status_code" > "$out/original-final-status.exit"
+          cat "$out/original-final-status.log"
+          exit "$status_code"
+      - name: Read existing caller budget and pool availability without admission
+        working-directory: cryptanalysis
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+        run: |
+          set -euo pipefail
+          echo '887146b97a21c909808364cdbc23ef31fa0b40f4d05b8221e9d35ee7728c1d7f  ../crypto/scripts/isolab_pool_check.sh' | sha256sum --check
+          out="$RUNNER_TEMP/lp-historical-custody"
+          set +e
+          timeout 420 bash experiments/chained-transfer-lp-presentation-01/admission-01/read-only-01.sh "$out/read-only-admission" ../crypto/scripts/isolab_pool_check.sh > "$out/entire-read-only-admission-caller.stdout" 2> "$out/entire-read-only-admission-caller.stderr"
+          code=$?
+          set -e
+          printf '%s\n' "$code" > "$out/actual-read-only-admission-observer.exit"
+          exit "$code"
+      - name: Run only the complete synthetic native adapter development
+        working-directory: cryptanalysis
+        run: |
+          set -euo pipefail
+          custody="$RUNNER_TEMP/lp-historical-custody"
+          cp ../executed-workflow/.github/workflows/chained-transfer-lp-historical-development-01.yml "$custody/actual-workflow.yml"
+          set +e
+          timeout 1200 bash experiments/chained-transfer-lp-presentation-01/historical-01/run-development-01.sh "$custody/whole-native-development" "$RUNNER_TEMP/lp-historical-checkpoint"
+          code=$?
+          set -e
+          printf '%s\n' "$code" > "$custody/actual-driver.exit"
+          exit "$code"
+      - name: Check process metadata and cold-build prospective pure entrypoints without execution
+        working-directory: cryptanalysis
+        run: |
+          set -euo pipefail
+          custody="$RUNNER_TEMP/lp-historical-custody"
+          component=experiments/chained-transfer-lp-presentation-01
+          for source in "$component"/population-01/*.sh "$component"/runtime-01/assemble-01.sh "$component"/runtime-01/export-guarded-bytes-01.sh "$component"/runtime-01/oci-01/*.sh; do
+            bash -n "$source"
+          done
+          timeout 30 bash "$component/population-01/check-phase-metadata-01.sh" "$custody/offline-process-metadata-controls"
+          set +e
+          timeout 600 bash "$component/population-01/build-pure-01.sh" "$PWD" "$SOURCE_REVISION" "$custody/entire-prospective-pure-native-build" > "$custody/entire-prospective-build-caller.stdout" 2> "$custody/entire-prospective-build-caller.stderr"
+          code=$?
+          set -e
+          printf '%s\n' "$code" > "$custody/actual-prospective-build.exit"
+          exit "$code"
+      - name: Check exact constructive graph statements with both original proof gates
+        working-directory: cryptanalysis
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/lp-historical-custody"
+          component=experiments/chained-transfer-lp-presentation-01
+          cmp "$component/lean/LPGraphCases02.lean" "$component/evidence/direct-graph-proof-final-06/LPGraphCases02.lean"
+          echo 'a64f4010f3713653786e56ef7762b3e879720e2706ca78f979a0fefe2d53a7e2  tools/lean/proof-gate.sh' | sha256sum --check
+          echo 'f97280b48f1846d13e7ed96d9691753811551864162086fb25e9fe05438aa7dc  tools/lean/AuditAxioms.lean' | sha256sum --check
+          echo '2fe88bb302db587bbb6ede217fc646cf8fa35f9b9a2980e4a15dae273b8df6eb  ../crypto/tools/lean/proof-gate.sh' | sha256sum --check
+          echo 'b90d6b58c92138f4f4e4d4692a9c3152629c3aafa537e789248bebbf6ddb1929  ../crypto/tools/lean/AuditAxioms.lean' | sha256sum --check
+          cp -r "$component/lean" "$out/entire-proof-source"
+          sha256sum --check "$component/runtime-01/oci-01/source-01.sha256" > "$out/complete-OCI-recipe-source-guard.txt"
+          cp -r "$component/runtime-01/oci-01" "$out/entire-prospective-OCI-recipe-source"
+          cp -r tools/lean "$out/entire-original-Consumer-proof-tools"
+          cp -r ../crypto/tools/lean "$out/entire-original-Root-proof-tools"
+          mkdir "$out/proof-compiler-bin"
+          cat > "$out/proof-compiler-bin/lean" <<'EOF'
+          #!/usr/bin/env sh
+          exec "$HOME/.elan/bin/lean" -j 1 "$@"
+          EOF
+          chmod +x "$out/proof-compiler-bin/lean"
+          export PATH="$out/proof-compiler-bin:$PATH"
+          for spec in Consumer434 Root435; do
+            if [[ $spec == Consumer434 ]]; then gate=tools/lean/proof-gate.sh; chain=leanprover/lean4:v4.34.1; else gate=../crypto/tools/lean/proof-gate.sh; chain=leanprover/lean4:v4.35.0; fi
+            set +e
+            ELAN_TOOLCHAIN=$chain timeout 120 bash "$gate" --out "$out/original-$spec-graph-proofs" "$component/lean/LPGraphCases02.lean" > "$out/entire-$spec-graph-proof-caller.txt" 2>&1
+            code=$?
+            set -e
+            printf '%s\n' "$code" > "$out/actual-$spec-graph-proof.exit"
+            cat "$out/entire-$spec-graph-proof-caller.txt"
+            test "$code" -eq 0 || exit "$code"
+          done
+          test -z "$(git status --porcelain --untracked-files=all)"
+      - name: Retain every complete and partial source/checkpoint/native artifact
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: lp-historical-development-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/lp-historical-custody
+            ${{ runner.temp }}/lp-historical-checkpoint
+          if-no-files-found: error

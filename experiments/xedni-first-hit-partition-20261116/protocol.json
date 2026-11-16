@@ -1,0 +1,24 @@
+{
+  "schema": "xedni-first-hit-partition-protocol-v1",
+  "group": "additive Z/7Z",
+  "scalar_law": "all seven scalars",
+  "encoding_law": "all 7! bijections from group elements to labels 0..6",
+  "program": [
+    "seed G=1 and Q=w",
+    "if label(G)<label(Q), append G+Q; else append G-Q",
+    "append G-G",
+    "append G-G again",
+    "append G+G"
+  ],
+  "stages": [1, 2, 3, 4, 5],
+  "initial_event": "G=Q at stage 1",
+  "later_raw_event": "new point equals an old point whose affine form is distinct",
+  "later_staged_event": "old equality pattern matches symbolic form equality and later raw event holds",
+  "falsifiers": [
+    "a first raw hit differs from the first staged hit",
+    "a first staged hit differs from the minimum of predicted eligible-root stages",
+    "a live-stage count differs from the number of executions without an earlier raw hit",
+    "stopped plus live mass differs from all scalar-encoding executions"
+  ],
+  "claim_boundary": "exhaustive finite control for the frozen adaptive program and bijective encoding law"
+}

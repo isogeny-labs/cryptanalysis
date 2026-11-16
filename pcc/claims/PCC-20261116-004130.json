@@ -1,0 +1,21 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T03:54:14Z",
+ "id": "PCC-20261116-004130",
+ "kind": "statement",
+ "producer": {
+  "commit": "55170020a4e676378f302cdbc945eeb0aca47f6d",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "recompute",
+   "path": "experiments/prime-field-auxiliary-ic/random-vs-special/benchmark-request-20261116/preflight-validator.json",
+   "sha256": "4dab3f2c9b3e5c49b8ffe2abe28e58e2e17bdb8cb1bfc2e9ea1671304a8685ab"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Unsigned local preflight observations and unchanged readiness gaps only; no benchmark, timing or cryptanalytic conclusion.",
+ "statement": "For the user-requested p=2^31-1/p=2^61-1 random-versus-special IC benchmark, the current source admission attempt stops before execution: checkpoint.sh gate exits1 because no upload token/AWS transport is configured, and the normal Runpod fleet status client reports RUNPOD_API_KEY missing. Secret-list access also returned403, and no Modal or SSH runner credentials were found. No benchmark process or GPU allocation was started, no measurements were produced, and this is not evidence that resources are unavailable globally. Exclusive phase accounting and an eligible frozen61-bit three-arm panel also remain unfinished."
+}

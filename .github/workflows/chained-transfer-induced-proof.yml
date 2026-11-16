@@ -1,0 +1,78 @@
+name: Induced full-transfer proof replay
+on:
+  pull_request:
+    paths:
+      - 'experiments/chained-transfer-public-target/original-induced-transfer-01/**'
+      - 'experiments/chained-transfer-public-target/ci_induced_transfer/**'
+      - 'experiments/chained-transfer-public-target/evidence/original-induced-full-transfer-proof-01/**'
+      - 'tools/lean/**'
+      - 'tools/pcc/**'
+      - 'pcc/claims/**'
+      - '.github/workflows/chained-transfer-induced-proof.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'experiments/chained-transfer-public-target/original-induced-transfer-01/**'
+      - 'experiments/chained-transfer-public-target/ci_induced_transfer/**'
+      - 'tools/lean/**'
+      - 'tools/pcc/**'
+      - 'pcc/claims/**'
+      - '.github/workflows/chained-transfer-induced-proof.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  induced-transfer-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          path: cryptanalysis
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            experiments/chained-transfer-public-target/original-induced-transfer-01
+            experiments/chained-transfer-public-target/ci_induced_transfer
+            experiments/chained-transfer-public-target/evidence/original-induced-full-transfer-proof-01
+            experiments/chained-transfer-public-target/upstream-commit.txt
+            tools/lean
+            tools/pcc
+            pcc/keyring.json
+            pcc/claims
+            .github/workflows/chained-transfer-induced-proof.yml
+      - id: producer_pin
+        name: Read the immutable original producer revision
+        run: |
+          pin=$(cat cryptanalysis/experiments/chained-transfer-public-target/upstream-commit.txt)
+          [[ $pin =~ ^[0-9a-f]{40}$ ]] || exit 2
+          echo "revision=$pin" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          repository: isogeny-labs/crypto
+          ref: ${{ steps.producer_pin.outputs.revision }}
+          persist-credentials: false
+          path: crypto
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            tools/lean
+      - name: Install both pinned original Lean toolchains
+        run: |
+          set -euo pipefail
+          curl -fsSL --connect-timeout 15 --max-time 120 https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o "$RUNNER_TEMP/elan-init.sh"
+          sh "$RUNNER_TEMP/elan-init.sh" -y --no-modify-path --default-toolchain leanprover/lean4:v4.35.0
+          "$HOME/.elan/bin/elan" toolchain install leanprover/lean4:v4.34.1
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Replay all21 declarations and allnine exact bindings
+        run: |
+          set -euo pipefail
+          timeout 1500 bash cryptanalysis/experiments/chained-transfer-public-target/ci_induced_transfer/check-01.sh crypto "$RUNNER_TEMP/induced-full-transfer-proof"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: induced-full-transfer-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/induced-full-transfer-proof
+          if-no-files-found: ignore

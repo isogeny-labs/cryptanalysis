@@ -1,0 +1,18 @@
+[package]
+name = "chained-transfer-lp-presentation-01"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[workspace]
+
+[dependencies]
+serde = { version = "=1.0.228", features = ["derive"] }
+serde_json = "=1.0.145"
+
+[dev-dependencies]
+hex = "=0.4.3"
+
+[[bin]]
+name = "lp-foundation-identities"
+path = "src/bin/identities.rs"

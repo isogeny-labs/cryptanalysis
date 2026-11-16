@@ -1,0 +1,18 @@
+{
+  "source_commit": "d95d582ca01739e138b605db6279a906d0dd230b",
+  "argv": [
+    "/home/agent/.cargo/bin/cargo",
+    "+stable",
+    "test",
+    "--locked",
+    "--manifest-path",
+    "suite/Cargo.toml",
+    "--lib",
+    "cli::tools::ic::auxiliary::tests"
+  ],
+  "explicit_environment": {
+    "AUXILIARY_IC_REPORT_FIXTURE_DIR": "/workspace/cryptanalysis-pr/experiments/prime-field-auxiliary-ic/random-vs-special/joint-row-20261116/public-test-fixture"
+  },
+  "exit_code": 0,
+  "scope": "producer development correctness check; no benchmark"
+}

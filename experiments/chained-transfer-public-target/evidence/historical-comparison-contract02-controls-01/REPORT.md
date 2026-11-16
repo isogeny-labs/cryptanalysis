@@ -1,0 +1,3 @@
+# Historical comparison contract02 controls
+
+Prospectiveb5e431 was normally published5493385 before the new Rust source. Whole historical IC100 versus complete fresh02 passes the exact non-time comparison; whole historical sampler101 versus itself checks that schema, with no fresh sampler run claimed. Both timing-only whole-input variations pass, and eight full-input negatives (class/scalar/counter/unexpected-field changes for both families) return1 with no accepted output. Whole modified inputs, source, actual binary before/after and every subprocess output/exit remain retained and inventoried. No original auditor/native/historical fixture changes. Full fresh driver03 and GitHub CI remain pending. [pcc:unverified]

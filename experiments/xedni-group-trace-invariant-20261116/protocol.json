@@ -1,0 +1,11 @@
+{
+  "schema": "xedni-group-trace-invariant-protocol-v1",
+  "parent_result_sha256": "33940b83b524ac60b4bbdb5348f0a9695876990b9d4bae85b5a312074044dbf5",
+  "field_and_group": "Z/7Z with generator G=1 and additive group law",
+  "target_law": "all w except w=1; initial group trace (G,wG)",
+  "encoding_law": "all 7! bijections to labels 0..6 for each target scalar",
+  "strategy": "if label(G)<label(wG), output G+wG; otherwise output wG+wG",
+  "symbolic_forms": "prior (1,w); next (1+w) or (2w) according to the same labels",
+  "comparison": "group hit on either prior point versus symbolic affine collision, for all 30,240 scalar-encoding pairs",
+  "claim_boundary": "complete finite control for one adaptive group-oracle step"
+}

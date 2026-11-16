@@ -1,0 +1,47 @@
+[
+  {
+    "claim": "pcc/claims/PCC-20261115-840d3e.json",
+    "theorem": "RelationKernel.dot_add",
+    "statement": "theorem dot_add {C K : Type} [CommRing K] (columns : List C) (r s z : C \u2192 K) : dot columns (fun c => r c + s c) z = dot columns r z + dot columns s z"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-addf3c.json",
+    "theorem": "RelationKernel.dot_scale",
+    "statement": "theorem dot_scale {C K : Type} [CommRing K] (columns : List C) (u : K) (r z : C \u2192 K) : dot columns (fun c => u * r c) z = u * dot columns r z"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-341c1f.json",
+    "theorem": "RelationKernel.swap_kernel_iff",
+    "statement": "theorem swap_kernel_iff {I C K : Type} [DecidableEq I] [CommRing K] (columns : List C) (M : I \u2192 C \u2192 K) (z : C \u2192 K) (a b : I) (hab : a \u2260 b) : Kernel columns (swapRows M a b) z \u2194 Kernel columns M z"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-630337.json",
+    "theorem": "RelationKernel.scale_kernel_iff",
+    "statement": "theorem scale_kernel_iff {I C K : Type} [DecidableEq I] [CommRing K] (columns : List C) (M : I \u2192 C \u2192 K) (z : C \u2192 K) (a : I) (u v : K) (unit : u * v = 1) : Kernel columns (scaleRow M a u) z \u2194 Kernel columns M z"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-fe2979.json",
+    "theorem": "RelationKernel.add_kernel_iff",
+    "statement": "theorem add_kernel_iff {I C K : Type} [DecidableEq I] [CommRing K] (columns : List C) (M : I \u2192 C \u2192 K) (z : C \u2192 K) (dst src : I) (u : K) (different : dst \u2260 src) : Kernel columns (addRow M dst src u) z \u2194 Kernel columns M z"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-58465f.json",
+    "theorem": "RelationKernel.operation_kernel_iff",
+    "statement": "theorem operation_kernel_iff {I C K : Type} [DecidableEq I] [CommRing K] (columns : List C) (M : I \u2192 C \u2192 K) (z : C \u2192 K) (op : Elementary I K) : Kernel columns (applyOp op M) z \u2194 Kernel columns M z"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-ed383d.json",
+    "theorem": "RelationKernel.finite_trace_kernel_iff",
+    "statement": "theorem finite_trace_kernel_iff {I C K : Type} [DecidableEq I] [CommRing K] (columns : List C) (M : I \u2192 C \u2192 K) (z : C \u2192 K) (ops : List (Elementary I K)) : Kernel columns (replay ops M) z \u2194 Kernel columns M z"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-2726d1.json",
+    "theorem": "RelationKernel.one_free_column_proportional",
+    "statement": "theorem one_free_column_proportional {C K : Type} [CommRing K] (z w coefficient : C \u2192 K) (free : C) (inverse : K) (unit : w free * inverse = 1) (zrows : \u2200 c, c \u2260 free \u2192 z c + coefficient c * z free = 0) (wrows : \u2200 c, c \u2260 free \u2192 w c + coefficient c * w free = 0) : \u2200 c, z c = (z free * inverse) * w c"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-f5ee33.json",
+    "theorem": "RelationKernel.conditional_three_descent_ratio",
+    "statement": "theorem conditional_three_descent_ratio {J K : Type} [CommRing K] (addJ : J \u2192 J \u2192 J) (scalar : K \u2192 J \u2192 J) (character : J \u2192 K) (additive : \u2200 x y, character (addJ x y) = character x + character y) (linear : \u2200 a x, character (scalar a x) = a * character x) (R G Q : J) (k multiplier offset y0 y1 y2 inverse : K) (target : Q = scalar k G) (first : y0 = multiplier * character R - offset) (second : y1 = multiplier * character (addJ R G) - offset) (third : y2 = multiplier * character (addJ R Q) - offset) (unit : (y1 - y0) * inverse = 1) : (y2 - y0) * inverse = k"
+  }
+]

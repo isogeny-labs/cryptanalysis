@@ -7,6 +7,7 @@
 #include "linalg.h"
 #include "ca_internal.h"
 #include "ic_rational.h"
+#include "ic_trial32.h"
 #include <limits.h>
 
 #include <math.h>
@@ -44,6 +45,8 @@ struct ca_ic_ctx {
     uint32_t *fb;                 /* factor base primes */
     ic_fbdiv *fb_div;             /* their exact-division constants */
     uint64_t *step_power;         /* reusable zeta^s in Montgomery form */
+    uint32_t *fb_inv32, *fb_lim32; /* optional bounded-integer scan */
+    ca_ic_scan32_fn scan32;
     uint64_t *fb_log;             /* logs mod p-1 */
     uint8_t *fb_known;
     ca_ic_params params;
@@ -791,6 +794,71 @@ static int trial_factor(uint64_t v, const uint32_t *fb, const ic_fbdiv *div, uin
             if (v * div[i].inv <= div[i].lim) break;
         if (i == stop) break;
         const uint64_t inv = div[i].inv, lim = div[i].lim;
+        int32_t e = 0;
+        while (v * inv <= lim) {
+            v *= inv;
+            e++;
+        }
+        if (n >= IC_MAX_REL_COLS) return 0;
+        rel->col[n] = col0 + i;
+        rel->val[n] = e;
+        n++;
+        i++;
+        stop = v > 1 ? tf_square_bound(fb, i, stop, v) : i;
+    }
+    if (v > 1 && i < nfb) {
+        /* fb[i]^2 > v: v is prime, in the base iff <= fb[nfb-1] */
+        if (v <= fb[nfb - 1]) {
+            uint32_t lo = i, hi = nfb;
+            while (lo < hi) {
+                uint32_t mid = (lo + hi) / 2;
+                if (fb[mid] < v)
+                    lo = mid + 1;
+                else
+                    hi = mid;
+            }
+            if (lo < nfb && fb[lo] == v) {
+                if (n >= IC_MAX_REL_COLS) return 0;
+                rel->col[n] = col0 + lo;
+                rel->val[n] = 1;
+                n++;
+                *cnt = n;
+                return 1;
+            }
+        }
+        *cnt = n;
+        return 0;
+    }
+    *cnt = n;
+    return v == 1;
+}
+
+/* Same output contract for rational trial integers bounded by UINT32_MAX. */
+static int trial_factor32(uint32_t v, const ca_ic_ctx *ctx, uint32_t col0, relation *rel,
+                          uint32_t *cnt)
+{
+    const uint32_t *fb = ctx->fb;
+    const uint32_t *inverse = ctx->fb_inv32, *limit = ctx->fb_lim32;
+    const uint32_t nfb = ctx->nfb;
+    uint32_t n = *cnt;
+    uint32_t i = 0;
+    if (v > 1 && nfb > 0 && fb[0] == 2 && (uint64_t)4 <= v) {
+        /* q = 2, a shift; the only even prime, so fb[0] if present */
+        int32_t e = __builtin_ctz(v);
+        v >>= e;
+        if (e) {
+            if (n >= IC_MAX_REL_COLS) return 0;
+            rel->col[n] = col0;
+            rel->val[n] = e;
+            n++;
+        }
+        i = 1;
+    }
+    uint32_t stop = v > 1 ? tf_square_bound(fb, i, nfb, v) : i;
+    while (v > 1) {
+        i = ctx->scan32(v, inverse, limit, i, stop);
+        if (i == stop) break;
+        const uint32_t inv = inverse[i], lim = limit[i];
         int32_t e = 0;
         while (v * inv <= lim) {
             v *= inv;
@@ -1658,6 +1726,28 @@ static ca_status ic_precompute_impl(uint64_t p, uint64_t g, const ca_ic_params *
         ctx->fb_div[i].inv = inv;
         ctx->fb_div[i].lim = UINT64_MAX / q;
     }
+    const char *trial32_mode = getenv("CA_IC_TRIAL32");
+    if (trial32_mode && *trial32_mode && strcmp(trial32_mode, "0")) {
+        if (strcmp(trial32_mode, "auto") && strcmp(trial32_mode, "portable")) {
+            ca_set_error("CA_IC_TRIAL32 must be 0, portable, or auto");
+            free(fb_log2);
+            ca_ic_free(ctx);
+            return CA_ERR_INVALID;
+        }
+        ctx->fb_inv32 = malloc(nfb * sizeof(*ctx->fb_inv32));
+        ctx->fb_lim32 = malloc(nfb * sizeof(*ctx->fb_lim32));
+        if (!ctx->fb_inv32 || !ctx->fb_lim32) {
+            free(fb_log2);
+            ca_ic_free(ctx);
+            return CA_ERR_NOMEM;
+        }
+        for (size_t i = 0; i < nfb; ++i) {
+            ctx->fb_inv32[i] = (uint32_t)ctx->fb_div[i].inv;
+            ctx->fb_lim32[i] = UINT32_MAX / ctx->fb[i];
+        }
+        ctx->scan32 =
+            !strcmp(trial32_mode, "portable") ? ca_ic_scan32_portable : ca_ic_scan32_select();
+    }
     for (size_t i = 0; i < nfb; i++) fb_log2[i] = (uint8_t)(log2((double)ctx->fb[i]) + 0.5);
     st->factor_base_size = ctx->nfb;
     if (checkpoint_path) {
@@ -2084,6 +2174,8 @@ void ca_ic_free(ca_ic_ctx *ctx)
     free(ctx->fb_known);
     free(ctx->fb_div);
     free(ctx->step_power);
+    free(ctx->fb_inv32);
+    free(ctx->fb_lim32);
     pthread_mutex_destroy(&ctx->rng_lock);
     free(ctx);
 }
@@ -2123,10 +2215,20 @@ static ca_status individual_log_zeta(ca_ic_ctx *ctx, uint64_t h, uint64_t *out, 
             }
         }
 
-        if (trial_factor(numerator, ctx->fb, ctx->fb_div, ctx->nfb, 0, &numerator_rel,
-                         &numerator_count) &&
-            trial_factor(denominator, ctx->fb, ctx->fb_div, ctx->nfb, 0, &denominator_rel,
-                         &denominator_count)) {
+        int smooth;
+        if (ctx->scan32) {
+            /* Reconstruction guarantees both magnitudes fit in a word. */
+            smooth =
+                trial_factor32((uint32_t)numerator, ctx, 0, &numerator_rel, &numerator_count) &&
+                trial_factor32((uint32_t)denominator, ctx, 0, &denominator_rel, &denominator_count);
+        } else {
+            smooth = trial_factor(numerator, ctx->fb, ctx->fb_div, ctx->nfb, 0, &numerator_rel,
+                                  &numerator_count) &&
+                     trial_factor(denominator, ctx->fb, ctx->fb_div, ctx->nfb, 0, &denominator_rel,
+                                  &denominator_count);
+        }
+        if (smooth) {
+
             /* log h = log(a) - log(|b|) - log(sign(b)) - e. */
             int ok = 1;
             uint64_t acc = 0;

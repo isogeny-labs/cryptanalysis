@@ -1,0 +1,37 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-15T22:37:35Z",
+ "id": "PCC-20261115-b10aea",
+ "kind": "statement",
+ "producer": {
+  "commit": "82617f14fb48843585137f0310f7d1fa9a5d8ea6",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/primary-review-01/source-review.json",
+    "sha256": "81b37c5d66607610e701a415c0202bc371b8cef661b187dedc51465fcbdec36e"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/PROTOCOL_01.md",
+    "sha256": "17d9ee058723c55970b19648364f109f023100c0a4c5713e2ceadc3696df0bac"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/report-01/REPORT.md",
+    "sha256": "fa77289de4af66e03b515036e908f6500a0efc9d449e62fa39e43d01607ca4db"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Source-reviewed correction to b76887: original class_solver.rs260 makes rows_mult change cycle-row target as well as later selection, so prior inference that raising it cannot expose more derived constraints was too broad. Original ic.rs1036-1132 seeds rootedqueueonlyfromgrounds and stopscapped; trace.rs76-94 retainswholeuneliminatedgraph; produce.rs188-199 all_available isexactcapturedfull_rows+combined_lp_cycle_rows. Existingfixedparameter c0479c/3a7d56 results remainunchanged; no newcapactivity, componentcounts, ranks, completeness ornovelty asserted. Diem2012pp644-645/653-654 andexactsourcehashes/KBstatus+fourqueries+theorem failures127 retained. Frozenoldreportnotrewritten; unsignedsource-review correction only."
+}

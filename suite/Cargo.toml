@@ -59,6 +59,14 @@ path = "src/bin/curves.rs"
 
 [features]
 default = []
+# Experimental six-product three-limb carryless multiply; timing not established.
+f2m-karatsuba3 = []
+# Fixed two-fold reduction for bounded three-limb element products.
+f2m-fixed-reduction = []
+# Direct canonical S3 coefficients for the algebraic decomposition oracle.
+s3-direct-coefficients = []
+# Direct column elimination for the affine S3 projected constraints.
+s3-affine-columns = []
 # Back the algebra cache with a Redis server instead of the local directory.
 redis-cache = ["dep:redis"]
 # Compile the GPU F4 kernel's source (cuda/f4_gf2_device.cuh) as C and link
@@ -70,6 +78,7 @@ gpu-emulator = []
 rho_debug = []
 
 [dependencies]
+prime-field-auxiliary-ic = { path = "../crates/prime-field-auxiliary-ic" }
 # Pinned, hash-checked source snapshot from the crypto repository.
 crypto_analysis_core = { package = "crypto-analysis-core", path = "vendor/crypto-analysis-core" }
 redis = { version = "0.32", optional = true, default-features = false, features = ["tls-rustls"] }

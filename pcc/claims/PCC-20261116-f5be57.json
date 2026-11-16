@@ -1,0 +1,58 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T05:32:26Z",
+ "id": "PCC-20261116-f5be57",
+ "kind": "statement",
+ "producer": {
+  "commit": "7b1cdfc62650ffcfcee1e4227c46f4021f3eb587",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/original-engine-preparation-scope-01/character-auditor-compile.txt.xz",
+    "sha256": "fb95ed73549c215fe37b6a7c19de5ef852468508f58e1aa9e4e6794e44940b16"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/original-engine-preparation-scope-01/character-auditor-compiled-custody.json.xz",
+    "sha256": "3dff46f47d84b7a6a2fc3821f714f046743cdefa9e14a44cdbc0f2e80f1bc694"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/original-engine-preparation-scope-01/character-auditor-runtime-custody.json.xz",
+    "sha256": "72d03f88d9524901e9c8e595036f9d1552c9f89bc0e80f99aba424a78ff4ba64"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/original-engine-preparation-scope-01/engine-prepared.json.xz",
+    "sha256": "633cf12657f445af845fe0893e97835b30f0d27cc87b9568ae4811e67a42b86f"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/original-engine-preparation-scope-01/engine-reused-character-auditor.json.xz",
+    "sha256": "6af330efdc53c045be64580aab4ecbf1f9c3daba040891c20ebb4715a02f4751"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/original-engine-preparation-scope-01/inherited-original-fixed-ic/original-engine-preparation.txt.xz",
+    "sha256": "0fd25224d921fa35406333db45872f5d68f9c008ef11f163fddf46468d026ada"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Original b7 CI feca94 engine setup scope retained whole: original compiler log reports3m48s in the existing900s setup phase; complete49,805,778-byte RLIB and8,316,356-byte RMETA are inside the whole original340,729,140-byte artifact with full profile/source/alias reuse and auditor compiler/runtime custody. This observed historical setup is not a new cold120s LP compiler pass or calibrated timing comparison. Frozen LP120s helper/compiler limit stays unchanged. Reusing the unchanged original witness-auditor binary requires whole earlier source/engine/native/prepared artifacts and current exact before/after byte custody, with old/new source and OCI identities distinct. No new engine build/job or claim of universal120s impossibility."
+}

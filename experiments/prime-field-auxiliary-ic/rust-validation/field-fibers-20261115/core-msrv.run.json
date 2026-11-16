@@ -1,0 +1,13 @@
+{
+  "command": [
+    "/home/agent/.cargo/bin/cargo",
+    "+1.78.0",
+    "test",
+    "--manifest-path",
+    "crates/prime-field-auxiliary-ic/Cargo.toml",
+    "--",
+    "--nocapture"
+  ],
+  "exit_code": 0,
+  "output": "core-msrv.log"
+}

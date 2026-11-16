@@ -1,0 +1,434 @@
+{
+  "schema": "producer-msrv-integration-validator/v1",
+  "status": "pass",
+  "overall_ci_status": "blocked",
+  "independent": false,
+  "created_utc": "2026-11-16T00:00:46.928259+00:00",
+  "source_commit": "bbdf695dcd03b8c4730f10aaa17747f1072cdac1",
+  "scope": "Local correctness and locked all-target minimum-version compilation of the reviewed upstream Rust 1.85 graph; not hosted CI or performance qualification. Native and consumer test scopes are separate.",
+  "reviewed_upstream_pr": 1586,
+  "main_integrated": "66890bbe8ee2df7267f07a8abe97254c82c319fb",
+  "declared_minimums": {
+    "native_bindings_and_tensor_consumer": "1.85",
+    "standalone_prime_field_ic_core": "1.78 (unchanged; not rerun locally in this follow-up)"
+  },
+  "checks": {
+    "native": {
+      "source_commit": "bbdf695dcd03b8c4730f10aaa17747f1072cdac1",
+      "scope": "bindings/rust hashed-ecdl-tensor and cryptanalysis",
+      "checks": [
+        {
+          "name": "native-format",
+          "command": [
+            "cargo",
+            "+stable",
+            "fmt",
+            "--all",
+            "--check"
+          ],
+          "cwd": "bindings/rust",
+          "exit_code": 0,
+          "log": "experiments/prime-field-auxiliary-ic/rust-validation/ci-msrv-followup-20261115/native-format.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "native-clippy",
+          "command": [
+            "cargo",
+            "+stable",
+            "clippy",
+            "--locked",
+            "-p",
+            "hashed-ecdl-tensor",
+            "-p",
+            "cryptanalysis",
+            "--all-targets",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "cwd": "bindings/rust",
+          "exit_code": 0,
+          "log": "experiments/prime-field-auxiliary-ic/rust-validation/ci-msrv-followup-20261115/native-clippy.log",
+          "sha256": "0361735a7b942a78d1735b001a5b9f09901c2c786417d5ed0bf75c50c613e310"
+        },
+        {
+          "name": "native-tests",
+          "command": [
+            "cargo",
+            "+stable",
+            "test",
+            "--locked",
+            "--release",
+            "-p",
+            "hashed-ecdl-tensor",
+            "-p",
+            "cryptanalysis"
+          ],
+          "cwd": "bindings/rust",
+          "exit_code": 0,
+          "log": "experiments/prime-field-auxiliary-ic/rust-validation/ci-msrv-followup-20261115/native-tests.log",
+          "sha256": "a1b7e03a404a88abb5b9319f15baa88654d4b0098ee218ddb4c32606b23e85f4"
+        },
+        {
+          "name": "native-msrv",
+          "command": [
+            "cargo",
+            "+1.85.0",
+            "check",
+            "--locked",
+            "-p",
+            "hashed-ecdl-tensor",
+            "-p",
+            "cryptanalysis",
+            "--all-targets"
+          ],
+          "cwd": "bindings/rust",
+          "exit_code": 0,
+          "log": "experiments/prime-field-auxiliary-ic/rust-validation/ci-msrv-followup-20261115/native-msrv.log",
+          "sha256": "c9b4a11240c6c2ebd6ed78c780b5a91170a5d4de9ed78c9d0702b9090965a134"
+        }
+      ]
+    },
+    "consumer": {
+      "source_commit": "bbdf695dcd03b8c4730f10aaa17747f1072cdac1",
+      "scope": "crates/hashed-ecdl-tensor structured consumer",
+      "checks": [
+        {
+          "name": "consumer-format",
+          "command": [
+            "cargo",
+            "+stable",
+            "fmt",
+            "--check"
+          ],
+          "cwd": "crates/hashed-ecdl-tensor",
+          "exit_code": 0,
+          "log": "experiments/prime-field-auxiliary-ic/rust-validation/ci-msrv-followup-20261115/consumer-format.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "consumer-clippy",
+          "command": [
+            "cargo",
+            "+stable",
+            "clippy",
+            "--locked",
+            "--all-targets",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "cwd": "crates/hashed-ecdl-tensor",
+          "exit_code": 0,
+          "log": "experiments/prime-field-auxiliary-ic/rust-validation/ci-msrv-followup-20261115/consumer-clippy.log",
+          "sha256": "3ca5aa50286060abcb74b8c30e847d1b82a8b7bf317e5fc6f24f746aa64b0302"
+        },
+        {
+          "name": "consumer-tests",
+          "command": [
+            "cargo",
+            "+stable",
+            "test",
+            "--locked",
+            "--release",
+            "--lib",
+            "--test",
+            "structured_cli"
+          ],
+          "cwd": "crates/hashed-ecdl-tensor",
+          "exit_code": 0,
+          "log": "experiments/prime-field-auxiliary-ic/rust-validation/ci-msrv-followup-20261115/consumer-tests.log",
+          "sha256": "e5f0ed0aaed1c4c68af2b29e6c50e6e169b24b00c5500247417d5b86b9894796"
+        },
+        {
+          "name": "consumer-msrv",
+          "command": [
+            "cargo",
+            "+1.85.0",
+            "check",
+            "--locked",
+            "--all-targets"
+          ],
+          "cwd": "crates/hashed-ecdl-tensor",
+          "exit_code": 0,
+          "log": "experiments/prime-field-auxiliary-ic/rust-validation/ci-msrv-followup-20261115/consumer-msrv.log",
+          "sha256": "cea94a545a57e42d8a47f2e95243ebc1fa5ae5792ab661f9b8f0672c4823637c"
+        }
+      ]
+    }
+  },
+  "correctness_test_counts": {
+    "native": {
+      "groups": [
+        {
+          "passed": 20,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 0
+        },
+        {
+          "passed": 2,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 0
+        },
+        {
+          "passed": 19,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 0
+        },
+        {
+          "passed": 71,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 0
+        },
+        {
+          "passed": 5,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 0
+        },
+        {
+          "passed": 3,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 0
+        },
+        {
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 0
+        },
+        {
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 0
+        },
+        {
+          "passed": 6,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 0
+        },
+        {
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 0
+        },
+        {
+          "passed": 12,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 0
+        },
+        {
+          "passed": 5,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 0
+        },
+        {
+          "passed": 5,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 0
+        },
+        {
+          "passed": 3,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 0
+        },
+        {
+          "passed": 7,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 0
+        },
+        {
+          "passed": 3,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 0
+        },
+        {
+          "passed": 4,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 0
+        },
+        {
+          "passed": 14,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 0
+        },
+        {
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 0
+        }
+      ],
+      "passed": 180
+    },
+    "consumer": {
+      "groups": [
+        {
+          "passed": 33,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 0
+        },
+        {
+          "passed": 3,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 0
+        }
+      ],
+      "passed": 36
+    }
+  },
+  "remaining_blockers": [
+    "Exact-head applicable hosted checks and reviews must finish successfully before merge.",
+    "Inherited full-source GLV binding pin drift is unchanged; no digest bump or control weakening.",
+    "Known CodeQL findings and bot threads require maintainer classification; blocked alert API not retried."
+  ],
+  "fresh_measurement_launched": false,
+  "timing_advantage_established": false,
+  "policy_checks": {
+    "pcc_canary_classes": 69,
+    "frozen_snapshot_files_unchanged": 2473,
+    "canonical_main_ledger_prefix_preserved": true
+  },
+  "raw_data": [
+    {
+      "path": "consumer-checks.json",
+      "bytes": 1947,
+      "sha256": "10d58e9da11518cd8100c74344170f5c977ca65bbac5e7279ee5334c160c33ed"
+    },
+    {
+      "path": "consumer-clippy.log",
+      "bytes": 1257,
+      "sha256": "3ca5aa50286060abcb74b8c30e847d1b82a8b7bf317e5fc6f24f746aa64b0302"
+    },
+    {
+      "path": "consumer-format.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "consumer-msrv.log",
+      "bytes": 967,
+      "sha256": "cea94a545a57e42d8a47f2e95243ebc1fa5ae5792ab661f9b8f0672c4823637c"
+    },
+    {
+      "path": "consumer-tests.log",
+      "bytes": 4360,
+      "sha256": "e5f0ed0aaed1c4c68af2b29e6c50e6e169b24b00c5500247417d5b86b9894796"
+    },
+    {
+      "path": "initial-hosted-read.json",
+      "bytes": 20630,
+      "sha256": "ec590b398d7b6cf5574d4aae4b2ac657f6db03dd6d31bf9da873bd6c764ae63c"
+    },
+    {
+      "path": "ledger-merge.json",
+      "bytes": 6286,
+      "sha256": "299949e76844e153481be953828c34b517631c82972454384c49fcd16b375f26"
+    },
+    {
+      "path": "native-checks.json",
+      "bytes": 2093,
+      "sha256": "b2460a7971b4d3fd06cb797524c4d0472b2eefe063a5c3b53eda4b95efe5923b"
+    },
+    {
+      "path": "native-clippy.log",
+      "bytes": 2467,
+      "sha256": "0361735a7b942a78d1735b001a5b9f09901c2c786417d5ed0bf75c50c613e310"
+    },
+    {
+      "path": "native-format.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "native-msrv.log",
+      "bytes": 1228,
+      "sha256": "c9b4a11240c6c2ebd6ed78c780b5a91170a5d4de9ed78c9d0702b9090965a134"
+    },
+    {
+      "path": "native-tests.log",
+      "bytes": 19225,
+      "sha256": "a1b7e03a404a88abb5b9319f15baa88654d4b0098ee218ddb4c32606b23e85f4"
+    },
+    {
+      "path": "pcc-canary.log",
+      "bytes": 5604,
+      "sha256": "516f7c403eaf94e9feab023240342007a79d2401f3725f8411c09952f48b1cef"
+    },
+    {
+      "path": "source-provenance.json",
+      "bytes": 3560,
+      "sha256": "c23b3cc5d1272dc016a708a6e8cb1c6fe9a3d9c181b13eb2a79a3fe7345d27eb"
+    },
+    {
+      "path": "original-claim-f7dd33.json",
+      "sha256": "941c314d3e8110b4dfccbe4880cf2f3ec9932e8dd1f19ae5ff3f47662f5e3e8b"
+    },
+    {
+      "path": "initial-validator-format-failure.log",
+      "sha256": "346fe2333d0faab3c0e36ffb61032e49df102ad5cb70f2228c94fce03569727d"
+    },
+    {
+      "path": "msrv-integration-validator.json",
+      "sha256": "733bf6740b06ddfa0ed5bc6499ff8070b352c4b9e7279ddbc71b65b9adab8eea"
+    }
+  ],
+  "headline": [
+    {
+      "name": "native-correctness-passed",
+      "claimed": 180,
+      "recomputed": 180,
+      "rel_tol": 0
+    },
+    {
+      "name": "consumer-correctness-passed",
+      "claimed": 36,
+      "recomputed": 36,
+      "rel_tol": 0
+    }
+  ],
+  "supersedes_validator_metadata": {
+    "path": "msrv-integration-validator.json",
+    "reason": "Add the required raw_data and headline fields. Preserve the failed report and original claim bytes. Statement, source, commands, counts, overall blocked status and unsigned standing are unchanged."
+  }
+}
