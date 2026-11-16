@@ -37,3 +37,5 @@ Successful checkpoint admission permits timing; it establishes no performance co
 ## Resolution and history
 
 2026-11-16: unresolved. Three supported upload attempts failed before target timing. The benchmark record remains open with no commands, samples or metrics. Index registration is pending because `problems/README.md` is reserved by T-6315; this scoped record and the study handoff retain the link.
+
+2026-11-16 17:21 UTC: rechecked the supported token route at published head64ef14113. The gate again exited1 with HTTP403; original log004 is preserved under admission-001. No timing command or allocation was started. Access remains unresolved. [pcc:unverified]

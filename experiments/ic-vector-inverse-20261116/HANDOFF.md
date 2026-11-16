@@ -104,3 +104,5 @@ Await a working supported upload transport, pass the gate, then launch the froze
 run_prepared.py controller once. Do not skip the gate. No Rust compilation active.
 Flow assets and render_report.py are prepared; new report PDF marker has NOT run.
 No report should imply inverse timing results before the panel actually runs.
+
+Continuation 17:21UTC: token gate rechecked once, exit1 HTTP403, log004 preserved. Same access obstruction; no live timing handle, no new samples, no changes to frozen source/binaries/inputs. This is the second consecutive goal turn with checkpoint access blocking timing; do not mark the goal blocked before the third consecutive turn unless a different explicit instruction applies. Prior turn was progress (published implementation/evidence), this continuation has no performance progress. Source review confirms existing single-inverse tree retained; product-pass speed remains unmeasured.
