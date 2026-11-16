@@ -59,6 +59,14 @@ path = "src/bin/curves.rs"
 
 [features]
 default = []
+# Experimental six-product three-limb carryless multiply; timing not established.
+f2m-karatsuba3 = []
+# Fixed two-fold reduction for bounded three-limb element products.
+f2m-fixed-reduction = []
+# Direct canonical S3 coefficients for the algebraic decomposition oracle.
+s3-direct-coefficients = []
+# Direct column elimination for the affine S3 projected constraints.
+s3-affine-columns = []
 # Back the algebra cache with a Redis server instead of the local directory.
 redis-cache = ["dep:redis"]
 # Compile the GPU F4 kernel's source (cuda/f4_gf2_device.cuh) as C and link

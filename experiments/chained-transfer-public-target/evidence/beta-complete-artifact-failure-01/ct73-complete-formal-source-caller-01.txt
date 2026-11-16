@@ -1,0 +1,24 @@
+norm784 0
+arithmetic22 0
+beta-reference 0
+complete-reference 0
+complete-shell 0
+complete-actionlint 0
+complete-rustfmt 0
+ledger 0
+prose 0
+whitespace 0
+actionlint 0
+wiring 0
+benchrec 0
+reportPython 0
+cached-whitespace 0
+artifact 1
+Traceback (most recent call last):
+  File "/workspace/scratch/ct73_commit_complete_checkpoint.py", line 31, in <module>
+    stage();run('cached-whitespace',['git','diff','--cached','--check']);tree=subprocess.check_output(['git','write-tree'],cwd=r,text=True).strip();run('artifact',['python3','tools/artifacts/artifacts.py','check',base,tree])
+                                                                                                                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/ct73_commit_complete_checkpoint.py", line 11, in run
+    q=subprocess.run(c,cwd=r,capture_output=True);raw=q.stdout+q.stderr;(g/(n+'.txt.xz'if len(raw)>60000 else n+'.txt')).write_bytes(lzma.compress(raw)if len(raw)>60000 else raw);(g/(n+'.exit')).write_text(str(q.returncode)+'\n');print(n,q.returncode,flush=True);assert q.returncode==0,raw[:2000]
+                                                                                                                                                                                                                                                                              ^^^^^^^^^^^^^^^
+AssertionError: b'       151,899  experiments/chained-transfer-public-target/reports/beta-complete-rational-01/complete-diagram.png\n\n1 data file(s) belong in the store, not Git. Move them with\n  python3 tools/artifacts/artifacts.py push <file-or-dir>...\nand commit the .artifacts.json / .gitignore it writes (docs/artifacts.md).\n'

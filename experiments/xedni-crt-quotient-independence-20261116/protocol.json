@@ -1,0 +1,16 @@
+{
+  "schema": "xedni-crt-quotient-independence-v1",
+  "parent": "experiments/xedni-optimized-family-lift-replay-20261115",
+  "parent_protocol_sha256": "53151698eee9a8e5182a736ae9eee0a883b3f3be5f2e9d3bd64b7aa7ae934817",
+  "parent_result_sha256": "b6c37896ae64c113c92190d411218db97c6008131af6f0bde31c16ae61e4c6a2",
+  "parent_seal_sha256": "552284f216063d14acf51a1ddf32737d61fab9507b3398f6e610376ba0544b37",
+  "population": "all 9688 selected rational group-test rows from the 16 parent centered and shifted JSONL files, preserving arm, field, query, vector, curve, and point identity",
+  "ordered_primes": [3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97],
+  "quotient_certificate": "At the first good, integral prime in the ordered list where P, Q, and P+Q all lie outside 2E(F_l), record Z-linear independence of their images in E(F_l)/2E(F_l). Keep every prime status tested before this hit.",
+  "rational_2_torsion_certificate": "At the first good, integral prime in the ordered list with odd #E(F_l), certify no rational 2-torsion using good-reduction injection on prime-to-l torsion; l is odd. Keep no-hit rows unknown.",
+  "promotion_gate": "A rational pair is certified independent only if both the quotient and no-rational-2-torsion certificates are present. Missing either remains unknown, not dependent.",
+  "falsifiers": ["no certified pairs", "a parent rational relation is certified independent", "a quotient calculation disagrees with an independent exact group-law replay", "parent row hash or count mismatch"],
+  "run_cap_seconds": 900,
+  "measurement": "exact arithmetic and coverage diagnostic on local host; no isolated wall-time comparison",
+  "formal_dependency": "experiments/xedni-auxiliary-mod2-independence-20261116/AuxiliaryMod2Independence.lean:independent_of_exponent_two_quotient; actual curve/reduction instantiation remains partial"
+}

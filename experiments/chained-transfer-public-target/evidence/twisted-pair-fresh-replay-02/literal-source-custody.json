@@ -1,0 +1,91 @@
+{
+  "protocol": "f10846 published3fad107a before proof/native code",
+  "literal_sources": [
+    {
+      "source": "/workspace/scratch/ct81-twisted23-layout-01/cryptanalysis/experiments/chained-transfer-public-target/odd-source/src/lib.rs",
+      "whole_sha256": "ec0f28e21b6d66c5c8c334f239089cdf0173ed396b9daf296d1fb6e9b04df333",
+      "literal_prefix_bytes": 12036,
+      "literal_prefix_sha256": "63a8ac97ba43f1773cef7b026e4016ea93f005ae77285c6dd6be3c75f3a90c5e",
+      "explicit_patch": null,
+      "appended": "\ninclude!(\"second_literal.rs\");\ninclude!(\"third_literal.rs\");\n#[path=\"models/mod.rs\"]\npub mod models;\n#[path=\"torsion.rs\"]\npub mod twisted_torsion;\ninclude!(\"../src/twist_append.rs\");\n#[cfg(test)]\ninclude!(\"../src/tests.rs\");\n",
+      "generated": "lib.rs",
+      "generated_sha256": "35e4b034fa86203b47dd9057c5a97c13ccc5bca98216b9455b519aeb88402d92"
+    },
+    {
+      "source": "/workspace/scratch/ct81-twisted23-layout-01/cryptanalysis/experiments/chained-transfer-public-target/nondual13-preflight/src/append.rs",
+      "whole_sha256": "b515c9460a26a5f886146e899648195a32b421472cce69bd9fa7402fdaebadc2",
+      "literal_prefix_bytes": 9168,
+      "literal_prefix_sha256": "96bb03445dabbd37bd19ea31cb9ef8ee9d63d87a9ff1d9351a8a54b4d1e09cab",
+      "explicit_patch": null,
+      "appended": "",
+      "generated": "second_literal.rs",
+      "generated_sha256": "96bb03445dabbd37bd19ea31cb9ef8ee9d63d87a9ff1d9351a8a54b4d1e09cab"
+    },
+    {
+      "source": "/workspace/scratch/ct81-twisted23-layout-01/cryptanalysis/experiments/chained-transfer-public-target/nondual13-next-preflight/src/append.rs",
+      "whole_sha256": "caa1c3782dace1fb61c999454037501bd029ac8917e495468e0fb78cfcb6fb58",
+      "literal_prefix_bytes": 9370,
+      "literal_prefix_sha256": "431d0d3ff798e710ece825d529633b786eeacee7e71aa6cd27b481e12eb125b5",
+      "explicit_patch": null,
+      "appended": "",
+      "generated": "third_literal.rs",
+      "generated_sha256": "431d0d3ff798e710ece825d529633b786eeacee7e71aa6cd27b481e12eb125b5"
+    },
+    {
+      "source": "/workspace/scratch/ct81-twisted23-layout-01/cryptanalysis/experiments/chained-transfer-public-target/odd-product-models/src/lib.rs",
+      "whole_sha256": "8fced75dbdef1fbc6cf08014ad201d4f2cdd650bb514f58ceb94d5172ca9f095",
+      "literal_prefix_bytes": 23341,
+      "literal_prefix_sha256": "71cfc21f4d608c84dc6cde2d2632f9a42360478bcd3c3d9d97b5d2cabfa88d3d",
+      "explicit_patch": null,
+      "appended": "",
+      "generated": "models/mod.rs",
+      "generated_sha256": "71cfc21f4d608c84dc6cde2d2632f9a42360478bcd3c3d9d97b5d2cabfa88d3d"
+    },
+    {
+      "source": "/workspace/scratch/ct81-twisted23-layout-01/cryptanalysis/experiments/chained-transfer-public-target/odd-product-models/src/source.rs",
+      "whole_sha256": "1c3f5e1d038f735af32c6b50c107c9b1596364abc34f1e59cd32c86dfa1bb24f",
+      "literal_prefix_bytes": 4161,
+      "literal_prefix_sha256": "1c3f5e1d038f735af32c6b50c107c9b1596364abc34f1e59cd32c86dfa1bb24f",
+      "explicit_patch": [
+        "actual nonzero prime-ell generator plus unique Hasse multiple4;original arithmetic and written Hasse bridge",
+        "actual nonzero prime-ell generator plus unique Hasse multiple equal to declared order/ell; original arithmetic and written Hasse bridge"
+      ],
+      "appended": "\ninclude!(\"../../src/source_twist.rs\");\n",
+      "generated": "models/source.rs",
+      "generated_sha256": "b2677751e7eedcf6a42108252b3da73c1eaee55423c6804c1eabb3ab75a96cb5"
+    },
+    {
+      "source": "/workspace/scratch/ct81-twisted23-layout-01/cryptanalysis/experiments/chained-transfer-public-target/odd-product-models/src/even.rs",
+      "whole_sha256": "b819c2e24ca56736ff02fd0e689a606a43e04c8ba30cae00815c8e0cb1123466",
+      "literal_prefix_bytes": 4829,
+      "literal_prefix_sha256": "b819c2e24ca56736ff02fd0e689a606a43e04c8ba30cae00815c8e0cb1123466",
+      "explicit_patch": null,
+      "appended": "",
+      "generated": "models/even.rs",
+      "generated_sha256": "b819c2e24ca56736ff02fd0e689a606a43e04c8ba30cae00815c8e0cb1123466"
+    },
+    {
+      "source": "/workspace/scratch/ct81-twisted23-layout-01/cryptanalysis/experiments/chained-transfer-public-target/odd-product-refinements/src/kernels.rs",
+      "whole_sha256": "5d21960d676e84d3ce3a994f942f406c4cd2281fd311c6f68c3040e10cc9322c",
+      "literal_prefix_bytes": 3648,
+      "literal_prefix_sha256": "18609321772c153132fab9836f3323407086884fd3c8b386650bbe486195ed9c",
+      "explicit_patch": null,
+      "appended": "\ninclude!(\"../src/torsion_twist.rs\");\n",
+      "generated": "torsion.rs",
+      "generated_sha256": "988e1d67c19f65e592a88685a7aa7ddb995333c6856cbd037b5b2335193ee66e"
+    },
+    {
+      "source": "/workspace/scratch/ct81-twisted23-layout-01/cryptanalysis/experiments/chained-transfer-public-target/nondual13-preflight/models/expected-native-01.json.xz",
+      "generated": "old-second-model.json",
+      "whole_decompressed_sha256": "0848e323c0f6a2edcc3b16b111a31e40af9cfbb68850124d851e0861d69a64d6",
+      "method": "entire original genuine18 fixture, no field extraction"
+    },
+    {
+      "source": "/workspace/scratch/ct81-twisted23-layout-01/cryptanalysis/experiments/chained-transfer-public-target/nondual13-next-preflight/models/expected-native-01.json.xz",
+      "generated": "old-third-model.json",
+      "whole_decompressed_sha256": "d383833d1600734e6117b0e49d6e6dabbd5e1fa09f18b0069826d41996ccab69",
+      "method": "entire original genuine18 fixture, no field extraction"
+    }
+  ],
+  "scope": "original helpers and all prior hop bodies; only SourceE metadata text generalized to describe explicit new Hasse certificate, original cofactor4 checker unchanged; new source constructor separate"
+}

@@ -10,6 +10,7 @@
  * delivered late (ThreadSanitizer defers it to the next intercepted call). */
 #include "test_fixtures.h"
 #include "linalg.h"
+#include "dlog_internal.h"
 #include <signal.h>
 #include <unistd.h>
 
@@ -518,6 +519,56 @@ static void dense_composite_modulus(void)
     CHECK_EQ_U64(x5[0], 4);
 }
 
+static void interval_fit_bounds(void)
+{
+    /* The first case formerly succeeded with x == 0 outside the interval. */
+    uint64_t n = UINT64_MAX - 58, x = 0;
+    CHECK(!ca_fit_interval(n, &x, n + 1, UINT64_MAX));
+    CHECK_EQ_U64(x, 0);
+    x = 1;
+    CHECK(ca_fit_interval(n, &x, n + 1, UINT64_MAX));
+    CHECK_EQ_U64(x, n + 1);
+
+    /* Independent remainder-distance reference: advance from lo to the next
+     * congruent representative, using 128-bit addition only in this oracle. */
+    ca_rng rng;
+    ca_rng_seed(&rng, 813);
+    for (int i = 0; i < 20000; i++) {
+        uint64_t order = ca_rng_next(&rng), input = ca_rng_next(&rng);
+        uint64_t lo = ca_rng_next(&rng), hi = ca_rng_next(&rng);
+        if (i < 64) {
+            order = UINT64_MAX - (uint64_t)i;
+            lo = order;
+            hi = UINT64_MAX;
+        }
+        if (lo > hi) {
+            uint64_t tmp = lo;
+            lo = hi;
+            hi = tmp;
+        }
+        int expected;
+        ca_u128 answer = input;
+        if (!order)
+            expected = input >= lo && input <= hi;
+        else {
+            uint64_t residue = input % order, start = lo % order;
+            uint64_t distance = residue >= start ? residue - start : order - (start - residue);
+            answer = (ca_u128)lo + distance;
+            expected = answer <= hi;
+        }
+        x = input;
+        CHECK(ca_fit_interval(order, &x, lo, hi) == expected);
+        if (expected) {
+            CHECK_EQ_U64(x, (uint64_t)answer);
+            CHECK(x >= lo && x <= hi);
+        } else
+            CHECK_EQ_U64(x, input);
+    }
+    x = 7;
+    CHECK(ca_fit_interval(0, &x, 7, 7));
+    CHECK(!ca_fit_interval(0, &x, 8, 10));
+}
+
 static void bsgs_counts(void)
 {
     ca_group g;
@@ -543,6 +594,7 @@ int main(int argc, char **argv)
         {"gpu-rho-outside-subgroup", gpu_rho_target_outside_subgroup},
         {"kangaroo-outside-interval", kangaroo_log_outside_interval},
         {"bsgs-count", bsgs_counts},
+        {"interval-fit", interval_fit_bounds},
         {"oversized-table", oversized_tables},
         {"dense-composite", dense_composite_modulus},
     };

@@ -1,0 +1,39 @@
+warning: methods `add`, `sub`, and `powu` are never used
+   --> src/lib.rs:55:8
+    |
+ 10 | impl Fq {
+    | ------- methods in this implementation
+...
+ 55 |     fn add(&self, a: u32, b: u32) -> u32 {
+    |        ^^^
+...
+ 61 |     fn sub(&self, a: u32, b: u32) -> u32 {
+    |        ^^^
+...
+124 |     fn powu(&self, mut a: u32, mut e: u64) -> u32 {
+    |        ^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `norm-qpic-negative-hook-control` (lib test) generated 1 warning
+    Finished `release` profile [optimized] target(s) in 0.02s
+     Running unittests src/lib.rs (/workspace/scratch/ct57-n4-unit-01-build-cache/release/deps/norm_qpic_negative_hook_control-0c744854035c3b59)
+
+running 1 test
+test norm_arithmetic_primitive_unit::all_quadratic_leaves_counts_and_nonzero_inverses ... N4_NORM_QPIC_HOOK_PROBE {"a":224,"actual":1126,"all_algebra_equal":true,"b":671,"expected_coefficient_mul":5,"observed_coefficient_mul":0,"original_reference":1126,"scope":"original FpR body shares instrumented Zp/fpm dependencies; no execution standing"}
+
+thread 'norm_arithmetic_primitive_unit::all_quadratic_leaves_counts_and_nonzero_inverses' (374017) panicked at src/lib.rs:209:5:
+assertion `left == right` failed: actual omitted quadratic coefficient hook must reject
+  left: 0
+ right: 5
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+FAILED
+
+failures:
+
+failures:
+    norm_arithmetic_primitive_unit::all_quadratic_leaves_counts_and_nonzero_inverses
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+error: test failed, to rerun pass `--lib`

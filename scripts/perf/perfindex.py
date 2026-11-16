@@ -329,7 +329,58 @@ def invoke(binary: str, kid: str, a: argparse.Namespace) -> dict:
     return row
 
 
+def matched_kernels(a: argparse.Namespace) -> list[dict]:
+    """Require the same selected workload before invoking any measured kernel."""
+    baseline = list_kernels(a.base, a.full, a.filter)
+    candidate = list_kernels(a.cand, a.full, a.filter)
+    kb = {k["id"]: k for k in baseline}
+    kc = {k["id"]: k for k in candidate}
+    if len(kb) != len(baseline) or len(kc) != len(candidate):
+        raise ValueError("duplicate kernel IDs in selected workload")
+    if not kb or set(kb) != set(kc):
+        raise ValueError(f"selected kernel rosters must match and be nonempty; "
+                         f"baseline-only={sorted(set(kb) - set(kc))}, candidate-only={sorted(set(kc) - set(kb))}")
+    if any(kb[k]["area"] != kc[k]["area"] for k in kb):
+        raise ValueError("selected kernel areas differ between baseline and candidate")
+    return [kc[k] for k in sorted(kc)]
+
+
+def validate_pairs(kernels: list[dict], per: dict) -> None:
+    """Reject partial pairs instead of truncating zip() or the joint bootstrap."""
+    if not kernels or len({k["id"] for k in kernels}) != len(kernels):
+        raise ValueError("comparison needs a nonempty set of distinct kernels")
+    rounds = None
+    for kernel in kernels:
+        kid = kernel["id"]
+        record = per.get(kid, {})
+        baseline, candidate = record.get("A", []), record.get("B", [])
+        count = len(baseline)
+        if not count or len(candidate) != count:
+            raise ValueError(f"{kid}: incomplete baseline/candidate paired rounds")
+        if rounds is not None and count != rounds:
+            raise ValueError(f"{kid}: round count differs across kernels")
+        rounds = count
+        arms = [baseline, candidate]
+        # An empty A2 is the existing representation for --no-aa.
+        if record.get("A2"):
+            if len(record["A2"]) != count:
+                raise ValueError(f"{kid}: incomplete A/A paired rounds")
+            arms.append(record["A2"])
+        tagged = any("round" in row for arm in arms for row in arm)
+        for arm in arms:
+            if tagged and any(type(row.get("round")) is not int or row["round"] != i
+                              for i, row in enumerate(arm)):
+                raise ValueError(f"{kid}: missing, duplicated or reordered round IDs")
+            for row in arm:
+                value = row.get("median_ns")
+                if type(value) not in (int, float) or not math.isfinite(value) or value <= 0:
+                    raise ValueError(f"{kid}: measurement must be finite and positive")
+                if not isinstance(row.get("fingerprint"), str) or not row["fingerprint"]:
+                    raise ValueError(f"{kid}: missing output fingerprint")
+
+
 def summarize(kernels: list[dict], per: dict, weights: dict, rng: random.Random) -> dict:
+    validate_pairs(kernels, per)
     rows = []
     rounds = None
     for k in kernels:
@@ -339,8 +390,8 @@ def summarize(kernels: list[dict], per: dict, weights: dict, rng: random.Random)
         tA = [r["median_ns"] for r in rec["A"]]
         tB = [r["median_ns"] for r in rec["B"]]
         tA2 = [r["median_ns"] for r in rec.get("A2", [])]
-        d = [math.log(x / y) for x, y in zip(tA, tB)]
-        n = [math.log(x / y) for x, y in zip(tA, tA2)]
+        d = [math.log(x) - math.log(y) for x, y in zip(tA, tB)]
+        n = [math.log(x) - math.log(y) for x, y in zip(tA, tA2)]
         rounds = len(d) if rounds is None else min(rounds, len(d))
         valid = len(fps) == 1
         med = statistics.median(d)
@@ -375,8 +426,14 @@ def summarize(kernels: list[dict], per: dict, weights: dict, rng: random.Random)
     for r in rows:
         by_area.setdefault(r["area"], []).append(r)
     areas = sorted(by_area)
-    w = {ar: float(weights.get(ar, 1.0)) for ar in areas}
-    wsum = sum(w.values()) or 1.0
+    raw_weights = {ar: weights.get(ar, 1.0) for ar in areas}
+    if any(type(value) not in (int, float) or not math.isfinite(value) or value < 0
+           for value in raw_weights.values()):
+        raise ValueError("area weights must be finite nonnegative numbers")
+    w = {ar: float(value) for ar, value in raw_weights.items()}
+    wsum = sum(w.values())
+    if not math.isfinite(wsum) or wsum <= 0:
+        raise ValueError("selected area weights must have a finite positive sum")
     w = {ar: v / wsum for ar, v in w.items()}
 
     def index_for(rounds_idx: list[int]) -> tuple[float, dict]:
@@ -450,12 +507,7 @@ def cmd_compare(a: argparse.Namespace) -> None:
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=False)
     rng = random.Random(a.seed)
-    kb = {k["id"]: k for k in list_kernels(a.base, a.full, a.filter)}
-    kc = {k["id"]: k for k in list_kernels(a.cand, a.full, a.filter)}
-    only = sorted(set(kb) ^ set(kc))
-    if only:
-        print(f"kernels present on one side only (skipped): {only}", file=sys.stderr)
-    kernels = [kc[i] for i in sorted(set(kb) & set(kc))]
+    kernels = matched_kernels(a)
     per: dict[str, dict] = {k["id"]: {"A": [], "B": [], "A2": []} for k in kernels}
     host = host_manifest()
     for r in range(a.rounds):
@@ -489,7 +541,7 @@ def cmd_compare(a: argparse.Namespace) -> None:
             "raw": per,
         }
     )
-    (out / "compare.json").write_text(json.dumps(summary, indent=1) + "\n")
+    (out / "compare.json").write_text(json.dumps(summary, indent=1, allow_nan=False) + "\n")
     (out / "compare.md").write_text(markdown(summary, "perfbench wall-time comparison"))
     print(markdown(summary, "perfbench wall-time comparison"))
     if not summary["valid"]:
@@ -528,9 +580,7 @@ def instr_one(binary: str, kid: str) -> dict:
 def cmd_instr(a: argparse.Namespace) -> None:
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=False)
-    kb = {k["id"]: k for k in list_kernels(a.base, a.full, a.filter)}
-    kc = {k["id"]: k for k in list_kernels(a.cand, a.full, a.filter)}
-    kernels = [kc[i] for i in sorted(set(kb) & set(kc))]
+    kernels = matched_kernels(a)
     per = {}
     for k in kernels:
         ra = instr_one(a.base, k["id"])
@@ -543,7 +593,7 @@ def cmd_instr(a: argparse.Namespace) -> None:
         print(f"{k['id']}: base Ir={ra['ir']} cand Ir={rb['ir']}", file=sys.stderr)
     summary = summarize(kernels, per, load_weights(a.weights), random.Random(0))
     summary.update({"mode": "callgrind_ir", "unit": "Ir", "base": a.base, "cand": a.cand})
-    (out / "instr.json").write_text(json.dumps(summary, indent=1) + "\n")
+    (out / "instr.json").write_text(json.dumps(summary, indent=1, allow_nan=False) + "\n")
     md = markdown(summary, "perfbench instruction-count comparison (callgrind Ir, 1 thread)")
     (out / "instr.md").write_text(md)
     print(md)
@@ -599,7 +649,10 @@ def main() -> None:
     r.set_defaults(func=cmd_report)
 
     a = p.parse_args()
-    a.func(a)
+    try:
+        a.func(a)
+    except (ValueError, OverflowError) as error:
+        raise SystemExit(f"perfindex: {error}") from None
 
 
 if __name__ == "__main__":

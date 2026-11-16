@@ -1,0 +1,26 @@
+{
+  "schema": "xedni-height-growth-attempts-v1",
+  "attempts": [
+    {
+      "id": "v1-rational-point-enumeration",
+      "protocol": "PROTOCOL.json",
+      "source": "run.py",
+      "status": "interrupted_resource_cost",
+      "observed_elapsed_lower_bound_seconds": 104,
+      "observed_cpu_percent": 100,
+      "rows_written": 0,
+      "stdout": "initial-run.stdout",
+      "stderr": "initial-run.stderr.gz",
+      "reason": "each scalar image was remultiplied as a rational point; operator interrupted the live process"
+    },
+    {
+      "id": "v2-exact-scalar-image",
+      "protocol": "PROTOCOL-v2.json",
+      "source": "run-v2.py",
+      "status": "PASS",
+      "rows_written": 95,
+      "stdout": "run-v2.stdout",
+      "stderr": "run-v2.stderr"
+    }
+  ]
+}

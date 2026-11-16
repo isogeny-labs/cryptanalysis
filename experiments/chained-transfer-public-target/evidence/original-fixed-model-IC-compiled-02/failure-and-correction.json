@@ -1,0 +1,17 @@
+{
+  "first_build_actual_driver_exit": 1,
+  "actual_Cargo_compile_exit": 101,
+  "errors": [
+    "EncodedClass has no PartialEq; whole field/model/key tuple must be compared explicitly",
+    "PairedFourth constructor takes the existing TwistedPair; ThirdHop is a different map object"
+  ],
+  "narrow_correction": [
+    "compare all three packet fields without changing either external type",
+    "construct the same TwistedPair already used by FixedGeometry and pass it to PairedFourth"
+  ],
+  "literal_IC_solver_unchanged": true,
+  "no_native_math_executed": true,
+  "corrected_build_exit": 0,
+  "corrected_build_whole_supervisor_seconds": 900,
+  "individual_compile_bound_seconds": 120
+}
