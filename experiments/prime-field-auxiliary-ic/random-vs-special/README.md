@@ -26,6 +26,15 @@ and fixes the incoming SHA-2 API/lock/compiler-floor issues. Selected 1.85
 checks and focused controls pass; the earlier native-library timeout remains
 explicitly incomplete. It supplies no benchmark or timing gain. [pcc:unverified]
 
+The [version 2 timing correction](timing-v2-20261116/README.md), source
+`25049631` and claim `PCC-20261116-d1cfbe` (unverified), charges target-input
+validation to the IC caller and final scalar replay to rho. It partitions
+observed CLI costs and excludes reference work from IC totals, while leaving
+upstream/process/replay completeness unknown. Ten CLI and fifteen checker
+tests pass, with actual v2 and archived v1 report alignment checked separately.
+Version 1 data retain their original meaning. This is accounting, with no
+measured runtime improvement or new benchmark. [pcc:unverified]
+
 Algorithm/CLI source `5e3a4202` adds `FactorBase::random_control`, separate base
 and relation-search seeds, preparation rejection counters, and CLI
 `--random-base-columns K`. It checks the generator order and derives the

@@ -1,0 +1,278 @@
+{
+  "status": "pass",
+  "independent": false,
+  "source_commit": "25049631bc58ca848cbb00169eda193529d9fc87",
+  "overall_ci_status": "pending",
+  "scope": "Producer accounting/schema correctness on existing p=127 fixtures and scripted durations; not a fresh-target benchmark, cost reduction or signed execution/replay.",
+  "raw_data": [
+    {
+      "path": "actual-alignment.command.json",
+      "sha256": "60041f392151826c571f35ad9281111b8582c592d66e2e47bdeecb77137ca2b7"
+    },
+    {
+      "path": "actual-alignment.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "checker-tests.command.json",
+      "sha256": "e140f002b21b1e034bc791b8e7bb09a370edb8bf1dc00828d759f52b961bedf9"
+    },
+    {
+      "path": "checker-tests.log",
+      "sha256": "e294462e53fe01e1365decf5ee4f5f3078b95d733ddf9b8637e30fbd87a94f76"
+    },
+    {
+      "path": "cli-clippy.command.json",
+      "sha256": "5b8a307fe395276684e36a5c78b508f7af6ce6be98360a898ec9175c5edcb808"
+    },
+    {
+      "path": "cli-clippy.log",
+      "sha256": "b509820150e7f71ce807eb18a8b4803d98102f7893a68ca9ec096cacce91ba71"
+    },
+    {
+      "path": "cli-format.command.json",
+      "sha256": "28faf0a6ed606eba6ae8120ed5ceb00d0a4d333810f7e7006318e97dd7314453"
+    },
+    {
+      "path": "cli-format.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "cli-tests.command.json",
+      "sha256": "4f9b43f0ad70d53d0798529e597bed3379b1b29b8ad6a45eb6449101074dcc7b"
+    },
+    {
+      "path": "cli-tests.log",
+      "sha256": "d39acc2fb7849c488a0054a7c9093c9ddefb8e3efb0473fd6b1a3447feed1089"
+    },
+    {
+      "path": "docs-msrv.command.json",
+      "sha256": "633857a3f5bad76f47bd0d187fdf4e977d9bf9cdfa19116fcb505bbf8994cc65"
+    },
+    {
+      "path": "docs-msrv.log",
+      "sha256": "cf054629e924f84b5c8b0c5e26e46815ebdc9b1259a1cc54fe4c54f4a7a53d66"
+    },
+    {
+      "path": "docs-stable.command.json",
+      "sha256": "60272a8adc035159f3f7a5a6ff8ecd5dc70c031dcd37d3c7f01f8eb9eaf8d7a1"
+    },
+    {
+      "path": "docs-stable.log",
+      "sha256": "8798a585343036bc3eb3551e2655bc261481061231cbbf813f6d30c10b095eca"
+    },
+    {
+      "path": "legacy-alignment.command.json",
+      "sha256": "f2023d965a8d9b48ae58c714695db8885cc3334de30ae2b999b8830c980ebd6f"
+    },
+    {
+      "path": "legacy-alignment.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "legacy-comparison.json",
+      "sha256": "b71c6da52657545ecd3c24573f6dacc8b6a2bef6ba0cfb08d2bdbf59055e8043"
+    },
+    {
+      "path": "public-test-fixture/auxiliary.json",
+      "sha256": "370d7b28ed6495a6af7bbe61279ae4b330c9d27c5a53912e35d7d6f30f54b7e4"
+    },
+    {
+      "path": "public-test-fixture/comparison.json",
+      "sha256": "ed0c0c5a29cf219f9e8c27ecd18252052fa2f9f6ad6b544ef1dd79b705888957"
+    },
+    {
+      "path": "public-test-fixture/random.json",
+      "sha256": "444ddbf7d5815be72c2179b96a199784da6b69d0533c617239eaa49de27aede2"
+    },
+    {
+      "path": "public-test-fixture/same_base.json",
+      "sha256": "cbe9c1cf08134db5f5d8b9ab069f3d2b285be908cad3475237d71fbff01b7b17"
+    }
+  ],
+  "headline": [
+    {
+      "name": "cli-tests.log-passing-checks",
+      "claimed": 10,
+      "recomputed": 10,
+      "rel_tol": 0
+    },
+    {
+      "name": "checker-tests.log-passing-checks",
+      "claimed": 15,
+      "recomputed": 15,
+      "rel_tol": 0
+    },
+    {
+      "name": "public-test-fixture/comparison.json-aligned-arms",
+      "claimed": 3,
+      "recomputed": 3,
+      "rel_tol": 0
+    },
+    {
+      "name": "legacy-comparison.json-aligned-arms",
+      "claimed": 3,
+      "recomputed": 3,
+      "rel_tol": 0
+    }
+  ],
+  "checks": [
+    {
+      "name": "actual-alignment",
+      "source_commit": "25049631bc58ca848cbb00169eda193529d9fc87",
+      "argv": [
+        "python3",
+        "experiments/prime-field-auxiliary-ic/random-vs-special/compare_reports.py",
+        "--auxiliary",
+        "experiments/prime-field-auxiliary-ic/random-vs-special/timing-v2-20261116/public-test-fixture/auxiliary.json",
+        "--same-base",
+        "experiments/prime-field-auxiliary-ic/random-vs-special/timing-v2-20261116/public-test-fixture/same_base.json",
+        "--random",
+        "experiments/prime-field-auxiliary-ic/random-vs-special/timing-v2-20261116/public-test-fixture/random.json",
+        "--output",
+        "experiments/prime-field-auxiliary-ic/random-vs-special/timing-v2-20261116/public-test-fixture/comparison.json"
+      ],
+      "explicit_environment": {},
+      "exit_code": 0,
+      "timeout_seconds": 300,
+      "scope": "producer correctness/development check, not a benchmark"
+    },
+    {
+      "name": "checker-tests",
+      "source_commit": "25049631bc58ca848cbb00169eda193529d9fc87",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "experiments/prime-field-auxiliary-ic/random-vs-special",
+        "-p",
+        "test_compare_reports.py",
+        "-v"
+      ],
+      "explicit_environment": {},
+      "exit_code": 0,
+      "timeout_seconds": 300,
+      "scope": "producer correctness/development check, not a benchmark"
+    },
+    {
+      "name": "cli-clippy",
+      "source_commit": "25049631bc58ca848cbb00169eda193529d9fc87",
+      "argv": [
+        "/home/agent/.cargo/bin/cargo",
+        "+stable",
+        "clippy",
+        "--locked",
+        "--manifest-path",
+        "suite/Cargo.toml",
+        "--lib",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "explicit_environment": {
+        "CARGO_BUILD_JOBS": "2"
+      },
+      "exit_code": 0,
+      "timeout_seconds": 300,
+      "scope": "producer correctness/development check, not a benchmark"
+    },
+    {
+      "name": "cli-format",
+      "source_commit": "25049631bc58ca848cbb00169eda193529d9fc87",
+      "argv": [
+        "/home/agent/.cargo/bin/rustfmt",
+        "--edition",
+        "2021",
+        "--check",
+        "suite/src/cli/tools/ic/auxiliary.rs"
+      ],
+      "explicit_environment": {},
+      "exit_code": 0,
+      "timeout_seconds": 300,
+      "scope": "producer correctness/development check, not a benchmark"
+    },
+    {
+      "name": "cli-tests",
+      "source_commit": "25049631bc58ca848cbb00169eda193529d9fc87",
+      "argv": [
+        "/home/agent/.cargo/bin/cargo",
+        "+stable",
+        "test",
+        "--locked",
+        "--manifest-path",
+        "suite/Cargo.toml",
+        "--lib",
+        "cli::tools::ic::auxiliary::tests"
+      ],
+      "explicit_environment": {
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "AUXILIARY_IC_REPORT_FIXTURE_DIR": "/workspace/cryptanalysis-pr/experiments/prime-field-auxiliary-ic/random-vs-special/timing-v2-20261116/public-test-fixture"
+      },
+      "exit_code": 0,
+      "timeout_seconds": 300,
+      "scope": "producer correctness/development check, not a benchmark"
+    },
+    {
+      "name": "docs-msrv",
+      "source_commit": "25049631bc58ca848cbb00169eda193529d9fc87",
+      "argv": [
+        "/home/agent/.cargo/bin/cargo",
+        "+1.78.0",
+        "doc",
+        "--no-deps",
+        "--manifest-path",
+        "crates/prime-field-auxiliary-ic/Cargo.toml"
+      ],
+      "explicit_environment": {
+        "RUSTDOCFLAGS": "-D warnings"
+      },
+      "exit_code": 0,
+      "timeout_seconds": 300,
+      "scope": "producer correctness/development check, not a benchmark"
+    },
+    {
+      "name": "docs-stable",
+      "source_commit": "25049631bc58ca848cbb00169eda193529d9fc87",
+      "argv": [
+        "/home/agent/.cargo/bin/cargo",
+        "+stable",
+        "doc",
+        "--no-deps",
+        "--manifest-path",
+        "crates/prime-field-auxiliary-ic/Cargo.toml"
+      ],
+      "explicit_environment": {
+        "RUSTDOCFLAGS": "-D warnings"
+      },
+      "exit_code": 0,
+      "timeout_seconds": 300,
+      "scope": "producer correctness/development check, not a benchmark"
+    },
+    {
+      "name": "legacy-alignment",
+      "source_commit": "25049631bc58ca848cbb00169eda193529d9fc87",
+      "argv": [
+        "python3",
+        "experiments/prime-field-auxiliary-ic/random-vs-special/compare_reports.py",
+        "--auxiliary",
+        "experiments/prime-field-auxiliary-ic/random-vs-special/joint-row-20261116/public-test-fixture/auxiliary.json",
+        "--same-base",
+        "experiments/prime-field-auxiliary-ic/random-vs-special/joint-row-20261116/public-test-fixture/same_base.json",
+        "--random",
+        "experiments/prime-field-auxiliary-ic/random-vs-special/joint-row-20261116/public-test-fixture/random.json",
+        "--output",
+        "experiments/prime-field-auxiliary-ic/random-vs-special/timing-v2-20261116/legacy-comparison.json"
+      ],
+      "explicit_environment": {},
+      "exit_code": 0,
+      "timeout_seconds": 300,
+      "scope": "producer correctness/development check, not a benchmark"
+    }
+  ],
+  "qualified_speedup": null,
+  "fresh_measurement": null,
+  "classification": "accounting correction, not algorithmic/runtime improvement"
+}

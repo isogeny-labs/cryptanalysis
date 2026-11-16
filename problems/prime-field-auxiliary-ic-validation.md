@@ -58,6 +58,16 @@ protocol exist. No such run is launched by this import PR.
 
 ## Resolution and history
 
+2026-11-16, version 2 timing boundaries: source `25049631` charges target-point
+construction/validation inside the IC caller interval and rho's final Rust
+scalar replay inside its online wall time. Observed CLI setup/online/reporting
+and reference costs are disjoint; unknown upstream/process/independent costs
+and cold total remain null. The [source-scoped controls](../experiments/prime-field-auxiliary-ic/random-vs-special/timing-v2-20261116/README.md),
+claim `PCC-20261116-d1cfbe` (unverified), cover migration and refusal rules,
+including separate legacy compatibility. This narrows accounting bugs without
+establishing a fresh admitted panel, complete cold costs or a measured gain.
+[pcc:unverified]
+
 2026-11-16, continued engineering: source `59524758` implements optional
 exclusive core search phases and projective scalar multiplication; source
 `d95d582c` then checks public rows with joint projective equations without
