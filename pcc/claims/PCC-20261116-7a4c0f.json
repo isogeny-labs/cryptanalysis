@@ -1,0 +1,51 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T10:09:28Z",
+ "id": "PCC-20261116-7a4c0f",
+ "kind": "execution",
+ "producer": {
+  "commit": "f7dfc2a55917a22780052384c33d91829c41196f",
+  "model": "codex",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "docs/audits/2026-11-16-grumpy-checkpoint-counter-bounds.json",
+    "sha256": "fd681514efdfdec056efefeffc7578a3b62e95f51691d467125f49563a7f0a2a"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "docs/audits/2026-11-16-grumpy-checkpoint-evidence/before.log",
+    "sha256": "fc7ccf45c3671f625549bd9490b60268389267e0e42b65959fde83216421a334"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "docs/audits/2026-11-16-grumpy-checkpoint-evidence/after.log",
+    "sha256": "cf873d4a6662e8ecffabfb753e8f0cc24589ee176957898a4292fca899f64d06"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "docs/audits/2026-11-16-grumpy-checkpoint-evidence/ctest.log",
+    "sha256": "e0e5a06b80ae559688adb1dd3313f69bdda57af001c0435fad9fbd827dece10b"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "docs/audits/2026-11-16-grumpy-checkpoint-evidence/layout.json",
+    "sha256": "ae71dc32d782047157508f516e65937a177b4251876844dc1db3bff3f42d8e74"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Checksum-valid grumpy checkpoint accounting controls on the validation host",
+ "statement": "The retained controls report an overflowing resume counter before the fix, rejection of overflowing or malformed resume metadata afterward, exact stopping at counter capacity and 21 passing sanitizer controls. The private checkpoint declaration keeps the same host size and field offsets."
+}
