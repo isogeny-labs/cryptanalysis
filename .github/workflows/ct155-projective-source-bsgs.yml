@@ -4,6 +4,13 @@ on:
     paths:
       - "experiments/chained-transfer-public-target/norm-point-reuse-01/ct155_*"
       - ".github/workflows/ct155-projective-source-bsgs.yml"
+  push:
+    branches:
+      - research/ct146-correction-torsion-contract-20261115
+    paths:
+      - "experiments/chained-transfer-public-target/norm-point-reuse-01/ct155_*"
+      - "experiments/chained-transfer-public-target/norm-point-reuse-01/CT155_*"
+      - ".github/workflows/ct155-projective-source-bsgs.yml"
   workflow_dispatch:
 jobs:
   source-only:
@@ -12,7 +19,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
       - name: Compile exact source and baseline without paid compute
         shell: bash
         run: |
