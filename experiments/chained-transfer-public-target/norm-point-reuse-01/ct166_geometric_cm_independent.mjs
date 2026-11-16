@@ -39,13 +39,15 @@ function canonical(o) {
     return "{"+Object.keys(o).sort().map(k=>JSON.stringify(k)+":"+canonical(o[k])).join(",")+"}";
   return JSON.stringify(o);
 }
-function readCensus(folder) {
-  const b=fs.readFileSync(path.join(folder,"CT160_FULL_CENSUS.json"));
+function verifyGitBlob(b) {
   const header=Buffer.from("blob "+b.length+"\0");
   const sha=crypto.createHash("sha1").update(header).update(b).digest("hex");
   must(sha===expectedBlob,"changed CT160 source Git blob");
-  const obj=JSON.parse(b.toString("utf8"));
-  return obj;
+}
+function readCensus(folder) {
+  const b=fs.readFileSync(path.join(folder,"CT160_FULL_CENSUS.json"));
+  verifyGitBlob(b);
+  return JSON.parse(b.toString("utf8"));
 }
 function check(data){
   must(data && data.schema==="ct160-fixed-nu12-whole-field-census/v1","schema");
@@ -124,9 +126,9 @@ function negativeTests(data){
     ["float",'{"x":1.0}']
   ]){
     const blob=Buffer.from(raw);
-    const sha=crypto.createHash("sha1").update(Buffer.from("blob "+blob.length+"\0")).update(blob).digest("hex");
-    must(sha!==expectedBlob,"forged raw input SHA");
-    rejected.push(name);
+    try {verifyGitBlob(blob);}
+    catch(e) {rejected.push(name);continue;}
+    throw new Error("tampered source blob falsely accepted: "+name);
   }
   return rejected;
 }

@@ -53,9 +53,48 @@ theorem zmod_no_relation_preserving_lift (q : ℕ) (hq : 1 < q) [NeZero q]
   exact no_relation_preserving_lift q (1 : ZMod q) htor hone
     reduction hfree lift hright hpreserves
 
+/-- The failure of a set-theoretic lift to commute with multiplication by `q`. -/
+def torsionDefect (q : ℕ) (lift : C → H) (c : C) : H :=
+  q • lift c - lift (q • c)
+
+/-- For a rational lift with no `q`-torsion, the defect at a nonzero public
+`q`-torsion point is nonzero whenever zero lifts to zero. -/
+theorem torsion_defect_nonzero (q : ℕ) (c : C)
+    (hc : q • c = 0) (hc0 : c ≠ 0)
+    (reduction : H →+ C) (hfree : ∀ h : H, q • h = 0 → h = 0)
+    (lift : C → H) (hright : ∀ x : C, reduction (lift x) = x)
+    (hzero : lift 0 = 0) :
+    torsionDefect q lift c ≠ 0 := by
+  simpa [torsionDefect, hc, hzero] using
+    (torsion_relation_fails q c hc0 reduction hfree lift hright)
+
+/-- Any additive map from a `q`-torsion point to a characteristic-zero field
+vanishes on that point. -/
+theorem additive_log_kills_torsion {K : Type*} [Field K] [CharZero K]
+    (q : ℕ) (hq : 0 < q) (c : C) (hc : q • c = 0)
+    (log : C →+ K) : log c = 0 := by
+  have hqlog : q • log c = 0 := by
+    calc
+      q • log c = log (q • c) := by simp
+      _ = 0 := by rw [hc]; simp
+  have hqcast : (q : K) ≠ 0 := by exact_mod_cast (Nat.ne_of_gt hq)
+  apply (mul_eq_zero.mp ?_).resolve_left hqcast
+  simpa [nsmul_eq_mul] using hqlog
+
+/-- A homomorphic lift followed by an additive logarithm has zero output on
+every point of a finite-order public subgroup. -/
+theorem lifted_additive_log_zero {K : Type*} [Field K] [CharZero K]
+    (q : ℕ) (hq : 0 < q) (c : C) (hc : q • c = 0)
+    (sectionHom : C →+ H) (log : H →+ K) :
+    log (sectionHom c) = 0 := by
+  exact additive_log_kills_torsion q hq c hc (log.comp sectionHom)
+
 #print axioms torsion_relation_fails
 #print axioms no_additive_section
 #print axioms no_relation_preserving_lift
 #print axioms zmod_no_relation_preserving_lift
+#print axioms torsion_defect_nonzero
+#print axioms additive_log_kills_torsion
+#print axioms lifted_additive_log_zero
 
 end XedniTorsionSection
