@@ -20,6 +20,11 @@ is textual (comments and layout survive) and idempotent; checkouts into a
 
 `--check` edits nothing and exits 1 if any workflow lacks the step it needs,
 which is how CI keeps new workflows honest.
+
+Workflows marked `# artifacts-scope: job` calculate dependencies separately
+for each job. Shared workflow metadata still applies to every job. This lets
+source-only regression jobs coexist with jobs that consume archived data,
+without exempting either job from the dependency check.
 """
 
 from __future__ import annotations
@@ -138,6 +143,68 @@ def wire(text: str, paths: list[str]) -> tuple[str, list[str]]:
     return "\n".join(out), notes
 
 
+def without_pull_steps(text: str) -> str:
+    """Remove generated bootstrap steps before calculating their consumers.
+
+    A generated pull command is not itself evidence of a data dependency.
+    Existing bootstraps are regenerated from the remaining job contents.
+    """
+    lines = text.splitlines(keepends=True)
+    out: list[str] = []
+    i = 0
+    while i < len(lines):
+        match = re.match(r"^(\s*)- name: " + re.escape(STEP_NAME) + r"\s*$", lines[i])
+        if not match:
+            out.append(lines[i])
+            i += 1
+            continue
+        indent = len(match.group(1))
+        i += 1
+        start = i
+        while i < len(lines) and (not lines[i].strip() or
+                len(lines[i]) - len(lines[i].lstrip()) > indent):
+            i += 1
+        while i > start and not lines[i - 1].strip():
+            i -= 1
+    return "".join(out)
+
+
+def wire_workflow(text: str, moved: set[str], dirs: set[str]) -> tuple[str, list[str], list[str]]:
+    """Wire legacy workflows globally, or explicitly scoped workflows per job."""
+    if not re.search(r"(?m)^# artifacts-scope: job\s*$", text):
+        paths = needed(text, moved, dirs)
+        new, notes = wire(text, paths) if paths else (text, [])
+        return new, notes, paths
+
+    jobs = re.search(r"(?m)^jobs:[ \t]*(?:#.*)?\n", text)
+    if not jobs:
+        raise ValueError("job-scoped artifact wiring requires a top-level jobs mapping")
+    header, body = text[:jobs.end()], text[jobs.end():]
+    if re.search(r"(?m)^[^\s#]", body):
+        raise ValueError("job-scoped artifact wiring requires jobs to be the final top-level mapping")
+    for line in body.splitlines():
+        if re.match(r"^  \S", line) and not line.lstrip().startswith("#") and not re.match(
+                r"^  [A-Za-z_][A-Za-z0-9_-]*:[ \t]*(?:#.*)?$", line):
+            raise ValueError("job-scoped artifact wiring requires plain two-space job keys")
+    starts = list(re.finditer(r"(?m)^  ([A-Za-z_][A-Za-z0-9_-]*):[ \t]*(?:#.*)?$", body))
+    if not starts or any(line.strip() and not line.lstrip().startswith("#")
+                         for line in body[:starts[0].start()].splitlines()):
+        raise ValueError("job-scoped artifact wiring requires two-space job keys")
+    out = [header, body[:starts[0].start()]]
+    notes: list[str] = []
+    all_paths: set[str] = set()
+    for index, start in enumerate(starts):
+        end = starts[index + 1].start() if index + 1 < len(starts) else len(body)
+        block = without_pull_steps(body[start.start():end])
+        paths = needed(header + block, moved, dirs)
+        if paths:
+            block, job_notes = wire(block, paths)
+            notes.extend(f"{start.group(1)}: {note}" for note in job_notes)
+        all_paths.update(paths)
+        out.append(block)
+    return "".join(out), notes, sorted(all_paths)
+
+
 def add_sparse_pattern(block: list[str], indent: str) -> list[str]:
     """Make a sparse checkout also fetch tools/artifacts and .artifacts (the
     store config the pull step reads; without it the remote is empty)."""
@@ -181,10 +248,7 @@ def main() -> int:
     missing = 0
     for f in files:
         text = f.read_text()
-        paths = needed(text, moved, dirs)
-        if not paths:
-            continue
-        new, notes = wire(text, paths)
+        new, notes, paths = wire_workflow(text, moved, dirs)
         for n in notes:
             print(f"{f.name}: {n}", file=sys.stderr)
         if new != text:
