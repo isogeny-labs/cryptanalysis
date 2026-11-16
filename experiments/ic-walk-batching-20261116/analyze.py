@@ -21,7 +21,7 @@ if summary['status']!='matrix_completed_unqualified' or len(triples)!=120 or len
 if {(x['index'],x['fixture']) for x in triples}!={(i,f) for i in range(5) for f in range(384,408)}:errors.append('fixture coverage mismatch')
 for triple in triples:
  index,fixture=triple['index'],triple['fixture'];row=dict(index=index,fixture=fixture,order=triple['order'],qualified=None,methods={})
- assert triple['order']==list(itertools.permutations(MODES))[(fixture-384)%6]
+ assert triple['order']==list(list(itertools.permutations(MODES))[(fixture-384)%6])
  wid=ids[str(index)]['workloads'][str(fixture)];workload=json.loads((ROOT/'experiments/ic-bench/workloads'/f'{wid}.json').read_text());assert digest(workload).startswith(wid)
  row['workload']=wid;scalar,x,y=workload['targets'][0];ref=refmap.get((index,fixture),{});reference={}
  frozen=json.loads((OUT/f'calibration-{index}.json').read_text())['calibration']
