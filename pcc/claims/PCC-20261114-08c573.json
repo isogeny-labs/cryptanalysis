@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-14T21:11:16Z",
+ "id": "PCC-20261114-08c573",
+ "kind": "theorem",
+ "producer": {
+  "commit": "3fad107ab8112fff57febb89a287ca21b508d8a4",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "0f0025f17f6651fa771ee10a49306ecd5137b58ca455136e2b672eabf857ca0b",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/twisted-pair-preflight/lean/TwistHomogeneity.lean",
+   "theorem": "TwistHomogeneity.determinant_scale"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Polynomial ring identities for twist curve residual, Delta, all generic adjugate minors, determinant, cleared HLP numerator and Ciani coefficient scaling; inverse-hypothesis zero equivalence, plus finite NATURAL residue witnesses. BOTH original434/435gates8namedroots0trusted. Encoded finite field, nonzero denominators, actual HLP constructor equality, geometric quotient and full Rust/program/map bridges remain open; no native new-instance/order/model result, signed standing or novelty aggregate.",
+ "statement": "theorem determinant_scale {R : Type} [CommRing R] (v a b c d e f g h i : R) : det3 (v*a) (v*b) (v*c) (v*d) (v*e) (v*f) (v*g) (v*h) (v*i) = v^3 * det3 a b c d e f g h i"
+}

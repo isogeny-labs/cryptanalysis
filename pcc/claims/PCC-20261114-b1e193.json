@@ -1,0 +1,37 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-14T06:45:10Z",
+ "id": "PCC-20261114-b1e193",
+ "kind": "statement",
+ "producer": {
+  "commit": "3422ccb4239e9901f526d3c538728ce201ece889",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/beta-rational-lift-Lean-failure-01/QuadraticRationalLift.lean",
+    "sha256": "c57dc07e3217283e4a7f4c04d72cd32d67695f0f4b5ad3449193dd1c218c4bbc"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/beta-rational-lift-Lean-failure-01/build.exit",
+    "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/beta-rational-lift-Lean-failure-01/build.txt",
+    "sha256": "cf90e1fcc27aae922698d800852413002bf83c9463462cff6944cf21570300ea"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "First beta rational-lift Lean module attempt actual build1 preserved: central six structural declarations elaborated without listed errors, but finite toy control fails on Nat-to-Fin casts and missing computable Decidable for product quantification; whole module not accepted and no axiom-gate pass claimed. Preserve original source/log before representation repair."
+}

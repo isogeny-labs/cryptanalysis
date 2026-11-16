@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-15T04:37:22Z",
+ "id": "PCC-20261115-dfa181",
+ "kind": "theorem",
+ "producer": {
+  "commit": "bd603d0981653797e6cc0b9d50f50dcec2314ac1",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "951602fafdf378b586aaf47d8fe05002f7f6371b59e436f882123a20d11a4e04",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/original-prime-chain-01/lean/PrimeReprojection.lean",
+   "theorem": "PrimeReprojection.reprojection_dual_norm"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Conditional original-prime IntModule algebra: annihilator inverse-two; normalized norm bijection derived from both HLP identities and Phi linearity; BOTH desired reprojection dual norms derived from individual HLP and elliptic dual identities, without kernel-compatibility or desired transfer-norm hypothesis; adjacent-chain collapse; stronger known-initial-point equality; integer DLP linearity and exact old scalar/coprimality/positive-square witnesses. Both original434/435 gates7roots0trusted. Types must be the stated ell-torsion carriers; actual HLP/field/Frobenius/Picard/order/program bridges remain explicit. Runtime not implemented or tested; no full-group geometric norm, cost or signed promotion.",
+ "statement": "theorem reprojection_dual_norm {A B J K : Type} [IntModule A] [IntModule B] [IntModule J] [IntModule K] (pi : A \u2192 J) (pj : B \u2192 K) (ni : J \u2192 A) (nj : K \u2192 B) (g : A \u2192 B) (gh : B \u2192 A) (a ell quotient n : Int) (ni_pi : \u2200 p, ni (pi p)=(2 : Int) \u2022 p) (pi_ni : \u2200 x, pi (ni x)=(2 : Int) \u2022 x) (nj_pj : \u2200 p, nj (pj p)=(2 : Int) \u2022 p) (pj_nj : \u2200 x, pj (nj x)=(2 : Int) \u2022 x) (pi_linear : \u2200 z : Int, \u2200 p, pi (z \u2022 p)=z \u2022 pi p) (pj_linear : \u2200 z : Int, \u2200 p, pj (z \u2022 p)=z \u2022 pj p) (annA : \u2200 p : A, ell \u2022 p=0) (annB : \u2200 p : B, ell \u2022 p=0) (annJ : \u2200 x : J, ell \u2022 x=0) (annK : \u2200 x : K, ell \u2022 x=0) (bezout : a*2+quotient*ell=1) (source_elliptic_dual : \u2200 p, gh (g p)=n \u2022 p) (target_elliptic_dual : \u2200 p, g (gh p)=n \u2022 p) : (\u2200 x, transfer pi gh nj a (transfer pj g ni a x)=n \u2022 x) \u2227 (\u2200 y, transfer pj g ni a (transfer pi gh nj a y)=n \u2022 y)"
+}

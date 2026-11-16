@@ -1,7 +1,6 @@
 /* Exhaustive projected solution sets, independent of the Lanczos solver. */
-/* Include the implementation to compare private projection state directly. */
-// NOLINTNEXTLINE(bugprone-suspicious-include)
-#include "../src/indexcalc.c"
+// Exercise private graph/CSR helpers without expanding the public ABI.
+#include "../src/indexcalc.c" // NOLINT(bugprone-suspicious-include)
 #include <inttypes.h>
 
 static uint64_t projected(const rel_list *rels, const ca_spmat *A, const uint64_t *b,
@@ -53,8 +52,63 @@ static uint64_t projected(const rel_list *rels, const ca_spmat *A, const uint64_
     return result;
 }
 
+static int check_trial32(void)
+{
+    uint32_t primes[1600], inverse[1600], limit[1600];
+    ic_fbdiv div[1600];
+    size_t n = ca_sieve_primes(13000, primes, 1600);
+    if (n > 1600) return 1;
+    for (size_t i = 0; i < n; ++i) {
+        uint64_t q = primes[i], inv = q;
+        for (unsigned k = 0; k < 5; ++k) inv *= 2 - q * inv;
+        div[i] = (ic_fbdiv){inv, UINT64_MAX / q};
+        inverse[i] = (uint32_t)inv;
+        limit[i] = UINT32_MAX / primes[i];
+    }
+    ca_ic_ctx ctx = {0};
+    ctx.fb = primes;
+    ctx.nfb = (uint32_t)n;
+    ctx.fb_inv32 = inverse;
+    ctx.fb_lim32 = limit;
+    ca_ic_scan32_fn scanners[] = {ca_ic_scan32_portable, ca_ic_scan32_select()};
+#if defined(__x86_64__) && (defined(__GNUC__) || defined(__clang__))
+    printf("trial32 runtime backend: %s\n", scanners[1] == ca_ic_scan32_avx2 ? "AVX2" : "portable");
+#elif defined(__aarch64__)
+    puts("trial32 runtime backend: NEON");
+#else
+    puts("trial32 runtime backend: portable");
+#endif
+    ca_rng rng;
+    ca_rng_seed(&rng, UINT64_C(0x32c20261115));
+    unsigned checks = 0;
+    for (unsigned scanner = 0; scanner < 2; ++scanner) {
+        ctx.scan32 = scanners[scanner];
+        for (unsigned k = 0; k < 24000; ++k) {
+            uint32_t value = k < 4096 ? k : (uint32_t)ca_rng_next(&rng);
+            if (k == 4096) value = UINT32_MAX;
+            if (k == 4097) value = UINT32_C(0x80000000);
+            for (unsigned mode = 0; mode < 3; ++mode) {
+                relation a = {0}, b = {0};
+                uint32_t na = mode ? IC_MAX_REL_COLS - (mode == 1) : 0, nb = na;
+                int ra = trial_factor(value, primes, div, (uint32_t)n, 7, &a, &na);
+                int rb = trial_factor32(value, &ctx, 7, &b, &nb);
+                if (ra != rb || na != nb || memcmp(a.col, b.col, sizeof(a.col)) ||
+                    memcmp(a.val, b.val, sizeof(a.val))) {
+                    fprintf(stderr, "trial32 mismatch scanner=%u value=%u mode=%u\n", scanner,
+                            value, mode);
+                    return 1;
+                }
+                ++checks;
+            }
+        }
+    }
+    printf("ok: %u exact 32/64-bit factorization comparisons\n", checks);
+    return 0;
+}
+
 int main(void)
 {
+    if (check_trial32()) return 5;
     const uint64_t primes[] = {
         3, 5, 17, 1000003, 4294967311ULL, 2305843009213693951ULL, 18446744073709551557ULL};
     ca_rng rng;

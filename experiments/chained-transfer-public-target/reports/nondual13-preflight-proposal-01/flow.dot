@@ -1,0 +1,12 @@
+digraph prospective {
+ graph[rankdir=TB,bgcolor="white",fontname="DejaVu Sans",nodesep=.18,ranksep=.25];
+ node[shape=box,style="rounded",fontname="DejaVu Sans",fontsize=10,margin=.10];
+ edge[style=dashed,fontname="DejaVu Sans",fontsize=8,color="#a57535"];
+ e1[label="Actual E1/K\nN4-E13-short-\n936b863521fdce08d2724c468f27979c\nb39d9443d082b4be14209bb08f408414",color="#295477"];
+ e2[label="Candidate E2/K: UNKNOWN\ngamma2 kernel lambda2\nold dual lambda4 is control",color="#a57535"];
+ torsion[label="All64 actual product2-torsion points\nFrobenius / addition / pairings\ntransport full J1 gluing kernel"];
+ model[label="Matched F223 model: UNKNOWN\nchoose by transported mask first\nretain nonsquare / unsupported",color="#a57535"];
+ future[label="Future complete Jacobian hop\nseparate protocol and implementation\nno map or cost result yet"];
+ {rank=same;e1;e2;} {rank=same;torsion;model;}
+ e1->e2[label="proposed degree13",constraint=false];e2->torsion;torsion->model[constraint=false];model->future;
+}

@@ -1,0 +1,67 @@
+norm784 0
+arithmetic22 0
+beta-reference 0
+complete-reference 0
+complete-shell 0
+complete-actionlint 0
+complete-rustfmt 0
+norm-halving-reference 0
+norm-halving-shell 0
+norm-halving-actionlint 0
+norm-halving-rustfmt 0
+new-audit-shell 0
+new-audit-rustfmt 0
+nondual-new-rustfmt 0
+model-new-rustfmt 0
+next-prior-inputs 0
+next-new-rustfmt 0
+observer-prior24 0
+partial-diagnostic-shell 0
+twist-prior981 0
+twist-new-rustfmt 0
+twist-new-shell 0
+observer-new-rustfmt 0
+observer-new-shell 0
+nondual22-shell 0
+nondual22-actionlint 0
+nondual22-reference 0
+twisted20-original-artifact-verify 0
+fourth-prior1028 0
+fourth-new-rustfmt 0
+fourth-shell 0
+chain-prior1060 0
+chain-rustfmt 0
+chain-shell 0
+fourth24-reference 0
+fourth24-shell 0
+fourth24-actionlint 0
+chain-evaluator-prior1080 0
+chain-evaluator-rustfmt 0
+chain-evaluator-shell 0
+fixedchain25-reference 0
+fixedchain25-shell 0
+fixedchain25-actionlint 0
+fixedchain25-audit-rustfmt 0
+twisted23-reference 0
+twisted23-shell 0
+twisted23-actionlint 0
+native-models18-original-artifact-verify 0
+nativeA-original-artifact-verify 0
+ledger 0
+prose 0
+whitespace 0
+actionlint 0
+wiring 0
+benchrec 0
+reportPython 0
+fatal: empty string is not a valid pathspec. please use . instead if you meant to match all paths
+Traceback (most recent call last):
+  File "/workspace/scratch/ct86_commit_ci25_path_repair_01.py", line 93, in <module>
+    stage();run('complete22-staged-original-artifact-verify',['python3','tools/artifacts/artifacts.py','verify','docs/research-artifacts/chained-transfer/complete-chain-22']);run('fourth21-staged-original-artifact-verify',['python3','tools/artifacts/artifacts.py','verify','docs/research-artifacts/chained-transfer/paired-fourth-21']);run('twisted20-staged-original-artifact-verify',['python3','tools/artifacts/artifacts.py','verify','docs/research-artifacts/chained-transfer/fixed-twisted-pair-20']);run('cached-whitespace',['git','diff','--cached','--check']);tree=subprocess.check_output(['git','write-tree'],cwd=r,text=True).strip();run('artifact',['python3','tools/artifacts/artifacts.py','check',base,tree])
+    ^^^^^^^
+  File "/workspace/scratch/ct86_commit_ci25_path_repair_01.py", line 77, in stage
+    command=['git','add','--sparse']+(['--force']if force else[])+['--pathspec-from-file='+str(file),'--pathspec-file-nul'];subprocess.run(command,cwd=r,check=True)
+                                                                                                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['git', 'add', '--sparse', '--force', '--pathspec-from-file=/workspace/scratch/ct85-fixed-chain25-path-repair-01-exact-small-attestations.paths0', '--pathspec-file-nul']' returned non-zero exit status 128.

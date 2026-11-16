@@ -11,15 +11,15 @@ use num_bigint::BigUint;
 use num_traits::ToPrimitive;
 use std::collections::{HashMap, HashSet};
 #[path = "prime_field_adjoint.rs"]
-mod prime_field_adjoint;
+pub(super) mod prime_field_adjoint;
 #[path = "prime_field_psi.rs"]
-mod prime_field_psi;
+pub(super) mod prime_field_psi;
 #[path = "quartic_cover.rs"]
 mod quartic_cover;
 #[path = "quartic_norm.rs"]
-mod quartic_norm;
+pub(super) mod quartic_norm;
 #[path = "quartic_pullback.rs"]
-mod quartic_pullback;
+pub(super) mod quartic_pullback;
 
 #[test]
 fn closed_fibre_targeted_r0_r1_both_directions() {

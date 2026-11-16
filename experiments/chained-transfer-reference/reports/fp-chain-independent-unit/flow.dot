@@ -1,0 +1,17 @@
+digraph {
+ graph [rankdir=TB,bgcolor="white",pad="0.12",ranksep="0.5",nodesep="0.4"];
+ node [shape=box,style="rounded,filled",fontname="DejaVu Sans",fontsize=12,color="#405e6d",fillcolor="#edf4f5"];
+ edge [fontname="DejaVu Sans",fontsize=10,color="#367c65"];
+ {rank=same;C;T;}
+ {rank=same;A;B;}
+ C [label="Jac(C0) / F101\n12317 rational classes\ny²=z⁶+6z⁴+13z²+56"];
+ T [label="Jac(T20) / F101\n12317 rational classes\nold monic fixed model"];
+ A [label="E0 × F0\norders109 × 113\nE0(1,46); F0(44,21)",fillcolor="#e4f2e8"];
+ B [label="E2 × F0\norders109 × 113\nE2(59,27); F0 unchanged",fillcolor="#e4f2e8"];
+ C -> A [label="N0:two degree2 curve norms\nP0 reverse;both compositions[2]"];
+ T -> B [label="old M:two degree4 curve norms\nold PT reverse;both[4]"];
+ A -> B [constraint=false,label="original alpha49 × identity\nE0 → E1(26,58) → E2\nnormalized positive dual beta49"];
+ C -> T [constraint=false,color="#63717c",label="existing global chain F degree196\ncomparison:MF=2diag(alpha49,id)N0"];
+ N [shape=note,fillcolor="#f6f0df",label="NEW finite rational evaluator\nforward:PT diag(55,57) diag(alpha49,id) N0\ninverse:P0 diag(104,85) diag(beta49,id) M\nno global inverse or measured cost advantage"];
+ A -> N [style=dashed,arrowhead=none];B -> N [style=dashed,arrowhead=none];
+}

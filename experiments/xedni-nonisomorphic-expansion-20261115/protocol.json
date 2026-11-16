@@ -1,0 +1,14 @@
+{
+  "schema": "xedni-nonisomorphic-expansion-protocol-v1",
+  "question": "Do centered lifts of u=4,5 times the reduced subgroup generator yield additional proved rank-one rational curves in the frozen eight-field panel?",
+  "parent_result_sha256": "f4a1f26f46bf5da81b23bce5092228abe846ba1100e478309ba8c08d5da0d0b4",
+  "fields": "eight selected fields in parent screen order",
+  "u_values": [4, 5],
+  "lift": "center affine coordinates, B=y^2-x^3+x, E/Q:y^2=x^3-x+B",
+  "rank_test": "checked Sage rank(proof=True), exact rational torsion, 12-second cell cap",
+  "per_candidate_cap_seconds": 12,
+  "max_concurrent_sage_workers": 2,
+  "candidate_count": 16,
+  "promotion": "rank one proved, trivial rational torsion, point equals Mordell-Weil generator up to sign, distinct j-invariant from existing qualified models",
+  "claim_boundary": "rank-screen diagnostic until exact generator checks and independent replay are complete"
+}

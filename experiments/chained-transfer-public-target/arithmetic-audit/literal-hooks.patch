@@ -1,0 +1,2321 @@
+--- a/cryptanalysis/experiments/chained-transfer-public-target/native/Cargo.toml
++++ b/cryptanalysis/experiments/chained-transfer-public-target/native/Cargo.toml
+@@ -7,6 +7,7 @@
+ [workspace]
+ 
+ [dependencies]
++n4-arithmetic-taps = { path = "../../../../n4-arithmetic-taps" }
+ ghs-original-engines = { path = "../../../../crypto/research/chained_jacobian_transfers_20261110/genus3-prime-descent/engine" }
+ isogeny_algos = { path = "../../../../crypto/isogeny_algos" }
+ serde = { version = "=1.0.228", features = ["derive"] }
+--- a/cryptanalysis/experiments/chained-transfer-public-target/native/original/common.rs
++++ b/cryptanalysis/experiments/chained-transfer-public-target/native/original/common.rs
+@@ -115,6 +115,7 @@
+             continue;
+         }
+         for _ in 0..s - 1 {
++            n4_arithmetic_taps::hit("native.modular", n, "mul", 1); n4_arithmetic_taps::hit("native.modular", n, "rem_u128", 1);
+             x = ((x as u128 * x as u128) % n as u128) as u64;
+             if x == n - 1 {
+                 continue 'w;
+@@ -125,18 +126,22 @@
+     true
+ }
+ pub fn powmod(mut a: u64, mut e: u64, m: u64) -> u64 {
++        n4_arithmetic_taps::hit("native.modular", m, "rem_u64", 1);
+     let mut r = 1u64;
+     a %= m;
+     while e > 0 {
+         if e & 1 == 1 {
++            n4_arithmetic_taps::hit("native.modular", m, "mul", 1); n4_arithmetic_taps::hit("native.modular", m, "rem_u128", 1);
+             r = ((r as u128 * a as u128) % m as u128) as u64;
+         }
+-        a = ((a as u128 * a as u128) % m as u128) as u64;
++        n4_arithmetic_taps::hit("native.modular", m, "mul", 1); n4_arithmetic_taps::hit("native.modular", m, "rem_u128", 1);
++            a = ((a as u128 * a as u128) % m as u128) as u64;
+         e >>= 1;
+     }
+     r
+ }
+ pub fn inv_mod_u64(a: u64, m: u64) -> u64 {
++        n4_arithmetic_taps::hit("native.modular", m, "inv", 1);
+     // m prime or gcd(a,m)=1
+     let (mut t, mut nt) = (0i128, 1i128);
+     let (mut r, mut nr) = (m as i128, (a % m) as i128);
+@@ -161,11 +166,13 @@
+ impl Fp {
+     #[inline(always)]
+     pub fn mul(&self, a: u64, b: u64) -> u64 {
++        n4_arithmetic_taps::hit("native.Fp", self.q, "mul", 1); n4_arithmetic_taps::hit("native.Fp", self.q, "rem_u64", 1);
+         bump_mul(1);
+         a * b % self.q
+     }
+     #[inline(always)]
+     pub fn add(&self, a: u64, b: u64) -> u64 {
++        n4_arithmetic_taps::hit("native.Fp", self.q, "add", 1);
+         bump_add(1);
+         let s = a + b;
+         if s >= self.q {
+@@ -176,6 +183,7 @@
+     }
+     #[inline(always)]
+     pub fn sub(&self, a: u64, b: u64) -> u64 {
++        n4_arithmetic_taps::hit("native.Fp", self.q, "sub", 1);
+         bump_add(1);
+         if a >= b {
+             a - b
+@@ -185,6 +193,7 @@
+     }
+     #[inline(always)]
+     pub fn neg(&self, a: u64) -> u64 {
++        if a != 0 { n4_arithmetic_taps::hit("native.Fp", self.q, "neg", 1); }
+         if a == 0 {
+             0
+         } else {
+@@ -192,6 +201,7 @@
+         }
+     }
+     pub fn inv(&self, a: u64) -> u64 {
++        n4_arithmetic_taps::hit("native.Fp", self.q, "inv", 1);
+         bump_inv(1);
+         assert!(a != 0);
+         let (mut t, mut nt) = (0i64, 1i64);
+@@ -270,6 +280,7 @@
+             c += 1;
+         }
+         let w = powmod(c, (q - 1) / 3, q);
++        n4_arithmetic_taps::hit("native.K.constructor", q, "mul", 1); n4_arithmetic_taps::hit("native.K.constructor", q, "rem_u64", 1);
+         Kf { fp, c, w, w2: w * w % q, size: (q as u128).pow(3) }
+     }
+     pub fn q(&self) -> u64 {
+@@ -291,6 +302,7 @@
+         [f.neg(a[0]), f.neg(a[1]), f.neg(a[2])]
+     }
+     pub fn mul(&self, a: &K, b: &K) -> K {
++        n4_arithmetic_taps::hit("native.K.coefficient", self.fp.q, "mul", 11); n4_arithmetic_taps::hit("native.K.coefficient", self.fp.q, "add", 6); n4_arithmetic_taps::hit("native.K.coefficient", self.fp.q, "rem_u64", 7);
+         bump_mul(11);
+         bump_add(8);
+         let q = self.fp.q;
+@@ -318,6 +330,7 @@
+         let f = &self.fp;
+         let n = {
+             bump_mul(5);
++            n4_arithmetic_taps::hit("native.K.coefficient", self.fp.q, "mul", 4); n4_arithmetic_taps::hit("native.K.coefficient", self.fp.q, "add", 2); n4_arithmetic_taps::hit("native.K.coefficient", self.fp.q, "rem_u64", 3);
+             let q = self.fp.q;
+             let t0 = a[0] * p[0] % q;
+             let t3 = (a[1] * p[2] + a[2] * p[1]) % q;
+@@ -359,6 +372,7 @@
+         a[1] == 0 && a[2] == 0
+     }
+     pub fn from_fq(&self, s: u64) -> K {
++        n4_arithmetic_taps::hit("native.K.coefficient", self.fp.q, "rem_u64", 1);
+         [s % self.fp.q, 0, 0]
+     }
+ }
+--- a/cryptanalysis/experiments/chained-transfer-public-target/native/original/ghs.rs
++++ b/cryptanalysis/experiments/chained-transfer-public-target/native/original/ghs.rs
+@@ -405,6 +405,7 @@
+         };
+         let q = kf.q();
+         let inv2 = inv_mod_u64(2, q);
++        n4_arithmetic_taps::hit("native.ghs.constructor", q, "sq", 1); n4_arithmetic_taps::hit("native.ghs.constructor", q, "rem_u64", 1);
+         let inv4 = inv2 * inv2 % q;
+         // A = b - a^2/4 + V ; B = c + a V/2
+         let a2q = kf.mul_fq(&kf.mul(&self.qa, &self.qa), inv4);
+@@ -428,6 +429,7 @@
+         let t2 = kf.mul(t, t);
+         // V = 2 t^2 + a t - 2 y
+         let v = kf.sub(&kf.add(&kf.mul_fq(&t2, 2), &kf.mul(&self.qa, t)), &kf.mul_fq(y, 2));
++        n4_arithmetic_taps::hit("native.ghs.constructor", q, "sq", 1); n4_arithmetic_taps::hit("native.ghs.constructor", q, "rem_u64", 1);
+         let inv4 = inv2 * inv2 % q;
+         let a2q = kf.mul_fq(&kf.mul(&self.qa, &self.qa), inv4);
+         let aa = kf.add(&kf.sub(&self.qb, &a2q), &v);
+--- a/cryptanalysis/experiments/chained-transfer-public-target/native/original/ic.rs
++++ b/cryptanalysis/experiments/chained-transfer-public-target/native/original/ic.rs
+@@ -433,11 +433,13 @@
+ // ---------------------------------------------------------------- mod-ell linear algebra
+ #[inline(always)]
+ pub fn lm(a: u64, b: u64, ell: u64) -> u64 {
++        n4_arithmetic_taps::hit("native.scalar", ell, "mul", 1); n4_arithmetic_taps::hit("native.scalar", ell, "rem_u128", 1);
+     bump_lmul(1);
+     ((a as u128 * b as u128) % ell as u128) as u64
+ }
+ #[inline(always)]
+ pub fn la(a: u64, b: u64, ell: u64) -> u64 {
++        n4_arithmetic_taps::hit("native.scalar", ell, "add", 1);
+     bump_ladd(1);
+     let s = a + b;
+     if s >= ell {
+@@ -448,6 +450,7 @@
+ }
+ #[inline(always)]
+ pub fn ls(a: u64, b: u64, ell: u64) -> u64 {
++        n4_arithmetic_taps::hit("native.scalar", ell, "sub", 1);
+     bump_ladd(1);
+     if a >= b {
+         a - b
+@@ -1042,6 +1045,7 @@
+         adj[y as usize].push((x, e as u32));
+     }
+     let col = |i: u32| -> Option<u32> { if i == 0 { None } else { Some(i - 1) } };
++    n4_arithmetic_taps::hit("native.scalar.constant", ell, "neg", 1);
+     let minus1 = ell - 1;
+     let inv2 = (ell + 1) / 2;
+     let mut rows: Vec<Row> = Vec::new();
+--- a/cryptanalysis/experiments/chained-transfer-public-target/new-target-ic/Cargo.toml
++++ b/cryptanalysis/experiments/chained-transfer-public-target/new-target-ic/Cargo.toml
+@@ -7,6 +7,7 @@
+ [workspace]
+ 
+ [dependencies]
++n4-arithmetic-taps = { path = "../../../../n4-arithmetic-taps" }
+ chained-n4-public-target = { path = "../native" }
+ chained-n4-completed-v2 = { path = "../v2" }
+ chained-n4-odd-product-models = { path = "../odd-product-models" }
+--- /dev/null
++++ b/cryptanalysis/experiments/chained-transfer-public-target/new-target-ic/arithmetic-derived/class_solver.rs
+@@ -0,0 +1,557 @@
++// End-to-end N4 solve (IC) and the matched rho on E0(K).
++#![allow(dead_code)]
++use crate::common::*;
++use crate::ic::*;
++use crate::pic;
++use std::collections::{HashMap, HashSet};
++
++#[derive(Clone)]
++pub struct Params {
++    pub nfb: usize,       // 0 = all rational points
++    pub rows_mult: f64,   // rows used = rows_mult * columns + 30
++    pub max_desc: usize,  // descent trial cap per class
++    pub sge: bool,        // structured elimination of the relation matrix before Lanczos
++    pub maxw: usize,      // widest merged row allowed in the elimination
++    pub lp2: bool,        // double large primes (graph of large-prime pairs)
++}
++
++#[derive(Default, Clone)]
++pub struct Report {
++    pub ok: bool,
++    pub fail: String,
++    pub k_found: Option<u64>,
++    pub phases: Vec<(String, Cnt, f64)>,
++    pub stats: Vec<(String, f64)>,
++}
++impl Report {
++    pub fn stat(&mut self, k: &str, v: f64) {
++        self.stats.push((k.to_string(), v));
++    }
++}
++
++fn pc<R>(cv: &pic::PlaneQuartic, f: impl FnOnce() -> R) -> R {
++    let b = cv.counter();
++    let r = f();
++    let d = cv.counter().since(&b);
++    bump_mul(d.mul);
++    bump_inv(d.inv);
++    bump_add(d.add);
++    r
++}
++
++pub fn all_points(cv: &Curve, rng: &mut Rng) -> Vec<P3> {
++    let f = &cv.f;
++    let q = f.q;
++    let mut seen: HashSet<u64> = HashSet::new();
++    let mut out = Vec::new();
++    for a in 0..q {
++        for p in cv.line_points(&[a, 0, 1], &[0, 1, 0], rng) {
++            if seen.insert(pack(&p)) {
++                out.push(p);
++            }
++        }
++    }
++    for p in cv.line_points(&[1, 0, 0], &[0, 1, 0], rng) {
++        if seen.insert(pack(&p)) {
++            out.push(p);
++        }
++    }
++    out
++}
++
++pub fn sample_points(cv: &Curve, n: usize, rng: &mut Rng) -> Vec<P3> {
++    let q = cv.f.q;
++    let mut seen: HashSet<u64> = HashSet::new();
++    let mut out = Vec::new();
++    while out.len() < n {
++        let a = [rng.below(q), rng.below(q), rng.below(q)];
++        let b = [rng.below(q), rng.below(q), rng.below(q)];
++        if a == [0, 0, 0] || b == [0, 0, 0] {
++            continue;
++        }
++        let a = pnorm(&cv.f, &a);
++        let b = pnorm(&cv.f, &b);
++        if a == b {
++            continue;
++        }
++        for p in cv.line_points(&a, &b, rng) {
++            if out.len() < n && seen.insert(pack(&p)) {
++                out.push(p);
++            }
++        }
++    }
++    out
++}
++
++fn to_u32(p: &P3) -> [u32; 3] {
++    [p[0] as u32, p[1] as u32, p[2] as u32]
++}
++
++pub fn solve_class(inst: &crate::TargetContext<'_>, prm: &Params, generator: &pic::PicClass, target: &pic::PicClass, seed: u64, verify_rel: bool) -> Report {
++    let mut rep = Report::default();
++    let q = inst.q;
++    let ell = inst.ell;
++    let mut rng = Rng::new(seed ^ 0xC0FFEE);
++    let curve = Curve::new(q, &inst.f);
++    let f = curve.f;
++    let t_all = std::time::Instant::now();
++    let mut mark = (snap(), std::time::Instant::now());
++    macro_rules! phase {
++        ($name:expr) => {{
++            let now = snap();
++            rep.phases.push(($name.to_string(), now.since(&mark.0), mark.1.elapsed().as_secs_f64()));
++            mark = (now, std::time::Instant::now());
++        }};
++    }
++
++    // 1. factor base
++    let mut fb = if prm.nfb == 0 || prm.nfb as u64 >= q + 1 {
++        all_points(&curve, &mut rng)
++    } else {
++        sample_points(&curve, prm.nfb, &mut rng)
++    };
++    // Preserve the ACTUAL target P0 and its zero-log anchor.
++    let cv = &inst.norm.a.pic;
++    let anchor = cv.base_point().map(u64::from);
++    if let Some(index) = fb.iter().position(|p| *p == anchor) {
++        fb.swap(0, index);
++    } else {
++        fb[0] = anchor;
++    }
++    assert_eq!(fb[0], anchor);
++    let sc = cv.setup_cost();
++    bump_mul(sc.mul);
++    bump_inv(sc.inv);
++    bump_add(sc.add);
++    cv.reset_counter();
++    let n = fb.len();
++    rep.stat("n_fb", n as f64);
++    phase!("fb");
++
++    // 2. relations
++    let mut ro2: Option<Rel2Out> = None;
++    let ro = if prm.lp2 {
++        let r2 = find_relations_2lp(&curve, &fb);
++        let ro = RelOut {
++            full: r2.full.iter().map(|c| Rel { c: c.clone(), lp: None }).collect(),
++            lp: r2.ground.iter().filter(|g| !g.2).map(|(v, fp, _)| Rel { c: fp.clone(), lp: Some(*v) }).collect(),
++            lp_pts: r2.vertex_pts.clone(),
++            pairs: r2.pairs,
++            multi_lines: r2.edges.len() as u64,
++            unsure: r2.no_roots,
++        };
++        rep.stat("graph_edges", r2.edges.len() as f64);
++        rep.stat("graph_ground", r2.ground.len() as f64);
++        ro2 = Some(r2);
++        ro
++    } else {
++        find_relations(&curve, &fb, &mut rng)
++    };
++    rep.stat("pairs", ro.pairs as f64);
++    rep.stat("multi_lines", ro.multi_lines as f64);
++    rep.stat("rel_full", ro.full.len() as f64);
++    rep.stat("rel_lp", ro.lp.len() as f64);
++    rep.stat("lp_distinct", ro.lp_pts.len() as f64);
++    rep.stat("rel_unsure", ro.unsure as f64);
++    phase!("relations");
++    if verify_rel {
++        // independent check through the canonical group law: every sampled relation sums to
++        // the line-section class
++        let mut kappa: Option<pic::PicClass> = None;
++        let mut bad = 0;
++        let mut tested = 0;
++        let cls = |p: &P3| cv.point_class(to_u32(p));
++        let mut allrels: Vec<(Vec<(u32, u8)>, Option<u32>)> = Vec::new();
++        for r in ro.full.iter().take(10) {
++            allrels.push((r.c.clone(), None));
++        }
++        for r in ro.lp.iter().take(30) {
++            allrels.push((r.c.clone(), r.lp));
++        }
++        let mut edge_checks: Vec<(u32, u32, u32, u32)> = Vec::new();
++        if let Some(r2) = &ro2 {
++            edge_checks = r2.edges.iter().take(40).copied().collect();
++        }
++        for (c, lp) in allrels {
++            let mut s = cv.zero();
++            for (i, m) in c {
++                let x = cls(&fb[i as usize]);
++                for _ in 0..m {
++                    s = cv.add(&s, &x);
++                }
++            }
++            if let Some(l) = lp {
++                s = cv.add(&s, &cls(&ro.lp_pts[l as usize]));
++            }
++            match &kappa {
++                None => kappa = Some(s),
++                Some(k0) => {
++                    if *k0 != s {
++                        bad += 1;
++                    }
++                }
++            }
++            tested += 1;
++        }
++        if let Some(r2) = &ro2 {
++            for &(vx, vy, ia, ib) in &edge_checks {
++                let mut sm = cv.zero();
++                for pt in [&fb[ia as usize], &fb[ib as usize], &r2.vertex_pts[vx as usize], &r2.vertex_pts[vy as usize]] {
++                    sm = cv.add(&sm, &cls(pt));
++                }
++                match &kappa {
++                    None => kappa = Some(sm),
++                    Some(k0) => {
++                        if *k0 != sm {
++                            bad += 1;
++                        }
++                    }
++                }
++                tested += 1;
++            }
++        }
++        rep.stat("relations_verified", tested as f64);
++        rep.stat("relations_bad", bad as f64);
++        cv.reset_counter();
++    }
++
++    // 3. matrix: columns fb[1..] -> 0..n-2, eta -> n-1
++    let ncols_all = n;
++    let eta_col = (n - 1) as u32;
++    let col = |i: u32| -> Option<u32> { if i == 0 { None } else { Some(i - 1) } };
++    let to_mod = |v: i64| -> u64 { /* N4_AUDIT_SCALAR_CONVERSION */ n4_arithmetic_taps::hit("scalar.conversion", ell, "rem_u64", 1); if v < 0 { n4_arithmetic_taps::hit("scalar.conversion", ell, "neg", 1); } if v >= 0 { (v as u64) % ell } else { ell - ((-v) as u64 % ell) } };
++    let mut full_rows: Vec<Row> = Vec::new();
++    for r in &ro.full {
++        let mut row: Row = Vec::new();
++        for &(i, m) in &r.c {
++            if let Some(c) = col(i) {
++                row.push((c, m as u64));
++            }
++        }
++        /* N4_AUDIT_SCALAR_NEGONE */ n4_arithmetic_taps::hit("scalar.conversion", ell, "neg", 1);
++        row.push((eta_col, ell - 1));
++        full_rows.push(row);
++    }
++    let mut lp_groups: std::collections::BTreeMap<u32, Vec<usize>> = std::collections::BTreeMap::new();
++    for (ri, r) in ro.lp.iter().enumerate() {
++        lp_groups.entry(r.lp.unwrap()).or_default().push(ri);
++    }
++    let mut lp_rows: Vec<Row> = Vec::new();
++    for (_l, rs) in &lp_groups {
++        for w in 1..rs.len() {
++            let mut m: HashMap<u32, i64> = HashMap::new();
++            for &(i, mu) in &ro.lp[rs[w]].c {
++                if let Some(c) = col(i) {
++                    *m.entry(c).or_insert(0) += mu as i64;
++                }
++            }
++            for &(i, mu) in &ro.lp[rs[0]].c {
++                if let Some(c) = col(i) {
++                    *m.entry(c).or_insert(0) -= mu as i64;
++                }
++            }
++            let mut row: Row = m.into_iter().filter(|x| x.1 != 0).map(|(c, v)| (c, to_mod(v))).collect();
++            if !row.is_empty() {
++                row.sort();
++                lp_rows.push(row);
++            }
++        }
++    }
++    if let Some(r2) = &ro2 {
++        let target = (prm.rows_mult * ncols_all as f64).ceil() as usize * 3 + 100;
++        let cr = cycle_rows_2lp(r2, ell, eta_col, target);
++        rep.stat("rows_cycle", cr.len() as f64);
++        lp_rows.extend(cr);
++    }
++    rep.stat("rows_full", full_rows.len() as f64);
++    rep.stat("rows_lp_combined", lp_rows.len() as f64);
++    if full_rows.is_empty() {
++        rep.fail = "no full relation (eta unanchored)".into();
++        return rep;
++    }
++    let (z, used, remap, hold_ok, hold_bad) = if prm.sge {
++        // all rows go in; 60 random ones are held out
++        let nf = full_rows.len();
++        let mut all: Vec<Row> = full_rows;
++        all.extend(lp_rows);
++        for i in (1..all.len()).rev() {
++            let j = rng.below(i as u64 + 1) as usize;
++            all.swap(i, j);
++        }
++        let hold: Vec<Row> = all.drain(..all.len().min(60)).collect();
++        rep.stat("rows_available", all.len() as f64);
++        rep.stat("rows_full_total", nf as f64);
++        let out = sge(all, ncols_all, eta_col, ell, prm.maxw);
++        let nact = out.cols.len();
++        rep.stat("sge_singles", out.singles as f64);
++        rep.stat("sge_merges", out.merges as f64);
++        rep.stat("sge_pruned", out.pruned as f64);
++        rep.stat("sge_skipped_wide", out.skipped_wide as f64);
++        rep.stat("cols_active", nact as f64);
++        rep.stat("rows_used", out.core.len() as f64);
++        rep.stat("core_nnz", out.core.iter().map(|r| r.len()).sum::<usize>() as f64);
++        if out.core.len() < nact || nact == 0 {
++            rep.fail = format!("too few relations after elimination: {} rows for {} columns", out.core.len(), nact);
++            return rep;
++        }
++        phase!("matrix");
++        let mut zc = None;
++        for _ in 0..3 {
++            if let Some(v) = lanczos_kernel(&out.core, nact, ell, &mut rng) {
++                if out.core.iter().all(|r| row_apply(r, &v, ell) == 0) {
++                    zc = Some(v);
++                    break;
++                }
++            }
++        }
++        let zc = match zc {
++            Some(z) => z,
++            None => {
++                rep.fail = "lanczos failed".into();
++                return rep;
++            }
++        };
++        let mut vals: Vec<Option<u64>> = vec![None; ncols_all];
++        for (i, &c) in out.cols.iter().enumerate() {
++            vals[c as usize] = Some(zc[i]);
++        }
++        back_substitute(&out, &mut vals, ell);
++        let used: Vec<bool> = vals.iter().map(|v| v.is_some()).collect();
++        let remap: Vec<u32> = (0..ncols_all).map(|c| if used[c] { c as u32 } else { u32::MAX }).collect();
++        let z: Vec<u64> = vals.iter().map(|v| v.unwrap_or(0)).collect();
++        let (mut ho, mut hb) = (0, 0);
++        for r in &hold {
++            if r.iter().all(|&(c, _)| used[c as usize]) {
++                if row_apply(r, &z, ell) == 0 { ho += 1; } else { hb += 1; }
++            }
++        }
++        (z, used, remap, ho, hb)
++    } else {
++    let want = (prm.rows_mult * ncols_all as f64).ceil() as usize + 30;
++    let mut rows: Vec<Row> = Vec::new();
++    let nf = full_rows.len();
++    let mut rest: Vec<Row> = Vec::new();
++    for (i, r) in full_rows.into_iter().enumerate() {
++        if i < 3 {
++            rows.push(r);
++        } else {
++            rest.push(r);
++        }
++    }
++    rest.extend(lp_rows);
++    // shuffle rest (double large primes: lightest rows first)
++    for i in (1..rest.len()).rev() {
++        let j = rng.below(i as u64 + 1) as usize;
++        rest.swap(i, j);
++    }
++
++    let mut hold: Vec<Row> = Vec::new();
++    for r in rest {
++        if rows.len() < want {
++            rows.push(r);
++        } else if hold.len() < 60 {
++            hold.push(r);
++        }
++    }
++    // active columns
++    let mut used = vec![false; ncols_all];
++    for r in &rows {
++        for &(c, _) in r {
++            used[c as usize] = true;
++        }
++    }
++    used[eta_col as usize] = true;
++    let mut remap = vec![u32::MAX; ncols_all];
++    let mut nact = 0usize;
++    for c in 0..ncols_all {
++        if used[c] {
++            remap[c] = nact as u32;
++            nact += 1;
++        }
++    }
++    let rows_c: Vec<Row> = rows.iter().map(|r| r.iter().map(|&(c, a)| (remap[c as usize], a)).collect()).collect();
++    rep.stat("rows_used", rows_c.len() as f64);
++    rep.stat("cols_active", nact as f64);
++    rep.stat("rows_full_total", nf as f64);
++    if rows_c.len() < nact {
++        rep.fail = format!("too few relations: {} rows for {} columns", rows_c.len(), nact);
++        return rep;
++    }
++    phase!("matrix");
++
++    // 4. linear algebra
++    let mut z = None;
++    for _ in 0..3 {
++        if let Some(v) = lanczos_kernel(&rows_c, nact, ell, &mut rng) {
++            // verify A z = 0
++            if rows_c.iter().all(|r| row_apply(r, &v, ell) == 0) {
++                z = Some(v);
++                break;
++            }
++        }
++    }
++    let z = match z {
++        Some(z) => z,
++        None => {
++            rep.fail = "lanczos failed".into();
++            return rep;
++        }
++    };
++    // hold-out relations (only those whose columns are all active)
++    let mut hold_ok = 0;
++    let mut hold_bad = 0;
++    for r in &hold {
++        if r.iter().all(|&(c, _)| remap[c as usize] != u32::MAX) {
++            let rr: Row = r.iter().map(|&(c, a)| (remap[c as usize], a)).collect();
++            if row_apply(&rr, &z, ell) == 0 {
++                hold_ok += 1;
++            } else {
++                hold_bad += 1;
++            }
++        }
++    }
++        (z, used, remap, hold_ok, hold_bad)
++    };
++    rep.stat("holdout_ok", hold_ok as f64);
++    rep.stat("holdout_bad", hold_bad as f64);
++    phase!("linear_algebra");
++    if hold_bad > 0 {
++        rep.fail = "kernel not unique (hold-out relations violated)".into();
++        return rep;
++    }
++    let eta = z[remap[eta_col as usize] as usize];
++    if eta == 0 {
++        rep.fail = "eta is zero in the kernel vector".into();
++        return rep;
++    }
++    // logs of F points and large primes
++    let mut logs: HashMap<u64, u64> = HashMap::new();
++    let mut active_idx: Vec<u32> = Vec::new();
++    logs.insert(pack(&fb[0]), 0);
++    for i in 1..n {
++        let c = (i - 1) as usize;
++        if used[c] {
++            logs.insert(pack(&fb[i]), z[remap[c] as usize]);
++            active_idx.push(i as u32);
++        }
++    }
++    let mut lp_known = 0usize;
++    let mut seen_lp: HashSet<u32> = HashSet::new();
++    for r in &ro.lp {
++        let l = r.lp.unwrap();
++        if !seen_lp.insert(l) {
++            continue;
++        }
++        let mut s = 0u64;
++        let mut okr = true;
++        for &(i, mu) in &r.c {
++            let key = pack(&fb[i as usize]);
++            match logs.get(&key) {
++                Some(&v) => s = la(s, lm(mu as u64, v, ell), ell),
++                None => {
++                    okr = false;
++                    break;
++                }
++            }
++        }
++        if okr {
++            logs.insert(pack(&ro.lp_pts[l as usize]), ls(eta, s, ell));
++            lp_known += 1;
++        }
++    }
++    if let Some(r2) = &ro2 {
++        let lam = {
++            let fbl = |i: u32| -> Option<u64> { logs.get(&pack(&fb[i as usize])).copied() };
++            propagate_2lp(r2, &fbl, eta, ell)
++        };
++        let mut reached = 0;
++        for (v, l) in lam.iter().enumerate() {
++            if let Some(l) = l {
++                logs.insert(pack(&r2.vertex_pts[v]), *l);
++                reached += 1;
++            }
++        }
++        lp_known = reached;
++    }
++    rep.stat("lp_known", lp_known as f64);
++    rep.stat("known_points", logs.len() as f64);
++    phase!("log_recovery");
++
++    // 5. Descend actual classes R,R+G,R+Q in this target Jacobian.
++    let mons2 = pic::mons_of_degree(2);
++    let mut cls_cache: HashMap<u32, pic::PicClass> = HashMap::new();
++    let mut total_trials = 0u64;
++    let mut ys: Vec<u64> = Vec::new();
++    let mut desc_ok = true;
++    'outer: loop {
++        let r = rng.below(ell - 1) + 1;
++        let r0 = pc(&cv, || cv.mul_scalar(generator, r as u128));
++        let r1 = pc(&cv, || cv.add(&r0, generator));
++        let r2 = pc(&cv, || cv.add(&r0, target));
++        ys.clear();
++        for class in [r0, r1, r2] {
++            let mut x = class;
++            let mut added: Vec<u32> = Vec::new();
++            let mut got = None;
++            for _t in 0..prm.max_desc {
++                total_trials += 1;
++                if let pic::PicClass::Typ(m) = &x {
++                    if let Some(pts) = split3(&f, m, &mons2, &mut rng) {
++                        bump_hash(3);
++                        let l: Vec<Option<u64>> = pts.iter().map(|p| logs.get(&pack(p)).copied()).collect();
++                        if l.iter().all(|v| v.is_some()) {
++                            let mut s = 0u64;
++                            for v in l {
++                                s = la(s, v.unwrap(), ell);
++                            }
++                            s = ls(s, eta, ell);
++                            for &j in &added {
++                                s = ls(s, logs[&pack(&fb[j as usize])], ell);
++                            }
++                            got = Some(s);
++                            break;
++                        }
++                    }
++                }
++                let j = active_idx[rng.below(active_idx.len() as u64) as usize];
++                let cj = cls_cache
++                    .entry(j)
++                    .or_insert_with(|| pc(&cv, || cv.point_class(to_u32(&fb[j as usize]))))
++                    .clone();
++                x = pc(&cv, || cv.add(&x, &cj));
++                added.push(j);
++            }
++            match got {
++                Some(v) => ys.push(v),
++                None => {
++                    desc_ok = false;
++                    break 'outer;
++                }
++            }
++        }
++        break;
++    }
++    rep.stat("descent_trials", total_trials as f64);
++    phase!("descent");
++    if !desc_ok {
++        rep.fail = "descent exhausted".into();
++        return rep;
++    }
++    // 6. recover k and verify in the ACTUAL target Jacobian
++    let den = ls(ys[1], ys[0], ell);
++    if den == 0 {
++        rep.fail = "degenerate denominator".into();
++        return rep;
++    }
++    let kk = lm(ls(ys[2], ys[0], ell), inv_mod_u64(den, ell), ell);
++    let chk = pc(&cv, || cv.mul_scalar(generator, kk as u128));
++    rep.k_found = Some(kk);
++    rep.ok = chk == *target;
++    if !rep.ok {
++        rep.fail = "recovered k does not satisfy kG = Q".into();
++    }
++    phase!("verify");
++    rep.stat("wall_total", t_all.elapsed().as_secs_f64());
++    rep
++}
++
+--- a/cryptanalysis/experiments/chained-transfer-public-target/new-target-ic/src/lib.rs
++++ b/cryptanalysis/experiments/chained-transfer-public-target/new-target-ic/src/lib.rs
+@@ -5,7 +5,7 @@
+ pub use ghs_original_engines::pic;
+ use pic::PicClass;
+ 
+-#[path = "../derived/class_solver.rs"]
++#[path = "../arithmetic-derived/class_solver.rs"]
+ pub mod class_solver;
+ 
+ pub struct TargetContext<'a> {
+--- a/cryptanalysis/experiments/chained-transfer-public-target/norm-assisted-ic/Cargo.toml
++++ b/cryptanalysis/experiments/chained-transfer-public-target/norm-assisted-ic/Cargo.toml
+@@ -7,6 +7,7 @@
+ [workspace]
+ 
+ [dependencies]
++n4-arithmetic-taps = { path = "../../../../n4-arithmetic-taps" }
+ chained-n4-public-target = { path = "../native" }
+ chained-n4-completed-v2 = { path = "../v2" }
+ chained-n4-odd-product-models = { path = "../odd-product-models" }
+--- /dev/null
++++ b/cryptanalysis/experiments/chained-transfer-public-target/norm-assisted-ic/arithmetic-derived/class_solver.rs
+@@ -0,0 +1,557 @@
++// End-to-end N4 solve (IC) and the matched rho on E0(K).
++#![allow(dead_code)]
++use crate::common::*;
++use crate::ic::*;
++use crate::pic;
++use std::collections::{HashMap, HashSet};
++
++#[derive(Clone)]
++pub struct Params {
++    pub nfb: usize,       // 0 = all rational points
++    pub rows_mult: f64,   // rows used = rows_mult * columns + 30
++    pub max_desc: usize,  // descent trial cap per class
++    pub sge: bool,        // structured elimination of the relation matrix before Lanczos
++    pub maxw: usize,      // widest merged row allowed in the elimination
++    pub lp2: bool,        // double large primes (graph of large-prime pairs)
++}
++
++#[derive(Default, Clone)]
++pub struct Report {
++    pub ok: bool,
++    pub fail: String,
++    pub k_found: Option<u64>,
++    pub phases: Vec<(String, Cnt, f64)>,
++    pub stats: Vec<(String, f64)>,
++}
++impl Report {
++    pub fn stat(&mut self, k: &str, v: f64) {
++        self.stats.push((k.to_string(), v));
++    }
++}
++
++fn pc<R>(cv: &pic::PlaneQuartic, f: impl FnOnce() -> R) -> R {
++    let b = cv.counter();
++    let r = f();
++    let d = cv.counter().since(&b);
++    bump_mul(d.mul);
++    bump_inv(d.inv);
++    bump_add(d.add);
++    r
++}
++
++pub fn all_points(cv: &Curve, rng: &mut Rng) -> Vec<P3> {
++    let f = &cv.f;
++    let q = f.q;
++    let mut seen: HashSet<u64> = HashSet::new();
++    let mut out = Vec::new();
++    for a in 0..q {
++        for p in cv.line_points(&[a, 0, 1], &[0, 1, 0], rng) {
++            if seen.insert(pack(&p)) {
++                out.push(p);
++            }
++        }
++    }
++    for p in cv.line_points(&[1, 0, 0], &[0, 1, 0], rng) {
++        if seen.insert(pack(&p)) {
++            out.push(p);
++        }
++    }
++    out
++}
++
++pub fn sample_points(cv: &Curve, n: usize, rng: &mut Rng) -> Vec<P3> {
++    let q = cv.f.q;
++    let mut seen: HashSet<u64> = HashSet::new();
++    let mut out = Vec::new();
++    while out.len() < n {
++        let a = [rng.below(q), rng.below(q), rng.below(q)];
++        let b = [rng.below(q), rng.below(q), rng.below(q)];
++        if a == [0, 0, 0] || b == [0, 0, 0] {
++            continue;
++        }
++        let a = pnorm(&cv.f, &a);
++        let b = pnorm(&cv.f, &b);
++        if a == b {
++            continue;
++        }
++        for p in cv.line_points(&a, &b, rng) {
++            if out.len() < n && seen.insert(pack(&p)) {
++                out.push(p);
++            }
++        }
++    }
++    out
++}
++
++fn to_u32(p: &P3) -> [u32; 3] {
++    [p[0] as u32, p[1] as u32, p[2] as u32]
++}
++
++pub fn solve_class(inst: &crate::SamplerContext<'_>, prm: &Params, generator: &pic::PicClass, target: &pic::PicClass, seed: u64, verify_rel: bool) -> Report {
++    let mut rep = Report::default();
++    let q = inst.q;
++    let ell = inst.ell;
++    let mut rng = Rng::new(seed ^ 0xC0FFEE);
++    let curve = Curve::new(q, &inst.f);
++    let f = curve.f;
++    let t_all = std::time::Instant::now();
++    let mut mark = (snap(), std::time::Instant::now());
++    macro_rules! phase {
++        ($name:expr) => {{
++            let now = snap();
++            rep.phases.push(($name.to_string(), now.since(&mark.0), mark.1.elapsed().as_secs_f64()));
++            mark = (now, std::time::Instant::now());
++        }};
++    }
++
++    // 1. factor base
++    let mut fb = if prm.nfb == 0 || prm.nfb as u64 >= q + 1 {
++        all_points(&curve, &mut rng)
++    } else {
++        sample_points(&curve, prm.nfb, &mut rng)
++    };
++    // Preserve the ACTUAL target P0 and its zero-log anchor.
++    let cv = &inst.norm.a.pic;
++    let anchor = cv.base_point().map(u64::from);
++    if let Some(index) = fb.iter().position(|p| *p == anchor) {
++        fb.swap(0, index);
++    } else {
++        fb[0] = anchor;
++    }
++    assert_eq!(fb[0], anchor);
++    let sc = cv.setup_cost();
++    bump_mul(sc.mul);
++    bump_inv(sc.inv);
++    bump_add(sc.add);
++    cv.reset_counter();
++    let n = fb.len();
++    rep.stat("n_fb", n as f64);
++    phase!("fb");
++
++    // 2. relations
++    let mut ro2: Option<Rel2Out> = None;
++    let ro = if prm.lp2 {
++        let r2 = find_relations_2lp(&curve, &fb);
++        let ro = RelOut {
++            full: r2.full.iter().map(|c| Rel { c: c.clone(), lp: None }).collect(),
++            lp: r2.ground.iter().filter(|g| !g.2).map(|(v, fp, _)| Rel { c: fp.clone(), lp: Some(*v) }).collect(),
++            lp_pts: r2.vertex_pts.clone(),
++            pairs: r2.pairs,
++            multi_lines: r2.edges.len() as u64,
++            unsure: r2.no_roots,
++        };
++        rep.stat("graph_edges", r2.edges.len() as f64);
++        rep.stat("graph_ground", r2.ground.len() as f64);
++        ro2 = Some(r2);
++        ro
++    } else {
++        find_relations(&curve, &fb, &mut rng)
++    };
++    rep.stat("pairs", ro.pairs as f64);
++    rep.stat("multi_lines", ro.multi_lines as f64);
++    rep.stat("rel_full", ro.full.len() as f64);
++    rep.stat("rel_lp", ro.lp.len() as f64);
++    rep.stat("lp_distinct", ro.lp_pts.len() as f64);
++    rep.stat("rel_unsure", ro.unsure as f64);
++    phase!("relations");
++    if verify_rel {
++        // independent check through the canonical group law: every sampled relation sums to
++        // the line-section class
++        let mut kappa: Option<pic::PicClass> = None;
++        let mut bad = 0;
++        let mut tested = 0;
++        let cls = |p: &P3| cv.point_class(to_u32(p));
++        let mut allrels: Vec<(Vec<(u32, u8)>, Option<u32>)> = Vec::new();
++        for r in ro.full.iter().take(10) {
++            allrels.push((r.c.clone(), None));
++        }
++        for r in ro.lp.iter().take(30) {
++            allrels.push((r.c.clone(), r.lp));
++        }
++        let mut edge_checks: Vec<(u32, u32, u32, u32)> = Vec::new();
++        if let Some(r2) = &ro2 {
++            edge_checks = r2.edges.iter().take(40).copied().collect();
++        }
++        for (c, lp) in allrels {
++            let mut s = cv.zero();
++            for (i, m) in c {
++                let x = cls(&fb[i as usize]);
++                for _ in 0..m {
++                    s = cv.add(&s, &x);
++                }
++            }
++            if let Some(l) = lp {
++                s = cv.add(&s, &cls(&ro.lp_pts[l as usize]));
++            }
++            match &kappa {
++                None => kappa = Some(s),
++                Some(k0) => {
++                    if *k0 != s {
++                        bad += 1;
++                    }
++                }
++            }
++            tested += 1;
++        }
++        if let Some(r2) = &ro2 {
++            for &(vx, vy, ia, ib) in &edge_checks {
++                let mut sm = cv.zero();
++                for pt in [&fb[ia as usize], &fb[ib as usize], &r2.vertex_pts[vx as usize], &r2.vertex_pts[vy as usize]] {
++                    sm = cv.add(&sm, &cls(pt));
++                }
++                match &kappa {
++                    None => kappa = Some(sm),
++                    Some(k0) => {
++                        if *k0 != sm {
++                            bad += 1;
++                        }
++                    }
++                }
++                tested += 1;
++            }
++        }
++        rep.stat("relations_verified", tested as f64);
++        rep.stat("relations_bad", bad as f64);
++        cv.reset_counter();
++    }
++
++    // 3. matrix: columns fb[1..] -> 0..n-2, eta -> n-1
++    let ncols_all = n;
++    let eta_col = (n - 1) as u32;
++    let col = |i: u32| -> Option<u32> { if i == 0 { None } else { Some(i - 1) } };
++    let to_mod = |v: i64| -> u64 { /* N4_AUDIT_SCALAR_CONVERSION */ n4_arithmetic_taps::hit("scalar.conversion", ell, "rem_u64", 1); if v < 0 { n4_arithmetic_taps::hit("scalar.conversion", ell, "neg", 1); } if v >= 0 { (v as u64) % ell } else { ell - ((-v) as u64 % ell) } };
++    let mut full_rows: Vec<Row> = Vec::new();
++    for r in &ro.full {
++        let mut row: Row = Vec::new();
++        for &(i, m) in &r.c {
++            if let Some(c) = col(i) {
++                row.push((c, m as u64));
++            }
++        }
++        /* N4_AUDIT_SCALAR_NEGONE */ n4_arithmetic_taps::hit("scalar.conversion", ell, "neg", 1);
++        row.push((eta_col, ell - 1));
++        full_rows.push(row);
++    }
++    let mut lp_groups: std::collections::BTreeMap<u32, Vec<usize>> = std::collections::BTreeMap::new();
++    for (ri, r) in ro.lp.iter().enumerate() {
++        lp_groups.entry(r.lp.unwrap()).or_default().push(ri);
++    }
++    let mut lp_rows: Vec<Row> = Vec::new();
++    for (_l, rs) in &lp_groups {
++        for w in 1..rs.len() {
++            let mut m: HashMap<u32, i64> = HashMap::new();
++            for &(i, mu) in &ro.lp[rs[w]].c {
++                if let Some(c) = col(i) {
++                    *m.entry(c).or_insert(0) += mu as i64;
++                }
++            }
++            for &(i, mu) in &ro.lp[rs[0]].c {
++                if let Some(c) = col(i) {
++                    *m.entry(c).or_insert(0) -= mu as i64;
++                }
++            }
++            let mut row: Row = m.into_iter().filter(|x| x.1 != 0).map(|(c, v)| (c, to_mod(v))).collect();
++            if !row.is_empty() {
++                row.sort();
++                lp_rows.push(row);
++            }
++        }
++    }
++    if let Some(r2) = &ro2 {
++        let target = (prm.rows_mult * ncols_all as f64).ceil() as usize * 3 + 100;
++        let cr = cycle_rows_2lp(r2, ell, eta_col, target);
++        rep.stat("rows_cycle", cr.len() as f64);
++        lp_rows.extend(cr);
++    }
++    rep.stat("rows_full", full_rows.len() as f64);
++    rep.stat("rows_lp_combined", lp_rows.len() as f64);
++    if full_rows.is_empty() {
++        rep.fail = "no full relation (eta unanchored)".into();
++        return rep;
++    }
++    let (z, used, remap, hold_ok, hold_bad) = if prm.sge {
++        // all rows go in; 60 random ones are held out
++        let nf = full_rows.len();
++        let mut all: Vec<Row> = full_rows;
++        all.extend(lp_rows);
++        for i in (1..all.len()).rev() {
++            let j = rng.below(i as u64 + 1) as usize;
++            all.swap(i, j);
++        }
++        let hold: Vec<Row> = all.drain(..all.len().min(60)).collect();
++        rep.stat("rows_available", all.len() as f64);
++        rep.stat("rows_full_total", nf as f64);
++        let out = sge(all, ncols_all, eta_col, ell, prm.maxw);
++        let nact = out.cols.len();
++        rep.stat("sge_singles", out.singles as f64);
++        rep.stat("sge_merges", out.merges as f64);
++        rep.stat("sge_pruned", out.pruned as f64);
++        rep.stat("sge_skipped_wide", out.skipped_wide as f64);
++        rep.stat("cols_active", nact as f64);
++        rep.stat("rows_used", out.core.len() as f64);
++        rep.stat("core_nnz", out.core.iter().map(|r| r.len()).sum::<usize>() as f64);
++        if out.core.len() < nact || nact == 0 {
++            rep.fail = format!("too few relations after elimination: {} rows for {} columns", out.core.len(), nact);
++            return rep;
++        }
++        phase!("matrix");
++        let mut zc = None;
++        for _ in 0..3 {
++            if let Some(v) = lanczos_kernel(&out.core, nact, ell, &mut rng) {
++                if out.core.iter().all(|r| row_apply(r, &v, ell) == 0) {
++                    zc = Some(v);
++                    break;
++                }
++            }
++        }
++        let zc = match zc {
++            Some(z) => z,
++            None => {
++                rep.fail = "lanczos failed".into();
++                return rep;
++            }
++        };
++        let mut vals: Vec<Option<u64>> = vec![None; ncols_all];
++        for (i, &c) in out.cols.iter().enumerate() {
++            vals[c as usize] = Some(zc[i]);
++        }
++        back_substitute(&out, &mut vals, ell);
++        let used: Vec<bool> = vals.iter().map(|v| v.is_some()).collect();
++        let remap: Vec<u32> = (0..ncols_all).map(|c| if used[c] { c as u32 } else { u32::MAX }).collect();
++        let z: Vec<u64> = vals.iter().map(|v| v.unwrap_or(0)).collect();
++        let (mut ho, mut hb) = (0, 0);
++        for r in &hold {
++            if r.iter().all(|&(c, _)| used[c as usize]) {
++                if row_apply(r, &z, ell) == 0 { ho += 1; } else { hb += 1; }
++            }
++        }
++        (z, used, remap, ho, hb)
++    } else {
++    let want = (prm.rows_mult * ncols_all as f64).ceil() as usize + 30;
++    let mut rows: Vec<Row> = Vec::new();
++    let nf = full_rows.len();
++    let mut rest: Vec<Row> = Vec::new();
++    for (i, r) in full_rows.into_iter().enumerate() {
++        if i < 3 {
++            rows.push(r);
++        } else {
++            rest.push(r);
++        }
++    }
++    rest.extend(lp_rows);
++    // shuffle rest (double large primes: lightest rows first)
++    for i in (1..rest.len()).rev() {
++        let j = rng.below(i as u64 + 1) as usize;
++        rest.swap(i, j);
++    }
++
++    let mut hold: Vec<Row> = Vec::new();
++    for r in rest {
++        if rows.len() < want {
++            rows.push(r);
++        } else if hold.len() < 60 {
++            hold.push(r);
++        }
++    }
++    // active columns
++    let mut used = vec![false; ncols_all];
++    for r in &rows {
++        for &(c, _) in r {
++            used[c as usize] = true;
++        }
++    }
++    used[eta_col as usize] = true;
++    let mut remap = vec![u32::MAX; ncols_all];
++    let mut nact = 0usize;
++    for c in 0..ncols_all {
++        if used[c] {
++            remap[c] = nact as u32;
++            nact += 1;
++        }
++    }
++    let rows_c: Vec<Row> = rows.iter().map(|r| r.iter().map(|&(c, a)| (remap[c as usize], a)).collect()).collect();
++    rep.stat("rows_used", rows_c.len() as f64);
++    rep.stat("cols_active", nact as f64);
++    rep.stat("rows_full_total", nf as f64);
++    if rows_c.len() < nact {
++        rep.fail = format!("too few relations: {} rows for {} columns", rows_c.len(), nact);
++        return rep;
++    }
++    phase!("matrix");
++
++    // 4. linear algebra
++    let mut z = None;
++    for _ in 0..3 {
++        if let Some(v) = lanczos_kernel(&rows_c, nact, ell, &mut rng) {
++            // verify A z = 0
++            if rows_c.iter().all(|r| row_apply(r, &v, ell) == 0) {
++                z = Some(v);
++                break;
++            }
++        }
++    }
++    let z = match z {
++        Some(z) => z,
++        None => {
++            rep.fail = "lanczos failed".into();
++            return rep;
++        }
++    };
++    // hold-out relations (only those whose columns are all active)
++    let mut hold_ok = 0;
++    let mut hold_bad = 0;
++    for r in &hold {
++        if r.iter().all(|&(c, _)| remap[c as usize] != u32::MAX) {
++            let rr: Row = r.iter().map(|&(c, a)| (remap[c as usize], a)).collect();
++            if row_apply(&rr, &z, ell) == 0 {
++                hold_ok += 1;
++            } else {
++                hold_bad += 1;
++            }
++        }
++    }
++        (z, used, remap, hold_ok, hold_bad)
++    };
++    rep.stat("holdout_ok", hold_ok as f64);
++    rep.stat("holdout_bad", hold_bad as f64);
++    phase!("linear_algebra");
++    if hold_bad > 0 {
++        rep.fail = "kernel not unique (hold-out relations violated)".into();
++        return rep;
++    }
++    let eta = z[remap[eta_col as usize] as usize];
++    if eta == 0 {
++        rep.fail = "eta is zero in the kernel vector".into();
++        return rep;
++    }
++    // logs of F points and large primes
++    let mut logs: HashMap<u64, u64> = HashMap::new();
++    let mut active_idx: Vec<u32> = Vec::new();
++    logs.insert(pack(&fb[0]), 0);
++    for i in 1..n {
++        let c = (i - 1) as usize;
++        if used[c] {
++            logs.insert(pack(&fb[i]), z[remap[c] as usize]);
++            active_idx.push(i as u32);
++        }
++    }
++    let mut lp_known = 0usize;
++    let mut seen_lp: HashSet<u32> = HashSet::new();
++    for r in &ro.lp {
++        let l = r.lp.unwrap();
++        if !seen_lp.insert(l) {
++            continue;
++        }
++        let mut s = 0u64;
++        let mut okr = true;
++        for &(i, mu) in &r.c {
++            let key = pack(&fb[i as usize]);
++            match logs.get(&key) {
++                Some(&v) => s = la(s, lm(mu as u64, v, ell), ell),
++                None => {
++                    okr = false;
++                    break;
++                }
++            }
++        }
++        if okr {
++            logs.insert(pack(&ro.lp_pts[l as usize]), ls(eta, s, ell));
++            lp_known += 1;
++        }
++    }
++    if let Some(r2) = &ro2 {
++        let lam = {
++            let fbl = |i: u32| -> Option<u64> { logs.get(&pack(&fb[i as usize])).copied() };
++            propagate_2lp(r2, &fbl, eta, ell)
++        };
++        let mut reached = 0;
++        for (v, l) in lam.iter().enumerate() {
++            if let Some(l) = l {
++                logs.insert(pack(&r2.vertex_pts[v]), *l);
++                reached += 1;
++            }
++        }
++        lp_known = reached;
++    }
++    rep.stat("lp_known", lp_known as f64);
++    rep.stat("known_points", logs.len() as f64);
++    phase!("log_recovery");
++
++    // 5. Descend actual classes R,R+G,R+Q in this target Jacobian.
++    let mons2 = pic::mons_of_degree(2);
++    let mut cls_cache: HashMap<u32, pic::PicClass> = HashMap::new();
++    let mut total_trials = 0u64;
++    let mut ys: Vec<u64> = Vec::new();
++    let mut desc_ok = true;
++    'outer: loop {
++        let r = rng.below(ell - 1) + 1;
++        let r0 = inst.sample(r).expect("prepared exact-generator sampler");
++        let r1 = pc(&cv, || cv.add(&r0, generator));
++        let r2 = pc(&cv, || cv.add(&r0, target));
++        ys.clear();
++        for class in [r0, r1, r2] {
++            let mut x = class;
++            let mut added: Vec<u32> = Vec::new();
++            let mut got = None;
++            for _t in 0..prm.max_desc {
++                total_trials += 1;
++                if let pic::PicClass::Typ(m) = &x {
++                    if let Some(pts) = split3(&f, m, &mons2, &mut rng) {
++                        bump_hash(3);
++                        let l: Vec<Option<u64>> = pts.iter().map(|p| logs.get(&pack(p)).copied()).collect();
++                        if l.iter().all(|v| v.is_some()) {
++                            let mut s = 0u64;
++                            for v in l {
++                                s = la(s, v.unwrap(), ell);
++                            }
++                            s = ls(s, eta, ell);
++                            for &j in &added {
++                                s = ls(s, logs[&pack(&fb[j as usize])], ell);
++                            }
++                            got = Some(s);
++                            break;
++                        }
++                    }
++                }
++                let j = active_idx[rng.below(active_idx.len() as u64) as usize];
++                let cj = cls_cache
++                    .entry(j)
++                    .or_insert_with(|| pc(&cv, || cv.point_class(to_u32(&fb[j as usize]))))
++                    .clone();
++                x = pc(&cv, || cv.add(&x, &cj));
++                added.push(j);
++            }
++            match got {
++                Some(v) => ys.push(v),
++                None => {
++                    desc_ok = false;
++                    break 'outer;
++                }
++            }
++        }
++        break;
++    }
++    rep.stat("descent_trials", total_trials as f64);
++    phase!("descent");
++    if !desc_ok {
++        rep.fail = "descent exhausted".into();
++        return rep;
++    }
++    // 6. recover k and verify in the ACTUAL target Jacobian
++    let den = ls(ys[1], ys[0], ell);
++    if den == 0 {
++        rep.fail = "degenerate denominator".into();
++        return rep;
++    }
++    let kk = lm(ls(ys[2], ys[0], ell), inv_mod_u64(den, ell), ell);
++    let chk = pc(&cv, || cv.mul_scalar(generator, kk as u128));
++    rep.k_found = Some(kk);
++    rep.ok = chk == *target;
++    if !rep.ok {
++        rep.fail = "recovered k does not satisfy kG = Q".into();
++    }
++    phase!("verify");
++    rep.stat("wall_total", t_all.elapsed().as_secs_f64());
++    rep
++}
++
+--- a/cryptanalysis/experiments/chained-transfer-public-target/norm-assisted-ic/src/lib.rs
++++ b/cryptanalysis/experiments/chained-transfer-public-target/norm-assisted-ic/src/lib.rs
+@@ -9,7 +9,7 @@
+ use serde::Serialize;
+ use std::cell::Cell;
+ 
+-#[path = "../derived/class_solver.rs"]
++#[path = "../arithmetic-derived/class_solver.rs"]
+ pub mod class_solver;
+ 
+ /// Explicit calls at this API boundary; not primitive operations or a price.
+@@ -157,3 +157,7 @@
+ 
+ #[cfg(test)]
+ mod tests;
++
++#[cfg(test)]
++#[path = "../../../../../arithmetic-controls.rs"]
++mod arithmetic_controls;
+--- a/cryptanalysis/experiments/chained-transfer-public-target/norm-assisted-ic/src/tests.rs
++++ b/cryptanalysis/experiments/chained-transfer-public-target/norm-assisted-ic/src/tests.rs
+@@ -62,11 +62,16 @@
+ 
+ #[test]
+ fn exact_scalar_samples_and_all_sixty_original_candidate_ic_pairs() {
++    println!("N4_ARITHMETIC_BUILD {}", serde_json::json!({"manifest_dir":env!("CARGO_MANIFEST_DIR"),"controls_sha256":ghs_original_engines::digest::sha256(include_bytes!("../../../../../arithmetic-controls.rs")).iter().map(|b|format!("{b:02x}")).collect::<String>(),"literal_scalar_taps_checked_below":true}));
++    crate::arithmetic_controls::run();
++    let _audit_scope = n4_arithmetic_taps::scope("setup");
+     let original = include_str!("../original/class_solver.rs");
+     assert_eq!(
+         original,
+         include_str!("../../new-target-ic/derived/class_solver.rs")
+     );
++    assert_eq!(crate::arithmetic_controls::strip_scalar_taps(include_str!("../../new-target-ic/arithmetic-derived/class_solver.rs")), original);
++    assert_eq!(crate::arithmetic_controls::strip_scalar_taps(include_str!("../arithmetic-derived/class_solver.rs")), include_str!("../derived/class_solver.rs"));
+     let replacements = [
+         ("crate::TargetContext<'_>", "crate::SamplerContext<'_>"),
+         (
+@@ -105,13 +110,14 @@
+             continue;
+         }
+         let id = [model.root_index, model.sign_index];
++        let _model_scope = n4_arithmetic_taps::scope(format!("model-{id:?}"));
+         let norm = NormNew::new(Adapter::new(&source, &old.a, model).unwrap()).unwrap();
+         let chain = FastSourceChain::new(&c, &norm, &isogeny).unwrap();
+         let g = chain
+             .from_source(&chain.encode_source(short(&c, c.inst.g)))
+             .unwrap();
+         let gc = norm.decode(&g).unwrap();
+-        let prepared = SamplerContext::new(&norm, &g).unwrap();
++        let prepared = n4_arithmetic_taps::within(format!("prepare-{id:?}"), || SamplerContext::new(&norm, &g).unwrap());
+         let baseline_context = TargetContext::new(&norm).unwrap();
+         let pic = &norm.a.pic;
+         let preparation = prepared.calls();
+@@ -148,8 +154,8 @@
+         let mut all_samples = vec![];
+         for &r in &scalars {
+             let before = prepared.calls();
+-            let sampled = prepared.sample(r).unwrap();
+-            let original = pic.mul_scalar(&gc, r as u128);
++            let sampled = n4_arithmetic_taps::within(format!("sample-candidate-{id:?}"), || prepared.sample(r).unwrap());
++            let original = n4_arithmetic_taps::within(format!("sample-original-{id:?}"), || pic.mul_scalar(&gc, r as u128));
+             assert_eq!(
+                 sampled, original,
+                 "exact sampler class mismatch at {id:?},r={r}"
+@@ -195,11 +201,11 @@
+             let mut case_outcomes = vec![];
+             for (attempt, &nfb) in [30, 36, 48, 64].iter().enumerate() {
+                 let seed = 102 + attempt as u64;
+-                let a = baseline_context
++                let a = n4_arithmetic_taps::within(format!("solver-original-{id:?}-public{i}-FB{nfb}"), || baseline_context
+                     .solve(&g, q, &baseline_params(nfb), seed)
+-                    .unwrap();
++                    .unwrap());
+                 let before = prepared.calls();
+-                let b = prepared.solve(&g, q, &candidate_params(nfb), seed).unwrap();
++                let b = n4_arithmetic_taps::within(format!("solver-candidate-{id:?}-public{i}-FB{nfb}"), || prepared.solve(&g, q, &candidate_params(nfb), seed).unwrap());
+                 let calls = prepared.calls().since(before);
+                 let ar = report!(a);
+                 let br = report!(b);
+@@ -215,6 +221,7 @@
+                 assert_eq!(calls.source_scalar, calls.sampled);
+                 assert_eq!(calls.completed_transfer, calls.sampled);
+                 assert!(calls.sampled <= 1);
++                let _verify_scope = n4_arithmetic_taps::scope(format!("verification-{id:?}-public{i}-FB{nfb}"));
+                 let a_target = a
+                     .k_found
+                     .is_some_and(|k| pic.mul_scalar(&gc, k as u128) == *qc);
+@@ -355,4 +362,6 @@
+         "N4_NORM_SAMPLER_SCOPE {}",
+         json!({"models":models_seen,"scalar_pairs":scalar_pairs,"triples":triples,"paired_attempts":pairs,"solver_reports":2*pairs,"common_solved_cases":solved_cases,"all_target_outcomes":outcomes,"no_fallback_or_scalar_witness":true,"pricing":"complete arithmetic coverage/admission/matchedreferences pending"})
+     );
+-}
++    println!("N4_ARITHMETIC_CENSUS {}", n4_arithmetic_taps::snapshot());
++    n4_arithmetic_taps::assert_no_unsupported();
++}
+--- a/cryptanalysis/experiments/chained-transfer-public-target/odd-product-maps/Cargo.toml
++++ b/cryptanalysis/experiments/chained-transfer-public-target/odd-product-maps/Cargo.toml
+@@ -7,6 +7,7 @@
+ [workspace]
+ 
+ [dependencies]
++n4-arithmetic-taps = { path = "../../../../n4-arithmetic-taps" }
+ chained-n4-public-target = { path = "../native" }
+ chained-n4-completed-v2 = { path = "../v2" }
+ chained-n4-odd-product-models = { path = "../odd-product-models" }
+--- a/cryptanalysis/experiments/chained-transfer-public-target/odd-product-maps/src/norm.rs
++++ b/cryptanalysis/experiments/chained-transfer-public-target/odd-product-maps/src/norm.rs
+@@ -48,6 +48,7 @@
+ fn coeffs(q: u64, mut i: u64, r: usize) -> ER {
+     let mut x = [0; 16];
+     for c in x.iter_mut().take(r) {
++        n4_arithmetic_taps::hit("coefficient.encoding", q, "rem_u64", 1);
+         *c = i % q;
+         i /= q;
+     }
+--- a/cryptanalysis/experiments/chained-transfer-public-target/v2/Cargo.toml
++++ b/cryptanalysis/experiments/chained-transfer-public-target/v2/Cargo.toml
+@@ -7,6 +7,7 @@
+ [workspace]
+ 
+ [dependencies]
++n4-arithmetic-taps = { path = "../../../../n4-arithmetic-taps" }
+ chained-n4-public-target = { path = "../native" }
+ ghs-original-engines = { path = "../../../../crypto/research/chained_jacobian_transfers_20261110/genus3-prime-descent/engine" }
+ isogeny_algos = { path = "../../../../crypto/isogeny_algos" }
+--- a/cryptanalysis/experiments/chained-transfer-public-target/v2/src/adapter.rs
++++ b/cryptanalysis/experiments/chained-transfer-public-target/v2/src/adapter.rs
+@@ -65,6 +65,7 @@
+ fn kindex(q: u64, mut n: u64) -> Result<K> {
+     let mut a = [0; 3];
+     for x in &mut a {
++        n4_arithmetic_taps::hit("coefficient.encoding", q, "rem_u64", 1);
+         *x = n % q;
+         n /= q;
+     }
+--- a/cryptanalysis/experiments/chained-transfer-public-target/v2/src/norm.rs
++++ b/cryptanalysis/experiments/chained-transfer-public-target/v2/src/norm.rs
+@@ -48,6 +48,7 @@
+ fn coeffs(q: u64, mut i: u64, r: usize) -> ER {
+     let mut x = [0; 16];
+     for c in x.iter_mut().take(r) {
++        n4_arithmetic_taps::hit("coefficient.encoding", q, "rem_u64", 1);
+         *c = i % q;
+         i /= q;
+     }
+--- a/crypto/isogeny_algos/Cargo.toml
++++ b/crypto/isogeny_algos/Cargo.toml
+@@ -17,3 +17,6 @@
+ [profile.release]
+ opt-level = 3
+ debug = false
++
++[dependencies]
++n4-arithmetic-taps = { path = "../../n4-arithmetic-taps" }
+--- a/crypto/isogeny_algos/src/field.rs
++++ b/crypto/isogeny_algos/src/field.rs
+@@ -305,11 +305,13 @@
+ 
+ impl Red128 {
+     pub fn new(p: u64) -> Self {
++        n4_arithmetic_taps::hit("Red128.api", p, "new", 1);
+         assert!(p % 2 == 1 && p < (1u64 << 62), "Red128: odd p < 2^62");
+         let mut inv = 1u64;
+         for _ in 0..6 {
+             inv = inv.wrapping_mul(2u64.wrapping_sub(p.wrapping_mul(inv)));
+         }
++        n4_arithmetic_taps::hit("Zp.constructor", p, "rem_u128", 2); n4_arithmetic_taps::hit("Zp.constructor", p, "sq", 1);
+         let r1 = ((1u128 << 64) % p as u128) as u64;
+         Red128 {
+             p,
+@@ -322,6 +324,7 @@
+     /// x mod p for one word (Barrett; the quotient estimate is short by at most 2).
+     #[inline(always)]
+     pub fn mod_word(&self, x: u64) -> u64 {
++        n4_arithmetic_taps::hit("Red128.api", self.p, "mod_word", 1);
+         let q = ((x as u128 * self.bar as u128) >> 64) as u64;
+         let mut r = x - q * self.p;
+         if r >= self.p {
+@@ -335,6 +338,7 @@
+     /// x 2^-64 mod p: with x = h 2^64 + l, that is h + REDC(l), REDC(l) = (l + m p) / 2^64 <= p.
+     #[inline(always)]
+     pub fn redc(&self, x: u128) -> u64 {
++        n4_arithmetic_taps::hit("Red128.api", self.p, "redc", 1);
+         let h = self.mod_word((x >> 64) as u64);
+         let l = x as u64;
+         let m = l.wrapping_mul(self.ninv);
+@@ -348,12 +352,14 @@
+     /// A value congruent to x below 2^64 p (one multiplication): hi (2^64 mod p) + lo.
+     #[inline(always)]
+     pub fn fold(&self, x: u128) -> u128 {
++        n4_arithmetic_taps::hit("Red128.api", self.p, "fold", 1);
+         (x >> 64) * self.r1 as u128 + (x as u64) as u128
+     }
+     /// How a lazy accumulator whose final value must stay at most `limit` runs, keeping six
+     /// products spare: (fold, step) — reduce with `fold` (below 2^64 p) or `reduce` (below p)
+     /// after every `step` products, whichever leaves the longer steps.
+     pub fn lazy_plan(&self, limit: u128) -> (bool, usize) {
++        n4_arithmetic_taps::hit("Red128.api", self.p, "lazy_plan", 1);
+         let pm = (self.p - 1) as u128;
+         let pm2 = (pm * pm).max(1);
+         let base = (u64::MAX as u128) * self.r1 as u128 + u64::MAX as u128;
+@@ -374,6 +380,7 @@
+     /// x mod p: redc(redc(x) 2^128 mod p) = x.
+     #[inline(always)]
+     pub fn reduce(&self, x: u128) -> u64 {
++        n4_arithmetic_taps::hit("Red128.api", self.p, "reduce", 1);
+         self.redc(self.redc(x) as u128 * self.r2 as u128)
+     }
+ }
+@@ -457,6 +464,7 @@
+         1
+     }
+     fn add(&self, a: u64, b: u64) -> u64 {
++        n4_arithmetic_taps::hit("Zp", self.p, "add", 1);
+         let s = a + b;
+         if s >= self.p {
+             s - self.p
+@@ -465,6 +473,7 @@
+         }
+     }
+     fn sub(&self, a: u64, b: u64) -> u64 {
++        n4_arithmetic_taps::hit("Zp", self.p, "sub", 1);
+         if a >= b {
+             a - b
+         } else {
+@@ -472,6 +481,7 @@
+         }
+     }
+     fn neg(&self, a: u64) -> u64 {
++        if a != 0 { n4_arithmetic_taps::hit("Zp", self.p, "neg", 1); }
+         if a == 0 {
+             0
+         } else {
+@@ -479,13 +489,16 @@
+         }
+     }
+     fn mul(&self, a: u64, b: u64) -> u64 {
++        n4_arithmetic_taps::hit("Zp", self.p, "mul", 1);
+         self.red.reduce(a as u128 * b as u128)
+     }
+     fn inv(&self, a: u64) -> u64 {
++        n4_arithmetic_taps::hit("Zp", self.p, "inv_api", 1);
+         assert!(a != 0, "inverse of zero");
+         crate::fpm::inv_u64(a, self.p)
+     }
+     fn from_u64(&self, n: u64) -> u64 {
++        n4_arithmetic_taps::hit("Zp", self.p, "rem_u64", 1);
+         n % self.p
+     }
+     fn char(&self) -> u64 {
+@@ -555,6 +568,7 @@
+     if n <= cap {
+         let mut s = 0u128;
+         for (x, y) in a.iter().zip(b.iter().rev()) {
++            n4_arithmetic_taps::hit("Zp.lazy", red.p, "mul", 1); n4_arithmetic_taps::hit("Zp.lazy", red.p, "add", 1);
+             s += *x as u128 * *y as u128;
+         }
+         return s;
+@@ -568,14 +582,18 @@
+         let (mut s0, mut s1) = (0u128, 0u128);
+         let mut k = 0;
+         while k + 1 < m {
++            n4_arithmetic_taps::hit("Zp.lazy", red.p, "mul", 1); n4_arithmetic_taps::hit("Zp.lazy", red.p, "add", 1);
+             s0 += xa[k] as u128 * xb[m - 1 - k] as u128;
++            n4_arithmetic_taps::hit("Zp.lazy", red.p, "mul", 1); n4_arithmetic_taps::hit("Zp.lazy", red.p, "add", 1);
+             s1 += xa[k + 1] as u128 * xb[m - 2 - k] as u128;
+             k += 2;
+         }
+         if k < m {
++            n4_arithmetic_taps::hit("Zp.lazy", red.p, "mul", 1); n4_arithmetic_taps::hit("Zp.lazy", red.p, "add", 1);
+             s0 += xa[k] as u128 * xb[m - 1 - k] as u128;
+         }
+         // three values below p: fits a u64 (p < 2^62), and the next mod_word brings it back
++        n4_arithmetic_taps::hit("Zp.lazy", red.p, "add", 2);
+         tot = red.mod_word(tot + red.reduce(s0) + red.reduce(s1));
+         i += m;
+     }
+@@ -593,6 +611,7 @@
+     if fits_u64(p, n) {
+         let mut acc = 0u64;
+         for i in 0..n {
++            n4_arithmetic_taps::hit("Zp.lazy", red.p, "mul", 1); n4_arithmetic_taps::hit("Zp.lazy", red.p, "add", 1);
+             acc += a[i] * b[bl - 1 - i];
+         }
+         return fin(acc as u128);
+@@ -626,9 +645,13 @@
+             for j in i..e {
+                 let x = a[j] as u128;
+                 let k = n - 1 - j;
++                n4_arithmetic_taps::hit("Zp.lazy", red.p, "mul", 1); n4_arithmetic_taps::hit("Zp.lazy", red.p, "add", 1);
+                 s[0] += x * b0[k] as u128;
++                n4_arithmetic_taps::hit("Zp.lazy", red.p, "mul", 1); n4_arithmetic_taps::hit("Zp.lazy", red.p, "add", 1);
+                 s[1] += x * b1[k] as u128;
++                n4_arithmetic_taps::hit("Zp.lazy", red.p, "mul", 1); n4_arithmetic_taps::hit("Zp.lazy", red.p, "add", 1);
+                 s[2] += x * b2[k] as u128;
++                n4_arithmetic_taps::hit("Zp.lazy", red.p, "mul", 1); n4_arithmetic_taps::hit("Zp.lazy", red.p, "add", 1);
+                 s[3] += x * b3[k] as u128;
+             }
+             if e < n {
+@@ -679,9 +702,13 @@
+                         b.get_unchecked(k0 - j..k0 - j + 4),
+                     )
+                 };
++                n4_arithmetic_taps::hit("Zp.lazy", red.p, "mul", 1); n4_arithmetic_taps::hit("Zp.lazy", red.p, "add", 1);
+                 s[0] += x * w[0] as u128;
++                n4_arithmetic_taps::hit("Zp.lazy", red.p, "mul", 1); n4_arithmetic_taps::hit("Zp.lazy", red.p, "add", 1);
+                 s[1] += x * w[1] as u128;
++                n4_arithmetic_taps::hit("Zp.lazy", red.p, "mul", 1); n4_arithmetic_taps::hit("Zp.lazy", red.p, "add", 1);
+                 s[2] += x * w[2] as u128;
++                n4_arithmetic_taps::hit("Zp.lazy", red.p, "mul", 1); n4_arithmetic_taps::hit("Zp.lazy", red.p, "add", 1);
+                 s[3] += x * w[3] as u128;
+             }
+             i = e;
+@@ -699,6 +726,7 @@
+         let (l, h) = (lo[r], hi[r]);
+         let (cl, ch) = if ilo < ihi { (ilo, ihi) } else { (h, h) };
+         for j in (l..cl.min(h)).chain(ch.max(l)..h) {
++            n4_arithmetic_taps::hit("Zp.lazy", red.p, "mul", 1); n4_arithmetic_taps::hit("Zp.lazy", red.p, "add", 1);
+             s[r] += a[j] as u128 * b[k0 + r - j] as u128;
+         }
+     }
+@@ -746,6 +774,7 @@
+         if small {
+             let mut acc = 0u64;
+             for i in lo..=hi {
++                n4_arithmetic_taps::hit("Zp.lazy", red.p, "mul", 1); n4_arithmetic_taps::hit("Zp.lazy", red.p, "add", 1);
+                 acc += a[i] * b[k - i];
+             }
+             r.push(fin(acc as u128));
+@@ -781,6 +810,7 @@
+             let s = conv_block4(a, a, k, rs.map(|x| x.0), rs.map(|x| x.1), red, plan);
+             for (j, &v) in s.iter().enumerate() {
+                 let sq = if (k + j) % 2 == 0 { a[(k + j) / 2] } else { 0 };
++                n4_arithmetic_taps::hit("Zp.lazy", red.p, "sq", 1); n4_arithmetic_taps::hit("Zp.lazy", red.p, "const_two", 1); n4_arithmetic_taps::hit("Zp.lazy", red.p, "add", 1);
+                 r.push(fin(2 * v + sq as u128 * sq as u128));
+             }
+             k += 4;
+@@ -793,8 +823,10 @@
+         if small {
+             let mut acc = 0u64;
+             for i in lo..hi {
++                n4_arithmetic_taps::hit("Zp.lazy", red.p, "mul", 1); n4_arithmetic_taps::hit("Zp.lazy", red.p, "add", 1);
+                 acc += a[i] * a[k - i];
+             }
++            n4_arithmetic_taps::hit("Zp.lazy", red.p, "sq", 1); n4_arithmetic_taps::hit("Zp.lazy", red.p, "const_two", 1); n4_arithmetic_taps::hit("Zp.lazy", red.p, "add", 1);
+             r.push(fin((2 * acc + sq * sq) as u128));
+             continue;
+         }
+@@ -804,6 +836,7 @@
+         } else {
+             0
+         };
++        n4_arithmetic_taps::hit("Zp.lazy", red.p, "sq", 1); n4_arithmetic_taps::hit("Zp.lazy", red.p, "const_two", 1); n4_arithmetic_taps::hit("Zp.lazy", red.p, "add", 1);
+         r.push(fin(2 * s + sq as u128 * sq as u128));
+     }
+     r
+@@ -865,6 +898,7 @@
+         (f.mul(a.0, ni), f.neg(f.mul(a.1, ni)))
+     }
+     fn from_u64(&self, n: u64) -> Self::E {
++        n4_arithmetic_taps::hit("Zp2.embedding", self.base.p, "rem_u64", 1);
+         (n % self.base.p, 0)
+     }
+     fn char(&self) -> u64 {
+@@ -894,7 +928,7 @@
+         d /= 2;
+         s += 1;
+     }
+-    let mulm = |a: u64, b: u64| ((a as u128 * b as u128) % n as u128) as u64;
++    let mulm = |a: u64, b: u64| { n4_arithmetic_taps::hit("Zp.primality", n, "mul", 1); n4_arithmetic_taps::hit("Zp.primality", n, "rem_u128", 1); ((a as u128 * b as u128) % n as u128) as u64 };
+     'w: for &a in &[2u64, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37] {
+         let mut x = 1u64;
+         let mut b = a % n;
+@@ -933,6 +967,7 @@
+ /// Prime factorisation of n < 2^64 (trial division to 1000, then Pollard-Brent rho), as
+ /// (prime, exponent) pairs in increasing order.
+ pub fn factor_u64(n: u64) -> Vec<(u64, u32)> {
++        n4_arithmetic_taps::hit("field.factor_u64", n, "unsupported_entry", 1);
+     fn mulmod(a: u64, b: u64, m: u64) -> u64 {
+         (a as u128 * b as u128 % m as u128) as u64
+     }
+--- a/crypto/isogeny_algos/src/fpm.rs
++++ b/crypto/isogeny_algos/src/fpm.rs
+@@ -85,6 +85,7 @@
+ /// (every true coefficient is bounded by p, so wrapping two's-complement arithmetic is exact).
+ /// Measured 2x faster than the i128 version and 2.7x faster than binary gcd on this machine.
+ pub fn inv_u64(a: u64, p: u64) -> u64 {
++        n4_arithmetic_taps::hit("fpm.base", p, "inv", 1);
+     let (mut t, mut nt) = (0i64, 1i64);
+     let (mut r, mut nr) = (p, a);
+     while nr != 0 {
+--- a/crypto/isogeny_algos/src/fpr.rs
++++ b/crypto/isogeny_algos/src/fpr.rs
+@@ -29,6 +29,7 @@
+ impl FpR {
+     /// F_{p^r} with a low-weight monic irreducible z^r - red(z) found by Rabin's test over F_p.
+     pub fn new(p: u64, r: usize) -> FpR {
++        n4_arithmetic_taps::hit("FpR.api", p, "new", 1);
+         assert!(is_prime(p), "FpR: p must be prime");
+         assert!((1..=RMAX).contains(&r), "FpR: 1 <= r <= {RMAX}");
+         if r == 1 {
+@@ -59,6 +60,7 @@
+     /// high), so that z is a root of f: a root of an F_p-polynomial without root finding in the
+     /// extension. Irreducibility is checked (Rabin), since the arithmetic is wrong without it.
+     pub fn from_modulus(p: u64, f: &[u64]) -> FpR {
++        n4_arithmetic_taps::hit("FpR.api", p, "from_modulus", 1);
+         let r = f.len() - 1;
+         assert!(
+             (2..=RMAX).contains(&r) && f[r] == 1,
+@@ -66,6 +68,7 @@
+         );
+         let mut red = [0u64; RMAX];
+         for k in 0..r {
++            n4_arithmetic_taps::hit("FpR.constructor", p, "rem_u64", 2);
+             red[k] = (p - f[k] % p) % p; // z^r = -(f_0 + ... + f_(r-1) z^(r-1))
+         }
+         assert!(
+@@ -78,8 +81,10 @@
+     /// The generator z of F_p[z]/(modulus).
+     /// The monic modulus z^r - red(z), coefficients lowest first.
+     pub fn modulus(&self) -> Vec<u64> {
++        n4_arithmetic_taps::hit("FpR.api", self.p, "modulus", 1);
+         let mut m = vec![0u64; self.r + 1];
+         for &(k, c) in &self.nz {
++            n4_arithmetic_taps::hit("FpR.constructor", self.p, "rem_u64", 2);
+             m[k] = (self.p - c % self.p) % self.p;
+         }
+         m[self.r] = 1;
+@@ -93,9 +98,10 @@
+     }
+ 
+     fn build(p: u64, r: usize, red: ER) -> FpR {
++        n4_arithmetic_taps::hit("FpR.api", p, "build", 1);
+         let nz: Vec<(usize, u64)> = (0..r)
+-            .filter(|&k| !red[k].is_multiple_of(p))
+-            .map(|k| (k, red[k] % p))
++            .filter(|&k| { n4_arithmetic_taps::hit("FpR.constructor", p, "rem_u64", 1); !red[k].is_multiple_of(p) })
++            .map(|k| { n4_arithmetic_taps::hit("FpR.constructor", p, "rem_u64", 1); (k, red[k] % p) })
+             .collect();
+         // worst case per accumulator entry: r products (2x for squaring) plus (r-1)*|nz| folds,
+         // each < p^2; lazy accumulation is safe when that bound stays below 2^127
+@@ -126,24 +132,29 @@
+     /// Fold the coefficients of degree >= r with z^r = red and reduce mod p.
+     #[inline]
+     fn fold(&self, acc: &mut [u128; 2 * RMAX]) -> ER {
++        n4_arithmetic_taps::hit("FpR.api", self.p, "fold", 1);
+         let r = self.r;
+         let pp = self.p as u128;
+         for i in (r..2 * r - 1).rev() {
++            n4_arithmetic_taps::hit("FpR.coefficient", self.p, "rem_u128", 1);
+             let ci = acc[i] % pp;
+             if ci == 0 {
+                 continue;
+             }
+             for &(k, rk) in &self.nz {
+                 let idx = i - r + k;
++                n4_arithmetic_taps::hit("FpR.coefficient", self.p, "mul", 1); n4_arithmetic_taps::hit("FpR.coefficient", self.p, "add", 1);
+                 if self.lazy {
+                     acc[idx] += ci * rk as u128;
+                 } else {
++                    n4_arithmetic_taps::hit("FpR.coefficient", self.p, "rem_u128", 3);
+                     acc[idx] = (acc[idx] % pp + ci * rk as u128 % pp) % pp;
+                 }
+             }
+         }
+         let mut out = [0u64; RMAX];
+         for i in 0..r {
++            n4_arithmetic_taps::hit("FpR.coefficient", self.p, "rem_u128", 1);
+             out[i] = (acc[i] % pp) as u64;
+         }
+         out
+@@ -151,6 +162,7 @@
+ 
+     /// Frobenius a -> a^p (F_p-linear: a matrix-vector product).
+     pub fn frobenius(&self, a: ER) -> ER {
++        n4_arithmetic_taps::hit("FpR.api", self.p, "frobenius", 1);
+         let r = self.r;
+         let pp = self.p as u128;
+         let mut acc = [0u128; RMAX];
+@@ -160,15 +172,18 @@
+             }
+             let ai = a[i] as u128;
+             for k in 0..r {
++                n4_arithmetic_taps::hit("FpR.coefficient", self.p, "mul", 1); n4_arithmetic_taps::hit("FpR.coefficient", self.p, "add", 1);
+                 if self.lazy {
+                     acc[k] += ai * self.frob[i][k] as u128;
+                 } else {
++                    n4_arithmetic_taps::hit("FpR.coefficient", self.p, "rem_u128", 2);
+                     acc[k] = (acc[k] + ai * self.frob[i][k] as u128 % pp) % pp;
+                 }
+             }
+         }
+         let mut out = [0u64; RMAX];
+         for k in 0..r {
++            n4_arithmetic_taps::hit("FpR.coefficient", self.p, "rem_u128", 1);
+             out[k] = (acc[k] % pp) as u64;
+         }
+         out
+@@ -181,6 +196,7 @@
+     let mut m = vec![0u64; r + 1];
+     m[r] = 1;
+     for k in 0..r {
++        n4_arithmetic_taps::hit("FpR.constructor", p, "rem_u64", 2);
+         m[k] = (p - red[k] % p) % p; // -red[k]
+     }
+     m
+@@ -216,7 +232,7 @@
+ }
+ 
+ fn is_zero_poly(zp: &Zp, a: &[u64]) -> bool {
+-    a.iter().all(|&c| c % zp.p == 0)
++    a.iter().all(|&c| { n4_arithmetic_taps::hit("FpR.constructor", zp.p, "rem_u64", 1); c % zp.p == 0 })
+ }
+ 
+ fn search_tail(zp: &Zp, r: usize, weight: usize) -> Option<ER> {
+@@ -277,24 +293,30 @@
+         [0; RMAX]
+     }
+     fn one(&self) -> ER {
++        n4_arithmetic_taps::hit("FpR.api", self.p, "one", 1);
+         let mut e = [0; RMAX];
++        n4_arithmetic_taps::hit("FpR.coefficient", self.p, "rem_u64", 1);
+         e[0] = 1 % self.p;
+         e
+     }
+     // Elements are kept reduced (every coefficient < p), so add/sub need one conditional
+     // correction instead of a division.
+     fn add(&self, a: ER, b: ER) -> ER {
++        n4_arithmetic_taps::hit("FpR.api", self.p, "add", 1);
+         let p = self.p as u128;
+         let mut c = [0u64; RMAX];
+         for i in 0..self.r {
++            n4_arithmetic_taps::hit("FpR.coefficient", self.p, "add", 1);
+             let s = a[i] as u128 + b[i] as u128;
+             c[i] = if s >= p { (s - p) as u64 } else { s as u64 };
+         }
+         c
+     }
+     fn sub(&self, a: ER, b: ER) -> ER {
++        n4_arithmetic_taps::hit("FpR.api", self.p, "sub", 1);
+         let mut c = [0u64; RMAX];
+         for i in 0..self.r {
++            n4_arithmetic_taps::hit("FpR.coefficient", self.p, "sub", 1);
+             c[i] = if a[i] >= b[i] {
+                 a[i] - b[i]
+             } else {
+@@ -304,16 +326,20 @@
+         c
+     }
+     fn neg(&self, a: ER) -> ER {
++        n4_arithmetic_taps::hit("FpR.api", self.p, "neg", 1);
+         let mut c = [0u64; RMAX];
+         for i in 0..self.r {
++            if a[i] != 0 { n4_arithmetic_taps::hit("FpR.coefficient", self.p, "neg", 1); }
+             c[i] = if a[i] == 0 { 0 } else { self.p - a[i] };
+         }
+         c
+     }
+     fn mul(&self, a: ER, b: ER) -> ER {
++        n4_arithmetic_taps::hit("FpR.api", self.p, "mul", 1);
+         let r = self.r;
+         if r == 1 {
+             let mut c = [0u64; RMAX];
++            n4_arithmetic_taps::hit("FpR.coefficient", self.p, "mul", 1); n4_arithmetic_taps::hit("FpR.coefficient", self.p, "rem_u128", 1);
+             c[0] = (a[0] as u128 * b[0] as u128 % self.p as u128) as u64;
+             return c;
+         }
+@@ -325,9 +351,11 @@
+             }
+             let ai = a[i] as u128;
+             for j in 0..r {
++                n4_arithmetic_taps::hit("FpR.coefficient", self.p, "mul", 1); n4_arithmetic_taps::hit("FpR.coefficient", self.p, "add", 1);
+                 if self.lazy {
+                     acc[i + j] += ai * b[j] as u128;
+                 } else {
++                    n4_arithmetic_taps::hit("FpR.coefficient", self.p, "rem_u128", 2);
+                     acc[i + j] = (acc[i + j] + ai * b[j] as u128 % pp) % pp;
+                 }
+             }
+@@ -335,6 +363,7 @@
+         self.fold(&mut acc)
+     }
+     fn sq(&self, a: ER) -> ER {
++        n4_arithmetic_taps::hit("FpR.api", self.p, "sq", 1);
+         let r = self.r;
+         if r == 1 || !self.lazy {
+             return self.mul(a, a);
+@@ -346,9 +375,12 @@
+                 continue;
+             }
+             let ai = a[i] as u128;
++            n4_arithmetic_taps::hit("FpR.coefficient", self.p, "sq", 1); n4_arithmetic_taps::hit("FpR.coefficient", self.p, "add", 1);
+             acc[2 * i] += ai * ai;
++            n4_arithmetic_taps::hit("FpR.coefficient", self.p, "const_two", 1);
+             let ai2 = 2 * ai;
+             for j in (i + 1)..r {
++                n4_arithmetic_taps::hit("FpR.coefficient", self.p, "mul", 1); n4_arithmetic_taps::hit("FpR.coefficient", self.p, "add", 1);
+                 acc[i + j] += ai2 * a[j] as u128;
+             }
+         }
+@@ -357,6 +389,7 @@
+     /// Inverse through the norm: with b = a^p a^(p^2) ... a^(p^(r-1)) (Frobenius powers, each a
+     /// matrix-vector product), N(a) = a b lies in F_p, and a^-1 = b N(a)^-1.
+     fn inv(&self, a: ER) -> ER {
++        n4_arithmetic_taps::hit("FpR.api", self.p, "inv", 1);
+         assert!(!self.is_zero(a), "FpR: inverse of zero");
+         let p = self.p;
+         if self.r == 1 {
+@@ -375,12 +408,15 @@
+         let ninv = crate::fpm::inv_u64(n[0], p) as u128;
+         let mut c = [0u64; RMAX];
+         for i in 0..self.r {
++            n4_arithmetic_taps::hit("FpR.coefficient", p, "mul", 1); n4_arithmetic_taps::hit("FpR.coefficient", p, "rem_u128", 1);
+             c[i] = (b[i] as u128 * ninv % p as u128) as u64;
+         }
+         c
+     }
+     fn from_u64(&self, n: u64) -> ER {
++        n4_arithmetic_taps::hit("FpR.api", self.p, "from_u64", 1);
+         let mut e = [0; RMAX];
++        n4_arithmetic_taps::hit("FpR.coefficient", self.p, "rem_u64", 1);
+         e[0] = n % self.p;
+         e
+     }
+@@ -418,8 +454,9 @@
+     }
+     /// If the element lies in the prime field (coeffs 1..r all zero), return it.
+     pub fn project(&self, a: ER) -> Option<u64> {
+-        if a[1..self.r].iter().all(|&c| c % self.p == 0) {
+-            Some(a[0] % self.p)
++        n4_arithmetic_taps::hit("FpR.api", self.p, "project", 1);
++        if a[1..self.r].iter().all(|&c| { n4_arithmetic_taps::hit("FpR.coefficient", self.p, "rem_u64", 1); c % self.p == 0 }) {
++            { n4_arithmetic_taps::hit("FpR.coefficient", self.p, "rem_u64", 1); Some(a[0] % self.p) }
+         } else {
+             None
+         }
+--- a/crypto/isogeny_algos/src/lib.rs
++++ b/crypto/isogeny_algos/src/lib.rs
+@@ -49,3 +49,6 @@
+ pub mod theta;
+ pub mod theta_g;
+ pub mod weier;
++
++#[path = "../../../../original-layout/crypto/isogeny_algos/src/fpr.rs"]
++pub mod arithmetic_audit_original_fpr;
+--- a/crypto/research/chained_jacobian_transfers_20261110/genus3-prime-descent/engine/Cargo.toml
++++ b/crypto/research/chained_jacobian_transfers_20261110/genus3-prime-descent/engine/Cargo.toml
+@@ -3,3 +3,6 @@
+ version = "0.1.0"
+ edition = "2021"
+ publish = false
++
++[dependencies]
++n4-arithmetic-taps = { path = "../../../../../n4-arithmetic-taps" }
+--- a/crypto/src/cryptanalysis/diem_quartic.rs
++++ b/crypto/src/cryptanalysis/diem_quartic.rs
+@@ -102,6 +102,7 @@
+     }
+     #[inline]
+     pub fn add(&self, a: u64, b: u64) -> u64 {
++        n4_arithmetic_taps::hit("cover.Fq", self.p, "add", 1);
+         let s = a + b;
+         if s >= self.p {
+             s - self.p
+@@ -111,6 +112,7 @@
+     }
+     #[inline]
+     pub fn sub(&self, a: u64, b: u64) -> u64 {
++        n4_arithmetic_taps::hit("cover.Fq", self.p, "sub", 1);
+         if a >= b {
+             a - b
+         } else {
+@@ -119,6 +121,7 @@
+     }
+     #[inline]
+     pub fn neg(&self, a: u64) -> u64 {
++        if a != 0 { n4_arithmetic_taps::hit("cover.Fq", self.p, "neg", 1); }
+         if a == 0 {
+             0
+         } else {
+@@ -127,6 +130,7 @@
+     }
+     #[inline]
+     pub fn mul(&self, a: u64, b: u64) -> u64 {
++        n4_arithmetic_taps::hit("cover.Fq", self.p, "mul", 1); n4_arithmetic_taps::hit("cover.Fq", self.p, "rem_u64", 1);
+         self.muls.set(self.muls.get() + 1);
+         a * b % self.p
+     }
+@@ -141,6 +145,7 @@
+         r
+     }
+     pub fn int(&self, c: i64) -> u64 {
++        n4_arithmetic_taps::hit("cover.Fq", self.p, "rem_i64", 1);
+         c.rem_euclid(self.p as i64) as u64
+     }
+     pub fn pow(&self, mut a: u64, mut e: u64) -> u64 {
+@@ -158,6 +163,7 @@
+     }
+     /// Inverse by the extended Euclidean algorithm (counted as one inversion).
+     pub fn inv(&self, a: u64) -> u64 {
++        n4_arithmetic_taps::hit("cover.Fq", self.p, "inv", 1);
+         assert!(a != 0, "inverse of zero");
+         self.invs.set(self.invs.get() + 1);
+         let (mut t, mut newt) = (0i64, 1i64);
+@@ -206,7 +212,7 @@
+         d /= 2;
+         s += 1;
+     }
+-    let mulm = |a: u64, b: u64| ((a as u128 * b as u128) % n as u128) as u64;
++    let mulm = |a: u64, b: u64| { n4_arithmetic_taps::hit("cover.primality", n, "mul", 1); n4_arithmetic_taps::hit("cover.primality", n, "rem_u128", 1); ((a as u128 * b as u128) % n as u128) as u64 };
+     'w: for &a in &[2u64, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37] {
+         let mut x = 1u64;
+         let (mut b, mut e) = (a % n, d);
+@@ -273,6 +279,7 @@
+             inv = inv.wrapping_mul(2u64.wrapping_sub(n.wrapping_mul(inv)));
+         }
+         let ninv = inv.wrapping_neg();
++        n4_arithmetic_taps::hit("cover.Mont.constructor", n, "rem_u128", 2); n4_arithmetic_taps::hit("cover.Mont.constructor", n, "sq", 1);
+         let r = ((1u128 << 64) % n as u128) as u64;
+         let r2 = ((r as u128 * r as u128) % n as u128) as u64;
+         Mont {
+@@ -284,6 +291,7 @@
+     }
+     #[inline]
+     fn redc(&self, t: u128) -> u64 {
++        n4_arithmetic_taps::hit("cover.Mont", self.n, "redc_api", 1);
+         let m = (t as u64).wrapping_mul(self.ninv);
+         let u = ((t + m as u128 * self.n as u128) >> 64) as u64;
+         if u >= self.n {
+@@ -294,10 +302,12 @@
+     }
+     #[inline]
+     pub fn mul(&self, a: u64, b: u64) -> u64 {
++        n4_arithmetic_taps::hit("cover.Mont", self.n, "mul", 1);
+         self.redc(a as u128 * b as u128)
+     }
+     #[inline]
+     pub fn add(&self, a: u64, b: u64) -> u64 {
++        n4_arithmetic_taps::hit("cover.Mont", self.n, "add", 1);
+         let s = a + b;
+         if s >= self.n {
+             s - self.n
+@@ -307,6 +317,7 @@
+     }
+     #[inline]
+     pub fn sub(&self, a: u64, b: u64) -> u64 {
++        n4_arithmetic_taps::hit("cover.Mont", self.n, "sub", 1);
+         if a >= b {
+             a - b
+         } else {
+@@ -315,6 +326,7 @@
+     }
+     #[inline]
+     pub fn neg(&self, a: u64) -> u64 {
++        if a != 0 { n4_arithmetic_taps::hit("cover.Mont", self.n, "neg", 1); }
+         if a == 0 {
+             0
+         } else {
+@@ -324,6 +336,7 @@
+     /// Plain residue -> Montgomery form.
+     #[inline]
+     pub fn to(&self, a: u64) -> u64 {
++        n4_arithmetic_taps::hit("cover.Mont", self.n, "rem_u64", 1);
+         self.mul(a % self.n, self.r2)
+     }
+     /// Montgomery form -> plain residue.
+@@ -344,6 +357,7 @@
+     }
+     /// Inverse for prime `n` (Fermat), Montgomery form in and out.
+     pub fn inv(&self, a: u64) -> u64 {
++        n4_arithmetic_taps::hit("cover.Mont", self.n, "inv_api", 1);
+         self.pow(a, self.n - 2)
+     }
+     /// Signed small integer to Montgomery form.
+@@ -556,6 +570,7 @@
+         loop {
+             let mut irreducible = true;
+             for x in 0..q {
++                n4_arithmetic_taps::hit("cover.K.constructor", q, "mul", 2); n4_arithmetic_taps::hit("cover.K.constructor", q, "sq", 1); n4_arithmetic_taps::hit("cover.K.constructor", q, "add", 2); n4_arithmetic_taps::hit("cover.K.constructor", q, "rem_u64", 2);
+                 let v = (x * x % q * x + aa * x + bb) % q;
+                 if v == 0 {
+                     irreducible = false;
+@@ -2651,6 +2666,7 @@
+ 
+ impl KFast {
+     pub fn new(kf: &Kf) -> KFast {
++        n4_arithmetic_taps::hit("cover.KFast", kf.q(), "unsupported_entry", 1);
+         KFast {
+             q: kf.q(),
+             a: kf.a,
+--- a/crypto/src/cryptanalysis/plane_quartic_pic.rs
++++ b/crypto/src/cryptanalysis/plane_quartic_pic.rs
+@@ -159,21 +159,25 @@
+ impl Fq {
+     #[inline]
+     fn mul(&self, a: u32, b: u32) -> u32 {
++        n4_arithmetic_taps::hit("Picard.Fq", self.q, "mul", 1); n4_arithmetic_taps::hit("Picard.Fq", self.q, "rem_u64", 1);
+         self.c_mul.set(self.c_mul.get() + 1);
+         ((a as u64 * b as u64) % self.q) as u32
+     }
+     #[inline]
+     fn mulu(&self, a: u32, b: u32) -> u32 {
++        n4_arithmetic_taps::hit("Picard.Fq", self.q, "mul", 1); n4_arithmetic_taps::hit("Picard.Fq", self.q, "rem_u64", 1);
+         ((a as u64 * b as u64) % self.q) as u32
+     }
+     #[inline]
+     fn add(&self, a: u32, b: u32) -> u32 {
++        n4_arithmetic_taps::hit("Picard.Fq", self.q, "add", 1);
+         self.c_add.set(self.c_add.get() + 1);
+         let s = a as u64 + b as u64;
+         (if s >= self.q { s - self.q } else { s }) as u32
+     }
+     #[inline]
+     fn sub(&self, a: u32, b: u32) -> u32 {
++        n4_arithmetic_taps::hit("Picard.Fq", self.q, "sub", 1);
+         self.c_add.set(self.c_add.get() + 1);
+         if a >= b {
+             a - b
+@@ -183,6 +187,7 @@
+     }
+     #[inline]
+     fn neg(&self, a: u32) -> u32 {
++        if a != 0 { n4_arithmetic_taps::hit("Picard.Fq", self.q, "neg", 1); }
+         if a == 0 {
+             0
+         } else {
+@@ -190,6 +195,7 @@
+         }
+     }
+     fn invu(&self, a: u32) -> u32 {
++        n4_arithmetic_taps::hit("Picard.Fq", self.q, "inv", 1);
+         // extended Euclid on (q, a)
+         let (mut r0, mut r1) = (self.q as i64, a as i64);
+         let (mut t0, mut t1) = (0i64, 1i64);
+@@ -356,6 +362,7 @@
+ 
+ impl Fq {
+     fn sub_nc(&self, a: u32, b: u32) -> u32 {
++        n4_arithmetic_taps::hit("Picard.Fq", self.q, "sub", 1);
+         if a >= b {
+             a - b
+         } else {
+@@ -371,6 +378,7 @@
+     }
+     let mut d = 3u64;
+     while d * d <= q {
++        n4_arithmetic_taps::hit("Picard.primality.aux", q, "trial_divisibility", 1);
+         if q.is_multiple_of(d) {
+             return false;
+         }
+@@ -954,6 +962,7 @@
+                     self.fq
+                         .mulu(self.fq.mulu(pw(a - 1, p0[0]), pw(b, p0[1])), pw(c, p0[2])),
+                 );
++                n4_arithmetic_taps::hit("Picard.setup", self.q as u64, "add", 1); n4_arithmetic_taps::hit("Picard.setup", self.q as u64, "rem_u64", 1);
+                 grad[0] = ((grad[0] as u64 + t as u64) % self.q as u64) as u32;
+             }
+             if b > 0 {
+@@ -962,6 +971,7 @@
+                     self.fq
+                         .mulu(self.fq.mulu(pw(a, p0[0]), pw(b - 1, p0[1])), pw(c, p0[2])),
+                 );
++                n4_arithmetic_taps::hit("Picard.setup", self.q as u64, "add", 1); n4_arithmetic_taps::hit("Picard.setup", self.q as u64, "rem_u64", 1);
+                 grad[1] = ((grad[1] as u64 + t as u64) % self.q as u64) as u32;
+             }
+             if c > 0 {
+@@ -970,6 +980,7 @@
+                     self.fq
+                         .mulu(self.fq.mulu(pw(a, p0[0]), pw(b, p0[1])), pw(c - 1, p0[2])),
+                 );
++                n4_arithmetic_taps::hit("Picard.setup", self.q as u64, "add", 1); n4_arithmetic_taps::hit("Picard.setup", self.q as u64, "rem_u64", 1);
+                 grad[2] = ((grad[2] as u64 + t as u64) % self.q as u64) as u32;
+             }
+         }
+@@ -1007,8 +1018,10 @@
+                     t = self.fq.mulu(t, pw(ee, p0[w]));
+                 }
+                 t = self.fq.mulu(t, tau[v]);
++                n4_arithmetic_taps::hit("Picard.setup", self.q as u64, "add", 1);
+                 d += t as u64;
+             }
++            n4_arithmetic_taps::hit("Picard.setup", self.q as u64, "rem_u64", 1);
+             r2[i] = (d % self.q as u64) as u32;
+         }
+         let ns = self.nullspace(vec![r1, r2], 6);
+@@ -1417,6 +1430,7 @@
+     let mut r = vec![0u64; a.len() + b.len() - 1];
+     for (i, &x) in a.iter().enumerate() {
+         for (j, &y) in b.iter().enumerate() {
++            n4_arithmetic_taps::hit("Picard.polynomial", q, "mul", 1); n4_arithmetic_taps::hit("Picard.polynomial", q, "add", 1); n4_arithmetic_taps::hit("Picard.polynomial", q, "rem_u64", 2);
+             r[i + j] = (r[i + j] + x * y % q) % q;
+         }
+     }
+@@ -1425,6 +1439,7 @@
+ }
+ 
+ fn pinv(q: u64, a: u64) -> u64 {
++        n4_arithmetic_taps::hit("Picard.polynomial", q, "inv", 1);
+     let (mut r0, mut r1, mut t0, mut t1) = (q as i128, a as i128, 0i128, 1i128);
+     while r1 != 0 {
+         let d = r0 / r1;
+@@ -1439,9 +1454,11 @@
+     pmod_trim(&mut r);
+     let ig = pinv(q, *g.last().unwrap());
+     while r.len() >= g.len() {
+-        let c = r.last().copied().unwrap() * ig % q;
++        n4_arithmetic_taps::hit("Picard.polynomial", q, "mul", 1); n4_arithmetic_taps::hit("Picard.polynomial", q, "rem_u64", 1);
++            let c = r.last().copied().unwrap() * ig % q;
+         let sh = r.len() - g.len();
+         for (i, &gi) in g.iter().enumerate() {
++            n4_arithmetic_taps::hit("Picard.polynomial", q, "mul", 1); n4_arithmetic_taps::hit("Picard.polynomial", q, "sub", 1); n4_arithmetic_taps::hit("Picard.polynomial", q, "rem_u64", 2);
+             r[sh + i] = (r[sh + i] + q - c * gi % q) % q;
+         }
+         pmod_trim(&mut r);
+@@ -1461,6 +1478,7 @@
+     if let Some(&l) = a.last() {
+         let il = pinv(q, l);
+         for c in a.iter_mut() {
++            n4_arithmetic_taps::hit("Picard.polynomial", q, "mul", 1); n4_arithmetic_taps::hit("Picard.polynomial", q, "rem_u64", 1);
+             *c = *c * il % q;
+         }
+     }
+@@ -1495,7 +1513,8 @@
+     if diff.len() < 2 {
+         diff.resize(2, 0);
+     }
+-    diff[1] = (diff[1] + q - 1) % q;
++    n4_arithmetic_taps::hit("Picard.polynomial", q, "sub", 1); n4_arithmetic_taps::hit("Picard.polynomial", q, "rem_u64", 1);
++            diff[1] = (diff[1] + q - 1) % q;
+     pmod_trim(&mut diff);
+     let g1 = if diff.is_empty() {
+         g.clone()
+@@ -1509,6 +1528,7 @@
+             continue;
+         }
+         if h.len() == 2 {
++            n4_arithmetic_taps::hit("Picard.polynomial", q, "neg", 1); n4_arithmetic_taps::hit("Picard.polynomial", q, "mul", 1); n4_arithmetic_taps::hit("Picard.polynomial", q, "rem_u64", 2);
+             roots.push(((q - h[0]) % q * pinv(q, h[1]) % q) as u32);
+             continue;
+         }
+@@ -1519,6 +1539,7 @@
+             if t1.is_empty() {
+                 t1.push(0);
+             }
++            n4_arithmetic_taps::hit("Picard.polynomial", q, "sub", 1); n4_arithmetic_taps::hit("Picard.polynomial", q, "rem_u64", 1);
+             t1[0] = (t1[0] + q - 1) % q;
+             pmod_trim(&mut t1);
+             let d = if t1.is_empty() {
+@@ -1532,11 +1553,13 @@
+                 let mut r = h.clone();
+                 let id = pinv(q, *d.last().unwrap());
+                 while r.len() >= d.len() {
+-                    let cf = r.last().copied().unwrap() * id % q;
++                    n4_arithmetic_taps::hit("Picard.polynomial", q, "mul", 1); n4_arithmetic_taps::hit("Picard.polynomial", q, "rem_u64", 1);
++            let cf = r.last().copied().unwrap() * id % q;
+                     let sh = r.len() - d.len();
+                     quo[sh] = cf;
+                     for (i, &di) in d.iter().enumerate() {
+-                        r[sh + i] = (r[sh + i] + q - cf * di % q) % q;
++                        n4_arithmetic_taps::hit("Picard.polynomial", q, "mul", 1); n4_arithmetic_taps::hit("Picard.polynomial", q, "sub", 1); n4_arithmetic_taps::hit("Picard.polynomial", q, "rem_u64", 2);
++            r[sh + i] = (r[sh + i] + q - cf * di % q) % q;
+                     }
+                     pmod_trim(&mut r);
+                 }
+@@ -1565,8 +1588,10 @@
+             }
+             let mut yp = 1u64;
+             for _ in 0..b {
+-                yp = yp * y % qq;
+-            }
++                n4_arithmetic_taps::hit("Picard.point_search", qq, "mul", 1); n4_arithmetic_taps::hit("Picard.point_search", qq, "rem_u64", 1);
++            yp = yp * y % qq;
++            }
++            n4_arithmetic_taps::hit("Picard.point_search", qq, "mul", 1); n4_arithmetic_taps::hit("Picard.point_search", qq, "add", 1); n4_arithmetic_taps::hit("Picard.point_search", qq, "rem_u64", 1);
+             coef[c as usize] = ((coef[c as usize] as u64 + f[i] as u64 * yp) % qq) as u32;
+         }
+         let roots = poly_roots(q, &coef, rng);
+@@ -1713,6 +1738,7 @@
+ 
+     impl Ext {
+         pub fn new(q: u32, k: usize) -> Ext {
++        n4_arithmetic_taps::hit("Picard.Ext", q as u64, "unsupported_entry", 1);
+             let qq = q as u64;
+             let m = match k {
+                 1 => [0, 0, 0],
+@@ -3526,3 +3552,19 @@
+         }
+     }
+ }
++
++// Additive derivative-only private-primitive access. No algorithm uses this.
++pub fn arithmetic_audit_private_controls() {
++    let f = Fq {q:223, c_mul:Cell::new(0),c_inv:Cell::new(0),c_add:Cell::new(0)};
++    n4_arithmetic_taps::within("primitive-pic-mul", || assert_eq!(f.mul(7,9),63));
++    assert_eq!(f.c_mul.get(),1);
++    n4_arithmetic_taps::within("primitive-pic-mulu", || assert_eq!(f.mulu(7,9),63));
++    assert_eq!(f.c_mul.get(),1,"legacy mulu remains uncounted");
++    n4_arithmetic_taps::within("primitive-pic-add", || assert_eq!(f.add(220,9),6));
++    n4_arithmetic_taps::within("primitive-pic-sub", || assert_eq!(f.sub(7,9),221));
++    n4_arithmetic_taps::within("primitive-pic-subnc", || assert_eq!(f.sub_nc(7,9),221));
++    n4_arithmetic_taps::within("primitive-pic-neg", || assert_eq!(f.neg(7),216));
++    n4_arithmetic_taps::within("primitive-pic-invu", || assert_eq!(f.invu(2),112));
++    n4_arithmetic_taps::within("primitive-pic-inv", || assert_eq!(f.inv(2),112));
++    assert_eq!(f.c_inv.get(),1,"legacy invu remains uncounted");
++}

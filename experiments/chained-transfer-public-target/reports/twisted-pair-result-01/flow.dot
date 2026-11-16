@@ -1,0 +1,10 @@
+digraph actualpair {graph[rankdir=TB,bgcolor="white",ranksep=.3,nodesep=.4];node[shape=box,style=rounded,fontname="DejaVu Sans",fontsize=10];edge[fontname="DejaVu Sans",fontsize=9];
+e2[label="E2 twist12 / K\nnew prime2771711; full order11086844",color="#235b72"];
+e3[label="E3 twist12 / K\nnew prime2771711; full order11086844",color="#235b72"];
+j2[label="Fixed F223 quartic C2\nmatched HLP(1,1), D220, sqrt79\nold normalized coefficients retained",color="#46754a"];
+j3[label="Fixed F223 quartic C3\nmatched HLP(2,0), D217, sqrt70\nold normalized coefficients retained",color="#46754a"];
+{rank=same;e2;e3}{rank=same;j2;j3}
+e2->e3[label="actual degree13 / both[13] identities"];
+e2->j2[label="HLP quotient of Weil restriction\nglobal geometry bridge",style=dashed];
+e3->j3[label="HLP quotient of Weil restriction\nglobal geometry bridge",style=dashed];
+j2->j3[label="induced degree13^3: conditional factorization\ncomplete rational evaluator NOT IMPLEMENTED",style=dashed,color="#a57535"];}

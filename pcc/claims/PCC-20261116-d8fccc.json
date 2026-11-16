@@ -1,0 +1,44 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T02:30:19Z",
+ "id": "PCC-20261116-d8fccc",
+ "kind": "statement",
+ "producer": {
+  "commit": "b7b91903888ffa9dea85e643e5a86e828767e7c8",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/historical-static-original-SHA-style-Clippy-01/actual-Clippy.exit.xz",
+    "sha256": "3246e457abfbcdad9b15fd3e441fdcb4b89f5c51fb997d428ab0d77f17fa7409"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/historical-static-original-SHA-style-Clippy-01/entire-source-at-Clippy.tar.xz",
+    "sha256": "21999fa8f220dd44b53637a4d63e1b7b0e2c6b9981ec1471204ab51d0fd5b085"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/historical-static-original-SHA-style-Clippy-01/whole-Cargo-messages.jsonl.xz",
+    "sha256": "9a9244a86b48c2edff60ace832be845558597b7ea922baed707628da54710694"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/historical-static-original-SHA-style-Clippy-01/whole-compiler.stderr.xz",
+    "sha256": "86bc2a19eaf233d6af87d9cdc890805853d9a7c76016a3490ba05c43e8c601b5"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Historical adapter static compile03 succeeds0 without running any native test. First strict static Clippy actual101 flags four unchanged original SHA chunks_exact iterator sites under the new Rust1.99 style lint, initially while compiling the build script. Whole source and full original lint messages/exit preserved. Keep original SHA bytes and all its tests unchanged; permit only this named style lint on the two imported original SHA modules, keep strict warnings on new adapter code, and retain these original-source diagnostics explicitly. No algorithm, mathematical gate or test is disabled. Native mathematical execution still awaits the original CI checkpoint path."
+}
