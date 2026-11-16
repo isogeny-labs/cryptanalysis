@@ -1,0 +1,97 @@
+{
+  "source_commit": "bbdf695dcd03b8c4730f10aaa17747f1072cdac1",
+  "main_integrated": "66890bbe8ee2df7267f07a8abe97254c82c319fb",
+  "parents": [
+    "e0ad790af437601866a3072718e1458fdc559b62",
+    "66890bbe8ee2df7267f07a8abe97254c82c319fb"
+  ],
+  "source_files": [
+    {
+      "path": ".github/workflows/hashed-ecdl-tensor.yml",
+      "sha256": "0b41417c09cb35471a4f30b2b21de7977833c14f3beb5edde860d084ab82ec4c"
+    },
+    {
+      "path": ".github/workflows/bindings.yml",
+      "sha256": "8f7df62122a362943dbbee5a354682bf502638ae5292aeb094760e8ba3569ea0"
+    },
+    {
+      "path": ".github/workflows/prime-field-auxiliary-ic.yml",
+      "sha256": "a26ad32a301dd13ea9639d62a654dcbd57e1ecb25635601781526c3f6f191df1"
+    },
+    {
+      "path": "bindings/rust/Cargo.toml",
+      "sha256": "788bf1bed82db61a175e576854dda853739e24549e6a8d7e0ef3910d4de38294"
+    },
+    {
+      "path": "bindings/rust/Cargo.lock",
+      "sha256": "bd229350cde2b93f77c36fb8e6119f363673d6375328b84bbf56e4f14f233b87"
+    },
+    {
+      "path": "bindings/rust/hashed-ecdl-tensor/Cargo.toml",
+      "sha256": "a13ae217e879da3f0740f9b5339710fa32b418821288aa7eee902f9dd5b65680"
+    },
+    {
+      "path": "bindings/rust/hashed-ecdl-tensor/Cargo.lock",
+      "sha256": "3d5dcbd57991ceb63bc79d0b70f79eb18a6828aafb764558bbddbf4661f4d4c4"
+    },
+    {
+      "path": "bindings/rust/hashed-ecdl-tensor/clippy.toml",
+      "sha256": "9a8939de86125e41d647f6d410ae1ba8a3d3385c3ef6ad2b48f0f898f08e29b1"
+    },
+    {
+      "path": "bindings/rust/hashed-ecdl-tensor/src/encoding.rs",
+      "sha256": "bcb72ecb9819b2ffbfe56282f7a62145d49f115844a7d8a3d4704350fd0b3bcf"
+    },
+    {
+      "path": "bindings/rust/hashed-ecdl-tensor/src/reduction.rs",
+      "sha256": "5cbce62af75d8d359dfa2b479a0726774b3c958f20878bca514b77cde8fba838"
+    },
+    {
+      "path": "crates/hashed-ecdl-tensor/Cargo.toml",
+      "sha256": "175fb01b6ffee7296b7b285f1a3cace015015ce20bf814e1ea230a1b5d31016e"
+    },
+    {
+      "path": "crates/hashed-ecdl-tensor/Cargo.lock",
+      "sha256": "0a4f752acbc2d8bb3932dae0e8bedd3f187840b058eb9e140782aa593e7b6eb3"
+    },
+    {
+      "path": "crates/prime-field-auxiliary-ic/Cargo.toml",
+      "sha256": "5d221db9ff2f92cb45e127f3171aba53d40ca21e5b37c223368ee0b157d4b520"
+    },
+    {
+      "path": "src/curve.c",
+      "sha256": "6d120872c2020870a7fed1f8c28af644a7e31667e7b202986dddbca34772125b"
+    },
+    {
+      "path": "tools/lean/current-corpus-gate.py",
+      "sha256": "03733f9f2a357baa51c15e188f096b88a0b344460fa6d0de18aca113a43b5edc"
+    }
+  ],
+  "frozen_snapshot": {
+    "path": "experiments/prime-field-auxiliary-ic/snapshot",
+    "tree_oid": "2298425e1d3568a1687830e29a390f7c601dd6e8",
+    "files": 2473,
+    "comparison_ref": "e0ad790af437601866a3072718e1458fdc559b62"
+  },
+  "prior_evidence_unchanged": [
+    {
+      "path": "experiments/prime-field-auxiliary-ic/rust-validation/ci-consumer-followup-20261115",
+      "tree_oid": "55bc3d831c43a20b80506e3e132bd1c492ab1fc9"
+    },
+    {
+      "path": "experiments/prime-field-auxiliary-ic/rust-validation/ci-followup-20261115",
+      "tree_oid": "a80dd6d500655e728c69c1968e3950530660438a"
+    },
+    {
+      "path": "experiments/prime-field-auxiliary-ic/rust-validation/field-fibers-20261115",
+      "tree_oid": "e70ac2831e136d53b465787537685254548e7e40"
+    }
+  ],
+  "toolchains": {
+    "stable": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+    "1.85.0": "rustc 1.85.0 (4d91de4e4 2025-02-17)",
+    "1.78.0": "rustc 1.78.0 (9b00956e5 2024-04-29)"
+  },
+  "core_rust_1_78_not_changed": true,
+  "fresh_benchmark_launched": false
+}

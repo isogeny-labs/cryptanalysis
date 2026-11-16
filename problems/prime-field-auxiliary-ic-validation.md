@@ -58,6 +58,16 @@ protocol exist. No such run is launched by this import PR.
 
 ## Resolution and history
 
+2026-11-16, reviewed native-floor integration: upstream PR #1586 has merged;
+source `bbdf695d` adopts its Rust 1.85 native/consumer floor. Both locked
+all-target minimum-version checks and the separate stable correctness scopes
+pass locally. This supersedes the earlier statement that the native floor is
+still unrepaired, while preserving that failed check and its original scope.
+The IC core's Rust 1.78 support is unchanged. Hosted CI, inherited GLV source
+binding, CodeQL classification and timing qualification remain open. See
+[the scoped follow-up](../experiments/prime-field-auxiliary-ic/rust-validation/ci-msrv-followup-20261115/),
+claim `PCC-20261116-f7dd33`. [pcc:unverified]
+
 2026-11-15, hosted CI follow-up: the dedicated Rust 1.78/stable and archived
 Python jobs passed on `54e4331a`. A separate structured-consumer job reached a
 stale wrapper lockfile after its earlier native checks. The lock was

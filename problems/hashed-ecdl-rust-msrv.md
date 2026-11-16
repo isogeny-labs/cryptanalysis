@@ -1,6 +1,6 @@
 # Native hashed-EC dependency graph exceeds the declared Rust floor
 
-- **Status:** open
+- **Status:** open, narrowed after reviewed floor update
 - **Kind:** inherited dependency compatibility gap
 - **Affected work:** native `bindings/rust/hashed-ecdl-tensor` compatibility qualification
 - **Next action owner:** native dependency-maintenance lane
@@ -8,11 +8,21 @@
 
 ## Problem
 
-The native crate still declares Rust 1.78, but current main selects getrandom
+At the original diagnosis, the native crate declared Rust 1.78, but main selected getrandom
 0.4.3, whose package requires Rust 1.85 and edition 2024. This blocks an actual
-Rust 1.78 check of the dependency graph. The prepared point-table feature itself
+Rust 1.78 check of that dependency graph. The prepared point-table feature itself
 uses the compatible common API/syntax; the counterpart Crypto graph passes
 Rust 1.78 all-target checking. These are producer observations. [pcc:unverified]
+
+Upstream PR #1586 has since merged an owner-reviewed Rust 1.85 floor. Source
+`bbdf695d` integrates that repair: the native and structured-consumer graphs
+both pass locked all-target Rust 1.85 compilation. Their stable correctness
+controls also pass. This narrows the compatibility obstruction; exact-head
+hosted qualification and the original requirement for correctness controls at
+the declared minimum remain open. The standalone prime-field IC core retains
+its separate Rust 1.78 floor. See
+[the new scoped receipt](../experiments/prime-field-auxiliary-ic/rust-validation/ci-msrv-followup-20261115/),
+claim `PCC-20261116-f7dd33`. [pcc:unverified]
 
 ## Evidence and uncertainty
 
@@ -43,9 +53,13 @@ users, then validate the proposed graph in an isolated checkout. Do not silently
 lower validation or describe a newer-compiler build as a 1.78 pass. No cloud
 experiment or new spending is required for that development check.
 
+The dependency-floor decision is now reviewed and merged. Next, finish the
+exact-head hosted checks and qualify the original native correctness controls
+on the accepted minimum. Preserve the earlier Rust 1.78 rejection as history.
+
 ## Resolution and history
 
-Unresolved. Initial current-main API failure, modern API correction and actual
+Not fully resolved. Initial main API failure, modern API correction and actual
 1.78 dependency rejection remain retained; historical receipts are unchanged.
 
 
@@ -60,6 +74,6 @@ The original graph qualification requirement remains open. See
 
 A proposed upstream minimum-version repair is tracked in
 [PR #1586](https://github.com/isogeny-labs/cryptanalysis/pull/1586); it was open
-at this check. This follow-up preserves the existing minimum-version tests
+at that earlier check and merged on 2026-11-15. This follow-up preserves the existing minimum-version tests
 and does not treat a modern-compiler pass as Rust 1.78 compatibility.
 [pcc:unverified]

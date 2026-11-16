@@ -1,0 +1,77 @@
+{
+  "source_commit": "bbdf695dcd03b8c4730f10aaa17747f1072cdac1",
+  "scope": "bindings/rust hashed-ecdl-tensor and cryptanalysis",
+  "checks": [
+    {
+      "name": "native-format",
+      "command": [
+        "cargo",
+        "+stable",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "cwd": "bindings/rust",
+      "exit_code": 0,
+      "log": "experiments/prime-field-auxiliary-ic/rust-validation/ci-msrv-followup-20261115/native-format.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "native-clippy",
+      "command": [
+        "cargo",
+        "+stable",
+        "clippy",
+        "--locked",
+        "-p",
+        "hashed-ecdl-tensor",
+        "-p",
+        "cryptanalysis",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "cwd": "bindings/rust",
+      "exit_code": 0,
+      "log": "experiments/prime-field-auxiliary-ic/rust-validation/ci-msrv-followup-20261115/native-clippy.log",
+      "sha256": "0361735a7b942a78d1735b001a5b9f09901c2c786417d5ed0bf75c50c613e310"
+    },
+    {
+      "name": "native-tests",
+      "command": [
+        "cargo",
+        "+stable",
+        "test",
+        "--locked",
+        "--release",
+        "-p",
+        "hashed-ecdl-tensor",
+        "-p",
+        "cryptanalysis"
+      ],
+      "cwd": "bindings/rust",
+      "exit_code": 0,
+      "log": "experiments/prime-field-auxiliary-ic/rust-validation/ci-msrv-followup-20261115/native-tests.log",
+      "sha256": "a1b7e03a404a88abb5b9319f15baa88654d4b0098ee218ddb4c32606b23e85f4"
+    },
+    {
+      "name": "native-msrv",
+      "command": [
+        "cargo",
+        "+1.85.0",
+        "check",
+        "--locked",
+        "-p",
+        "hashed-ecdl-tensor",
+        "-p",
+        "cryptanalysis",
+        "--all-targets"
+      ],
+      "cwd": "bindings/rust",
+      "exit_code": 0,
+      "log": "experiments/prime-field-auxiliary-ic/rust-validation/ci-msrv-followup-20261115/native-msrv.log",
+      "sha256": "c9b4a11240c6c2ebd6ed78c780b5a91170a5d4de9ed78c9d0702b9090965a134"
+    }
+  ]
+}
