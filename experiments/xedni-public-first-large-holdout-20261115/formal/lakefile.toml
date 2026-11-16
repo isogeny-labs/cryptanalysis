@@ -1,6 +1,6 @@
 name = "xedniPublicFirstLargeHoldout"
 version = "0.1.0"
-defaultTargets = ["FamilyCount", "Panel", "AdmissiblePairs", "FamilyBound", "BoxBound", "PublicRecovery", "PublicGroupRecovery", "PrimeOrderRecovery", "ExceptionalRelation", "DistinctOffsetRecovery", "ConcreteCurveRecovery", "OrderArithmetic", "PointDoubling", "OrderArithmetic2", "PointDoubling2", "OrderArithmetic3", "PointDoubling3", "OrderArithmetic4", "PointDoubling4", "OrderArithmeticRemaining", "PointDoublingRemaining"]
+defaultTargets = ["FamilyCount", "Panel", "AdmissiblePairs", "FamilyBound", "BoxBound", "PublicRecovery", "PublicGroupRecovery", "PrimeOrderRecovery", "ExceptionalRelation", "DistinctOffsetRecovery", "ConcreteCurveRecovery", "OrderArithmetic", "PointDoubling", "OrderArithmetic2", "PointDoubling2", "OrderArithmetic3", "PointDoubling3", "OrderArithmetic4", "PointDoubling4", "OrderArithmeticRemaining", "PointDoublingRemaining", "OrderAddition", "PointAddition", "OrderCertificate"]
 
 [[require]]
 name = "mathlib"
@@ -72,3 +72,12 @@ name = "OrderArithmeticRemaining"
 
 [[lean_lib]]
 name = "PointDoublingRemaining"
+
+[[lean_lib]]
+name = "OrderAddition"
+
+[[lean_lib]]
+name = "PointAddition"
+
+[[lean_lib]]
+name = "OrderCertificate"

@@ -308,6 +308,32 @@ def main():
         theorem=f'panel313_{label}_double'
         assert f'theorem {theorem}' in remaining_points
         assert f"'XedniPublicFirstLargeHoldout.{theorem}' depends on axioms: [propext, Classical.choice, Quot.sound]" in remaining_points_build
+    addition_arithmetic=(formal/'OrderAddition.lean').read_text()
+    addition_arithmetic_build=(formal/'order-addition-build-output.txt').read_text()
+    assert 'Build completed successfully (9062 jobs)' in addition_arithmetic_build
+    assert not any(token in addition_arithmetic for token in ('sorry','admit','sorryAx','native_decide'))
+    for n in (320,328,330):
+        for suffix in ('slope','x','y'):
+            theorem=f'mod313_add{n}_{suffix}'
+            assert f'theorem {theorem}' in addition_arithmetic
+            assert f"'XedniPublicFirstLargeHoldout.{theorem}' depends on axioms: [propext, Classical.choice, Quot.sound]" in addition_arithmetic_build
+    addition_points=(formal/'PointAddition.lean').read_text()
+    addition_points_build=(formal/'point-addition-build-output.txt').read_text()
+    assert 'Build completed successfully (9063 jobs)' in addition_points_build
+    assert not any(token in addition_points for token in ('sorry','admit','sorryAx','native_decide'))
+    for n in (320,328,330,331):
+        theorem=f'panel313_add{n}'
+        assert f'theorem {theorem}' in addition_points
+        assert f"'XedniPublicFirstLargeHoldout.{theorem}' depends on axioms: [propext, Classical.choice, Quot.sound]" in addition_points_build
+    certificate=(formal/'OrderCertificate.lean').read_text()
+    certificate_build=(formal/'order-certificate-build-output.txt').read_text()
+    assert 'Build completed successfully (9064 jobs)' in certificate_build
+    assert not any(token in certificate for token in ('sorry','admit','sorryAx','native_decide'))
+    certificate_build_normalized=re.sub(r'\s+',' ',certificate_build)
+    for theorem in ('panel313_order_divides_331','panel313_generator_order',
+                    'panel313_public_relation_iff_recovery'):
+        assert f'theorem {theorem}' in certificate
+        assert f"'XedniPublicFirstLargeHoldout.{theorem}' depends on axioms: [propext, Classical.choice, Quot.sound]" in certificate_build_normalized
     recovery_protocol=json.loads((HERE/'public-recovery-protocol.json').read_text())
     recovery_result=json.loads((HERE/'public-recovery-result.json').read_text())
     recovery_audit_protocol=json.loads((HERE/'public-recovery-audit-protocol.json').read_text())
