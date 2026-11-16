@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """Bounded whole-guest instruction attribution with immutable prepared bytes."""
-import hashlib,json,os,platform,resource,signal,subprocess,tarfile,time
+import argparse,hashlib,json,os,platform,resource,shutil,signal,subprocess,tarfile,time
 from pathlib import Path
 HERE=Path(__file__).resolve().parent;ROOT=HERE.parents[1]
-OUT=HERE/'profile-001';OUT.mkdir(exist_ok=False);START=time.monotonic();arms=[]
+parser=argparse.ArgumentParser();parser.add_argument('--run-id',required=True);args=parser.parse_args()
+assert args.run_id.replace('-','').isalnum()
+OUT=HERE/args.run_id;OUT.mkdir(exist_ok=False);START=time.monotonic();arms=[]
 def read(p):
  try:return Path(p).read_text()
  except OSError:return None
@@ -83,8 +85,9 @@ try:
  (OUT/'timing-job-metadata.json').write_bytes(timingmeta)
  host.update(binary_sha256=prepared['binary_sha256'],binary_source_commit=prepared['source_commit'],source_sha256={str(f.relative_to(ROOT)):sha(f) for f in [HERE/'PROTOCOL.md',HERE/'run_profile.py',HERE/'profile-input.json',HERE/'workload.json',HERE/'instances.json']})
  os.sched_setaffinity(0,{host['allowed_cpus'][0]});host['selected_cpu']=host['allowed_cpus'][0]
- for label,argv in [('valgrind-version',['valgrind','--version']),('annotate-version',['callgrind_annotate','--version']),('objdump-version',['objdump','--version']),('lscpu',['lscpu']),('uname',['uname','-a'])]:
+ for label,argv in [('valgrind-version',['valgrind','--version']),('valgrind-package-version',['dpkg-query','--show','--showformat=${Package} ${Version}\n','valgrind']),('objdump-version',['objdump','--version']),('lscpu',['lscpu']),('uname',['uname','-a'])]:
   code,_,_=command(argv,20,label);assert code==0,label
+ host['tool_sha256']={name:sha(shutil.which(name)) for name in ['valgrind','callgrind_annotate','objdump']}
  pre=['valgrind','--tool=none','--log-file='+str(OUT/'preflight.valgrind.log'),str(binary),str(HERE/'instances.json'),'4','verify-table']
  code,out,_=timed(pre,'preflight',90);assert code==0,'instrumented capability preflight failed'
  check=json.loads(out);assert check['status']=='pass' and check['complete_map_comparisons']==25 and check['vector_backend']=='avx2-pclmul128'
