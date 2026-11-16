@@ -5,7 +5,7 @@
 - **Affected work:** [retrospective import](../experiments/prime-field-auxiliary-ic/README.md),
   claims `PCC-20261115-288dc5` and `PCC-20261115-bb0887`
 - **Next action owner:** explicitly unassigned; no new experiment is scheduled
-- **Last updated:** 2026-11-15
+- **Last updated:** 2026-11-16
 
 ## Problem
 
@@ -57,6 +57,18 @@ retains the blocker. Recheck when an independent replay allocation and frozen
 protocol exist. No such run is launched by this import PR.
 
 ## Resolution and history
+
+2026-11-16, continued engineering: source `59524758` implements optional
+exclusive core search phases and projective scalar multiplication; source
+`d95d582c` then checks public rows with joint projective equations without
+affine normalization. The [source-scoped reports](../experiments/prime-field-auxiliary-ic/random-vs-special/joint-row-20261116/README.md),
+claims `PCC-20261116-992167` and `PCC-20261116-c1df99` (unverified), retain
+correctness/lint/docs and actual p=127 three-arm alignment controls. This
+narrows the core-accounting implementation gap. Complete cold accounting,
+upstream discovery/construction, admitted fresh inputs/execution and signed
+independent replay remain open. No fresh timing run or measured gain is
+established; the failed preflight below is not retried without changed access.
+[pcc:unverified]
 
 2026-11-16, explicit benchmark request: admission was attempted on source
 `55170020`. The checkpoint gate exits 1 without uploading because no token

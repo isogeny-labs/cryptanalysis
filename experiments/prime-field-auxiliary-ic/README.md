@@ -6,6 +6,12 @@ bindings and `ca-ic auxiliary` integration. It adds signed graph elimination
 and a batched direct IC control without changing the frozen snapshot. No new
 qualified timing claim is made. [pcc:unverified]
 
+The [random-versus-special comparison follow-up](random-vs-special/README.md)
+adds equal-column random-base controls, opt-in core phase accounting and
+projective scalar/row arithmetic shared by all arms. Producer correctness
+checks are retained by source; they establish no measured auxiliary speedup.
+[pcc:unverified]
+
 The subsequent [field-fiber implementation report](rust-validation/field-fibers-20261115/REPORT.md)
 and [PDF](rust-validation/field-fibers-20261115/REPORT.pdf), claim
 `PCC-20261115-82ccdd`, add multiplicative and norm-one trace encodings,

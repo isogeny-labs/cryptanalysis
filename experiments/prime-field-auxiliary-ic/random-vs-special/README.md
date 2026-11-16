@@ -10,6 +10,16 @@ The old same-base control remains useful for isolating the maps' contribution;
 it is not relabeled as a random-base comparison. The full comparison and cost
 requirements are in [COMPARISON.md](COMPARISON.md).
 
+Current engineering follow-up: [exclusive core phase accounting and projective
+scalar arithmetic](phase-projective-20261116/README.md), source `59524758`,
+and [joint projective row validation](joint-row-20261116/README.md), source
+`d95d582c`, retain separate unsigned receipts and claims `PCC-20261116-992167`
+and `PCC-20261116-c1df99`. The later source has 32 core checks on each
+toolchain and eight CLI checks passing. Phase accounting is implemented for
+the core interval, while upstream/cold costs and independent replay remain
+outside it. No fresh benchmark or runtime gain is established. Historical
+observations below retain their original source scopes. [pcc:unverified]
+
 Algorithm/CLI source `5e3a4202` adds `FactorBase::random_control`, separate base
 and relation-search seeds, preparation rejection counters, and CLI
 `--random-base-columns K`. It checks the generator order and derives the

@@ -1,0 +1,21 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T05:27:44Z",
+ "id": "PCC-20261116-992167",
+ "kind": "statement",
+ "producer": {
+  "commit": "59524758ca320597cf8ea2b760a054904c2532ab",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "recompute",
+   "path": "experiments/prime-field-auxiliary-ic/random-vs-special/phase-projective-20261116/validator.json",
+   "sha256": "698d3dca1c75b1a764260f32e9827a7bbdf49b4f85c830228cafe0d63cb292e4"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Engineering correctness on the editing host; phase totals include local replay and clock overhead, exclude upstream preparation and independent replay; original unprofiled APIs retained.",
+ "statement": "On source 59524758ca320597cf8ea2b760a054904c2532ab, producer development checks for opt-in exclusive core phase accounting and Jacobian scalar multiplication report 30 core checks on each of stable and Rust 1.78, eight targeted CLI checks, two C arithmetic binding controls and 13 report-alignment test methods passing. The actual existing p=127 three-arm correctness-fixture reports align with exact phase sums. Formatting, strict core/CLI lint, warning-fatal rustdoc on both core toolchains and the frozen 2473-file snapshot check pass. These unsigned observations establish neither execution verification nor timing improvement, natural relation yield, a fresh 31/61-bit panel or an auxiliary speedup."
+}

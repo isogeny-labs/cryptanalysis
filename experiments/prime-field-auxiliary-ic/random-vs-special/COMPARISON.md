@@ -141,6 +141,10 @@ graph/replay time in yield-only mode. It still derives no time ratio.
 These are producer instrumentation assertions, not signed timing evidence.
 [pcc:unverified]
 
+Profiled timings describe the instrumented implementation. Include matched
+uninstrumented controls to expose instrumentation effects; never subtract an
+estimated overhead or combine unprofiled totals with phases from another run.
+
 Cold totals charge auxiliary-curve discovery, point counting/order evidence,
 smooth-kernel search, isogeny-map construction, fiber enumeration/lifting,
 random-base sampling/clearing/deduplication, circuit preparation, target walks,
