@@ -36,8 +36,9 @@ and process startup and is not the repository's primary online interval.
 
 - [ ] Freeze exact canonical candidates/bases and at least five fresh public
   points after candidate selection, with a declared resource envelope.
-- [ ] Meet the checkpoint, GPU execution, admitted placement/noise, and
-  single-target online-accounting requirements before measurement.
+- [ ] Retain resumable work in Git/PR under the user's S3-free instruction,
+  and meet GPU execution, admitted placement/noise, and single-target
+  online-accounting requirements before measurement.
 - [ ] Compare the same public points with the strong repository rho reference,
   retain all failures/censoring, and obtain independent replay and signed PCC
   verdicts for the exact source and raw output digests.
@@ -57,6 +58,17 @@ retains the blocker. Recheck when an independent replay allocation and frozen
 protocol exist. No such run is launched by this import PR.
 
 ## Resolution and history
+
+2026-11-16, the user explicitly instructed **Proceed without S3**. S3 upload
+is no longer an admission prerequisite for this task; retain resumable source
+and small evidence in Git/PR instead. The earlier failed upload attempt and
+all historical receipts remain intact. The
+[source-only CI correction](../experiments/prime-field-auxiliary-ic/rust-validation/no-s3-analysis-20261116/PLAN.md)
+removes unrelated historical restoration from the N83 unit job, while keeping
+the actual test cases, checksum pins and experiment job's data requirements.
+An admitted measurement host/panel, complete cost accounting and independent
+signed replay remain separate open requirements. This authorization supplies
+none of those resources and establishes no timing gain.
 
 2026-11-16, version 2 timing boundaries: source `25049631` charges target-point
 construction/validation inside the IC caller interval and rho's final Rust
