@@ -1,0 +1,98 @@
+{
+  "actual_original_issuer": "False",
+  "certificate_issued": false,
+  "counterexample": {
+    "assignment": [
+      2116013522071954155,
+      972731577408402006,
+      1156839043532503203
+    ],
+    "index": 0,
+    "lhs": 1926184034930214359,
+    "rhs": 1926184034930214360
+  },
+  "statement": {
+    "degree_bound": 1,
+    "lhs": {
+      "args": [
+        {
+          "args": [
+            {
+              "args": [
+                {
+                  "args": "a",
+                  "op": "var"
+                },
+                {
+                  "args": "b",
+                  "op": "var"
+                }
+              ],
+              "op": "add"
+            },
+            {
+              "args": {
+                "args": [
+                  {
+                    "args": "b",
+                    "op": "var"
+                  },
+                  {
+                    "args": "c",
+                    "op": "var"
+                  }
+                ],
+                "op": "add"
+              },
+              "op": "neg"
+            }
+          ],
+          "op": "add"
+        },
+        {
+          "args": [
+            {
+              "args": "c",
+              "op": "var"
+            },
+            {
+              "args": "a",
+              "op": "var"
+            }
+          ],
+          "op": "add"
+        }
+      ],
+      "op": "add"
+    },
+    "name": "negative_odd_triangle_plus_one",
+    "rhs": {
+      "args": [
+        {
+          "args": [
+            {
+              "args": 2,
+              "op": "const"
+            },
+            {
+              "args": "a",
+              "op": "var"
+            }
+          ],
+          "op": "mul"
+        },
+        {
+          "args": 1,
+          "op": "const"
+        }
+      ],
+      "op": "add"
+    },
+    "source": "Known cancellation; LPProjection.odd_triangle, ../lean/LPProjection.lean. Development only, no q223 population or novelty claim.",
+    "variables": [
+      "a",
+      "b",
+      "c"
+    ]
+  }
+}

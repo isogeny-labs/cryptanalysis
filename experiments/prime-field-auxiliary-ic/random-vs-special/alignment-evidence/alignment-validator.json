@@ -1,0 +1,266 @@
+{
+  "schema": "producer-comparison-alignment-validator/v1",
+  "status": "pass",
+  "overall_ci_status": "pending",
+  "independent": false,
+  "source_commit": "3ddc32380f9b59e40efd4e7bc44c43ebdd501f59",
+  "scope": "Unsigned CLI/report-alignment development checks on the existing p=127 fixture and synthetic refusal cases. No fresh 31/61-bit benchmark, execution attestation or speedup.",
+  "raw_data": [
+    {
+      "path": "actual-report-alignment.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "admission-presence.json",
+      "bytes": 313,
+      "sha256": "807284b849c5237a9331b39866620d5776fe747602576b49671c2a0cbf93694d"
+    },
+    {
+      "path": "checker-checks.json",
+      "bytes": 1622,
+      "sha256": "b9b415aa93720230d02a83b8b669499b9754c69f224bbb50de6649cb9a1a0c17"
+    },
+    {
+      "path": "checker-tests.log",
+      "bytes": 2013,
+      "sha256": "bcc46b32f668d434e3d5e4d2bb4e589e2712341d961e513758d7f0f81f02ebb0"
+    },
+    {
+      "path": "cli-checks.json",
+      "bytes": 2326,
+      "sha256": "a2fb39cb8f5b981743ec2c4157b4944001bd17471bab689ed84398f0970cc2d3"
+    },
+    {
+      "path": "cli-clippy.log",
+      "bytes": 348,
+      "sha256": "ec1ac19f2c2828c4e022d07394efc692265f271f5048f19bc92d9d5fcf99b33c"
+    },
+    {
+      "path": "cli-format.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "cli-tests.log",
+      "bytes": 1362,
+      "sha256": "5b3c1945ab797299e124b0f9cced49c497c5c886903ccee043bd4ec6e4f9221b"
+    },
+    {
+      "path": "initial-fixture-failure.log",
+      "bytes": 5318,
+      "sha256": "d402ea0b2c8ffd13f21c39010e58577cb69ced79c6bca56c1f777f146273dee7"
+    },
+    {
+      "path": "initial-test-source.py.txt",
+      "bytes": 9064,
+      "sha256": "af67dd381cbde7770b9bccc6977cf0f0f7745303662347e5bc4ffd5c867c09c1"
+    },
+    {
+      "path": "public-test-fixture/auxiliary.json",
+      "bytes": 1738,
+      "sha256": "121b2818f8832b7852fd27a3a1a24587e9ecc287586b18df56e8de313c68e322"
+    },
+    {
+      "path": "public-test-fixture/comparison.json",
+      "bytes": 3419,
+      "sha256": "a006a860a1dd6f67d6642b49a52717d40bdf100329e94fa6e47f7cf294e8a172"
+    },
+    {
+      "path": "public-test-fixture/random.json",
+      "bytes": 2122,
+      "sha256": "8637e952294b7e9bb45ae66765268efdd2041fa3fb1567c5d683f259ebfbecaa"
+    },
+    {
+      "path": "public-test-fixture/same_base.json",
+      "bytes": 1732,
+      "sha256": "df913c4708bcd243da0488367a4fc5a2519bf6bdbf6b10436275d49c97227030"
+    },
+    {
+      "path": "rustdoc-msrv.log",
+      "bytes": 299,
+      "sha256": "50b158a401469835631cb5e26bd14fd75c00bddf5152b946470efb9f689a92ab"
+    },
+    {
+      "path": "rustdoc-stable.log",
+      "bytes": 299,
+      "sha256": "2a0e1272cb713b64a9ebb5f9711cbd9f944d3437a9749e940befbf9bf0ad0044"
+    },
+    {
+      "path": "source-provenance.json",
+      "bytes": 1081,
+      "sha256": "d6a544f652b111172580d0486efa9e7d70b55ba109f7bf5dea6aabce6a4e164f"
+    },
+    {
+      "path": "workflow-wire.log",
+      "bytes": 61,
+      "sha256": "1ef0d99d3ba29c1c9dc4889fabbb41d82ce8d9bbbaaf8ebf5856c9bf077bce57"
+    }
+  ],
+  "headline": [
+    {
+      "name": "targeted-cli-tests",
+      "claimed": 7,
+      "recomputed": 7,
+      "rel_tol": 0
+    },
+    {
+      "name": "checker-test-methods",
+      "claimed": 12,
+      "recomputed": 12,
+      "rel_tol": 0
+    },
+    {
+      "name": "aligned-public-fixture-arms",
+      "claimed": 3,
+      "recomputed": 3,
+      "rel_tol": 0
+    }
+  ],
+  "checks": [
+    {
+      "source_commit": "3ddc32380f9b59e40efd4e7bc44c43ebdd501f59",
+      "scope": "Rust CLI and report hand-off on the existing public p=127 correctness fixture, not a research benchmark",
+      "checks": [
+        {
+          "name": "cli-tests",
+          "command": [
+            "cargo",
+            "+stable",
+            "test",
+            "--locked",
+            "--manifest-path",
+            "suite/Cargo.toml",
+            "--lib",
+            "cli::tools::ic::auxiliary::tests"
+          ],
+          "exit_code": 0,
+          "log": "cli-tests.log",
+          "sha256": "5b3c1945ab797299e124b0f9cced49c497c5c886903ccee043bd4ec6e4f9221b"
+        },
+        {
+          "name": "actual-report-alignment",
+          "command": [
+            "python3",
+            "experiments/prime-field-auxiliary-ic/random-vs-special/compare_reports.py",
+            "--auxiliary",
+            "/workspace/cryptanalysis-pr/experiments/prime-field-auxiliary-ic/random-vs-special/alignment-evidence/public-test-fixture/auxiliary.json",
+            "--same-base",
+            "/workspace/cryptanalysis-pr/experiments/prime-field-auxiliary-ic/random-vs-special/alignment-evidence/public-test-fixture/same_base.json",
+            "--random",
+            "/workspace/cryptanalysis-pr/experiments/prime-field-auxiliary-ic/random-vs-special/alignment-evidence/public-test-fixture/random.json",
+            "--output",
+            "/workspace/cryptanalysis-pr/experiments/prime-field-auxiliary-ic/random-vs-special/alignment-evidence/public-test-fixture/comparison.json"
+          ],
+          "exit_code": 0,
+          "log": "actual-report-alignment.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "cli-format",
+          "command": [
+            "rustfmt",
+            "--edition",
+            "2021",
+            "--check",
+            "suite/src/cli/tools/ic/auxiliary.rs"
+          ],
+          "exit_code": 0,
+          "log": "cli-format.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "cli-clippy",
+          "command": [
+            "cargo",
+            "+stable",
+            "clippy",
+            "--locked",
+            "--manifest-path",
+            "suite/Cargo.toml",
+            "--lib",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "exit_code": 0,
+          "log": "cli-clippy.log",
+          "sha256": "ec1ac19f2c2828c4e022d07394efc692265f271f5048f19bc92d9d5fcf99b33c"
+        }
+      ]
+    },
+    {
+      "source_commit": "3ddc32380f9b59e40efd4e7bc44c43ebdd501f59",
+      "scope": "Synthetic refusal controls, documentation and workflow wiring; not performance",
+      "checks": [
+        {
+          "name": "checker-tests",
+          "command": [
+            "python3",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "experiments/prime-field-auxiliary-ic/random-vs-special",
+            "-p",
+            "test_compare_reports.py",
+            "-v"
+          ],
+          "exit_code": 0,
+          "log": "checker-tests.log",
+          "sha256": "bcc46b32f668d434e3d5e4d2bb4e589e2712341d961e513758d7f0f81f02ebb0"
+        },
+        {
+          "name": "rustdoc-stable",
+          "command": [
+            "cargo",
+            "+stable",
+            "doc",
+            "--manifest-path",
+            "crates/prime-field-auxiliary-ic/Cargo.toml",
+            "--no-deps"
+          ],
+          "exit_code": 0,
+          "log": "rustdoc-stable.log",
+          "sha256": "2a0e1272cb713b64a9ebb5f9711cbd9f944d3437a9749e940befbf9bf0ad0044"
+        },
+        {
+          "name": "rustdoc-msrv",
+          "command": [
+            "cargo",
+            "+1.78.0",
+            "doc",
+            "--manifest-path",
+            "crates/prime-field-auxiliary-ic/Cargo.toml",
+            "--no-deps"
+          ],
+          "exit_code": 0,
+          "log": "rustdoc-msrv.log",
+          "sha256": "50b158a401469835631cb5e26bd14fd75c00bddf5152b946470efb9f689a92ab"
+        },
+        {
+          "name": "workflow-wire",
+          "command": [
+            "python3",
+            "tools/artifacts/wire_workflows.py",
+            "--check"
+          ],
+          "exit_code": 0,
+          "log": "workflow-wire.log",
+          "sha256": "1ef0d99d3ba29c1c9dc4889fabbb41d82ce8d9bbbaaf8ebf5856c9bf077bce57"
+        }
+      ]
+    }
+  ],
+  "initial_failure": {
+    "scope": "Uncommitted development fixture; exact initial fixture source and failing output are preserved, not a fully pinned pre-commit source tree.",
+    "cause": "The shorter-query negative fixture retained a larger circuit-query count, so the checker correctly refused it before reaching the expected incomplete-prefix diagnostic.",
+    "correction": "Make the partial fixture counts consistent; no checker guard was removed.",
+    "preserved": [
+      "initial-test-source.py.txt",
+      "initial-fixture-failure.log"
+    ]
+  },
+  "qualified_speedup": null,
+  "end_to_end_comparison": "Not established; phase accounting, frozen admitted panel, checkpoint/GPU access and independent signed replay remain required."
+}

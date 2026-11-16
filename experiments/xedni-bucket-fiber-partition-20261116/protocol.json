@@ -1,0 +1,24 @@
+{
+  "schema": "xedni-bucket-fiber-partition-protocol-v1",
+  "group": "additive Z/7Z",
+  "scalar_law": "all seven scalars",
+  "encoding_law": "all 7! bijections from group elements to labels 0..6",
+  "program": [
+    "seed G=1 and Q=w",
+    "if label(G)<label(Q), append G+Q; else append G-Q",
+    "append G-G",
+    "append G-G again",
+    "append G+G"
+  ],
+  "prefix_lengths": [2, 3, 4, 5],
+  "bucket_key": "visible prefix label tuple",
+  "fiber_count": "number of encodings at one scalar producing the bucket",
+  "live_prediction": "eligible scalar times its exact bucket fiber count",
+  "hit_prediction": "eligible next-candidate scalar times its exact bucket fiber count",
+  "falsifiers": [
+    "any live bucket/scalar count differs from eligibility times exact fiber",
+    "any first-hit bucket/scalar count differs from eligible next-candidate membership times exact fiber",
+    "sum of bucket counts differs from direct execution-space live or first-hit count"
+  ],
+  "claim_boundary": "exhaustive finite control for the frozen adaptive program and uniform bijective encoding law"
+}

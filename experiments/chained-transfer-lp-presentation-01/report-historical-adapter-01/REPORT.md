@@ -1,0 +1,15 @@
+# Historical LP public adapter: static source checkpoint
+
+The adapter implements the public-input and raw-presentation stages of the published protocol. Final compilation and static checks pass at their declared scope; mathematical unit execution and the historical computation remain pending. This is an implementation checkpoint with unsigned data claim e48db4. [pcc:unverified]
+
+The primary extractor checks the entire original 3529635-byte trace and its frozen SHA before parsing. It passes only identity, ell and the complete available object to the typed public view. Unknown oracle fields are refused, all 60 calls remain in source order, and the 62-record encoding requires a complete footer. The independent binding entry compares with the actual original source; a self-asserted header is insufficient. The separate whole private-feedback control is implemented but unexecuted. [pcc:unverified]
+
+Every full, ground and edge occurrence is retained in the LP-first presentation, with the full column map, basepoint-zero omission and unsummed term map. The captured baseline remains a prefix of the uncapped arm. That arm calls the byte-exact original rooted routine at usize::MAX with its original counters; no counter is replaced. The complete original files and all selected function/type/counter bytes are checked at build time. [pcc:unverified]
+
+Final compile-only, new-code strict Clippy, source guards, actionlint, shell syntax and the exact 13-package dependency check exit 0. Three named style exceptions apply only to frozen original imports. All earlier private-type, hex-dependency and imported-style failures remain complete. No native test was executed locally: the original checkpoint gate has no upload credentials. The new prospective unit workflow performs the original checkpoint and full remote readback before native execution. [pcc:unverified]
+
+The 14 synthetic raw-graph cases cover even/odd cycles, shared/disconnected odd cycles, grounds, half grounds, repeated terms/rows, isolated LP variables and empty graphs. Complete input, mapping, original rooted output, matrix and certificate export is implemented. These tests are pending; their expected dimensions are predictions, not observations. [pcc:unverified]
+
+Next: inspect actual gated CI; complete separately coded raw-row reconstruction, streaming historical producer/replayer, whole controls, unchanged 360 replay and post-character audit. Full 60 execution still requires published launch configuration, known live budget/capacity, source-built image custody and EKS admission. No ECDLP recovery, geometric/global theorem, measured cost advantage or signed execution standing follows from this checkpoint. Canonical scientific graphs remain unchanged. [pcc:unverified]
+
+Sources: PROTOCOL_01.md; historical-01/DEVELOPMENT_01.md and source-01.sha256; evidence/historical-final-static-source-and-CI-protocol-01; complete original ic.rs SHAec20c87e… and common.rs SHA832fd288…; original matrix-01 producer and independent Euclidean replay. [pcc:unverified]

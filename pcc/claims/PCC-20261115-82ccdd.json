@@ -1,0 +1,21 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-15T20:48:32Z",
+ "id": "PCC-20261115-82ccdd",
+ "kind": "statement",
+ "producer": {
+  "commit": "facaac33bfe62bb59d9997141e53d9cffca72d2c",
+  "model": "GPT-6",
+  "session": "codex-field-fibers-20261115"
+ },
+ "proofs": [
+  {
+   "kind": "recompute",
+   "path": "experiments/prime-field-auxiliary-ic/rust-validation/field-fibers-20261115/producer-checks.json",
+   "sha256": "cb9ebf64e624a211c92ca1fbc80f52b31d1aec980a59f721fb47d001f75ace05"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "PR #1536 field-fiber implementation and producer correctness only; baseline ad3dfc9383ed4efbe4c408965e5c4639409e6868; snapshot unchanged.",
+ "statement": "Rust field-fiber and terminal changes at facaac33 implement multiplicative and norm-one trace encodings with direct controls, pass 20 core producer checks on stable and Rust 1.78 and four CLI checks, and retain derived source-operation counts. This is unsigned implementation evidence; no measured speedup, checked Lean theorem, independent replay or fresh large-field recovery is established."
+}

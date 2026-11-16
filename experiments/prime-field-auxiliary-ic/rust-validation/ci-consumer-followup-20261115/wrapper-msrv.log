@@ -1,0 +1,11 @@
+    Updating crates.io index
+ Downloading crates ...
+  Downloaded getrandom v0.4.3
+error: failed to parse manifest at `/home/agent/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.4.3/Cargo.toml`
+
+Caused by:
+  feature `edition2024` is required
+
+  The package requires the Cargo feature called `edition2024`, but that feature is not stabilized in this version of Cargo (1.78.0 (54d8815d0 2024-03-26)).
+  Consider trying a newer version of Cargo (this may require the nightly release).
+  See https://doc.rust-lang.org/nightly/cargo/reference/unstable.html#edition-2024 for more information about the status of this feature.

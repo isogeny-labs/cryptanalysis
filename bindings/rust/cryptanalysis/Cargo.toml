@@ -9,5 +9,6 @@ description = "Safe Rust bindings to libcryptanalysis: BSGS, Pollard rho, kangar
 publish = false
 
 [dependencies]
+prime-field-auxiliary-ic = { path = "../../../crates/prime-field-auxiliary-ic" }
 hashed-ecdl-tensor = { path = "../hashed-ecdl-tensor" }
 cryptanalysis-sys = { path = "../cryptanalysis-sys" }

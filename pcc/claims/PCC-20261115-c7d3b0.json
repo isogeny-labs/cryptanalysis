@@ -1,0 +1,37 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-15T21:37:21Z",
+ "id": "PCC-20261115-c7d3b0",
+ "kind": "statement",
+ "producer": {
+  "commit": "f136ae5ae32e10b380bc3bb4f2339468ff43e65a",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/reports/unassisted-relation-completion-review-01/visual-inspection.json",
+    "sha256": "238a97047d9d052197bb0cfb9ea0d86e57e47b9a5566e443d8e98df1b5517a9b"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/reports/unassisted-relation-completion-review-01/render-inputs.json",
+    "sha256": "298f39d15a85df3cd229a4ed49153380c3489024f9c1d00b6f50412077b93771"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/reports/unassisted-relation-completion-review-01/report.pdf",
+    "sha256": "f5d24687f450213586873288c93e082d0d7f3567d2ed6e06dafb519b651b1027"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Precision correction to b76887 verbal approximatePDFbytecount: the final separatelyrendered/actuallyinspected two-page review PDF is exactly51801bytes, SHA asvisual-inspection.json/render-inputs.json. Firstdraft52186B PDF remains complete inct122review01; finalreview02 and allpinnedmetadata alreadyrecord correct51801. The oldclaim statement approximate52186-ishB shouldnotbeused asfinalsize. No reportsource/data/proposal/scope or mathematicalresult changed; unsignedmetadata correction only."
+}

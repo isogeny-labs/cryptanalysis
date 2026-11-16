@@ -1,0 +1,37 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T17:26:41Z",
+ "id": "PCC-20261116-833512",
+ "kind": "statement",
+ "producer": {
+  "commit": "febfa6e61af343210808b6fa2eb21aceaccad603",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/genuine-store-ready-PR-checkpoint-20/ct470-Consumer-ready-PR-body.md.xz",
+    "sha256": "18bfb3ad4b16f4ea41ee4514157d2da0be55f376d035b42d713d07cd72bc9f25"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/genuine-store-ready-PR-checkpoint-20/ct470-Consumer-ready-PR-prior-api.json.xz",
+    "sha256": "575b5cdf4c55af81339993e109bf004ef72c9b4ff196d3ad6ea0fd187e2a2bc9"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/genuine-store-ready-PR-checkpoint-20/ct470-Consumer-ready-PR-updated-api.json.xz",
+    "sha256": "0ce8b54886452b139b990cb1b339b9881271dd71177b5bb8b6687fb40da4a166"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Existing ready Consumer1587 title/body updated for normal publishedfebfa6/immutable tag8cfe6d, genuine ten-object metadata433620/source guards0d2647, fourteen original addresses, historical bb whole746-member CI and all frozen scientific/runtime/cold/admission gaps. Actual returned ready metadata still reports oldheadbb451dc4 despite independent exact normal Git branch/tag readbacksfebfa6; discrepancy retained, not treated as new-source CI confirmation. Own current source metadata/hydration/CI collection remains scheduled18:15UTC. No original verifier/keyring/policy/frozen PCC source changed, no signed/native/paid promotion."
+}

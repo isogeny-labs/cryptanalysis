@@ -1,0 +1,51 @@
+test_conditional_checkout_keeps_pull_condition (tools.artifacts.test_artifacts.JobScopedWiring.test_conditional_checkout_keeps_pull_condition) ... FAIL
+test_global_data_dependency_applies_to_every_job (tools.artifacts.test_artifacts.JobScopedWiring.test_global_data_dependency_applies_to_every_job) ... ok
+test_new_source_job_data_dependency_requires_a_pull (tools.artifacts.test_artifacts.JobScopedWiring.test_new_source_job_data_dependency_requires_a_pull) ... ok
+test_only_data_consuming_job_gets_a_pull (tools.artifacts.test_artifacts.JobScopedWiring.test_only_data_consuming_job_gets_a_pull) ... ok
+test_stale_bootstrap_does_not_create_its_own_dependency (tools.artifacts.test_artifacts.JobScopedWiring.test_stale_bootstrap_does_not_create_its_own_dependency) ... ok
+test_unmarked_workflows_keep_legacy_wiring (tools.artifacts.test_artifacts.JobScopedWiring.test_unmarked_workflows_keep_legacy_wiring) ... ok
+test_unsupported_scope_structure_is_refused (tools.artifacts.test_artifacts.JobScopedWiring.test_unsupported_scope_structure_is_refused) ... ok
+test_rules (tools.artifacts.test_artifacts.Policy.test_rules) ... ok
+test_check_fetches_missing_blob_in_partial_clone (tools.artifacts.test_artifacts.RoundTrip.test_check_fetches_missing_blob_in_partial_clone) ... ok
+test_check_gate (tools.artifacts.test_artifacts.RoundTrip.test_check_gate) ... ok
+test_check_gate_in_blobless_sparse_clone (tools.artifacts.test_artifacts.RoundTrip.test_check_gate_in_blobless_sparse_clone) ... ok
+test_corrupt_remote_object_is_refused (tools.artifacts.test_artifacts.RoundTrip.test_corrupt_remote_object_is_refused) ... ok
+test_manifest_cannot_replace_linked_worktree_control_files (tools.artifacts.test_artifacts.RoundTrip.test_manifest_cannot_replace_linked_worktree_control_files) ... ok
+test_manifest_directory_symlink_cannot_redirect_hydration (tools.artifacts.test_artifacts.RoundTrip.test_manifest_directory_symlink_cannot_redirect_hydration) ... ok
+test_manifest_metadata_is_validated_before_any_pull (tools.artifacts.test_artifacts.RoundTrip.test_manifest_metadata_is_validated_before_any_pull) ... ok
+test_manifest_paths_cannot_escape_their_directory (tools.artifacts.test_artifacts.RoundTrip.test_manifest_paths_cannot_escape_their_directory) ... ok
+test_pull_creates_missing_parent_in_blobless_sparse_clone (tools.artifacts.test_artifacts.RoundTrip.test_pull_creates_missing_parent_in_blobless_sparse_clone) ... ok
+test_pull_into_absent_sparse_directory_preserves_bytes_and_clean_tree (tools.artifacts.test_artifacts.RoundTrip.test_pull_into_absent_sparse_directory_preserves_bytes_and_clean_tree) ... ok
+test_pull_preserves_case_and_unicode_aliases_of_tracked_paths (tools.artifacts.test_artifacts.RoundTrip.test_pull_preserves_case_and_unicode_aliases_of_tracked_paths) ... ok
+test_pull_preserves_tracked_successor_and_unstaged_edits (tools.artifacts.test_artifacts.RoundTrip.test_pull_preserves_tracked_successor_and_unstaged_edits) ... ok
+test_pull_recreates_parent_outside_sparse_checkout (tools.artifacts.test_artifacts.RoundTrip.test_pull_recreates_parent_outside_sparse_checkout) ... ok
+test_push_commit_clone_pull_verify (tools.artifacts.test_artifacts.RoundTrip.test_push_commit_clone_pull_verify) ... ok
+test_push_from_sparse_checkout_reads_blobs (tools.artifacts.test_artifacts.RoundTrip.test_push_from_sparse_checkout_reads_blobs) ... ok
+test_push_merges_existing_manifest_and_gitignore (tools.artifacts.test_artifacts.RoundTrip.test_push_merges_existing_manifest_and_gitignore) ... ok
+test_push_refuses_unmerged_index_without_changing_stages (tools.artifacts.test_artifacts.RoundTrip.test_push_refuses_unmerged_index_without_changing_stages) ... ok
+test_required_filter_failure_cannot_upload_raw_staged_bytes (tools.artifacts.test_artifacts.RoundTrip.test_required_filter_failure_cannot_upload_raw_staged_bytes) ... ok
+test_same_size_corrupt_cache_is_refetched_or_refused (tools.artifacts.test_artifacts.RoundTrip.test_same_size_corrupt_cache_is_refetched_or_refused) ... ok
+test_sparse_offload_uses_filtered_plaintext_size_and_preserves_ignore (tools.artifacts.test_artifacts.RoundTrip.test_sparse_offload_uses_filtered_plaintext_size_and_preserves_ignore) ... ok
+test_staged_metadata_filter_failure_is_not_absence (tools.artifacts.test_artifacts.RoundTrip.test_staged_metadata_filter_failure_is_not_absence) ... ok
+test_layout_matches_crypto_store (tools.artifacts.test_artifacts.S3Argv.test_layout_matches_crypto_store) ... ok
+test_put_is_write_once_and_checksummed (tools.artifacts.test_artifacts.S3Argv.test_put_is_write_once_and_checksummed) ... ok
+test_rejects_non_digest (tools.artifacts.test_artifacts.S3Argv.test_rejects_non_digest) ... artifacts: not a sha256 digest: '../../etc/passwd'
+ok
+test_conditional_full_checkout_is_preserved (tools.artifacts.test_artifacts.WorkflowBootstrap.test_conditional_full_checkout_is_preserved) ... ok
+test_rewiring_refreshes_paths_and_keeps_checkout_condition (tools.artifacts.test_artifacts.WorkflowBootstrap.test_rewiring_refreshes_paths_and_keeps_checkout_condition) ... ok
+test_sparse_clone_can_load_tool_and_remote_configuration (tools.artifacts.test_artifacts.WorkflowBootstrap.test_sparse_clone_can_load_tool_and_remote_configuration) ... ok
+test_named_file_and_directory_are_pulled (tools.artifacts.test_artifacts.WorkflowPaths.test_named_file_and_directory_are_pulled) ... ok
+test_unrelated_sibling_does_not_pull_whole_archive (tools.artifacts.test_artifacts.WorkflowPaths.test_unrelated_sibling_does_not_pull_whole_archive) ... ok
+
+======================================================================
+FAIL: test_conditional_checkout_keeps_pull_condition (tools.artifacts.test_artifacts.JobScopedWiring.test_conditional_checkout_keeps_pull_condition)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/cryptanalysis-pr/tools/artifacts/test_artifacts.py", line 571, in test_conditional_checkout_keeps_pull_condition
+    self.assertEqual(result.count("if: needs.scope.outputs.replay == 'true'"), 2)
+AssertionError: 0 != 2
+
+----------------------------------------------------------------------
+Ran 37 tests in 86.507s
+
+FAILED (failures=1)

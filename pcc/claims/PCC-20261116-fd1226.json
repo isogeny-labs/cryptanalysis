@@ -1,0 +1,30 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T01:45:52Z",
+ "id": "PCC-20261116-fd1226",
+ "kind": "statement",
+ "producer": {
+  "commit": "66d2b8664633ef1a6bf0bc7ceaf7f9e9b2539f2a",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/cold-identity-preparation-source-governance-04/original-command.py",
+    "sha256": "ae72a711159bad8f798ff0b80143fd24e198ab1ad44ab66c3b5b54b16145300f"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/cold-identity-preparation-source-governance-04/whole-caller.txt.xz",
+    "sha256": "cb283dcfe945c15acb00df8f91b5975945f7ca2254b904c232cbf40f8b41c1f7"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Cold fixture governor04 stopped on a metadata scope assertion because native/build.rs was already staged by the previous stopped governor. No existing native, Lean, matrix, tools, scripts, suite, workflow or artifact policy was changed. Preserve whole command and caller. Successor explicitly permits only the already declared new native/build.rs with its exact4270a0 digest, checks every other protected path unchanged, and retains every prior failed check."
+}
