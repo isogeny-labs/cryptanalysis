@@ -257,6 +257,23 @@ def main():
     doubling2_build=(formal/'point-doubling2-build-output.txt').read_text()
     assert 'Build completed successfully (9055 jobs)' in doubling2_build
     assert "'XedniPublicFirstLargeHoldout.panel313_second_double' depends on axioms: [propext, Classical.choice, Quot.sound]" in re.sub(r'\s+',' ',doubling2_build)
+    arithmetic3=(formal/'OrderArithmetic3.lean').read_text()
+    assert all(f'theorem {name}' in arithmetic3 for name in
+               ('mod313_third_tangent_slope','mod313_octuple_x','mod313_octuple_y'))
+    assert not any(token in arithmetic3 for token in ('sorry','admit','sorryAx','native_decide'))
+    arithmetic3_build=(formal/'order-arithmetic3-build-output.txt').read_text()
+    assert 'Build completed successfully (9056 jobs)' in arithmetic3_build
+    arithmetic3_build_normalized=re.sub(r'\s+',' ',arithmetic3_build)
+    for name in ('mod313_third_tangent_slope','mod313_octuple_x','mod313_octuple_y'):
+        assert f"'XedniPublicFirstLargeHoldout.{name}' depends on axioms: [propext, Classical.choice, Quot.sound]" in arithmetic3_build_normalized
+    doubling3=(formal/'PointDoubling3.lean').read_text()
+    assert 'theorem panel313_third_double' in doubling3
+    assert all(name in doubling3 for name in
+               ('mod313_third_tangent_slope','mod313_octuple_x','mod313_octuple_y'))
+    assert not any(token in doubling3 for token in ('sorry','admit','sorryAx','native_decide'))
+    doubling3_build=(formal/'point-doubling3-build-output.txt').read_text()
+    assert 'Build completed successfully (9057 jobs)' in doubling3_build
+    assert "'XedniPublicFirstLargeHoldout.panel313_third_double' depends on axioms: [propext, Classical.choice, Quot.sound]" in re.sub(r'\s+',' ',doubling3_build)
     recovery_protocol=json.loads((HERE/'public-recovery-protocol.json').read_text())
     recovery_result=json.loads((HERE/'public-recovery-result.json').read_text())
     recovery_audit_protocol=json.loads((HERE/'public-recovery-audit-protocol.json').read_text())
