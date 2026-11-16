@@ -1,0 +1,38 @@
+{
+  "schema": "xedni-crt-band-panel-protocol-v1",
+  "question": "Does the deterministic CRT curve-choice policy produce rational two-point relations across the first eight prime fields with comparable subgroup orders?",
+  "field_selection": {
+    "scan_primes_inclusive": [43, 499],
+    "base_curve_coefficients": [0, 0, 0, -1, -2],
+    "eligibility": "nonsingular base curve and largest prime factor r of #E(F_p) in [43,80]",
+    "take": "first eight eligible primes in increasing order, using only the group order",
+    "expected_number_of_fields": 8
+  },
+  "base_curve_coefficients": [0, 0, 0, -1, -2],
+  "subgroup_policy": {
+    "order": "largest prime factor of the full base-curve group order",
+    "generator": "lexicographically first eligible cofactor multiple",
+    "required_minimum_order": 43
+  },
+  "target_policy": {
+    "scalar": "17",
+    "sample_coefficients": [1, 1],
+    "query_order": "complete ordered t1,t2 in [0,r)^2, lexicographic",
+    "sampled_points": "P_i=Q-t_i G",
+    "admission": "both sampled points nonidentity and distinct"
+  },
+  "curve_choice_policy": {
+    "auxiliary_primes": [7, 11],
+    "required_orders": [4, 6],
+    "free_coefficients": ["a1", "a2", "a3"],
+    "search": "same centered-residue order and exact rational CRT reconstruction as the pinned parent panel"
+  },
+  "relation_vector": [1, 2],
+  "recovery": "w=(t1+2t2)/3 mod r followed by scalar replay",
+  "max_total_target_queries": 40000,
+  "raw_rows": "deterministic gzip JSONL shards by blocks of eight t1 values",
+  "parent_run_source_sha256": "7f2968cc6187e5fac77278c08008258f6a95a1e7a0ad8edb458ef743fb6b6e47",
+  "parent_audit_source_sha256": "28dd3e4553bfcedc3c646d5d8d284b137e5494ed3ebec5533d0961f1ea5337a8",
+  "grandparent_search_source_sha256": "e96e0ddee58a91e5da0815fb4eca524983531408056af75842584a6c8ed4e8aa",
+  "claim_boundary": "field-specific exact finite-panel yield and candidate probes; no pooled success-rate or wall-time comparison"
+}

@@ -1,0 +1,47 @@
+    Updating crates.io index
+     Locking 10 packages to highest compatible versions
+      Adding block-buffer v0.10.4
+      Adding cpufeatures v0.2.17
+      Adding crypto-common v0.1.7
+      Adding digest v0.10.7
+      Adding generic-array v0.14.7 (available: v0.14.9)
+    Updating getrandom v0.2.17 -> v0.4.3
+      Adding r-efi v6.0.0
+      Adding sha2 v0.10.9 (available: v0.11.1)
+      Adding typenum v1.20.1
+      Adding version_check v0.9.5
+   Compiling version_check v0.9.5
+   Compiling autocfg v1.5.1
+   Compiling generic-array v0.14.7
+   Compiling typenum v1.20.1
+   Compiling num-traits v0.2.19
+   Compiling serde_core v1.0.229
+   Compiling zmij v1.0.23
+   Compiling serde v1.0.229
+   Compiling libc v0.2.191
+   Compiling crypto-common v0.1.7
+   Compiling block-buffer v0.10.4
+   Compiling num-integer v0.1.47
+   Compiling serde_json v1.0.154
+   Compiling cfg-if v1.0.5
+   Compiling getrandom v0.4.3
+   Compiling digest v0.10.7
+   Compiling itoa v1.0.18
+   Compiling memchr v2.8.3
+   Compiling cpufeatures v0.2.17
+   Compiling sha2 v0.10.9
+   Compiling num-bigint v0.5.1
+   Compiling num-rational v0.4.2
+   Compiling hashed-ecdl-tensor v0.1.0 (/workspace/isogeny-labs/cryptanalysis/bindings/rust/hashed-ecdl-tensor)
+    Finished `test` profile [unoptimized] target(s) in 9.27s
+     Running unittests src/lib.rs (/workspace/isogeny-labs/cryptanalysis-target/debug/build/hashed-ecdl-tensor/7bf0244d393239c0/out/hashed_ecdl_tensor-7bf0244d393239c0)
+
+running 5 tests
+test binary::tests::binary_fields_check_irreducibility_inverse_and_official_131_polynomial ... ok
+test binary::tests::both_koblitz_coefficients_and_derived_eigenvalues_have_pinned_fixture_identities ... ok
+test binary::tests::xor_hash_inverse_and_binary_selector_search_match_exhaustive_domains ... ok
+test binary::tests::orbit_coefficients_and_orbit_hash_enumeration_are_complete ... ok
+test binary::tests::binary_group_roundtrip_full_cardinality_associativity_and_frobenius ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 59 filtered out; finished in 0.10s
+
