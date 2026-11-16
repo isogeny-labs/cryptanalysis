@@ -1,0 +1,37 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T05:41:36Z",
+ "id": "PCC-20261116-bf69ba",
+ "kind": "statement",
+ "producer": {
+  "commit": "7b1cdfc62650ffcfcee1e4227c46f4021f3eb587",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/read-only-admission-metadata-assertion-failure-01/ct232-entire-metadata-control-caller.txt.xz",
+    "sha256": "ccb70a497c034526406bfd253437d0d8c2376419f05be110d8be237da8fa2f4b"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/read-only-admission-metadata-assertion-failure-01/ct232_read_only_admission_metadata_controls.py.xz",
+    "sha256": "a54a069af8a9723fce9cac1506eebb29a4bfd2e5cba096fd3f1921b92650e7b7"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/read-only-admission-metadata-assertion-failure-01/entire-first-offline-fixture.tar.xz",
+    "sha256": "ed08c74e1d5e1eb193759750d5855c28ccc6c1f706bf5389918461be65e356db"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Read-only admission offline control harness stops after correct foreign-account observer result because its broad forbidden substring put also matches --output. Entire mock source/first fixture/caller retained. Actual observer issued only mocked STS, stopped further account reads and wrote admitted=false. No real AWS/Kubernetes or experiment call occurred. Fix metadata test to compare exact argv tokens; observer access logic unchanged. Initial admission patch formatting error stopped before any file write; corrected source then passed shell syntax/actionlint."
+}

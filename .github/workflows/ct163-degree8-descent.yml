@@ -1,0 +1,40 @@
+name: CT163 fixed-nu12 degree-eight descent finite audit
+on:
+  pull_request:
+    paths:
+      - "experiments/chained-transfer-public-target/norm-point-reuse-01/ct163_*"
+      - "experiments/chained-transfer-public-target/norm-point-reuse-01/CT163_*"
+      - ".github/workflows/ct163-degree8-descent.yml"
+  workflow_dispatch:
+
+jobs:
+  finite-source-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Independent normal/optimized/JS exact freeze and mutations
+        shell: bash
+        run: |
+          set -euo pipefail
+          D=experiments/chained-transfer-public-target/norm-point-reuse-01
+          python3 -B "$D/ct163_degree8_lagrangians.py" --self-test > "$RUNNER_TEMP/ct163-python.json"
+          python3 -O -B "$D/ct163_degree8_lagrangians.py" --self-test > "$RUNNER_TEMP/ct163-optimized.json"
+          node "$D/ct163_degree8_independent.cjs" --self-test > "$RUNNER_TEMP/ct163-independent.json"
+          cmp "$RUNNER_TEMP/ct163-python.json" "$RUNNER_TEMP/ct163-optimized.json"
+          cmp "$RUNNER_TEMP/ct163-python.json" "$RUNNER_TEMP/ct163-independent.json"
+          cmp "$RUNNER_TEMP/ct163-python.json" "$D/CT163_RESULT.json"
+          sha256sum "$RUNNER_TEMP/ct163-python.json" "$RUNNER_TEMP/ct163-independent.json" "$D/CT163_RESULT.json"
+          python3 -B - <<'PY'
+          import json,os,pathlib
+          path=pathlib.Path(os.environ["RUNNER_TEMP"])/"ct163-python.json"
+          r=json.loads(path.read_text())
+          assert (r["all_three_subspaces"],r["lagrangian_subspaces"],
+                  r["frobenius_stable_lagrangians"],r["factorwise"],r["mixed"],
+                  r["negative_controls_rejected"]) == (1395,135,9,3,6,6)
+          assert all(k["frobenius_fixed"]==2 for k in r["kernels"])
+          print("ct163 frozen source-only result matched in three executions; no native maps or PCC")
+          PY

@@ -30,6 +30,31 @@ pub struct FastPoint {
     pub infinity: bool,
 }
 
+/// Complete inverses of a bounded polynomial prefix, tied to its field.
+/// Construction is target-independent setup and must be charged by callers.
+pub struct PrefixInverseTable {
+    irr: u64,
+    inverses: Vec<u64>,
+}
+
+impl PrefixInverseTable {
+    pub fn new(field: &Gf2, dimension: usize) -> Result<Self, &'static str> {
+        if !(1..=12).contains(&dimension) || dimension > field.n as usize {
+            return Err("prefix inverse dimension must be in1..=min(12,n)");
+        }
+        let mut inverses: Vec<_> = (0..1u64 << dimension).collect();
+        field.batch_inv(&mut inverses, &mut Vec::new());
+        Ok(Self {
+            irr: field.irr,
+            inverses,
+        })
+    }
+
+    pub fn bytes(&self) -> usize {
+        self.inverses.len() * std::mem::size_of::<u64>()
+    }
+}
+
 impl FastPoint {
     /// The point at infinity.
     pub const INFINITY: Self = Self {
@@ -391,6 +416,268 @@ impl FastCurve {
             }
             let lambda = f.mul(p.y ^ q.y, inv);
             out.push(self.add_with_lambda(*p, *q, lambda));
+        }
+    }
+
+    /// Full point sums with one shared inverse and opt-in four-lane formulas.
+    /// Appends exactly one point per pair and returns the number executed by
+    /// the vector kernel. Unsupported hosts/fields retain ordinary batching.
+    pub fn add_pairwise_vector(
+        &self,
+        ps: &[FastPoint],
+        qs: &[FastPoint],
+        out: &mut Vec<FastPoint>,
+        scratch: &mut BatchScratch,
+    ) -> usize {
+        self.add_pairwise_vector_impl(ps, qs, out, scratch, false).0
+    }
+
+    /// Same full points with opt-in SIMD inverse product passes for8..16 inputs.
+    /// Returns (vector point pairs, inverse input elements executed by SIMD).
+    pub fn add_pairwise_vector_inverse(
+        &self,
+        ps: &[FastPoint],
+        qs: &[FastPoint],
+        out: &mut Vec<FastPoint>,
+        scratch: &mut BatchScratch,
+    ) -> (usize, usize) {
+        self.add_pairwise_vector_impl(ps, qs, out, scratch, true)
+    }
+
+    fn add_pairwise_vector_impl(
+        &self,
+        ps: &[FastPoint],
+        qs: &[FastPoint],
+        out: &mut Vec<FastPoint>,
+        scratch: &mut BatchScratch,
+        vector_inverse: bool,
+    ) -> (usize, usize) {
+        let _ = vector_inverse;
+        assert_eq!(ps.len(), qs.len(), "pairwise addition needs equal slices");
+        #[cfg(all(target_arch = "x86_64", suite_avx512))]
+        if let Some(kernel) = simd256::Simd256::new(&self.field) {
+            scratch.dens.clear();
+            scratch.dens.extend(ps.iter().zip(qs).map(|(p, q)| {
+                if p.infinity || q.infinity || p.x == q.x {
+                    0
+                } else {
+                    p.x ^ q.x
+                }
+            }));
+            // SAFETY: the constructor checked AVX2/PCLMUL. The bounded helper
+            // rejects unsupported lengths and noncanonical values unchanged.
+            let inverse_elements = if vector_inverse {
+                unsafe { kernel.batch_inverse_narrow(&self.field, &mut scratch.dens) }
+            } else {
+                0
+            };
+            if inverse_elements == 0 {
+                self.field.batch_inv(&mut scratch.dens, &mut scratch.acc);
+            }
+            // SAFETY: the constructor checks AVX2/PCLMUL, and the helper
+            // dispatches VPCLMUL only when independently detected.
+            return (
+                unsafe { kernel.add_full(self, ps, qs, &scratch.dens, out, false) },
+                inverse_elements,
+            );
+        }
+        self.add_pairwise(ps, qs, out, scratch);
+        (0, 0)
+    }
+
+    /// Abscissae of `P_i + Q_i`, with one batch inversion. `None` is O.
+    /// Ordinary sums never compute an ordinate; exceptional pairs use the
+    /// exact existing addition. The caller must not treat an abscissa as a
+    /// full point or a verified decomposition.
+    pub fn add_pairwise_abscissae(
+        &self,
+        ps: &[FastPoint],
+        qs: &[FastPoint],
+        out: &mut Vec<Option<u64>>,
+        scratch: &mut BatchScratch,
+    ) {
+        self.add_pairwise_abscissae_dispatch(ps, qs, out, scratch, None);
+    }
+
+    /// Cached prefix denominators; values outside the prefix use exact
+    /// individual inversions. A cache from another field is rejected before
+    /// touching the output. Exceptional pairs keep the normal exact path.
+    pub fn add_pairwise_abscissae_cached(
+        &self,
+        ps: &[FastPoint],
+        qs: &[FastPoint],
+        out: &mut Vec<Option<u64>>,
+        scratch: &mut BatchScratch,
+        cache: &PrefixInverseTable,
+    ) -> Result<(), &'static str> {
+        if self.field.irr != cache.irr {
+            return Err("prefix inverse cache belongs to another field");
+        }
+        self.add_pairwise_abscissae_dispatch(ps, qs, out, scratch, Some(&cache.inverses));
+        Ok(())
+    }
+
+    /// Opt-in four-lane cached preparation. Unsupported CPUs/field shapes and
+    /// exceptional pairs retain the complete scalar path. Returns the number
+    /// of pair sums actually evaluated by the vector kernel.
+    pub fn add_pairwise_abscissae_vector_cached(
+        &self,
+        ps: &[FastPoint],
+        qs: &[FastPoint],
+        out: &mut Vec<Option<u64>>,
+        scratch: &mut BatchScratch,
+        cache: &PrefixInverseTable,
+    ) -> Result<usize, &'static str> {
+        self.add_pairwise_abscissae_vector_cached_impl(ps, qs, out, scratch, cache, 0)
+    }
+
+    /// Opt-in packed squaring for canonical fields of at most 32 bits.
+    /// Larger fields and unsupported hardware retain the original vector/scalar paths.
+    pub fn add_pairwise_abscissae_vector_packed_cached(
+        &self,
+        ps: &[FastPoint],
+        qs: &[FastPoint],
+        out: &mut Vec<Option<u64>>,
+        scratch: &mut BatchScratch,
+        cache: &PrefixInverseTable,
+    ) -> Result<usize, &'static str> {
+        self.add_pairwise_abscissae_vector_cached_impl(ps, qs, out, scratch, cache, 1)
+    }
+
+    /// Opt-in constant-polynomial reduction for five exact field encodings.
+    /// Other fields retain the existing vector/scalar dispatch and output order.
+    pub fn add_pairwise_abscissae_vector_const_cached(
+        &self,
+        ps: &[FastPoint],
+        qs: &[FastPoint],
+        out: &mut Vec<Option<u64>>,
+        scratch: &mut BatchScratch,
+        cache: &PrefixInverseTable,
+    ) -> Result<usize, &'static str> {
+        self.add_pairwise_abscissae_vector_cached_impl(ps, qs, out, scratch, cache, 2)
+    }
+
+    /// Ordinary-PCLMUL dynamic reduction control, including on VPCLMUL hosts.
+    /// Unsupported hardware/field shapes retain the complete scalar fallback.
+    pub fn add_pairwise_abscissae_vector_narrow_cached(
+        &self,
+        ps: &[FastPoint],
+        qs: &[FastPoint],
+        out: &mut Vec<Option<u64>>,
+        scratch: &mut BatchScratch,
+        cache: &PrefixInverseTable,
+    ) -> Result<usize, &'static str> {
+        self.add_pairwise_abscissae_vector_cached_impl(ps, qs, out, scratch, cache, 3)
+    }
+
+    /// Exact field guard; feature detection is separate.
+    pub fn has_const_vector_field(&self) -> bool {
+        matches!(
+            (self.field.n, self.field.irr ^ (1u64 << self.field.n)),
+            (15, 3) | (18, 9) | (21, 5) | (24, 27) | (27, 39)
+        )
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn add_pairwise_abscissae_vector_cached_impl(
+        &self,
+        ps: &[FastPoint],
+        qs: &[FastPoint],
+        out: &mut Vec<Option<u64>>,
+        scratch: &mut BatchScratch,
+        cache: &PrefixInverseTable,
+        strategy: u8,
+    ) -> Result<usize, &'static str> {
+        if self.field.irr != cache.irr {
+            return Err("prefix inverse cache belongs to another field");
+        }
+        assert_eq!(ps.len(), qs.len(), "pairwise addition needs equal slices");
+        let _ = strategy; // Also used when the native SIMD module is compiled.
+        #[cfg(all(target_arch = "x86_64", suite_avx512))]
+        if let Some(kernel) = simd256::Simd256::new(&self.field) {
+            // SAFETY: new() checks AVX2 and PCLMUL; its dispatcher guards VPCLMUL, field shape is checked,
+            // and the kernel uses bounded four-element chunks.
+            return unsafe { kernel.add_cached(self, ps, qs, out, scratch, cache, strategy) };
+        }
+        self.add_pairwise_abscissae_cached(ps, qs, out, scratch, cache)?;
+        Ok(0)
+    }
+
+    /// Arithmetic backend available to the cached vector preparation.
+    pub fn cached_vector_backend(&self) -> &'static str {
+        #[cfg(all(target_arch = "x86_64", suite_avx512))]
+        if let Some(kernel) = simd256::Simd256::new(&self.field) {
+            return kernel.backend();
+        }
+        "scalar"
+    }
+
+    fn add_pairwise_abscissae_dispatch(
+        &self,
+        ps: &[FastPoint],
+        qs: &[FastPoint],
+        out: &mut Vec<Option<u64>>,
+        scratch: &mut BatchScratch,
+        cache: Option<&[u64]>,
+    ) {
+        assert_eq!(ps.len(), qs.len(), "pairwise addition needs equal slices");
+        #[cfg(target_arch = "x86_64")]
+        if self.field.has_clmul() {
+            // SAFETY: runtime detection covers the only enabled feature.
+            return unsafe { self.add_pairwise_abscissae_clmul(ps, qs, out, scratch, cache) };
+        }
+        self.add_pairwise_abscissae_body(ps, qs, out, scratch, cache);
+    }
+
+    #[cfg(target_arch = "x86_64")]
+    #[target_feature(enable = "pclmulqdq")]
+    unsafe fn add_pairwise_abscissae_clmul(
+        &self,
+        ps: &[FastPoint],
+        qs: &[FastPoint],
+        out: &mut Vec<Option<u64>>,
+        scratch: &mut BatchScratch,
+        cache: Option<&[u64]>,
+    ) {
+        self.add_pairwise_abscissae_body(ps, qs, out, scratch, cache);
+    }
+
+    #[inline(always)]
+    fn add_pairwise_abscissae_body(
+        &self,
+        ps: &[FastPoint],
+        qs: &[FastPoint],
+        out: &mut Vec<Option<u64>>,
+        scratch: &mut BatchScratch,
+        cache: Option<&[u64]>,
+    ) {
+        let f = &self.field;
+        scratch.dens.clear();
+        scratch.dens.extend(ps.iter().zip(qs).map(|(p, q)| {
+            if p.infinity || q.infinity || p.x == q.x {
+                0
+            } else {
+                let denominator = p.x ^ q.x;
+                cache.map_or(denominator, |values| {
+                    values
+                        .get(denominator as usize)
+                        .copied()
+                        .unwrap_or_else(|| f.inv(denominator))
+                })
+            }
+        }));
+        if cache.is_none() {
+            f.batch_inv(&mut scratch.dens, &mut scratch.acc);
+        }
+        out.reserve(ps.len());
+        for ((p, q), &inv) in ps.iter().zip(qs).zip(&scratch.dens) {
+            if inv == 0 {
+                let sum = self.add(*p, *q);
+                out.push((!sum.infinity).then_some(sum.x));
+            } else {
+                let lambda = f.mul(p.y ^ q.y, inv);
+                out.push(Some(f.sqr(lambda) ^ lambda ^ p.x ^ q.x ^ self.a));
+            }
         }
     }
 
@@ -941,6 +1228,566 @@ pub struct BatchScratch {
     qx: Vec<u64>,
     #[cfg(all(target_arch = "x86_64", suite_avx512))]
     qy: Vec<u64>,
+}
+
+/// Four-lane cached pair arithmetic for AVX2/PCLMUL hosts; VPCLMUL where available.
+/// Reuses the same two-fold sparse-tail reduction as the existing AVX-512
+/// kernel, without requiring AVX-512. Runtime dispatch keeps other hosts safe.
+#[cfg(all(target_arch = "x86_64", suite_avx512))]
+#[clippy::msrv = "1.89"]
+mod simd256 {
+    use super::{BatchScratch, FastCurve, FastPoint, PrefixInverseTable};
+    use crate::cryptanalysis::semaev_decomp::Gf2;
+    use std::arch::x86_64::*;
+
+    // Separate target-feature functions keep feature dispatch out of the
+    // arithmetic loop and let LLVM inline the selected product/reduction path.
+    macro_rules! full_point_kernel {
+        ($name:ident, $multiply:ident, $features:literal) => {
+            #[target_feature(enable = $features)]
+            unsafe fn $name(
+                &self,
+                curve: &FastCurve,
+                ps: &[FastPoint],
+                qs: &[FastPoint],
+                inverses: &[u64],
+                out: &mut Vec<FastPoint>,
+            ) -> usize {
+                let full = ps.len() / 4 * 4;
+                let mut vector_pairs = 0;
+                out.reserve(ps.len());
+                for ((pc, qc), ic) in ps[..full]
+                    .chunks_exact(4)
+                    .zip(qs[..full].chunks_exact(4))
+                    .zip(inverses[..full].chunks_exact(4))
+                {
+                    let mut coordinates = 0;
+                    let mut exceptional = false;
+                    for i in 0..4 {
+                        coordinates |= pc[i].x | pc[i].y | qc[i].x | qc[i].y;
+                        exceptional |= pc[i].infinity || qc[i].infinity || ic[i] == 0;
+                    }
+                    if exceptional || coordinates & !self.mask != 0 {
+                        Self::append_full_scalar(curve, pc, qc, ic, out);
+                        continue;
+                    }
+                    let px: [u64; 4] = std::array::from_fn(|i| pc[i].x);
+                    let py: [u64; 4] = std::array::from_fn(|i| pc[i].y);
+                    let numerator: [u64; 4] = std::array::from_fn(|i| pc[i].y ^ qc[i].y);
+                    let offset: [u64; 4] = std::array::from_fn(|i| pc[i].x ^ qc[i].x ^ curve.a);
+                    let lambda = self.$multiply(
+                        _mm256_loadu_si256(numerator.as_ptr().cast()),
+                        _mm256_loadu_si256(ic.as_ptr().cast()),
+                    );
+                    let x = _mm256_xor_si256(
+                        _mm256_xor_si256(self.$multiply(lambda, lambda), lambda),
+                        _mm256_loadu_si256(offset.as_ptr().cast()),
+                    );
+                    let y = _mm256_xor_si256(
+                        self.$multiply(
+                            lambda,
+                            _mm256_xor_si256(_mm256_loadu_si256(px.as_ptr().cast()), x),
+                        ),
+                        _mm256_xor_si256(x, _mm256_loadu_si256(py.as_ptr().cast())),
+                    );
+                    let mut xs = [0u64; 4];
+                    let mut ys = [0u64; 4];
+                    _mm256_storeu_si256(xs.as_mut_ptr().cast(), x);
+                    _mm256_storeu_si256(ys.as_mut_ptr().cast(), y);
+                    out.extend(xs.into_iter().zip(ys).map(|(x, y)| FastPoint::affine(x, y)));
+                    vector_pairs += 4;
+                }
+                Self::append_full_scalar(curve, &ps[full..], &qs[full..], &inverses[full..], out);
+                vector_pairs
+            }
+        };
+    }
+
+    pub(super) struct Simd256 {
+        n: u32,
+        mask: u64,
+        terms: [u32; 8],
+        nterms: usize,
+        use_vpclmul: bool,
+    }
+
+    impl Simd256 {
+        pub(super) fn new(field: &Gf2) -> Option<Self> {
+            if !(is_x86_feature_detected!("avx2") && is_x86_feature_detected!("pclmulqdq")) {
+                return None;
+            }
+            let n = field.n;
+            if !(2..=63).contains(&n) {
+                return None;
+            }
+            let tail = field.irr ^ (1u64 << n);
+            if tail == 0 {
+                return None;
+            }
+            let high = 63 - tail.leading_zeros();
+            if n + high > 65 || 2 * high > n + 1 || tail.count_ones() > 8 {
+                return None;
+            }
+            let mut terms = [0; 8];
+            let mut nterms = 0;
+            for bit in 0..n {
+                if tail >> bit & 1 != 0 {
+                    terms[nterms] = bit;
+                    nterms += 1;
+                }
+            }
+            Some(Self {
+                n,
+                mask: (1u64 << n) - 1,
+                terms,
+                nterms,
+                use_vpclmul: is_x86_feature_detected!("vpclmulqdq"),
+            })
+        }
+
+        #[inline]
+        #[target_feature(enable = "avx2")]
+        unsafe fn times_tail(&self, high: __m256i) -> __m256i {
+            let mut result = _mm256_setzero_si256();
+            for &bit in &self.terms[..self.nterms] {
+                result = _mm256_xor_si256(
+                    result,
+                    _mm256_sll_epi64(high, _mm_cvtsi64_si128(i64::from(bit))),
+                );
+            }
+            result
+        }
+
+        #[inline]
+        #[target_feature(enable = "avx2")]
+        unsafe fn reduce_products(&self, low: __m256i, high: __m256i) -> __m256i {
+            let n = _mm_cvtsi64_si128(i64::from(self.n));
+            let reverse = _mm_cvtsi64_si128(i64::from(64 - self.n));
+            let mask = _mm256_set1_epi64x(self.mask as i64);
+            let h = _mm256_or_si256(_mm256_srl_epi64(low, n), _mm256_sll_epi64(high, reverse));
+            let folded = self.times_tail(h);
+            let result =
+                _mm256_xor_si256(_mm256_and_si256(low, mask), _mm256_and_si256(folded, mask));
+            _mm256_xor_si256(result, self.times_tail(_mm256_srl_epi64(folded, n)))
+        }
+
+        #[inline]
+        #[target_feature(enable = "avx2,vpclmulqdq")]
+        unsafe fn mul_vpclmul(&self, a: __m256i, b: __m256i) -> __m256i {
+            let even = _mm256_clmulepi64_epi128::<0x00>(a, b);
+            let odd = _mm256_clmulepi64_epi128::<0x11>(a, b);
+            self.reduce_products(
+                _mm256_unpacklo_epi64(even, odd),
+                _mm256_unpackhi_epi64(even, odd),
+            )
+        }
+
+        #[inline]
+        #[target_feature(enable = "avx2,pclmulqdq")]
+        unsafe fn mul_pclmul128(&self, a: __m256i, b: __m256i) -> __m256i {
+            self.mul_pclmul128_reduction::<0, 0>(a, b)
+        }
+
+        #[inline]
+        #[target_feature(enable = "avx2,pclmulqdq")]
+        unsafe fn mul_pclmul128_reduction<const N: u32, const TAIL: u64>(
+            &self,
+            a: __m256i,
+            b: __m256i,
+        ) -> __m256i {
+            let al = _mm256_castsi256_si128(a);
+            let bl = _mm256_castsi256_si128(b);
+            let ah = _mm256_extracti128_si256::<1>(a);
+            let bh = _mm256_extracti128_si256::<1>(b);
+            let p0 = _mm_clmulepi64_si128::<0x00>(al, bl);
+            let p1 = _mm_clmulepi64_si128::<0x11>(al, bl);
+            let p2 = _mm_clmulepi64_si128::<0x00>(ah, bh);
+            let p3 = _mm_clmulepi64_si128::<0x11>(ah, bh);
+            let low = _mm256_inserti128_si256::<1>(
+                _mm256_castsi128_si256(_mm_unpacklo_epi64(p0, p1)),
+                _mm_unpacklo_epi64(p2, p3),
+            );
+            let high = _mm256_inserti128_si256::<1>(
+                _mm256_castsi128_si256(_mm_unpackhi_epi64(p0, p1)),
+                _mm_unpackhi_epi64(p2, p3),
+            );
+            if N == 0 {
+                return self.reduce_products(low, high);
+            }
+            // The exact-field dispatcher supplies only sparse shapes already
+            // accepted by new(). Use the same two folds with compile-time data.
+            let mask = _mm256_set1_epi64x(((1u64 << N) - 1) as i64);
+            let h = _mm256_or_si256(
+                _mm256_srl_epi64(low, _mm_cvtsi64_si128(i64::from(N))),
+                _mm256_sll_epi64(high, _mm_cvtsi64_si128(i64::from(64 - N))),
+            );
+            let folded = Self::times_const_tail::<TAIL>(h);
+            _mm256_xor_si256(
+                _mm256_and_si256(_mm256_xor_si256(low, folded), mask),
+                Self::times_const_tail::<TAIL>(_mm256_srl_epi64(
+                    folded,
+                    _mm_cvtsi64_si128(i64::from(N)),
+                )),
+            )
+        }
+
+        #[inline]
+        #[target_feature(enable = "avx2")]
+        unsafe fn times_const_tail<const TAIL: u64>(x: __m256i) -> __m256i {
+            let mut tail = TAIL;
+            let mut result = _mm256_setzero_si256();
+            while tail != 0 {
+                let bit = tail.trailing_zeros();
+                result = _mm256_xor_si256(
+                    result,
+                    _mm256_sll_epi64(x, _mm_cvtsi64_si128(i64::from(bit))),
+                );
+                tail &= tail - 1;
+            }
+            result
+        }
+
+        // For canonical n <= 32, pack a0 + a1*z^32 into each 128-bit half.
+        // In characteristic two its square is a0^2 + a1^2*z^64: no cross terms
+        // and each raw square fits in 64 bits. Shuffle 0xd8 selects words
+        // [0,2,1,3], placing the two field elements in the low 64-bit operand.
+        #[inline]
+        #[target_feature(enable = "avx2,vpclmulqdq")]
+        unsafe fn square_packed_wide(&self, a: __m256i) -> __m256i {
+            let packed = _mm256_shuffle_epi32::<0xd8>(a);
+            let raw = _mm256_clmulepi64_epi128::<0x00>(packed, packed);
+            self.reduce_products(raw, _mm256_setzero_si256())
+        }
+
+        #[inline]
+        #[target_feature(enable = "avx2,pclmulqdq")]
+        unsafe fn square_packed_narrow(&self, a: __m256i) -> __m256i {
+            let packed = _mm256_shuffle_epi32::<0xd8>(a);
+            let low = _mm256_castsi256_si128(packed);
+            let high = _mm256_extracti128_si256::<1>(packed);
+            let raw = _mm256_inserti128_si256::<1>(
+                _mm256_castsi128_si256(_mm_clmulepi64_si128::<0x00>(low, low)),
+                _mm_clmulepi64_si128::<0x00>(high, high),
+            );
+            self.reduce_products(raw, _mm256_setzero_si256())
+        }
+
+        #[cfg(test)]
+        pub(super) fn square4(&self, a: &[u64; 4], force_pclmul128: bool) -> [u64; 4] {
+            let mut out = [0u64; 4];
+            // SAFETY: new checks features; packed helpers require canonical n <= 32.
+            unsafe {
+                let av = _mm256_loadu_si256(a.as_ptr() as *const __m256i);
+                let value = if self.use_vpclmul && !force_pclmul128 {
+                    if self.n <= 32 {
+                        self.square_packed_wide(av)
+                    } else {
+                        self.mul_vpclmul(av, av)
+                    }
+                } else if self.n <= 32 {
+                    self.square_packed_narrow(av)
+                } else {
+                    self.mul_pclmul128(av, av)
+                };
+                _mm256_storeu_si256(out.as_mut_ptr() as *mut __m256i, value);
+            }
+            out
+        }
+
+        /// Lane-wise version of Gf2's existing four accumulators. Padding
+        /// contributes only identities; the original zero mask is restored.
+        /// Return0 without mutation whenever the complete scalar path is needed.
+        #[target_feature(enable = "avx2,pclmulqdq")]
+        pub(super) unsafe fn batch_inverse_narrow(&self, field: &Gf2, xs: &mut [u64]) -> usize {
+            if !(8..=16).contains(&xs.len())
+                || xs.iter().any(|x| x & !self.mask != 0)
+                || xs.iter().all(|&x| x == 0)
+            {
+                return 0;
+            }
+            let blocks = xs.len().div_ceil(4);
+            let mut input = [[1u64; 4]; 4];
+            for (dst, &x) in input.iter_mut().flatten().zip(xs.iter()) {
+                *dst = if x == 0 { 1 } else { x };
+            }
+            let mut prefix = [_mm256_setzero_si256(); 4];
+            prefix[0] = _mm256_loadu_si256(input[0].as_ptr().cast());
+            for i in 1..blocks {
+                prefix[i] =
+                    self.mul_pclmul128(prefix[i - 1], _mm256_loadu_si256(input[i].as_ptr().cast()));
+            }
+            let mut products = [0u64; 4];
+            _mm256_storeu_si256(products.as_mut_ptr().cast(), prefix[blocks - 1]);
+            // Exactly the original four-product inversion tree; one inverse.
+            let p01 = field.mul(products[0], products[1]);
+            let p23 = field.mul(products[2], products[3]);
+            let inv_all = field.inv(field.mul(p01, p23));
+            let i01 = field.mul(inv_all, p23);
+            let i23 = field.mul(inv_all, p01);
+            let inverses = [
+                field.mul(i01, products[1]),
+                field.mul(i01, products[0]),
+                field.mul(i23, products[3]),
+                field.mul(i23, products[2]),
+            ];
+            let mut acc = _mm256_loadu_si256(inverses.as_ptr().cast());
+            for i in (1..blocks).rev() {
+                let value = self.mul_pclmul128(acc, prefix[i - 1]);
+                acc = self.mul_pclmul128(acc, _mm256_loadu_si256(input[i].as_ptr().cast()));
+                let mut values = [0u64; 4];
+                _mm256_storeu_si256(values.as_mut_ptr().cast(), value);
+                let end = xs.len().min(4 * i + 4);
+                for (x, inv) in xs[4 * i..end].iter_mut().zip(values) {
+                    if *x != 0 {
+                        *x = inv;
+                    }
+                }
+            }
+            let mut first = [0u64; 4];
+            _mm256_storeu_si256(first.as_mut_ptr().cast(), acc);
+            for (x, inv) in xs[..4].iter_mut().zip(first) {
+                if *x != 0 {
+                    *x = inv;
+                }
+            }
+            xs.len()
+        }
+
+        fn append_full_scalar(
+            curve: &FastCurve,
+            ps: &[FastPoint],
+            qs: &[FastPoint],
+            inverses: &[u64],
+            out: &mut Vec<FastPoint>,
+        ) {
+            for ((&p, &q), &inverse) in ps.iter().zip(qs).zip(inverses) {
+                out.push(if inverse == 0 {
+                    curve.add(p, q)
+                } else {
+                    curve.add_with_lambda(p, q, curve.field.mul(p.y ^ q.y, inverse))
+                });
+            }
+        }
+
+        pub(super) unsafe fn add_full(
+            &self,
+            curve: &FastCurve,
+            ps: &[FastPoint],
+            qs: &[FastPoint],
+            inverses: &[u64],
+            out: &mut Vec<FastPoint>,
+            force_pclmul128: bool,
+        ) -> usize {
+            assert_eq!(ps.len(), qs.len());
+            assert_eq!(ps.len(), inverses.len());
+            if self.use_vpclmul && !force_pclmul128 {
+                self.add_full_wide(curve, ps, qs, inverses, out)
+            } else {
+                self.add_full_narrow(curve, ps, qs, inverses, out)
+            }
+        }
+
+        full_point_kernel!(add_full_wide, mul_vpclmul, "avx2,vpclmulqdq");
+        full_point_kernel!(add_full_narrow, mul_pclmul128, "avx2,pclmulqdq");
+
+        pub(super) fn backend(&self) -> &'static str {
+            if self.use_vpclmul {
+                "avx2-vpclmul"
+            } else {
+                "avx2-pclmul128"
+            }
+        }
+
+        #[cfg(test)]
+        pub(super) fn mul4(&self, a: &[u64; 4], b: &[u64; 4], force_pclmul128: bool) -> [u64; 4] {
+            let mut out = [0u64; 4];
+            // SAFETY: Simd256::new checks the target features.
+            unsafe {
+                let av = _mm256_loadu_si256(a.as_ptr() as *const __m256i);
+                let bv = _mm256_loadu_si256(b.as_ptr() as *const __m256i);
+                let value = if self.use_vpclmul && !force_pclmul128 {
+                    self.mul_vpclmul(av, bv)
+                } else {
+                    self.mul_pclmul128(av, bv)
+                };
+                _mm256_storeu_si256(out.as_mut_ptr() as *mut __m256i, value);
+            }
+            out
+        }
+
+        #[allow(clippy::too_many_arguments)]
+        pub(super) unsafe fn add_cached(
+            &self,
+            curve: &FastCurve,
+            ps: &[FastPoint],
+            qs: &[FastPoint],
+            out: &mut Vec<Option<u64>>,
+            scratch: &mut BatchScratch,
+            cache: &PrefixInverseTable,
+            strategy: u8,
+        ) -> Result<usize, &'static str> {
+            if strategy == 3 {
+                return self.add_cached_narrow::<false, 0, 0>(curve, ps, qs, out, scratch, cache);
+            }
+            if strategy == 2 {
+                // PCLMUL is available on every admitted host. Keep this narrow
+                // specialization explicit even on VPCLMUL-capable CPUs.
+                match (curve.field.n, curve.field.irr ^ (1u64 << curve.field.n)) {
+                    (15, 3) => {
+                        return self
+                            .add_cached_narrow::<false, 15, 3>(curve, ps, qs, out, scratch, cache)
+                    }
+                    (18, 9) => {
+                        return self
+                            .add_cached_narrow::<false, 18, 9>(curve, ps, qs, out, scratch, cache)
+                    }
+                    (21, 5) => {
+                        return self
+                            .add_cached_narrow::<false, 21, 5>(curve, ps, qs, out, scratch, cache)
+                    }
+                    (24, 27) => {
+                        return self
+                            .add_cached_narrow::<false, 24, 27>(curve, ps, qs, out, scratch, cache)
+                    }
+                    (27, 39) => {
+                        return self
+                            .add_cached_narrow::<false, 27, 39>(curve, ps, qs, out, scratch, cache)
+                    }
+                    _ => {}
+                }
+            }
+            match (self.use_vpclmul, strategy == 1 && self.n <= 32) {
+                (true, true) => self.add_cached_wide::<true>(curve, ps, qs, out, scratch, cache),
+                (true, false) => self.add_cached_wide::<false>(curve, ps, qs, out, scratch, cache),
+                (false, true) => {
+                    self.add_cached_narrow::<true, 0, 0>(curve, ps, qs, out, scratch, cache)
+                }
+                (false, false) => {
+                    self.add_cached_narrow::<false, 0, 0>(curve, ps, qs, out, scratch, cache)
+                }
+            }
+        }
+
+        #[target_feature(enable = "avx2,vpclmulqdq")]
+        unsafe fn add_cached_wide<const PACKED: bool>(
+            &self,
+            curve: &FastCurve,
+            ps: &[FastPoint],
+            qs: &[FastPoint],
+            out: &mut Vec<Option<u64>>,
+            scratch: &mut BatchScratch,
+            cache: &PrefixInverseTable,
+        ) -> Result<usize, &'static str> {
+            let mut vector_pairs = 0;
+            let full = ps.len() / 4 * 4;
+            out.reserve(ps.len());
+            for (pc, qc) in ps[..full]
+                .as_chunks::<4>()
+                .0
+                .iter()
+                .zip(qs[..full].as_chunks::<4>().0.iter())
+            {
+                let mut inv = [0u64; 4];
+                let normal = (0..4).all(|i| {
+                    if pc[i].infinity || qc[i].infinity || pc[i].x == qc[i].x {
+                        return false;
+                    }
+                    let Some(&value) = cache.inverses.get((pc[i].x ^ qc[i].x) as usize) else {
+                        return false;
+                    };
+                    inv[i] = value;
+                    value != 0
+                });
+                if !normal {
+                    curve.add_pairwise_abscissae_cached(pc, qc, out, scratch, cache)?;
+                    continue;
+                }
+                let numerator: [u64; 4] = std::array::from_fn(|i| pc[i].y ^ qc[i].y);
+                let offset: [u64; 4] = std::array::from_fn(|i| pc[i].x ^ qc[i].x ^ curve.a);
+                let lambda = self.mul_vpclmul(
+                    _mm256_loadu_si256(numerator.as_ptr() as *const __m256i),
+                    _mm256_loadu_si256(inv.as_ptr() as *const __m256i),
+                );
+                let x = _mm256_xor_si256(
+                    _mm256_xor_si256(
+                        if PACKED {
+                            self.square_packed_wide(lambda)
+                        } else {
+                            self.mul_vpclmul(lambda, lambda)
+                        },
+                        lambda,
+                    ),
+                    _mm256_loadu_si256(offset.as_ptr() as *const __m256i),
+                );
+                let mut xs = [0u64; 4];
+                _mm256_storeu_si256(xs.as_mut_ptr() as *mut __m256i, x);
+                out.extend(xs.into_iter().map(Some));
+                vector_pairs += 4;
+            }
+            curve.add_pairwise_abscissae_cached(&ps[full..], &qs[full..], out, scratch, cache)?;
+            Ok(vector_pairs)
+        }
+
+        #[target_feature(enable = "avx2,pclmulqdq")]
+        unsafe fn add_cached_narrow<const PACKED: bool, const N: u32, const TAIL: u64>(
+            &self,
+            curve: &FastCurve,
+            ps: &[FastPoint],
+            qs: &[FastPoint],
+            out: &mut Vec<Option<u64>>,
+            scratch: &mut BatchScratch,
+            cache: &PrefixInverseTable,
+        ) -> Result<usize, &'static str> {
+            let mut vector_pairs = 0;
+            let full = ps.len() / 4 * 4;
+            out.reserve(ps.len());
+            for (pc, qc) in ps[..full]
+                .as_chunks::<4>()
+                .0
+                .iter()
+                .zip(qs[..full].as_chunks::<4>().0.iter())
+            {
+                let mut inv = [0u64; 4];
+                let normal = (0..4).all(|i| {
+                    if pc[i].infinity || qc[i].infinity || pc[i].x == qc[i].x {
+                        return false;
+                    }
+                    let Some(&value) = cache.inverses.get((pc[i].x ^ qc[i].x) as usize) else {
+                        return false;
+                    };
+                    inv[i] = value;
+                    value != 0
+                });
+                if !normal {
+                    curve.add_pairwise_abscissae_cached(pc, qc, out, scratch, cache)?;
+                    continue;
+                }
+                let numerator: [u64; 4] = std::array::from_fn(|i| pc[i].y ^ qc[i].y);
+                let offset: [u64; 4] = std::array::from_fn(|i| pc[i].x ^ qc[i].x ^ curve.a);
+                let lambda = self.mul_pclmul128_reduction::<N, TAIL>(
+                    _mm256_loadu_si256(numerator.as_ptr() as *const __m256i),
+                    _mm256_loadu_si256(inv.as_ptr() as *const __m256i),
+                );
+                let x = _mm256_xor_si256(
+                    _mm256_xor_si256(
+                        if PACKED {
+                            self.square_packed_narrow(lambda)
+                        } else {
+                            self.mul_pclmul128_reduction::<N, TAIL>(lambda, lambda)
+                        },
+                        lambda,
+                    ),
+                    _mm256_loadu_si256(offset.as_ptr() as *const __m256i),
+                );
+                let mut xs = [0u64; 4];
+                _mm256_storeu_si256(xs.as_mut_ptr() as *mut __m256i, x);
+                out.extend(xs.into_iter().map(Some));
+                vector_pairs += 4;
+            }
+            curve.add_pairwise_abscissae_cached(&ps[full..], &qs[full..], out, scratch, cache)?;
+            Ok(vector_pairs)
+        }
+    }
 }
 
 /// Eight-lane AVX-512 field arithmetic for the decomposition scan.
@@ -1625,6 +2472,225 @@ mod tests {
         }
     }
 
+    #[cfg(all(target_arch = "x86_64", suite_avx512))]
+    #[test]
+    fn avx2_cached_kernel_matches_scalar_arithmetic() {
+        if !(is_x86_feature_detected!("avx2") && is_x86_feature_detected!("pclmulqdq")) {
+            eprintln!("skipped: no AVX2 + PCLMUL");
+            return;
+        }
+        let mut rng = StdRng::seed_from_u64(0x256CA5E);
+        let mut accepted = 0;
+        for n in 2..=63 {
+            let field = nb_field(n);
+            let Some(kernel) = simd256::Simd256::new(&field) else {
+                continue;
+            };
+            accepted += 1;
+            for k in 0..200 {
+                let a: [u64; 4] = std::array::from_fn(|i| {
+                    if k == 0 {
+                        [0, 1, field.mask, field.mask][i]
+                    } else {
+                        rng.gen::<u64>() & field.mask
+                    }
+                });
+                let b: [u64; 4] = std::array::from_fn(|i| {
+                    if k == 0 {
+                        [field.mask, field.mask, 1, field.mask][i]
+                    } else {
+                        rng.gen::<u64>() & field.mask
+                    }
+                });
+                let got = kernel.mul4(&a, &b, false);
+                let narrow = kernel.mul4(&a, &b, true);
+                assert_eq!(got, narrow, "native/narrow n={n}");
+                let squares = kernel.square4(&a, false);
+                assert_eq!(
+                    squares,
+                    kernel.square4(&a, true),
+                    "native/narrow square n={n}"
+                );
+                for lane in 0..4 {
+                    assert_eq!(
+                        squares[lane],
+                        field.mul(a[lane], a[lane]),
+                        "square n={n}, lane={lane}"
+                    );
+                }
+                for lane in 0..4 {
+                    assert_eq!(got[lane], field.mul(a[lane], b[lane]), "n={n}, lane={lane}");
+                }
+            }
+        }
+        assert!(accepted >= 50);
+        eprintln!("AVX2 vector arithmetic accepted {accepted} field widths");
+    }
+
+    #[test]
+    fn pairwise_abscissae_match_full_points_including_exceptions() {
+        for n in [7, 13, 19, 23, 31, 53, 61] {
+            let kc = KoblitzCurve::new(0, n).unwrap();
+            let fc = FastCurve::new(&kc.curve).unwrap();
+            let mut points: Vec<_> = random_points(&kc, 12, 29)
+                .iter()
+                .map(|p| fc.lift(p))
+                .collect();
+            points.extend([FastPoint::INFINITY, FastPoint::affine(0, 1)]);
+            let mut ps = Vec::new();
+            let mut qs = Vec::new();
+            for &p in &points {
+                for &q in &points {
+                    ps.push(p);
+                    qs.push(q);
+                }
+                for q in [p, fc.neg(p)] {
+                    ps.push(p);
+                    qs.push(q);
+                }
+            }
+            let mut scratch = BatchScratch::default();
+            let mut actual = vec![Some(123)];
+            fc.add_pairwise_abscissae(&ps, &qs, &mut actual, &mut scratch);
+            assert_eq!(actual[0], Some(123));
+            let expected: Vec<_> = ps
+                .iter()
+                .zip(&qs)
+                .map(|(&p, &q)| {
+                    let s = fc.add(p, q);
+                    (!s.infinity).then_some(s.x)
+                })
+                .collect();
+            assert_eq!(&actual[1..], &expected, "n={n}");
+            let mut portable = Vec::new();
+            fc.add_pairwise_abscissae_body(&ps, &qs, &mut portable, &mut scratch, None);
+            assert_eq!(portable, expected, "portable n={n}");
+            let cache = PrefixInverseTable::new(&fc.field, 3).unwrap();
+            assert_eq!(cache.bytes(), 64);
+            let mut cached = Vec::new();
+            fc.add_pairwise_abscissae_cached(&ps, &qs, &mut cached, &mut scratch, &cache)
+                .unwrap();
+            assert_eq!(cached, expected, "cached/inverse fallback n={n}");
+            let mut vector = Vec::new();
+            let count = fc
+                .add_pairwise_abscissae_vector_cached(&ps, &qs, &mut vector, &mut scratch, &cache)
+                .unwrap();
+            assert_eq!(vector, expected, "vector cached / exact fallback n={n}");
+            assert!(count <= ps.len());
+            let mut packed = Vec::new();
+            let packed_count = fc
+                .add_pairwise_abscissae_vector_packed_cached(
+                    &ps,
+                    &qs,
+                    &mut packed,
+                    &mut scratch,
+                    &cache,
+                )
+                .unwrap();
+            assert_eq!(packed, expected, "packed square / exact fallback n={n}");
+            assert_eq!(packed_count, count);
+
+            assert!(PrefixInverseTable::new(&fc.field, 0).is_err());
+            assert!(PrefixInverseTable::new(&fc.field, 13).is_err());
+            let other = PrefixInverseTable::new(&nb_field(if n == 7 { 13 } else { 7 }), 3).unwrap();
+            let mut unchanged = vec![Some(99)];
+            assert!(fc
+                .add_pairwise_abscissae_cached(&ps, &qs, &mut unchanged, &mut scratch, &other)
+                .is_err());
+            assert_eq!(unchanged, vec![Some(99)]);
+
+            let mut empty = Vec::new();
+            fc.add_pairwise_abscissae(&[], &[], &mut empty, &mut scratch);
+            assert!(empty.is_empty());
+        }
+    }
+
+    #[test]
+    fn const_cached_reduction_matches_general_with_exceptions_and_tails() {
+        let mut rng = StdRng::seed_from_u64(0xC057_F1E1D);
+        for (n, tail) in [(15, 3u64), (18, 9), (21, 5), (24, 27), (27, 39), (19, 39)] {
+            let field = nb_field(n);
+            let curve = FastCurve {
+                n,
+                a: 1,
+                b: 1,
+                field,
+                #[cfg(all(target_arch = "x86_64", suite_avx512))]
+                simd: None,
+            };
+            let exact = matches!(n, 15 | 18 | 21 | 24 | 27);
+            if exact {
+                assert_eq!(curve.field.irr, (1u64 << n) | tail);
+            }
+            assert_eq!(curve.has_const_vector_field(), exact);
+            let mut ps: Vec<_> = (0..97)
+                .map(|_| {
+                    FastPoint::affine(rng.gen::<u64>() & 7, rng.gen::<u64>() & curve.field.mask)
+                })
+                .collect();
+            let mut qs: Vec<_> = ps
+                .iter()
+                .map(|p| FastPoint::affine(p.x ^ 1, rng.gen::<u64>() & curve.field.mask))
+                .collect();
+            ps[12] = FastPoint::INFINITY;
+            qs[13] = FastPoint::INFINITY;
+            qs[14] = ps[14];
+            qs[15] = curve.neg(ps[15]);
+            let cache = PrefixInverseTable::new(&curve.field, 3).unwrap();
+            let mut scratch = BatchScratch::default();
+            for len in [0, 1, 3, 4, 7, 15, 16, 17, 96, 97] {
+                let mut expected = vec![Some(123)];
+                curve
+                    .add_pairwise_abscissae_cached(
+                        &ps[..len],
+                        &qs[..len],
+                        &mut expected,
+                        &mut scratch,
+                        &cache,
+                    )
+                    .unwrap();
+                let mut got = vec![Some(123)];
+                let count = curve
+                    .add_pairwise_abscissae_vector_const_cached(
+                        &ps[..len],
+                        &qs[..len],
+                        &mut got,
+                        &mut scratch,
+                        &cache,
+                    )
+                    .unwrap();
+                let mut dynamic = vec![Some(123)];
+                let dynamic_count = curve
+                    .add_pairwise_abscissae_vector_narrow_cached(
+                        &ps[..len],
+                        &qs[..len],
+                        &mut dynamic,
+                        &mut scratch,
+                        &cache,
+                    )
+                    .unwrap();
+                assert_eq!(dynamic, expected, "forced narrow n={n}, len={len}");
+                assert_eq!(dynamic_count, count);
+                assert_eq!(got, expected, "n={n}, len={len}");
+                if exact && len >= 4 && curve.cached_vector_backend() != "scalar" {
+                    assert!(count >= 4, "specialized normal block must execute");
+                }
+            }
+            let other = PrefixInverseTable::new(&nb_field(7), 3).unwrap();
+            let mut out = vec![Some(123)];
+            assert!(curve
+                .add_pairwise_abscissae_vector_const_cached(
+                    &ps,
+                    &qs,
+                    &mut out,
+                    &mut scratch,
+                    &other
+                )
+                .is_err());
+            assert_eq!(out, [Some(123)]);
+        }
+    }
+
     #[test]
     fn batched_additions_equal_individual_ones() {
         let kc = KoblitzCurve::new(0, 19).unwrap();
@@ -1648,6 +2714,213 @@ mod tests {
                 assert_eq!(*sum, fc.add(p, *q));
             }
         }
+    }
+
+    #[cfg(all(target_arch = "x86_64", suite_avx512))]
+    #[test]
+    fn vector_inverse_products_match_existing_across_widths_zeros_and_lengths() {
+        if !(is_x86_feature_detected!("avx2") && is_x86_feature_detected!("pclmulqdq")) {
+            eprintln!("skipped: no AVX2/PCLMUL inverse product kernel");
+            return;
+        }
+        let mut rng = StdRng::seed_from_u64(0x01A7_E256);
+        let mut accepted = 0;
+        for n in 2..=FastCurve::MAX_DEGREE {
+            let field = nb_field(n);
+            let Some(kernel) = simd256::Simd256::new(&field) else {
+                continue;
+            };
+            accepted += 1;
+            for len in [0, 1, 3, 4, 7, 8, 9, 12, 15, 16, 17, 31] {
+                for pattern in 0..16 {
+                    let mut xs: Vec<_> = (0..len)
+                        .map(|i| {
+                            if pattern == 0
+                                || (pattern == 1 && i % 2 == 0)
+                                || (pattern == 2 && i + 1 != len)
+                            {
+                                0
+                            } else {
+                                rng.gen::<u64>() & field.mask
+                            }
+                        })
+                        .collect();
+                    let original = xs.clone();
+                    let mut expected = xs.clone();
+                    field.batch_inv(&mut expected, &mut Vec::new());
+                    // SAFETY: constructor checks features and the helper validates length/inputs.
+                    let count = unsafe { kernel.batch_inverse_narrow(&field, &mut xs) };
+                    if (8..=16).contains(&len) && original.iter().any(|&x| x != 0) {
+                        assert_eq!(count, len);
+                        assert_eq!(xs, expected, "n={n}, len={len}, pattern={pattern}");
+                    } else {
+                        assert_eq!(count, 0);
+                        assert_eq!(xs, original);
+                    }
+                }
+            }
+            let mut invalid = vec![field.mask + 1; 16];
+            let before = invalid.clone();
+            assert_eq!(
+                unsafe { kernel.batch_inverse_narrow(&field, &mut invalid) },
+                0
+            );
+            assert_eq!(invalid, before);
+        }
+        assert!(accepted >= 50);
+        eprintln!("SIMD inverse products accepted {accepted} field widths");
+    }
+
+    #[test]
+    fn vector_inverse_points_preserve_valid_curve_outputs_append_and_scratch() {
+        for n in [7, 13, 19, 23, 31, 53, 61] {
+            let kc = KoblitzCurve::new(0, n).unwrap();
+            let curve = FastCurve::new(&kc.curve).unwrap();
+            let points: Vec<_> = random_points(&kc, 40, 0x1A7E + u64::from(n))
+                .iter()
+                .map(|p| curve.lift(p))
+                .collect();
+            let ps: Vec<_> = (0..37).map(|i| points[i % points.len()]).collect();
+            let mut qs: Vec<_> = ps
+                .iter()
+                .map(|p| *points.iter().find(|q| q.x != p.x).unwrap())
+                .collect();
+            qs[0] = FastPoint::INFINITY;
+            qs[1] = ps[1];
+            qs[2] = curve.neg(ps[2]);
+            let mut scratch = BatchScratch::default();
+            for len in [0, 1, 3, 4, 7, 8, 9, 12, 15, 16, 17, 37] {
+                let mut expected = vec![FastPoint::INFINITY];
+                expected.extend(
+                    ps[..len]
+                        .iter()
+                        .zip(&qs[..len])
+                        .map(|(&p, &q)| curve.add(p, q)),
+                );
+                let mut ordinary = vec![FastPoint::INFINITY];
+                let old_count =
+                    curve.add_pairwise_vector(&ps[..len], &qs[..len], &mut ordinary, &mut scratch);
+                let mut actual = vec![FastPoint::INFINITY];
+                let (points_count, inverses_count) = curve.add_pairwise_vector_inverse(
+                    &ps[..len],
+                    &qs[..len],
+                    &mut actual,
+                    &mut scratch,
+                );
+                assert_eq!(actual, expected, "n={n},len={len}");
+                assert_eq!(actual, ordinary);
+                assert_eq!(points_count, old_count);
+                assert_eq!(
+                    inverses_count > 0,
+                    (8..=16).contains(&len) && curve.cached_vector_backend() != "scalar"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn vector_full_points_match_scalar_and_batched_with_exceptions() {
+        for n in [7, 13, 19, 23, 31, 53, 61] {
+            let kc = KoblitzCurve::new(0, n).unwrap();
+            let curve = FastCurve::new(&kc.curve).unwrap();
+            let mut points: Vec<_> = random_points(&kc, 12, 63)
+                .iter()
+                .map(|p| curve.lift(p))
+                .collect();
+            points.extend([FastPoint::INFINITY, FastPoint::affine(0, 1)]);
+            let mut ps = Vec::new();
+            let mut qs = Vec::new();
+            for &p in &points {
+                for &q in &points {
+                    ps.push(p);
+                    qs.push(q);
+                }
+                for q in [p, curve.neg(p)] {
+                    ps.push(p);
+                    qs.push(q);
+                }
+            }
+            let expected: Vec<_> = ps.iter().zip(&qs).map(|(&p, &q)| curve.add(p, q)).collect();
+            let mut scratch = BatchScratch::default();
+            for len in [0, 1, 3, 4, 7, 15, 16, 17, ps.len()] {
+                let mut ordinary = vec![FastPoint::INFINITY];
+                curve.add_pairwise(&ps[..len], &qs[..len], &mut ordinary, &mut scratch);
+                let mut vector = vec![FastPoint::INFINITY];
+                let count =
+                    curve.add_pairwise_vector(&ps[..len], &qs[..len], &mut vector, &mut scratch);
+                assert_eq!(vector, ordinary, "batch n={n} len={len}");
+                assert_eq!(&vector[1..], &expected[..len], "scalar n={n} len={len}");
+                assert!(count <= len && count.is_multiple_of(4));
+                if len == ps.len() && curve.cached_vector_backend() != "scalar" {
+                    assert!(count > 0, "vector path n={n}");
+                }
+            }
+        }
+    }
+
+    #[cfg(all(target_arch = "x86_64", suite_avx512))]
+    #[test]
+    fn vector_full_formulas_cover_supported_widths_and_forced_pclmul() {
+        if !(is_x86_feature_detected!("avx2") && is_x86_feature_detected!("pclmulqdq")) {
+            eprintln!("skipped: no AVX2 + PCLMUL");
+            return;
+        }
+        let mut rng = StdRng::seed_from_u64(0xF011_CA5E);
+        let mut accepted = 0;
+        for n in 2..=FastCurve::MAX_DEGREE {
+            let field = nb_field(n);
+            let Some(kernel) = simd256::Simd256::new(&field) else {
+                continue;
+            };
+            accepted += 1;
+            let curve = FastCurve {
+                n,
+                a: 1,
+                b: 1,
+                field,
+                simd: None,
+            };
+            let mut ps: Vec<_> = (0..37)
+                .map(|_| {
+                    FastPoint::affine(
+                        rng.gen::<u64>() & curve.field.mask,
+                        rng.gen::<u64>() & curve.field.mask,
+                    )
+                })
+                .collect();
+            let mut qs: Vec<_> = (0..37)
+                .map(|_| {
+                    FastPoint::affine(
+                        rng.gen::<u64>() & curve.field.mask,
+                        rng.gen::<u64>() & curve.field.mask,
+                    )
+                })
+                .collect();
+            // Formula coverage uses canonical coordinates (not a curve census);
+            // the companion test uses actual curve points and both infinities.
+            ps[0] = FastPoint::INFINITY;
+            qs[1] = FastPoint::INFINITY;
+            qs[2] = ps[2];
+            qs[3] = curve.neg(ps[3]);
+            // Guarantee a normal block even in the smallest accepted field.
+            for i in 4..8 {
+                qs[i].x = ps[i].x ^ 1;
+            }
+            let expected: Vec<_> = ps.iter().zip(&qs).map(|(&p, &q)| curve.add(p, q)).collect();
+            let mut scratch = BatchScratch::default();
+            let mut vector = Vec::new();
+            let count = curve.add_pairwise_vector(&ps, &qs, &mut vector, &mut scratch);
+            assert_eq!(vector, expected, "selected vector n={n}");
+            let mut narrow = Vec::new();
+            // SAFETY: kernel construction checks AVX2/PCLMUL support.
+            let narrow_count =
+                unsafe { kernel.add_full(&curve, &ps, &qs, &scratch.dens, &mut narrow, true) };
+            assert_eq!(narrow, expected, "forced ordinary PCLMUL n={n}");
+            assert_eq!(count, narrow_count);
+            assert!(count > 0, "normal vector pairs n={n}");
+        }
+        assert!(accepted >= 50);
+        eprintln!("AVX2 full-point vector formulas accepted {accepted} field widths");
     }
 
     #[test]

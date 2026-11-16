@@ -1,0 +1,93 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-13T17:29:59Z",
+ "id": "PCC-20261113-1e3436",
+ "kind": "statement",
+ "producer": {
+  "commit": "5b459ecae1fc469bf9c3bd5fdfe26a0ac0a09d86",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/gluing-models-compile-correction-01/compile.exit",
+    "sha256": "39b8dc3fc8b44765c8e6f1adee04c5b465e555ab791cc42d0d9e810d5b64297c"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/gluing-models-compile-correction-01/compile.log.xz",
+    "sha256": "0ec44b41c25bcdf6d26bc9a8b3e7abd54113c734682a119756d111ab39e06141"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/gluing-models-compile-correction-01/correction.json",
+    "sha256": "4a25e5e57e229aeb66a9b298025c3a263c8a01f0ce54abeb0388f1deb4bc33eb"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/gluing-models-compile-correction-01/failed-lib.rs.xz",
+    "sha256": "1e33f08c16312671cec23d46406c7ac0ebb6bb5cf46ba558342b555637f1488e"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/gluing-models-compile-correction-01/guard.exit",
+    "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/gluing-models-compile-correction-01/guards.json",
+    "sha256": "139dd1c9d88ba73fc3e93eff4037b271bad1c59c984fc739adf3061886f564b6"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/gluing-models-compile-correction-01/native.exit",
+    "sha256": "39b8dc3fc8b44765c8e6f1adee04c5b465e555ab791cc42d0d9e810d5b64297c"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/gluing-models-compile-correction-01/native.log.xz",
+    "sha256": "0ec44b41c25bcdf6d26bc9a8b3e7abd54113c734682a119756d111ab39e06141"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/gluing-models-compile-correction-01/original-command.sh",
+    "sha256": "187454e630f40e2201367deff6cc285b3caf84cb3c3238b4644a367d235e8347"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/gluing-models-compile-correction-01/plan.json",
+    "sha256": "235728659bbcc1660bf11540d81dc7d844fb728ed52d7abd6e9859e1777f9873"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/gluing-models-compile-correction-01/prepare.py",
+    "sha256": "b59f3baf4493af7f30d2bd358bd9338ad38bc419b4c4bf772578f0b8b695c58d"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Gluing models native01 compiler exits101 on FOUR mistaken FpR constructor argument types before native execution; all2392source hashes unchanged. Wholefailedsource/compile/native/process/guard receipts retained. Prospective API-only correction: original FpR::from_modulus for same pinnedK/L polynomials and FpR::new(p,1) forprimefield. No mathematical sourceinput/candidate/formula/threshold/test/engine change;27369d frozen. Preserve whole01 and launch fresh02 after correction."
+}

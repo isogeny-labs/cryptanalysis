@@ -1,0 +1,20 @@
+digraph IC {
+  graph [rankdir=TB, bgcolor="white", pad=0.2, nodesep=0.22, ranksep=0.35];
+  node [shape=box, style="rounded,filled", fillcolor="#edf3fa", fontname="DejaVu Sans", fontsize=11];
+  edge [color="#526d83", arrowsize=0.6];
+  target [label="Target curve E/Fp\nSemaev quadratic q(t)"];
+  aux [label="Auxiliary elliptic maps\ncentered rational stages\npre-split final pair"];
+  power [label="Power fibers: S | p-1\ncube / seventh stages"];
+  torus [label="Norm-one traces: S | p+1\nx^2-2 stages\none-root trace-orbit setup"];
+  values [label="Exact product over raw roots\nscalar / packed evaluation", fillcolor="#dcefe9"];
+  direct [label="Same signed columns\nbatched direct subtraction", fillcolor="#fff0d9"];
+  check [label="Target-group relation check\ndistinct rows / signed graph"];
+  scalar [label="Recovery certificate\nkG = Q"];
+  note -> target [style=invis];
+  target -> {aux power torus direct};
+  {aux power torus} -> values;
+  values -> check;
+  direct -> check;
+  check -> scalar;
+  note [shape=note, label="Implementation leads; timing unestablished.\nNo target-DLP transport to the auxiliary curve.", fillcolor="#ffffff", fontsize=10];
+}

@@ -1,0 +1,11 @@
+digraph replay {
+  graph [rankdir=TB,bgcolor="white",pad="0.12",nodesep="0.4",ranksep="0.3"];
+  node [shape=box,style="rounded,filled",fontname="DejaVu Sans",fontsize=11,fillcolor="#eef4f5",color="#49616c"];
+  edge [fontname="DejaVu Sans",fontsize=10,color="#49616c"];
+  pin [label="Exact crypto338d154b\nProtocol9653c3 / source tree5c1013fc"];
+  local [label="Isolated replay01 / 814cfc\n35native /23algebra /7exact outputs\n35Lean modules /203compiled /177written /0trusted",fillcolor="#e5f2e8"];
+  guards [label="706upstream +163consumer hashes unchanged\nWrongHEAD /dirtynewJSON /missinggrep reject2\nAlways-failing rg shim never invoked"];
+  custody [label="Entire143-file tree /64540-byte tar.xz\nPer-file SHA /whole hashes /exact roundtrip\nScientific standing unsigned",fillcolor="#fff6df"];
+  ci [label="Next:exact new consumer CI\nOld98 reference +old32 independent +new35 replay\nBoth prior jobs/pins remain unchanged",style="rounded,dashed,filled",fillcolor="#fafafa"];
+  pin -> local;local -> guards;guards -> custody;custody -> ci [style=dashed];
+}

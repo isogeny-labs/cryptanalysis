@@ -1,0 +1,121 @@
+{
+  "arms": {
+    "auxiliary": {
+      "columns_blake3": "b2a2952cdac9af9111db4cfbd575c0c490b15cace6557677c2397589b8e07b5f",
+      "derived_counts": {
+        "distinct_rows_per_query": {
+          "denominator": 129,
+          "numerator": 8
+        },
+        "hits_per_query": {
+          "denominator": 129,
+          "numerator": 13
+        }
+      },
+      "status": "complete",
+      "stop_reason": "QueryBudget",
+      "work": {
+        "duplicate_rows": 5,
+        "generated_targets": 136,
+        "lane_rounds": 17,
+        "queries": 129,
+        "relations": 8
+      }
+    },
+    "random": {
+      "columns_blake3": "5e06bbcad403332214447048fc83a9e4469870ff396e5a54140946122898818b",
+      "derived_counts": {
+        "distinct_rows_per_query": {
+          "denominator": 129,
+          "numerator": 8
+        },
+        "hits_per_query": {
+          "denominator": 129,
+          "numerator": 19
+        }
+      },
+      "status": "complete",
+      "stop_reason": "QueryBudget",
+      "work": {
+        "duplicate_rows": 11,
+        "generated_targets": 136,
+        "lane_rounds": 17,
+        "queries": 129,
+        "relations": 8
+      }
+    },
+    "same_base": {
+      "columns_blake3": "b2a2952cdac9af9111db4cfbd575c0c490b15cace6557677c2397589b8e07b5f",
+      "derived_counts": {
+        "distinct_rows_per_query": {
+          "denominator": 129,
+          "numerator": 8
+        },
+        "hits_per_query": {
+          "denominator": 129,
+          "numerator": 13
+        }
+      },
+      "status": "complete",
+      "stop_reason": "QueryBudget",
+      "work": {
+        "duplicate_rows": 5,
+        "generated_targets": 136,
+        "lane_rounds": 17,
+        "queries": 129,
+        "relations": 8
+      }
+    }
+  },
+  "common": {
+    "binary_blake3": "d7693120bd3ab0a5c8c55cfd741a3b3ce567d96ebe5dc499a45f14b581b00e3e",
+    "configured_search": {
+      "max_millis": null,
+      "max_proof_nodes": 4194304,
+      "max_queries": 129,
+      "max_relations": 10000,
+      "seed": 43,
+      "walk_lanes": 8
+    },
+    "field_bits": 7,
+    "public": {
+      "P": [
+        3,
+        46
+      ],
+      "Q": [
+        6,
+        122
+      ],
+      "a": 2,
+      "b": 51,
+      "n": 109,
+      "p": 127
+    },
+    "source_commit": "3ddc32380f9b59e40efd4e7bc44c43ebdd501f59"
+  },
+  "end_to_end_cost_comparison": null,
+  "issues": [],
+  "qualification": "unsigned producer alignment and derived counters only",
+  "qualified_speedup": null,
+  "random_base_coincides_with_special": false,
+  "raw_data": [
+    {
+      "arm": "auxiliary",
+      "path": "/workspace/cryptanalysis-pr/experiments/prime-field-auxiliary-ic/random-vs-special/alignment-evidence/public-test-fixture/auxiliary.json",
+      "sha256": "121b2818f8832b7852fd27a3a1a24587e9ecc287586b18df56e8de313c68e322"
+    },
+    {
+      "arm": "same_base",
+      "path": "/workspace/cryptanalysis-pr/experiments/prime-field-auxiliary-ic/random-vs-special/alignment-evidence/public-test-fixture/same_base.json",
+      "sha256": "df913c4708bcd243da0488367a4fc5a2519bf6bdbf6b10436275d49c97227030"
+    },
+    {
+      "arm": "random",
+      "path": "/workspace/cryptanalysis-pr/experiments/prime-field-auxiliary-ic/random-vs-special/alignment-evidence/public-test-fixture/random.json",
+      "sha256": "8637e952294b7e9bb45ae66765268efdd2041fa3fb1567c5d683f259ebfbecaa"
+    }
+  ],
+  "schema": "auxiliary-ic-relation-comparison/v1",
+  "status": "aligned"
+}

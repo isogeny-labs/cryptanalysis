@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-15T01:34:58Z",
+ "id": "PCC-20261115-6ad0ab",
+ "kind": "theorem",
+ "producer": {
+  "commit": "70ec53e5a297a47e8c933dad1b58e870211b16fa",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "f8fc0fa099ea7626e2e652e30042bbecf27639884495ecac9eeeb9d2277f3773",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/fixed-jacobian-chain-evaluator-01/lean/ChainDescent.lean",
+   "theorem": "ChainDescent.norm_half_difference_in_kernel"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Conditional function and IntModule algebra for correction completeness: square/cube fixedness, equivariant image, rational two-torsion averaging, norm-half kernel membership, kernel transport, half-choice independence and Frobenius-fixed output. Both original gates8roots0trusted. No desired quotient beta or corrected evaluator assumed. Actual HLP norm-kernel identities, encoded fields/varieties/Frobenius, full fixed-kernel transport, Picard/program/descent remain explicit bridges; native PhaseA geometry is separate, complete chain/cost pending.",
+ "statement": "theorem norm_half_difference_in_kernel {A J : Type} [IntModule A] [IntModule J] (phi : A \u2192 J) (norm : J \u2192 A) (norm_sub : \u2200 x y, norm (x-y)=norm x-norm y) (dual : \u2200 a, norm (phi a)=(2 : Int) \u2022 a) (x : J) (p : A) (half : (2 : Int) \u2022 p=norm x) : norm (x-phi p)=0"
+}

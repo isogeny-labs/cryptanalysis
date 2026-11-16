@@ -1,0 +1,27 @@
+digraph {
+ graph [rankdir=TB,bgcolor="white",pad="0.12",ranksep="0.45",nodesep="0.3"];
+ node [shape=box,style="rounded,filled",fontname="DejaVu Sans",fontsize=10.5,color="#456273",fillcolor="#edf4f4"];
+ edge [fontname="DejaVu Sans",fontsize=10,color="#397b64"];
+ J0 [label="Jac(C0)/F101
+y²=z⁶+6z⁴+13z²+56"];
+ JT [label="Jac(T20)/F101
+y²=z⁶+46z⁵+6z⁴+50z³+74z²+12z+100"];
+ A0 [label="E0(1,46) × F0(44,21)
+orders109 ×113"];
+ A2 [label="E2(59,27) × F0(44,21)
+orders109 ×113"];
+ {rank=same;J0;JT} {rank=same;A0;A2}
+ J0 -> JT [label="Accepted F=R20 Phi49
+global degree196"];
+ J0 -> A0 [label="N0:global degree4/two degree2 covers
+NEW F101 coordinate evaluation PROPOSED",style=dashed,color="#9a6924"];
+ A0 -> A2 [label="Existing diag(alpha49,id) ·degree49
+normalized7+7 through E1(26,58)"];
+ JT -> A2 [label="Existing M ·global degree16
+both adjoint compositions[4]"];
+ n [shape=note,fillcolor="#fff2de",label="Proposed rational forward:PT diag(55,57) diag(alpha49,id) N0
+Proposed inverse:P0 diag(104,85) diag(beta49,id) M
+Public finite-group scalars are NOT global inverse isogenies
+Equality with accepted chain uses actual norm diagram +injectivity"];
+ A2 -> n [style=invis];
+}

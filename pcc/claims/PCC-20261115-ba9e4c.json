@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-15T08:38:37Z",
+ "id": "PCC-20261115-ba9e4c",
+ "kind": "theorem",
+ "producer": {
+  "commit": "e633524f33e62c4ffa273ffefd4a8ea3915ef93d",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "fcd4c94561b1a3b068c63053e4e96ab902675d8687bff0eae8642a22f22813e7",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/original-full-evaluator-01/lean/PrimeRecovery.lean",
+   "theorem": "OriginalFullPrimeRecovery.recover_prime_summand"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Conditional IntModule CRT recovery of the prime summand from2p plus arbitrary four-torsion; explicit ellannihilation andcofactor4annihilation. Ordinary Lean kernel checks actualoriginal scalar9705756=4*2426439, divisible4 andinverse2mod2773073, Bezout quotient-7. This repairs onlythe independent test oracle; not inverse2 onthefullgroup. Bothoriginalgates2roots0trusted; actualfield/HLP/program bridges explicit; unsigned.",
+ "statement": "theorem recover_prime_summand {A : Type} [IntModule A] (p t : A) (ell r m quotient : Int) (prime_ann : ell \u2022 p=0) (cofactor_ann : (4 : Int) \u2022 t=0) (inverse_two : r*2+quotient*ell=1) (multiple_four : r=4*m) : r \u2022 ((2 : Int) \u2022 p+t)=p"
+}

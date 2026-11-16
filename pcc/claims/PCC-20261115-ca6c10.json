@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-15T23:20:03Z",
+ "id": "PCC-20261115-ca6c10",
+ "kind": "theorem",
+ "producer": {
+  "commit": "6bb2516b64e7112356e58e45da590d60591c0461",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "d58e16a763d7ee5e675de76f8927d053387d5cf97267fcaebb6f1e232c2ef966",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-lp-presentation-01/lean/LPProjection.lean",
+   "theorem": "LPProjection.two_odd_triangles"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Known ring cancellations and finite homogeneous linear-kernel projection under explicit full-projection-span, constraint-span, annihilation and valid-full-lift hypotheses. Both unchanged original gates audit13declarations: ten named substantive theorems and three generated dot equations, standard foundations only,0trusted. No new identity or novelty, no concrete numerical basis-completeness theorem, no q223 population, Picard character or solver/program bridge, solve/cost/complexity claim. Original native identity checker and SHA included unchanged; deterministic extra-point diagnostics are not signed independent execution proofs. Unsigned local theorem binding.",
+ "statement": "theorem two_odd_triangles {K : Type} [CommRing K] (a b c d e : K) : (((a + b) - (b + c)) + (c + a)) - (((a + d) - (d + e)) + (e + a)) = 0"
+}

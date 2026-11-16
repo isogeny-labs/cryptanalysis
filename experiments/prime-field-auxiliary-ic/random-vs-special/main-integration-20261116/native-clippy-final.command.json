@@ -1,0 +1,25 @@
+{
+  "source_commit": "f748c746854479e3a04546b2f860026b345df8b7",
+  "argv": [
+    "/home/agent/.cargo/bin/cargo",
+    "+stable",
+    "clippy",
+    "--locked",
+    "--all-targets",
+    "--manifest-path",
+    "bindings/rust/Cargo.toml",
+    "-p",
+    "hashed-ecdl-tensor",
+    "-p",
+    "ca-curve-audit",
+    "--",
+    "-D",
+    "warnings"
+  ],
+  "explicit_environment": {
+    "CARGO_BUILD_JOBS": "2"
+  },
+  "timeout_seconds": 300,
+  "exit_code": 0,
+  "scope": "producer development correctness check; no benchmark"
+}

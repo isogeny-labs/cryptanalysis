@@ -1,0 +1,12 @@
+{
+  "schema": "xedni-isomorphic-family-admission-protocol-v1",
+  "question": "Do four rationally isomorphic integral models with identity reduction enlarge bounded-coordinate pair admission?",
+  "parent_fixed_curve_result_sha256": "79f6931b7b361285fd05840891907ccb751469cd1ebd171418de12930f765d94",
+  "parent_selected_pair_theorem_sha256": "04a887ab028400eca35a5acc8a810ef040fe9060934b01c843faa653b78ce370",
+  "base_curve": "E0/Q: y^2=x^3-x-2, P=(2,2)",
+  "model_law": "for each field prime p and j in {0,1,2,3}, let a=j*p, X=x+a, Y=y, E_j: Y^2=X^3-3aX^2+(3a^2-1)X+(-a^3+a-2), P_j=(2+a,2)",
+  "query_law": "same full ordered q^2 public-point pairs and K=4 as parent",
+  "candidate_policy": "test all four model images for every ordered pair in j order; retain four-bit mask and every failed pair",
+  "charged_counts": "four model constructions per field, four candidate pair-membership tests per query; group-point setup and Sage audit separate",
+  "claim_boundary": "models are rationally isomorphic and reduce by the identity map; equality of their bounded images does not establish a bound for nonisomorphic adaptive curves"
+}

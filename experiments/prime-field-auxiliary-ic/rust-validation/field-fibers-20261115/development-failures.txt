@@ -1,0 +1,33 @@
+Development failures recorded from the tool transcript (not original process
+stdout captures; exact pre-commit source bytes were not checkpointed).
+
+1. Command: cargo test --release --manifest-path crates/prime-field-auxiliary-ic/Cargo.toml --test field_fibers
+Exit 101; 3 passed, 1 failed. power_fibers_match_explicit_products_and_direct_rows_in_both_fields panicked at tests/field_fibers.rs:100:57:
+called `Result::unwrap()` on an `Err` value: Invalid("factor base contains no rational target points")
+Cause: the test assumed every split fiber lifted. Retained final diagnostics
+identify B=61, S=9, coset=3 on y^2=x^3+3 as the empty fiber. The test now
+independently checks lifting and asserts rejection for that exact case.
+
+2. Command: rustfmt --edition 2021 suite/src/cli/tools/ic/auxiliary.rs
+Shell reported `rustfmt: command not found` (127). Subsequent formatting used
+/home/agent/.cargo/bin/rustfmt, available in the installed Rust toolchain.
+
+3. Command: cargo clippy --manifest-path crates/prime-field-auxiliary-ic/Cargo.toml --all-targets -- -D warnings
+Exit 101. manual_div_ceil at src/circuit.rs:223:20 recommended replacing
+(p+1)/2 with p.div_ceil(2). The equivalent expression was updated; no lint
+was allowed, suppressed or disabled.
+
+4. The initial check runner's attempted `lake build` raised FileNotFoundError
+before writing run metadata. The later formal-missing-toolchain.log records
+an explicit exit-127 tool-unavailable result. formal.log was the empty file
+created by the first wrapper attempt; it is retained as such.
+
+5. Importing svglib.svglib raised ModuleNotFoundError. The PDF renderer instead
+uses Graphviz's PNG/SVG outputs and ReportLab directly. No missing figure was
+silently replaced with an earlier report.
+
+Separate original captures: docs-initial.log (literal PCC marker interpreted
+as a rustdoc link) and fmt-wrong-cwd.log (relative core manifest from formal
+project directory). Corrected commands/results are in final-docs.log and
+final-fmt.log. Source changes and all successful reruns are pinned by the
+producer receipt; none of these development failures is a benchmark result.

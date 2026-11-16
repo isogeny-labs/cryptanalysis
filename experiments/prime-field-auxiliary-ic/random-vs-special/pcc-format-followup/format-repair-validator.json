@@ -1,0 +1,59 @@
+{
+  "status": "pass",
+  "overall_ci_status": "blocked",
+  "independent": false,
+  "source_commit": "2629e4f162443c3440d15d6c6d5294a51455914a",
+  "scope": "Format-only repair of an inherited unsigned claim. Base/head failures, original claim and raw text are preserved. No new native run, source/execution binding, full CI or speed claim.",
+  "raw_data": [
+    {
+      "path": "base-head-comparison.json",
+      "sha256": "31de5c1ac90f875795d6a9764280eae05772a82caf3370430d42f97edf1d3e4e"
+    },
+    {
+      "path": "base-reproduction.log",
+      "sha256": "53b0c38009e237b673182cdd829272d6dd956ecaf261ab0bb88d62cbbd4bcafa"
+    },
+    {
+      "path": "corrected-standing.log",
+      "sha256": "837974f7ab62de9b69f5c491f45906337aa9e9124fa2bd1f0b45d9650e6496ce"
+    },
+    {
+      "path": "corrected-verification.log",
+      "sha256": "77e8e0d6c12350ffb644400eff0c7c798efedb398c500e981e63c38cdaf5a23b"
+    },
+    {
+      "path": "correction-receipt.json",
+      "sha256": "8f8b7bc88a0b1203429eff8a4521cebd9e66a01bca047e37947dc22c04a0035f"
+    },
+    {
+      "path": "head-reproduction.log",
+      "sha256": "53b0c38009e237b673182cdd829272d6dd956ecaf261ab0bb88d62cbbd4bcafa"
+    },
+    {
+      "path": "hosted-133030734560.log.gz",
+      "sha256": "29b86bebf63c8dd51cfe9d4ff2be7a345ad45e3cbf61a2d0142f80e7b950a060"
+    },
+    {
+      "path": "hosted-133030734988.log.gz",
+      "sha256": "2b00fb4cace7051d64717c22c4b6cbf4f066cd44c1efa893ba4e0e7a92575284"
+    }
+  ],
+  "headline": [
+    {
+      "name": "non-json-recompute-slots-replaced",
+      "claimed": 2,
+      "recomputed": 2,
+      "rel_tol": 0
+    }
+  ],
+  "preserved_claim_fields": [
+    "statement",
+    "scope",
+    "producer",
+    "created_at"
+  ],
+  "previous_result": "fail: two text files parsed as JSON",
+  "corrected_result": "not_covered: unsigned validator; standing unverified",
+  "main_prefix_and_historical_events_unchanged": true,
+  "qualified_speedup": null
+}

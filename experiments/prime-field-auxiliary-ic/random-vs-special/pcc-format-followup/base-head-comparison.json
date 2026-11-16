@@ -1,0 +1,68 @@
+{
+  "reproductions": [
+    {
+      "ref": "66890bbe8ee2df7267f07a8abe97254c82c319fb",
+      "inputs": [
+        {
+          "path": "pcc/claims/PCC-20261115-8d2645.json",
+          "sha256": "3f26c04141cc196a9c4736e375bd19514268cf4f1ab900cf47f4088a21db4222"
+        },
+        {
+          "path": "pcc/keyring.json",
+          "sha256": "ceb7f66f25b10cccf322f23ec9d15fddb0750334e492070d20e1577bd82708ad"
+        },
+        {
+          "path": "pcc/ledger.jsonl",
+          "sha256": "4d3544e17892443e2c01f5db2af535df99f9a222de5c8c17d1fb26de35e681c9"
+        },
+        {
+          "path": "tools/pcc/pcc.py",
+          "sha256": "acfd841b13c21db3f1d1a89d2bd7339a3faf8a2a63dc3cac623ef55a03b1444a"
+        },
+        {
+          "path": "reports/courtois-getrandom-compat-20261115/native-binary-tests.txt",
+          "sha256": "dc1ac633b864f151ec95106d2c4adfac8754fe6c8be63e050ce49771c9e222ad"
+        },
+        {
+          "path": "reports/courtois-getrandom-compat-20261115/build-before.txt",
+          "sha256": "395dba239bf9832a9e5e6ee6d25db5288531fe056de52d5efbd3c50a09fefb9a"
+        }
+      ],
+      "exit_code": 1,
+      "log": "base-reproduction.log"
+    },
+    {
+      "ref": "b85bca1e27bde3b3b4d30f6037986c15f32d3a56",
+      "inputs": [
+        {
+          "path": "pcc/claims/PCC-20261115-8d2645.json",
+          "sha256": "3f26c04141cc196a9c4736e375bd19514268cf4f1ab900cf47f4088a21db4222"
+        },
+        {
+          "path": "pcc/keyring.json",
+          "sha256": "ceb7f66f25b10cccf322f23ec9d15fddb0750334e492070d20e1577bd82708ad"
+        },
+        {
+          "path": "pcc/ledger.jsonl",
+          "sha256": "8e6179f9aa80e97a58019ee65eaadb0a8130e9a1891f364ed283d1acf3f797b4"
+        },
+        {
+          "path": "tools/pcc/pcc.py",
+          "sha256": "acfd841b13c21db3f1d1a89d2bd7339a3faf8a2a63dc3cac623ef55a03b1444a"
+        },
+        {
+          "path": "reports/courtois-getrandom-compat-20261115/native-binary-tests.txt",
+          "sha256": "dc1ac633b864f151ec95106d2c4adfac8754fe6c8be63e050ce49771c9e222ad"
+        },
+        {
+          "path": "reports/courtois-getrandom-compat-20261115/build-before.txt",
+          "sha256": "395dba239bf9832a9e5e6ee6d25db5288531fe056de52d5efbd3c50a09fefb9a"
+        }
+      ],
+      "exit_code": 1,
+      "log": "head-reproduction.log"
+    }
+  ],
+  "scope": "Isolated snapshots execute the actual base/head PCC checker on the retained claim and proof bytes; not a full base CI rerun.",
+  "nonledger_inputs_identical": true
+}

@@ -1,0 +1,91 @@
+{
+  "at": "2026-11-15T14:14:37.984685+00:00",
+  "KB_queries": [
+    {
+      "name": "status",
+      "args": [
+        "status"
+      ],
+      "exit": 127
+    },
+    {
+      "name": "matrix",
+      "args": [
+        "search",
+        "plane quartic index calculus relation matrix kernel rank FB30",
+        "--top-k",
+        "8"
+      ],
+      "exit": 127
+    },
+    {
+      "name": "negative",
+      "args": [
+        "search",
+        "spurious relation kernel does not extend to global logarithm small factor base",
+        "--top-k",
+        "8"
+      ],
+      "exit": 127
+    },
+    {
+      "name": "application",
+      "args": [
+        "search",
+        "Diem large prime graph cycle relations saturation discrete logarithm",
+        "--top-k",
+        "8"
+      ],
+      "exit": 127
+    },
+    {
+      "name": "adjacent",
+      "args": [
+        "search",
+        "finite abelian presentation relation module annihilator global character",
+        "--top-k",
+        "8"
+      ],
+      "exit": 127
+    },
+    {
+      "name": "theorems",
+      "args": [
+        "theorems",
+        "NewTargetIC223.common_offset_log_ratio"
+      ],
+      "exit": 127
+    }
+  ],
+  "tools_available_in_runtime": false,
+  "KB_unavailable_no_absence_or_novelty_inference": true,
+  "primary_sources": [
+    {
+      "path": "/workspace/scratch/ct90-prime-descent-primary-review-01/diem-plane-curves-2012.txt",
+      "bytes": 85151,
+      "sha256": "a2580bc75e8aff7983bc944a43e86972780c59ea5f5681592e992c96bd232d9e"
+    },
+    {
+      "path": "/workspace/cryptanalysis/experiments/chained-transfer-public-target/original-fixed-model-ic-01/derived/class_solver.rs",
+      "bytes": 19036,
+      "sha256": "9dcfe8b3e14ed446d595675415d73d74f8f04654a91e79858c96011a21e4de24"
+    },
+    {
+      "path": "/workspace/crypto/research/quartic_n4_la_20261021/ic.rs",
+      "bytes": 40809,
+      "sha256": "ec20c87ed0be8c663af9965b4f0caf5bfe25b58d629a1896078026d52cfee90c"
+    },
+    {
+      "path": "/workspace/cryptanalysis/experiments/chained-transfer-public-target/new-target-ic/lean/NewTargetIC.lean",
+      "bytes": 1252,
+      "sha256": "28d8abe06f772afbba14d3e4fc6f6e9f7677ed5661580f78a0d0684bc1bf4c69"
+    },
+    {
+      "path": "/workspace/cryptanalysis/experiments/chained-transfer-public-target/original-full-geometry-01/generated/norm.rs",
+      "bytes": 22302,
+      "sha256": "1badf36600c737dd68b5823102659f3e2dca7463b51c47a246dab7819e1283bd"
+    }
+  ],
+  "observed_program_scope": "Frozen params sge=false/lp2=true; training plus at most60 held-out relations; Lanczos candidate checked on training/heldout; common_offset_log_ratio assumes genuine global additive/scalar log. A kernel-vector check alone does not provide that global extension. No rank/diagnostic calculation performed.",
+  "next": "Specify passive captures of all available/selected/heldout rows, kernel/log table and descent data; exact Rust rank certificates and independent post-solver norm/BSGS character checks; no validator data injected into original solver."
+}

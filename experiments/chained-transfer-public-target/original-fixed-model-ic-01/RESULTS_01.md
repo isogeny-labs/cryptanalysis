@@ -1,0 +1,5 @@
+# Complete bounded original-model IC result
+
+Native7df2ae and inspected reportpcc/claims/PCC-20261115-ab5c32.json at exact0cb4ab3 pass all60 attempts/all15 public cases. FB36/48/64 give45 verified answers; all15 FB30 candidates remain rejected complete reports. Whole100 records/all30 phases/seven actual whole-class omissions101/no output/1465 guards/actual binaries/full preparation/exact original checkpoint20 pass. The solver remains literal; every input packet matches the independent point/Phi path. See [the result](../reports/original-fixed-model-IC-result-01/REPORT.md) and [whole evidence](../evidence/original-fixed-model-IC-native-01/REPORT.md). [pcc:unverified]
+
+The old source README/proof map remain immutable historical compiled02 evidence. Existing conditional proofs and actual model/program/order/log-extension/completeness/cost bridges remain explicit. Full data/failures/source/executables/prepared copies await genuineNEW26 and additive native replay; no calibrated advantage or signed standing. Next adapt the existing norm-assisted sampler to these exact same models, retaining all paired outcomes. [pcc:unverified]

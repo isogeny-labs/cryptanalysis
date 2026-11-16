@@ -1,0 +1,28 @@
+"""Retain the inspected report and literal render inputs; document custody."""
+from pathlib import Path
+from datetime import datetime, timezone
+import hashlib,json,shutil,subprocess
+r=Path('/workspace/cryptanalysis');s=r/'experiments/chained-transfer-public-target'
+raw=Path('/workspace/scratch/ct87-original-prime-result-report-01');render=raw/'corrected02'
+d=s/'reports/original-prime-reprojection-result-01';d.mkdir()
+for name in ['report.typ','report.pdf','render-inputs.json']:shutil.copyfile(render/name,d/name)
+assert (render/'render.exit').read_text().strip()=='0' and (render/'raster.exit').read_text().strip()=='0'
+for name,cmd in [('pdfinfo',['pdfinfo',str(d/'report.pdf')]),('pdftext',['pdftotext',str(d/'report.pdf'),'-'])]:
+ q=subprocess.run(cmd,capture_output=True);(raw/(name+'.txt')).write_bytes(q.stdout+q.stderr);(raw/(name+'.exit')).write_text(str(q.returncode)+'\n');assert q.returncode==0
+ if name=='pdfinfo':assert b'Pages:           2' in q.stdout
+(d/'visual-inspection.json').write_text(json.dumps(dict(at=datetime.now(timezone.utc).isoformat(),pages=2,pdf_bytes=(d/'report.pdf').stat().st_size,pdf_sha256=hashlib.sha256((d/'report.pdf').read_bytes()).hexdigest(),actually_opened_both_final_raster_pages=True,checks='complete titles, diagrams and tables readable; no clipping; selected counts read from whole literal render inputs; conditional/prime-only scope explicit',rasters={p.name:dict(bytes=p.stat().st_size,sha256=hashlib.sha256(p.read_bytes()).hexdigest())for p in sorted(render.glob('page-*.png'))},first_render_failure=json.loads((raw/'failed01-render-observation.json').read_text()),raw_retained_for='NEW24'),indent=2)+'\n')
+(d/'original-render.py').write_text('from pathlib import Path\nimport typst\np=Path(__file__).resolve().parent\ntypst.compile(str(p/"report.typ"), output=str(p/"report.pdf"), root=str(p))\n')
+shutil.copyfile(__file__,d/'original-record-command.py')
+(d/'REPORT.md').write_text('''# Original-prime reprojection: complete finite result
+
+The [two-page report](report.pdf) records unsigned native976f50 at published source2a1a8e5/build03, after protocol38b827 was publishedbd603d0 before code. All1,077 whole ordered records pass; four actual whole-class omissions reject101 without accepted output. The original-prime source, fixed three cases, all18 model rows,672 explicitly projected exceptional descriptors,384 public points, cofactor rejection, additions, original-public transfers and12 five-route vectors retain their full frozen criteria. All13 phase exits,1,131 input hashes and actual executable custody pass. [pcc:unverified]
+
+Both final pages were opened and inspected. The report preserves the original-prime diagram, conditional seven-root proof boundary, actual source-call table and stronger known-initial-point route, which avoids initial norm/inverse-two. Counts are unpriced. Native01 failuree62fb2, diagnostic-only correctiona3c6eb, all raw/source/executable/prepared-copy bytes and the initial Typst rendering failure remain retained for NEW24. [pcc:unverified]
+
+Sources: [native outcome](../../evidence/original-prime-native-02/outcome.json), [whole raw inventory](../../evidence/original-prime-native-02/whole-unfiltered-raw-inventory.json), [literal render inputs](render-inputs.json), [proof map](../../original-prime-chain-01/PROOF_MAP.md), and [prospective protocol](../../ORIGINAL_PRIME_REPROJECTION_PROTOCOL_01.md). The next finite full-group kernel-compatibility census receives its own prospective protocol before new calculations. [pcc:unverified]
+''')
+attrs=r/'.gitattributes';line=(d/'report.pdf').relative_to(r).as_posix()+' binary\n';assert line not in attrs.read_text();attrs.write_text(attrs.read_text().rstrip()+'\n'+line)
+cmd=['python3','tools/pcc/pcc.py','claim','new','--kind','statement','--claim-type','data','--statement','Original-prime native976f50 report: actual two-page61571B PDF, both final raster pages opened and inspected; model/reprojection diagram, entire frozen1077population and actual13phase acceptance, conditional seven-rootproof/program boundary, originalcheckpoint15 and literalfive-route selectedcalls included. Known-initial-point route avoids initial norm/inverse-two; counts unpriced. Native01failed101/e62fb2 and diagnostic-onlycompiled03a3c6eb retained, together with initial Typst dictionary-shadowing render failure and corrected render source. Whole raw/source/executables/preparedlibraries/checkpoint/reportdrafts retained forNEW24. Next full-group finitekernelcensus receives its own prospective protocol before newcalculations. Unsigned report custody, no new mathematical or cost standing.']
+for p in sorted(d.iterdir()):cmd+=['--proof','attestation:'+p.relative_to(r).as_posix()]
+claim=subprocess.check_output(cmd,cwd=r,text=True).strip();Path('/workspace/scratch/ct87-original-prime-result-report.claim.txt').write_text(claim+'\n');print(claim)
+p=r/'docs/session-logs/2026-11-15.md';p.write_text(p.read_text().rstrip()+'\n\n## What was done\n'+datetime.now(timezone.utc).isoformat()+': '+claim+' retains the inspected two-page original-prime result report and literal source-call inputs for native976f50. [pcc:unverified]\n\n## Decisions made\nPublish complete native and report, then a separately preregistered finite full-group compatibility census. [pcc:unverified]\n\n## Open threads\nNormal result publication; no census outcome computed. All original sources/raw/binaries/prepared copies and failed report source retained. [pcc:unverified]\n\n## Errors\nFirst Typst compile failed because a literal dictionary named v shadowed the vertical-spacing function. Corrected source uses vec; both final pages were opened and have no clipping. [pcc:unverified]\n')

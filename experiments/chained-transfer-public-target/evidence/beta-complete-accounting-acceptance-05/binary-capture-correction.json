@@ -1,0 +1,15 @@
+{
+  "cargo_compiled_and_executed_path": "/workspace/scratch/ct57-n4-unit-01-build-cache/release/deps/chained_n4_beta_complete_evaluator-7a5c3164b55af15b",
+  "correct_binary": {
+    "path": "/workspace/scratch/ct73-beta-complete-native-05/verified-executed-test-executable.bin",
+    "bytes": 4539544,
+    "sha256": "d01511fe25c473bb1cb6b291bd83859c4b4499b1239cdf2b3994e541aa897ef8"
+  },
+  "first_incorrectly_named_capture": {
+    "path": "/workspace/scratch/ct73-beta-complete-native-05/actual-test-executable.bin",
+    "bytes": 4536208,
+    "sha256": "9a585d67bd1d0d705b3613bc6de86fe3b8cec88242771e7e4f44211227220eab",
+    "reason": "old hardcoded binary hash remained after direct serde/hex dependencies changed executable hash; preserved as originally captured, not the executed05 binary"
+  },
+  "source_and_native": "compile and runtime paths match; no rerun or outcome change"
+}
