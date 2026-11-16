@@ -33,14 +33,14 @@ The new source/binary/row digests and every raw process line are retained in the
 
 ## Commands
 
-\`\`\`sh
+```sh
 D=experiments/chained-transfer-public-target/norm-point-reuse-01
 g++ -std=c++17 -O3 -Wall -Wextra -Werror "$D/ct154_public_point_reference.cpp" -o /tmp/ct155-base
 g++ -std=c++17 -O3 -Wall -Wextra -Werror "$D/ct155_projective_bsgs.cpp" -o /tmp/ct155-new
 /tmp/ct155-new --self-test
 python3 "$D/ct155_projective_audit.py" --candidate /tmp/ct155-new --baseline /tmp/ct155-base --quick
 python3 "$D/ct155_projective_audit.py" --candidate /tmp/ct155-new --baseline /tmp/ct155-base --output /tmp/ct155-raw.json
-\`\`\`
+```
 
 ## Unmet decisive transfer gates
 
