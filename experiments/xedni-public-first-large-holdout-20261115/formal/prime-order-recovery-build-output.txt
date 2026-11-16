@@ -70,7 +70,7 @@ info: PublicRecovery.lean:34:0: 'XedniPublicFirstLargeHoldout.public_relation_ta
 info: PublicGroupRecovery.lean:33:0: 'XedniPublicFirstLargeHoldout.public_group_relation_iff_recovered_scalar' depends on axioms: [propext,
  Classical.choice,
  Quot.sound]
-⚠ [9047/9048] Built PrimeOrderRecovery (119s)
+⚠ [9047/9048] Built PrimeOrderRecovery (56s)
 warning: PrimeOrderRecovery.lean: imports `Mathlib.Algebra.Module.ZMod` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
 warning: PrimeOrderRecovery.lean:49:2: Try this: 
   letI̵
@@ -80,10 +80,14 @@ The difference between `let` and `letI` is that `letI` inlines the value.
 But this is not relevant for proofs because of proof irrelevance.
 
 Note: This linter can be disabled with `set_option linter.style.haveILetI false`
-info: PrimeOrderRecovery.lean:52:0: 'XedniPublicFirstLargeHoldout.prime_order_public_relation_iff_recovered_scalar' depends on axioms: [propext,
+info: PrimeOrderRecovery.lean:80:0: 'XedniPublicFirstLargeHoldout.prime_order_public_relation_iff_recovered_scalar' depends on axioms: [propext,
  Classical.choice,
  Quot.sound]
-info: PrimeOrderRecovery.lean:53:0: 'XedniPublicFirstLargeHoldout.torsion_public_relation_iff_recovered_scalar' depends on axioms: [propext,
+info: PrimeOrderRecovery.lean:81:0: 'XedniPublicFirstLargeHoldout.torsion_public_relation_iff_recovered_scalar' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: PrimeOrderRecovery.lean:82:0: 'XedniPublicFirstLargeHoldout.cyclic_torsion' depends on axioms: [propext]
+info: PrimeOrderRecovery.lean:83:0: 'XedniPublicFirstLargeHoldout.cyclic_public_relation_iff_recovered_scalar' depends on axioms: [propext,
  Classical.choice,
  Quot.sound]
 Build completed successfully (9048 jobs).
