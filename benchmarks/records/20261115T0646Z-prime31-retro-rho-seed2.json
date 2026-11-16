@@ -1,0 +1,116 @@
+{
+  "branch": "codex/prime-field-auxiliary-ic-rho",
+  "closed_utc": "2026-11-15T06:46:58+00:00",
+  "commands": [
+    {
+      "argv": [
+        "/workspace/index_calculus_demo/algebraic/optimized/rho31",
+        "/workspace/index_calculus_demo/algebraic/optimized/results/field31_s5_base0/rho_public.txt",
+        "/workspace/index_calculus_demo/algebraic/optimized/results/field31_s5_base0/rho_seed2.json",
+        "2"
+      ],
+      "cwd": "/workspace/index_calculus_demo",
+      "exit": 0,
+      "retrospective": true,
+      "started_utc": null,
+      "wall_s": 0.018318452001039986
+    }
+  ],
+  "commit": "4551d77ae4a87fdee717e69b8f90c46420f6cc35",
+  "commit_dirty": true,
+  "created_utc": "2026-11-15T06:46:58+00:00",
+  "curve_uid": null,
+  "entries": [],
+  "host": {
+    "cpu": "Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz",
+    "cpus_online": 5,
+    "hostname": "df634043e2f7",
+    "isolation": "exploratory-retrospective; no admitted tier",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+    "role": "import host; see original manifest for recorded execution environment"
+  },
+  "id": "20261115T0646Z-prime31-retro-rho-seed2",
+  "metrics": [
+    {
+      "baseline": null,
+      "better": "lower",
+      "n": 1,
+      "name": "rho_reported_cold_wall",
+      "note": "Already-known single target; cold wall interval; unsigned producer checks; no online speedup qualification.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "wall_s",
+      "value": 0.018318452001039986
+    },
+    {
+      "baseline": null,
+      "better": "lower",
+      "n": 1,
+      "name": "rho_reported_cpu",
+      "note": "Already-known single target; cold wall interval; unsigned producer checks; no online speedup qualification.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "cpu_s",
+      "value": 0.017873999999999998
+    }
+  ],
+  "problem": "ecdlp:prime31aux-retrospective",
+  "raw": [
+    {
+      "bytes": 263,
+      "path": "experiments/prime-field-auxiliary-ic/snapshot/algebraic/optimized/results/field31_s5_base0/rho_seed2.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/a6/a6acd125318b587d7b3f1ad305c2aecfcf27f7628cfef87592b67a075f046900",
+      "sha256": "a6acd125318b587d7b3f1ad305c2aecfcf27f7628cfef87592b67a075f046900",
+      "uploaded": false
+    },
+    {
+      "bytes": 687,
+      "path": "experiments/prime-field-auxiliary-ic/snapshot/algebraic/optimized/results/field31_s5_base0/rho_seed2.audited.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/47/4712be2efd01a4bdfbe7b9d696c38ffe0332132ea0d33343c5b997fa527cb799",
+      "sha256": "4712be2efd01a4bdfbe7b9d696c38ffe0332132ea0d33343c5b997fa527cb799",
+      "uploaded": false
+    },
+    {
+      "bytes": 56,
+      "path": "experiments/prime-field-auxiliary-ic/snapshot/algebraic/optimized/results/field31_s5_base0/rho_seed2.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/be/bee63a2bfc078654be1f8534efbe2db5bcdd46136076a71aa78ecb28649af02e",
+      "sha256": "bee63a2bfc078654be1f8534efbe2db5bcdd46136076a71aa78ecb28649af02e",
+      "uploaded": false
+    },
+    {
+      "bytes": 3172,
+      "path": "experiments/prime-field-auxiliary-ic/snapshot/algebraic/optimized/results/field31_s5_base0/public.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/a5/a5fd508b6deacd2e2036a790946d7700929a822caf92e1fed699e6a7657fb9ca",
+      "sha256": "a5fd508b6deacd2e2036a790946d7700929a822caf92e1fed699e6a7657fb9ca",
+      "uploaded": false
+    },
+    {
+      "bytes": 480,
+      "path": "experiments/prime-field-auxiliary-ic/snapshot/algebraic/optimized/environment.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/89/89a5305b243ab7370509e27a9ac61230438fd5eb7b797f07a6801a660c95a885",
+      "sha256": "89a5305b243ab7370509e27a9ac61230438fd5eb7b797f07a6801a660c95a885",
+      "uploaded": false
+    }
+  ],
+  "repo": "cryptanalysis",
+  "reports": {
+    "pdf": "experiments/prime-field-auxiliary-ic/IMPORT_REPORT.pdf",
+    "png": [],
+    "svg": []
+  },
+  "retrospective_import": {
+    "execution_commit": null,
+    "preregistered": false,
+    "registration_commit": "4551d77ae4a87fdee717e69b8f90c46420f6cc35",
+    "scope": "Already-known single target; cold wall interval; unsigned producer checks; no online speedup qualification.",
+    "source_sha256": "d370e1be5fb8bc3ea97c0de69a038954eae375c94ebf6f7fef6606e877495cf9"
+  },
+  "schema": "bench.record/v1",
+  "session": null,
+  "slug": "prime31-retro-rho-seed2",
+  "status": "measured",
+  "summary": "Retrospective unverified producer observations; Already-known single target; cold wall interval; unsigned producer checks; no online speedup qualification.",
+  "validation": null
+}

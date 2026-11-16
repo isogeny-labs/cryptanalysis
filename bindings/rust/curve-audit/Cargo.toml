@@ -16,4 +16,5 @@ path = "src/main.rs"
 num-bigint = "=0.5.1"
 num-traits = "=0.2.19"
 serde_json = "=1.0.154"
-sha2 = "=0.11.1"
+# Keep SHA-2 compatible with this package's inherited Rust 1.85 floor.
+sha2 = "=0.11.0"

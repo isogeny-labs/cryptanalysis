@@ -1,0 +1,167 @@
+{
+  "schema": "producer-kernel-correctness/v1",
+  "status": "pass",
+  "independent": false,
+  "source_commit": "27fc983527118c3b3b0016a12b9aca8b5539108a",
+  "scope": "Source-level arithmetic/indexing changes and producer correctness checks only. No new benchmark, runtime speedup, signed replay or execution-proof claim.",
+  "source_files": [
+    {
+      "path": "crates/prime-field-auxiliary-ic/src/circuit.rs",
+      "sha256": "5d26beb65cd51501dcb155d50a8c4a682e92655bc413c45eeaae5bb2a3a57cbd"
+    },
+    {
+      "path": "crates/prime-field-auxiliary-ic/src/circuit_x86.rs",
+      "sha256": "f765f08ca073337dcf48cf289f9e250436622f2d3248360fbe9324427113853c"
+    },
+    {
+      "path": "crates/prime-field-auxiliary-ic/src/field.rs",
+      "sha256": "19f18d1763842fdecfa2f14d600e249b6b1777f68065ec7f290c17e3178ae5e6"
+    },
+    {
+      "path": "crates/prime-field-auxiliary-ic/src/graph.rs",
+      "sha256": "e8b9a27ffadabba9351ef2fd47a1cb15ba9affb6ed0ba0bef1abf09cbe823f4f"
+    },
+    {
+      "path": "crates/prime-field-auxiliary-ic/src/lib.rs",
+      "sha256": "cb15086f7136bdb1ecaa7797b46af0ff3fbbd0b8df7b9d83d225fee15bfb734c"
+    },
+    {
+      "path": "crates/prime-field-auxiliary-ic/src/solve.rs",
+      "sha256": "34622b5fc8d0b4082c10ef239dd51688107c70c3f48c0cf110798e964cb7c66f"
+    },
+    {
+      "path": "crates/prime-field-auxiliary-ic/tests/common/mod.rs",
+      "sha256": "55dd7ebc5f1ee46d4cb04c1404d6b9ab4c45830443529b3f0bd6dc4485bd2e8b"
+    },
+    {
+      "path": "crates/prime-field-auxiliary-ic/tests/common/multi_tile.rs",
+      "sha256": "8df9a1d57ba99a2db6e1fa1ae339452536b5b1a698adbb0426ecee5c24c0a199"
+    },
+    {
+      "path": "crates/prime-field-auxiliary-ic/tests/pipeline.rs",
+      "sha256": "377ed455704ac5e16539c63b92361f2e5ccc69d1af651dd074715a23b02bd05a"
+    },
+    {
+      "path": "crates/prime-field-auxiliary-ic/Cargo.toml",
+      "sha256": "5d221db9ff2f92cb45e127f3171aba53d40ca21e5b37c223368ee0b157d4b520"
+    },
+    {
+      "path": "crates/prime-field-auxiliary-ic/build.rs",
+      "sha256": "dd3298150d5d629e99ec941fa33b8f1bdb0a2da7a1689cd225ac8b27815393c8"
+    },
+    {
+      "path": "crates/prime-field-auxiliary-ic/README.md",
+      "sha256": "ad09b80c0ac5176a533dd990e70cb82236bdddc12a2c37e4a229ac311b0ca250"
+    }
+  ],
+  "fixture_source": {
+    "path": "experiments/prime-field-auxiliary-ic/snapshot/algebraic/end_to_end/field31_s7_base0/public.json",
+    "sha256": "14f6952ff7377c39181af51f5986b1b5bb5c9fc42e8cf9a307268a9a66ed1ef3",
+    "raw_roots": 128,
+    "usable_coordinates": 58
+  },
+  "arithmetic_change": {
+    "scope": "nonterminal center-shift update per coordinate or packed vector, excluding norm/CD/ND generation",
+    "before": {
+      "multiplications": 3,
+      "additions_or_subtractions": 3
+    },
+    "after": {
+      "multiplications": 2,
+      "additions_or_subtractions": 4
+    },
+    "shared_value": "t = delta*nd",
+    "updated_h": "norm + delta*(cd+t)",
+    "updated_c": "cd+t+t",
+    "count_method": "source-level call audit; not machine-instruction or timing measurement"
+  },
+  "indexing_change": "Zero comparisons are fused into the scalar loop and SIMD stores. Packed masks retain sorted indices, discard padding, and return immediately for empty masks; complete scalar values are still stored.",
+  "runs": [
+    {
+      "command": "cargo test --release --manifest-path crates/prime-field-auxiliary-ic/Cargo.toml",
+      "exit_code": 0,
+      "passed_checks": 15,
+      "raw_output": "core-stable.log"
+    },
+    {
+      "command": "cargo +1.78.0 test --manifest-path crates/prime-field-auxiliary-ic/Cargo.toml",
+      "exit_code": 0,
+      "passed_checks": 15,
+      "raw_output": "core-msrv.log"
+    },
+    {
+      "command": "cargo test --manifest-path suite/Cargo.toml --lib cli::tools::ic::auxiliary::tests -j 2",
+      "exit_code": 0,
+      "passed_checks": 3,
+      "raw_output": "cli.log"
+    },
+    {
+      "command": "cargo clippy --manifest-path crates/prime-field-auxiliary-ic/Cargo.toml --all-targets -- -D warnings",
+      "exit_code": 0,
+      "passed_checks": null,
+      "raw_output": "clippy.log"
+    },
+    {
+      "command": "RUSTDOCFLAGS=-D warnings cargo doc --manifest-path crates/prime-field-auxiliary-ic/Cargo.toml --no-deps",
+      "exit_code": 0,
+      "passed_checks": null,
+      "raw_output": "rustdoc.log"
+    }
+  ],
+  "raw_data": [
+    {
+      "path": "core-stable.log",
+      "sha256": "e7d6fb4251922a112cd36d63456db23965ca3466bd2c8544c8278576137f7107"
+    },
+    {
+      "path": "core-msrv.log",
+      "sha256": "b0a726b5d5207f70ab85e5fa37393176ab32e8dd99abb0a27d06e6f8f0602b04"
+    },
+    {
+      "path": "cli.log",
+      "sha256": "954ce1bc0ab9d95b07529ad4a916610d84cb57fbc52882ccbf93bce1403e0b23"
+    },
+    {
+      "path": "clippy.log",
+      "sha256": "b3031f206f6decc4aea5ca11c601b7632467978d74db8ca0487afa67bae1f7f7"
+    },
+    {
+      "path": "rustdoc.log",
+      "sha256": "be502251c78b9580a7551fa0fea17efc8e8de93bb06c13a91cc1aef1610d75c1"
+    },
+    {
+      "path": "access-presence.json",
+      "sha256": "7eeb8cadf1d94ac392de284f441a3d17fcd864f6983494c7258beb9f586dff54"
+    },
+    {
+      "path": "fleet-status.log",
+      "sha256": "1605a7e4b41f9870cd5793f26b5757e6271ac617814a522d5451afa2728f97d2"
+    },
+    {
+      "path": "cloud-status-attempt.json",
+      "sha256": "b280d594f82a12d52b17ba453baeecafdd709e1fffe5c6d28a3955ea37afb62a"
+    }
+  ],
+  "headline": [
+    {
+      "name": "core-stable-passed-checks",
+      "claimed": 15,
+      "recomputed": 15,
+      "rel_tol": 0
+    },
+    {
+      "name": "core-msrv-passed-checks",
+      "claimed": 15,
+      "recomputed": 15,
+      "rel_tol": 0
+    },
+    {
+      "name": "cli-passed-checks",
+      "claimed": 3,
+      "recomputed": 3,
+      "rel_tol": 0
+    }
+  ],
+  "qualified_speedup": null,
+  "remaining_work": "Fresh timing with/without auxiliary maps and versus rho still requires checkpoint access, an admitted GPU allocation and the frozen accounting/replay protocol. Local expected credentials remain absent and the legacy cloud-status workflow is manually disabled."
+}

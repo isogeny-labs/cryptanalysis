@@ -1,0 +1,12 @@
+{
+  "failed_assertion": "len(metadata.packages)==14",
+  "actual": 15,
+  "stage": "metadata capture before claim creation; no native execution",
+  "correction": "15 total packages including root,14 dependencies; earlier historical adapter has14 total including root,13 dependencies. Original lock and code checks unchanged.",
+  "all_static_command_exits": {
+    "actual-metadata.exit": "0",
+    "actual-Clippy.exit": "0",
+    "actual-compile.exit": "0",
+    "actual-lock.exit": "0"
+  }
+}

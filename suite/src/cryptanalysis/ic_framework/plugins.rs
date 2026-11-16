@@ -31,7 +31,7 @@
 //! The pair table is where memory buys time, and `mitm`'s
 //! `negation_folded` parameter halves the additions that build it.
 
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
 use super::stages::{
     BooleanSystem, DecompositionOracle, FactorBaseBuilder, InstanceCtx, Params, SolverCost,
@@ -257,11 +257,16 @@ impl<G: CountedGroup> DecompositionOracle<G> for SubtractOracle {
 pub struct MitmOracle {
     m: u32,
     table: Option<PairTable>,
+    native_setup_ns: u64,
 }
 
 impl MitmOracle {
     pub fn new(m: u32) -> Self {
-        Self { m, table: None }
+        Self {
+            m,
+            table: None,
+            native_setup_ns: 0,
+        }
     }
 }
 
@@ -289,7 +294,7 @@ impl<G: CountedGroup> DecompositionOracle<G> for MitmOracle {
         &[(
             "negation_folded",
             "1 to build only one of each ±pair, halving the table's additions",
-        )]
+        ), ("native_setup_pricing", "0 or1, default0; price whole preparation in nanoseconds and retain additions as diagnostics")]
     }
 
     fn prepare(
@@ -299,15 +304,43 @@ impl<G: CountedGroup> DecompositionOracle<G> for MitmOracle {
         params: &Params,
         ops: &mut GroupOps,
     ) -> Result<(), String> {
+        let native = params.u64_or("native_setup_pricing", 0)?;
+        if native > 1 {
+            return Err("native_setup_pricing must be0 or1".into());
+        }
+        let started = Instant::now();
         let table = if params.flag("negation_folded") {
             PairTable::build_negation_folded(ctx.group, fb)
         } else {
             PairTable::build(ctx.group, fb)
         };
         // The table's construction is part of the pipeline's cost.
-        ops.merge(table.build_ops);
+        if native == 0 {
+            ops.merge(table.build_ops);
+        }
         self.table = Some(table);
+        self.native_setup_ns = if native == 1 {
+            started.elapsed().as_nanos() as u64
+        } else {
+            0
+        };
         Ok(())
+    }
+
+    fn setup_native(&self) -> std::collections::BTreeMap<String, u64> {
+        if self.native_setup_ns == 0 {
+            return Default::default();
+        }
+        let observed = self.table.as_ref().unwrap().build_ops;
+        std::collections::BTreeMap::from([
+            ("mitm_native_setup_ns".into(), self.native_setup_ns),
+            ("mitm_setup_observed_adds".into(), observed.adds),
+            ("mitm_setup_observed_doubles".into(), observed.doubles),
+            (
+                "mitm_setup_observed_scalar_mults".into(),
+                observed.scalar_mults,
+            ),
+        ])
     }
 
     fn decompose(
@@ -474,6 +507,8 @@ pub struct DescentAlgebraicOracle<'i> {
     v_basis: Vec<u64>,
     harness: SolverHarness,
     totals: SolverTotals,
+    descent_setup_ns: u64,
+    descent_relation_ns: u64,
     /// Systems the solver decided satisfiable none of whose solutions
     /// lifted to base points summing to the target.  Expected, not a
     /// defect: a summation polynomial vanishes over the algebraic
@@ -503,6 +538,8 @@ impl<'i> DescentAlgebraicOracle<'i> {
             v_basis: Vec::new(),
             harness: SolverHarness::new(solver, solver_params, budget),
             totals,
+            descent_setup_ns: 0,
+            descent_relation_ns: 0,
             unliftable: 0,
         }
     }
@@ -553,6 +590,14 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for DescentAlgebraicOracle<'_> {
         &[("m", "summands, 2 (descends S3) or 3 (descends S4)")]
     }
 
+    fn setup_native(&self) -> std::collections::BTreeMap<String, u64> {
+        std::collections::BTreeMap::from([("symbolic_descent_ns".into(), self.descent_setup_ns)])
+    }
+
+    fn relation_counters(&self) -> std::collections::BTreeMap<String, u64> {
+        std::collections::BTreeMap::from([("symbolic_descent_ns".into(), self.descent_relation_ns)])
+    }
+
     fn prepare(
         &mut self,
         _ctx: &InstanceCtx<BinaryGroup<'a>>,
@@ -583,7 +628,11 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for DescentAlgebraicOracle<'_> {
         // abscissa now and let the engine decline the shape here, once,
         // with a reason a sweep can report — rather than target by
         // target, which would run the whole relation phase for nothing.
+        let started = Instant::now();
         let shape = system_of(&self.descend(self.instance.generator.x)).shape();
+        self.descent_setup_ns = self
+            .descent_setup_ns
+            .saturating_add(started.elapsed().as_nanos() as u64);
         if !self.harness.solver.accepts(&shape) {
             return Err(format!(
                 "solver `{}` declines a system of {} unknowns and {} equations; \
@@ -607,10 +656,15 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for DescentAlgebraicOracle<'_> {
         if self.v_basis.is_empty() {
             return None;
         }
-        // Descend, solve, and lift every solution until one sums to R.
+        // Charge descent, system packing and shape construction separately
+        // from the solver interval, so failed queries pay the same work too.
+        let started = Instant::now();
         let sys = self.descend(point.x);
         let system = system_of(&sys);
         let shape = system.shape();
+        self.descent_relation_ns = self
+            .descent_relation_ns
+            .saturating_add(started.elapsed().as_nanos() as u64);
         let verdict = self.harness.solve(&system);
         let exceeded = matches!(verdict, SolverVerdict::BudgetExceeded);
         self.totals.absorb(&shape, self.harness.cost(), exceeded);

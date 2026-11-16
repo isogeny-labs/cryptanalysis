@@ -1,0 +1,21 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T02:07:56Z",
+ "id": "PCC-20261116-537de4",
+ "kind": "statement",
+ "producer": {
+  "commit": "df6d8afb2235f2c066e40903d4f362648ffab694",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "recompute",
+   "path": "experiments/prime-field-auxiliary-ic/random-vs-special/pcc-format-followup/hosted-acceptance-validator.json",
+   "sha256": "5b902862d4db83b498593fdc98529b1ec0f662b19dddd3a83d8c73a254e993ab"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Unsigned operational CI metadata and format-obstruction resolution only; source and previous native-result scopes remain separate.",
+ "statement": "GitHub hosted check metadata for exact head df6d8afb reports the PCC gate and all three auxiliary Rust/CLI jobs successful after the format-only inherited-claim repair. The overall PR remains blocked: the corpus job still refuses the unchanged GLV C-source digest, and other checks were pending in the captured snapshot. This confirms CI acceptance of the proof format, not a signed independent execution verdict, original-result verification, 31/61-bit measurement or speedup."
+}

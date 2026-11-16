@@ -1,0 +1,74 @@
+{
+  "source_commit": "5e3a420242277199b8784c0999a57d80ca117e1e",
+  "scope": "core stable and Rust 1.78 correctness; not timing",
+  "checks": [
+    {
+      "name": "core-stable-tests",
+      "command": [
+        "cargo",
+        "+stable",
+        "test",
+        "--release"
+      ],
+      "cwd": "crates/prime-field-auxiliary-ic",
+      "exit_code": 0,
+      "log": "core-stable-tests.log",
+      "sha256": "3689e243133ab7a81b904dcd37e33c3b03c680ab30eafba47cac8e0c262f4bad"
+    },
+    {
+      "name": "core-msrv-tests",
+      "command": [
+        "cargo",
+        "+1.78.0",
+        "test",
+        "--release"
+      ],
+      "cwd": "crates/prime-field-auxiliary-ic",
+      "exit_code": 0,
+      "log": "core-msrv-tests.log",
+      "sha256": "428187e83a209f9656e1da6d54e3d2dbcf06db28a8b0c877f6a3203035907224"
+    },
+    {
+      "name": "core-format",
+      "command": [
+        "cargo",
+        "+stable",
+        "fmt",
+        "--check"
+      ],
+      "cwd": "crates/prime-field-auxiliary-ic",
+      "exit_code": 0,
+      "log": "core-format.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "core-clippy",
+      "command": [
+        "cargo",
+        "+stable",
+        "clippy",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "cwd": "crates/prime-field-auxiliary-ic",
+      "exit_code": 0,
+      "log": "core-clippy.log",
+      "sha256": "bca41f95aa6ada5604e443a7f71d9da118a5c3cd34a1b81308498db5cddce439"
+    },
+    {
+      "name": "core-docs",
+      "command": [
+        "cargo",
+        "+stable",
+        "doc",
+        "--no-deps"
+      ],
+      "cwd": "crates/prime-field-auxiliary-ic",
+      "exit_code": 0,
+      "log": "core-docs.log",
+      "sha256": "98b5d276347d2803a4c7376ed6f0d9149a0073fe621c3ba572827b69a9bb5338"
+    }
+  ]
+}

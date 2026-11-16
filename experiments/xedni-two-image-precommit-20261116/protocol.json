@@ -1,0 +1,30 @@
+{
+  "curve": "finite base y^2=x^3-x-2",
+  "distinct_x_rule": "center the two finite affine coordinate pairs as integers; f_i=y_i^2-x_i^3; A=(f_1-f_2)/(x_1-x_2), B=f_1-A*x_1; use y^2=x^3+A*x+B over Q",
+  "equal_x_rule": "when the two distinct finite points have the same x, require V=-U; center U as (x,y), set second rational point (x,-y), A=-1, B=y^2-x^3+x; record as exceptional opposite-pair branch",
+  "falsifiers": [
+    "any curve or point construction fails",
+    "a rational relation lacks corresponding public relation",
+    "a public relation appears rational in unrecorded attempt",
+    "independent replay disagrees with any row"
+  ],
+  "formal_goal": "prove two-point interpolation over any field, uniqueness of coefficients when x coordinates differ, and group relation transfer under an additive reduction homomorphism; explicitly retain the rational-to-finite reduction bridge",
+  "information_order": "construct and validate one curve and both lifts per query before looking at any vector; then test every source vector for rational and public relations",
+  "operation_boundary": "512 query-level constructions and 6656 vector relation tests; include all failures; run cap 1200 seconds; no calibrated online speedup claim",
+  "query_count": 512,
+  "question": "If one rational curve and both rational point lifts are fixed from the public pair before testing any coefficient vector, which selected rational relations occur?",
+  "required_checks": [
+    "rational curve nonsingular",
+    "good reduction at p",
+    "both point reductions equal U,V",
+    "rational relation implies public relation",
+    "all source public flags replay",
+    "retain failures and exceptional pairs"
+  ],
+  "run_cap_seconds": 1200,
+  "schema": "xedni-two-image-precommit-protocol-v1",
+  "source_protocol_sha256": "a84d901d47138c196c56e870a574f7a76761bf93aaaec3dac4fd4e9d50c4e24c",
+  "source_public": "experiments/xedni-large-order-height-admission-20261116/public.jsonl.gz",
+  "source_public_sha256": "5562631c1c073c3e21bd3c5f7dbeeeed2959ce3ff778d196369d1ec8da794b75",
+  "vector_attempts": 6656
+}

@@ -1,0 +1,119 @@
+{
+  "command": "cargo metadata --locked --format-version 1 --manifest-path bindings/rust/Cargo.toml",
+  "exit_code": 0,
+  "native_package": {
+    "name": "prime-field-auxiliary-ic",
+    "version": "0.1.0",
+    "id": "path+file:///workspace/cryptanalysis-pr/crates/prime-field-auxiliary-ic#0.1.0",
+    "license": "MIT",
+    "license_file": null,
+    "description": "Bounded prime-field elliptic-curve index calculus with auxiliary rational-map circuits",
+    "source": null,
+    "dependencies": [],
+    "targets": [
+      {
+        "kind": [
+          "lib"
+        ],
+        "crate_types": [
+          "lib"
+        ],
+        "name": "prime_field_auxiliary_ic",
+        "src_path": "/workspace/cryptanalysis-pr/crates/prime-field-auxiliary-ic/src/lib.rs",
+        "edition": "2021",
+        "doc": true,
+        "doctest": true,
+        "test": true
+      },
+      {
+        "kind": [
+          "test"
+        ],
+        "crate_types": [
+          "bin"
+        ],
+        "name": "pipeline",
+        "src_path": "/workspace/cryptanalysis-pr/crates/prime-field-auxiliary-ic/tests/pipeline.rs",
+        "edition": "2021",
+        "doc": false,
+        "doctest": false,
+        "test": true
+      },
+      {
+        "kind": [
+          "custom-build"
+        ],
+        "crate_types": [
+          "bin"
+        ],
+        "name": "build-script-build",
+        "src_path": "/workspace/cryptanalysis-pr/crates/prime-field-auxiliary-ic/build.rs",
+        "edition": "2021",
+        "doc": false,
+        "doctest": false,
+        "test": false
+      }
+    ],
+    "features": {
+      "default": []
+    },
+    "manifest_path": "/workspace/cryptanalysis-pr/crates/prime-field-auxiliary-ic/Cargo.toml",
+    "metadata": null,
+    "publish": [],
+    "authors": [],
+    "categories": [],
+    "keywords": [],
+    "readme": "README.md",
+    "repository": "https://github.com/isogeny-labs/cryptanalysis",
+    "homepage": null,
+    "documentation": null,
+    "edition": "2021",
+    "links": null,
+    "default_run": null,
+    "rust_version": "1.78"
+  },
+  "consumer_nodes": [
+    {
+      "id": "path+file:///workspace/cryptanalysis-pr/bindings/rust/cryptanalysis#0.1.0",
+      "dependencies": [
+        "path+file:///workspace/cryptanalysis-pr/bindings/rust/cryptanalysis-sys#0.1.0",
+        "path+file:///workspace/cryptanalysis-pr/bindings/rust/hashed-ecdl-tensor#0.1.0",
+        "path+file:///workspace/cryptanalysis-pr/crates/prime-field-auxiliary-ic#0.1.0"
+      ],
+      "deps": [
+        {
+          "name": "cryptanalysis_sys",
+          "pkg": "path+file:///workspace/cryptanalysis-pr/bindings/rust/cryptanalysis-sys#0.1.0",
+          "dep_kinds": [
+            {
+              "kind": null,
+              "target": null
+            }
+          ]
+        },
+        {
+          "name": "hashed_ecdl_tensor",
+          "pkg": "path+file:///workspace/cryptanalysis-pr/bindings/rust/hashed-ecdl-tensor#0.1.0",
+          "dep_kinds": [
+            {
+              "kind": null,
+              "target": null
+            }
+          ]
+        },
+        {
+          "name": "prime_field_auxiliary_ic",
+          "pkg": "path+file:///workspace/cryptanalysis-pr/crates/prime-field-auxiliary-ic#0.1.0",
+          "dep_kinds": [
+            {
+              "kind": null,
+              "target": null
+            }
+          ]
+        }
+      ],
+      "features": []
+    }
+  ],
+  "format_check": "cargo fmt --manifest-path bindings/rust/Cargo.toml --all --check exited 0"
+}

@@ -1,0 +1,112 @@
+{
+  "actual_original_issuer": "False",
+  "certificate_issued": false,
+  "counterexample": {
+    "assignment": [
+      63800577064266329,
+      629423930570137499,
+      736986194453156760,
+      1801448747087941462
+    ],
+    "index": 0,
+    "lhs": 0,
+    "rhs": 1
+  },
+  "statement": {
+    "degree_bound": 1,
+    "lhs": {
+      "args": [
+        {
+          "args": [
+            {
+              "args": [
+                {
+                  "args": "a",
+                  "op": "var"
+                },
+                {
+                  "args": "b",
+                  "op": "var"
+                }
+              ],
+              "op": "add"
+            },
+            {
+              "args": {
+                "args": [
+                  {
+                    "args": "b",
+                    "op": "var"
+                  },
+                  {
+                    "args": "c",
+                    "op": "var"
+                  }
+                ],
+                "op": "add"
+              },
+              "op": "neg"
+            }
+          ],
+          "op": "add"
+        },
+        {
+          "args": [
+            {
+              "args": [
+                {
+                  "args": "c",
+                  "op": "var"
+                },
+                {
+                  "args": "d",
+                  "op": "var"
+                }
+              ],
+              "op": "add"
+            },
+            {
+              "args": {
+                "args": [
+                  {
+                    "args": "d",
+                    "op": "var"
+                  },
+                  {
+                    "args": "a",
+                    "op": "var"
+                  }
+                ],
+                "op": "add"
+              },
+              "op": "neg"
+            }
+          ],
+          "op": "add"
+        }
+      ],
+      "op": "add"
+    },
+    "name": "negative_even_four_cycle_plus_one",
+    "rhs": {
+      "args": [
+        {
+          "args": 0,
+          "op": "const"
+        },
+        {
+          "args": 1,
+          "op": "const"
+        }
+      ],
+      "op": "add"
+    },
+    "source": "Known cancellation; LPProjection.even_four_cycle, ../lean/LPProjection.lean. Development only, no q223 population or novelty claim.",
+    "variables": [
+      "a",
+      "b",
+      "c",
+      "d"
+    ]
+  }
+}

@@ -1,0 +1,30 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-15T03:55:34Z",
+ "id": "PCC-20261115-ac1152",
+ "kind": "statement",
+ "producer": {
+  "commit": "4ba7c50b955a0b9a2c0c0c0745fe329effbfcbaa",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/fixed-chain25-empty-stage-repair-01/original-caller.txt",
+    "sha256": "7cce6019763e22061f16e56f0a1bac757276e5a9a20885c0c36008e3204a3ee3"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/fixed-chain25-empty-stage-repair-01/outcome.json",
+    "sha256": "9d2460c3489978b3674adfdf7c4b843d02500ee874b0af8cdbf27643be21af2c"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "CI25 path-repair governance01 passed every recorded local check then failed staging an empty optional five-file attestation subset. Original failure/caller retained. Successor02 skips only empty subset and preserves exact selected-set/hashes/parent checks; no mathematical change or result. Unsigned."
+}

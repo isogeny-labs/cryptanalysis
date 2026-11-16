@@ -1,0 +1,11 @@
+{
+  "schema": "xedni-label-conditioned-collision-protocol-v1",
+  "field": "Z/7Z",
+  "target_law": "all w in Z/7Z except w=1, uniformly enumerated",
+  "encoding_law": "all 7! bijections to labels 0..6 per eligible scalar",
+  "prior_trace": ["1", "w"],
+  "next_form": "w+1 if label(1)<label(w), else 2w",
+  "collision_event": "next form equals either prior form; prior trace is injective",
+  "output": "one row per ordered pair of distinct visible labels, including eligible and collision encoding counts",
+  "claim_boundary": "finite label-conditioned count control; no long-run generic-group theorem or coordinate observation"
+}

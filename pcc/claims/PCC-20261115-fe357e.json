@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-15T23:20:50Z",
+ "id": "PCC-20261115-fe357e",
+ "kind": "theorem",
+ "producer": {
+  "commit": "6bb2516b64e7112356e58e45da590d60591c0461",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "30c4bbde1aecb7f1af6892879b66c75b4c2ef611c3a3d0e68ce502de4cc0fa8b",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-lp-presentation-01/lean/LPProjection.lean",
+   "theorem": "LPProjection.projected_kernel_iff_of_finite_spans"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Known ring cancellations and finite homogeneous linear-kernel projection under explicit full-projection-span, constraint-span, annihilation and valid-full-lift hypotheses. Both unchanged original gates audit13declarations: ten named substantive theorems and three generated dot equations, standard foundations only,0trusted. No new identity or novelty, no concrete numerical basis-completeness theorem, no q223 population, Picard character or solver/program bridge, solve/cost/complexity claim. Original native identity checker and SHA included unchanged; deterministic extra-point diagnostics are not signed independent execution proofs. Unsigned local theorem binding.",
+ "statement": "theorem projected_kernel_iff_of_finite_spans {I J R S LP FB K : Type} [CommRing K] (lpcols : List LP) (fbcols : List FB) (left : R \u2192 LP \u2192 K) (right : R \u2192 FB \u2192 K) (constraints : S \u2192 FB \u2192 K) (fullIndices : List I) (fullImages : I \u2192 FB \u2192 K) (imageIndices : List J) (lifts : J \u2192 LP \u2192 K) (images : J \u2192 FB \u2192 K) (fullSpan : \u2200 lp fb, FullKernel lpcols fbcols left right lp fb \u2192 \u2203 coefficient, combine fullIndices coefficient fullImages = fb) (annihilated : \u2200 i, RowKernel fbcols constraints (fullImages i)) (constraintSpan : \u2200 fb, RowKernel fbcols constraints fb \u2192 \u2203 coefficient, combine imageIndices coefficient images = fb) (validLifts : \u2200 j, FullKernel lpcols fbcols left right (lifts j) (images j)) (fb : FB \u2192 K) : RowKernel fbcols constraints fb \u2194 \u2203 lp, FullKernel lpcols fbcols left right lp fb"
+}

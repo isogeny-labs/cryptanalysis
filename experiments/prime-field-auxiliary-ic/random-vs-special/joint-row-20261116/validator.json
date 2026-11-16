@@ -1,0 +1,283 @@
+{
+  "status": "pass",
+  "independent": false,
+  "overall_ci_status": "pending",
+  "source_commit": "d95d582ca01739e138b605db6279a906d0dd230b",
+  "scope": "Producer correctness for joint projective row equations; affine-oracle controls include torsion, infinity, equal/opposite points and unsigned scalar boundaries. No timing comparison or independent execution verification.",
+  "raw_data": [
+    {
+      "path": "aligned-reports.command.json",
+      "sha256": "bd20d3c2c112e8d0f662d48825d25c797d084931b7856ae6f9a0e5cc8ef16b9b"
+    },
+    {
+      "path": "aligned-reports.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "cli-lints.command.json",
+      "sha256": "3b4a6c1d6b31560a6aa8a4c12b12edadadec6ec61e9a4edf9e004ddd1dbf9c6c"
+    },
+    {
+      "path": "cli-lints.log",
+      "sha256": "08157afe1f180cd4f30d2640da45a625bf7b3403b5713d4145ac00c66b6b0f14"
+    },
+    {
+      "path": "format-check.command.json",
+      "sha256": "1672812cb32006a53592e1a2e7379abf2eafbd91733208945c5463e01850869e"
+    },
+    {
+      "path": "format-check.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "msrv-core.command.json",
+      "sha256": "ff9e7ca39611a109095c871f1efff142507ed96b715b492276704a59e3ca8627"
+    },
+    {
+      "path": "msrv-core.log",
+      "sha256": "c8d4a9e223a0c9fb5cdc9a0956efe22e1e2e554c5ee98f32fd2d1a1a46786044"
+    },
+    {
+      "path": "msrv-docs.command.json",
+      "sha256": "ad4b7f4d6bc5ab60cbcb3f3be2b3e30854ac6a6baaffb461edb9dc505d7943bb"
+    },
+    {
+      "path": "msrv-docs.log",
+      "sha256": "193ac25188fcc8f9b8255db9bd916603ab0b91849f5601063c779b5147045eaf"
+    },
+    {
+      "path": "public-test-fixture/auxiliary.json",
+      "sha256": "1f848b590770fd189dc48d89a9fc2d515832b5d534620d4313ea5d4b26f4b149"
+    },
+    {
+      "path": "public-test-fixture/comparison.json",
+      "sha256": "9832db86cac4de28f9e46cc7f093fffaebee27606b11b98bc874b61b3e8d003c"
+    },
+    {
+      "path": "public-test-fixture/random.json",
+      "sha256": "c82b4a4a9c23c6b63e5384e27e0c8493475d282dd7e30f9ae589dc9cec3c7955"
+    },
+    {
+      "path": "public-test-fixture/same_base.json",
+      "sha256": "bdfd1f92bfefac896855ddbfb083fff23eb8b0079a1b2decb6246a887ac1a90a"
+    },
+    {
+      "path": "stable-cli.command.json",
+      "sha256": "0fdcb4ee093f6604abd8eb8439e541bf69b3209e879662789bf2c714fb34ee3f"
+    },
+    {
+      "path": "stable-cli.log",
+      "sha256": "b3bb43926a04490f47fe0adf44fb27c605659dfd15a13443a0597e48cda72390"
+    },
+    {
+      "path": "stable-core.command.json",
+      "sha256": "c2ebedda109f0440c0b297f7a9a65c2def49001a0eda7f067f42ce086d5c0c3a"
+    },
+    {
+      "path": "stable-core.log",
+      "sha256": "e6bb8d512d086fa5a582133ae0354fd9fda0bba1fcff59c7423ad671b5fdb2e0"
+    },
+    {
+      "path": "stable-docs.command.json",
+      "sha256": "863caa2aae2904d0baa79d3165da9505edd050f7cce90936dd54cdfb8fe3b92c"
+    },
+    {
+      "path": "stable-docs.log",
+      "sha256": "922b98fe203840f49c9ceed6b90bf5f1cd65e83d2131e5f6d4d376711527e00a"
+    },
+    {
+      "path": "stable-lints.command.json",
+      "sha256": "68d3fd80953092719a5df3a2a58f8b34866299b034484b2b8662c7cecd195095"
+    },
+    {
+      "path": "stable-lints.log",
+      "sha256": "d59c38f999b638ef4ae9bd14601f084f63919acebe8957864e4a135feff1b855"
+    }
+  ],
+  "headline": [
+    {
+      "name": "stable-core-checks",
+      "claimed": 32,
+      "recomputed": 32,
+      "rel_tol": 0
+    },
+    {
+      "name": "msrv-core-checks",
+      "claimed": 32,
+      "recomputed": 32,
+      "rel_tol": 0
+    },
+    {
+      "name": "stable-cli-checks",
+      "claimed": 8,
+      "recomputed": 8,
+      "rel_tol": 0
+    },
+    {
+      "name": "aligned-public-correctness-fixture-arms",
+      "claimed": 3,
+      "recomputed": 3,
+      "rel_tol": 0
+    }
+  ],
+  "checks": [
+    {
+      "name": "aligned-reports",
+      "source_commit": "d95d582ca01739e138b605db6279a906d0dd230b",
+      "argv": [
+        "python3",
+        "experiments/prime-field-auxiliary-ic/random-vs-special/compare_reports.py",
+        "--auxiliary",
+        "/workspace/cryptanalysis-pr/experiments/prime-field-auxiliary-ic/random-vs-special/joint-row-20261116/public-test-fixture/auxiliary.json",
+        "--same-base",
+        "/workspace/cryptanalysis-pr/experiments/prime-field-auxiliary-ic/random-vs-special/joint-row-20261116/public-test-fixture/same_base.json",
+        "--random",
+        "/workspace/cryptanalysis-pr/experiments/prime-field-auxiliary-ic/random-vs-special/joint-row-20261116/public-test-fixture/random.json",
+        "--output",
+        "experiments/prime-field-auxiliary-ic/random-vs-special/joint-row-20261116/public-test-fixture/comparison.json"
+      ],
+      "explicit_environment": {},
+      "exit_code": 0,
+      "scope": "producer development correctness check; no benchmark"
+    },
+    {
+      "name": "cli-lints",
+      "source_commit": "d95d582ca01739e138b605db6279a906d0dd230b",
+      "argv": [
+        "/home/agent/.cargo/bin/cargo",
+        "+stable",
+        "clippy",
+        "--locked",
+        "--manifest-path",
+        "suite/Cargo.toml",
+        "--lib",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "explicit_environment": {},
+      "exit_code": 0,
+      "scope": "producer development correctness check; no benchmark"
+    },
+    {
+      "name": "format-check",
+      "source_commit": "d95d582ca01739e138b605db6279a906d0dd230b",
+      "argv": [
+        "/home/agent/.cargo/bin/cargo",
+        "+stable",
+        "fmt",
+        "--check",
+        "--manifest-path",
+        "crates/prime-field-auxiliary-ic/Cargo.toml"
+      ],
+      "explicit_environment": {},
+      "exit_code": 0,
+      "scope": "producer development correctness check; no benchmark"
+    },
+    {
+      "name": "msrv-core",
+      "source_commit": "d95d582ca01739e138b605db6279a906d0dd230b",
+      "argv": [
+        "/home/agent/.cargo/bin/cargo",
+        "+1.78.0",
+        "test",
+        "--locked",
+        "--release",
+        "--manifest-path",
+        "crates/prime-field-auxiliary-ic/Cargo.toml"
+      ],
+      "explicit_environment": {},
+      "exit_code": 0,
+      "scope": "producer development correctness check; no benchmark"
+    },
+    {
+      "name": "msrv-docs",
+      "source_commit": "d95d582ca01739e138b605db6279a906d0dd230b",
+      "argv": [
+        "/home/agent/.cargo/bin/cargo",
+        "+1.78.0",
+        "doc",
+        "--no-deps",
+        "--manifest-path",
+        "crates/prime-field-auxiliary-ic/Cargo.toml"
+      ],
+      "explicit_environment": {
+        "RUSTDOCFLAGS": "-D warnings"
+      },
+      "exit_code": 0,
+      "scope": "producer development correctness check; no benchmark"
+    },
+    {
+      "name": "stable-cli",
+      "source_commit": "d95d582ca01739e138b605db6279a906d0dd230b",
+      "argv": [
+        "/home/agent/.cargo/bin/cargo",
+        "+stable",
+        "test",
+        "--locked",
+        "--manifest-path",
+        "suite/Cargo.toml",
+        "--lib",
+        "cli::tools::ic::auxiliary::tests"
+      ],
+      "explicit_environment": {
+        "AUXILIARY_IC_REPORT_FIXTURE_DIR": "/workspace/cryptanalysis-pr/experiments/prime-field-auxiliary-ic/random-vs-special/joint-row-20261116/public-test-fixture"
+      },
+      "exit_code": 0,
+      "scope": "producer development correctness check; no benchmark"
+    },
+    {
+      "name": "stable-core",
+      "source_commit": "d95d582ca01739e138b605db6279a906d0dd230b",
+      "argv": [
+        "/home/agent/.cargo/bin/cargo",
+        "+stable",
+        "test",
+        "--locked",
+        "--release",
+        "--manifest-path",
+        "crates/prime-field-auxiliary-ic/Cargo.toml"
+      ],
+      "explicit_environment": {},
+      "exit_code": 0,
+      "scope": "producer development correctness check; no benchmark"
+    },
+    {
+      "name": "stable-docs",
+      "source_commit": "d95d582ca01739e138b605db6279a906d0dd230b",
+      "argv": [
+        "/home/agent/.cargo/bin/cargo",
+        "+stable",
+        "doc",
+        "--no-deps",
+        "--manifest-path",
+        "crates/prime-field-auxiliary-ic/Cargo.toml"
+      ],
+      "explicit_environment": {
+        "RUSTDOCFLAGS": "-D warnings"
+      },
+      "exit_code": 0,
+      "scope": "producer development correctness check; no benchmark"
+    },
+    {
+      "name": "stable-lints",
+      "source_commit": "d95d582ca01739e138b605db6279a906d0dd230b",
+      "argv": [
+        "/home/agent/.cargo/bin/cargo",
+        "+stable",
+        "clippy",
+        "--manifest-path",
+        "crates/prime-field-auxiliary-ic/Cargo.toml",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "explicit_environment": {},
+      "exit_code": 0,
+      "scope": "producer development correctness check; no benchmark"
+    }
+  ],
+  "qualified_speedup": null,
+  "fresh_measurements": null
+}

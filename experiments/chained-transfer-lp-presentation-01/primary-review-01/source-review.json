@@ -1,0 +1,61 @@
+{
+  "at": "2026-11-15T22:33:23.489541+00:00",
+  "primary_source": "Diem2012 JTNB24(3),639-667; pp644-645 compare full LP graphs and rooted trees, pp653-654 reduce classes and retry linear algebra",
+  "primary_url": "http://jtnb.cedram.org/item?id=JTNB_2012__24_3_639_0",
+  "exact_source_files": [
+    {
+      "path": "/workspace/crypto/research/quartic_n4_la_20261021/ic.rs",
+      "bytes": 40809,
+      "sha256": "ec20c87ed0be8c663af9965b4f0caf5bfe25b58d629a1896078026d52cfee90c"
+    },
+    {
+      "path": "/workspace/cryptanalysis/experiments/chained-transfer-public-target/original-relation-kernel-01/derived/class_solver.rs",
+      "bytes": 19472,
+      "sha256": "1f017ac2898515f9ead32d7da80b5a85000c56809cf0dff46add0a26e1561bb3"
+    },
+    {
+      "path": "/workspace/cryptanalysis/experiments/chained-transfer-public-target/original-relation-kernel-01/src/trace.rs",
+      "bytes": 7373,
+      "sha256": "8f0b4dcb77247739aa7fdebeeb1149acd32643171add6a2e35b62d3664e58b6c"
+    },
+    {
+      "path": "/workspace/cryptanalysis/experiments/chained-transfer-public-target/original-relation-rank-01/src/bin/produce.rs",
+      "bytes": 9664,
+      "sha256": "f677c9d34ba973d1fad548903d78b377fd6709e0c6688032d7d852a77388e54f"
+    },
+    {
+      "path": "/workspace/cryptanalysis/experiments/chained-transfer-public-target/original-relation-rank-01/src/bin/replay.rs",
+      "bytes": 14475,
+      "sha256": "77c0ebd13201d9f54605ddcbb39dd3d80864f90226fd2895d87520841fdabea8"
+    },
+    {
+      "path": "/workspace/cryptanalysis/experiments/chained-transfer-public-target/original-relation-rank-01/lean/RelationKernel.lean",
+      "bytes": 6782,
+      "sha256": "249c3370c8d7111f799a029f03d9121c7a07f3664a63fc268a81cd75e9901291"
+    },
+    {
+      "path": "/workspace/scratch/ct90-prime-descent-primary-review-01/diem-plane-curves-2012.pdf",
+      "bytes": 951448,
+      "sha256": "cdbd69bf98354b5c640cf00ca562593dfaf76cdb6b82c9e79cc701d89c73579f"
+    },
+    {
+      "path": "/workspace/scratch/ct90-prime-descent-primary-review-01/diem-plane-curves-2012.txt",
+      "bytes": 85151,
+      "sha256": "a2580bc75e8aff7983bc944a43e86972780c59ea5f5681592e992c96bd232d9e"
+    }
+  ],
+  "observed_code": {
+    "cycle_rows_2lp": "ic.rs1036-1132 initializes queue only from ground; processes reachable adjacency; row target can terminate traversal",
+    "cycle_target": "class_solver.rs260 rows_mult determines cycle target as well as later row selection",
+    "capture": "trace.rs76-94 retains entire full/ground/edges/vertex_points graph alongside post-cycle matrices",
+    "prior_rank": "produce.rs188-199 all_available consists exactly of full_rows+combined_lp_cycle_rows"
+  },
+  "correction": "b76887 claim that rows_mult cannot expose additional constraints was too broad. Raw geometry is unchanged, but the cycle cap changes. No actual cap activity, unrooted constraints or new ranks measured here.",
+  "KB": "status unavailable127; four new distinct queries and theorem search all127; complete logs retained; VLT1 atlas remains unread, no novelty or absence inference",
+  "classification": "finite linear-algebra component of the existing generic-decomposition pipeline; established graph elimination context, no new isogeny or complexity claim",
+  "implementation_or_population_experiment": false,
+  "formal_status": "generic projection/lift and cancellation proof obligations prospective; no new identity/theorem asserted",
+  "parent_source": "82617f14fb48843585137f0310f7d1fa9a5d8ea6",
+  "parent_CI_PR": 1578,
+  "parent_CI02_status": "last observed queued43766245639; no result inferred"
+}

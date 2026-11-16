@@ -1,0 +1,116 @@
+{
+  "schema": "ic-bench-candidate/1",
+  "field": {
+    "characteristic": 2,
+    "degree": 24,
+    "representation": "polynomial",
+    "modulus_exponents": [
+      24,
+      4,
+      3,
+      1,
+      0
+    ],
+    "element_encoding": "hex polynomial coefficient bitset, least significant bit is constant"
+  },
+  "curve": {
+    "model": "binary Weierstrass",
+    "coefficients": [
+      1,
+      0,
+      0,
+      0,
+      6277594
+    ],
+    "subgroup_order": "2097533",
+    "cofactor": 8,
+    "generator": [
+      "0xa8bb75",
+      "0xdd68ed"
+    ],
+    "target_group": "prime-order subgroup",
+    "curve_id": "EC1N24Crbh1d71c3dc9cbc"
+  },
+  "factor_base": {
+    "actual_usable_point_count": 514,
+    "construction": {
+      "basis": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "family": "registry-prefix",
+      "params": {
+        "exclude_x_zero": true,
+        "registry_alias": "icv1_f2m24_tm3047_2d0c0e8c"
+      },
+      "polynomial_constraint": "none",
+      "shifted_bases": "none"
+    },
+    "curve_id": "EC1N24Crbh1d71c3dc9cbc",
+    "effective_columns": 257,
+    "enumerated_set_sha256": "4a08e16c1d7682484d33c8b1565ea14522622053534ce5e04c96f356ae8d3ea5",
+    "geometric_point_count": 514,
+    "nominal_dimension": 9,
+    "quotient_rule": "sign, with prime-order cofactor quotient logarithms",
+    "strict_subgroup_point_count": 114,
+    "subgroup_policy": "full curve lifts, relations reduced in the prime-order cofactor quotient; no pure torsion"
+  },
+  "point_decomposition": {
+    "summands": 2,
+    "solver_family": "vector64",
+    "stage_code": "PDP2vector64",
+    "oracle": "mitm-batched",
+    "params": {
+      "m": 2,
+      "batch_size": 64,
+      "x_only": 1,
+      "prefix_inverse_cache": 1,
+      "vector_prepare": 1
+    },
+    "projection_cap_policy": "complete subtraction fallback",
+    "zero_target_policy": "complete subtraction fallback",
+    "setup_policy": "cold target-independent setup charged once per single target"
+  },
+  "relation_collection": {
+    "stage_code": "RCwalk",
+    "targets": "walk",
+    "max_trials": 500000
+  },
+  "relation_linear_algebra": {
+    "stage_code": "LAgauss",
+    "implementation": "incremental-gauss"
+  },
+  "target_descent": {
+    "stage_code": "TDdirect",
+    "rule": "one target column in relation matrix"
+  },
+  "isogeny": "none",
+  "implementation": {
+    "entry_point": "suite/examples/ic_affine_pipeline_probe.rs -> run_pipeline",
+    "sources_sha256": {
+      "suite/examples/ic_affine_pipeline_probe.rs": "fc0eb61e49a4bdcd20af8d67ba0d370460622aa85dc49e4c22550d25a5537660",
+      "suite/Cargo.toml": "9913e8e031406a6f8f789f0ab3b3611957bd15f79fd6a7e643c5ee6e3b2cf1b3",
+      "suite/Cargo.lock": "78f383ad0a5e3977d94ddec4ee1312aed0b82cc48ac7096604b3fe40d3735edd",
+      "suite/build.rs": "febfc0e97b8c4ab27477af0817f3ed0a3bdafa32cfa5384f1d92b65e4159090b",
+      "suite/src/cryptanalysis/s3_affine_projection.rs": "a1610f8c0b88bf57aa749103a21ca157e99b1dff6791b2dfef3e6e31012851b9",
+      "suite/src/cryptanalysis/ic_framework/affine.rs": "ceb5326ba36928e0abbf4a977274be2f3c78597b11e9687ef6da135224eb56b1",
+      "suite/src/cryptanalysis/ic_framework/batch_mitm.rs": "961be8e02dfd25707fda395cdcefd52fef5e38d1239e3de3d2f82c652a63e781",
+      "suite/src/cryptanalysis/ic_framework/mod.rs": "ed6426bbe16a71ecfd3730b7585c0c299b7368cf3ab59b1945db796c1c884945",
+      "suite/src/cryptanalysis/ic_framework/plugins.rs": "174e3aca3bae132a8c1373765d0d6ef5f2f03c0e13b28e470840d9430dbed6d3",
+      "suite/src/cryptanalysis/ic_framework/u32_reciprocal.rs": "022b8be73c1fa028dde65a78f72845e95a87b3eba10fbecd1f9a568db3dbccf8",
+      "suite/src/cryptanalysis/ic_framework/linalg.rs": "c886719ba43aed640cf7a572920d595de2141be48912480c958bf30bb3fb0c79",
+      "suite/src/cryptanalysis/ic_boundary.rs": "1c0afb39597089d0aa472f9fedeb2872f3cfcc70dde56d8e00ff9a994223661e",
+      "suite/src/cryptanalysis/koblitz_fast.rs": "332a7aaaeb98cc7b21f3edd6fdbe25d68cdc83e7155711b68b76303bcc0e91ba",
+      "suite/src/cryptanalysis/semaev_decomp.rs": "0396783a9ddfa8395b7524487df8972c476491c52e605eb208fff1850b3c26a2"
+    },
+    "cargo_features": [],
+    "vector_policy": "vpclmul-if-present-else-pclmul128"
+  }
+}

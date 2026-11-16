@@ -1,0 +1,41 @@
+name: CT153 original-q223 cold source solver reference checks
+on:
+  pull_request:
+    paths:
+      - "experiments/chained-transfer-public-target/norm-point-reuse-01/ct153_*"
+      - "experiments/chained-transfer-public-target/norm-point-reuse-01/CT153_*"
+      - ".github/workflows/ct153-original-source-reference.yml"
+  push:
+    branches:
+      - research/ct146-correction-torsion-contract-20261115
+    paths:
+      - "experiments/chained-transfer-public-target/norm-point-reuse-01/ct153_*"
+      - "experiments/chained-transfer-public-target/norm-point-reuse-01/CT153_*"
+      - ".github/workflows/ct153-original-source-reference.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  bounded-source-correctness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+      - name: Compile exact source and run independent complete toy DLP correctness
+        shell: bash
+        run: |
+          set -euo pipefail
+          D=experiments/chained-transfer-public-target/norm-point-reuse-01
+          g++ -std=c++17 -O3 -Wall -Wextra -Werror "$D/ct153_original_cold_reference.cpp" -o /tmp/ct153
+          /tmp/ct153 --self-test-negative > /tmp/ct153-neg.json
+          python3 "$D/ct153_reference_audit.py" /tmp/ct153 --quick --output /tmp/ct153-short.json > /tmp/ct153-summary.json
+          python3 - <<'PY'
+          import json
+          a=json.load(open('/tmp/ct153-summary.json'))
+          assert a['count']==8 and a['targets']==2 and a['negative_controls']==9
+          assert a['all_answers_independently_reverified'] and a['standing']=='[pcc:unverified]'
+          assert a['bsgs_peak_rss_max_kb']>0 and a['rho_peak_rss_max_kb']>0
+          PY
+          sha256sum "$D/ct153_original_cold_reference.cpp" "$D/ct153_reference_audit.py" /tmp/ct153

@@ -91,7 +91,7 @@ jobs:
           subprocess.run(['python3', tool, 'verify', '--remote', *paths], check=True)
           PY
       - name: Export storage pointers for a normal reviewed Git commit
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: quartic-original-census-pointers
           include-hidden-files: true
@@ -147,7 +147,7 @@ jobs:
       - name: Refusal controls
         run: python3 -m unittest discover -s tools/ci -p 'test_quartic*.py' -v
       - name: Retain the exact verified checkpoint for independent replay
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: quartic-original-checkpoint
           path: experiments/hecke-432-j1728-relative-quartic-splitting-20261026/rnf-checkpoint.bin
@@ -168,7 +168,7 @@ jobs:
             --evidence "$RUNNER_TEMP/quartic-integer"
       - name: Retain successes, failures and exact verifier output
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: quartic-integer-replay
           path: ${{ runner.temp }}/quartic-integer/
@@ -217,7 +217,7 @@ jobs:
         run: python3 tools/ci/check_quartic_certificates.py formal --evidence "$RUNNER_TEMP/quartic-formal"
       - name: Retain fresh proof logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: quartic-formal-replay
           path: |

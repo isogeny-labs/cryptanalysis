@@ -1,0 +1,21 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T19:08:47Z",
+ "id": "PCC-20261116-f96d0c",
+ "kind": "statement",
+ "producer": {
+  "commit": "ad063e04e14d721ae1263a63c7c2ed5e07c2932e",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "recompute",
+   "path": "experiments/prime-field-auxiliary-ic/rust-validation/no-s3-ci-followup-20261116/validator.json",
+   "sha256": "62ddfdf1e69df9fdad803d69e7a6a8b7eb9e7556d330189f72517ccec59628a0"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "prime-field-auxiliary-ic-s3-free-ci-followup-20261116",
+ "statement": "On source ad063e04e14d721ae1263a63c7c2ed5e07c2932e, recorded 38 passing artifact regressions and successful global workflow wiring after removing unrelated S3 restore prerequisites from three source-validation workflows. Non-bootstrap check configuration is preserved; the existing format exclusion regexp selects byte-identical paths on all 70624 tracked files plus 12 examples. Eight failed provider jobs on prior head77c4a311 are preserved. Native/Lean/static hosted execution remains pending. This is unsigned producer integration evidence, not independent execution or a performance result."
+}

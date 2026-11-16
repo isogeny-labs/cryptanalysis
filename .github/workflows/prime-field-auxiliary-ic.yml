@@ -1,0 +1,131 @@
+name: prime-field-auxiliary-ic
+# artifact-store: no-pull (only source and policy-small fixtures committed here)
+on:
+  pull_request:
+    paths:
+      - experiments/prime-field-auxiliary-ic/**
+      - crates/prime-field-auxiliary-ic/**
+      - suite/src/cli/tools/ic/auxiliary.rs
+      - bindings/rust/cryptanalysis/tests/auxiliary_ic.rs
+      - .github/workflows/prime-field-auxiliary-ic.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native-rust:
+    name: Auxiliary IC Rust ${{ matrix.rust }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        rust: ['1.78.0', stable]
+    defaults:
+      run:
+        working-directory: crates/prime-field-auxiliary-ic
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: crates/prime-field-auxiliary-ic
+      - name: Install the selected Rust toolchain
+        env:
+          AUXILIARY_IC_TOOLCHAIN: ${{ matrix.rust }}
+        run: |
+          rustup toolchain install "$AUXILIARY_IC_TOOLCHAIN" --profile minimal --component clippy --component rustfmt
+          printf 'RUSTUP_TOOLCHAIN=%s\n' "$AUXILIARY_IC_TOOLCHAIN" >> "$GITHUB_ENV"
+      - name: Check complete IC pipeline and scalar/SIMD parity
+        run: cargo test --release
+      - name: Formatting and lints
+        if: matrix.rust == 'stable'
+        run: |
+          cargo fmt --check
+          cargo clippy --all-targets -- -D warnings
+      - name: Public documentation
+        run: cargo doc --no-deps
+        env:
+          RUSTDOCFLAGS: -D warnings
+  cli-comparison:
+    name: Auxiliary IC CLI comparison
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          filter: blob:none
+          sparse-checkout: |
+            suite
+            crates/prime-field-auxiliary-ic
+            crates/hashed-ecdl-tensor
+            bindings/rust
+            src
+            include
+            cuda
+            challenges/elliptic
+            experiments/prime-field-auxiliary-ic/snapshot
+            experiments/prime-field-auxiliary-ic/random-vs-special
+      - name: Install stable Rust and formatting tools
+        run: |
+          rustup toolchain install stable --profile minimal --component rustfmt
+          echo 'RUSTUP_TOOLCHAIN=stable' >> "$GITHUB_ENV"
+      - uses: actions/cache@v6
+        with:
+          path: |
+            ~/.cargo/registry/index
+            ~/.cargo/registry/cache
+            ~/.cargo/git/db
+            suite/target
+          key: ${{ runner.os }}-auxiliary-cli-${{ hashFiles('suite/Cargo.lock', 'bindings/rust/Cargo.lock', 'crates/**/Cargo.toml') }}
+          restore-keys: ${{ runner.os }}-auxiliary-cli-
+      - name: Matched random, same-base and auxiliary relation controls
+        env:
+          AUXILIARY_IC_REPORT_FIXTURE_DIR: ${{ runner.temp }}/auxiliary-ic-comparison
+        run: cargo test --locked --manifest-path suite/Cargo.toml --lib cli::tools::ic::auxiliary::tests
+      - name: Align actual public correctness-fixture reports
+        env:
+          AUXILIARY_IC_REPORT_FIXTURE_DIR: ${{ runner.temp }}/auxiliary-ic-comparison
+        run: |
+          python3 experiments/prime-field-auxiliary-ic/random-vs-special/compare_reports.py \
+            --auxiliary "$AUXILIARY_IC_REPORT_FIXTURE_DIR/auxiliary.json" \
+            --same-base "$AUXILIARY_IC_REPORT_FIXTURE_DIR/same_base.json" \
+            --random "$AUXILIARY_IC_REPORT_FIXTURE_DIR/random.json"
+      - name: CLI source formatting
+        run: rustfmt --edition 2021 --check suite/src/cli/tools/ic/auxiliary.rs
+  implementation-checks:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: experiments/prime-field-auxiliary-ic
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Original snapshot byte inventory
+        run: python experiments/prime-field-auxiliary-ic/check_snapshot.py
+      - name: Reject mismatched or censored comparison reports
+        run: python -m unittest discover -s experiments/prime-field-auxiliary-ic/random-vs-special -p test_compare_reports.py -v
+      - name: Implementation dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends singular
+          python -m pip install -r experiments/prime-field-auxiliary-ic/snapshot/algebraic/requirements.txt
+      - name: Regression checks in a temporary copy
+        env:
+          SNAPSHOT_SOURCE: ${{ github.workspace }}/experiments/prime-field-auxiliary-ic/snapshot
+          # The historical SymPy environment loaded before the locally
+          # vendored FLINT module. Global FLINT changes SymPy's factor sorting
+          # to nmod comparisons, which that SymPy version does not support.
+          SYMPY_GROUND_TYPES: python
+        run: |
+          cp -a "$SNAPSHOT_SOURCE" "$RUNNER_TEMP/prime-field-ic"
+          cd "$RUNNER_TEMP/prime-field-ic/algebraic"
+          python -m unittest test_solver test_resultants test_optimized optimized.test_v2 -v
+      - name: Retain extraction diagnostics on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: prime-field-ic-extraction-diagnostics
+          path: ${{ runner.temp }}/prime-field-ic/algebraic/tests/**/extraction.log
+          if-no-files-found: ignore
