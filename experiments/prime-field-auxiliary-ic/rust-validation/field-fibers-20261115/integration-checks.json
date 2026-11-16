@@ -1,0 +1,116 @@
+{
+  "schema": "producer-integration-followup/v1",
+  "status": "pass",
+  "independent": false,
+  "source_commit": "d3de0872f71600f02e15e38809ac1ed7b751e74d",
+  "canonical_base": "2a0e4f2d3a96e3fb2e0be5034ac0ccc5041bc718",
+  "source_files": [
+    {
+      "path": "bindings/rust/hashed-ecdl-tensor/src/arithmetic.rs",
+      "sha256": "26bbf06a774ead3a41a6ef65298ecff6571736f4c338eb69047e3b44ffbff21a"
+    },
+    {
+      "path": "suite/Cargo.lock",
+      "sha256": "12b6ab61b9e1b05bcb738c353748d01b3aaf5d2762ed2b9b171747b9cfcf5414"
+    },
+    {
+      "path": "tools/binary-genus2-cover/Cargo.lock",
+      "sha256": "1165c75eee70bee69843920946b3bd506b4739fa88afcfe16c66be583c2eca3b"
+    },
+    {
+      "path": ".artifacts/config.json",
+      "sha256": "0accd31fa5714ab541588263cba6c4ee844e27b5f04a5e1becc564cd91841fc9"
+    }
+  ],
+  "raw_data": [
+    {
+      "path": "publication-artifacts.log",
+      "sha256": "30a8346d1f9f41872ce54a60a20c0c053f57632ebd6e32f1e9be5529224fa934"
+    },
+    {
+      "path": "publication-ledger.log",
+      "sha256": "f8a2ee2ea3f30ba24fe817249144096902aea48bda535606c903085f5bab8949"
+    },
+    {
+      "path": "publication-records.log",
+      "sha256": "0f748880b854bf84ff1d2b0de5680a307992c4d3310cdc08a98e0b595cc048a3"
+    },
+    {
+      "path": "publication-snapshot.log",
+      "sha256": "990d3694b039245d2eb61d36e4977713c33bf3a91f810cc6f6b67b19458dc54d"
+    },
+    {
+      "path": "post-merge-cli.log",
+      "sha256": "db0717e21560f2e32e06ad11fc377992c29cafc282d6fc374429b22fd3c958a5"
+    },
+    {
+      "path": "getrandom-cli.log",
+      "sha256": "b01b3b168a89063c79661b34c1bcdd6d733d9997fe3a8e1303428afd31382466"
+    },
+    {
+      "path": "locked-consumer.log",
+      "sha256": "a5f4c585ee974ca44916ac30a98bbc189e067a7e0a6bc6d2e8d6bc525be724af"
+    },
+    {
+      "path": "merge-claim-replay.json",
+      "sha256": "20ea5eebf22cb359810b1a53d6b8ea4cae031877608863b81974ef21cb9a1ecc"
+    },
+    {
+      "path": "integration-followup.txt",
+      "sha256": "b4ffeb77f2f7d95ef64148dc3581de14d5822ed628840df209b7460ed77865f7"
+    }
+  ],
+  "runs": [
+    {
+      "command": [
+        "python3",
+        "tools/artifacts/artifacts.py",
+        "check",
+        "origin/main",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "output": "publication-artifacts.log"
+    },
+    {
+      "command": [
+        "python3",
+        "tools/pcc/pcc.py",
+        "ledger",
+        "verify",
+        "--base",
+        "origin/main"
+      ],
+      "exit_code": 0,
+      "output": "publication-ledger.log"
+    },
+    {
+      "command": [
+        "python3",
+        "tools/benchrec.py",
+        "gate"
+      ],
+      "exit_code": 0,
+      "output": "publication-records.log"
+    },
+    {
+      "command": [
+        "python3",
+        "experiments/prime-field-auxiliary-ic/check_snapshot.py"
+      ],
+      "exit_code": 0,
+      "output": "publication-snapshot.log"
+    }
+  ],
+  "headline": [
+    {
+      "name": "post-merge-cli-passed-checks",
+      "claimed": 4,
+      "recomputed": 4,
+      "rel_tol": 0
+    }
+  ],
+  "scope": "Build migration, exact canonical ledger prefix and repository publication gates; no performance or independent verification claim.",
+  "artifact_policy": "Only the required live pcc/ledger.jsonl has an exact-path keep entry; other data remain checked. PDF/PNG report artifacts are below 64 KiB.",
+  "remaining": "Current-head hosted CI, maintainer CodeQL classification, and fresh timing allocation/protocol remain outstanding."
+}

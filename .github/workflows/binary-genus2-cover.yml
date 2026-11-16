@@ -1,4 +1,5 @@
 name: Binary genus-two cover
+# artifacts-scope: job
 
 on:
   pull_request:
@@ -15,6 +16,8 @@ on:
       - 'suite/vendor/crypto-analysis-core/**'
       - 'tools/bootstrap_crypto_analysis_core.sh'
       - 'suite/Cargo.lock'
+      - 'crates/prime-field-auxiliary-ic/**'
+      - 'bindings/rust/cryptanalysis/**'
       - 'research/binary_genus2_cover_20261014/**'
       - '.github/workflows/binary-genus2-cover.yml'
   workflow_dispatch:
@@ -59,26 +62,6 @@ jobs:
             /research/binary_genus2_cover_20261014/
             /tools/artifacts/
             /.artifacts/config.json
-      - name: Pull store data this workflow reads (tools/artifacts)
-        shell: bash
-        working-directory: ${{ github.workspace }}
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
-        run: |
-          if ! command -v aws >/dev/null; then
-            python3 -m venv "$RUNNER_TEMP/artifacts-awscli"
-            artifacts_cli_python="$RUNNER_TEMP/artifacts-awscli/bin/python"
-            artifacts_cli_aws="$RUNNER_TEMP/artifacts-awscli/bin/aws"
-            if [ -d "$RUNNER_TEMP/artifacts-awscli/Scripts" ]; then
-              artifacts_cli_python="$RUNNER_TEMP/artifacts-awscli/Scripts/python.exe"
-              artifacts_cli_aws="$RUNNER_TEMP/artifacts-awscli/Scripts/aws.exe"
-            fi
-            "$artifacts_cli_python" -m pip install --disable-pip-version-check awscli==1.46.2
-            export ARTIFACTS_AWS="$artifacts_cli_aws"
-          fi
-          python3 tools/artifacts/artifacts.py pull --jobs 16 docs/ecdlp-surfaces research/binary_genus2_cover_20261014
       - name: Install stable Rust with formatting and lint tools
         run: |
           rustup toolchain install stable --profile minimal --component rustfmt --component clippy
@@ -96,26 +79,6 @@ jobs:
             research/binary_genus2_cover_20261014/lean
             tools/artifacts
             .artifacts
-      - name: Pull store data this workflow reads (tools/artifacts)
-        shell: bash
-        working-directory: ${{ github.workspace }}
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
-        run: |
-          if ! command -v aws >/dev/null; then
-            python3 -m venv "$RUNNER_TEMP/artifacts-awscli"
-            artifacts_cli_python="$RUNNER_TEMP/artifacts-awscli/bin/python"
-            artifacts_cli_aws="$RUNNER_TEMP/artifacts-awscli/bin/aws"
-            if [ -d "$RUNNER_TEMP/artifacts-awscli/Scripts" ]; then
-              artifacts_cli_python="$RUNNER_TEMP/artifacts-awscli/Scripts/python.exe"
-              artifacts_cli_aws="$RUNNER_TEMP/artifacts-awscli/Scripts/aws.exe"
-            fi
-            "$artifacts_cli_python" -m pip install --disable-pip-version-check awscli==1.46.2
-            export ARTIFACTS_AWS="$artifacts_cli_aws"
-          fi
-          python3 tools/artifacts/artifacts.py pull --jobs 16 docs/ecdlp-surfaces research/binary_genus2_cover_20261014
       - name: Install pinned Lean and verify download
         run: |
           curl --fail --location --output "$RUNNER_TEMP/lean.tar.zst" https://github.com/leanprover/lean4/releases/download/v4.24.0/lean-4.24.0-linux.tar.zst

@@ -36,6 +36,8 @@
 //! * [`Elem`] is a `Copy` newtype over the `[u64; 4]` element words.
 //! * [`Options`] / [`Stats`] mirror the C option and statistics structs.
 //! * [`index_calculus`] holds the `(Z/pZ)^*`-only index-calculus API.
+//! * [`auxiliary_ic`] provides native bounded elliptic-curve IC over Mersenne
+//!   prime fields, with auxiliary maps, a direct control, and public certificates.
 //! * Free functions: [`cheon_best_divisor`], the number-theory helpers
 //!   ([`is_prime`], [`next_prime`], [`primitive_root`], [`powmod`],
 //!   [`invmod`], [`factorize`]) and [`version`].
@@ -52,6 +54,9 @@ pub mod gpu;
 mod group;
 pub mod hashed_ecdl;
 pub mod index_calculus;
+/// Native Mersenne-prime elliptic-curve IC, auxiliary circuits, and certificates.
+/// This is separate from [`index_calculus`], which solves multiplicative-field logs.
+pub use prime_field_auxiliary_ic as auxiliary_ic;
 mod nt;
 mod options;
 

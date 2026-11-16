@@ -230,6 +230,8 @@ pub mod pq_wiedemann;
 pub mod pq_xl;
 pub mod preprocessing_rho;
 pub mod prime_orbit_index_calculus;
+/// Native auxiliary-map IC over Mersenne prime fields, with checked recovery.
+pub use prime_field_auxiliary_ic as prime_auxiliary_index_calculus;
 pub mod quantum_estimator;
 pub mod quasi_subfield;
 pub mod research_bench;

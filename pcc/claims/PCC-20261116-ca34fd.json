@@ -1,0 +1,21 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T16:02:54Z",
+ "id": "PCC-20261116-ca34fd",
+ "kind": "statement",
+ "producer": {
+  "commit": "e8b78b114071cb9ad31916b50d6d046ed0eaf684",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "recompute",
+   "path": "experiments/prime-field-auxiliary-ic/random-vs-special/timing-v2-20261116/main-followup-validator.json",
+   "sha256": "ceb2da7da7924a5fabf65cea382179e76b7ed825caf1cdcb045be27e1787c033"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Canonical-ledger/main integration and bounded targeted CLI controls; original frozen snapshot and source-scoped evidence retained.",
+ "statement": "Merge source e8b78b114071cb9ad31916b50d6d046ed0eaf684 integrates main cf77e3a5 with both Git parents retained, the exact canonical 171-entry ledger prefix and all 29 unmerged claim/note bodies replayed through the PCC writer. Reviewed active 8d2645 attestation metadata remains unchanged. The timing v2 CLI, comparison checker and core source paths remain identical to 25049631; ten targeted CLI controls pass after the incoming native C guard updates. This unsigned compatibility/accounting observation supplies no fresh benchmark, runtime gain, independent execution or signed replay."
+}

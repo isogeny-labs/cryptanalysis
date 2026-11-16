@@ -1,0 +1,18 @@
+{
+  "source_commit": "5b9f7050c681614342e12d3becb6da0620d6f603",
+  "argv": [
+    "/home/agent/.cargo/bin/cargo",
+    "+1.85.0",
+    "check",
+    "--locked",
+    "--all-targets",
+    "--manifest-path",
+    "crates/hashed-ecdl-tensor/Cargo.toml"
+  ],
+  "explicit_environment": {
+    "CARGO_BUILD_JOBS": "1"
+  },
+  "timeout_seconds": 300,
+  "exit_code": 0,
+  "scope": "producer development correctness check; no benchmark"
+}

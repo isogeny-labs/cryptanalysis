@@ -1,0 +1,21 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-15T22:48:56Z",
+ "id": "PCC-20261115-113f0f",
+ "kind": "statement",
+ "producer": {
+  "commit": "fcd78dcb5e7d86f8ca0336da6c0e38cee3439118",
+  "model": "GPT-6",
+  "session": "codex-pr1536-consumer-followup-20261115"
+ },
+ "proofs": [
+  {
+   "kind": "recompute",
+   "path": "experiments/prime-field-auxiliary-ic/rust-validation/ci-consumer-followup-20261115/producer-checks.json",
+   "sha256": "74b8d337d99cb6e9e3c7bf0bd0420aaa88ec53e4624b882cb688ec50629a2c93"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Software dependency/CI correction and inherited blocker diagnosis only; failures and full hosted decoded logs retained.",
+ "statement": "PR 1536 CI follow-up synchronizes the structured-consumer lock with getrandom 0.4.3 while retaining prior package versions/checksums and all validation flags. On source 0f6f1045, locked Clippy and 36 release checks pass; after main integration fcd78dcb, locked Clippy and three CLI checks pass. GLV source-pin refusal is reproduced with identical main/PR inputs, and Rust 1.78 still rejects the inherited edition2024 dependency. Full CI and merge remain blocked; no performance claim."
+}

@@ -1,0 +1,63 @@
+    Blocking waiting for file lock on package cache
+   Compiling prime-field-auxiliary-ic v0.1.0 (/workspace/cryptanalysis-pr/crates/prime-field-auxiliary-ic)
+    Finished `release` profile [optimized] target(s) in 7.51s
+     Running unittests src/lib.rs (crates/prime-field-auxiliary-ic/target/release/build/prime-field-auxiliary-ic/5b5e3acf2dc6ffba/out/prime_field_auxiliary_ic-5b5e3acf2dc6ffba)
+
+running 9 tests
+test field::tests::batched_exceptions_match_individual_additions ... ok
+test field::tests::primality_handles_small_values_and_pseudoprimes ... ok
+test field::tests::reduction_and_fixed_inverse_match_integer_reference ... ok
+test graph::tests::anchors_and_balanced_cycles_match_dense_elimination ... ok
+test phases::tests::disjoint_intervals_include_repeated_phases_and_the_final_tail ... ok
+test graph::tests::random_signed_systems_match_rank_first_recovery_and_all_returned_proofs ... ok
+test phases::tests::early_exit_accounts_for_initialization_without_inventing_search_work ... ok
+test field::tests::projective_multiplication_matches_affine_reference_in_both_requested_fields ... ok
+test field::tests::projective_multiplication_matches_affine_addition_in_small_groups ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/field_fibers.rs (crates/prime-field-auxiliary-ic/target/release/build/prime-field-auxiliary-ic/0ddd31209706f0d1/out/field_fibers-0ddd31209706f0d1)
+
+running 4 tests
+test malformed_field_fibers_are_rejected ... ok
+test field_circuits_and_direct_controls_have_identical_full_recoveries ... ok
+test torus_fibers_match_explicit_products_and_direct_rows_in_both_fields ... ok
+test power_fibers_match_explicit_products_and_direct_rows_in_both_fields ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.68s
+
+     Running tests/pipeline.rs (crates/prime-field-auxiliary-ic/target/release/build/prime-field-auxiliary-ic/e83bd5952036420c/out/pipeline-e83bd5952036420c)
+
+running 11 tests
+test malformed_fibers_and_subgroups_are_rejected ... ok
+test direct_control_has_identical_rows_and_recovery_on_identical_walks ... ok
+test original_31_bit_rows_recover_without_search_or_private_input ... ok
+test resource_boundaries_are_explicit_and_do_not_report_recovery ... ok
+test complete_small_solves_use_distinct_nontrivial_rows ... ok
+test split_terminal_handles_one_map_and_symmetric_unit_roots ... ok
+test zero_and_mixed_center_shifts_match_the_explicit_polynomial ... ok
+test zero_masks_cross_vector_tiles_and_discard_padding ... ok
+test scalar_and_simd_are_exact_products_in_both_fields ... ok
+test nonzero_first_pole_and_root_order_are_supported ... ok
+test optional_profiling_preserves_recovery_rows_and_all_resource_stops ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.21s
+
+     Running tests/random_control.rs (crates/prime-field-auxiliary-ic/target/release/build/prime-field-auxiliary-ic/74bdc6c0d3c79b49/out/random_control-74bdc6c0d3c79b49)
+
+running 5 tests
+test invalid_random_controls_and_exhausted_preparation_are_explicit ... ok
+test random_bases_match_size_and_subgroup_in_both_requested_fields ... ok
+test relation_yield_runs_the_full_matched_prefix_without_early_recovery ... ok
+test cofactor_clearing_matches_the_complete_small_subgroup ... ok
+test three_arms_use_equal_columns_and_recover_the_same_public_targets ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests prime_field_auxiliary_ic
+
+running 1 test
+test src/lib.rs - (line 88) ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.28s
+

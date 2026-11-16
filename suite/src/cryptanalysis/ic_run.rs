@@ -395,6 +395,7 @@ fn run_binary_analogue(
         };
         let m = spec.oracle_params.u64_or("m", 2)? as u32;
         let mut subtract = SubtractOracle;
+        let mut subtract_binary = crate::cryptanalysis::ic_framework::binary_subtract::BinarySubtractOracle::new();
         let mut mitm = MitmOracle::new(m);
         let mut frob =
             crate::cryptanalysis::ic_framework::plugins::FrobeniusMitmOracle::new(m, inst);
@@ -418,6 +419,7 @@ fn run_binary_analogue(
         };
         let oracle: &mut dyn DecompositionOracle<BinaryGroup> = match spec.oracle.as_str() {
             "subtract" => &mut subtract,
+            "subtract-binary-batch" => &mut subtract_binary,
             "mitm" => &mut mitm,
             "mitm-frobenius" => &mut frob,
             "descent-algebraic" => algebraic.as_mut().expect("built above"),

@@ -1,0 +1,57 @@
+name: CT135 independently audited native cold CM comparator
+on:
+  pull_request:
+    paths:
+      - 'experiments/chained-transfer-public-target/ct130-prime31/ct135_*'
+      - 'experiments/chained-transfer-public-target/ct130-prime31/CT135_*'
+      - '.github/workflows/ct135-fast-inverse-cold.yml'
+  workflow_dispatch:
+jobs:
+  prospective-holdout:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Compile pinned-source comparator and capture host
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p ct135-artifacts
+          uname -a | tee ct135-artifacts/host.txt
+          g++ --version | head -1 | tee -a ct135-artifacts/host.txt
+          grep -m1 'model name' /proc/cpuinfo | tee -a ct135-artifacts/host.txt
+          g++ -O3 -std=c++17 -Wall -Wextra -Werror \
+            experiments/chained-transfer-public-target/ct130-prime31/ct135_native.cpp \
+            -o ct135-artifacts/ct135_native
+      - name: Run prospective four panels (fail whole job on error)
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd ct135-artifacts
+          for seed in 20261220 20261221 20261222 20261223; do
+            /usr/bin/time -f "seed=$seed wall_s=%e maxrss_kb=%M" \
+              -o "$seed.time" ./ct135_native 64 "$seed" > "$seed.csv"
+          done
+          sha256sum 2026122*.csv ct135_native > SHA256SUMS
+      - name: Independently audit all public logs under Python and Python -O
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -S experiments/chained-transfer-public-target/ct130-prime31/ct135_verify.py \
+            ct135-artifacts/2026122{0,1,2,3}.csv > ct135-artifacts/audit.json
+          python3 -O -S experiments/chained-transfer-public-target/ct130-prime31/ct135_verify.py \
+            ct135-artifacts/2026122{0,1,2,3}.csv > ct135-artifacts/audit-optimized.json
+          cmp ct135-artifacts/audit.json ct135-artifacts/audit-optimized.json
+          cat ct135-artifacts/audit.json
+      - name: Retain all raw panels and verification receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ct135-native-prospective-cold
+          path: ct135-artifacts/
+          retention-days: 30

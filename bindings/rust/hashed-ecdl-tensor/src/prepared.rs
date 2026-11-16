@@ -6,6 +6,7 @@
 use crate::arithmetic::{RandomSource, Seeded};
 use crate::curve::{Curve, Point};
 use crate::reduction::{self, Certificate, Config, FactorBase};
+use crate::subgroup::SubgroupPoint;
 use crate::{integrity, invalid, overflow, Meter, Result};
 use std::cell::RefCell;
 use std::collections::{hash_map::RandomState, BTreeMap, HashSet};
@@ -159,6 +160,178 @@ impl<S: BuildHasher + Clone> PairTable<S> {
         if !self.curve.in_subgroup(target, meter)? {
             return Err(invalid("prepared query outside the certified subgroup"));
         }
+        self.decompose_validated(target, smallest_first, statistics, meter)
+    }
+
+    // Only an opaque point admitted by subgroup validation or checked closure
+    // reaches this path. Full curve/subgroup equality binds the owned Curve
+    // clone; hash lookup still supplies no validation or witness trust.
+    pub(crate) fn decompose_subgroup(
+        &self,
+        target: &SubgroupPoint,
+        smallest_first: bool,
+        statistics: &mut Statistics,
+        meter: &mut Meter,
+    ) -> Result<Option<Vec<Point>>> {
+        self.decompose_validated(
+            target.for_curve(&self.curve)?,
+            smallest_first,
+            statistics,
+            meter,
+        )
+    }
+
+    // Coefficients never enter this API. The optional callback sees only a
+    // replayed, slot-ordered witness and graph connectivity.
+    pub(crate) fn decompose_configured(
+        &self,
+        query: crate::optimized::Query<'_>,
+        options: &crate::optimized::Options,
+        statistics: &mut crate::optimized::Statistics,
+        mut closes: impl FnMut(&[Point], &mut Meter) -> Result<bool>,
+        meter: &mut Meter,
+    ) -> Result<Option<Vec<Point>>> {
+        use crate::optimized::{increment, Query};
+        use crate::witness_policy::{self, ScanStep};
+        if options.batch_chunk == 1 && options.extra_scans == 0 {
+            let before = statistics.prepared.lookups;
+            let result = match query {
+                Query::Checked(point) => {
+                    self.decompose(point, true, &mut statistics.prepared, meter)
+                }
+                Query::Proven(point) => {
+                    point.for_curve(&self.curve)?;
+                    increment(&mut statistics.trusted_queries, 1)?;
+                    self.decompose_subgroup(point, true, &mut statistics.prepared, meter)
+                }
+            };
+            increment(
+                &mut statistics.complements,
+                usize::try_from(statistics.prepared.lookups - before)
+                    .map_err(|_| overflow("prepared complement events"))?,
+            )?;
+            return result;
+        }
+        let target = match query {
+            Query::Checked(point) => {
+                if !self.curve.in_subgroup(point, meter)? {
+                    return Err(invalid("prepared query outside the certified subgroup"));
+                }
+                point
+            }
+            Query::Proven(point) => {
+                let point = point.for_curve(&self.curve)?;
+                increment(&mut statistics.trusted_queries, 1)?;
+                point
+            }
+        };
+        add(&mut statistics.prepared.queries, 1)?;
+        let first = usize::from(self.bases[1].threshold() < self.bases[0].threshold());
+        let last = 1 - first;
+        let ordered = &self.ordered[first];
+        let mut position = 0usize;
+        let mut buffer = Vec::new();
+        let mut offset = 0usize;
+        let mut computed = 0usize;
+        let mut seen_witness = false;
+        let mut extra_remaining = options.extra_scans;
+        let mut policy = std::mem::take(&mut statistics.policy);
+        let result = witness_policy::choose(
+            options.extra_scans,
+            |work| {
+                if position == ordered.len() {
+                    return Ok(ScanStep::Exhausted);
+                }
+                if offset == buffer.len() {
+                    let chunk = if seen_witness {
+                        options.batch_chunk.min(extra_remaining)
+                    } else {
+                        options.batch_chunk
+                    };
+                    if chunk == 0 {
+                        return Err(integrity("witness cursor exceeded extra-scan cap"));
+                    }
+                    let end = position.saturating_add(chunk).min(ordered.len());
+                    if options.batch_chunk == 1 {
+                        work.vector(1, "prepared complement buffer")?;
+                        buffer = vec![self.curve.add(
+                            target,
+                            &self.curve.negate(&ordered[position])?,
+                            work,
+                        )?];
+                    } else {
+                        buffer = crate::batch::complement_chunk_with_statistics(
+                            &self.curve,
+                            target,
+                            &ordered[position..end],
+                            &mut statistics.batch,
+                            work,
+                        )?;
+                    }
+                    if buffer.len() != end - position {
+                        return Err(integrity("prepared complement chunk length"));
+                    }
+                    computed = computed
+                        .checked_add(buffer.len())
+                        .ok_or_else(|| overflow("computed complements"))?;
+                    increment(&mut statistics.complements, buffer.len())?;
+                    offset = 0;
+                }
+                if seen_witness {
+                    extra_remaining = extra_remaining
+                        .checked_sub(1)
+                        .ok_or_else(|| integrity("witness cursor extra-scan accounting"))?;
+                }
+                work.charge(1, "prepared pair candidate")?;
+                let point = ordered[position].clone();
+                let complement = buffer[offset].clone();
+                position += 1;
+                offset += 1;
+                add(&mut statistics.prepared.lookups, 1)?;
+                if !self.members[last].contains(&complement) {
+                    return Ok(ScanStep::Miss);
+                }
+                let mut witness = vec![point, complement];
+                if first == 1 {
+                    witness.swap(0, 1);
+                }
+                let mut sum = Point::Infinity;
+                for (base, point) in self.bases.iter().zip(&witness) {
+                    if !base.contains(&self.curve, point, work)? {
+                        return Err(integrity("prepared policy witness membership replay"));
+                    }
+                    sum = self.curve.add(&sum, point, work)?;
+                }
+                if &sum != target {
+                    return Err(integrity("prepared policy witness sum replay"));
+                }
+                add(&mut statistics.prepared.replays, 1)?;
+                seen_witness = true;
+                Ok(ScanStep::Witness(witness))
+            },
+            |witness, work| closes(witness, work),
+            &mut policy,
+            meter,
+        );
+        statistics.policy = policy;
+        // Already computed batch tails are charged by the arithmetic kernel,
+        // even when witness selection does not inspect or retain them.
+        increment(
+            &mut statistics.unused_complements,
+            computed
+                .checked_sub(position)
+                .ok_or_else(|| integrity("prepared batch tail accounting"))?,
+        )?;
+        Ok(result?.map(|selection| selection.witness))
+    }
+
+    fn decompose_validated(
+        &self,
+        target: &Point,
+        smallest_first: bool,
+        statistics: &mut Statistics,
+        meter: &mut Meter,
+    ) -> Result<Option<Vec<Point>>> {
         add(&mut statistics.queries, 1)?;
         let first =
             usize::from(smallest_first && self.bases[1].threshold() < self.bases[0].threshold());
@@ -383,6 +556,104 @@ mod tests {
             Err(Error::Integrity(_))
         ));
         assert_eq!(statistics.replays, 0);
+    }
+    #[test]
+    fn provenance_queries_keep_first_witness_and_remove_only_revalidation() {
+        use crate::subgroup::SubgroupContext;
+        let mut setup = Meter::new(Limits::default());
+        let curve = curve(&mut setup);
+        let bases = bases(&curve, &mut setup);
+        let table = PairTable::new(&curve, &bases, &mut Statistics::default(), &mut setup).unwrap();
+        let context = SubgroupContext::new(&curve);
+        for scalar in 0..19u8 {
+            let admitted = context
+                .mul(&context.generator(), &scalar.into(), &mut setup)
+                .unwrap();
+            for smallest in [false, true] {
+                let mut checked = Meter::new(Limits::default());
+                let mut trusted = Meter::new(Limits::default());
+                let mut subgroup = Meter::new(Limits::default());
+                let (valid, subgroup_groups) =
+                    crate::collector_metrics::observe_group_calls(&mut subgroup, |work| {
+                        curve.in_subgroup(admitted.point(), work).unwrap()
+                    });
+                assert!(valid);
+                let mut checked_stats = Statistics::default();
+                let mut trusted_stats = Statistics::default();
+                let (checked_points, checked_groups) =
+                    crate::collector_metrics::observe_group_calls(&mut checked, |work| {
+                        table
+                            .decompose(admitted.point(), smallest, &mut checked_stats, work)
+                            .unwrap()
+                    });
+                let (trusted_points, trusted_groups) =
+                    crate::collector_metrics::observe_group_calls(&mut trusted, |work| {
+                        table
+                            .decompose_subgroup(&admitted, smallest, &mut trusted_stats, work)
+                            .unwrap()
+                    });
+                assert_eq!(checked_points, trusted_points);
+                assert_eq!(checked.used, trusted.used + subgroup.used);
+                assert_eq!(checked_groups, trusted_groups + subgroup_groups);
+                assert_eq!(checked_stats.queries, trusted_stats.queries);
+                assert_eq!(checked_stats.lookups, trusted_stats.lookups);
+                assert_eq!(checked_stats.replays, trusted_stats.replays);
+            }
+        }
+        let other_generator = curve
+            .mul(curve.generator(), &2u8.into(), &mut setup)
+            .unwrap();
+        let other_curve = Curve::new(
+            curve.modulus().clone(),
+            curve.a().clone(),
+            curve.b().clone(),
+            curve.order().clone(),
+            other_generator,
+            &mut setup,
+        )
+        .unwrap();
+        let wrong = SubgroupContext::new(&other_curve).generator();
+        let mut stats = Statistics::default();
+        assert!(matches!(
+            table.decompose_subgroup(&wrong, false, &mut stats, &mut setup),
+            Err(Error::Invalid(_))
+        ));
+        assert_eq!(stats.queries, 0);
+        let mut limited = Meter::new(Limits {
+            steps: 0,
+            ..Limits::default()
+        });
+        assert!(matches!(
+            table.decompose_subgroup(&context.generator(), false, &mut stats, &mut limited),
+            Err(Error::Limit(_))
+        ));
+    }
+
+    #[test]
+    fn provenance_queries_replay_even_a_forged_full_point_hit() {
+        use crate::subgroup::SubgroupContext;
+        let mut meter = Meter::new(Limits::default());
+        let curve = curve(&mut meter);
+        let bases = bases(&curve, &mut meter);
+        let mut table =
+            PairTable::new(&curve, &bases, &mut Statistics::default(), &mut meter).unwrap();
+        let foreign = (1..19u8)
+            .map(|k| curve.mul(curve.generator(), &k.into(), &mut meter).unwrap())
+            .find(|p| !table.members[1].contains(p))
+            .unwrap();
+        let raw = curve
+            .add(&table.ordered[0][0], &foreign, &mut meter)
+            .unwrap();
+        let admitted = SubgroupContext::new(&curve)
+            .validate(&raw, &mut meter)
+            .unwrap();
+        table.members[1].insert(foreign);
+        let mut stats = Statistics::default();
+        assert!(matches!(
+            table.decompose_subgroup(&admitted, false, &mut stats, &mut meter),
+            Err(Error::Integrity(_))
+        ));
+        assert_eq!(stats.replays, 0);
     }
     #[test]
     fn fresh_trials_rebuild_tables_before_their_queries() {

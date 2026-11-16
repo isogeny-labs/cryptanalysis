@@ -1,0 +1,6 @@
+6. A local benchrec gate initially failed for command exits in historical
+record 20261104T0352Z-descent-walks-k0n53. The merged head already contains
+benchmarks/integrity-exclusions.json, but sparse checkout omitted that root
+file. Restoring the exact committed bytes made the gate pass (36 records,
+progress current). No benchmark record, exclusion or guard was edited.
+The successful capture is benchrec-gate.log.

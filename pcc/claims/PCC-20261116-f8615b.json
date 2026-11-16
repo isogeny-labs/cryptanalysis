@@ -1,0 +1,21 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T01:06:49Z",
+ "id": "PCC-20261116-f8615b",
+ "kind": "statement",
+ "producer": {
+  "commit": "3ddc32380f9b59e40efd4e7bc44c43ebdd501f59",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "recompute",
+   "path": "experiments/prime-field-auxiliary-ic/random-vs-special/alignment-evidence/alignment-validator.json",
+   "sha256": "dd9ccebf844d80bcaec921e48a8fbbcfc957b5ab2d9c842b4226f4054d2239c3"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Source-pinned implementation and local development controls only; existing toy fixture and synthetic reports are explicitly separate from the requested admitted research benchmark.",
+ "statement": "Source 3ddc3238 adds actual-column BLAKE3 identities to Rust CLI reports and a producer-side scalar relation-yield alignment helper. It rejects mismatched source/binary/public/configuration/base identities, incomplete prefixes, inconsistent draw/lane counters, duplicate JSON keys and replay/full-solve modes; it derives no time ratio. Seven targeted CLI checks and twelve checker test methods pass, along with strict CLI lint/format, stable and Rust 1.78 docs and workflow wiring. The helper accepts all three actual Rust reports from the existing p=127 development fixture on matching 129-query prefixes. The initial inconsistent negative-test fixture and failing output are preserved. This is unsigned development correctness, not independent execution verification, a fresh 31/61-bit comparison or a speedup."
+}
