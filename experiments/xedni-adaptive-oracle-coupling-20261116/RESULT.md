@@ -3,7 +3,7 @@
 The checked `adaptive_fresh_event_count_eq` theorem extends the random-label
 coupling to a label-dependent next addition. For two injective indexed group
 traces, a deterministic chooser may inspect the entire old label tuple and
-select a pair of indices. If every candidate output is fresh in both traces,
+select a pair from a finite allowed set. If every allowed output is fresh in both traces,
 the count of bijective encodings satisfying any full old-plus-new label event
 is equal after summing over selected branches. This retains the actual branch
 choice in the count; it is not a fixed-command assumption.

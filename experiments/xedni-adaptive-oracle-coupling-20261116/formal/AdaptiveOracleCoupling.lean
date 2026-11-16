@@ -41,18 +41,18 @@ theorem adaptive_fresh_event_count_eq {G L : Type*}
     (x y : Fin n → G)
     (hx : Function.Injective x) (hy : Function.Injective y)
     (choose : (Fin n → L) → Fin n × Fin n)
-    (hxfresh : ∀ ij : Fin n × Fin n,
-      x ij.1 + x ij.2 ∉ Set.range x)
-    (hyfresh : ∀ ij : Fin n × Fin n,
-      y ij.1 + y ij.2 ∉ Set.range y)
+    (allowed : Finset (Fin n × Fin n))
+    (_hchoose : ∀ labels, choose labels ∈ allowed)
+    (hxfresh : ∀ ij ∈ allowed, x ij.1 + x ij.2 ∉ Set.range x)
+    (hyfresh : ∀ ij ∈ allowed, y ij.1 + y ij.2 ∉ Set.range y)
     (event : (Fin (n + 1) → L) → Prop) :
-    (∑ ij : Fin n × Fin n, branchCount x choose ij event) =
-      ∑ ij : Fin n × Fin n, branchCount y choose ij event := by
+    (∑ ij ∈ allowed, branchCount x choose ij event) =
+      ∑ ij ∈ allowed, branchCount y choose ij event := by
   classical
   apply Finset.sum_congr rfl
-  intro ij _
+  intro ij hij
   exact fresh_branch_count_eq x y hx hy choose ij
-    (hxfresh ij) (hyfresh ij) event
+    (hxfresh ij hij) (hyfresh ij hij) event
 
 #print axioms branchCount
 #print axioms fresh_branch_count_eq
