@@ -58,7 +58,33 @@ theorem public_relation_of_compatible_lift
   have h := congrArg reduce hrel
   simpa [map_add, map_zsmul, hP, hQ] using h
 
+theorem public_query_relation_equation
+    {F : Type*} [AddCommGroup F]
+    (a b t₁ t₂ : ℤ) (G Q : F)
+    (hrel : a • (Q - t₁ • G) + b • (Q - t₂ • G) = 0) :
+    (a + b) • Q = (a * t₁ + b * t₂) • G := by
+  apply sub_eq_zero.mp
+  calc
+    (a + b) • Q - (a * t₁ + b * t₂) • G =
+        a • (Q - t₁ • G) + b • (Q - t₂ • G) := by
+          simp only [add_smul, smul_sub, smul_smul]
+          abel
+    _ = 0 := hrel
+
+theorem public_query_relation_recovers_target
+    {F : Type*} [AddCommGroup F]
+    (a b t₁ t₂ c : ℤ) (G Q : F)
+    (hleft : ∀ z : F, c • ((a + b) • z) = z)
+    (hrel : a • (Q - t₁ • G) + b • (Q - t₂ • G) = 0) :
+    Q = c • ((a * t₁ + b * t₂) • G) := by
+  have heq := public_query_relation_equation a b t₁ t₂ G Q hrel
+  calc
+    Q = c • ((a + b) • Q) := (hleft Q).symm
+    _ = c • ((a * t₁ + b * t₂) • G) := by rw [heq]
+
 #print axioms common_preimage_relation_lift
 #print axioms public_relation_of_compatible_lift
 #print axioms one_point_curve_lift
 #print axioms one_point_coefficient_reduces
+#print axioms public_query_relation_equation
+#print axioms public_query_relation_recovers_target
