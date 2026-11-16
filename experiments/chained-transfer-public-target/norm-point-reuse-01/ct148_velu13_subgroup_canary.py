@@ -160,6 +160,9 @@ def main():
         safe_tests += 1
     bad_source_rejections=0
     mapped_classes={}
+    complete_repair_checks=0
+    max_repair_checks=0
+    complete_source_controls=0
     for x in range(n_bad):
         q=mul(x,bad,A2,A4)
         y=bsgs(mb,mapped[q],bad_image_order,A2,b)
@@ -168,8 +171,24 @@ def main():
         if mul(y,bad,A2,A4) != q:
             bad_source_rejections += 1
         mapped_classes.setdefault(mapped[q], []).append(x)
+        source_y=bsgs(bad,q,n_bad,A2,A4)
+        require(source_y==x,'direct source BSGS complete solve')
+        complete_source_controls += 1
+        candidates_checked=0
+        answers=[]
+        for j in range(n_bad//bad_image_order):
+            candidate=y+j*bad_image_order
+            candidates_checked += 1
+            if mul(candidate,bad,A2,A4)==q:
+                answers.append(candidate)
+                break
+        require(answers==[x], 'source-coset repair did not recover the full log')
+        complete_repair_checks += candidates_checked
+        max_repair_checks=max(max_repair_checks,candidates_checked)
     require(bad_source_rejections == n_bad-bad_image_order,
             'unexpected collision rejection count')
+    require(complete_source_controls==n_bad and max_repair_checks==13 and
+            complete_repair_checks==728,'complete solve repair/control counts')
     require(len(mapped_classes)==bad_image_order, 'wrong image quotient classes')
     require(all(len(v)==n_bad//bad_image_order for v in mapped_classes.values()),
             'unequal image fibers')
@@ -191,6 +210,10 @@ def main():
             'unsafe_image_order':bad_image_order,
             'unsafe_distinct_source_candidates_per_target':n_bad//bad_image_order,
             'unsafe_full_source_rejections':bad_source_rejections,
+            'complete_source_bsgs_dlps':complete_source_controls,
+            'complete_repaired_transfer_dlps':n_bad,
+            'complete_repair_source_candidate_checks':complete_repair_checks,
+            'complete_repair_worst_case_checks':max_repair_checks,
             'unsafe_indistinguishable_scalar_witness':witness[:2],
             'standing':'[pcc:unverified]','scope':'toy degree-13 Velu map, not actual q223'}
 
