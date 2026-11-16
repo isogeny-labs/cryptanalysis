@@ -216,6 +216,20 @@ def main():
     assert [r['point'] for r in chain['doubling_chain']]==[
         [2,2],[297,204],[65,226],[298,9],[211,223],
         [121,291],[218,5],[208,151],[258,173]]
+    arithmetic=(formal/'OrderArithmetic.lean').read_text()
+    assert all(f'theorem {name}' in arithmetic for name in
+               ('mod313_tangent_slope','mod313_double_x','mod313_double_y'))
+    assert not any(token in arithmetic for token in ('sorry','admit','sorryAx','native_decide'))
+    arithmetic_build=(formal/'order-arithmetic-build-output.txt').read_text()
+    assert 'Build completed successfully (9052 jobs)' in arithmetic_build
+    arithmetic_build_normalized=re.sub(r'\s+',' ',arithmetic_build)
+    for name in ('mod313_tangent_slope','mod313_double_x','mod313_double_y'):
+        assert f"'XedniPublicFirstLargeHoldout.{name}' depends on axioms: [propext, Classical.choice, Quot.sound]" in arithmetic_build_normalized
+    point_probe=json.loads((probes/'point-formula-probe-status.json').read_text())
+    assert point_probe['schema']=='xedni-point-formula-probe-v1'
+    assert point_probe['source_sha256']==sha(probes/'PointFormulaProbe.lean')
+    assert point_probe['status']=='timeout' and point_probe['observed_exit_code']==124
+    assert point_probe['lean_point_equality_proved'] is False
     recovery_protocol=json.loads((HERE/'public-recovery-protocol.json').read_text())
     recovery_result=json.loads((HERE/'public-recovery-result.json').read_text())
     recovery_audit_protocol=json.loads((HERE/'public-recovery-audit-protocol.json').read_text())
