@@ -1,0 +1,19 @@
+{
+  "schema": "ic-bench-workload/1",
+  "curve_id": "EC1N21Crbh30df0435638d",
+  "subgroup_order": "1047281",
+  "target_count": 1,
+  "cache_state": "cold",
+  "fixture": 270,
+  "prng": "StdRng rand pinned in suite/Cargo.lock",
+  "target_law": "public fixed seed law in ic_affine_pipeline_probe.rs; scalar uniform on [1,r-1]",
+  "targets": [
+    [
+      10768,
+      1440971,
+      917879
+    ]
+  ],
+  "walk_seed": 13195347859116073145,
+  "rho_reference": "separate fresh plain/negation processes with both original and Euclidean backends on this exact point and walk seed"
+}

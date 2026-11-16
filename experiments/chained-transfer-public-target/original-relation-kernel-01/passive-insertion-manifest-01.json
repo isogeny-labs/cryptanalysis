@@ -1,0 +1,76 @@
+{
+  "protocol": "8e7e1c/CBC published before source",
+  "source_commit": "84bf4606bdd80fe210c56b4352c80d970dc32d2a",
+  "original_solver": {
+    "path": "experiments/chained-transfer-public-target/original-fixed-model-ic-01/derived/class_solver.rs",
+    "sha256": "9dcfe8b3e14ed446d595675415d73d74f8f04654a91e79858c96011a21e4de24"
+  },
+  "derived_solver_sha256": "1f017ac2898515f9ead32d7da80b5a85000c56809cf0dff46add0a26e1561bb3",
+  "all_seven_exact_passive_insertions": [
+    {
+      "anchor": "    rep.stat(\"rows_lp_combined\", lp_rows.len() as f64);",
+      "insert_after": "\n    crate::trace::available(&fb, &full_rows, &lp_rows, ro2.as_ref(), ncols_all, eta_col);"
+    },
+    {
+      "anchor": "    let rows_c: Vec<Row> = rows.iter().map(|r| r.iter().map(|&(c, a)| (remap[c as usize], a)).collect()).collect();",
+      "insert_after": "\n    crate::trace::selected(&rows, &rows_c, &hold, &used, &remap);"
+    },
+    {
+      "anchor": "    rep.stat(\"holdout_ok\", hold_ok as f64);",
+      "insert_after": "\n    crate::trace::kernel(&z, &used, &remap, hold_ok, hold_bad);"
+    },
+    {
+      "anchor": "    rep.stat(\"known_points\", logs.len() as f64);",
+      "insert_after": "\n    crate::trace::known_logs(&logs);"
+    },
+    {
+      "anchor": "        let r2 = pc(&cv, || cv.add(&r0, target));",
+      "insert_after": "\n        crate::trace::starts(r, [r0.clone(), r1.clone(), r2.clone()]);"
+    },
+    {
+      "anchor": "                            got = Some(s);",
+      "insert_after": "\n                            crate::trace::split(&added, &pts, s);"
+    },
+    {
+      "anchor": "    let kk = lm(ls(ys[2], ys[0], ell), inv_mod_u64(den, ell), ell);",
+      "insert_after": "\n    crate::trace::recovery(&ys, den, kk);"
+    }
+  ],
+  "complete_original_solver_reconstructed_by_removing_only_these_insertions": true,
+  "context_changes": [
+    {
+      "original": "//! Fixed original-model IC under prospective3da7fe published7550409 before source.",
+      "replacement": "//! Passive original relation-kernel trace under8e7e1c, publishedCBC before source."
+    },
+    {
+      "original": "pub mod class_solver;",
+      "replacement": "pub mod class_solver;\npub mod trace;"
+    },
+    {
+      "original": "        Ok(class_solver::solve_class(self, params, &g, &q, seed, true))",
+      "replacement": "        trace::begin(self, generator, target, params, seed);\n        let report = class_solver::solve_class(self, params, &g, &q, seed, true);\n        trace::finish(&report);\n        Ok(report)"
+    }
+  ],
+  "test_label_provenance_and_postreport_export_changes": [
+    {
+      "original": "                let result = context.solve(g, q, &parameters(nfb), seed).unwrap();",
+      "replacement": "                crate::trace::label(side, public_index, attempt);\n                let result = context.solve(g, q, &parameters(nfb), seed).unwrap();"
+    },
+    {
+      "original": "\"solver_source\":\"literal existing new-target class_solver.rs, no edits\"",
+      "replacement": "\"solver_source\":\"exact original algorithm plus the published passive insertion manifest; separate diagnostic provenance\""
+    },
+    {
+      "original": "        \"whole frozen acceptance requires all15 public cases\"\n    );",
+      "replacement": "        \"whole frozen acceptance requires all15 public cases\"\n    );\n    crate::trace::write_after_reports(\n        &runtime.geometry,\n        &std::path::PathBuf::from(\n            std::env::var(\"N4_RELATION_TRACE_OUTPUT\")\n                .expect(\"explicit separate whole-trace output\"),\n        ),\n    );"
+    }
+  ],
+  "original_context_and_test_reconstructed_by_exact_reverse_projection": true,
+  "algorithm_math_RNG_selection_and_counter_bodies_unchanged": true,
+  "rank_character_measurements": "not run",
+  "scope": "passive source implementation only; build/native/parity/rank still pending",
+  "exact_original_context_and_test_reconstructed_after_declared_rustfmt_of_inserted_export": true,
+  "PicClass_key_review": "original key() only fixed-array/tag copies; no field/group arithmetic; starts capture raw keys, not interpreted classes",
+  "durable_journal": "every passive event flushed and sync_data; completed events survive later interruption; complete output written only after reports",
+  "observer_source_sha256": "8f0b4dcb77247739aa7fdebeeb1149acd32643171add6a2e35b62d3664e58b6c"
+}

@@ -1,0 +1,60 @@
+{
+  "protocol": "bbfd74 published9038f2b9 before new code",
+  "literal_sources": [
+    {
+      "original": "/workspace/cryptanalysis/experiments/chained-transfer-public-target/odd-product-models/src/lib.rs",
+      "whole_sha256": "8fced75dbdef1fbc6cf08014ad201d4f2cdd650bb514f58ceb94d5172ca9f095",
+      "literal_prefix_bytes": 23341,
+      "literal_prefix_sha256": "71cfc21f4d608c84dc6cde2d2632f9a42360478bcd3c3d9d97b5d2cabfa88d3d",
+      "generated": "lib.rs",
+      "generated_sha256": "dd511ccbb941793ce2bb73e859b1b6e0773bd19a50d606299635e12fbe1837dc",
+      "added_suffix": "\n#[path=\"torsion_original.rs\"]\npub mod transported;\ninclude!(\"../src/model_append.rs\");\n"
+    },
+    {
+      "original": "/workspace/cryptanalysis/experiments/chained-transfer-public-target/odd-product-models/src/source.rs",
+      "whole_sha256": "1c3f5e1d038f735af32c6b50c107c9b1596364abc34f1e59cd32c86dfa1bb24f",
+      "literal_prefix_bytes": 4161,
+      "literal_prefix_sha256": "1c3f5e1d038f735af32c6b50c107c9b1596364abc34f1e59cd32c86dfa1bb24f",
+      "generated": "source.rs",
+      "generated_sha256": "9cdabe6890f4e087bd56cdc59968dde9c1a7574f1a38092170340648b82119fe",
+      "added_suffix": "\ninclude!(\"source_second_literal.rs\");\ninclude!(\"../src/source_append.rs\");\n"
+    },
+    {
+      "original": "/workspace/cryptanalysis/experiments/chained-transfer-public-target/nondual13-preflight/models/src/source_append.rs",
+      "whole_sha256": "1d10ea92dd194f36f3831a68121663749a8e6f60a69a5cb44ca9965737b4fc13",
+      "literal_prefix_bytes": 1048,
+      "literal_prefix_sha256": "1d10ea92dd194f36f3831a68121663749a8e6f60a69a5cb44ca9965737b4fc13",
+      "generated": "source_second_literal.rs",
+      "generated_sha256": "1d10ea92dd194f36f3831a68121663749a8e6f60a69a5cb44ca9965737b4fc13",
+      "added_suffix": ""
+    },
+    {
+      "original": "/workspace/cryptanalysis/experiments/chained-transfer-public-target/odd-product-models/src/even.rs",
+      "whole_sha256": "b819c2e24ca56736ff02fd0e689a606a43e04c8ba30cae00815c8e0cb1123466",
+      "literal_prefix_bytes": 4829,
+      "literal_prefix_sha256": "b819c2e24ca56736ff02fd0e689a606a43e04c8ba30cae00815c8e0cb1123466",
+      "generated": "even.rs",
+      "generated_sha256": "b819c2e24ca56736ff02fd0e689a606a43e04c8ba30cae00815c8e0cb1123466",
+      "added_suffix": ""
+    },
+    {
+      "original": "/workspace/cryptanalysis/experiments/chained-transfer-public-target/odd-product-refinements/src/kernels.rs",
+      "whole_sha256": "5d21960d676e84d3ce3a994f942f406c4cd2281fd311c6f68c3040e10cc9322c",
+      "literal_prefix_bytes": 3648,
+      "literal_prefix_sha256": "18609321772c153132fab9836f3323407086884fd3c8b386650bbe486195ed9c",
+      "generated": "torsion_original.rs",
+      "generated_sha256": "652389dc83be85b6cc50780bd76ef89026bb9dcf76f49ac1036916e847f0b6c6",
+      "added_suffix": "\ninclude!(\"torsion_second_literal.rs\");\ninclude!(\"../src/torsion_append.rs\");\n"
+    },
+    {
+      "original": "/workspace/cryptanalysis/experiments/chained-transfer-public-target/nondual13-preflight/models/src/torsion_append.rs",
+      "whole_sha256": "b40a430202cb9d15d78c452cbfb5a2665cfc7fd40c9ee32cf3ff85f5d66478a8",
+      "literal_prefix_bytes": 6326,
+      "literal_prefix_sha256": "b40a430202cb9d15d78c452cbfb5a2665cfc7fd40c9ee32cf3ff85f5d66478a8",
+      "generated": "torsion_second_literal.rs",
+      "generated_sha256": "b40a430202cb9d15d78c452cbfb5a2665cfc7fd40c9ee32cf3ff85f5d66478a8",
+      "added_suffix": ""
+    }
+  ],
+  "scope": "original generic/source/even/finite-space prefixes plus entire prior second-source/transport appendices; third source/transport/test are explicit additive code"
+}

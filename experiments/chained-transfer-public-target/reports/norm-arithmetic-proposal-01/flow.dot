@@ -1,0 +1,12 @@
+digraph census {
+ graph[rankdir=LR,bgcolor="white",fontname="DejaVu Sans",nodesep=.18,ranksep=.23];
+ node[shape=box,style="rounded",fontname="DejaVu Sans",fontsize=10,margin=.10];
+ edge[fontname="DejaVu Sans",fontsize=8];
+ src[label="Pinned source5ac59843\n929 inputs + manifest",color="#295477"];
+ drv[label="Separate derivative\nliteral observer additions\narithmetic bodies restored exactly"];
+ parity[label="All four unfiltered tests\nobserver OFF\nall four whole records exact",color="#a57535"];
+ cold[label="Strict observer ON\n120 separate case processes\n2 separate reused-context arms",color="#366c68"];
+ checks[label="Full norm + ORDER admission\nexact output + original validation\nsetup / inverse / residual included"];
+ out[label="Backend / modulus / operation vectors\nunsupported work rejects coverage\nno calibrated price or speedup",color="#295477"];
+ src->drv;drv->parity;drv->cold;cold->checks;checks->out;parity->out[label="mathematical parity only"];
+}

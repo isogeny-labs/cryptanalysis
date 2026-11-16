@@ -1,0 +1,30 @@
+name: CT41 Frobenius Verschiebung and 2-adic gluing audit
+on:
+  pull_request:
+    paths:
+      - 'experiments/chained-transfer-reference/ct41/**'
+      - '.github/workflows/ct41-verschiebung.yml'
+  push:
+    branches:
+      - research/ct36-normalized-dual49-20261112
+    paths:
+      - 'experiments/chained-transfer-reference/ct41/**'
+      - '.github/workflows/ct41-verschiebung.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  gluing-arithmetic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - name: Check F+V projectors and sharp two-primary lattice negative controls
+        run: |
+          node --check experiments/chained-transfer-reference/ct41/ct41_verschiebung_glue.js
+          node experiments/chained-transfer-reference/ct41/ct41_verschiebung_glue.js > /tmp/ct41.normal
+          node --no-opt experiments/chained-transfer-reference/ct41/ct41_verschiebung_glue.js > /tmp/ct41.noopt
+          diff -u /tmp/ct41.normal /tmp/ct41.noopt
+          cat /tmp/ct41.normal

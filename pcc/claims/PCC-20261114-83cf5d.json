@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-14T21:32:51Z",
+ "id": "PCC-20261114-83cf5d",
+ "kind": "theorem",
+ "producer": {
+  "commit": "3fad107ab8112fff57febb89a287ca21b508d8a4",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "5e1b873a396db15359e4f4c7720cb5a94869f3b0ba88536c48c22a2384283fc0",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/twisted-pair-preflight/lean/TwistingFactor.lean",
+   "theorem": "TwistingFactor.scaled_delta_inverse"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Ring model of primary HLP expression with explicit inverse witnesses: scaled denominator inverse, full factor homogeneity and equality to actual symmetric determinant polynomial under pair-product inverse hypotheses. BOTH original434/435gates3roots0trusted. Actual field encoding, provided inverses/constructor input matching/geometric quotient and Rust program remain bridges; no native new-source/model result or signed/novelty/performance standing.",
+ "statement": "theorem scaled_delta_inverse {R : Type} [CommRing R] (v w delta inverseDelta : R) (inverseScale : v*w=1) (inverseDenominator : delta*inverseDelta=1) : (v^2*delta)*(w^2*inverseDelta)=1"
+}

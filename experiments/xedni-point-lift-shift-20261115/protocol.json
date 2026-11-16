@@ -1,0 +1,17 @@
+{
+  "schema": "xedni-point-lift-shift-protocol-v1",
+  "question": "Does the deterministic minimal y-coordinate p-shift that makes every distinct-x chord slope integral improve rational relation yield under the same CRT curve-choice policy?",
+  "parent_panel_protocol_sha256": "53c871539390ed60cbf28f22569fa0444f983e3b59060bab8bea7083239039b6",
+  "parent_panel_result_sha256": "edbe3a808aa86054c00f15a5ae40814ed2f8452c4316abbe68f41a62f2219b49",
+  "parent_prime_run_source_sha256": "7f2968cc6187e5fac77278c08008258f6a95a1e7a0ad8edb458ef743fb6b6e47",
+  "parent_curve_search_source_sha256": "e96e0ddee58a91e5da0815fb4eca524983531408056af75842584a6c8ed4e8aa",
+  "fields": [47, 101, 191, 211, 251, 281, 347, 349],
+  "input": "same fixed G,Q and ordered t1,t2 in [0,r)^2 as parent panel; P_i=Q-t_i G",
+  "lift": "center both point coordinates modulo p; if x1 != x2, set d=abs(x1-x2), choose k minimizing (abs(k),k) among integers with d dividing y1-y2+k*p; replace only y1 by y1+k*p; if x1=x2 retain parent same-x status",
+  "auxiliary_curve_choice": "same ordered a1,a2,a3 search at 7 and 11, required curve orders 4 and 6, centered CRT reconstruction, rational a4,a6 solve, and nonsingularity/reduction gates as parent",
+  "max_total_queries": 30008,
+  "max_total_auxiliary_probes": 12000000,
+  "raw_rows": "deterministic gzip JSONL shards by blocks of eight t1 values; preserve all statuses including failures",
+  "control": "recompute all parent field generators and public targets; for every distinct-x row check integral shifted slope and exact reduction to the same P1,P2",
+  "claim_boundary": "finite deterministic correctness and candidate-probe diagnostics; compare parent on identical public points and resource-independent counts, not online wall time or asymptotic yield"
+}

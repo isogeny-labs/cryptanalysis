@@ -1,0 +1,7 @@
+# Exact additive25 complete geometry and chain replay
+
+At source77a26ca, run43674526503/job132691640180 succeeds. The whole44,978,600-byte artifact14146271228, SHA4ba6c96eac32a6fb8884bdd7a6270e42e5e48992461b63245fc6d1d9771b2558, has all294 members retained and checked. All58 phases have their expected exits, including both unfiltered tests, whole13 geometry and695 chain records, six actual whole-record omissions101/no output, both33-root original proof gates/all33 exact local binding verdicts and all1141 source guards. [pcc:unverified]
+
+Actual downloaded CI Rust auditors run on this host: both whole positives return0 and all six original entire-class omission inputs return101 without accepted outputs. Actual compiled/runtime test/auditor bytes and complete prepared libraries/reuse are checked. All15 run-log ZIP members, including the entire largest job log, are preserved. The original early relative-path failure and versioned repair remain intact; no repeated native mathematics was needed for the host I/O auditor checks. [pcc:unverified]
+
+This is unsigned exact CI replay acceptance for the original geometry and full chain. It does not establish all-current-workflow acceptance, candidate norm-point/prime-chain replay, global root tests, calibrated cost, old cold120 acceptance, an ECDLP advantage or signed standing. Full raw/source/binaries/libraries/logs await genuine NEW23. [pcc:unverified]
