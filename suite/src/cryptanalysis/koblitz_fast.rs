@@ -451,6 +451,31 @@ impl FastCurve {
         Ok(())
     }
 
+    /// Opt-in four-lane cached preparation. Unsupported CPUs/field shapes and
+    /// exceptional pairs retain the complete scalar path. Returns the number
+    /// of pair sums actually evaluated by the vector kernel.
+    pub fn add_pairwise_abscissae_vector_cached(
+        &self,
+        ps: &[FastPoint],
+        qs: &[FastPoint],
+        out: &mut Vec<Option<u64>>,
+        scratch: &mut BatchScratch,
+        cache: &PrefixInverseTable,
+    ) -> Result<usize, &'static str> {
+        if self.field.irr != cache.irr {
+            return Err("prefix inverse cache belongs to another field");
+        }
+        assert_eq!(ps.len(), qs.len(), "pairwise addition needs equal slices");
+        #[cfg(all(target_arch = "x86_64", suite_avx512))]
+        if let Some(kernel) = simd256::Simd256::new(&self.field) {
+            // SAFETY: new() checks AVX2 and VPCLMULQDQ, field shape is checked,
+            // and the kernel uses bounded four-element chunks.
+            return unsafe { kernel.add_cached(self, ps, qs, out, scratch, cache) };
+        }
+        self.add_pairwise_abscissae_cached(ps, qs, out, scratch, cache)?;
+        Ok(0)
+    }
+
     fn add_pairwise_abscissae_dispatch(
         &self,
         ps: &[FastPoint],
@@ -1067,6 +1092,150 @@ pub struct BatchScratch {
     qx: Vec<u64>,
     #[cfg(all(target_arch = "x86_64", suite_avx512))]
     qy: Vec<u64>,
+}
+
+/// Four-lane cached pair arithmetic for AVX2 hosts with VPCLMULQDQ.
+/// Reuses the same two-fold sparse-tail reduction as the existing AVX-512
+/// kernel, without requiring AVX-512. Runtime dispatch keeps other hosts safe.
+#[cfg(all(target_arch = "x86_64", suite_avx512))]
+#[clippy::msrv = "1.89"]
+mod simd256 {
+    use super::{BatchScratch, FastCurve, FastPoint, PrefixInverseTable};
+    use crate::cryptanalysis::semaev_decomp::Gf2;
+    use std::arch::x86_64::*;
+
+    pub(super) struct Simd256 {
+        n: u32,
+        mask: u64,
+        terms: [u32; 8],
+        nterms: usize,
+    }
+
+    impl Simd256 {
+        pub(super) fn new(field: &Gf2) -> Option<Self> {
+            if !(is_x86_feature_detected!("avx2") && is_x86_feature_detected!("vpclmulqdq")) {
+                return None;
+            }
+            let n = field.n;
+            if !(2..=63).contains(&n) {
+                return None;
+            }
+            let tail = field.irr ^ (1u64 << n);
+            if tail == 0 {
+                return None;
+            }
+            let high = 63 - tail.leading_zeros();
+            if n + high > 65 || 2 * high > n + 1 || tail.count_ones() > 8 {
+                return None;
+            }
+            let mut terms = [0; 8];
+            let mut nterms = 0;
+            for bit in 0..n {
+                if tail >> bit & 1 != 0 {
+                    terms[nterms] = bit;
+                    nterms += 1;
+                }
+            }
+            Some(Self {
+                n,
+                mask: (1u64 << n) - 1,
+                terms,
+                nterms,
+            })
+        }
+
+        #[inline]
+        #[target_feature(enable = "avx2")]
+        unsafe fn times_tail(&self, high: __m256i) -> __m256i {
+            let mut result = _mm256_setzero_si256();
+            for &bit in &self.terms[..self.nterms] {
+                result = _mm256_xor_si256(
+                    result,
+                    _mm256_sll_epi64(high, _mm_cvtsi64_si128(i64::from(bit))),
+                );
+            }
+            result
+        }
+
+        #[inline]
+        #[target_feature(enable = "avx2,vpclmulqdq")]
+        unsafe fn mul(&self, a: __m256i, b: __m256i) -> __m256i {
+            let even = _mm256_clmulepi64_epi128::<0x00>(a, b);
+            let odd = _mm256_clmulepi64_epi128::<0x11>(a, b);
+            let low = _mm256_unpacklo_epi64(even, odd);
+            let high = _mm256_unpackhi_epi64(even, odd);
+            let n = _mm_cvtsi64_si128(i64::from(self.n));
+            let reverse = _mm_cvtsi64_si128(i64::from(64 - self.n));
+            let mask = _mm256_set1_epi64x(self.mask as i64);
+            let h = _mm256_or_si256(_mm256_srl_epi64(low, n), _mm256_sll_epi64(high, reverse));
+            let folded = self.times_tail(h);
+            let result =
+                _mm256_xor_si256(_mm256_and_si256(low, mask), _mm256_and_si256(folded, mask));
+            _mm256_xor_si256(result, self.times_tail(_mm256_srl_epi64(folded, n)))
+        }
+
+        #[cfg(test)]
+        pub(super) fn mul4(&self, a: &[u64; 4], b: &[u64; 4]) -> [u64; 4] {
+            let mut out = [0u64; 4];
+            // SAFETY: Simd256::new checks the target features.
+            unsafe {
+                let value = self.mul(
+                    _mm256_loadu_si256(a.as_ptr() as *const __m256i),
+                    _mm256_loadu_si256(b.as_ptr() as *const __m256i),
+                );
+                _mm256_storeu_si256(out.as_mut_ptr() as *mut __m256i, value);
+            }
+            out
+        }
+
+        #[target_feature(enable = "avx2,vpclmulqdq")]
+        pub(super) unsafe fn add_cached(
+            &self,
+            curve: &FastCurve,
+            ps: &[FastPoint],
+            qs: &[FastPoint],
+            out: &mut Vec<Option<u64>>,
+            scratch: &mut BatchScratch,
+            cache: &PrefixInverseTable,
+        ) -> Result<usize, &'static str> {
+            let mut vector_pairs = 0;
+            let full = ps.len() / 4 * 4;
+            out.reserve(ps.len());
+            for (pc, qc) in ps[..full].chunks_exact(4).zip(qs[..full].chunks_exact(4)) {
+                let mut inv = [0u64; 4];
+                let normal = (0..4).all(|i| {
+                    if pc[i].infinity || qc[i].infinity || pc[i].x == qc[i].x {
+                        return false;
+                    }
+                    let Some(&value) = cache.inverses.get((pc[i].x ^ qc[i].x) as usize) else {
+                        return false;
+                    };
+                    inv[i] = value;
+                    value != 0
+                });
+                if !normal {
+                    curve.add_pairwise_abscissae_cached(pc, qc, out, scratch, cache)?;
+                    continue;
+                }
+                let numerator: [u64; 4] = std::array::from_fn(|i| pc[i].y ^ qc[i].y);
+                let offset: [u64; 4] = std::array::from_fn(|i| pc[i].x ^ qc[i].x ^ curve.a);
+                let lambda = self.mul(
+                    _mm256_loadu_si256(numerator.as_ptr() as *const __m256i),
+                    _mm256_loadu_si256(inv.as_ptr() as *const __m256i),
+                );
+                let x = _mm256_xor_si256(
+                    _mm256_xor_si256(self.mul(lambda, lambda), lambda),
+                    _mm256_loadu_si256(offset.as_ptr() as *const __m256i),
+                );
+                let mut xs = [0u64; 4];
+                _mm256_storeu_si256(xs.as_mut_ptr() as *mut __m256i, x);
+                out.extend(xs.into_iter().map(Some));
+                vector_pairs += 4;
+            }
+            curve.add_pairwise_abscissae_cached(&ps[full..], &qs[full..], out, scratch, cache)?;
+            Ok(vector_pairs)
+        }
+    }
 }
 
 /// Eight-lane AVX-512 field arithmetic for the decomposition scan.
@@ -1751,6 +1920,46 @@ mod tests {
         }
     }
 
+    #[cfg(all(target_arch = "x86_64", suite_avx512))]
+    #[test]
+    fn avx2_cached_kernel_matches_scalar_arithmetic() {
+        if !(is_x86_feature_detected!("avx2") && is_x86_feature_detected!("vpclmulqdq")) {
+            eprintln!("skipped: no AVX2 + VPCLMULQDQ");
+            return;
+        }
+        let mut rng = StdRng::seed_from_u64(0x256CA5E);
+        let mut accepted = 0;
+        for n in 2..=63 {
+            let field = nb_field(n);
+            let Some(kernel) = simd256::Simd256::new(&field) else {
+                continue;
+            };
+            accepted += 1;
+            for k in 0..200 {
+                let a: [u64; 4] = std::array::from_fn(|i| {
+                    if k == 0 {
+                        [0, 1, field.mask, field.mask][i]
+                    } else {
+                        rng.gen::<u64>() & field.mask
+                    }
+                });
+                let b: [u64; 4] = std::array::from_fn(|i| {
+                    if k == 0 {
+                        [field.mask, field.mask, 1, field.mask][i]
+                    } else {
+                        rng.gen::<u64>() & field.mask
+                    }
+                });
+                let got = kernel.mul4(&a, &b);
+                for lane in 0..4 {
+                    assert_eq!(got[lane], field.mul(a[lane], b[lane]), "n={n}, lane={lane}");
+                }
+            }
+        }
+        assert!(accepted >= 50);
+        eprintln!("AVX2 vector arithmetic accepted {accepted} field widths");
+    }
+
     #[test]
     fn pairwise_abscissae_match_full_points_including_exceptions() {
         for n in [7, 13, 19, 23, 31, 53, 61] {
@@ -1795,6 +2004,13 @@ mod tests {
             fc.add_pairwise_abscissae_cached(&ps, &qs, &mut cached, &mut scratch, &cache)
                 .unwrap();
             assert_eq!(cached, expected, "cached/inverse fallback n={n}");
+            let mut vector = Vec::new();
+            let count = fc
+                .add_pairwise_abscissae_vector_cached(&ps, &qs, &mut vector, &mut scratch, &cache)
+                .unwrap();
+            assert_eq!(vector, expected, "vector cached / exact fallback n={n}");
+            assert!(count <= ps.len());
+
             assert!(PrefixInverseTable::new(&fc.field, 0).is_err());
             assert!(PrefixInverseTable::new(&fc.field, 13).is_err());
             let other = PrefixInverseTable::new(&nb_field(if n == 7 { 13 } else { 7 }), 3).unwrap();

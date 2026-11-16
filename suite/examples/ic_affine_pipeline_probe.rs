@@ -128,7 +128,8 @@ fn main() {
             | "verify-table-euclid"
     );
     let mode = match requested_mode {
-        "mitm-euclid" | "mitm-euclid-u32" | "mitm-prefix-u32" => "mitm-prefix",
+        "mitm-euclid" | "mitm-euclid-u32" | "mitm-prefix-u32" | "mitm-vector" | "mitm-vector64"
+        | "mitm-vector4096" => "mitm-prefix",
         "rho-plain-euclid" => "rho-plain",
         "rho-negation-euclid" => "rho-negation",
         "verify-table-euclid" => "verify-table",
@@ -227,20 +228,24 @@ fn main() {
             );
         }
         let mut comparisons = 0;
-        for chunk in [1, 7, 1024] {
+        let mut vector_pairs = 0;
+        for chunk in [1, 7, 64, 1024, 4096] {
             for candidate in [
                 PairTable::build_negation_folded_binary_batched(&inst.fast, &fb, chunk).unwrap(),
                 PairTable::build_negation_folded_binary_abscissae(&inst.fast, &fb, chunk).unwrap(),
                 PairTable::build_negation_folded_binary_prefix_cached(&inst.fast, &fb, chunk)
                     .unwrap(),
+                PairTable::build_negation_folded_binary_vector_cached(&inst.fast, &fb, chunk)
+                    .unwrap(),
             ] {
+                vector_pairs += candidate.vector_pairs;
                 assert!(reference.same_witness_map(&candidate));
                 comparisons += 1;
             }
         }
         println!(
             "{}",
-            json!({"curve_id":inst.name,"status":"pass","euclidean_inverse":inst.gf.uses_euclidean_inverse(),"complete_map_comparisons":comparisons,"entries":reference.entries,"has_clmul":inst.gf.has_clmul()})
+            json!({"curve_id":inst.name,"status":"pass","euclidean_inverse":inst.gf.uses_euclidean_inverse(),"vector_pairs":vector_pairs,"complete_map_comparisons":comparisons,"entries":reference.entries,"has_clmul":inst.gf.has_clmul()})
         );
         return;
     }
@@ -375,7 +380,26 @@ fn main() {
     };
     spec.factor_base_params
         .set("dimension", dimension.to_string());
+    spec.oracle_params.set(
+        "batch_size",
+        match requested_mode {
+            "mitm-vector64" => "64",
+            "mitm-vector4096" => "4096",
+            _ => "1024",
+        },
+    );
     spec.oracle_params.set("m", "2");
+    spec.oracle_params.set(
+        "vector_prepare",
+        if matches!(
+            requested_mode,
+            "mitm-vector" | "mitm-vector64" | "mitm-vector4096"
+        ) {
+            "1"
+        } else {
+            "0"
+        },
+    );
     spec.oracle_params.set("negation_folded", "1");
     spec.oracle_params.set("max_residual", "12");
     spec.oracle_params.set(

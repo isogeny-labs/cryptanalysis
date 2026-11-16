@@ -3170,6 +3170,7 @@ pub struct PairTable {
     pub build_wall_ns: u64,
     /// Temporary inverse-cache allocation, freed before this table returns.
     pub prefix_inverse_bytes: usize,
+    pub vector_pairs: usize,
 }
 
 impl PairTable {
@@ -3187,7 +3188,7 @@ impl PairTable {
         fb: &FactorBase<FastPoint>,
         chunk_size: usize,
     ) -> Result<Self, &'static str> {
-        Self::build_binary_batch(curve, fb, chunk_size, false, false)
+        Self::build_binary_batch(curve, fb, chunk_size, false, false, false)
     }
 
     /// Same ordered table, omitting ordinates unused by its abscissa keys.
@@ -3196,7 +3197,7 @@ impl PairTable {
         fb: &FactorBase<FastPoint>,
         chunk_size: usize,
     ) -> Result<Self, &'static str> {
-        Self::build_binary_batch(curve, fb, chunk_size, true, false)
+        Self::build_binary_batch(curve, fb, chunk_size, true, false, false)
     }
 
     /// Bounded prefix inverse reuse. Unsupported bases retain the complete
@@ -3206,7 +3207,17 @@ impl PairTable {
         fb: &FactorBase<FastPoint>,
         chunk_size: usize,
     ) -> Result<Self, &'static str> {
-        Self::build_binary_batch(curve, fb, chunk_size, true, true)
+        Self::build_binary_batch(curve, fb, chunk_size, true, true, false)
+    }
+
+    /// Opt-in AVX2/VPCLMUL cached preparation; exact scalar fallback on
+    /// unsupported hardware/field/base shapes. First-witness order is unchanged.
+    pub fn build_negation_folded_binary_vector_cached(
+        curve: &FastCurve,
+        fb: &FactorBase<FastPoint>,
+        chunk_size: usize,
+    ) -> Result<Self, &'static str> {
+        Self::build_binary_batch(curve, fb, chunk_size, true, true, true)
     }
 
     fn build_binary_batch(
@@ -3215,6 +3226,7 @@ impl PairTable {
         chunk_size: usize,
         x_only: bool,
         prefix_cache: bool,
+        vector_cached: bool,
     ) -> Result<Self, &'static str> {
         if !(1..=65536).contains(&chunk_size) {
             return Err("MITM batch size must be in1..=65536");
@@ -3250,6 +3262,7 @@ impl PairTable {
             None
         };
         let prefix_inverse_bytes = cache.as_ref().map_or(0, |c| c.bytes());
+        let mut vector_pairs = 0;
         let map = {
             let groups: Vec<_> = fb
                 .abscissa_list
@@ -3269,15 +3282,27 @@ impl PairTable {
                 if x_only {
                     abscissae.clear();
                     if let Some(cache) = &cache {
-                        curve
-                            .add_pairwise_abscissae_cached(
-                                ps,
-                                qs,
-                                &mut abscissae,
-                                &mut scratch,
-                                cache,
-                            )
-                            .expect("cache was constructed for this exact field");
+                        if vector_cached {
+                            vector_pairs += curve
+                                .add_pairwise_abscissae_vector_cached(
+                                    ps,
+                                    qs,
+                                    &mut abscissae,
+                                    &mut scratch,
+                                    cache,
+                                )
+                                .expect("cache was constructed for this exact field");
+                        } else {
+                            curve
+                                .add_pairwise_abscissae_cached(
+                                    ps,
+                                    qs,
+                                    &mut abscissae,
+                                    &mut scratch,
+                                    cache,
+                                )
+                                .expect("cache was constructed for this exact field");
+                        }
                     } else {
                         curve.add_pairwise_abscissae(ps, qs, &mut abscissae, &mut scratch);
                     }
@@ -3320,7 +3345,9 @@ impl PairTable {
         };
         drop(cache);
         Ok(Self {
-            kind: if prefix_inverse_bytes != 0 {
+            kind: if vector_pairs != 0 {
+                "negation_folded_prefix_vector"
+            } else if prefix_inverse_bytes != 0 {
                 "negation_folded_prefix_cached"
             } else if x_only {
                 "negation_folded_batch_xonly"
@@ -3332,6 +3359,7 @@ impl PairTable {
             build_ops: GroupOps::default(),
             build_wall_ns: start.elapsed().as_nanos() as u64,
             prefix_inverse_bytes,
+            vector_pairs,
         })
     }
 
@@ -3356,6 +3384,7 @@ impl PairTable {
             build_ops: ops,
             build_wall_ns: start.elapsed().as_nanos() as u64,
             prefix_inverse_bytes: 0,
+            vector_pairs: 0,
         }
     }
 
@@ -3395,6 +3424,7 @@ impl PairTable {
             build_ops: ops,
             build_wall_ns: start.elapsed().as_nanos() as u64,
             prefix_inverse_bytes: 0,
+            vector_pairs: 0,
         }
     }
 
@@ -3409,6 +3439,7 @@ impl PairTable {
                 "negation_folded_batch"
                     | "negation_folded_batch_xonly"
                     | "negation_folded_prefix_cached"
+                    | "negation_folded_prefix_vector"
             ) {
                 vec![("mitm_batch_setup_ns", self.build_wall_ns)]
             } else {
