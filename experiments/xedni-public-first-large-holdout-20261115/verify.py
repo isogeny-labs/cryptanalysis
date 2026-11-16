@@ -230,6 +230,16 @@ def main():
     assert point_probe['source_sha256']==sha(probes/'PointFormulaProbe.lean')
     assert point_probe['status']=='timeout' and point_probe['observed_exit_code']==124
     assert point_probe['lean_point_equality_proved'] is False
+    doubling=(formal/'PointDoubling.lean').read_text()
+    assert 'theorem panel313_double' in doubling
+    assert 'mod313_tangent_slope' in doubling
+    assert 'mod313_double_x' in doubling and 'mod313_double_y' in doubling
+    assert not any(token in doubling for token in ('sorry','admit','sorryAx','native_decide'))
+    doubling_build=(formal/'point-doubling-build-output.txt').read_text()
+    assert 'Build completed successfully (9053 jobs)' in doubling_build
+    doubling_build_normalized=re.sub(r'\s+',' ',doubling_build)
+    assert "'XedniPublicFirstLargeHoldout.panel313_good_prime' depends on axioms: [propext]" in doubling_build_normalized
+    assert "'XedniPublicFirstLargeHoldout.panel313_double' depends on axioms: [propext, Classical.choice, Quot.sound]" in doubling_build_normalized
     recovery_protocol=json.loads((HERE/'public-recovery-protocol.json').read_text())
     recovery_result=json.loads((HERE/'public-recovery-result.json').read_text())
     recovery_audit_protocol=json.loads((HERE/'public-recovery-audit-protocol.json').read_text())

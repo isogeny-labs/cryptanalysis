@@ -1,6 +1,6 @@
 name = "xedniPublicFirstLargeHoldout"
 version = "0.1.0"
-defaultTargets = ["FamilyCount", "Panel", "AdmissiblePairs", "FamilyBound", "BoxBound", "PublicRecovery", "PublicGroupRecovery", "PrimeOrderRecovery", "ExceptionalRelation", "DistinctOffsetRecovery", "ConcreteCurveRecovery", "OrderArithmetic"]
+defaultTargets = ["FamilyCount", "Panel", "AdmissiblePairs", "FamilyBound", "BoxBound", "PublicRecovery", "PublicGroupRecovery", "PrimeOrderRecovery", "ExceptionalRelation", "DistinctOffsetRecovery", "ConcreteCurveRecovery", "OrderArithmetic", "PointDoubling"]
 
 [[require]]
 name = "mathlib"
@@ -45,3 +45,6 @@ name = "ConcreteCurveRecovery"
 
 [[lean_lib]]
 name = "OrderArithmetic"
+
+[[lean_lib]]
+name = "PointDoubling"
