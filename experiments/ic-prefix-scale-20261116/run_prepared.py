@@ -84,12 +84,16 @@ try:
   def member(name):
    m=tar.getmember(prefix+name);assert m.isfile();return tar.extractfile(m).read()
   receipt_bytes=member('receipt.json');assert hashlib.sha256(receipt_bytes).hexdigest()==prepared['receipt_sha256']
-  receipt=json.loads(receipt_bytes);assert receipt['status']=='prepared' and receipt['source_commit']==prepared['source_commit']
+  receipt=json.loads(receipt_bytes);assert receipt['status']=='prepared' and receipt['source_commit']==prepared['receipt_source_commit']
+  metadata_bytes=(Path('/jobs')/prepared['source_job']/'job.json').read_bytes()
+  assert hashlib.sha256(metadata_bytes).hexdigest()==prepared['job_metadata_sha256']
+  metadata=json.loads(metadata_bytes)
+  assert metadata['git']['commit']==prepared['source_commit'] and not metadata['git']['dirty']
   candidate=json.loads((ROOT/'experiments/ic-bench/candidates'/(ids['0']['mitm-native']+'.json')).read_text())
   assert receipt['source_sha256']==candidate['implementation']['sources_sha256']
   data=member('probe');assert hashlib.sha256(data).hexdigest()==prepared['binary_sha256']==receipt['binary_sha256']
   (OUT/'probe').write_bytes(data);(OUT/'probe').chmod(0o755);(OUT/'preparation-receipt.json').write_bytes(receipt_bytes)
- host.update(binary_sha256=prepared['binary_sha256'],binary_source_commit=receipt['source_commit'],binary_toolchain=receipt['rustc'])
+ host.update(binary_sha256=prepared['binary_sha256'],binary_source_commit=prepared['source_commit'],receipt_source_commit=receipt['source_commit'],binary_toolchain=receipt['rustc'])
  os.sched_setaffinity(0,{host['allowed_cpus'][0]});host['selected_cpu']=host['allowed_cpus'][0]
  for index in range(5):
   calibration=arm(index,'calibration',0,'frozen-model-units');assert calibration['exit_code']==0
@@ -117,7 +121,7 @@ try:
     triple['same_input']=all(all(r[k]==results[0][k] for k in ['curve_id','planted','target','target_seed']) for r in results)
     triple['all_verified']=all(report(runs[m])['verified'] for m in MODES)
     frozen=json.loads((OUT/f'calibration-{index}.json').read_text())['calibration']
-    triple['same_calibration']=all(r['calibration']==frozen for r in results) and references[-1]['result']['calibration']==frozen
+    triple['same_calibration']=all(r['calibration']==frozen for r in results) and references[-1].get('result',{}).get('calibration')==frozen
     triple['raw_cold_ratios']={m:cold(runs['mitm-native'])/cold(runs[m]) for m in ['mitm-scalar','mitm-prefix','mitm-auto']}
     a,b=(report(runs[m]) for m in ['mitm-native','mitm-scalar'])
     triple['batch_preserves_counts']=all(a[s][k]==b[s][k] for s,k in [('decomposition','targets_tried'),('decomposition','relations_found'),('linear_algebra','rank'),('linear_algebra','rows'),('linear_algebra','dependent'),('linear_algebra','work')])

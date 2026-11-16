@@ -37,7 +37,7 @@ for p in pairs:
  assert workload['target_count']==1
  expected_scalar,x,y=workload['targets'][0]
  matched=ref_by_key.get((p['index'],p['fixture']),{}).get('result')
- row['reference_completed']=bool(matched and matched['matched']['verified'] and matched['matched']['recovered']==expected_scalar)
+ row['reference_completed']=bool(matched and all(matched[k]['verified'] and matched[k]['recovered']==expected_scalar for k in ['plain','matched']))
  for variant in ['mitm-native','mitm-scalar','mitm-prefix','mitm-auto']:
   raw=p['runs'][variant];r=report(raw);rdata=raw.get('result')
   value={'exit_code':raw['exit_code'],'completed':r is not None,'verified':bool(r and r['verified']),
