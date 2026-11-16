@@ -30,6 +30,8 @@ jobs:
           python3 -O "$D/ct168_trace_audit.py" /tmp/ct168-direct.json /tmp/ct168-generic.json > /tmp/ct168-audit-opt.json
           python3 "$D/ct169_audit_mutation_test.py" /tmp/ct168-direct.json /tmp/ct168-generic.json
           python3 -O "$D/ct169_audit_mutation_test.py" /tmp/ct168-direct.json /tmp/ct168-generic.json
+          # CT170 prepatch exposure: both synchronized semantic falsifications are still accepted.
+          python3 "$D/ct170_semantic_mutation_test.py" /tmp/ct168-direct.json /tmp/ct168-generic.json --expose-prepatch
           python3 - "$D" <<'PY'
           import json, pathlib, sys
           d=pathlib.Path(sys.argv[1])
