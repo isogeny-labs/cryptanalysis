@@ -69,3 +69,27 @@ done2pages. Recordrawlosslessbundle/perfileSHAURIinventory plusanalysis/replays/
 jobmetadata; allrawcaptures separatelyartifactstored. Uploadall beforeclosing.
 Do notrepeat915entryrecordbulk unnecessarily; losslessbundlecoversallrawbytes,
 recordpointerstobundle/manifest preserveprovenance andkeepsrecordcompact.
+
+
+Update15:52UTC: timing154152-55b7 exit0after72s,757rawoutputs. AnalysisPASS,
+240IC240rhoexistingPythonanswers and2560timingpreflightstates pass;120same-schedule
+semantic/workaudits. AlltimingprepbackendsordinaryPCL.8AAfailsretained0caps.
+Claimf2254cunsigned. PrimaryN15/18/21/24/27pairedratios1.01256/1.01241/1.02190/
+1.04379/1.05529; N15/18CIincludes1. N27primaryCI1.04714..1.07671, table1.09924,
+collector1.00247CIincludes1; means23.6532ms->22.3818ms. Setupgainmoveslargerscope,
+notcompleteprocesscold. Actualmatchingcontext-rhoneg/ICmedianN27 .05865; noBLreused
+setupclaim. All757raw separatelyartifactstored+losslessSHAURIbundle757files.
+Record1541ZclosedINVALID with23metrics/16uploadedrawrefs,18KB;44recordgatePASS.
+AllfourfinalREPORT.pdfpagesinspected; firstPDFmarkerforTHISstudyALREADYcalledONCE.
+Render001claimplaceholderdraft,002diagramlazy-sizingclipped,003correctedlayout;
+alllogsretained,nodatacriteriachanges. NoPDFmarkeragainforthisreport.
+
+Nextpublishresult/codeprogresssourceandPRbody. Progresshelperprior36metricschecks
+unchanged; aftercommitverifynew23exactvalues(59totalinhelper). NextsourceleadSIMD
+batch-inverse product lanes: currentGf2.batch_invALREADYhasfourindependentscalar
+accumulators andsingleinverse; optimizeproductswithSIMD, donotclaimnewbatching.
+Owningsourcehasidentitymultsforward/backward; peeled8..16stackkernelcanreduce
+unneededmuls, zero-safe,canonicalguard,fullfallback. NeedKB/atlas/primarysources,
+separateclaim/protocol/sourcecontrols beforefreshpoints. No newprototypeyet.
+PCCforkpreserved,nosignedverdict; broadgoalactive. EarliestCI50minafterlatestpush/
+PRactivity; noneinspectedthisturn. SharedcryptomirrorstillawaitingsourcePRmerge.

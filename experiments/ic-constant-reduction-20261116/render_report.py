@@ -7,12 +7,14 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from reportlab.lib.pagesizes import A4
+from reportlab.lib.utils import ImageReader
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import SimpleDocTemplate,Paragraph,Spacer,Table,Image,PageBreak
 
 P=Path(__file__).resolve().parent
 parser=argparse.ArgumentParser();parser.add_argument('--job',required=True);parser.add_argument('--claim',required=True);args=parser.parse_args()
 a=json.loads((P/'analysis.json').read_text());replay=json.loads((P/'independent-arithmetic-timing001.json').read_text());prep=json.loads((P/'prepared-input-amended.json').read_text())
+instances=json.loads((P/'instances.json').read_text());ids=json.loads((P/'identities.json').read_text())
 cases=a['cases'];modes=['mitm-walk16-vector-narrow','mitm-walk16-vector-const']
 plt.rcParams.update({'svg.fonttype':'none','font.size':9,'axes.spines.top':False,'axes.spines.right':False})
 fig,axes=plt.subplots(1,3,figsize=(10,3.5))
@@ -50,6 +52,10 @@ text=[
 ]
 md=['# '+text[0][0],'',claim,'',*sum(([t+' [pcc:unverified]',''] for t,s in text[2:]),[]),'| Field | Primary dynamic / constant | Table setup | Collector | A/A failures |','|---|---:|---:|---:|---:|',*['| '+' | '.join(r)+' |' for r in rows],'','![Paired costs](ratios.svg)','','![Same-target flow](flow.svg)']
 (P/'REPORT.md').write_text('\n'.join(md)+'\n')
+md += ['','## Exact curve and base scope','']
+for i,inst in enumerate(instances):
+ row=ids[str(i)]['archive'];md += [inst['curve_id']+'; r='+str(inst['curve']['subgroup_order'])+'; dimension='+str(inst['dimension'])+'; columns='+str(row['effective_columns'])+'; base SHA256='+row['factor_base_sha256']+' [pcc:unverified]','']
+(P/'REPORT.md').write_text('\n'.join(md)+'\n')
 styles=getSampleStyleSheet();story=[]
 for i,(t,style) in enumerate(text):
  if i in [4,7]:story.append(PageBreak())
@@ -57,7 +63,12 @@ for i,(t,style) in enumerate(text):
  if i==3:
   story += [Image(str(P/'ratios.png'),width=520,height=182),Spacer(1,8),Table([['Field','Primary','Table setup','Collector','A/A']]+rows,colWidths=[33,151,151,151,24],style=[('FONTSIZE',(0,0),(-1,-1),7),('BOTTOMPADDING',(0,0),(-1,-1),7)])]
  if i==4:
-  flow=Image(str(P/'flow.png'));flow.drawWidth=520;flow.drawHeight=520*flow.imageHeight/flow.imageWidth;story += [flow,Spacer(1,9)]
+  iw,ih=ImageReader(str(P/'flow.png')).getSize();story += [Image(str(P/'flow.png'),width=520,height=520*ih/iw),Spacer(1,9)]
  if i==6:story += [Table([['Field','Dynamic ms','Constant ms','Plain rho / IC','Neg. rho / IC']]+cost,colWidths=[45,100,100,125,125],style=[('FONTSIZE',(0,0),(-1,-1),8),('BOTTOMPADDING',(0,0),(-1,-1),7)])]
+story += [PageBreak(),Paragraph('Exact curve and base scope',styles['Heading1']),Spacer(1,10)]
+for i,inst in enumerate(instances):
+ row=ids[str(i)]['archive'];detail=inst['curve_id']+'; subgroup r='+str(inst['curve']['subgroup_order'])+'; dimension='+str(inst['dimension'])+'; columns='+str(row['effective_columns'])+'; geometric points='+str(row['fb_points'])+'; archived base SHA256 '+row['factor_base_sha256']
+ story += [Paragraph(escape(detail),styles['BodyText']),Spacer(1,12)]
+story += [Paragraph(escape(claim),styles['BodyText'])]
 SimpleDocTemplate(str(P/'REPORT.pdf'),pagesize=A4,leftMargin=36,rightMargin=36,topMargin=30,bottomMargin=30).build(story)
 print(json.dumps({'pdf':str(P/'REPORT.pdf'),'claim':args.claim}))

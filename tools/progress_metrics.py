@@ -200,6 +200,8 @@ def ic_native_walk_evidence(ref, since):
          "binary-ic-one-target-walk-batching", "ic.walk_batch16.exploratory.", "IC batch16"),
         ("benchmarks/records/20261116T1406Z-ic-vector-query-factorial-001.json",
          "binary-ic-one-target-vector-query", "ic.vector_query.exploratory.", "IC vector formulas"),
+        ("benchmarks/records/20261116T1541Z-ic-constant-reduction-factorial-001.json",
+         "binary-ic-constant-polynomial-setup-pipeline", "ic.constant_reduction.exploratory.", "IC constant polynomial"),
     ]
     for path, problem, prefix, label in sources:
         text = show(ref, path)
