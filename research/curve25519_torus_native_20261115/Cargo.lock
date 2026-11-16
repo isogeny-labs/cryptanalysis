@@ -49,6 +49,7 @@ dependencies = [
  "num-bigint",
  "serde_json",
  "torus-s4",
+ "torus-s4-tree",
 ]
 
 [[package]]
@@ -70,6 +71,12 @@ dependencies = [
  "typenum",
  "version_check",
 ]
+
+[[package]]
+name = "hex"
+version = "0.4.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7f24254aa9a54b5c858eaee2f5bccdb46aaf0e486a595ed5fd8f86ba55232a70"
 
 [[package]]
 name = "itoa"
@@ -209,6 +216,17 @@ dependencies = [
  "serde",
  "serde_json",
  "sha2",
+]
+
+[[package]]
+name = "torus-s4-tree"
+version = "0.1.0"
+dependencies = [
+ "hex",
+ "num-bigint",
+ "serde",
+ "serde_json",
+ "torus-s4",
 ]
 
 [[package]]

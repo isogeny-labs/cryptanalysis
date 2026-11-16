@@ -1,0 +1,51 @@
+\documentclass[10pt]{article}
+\usepackage[a4paper,margin=17mm]{geometry}
+\usepackage{graphicx,hyperref,amsmath}
+\hypersetup{colorlinks=true,urlcolor=blue}
+\setlength{\parindent}{0pt}\setlength{\parskip}{5pt}
+\begin{document}
+\begin{center}\Large Native four-point root recovery\\[3pt]
+\normalsize 15 November 2026 --- producer evidence, PCC unverified\end{center}
+Native Singular and Rust recovery match the complete $M=1$ four-point oracle
+over the actual Curve25519 field: one assignment and checked sum for the
+member target; zero for the nonmember, whose engine basis is reported unit.
+These are functional controls, not large-base timings. PCC-20261115-47a01f.
+[pcc:unverified]
+
+\begin{center}\includegraphics[width=0.94\linewidth,height=104mm,keepaspectratio]{pipeline.pdf}\end{center}
+
+\textbf{Implementation and evidence.}
+An immutable qualifier hashes the public input, script and engine before
+execution. Structured basis parsing rejects malformed, truncated, duplicate
+and mixed frames. Rust computes rational roots with $\gcd(f,X^p-X)$ and
+bounded splitting, recovers triangular assignments, checks the original
+equations, membership, rational lifts and actual signed sums.
+Nine unit tests and one process-level test pass. The 454-variable known
+assignment test uses a synthetic basis and does not test solver discovery.
+Frozen logs, scripts, transcripts and consumer source are linked from
+\texttt{REPORT.md}. [pcc:unverified]
+
+\textbf{Limits and unresolved work.}
+Default recovery limits are degree 4096, $10^7$ coefficient-loop units,
+4096 branches and 128 split attempts. These counters are guards, not admitted
+work prices. The full four-coset public script has 454 variables and 455
+quadratic equations and records \texttt{solver\_invoked=false}. It needs
+aggregate accounting, a separate frozen resource/target card, qualified
+isolated runtime and live budget/capacity readback. No cloud job was launched.
+Empty recovery and a reported unit ideal are not absence certificates.
+[pcc:unverified]
+
+\textbf{Route rejection.}
+The criteria distinguish scoped proof, checked counterexample, corrected
+statistical rejection, parked implementation and invalid experiment.
+For a frozen $q\ge3/4$ promise, seven independent failures reject at
+$\alpha=1/10000$, since $4^{-7}<1/10000$; this is an example design, not a run.
+A timeout does not exclude every solver or prove an asymptotic exponent.
+
+\textbf{Sources.}
+\href{https://cacr.uwaterloo.ca/hac/about/chap3.pdf}{HAC \S3.11};
+\href{https://www.rfc-editor.org/rfc/rfc7748}{RFC 7748};
+\href{https://www.rfc-editor.org/rfc/rfc9380}{RFC 9380};
+\href{https://people.maths.ox.ac.uk/petit/files/16PKC_primeECDLP.pdf}{Petit--Kosters--Messeng}.
+No novelty or performance edge is asserted.
+\end{document}
