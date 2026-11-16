@@ -1,0 +1,11 @@
+{
+  "audit_v2_sha256": "2c5a9ae8465b12d372ec3c619d2492a26e374e07c543a5c3f515de010417fa0f",
+  "base_protocol_sha256": "b0efd7f2f18d8d9df1290651230970f357c5485ce2fc9b4fd9b416f95a937bb7",
+  "failed_audit_output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "failed_audit_stderr_sha256": "d645cb51bf20e3e1be2f89f0277cabbafee5a21b8e42850a263735dc787895da",
+  "frozen_producer_result_sha256": "9dceedf802afb9070974c0842bb6e26969e3d52b543d998e92996ba5282e35e9",
+  "original_audit_sha256": "59261b03d6a182743f5ced54e0095f3532a48ac5de96e49f91735c4d34c6a786",
+  "reason": "The v1 audit indexed a sparse Counter as counts[filtered_queries] when a field had zero filtered queries; v2 uses counts.get(filtered_queries,0).",
+  "schema": "xedni-public-first-large-holdout-audit-amendment-v1",
+  "scope": "Audit reporting only; frozen query law, producer source, result, event files, and every mathematical check remain unchanged."
+}
