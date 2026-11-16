@@ -24,6 +24,8 @@ jobs:
           node "$D/ct166_geometric_cm_independent.mjs" "$D" --self-test > /tmp/ct166-js.json
           cmp /tmp/ct166-py.json /tmp/ct166-opt.json
           cmp /tmp/ct166-py.json /tmp/ct166-js.json
+          python3 -S "$D/ct166_geometric_cm.py" --fixtures "$D" > /tmp/ct166-frozen.json
+          cmp /tmp/ct166-frozen.json "$D/CT166_RESULT.json"
           python3 - <<'PY'
           import json
           p=json.load(open('/tmp/ct166-py.json'))
