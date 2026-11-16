@@ -51,7 +51,7 @@ function check(data){
   must(data && data.schema==="ct160-fixed-nu12-whole-field-census/v1","schema");
   must(Number.isInteger(data.field_cardinality)&&data.field_cardinality===Q,"field");
   must(data.accepted===true && data.mutant===false && data.mutation_rejected===false, "nominal flags");
-  must(data.square_roster_cardinality===(Q+1)/2-0.5,"square roster");
+  must(data.square_roster_cardinality===(Q+1)/2,"square roster");
   for(const name of ["actual_fixed_nu12_source","actual_fixed_nu12_target"]){
     const m=data[name]; must(m && typeof m==="object","missing model");
     for(const key of ["zeros","nonzero_squares","nonsquares","order"])
