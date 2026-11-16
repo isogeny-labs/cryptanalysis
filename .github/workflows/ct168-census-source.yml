@@ -1,0 +1,56 @@
+name: CT168 complete cubic census and public-input toy-solve guard
+on:
+  pull_request:
+    paths:
+      - 'experiments/chained-transfer-public-target/ct168-cubic-census/**'
+      - 'experiments/chained-transfer-public-target/ct167-sextic-control/ct167_sextic_control.py'
+      - '.github/workflows/ct168-census-source.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  bounded-source-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile standalone counters without external dependencies
+        run: |
+          set -euo pipefail
+          D=experiments/chained-transfer-public-target/ct168-cubic-census
+          g++ -O3 -std=c++17 -Wall -Wextra -Werror -pedantic "$D/ct168_cubic_census.cpp" -o /tmp/ct168-direct
+          g++ -O2 -std=c++17 -Wall -Wextra -Werror -pedantic "$D/ct168_generic_crosscheck.cpp" -o /tmp/ct168-generic
+      - name: Run exhaustive independent field enumerations and check frozen records
+        run: |
+          set -euo pipefail
+          D=experiments/chained-transfer-public-target/ct168-cubic-census
+          /tmp/ct168-direct > /tmp/ct168-direct.json
+          /tmp/ct168-generic > /tmp/ct168-generic.json
+          python3 "$D/ct168_trace_audit.py" /tmp/ct168-direct.json /tmp/ct168-generic.json > /tmp/ct168-audit.json
+          python3 -O "$D/ct168_trace_audit.py" /tmp/ct168-direct.json /tmp/ct168-generic.json > /tmp/ct168-audit-opt.json
+          python3 "$D/ct169_audit_mutation_test.py" /tmp/ct168-direct.json /tmp/ct168-generic.json
+          python3 -O "$D/ct169_audit_mutation_test.py" /tmp/ct168-direct.json /tmp/ct168-generic.json
+          python3 - "$D" <<'PY'
+          import json, pathlib, sys
+          d=pathlib.Path(sys.argv[1])
+          for name,actual in [('census.json','/tmp/ct168-direct.json'),
+                              ('generic-crosscheck.json','/tmp/ct168-generic.json'),
+                              ('trace-audit.json','/tmp/ct168-audit.json'),
+                              ('trace-audit.json','/tmp/ct168-audit-opt.json')]:
+              assert json.loads((d/name).read_text())==json.loads(pathlib.Path(actual).read_text()),name
+          PY
+      - name: Check exact-source scalar-blind public-input toy solver
+        run: |
+          set -euo pipefail
+          P=experiments/chained-transfer-public-target/ct167-sextic-control/ct167_sextic_control.py
+          python3 -B "$P" --self-test > /tmp/ct167-self.json
+          python3 -B "$P" --paired > /tmp/ct167-public-input-paired.json
+          python3 - /tmp/ct167-public-input-paired.json <<'PY'
+          import json,sys
+          doc=json.load(open(sys.argv[1]))
+          assert len(doc['records'])==16
+          assert all(type(r['recovered_log']) is int and r['recovered_log']==r['verifier_k'] and r['verified'] for r in doc['records'])
+          assert all('k_for_verifier_only' not in r for r in doc['records'])
+          PY
+          if python3 -B "$P" --arm twist --k 7 >/tmp/ct168-badscalar.log 2>&1; then echo 'secret scalar was accepted' >&2; exit 1; fi
+          if python3 -B "$P" --arm twist --qx 1 --qy 1 >/tmp/ct168-badpoint.log 2>&1; then echo 'off-curve point was accepted' >&2; exit 1; fi
