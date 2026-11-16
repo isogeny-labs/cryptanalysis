@@ -14,7 +14,10 @@ import time
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent.parent
-OUT = HERE / 'run-001'
+RUN_ID = os.environ.get('IC_RUN_ID', 'run-001')
+if not RUN_ID.replace('-', '').replace('_', '').isalnum():
+    raise ValueError('invalid run id')
+OUT = HERE / RUN_ID
 BUILD = Path('/tmp/ic-current-cloud-build')
 BASE = '2b97ddf662b53d330581ae51a7818a82e94585ac'
 CASES = [(2000000579, 0), (1099511627791, 0), (281474976710597, 0),
@@ -66,7 +69,7 @@ def build():
     cc = os.environ.get('CC', 'cc')
     for variant in ('reference', 'optimized', 'references'):
         source = HERE / ('references.c' if variant == 'references' else 'pipeline.c')
-        args = [cc, '-O3', '-std=c11', '-ffp-contract=off', '-I' + str(ROOT / 'include'),
+        args = [cc, '-O3', '-std=c11', '-D_POSIX_C_SOURCE=200809L', '-ffp-contract=off', '-I' + str(ROOT / 'include'),
                 '-I' + str(ROOT / 'src'), str(source)]
         if variant == 'reference':
             args += [str(BUILD / 'reference.o')]
