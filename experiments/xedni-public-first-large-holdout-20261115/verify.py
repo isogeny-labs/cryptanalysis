@@ -199,6 +199,23 @@ def main():
     for name in ('panelCurve_discriminant','panelCurve_isElliptic',
                  'panelGenerator_nonzero','panel_curve_public_relation_iff_recovery'):
         assert f"'XedniPublicFirstLargeHoldout.{name}' depends on axioms: [propext, Classical.choice, Quot.sound]" in curve_build_normalized
+    probes=formal/'probes'
+    probe=json.loads((probes/'probe-status.json').read_text())
+    assert probe['schema']=='xedni-lean-order-probe-v1'
+    assert probe['field_prime']==313 and probe['subgroup_order']==331
+    assert probe['status']=='timeout' and probe['observed_exit_code']==124
+    assert probe['lean_order_proved'] is False
+    for key,name in (('source_sha256','OrderProbe.lean'),
+                     ('sage_chain_source_sha256','sage_chain.py'),
+                     ('sage_chain_result_sha256','sage_chain.json')):
+        assert probe[key]==sha(probes/name)
+    chain=json.loads((probes/'sage_chain.json').read_text())
+    assert chain['field_prime']==313 and chain['subgroup_order']==331
+    assert chain['q_multiple_is_identity'] is True
+    assert [r['multiple'] for r in chain['doubling_chain']]==[2**i for i in range(9)]
+    assert [r['point'] for r in chain['doubling_chain']]==[
+        [2,2],[297,204],[65,226],[298,9],[211,223],
+        [121,291],[218,5],[208,151],[258,173]]
     recovery_protocol=json.loads((HERE/'public-recovery-protocol.json').read_text())
     recovery_result=json.loads((HERE/'public-recovery-result.json').read_text())
     recovery_audit_protocol=json.loads((HERE/'public-recovery-audit-protocol.json').read_text())
