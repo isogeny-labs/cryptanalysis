@@ -1,0 +1,29 @@
+{
+  "schema": "pcc-moving-base-replay/v1",
+  "merge": "28d1c3b043481baad61aa7a84423586f56aaa1b7",
+  "parent": "f885c90394f9addd6e71cd807da8cc28d03cb132",
+  "later_main": "5d4bcf089a164a1ac8eb248ab89aedd8eb804463",
+  "checks": [
+    {
+      "base": "origin/main",
+      "exit": 1,
+      "output": "ledger: head has 166 entries, base has 167 (history removed)\nledger: 166 entries, BROKEN\n"
+    },
+    {
+      "base": "HEAD^1",
+      "exit": 0,
+      "output": "ledger: 166 entries, chain ok\n"
+    },
+    {
+      "case": "truncated_ledger",
+      "exit": 1,
+      "output": "ledger: head has 165 entries, base has 166 (history removed)\nledger: 165 entries, BROKEN\n"
+    },
+    {
+      "case": "altered_keyring",
+      "exit": 1,
+      "output": "keyring: pcc/keyring.json differs from HEAD^1. A producer cannot change whose verdicts count: the owner pins the new keyring's SHA-256 (PCC_KEYRING_SHA256) before it merges\nledger: 166 entries, BROKEN\n"
+    }
+  ],
+  "source": "GitHub actions/checkout default pull_request merge checkout; https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#pull_request"
+}
