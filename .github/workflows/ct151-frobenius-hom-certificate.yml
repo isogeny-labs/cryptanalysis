@@ -1,0 +1,37 @@
+name: CT151 source-only Frobenius Hom certificate
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/ct151-frobenius-hom-certificate.yml'
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/ct151_frobenius_hom_certificate.py'
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT151_FROBENIUS_HOM_*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  exact-integer-certificate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run frozen CT151 arithmetic controls (no native benchmark)
+        shell: bash
+        run: |
+          set -euo pipefail
+          script=experiments/chained-transfer-public-target/norm-point-reuse-01/ct151_frobenius_hom_certificate.py
+          python3 "$script" > /tmp/ct151-normal.json
+          python3 -O "$script" > /tmp/ct151-optimized.json
+          cmp /tmp/ct151-normal.json /tmp/ct151-optimized.json
+          python3 - <<'PY'
+          import json
+          v=json.load(open('/tmp/ct151-normal.json'))
+          assert v['total_bezout_witnesses']==118
+          assert len(v['models'])==2
+          assert [m['predicted_cubic_trace'] for m in v['models']]==[-2724,2724]
+          assert [m['minimizing_prime_trace'] for m in v['models']]==[4,-4]
+          assert [m['minimum_abs_delta'] for m in v['models']]==[112,112]
+          assert all(m['all_delta_nonzero'] for m in v['models'])
+          print('CT151 118 conditional Bezout identities and input-falsification controls passed [pcc:unverified]')
+          PY

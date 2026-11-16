@@ -1,0 +1,33 @@
+name: CT160 actual fixed nu12 independent census
+on:
+  push:
+    branches:
+      - research/ct146-correction-torsion-contract-20261115
+  pull_request:
+    paths:
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/ct160_*'
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT160_*'
+      - '.github/workflows/ct160-fixed-nu12-census.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  whole-field-census:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Full actual source and target census and independent generator audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          D=experiments/chained-transfer-public-target/norm-point-reuse-01
+          c++ -std=c++17 -O3 -Wall -Wextra -Werror "$D/ct160_fixed_nu12_census.cpp" -o "$RUNNER_TEMP/ct160-census"
+          "$RUNNER_TEMP/ct160-census" > "$RUNNER_TEMP/ct160-nominal.json"
+          cmp "$RUNNER_TEMP/ct160-nominal.json" "$D/CT160_FULL_CENSUS.json"
+          "$RUNNER_TEMP/ct160-census" --mutate-source-B0 > "$RUNNER_TEMP/ct160-mutant.json"
+          cmp "$RUNNER_TEMP/ct160-mutant.json" "$D/CT160_MUTANT_CENSUS.json"
+          python3 -B "$D/ct160_fixed_nu12_generator_audit.py" > "$RUNNER_TEMP/ct160-group.json"
+          python3 -O -B "$D/ct160_fixed_nu12_generator_audit.py" > "$RUNNER_TEMP/ct160-group-opt.json"
+          cmp "$RUNNER_TEMP/ct160-group.json" "$RUNNER_TEMP/ct160-group-opt.json"
+          cmp "$RUNNER_TEMP/ct160-group.json" "$D/CT160_GENERATOR_AUDIT.json"
