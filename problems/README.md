@@ -9,6 +9,7 @@ explain the gap and what would let the work move past it.
 
 | Problem | Status | What it blocks | What would unblock it |
 | --- | --- | --- | --- |
+| [Full IC pipeline build envelope](ic-pipeline-build-envelope.md) | investigating | frozen full-pipeline comparison cannot start before its build cap | separately bounded same-source binary preparation, then the frozen matrix |
 | [Native IC controlled timing qualification](native-ic-timing-qualification.md) | investigating | current-baseline timing promotion and independent claim standing | prepared host or equivalent v1-aware preflight, passing frozen controls, and signed evidence |
 | [Prepared/joint collector runtime qualification](point-table-joint-runtime-qualification.md) | open | matched native point-table/joint runtime result | current-source S3 upload/readback, authenticated exact native image/execution, admitted matched comparison |
 | [Native hashed-EC Rust floor](hashed-ecdl-rust-msrv.md) | open | Rust 1.78 qualification of the current getrandom 0.4 native graph | approved compatible graph or reviewed minimum-version update, with locked checks at the stated floor |

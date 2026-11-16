@@ -36,7 +36,10 @@ def build(n,l,seed,points,extra):
     a,b=map(integer,(curve['coefficients'][1],curve['coefficients'][4]))
     r,h=map(integer,(curve['subgroup_order'],curve['cofactor']))
     G=tuple(map(integer,curve['generator']))
-    if _smul(K,a,G,r) is not None or _smul(K,a,G,1)!=G:
+    gx,gy=G
+    if K.sqr(gy)^K.mul(gx,gy)^K.mul(K.sqr(gx),gx)^K.mul(a,K.sqr(gx))^b:
+        raise ValueError('generator fails curve equation')
+    if _smul(K,a,G,r) is not None or _smul(K,a,G,h) is None:
         raise ValueError('generator membership mismatch')
     if r<2 or any(r%d==0 for d in range(2,int(r**.5)+1)):
         raise ValueError('nonprime declared subgroup')
