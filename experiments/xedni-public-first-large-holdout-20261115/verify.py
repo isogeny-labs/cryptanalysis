@@ -274,6 +274,23 @@ def main():
     doubling3_build=(formal/'point-doubling3-build-output.txt').read_text()
     assert 'Build completed successfully (9057 jobs)' in doubling3_build
     assert "'XedniPublicFirstLargeHoldout.panel313_third_double' depends on axioms: [propext, Classical.choice, Quot.sound]" in re.sub(r'\s+',' ',doubling3_build)
+    arithmetic4=(formal/'OrderArithmetic4.lean').read_text()
+    assert all(f'theorem {name}' in arithmetic4 for name in
+               ('mod313_fourth_tangent_slope','mod313_sixteen_x','mod313_sixteen_y'))
+    assert not any(token in arithmetic4 for token in ('sorry','admit','sorryAx','native_decide'))
+    arithmetic4_build=(formal/'order-arithmetic4-build-output.txt').read_text()
+    assert 'Build completed successfully (9058 jobs)' in arithmetic4_build
+    arithmetic4_build_normalized=re.sub(r'\s+',' ',arithmetic4_build)
+    for name in ('mod313_fourth_tangent_slope','mod313_sixteen_x','mod313_sixteen_y'):
+        assert f"'XedniPublicFirstLargeHoldout.{name}' depends on axioms: [propext, Classical.choice, Quot.sound]" in arithmetic4_build_normalized
+    doubling4=(formal/'PointDoubling4.lean').read_text()
+    assert 'theorem panel313_fourth_double' in doubling4
+    assert all(name in doubling4 for name in
+               ('mod313_fourth_tangent_slope','mod313_sixteen_x','mod313_sixteen_y'))
+    assert not any(token in doubling4 for token in ('sorry','admit','sorryAx','native_decide'))
+    doubling4_build=(formal/'point-doubling4-build-output.txt').read_text()
+    assert 'Build completed successfully (9059 jobs)' in doubling4_build
+    assert "'XedniPublicFirstLargeHoldout.panel313_fourth_double' depends on axioms: [propext, Classical.choice, Quot.sound]" in re.sub(r'\s+',' ',doubling4_build)
     recovery_protocol=json.loads((HERE/'public-recovery-protocol.json').read_text())
     recovery_result=json.loads((HERE/'public-recovery-result.json').read_text())
     recovery_audit_protocol=json.loads((HERE/'public-recovery-audit-protocol.json').read_text())
