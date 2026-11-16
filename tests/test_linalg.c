@@ -27,8 +27,45 @@ static void random_system(uint32_t rows, uint32_t cols, uint32_t per_row, uint64
     free(tc); free(tv);
 }
 
+static void dense_boundaries(void)
+{
+    const uint64_t primes[] = {2, 3, 17, 1000003, 4294967311ULL,
+        2305843009213693951ULL, 18446744073709551557ULL};
+    ca_rng rng;
+    ca_rng_seed(&rng, 0x1a20261115ULL);
+    enum { N = 33 };
+    for (size_t qi = 0; qi < sizeof(primes) / sizeof(*primes); ++qi) {
+        uint64_t q = primes[qi];
+        uint64_t M[N * N], rhs[N], x[N], expected[N];
+        memset(M, 0, sizeof(M));
+        for (unsigned j = 0; j < N; ++j) expected[j] = ca_rng_below(&rng, q);
+        for (unsigned i = 0; i < N; ++i) {
+            M[i * N + i] = q + 1 > q ? q + 1 : 1;
+            for (unsigned j = i + 1; j < N; ++j) M[i * N + j] = ca_rng_next(&rng);
+        }
+        /* Reverse rows to force pivot exchanges, retaining unreduced entries. */
+        for (unsigned i = 0; i < N / 2; ++i)
+            for (unsigned j = 0; j < N; ++j) {
+                uint64_t t = M[i * N + j];
+                M[i * N + j] = M[(N - 1 - i) * N + j];
+                M[(N - 1 - i) * N + j] = t;
+            }
+        for (unsigned i = 0; i < N; ++i) {
+            rhs[i] = 0;
+            for (unsigned j = 0; j < N; ++j)
+                rhs[i] = ca_addmod(rhs[i], ca_mulmod(M[i * N + j] % q, expected[j], q), q);
+        }
+        CHECK(ca_dense_solve_mod_prime(M, N, rhs, q, x) == CA_OK);
+        for (unsigned j = 0; j < N; ++j) CHECK_EQ_U64(x[j], expected[j]);
+        memset(M, 0, sizeof(M));
+        memset(rhs, 0, sizeof(rhs));
+        CHECK(ca_dense_solve_mod_prime(M, N, rhs, q, x) == CA_ERR_SINGULAR);
+    }
+}
+
 int main(void)
 {
+    dense_boundaries();
     ca_rng rng;
     ca_rng_seed(&rng, 8);
     /* dense */

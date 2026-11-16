@@ -81,8 +81,49 @@ ca_status ca_spmat_add_row(ca_spmat *m, const uint32_t *cols, const int32_t *val
 
 /* ---- dense elimination -------------------------------------------------- */
 
+/* Keep rows in ordinary residues and convert only each reused scalar to
+ * Montgomery form: REDC((a R) b) = a b. This pays one conversion per row
+ * operation instead of a wide division per matrix entry. */
+static ca_status dense_solve_mont(uint64_t *M, uint32_t n, uint64_t *rhs,
+                                  const ca_mont *mont, uint64_t *x)
+{
+    const uint64_t q = mont->p;
+    for (size_t k = 0; k < (size_t)n * n; ++k) M[k] %= q;
+    for (uint32_t i = 0; i < n; ++i) rhs[i] %= q;
+    for (uint32_t c = 0; c < n; ++c) {
+        uint32_t piv = c;
+        while (piv < n && M[(size_t)piv * n + c] == 0) ++piv;
+        if (piv == n) return CA_ERR_SINGULAR;
+        uint64_t *pivot = M + (size_t)c * n;
+        if (piv != c) {
+            uint64_t *other = M + (size_t)piv * n;
+            for (uint32_t j = 0; j < n; ++j) {
+                uint64_t t = pivot[j]; pivot[j] = other[j]; other[j] = t;
+            }
+            uint64_t t = rhs[c]; rhs[c] = rhs[piv]; rhs[piv] = t;
+        }
+        uint64_t inv = ca_mont_to(mont, ca_invmod(pivot[c], q));
+        for (uint32_t j = c; j < n; ++j) pivot[j] = ca_mont_mul(mont, pivot[j], inv);
+        rhs[c] = ca_mont_mul(mont, rhs[c], inv);
+        for (uint32_t i = 0; i < n; ++i) {
+            if (i == c) continue;
+            uint64_t *row = M + (size_t)i * n;
+            if (!row[c]) continue;
+            uint64_t f = ca_mont_to(mont, row[c]);
+            row[c] = 0;
+            for (uint32_t j = c + 1; j < n; ++j)
+                row[j] = ca_submod(row[j], ca_mont_mul(mont, f, pivot[j]), q);
+            rhs[i] = ca_submod(rhs[i], ca_mont_mul(mont, f, rhs[c]), q);
+        }
+    }
+    for (uint32_t i = 0; i < n; ++i) x[i] = rhs[i];
+    return CA_OK;
+}
+
 ca_status ca_dense_solve_mod_prime(uint64_t *M, uint32_t n, uint64_t *rhs, uint64_t q, uint64_t *x)
 {
+    ca_mont mont;
+    if (ca_mont_init(&mont, q)) return dense_solve_mont(M, n, rhs, &mont, x);
 #define A(i, j) M[(size_t)(i) * n + (j)]
     for (uint32_t c = 0; c < n; c++) {
         uint32_t piv = c;
@@ -111,6 +152,15 @@ ca_status ca_dense_solve_mod_prime(uint64_t *M, uint32_t n, uint64_t *rhs, uint6
 
 /* ---- modular vector helpers ------------------------------------------- */
 
+/* Sparse signed-coefficient sums often fit in one word even though the
+ * general accumulator must be 128-bit. Avoid the compiler's wide division
+ * runtime for that common case; retain it for full-width sums. */
+static inline uint64_t sum_mod(ca_u128 sum, uint64_t q)
+{
+    if ((uint64_t)(sum >> 64) == 0) return (uint64_t)sum % q;
+    return (uint64_t)(sum % q);
+}
+
 /* small signed coefficient reduced into [0, q) */
 static inline uint64_t coef_mod(int64_t v, uint64_t q)
 {
@@ -121,20 +171,38 @@ static inline uint64_t coef_mod(int64_t v, uint64_t q)
 
 static inline uint64_t vdot(const uint64_t *a, const uint64_t *b, uint32_t n, uint64_t q)
 {
-    /* each product < 2^128; four of them fit in 128 bits only if q < 2^62 */
+    /* a,b are canonical. If q-1 has k bits then each product is <2^(2k),
+     * so 2^(128-2k) products fit without overflow. Cap at 1024 to keep
+     * reduction intervals bounded, including for very small primes. */
     ca_u128 acc = 0;
     uint64_t r = 0;
-    uint32_t chunk_mask = (q >> 62) ? 0u : 3u;
+    unsigned bits = 64u - (unsigned)__builtin_clzll(q - 1);
+    unsigned shift = 128u - 2u * bits;
+    if (shift > 10) shift = 10;
+    uint32_t chunk_mask = (1u << shift) - 1;
     for (uint32_t i = 0; i < n; i++) {
         acc += (ca_u128)a[i] * b[i];
-        if ((i & chunk_mask) == chunk_mask || i + 1 == n) { r = ca_addmod(r, (uint64_t)(acc % q), q); acc = 0; }
+        if ((i & chunk_mask) == chunk_mask || i + 1 == n) { r = ca_addmod(r, sum_mod(acc, q), q); acc = 0; }
     }
     return r;
 }
 
 /* y = A v (mod q) using 128-bit accumulation; entries |val| < 2^31 */
-static void spmv(const ca_spmat *A, const uint64_t *v, uint64_t *y, uint64_t q)
+static void spmv(const ca_spmat *A, const uint64_t *v, uint64_t *y, uint64_t q,
+                 int word_sums)
 {
+    if (word_sums) {
+        for (uint32_t i = 0; i < A->rows; ++i) {
+            uint64_t pos = 0, neg = 0;
+            for (uint32_t k = A->row_ptr[i]; k < A->row_ptr[i + 1]; ++k) {
+                int32_t c = A->val[k];
+                if (c > 0) pos += (uint64_t)(uint32_t)c * v[A->col[k]];
+                else neg += (uint64_t)(-(int64_t)c) * v[A->col[k]];
+            }
+            y[i] = ca_submod(pos % q, neg % q, q);
+        }
+        return;
+    }
     for (uint32_t i = 0; i < A->rows; i++) {
         ca_u128 pos = 0, neg = 0;
         uint32_t cnt = 0;
@@ -142,23 +210,40 @@ static void spmv(const ca_spmat *A, const uint64_t *v, uint64_t *y, uint64_t q)
         for (uint32_t k = A->row_ptr[i]; k < A->row_ptr[i + 1]; k++) {
             int32_t c = A->val[k];
             if (c > 0) pos += (ca_u128)(uint32_t)c * v[A->col[k]];
-            else neg += (ca_u128)(uint32_t)(-c) * v[A->col[k]];
+            else neg += (ca_u128)(uint32_t)(-(int64_t)c) * v[A->col[k]];
             if (++cnt == 1u << 30) { /* never in practice */
-                rp = ca_addmod(rp, (uint64_t)(pos % q), q); pos = 0;
-                rn = ca_addmod(rn, (uint64_t)(neg % q), q); neg = 0;
+                rp = ca_addmod(rp, sum_mod(pos, q), q); pos = 0;
+                rn = ca_addmod(rn, sum_mod(neg, q), q); neg = 0;
                 cnt = 0;
             }
         }
-        rp = ca_addmod(rp, (uint64_t)(pos % q), q);
-        rn = ca_addmod(rn, (uint64_t)(neg % q), q);
+        rp = ca_addmod(rp, sum_mod(pos, q), q);
+        rn = ca_addmod(rn, sum_mod(neg, q), q);
         y[i] = ca_submod(rp, rn, q);
     }
 }
 
 /* z = A^T w (mod q) */
 static void spmtv(const ca_spmat *A, const uint64_t *w, uint64_t *z, uint64_t q, ca_u128 *accp,
-                  ca_u128 *accn)
+                  ca_u128 *accn, int word_sums)
 {
+    if (word_sums) {
+        uint64_t *pos = (uint64_t *)accp, *neg = (uint64_t *)accn;
+        memset(pos, 0, (size_t)A->cols * sizeof(*pos));
+        memset(neg, 0, (size_t)A->cols * sizeof(*neg));
+        for (uint32_t i = 0; i < A->rows; ++i) {
+            uint64_t wi = w[i];
+            if (!wi) continue;
+            for (uint32_t k = A->row_ptr[i]; k < A->row_ptr[i + 1]; ++k) {
+                int32_t c = A->val[k];
+                if (c > 0) pos[A->col[k]] += (uint64_t)(uint32_t)c * wi;
+                else neg[A->col[k]] += (uint64_t)(-(int64_t)c) * wi;
+            }
+        }
+        for (uint32_t j = 0; j < A->cols; ++j)
+            z[j] = ca_submod(pos[j] % q, neg[j] % q, q);
+        return;
+    }
     memset(accp, 0, A->cols * sizeof(ca_u128));
     memset(accn, 0, A->cols * sizeof(ca_u128));
     /* each term < 2^31 * 2^64 = 2^95; up to 2^33 terms per column fit */
@@ -168,11 +253,11 @@ static void spmtv(const ca_spmat *A, const uint64_t *w, uint64_t *z, uint64_t q,
         for (uint32_t k = A->row_ptr[i]; k < A->row_ptr[i + 1]; k++) {
             int32_t c = A->val[k];
             if (c > 0) accp[A->col[k]] += (ca_u128)(uint32_t)c * wi;
-            else accn[A->col[k]] += (ca_u128)(uint32_t)(-c) * wi;
+            else accn[A->col[k]] += (ca_u128)(uint32_t)(-(int64_t)c) * wi;
         }
     }
     for (uint32_t j = 0; j < A->cols; j++)
-        z[j] = ca_submod((uint64_t)(accp[j] % q), (uint64_t)(accn[j] % q), q);
+        z[j] = ca_submod(sum_mod(accp[j], q), sum_mod(accn[j], q), q);
 }
 
 /*
@@ -182,6 +267,17 @@ static void spmtv(const ca_spmat *A, const uint64_t *w, uint64_t *z, uint64_t q,
 static ca_status lanczos(const ca_spmat *A, const uint64_t *b, uint64_t q, uint64_t *x,
                          ca_rng *rng, uint32_t *iters_out)
 {
+    ca_mont mont;
+    if (!ca_mont_init(&mont, q)) return CA_ERR_INVALID;
+    /* Every row/column sum is bounded by (q-1) times the total absolute
+     * coefficient weight. Use word accumulators only when that product is
+     * provably representable. The nnz and int32 bounds make weight <2^63. */
+    uint64_t weight = 0;
+    for (uint32_t k = 0; k < A->nnz; ++k) {
+        int64_t c = A->val[k];
+        weight += (uint64_t)(c < 0 ? -c : c);
+    }
+    int word_sums = !weight || q - 1 <= UINT64_MAX / weight;
     uint32_t n = A->cols, m = A->rows;
     uint64_t *D = malloc(m * sizeof(uint64_t));
     uint64_t *tmp_m = malloc(m * sizeof(uint64_t));
@@ -194,9 +290,9 @@ static ca_status lanczos(const ca_spmat *A, const uint64_t *b, uint64_t q, uint6
     ca_u128 *accn = malloc(n * sizeof(ca_u128));
     ca_status rc = CA_ERR_SINGULAR;
     if (!D || !tmp_m || !bp || !w0 || !w1 || !w2 || !Bw || !accp || !accn) { rc = CA_ERR_NOMEM; goto out; }
-    for (uint32_t i = 0; i < m; i++) D[i] = 1 + ca_rng_below(rng, q - 1);
-    for (uint32_t i = 0; i < m; i++) tmp_m[i] = ca_mulmod(D[i], b[i] % q, q);
-    spmtv(A, tmp_m, bp, q, accp, accn);
+    for (uint32_t i = 0; i < m; i++) D[i] = ca_mont_to(&mont, 1 + ca_rng_below(rng, q - 1));
+    for (uint32_t i = 0; i < m; i++) tmp_m[i] = ca_mont_mul(&mont, D[i], b[i] % q);
+    spmtv(A, tmp_m, bp, q, accp, accn, word_sums);
     memset(x, 0, n * sizeof(uint64_t));
     /* w_prev = w0 (i-1), w_cur = w1 (i) */
     uint64_t *w_prev = w0, *w_cur = w1, *w_next = w2;
@@ -205,9 +301,9 @@ static ca_status lanczos(const ca_spmat *A, const uint64_t *b, uint64_t q, uint6
     uint32_t it = 0;
     for (it = 0; it < n + 8; it++) {
         /* Bw = A^T D A w_cur */
-        spmv(A, w_cur, tmp_m, q);
-        for (uint32_t i = 0; i < m; i++) tmp_m[i] = ca_mulmod(tmp_m[i], D[i], q);
-        spmtv(A, tmp_m, Bw, q, accp, accn);
+        spmv(A, w_cur, tmp_m, q, word_sums);
+        for (uint32_t i = 0; i < m; i++) tmp_m[i] = ca_mont_mul(&mont, tmp_m[i], D[i]);
+        spmtv(A, tmp_m, Bw, q, accp, accn, word_sums);
         uint64_t wBw = vdot(w_cur, Bw, n, q);
         int zero = 1;
         for (uint32_t j = 0; j < n; j++) if (w_cur[j]) { zero = 0; break; }
@@ -216,13 +312,15 @@ static ca_status lanczos(const ca_spmat *A, const uint64_t *b, uint64_t q, uint6
         uint64_t inv = ca_invmod(wBw, q);
         /* x += (w . bp) / (w . Bw) * w */
         uint64_t coef = ca_mulmod(vdot(w_cur, bp, n, q), inv, q);
-        for (uint32_t j = 0; j < n; j++) x[j] = ca_addmod(x[j], ca_mulmod(coef, w_cur[j], q), q);
+        uint64_t coef_m = ca_mont_to(&mont, coef);
+        for (uint32_t j = 0; j < n; j++) x[j] = ca_addmod(x[j], ca_mont_mul(&mont, coef_m, w_cur[j]), q);
         /* w_next = Bw - c1 w_cur - c2 w_prev */
         uint64_t c1 = ca_mulmod(vdot(Bw, Bw, n, q), inv, q);
         uint64_t c2 = prev_wBw ? ca_mulmod(wBw, ca_invmod(prev_wBw, q), q) : 0;
+        uint64_t c1_m = ca_mont_to(&mont, c1), c2_m = ca_mont_to(&mont, c2);
         for (uint32_t j = 0; j < n; j++) {
-            uint64_t t = ca_submod(Bw[j], ca_mulmod(c1, w_cur[j], q), q);
-            if (c2) t = ca_submod(t, ca_mulmod(c2, w_prev[j], q), q);
+            uint64_t t = ca_submod(Bw[j], ca_mont_mul(&mont, c1_m, w_cur[j]), q);
+            if (c2) t = ca_submod(t, ca_mont_mul(&mont, c2_m, w_prev[j]), q);
             w_next[j] = t;
         }
         prev_wBw = wBw;
@@ -230,7 +328,7 @@ static ca_status lanczos(const ca_spmat *A, const uint64_t *b, uint64_t q, uint6
     }
     if (rc == CA_OK) {
         /* verify A x == b */
-        spmv(A, x, tmp_m, q);
+        spmv(A, x, tmp_m, q, word_sums);
         for (uint32_t i = 0; i < m; i++) {
             if (tmp_m[i] != b[i] % q) { rc = CA_ERR_SINGULAR; break; }
         }

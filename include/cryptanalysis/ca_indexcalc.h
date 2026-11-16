@@ -20,8 +20,10 @@
  * e > 1).  Every factor-base logarithm is verified (g^log == prime) before
  * use, so a wrong answer is never returned.
  *
- * Individual logarithms: h g^e is tested for B-smoothness for random e
- * until it factors over the (verified) factor base.
+ * Individual logarithms: each h g^e is reconstructed as a signed rational
+ * a/b with numerator and denominator near sqrt(p), then both are tested
+ * for B-smoothness over the verified factor base. Reusable Montgomery
+ * step powers avoid repeated short exponentiation in the search walk.
  *
  * Scope: p < 2^64.  This is a working single-machine index calculus, not
  * the number field sieve; see docs/ALGORITHMS.md for the relationship to
