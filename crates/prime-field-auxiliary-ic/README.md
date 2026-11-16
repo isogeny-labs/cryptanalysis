@@ -20,7 +20,7 @@ in the target group. This avoids constructing a high-degree resultant or
 running a generic polynomial GCD for this complete known-root case. It is an
 exact solver specialized to two-term decompositions (`m=2`), not a general
 multivariate Gröbner solver. These are producer implementation assertions.
-[pcc:unverified]
+`[pcc:unverified]`
 
 The implementation includes these optimization choices:
 
