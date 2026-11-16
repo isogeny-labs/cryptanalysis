@@ -1,0 +1,18 @@
+digraph Pipeline {
+  graph [rankdir=LR, bgcolor="white", pad="0.2"];
+  node [shape=box,style="rounded,filled",fontname="Helvetica",fontsize=12,color="#40677b",fillcolor="#eaf2f6"];
+  registry [label="Fixed registered curve\nExact subgroup + generator\nArchived prefix base"];
+  workload [label="One frozen target\nFresh process per arm\nSame walk seed"];
+  ref [label="Reference\nGeneric symbolic S3"];
+  opt [label="Optional\nDirect symmetric S3"];
+  solve [label="Buchberger / F4 / wide FES\nRelations + incremental LA\nFinal scalar check"];
+  mitm [label="MITM control\nSame base and target",fillcolor="#f5ead6"];
+  rho [label="Same-target rho\nPlain and negation",fillcolor="#f5ead6"];
+  cost [label="Complete first pipeline interval\nContext reported separately\nCaps + all outcomes retained",fillcolor="#e2f0e5"];
+  registry -> workload;
+  workload -> ref -> solve;
+  workload -> opt -> solve;
+  workload -> mitm;
+  workload -> rho;
+  solve -> cost; mitm -> cost; rho -> cost;
+}

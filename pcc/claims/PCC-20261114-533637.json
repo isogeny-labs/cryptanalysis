@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-14T21:11:28Z",
+ "id": "PCC-20261114-533637",
+ "kind": "theorem",
+ "producer": {
+  "commit": "3fad107ab8112fff57febb89a287ca21b508d8a4",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "b2aa4e0aa7ac44f88cda6b1f1749fef7c49d313398540e3d4de89e9714250401",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/twisted-pair-preflight/lean/TwistHomogeneity.lean",
+   "theorem": "TwistHomogeneity.ciani_coefficient_scale"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Polynomial ring identities for twist curve residual, Delta, all generic adjugate minors, determinant, cleared HLP numerator and Ciani coefficient scaling; inverse-hypothesis zero equivalence, plus finite NATURAL residue witnesses. BOTH original434/435gates8namedroots0trusted. Encoded finite field, nonzero denominators, actual HLP constructor equality, geometric quotient and full Rust/program/map bridges remain open; no native new-instance/order/model result, signed standing or novelty aggregate.",
+ "statement": "theorem ciani_coefficient_scale {R : Type} [CommRing R] (v a b c d e f x y z : R) : ciani (v^2*a) (v^2*b) (v^2*c) (v^2*d) (v^2*e) (v^2*f) x y z = v^2*ciani a b c d e f x y z"
+}

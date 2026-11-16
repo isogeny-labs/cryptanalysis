@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-15T08:36:01Z",
+ "id": "PCC-20261115-3c8cb2",
+ "kind": "theorem",
+ "producer": {
+  "commit": "e633524f33e62c4ffa273ffefd4a8ea3915ef93d",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "47818e49142074e6ca65f85737975df0497434681aba5e0c171ce8ddcee53314",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/original-full-evaluator-01/lean/OriginalFullChain.lean",
+   "theorem": "FullGroupNorm.retained_lift_chain"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Conditional IntModule algebra under explicit linearity/duality/kerneltransport/Frobenius/kernel-description/order-annihilation hypotheses. Sixteen old roots and hypotheses are literal unchanged source concatenation, including historical nu12-only numeric roots; those historical values are NOT original-order witnesses. Three additive roots derive p/zero knownpoint representation, knownpoint output from old half/correction independence (no assumed desired evaluator equality), and actual original ORDER11092292/gcd13-169/squares89-40-6/inverse13=3413013 inverse169=9648325 and IntBezout witnesses. Both unchanged original434/435 gates19roots0trusted. Actual field/HLP/geometricquotient/Frobenius/Picard/program/order bridges remain explicit; no signedstanding, cost or computational advantage.",
+ "statement": "theorem retained_lift_chain {A B C J K L : Type} (pa : A \u2192 J) (pb : B \u2192 K) (pc : C \u2192 L) (g : A \u2192 B) (h : B \u2192 C) (first : J \u2192 K) (second : K \u2192 L) (first_square : \u2200 a, first (pa a)=pb (g a)) (second_square : \u2200 b, second (pb b)=pc (h b)) (a : A) : second (first (pa a))=pc (h (g a))"
+}

@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-15T01:35:03Z",
+ "id": "PCC-20261115-0c05ab",
+ "kind": "theorem",
+ "producer": {
+  "commit": "70ec53e5a297a47e8c933dad1b58e870211b16fa",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "2d2ec2d62f323768329a54ba774ce16b68bf8dcd13ba118fa7efd4dc2c819c2e",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/fixed-jacobian-chain-evaluator-01/lean/ChainDescent.lean",
+   "theorem": "ChainDescent.equal_images_equal_targets"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Conditional function and IntModule algebra for correction completeness: square/cube fixedness, equivariant image, rational two-torsion averaging, norm-half kernel membership, kernel transport, half-choice independence and Frobenius-fixed output. Both original gates8roots0trusted. No desired quotient beta or corrected evaluator assumed. Actual HLP norm-kernel identities, encoded fields/varieties/Frobenius, full fixed-kernel transport, Picard/program/descent remain explicit bridges; native PhaseA geometry is separate, complete chain/cost pending.",
+ "statement": "theorem equal_images_equal_targets {A J B : Type} [IntModule A] [IntModule J] [IntModule B] (phi : A \u2192 J) (psi : A \u2192 B) (phi_sub : \u2200 a b, phi (a-b)=phi a-phi b) (psi_sub : \u2200 a b, psi (a-b)=psi a-psi b) (kernel_transport : \u2200 a, phi a=0 \u2192 psi a=0) (a b : A) (same : phi a=phi b) : psi a=psi b"
+}

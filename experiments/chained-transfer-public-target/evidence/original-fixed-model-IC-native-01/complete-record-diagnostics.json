@@ -1,0 +1,803 @@
+{
+  "actual_Rust_scope": {
+    "all_targets": [
+      {
+        "all_cases": [
+          {
+            "all_four_attempts_retained": true,
+            "public_index": 0,
+            "side": 0,
+            "successful_attempts": 3
+          },
+          {
+            "all_four_attempts_retained": true,
+            "public_index": 1,
+            "side": 0,
+            "successful_attempts": 3
+          },
+          {
+            "all_four_attempts_retained": true,
+            "public_index": 2,
+            "side": 0,
+            "successful_attempts": 3
+          },
+          {
+            "all_four_attempts_retained": true,
+            "public_index": 3,
+            "side": 0,
+            "successful_attempts": 3
+          },
+          {
+            "all_four_attempts_retained": true,
+            "public_index": 4,
+            "side": 0,
+            "successful_attempts": 3
+          }
+        ],
+        "all_twenty_attempts_retained": true,
+        "costs": "IC/Picard diagnostics only; primitive/setup/knownpoint/opaque-input/admission/reference costs unknown; no calibrated advantage",
+        "public_cases_solved": 5,
+        "required": 5,
+        "side": 0
+      },
+      {
+        "all_cases": [
+          {
+            "all_four_attempts_retained": true,
+            "public_index": 0,
+            "side": 1,
+            "successful_attempts": 3
+          },
+          {
+            "all_four_attempts_retained": true,
+            "public_index": 1,
+            "side": 1,
+            "successful_attempts": 3
+          },
+          {
+            "all_four_attempts_retained": true,
+            "public_index": 2,
+            "side": 1,
+            "successful_attempts": 3
+          },
+          {
+            "all_four_attempts_retained": true,
+            "public_index": 3,
+            "side": 1,
+            "successful_attempts": 3
+          },
+          {
+            "all_four_attempts_retained": true,
+            "public_index": 4,
+            "side": 1,
+            "successful_attempts": 3
+          }
+        ],
+        "all_twenty_attempts_retained": true,
+        "costs": "IC/Picard diagnostics only; primitive/setup/knownpoint/opaque-input/admission/reference costs unknown; no calibrated advantage",
+        "public_cases_solved": 5,
+        "required": 5,
+        "side": 1
+      },
+      {
+        "all_cases": [
+          {
+            "all_four_attempts_retained": true,
+            "public_index": 0,
+            "side": 2,
+            "successful_attempts": 3
+          },
+          {
+            "all_four_attempts_retained": true,
+            "public_index": 1,
+            "side": 2,
+            "successful_attempts": 3
+          },
+          {
+            "all_four_attempts_retained": true,
+            "public_index": 2,
+            "side": 2,
+            "successful_attempts": 3
+          },
+          {
+            "all_four_attempts_retained": true,
+            "public_index": 3,
+            "side": 2,
+            "successful_attempts": 3
+          },
+          {
+            "all_four_attempts_retained": true,
+            "public_index": 4,
+            "side": 2,
+            "successful_attempts": 3
+          }
+        ],
+        "all_twenty_attempts_retained": true,
+        "costs": "IC/Picard diagnostics only; primitive/setup/knownpoint/opaque-input/admission/reference costs unknown; no calibrated advantage",
+        "public_cases_solved": 5,
+        "required": 5,
+        "side": 2
+      }
+    ],
+    "attempts": 60,
+    "public_cases_solved": 15,
+    "required_attempts": 60,
+    "required_public_cases": 15,
+    "scope": "finite original fixed model correctness only, unsigned, no calibrated ECDLP advantage",
+    "solver_source": "literal existing new-target class_solver.rs, no edits",
+    "unpriced_costs": "source-validation;both-geometry-origins;model-map-setup;knownpoint;opaque-retained-transfer;FpR-extension;admission;final-independent-verification;matched-reference"
+  },
+  "actual_input_transfer_API_calls": {
+    "correction_dictionary_lookup": 12,
+    "correction_difference": 12,
+    "degree13_elliptic_evaluation": 6,
+    "degree169_elliptic_evaluation": 6,
+    "explicit_half_check": 96,
+    "external_full_order": 12,
+    "external_norm_and_geometry": 12,
+    "external_packet_parse": 12,
+    "external_point_full_order": 0,
+    "external_point_parse": 0,
+    "final_actual_norm": 12,
+    "final_full_order": 12,
+    "generic_halving_factorization": 12,
+    "generic_ordinate": 48,
+    "infinity_halves": 0,
+    "inverse_full_group_scalar": 0,
+    "matching_corrections_checked": 24,
+    "quadratic_source_phi": 12,
+    "quadratic_target_phi": 12,
+    "source_lift_addition": 12,
+    "target_correction_addition": 0,
+    "target_prime_phi": 0,
+    "transported_norm_doubling": 12,
+    "two_torsion_halves": 0
+  },
+  "actual_target_inputs": [
+    {
+      "P0": [
+        1,
+        0,
+        28
+      ],
+      "actual_opaque_chain_equals_independent_Phi": true,
+      "case": [
+        2,
+        0
+      ],
+      "ell": 2773073,
+      "field": "Fq-223",
+      "generator": {
+        "field": "Fq-223",
+        "key": [
+          1,
+          1,
+          0,
+          0,
+          118,
+          153,
+          168,
+          0,
+          1,
+          0,
+          125,
+          188,
+          94,
+          0,
+          0,
+          1,
+          12,
+          214,
+          154
+        ],
+        "model": "Ciani-Jac-odd-product-v1-ef692dee868b4315075816b8adeb721590483051bdffe59d6377ac13acfc7902"
+      },
+      "mask": 1155177839943778305,
+      "model": "Ciani-Jac-odd-product-v1-ef692dee868b4315075816b8adeb721590483051bdffe59d6377ac13acfc7902",
+      "order": 11092292,
+      "quartic": [
+        1,
+        213,
+        120,
+        124,
+        176,
+        13,
+        13,
+        8,
+        27,
+        153,
+        78,
+        40,
+        15,
+        98,
+        200
+      ],
+      "side": 0,
+      "source": {
+        "a": [
+          12,
+          143,
+          39
+        ],
+        "b": [
+          115,
+          82,
+          144
+        ],
+        "ell": 2773073,
+        "field_modulus": [
+          220,
+          0,
+          0,
+          1
+        ],
+        "field_tag": "K3-223-d9c024d6fb0b129b7ea9d1914c9c6c98e75db9e090311fbc32d96f7f56160213",
+        "generator": [
+          [
+            25,
+            88,
+            25
+          ],
+          [
+            206,
+            133,
+            86
+          ]
+        ],
+        "order": 11092292,
+        "order_certificate": "actual nonzero prime-ell generator plus unique Hasse multiple equal to declared order/ell; original arithmetic and written Hasse bridge",
+        "source_tag": "N4-E13x13-short-2088c9e2bd44dfea66094a767e22a1f2ebffdd4e963244cb320d93408e58b4b5"
+      }
+    },
+    {
+      "P0": [
+        1,
+        0,
+        90
+      ],
+      "actual_opaque_chain_equals_independent_Phi": true,
+      "case": [
+        0,
+        1
+      ],
+      "ell": 2773073,
+      "field": "Fq-223",
+      "generator": {
+        "field": "Fq-223",
+        "key": [
+          1,
+          1,
+          0,
+          0,
+          221,
+          211,
+          183,
+          0,
+          1,
+          0,
+          183,
+          2,
+          127,
+          0,
+          0,
+          1,
+          60,
+          32,
+          68
+        ],
+        "model": "Ciani-Jac-odd-product-v1-3e0ecf15e3695650c709d3c9353a553565d921c24c34b7ff23048515267e6121"
+      },
+      "mask": 5188291906266857505,
+      "model": "Ciani-Jac-odd-product-v1-3e0ecf15e3695650c709d3c9353a553565d921c24c34b7ff23048515267e6121",
+      "order": 11092292,
+      "quartic": [
+        1,
+        77,
+        198,
+        5,
+        134,
+        165,
+        215,
+        92,
+        175,
+        146,
+        196,
+        66,
+        123,
+        182,
+        208
+      ],
+      "side": 1,
+      "source": {
+        "a": [
+          99,
+          74,
+          32
+        ],
+        "b": [
+          192,
+          90,
+          87
+        ],
+        "ell": 2773073,
+        "field_modulus": [
+          220,
+          0,
+          0,
+          1
+        ],
+        "field_tag": "K3-223-d9c024d6fb0b129b7ea9d1914c9c6c98e75db9e090311fbc32d96f7f56160213",
+        "generator": [
+          [
+            200,
+            179,
+            169
+          ],
+          [
+            90,
+            15,
+            166
+          ]
+        ],
+        "order": 11092292,
+        "order_certificate": "actual nonzero prime-ell generator plus unique Hasse multiple equal to declared order/ell; original arithmetic and written Hasse bridge",
+        "source_tag": "N4-E13x13x13-short-5a8415bfa6d76cb096d0baa1f2d623d04552cc70068c72d54656632fc933aa86"
+      }
+    },
+    {
+      "P0": [
+        1,
+        1,
+        165
+      ],
+      "actual_opaque_chain_equals_independent_Phi": true,
+      "case": [
+        2,
+        0
+      ],
+      "ell": 2773073,
+      "field": "Fq-223",
+      "generator": {
+        "field": "Fq-223",
+        "key": [
+          1,
+          1,
+          0,
+          0,
+          204,
+          131,
+          127,
+          0,
+          1,
+          0,
+          206,
+          87,
+          164,
+          0,
+          0,
+          1,
+          49,
+          204,
+          176
+        ],
+        "model": "Ciani-Jac-odd-product-v1-6947dc56fff2c8d102586a9361d03f8ed992cb23670ecc93ccd205da4209fee4"
+      },
+      "mask": 1155177839943778305,
+      "model": "Ciani-Jac-odd-product-v1-6947dc56fff2c8d102586a9361d03f8ed992cb23670ecc93ccd205da4209fee4",
+      "order": 11092292,
+      "quartic": [
+        1,
+        219,
+        133,
+        19,
+        143,
+        65,
+        108,
+        63,
+        110,
+        36,
+        35,
+        193,
+        68,
+        173,
+        200
+      ],
+      "side": 2,
+      "source": {
+        "a": [
+          83,
+          105,
+          150
+        ],
+        "b": [
+          179,
+          83,
+          20
+        ],
+        "ell": 2773073,
+        "field_modulus": [
+          220,
+          0,
+          0,
+          1
+        ],
+        "field_tag": "K3-223-d9c024d6fb0b129b7ea9d1914c9c6c98e75db9e090311fbc32d96f7f56160213",
+        "generator": [
+          [
+            187,
+            7,
+            102
+          ],
+          [
+            216,
+            11,
+            88
+          ]
+        ],
+        "order": 11092292,
+        "order_certificate": "actual nonzero prime-ell generator plus unique Hasse multiple equal to declared order/ell; original arithmetic and written Hasse bridge",
+        "source_tag": "N4-E13x13x13x13-short-6d3fc8ab864484c3a6c91aaa94b4ae1e9b94c84687d6cb2117410e27a0fdc681"
+      }
+    }
+  ],
+  "all12_attempt_setting_groups": [
+    {
+      "all_attempts": 5,
+      "all_failure_reasons": [
+        "recovered k does not satisfy kG = Q",
+        "recovered k does not satisfy kG = Q",
+        "recovered k does not satisfy kG = Q",
+        "recovered k does not satisfy kG = Q",
+        "recovered k does not satisfy kG = Q"
+      ],
+      "cost_scope": "all five attempts including failures; partial IC/Picard counters and uncalibrated raw phase walls, not complete pipeline cost or price",
+      "failed_attempts": 5,
+      "nfb": 30,
+      "side": 0,
+      "summed_original_partial_phase_counters": {
+        "add": 3060093,
+        "cmp": 0,
+        "hash": 4218,
+        "inv": 30284,
+        "ladd": 144793,
+        "lmul": 143570,
+        "mul": 3094299
+      },
+      "summed_reported_phase_wall_seconds_diagnostic_only": 0.15290048700000003,
+      "verified_successes": 0
+    },
+    {
+      "all_attempts": 5,
+      "all_failure_reasons": [],
+      "cost_scope": "all five attempts including failures; partial IC/Picard counters and uncalibrated raw phase walls, not complete pipeline cost or price",
+      "failed_attempts": 0,
+      "nfb": 36,
+      "side": 0,
+      "summed_original_partial_phase_counters": {
+        "add": 2771990,
+        "cmp": 0,
+        "hash": 5924,
+        "inv": 26641,
+        "ladd": 308330,
+        "lmul": 311240,
+        "mul": 2917631
+      },
+      "summed_reported_phase_wall_seconds_diagnostic_only": 0.15955957499999998,
+      "verified_successes": 5
+    },
+    {
+      "all_attempts": 5,
+      "all_failure_reasons": [],
+      "cost_scope": "all five attempts including failures; partial IC/Picard counters and uncalibrated raw phase walls, not complete pipeline cost or price",
+      "failed_attempts": 0,
+      "nfb": 48,
+      "side": 0,
+      "summed_original_partial_phase_counters": {
+        "add": 2849187,
+        "cmp": 0,
+        "hash": 10295,
+        "inv": 27742,
+        "ladd": 495979,
+        "lmul": 495615,
+        "mul": 3229453
+      },
+      "summed_reported_phase_wall_seconds_diagnostic_only": 0.16624053600000005,
+      "verified_successes": 5
+    },
+    {
+      "all_attempts": 5,
+      "all_failure_reasons": [],
+      "cost_scope": "all five attempts including failures; partial IC/Picard counters and uncalibrated raw phase walls, not complete pipeline cost or price",
+      "failed_attempts": 0,
+      "nfb": 64,
+      "side": 0,
+      "summed_original_partial_phase_counters": {
+        "add": 3002652,
+        "cmp": 0,
+        "hash": 18030,
+        "inv": 30014,
+        "ladd": 619784,
+        "lmul": 637900,
+        "mul": 3782831
+      },
+      "summed_reported_phase_wall_seconds_diagnostic_only": 0.16578099,
+      "verified_successes": 5
+    },
+    {
+      "all_attempts": 5,
+      "all_failure_reasons": [
+        "recovered k does not satisfy kG = Q",
+        "recovered k does not satisfy kG = Q",
+        "recovered k does not satisfy kG = Q",
+        "recovered k does not satisfy kG = Q",
+        "recovered k does not satisfy kG = Q"
+      ],
+      "cost_scope": "all five attempts including failures; partial IC/Picard counters and uncalibrated raw phase walls, not complete pipeline cost or price",
+      "failed_attempts": 5,
+      "nfb": 30,
+      "side": 1,
+      "summed_original_partial_phase_counters": {
+        "add": 4503311,
+        "cmp": 0,
+        "hash": 4276,
+        "inv": 45618,
+        "ladd": 102733,
+        "lmul": 99520,
+        "mul": 4466650
+      },
+      "summed_reported_phase_wall_seconds_diagnostic_only": 0.17915295899999995,
+      "verified_successes": 0
+    },
+    {
+      "all_attempts": 5,
+      "all_failure_reasons": [],
+      "cost_scope": "all five attempts including failures; partial IC/Picard counters and uncalibrated raw phase walls, not complete pipeline cost or price",
+      "failed_attempts": 0,
+      "nfb": 36,
+      "side": 1,
+      "summed_original_partial_phase_counters": {
+        "add": 2537777,
+        "cmp": 0,
+        "hash": 5863,
+        "inv": 24367,
+        "ladd": 350158,
+        "lmul": 352455,
+        "mul": 2699816
+      },
+      "summed_reported_phase_wall_seconds_diagnostic_only": 0.159223907,
+      "verified_successes": 5
+    },
+    {
+      "all_attempts": 5,
+      "all_failure_reasons": [],
+      "cost_scope": "all five attempts including failures; partial IC/Picard counters and uncalibrated raw phase walls, not complete pipeline cost or price",
+      "failed_attempts": 0,
+      "nfb": 48,
+      "side": 1,
+      "summed_original_partial_phase_counters": {
+        "add": 2307463,
+        "cmp": 0,
+        "hash": 10060,
+        "inv": 22305,
+        "ladd": 503093,
+        "lmul": 503455,
+        "mul": 2709382
+      },
+      "summed_reported_phase_wall_seconds_diagnostic_only": 0.17058272600000002,
+      "verified_successes": 5
+    },
+    {
+      "all_attempts": 5,
+      "all_failure_reasons": [],
+      "cost_scope": "all five attempts including failures; partial IC/Picard counters and uncalibrated raw phase walls, not complete pipeline cost or price",
+      "failed_attempts": 0,
+      "nfb": 64,
+      "side": 1,
+      "summed_original_partial_phase_counters": {
+        "add": 2575551,
+        "cmp": 0,
+        "hash": 17360,
+        "inv": 25084,
+        "ladd": 672522,
+        "lmul": 688015,
+        "mul": 3377279
+      },
+      "summed_reported_phase_wall_seconds_diagnostic_only": 0.17721476999999994,
+      "verified_successes": 5
+    },
+    {
+      "all_attempts": 5,
+      "all_failure_reasons": [
+        "recovered k does not satisfy kG = Q",
+        "recovered k does not satisfy kG = Q",
+        "recovered k does not satisfy kG = Q",
+        "recovered k does not satisfy kG = Q",
+        "recovered k does not satisfy kG = Q"
+      ],
+      "cost_scope": "all five attempts including failures; partial IC/Picard counters and uncalibrated raw phase walls, not complete pipeline cost or price",
+      "failed_attempts": 5,
+      "nfb": 30,
+      "side": 2,
+      "summed_original_partial_phase_counters": {
+        "add": 3591804,
+        "cmp": 0,
+        "hash": 4275,
+        "inv": 33216,
+        "ladd": 89505,
+        "lmul": 87255,
+        "mul": 3590312
+      },
+      "summed_reported_phase_wall_seconds_diagnostic_only": 0.166990799,
+      "verified_successes": 0
+    },
+    {
+      "all_attempts": 5,
+      "all_failure_reasons": [],
+      "cost_scope": "all five attempts including failures; partial IC/Picard counters and uncalibrated raw phase walls, not complete pipeline cost or price",
+      "failed_attempts": 0,
+      "nfb": 36,
+      "side": 2,
+      "summed_original_partial_phase_counters": {
+        "add": 2278503,
+        "cmp": 0,
+        "hash": 6135,
+        "inv": 21166,
+        "ladd": 339571,
+        "lmul": 341750,
+        "mul": 2449343
+      },
+      "summed_reported_phase_wall_seconds_diagnostic_only": 0.17271479399999998,
+      "verified_successes": 5
+    },
+    {
+      "all_attempts": 5,
+      "all_failure_reasons": [],
+      "cost_scope": "all five attempts including failures; partial IC/Picard counters and uncalibrated raw phase walls, not complete pipeline cost or price",
+      "failed_attempts": 0,
+      "nfb": 48,
+      "side": 2,
+      "summed_original_partial_phase_counters": {
+        "add": 2790748,
+        "cmp": 0,
+        "hash": 9980,
+        "inv": 25226,
+        "ladd": 507128,
+        "lmul": 508160,
+        "mul": 3159367
+      },
+      "summed_reported_phase_wall_seconds_diagnostic_only": 0.16372352199999995,
+      "verified_successes": 5
+    },
+    {
+      "all_attempts": 5,
+      "all_failure_reasons": [],
+      "cost_scope": "all five attempts including failures; partial IC/Picard counters and uncalibrated raw phase walls, not complete pipeline cost or price",
+      "failed_attempts": 0,
+      "nfb": 64,
+      "side": 2,
+      "summed_original_partial_phase_counters": {
+        "add": 2665174,
+        "cmp": 0,
+        "hash": 17655,
+        "inv": 24920,
+        "ladd": 625304,
+        "lmul": 642395,
+        "mul": 3453304
+      },
+      "summed_reported_phase_wall_seconds_diagnostic_only": 0.165729557,
+      "verified_successes": 5
+    }
+  ],
+  "all15_public_case_summaries": [
+    {
+      "all_four_attempts_retained": true,
+      "public_index": 0,
+      "side": 0,
+      "successful_attempts": 3
+    },
+    {
+      "all_four_attempts_retained": true,
+      "public_index": 1,
+      "side": 0,
+      "successful_attempts": 3
+    },
+    {
+      "all_four_attempts_retained": true,
+      "public_index": 2,
+      "side": 0,
+      "successful_attempts": 3
+    },
+    {
+      "all_four_attempts_retained": true,
+      "public_index": 3,
+      "side": 0,
+      "successful_attempts": 3
+    },
+    {
+      "all_four_attempts_retained": true,
+      "public_index": 4,
+      "side": 0,
+      "successful_attempts": 3
+    },
+    {
+      "all_four_attempts_retained": true,
+      "public_index": 0,
+      "side": 1,
+      "successful_attempts": 3
+    },
+    {
+      "all_four_attempts_retained": true,
+      "public_index": 1,
+      "side": 1,
+      "successful_attempts": 3
+    },
+    {
+      "all_four_attempts_retained": true,
+      "public_index": 2,
+      "side": 1,
+      "successful_attempts": 3
+    },
+    {
+      "all_four_attempts_retained": true,
+      "public_index": 3,
+      "side": 1,
+      "successful_attempts": 3
+    },
+    {
+      "all_four_attempts_retained": true,
+      "public_index": 4,
+      "side": 1,
+      "successful_attempts": 3
+    },
+    {
+      "all_four_attempts_retained": true,
+      "public_index": 0,
+      "side": 2,
+      "successful_attempts": 3
+    },
+    {
+      "all_four_attempts_retained": true,
+      "public_index": 1,
+      "side": 2,
+      "successful_attempts": 3
+    },
+    {
+      "all_four_attempts_retained": true,
+      "public_index": 2,
+      "side": 2,
+      "successful_attempts": 3
+    },
+    {
+      "all_four_attempts_retained": true,
+      "public_index": 3,
+      "side": 2,
+      "successful_attempts": 3
+    },
+    {
+      "all_four_attempts_retained": true,
+      "public_index": 4,
+      "side": 2,
+      "successful_attempts": 3
+    }
+  ],
+  "all_attempts": 60,
+  "complete_primitive_setup_source_admission_independent_verification_and_matched_reference_costs": "unknown; no admitted calibrated ratio or ECDLP advantage",
+  "every_record_kind_count": {
+    "N4_FOURTH_KERNEL_GATE": 2,
+    "N4_NEXT13_KERNEL_GATE": 4,
+    "N4_NONDUAL13_KERNEL_GATE": 4,
+    "N4_ORIGINAL_MODEL_IC_ATTEMPT": 60,
+    "N4_ORIGINAL_MODEL_IC_CASE": 15,
+    "N4_ORIGINAL_MODEL_IC_INPUT": 3,
+    "N4_ORIGINAL_MODEL_IC_REJECTIONS": 3,
+    "N4_ORIGINAL_MODEL_IC_SCOPE": 1,
+    "N4_ORIGINAL_MODEL_IC_SETUP": 1,
+    "N4_ORIGINAL_MODEL_IC_TARGET": 3,
+    "N4_TWIST_GENERATOR_ATTEMPTS": 2,
+    "N4_TWIST_ORDER_CANDIDATE": 2
+  },
+  "failed_attempts": 15,
+  "scope": "Rust-only exact complete-record aggregation; no field arithmetic in the orchestration and no scientific raw record removed",
+  "verified_successful_attempts": 45,
+  "whole_record_count": 100
+}

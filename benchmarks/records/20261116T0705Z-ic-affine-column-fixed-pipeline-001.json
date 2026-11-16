@@ -1,0 +1,155 @@
+{
+  "branch": "codex/ic-trial32-20261115",
+  "closed_utc": "2026-11-16T07:08:32+00:00",
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "cloud/modal_run.py",
+        "run",
+        "--image",
+        "cuda",
+        "--gpu",
+        "L4",
+        "--cpu",
+        "4",
+        "--memory",
+        "8",
+        "--timeout",
+        "900",
+        "--out",
+        "experiments/ic-affine-columns-20261115/timing-001",
+        "--detach",
+        "--",
+        "python3",
+        "experiments/ic-affine-columns-20261115/run_prepared.py"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "started_utc": "2026-11-16T07:05:58+00:00",
+      "wall_s": 13.138
+    }
+  ],
+  "commit": "49610cbe2c73b96ecf377731dccdbf0b0b3d001d",
+  "commit_dirty": false,
+  "created_utc": "2026-11-16T07:05:48+00:00",
+  "curve_uid": null,
+  "entries": [
+    "experiments/ic-affine-columns-20261115"
+  ],
+  "host": {
+    "cpu": "arm",
+    "cpus_online": 14,
+    "hostname": "Mac.attlocal.net",
+    "isolation": "unstated",
+    "platform": "macOS-27.2-arm64-arm-64bit-Mach-O"
+  },
+  "id": "20261116T0705Z-ic-affine-column-fixed-pipeline-001",
+  "metrics": [
+    {
+      "baseline": 1.0,
+      "better": "higher",
+      "n": 6,
+      "name": "n15_column_cold_mitm_ratio",
+      "note": "Raw same-target paired cold ratio; unqualified gVisor, one N15 A/A failure retained",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ratio",
+      "value": 0.8234978658578644
+    },
+    {
+      "baseline": 1.0,
+      "better": "higher",
+      "n": 6,
+      "name": "n18_column_cold_mitm_ratio",
+      "note": "Raw same-target paired cold ratio; unqualified gVisor, qualified null",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ratio",
+      "value": 1.1612570869021153
+    }
+  ],
+  "problem": "ecdlp:binary_ic_affine_fixed_instances",
+  "raw": [
+    {
+      "bytes": 1266047,
+      "path": "experiments/ic-affine-columns-20261115/timing-001/arms.jsonl",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/75/759c84a65623c7d6910f6e4b434eba30f0d6ac9690aa967b7a775b49bb46760a",
+      "sha256": "759c84a65623c7d6910f6e4b434eba30f0d6ac9690aa967b7a775b49bb46760a",
+      "uploaded": true
+    },
+    {
+      "bytes": 31416,
+      "path": "experiments/ic-affine-columns-20261115/timing-001/host.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/f9/f97e1ad4270b8c7c340f37fe730738c442a3dd4c02c4552d4feef7df92def2a9",
+      "sha256": "f97e1ad4270b8c7c340f37fe730738c442a3dd4c02c4552d4feef7df92def2a9",
+      "uploaded": true
+    },
+    {
+      "bytes": 2450,
+      "path": "experiments/ic-affine-columns-20261115/timing-001/preparation-receipt.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/1a/1a367addbcf235ae69aefee0bcdcf0446c31cf43a716c46ceadb599189f55e7a",
+      "sha256": "1a367addbcf235ae69aefee0bcdcf0446c31cf43a716c46ceadb599189f55e7a",
+      "uploaded": true
+    },
+    {
+      "bytes": 2227424,
+      "path": "experiments/ic-affine-columns-20261115/timing-001/probe",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/ca/ca243e53e20b06dc880af0d7b8139d9a2af8de752de834d89f895ea11cd4f306",
+      "sha256": "ca243e53e20b06dc880af0d7b8139d9a2af8de752de834d89f895ea11cd4f306",
+      "uploaded": true
+    },
+    {
+      "bytes": 192336,
+      "path": "experiments/ic-affine-columns-20261115/timing-001/references.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/a6/a6cd1d8759b9c6dd84a5c1900d19877886e29ab8d6a51ecdba3f5b9b15ec476d",
+      "sha256": "a6cd1d8759b9c6dd84a5c1900d19877886e29ab8d6a51ecdba3f5b9b15ec476d",
+      "uploaded": true
+    },
+    {
+      "bytes": 105,
+      "path": "experiments/ic-affine-columns-20261115/timing-001/summary.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/ef/ef56ef9ee3b527af42ca71556c0c203db9fe67bd8f8a37d79195929d96553d0e",
+      "sha256": "ef56ef9ee3b527af42ca71556c0c203db9fe67bd8f8a37d79195929d96553d0e",
+      "uploaded": true
+    },
+    {
+      "bytes": 1284880,
+      "path": "experiments/ic-affine-columns-20261115/timing-001/triples.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/ee/eeae5b33bea579d592076da18d832577a321ad6667390ff74b3f91660d74aab3",
+      "sha256": "eeae5b33bea579d592076da18d832577a321ad6667390ff74b3f91660d74aab3",
+      "uploaded": true
+    },
+    {
+      "bytes": 82697,
+      "path": "experiments/ic-affine-columns-20261115/analysis.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/ad/adc3797d50dd567e11de6701c07c9a96aee44a93689c57ccd6a196164df7e965",
+      "sha256": "adc3797d50dd567e11de6701c07c9a96aee44a93689c57ccd6a196164df7e965",
+      "uploaded": true
+    },
+    {
+      "bytes": 11582,
+      "path": "experiments/ic-affine-columns-20261115/independent-arithmetic-timing001.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/16/169c54a67e97ce4422ef70742dd3e2ae73fce31cc3e31aa19230a53f41f2c613",
+      "sha256": "169c54a67e97ce4422ef70742dd3e2ae73fce31cc3e31aa19230a53f41f2c613",
+      "uploaded": true
+    }
+  ],
+  "repo": "cryptanalysis",
+  "reports": {
+    "pdf": "experiments/ic-affine-columns-20261115/REPORT.pdf",
+    "png": [],
+    "svg": [
+      "experiments/ic-affine-columns-20261115/cold-costs.svg",
+      "experiments/ic-affine-columns-20261115/flow.svg"
+    ]
+  },
+  "schema": "bench.record/v1",
+  "session": null,
+  "slug": "ic-affine-column-fixed-pipeline-001",
+  "status": "invalid",
+  "summary": "Complete12 triples;36 IC and24 same-target rho answers replayed. Row/column non-timing counters match. Raw MITM/column cold ratios0.823498 N15 and1.161257 N18; one N15 A/A failure. Unqualified gVisor, null qualified metrics; no promotion.",
+  "validation": "experiments/ic-affine-columns-20261115/analysis.json"
+}

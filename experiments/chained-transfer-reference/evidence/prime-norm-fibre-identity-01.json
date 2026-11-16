@@ -1,0 +1,327 @@
+{
+  "schema": "identity.certificate/v1",
+  "id": "IDC1h72eac926f7b6d166",
+  "statement": {
+    "name": "Completed quartic fibre cleared source relation",
+    "source": "PRIME_NORM_PULLBACK_DERIVATION.md;Galbraith8.3.8;Lean PrimeNormPullback.cleared_fibre_factorization",
+    "variables": [
+      "n",
+      "q",
+      "X",
+      "a",
+      "b"
+    ],
+    "degree_bound": 9,
+    "lhs": {
+      "op": "add",
+      "args": [
+        {
+          "op": "mul",
+          "args": [
+            {
+              "op": "var",
+              "args": "n"
+            },
+            {
+              "op": "var",
+              "args": "n"
+            },
+            {
+              "op": "var",
+              "args": "n"
+            }
+          ]
+        },
+        {
+          "op": "mul",
+          "args": [
+            {
+              "op": "var",
+              "args": "a"
+            },
+            {
+              "op": "var",
+              "args": "n"
+            },
+            {
+              "op": "mul",
+              "args": [
+                {
+                  "op": "var",
+                  "args": "q"
+                },
+                {
+                  "op": "var",
+                  "args": "q"
+                },
+                {
+                  "op": "var",
+                  "args": "q"
+                },
+                {
+                  "op": "var",
+                  "args": "q"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "op": "mul",
+          "args": [
+            {
+              "op": "var",
+              "args": "b"
+            },
+            {
+              "op": "mul",
+              "args": [
+                {
+                  "op": "var",
+                  "args": "q"
+                },
+                {
+                  "op": "var",
+                  "args": "q"
+                },
+                {
+                  "op": "var",
+                  "args": "q"
+                },
+                {
+                  "op": "var",
+                  "args": "q"
+                },
+                {
+                  "op": "var",
+                  "args": "q"
+                },
+                {
+                  "op": "var",
+                  "args": "q"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "op": "neg",
+          "args": {
+            "op": "mul",
+            "args": [
+              {
+                "op": "add",
+                "args": [
+                  {
+                    "op": "mul",
+                    "args": [
+                      {
+                        "op": "var",
+                        "args": "X"
+                      },
+                      {
+                        "op": "var",
+                        "args": "X"
+                      },
+                      {
+                        "op": "var",
+                        "args": "X"
+                      }
+                    ]
+                  },
+                  {
+                    "op": "mul",
+                    "args": [
+                      {
+                        "op": "var",
+                        "args": "a"
+                      },
+                      {
+                        "op": "var",
+                        "args": "X"
+                      }
+                    ]
+                  },
+                  {
+                    "op": "var",
+                    "args": "b"
+                  }
+                ]
+              },
+              {
+                "op": "mul",
+                "args": [
+                  {
+                    "op": "var",
+                    "args": "q"
+                  },
+                  {
+                    "op": "var",
+                    "args": "q"
+                  },
+                  {
+                    "op": "var",
+                    "args": "q"
+                  },
+                  {
+                    "op": "var",
+                    "args": "q"
+                  },
+                  {
+                    "op": "var",
+                    "args": "q"
+                  },
+                  {
+                    "op": "var",
+                    "args": "q"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "rhs": {
+      "op": "mul",
+      "args": [
+        {
+          "op": "add",
+          "args": [
+            {
+              "op": "var",
+              "args": "n"
+            },
+            {
+              "op": "neg",
+              "args": {
+                "op": "mul",
+                "args": [
+                  {
+                    "op": "var",
+                    "args": "X"
+                  },
+                  {
+                    "op": "mul",
+                    "args": [
+                      {
+                        "op": "var",
+                        "args": "q"
+                      },
+                      {
+                        "op": "var",
+                        "args": "q"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "op": "add",
+          "args": [
+            {
+              "op": "mul",
+              "args": [
+                {
+                  "op": "var",
+                  "args": "n"
+                },
+                {
+                  "op": "var",
+                  "args": "n"
+                }
+              ]
+            },
+            {
+              "op": "mul",
+              "args": [
+                {
+                  "op": "var",
+                  "args": "X"
+                },
+                {
+                  "op": "var",
+                  "args": "n"
+                },
+                {
+                  "op": "mul",
+                  "args": [
+                    {
+                      "op": "var",
+                      "args": "q"
+                    },
+                    {
+                      "op": "var",
+                      "args": "q"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "op": "mul",
+              "args": [
+                {
+                  "op": "add",
+                  "args": [
+                    {
+                      "op": "mul",
+                      "args": [
+                        {
+                          "op": "var",
+                          "args": "X"
+                        },
+                        {
+                          "op": "var",
+                          "args": "X"
+                        }
+                      ]
+                    },
+                    {
+                      "op": "var",
+                      "args": "a"
+                    }
+                  ]
+                },
+                {
+                  "op": "mul",
+                  "args": [
+                    {
+                      "op": "var",
+                      "args": "q"
+                    },
+                    {
+                      "op": "var",
+                      "args": "q"
+                    },
+                    {
+                      "op": "var",
+                      "args": "q"
+                    },
+                    {
+                      "op": "var",
+                      "args": "q"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "modulus": 2305843009213693951,
+  "points": 32,
+  "seed": 21313,
+  "value_digest": "72956ddcfb1634d1304c5c910759d292c2c6dd30051c6ddc3585148c8cb6ac4c",
+  "independence": "Existing unchanged issuer/checker;32+64domain-separated points;unsigned universal identity only",
+  "proof": {
+    "kind": "lean4 pointer;separate gate required",
+    "path": "experiments/chained-transfer-reference/norm-checker/lean/PullbackFibres.lean",
+    "sha256": "895c78421770f6aab6a97533d6ec28cc5a2cf4a977cd2de965eeb8262de8d273"
+  }
+}
