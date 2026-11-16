@@ -1,0 +1,18 @@
+{
+  "schema": "xedni-adaptive-inverse-lift-protocol-v1",
+  "question": "Can a public-pair-dependent rational curve force a rational relation on every reduced inverse-pair event, and what public test identifies that event?",
+  "input_selection_result_sha256": "b18127c392b904559ac12512642ab0322eaa3b9b72a61f45dacf4a2fb8c9a25c",
+  "parent_finite_group_source_sha256": "f053f8cfc20e35b253caaa05fa89665318e1c47af587beec69347c6e28026284",
+  "fields": "all eight selected fields in input order",
+  "base_curve_coefficients": [0, 0, 0, -1, -2],
+  "generator": "m times reduction of rational P=(2,2), where m=ord(P mod p)/q",
+  "target": "Q=17G; fixture scalar used for replay after any relation",
+  "query_law": "complete lexicographic ordered (t1,t2) in [0,q)^2; R_i=Q-t_i G",
+  "admission": "both reduced points nonidentity and distinct",
+  "public_test": "one reduced-group addition R1+R2 per admissible query",
+  "adaptive_curve": "on a public inverse-pair hit, center x,y of R1; take E_Q: Y^2=X^3-X+B with B=y^2-x^3+x; lift R1=(x,y), R2=(x,-y)",
+  "curve_construction": "one integer B and exact nonsingularity and reduction check per reduced hit",
+  "relation_vector": [1, 1],
+  "raw_rows": "deterministic gzip JSONL shards by field and blocks of 32 t1 values; every query status retained",
+  "claim_boundary": "adaptive rational relation construction on the already-public inverse-pair event; no generic success, wall-time, or IC speedup claim"
+}
