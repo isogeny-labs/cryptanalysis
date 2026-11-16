@@ -1,4 +1,7 @@
-import Mathlib
+import Mathlib.Algebra.BigOperators.Ring.Finset
+import Mathlib.Algebra.CharP.Two
+import Mathlib.Tactic.Ring
+import Mathlib.Tactic.LinearCombination
 
 /- Algebraic coefficient identity only. This does not verify Rust memory,
 word arithmetic, canonical-order emission or the full IC pipeline. -/
