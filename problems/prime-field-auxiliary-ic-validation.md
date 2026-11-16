@@ -58,6 +58,17 @@ protocol exist. No such run is launched by this import PR.
 
 ## Resolution and history
 
+2026-11-16, explicit benchmark request: admission was attempted on source
+`55170020`. The checkpoint gate exits 1 without uploading because no token
+or AWS transport is configured. Fleet status reports the Runpod key missing;
+no Modal/SSH runner configuration was found, and repository-secret listing
+returns HTTP 403. No benchmark process, GPU allocation or fresh panel was
+started. The [request preflight and raw failure](../experiments/prime-field-auxiliary-ic/random-vs-special/benchmark-request-20261116/README.md),
+claim `PCC-20261116-004130` (unverified), retain this attempt. Access is needed,
+and exclusive phase accounting and panel admission remain separate unfinished
+requirements. No timing result is inferred from CI or the toy controls.
+[pcc:unverified]
+
 2026-11-16, report-alignment follow-up: source `3ddc3238` adds actual-column
 identities and an offline checker for matching scalar relation-yield reports.
 The [source-scoped development controls](../experiments/prime-field-auxiliary-ic/random-vs-special/README.md)
