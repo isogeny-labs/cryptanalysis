@@ -419,6 +419,36 @@ impl FastCurve {
         }
     }
 
+    /// Full point sums with one shared inverse and opt-in four-lane formulas.
+    /// Appends exactly one point per pair and returns the number executed by
+    /// the vector kernel. Unsupported hosts/fields retain ordinary batching.
+    pub fn add_pairwise_vector(
+        &self,
+        ps: &[FastPoint],
+        qs: &[FastPoint],
+        out: &mut Vec<FastPoint>,
+        scratch: &mut BatchScratch,
+    ) -> usize {
+        assert_eq!(ps.len(), qs.len(), "pairwise addition needs equal slices");
+        #[cfg(all(target_arch = "x86_64", suite_avx512))]
+        if let Some(kernel) = simd256::Simd256::new(&self.field) {
+            scratch.dens.clear();
+            scratch.dens.extend(ps.iter().zip(qs).map(|(p, q)| {
+                if p.infinity || q.infinity || p.x == q.x {
+                    0
+                } else {
+                    p.x ^ q.x
+                }
+            }));
+            self.field.batch_inv(&mut scratch.dens, &mut scratch.acc);
+            // SAFETY: the constructor checks AVX2/PCLMUL, and the helper
+            // dispatches VPCLMUL only when independently detected.
+            return unsafe { kernel.add_full(self, ps, qs, &scratch.dens, out, false) };
+        }
+        self.add_pairwise(ps, qs, out, scratch);
+        0
+    }
+
     /// Abscissae of `P_i + Q_i`, with one batch inversion. `None` is O.
     /// Ordinary sums never compute an ordinate; exceptional pairs use the
     /// exact existing addition. The caller must not treat an abscissa as a
@@ -1140,6 +1170,69 @@ mod simd256 {
     use crate::cryptanalysis::semaev_decomp::Gf2;
     use std::arch::x86_64::*;
 
+    // Separate target-feature functions keep feature dispatch out of the
+    // arithmetic loop and let LLVM inline the selected product/reduction path.
+    macro_rules! full_point_kernel {
+        ($name:ident, $multiply:ident, $features:literal) => {
+            #[target_feature(enable = $features)]
+            unsafe fn $name(
+                &self,
+                curve: &FastCurve,
+                ps: &[FastPoint],
+                qs: &[FastPoint],
+                inverses: &[u64],
+                out: &mut Vec<FastPoint>,
+            ) -> usize {
+                let full = ps.len() / 4 * 4;
+                let mut vector_pairs = 0;
+                out.reserve(ps.len());
+                for ((pc, qc), ic) in ps[..full]
+                    .chunks_exact(4)
+                    .zip(qs[..full].chunks_exact(4))
+                    .zip(inverses[..full].chunks_exact(4))
+                {
+                    let mut coordinates = 0;
+                    let mut exceptional = false;
+                    for i in 0..4 {
+                        coordinates |= pc[i].x | pc[i].y | qc[i].x | qc[i].y;
+                        exceptional |= pc[i].infinity || qc[i].infinity || ic[i] == 0;
+                    }
+                    if exceptional || coordinates & !self.mask != 0 {
+                        Self::append_full_scalar(curve, pc, qc, ic, out);
+                        continue;
+                    }
+                    let px: [u64; 4] = std::array::from_fn(|i| pc[i].x);
+                    let py: [u64; 4] = std::array::from_fn(|i| pc[i].y);
+                    let numerator: [u64; 4] = std::array::from_fn(|i| pc[i].y ^ qc[i].y);
+                    let offset: [u64; 4] = std::array::from_fn(|i| pc[i].x ^ qc[i].x ^ curve.a);
+                    let lambda = self.$multiply(
+                        _mm256_loadu_si256(numerator.as_ptr().cast()),
+                        _mm256_loadu_si256(ic.as_ptr().cast()),
+                    );
+                    let x = _mm256_xor_si256(
+                        _mm256_xor_si256(self.$multiply(lambda, lambda), lambda),
+                        _mm256_loadu_si256(offset.as_ptr().cast()),
+                    );
+                    let y = _mm256_xor_si256(
+                        self.$multiply(
+                            lambda,
+                            _mm256_xor_si256(_mm256_loadu_si256(px.as_ptr().cast()), x),
+                        ),
+                        _mm256_xor_si256(x, _mm256_loadu_si256(py.as_ptr().cast())),
+                    );
+                    let mut xs = [0u64; 4];
+                    let mut ys = [0u64; 4];
+                    _mm256_storeu_si256(xs.as_mut_ptr().cast(), x);
+                    _mm256_storeu_si256(ys.as_mut_ptr().cast(), y);
+                    out.extend(xs.into_iter().zip(ys).map(|(x, y)| FastPoint::affine(x, y)));
+                    vector_pairs += 4;
+                }
+                Self::append_full_scalar(curve, &ps[full..], &qs[full..], &inverses[full..], out);
+                vector_pairs
+            }
+        };
+    }
+
     pub(super) struct Simd256 {
         n: u32,
         mask: u64,
@@ -1287,6 +1380,43 @@ mod simd256 {
             }
             out
         }
+
+        fn append_full_scalar(
+            curve: &FastCurve,
+            ps: &[FastPoint],
+            qs: &[FastPoint],
+            inverses: &[u64],
+            out: &mut Vec<FastPoint>,
+        ) {
+            for ((&p, &q), &inverse) in ps.iter().zip(qs).zip(inverses) {
+                out.push(if inverse == 0 {
+                    curve.add(p, q)
+                } else {
+                    curve.add_with_lambda(p, q, curve.field.mul(p.y ^ q.y, inverse))
+                });
+            }
+        }
+
+        pub(super) unsafe fn add_full(
+            &self,
+            curve: &FastCurve,
+            ps: &[FastPoint],
+            qs: &[FastPoint],
+            inverses: &[u64],
+            out: &mut Vec<FastPoint>,
+            force_pclmul128: bool,
+        ) -> usize {
+            assert_eq!(ps.len(), qs.len());
+            assert_eq!(ps.len(), inverses.len());
+            if self.use_vpclmul && !force_pclmul128 {
+                self.add_full_wide(curve, ps, qs, inverses, out)
+            } else {
+                self.add_full_narrow(curve, ps, qs, inverses, out)
+            }
+        }
+
+        full_point_kernel!(add_full_wide, mul_vpclmul, "avx2,vpclmulqdq");
+        full_point_kernel!(add_full_narrow, mul_pclmul128, "avx2,pclmulqdq");
 
         pub(super) fn backend(&self) -> &'static str {
             if self.use_vpclmul {
@@ -2284,6 +2414,111 @@ mod tests {
                 assert_eq!(*sum, fc.add(p, *q));
             }
         }
+    }
+
+    #[test]
+    fn vector_full_points_match_scalar_and_batched_with_exceptions() {
+        for n in [7, 13, 19, 23, 31, 53, 61] {
+            let kc = KoblitzCurve::new(0, n).unwrap();
+            let curve = FastCurve::new(&kc.curve).unwrap();
+            let mut points: Vec<_> = random_points(&kc, 12, 63)
+                .iter()
+                .map(|p| curve.lift(p))
+                .collect();
+            points.extend([FastPoint::INFINITY, FastPoint::affine(0, 1)]);
+            let mut ps = Vec::new();
+            let mut qs = Vec::new();
+            for &p in &points {
+                for &q in &points {
+                    ps.push(p);
+                    qs.push(q);
+                }
+                for q in [p, curve.neg(p)] {
+                    ps.push(p);
+                    qs.push(q);
+                }
+            }
+            let expected: Vec<_> = ps.iter().zip(&qs).map(|(&p, &q)| curve.add(p, q)).collect();
+            let mut scratch = BatchScratch::default();
+            for len in [0, 1, 3, 4, 7, 15, 16, 17, ps.len()] {
+                let mut ordinary = vec![FastPoint::INFINITY];
+                curve.add_pairwise(&ps[..len], &qs[..len], &mut ordinary, &mut scratch);
+                let mut vector = vec![FastPoint::INFINITY];
+                let count =
+                    curve.add_pairwise_vector(&ps[..len], &qs[..len], &mut vector, &mut scratch);
+                assert_eq!(vector, ordinary, "batch n={n} len={len}");
+                assert_eq!(&vector[1..], &expected[..len], "scalar n={n} len={len}");
+                assert!(count <= len && count.is_multiple_of(4));
+                if len == ps.len() && curve.cached_vector_backend() != "scalar" {
+                    assert!(count > 0, "vector path n={n}");
+                }
+            }
+        }
+    }
+
+    #[cfg(all(target_arch = "x86_64", suite_avx512))]
+    #[test]
+    fn vector_full_formulas_cover_supported_widths_and_forced_pclmul() {
+        if !(is_x86_feature_detected!("avx2") && is_x86_feature_detected!("pclmulqdq")) {
+            eprintln!("skipped: no AVX2 + PCLMUL");
+            return;
+        }
+        let mut rng = StdRng::seed_from_u64(0xF011_CA5E);
+        let mut accepted = 0;
+        for n in 2..=FastCurve::MAX_DEGREE {
+            let field = nb_field(n);
+            let Some(kernel) = simd256::Simd256::new(&field) else {
+                continue;
+            };
+            accepted += 1;
+            let curve = FastCurve {
+                n,
+                a: 1,
+                b: 1,
+                field,
+                simd: None,
+            };
+            let mut ps: Vec<_> = (0..37)
+                .map(|_| {
+                    FastPoint::affine(
+                        rng.gen::<u64>() & curve.field.mask,
+                        rng.gen::<u64>() & curve.field.mask,
+                    )
+                })
+                .collect();
+            let mut qs: Vec<_> = (0..37)
+                .map(|_| {
+                    FastPoint::affine(
+                        rng.gen::<u64>() & curve.field.mask,
+                        rng.gen::<u64>() & curve.field.mask,
+                    )
+                })
+                .collect();
+            // Formula coverage uses canonical coordinates (not a curve census);
+            // the companion test uses actual curve points and both infinities.
+            ps[0] = FastPoint::INFINITY;
+            qs[1] = FastPoint::INFINITY;
+            qs[2] = ps[2];
+            qs[3] = curve.neg(ps[3]);
+            // Guarantee a normal block even in the smallest accepted field.
+            for i in 4..8 {
+                qs[i].x = ps[i].x ^ 1;
+            }
+            let expected: Vec<_> = ps.iter().zip(&qs).map(|(&p, &q)| curve.add(p, q)).collect();
+            let mut scratch = BatchScratch::default();
+            let mut vector = Vec::new();
+            let count = curve.add_pairwise_vector(&ps, &qs, &mut vector, &mut scratch);
+            assert_eq!(vector, expected, "selected vector n={n}");
+            let mut narrow = Vec::new();
+            // SAFETY: kernel construction checks AVX2/PCLMUL support.
+            let narrow_count =
+                unsafe { kernel.add_full(&curve, &ps, &qs, &scratch.dens, &mut narrow, true) };
+            assert_eq!(narrow, expected, "forced ordinary PCLMUL n={n}");
+            assert_eq!(count, narrow_count);
+            assert!(count > 0, "normal vector pairs n={n}");
+        }
+        assert!(accepted >= 50);
+        eprintln!("AVX2 full-point vector formulas accepted {accepted} field widths");
     }
 
     #[test]

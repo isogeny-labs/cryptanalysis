@@ -475,6 +475,8 @@ pub enum Targets {
     WalkBatch,
     /// Same sixteen-state schedule using scalar additions, for comparison.
     WalkBatchScalar,
+    /// Identical schedule with vector full-point formulas after batch inversion.
+    WalkBatchVector,
 }
 
 impl Targets {
@@ -484,6 +486,7 @@ impl Targets {
             Targets::Walk => "walk",
             Targets::WalkBatch => "walk-batch16",
             Targets::WalkBatchScalar => "walk-batch16-scalar",
+            Targets::WalkBatchVector => "walk-batch16-vector",
         }
     }
 
@@ -493,8 +496,9 @@ impl Targets {
             "walk" => Ok(Targets::Walk),
             "walk-batch16" => Ok(Targets::WalkBatch),
             "walk-batch16-scalar" => Ok(Targets::WalkBatchScalar),
+            "walk-batch16-vector" => Ok(Targets::WalkBatchVector),
             other => Err(format!(
-                "unknown target source `{other}`; try random, walk, walk-batch16 or walk-batch16-scalar"
+                "unknown target source `{other}`; try random, walk, walk-batch16, walk-batch16-scalar or walk-batch16-vector"
             )),
         }
     }

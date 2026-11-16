@@ -504,4 +504,88 @@ mod tests {
         );
         assert!(native.collector_wall_seconds > 0.0);
     }
+
+    #[test]
+    fn batched_walk_vector_matches_ordinary_batch_schedule() {
+        let inst = random_binary_instance(11, 3, 8).unwrap();
+        let group = BinaryGroup(&inst.fast);
+        let planted = 1 + 30_011 % (inst.r - 1);
+        let target = group.mul(&mut GroupOps::default(), inst.generator, planted);
+        let ctx = InstanceCtx {
+            group: &group,
+            generator: inst.generator,
+            target,
+            r: inst.r,
+            cofactor: inst.cofactor,
+            group_order: inst.group_order,
+            name: inst.name.clone(),
+            field_degree: Some(inst.n),
+        };
+        let mut spec = PipelineSpec {
+            factor_base: "binary-subspace".into(),
+            oracle: "mitm-batched".into(),
+            targets: Targets::WalkBatch,
+            seed: 7,
+            max_trials: 200_000,
+            ..Default::default()
+        };
+        spec.factor_base_params.set("dimension", "5");
+        spec.oracle_params.set("vector_prepare", "1");
+        let calibration = Calibration {
+            ns_per_add: 1.0,
+            ..Default::default()
+        };
+        let mut run = |source| {
+            spec.targets = source;
+            run_pipeline(
+                &ctx,
+                &spec,
+                &BinarySubspaceBase { instance: &inst },
+                &mut BinaryBatchMitmOracle::default(),
+                planted,
+                &calibration,
+                None,
+            )
+            .unwrap()
+        };
+        let ordinary = run(Targets::WalkBatch);
+        let vector = run(Targets::WalkBatchVector);
+        assert!(ordinary.verified && vector.verified);
+        assert_eq!(ordinary.recovered, vector.recovered);
+        assert_eq!(
+            ordinary.decomposition.targets_tried,
+            vector.decomposition.targets_tried
+        );
+        assert_eq!(
+            ordinary.decomposition.relations_found,
+            vector.decomposition.relations_found
+        );
+        assert_eq!(ordinary.linear_algebra.rank, vector.linear_algebra.rank);
+        assert_eq!(ordinary.linear_algebra.rows, vector.linear_algebra.rows);
+        assert_eq!(ordinary.linear_algebra.work, vector.linear_algebra.work);
+        assert_eq!(
+            ordinary.decomposition.cost.group_ops,
+            vector.decomposition.cost.group_ops
+        );
+        for (key, value) in &ordinary.decomposition.cost.native {
+            if !key.starts_with("walk_batch_vector_") {
+                assert_eq!(
+                    Some(value),
+                    vector.decomposition.cost.native.get(key),
+                    "{key}"
+                );
+            }
+        }
+        let query = &vector.decomposition.cost;
+        assert_eq!(query.get("walk_batch_vector_requested"), 1);
+        assert_eq!(
+            query.get("walk_batch_vector_backend"),
+            u64::from(query.get("walk_batch_vector_pairs") > 0)
+        );
+        assert!(query.get("walk_batch_vector_pairs") <= query.get("walk_batch_pair_adds"));
+        assert_eq!(
+            ordinary.decomposition.cost.get("walk_batch_vector_pairs"),
+            0
+        );
+    }
 }

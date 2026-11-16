@@ -23,6 +23,8 @@ pub(super) struct BatchedWalker<E: Copy> {
     r: u64,
     cap: u64,
     native: bool,
+    vector: bool,
+    vector_pairs: u64,
     rng: StdRng,
     pool_rng: StdRng,
     jumps: Vec<(E, u64, u64)>,
@@ -64,6 +66,8 @@ impl<E: Copy> BatchedWalker<E> {
             r,
             cap,
             native,
+            vector: false,
+            vector_pairs: 0,
             rng: StdRng::seed_from_u64(seed),
             pool_rng: StdRng::seed_from_u64(seed ^ 0x504F_4F4C_5F4F_4646),
             jumps: Vec::new(),
@@ -135,9 +139,22 @@ impl<E: Copy> BatchedWalker<E> {
         this
     }
 
+    /// Preserve shared-inverse initialization; vectorize subsequent advances.
+    pub(super) fn enable_vector(&mut self) {
+        self.vector = true;
+    }
+
     fn add_pairs<G: CountedGroup<Elt = E>>(&mut self, g: &G, ops: &mut GroupOps) {
         self.output.clear();
-        if self.native {
+        if self.vector {
+            self.vector_pairs += g.add_pairwise_vector(
+                ops,
+                &self.left,
+                &self.right,
+                &mut self.output,
+                &mut self.scratch,
+            ) as u64;
+        } else if self.native {
             g.add_pairwise(
                 ops,
                 &self.left,
@@ -223,7 +240,7 @@ impl<E: Copy> BatchedWalker<E> {
         self.lanes[lane].fresh = true;
     }
 
-    pub(super) fn counters<G: CountedGroup<Elt = E>>(&self, g: &G) -> [(&'static str, u64); 15] {
+    pub(super) fn counters<G: CountedGroup<Elt = E>>(&self, g: &G) -> [(&'static str, u64); 18] {
         [
             ("walk_jumps", (self.jumps.len() + self.pool.len()) as u64),
             ("walk_pool_offsets", self.pool.len() as u64),
@@ -237,6 +254,12 @@ impl<E: Copy> BatchedWalker<E> {
             ("walk_batch_unused", self.generated - self.consumed),
             ("walk_batch_pair_calls", self.pair_calls),
             ("walk_batch_pair_adds", self.pair_adds),
+            ("walk_batch_vector_requested", u64::from(self.vector)),
+            ("walk_batch_vector_pairs", self.vector_pairs),
+            (
+                "walk_batch_vector_backend",
+                u64::from(self.vector_pairs != 0),
+            ),
             ("walk_batch_native_requested", u64::from(self.native)),
             (
                 "walk_batch_native_backend",
@@ -266,6 +289,7 @@ mod tests {
     ) -> Vec<(G::Elt, u64, u64)> {
         let mut native_ops = GroupOps::default();
         let mut scalar_ops = GroupOps::default();
+        let mut vector_ops = GroupOps::default();
         let mut native = BatchedWalker::new(
             g,
             generator,
@@ -288,12 +312,25 @@ mod tests {
             pool,
             &mut scalar_ops,
         );
+        let mut vector = BatchedWalker::new(
+            g,
+            generator,
+            target,
+            r,
+            71,
+            cap,
+            true,
+            pool,
+            &mut vector_ops,
+        );
+        vector.enable_vector();
         let mut seen = HashSet::new();
         let mut rows = Vec::new();
         loop {
             let n = native.next(g, &mut native_ops);
             let s = scalar.next(g, &mut scalar_ops);
             assert_eq!(n, s);
+            assert_eq!(n, vector.next(g, &mut vector_ops));
             let Some((point, a, b, lane)) = n else {
                 break;
             };
@@ -304,12 +341,14 @@ mod tests {
             if g.is_identity(&point) || !seen.insert(g.key(&point)) || rows.len() % 11 == 0 {
                 native.restart(lane);
                 scalar.restart(lane);
+                vector.restart(lane);
             }
             rows.push((point, a, b));
             assert!(rows.len() as u64 <= cap);
         }
         assert_eq!(rows.len() as u64, cap);
         assert_eq!(native_ops, scalar_ops);
+        assert_eq!(native_ops, vector_ops);
         let nc = native.counters(g);
         let sc = scalar.counters(g);
         for ((name, nv), (sname, sv)) in nc.iter().zip(&sc) {
@@ -319,6 +358,12 @@ mod tests {
                 "walk_batch_native_requested" | "walk_batch_native_backend"
             ) {
                 assert_eq!(nv, sv, "{name}");
+            }
+        }
+        for ((name, value), (vname, vvalue)) in nc.iter().zip(vector.counters(g)) {
+            assert_eq!(*name, vname);
+            if !name.starts_with("walk_batch_vector_") {
+                assert_eq!(*value, vvalue, "{name}");
             }
         }
         rows

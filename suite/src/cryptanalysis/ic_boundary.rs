@@ -941,11 +941,67 @@ pub fn trace_batched_walk<G: CountedGroup>(
     pool: RestartPool,
     forced_every: u64,
 ) -> WalkBatchAudit<G::Elt> {
+    trace_batched_walk_impl(
+        g,
+        generator,
+        target,
+        r,
+        seed,
+        cap,
+        native,
+        false,
+        pool,
+        forced_every,
+    )
+}
+
+/// Same bounded trace with vector advancement, retaining ordinary initialization.
+#[allow(clippy::too_many_arguments)]
+pub fn trace_batched_walk_vector<G: CountedGroup>(
+    g: &G,
+    generator: G::Elt,
+    target: G::Elt,
+    r: u64,
+    seed: u64,
+    cap: u64,
+    pool: RestartPool,
+    forced_every: u64,
+) -> WalkBatchAudit<G::Elt> {
+    trace_batched_walk_impl(
+        g,
+        generator,
+        target,
+        r,
+        seed,
+        cap,
+        true,
+        true,
+        pool,
+        forced_every,
+    )
+}
+
+#[allow(clippy::too_many_arguments)]
+fn trace_batched_walk_impl<G: CountedGroup>(
+    g: &G,
+    generator: G::Elt,
+    target: G::Elt,
+    r: u64,
+    seed: u64,
+    cap: u64,
+    native: bool,
+    vector: bool,
+    pool: RestartPool,
+    forced_every: u64,
+) -> WalkBatchAudit<G::Elt> {
     assert!(cap <= 4096, "diagnostic trace is bounded to4096 states");
     let mut ops = GroupOps::default();
     let mut walker = batched_walk::BatchedWalker::new(
         g, generator, target, r, seed, cap, native, pool, &mut ops,
     );
+    if vector {
+        walker.enable_vector();
+    }
     let mut seen = fast_map(cap as usize);
     let mut frames = Vec::with_capacity(cap as usize);
     while let Some((point, a, b, lane)) = walker.next(g, &mut ops) {
@@ -994,6 +1050,19 @@ pub trait CountedGroup {
         assert_eq!(ps.len(), qs.len());
         out.clear();
         out.extend(ps.iter().zip(qs).map(|(&p, &q)| self.add(ops, p, q)));
+    }
+    /// Optional vector formulas after the shared inverse; generic default
+    /// retains the ordinary pair implementation and reports zero vector pairs.
+    fn add_pairwise_vector(
+        &self,
+        ops: &mut GroupOps,
+        ps: &[Self::Elt],
+        qs: &[Self::Elt],
+        out: &mut Vec<Self::Elt>,
+        scratch: &mut GroupPairScratch,
+    ) -> usize {
+        self.add_pairwise(ops, ps, qs, out, scratch);
+        0
     }
     fn has_native_pairwise(&self) -> bool {
         false
@@ -2778,6 +2847,19 @@ impl CountedGroup for BinaryGroup<'_> {
         ops.adds += ps.len() as u64;
         self.0.add_pairwise(ps, qs, out, &mut scratch.binary);
     }
+    fn add_pairwise_vector(
+        &self,
+        ops: &mut GroupOps,
+        ps: &[FastPoint],
+        qs: &[FastPoint],
+        out: &mut Vec<FastPoint>,
+        scratch: &mut GroupPairScratch,
+    ) -> usize {
+        assert_eq!(ps.len(), qs.len());
+        out.clear();
+        ops.adds += ps.len() as u64;
+        self.0.add_pairwise_vector(ps, qs, out, &mut scratch.binary)
+    }
     fn has_native_pairwise(&self) -> bool {
         true
     }
@@ -4180,6 +4262,8 @@ pub enum TargetSource {
     WalkBatch,
     /// Exact same schedule using scalar additions; an arithmetic control.
     WalkBatchScalar,
+    /// Same schedule and shared inverse with opt-in vector point formulas.
+    WalkBatchVector,
 }
 
 impl TargetSource {
@@ -4191,6 +4275,7 @@ impl TargetSource {
             TargetSource::WalkSharedJumps => "walk_shared_jumps",
             TargetSource::WalkBatch => "walk_batch16",
             TargetSource::WalkBatchScalar => "walk_batch16_scalar",
+            TargetSource::WalkBatchVector => "walk_batch16_vector",
         }
     }
     pub fn is_walk(&self) -> bool {
@@ -4200,12 +4285,13 @@ impl TargetSource {
                 | TargetSource::WalkSharedJumps
                 | TargetSource::WalkBatch
                 | TargetSource::WalkBatchScalar
+                | TargetSource::WalkBatchVector
         )
     }
     pub fn is_batched(&self) -> bool {
         matches!(
             self,
-            TargetSource::WalkBatch | TargetSource::WalkBatchScalar
+            TargetSource::WalkBatch | TargetSource::WalkBatchScalar | TargetSource::WalkBatchVector
         )
     }
     /// **Whether a target the run has already decomposed is skipped.**
@@ -4227,6 +4313,7 @@ impl TargetSource {
                 | TargetSource::Walk
                 | TargetSource::WalkBatch
                 | TargetSource::WalkBatchScalar
+                | TargetSource::WalkBatchVector
         )
     }
 }
@@ -4451,17 +4538,24 @@ pub fn collect_and_solve_with<G: CountedGroup, L: RelationSolver + ?Sized>(
     }
 
     let mut batch_walk = targets.is_batched().then(|| {
-        batched_walk::BatchedWalker::new(
+        let mut walker = batched_walk::BatchedWalker::new(
             g,
             generator,
             target,
             r,
             seed,
             max_trials,
-            targets == TargetSource::WalkBatch,
+            matches!(
+                targets,
+                TargetSource::WalkBatch | TargetSource::WalkBatchVector
+            ),
             pool_mode,
             &mut rel.group_ops,
-        )
+        );
+        if targets == TargetSource::WalkBatchVector {
+            walker.enable_vector();
+        }
+        walker
     });
     while trials < max_trials {
         let mut active_lane = None;
@@ -4478,7 +4572,9 @@ pub fn collect_and_solve_with<G: CountedGroup, L: RelationSolver + ?Sized>(
                 }
                 (point, a, b)
             }
-            TargetSource::WalkBatch | TargetSource::WalkBatchScalar => {
+            TargetSource::WalkBatch
+            | TargetSource::WalkBatchScalar
+            | TargetSource::WalkBatchVector => {
                 let walker = batch_walk.as_mut().expect("batch source has state");
                 let Some((point, a, b, lane)) = walker.next(g, &mut rel.group_ops) else {
                     break;
