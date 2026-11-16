@@ -1,0 +1,65 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-14T22:21:48Z",
+ "id": "PCC-20261114-97f407",
+ "kind": "statement",
+ "producer": {
+  "commit": "0db58cf0b8d8f8c3ea8536433d537bc9415916ac",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/observer-storage-retrospective-diagnostic-build-04/actual-executable.json",
+    "sha256": "fba875413d15aff11526e84b3801d4c8252f7f8c0528a68647f6b42c9c07ee50"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/observer-storage-retrospective-diagnostic-build-04/actual-source.rs",
+    "sha256": "d1d6486734722f47aaa5c8c39594b6d3e0a19cf516b68e5f70875cf0ff36ae22"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/observer-storage-retrospective-diagnostic-build-04/compile.exit",
+    "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/observer-storage-retrospective-diagnostic-build-04/compile.jsonl",
+    "sha256": "127ff2c33e8a96816e4d6c63f4a2971adf409754b9a57c70a1abf3f0d0930466"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/observer-storage-retrospective-diagnostic-build-04/compile.stderr.txt",
+    "sha256": "f817dc91c91343f204a7d36c339622a7471a84c330fdd47a0c8139cc8d157ae8"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/observer-storage-retrospective-diagnostic-build-04/original-record-command.py",
+    "sha256": "74bb56ae43cf175efd397a4a3cc9ea0a8e9682afb494bb1a07fcd6ec3a1d3e2b"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/observer-storage-retrospective-diagnostic-build-04/whole-closed-raw-members.json",
+    "sha256": "b44633bcda0083c8e416fd2536a5f81f10c1e2e940809bce7ff9bca216c8baf8"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Separate RETROSPECTIVE partial-observation Rust diagnostic compiles0 within120 after actual04cold124; actual source/Cargo executable bytes retained. Requires old/new actual cold124 and both reuse0, retains every actual new complete/missing cold case, compares ALL12 old cold and BOTH whole60-output reuse packets including EVERY cumulative ledger, no masks/dedup. Output explicitly full_cold_population_accepted=false; NEVER changes original full analyzer or strict complete120 parity checker. Native old-original partial analyzer/new old-packet parity/actual whole-packet omission controls NOTRUN, need fresh exact source checkpoint. Source-native count vectors remain unpriced; no full acceptance or performance claim."
+}

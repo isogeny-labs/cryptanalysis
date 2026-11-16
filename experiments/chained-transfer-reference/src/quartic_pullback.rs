@@ -11,11 +11,11 @@ use num_traits::ToPrimitive;
 use std::collections::{HashMap, HashSet};
 #[path = "quartic_pullback_points.rs"]
 mod existing_points;
-pub(super) fn rational_points(f: &Zp, e: &Curve<u64>) -> Vec<Pt<u64>> {
+pub(crate) fn rational_points(f: &Zp, e: &Curve<u64>) -> Vec<Pt<u64>> {
     existing_points::points(f, e)
 }
 
-pub(super) struct Pullback {
+pub(crate) struct Pullback {
     fp: Zp,
     source: Balanced,
     curve: Curve<u64>,
@@ -25,7 +25,7 @@ pub(super) struct Pullback {
     infinity: Pt<u64>,
 }
 impl Pullback {
-    pub(super) fn fixed(model: usize, component: usize) -> Self {
+    pub(crate) fn fixed(model: usize, component: usize) -> Self {
         let (equation, curve, n, q, m, infinity) = match (model, component) {
             (0, 0) => (
                 [31, 75, 74, 54, 71, 55, 1],
@@ -59,6 +59,22 @@ impl Pullback {
                 vec![4, 76, 75, 41],
                 Pt::Aff(46, 41),
             ),
+            (2, 0) => (
+                [95, 93, 43, 39, 92, 17, 1],
+                Curve::new(59, 27),
+                vec![97, 93, 7, 0, 97],
+                vec![55, 0, 1],
+                vec![71, 49, 20, 63],
+                Pt::Aff(97, 63),
+            ),
+            (2, 1) => (
+                [95, 93, 43, 39, 92, 17, 1],
+                Curve::new(23, 7),
+                vec![74, 0, 81, 42, 64],
+                vec![23, 0, 1],
+                vec![37, 9, 9, 35],
+                Pt::Aff(64, 35),
+            ),
             _ => panic!("fixed models/components only"),
         };
         Self {
@@ -71,7 +87,7 @@ impl Pullback {
             infinity,
         }
     }
-    pub(super) fn pull(&self, point: &Pt<u64>) -> Result<(Class, (usize, i64)), String> {
+    pub(crate) fn pull(&self, point: &Pt<u64>) -> Result<(Class, (usize, i64)), String> {
         let f = &self.fp;
         if !curve::on_curve(f, &self.curve, point) {
             return Err("foreign/off-curve elliptic point".into());

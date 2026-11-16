@@ -1,0 +1,86 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-14T16:14:35Z",
+ "id": "PCC-20261114-471848",
+ "kind": "statement",
+ "producer": {
+  "commit": "cf9ca8f5eee66745848fae2673f655561b1de90f",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/norm-arithmetic-partial-analysis-01/Cargo.lock",
+    "sha256": "4c952d851181fbc0e788e2ab86981e0e030c9b94c3934cd0e93fb13bcab7294f"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/norm-arithmetic-partial-analysis-01/actual-analysis.rs",
+    "sha256": "da323e0560a8f1d6a8c23c559612089c1ce4dd1918cc4368035519f8561dfc8a"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/norm-arithmetic-partial-analysis-01/compile.exit",
+    "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/norm-arithmetic-partial-analysis-01/compile.txt",
+    "sha256": "762cf89064f34ed00133c9b252f6f3e49aa14bf501eb6d3b6cc72a48da0f64b9"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/norm-arithmetic-partial-analysis-01/lock.exit",
+    "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/norm-arithmetic-partial-analysis-01/lock.txt",
+    "sha256": "90c7c351cd7aedeea9f56b637a9f2712140bf10bc0303644193a8c76a438c4c6"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/norm-arithmetic-partial-analysis-01/native.exit",
+    "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/norm-arithmetic-partial-analysis-01/native.txt",
+    "sha256": "af10b3ca039e01a6e626a6f25d71f06356b60e6db0ea890f044810f9fca57033"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/norm-arithmetic-partial-analysis-01/scope.json",
+    "sha256": "12913a67c0ec47d079a814a4a2bc5098d5c3062ab5e9c659c8736f5732205d16"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/norm-arithmetic-partial-analysis-01/whole-index.json",
+    "sha256": "d2ce3a7b3446a9c35d39221e15d06a3b654e48d76912e401e9e43cc4aaf10c43"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Retrospective explicit partial Rust analysis build0/native0: accepts ONLY12 actually completed cold records, lists all108 missing/incomplete, validates BOTH complete reused-context60-case sequences against untouched frozen whole packets/no masks, monotone whole ledgers/exact final snapshots/known executed backend coverage. Retains all source unit vectors and signed differences with diagnostics separately keyed. Original prospective full120cold+2reused comparator still rejects101, no accepted full cold record. Counts unpriced; no cold extrapolation/runtime/ECDLP advantage or signed standing. Whole5.3MiB vectors and actual analyzer indexed, pending genuine17."
+}

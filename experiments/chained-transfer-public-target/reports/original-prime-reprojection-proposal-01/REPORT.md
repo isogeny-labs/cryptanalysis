@@ -1,0 +1,5 @@
+# Original-prime alternative-kernel reprojection proposal
+
+The [inspected two-page proposal](report.pdf) preserves all18 existing original admissibility entries, the frozen alternative-kernel diagram and the conditional norm-assisted prime-group construction. The old matched D12/D24/D67 failures remain exact; this separate successor uses the original prime2,773,073 without twisting. No new runtime, theorem implementation or native outcome exists yet. Both final pages were opened and checked; PDF55,582B. [pcc:unverified]
+
+The [prospective protocol](../../ORIGINAL_PRIME_REPROJECTION_PROTOCOL_01.md) freezes the actual cases/masks and full population before new implementation. The [review](../../evidence/original-prime-alternative-kernel-review-01/review.json) and whole original18 rows are source-linked. This extends the existing scalar baseline; full-cofactor geometric norm13/169, new isomorphism, novelty and computational advantage are not claimed. The known-initial-elliptic-point route is an explicit stronger comparison. [pcc:unverified]

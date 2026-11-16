@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-15T08:35:36Z",
+ "id": "PCC-20261115-b884ae",
+ "kind": "theorem",
+ "producer": {
+  "commit": "e633524f33e62c4ffa273ffefd4a8ea3915ef93d",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "1ff624969cfbdbc5e4c67ed390ca86dcdc06612c40a9d18b1c96dc3aefbb8b1c",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/original-full-evaluator-01/lean/OriginalFullChain.lean",
+   "theorem": "FullGroupNorm.two_pair_norm"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Conditional IntModule algebra under explicit linearity/duality/kerneltransport/Frobenius/kernel-description/order-annihilation hypotheses. Sixteen old roots and hypotheses are literal unchanged source concatenation, including historical nu12-only numeric roots; those historical values are NOT original-order witnesses. Three additive roots derive p/zero knownpoint representation, knownpoint output from old half/correction independence (no assumed desired evaluator equality), and actual original ORDER11092292/gcd13-169/squares89-40-6/inverse13=3413013 inverse169=9648325 and IntBezout witnesses. Both unchanged original434/435 gates19roots0trusted. Actual field/HLP/geometricquotient/Frobenius/Picard/program/order bridges remain explicit; no signedstanding, cost or computational advantage.",
+ "statement": "theorem two_pair_norm {A B C : Type} [IntModule A] [IntModule B] [IntModule C] (f : A \u2192 B) (fh : B \u2192 A) (g : B \u2192 C) (gh : C \u2192 B) (n m : Int) (hf : \u2200 a, fh (f a)=n \u2022 a) (hfh : \u2200 b, f (fh b)=n \u2022 b) (hg : \u2200 b, gh (g b)=m \u2022 b) (hgh : \u2200 c, g (gh c)=m \u2022 c) (fh_linear : \u2200 z : Int, \u2200 b, fh (z \u2022 b)=z \u2022 fh b) (g_linear : \u2200 z : Int, \u2200 b, g (z \u2022 b)=z \u2022 g b) : (\u2200 a, fh (gh (g (f a)))=(n*m) \u2022 a) \u2227 (\u2200 c, g (f (fh (gh c)))=(n*m) \u2022 c)"
+}

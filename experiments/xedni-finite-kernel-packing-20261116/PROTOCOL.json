@@ -1,0 +1,16 @@
+{
+  "schema": "xedni-finite-kernel-packing-protocol-v1",
+  "positive_instance": "Z^2 x Z/T with points (1,0,0), (0,1,0), (1,1,1), projection to Z^2",
+  "torsion_orders": [1, 2, 3, 4],
+  "K_range_inclusive": [0, 16],
+  "euclidean_bound": "T*(1+4*sqrt(2)*K)^2",
+  "negative_instance": "Z^2 to Z projection (x,y)->x on values (0,n), -K<=n<=K",
+  "negative_K_range_inclusive": [1, 16],
+  "falsifiers": [
+    "a finite-kernel fiber exceeds the recorded kernel size",
+    "the exact count exceeds the Euclidean packing bound",
+    "a packing-certified collision is absent from the exact coefficient-box count",
+    "the omitted-kernel control still satisfies a claimed unit fiber bound"
+  ],
+  "status_law": "retain all 68 positive rows and 16 negative rows, including noncertifying packing bounds"
+}

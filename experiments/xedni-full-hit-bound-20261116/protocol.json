@@ -1,0 +1,27 @@
+{
+  "schema": "xedni-full-hit-bound-protocol-v1",
+  "model": "uniform scalar and bijective group-label encoding; typed program starts with G,Q=wG and uses label-selected group addition or subtraction",
+  "controls": {
+    "z7_exhaustive": {
+      "field_order": 7,
+      "generator": 1,
+      "program_points": 6,
+      "encoding_law": "all 7! bijections",
+      "scalar_law": "all 7 scalars",
+      "prior_result_sha256": "c64477fdc232f3a17d4c7c0e9da76ee324546903dd515b058d800aac4421b365"
+    },
+    "z101_exact_branch": {
+      "field_order": 101,
+      "generator": 1,
+      "program_points": 3,
+      "branch": "if label(G)<label(Q), append G+Q; otherwise append G-Q",
+      "encoding_law": "count all 101! bijections via exact seed-order symmetry"
+    }
+  },
+  "falsifiers": [
+    "the exhaustive Z/7 first-hit distribution differs from its independently sealed predecessor",
+    "the Z/101 branch-symmetry count differs from the direct scalar and point-equality cases",
+    "the full-hit Lean theorem uses admitted or custom research axioms"
+  ],
+  "claim_boundary": "exact finite group-label first-hit counts and a Lean theorem under its stated finite-field module and program assumptions"
+}

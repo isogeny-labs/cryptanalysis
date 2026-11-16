@@ -1,0 +1,2 @@
+import QuadraticNormIdentity
+#print axioms QuadraticNormIdentity.norm_multiplicative

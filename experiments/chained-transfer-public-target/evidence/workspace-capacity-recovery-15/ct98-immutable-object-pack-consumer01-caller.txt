@@ -1,0 +1,52 @@
+error: failed to run reflog
+error: task 'gc' failed
+error: couldn't write .git/logs/HEAD: No space left on device
+error: couldn't write .git/logs/refs/heads/research/chained-transfer-public-target-20261113: Input/output error
+error: failed to run reflog
+error: task 'gc' failed
+error: couldn't write .git/logs/HEAD: No space left on device
+error: couldn't write .git/logs/refs/heads/main: No space left on device
+error: couldn't write .git/logs/refs/heads/research/chained-transfer-balanced-genus2-20261111: No space left on device
+error: couldn't write .git/logs/refs/heads/research/chained-transfer-closed-fibres-20261111: No space left on device
+error: couldn't write .git/logs/refs/heads/research/chained-transfer-cubic-norm-20261111: No space left on device
+error: couldn't write .git/logs/refs/heads/research/chained-transfer-direct-norms-20261111: No space left on device
+error: couldn't write .git/logs/refs/heads/research/chained-transfer-fp-chain-20261113: No space left on device
+error: couldn't write .git/logs/refs/heads/research/chained-transfer-full-class-replay-20261112: No space left on device
+error: couldn't write .git/logs/refs/heads/research/chained-transfer-g3-norm-20261113: No space left on device
+error: couldn't write .git/logs/refs/heads/research/chained-transfer-independent-replay-20261112: No space left on device
+error: couldn't write .git/logs/refs/heads/research/chained-transfer-induced-map-20261115: No space left on device
+error: couldn't write .git/logs/refs/heads/research/chained-transfer-nonsplit-kernels-20261111: No space left on device
+error: couldn't write .git/logs/refs/heads/research/chained-transfer-nonsplit-map-20261111: No space left on device
+error: couldn't write .git/logs/refs/heads/research/chained-transfer-odd-kernels-20261111: No space left on device
+error: couldn't write .git/logs/refs/heads/research/chained-transfer-oracle-20261111: No space left on device
+error: couldn't write .git/logs/refs/heads/research/chained-transfer-partial-frobenius-20261112: No space left on device
+error: couldn't write .git/logs/refs/heads/research/chained-transfer-prime-field-adjoint-20261112: No space left on device
+error: couldn't write .git/logs/refs/heads/research/chained-transfer-prime-field-psi-20261112: No space left on device
+error: couldn't write .git/logs/refs/heads/research/chained-transfer-prime-field-second-20261112: No space left on device
+error: couldn't write .git/logs/refs/heads/research/chained-transfer-prime-norms-20261112: No space left on device
+error: couldn't write .git/logs/refs/heads/research/chained-transfer-proper-t20-20261112: No space left on device
+error: couldn't write .git/logs/refs/heads/research/chained-transfer-public-target-20261113: No space left on device
+error: couldn't write .git/logs/refs/heads/research/chained-transfer-quartic-covers-20261112: No space left on device
+error: couldn't write .git/logs/refs/heads/research/chained-transfer-root-cache-20261112: No space left on device
+error: couldn't write .git/logs/refs/heads/research/chained-transfer-seven-20261111: No space left on device
+error: couldn't write .git/logs/refs/heads/research/chained-transfer-seven-glue-20261111: No space left on device
+error: couldn't write .git/logs/refs/heads/research/chained-transfer-seven-torsion-20261111: No space left on device
+error: couldn't write .git/logs/refs/heads/research/chained-transfer-shifted109-20261111: No space left on device
+error: couldn't write .git/logs/refs/heads/research/chained-transfer-small-prime-oracle-20261111: No space left on device
+error: couldn't write .git/logs/refs/heads/research/chained-transfer-split-quotients-20261111: No space left on device
+error: couldn't write .git/logs/refs/heads/research/chained-transfer-successor-norms-20261112: No space left on device
+error: couldn't write .git/logs/refs/heads/research/chained-transfer-successor-oracle-20261111: No space left on device
+error: couldn't write .git/logs/refs/heads/research/chained-transfer-successor-seven-20261111: No space left on device
+error: couldn't write .git/logs/refs/heads/research/chainedTraceback (most recent call last):
+  File "/workspace/scratch/ct98_pack_closed_immutable_objects_01.py", line 16, in <module>
+    for line in git('rev-list','--objects','--all').decode().splitlines():
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/ct98_pack_closed_immutable_objects_01.py", line 10, in git
+    def git(*args,**kw):return subprocess.check_output(['git',*args],cwd=repo,**kw)
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 466, in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['git', 'rev-list', '--objects', '--all']' returned non-zero exit status 128.

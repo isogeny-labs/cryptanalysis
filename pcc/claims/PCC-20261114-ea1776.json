@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-14T06:56:28Z",
+ "id": "PCC-20261114-ea1776",
+ "kind": "theorem",
+ "producer": {
+  "commit": "3422ccb4239e9901f526d3c538728ce201ece889",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "f90d1e83b663aa66fb95677217bd60eb9b0f99fad8e9f30ad3d2a8835d03f2df",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/beta-rational-lift/lean/QuadraticRationalLift.lean",
+   "theorem": "QuadraticRationalLift.quadratic_fixed_lift"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Faithful conditional general abelian-group/Frobenius lift: surjective geometric additive Phi commuting with F, exponent2 kernel and F^3=1 on kernel derive existence of F^2-fixed lift for every F-fixed target; ordinary laws explicit. Other declarations prove image independence from kernel containment, four-torsion bound from NPhi=2 and exponent2Nx, and F2+F3 fixed kernel implies F fixed. Fin8 explicitly encodes C4xC2 and checks every stated group/hom/automorphism/surjectivity/kernel2 condition plus failure of F3 and absence of quadratic lifts; finite abstract group control only. Both ORIGINAL gates PASS20 total declarations/zero trusted; six named structural roots no axioms, finite control kernel-decide onlypropext+Quot.sound. Actual Picard/Weil-restriction/Frobenius/quotient/norm bridges remain written/native; not full formal geometry or signed execution.",
+ "statement": "theorem quadratic_fixed_lift {A J : Type} (g : Abelian A) (h : Abelian J) (phi : Hom g h) (FA : Hom g g) (FJ : Hom h h) (commutes : \u2200 a, phi.toFun (FA.toFun a) = FJ.toFun (phi.toFun a)) (surjective : \u2200 x, \u2203 a, phi.toFun a = x) (kernel_two : \u2200 c, phi.toFun c = h.zero \u2192 g.add c c = g.zero) (kernel_cube : \u2200 c, phi.toFun c = h.zero \u2192 FA.toFun (FA.toFun (FA.toFun c)) = c) (x : J) (fixed : FJ.toFun x = x) : \u2203 b, phi.toFun b = x \u2227 FA.toFun (FA.toFun b) = b"
+}
