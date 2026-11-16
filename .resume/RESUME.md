@@ -1,3 +1,108 @@
+# Preserve generated PDF text-classification rejection
+
+## What was done
+pcc/claims/PCC-20261116-b90851.json: every preceding source gate0; cached whitespace treated the literal generated PDF as text and rejected its binary streams/cross-reference CRLF. Whole failure retained; no source commit/push occurred. [pcc:unverified]
+
+## Decisions made
+Set one exact PDF binary attribute, preserving all53598 original bytes, then use separate governor02. [pcc:unverified]
+
+## Open threads
+Native matrix checkpoint/publication and actual unit CI; strict historical ingestion/original rooted arm; original CI03 and Root4366 check. [pcc:unverified]
+
+## Errors
+Git's heuristic did not classify this PDF as binary. No PDF regeneration, trimming, scientific change or gate exception is used. [pcc:unverified]
+
+---
+# Continue across UTC midnight: complete matrix engine and publish source
+
+## What was done
+PCC-20261115-c07ee3 freezes the native finite-certificate core and full synthetic controls. PCC-20261116-ef9da9 records the inspected two-page report and prospective development CI, with actual static checks0. The first entry after midnight was appended to the prior day's log; it is retained unchanged, and current entries move here. [pcc:unverified]
+
+## Decisions made
+Publish exact source and new source tag before new development CI. Preserve native/lean/matrix core bytes, full negative history and compiled binaries. Next separate historical-ingestion/original-cycle implementation and CI03 source materialization; no local fixed-population substitution. [pcc:unverified]
+
+## Open threads
+Source governance/publication, actual unit CI; Root4366 actual transport02 check due00:08UTC; full60call A/P/C/U pipeline and EKS admission; full scientific NEW28, original frozen-ledger and reference/global bridges. [pcc:unverified]
+
+## Errors
+The midnight entry used the previous log path. No prior entry or pinned evidence is edited; new work uses2026-11-16.md. No new experiment failure. [pcc:unverified]
+
+---
+# Inspect native matrix report and freeze development CI source
+
+## What was done
+pcc/claims/PCC-20261116-ef9da9.json: native-generated all14-row table and Matplotlib chart retained with two-page53598B PDF; both pages actually opened and legible. New development-only CI workflow/protocol authored; actionlint/wiring/report-Python/strict Clippy0. Native matrix result remainsc07ee3. [pcc:unverified]
+
+## Decisions made
+Publish this complete component and prospective unit/proof CI before execution. Preserve the frozen core, every full unit control and compiled binaries. Continue to a separate strict historical-input/original-cycle component after checkpointing. [pcc:unverified]
+
+## Open threads
+Source governance/publication and actual development CI; full historical A/P/C/U population pipeline/EKS admission; original CI03 materialization and Root4366 transport02 dueabout00:08UTC; NEW28. [pcc:unverified]
+
+## Errors
+No new render or static-check failure. Unit U remains a literal fixture; actual original routine and historical results remain unmeasured. [pcc:unverified]
+
+---
+# Freeze final synthetic finite-certificate engine
+
+## What was done
+pcc/claims/PCC-20261115-c07ee3.json: strict Clippy0; six core plus two exhaustive tests pass. All23 native process phases match expected;14 whole positives accept and seven whole modified controls reject without accepted outputs. Complete synthetic corpus is byte-identical to firstb68e68. All source/runtime/dependency/whole positive-negative evidence retained, including the complete compiled binary outside Git. [pcc:unverified]
+
+## Decisions made
+Freeze matrix-01 core source and publish its report and source checkpoint. Add reporting as a separate binary only. Historical ingestion/original rooted-cycle code belongs in a later separate source component, with actual full-population execution still EKS-admission gated. [pcc:unverified]
+
+## Open threads
+Matrix report/source/CI publication; strict historical extraction/original uncapped arm, old360/whole private-field canary/post-character; original EKS admission; CI03 and Root4366/NEW28. [pcc:unverified]
+
+## Errors
+First strict-lint failure192974 remains full. No new failure or cost/solve result; native and generic Lean checks remain unsigned. [pcc:unverified]
+
+---
+# Direct exhaustive projection checks pass; preserve strict lint rejection
+
+## What was done
+pcc/claims/PCC-20261115-192974.json: two additional integration tests enumerate every solution/projection candidate for seven small F101 fixtures and agree with ker(C), without either Gaussian basis supplying the ground truth. Full native counts and logs retained. Strict Clippy101 identifies two row-add indexing loops; source and complete failure preserved. [pcc:unverified]
+
+## Decisions made
+Use disjoint row slices and element iterators, preserving operation and certificate order. Rerun strict lint and affected units/process controls; require whole certificate bodies byte-identical to first synthetic corpus. [pcc:unverified]
+
+## Open threads
+Final native matrix component/report/source/CI, strict raw extraction and original rooted arm, whole population controls/EKS, CI03 and Root4366. [pcc:unverified]
+
+## Errors
+Two indexing loops fail strict lint. No suppression, weakened test or performance claim is introduced. [pcc:unverified]
+
+---
+# Complete synthetic finite projection certificates and whole process controls
+
+## What was done
+pcc/claims/PCC-20261115-b68e68.json: release core units6/6; actual native wrapper23 ordered phases all match, original.exit0. All14 complete synthetic A/P/C/U cases replay; all seven whole modified records exit1 without accepted output. Every zero/duplicate projection, full lift, complete kernel basis and original-row residual retained. Full source/lock/binary/runtime/raw outputs remain reproducible. [pcc:unverified]
+
+## Decisions made
+Add a third, direct exhaustive finite-set comparison for tractable small F101 fixtures to check projection equality without generating the ground truth from either Gaussian implementation. The frozen q223 population is not run locally. [pcc:unverified]
+
+## Open threads
+Exhaustive development checks/report/source publication; strict full-trace public extraction and original unchanged uncapped rooted-cycle wrapper; old360 replay/whole canary/post-character/EKS admission; CI03 and Root4366/NEW28. [pcc:unverified]
+
+## Errors
+No new native failure. Unit U matrices are literal fixtures; do not treat them as execution of the original rooted routine or claim complete production controls from this synthetic component. [pcc:unverified]
+
+---
+# Published LP foundation; advance to finite projection certificates
+
+## What was done
+pcc/claims/PCC-20261115-ae9d58.json: tested generic foundation/report sourceb114f3814473 published normally and under new exact source tag; every final source/static/storage check0. All prior failures retained. [pcc:unverified]
+
+## Decisions made
+Freeze native/ and lean/ bytes. Expand owned development scope to experiments/chained-transfer-lp-presentation-01/matrix-01 for a separate Rust certificate producer and independent Euclidean replayer, followed by the frozen synthetic graph units. No historical population computation locally. [pcc:unverified]
+
+## Open threads
+Complete A/P/C/U certificates, all projections/full lifts/inclusions, strict extraction/original uncapped arm, whole controls and EKS admission; CI03 and Root4366/NEW28. [pcc:unverified]
+
+## Errors
+No new source publication error. Current signed standing and end-to-end solve/cost advantage remain unestablished. [pcc:unverified]
+
+---
 # Preserve literal native test log whitespace rejection
 
 ## What was done

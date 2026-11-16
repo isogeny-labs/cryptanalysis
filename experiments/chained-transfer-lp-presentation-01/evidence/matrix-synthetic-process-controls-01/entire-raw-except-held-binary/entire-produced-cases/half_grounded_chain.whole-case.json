@@ -1,0 +1,395 @@
+{
+  "case": {
+    "baseline": {
+      "ncols": 3,
+      "rows": [
+        [
+          1,
+          99,
+          1
+        ]
+      ]
+    },
+    "expected_full_nullity": 2,
+    "expected_projection_dimension": 2,
+    "expected_zero_projections": 0,
+    "full": {
+      "ncols": 5,
+      "rows": [
+        [
+          2,
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          1,
+          1,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          2,
+          0,
+          0,
+          1
+        ]
+      ]
+    },
+    "lp_columns": 2,
+    "name": "half_grounded_chain",
+    "uncapped": {
+      "ncols": 3,
+      "rows": [
+        [
+          1,
+          99,
+          1
+        ]
+      ]
+    }
+  },
+  "certificate": {
+    "a": {
+      "input": {
+        "ncols": 5,
+        "rows": [
+          [
+            2,
+            0,
+            1,
+            0,
+            0
+          ],
+          [
+            1,
+            1,
+            0,
+            1,
+            0
+          ],
+          [
+            0,
+            2,
+            0,
+            0,
+            1
+          ]
+        ]
+      },
+      "kernel": [
+        [
+          100,
+          0,
+          2,
+          1,
+          0
+        ],
+        [
+          51,
+          50,
+          100,
+          0,
+          1
+        ]
+      ],
+      "modulus": 101,
+      "operations": [
+        {
+          "coefficient": 51,
+          "inverse": 2,
+          "op": "scale",
+          "row": 0
+        },
+        {
+          "coefficient": 100,
+          "dst": 1,
+          "op": "add",
+          "src": 0
+        },
+        {
+          "coefficient": 1,
+          "inverse": 1,
+          "op": "scale",
+          "row": 1
+        },
+        {
+          "coefficient": 99,
+          "dst": 2,
+          "op": "add",
+          "src": 1
+        },
+        {
+          "coefficient": 1,
+          "inverse": 1,
+          "op": "scale",
+          "row": 2
+        },
+        {
+          "coefficient": 50,
+          "dst": 0,
+          "op": "add",
+          "src": 2
+        },
+        {
+          "coefficient": 51,
+          "dst": 1,
+          "op": "add",
+          "src": 2
+        }
+      ],
+      "pivots": [
+        0,
+        1,
+        2
+      ],
+      "rref": {
+        "ncols": 5,
+        "rows": [
+          [
+            1,
+            0,
+            0,
+            1,
+            50
+          ],
+          [
+            0,
+            1,
+            0,
+            0,
+            51
+          ],
+          [
+            0,
+            0,
+            1,
+            99,
+            1
+          ]
+        ]
+      }
+    },
+    "c": {
+      "input": {
+        "ncols": 3,
+        "rows": [
+          [
+            1,
+            99,
+            1
+          ]
+        ]
+      },
+      "kernel": [
+        [
+          2,
+          1,
+          0
+        ],
+        [
+          100,
+          0,
+          1
+        ]
+      ],
+      "modulus": 101,
+      "operations": [
+        {
+          "coefficient": 1,
+          "inverse": 1,
+          "op": "scale",
+          "row": 0
+        }
+      ],
+      "pivots": [
+        0
+      ],
+      "rref": {
+        "ncols": 3,
+        "rows": [
+          [
+            1,
+            99,
+            1
+          ]
+        ]
+      }
+    },
+    "constraint_kernel_lifts": [
+      {
+        "full_vector": [
+          100,
+          0,
+          2,
+          1,
+          0
+        ],
+        "image_coefficients": [
+          2,
+          1
+        ],
+        "vector": [
+          2,
+          1,
+          0
+        ]
+      },
+      {
+        "full_vector": [
+          51,
+          50,
+          100,
+          0,
+          1
+        ],
+        "image_coefficients": [
+          100,
+          0
+        ],
+        "vector": [
+          100,
+          0,
+          1
+        ]
+      }
+    ],
+    "lp_columns": 2,
+    "p": {
+      "input": {
+        "ncols": 3,
+        "rows": [
+          [
+            2,
+            1,
+            0
+          ],
+          [
+            100,
+            0,
+            1
+          ]
+        ]
+      },
+      "kernel": [
+        [
+          1,
+          99,
+          1
+        ]
+      ],
+      "modulus": 101,
+      "operations": [
+        {
+          "coefficient": 51,
+          "inverse": 2,
+          "op": "scale",
+          "row": 0
+        },
+        {
+          "coefficient": 1,
+          "dst": 1,
+          "op": "add",
+          "src": 0
+        },
+        {
+          "coefficient": 2,
+          "inverse": 51,
+          "op": "scale",
+          "row": 1
+        },
+        {
+          "coefficient": 50,
+          "dst": 0,
+          "op": "add",
+          "src": 1
+        }
+      ],
+      "pivots": [
+        0,
+        1
+      ],
+      "rref": {
+        "ncols": 3,
+        "rows": [
+          [
+            1,
+            0,
+            100
+          ],
+          [
+            0,
+            1,
+            2
+          ]
+        ]
+      }
+    },
+    "transformed_full_lifts": [
+      [
+        50,
+        51,
+        1,
+        0,
+        100
+      ],
+      [
+        0,
+        100,
+        0,
+        1,
+        2
+      ]
+    ],
+    "u": {
+      "input": {
+        "ncols": 3,
+        "rows": [
+          [
+            1,
+            99,
+            1
+          ]
+        ]
+      },
+      "kernel": [
+        [
+          2,
+          1,
+          0
+        ],
+        [
+          100,
+          0,
+          1
+        ]
+      ],
+      "modulus": 101,
+      "operations": [
+        {
+          "coefficient": 1,
+          "inverse": 1,
+          "op": "scale",
+          "row": 0
+        }
+      ],
+      "pivots": [
+        0
+      ],
+      "rref": {
+        "ncols": 3,
+        "rows": [
+          [
+            1,
+            99,
+            1
+          ]
+        ]
+      }
+    }
+  },
+  "schema": "chained.lp.synthetic-projection/v1"
+}
