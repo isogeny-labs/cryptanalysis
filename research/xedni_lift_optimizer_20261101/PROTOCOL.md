@@ -97,3 +97,37 @@ This is a correctness/solution-quality diagnostic on the ordinary managed
 host, not a performance benchmark.  Wall-clock ratios are intentionally not
 recorded or interpreted.
 
+
+## Amendment 2026-11-12: owner waiver of the S3 resume checkpoint, and first run
+
+Appended after the freeze.  Every parameter above (fixture, radii, caps,
+acceptance rules, reproduction command) is unchanged.  sha256 of this file
+before the amendment: `92fef770f86e38fe57e6fbbbce3e48d97412c200c0cc65272aa0049dec7f3620`.
+
+**Owner waiver (2026-11-12, given in the crypto session), verbatim:** "for this
+toy-size run only, the S3 resume-checkpoint requirement is waived because no
+upload credential exists in this container."  The waiver covers the S3
+resume-checkpoint requirement for this p=67 run and the sweep in
+`research/xedni_lift_success_20261112/` only.  It does not waive the
+benchmark record, this frozen protocol, or the certificates.  The checkpoint
+gate was not run and no `CHECKPOINT_SKIP` was used for it.
+
+**Run (2026-11-12).**  Command exactly as in "Reproduction", from commit
+`0d69fc5526c02c4071db896d8800be74929f4ff7`, `ca-icx` built in release mode
+(sha256 `53addfe29282034d2715b33e65edd686b24a2e79e9a20e91dd1c3f71853abb25`),
+output `runs/run-20261112/`.  All four rows completed and satisfied
+acceptance rules 1 to 5.  Discriminant bits (raw / Babai / optimized) and
+coefficient bits (raw / Babai / optimized):
+
+| radius | candidates | disc bits raw / Babai / opt | coeff bits raw / Babai / opt |
+|---|---|---|---|
+| 0 | 1 | 1114 / 56 / 56 | 142 / 15 / 15 |
+| 1 | 27 | 1114 / 56 / 56 | 142 / 15 / 15 |
+| 2 | 125 | 1114 / 56 / 56 | 142 / 15 / 15 |
+| 4 | 729 | 1114 / 56 / 56 | 142 / 15 / 15 |
+
+Outcome under the protocol's stop rule: no smaller discriminant at radius
+r>0 than at radius 0, so this is a bounded null result for the nonlinear
+neighborhood on this one coset.  LLL+Babai alone reduced the raw
+representative from 1114 to 56 discriminant bits; that is the linear control,
+not an HMM-HNF comparison.  [pcc:unverified]

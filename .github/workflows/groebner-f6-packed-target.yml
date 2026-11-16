@@ -71,6 +71,7 @@ jobs:
           python experiments/groebner-f6-packed-target-20261009/build.py
       - name: Direct ANF, UBSan, and 512-target exactness
         run: |
+          set -o pipefail
           mkdir -p f6-packed-target-evidence
           python experiments/groebner-f6-packed-target-20261009/test_packed.py | tee f6-packed-target-evidence/tests.log
           python experiments/groebner-f6-packed-target-20261009/semantic_replay.py --output f6-packed-target-evidence/semantic.json

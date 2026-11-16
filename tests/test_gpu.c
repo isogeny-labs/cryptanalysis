@@ -4,6 +4,26 @@
 #include "test_fixtures.h"
 #include "gpu_internal.h"
 
+static void test_dp_capacity(void)
+{
+    const uint32_t values[] = {0, 1, 522239, 522240, UINT32_MAX - 7u, UINT32_MAX};
+    for (unsigned d = 0; d < 64; d++) {
+        for (size_t i = 0; i < sizeof(values) / sizeof(values[0]); i++) {
+            for (size_t j = 0; j < sizeof(values) / sizeof(values[0]); j++) {
+                __uint128_t exact = ((__uint128_t)values[i] * values[j] * 2) >> d;
+                exact += 4096;
+                if (exact > (1u << 20)) exact = 1u << 20;
+                CHECK_EQ_U64(ca_gpu_dp_capacity(values[i], values[j], d), (uint64_t)exact);
+            }
+        }
+    }
+    /* Largest accepted walk herd and launch length: the previous double-to-
+     * uint64_t conversion overflowed before the intended saturation. */
+    CHECK_EQ_U64(ca_gpu_dp_capacity(UINT32_MAX - 7u, UINT32_MAX, 0), 1u << 20);
+    CHECK_EQ_U64(ca_gpu_dp_capacity(522239, 1, 0), (1u << 20) - 2);
+    CHECK_EQ_U64(ca_gpu_dp_capacity(522240, 1, 0), 1u << 20);
+}
+
 static void test_device_arith(void)
 {
     ca_rng rng;
@@ -219,8 +239,39 @@ static void run_solver(const ca_group *g, const ca_elem *gen, ca_gpu_backend be,
     printf("%-28s ops/sqrt(n) = %.2f\n", label, tot / reps / sqrt((double)g->order));
 }
 
+static void test_launch_dimension_overflow(void)
+{
+    ca_group g;
+    ca_elem gen, target;
+    fx_zp_safe(&g, &gen, 2000000579ULL);
+    fx_instance(&g, &gen, 7, &target);
+    const uint32_t dimensions[][2] = {
+        {1u << 25, 128},       /* thread count would truncate to zero */
+        {(1u << 25) + 1, 128}, /* thread count would truncate to 128 */
+        {1u << 22, 128},       /* thread count fits, walk IDs do not */
+        {UINT32_MAX, UINT32_MAX},
+    };
+    for (size_t i = 0; i < sizeof(dimensions) / sizeof(dimensions[0]); i++) {
+        ca_gpu_rho_params p;
+        ca_gpu_rho_params_default(&p);
+        p.backend = CA_GPU_BACKEND_EMULATE;
+        p.blocks = dimensions[i][0];
+        p.threads_per_block = dimensions[i][1];
+        p.dp_bits = 0;
+        p.steps_per_launch = 1;
+        p.max_ops = 1;
+        uint64_t got = UINT64_MAX;
+        ca_status rc = ca_gpu_rho_solve(&g, &gen, &target, &p, &got, NULL);
+        CHECK(rc == CA_ERR_INVALID);
+        CHECK_EQ_U64(got, UINT64_MAX);
+        if (rc != CA_ERR_INVALID) return; /* a broken guard must not attempt larger allocations */
+    }
+}
+
 int main(void)
 {
+    test_launch_dimension_overflow();
+    test_dp_capacity();
     test_device_arith();
     ca_group g;
     ca_elem gen;

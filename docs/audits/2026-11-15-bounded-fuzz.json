@@ -1,0 +1,129 @@
+{
+  "kind": "producer-reported software correctness controls",
+  "source_head": "d3f1876ad7945a381f065d4a152132290c23b1eb",
+  "merged_source_commit": "54eb4cd3d35d5aa69426d01b87e73a955828a886",
+  "protocol": {
+    "kind": "bounded software correctness controls; no performance comparison",
+    "source_head": "d3f1876ad",
+    "frozen_utc": "2026-11-15T11:05:02.161713+00:00",
+    "harnesses": [
+      "fuzz_coord",
+      "fuzz_dlog",
+      "fuzz_ffi",
+      "fuzz_gpu",
+      "fuzz_group",
+      "fuzz_indexcalc",
+      "fuzz_modarith"
+    ],
+    "compiler": "AppleClang21",
+    "instrumentation": "fuzzer-no-link,address,undefined on entire C library; fuzzer,address,undefined on harnesses",
+    "seed": 12345,
+    "max_total_time_seconds_per_harness": 60,
+    "hard_timeout_seconds_per_harness": 100,
+    "per_input_timeout_seconds": 25,
+    "rss_limit_mb": 1024,
+    "max_input_bytes": 4096,
+    "workers": 1,
+    "corpus": "private copies of committed seeds; original corpus untouched",
+    "results": "retain every exit/failure; no complete audit or timing claim",
+    "amendments": [
+      {
+        "utc": "2026-11-15T11:06:12.807466+00:00",
+        "stage": "before any fuzz execution",
+        "reason": "AppleClang21 installation lacks libclang_rt.fuzzer_osx.a; failed link log retained",
+        "execution_compiler": "installed LLVM23.1.1 with its existing fuzzer runtime",
+        "environment": "process-local DYLD_LIBRARY_PATH to installed Z3 5.1.0; no global changes",
+        "limits": "unchanged"
+      },
+      {
+        "utc": "2026-11-15T11:19:43.220767+00:00",
+        "stage": "before any fuzz execution",
+        "reason": "Apple ld strips DYLD path when loading Homebrew libLTO; failed LLVM23 configure log retained",
+        "execution_compiler": "installed LLVM23.1.1 via task-owned wrapper setting Z3 library path",
+        "linker": "existing Apple ld using its existing Apple libLTO plugin explicitly; non-LTO build",
+        "flags": "-Wl,-lto_library,/Library/Developer/CommandLineTools/usr/lib/libLTO.dylib",
+        "limits": "unchanged",
+        "source_head": "d3f1876ad7945a381f065d4a152132290c23b1eb"
+      }
+    ]
+  },
+  "results": {
+    "source_head": "d3f1876ad7945a381f065d4a152132290c23b1eb",
+    "started_utc": "2026-11-15T11:21:04.446000+00:00",
+    "scope": "local ASan/UBSan correctness controls; no LeakSanitizer, GPU execution, timing comparison or exhaustive coverage",
+    "results": [
+      {
+        "harness": "fuzz_coord",
+        "binary_sha256": "3a6b00b7036cd12fc43283a7f3c05d059dad05e7df742d6e0a38f46347e4e37b",
+        "replay_exit": 0,
+        "fuzz_exit": 0
+      },
+      {
+        "harness": "fuzz_dlog",
+        "binary_sha256": "b6fd236281aad8f8c1dedc550b04636e383185cd57b735c67d00ca3848b6cee7",
+        "replay_exit": 0,
+        "fuzz_exit": 0
+      },
+      {
+        "harness": "fuzz_ffi",
+        "binary_sha256": "31cfeb0857d04134a1140cfee705679c840ede1e09a4e7e8f5d53dd19d0a1955",
+        "replay_exit": 0,
+        "fuzz_exit": 0
+      },
+      {
+        "harness": "fuzz_gpu",
+        "binary_sha256": "d295dbc5798508008691cbe6abe58053560441ab6ac6c6beda973a2dc14eb5d1",
+        "replay_exit": 0,
+        "fuzz_exit": 0
+      },
+      {
+        "harness": "fuzz_group",
+        "binary_sha256": "8709e246036011390a0151fda04b3cc8c29a0be53a31f21e12528160efa84408",
+        "replay_exit": 0,
+        "fuzz_exit": 0
+      },
+      {
+        "harness": "fuzz_indexcalc",
+        "binary_sha256": "2ea0454713ed003d304f9fcd266842d82928888af995bf4926da9002d15fa68f",
+        "replay_exit": 0,
+        "fuzz_exit": 0
+      },
+      {
+        "harness": "fuzz_modarith",
+        "binary_sha256": "d7d7db8bb285870dcb4f7acad635fa6c9dad1dc9cbc1e1d5ed17f030415a6605",
+        "replay_exit": 0,
+        "fuzz_exit": 0
+      }
+    ],
+    "ended_utc": "2026-11-15T11:28:14.871560+00:00"
+  },
+  "limitations": [
+    "No LeakSanitizer on this host",
+    "No GPU or optional PTX execution",
+    "No performance comparison or exhaustive-coverage claim",
+    "Hosted fuzz workflow was manually disabled and remains unchanged"
+  ],
+  "evidence_comment": "https://github.com/isogeny-labs/cryptanalysis/pull/1543#issuecomment-6893646842",
+  "separate_ptx_arithmetic_control": {
+    "scope": "exact integer operand witness and legal-allocation model; not GPU execution or a fuzz result",
+    "old_commit": "66b636486d04018aef499fb1ba92cee414fe1fa4",
+    "old_header_sha256": "134a01bc6ef1a56351abeca9911a4429389d41371aba63fa8668c449fc05336b",
+    "corrected_header_sha256": "25754e4b198e7c9271e26cfae50fcfd6d4d44b70af2451d5f2e0f12196fd191f",
+    "inputs": {
+      "R": "0x10000000000000000",
+      "p": "0xffffffffffffffc5",
+      "a": "0xffffffffffffffc4",
+      "b": "0xffffffffffffff8a",
+      "pinv": "0xcbeea4e1a08ad8f3",
+      "product": "0xffffffffffffff4e0000000000001ba8",
+      "u": "0x78",
+      "t": "0xffffffffffffffc6"
+    },
+    "canonical_montgomery_result": "0x1",
+    "old_constraint_permitted_overlap": {
+      "s0": "p1"
+    },
+    "overlap_model_result": "0xfffffffe00000001",
+    "new_early_clobber_constraints_forbid_that_overlap": true
+  }
+}

@@ -66,6 +66,12 @@ uint64_t ca_seed_or_random(uint64_t seed)
 
 ca_status ca_htab_init(ca_htab *t, size_t expected)
 {
+    /* 2 * expected must not wrap, nor the doubling below run past the top bit */
+    if (expected > SIZE_MAX / 4) {
+        t->e = NULL;
+        t->cap = t->count = 0;
+        return CA_ERR_NOMEM;
+    }
     size_t cap = 16;
     while (cap < expected * 2) cap <<= 1;
     t->e = calloc(cap, sizeof(ca_htab_entry));
@@ -158,6 +164,12 @@ size_t ca_htab_bytes(const ca_htab *t) { return t->cap * sizeof(ca_htab_entry); 
 
 ca_status ca_htab1_init(ca_htab1 *t, size_t expected)
 {
+    /* 2 * expected must not wrap, nor the doubling below run past the top bit */
+    if (expected > SIZE_MAX / 4) {
+        t->e = NULL;
+        t->cap = t->count = 0;
+        return CA_ERR_NOMEM;
+    }
     size_t cap = 16;
     while (cap < expected * 2) cap <<= 1;
     t->e = calloc(cap, sizeof(ca_htab1_entry));

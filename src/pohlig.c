@@ -81,6 +81,25 @@ static ca_status brute_force(const ca_group *g, const ca_elem *base, const ca_el
         if (ca_group_equal(g, &cur, target)) { *x = lo; return CA_OK; }
         return brute_force_ec_batch(g, base, target, lo, hi, &cur, x, st);
     }
+    if (g->kind == CA_GROUP_ZP && ca_zp_group_is_native(g)) {
+        /* Native Z_p: one Montgomery product per candidate on the residue
+         * word, no vtable calls.  group_ops is charged one per product, as
+         * by the generic loop below. */
+        uint64_t c = cur.w[0], n = 0;
+        const uint64_t t = target->w[0], b = base->w[0];
+        for (uint64_t k = lo;; k++) {
+            if (c == t) {
+                *x = k;
+                if (st) st->group_ops += n;
+                return CA_OK;
+            }
+            if (k == hi) break;
+            c = ca_mont_mul(&g->mont, c, b);
+            n++;
+        }
+        if (st) st->group_ops += n;
+        return CA_ERR_NOT_FOUND;
+    }
     for (uint64_t k = lo;; k++) {
         if (ca_group_equal(g, &cur, target)) { *x = k; return CA_OK; }
         if (k == hi) break;
@@ -408,6 +427,36 @@ ph_done:
     return rc;
 }
 
+/* base^(n / q_i^e_i) for every prime power of n = prod q_i^e_i, by splitting
+ * the factor list in halves: the element for a half is the parent raised to
+ * the product of the other half, so every level of the tree costs about one
+ * exponentiation by n in total instead of one per factor.  The results are
+ * the same group elements (integer exponents, no reduction); the caller still
+ * charges group_ops per original exponent. */
+static void ph_split_powers(const ca_group *g, const ca_elem *y, const uint64_t *qe, unsigned lo,
+                            unsigned hi, ca_elem *out)
+{
+    if (hi - lo == 1) {
+        out[lo] = *y;
+        return;
+    }
+    unsigned mid = lo + (hi - lo) / 2;
+    uint64_t pl = 1, pr = 1;
+    for (unsigned i = lo; i < mid; i++) pl *= qe[i];
+    for (unsigned i = mid; i < hi; i++) pr *= qe[i];
+    ca_elem yl, yr;
+    ca_group_mul(g, &yl, y, pr, NULL);
+    ca_group_mul(g, &yr, y, pl, NULL);
+    ph_split_powers(g, &yl, qe, lo, mid, out);
+    ph_split_powers(g, &yr, qe, mid, hi, out);
+}
+
+static uint64_t ph_mul_ops(uint64_t k)
+{
+    /* what ca_group_mul charges for the multiplier k */
+    return k ? (uint64_t)__builtin_popcountll(k) + (uint64_t)(63 - __builtin_clzll(k)) : 0;
+}
+
 ca_status ca_pohlig_hellman(const ca_group *g, const ca_elem *base, const ca_elem *target,
                             const ca_dlog_params *params, uint64_t *x, ca_stats *st)
 {
@@ -430,6 +479,26 @@ ca_status ca_pohlig_hellman(const ca_group *g, const ca_elem *base, const ca_ele
     ca_factorization f;
     ca_factorize(n, &f);
     uint64_t result = 0, modulus = 1;
+    /* Three or more prime powers: get every base^(n/q^e) and target^(n/q^e)
+     * from one halving tree instead of one long exponentiation each. */
+    ca_elem split_base[CA_MAX_FACTORS], split_target[CA_MAX_FACTORS];
+    const int zp_native = g->kind == CA_GROUP_ZP && ca_zp_group_is_native(g);
+    int use_split = 0;
+    if (f.count >= 3) {
+        uint64_t pw[CA_MAX_FACTORS], total = 1;
+        for (unsigned fi = 0; fi < f.count; fi++) {
+            pw[fi] = 1;
+            for (unsigned k = 0; k < f.f[fi].e; k++) pw[fi] *= f.f[fi].p;
+            total *= pw[fi];
+        }
+        /* total == n for a complete factorization; if the factor list was
+         * truncated, keep the plain path */
+        if (total == n) {
+            ph_split_powers(g, base, pw, 0, f.count, split_base);
+            ph_split_powers(g, target, pw, 0, f.count, split_target);
+            use_split = 1;
+        }
+    }
     for (unsigned fi = 0; fi < f.count; fi++) {
         uint64_t q = f.f[fi].p;
         unsigned e = f.f[fi].e;
@@ -437,8 +506,14 @@ ca_status ca_pohlig_hellman(const ca_group *g, const ca_elem *base, const ca_ele
         for (unsigned k = 0; k < e; k++) qe *= q;
         /* work in the order-q^e subgroup: base_e = (n/q^e) base */
         ca_elem base_e, target_e, gq;
-        ca_group_mul(g, &base_e, base, n / qe, st ? &st->group_ops : NULL);
-        ca_group_mul(g, &target_e, target, n / qe, st ? &st->group_ops : NULL);
+        if (use_split) {
+            base_e = split_base[fi];
+            target_e = split_target[fi];
+            if (st) st->group_ops += 2 * ph_mul_ops(n / qe);
+        } else {
+            ca_group_mul(g, &base_e, base, n / qe, st ? &st->group_ops : NULL);
+            ca_group_mul(g, &target_e, target, n / qe, st ? &st->group_ops : NULL);
+        }
         /* gq = q^(e-1) * base_e has order q */
         ca_group_mul(g, &gq, &base_e, qe / q, st ? &st->group_ops : NULL);
         ca_group sub = *g;
@@ -447,8 +522,20 @@ ca_status ca_pohlig_hellman(const ca_group *g, const ca_elem *base, const ca_ele
         for (unsigned k = 0; k < e; k++) {
             /* h_k = (target_e - xk * base_e) * q^(e-1-k) */
             ca_elem t, hk;
-            ca_group_mul(g, &t, &base_e, xk, st ? &st->group_ops : NULL);
-            ca_group_inv(g, &t, &t);
+            if (zp_native) {
+                /* base_e has order q^e (n = ord(base)), so (xk base_e)^-1 is
+                 * (q^e - xk) base_e: one short exponentiation instead of a
+                 * 64-bit modular inversion; xk = 0 gives the identity.  The
+                 * charge is what the xk multiplication below would add. */
+                if (xk == 0)
+                    ca_group_identity(g, &t);
+                else
+                    ca_group_mul(g, &t, &base_e, qe - xk, NULL);
+                if (st) st->group_ops += ph_mul_ops(xk);
+            } else {
+                ca_group_mul(g, &t, &base_e, xk, st ? &st->group_ops : NULL);
+                ca_group_inv(g, &t, &t);
+            }
             ca_group_op(g, &hk, &target_e, &t);
             ca_group_mul(g, &hk, &hk, qe / (qk * q), st ? &st->group_ops : NULL);
             uint64_t d;
