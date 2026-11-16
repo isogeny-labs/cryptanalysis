@@ -1,0 +1,185 @@
+{
+  "at": "2026-11-15T21:44:29.191431+00:00",
+  "source": "f136ae5ae32e10b380bc3bb4f2339468ff43e65a",
+  "external_remote": "69590ba629e0b6c8b27c59402a83fb9acca6d123",
+  "external_parents": [
+    "f136ae5ae32e10b380bc3bb4f2339468ff43e65a",
+    "cbd5e31c3512f35c0092dce63fb227e5dc1b9499"
+  ],
+  "actual_fetch_exit": 0,
+  "entire_original_PCC_chain_errors": {
+    "base": [],
+    "remote": [],
+    "local": []
+  },
+  "entire_original_PCC_prefix_errors": [
+    "ledger[56]: differs from the base branch (history rewritten)"
+  ],
+  "local_ledger_still_exact_append_only_of_f136": true,
+  "HEAD_all_refs_unchanged": true,
+  "initial_fetch_final_status_guard_failed": true,
+  "actual_status_added": [
+    " M .gitattributes",
+    "?? experiments/chained-transfer-public-target/evidence/diagnostic-CI02-review-cached-whitespace-failure-01/entire-failed-caller.txt.xz",
+    "?? experiments/chained-transfer-public-target/evidence/diagnostic-CI02-review-cached-whitespace-failure-01/whole-staged-filenames.txt",
+    "?? pcc/claims/PCC-20261115-243e85.json",
+    "MM .resume/RESUME.md",
+    "MM docs/session-logs/2026-11-15.md",
+    "MM pcc/ledger.jsonl"
+  ],
+  "actual_status_removed": [
+    "M  .resume/RESUME.md",
+    "M  docs/session-logs/2026-11-15.md",
+    "M  pcc/ledger.jsonl"
+  ],
+  "concurrent_session_edits": "243e85 exactSVGattribute/newfailureclaim/evidence/log/Resume; initial helper broad status guard correctly failed, so no unchanged-status closure is claimed for that attempt",
+  "no_network_retry": true,
+  "all_whole_raw_files": {
+    "base-ledger.exit": {
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    "base-ledger.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "base-ledger.whole": {
+      "bytes": 498911,
+      "sha256": "a4d5d1333373028fb2fa7337773a7f024eb47c5cbf28e7731b14c66a3faa0dc9"
+    },
+    "before-HEAD.txt": {
+      "bytes": 41,
+      "sha256": "0378bad86fb45741e0d527094528d48f70f9ee7d7f8535edea768fcf3d233afd"
+    },
+    "before-refs.txt": {
+      "bytes": 130800,
+      "sha256": "c0f8b80078adc56803490584c5219c428da83b5f194873d8bc5c8cd9e1a8f169"
+    },
+    "before-status.txt": {
+      "bytes": 50692,
+      "sha256": "c3aeaad1bd926ecd15c133ea07c197fa3dc0e407528946f4b57bfcf542b1194a"
+    },
+    "entire-base-to-remote-paths.txt": {
+      "bytes": 24772,
+      "sha256": "a2c11efeea68a9f44fc9e5f3222c85db13e857980a9f06cf6ebd884be838bc80"
+    },
+    "fetch.exit": {
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    "fetch.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "remote-AGENTS.exit": {
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    "remote-AGENTS.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "remote-AGENTS.whole": {
+      "bytes": 71814,
+      "sha256": "ec6ac3723fc140595c44a38a381d5ba01d0cf5ab32bbfeb1613c1123968add77"
+    },
+    "remote-ledger.exit": {
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    "remote-ledger.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "remote-ledger.whole": {
+      "bytes": 511346,
+      "sha256": "1715c37213b7ad895708a42fc1f461666cc898a572e424e8d4c46492ae4db800"
+    },
+    "whole-before-ledger.jsonl": {
+      "bytes": 500527,
+      "sha256": "6a46a668c2ca9def888dfffddbdf0d53689344b200f141177f0f3b1d6e29f5f0"
+    },
+    "whole-remote-commit.txt": {
+      "bytes": 376,
+      "sha256": "3af132535804b1a056fb7a3be230b2f02868217616ee969aef19c6984a4db10b"
+    }
+  },
+  "whole_raw_root": "/workspace/scratch/ct125-concurrent-consumer-merge-01",
+  "all_original_remote_cache": [
+    {
+      "path": "/dev/shm/ct125-concurrent-consumer-merge-objects-01/pack/pack-1c82305335871099955c588dd2f61ba9ddf0b84f.idx",
+      "exposed": "/workspace/cryptanalysis/.git/objects/pack/pack-1c82305335871099955c588dd2f61ba9ddf0b84f.idx",
+      "bytes": 353816,
+      "sha256": "9a0576224ea82a367cc59c1936d761fe37bbb3a39212462ee4f56d95485eccc0"
+    },
+    {
+      "path": "/dev/shm/ct125-concurrent-consumer-merge-objects-01/pack/pack-1c82305335871099955c588dd2f61ba9ddf0b84f.pack",
+      "exposed": "/workspace/cryptanalysis/.git/objects/pack/pack-1c82305335871099955c588dd2f61ba9ddf0b84f.pack",
+      "bytes": 24475132,
+      "sha256": "03eb5cbbd8a44fa61db93de231e88ee111ea3f1c7951b8bd79090d603639bcc7"
+    },
+    {
+      "path": "/dev/shm/ct125-concurrent-consumer-merge-objects-01/pack/pack-1c82305335871099955c588dd2f61ba9ddf0b84f.promisor",
+      "exposed": "/workspace/cryptanalysis/.git/objects/pack/pack-1c82305335871099955c588dd2f61ba9ddf0b84f.promisor",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/dev/shm/ct125-concurrent-consumer-merge-objects-01/pack/pack-1c82305335871099955c588dd2f61ba9ddf0b84f.rev",
+      "exposed": "/workspace/cryptanalysis/.git/objects/pack/pack-1c82305335871099955c588dd2f61ba9ddf0b84f.rev",
+      "bytes": 50444,
+      "sha256": "5193121eed78a6d35118b18b53693783f5a9fba67afa13d5812f1219e5874c46"
+    },
+    {
+      "path": "/dev/shm/ct125-concurrent-consumer-merge-objects-01/pack/pack-6fb199bd379fdb9e0ef0f06e6454ede54ea9f0a4.idx",
+      "exposed": "/workspace/cryptanalysis/.git/objects/pack/pack-6fb199bd379fdb9e0ef0f06e6454ede54ea9f0a4.idx",
+      "bytes": 33860,
+      "sha256": "9ca332eddac87490e5831aa4fc196efaad18119dea6cad0d6102f49212a4b41a"
+    },
+    {
+      "path": "/dev/shm/ct125-concurrent-consumer-merge-objects-01/pack/pack-6fb199bd379fdb9e0ef0f06e6454ede54ea9f0a4.pack",
+      "exposed": "/workspace/cryptanalysis/.git/objects/pack/pack-6fb199bd379fdb9e0ef0f06e6454ede54ea9f0a4.pack",
+      "bytes": 357261,
+      "sha256": "894d9abb38b8deaf69db8c0f539ad3db15812ba482bf6a55c571a5fc39c7fbd0"
+    },
+    {
+      "path": "/dev/shm/ct125-concurrent-consumer-merge-objects-01/pack/pack-6fb199bd379fdb9e0ef0f06e6454ede54ea9f0a4.promisor",
+      "exposed": "/workspace/cryptanalysis/.git/objects/pack/pack-6fb199bd379fdb9e0ef0f06e6454ede54ea9f0a4.promisor",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/dev/shm/ct125-concurrent-consumer-merge-objects-01/pack/pack-6fb199bd379fdb9e0ef0f06e6454ede54ea9f0a4.rev",
+      "exposed": "/workspace/cryptanalysis/.git/objects/pack/pack-6fb199bd379fdb9e0ef0f06e6454ede54ea9f0a4.rev",
+      "bytes": 4736,
+      "sha256": "dce5fa4a0b7f7c275857c6bf354ae20357ad285fc8291d1da63b2eccdf062522"
+    },
+    {
+      "path": "/dev/shm/ct125-concurrent-consumer-merge-objects-01/pack/pack-798a9df604bf58c982e1adbe58aa162174241861.idx",
+      "exposed": "/workspace/cryptanalysis/.git/objects/pack/pack-798a9df604bf58c982e1adbe58aa162174241861.idx",
+      "bytes": 1100,
+      "sha256": "31c65d73659e3314822674a0d27369ad33f4f8a528d38639b83c617b20e63cd7"
+    },
+    {
+      "path": "/dev/shm/ct125-concurrent-consumer-merge-objects-01/pack/pack-798a9df604bf58c982e1adbe58aa162174241861.pack",
+      "exposed": "/workspace/cryptanalysis/.git/objects/pack/pack-798a9df604bf58c982e1adbe58aa162174241861.pack",
+      "bytes": 134340,
+      "sha256": "2e74a40be7c52d6b6ec4e9c0a7f3d046dc5326b9f2f9285178e9427bc2a835a6"
+    },
+    {
+      "path": "/dev/shm/ct125-concurrent-consumer-merge-objects-01/pack/pack-798a9df604bf58c982e1adbe58aa162174241861.promisor",
+      "exposed": "/workspace/cryptanalysis/.git/objects/pack/pack-798a9df604bf58c982e1adbe58aa162174241861.promisor",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/dev/shm/ct125-concurrent-consumer-merge-objects-01/pack/pack-798a9df604bf58c982e1adbe58aa162174241861.rev",
+      "exposed": "/workspace/cryptanalysis/.git/objects/pack/pack-798a9df604bf58c982e1adbe58aa162174241861.rev",
+      "bytes": 56,
+      "sha256": "bf98dc35387e19f3471b6c07b5d2b00842e5cdad56e24d04daf75d1689cb7dee"
+    }
+  ],
+  "no_existing_objects_deleted_or_moved": true,
+  "no_sharedbranch_push_or_merge_or_rechain": true,
+  "scope": "unsigned immutable remote/ledger inspection after retained own-concurrent-metadata guard failure; not a mathematical run or accepted unchanged-worktree receipt"
+}

@@ -1,0 +1,10 @@
+ledger 0
+prose 1
+Traceback (most recent call last):
+  File "/workspace/scratch/ct151_publish_cold_identity_preparation_01.py", line 13, in <module>
+    run('ledger',['python3','tools/pcc/pcc.py','ledger','verify','--base',base]);run('prose',['python3','tools/pcc/pcc.py','lint-prose',*[n.decode()for n in paths()if n.endswith(b'.md')]]);run('all1605-original-source-guards',['sha256sum','--check','experiments/chained-transfer-relation-diagnostics-02/reference-02.sha256']);run('benchrec',['python3','tools/benchrec.py','gate']);run('wiring',['python3','tools/artifacts/wire_workflows.py','--check']);run('report-Python',['python3','tools/ci/check_report_graph_python.py']);run('build-preparer-format',['/home/agent/.cargo/bin/rustfmt','--edition','2021','--config','skip_children=true','--check',str(p/'native/build.rs')])
+                                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/ct151_publish_cold_identity_preparation_01.py", line 11, in run
+    q=subprocess.run(c,cwd=r,capture_output=True);b=q.stdout+q.stderr;(g/(n+'.txt.xz')).write_bytes(lzma.compress(b));(g/(n+'.exit')).write_text(str(q.returncode)+'\n');print(n,q.returncode,flush=True);assert q.returncode==0
+                                                                                                                                                                                                                 ^^^^^^^^^^^^^^^
+AssertionError

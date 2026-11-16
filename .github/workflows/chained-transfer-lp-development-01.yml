@@ -1,0 +1,138 @@
+name: LP projection native development and original proof gates01
+
+on:
+  pull_request:
+    paths:
+      - 'experiments/chained-transfer-lp-presentation-01/**'
+      - '.github/workflows/chained-transfer-lp-development-01.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  finite-development:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      RUSTUP_TOOLCHAIN: 1.99.1
+      SOURCE_REVISION: ${{ github.event.pull_request.head.sha || github.sha }}
+      ELAN_TOOLCHAIN: leanprover/lean4:v4.35.0
+    steps:
+      - name: Initialize complete partial-output custody
+        run: |
+          mkdir "$RUNNER_TEMP/lp-development-custody"
+          date -u +%FT%TZ > "$RUNNER_TEMP/lp-development-custody/start.txt"
+          printf '%s\n' "$SOURCE_REVISION" > "$RUNNER_TEMP/lp-development-custody/source-revision.txt"
+          printf '%s\n' '${{ github.workflow_sha }}' > "$RUNNER_TEMP/lp-development-custody/workflow-revision.txt"
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          path: cryptanalysis
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /experiments/chained-transfer-lp-presentation-01/
+            /tools/lean/
+            /.github/workflows/chained-transfer-lp-development-01.yml
+      - name: Checkout immutable original identity, SHA and Root proof gate
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          repository: isogeny-labs/crypto
+          ref: 2d46258afc20188b8593b3a0693183d1282e0aaf
+          persist-credentials: false
+          path: crypto
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /src/cryptanalysis/identity_certificate.rs
+            /src/hash/sha256.rs
+            /tools/lean/
+      - name: Retain actual executing workflow source
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          ref: ${{ github.workflow_sha }}
+          path: executed-workflow
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /.github/workflows/chained-transfer-lp-development-01.yml
+      - name: Install declared development toolchains
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.99.1 --profile minimal --component rustfmt --component clippy
+          out="$RUNNER_TEMP/lp-development-custody"
+          curl -fsSL --connect-timeout 15 --max-time 120 https://raw.githubusercontent.com/leanprover/elan/v4.2.4/elan-init.sh -o "$out/actual-elan-init.sh"
+          sh "$out/actual-elan-init.sh" -y --no-modify-path --default-toolchain "$ELAN_TOOLCHAIN"
+          "$HOME/.elan/bin/elan" toolchain install leanprover/lean4:v4.34.1
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Build, replay every synthetic case, check whole controls and original proofs
+        working-directory: cryptanalysis
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/lp-development-custody"
+          component=experiments/chained-transfer-lp-presentation-01
+          test "$(git rev-parse HEAD)" = "$SOURCE_REVISION"
+          git rev-parse HEAD > "$out/actual-source-head.txt"
+          git -C ../crypto rev-parse HEAD > "$out/actual-original-source-head.txt"
+          test "$(cat "$out/actual-original-source-head.txt")" = 2d46258afc20188b8593b3a0693183d1282e0aaf
+          cp ../executed-workflow/.github/workflows/chained-transfer-lp-development-01.yml "$out/actual-workflow.yml"
+          echo 'd81ee915ad769a87d7aac5d9664631239607f4a0deb27850cdb52cea84e34270  ../crypto/src/cryptanalysis/identity_certificate.rs' | sha256sum --check
+          echo '2bafe271f1b2f6e6eb1a100f672f81e2b16bbe30b6db29ac579c0740dfe9eddf  ../crypto/src/hash/sha256.rs' | sha256sum --check
+          echo '2fe88bb302db587bbb6ede217fc646cf8fa35f9b9a2980e4a15dae273b8df6eb  ../crypto/tools/lean/proof-gate.sh' | sha256sum --check
+          echo 'b90d6b58c92138f4f4e4d4692a9c3152629c3aafa537e789248bebbf6ddb1929  ../crypto/tools/lean/AuditAxioms.lean' | sha256sum --check
+          echo 'a64f4010f3713653786e56ef7762b3e879720e2706ca78f979a0fefe2d53a7e2  tools/lean/proof-gate.sh' | sha256sum --check
+          echo 'f97280b48f1846d13e7ed96d9691753811551864162086fb25e9fe05438aa7dc  tools/lean/AuditAxioms.lean' | sha256sum --check
+          cp -r "$component/native" "$out/entire-identity-source"
+          cp -r "$component/matrix-01" "$out/entire-matrix-source"
+          cp -r "$component/lean" "$out/entire-proof-source"
+          cp -r tools/lean "$out/original-Consumer-proof-tools"
+          cp -r ../crypto/tools/lean "$out/original-Root-proof-tools"
+          cp ../crypto/src/cryptanalysis/identity_certificate.rs "$out/original-identity-module.rs"
+          cp ../crypto/src/hash/sha256.rs "$out/original-SHA-module.rs"
+          rustc --version --verbose > "$out/rustc.txt"
+          uname -a > "$out/host.txt"
+          export CARGO_TARGET_DIR="$RUNNER_TEMP/lp-development-target" CARGO_INCREMENTAL=0 CARGO_BUILD_JOBS=1
+          bounded() (ulimit -v 2097152; exec timeout 120 "$@")
+          phase() {
+            local name=$1 code
+            shift
+            set +e
+            "$@" > "$out/$name.log" 2>&1
+            code=$?
+            set -e
+            printf '%s\n' "$code" > "$out/$name.exit"
+            printf '%s %s\n' "$name" "$code" >> "$out/actual-phases.txt"
+            if test "$code" -ne 0; then cat "$out/$name.log"; fi
+            return "$code"
+          }
+          phase fetch-identity-lock timeout 120 cargo fetch --locked --manifest-path "$component/native/Cargo.toml"
+          phase fetch-matrix-lock timeout 120 cargo fetch --locked --manifest-path "$component/matrix-01/Cargo.toml"
+          phase identity-unit-tests bounded cargo test --release --locked --offline --manifest-path "$component/native/Cargo.toml"
+          phase matrix-unit-and-exhaustive-tests bounded cargo test --release --locked --offline --manifest-path "$component/matrix-01/Cargo.toml" -- --nocapture
+          phase matrix-strict-Clippy bounded cargo clippy --release --locked --offline --all-targets --manifest-path "$component/matrix-01/Cargo.toml" -- -D warnings
+          phase whole-synthetic-process-controls bash "$component/matrix-01/run-development-01.sh" "$out/complete-synthetic-processes" "$CARGO_TARGET_DIR"
+          phase identity-binary-build bounded cargo build --release --locked --offline --manifest-path "$component/native/Cargo.toml" --bin lp-foundation-identities
+          cp "$CARGO_TARGET_DIR/release/lp-foundation-identities" "$out/actual-identity-binary.bin"
+          cp "$CARGO_TARGET_DIR/release/lp-foundation-identities.d" "$out/actual-identity-dependency-closure.d"
+          phase complete-identity-controls bounded "$CARGO_TARGET_DIR/release/lp-foundation-identities" "$out/complete-identity-controls" "$component/lean/LPProjection.lean"
+          phase exact-identity-corpus diff -r "$component/evidence/foundation-proof-and-identity-01/entire-native-identities" "$out/complete-identity-controls"
+          phase report-binary-build bounded cargo build --release --locked --offline --manifest-path "$component/matrix-01/Cargo.toml" --bin report_development
+          cp "$CARGO_TARGET_DIR/release/report_development" "$out/actual-report-binary.bin"
+          mkdir "$out/native-report"
+          phase native-report bounded "$CARGO_TARGET_DIR/release/report_development" "$out/complete-synthetic-processes/entire-produced-cases/development-observations.json" "$out/native-report"
+          phase exact-native-report-MD cmp "$component/report-matrix-01/generated-results.md" "$out/native-report/generated-results.md"
+          phase exact-native-report-Typst cmp "$component/report-matrix-01/generated-table.typ" "$out/native-report/generated-table.typ"
+          phase original-Consumer-Lean434 env ELAN_TOOLCHAIN=leanprover/lean4:v4.34.1 timeout 120 bash tools/lean/proof-gate.sh --out "$out/original-Consumer-Lean434" "$component/lean/LPProjection.lean"
+          phase original-Root-Lean435 env ELAN_TOOLCHAIN=leanprover/lean4:v4.35.0 timeout 120 bash ../crypto/tools/lean/proof-gate.sh --out "$out/original-Root-Lean435" "$component/lean/LPProjection.lean"
+          cargo metadata --offline --format-version 1 --manifest-path "$component/matrix-01/Cargo.toml" > "$out/entire-Cargo-metadata.json"
+          git status --porcelain --untracked-files=all > "$out/final-source-status.txt"
+          test ! -s "$out/final-source-status.txt"
+          printf '0\n' > "$out/original.exit"
+          date -u +%FT%TZ > "$out/finish.txt"
+      - name: Retain every complete and partial development artifact
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: lp-development-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/lp-development-custody
+          if-no-files-found: error

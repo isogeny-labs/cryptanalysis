@@ -1,0 +1,15 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T16:20:24Z",
+ "id": "PCC-20261116-cf7e2d",
+ "kind": "statement",
+ "producer": {
+  "commit": "f49291db45545796337a026ae01f352d9fbac917",
+  "model": "",
+  "session": "ic-rational-current-20261115"
+ },
+ "proofs": [],
+ "schema": "pcc.claim/v1",
+ "scope": "working SIMD inverse product prototype; local control receipts ic-vector-inverse-20261116/local-001",
+ "statement": "Implemented opt-in vector inverse product passes for bounded8through16canonical inputs with zero masks, padded-identity lanes, one shared inverse tree, full scalar fallback and unchanged point stream. Local filters2vector-inverse,27framework,5batched-walk passed with overlapping counts;10development-fixture ARM fallback routes and5fields times512states times4stream comparisons passed. Strict x86musl library/probe Clippy passed after removing a redundant probe match; first failure retained. No actual native x86 inverse execution or performance result yet."
+}

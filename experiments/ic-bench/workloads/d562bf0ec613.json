@@ -1,0 +1,19 @@
+{
+  "schema": "ic-bench-workload/1",
+  "curve_id": "EC1N18Crbhe731503070c0",
+  "subgroup_order": "32719",
+  "target_count": 1,
+  "cache_state": "cold",
+  "fixture": 172,
+  "prng": "StdRng rand pinned in suite/Cargo.lock",
+  "target_law": "public fixed seed law in ic_affine_pipeline_probe.rs; scalar uniform on [1,r-1]",
+  "targets": [
+    [
+      7713,
+      215173,
+      260549
+    ]
+  ],
+  "walk_seed": 2685290946844400585,
+  "rho_reference": "plain and negation repository walks on this exact point and walk seed"
+}

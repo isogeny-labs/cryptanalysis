@@ -1,0 +1,16 @@
+{
+  "schema": "xedni-fixed-curve-admission-protocol-v1",
+  "question": "For the fixed rank-one rational curve and coordinate cap |k|<=4, how many public points and ordered pairs can the lift law admit?",
+  "input_selection_result_sha256": "b18127c392b904559ac12512642ab0322eaa3b9b72a61f45dacf4a2fb8c9a25c",
+  "rank_one_control_result_sha256": "c12c6216cb3e6e18a96c4671441b2d40eff5f6bed880dc10efe422353e13c54b",
+  "finite_group_source_sha256": "f053f8cfc20e35b253caaa05fa89665318e1c47af587beec69347c6e28026284",
+  "curve": "fixed E/Q: y^2=x^3-x-2, rational generator P=(2,2), rank one and trivial torsion per pinned Sage control",
+  "fields": "all eight selected fields in input order",
+  "subgroup_generator": "G=m(P mod p), where m=ord(P mod p)/q",
+  "public_target": "Q=17G; fixture scalar used only for independent replay",
+  "query_law": "every ordered (t1,t2) in [0,q)^2, with R_i=Q-t_iG",
+  "lift_admission": "R is reduction of kP for some integer -4<=k<=4",
+  "pair_status_order": ["identity", "duplicate", "admitted", "outside_cap"],
+  "raw_rows": "deterministic gzip JSONL per field with all ordered pairs",
+  "claim_boundary": "fixed rational curve and bounded rank-one generator coordinates; pair-dependent curve selection is outside this law"
+}

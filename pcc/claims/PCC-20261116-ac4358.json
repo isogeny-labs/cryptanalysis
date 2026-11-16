@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-16T04:52:58Z",
+ "id": "PCC-20261116-ac4358",
+ "kind": "theorem",
+ "producer": {
+  "commit": "c045dfdf2e682d0c98fba9a1bcd7824c00c649dd",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "8dfae10c5e33aacf20cf36d8fbb2d4b028a889a86649b6e59f7256ab41924504",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-final-06/LPGraphCases02.lean",
+   "theorem": "LPGraphCases02.triangle_has_lift"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Scalar relation equations over Lean.Grind.CommRing; exact inverse-of-two/nonzero assumptions as stated; explicit lifts. No numerical dimension, program/geometry/global character or cost claim. Source immutable; both original proof gates pass10/0 as data pcc/claims/PCC-20261116-be98f8.json",
+ "statement": "theorem triangle_has_lift {K : Type} [CommRing K] (half : K) (two_half : (2 : K) * half = 1) (f eta : K) : \u2203 a b c, Triangle f eta a b c"
+}

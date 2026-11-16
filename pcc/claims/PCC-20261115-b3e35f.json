@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-15T08:36:24Z",
+ "id": "PCC-20261115-b3e35f",
+ "kind": "theorem",
+ "producer": {
+  "commit": "e633524f33e62c4ffa273ffefd4a8ea3915ef93d",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "8b4dc83d386180fa4d3e159858cdd65bb8ab4d89ffd0c000047df074cdca70f5",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/original-full-evaluator-01/lean/OriginalFullChain.lean",
+   "theorem": "OriginalFullChain.known_point_representation"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Conditional IntModule algebra under explicit linearity/duality/kerneltransport/Frobenius/kernel-description/order-annihilation hypotheses. Sixteen old roots and hypotheses are literal unchanged source concatenation, including historical nu12-only numeric roots; those historical values are NOT original-order witnesses. Three additive roots derive p/zero knownpoint representation, knownpoint output from old half/correction independence (no assumed desired evaluator equality), and actual original ORDER11092292/gcd13-169/squares89-40-6/inverse13=3413013 inverse169=9648325 and IntBezout witnesses. Both unchanged original434/435 gates19roots0trusted. Actual field/HLP/geometricquotient/Frobenius/Picard/program/order bridges remain explicit; no signedstanding, cost or computational advantage.",
+ "statement": "theorem known_point_representation {A J : Type} [IntModule A] [IntModule J] (phi : A \u2192 J) (norm : J \u2192 A) (duality : \u2200 a, norm (phi a)=(2 : Int) \u2022 a) (phi_zero : phi 0=0) (p : A) : (2 : Int) \u2022 p=norm (phi p) \u2227 phi 0=phi p-phi p"
+}

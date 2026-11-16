@@ -1,0 +1,47 @@
+[
+  {
+    "claim": "pcc/claims/PCC-20261115-592898.json",
+    "theorem": "InducedFullTransfer.representative_independence",
+    "statement": "theorem representative_independence {A J B K : Type} [IntModule A] [IntModule J] [IntModule B] [IntModule K] (source : Presentation A J) (target : Presentation B K) (edge : CompatibleEdge source target) (a b : A) (same : source.phi a=source.phi b) : target.phi (edge.map a)=target.phi (edge.map b)"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-ea800e.json",
+    "theorem": "InducedFullTransfer.induced_on_source",
+    "statement": "theorem induced_on_source {A J B K : Type} [IntModule A] [IntModule J] [IntModule B] [IntModule K] (source : Presentation A J) (target : Presentation B K) (edge : CompatibleEdge source target) (a : A) : transfer edge (source.phi a)=target.phi (edge.map a)"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-0b07fa.json",
+    "theorem": "InducedFullTransfer.induced_additive",
+    "statement": "theorem induced_additive {A J B K : Type} [IntModule A] [IntModule J] [IntModule B] [IntModule K] (source : Presentation A J) (target : Presentation B K) (edge : CompatibleEdge source target) (x y : J) : transfer edge (x+y)=transfer edge x+transfer edge y"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-11ccb9.json",
+    "theorem": "InducedFullTransfer.induced_integer_linear",
+    "statement": "theorem induced_integer_linear {A J B K : Type} [IntModule A] [IntModule J] [IntModule B] [IntModule K] (source : Presentation A J) (target : Presentation B K) (edge : CompatibleEdge source target) (z : Int) (x : J) : transfer edge (z \u2022 x)=z \u2022 transfer edge x"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-936200.json",
+    "theorem": "InducedFullTransfer.induced_reverse_norms",
+    "statement": "theorem induced_reverse_norms {A J B K : Type} [IntModule A] [IntModule J] [IntModule B] [IntModule K] (source : Presentation A J) (target : Presentation B K) (forward : CompatibleEdge source target) (reverse : CompatibleEdge target source) (n : Int) (source_elliptic_dual : \u2200 a, reverse.map (forward.map a)=n \u2022 a) (target_elliptic_dual : \u2200 b, forward.map (reverse.map b)=n \u2022 b) : (\u2200 x, transfer reverse (transfer forward x)=n \u2022 x) \u2227 (\u2200 y, transfer forward (transfer reverse y)=n \u2022 y)"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-ada574.json",
+    "theorem": "InducedFullTransfer.induced_chain_collapse",
+    "statement": "theorem induced_chain_collapse {A J B K C L : Type} [IntModule A] [IntModule J] [IntModule B] [IntModule K] [IntModule C] [IntModule L] (source : Presentation A J) (middle : Presentation B K) (target : Presentation C L) (first : CompatibleEdge source middle) (second : CompatibleEdge middle target) (x : J) : transfer second (transfer first x)= target.phi (second.map (first.map (source.lift x)))"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-541344.json",
+    "theorem": "InducedFullTransfer.recover_on_annihilator",
+    "statement": "theorem recover_on_annihilator {A J B K : Type} [IntModule A] [IntModule J] [IntModule B] [IntModule K] (source : Presentation A J) (target : Presentation B K) (forward : CompatibleEdge source target) (reverse : CompatibleEdge target source) (n order inverse quotient : Int) (source_elliptic_dual : \u2200 a, reverse.map (forward.map a)=n \u2022 a) (target_elliptic_dual : \u2200 b, forward.map (reverse.map b)=n \u2022 b) (bezout : inverse*n+quotient*order=1) (x : J) (annihilated : order \u2022 x=0) : inverse \u2022 transfer reverse (transfer forward x)=x"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-57b14d.json",
+    "theorem": "InducedFullTransfer.injective_on_annihilator",
+    "statement": "theorem injective_on_annihilator {A J B K : Type} [IntModule A] [IntModule J] [IntModule B] [IntModule K] (source : Presentation A J) (target : Presentation B K) (forward : CompatibleEdge source target) (reverse : CompatibleEdge target source) (n order inverse quotient : Int) (source_elliptic_dual : \u2200 a, reverse.map (forward.map a)=n \u2022 a) (target_elliptic_dual : \u2200 b, forward.map (reverse.map b)=n \u2022 b) (bezout : inverse*n+quotient*order=1) (x y : J) (annihilated_x : order \u2022 x=0) (annihilated_y : order \u2022 y=0) (same : transfer forward x=transfer forward y) : x=y"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-a7d195.json",
+    "theorem": "InducedFullTransfer.actual_original_witnesses",
+    "statement": "theorem actual_original_witnesses : (3413013*13+(-4)*11092292 : Int)=1 \u2227 (9648325*169+(-147)*11092292 : Int)=1 \u2227 Nat.gcd 13 11092292=1 \u2227 Nat.gcd 169 11092292=1"
+  }
+]

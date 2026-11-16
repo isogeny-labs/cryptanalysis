@@ -1,0 +1,31 @@
+"""Compilation, dependency closure and full prepared-byte custody only."""
+from pathlib import Path
+from datetime import datetime,timezone
+import hashlib,json,lzma,shutil,subprocess
+r=Path('/workspace/cryptanalysis');s=r/'experiments/chained-transfer-public-target';pkg=s/'original-full-geometry-01'
+raw=Path('/workspace/scratch/ct88-original-full-geometry-build-01');e=s/'evidence/original-full-geometry-compiled-01';e.mkdir()
+assert(raw/'original.exit').read_text().strip()=='0'
+for name in ['prior-inputs','locked-graph','metadata','inherited-preparation','chain-compile','auditor-compile','final-prior-inputs']:assert(raw/(name+'.exit')).read_text().strip()=='0'
+for p in sorted((raw/'actual-source').rglob('*')):
+ if p.is_file():assert p.read_bytes()==(pkg/p.relative_to(raw/'actual-source')).read_bytes()
+for label in ['chain','auditor']:
+ row=json.loads((raw/(label+'-compiled-custody.json')).read_text());assert Path(row['copy']).read_bytes()==Path(row['actual_path']).read_bytes();shutil.copyfile(raw/(label+'-compiled-custody.json'),e/(label+'-compiled-custody.json'))
+for name in ['engine-prepared.json','engine-reused.json','inherited-preparation.json']:shutil.copyfile(raw/name,e/name)
+for row in json.loads((raw/'engine-prepared.json').read_text())['files']:assert Path(row['copy']).read_bytes()==Path(row['actual_path']).read_bytes()
+for p in sorted(raw.iterdir()):
+ if p.is_file()and p.suffix not in ['.bin','.json']:
+  b=p.read_bytes();name=p.name+'.xz'if len(b)>60000 else p.name;value=lzma.compress(b)if len(b)>60000 else b
+  assert len(value)<262144;(e/name).write_bytes(value)
+for name in ['source-derivation.json','generated/custody.json']:shutil.copyfile(pkg/name,e/Path(name).name)
+inventory={p.relative_to(raw).as_posix():dict(bytes=p.stat().st_size,sha256=hashlib.file_digest(p.open('rb'),'sha256').hexdigest())for p in sorted(raw.rglob('*'))if p.is_file()}
+(e/'whole-build-inventory.json').write_text(json.dumps(dict(root=str(raw),all_members=inventory,future_custody='NEW24; entireactualsource/executables/fullpreparedlibraries retained'),indent=2)+'\n')
+(e/'outcome.json').write_text(json.dumps(dict(at=datetime.now(timezone.utc).isoformat(),prospective='1539b6 publishedd4f9d6b before code',all_prior1206_guards=0,locked_offline_graph=0,exact_field_engine_dependency_feature_target_closure_equal=True,whole_prepared_RLIB_RMETA_equal=True,actual_Cargo_engine_reused=True,new_engine_preparation=False,unfiltered_geometry_test_compiled=0,whole_record_auditor_compiled=0,source_and_actual_executables_wholebytes_equal=True,native='NOT RUN',whole16_acceptance='pending',phaseB='NOT WRITTEN; waits forcompleteA acceptance',scope='unsigned compilation/custody only'),indent=2)+'\n')
+shutil.copyfile(__file__,e/'original-record-command.py')
+cmd=['python3','tools/pcc/pcc.py','claim','new','--kind','statement','--claim-type','data','--statement','Full-original-group protocol1539b6/d4f9d6b geometry PhaseA compiledsource01: all1206prior sourcehashes0, lockedofflinegraph/metadata/exactentirefieldengine dependency-features-targetclosure inheritance0; bothunfiltered geometrytest andwhole16auditor compile0. ActualCargo enginefresh reuse andentirecache/fullprepared RLIB-RMETA byteequality pass; no newenginepreparation, closedcopies linked onlyafterindependentwholecomparison. Actualsource/test/auditor/fullpreparedlibraries andwholebuildinventory retained. Originalcases2,0-0,1-2,0/D116-39-36/sourcegenerators/branchfalse/whole18rowcensusparity, all224origins/separatequadraticorigins/fullcorrection controls andactualforeignprime control implemented. Complementarytwistorder/no13polecondition retained. NativeNOTRUN/full16acceptancepending; PhaseBnotwritten untilApasses. Publish exactcompiledsource/fresh originalcheckpoint/immediategate beforeone900s2GiBtest/120sauditors. FuturecustodyNEW24; unsignedcompilation only.']
+for p in sorted(e.iterdir()):
+ assert p.stat().st_size<262144
+ cmd+=['--proof','attestation:'+p.relative_to(r).as_posix()]
+claim=subprocess.check_output(cmd,cwd=r,text=True).strip();Path('/workspace/scratch/ct88-full-geometry-compiled.claim.txt').write_text(claim+'\n');print(claim)
+state='# Full original geometry PhaseA compiled; exact published checkpoint next\n\n'+claim+': protocol1539b6 publishedd4f9d6b beforecode. All1206priorhashes/lockedgraph/metadata/exactfieldengine closure/wholeprepared-librarybytes pass; bothgeometrytest andwhole16auditor compile0. ActualCargo fieldengine reuse, no newenginepreparation. NativeNOTRUN/whole16acceptancepending; PhaseBnotwritten. [pcc:unverified]\n\n## What was done\nAdditiveoriginal-full-geometry-01 fixedcases(2,0)/(0,1)/(2,0), D116/39/36 andoriginalell2773073/order11092292. Originalsourcegenerators/identities/branchfalse, independentcomplementaryorder/no13pole control andgenuinelyforeignprime rejection, literalprime/quadraticbackends/oldknownanswer pluswhole18rowparity implemented. Allactualsource/executables/fullpreparedRLIB-RMETA copies retained. [pcc:unverified]\n\n## Decisions made\nPublish exactcompiledsource; originalcheckpoint17 matching cleanHEAD/Resume/tool/all28members andimmediate gate0 before original-full-geometry-01/run-native-01.sh EXACTHEAD /workspace/scratch/ct88-original-full-geometry-native-01 /workspace/scratch/ct88-original-full-geometry-build-01. Require all16whole records/allorigins-fibres-controls/actualgeometry omission101-nooutput/1206guards/actualbinarybytes,900s2GiB/120sauditors. [pcc:unverified]\n\n## Open threads\nSourcepublication/checkpoint17/nativeA; onlyaftercompleteA acceptance implementPhaseB701fullrecords under1539b6. Existingcensus88f828/proof29e535/reportcd8173 andprime-only976f50 choices/fixednegative scopes unchanged. FuturewholecustodyNEW24. [pcc:unverified]\n\n## Errors\nNo PhaseAcompilefailure; exactdependency closure andallfullcopies matcholdnormreusebuild01. Allhistoricalscientific/infrastructure/source/proof/format failures retained. No calibratedcost/globalCI/signedpromotion. [pcc:unverified]\n\n---\n\n'
+for p in [r/'.resume/RESUME.md',s/'CHECKPOINT.md',s/'RESEARCH_QUEUE.md']:p.write_text(state+p.read_text())
+p=r/'docs/session-logs/2026-11-15.md';p.write_text(p.read_text().rstrip()+'\n\n'+state.split('\n---')[0].rstrip()+'\n')

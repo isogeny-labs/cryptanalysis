@@ -1,0 +1,15 @@
+{
+  "schema": "xedni-nonisomorphic-holdout-protocol-v1",
+  "question": "Does the centered rational lift rank-one yield from the training panel persist on deterministic unseen prime-order fields?",
+  "training": "eight fields 313,421,431,547,571,593,617,677; u=1..5 inspected before this holdout",
+  "field_selection": "the first eight prime p>677 for which #E(F_p) is prime, E:y^2=x^3-x-2; scan p in increasing order using exact Legendre-symbol point count and trial-division primality",
+  "expected_fields": [[773,751],[863,883],[883,883],[983,983],[1049,1103],[1153,1153],[1423,1453],[1433,1459]],
+  "candidate_reduced_points": "uG for u=1,2,3,4,5; G=(2,2) on each prime-order field",
+  "lift": "center each affine x,y in [-p/2,p/2]; B=y^2-x^3+x; E/Q:y^2=x^3-x+B; P=(x,y)",
+  "rank_test": "checked Sage E.rank(proof=True) and torsion_subgroup().order(), retaining errors and timeouts",
+  "per_candidate_cap_seconds": 12,
+  "max_concurrent_sage_workers": 2,
+  "candidate_count": 40,
+  "promotion": "only proved rank-one, trivial-torsion rows with point independently checked as a signed Mordell-Weil generator",
+  "claim_boundary": "holdout rank-screen event rate and finite-panel admission, not a wall-time or same-target speed comparison"
+}

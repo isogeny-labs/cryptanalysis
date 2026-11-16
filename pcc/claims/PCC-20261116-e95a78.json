@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-16T04:52:59Z",
+ "id": "PCC-20261116-e95a78",
+ "kind": "theorem",
+ "producer": {
+  "commit": "c045dfdf2e682d0c98fba9a1bcd7824c00c649dd",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "7487b2eafd38c1ee7746ccebce4a1158b46c18452597bb400c1a4b992c0fcf00",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-final-06/LPGraphCases02.lean",
+   "theorem": "LPGraphCases02.even_four_no_unit_lift"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Scalar relation equations over Lean.Grind.CommRing; exact inverse-of-two/nonzero assumptions as stated; explicit lifts. No numerical dimension, program/geometry/global character or cost claim. Source immutable; both original proof gates pass10/0 as data pcc/claims/PCC-20261116-be98f8.json",
+ "statement": "theorem even_four_no_unit_lift {K : Type} [CommRing K] (one_ne_zero : (1 : K) \u2260 0) : \u00ac \u2203 a b c d, EvenFour (0 : K) 1 0 a b c d"
+}

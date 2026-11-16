@@ -1,0 +1,20 @@
+{
+  "schema": "xedni-precommitted-vector-lift-v1",
+  "question": "When a vector-dependent rank-one rational lift rule is fixed before fresh public queries, is its second reduction check equivalent to the public group relation, with all attempts charged?",
+  "field_registry": "experiments/xedni-crt-band-panel-20261115/result.json",
+  "field_registry_sha256": "edbe3a808aa86054c00f15a5ae40814ed2f8452c4316abbe68f41a62f2219b49",
+  "selected_family": "experiments/xedni-coefficient-optimization-20261115/family-selection.json",
+  "selected_family_sha256": "82b340802ae37e8aaa3b1b0c2774911c27de88ef0e7d99e54fd9378b53f92894",
+  "base_curve": "E/F_p: y^2=x^3-x-2; exact G and prime subgroup q from the pinned registry",
+  "target_law": "for j=0,1,2,3, let w=1+SHA256('xedni-precommitted-v1|p|j') interpreted big-endian modulo (q-1), and Q=wG; fixture construction is outside the attempt phase",
+  "target_scalars_by_field": {"47": [6,11,29,14], "101": [8,6,29,2], "191": [42,12,36,23], "211": [28,10,4,71], "251": [35,31,27,5], "281": [54,23,68,60], "347": [24,11,36,9], "349": [9,5,35,48]},
+  "query_law": "offset list [0,1,2,3,5,8,13,21]; for each field and target, take the first 16 lexicographic ordered distinct offsets (t1,t2) with U=Q-t1G and V=Q-t2G both nonidentity",
+  "selected_attempts": "for every query use all 13 selected public coefficient vectors in saved order; 8 fields times 4 targets times 16 queries times 13 vectors = 6656 attempts",
+  "precommitted_construction": "for vector (a,b) with b invertible mod q, compute finite T=b^-1 U without testing aU+bV; center T's affine coordinates (x,y), set B=y^2-x^3+x and E_B/Q:y^2=x^3-x+B, P=(x,y), A=bP, C=-aP; check nonsingularity, good reduction, the rational relation aA+bC=O, and both reductions A=U,C=V",
+  "acceptance": "accept exactly when all construction and reduction checks pass; separately compute public aU+bV=O after construction as an independently recorded diagnostic, and verify acceptance equivalence",
+  "controls": "after selected attempts, for each target use vector (1,2) and offsets t1=0,t2=(3w)/2 mod q as a planted public-relation positive control; use the first t2+k mod q, k>=1, with distinct nonidentity U,V and false public relation as a negative control; controls are separate from selected yield",
+  "cost_accounting": "record every attempted vector, rational model construction, scalar multiplication, reduction check, acceptance/rejection, and public diagnostic; no isolated wall-time comparison",
+  "falsifiers": ["rational model or point construction fails", "accepted row lacks the public relation", "public relation row fails either reduction check", "positive or negative control disagrees with its frozen status"],
+  "run_cap_seconds": 900,
+  "formal_goal": "prove in Lean the reduction-check iff public-relation implication with an explicit injectivity hypothesis on multiplication by b in the finite target group; leave actual elliptic-curve reduction-map instantiation explicit if unavailable"
+}

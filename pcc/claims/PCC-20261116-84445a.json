@@ -1,0 +1,44 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T17:18:23Z",
+ "id": "PCC-20261116-84445a",
+ "kind": "statement",
+ "producer": {
+  "commit": "bb451dc4c85e001cc7c3b629cdeff93a7235b6c9",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/raw-Git-receipt-whitespace-negative-17/ACTUAL_RAW_RECEIPT_DIAGNOSTIC.json",
+    "sha256": "04367044b76319bf4bc5bdb13e2ea90772e81d50273f35c852d082ba77d7a978"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/raw-Git-receipt-whitespace-negative-17/entire-original-metadata-caller.txt",
+    "sha256": "a76824b3608fa5bfd91cb34b21ab72fb617165f5da1d0e38a33f96394c57a3b2"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/genuine-docs-normal-source-checkpoint-16/cached-whitespace.stdout.xz",
+    "sha256": "f5c30107036d87d49c9db48448b9c9074174c35c045651610ebb6c5d0d6dda98"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/genuine-docs-normal-source-checkpoint-16/cached-whitespace.exit",
+    "sha256": "53c234e5e8472b6ac51c1ae1cab3fe06fad053beb8ebfd8977b010655bfdd3c3"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Consumer metadata cached whitespace check2 flags one exact unchanged184B Git push porcelain receiptde361d00 bound by original9e7a06. All frozen sources/PCC unchanged; original prefix/prose/actionlint0. Producer expected raw data to satisfy authored-text whitespace and stopped before artifact policy/claim/commit. Retain original receipt byte-for-byte and exact original2, separately check authored text excluding this one immutable raw receipt without calling original whole check green. No scientific or verifier criterion change."
+}
