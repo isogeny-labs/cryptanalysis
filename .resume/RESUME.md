@@ -1,3 +1,865 @@
+# Prospective whole diagnostic CI contract01 authored before code
+
+## What was done
+pcc/claims/PCC-20261115-9aad0c.json: ci_original_relation/PROTOCOL_01.md freezes all six whole genuine27 fixtures and exact historical capture receipt, complete strict scientific equality, explicitly bound elapsed/hash/path locations, whole comparator/mathematical controls, original proof gates, single preparation and complete runtime/library custody. Sources checked (KB): primary-review-01 status/four queries/theorem query all127; primary protocols, original CI/auditors and previously retained Diem paper used. GitHub queue3904 and both PR bodies now record published producer173db1a5/consumer8e638ee7 and genuine27 release. [pcc:unverified]
+
+## Decisions made
+Normally publish this exact prospective contract and inputs BEFORE new comparator, control generator, driver or diagnostic execution. Preserve all strict failures; any new equivalence needs a later prospective amendment. Existing observer/rank/character code and scientific protocols remain unchanged. [pcc:unverified]
+
+## Open threads
+Contract governance/normal publication, then implement whole Rust comparator/controls and full diagnostic CI; primary review and prospective unassisted relation-completion successor remain queued. Future whole custody NEW28. Existing global/numericLean/calibrated/reference/admission/merge requirements stay open. [pcc:unverified]
+
+## Errors
+KB tools unavailable127 and conductor unavailable127. GitHub draft tooling initially used unavailable TextEncoder in the orchestration isolate; text had been retained in tool stores, was written with ordinary strings and passed unchanged original prose lint0 before all three actual GitHub updates. No publication or scientific failure was hidden. Locked autoresearcher remains four-byte-header-only. [pcc:unverified]
+
+---
+
+# Genuine27 settled; whole diagnostic fixtures published
+
+## What was done
+pcc/claims/PCC-20261115-cef18c.json / pcc/claims/PCC-20261115-277e77.json: original run43745805865/job132908716494 replayed eleven remote objects BEFORE actual bot0b2bee203a, direct parent00800a2b, exact thirteen changed paths. All 65,886 content keys and 179 literal links/full target states/owned bytes/ledger checks retained; exact normal FF and original artifact/wiring checks exit0. HOLD27 RELEASED. Whole 125,663,108-byte archive, 7,005 members, 59 closed roots, all 3,578 consumer/622 producer delta paths retained. Five exact original canonical entry dictionaries and six relative aliases roundtrip the complete passive/rank/character fixtures; small rank verdict and full inspected PDF retain ordinary Git policy. [pcc:unverified]
+
+## Decisions made
+Publish custody settlement, then freeze and normally publish the whole diagnostic CI comparison contract BEFORE comparator/driver code. Require the entire population, all mathematical controls, both original conditional Lean gates, original engine/runtime/fullprepared custody and complete artifacts. Future whole custody is NEW28. [pcc:unverified]
+
+## Open threads
+Whole diagnostic CI; primary-source/KB review and prospective unassisted relation-completion successor. The finite character separator3a7d56, exact rankc0479c and conditional proof19c467 retain their original scope. Actual global character/program/numeric Lean bridges, complete setup/primitive/strongest-reference calibrated costs and original merge gates remain open. Vault8edec422 remains locked with four-byte VLT1 checks only; KB127 remains an availability gap. [pcc:unverified]
+
+## Errors
+All prior archive/governance/source/native/proof/control/report/transport failures remain complete. Conductor is unavailable (actual127). An initial broad AGENTS read accidentally included the locked autoresearcher ciphertext, repeating the recorded access error; no plaintext/key/decryption/execution or file modification occurred. No emitted ciphertext is republished. Future reads obey the exact four-byte-only restriction. [pcc:unverified]
+
+---
+
+# Whole relation-character custody27: inputs HELD
+
+## What was done
+Source consumerfe914417/producer69abf112: passive d118b9 full100native/60calls660events/strict report-counter parity; rankc0479c all360certificates1440470operations/FB30nullities6-10-13/largerFBnullity1; proof19c467 both27declarationgates/allninebindings; character3a7d56 full60calls13200actualnorm-cofactor4-BSGSwitnesses15125rows/all180canonical-characterdecompositions/all60postsolver targetchecks. Final2fd6b0report53962B/twoactuallyopenedpages and allfailed metadata/source/report/CI/transport specimens retained. Prior58919keys/177links and exact genuine26/current ledger prefixes checked. [pcc:unverified]
+
+## Decisions made
+HOLD all science/source/raw/aliases/consumer owned bytes and consumer ledger until actual original remote replays BEFORE the actual publisher/bot, exact normalFF, whole reassembly and terminal27 file/link-state checks. Include every declared complete nonsecret post26root and both repository deltas; keep alreadygenuine archivepayloads referenced without recursive copies. Preserve dangling failed-layout symlinks exactly, with complete literal-target/target-state guards; never hydrate or omit them. Archive/parts initially inRAM; allregularpayloadbytes and anynewGitblobcache require full custody/recovery receipts. No force/rechain/policy exemption/synthetic manifest. [pcc:unverified]
+
+## Open threads
+Complete genuine27 and exact wholefixture projection, then prospectively publish whole diagnosticCI comparison contract and review/freeze an unassisted relation-completion successor before code. All numericLean/globalmodel-program-character/causal/calibratedliveadmission/primitive/strongest-reference/merge requirements remain explicit. Vault8edec422/VLT1 only, KB127. [pcc:unverified]
+
+## Errors
+All original failures remain complete. Historicalct95staginglist bytes were restored exactly from genuine26; its later overwritten transient list is preserved and newRoot governors use unique staginglist filenames. Consumerproblem-index updates are declared released metadata. No scientificresult or pinned render/source byte changed. [pcc:unverified]
+
+---
+
+# Passive relation observer compiled; publish/exact checkpoint before capture
+
+pcc/claims/PCC-20261115-add9e6.json: firstbuild0/1503prior17current2driverguards/original entire field-engine closure/full preparedRLIB-RMETA/freshreuse/test andbothauditors compile. Sevenpassiveinsertions/context-testreverseprojection exact; purecanonicalkeybytecopies reviewed. Native/full60call reportparity/660journal events/rank-character measurements NOTRUN. [pcc:unverified]
+
+Nextnormalpublish compiledsource anddiscover/import exact ORIGINALcheckpoint, withone manualdispatch onlyifneeded. Then run-native-01.sh EXACTHEAD /workspace/scratch/ct101-original-relation-kernel-native-01 /workspace/scratch/ct101-original-relation-kernel-build-01 under900s2GiB; all28phases/60calls660events/full100native/strict all-counter reportparity/fourwhole-stageomissions101-nooutput required. Preserveeveryrawvalue andfailedFB30candidate. [pcc:unverified]
+
+FreshIC/samplerCI0b4ddb is normallypublished84bf460; consumerrequiredpccgate43728655252 nowSUCCESS afteroriginalPRbodytagfix. RootCBCmirror ec632f8. No rankdiagnosticresult yet; postcapture RREF-independent rowcertificates, conditional Lean implications and separate post-solver normBSGS character checks remain queued underpublished8e7e1c. FuturegenuineNEW27 mustholdallwhole newsource-build-runtime-control-failure-fullprepared-GitHubartifact-log-proposaldraftroots. [pcc:unverified]
+
+---
+
+# Fresh GitHub IC/sampler replay accepted; begin published rank protocol
+
+pcc/claims/PCC-20261115-0b4ddb.json: exactCBC/43726524795/job132849545337/art14166259090SUCCESS/whole43094388BZIP/all474members158742148Bdecoded/fulljoblog/all15runlogs. All102phases1503guards/two unfiltered tests/whole100-101populations/15actualomissions/eight negatives/two timing positives/runtime-fullpreparedclosure/both26declarationgates14bindings and independent actualIOverdict/host downloadedRust all29replays pass. Everywholemember retainsoriginalbytes. [pcc:unverified]
+
+Prospective8e7e1c was normallypublishedCBC BEFOREcode; next implement original-relation-kernel-01/passive whole60call observation/strict inheritedreport-counter parity/exact RREF-row-operation certificates/independent post-solver normBSGS and direct source checks; no diagnostic rank or character result yet. Producer mirror043401/governance177d17 normallypublished ec632f8. CBCpccledger-claims passed/bodytag failure snapshot preserved; correctedbody original lint0, nextmeaningfulsourcegate required. [pcc:unverified]
+
+Nextnormalpublishthisacceptance thenverifyfresh pccgate whileimplement diagnostic. FuturegenuineNEW27 coversallct99postpublication/ct100CI-build-native-controls-failures-fullpreparedsource/whole474CIartifact-logs/ct101primary-proposaldrafts. Overlay~400MiB/RAM5.3GiB: stage anynextlargeGitfetch inRAM toavoid prior904MBpromisordownload fillingOverlay; do notdelete science/localsource/raw/runtime/preparedcopies or localnonpromisorobjects. Vaultlocked8edec422/KB127/completecost-liveadmission-reference obligations remain. [pcc:unverified]
+
+---
+
+# Complete local CI03; prospective relation-kernel protocol ready for publication
+
+## What was done
+Localf5b20f passes all102actual phases/1503guards/finalguards, two unfiltered tests/whole100-101 populations, literal same-run equality and all-counter/non-time historical equality under publishedb5e431. Fifteen actual omissions101/nooutput, eight whole historical negatives1/nooutput, two timing positives0, runtime/full prepared/dependency closure and both original26declaration gates/all5+9bindings pass. Persisted whole IOverdict independently reproduces byte-for-byte. Source is producer3d49/consumerparent5493385 plus explicit precommit untracked CI source manifest; no fresh GitHub result yet. [pcc:unverified]
+
+## Decisions made
+Normal-publish the validated independent IC/sampler CI workflow and8e7e1c prospective relation-kernel protocol/proposal BEFORE instrumentation or measurements. Both53395Bfinal proposal pages actually opened. Keep all60 original IC calls, passive observations only, exact rank certificates/independent replay and post-solver norm/BSGS checks without oracle injection; finite/null/negative outcomes retained. No diagnostic implementation/result yet. [pcc:unverified]
+
+## Open threads
+Collect fresh GitHub CI at the eventual exact source commit, while implementing the now-published diagnostic protocol. GenuineNEW27 must retain allct99post-custody/ct100CI source/build/native/failure/runtime/fullprepared/control roots andct101primary/proposal/all drafts. Producer remains7242bb7 until exact new consumer mirror; vault8edec422 locked/KB127 and live calibrated admission/reference gaps remain. [pcc:unverified]
+
+## Errors
+Local01 existing-fixture copy omission, local02 historical same-run timing misuse, partial-governor staged-path assertion and control-authoring syntax error preserved. Prospectiveb5e431 published549 before the separate verifier source; all original science/solvers/auditors/fixtures unchanged. [pcc:unverified]
+
+---
+
+# Cross-run comparison contract02 published next; CI retries preserved
+
+## What was done
+Genuine26 remains settled at producer7242bb7/consumer2920181. Fresh local CI02 passes1498guards/fresh engine/full prepared reuse/closure and the entire original IC native test; the newly added historical check fails101 because it used a same-run auditor on independently timed reports. Whole480literal differences and all raw/source/executable/prepared bytes are retained; no completed CI pass is claimed. [pcc:unverified]
+
+## Decisions made
+Publish this separate prospective cross-run contract before new verifier code/retry03. Keep original same-run auditors/fixtures/native sources unchanged. Compare all whole historical/fresh non-time fields/counters exactly and retain every raw time. Four actual whole-input negative controls and one timing-only positive are required. Unfinished CI source remains uncommitted until tested. [pcc:unverified]
+
+## Open threads
+Implement/test the new Rust verifier under the published contract; retry full CI in a new isolated fresh output/cache, then normal-publish complete CI source and collect GitHub replay. FB30 relation-rank protocol not implemented; primary review ct101 records KB127/actual source assumptions. Future whole custodyNEW27. [pcc:unverified]
+
+## Errors
+Local setup01 missing existing fixture and CI02 historical timing-contract error are preserved separately, including actual native/cross-comparator outcomes. [pcc:unverified]
+
+---
+
+## Current RAM cache recovery receipts
+
+Regenerable remote promisor cache packs retain original paths as RAM symlinks. Full bytes/modes/ref-HEAD-status checks and exact restart recipes are in /workspace/scratch/ct99-remote-cache-relocation-02/outcome.json and /workspace/scratch/ct99-remote-cache-relocation-03/outcome.json, with earlier ct98 receipt retained. No local/nonpromisor objects or scientific files were removed. Automatic repacking is disabled. Genuine26HOLD released; publish settlement and projection, then fresh IC/samplerCI. [pcc:unverified]
+
+# Genuine26 settled; whole100/101 fixtures and complete PDF published
+
+## What was done
+pcc/claims/PCC-20261115-0c13e6.json / pcc/claims/PCC-20261115-86ddc2.json: original43720549312/job132831389944SUCCESS, nine remote objects replayed BEFORE actualbotb7bc54fcba/direct99cb2b204d/exact11paths; two plain Git objects unchanged. All58919heldinputs177linksownedbytes and whole136572156Barchive7357members68roots/3777consumerdeltafiles preserved. NormalFF-artifact-wiring0/HOLD26RELEASED. All51583prior25keys176links/both exactledgerprefixes/oldarchives held. Two exact original manifest entry dictionaries and two relative aliases roundtrip to the entire actualIC100/sampler101 populations. Full69112BPDF unchanged in ordinary producer Git; additive publication link replaces pending status without rewriting prior attested receipts. [pcc:unverified]
+
+## Decisions made
+Normal-publish custody settlement and consumer fixture projection, then add a fresh CI workflow covering the two new native populations with exact source/runtime/prepared custody and actual whole-class omissions. Preserve all prior source guards, workflows, reports, proofs and failed controls. Future whole custody is NEW27. [pcc:unverified]
+
+## Open threads
+Fresh IC/sampler CI; prospective FB30 relation-matrix/kernel-rank discriminator after primary-source/KB review; complete primitive/setup/known-point/strongest-reference cost census and live admission. All three norm-prepared points equal already available sourceGpoints; preserve the stronger-reference negative result. [pcc:unverified]
+
+## Errors
+First custody governor EOF-whitespace failure and FF01 lazy-fetch128 before merge; exact three-blob hydration preserves refs/HEAD/status, then explicit no-rename path comparison and FF02. Earlier ENOSPC/FUSE/history-inventory and every build/proof/recorder/import/native/control failure retained. FullCI41 artifact remains separate/uncollected, while a93f80 is exact258 and proofCI39bb46 exact41. [pcc:unverified]
+
+---
+
+# Whole IC, paired sampler and induced-proof custody26: inputs HELD
+
+## What was done
+At consumer41247ff and producer a0004ee, original IC7df2ae retains all100records/60attempts/45verified15rejected, pairedsampler4fd903 all101records/60pairs120reports/45verified15rejectedpairs, and inducedproofeddc37/freshproofCI39bb46 plus fullCIa93f80 all749members/logs. Both native phase sets, all prior51583keys/176links and exact ledger prefixes were checked before preparation. [pcc:unverified]
+
+## Decisions made
+HOLD all science, source, raw, aliases, consumer owned bytes and consumer ledger until actual original remote replays BEFORE the actual publisher, exact normal FF, archive reassembly and terminal26 held-byte/link checks. Archive every declared closed nonsecret ct92–99 root, additional uncaptured publication metadata and all consumer deltas since genuine25. Original crypto PDF keep policy differs from cryptanalysis: retain full69112B PDF in producer Git and whole archive, without a fabricated canonical PDF entry. [pcc:unverified]
+
+## Open threads
+Complete genuine26, project exact whole100/101-record fixture entries, link full producer PDF and add CI. Then prospectively investigate FB30 relation-kernel rank and complete strong-reference primitive/setup cost coverage. [pcc:unverified]
+
+## Errors
+All failed builds, proofs, recorders, transport/control attempts, ENOSPC and FUSE EPERM evidence remains intact. Only private transport authorization metadata is withheld from publication and retained locally. RAM cache relocation preserves all research and refs; follow ct99-remote-cache-relocation-02 recovery receipt if RAM is replaced. [pcc:unverified]
+
+---
+
+# Paired sampler native and inspected report sources complete; original migration next
+
+Native4fd903 all225samples1125triples60pairs120reports15jointcases45correctpairs90answers15sharedrejectedFB30pairs30reports/whole101records87new14prior/all33phases/8omissions/1487guards/exactruntime-preparedcustody/checkpoint21 pass. pcc/claims/PCC-20261115-346f08.json checkpointsinspected2pagePDFsources/whole69112BPDFhash; fullPDFselectedbyoriginalpolicyandretainedunchangedforNEW26 beforecanonicalalias. [pcc:unverified]
+
+Strongknowninitialpointreference equalsallthreepublicnorm-derivedpreparedsources; afterprep source-scalar-Phi samplebodyidentical, no newadvantageoverthatreference. Fullpartialcounters/API/rawwallsareunpricedandnevertrimmed. Bothoriginalconditional3roots0trusted/allthree20261114bindingsstaypreciselyscoped. [pcc:unverified]
+
+Nextcheckpointcapacityfailed-FUSE/ENOSPC-before-packing/reversiblewhole-remote-cache-RAM-recovery facts, normalpublish/mirrorRoot/GitHub. ThenoriginalgenuineNEW26 wholearchive+report+canonicalfixtures/additiveCI; RAMhas8.7GiB andsource-cacheddataisfullyretainedatlistedpaths, Overlay~100MiB. Avoidwholehistoryobjectenumeration; setGIT_NO_LAZY_FETCH=1. No researchsource/raw/executable/preparedcopyremoved. Cold12018complete102missing124/root124/clock101/globalmainledger/liveadmission/vaultlockedKB127/review-signing/calibratedadvantagegapsunchanged. [pcc:unverified]
+
+---
+
+# Original paired sampler passes; stronger known-point reference limits advantage
+
+pcc/claims/PCC-20261115-4fd903.json: exactd0b0d41/prospectiveabf432/compiled033a84-build01; oneunfiltered0/all33phases/whole101records87new14prior/all225samples1125triples60pairs120FULLreports/all15jointpubliccases.45verifiedpairs90answers,15sharedFB30pairs30rejections retained. IndependentRustprojectioncomparisonallfrozenfieldsequal; fulltiming/descentcounterrawneverremoved. [pcc:unverified]
+
+Allthreepublicnorm-derivedpreparedpoints EXACTalreadyknownindependentlytransportedGpoints. Aftersourceprep samplebodymatchesstrongerretainedknownpointsource-scalar-Phi path; no newadvantageestablishedversusthatreference. Fullprimitive/setup/nesteddecode/admission/sourceverify/referencecostsandliveadmission unknown. Eightwholeclassomissions101-nooutput/XZfullbytes/actualbinaries-preparedreuse/allpriorguards/checkpoint21all28remote-localgate0 pass; oldconditional3roots0trusted/threeactual20261114bindingskeepbridgesexplicit. [pcc:unverified]
+
+Nextinspectsource-linkedresult/report, registercapacitynegative-and-recovery, normalpublishRootmirrorandGitHubqueue; genuineNEW26wholedata/canonicalfixtures/additiveCI, thencompleteprimitive/setup/strongreferencecensus andpossibleFB30relation-rankdiscriminator. Allscience/raw/exes/fullpreparedcopies/rejections/earlierfailuresretained. TemporaryreadonlyFUSEprobeEPERM; historyinventorytriggeredpromisorfetchandENOSPCBEFOREpacking/removal, allrefsunchanged; onlynewremote180MBcachepackrelocatedwhollytoRAMwithoriginalpathbytesmodes/refHEADstatusstable, recoveryrecipeinscratchct98-remote-cache-relocation-01. UseGIT_NO_LAZY_FETCH=1 andavoidwholehistoryobjectenumeration. [pcc:unverified]
+
+No calibrated-ECDLPadvantage/novelty/globalCI/signedpromotion. Oldcold12018complete102missing124/root124/clock101/mainledger/vault8edec422locked-KB127/review-signing/liveadmission gapsstayopen. [pcc:unverified]
+
+---
+
+# Fixed-model paired sampler compiled01; full native next
+
+pcc/claims/PCC-20261115-033a84.json: firstattemptcompile0/entireoldclassbodyliteral/originalgeometrycontextonly;225samples1125triples60pairs120fullreports15jointcases frozen. BothoriginalNormAssistedSampling3roots0trusted/allthreeexact20261114bindingspass; helperunusedwrongdatemetadata explicitlycorrectedwithoutmath-claim-verifieredit. New33phasewhole900s2GiB/losslessfullcontrols/eightactualomissions/finalcustody launcherready; nativepending. [pcc:unverified]
+
+Prospectiveabf432 published80631ad BEFOREsource; acceptedbaseline7df2ae/reportab5c32 atba1fae2/Root4de29a1 unchanged/all343producer sciencehashes stable. Actualpreparedsource-versus-knowninitialGpoint/samequarticactualalternateP0/allthreecross-target/omittedinverse2 controls required. Allfullsource/raw/exes/preparedcopies/failures awaitNEW26. [pcc:unverified]
+
+Nextnormalpublishcompiledsource, exactoriginalcheckpoint21 once, boundedwholepairpanel; preserveanyrealfailure. Workspace~42MiBfree; UVTypst81MBsharesinstalledinode anddoesnotfreedata, Rootunheldregistrycandidateassessment0. Cargoarchivecache28MB/readonlyarchiveview orsafeimmutableGitobjectpacking arecapacityalternatives; no researchdata/source/exe/prepareddeletion. Completeprimitive/setup/knownpoint/strongreference/liveadmission andcold12018complete102missing/124/root124/clock101/globalmainledger/review/signing gaps remain/no calibratedratio-ECDLPadvantage-signedpromotion. [pcc:unverified]
+
+---
+
+# Paired sampler prospect frozen after complete fixed original IC result
+
+pcc/claims/PCC-20261115-abf432.json BEFOREnewRust: allsameD116-39-36models/originalprime/publicpackets; entireoldnormassistedsamplerclassbodyliteral. All225scalarpairs1125triples/60pairedattempts120fullreports/15jointcorrectcases/oldseedsparams/comparisonprojection withallrawfieldsretained. Actualstrongknowninitialpoint equalityreference, samequarticdifferentP0/allthreecross-target/omittedinverse2 controls frozen. No outcomeinferred. [pcc:unverified]
+
+Native7df2ae/reportab5c32 publishedba1fae2; Root4de29a1/61fcae-d6104b mirrorall343sciencehashesunchanged. All60baselineattempts/15correctcases/45verifiedanswers/15retainedFB30rejections/whole100records/30phases/sevenomissions/1465guards/exactruntime-preparedcustody/checkpoint20all28remote-localgate0 remainaccepted. Allwholedata/source/exes/fullpreparedcopies/failures awaitgenuineNEW26; primitive/setup/knownpoint/strongreference/liveadmission costsunknown/no calibrated-ECDLPadvantage/globalCI/signedpromotion. [pcc:unverified]
+
+NextpublishthisprospectBEFOREcreatingoriginal-fixed-model-sampler-01, thenmechanicalcontextadaptation/build/proof/native/pairdiagnostic/result/CI/custody. Workspace~61MiBfree; uv81MBcacheisTypstwheelstore, investigateinstalledenvreferences beforeanyunheldcachecleanup; no installedtool/source/sciencedeletion. Oldcold12018complete102missing/124/root124/clock101/mainledger/vaultlocked-KB127/review-signinggapsunchanged. [pcc:unverified]
+
+---
+
+# Complete original fixed-prime IC result and inspected report ready to publish
+
+Native7df2ae/all60attempts/all15publiccases/45verifiedanswers/15FB30rejectedreports/whole100records/all30phases/sevenactualwholeomissions/all1465guards/actualruntime-preparedcustody/exactoriginalcheckpoint20 pass. pcc/claims/PCC-20261115-ab5c32.json: BOTH63791BresultPDFpagesopened; literalRust all12settinggroup diagnostics includeallfiveattemptsperrow; editabletables/opaquechain-independence diagram/sourcehashlinks retained. [pcc:unverified]
+
+Nextnormalpublishwithoriginalgovernance, mirrorRootandupdateGitHubqueue; thenexistingnormassistedsamplertoexactsameD116-39-36models andcompleteprimitive/setup/knownpoint/strongreferenceadmissiontask. WholeNEW26 beforecanonicalfixtures/additiveICCI. No modelreselections/prunedfailures/calibratedratio/newasymptotic/ECDLPadvantage/globalCI/signedpromotion. Alloldcold12018complete102missing/124/root124/clock101/vaultlocked/KB127/mainledger/liveadmission/review/signinggapsunchanged. [pcc:unverified]
+
+---
+
+# Original fixed-prime IC passes all15 public cases; preserve15 rejected FB30 reports
+
+pcc/claims/PCC-20261115-7df2ae.json: exact0cb4ab3/prospective3da7fe/compiledf9e8c9-build02. Oneunfilteredtest0/all30phasesexpected/whole100records(86new+14priorconstructors)/all60attempts/all15publiccasesverified. FB36-48-64all45accepted, FB30all15candidatesrejectedbyactualfinalgroupcheck andwholefailurereportsretained. Sevenactualentireclassomissions101/nooutput/fullwholeXZdecompressedbyteequality; all1465guards/exactbinaries/fullpreparedreuse/checkpoint20all28+remote-localgate0. [pcc:unverified]
+
+## What was done
+ActualopaqueJacobianchainpacketsexactindependentpoint-Phi outputs onallfixedmodels/publicinputs. Solverentireexistingclassbodyliteral/contextonlytypeadapter/no runtimescalar-witness-lift-DLPfallback. Rustwhole-recordaggregation/all12settinggroups/partialcounterdiagnostics retained. ConditionalNewTargetIC2roots0trusted/twoexactbindings andpriorInduced21/allninebindings stayexplicitaboutgeometric-model-program-order-logextension/completeness-costbridges. [pcc:unverified]
+
+## Decisions made
+Retainall100wholedecodedrecords/wholeNative/fullsetup/14constructorrecords/all60reports/15rejections/allsource-exes-preparedcopies-firstCargo101failure forNEW26. Additionalall85compactIC-recordexportdoesnotreplacewholedata. Renderandinspectsource-linkedresult, normalpublishandcheckpointGitHub; nextadaptoldnormassistedsamplertoexactsamemodels, preservepairedfailures andcompleteprimitive/setup/knownpoint/strongreferencecensus. [pcc:unverified]
+
+## Open threads
+Inspectedresultreport/genuineNEW26wholepublication/canonicalwholefixture/additiveICCI; prospectivepairedsampler/costtask. FullCI43707728514at41successmetadatahasseparateuncollectedfullartifact, olda93f80at258andproofCI39bb46at41 scopesunchanged. Root66bc048/vault8edec422 unchanged. Cold12018complete102missing/124/root124/clock101/global-mainledger/livebudget-capacity-isolation-image/review/signingremainopen. No calibratedratio/ECDLPadvantage/globalCI/signedpromotion. [pcc:unverified]
+
+## Errors
+All15FB30wrongcandidatesareoriginalsolver-rejected reports, notacceptedwronganswers; no model/kernel/parameterswerereselected. Firstcompiledtypeerrors/alloldprojection-transport-governance-publisher-source-coldnegativeactualprefixes remainintact. [pcc:unverified]
+
+---
+
+# Exact bounded original-model IC launch ready
+
+Launchad4030 preservescompiledf9e8c9/03769fb Rustbytes; complete30phase driver isready. Wholeomissioninputs retainedlosslesslyasXZ withproducerpipefail/CRCchecked beforeunchangedRustauditor; allsevenactualclassesmustreject101-nooutput. Source-compiledbinaries/1465guards/originalcheckpointgate/900s2GiB/fullrecordfreezecompare/finalcustody mandatory. Nativehasnotrun. [pcc:unverified]
+
+Cleanup14recovers18,759,680allocatedB from2unheldregistrylibraries only; all98protectedexecutables/bothdifferentdiagnostics/source-dependencyrecords/51583heldpaths/everyPCCsubject/allGitstatuses protected. Wholehashinventory retained. Workspace~77MiBfree; compressedwholeomissions avoid84MBduplicatedraw whilepreservingallinputbytes. [pcc:unverified]
+
+Next:normalpublishthislauncher, collectexactoriginalcheckpointtransport atthatcleanhead, runfullpanel withoutsourceedits; preserveanyactualfailureprefix. CurrentfullCI43707728514at41 job132792341318SUCCESS metadataobserved; secondfullscientificartifact acceptance pendingresource-awarecompletecollection, originala93f80at258 scopeunchanged. NewproofCI39bb46/conditionaleddc37/prospective3da7fe at755 remainacceptedwiththeirstatedlimits. WholeNEW26 andprimitive-cost/sampler/reference/admission obligationsopen. [pcc:unverified]
+
+---
+
+# Fixed original-prime IC compiled02; native experiment next
+
+pcc/claims/PCC-20261115-f9e8c9.json: prospective3da7fe published7550409 BEFOREnewRust; entireoldclasssolver literalunchanged/fixedD116-39-36context/all60attempts15cases/actualopaquechainindependentpoint-Phi equality/controls/wholeRustI-Oauditor. Build02driver0/test4799976B/auditor640792B/exactoldpreparedclosure-fullbytes-freshreuse/1465guards. BothoriginalreusedNewTargetICgates2roots0trusted/twooriginalbindings01efbf-671d42pass. No nativeexperimenthasrun. [pcc:unverified]
+
+## What was done
+Preservedwholefailedbuild01/Cargo101typeerrors andcorrectedonlypacketfieldcomparison/TwistedPairconstructortype. Allmathematicalmodels/solver/criteria unchanged. ProofCI39bb46 accepts41/all50files/both21declarations0trusted/allninebindings; FFb6bcac recordsentireledgerprefix/ordinary258→41 advance. Root66bc048 mirror/343sciencehashesunchanged; vault8edec422 lockedclean/KB127. [pcc:unverified]
+
+## Decisions made
+Publishthiscompiledsourcecheckpoint withoriginalgovernance andnewrustfmt-shell-priorguards; obtainexactoriginalcheckpointtransport beforebounded900s2GiBserialunfilterednative. Retainall60attempts/failures; requireall15verifiedcases. Recordallactualwholeclassomissions101-nooutput/sourceguards/actualcompiled-runtimebinaries. [pcc:unverified]
+
+## Open threads
+NativeIC/wholedataaudits/inspectedresult/proofscope/additiveCI/genuineNEW26, thenadaptoldnormassistedsampler andcompleteprimitive/setup/knownpoint/strongmatchedreferencecensus. CollectfreshfullCI43707728514at41withoutunobservedconclusion; new755CIseparate. Cold12018complete102missing/124/root124/clock101/global-mainledger/livebudget-capacity-isolation-image/review/signingremainopen; no calibrated/ECDLPadvantage/signedstanding. [pcc:unverified]
+
+## Errors
+Firstbuildtypefailurenotmathematicalcounterexample; failedfullsource/Cargodiagnostics/real101anddriver1 retained. Everypriorcustody/proof/transport/governance/literal-logwhitespace/publisher/clock/coldnegative intact. Neitherdesiredtransferidentity norwrongsourceorder wasaddedtorepairaresult. [pcc:unverified]
+
+---
+
+# Fresh induced-proof CI accepted; fixed original-model IC prospect frozen
+
+pcc/claims/PCC-20261115-39bb46.json acceptsrun43707728617/job132792341744 at41e35d8/all50files/full24931BZIP/all12runlogs/16phases/73guards/both21declarations0trusted/allnineexactbindings/independentwholeverdictreproduction. pcc/claims/PCC-20261115-b6bcac.json recordsordinary258→41FF preservingwholeledgerprefix; originalresearchbranchissoleledgerwriter. pcc/claims/PCC-20261115-3da7fe.json freezesfixedoriginal-modelIC BEFOREnewRust; both56847BproposalPDFpagesopened. [pcc:unverified]
+
+## What was done
+CompleteCI03a93f80 at258/sevenwholepopulations/all749files/153phases/24omissions/both70checks54names16copies/all70bindings/1440guards/actualprepared-runtimecustody retained. Conditionaleddc37/resultd90ad1 sourceproof complete; Root66bc048 mirrorsallwith343sciencehashesunchanged. Freshfullrun43707728514 at41 isseparate; no unobservedconclusion. FourKB127/vault8edec422 lockedclean/primaryDiem-Tian passages retained. [pcc:unverified]
+
+## Decisions made
+Publishthisprotocol/proposal BEFOREcreating original-fixed-model-ic-01 Rustcrate. Keepall60attempts3models5public4FBsettings, requireall15verifiedcases; preserveanyfailure. Literalexistingclasssolverunchanged/contextonlyadapter, actualopaqueJacobianchainplusindependentpoint-Phi equality, scalaranswersoutsideallruntimeinputs. No model/kernel/origin/prime/publicreselection. [pcc:unverified]
+
+## Open threads
+Implement/build/prove/native/auditfixedoriginalIC underpublishedprospect; nextadaptoldnormassistedsampler andcompleteprimitive/setup/knownpoint/strongmatchedreferencecensus. GenuineNEW26 ofwholect92-96 includingoriginalfullZIP749files/fulljoblog/freshproofZIPs/source/exes/fullpreparedcopies/allfailures/reports. Storage83MiBfree; onlyunheldderivedcacheorwholeclosedidenticalbytesmaybereclaimed. Cold12018complete102missing/124/root124/clock101/global-mainledger/livebudget-capacity-isolation-image/review/signing gaps remain. No calibrated/ECDLPadvantage/globalCI/signedpromotion. [pcc:unverified]
+
+## Errors
+Allcustodyprojection/hostkernelmissing-env101/transport403/materializer/publisherdirectparentfailures retained. RootoneattestedAPIJSONliteralEOFwhitespace2 preservedwithoneexactperfileattribute; no source/formula/claimhash/gatecriterion changed. Priorfullnative693failedprefix/test-onlyCRToraclefix andalloldnegativegeometry/proof/cold/globalresults remain. [pcc:unverified]
+
+---
+
+# Original full CI accepted; new induced-proof replay ready for publication
+
+CIacceptancea93f80 at258: all749members/153phases/sevenwholepopulations/24omissions/both70module-declarationchecks/all70bindings/1440guards/actualruntime-preparedcustody anddownloadedsevenRustpositive0/24omissions101. NewproofCI pcc/claims/PCC-20261115-d3a769.json locallypassescomplete driver0/both21declarations0trusted/allnineexactbindings/73guards/fouractualreceiptnegatives1-nooutput. Consumerparent5417e9d plusuntrackednewsourceexplicit; no freshGitHubproofexecutionclaim. [pcc:unverified]
+
+## What was done
+FrozenCI03/fullfailed-and-successfulrawretained; proofeddc37/resultd90ad1 remains conditionalquotientalgebra with geometric/fullkerneltransport/ellipticduality/perinputannihilator hypotheses. Everylocalfailedprojection/hostmissing-env/transport/materializationattemptretained. Cleanup12c9513d/136555ac excludeallheldinputs/subjects andpreserveactualscience/source/exes/fullpreparedcopies. [pcc:unverified]
+
+## Decisions made
+Commitandnormalpublish onsoleledgerwriter research/chained-transfer-induced-map-20261115; thenordinaryFF originalresearch/chained-transfer-public-target-20261113 from258 tothatcheckpoint BEFORE anyacceptanceappendthere. No rebase/rechain/force/mergerequirementwaiver. Newworkflowadditive, alloldtools/scripts/suite/workflows/sourcecriteriaunchanged. [pcc:unverified]
+
+## Open threads
+CollectnewproofCIafterFF withoutduplicatedispatch, mirrorproof-and-CIcheckpointtoRoot, genuineNEW26 wholecustody ofct92-95; nextoriginalfixedmodels prime-fieldIC reuseoldIC/normassistedbaseline withcompleteprimitive/setup/referencecensus. Cold12018complete102missing/124, root124/clock101/livebudget-capacity-isolation-image/mainledger/review/signing remain open. No calibrated/globalCI/ECDLPadvantage/signedpromotion. [pcc:unverified]
+
+## Errors
+Originalfullnative693/test-onlyCRToraclecorrection andallpriornegativegeometry/proof/cold/globalresults retained; newreceiptnegativecontrols aredeliberatevalidationinputs, notmathematicalcounterexamples. No scientificcriterion wasweakened. [pcc:unverified]
+
+---
+
+# Complete exact original full replay accepted; induced-transfer proof next
+
+pcc/claims/PCC-20261115-a93f80.json accepts CI03 at25801fe: run43700115169/job132769186550/all749members;153expectedphases/sevenwholepopulations/24actualomissions/both70checks(54names+16historicalcopies)/all70bindings/1440guards/actualruntime-enginecustody. IndependentdownloadedRust auditors:sevenpositive0/all24omissions101. Every failed host/projection/transport attempt retained; no scientific criterion changed. [pcc:unverified]
+
+## What was done
+Retained whole99,483,928BZIP/all749paths andcomplete63,261,451Bjoblog. Closed-byte/mode reuse preserves813MB/allpaths. Cleanup12c9513d and13pcc/claims/PCC-20261115-6555ac.json removeonlyunheldthirdparty/compiler-downloadcaches; actualscience/source/exes/fullpreparedlibraries stayintact. New induced-proof driver/workflow is being locally checked; proofeddc37/resultd90ad1 at5417e9d remains conditional standardalgebra/allnineexactbindings/both21declarations0trusted. [pcc:unverified]
+
+## Decisions made
+Single consumer ledger remains onresearch/chained-transfer-induced-map-20261115. Normalfast-forward original research/chained-transfer-public-target-20261113 from258 to this branch latest checkpoint BEFORE any acceptance append there. No rebase/rechain/force/merge waiver. Newproofworkflow additive, original CI03 and allold guards unchanged. Whole newct92-95 material retained for genuineNEW26. [pcc:unverified]
+
+## Open threads
+Finish actualnewproof-driver validation/normalpublication/ordinarybranchFF, collectfreshproofCI; advanceoriginalfixedmodels prime-fieldIC usingexistingIC/normassistedsampling implementations; completeprimitive/setup/knownpoint/strongmatchedreference study. Cold120 remains18complete102missing/124; root124/clock101/livebudget-capacity-isolation-image/review/signing gaps unchanged. No calibrated/globalCI/ECDLPadvantage/signedpromotion. [pcc:unverified]
+
+## Errors
+Fullactualkernelhostmissing-env101 preserved before successful corrected13remainingcontrols. Custody projection failures and initialjoblog403 preserved; completeCIartifactsource/mathematicsneverchanged. Oldfullnative693failure/test-onlyCRToraclecorrection andallpriornegativegeometry/proof/cold/mainledger results remain intact. [pcc:unverified]
+
+---
+
+# Induced quotient norms/linearity proof and inspected report complete on isolated branch
+
+Proofeddc37/source dbdfd52 andpcc/claims/PCC-20261115-d90ad1.json: nineplannednamedmathroots/allnineexactbindings pass; bothoriginalgates21auditeddeclarations0trusted(9named+10proof-fieldprojections+2sizeOfspecs). Both55259BresultPDFpages actuallyopened. Prospective2de4aa/a0ec881 precedessource; all1440oldrefs/343producer sciencehashes unchanged. [pcc:unverified]
+
+## What was done
+DerivedquotientTsourceidentity/additivity/Z-DLPlinearity/BOTHindividualreversenorms/chaincollapse/fullperinputannihilatorrecovery-injectivity/originalBezoutwitnesses fromexplicitgeometricsections/sourcehomomorphisms/fullkerneltransport/ellipticduality. DesiredTidentities/norm/linearity neverinputs; norational-linearsection orfiniteannihilationonallgeometricpoints. ActualHLP-field-Frob-Picard-order-program-lift bridges explicit; standardconditionalalgebra/nocostadvantage. [pcc:unverified]
+
+## Decisions made
+Normalpublishthisresult onresearch/chained-transfer-induced-map-20261115. Soleconsumerledgerwriter here; originalresearch/chained-transfer-public-target-20261113 stays258untilordinaryFFtothisbranch, BEFOREanyacceptanceappendthere. No rebase/rechain/force. Retainallsource/gates/bindings/proposalTypstfailure/reportbytes forNEW26. [pcc:unverified]
+
+## Open threads
+FreshadditiveproofCI fornewnine/math21total declarations andbindings; collectcurrentnativeCI43700115169/job132769186550 exact258 fullartifact/all7tests24omissions70roots70bindings/source-runtime-preparedbytes beforeacceptance. Storage:17MiBfree, investigateonlyunheldderivedcompiler/downloadcache orclosedexact-byte duplicatepaths, neverremoveactualscience/source/raw/researchexecutables/fullpreparedcopies. Nextoriginalfixedmodels prime-fieldIC usingexistingIC/norm-assistedsampling baseline, completeprimitive/setup/referencecoststudy. [pcc:unverified]
+
+## Errors
+No newformalproof failure. Extra12structuraldeclarations areexplicitlyaudited/zero-trusted, allninefrozenroots retained. ProspectiveTypstdelimiterfailure andalloldnativefailed693/math/source/proof/cold/root-main negatives preserved. No calibrated/globalCI/signedpromotion. [pcc:unverified]
+
+---
+
+# Induced quotient-transfer proof passes; result report and branch checkpoint next
+
+Proofeddc37 underprospective2de4aa/a0ec881: both unchanged original4.34.1/4.35.0 gates pass21auditeddeclarations0trusted, allnineplannednamedroots andallnineexactlocalbindings pass. Twelveextra auditeddeclarations aretenexplicitproof-fieldprojections/twogeneratedsizeOfspecs; nonewroot/gate waiver. All1440old/343producer sciencehashes unchanged. [pcc:unverified]
+
+## What was done
+Definedgeometric quotient presentations/arbitrarysections andcompatibleelliptic edges withfullkerneltransport; derivedrepresentationindependence/sourceidentity/additivity/Zlinearity/BOTHindividualquotientreversenorms/twoedgecollapse/perpointfullannihilatorrecovery/injectivity/originalBezout-gcdwitnesses. DesiredTidentities/norm/linearity neverinputs, no rational-linearsection orfiniteannihilationonallgeometricpoints. Firstformalmodulepassesbothgates; exactsource/actualgates/allbindings retained. [pcc:unverified]
+
+## Decisions made
+Publishproofsource/rawgates/bindings/proofmap onisolated research/chained-transfer-induced-map-20261115; theninspectedresultreport. Soleactiveconsumerledger here; original research/chained-transfer-public-target-20261113 still258. NormalFF thatbranch beforeanyCIacceptanceledgerappend; noforkedappend/rebase/rechain/force. [pcc:unverified]
+
+## Open threads
+Inspectedresultreport; normalFF mainresearch branchafterready. AdditiveCI43700115169/job132769186550 remains separatelyscopedtoexact258; collectentireartifact/all7native/24actualomissions/both70-rootgates/all70bindings/source-runtime-preparedbytes beforeacceptance. Thenoriginalfixedmodels prime-field IC continuation usingexistingnew-targetIC/normassistedsamplerasbaseline andcompleteprimitive/setup/reference study. [pcc:unverified]
+
+## Errors
+No formalproof failure. Actualgatesaudit21ratherthanninenamedroots because12structuraldeclarations arealsoaudited; all21zero-trusted andninenamedclaims checkedexplicitly. ProspectiveTypstdelimiterfailure preserved. Allnativefailed693/field/source/proof/cold/root-main negatives retained. HLP/field/Frobenius/Picard/order/program/lift bridges andcalibratedcost/signing/globalmerge requirements remainopen. [pcc:unverified]
+
+---
+
+# Isolated induced-transfer prospective ready; publish before Lean code
+
+pcc/claims/PCC-20261115-2de4aa.json: base25801fe, branchresearch/chained-transfer-induced-map-20261115. Ninenewconditionalrootsplanned undergeometricpresentations/arbitrarysections/fullkerneltransport/ellipticduality, desiredtransferlinearity/norms areconclusions. No newLeanmoduleexists/proofNOTRUN. Both final54669Bproposalpages inspected. [pcc:unverified]
+
+## What was done
+HLPprimary4.1/Lemma13/Props14-15/degree8/quadraticqualification andwholeoldChainDescent-FullGroupNorm reviewed. FourKBqueries127, vaultVLT1/8edec422headers-only unchanged/noabsenceinference. Protocolfreezesrepresentationindependence/sourceidentity/additivity/Zlinearity/bothindividualnorms/chaincollapse/perpointfullannihilator recovery-injectivity/originalscalarwitnesses, no desiredidentityhyp orrationalsection. FirstTypstdelimiterfailure preserved. [pcc:unverified]
+
+## Decisions made
+Publish thisprospective BEFOREcreating original-induced-transfer-01/lean/InducedFullTransfer.lean. BothoriginalLean gates120s/nineroots0trusted/allninebindings; old1440reference and343originalproducer sciencehashes remainunchanged. Preservefailedsources/rawgates; do notpatchproofbyassumingdesiredconclusion. [pcc:unverified]
+
+## Open threads
+Implement/gate/bind/report/protocolbranch checkpoints, thennormalFF research/chained-transfer-public-target-20261113 from258 tothisbranchBEFOREanyacceptanceledgerappendthere. RunningadditiveCI43700115169/job132769186550 staysscopedtoexact258; collectwholeartifactandall7tests24omissions70roots70bindings beforeacceptance, preservingallfailures. Singleconsumerledgerwriter onthisbranch; noforkedappend/rebase/rechain/force. [pcc:unverified]
+
+## Errors
+Genuine25/rootd93-consumer634/HOLDrelease andnativee245d0/proofs7b5f49-da2fe7/report761003/failed99d448all693 unchanged. Alloldnegatives preserved. SourcegenCIgovernor firstsearchassertion recordedoutsideGit; currentCIpending. No calibrated/globalCI/signedpromotion; actualgeometric/program bridges andstrongIC/referencecoststudy remainopen. [pcc:unverified]
+
+---
+
+# Additive original full-group CI source03 ready; fresh remote replay next
+
+pcc/claims/PCC-20261115-18e6cf.json: oldworkflow/driver02/reference01-02/33bindings unchanged, allold1141guards retained in1331authored/1440complete references. Source/helpercontrols pass0; actualforeignenginefeature rejects1/nooutput. CI NOTRUN. [pcc:unverified]
+
+## What was done
+Newworkflow chained-transfer-original-full.yml andversioned ci_fixed_chain/check-03.sh retainoldphases andappendnormpoint695/originalprime1077/kernel311/originalgeometry16/originalfull701 toold13+695. Plan7unfilteredtests/24actualwholeclassomissions/bothoriginal70-root gates/all70exactbindings, repeatedoldcopies explicit.21captured derivativefiles exactclosedcompiledbytes, alloriginalmaterializers/formulas/workflows/references immutable. CompleteCargoengineclosure/actualcache-fullpreparedbytes/reuse required; no newmathpopulation oralgorithm. [pcc:unverified]
+
+## Decisions made
+Publish exactsource thenonefreshCIworkflow run; initialemptydiscoveryisnotpermissiontoduplicatedispatch. Requireentireartifact/membership/allphases/source-runtimefullpreparedbytechecks/wholeauditors/actualomissions/bothgates/allbindings beforeacceptance. Originalcensuspublished_compiled_source is811395 origin, actualCIrevision separatelyconsumer-head.txt. One900sengineprep/120scompile-auditors/900s2GiBnative bounds remain. [pcc:unverified]
+
+## Open threads
+NormalCI-sourcepublication/freshadditive replay; nextconditionalinduced-map linearity/individual13norm derivation fromquotientsections/kerneltransport/ellipticduality, pluscompleteprimitive/setup/reference/prime-fieldICdescent usingexistingIC/norm-assistedsampler. Source notes ct92-next-proof-task-notes-01.md. Actualgeometric/program/cost/signing/globalmerge requirements remainexplicit. [pcc:unverified]
+
+## Errors
+Genuine25fullysettled/rootd93b64d/consumer6343025, HOLD25released/all51583inputs176linksownedbytes/whole22035092Barchive540members22roots. Nativee245d0/conditional7b5f49-da2fe7/report761003 andfailed99d448/all693 preserved. No currentCIresult/advantage/globalCI/signedpromotion. [pcc:unverified]
+
+---
+
+# Genuine25 settled; canonical whole701 published, fresh additive CI next
+
+pcc/claims/PCC-20261115-f38b01.json/pcc/claims/PCC-20261115-e2952d.json: original43698195189/job132763282137SUCCESS, threeobjects replayed BEFOREbot5683a83683/direct1d40fe0/exact5paths/twoplainGitobjects unchanged. All51583heldinputs/176links/ownedbytes, whole22035092Barchive/540members/22closedroots survive; normalFF-artifact-wiring0/HOLD25RELEASED. All49753prior24keys/172links/bothledgerprefixes/prior24archive retained. Oneexactcanonicalentry/relativealias, wholelosslessXZequalsactual701, no newconsumerremoteread. [pcc:unverified]
+
+## What was done
+Completeoriginalfullcofactor nativee245d0/sourcec8490c7/build03/all14phases/all701whole/fiveactualomissions/1270hashes/actualbinaries; conditional7b5f49-da2fe7/bothoriginalgates19+2roots0trusted/all21bindings; inspected58175Breport761003; failed99d448/all693 andallsource-executable-fullpreparedcopies/checkpoints/proofs/reportdrafts/cleanup11inventory preserved. Onlytwo private signed-download metadata filesexcluded/retainedlocally. [pcc:unverified]
+
+## Decisions made
+Normalpublish rootsettlement/consumerprojection withoriginalartifactverify AFTERSTAGING, thenfreshadditiveCI preservingoldworkflows/references andcoveringallnewworkloads/proofs. Newcanonical alias original-full-evaluator-01/expected-native-02.json.xz points to docs/research-artifacts/chained-transfer/original-full-group-25. FuturecustodyNEW26. [pcc:unverified]
+
+## Open threads
+FreshadditiveCI replay; thenconditionalfullinduced-map integerlinearity/individual13norms fromsections/kerneltransport/ellipticduality withoutassumingdesiredtransferidentities (ct92-next-proof-task-notes-01.md), andstrongprimitive/setup/reference/prime-fieldICdescent study usingexistingIC/norm-assistedsampler. ActualHLP/field/geometry/Frobenius/Picard/order/program bridges/costadmissions remainexplicit. [pcc:unverified]
+
+## Errors
+Allfailed693/source/proof/format/importer/launch/reportdraft/cold/root-main/mathnegatives retained. No native02failure, calibratedadvantage/globalCI/signing/mergepromotion. [pcc:unverified]
+
+---
+
+# Whole original full-group custody25 preparing; science and consumer ledger HELD
+
+Nativee245d0/full701/proofs7b5f49-da2fe7/all21bindings/report761003 complete atconsumer675cbc9; rootmirror27a680b/c66350. All14phases/fiveactualwholeclassomissions/1270hashes/actualbinaries pass, bothoriginalLean gates19+2roots0trusted. Wholefailed99d448/693records andeveryoldnegative retained. [pcc:unverified]
+
+## What was done
+NEW25 preserves every nonsecret ct90science/control root, allactualsource/executable/fullpreparedcopies/checkpoints18-19/proofs/reportdrafts/primaryreviews, pluscleanup11/fullinventory/ALLpendingconsumerbytes. All49753prior24keys/172links/both exactledgerprefixes remain; prior24archive24881096B/parts stayheld/exact/alreadygenuine withoutrecursivecopy. [pcc:unverified]
+
+## Decisions made
+HOLDallscience/source/raw/aliases/ownedbytes/consumerledger untiloriginalremote replays BEFOREactualbot/exactnormalFF/wholearchive/terminal25guards-links-ownedbytes. Onlyprivate signed-download metadata excluded andretainedlocally; no scientific/control/negative/source bytes filtered. Canonicalpositive701fixture onlyafteractualoriginalpublication. [pcc:unverified]
+
+## Open threads
+Genuine25publication/release/canonical701, thenfreshadditiveCI preservingoldworkflows/references/allnewworkloads/proofs. Nextstrongprimitive/setup/reference andprime-fieldICdescentstudy usingexistingIC/norm-assistedsampler. ActualHLP/field/geometric/Frobenius/Picard/order/program bridges andcostadmissions remainexplicit. [pcc:unverified]
+
+## Errors
+Failednative693, literalsource/panicwhitespace, importer/producerlaunch/reportmetadata-render-raster andallhistoricalnegatives retained. No calibrated/globalCI/signing/mergepromotion. [pcc:unverified]
+
+---
+
+# Full original chain result/report ready; whole custody and additive CI next
+
+Nativee245d0/proofs7b5f49-da2fe7/pcc/claims/PCC-20261115-761003.json: sourcec8490c7/build03/exactoriginalcheckpoint19, oneunfilteredtest0/worker0/all14phases, all701whole records/fiveactualwholeclassomissions101-nooutput/1270hashes/actualbinaries pass. BothoriginalLean gates19+2roots0trusted/all21localbindings; both final58175BPDF pages inspected. Allstanding unsigned. [pcc:unverified]
+
+## What was done
+Fullcofactor originalcases2,0-0,1-2,0/D116-39-36/ell2773073/order11092292: all672exceptionals/bothoutgoing/all4halves/duplicatecorrections/all228cofactorattempts-domain/fouractualsectors/144mixed120public/96additions-pair/48opaque48knownpoint/15originalpubliccontrols pass. Fullinverse13=3413013/169=9648325; direct169/literalJacobchain/strongretainedlift wholeoutputs agree. Knownpoint sharesactualKcoefficients/oneprimePhi/checks; duplicatepresentationsretained, notallJacobiancofactorsectors claimedcovered. [pcc:unverified]
+
+## Decisions made
+Publish result/report/rootmirror; then genuinewholecustodyNEW25/canonical701onlyafteroriginalactualpublication; freshadditiveCI preservingoldworkflows/references andallnewworkloads/proofs. ExistingIC andnorm-assisted sampler remainstrongbaselines. Field/HLP/geometric/Frobenius/Picard/order/program bridges explicit, callsunpriced/noadvantage. [pcc:unverified]
+
+## Open threads
+Whole25 includesallct90 builds01-03/nativefailed693/success701/fiveomissions/checkpoints18-19/proofs/reportdrafts/primaryreviews/source-fullpreparedcopies, withsigned-downloadmetadata privateexcludedonly. Needguardsall49753prior24keys/172links/bothledgerprefixes; actualremoteproofbeforebot/exactFF. ThenadditiveCI andnextprimitive/setup/reference/prime-fieldICdescent protocol. [pcc:unverified]
+
+## Errors
+Preserve99d448failednative693; sourceonlyoldtestoracleCRTrepair9705756 provedda2fe7. Literalhelper/panicEOF failures, importer/producerlaunch andreportmetadata/render/raster failures retained. No native02failure, calibratedperformance/globalCI/signedpromotion. [pcc:unverified]
+
+---
+
+# Original full-group chain native02 passes; report/custody/additive CI next
+
+pcc/claims/PCC-20261115-e245d0.json: sourcec8490c7/build03/ba9700/exactoriginalcheckpoint19/all28/immediategate0. Oneunfilterednative0/worker0/supervisor0/all14phases, whole701orderedrecords byteequal, fiveactualwholeclass omissions101-nooutput, all1270hashes/actualbinaries exact. [pcc:unverified]
+
+## What was done
+Complete frozenoriginal full-cofactor chain atcases(2,0)/(0,1)/(2,0),D116/39/36,ell2773073/order11092292 passes672exceptionals/bothoutgoing/allfourhalves/duplicatecorrections/all228cofactorattempts-domain/foursectors/144mixed120public/96additions-pair/48opaquevectors. Direct169/literalJacobianchain/strongretainedlift wholeoutputs agree. All48knownpoint cubicdirect169/factored13 routes sharepreparedcoefficients andmatchactualopaquePhi(P+T), withallfourE2presentations andduplicates retained; notallJacobiancofactorsectors covered bythosepresentations. All15unchangedoriginalpublicendpointcontrols recoverE0. [pcc:unverified]
+
+## Decisions made
+Use7b5f49 nineteen-root conditionalproof plusda2fe7 two-rootCRTproof, bothoriginalgates0trusted/all21bindingspass. ActualHLP/field/geometric/Frobenius/Picard/program/order bridges remainexplicit; selectedcalls unpriced. Preserve99d448failed693/fullsource/raw andalloldnegatives. Nativewhole701expected/compared independentbytecomparison precedestransparentclosedlink, bothpathsfullbytesretained. [pcc:unverified]
+
+## Open threads
+Inspected combinedA/Bresultvisual, commit/publish result/rootmirror/GitHubqueue; genuinewholecustodyNEW25 andcanonicalpositive701fixture onlyafteractualoriginalpublication, thenfreshadditiveCI withallnewworkloads/proofs andoldimmutableworkflows/references. Nextstrongprimitive/setup/reference study andprime-field IC/descent usingexistingnew-target IC/norm-assistedsamplerasbaseline. [pcc:unverified]
+
+## Errors
+Native01failure99d448 retains693whole/672exceptionals andoldtestscalar1385856; narroworiginalCRT9705756repair passeswithoutchangingruntime/maps/models/populations. Bothliteralwhitespacefailures/importer/launchfailures preserved. No native02failure, calibratedcost/globalCI/signedpromotion. [pcc:unverified]
+
+---
+
+# Corrected original full-group evaluator compiled03; fresh checkpoint19 next
+
+pcc/claims/PCC-20261115-ba9700.json: all1270prior hashes/buildphases0, exact field-engine closure/fullpreparedbytes equal andactualCargo reuse, no new preparation. Onlytwo test-oracle literals changed afterfailednative99d448; allfullruntime/model/population criteria unchanged. Native02 NOT RUN; whole701pending. [pcc:unverified]
+
+## What was done
+Native01 atpublished e633524/build01/exact originalcheckpoint18/all28/immediategate0 failed101/worker1 after693whole records, including672exceptionals/bothoutgoing/all4halves/duplicatecorrections/full13-169inverse. Stale nu12 scalar1385856 failed independentprime-source test recovery. Fullraw/693whole/source/binaries retained under99d448; postfailure1270hashes/binaries0. Correctoracle derives4*inverse_original_prime(8), kills4cofactor andinverts2modoriginalell; bothoriginalCRTproofgates2roots0trusted. [pcc:unverified]
+
+## Decisions made
+The19-root proof7b5f49 retains8ChainDescent+5FullGroupNorm+3NormPointReuse unchanged andderives knownpoint p/zero representation pluskerneltransport choiceindependence; original inverses13=3413013/169=9648325 androots89/40/6 kernelchecked, all19localbindingspass. Actualfield/HLP/geometry/Frobenius/Picard/program/order bridges remainexplicit. Publishcorrected source, originalcheckpoint19 exactcleanHEAD/Resume/tool/28members/immediategate0, then run one900s2GiB native02 with120sauditors. [pcc:unverified]
+
+## Open threads
+Run original-full-evaluator-01/run-native-01.sh EXACTHEAD /workspace/scratch/ct90-original-full-evaluator-native-02 /workspace/scratch/ct90-original-full-evaluator-build-03 onlyafterfreshcheckpoint19. Require701whole/fiveactualwholeclassomissions101-nooutput/all1270hashes/actualbinaries; inspectedreport, genuinecustodyNEW25, freshadditiveCI. Thenprimitive/setup/strongreferences andprime-field descent leads. [pcc:unverified]
+
+## Errors
+Nativefailure99d448 andall693whole records retained. Literal-source whitespacefailureb3ef84 fixedonlyexactattributes; alloldsourcebytes retained. Firstcheckpoint18 importer filenameprojection failedbeforeimport, correctedimport all28/localgate0; originalsourceunchanged. FirstproducerCRTgate shelllaunch race failedbeforegate, secondactualgatepasses. Allhistoricalnegatives preserved; no calibratedperformance/globalCI/signingpromotion. [pcc:unverified]
+
+---
+
+# Corrected original full-group evaluator compiled02; fresh checkpoint19 next
+
+pcc/claims/PCC-20261115-60f5f0.json: all1270prior hashes/buildphases0, exact field-engine closure/fullpreparedbytes equal andactualCargo reuse, no new preparation. Onlytwo test-oracle literals changed afterfailednative99d448; allfullruntime/model/population criteria unchanged. Native02 NOT RUN; whole701pending. [pcc:unverified]
+
+## What was done
+Native01 atpublished e633524/build01/exact originalcheckpoint18/all28/immediategate0 failed101/worker1 after693whole records, including672exceptionals/bothoutgoing/all4halves/duplicatecorrections/full13-169inverse. Stale nu12 scalar1385856 failed independentprime-source test recovery. Fullraw/693whole/source/binaries retained under99d448; postfailure1270hashes/binaries0. Correctoracle derives4*inverse_original_prime(8), kills4cofactor andinverts2modoriginalell; bothoriginalCRTproofgates2roots0trusted. [pcc:unverified]
+
+## Decisions made
+The19-root proof7b5f49 retains8ChainDescent+5FullGroupNorm+3NormPointReuse unchanged andderives knownpoint p/zero representation pluskerneltransport choiceindependence; original inverses13=3413013/169=9648325 androots89/40/6 kernelchecked, all19localbindingspass. Actualfield/HLP/geometry/Frobenius/Picard/program/order bridges remainexplicit. Publishcorrected source, originalcheckpoint19 exactcleanHEAD/Resume/tool/28members/immediategate0, then run one900s2GiB native02 with120sauditors. [pcc:unverified]
+
+## Open threads
+Run original-full-evaluator-01/run-native-01.sh EXACTHEAD /workspace/scratch/ct90-original-full-evaluator-native-02 /workspace/scratch/ct90-original-full-evaluator-build-02 onlyafterfreshcheckpoint19. Require701whole/fiveactualwholeclassomissions101-nooutput/all1270hashes/actualbinaries; inspectedreport, genuinecustodyNEW25, freshadditiveCI. Thenprimitive/setup/strongreferences andprime-field descent leads. [pcc:unverified]
+
+## Errors
+Nativefailure99d448 andall693whole records retained. Literal-source whitespacefailureb3ef84 fixedonlyexactattributes; alloldsourcebytes retained. Firstcheckpoint18 importer filenameprojection failedbeforeimport, correctedimport all28/localgate0; originalsourceunchanged. FirstproducerCRTgate shelllaunch race failedbeforegate, secondactualgatepasses. Allhistoricalnegatives preserved; no calibratedperformance/globalCI/signingpromotion. [pcc:unverified]
+
+---
+
+# Original full-group Phase B compiled; fresh checkpoint18 next
+
+pcc/claims/PCC-20261115-f2f298.json: first build all0, 1270 frozen prior hashes unchanged, exact field-engine dependency closure and whole prepared-library bytes match; actual Cargo reuse, no new preparation. Native NOT RUN; whole701 acceptance and proof/additive CI pending. [pcc:unverified]
+
+## What was done
+Additive original-full-evaluator-01 implements the fixed original-source full-group maps under prospective1539b6/d4f9d6b and accepted geometry0976e9/7e28729. Full halving/correction/admission/norm/inverse retained. The stronger known-point comparator uses actual cubic rational maps with shared coefficients, one prime Phi, actual norm/full-order checks and no scalar witness. All source, actual binaries and full prepared libraries retained in /workspace/scratch/ct90-original-full-evaluator-build-01. [pcc:unverified]
+
+## Decisions made
+Publish this compiled source, import exact original checkpoint18 matching clean HEAD/Resume/tool/all28members, then immediate gate0 and one bounded900s/2GiB test via original-full-evaluator-01/run-native-01.sh EXACTHEAD /workspace/scratch/ct90-original-full-evaluator-native-01 /workspace/scratch/ct90-original-full-evaluator-build-01. Require all701whole records, allfive actual class-omission101/nooutput, allprior hashes and actual binary bytes. Keep inverse2 confined to the old public prime controls. [pcc:unverified]
+
+## Open threads
+Obtain checkpoint18 and native PhaseB; derive original full-order witnesses and known-point identity, retaining all old conditional roots/hypotheses. Both original Lean gates and exact bindings; inspected report, genuine custodyNEW25 and fresh additive CI. Then continue primitive/setup/reference and prime-field descent leads. [pcc:unverified]
+
+## Errors
+No PhaseB compile failure. All prior scientific, infrastructure, proof and source/format failures retained. Genuine24 is fully settled/root0f8203f/consumer7e28729; HOLD24 released and all49753inputs/172links/ownedbytes preserved. Cleanup10 c19c3c removed only unheld rebuildable dependency cache with unchanged scientific executable/source evidence. No calibrated cost, global CI or signed promotion. [pcc:unverified]
+
+---
+
+# Genuine24 settled; publish full geometry A andadvance full-group evaluator
+
+pcc/claims/PCC-20261115-8605e7.json/pcc/claims/PCC-20261115-9a5256.json: original43692253321/job132745186500SUCCESS, sixremoteobjects replayed BEFOREbot06d030bb/direct64653b0/exact8paths/twoplainGitobjects unchanged. All49753heldinputs/172links/ownedbytes andwhole24881096Barchive/all927members/33closedroots preserved; normalFF-artifact-wiring0/HOLD24RELEASED. All47225prior23keys/169links/both exactledgerprefixes retained. Fourexactcanonicalmanifest entries/fourtransparentrelativealiases, no newconsumerremote read. [pcc:unverified]
+
+## What was done
+Entire positiveoriginalprime1077/census311/geometry16 plusimmutable87720B geometrysubject genuinelypublished. Original0976e9subjecthash unchanged; regularfile replaced onlyafter wholeindependentcomparison. Fullsource/executables/preparedlibraries/proofs/reports/checkpoints/failures andALL199pendingconsumerfiles archived. Onlyfourprivate transportfiles excluded/retainedlocally. [pcc:unverified]
+
+## Decisions made
+Normalpublish rootsettlement andconsumer nativeA0976e9/canonicalprojection, originalartifactverify AFTERSTAGING. Then implementoriginal-full-evaluator-01 under1539b6; geometryAcomplete. Full4cofactors/all4halves/duplicatecorrections/672twooutgoing/144mixed120public96additions-pair/48opaque48knownpointvectors/15originalpublictransfers/701whole records/actualomissions remainfixed. [pcc:unverified]
+
+## Open threads
+PhaseBimplementationnotes /workspace/scratch/ct88-full-evaluator-implementation-notes-01.md; compiledsource/conditionalproof/exactoriginalcheckpoint/native; thencombinedreport/genuineNEW25/freshadditiveCI. Completeprimitive/setup/reference andprimefielddescent leads continue. [pcc:unverified]
+
+## Errors
+Allscience/native/source/proof/format/controlcoverage/artifact/cold/root-main failures retained. Firstnormalpublishercaller wrongcwd failedbeforeGitlookup/push; corrected02 normalpush0, firstsource-generation syntaxfailure retainedlocally. No signing/globalCI/calibrated/mergepromotion. [pcc:unverified]
+
+---
+
+# Whole research handoff24 preparing; science and consumer ledger HELD
+
+Fulloriginalgeometry0976e9 passes16whole records/all10phases/1206guards/actualbinarycustody at60741af/build02. Originalprime976f50/full1077 andcensus88f828/full311/proof29e535/reportcd8173 remain complete inunsignedfinite scopes. Originalartifactgate1 selects87720B wholegeometry subject; no waiver orsubjectchange. [pcc:unverified]
+
+## What was done
+NEW24 retains every nonsecret member ofallclosedct87-ct88 science/control roots, allsources/executables/fullpreparedcopies/proofs/reports/checkpoints15-17/failures, current607Gitbase plusALLpendingconsumer bytes andwholebinarypatch. All47225prior23keys/169links/exactledgerprefixes retained. Alreadygenuine23archive/parts stayheld/exact withoutrecursivepayloadcopy. [pcc:unverified]
+
+## Decisions made
+HOLD allscience/raw/source/aliases/ownedbytes/consumerledger until ORIGINALremote replays BEFOREactualbot/exactnormalFF/wholeorderedarchive/terminal24guards-links-ownedbytes. Onlyprivatecredential-bearing transport metadata excluded andretainedlocally. Originalpolicy andexact32MiBparts; no mathematical data filtered. [pcc:unverified]
+
+## Open threads
+Genuine24publication/release/fourcanonical entries includingimmutablegeometrysubject, thenpublishAresult andimplementPhaseB701fullgroup evaluator under1539b6. NativeA16passes; PhaseBnotwritten untilholdrelease. Implementationnotesct88-full-evaluator-implementation-notes-01.md. Completeprimitive/knownpoint/primefielddescent andfreshadditiveCI remainqueued. [pcc:unverified]
+
+## Errors
+Allnative01formatter101/proofArrayreduction/source-brace/EOF/controlcoverage/artifact/cold/root-main/mathnegatives preserved. No calibrated/globalCI/signed/mergepromotion. [pcc:unverified]
+
+---
+
+# NativeA passed; genuine whole research custody24 before PhaseB
+
+pcc/claims/PCC-20261115-ef7d3a.json: originalartifactcheck1 selects exact87,720B wholegeometry XZsubject forstore. Fullnative0976e9/16records/allcontrols/1206guards/actualbinaries remainspassed; subjecthashunchanged. No waiver. Consumer resultpublication ispending genuineNEW24/exactcanonicalalias; PhaseBnotyetimplementedanddeferreduntilholdrelease. [pcc:unverified]
+
+## What was done
+Completefailedgovernance andallnative/source/binary/preparedcopy bytes preserved. Ten exactclosed copies independentlycomparedthenhardlinked,34,418,711logicalduplicatebytes, allpaths/bytes/modes remain; no livepackage/source/actualcache link. [pcc:unverified]
+
+## Decisions made
+PrepareNEW24 capturingwholeclosedct87-ct88science/controls/source-executables-fullpreparedcopies/reports-proofs-checkpoints-failures/current607consumerbase+ALLpendingbytes; retainallprior23guardkeys/links/ledgerprefix andgenuine23payload withoutrecursivecapture. HOLDscience/ownedbytes/consumerledger untiloriginalremote replays BEFOREbot/exactFF/wholearchive/terminalguards, thenexactcanonicalprojection andconsumerpublication. [pcc:unverified]
+
+## Open threads
+Genuine24preparation/publisher/FF/release/canonicalpositiveprime1077-census311-geometry16-plusgeometrysubject; thenPhaseB701fullgroup implementation under1539b6. Notes /workspace/scratch/ct88-full-evaluator-implementation-notes-01.md. Strongknownpoint/fullcofactor criteria/futureCI andcompleteprimitive obligations unchanged. [pcc:unverified]
+
+## Errors
+Originalartifactgate1preserved; no failedscientificnative orweakenedcriterion. Allprior source/proof/format/infrastructure/mathfailures remain. Signing/globalCI/review/conflicts/KB-vault/calibratedadmission gaps unchanged. [pcc:unverified]
+
+---
+
+# Full original geometry PhaseA passed; PhaseB now unblocked
+
+pcc/claims/PCC-20261115-0976e9.json: published60741af/build02/e39580/exact originalcheckpoint17/all28/immediategate0. One unfilterednative0/worker0/supervisor0/all10phases; whole16ordered records freeze/compare byteequal, oldknownanswer/all7originalconstructors pinnedwhole, actualgeometryomission101/nooutput, all1206hashes/actualbinaries exact. [pcc:unverified]
+
+## What was done
+Actualthreeprime/quadraticbackends fororiginalcases(2,0)/(0,1)/(2,0), D116/39/36, ell2773073/order11092292. All18censusrows exact/all224lineorigins permodel/separatequadraticorigins, allE2torsion-generator normPhi2/quadraticdescent andtwo2-preimage correctionfibres each pass. Explicitfield/model/alteredcurve andallold negativecontrols reject. FullpreparedRLIB/RMETA andexactengineclosure reused, no newpreparation. [pcc:unverified]
+
+## Decisions made
+Publish complete A result andimplement additive original-full-evaluator-01 underalready-published1539b6. Keep all full4cofactors/all4halves/duplicatecorrections/672twooutgoing/144mixed120public96additionpairs/48opaque48knownpoint vectors/15originalpublictransfers and701whole records/actualomissions. Implementation notes: /workspace/scratch/ct88-full-evaluator-implementation-notes-01.md. [pcc:unverified]
+
+## Open threads
+NormalAresultpublication; PhaseBfullruntime/rationalknownKmapsharing/whole701auditor/conditionalproof/compile/publication/exactoriginalcheckpoint/native; thencombinedinspectedreport/genuineNEW24/additiveCI. NativeA completesgeometryonly; no newfullgrouptransfer orcostresult yet. [pcc:unverified]
+
+## Errors
+No nativeA failure. Compiled01/53b81a andprepublication EOF/controlcoverage e69989 retained; expandedcompiled02 passesrequiredactualcontrols. Everyhistoricalmath/source/proof/infrastructure failure preserved; oldprime-only choices/fixednegative results unchanged. [pcc:unverified]
+
+---
+
+# Full original geometry PhaseA compiled02; exact published checkpoint next
+
+pcc/claims/PCC-20261115-e39580.json: protocol1539b6 publishedd4f9d6b beforecode. All1206priorhashes/lockedgraph/metadata/exactfieldengine closure/wholeprepared-librarybytes pass; bothgeometrytest andwhole16auditor compile0. ActualCargo fieldengine reuse, no newenginepreparation. NativeNOTRUN/whole16acceptancepending; PhaseBnotwritten. [pcc:unverified]
+
+## What was done
+Additiveoriginal-full-geometry-01 fixedcases(2,0)/(0,1)/(2,0), D116/39/36 andoriginalell2773073/order11092292. Originalsourcegenerators/identities/branchfalse, independentcomplementaryorder/no13pole control andgenuinelyforeignprime rejection, literalprime/quadraticbackends/oldknownanswer pluswhole18rowparity implemented. Allactualsource/executables/fullpreparedRLIB-RMETA copies retained. [pcc:unverified]
+
+## Decisions made
+Publish exactcompiledsource; originalcheckpoint17 matching cleanHEAD/Resume/tool/all28members andimmediate gate0 before original-full-geometry-01/run-native-01.sh EXACTHEAD /workspace/scratch/ct88-original-full-geometry-native-01 /workspace/scratch/ct88-original-full-geometry-build-02. Require all16whole records/allorigins-fibres-controls/actualgeometry omission101-nooutput/1206guards/actualbinarybytes,900s2GiB/120sauditors. [pcc:unverified]
+
+## Open threads
+Sourcepublication/checkpoint17/nativeA; onlyaftercompleteA acceptance implementPhaseB701fullrecords under1539b6. Existingcensus88f828/proof29e535/reportcd8173 andprime-only976f50 choices/fixednegative scopes unchanged. FuturewholecustodyNEW24. [pcc:unverified]
+
+## Errors
+No PhaseAcompilefailure; protocol-required explicit point/class field-model andalteredcurve controls added under e69989 beforefirstnative; exactdependency closure andallfullcopies matcholdnormreusebuild01. Allhistoricalscientific/infrastructure/source/proof/format failures retained. No calibratedcost/globalCI/signedpromotion. [pcc:unverified]
+
+---
+
+# Full original geometry PhaseA compiled; exact published checkpoint next
+
+pcc/claims/PCC-20261115-53b81a.json: protocol1539b6 publishedd4f9d6b beforecode. All1206priorhashes/lockedgraph/metadata/exactfieldengine closure/wholeprepared-librarybytes pass; bothgeometrytest andwhole16auditor compile0. ActualCargo fieldengine reuse, no newenginepreparation. NativeNOTRUN/whole16acceptancepending; PhaseBnotwritten. [pcc:unverified]
+
+## What was done
+Additiveoriginal-full-geometry-01 fixedcases(2,0)/(0,1)/(2,0), D116/39/36 andoriginalell2773073/order11092292. Originalsourcegenerators/identities/branchfalse, independentcomplementaryorder/no13pole control andgenuinelyforeignprime rejection, literalprime/quadraticbackends/oldknownanswer pluswhole18rowparity implemented. Allactualsource/executables/fullpreparedRLIB-RMETA copies retained. [pcc:unverified]
+
+## Decisions made
+Publish exactcompiledsource; originalcheckpoint17 matching cleanHEAD/Resume/tool/all28members andimmediate gate0 before original-full-geometry-01/run-native-01.sh EXACTHEAD /workspace/scratch/ct88-original-full-geometry-native-01 /workspace/scratch/ct88-original-full-geometry-build-01. Require all16whole records/allorigins-fibres-controls/actualgeometry omission101-nooutput/1206guards/actualbinarybytes,900s2GiB/120sauditors. [pcc:unverified]
+
+## Open threads
+Sourcepublication/checkpoint17/nativeA; onlyaftercompleteA acceptance implementPhaseB701fullrecords under1539b6. Existingcensus88f828/proof29e535/reportcd8173 andprime-only976f50 choices/fixednegative scopes unchanged. FuturewholecustodyNEW24. [pcc:unverified]
+
+## Errors
+No PhaseAcompilefailure; exactdependency closure andallfullcopies matcholdnormreusebuild01. Allhistoricalscientific/infrastructure/source/proof/format failures retained. No calibratedcost/globalCI/signedpromotion. [pcc:unverified]
+
+---
+
+# Full-group original-source successor protocol ready before code
+
+pcc/claims/PCC-20261115-1539b6.json: uniquecensus88f828/proof29e535/reportcd8173 publishedfb40449/rootd3f7124/mirror83885c fixes cases(2,0)/(0,1)/(2,0), D116/39/36/roots89/40/6 andoriginalell2773073/order11092292. Newgeometry/evaluator notwritten, native notrun. [pcc:unverified]
+
+## What was done
+Reviewed literaloldgeometry/fullruntime/normpointreuse/originalprime/maps/tests/auditors andHLPfieldqualification. Fullproofmodule/literaldata already pinned inroot83885c export. ProspectivephaseA16whole records/phaseB701 records freeze every fullcofactor-half-correction-exceptional-public-addition-vector/control requirement; add48knownpoint vectors and15originalpublictransfers. [pcc:unverified]
+
+## Decisions made
+Publish protocol before additiveoriginal-full-geometry-01/original-full-evaluator-01 code. Useoriginalbranch/actualsourcegenerators andorders, completequadraticno13polecondition, genuinelyforeignprime controls. Reuseactualpolynomials forstrong cubicfieldknownpointdirect/factored route. Publishedcompiledsource/freshoriginalcheckpoint precedephaseA thenB, each900s/2GiB,120sauditors; recordeveryfailure withoutmodel reselection orcriteria reduction. [pcc:unverified]
+
+## Open threads
+Normalprotocolpublication thengeometry/runtime/materialization/fullpreparedlibrary-custody/conditionalproof/compile/publication/checkpoint/native. Preserveoldworkflows andfollowwithnewadditiveCIafteractualcanonicalcustodyNEW24. Completeprimitive/setup/reference andprime-fielddescent leads continue. [pcc:unverified]
+
+## Errors
+All priornative/source/proof/format/infrastructure/mathematical failures retained. fullnormoldinversevalues belongtodifferentorder andmustnotbereused; computeactualinversewitnesses inRust/Lean. KB/vault remainunavailable, no novelty/absence/signedpromotion. [pcc:unverified]
+
+---
+
+# Unique original full-group candidate: native, independent finite proof and report ready
+
+Native88f828/proof29e535/pcc/claims/PCC-20261115-cd8173.json: complete finite18-vertex/72-pair/216-triple census finds exactlyone supportedcompatible triple4-1-4, cases(2,0)/(0,1)/(2,0), D116/39/36. All311 orderedwhole records, actualmalformedinputs/fourentire-class omissions/all1172hashes/actual binaries pass. Both originalLean gates6roots0trusted andall6exactlocalbindings pass. Inspected two-page graphreport retains all18models/all12compatibleedges includingineligible endpoints. [pcc:unverified]
+
+## What was done
+Independent Lean literals retainall18masks/D/smoothnessvectors andtwo64tables; recompute F223eligibility, all64membershiptests perpair, coverage andunique verdict. Sixbindings38af16/5142e9/952d21/0123e7/13289e/4ecfa5 pass. Whole source/raw/executables/first Array reductionfailure69d82d/reportdrafts retained forNEW24. [pcc:unverified]
+
+## Decisions made
+Publish native/proof/report, then freeze the unique full-group candidate undera separate implementation protocol before any newJacobian runtime code. Target actualprime/quadratic backends/fullcofactor-halves-corrections/norm13-169/inverse recovery andstronger knowninitialpoint route. Fixed D12/D24/D67 negatives andseparate prime-only976f50 choices stayunchanged. [pcc:unverified]
+
+## Open threads
+Normalresultpublication/rootmirror/GitHubqueue; prospectivefulloriginalgroup construction; complete primitive setup/online costs andprime-fielddescent leads. No full-group evaluator fornewmodels, geometric/program bridge orcalibratedperformance result claimed. [pcc:unverified]
+
+## Errors
+Original proof01 Array.all reductionFAIL_build retained; successor same data usesLists/ordinarykerneldecide. Literal whole selectedvertex projection1,071,623B was losslesslyXZcompressed34,032B after exactroundtrip; completeuncompressed/rawcopies retained. All prior mathematical/infrastructure/format failures preserved. [pcc:unverified]
+
+---
+
+# Full original kernel census: one supported compatible triple
+
+pcc/claims/PCC-20261115-88f828.json: published8113951/build01/exact originalcheckpoint16/all28/immediategate0. One unfilterednative0/worker0/supervisor0/all13phases expected; all311whole ordered records pass basis-span reconstruction, fouractual whole-class omissions101/nooutput, all1172hashes andactual binaries exact. [pcc:unverified]
+
+## What was done
+Exhausted all18original vertices/72pairs/216triples withcomplete oldrows/two64-4096-135certificates andevery failedreason. Eligiblevertices4/2/2; compatiblepairs6/6; supplied-source eligible compatiblepairs1/1; exactlyone supportedcompatibletriple [4,1,4], cases(2,0)/(0,1)/(2,0), D116/39/36. Sixactualmalformedinput controls reject. All oldfixed D12/D24/D67 negatives andprime-only976f50 choices remain unchanged. [pcc:unverified]
+
+## Decisions made
+First independently encode actualfinite masks/transports inLean, runbothoriginal proofgates andlocalbindings, produce inspected resultvisual andpublish. Then freeze unique full-group original-source triple in a separate implementation protocol before porting thecomplete evaluator; no full-group map is claimed constructed yet. [pcc:unverified]
+
+## Open threads
+Independent actual-data Lean coverage/verdict, visualreport, normalpublication; nextprospective full-group evaluator for originalell2773073/order11092292 withallfullcofactor/halves-corrections/population criteria, strongestknown-point andcompleteprimitive comparison retained. FuturewholecustodyNEW24. [pcc:unverified]
+
+## Errors
+No censusnativefailure. KB theorem andformal-source queries exit127; originalhelpers arebyteexact. Metadata inspection syntaxerror was corrected beforeI/O. All historical failednative/source/format/infrastructure andmathematical negatives retained. Unsignedfinite scope; actualgeometry/program bridges andcost obligations remain. [pcc:unverified]
+
+---
+
+# Original-kernel census compiled; publish source and exact checkpoint before native
+
+pcc/claims/PCC-20261115-4fde50.json: protocol0158c5 publishedc1cbc188 before code. Locked offline graph, both compilations andall1172prior hashes pass. Whole compiledsource andactual test/auditor bytes retained. No research native test ornewmask/path result has run. [pcc:unverified]
+
+## What was done
+Additive original-kernel-census-01 implements the complete18/72/216 finitefamily and311orderedwhole records, every original row/transport field, bitset-versus-basis check, six actual malformedinput controls andfour actual whole-class omissions. Original helper bodies are literal; no field-engine dependency orpreparation. [pcc:unverified]
+
+## Decisions made
+Publish this exactcompiledsource, collect originalcheckpoint16 for its cleanHEAD/Resume/tool/all28members, then run original-kernel-census-01/run-native-01.sh EXACTHEAD /workspace/scratch/ct87-original-kernel-native-01 /workspace/scratch/ct87-original-kernel-build-01. Original immediate gate,900s/2GiB test/120s auditors, all311records/four actual omissions/1172guards/actualbinarycustody required. After outcome, actual finite-data Lean coverage/verdict underbothoriginal gates andresultvisual. [pcc:unverified]
+
+## Open threads
+Exactsource publication/checkpoint/native, then formal actualfinite verdict, inspected report, next separate implementation protocol ifsupportedchain exists or materially different lead iffinite negative. Prime-only976f50/report1f3c4c remain published7a600a2/root mirrorea9174/e440710. Full source/raw/executables/checkpoints/reportdrafts/failures futurecustodyNEW24. [pcc:unverified]
+
+## Errors
+Initial rustfmt source parse caught extra brace beforefirstcompile; original failedsource retained. Protocol exact-excerpt EOF whitespace2/86dfaa andall prior scientific/infrastructure failures preserved. No performance orsignedpromotion. [pcc:unverified]
+
+---
+
+# Prospective full-group kernel census ready before implementation
+
+pcc/claims/PCC-20261115-0158c5.json: all18 existing original model vertices,72 candidate pairs and216 triples; preserve every whole row and both full original coordinate transports. Exactly311 ordered records andfour actual whole-class omissions required. No new mask/path result has been calculated. [pcc:unverified]
+
+## What was done
+Reviewed primary HLP section4.1 and field qualification, actual source builders and original transport certificates. The KB wrapper status/three searches exit127; the vault stays locked. Original-prime native976f50/report1f3c4c are published at7a600a2; root mirror is ea9174. [pcc:unverified]
+
+## Decisions made
+Publish protocol before additive Rust original-kernel-census-01. Revalidate complete64/4096/135 certificates, all18 model rows and eligibility, bitset-versus-basis transport, every pair andtriple; retain actual rejection controls. Source published andfresh exact original checkpoint/gate precede one unfiltered900s/2GiB native. Both original Lean gates/localbindings and resultvisual follow. [pcc:unverified]
+
+## Open threads
+Commit/publish this prospective protocol, then implement/compile/publish exactsource/checkpoint/native. If a supported compatible triple exists, freeze lexicographically first underseparate implementation protocol; otherwise preserve finite negative andtry a materially different lead. Completeprimitive/knownpoint/prime-fielddescent questions continue. Whole futurecustodyNEW24. [pcc:unverified]
+
+## Errors
+No new experiment has run. An initially guessed fourth-record tag was corrected from the original source before protocol publication to N4_FOURTH_FIXED_KERNELS. All historical failures and unsignedconditional boundaries remain. [pcc:unverified]
+
+---
+
+# Original-prime native02: complete finite reprojection checks passed
+
+pcc/claims/PCC-20261115-976f50.json: source2a1a8e5/build03 and exact original checkpoint15. One unfiltered native test and worker/supervisor return0. All13 phases have their required exits. All1,077 ordered records freeze and compare whole; four actual entire-class omissions reject101 without accepted output. All1,131 prior hashes and actual test/auditor bytes remain exact. [pcc:unverified]
+
+## What was done
+The original ell2,773,073/order11,092,292 instance passes the frozen18-row, three-model,672 projected exceptional,384 public-point, cofactor, addition, original-public-control and12-vector/five-route population. The previously failed run e62fb2 is retained; build03 changes only the degree6 diagnostic formatter. Seven conditional proof roots remain6d8c42, with explicit geometric and program bridges. The known initial elliptic point avoids the initial norm and inverse-two; selected source counters remain unpriced. [pcc:unverified]
+
+## Decisions made
+Publish the result and an inspected visual report. Preserve all raw/source/executable/full prepared-copy/checkpoint bytes, with future large custody NEW24. Next publish a prospective finite census of18 model vertices,72 adjacent candidate pairs and216 triples before computing new transported masks. Preserve the fixed D12/D24/D67 negative results and the frozen prime-only choices. [pcc:unverified]
+
+## Open threads
+Result report and normal publication; then the full-group kernel-compatibility census, complete primitive/setup/known-point comparison and prime-field descent leads. Sources checked for the next census: HLP math/9809210v1 section4.1/Lemma13/Propositions14-15 and field qualification; original full18-row/64-coordinate/4096-pair tables. KB status and three searches exit127; vault remains locked and unchanged. [pcc:unverified]
+
+## Errors
+Native01 diagnostic101 and all prior implementation/infrastructure/mathematical negatives remain recorded. A metadata inspection command had a syntax error before I/O and was corrected. No new calibrated performance or signed standing is asserted. [pcc:unverified]
+
+---
+
+# Genuine23 settled; corrected original-prime source ready for checkpoint
+
+pcc/claims/PCC-20261115-e722f6.json/pcc/claims/PCC-20261115-845245.json: original43683583068/job132719230311SUCCESS, sevenremoteobjects replayed BEFOREbotf55ad14c/direct38344f9/exact9paths. All47225heldinputs/169links/ownedbytes and ordered89375812Barchive/all1100nonsecretmembers/23closedroots preserved; normalFF-artifact-wiring0/HOLD23RELEASED. All44386prior22keys/165links and67a90fd7ledgerprefix retained. Three exact canonicalmanifestentries andthree transparentrelativealiases; no new consumerremote read claimed. [pcc:unverified]
+
+## What was done
+Preserved full norm-point reuse native46008b/695records/reportf8d381, strict25CI0f3ea8, original-prime native01failed101/eightcompletedrecords/e62fb2, correctedcompiled03a3c6eb/sevenconditionalproofroots, wholeclosedsource/executables/preparedcopies/failures/CI/checkpoints/reports. Failure attestation4575215B changed fromregularfile tocanonicalrelative symlink only after entirebytecomparison; subjecthashunchanged. [pcc:unverified]
+
+## Decisions made
+Publish correctedcompiled03source andcanonicalprojection, require fresh exact originalcheckpoint15 andimmediateoriginalgate0, then ONE unfiltered original-prime native02 with unchanged900s/2GiB bounds, all1077whole records/fouractualwhole-classomissions/1131guards/actualbinarycustody. Actualfirstnativefailure is diagnostic Fp6formatter assertion; no1077fixture or mathematical acceptance yet. [pcc:unverified]
+
+## Open threads
+Original-prime native02; then prospective finite18vertex/72edge/216triple full originalkernelcompatibility census before computing masks, preserving allfixednegative results andcurrentprime-only models. Completeprimitive andknown-initial-point comparisons/prime-fielddescent leads remainqueued. FuturelargecustodyNEW24. [pcc:unverified]
+
+## Errors
+All prior scientific/cold/source/proofpath/staging/PDF/logdownload/root-main failures retained; no CIwide, calibratedperformance, novelty or signedpromotion. KB unavailable andvaultlocked. The session read vaultAGENTSciphertext accidentally; no plaintext/key/decryption accessed; future reads checkVLT1header. [pcc:unverified]
+
+---
+
+# Whole research handoff23 preparation — science and consumer ledger HELD
+
+Norm-point result46008b/full695 with only48 counter changes and reportf8d381 are accepted only in their unsigned finite scopes. Strict25 acceptance0f3ea8 retains all294 artifact members/all15 runlogs, all58 phases/33-root gates/bindings. Original-prime proof6d8c42 is conditional; native01 e62fb2 at48262e0 fails101 before first source-model diagnostic, so full1077 parity remains unmet. Corrected formatter build03 a3c6eb passes compilation; native02 NOT RUN. [pcc:unverified]
+
+## What was done
+NEW23 captures every nonsecret member of all declared closed ct85/ct86 research/control roots, all closed ct84-86 loose controls and publication metadata, actual proof stages, both new complete report roots, current48262e0 Gitbase plus ALL pending consumer files and whole binary patch. All44386 prior keys/165links and exact67a ledger prefix retained; only declared released metadata differs. Already genuine22 archive/parts stay exact and are referenced by their complete original guard/manifest/publication metadata rather than recursively copied. [pcc:unverified]
+
+## Decisions made
+HOLD all science/raw/source/aliases/owned bytes/consumer ledger until actual original remote replays before actual publisher/exact normalFF/whole ordered archive reassembly/all terminal23 guards and links. Archive uses exact32MiB parts before Git100MiB limit; only original artifact policy selects objects. Retain whole4.4MB completed native-failure subject as a genuine object for transparent canonical projection. Exclude only private credential-bearing transport stderr, retained locally; no mathematical/control/source/executable/prepared-library data filtered. [pcc:unverified]
+
+## Open threads
+Genuine23 publication and release, exact canonical norm-point whole695/stdout and FAILED native01 completed-record alias; publish compiled03 and obtain its exact original checkpoint before full900s2GiB native02. Next full original kernel-compatibility census needs its own prospective protocol. Full primitive/minimal setup/stronger known-point comparisons and global geometry/program/calibrated-reference obligations remain open. [pcc:unverified]
+
+## Errors
+All first-native101/import/CIpath/staging/authoring/cache-preflight/cold/root-main and D12/D24/D67/oldtwistprime negatives retained. No positive1077 fixture, paid launch, force/rebase, CI/merge waiver, novelty or signed promotion. [pcc:unverified]
+
+---
+
+# Corrected original-prime formatter compiled; genuine23 before native02
+
+pcc/claims/PCC-20261115-a3c6eb.json: build03 all1131guards/metadata/inherited preparation/testno-run/auditor/finalguards0. Only Rust change fromcompiled02 is fullsix-coordinate line-offset diagnostic; every runtime formula/field/model/mask/sample/population/criterion unchanged. First nativee62fb2 at48262e0/checkpoint14 fails101 before first source-model record; all eight completed records/raw/binaries retained and whole1077 criterion remains unmet. Native02 NOT RUN. [pcc:unverified]
+
+## What was done
+Native01 exposed a diagnostic field-shape error, not a prime-map counterexample. Complete failure record is4.4MB, exceeding ordinary Git artifact policy. Preserve that whole subject through original NEW23 pipeline and transparent genuine canonical alias; do not trim it or weaken subject staging/hash checks. Corrected compiled03/source and all failures, norm-point46008b/reportf8d381, strict25acceptance0f3ea8/all294 ZIPmembers/full15runlogs, seven-root original-prime proofs and proposal remain intact. [pcc:unverified]
+
+## Decisions made
+Prepare whole closed scientific custodyNEW23, retaining all44386 prior keys/165 links and current append-only ledger plus ALL pendingconsumer bytes. HOLD all science/raw/source/aliases/ownedbytes/consumerledger until actual original remote replays before actual publisher/exactFF/whole archive reassembly/terminalguards. Exclude only credential-bearing private transport logs from publication while retaining them locally; no scientific source/data/control/negative trimmed. [pcc:unverified]
+
+## Open threads
+Genuine23 and exact canonical projection of whole norm-point fixture/stdout and oversized failure record; publish exact compiled03 then originalcheckpoint and full900s2GiB native02 under38b827. Next independent full-kernel compatibility census requires own prospective protocol before computation. Completeprimitive/minimal setup/known-point calibrated reference obligations remain open. [pcc:unverified]
+
+## Errors
+All native101/import/CIpath/staging/authoring/cold/rootmain and original D12/D24/D67/oldtwistprime negatives retained. Root unheld derived dependency cleanup09 preserves343source hashes/allraw/exes/fullcopies/current caches and exact263MB diagnostics. No paidlaunch/force/rebase/waiver/novelty/signedpromotion. [pcc:unverified]
+
+---
+
+# Original-prime reprojection compiled; publish and exact checkpoint next
+
+pcc/claims/PCC-20261115-aa8d72.json: prospective38b827 was publishedbd603d0 BEFORE code. Corrected02 build all1131 guards/metadata/inherited exact original preparation/test no-run/auditor/finalguards0. Failed01 two E0433 missing imports/source/raw retained; only curve::self nominal import changed. No second engine build. Seven conditional proof roots/both original gates/all7 bindings6d8c42 remain exact. Native NOT RUN. [pcc:unverified]
+
+## What was done
+Original-prime runtime implements strict class/norm prime admission and cofactor rejection, norm-assisted reprojection, explicit recovery and five matched opaque/retained/known-point expanded/factored routes. Tests require all18 oldrows/3models/672 projected exceptionals bothways/384public/all228 cofactor attempts-domain/all4classes/64 additions perpair/15 original public endpoint transfers/12vectors and all1077 whole records with four actual class omissions101. Extra correctness preflights are exposed, not minimal setup or a price. [pcc:unverified]
+
+## Decisions made
+Publish compiled source and import its exact ORIGINAL checkpoint before original-prime-chain-01/run-native-01.sh EXACTHEAD /workspace/scratch/ct86-original-prime-native-01 /workspace/scratch/ct86-original-prime-build-02. One900s2GiB unfiltered test, whole1077 freeze/compare and four omissions required; preserve any failure without model/population reselection. [pcc:unverified]
+
+## Open threads
+Exact strict25 acceptance0f3ea8 is now complete: 43674526503/job132691640180/art14146271228/44978600B/all294members/all58phases/whole13+695/sixwholeomissions/both33rootgates/all33bindings/all1141guards; actualCIauditor positives0/sixomissions101 and full15runlog members retained. Original-prime native; complete primitive/minimal setup/known-point baseline and calibratedrefs; genuineNEW23 of whole new roots before canonical fixtures/replay. [pcc:unverified]
+
+## Errors
+All D12/D24/D67, oldtwistprime, fullcold120/root124/clock101/CIpath/staging/authoring/import/legacycleanup failures retained. Source/math contexts remain unsigned/conditional; no paidlaunch/force/rebase/waiver/novelty/signedpromotion. Vault unchanged, KB127. [pcc:unverified]
+
+---
+
+# Next active task: original-prime alternative-kernel reprojection
+
+pcc/claims/PCC-20261115-38b827.json: all18 existing original six-model rows reviewed whole. Stored eligible alternatives fixed retrospectively by admissibility before NEW implementation: originalE2case(0,0)/D100/root10, E3case(0,1)/D39/root40, E4case(1,0)/D38/root22. This extends the prior strong scalar baseline on the original ell=2,773,073 subgroup; no twist transport. The inspected two-page proposal/diagram and exact full population/bounds are frozen. New runtime/theorem code NOT WRITTEN and no new native outcome. [pcc:unverified]
+
+## What was done
+Norm-point native46008b and reportf8d381 are published consumer69ce10b/governance371c89 and mirrored root99d36bcc/21c9c3/governance22c662. Full695 parity with only48 counter changes, all14 phases/four whole omissions/1099 guards/three binaries and both3-root proofs remain exact. Old all18 source rows contain alternatives; fixed D12/D24/D67 negatives are retained rather than redefined. [pcc:unverified]
+
+## Decisions made
+Publish this protocol BEFORE additive original-prime-chain-01 code. Then implement conditional Lean norm/recovery/chain/known-initial-point implications and actual three supported prime-field models with strict prime admission. Preserve entire declared672 projected exceptionals, all384 public points, all228 cofactor attempts/domain and nonprime rejection,64 additions/pair,15 original public transfers and12 matched scalar cases. Compiled source/exact original checkpoint precedes one900s2GiB native; original literal source and all whole omission criteria remain mandatory. [pcc:unverified]
+
+## Open threads
+Actual strict25 run43674526503 at next recorded cadence; original-prime reprojection under this new protocol; full primitive setup/reuse and known-initial-point baseline; genuineNEW23 before canonical candidatefixture/new replay; original full geometry/program, old fullcofactor endpoint/kernel and calibrated-reference obligations. [pcc:unverified]
+
+## Errors
+KBstatus127; lead atlas VLT1 encrypted; vault unchanged/no keys. Original fullcold120/root124/clock101/CIpath/staging/authoring/legacycleanup preflight failures retained. Source-only cache cleanupb72f12 cleared headroom without touching raw/source/exes/prepared copies. No paid launch/force/rebase/waiver/novelty/signed promotion. [pcc:unverified]
+
+---
+
+# Latest result and active research queue — 2026-11-15
+
+Norm-point reuse has full finite parity in unsigned claim46008b at published51dff2bb: one unfiltered test0, all14 expected phases, all695 whole records and four actual entire-class omissions101/no output. Only the preregistered48 selected counter vectors change; all mathematical data and original independent checks remain exact. Both original Lean gates and all3 exact bindings pass under compiled claim36f906. The visually inspected two-page reportf8d381 is [available here](reports/norm-point-reuse-result-01/report.pdf). [pcc:unverified]
+
+| Priority | Task | Status and next acceptance |
+| --- | --- | --- |
+| 1 | Preserve this result and mirror the root checkpoint | Commit report/raw inventories/claims; normal publication; all343 producer sources unchanged |
+| 2 | Actual strict25 CI for the original complete chain | Versioned path repair77a26ca; run43674526503 initially in progress. At recorded cadence collect all job/artifact bytes, both tests, all13/695 records, six omissions, both33-root gates/all33 bindings |
+| 3 | Complete primitive costs and stronger known-initial-point baseline | Selected entries stay unpriced. Freeze source instrumentation and standalone/reused populations before counts; retain the old incomplete cold120 outcome |
+| 4 | Original-prime and prime-field successors | Read all existing HLP kernel rows before choosing any new model. Keep fixed-source D12/D24/D67 failures and the twist-prime obstruction intact; preregister any separate prime-subgroup reprojection |
+| 5 | Genuine NEW23 and candidate replay | Capture all whole new scientific roots/source/binaries/prepared copies/failures/reports/checkpoint13; actual original publication and exact FF required before canonical candidate fixture or new replay |
+
+Storage cleanupb72f12 removes only one415,311,792-byte obsolete derived root Cargo RLIB, after checking all44,386 genuine22 guards, every current and legacy PCC attestation subject, no active compilers, the exact retained diagnostic executable and all unchanged Git statuses. All source/raw/executables/full prepared-library copies/current caches remain intact. The before-unlink legacy-schema failure is retained. [pcc:unverified]
+
+Calibrated measurement admission, strongest matched references, full actual geometry/program bridges, signing/main-ledger/reviews/conflicts and original root124/clock101/cold120 gaps remain open. The autoresearcher vault remains unchanged and inaccessible; no paid launch, merge waiver, history rewrite, novelty or signed promotion. [pcc:unverified]
+
+---
+
+# Norm-point reuse full695 parity passed; preserve and advance cost baseline
+
+pcc/claims/PCC-20261115-46008b.json: published51dff2bb/build01/exact originalcheckpoint13/all28/immediategate0, oneunfiltered native0, worker/supervisor0, all14phases expected. Original whole auditor acceptsALL695 ordered records against prospective Rust clone transformation of entire genuine baseline; onlyexact48counterchanges, every mathematical field/occurrence unchanged. Fourentire-class omissions101/nooutput, actual3binarybytes/all1099guards exact. [pcc:unverified]
+
+## What was done
+Same672exceptionals underbothoutgoing/all4halves/duplicatecorrections/fourcofactors/144mixed120public96additions perpair/full13-169norm-inverses/oldindependentellipticchecks. Direct169calls2to1+1doubling; literal13calls4to2+2doublings; retained13calls4to2+1doubling. Allotherselectedcounters exact. Both originalLean gates3roots0trusted/all3bindings remain36f906. All selectedvectorsunpriced, no footer-time ratio. [pcc:unverified]
+
+## Decisions made
+Preserve actualnative/fixture/control/source/compiler/proof/checkpoint bytes, result report/visual, publish and mirror root. No new canonical candidatefixture/replayCI before genuineNEW23. Then completeprimitive setup/reuse census including stronger public-known-initial-lift ECDLP comparator; keep actualcold120 negative and calibratedadmission obligations open. [pcc:unverified]
+
+## Open threads
+Actual strict25 replay43674526503 atrecordedcadence; costobserver/whole primitive protocol; knowninitiallift baseline; endpoint/factorbase/original-prime primary leads. Disk58MiB afternewraw requires narrowly protected cleanup ofobsoleteunheldderivedcache beforefurtherlarge CI/custody. No source/raw/executables/preparedfullcopies removed. [pcc:unverified]
+
+## Errors
+All previous path/staging/authoring/mathematical/cold/root-main failures retained. Unsigned conditional finite correctness only; no paid launch/waiver/force/rebase/novelty/signed promotion. [pcc:unverified]
+
+---
+
+# Norm-point evaluator02 compiled; exact checkpoint then full native
+
+pcc/claims/PCC-20261115-36f906.json: published25d29e precedes additive code. All recorded build phases/1099 guards/whole engine reuse0; both original Lean toolchains3roots0trusted and all3 bindings0. All source/compiler/runtime-ready binaries/full prepared bytes retained. Native NOT RUN. [pcc:unverified]
+
+## What was done
+Original evaluator01/tests/rational/auditor and all695 records immutable under genuine22. Six declared runtime/counter rewrites retain final elliptic point and double for norm. Rustderiver pins entire original123633074B fixture and rejects unexpected schema/counts before exact48 transformation. CI25 path failure0acc7c and governance empty-stageac1152 preserved; path repair published77a26ca, actual replay43674526503 first collected in progress. [pcc:unverified]
+
+## Decisions made
+Normal-publish exact compiled candidate. Collect its ORIGINAL checkpoint artifact and run immediate originalgate before fixed-jacobian-chain-evaluator-02/run-native-01.sh EXACTHEAD /workspace/scratch/ct86-norm-point-reuse-native-01 /workspace/scratch/ct86-norm-point-reuse-build-01. One900s2GiB unfiltered test; full695 parity except declared48 transformations and all four whole omissions101/no output. [pcc:unverified]
+
+## Open threads
+Native norm reuse; actual strict25 replay and33bindings at recorded cadence; complete primitive standalone/reused cost and known initial elliptic lift comparator; prime-field endpoint and original-prime primary review. Future whole large custodyNEW23. [pcc:unverified]
+
+## Errors
+Original authoring01 nested string SyntaxError happened before execution; source/error preserved and delimiter-only successor02 succeeded. All earlier CI/path/staging/mathematical/cold/root-main negatives retained. No paid launch/waiver/signed promotion; KB/vault/live benchmark admission gaps remain. [pcc:unverified]
+
+---
+
+# Versioned25 CI path repair; norm-reuse source next
+
+pcc/claims/PCC-20261115-0acc7c.json: original new25 job failed before mathematics from relative self-copy after cd; whole artifact/log preserved. Additive check02 and reference02 pass local syntax/actionlint/all1141 guards. Full replay awaits next actual CI. Norm reuse25d29e remains prospective; source not yet written. [pcc:unverified]
+
+## What was done
+Genuine22 is settled and old complete-chain ed33ef/geometry f81cbf/proofs/reports are immutable. Original25 path failure is infrastructure, not a mathematical negative. [pcc:unverified]
+
+## Decisions made
+Normal-publish versioned repair without changing frozen math. Then materialize additive evaluator02 and Rust whole695 expected-counter derivation under published25d29e; compile, publish, import exact original checkpoint before one bounded native. [pcc:unverified]
+
+## Open threads
+Actual complete25 replay/33 bindings; norm-point reuse; complete primitive setup/reuse and known initial elliptic lift comparator; prime-field endpoint and original-prime primary leads. Future large custodyNEW23. [pcc:unverified]
+
+## Errors
+All original path/staging/19GH001/scientific/cold/root-main negatives retained. No paid launch/waiver/signed promotion; calibrated measurement admission and KB/vault access remain blocked. [pcc:unverified]
+
+---
+
 # Additive25 strict replay source ready; own fresh CI pending
 
 pcc/claims/PCC-20261115-65dc1f.json: newci_fixed_chain driver/workflow/reference1139 includesALLold24referenceinputs unchanged; all13geometry+695completechainwhole records/sixactualentireomissions/both33rootproofgates/all33bindings required. NewI/O-onlygeometryauditor compiled0 andactualgenuine22wholepositive0/oldparity-wholegeometry omissions101/noacceptedoutputs/compiled-runtimebytes equal. Localshell/actionlint/rustfmt/originalwiring0/canonical4entries4hydrated0problems. Fullnew25native replay NOT RUN. [pcc:unverified]
@@ -1369,3 +2231,176 @@ Its automatic CI closed19success/onePCCfailure: newcomplete43585724236 succeeded
 Next: normal publish this data-path correction and collect its ownautomatic20CI; retain/audit alloriginal joblogs andallartifactmembers,73canonical/75actualproofverdicts,419whole native records/7113census withonlyalreadyfrozenoldwallmasks, new20phase allcontrols. Keep b691whole CI failure asnegative; do not infer all20green from19mathpasses. Downloaded b691complete ZIP326123B73members andsourcecheckpoint153850B28members remainwhole. Existing b691freshfull remains valid forbyte-identical881source inputs; no duplicate localfull needed. [pcc:unverified]
 
 NEWguard13 must publish allclosed ca9/398/A-B/C77/fullC/ownCI captures withcompleteindices, including sealed Bfull derivedcache andnew seventh PNGlink; neverreuse releasedguard12. Then primary/KB review andprospective protocol fordirectNorm-halving versus strongest norm-assisted elliptic-scalar baseline, before any code/claim. Rootclock124/101,main append-onlyledger/reviews/signing/conflict,fullformalgeometry/globalclosedcoordinates andadmittedcalibratedcost gates remainopen; lockedvault8edec422/KB127 andno paidcompute. Continue nextunblocked task. [pcc:unverified]
+
+
+# Whole passive relation capture and report parity
+
+## What was done
+
+pcc/claims/PCC-20261115-d118b9.json: normallypublished6d823770/originalcheckpoint22 genuine28member download and exact remote/local originalgates0; full native0/28phases/all100original records/60calls/660journal events. All complete input/scalar/check/non-time reports and counters agree under elapsed-onlyb5e431. Four entire capture-stage omissions actual101/nooutput. All1503prior17compiled2driver guards and three runtime images/fullprepared copies hold. Whole raw trace/journal/controls retained at scratch/ct101-original-relation-kernel-native-01; exact source/build/import retained. [pcc:unverified]
+
+## Decisions made
+
+Strict passive-parity boundary passed as unsigned evidence. Begin full60call exact RREF certificates and separate replay without changing compiled observer or production solver. Retain all original failed FB30 candidates; no rank attribution yet. [pcc:unverified]
+
+## Open threads
+
+Rank/full-active column certificates, independent row-operation replay and conditional Lean implications, then separate post-solver actual norm/BSGS character and descent checks under published8e7e1c. GenuineNEW27 must preserve all post26 source/build/raw/failed control/fullprepared/CI-artifact/joblog/proposal roots; Overlay capacity requires RAM staging for any large fetch. Root/ec632 and GitHub persistent queue need current exact consumer acceptance and observer updates. [pcc:unverified]
+
+## Errors
+
+No native capture failure. Earlier compiled-governance inherited EOF whitespace failure remains preserved; exact per-path whitespace attribute preserved original bytes. All historical failures and unsigned standing remain. [pcc:unverified]
+
+
+# Exact rank certificate tools compiled; native pending
+
+## What was done
+
+pcc/claims/PCC-20261115-9bc8da.json: original-relation-rank-01/three Rust bins compiled0, lockedoffline serde-only graph/no field-engine import, complete compiler source/runtime copies/10sourceguards pinned. Separate producer/RREF and replay/extendedEuclid arithmetic; all60calls/six matrices each remain mandatory, unknown inactive coordinates retained, all row operations and full nullspace bases retained. Whole coefficient and constrained-coordinate controls implemented. Protocol8e7e1c preceded all code; capture d118b9 preceded interpretation. [pcc:unverified]
+
+## Decisions made
+
+Normal-publish compiled source, import exact original checkpoint, then22phase run-native-01.sh under900s2GiB. No rank or character measurement yet. Whole native JSONL and both whole controls staged in RAM only for capacity, then each losslessly XZ persisted with CRC and full decoded-byte comparison; no population reduction. [pcc:unverified]
+
+## Open threads
+
+Complete exact rank replay/controls; conditional Lean row-operation and finite-character implications; separate post-solver norm/BSGS/full known-log and descent checks. GenuineNEW27 and Root additive acceptance/capture mirror remain queued. Persistent GitHub3904/both PRs now reflect df107ab1/passive capture and fresh CI0b4ddb. [pcc:unverified]
+
+## Errors
+
+No compiler failure. First build01 contains producer/replay before the additional control bin; finalbuild02 contains unchanged compiler subjects plus control bin, all three0, and preserves both whole source snapshots. Historical failures remain preserved. [pcc:unverified]
+
+
+# Complete relation ranks and conditional kernel proofs
+
+## What was done
+
+pcc/claims/PCC-20261115-c0479c.json: exactd06ab02f/originalcheckpoint23 native0/all22phases; all60calls/360certificates/1440470independentlyreplayedrowoperations. FB30 full/active training/training+heldout/allavailable nullities6,10,13 by side for allfivepublictargets; FB36/48/64 nullity1 throughout. All full predescent stages equal across each group of five, with everycallretained. Both whole mathematical mutations101/nooutput. Allthreewhole48MBJSONL files persist losslesslyXZ/CRC/full decodedbytecompare; entire raw/runtime/source staysheldforNEW27. [pcc:unverified]
+
+pcc/claims/PCC-20261115-19c467.json: both original434/435gates27declarations0trusted, allnine named roots/eighteen generatedtheorems; allnine local exactstatementbindings0. Proofs derive literal row-operation/finite-trace kernel preservation and conditional RREF-one-free-column/character-ratio implications. Numeric certificates are Rust only; no concrete Lean specialization or global Picard character theorem. [pcc:unverified]
+
+## Decisions made
+
+The available FB30 constraints remain multidimensional even when all collected rows are used; this finite association is not causal proof for the wrong scalar. Next implement separate post-solver actual norm/cofactor4/BSGS witnesses, all known-log proportionality and all three descent checks under8e7e1c. No oracle enters solver, no production algorithm changed. [pcc:unverified]
+
+## Open threads
+
+Actual source-character/global extension and descent separators, scalar-witness negative control, full result visual/PDF, current Root mirror/GitHub queue and genuineNEW27. Calibrated/liveadmission/strongest-reference and original model-program bridge requirements remain. [pcc:unverified]
+
+## Errors
+
+Two Lean development failures preserved byte-for-byte as .lean.txt plus complete logs/actualexit1; fixes only simplification/elaboration, theorem statements unchanged. Finalthirdsource passed both originalgates. No rank native/independent replay failure; all existing earlier failures remain. [pcc:unverified]
+
+
+# Post-solver source-character tools compiled; native pending
+
+## What was done
+
+pcc/claims/PCC-20261115-6dd355.json: original-relation-character-01/producer-auditor-control compiledfirst0 under8e7e1c; all1532prior11compiled2driver guards/full original dependency-features-target closure/fullpreparedRLIB-RMETA/actualfreshreuse0. Entire post-solver witness population/allthree BSGS tables and all60calls remain mandatory; separate actualnorm/directsourcegroup checks and whole scalar-witness mutation implemented. No witness/character/native measurement yet. [pcc:unverified]
+
+## Decisions made
+
+Normal-publish compiled source and import its exact original checkpoint, then22phase run-native-01.sh under900s2GiB percompleteproducer-auditor. No solving API or private target scalar input; compare finite character/matrix/knownlog/fullsplitwalk-descent evidence before causal interpretation. [pcc:unverified]
+
+## Open threads
+
+Actual whole60witness/direct-source audit/scalar control, result visual/PDF, updated Root mirror/GitHub queue and genuineNEW27. Ranknativec0479c/proof19c467 normallypublished4ec3401; allnumericLean/globalcharacter/modelprogram/cost-liveadmission/reference obligations remain. [pcc:unverified]
+
+## Errors
+
+No character compile failure. The temporary consumer root target proof-source duplicate became untracked; moved only that exact owned directory intact to scratch/ct102-consumer-proof-stage-custody-01 with byte-equality/hash/Git-state receipt. Canonical proof/raw gate copies remain unchanged; clean consumer state restored before character source work. Two failed Lean development attempts remain preserved. [pcc:unverified]
+
+
+# Actual source-character mismatch localizes the FB30 failure before descent
+
+## What was done
+
+pcc/claims/PCC-20261115-3a7d56.json: exactpublished5408b9db/originalcheckpoint24 native0/all22phases/60calls/13200actual norm-cofactor4-BSGS witnesses/15125relation occurrences/allthreewhole baby tables. Separate direct source-group auditor accepts everywitness; all relation residues zero/allcanonical Picard and source-character split-walk decompositions hold/all60independent post-solver ratios pass actualtarget verification. All15FB30calls have29active-column and179/171/174known-log disagreements byside; all45FB30descentY values disagree. The45largerFBcalls have zero column/log/Y disagreements. Whole scalar mutation101at directsource equation/nooutput, allsource-runtime-prepared guards hold. Rustwhole60 reporting gated/compiled/executed0; whole5.2MBpositive-negativeinputs and7.9MBverdict retained. [pcc:unverified]
+
+## Decisions made
+
+The finite FB30 candidate functional already differs from the checked source character before geometric descent, while everyobserved canonicaldecomposition holds. Preserve this finite separator, not a global character or causal theorem. Complete source-linked result visual/PDF and genuineNEW27 before production-solver changes. A successor relation-completion mechanism needs new prior-art review/prospective protocol before code. [pcc:unverified]
+
+## Open threads
+
+Result visual/PDF, current GitHub queue, Root character mirror and genuineNEW27/full source-runtime-prepared/raw custody. Then review an unassisted relation-completion experiment under a new prospective addendum; all originalcost/liveadmission/reference/Lean numeric-global-model-program bridges and merge requirements stay explicit. Root acceptedCI/rank mirror719d74/governance36196a normallypublished4cea0760. Vault8edec422/VLT1 only, KB127. [pcc:unverified]
+
+## Errors
+
+No character native/compiler/auditor failure. Scalar mutation rejected for the required direct source equation; original negative preserved. First Root mirror used wrong publication-receipt filename and stopped before anyclaim; wholepartial export/caller/exit1 retained, correctednew02export accepted719d74 without science or criterion change. Everyhistorical failed run remains. [pcc:unverified]
+
+
+# Complete rank and source-character result report inspected
+
+## What was done
+
+pcc/claims/PCC-20261115-2fd6b0.json: full53962B/two-page resultPDF with source-linked Markdown/Typst/diagram/wholeRustreportdata/plots. Both finalpages actuallyopened, allthreecomplete drafts/PDFs/rasters preserved. Named problem original-FB30-character-extension records finite rank-character obstruction, exact limits and unassisted-repair/matched-cost exit criteria. [pcc:unverified]
+
+## Decisions made
+
+Finish report publication and Root character mirror, then freeze genuineNEW27 for allcomplete post26source-build-native-runtime-fullprepared-failure-control-GitHubartifact-log-report roots. Review/freeze any successor relation-completion mechanism before code. Currentconsumer693f7a4/native3a7d56 requiredPCC43736524883SUCCESS; GitHub3904/bothPRs updated. [pcc:unverified]
+
+## Open threads
+
+Whole diagnostic CI/prospective comparison contract; newunassisted relation-completion primaryreview/protocol; globalcharacter/model-program/numericLean/calibratedliveadmission/primitive/strongest-reference/merge requirements. [pcc:unverified]
+
+## Errors
+
+Reportdraft01/02 spacing corrected in final03; an unconfirmed DOI string was removed from Markdown and replaced by exact primaryPDF URL. No scientific data changed; all drafts retained. Earlier original source/CI/proof/native/authoring/publication failures remain held. [pcc:unverified]
+
+
+# Preserve pinned first problem draft and correct its live metadata
+
+## What was done
+
+pcc/claims/PCC-20261115-b714fa.json: report governance01 fails original prose lint1 on the new problem metadata phrase without unsignedtag, before staging/commit. Exactfirstdraft/2fd6b0subjects and full original checks/caller are unchanged; currentproblem02 adds the tag and explicit frozen-draft role, original lint0. [pcc:unverified]
+
+## Decisions made
+
+Frozen firstdraft remains a narrow negative fixture: require exactpathSHA and exactone original lintfinding/exit1; all live changed Markdown must pass unchanged original lint0. No linter change or missing-input skip; everyownednewfile still staged and everypinnedsubject still exact. [pcc:unverified]
+
+## Open threads
+
+Complete report retry/publication, Root character mirror and genuineNEW27. Current scientific evidence and finalPDF do not change. [pcc:unverified]
+
+## Errors
+
+One metadata tag omitted in the firstproblem draft; entire failed01 and exactsubject preserved. No scientific or native failure and no criteriarelaxation. [pcc:unverified]
+
+
+# Preserve generated SVG bytes after cached-whitespace failure
+
+## What was done
+
+pcc/claims/PCC-20261115-69d523.json: governance02 fails at cachedwhitespace2 on Matplotlib SVG coordinate trailing whitespace; driver1/fullraw retained. Earlierpositive source/prose/canonicalchecks0 and exact frozenprosenegative1 hold. [pcc:unverified]
+
+## Decisions made
+
+Exact generatedSVG asset -whitespace metadata preserves all2fd6b0subject bytes; no trimming or regeneration. Nextcustody separates allpositivechecks0 from explicit expectedfrozendraftnegative1. [pcc:unverified]
+
+## Open threads
+
+Complete report03publication, Rootcharacter mirror and fullgenuineNEW27; scientific results remain3a7d56/c0479c/19c467. [pcc:unverified]
+
+## Errors
+
+Generatedasset whitespace classification was missing beforecachedcheck. Entirefailed02 and immutableSVG/PDF/firstdraft remain preserved. [pcc:unverified]
+
+
+# Preserve literal whitespace-diagnostic data
+
+## What was done
+
+pcc/claims/PCC-20261115-0b280b.json: report03cachedGitcheck2 flags whole priorraw diagnostics quoting the same SVG whitespace; driver1/complete compressedcaller-cachedlog and actualsource retained. [pcc:unverified]
+
+## Decisions made
+
+Three exact hashed raw diagnostic data paths get whitespace-preservation metadata. Future failed whitespace logs are whole losslessXZ, bytecompared; allpositive gates0 and frozenproblemnegative1 unchanged. No scientific, rendered or pinned byte changed. [pcc:unverified]
+
+## Open threads
+
+Report04publication, Rootcharacter mirror and genuineNEW27. [pcc:unverified]
+
+## Errors
+
+The first followup classified the generatedSVG but omitted its verbatim diagnostic copies. Allfailures remain, with no truncated logs. [pcc:unverified]

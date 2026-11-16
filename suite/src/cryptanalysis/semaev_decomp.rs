@@ -166,6 +166,7 @@ pub struct Gf2 {
     /// [`Self::reduce`] folds by shifts, `0` when the table is used.
     tri: u32,
     has_clmul: bool,
+    euclidean_inverse: bool,
 }
 
 /// Spread the low 32 bits of `x` so that bit `i` lands at bit `2i`.
@@ -254,6 +255,7 @@ impl Gf2 {
             positions,
             tri,
             has_clmul,
+            euclidean_inverse: false,
         };
         if cached.is_none() {
             let (msq, msq_at) = gf.build_msq();
@@ -513,6 +515,39 @@ impl Gf2 {
         a
     }
 
+    /// Opt-in polynomial Euclidean inversion for fields fitting in 32 bits.
+    /// Wider fields retain Itoh–Tsujii. This changes arithmetic only.
+    pub fn set_euclidean_inverse(&mut self, enabled: bool) {
+        self.euclidean_inverse = enabled && self.n <= 32;
+    }
+
+    pub fn uses_euclidean_inverse(&self) -> bool {
+        self.euclidean_inverse
+    }
+
+    /// Polynomial extended Euclid, with u/v degrees at most n and Bezout
+    /// coefficient shifts below 2n. The 32-bit guard keeps every intermediate
+    /// in u64. Inputs are canonical elements of the irreducible field.
+    fn inv_euclidean(&self, a: u64) -> u64 {
+        if a == 0 {
+            return 0;
+        }
+        let (mut u, mut v) = (a, self.irr);
+        let (mut x, mut y) = (1u64, 0u64);
+        while u != 1 {
+            let mut shift = v.leading_zeros() as i32 - u.leading_zeros() as i32;
+            if shift < 0 {
+                std::mem::swap(&mut u, &mut v);
+                std::mem::swap(&mut x, &mut y);
+                shift = -shift;
+            }
+            u ^= v << shift;
+            x ^= y << shift;
+        }
+        debug_assert_eq!(x & !self.mask, 0);
+        x
+    }
+
     /// `a^{-1}` by Fermat: `a^(2^n − 2)`.  Zero maps to zero.
     ///
     /// Itoh–Tsujii addition chain: with `β_k = a^{2^k − 1}`, walk the
@@ -522,6 +557,9 @@ impl Gf2 {
     /// multiplications, against `n − 2` for square-and-multiply —
     /// 7 instead of 22 at `n = 24`.
     pub fn inv(&self, a: u64) -> u64 {
+        if self.euclidean_inverse && a & !self.mask == 0 {
+            return self.inv_euclidean(a);
+        }
         #[cfg(target_arch = "x86_64")]
         if self.has_clmul {
             // SAFETY: as in `batch_inv`.
@@ -1650,6 +1688,46 @@ mod tests {
 
     /// The Itoh–Tsujii inverse is a true inverse at every one-word
     /// field size, where the chain's shape follows the bits of `n − 1`.
+    #[test]
+    fn euclidean_inverse_matches_chain_and_general_arithmetic() {
+        use crate::cryptanalysis::koblitz_index_calculus::find_irreducible_sparse;
+        let mut state = 0x533350495045u64;
+        for n in 2u32..=63 {
+            let Some(irr) = find_irreducible_sparse(n) else {
+                continue;
+            };
+            let reference = Gf2::new(&irr);
+            let mut candidate = reference.clone();
+            candidate.set_euclidean_inverse(true);
+            assert_eq!(candidate.uses_euclidean_inverse(), n <= 32);
+            let count = if n <= 16 { 1usize << n } else { 2048 };
+            for i in 0..count {
+                let a = if n <= 16 {
+                    i as u64
+                } else {
+                    xorshift(&mut state) & reference.mask
+                };
+                let actual = candidate.inv(a);
+                assert_eq!(actual, reference.inv(a), "n={n}, a={a}");
+                if a != 0 {
+                    assert_eq!(reference.mul(a, actual), 1);
+                    if i < 16 {
+                        let want = reference.to_element(a).flt_inverse(&irr).unwrap();
+                        assert_eq!(actual, reference.from_element(&want));
+                    }
+                }
+            }
+            let mut xs: Vec<_> = (0..257)
+                .map(|_| xorshift(&mut state) & reference.mask)
+                .collect();
+            let expected: Vec<_> = xs.iter().map(|&a| reference.inv(a)).collect();
+            candidate.batch_inv(&mut xs, &mut Vec::new());
+            assert_eq!(xs, expected);
+            candidate.set_euclidean_inverse(false);
+            assert!(!candidate.uses_euclidean_inverse());
+        }
+    }
+
     #[test]
     fn itoh_tsujii_inverse_roundtrips_at_every_width() {
         use crate::cryptanalysis::koblitz_index_calculus::find_irreducible_sparse;

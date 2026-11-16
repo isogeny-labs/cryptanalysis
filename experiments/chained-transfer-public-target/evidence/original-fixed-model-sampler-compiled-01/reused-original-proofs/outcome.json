@@ -1,0 +1,47 @@
+{
+  "at": "2026-11-15T12:21:30.578765+00:00",
+  "reused_source": "/workspace/cryptanalysis/experiments/chained-transfer-public-target/norm-assisted-ic/lean/NormAssistedSampling.lean",
+  "source_sha256": "ee5003600419079b3e1891b08f0639c68e5fbb7ade5605b2b394a27e76340394",
+  "original_exact_binding_ids": [
+    "PCC-20261113-789d94",
+    "PCC-20261113-a9a7af",
+    "PCC-20261113-ed533b"
+  ],
+  "gates": [
+    {
+      "gate": "consumer",
+      "command": [
+        "timeout",
+        "120",
+        "env",
+        "ELAN_TOOLCHAIN=leanprover/lean4:v4.34.1",
+        "bash",
+        "tools/lean/proof-gate.sh",
+        "--out",
+        "/workspace/scratch/ct97-original-fixed-sampler-reused-proof-01/consumer-proofs",
+        "experiments/chained-transfer-public-target/norm-assisted-ic/lean/NormAssistedSampling.lean"
+      ],
+      "actual_exit": 0,
+      "declarations": 3,
+      "trusted": 0
+    },
+    {
+      "gate": "producer",
+      "command": [
+        "timeout",
+        "120",
+        "env",
+        "ELAN_TOOLCHAIN=leanprover/lean4:v4.35.0",
+        "bash",
+        "tools/lean/proof-gate.sh",
+        "--out",
+        "/workspace/scratch/ct97-original-fixed-sampler-reused-proof-01/producer-proofs",
+        "target/ct97-original-fixed-sampler-proof-stage-01/NormAssistedSampling.lean"
+      ],
+      "actual_exit": 0,
+      "declarations": 3,
+      "trusted": 0
+    }
+  ],
+  "scope": "reuses existing conditional norm-half roundtrip, prepared sample exactness and omitted-half rejection statements only; actual transfer/model/program/order/relation-log bridges remain explicit, no solver completeness or cost proof"
+}

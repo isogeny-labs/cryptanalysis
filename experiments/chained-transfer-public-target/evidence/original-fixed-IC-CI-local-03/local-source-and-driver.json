@@ -1,0 +1,158 @@
+{
+  "at": "2026-11-15T14:41:18.266466+00:00",
+  "actual_exit": 0,
+  "command": [
+    "timeout",
+    "3600",
+    "bash",
+    "/dev/shm/ct100-original-fixed-IC-CI-layout-03/cryptanalysis/experiments/chained-transfer-public-target/ci_original_fixed_ic/check-01.sh",
+    "/dev/shm/ct100-original-fixed-IC-CI-layout-03/crypto",
+    "/dev/shm/ct100-original-fixed-IC-CI-layout-03/whole-output"
+  ],
+  "consumer_parent": "5493385305de052bc6e84cc9dc7fe7bf08596436",
+  "producer_original_pin": "3d49af7f3d0a28e76b79e4825c9d2324e85853d2",
+  "precommit_source_manifest": "exact-precommit-driver-source.json",
+  "preparatory_commands": [
+    {
+      "name": "crypto-worktree",
+      "command": [
+        "git",
+        "worktree",
+        "add",
+        "--detach",
+        "--no-checkout",
+        "/dev/shm/ct100-original-fixed-IC-CI-layout-03/crypto",
+        "3d49af7f3d0a28e76b79e4825c9d2324e85853d2"
+      ],
+      "cwd": "/workspace/crypto",
+      "actual_exit": 0
+    },
+    {
+      "name": "crypto-sparse",
+      "command": [
+        "git",
+        "sparse-checkout",
+        "set",
+        "--no-cone",
+        "/research/chained_jacobian_transfers_20261110/genus3-prime-descent/",
+        "/research/chained_jacobian_transfers_20261110/evidence/genus3-primary-01/cases.json",
+        "/research/chained_jacobian_transfers_20261110/evidence/genus3-cli-fixtures-01/",
+        "/research/chained_jacobian_transfers_20261110/evidence/genus3-ramification-panel-01/all-historical-cases.json",
+        "/research/chained_jacobian_transfers_20261110/evidence/genus3-lean-bindings-01/claims.json",
+        "/research/chained_jacobian_transfers_20261110/G3_DESCENT_PROTOCOL.md",
+        "/research/chained_jacobian_transfers_20261110/G3_DESCENT_DERIVATION.md",
+        "/research/chained_jacobian_transfers_20261110/G3_MODEL_TRANSPORT_ADDENDUM.md",
+        "/research/chained_jacobian_transfers_20261110/G3_RAMIFICATION_COVERAGE_ADDENDUM.md",
+        "/research/chained_jacobian_transfers_20261110/G3_PROOF_MAP.md",
+        "/research/quartic_n4_la_20261021/common.rs",
+        "/research/quartic_n4_la_20261021/ghs.rs",
+        "/research/quartic_n4_la_20261021/ic.rs",
+        "/research/quartic_n4_la_20261021/solver.rs",
+        "/isogeny_algos/",
+        "/src/cryptanalysis/diem_quartic.rs",
+        "/src/cryptanalysis/plane_quartic_pic.rs",
+        "/src/cryptanalysis/identity_certificate.rs",
+        "/src/cryptanalysis/smith_kernel_coverage.rs",
+        "/src/hash/sha256.rs",
+        "/tools/lean/",
+        "/tools/pcc/",
+        "/pcc/keyring.json",
+        "/pcc/claims/",
+        "/.github/workflows/genus3-prime-descent.yml"
+      ],
+      "cwd": "/dev/shm/ct100-original-fixed-IC-CI-layout-03/crypto",
+      "actual_exit": 0
+    },
+    {
+      "name": "crypto-checkout",
+      "command": [
+        "git",
+        "checkout",
+        "--detach",
+        "3d49af7f3d0a28e76b79e4825c9d2324e85853d2"
+      ],
+      "cwd": "/dev/shm/ct100-original-fixed-IC-CI-layout-03/crypto",
+      "actual_exit": 0
+    },
+    {
+      "name": "cryptanalysis-worktree",
+      "command": [
+        "git",
+        "worktree",
+        "add",
+        "--detach",
+        "--no-checkout",
+        "/dev/shm/ct100-original-fixed-IC-CI-layout-03/cryptanalysis",
+        "5493385305de052bc6e84cc9dc7fe7bf08596436"
+      ],
+      "cwd": "/workspace/cryptanalysis",
+      "actual_exit": 0
+    },
+    {
+      "name": "cryptanalysis-sparse",
+      "command": [
+        "git",
+        "sparse-checkout",
+        "set",
+        "--no-cone",
+        "/experiments/chained-transfer-public-target/",
+        "/tools/lean/",
+        "/tools/pcc/",
+        "/pcc/keyring.json",
+        "/pcc/claims/",
+        "/.github/workflows/",
+        "/.github/workflows/chained-transfer-reference.yml",
+        "/.github/workflows/chained-transfer-public-target.yml",
+        "/.github/workflows/chained-transfer-norm-sampling.yml",
+        "/.github/workflows/chained-transfer-arithmetic-audit.yml",
+        "/.github/workflows/chained-transfer-beta-complete.yml",
+        "/.github/workflows/chained-transfer-fixed-chain.yml",
+        "/docs/research-artifacts/chained-transfer/norm-halving-01/",
+        "/docs/research-artifacts/chained-transfer/nondual13-phaseA-01/",
+        "/docs/research-artifacts/chained-transfer/nondual-models-18/",
+        "/docs/research-artifacts/chained-transfer/fixed-twisted-pair-20/",
+        "/docs/research-artifacts/chained-transfer/paired-fourth-21/",
+        "/docs/research-artifacts/chained-transfer/complete-chain-22/",
+        "/docs/research-artifacts/chained-transfer/norm-point-original-prime-23/",
+        "/docs/research-artifacts/chained-transfer/original-prime-kernel-geometry-24/",
+        "/docs/research-artifacts/chained-transfer/original-full-group-25/",
+        "/docs/research-artifacts/chained-transfer/original-IC-sampler-26/",
+        "/.github/workflows/chained-transfer-nondual-preflight.yml",
+        "/.github/workflows/chained-transfer-beta-rational-lift.yml",
+        "/.github/workflows/chained-transfer-common-origin.yml",
+        "/.github/workflows/chained-transfer-new-target-ic.yml",
+        "/.github/workflows/chained-transfer-checkpoint-transport.yml",
+        "/.github/workflows/chained-transfer-odd-refinement.yml",
+        "/.github/workflows/chained-transfer-original-root-fixture.yml",
+        "/.github/workflows/chained-transfer-odd-product.yml",
+        "/.github/workflows/chained-transfer-odd-source.yml",
+        "/tools/artifacts/artifacts.py",
+        "/.artifacts/config.json",
+        "/.github/workflows/chained-transfer-chain-kernels.yml",
+        "/.github/workflows/chained-transfer-gluing.yml",
+        "/.github/workflows/chained-transfer-kernels.yml",
+        "/.github/workflows/chained-transfer-bitangents.yml",
+        "/.github/workflows/chained-transfer-two-primary.yml",
+        "/.github/workflows/chained-transfer-completed-v2.yml",
+        "/.github/workflows/chained-transfer-completed-descent.yml",
+        "/.github/workflows/pcc-gate.yml"
+      ],
+      "cwd": "/dev/shm/ct100-original-fixed-IC-CI-layout-03/cryptanalysis",
+      "actual_exit": 0
+    },
+    {
+      "name": "cryptanalysis-checkout",
+      "command": [
+        "git",
+        "checkout",
+        "--detach",
+        "5493385305de052bc6e84cc9dc7fe7bf08596436"
+      ],
+      "cwd": "/dev/shm/ct100-original-fixed-IC-CI-layout-03/cryptanalysis",
+      "actual_exit": 0
+    }
+  ],
+  "all_whole_outputs_copied_and_compared_before_interpretation": true,
+  "raw_cargo_cache": "RAM derived cache retained, distinct from preserved full prepared/runtime copies",
+  "scope": "fresh local precommit exact driver validation; no GitHub CI or timing standing"
+}

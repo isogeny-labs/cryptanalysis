@@ -1,0 +1,15 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T11:11:45Z",
+ "id": "PCC-20261116-32a0a0",
+ "kind": "statement",
+ "producer": {
+  "commit": "300f0e5ffd0a06b714bfdcd9c9e3a6d3d21fe8e3",
+  "model": "",
+  "session": "ic-rational-current-20261115"
+ },
+ "proofs": [],
+ "schema": "pcc.claim/v1",
+ "scope": "suite/src/cryptanalysis/koblitz_fast.rs",
+ "statement": "Opt-in vector_prepare=2 adds packed characteristic-two square helpers guarded by canonical field degree at most32, with original vector product squaring for larger fields and complete scalar fallback. Four lanes use one wide or two ordinary carryless square instructions and existing reduction; no runtime gain follows from static structure. Local ARM pipeline and exceptional-point differential tests pass; native x86 square execution and timing remain pending."
+}
