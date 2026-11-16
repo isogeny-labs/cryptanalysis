@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.4](https://github.com/isogeny-labs/cryptanalysis/compare/cryptanalysis-v0.1.3...cryptanalysis-v0.1.4) (2026-11-16)
+
+
+### Bug Fixes
+
+* sync canonical finite benchmark arithmetic and chart bounds ([854d70d](https://github.com/isogeny-labs/cryptanalysis/commit/854d70df60629a011ee587d608c6d02278521ecb))
+* validate GPU checkpoint metadata and cumulative counter capacity ([91b7bc0](https://github.com/isogeny-labs/cryptanalysis/commit/91b7bc037911edb27f288498058c2d5cde057b7d))
+
 ## [0.1.3](https://github.com/isogeny-labs/cryptanalysis/compare/cryptanalysis-v0.1.2...cryptanalysis-v0.1.3) (2026-11-14)
 
 

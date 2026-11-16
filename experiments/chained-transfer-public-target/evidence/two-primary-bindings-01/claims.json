@@ -1,0 +1,42 @@
+[
+  {
+    "theorem": "TwoPrimary223.exact_trace_and_parity",
+    "claim_path": "pcc/claims/PCC-20261113-4e7bfe.json",
+    "statement": "theorem exact_trace_and_parity : (223 : Int)^3 + 1 - 11092292 = -2724 \u2227 (2724 : Nat) % 2 = 0 \u2227 (11089567 : Nat) % 2 = 1",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/two-primary/FrobeniusSix.lean",
+      "theorem": "TwoPrimary223.exact_trace_and_parity",
+      "decl_sha256": "0a6d233de184547fb20bd473c964b5f3e2cf71971e3298124c66ded7f3143674"
+    }
+  },
+  {
+    "theorem": "TwoPrimary223.no_three_cycle_partition",
+    "claim_path": "pcc/claims/PCC-20261113-cc7273.json",
+    "statement": "theorem no_three_cycle_partition (cycles : Nat) : 64 \u2260 2 + 3*cycles",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/two-primary/FrobeniusSix.lean",
+      "theorem": "TwoPrimary223.no_three_cycle_partition",
+      "decl_sha256": "3b628c571bc551b8909c13282fe7d929f0417d8d085d2206fc60a2f8a91e87c1"
+    }
+  },
+  {
+    "theorem": "TwoPrimary223.sixth_iterate_on_exponent_two",
+    "claim_path": "pcc/claims/PCC-20261113-abcfec.json",
+    "statement": "theorem sixth_iterate_on_exponent_two {V : Type} [IntModule V] (f : V \u2192 V) (exponent_two : \u2200 x : V, (2 : Nat) \u2022 x = 0) (annihilator : \u2200 x : V, iterate f 6 x + (2724 : Nat) \u2022 iterate f 3 x + (11089567 : Nat) \u2022 x = 0) : \u2200 x : V, iterate f 6 x = x",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/two-primary/FrobeniusSix.lean",
+      "theorem": "TwoPrimary223.sixth_iterate_on_exponent_two",
+      "decl_sha256": "3477e6c07a6aefc1828f6dafc451c6101600b77a368d71a69e3bad04c3553f31"
+    }
+  },
+  {
+    "theorem": "TwoPrimary223.exact_six_from_divisor_exclusions",
+    "claim_path": "pcc/claims/PCC-20261113-5facfe.json",
+    "statement": "theorem exact_six_from_divisor_exclusions (d : Nat) (divides_six : d \u2223 6) (not_two : \u00ac d \u2223 2) (not_three : \u00ac d \u2223 3) : d=6",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/two-primary/FrobeniusSix.lean",
+      "theorem": "TwoPrimary223.exact_six_from_divisor_exclusions",
+      "decl_sha256": "50f7ad22b8550d1b46ca024d05d3782578d26716a83477a72d9e6eb8ef1859bc"
+    }
+  }
+]

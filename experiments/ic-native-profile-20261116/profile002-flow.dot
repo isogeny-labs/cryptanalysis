@@ -1,0 +1,1 @@
+digraph G {rankdir=LR;node[shape=box,style="rounded,filled",fillcolor="#e6eeee",fontname="Helvetica"];a[label="Point additions\n56,958 inverse calls"];b[label="Point doubles\n2,073 calls"];c[label="Base point construction\n1,023 calls"];d[label="Batch inversion\n1 call"];e[label="Gf2::inv\n60,055 calls"];f[label="inv_clmul\n43,239,600 exclusive Ir"];a->e;b->e;c->e;d->e;e->f;}

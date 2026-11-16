@@ -1,0 +1,1162 @@
+{
+  "prior": "/workspace/scratch/ct101-original-relation-kernel-build-01",
+  "exact_whole_engine_dependency_closure": {
+    "path+file:///workspace/crypto/isogeny_algos#0.1.0": {
+      "node": {
+        "id": "path+file:///workspace/crypto/isogeny_algos#0.1.0",
+        "dependencies": [],
+        "deps": [],
+        "features": []
+      },
+      "package": {
+        "id": "path+file:///workspace/crypto/isogeny_algos#0.1.0",
+        "manifest_path": "/workspace/crypto/isogeny_algos/Cargo.toml",
+        "dependencies": [],
+        "features": {},
+        "targets": [
+          {
+            "kind": [
+              "lib"
+            ],
+            "crate_types": [
+              "lib"
+            ],
+            "name": "isogeny_algos",
+            "src_path": "/workspace/crypto/isogeny_algos/src/lib.rs",
+            "edition": "2021",
+            "doc": true,
+            "doctest": true,
+            "test": true
+          },
+          {
+            "kind": [
+              "bin"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "bench",
+            "src_path": "/workspace/crypto/isogeny_algos/src/bin/bench.rs",
+            "edition": "2021",
+            "doc": true,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "bin"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "gen_mont_adx",
+            "src_path": "/workspace/crypto/isogeny_algos/src/bin/gen_mont_adx.rs",
+            "edition": "2021",
+            "doc": true,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "bin"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "isobench",
+            "src_path": "/workspace/crypto/isogeny_algos/src/bin/isobench.rs",
+            "edition": "2021",
+            "doc": true,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "bin"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "isogeny-algos",
+            "src_path": "/workspace/crypto/isogeny_algos/src/bin/isogeny-algos.rs",
+            "edition": "2021",
+            "doc": true,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "bin"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "isogeny-perf",
+            "src_path": "/workspace/crypto/isogeny_algos/src/bin/isogeny-perf.rs",
+            "edition": "2021",
+            "doc": true,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "bin"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "micro",
+            "src_path": "/workspace/crypto/isogeny_algos/src/bin/micro.rs",
+            "edition": "2021",
+            "doc": true,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "bin"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "report",
+            "src_path": "/workspace/crypto/isogeny_algos/src/bin/report.rs",
+            "edition": "2021",
+            "doc": true,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "example"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "bench_compare",
+            "src_path": "/workspace/crypto/isogeny_algos/examples/bench_compare.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": false
+          },
+          {
+            "kind": [
+              "example"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "binary_gls_scan",
+            "src_path": "/workspace/crypto/isogeny_algos/examples/binary_gls_scan.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": false
+          },
+          {
+            "kind": [
+              "example"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "binary_gls_validate",
+            "src_path": "/workspace/crypto/isogeny_algos/examples/binary_gls_validate.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": false
+          },
+          {
+            "kind": [
+              "example"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "binary_level_yield",
+            "src_path": "/workspace/crypto/isogeny_algos/examples/binary_level_yield.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": false
+          },
+          {
+            "kind": [
+              "example"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "csidh512_once",
+            "src_path": "/workspace/crypto/isogeny_algos/examples/csidh512_once.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": false
+          },
+          {
+            "kind": [
+              "example"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "eigen_seta_toy",
+            "src_path": "/workspace/crypto/isogeny_algos/examples/eigen_seta_toy.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": false
+          },
+          {
+            "kind": [
+              "example"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "ext_compare",
+            "src_path": "/workspace/crypto/isogeny_algos/examples/ext_compare.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": false
+          },
+          {
+            "kind": [
+              "example"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "ext_families",
+            "src_path": "/workspace/crypto/isogeny_algos/examples/ext_families.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": false
+          },
+          {
+            "kind": [
+              "example"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "ext_summary",
+            "src_path": "/workspace/crypto/isogeny_algos/examples/ext_summary.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": false
+          },
+          {
+            "kind": [
+              "example"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "fixed_degree_report",
+            "src_path": "/workspace/crypto/isogeny_algos/examples/fixed_degree_report.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": false
+          },
+          {
+            "kind": [
+              "example"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "gls_loop_bench",
+            "src_path": "/workspace/crypto/isogeny_algos/examples/gls_loop_bench.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": false
+          },
+          {
+            "kind": [
+              "example"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "gls_loop_validate",
+            "src_path": "/workspace/crypto/isogeny_algos/examples/gls_loop_validate.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": false
+          },
+          {
+            "kind": [
+              "example"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "klpt_once",
+            "src_path": "/workspace/crypto/isogeny_algos/examples/klpt_once.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": false
+          },
+          {
+            "kind": [
+              "example"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "p192_p224_large_degree_search",
+            "src_path": "/workspace/crypto/isogeny_algos/examples/p192_p224_large_degree_search.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": false
+          },
+          {
+            "kind": [
+              "example"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "profile_csidh",
+            "src_path": "/workspace/crypto/isogeny_algos/examples/profile_csidh.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": false
+          },
+          {
+            "kind": [
+              "example"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "profile_eig",
+            "src_path": "/workspace/crypto/isogeny_algos/examples/profile_eig.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": false
+          },
+          {
+            "kind": [
+              "example"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "profile_large_ell",
+            "src_path": "/workspace/crypto/isogeny_algos/examples/profile_large_ell.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": false
+          },
+          {
+            "kind": [
+              "example"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "profile_ntt",
+            "src_path": "/workspace/crypto/isogeny_algos/examples/profile_ntt.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": false
+          },
+          {
+            "kind": [
+              "example"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "profile_powmod",
+            "src_path": "/workspace/crypto/isogeny_algos/examples/profile_powmod.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": false
+          },
+          {
+            "kind": [
+              "example"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "profile_sea",
+            "src_path": "/workspace/crypto/isogeny_algos/examples/profile_sea.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": false
+          },
+          {
+            "kind": [
+              "example"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "profile_sqr",
+            "src_path": "/workspace/crypto/isogeny_algos/examples/profile_sqr.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": false
+          },
+          {
+            "kind": [
+              "example"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "profile_tree_vs_direct",
+            "src_path": "/workspace/crypto/isogeny_algos/examples/profile_tree_vs_direct.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": false
+          },
+          {
+            "kind": [
+              "example"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "profile_weier",
+            "src_path": "/workspace/crypto/isogeny_algos/examples/profile_weier.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": false
+          },
+          {
+            "kind": [
+              "example"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "sqrtvelu_once",
+            "src_path": "/workspace/crypto/isogeny_algos/examples/sqrtvelu_once.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": false
+          },
+          {
+            "kind": [
+              "test"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "adx_gen",
+            "src_path": "/workspace/crypto/isogeny_algos/tests/adx_gen.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "test"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "api",
+            "src_path": "/workspace/crypto/isogeny_algos/tests/api.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "test"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "api_families",
+            "src_path": "/workspace/crypto/isogeny_algos/tests/api_families.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "test"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "bigfield",
+            "src_path": "/workspace/crypto/isogeny_algos/tests/bigfield.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "test"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "binary",
+            "src_path": "/workspace/crypto/isogeny_algos/tests/binary.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "test"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "bmss",
+            "src_path": "/workspace/crypto/isogeny_algos/tests/bmss.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "test"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "chain",
+            "src_path": "/workspace/crypto/isogeny_algos/tests/chain.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "test"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "coppersmith",
+            "src_path": "/workspace/crypto/isogeny_algos/tests/coppersmith.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "test"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "csidh",
+            "src_path": "/workspace/crypto/isogeny_algos/tests/csidh.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "test"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "dot",
+            "src_path": "/workspace/crypto/isogeny_algos/tests/dot.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "test"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "dual",
+            "src_path": "/workspace/crypto/isogeny_algos/tests/dual.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "test"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "endo",
+            "src_path": "/workspace/crypto/isogeny_algos/tests/endo.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "test"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "find",
+            "src_path": "/workspace/crypto/isogeny_algos/tests/find.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "test"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "fixed_degree_pipeline",
+            "src_path": "/workspace/crypto/isogeny_algos/tests/fixed_degree_pipeline.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "test"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "fixed_degree_solvers",
+            "src_path": "/workspace/crypto/isogeny_algos/tests/fixed_degree_solvers.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "test"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "fpm",
+            "src_path": "/workspace/crypto/isogeny_algos/tests/fpm.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "test"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "fpm_inv",
+            "src_path": "/workspace/crypto/isogeny_algos/tests/fpm_inv.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "test"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "fpr",
+            "src_path": "/workspace/crypto/isogeny_algos/tests/fpr.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "test"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "genus2",
+            "src_path": "/workspace/crypto/isogeny_algos/tests/genus2.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "test"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "gf3n",
+            "src_path": "/workspace/crypto/isogeny_algos/tests/gf3n.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "test"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "hessian",
+            "src_path": "/workspace/crypto/isogeny_algos/tests/hessian.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "test"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "icv1",
+            "src_path": "/workspace/crypto/isogeny_algos/tests/icv1.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "test"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "int",
+            "src_path": "/workspace/crypto/isogeny_algos/tests/int.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "test"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "isobench",
+            "src_path": "/workspace/crypto/isogeny_algos/tests/isobench.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "test"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "kernel",
+            "src_path": "/workspace/crypto/isogeny_algos/tests/kernel.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "test"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "kernel2",
+            "src_path": "/workspace/crypto/isogeny_algos/tests/kernel2.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "test"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "models",
+            "src_path": "/workspace/crypto/isogeny_algos/tests/models.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "test"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "mont",
+            "src_path": "/workspace/crypto/isogeny_algos/tests/mont.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "test"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "ntt",
+            "src_path": "/workspace/crypto/isogeny_algos/tests/ntt.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "test"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "path",
+            "src_path": "/workspace/crypto/isogeny_algos/tests/path.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "test"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "phi_fast",
+            "src_path": "/workspace/crypto/isogeny_algos/tests/phi_fast.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "test"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "polyfast",
+            "src_path": "/workspace/crypto/isogeny_algos/tests/polyfast.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "test"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "powmod",
+            "src_path": "/workspace/crypto/isogeny_algos/tests/powmod.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "test"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "quat",
+            "src_path": "/workspace/crypto/isogeny_algos/tests/quat.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "test"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "radical",
+            "src_path": "/workspace/crypto/isogeny_algos/tests/radical.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "test"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "relation",
+            "src_path": "/workspace/crypto/isogeny_algos/tests/relation.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "test"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "report",
+            "src_path": "/workspace/crypto/isogeny_algos/tests/report.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "test"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "sea",
+            "src_path": "/workspace/crypto/isogeny_algos/tests/sea.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "test"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "small_char",
+            "src_path": "/workspace/crypto/isogeny_algos/tests/small_char.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "test"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "sqr",
+            "src_path": "/workspace/crypto/isogeny_algos/tests/sqr.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "test"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "sqrt_velu_gaps",
+            "src_path": "/workspace/crypto/isogeny_algos/tests/sqrt_velu_gaps.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "test"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "sqrt_velu_mont",
+            "src_path": "/workspace/crypto/isogeny_algos/tests/sqrt_velu_mont.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "test"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "sutherland",
+            "src_path": "/workspace/crypto/isogeny_algos/tests/sutherland.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "test"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "theta",
+            "src_path": "/workspace/crypto/isogeny_algos/tests/theta.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "test"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "theta_g",
+            "src_path": "/workspace/crypto/isogeny_algos/tests/theta_g.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "test"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "two_power",
+            "src_path": "/workspace/crypto/isogeny_algos/tests/two_power.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "test"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "weier",
+            "src_path": "/workspace/crypto/isogeny_algos/tests/weier.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "test"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "znring",
+            "src_path": "/workspace/crypto/isogeny_algos/tests/znring.rs",
+            "edition": "2021",
+            "doc": false,
+            "doctest": false,
+            "test": true
+          }
+        ]
+      }
+    }
+  },
+  "all_dependency_feature_target_identities_equal": true,
+  "files": [
+    {
+      "previous_full_closed_copy": "/workspace/scratch/ct101-original-relation-kernel-build-01/actual-prepared-original-engine/libisogeny_algos.rlib",
+      "actual_cache_path": "/workspace/scratch/ct80-twisted-pair-build-01-cache/release/libisogeny_algos.rlib",
+      "new_full_copy": "/workspace/scratch/ct103-original-relation-character-build-01/actual-prepared-original-engine/libisogeny_algos.rlib",
+      "bytes": 49789168,
+      "sha256": "15e4ed73ecf373485f8ec408dc8ec31c3ac3e9cd0e1fc472ebc6a7798a971a0c",
+      "whole_independent_comparison": true
+    },
+    {
+      "previous_full_closed_copy": "/workspace/scratch/ct101-original-relation-kernel-build-01/actual-prepared-original-engine/libisogeny_algos-e97507d926e5798a.rmeta",
+      "actual_cache_path": "/workspace/scratch/ct80-twisted-pair-build-01-cache/release/deps/libisogeny_algos-e97507d926e5798a.rmeta",
+      "new_full_copy": "/workspace/scratch/ct103-original-relation-character-build-01/actual-prepared-original-engine/libisogeny_algos-e97507d926e5798a.rmeta",
+      "bytes": 8306696,
+      "sha256": "bc0eb459fb4959fd22afef379eaa30ef4b226729177a023075d916b75d1bb416",
+      "whole_independent_comparison": true
+    }
+  ],
+  "no_new_engine_preparation": true,
+  "scope": "full cache/prepared-copy equality; closed copies linked after independent byte comparison"
+}

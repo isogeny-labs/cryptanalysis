@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-15T00:02:03Z",
+ "id": "PCC-20261115-d0768a",
+ "kind": "theorem",
+ "producer": {
+  "commit": "fa3c50b50db034a36a82813917e42e6801554d6c",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "9dac93f65de551d6dc5899bc72eb80b55a2dc4eaa7356a08976780340aa6c834",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/paired-fourth-preflight/lean/ThreePairNorm.lean",
+   "theorem": "ThreePairNorm.three_pair_norms"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Abstract IntModule three-pair dual norms derived from six individual identities/four linearity laws; Bezout recovery/injectivity on an explicit annihilator subgroup and fixed Nat gcd2197-oldell2773073/13-newell2771711. Both original gates3roots0trusted. No composite norm assumed. Actual curves/finite fields/projective maps/HLP-Frobenius Jacobians/polarizations/programs and cyclic kernel classification remain separate bridges; no native fourth-edge outcome or computational gain.",
+ "statement": "theorem three_pair_norms {A B C D : Type} [IntModule A] [IntModule B] [IntModule C] [IntModule D] (f : A \u2192 B) (fh : B \u2192 A) (g : B \u2192 C) (gh : C \u2192 B) (h : C \u2192 D) (hh : D \u2192 C) (n m k : Int) (hf : \u2200 a, fh (f a) = n \u2022 a) (hfh : \u2200 b, f (fh b) = n \u2022 b) (hg : \u2200 b, gh (g b) = m \u2022 b) (hgh : \u2200 c, g (gh c) = m \u2022 c) (hhf : \u2200 c, hh (h c) = k \u2022 c) (hhb : \u2200 d, h (hh d) = k \u2022 d) (hfl : \u2200 z : Int, \u2200 b, fh (z \u2022 b) = z \u2022 fh b) (hghl : \u2200 z : Int, \u2200 c, gh (z \u2022 c) = z \u2022 gh c) (hgl : \u2200 z : Int, \u2200 b, g (z \u2022 b) = z \u2022 g b) (hhl : \u2200 z : Int, \u2200 c, h (z \u2022 c) = z \u2022 h c) : (\u2200 a, fh (gh (hh (h (g (f a))))) = (n*m*k) \u2022 a) \u2227 (\u2200 d, h (g (f (fh (gh (hh d))))) = (n*m*k) \u2022 d)"
+}

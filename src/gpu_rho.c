@@ -11,18 +11,8 @@
 #include "dlog_internal.h"
 #include "dlog_checkpoint_internal.h"
 
+#include <math.h>
 #include <stdio.h>
-
-typedef struct gpu_rho_checkpoint_header {
-    char magic[8];
-    uint64_t p, a, b, order, cofactor, base[4], target[4];
-    uint32_t kind, negmap, r, nthreads, dp_bits, tpb, requested_steps;
-    uint32_t walks_per_thread, aux_words, entry_size, resolved_steps;
-    uint64_t seed, resumes, ops, launches, dps, restarts, entries, result;
-    double elapsed_seconds;
-    uint32_t solved;
-    uint64_t checksum;
-} gpu_rho_checkpoint_header;
 
 static void gpu_rho_checkpoint_identity(gpu_rho_checkpoint_header *h,
                                          const ca_group *g, const ca_elem *base,
@@ -72,9 +62,11 @@ static int gpu_rho_checkpoint_probe(const char *path,
     }
     int ok = fread(saved, 1, sizeof(*saved), f) == sizeof(*saved) &&
              gpu_rho_checkpoint_same_run(saved, identity) && saved->seed &&
-             (!requested_seed || saved->seed == requested_seed) &&
-             saved->resolved_steps && saved->entries <= SIZE_MAX / sizeof(ca_htab_entry) &&
-             saved->elapsed_seconds >= 0 && saved->resumes < UINT64_MAX;
+             (!requested_seed || saved->seed == requested_seed) && saved->resolved_steps &&
+             saved->entries <= SIZE_MAX / sizeof(ca_htab_entry) &&
+             isfinite(saved->elapsed_seconds) && saved->elapsed_seconds >= 0 &&
+             saved->solved <= 1 && saved->resumes < UINT64_MAX && saved->launches <= saved->ops &&
+             saved->dps <= saved->ops && saved->restarts <= saved->dps;
     fclose(f);
     if (!ok) ca_set_error("gpu rho: checkpoint identity, format or seed does not match");
     return ok ? 1 : -1;
@@ -474,6 +466,10 @@ static ca_status gpu_rho_solve(const ca_group *g, const ca_elem *base,
     if (existing) {
         if (!gpu_rho_checkpoint_load(checkpoint_path, &saved, &tab, g, base, target))
             goto finish;
+        if (saved.ops > UINT64_MAX - total_ops) {
+            ca_set_error("gpu rho: resumed operation count exceeds counter capacity");
+            goto finish;
+        }
         total_ops += saved.ops;
         launches = saved.launches;
         dps_total = saved.dps;
@@ -493,6 +489,13 @@ static ca_status gpu_rho_solve(const ca_group *g, const ca_elem *base,
         goto finish;
     }
     for (;;) {
+        /* Dimensions above bound this product below UINT64_MAX. Stop before
+         * launching work whose cumulative operation charge cannot be stored. */
+        if (nwalks * steps > UINT64_MAX - total_ops) {
+            ca_set_error("gpu rho: operation counter capacity reached");
+            rc = CA_ERR_LIMIT;
+            break;
+        }
         const uint64_t *dps;
         uint32_t count;
         ca_status lrc = ops->launch(ctx, &dps, &count);
