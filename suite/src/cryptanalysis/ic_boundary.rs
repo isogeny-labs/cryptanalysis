@@ -3171,6 +3171,7 @@ pub struct PairTable {
     /// Temporary inverse-cache allocation, freed before this table returns.
     pub prefix_inverse_bytes: usize,
     pub vector_pairs: usize,
+    pub vector_pclmul128_pairs: usize,
 }
 
 impl PairTable {
@@ -3359,6 +3360,13 @@ impl PairTable {
             build_ops: GroupOps::default(),
             build_wall_ns: start.elapsed().as_nanos() as u64,
             prefix_inverse_bytes,
+            vector_pclmul128_pairs: if vector_pairs != 0
+                && curve.cached_vector_backend() == "avx2-pclmul128"
+            {
+                vector_pairs
+            } else {
+                0
+            },
             vector_pairs,
         })
     }
@@ -3385,6 +3393,7 @@ impl PairTable {
             build_wall_ns: start.elapsed().as_nanos() as u64,
             prefix_inverse_bytes: 0,
             vector_pairs: 0,
+            vector_pclmul128_pairs: 0,
         }
     }
 
@@ -3425,6 +3434,7 @@ impl PairTable {
             build_wall_ns: start.elapsed().as_nanos() as u64,
             prefix_inverse_bytes: 0,
             vector_pairs: 0,
+            vector_pclmul128_pairs: 0,
         }
     }
 

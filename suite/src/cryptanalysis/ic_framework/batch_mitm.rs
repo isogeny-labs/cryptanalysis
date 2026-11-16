@@ -27,7 +27,7 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for BinaryBatchMitmOracle {
         } else if params.flag("adaptive_prepare") {
             "scalar at <=64 abscissae, bounded prefix inverse reuse above64"
         } else if params.flag("vector_prepare") {
-            "guarded AVX2/VPCLMUL cached pair preparation, exact scalar fallback"
+            "guarded AVX2/PCLMUL (VPCLMUL when available) cached pair preparation, exact scalar fallback"
         } else if params.flag("prefix_inverse_cache") {
             "bounded prefix inverse reuse with complete generic fallback"
         } else if params.flag("x_only") {
@@ -41,7 +41,7 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for BinaryBatchMitmOracle {
     }
     fn parameters(&self) -> &[(&str, &str)] {
         &[
-            ("vector_prepare", "0 or1, default0; AVX2/VPCLMUL cached preparation with complete scalar fallback"),
+            ("vector_prepare", "0 or1, default0; AVX2/PCLMUL (VPCLMUL when available) cached preparation with complete scalar fallback"),
             ("scalar_prepare", "0 or1, default0; original scalar table with fixed-two-summand query dispatch"),
             ("adaptive_prepare", "0 or1, default0; scalar at <=64 abscissae, prefix-cached x-only above64; experimental policy"),
             (
@@ -126,6 +126,18 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for BinaryBatchMitmOracle {
             (
                 "mitm_vector_pairs".into(),
                 self.table.as_ref().map_or(0, |t| t.vector_pairs as u64),
+            ),
+            (
+                "mitm_vector_pclmul128_pairs".into(),
+                self.table
+                    .as_ref()
+                    .map_or(0, |t| t.vector_pclmul128_pairs as u64),
+            ),
+            (
+                "mitm_vector_vpclmul_pairs".into(),
+                self.table.as_ref().map_or(0, |t| {
+                    t.vector_pairs.saturating_sub(t.vector_pclmul128_pairs) as u64
+                }),
             ),
             (
                 "mitm_observed_setup_adds".into(),
