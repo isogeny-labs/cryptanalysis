@@ -2,7 +2,7 @@
 
 [pcc:unverified]
 
-S3Direct.lean proves the direct Boolean coefficient identity and cross-term
+[pcc:unverified] S3Direct.lean proves the direct Boolean coefficient identity and cross-term
 symmetry over any commutative characteristic-two ring and finite index set.
 Boolean coordinates are explicit hypotheses u_i²=u_i and w_i²=w_i.
 

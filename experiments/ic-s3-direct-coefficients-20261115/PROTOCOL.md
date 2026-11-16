@@ -5,7 +5,7 @@
 The existing algebraic IC oracle calls pq_descent_symbolic::descend. Compare
 that current generic symbolic builder against s3-direct-coefficients from the
 same source and lockfile. Other optional arithmetic features stay disabled.
-This is the equation-construction interval, including allocation and canonical
+[pcc:unverified] This is the equation-construction interval, including allocation and canonical
 emission. It excludes relation search, solving, lifting, linear algebra and
 scalar recovery; a stage result cannot establish a full IC improvement.
 
@@ -39,7 +39,7 @@ are v_i²*xR² for both linear groups and (v_i*v_j)*xR+(v_i*v_j)² for cross mas
 Symmetry permits one triangular calculation per unordered basis pair. Emit
 cross masks, linear masks and the constant in canonical order, avoiding hash
 maps and sorting. This adapts an elementary coefficient identity; no novelty
-claim follows. The Lean source proves the identity and symmetry, with the
+claim follows. [pcc:unverified] The Lean source proves the identity and symmetry, with the
 implementation correspondence remaining a separate verification obligation.
 
 The generic path remains the default and reference. Tests compare every
