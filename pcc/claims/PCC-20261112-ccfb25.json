@@ -1,0 +1,58 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-12T08:17:18Z",
+ "id": "PCC-20261112-ccfb25",
+ "kind": "statement",
+ "producer": {
+  "commit": "b2972eb51fd794e1a6061c41fd5f3828890c08e3",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/adjoint-source-guards-02.txt",
+    "sha256": "c274f2dc9b70e59e28f7935969c5a518d28dff887f368cab73fa859493d1f753"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/adjoint-seven_chain-source-02.rs",
+    "sha256": "169b46dabbcdce2903ca08d01b461da5ae3b4284a7f72145820ced8454507ca0"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/adjoint-quartic_norm-source-02.rs",
+    "sha256": "e7a1d19869aa5cfc16ac77e126b312ba2a3ca30cadc5f80255ffc8150082bb22"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/adjoint-prime_field_adjoint-source-02.rs",
+    "sha256": "69c77ade7507b32d8ccfcb6487c9fee3caafd98d6ee6dc1a533c85ca0ad06730"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/adjoint-source-02.sha256",
+    "sha256": "32cde6db2d0ecd4a6c1fc3f280a0d8e3c07c2bada6f175ed05ce43ccf1b4951d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/adjoint-clippy-02.txt",
+    "sha256": "ca948849d4019584303fd027058ff17abb2a1780db884e04feea4ca337269ca4"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Unsigned actual adjoint integration02 strictClippy/exact source guards pass:SevenChain.dual selects standalone PrimeFieldAdjoint;exact old dual remains dual_reference and full comparison explicitly calls it. All old forward/reference/quarter/naive bodies and old test suffix unchanged. T1norm18 source and adjoint24 constructor/evaluator arithmetic byte-identical;only model data/path/visibility/helper delegation added. Balanced/cover/Lagrange/point sources unchanged. Nine source snapshots/hashmanifest frozen;full changed25native/92reference+five/one oldignored pending. Parent1506/b29790-suite fixed;failed private-field01/bb323e retained,no timing claim."
+}

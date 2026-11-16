@@ -1,0 +1,35 @@
+{
+  "schema": "xedni-crt-fixed-target-protocol-v1",
+  "parent_protocol": "protocol-v2.json",
+  "parent_source_sha256": "e96e0ddee58a91e5da0815fb4eca524983531408056af75842584a6c8ed4e8aa",
+  "parent_census_rows_sha256": "e103c4f2beb37639b60de0700e8011e3944f7c2961461862a65d52ad269ec34c",
+  "curve": {
+    "field_prime": 47,
+    "coefficients": [0, 0, 0, -1, -2],
+    "subgroup_order": 43,
+    "generator": [2, 2],
+    "public_target": [26, 8]
+  },
+  "fixture": {
+    "known_scalar_for_independent_replay": 17,
+    "construction": "Q=17G, performed before target enumeration"
+  },
+  "target_input_law": {
+    "s": [1, 1],
+    "t": "complete ordered t1,t2 in {0,...,42}^2, lexicographic",
+    "sampled_points": "P_i=s_i*Q-t_i*G",
+    "admission": "both sampled points nonidentity and distinct, followed by the frozen CRT coefficient policy",
+    "relation_vector": [1, 2],
+    "recovery": "w=(t1+2*t2)/3 mod 43 after a checked rational relation"
+  },
+  "frozen_predictions_from_parent_census": {
+    "target_queries": 1849,
+    "admissible_ordered_pairs": 1722,
+    "crt_accepted_pairs": 1344,
+    "accepted_reduced_relation_pairs": 34,
+    "accepted_rational_relation_pairs": 2,
+    "all_recovered_scalars": [17]
+  },
+  "accounting": "complete correctness replay; source/catalog construction, Sage startup and per-query costs retained separately from any future online comparison",
+  "interpretation": "Fixed public-point xedni target control on one small prime-order group, with exhaustive t enumeration and independent scalar replay"
+}
