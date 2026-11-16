@@ -1,0 +1,43 @@
+⚠ [9039/9043] Replayed CoefficientFamily
+warning: CoefficientFamily.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+info: CoefficientFamily.lean:127:0: 'XedniCoefficientFamily.distinct_directions_force_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoefficientFamily.lean:128:0: 'XedniCoefficientFamily.zero_sum_pair_relation' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoefficientFamily.lean:129:0: 'XedniCoefficientFamily.relation_iff_second' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoefficientFamily.lean:130:0: 'XedniCoefficientFamily.line_hit_count' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoefficientFamily.lean:131:0: 'XedniCoefficientFamily.line_hit_admissible' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoefficientFamily.lean:132:0: 'XedniCoefficientFamily.admissible_hit_count' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [9040/9043] Replayed FamilyCount
+info: FamilyCount.lean:87:0: 'XedniPublicFirstLargeHoldout.family_event_count' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: FamilyCount.lean:88:0: 'XedniPublicFirstLargeHoldout.eventToHitPair_injective' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: FamilyCount.lean:89:0: 'XedniPublicFirstLargeHoldout.family_hit_pair_count' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [9041/9043] Replayed Panel
+info: Panel.lean:93:0: 'XedniPublicFirstLargeHoldout.panel293' depends on axioms: [propext, Quot.sound]
+info: Panel.lean:94:0: 'XedniPublicFirstLargeHoldout.panel313' depends on axioms: [propext, Quot.sound]
+info: Panel.lean:95:0: 'XedniPublicFirstLargeHoldout.panel331' depends on axioms: [propext, Quot.sound]
+info: Panel.lean:96:0: 'XedniPublicFirstLargeHoldout.panel353' depends on axioms: [propext, Quot.sound]
+info: Panel.lean:97:0: 'XedniPublicFirstLargeHoldout.panel419' depends on axioms: [propext, Quot.sound]
+info: Panel.lean:98:0: 'XedniPublicFirstLargeHoldout.panel439' depends on axioms: [propext, Quot.sound]
+info: Panel.lean:99:0: 'XedniPublicFirstLargeHoldout.panel571' depends on axioms: [propext, Quot.sound]
+info: Panel.lean:100:0: 'XedniPublicFirstLargeHoldout.panel599' depends on axioms: [propext, Quot.sound]
+info: Panel.lean:101:0: 'XedniPublicFirstLargeHoldout.panel_card' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Panel.lean:102:0: 'XedniPublicFirstLargeHoldout.count293' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Panel.lean:103:0: 'XedniPublicFirstLargeHoldout.count313' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Panel.lean:104:0: 'XedniPublicFirstLargeHoldout.count331' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Panel.lean:105:0: 'XedniPublicFirstLargeHoldout.count353' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Panel.lean:106:0: 'XedniPublicFirstLargeHoldout.count419' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Panel.lean:107:0: 'XedniPublicFirstLargeHoldout.count439' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Panel.lean:108:0: 'XedniPublicFirstLargeHoldout.count571' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Panel.lean:109:0: 'XedniPublicFirstLargeHoldout.count599' depends on axioms: [propext, Classical.choice, Quot.sound]
+⚠ [9042/9043] Built AdmissiblePairs (62s)
+warning: AdmissiblePairs.lean:28:10: This simp argument is unused:
+  AdmissiblePair
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [s, Finset.mem_offDiag]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+info: AdmissiblePairs.lean:80:0: 'XedniPublicFirstLargeHoldout.admissible_pair_count' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AdmissiblePairs.lean:81:0: 'XedniPublicFirstLargeHoldout.family_density_cross_mul' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AdmissiblePairs.lean:82:0: 'XedniPublicFirstLargeHoldout.family_exact_fraction' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AdmissiblePairs.lean:83:0: 'XedniPublicFirstLargeHoldout.family_fraction_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+Build completed successfully (9043 jobs).

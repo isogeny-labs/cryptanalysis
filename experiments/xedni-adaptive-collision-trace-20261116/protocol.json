@@ -1,0 +1,12 @@
+{
+  "schema": "xedni-adaptive-collision-trace-protocol-v1",
+  "field_prime": 313,
+  "curve": "y^2=x^3-x-2",
+  "generator": [2, 2],
+  "subgroup_order": 331,
+  "target_law": "complete enumeration w in [0,331); Q=wG",
+  "new_form_cap": 24,
+  "form_rule": "at i=0 use (a,b)=(0,1); at i=1 use (1,0); later compute SHA-256 of ASCII xedni-adaptive-collision-v1| plus comma-separated prior miss bits, use first two 4-byte big-endian words reduced modulo q as (a,b); store aQ+bG",
+  "oracle": "after each new form, compare with all earlier forms of unequal slope; return one bit for whether any informative equality occurred, then stop on yes",
+  "measurement": "complete deterministic group-operation and first-hit census; no wall-time performance comparison"
+}

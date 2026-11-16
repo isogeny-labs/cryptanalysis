@@ -1,0 +1,51 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T05:43:12Z",
+ "id": "PCC-20261116-525863",
+ "kind": "statement",
+ "producer": {
+  "commit": "7b1cdfc62650ffcfcee1e4227c46f4021f3eb587",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/read-only-admission-metadata-controls-02/all3-entire-offline-metadata-fixtures.tar.xz",
+    "sha256": "c5cc8f27bee270adeb0531cfe26746ca19bdb21e11e5e7e81bc093d66283a901"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/read-only-admission-metadata-controls-02/ct234-entire-metadata-control-caller.txt.xz",
+    "sha256": "4fcabc8b9b31f2664e4e59a8504202e41a58b49f01c07504acdb94da59c94888"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/read-only-admission-metadata-controls-02/ct234_read_only_admission_metadata_controls.py.xz",
+    "sha256": "e81331c675761757e3cb763b91cd34934a6c1a7f24e90e066f6ca7e7bdc9b43c"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/read-only-admission-metadata-controls-02/entire-source/admission-01/README.md",
+    "sha256": "4f643cf5fe61d41eaf8df23c460ed8a63deaee204f65c6eb466c19d6e2942f59"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/read-only-admission-metadata-controls-02/entire-source/admission-01/read-only-01.sh",
+    "sha256": "fafd72c37053074ba3da8cf3c1ce502c06caa8e65d56de27cdb5a723b185ad53"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Read-only admission observer metadata controls02: all3 offline mocked process/I-O fixtures pass, no real AWS/Kubernetes calls. Foreign account stops budget/cluster reads; denied original APIs remain unavailable; even successful mock three-budget/all-tenant pool reads still produce admitted=false because lane charged/reserved accounting is unknown. All four complete pool responses and entire mocked command argv/exits retained; exact-token assertion fixes prior fixture-only substring error bf69ba. Existing caller only, no identity/permission/build/job creation. New actual CI read-only probe remains unexecuted/unobserved; native unit source checkpoint remains separate."
+}

@@ -1,0 +1,12 @@
+{
+  "command": [
+    "/home/agent/.cargo/bin/cargo",
+    "fmt",
+    "--check",
+    "--manifest-path",
+    "crates/prime-field-auxiliary-ic/Cargo.toml"
+  ],
+  "exit_code": 1,
+  "output": "fmt-wrong-cwd.log",
+  "cwd": "/workspace/cryptanalysis-pr/experiments/prime-field-auxiliary-ic/rust-validation/field-fibers-20261115/formal"
+}

@@ -1,0 +1,23 @@
+ring source=127,(x2,x1),dp;
+short=0;
+poly targetX=63;
+poly curveA=2;
+poly curveB=51;
+option(redSB);
+ideal inputIdeal=58*x1^0+39*x1^1+90*x1^2+7*x1^3+57*x1^4+64*x1^5+2*x1^6+19*x1^7+1*x1^8,
+58*x2^0+39*x2^1+90*x2^2+7*x2^3+57*x2^4+64*x2^5+2*x2^6+19*x2^7+1*x2^8,
+((x1)-(x2))^2*(targetX)^2-2*(((x1)+(x2))*((x1)*(x2)+(curveA))+2*(curveB))*(targetX)+((x1)*(x2)-(curveA))^2-4*(curveB)*((x1)+(x2));
+ideal G=std(inputIdeal);
+print("@@GB_DONE@@");
+print("@@DIM@@"+string(dim(G)));
+ring result=127,(x2,x1),lp;
+short=0;
+ideal H=fglm(source,G);
+int ii;
+for(ii=1;ii<=size(H);ii++){
+print("@@POLY_BEGIN@@");
+print(string(H[ii]));
+print("@@POLY_END@@");
+}
+print("@@DONE@@");
+quit;

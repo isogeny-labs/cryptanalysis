@@ -1,0 +1,541 @@
+{
+  "at": "2026-11-15T11:04:47.641062+00:00",
+  "source": "25801fe6aaba49674ef010e814dc7c9a58c28247",
+  "producer_pin": "3d49af7f3d0a28e76b79e4825c9d2324e85853d2",
+  "run": 43700115169,
+  "job": 132769186550,
+  "artifact": 14156900587,
+  "artifact_bytes": 99483928,
+  "artifact_sha256": "06104f175a79f38aa22961cabb6467e33838724e9e87f9b037e3477defa970fb",
+  "all_unfiltered_artifact_members": 749,
+  "expected_phase_exits": 153,
+  "whole_record_counts": {
+    "geometry": 13,
+    "chain": 695,
+    "norm-point": 695,
+    "original-prime": 1077,
+    "original-kernel": 311,
+    "original-geometry": 16,
+    "original-full": 701
+  },
+  "whole_class_omissions": 24,
+  "original_source_guards": 1440,
+  "both_original_proof_modules": 12,
+  "both_original_proof_declaration_occurrences": 70,
+  "distinct_proof_names": 54,
+  "historical_repeated_proof_occurrences": 16,
+  "all_exact_local_binding_verdicts": 70,
+  "downloaded_actual_Rust_auditor_controls": [
+    {
+      "label": "geometry",
+      "case": "whole-positive",
+      "command": [
+        "timeout",
+        "120",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/actual-compiled-geometry-auditor.bin",
+        "--compare",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/old-sixteen.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/geometry-expected.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/geometry-native.txt",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/actual-downloaded-Rust-auditor-controls-01/geometry-whole-positive-accepted.json"
+      ],
+      "actual_exit": 0,
+      "accepted_output": true
+    },
+    {
+      "label": "geometry",
+      "case": "N4_CHAIN_OLD_LITERAL_PARITY",
+      "command": [
+        "timeout",
+        "120",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/actual-compiled-geometry-auditor.bin",
+        "--compare",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/old-sixteen.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/geometry-expected.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/N4_CHAIN_OLD_LITERAL_PARITY-entire-actual-records-omitted.txt",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/actual-downloaded-Rust-auditor-controls-01/geometry-N4_CHAIN_OLD_LITERAL_PARITY-accepted.json"
+      ],
+      "actual_exit": 101,
+      "accepted_output": false
+    },
+    {
+      "label": "geometry",
+      "case": "N4_CHAIN_FIXED_GEOMETRY",
+      "command": [
+        "timeout",
+        "120",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/actual-compiled-geometry-auditor.bin",
+        "--compare",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/old-sixteen.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/geometry-expected.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/N4_CHAIN_FIXED_GEOMETRY-entire-actual-records-omitted.txt",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/actual-downloaded-Rust-auditor-controls-01/geometry-N4_CHAIN_FIXED_GEOMETRY-accepted.json"
+      ],
+      "actual_exit": 101,
+      "accepted_output": false
+    },
+    {
+      "label": "chain",
+      "case": "whole-positive",
+      "command": [
+        "timeout",
+        "120",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/actual-compiled-chain-auditor.bin",
+        "--compare",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/old-sixteen.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/chain-expected.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/chain-native.txt",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/actual-downloaded-Rust-auditor-controls-01/chain-whole-positive-accepted.json"
+      ],
+      "actual_exit": 0,
+      "accepted_output": true
+    },
+    {
+      "label": "chain",
+      "case": "N4_FIXED_CHAIN_EXCEPTIONAL_CASE",
+      "command": [
+        "timeout",
+        "120",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/actual-compiled-chain-auditor.bin",
+        "--compare",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/old-sixteen.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/chain-expected.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/N4_FIXED_CHAIN_EXCEPTIONAL_CASE-entire-actual-records-omitted.txt",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/actual-downloaded-Rust-auditor-controls-01/chain-N4_FIXED_CHAIN_EXCEPTIONAL_CASE-accepted.json"
+      ],
+      "actual_exit": 101,
+      "accepted_output": false
+    },
+    {
+      "label": "chain",
+      "case": "N4_FIXED_CHAIN_ALL_EXCEPTIONALS",
+      "command": [
+        "timeout",
+        "120",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/actual-compiled-chain-auditor.bin",
+        "--compare",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/old-sixteen.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/chain-expected.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/N4_FIXED_CHAIN_ALL_EXCEPTIONALS-entire-actual-records-omitted.txt",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/actual-downloaded-Rust-auditor-controls-01/chain-N4_FIXED_CHAIN_ALL_EXCEPTIONALS-accepted.json"
+      ],
+      "actual_exit": 101,
+      "accepted_output": false
+    },
+    {
+      "label": "chain",
+      "case": "N4_FIXED_CHAIN_ALL_PUBLIC",
+      "command": [
+        "timeout",
+        "120",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/actual-compiled-chain-auditor.bin",
+        "--compare",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/old-sixteen.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/chain-expected.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/N4_FIXED_CHAIN_ALL_PUBLIC-entire-actual-records-omitted.txt",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/actual-downloaded-Rust-auditor-controls-01/chain-N4_FIXED_CHAIN_ALL_PUBLIC-accepted.json"
+      ],
+      "actual_exit": 101,
+      "accepted_output": false
+    },
+    {
+      "label": "chain",
+      "case": "N4_FIXED_CHAIN_SELECTED_CALL_VECTORS",
+      "command": [
+        "timeout",
+        "120",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/actual-compiled-chain-auditor.bin",
+        "--compare",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/old-sixteen.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/chain-expected.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/N4_FIXED_CHAIN_SELECTED_CALL_VECTORS-entire-actual-records-omitted.txt",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/actual-downloaded-Rust-auditor-controls-01/chain-N4_FIXED_CHAIN_SELECTED_CALL_VECTORS-accepted.json"
+      ],
+      "actual_exit": 101,
+      "accepted_output": false
+    },
+    {
+      "label": "norm-point",
+      "case": "whole-positive",
+      "command": [
+        "timeout",
+        "120",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/actual-compiled-norm-point-auditor.bin",
+        "--compare",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/old-sixteen.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/norm-point-expected.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/norm-point-native.txt",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/actual-downloaded-Rust-auditor-controls-01/norm-point-whole-positive-accepted.json"
+      ],
+      "actual_exit": 0,
+      "accepted_output": true
+    },
+    {
+      "label": "norm-point",
+      "case": "N4_FIXED_CHAIN_EXCEPTIONAL_CASE",
+      "command": [
+        "timeout",
+        "120",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/actual-compiled-norm-point-auditor.bin",
+        "--compare",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/old-sixteen.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/norm-point-expected.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/norm-point-N4_FIXED_CHAIN_EXCEPTIONAL_CASE-entire-actual-records-omitted.txt",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/actual-downloaded-Rust-auditor-controls-01/norm-point-N4_FIXED_CHAIN_EXCEPTIONAL_CASE-accepted.json"
+      ],
+      "actual_exit": 101,
+      "accepted_output": false
+    },
+    {
+      "label": "norm-point",
+      "case": "N4_FIXED_CHAIN_ALL_EXCEPTIONALS",
+      "command": [
+        "timeout",
+        "120",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/actual-compiled-norm-point-auditor.bin",
+        "--compare",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/old-sixteen.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/norm-point-expected.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/norm-point-N4_FIXED_CHAIN_ALL_EXCEPTIONALS-entire-actual-records-omitted.txt",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/actual-downloaded-Rust-auditor-controls-01/norm-point-N4_FIXED_CHAIN_ALL_EXCEPTIONALS-accepted.json"
+      ],
+      "actual_exit": 101,
+      "accepted_output": false
+    },
+    {
+      "label": "norm-point",
+      "case": "N4_FIXED_CHAIN_ALL_PUBLIC",
+      "command": [
+        "timeout",
+        "120",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/actual-compiled-norm-point-auditor.bin",
+        "--compare",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/old-sixteen.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/norm-point-expected.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/norm-point-N4_FIXED_CHAIN_ALL_PUBLIC-entire-actual-records-omitted.txt",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/actual-downloaded-Rust-auditor-controls-01/norm-point-N4_FIXED_CHAIN_ALL_PUBLIC-accepted.json"
+      ],
+      "actual_exit": 101,
+      "accepted_output": false
+    },
+    {
+      "label": "norm-point",
+      "case": "N4_FIXED_CHAIN_SELECTED_CALL_VECTORS",
+      "command": [
+        "timeout",
+        "120",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/actual-compiled-norm-point-auditor.bin",
+        "--compare",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/old-sixteen.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/norm-point-expected.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/norm-point-N4_FIXED_CHAIN_SELECTED_CALL_VECTORS-entire-actual-records-omitted.txt",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/actual-downloaded-Rust-auditor-controls-01/norm-point-N4_FIXED_CHAIN_SELECTED_CALL_VECTORS-accepted.json"
+      ],
+      "actual_exit": 101,
+      "accepted_output": false
+    },
+    {
+      "label": "original-prime",
+      "case": "whole-positive",
+      "command": [
+        "timeout",
+        "120",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/actual-compiled-original-prime-auditor.bin",
+        "--compare",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/old-sixteen.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/original-prime-expected.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/original-prime-native.txt",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/actual-downloaded-Rust-auditor-controls-01/original-prime-whole-positive-accepted.json"
+      ],
+      "actual_exit": 0,
+      "accepted_output": true
+    },
+    {
+      "label": "original-prime",
+      "case": "N4_ORIGINAL_PRIME_EXCEPTIONAL_CASE",
+      "command": [
+        "timeout",
+        "120",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/actual-compiled-original-prime-auditor.bin",
+        "--compare",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/old-sixteen.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/original-prime-expected.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/original-prime-N4_ORIGINAL_PRIME_EXCEPTIONAL_CASE-entire-actual-records-omitted.txt",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/actual-downloaded-Rust-auditor-controls-01/original-prime-N4_ORIGINAL_PRIME_EXCEPTIONAL_CASE-accepted.json"
+      ],
+      "actual_exit": 101,
+      "accepted_output": false
+    },
+    {
+      "label": "original-prime",
+      "case": "N4_ORIGINAL_PRIME_PUBLIC_CASE",
+      "command": [
+        "timeout",
+        "120",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/actual-compiled-original-prime-auditor.bin",
+        "--compare",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/old-sixteen.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/original-prime-expected.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/original-prime-N4_ORIGINAL_PRIME_PUBLIC_CASE-entire-actual-records-omitted.txt",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/actual-downloaded-Rust-auditor-controls-01/original-prime-N4_ORIGINAL_PRIME_PUBLIC_CASE-accepted.json"
+      ],
+      "actual_exit": 101,
+      "accepted_output": false
+    },
+    {
+      "label": "original-prime",
+      "case": "N4_ORIGINAL_PRIME_SOURCE_MODEL",
+      "command": [
+        "timeout",
+        "120",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/actual-compiled-original-prime-auditor.bin",
+        "--compare",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/old-sixteen.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/original-prime-expected.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/original-prime-N4_ORIGINAL_PRIME_SOURCE_MODEL-entire-actual-records-omitted.txt",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/actual-downloaded-Rust-auditor-controls-01/original-prime-N4_ORIGINAL_PRIME_SOURCE_MODEL-accepted.json"
+      ],
+      "actual_exit": 101,
+      "accepted_output": false
+    },
+    {
+      "label": "original-prime",
+      "case": "N4_ORIGINAL_PRIME_SELECTED_VECTORS",
+      "command": [
+        "timeout",
+        "120",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/actual-compiled-original-prime-auditor.bin",
+        "--compare",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/old-sixteen.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/original-prime-expected.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/original-prime-N4_ORIGINAL_PRIME_SELECTED_VECTORS-entire-actual-records-omitted.txt",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/actual-downloaded-Rust-auditor-controls-01/original-prime-N4_ORIGINAL_PRIME_SELECTED_VECTORS-accepted.json"
+      ],
+      "actual_exit": 101,
+      "accepted_output": false
+    },
+    {
+      "label": "original-kernel",
+      "case": "whole-positive",
+      "command": [
+        "timeout",
+        "120",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/actual-compiled-original-kernel-auditor.bin",
+        "--compare",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/original-kernel-expected.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/original-kernel-native.txt",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/actual-downloaded-Rust-auditor-controls-02/original-kernel-whole-positive-accepted.json"
+      ],
+      "actual_exit": 0,
+      "accepted_output": true,
+      "original_fixture_environment": "811395139bbd33b75fd5697973202cd1dcc13bba"
+    },
+    {
+      "label": "original-kernel",
+      "case": "N4_ORIGINAL_KERNEL_TRANSPORT",
+      "command": [
+        "timeout",
+        "120",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/actual-compiled-original-kernel-auditor.bin",
+        "--compare",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/original-kernel-expected.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/original-kernel-N4_ORIGINAL_KERNEL_TRANSPORT-entire-actual-records-omitted.txt",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/actual-downloaded-Rust-auditor-controls-02/original-kernel-N4_ORIGINAL_KERNEL_TRANSPORT-accepted.json"
+      ],
+      "actual_exit": 101,
+      "accepted_output": false,
+      "original_fixture_environment": "811395139bbd33b75fd5697973202cd1dcc13bba"
+    },
+    {
+      "label": "original-kernel",
+      "case": "N4_ORIGINAL_KERNEL_VERTEX",
+      "command": [
+        "timeout",
+        "120",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/actual-compiled-original-kernel-auditor.bin",
+        "--compare",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/original-kernel-expected.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/original-kernel-N4_ORIGINAL_KERNEL_VERTEX-entire-actual-records-omitted.txt",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/actual-downloaded-Rust-auditor-controls-02/original-kernel-N4_ORIGINAL_KERNEL_VERTEX-accepted.json"
+      ],
+      "actual_exit": 101,
+      "accepted_output": false,
+      "original_fixture_environment": "811395139bbd33b75fd5697973202cd1dcc13bba"
+    },
+    {
+      "label": "original-kernel",
+      "case": "N4_ORIGINAL_KERNEL_PAIR",
+      "command": [
+        "timeout",
+        "120",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/actual-compiled-original-kernel-auditor.bin",
+        "--compare",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/original-kernel-expected.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/original-kernel-N4_ORIGINAL_KERNEL_PAIR-entire-actual-records-omitted.txt",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/actual-downloaded-Rust-auditor-controls-02/original-kernel-N4_ORIGINAL_KERNEL_PAIR-accepted.json"
+      ],
+      "actual_exit": 101,
+      "accepted_output": false,
+      "original_fixture_environment": "811395139bbd33b75fd5697973202cd1dcc13bba"
+    },
+    {
+      "label": "original-kernel",
+      "case": "N4_ORIGINAL_KERNEL_TRIPLE",
+      "command": [
+        "timeout",
+        "120",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/actual-compiled-original-kernel-auditor.bin",
+        "--compare",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/original-kernel-expected.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/original-kernel-N4_ORIGINAL_KERNEL_TRIPLE-entire-actual-records-omitted.txt",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/actual-downloaded-Rust-auditor-controls-02/original-kernel-N4_ORIGINAL_KERNEL_TRIPLE-accepted.json"
+      ],
+      "actual_exit": 101,
+      "accepted_output": false,
+      "original_fixture_environment": "811395139bbd33b75fd5697973202cd1dcc13bba"
+    },
+    {
+      "label": "original-geometry",
+      "case": "whole-positive",
+      "command": [
+        "timeout",
+        "120",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/actual-compiled-original-geometry-auditor.bin",
+        "--compare",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/old-sixteen.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/geometry-expected.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/original-geometry-expected.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/original-geometry-native.txt",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/actual-downloaded-Rust-auditor-controls-02/original-geometry-whole-positive-accepted.json"
+      ],
+      "actual_exit": 0,
+      "accepted_output": true,
+      "original_fixture_environment": "same whole fixture files"
+    },
+    {
+      "label": "original-geometry",
+      "case": "N4_CHAIN_FIXED_GEOMETRY",
+      "command": [
+        "timeout",
+        "120",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/actual-compiled-original-geometry-auditor.bin",
+        "--compare",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/old-sixteen.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/geometry-expected.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/original-geometry-expected.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/original-geometry-N4_CHAIN_FIXED_GEOMETRY-entire-actual-records-omitted.txt",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/actual-downloaded-Rust-auditor-controls-02/original-geometry-N4_CHAIN_FIXED_GEOMETRY-accepted.json"
+      ],
+      "actual_exit": 101,
+      "accepted_output": false,
+      "original_fixture_environment": "same whole fixture files"
+    },
+    {
+      "label": "original-full",
+      "case": "whole-positive",
+      "command": [
+        "timeout",
+        "120",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/actual-compiled-original-full-auditor.bin",
+        "--compare",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/old-sixteen.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/original-full-expected.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/original-full-native.txt",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/actual-downloaded-Rust-auditor-controls-02/original-full-whole-positive-accepted.json"
+      ],
+      "actual_exit": 0,
+      "accepted_output": true,
+      "original_fixture_environment": "same whole fixture files"
+    },
+    {
+      "label": "original-full",
+      "case": "N4_FIXED_CHAIN_EXCEPTIONAL_CASE",
+      "command": [
+        "timeout",
+        "120",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/actual-compiled-original-full-auditor.bin",
+        "--compare",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/old-sixteen.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/original-full-expected.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/original-full-N4_FIXED_CHAIN_EXCEPTIONAL_CASE-entire-actual-records-omitted.txt",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/actual-downloaded-Rust-auditor-controls-02/original-full-N4_FIXED_CHAIN_EXCEPTIONAL_CASE-accepted.json"
+      ],
+      "actual_exit": 101,
+      "accepted_output": false,
+      "original_fixture_environment": "same whole fixture files"
+    },
+    {
+      "label": "original-full",
+      "case": "N4_FIXED_CHAIN_ALL_EXCEPTIONALS",
+      "command": [
+        "timeout",
+        "120",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/actual-compiled-original-full-auditor.bin",
+        "--compare",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/old-sixteen.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/original-full-expected.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/original-full-N4_FIXED_CHAIN_ALL_EXCEPTIONALS-entire-actual-records-omitted.txt",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/actual-downloaded-Rust-auditor-controls-02/original-full-N4_FIXED_CHAIN_ALL_EXCEPTIONALS-accepted.json"
+      ],
+      "actual_exit": 101,
+      "accepted_output": false,
+      "original_fixture_environment": "same whole fixture files"
+    },
+    {
+      "label": "original-full",
+      "case": "N4_FIXED_CHAIN_ALL_PUBLIC",
+      "command": [
+        "timeout",
+        "120",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/actual-compiled-original-full-auditor.bin",
+        "--compare",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/old-sixteen.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/original-full-expected.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/original-full-N4_FIXED_CHAIN_ALL_PUBLIC-entire-actual-records-omitted.txt",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/actual-downloaded-Rust-auditor-controls-02/original-full-N4_FIXED_CHAIN_ALL_PUBLIC-accepted.json"
+      ],
+      "actual_exit": 101,
+      "accepted_output": false,
+      "original_fixture_environment": "same whole fixture files"
+    },
+    {
+      "label": "original-full",
+      "case": "N4_FIXED_CHAIN_SELECTED_CALL_VECTORS",
+      "command": [
+        "timeout",
+        "120",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/actual-compiled-original-full-auditor.bin",
+        "--compare",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/old-sixteen.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/original-full-expected.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/original-full-N4_FIXED_CHAIN_SELECTED_CALL_VECTORS-entire-actual-records-omitted.txt",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/actual-downloaded-Rust-auditor-controls-02/original-full-N4_FIXED_CHAIN_SELECTED_CALL_VECTORS-accepted.json"
+      ],
+      "actual_exit": 101,
+      "accepted_output": false,
+      "original_fixture_environment": "same whole fixture files"
+    },
+    {
+      "label": "original-full",
+      "case": "N4_ORIGINAL_FULL_KNOWN_POINT_VECTORS",
+      "command": [
+        "timeout",
+        "120",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/actual-compiled-original-full-auditor.bin",
+        "--compare",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/old-sixteen.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/original-full-expected.json",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/original-full-N4_ORIGINAL_FULL_KNOWN_POINT_VECTORS-entire-actual-records-omitted.txt",
+        "/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/actual-downloaded-Rust-auditor-controls-02/original-full-N4_ORIGINAL_FULL_KNOWN_POINT_VECTORS-accepted.json"
+      ],
+      "actual_exit": 101,
+      "accepted_output": false,
+      "original_fixture_environment": "same whole fixture files"
+    }
+  ],
+  "whole_original_job_log_retained": true,
+  "actual_compiled_runtime_test_and_auditor_bytes_equal": true,
+  "full_prepared_RLIB_RMETA_and_complete_Cargo_closure_and_actual_reuse_checked": true,
+  "all_host_failures_preserved": true,
+  "scope": "unsigned bounded exact CI03 replay and independent downloaded Rust auditor acceptance only; no induced-transfer proof CI, all-current/global CI, calibrated cost, cold120 acceptance, ECDLP advantage, or signed standing"
+}

@@ -1,0 +1,14 @@
+{
+  "schema": "xedni-elliptic-torsion-kernel-protocol-v1",
+  "curve": "E/Q: y^2=x^3-x-2",
+  "selected_point": "P=(2,2)",
+  "points": ["P", "2P", "3P"],
+  "K_range_inclusive": [0, 4],
+  "formal_falsifier": "a Lean build failure or any nonstandard axiom in the four new declarations",
+  "control_falsifiers": [
+    "rank differs from one, torsion differs from one, or P differs from the returned generator up to sign",
+    "canonical-height doubling/tripling ratios deviate from 4 and 9 at the recorded precision",
+    "independent replay disagrees with an exact point-sum count or packing threshold"
+  ],
+  "status_law": "retain all five coefficient radii including K=0"
+}

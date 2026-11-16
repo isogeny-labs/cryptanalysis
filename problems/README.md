@@ -104,3 +104,63 @@ existing review, archival, and claim-promotion rules.
 
 
 - [Lean CI evidence source admission](lean-ci-evidence-source-admission.md): resolved: complete report discovery restored; actual pinned native job checked77 added modules and all three original engineering audits.
+
+
+
+| [Plain logs used as recompute proofs](pcc-raw-log-recompute-proofs.md) | resolved for format | Former PCC refusal of two non-JSON proof inputs | Exact-head PCC gate accepts the additive unsigned report on df6d8afb; raw failures and original history retained |
+| [Prime-field auxiliary-map IC measurement qualification](prime-field-auxiliary-ic-validation.md) | open, narrowed | Qualified IC timing claims; core phases and projective row arithmetic are implemented with unsigned controls | Resumable Git/PR checkpoint (S3 waived by user), admitted fresh panel/execution, complete upstream/cold accounting, signed independent replay, and maintainer classification of retained CI alerts |
+| [Live GLV source/proof binding drift](live-glv-source-pin-drift.md) | open | Corpus source-binding controls refuse current main and the IC PR before native proofs | Reviewed current-source binding, retained prior evidence, complete selector/native proof checks and a passing exact-head corpus gate |
+| [Native hashed-EC Rust floor](hashed-ecdl-rust-msrv.md) | open, narrowed | Exact-head hosted and minimum-version correctness qualification after the reviewed Rust 1.85 update | Hosted locked checks and original correctness controls at the accepted minimum; local all-target minimum compilation now passes |
+| [Prime IC Jacobian timing checkpoint access](prime-ic-jacobian-checkpoint-access.md) | open | Measured relation-collection speedup claim for the new Jacobian lane backend | Successful checkpoint gate plus a retained paired run on an isolation-qualified host |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+| [Complete LP presentation projection](chained-transfer-full-large-prime-presentation.md) | investigating | Captured all_available rank is not complete raw-graph projection | Frozen sixty-call A/P/C/U certificates, full lifts and independent replay; compare captured/cap/full-graph dimensions without oracle feedback. [pcc:unverified] |
+| [Diagnostic checkpoint sparse status](chained-transfer-diagnostic-checkpoint-sparse-status.md) | investigating | Original checkpoint/readbacks0 then finalstatus1; native step skipped | Version02 exact original fetch-depth0 setup, actualstatus0 and complete whole diagnostic run; failuresce239f retained. [pcc:unverified] |
+| [Whole comparator memory envelope and schema updates](chained-transfer-whole-comparator-memory-bound-updates.md) | resolved for fixed historical comparator03 | Original allocation134, then false rank-count rejection1; both preserved | All26 phases, whole positive and elapsed-only0, eight negatives1/no accepted output, original constrained-coordinate audit101; unchanged2GiB cap. Fresh diagnostic CI remains open. [pcc:unverified] |
+| [Original FB30 character extension](chained-transfer-original-FB30-character-extension-02.md) | investigating | Collected FB30 constraints admit a finite noncharacter functional | Prospective unassisted actual-relation completion, full-population checks and separately admitted matched costs. [pcc:unverified] |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+| [IC computation window omits teardown](ic-probe-teardown-window.md) | investigating | complete-cold and primary-online interpretation of earlier internal clocks | explicit ownership-boundary clocks and fresh frozen comparisons |
+| [IC matrix candidate filenames](ic-candidate-matrix-filename-alias.md) | investigating; local repair passes | historical LA stage/name mismatch | source merge then paired strict-validator mirror |
+| [IC SIMD host capability](ic-simd-host-capability.md) | resolved for recorded CPU backends | vector performance admission across separate allocations | native dual-backend controls and same-allocation diagnostics in compatible panel |
+| [IC probe lookup pricing](ic-probe-lookup-pricing.md) | observed; future repair | complete interpretation of archived partial model costs | positive shared calibration and a fresh panel; old raw records retained |
+| [Full IC pipeline build envelope](ic-pipeline-build-envelope.md) | resolved for preparation | original330-second build cap prevented algorithm execution | separate pinned binaries and complete frozen matrix retained; timing qualification remains open |
+| [Parallel PCC appends for native IC](pcc-parallel-append-ic-native.md) | open | PR1621 integration after main/branch append different suffixes at167 | accepted custody-preserving reconciliation and actual current-main prefix/hash-link checks |
+| [Native IC controlled timing qualification](native-ic-timing-qualification.md) | investigating | current-baseline timing promotion and independent claim standing | prepared host or equivalent v1-aware preflight, passing frozen controls, and signed evidence |
+
+
+
+
+
+
+
+
+
+
+
+
+

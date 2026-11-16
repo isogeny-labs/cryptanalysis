@@ -1,0 +1,237 @@
+/workspace/scratch/ct102-rank-proof-attempt-01/RelationKernel.lean:17:8: error: unsolved goals
+case nil
+C K : Type
+inst✝ : CommRing K
+r s z : C → K
+⊢ 0 = 0 + 0
+/workspace/scratch/ct102-rank-proof-attempt-01/RelationKernel.lean:24:8: error: unsolved goals
+case nil
+C K : Type
+inst✝ : CommRing K
+u : K
+r z : C → K
+⊢ 0 = u * 0
+/workspace/scratch/ct102-rank-proof-attempt-01/RelationKernel.lean:50:8: error: Type mismatch: After simplification, term
+  h a
+ has type
+  dot columns (M a) z = 0
+but is expected to have type
+  dot columns (if b = a then M b else M a) z = 0
+/workspace/scratch/ct102-rank-proof-attempt-01/RelationKernel.lean:66:27: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+/workspace/scratch/ct102-rank-proof-attempt-01/RelationKernel.lean:68:6: error: `grind` failed
+case grind
+I C K : Type
+inst : DecidableEq I
+inst_1 : CommRing K
+columns : List C
+M : I → C → K
+z : C → K
+a : I
+u v : K
+unit : u * v = 1
+h : Kernel columns (scaleRow M a u) z
+hs : dot columns (if True then fun c => u * M a c else M a) z = 0
+hm : v * dot columns (if True then fun c => u * M a c else M a) z = v * 0
+h_1 : ¬dot columns (M a) z = 0
+⊢ False
+[grind] Goal diagnostics
+  [facts] Asserted facts
+    [prop] u * v = 1
+    [prop] Kernel columns (scaleRow M a u) z
+    [prop] dot columns (fun c => u * M a c) z = 0
+    [prop] v * dot columns (fun c => u * M a c) z = 0
+    [prop] ¬dot columns (M a) z = 0
+  [eqc] True propositions
+    [prop] Kernel columns (scaleRow M a u) z
+  [eqc] False propositions
+    [prop] dot columns (M a) z = 0
+  [eqc] Equivalence classes
+    [eqc] {0, v * dot columns (fun c => u * M a c) z, dot columns (fun c => u * M a c) z}
+    [eqc] {1, u * v}
+  [ring] Ring `K`
+    [basis] Basis
+      [_] u * v + -1 = 0
+      [_] dot columns (fun c => u * M a c) z = 0
+/workspace/scratch/ct102-rank-proof-attempt-01/RelationKernel.lean:73:27: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+/workspace/scratch/ct102-rank-proof-attempt-01/RelationKernel.lean:74:6: error: `grind` failed
+case grind
+I C K : Type
+inst : DecidableEq I
+inst_1 : CommRing K
+columns : List C
+M : I → C → K
+z : C → K
+a : I
+u v : K
+unit : u * v = 1
+h : Kernel columns M z
+h_1 : ¬dot columns (fun c => u * M a c) z = 0
+⊢ False
+[grind] Goal diagnostics
+  [facts] Asserted facts
+    [prop] u * v = 1
+    [prop] Kernel columns M z
+    [prop] ¬dot columns (fun c => u * M a c) z = 0
+  [eqc] True propositions
+    [prop] Kernel columns M z
+  [eqc] False propositions
+    [prop] dot columns (fun c => u * M a c) z = 0
+  [eqc] Equivalence classes
+    [eqc] {1, u * v}
+  [ring] Ring `K`
+    [basis] Basis
+      [_] u * v + -1 = 0
+/workspace/scratch/ct102-rank-proof-attempt-01/RelationKernel.lean:66:27: warning: This simp argument is unused:
+  if_pos rfl
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [scaleRow, dot_scale] at hs
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+/workspace/scratch/ct102-rank-proof-attempt-01/RelationKernel.lean:66:39: warning: This simp argument is unused:
+  dot_scale
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [scaleRow, if_pos rfl] at hs
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+/workspace/scratch/ct102-rank-proof-attempt-01/RelationKernel.lean:73:27: warning: This simp argument is unused:
+  if_pos rfl
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [scaleRow, dot_scale, h a]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+/workspace/scratch/ct102-rank-proof-attempt-01/RelationKernel.lean:73:39: warning: This simp argument is unused:
+  dot_scale
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [scaleRow, if_pos rfl, h a]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+/workspace/scratch/ct102-rank-proof-attempt-01/RelationKernel.lean:73:50: warning: This simp argument is unused:
+  h a
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [scaleRow, if_pos rfl, dot_scale]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+/workspace/scratch/ct102-rank-proof-attempt-01/RelationKernel.lean:92:25: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+/workspace/scratch/ct102-rank-proof-attempt-01/RelationKernel.lean:93:6: error: `grind` failed
+case grind
+I C K : Type
+inst : DecidableEq I
+inst_1 : CommRing K
+columns : List C
+M : I → C → K
+z : C → K
+dst src : I
+u : K
+different : dst ≠ src
+h : Kernel columns (addRow M dst src u) z
+hs : dot columns (M src) z = 0
+hd : dot columns (if True then fun c => M dst c + u * M src c else M dst) z = 0
+h_1 : ¬dot columns (M dst) z = 0
+⊢ False
+[grind] Goal diagnostics
+  [facts] Asserted facts
+    [prop] ¬dst = src
+    [prop] Kernel columns (addRow M dst src u) z
+    [prop] dot columns (M src) z = 0
+    [prop] dot columns (fun c => M dst c + u * M src c) z = 0
+    [prop] ¬dot columns (M dst) z = 0
+  [eqc] True propositions
+    [prop] Kernel columns (addRow M dst src u) z
+  [eqc] False propositions
+    [prop] dst = src
+    [prop] dot columns (M dst) z = 0
+  [eqc] Equivalence classes
+    [eqc] {0, dot columns (M src) z, dot columns (fun c => M dst c + u * M src c) z}
+/workspace/scratch/ct102-rank-proof-attempt-01/RelationKernel.lean:98:25: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+/workspace/scratch/ct102-rank-proof-attempt-01/RelationKernel.lean:99:6: error: `grind` failed
+case grind
+I C K : Type
+inst : DecidableEq I
+inst_1 : CommRing K
+columns : List C
+M : I → C → K
+z : C → K
+dst src : I
+u : K
+different : dst ≠ src
+h : Kernel columns M z
+h_1 : ¬dot columns (fun c => M dst c + u * M src c) z = 0
+⊢ False
+[grind] Goal diagnostics
+  [facts] Asserted facts
+    [prop] ¬dst = src
+    [prop] Kernel columns M z
+    [prop] ¬dot columns (fun c => M dst c + u * M src c) z = 0
+  [eqc] True propositions
+    [prop] Kernel columns M z
+  [eqc] False propositions
+    [prop] dst = src
+    [prop] dot columns (fun c => M dst c + u * M src c) z = 0
+/workspace/scratch/ct102-rank-proof-attempt-01/RelationKernel.lean:92:25: warning: This simp argument is unused:
+  if_pos rfl
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [addRow, dot_add, dot_scale, hs] at hd
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+/workspace/scratch/ct102-rank-proof-attempt-01/RelationKernel.lean:92:37: warning: This simp argument is unused:
+  dot_add
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [addRow, if_pos rfl, dot_scale, hs] at hd
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+/workspace/scratch/ct102-rank-proof-attempt-01/RelationKernel.lean:92:46: warning: This simp argument is unused:
+  dot_scale
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [addRow, if_pos rfl, dot_add, hs] at hd
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+/workspace/scratch/ct102-rank-proof-attempt-01/RelationKernel.lean:92:57: warning: This simp argument is unused:
+  hs
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [addRow, if_pos rfl, dot_add, dot_scale] at hd
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+/workspace/scratch/ct102-rank-proof-attempt-01/RelationKernel.lean:98:25: warning: This simp argument is unused:
+  if_pos rfl
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [addRow, dot_add, dot_scale, h dst, h src]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+/workspace/scratch/ct102-rank-proof-attempt-01/RelationKernel.lean:98:37: warning: This simp argument is unused:
+  dot_add
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [addRow, if_pos rfl, dot_scale, h dst, h src]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+/workspace/scratch/ct102-rank-proof-attempt-01/RelationKernel.lean:98:46: warning: This simp argument is unused:
+  dot_scale
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [addRow, if_pos rfl, dot_add, h dst, h src]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+/workspace/scratch/ct102-rank-proof-attempt-01/RelationKernel.lean:98:57: warning: This simp argument is unused:
+  h dst
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [addRow, if_pos rfl, dot_add, dot_scale, h src]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+/workspace/scratch/ct102-rank-proof-attempt-01/RelationKernel.lean:98:64: warning: This simp argument is unused:
+  h src
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [addRow, if_pos rfl, dot_add, dot_scale, h dst]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`

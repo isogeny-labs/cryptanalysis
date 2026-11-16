@@ -1,0 +1,71 @@
+{
+  "binary_blake3": "d7693120bd3ab0a5c8c55cfd741a3b3ce567d96ebe5dc499a45f14b581b00e3e",
+  "certificate": null,
+  "configured_search": {
+    "max_millis": null,
+    "max_proof_nodes": 4194304,
+    "max_queries": 129,
+    "max_relations": 10000,
+    "seed": 43,
+    "walk_lanes": 8
+  },
+  "execution_class": "cpu-only",
+  "factor_base": {
+    "affine_points": 6,
+    "backend": "scalar",
+    "columns_blake3": "b2a2952cdac9af9111db4cfbd575c0c490b15cace6557677c2397589b8e07b5f",
+    "encoding": {
+      "kind": "auxiliary"
+    },
+    "folded_columns": 3,
+    "raw_roots": 8,
+    "selection_encoding": {
+      "kind": "auxiliary"
+    },
+    "terminal_coordinate": 38,
+    "uses_auxiliary_maps": true,
+    "uses_circuit": true
+  },
+  "field_bits": 7,
+  "gpu": {
+    "devices": []
+  },
+  "input_blake3": "fixture",
+  "mode": "bounded-relation-yield",
+  "online_exclusive_phases": null,
+  "online_wall_seconds": 0.00048271,
+  "operation": "auxiliary-prime-field-ic",
+  "public": {
+    "P": [
+      3,
+      46
+    ],
+    "Q": [
+      6,
+      122
+    ],
+    "a": 2,
+    "b": 51,
+    "n": 109,
+    "p": 127
+  },
+  "qualification": "unverified producer diagnostic; no signed independent replay or admitted performance tier",
+  "qualified_speedup": null,
+  "sampler": "splitmix64-rejection-public-coefficient-walks",
+  "schema_version": 1,
+  "source_commit": "3ddc32380f9b59e40efd4e7bc44c43ebdd501f59",
+  "status": "complete",
+  "stop_reason": "QueryBudget",
+  "target_independent_preparation_seconds": 0.000180374,
+  "work": {
+    "backend": "scalar",
+    "circuit_queries": 129,
+    "duplicate_rows": 5,
+    "generated_targets": 136,
+    "lane_rounds": 17,
+    "matrix_rank": 0,
+    "proof_nodes": 0,
+    "queries": 129,
+    "relations": 8
+  }
+}

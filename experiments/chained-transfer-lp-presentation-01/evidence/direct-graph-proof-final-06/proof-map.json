@@ -1,0 +1,74 @@
+[
+  {
+    "theorem": "LPGraphCases02.even_four_projection_iff",
+    "statement": "theorem even_four_projection_iff {K : Type} [CommRing K] (f g eta : K) : (\u2203 a b c d, EvenFour f g eta a b c d) \u2194 g = 0",
+    "decl_sha256": "f7f348e8f7871a9bef124a2da29ac05b946df4674f0307efb9f506c06b707a3d",
+    "claim_path": "pcc/claims/PCC-20261116-c49a93.json",
+    "proof_source": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-final-06/LPGraphCases02.lean",
+    "standing": "unsigned; original standing tool only",
+    "proof_gate_data": "pcc/claims/PCC-20261116-be98f8.json"
+  },
+  {
+    "theorem": "LPGraphCases02.triangle_has_lift",
+    "statement": "theorem triangle_has_lift {K : Type} [CommRing K] (half : K) (two_half : (2 : K) * half = 1) (f eta : K) : \u2203 a b c, Triangle f eta a b c",
+    "decl_sha256": "8dfae10c5e33aacf20cf36d8fbb2d4b028a889a86649b6e59f7256ab41924504",
+    "claim_path": "pcc/claims/PCC-20261116-ac4358.json",
+    "proof_source": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-final-06/LPGraphCases02.lean",
+    "standing": "unsigned; original standing tool only",
+    "proof_gate_data": "pcc/claims/PCC-20261116-be98f8.json"
+  },
+  {
+    "theorem": "LPGraphCases02.shared_odd_projection_iff",
+    "statement": "theorem shared_odd_projection_iff {K : Type} [CommRing K] (half : K) (two_half : (2 : K) * half = 1) (f g eta : K) : (\u2203 a b c d e, Triangle f eta a b c \u2227 Triangle g eta a d e) \u2194 f = g",
+    "decl_sha256": "9813b09dafc7d07af30c58d36a9d42da74deddf0018d7e70e5e9ab0c882e5b86",
+    "claim_path": "pcc/claims/PCC-20261116-c14509.json",
+    "proof_source": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-final-06/LPGraphCases02.lean",
+    "standing": "unsigned; original standing tool only",
+    "proof_gate_data": "pcc/claims/PCC-20261116-be98f8.json"
+  },
+  {
+    "theorem": "LPGraphCases02.disconnected_odd_has_lifts",
+    "statement": "theorem disconnected_odd_has_lifts {K : Type} [CommRing K] (half : K) (two_half : (2 : K) * half = 1) (f g eta : K) : \u2203 a b c d e z, Triangle f eta a b c \u2227 Triangle g eta d e z",
+    "decl_sha256": "629308a59219a3c757cf485050d72e509499474d30aa9a4b763219db3042c6dc",
+    "claim_path": "pcc/claims/PCC-20261116-18029c.json",
+    "proof_source": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-final-06/LPGraphCases02.lean",
+    "standing": "unsigned; original standing tool only",
+    "proof_gate_data": "pcc/claims/PCC-20261116-be98f8.json"
+  },
+  {
+    "theorem": "LPGraphCases02.grounded_triangle_projection_iff",
+    "statement": "theorem grounded_triangle_projection_iff {K : Type} [CommRing K] (f eta : K) : (\u2203 a b c, a = eta \u2227 Triangle f eta a b c) \u2194 eta + f = 0",
+    "decl_sha256": "cd28809b24a9d0303db5a012b62f161bdb327a59adf2ea45cf1ba2a4dcc49e0f",
+    "claim_path": "pcc/claims/PCC-20261116-cef04b.json",
+    "proof_source": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-final-06/LPGraphCases02.lean",
+    "standing": "unsigned; original standing tool only",
+    "proof_gate_data": "pcc/claims/PCC-20261116-be98f8.json"
+  },
+  {
+    "theorem": "LPGraphCases02.half_ground_edge_has_lift",
+    "statement": "theorem half_ground_edge_has_lift {K : Type} [CommRing K] (half : K) (two_half : (2 : K) * half = 1) (f g eta : K) : \u2203 a b, 2 * a + (f + f) - eta = 0 \u2227 a + b + f + g - eta = 0",
+    "decl_sha256": "a39ce4ebde2edbce1f3167a047fce31f898b4cbcb339b9f532e34971f38e417d",
+    "claim_path": "pcc/claims/PCC-20261116-ae9438.json",
+    "proof_source": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-final-06/LPGraphCases02.lean",
+    "standing": "unsigned; original standing tool only",
+    "proof_gate_data": "pcc/claims/PCC-20261116-be98f8.json"
+  },
+  {
+    "theorem": "LPGraphCases02.parallel_edges_projection_iff",
+    "statement": "theorem parallel_edges_projection_iff {K : Type} [CommRing K] (f g eta : K) : (\u2203 a b, a + b + f - eta = 0 \u2227 a + b + g - eta = 0) \u2194 f = g",
+    "decl_sha256": "e26baaf3ec42112746cdfd39f77f442d5600e7e2fd3ec577b427825de4135277",
+    "claim_path": "pcc/claims/PCC-20261116-6aee73.json",
+    "proof_source": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-final-06/LPGraphCases02.lean",
+    "standing": "unsigned; original standing tool only",
+    "proof_gate_data": "pcc/claims/PCC-20261116-be98f8.json"
+  },
+  {
+    "theorem": "LPGraphCases02.even_four_no_unit_lift",
+    "statement": "theorem even_four_no_unit_lift {K : Type} [CommRing K] (one_ne_zero : (1 : K) \u2260 0) : \u00ac \u2203 a b c d, EvenFour (0 : K) 1 0 a b c d",
+    "decl_sha256": "7487b2eafd38c1ee7746ccebce4a1158b46c18452597bb400c1a4b992c0fcf00",
+    "claim_path": "pcc/claims/PCC-20261116-e95a78.json",
+    "proof_source": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-final-06/LPGraphCases02.lean",
+    "standing": "unsigned; original standing tool only",
+    "proof_gate_data": "pcc/claims/PCC-20261116-be98f8.json"
+  }
+]

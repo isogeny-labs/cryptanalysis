@@ -1,0 +1,177 @@
+{
+  "head": "e0ad790af437601866a3072718e1458fdc559b62",
+  "pr": {
+    "url": "https://github.com/isogeny-labs/cryptanalysis/pull/1536",
+    "number": 1536,
+    "state": "open",
+    "merged": false,
+    "mergeable": false,
+    "draft": false,
+    "body": "The standalone auxiliary-map elliptic-curve IC code is now integrated into a dependency-free Rust core, the safe bindings and `ca-ic auxiliary`. It supports supplied auxiliary-curve maps, newly generated multiplicative/torus fibers, and matched direct-subtraction controls on the same public target and signed columns.\n\n- Compile exact homogeneous Semaev elimination for both requested fields, p=2^31-1 and p=2^61-1. Runtime-selected AVX2/AVX-512 applies through 31 bits; the 61-bit path uses scalar `u128`. Scalar and packed evaluation share coefficient updates and retain full polynomial values, including degenerate leading coefficients.\n- Split the last auxiliary quadratic during preparation and evaluate its two factors directly. The general terminal needs five multiplication calls instead of eight; opposite/unit roots specialize further. Existing shared center shifts, three-vector tiles and fused zero-mask extraction remain. These are source-operation reductions; runtime improvement remains unmeasured. [pcc:unverified]\n- Add `--multiplicative-degree S [--coset C]` for complete power fibers with factors 2,3,7 and S dividing p-1, and `--torus-depth D [--torus-trace T]` for norm-one trace fibers of iterated x^2-2. Both requested fields support degree 126. Torus intermediates use four multiplication calls; trace-orbit preparation replaces 2^D-2 inverse-tree square roots with one (none at depth one). Every generated root is still checked before lifting. [pcc:unverified]\n- Add `--without-auxiliary` to either generated mode for direct IC with exactly the same signed columns and raw-root accounting. Arbitrary direct roots and supplied auxiliary-map manifests remain supported. Reports distinguish the effective circuit from the selection recipe and include reproducible field-fiber parameters.\n- Collect distinct two-column signed relations, solve with a gain graph and certificate DAG, and replay the public recovery witness. Query, lane, relation, proof-storage and time caps return explicit incomplete outcomes. The optional strong repository C negation-map rho still solves the same public point; its Montgomery backend differs from the IC arithmetic. Public-row replay remains separately labeled and untimed as an attack. [pcc:unverified]\n\nProducer correctness: 20 core checks pass on stable and Rust 1.78, four targeted CLI checks pass, and formatting, Clippy and rustdoc checks pass. Tests compare complete polynomial values, zero indices and signed rows with explicit products/direct subtraction at both requested field sizes, cover SIMD tile/padding and depth boundaries, and compare full small-field recoveries on matched walks. An empty 61-bit degree-nine coset is explicitly rejected rather than counted as a usable base. These are unsigned producer checks. Source pins, raw successes/failures, a diagram and PDF are in [the field-fiber report](https://github.com/isogeny-labs/cryptanalysis/blob/233e04ea6c628de651badefaa897f2edd33379cd/experiments/prime-field-auxiliary-ic/rust-validation/field-fibers-20261115/REPORT.md), claim `PCC-20261115-82ccdd`, algorithm source `facaac33`. Six identity declarations now compile under pinned Lean 4.35.0 and print only the standard foundations `propext` and `Quot.sound`; both exact-source corpus admissions and six refusal controls pass. The [native-admission follow-up](https://github.com/isogeny-labs/cryptanalysis/blob/233e04ea6c628de651badefaa897f2edd33379cd/experiments/prime-field-auxiliary-ic/rust-validation/field-fibers-20261115/FORMAL_ADMISSION.md), claims `PCC-20261115-8cb342` and `PCC-20261115-496600`, supersedes the missing-toolchain status. The full finite-field structural bridge remains open. [pcc:unverified]\n\nConcurrent owner merges are retained; the integration receipt is `rust-validation/field-fibers-20261115/integration-checks.json`, claim `PCC-20261115-92610e`. Their getrandom 0.4 update exposed a removed API call; the call is migrated to `getrandom::fill`, and suite/tool lockfiles are updated. The exact canonical main ledger prefix is preserved, with the new claim appended through the PCC writer. An exact-path artifact-policy keep entry retains this required live ledger in Git; report PDF/PNG files meet the ordinary size threshold and other data checks remain active. [pcc:unverified]\n\nEarlier C arithmetic parity, consumer and 26-test Python receipts remain retained under `rust-validation/`. The dedicated Rust 1.78/stable and archived Python workflows retain their checks, direct rustup installation and `SYMPY_GROUND_TYPES=python`. The original 2,473-file snapshot and unsigned historical observations are unchanged. This round establishes no measured end-to-end speedup, fresh full-size recovery or advantage over rho. [pcc:unverified]\n\nFresh timing still requires successful checkpoint upload, an admitted GPU allocation, frozen fresh targets, exclusive online/cold accounting and independent signed replay; current expected access is absent. The obligation remains in `problems/prime-field-auxiliary-ic-validation.md`. The shared KB and readable owning lead atlas are also unavailable here, so no novelty or atlas disposition is claimed. [pcc:unverified]\n\nThe latest previously observed CodeQL blocker still needs maintainer classification: archived known-answer scalars and the CLI's mathematical recovery-witness output. No alert was suppressed, output hidden, check disabled or frozen evidence changed. The blocked alert-management API was not retried. MERGE auto-merge stays enabled, subject to current-head applicable checks and blocking reviews. [pcc:unverified]\n",
+    "title": "Integrate Rust prime-field IC with auxiliary, power and torus circuits",
+    "base": "main",
+    "base_sha": "53bb82ac3ef0c99480d2ecdf55fd728a304d9855",
+    "head": "codex/prime-field-auxiliary-ic-rho",
+    "head_sha": "e0ad790af437601866a3072718e1458fdc559b62",
+    "head_repo_id": 1376761927,
+    "head_repo_full_name": "isogeny-labs/cryptanalysis",
+    "merge_commit_sha": null,
+    "user": {
+      "login": "aburan28",
+      "name": "aburan28",
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/1086874?v=4",
+      "id": 1086874
+    },
+    "requested_reviewers": null,
+    "requested_team_reviewers": null,
+    "diff": null,
+    "comments": null,
+    "created_at": "2026-11-15T06:52:17Z",
+    "updated_at": "2026-11-15T22:59:35Z",
+    "closed_at": null,
+    "merged_at": null,
+    "commits": 26,
+    "changed_files": 2715,
+    "additions": 278678,
+    "deletions": 187,
+    "display_url": "https://github.com/isogeny-labs/cryptanalysis/pull/1536",
+    "display_title": "Integrate Rust prime-field IC with auxiliary, power and torus circuits"
+  },
+  "review_threads": {
+    "review_threads": [
+      {
+        "id": "PRRT_kwDOUg-4R863nIP6",
+        "is_resolved": false,
+        "is_outdated": false,
+        "head_sha": "e0ad790af437601866a3072718e1458fdc559b62",
+        "path": "experiments/prime-field-auxiliary-ic/snapshot/algebraic/end_to_end/prepare_runs.py",
+        "line": 63,
+        "diff_side": "RIGHT",
+        "start_line": 63,
+        "start_diff_side": null,
+        "original_line": 63,
+        "original_start_line": null,
+        "resolved_by": null,
+        "comments": [
+          {
+            "id": "PRRC_kwDOUg-4R88AAAABENWcIg",
+            "database_id": 4577401890,
+            "body": "## CodeQL / Clear-text storage of sensitive information\n\nThis expression stores [sensitive data (secret)](1) as clear text.\n\n[Show more details](https://github.com/isogeny-labs/cryptanalysis/security/code-scanning/363)",
+            "created_at": "2026-11-15T06:58:57Z",
+            "updated_at": "2026-11-15T06:58:58Z",
+            "author": {
+              "login": "github-advanced-security",
+              "name": "github-advanced-security",
+              "email": null,
+              "avatar_url": "https://avatars.githubusercontent.com/in/57789?v=4",
+              "id": null
+            },
+            "viewer_did_author": false
+          }
+        ]
+      },
+      {
+        "id": "PRRT_kwDOUg-4R863nIQH",
+        "is_resolved": false,
+        "is_outdated": false,
+        "head_sha": "e0ad790af437601866a3072718e1458fdc559b62",
+        "path": "experiments/prime-field-auxiliary-ic/snapshot/prepare.py",
+        "line": 193,
+        "diff_side": "RIGHT",
+        "start_line": 193,
+        "start_diff_side": null,
+        "original_line": 193,
+        "original_start_line": null,
+        "resolved_by": null,
+        "comments": [
+          {
+            "id": "PRRC_kwDOUg-4R88AAAABENWcPA",
+            "database_id": 4577401916,
+            "body": "## CodeQL / Clear-text storage of sensitive information\n\nThis expression stores [sensitive data (secret)](1) as clear text.\n\n[Show more details](https://github.com/isogeny-labs/cryptanalysis/security/code-scanning/361)",
+            "created_at": "2026-11-15T06:58:57Z",
+            "updated_at": "2026-11-15T06:58:58Z",
+            "author": {
+              "login": "github-advanced-security",
+              "name": "github-advanced-security",
+              "email": null,
+              "avatar_url": "https://avatars.githubusercontent.com/in/57789?v=4",
+              "id": null
+            },
+            "viewer_did_author": false
+          }
+        ]
+      },
+      {
+        "id": "PRRT_kwDOUg-4R863nIQV",
+        "is_resolved": false,
+        "is_outdated": false,
+        "head_sha": "e0ad790af437601866a3072718e1458fdc559b62",
+        "path": "experiments/prime-field-auxiliary-ic/snapshot/prepare61.py",
+        "line": 57,
+        "diff_side": "RIGHT",
+        "start_line": 57,
+        "start_diff_side": null,
+        "original_line": 57,
+        "original_start_line": null,
+        "resolved_by": null,
+        "comments": [
+          {
+            "id": "PRRC_kwDOUg-4R88AAAABENWcUQ",
+            "database_id": 4577401937,
+            "body": "## CodeQL / Clear-text storage of sensitive information\n\nThis expression stores [sensitive data (secret)](1) as clear text.\n\n[Show more details](https://github.com/isogeny-labs/cryptanalysis/security/code-scanning/362)",
+            "created_at": "2026-11-15T06:58:58Z",
+            "updated_at": "2026-11-15T06:58:59Z",
+            "author": {
+              "login": "github-advanced-security",
+              "name": "github-advanced-security",
+              "email": null,
+              "avatar_url": "https://avatars.githubusercontent.com/in/57789?v=4",
+              "id": null
+            },
+            "viewer_did_author": false
+          }
+        ]
+      }
+    ]
+  },
+  "upstream_floor_fix": {
+    "url": "https://github.com/isogeny-labs/cryptanalysis/pull/1586",
+    "number": 1586,
+    "state": "closed",
+    "merged": true,
+    "mergeable": false,
+    "draft": false,
+    "body": "## What this changes\n\nMakes the `native` job (`hashed-ecdl-tensor.yml`) and the `rust-msrv` job (`bindings.yml`) pass again after the `getrandom` 0.4.3 bump.\n\n- `rust-version` 1.78 to 1.85 for the workspace core crates (`bindings/rust/Cargo.toml`), `bindings/rust/hashed-ecdl-tensor` and `crates/hashed-ecdl-tensor`.\n- `hashed-ecdl-tensor.yml` and the `rust-msrv` matrix in `bindings.yml` test 1.85 where they tested 1.78.\n- `crates/hashed-ecdl-tensor/Cargo.lock` refreshed: it adds `getrandom` 0.4.3 and `r-efi` 6.0.0 for the path dependency (lock format 4).\n- `clippy.toml` with `msrv = \"1.78\"` in the two tensor crate directories. No source file changes.\n\n## Why\n\n`main` bumped `getrandom` to 0.4.3 (PR 1453) and already calls `getrandom::fill` (`ae370a907`). Two things were left failing:\n\n1. `cargo clippy --locked` in `crates/hashed-ecdl-tensor` refused to run, because that crate's lock did not contain `getrandom` 0.4.3 for its path dependency on the bindings crate.\n2. `getrandom` 0.4.3 is edition 2024 and declares `rust-version = \"1.85\"`, so `cargo +1.78.0 check` stops with \"feature `edition2024` is required\". `cryptanalysis` depends on `hashed-ecdl-tensor`, so the core crates share that floor.\n\nWith the manifest floor at 1.85, clippy asked for `Option::is_none_or` in six places. The tensor sources are mirrored in other crates, so the lint level is kept at 1.78 in `clippy.toml` and the sources stay as written. The owner chose to finish the bump forward, not revert it.\n\n## How it was checked\n\nRun locally, in the order the `native` job runs them:\n\n- [x] `cargo fmt --all --check` (bindings workspace) and `cargo fmt --check` (consumer crate)\n- [x] `cargo clippy --locked -p hashed-ecdl-tensor -p cryptanalysis --all-targets -- -D warnings`, and workspace clippy\n- [x] `cargo test --locked --release -p hashed-ecdl-tensor -p cryptanalysis`: all groups pass\n- [x] Consumer crate: `cargo clippy --locked --all-targets -- -D warnings`; `cargo test --locked --release --lib --test structured_cli` (33 and 3 pass)\n- [x] `cargo +1.85.0 check --locked` for `-p hashed-ecdl-tensor -p cryptanalysis`, for `-p cryptanalysis-sys -p cryptanalysis`, and for the consumer crate\n- [x] Before the change, `cargo +1.78.0 check --locked` fails as described above\n- [ ] `ctest`, `clang-tidy`, `cppcheck`, sanitizers: no C source change\n\nNot changed: historical validation notes under `docs/hashed-ecdl-*.md` that record Rust 1.78 checks; `crates/hashed-ecdl-tensor` still uses `getrandom` 0.2 for its own call, so its lock carries both versions.\n\n---\n_Generated by [Claude Code](https://claude.ai/code/session_01TCbLH9fH4ZyB6kQvs9iHQU)_",
+    "title": "Rust bindings: declare 1.85 as the floor after the getrandom 0.4 bump",
+    "base": "main",
+    "base_sha": "c41df54d3797dad4d39096e6abc95b0ae6d33c9b",
+    "head": "claude/codebase-assessment-report-fp044d",
+    "head_sha": "50f1b2d153c1b4c478d7dc5b37223bdbab134813",
+    "head_repo_id": 1376761927,
+    "head_repo_full_name": "isogeny-labs/cryptanalysis",
+    "merge_commit_sha": "f3223fe605707c8808da3c32c1bb9b95e9c1132e",
+    "user": {
+      "login": "aburan28",
+      "name": "aburan28",
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/1086874?v=4",
+      "id": 1086874
+    },
+    "requested_reviewers": null,
+    "requested_team_reviewers": null,
+    "diff": null,
+    "comments": null,
+    "created_at": "2026-11-15T22:38:31Z",
+    "updated_at": "2026-11-15T22:54:22Z",
+    "closed_at": "2026-11-15T22:54:22Z",
+    "merged_at": "2026-11-15T22:54:22Z",
+    "commits": 3,
+    "changed_files": 10,
+    "additions": 80,
+    "deletions": 16,
+    "display_url": "https://github.com/isogeny-labs/cryptanalysis/pull/1586",
+    "display_title": "Rust bindings: declare 1.85 as the floor after the getrandom 0.4 bump"
+  },
+  "check_and_comments_output": "{\"checks\":[{\"annotations_count\":23,\"conclusion\":\"failure\",\"details_url\":\"https://github.com/isogeny-labs/cryptanalysis/runs/132992543106\",\"id\":132992543106,\"name\":\"CodeQL\",\"status\":\"completed\"},{\"annotations_count\":2,\"conclusion\":\"success\",\"details_url\":\"https://github.com/isogeny-labs/cryptanalysis/actions/runs/43772052933/job/132989914525\",\"id\":132989914525,\"name\":\"Analyze (actions)\",\"status\":\"completed\"},{\"annotations_count\":2,\"conclusion\":\"success\",\"details_url\":\"https://github.com/isogeny-labs/cryptanalysis/actions/runs/43772052933/job/132989914425\",\"id\":132989914425,\"name\":\"Analyze (javascript-typescript)\",\"status\":\"completed\"},{\"annotations_count\":2,\"conclusion\":\"success\",\"details_url\":\"https://github.com/isogeny-labs/cryptanalysis/actions/runs/43772052933/job/132989914384\",\"id\":132989914384,\"name\":\"Analyze (python)\",\"status\":\"completed\"},{\"annotations_count\":2,\"conclusion\":\"success\",\"details_url\":\"https://github.com/isogeny-labs/cryptanalysis/actions/runs/43772052933/job/132989914383\",\"id\":132989914383,\"name\":\"Analyze (go)\",\"status\":\"completed\"},{\"annotations_count\":2,\"conclusion\":\"success\",\"details_url\":\"https://github.com/isogeny-labs/cryptanalysis/actions/runs/43772052933/job/132989914318\",\"id\":132989914318,\"name\":\"Analyze (c-cpp)\",\"status\":\"completed\"},{\"annotations_count\":2,\"conclusion\":\"success\",\"details_url\":\"https://github.com/isogeny-labs/cryptanalysis/actions/runs/43772052933/job/132989914106\",\"id\":132989914106,\"name\":\"Analyze (rust)\",\"status\":\"completed\"}],\"total_count\":7}\n[{\"author\":\"aburan28\",\"body\":\"CI follow-up: `ebb6e79` fixes the workflow startup failure by replacing the disallowed `dtolnay/rust-toolchain@master` action with direct Rust installation. The corrected [auxiliary workflow run](https://github.com/isogeny-labs/cryptanalysis/actions/runs/43698326524) has passed, retaining both toolchains, the native tests/lints/docs and the archived Python regression checks. [pcc:unverified]\\n\\nThe latest completed CodeQL analysis still requires maintainer classification: 23 annotations (three archived scalar fixtures and 20 sinks for the CLI's mathematical recovery-witness output). Reading alert #361 again returned HTTP 403, so this integration cannot classify/dismiss them. The exact annotations, policy error and local checks are retained in `experiments/prime-field-auxiliary-ic/rust-validation/ci-followup-20261115/`, claim `PCC-20261115-2a4d0d`. MERGE auto-merge remains enabled; the PR is open while applicable checks and review remain outstanding. [pcc:unverified]\",\"createdAt\":\"2026-11-15T09:18:08Z\",\"url\":\"https://github.com/isogeny-labs/cryptanalysis/pull/1536#issuecomment-6892226952\"},{\"author\":\"aburan28\",\"body\":\"CI has finished on `ebb6e79912c95e3609436fd5f93c458494350951`: 37 reported checks succeeded and four were skipped. CodeQL is the sole reported failure, retaining the 23 annotations already documented, with three unresolved bot review threads. The auxiliary workflow and both dependency-consumer workflows passed. [pcc:unverified]\\n\\nThe PR remains open for maintainer classification of those alerts. MERGE auto-merge is still enabled. No further source correction is indicated by the current check results; the alert-management access limitation remains as documented.\",\"createdAt\":\"2026-11-15T10:11:43Z\",\"url\":\"https://github.com/isogeny-labs/cryptanalysis/pull/1536#issuecomment-6892806550\"},{\"author\":\"aburan28\",\"body\":\"Pushed the structured-consumer lock correction in `e0ad790a`. It adds the already-declared native getrandom 0.4.3 dependency and r-efi while retaining every prior package version/checksum and all `--locked`/lint/test flags. Locked Clippy plus 33 library and three CLI checks passed on `0f6f1045`; after integrating current main, locked Clippy and three CLI checks passed on `fcd78dcb`. These source scopes are kept separate. [pcc:unverified]\\n\\nThe prior corpus failure is inherited: base `58c86ef4` and PR head `54e4331a` have identical curve bytes and checker inputs, and both actual binding checkers refuse curve SHA-256 `6d120872…` against the old expected pin `e1d624e5…`. Current main `53bb82ac` retains that mismatch. No GLV source pin, proof or control was relaxed. The diagnosis and acceptance criteria are in [the source-binding problem](https://github.com/isogeny-labs/cryptanalysis/blob/e0ad790af437601866a3072718e1458fdc559b62/problems/live-glv-source-pin-drift.md). [pcc:unverified]\\n\\nThe existing Rust-floor gap also remains: Cargo 1.78 rejects getrandom 0.4.3's edition2024 manifest. The earlier hosted job stopped before those minimum-version steps; a modern-compiler pass is not reported as a 1.78 pass. The existing problem and proposed upstream [PR #1586](https://github.com/isogeny-labs/cryptanalysis/pull/1586) cover that repair. [pcc:unverified]\\n\\nFull decoded hosted logs, failures, source comparisons, scoped local checks and the receipt metadata correction are retained in [the follow-up report](https://github.com/isogeny-labs/cryptanalysis/blob/e0ad790af437601866a3072718e1458fdc559b62/experiments/prime-field-auxiliary-ic/rust-validation/ci-consumer-followup-20261115/README.md), claim `PCC-20261115-113f0f` (unverified). The frozen 2,473-file snapshot is unchanged. New-head CI has started materializing; full CI/merge remain pending, with guarded MERGE auto-merge retained. No performance result is promoted. [pcc:unverified]\",\"createdAt\":\"2026-11-15T22:59:35Z\",\"url\":\"https://github.com/isogeny-labs/cryptanalysis/pull/1536#issuecomment-6902809160\"}]\n"
+}

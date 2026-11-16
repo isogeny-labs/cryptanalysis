@@ -1,0 +1,10 @@
+name = "QuotedSourceAudit"
+version = "0.1.0"
+defaultTargets = ["Good"]
+
+[[lean_lib]]
+name = "Good"
+
+[[lean_lib]]
+name = "Hidden"
+roots = ["«hyphen-dir».Hidden"]

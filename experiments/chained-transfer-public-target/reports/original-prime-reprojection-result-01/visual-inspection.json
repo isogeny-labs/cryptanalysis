@@ -1,0 +1,27 @@
+{
+  "at": "2026-11-15T06:24:21.778127+00:00",
+  "pages": 2,
+  "pdf_bytes": 61571,
+  "pdf_sha256": "2cb69f391a6f2fad2ecb075666b22f4697ff995b7d2558c5a555668e0df499b9",
+  "actually_opened_both_final_raster_pages": true,
+  "checks": "complete titles, diagrams and tables readable; no clipping; selected counts read from whole literal render inputs; conditional/prime-only scope explicit",
+  "rasters": {
+    "page-1.png": {
+      "bytes": 212775,
+      "sha256": "1ff274699f6383bb1b327ac310a72327ef885e1493f88ef071fd2de3eba557cd"
+    },
+    "page-2.png": {
+      "bytes": 231238,
+      "sha256": "26f685844bb1f6a275e3e72e442653ef56d087578fa412540ed798b096a2f2a0"
+    }
+  },
+  "first_render_failure": {
+    "phase": "actual first Typst compile",
+    "exit": 1,
+    "error": "expected function, found dictionary",
+    "cause": "let v dictionary shadowed original vertical-spacing function v",
+    "source": "report.typ retained unchanged",
+    "successor": "corrected02/report.typ only renames dictionary to vec; literal inputs unchanged"
+  },
+  "raw_retained_for": "NEW24"
+}

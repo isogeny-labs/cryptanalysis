@@ -1,0 +1,86 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T04:11:01Z",
+ "id": "PCC-20261116-760a08",
+ "kind": "statement",
+ "producer": {
+  "commit": "c045dfdf2e682d0c98fba9a1bcd7824c00c649dd",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-thread-limit-failure-02/actual-Consumer434.exit",
+    "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-thread-limit-failure-02/actual-Root435.exit",
+    "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-thread-limit-failure-02/compiler-bin/lean",
+    "sha256": "3790e5a9ef25675975c3fa2f7c3444ab6fabbe8b4fe8092bdce5c96a588ecbbd"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-thread-limit-failure-02/entire-original-attempt02.lean",
+    "sha256": "be7537a2dfcaf2628d89e1763c3e9fbd0bd2496ed74c7a78c348d3986871a690"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-thread-limit-failure-02/original-Consumer434/experiments_chained-transfer-lp-presentation-01_lean_LPGraphCases02_lean/build.log",
+    "sha256": "8359249f494db5081050f585a4c9d589f4edb85f31252481b841f195761fd4f1"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-thread-limit-failure-02/original-Consumer434/experiments_chained-transfer-lp-presentation-01_lean_LPGraphCases02_lean/status",
+    "sha256": "0c6532fbd1cb7b97b6781811241a4e7dcaebf0e3ff758f7054a3038de5d2281f"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-thread-limit-failure-02/original-Root435/experiments_chained-transfer-lp-presentation-01_lean_LPGraphCases02_lean/build.log",
+    "sha256": "8359249f494db5081050f585a4c9d589f4edb85f31252481b841f195761fd4f1"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-thread-limit-failure-02/original-Root435/experiments_chained-transfer-lp-presentation-01_lean_LPGraphCases02_lean/status",
+    "sha256": "0c6532fbd1cb7b97b6781811241a4e7dcaebf0e3ff758f7054a3038de5d2281f"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-thread-limit-failure-02/whole-Consumer434-caller.txt",
+    "sha256": "1caee438909a4cb3dffafc6882e5b60971700c935c23f2da5f3044d86cfcfa81"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-thread-limit-failure-02/whole-Root435-caller.txt",
+    "sha256": "155060577f5b2ddd30ee7c27d8dc8e2190081b34559a24baa64c8d64a768acf9"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Direct graph static proof attempt02: same2GiB VM/120s, documented -j1 compiler wrapper and unchanged proof/original gates; both builds still abort before type checking with thread-creation failure. Full sources/wrapper/build/caller/status retained. The resource cause is not yet isolated; no theorem audited or mathematical negative inferred. Next compare a minimal static source and direct pinned runtime with runtime worker count/stack control under the same bound; any broader static diagnostic would retain this failed bound explicitly and would not change native/fixed-population requirements."
+}

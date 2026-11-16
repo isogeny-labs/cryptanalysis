@@ -1,0 +1,21 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T18:59:15Z",
+ "id": "PCC-20261116-c91136",
+ "kind": "statement",
+ "producer": {
+  "commit": "2ce59d8a261308cec218cc4fd7829b5c8b7fcbb1",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "recompute",
+   "path": "experiments/prime-field-auxiliary-ic/rust-validation/no-s3-analysis-20261116/validator.json",
+   "sha256": "8ba9508c47eae8f541fe9f4c7525bdcbd2d396ca240ca9ba30ce5bfa362df225"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "prime-field-auxiliary-ic-s3-free-analysis-20261116",
+ "statement": "Recorded S3-free source-only N83 analysis gate validation on 2ce59d8a261308cec218cc4fd7829b5c8b7fcbb1: eight unchanged pinned test cases on nine tracked inputs with network, subprocess and historical-artifact reads denied; four intentional refusal controls; and 37 passing artifact regressions. The job-scoped wiring check passes on f7d0e2c8 with unchanged wiring/workflow bytes afterward. Initial development failures, frozen snapshot and IC/timing sources are retained. This is unsigned producer development evidence, not a fresh performance experiment or independent execution proof."
+}

@@ -7,6 +7,7 @@ Requires TWO actual independent native test logs; neither synthetic tests nor
 import argparse
 import copy
 import json
+import math
 import re
 from collections import Counter
 from pathlib import Path
@@ -22,6 +23,27 @@ def require(ok, msg):
     if not ok:
         raise ValueError(msg)
 
+def exact_json_equal(a, b):
+    """Preserve types: Python equality conflates bool, int and float."""
+    if type(a) is not type(b):
+        return False
+    if type(a) is dict:
+        return a.keys() == b.keys() and all(
+            exact_json_equal(a[key], b[key]) for key in a
+        )
+    if type(a) is list:
+        return len(a) == len(b) and all(
+            exact_json_equal(x, y) for x, y in zip(a, b)
+        )
+    if type(a) is float:
+        return math.isfinite(a) and math.isfinite(b) and a == b
+    return a == b
+
+
+def reject_non_json_constant(value):
+    raise ValueError(f"non-standard JSON numeric constant: {value}")
+
+
 def no_duplicate_keys(items):
     result = {}
     for key, val in items:
@@ -36,7 +58,9 @@ def events(path):
             continue
         match = TAG.search(line.strip())
         require(match is not None, "malformed tagged native record")
-        out.append((match[1], json.loads(match[2], object_pairs_hook=no_duplicate_keys)))
+        out.append((match[1], json.loads(
+            match[2], object_pairs_hook=no_duplicate_keys,
+            parse_constant=reject_non_json_constant)))
     return out
 
 def check(original, optimized, expected_count=695):
@@ -52,11 +76,11 @@ def check(original, optimized, expected_count=695):
     for i, ((tag, a), (other_tag, b)) in enumerate(zip(original, optimized)):
         require(tag == other_tag, f"whole event order differs at {i}")
         if tag != "N4_FIXED_CHAIN_SELECTED_CALL_VECTORS":
-            require(a == b, f"unexpected changed whole event at {i}/{tag}")
+            require(exact_json_equal(a, b), f"unexpected changed whole event at {i}/{tag}")
             continue
         require(type(a) is dict and type(b) is dict and set(a) == set(b),
                 "selected event changed schema")
-        require(set(a) == {"all48", "scope"} and a["scope"] == b["scope"],
+        require(set(a) == {"all48", "scope"} and exact_json_equal(a["scope"], b["scope"]),
                 "selected event scope changed")
         oldrows, newrows = a["all48"], b["all48"]
         require(type(oldrows) is list and type(newrows) is list and
@@ -65,7 +89,7 @@ def check(original, optimized, expected_count=695):
         for j, (old, new) in enumerate(zip(oldrows, newrows)):
             require(type(old) is dict and type(new) is dict and set(old) == set(new),
                     f"row {j} schema")
-            require(all(old[k] == new[k] for k in old if k not in ROUTES),
+            require(all(exact_json_equal(old[k], new[k]) for k in old if k not in ROUTES),
                     f"row {j} changed public input/output")
             directions[(old["from"], old["to"])] += 1
             sectors[old["sector"]] += 1
@@ -75,12 +99,13 @@ def check(original, optimized, expected_count=695):
                 require("norm_point_doubling" not in o, "baseline already optimized")
                 require(set(n) == set(o) | {"norm_point_doubling"},
                         f"unexpected fields {j}/{route}")
-                require(o[field] == before and n[field] == after,
+                require(type(o[field]) is int and type(n[field]) is int and
+                        o[field] == before and n[field] == after,
                         f"incorrect map-call reduction {j}/{route}")
                 require(type(n["norm_point_doubling"]) is int and
                         n["norm_point_doubling"] == doubles,
                         f"wrong new doubling count {j}/{route}")
-                require(all(o[k] == n[k] for k in o if k != field),
+                require(all(exact_json_equal(o[k], n[k]) for k in o if k != field),
                         f"hidden counter change {j}/{route}")
                 changed += 1
     require(directions == Counter({(0, 2): 24, (2, 0): 24}),
@@ -124,6 +149,33 @@ def self_test():
     bad = copy.deepcopy(opt); bad[-1][1]["all48"][0]["direct_composite"]["norm_point_doubling"] = 0; variants.append(bad)
     bad = copy.deepcopy(opt); bad[-1][1]["all48"][0]["strongest_retained_lift_chain"]["untouched"] = 9; variants.append(bad)
     bad = copy.deepcopy(opt); bad[0], bad[1] = bad[1], bad[0]; variants.append(bad)
+    # CT157: five substitutions the legacy Python object equality accepts.
+    bad = copy.deepcopy(opt); bad[0][1]["index"] = False; variants.append(bad)
+    bad = copy.deepcopy(opt); bad[-1][1]["all48"][0]["input"][0] = False; variants.append(bad)
+    bad = copy.deepcopy(opt)
+    bad[-1][1]["all48"][0]["direct_composite"]["degree169_elliptic_evaluation"] = True
+    variants.append(bad)
+    bad = copy.deepcopy(opt)
+    bad[-1][1]["all48"][0]["direct_composite"]["degree169_elliptic_evaluation"] = 1.0
+    variants.append(bad)
+    bad = copy.deepcopy(opt)
+    bad[-1][1]["all48"][0]["direct_composite"]["untouched"] = False
+    variants.append(bad)
+    bad_orig = copy.deepcopy(orig)
+    bad_orig[-1][1]["all48"][0]["direct_composite"]["degree169_elliptic_evaluation"] = 2.0
+    try:
+        check(bad_orig, opt)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("original-side integer-to-float counter accepted")
+    for token in ("NaN", "Infinity", "-Infinity"):
+        try:
+            json.loads('{"value":' + token + '}', parse_constant=reject_non_json_constant)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError(f"non-JSON numeric token accepted: {token}")
     for i, variant in enumerate(variants):
         try:
             check(orig, variant)
@@ -131,7 +183,9 @@ def self_test():
             continue
         raise AssertionError(f"negative control {i} wrongly accepted")
     return {"synthetic_695_record_control": "pass",
-            "mutations_rejected": len(variants)}
+            "mutations_rejected": len(variants),
+            "original_counter_type_mutations_rejected": 1,
+            "non_json_numeric_tokens_rejected": 3}
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
