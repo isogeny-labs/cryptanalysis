@@ -1,0 +1,86 @@
+#!/usr/bin/env python3
+"""Frozen cold one-target comparison: MITM, native affine, prepared affine."""
+import hashlib,itertools,json,os,platform,resource,signal,subprocess,tarfile,time
+from pathlib import Path
+HERE=Path(__file__).resolve().parent;ROOT=HERE.parents[1]
+OUT=HERE/'timing-001';OUT.mkdir(exist_ok=False);START=time.monotonic()
+MODES=['mitm','affine','affine-cached']
+ids=json.loads((HERE/'identities.json').read_text());triples=[];references=[];arms=[]
+def read(p):
+ try:return Path(p).read_text()
+ except OSError:return None
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def snap():
+ return {p:read(p) for p in ['/proc/self/status','/proc/self/cgroup','/proc/self/mountinfo','/proc/stat',
+  '/proc/self/numa_maps','/sys/fs/cgroup/cpu.stat','/sys/fs/cgroup/memory.events',
+  '/sys/fs/cgroup/cpu/cpu.stat','/sys/fs/cgroup/memory/memory.failcnt']}
+def command(argv):
+ remaining=780-(time.monotonic()-START)
+ if remaining<=0:raise TimeoutError('timing controller budget')
+ started=time.monotonic();p=subprocess.Popen(argv,cwd=ROOT,text=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE,start_new_session=True)
+ try:out,err=p.communicate(timeout=min(12,remaining))
+ except subprocess.TimeoutExpired:
+  os.killpg(p.pid,signal.SIGKILL);out,err=p.communicate();return 124,out,err+'\nprocess group killed at cap\n',time.monotonic()-started
+ return p.returncode,out,err,time.monotonic()-started
+host={'platform':platform.platform(),'cpuinfo':read('/proc/cpuinfo'),'initial':snap(),'allowed_cpus':sorted(os.sched_getaffinity(0)),
+ 'source_sha256':{str(p.relative_to(ROOT)):sha(p) for p in [HERE/'PROTOCOL.md',HERE/'run_prepared.py',HERE/'instances.json',HERE/'identities.json',HERE/'prepared-input.json']},
+ 'qualification':'gVisor placement unqualified; CPU work on one L4 allocation'}
+def arm(index,mode,fixture,role):
+ argv=[str(OUT/'probe'),str(HERE/'instances.json'),str(index),mode,str(fixture)]
+ before=snap();usage=resource.getrusage(resource.RUSAGE_CHILDREN)
+ code,out,err,wall=command(argv);after=resource.getrusage(resource.RUSAGE_CHILDREN)
+ row={'index':index,'mode':mode,'fixture':fixture,'role':role,'argv':argv,'exit_code':code,'stdout':out,'stderr':err,
+  'process_wall_s':wall,'cpu_s':after.ru_utime+after.ru_stime-usage.ru_utime-usage.ru_stime,
+  'involuntary':after.ru_nivcsw-usage.ru_nivcsw,'before':before,'after':snap(),'qualified':None}
+ if not code:
+  try:row['result']=json.loads(out)
+  except ValueError:row['parse_error']=True
+ arms.append(row)
+ with (OUT/'arms.jsonl').open('a') as f:f.write(json.dumps(row)+'\n')
+ return row
+def report(row):return row.get('result',{}).get('report',{}).get('Ok')
+def cold(row):
+ r=report(row);return None if r is None else row['result']['context_ns']*1e-9+r['wall_seconds']
+def save():
+ (OUT/'triples.json').write_text(json.dumps(triples,indent=2)+'\n')
+ (OUT/'references.json').write_text(json.dumps(references,indent=2)+'\n')
+try:
+ prepared=json.loads((HERE/'prepared-input.json').read_text())
+ with tarfile.open(Path('/jobs')/prepared['source_job']/'shards/0/out.tar.gz','r:gz') as tar:
+  prefix='experiments/ic-affine-native-20261115/build-001/'
+  def member(name):
+   m=tar.getmember(prefix+name);assert m.isfile();return tar.extractfile(m).read()
+  receipt_bytes=member('receipt.json');assert hashlib.sha256(receipt_bytes).hexdigest()==prepared['receipt_sha256']
+  receipt=json.loads(receipt_bytes);assert receipt['status']=='prepared' and receipt['source_commit']==prepared['source_commit']
+  candidate=json.loads((ROOT/'experiments/ic-bench/candidates'/(ids['0']['mitm']+'.json')).read_text())
+  assert receipt['source_sha256']==candidate['implementation']['sources_sha256']
+  data=member('probe');assert hashlib.sha256(data).hexdigest()==prepared['binary_sha256']==receipt['binary_sha256']
+  (OUT/'probe').write_bytes(data);(OUT/'probe').chmod(0o755);(OUT/'preparation-receipt.json').write_bytes(receipt_bytes)
+ host.update(binary_sha256=prepared['binary_sha256'],binary_source_commit=receipt['source_commit'],binary_toolchain=receipt['rustc'])
+ os.sched_setaffinity(0,{host['allowed_cpus'][0]});host['selected_cpu']=host['allowed_cpus'][0]
+ for fixture in range(112,118):
+  for index in [0,1]:
+   references.append(arm(index,'rho',fixture,'same-target-reference'));save()
+   pre=arm(index,'mitm',0,'calibration')
+   order=list(itertools.permutations(MODES))[fixture-112]
+   runs={mode:arm(index,mode,fixture,'complete-pipeline') for mode in order}
+   post=arm(index,'mitm',0,'calibration')
+   triple={'index':index,'fixture':fixture,'order':order,'runs':runs,'pre':pre,'post':post,
+    'candidate_ids':{mode:ids[str(index)][mode] for mode in MODES},'workload':ids[str(index)]['workloads'][str(fixture)],'qualified':None}
+   results=[runs[m].get('result') for m in MODES]
+   triple['all_completed']=all(report(runs[m]) is not None for m in MODES)
+   if triple['all_completed']:
+    triple['same_input']=all(all(r[k]==results[0][k] for k in ['curve_id','planted','target','target_seed']) for r in results)
+    triple['all_verified']=all(report(runs[m])['verified'] for m in MODES)
+    triple['raw_cold_ratios']={m:cold(runs['mitm'])/cold(runs[m]) for m in ['affine','affine-cached']}
+    a,b=(report(runs[m]) for m in ['affine','affine-cached'])
+    triple['cache_preserves_counts']=all(a[s][k]==b[s][k] for s,k in [('decomposition','targets_tried'),('decomposition','relations_found'),('linear_algebra','rank')])
+   if cold(pre) is not None and cold(post) is not None:
+    aa=cold(pre)/cold(post);triple.update(calibration_ratio=aa,calibration_within_bound=.85<=aa<=1.15)
+   triples.append(triple);save()
+ summary={'status':'matrix_completed_unqualified','triples':len(triples),'references':len(references),'qualified':None}
+except Exception as e:summary={'status':'failed_or_capped','error':repr(e),'triples':len(triples),'references':len(references),'qualified':None}
+finally:
+ save();host['final']=snap();(OUT/'host.json').write_text(json.dumps(host,indent=2)+'\n')
+ (OUT/'summary.json').write_text(json.dumps(summary,indent=2)+'\n');print(json.dumps(summary),flush=True)
+if summary['status']!='matrix_completed_unqualified':raise SystemExit(1)

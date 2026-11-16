@@ -1,0 +1,60 @@
+# CT137 first native compilation: missing upstream generated source
+
+2026-11-15, standing [pcc:unverified]. First scoped GitHub Actions run [43719284031](https://github.com/isogeny-labs/cryptanalysis/actions/runs/43719284031), exact PR head `a0325f3a7de1aa22cef2df9f90354c05cb4fc031`, job `132827561285`, **failed** during the actual original Cargo dependency graph. The independent runner successfully checked out both pinned repositories; checked the source blobs and sibling link; constructed the original seven helper sections and distinct guarded CT125 norm-reuse evaluator. Both Rust source derivations therefore passed their source gates.
+
+The **first and only fatal compiler diagnostic** was:
+```text
+error: couldn't find file .../paired-fourth-preflight/generated/lib.rs
+error: could not compile chained-n4-paired-fourth-preflight (lib) due to 1 previous error
+```
+The compiler did not yet reach CT126 `main.rs` or the reuse graph. No arithmetic result, norm-point parity, performance or ECDLP conclusion is supported by this failure.
+
+The omitted prerequisite is the pre-existing `paired-fourth-preflight/materialize.py`, which assembles literal predecessor source and frozen LZMA fixtures without changing any mathematical Rust source. Add a new preparatory step invoking that exact script **before** the CT126 Cargo checks, keep original source and protocol frozen, and rerun. If compilation then stops on a different generated prerequisite or an actual type error, retain and classify that diagnostic, rather than weakening validation.
+
+Source: [CT137 artifact #14163997299](https://github.com/isogeny-labs/cryptanalysis/actions/runs/43719284031/artifacts/14163997299), SHA-256 d4800f201f423919934457dccbfffd336f1a973f4706f7175330cdcde30f7f6c. The earlier CT137 protocol remains prospectively frozen; this addendum documents the failure and scope-limited preparation repair. No paid EKS/Spot, benchmark admission, 695-record replacement, protected merge or signed PCC.
+
+
+## Second replay: original-artifact symlinks were not hydrated
+
+The next exact-head GitHub run [43719898130](https://github.com/isogeny-labs/cryptanalysis/actions/runs/43719898130) at `d3a8f52741e7c60eaa66e1d260bce7601459ca76` failed in job `132829390617` **before Cargo**. The preceding added predecessor-materialization step now ran, but `paired-fourth-preflight/materialize.py` attempted to decompress `nondual13-preflight/models/expected-native-01.json.xz`, which is a Git symlink to an absent artifact-store file. Actual runner traceback: `FileNotFoundError: .../nondual13-preflight/models/expected-native-01.json.xz`. Whole failure log and custody output are retained in [artifact 14163599705](https://github.com/isogeny-labs/cryptanalysis/actions/runs/43719898130/artifacts/14163599705). [pcc:unverified]
+
+The two genuine symlink blobs are Git `46a2e766` and `f6d47eef` and point to `docs/research-artifacts/chained-transfer/nondual-models-18/{second,third}-model-expected-native-01.json.xz`. Those binary targets are excluded from Git by the original `.artifacts.json` policy and require the existing vault hydration step. The manifest at this branch pins the compressed original byte counts/SHA256 as **217960 / 22225094...** (second) and **326200 / 1a7c90c8...** (third). A normal `actions/checkout` cannot restore them. No Rust compile or benchmark failed here; neither had started. [pcc:unverified]
+
+Commit `4269ae3454d8848545b1c3fe040e0cc7929f0e39` repairs only the additive CI: it checks out the immutable original artifact tool at `3de8c174`, compares the checked-out policy/tool bytes, uses the **existing repo-approved manifest hydration procedure** under the existing workflow secrets, then checks both SHA256, byte lengths and symlink resolution before running the unchanged predecessor materializer. That is the same restoration mechanism already used by the standing `chained-transfer-fixed-chain.yml` and `chained-transfer-paired-fourth.yml` workflows, with only the necessary original `nondual-models-18` class selected. No private keys are read into logs; hydration is capped at 180 seconds and does not authorize EKS/Spot or any benchmark. [pcc:unverified]
+
+**Next gate:** inspect an exact-head CT137 run after this repair. Success requires the genuine model bytes to match the two manifest hashes, both source derivatives to materialize without mutation, and `cargo check --release` to complete on **both** original and norm-reuse Rust graphs at pinned Rust 1.99.1. If another dependency or type failure occurs, preserve the first compiler diagnostic and repair only that failure. Passing `cargo check` is not a (C_{169}, C_{13a}, C_{13b}, D) timing, parity or full cold ECDLP speedup, and PCC remains unverified.
+
+
+## Third replay: first Rust compilation reaches the fixed-chain nominal modules
+
+[Run 43721405143](https://github.com/isogeny-labs/cryptanalysis/actions/runs/43721405143), job `132833984378` at exact input commit `4269ae3454d8848545b1c3fe040e0cc7929f0e39`, **reproduced the complete original-artifact hydration** and passed both original manifest checks, both symlink resolutions, literal paired-fourth source assembly, seven literal CT126 helper assembly and guarded CT125 derivative generation. The reviewed complete job log confirms Rust 1.99.1 entered the actual original Cargo graph; it failed when the pre-existing fixed-Jacobian predecessor's nominal-type derivative had not been materialized:
+
+```text
+Checking chained-n4-fixed-jacobian-chain v0.1.0
+error: couldn't find file .../fixed-jacobian-chain-01/src/../generated/adapter.rs
+  --> .../fixed-jacobian-chain-01/src/lib.rs:5:1
+  5 | pub mod adapter;
+error: could not compile chained-n4-fixed-jacobian-chain (lib) due to 1 previous error
+```
+
+This is a **new upstream generated-source dependency**, not yet a CT126 source type error. The raw CI artifact [#14163879404](https://github.com/isogeny-labs/cryptanalysis/actions/runs/43721405143/artifacts/14163879404) includes compile stdout and all custody receipts. The source original fixed-chain CI's `ci_fixed_chain/check.sh` names the deterministic materialization order `paired-fourth-preflight`, `fixed-jacobian-chain-01`, `fixed-jacobian-chain-evaluator-01`; CT137 had only the first and third. [pcc:unverified]
+
+Commit `cbdf45e61944e4350dc57d012cc4b32273627e86` adds the unchanged `fixed-jacobian-chain-01/materialize.py` between its two predecessors, corresponding exactly to the original fixed-chain CI sequence. Its three generated modules derive literally from original `odd-product-maps` and `beta-complete-evaluator` with the previously declared nominal type substitutions only; neither stored source nor mathematical formulas were changed. The new CI will be inspected separately, and no native benchmark, full cold solve, original-prime solver timing or signed PCC claim follows from a compilation gate. [pcc:unverified]
+
+
+## Fourth replay: actual CT126 Rust interface defects, not mathematical errors
+
+The subsequent [CI 43721930582](https://github.com/isogeny-labs/cryptanalysis/actions/runs/43721930582), job `132835611560`, passed original artifact restoration and **all three** unchanged fixed-chain derivative materializers before entering Rust 1.99.1. The source compiler reached `ct126-actual-map-price`, but rejected **seven Rust visibility errors**: `E0603` for two references to a private import `chain::ELL` and one `chain::ORDER`; `E0616` for four prohibited accesses to private `Entry.class` / `Entry.norm`. No actual timing, norm-reuse execution, parity or DLP occurred. [pcc:unverified]
+
+Scoped fix commits `be00283e`, `c66b4546`, `3e61a939` use the **already-published public original geometry constants** from explicit `chained-n4-fixed-jacobian-chain` Cargo dependencies in both pricing packages. The benchmark no longer reaches into private `Entry` internals. It calls the existing `Runtime::check_final` separately on both routes (which itself recomputes actual Jacobian norms and checks full-order membership) and compares **all three public canonical output fields** `field`, `model`, and `key`. This preserves end-to-end independently checked class equality at the stable public interface, without editing the locked `fixed-jacobian-chain-evaluator-01/src/lib.rs`, the primitive formulas, the 695/701 frozen fixture, the original PCC ledger or the sampler results. The separately computed source-domain public scalar identities are unchanged. [pcc:unverified]
+
+Commit `810b9f1e` additionally makes the exact compile gate respond to changes in either pricing `Cargo.toml` or the shared `main.rs` so a future source correction does not silently evade the workflow. The next result must be read from the actual hosted compiler stdout, including the separate **reuse** crate graph; Rust parsing before this is not compilation. Neither graph has yet passed at this writing. [pcc:unverified]
+
+
+## Fifth replay: both original and norm-reuse native Rust graphs compile
+
+**Scoped compile gate succeeded.** [Run 43722363285](https://github.com/isogeny-labs/cryptanalysis/actions/runs/43722363285), job `132836897774`, replayed exact source-changing commit `810b9f1e38816c7c177f5744ce1b375de9cd054b`. The complete decoded job log was inspected (102,069 bytes): original artifact hydration and its SHA256/length/symlink checks passed; all predecessor and seven CT126 literal materializations and guarded norm-reuse source generation passed; `rustc 1.99.1` and `cargo 1.99.1` ran **both** separate `cargo check --release` graphs to exit 0. The original check finished in 10.01s and the reuse check in 9.85s, on this CI runner; these are **compile times**, not arithmetic latency. [Raw 8,251-byte hosted CI artifact #14164689617](https://github.com/isogeny-labs/cryptanalysis/actions/runs/43722363285/artifacts/14164689617) retains toolchain, both compiler logs, original and derivative source SHA256 receipts, exact two model artifact checks and materializer outputs. The same commit's `pcc-gate` workflow [#43722363455](https://github.com/isogeny-labs/cryptanalysis/actions/runs/43722363455) also succeeded, but **no scientific execution has a signed independent PCC verdict**. [pcc:unverified]
+
+**Scope bound:** `cargo check` performs Rust semantic/type checks but does not link/run the final production binary, execute any of the five public-scalar fixtures, reproduce 695/701 native records, measure `C169,C13a,C13b,D`, or time full cold ECDLP. Public final-class equality via two independent `check_final` calls is compiled; it has not executed here. This resolves the concrete compiler gate, **not** norm-reuse scientific validation or an ECDLP speedup. [pcc:unverified]
+
+**Next proper gate:** run original and CT125 reuse complete binary paths with the frozen 695/701 source checks and admission/budget rules. Collect matched same-host ABBA primitive-price evidence and A/A memory/clock controls; then full cold matched rho/BSGS/IC and strongest known-point source reference, with setup, linear algebra, transfer, verification and memory charged. Keep all outputs and failed cases. No unapproved EKS/Spot, benchmark launch, scientific fixture edit, merge or signed speedup. [pcc:unverified]

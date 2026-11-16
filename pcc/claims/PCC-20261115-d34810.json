@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-15T02:00:35Z",
+ "id": "PCC-20261115-d34810",
+ "kind": "theorem",
+ "producer": {
+  "commit": "70ec53e5a297a47e8c933dad1b58e870211b16fa",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "47818e49142074e6ca65f85737975df0497434681aba5e0c171ce8ddcee53314",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/fixed-jacobian-chain-evaluator-01/lean/FullGroupNorm.lean",
+   "theorem": "FullGroupNorm.retained_lift_chain"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Conditional IntModule two-pair composite norms derived from individual dual identities, full-annihilator inverse recovery with explicit Bezout witness, fixed integer13/169 inverses modulo11086844 and prime-source recovery arithmetic, coprimality and retained-lift composition. Both original gates5roots0trusted. Actual HLP polarized varieties, norms, finite fields/Frobenius, kernel transport, Picard/program bridges remain open. Native complete chain not run; no cost or signed promotion.",
+ "statement": "theorem retained_lift_chain {A B C J K L : Type} (pa : A \u2192 J) (pb : B \u2192 K) (pc : C \u2192 L) (g : A \u2192 B) (h : B \u2192 C) (first : J \u2192 K) (second : K \u2192 L) (first_square : \u2200 a, first (pa a)=pb (g a)) (second_square : \u2200 b, second (pb b)=pc (h b)) (a : A) : second (first (pa a))=pc (h (g a))"
+}

@@ -6,6 +6,9 @@
 #include "cryptanalysis/ca_pohlig.h"
 #include "linalg.h"
 #include "ca_internal.h"
+#include "ic_rational.h"
+#include "ic_trial32.h"
+#include <limits.h>
 
 #include <math.h>
 #include <pthread.h>
@@ -22,6 +25,7 @@
 
 #define IC_SMALL_Q (1ULL << 24)   /* prime factors of p-1 up to this: Pohlig-Hellman */
 #define IC_MAX_REL_COLS 96
+#define IC_STEP_POWERS  4096
 
 /* Exact division by an odd factor-base prime q without a divide
  * instruction: with inv = q^{-1} mod 2^64 and lim = floor((2^64 - 1) / q),
@@ -40,6 +44,9 @@ struct ca_ic_ctx {
     uint32_t nfb;
     uint32_t *fb;                 /* factor base primes */
     ic_fbdiv *fb_div;             /* their exact-division constants */
+    uint64_t *step_power;         /* reusable zeta^s in Montgomery form */
+    uint32_t *fb_inv32, *fb_lim32; /* optional bounded-integer scan */
+    ca_ic_scan32_fn scan32;
     uint64_t *fb_log;             /* logs mod p-1 */
     uint8_t *fb_known;
     ca_ic_params params;
@@ -826,6 +833,71 @@ static int trial_factor(uint64_t v, const uint32_t *fb, const ic_fbdiv *div, uin
     return v == 1;
 }
 
+/* Same output contract for rational trial integers bounded by UINT32_MAX. */
+static int trial_factor32(uint32_t v, const ca_ic_ctx *ctx, uint32_t col0, relation *rel,
+                          uint32_t *cnt)
+{
+    const uint32_t *fb = ctx->fb;
+    const uint32_t *inverse = ctx->fb_inv32, *limit = ctx->fb_lim32;
+    const uint32_t nfb = ctx->nfb;
+    uint32_t n = *cnt;
+    uint32_t i = 0;
+    if (v > 1 && nfb > 0 && fb[0] == 2 && (uint64_t)4 <= v) {
+        /* q = 2, a shift; the only even prime, so fb[0] if present */
+        int32_t e = __builtin_ctz(v);
+        v >>= e;
+        if (e) {
+            if (n >= IC_MAX_REL_COLS) return 0;
+            rel->col[n] = col0;
+            rel->val[n] = e;
+            n++;
+        }
+        i = 1;
+    }
+    uint32_t stop = v > 1 ? tf_square_bound(fb, i, nfb, v) : i;
+    while (v > 1) {
+        i = ctx->scan32(v, inverse, limit, i, stop);
+        if (i == stop) break;
+        const uint32_t inv = inverse[i], lim = limit[i];
+        int32_t e = 0;
+        while (v * inv <= lim) {
+            v *= inv;
+            e++;
+        }
+        if (n >= IC_MAX_REL_COLS) return 0;
+        rel->col[n] = col0 + i;
+        rel->val[n] = e;
+        n++;
+        i++;
+        stop = v > 1 ? tf_square_bound(fb, i, stop, v) : i;
+    }
+    if (v > 1 && i < nfb) {
+        /* fb[i]^2 > v: v is prime, in the base iff <= fb[nfb-1] */
+        if (v <= fb[nfb - 1]) {
+            uint32_t lo = i, hi = nfb;
+            while (lo < hi) {
+                uint32_t mid = (lo + hi) / 2;
+                if (fb[mid] < v)
+                    lo = mid + 1;
+                else
+                    hi = mid;
+            }
+            if (lo < nfb && fb[lo] == v) {
+                if (n >= IC_MAX_REL_COLS) return 0;
+                rel->col[n] = col0 + lo;
+                rel->val[n] = 1;
+                n++;
+                *cnt = n;
+                return 1;
+            }
+        }
+        *cnt = n;
+        return 0;
+    }
+    *cnt = n;
+    return v == 1;
+}
+
 /* ---- linear sieve ------------------------------------------------------- */
 
 typedef struct sieve_shared {
@@ -1105,6 +1177,7 @@ static int rexp_snapshot_load(const char *path, const ic_rexp_header *want,
 
 typedef struct rexp_shared {
     uint64_t p, zeta;
+    const uint64_t *step_power;
     const uint32_t *fb;
     const ic_fbdiv *fb_div;
     uint32_t nfb;
@@ -1209,7 +1282,7 @@ static void *rexp_thread(void *arg)
     while (!atomic_load(&s->done)) {
         /* step e by a random small amount to keep exponentiation cheap */
         uint64_t step = 1 + ca_rng_below(&rng, 255);
-        cur = ca_mont_mul(&m, cur, ca_mont_pow(&m, zm, step));
+        cur = ca_mont_mul(&m, cur, s->step_power[step]);
         e = (e + step) % (s->p - 1);
         uint64_t v = ca_mont_from(&m, cur);
         tests++;
@@ -1331,6 +1404,178 @@ static ca_status build_matrix(const rel_list *rels, uint32_t ncols, uint64_t pm1
     }
     *b_out = b;
     return CA_OK;
+}
+
+/* Exact elimination for linear-sieve relations. Included after relation's
+ * definition. Auxiliary columns occur as h_u+h_v or 2*h_u. */
+
+static ca_status build_graph_matrix(const rel_list *rels, uint32_t ncols, uint32_t nfb,
+                                    uint64_t modulus, ca_spmat *A, uint64_t **b_out)
+{
+    const uint32_t none = UINT32_MAX;
+    uint32_t nv = ncols - nfb;
+    /* Bound the dense expression workspace; larger instances use CSR as
+     * before. All persistent relation output remains sparse. */
+    if (!nv || !nfb || (size_t)nv > ((size_t)64 * 1024 * 1024) / sizeof(int32_t) / nfb ||
+        rels->n > UINT32_MAX / 2)
+        return CA_ERR_INVALID;
+    ca_status rc = CA_ERR_NOMEM;
+    uint32_t *u = malloc((size_t)rels->n * sizeof(*u));
+    uint32_t *v = malloc((size_t)rels->n * sizeof(*v));
+    uint32_t *head = malloc((size_t)nv * sizeof(*head));
+    uint32_t *next = malloc((size_t)rels->n * 2 * sizeof(*next));
+    uint32_t *queue = malloc((size_t)nv * sizeof(*queue));
+    uint32_t *component = malloc((size_t)nv * sizeof(*component));
+    int8_t *sign = calloc(nv, sizeof(*sign));
+    int32_t *expr = calloc((size_t)nv * nfb, sizeof(*expr));
+    uint64_t *constant = calloc(nv, sizeof(*constant));
+    int64_t *row = calloc(nfb, sizeof(*row));
+    uint32_t *cols = malloc(((size_t)nfb + 1) * sizeof(*cols));
+    int32_t *vals = malloc(((size_t)nfb + 1) * sizeof(*vals));
+    uint64_t *rhs = calloc(rels->n ? rels->n : 1, sizeof(*rhs));
+    int initialized = 0;
+    if (!u || !v || !head || !next || !queue || !component || !sign || !expr || !constant || !row ||
+        !cols || !vals || !rhs)
+        goto done;
+    for (uint32_t j = 0; j < nv; ++j) head[j] = none;
+    for (uint32_t i = 0; i < rels->n; ++i) {
+        const uint32_t len = rel_len(rels, i);
+        const uint32_t *rcol = rel_cols(rels, i);
+        const int32_t *rval = rel_vals(rels, i);
+        u[i] = v[i] = none;
+        unsigned count = 0;
+        for (uint32_t k = 0; k < len; ++k) {
+            if (rcol[k] < nfb) continue;
+            if (rcol[k] >= ncols || ++count > 2) {
+                rc = CA_ERR_INVALID;
+                goto done;
+            }
+            uint32_t node = rcol[k] - nfb;
+            if (rval[k] == 2 && count == 1)
+                u[i] = v[i] = node;
+            else if (rval[k] == 1) {
+                if (count == 1)
+                    u[i] = node;
+                else if (v[i] == none)
+                    v[i] = node;
+                else {
+                    rc = CA_ERR_INVALID;
+                    goto done;
+                }
+            } else {
+                rc = CA_ERR_INVALID;
+                goto done;
+            }
+        }
+        if (!count) continue;
+        if (u[i] == none || v[i] == none) {
+            rc = CA_ERR_INVALID;
+            goto done;
+        }
+        next[(size_t)2 * i] = head[u[i]];
+        head[u[i]] = 2 * i;
+        next[(size_t)2 * i + 1] = head[v[i]];
+        head[v[i]] = 2 * i + 1;
+    }
+    uint32_t nc = 0;
+    for (uint32_t root = 0; root < nv; ++root) {
+        if (sign[root] || head[root] == none) continue;
+        uint32_t first = 0, end = 0;
+        sign[root] = 1;
+        component[root] = nc++;
+        queue[end++] = root;
+        while (first < end) {
+            uint32_t parent = queue[first++];
+            for (uint32_t edge = head[parent]; edge != none; edge = next[edge]) {
+                uint32_t i = edge / 2;
+                uint32_t child = u[i] == parent ? v[i] : u[i];
+                if (sign[child]) continue;
+                sign[child] = (int8_t)-sign[parent];
+                component[child] = component[parent];
+                constant[child] = ca_submod(rels->rhs[i] % modulus, constant[parent], modulus);
+                int32_t *dst = expr + (size_t)child * nfb;
+                const int32_t *src = expr + (size_t)parent * nfb;
+                for (uint32_t j = 0; j < nfb; ++j) {
+                    if (src[j] == INT32_MIN) {
+                        rc = CA_ERR_INVALID;
+                        goto done;
+                    }
+                    dst[j] = -src[j];
+                }
+                const uint32_t len = rel_len(rels, i);
+                const uint32_t *rcol = rel_cols(rels, i);
+                const int32_t *rval = rel_vals(rels, i);
+                for (uint32_t k = 0; k < len; ++k) {
+                    uint32_t j = rcol[k];
+                    if (j >= nfb) continue;
+                    int64_t value = (int64_t)dst[j] - rval[k];
+                    if (value <= INT32_MIN || value > INT32_MAX) {
+                        rc = CA_ERR_INVALID;
+                        goto done;
+                    }
+                    dst[j] = (int32_t)value;
+                }
+                queue[end++] = child;
+            }
+        }
+    }
+    rc = ca_spmat_init(A, nfb + nc, rels->n, rels->n * 16);
+    if (rc != CA_OK) goto done;
+    initialized = 1;
+    for (uint32_t i = 0; i < rels->n; ++i) {
+        const uint32_t len = rel_len(rels, i);
+        const uint32_t *rcol = rel_cols(rels, i);
+        const int32_t *rval = rel_vals(rels, i);
+        memset(row, 0, (size_t)nfb * sizeof(*row));
+        uint64_t b = rels->rhs[i] % modulus;
+        int root_coef = 0;
+        if (u[i] != none) {
+            const int32_t *eu = expr + (size_t)u[i] * nfb;
+            const int32_t *ev = expr + (size_t)v[i] * nfb;
+            for (uint32_t j = 0; j < nfb; ++j) row[j] = (int64_t)eu[j] + ev[j];
+            root_coef = sign[u[i]] + sign[v[i]];
+            b = ca_submod(ca_submod(b, constant[u[i]], modulus), constant[v[i]], modulus);
+        }
+        for (uint32_t k = 0; k < len; ++k)
+            if (rcol[k] < nfb) row[rcol[k]] += rval[k];
+        uint32_t count = 0;
+        for (uint32_t j = 0; j < nfb; ++j) {
+            if (!row[j]) continue;
+            if (row[j] <= INT32_MIN || row[j] > INT32_MAX) {
+                rc = CA_ERR_INVALID;
+                goto done;
+            }
+            cols[count] = j;
+            vals[count++] = (int32_t)row[j];
+        }
+        if (root_coef) {
+            cols[count] = nfb + component[u[i]];
+            vals[count++] = root_coef;
+        }
+        if (!count && !b) continue; /* spanning-tree equations become 0=0 */
+        rhs[A->rows] = b;
+        rc = ca_spmat_add_row(A, cols, vals, count);
+        if (rc != CA_OK) goto done;
+    }
+    *b_out = rhs;
+    rhs = NULL;
+    rc = CA_OK;
+done:
+    if (rc != CA_OK && initialized) ca_spmat_free(A);
+    free(u);
+    free(v);
+    free(head);
+    free(next);
+    free(queue);
+    free(component);
+    free(sign);
+    free(expr);
+    free(constant);
+    free(row);
+    free(cols);
+    free(vals);
+    free(rhs);
+    return rc;
 }
 
 /* Solve the matrix modulo q^e for a large prime q: Lanczos mod q + Hensel. */
@@ -1462,11 +1707,46 @@ static ca_status ic_precompute_impl(uint64_t p, uint64_t g, const ca_ic_params *
     }
     ca_sieve_primes(B, ctx->fb, nfb);
     ctx->nfb = (uint32_t)nfb;
+    /* Target-independent walk powers also cover restored precomputation. */
+    ctx->step_power = malloc(IC_STEP_POWERS * sizeof(*ctx->step_power));
+    if (!ctx->step_power) {
+        free(fb_log2);
+        ca_ic_free(ctx);
+        return CA_ERR_NOMEM;
+    }
+    ca_mont step_mont;
+    ca_mont_init(&step_mont, p);
+    uint64_t step_zeta = ca_mont_to(&step_mont, ctx->zeta);
+    ctx->step_power[0] = step_mont.r1;
+    for (uint32_t i = 1; i < IC_STEP_POWERS; ++i)
+        ctx->step_power[i] = ca_mont_mul(&step_mont, ctx->step_power[i - 1], step_zeta);
     for (size_t i = 0; i < nfb; i++) {
         uint64_t q = ctx->fb[i], inv = q; /* Newton: q odd, correct to 3 bits */
         for (int k = 0; k < 5; k++) inv *= 2 - q * inv;
         ctx->fb_div[i].inv = inv;
         ctx->fb_div[i].lim = UINT64_MAX / q;
+    }
+    const char *trial32_mode = getenv("CA_IC_TRIAL32");
+    if (trial32_mode && *trial32_mode && strcmp(trial32_mode, "0")) {
+        if (strcmp(trial32_mode, "auto") && strcmp(trial32_mode, "portable")) {
+            ca_set_error("CA_IC_TRIAL32 must be 0, portable, or auto");
+            free(fb_log2);
+            ca_ic_free(ctx);
+            return CA_ERR_INVALID;
+        }
+        ctx->fb_inv32 = malloc(nfb * sizeof(*ctx->fb_inv32));
+        ctx->fb_lim32 = malloc(nfb * sizeof(*ctx->fb_lim32));
+        if (!ctx->fb_inv32 || !ctx->fb_lim32) {
+            free(fb_log2);
+            ca_ic_free(ctx);
+            return CA_ERR_NOMEM;
+        }
+        for (size_t i = 0; i < nfb; ++i) {
+            ctx->fb_inv32[i] = (uint32_t)ctx->fb_div[i].inv;
+            ctx->fb_lim32[i] = UINT32_MAX / ctx->fb[i];
+        }
+        ctx->scan32 =
+            !strcmp(trial32_mode, "portable") ? ca_ic_scan32_portable : ca_ic_scan32_select();
     }
     for (size_t i = 0; i < nfb; i++) fb_log2[i] = (uint8_t)(log2((double)ctx->fb[i]) + 0.5);
     st->factor_base_size = ctx->nfb;
@@ -1644,6 +1924,7 @@ static ca_status ic_precompute_impl(uint64_t p, uint64_t g, const ca_ic_params *
         memset(&s, 0, sizeof(s));
         s.p = p;
         s.zeta = ctx->zeta;
+        s.step_power = ctx->step_power;
         s.fb = ctx->fb;
         s.fb_div = ctx->fb_div;
         s.nfb = ctx->nfb;
@@ -1805,7 +2086,10 @@ static ca_status ic_precompute_impl(uint64_t p, uint64_t g, const ca_ic_params *
             uint64_t q = f.f[i].p;
             if (q <= IC_SMALL_Q) continue;
             if (!have_matrix) {
-                rc = build_matrix(&rels, ncols, pm1, &A, &b);
+                rc = CA_ERR_INVALID;
+                if (params->method == CA_IC_LINEAR_SIEVE)
+                    rc = build_graph_matrix(&rels, ncols, ctx->nfb, pm1, &A, &b);
+                if (rc != CA_OK) rc = build_matrix(&rels, ncols, pm1, &A, &b);
                 if (rc != CA_OK) goto done;
                 have_matrix = 1;
                 /* the matrix is a copy: nothing reads the relations again */
@@ -1889,14 +2173,18 @@ void ca_ic_free(ca_ic_ctx *ctx)
     free(ctx->fb_log);
     free(ctx->fb_known);
     free(ctx->fb_div);
+    free(ctx->step_power);
+    free(ctx->fb_inv32);
+    free(ctx->fb_lim32);
     pthread_mutex_destroy(&ctx->rng_lock);
     free(ctx);
 }
 
-/* log_zeta(h) via smoothness of h * zeta^e */
+/* log_zeta(h) via simultaneous smoothness of a/b = h*zeta^e. */
 static ca_status individual_log_zeta(ca_ic_ctx *ctx, uint64_t h, uint64_t *out, uint64_t *tries)
 {
     uint64_t p = ctx->p, pm1 = p - 1;
+    uint64_t bound = ca_isqrt(p);
     ca_mont m;
     ca_mont_init(&m, p);
     uint64_t zm = ca_mont_to(&m, ctx->zeta);
@@ -1912,8 +2200,11 @@ static ca_status individual_log_zeta(ca_ic_ctx *ctx, uint64_t h, uint64_t *out, 
     double started = ca_now(), last_report = started;
     for (uint64_t t = 0; t < limit; t++) {
         uint64_t v = ca_mont_from(&m, cur);
-        relation rel;
-        uint32_t cnt = 0;
+        relation numerator_rel, denominator_rel;
+        uint32_t numerator_count = 0, denominator_count = 0;
+        uint64_t numerator, denominator;
+        int negative;
+        ca_ic_rational_split(v, p, bound, &numerator, &denominator, &negative);
         (*tries)++;
         if (ctx->params.verbose && (t & 4095) == 0) {
             double now = ca_now();
@@ -1923,22 +2214,51 @@ static ca_status individual_log_zeta(ca_ic_ctx *ctx, uint64_t h, uint64_t *out, 
                 last_report = now;
             }
         }
-        if (trial_factor(v, ctx->fb, ctx->fb_div, ctx->nfb, 0, &rel, &cnt)) {
-            /* h zeta^e = prod q^a  =>  log h = sum a log q - e */
+
+        int smooth;
+        if (ctx->scan32) {
+            /* Reconstruction guarantees both magnitudes fit in a word. */
+            smooth =
+                trial_factor32((uint32_t)numerator, ctx, 0, &numerator_rel, &numerator_count) &&
+                trial_factor32((uint32_t)denominator, ctx, 0, &denominator_rel, &denominator_count);
+        } else {
+            smooth = trial_factor(numerator, ctx->fb, ctx->fb_div, ctx->nfb, 0, &numerator_rel,
+                                  &numerator_count) &&
+                     trial_factor(denominator, ctx->fb, ctx->fb_div, ctx->nfb, 0, &denominator_rel,
+                                  &denominator_count);
+        }
+        if (smooth) {
+
+            /* log h = log(a) - log(|b|) - log(sign(b)) - e. */
             int ok = 1;
             uint64_t acc = 0;
-            for (uint32_t i = 0; i < cnt; i++) {
-                if (!ctx->fb_known[rel.col[i]]) { ok = 0; break; }
-                acc = ca_addmod(acc, ca_mulmod((uint64_t)rel.val[i], ctx->fb_log[rel.col[i]], pm1), pm1);
+            for (uint32_t i = 0; i < numerator_count; i++) {
+                uint32_t j = numerator_rel.col[i];
+                if (!ctx->fb_known[j]) {
+                    ok = 0;
+                    break;
+                }
+                acc = ca_addmod(acc, ca_mulmod((uint64_t)numerator_rel.val[i], ctx->fb_log[j], pm1),
+                                pm1);
+            }
+            for (uint32_t i = 0; ok && i < denominator_count; i++) {
+                uint32_t j = denominator_rel.col[i];
+                if (!ctx->fb_known[j]) {
+                    ok = 0;
+                    break;
+                }
+                acc = ca_submod(
+                    acc, ca_mulmod((uint64_t)denominator_rel.val[i], ctx->fb_log[j], pm1), pm1);
             }
             if (ok) {
+                if (negative) acc = ca_submod(acc, pm1 / 2, pm1);
                 acc = ca_submod(acc, e % pm1, pm1);
                 /* verify */
                 if (ca_mont_from(&m, ca_mont_pow(&m, zm, acc)) == h % p) { *out = acc; return CA_OK; }
             }
         }
         uint64_t step = 1 + ca_rng_below(&rng, 4095);
-        cur = ca_mont_mul(&m, cur, ca_mont_pow(&m, zm, step));
+        cur = ca_mont_mul(&m, cur, ctx->step_power[step]);
         e = (e + step) % pm1;
     }
     return CA_ERR_LIMIT;

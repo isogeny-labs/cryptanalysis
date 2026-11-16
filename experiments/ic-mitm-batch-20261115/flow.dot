@@ -1,0 +1,8 @@
+digraph G {rankdir=TB; node [shape=box, style="rounded,filled",fillcolor="#eef4f6",fontname="Helvetica"];
+ input [label="Frozen curve / base / target"];
+ setup [label="Cold context + base setup"];
+ mitm [label="Original or batched MITM table"];
+ affine [label="Cached column-affine plan"];
+ query [label="Queries + exact signed lifts\nComplete fallback at caps/zero"];
+ end [label="Relations + matrix + scalar check"];
+ input -> setup; setup -> mitm; setup -> affine; mitm -> query; affine -> query; query -> end;}

@@ -1,0 +1,5 @@
+# Complete fixed Jacobian chain and the retained-lift comparator
+
+The [two-page report](report.pdf) records actual complete native ed33ef: the whole frozen exceptional/cofactor/public/mixed/addition population and all695 ordered records pass; four actual full-record omission controls reject101. Both final raster pages were opened and checked; PDF58,309B. The original draft and all raw input/source/binary/log data remain intact for genuine NEW22 custody. [pcc:unverified]
+
+The comparison preserves its negative result: direct expansion has no halving-count advantage over the tested retained-lift route. All48 selected vectors are unpriced; complete primitive accounting and benchmark admission remain open. A prospective norm-point reuse candidate is separate from the observed result. Elliptic degree/norm scalar13 corresponds to geometric degree13³ for the genus3 Jacobian map under the stated HLP/descent bridges; direct scalar169 corresponds to169³. Original negatives, conditional proof and program bridges remain explicit. [pcc:unverified]

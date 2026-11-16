@@ -1,0 +1,128 @@
+/workspace/crypto/target/ct76-nondual-composition-stage-01/NondualComposition.lean:25:4: error: `grind` failed
+case grind
+A B C : Type
+inst : IntModule A
+inst_1 : IntModule B
+inst_2 : IntModule C
+f : A → B
+fh : B → A
+g : B → C
+gh : C → B
+n m : Int
+hf : ∀ (a : A), fh (f a) = n • a
+hfh : ∀ (b : B), f (fh b) = n • b
+hg : ∀ (b : B), gh (g b) = m • b
+hgh : ∀ (c : C), g (gh c) = m • c
+hfl : ∀ (k : Int) (b : B), fh (k • b) = k • fh b
+hgl : ∀ (k : Int) (b : B), g (k • b) = k • g b
+a : A
+h : ¬m • n • a = (n * m) • a
+⊢ False
+[grind] Goal diagnostics
+  [facts] Asserted facts
+    [prop] ∀ (a : A), fh (f a) = n • a
+    [prop] ∀ (b : B), f (fh b) = n • b
+    [prop] ∀ (b : B), gh (g b) = m • b
+    [prop] ∀ (c : C), g (gh c) = m • c
+    [prop] ∀ (k : Int) (b : B), fh (k • b) = k • fh b
+    [prop] ∀ (k : Int) (b : B), g (k • b) = k • g b
+    [prop] ¬m • n • a = (n * m) • a
+  [eqc] True propositions
+    [prop] ∀ (a : A), fh (f a) = n • a
+    [prop] ∀ (b : B), f (fh b) = n • b
+    [prop] ∀ (b : B), gh (g b) = m • b
+    [prop] ∀ (c : C), g (gh c) = m • c
+    [prop] ∀ (k : Int) (b : B), fh (k • b) = k • fh b
+    [prop] ∀ (k : Int) (b : B), g (k • b) = k • g b
+  [eqc] False propositions
+    [prop] m • n • a = (n * m) • a
+  [ematch] E-matching patterns
+    [thm] hf: [fh (f #0)]
+    [thm] hf: [f #0]
+    [thm] hfh: [f (fh #0)]
+    [thm] hfh: [fh #0]
+    [thm] hg: [gh (g #0)]
+    [thm] hg: [g #0]
+    [thm] hgh: [g (gh #0)]
+    [thm] hgh: [gh #0]
+    [thm] hfl: [fh (@HSMul.hSMul `[Int] `[B] `[B] `[instHSMul] #1 #0)]
+    [thm] hgl: [g (@HSMul.hSMul `[Int] `[B] `[B] `[instHSMul] #1 #0)]
+  [cutsat] Assignment satisfying linear constraints
+    [assign] n := 0
+    [assign] m := 0
+  [linarith] Linarith assignment for `A`
+    [assign] a := 2
+[grind] Issues
+  [issue] `grind linarith` term with unexpected instance
+        m • n • a
+  [issue] `grind linarith` term with unexpected instance
+        m • n • a
+  [issue] `grind linarith` term with unexpected instance
+        (n * m) • a
+  [issue] `grind linarith` term with unexpected instance
+        (n * m) • a
+/workspace/crypto/target/ct76-nondual-composition-stage-01/NondualComposition.lean:28:4: error: `grind` failed
+case grind
+A B C : Type
+inst : IntModule A
+inst_1 : IntModule B
+inst_2 : IntModule C
+f : A → B
+fh : B → A
+g : B → C
+gh : C → B
+n m : Int
+hf : ∀ (a : A), fh (f a) = n • a
+hfh : ∀ (b : B), f (fh b) = n • b
+hg : ∀ (b : B), gh (g b) = m • b
+hgh : ∀ (c : C), g (gh c) = m • c
+hfl : ∀ (k : Int) (b : B), fh (k • b) = k • fh b
+hgl : ∀ (k : Int) (b : B), g (k • b) = k • g b
+c : C
+h : ¬n • m • c = (n * m) • c
+⊢ False
+[grind] Goal diagnostics
+  [facts] Asserted facts
+    [prop] ∀ (a : A), fh (f a) = n • a
+    [prop] ∀ (b : B), f (fh b) = n • b
+    [prop] ∀ (b : B), gh (g b) = m • b
+    [prop] ∀ (c : C), g (gh c) = m • c
+    [prop] ∀ (k : Int) (b : B), fh (k • b) = k • fh b
+    [prop] ∀ (k : Int) (b : B), g (k • b) = k • g b
+    [prop] ¬n • m • c = (n * m) • c
+  [eqc] True propositions
+    [prop] ∀ (a : A), fh (f a) = n • a
+    [prop] ∀ (b : B), f (fh b) = n • b
+    [prop] ∀ (b : B), gh (g b) = m • b
+    [prop] ∀ (c : C), g (gh c) = m • c
+    [prop] ∀ (k : Int) (b : B), fh (k • b) = k • fh b
+    [prop] ∀ (k : Int) (b : B), g (k • b) = k • g b
+  [eqc] False propositions
+    [prop] n • m • c = (n * m) • c
+  [ematch] E-matching patterns
+    [thm] hf: [fh (f #0)]
+    [thm] hf: [f #0]
+    [thm] hfh: [f (fh #0)]
+    [thm] hfh: [fh #0]
+    [thm] hg: [gh (g #0)]
+    [thm] hg: [g #0]
+    [thm] hgh: [g (gh #0)]
+    [thm] hgh: [gh #0]
+    [thm] hfl: [fh (@HSMul.hSMul `[Int] `[B] `[B] `[instHSMul] #1 #0)]
+    [thm] hgl: [g (@HSMul.hSMul `[Int] `[B] `[B] `[instHSMul] #1 #0)]
+  [cutsat] Assignment satisfying linear constraints
+    [assign] n := 0
+    [assign] m := 0
+  [linarith] Linarith assignment for `C`
+    [assign] c := 2
+[grind] Issues
+  [issue] `grind linarith` term with unexpected instance
+        n • m • c
+  [issue] `grind linarith` term with unexpected instance
+        n • m • c
+  [issue] `grind linarith` term with unexpected instance
+        (n * m) • c
+  [issue] `grind linarith` term with unexpected instance
+        (n * m) • c
+'NondualComposition.both_composite_norms' depends on axioms: [sorryAx]
+'NondualComposition.both_composite_169' depends on axioms: [sorryAx]

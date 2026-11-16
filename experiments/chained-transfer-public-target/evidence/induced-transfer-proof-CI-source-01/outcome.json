@@ -1,0 +1,98 @@
+{
+  "at": "2026-11-15T11:06:37.389550+00:00",
+  "actual_exit": 0,
+  "command": [
+    "timeout",
+    "1500",
+    "bash",
+    "/workspace/scratch/ct95-induced-proof-driver-local-01/cryptanalysis/experiments/chained-transfer-public-target/ci_induced_transfer/check-01.sh",
+    "/workspace/scratch/ct95-induced-proof-driver-local-01/crypto",
+    "/workspace/scratch/ct95-induced-proof-driver-local-01/whole-output"
+  ],
+  "consumer_parent": "5417e9d1e6fcb99c205ab0cee405338294b3b70f",
+  "producer_original_pin": "3d49af7f3d0a28e76b79e4825c9d2324e85853d2",
+  "prospective_source_manifest": "prospective-local-uncommitted-driver-source.json",
+  "preparatory_commands": [
+    {
+      "name": "crypto-worktree",
+      "command": [
+        "git",
+        "worktree",
+        "add",
+        "--detach",
+        "--no-checkout",
+        "/workspace/scratch/ct95-induced-proof-driver-local-01/crypto",
+        "3d49af7f3d0a28e76b79e4825c9d2324e85853d2"
+      ],
+      "cwd": "/workspace/crypto",
+      "actual_exit": 0
+    },
+    {
+      "name": "crypto-sparse",
+      "command": [
+        "git",
+        "sparse-checkout",
+        "set",
+        "--no-cone",
+        "/tools/lean/"
+      ],
+      "cwd": "/workspace/scratch/ct95-induced-proof-driver-local-01/crypto",
+      "actual_exit": 0
+    },
+    {
+      "name": "crypto-checkout",
+      "command": [
+        "git",
+        "checkout",
+        "--detach",
+        "3d49af7f3d0a28e76b79e4825c9d2324e85853d2"
+      ],
+      "cwd": "/workspace/scratch/ct95-induced-proof-driver-local-01/crypto",
+      "actual_exit": 0
+    },
+    {
+      "name": "cryptanalysis-worktree",
+      "command": [
+        "git",
+        "worktree",
+        "add",
+        "--detach",
+        "--no-checkout",
+        "/workspace/scratch/ct95-induced-proof-driver-local-01/cryptanalysis",
+        "5417e9d1e6fcb99c205ab0cee405338294b3b70f"
+      ],
+      "cwd": "/workspace/cryptanalysis",
+      "actual_exit": 0
+    },
+    {
+      "name": "cryptanalysis-sparse",
+      "command": [
+        "git",
+        "sparse-checkout",
+        "set",
+        "--no-cone",
+        "/tools/lean/",
+        "/tools/pcc/",
+        "/pcc/keyring.json",
+        "/pcc/claims/",
+        "/experiments/chained-transfer-public-target/original-induced-transfer-01/",
+        "/experiments/chained-transfer-public-target/evidence/original-induced-full-transfer-proof-01/",
+        "/experiments/chained-transfer-public-target/upstream-commit.txt"
+      ],
+      "cwd": "/workspace/scratch/ct95-induced-proof-driver-local-01/cryptanalysis",
+      "actual_exit": 0
+    },
+    {
+      "name": "cryptanalysis-checkout",
+      "command": [
+        "git",
+        "checkout",
+        "--detach",
+        "5417e9d1e6fcb99c205ab0cee405338294b3b70f"
+      ],
+      "cwd": "/workspace/scratch/ct95-induced-proof-driver-local-01/cryptanalysis",
+      "actual_exit": 0
+    }
+  ],
+  "scope": "local complete new proof-driver validation only; no fresh GitHub CI or broader mathematical/program/cost standing"
+}

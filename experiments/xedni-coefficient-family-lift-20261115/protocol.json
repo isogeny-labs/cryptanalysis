@@ -1,0 +1,20 @@
+{
+  "schema": "xedni-coefficient-family-lift-protocol-v1",
+  "question": "Under the frozen centered and shifted two-point lift laws, how many rational relations arise among accepted curves for the primitive 14-vector family, with every original auxiliary-search probe charged?",
+  "centered_result_sha256": "edbe3a808aa86054c00f15a5ae40814ed2f8452c4316abbe68f41a62f2219b49",
+  "shifted_result_sha256": "b5262749615ab776239416c6324a7e95be741c8a4db9adb4cadf9890077920fc",
+  "family_result_sha256": "13f822d73d7d9591b0de0ab6904d3447b18f6b55e66df59e54c528b8b6779689",
+  "arithmetic_source_sha256": "28dd3e4553bfcedc3c646d5d8d284b137e5494ed3ebec5533d0961f1ea5337a8",
+  "candidate_order_source_sha256": "565365e0e9093dcc512cc551bb19760b4f6aa54538093c557dc1acd1cdf645f7",
+  "shift_source_sha256": "41f28f345105770348d10d12e83893a183490089caf86b560cb5987014caee65",
+  "fields": [47, 101, 191, 211, 251, 281, 347, 349],
+  "base_curve_coefficients": [0, 0, 0, -1, -2],
+  "vectors": "same ordered primitive (a,b) family as the pinned family result: 1<=a<=3, 1<=abs(b)<=3, gcd(a,abs(b))=1",
+  "rows": "all 30,008 saved target-query rows in each lift arm; verify uncompressed row hashes and exact ordinal candidate positions",
+  "reconstruction": "for accepted rows with a public reduced-family hit, select auxiliary residues from the archived attempts_7 and attempts_11 ordinals, rebuild the centered CRT curve, verify curve and point reductions, then test the rational group relation",
+  "cost_accounting": "charge all archived auxiliary probes and all public family-vector tests per arm; report rational group tests separately; ordinal reconstruction work is a replay diagnostic, not a replacement for the archived probe charge",
+  "positive_control": "the fixed (1,2) rational hit counts and first hits must equal the centered and shifted parent records",
+  "maximum_queries_per_arm": 30008,
+  "maximum_archived_auxiliary_probes_per_arm": 6000000,
+  "claim_boundary": "exact finite-panel rational relation yield and operation counts under the two frozen lift laws; no isolated wall-time comparison or generalized coefficient search"
+}

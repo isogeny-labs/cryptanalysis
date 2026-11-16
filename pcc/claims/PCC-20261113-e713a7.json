@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-13T08:50:44Z",
+ "id": "PCC-20261113-e713a7",
+ "kind": "theorem",
+ "producer": {
+  "commit": "c3b8d74cb356be7a1a10ae8778831f1661d506cc",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "ae9a3699ce8a603997d304d1f8e7b07b92ad38b96b6c290911db778d93442f25",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-reference/g3-norm-checker/lean/CanonicalNorm.lean",
+   "theorem": "G3CanonicalNorm.canonical_section_independence"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Independent canonical-class norm conditional quotient pushforward/section choice/multiplicity/geometric surjectivity implication and odd subgroup recovery. Actual divisor groups, Picard functors, function-field norm/principal divisor bridge, quotient algebra identification, covers/reducers and geometric product-pullback surjectivity remain written/native bridges. SAME source accepted separately by original producer4.35 and matching consumer4.34.1 gates;no verifier/trust change. Local exact bindings remain unsigned until main CI verdict;no full formal geometry or computational advantage.",
+ "statement": "theorem canonical_section_independence {D J E : Type} [IntModule D] [IntModule J] [IntModule E] (cl : D \u2192 J) (push : D \u2192 E) (cl_sub : \u2200 a b, cl (a-b)=cl a-cl b) (push_sub : \u2200 a b, push (a-b)=push a-push b) (principal_norm : \u2200 d, cl d=0 \u2192 push d=0) (s t : J \u2192 D) (s_law : \u2200 x, cl (s x)=x) (t_law : \u2200 x, cl (t x)=x) (x : J) : push (s x)=push (t x)"
+}

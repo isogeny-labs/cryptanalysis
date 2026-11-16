@@ -1,0 +1,14 @@
+digraph Reduction {
+  rankdir=LR; graph [bgcolor="white", pad=0.2, nodesep=0.3, ranksep=0.35];
+  node [shape=box, style="rounded,filled", fillcolor="#eef4fa", fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica",fontsize=10,color="#43546a"];
+  input [label="Masked element product P\ndegree <= 2m-2\nm = 131, 155, 163"];
+  gate [label="Canonical tail + hardware\nPCLMUL / PMULL\nopt-in feature"];
+  split [label="P = L + X^m H\nthree-limb high part"];
+  first [label="First fold: F = L + H*r\nindependent limb products"];
+  second [label="Second fold: low(F) + high(F)*r\nresult degree < m"];
+  output [label="Reduced three-word result\nclear consumed high words",fillcolor="#e6f3ed"];
+  generic [label="Existing generic reducer\nother polynomials / sizes / CPUs",fillcolor="#f1f1f1"];
+  input -> gate; gate -> split [label="eligible"]; split -> first -> second -> output;
+  gate -> generic [label="fallback",style=dashed];
+}

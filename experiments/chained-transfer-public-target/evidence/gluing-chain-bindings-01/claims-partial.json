@@ -1,0 +1,32 @@
+[
+  {
+    "theorem": "GluingChain223.two_dual_pairs_give_both_four",
+    "claim_path": "pcc/claims/PCC-20261113-eb286e.json",
+    "statement": "theorem two_dual_pairs_give_both_four {A J L : Type} (phi : A \u2192 J) (norm : J \u2192 A) (phiPrime : A \u2192 L) (normPrime : L \u2192 A) (doubleA : A \u2192 A) (doubleJ : J \u2192 J) (doubleL : L \u2192 L) (oldA : \u2200 a, norm (phi a) = doubleA a) (oldJ : \u2200 x, phi (norm x) = doubleJ x) (newA : \u2200 a, normPrime (phiPrime a) = doubleA a) (newL : \u2200 y, phiPrime (normPrime y) = doubleL y) : (\u2200 x, phi (normPrime (phiPrime (norm x))) = doubleJ (doubleJ x)) \u2227 (\u2200 y, phiPrime (norm (phi (normPrime y))) = doubleL (doubleL y))",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/gluing-maps/lean/GluingChain.lean",
+      "theorem": "GluingChain223.two_dual_pairs_give_both_four",
+      "decl_sha256": "6da950387cb4594b4137974376fe562f8905638a27e80f95a24e87512495bdd9"
+    }
+  },
+  {
+    "theorem": "GluingChain223.pullback_injective_from_actual_double_inverse",
+    "claim_path": "pcc/claims/PCC-20261113-7424e9.json",
+    "statement": "theorem pullback_injective_from_actual_double_inverse {A J : Type} (phi : A \u2192 J) (norm : J \u2192 A) (double half : A \u2192 A) (composition : \u2200 a, norm (phi a) = double a) (inverseOnDomain : \u2200 a, half (double a) = a) : \u2200 a b, phi a = phi b \u2192 a = b",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/gluing-maps/lean/GluingChain.lean",
+      "theorem": "GluingChain223.pullback_injective_from_actual_double_inverse",
+      "decl_sha256": "8398fdcc028600f1c0d85e0fda122ae01f752d752f4de7f08ffe29e7a43daae1"
+    }
+  },
+  {
+    "theorem": "GluingChain223.polarized_product_degree_one_column",
+    "claim_path": "pcc/claims/PCC-20261113-47c63e.json",
+    "statement": "theorem polarized_product_degree_one_column (x y z : Nat) (degree : x+y+z=1) : (x=1 \u2227 y=0 \u2227 z=0) \u2228 (x=0 \u2227 y=1 \u2227 z=0) \u2228 (x=0 \u2227 y=0 \u2227 z=1)",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/gluing-maps/lean/GluingChain.lean",
+      "theorem": "GluingChain223.polarized_product_degree_one_column",
+      "decl_sha256": "f50ddfa2c4511f35dc2db48c32c70de38193972be2e703573ee74a1369c7da6c"
+    }
+  }
+]

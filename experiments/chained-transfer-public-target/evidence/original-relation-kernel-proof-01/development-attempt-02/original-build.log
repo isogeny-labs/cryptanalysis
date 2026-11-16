@@ -1,0 +1,16 @@
+/workspace/scratch/ct102-rank-proof-attempt-02/RelationKernel.lean:66:6: error: 'change' tactic failed, pattern
+  dot columns (fun c => u * M a c) z = 0
+is not definitionally equal to target
+  dot columns (scaleRow M a u a) z = 0
+/workspace/scratch/ct102-rank-proof-attempt-02/RelationKernel.lean:74:6: error: 'change' tactic failed, pattern
+  dot columns (fun c => u * M a c) z = 0
+is not definitionally equal to target
+  dot columns (scaleRow M a u a) z = 0
+/workspace/scratch/ct102-rank-proof-attempt-02/RelationKernel.lean:94:6: error: 'change' tactic failed, pattern
+  dot columns (fun c => M dst c + u * M src c) z = 0
+is not definitionally equal to target
+  dot columns (addRow M dst src u dst) z = 0
+/workspace/scratch/ct102-rank-proof-attempt-02/RelationKernel.lean:101:6: error: 'change' tactic failed, pattern
+  dot columns (fun c => M dst c + u * M src c) z = 0
+is not definitionally equal to target
+  dot columns (addRow M dst src u dst) z = 0

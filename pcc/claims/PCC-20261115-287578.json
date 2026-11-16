@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-15T04:37:35Z",
+ "id": "PCC-20261115-287578",
+ "kind": "theorem",
+ "producer": {
+  "commit": "bd603d0981653797e6cc0b9d50f50dcec2314ac1",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "ca85f11700d813747828b8c0ee05386a026d6cd4519c0a8d5972b9d7e04b695f",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/original-prime-chain-01/lean/PrimeReprojection.lean",
+   "theorem": "PrimeReprojection.actual_original_witnesses"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Conditional original-prime IntModule algebra: annihilator inverse-two; normalized norm bijection derived from both HLP identities and Phi linearity; BOTH desired reprojection dual norms derived from individual HLP and elliptic dual identities, without kernel-compatibility or desired transfer-norm hypothesis; adjacent-chain collapse; stronger known-initial-point equality; integer DLP linearity and exact old scalar/coprimality/positive-square witnesses. Both original434/435 gates7roots0trusted. Types must be the stated ell-torsion carriers; actual HLP/field/Frobenius/Picard/order/program bridges remain explicit. Runtime not implemented or tested; no full-group geometric norm, cost or signed promotion.",
+ "statement": "theorem actual_original_witnesses : (2*1386537 : Nat)=2773073+1 \u2227 Nat.gcd 13 2773073=1 \u2227 Nat.gcd 169 2773073=1 \u2227 Nat.gcd 2197 2773073=1 \u2227 Nat.gcd 28561 2773073=1 \u2227 (10*10 : Nat)%223=100 \u2227 (40*40 : Nat)%223=39 \u2227 (22*22 : Nat)%223=38"
+}

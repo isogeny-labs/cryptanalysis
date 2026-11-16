@@ -1,0 +1,62 @@
+[
+  {
+    "theorem": "CompleteRationalBeta.rational_decomposition",
+    "claim_path": "pcc/claims/PCC-20261114-3237be.json",
+    "statement": "theorem rational_decomposition {A : Type} (g : Abelian A) (ell m : Nat) (ell_form : ell = 4 * m + 1) (x : A) (annihilated : nsmul g (4 * ell) x = g.zero) : nsmul g 4 (nsmul g ell x) = g.zero \u2227 nsmul g ell (g.add x (g.neg (nsmul g ell x))) = g.zero \u2227 g.add (g.add x (g.neg (nsmul g ell x))) (nsmul g ell x) = x",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/beta-complete-evaluator/lean/CompleteRationalBeta.lean",
+      "theorem": "CompleteRationalBeta.rational_decomposition",
+      "decl_sha256": "d7bcfe45299a37a45d8b154d94653bdb2d1c82a68ce6e1d0e384fab415ce3833"
+    }
+  },
+  {
+    "theorem": "CompleteRationalBeta.odd_half",
+    "claim_path": "pcc/claims/PCC-20261114-5098ee.json",
+    "statement": "theorem odd_half {J T : Type} (g : Abelian J) (h : Abelian T) (beta : Hom g h) (F : J \u2192 T) (twice_beta : \u2200 x, F x = h.add (beta.toFun x) (beta.toFun x)) (ell inv : Nat) (inverse : 2 * inv = ell + 1) (x : J) (odd : nsmul g ell x = g.zero) : nsmul h inv (F x) = beta.toFun x",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/beta-complete-evaluator/lean/CompleteRationalBeta.lean",
+      "theorem": "CompleteRationalBeta.odd_half",
+      "decl_sha256": "8d977b9794e05857d916e58d0489a0ffa08b6663c752040c42360d8371f0068e"
+    }
+  },
+  {
+    "theorem": "CompleteRationalBeta.evaluate_matches_beta",
+    "claim_path": "pcc/claims/PCC-20261114-15a9e4.json",
+    "statement": "theorem evaluate_matches_beta {A J T : Type} (c : Config A J T) (x : J) : evaluate c x = c.beta.toFun x",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/beta-complete-evaluator/lean/CompleteRationalBeta.lean",
+      "theorem": "CompleteRationalBeta.evaluate_matches_beta",
+      "decl_sha256": "5c63096c3dfe85f6375504bb5b01cbdfb66c53185d59f8b0d91ba8749431b172"
+    }
+  },
+  {
+    "theorem": "CompleteRationalBeta.dlp_preservation",
+    "claim_path": "pcc/claims/PCC-20261114-a92216.json",
+    "statement": "theorem dlp_preservation {A J T : Type} (c : Config A J T) (G : J) (n : Nat) : evaluate c (nsmul c.g n G) = nsmul c.h n (evaluate c G)",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/beta-complete-evaluator/lean/CompleteRationalBeta.lean",
+      "theorem": "CompleteRationalBeta.dlp_preservation",
+      "decl_sha256": "7daf8f22bbf72acb9e04851f83321b6b4f3012edf5139429f96b811b7aecf170"
+    }
+  },
+  {
+    "theorem": "CompleteRationalBeta.full_rational_inverse13",
+    "claim_path": "pcc/claims/PCC-20261114-07e7e3.json",
+    "statement": "theorem full_rational_inverse13 {J T : Type} (g : Abelian J) (h : Abelian T) (beta : Hom g h) (dual : Hom h g) (composition : \u2200 x, dual.toFun (beta.toFun x) = nsmul g 13 x) (order : \u2200 x, nsmul g 11092292 x = g.zero) (x : J) : nsmul g 3413013 (dual.toFun (beta.toFun x)) = x",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/beta-complete-evaluator/lean/CompleteRationalBeta.lean",
+      "theorem": "CompleteRationalBeta.full_rational_inverse13",
+      "decl_sha256": "e7f74f6810f3555253d7c8e63e1272cfa4d82e9e82d1a528e253345d6f58b436"
+    }
+  },
+  {
+    "theorem": "CompleteRationalBeta.dlp_equivalence",
+    "claim_path": "pcc/claims/PCC-20261114-9e1fdf.json",
+    "statement": "theorem dlp_equivalence {A J T : Type} (c : Config A J T) (ell_identity : c.ell = 2773073) (dual : Hom c.h c.g) (composition : \u2200 x, dual.toFun (c.beta.toFun x) = nsmul c.g 13 x) (Q G : J) (n : Nat) : (evaluate c Q = nsmul c.h n (evaluate c G)) \u2194 Q = nsmul c.g n G",
+    "proof": {
+      "path": "experiments/chained-transfer-public-target/beta-complete-evaluator/lean/CompleteRationalBeta.lean",
+      "theorem": "CompleteRationalBeta.dlp_equivalence",
+      "decl_sha256": "fe63aa962b43f9a652a23308a4b92435ea6c944a8b09777e7d21f7b544ecd19a"
+    }
+  }
+]

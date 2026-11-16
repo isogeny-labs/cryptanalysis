@@ -1,0 +1,180 @@
+{
+  "at": "2026-11-15T14:29:38.387606+00:00",
+  "published_contract": "b5e431/5493385 before source",
+  "commands": [
+    {
+      "name": "original-ic-whole-positive",
+      "command": [
+        "/dev/shm/ct100-original-fixed-IC-CI-layout-01/whole-output-02-build-cache/release/audit-original-fixed-ic-historical",
+        "--compare",
+        "original-ic",
+        "/workspace/scratch/ct100-original-fixed-IC-CI-local-02/whole-output/original-ic-expected.json",
+        "/workspace/scratch/ct100-original-fixed-IC-CI-local-02/whole-output/original-ic-whole-frozen.json",
+        "/workspace/scratch/ct100-historical-audit-controls-01/original-ic-whole-positive.json"
+      ],
+      "actual_exit": 0
+    },
+    {
+      "name": "original-ic-materialize-controls",
+      "command": [
+        "/dev/shm/ct100-original-fixed-IC-CI-layout-01/whole-output-02-build-cache/release/audit-original-fixed-ic-historical",
+        "--mutations",
+        "original-ic",
+        "/workspace/scratch/ct100-original-fixed-IC-CI-local-02/whole-output/original-ic-expected.json",
+        "/workspace/scratch/ct100-historical-audit-controls-01/original-ic-whole-controls"
+      ],
+      "actual_exit": 0
+    },
+    {
+      "name": "original-ic-missing-record-class",
+      "command": [
+        "/dev/shm/ct100-original-fixed-IC-CI-layout-01/whole-output-02-build-cache/release/audit-original-fixed-ic-historical",
+        "--compare",
+        "original-ic",
+        "/workspace/scratch/ct100-historical-audit-controls-01/original-ic-whole-controls/missing-record-class.json",
+        "/workspace/scratch/ct100-original-fixed-IC-CI-local-02/whole-output/original-ic-whole-frozen.json",
+        "/workspace/scratch/ct100-historical-audit-controls-01/original-ic-missing-record-class-accepted.json"
+      ],
+      "actual_exit": 1
+    },
+    {
+      "name": "original-ic-changed-scalar",
+      "command": [
+        "/dev/shm/ct100-original-fixed-IC-CI-layout-01/whole-output-02-build-cache/release/audit-original-fixed-ic-historical",
+        "--compare",
+        "original-ic",
+        "/workspace/scratch/ct100-historical-audit-controls-01/original-ic-whole-controls/changed-scalar.json",
+        "/workspace/scratch/ct100-original-fixed-IC-CI-local-02/whole-output/original-ic-whole-frozen.json",
+        "/workspace/scratch/ct100-historical-audit-controls-01/original-ic-changed-scalar-accepted.json"
+      ],
+      "actual_exit": 1
+    },
+    {
+      "name": "original-ic-changed-counter",
+      "command": [
+        "/dev/shm/ct100-original-fixed-IC-CI-layout-01/whole-output-02-build-cache/release/audit-original-fixed-ic-historical",
+        "--compare",
+        "original-ic",
+        "/workspace/scratch/ct100-historical-audit-controls-01/original-ic-whole-controls/changed-counter.json",
+        "/workspace/scratch/ct100-original-fixed-IC-CI-local-02/whole-output/original-ic-whole-frozen.json",
+        "/workspace/scratch/ct100-historical-audit-controls-01/original-ic-changed-counter-accepted.json"
+      ],
+      "actual_exit": 1
+    },
+    {
+      "name": "original-ic-unexpected-report-field",
+      "command": [
+        "/dev/shm/ct100-original-fixed-IC-CI-layout-01/whole-output-02-build-cache/release/audit-original-fixed-ic-historical",
+        "--compare",
+        "original-ic",
+        "/workspace/scratch/ct100-historical-audit-controls-01/original-ic-whole-controls/unexpected-report-field.json",
+        "/workspace/scratch/ct100-original-fixed-IC-CI-local-02/whole-output/original-ic-whole-frozen.json",
+        "/workspace/scratch/ct100-historical-audit-controls-01/original-ic-unexpected-report-field-accepted.json"
+      ],
+      "actual_exit": 1
+    },
+    {
+      "name": "original-ic-timing-only",
+      "command": [
+        "/dev/shm/ct100-original-fixed-IC-CI-layout-01/whole-output-02-build-cache/release/audit-original-fixed-ic-historical",
+        "--compare",
+        "original-ic",
+        "/workspace/scratch/ct100-historical-audit-controls-01/original-ic-whole-controls/timing-only.json",
+        "/workspace/scratch/ct100-original-fixed-IC-CI-local-02/whole-output/original-ic-whole-frozen.json",
+        "/workspace/scratch/ct100-historical-audit-controls-01/original-ic-timing-only-accepted.json"
+      ],
+      "actual_exit": 0
+    },
+    {
+      "name": "original-sampler-whole-positive",
+      "command": [
+        "/dev/shm/ct100-original-fixed-IC-CI-layout-01/whole-output-02-build-cache/release/audit-original-fixed-ic-historical",
+        "--compare",
+        "original-sampler",
+        "/workspace/scratch/ct97-original-fixed-model-sampler-native-01/all-whole-compared.json",
+        "/workspace/scratch/ct97-original-fixed-model-sampler-native-01/all-whole-compared.json",
+        "/workspace/scratch/ct100-historical-audit-controls-01/original-sampler-whole-positive.json"
+      ],
+      "actual_exit": 0
+    },
+    {
+      "name": "original-sampler-materialize-controls",
+      "command": [
+        "/dev/shm/ct100-original-fixed-IC-CI-layout-01/whole-output-02-build-cache/release/audit-original-fixed-ic-historical",
+        "--mutations",
+        "original-sampler",
+        "/workspace/scratch/ct97-original-fixed-model-sampler-native-01/all-whole-compared.json",
+        "/workspace/scratch/ct100-historical-audit-controls-01/original-sampler-whole-controls"
+      ],
+      "actual_exit": 0
+    },
+    {
+      "name": "original-sampler-missing-record-class",
+      "command": [
+        "/dev/shm/ct100-original-fixed-IC-CI-layout-01/whole-output-02-build-cache/release/audit-original-fixed-ic-historical",
+        "--compare",
+        "original-sampler",
+        "/workspace/scratch/ct100-historical-audit-controls-01/original-sampler-whole-controls/missing-record-class.json",
+        "/workspace/scratch/ct97-original-fixed-model-sampler-native-01/all-whole-compared.json",
+        "/workspace/scratch/ct100-historical-audit-controls-01/original-sampler-missing-record-class-accepted.json"
+      ],
+      "actual_exit": 1
+    },
+    {
+      "name": "original-sampler-changed-scalar",
+      "command": [
+        "/dev/shm/ct100-original-fixed-IC-CI-layout-01/whole-output-02-build-cache/release/audit-original-fixed-ic-historical",
+        "--compare",
+        "original-sampler",
+        "/workspace/scratch/ct100-historical-audit-controls-01/original-sampler-whole-controls/changed-scalar.json",
+        "/workspace/scratch/ct97-original-fixed-model-sampler-native-01/all-whole-compared.json",
+        "/workspace/scratch/ct100-historical-audit-controls-01/original-sampler-changed-scalar-accepted.json"
+      ],
+      "actual_exit": 1
+    },
+    {
+      "name": "original-sampler-changed-counter",
+      "command": [
+        "/dev/shm/ct100-original-fixed-IC-CI-layout-01/whole-output-02-build-cache/release/audit-original-fixed-ic-historical",
+        "--compare",
+        "original-sampler",
+        "/workspace/scratch/ct100-historical-audit-controls-01/original-sampler-whole-controls/changed-counter.json",
+        "/workspace/scratch/ct97-original-fixed-model-sampler-native-01/all-whole-compared.json",
+        "/workspace/scratch/ct100-historical-audit-controls-01/original-sampler-changed-counter-accepted.json"
+      ],
+      "actual_exit": 1
+    },
+    {
+      "name": "original-sampler-unexpected-report-field",
+      "command": [
+        "/dev/shm/ct100-original-fixed-IC-CI-layout-01/whole-output-02-build-cache/release/audit-original-fixed-ic-historical",
+        "--compare",
+        "original-sampler",
+        "/workspace/scratch/ct100-historical-audit-controls-01/original-sampler-whole-controls/unexpected-report-field.json",
+        "/workspace/scratch/ct97-original-fixed-model-sampler-native-01/all-whole-compared.json",
+        "/workspace/scratch/ct100-historical-audit-controls-01/original-sampler-unexpected-report-field-accepted.json"
+      ],
+      "actual_exit": 1
+    },
+    {
+      "name": "original-sampler-timing-only",
+      "command": [
+        "/dev/shm/ct100-original-fixed-IC-CI-layout-01/whole-output-02-build-cache/release/audit-original-fixed-ic-historical",
+        "--compare",
+        "original-sampler",
+        "/workspace/scratch/ct100-historical-audit-controls-01/original-sampler-whole-controls/timing-only.json",
+        "/workspace/scratch/ct97-original-fixed-model-sampler-native-01/all-whole-compared.json",
+        "/workspace/scratch/ct100-historical-audit-controls-01/original-sampler-timing-only-accepted.json"
+      ],
+      "actual_exit": 0
+    }
+  ],
+  "whole_positive_inputs": "IC entire independent fresh02 vs historical100; sampler entire historical101 vs itself, not a fresh sampler execution",
+  "whole_timing_only_positives": 2,
+  "whole_modified_negative_inputs": 8,
+  "all_negative_exits": 1,
+  "all_negative_accepted_outputs_absent": true,
+  "actual_auditor_sha256": "8d189fc12d4d94b73c0e60cc31122f32533d8b41c059a82ebc5c8d93ca6e59a4",
+  "actual_compiled_before_after_bytes_equal": true,
+  "scope": "comparison contract controls only; full fresh driver03/GitHubCI still pending"
+}

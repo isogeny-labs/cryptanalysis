@@ -1,0 +1,32 @@
+digraph Lifts {
+ graph [rankdir=TB,bgcolor="white",nodesep=.55,ranksep=.55];
+ node [shape=box,style="rounded,filled",fillcolor="#edf4fa",fontname="DejaVu Sans",fontsize=10,margin=".16,.12"];
+ edge [fontname="DejaVu Sans",fontsize=9,color="#275875"];
+ e0 [label="E(L)[4] — ALL16 points
+a=(214,144,205), b=(137,218,9)
+K:z³=3; L:w⁶=3; z=w²"];
+ e1 [label="E13(L)[4] — ALL16 points
+a=(196,168,69), b=(8,82,207)
+N4-E13-short-936b863521fdce08d2724c468f27979cb
+39d9443d082b4be14209bb08f408414"];
+ j0 [label="J0(F223²): image of E(L)[4]
+C0: [0,1,91,68,209,30,216,142,
+31,72,184,179,36,124,140], P0=(1,0,0)
+Original Picard monomial order
+Rational cofactor subset has4 classes",fillcolor="#e8f3e7"];
+ j1 [label="Matched HLP(1,0) J1(F223²)
+Ciani-Jac-odd-product-v1-
+7ea9d0f9d1a48a48489425beab48274fca7b
+d0848e47a0bac3a027c01601e2c4
+P0=(1,0,84)",fillcolor="#e8f3e7"];
+ {rank=same;e0;e1;} {rank=same;j0;j1;}
+ e0 -> e1 [label="γ degree13
+ALL256 addition pairs per curve
+both dual compositions [13]"];
+ e0 -> j0 [label="Φ0 degree8
+complete F223² fibre map next",style=dashed];
+ e1 -> j1 [label="Φ1 degree8
+complete F223² fibre map next",style=dashed];
+ j0 -> j1 [label="β degree13³ (written quotient)
+rational F223 evaluator next",style=dashed];
+}
