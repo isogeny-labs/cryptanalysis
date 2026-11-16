@@ -101,8 +101,8 @@ def audit():
     tvals=range(-isqrt(4*P),isqrt(4*P)+1)
     gaps=[abs(t**3-3*P*t-(Q+1-ORDER)) for t in tvals if t*t<=4*P]
     require(len(gaps)==59 and min(gaps)==112 and all(g!=0 for g in gaps),'Frobenius base-change gap')
-    # Mutant A source and coordinate altered public generators must fail.
-    mutated=((168,76,41),SOURCE[1])
+    # Mutant B0 source and coordinate altered public generators must fail.
+    mutated=((168,76,41),SOURCE[1]) # wrong A, not one of frozen models
     tests=[(mutated,GENERATORS[0]),(SOURCE,(add(GENERATORS[0][0],ONE),GENERATORS[0][1])),(TARGET,(add(GENERATORS[1][0],ONE),GENERATORS[1][1]))]
     for e,p in tests: require(not curve_check(e,p),'mutated model/generator unexpectedly on curve')
     return {'schema':'ct160-actual-nu12-hasse-generator-certificate/v1','status':'[pcc:unverified]','field_size':Q,
