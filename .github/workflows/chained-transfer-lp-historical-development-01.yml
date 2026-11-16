@@ -46,6 +46,7 @@ jobs:
             /experiments/chained-transfer-lp-presentation-01/admission-01/
             /experiments/chained-transfer-lp-presentation-01/population-01/
             /experiments/chained-transfer-lp-presentation-01/runtime-01/
+            /experiments/chained-transfer-lp-presentation-01/PROTOCOL_01.md
             /experiments/chained-transfer-lp-presentation-01/historical-whole-fixture-pins-01.json
             /experiments/chained-transfer-lp-presentation-01/lean/
             /experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-final-06/
@@ -117,6 +118,12 @@ jobs:
             git switch --create "$branch"
           fi
           test -z "$(git status --porcelain --untracked-files=all)"
+          set +e
+          sha256sum --check experiments/chained-transfer-lp-presentation-01/population-01/source-01.sha256 > "$RUNNER_TEMP/lp-historical-custody/early-complete-population-source-guard.txt" 2>&1
+          source_code=$?
+          set -e
+          printf '%s\n' "$source_code" > "$RUNNER_TEMP/lp-historical-custody/early-complete-population-source-guard.exit"
+          test "$source_code" -eq 0 || exit "$source_code"
           cmp ../artifact-tools/scripts/checkpoint.sh scripts/checkpoint.sh
           echo '3c4192168bbc390bf94be46c765914a419a4eff8c30e3f52f5b94ea432738056  ../artifact-tools/scripts/checkpoint.sh' | sha256sum --check
           out="$RUNNER_TEMP/lp-historical-checkpoint"
