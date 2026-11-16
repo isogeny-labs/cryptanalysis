@@ -5,6 +5,7 @@ import json
 import subprocess
 import statistics
 import textwrap
+import argparse
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -15,8 +16,16 @@ from PIL import Image as PillowImage
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Table, TableStyle, PageBreak
 
 HERE = Path(__file__).resolve().parent
-rows = json.loads((HERE/'run-001/pairs.json').read_text())
-summary = json.loads((HERE/'run-001/summary.json').read_text())
+parser=argparse.ArgumentParser()
+parser.add_argument('--run-id', default='run-001')
+parser.add_argument('--stem', default='REPORT')
+parser.add_argument('--claim-id', default='PCC-20261116-3717ba')
+args=parser.parse_args()
+if not args.run_id.replace('-', '').isalnum() or not args.stem.replace('-', '').isalnum():
+    raise ValueError('invalid artifact path')
+chart='ratios' if args.run_id=='run-001' else 'ratios-'+args.run_id
+rows = json.loads((HERE/args.run_id/'pairs.json').read_text())
+summary = json.loads((HERE/args.run_id/'summary.json').read_text())
 subprocess.run(['dot','-Tsvg',str(HERE/'flow.dot'),'-o',str(HERE/'flow.svg')],check=True)
 subprocess.run(['dot','-Tpng','-Gdpi=170',str(HERE/'flow.dot'),'-o',str(HERE/'flow.png')],check=True)
 fig, axes = plt.subplots(1,2,figsize=(10.5,4),sharey=True)
@@ -32,9 +41,11 @@ for ax,key,title in zip(axes,['raw_wall_ratio','reduction_wall_ratio'],['Default
 axes[0].set_ylabel('Raw paired wall-time ratio (higher = less candidate time)')
 fig.suptitle('Exploratory component diagnostic: six fresh inputs per field; qualified values null',fontsize=11)
 fig.tight_layout()
-fig.savefig(HERE/'ratios.svg');fig.savefig(HERE/'ratios.png',dpi=200);plt.close(fig)
+fig.savefig(HERE/(chart+'.svg'));
+svg=HERE/(chart+'.svg');svg.write_text('\n'.join(line.rstrip() for line in svg.read_text().splitlines())+'\n')
+fig.savefig(HERE/(chart+'.png'),dpi=200);plt.close(fig)
 styles=getSampleStyleSheet();styles.add(ParagraphStyle(name='Small',fontName='Helvetica',fontSize=8,leading=11))
-pdf=SimpleDocTemplate(str(HERE/'REPORT.pdf'),pagesize=(11.7*inch,8.3*inch),rightMargin=36,leftMargin=36,topMargin=30,bottomMargin=30)
+pdf=SimpleDocTemplate(str(HERE/(args.stem+'.pdf')),pagesize=(11.7*inch,8.3*inch),rightMargin=36,leftMargin=36,topMargin=30,bottomMargin=30)
 story=[Paragraph('Bounded-product fixed two-fold reduction',styles['Title']),Paragraph('2026-11-15 - producer component evidence; performance goal remains open',styles['Small']),Spacer(1,10)]
 body=[
 'Question: does eliminating the generic high-word reduction walk lower complete field-multiplication cost on the same inputs? The three arms are current default, six-product multiplication, and six-product multiplication plus fixed reduction. This is arithmetic supporting ECC/IC, without a full attack comparison.',
@@ -44,11 +55,11 @@ body=[
 ]
 for t in body:story += [Paragraph(t,styles['BodyText']),Spacer(1,6)]
 flow_size=PillowImage.open(HERE/'flow.png').size
-story += [Paragraph('Producer arithmetic report: PCC-20261116-3717ba, unsigned and not covered by independent standing.',styles['Small']),Spacer(1,6),Image(str(HERE/'flow.png'),width=10.6*inch,height=10.6*inch*flow_size[1]/flow_size[0]),PageBreak(),Paragraph('Raw observations and scope',styles['Heading1'])]
+story += [Paragraph('Producer arithmetic report: '+args.claim_id+', unsigned and not covered by independent standing.',styles['Small']),Spacer(1,6),Image(str(HERE/'flow.png'),width=10.6*inch,height=10.6*inch*flow_size[1]/flow_size[0]),PageBreak(),Paragraph('Raw observations and scope',styles['Heading1'])]
 data=[['Degree','Inputs','Default / combined median','Six-product / combined median']]
 for case in summary['cases']:
  data.append([str(case['degree']),str(case['n']),f"{case['raw_median_ratio']:.6f}",f"{case['reduction_median_ratio']:.6f}"])
-t=Table(data,colWidths=[75,60,230,230]);t.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,0),colors.HexColor('#e7eef4')),('FONTNAME',(0,0),(-1,0),'Helvetica-Bold'),('FONTSIZE',(0,0),(-1,-1),9),('BOTTOMPADDING',(0,0),(-1,-1),7),('GRID',(0,0),(-1,-1),.3,colors.lightgrey)]));story += [t,Spacer(1,10),Image(str(HERE/'ratios.png'),width=10.5*inch,height=4*inch)]
-for txt in ['Dots are all six individual paired ratios; black bars are medians. These are observations, not confidence intervals. Ratios below one remain in the data.', 'Sources: run-001/pairs.json, summary.json and host.json; launch receipt; PROTOCOL.md; REPORT.md. Their SHA-256 artifact manifests bind raw bytes. Historical smaller-field two-fold source: crypto docs/perf/RESULTS.md at d390e84ab2973372534120fc4207fb65e52d4f3f; KB source:4aeae310bd8926130ee38d08ce3d9da5. No historical timing ratio is transferred to this implementation.']:
+t=Table(data,colWidths=[75,60,230,230]);t.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,0),colors.HexColor('#e7eef4')),('FONTNAME',(0,0),(-1,0),'Helvetica-Bold'),('FONTSIZE',(0,0),(-1,-1),9),('BOTTOMPADDING',(0,0),(-1,-1),7),('GRID',(0,0),(-1,-1),.3,colors.lightgrey)]));story += [t,Spacer(1,10),Image(str(HERE/(chart+'.png')),width=10.5*inch,height=4*inch)]
+for txt in ['Dots are all six individual paired ratios; black bars are medians. These are observations, not confidence intervals. Ratios below one remain in the data.', 'Sources: '+args.run_id+'/pairs.json, summary.json and host.json; launch receipt; PROTOCOL.md; REPORT.md. Their SHA-256 artifact manifests bind raw bytes. Historical smaller-field two-fold source: crypto docs/perf/RESULTS.md at d390e84ab2973372534120fc4207fb65e52d4f3f; KB source:4aeae310bd8926130ee38d08ce3d9da5. No historical timing ratio is transferred to this implementation.']:
  story += [Paragraph(txt,styles['Small']),Spacer(1,5)]
 pdf.build(story)
