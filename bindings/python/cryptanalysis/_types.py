@@ -125,7 +125,7 @@ class Options:
 
     threads: int = 1  # rho worker threads (0 => 1)
     seed: int = 0  # 0 => random
-    max_ops: int = 0  # 0 => unlimited (raises LimitError when exceeded)
+    max_ops: int = 0  # 0 => no caller limit (rho/kangaroo: built-in runaway guard)
     bsgs_table_size: int = 0  # 0 => sqrt(width)
     rho_r: int = 0  # 0 => auto
     rho_dp_bits: int = -1  # -1 => auto

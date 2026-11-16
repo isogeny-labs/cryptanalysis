@@ -55,7 +55,7 @@ pub struct Options {
     /// RNG seed (0 => random).
     pub seed: u64,
     /// Work limit in group operations; solvers return
-    /// [`Error::Limit`](crate::Error::Limit) when it is hit (0 => unlimited).
+    /// [`Error::Limit`](crate::Error::Limit) when it is hit (0 => no caller limit; rho and kangaroo then stop at a built-in runaway guard with `NotFound`).
     pub max_ops: u64,
     /// BSGS: baby-step table size (0 => sqrt(width)).
     pub bsgs_table_size: u64,

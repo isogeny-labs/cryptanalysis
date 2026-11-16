@@ -753,6 +753,7 @@ pub enum RowStatus {
 /// is counted, so the linear algebra is priced in its own native unit.
 pub struct IncrementalGauss {
     modulus: u64,
+    reciprocal: Option<crate::cryptanalysis::ic_framework::u32_reciprocal::U32Reciprocal>,
     cols: usize,
     rows: Vec<Vec<u64>>,
     rhs: Vec<u64>,
@@ -768,6 +769,7 @@ impl IncrementalGauss {
     pub fn new(cols: usize, modulus: u64) -> Self {
         Self {
             modulus,
+            reciprocal: None,
             cols,
             rows: Vec::new(),
             rhs: Vec::new(),
@@ -779,6 +781,14 @@ impl IncrementalGauss {
         }
     }
 
+    /// Opt-in reciprocal reduction; unsupported moduli retain generic arithmetic.
+    pub fn new_u32_reciprocal(cols: usize, modulus: u64) -> Self {
+        let mut matrix = Self::new(cols, modulus);
+        matrix.reciprocal =
+            crate::cryptanalysis::ic_framework::u32_reciprocal::U32Reciprocal::new(modulus);
+        matrix
+    }
+
     pub fn rank(&self) -> usize {
         self.rows.len()
     }
@@ -788,8 +798,31 @@ impl IncrementalGauss {
     }
 
     /// Add one equation `Σ row[j]·x_j ≡ rhs (mod r)`.
-    pub fn add_row(&mut self, mut row: Vec<u64>, mut rhs: u64) -> RowStatus {
+    pub fn add_row(&mut self, row: Vec<u64>, rhs: u64) -> RowStatus {
+        let reciprocal = self.reciprocal;
+        if reciprocal.is_some() && rhs < self.modulus && row.iter().all(|&v| v < self.modulus) {
+            self.add_row_inner::<true>(row, rhs, reciprocal)
+        } else {
+            self.add_row_inner::<false>(row, rhs, None)
+        }
+    }
+
+    fn add_row_inner<const FAST: bool>(
+        &mut self,
+        mut row: Vec<u64>,
+        mut rhs: u64,
+        reciprocal: Option<crate::cryptanalysis::ic_framework::u32_reciprocal::U32Reciprocal>,
+    ) -> RowStatus {
         let m = self.modulus;
+        let multiply = |a: u64, b: u64| {
+            if FAST {
+                reciprocal
+                    .expect("validated reciprocal strategy")
+                    .mul(a as u32, b as u32)
+            } else {
+                mulmod(a, b, m)
+            }
+        };
         debug_assert_eq!(row.len(), self.cols);
         // Reduce against every existing pivot.
         for i in 0..self.rows.len() {
@@ -802,11 +835,11 @@ impl IncrementalGauss {
             for j in 0..self.cols {
                 let v = pivot[j];
                 if v != 0 {
-                    row[j] = submod(row[j], mulmod(f, v, m), m);
+                    row[j] = submod(row[j], multiply(f, v), m);
                     self.row_ops += 1;
                 }
             }
-            rhs = submod(rhs, mulmod(f, self.rhs[i], m), m);
+            rhs = submod(rhs, multiply(f, self.rhs[i]), m);
             self.row_ops += 1;
         }
         let Some(pc) = (0..self.cols).find(|&j| row[j] != 0) else {
@@ -821,11 +854,11 @@ impl IncrementalGauss {
         let inv = invmod(row[pc], m).expect("prime modulus");
         for v in row.iter_mut() {
             if *v != 0 {
-                *v = mulmod(*v, inv, m);
+                *v = multiply(*v, inv);
                 self.row_ops += 1;
             }
         }
-        rhs = mulmod(rhs, inv, m);
+        rhs = multiply(rhs, inv);
         self.row_ops += 1;
         // Eliminate the new pivot column from every existing row.
         let nnz: Vec<usize> = (0..self.cols).filter(|&j| row[j] != 0).collect();
@@ -835,11 +868,11 @@ impl IncrementalGauss {
                 continue;
             }
             for &j in &nnz {
-                let v = mulmod(f, row[j], m);
+                let v = multiply(f, row[j]);
                 self.rows[i][j] = submod(self.rows[i][j], v, m);
                 self.row_ops += 1;
             }
-            self.rhs[i] = submod(self.rhs[i], mulmod(f, rhs, m), m);
+            self.rhs[i] = submod(self.rhs[i], multiply(f, rhs), m);
             self.row_ops += 1;
         }
         self.row_of_pivot[pc] = Some(self.rows.len());
@@ -866,11 +899,217 @@ impl IncrementalGauss {
 
 /// The little a collision search and a relation loop need from a group,
 /// with every operation charged to a ledger.
+/// Reusable storage owned by a counted pair-addition caller. Generic groups
+/// ignore the backend buffers; the binary backend reuses them across batches.
+#[derive(Default)]
+pub struct GroupPairScratch {
+    binary: crate::cryptanalysis::koblitz_fast::BatchScratch,
+}
+
+mod batched_walk;
+
+/// One bounded diagnostic state, before the collector's matrix consumes it.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct WalkBatchFrame<E> {
+    pub point: E,
+    pub a: u64,
+    pub b: u64,
+    pub lane: usize,
+    pub identity: bool,
+    pub repeated: bool,
+    pub forced_restart: bool,
+}
+
+pub struct WalkBatchAudit<E> {
+    pub frames: Vec<WalkBatchFrame<E>>,
+    pub group_ops: GroupOps,
+    pub counters: std::collections::BTreeMap<String, u64>,
+}
+
+/// Bounded correctness trace of the new schedule, never a relation-yield sample.
+/// `forced_every=0` disables the controlled restart injection. The real collector
+/// shares the walker and identity/duplicate rules but never forces this cadence.
+#[allow(clippy::too_many_arguments)]
+pub fn trace_batched_walk<G: CountedGroup>(
+    g: &G,
+    generator: G::Elt,
+    target: G::Elt,
+    r: u64,
+    seed: u64,
+    cap: u64,
+    native: bool,
+    pool: RestartPool,
+    forced_every: u64,
+) -> WalkBatchAudit<G::Elt> {
+    trace_batched_walk_impl(
+        g,
+        generator,
+        target,
+        r,
+        seed,
+        cap,
+        native,
+        false,
+        false,
+        pool,
+        forced_every,
+    )
+}
+
+/// Same bounded trace with vector advancement, retaining ordinary initialization.
+#[allow(clippy::too_many_arguments)]
+pub fn trace_batched_walk_vector<G: CountedGroup>(
+    g: &G,
+    generator: G::Elt,
+    target: G::Elt,
+    r: u64,
+    seed: u64,
+    cap: u64,
+    pool: RestartPool,
+    forced_every: u64,
+) -> WalkBatchAudit<G::Elt> {
+    trace_batched_walk_impl(
+        g,
+        generator,
+        target,
+        r,
+        seed,
+        cap,
+        true,
+        true,
+        false,
+        pool,
+        forced_every,
+    )
+}
+
+/// Same trace with SIMD inverse products and ordinary shared-inverse initialization.
+#[allow(clippy::too_many_arguments)]
+pub fn trace_batched_walk_vector_inverse<G: CountedGroup>(
+    g: &G,
+    generator: G::Elt,
+    target: G::Elt,
+    r: u64,
+    seed: u64,
+    cap: u64,
+    pool: RestartPool,
+    forced_every: u64,
+) -> WalkBatchAudit<G::Elt> {
+    trace_batched_walk_impl(
+        g,
+        generator,
+        target,
+        r,
+        seed,
+        cap,
+        true,
+        true,
+        true,
+        pool,
+        forced_every,
+    )
+}
+
+#[allow(clippy::too_many_arguments)]
+fn trace_batched_walk_impl<G: CountedGroup>(
+    g: &G,
+    generator: G::Elt,
+    target: G::Elt,
+    r: u64,
+    seed: u64,
+    cap: u64,
+    native: bool,
+    vector: bool,
+    vector_inverse: bool,
+    pool: RestartPool,
+    forced_every: u64,
+) -> WalkBatchAudit<G::Elt> {
+    assert!(cap <= 4096, "diagnostic trace is bounded to4096 states");
+    let mut ops = GroupOps::default();
+    let mut walker = batched_walk::BatchedWalker::new(
+        g, generator, target, r, seed, cap, native, pool, &mut ops,
+    );
+    if vector_inverse {
+        walker.enable_vector_inverse();
+    } else if vector {
+        walker.enable_vector();
+    }
+    let mut seen = fast_map(cap as usize);
+    let mut frames = Vec::with_capacity(cap as usize);
+    while let Some((point, a, b, lane)) = walker.next(g, &mut ops) {
+        let identity = g.is_identity(&point);
+        let repeated = !identity && seen.insert(g.key(&point), ()).is_some();
+        let forced_restart =
+            forced_every != 0 && (frames.len() as u64 + 1).is_multiple_of(forced_every);
+        if identity || repeated || forced_restart {
+            walker.restart(lane);
+        }
+        frames.push(WalkBatchFrame {
+            point,
+            a,
+            b,
+            lane,
+            identity,
+            repeated,
+            forced_restart,
+        });
+    }
+    WalkBatchAudit {
+        frames,
+        group_ops: ops,
+        counters: walker
+            .counters(g)
+            .into_iter()
+            .map(|(k, v)| (k.to_string(), v))
+            .collect(),
+    }
+}
+
 pub trait CountedGroup {
     type Elt: Copy + PartialEq + std::fmt::Debug;
     fn identity(&self) -> Self::Elt;
     fn is_identity(&self, p: &Self::Elt) -> bool;
     fn add(&self, ops: &mut GroupOps, p: Self::Elt, q: Self::Elt) -> Self::Elt;
+    /// One counted addition per pair, with a complete scalar default.
+    fn add_pairwise(
+        &self,
+        ops: &mut GroupOps,
+        ps: &[Self::Elt],
+        qs: &[Self::Elt],
+        out: &mut Vec<Self::Elt>,
+        _scratch: &mut GroupPairScratch,
+    ) {
+        assert_eq!(ps.len(), qs.len());
+        out.clear();
+        out.extend(ps.iter().zip(qs).map(|(&p, &q)| self.add(ops, p, q)));
+    }
+    /// Optional vector formulas after the shared inverse; generic default
+    /// retains the ordinary pair implementation and reports zero vector pairs.
+    fn add_pairwise_vector(
+        &self,
+        ops: &mut GroupOps,
+        ps: &[Self::Elt],
+        qs: &[Self::Elt],
+        out: &mut Vec<Self::Elt>,
+        scratch: &mut GroupPairScratch,
+    ) -> usize {
+        self.add_pairwise(ops, ps, qs, out, scratch);
+        0
+    }
+    /// Optional SIMD inverse products; returns point and inverse element counts.
+    fn add_pairwise_vector_inverse(
+        &self,
+        ops: &mut GroupOps,
+        ps: &[Self::Elt],
+        qs: &[Self::Elt],
+        out: &mut Vec<Self::Elt>,
+        scratch: &mut GroupPairScratch,
+    ) -> (usize, usize) {
+        (self.add_pairwise_vector(ops, ps, qs, out, scratch), 0)
+    }
+    fn has_native_pairwise(&self) -> bool {
+        false
+    }
     fn double(&self, ops: &mut GroupOps, p: Self::Elt) -> Self::Elt;
     fn neg(&self, p: Self::Elt) -> Self::Elt;
     /// A key that identifies the element (both walks must agree on it).
@@ -2638,6 +2877,49 @@ impl CountedGroup for BinaryGroup<'_> {
         ops.adds += 1;
         self.0.add(p, q)
     }
+    fn add_pairwise(
+        &self,
+        ops: &mut GroupOps,
+        ps: &[FastPoint],
+        qs: &[FastPoint],
+        out: &mut Vec<FastPoint>,
+        scratch: &mut GroupPairScratch,
+    ) {
+        assert_eq!(ps.len(), qs.len());
+        out.clear();
+        ops.adds += ps.len() as u64;
+        self.0.add_pairwise(ps, qs, out, &mut scratch.binary);
+    }
+    fn add_pairwise_vector(
+        &self,
+        ops: &mut GroupOps,
+        ps: &[FastPoint],
+        qs: &[FastPoint],
+        out: &mut Vec<FastPoint>,
+        scratch: &mut GroupPairScratch,
+    ) -> usize {
+        assert_eq!(ps.len(), qs.len());
+        out.clear();
+        ops.adds += ps.len() as u64;
+        self.0.add_pairwise_vector(ps, qs, out, &mut scratch.binary)
+    }
+    fn add_pairwise_vector_inverse(
+        &self,
+        ops: &mut GroupOps,
+        ps: &[FastPoint],
+        qs: &[FastPoint],
+        out: &mut Vec<FastPoint>,
+        scratch: &mut GroupPairScratch,
+    ) -> (usize, usize) {
+        assert_eq!(ps.len(), qs.len());
+        out.clear();
+        ops.adds += ps.len() as u64;
+        self.0
+            .add_pairwise_vector_inverse(ps, qs, out, &mut scratch.binary)
+    }
+    fn has_native_pairwise(&self) -> bool {
+        true
+    }
     fn double(&self, ops: &mut GroupOps, p: FastPoint) -> FastPoint {
         ops.doubles += 1;
         self.0.double(p)
@@ -3135,9 +3417,253 @@ pub struct PairTable {
     pub entries: u64,
     pub build_ops: GroupOps,
     pub build_wall_ns: u64,
+    /// Temporary inverse-cache allocation, freed before this table returns.
+    pub prefix_inverse_bytes: usize,
+    pub vector_pairs: usize,
+    pub vector_pclmul128_pairs: usize,
+    pub vector_packed_square_pairs: usize,
+    pub vector_const_pairs: usize,
 }
 
 impl PairTable {
+    /// Exact diagnostic comparison of keys and first witnesses, ignoring
+    /// preparation counters, timing and allocation strategy.
+    pub fn same_witness_map(&self, other: &Self) -> bool {
+        self.map == other.map
+    }
+
+    /// The identical ordered negation-folded table, using bounded batches of
+    /// native binary additions. Its complete preparation is priced in native
+    /// nanoseconds, not as hypothetical independent affine inversions.
+    pub fn build_negation_folded_binary_batched(
+        curve: &FastCurve,
+        fb: &FactorBase<FastPoint>,
+        chunk_size: usize,
+    ) -> Result<Self, &'static str> {
+        Self::build_binary_batch(curve, fb, chunk_size, false, false, 0)
+    }
+
+    /// Same ordered table, omitting ordinates unused by its abscissa keys.
+    pub fn build_negation_folded_binary_abscissae(
+        curve: &FastCurve,
+        fb: &FactorBase<FastPoint>,
+        chunk_size: usize,
+    ) -> Result<Self, &'static str> {
+        Self::build_binary_batch(curve, fb, chunk_size, true, false, 0)
+    }
+
+    /// Bounded prefix inverse reuse. Unsupported bases retain the complete
+    /// ordinary abscissa-only batch path, with zero cache bytes reported.
+    pub fn build_negation_folded_binary_prefix_cached(
+        curve: &FastCurve,
+        fb: &FactorBase<FastPoint>,
+        chunk_size: usize,
+    ) -> Result<Self, &'static str> {
+        Self::build_binary_batch(curve, fb, chunk_size, true, true, 0)
+    }
+
+    /// Opt-in AVX2/VPCLMUL cached preparation; exact scalar fallback on
+    /// unsupported hardware/field/base shapes. First-witness order is unchanged.
+    pub fn build_negation_folded_binary_vector_cached(
+        curve: &FastCurve,
+        fb: &FactorBase<FastPoint>,
+        chunk_size: usize,
+    ) -> Result<Self, &'static str> {
+        Self::build_binary_batch(curve, fb, chunk_size, true, true, 1)
+    }
+
+    /// Same first-witness map with opt-in packed squaring for fields <= 32 bits.
+    pub fn build_negation_folded_binary_vector_packed_cached(
+        curve: &FastCurve,
+        fb: &FactorBase<FastPoint>,
+        chunk_size: usize,
+    ) -> Result<Self, &'static str> {
+        Self::build_binary_batch(curve, fb, chunk_size, true, true, 2)
+    }
+
+    /// Same ordered first witnesses, with exact-field constant SIMD reduction.
+    pub fn build_negation_folded_binary_vector_const_cached(
+        curve: &FastCurve,
+        fb: &FactorBase<FastPoint>,
+        chunk_size: usize,
+    ) -> Result<Self, &'static str> {
+        Self::build_binary_batch(curve, fb, chunk_size, true, true, 3)
+    }
+
+    /// Dynamic-reduction ordinary-PCLMUL control for the constant kernel.
+    pub fn build_negation_folded_binary_vector_narrow_cached(
+        curve: &FastCurve,
+        fb: &FactorBase<FastPoint>,
+        chunk_size: usize,
+    ) -> Result<Self, &'static str> {
+        Self::build_binary_batch(curve, fb, chunk_size, true, true, 4)
+    }
+
+    fn build_binary_batch(
+        curve: &FastCurve,
+        fb: &FactorBase<FastPoint>,
+        chunk_size: usize,
+        x_only: bool,
+        prefix_cache: bool,
+        vector_cached: u8,
+    ) -> Result<Self, &'static str> {
+        if !(1..=65536).contains(&chunk_size) {
+            return Err("MITM batch size must be in1..=65536");
+        }
+        let start = Instant::now();
+        let cache = if prefix_cache {
+            fb.subspace_basis.as_deref().and_then(|basis| {
+                let d = basis.len();
+                if !(1..=12).contains(&d)
+                    || basis.iter().any(|v| v >> d != 0)
+                    || fb.points.iter().any(|p| p.x >> d != 0)
+                {
+                    return None;
+                }
+                let mut pivots = [0u64; 12];
+                for &value in basis {
+                    let mut x = value;
+                    while x != 0 {
+                        let bit = 63 - x.leading_zeros() as usize;
+                        if pivots[bit] == 0 {
+                            pivots[bit] = x;
+                            break;
+                        }
+                        x ^= pivots[bit];
+                    }
+                    if x == 0 {
+                        return None;
+                    }
+                }
+                crate::cryptanalysis::koblitz_fast::PrefixInverseTable::new(&curve.field, d).ok()
+            })
+        } else {
+            None
+        };
+        let prefix_inverse_bytes = cache.as_ref().map_or(0, |c| c.bytes());
+        let mut vector_pairs = 0;
+        let map = {
+            let groups: Vec<_> = fb
+                .abscissa_list
+                .iter()
+                .map(|x| fb.x_index.get(x).expect("every listed abscissa is indexed"))
+                .collect();
+            let mut map = fast_map(groups.len() * groups.len() + 1);
+            let mut ps = Vec::with_capacity(chunk_size);
+            let mut qs = Vec::with_capacity(chunk_size);
+            let mut indices = Vec::with_capacity(chunk_size);
+            let mut sums = Vec::with_capacity(if x_only { 0 } else { chunk_size });
+            let mut abscissae = Vec::with_capacity(if x_only { chunk_size } else { 0 });
+            let mut scratch = crate::cryptanalysis::koblitz_fast::BatchScratch::default();
+            let mut flush = |ps: &mut Vec<FastPoint>,
+                             qs: &mut Vec<FastPoint>,
+                             indices: &mut Vec<(u32, u32)>| {
+                if x_only {
+                    abscissae.clear();
+                    if let Some(cache) = &cache {
+                        if vector_cached != 0 {
+                            let prepare = if vector_cached == 4 {
+                                FastCurve::add_pairwise_abscissae_vector_narrow_cached
+                            } else if vector_cached == 3 {
+                                FastCurve::add_pairwise_abscissae_vector_const_cached
+                            } else if vector_cached == 2 {
+                                FastCurve::add_pairwise_abscissae_vector_packed_cached
+                            } else {
+                                FastCurve::add_pairwise_abscissae_vector_cached
+                            };
+                            vector_pairs +=
+                                prepare(curve, ps, qs, &mut abscissae, &mut scratch, cache)
+                                    .expect("cache was constructed for this exact field");
+                        } else {
+                            curve
+                                .add_pairwise_abscissae_cached(
+                                    ps,
+                                    qs,
+                                    &mut abscissae,
+                                    &mut scratch,
+                                    cache,
+                                )
+                                .expect("cache was constructed for this exact field");
+                        }
+                    } else {
+                        curve.add_pairwise_abscissae(ps, qs, &mut abscissae, &mut scratch);
+                    }
+                    for (x, &pair) in abscissae.iter().zip(indices.iter()) {
+                        if let Some(x) = x {
+                            // Match FastPoint::pack() >> 1: zero is reserved for O.
+                            map.entry(*x + 1).or_insert(pair);
+                        }
+                    }
+                } else {
+                    sums.clear();
+                    curve.add_pairwise(ps, qs, &mut sums, &mut scratch);
+                    for (sum, &pair) in sums.iter().zip(indices.iter()) {
+                        if !sum.infinity {
+                            map.entry(sum.pack() >> 1).or_insert(pair);
+                        }
+                    }
+                }
+                ps.clear();
+                qs.clear();
+                indices.clear();
+            };
+            for (ai, group) in groups.iter().enumerate() {
+                let i = group[0];
+                for later in groups.iter().skip(ai) {
+                    for &j in later.iter() {
+                        ps.push(fb.points[i]);
+                        qs.push(fb.points[j]);
+                        indices.push((i as u32, j as u32));
+                        if ps.len() == chunk_size {
+                            flush(&mut ps, &mut qs, &mut indices);
+                        }
+                    }
+                }
+            }
+            if !ps.is_empty() {
+                flush(&mut ps, &mut qs, &mut indices);
+            }
+            map
+        };
+        drop(cache);
+        Ok(Self {
+            kind: if vector_pairs != 0 {
+                "negation_folded_prefix_vector"
+            } else if prefix_inverse_bytes != 0 {
+                "negation_folded_prefix_cached"
+            } else if x_only {
+                "negation_folded_batch_xonly"
+            } else {
+                "negation_folded_batch"
+            },
+            entries: map.len() as u64,
+            map,
+            build_ops: GroupOps::default(),
+            build_wall_ns: start.elapsed().as_nanos() as u64,
+            prefix_inverse_bytes,
+            vector_pclmul128_pairs: if vector_pairs != 0
+                && (curve.cached_vector_backend() == "avx2-pclmul128"
+                    || vector_cached == 4
+                    || (vector_cached == 3 && curve.has_const_vector_field()))
+            {
+                vector_pairs
+            } else {
+                0
+            },
+            vector_packed_square_pairs: if vector_cached == 2 && curve.field.n <= 32 {
+                vector_pairs
+            } else {
+                0
+            },
+            vector_const_pairs: if vector_cached == 3 && curve.has_const_vector_field() {
+                vector_pairs
+            } else {
+                0
+            },
+            vector_pairs,
+        })
+    }
+
     pub fn build<G: CountedGroup>(g: &G, fb: &FactorBase<G::Elt>) -> Self {
         let start = Instant::now();
         let n = fb.points.len();
@@ -3158,6 +3684,11 @@ impl PairTable {
             map,
             build_ops: ops,
             build_wall_ns: start.elapsed().as_nanos() as u64,
+            prefix_inverse_bytes: 0,
+            vector_pairs: 0,
+            vector_pclmul128_pairs: 0,
+            vector_packed_square_pairs: 0,
+            vector_const_pairs: 0,
         }
     }
 
@@ -3196,6 +3727,11 @@ impl PairTable {
             map,
             build_ops: ops,
             build_wall_ns: start.elapsed().as_nanos() as u64,
+            prefix_inverse_bytes: 0,
+            vector_pairs: 0,
+            vector_pclmul128_pairs: 0,
+            vector_packed_square_pairs: 0,
+            vector_const_pairs: 0,
         }
     }
 
@@ -3205,7 +3741,17 @@ impl PairTable {
             entries: self.entries,
             group_ops: self.build_ops,
             wall_ns: self.build_wall_ns,
-            native: Vec::new(),
+            native: if matches!(
+                self.kind,
+                "negation_folded_batch"
+                    | "negation_folded_batch_xonly"
+                    | "negation_folded_prefix_cached"
+                    | "negation_folded_prefix_vector"
+            ) {
+                vec![("mitm_batch_setup_ns", self.build_wall_ns)]
+            } else {
+                Vec::new()
+            },
         }
     }
 
@@ -3801,6 +4347,14 @@ pub enum TargetSource {
     /// every segment and no guard, so segments merge as rho's walks do.
     /// For the diagnostic of §10.2 only.
     WalkSharedJumps,
+    /// Sixteen guarded states for this same target, with native pair additions.
+    WalkBatch,
+    /// Exact same schedule using scalar additions; an arithmetic control.
+    WalkBatchScalar,
+    /// Same schedule and shared inverse with opt-in vector point formulas.
+    WalkBatchVector,
+    /// Same vector points with SIMD product passes in the shared inverse.
+    WalkBatchVectorInverse,
 }
 
 impl TargetSource {
@@ -3810,10 +4364,31 @@ impl TargetSource {
             TargetSource::RandomUnguarded => "random_unguarded",
             TargetSource::Walk => "walk",
             TargetSource::WalkSharedJumps => "walk_shared_jumps",
+            TargetSource::WalkBatch => "walk_batch16",
+            TargetSource::WalkBatchScalar => "walk_batch16_scalar",
+            TargetSource::WalkBatchVector => "walk_batch16_vector",
+            TargetSource::WalkBatchVectorInverse => "walk_batch16_vector_inverse",
         }
     }
     pub fn is_walk(&self) -> bool {
-        matches!(self, TargetSource::Walk | TargetSource::WalkSharedJumps)
+        matches!(
+            self,
+            TargetSource::Walk
+                | TargetSource::WalkSharedJumps
+                | TargetSource::WalkBatch
+                | TargetSource::WalkBatchScalar
+                | TargetSource::WalkBatchVector
+                | TargetSource::WalkBatchVectorInverse
+        )
+    }
+    pub fn is_batched(&self) -> bool {
+        matches!(
+            self,
+            TargetSource::WalkBatch
+                | TargetSource::WalkBatchScalar
+                | TargetSource::WalkBatchVector
+                | TargetSource::WalkBatchVectorInverse
+        )
     }
     /// **Whether a target the run has already decomposed is skipped.**
     ///
@@ -3828,7 +4403,15 @@ impl TargetSource {
     /// search nothing.  The guard is one hash insert per target, counted
     /// and priced as a lookup.
     pub fn is_guarded(&self) -> bool {
-        matches!(self, TargetSource::Random | TargetSource::Walk)
+        matches!(
+            self,
+            TargetSource::Random
+                | TargetSource::Walk
+                | TargetSource::WalkBatch
+                | TargetSource::WalkBatchScalar
+                | TargetSource::WalkBatchVector
+                | TargetSource::WalkBatchVectorInverse
+        )
     }
 }
 
@@ -4024,7 +4607,7 @@ pub fn collect_and_solve_with<G: CountedGroup, L: RelationSolver + ?Sized>(
     let mut seen: FastMap<()> = fast_map(if guarded { 1 << 12 } else { 0 });
     let (mut walk_steps, mut walk_restarts, mut repeats_skipped, mut guard_probes, mut walk_jumps) =
         (0u64, 0u64, 0u64, 0u64, 0u64);
-    if targets.is_walk() {
+    if targets.is_walk() && !targets.is_batched() {
         jumps = draw_jumps(
             g,
             generator,
@@ -4051,7 +4634,32 @@ pub fn collect_and_solve_with<G: CountedGroup, L: RelationSolver + ?Sized>(
         }
     }
 
+    let mut batch_walk = targets.is_batched().then(|| {
+        let mut walker = batched_walk::BatchedWalker::new(
+            g,
+            generator,
+            target,
+            r,
+            seed,
+            max_trials,
+            matches!(
+                targets,
+                TargetSource::WalkBatch
+                    | TargetSource::WalkBatchVector
+                    | TargetSource::WalkBatchVectorInverse
+            ),
+            pool_mode,
+            &mut rel.group_ops,
+        );
+        if targets == TargetSource::WalkBatchVectorInverse {
+            walker.enable_vector_inverse();
+        } else if targets == TargetSource::WalkBatchVector {
+            walker.enable_vector();
+        }
+        walker
+    });
     while trials < max_trials {
+        let mut active_lane = None;
         let (point, a, b) = match targets {
             TargetSource::Random | TargetSource::RandomUnguarded => {
                 let a = rng.gen_range(1..r);
@@ -4060,6 +4668,22 @@ pub fn collect_and_solve_with<G: CountedGroup, L: RelationSolver + ?Sized>(
                 let bq = g.mul(&mut rel.group_ops, target, b);
                 let point = g.add(&mut rel.group_ops, ag, bq);
                 if g.is_identity(&point) {
+                    direct_skipped += 1;
+                    continue;
+                }
+                (point, a, b)
+            }
+            TargetSource::WalkBatch
+            | TargetSource::WalkBatchScalar
+            | TargetSource::WalkBatchVector
+            | TargetSource::WalkBatchVectorInverse => {
+                let walker = batch_walk.as_mut().expect("batch source has state");
+                let Some((point, a, b, lane)) = walker.next(g, &mut rel.group_ops) else {
+                    break;
+                };
+                active_lane = Some(lane);
+                if g.is_identity(&point) {
+                    walker.restart(lane);
                     direct_skipped += 1;
                     continue;
                 }
@@ -4132,6 +4756,9 @@ pub fn collect_and_solve_with<G: CountedGroup, L: RelationSolver + ?Sized>(
             guard_probes += 1;
             if seen.insert(g.key(&point), ()).is_some() {
                 repeats_skipped += 1;
+                if let (Some(walker), Some(lane)) = (batch_walk.as_mut(), active_lane) {
+                    walker.restart(lane);
+                }
                 walk_fresh = true;
                 continue;
             }
@@ -4204,7 +4831,11 @@ pub fn collect_and_solve_with<G: CountedGroup, L: RelationSolver + ?Sized>(
     rel.count("direct_relations_skipped", direct_skipped);
     rel.count("repeated_targets_skipped", repeats_skipped);
     rel.count("target_guard_probes", guard_probes);
-    if targets.is_walk() {
+    if let Some(walker) = &batch_walk {
+        for (name, value) in walker.counters(g) {
+            rel.count(name, value);
+        }
+    } else if targets.is_walk() {
         rel.count("walk_jumps", walk_jumps + pool.len() as u64);
         rel.count("walk_pool_offsets", pool.len() as u64);
         rel.count("walk_pool_ops", pool_ops.adds + pool_ops.doubles);
@@ -4334,6 +4965,12 @@ pub fn price_phase(phase: &mut PhaseCost, calib: &Calibration) {
     gae += conv("frobenius_maps", calib.ns_per_frobenius);
     gae += conv("canonicalisations", calib.ns_per_canon);
     gae += conv("target_guard_probes", Some(calib.ns_per_lookup));
+    // This counter is measured nanoseconds, disjoint from solver work and
+    // group operations; convert with one nanosecond per recorded unit.
+    gae += conv("symbolic_descent_ns", Some(1.0));
+    gae += conv("affine_s3_ns", Some(1.0));
+    gae += conv("mitm_batch_setup_ns", Some(1.0));
+    gae += conv("mitm_native_setup_ns", Some(1.0));
     phase.gae = gae;
 }
 
@@ -7480,5 +8117,73 @@ mod tests {
             .unwrap();
         assert!((total.alpha - 0.75).abs() < 1e-9, "{total:?}");
         assert!(total.r_squared > 0.999);
+    }
+}
+
+#[cfg(test)]
+mod reciprocal_gauss_tests {
+    use super::*;
+
+    fn equal_state(a: &IncrementalGauss, b: &IncrementalGauss) {
+        assert_eq!(a.rows, b.rows);
+        assert_eq!(a.rhs, b.rhs);
+        assert_eq!(a.pivot_of_row, b.pivot_of_row);
+        assert_eq!(a.row_of_pivot, b.row_of_pivot);
+        assert_eq!(
+            (a.row_ops, a.dependent, a.inconsistent),
+            (b.row_ops, b.dependent, b.inconsistent)
+        );
+        for col in 0..a.cols {
+            assert_eq!(a.pinned(col), b.pinned(col));
+        }
+    }
+
+    #[test]
+    fn reciprocal_rows_match_generic_complete_states_and_work() {
+        let mut state = 0xc5df9e2097b0153eu64;
+        for m in [
+            2,
+            3,
+            17,
+            65521,
+            1047281,
+            2097533,
+            22367531,
+            4294967291,
+            4294967311,
+            (1 << 61) - 1,
+        ] {
+            for cols in [0, 1, 2, 7, 19] {
+                let mut a = IncrementalGauss::new(cols, m);
+                let mut b = IncrementalGauss::new_u32_reciprocal(cols, m);
+                assert_eq!(b.reciprocal.is_some(), m <= u32::MAX as u64);
+                for k in 0..80 {
+                    let mut next = || {
+                        state ^= state << 13;
+                        state ^= state >> 7;
+                        state ^= state << 17;
+                        state % m
+                    };
+                    let mut row: Vec<_> = (0..cols).map(|_| next()).collect();
+                    if k % 7 == 0 {
+                        row.fill(0);
+                    }
+                    let rhs = if k % 11 == 0 { 0 } else { next() };
+                    assert_eq!(a.add_row(row.clone(), rhs), b.add_row(row, rhs));
+                    equal_state(&a, &b);
+                }
+            }
+        }
+        // Public callers with noncanonical input take the preserved generic path.
+        let mut a = IncrementalGauss::new(2, 17);
+        let mut b = IncrementalGauss::new_u32_reciprocal(2, 17);
+        assert_eq!(a.add_row(vec![18, 2], 19), b.add_row(vec![18, 2], 19));
+        equal_state(&a, &b);
+        // Explicit dependent/inconsistent rows remain distinguishable.
+        assert_eq!(a.add_row(vec![1, 2], 2), RowStatus::Dependent);
+        assert_eq!(b.add_row(vec![1, 2], 2), RowStatus::Dependent);
+        assert_eq!(a.add_row(vec![1, 2], 3), RowStatus::Inconsistent);
+        assert_eq!(b.add_row(vec![1, 2], 3), RowStatus::Inconsistent);
+        equal_state(&a, &b);
     }
 }

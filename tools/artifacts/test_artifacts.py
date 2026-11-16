@@ -4,6 +4,8 @@
 """
 
 import base64
+from unittest import mock
+import shlex
 import hashlib
 import json
 import os
@@ -255,6 +257,182 @@ class RoundTrip(unittest.TestCase):
         self.assertEqual(result.returncode, 1, result.stderr)
         self.assertIn("outside/new.jsonl", result.stdout)
         self.assertIn("data file(s) belong in the store", result.stderr)
+
+    def install_content_filter(self):
+        # Public reversible fixture exercises Git's filter contract, not AES.
+        script = Path(self.tmp.name) / "content_filter.py"
+        script.write_text("import sys\nraw=sys.stdin.buffer.read()\n"
+                          "if sys.argv[1]=='clean': out=b'FILTERED:'+raw.hex().encode()\n"
+                          "else: out=bytes.fromhex(raw[9:].decode()) if raw.startswith(b'FILTERED:') else raw\n"
+                          "sys.stdout.buffer.write(out)\n")
+        command = shlex.quote(sys.executable) + " " + shlex.quote(str(script))
+        self.git("config", "filter.fixture.clean", command + " clean")
+        self.git("config", "filter.fixture.smudge", command + " smudge")
+        self.git("config", "filter.fixture.required", "true")
+        (self.repo / '.gitattributes').write_text('research/** filter=fixture\n')
+        self.git('add', '.gitattributes')
+        self.git('add', '--renormalize', 'research')
+        self.git('commit', '-qm', 'public filter fixture')
+
+    def test_sparse_offload_uses_filtered_plaintext_size_and_preserves_ignore(self):
+        (self.repo / 'research/r1/runs/.gitignore').write_text('/keep-me/\n')
+        self.git('add', '-A')
+        self.git('commit', '-qm', 'ignore fixture')
+        self.install_content_filter()
+        self.git('sparse-checkout', 'set', '--no-cone', '/*', '!/research/')
+        self.art('push', 'research/r1/runs/a.jsonl')
+        digest = hashlib.sha256(self.big).hexdigest()
+        self.assertEqual((self.remote/'sha256'/digest[:2]/digest).read_bytes(), self.big)
+        manifest=json.loads((self.repo/'research/r1/runs/.artifacts.json').read_text())
+        self.assertEqual(manifest['files']['a.jsonl'], {'sha256':digest,'bytes':len(self.big)})
+        self.assertTrue((self.repo/'research/r1/runs/.gitignore').read_text().startswith('/keep-me/\n'))
+
+    def test_required_filter_failure_cannot_upload_raw_staged_bytes(self):
+        self.install_content_filter()
+        self.git('sparse-checkout', 'set', '--no-cone', '/*', '!/research/')
+        self.git('config', 'filter.fixture.smudge', 'false')
+        result=self.art('push', 'research/r1/runs/a.jsonl', check=False)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertFalse((self.repo/'research/r1/runs/.artifacts.json').exists())
+        self.assertFalse(list(self.remote.rglob('*')) if self.remote.exists() else [])
+        self.assertFalse(list((self.cache/'tmp').glob('*')))
+
+    def test_staged_metadata_filter_failure_is_not_absence(self):
+        (self.repo / 'research/r1/runs/.gitignore').write_text('/keep-me/\n')
+        self.git('add', '-A')
+        self.git('commit', '-qm', 'ignore fixture')
+        self.install_content_filter()
+        self.git('sparse-checkout', 'set', '--no-cone', '/*', '!/research/')
+        self.git('config', 'filter.fixture.smudge', 'false')
+        with mock.patch.object(artifacts, 'repo_root', return_value=self.repo):
+            with self.assertRaises(subprocess.CalledProcessError):
+                artifacts.read_text_or_index(self.repo/'research/r1/runs/.gitignore')
+
+    def test_pull_preserves_case_and_unicode_aliases_of_tracked_paths(self):
+        self.art("push", "research/r1/runs/a.jsonl")
+        directory = self.repo / "research/r1/runs"
+        successor = b"current tracked successor\n"
+        for source_name, alias in (("a.jsonl", "A.JSONL"), ("caf\u00e9.jsonl", "cafe\u0301.JSONL")):
+            with self.subTest(alias=alias):
+                source = directory / source_name
+                source.write_bytes(successor)
+                self.git("add", "-f", f"research/r1/runs/{source_name}")
+                manifest = {"schema": artifacts.MANIFEST_SCHEMA, "files": {
+                    alias: {"sha256": hashlib.sha256(self.big).hexdigest(), "bytes": len(self.big)}}}
+                (directory / ".artifacts.json").write_text(json.dumps(manifest))
+                self.git("add", "research/r1/runs/.artifacts.json")
+                self.art("pull", "research")
+                self.assertEqual(source.read_bytes(), successor)
+                # Source ownership remains authoritative while sparse/omitted.
+                source.unlink()
+                self.art("pull", "research")
+                self.assertFalse(source.exists())
+                self.assertFalse((directory / alias).exists())
+
+    def test_manifest_cannot_replace_linked_worktree_control_files(self):
+        self.art("push", "research/r1/runs/a.jsonl")
+        self.git("commit", "-qm", "store fixture")
+        linked = Path(self.tmp.name) / "linked"
+        self.git("worktree", "add", "-b", "linked-control", str(linked), "HEAD")
+        original = (linked / ".git").read_bytes()
+        for name in (".git", ".GIT", ".git ", ".git.", ".git::$DATA",
+                     ".artifacts.json", ".gitignore", ".gitattributes"):
+            with self.subTest(name=name):
+                manifest = {"schema": artifacts.MANIFEST_SCHEMA, "files": {
+                    name: {"sha256": hashlib.sha256(self.big).hexdigest(), "bytes": len(self.big)}}}
+                (linked / ".artifacts.json").write_text(json.dumps(manifest))
+                sh(linked, "git", "add", ".artifacts.json", env=self.env)
+                result = self.art("pull", cwd=linked, check=False)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn("invalid manifest entry", result.stderr)
+                self.assertEqual((linked / ".git").read_bytes(), original)
+
+    def test_pull_preserves_tracked_successor_and_unstaged_edits(self):
+        self.art("push", "research")
+        path = self.repo / "research/r1/runs/a.jsonl"
+        successor = b"current authoritative tracked successor\n"
+        path.write_bytes(successor)
+        self.git("add", "-f", "research/r1/runs/a.jsonl")
+        # Siblings still hydrate, while the staged successor stays authoritative.
+        sibling = self.repo / "research/r1/blob.unknown"
+        sibling.unlink()
+        self.art("pull", "research")
+        self.assertEqual(path.read_bytes(), successor)
+        self.assertTrue(sibling.is_file())
+        edited = successor + b"local edit\n"
+        path.write_bytes(edited)
+        result = self.art("pull", "research/r1/runs/a.jsonl")
+        self.assertEqual(path.read_bytes(), edited)
+        self.assertIn("preserved 1 tracked files", result.stderr)
+        # An omitted tracked path is also authoritative, not a hydration target.
+        path.unlink()
+        self.art("pull", "research/r1/runs/a.jsonl")
+        self.assertFalse(path.exists())
+
+    def test_manifest_paths_cannot_escape_their_directory(self):
+        self.art("push", "research/r1/runs/a.jsonl")
+        target = Path(self.tmp.name) / "escaped.jsonl"
+        for name in ("../escaped.jsonl", "nested/file.jsonl", "..\\escaped.jsonl", "", ".", ".."):
+            with self.subTest(name=name):
+                manifest = {"schema": artifacts.MANIFEST_SCHEMA, "files": {
+                    name: {"sha256": hashlib.sha256(self.big).hexdigest(), "bytes": len(self.big)}}}
+                (self.repo / ".artifacts.json").write_text(json.dumps(manifest))
+                self.git("add", ".artifacts.json")
+                result = self.art("pull", check=False)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn("invalid manifest entry", result.stderr)
+                self.assertFalse(target.exists())
+
+    def test_manifest_metadata_is_validated_before_any_pull(self):
+        for entry in ({"sha256": "0" * 64, "bytes": True},
+                      {"sha256": "0" * 64, "bytes": -1},
+                      {"sha256": "BAD", "bytes": 1}, None):
+            with self.subTest(entry=entry):
+                (self.repo / ".artifacts.json").write_text(json.dumps(
+                    {"schema": artifacts.MANIFEST_SCHEMA, "files": {"data.jsonl": entry}}))
+                self.git("add", ".artifacts.json")
+                result = self.art("pull", check=False)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn("invalid manifest entry", result.stderr)
+
+    def test_manifest_directory_symlink_cannot_redirect_hydration(self):
+        self.art("push", "research/r1/runs/a.jsonl")
+        directory = self.repo / "research/r1/runs"
+        outside = Path(self.tmp.name) / "outside"
+        directory.rename(outside)
+        directory.symlink_to(outside, target_is_directory=True)
+        target = outside / "a.jsonl"
+        target.unlink()
+        result = self.art("pull", check=False)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("outside the repository", result.stderr)
+        self.assertFalse(target.exists())
+
+    def test_push_refuses_unmerged_index_without_changing_stages(self):
+        path = "research/r1/runs/a.jsonl"
+        oids = []
+        for payload in (self.big, self.big + b"ours\n", self.big + b"theirs\n"):
+            result = subprocess.run(["git", "hash-object", "-w", "--stdin"], cwd=self.repo,
+                                    input=payload, capture_output=True, check=True, env=self.env)
+            oids.append(result.stdout.decode().strip())
+        self.assertEqual(len(set(oids)), 3)
+        self.git("update-index", "--force-remove", path)
+        rows = "".join(f"100644 {oid} {stage}\t{path}\n" for stage, oid in enumerate(oids, 1))
+        subprocess.run(["git", "update-index", "--index-info"], cwd=self.repo,
+                       input=rows, text=True, check=True, env=self.env)
+        original_index = self.git("ls-files", "--stage")
+        for arguments in (("push", path), ("push", "research"), ("push", "--dry-run", path)):
+            with self.subTest(arguments=arguments):
+                result = self.art(*arguments, check=False)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn("unresolved Git index conflicts", result.stderr)
+                self.assertEqual(self.git("ls-files", "--stage"), original_index)
+                self.assertEqual((self.repo / path).read_bytes(), self.big)
+                self.assertFalse(self.remote.exists())
+                self.assertFalse((self.repo / "research/r1/runs/.artifacts.json").exists())
+
+
+
 
 
 class Policy(unittest.TestCase):

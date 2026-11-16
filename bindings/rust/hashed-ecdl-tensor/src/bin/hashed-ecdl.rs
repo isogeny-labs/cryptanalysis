@@ -5,7 +5,7 @@ use hashed_ecdl_tensor::contraction::Counter;
 use hashed_ecdl_tensor::curve::{Curve, Point};
 use hashed_ecdl_tensor::primality::PrimeCertificate;
 use hashed_ecdl_tensor::reduction::{self, Certificate, Config};
-use hashed_ecdl_tensor::{finite, width};
+use hashed_ecdl_tensor::{finite, prepared, width};
 use hashed_ecdl_tensor::{BigUint, Error, Limits, Meter};
 use serde_json::{json, Value};
 use std::io::Read;
@@ -156,9 +156,16 @@ fn solve_command(
     rng: &mut impl RandomSource,
     counter: &mut Counter,
     statistics: &mut finite::Statistics,
+    prepared_statistics: &mut prepared::Statistics,
     meter: &mut Meter,
 ) -> Result<Certificate, Error> {
     match command {
+        "solve-hashed-joint" => {
+            prepared::solve_joint(curve, target, config, rng, true, prepared_statistics, meter)
+        }
+        "solve-hashed" => {
+            prepared::solve(curve, target, config, rng, true, prepared_statistics, meter)
+        }
         "solve-selectors" => reduction::solve_with_oracle(
             curve,
             target,
@@ -208,15 +215,16 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                 "hash_prime":config.hash_prime.as_ref().map(ToString::to_string),
                 "challenge_solved":false}));
         }
-        Some("solve" | "solve-selectors" | "solve-width") if args.len() == 4 => {
+        Some("solve" | "solve-selectors" | "solve-hashed" | "solve-hashed-joint" | "solve-width") if args.len() == 4 => {
             let problem: Problem = serde_json::from_slice(&read(&args[2])?)?;
             let (curve, target, config, mut meter) = prepare(&problem)?;
             let mut counter = Counter::default();
             let mut finite_statistics = finite::Statistics::default();
+            let mut prepared_statistics = prepared::Statistics::default();
             let certificate = if let Some(seed) = problem.fixture_seed {
-                solve_command(&args[1], &curve, &target, &config, &mut Seeded(seed), &mut counter, &mut finite_statistics, &mut meter)?
+                solve_command(&args[1], &curve, &target, &config, &mut Seeded(seed), &mut counter, &mut finite_statistics, &mut prepared_statistics, &mut meter)?
             } else {
-                solve_command(&args[1], &curve, &target, &config, &mut OsRandom, &mut counter, &mut finite_statistics, &mut meter)?
+                solve_command(&args[1], &curve, &target, &config, &mut OsRandom, &mut counter, &mut finite_statistics, &mut prepared_statistics, &mut meter)?
             };
             let mut diagnostics = json!({
                 "backend": format!("{:?}", counter.statistics.last_backend),
@@ -233,6 +241,13 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                 diagnostics["selector_decodes"] = json!(finite_statistics.decodes);
                 diagnostics["selector_cache_hits"] = json!(finite_statistics.cache_hits);
                 diagnostics["derived_checks"] = json!(finite_statistics.derived_checks);
+            } else if args[1] == "solve-hashed" || args[1] == "solve-hashed-joint" {
+                diagnostics["backend"] = json!(if args[1] == "solve-hashed-joint" { "PreparedPairJoint" } else { "PreparedPair" });
+                diagnostics["prepared_pair_builds"] = json!(prepared_statistics.preparations);
+                diagnostics["prepared_points"] = json!(prepared_statistics.prepared_points);
+                diagnostics["prepared_queries"] = json!(prepared_statistics.queries);
+                diagnostics["full_point_lookups"] = json!(prepared_statistics.lookups);
+                diagnostics["arithmetic_replays"] = json!(prepared_statistics.replays);
             } else if args[1] == "solve-width" {
                 diagnostics["backend"] = json!("WidthWitness");
             }
@@ -253,7 +268,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
             reduction::verify(&curve, &target, &receipt.certificate, &mut meter)?;
             println!("certificate verified: scalar {}", receipt.certificate.scalar);
         }
-        _ => return Err("usage: hashed-ecdl validate PROBLEM.json | hashed-ecdl solve|solve-selectors|solve-width PROBLEM.json NEW_RECEIPT.json | hashed-ecdl verify RECEIPT.json".into()),
+        _ => return Err("usage: hashed-ecdl validate PROBLEM.json | hashed-ecdl solve|solve-selectors|solve-hashed|solve-hashed-joint|solve-width PROBLEM.json NEW_RECEIPT.json | hashed-ecdl verify RECEIPT.json".into()),
     }
     Ok(())
 }

@@ -1,0 +1,16 @@
+{
+  "schema": "xedni-crt-extended-quotient-v1",
+  "parent": "experiments/xedni-crt-quotient-independence-20261116",
+  "parent_protocol_sha256": "d15288d11a9dfd67337cf0042b83635b0bfafcaf777ceee8689c1138d18e8348",
+  "parent_result_sha256": "bf1cd03eaa6b61246e67904c0dec66799ddb20754b45895a3513e85a40fcc900",
+  "parent_seal_sha256": "472b0368853012abdf3647f1ef7460a177fd135646db9b1b89b1a2ece9c8ea29",
+  "population": "all 1801 parent rows without both certificates: 1798 torsion_only and 3 quotient_only, preserving all 9688 parent row identities and statuses",
+  "exploratory_basis": "The first torsion-only row in each of the 16 parent files received a quotient certificate at a prime between 101 and 331 in an exploratory scout; no scout result is used as a final measurement.",
+  "extended_prime_law": "all primes p with 101 <= p < 500 in increasing order",
+  "torsion_only_test": "For every torsion_only row, retain the inherited odd-order certificate and test the first good integral prime in the extended law for which P, Q, P+Q all lie outside 2E(F_p); preserve every attempted-prime status and no-hit rows.",
+  "quotient_only_test": "For every quotient_only row, retain its inherited quotient certificate and enumerate rational roots of the exact 2-division polynomial of its general Weierstrass curve; no roots certifies absence of rational 2-torsion, while roots leave the row uncertified by this theorem.",
+  "promotion_gate": "A row is certified independent only when it has both a quotient certificate and a no-rational-2-torsion certificate. Preserve all unclassified rows; never infer dependence from no hit.",
+  "run_cap_seconds": 900,
+  "measurement": "exact arithmetic coverage diagnostic on the local host; no wall-time performance comparison",
+  "formal_dependency": "experiments/xedni-auxiliary-mod2-independence-20261116/AuxiliaryMod2Independence.lean:independent_of_exponent_two_quotient; actual elliptic-curve instantiation remains partial"
+}

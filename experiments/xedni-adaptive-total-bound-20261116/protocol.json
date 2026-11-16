@@ -1,0 +1,22 @@
+{
+  "schema": "xedni-adaptive-total-bound-protocol-v1",
+  "execution_space": "all scalar-and-bijective-encoding pairs in a finite group-label program",
+  "theorem_scope": "first informative hits at stages 2 through m-1, with q=field cardinality and injective scalar map",
+  "stage_bound": "(q-k*k) times first-hit execution count at k <= k times live execution count at k",
+  "aggregate_bound": "(q-m*m) times sum of first-hit execution counts for 2<=k<m <= m*m times execution-space cardinality",
+  "controls": {
+    "z7_exhaustive_execution_result": {
+      "artifact": "experiments/xedni-bucket-fiber-partition-20261116/result.json",
+      "sha256": "c64477fdc232f3a17d4c7c0e9da76ee324546903dd515b058d800aac4421b365"
+    },
+    "z101_fixed_bucket_result": {
+      "artifact": "experiments/xedni-group-fiber-bound-20261116/result.json",
+      "sha256": "eee7549cf73c349dfc3c980253f191073b7fd727ac2d9cdbd3dad94c9a75946e"
+    }
+  },
+  "falsifiers": [
+    "an exhaustive Z/7 actual stage violates the stage inequality",
+    "the sum of any frozen Z/101 bucket subset violates the summed inequality",
+    "Lean admits a nonstandard axiom in the final stage or aggregate theorem"
+  ]
+}

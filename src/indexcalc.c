@@ -6,6 +6,9 @@
 #include "cryptanalysis/ca_pohlig.h"
 #include "linalg.h"
 #include "ca_internal.h"
+#include "ic_rational.h"
+#include "ic_trial32.h"
+#include <limits.h>
 
 #include <math.h>
 #include <pthread.h>
@@ -22,6 +25,7 @@
 
 #define IC_SMALL_Q (1ULL << 24)   /* prime factors of p-1 up to this: Pohlig-Hellman */
 #define IC_MAX_REL_COLS 96
+#define IC_STEP_POWERS  4096
 
 /* Exact division by an odd factor-base prime q without a divide
  * instruction: with inv = q^{-1} mod 2^64 and lim = floor((2^64 - 1) / q),
@@ -40,6 +44,9 @@ struct ca_ic_ctx {
     uint32_t nfb;
     uint32_t *fb;                 /* factor base primes */
     ic_fbdiv *fb_div;             /* their exact-division constants */
+    uint64_t *step_power;         /* reusable zeta^s in Montgomery form */
+    uint32_t *fb_inv32, *fb_lim32; /* optional bounded-integer scan */
+    ca_ic_scan32_fn scan32;
     uint64_t *fb_log;             /* logs mod p-1 */
     uint8_t *fb_known;
     ca_ic_params params;
@@ -81,6 +88,8 @@ static unsigned bitlen(uint64_t v) { unsigned b = 0; while (v) { v >>= 1; b++; }
 
 /* ---- relation storage --------------------------------------------------- */
 
+/* The record a smoothness test factors into (trial_factor's output): fixed
+ * slots, built on the stack and copied into a rel_list, never stored as is. */
 typedef struct relation {
     uint32_t n;
     uint32_t col[IC_MAX_REL_COLS];
@@ -88,43 +97,245 @@ typedef struct relation {
     uint64_t rhs;                 /* known constant (mod p-1), moved to the right-hand side */
 } relation;
 
+/* Relations held compactly, CSR style: relation i owns the entries
+ * [off[i], off[i+1]) of col/val and the right-hand side rhs[i].  A relation
+ * costs 12 bytes plus 8 a nonzero instead of the 784 of a fixed record (at
+ * 48 bits a relation has about 7 nonzeros: 68 bytes).  The order of relations and
+ * of the entries within one is the order they were appended, so every
+ * consumer sees the same rows in the same order as with fixed records. */
 typedef struct rel_list {
-    relation *r;
-    uint32_t n, cap;
+    uint32_t n, cap; /* relations held / room for */
+    uint32_t ecap;   /* room for entries; off[n] are held */
+    uint32_t *off;   /* cap + 1 */
+    uint64_t *rhs;   /* cap */
+    uint32_t *col;   /* ecap */
+    int32_t *val;    /* ecap */
 } rel_list;
+
+static uint32_t rel_entries(const rel_list *l) { return l->off ? l->off[l->n] : 0; }
+static uint32_t rel_len(const rel_list *l, uint32_t i) { return l->off[i + 1] - l->off[i]; }
+static const uint32_t *rel_cols(const rel_list *l, uint32_t i) { return l->col + l->off[i]; }
+static const int32_t *rel_vals(const rel_list *l, uint32_t i) { return l->val + l->off[i]; }
+
+static void rel_free(rel_list *l)
+{
+    free(l->off);
+    free(l->rhs);
+    free(l->col);
+    free(l->val);
+    memset(l, 0, sizeof(*l));
+}
+
+/* Empty the list and keep its buffers (a worker's per-unit list). */
+static void rel_clear(rel_list *l) { l->n = 0; }
+
+/* Bounds on the list, checked before every allocation: a resumed journal or
+ * snapshot supplies these counts, so they are file data, not trusted sizes. */
+#define REL_MAX_ROWS    (UINT32_C(1) << 28)
+#define REL_MAX_ENTRIES (UINT32_C(1) << 31)
+
+/* Room for cap relations (the off/rhs arrays).  realloc: glibc moves a large
+ * block with mremap, so growing the list never holds two copies of it. */
+
+static int rel_grow_rows(rel_list *l, uint32_t cap)
+{
+    if (cap <= l->cap) return 0;
+    if (cap > REL_MAX_ROWS) return -1;
+    /* Bounded above (REL_MAX_*); the analyzer does not carry that bound through the multiply. */
+    // NOLINTNEXTLINE(clang-analyzer-optin.taint.TaintedAlloc)
+    uint32_t *no = realloc(l->off, ((size_t)cap + 1) * sizeof(uint32_t));
+    if (!no) return -1;
+    if (!l->off) no[0] = 0;
+    l->off = no;
+    /* Bounded above (REL_MAX_*); the analyzer does not carry that bound through the multiply. */
+    // NOLINTNEXTLINE(clang-analyzer-optin.taint.TaintedAlloc)
+    uint64_t *nr = realloc(l->rhs, (size_t)cap * sizeof(uint64_t));
+    if (!nr) return -1;
+    l->rhs = nr;
+    l->cap = cap;
+    return 0;
+}
+
+static int rel_grow_entries(rel_list *l, uint32_t ecap)
+{
+    if (ecap <= l->ecap) return 0;
+    if (ecap > REL_MAX_ENTRIES) return -1;
+    /* Bounded above (REL_MAX_*); the analyzer does not carry that bound through the multiply. */
+    // NOLINTNEXTLINE(clang-analyzer-optin.taint.TaintedAlloc)
+    uint32_t *nc = realloc(l->col, (size_t)ecap * sizeof(uint32_t));
+    if (!nc) return -1;
+    l->col = nc;
+    /* Bounded above (REL_MAX_*); the analyzer does not carry that bound through the multiply. */
+    // NOLINTNEXTLINE(clang-analyzer-optin.taint.TaintedAlloc)
+    int32_t *nv = realloc(l->val, (size_t)ecap * sizeof(int32_t));
+    if (!nv) return -1;
+    l->val = nv;
+    l->ecap = ecap;
+    return 0;
+}
+
+/* Append one relation: cnt entries (col, val) and its right-hand side. */
+static int rel_append(rel_list *l, const uint32_t *col, const int32_t *val, uint32_t cnt,
+                      uint64_t rhs)
+{
+    if (l->n == l->cap) {
+        /* 64 to start: a worker's local list holds one sieve unit's
+         * relations or one random-exponent batch (flushed at 64), and the
+         * precompute's own list is reserved for its target (rel_reserve) */
+        if (l->cap == UINT32_MAX - 1) return -1;
+        uint64_t nc = l->cap ? (uint64_t)l->cap * 2 : 64;
+        if (rel_grow_rows(l, nc < UINT32_MAX - 1 ? (uint32_t)nc : UINT32_MAX - 1) < 0) return -1;
+    }
+    uint32_t used = rel_entries(l);
+    if ((uint64_t)used + cnt > UINT32_MAX) return -1;
+    if (used + cnt > l->ecap) {
+        uint64_t ne = l->ecap ? (uint64_t)l->ecap + l->ecap / 2 : 1024;
+        if (ne < (uint64_t)used + cnt) ne = (uint64_t)used + cnt;
+        if (rel_grow_entries(l, ne < UINT32_MAX ? (uint32_t)ne : UINT32_MAX) < 0) return -1;
+    }
+    if (cnt) {
+        memcpy(l->col + used, col, (size_t)cnt * sizeof(uint32_t));
+        memcpy(l->val + used, val, (size_t)cnt * sizeof(int32_t));
+    }
+    l->rhs[l->n] = rhs;
+    l->off[l->n + 1] = used + cnt;
+    l->n++;
+    return 0;
+}
 
 static int rel_push(rel_list *l, const relation *r)
 {
-    if (l->n == l->cap) {
-        uint32_t nc = l->cap ? l->cap * 2 : 1024;
-        /* malloc/copy/free rather than realloc: the growth is amortised and
-         * rare, and the explicit handover keeps the old buffer's lifetime
-         * unambiguous; calloc so a partly filled buffer is never copied from
-         * uninitialised storage. */
-        relation *nr = calloc(nc, sizeof(relation));
-        if (!nr) return -1;
-        if (l->n) memcpy(nr, l->r, (size_t)l->n * sizeof(relation));
-        free(l->r);
-        l->r = nr;
-        l->cap = nc;
+    return rel_append(l, r->col, r->val, r->n, r->rhs);
+}
+
+/* Append relation i of src. */
+static int rel_push_from(rel_list *l, const rel_list *src, uint32_t i)
+{
+    return rel_append(l, rel_cols(src, i), rel_vals(src, i), rel_len(src, i), src->rhs[i]);
+}
+
+/* An empty list with room for cap relations and an average of
+ * IC_REL_RESERVE_ENTRIES entries each, so that a collector whose target is
+ * known up front fills one set of buffers (relations from 40 to 56 bits
+ * average 6.2 to 7.4 entries, at most 11).  rel_append still grows past
+ * either. */
+#define IC_REL_RESERVE_ENTRIES 8
+static int rel_reserve(rel_list *l, uint32_t cap)
+{
+    if (l->off || cap == 0) return 0;
+    if (cap > UINT32_MAX - 1) cap = UINT32_MAX - 1;
+    uint64_t ecap = (uint64_t)cap * IC_REL_RESERVE_ENTRIES;
+    if (rel_grow_rows(l, cap) < 0 ||
+        rel_grow_entries(l, ecap < UINT32_MAX ? (uint32_t)ecap : UINT32_MAX) < 0) {
+        rel_free(l);
+        return -1;
     }
-    l->r[l->n++] = *r;
     return 0;
+}
+
+/* ---- checkpoint relation formats ---------------------------------------- *
+ *
+ * Format v1 (journal magic "CAICJ1", random-exponent snapshot "CAICRX1";
+ * header relation_size = 784): each relation is the native in-memory struct
+ * below, padding included, 96 fixed col/val slots of which the first n are
+ * meaningful.  Read only: an old checkpoint still resumes, and is rewritten
+ * as v2 when it is loaded.
+ *
+ * Format v2 (journal magic "CAICJ2", snapshot "CAICRX2"; header
+ * relation_size = 0, meaning variable-length records): each relation is
+ *     uint32 n; uint64 rhs; uint32 col[n]; int32 val[n]
+ * packed (12 + 8 n bytes, no padding), native byte order like every other
+ * field of these files.  A v2 journal record header also carries the total
+ * number of entries of its relations, so its payload length is known before
+ * it is read.  The two versions are told apart by the magic and the
+ * relation_size field together; a file matching neither is rejected, never
+ * reinterpreted. */
+#define IC_REL_V1_COLS 96
+typedef struct ic_relation_v1 {
+    uint32_t n;
+    uint32_t col[IC_REL_V1_COLS];
+    int32_t val[IC_REL_V1_COLS];
+    uint64_t rhs;
+} ic_relation_v1;
+_Static_assert(sizeof(ic_relation_v1) == 784, "format v1 relation records are 784 bytes");
+#define IC_REL_V1_SIZE  ((uint32_t)sizeof(ic_relation_v1))
+#define IC_REL_V2_SIZE  0u  /* the relation_size of a v2 header: variable length */
+#define IC_REL_V2_FIXED 12u /* n and rhs */
+
+/* Encode relation i of l as a v2 record into buf (room for
+ * IC_REL_V2_FIXED + 8 * IC_MAX_REL_COLS bytes); returns its length. */
+static size_t rel_encode_v2(const rel_list *l, uint32_t i, unsigned char *buf)
+{
+    uint32_t n = rel_len(l, i);
+    memcpy(buf, &n, 4);
+    memcpy(buf + 4, &l->rhs[i], 8);
+    memcpy(buf + IC_REL_V2_FIXED, rel_cols(l, i), (size_t)n * 4);
+    memcpy(buf + IC_REL_V2_FIXED + (size_t)n * 4, rel_vals(l, i), (size_t)n * 4);
+    return IC_REL_V2_FIXED + (size_t)n * 8;
+}
+
+/* Decode count v2 records from buf[0..len) into l, checking each against
+ * the run (columns below ncols, rhs below p - 1, nonnegative values when
+ * nonneg is set).  The records must fill buf exactly.  Returns 0 on success,
+ * -1 if the bytes are invalid, -2 if out of memory. */
+static int rel_decode_v2(rel_list *l, const unsigned char *buf, size_t len, uint32_t count,
+                         uint32_t ncols, uint64_t p, int nonneg)
+{
+    uint32_t col[IC_MAX_REL_COLS];
+    int32_t val[IC_MAX_REL_COLS];
+    size_t at = 0;
+    for (uint32_t i = 0; i < count; i++) {
+        uint32_t n;
+        uint64_t rhs;
+        if (len - at < IC_REL_V2_FIXED) return -1;
+        memcpy(&n, buf + at, 4);
+        memcpy(&rhs, buf + at + 4, 8);
+        at += IC_REL_V2_FIXED;
+        if (n > IC_MAX_REL_COLS || rhs >= p - 1 || (len - at) / 8 < n) return -1;
+        memcpy(col, buf + at, (size_t)n * 4);
+        memcpy(val, buf + at + (size_t)n * 4, (size_t)n * 4);
+        at += (size_t)n * 8;
+        for (uint32_t j = 0; j < n; j++)
+            if (col[j] >= ncols || (nonneg && val[j] < 0)) return -1;
+        if (rel_append(l, col, val, n, rhs) < 0) return -2;
+    }
+    return at == len ? 0 : -1;
+}
+
+/* Check one v1 record against the run and append it. */
+static int rel_push_v1(rel_list *l, const ic_relation_v1 *r, uint32_t ncols, uint64_t p, int nonneg)
+{
+    if (r->n > IC_MAX_REL_COLS || r->rhs >= p - 1) return -1;
+    for (uint32_t j = 0; j < r->n; j++)
+        if (r->col[j] >= ncols || (nonneg && r->val[j] < 0)) return -1;
+    return rel_append(l, r->col, r->val, r->n, r->rhs) < 0 ? -2 : 0;
 }
 
 /* A journal record is committed only after fflush and fsync.  The native
  * layout is intentionally versioned and checked: a different build/ABI must
  * reject the file rather than reinterpret relations. */
 typedef struct ic_journal_header {
-    char magic[8];
+    char magic[8]; /* "CAICJ2" (v2, written) or "CAICJ1" (v1, read only) */
     uint64_t p, g, zeta;
-    uint32_t B, C, nfb, ncols, target, relation_size;
+    uint32_t B, C, nfb, ncols, target;
+    uint32_t relation_size; /* v1: IC_REL_V1_SIZE (784); v2: IC_REL_V2_SIZE (0) */
 } ic_journal_header;
 
+#define IC_JOURNAL_MARKER_V1 UINT32_C(0x43493152) /* "R1IC" little-endian */
+#define IC_JOURNAL_MARKER_V2 UINT32_C(0x43493252) /* "R2IC" little-endian */
+
+/* v1 record header, followed by count ic_relation_v1 records. */
 typedef struct ic_journal_record {
     uint32_t marker, index, count;
     uint64_t candidates, checksum;
 } ic_journal_record;
+
+/* v2 record header, followed by count v2 relations holding entries
+ * nonzeros in all: count * 12 + entries * 8 bytes. */
+typedef struct ic_journal_record_v2 {
+    uint32_t marker, index, count, entries;
+    uint64_t candidates, checksum;
+} ic_journal_record_v2;
 
 static uint64_t ic_hash(const void *data, size_t n, uint64_t h)
 {
@@ -133,13 +344,24 @@ static uint64_t ic_hash(const void *data, size_t n, uint64_t h)
     return h;
 }
 
-static uint64_t ic_record_hash(const ic_journal_record *r, const relation *rels)
+static uint64_t ic_record_hash(const ic_journal_record *r, const ic_relation_v1 *rels)
 {
     uint64_t h = UINT64_C(14695981039346656037);
     h = ic_hash(&r->index, sizeof(r->index), h);
     h = ic_hash(&r->count, sizeof(r->count), h);
     h = ic_hash(&r->candidates, sizeof(r->candidates), h);
     return ic_hash(rels, (size_t)r->count * sizeof(*rels), h);
+}
+
+static uint64_t ic_record_hash_v2(const ic_journal_record_v2 *r, const unsigned char *payload,
+                                  size_t len)
+{
+    uint64_t h = UINT64_C(14695981039346656037);
+    h = ic_hash(&r->index, sizeof(r->index), h);
+    h = ic_hash(&r->count, sizeof(r->count), h);
+    h = ic_hash(&r->entries, sizeof(r->entries), h);
+    h = ic_hash(&r->candidates, sizeof(r->candidates), h);
+    return ic_hash(payload, len, h);
 }
 
 static int ic_sync(FILE *f)
@@ -167,6 +389,79 @@ static int ic_sync_parent(const char *path)
     return ok;
 }
 
+/* Write relations [first, first + count) of rels as one v2 journal record
+ * (no sync).  The payload is encoded into one buffer so that it is hashed
+ * and written as the same bytes. */
+static int ic_journal_write_v2(FILE *f, uint32_t index, const rel_list *rels, uint32_t first,
+                               uint32_t count, uint64_t candidates)
+{
+    ic_journal_record_v2 r = {0};
+    r.marker = IC_JOURNAL_MARKER_V2;
+    r.index = index;
+    r.count = count;
+    r.entries = count ? rels->off[first + count] - rels->off[first] : 0;
+    r.candidates = candidates;
+    size_t len = (size_t)count * IC_REL_V2_FIXED + (size_t)r.entries * 8;
+    /* calloc only to quiet a maybe-uninitialized false positive: every
+     * byte is written by rel_encode_v2 before it is hashed */
+    unsigned char *payload = calloc(len ? len : 1, 1);
+    if (!payload) return 0;
+    size_t at = 0;
+    for (uint32_t i = 0; i < count; i++) at += rel_encode_v2(rels, first + i, payload + at);
+    r.checksum = ic_record_hash_v2(&r, payload, len);
+    int ok = at == len && fwrite(&r, sizeof(r), 1, f) == 1 &&
+             (!len || fwrite(payload, 1, len, f) == len);
+    free(payload);
+    return ok;
+}
+
+static char *ic_precomp_path(const char *journal, const char *suffix);
+
+/* One journal record as replayed: what a v1 journal is rewritten from. */
+typedef struct ic_replayed {
+    uint32_t index, first, count;
+    uint64_t candidates;
+} ic_replayed;
+
+/* Rewrite a v1 journal that has just been replayed as a v2 journal holding
+ * the same sieve units, relations (in the same order) and candidate counts:
+ * written to a temporary file, synced, then renamed over the old one, so a
+ * crash leaves either the complete v1 or the complete v2 journal.  Returns
+ * the new journal positioned at its end. */
+static FILE *ic_journal_migrate(const char *path, const ic_journal_header *want,
+                                const rel_list *rels, const ic_replayed *recs, size_t nrecs)
+{
+    char *tmp = ic_precomp_path(path, ".v2.tmp.XXXXXX");
+    if (!tmp) return NULL;
+    int fd = mkstemp(tmp);
+    FILE *f = fd >= 0 ? fdopen(fd, "wb") : NULL;
+    if (!f) {
+        if (fd >= 0) close(fd);
+        free(tmp);
+        return NULL;
+    }
+    int ok = fwrite(want, sizeof(*want), 1, f) == 1;
+    for (size_t i = 0; ok && i < nrecs; i++)
+        ok = ic_journal_write_v2(f, recs[i].index, rels, recs[i].first, recs[i].count,
+                                 recs[i].candidates);
+    if (ok) ok = ic_sync(f);
+    if (fclose(f) != 0) ok = 0;
+    if (ok && rename(tmp, path) != 0) ok = 0;
+    if (ok && !ic_sync_parent(path)) ok = 0;
+    if (!ok) unlink(tmp);
+    free(tmp);
+    if (!ok) return NULL;
+    f = fopen(path, "rb+");
+    if (f && fseeko(f, 0, SEEK_END) != 0) {
+        fclose(f);
+        f = NULL;
+    }
+    return f;
+}
+
+/* Open or create the sieve journal and replay it into rels.  want is the v2
+ * header of this run; a v1 journal of the same run (same identity, magic
+ * "CAICJ1", relation_size 784) is replayed too and then rewritten as v2. */
 static FILE *ic_journal_open(const char *path, const ic_journal_header *want, rel_list *rels,
                              uint8_t **complete_out, size_t complete_count, uint64_t *candidates)
 {
@@ -185,85 +480,159 @@ static FILE *ic_journal_open(const char *path, const ic_journal_header *want, re
         return f;
     }
     if (!f) { ca_set_error("cannot open index-calculus checkpoint"); return NULL; }
-    ic_journal_header got;
-    if (fread(&got, sizeof(got), 1, f) != 1 || memcmp(&got, want, sizeof(got)) != 0) {
+    ic_journal_header got, want_v1 = *want;
+    memset(want_v1.magic, 0, sizeof(want_v1.magic));
+    memcpy(want_v1.magic, "CAICJ1", 6);
+    want_v1.relation_size = IC_REL_V1_SIZE;
+    int v1 = 0;
+    if (fread(&got, sizeof(got), 1, f) != 1) {
         ca_set_error("checkpoint identity or format does not match this run");
         fclose(f);
         return NULL;
     }
+    if (memcmp(&got, want, sizeof(got)) == 0) {
+        v1 = 0;
+    } else if (memcmp(&got, &want_v1, sizeof(got)) == 0) {
+        v1 = 1;
+    } else {
+        ca_set_error("checkpoint identity or format does not match this run");
+        fclose(f);
+        return NULL;
+    }
+    ic_replayed *recs = NULL;
+    size_t nrecs = 0, recs_cap = 0;
     for (;;) {
         off_t start = ftello(f);
-        ic_journal_record r;
-        size_t nr = fread(&r, 1, sizeof(r), f);
+        uint32_t index, count, entries = 0;
+        uint64_t rec_candidates;
+        ic_journal_record r1;
+        ic_journal_record_v2 r2;
+        size_t want_size = v1 ? sizeof(r1) : sizeof(r2);
+        size_t nr = fread(v1 ? (void *)&r1 : (void *)&r2, 1, want_size, f);
         if (ferror(f)) goto io_error;
         if (nr == 0 && feof(f)) break;
-        if (nr != sizeof(r)) {
+        if (nr != want_size) {
             if (ftruncate(fileno(f), start) != 0) goto io_error;
             break;
         }
-        if (r.marker != UINT32_C(0x43493152) || r.index >= complete_count ||
-            r.count > complete_count) {
+        if (v1) {
+            index = r1.index;
+            count = r1.count;
+            rec_candidates = r1.candidates;
+        } else {
+            index = r2.index;
+            count = r2.count;
+            entries = r2.entries;
+            rec_candidates = r2.candidates;
+        }
+        if ((v1 ? r1.marker != IC_JOURNAL_MARKER_V1 : r2.marker != IC_JOURNAL_MARKER_V2) ||
+            index >= complete_count || count > complete_count ||
+            (!v1 && (uint64_t)entries > (uint64_t)count * IC_MAX_REL_COLS)) {
             ca_set_error("checkpoint contains an out-of-range sieve unit");
-            fclose(f);
-            return NULL;
+            goto fail;
         }
-        if (complete[r.index]) {
+        if (complete[index]) {
             ca_set_error("checkpoint contains an invalid or duplicate sieve unit");
-            fclose(f);
-            return NULL;
+            goto fail;
         }
-        relation *batch = calloc(r.count ? r.count : 1, sizeof(*batch));
-        if (!batch) goto io_error;
-        nr = fread(batch, sizeof(*batch), r.count, f);
-        if (ferror(f)) { free(batch); goto io_error; }
-        if (nr != r.count) {
-            free(batch);
-            if (ftruncate(fileno(f), start) != 0) goto io_error;
-            break;
-        }
-        if (ic_record_hash(&r, batch) != r.checksum) {
-            free(batch);
-            ca_set_error("checkpoint relation checksum mismatch");
-            fclose(f);
-            return NULL;
-        }
-        for (uint32_t i = 0; i < r.count; i++) {
-            if (batch[i].n > IC_MAX_REL_COLS || batch[i].rhs >= want->p - 1) {
-                free(batch); ca_set_error("checkpoint relation is invalid"); fclose(f); return NULL;
+        uint32_t first = rels->n;
+        if (v1) {
+            ic_relation_v1 *batch = calloc(count ? count : 1, sizeof(*batch));
+            if (!batch) goto io_error;
+            nr = fread(batch, sizeof(*batch), count, f);
+            if (ferror(f)) {
+                free(batch);
+                goto io_error;
             }
-            for (uint32_t j = 0; j < batch[i].n; j++) {
-                if (batch[i].col[j] >= want->ncols) {
-                    free(batch); ca_set_error("checkpoint column is invalid"); fclose(f); return NULL;
+            if (nr != count) {
+                free(batch);
+                if (ftruncate(fileno(f), start) != 0) goto io_error;
+                break;
+            }
+            if (ic_record_hash(&r1, batch) != r1.checksum) {
+                free(batch);
+                ca_set_error("checkpoint relation checksum mismatch");
+                goto fail;
+            }
+            for (uint32_t i = 0; i < count; i++) {
+                int rc = rel_push_v1(rels, &batch[i], want->ncols, want->p, 0);
+                if (rc == -2) {
+                    free(batch);
+                    goto io_error;
+                }
+                if (rc < 0) {
+                    free(batch);
+                    ca_set_error("checkpoint relation is invalid");
+                    goto fail;
                 }
             }
-            if (rel_push(rels, &batch[i]) < 0) { free(batch); goto io_error; }
+            free(batch);
+        } else {
+            size_t len = (size_t)count * IC_REL_V2_FIXED + (size_t)entries * 8;
+            unsigned char *payload = malloc(len ? len : 1);
+            if (!payload) goto io_error;
+            nr = fread(payload, 1, len, f);
+            if (ferror(f)) {
+                free(payload);
+                goto io_error;
+            }
+            if (nr != len) {
+                free(payload);
+                if (ftruncate(fileno(f), start) != 0) goto io_error;
+                break;
+            }
+            if (ic_record_hash_v2(&r2, payload, len) != r2.checksum) {
+                free(payload);
+                ca_set_error("checkpoint relation checksum mismatch");
+                goto fail;
+            }
+            int rc = rel_decode_v2(rels, payload, len, count, want->ncols, want->p, 0);
+            free(payload);
+            if (rc == -2) goto io_error;
+            if (rc < 0) {
+                ca_set_error("checkpoint relation is invalid");
+                goto fail;
+            }
         }
-        free(batch);
-        complete[r.index] = 1;
-        *candidates += r.candidates;
+        if (v1) {
+            if (nrecs == recs_cap) {
+                size_t nc = recs_cap ? recs_cap * 2 : 64;
+                ic_replayed *nrp = realloc(recs, nc * sizeof(*recs));
+                if (!nrp) goto io_error;
+                recs = nrp;
+                recs_cap = nc;
+            }
+            recs[nrecs].index = index;
+            recs[nrecs].first = first;
+            recs[nrecs].count = count;
+            recs[nrecs].candidates = rec_candidates;
+            nrecs++;
+        }
+        complete[index] = 1;
+        *candidates += rec_candidates;
+    }
+    if (v1) {
+        fclose(f);
+        f = ic_journal_migrate(path, want, rels, recs, nrecs);
+        free(recs);
+        if (!f) ca_set_error("cannot rewrite the v1 index-calculus checkpoint as v2");
+        return f;
     }
     clearerr(f);
     if (fseeko(f, 0, SEEK_END) != 0) goto io_error;
     return f;
 io_error:
     ca_set_error("cannot read or repair index-calculus checkpoint");
+fail:
+    free(recs);
     fclose(f);
     return NULL;
 }
 
 static int ic_journal_append(FILE *f, uint32_t index, const rel_list *batch, uint64_t candidates)
 {
-    ic_journal_record r = {0};
-    r.marker = UINT32_C(0x43493152);
-    r.index = index;
-    r.count = batch->n;
-    r.candidates = candidates;
-    r.checksum = ic_record_hash(&r, batch->r);
-    return fwrite(&r, sizeof(r), 1, f) == 1 &&
-           (!batch->n || fwrite(batch->r, sizeof(*batch->r), batch->n, f) == batch->n) &&
-           ic_sync(f);
+    return ic_journal_write_v2(f, index, batch, 0, batch->n, candidates) && ic_sync(f);
 }
-
 typedef struct ic_precomp_header {
     char magic[8];
     uint64_t p, g, zeta;
@@ -464,6 +833,71 @@ static int trial_factor(uint64_t v, const uint32_t *fb, const ic_fbdiv *div, uin
     return v == 1;
 }
 
+/* Same output contract for rational trial integers bounded by UINT32_MAX. */
+static int trial_factor32(uint32_t v, const ca_ic_ctx *ctx, uint32_t col0, relation *rel,
+                          uint32_t *cnt)
+{
+    const uint32_t *fb = ctx->fb;
+    const uint32_t *inverse = ctx->fb_inv32, *limit = ctx->fb_lim32;
+    const uint32_t nfb = ctx->nfb;
+    uint32_t n = *cnt;
+    uint32_t i = 0;
+    if (v > 1 && nfb > 0 && fb[0] == 2 && (uint64_t)4 <= v) {
+        /* q = 2, a shift; the only even prime, so fb[0] if present */
+        int32_t e = __builtin_ctz(v);
+        v >>= e;
+        if (e) {
+            if (n >= IC_MAX_REL_COLS) return 0;
+            rel->col[n] = col0;
+            rel->val[n] = e;
+            n++;
+        }
+        i = 1;
+    }
+    uint32_t stop = v > 1 ? tf_square_bound(fb, i, nfb, v) : i;
+    while (v > 1) {
+        i = ctx->scan32(v, inverse, limit, i, stop);
+        if (i == stop) break;
+        const uint32_t inv = inverse[i], lim = limit[i];
+        int32_t e = 0;
+        while (v * inv <= lim) {
+            v *= inv;
+            e++;
+        }
+        if (n >= IC_MAX_REL_COLS) return 0;
+        rel->col[n] = col0 + i;
+        rel->val[n] = e;
+        n++;
+        i++;
+        stop = v > 1 ? tf_square_bound(fb, i, stop, v) : i;
+    }
+    if (v > 1 && i < nfb) {
+        /* fb[i]^2 > v: v is prime, in the base iff <= fb[nfb-1] */
+        if (v <= fb[nfb - 1]) {
+            uint32_t lo = i, hi = nfb;
+            while (lo < hi) {
+                uint32_t mid = (lo + hi) / 2;
+                if (fb[mid] < v)
+                    lo = mid + 1;
+                else
+                    hi = mid;
+            }
+            if (lo < nfb && fb[lo] == v) {
+                if (n >= IC_MAX_REL_COLS) return 0;
+                rel->col[n] = col0 + lo;
+                rel->val[n] = 1;
+                n++;
+                *cnt = n;
+                return 1;
+            }
+        }
+        *cnt = n;
+        return 0;
+    }
+    *cnt = n;
+    return v == 1;
+}
+
 /* ---- linear sieve ------------------------------------------------------- */
 
 typedef struct sieve_shared {
@@ -550,7 +984,7 @@ static void *sieve_thread(void *arg)
         if (idx > 2 * C) break;
         if (s->complete && s->complete[idx]) continue;
         uint64_t cand_count = 0;
-        local.n = 0;
+        rel_clear(&local);
         int oom = 0;
         int64_t c1 = idx - C;
         /* sieve c2 in [c1, C] */
@@ -613,7 +1047,11 @@ static void *sieve_thread(void *arg)
             atomic_store(&s->done, 1);
         } else {
             for (uint32_t i = 0; i < local.n; i++) {
-                if (rel_push(s->rels, &local.r[i]) < 0) { s->status = CA_ERR_NOMEM; atomic_store(&s->done, 1); break; }
+                if (rel_push_from(s->rels, &local, i) < 0) {
+                    s->status = CA_ERR_NOMEM;
+                    atomic_store(&s->done, 1);
+                    break;
+                }
             }
             if (s->complete) s->complete[idx] = 1;
             s->completed++;
@@ -638,7 +1076,7 @@ static void *sieve_thread(void *arg)
         }
         pthread_mutex_unlock(&s->lock);
     }
-    free(local.r);
+    rel_free(&local);
     free(arr); free(hmod); free(jmod);
     return NULL;
 }
@@ -646,13 +1084,19 @@ static void *sieve_thread(void *arg)
 /* ---- random exponent collector ----------------------------------------- */
 
 typedef struct ic_rexp_header {
-    char magic[8];
+    char magic[8]; /* "CAICRX2" (v2, written) or "CAICRX1" (v1, read only) */
     uint64_t p, g, zeta, seed, tests, generation, fb_hash;
     double elapsed_seconds;
-    uint32_t B, C, nfb, ncols, target, threads, relation_size, count;
-    uint64_t checksum;
+    uint32_t B, C, nfb, ncols, target, threads;
+    uint32_t relation_size; /* v1: IC_REL_V1_SIZE (784); v2: IC_REL_V2_SIZE (0) */
+    uint32_t count;         /* relations in the payload */
+    uint64_t checksum;      /* FNV-1a over the header up to here and the payload */
 } ic_rexp_header;
 
+/* Load a random-exponent snapshot into rels (replacing its contents).  want
+ * is this run's v2 header.  A v2 snapshot ("CAICRX2", relation_size 0) and
+ * a v1 snapshot of the same run ("CAICRX1", relation_size 784) are both
+ * accepted; the next save rewrites a v1 snapshot as v2. */
 static int rexp_snapshot_load(const char *path, const ic_rexp_header *want,
                               uint64_t requested_seed, rel_list *rels,
                               uint64_t *seed, uint64_t *tests, uint64_t *generation,
@@ -666,48 +1110,66 @@ static int rexp_snapshot_load(const char *path, const ic_rexp_header *want,
     }
     ic_rexp_header h;
     struct stat sb;
-    int ok = fread(&h, sizeof(h), 1, f) == 1 && memcmp(h.magic, "CAICRX1", 8) == 0 &&
-             h.p == want->p && h.g == want->g && h.zeta == want->zeta && h.B == want->B &&
-             h.C == want->C && h.nfb == want->nfb && h.ncols == want->ncols &&
-             h.target == want->target && h.threads == want->threads &&
-             h.relation_size == sizeof(relation) && h.fb_hash == want->fb_hash &&
-             (!requested_seed || h.seed == want->seed) && h.seed != 0 && h.count >= 1 &&
-             h.elapsed_seconds >= 0 && isfinite(h.elapsed_seconds) && fstat(fileno(f), &sb) == 0 &&
-             sb.st_size >= 0 &&
-             (uint64_t)sb.st_size == sizeof(h) + (uint64_t)h.count * sizeof(relation);
+    int ok = fread(&h, sizeof(h), 1, f) == 1 && fstat(fileno(f), &sb) == 0 && sb.st_size >= 0 &&
+             (uint64_t)sb.st_size >= sizeof(h);
+    int v1 = ok && memcmp(h.magic, "CAICRX1", 8) == 0 && h.relation_size == IC_REL_V1_SIZE;
+    int v2 = ok && memcmp(h.magic, "CAICRX2", 8) == 0 && h.relation_size == IC_REL_V2_SIZE;
+    uint64_t payload = ok ? (uint64_t)sb.st_size - sizeof(h) : 0;
+    ok = ok && (v1 || v2) && h.p == want->p && h.g == want->g && h.zeta == want->zeta &&
+         h.B == want->B && h.C == want->C && h.nfb == want->nfb && h.ncols == want->ncols &&
+         h.target == want->target && h.threads == want->threads && h.fb_hash == want->fb_hash &&
+         (!requested_seed || h.seed == want->seed) && h.seed != 0 && h.count >= 1 &&
+         h.elapsed_seconds >= 0 && isfinite(h.elapsed_seconds) &&
+         (v1 ? payload == (uint64_t)h.count * IC_REL_V1_SIZE
+             : payload >= (uint64_t)h.count * IC_REL_V2_FIXED &&
+                   payload <= (uint64_t)h.count * (IC_REL_V2_FIXED + 8 * IC_MAX_REL_COLS));
     if (!ok || (uint64_t)h.count > (uint64_t)want->target + 64 * (uint64_t)want->threads + 1) {
         fclose(f);
         ca_set_error("random-exponent checkpoint identity or header mismatch");
         return -1;
     }
     /* The checked file length, not a deserialized allocation size, owns the buffer. */
-    size_t saved_bytes = (size_t)((uint64_t)sb.st_size - sizeof(h));
-    if (saved_bytes / sizeof(relation) != h.count) {
+    size_t saved_bytes = (size_t)payload;
+    if ((uint64_t)saved_bytes != payload) {
         fclose(f);
         ca_set_error("random-exponent checkpoint payload is too large");
         return -1;
     }
-    relation *saved = malloc(saved_bytes);
+    unsigned char *saved = malloc(saved_bytes ? saved_bytes : 1);
     if (!saved) { fclose(f); return -2; }
-    ok = fread(saved, sizeof(*saved), h.count, f) == h.count && fgetc(f) == EOF;
+    ok = fread(saved, 1, saved_bytes, f) == saved_bytes && fgetc(f) == EOF;
     fclose(f);
     uint64_t hash = ic_hash(&h, offsetof(ic_rexp_header, checksum),
                             UINT64_C(14695981039346656037));
-    hash = ic_hash(saved, (size_t)h.count * sizeof(*saved), hash);
+    hash = ic_hash(saved, saved_bytes, hash);
     ok = ok && hash == h.checksum;
-    for (uint32_t i = 0; ok && i < h.count; i++) {
-        if (saved[i].n > IC_MAX_REL_COLS || saved[i].rhs >= h.p - 1) { ok = 0; break; }
-        for (uint32_t j = 0; j < saved[i].n; j++) {
-            if (saved[i].col[j] >= h.ncols || saved[i].val[j] < 0) { ok = 0; break; }
+    rel_list loaded = {0};
+    int rc = 0;
+    if (ok && v1) {
+        if (rel_grow_rows(&loaded, h.count) < 0) rc = -2;
+        for (uint32_t i = 0; rc == 0 && i < h.count; i++) {
+            ic_relation_v1 r;
+            memcpy(&r, saved + (size_t)i * IC_REL_V1_SIZE, sizeof(r));
+            rc = rel_push_v1(&loaded, &r, h.ncols, h.p, 1);
         }
+    } else if (ok) {
+        if (rel_grow_rows(&loaded, h.count) < 0)
+            rc = -2;
+        else
+            rc = rel_decode_v2(&loaded, saved, saved_bytes, h.count, h.ncols, h.p, 1);
     }
-    if (!ok) {
-        free(saved);
+    free(saved);
+    if (rc == -2) {
+        rel_free(&loaded);
+        return -2;
+    }
+    if (!ok || rc < 0) {
+        rel_free(&loaded);
         ca_set_error("random-exponent checkpoint checksum or relation mismatch");
         return -1;
     }
-    free(rels->r);
-    rels->r = saved; rels->n = h.count; rels->cap = h.count;
+    rel_free(rels);
+    *rels = loaded;
     *seed = h.seed; *tests = h.tests; *generation = h.generation + 1;
     *elapsed_seconds = h.elapsed_seconds;
     return 1;
@@ -715,6 +1177,7 @@ static int rexp_snapshot_load(const char *path, const ic_rexp_header *want,
 
 typedef struct rexp_shared {
     uint64_t p, zeta;
+    const uint64_t *step_power;
     const uint32_t *fb;
     const ic_fbdiv *fb_div;
     uint32_t nfb;
@@ -752,12 +1215,18 @@ static int rexp_snapshot_save(rexp_shared *s)
     h.generation = s->generation; h.count = s->rels->n;
     h.elapsed_seconds = s->elapsed_prior + ca_now() - s->started;
     h.checksum = 0;
+    /* two passes over the v2 encoding: the checksum leads the payload */
+    unsigned char rec[IC_REL_V2_FIXED + 8 * IC_MAX_REL_COLS];
     uint64_t hash = ic_hash(&h, offsetof(ic_rexp_header, checksum),
                             UINT64_C(14695981039346656037));
-    hash = ic_hash(s->rels->r, (size_t)h.count * sizeof(relation), hash);
+    for (uint32_t i = 0; i < h.count; i++)
+        hash = ic_hash(rec, rel_encode_v2(s->rels, i, rec), hash);
     h.checksum = hash;
-    int ok = fwrite(&h, sizeof(h), 1, f) == 1 &&
-             fwrite(s->rels->r, sizeof(relation), h.count, f) == h.count;
+    int ok = fwrite(&h, sizeof(h), 1, f) == 1;
+    for (uint32_t i = 0; ok && i < h.count; i++) {
+        size_t len = rel_encode_v2(s->rels, i, rec);
+        ok = fwrite(rec, 1, len, f) == len;
+    }
     pthread_mutex_unlock(&s->lock);
     if (ok) ok = ic_sync(f);
     if (fclose(f) != 0) ok = 0;
@@ -813,7 +1282,7 @@ static void *rexp_thread(void *arg)
     while (!atomic_load(&s->done)) {
         /* step e by a random small amount to keep exponentiation cheap */
         uint64_t step = 1 + ca_rng_below(&rng, 255);
-        cur = ca_mont_mul(&m, cur, ca_mont_pow(&m, zm, step));
+        cur = ca_mont_mul(&m, cur, s->step_power[step]);
         e = (e + step) % (s->p - 1);
         uint64_t v = ca_mont_from(&m, cur);
         tests++;
@@ -834,7 +1303,7 @@ static void *rexp_thread(void *arg)
             if (local.n >= 64) {
                 pthread_mutex_lock(&s->lock);
                 for (uint32_t i = 0; i < local.n; i++) {
-                    if (rel_push(s->rels, &local.r[i]) < 0) {
+                    if (rel_push_from(s->rels, &local, i) < 0) {
                         s->status = CA_ERR_NOMEM;
                         atomic_store(&s->done, 1);
                         break;
@@ -842,7 +1311,7 @@ static void *rexp_thread(void *arg)
                 }
                 if (s->rels->n >= s->target_rels) atomic_store(&s->done, 1);
                 pthread_mutex_unlock(&s->lock);
-                local.n = 0;
+                rel_clear(&local);
                 if (atomic_load(&s->done)) break;
             }
         }
@@ -867,7 +1336,7 @@ static void *rexp_thread(void *arg)
     pthread_mutex_lock(&s->lock);
     if (s->status == CA_OK) {
         for (uint32_t i = 0; i < local.n; i++) {
-            if (rel_push(s->rels, &local.r[i]) < 0) {
+            if (rel_push_from(s->rels, &local, i) < 0) {
                 s->status = CA_ERR_NOMEM;
                 atomic_store(&s->done, 1);
                 break;
@@ -877,7 +1346,7 @@ static void *rexp_thread(void *arg)
     if (s->rels->n >= s->target_rels) atomic_store(&s->done, 1);
     pthread_mutex_unlock(&s->lock);
     atomic_fetch_add(&s->tests, pending_tests);
-    free(local.r);
+    rel_free(&local);
     atomic_fetch_sub(&s->active, 1);
     return NULL;
 }
@@ -913,16 +1382,16 @@ static ca_status small_part_logs(const ca_ic_ctx *ctx, uint64_t m_small, uint64_
 static ca_status build_matrix(const rel_list *rels, uint32_t ncols, uint64_t pm1, ca_spmat *A,
                               uint64_t **b_out)
 {
-    ca_status rc = ca_spmat_init(A, ncols, rels->n, rels->n * 16);
+    /* the exact nonzero count: the matrix's arrays are sized once */
+    ca_status rc = ca_spmat_init(A, ncols, rels->n, rel_entries(rels));
     if (rc != CA_OK) return rc;
     /* calloc: zero is the harmless rhs for any entry that is never written. */
     uint64_t *b = calloc(rels->n ? rels->n : 1, sizeof(uint64_t));
     if (!b) { ca_spmat_free(A); return CA_ERR_NOMEM; }
     for (uint32_t i = 0; i < rels->n; i++) {
-        const relation *r = &rels->r[i];
-        rc = ca_spmat_add_row(A, r->col, r->val, r->n);
+        rc = ca_spmat_add_row(A, rel_cols(rels, i), rel_vals(rels, i), rel_len(rels, i));
         if (rc != CA_OK) { free(b); ca_spmat_free(A); return rc; }
-        b[i] = r->rhs % pm1;
+        b[i] = rels->rhs[i] % pm1;
     }
     /* The solvers read b[0..A->rows) and x/known[0..A->cols), and those
      * buffers are sized from rels->n and ncols here: check that the matrix
@@ -935,6 +1404,178 @@ static ca_status build_matrix(const rel_list *rels, uint32_t ncols, uint64_t pm1
     }
     *b_out = b;
     return CA_OK;
+}
+
+/* Exact elimination for linear-sieve relations. Included after relation's
+ * definition. Auxiliary columns occur as h_u+h_v or 2*h_u. */
+
+static ca_status build_graph_matrix(const rel_list *rels, uint32_t ncols, uint32_t nfb,
+                                    uint64_t modulus, ca_spmat *A, uint64_t **b_out)
+{
+    const uint32_t none = UINT32_MAX;
+    uint32_t nv = ncols - nfb;
+    /* Bound the dense expression workspace; larger instances use CSR as
+     * before. All persistent relation output remains sparse. */
+    if (!nv || !nfb || (size_t)nv > ((size_t)64 * 1024 * 1024) / sizeof(int32_t) / nfb ||
+        rels->n > UINT32_MAX / 2)
+        return CA_ERR_INVALID;
+    ca_status rc = CA_ERR_NOMEM;
+    uint32_t *u = malloc((size_t)rels->n * sizeof(*u));
+    uint32_t *v = malloc((size_t)rels->n * sizeof(*v));
+    uint32_t *head = malloc((size_t)nv * sizeof(*head));
+    uint32_t *next = malloc((size_t)rels->n * 2 * sizeof(*next));
+    uint32_t *queue = malloc((size_t)nv * sizeof(*queue));
+    uint32_t *component = malloc((size_t)nv * sizeof(*component));
+    int8_t *sign = calloc(nv, sizeof(*sign));
+    int32_t *expr = calloc((size_t)nv * nfb, sizeof(*expr));
+    uint64_t *constant = calloc(nv, sizeof(*constant));
+    int64_t *row = calloc(nfb, sizeof(*row));
+    uint32_t *cols = malloc(((size_t)nfb + 1) * sizeof(*cols));
+    int32_t *vals = malloc(((size_t)nfb + 1) * sizeof(*vals));
+    uint64_t *rhs = calloc(rels->n ? rels->n : 1, sizeof(*rhs));
+    int initialized = 0;
+    if (!u || !v || !head || !next || !queue || !component || !sign || !expr || !constant || !row ||
+        !cols || !vals || !rhs)
+        goto done;
+    for (uint32_t j = 0; j < nv; ++j) head[j] = none;
+    for (uint32_t i = 0; i < rels->n; ++i) {
+        const uint32_t len = rel_len(rels, i);
+        const uint32_t *rcol = rel_cols(rels, i);
+        const int32_t *rval = rel_vals(rels, i);
+        u[i] = v[i] = none;
+        unsigned count = 0;
+        for (uint32_t k = 0; k < len; ++k) {
+            if (rcol[k] < nfb) continue;
+            if (rcol[k] >= ncols || ++count > 2) {
+                rc = CA_ERR_INVALID;
+                goto done;
+            }
+            uint32_t node = rcol[k] - nfb;
+            if (rval[k] == 2 && count == 1)
+                u[i] = v[i] = node;
+            else if (rval[k] == 1) {
+                if (count == 1)
+                    u[i] = node;
+                else if (v[i] == none)
+                    v[i] = node;
+                else {
+                    rc = CA_ERR_INVALID;
+                    goto done;
+                }
+            } else {
+                rc = CA_ERR_INVALID;
+                goto done;
+            }
+        }
+        if (!count) continue;
+        if (u[i] == none || v[i] == none) {
+            rc = CA_ERR_INVALID;
+            goto done;
+        }
+        next[(size_t)2 * i] = head[u[i]];
+        head[u[i]] = 2 * i;
+        next[(size_t)2 * i + 1] = head[v[i]];
+        head[v[i]] = 2 * i + 1;
+    }
+    uint32_t nc = 0;
+    for (uint32_t root = 0; root < nv; ++root) {
+        if (sign[root] || head[root] == none) continue;
+        uint32_t first = 0, end = 0;
+        sign[root] = 1;
+        component[root] = nc++;
+        queue[end++] = root;
+        while (first < end) {
+            uint32_t parent = queue[first++];
+            for (uint32_t edge = head[parent]; edge != none; edge = next[edge]) {
+                uint32_t i = edge / 2;
+                uint32_t child = u[i] == parent ? v[i] : u[i];
+                if (sign[child]) continue;
+                sign[child] = (int8_t)-sign[parent];
+                component[child] = component[parent];
+                constant[child] = ca_submod(rels->rhs[i] % modulus, constant[parent], modulus);
+                int32_t *dst = expr + (size_t)child * nfb;
+                const int32_t *src = expr + (size_t)parent * nfb;
+                for (uint32_t j = 0; j < nfb; ++j) {
+                    if (src[j] == INT32_MIN) {
+                        rc = CA_ERR_INVALID;
+                        goto done;
+                    }
+                    dst[j] = -src[j];
+                }
+                const uint32_t len = rel_len(rels, i);
+                const uint32_t *rcol = rel_cols(rels, i);
+                const int32_t *rval = rel_vals(rels, i);
+                for (uint32_t k = 0; k < len; ++k) {
+                    uint32_t j = rcol[k];
+                    if (j >= nfb) continue;
+                    int64_t value = (int64_t)dst[j] - rval[k];
+                    if (value <= INT32_MIN || value > INT32_MAX) {
+                        rc = CA_ERR_INVALID;
+                        goto done;
+                    }
+                    dst[j] = (int32_t)value;
+                }
+                queue[end++] = child;
+            }
+        }
+    }
+    rc = ca_spmat_init(A, nfb + nc, rels->n, rels->n * 16);
+    if (rc != CA_OK) goto done;
+    initialized = 1;
+    for (uint32_t i = 0; i < rels->n; ++i) {
+        const uint32_t len = rel_len(rels, i);
+        const uint32_t *rcol = rel_cols(rels, i);
+        const int32_t *rval = rel_vals(rels, i);
+        memset(row, 0, (size_t)nfb * sizeof(*row));
+        uint64_t b = rels->rhs[i] % modulus;
+        int root_coef = 0;
+        if (u[i] != none) {
+            const int32_t *eu = expr + (size_t)u[i] * nfb;
+            const int32_t *ev = expr + (size_t)v[i] * nfb;
+            for (uint32_t j = 0; j < nfb; ++j) row[j] = (int64_t)eu[j] + ev[j];
+            root_coef = sign[u[i]] + sign[v[i]];
+            b = ca_submod(ca_submod(b, constant[u[i]], modulus), constant[v[i]], modulus);
+        }
+        for (uint32_t k = 0; k < len; ++k)
+            if (rcol[k] < nfb) row[rcol[k]] += rval[k];
+        uint32_t count = 0;
+        for (uint32_t j = 0; j < nfb; ++j) {
+            if (!row[j]) continue;
+            if (row[j] <= INT32_MIN || row[j] > INT32_MAX) {
+                rc = CA_ERR_INVALID;
+                goto done;
+            }
+            cols[count] = j;
+            vals[count++] = (int32_t)row[j];
+        }
+        if (root_coef) {
+            cols[count] = nfb + component[u[i]];
+            vals[count++] = root_coef;
+        }
+        if (!count && !b) continue; /* spanning-tree equations become 0=0 */
+        rhs[A->rows] = b;
+        rc = ca_spmat_add_row(A, cols, vals, count);
+        if (rc != CA_OK) goto done;
+    }
+    *b_out = rhs;
+    rhs = NULL;
+    rc = CA_OK;
+done:
+    if (rc != CA_OK && initialized) ca_spmat_free(A);
+    free(u);
+    free(v);
+    free(head);
+    free(next);
+    free(queue);
+    free(component);
+    free(sign);
+    free(expr);
+    free(constant);
+    free(row);
+    free(cols);
+    free(vals);
+    free(rhs);
+    return rc;
 }
 
 /* Solve the matrix modulo q^e for a large prime q: Lanczos mod q + Hensel. */
@@ -1066,11 +1707,46 @@ static ca_status ic_precompute_impl(uint64_t p, uint64_t g, const ca_ic_params *
     }
     ca_sieve_primes(B, ctx->fb, nfb);
     ctx->nfb = (uint32_t)nfb;
+    /* Target-independent walk powers also cover restored precomputation. */
+    ctx->step_power = malloc(IC_STEP_POWERS * sizeof(*ctx->step_power));
+    if (!ctx->step_power) {
+        free(fb_log2);
+        ca_ic_free(ctx);
+        return CA_ERR_NOMEM;
+    }
+    ca_mont step_mont;
+    ca_mont_init(&step_mont, p);
+    uint64_t step_zeta = ca_mont_to(&step_mont, ctx->zeta);
+    ctx->step_power[0] = step_mont.r1;
+    for (uint32_t i = 1; i < IC_STEP_POWERS; ++i)
+        ctx->step_power[i] = ca_mont_mul(&step_mont, ctx->step_power[i - 1], step_zeta);
     for (size_t i = 0; i < nfb; i++) {
         uint64_t q = ctx->fb[i], inv = q; /* Newton: q odd, correct to 3 bits */
         for (int k = 0; k < 5; k++) inv *= 2 - q * inv;
         ctx->fb_div[i].inv = inv;
         ctx->fb_div[i].lim = UINT64_MAX / q;
+    }
+    const char *trial32_mode = getenv("CA_IC_TRIAL32");
+    if (trial32_mode && *trial32_mode && strcmp(trial32_mode, "0")) {
+        if (strcmp(trial32_mode, "auto") && strcmp(trial32_mode, "portable")) {
+            ca_set_error("CA_IC_TRIAL32 must be 0, portable, or auto");
+            free(fb_log2);
+            ca_ic_free(ctx);
+            return CA_ERR_INVALID;
+        }
+        ctx->fb_inv32 = malloc(nfb * sizeof(*ctx->fb_inv32));
+        ctx->fb_lim32 = malloc(nfb * sizeof(*ctx->fb_lim32));
+        if (!ctx->fb_inv32 || !ctx->fb_lim32) {
+            free(fb_log2);
+            ca_ic_free(ctx);
+            return CA_ERR_NOMEM;
+        }
+        for (size_t i = 0; i < nfb; ++i) {
+            ctx->fb_inv32[i] = (uint32_t)ctx->fb_div[i].inv;
+            ctx->fb_lim32[i] = UINT32_MAX / ctx->fb[i];
+        }
+        ctx->scan32 =
+            !strcmp(trial32_mode, "portable") ? ca_ic_scan32_portable : ca_ic_scan32_select();
     }
     for (size_t i = 0; i < nfb; i++) fb_log2[i] = (uint8_t)(log2((double)ctx->fb[i]) + 0.5);
     st->factor_base_size = ctx->nfb;
@@ -1106,6 +1782,18 @@ static ca_status ic_precompute_impl(uint64_t p, uint64_t g, const ca_ic_params *
 
     /* ---- relation collection ---- */
     rel_list rels = {0};
+    /* the target, room for the overshoot of the last sieve units or of the
+     * random-exponent workers (at most 64 a thread there), and the zeta row;
+     * a larger overshoot grows the list as before */
+    {
+        const uint64_t want =
+            (uint64_t)target + target / 16 + 64 * (uint64_t)(threads < 16 ? threads : 16) + 256;
+        if (rel_reserve(&rels, want < UINT32_MAX ? (uint32_t)want : UINT32_MAX) < 0) {
+            free(fb_log2);
+            ca_ic_free(ctx);
+            return CA_ERR_NOMEM;
+        }
+    }
     double t0 = ca_now();
     double prior_sieve_seconds = 0;
     /* an explicit relation for zeta (usually itself a factor-base prime):
@@ -1119,6 +1807,7 @@ static ca_status ic_precompute_impl(uint64_t p, uint64_t g, const ca_ic_params *
             rel.rhs = 1;
             if (rel_push(&rels, &rel) < 0) {
                 free(fb_log2);
+                rel_free(&rels);
                 ca_ic_free(ctx);
                 return CA_ERR_NOMEM;
             }
@@ -1126,12 +1815,18 @@ static ca_status ic_precompute_impl(uint64_t p, uint64_t g, const ca_ic_params *
             ca_set_error("primitive root %llu is not smooth over the factor base",
                          (unsigned long long)ctx->zeta);
             free(fb_log2);
+            rel_free(&rels);
             ca_ic_free(ctx);
             return CA_ERR_INTERNAL;
         }
     }
     pthread_t *tids = calloc(threads, sizeof(pthread_t));
-    if (!tids) { free(fb_log2); ca_ic_free(ctx); free(rels.r); return CA_ERR_NOMEM; }
+    if (!tids) {
+        free(fb_log2);
+        ca_ic_free(ctx);
+        rel_free(&rels);
+        return CA_ERR_NOMEM;
+    }
     if (params->method == CA_IC_LINEAR_SIEVE) {
         sieve_shared s;
         memset(&s, 0, sizeof(s));
@@ -1162,18 +1857,21 @@ static ca_status ic_precompute_impl(uint64_t p, uint64_t g, const ca_ic_params *
         pthread_mutex_init(&s.lock, NULL);
         if (checkpoint_path) {
             ic_journal_header header = {0};
-            memcpy(header.magic, "CAICJ1", 6);
+            memcpy(header.magic, "CAICJ2", 6);
             header.p = p; header.g = g; header.zeta = ctx->zeta;
             header.B = B; header.C = C; header.nfb = ctx->nfb;
             header.ncols = ncols; header.target = target;
-            header.relation_size = sizeof(relation);
+            header.relation_size = IC_REL_V2_SIZE;
             uint64_t replay_candidates = 0;
             s.journal = ic_journal_open(checkpoint_path, &header, &rels, &s.complete,
                                         (size_t)2 * C + 1, &replay_candidates);
             if (!s.journal) {
                 ca_status failure = s.complete ? CA_ERR_INVALID : CA_ERR_NOMEM;
                 free(s.complete); pthread_mutex_destroy(&s.lock);
-                free(tids); free(fb_log2); free(rels.r); ca_ic_free(ctx);
+                free(tids);
+                free(fb_log2);
+                rel_free(&rels);
+                ca_ic_free(ctx);
                 return failure;
             }
             atomic_store(&s.candidates, replay_candidates);
@@ -1187,7 +1885,10 @@ static ca_status ic_precompute_impl(uint64_t p, uint64_t g, const ca_ic_params *
             ca_set_error("cannot persist index-calculus progress");
             if (s.journal) fclose(s.journal);
             free(s.complete); pthread_mutex_destroy(&s.lock);
-            free(tids); free(fb_log2); free(rels.r); ca_ic_free(ctx);
+            free(tids);
+            free(fb_log2);
+            rel_free(&rels);
+            ca_ic_free(ctx);
             return CA_ERR_INTERNAL;
         }
         vlog(params, "[ic] p=%llu (%u bits) linear sieve B=%u (%u primes) C=%u unknowns=%u target=%u threads=%u\n",
@@ -1212,13 +1913,18 @@ static ca_status ic_precompute_impl(uint64_t p, uint64_t g, const ca_ic_params *
         st->sieve_candidates = atomic_load(&s.candidates);
         if (s.status != CA_OK) {
             if (s.status == CA_ERR_INTERNAL) ca_set_error("cannot persist index-calculus checkpoint or progress");
-            free(tids); free(fb_log2); free(rels.r); ca_ic_free(ctx); return s.status;
+            free(tids);
+            free(fb_log2);
+            rel_free(&rels);
+            ca_ic_free(ctx);
+            return s.status;
         }
     } else {
         rexp_shared s;
         memset(&s, 0, sizeof(s));
         s.p = p;
         s.zeta = ctx->zeta;
+        s.step_power = ctx->step_power;
         s.fb = ctx->fb;
         s.fb_div = ctx->fb_div;
         s.nfb = ctx->nfb;
@@ -1238,12 +1944,13 @@ static ca_status ic_precompute_impl(uint64_t p, uint64_t g, const ca_ic_params *
         atomic_store(&s.tests, 0);
         pthread_mutex_init(&s.lock, NULL);
         if (checkpoint_path) {
-            memcpy(s.header.magic, "CAICRX1", 7);
+            memcpy(s.header.magic, "CAICRX2", 7);
             s.header.p = p; s.header.g = g; s.header.zeta = ctx->zeta;
             s.header.seed = seed;
             s.header.B = B; s.header.C = C; s.header.nfb = ctx->nfb;
             s.header.ncols = ncols; s.header.target = target;
-            s.header.threads = threads; s.header.relation_size = sizeof(relation);
+            s.header.threads = threads;
+            s.header.relation_size = IC_REL_V2_SIZE;
             s.header.fb_hash = ic_hash(ctx->fb, (size_t)ctx->nfb * sizeof(uint32_t),
                                        UINT64_C(14695981039346656037));
             uint64_t saved_tests = 0;
@@ -1252,7 +1959,10 @@ static ca_status ic_precompute_impl(uint64_t p, uint64_t g, const ca_ic_params *
                                              &s.generation, &s.elapsed_prior);
             if (loaded < 0) {
                 pthread_mutex_destroy(&s.lock);
-                free(tids); free(fb_log2); free(rels.r); ca_ic_free(ctx);
+                free(tids);
+                free(fb_log2);
+                rel_free(&rels);
+                ca_ic_free(ctx);
                 return loaded == -2 ? CA_ERR_NOMEM : CA_ERR_INVALID;
             }
             atomic_store(&s.tests, saved_tests);
@@ -1263,7 +1973,10 @@ static ca_status ic_precompute_impl(uint64_t p, uint64_t g, const ca_ic_params *
                              " smoothness tests\n", rels.n, saved_tests);
             if (!rexp_snapshot_save(&s) || !rexp_progress_save(&s, "collecting")) {
                 pthread_mutex_destroy(&s.lock);
-                free(tids); free(fb_log2); free(rels.r); ca_ic_free(ctx);
+                free(tids);
+                free(fb_log2);
+                rel_free(&rels);
+                ca_ic_free(ctx);
                 ca_set_error("cannot persist random-exponent checkpoint or progress");
                 return CA_ERR_INTERNAL;
             }
@@ -1321,7 +2034,10 @@ static ca_status ic_precompute_impl(uint64_t p, uint64_t g, const ca_ic_params *
         pthread_mutex_destroy(&s.lock);
         st->smooth_tests = atomic_load(&s.tests);
         if (s.status != CA_OK) {
-            free(tids); free(fb_log2); free(rels.r); ca_ic_free(ctx);
+            free(tids);
+            free(fb_log2);
+            rel_free(&rels);
+            ca_ic_free(ctx);
             return s.status;
         }
     }
@@ -1333,7 +2049,7 @@ static ca_status ic_precompute_impl(uint64_t p, uint64_t g, const ca_ic_params *
          (unsigned long long)st->sieve_candidates);
     if (rels.n < ncols / 2) {
         ca_set_error("too few relations (%u for %u unknowns); increase C or B", rels.n, ncols);
-        free(rels.r);
+        rel_free(&rels);
         ca_ic_free(ctx);
         return CA_ERR_NOT_FOUND;
     }
@@ -1370,9 +2086,14 @@ static ca_status ic_precompute_impl(uint64_t p, uint64_t g, const ca_ic_params *
             uint64_t q = f.f[i].p;
             if (q <= IC_SMALL_Q) continue;
             if (!have_matrix) {
-                rc = build_matrix(&rels, ncols, pm1, &A, &b);
+                rc = CA_ERR_INVALID;
+                if (params->method == CA_IC_LINEAR_SIEVE)
+                    rc = build_graph_matrix(&rels, ncols, ctx->nfb, pm1, &A, &b);
+                if (rc != CA_OK) rc = build_matrix(&rels, ncols, pm1, &A, &b);
                 if (rc != CA_OK) goto done;
                 have_matrix = 1;
+                /* the matrix is a copy: nothing reads the relations again */
+                rel_free(&rels);
             }
             uint64_t qe = 1;
             for (unsigned e = 0; e < f.f[i].e; e++) qe *= q;
@@ -1421,7 +2142,10 @@ static ca_status ic_precompute_impl(uint64_t p, uint64_t g, const ca_ic_params *
     }
 done:
     st->linalg_seconds = ca_now() - t0;
-    free(logs); free(known); free(small_logs); free(rels.r);
+    free(logs);
+    free(known);
+    free(small_logs);
+    rel_free(&rels);
     if (rc != CA_OK) { ca_ic_free(ctx); return rc; }
     /* log of the user's base */
     ctx->ord_g = ca_mult_order(g, p);
@@ -1449,14 +2173,18 @@ void ca_ic_free(ca_ic_ctx *ctx)
     free(ctx->fb_log);
     free(ctx->fb_known);
     free(ctx->fb_div);
+    free(ctx->step_power);
+    free(ctx->fb_inv32);
+    free(ctx->fb_lim32);
     pthread_mutex_destroy(&ctx->rng_lock);
     free(ctx);
 }
 
-/* log_zeta(h) via smoothness of h * zeta^e */
+/* log_zeta(h) via simultaneous smoothness of a/b = h*zeta^e. */
 static ca_status individual_log_zeta(ca_ic_ctx *ctx, uint64_t h, uint64_t *out, uint64_t *tries)
 {
     uint64_t p = ctx->p, pm1 = p - 1;
+    uint64_t bound = ca_isqrt(p);
     ca_mont m;
     ca_mont_init(&m, p);
     uint64_t zm = ca_mont_to(&m, ctx->zeta);
@@ -1472,8 +2200,11 @@ static ca_status individual_log_zeta(ca_ic_ctx *ctx, uint64_t h, uint64_t *out, 
     double started = ca_now(), last_report = started;
     for (uint64_t t = 0; t < limit; t++) {
         uint64_t v = ca_mont_from(&m, cur);
-        relation rel;
-        uint32_t cnt = 0;
+        relation numerator_rel, denominator_rel;
+        uint32_t numerator_count = 0, denominator_count = 0;
+        uint64_t numerator, denominator;
+        int negative;
+        ca_ic_rational_split(v, p, bound, &numerator, &denominator, &negative);
         (*tries)++;
         if (ctx->params.verbose && (t & 4095) == 0) {
             double now = ca_now();
@@ -1483,22 +2214,51 @@ static ca_status individual_log_zeta(ca_ic_ctx *ctx, uint64_t h, uint64_t *out, 
                 last_report = now;
             }
         }
-        if (trial_factor(v, ctx->fb, ctx->fb_div, ctx->nfb, 0, &rel, &cnt)) {
-            /* h zeta^e = prod q^a  =>  log h = sum a log q - e */
+
+        int smooth;
+        if (ctx->scan32) {
+            /* Reconstruction guarantees both magnitudes fit in a word. */
+            smooth =
+                trial_factor32((uint32_t)numerator, ctx, 0, &numerator_rel, &numerator_count) &&
+                trial_factor32((uint32_t)denominator, ctx, 0, &denominator_rel, &denominator_count);
+        } else {
+            smooth = trial_factor(numerator, ctx->fb, ctx->fb_div, ctx->nfb, 0, &numerator_rel,
+                                  &numerator_count) &&
+                     trial_factor(denominator, ctx->fb, ctx->fb_div, ctx->nfb, 0, &denominator_rel,
+                                  &denominator_count);
+        }
+        if (smooth) {
+
+            /* log h = log(a) - log(|b|) - log(sign(b)) - e. */
             int ok = 1;
             uint64_t acc = 0;
-            for (uint32_t i = 0; i < cnt; i++) {
-                if (!ctx->fb_known[rel.col[i]]) { ok = 0; break; }
-                acc = ca_addmod(acc, ca_mulmod((uint64_t)rel.val[i], ctx->fb_log[rel.col[i]], pm1), pm1);
+            for (uint32_t i = 0; i < numerator_count; i++) {
+                uint32_t j = numerator_rel.col[i];
+                if (!ctx->fb_known[j]) {
+                    ok = 0;
+                    break;
+                }
+                acc = ca_addmod(acc, ca_mulmod((uint64_t)numerator_rel.val[i], ctx->fb_log[j], pm1),
+                                pm1);
+            }
+            for (uint32_t i = 0; ok && i < denominator_count; i++) {
+                uint32_t j = denominator_rel.col[i];
+                if (!ctx->fb_known[j]) {
+                    ok = 0;
+                    break;
+                }
+                acc = ca_submod(
+                    acc, ca_mulmod((uint64_t)denominator_rel.val[i], ctx->fb_log[j], pm1), pm1);
             }
             if (ok) {
+                if (negative) acc = ca_submod(acc, pm1 / 2, pm1);
                 acc = ca_submod(acc, e % pm1, pm1);
                 /* verify */
                 if (ca_mont_from(&m, ca_mont_pow(&m, zm, acc)) == h % p) { *out = acc; return CA_OK; }
             }
         }
         uint64_t step = 1 + ca_rng_below(&rng, 4095);
-        cur = ca_mont_mul(&m, cur, ca_mont_pow(&m, zm, step));
+        cur = ca_mont_mul(&m, cur, ctx->step_power[step]);
         e = (e + step) % pm1;
     }
     return CA_ERR_LIMIT;

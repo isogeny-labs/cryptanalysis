@@ -3,6 +3,121 @@
  * device is present). */
 #include "test_fixtures.h"
 #include "gpu_internal.h"
+#include "dlog_checkpoint_internal.h"
+#include <math.h>
+
+static int write_checkpoint_header(const char *path, gpu_rho_checkpoint_header h)
+{
+    h.checksum = 0;
+    h.checksum = dlog_ckpt_hash(&h, sizeof(h), UINT64_C(14695981039346656037));
+    FILE *f = fopen(path, "wb");
+    if (!f) return 0;
+    int ok = fwrite(&h, sizeof(h), 1, f) == 1;
+    return fclose(f) == 0 && ok;
+}
+
+static void test_checkpoint_metadata(void)
+{
+    char directory[] = "/tmp/ca-gpu-metadata-XXXXXX";
+    CHECK(mkdtemp(directory) != NULL);
+    char path[160], progress[180];
+    snprintf(path, sizeof(path), "%s/state", directory);
+    snprintf(progress, sizeof(progress), "%s.progress.json", path);
+    ca_group g;
+    ca_elem base, target;
+    fx_zp_safe(&g, &base, 2000000579ULL);
+    fx_instance(&g, &base, 42, &target);
+    ca_gpu_rho_params p;
+    ca_gpu_rho_params_default(&p);
+    p.backend = CA_GPU_BACKEND_EMULATE;
+    p.seed = 4;
+    p.r = 4;
+    p.blocks = 1;
+    p.threads_per_block = 1;
+    p.steps_per_launch = 1;
+    p.dp_bits = 4;
+    p.max_ops = 1;
+    uint64_t answer = 0;
+    ca_status rc =
+        ca_gpu_rho_solve_checkpointed(&g, &base, &target, &p, path, 1, 1, 0, &answer, NULL);
+    CHECK(rc == CA_ERR_LIMIT);
+    FILE *f = fopen(path, "rb");
+    CHECK(f != NULL);
+    if (!f) return;
+    gpu_rho_checkpoint_header original;
+    int ok = fread(&original, sizeof(original), 1, f) == 1 && fgetc(f) == EOF;
+    fclose(f);
+    CHECK(ok && original.entries == 0);
+    if (!ok || original.entries) return;
+    const double invalid_elapsed[] = {INFINITY, NAN, -1.0};
+    for (size_t i = 0; i < sizeof(invalid_elapsed) / sizeof(invalid_elapsed[0]); i++) {
+        gpu_rho_checkpoint_header h = original;
+        h.elapsed_seconds = invalid_elapsed[i];
+        CHECK(write_checkpoint_header(path, h));
+        CHECK(ca_gpu_rho_solve_checkpointed(&g, &base, &target, &p, path, 1, 1, 0, &answer, NULL) ==
+              CA_ERR_INTERNAL);
+    }
+    for (unsigned field = 0; field < 3; field++) {
+        gpu_rho_checkpoint_header h = original;
+        if (field == 0) h.launches = UINT64_MAX;
+        if (field == 1) h.dps = UINT64_MAX;
+        if (field == 2) h.restarts = 1;
+        CHECK(write_checkpoint_header(path, h));
+        CHECK(ca_gpu_rho_solve_checkpointed(&g, &base, &target, &p, path, 1, 1, 0, &answer, NULL) ==
+              CA_ERR_INTERNAL);
+    }
+    gpu_rho_checkpoint_header h = original;
+    h.ops = UINT64_MAX;
+    CHECK(write_checkpoint_header(path, h));
+    CHECK(ca_gpu_rho_solve_checkpointed(&g, &base, &target, &p, path, 1, 1, 0, &answer, NULL) ==
+          CA_ERR_INTERNAL);
+    h = original;
+    h.ops = UINT64_MAX - original.ops;
+    CHECK(write_checkpoint_header(path, h));
+    p.max_ops = UINT64_MAX;
+    ca_stats stats = {0};
+    CHECK(ca_gpu_rho_solve_checkpointed(&g, &base, &target, &p, path, 1, 1, 0, &answer, &stats) ==
+          CA_ERR_LIMIT);
+    CHECK_EQ_U64(stats.group_ops, UINT64_MAX);
+    CHECK_EQ_U64(stats.reserved, 0);
+    p.max_ops = 1;
+    h = original;
+    h.solved = 2;
+    h.result = 42;
+    CHECK(write_checkpoint_header(path, h));
+    CHECK(ca_gpu_rho_solve_checkpointed(&g, &base, &target, &p, path, 1, 1, 0, &answer, NULL) ==
+          CA_ERR_INTERNAL);
+    h = original;
+    h.solved = 1;
+    h.result = 42;
+    CHECK(write_checkpoint_header(path, h));
+    CHECK(ca_gpu_rho_solve_checkpointed(&g, &base, &target, &p, path, 1, 1, 0, &answer, NULL) ==
+          CA_OK);
+    CHECK_EQ_U64(answer, 42);
+    unlink(path);
+    unlink(progress);
+    rmdir(directory);
+}
+
+static void test_dp_capacity(void)
+{
+    const uint32_t values[] = {0, 1, 522239, 522240, UINT32_MAX - 7u, UINT32_MAX};
+    for (unsigned d = 0; d < 64; d++) {
+        for (size_t i = 0; i < sizeof(values) / sizeof(values[0]); i++) {
+            for (size_t j = 0; j < sizeof(values) / sizeof(values[0]); j++) {
+                __uint128_t exact = ((__uint128_t)values[i] * values[j] * 2) >> d;
+                exact += 4096;
+                if (exact > (1u << 20)) exact = 1u << 20;
+                CHECK_EQ_U64(ca_gpu_dp_capacity(values[i], values[j], d), (uint64_t)exact);
+            }
+        }
+    }
+    /* Largest accepted walk herd and launch length: the previous double-to-
+     * uint64_t conversion overflowed before the intended saturation. */
+    CHECK_EQ_U64(ca_gpu_dp_capacity(UINT32_MAX - 7u, UINT32_MAX, 0), 1u << 20);
+    CHECK_EQ_U64(ca_gpu_dp_capacity(522239, 1, 0), (1u << 20) - 2);
+    CHECK_EQ_U64(ca_gpu_dp_capacity(522240, 1, 0), 1u << 20);
+}
 
 static void test_device_arith(void)
 {
@@ -219,8 +334,40 @@ static void run_solver(const ca_group *g, const ca_elem *gen, ca_gpu_backend be,
     printf("%-28s ops/sqrt(n) = %.2f\n", label, tot / reps / sqrt((double)g->order));
 }
 
+static void test_launch_dimension_overflow(void)
+{
+    ca_group g;
+    ca_elem gen, target;
+    fx_zp_safe(&g, &gen, 2000000579ULL);
+    fx_instance(&g, &gen, 7, &target);
+    const uint32_t dimensions[][2] = {
+        {1u << 25, 128},       /* thread count would truncate to zero */
+        {(1u << 25) + 1, 128}, /* thread count would truncate to 128 */
+        {1u << 22, 128},       /* thread count fits, walk IDs do not */
+        {UINT32_MAX, UINT32_MAX},
+    };
+    for (size_t i = 0; i < sizeof(dimensions) / sizeof(dimensions[0]); i++) {
+        ca_gpu_rho_params p;
+        ca_gpu_rho_params_default(&p);
+        p.backend = CA_GPU_BACKEND_EMULATE;
+        p.blocks = dimensions[i][0];
+        p.threads_per_block = dimensions[i][1];
+        p.dp_bits = 0;
+        p.steps_per_launch = 1;
+        p.max_ops = 1;
+        uint64_t got = UINT64_MAX;
+        ca_status rc = ca_gpu_rho_solve(&g, &gen, &target, &p, &got, NULL);
+        CHECK(rc == CA_ERR_INVALID);
+        CHECK_EQ_U64(got, UINT64_MAX);
+        if (rc != CA_ERR_INVALID) return; /* a broken guard must not attempt larger allocations */
+    }
+}
+
 int main(void)
 {
+    test_checkpoint_metadata();
+    test_launch_dimension_overflow();
+    test_dp_capacity();
     test_device_arith();
     ca_group g;
     ca_elem gen;

@@ -1,0 +1,12 @@
+digraph S3 {
+  graph [rankdir=LR, bgcolor="white", pad="0.18"];
+  node [shape=box, style="rounded,filled", fillcolor="#edf3f7", color="#47738a", fontname="Helvetica", fontsize=12];
+  input [label="Field + basis + xR + b"];
+  generic [label="Reference\nLinear-form maps\nPolynomial products and sums\nSort canonical monomials"];
+  direct [label="Optional direct S3\nTriangular symmetric coefficients\nOrdered mask emission\nNo maps or sorting"];
+  same [label="Identical ordered\nBoolean equations", fillcolor="#e2f0e6"];
+  solver [label="Solver + lift + relation check\nCollection + linear algebra\nFinal scalar verification", fillcolor="#f6eddd"];
+  input -> generic -> same;
+  input -> direct -> same;
+  same -> solver;
+}

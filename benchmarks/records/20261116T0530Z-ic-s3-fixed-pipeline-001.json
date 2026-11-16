@@ -1,0 +1,122 @@
+{
+  "branch": "codex/ic-trial32-20261115",
+  "closed_utc": "2026-11-16T05:42:52+00:00",
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "cloud/modal_run.py",
+        "run",
+        "--image",
+        "cuda",
+        "--gpu",
+        "L4",
+        "--cpu",
+        "4",
+        "--memory",
+        "8",
+        "--timeout",
+        "900",
+        "--out",
+        "experiments/ic-s3-pipeline-20261115/run-001",
+        "--detach",
+        "--",
+        "python3",
+        "experiments/ic-s3-pipeline-20261115/run_panel.py"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "started_utc": "2026-11-16T05:30:58+00:00",
+      "wall_s": 10.45
+    }
+  ],
+  "commit": "ef83ed80b4d81babe70f11e99e18627daf3d6ce9",
+  "commit_dirty": false,
+  "created_utc": "2026-11-16T05:30:46+00:00",
+  "curve_uid": null,
+  "entries": [
+    "experiments/ic-s3-pipeline-20261115"
+  ],
+  "host": {
+    "cpu": "arm",
+    "cpus_online": 14,
+    "hostname": "Mac.attlocal.net",
+    "isolation": "unstated",
+    "platform": "macOS-27.2-arm64-arm-64bit-Mach-O"
+  },
+  "id": "20261116T0530Z-ic-s3-fixed-pipeline-001",
+  "metrics": [],
+  "problem": "ecdlp:binary_ic_s3_fixed_instances",
+  "raw": [
+    {
+      "bytes": 32062,
+      "path": "experiments/ic-s3-pipeline-20261115/run-001/host.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/85/8525ff6c9d48d37f68a3d75994f2cbd59de08e7862974c79a777df7deaad016f",
+      "sha256": "8525ff6c9d48d37f68a3d75994f2cbd59de08e7862974c79a777df7deaad016f",
+      "uploaded": true
+    },
+    {
+      "bytes": 3,
+      "path": "experiments/ic-s3-pipeline-20261115/run-001/pairs.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/37/37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "uploaded": true
+    },
+    {
+      "bytes": 4981,
+      "path": "experiments/ic-s3-pipeline-20261115/run-001/reference-build.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/6b/6b9c5c316da40d3b85352867c9ac01c0f761358d378a72a386af5f5027709e38",
+      "sha256": "6b9c5c316da40d3b85352867c9ac01c0f761358d378a72a386af5f5027709e38",
+      "uploaded": true
+    },
+    {
+      "bytes": 3,
+      "path": "experiments/ic-s3-pipeline-20261115/run-001/references.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/37/37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "uploaded": true
+    },
+    {
+      "bytes": 143,
+      "path": "experiments/ic-s3-pipeline-20261115/run-001/summary.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/3c/3c4ebc2c04af10bc4acd5b12575f1f9db8837b0578ac56aaa97e9a53dc00d730",
+      "sha256": "3c4ebc2c04af10bc4acd5b12575f1f9db8837b0578ac56aaa97e9a53dc00d730",
+      "uploaded": true
+    },
+    {
+      "bytes": 577,
+      "path": "experiments/ic-s3-pipeline-20261115/launch-001/job.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/4c/4ce53e0c53a8e4649cdfdab38586fe2a7e24b770e4c2c391dbfc7bfcc7445832",
+      "sha256": "4ce53e0c53a8e4649cdfdab38586fe2a7e24b770e4c2c391dbfc7bfcc7445832",
+      "uploaded": true
+    },
+    {
+      "bytes": 352,
+      "path": "experiments/ic-s3-pipeline-20261115/launch-001/output.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/c5/c5bf324beb985527f7e4b59ad5cdf529dae951b253f5d165bee0a2ec1106d3c4",
+      "sha256": "c5bf324beb985527f7e4b59ad5cdf529dae951b253f5d165bee0a2ec1106d3c4",
+      "uploaded": true
+    },
+    {
+      "bytes": 3281,
+      "path": "experiments/ic-s3-pipeline-20261115/analysis.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/3c/3cc9ffefff5fbdacea4813c1faefa4b5ce8b2da2b475844a6e85957a11e2bc9b",
+      "sha256": "3cc9ffefff5fbdacea4813c1faefa4b5ce8b2da2b475844a6e85957a11e2bc9b",
+      "uploaded": true
+    }
+  ],
+  "repo": "cryptanalysis",
+  "reports": {
+    "pdf": "experiments/ic-s3-pipeline-20261115/REPORT.pdf",
+    "png": [],
+    "svg": [
+      "experiments/ic-s3-pipeline-20261115/flow.svg"
+    ]
+  },
+  "schema": "bench.record/v1",
+  "session": null,
+  "slug": "ic-s3-fixed-pipeline-001",
+  "status": "censored",
+  "summary": "Reference release build reached frozen330-second cap; process group terminated; zero pipeline pairs and zero rho references. Preparation failure only; no algorithm timing. Separate binary preparation will preserve source, targets and original censored attempt.",
+  "validation": "experiments/ic-s3-pipeline-20261115/analysis.json"
+}

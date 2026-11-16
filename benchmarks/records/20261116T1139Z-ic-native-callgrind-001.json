@@ -1,0 +1,101 @@
+{
+  "branch": "codex/ic-trial32-20261115",
+  "closed_utc": "2026-11-16T11:45:54+00:00",
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "cloud/modal_run.py",
+        "run",
+        "--image",
+        "cuda",
+        "--gpu",
+        "L4",
+        "--cpu",
+        "4",
+        "--memory",
+        "8",
+        "--timeout",
+        "900",
+        "--apt",
+        "time",
+        "--apt",
+        "valgrind",
+        "--apt",
+        "binutils",
+        "--out",
+        "experiments/ic-native-profile-20261116/profile-001",
+        "--detach",
+        "--",
+        "python3",
+        "experiments/ic-native-profile-20261116/run_profile.py"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "started_utc": "2026-11-16T11:40:20+00:00",
+      "wall_s": 28.839
+    }
+  ],
+  "commit": "6423536055233d63fa25ccb62097823317c8cc94",
+  "commit_dirty": false,
+  "created_utc": "2026-11-16T11:39:55+00:00",
+  "curve_uid": null,
+  "entries": [
+    "experiments/ic-native-profile-20261116"
+  ],
+  "host": {
+    "cpu": "arm",
+    "cpus_online": 14,
+    "hostname": "Mac.attlocal.net",
+    "isolation": "unstated",
+    "platform": "macOS-27.2-arm64-arm-64bit-Mach-O"
+  },
+  "id": "20261116T1139Z-ic-native-callgrind-001",
+  "metrics": [
+    {
+      "baseline": null,
+      "better": "neutral",
+      "n": null,
+      "name": "completed_target_profiles",
+      "note": "Stopped at metadata query before ISA preflight or target instrumentation",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "count",
+      "value": 0.0
+    }
+  ],
+  "problem": "profile:binary_ic_guest_ir",
+  "raw": [
+    {
+      "bytes": 1007686,
+      "path": "experiments/ic-native-profile-20261116/raw-profile-001.tar.gz",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/73/735ffca9685ae33aeac1750ed6b88ac6c4ef93c1a6188e811c43e03268e8db34",
+      "sha256": "735ffca9685ae33aeac1750ed6b88ac6c4ef93c1a6188e811c43e03268e8db34",
+      "uploaded": false
+    },
+    {
+      "bytes": 3102,
+      "path": "experiments/ic-native-profile-20261116/raw-profile001-bundle-receipt.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/77/77c12a6dfa655157860748216b320b8a3ebd4e83160764aee00063f15bdf0a63",
+      "sha256": "77c12a6dfa655157860748216b320b8a3ebd4e83160764aee00063f15bdf0a63",
+      "uploaded": false
+    }
+  ],
+  "repo": "cryptanalysis",
+  "reports": {
+    "pdf": "experiments/ic-native-profile-20261116/REPORT-profile001.pdf",
+    "png": [
+      "experiments/ic-native-profile-20261116/admission001.png"
+    ],
+    "svg": [
+      "experiments/ic-native-profile-20261116/admission001.svg"
+    ]
+  },
+  "schema": "bench.record/v1",
+  "session": null,
+  "slug": "ic-native-callgrind-001",
+  "status": "invalid",
+  "summary": "Version-metadata admission failure: annotator prints3.22.0 but exits255; driver requires0. Zero capability checks/target profiles/captures. All11raw outputs preserved; unsigned30b379. New version-metadata-only amendment retains all arithmetic/capability/resource gates.",
+  "validation": null
+}

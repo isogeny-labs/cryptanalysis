@@ -11,8 +11,8 @@ report is labelled derived.
 One record per run, schema `bench.record/v1`, at
 `<records_dir>/<YYYYMMDD>T<HHMM>Z-<slug>.json` (default `benchmarks/records/`;
 `.benchrec.json` at the repository root overrides the layout).
-`living_paths` in `.benchrec.json` names catalogs that keep changing after a run
-(e.g. a curve registry): a raw entry on one is checked in the store, not the checkout.
+`living_paths` may name evolving catalogs for configuration compatibility;
+a changed checkout still requires exact original archive bytes for a closed run.
 
     benchrec.py init --slug SLUG --problem PROBLEM [--curve UID] [--entry DIR]
     benchrec.py run RECORD -- COMMAND...          run a launcher under the record
@@ -36,6 +36,7 @@ import argparse
 import datetime as dt
 import hashlib
 import json
+import math
 import os
 import platform
 import re
@@ -43,14 +44,31 @@ import shutil
 import socket
 import subprocess
 import sys
+import tempfile
 import time
 import zlib
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 SCHEMA = "bench.record/v1"
 PROGRESS_SCHEMA = "bench.progress/v1"
 BUCKET = "setec-astronomy-artifacts"
 STORE_PREFIX = "store/sha256"
+# The artifact bucket lives in us-east-2. CI exports AWS_REGION=us-west-2 for
+# other jobs; every call here names the bucket region so S3 does not answer
+# each request with a cross-region redirect (about +55% per call, measured).
+BUCKET_REGION = "us-east-2"
+# Every aws call is bounded. A call that exceeds its limit raises S3Error with
+# the command and the limit, instead of hanging until the job is cancelled.
+AWS_CONNECT_TIMEOUT_S = 10
+AWS_READ_TIMEOUT_S = 60
+AWS_CALL_TIMEOUT_S = 120      # sts, head-object
+AWS_TRANSFER_TIMEOUT_S = 300  # get-object, s3 cp
+AWS_LIST_TIMEOUT_S = 300      # one paginated list-objects-v2 over a prefix
+# --verify-s3 lists a prefix once when it needs at least this many keys under
+# it; below that it HEADs each object. HEADs run concurrently.
+LIST_MIN_KEYS = 16
+HEAD_WORKERS = 16
 DEFAULT_CONFIG = {
     "records_dir": "benchmarks/records",
     "progress_dir": "benchmarks/progress",
@@ -58,6 +76,7 @@ DEFAULT_CONFIG = {
     "entry_re": r"^\d{8}-[A-Za-z0-9_.-]+$",
     "bucket": BUCKET,
     "store_prefix": STORE_PREFIX,
+    "region": BUCKET_REGION,
     "living_paths": [],
 }
 OPEN_LIST = ".benchrec/open.jsonl"
@@ -96,6 +115,29 @@ def git(root: Path, *args: str, check: bool = True) -> str:
     if check and p.returncode != 0:
         raise SystemExit(f"benchrec: git {' '.join(args)}: {p.stderr.strip()[:300]}")
     return p.stdout
+
+
+
+def committed_record(root: Path, ref: str, path: str) -> str | None:
+    """Plaintext base record; an unreadable existing object is a hard failure."""
+    spec = f"{ref}:{path}"
+    result = subprocess.run(["git", "-C", str(root), "cat-file", "--filters", spec],
+                            capture_output=True)
+    if result.returncode:
+        if "\n" not in spec:
+            query = spec.encode("utf-8", "surrogateescape")
+            probe = subprocess.run(["git", "-C", str(root), "cat-file", "--batch-check"],
+                                   input=query + b"\n", capture_output=True)
+            if (probe.returncode == 0 and not probe.stderr
+                    and probe.stdout == query + b" missing\n"):
+                return None
+        raise SystemExit(f"benchrec: cannot read committed base record {path}")
+    if result.stdout.startswith(b"VLT1"):
+        raise SystemExit("benchrec: base record remains encrypted; configure the required vault filter")
+    try:
+        return result.stdout.decode("utf-8")
+    except UnicodeDecodeError as error:
+        raise SystemExit(f"benchrec: base record is not UTF-8: {path}") from error
 
 
 def repo_root(start: Path | None = None) -> Path:
@@ -165,7 +207,7 @@ def host_info() -> dict:
 def write_json(path: Path, obj) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_suffix(path.suffix + ".tmp")
-    tmp.write_text(json.dumps(obj, indent=2, sort_keys=True) + "\n")
+    tmp.write_text(json.dumps(obj, indent=2, sort_keys=True, allow_nan=False) + "\n")
     os.replace(tmp, path)
 
 
@@ -316,12 +358,15 @@ def cmd_metric(a, root: Path, cfg: dict) -> int:
         "unit": a.unit,
         "better": better,
         "n": a.n,
-        "spread": [a.spread_low, a.spread_high] if a.spread_low is not None else None,
+        "spread": [a.spread_low, a.spread_high] if a.spread_low is not None or a.spread_high is not None else None,
         "baseline": a.baseline,
         "reference": a.reference,
         "reference_kind": a.reference_kind if a.reference is not None else None,
         "note": a.note or "",
     }
+    errors = metric_errors(m, a.record)
+    if errors:
+        raise ValueError("; ".join(errors))
     if any(x["name"] == a.name for x in rec["metrics"]):
         raise SystemExit(f"benchrec: metric {a.name} already recorded; a rerun is a new record")
     rec["metrics"].append(m)
@@ -329,15 +374,18 @@ def cmd_metric(a, root: Path, cfg: dict) -> int:
     return 0
 
 
-def aws_available() -> bool:
-    if not shutil.which("aws"):
-        return False
-    env = dict(os.environ)
-    for k in ("ARTIFACTS_AWS_ACCESS_KEY_ID", "ARTIFACTS_AWS_SECRET_ACCESS_KEY"):
-        if k in env:
-            env[k.replace("ARTIFACTS_", "")] = env[k]
-    p = subprocess.run(["aws", "sts", "get-caller-identity"], capture_output=True, env=env)
-    return p.returncode == 0
+class S3Error(RuntimeError):
+    """An S3 call that could not complete: timed out, or failed for a reason
+    other than "this object is not there". The check fails closed on it."""
+
+
+class S3Timeout(S3Error):
+    """An aws call that did not finish within its limit."""
+
+
+def s3_region(cfg: dict | None = None) -> str:
+    return (os.environ.get("BENCHREC_S3_REGION")
+            or (cfg or {}).get("region") or BUCKET_REGION)
 
 
 def aws_env() -> dict:
@@ -345,21 +393,195 @@ def aws_env() -> dict:
     for k in ("ARTIFACTS_AWS_ACCESS_KEY_ID", "ARTIFACTS_AWS_SECRET_ACCESS_KEY"):
         if k in env:
             env[k.replace("ARTIFACTS_", "")] = env[k]
-    env.setdefault("AWS_REGION", os.environ.get("ARTIFACTS_AWS_REGION", "us-east-2"))
+    # Never prompt: no pager, no interactive input.
+    env["AWS_PAGER"] = ""
+    env.setdefault("AWS_REGION", os.environ.get("ARTIFACTS_AWS_REGION", BUCKET_REGION))
     env.setdefault("AWS_DEFAULT_REGION", env["AWS_REGION"])
     return env
 
 
-def s3_exists(uri: str) -> bool:
-    bucket, key = uri[5:].split("/", 1)
-    p = subprocess.run(["aws", "s3api", "head-object", "--bucket", bucket, "--key", key],
-                       capture_output=True, env=aws_env())
+def aws_call(args: list[str], *, timeout: float, cfg: dict | None = None,
+             capture: bool = True) -> subprocess.CompletedProcess:
+    """Run `aws <service> <op> ...` with connect/read timeouts, the bucket
+    region, no stdin, and a hard wall-clock limit. The global options go right
+    after the operation so a trailing positional (get-object's outfile) stays last."""
+    cmd = ["aws", args[0], args[1],
+           "--cli-connect-timeout", str(AWS_CONNECT_TIMEOUT_S),
+           "--cli-read-timeout", str(AWS_READ_TIMEOUT_S),
+           "--region", s3_region(cfg), *args[2:]]
+    try:
+        return subprocess.run(cmd, capture_output=capture, text=True, env=aws_env(),
+                              stdin=subprocess.DEVNULL, timeout=timeout)
+    except subprocess.TimeoutExpired as exc:
+        raise S3Timeout(f"aws {args[0]} {args[1]} {' '.join(args[2:])[:200]} "
+                      f"did not finish within {timeout:g}s") from exc
+
+
+def aws_available(cfg: dict | None = None) -> bool:
+    if not shutil.which("aws"):
+        return False
+    p = aws_call(["sts", "get-caller-identity"], timeout=AWS_CALL_TIMEOUT_S, cfg=cfg)
     return p.returncode == 0
+
+
+def split_s3(uri: str) -> tuple[str, str]:
+    if not uri.startswith("s3://") or "/" not in uri[5:]:
+        raise ValueError(f"not an s3://bucket/key URI: {uri!r}")
+    bucket, key = uri[5:].split("/", 1)
+    return bucket, key
+
+
+def s3_head_size(uri: str, cfg: dict | None = None) -> int | None:
+    """Object size, or None when HEAD fails (absent or not readable).
+    Raises S3Error on a timeout."""
+    bucket, key = split_s3(uri)
+    p = aws_call(["s3api", "head-object", "--bucket", bucket, "--key", key,
+                  "--query", "ContentLength", "--output", "text"],
+                 timeout=AWS_CALL_TIMEOUT_S, cfg=cfg)
+    if p.returncode:
+        return None
+    try:
+        return int(p.stdout.strip())
+    except ValueError:
+        # Some aws versions print JSON even with --query/--output text.
+        try:
+            return int(json.loads(p.stdout)["ContentLength"])
+        except (ValueError, KeyError, TypeError):
+            raise S3Error(f"head-object {uri}: unreadable size {p.stdout.strip()[:80]!r}")
+
+
+def s3_exists(uri: str, cfg: dict | None = None) -> bool:
+    return s3_head_size(uri, cfg) is not None
+
+
+def s3_list(bucket: str, prefix: str, cfg: dict | None = None) -> dict[str, int]:
+    """key -> size for every object under prefix, in one paginated call."""
+    p = aws_call(["s3api", "list-objects-v2", "--bucket", bucket, "--prefix", prefix,
+                  "--query", "Contents[].[Key,Size]", "--output", "json"],
+                 timeout=AWS_LIST_TIMEOUT_S, cfg=cfg)
+    if p.returncode:
+        raise S3Error(f"list-objects-v2 s3://{bucket}/{prefix} failed: "
+                      f"{(p.stderr or '').strip()[:300]}")
+    try:
+        rows = json.loads(p.stdout or "null") or []
+        return {str(k): int(n) for k, n in rows}
+    except (ValueError, TypeError) as exc:
+        raise S3Error(f"list-objects-v2 s3://{bucket}/{prefix}: unreadable output") from exc
+
+
+class S3Inventory:
+    """What --verify-s3 knows about the objects it must find.
+
+    The check used to start one `aws s3api head-object` process per raw file,
+    serially: 1561 objects at 0.7-1.0 s each outran the 15-minute CI limit.
+    A prefix that holds at least LIST_MIN_KEYS of the wanted keys is listed
+    once (keys and sizes); any other key is HEADed, concurrently. A listing
+    that is refused falls back to the HEADs, so a missing ListBucket permission
+    costs time, not coverage; a listing that times out fails the check. Presence is decided per key either way, and the
+    listed or HEAD size is returned so callers can compare it to the record.
+    """
+
+    def __init__(self, cfg: dict):
+        self.cfg = cfg
+        self.listings: dict[tuple[str, str], dict[str, int]] = {}
+        self.sizes: dict[str, int | None] = {}
+        self.stats = {"listed_prefixes": 0, "listed_objects": 0, "heads": 0}
+
+    def _prefix(self, key: str) -> str:
+        store = self.cfg.get("store_prefix", STORE_PREFIX).strip("/") + "/"
+        if key.startswith(store):
+            return store
+        return key.rsplit("/", 1)[0] + "/" if "/" in key else ""
+
+    def prefetch(self, uris) -> None:
+        groups: dict[tuple[str, str], set[str]] = {}
+        for u in set(uris):
+            if u in self.sizes:
+                continue
+            try:
+                bucket, key = split_s3(u)
+            except ValueError:
+                continue
+            groups.setdefault((bucket, self._prefix(key)), set()).add(u)
+        heads: list[str] = []
+        for (bucket, prefix), members in sorted(groups.items()):
+            listing = self.listings.get((bucket, prefix))
+            if listing is None and len(members) >= LIST_MIN_KEYS:
+                try:
+                    listing = s3_list(bucket, prefix, self.cfg)
+                except S3Timeout:
+                    raise
+                except S3Error as exc:
+                    print(f"benchrec: {exc}; falling back to {len(members)} HEAD requests",
+                          file=sys.stderr)
+                else:
+                    self.listings[(bucket, prefix)] = listing
+                    self.stats["listed_prefixes"] += 1
+                    self.stats["listed_objects"] += len(listing)
+            if listing is not None:
+                for u in members:
+                    self.sizes[u] = listing.get(split_s3(u)[1])
+            else:
+                heads.extend(sorted(members))
+        if heads:
+            with ThreadPoolExecutor(max_workers=HEAD_WORKERS) as pool:
+                for u, n in zip(heads, pool.map(lambda x: s3_head_size(x, self.cfg), heads)):
+                    self.sizes[u] = n
+            self.stats["heads"] += len(heads)
+
+    def size(self, uri: str) -> int | None:
+        if uri not in self.sizes:
+            self.prefetch([uri])
+        return self.sizes.get(uri)
+
+    def exists(self, uri: str) -> bool:
+        return self.size(uri) is not None
+
+
+def archived_raw_matches(root: Path, cfg: dict, raw: dict, *, remote: bool) -> bool:
+    """Verify the original immutable bytes, never the newer checkout version.
+
+    Only the configured canonical content-addressed URI qualifies. A local
+    cache is untrusted until both length and digest match; otherwise an online
+    caller must HEAD the recorded size and GET/hash the bounded object. This
+    does not alter the source path, record, upload flag, or any scientific field.
+    """
+    digest, size = raw.get("sha256"), raw.get("bytes")
+    if (not isinstance(digest, str) or not re.fullmatch(r"[0-9a-f]{64}", digest)
+            or not isinstance(size, int) or isinstance(size, bool) or size < 0
+            or raw.get("s3_uri") != store_uri(cfg, digest)):
+        return False
+    cache = root / ".benchrec" / "raw-archive-cache" / digest
+    try:
+        if cache.exists():
+            cache_ok = (not cache.is_symlink()
+                        and cache.resolve().is_relative_to(root.resolve())
+                        and cache.is_file() and cache.stat().st_size == size
+                        and sha256_file(cache) == digest)
+            if not cache_ok or not remote:
+                return cache_ok
+        if not remote:
+            return False
+        bucket, key = split_s3(raw["s3_uri"])
+        if s3_head_size(raw["s3_uri"], cfg) != size:
+            return False
+        with tempfile.TemporaryDirectory(prefix="benchrec-archive-") as temp:
+            path = Path(temp) / "raw"
+            # One extra byte detects an oversized object if it changes after
+            # HEAD; the original exact size/hash still decide acceptance.
+            args = ["s3api", "get-object", "--bucket", bucket, "--key", key]
+            if size:
+                args += ["--range", f"bytes=0-{size}"]
+            result = aws_call([*args, str(path)], timeout=AWS_TRANSFER_TIMEOUT_S, cfg=cfg)
+            return (result.returncode == 0 and path.is_file()
+                    and path.stat().st_size == size and sha256_file(path) == digest)
+    except (OSError, ValueError):
+        return False
 
 
 def cmd_upload(a, root: Path, cfg: dict) -> int:
     path, rec = load_record(root, a.record)
-    if not aws_available():
+    if not aws_available(cfg):
         print("benchrec: no AWS credentials here; CI uploads files that are in Git, "
               "push larger ones with tools/artifacts/artifacts.py push where credentials exist",
               file=sys.stderr)
@@ -374,13 +596,20 @@ def cmd_upload(a, root: Path, cfg: dict) -> int:
             rc = 1
             continue
         if sha256_file(src) != r["sha256"]:
+            if (rec["status"] in ("measured", "invalid", "censored")
+                    and archived_raw_matches(root, cfg, r, remote=True)
+                    and s3_exists(r["s3_uri"], cfg)):
+                print(f"benchrec: {r['path']}: original archive bytes verified; "
+                      "checkout differs, no upload performed")
+                continue
             print(f"benchrec: {r['path']} changed since it was recorded", file=sys.stderr)
             rc = 1
             continue
-        if s3_exists(r["s3_uri"]):
+        if s3_exists(r["s3_uri"], cfg):
             r["uploaded"] = True
             continue
-        p = subprocess.run(["aws", "s3", "cp", "--only-show-errors", str(src), r["s3_uri"]], env=aws_env())
+        p = aws_call(["s3", "cp", "--only-show-errors", str(src), r["s3_uri"]],
+                     timeout=AWS_TRANSFER_TIMEOUT_S, cfg=cfg, capture=False)
         if p.returncode == 0:
             r["uploaded"] = True
         else:
@@ -410,13 +639,18 @@ def cmd_close(a, root: Path, cfg: dict) -> int:
         rec["summary"] = a.summary
     rec["status"] = a.status
     rec["closed_utc"] = utcnow().isoformat()
-    errors = record_errors(root, cfg, rec, rel(root, path), require_closed=True)
+    # The record is still open on disk. Its temporary closing status must
+    # not unlock the fallback reserved for already-closed historical records.
+    errors = record_errors(root, cfg, rec, rel(root, path), require_closed=True,
+                           allow_archived_raw=False)
     if errors:
         rec["status"] = "open"
         rec["closed_utc"] = None
         for e in errors:
             print(f"benchrec: {e}", file=sys.stderr)
         return 1
+    # Check cross-record comparisons before making this record immutable.
+    build_progress(root, cfg, replacement=(rel(root, path), rec))
     write_json(path, rec)
     items = [i for i in open_list(root) if i["record"] != rel(root, path)]
     set_open_list(root, items)
@@ -427,9 +661,92 @@ def cmd_close(a, root: Path, cfg: dict) -> int:
 
 # ---------------------------------------------------------------------- checks
 
+def finite_number(value) -> bool:
+    if type(value) not in (int, float):
+        return False
+    try:
+        return math.isfinite(value)
+    except OverflowError:
+        return False
+
+
+def metric_errors(m: dict, name: str) -> list[str]:
+    prefix = f"{name}: metric {m.get('name')}"
+    errors = []
+    if not isinstance(m.get("name"), str) or not re.fullmatch(r"[a-z0-9][a-z0-9_./-]{0,80}", m["name"]):
+        errors.append(f"{prefix} name must be a stable lowercase key")
+    if m.get("unit") not in UNITS:
+        errors.append(f"{prefix} has unknown unit {m.get('unit')!r}")
+    for key in ("value", "baseline", "reference"):
+        if (key == "value" or m.get(key) is not None) and not finite_number(m.get(key)):
+            errors.append(f"{prefix} {key} must be a finite number (not boolean)")
+    if m.get("better") not in ("lower", "higher", "neutral"):
+        errors.append(f"{prefix} better must be lower|higher|neutral")
+    if m.get("reference") is not None and m.get("reference_kind") not in REFERENCE_KINDS:
+        errors.append(f"{prefix} reference_kind must be one of {REFERENCE_KINDS}")
+    if m.get("n") is not None and (type(m["n"]) is not int or m["n"] <= 0):
+        errors.append(f"{prefix} n must be a positive integer")
+    spread = m.get("spread")
+    if spread is not None and (not isinstance(spread, list) or len(spread) != 2
+                               or not all(finite_number(v) for v in spread)
+                               or spread[0] > spread[1]):
+        errors.append(f"{prefix} spread must have two finite ordered endpoints")
+    return errors
+
+
+def measurement_errors(rec: dict, name: str) -> list[str]:
+    """Metadata needed before a measured record contributes to comparisons."""
+    errors = []
+    commands = rec.get("commands")
+    if not isinstance(commands, list) or not commands:
+        errors.append(f"{name}: no command recorded")
+    else:
+        for i, command in enumerate(commands):
+            if not isinstance(command, dict) or type(command.get("exit")) is not int or command["exit"] != 0:
+                errors.append(f"{name}: command {i + 1} has no successful integer exit code; "
+                              "use invalid/censored or an explicit pinned historical exclusion")
+    metrics = rec.get("metrics")
+    if not isinstance(metrics, list) or not metrics:
+        errors.append(f"{name}: a measured record needs at least one metric")
+        return errors
+    seen = set()
+    for metric in metrics:
+        if not isinstance(metric, dict):
+            errors.append(f"{name}: metric must be an object")
+            continue
+        errors.extend(metric_errors(metric, name))
+        key = str(metric.get("name"))
+        if key in seen:
+            errors.append(f"{name}: metric {key} listed twice")
+        seen.add(key)
+    return errors
+
+
+def integrity_exclusions(root: Path, cfg: dict, recs: list[tuple[str, dict]]) -> dict:
+    """Explicit, digest-pinned historical exclusions never waive raw-file checks."""
+    path = root / Path(cfg["records_dir"]).parent / "integrity-exclusions.json"
+    if not path.exists():
+        return {}
+    data = json.loads(path.read_text())
+    if not isinstance(data, dict) or data.get("schema") != "bench.integrity-exclusions/v1" or not isinstance(data.get("records"), dict):
+        raise ValueError(f"{rel(root, path)}: invalid integrity exclusion manifest")
+    records = dict(recs)
+    for name, pin in data["records"].items():
+        rec = records.get(name)
+        if (rec is None or rec.get("status") != "measured" or not isinstance(pin, dict)
+                or not isinstance(pin.get("reason"), str) or not pin["reason"].strip()
+                or pin.get("sha256") != sha256_file(root / name)):
+            raise ValueError(f"{name}: integrity exclusion needs an exact measured-record digest and reason")
+    return data["records"]
+
+
 def record_errors(root: Path, cfg: dict, rec: dict, name: str, *, require_closed: bool,
-                  verify_s3: bool = False, manifests: dict | None = None) -> list[str]:
+                  verify_s3: bool = False, manifests: dict | None = None,
+                  allow_archived_raw: bool = True, excluded: bool = False,
+                  inventory: S3Inventory | None = None) -> list[str]:
     e: list[str] = []
+    if verify_s3 and inventory is None:
+        inventory = S3Inventory(cfg)
     for k in ("schema", "id", "slug", "problem", "repo", "created_utc", "status", "commit",
               "branch", "host", "entries", "commands", "raw", "metrics", "reports"):
         if k not in rec:
@@ -463,19 +780,17 @@ def record_errors(root: Path, cfg: dict, rec: dict, name: str, *, require_closed
                 e.append(f"{name}: a measured record carries a one-line summary")
         if rec["status"] in ("invalid", "censored") and not rec.get("summary"):
             e.append(f"{name}: say why the run is {rec['status']} in --summary")
-    seen = set()
-    for m in rec["metrics"]:
-        if m.get("unit") not in UNITS:
-            e.append(f"{name}: metric {m.get('name')} has unknown unit {m.get('unit')!r}")
-        if not isinstance(m.get("value"), (int, float)) or isinstance(m.get("value"), bool):
-            e.append(f"{name}: metric {m.get('name')} value is not a number")
-        if m.get("better") not in ("lower", "higher", "neutral"):
-            e.append(f"{name}: metric {m.get('name')} better must be lower|higher|neutral")
-        if m.get("reference") is not None and m.get("reference_kind") not in REFERENCE_KINDS:
-            e.append(f"{name}: metric {m.get('name')} reference_kind must be one of {REFERENCE_KINDS}")
-        if m.get("name") in seen:
-            e.append(f"{name}: metric {m.get('name')} listed twice")
-        seen.add(m.get("name"))
+    if rec["status"] == "measured":
+        if not excluded:
+            e.extend(measurement_errors(rec, name))
+    else:
+        seen = set()
+        for m in rec["metrics"]:
+            e.extend(metric_errors(m, name))
+            key = str(m.get("name"))
+            if key in seen:
+                e.append(f"{name}: metric {key} listed twice")
+            seen.add(key)
     for r in rec["raw"]:
         for k in ("path", "sha256", "bytes", "s3_uri"):
             if k not in r:
@@ -484,22 +799,31 @@ def record_errors(root: Path, cfg: dict, rec: dict, name: str, *, require_closed
             e.append(f"{name}: raw {r.get('path')} sha256 malformed")
         if not str(r.get("s3_uri", "")).startswith("s3://"):
             e.append(f"{name}: raw {r.get('path')} has no s3:// location")
+        if type(r.get("bytes")) is not int or r["bytes"] < 0:
+            e.append(f"{name}: raw {r.get('path')} bytes must be a nonnegative integer")
         local = root / r.get("path", "")
-        if r.get("path") in cfg.get("living_paths", ()):
-            # A living catalog (e.g. a curve registry) keeps changing after the run.
-            # The record's snapshot of it lives in the store at s3_uri and is checked
-            # there with --verify-s3, not against the checkout.
-            pass
-        elif local.is_file():
-            if sha256_file(local) != r.get("sha256"):
-                e.append(f"{name}: raw {r['path']} differs from its recorded sha256")
+        if local.is_file():
+            if sha256_file(local) != r.get("sha256") or local.stat().st_size != r.get("bytes"):
+                if (allow_archived_raw
+                        and rec["status"] in ("measured", "invalid", "censored")
+                        and archived_raw_matches(root, cfg, r, remote=verify_s3)):
+                    source = "S3 archive" if verify_s3 else "local archive cache"
+                    print(f"benchrec: {name}: original raw bytes verified from {source} "
+                          f"for {r['path']}; differing checkout bytes are not validated here")
+                else:
+                    e.append(f"{name}: raw {r['path']} differs from its recorded sha256 or bytes")
         else:
             covered = manifests is not None and manifests.get(r.get("path")) == r.get("sha256")
             if not covered and not r.get("uploaded"):
                 e.append(f"{name}: raw {r.get('path')} is neither in Git, nor in a .artifacts.json "
                          "manifest, nor marked uploaded; run benchrec.py upload or artifacts.py push")
-        if verify_s3 and not s3_exists(r["s3_uri"]):
-            e.append(f"{name}: raw {r['path']} is not at {r['s3_uri']}")
+        if verify_s3 and str(r.get("s3_uri", "")).startswith("s3://"):
+            found = inventory.size(r["s3_uri"])
+            if found is None:
+                e.append(f"{name}: raw {r['path']} is not at {r['s3_uri']}")
+            elif isinstance(r.get("bytes"), int) and found != r["bytes"]:
+                e.append(f"{name}: raw {r['path']} at {r['s3_uri']} holds {found} bytes, "
+                         f"the record says {r['bytes']}")
     def stored_ok(p: str, what: str) -> bool:
         """True if p is in the checkout, or is store-backed through a .artifacts.json manifest
         (docs/artifacts.md). With verify_s3, a store-backed file must also exist in the store."""
@@ -508,7 +832,7 @@ def record_errors(root: Path, cfg: dict, rec: dict, name: str, *, require_closed
         digest = manifests.get(p) if manifests is not None else None
         if not digest:
             return False
-        if verify_s3 and not s3_exists(store_uri(cfg, digest)):
+        if verify_s3 and not inventory.exists(store_uri(cfg, digest)):
             e.append(f"{name}: {what} {p} is in a .artifacts.json manifest but not at {store_uri(cfg, digest)}")
         return True
     for k in ("pdf",):
@@ -561,10 +885,28 @@ def all_records(root: Path, cfg: dict) -> list[tuple[str, dict]]:
     return out
 
 
+def _comparison_snapshot(root: Path, base: str) -> tuple[str, list[tuple[str, str]]]:
+    """Pin both commits; failed or unrelated comparisons are never empty diffs."""
+    if not base:
+        raise SystemExit("benchrec: empty comparison base")
+    head = git(root, "rev-parse", "--verify", "--end-of-options", "HEAD^{commit}").strip()
+    requested = git(root, "rev-parse", "--verify", "--end-of-options", f"{base}^{{commit}}").strip()
+    merge_base = git(root, "merge-base", requested, head).strip()
+    fields = git(root, "diff", "--no-ext-diff", "--name-status", "-z", "--no-renames",
+                 merge_base, head).split("\0")
+    if fields.pop() != "" or len(fields) % 2:
+        raise SystemExit("benchrec: incomplete Git change inventory")
+    changes = list(zip(fields[::2], fields[1::2]))
+    if any(status not in {"A", "M", "D", "T"} for status, _ in changes):
+        raise SystemExit("benchrec: unexpected Git change status")
+    return merge_base, changes
+
+
 def changed_paths(root: Path, base: str) -> list[str]:
-    merge_base = git(root, "merge-base", base, "HEAD", check=False).strip() or base
-    out = git(root, "diff", "--name-only", "--diff-filter=ACMR", f"{merge_base}...HEAD", check=False)
-    return [l for l in out.splitlines() if l]
+    # New entries retain their prior add/modify semantics. Disabling rename
+    # detection represents a move as an addition and a deletion.
+    _, changes = _comparison_snapshot(root, base)
+    return [path for status, path in changes if status in {"A", "M"}]
 
 
 def new_entries(root: Path, cfg: dict, paths: list[str]) -> set[str]:
@@ -585,35 +927,54 @@ def new_entries(root: Path, cfg: dict, paths: list[str]) -> set[str]:
 
 def cmd_check(a, root: Path, cfg: dict) -> int:
     problems: list[str] = []
-    if a.verify_s3 and not aws_available():
+    comparison = _comparison_snapshot(root, a.base) if a.base is not None else None
+    if a.verify_s3 and not aws_available(cfg):
         print("FAIL: --verify-s3 asked for but no AWS credentials or aws CLI here; "
               "the S3 side of the records cannot be verified")
         return 1
     recs = all_records(root, cfg)
+    exclusions = integrity_exclusions(root, cfg, recs)
     manifests = artifact_manifests(root)
+    inventory = S3Inventory(cfg) if a.verify_s3 else None
+    if inventory is not None:
+        started = time.monotonic()
+        wanted = [str(r.get("s3_uri", "")) for _, rec in recs if rec.get("schema") == SCHEMA
+                  for r in rec.get("raw", []) if isinstance(r, dict)]
+        inventory.prefetch(u for u in wanted if u.startswith("s3://"))
+        st = inventory.stats
+        print(f"benchrec: S3 inventory for {len(wanted)} raw object(s): "
+              f"{st['listed_prefixes']} prefix listing(s) ({st['listed_objects']} objects), "
+              f"{st['heads']} HEAD(s), {time.monotonic() - started:.1f}s")
     referenced: set[str] = set()
     for name, rec in recs:
         if rec.get("schema") != SCHEMA:
             problems.append(f"{name}: not a {SCHEMA} record")
             continue
         problems += record_errors(root, cfg, rec, name, require_closed=True,
-                                  verify_s3=a.verify_s3, manifests=manifests)
+                                  verify_s3=a.verify_s3, manifests=manifests,
+                                  excluded=name in exclusions,
+                                  inventory=inventory)
         referenced.update(rec.get("entries", []))
-    if a.base:
-        changed = changed_paths(root, a.base)
+    if comparison is not None:
+        base_ref, changes = comparison
+        changed = [path for status, path in changes if status in {"A", "M"}]
         for d in sorted(new_entries(root, cfg, changed)):
             if d not in referenced:
                 problems.append(f"{d}: benchmark entry added without a {SCHEMA} record naming it "
                                 f"(benchrec.py init --entry {d} ...)")
-        touched_records = [p for p in changed if p.startswith(cfg["records_dir"].rstrip("/") + "/")]
-        base_ref = git(root, "merge-base", a.base, "HEAD", check=False).strip() or a.base
+        touched_records = [p for _, p in changes
+                           if p.startswith(cfg["records_dir"].rstrip("/") + "/")]
         for p in touched_records:
-            old = git(root, "show", f"{base_ref}:{p}", check=False)
-            if old.strip():
+            old = committed_record(root, base_ref, p)
+            if old is not None:
                 try:
                     o = json.loads(old)
                 except ValueError:
-                    o = {}
+                    problems.append(f"{p}: committed base benchmark record is invalid JSON")
+                    continue
+                if not isinstance(o, dict):
+                    problems.append(f"{p}: committed base benchmark record is not an object")
+                    continue
                 if o.get("status") in ("measured", "invalid", "censored"):
                     problems.append(f"{p}: a closed record is immutable; a rerun is a new record")
     if a.local:
@@ -647,15 +1008,39 @@ def cmd_open(a, root: Path, cfg: dict) -> int:
 
 # ------------------------------------------------------------------- progress
 
-def series_key(rec: dict, m: dict) -> str:
-    return f"{rec['problem']}|{m['name']}|{m['unit']}"
+def series_key(rec: dict, m: dict) -> tuple[str, str, str]:
+    return rec['problem'], m['name'], m['unit']
 
 
-def build_progress(root: Path, cfg: dict) -> dict:
-    recs = [r for _, r in all_records(root, cfg) if r.get("schema") == SCHEMA]
-    closed = [r for r in recs if r.get("status") == "measured"]
+def relative_gain(first, value, better: str) -> float:
+    """Retain ordinary rounding while avoiding overflowing finite differences."""
+    sign = 1.0 if better == "lower" else -1.0
+    difference = first - value
+    if finite_number(difference):
+        return round(sign * difference / abs(first) * 100.0, 4)
+    # Opposite-signed finite endpoints can have a finite relative change even
+    # when their difference cannot be represented as a float.
+    return round(sign * (first / abs(first) - value / abs(first)) * 100.0, 4)
+
+
+def build_progress(root: Path, cfg: dict, *, replacement: tuple[str, dict] | None = None) -> dict:
+    records = all_records(root, cfg)
+    exclusions = integrity_exclusions(root, cfg, records)
+    if replacement:
+        records = [(name, replacement[1] if name == replacement[0] else r) for name, r in records]
+    recs = [r for _, r in records if r.get("schema") == SCHEMA]
+    closed = []
+    for name, r in records:
+        if r.get("schema") != SCHEMA:
+            raise ValueError(f"{name}: not a readable {SCHEMA} record")
+        if r.get("status") != "measured" or name in exclusions:
+            continue
+        errors = measurement_errors(r, name)
+        if errors:
+            raise ValueError("; ".join(errors))
+        closed.append(r)
     closed.sort(key=lambda r: (r.get("closed_utc") or r["created_utc"], r["id"]))
-    series: dict[str, dict] = {}
+    series: dict[tuple[str, str, str], dict] = {}
     for r in closed:
         for m in r["metrics"]:
             k = series_key(r, m)
@@ -663,6 +1048,9 @@ def build_progress(root: Path, cfg: dict) -> dict:
                 "problem": r["problem"], "metric": m["name"], "unit": m["unit"],
                 "better": m["better"], "points": [],
             })
+            if s["better"] != m["better"]:
+                raise ValueError(f"{r['id']}: direction for {k!r} differs from "
+                                 f"{s['points'][0]['record']}; use a distinct metric identity")
             s["points"].append({
                 "record": r["id"], "date": (r.get("closed_utc") or r["created_utc"])[:10],
                 "value": m["value"], "n": m.get("n"), "spread": m.get("spread"),
@@ -670,7 +1058,8 @@ def build_progress(root: Path, cfg: dict) -> dict:
                 "commit": r["commit"][:12], "summary": r.get("summary", ""),
             })
     out_series = []
-    for k in sorted(series):
+    # Keep the established display order while using collision-free identities.
+    for k in sorted(series, key=lambda key: "|".join(key)):
         s = series[k]
         pts = s["points"]
         first = pts[0]["value"]
@@ -678,20 +1067,23 @@ def build_progress(root: Path, cfg: dict) -> dict:
         for p in pts:
             v = p["value"]
             p["derived"] = {}
-            if s["better"] in ("lower", "higher") and first not in (0, None):
-                sign = 1.0 if s["better"] == "lower" else -1.0
-                p["derived"]["improvement_vs_first_percent"] = round(sign * (first - v) / abs(first) * 100.0, 4)
-                if prev not in (0, None):
-                    p["derived"]["improvement_vs_previous_percent"] = round(sign * (prev - v) / abs(prev) * 100.0, 4)
+            # A first observation alone is not a comparison with itself.
+            # Keep its zero anchor only when another record exists.
+            if len(pts) > 1 and s["better"] in ("lower", "higher") and first not in (0, None):
+                p["derived"]["improvement_vs_first_percent"] = relative_gain(first, v, s["better"])
+            if s["better"] in ("lower", "higher") and prev not in (0, None):
+                p["derived"]["improvement_vs_previous_percent"] = relative_gain(prev, v, s["better"])
             if p.get("reference") not in (0, None):
                 p["derived"]["value_over_reference"] = round(v / p["reference"], 6)
+            if any(not finite_number(value) for value in p["derived"].values()):
+                raise ValueError(f"{p['record']}: derived comparison overflow for {k!r}")
             prev = v
         s["first"] = first
         s["latest"] = pts[-1]["value"]
         s["latest_derived"] = pts[-1]["derived"]
         out_series.append(s)
     counts = {st: len([r for r in recs if r.get("status") == st]) for st in STATUSES}
-    return {
+    result = {
         "schema": PROGRESS_SCHEMA,
         "repo": repo_name(root),
         "headline_unit": HEADLINE_UNIT,
@@ -703,6 +1095,12 @@ def build_progress(root: Path, cfg: dict) -> dict:
                  "Percentages and ratios under 'derived' are computed here from those values "
                  "and are not measurements. Series in different units are never compared."),
     }
+    if exclusions:
+        result["integrity_exclusions"] = [{"record": name, **pin} for name, pin in sorted(exclusions.items())]
+        result["note"] += (f" {len(exclusions)} digest-pinned historical measured records are excluded "
+                           "from all series and derived comparisons; recorded status counts retain them. "
+                           "See integrity_exclusions in progress.json and PROGRESS.md for reasons.")
+    return result
 
 
 def progress_paths(root: Path, cfg: dict) -> dict[str, Path]:
@@ -713,7 +1111,7 @@ def progress_paths(root: Path, cfg: dict) -> dict[str, Path]:
 
 def render_all(prog: dict) -> dict[str, bytes]:
     return {
-        "json": (json.dumps(prog, indent=2, sort_keys=True) + "\n").encode(),
+        "json": (json.dumps(prog, indent=2, sort_keys=True, allow_nan=False) + "\n").encode(),
         "md": render_md(prog).encode(),
         "svg": render_svg(prog).encode(),
         "pdf": render_pdf(prog),
@@ -804,6 +1202,12 @@ def render_md(prog: dict) -> str:
                      f"{fmt(p['derived'].get('value_over_reference'))} | {p['summary'][:120]} |")
         L.append("")
     L += ["", prog["note"], ""]
+    if prog.get("integrity_exclusions"):
+        L += ["## Historical records excluded from comparisons", "",
+              "Recorded statuses above are preserved. These records contribute no points or gains.", ""]
+        for item in prog["integrity_exclusions"]:
+            L += [f"- `{item['record']}` (SHA-256 `{item['sha256']}`): {item['reason']}"]
+        L.append("")
     return "\n".join(L)
 
 
@@ -817,15 +1221,17 @@ def _esc(s: str) -> str:
 
 
 def chart_panels(prog: dict) -> list[dict]:
-    """Panels: headline 'gain vs first' for every headline series, 'distance to
-    reference' where references exist, then one panel per other unit."""
+    """Show only panels with comparable observations in their own units."""
     panels = []
     head = [s for s in prog["series"] if s["unit"] == prog["headline_unit"]]
-    if head:
+    if any(p["derived"].get("improvement_vs_first_percent") is not None
+           for s in head for p in s["points"]):
         panels.append({"title": f"Cumulative gain vs first record, unit {prog['headline_unit']} (derived, %)",
                        "ylabel": "% better than first", "series": head,
                        "y": lambda p: p["derived"].get("improvement_vs_first_percent"), "log": False})
-    refd = [s for s in prog["series"] if any(p["derived"].get("value_over_reference") for p in s["points"])]
+    refd = [s for s in prog["series"] if any(
+        (v := p["derived"].get("value_over_reference")) is not None and v > 0
+        for p in s["points"])]
     if refd:
         panels.append({"title": "Distance remaining: value / reference (1.0 = parity; derived)",
                        "ylabel": "value / reference", "series": refd,
@@ -835,9 +1241,12 @@ def chart_panels(prog: dict) -> list[dict]:
         if s["unit"] != prog["headline_unit"]:
             by_unit.setdefault(s["unit"], []).append(s)
     for u in sorted(by_unit):
-        panels.append({"title": f"Series in unit {u}: gain vs first record (derived, %)",
-                       "ylabel": "% better than first", "series": by_unit[u],
-                       "y": lambda p: p["derived"].get("improvement_vs_first_percent"), "log": False})
+        series = by_unit[u]
+        if any(p["derived"].get("improvement_vs_first_percent") is not None
+               for s in series for p in s["points"]):
+            panels.append({"title": f"Series in unit {u}: gain vs first record (derived, %)",
+                           "ylabel": "% better than first", "series": series,
+                           "y": lambda p: p["derived"].get("improvement_vs_first_percent"), "log": False})
     return panels
 
 
@@ -868,42 +1277,70 @@ def panel_geometry(panel: dict):
     if y0 == y1:
         y0, y1 = y0 - 1, y1 + 1
     pad = (y1 - y0) * 0.1
-    return x0, x1, y0 - pad, y1 + pad
+    low, high = y0 - pad, y1 + pad
+    if all(finite_number(v) for v in (low, high, high - low)) and low < high:
+        return x0, x1, low, high, 1.0
+    # Finite plotted values need not have a representable difference or padded
+    # range. Normalize only that exceptional case; keep labels in original units.
+    scale = max(abs(v) for v in ys)
+    low, high = min(ys) / scale, max(ys) / scale
+    pad = (high - low) * 0.1 if low != high else 0.1
+    return x0, x1, max(-1.0, low - pad), min(1.0, high + pad), scale
+
+
+def axis_label(value: float, logarithmic: bool, scale: float) -> str:
+    if logarithmic:
+        try:
+            linear = 10 ** value
+        except OverflowError:
+            linear = float("inf")
+        return f"{linear:.3g}" if finite_number(linear) and linear > 0 else f"10^{value:.3g}"
+    value = value if scale == 1.0 else max(-1.0, min(1.0, value)) * scale
+    return f"{value:.3g}"
 
 
 def render_svg(prog: dict) -> str:
     import math
     W, PH, M = 900, 260, 60
     panels = chart_panels(prog)
-    H = 70 + max(1, len(panels)) * (PH + 50)
+    # The legend can be taller than the plot when many metrics are recorded.
+    # Reserve its full height before positioning the next panel.
+    spans = [max(PH + 50, 62 + 16 * (len(p["series"]) - 1)) for p in panels]
+    H = 70 + (sum(spans) if spans else PH + 50)
     o = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}" font-family="Helvetica, Arial, sans-serif" font-size="12">',
          f'<rect width="{W}" height="{H}" fill="white"/>',
          f'<text x="{M}" y="30" font-size="18" font-weight="bold">Benchmark progress: {_esc(prog["repo"])}</text>',
          f'<text x="{M}" y="50" fill="#555">Values from bench.record/v1 records; percentages and ratios derived, same unit within a series. '
          f'Records: {", ".join(f"{k} {v}" for k, v in prog["records"].items())}.</text>']
     if not panels:
-        o.append(f'<text x="{M}" y="100">No measured records yet.</text>')
-    for i, panel in enumerate(panels):
-        top = 70 + i * (PH + 50)
+        message = ("No comparable observations within a metric yet; see PROGRESS.md for measured values."
+                   if prog["records"].get("measured", 0) else "No measured records yet.")
+        o.append(f'<text x="{M}" y="100">{_esc(message)}</text>')
+    if prog.get("integrity_exclusions"):
+        o.append(f'<text x="{M}" y="67" fill="#a03030">'
+                 f'{len(prog["integrity_exclusions"])} historical measured records excluded from comparisons; see PROGRESS.md.</text>')
+    top = 70
+    for panel, span in zip(panels, spans):
         geom = panel_geometry(panel)
         o.append(f'<text x="{M}" y="{top + 14}" font-weight="bold">{_esc(panel["title"])}</text>')
         gx0, gy0, gw, gh = M, top + 24, W - 2 * M - 220, PH - 40
         o.append(f'<rect x="{gx0}" y="{gy0}" width="{gw}" height="{gh}" fill="none" stroke="#999"/>')
         if geom is None:
             o.append(f'<text x="{gx0 + 10}" y="{gy0 + 20}" fill="#555">no points</text>')
+            top += span
             continue
-        x0, x1, y0, y1 = geom
+        x0, x1, y0, y1, scale = geom
 
         def X(d):
             return gx0 + (d - x0) / (x1 - x0) * gw
 
         def Y(v):
-            v = math.log10(v) if panel["log"] else v
+            v = (math.log10(v) if panel["log"] else v) / scale
             return gy0 + gh - (v - y0) / (y1 - y0) * gh
         for k in range(5):
             yv = y0 + (y1 - y0) * k / 4
             yy = gy0 + gh - gh * k / 4
-            lab = f"{10 ** yv:.3g}" if panel["log"] else f"{yv:.3g}"
+            lab = axis_label(yv, panel["log"], scale)
             o.append(f'<line x1="{gx0}" y1="{yy:.1f}" x2="{gx0 + gw}" y2="{yy:.1f}" stroke="#eee"/>')
             o.append(f'<text x="{gx0 - 6}" y="{yy + 4:.1f}" text-anchor="end" fill="#555">{lab}</text>')
         for k in range(4):
@@ -933,6 +1370,7 @@ def render_svg(prog: dict) -> str:
             lx, ly = gx0 + gw + 16, gy0 + 14 + j * 16
             o.append(f'<rect x="{lx}" y="{ly - 9}" width="10" height="10" fill="{col}"/>')
             o.append(f'<text x="{lx + 14}" y="{ly}">{_esc((s["problem"] + " · " + s["metric"])[:34])}</text>')
+        top += span
     o.append("</svg>")
     return "\n".join(o) + "\n"
 
@@ -1037,7 +1475,9 @@ def render_pdf(prog: dict) -> bytes:
     y += 24
     panels = chart_panels(prog)
     if not panels:
-        pdf.text(M, y, "No measured records yet.", 11)
+        message = ("No comparable observations within a metric yet; measured values are tabulated below."
+                   if prog["records"].get("measured", 0) else "No measured records yet.")
+        pdf.text(M, y, message, 11)
     PH = 200
     for panel in panels:
         if y + PH + 40 > H - M:
@@ -1045,25 +1485,25 @@ def render_pdf(prog: dict) -> bytes:
             y = 60
         pdf.text(M, y, panel["title"], 11, bold=True)
         y += 10
-        gx0, gy0, gw, gh = M + 40, y, W - 2 * M - 200, PH - 40
+        gx0, gy0, gw, gh = M + 40, y, W - 2 * M - 40, PH - 40
         pdf.rect(gx0, gy0, gw, gh, stroke="#999999")
         geom = panel_geometry(panel)
         if geom is None:
             pdf.text(gx0 + 8, gy0 + 16, "no points", 9, "#555555")
             y += PH
             continue
-        x0, x1, y0, y1 = geom
+        x0, x1, y0, y1, scale = geom
 
         def X(d):
             return gx0 + (d - x0) / (x1 - x0) * gw
 
         def Y(v):
-            v = math.log10(v) if panel["log"] else v
+            v = (math.log10(v) if panel["log"] else v) / scale
             return gy0 + gh - (v - y0) / (y1 - y0) * gh
         for k in range(5):
             yv = y0 + (y1 - y0) * k / 4
             yy = gy0 + gh - gh * k / 4
-            lab = f"{10 ** yv:.3g}" if panel["log"] else f"{yv:.3g}"
+            lab = axis_label(yv, panel["log"], scale)
             pdf.line(gx0, yy, gx0 + gw, yy, "#eeeeee")
             pdf.text(gx0 - 34, yy + 3, lab, 7, "#555555")
         for k in range(4):
@@ -1081,13 +1521,37 @@ def render_pdf(prog: dict) -> bytes:
             pdf.polyline(pts, col)
             for px, py in pts:
                 pdf.dot(px, py, 2.5, col)
-            lx, ly = gx0 + gw + 12, gy0 + 12 + j * 12
-            pdf.rect(lx, ly - 7, 8, 8, stroke=None, fill=col)
-            pdf.text(lx + 12, ly, (s["problem"] + " · " + s["metric"])[:30], 7)
-        y += PH
-    # Table page(s)
-    pdf.new_page()
-    y = 60
+        y = gy0 + gh + 26
+        pdf.text(M, y, "Series key", 9, bold=True)
+        y += 14
+        next_series = 0
+        while next_series < len(panel["series"]):
+            available_rows = int((H - M - y) // 12)
+            if available_rows < 1:
+                pdf.new_page()
+                y = 60
+                pdf.text(M, y, panel["title"] + " (series key continued)", 9, bold=True)
+                y += 18
+                continue
+            rows = min(available_rows, (len(panel["series"]) - next_series + 1) // 2)
+            for col in range(2):
+                for row in range(rows):
+                    j = next_series + col * rows + row
+                    if j >= len(panel["series"]):
+                        break
+                    s = panel["series"][j]
+                    lx, ly = M + col * (W - 2 * M) / 2, y + row * 12
+                    pdf.rect(lx, ly - 7, 8, 8, stroke=None, fill=PALETTE[j % len(PALETTE)])
+                    pdf.text(lx + 12, ly, (s["problem"] + " · " + s["metric"])[:30], 7)
+            next_series += 2 * rows
+            y += rows * 12 + 18
+    # Keep the table on the first page when there was no comparison chart;
+    # otherwise give the chart and table their own pages.
+    if panels:
+        pdf.new_page()
+        y = 60
+    else:
+        y += 24
     pdf.text(M, y, "Series summary", 14, bold=True)
     y += 18
     cols = [(M, "problem · metric"), (M + 230, "unit"), (M + 270, "first"), (M + 330, "latest"),
@@ -1106,7 +1570,7 @@ def render_pdf(prog: dict) -> bytes:
                 (fmt(d.get("improvement_vs_first_percent")) + "%") if d.get("improvement_vs_first_percent") is not None else "–",
                 fmt(d.get("value_over_reference")), str(len(s["points"]))]
         for (x, _), v in zip(cols, vals):
-            pdf.text(x, y, v, 8)
+            pdf.text(x, y, v.replace("–", "-"), 8)
         y += 12
     y += 16
     for line in _wrap(prog["note"], 110):
@@ -1115,6 +1579,19 @@ def render_pdf(prog: dict) -> bytes:
             y = 60
         pdf.text(M, y, line, 8, "#555555")
         y += 11
+    if prog.get("integrity_exclusions"):
+        pdf.new_page()
+        y = 60
+        pdf.text(M, y, "Historical records excluded from comparisons", 14, bold=True)
+        y += 24
+        for item in prog["integrity_exclusions"]:
+            for line in _wrap(f"{item['record']}: {item['reason']}", 105):
+                if y > H - M:
+                    pdf.new_page()
+                    y = 60
+                pdf.text(M, y, line, 8)
+                y += 12
+            y += 8
     return pdf.render()
 
 
@@ -1195,7 +1672,8 @@ def main(argv=None) -> int:
     p = sub.add_parser("check")
     p.add_argument("--base", default=None, help="compare against this ref (CI: origin/<base>)")
     p.add_argument("--local", action="store_true", help="also fail on records opened here and not closed")
-    p.add_argument("--verify-s3", action="store_true", help="HEAD every raw object (needs AWS credentials)")
+    p.add_argument("--verify-s3", action="store_true",
+                   help="confirm every raw object is in S3 at its recorded size (needs AWS credentials)")
     p.set_defaults(fn=cmd_check)
 
     p = sub.add_parser("gate")
@@ -1209,7 +1687,15 @@ def main(argv=None) -> int:
     cfg = load_config(root)
     if a.cmd == "run" and a.command and a.command[0] == "--":
         a.command = a.command[1:]
-    return a.fn(a, root, cfg)
+    try:
+        return a.fn(a, root, cfg)
+    except S3Error as exc:
+        print(f"FAIL: S3 could not be verified: {exc}")
+        print(f"benchrec: S3 error: {exc}", file=sys.stderr)
+        return 1
+    except (ValueError, OverflowError) as error:
+        print(f"benchrec: {error}", file=sys.stderr)
+        return 1
 
 
 if __name__ == "__main__":
