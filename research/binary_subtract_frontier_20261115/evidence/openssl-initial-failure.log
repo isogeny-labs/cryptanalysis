@@ -1,0 +1,45 @@
+   Compiling binary-subtract-production-controls v0.1.0 (/workspace/cryptanalysis/research/binary_subtract_frontier_20261115/check)
+    Finished `release` profile [optimized] target(s) in 1.93s
+     Running unittests ../oracle_controls.rs (suite/target/release/build/binary-subtract-production-controls/5c2d792e6dd3f438/out/binary_subtract_production_controls-5c2d792e6dd3f438)
+
+running 5 tests
+
+thread 'tests::early_hit_charges_the_computed_block_and_failed_prepare_invalidates' (15976) panicked at /workspace/cryptanalysis/suite/src/cryptanalysis/ic_framework/binary_subtract.rs:150:9:
+subtract-binary-batch requires successful prepare
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+thread 'tests::early_hit_charges_the_computed_block_and_failed_prepare_invalidates' (15976) panicked at /workspace/cryptanalysis/suite/src/cryptanalysis/ic_framework/binary_subtract.rs:150:9:
+subtract-binary-batch requires successful prepare
+
+thread 'tests::early_hit_charges_the_computed_block_and_failed_prepare_invalidates' (15976) panicked at /workspace/cryptanalysis/suite/src/cryptanalysis/ic_framework/binary_subtract.rs:150:9:
+subtract-binary-batch requires successful prepare
+
+thread 'tests::early_hit_charges_the_computed_block_and_failed_prepare_invalidates' (15976) panicked at /workspace/cryptanalysis/suite/src/cryptanalysis/ic_framework/binary_subtract.rs:150:9:
+subtract-binary-batch requires successful prepare
+
+thread 'tests::early_hit_charges_the_computed_block_and_failed_prepare_invalidates' (15976) panicked at /workspace/cryptanalysis/suite/src/cryptanalysis/ic_framework/binary_subtract.rs:150:9:
+subtract-binary-batch requires successful prepare
+test tests::early_hit_charges_the_computed_block_and_failed_prepare_invalidates ... ok
+
+thread 'tests::native_fields_and_preparation_reuse_keep_scalar_answers' (15978) panicked at ../oracle_controls.rs:156:47:
+called `Option::unwrap()` on a `None` value
+test tests::native_fields_and_preparation_reuse_keep_scalar_answers ... FAILED
+test tests::composed_pipeline_recovers_the_same_public_known_answer ... ok
+production first-witness comparisons against general pair enumeration: 12900
+test tests::first_witness_matches_independent_general_pair_enumeration ... ok
+
+thread 'tests::openssl_independent_binary_group_control_matches_first_witnesses' (15979) panicked at ../oracle_controls.rs:427:13:
+assertion `left == right` failed: OpenSSL first-witness parity n=7
+  left: "0 0 3\n1 1 2\n2 0 3\n3 none\n4 none\n5 none\n6 none\n7 none\n8 none\n9 none\n10 none\n11 none\n12 none\n13 none\n14 none\n15 none\n16 none\n17 none\n18 none\n19 none\n20 none\n21 none\n22 none\n23 none\n24 none\n25 none\n26 1 2\n27 0 3\n28 0 3\n29 1 2\n"
+ right: "0 1 1\n1 0 3\n2 1 1\n3 none\n4 none\n5 none\n6 none\n7 none\n8 none\n9 none\n10 none\n11 none\n12 none\n13 none\n14 none\n15 none\n16 none\n17 none\n18 none\n19 none\n20 none\n21 none\n22 none\n23 none\n24 none\n25 none\n26 0 3\n27 1 1\n28 1 1\n29 0 3\n"
+test tests::openssl_independent_binary_group_control_matches_first_witnesses ... FAILED
+
+failures:
+
+failures:
+    tests::native_fields_and_preparation_reuse_keep_scalar_answers
+    tests::openssl_independent_binary_group_control_matches_first_witnesses
+
+test result: FAILED. 3 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.77s
+
+error: test failed, to rerun pass `--lib`

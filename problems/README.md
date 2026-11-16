@@ -10,18 +10,7 @@ explain the gap and what would let the work move past it.
 | Problem | Status | What it blocks | What would unblock it |
 | --- | --- | --- | --- |
 | [Prepared/joint collector runtime qualification](point-table-joint-runtime-qualification.md) | open | matched native point-table/joint runtime result | current-source S3 upload/readback, authenticated exact native image/execution, admitted matched comparison |
-| [Whole comparator memory envelope and schema updates](chained-transfer-whole-comparator-memory-bound-updates.md) | resolved for fixed historical comparator03 | Original allocation134, then false rank-count rejection1; both preserved | All26 phases, whole positive and elapsed-only0, eight negatives1/no accepted output, original constrained-coordinate audit101; unchanged2GiB cap. Fresh diagnostic CI remains open. [pcc:unverified] |
-| [Original FB30 character extension](chained-transfer-original-FB30-character-extension-02.md) | investigating | Collected FB30 constraints admit a finite noncharacter functional | Prospective unassisted actual-relation completion, full-population checks and separately admitted matched costs. [pcc:unverified] |
-| [Cold preflight build envelope update](chained-transfer-cold-preflight-build-budget-update-20261114.md) | partial | Original full cold120 compile remains unmet | Explicit900setup/full39phase replay e6f380 completes locally; preserve earlier124, audit whole CI artifact; no cold120 waiver. [pcc:unverified] |
-| [Census supervisor lifetime](chained-transfer-census-process-lifetime.md) | resolved for detached04 | Old03 remains interrupted/unknown | Detached04 records actualcold124/reuse0/sourceguards0; original fullcensus requirement remains open. [pcc:unverified] |
-| [Incomplete cold arithmetic census](chained-transfer-incomplete-cold-arithmetic-census.md) | open | Complete120cold900 requirement unmet after actual04cold124/18success receipts; bothreuse0 | Whole partial-data parity/control audit then preserve all negatives; any new optimization must meet unchanged full criterion. [pcc:unverified] |
-| [Actual new-target IC compatibility and complete cost coverage](chained-transfer-new-jacobian-ic-cost-coverage.md) | partial; finite native compatibility supplied,cost/formal gaps open | Complete cold+online FpR/model/map/admission/verification coverage and global bridges | 8a77f3 all20pairs/fouractualP0s/1004raw92triples/3304guards;57existingconditionalbindings;genuinewholedataf5a805/4fda8d;next755full/16CI then operationcoverage. [pcc:unverified] |
-| [Transported52 kernels and complete odd-degree coordinates](chained-transfer-odd-product-kernel-and-odd-factor.md) | open; bounded panel obstruction/coordinate gap | Free52 for three actual targets and complete odddegree13^3 beta coordinates | Native147b66/d3,2,1/nonefree; matched beta coordinates open. Nondual second-hop27fb3a fixed HLP(2,1) smooth/D12nonsquare unsupported for suppliedsource; allsixretained/strictomission101/report14b605. Additional fixededge6d2c97 uniquelyHLP(0,0)D24unsupported; finite-residue68cd8c/reporta1ee6b. Wholepublication/replay then coldcensus remedy. [pcc:unverified] |
-| [Fixed q223 prime-field polarized two-kernel](chained-transfer-primefield-polarized-two-kernel.md) | investigating; unsigned derived fixed-degree obstruction | Another F223-rational polarized(2,2,2) Jacobian target from fixedJ | c88589/907dfc/c2270b; fullb9cd55/CI48edee and gluing06b112/aefb67 done. Actual alternative maps7c9bf4; kernel29830a/2e21d5 and same-product collapse; kernel fullf4c0a7/CI6add5b done; actual degree13 different productde87bd/b9a91f; actual3 Aprime targets/complete maps9561ce,both52/source recovery/written1fd6e7;675input clean full/CI,kernel type/cost next. [pcc:unverified] |
-| [Actual q223 geometric two-torsion and nondual map](chained-transfer-geometric-two-torsion.md) | open | Actual geometric coordinates, Frobenius, kernel and nondual codomain | Actual old Jac2/Jac4 divisor bases remain open; four complete maps7c9bf4, full06b112/CIaefb67; actual product intersections29830a and geometric free4 types2e21d5; actual degree13 different source productde87bd; actual3 Aprime targets/both52/source recovery9561ce;full geometric kernel type/cost next. [pcc:unverified] |
-| [Public-target chained-transfer destination bridge](chained-transfer-public-target-destination-bridge.md) | partial; public solutions/complete q223 maps/alternative targets/actual odd source | Complete chained Jacobian transfer with full costs and independent evidence | P1/completed/gluing/kernel fullCI settled; source13de87bd/b9a91f,50 partial bindings; actual3 Aprime Jacobian maps9561ce/both52/recovery,52 partial bindings;own675input replay/full geometric kernel/cost open. [pcc:unverified] |
-| [q223 prime-field elliptic shortcut](q223-prime-field-elliptic-shortcut.md) | fixed shortcut excluded; formal integer scope only | Hasse count195..253 cannot divide11092292 | Three original Lean bindings d8f845/180a3c/7c5dfe; positive Jacobian descent retained; actual geometry formalization open |
-| [Independent chained-transfer input closure](chained-transfer-independent-input-closure.md) | resolved | exactf656 CI43246121013 succeeds:25/98+five and32/23/twooutputs/32modules;fullf58004 | preserve settled sources,pins,negative attempts and whole logs;future integration requires a new protocol |
+| [Production binary-subtraction speed frontier](binary-subtract-speed-frontier.md) | open | admitted matched native/external speed-frontier result after production integration | existing EKS/budget/pool/checkpoint access, frozen binary/image, L2/A-A/replay, external timing and independent verification |
 
 ---
 
@@ -129,6 +118,18 @@ existing review, archival, and claim-promotion rules.
 
 | [Complete LP presentation projection](chained-transfer-full-large-prime-presentation.md) | investigating | Captured all_available rank is not complete raw-graph projection | Frozen sixty-call A/P/C/U certificates, full lifts and independent replay; compare captured/cap/full-graph dimensions without oracle feedback. [pcc:unverified] |
 | [Diagnostic checkpoint sparse status](chained-transfer-diagnostic-checkpoint-sparse-status.md) | investigating | Original checkpoint/readbacks0 then finalstatus1; native step skipped | Version02 exact original fetch-depth0 setup, actualstatus0 and complete whole diagnostic run; failuresce239f retained. [pcc:unverified] |
+| [Whole comparator memory envelope and schema updates](chained-transfer-whole-comparator-memory-bound-updates.md) | resolved for fixed historical comparator03 | Original allocation134, then false rank-count rejection1; both preserved | All26 phases, whole positive and elapsed-only0, eight negatives1/no accepted output, original constrained-coordinate audit101; unchanged2GiB cap. Fresh diagnostic CI remains open. [pcc:unverified] |
+| [Original FB30 character extension](chained-transfer-original-FB30-character-extension-02.md) | investigating | Collected FB30 constraints admit a finite noncharacter functional | Prospective unassisted actual-relation completion, full-population checks and separately admitted matched costs. [pcc:unverified] |
+| [Cold preflight build envelope update](chained-transfer-cold-preflight-build-budget-update-20261114.md) | partial | Original full cold120 compile remains unmet | Explicit900setup/full39phase replay e6f380 completes locally; preserve earlier124, audit whole CI artifact; no cold120 waiver. [pcc:unverified] |
+| [Census supervisor lifetime](chained-transfer-census-process-lifetime.md) | resolved for detached04 | Old03 remains interrupted/unknown | Detached04 records actualcold124/reuse0/sourceguards0; original fullcensus requirement remains open. [pcc:unverified] |
+| [Incomplete cold arithmetic census](chained-transfer-incomplete-cold-arithmetic-census.md) | open | Complete120cold900 requirement unmet after actual04cold124/18success receipts; bothreuse0 | Whole partial-data parity/control audit then preserve all negatives; any new optimization must meet unchanged full criterion. [pcc:unverified] |
+| [Actual new-target IC compatibility and complete cost coverage](chained-transfer-new-jacobian-ic-cost-coverage.md) | partial; finite native compatibility supplied,cost/formal gaps open | Complete cold+online FpR/model/map/admission/verification coverage and global bridges | 8a77f3 all20pairs/fouractualP0s/1004raw92triples/3304guards;57existingconditionalbindings;genuinewholedataf5a805/4fda8d;next755full/16CI then operationcoverage. [pcc:unverified] |
+| [Transported52 kernels and complete odd-degree coordinates](chained-transfer-odd-product-kernel-and-odd-factor.md) | open; bounded panel obstruction/coordinate gap | Free52 for three actual targets and complete odddegree13^3 beta coordinates | Native147b66/d3,2,1/nonefree; matched beta coordinates open. Nondual second-hop27fb3a fixed HLP(2,1) smooth/D12nonsquare unsupported for suppliedsource; allsixretained/strictomission101/report14b605. Additional fixededge6d2c97 uniquelyHLP(0,0)D24unsupported; finite-residue68cd8c/reporta1ee6b. Wholepublication/replay then coldcensus remedy. [pcc:unverified] |
+| [Fixed q223 prime-field polarized two-kernel](chained-transfer-primefield-polarized-two-kernel.md) | investigating; unsigned derived fixed-degree obstruction | Another F223-rational polarized(2,2,2) Jacobian target from fixedJ | c88589/907dfc/c2270b; fullb9cd55/CI48edee and gluing06b112/aefb67 done. Actual alternative maps7c9bf4; kernel29830a/2e21d5 and same-product collapse; kernel fullf4c0a7/CI6add5b done; actual degree13 different productde87bd/b9a91f; actual3 Aprime targets/complete maps9561ce,both52/source recovery/written1fd6e7;675input clean full/CI,kernel type/cost next. [pcc:unverified] |
+| [Actual q223 geometric two-torsion and nondual map](chained-transfer-geometric-two-torsion.md) | open | Actual geometric coordinates, Frobenius, kernel and nondual codomain | Actual old Jac2/Jac4 divisor bases remain open; four complete maps7c9bf4, full06b112/CIaefb67; actual product intersections29830a and geometric free4 types2e21d5; actual degree13 different source productde87bd; actual3 Aprime targets/both52/source recovery9561ce;full geometric kernel type/cost next. [pcc:unverified] |
+| [Public-target chained-transfer destination bridge](chained-transfer-public-target-destination-bridge.md) | partial; public solutions/complete q223 maps/alternative targets/actual odd source | Complete chained Jacobian transfer with full costs and independent evidence | P1/completed/gluing/kernel fullCI settled; source13de87bd/b9a91f,50 partial bindings; actual3 Aprime Jacobian maps9561ce/both52/recovery,52 partial bindings;own675input replay/full geometric kernel/cost open. [pcc:unverified] |
+| [q223 prime-field elliptic shortcut](q223-prime-field-elliptic-shortcut.md) | fixed shortcut excluded; formal integer scope only | Hasse count195..253 cannot divide11092292 | Three original Lean bindings d8f845/180a3c/7c5dfe; positive Jacobian descent retained; actual geometry formalization open |
+| [Independent chained-transfer input closure](chained-transfer-independent-input-closure.md) | resolved | exactf656 CI43246121013 succeeds:25/98+five and32/23/twooutputs/32modules;fullf58004 | preserve settled sources,pins,negative attempts and whole logs;future integration requires a new protocol |
 
 
 
@@ -150,6 +151,66 @@ existing review, archival, and claim-promotion rules.
 | [Full IC pipeline build envelope](ic-pipeline-build-envelope.md) | resolved for preparation | original330-second build cap prevented algorithm execution | separate pinned binaries and complete frozen matrix retained; timing qualification remains open |
 | [Parallel PCC appends for native IC](pcc-parallel-append-ic-native.md) | open | PR1621 integration after main/branch append different suffixes at167 | accepted custody-preserving reconciliation and actual current-main prefix/hash-link checks |
 | [Native IC controlled timing qualification](native-ic-timing-qualification.md) | investigating | current-baseline timing promotion and independent claim standing | prepared host or equivalent v1-aware preflight, passing frozen controls, and signed evidence |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

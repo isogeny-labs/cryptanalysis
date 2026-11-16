@@ -1,0 +1,13 @@
+[package]
+name = "binary-subtract-production-controls"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[workspace]
+
+[dev-dependencies]
+frontier_core = { package = "cryptanalysis-suite", path = "../../../suite" }
+
+[lib]
+path = "../oracle_controls.rs"
