@@ -1,0 +1,17 @@
+[
+  {
+    "claim": "pcc/claims/PCC-20261114-fd42cc.json",
+    "theorem": "OldPrimeObstruction.coprime_annihilators",
+    "statement": "theorem coprime_annihilators {A : Type} [IntModule A] (a : A) (p n u v : Int) (relation : u*p+v*n=1) (primeAnnihilator : p \u2022 a=0) (targetAnnihilator : n \u2022 a=0) : a=0"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261114-0152d9.json",
+    "theorem": "OldPrimeObstruction.fixed_orders_coprime",
+    "statement": "theorem fixed_orders_coprime : Nat.gcd 2773073 11086844 = 1"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261114-cb00da.json",
+    "theorem": "OldPrimeObstruction.old_prime_point_zero",
+    "statement": "theorem old_prime_point_zero {A : Type} [IntModule A] (a : A) (oldPrime : (2773073 : Int) \u2022 a=0) (targetOrder : (11086844 : Int) \u2022 a=0) : a=0"
+  }
+]

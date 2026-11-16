@@ -1,0 +1,5 @@
+# Versioned CI driver path repair
+
+The original25 run43673764987/job132689306146 at4ba7c50b stopped with step exit1 before the initial source guard or any mathematics: after changing directories, check.sh tried to copy its relative invocation path. The whole artifact ZIP (51,348B; all one member) and whole64,195B job log are retained in evidence/fixed-chain25-path-failure-01. The EXIT trap had not yet been installed, so no original.exit file exists; no missing exit is invented. [pcc:unverified]
+
+check-02.sh is the literal original check.sh with two explicit changes: select reference-02.sha256 and copy the resolved absolute driver path. The workflow invokes this successor. Reference02 retains all original1139 paths, changes only the declared workflow hash, and adds the old whole reference and new driver. Original check.sh/reference01/README and all original24 source remain unchanged. All two tests, 13/695 whole records, six whole-record omissions, 33 theorem roots and 33 bindings retain their original criteria. No successful replay is asserted before the new actual CI result. [pcc:unverified]

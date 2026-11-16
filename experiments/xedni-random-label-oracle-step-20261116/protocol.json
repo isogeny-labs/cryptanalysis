@@ -1,0 +1,11 @@
+{
+  "schema": "xedni-random-label-oracle-step-protocol-v1",
+  "group": "additive Z/5Z",
+  "labels": [0, 1, 2, 3, 4],
+  "encoding_law": "complete enumeration of all 5! bijections",
+  "initial_traces": {"x": [0, 1, 2], "y": [0, 2, 3]},
+  "fresh_operation": "add the last observed element to itself in both executions; xNew=4, yNew=1",
+  "boundary_operation": "add the second and third observed elements; xNew=3 is fresh, yNew=0 repeats the first",
+  "coupling": "extend the point correspondence between the four-element fresh traces to a permutation of Z/5Z by sorted complements; pair encodings by precomposition with its inverse",
+  "measurement": "complete transition-label histograms and explicit encoding pairing"
+}

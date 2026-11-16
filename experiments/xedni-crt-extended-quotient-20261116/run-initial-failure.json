@@ -1,0 +1,7 @@
+{
+  "status": "producer_failure",
+  "stage": "JSON row serialization before first output row",
+  "error": "TypeError: Object of type Integer is not JSON serializable; source was Sage prime_range returning Sage Integer values",
+  "observed_output_rows": 0,
+  "correction": "Convert each frozen prime to a Python int before serializing per-prime checks; ordered mathematical prime set unchanged"
+}

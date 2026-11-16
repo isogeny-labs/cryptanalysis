@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-14T08:58:32Z",
+ "id": "PCC-20261114-a92216",
+ "kind": "theorem",
+ "producer": {
+  "commit": "44df3f0ab0c06ba7bc6d5aaab3e3fe22236bfcb7",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "7daf8f22bbf72acb9e04851f83321b6b4f3012edf5139429f96b811b7aecf170",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/beta-complete-evaluator/lean/CompleteRationalBeta.lean",
+   "theorem": "CompleteRationalBeta.dlp_preservation"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Faithful conditional complete-rational evaluator algebra in ordinary explicit abelian groups/homomorphisms. Natural scalar multiplication is defined from addition and its laws proved. ell=4m+1 and group order4ell derive the split; F=2beta and 2inv=ell+1 derive odd normalization. Explicit quotient betaPhi=Psi and actual-cofactor-lift correctness hypotheses derive evaluate=beta for every class, preserving scalars. Dual13 and rational order11092292 derive full inverse3413013 and DLP equivalence in both directions for ell2773073. Config does not assume the evaluator conclusion; runtime expression does not call beta. Both ORIGINAL proof gates PASS44 audited declarations/zero trusted; ALL19 named roots no axioms beyond propext, no native_decide/holes/user axioms. Actual Picard/Weil-restriction/complete-ideal/reducer/quotient/norm/order/finite-table bridges remain written/native.72partialunique bindings after this set, not72geometricformalizations; unsigned, no execution standing or performance claim.",
+ "statement": "theorem dlp_preservation {A J T : Type} (c : Config A J T) (G : J) (n : Nat) : evaluate c (nsmul c.g n G) = nsmul c.h n (evaluate c G)"
+}

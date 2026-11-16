@@ -1,0 +1,10 @@
+digraph replay {
+  graph [rankdir=TB,bgcolor="white",pad="0.12",nodesep="0.4",ranksep="0.3"];
+  node [shape=box,style="rounded,filled",fontname="DejaVu Sans",fontsize=11,fillcolor="#eef4f5",color="#49616c"];
+  edge [color="#49616c"];
+  head [label="Exact consumer f656cf33\nCI43246121013 · both jobs SUCCESS",fillcolor="#e5f2e8"];
+  ref [label="Original75a source fixed\n25native /98reference+5integrations\n1 old ignored test"];
+  indep [label="Independent0796 source fixed\n32native /23algebra /2exact outputs\n32Lean modules /186compiled /160written\n0 trusted native /source unchanged"];
+  receipt [label="f58004 · complete UTF8 logs/API/custody\nWhole XZ /raw+archive SHA /exact roundtrip\nScientific standing unsigned",fillcolor="#fff6df"];
+  head -> ref;head -> indep;ref -> receipt;indep -> receipt;
+}

@@ -1,0 +1,124 @@
+{
+  "source": "5ac59843a0cc6546b0f007c0bd2f79212d169c43",
+  "producer": "3d49af7f3d0a28e76b79e4825c9d2324e85853d2",
+  "sources": [
+    {
+      "path": "/workspace/cryptanalysis/experiments/chained-transfer-public-target/arithmetic-audit/materialize.sh",
+      "bytes": 3206,
+      "sha256": "0e4b17cf765c5dbac76c974adfabf1a92e87b2ca23422bc6f161b85b83e8155e"
+    },
+    {
+      "path": "/workspace/cryptanalysis/experiments/chained-transfer-public-target/arithmetic-audit/literal-hooks.patch",
+      "bytes": 92116,
+      "sha256": "54771ca9a0f1c00427569d71a4c54822014f919fd8c83ffeab60d38d08f542bc"
+    },
+    {
+      "path": "/workspace/cryptanalysis/experiments/chained-transfer-public-target/arithmetic-audit/hook-inventory.json",
+      "bytes": 7793,
+      "sha256": "411715fa138de920e332453e83844115a720f523c0434159558fd05988b186cd"
+    },
+    {
+      "path": "/workspace/cryptanalysis/experiments/chained-transfer-public-target/arithmetic-audit/controls.rs",
+      "bytes": 13510,
+      "sha256": "3996a052ee849c5cd7bac41f9e243ba5f82b09c48158764a444256a10baec59c"
+    },
+    {
+      "path": "/workspace/cryptanalysis/experiments/chained-transfer-public-target/arithmetic-audit/taps/src/lib.rs",
+      "bytes": 4035,
+      "sha256": "b3f0222475b75b43237441b10c385ca3f73df0e17aa322081631fc14de5f228a"
+    },
+    {
+      "path": "/workspace/cryptanalysis/experiments/chained-transfer-public-target/ARITHMETIC_AUDIT_PROTOCOL_01.md",
+      "bytes": 10933,
+      "sha256": "424a6f93d915f45337d01d75e13e77f05eb1fbcea87696bca08d379d04aaa550"
+    },
+    {
+      "path": "/workspace/cryptanalysis/experiments/chained-transfer-public-target/ARITHMETIC_AUDIT_PROTOCOL_02.md",
+      "bytes": 3520,
+      "sha256": "277f9e5662548e6bbe3d6a6fbc2f228508d71269183817ac42bf4c610568200c"
+    },
+    {
+      "path": "/workspace/cryptanalysis/experiments/chained-transfer-public-target/norm-halving-evaluator/src/lib.rs",
+      "bytes": 8365,
+      "sha256": "b28f722f698ad841ef56f53e3ffd7c6733c3a86eddf30884e861c292af369cd1"
+    },
+    {
+      "path": "/workspace/cryptanalysis/experiments/chained-transfer-public-target/norm-halving-evaluator/src/direct.rs",
+      "bytes": 18869,
+      "sha256": "6efe0347737bdc1d5a3d3d6639a921405ab28de5ec148510b43271d57ff68eaa"
+    },
+    {
+      "path": "/workspace/cryptanalysis/experiments/chained-transfer-public-target/beta-rational-lift/quadratic-picard-engine/src/lib.rs",
+      "bytes": 58323,
+      "sha256": "9975a014b8163bfca121090e00e8045b797cf8255dec2efb0e5685593ed70b40"
+    },
+    {
+      "path": "/workspace/cryptanalysis/experiments/chained-transfer-public-target/beta-rational-lift/src/quadratic_tests.rs",
+      "bytes": 10221,
+      "sha256": "dfe85e153515bc44b16865b4dae3ac8cbd3d0880fa0163cbe20dd71c506ce847"
+    },
+    {
+      "path": "/workspace/cryptanalysis/experiments/chained-transfer-public-target/beta-complete-evaluator/src/lib.rs",
+      "bytes": 14014,
+      "sha256": "190939a81ecdd4564aa44d94a8dac23c99c9782a4ba6a584764b1e1b2164a383"
+    },
+    {
+      "path": "/workspace/cryptanalysis/experiments/chained-transfer-public-target/odd-source/src/lib.rs",
+      "bytes": 18512,
+      "sha256": "ec0f28e21b6d66c5c8c334f239089cdf0173ed396b9daf296d1fb6e9b04df333"
+    },
+    {
+      "path": "/workspace/cryptanalysis/experiments/chained-transfer-public-target/odd-product-models/src/lib.rs",
+      "bytes": 23366,
+      "sha256": "8fced75dbdef1fbc6cf08014ad201d4f2cdd650bb514f58ceb94d5172ca9f095"
+    },
+    {
+      "path": "/workspace/cryptanalysis/experiments/chained-transfer-public-target/odd-product-models/src/source.rs",
+      "bytes": 4161,
+      "sha256": "1c3f5e1d038f735af32c6b50c107c9b1596364abc34f1e59cd32c86dfa1bb24f"
+    },
+    {
+      "path": "/workspace/crypto/research/chained_jacobian_transfers_20261110/CT24_PREFLIGHT.md",
+      "bytes": 2678,
+      "sha256": "881d2f1e8d3a05737b9beb70274c49426fcd481b971eb79b528be265ae863390"
+    }
+  ],
+  "findings": [
+    "Existing literal source-operation audit covers native/FpR/prime-Picard and class-solver backends; the later copied quadratic Picard Fq backend is outside that inventory. This is a specific source-coverage gap, not an exhaustive runtime claim.",
+    "Fq.mulu/add_nc/sub_nc/invu/base_invu and delegated wrappers must be inventoried at leaves; Fq2 is true F223[v]/(v^2-3). Existing exhaustive semantic field tests can be reused; prices remain open.",
+    "Direct and strongest baseline have exact whole equal outputs; common complete norm and fullORDER admission, setup, output validation, residual and actual inverse costs must remain visible.",
+    "The four-test serial Rust1.99.1 harness actually uses four different ThreadIds2/3/4/5; old static process-owner ledger cannot observe the full harness unchanged. Proposed full parity run explicitly disables the observer; separate cold single-case processes enable strict ownership. Unexpected disabled measurement must reject.",
+    "The original tap ledger, original literal patch, all old929 source inputs and old21workflows stay immutable; any new observer/coverage hooks belong to a separate derivative and versioned ledger."
+  ],
+  "hypotheses": [
+    "Direct may use fewer, equal or more primitive operations than the strengthened baseline; retain all outcomes, no predicted win.",
+    "A nondual second degree13 kernel remains queued after this census; elliptic/global/HLP preflight and actual Jacobian maps remain separate obligations."
+  ],
+  "scope": "prospective source/host review; no new taps, census, price, timing or advantage",
+  "KB": [
+    {
+      "argv": [
+        "/workspace/crypto/scripts/research-kb",
+        "status"
+      ],
+      "exit": 127
+    },
+    {
+      "argv": [
+        "/workspace/crypto/scripts/research-kb",
+        "search",
+        "norm-halving exact primitive arithmetic census quadratic Picard cold baseline"
+      ],
+      "exit": 127
+    },
+    {
+      "argv": [
+        "/workspace/crypto/scripts/research-kb",
+        "theorems",
+        "quadratic norm multiplicative inverse pair commutative ring"
+      ],
+      "exit": 127
+    }
+  ],
+  "vault": "crypto-autoresearcher8edec422 remains locked; no encrypted tool or atlas executed, no novelty/absence inference"
+}

@@ -1,0 +1,46 @@
+{
+  "at": "2026-11-15T11:35:17.294577+00:00",
+  "reused_source": "/workspace/cryptanalysis/experiments/chained-transfer-public-target/new-target-ic/lean/NewTargetIC.lean",
+  "source_sha256": "28d8abe06f772afbba14d3e4fc6f6e9f7677ed5661580f78a0d0684bc1bf4c69",
+  "original_exact_binding_ids": [
+    "PCC-20261113-01efbf",
+    "PCC-20261113-671d42"
+  ],
+  "gates": [
+    {
+      "gate": "consumer",
+      "command": [
+        "timeout",
+        "120",
+        "env",
+        "ELAN_TOOLCHAIN=leanprover/lean4:v4.34.1",
+        "bash",
+        "tools/lean/proof-gate.sh",
+        "--out",
+        "/workspace/scratch/ct96-original-model-IC-reused-proof-01/consumer-proofs",
+        "experiments/chained-transfer-public-target/new-target-ic/lean/NewTargetIC.lean"
+      ],
+      "actual_exit": 0,
+      "declarations": 2,
+      "trusted": 0
+    },
+    {
+      "gate": "producer",
+      "command": [
+        "timeout",
+        "120",
+        "env",
+        "ELAN_TOOLCHAIN=leanprover/lean4:v4.35.0",
+        "bash",
+        "tools/lean/proof-gate.sh",
+        "--out",
+        "/workspace/scratch/ct96-original-model-IC-reused-proof-01/producer-proofs",
+        "target/ct96-original-model-IC-proof-stage-01/NewTargetIC.lean"
+      ],
+      "actual_exit": 0,
+      "declarations": 2,
+      "trusted": 0
+    }
+  ],
+  "scope": "reuses existing conditional checked-target soundness and common-offset log-ratio statements only; actual transfer/model/program/order/relation-log bridges remain explicit, no solver completeness or cost proof"
+}

@@ -1,0 +1,5 @@
+# Inspected report and complete diagnostic custody
+
+The full 53,962-byte, two-page PDF is [published at the immutable original bot revision](https://github.com/isogeny-labs/crypto/blob/0b2bee203a133568f1c7e9a35bfe3be1a663a879/research/chained_jacobian_transfers_20261110/evidence/public-n4-original-relation-rank-character-handoff-27/original-relation-character-result-01.pdf). Its bytes match report claim2fd6b0 and both actually opened pages. Original producer policy keeps this PDF in ordinary Git. pcc/claims/PCC-20261115-277e77.json records actual publication, complete terminal guards and fixture projection. [pcc:unverified]
+
+The complete archive retains all 60 passive/rank/character calls, every rejected candidate, row/certificate/BSGS table, original CI artifact and logs, full prepared engine/runtime/source, failures, controls and report drafts. Five canonical entry dictionaries and six relative aliases reproduce the entire six fixtures; the small rank verdict remains ordinary Git. [pcc:unverified]

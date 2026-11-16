@@ -1,0 +1,286 @@
+{
+  "schema": "identity.certificate/v1",
+  "id": "IDC1hd724979553e97e07",
+  "statement": {
+    "name": "Multiplicativity of a^2-nu*b^2 for quadratic coordinates",
+    "source": "BETA_RATIONAL_LIFT_DERIVATION_01; elementary coefficient expansion, supporting quadratic-field inversion; no novelty claim",
+    "variables": [
+      "a",
+      "b",
+      "c",
+      "d",
+      "nu"
+    ],
+    "degree_bound": 6,
+    "lhs": {
+      "op": "add",
+      "args": [
+        {
+          "op": "mul",
+          "args": [
+            {
+              "op": "add",
+              "args": [
+                {
+                  "op": "mul",
+                  "args": [
+                    {
+                      "op": "var",
+                      "args": "a"
+                    },
+                    {
+                      "op": "var",
+                      "args": "c"
+                    }
+                  ]
+                },
+                {
+                  "op": "mul",
+                  "args": [
+                    {
+                      "op": "var",
+                      "args": "nu"
+                    },
+                    {
+                      "op": "mul",
+                      "args": [
+                        {
+                          "op": "var",
+                          "args": "b"
+                        },
+                        {
+                          "op": "var",
+                          "args": "d"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "op": "add",
+              "args": [
+                {
+                  "op": "mul",
+                  "args": [
+                    {
+                      "op": "var",
+                      "args": "a"
+                    },
+                    {
+                      "op": "var",
+                      "args": "c"
+                    }
+                  ]
+                },
+                {
+                  "op": "mul",
+                  "args": [
+                    {
+                      "op": "var",
+                      "args": "nu"
+                    },
+                    {
+                      "op": "mul",
+                      "args": [
+                        {
+                          "op": "var",
+                          "args": "b"
+                        },
+                        {
+                          "op": "var",
+                          "args": "d"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "op": "neg",
+          "args": {
+            "op": "mul",
+            "args": [
+              {
+                "op": "var",
+                "args": "nu"
+              },
+              {
+                "op": "mul",
+                "args": [
+                  {
+                    "op": "add",
+                    "args": [
+                      {
+                        "op": "mul",
+                        "args": [
+                          {
+                            "op": "var",
+                            "args": "a"
+                          },
+                          {
+                            "op": "var",
+                            "args": "d"
+                          }
+                        ]
+                      },
+                      {
+                        "op": "mul",
+                        "args": [
+                          {
+                            "op": "var",
+                            "args": "b"
+                          },
+                          {
+                            "op": "var",
+                            "args": "c"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "op": "add",
+                    "args": [
+                      {
+                        "op": "mul",
+                        "args": [
+                          {
+                            "op": "var",
+                            "args": "a"
+                          },
+                          {
+                            "op": "var",
+                            "args": "d"
+                          }
+                        ]
+                      },
+                      {
+                        "op": "mul",
+                        "args": [
+                          {
+                            "op": "var",
+                            "args": "b"
+                          },
+                          {
+                            "op": "var",
+                            "args": "c"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "rhs": {
+      "op": "mul",
+      "args": [
+        {
+          "op": "add",
+          "args": [
+            {
+              "op": "mul",
+              "args": [
+                {
+                  "op": "var",
+                  "args": "a"
+                },
+                {
+                  "op": "var",
+                  "args": "a"
+                }
+              ]
+            },
+            {
+              "op": "neg",
+              "args": {
+                "op": "mul",
+                "args": [
+                  {
+                    "op": "var",
+                    "args": "nu"
+                  },
+                  {
+                    "op": "mul",
+                    "args": [
+                      {
+                        "op": "var",
+                        "args": "b"
+                      },
+                      {
+                        "op": "var",
+                        "args": "b"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "op": "add",
+          "args": [
+            {
+              "op": "mul",
+              "args": [
+                {
+                  "op": "var",
+                  "args": "c"
+                },
+                {
+                  "op": "var",
+                  "args": "c"
+                }
+              ]
+            },
+            {
+              "op": "neg",
+              "args": {
+                "op": "mul",
+                "args": [
+                  {
+                    "op": "var",
+                    "args": "nu"
+                  },
+                  {
+                    "op": "mul",
+                    "args": [
+                      {
+                        "op": "var",
+                        "args": "d"
+                      },
+                      {
+                        "op": "var",
+                        "args": "d"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "modulus": 2305843009213693951,
+  "points": 64,
+  "seed": 495235060301,
+  "value_digest": "34eed00a802626e96aeffa4099572d6bdeeb5fc5ffe2671c3ebb15bac50ccc20",
+  "independence": "unchanged producer3d49 native issuer/checker; exact integer coefficient expansion in caller; Lean source pointer checked separately; unsigned process evidence",
+  "proof": {
+    "kind": "lean4",
+    "path": "experiments/chained-transfer-public-target/beta-rational-lift/lean/QuadraticNormIdentity.lean",
+    "sha256": "49dcc79181e035c856244446124e804396b1f1bed85dc720a49d9e4f38fa91e9"
+  }
+}
