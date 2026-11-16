@@ -12,7 +12,8 @@ The additional test compares every 192-by-192 pair of basis-bit inputs and
 1024 random pairs to an independent bit-shift/XOR reference, with arbitrary
 initial output and a sentinel seventh word. Zero and all-ones inputs are also
 checked. Native ARM execution reports all17 tests passing with the feature;
-Linux PCLMUL validation and full-suite integration remain pending.
+Linux validation006 also reports 16 default and17 specialized field tests
+passing. Full-suite integration remains pending.
 [pcc:unverified]
 
 Claim PCC-20261116-fff2e4 records the producer statement.

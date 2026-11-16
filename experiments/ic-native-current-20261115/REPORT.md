@@ -106,3 +106,12 @@ would break that independent ledger check. Raw run logs retain the existing
 object-store policy. The inherited PCC-20261115-8d2645 failure references plain
 text as recompute JSON; its source claim is outside this arithmetic change and
 remains unchanged. No signed standing is asserted by this follow-up.
+
+Validation006 completed with exit0. Its command receipt reports all22 C tests,
+both scan modes, clang-tidy and cppcheck passing; AVX2 is printed by the
+runtime selector. The isolated binary-field tests report16 default and17
+specialized checks passing on Linux. The earlier005 cppcheck failure is retained;
+the eight-lane sign mask resolves its range-model complaint. Native ARM field
+checks also pass. These are producer execution observations, not signed standing.
+The binary-field six-product feature and field-component protocol are published
+separately in experiments/ic-f2m-three-limb-20261115. [pcc:unverified]

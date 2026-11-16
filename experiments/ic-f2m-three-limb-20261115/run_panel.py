@@ -11,7 +11,13 @@ import subprocess
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
-OUT = HERE / 'run-001'
+RUN_ID = os.environ.get('IC_FIELD_RUN_ID', 'run-001')
+if not RUN_ID.replace('-', '').isalnum():
+    raise ValueError('invalid run directory')
+FIXTURE_START = int(os.environ.get('IC_FIELD_FIXTURE_START', '20'))
+if FIXTURE_START < 0 or FIXTURE_START > 1000000:
+    raise ValueError('invalid fixture range')
+OUT = HERE / RUN_ID
 OUT.mkdir(exist_ok=False)
 
 
@@ -80,7 +86,7 @@ def arm(variant, degree, fixture, role):
 
 pairs = []
 for degree in [113, 131, 155, 163, 233]:
-    for fixture in range(20, 25):
+    for fixture in range(FIXTURE_START, FIXTURE_START + 5):
         pre = arm('default', 131, 0, 'calibration')
         order = ['default', 'specialized'] if fixture % 2 == 0 else ['specialized', 'default']
         runs = {v: arm(v, degree, fixture, 'component') for v in order}

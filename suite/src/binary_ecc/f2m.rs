@@ -834,6 +834,8 @@ fn mul_words_into(a: &[u64], b: &[u64], out: &mut [u64]) {
 #[cfg_attr(target_arch = "x86_64", target_feature(enable = "pclmulqdq"))]
 #[cfg_attr(target_arch = "aarch64", target_feature(enable = "aes"))]
 unsafe fn mul_words3_hw(a: &[u64], b: &[u64], out: &mut [u64]) {
+    // Check the six-word output extent once before the coefficient stores.
+    let out = &mut out[..6];
     let d0 = clmul64_hw(a[0], b[0]);
     let d1 = clmul64_hw(a[1], b[1]);
     let d2 = clmul64_hw(a[2], b[2]);
