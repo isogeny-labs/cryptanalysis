@@ -24,25 +24,25 @@ def strict_load(path):
 def audit(primary,secondary):
     a=strict_load(primary)
     b=strict_load(secondary)
-    assert a['field_size']==q and a['x_enumerations_each']==q and a['y_square_enumerations']==q
-    assert a['source_prime_order']==219 and a['d_sixth_character']==40
+    if not (a['field_size']==q and a['x_enumerations_each']==q and a['y_square_enumerations']==q): raise ValueError("CT168 validation failed")
+    if not (a['source_prime_order']==219 and a['d_sixth_character']==40): raise ValueError("CT168 validation failed")
     for ai,bi in zip(('source_cubic','twist_cubic','mutated_twist'),b['counts']):
         ca=a[ai]
-        assert type(ca['points']) is int and ca['points']==bi['n']
-        assert ca['zero_rhs_x']==bi['zero']
-        assert ca['nonzero_square_x']==bi['nonzero_square']
-        assert 1+ca['zero_rhs_x']+2*ca['nonzero_square_x']==ca['points']
-        assert ca['nonzero_square_x']+ca['zero_rhs_x']+ca['nonsquare_x']==q
-    assert a['twist_cubic']['points']!=a['mutated_twist']['points']
+        if not (type(ca['points']) is int and ca['points']==bi['n']): raise ValueError("CT168 validation failed")
+        if not (ca['zero_rhs_x']==bi['zero']): raise ValueError("CT168 validation failed")
+        if not (ca['nonzero_square_x']==bi['nonzero_square']): raise ValueError("CT168 validation failed")
+        if not (1+ca['zero_rhs_x']+2*ca['nonzero_square_x']==ca['points']): raise ValueError("CT168 validation failed")
+        if not (ca['nonzero_square_x']+ca['zero_rhs_x']+ca['nonsquare_x']==q): raise ValueError("CT168 validation failed")
+    if not (a['twist_cubic']['points']!=a['mutated_twist']['points']): raise ValueError("CT168 validation failed")
     ts=q+1-a['source_cubic']['points']
     td=q+1-a['twist_cubic']['points']
-    assert ts==-3220 and td==3439
-    assert 219==3*73
-    assert (q+1-ts)%73==0
+    if not (ts==-3220 and td==3439): raise ValueError("CT168 validation failed")
+    if not (219==3*73): raise ValueError("CT168 validation failed")
+    if not ((q+1-ts)%73==0): raise ValueError("CT168 validation failed")
     S,D=rec(ts),rec(td)
-    assert all(S[r]!=D[r] for r in range(1,6))
-    assert S[6]==D[6]
-    assert (q+1-td)%73!=0 and (q*q+1-D[2])%73==0
+    if not (all(S[r]!=D[r] for r in range(1,6))): raise ValueError("CT168 validation failed")
+    if not (S[6]==D[6]): raise ValueError("CT168 validation failed")
+    if not ((q+1-td)%73!=0 and (q*q+1-D[2])%73==0): raise ValueError("CT168 validation failed")
     return {'schema':'ct168-minimal-isogeny-degree-v1','base_prime':p,'K_cardinality':q,
             'source_trace_K':ts,'twist_trace_K':td,
             'isogenous_extension_degrees_1_through_6':[r for r in range(1,7) if S[r]==D[r]],
