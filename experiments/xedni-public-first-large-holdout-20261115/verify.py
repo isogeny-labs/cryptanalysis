@@ -128,6 +128,14 @@ def main():
     assert 'Build completed successfully (9044 jobs)' in bound_build
     for name in ('family_hit_card_le','family_fraction_le','family_size_needed'):
         assert f"'XedniPublicFirstLargeHoldout.{name}' depends on axioms: [propext, Classical.choice, Quot.sound]" in bound_build
+    box=(formal/'BoxBound.lean').read_text()
+    assert all(name in box for name in ('theorem coeff_box_card','theorem bounded_vector_card_le',
+                                       'theorem bounded_vector_fraction_le','theorem coefficient_height_needed'))
+    assert not any(token in box for token in ('sorry','admit','sorryAx','native_decide'))
+    box_build=(formal/'box-build-output.txt').read_text()
+    assert 'Build completed successfully (9045 jobs)' in box_build
+    for name in ('coeff_box_card','bounded_vector_card_le','bounded_vector_fraction_le','coefficient_height_needed'):
+        assert f"'XedniPublicFirstLargeHoldout.{name}' depends on axioms: [propext, Classical.choice, Quot.sound]" in box_build
     for old,row in zip(result['fields'],post['rows'],strict=True):
         q=old['subgroup_order']
         assert row['field_prime']==old['field_prime'] and row['subgroup_order']==q
