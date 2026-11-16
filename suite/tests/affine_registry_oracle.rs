@@ -102,9 +102,10 @@ fn complete_registered_curve_domains_match_signed_pair_enumeration() {
             name: inst.name.clone(),
             field_degree: Some(inst.n),
         };
-        for cache in [0, 1] {
+        for (cache, columns) in [(0, 0), (1, 0), (0, 1), (1, 1)] {
             let mut params = Params::default();
             params.set("inverse_cache", cache.to_string());
+            params.set("column_solver", columns.to_string());
             let mut oracle = AffineS3Oracle::new(&inst);
             oracle
                 .prepare(&ctx, &fb, &params, &mut GroupOps::default())
@@ -122,7 +123,7 @@ fn complete_registered_curve_domains_match_signed_pair_enumeration() {
                 assert_eq!(
                     got.is_some(),
                     expected.contains(&target.pack()),
-                    "curve={} cache={cache} target={target:?}",
+                    "curve={} cache={cache} columns={columns} target={target:?}",
                     inst.name
                 );
                 if let Some(pair) = got {
@@ -143,7 +144,7 @@ fn complete_registered_curve_domains_match_signed_pair_enumeration() {
             assert_eq!(checked, inst.group_order);
             assert_eq!(accepted, expected.len() as u64);
             eprintln!(
-                "curve={} cache={cache} full_targets={checked} decomposable={accepted}",
+                "curve={} cache={cache} columns={columns} full_targets={checked} decomposable={accepted}",
                 inst.name
             );
         }

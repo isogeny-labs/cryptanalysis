@@ -160,6 +160,14 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for AffineS3Oracle<'_> {
             S3AffineProjection::new(&self.instance.gf, self.instance.b, basis)
                 .map_err(str::to_string)?,
         );
+        let column_solver = params.u64_or("column_solver", 0)?;
+        if column_solver > 1 {
+            return Err("column_solver must be0 or1".into());
+        }
+        self.plan
+            .as_mut()
+            .unwrap()
+            .set_column_solver(column_solver == 1);
         if params.u64_or("inverse_cache", 0)? > 1 {
             return Err("inverse_cache must be0 or1".into());
         }

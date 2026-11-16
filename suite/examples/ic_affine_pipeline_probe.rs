@@ -176,7 +176,10 @@ fn main() {
         );
         return;
     }
-    assert!(matches!(mode, "mitm" | "affine" | "affine-cached"));
+    assert!(matches!(
+        mode,
+        "mitm" | "affine" | "affine-cached" | "affine-columns"
+    ));
     let mut spec = PipelineSpec {
         factor_base: "binary-subspace".into(),
         oracle: if mode == "mitm" { "mitm" } else { "affine-s3" }.into(),
@@ -192,7 +195,15 @@ fn main() {
     spec.oracle_params.set("max_residual", "12");
     spec.oracle_params.set(
         "inverse_cache",
-        if mode == "affine-cached" { "1" } else { "0" },
+        if matches!(mode, "affine-cached" | "affine-columns") {
+            "1"
+        } else {
+            "0"
+        },
+    );
+    spec.oracle_params.set(
+        "column_solver",
+        if mode == "affine-columns" { "1" } else { "0" },
     );
     let mut oracle: Box<dyn DecompositionOracle<BinaryGroup<'_>> + '_> = if mode == "mitm" {
         Box::new(MitmOracle::new(2))

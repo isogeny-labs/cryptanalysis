@@ -180,6 +180,7 @@ fn listing() -> Value {
                      "parameters": [{"name": "m", "means": "summands, 2 or 3"}]},
                     {"name": "affine-s3", "summands": "2", "regimes": ["char2", "koblitz"],
                      "parameters": [{"name":"max_residual","means":"0..20, default12; complete subtraction fallback beyond it"},
+                                    {"name":"column_solver","means":"0 or1, default0; direct projected column elimination"},
                                     {"name":"inverse_cache","means":"0 or1, default0; prefix inverse-square preparation"}],
                      "needs":"a subspace factor base; native affine projection and exact signed lifts"},
                     {"name": "descent-algebraic", "summands": "2 or 3", "regimes": ["char2", "koblitz"],

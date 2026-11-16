@@ -13,7 +13,7 @@ pub enum ProjectionError {
     ResidualCap { dimension: usize, limit: usize },
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct ProjectionRoots {
     pub pairs: Vec<(u64, u64)>,
     pub residual_dimension: usize,
@@ -32,7 +32,9 @@ pub struct S3AffineProjection {
     trace_one: u64,
     membership: [u64; 64],
     prefix: bool,
+    product_projection_shift: Option<usize>,
     inverse_squares: Option<Vec<u64>>,
+    column_solver: bool,
 }
 
 fn parity(x: u64) -> u64 {
@@ -101,6 +103,44 @@ fn linear_combination(basis: &[u64], coefficients: u64) -> u64 {
     })
 }
 
+/// Eliminate images directly, carrying domain coefficients as witnesses.
+/// Every dependent image gives one independent kernel vector: its newest
+/// domain bit occurs in no earlier witness. No row transpose is required.
+fn column_space(columns: &[u64], mut target: u64) -> Option<(u64, [u64; 33], usize)> {
+    let mut images = [0u64; 64];
+    let mut witnesses = [0u64; 64];
+    let mut free = [0u64; 33];
+    let mut dimension = 0;
+    for (i, &column) in columns.iter().enumerate() {
+        let mut image = column;
+        let mut witness = 1u64 << i;
+        while image != 0 {
+            let bit = 63 - image.leading_zeros() as usize;
+            if images[bit] == 0 {
+                images[bit] = image;
+                witnesses[bit] = witness;
+                break;
+            }
+            image ^= images[bit];
+            witness ^= witnesses[bit];
+        }
+        if image == 0 {
+            free[dimension] = witness;
+            dimension += 1;
+        }
+    }
+    let mut particular = 0;
+    while target != 0 {
+        let bit = 63 - target.leading_zeros() as usize;
+        if images[bit] == 0 {
+            return None;
+        }
+        target ^= images[bit];
+        particular ^= witnesses[bit];
+    }
+    Some((particular, free, dimension))
+}
+
 impl S3AffineProjection {
     pub fn new(gf: &Gf2, b: u64, basis: &[u64]) -> Result<Self, &'static str> {
         if basis.is_empty() || basis.len() > 32 {
@@ -135,6 +175,11 @@ impl S3AffineProjection {
             .enumerate()
             .fold(0, |row, (i, &v)| row | (ash.trace(v) << i));
         let prefix = basis.iter().all(|v| v >> basis.len() == 0);
+        // Independent prefix vectors span all polynomials of degree<d.
+        // With 2d-2<n their products span exactly degrees 0..=2d-2,
+        // without field reduction, so quotient projection is just a shift.
+        let product_projection_shift =
+            (prefix && 2 * basis.len() - 2 < gf.n as usize).then_some(2 * basis.len() - 1);
         Ok(Self {
             gf: gf.clone(),
             ash,
@@ -146,7 +191,9 @@ impl S3AffineProjection {
             trace_one,
             membership,
             prefix,
+            product_projection_shift,
             inverse_squares: None,
+            column_solver: cfg!(feature = "s3-affine-columns"),
         })
     }
 
@@ -169,6 +216,11 @@ impl S3AffineProjection {
         self.inverse_squares
             .as_ref()
             .map_or(0, |v| v.len() * std::mem::size_of::<u64>())
+    }
+
+    /// Explicit opt-in for callers comparing projected-system implementations.
+    pub fn set_column_solver(&mut self, enabled: bool) {
+        self.column_solver = enabled;
     }
 
     fn section(&self, c: u64) -> u64 {
@@ -204,6 +256,25 @@ impl S3AffineProjection {
         z: u64,
         max_residual_dimension: usize,
     ) -> Result<ProjectionRoots, ProjectionError> {
+        self.roots_with_solver(z, max_residual_dimension, self.column_solver)
+    }
+
+    fn project_product(&self, value: u64) -> u64 {
+        if let Some(shift) = self.product_projection_shift {
+            return value >> shift;
+        }
+        self.product_checks
+            .iter()
+            .enumerate()
+            .fold(0, |out, (i, &h)| out | (parity(h & value) << i))
+    }
+
+    fn roots_with_solver(
+        &self,
+        z: u64,
+        max_residual_dimension: usize,
+        use_columns: bool,
+    ) -> Result<ProjectionRoots, ProjectionError> {
         if z == 0 {
             return Err(ProjectionError::ZeroAbscissa);
         }
@@ -214,49 +285,63 @@ impl S3AffineProjection {
         let inverse = self.gf.inv(z);
         let constant = self.gf.mul(self.b, self.gf.sqr(inverse));
         let constant_product = self.gf.mul(z, self.section(constant));
-        let mut columns: Vec<u64> = self
-            .section_squares
-            .iter()
-            .map(|&v| self.gf.mul(z, v))
-            .collect();
-        columns.push(z); // the joint epsilon unknown, instead of two affine solves
-        let mut rows: Vec<(u64, u64)> = self
-            .product_checks
-            .iter()
-            .map(|&h| {
-                let mask = columns
-                    .iter()
-                    .enumerate()
-                    .fold(0, |row, (i, &v)| row | (parity(h & v) << i));
-                (mask, parity(h & constant_product))
+        let mut column_storage = [0u64; 33];
+        for (out, &v) in column_storage.iter_mut().zip(&self.section_squares) {
+            *out = self.gf.mul(z, v);
+        }
+        column_storage[d] = z; // the joint epsilon unknown
+        let columns = &column_storage[..=d];
+        let solution = if use_columns {
+            let mut projected = [0u64; 33];
+            for (i, (&column, out)) in columns.iter().zip(&mut projected).enumerate() {
+                *out = (self.project_product(column) << 1) | ((self.trace_row >> i) & 1);
+            }
+            column_space(
+                &projected[..=d],
+                (self.project_product(constant_product) << 1) | self.ash.trace(constant),
+            )
+        } else {
+            let mut rows: Vec<(u64, u64)> = self
+                .product_checks
+                .iter()
+                .map(|&h| {
+                    let mask = columns
+                        .iter()
+                        .enumerate()
+                        .fold(0, |row, (i, &v)| row | (parity(h & v) << i));
+                    (mask, parity(h & constant_product))
+                })
+                .collect();
+            rows.push((self.trace_row, self.ash.trace(constant)));
+            affine_space(rows, d + 1).map(|(particular, free)| {
+                let mut storage = [0; 33];
+                storage[..free.len()].copy_from_slice(&free);
+                (particular, storage, free.len())
             })
-            .collect();
-        rows.push((self.trace_row, self.ash.trace(constant)));
-        let Some((particular, free)) = affine_space(rows, d + 1) else {
+        };
+        let Some((particular, free, dimension)) = solution else {
             return Ok(ProjectionRoots {
                 pairs: Vec::new(),
                 residual_dimension: 0,
                 affine_candidates: 0,
             });
         };
-        if free.len() > max_residual_dimension {
+        if dimension > max_residual_dimension {
             return Err(ProjectionError::ResidualCap {
-                dimension: free.len(),
+                dimension,
                 limit: max_residual_dimension,
             });
         }
-        let directions: Vec<(u64, u64)> = free
-            .iter()
-            .map(|&v| {
-                (
-                    linear_combination(&self.basis, v),
-                    linear_combination(&columns, v),
-                )
-            })
-            .collect();
+        let mut directions = [(0u64, 0u64); 33];
+        for (out, &v) in directions.iter_mut().zip(&free[..dimension]) {
+            *out = (
+                linear_combination(&self.basis, v),
+                linear_combination(columns, v),
+            );
+        }
         let mut sum = linear_combination(&self.basis, particular);
-        let mut product = constant_product ^ linear_combination(&columns, particular);
-        let candidates = 1u64 << free.len();
+        let mut product = constant_product ^ linear_combination(columns, particular);
+        let candidates = 1u64 << dimension;
         let mut pairs = Vec::new();
         for i in 0..candidates {
             if i != 0 {
@@ -285,7 +370,7 @@ impl S3AffineProjection {
         pairs.sort_unstable();
         Ok(ProjectionRoots {
             pairs,
-            residual_dimension: free.len(),
+            residual_dimension: dimension,
             affine_candidates: candidates,
         })
     }
@@ -320,6 +405,11 @@ mod tests {
                                 }
                             }
                             let actual = plan.roots(z, 12).unwrap();
+                            assert_eq!(
+                                plan.roots_with_solver(z, 12, false),
+                                plan.roots_with_solver(z, 12, true),
+                                "row/column n={n} d={d} b={b} z={z} multiplier={multiplier}"
+                            );
                             assert_eq!(
                                 actual.pairs, expected,
                                 "n={n} d={d} b={b} z={z} multiplier={multiplier}"
@@ -377,6 +467,34 @@ mod tests {
             let mut other = S3AffineProjection::new(&gf, 3, &[1, 8]).unwrap();
             assert!(other.prepare_prefix_inverse_cache().is_err());
         }
+    }
+
+    #[test]
+    fn column_solver_preserves_caps_and_roots_across_word_fields() {
+        for n in [15, 18, 31, 53, 63] {
+            let gf = Gf2::new(&find_irreducible_sparse(n).unwrap());
+            for d in [1, 4, 7, 12, 16, 32].into_iter().filter(|&d| d <= n) {
+                for multiplier in [1, (gf.mask >> 1) | 1] {
+                    let basis: Vec<_> = (0..d).map(|i| gf.mul(multiplier, 1 << i)).collect();
+                    let plan = S3AffineProjection::new(&gf, 0xb, &basis).unwrap();
+                    for fixture in 1..=8u64 {
+                        let z = (fixture.wrapping_mul(0x9e37_79b9_7f4a_7c15) & gf.mask) | 1;
+                        for cap in [0, 1, 8] {
+                            assert_eq!(
+                                plan.roots_with_solver(z, cap, false),
+                                plan.roots_with_solver(z, cap, true),
+                                "n={n} d={d} multiplier={multiplier} z={z} cap={cap}"
+                            );
+                        }
+                    }
+                }
+            }
+        }
+        // Both an inconsistent system and a redundant zero image.
+        assert!(column_space(&[2, 4], 1).is_none());
+        let (particular, free, dimension) = column_space(&[2, 2, 0], 2).unwrap();
+        assert_eq!((particular, dimension), (1, 2));
+        assert_eq!(&free[..dimension], &[3, 4]);
     }
 
     #[test]
