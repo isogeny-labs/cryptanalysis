@@ -3140,6 +3140,12 @@ pub struct PairTable {
 }
 
 impl PairTable {
+    /// Exact diagnostic comparison of keys and first witnesses, ignoring
+    /// preparation counters, timing and allocation strategy.
+    pub fn same_witness_map(&self, other: &Self) -> bool {
+        self.map == other.map
+    }
+
     /// The identical ordered negation-folded table, using bounded batches of
     /// native binary additions. Its complete preparation is priced in native
     /// nanoseconds, not as hypothetical independent affine inversions.

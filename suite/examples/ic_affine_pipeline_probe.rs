@@ -193,6 +193,28 @@ fn main() {
         );
         return;
     }
+    if mode == "verify-table" {
+        let basis: Vec<_> = (0..dimension).map(|i| 1 << i).collect();
+        let fb = binary_subspace_factor_base(&inst, &basis);
+        let reference = PairTable::build_negation_folded(&group, &fb);
+        let mut comparisons = 0;
+        for chunk in [1, 7, 1024] {
+            for candidate in [
+                PairTable::build_negation_folded_binary_batched(&inst.fast, &fb, chunk).unwrap(),
+                PairTable::build_negation_folded_binary_abscissae(&inst.fast, &fb, chunk).unwrap(),
+                PairTable::build_negation_folded_binary_prefix_cached(&inst.fast, &fb, chunk)
+                    .unwrap(),
+            ] {
+                assert!(reference.same_witness_map(&candidate));
+                comparisons += 1;
+            }
+        }
+        println!(
+            "{}",
+            json!({"curve_id":inst.name,"status":"pass","complete_map_comparisons":comparisons,"entries":reference.entries,"has_clmul":inst.gf.has_clmul()})
+        );
+        return;
+    }
     let fixture: u64 = args[4].parse().unwrap();
     let mut rng =
         StdRng::seed_from_u64(0x5333_5049_5045 ^ fixture.wrapping_mul(0x9e37_79b9_7f4a_7c15));
@@ -238,6 +260,32 @@ fn main() {
         );
         return;
     }
+    if matches!(mode, "rho-plain" | "rho-negation") {
+        let result = if mode == "rho-plain" {
+            rho_reference(
+                &group,
+                inst.generator,
+                target,
+                inst.r,
+                target_seed,
+                2_000_000,
+            )
+        } else {
+            rho_reference_negation(
+                &group,
+                inst.generator,
+                target,
+                inst.r,
+                target_seed,
+                2_000_000,
+            )
+        };
+        println!(
+            "{}",
+            json!({"curve_id":inst.name,"fixture":fixture,"planted":planted,"target":[target.x,target.y],"target_seed":target_seed,"context_ns":context_ns,"calibration_ns":calibration_ns,"calibration":calibration,"solver":result,"rho_kind":mode})
+        );
+        return;
+    }
     if mode == "rho" {
         let plain = rho_reference(
             &group,
@@ -270,6 +318,8 @@ fn main() {
             | "mitm-batched"
             | "mitm-xonly"
             | "mitm-prefix"
+            | "mitm-scalar"
+            | "mitm-auto"
             | "affine"
             | "affine-cached"
             | "affine-columns"
@@ -278,12 +328,14 @@ fn main() {
         factor_base: "binary-subspace".into(),
         oracle: match mode {
             "mitm" | "mitm-native" => "mitm",
-            "mitm-batched" | "mitm-xonly" | "mitm-prefix" => "mitm-batched",
+            "mitm-batched" | "mitm-xonly" | "mitm-prefix" | "mitm-scalar" | "mitm-auto" => {
+                "mitm-batched"
+            }
             _ => "affine-s3",
         }
         .into(),
         targets: Targets::Walk,
-        max_trials: 50_000,
+        max_trials: record.get("max_trials").map(integer).unwrap_or(50_000),
         seed: target_seed,
         ..Default::default()
     };
@@ -320,10 +372,21 @@ fn main() {
         "native_setup_pricing",
         if mode == "mitm-native" { "1" } else { "0" },
     );
+    spec.oracle_params.set(
+        "scalar_prepare",
+        if mode == "mitm-scalar" { "1" } else { "0" },
+    );
+    spec.oracle_params.set(
+        "adaptive_prepare",
+        if mode == "mitm-auto" { "1" } else { "0" },
+    );
     let mut oracle: Box<dyn DecompositionOracle<BinaryGroup<'_>> + '_> =
         if matches!(mode, "mitm" | "mitm-native") {
             Box::new(MitmOracle::new(2))
-        } else if matches!(mode, "mitm-batched" | "mitm-xonly" | "mitm-prefix") {
+        } else if matches!(
+            mode,
+            "mitm-batched" | "mitm-xonly" | "mitm-prefix" | "mitm-scalar" | "mitm-auto"
+        ) {
             Box::new(BinaryBatchMitmOracle::default())
         } else {
             Box::new(AffineS3Oracle::new(&inst))

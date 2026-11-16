@@ -11,6 +11,7 @@ use std::time::Instant;
 pub struct BinaryBatchMitmOracle {
     table: Option<PairTable>,
     setup_ns: u64,
+    used_scalar: bool,
 }
 
 impl<'a> DecompositionOracle<BinaryGroup<'a>> for BinaryBatchMitmOracle {
@@ -20,11 +21,26 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for BinaryBatchMitmOracle {
     fn summands(&self) -> u32 {
         2
     }
-    fn describe(&self, _params: &Params) -> String {
-        "ordered negation-folded binary pair table with bounded batch inversions; complete native setup charged".into()
+    fn describe(&self, params: &Params) -> String {
+        let strategy = if params.flag("scalar_prepare") {
+            "original scalar preparation, fixed-m2 queries"
+        } else if params.flag("adaptive_prepare") {
+            "scalar at <=64 abscissae, bounded prefix inverse reuse above64"
+        } else if params.flag("prefix_inverse_cache") {
+            "bounded prefix inverse reuse with complete generic fallback"
+        } else if params.flag("x_only") {
+            "abscissa-only batch inversion"
+        } else {
+            "full-point batch inversion"
+        };
+        format!(
+            "ordered negation-folded binary pair table; {strategy}; complete native setup charged"
+        )
     }
     fn parameters(&self) -> &[(&str, &str)] {
         &[
+            ("scalar_prepare", "0 or1, default0; original scalar table with fixed-two-summand query dispatch"),
+            ("adaptive_prepare", "0 or1, default0; scalar at <=64 abscissae, prefix-cached x-only above64; unmeasured policy"),
             (
                 "batch_size",
                 "bounded ordered preparation chunk (1..=65536, default1024)",
@@ -59,8 +75,23 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for BinaryBatchMitmOracle {
             return Err("prefix_inverse_cache must be0 or1".into());
         }
         let start = Instant::now();
+        let scalar = params.u64_or("scalar_prepare", 0)?;
+        let adaptive = params.u64_or("adaptive_prepare", 0)?;
+        if scalar > 1 || adaptive > 1 {
+            return Err("prepare strategy flags must be0 or1".into());
+        }
+        if (scalar == 1 && (adaptive == 1 || prefix_cache == 1 || x_only == 1))
+            || (adaptive == 1 && (prefix_cache == 1 || x_only == 1))
+        {
+            return Err(
+                "scalar/adaptive preparation cannot be combined with another strategy".into(),
+            );
+        }
+        self.used_scalar = scalar == 1 || (adaptive == 1 && fb.abscissa_list.len() <= 64);
         self.table = Some(
-            (if prefix_cache == 1 {
+            (if self.used_scalar {
+                Ok(PairTable::build_negation_folded(ctx.group, fb))
+            } else if prefix_cache == 1 || adaptive == 1 {
                 PairTable::build_negation_folded_binary_prefix_cached(
                     ctx.group.0,
                     fb,
@@ -81,6 +112,11 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for BinaryBatchMitmOracle {
     fn setup_native(&self) -> BTreeMap<String, u64> {
         BTreeMap::from([
             ("mitm_batch_setup_ns".into(), self.setup_ns),
+            ("mitm_scalar_prepare".into(), u64::from(self.used_scalar)),
+            (
+                "mitm_observed_setup_adds".into(),
+                self.table.as_ref().map_or(0, |t| t.build_ops.adds),
+            ),
             (
                 "mitm_prefix_inverse_bytes".into(),
                 self.table
@@ -243,6 +279,56 @@ mod tests {
             reference.linear_algebra.rank,
             cached_report.linear_algebra.rank
         );
+        spec.oracle_params.set("prefix_inverse_cache", "0");
+        spec.oracle_params.set("x_only", "0");
+        for strategy in ["scalar_prepare", "adaptive_prepare"] {
+            spec.oracle_params.set("scalar_prepare", "0");
+            spec.oracle_params.set("adaptive_prepare", "0");
+            spec.oracle_params.set(strategy, "1");
+            let selected = run_pipeline(
+                &ctx,
+                &spec,
+                &BinarySubspaceBase { instance: &inst },
+                &mut BinaryBatchMitmOracle::default(),
+                planted,
+                &calib,
+                None,
+            )
+            .unwrap();
+            assert!(selected.verified);
+            assert_eq!(selected.recovered, reference.recovered);
+            assert_eq!(
+                selected.decomposition.targets_tried,
+                reference.decomposition.targets_tried
+            );
+            assert_eq!(selected.linear_algebra.rank, reference.linear_algebra.rank);
+            assert_eq!(selected.decomposition.setup.get("mitm_scalar_prepare"), 1);
+            assert_eq!(selected.decomposition.setup.group_ops, GroupOps::default());
+            assert_eq!(
+                selected.decomposition.setup.gae,
+                selected.decomposition.setup.get("mitm_batch_setup_ns") as f64
+            );
+        }
+        let basis: Vec<_> = (0..8).map(|i| 1 << i).collect();
+        let large = crate::cryptanalysis::ic_boundary::binary_subspace_factor_base(&inst, &basis);
+        assert!(large.abscissa_list.len() > 64);
+        let mut adaptive = BinaryBatchMitmOracle::default();
+        let mut params = Params::default();
+        params.set("adaptive_prepare", "1");
+        adaptive
+            .prepare(&ctx, &large, &params, &mut GroupOps::default())
+            .unwrap();
+        assert_eq!(adaptive.setup_native()["mitm_scalar_prepare"], 0);
+        assert_eq!(adaptive.setup_native()["mitm_prefix_inverse_bytes"], 2048);
+        assert!(adaptive
+            .table
+            .as_ref()
+            .unwrap()
+            .same_witness_map(&PairTable::build_negation_folded(&group, &large)));
+        params.set("x_only", "1");
+        assert!(adaptive
+            .prepare(&ctx, &large, &params, &mut GroupOps::default())
+            .is_err());
         let empty = FactorBase::<FastPoint>::empty("empty validation base".into());
         let table = PairTable::build_negation_folded_binary_batched(&inst.fast, &empty, 7).unwrap();
         assert_eq!(table.entries, 0);
@@ -261,6 +347,8 @@ mod tests {
             ("batch_size", "65537"),
             ("x_only", "2"),
             ("prefix_inverse_cache", "2"),
+            ("scalar_prepare", "2"),
+            ("adaptive_prepare", "2"),
         ] {
             let mut params = Params::default();
             params.set(key, value);
