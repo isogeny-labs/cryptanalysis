@@ -1,0 +1,12 @@
+digraph pipeline {
+  graph [rankdir=TB,bgcolor="white",pad="0.15",nodesep="0.16",ranksep="0.25"];
+  node [shape=box,style="rounded,filled",fontname="DejaVu Sans",fontsize=10,fillcolor="#edf4fa",color="#52718c"];
+  edge [color="#52718c",arrowsize=0.65];
+  input [label="Certified curve + validated public Q\nReusable exact factor-base point tables"];
+  target [label="L1: sealed subgroup construction\nL5: independent anchors + labelled adding steps"];
+  search [label="L2: batched complements R−P\nFull point hash lookup + arithmetic witness replay"];
+  choose [label="L4: bounded extra candidates\nPoint/connectivity callback only; no u,v"];
+  cycle [label="L3: weighted forest / useful cycle\nContinue collecting exactly N+1 rows"];
+  replay [label="Scalar replay + unchanged v1 verifier\nCounters include setup and unused tails",fillcolor="#e8f4eb"];
+  input -> target -> search -> choose -> cycle -> replay;
+}

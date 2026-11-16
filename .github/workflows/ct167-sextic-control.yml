@@ -1,0 +1,37 @@
+name: CT167 sextic scalar-blind transfer toy checks
+on:
+  pull_request:
+    paths:
+      - 'experiments/chained-transfer-public-target/ct167-sextic-control/**'
+      - '.github/workflows/ct167-sextic-control.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  ct167:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Exact-source source-only correctness controls (unverified scientific standing)
+        run: |
+          set -euo pipefail
+          D=experiments/chained-transfer-public-target/ct167-sextic-control
+          python3 -B "$D/ct167_sextic_control.py" --self-test > /tmp/ct167-plain.json
+          python3 -O -B "$D/ct167_sextic_control.py" --self-test > /tmp/ct167-optimized.json
+          cmp /tmp/ct167-plain.json /tmp/ct167-optimized.json
+          cat /tmp/ct167-plain.json
+      - name: Bounded complete-public-Q cold controls (not a speedup gate)
+        run: |
+          set -euo pipefail
+          D=experiments/chained-transfer-public-target/ct167-sextic-control
+          python3 -B "$D/ct167_sextic_control.py" --paired > /tmp/ct167-paired.json
+          python3 - <<'PY'
+          import json
+          r=json.load(open('/tmp/ct167-paired.json'))
+          assert len(r['records'])==16
+          assert all(x['verified'] for x in r['records'])
+          assert {x['verifier_k'] for x in r['records']} == {7,31,59,41}
+          print('complete_verified=16; scientific_status=pcc:unverified; cold_ratio_descriptive=',r['twist_over_source_ratio'])
+          PY
+          # Do not promote wall ratios, leaderboard rows, proof or PCC from Actions.

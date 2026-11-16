@@ -1,0 +1,45 @@
+{
+  "schema": "point-hash-development-qualification/v1",
+  "repository": "mirror",
+  "source_identity": {
+    "kind": "post-test-observed-sha256-manifest",
+    "manifest": "native-source.sha256",
+    "sha256": "f70ae2ecf14a0581007cadc2a07225b4b0df17982cc428fbd0d9328677694c86",
+    "no_native_edits_after_tests": true
+  },
+  "base_commit": "5dfcf82e698db8d895452c7089f566d3e68d1337",
+  "standing": "producer development controls; unsigned, no performance or execution attestation",
+  "full_suite": {
+    "command": "cargo test --manifest-path bindings/rust/Cargo.toml -p hashed-ecdl-tensor --locked --release --all-targets",
+    "exit_code": 0,
+    "passed": 183,
+    "failed": 0,
+    "ignored": 0,
+    "raw": "point-five-mirror-controls/full-final.txt"
+  },
+  "format": {
+    "exit_code": 0,
+    "raw": "point-five-mirror-controls/fmt-final.txt"
+  },
+  "clippy": {
+    "arguments": "--locked --all-targets -- -D warnings",
+    "exit_code": 0,
+    "raw": "point-five-mirror-controls/clippy-final.txt"
+  },
+  "compiler_check": {
+    "rust": "1.88.0",
+    "all_targets": true,
+    "locked": true,
+    "exit_code": 0,
+    "raw": "point-five-mirror-controls/rust188-check.txt"
+  },
+  "benchmarks_launched": false,
+  "scientific_conclusions": null,
+  "declared_floor_check": {
+    "rust": "1.85.0",
+    "exit_code": 101,
+    "status": "inherited dependency failure: sha2 0.11.1 requires Rust 1.88",
+    "raw": "point-five-mirror-controls/msrv-final.txt"
+  },
+  "clippy_configuration_warning": "inherited clippy.toml 1.78 versus Cargo.toml 1.85; no lint suppression introduced"
+}

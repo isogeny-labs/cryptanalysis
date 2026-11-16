@@ -370,9 +370,9 @@ impl Config {
 /// A successful group equation in one fixed-seed trial.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Relation {
-    /// Uniform public scalar multiplying P.
+    /// Public scalar multiplying P; independent sampling is a solver policy.
     pub u: BigUint,
-    /// Uniform public scalar multiplying Q.
+    /// Public scalar multiplying Q; independent sampling is a solver policy.
     pub v: BigUint,
     /// Exactly one nonidentity point per slot.
     pub points: Vec<Point>,
@@ -412,7 +412,7 @@ json_record!(
     optional {}
 );
 
-fn threshold(
+pub(crate) fn threshold(
     curve: &Curve,
     prime: &BigUint,
     config: &Config,
@@ -437,7 +437,7 @@ fn threshold(
 
 // Streaming elimination stores at most N pivot rows and their expression in
 // the input rows. It selects the first dependency deterministically from M only.
-fn row_dependency(
+pub(crate) fn row_dependency(
     matrix: &[Vec<BigUint>],
     modulus: &BigUint,
     meter: &mut Meter,
@@ -484,7 +484,7 @@ fn row_dependency(
     Err(integrity("N+1 rows lacked a dependency"))
 }
 
-fn indexed_bases(
+pub(crate) fn indexed_bases(
     curve: &Curve,
     bases: &[FactorBase],
     rng: &mut impl RandomSource,
@@ -505,7 +505,7 @@ fn indexed_bases(
     Ok(indexes)
 }
 
-fn matrix_row(
+pub(crate) fn matrix_row(
     relation: &Relation,
     indexes: &[BTreeMap<Point, usize>],
     columns: usize,
@@ -523,7 +523,7 @@ fn matrix_row(
     Ok(row)
 }
 
-fn combined_scalars(
+pub(crate) fn combined_scalars(
     relations: &[Relation],
     dependency: &[BigUint],
     modulus: &BigUint,

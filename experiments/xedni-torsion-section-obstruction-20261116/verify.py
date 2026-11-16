@@ -10,7 +10,9 @@ source = (FORMAL / 'TorsionSection.lean').read_text()
 for forbidden in ('sorry', 'admit', 'sorryAx', 'axiom '):
     assert forbidden not in source, forbidden
 names = ('torsion_relation_fails', 'no_additive_section',
-         'no_relation_preserving_lift', 'zmod_no_relation_preserving_lift')
+         'no_relation_preserving_lift', 'zmod_no_relation_preserving_lift',
+         'torsion_defect_nonzero', 'additive_log_kills_torsion',
+         'lifted_additive_log_zero')
 for name in names:
     assert f'theorem {name} ' in source
     assert f'#print axioms {name}' in source
