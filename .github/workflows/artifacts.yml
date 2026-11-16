@@ -1,4 +1,5 @@
 name: artifacts
+# artifacts-scope: job
 # Data files live in S3 with a manifest in Git (docs/artifacts.md). This runs the
 # tool's own tests, fails a pull request that adds or modifies a file the policy
 # says belongs in the store, and checks that every workflow naming moved data
@@ -81,12 +82,6 @@ jobs:
             /.artifacts/
             /.github/workflows/
             **/.artifacts.json
-      - name: Pull store data this workflow reads (tools/artifacts)
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
-        run: python3 tools/artifacts/artifacts.py pull --jobs 16 docs
       - name: Unit tests
         env:
           GIT_AUTHOR_NAME: ci

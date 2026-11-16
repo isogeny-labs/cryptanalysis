@@ -25,6 +25,7 @@ Workflows marked `# artifacts-scope: job` calculate dependencies separately
 for each job. Shared workflow metadata still applies to every job. This lets
 source-only regression jobs coexist with jobs that consume archived data,
 without exempting either job from the dependency check.
+Event path filters select when a workflow runs; they are not runtime inputs.
 """
 
 from __future__ import annotations
@@ -180,6 +181,27 @@ def wire_workflow(text: str, moved: set[str], dirs: set[str]) -> tuple[str, list
     if not jobs:
         raise ValueError("job-scoped artifact wiring requires a top-level jobs mapping")
     header, body = text[:jobs.end()], text[jobs.end():]
+    # A push/PR path selector names changes that trigger the workflow. Keep
+    # env/defaults and dispatch input defaults conservative, while excluding
+    # only path selectors inside the top-level event mapping.
+    header_lines = header.splitlines(keepends=True)
+    runtime_header: list[str] = []
+    in_events = False
+    i = 0
+    while i < len(header_lines):
+        line = header_lines[i]
+        if re.match(r"^on:[ \t]*(?:#.*)?\n$", line):
+            in_events = True
+        elif line.strip() and not line[0].isspace() and not line.startswith('#'):
+            in_events = False
+        if in_events and re.match(r"^    paths(?:-ignore)?:", line):
+            i += 1
+            while i < len(header_lines) and (not header_lines[i].strip() or
+                    len(header_lines[i]) - len(header_lines[i].lstrip()) > 4):
+                i += 1
+            continue
+        runtime_header.append(line)
+        i += 1
     if re.search(r"(?m)^[^\s#]", body):
         raise ValueError("job-scoped artifact wiring requires jobs to be the final top-level mapping")
     for line in body.splitlines():
@@ -196,7 +218,7 @@ def wire_workflow(text: str, moved: set[str], dirs: set[str]) -> tuple[str, list
     for index, start in enumerate(starts):
         end = starts[index + 1].start() if index + 1 < len(starts) else len(body)
         block = without_pull_steps(body[start.start():end])
-        paths = needed(header + block, moved, dirs)
+        paths = needed(''.join(runtime_header) + block, moved, dirs)
         if paths:
             block, job_notes = wire(block, paths)
             notes.extend(f"{start.group(1)}: {note}" for note in job_notes)

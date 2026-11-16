@@ -558,6 +558,12 @@ jobs:
         source = self.SOURCE.replace("jobs:", "env:\n  INPUT: research/runs\njobs:", 1)
         self.assertEqual(self.wired(source).count(wire_workflows.STEP_NAME), 2)
 
+    def test_event_path_filters_are_not_runtime_inputs(self):
+        source = self.SOURCE.replace("jobs:", "on:\n  pull_request:\n    paths:\n      - research/runs/**\n  push:\n    paths-ignore: [research/runs/**]\n  workflow_dispatch:\n    inputs:\n      file:\n        default: research/check.py\njobs:", 1)
+        self.assertEqual(self.wired(source).count(wire_workflows.STEP_NAME), 1)
+        source = source.replace('default: research/check.py', 'default: research/runs/result.jsonl')
+        self.assertEqual(self.wired(source).count(wire_workflows.STEP_NAME), 2)
+
     def test_stale_bootstrap_does_not_create_its_own_dependency(self):
         stale = wire_workflows.wire(self.SOURCE, ["research/runs"])[0]
         result = self.wired(stale)
