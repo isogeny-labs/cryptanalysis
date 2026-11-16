@@ -9,7 +9,7 @@ def digest(v):return hashlib.sha256(canonical(v).encode()).hexdigest()
 def write(path,v):
  if path.exists() and json.loads(path.read_text())!=v:raise ValueError('immutable input differs: '+str(path))
  path.write_text(json.dumps(v,indent=2)+'\n')
-sources=['suite/examples/ic_affine_pipeline_probe.rs','suite/Cargo.toml','suite/Cargo.lock',
+sources=['suite/examples/ic_affine_pipeline_probe.rs','suite/Cargo.toml','suite/Cargo.lock','suite/build.rs',
  'suite/src/cryptanalysis/s3_affine_projection.rs','suite/src/cryptanalysis/ic_framework/affine.rs',
  'suite/src/cryptanalysis/ic_framework/batch_mitm.rs','suite/src/cryptanalysis/ic_framework/mod.rs','suite/src/cryptanalysis/ic_framework/plugins.rs',
  'suite/src/cryptanalysis/ic_framework/u32_reciprocal.rs','suite/src/cryptanalysis/ic_framework/linalg.rs','suite/src/cryptanalysis/ic_boundary.rs',
