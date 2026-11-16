@@ -1,5 +1,12 @@
 name: CT162 genus-3 Weil / torsion screen (source only)
 on:
+  push:
+    branches:
+      - 'research/ct146-correction-torsion-contract-20261115'
+    paths:
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/ct162_*'
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT162_*'
+      - '.github/workflows/ct162-genus3-torsion-screen.yml'
   pull_request:
     paths:
       - 'experiments/chained-transfer-public-target/norm-point-reuse-01/ct162_*'
