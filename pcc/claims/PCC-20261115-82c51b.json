@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-15T08:35:20Z",
+ "id": "PCC-20261115-82c51b",
+ "kind": "theorem",
+ "producer": {
+  "commit": "e633524f33e62c4ffa273ffefd4a8ea3915ef93d",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "0199d31d781cae6bd0ef92976fd3fdfc431088838f7c85283ccc88f5897da455",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/original-full-evaluator-01/lean/OriginalFullChain.lean",
+   "theorem": "ChainDescent.corrected_half_choice_independent"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Conditional IntModule algebra under explicit linearity/duality/kerneltransport/Frobenius/kernel-description/order-annihilation hypotheses. Sixteen old roots and hypotheses are literal unchanged source concatenation, including historical nu12-only numeric roots; those historical values are NOT original-order witnesses. Three additive roots derive p/zero knownpoint representation, knownpoint output from old half/correction independence (no assumed desired evaluator equality), and actual original ORDER11092292/gcd13-169/squares89-40-6/inverse13=3413013 inverse169=9648325 and IntBezout witnesses. Both unchanged original434/435 gates19roots0trusted. Actual field/HLP/geometricquotient/Frobenius/Picard/program/order bridges remain explicit; no signedstanding, cost or computational advantage.",
+ "statement": "theorem corrected_half_choice_independent {A J B : Type} [IntModule A] [IntModule J] [IntModule B] (phi : A \u2192 J) (psi : A \u2192 B) (phi_add : \u2200 a b, phi (a+b)=phi a+phi b) (phi_sub : \u2200 a b, phi (a-b)=phi a-phi b) (psi_add : \u2200 a b, psi (a+b)=psi a+psi b) (psi_sub : \u2200 a b, psi (a-b)=psi a-psi b) (kernel_transport : \u2200 a, phi a=0 \u2192 psi a=0) (x : J) (p t q u : A) (first : phi t=x-phi p) (second : phi u=x-phi q) : psi p+psi t=psi q+psi u"
+}

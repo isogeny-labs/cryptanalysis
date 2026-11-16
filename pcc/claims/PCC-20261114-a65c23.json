@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-14T21:10:54Z",
+ "id": "PCC-20261114-a65c23",
+ "kind": "theorem",
+ "producer": {
+  "commit": "3fad107ab8112fff57febb89a287ca21b508d8a4",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "1e3d9524747baa949aefd2ab6d8528b85a70904eac6c7d62a183c4f78dce38f3",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/twisted-pair-preflight/lean/TwistHomogeneity.lean",
+   "theorem": "TwistHomogeneity.short_twist_residual"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Polynomial ring identities for twist curve residual, Delta, all generic adjugate minors, determinant, cleared HLP numerator and Ciani coefficient scaling; inverse-hypothesis zero equivalence, plus finite NATURAL residue witnesses. BOTH original434/435gates8namedroots0trusted. Encoded finite field, nonzero denominators, actual HLP constructor equality, geometric quotient and full Rust/program/map bridges remain open; no native new-instance/order/model result, signed standing or novelty aggregate.",
+ "statement": "theorem short_twist_residual {R : Type} [CommRing R] (v s a b x y : R) (root : s^2 = v) : (v*s*y)^2 - ((v*x)^3 + (v^2*a)*(v*x) + v^3*b) = v^3 * (y^2 - (x^3 + a*x + b))"
+}

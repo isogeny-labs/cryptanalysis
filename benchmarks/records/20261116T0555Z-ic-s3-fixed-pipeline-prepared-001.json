@@ -1,0 +1,344 @@
+{
+  "branch": "codex/ic-trial32-20261115",
+  "closed_utc": "2026-11-16T06:10:11+00:00",
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "cloud/modal_run.py",
+        "run",
+        "--image",
+        "cuda",
+        "--gpu",
+        "L4",
+        "--cpu",
+        "4",
+        "--memory",
+        "8",
+        "--timeout",
+        "900",
+        "--out",
+        "experiments/ic-s3-pipeline-20261115/timing-001",
+        "--detach",
+        "--",
+        "python3",
+        "experiments/ic-s3-pipeline-20261115/run_prepared.py"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "started_utc": "2026-11-16T05:55:03+00:00",
+      "wall_s": 15.12
+    }
+  ],
+  "commit": "d6bd907c6db654be06b868acf8bfbe58eb257d64",
+  "commit_dirty": false,
+  "created_utc": "2026-11-16T05:55:00+00:00",
+  "curve_uid": null,
+  "entries": [
+    "experiments/ic-s3-pipeline-20261115"
+  ],
+  "host": {
+    "cpu": "arm",
+    "cpus_online": 14,
+    "hostname": "Mac.attlocal.net",
+    "isolation": "unstated",
+    "platform": "macOS-27.2-arm64-arm-64bit-Mach-O"
+  },
+  "id": "20261116T0555Z-ic-s3-fixed-pipeline-prepared-001",
+  "metrics": [
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 6,
+      "name": "n15-buchberger-f2-raw_cold_median_ratio",
+      "note": "Median of six frozen same-target generic/direct pairs; raw unqualified; all calibration failures and outliers retained. MITM is fastest tested method; no gain over that baseline established.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ratio",
+      "value": 1.037623786729862
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 6,
+      "name": "n15-buchberger-f2-raw_counted_s_median_ratio",
+      "note": "Median of six frozen same-target generic/direct pairs; raw unqualified; all calibration failures and outliers retained. MITM is fastest tested method; no gain over that baseline established.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ratio",
+      "value": 1.0345536727464877
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 6,
+      "name": "n15-f4-f2-raw_cold_median_ratio",
+      "note": "Median of six frozen same-target generic/direct pairs; raw unqualified; all calibration failures and outliers retained. MITM is fastest tested method; no gain over that baseline established.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ratio",
+      "value": 1.0665906749554623
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 6,
+      "name": "n15-f4-f2-raw_counted_s_median_ratio",
+      "note": "Median of six frozen same-target generic/direct pairs; raw unqualified; all calibration failures and outliers retained. MITM is fastest tested method; no gain over that baseline established.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ratio",
+      "value": 1.0667323808283458
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 6,
+      "name": "n15-fes-f2-wide-raw_cold_median_ratio",
+      "note": "Median of six frozen same-target generic/direct pairs; raw unqualified; all calibration failures and outliers retained. MITM is fastest tested method; no gain over that baseline established.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ratio",
+      "value": 1.1060339987772414
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 6,
+      "name": "n15-fes-f2-wide-raw_counted_s_median_ratio",
+      "note": "Median of six frozen same-target generic/direct pairs; raw unqualified; all calibration failures and outliers retained. MITM is fastest tested method; no gain over that baseline established.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ratio",
+      "value": 1.1097051475663728
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 6,
+      "name": "n15-mitm-raw_cold_median_ratio",
+      "note": "Median of six frozen same-target generic/direct pairs; raw unqualified; all calibration failures and outliers retained. MITM is fastest tested method; no gain over that baseline established.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ratio",
+      "value": 1.005862230776966
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 6,
+      "name": "n15-mitm-raw_counted_s_median_ratio",
+      "note": "Median of six frozen same-target generic/direct pairs; raw unqualified; all calibration failures and outliers retained. MITM is fastest tested method; no gain over that baseline established.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ratio",
+      "value": 0.9918583515041697
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 6,
+      "name": "n18-buchberger-f2-raw_cold_median_ratio",
+      "note": "Median of six frozen same-target generic/direct pairs; raw unqualified; all calibration failures and outliers retained. MITM is fastest tested method; no gain over that baseline established.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ratio",
+      "value": 0.9997169582663408
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 6,
+      "name": "n18-buchberger-f2-raw_counted_s_median_ratio",
+      "note": "Median of six frozen same-target generic/direct pairs; raw unqualified; all calibration failures and outliers retained. MITM is fastest tested method; no gain over that baseline established.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ratio",
+      "value": 1.0006010718182115
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 6,
+      "name": "n18-f4-f2-raw_cold_median_ratio",
+      "note": "Median of six frozen same-target generic/direct pairs; raw unqualified; all calibration failures and outliers retained. MITM is fastest tested method; no gain over that baseline established.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ratio",
+      "value": 1.030509957669263
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 6,
+      "name": "n18-f4-f2-raw_counted_s_median_ratio",
+      "note": "Median of six frozen same-target generic/direct pairs; raw unqualified; all calibration failures and outliers retained. MITM is fastest tested method; no gain over that baseline established.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ratio",
+      "value": 1.0315008494520383
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 6,
+      "name": "n18-fes-f2-wide-raw_cold_median_ratio",
+      "note": "Median of six frozen same-target generic/direct pairs; raw unqualified; all calibration failures and outliers retained. MITM is fastest tested method; no gain over that baseline established.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ratio",
+      "value": 1.0506974581907649
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 6,
+      "name": "n18-fes-f2-wide-raw_counted_s_median_ratio",
+      "note": "Median of six frozen same-target generic/direct pairs; raw unqualified; all calibration failures and outliers retained. MITM is fastest tested method; no gain over that baseline established.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ratio",
+      "value": 1.0540949685234613
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 6,
+      "name": "n18-mitm-raw_cold_median_ratio",
+      "note": "Median of six frozen same-target generic/direct pairs; raw unqualified; all calibration failures and outliers retained. MITM is fastest tested method; no gain over that baseline established.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ratio",
+      "value": 1.0040814348511637
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 6,
+      "name": "n18-mitm-raw_counted_s_median_ratio",
+      "note": "Median of six frozen same-target generic/direct pairs; raw unqualified; all calibration failures and outliers retained. MITM is fastest tested method; no gain over that baseline established.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ratio",
+      "value": 0.9837761473957902
+    }
+  ],
+  "problem": "ecdlp:binary_ic_s3_fixed_instances",
+  "raw": [
+    {
+      "bytes": 3711120,
+      "path": "experiments/ic-s3-pipeline-20261115/timing-001/arms.jsonl",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/94/94922dc66f0f426b6dcf471ea9fff41645709be561ad997bebcd646c50b0948c",
+      "sha256": "94922dc66f0f426b6dcf471ea9fff41645709be561ad997bebcd646c50b0948c",
+      "uploaded": true
+    },
+    {
+      "bytes": 32786,
+      "path": "experiments/ic-s3-pipeline-20261115/timing-001/host.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/cd/cda338e9d0faf6693f249a84d77b1d2455a03919ce573039d7e430abde613f8e",
+      "sha256": "cda338e9d0faf6693f249a84d77b1d2455a03919ce573039d7e430abde613f8e",
+      "uploaded": true
+    },
+    {
+      "bytes": 4216075,
+      "path": "experiments/ic-s3-pipeline-20261115/timing-001/pairs.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/18/18c6cf40ddedddaff9559785d667293079b58840df29424312dcd747c9a896bd",
+      "sha256": "18c6cf40ddedddaff9559785d667293079b58840df29424312dcd747c9a896bd",
+      "uploaded": true
+    },
+    {
+      "bytes": 27636,
+      "path": "experiments/ic-s3-pipeline-20261115/timing-001/preparation-receipt.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/6b/6b27c53c84601f14ad37d2eaebefb50a8e7cbbfaf47b1dc39253119f0a9e461c",
+      "sha256": "6b27c53c84601f14ad37d2eaebefb50a8e7cbbfaf47b1dc39253119f0a9e461c",
+      "uploaded": true
+    },
+    {
+      "bytes": 4153216,
+      "path": "experiments/ic-s3-pipeline-20261115/timing-001/probe-direct",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/1c/1c870cfe1f55998b64259273df91eafcce4363823254def15982fe4161f39b4a",
+      "sha256": "1c870cfe1f55998b64259273df91eafcce4363823254def15982fe4161f39b4a",
+      "uploaded": true
+    },
+    {
+      "bytes": 4166224,
+      "path": "experiments/ic-s3-pipeline-20261115/timing-001/probe-reference",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/f4/f4c5171f00e1a7ff82772f4e5cf598ecd43243d48981b7d7cab773bfad3bcb1b",
+      "sha256": "f4c5171f00e1a7ff82772f4e5cf598ecd43243d48981b7d7cab773bfad3bcb1b",
+      "uploaded": true
+    },
+    {
+      "bytes": 193548,
+      "path": "experiments/ic-s3-pipeline-20261115/timing-001/references.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/91/915649a5e05cdd2efe4a2c6e378f61478f76677e30d5bd0f6cb10f837c1c0fd8",
+      "sha256": "915649a5e05cdd2efe4a2c6e378f61478f76677e30d5bd0f6cb10f837c1c0fd8",
+      "uploaded": true
+    },
+    {
+      "bytes": 103,
+      "path": "experiments/ic-s3-pipeline-20261115/timing-001/summary.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/3b/3b50c3c6f216c1ff6d3de7013b7c645694fbcac6703d39238481d63bbc0c8876",
+      "sha256": "3b50c3c6f216c1ff6d3de7013b7c645694fbcac6703d39238481d63bbc0c8876",
+      "uploaded": true
+    },
+    {
+      "bytes": 583,
+      "path": "experiments/ic-s3-pipeline-20261115/timing-launch-001/job.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/4f/4f835378a703c23277a58a43401c1731d9c1dc1936668edf3c50a727c3ee6c8f",
+      "sha256": "4f835378a703c23277a58a43401c1731d9c1dc1936668edf3c50a727c3ee6c8f",
+      "uploaded": true
+    },
+    {
+      "bytes": 316,
+      "path": "experiments/ic-s3-pipeline-20261115/timing-launch-001/output.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/07/072b6ffd4dedda216211b464f41f904fed78ce90e8c3233b2742b94776a2c07a",
+      "sha256": "072b6ffd4dedda216211b464f41f904fed78ce90e8c3233b2742b94776a2c07a",
+      "uploaded": true
+    },
+    {
+      "bytes": 124105,
+      "path": "experiments/ic-s3-pipeline-20261115/analysis-timing001.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/d7/d778c45b88610f1ecf67c5c9f77b2b8c68922820a264587db72e8f2aad3b6d17",
+      "sha256": "d778c45b88610f1ecf67c5c9f77b2b8c68922820a264587db72e8f2aad3b6d17",
+      "uploaded": true
+    },
+    {
+      "bytes": 22559,
+      "path": "experiments/ic-s3-pipeline-20261115/independent-arithmetic-timing001.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/33/33b89f1972c42aec9d1c72b4c87aa2f69d80b3d70e9d347cc39e1715c6b9243b",
+      "sha256": "33b89f1972c42aec9d1c72b4c87aa2f69d80b3d70e9d347cc39e1715c6b9243b",
+      "uploaded": true
+    }
+  ],
+  "repo": "cryptanalysis",
+  "reports": {
+    "pdf": "experiments/ic-s3-pipeline-20261115/REPORT-timing001.pdf",
+    "png": [],
+    "svg": [
+      "experiments/ic-s3-pipeline-20261115/ratios-timing001.svg",
+      "experiments/ic-s3-pipeline-20261115/costs-timing001.svg"
+    ]
+  },
+  "schema": "bench.record/v1",
+  "session": null,
+  "slug": "ic-s3-fixed-pipeline-prepared-001",
+  "status": "invalid",
+  "summary": "All48 paired cases and12 exact-target rho records complete;96 pipeline and24 rho answers replayed in existing Python group arithmetic. Generic/direct raw cold ratios N15:1.038/1.067/1.106/1.006; N18:1.000/1.031/1.051/1.004 for Buchberger/F4/FES-wide/MITM. MITM remains fastest tested. One A/A failure and one large MITM timing outlier retained. Host unqualified; no best-baseline breakthrough established.",
+  "validation": "experiments/ic-s3-pipeline-20261115/analysis-timing001.json"
+}

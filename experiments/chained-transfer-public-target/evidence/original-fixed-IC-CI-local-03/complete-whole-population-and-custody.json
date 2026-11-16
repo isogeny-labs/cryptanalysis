@@ -1,0 +1,34 @@
+{
+  "whole_populations": [
+    {
+      "label": "original-ic",
+      "historical_whole_records": 100,
+      "whole_compared_sha256": "22036204e78e868607456cde35c9e5a36dae812e00f436a344943f682db4b39c",
+      "test_sha256": "3b870598c9de9849477ebc55326c0f06182768f05de0725c3ac7ef34c0a1fd51",
+      "auditor_sha256": "15664f4daa1504e8073acb2b530b8a254c8e12f2eae65465742919a213b1dac6",
+      "whole_class_omissions": 7
+    },
+    {
+      "label": "original-sampler",
+      "historical_whole_records": 101,
+      "whole_compared_sha256": "e2802599341c7e8c3dd64f993bc674d150acb40060ad842b4cb58ce46c0cf682",
+      "test_sha256": "baedb3f0466944b7cb3571b7ddb12084dc3e48ab0f93bf68ebdc002f623ab0ce",
+      "auditor_sha256": "46846099dfeed62568af42b33095f6f5fc480c5b8b37e7d370a26829c71c25fe",
+      "whole_class_omissions": 8
+    }
+  ],
+  "exact_old_five_theorem_bindings": [
+    "PCC-20261113-01efbf",
+    "PCC-20261113-671d42",
+    "PCC-20261114-789d94",
+    "PCC-20261114-a9a7af",
+    "PCC-20261114-ed533b"
+  ],
+  "induced_declarations_per_original_gate": 21,
+  "induced_named_bindings": 9,
+  "total_declarations_per_original_gate": 26,
+  "required_scientific_prefix_phases": 100,
+  "complete_driver_phases": 102,
+  "completion_requirement": "The caller must separately require original.exit0, final-source-guards.exit0 and the entire ordered phase list; this validator runs before its own exit is recorded.",
+  "scope": "unsigned exact correctness/proof/byte replay; timings and partial counters are retained unpriced; original actual-model/program and complete-cost bridges unchanged"
+}

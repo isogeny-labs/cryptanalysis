@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-14T21:11:23Z",
+ "id": "PCC-20261114-65a9d8",
+ "kind": "theorem",
+ "producer": {
+  "commit": "3fad107ab8112fff57febb89a287ca21b508d8a4",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "4d22a2c827e80c538500ac50b4710e798c12fac30db775f0032f9449cc01009a",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/twisted-pair-preflight/lean/TwistHomogeneity.lean",
+   "theorem": "TwistHomogeneity.twisting_numerator_scale"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Polynomial ring identities for twist curve residual, Delta, all generic adjugate minors, determinant, cleared HLP numerator and Ciani coefficient scaling; inverse-hypothesis zero equivalence, plus finite NATURAL residue witnesses. BOTH original434/435gates8namedroots0trusted. Encoded finite field, nonzero denominators, actual HLP constructor equality, geometric quotient and full Rust/program/map bridges remain open; no native new-instance/order/model result, signed standing or novelty aggregate.",
+ "statement": "theorem twisting_numerator_scale {R : Type} [CommRing R] (v r a b c d e f : R) : twistingNumerator (v^3*r) (v*a) (v*b) (v*c) (v^2*d) (v^2*e) (v^2*f) = v^9 * twistingNumerator r a b c d e f"
+}

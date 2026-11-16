@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-13T02:04:27Z",
+ "id": "PCC-20261113-e36488",
+ "kind": "theorem",
+ "producer": {
+  "commit": "635bd2d2b57af89fb474039db6fcba72631bf681",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "96e1d39c5c9e640f8a8c1586a9b516cde46d7c1a69293776c3b675d273db21a6",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-reference/fp-chain-checker/lean/ChainAdapter.lean",
+   "theorem": "PrimeFieldChain.actual_c0_first_cover"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Fixed C0/T20 adapter:actual characteristic101 coefficients and conditional finite-group norm uniqueness/two-way inverse with nonuniform104/85. Actual curves/Picard/completion/reducer/chain normalizations and joint norm injectivity remain explicit written/native bridges;no global inverse isogeny/full formal geometry/scientific signature.",
+ "statement": "theorem actual_c0_first_cover {K : Type} [CommRing K] (z : K) (characteristic : (101 : K)=0) : z^6+6*z^4+13*z^2+56=(z^2+2)^3+(z^2+2)+46"
+}

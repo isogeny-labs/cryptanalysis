@@ -1,0 +1,14 @@
+{
+  "original_command": [
+    "git",
+    "sparse-checkout",
+    "add",
+    "--no-cone",
+    "/research/chained_jacobian_transfers_20261110/genus3-prime-descent/reference-02.sha256"
+  ],
+  "original_exit": 129,
+  "original_error": "unknown option no-cone;add supports existing mode and --stdin/--skip-checks",
+  "caller_followups": "prepare02 absent because helperstopped;subsequent shell lines127,NO full02 native launch",
+  "scope": "local GitCLI preparation failure only;originalfull01 alreadyretained3b2d52;no source/criterion change",
+  "correction": "Use git sparse-checkout add in already configured noncone mode;assert exactGitblob andclean"
+}
