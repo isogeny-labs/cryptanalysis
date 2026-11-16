@@ -1,0 +1,61 @@
+name: CT162 genus-3 Weil / torsion screen (source only)
+on:
+  pull_request:
+    paths:
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/ct162_*'
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT162_*'
+      - '.github/workflows/ct162-genus3-torsion-screen.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ct162:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Python normal and optimized exact result (no paid native evaluator)
+        shell: bash
+        run: |
+          set -euo pipefail
+          D=experiments/chained-transfer-public-target/norm-point-reuse-01
+          python3 -B "$D/ct162_genus3_torsion_filter.py" --self-test > /tmp/ct162-py.json
+          python3 -O -B "$D/ct162_genus3_torsion_filter.py" --self-test > /tmp/ct162-opt.json
+          cmp /tmp/ct162-py.json /tmp/ct162-opt.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          path = Path('experiments/chained-transfer-public-target/norm-point-reuse-01')
+          actual = json.loads(Path('/tmp/ct162-py.json').read_text())
+          frozen = json.loads((path / 'CT162_RESULT.json').read_text())
+          if actual != frozen:
+              raise RuntimeError('frozen CT162 result differs from executed arithmetic')
+          if actual['mutations_rejected'] != 9:
+              raise RuntimeError('insufficient sabotage coverage')
+          print('CT162 Python raw result, fixed CT160 SHA and 9 sabotage controls matched')
+          PY
+      - name: Independent Node GF2 and two-torsion computation
+        shell: bash
+        run: |
+          set -euo pipefail
+          node experiments/chained-transfer-public-target/norm-point-reuse-01/ct162_genus3_torsion_independent.mjs
+      - name: Reject a tampered copy of original CT160 census
+        shell: bash
+        run: |
+          set -euo pipefail
+          D=experiments/chained-transfer-public-target/norm-point-reuse-01
+          cp "$D/CT160_FULL_CENSUS.json" /tmp/ct160-mutated.json
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('/tmp/ct160-mutated.json')
+          data=p.read_bytes()
+          assert b'"zeros":3' in data
+          p.write_bytes(data.replace(b'"zeros":3',b'"zeros":2',1))
+          PY
+          if python3 -B "$D/ct162_genus3_torsion_filter.py" --census /tmp/ct160-mutated.json --self-test; then
+            echo 'ERROR: altered frozen input accepted' >&2
+            exit 1
+          fi
+          echo 'CT162 mutated source correctly rejected'
