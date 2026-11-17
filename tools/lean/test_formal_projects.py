@@ -234,5 +234,19 @@ class FormalGateBindingControls(unittest.TestCase):
         self.assertTrue(set(record["projects"]) <= paths)
 
 
+
+    def test_induced_replay_sparse_inputs_cover_all_registered_proofs_and_build_inputs(self):
+        root = Path(__file__).resolve().parents[2]
+        record = json.loads((root / "tools/lean/registered-mathlib-sources-20261117.json").read_text())
+        workflow = (root / ".github/workflows/chained-transfer-induced-proof.yml").read_text()
+        selected = workflow.split("sparse-checkout: |", 1)[1].split("- id: producer_pin", 1)[0]
+        paths = {line.strip() for line in selected.splitlines() if line.strip()}
+        required = set(record["sources"])
+        required.update(path for row in record["sources"].values() for path in row["project_inputs"])
+        missing = {path for path in required
+                   if not any(path == prefix or path.startswith(prefix + "/") for prefix in paths)}
+        self.assertEqual(missing, set(), "registered controls need their exact original sparse inputs")
+
+
 if __name__ == "__main__":
     unittest.main()
