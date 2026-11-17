@@ -120,6 +120,22 @@ class CT176Tests(unittest.TestCase):
                           "strongest_retained_lift_chain", "direct_composite"))
         self.assertEqual(panel.ARMS[-2:], ("direct_composite", "direct_composite"))
 
+    def test_terminal_incomplete_is_refused(self):
+        terminal = panel.terminal_status(2303, None)
+        self.assertFalse(terminal["verified_complete"])
+        self.assertEqual(terminal["refusal"], "incomplete process population")
+        self.assertEqual(terminal["attempted"], 2303)
+
+    def test_terminal_preserves_failure(self):
+        terminal = panel.terminal_status(18, "child nonzero exit")
+        self.assertFalse(terminal["verified_complete"])
+        self.assertEqual(terminal["refusal"], "child nonzero exit")
+
+    def test_terminal_all_complete(self):
+        terminal = panel.terminal_status(2304, None)
+        self.assertTrue(terminal["verified_complete"])
+        self.assertIsNone(terminal["refusal"])
+
     def test_subprocess_validates_public_mock_not_math(self):
         with tempfile.TemporaryDirectory() as tmp:
             child = Path(tmp) / "mock_ct175.py"
