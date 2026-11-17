@@ -27,7 +27,7 @@ def write(path, value):
 
 hashes = source_hashes()
 revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
-controllers = ['freeze_setup_inputs.py','setup_fresh_common.py','run_setup_fresh.py','analyze_setup_fresh.py','replay_setup_fresh_answers.py','replay_setup_fresh_states.py','setup_checks.py','counterfactual_checks.py','FRESH_SETUP_PROTOCOL.md','setup-raw-reference-plan.json','seal_setup_provenance.py','record_setup_metrics.py','setup-frozen-inputs.json','prepare_setup_identity.py','check_setup_packet.py','bind_setup_record.py','check_setup_progress_export.py','attach_setup_record_raw.py']
+controllers = ['freeze_setup_inputs.py','setup_fresh_common.py','run_setup_fresh.py','analyze_setup_fresh.py','replay_setup_fresh_answers.py','replay_setup_fresh_states.py','setup_checks.py','counterfactual_checks.py','FRESH_SETUP_PROTOCOL.md','setup-raw-reference-plan.json','seal_setup_provenance.py','record_setup_metrics.py','setup-frozen-inputs.json','prepare_setup_identity.py','check_setup_packet.py','bind_setup_record.py','check_setup_progress_export.py','attach_setup_record_raw.py','check_setup_identities.py']
 for name in controllers:
     relative = str((P/name).relative_to(ROOT))
     assert (P/name).read_bytes() == subprocess.check_output(['git', 'show', revision+':'+relative], cwd=ROOT), 'Publish controllers before generation'
@@ -66,7 +66,9 @@ for index, record in enumerate(json.loads((P/'instances.json').read_text())):
     for mode in MODES[3:]:
         strategy=STRATEGIES[mode]
         candidate = copy.deepcopy(original)
-        candidate['point_decomposition']['params'].update(vector_prepare=strategy,suppress_indexed_counter=0)
+        candidate['point_decomposition']['params'].update(vector_prepare=strategy)
+        if strategy in [3,5]:candidate['point_decomposition']['params']['suppress_indexed_counter']=0
+        else:candidate['point_decomposition']['params'].pop('suppress_indexed_counter',None)
         impl=candidate['implementation']
         impl.update(sources_sha256=hashes,probe_mode=ACTUAL[mode],
                     pair_input_policy='original-staged-point-buffers-original-order-and-chunks' if strategy==5 else 'immutable-factor-base-indices-original-order-and-chunks',
