@@ -12,7 +12,7 @@ import unittest
 
 LOCAL = Path(__file__).resolve().parent
 PINNED = os.environ.get("CT182_SOURCE_ROOT")
-if not PINN:
+if not PINNED:
     raise RuntimeError("CT182_SOURCE_ROOT must point to pinned commit 92d0c646")
 READER = Path(PINNED).resolve(strict=True)
 if not (READER / "ct182_v2_panel_adjudicator.py").is_file():
