@@ -94,7 +94,7 @@ def audit(original, changed, runtime, cargo):
              'chained-n4-paired-fourth-preflight',
              'isogeny_algos', 'serde_json')
     for n in names:
-        if cargo.count(n.encode()) != 1:
+        if sum(line.strip().startswith(n.encode() + b" =") for line in cargo.splitlines()) != 1:
             raise ValueError("missing or repeated dependency " + n)
     if b'path = "../../paired-fourth-preflight"' not in cargo:
         raise ValueError("CT125 back6 dependency path missing")
