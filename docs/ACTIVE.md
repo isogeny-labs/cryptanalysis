@@ -12,11 +12,13 @@ PR, not in this file.
 
 ## Current goal
 
-_(none pinned — set one with `/goal <text>`)_
+Achieve a large, evidence-backed Xedni-calculus breakthrough across the
+prime-field lift pipeline, while continuing to track the binary/Koblitz source
+and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
 
-- [ ] CT188: randomized physical-route 48-packet crossover pilot with identifiable first-order carryover controls, source-only (automation, started 2026-11-17, branch research/ct188-physical-crossover-20261117, PR #1723)
+- [ ] Extend certified Xedni lift-success trials to the ten-coefficient `r=7..9` regime with exact rational dependence verification (Codex, started 2026-11-17, branch codex/xedni-breakthrough-20261117, PR #1722) [pcc:unverified]
 
 - [x] CT187: bounded admitted-source native 1,536-call same-route sham producer, strict evidence reader and synthetic handshake; no paid execution (automation, started 2026-11-17, branch research/ct187-native-sham-source-admission-20261117, PR #1719)
 
