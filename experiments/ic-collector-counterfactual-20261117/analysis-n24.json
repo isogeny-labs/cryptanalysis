@@ -1,0 +1,592 @@
+{
+  "status": "pass",
+  "rows": [
+    {
+      "tag": "sp",
+      "whole_guest_ir": 25844720,
+      "exclusive_sum": 25844720,
+      "selected_exclusive_function_ir": {
+        "collector_function": 869478,
+        "walker_function": 1304203,
+        "pair_probe_function": 315713,
+        "witness_lookup_function": 377271,
+        "generic_dispatch_function": 0
+      },
+      "collector_call_edges": [
+        {
+          "caller": "cryptanalysis_suite::cryptanalysis::ic_framework::run_pipeline::<cryptanalysis_suite::cryptanalysis::ic_boundary::BinaryGroup>",
+          "callee": "cryptanalysis_suite::cryptanalysis::ic_boundary::collect_and_solve_with::<cryptanalysis_suite::cryptanalysis::ic_boundary::BinaryGroup, dyn cryptanalysis_suite::cryptanalysis::ic_boundary::RelationSolver, cryptanalysis_suite::cryptanalysis::ic_framework::run_pipeline<cryptanalysis_suite::cryptanalysis::ic_boundary::BinaryGroup>::{closure#0}>",
+          "calls": 1,
+          "ir": 10267939
+        }
+      ],
+      "dictionary_and_probe_edges": [
+        {
+          "caller": "<cryptanalysis_suite::cryptanalysis::ic_framework::batch_mitm::BinaryBatchMitmOracle as cryptanalysis_suite::cryptanalysis::ic_framework::stages::DecompositionOracle<cryptanalysis_suite::cryptanalysis::ic_boundary::BinaryGroup>>::decompose",
+          "callee": "<cryptanalysis_suite::cryptanalysis::ic_boundary::PairTable>::probe::<cryptanalysis_suite::cryptanalysis::ic_boundary::BinaryGroup>",
+          "calls": 8583,
+          "ir": 814580
+        },
+        {
+          "caller": "<cryptanalysis_suite::cryptanalysis::ic_boundary::PairTable>::probe::<cryptanalysis_suite::cryptanalysis::ic_boundary::BinaryGroup>",
+          "callee": "<cryptanalysis_suite::cryptanalysis::ic_boundary::PairWitnessMap>::get",
+          "calls": 8583,
+          "ir": 377271
+        },
+        {
+          "caller": "<cryptanalysis_suite::cryptanalysis::ic_boundary::PairTable>::probe::<cryptanalysis_suite::cryptanalysis::ic_boundary::BinaryGroup>",
+          "callee": "<cryptanalysis_suite::cryptanalysis::koblitz_fast::FastCurve>::add",
+          "calls": 129,
+          "ir": 121596
+        }
+      ],
+      "top_functions": [
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::ic_boundary::PairWitnessMap>::insert_abscissae",
+          "ir": 5236815,
+          "fraction": 0.20262610699593572
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::ic_boundary::PairTable>::build_binary_batch",
+          "ir": 4031514,
+          "fraction": 0.15598985015121078
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::semaev_decomp::Gf2>::inv_clmul",
+          "ir": 2476955,
+          "fraction": 0.09583988528411219
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::koblitz_fast::simd256::Simd256>::add_cached_narrow::<true, 24, 27, true>",
+          "ir": 2431515,
+          "fraction": 0.09408169250817962
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::ic_boundary::batched_walk::BatchedWalker<cryptanalysis_suite::cryptanalysis::koblitz_fast::FastPoint>>::next::<cryptanalysis_suite::cryptanalysis::ic_boundary::BinaryGroup>",
+          "ir": 1269524,
+          "fraction": 0.049121213153015396
+        },
+        {
+          "function": "<alloc::vec::Vec<core::option::Option<u64>> as alloc::vec::spec_extend::SpecExtend<core::option::Option<u64>, core::iter::adapters::map::Map<core::array::iter::IntoIter<u64, 4>, core::option::Option<u64>::Some>>>::spec_extend",
+          "ir": 913920,
+          "fraction": 0.035361961746925484
+        },
+        {
+          "function": "cryptanalysis_suite::cryptanalysis::ic_boundary::collect_and_solve_with::<cryptanalysis_suite::cryptanalysis::ic_boundary::BinaryGroup, dyn cryptanalysis_suite::cryptanalysis::ic_boundary::RelationSolver, cryptanalysis_suite::cryptanalysis::ic_framework::run_pipeline<cryptanalysis_suite::cryptanalysis::ic_boundary::BinaryGroup>::{closure#0}>",
+          "ir": 869478,
+          "fraction": 0.03364238420845728
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::ic_boundary::IncrementalGauss>::add_row",
+          "ir": 856665,
+          "fraction": 0.033146615633676824
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::koblitz_fast::simd256::Simd256>::add_full_narrow",
+          "ir": 848141,
+          "fraction": 0.03281679971769862
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::koblitz_fast::simd256::Simd256>::batch_inverse_narrow",
+          "ir": 768446,
+          "fraction": 0.029733191150842418
+        },
+        {
+          "function": "<hashbrown::map::HashMap<u64, (), core::hash::BuildHasherDefault<cryptanalysis_suite::cryptanalysis::ic_boundary::MixHasher>>>::insert",
+          "ir": 628830,
+          "fraction": 0.02433108193859326
+        },
+        {
+          "function": "__memset_avx2_unaligned_erms",
+          "ir": 449120,
+          "fraction": 0.017377630711418037
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::ic_boundary::PairWitnessMap>::get",
+          "ir": 377271,
+          "fraction": 0.014597604462342793
+        },
+        {
+          "function": "<alloc::vec::Vec<usize> as alloc::vec::spec_from_iter::SpecFromIter<usize, core::iter::adapters::filter::Filter<core::ops::range::Range<usize>, <cryptanalysis_suite::cryptanalysis::ic_boundary::IncrementalGauss>::add_row_inner<false>::{closure#2}>>>::from_iter",
+          "ir": 340479,
+          "fraction": 0.013174025487604431
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::koblitz_fast::FastCurve>::double",
+          "ir": 333345,
+          "fraction": 0.012897992317192835
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::ic_boundary::PairTable>::probe::<cryptanalysis_suite::cryptanalysis::ic_boundary::BinaryGroup>",
+          "ir": 315713,
+          "fraction": 0.012215763993573929
+        },
+        {
+          "function": "<hashbrown::raw::RawTable<(u64, ())>>::reserve_rehash::<hashbrown::map::make_hasher<u64, (), core::hash::BuildHasherDefault<cryptanalysis_suite::cryptanalysis::ic_boundary::MixHasher>>::{closure#0}>",
+          "ir": 302789,
+          "fraction": 0.011715700537672685
+        },
+        {
+          "function": "cryptanalysis_suite::cryptanalysis::ic_boundary::column_part_key",
+          "ir": 239490,
+          "fraction": 0.009266496212766089
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::koblitz_fast::FastCurve>::add",
+          "ir": 167375,
+          "fraction": 0.00647617772605004
+        },
+        {
+          "function": "_int_malloc",
+          "ir": 167327,
+          "fraction": 0.00647432048015997
+        }
+      ],
+      "binary_sha256": "4bebe2b62aa3192032bfd0ec9c978c31eda9fb39dcc67b97abf12a48ad4cf542",
+      "answer": 996435
+    },
+    {
+      "tag": "sa",
+      "whole_guest_ir": 25841760,
+      "exclusive_sum": 25841760,
+      "selected_exclusive_function_ir": {
+        "collector_function": 869478,
+        "walker_function": 1304203,
+        "pair_probe_function": 315713,
+        "witness_lookup_function": 377271,
+        "generic_dispatch_function": 0
+      },
+      "collector_call_edges": [
+        {
+          "caller": "cryptanalysis_suite::cryptanalysis::ic_framework::run_pipeline::<cryptanalysis_suite::cryptanalysis::ic_boundary::BinaryGroup>",
+          "callee": "cryptanalysis_suite::cryptanalysis::ic_boundary::collect_and_solve_with::<cryptanalysis_suite::cryptanalysis::ic_boundary::BinaryGroup, dyn cryptanalysis_suite::cryptanalysis::ic_boundary::RelationSolver, cryptanalysis_suite::cryptanalysis::ic_framework::run_pipeline<cryptanalysis_suite::cryptanalysis::ic_boundary::BinaryGroup>::{closure#0}>",
+          "calls": 1,
+          "ir": 10268027
+        }
+      ],
+      "dictionary_and_probe_edges": [
+        {
+          "caller": "<cryptanalysis_suite::cryptanalysis::ic_framework::batch_mitm::BinaryBatchMitmOracle as cryptanalysis_suite::cryptanalysis::ic_framework::stages::DecompositionOracle<cryptanalysis_suite::cryptanalysis::ic_boundary::BinaryGroup>>::decompose",
+          "callee": "<cryptanalysis_suite::cryptanalysis::ic_boundary::PairTable>::probe::<cryptanalysis_suite::cryptanalysis::ic_boundary::BinaryGroup>",
+          "calls": 8583,
+          "ir": 814580
+        },
+        {
+          "caller": "<cryptanalysis_suite::cryptanalysis::ic_boundary::PairTable>::probe::<cryptanalysis_suite::cryptanalysis::ic_boundary::BinaryGroup>",
+          "callee": "<cryptanalysis_suite::cryptanalysis::ic_boundary::PairWitnessMap>::get",
+          "calls": 8583,
+          "ir": 377271
+        },
+        {
+          "caller": "<cryptanalysis_suite::cryptanalysis::ic_boundary::PairTable>::probe::<cryptanalysis_suite::cryptanalysis::ic_boundary::BinaryGroup>",
+          "callee": "<cryptanalysis_suite::cryptanalysis::koblitz_fast::FastCurve>::add",
+          "calls": 129,
+          "ir": 121596
+        }
+      ],
+      "top_functions": [
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::ic_boundary::PairWitnessMap>::insert_abscissae",
+          "ir": 5236815,
+          "fraction": 0.20264931645522596
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::ic_boundary::PairTable>::build_binary_batch",
+          "ir": 4031514,
+          "fraction": 0.15600771774058733
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::semaev_decomp::Gf2>::inv_clmul",
+          "ir": 2476955,
+          "fraction": 0.0958508630991078
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::koblitz_fast::simd256::Simd256>::add_cached_narrow::<true, 24, 27, true>",
+          "ir": 2431515,
+          "fraction": 0.0940924689340045
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::ic_boundary::batched_walk::BatchedWalker<cryptanalysis_suite::cryptanalysis::koblitz_fast::FastPoint>>::next::<cryptanalysis_suite::cryptanalysis::ic_boundary::BinaryGroup>",
+          "ir": 1269524,
+          "fraction": 0.049126839657979954
+        },
+        {
+          "function": "<alloc::vec::Vec<core::option::Option<u64>> as alloc::vec::spec_extend::SpecExtend<core::option::Option<u64>, core::iter::adapters::map::Map<core::array::iter::IntoIter<u64, 4>, core::option::Option<u64>::Some>>>::spec_extend",
+          "ir": 913920,
+          "fraction": 0.035366012222077754
+        },
+        {
+          "function": "cryptanalysis_suite::cryptanalysis::ic_boundary::collect_and_solve_with::<cryptanalysis_suite::cryptanalysis::ic_boundary::BinaryGroup, dyn cryptanalysis_suite::cryptanalysis::ic_boundary::RelationSolver, cryptanalysis_suite::cryptanalysis::ic_framework::run_pipeline<cryptanalysis_suite::cryptanalysis::ic_boundary::BinaryGroup>::{closure#0}>",
+          "ir": 869478,
+          "fraction": 0.033646237717554844
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::ic_boundary::IncrementalGauss>::add_row",
+          "ir": 856665,
+          "fraction": 0.03315041235581478
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::koblitz_fast::simd256::Simd256>::add_full_narrow",
+          "ir": 848141,
+          "fraction": 0.032820558661639146
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::koblitz_fast::simd256::Simd256>::batch_inverse_narrow",
+          "ir": 768446,
+          "fraction": 0.02973659688813765
+        },
+        {
+          "function": "<hashbrown::map::HashMap<u64, (), core::hash::BuildHasherDefault<cryptanalysis_suite::cryptanalysis::ic_boundary::MixHasher>>>::insert",
+          "ir": 628830,
+          "fraction": 0.02433386890057024
+        },
+        {
+          "function": "__memset_avx2_unaligned_erms",
+          "ir": 449120,
+          "fraction": 0.017379621202271052
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::ic_boundary::PairWitnessMap>::get",
+          "ir": 377271,
+          "fraction": 0.01459927651986552
+        },
+        {
+          "function": "<alloc::vec::Vec<usize> as alloc::vec::spec_from_iter::SpecFromIter<usize, core::iter::adapters::filter::Filter<core::ops::range::Range<usize>, <cryptanalysis_suite::cryptanalysis::ic_boundary::IncrementalGauss>::add_row_inner<false>::{closure#2}>>>::from_iter",
+          "ir": 340479,
+          "fraction": 0.013175534483719374
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::koblitz_fast::FastCurve>::double",
+          "ir": 333345,
+          "fraction": 0.012899469695562531
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::ic_boundary::PairTable>::probe::<cryptanalysis_suite::cryptanalysis::ic_boundary::BinaryGroup>",
+          "ir": 315713,
+          "fraction": 0.012217163227272445
+        },
+        {
+          "function": "<hashbrown::raw::RawTable<(u64, ())>>::reserve_rehash::<hashbrown::map::make_hasher<u64, (), core::hash::BuildHasherDefault<cryptanalysis_suite::cryptanalysis::ic_boundary::MixHasher>>::{closure#0}>",
+          "ir": 302789,
+          "fraction": 0.011717042492461813
+        },
+        {
+          "function": "cryptanalysis_suite::cryptanalysis::ic_boundary::column_part_key",
+          "ir": 239490,
+          "fraction": 0.009267557627653845
+        },
+        {
+          "function": "_int_malloc",
+          "ir": 167380,
+          "fraction": 0.0064771130139742806
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::koblitz_fast::FastCurve>::add",
+          "ir": 167375,
+          "fraction": 0.006476919528700832
+        }
+      ],
+      "binary_sha256": "4bebe2b62aa3192032bfd0ec9c978c31eda9fb39dcc67b97abf12a48ad4cf542",
+      "answer": 996435
+    },
+    {
+      "tag": "ip",
+      "whole_guest_ir": 25021255,
+      "exclusive_sum": 25021255,
+      "selected_exclusive_function_ir": {
+        "collector_function": 869478,
+        "walker_function": 1304203,
+        "pair_probe_function": 315713,
+        "witness_lookup_function": 377271,
+        "generic_dispatch_function": 0
+      },
+      "collector_call_edges": [
+        {
+          "caller": "cryptanalysis_suite::cryptanalysis::ic_framework::run_pipeline::<cryptanalysis_suite::cryptanalysis::ic_boundary::BinaryGroup>",
+          "callee": "cryptanalysis_suite::cryptanalysis::ic_boundary::collect_and_solve_with::<cryptanalysis_suite::cryptanalysis::ic_boundary::BinaryGroup, dyn cryptanalysis_suite::cryptanalysis::ic_boundary::RelationSolver, cryptanalysis_suite::cryptanalysis::ic_framework::run_pipeline<cryptanalysis_suite::cryptanalysis::ic_boundary::BinaryGroup>::{closure#0}>",
+          "calls": 1,
+          "ir": 10267939
+        }
+      ],
+      "dictionary_and_probe_edges": [
+        {
+          "caller": "<cryptanalysis_suite::cryptanalysis::ic_framework::batch_mitm::BinaryBatchMitmOracle as cryptanalysis_suite::cryptanalysis::ic_framework::stages::DecompositionOracle<cryptanalysis_suite::cryptanalysis::ic_boundary::BinaryGroup>>::decompose",
+          "callee": "<cryptanalysis_suite::cryptanalysis::ic_boundary::PairTable>::probe::<cryptanalysis_suite::cryptanalysis::ic_boundary::BinaryGroup>",
+          "calls": 8583,
+          "ir": 814580
+        },
+        {
+          "caller": "<cryptanalysis_suite::cryptanalysis::ic_boundary::PairTable>::probe::<cryptanalysis_suite::cryptanalysis::ic_boundary::BinaryGroup>",
+          "callee": "<cryptanalysis_suite::cryptanalysis::ic_boundary::PairWitnessMap>::get",
+          "calls": 8583,
+          "ir": 377271
+        },
+        {
+          "caller": "<cryptanalysis_suite::cryptanalysis::ic_boundary::PairTable>::probe::<cryptanalysis_suite::cryptanalysis::ic_boundary::BinaryGroup>",
+          "callee": "<cryptanalysis_suite::cryptanalysis::koblitz_fast::FastCurve>::add",
+          "calls": 129,
+          "ir": 121596
+        }
+      ],
+      "top_functions": [
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::ic_boundary::PairWitnessMap>::insert_abscissae",
+          "ir": 5236815,
+          "fraction": 0.20929465768203873
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::koblitz_fast::simd256::Simd256>::add_indexed_const_narrow::<24, 27>",
+          "ir": 4004173,
+          "fraction": 0.16003086176133052
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::semaev_decomp::Gf2>::inv_clmul",
+          "ir": 2476955,
+          "fraction": 0.09899403527121242
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::ic_boundary::PairTable>::build_binary_batch",
+          "ir": 1644491,
+          "fraction": 0.06572376165783851
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::ic_boundary::batched_walk::BatchedWalker<cryptanalysis_suite::cryptanalysis::koblitz_fast::FastPoint>>::next::<cryptanalysis_suite::cryptanalysis::ic_boundary::BinaryGroup>",
+          "ir": 1269524,
+          "fraction": 0.05073782270313779
+        },
+        {
+          "function": "<alloc::vec::Vec<core::option::Option<u64>> as alloc::vec::spec_extend::SpecExtend<core::option::Option<u64>, core::iter::adapters::map::Map<core::array::iter::IntoIter<u64, 4>, core::option::Option<u64>::Some>>>::spec_extend",
+          "ir": 913920,
+          "fraction": 0.036525745810911565
+        },
+        {
+          "function": "cryptanalysis_suite::cryptanalysis::ic_boundary::collect_and_solve_with::<cryptanalysis_suite::cryptanalysis::ic_boundary::BinaryGroup, dyn cryptanalysis_suite::cryptanalysis::ic_boundary::RelationSolver, cryptanalysis_suite::cryptanalysis::ic_framework::run_pipeline<cryptanalysis_suite::cryptanalysis::ic_boundary::BinaryGroup>::{closure#0}>",
+          "ir": 869478,
+          "fraction": 0.03474957591056084
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::ic_boundary::IncrementalGauss>::add_row",
+          "ir": 856665,
+          "fraction": 0.03423749128490957
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::koblitz_fast::simd256::Simd256>::add_full_narrow",
+          "ir": 848141,
+          "fraction": 0.033896820922851394
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::koblitz_fast::simd256::Simd256>::batch_inverse_narrow",
+          "ir": 768446,
+          "fraction": 0.030711728888099338
+        },
+        {
+          "function": "<hashbrown::map::HashMap<u64, (), core::hash::BuildHasherDefault<cryptanalysis_suite::cryptanalysis::ic_boundary::MixHasher>>>::insert",
+          "ir": 628830,
+          "fraction": 0.02513183291565511
+        },
+        {
+          "function": "__memset_avx2_unaligned_erms",
+          "ir": 449120,
+          "fraction": 0.017949539301685708
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::ic_boundary::PairWitnessMap>::get",
+          "ir": 377271,
+          "fraction": 0.015078020666829062
+        },
+        {
+          "function": "<alloc::vec::Vec<usize> as alloc::vec::spec_from_iter::SpecFromIter<usize, core::iter::adapters::filter::Filter<core::ops::range::Range<usize>, <cryptanalysis_suite::cryptanalysis::ic_boundary::IncrementalGauss>::add_row_inner<false>::{closure#2}>>>::from_iter",
+          "ir": 340479,
+          "fraction": 0.013607590826279497
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::koblitz_fast::FastCurve>::double",
+          "ir": 333345,
+          "fraction": 0.013322473233257085
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::ic_boundary::PairTable>::probe::<cryptanalysis_suite::cryptanalysis::ic_boundary::BinaryGroup>",
+          "ir": 315713,
+          "fraction": 0.01261779235294153
+        },
+        {
+          "function": "<hashbrown::raw::RawTable<(u64, ())>>::reserve_rehash::<hashbrown::map::make_hasher<u64, (), core::hash::BuildHasherDefault<cryptanalysis_suite::cryptanalysis::ic_boundary::MixHasher>>::{closure#0}>",
+          "ir": 302789,
+          "fraction": 0.012101271498971574
+        },
+        {
+          "function": "cryptanalysis_suite::cryptanalysis::ic_boundary::column_part_key",
+          "ir": 239490,
+          "fraction": 0.009571462342716223
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::koblitz_fast::FastCurve>::add",
+          "ir": 167375,
+          "fraction": 0.006689312746303093
+        },
+        {
+          "function": "_int_malloc",
+          "ir": 167069,
+          "fraction": 0.006677083143911047
+        }
+      ],
+      "binary_sha256": "4bebe2b62aa3192032bfd0ec9c978c31eda9fb39dcc67b97abf12a48ad4cf542",
+      "answer": 996435
+    },
+    {
+      "tag": "ia",
+      "whole_guest_ir": 25018206,
+      "exclusive_sum": 25018206,
+      "selected_exclusive_function_ir": {
+        "collector_function": 869478,
+        "walker_function": 1304203,
+        "pair_probe_function": 315713,
+        "witness_lookup_function": 377271,
+        "generic_dispatch_function": 0
+      },
+      "collector_call_edges": [
+        {
+          "caller": "cryptanalysis_suite::cryptanalysis::ic_framework::run_pipeline::<cryptanalysis_suite::cryptanalysis::ic_boundary::BinaryGroup>",
+          "callee": "cryptanalysis_suite::cryptanalysis::ic_boundary::collect_and_solve_with::<cryptanalysis_suite::cryptanalysis::ic_boundary::BinaryGroup, dyn cryptanalysis_suite::cryptanalysis::ic_boundary::RelationSolver, cryptanalysis_suite::cryptanalysis::ic_framework::run_pipeline<cryptanalysis_suite::cryptanalysis::ic_boundary::BinaryGroup>::{closure#0}>",
+          "calls": 1,
+          "ir": 10268027
+        }
+      ],
+      "dictionary_and_probe_edges": [
+        {
+          "caller": "<cryptanalysis_suite::cryptanalysis::ic_framework::batch_mitm::BinaryBatchMitmOracle as cryptanalysis_suite::cryptanalysis::ic_framework::stages::DecompositionOracle<cryptanalysis_suite::cryptanalysis::ic_boundary::BinaryGroup>>::decompose",
+          "callee": "<cryptanalysis_suite::cryptanalysis::ic_boundary::PairTable>::probe::<cryptanalysis_suite::cryptanalysis::ic_boundary::BinaryGroup>",
+          "calls": 8583,
+          "ir": 814580
+        },
+        {
+          "caller": "<cryptanalysis_suite::cryptanalysis::ic_boundary::PairTable>::probe::<cryptanalysis_suite::cryptanalysis::ic_boundary::BinaryGroup>",
+          "callee": "<cryptanalysis_suite::cryptanalysis::ic_boundary::PairWitnessMap>::get",
+          "calls": 8583,
+          "ir": 377271
+        },
+        {
+          "caller": "<cryptanalysis_suite::cryptanalysis::ic_boundary::PairTable>::probe::<cryptanalysis_suite::cryptanalysis::ic_boundary::BinaryGroup>",
+          "callee": "<cryptanalysis_suite::cryptanalysis::koblitz_fast::FastCurve>::add",
+          "calls": 129,
+          "ir": 121596
+        }
+      ],
+      "top_functions": [
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::ic_boundary::PairWitnessMap>::insert_abscissae",
+          "ir": 5236815,
+          "fraction": 0.20932016468327105
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::koblitz_fast::simd256::Simd256>::add_indexed_const_narrow::<24, 27>",
+          "ir": 4004173,
+          "fraction": 0.16005036492224903
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::semaev_decomp::Gf2>::inv_clmul",
+          "ir": 2476955,
+          "fraction": 0.09900609979788319
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::ic_boundary::PairTable>::build_binary_batch",
+          "ir": 1644491,
+          "fraction": 0.06573177149472668
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::ic_boundary::batched_walk::BatchedWalker<cryptanalysis_suite::cryptanalysis::koblitz_fast::FastPoint>>::next::<cryptanalysis_suite::cryptanalysis::ic_boundary::BinaryGroup>",
+          "ir": 1269524,
+          "fraction": 0.05074400618493588
+        },
+        {
+          "function": "<alloc::vec::Vec<core::option::Option<u64>> as alloc::vec::spec_extend::SpecExtend<core::option::Option<u64>, core::iter::adapters::map::Map<core::array::iter::IntoIter<u64, 4>, core::option::Option<u64>::Some>>>::spec_extend",
+          "ir": 913920,
+          "fraction": 0.03653019724915527
+        },
+        {
+          "function": "cryptanalysis_suite::cryptanalysis::ic_boundary::collect_and_solve_with::<cryptanalysis_suite::cryptanalysis::ic_boundary::BinaryGroup, dyn cryptanalysis_suite::cryptanalysis::ic_boundary::RelationSolver, cryptanalysis_suite::cryptanalysis::ic_framework::run_pipeline<cryptanalysis_suite::cryptanalysis::ic_boundary::BinaryGroup>::{closure#0}>",
+          "ir": 869478,
+          "fraction": 0.03475381088476128
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::ic_boundary::IncrementalGauss>::add_row",
+          "ir": 856665,
+          "fraction": 0.034241663850717356
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::koblitz_fast::simd256::Simd256>::add_full_narrow",
+          "ir": 848141,
+          "fraction": 0.03390095197073683
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::koblitz_fast::simd256::Simd256>::batch_inverse_narrow",
+          "ir": 768446,
+          "fraction": 0.030715471764841972
+        },
+        {
+          "function": "<hashbrown::map::HashMap<u64, (), core::hash::BuildHasherDefault<cryptanalysis_suite::cryptanalysis::ic_boundary::MixHasher>>>::insert",
+          "ir": 628830,
+          "fraction": 0.02513489576350918
+        },
+        {
+          "function": "__memset_avx2_unaligned_erms",
+          "ir": 449120,
+          "fraction": 0.01795172683445008
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::ic_boundary::PairWitnessMap>::get",
+          "ir": 377271,
+          "fraction": 0.015079858244032365
+        },
+        {
+          "function": "<alloc::vec::Vec<usize> as alloc::vec::spec_from_iter::SpecFromIter<usize, core::iter::adapters::filter::Filter<core::ops::range::Range<usize>, <cryptanalysis_suite::cryptanalysis::ic_boundary::IncrementalGauss>::add_row_inner<false>::{closure#2}>>>::from_iter",
+          "ir": 340479,
+          "fraction": 0.013609249200362328
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::koblitz_fast::FastCurve>::double",
+          "ir": 333345,
+          "fraction": 0.01332409685970289
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::ic_boundary::PairTable>::probe::<cryptanalysis_suite::cryptanalysis::ic_boundary::BinaryGroup>",
+          "ir": 315713,
+          "fraction": 0.012619330099048668
+        },
+        {
+          "function": "<hashbrown::raw::RawTable<(u64, ())>>::reserve_rehash::<hashbrown::map::make_hasher<u64, (), core::hash::BuildHasherDefault<cryptanalysis_suite::cryptanalysis::ic_boundary::MixHasher>>::{closure#0}>",
+          "ir": 302789,
+          "fraction": 0.012102746296037374
+        },
+        {
+          "function": "cryptanalysis_suite::cryptanalysis::ic_boundary::column_part_key",
+          "ir": 239490,
+          "fraction": 0.009572628828781729
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::koblitz_fast::FastCurve>::add",
+          "ir": 167375,
+          "fraction": 0.006690127981198972
+        },
+        {
+          "function": "_int_malloc",
+          "ir": 167122,
+          "fraction": 0.0066800153456247026
+        }
+      ],
+      "binary_sha256": "4bebe2b62aa3192032bfd0ec9c978c31eda9fb39dcc67b97abf12a48ad4cf542",
+      "answer": 996435
+    }
+  ],
+  "independent_answer_checks": 4,
+  "synthetic_units": true,
+  "qualification": null,
+  "standing": "unsigned existing-parser and independent arithmetic invocation",
+  "scope": "selected exclusive functions and call edges are instruction attribution, not exact collector clocks; no allocator/cache or native-speed causality inferred",
+  "source_sha256": {
+    "experiments/ic-collector-counterfactual-20261117/analyze_n24.py": "0262772084b7cca165024715412f280d82dc804b2c436c69672866bac39571ca",
+    "experiments/ic-collector-counterfactual-20261117/callgrind_parser.py": "25adcf986789fd9268a80eb2199bfa294fdc1e1f99daa4b7f3044396fc582f2d",
+    "experiments/fb-archive/purepy.py": "b15e4431540670be570e44c5c750f1a6f01e6714cb3cdf24f9d01d5cdaa6f5ef",
+    "experiments/fb-archive/external.py": "f5294382c5720f0f12831908d570617836deaa3743195ce0f4c376e2db8ffcd7"
+  }
+}
