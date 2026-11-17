@@ -30,6 +30,9 @@ jobs:
           python3 -O "$D/ct168_trace_audit.py" /tmp/ct168-direct.json /tmp/ct168-generic.json > /tmp/ct168-audit-opt.json
           python3 "$D/ct169_audit_mutation_test.py" /tmp/ct168-direct.json /tmp/ct168-generic.json
           python3 -O "$D/ct169_audit_mutation_test.py" /tmp/ct168-direct.json /tmp/ct168-generic.json
+          # CT170: both synchronized semantic falsifications must now fail closed.
+          python3 "$D/ct170_semantic_mutation_test.py" /tmp/ct168-direct.json /tmp/ct168-generic.json
+          python3 -O "$D/ct170_semantic_mutation_test.py" /tmp/ct168-direct.json /tmp/ct168-generic.json
           python3 - "$D" <<'PY'
           import json, pathlib, sys
           d=pathlib.Path(sys.argv[1])
@@ -54,3 +57,51 @@ jobs:
           PY
           if python3 -B "$P" --arm twist --k 7 >/tmp/ct168-badscalar.log 2>&1; then echo 'secret scalar was accepted' >&2; exit 1; fi
           if python3 -B "$P" --arm twist --qx 1 --qy 1 >/tmp/ct168-badpoint.log 2>&1; then echo 'off-curve point was accepted' >&2; exit 1; fi
+
+      - name: Retain complete CT170 public-Q cold toy transcript and diagnostic (unsigned)
+        run: |
+          set -euo pipefail
+          echo "CT170 exact checked-out source $(git rev-parse HEAD)"
+          python3 --version
+          uname -a
+          P=experiments/chained-transfer-public-target/ct167-sextic-control/ct167_sextic_control.py
+          D=experiments/chained-transfer-public-target/ct168-cubic-census
+          sha256sum "$P" "$D/ct168_trace_audit.py" "$D/ct170_semantic_mutation_test.py"
+          echo "BEGIN_CT170_FULL_16_ROW_PUBLIC_Q_TOY_COLD_JSON"
+          cat /tmp/ct167-public-input-paired.json
+          echo
+          echo "END_CT170_FULL_16_ROW_PUBLIC_Q_TOY_COLD_JSON"
+          sha256sum /tmp/ct167-public-input-paired.json
+          python3 - /tmp/ct167-public-input-paired.json <<'PY'
+          import hashlib,json,statistics,sys
+          raw=open(sys.argv[1],'rb').read()
+          doc=json.loads(raw)
+          rows=doc['records']
+          assert len(rows)==16 and set(r['arm'] for r in rows)=={'source','twist'}
+          assert len(set(r['verifier_k'] for r in rows))==4
+          for r in rows:
+              assert type(r['cold_host_ns']) is int and r['cold_host_ns']>0
+              assert type(r['peak_rss_kib']) is int and r['peak_rss_kib']>0
+              assert type(r['recovered_log']) is int and r['recovered_log']==r['verifier_k']
+              assert r['source_Q']==next(s['source_Q'] for s in rows if s['verifier_k']==r['verifier_k'])
+          s=[r for r in rows if r['arm']=='source']
+          t=[r for r in rows if r['arm']=='twist']
+          assert len(s)==len(t)==8
+          assert sum(r['cold_host_ns'] for r in s)==doc['cold_source_total_ns']
+          assert sum(r['cold_host_ns'] for r in t)==doc['cold_twist_total_ns']
+          def drift(arm):
+              return {str(k):max(x['cold_host_ns'] for x in arm if x['verifier_k']==k)/
+                             min(x['cold_host_ns'] for x in arm if x['verifier_k']==k)
+                      for k in sorted(set(r['verifier_k'] for r in arm))}
+          print(json.dumps({'schema':'ct170-clean-public-q-cold-toy-diagnostic-v1',
+             'standing':'pcc:unverified',
+             'whole_transcript_sha256':hashlib.sha256(raw).hexdigest(),
+             'source_total_cold_ns':doc['cold_source_total_ns'],
+             'twist_total_cold_ns':doc['cold_twist_total_ns'],
+             'twist_over_source':doc['cold_twist_total_ns']/doc['cold_source_total_ns'],
+             'source_median_cold_ns':statistics.median(r['cold_host_ns'] for r in s),
+             'twist_median_cold_ns':statistics.median(r['cold_host_ns'] for r in t),
+             'source_aa_maxmin_by_k':drift(s),'twist_aa_maxmin_by_k':drift(t),
+             'peak_rss_kib_max':max(r['peak_rss_kib'] for r in rows),
+             'scope':'free hosted 4 toy order-73 Q, 16 nonisolated cold BSGS processes; no rho, IC, C169/C13/D or signed PCC'},sort_keys=True,separators=(',',':')))
+          PY
