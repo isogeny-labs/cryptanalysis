@@ -89,9 +89,10 @@ class CT184CrossStackTests(unittest.TestCase):
             "--output", str(target), "--execute", "--admission-approved",
             "--timeout-seconds", "120", "--panel-wall-seconds", "120",
         ]
-        with mock.patch.object(bounded, "host_metadata", return_value=stable_host), \\
-             mock.patch.object(bounded, "run_sample", side_effect=fake_child), \\
-             mock.patch.object(bounded, "bounded_subprocess", side_effect=AssertionError("native subprocess FORBIDDEN")):
+        with (mock.patch.object(bounded, "host_metadata", return_value=stable_host),
+              mock.patch.object(bounded, "run_sample", side_effect=fake_child),
+              mock.patch.object(bounded, "bounded_subprocess",
+                                side_effect=AssertionError("native subprocess FORBIDDEN"))):
             with contextlib.redirect_stdout(io.StringIO()):
                 rc = producer.run(args)
         self.assertEqual(rc, 0)
