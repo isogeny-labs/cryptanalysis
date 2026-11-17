@@ -122,6 +122,58 @@ class CT179SourceTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "changed"):
             judge.valid_sample(s, self.rows[0], 0, "direct_composite")
 
+    def test_ct180_impossible_nested_cold_times_refused(self):
+        # Start from a byte/digest-consistent sample that was accepted by
+        # CT179. Only measured elapsed durations are changed in each control.
+        arm = "direct_composite"
+        baseline = self.sample(0, arm, 0)
+        self.assertEqual(judge.valid_sample(baseline, self.rows[0], 0, arm),
+                         (3_000_000, 1024))
+
+        cases = (
+            ("external process wall", None, "1",
+             "internal total exceeds external process wall"),
+            ("setup plus route exceeds total",
+             ("in_process_total_ns_decimal", "200"), None,
+             "native setup/route exceeds internal total"),
+            ("route exceeds total", ("native_elapsed", "340"), None,
+             "native setup/route exceeds internal total"),
+            ("zero route", ("native_elapsed", "0"), None,
+             "native elapsed: noncanonical or out of range"),
+            ("zero total", ("in_process_total_ns_decimal", "0"), None,
+             "native in-process: noncanonical or out of range"),
+        )
+        for label, child_change, external, reason in cases:
+            with self.subTest(label=label):
+                sample = self.sample(0, arm, 0)
+                child = self.child(0, arm)
+                if child_change:
+                    key, value = child_change
+                    if key == "native_elapsed":
+                        child["native_sample"]["elapsed_ns_decimal"] = value
+                    else:
+                        child[key] = value
+                output = (json.dumps(child, sort_keys=True) + "\\n").encode()
+                sample["stdout"] = output.decode()
+                sample["stdout_base64"] = base64.b64encode(output).decode()
+                sample["stdout_sha256"] = hashlib.sha256(output).hexdigest()
+                if external is not None:
+                    sample["external_wall_ns_decimal"] = external
+                with self.assertRaisesRegex(ValueError, reason):
+                    judge.valid_sample(sample, self.rows[0], 0, arm)
+
+    def test_ct180_exact_nested_boundary_is_accepted_synthetically(self):
+        arm = "direct_composite"
+        sample = self.sample(0, arm, 0, wall=230)
+        child = self.child(0, arm)
+        child["in_process_total_ns_decimal"] = "230"
+        output = (json.dumps(child, sort_keys=True) + "\\n").encode()
+        sample["stdout"] = output.decode()
+        sample["stdout_base64"] = base64.b64encode(output).decode()
+        sample["stdout_sha256"] = hashlib.sha256(output).hexdigest()
+        self.assertEqual(judge.valid_sample(sample, self.rows[0], 0, arm),
+                         (230, 1024))
+
     def test_historical_partial_panel_refused(self):
         with tempfile.TemporaryDirectory() as d:
             path = Path(d) / "panel.jsonl"
