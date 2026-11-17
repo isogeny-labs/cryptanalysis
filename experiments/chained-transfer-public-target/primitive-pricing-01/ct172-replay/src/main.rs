@@ -168,7 +168,8 @@ fn controls(rows: &[Value], observed: &[Value]) -> Result<usize, String> {
 
 fn run() -> Result<(), String> {
     let args = std::env::args().skip(1).collect::<Vec<_>>();
-    must(args.is_empty() || args == ["--self-test"], "usage: ct172-replay [--self-test]")?;
+    must(args.is_empty() || (args.len() == 1 && args[0] == "--self-test"),
+         "usage: ct172-replay [--self-test]")?;
     let data: Value = serde_json::from_str(FROZEN).map_err(|e| e.to_string())?;
     must(data.as_object().is_some_and(|d| d.len() == 2
          && d.contains_key("all48") && d.contains_key("scope")),
