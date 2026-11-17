@@ -212,6 +212,8 @@ def ic_native_walk_evidence(ref, since):
          "binary-ic-compact-pair-table-pipeline", "ic.compact_pair_table.exploratory.", "IC compact pair table"),
         ("benchmarks/records/20261117T0620Z-ic-simd-output-fivepath-001.json",
          "binary-ic-simd-output-pipeline", "ic.simd_output.exploratory.", "IC SIMD output append"),
+        ("benchmarks/records/20261117T0754Z-ic-packed-const-fivepath-001.json",
+         "binary-ic-packed-const-pipeline", "ic.packed_const.exploratory.", "IC packed constant squares"),
     ]
     for path, problem, prefix, label in sources:
         text = show(ref, path)
