@@ -1,0 +1,42 @@
+{
+  "status": "pass",
+  "checks": [
+    {
+      "name": "validated-framework",
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "-j2",
+        "--manifest-path",
+        "/tmp/ic-canonical-frozen-source-001/suite/Cargo.toml",
+        "--lib",
+        "ic_framework",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "validated-clippy",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--offline",
+        "--locked",
+        "-j2",
+        "--manifest-path",
+        "/tmp/ic-canonical-frozen-source-001/suite/Cargo.toml",
+        "--lib",
+        "--example",
+        "ic_affine_pipeline_probe",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "standing": "local ARM only; native v2 execution pending"
+}
