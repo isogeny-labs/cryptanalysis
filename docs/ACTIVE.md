@@ -18,7 +18,7 @@ and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
 
-- [ ] CT189: implement native-eligible v3 randomized physical A/B cold crossover producer and strict evidence reader, source-only synthetic validation; native runtime gated (automation, started 2026-11-17, branch research/ct189-native-physical-crossover-20261117, PR #1729) [pcc:unverified]
+- [x] CT189: implement native-eligible v3 randomized physical A/B cold crossover producer and strict evidence reader, source-only synthetic validation; native runtime gated (automation, started 2026-11-17, branch research/ct189-native-physical-crossover-20261117, PR #1729) [pcc:unverified]
 
 - [ ] Extend certified Xedni lift-success trials to the ten-coefficient `r=7..9` regime with exact rational dependence verification (Codex, started 2026-11-17, branch codex/xedni-breakthrough-20261117, PR #1722) [pcc:unverified]
 
@@ -37,3 +37,5 @@ and construction gates. [pcc:unverified]
 - [ ] <task> (<runtime>, started YYYY-MM-DD, branch <branch>, PR #<n>) -->
 
 ## Blocked / questions for the owner
+
+- CT189 PR #1729: exact-source synthetic producer/reader passed; protected merge/independent PCC and authenticated 695/701 corpus plus original CT172 native 48-case parity remain open. CT189 prices original CT175 21-counter physical routes, not the 22-counter norm-point-reuse derivative. Owner/provider admission needed for actual cold C169/C13a/C13b/N2_actual/D and complete single-target solver comparisons; no paid work authorized. [pcc:unverified]
