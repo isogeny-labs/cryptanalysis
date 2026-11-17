@@ -23,18 +23,17 @@ The frozen seven-path panel uses the original N15/18/21/24/27 curves/bases, fixe
 ## What would unblock it
 
 - [x] Before new fresh timing, admit matched N24 development inputs/source/units and compare compact, packed, indexed and static paths under the separate protocol.
-- [x] If work counts remain unchanged, freeze a counter-only or old-scratch-reservation counterfactual before any additional timing; retain source variants and all outcomes. Staged/indexed and counter-presence cells are admitted in one binary; native-clock measurement remains pending.
+- [x] If work counts remain unchanged, freeze a counter-only or old-scratch-reservation counterfactual before any additional timing; retain source variants and all outcomes. Staged/indexed and counter-presence cells are admitted in one binary; fresh native-clock measurement completed; no counter-removal remedy was established.
 - [ ] Identify a repeatable causal contrast with independent correctness/replay, then test the remedy against the original control in a separate full primary comparison.
 
 Instruction evidence can narrow the cause without resolving native timing. A faster new dictionary does not itself resolve the earlier attribution question. A signed/qualified broader conclusion still requires the repository's independent evidence gates. [pcc:unverified]
 
 ## Next discriminating step
 
-- **Action:** publish fresh fixture726..767 identities and execute the separately frozen seven-path panel after the completed single-binary admission.
-- **Inputs/controls:** immutable anchorordinary/compactinverse/indexedinverse controls and the admitted SP/SA/IP/IAinverse cells, matched rho and IPordinary A/A controls on exact public targets.
-- **Limits:** one4CPU/8GiB/L4/900s timing allocation, declared780s controller and child caps; no instrumentation, host replacement, A/A filtering or cross-panel products.
-- **Outcomes:** the within-binary effects isolate declared setup choices in this build, while frozenindexed/IP checks transfer. A repeatable effect is not automatically a historical cause or allocator/cache explanation. Failure, censoring and inconclusive intervals retain uncertainty and raw evidence.
-- **Recheck trigger:** completed fresh panel and independent arithmetic replay, including all failed A/A rows.
+- **Action:** keep indexed arithmetic and table contents fixed; independently restore staged scratch reservations and gather writes in explicit experimental cells.
+- **Controls:** immutable indexed baseline, staged control, exact complete table/first-witness maps, independent arithmetic replay, and a rebuild transfer control.
+- **Prediction:** restoring only one preparation-state factor may restore collector timing; no repeatable effect rejects that factor as the sufficient explanation. Any remedy must lower charged primary on separately fresh targets.
+- **Limits:** no physical allocator/cache explanation from clock or selected instruction counts alone. Freeze prospective controls and resource limits before additional timing.
 
 ## Resolution and history
 
@@ -43,3 +42,5 @@ Instruction evidence can narrow the cause without resolving native timing. A fas
 2026-11-17: separate preparation095854-5065 completed; four diagnostic answers independently replay. Compact/packed/indexed selected collector-root/walker/probe/lookup exclusive Ir are respectively869478/1304203/315713/377271 in all three binaries, with8583lookups; inclusive collector10265859/10265770/10265700 differs by at most159Ir. Generic dispatch remains absent. These instruction results narrow an extra-work explanation, but do not resolve the native slowdown. New static map whole Ir falls while lookup Ir rises to405429. Exact raw custody, source/binary admission and limits are in [PREPARATION.md](../experiments/ic-static-witness-map-20261117/PREPARATION.md), unsigned claim PCC-20261117-b9141d. A separate counter-only/scratch counterfactual is still required. [pcc:unverified]
 
 2026-11-17: single-binary preparation145812-d15b admitted staged/indexed and counter-present/absent configurations with exact maps and preserved semantic/inverse-vector counters. Existing independent Python arithmetic checked20pipeline answers,2560walk states and4diagnostic answers; all130outputs passed lossless working-store readback. The four N24cells retain the same selected exclusive collector/walker/probe/lookup counts as the earlier controls. This remains instruction attribution, with native collector-clock causality unresolved. The prospective panel, admission details and raw binding are in [the counterfactual preparation](../experiments/ic-collector-counterfactual-20261117/PREPARATION.md), unsigned claim PCC-20261117-b8257b. [pcc:unverified]
+
+2026-11-17: seven-path job154829-472b completed210blocks,2310answers and10240states replayed, zero caps. All13failed A/A rows remain in estimates. Every field's frozen-indexed/counterless primary interval includes1. AtN24 the staged/indexed collector ratio is0.973567[0.969511,0.978005] with counters and0.976343[0.962088,0.983075] without; the counter-only collector contrasts and interaction remain inconclusive. This narrows the setup-choice effect without identifying its physical mechanism. See [completed report](../experiments/ic-collector-counterfactual-20261117/REPORT.md), unsigned claim PCC-20261117-262375. The record was initialized after execution; prospective source/protocol/identities and native timestamps remain pinned. [pcc:unverified]
