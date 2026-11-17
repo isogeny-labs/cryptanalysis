@@ -16,7 +16,7 @@ _(none pinned — set one with `/goal <text>`)_
 
 ## Active items (top = next)
 
-- [ ] In progress: measure the indexed IC collector regression with staged/indexed and counter-presence setup contrasts in one binary, preserving frozen controls; implementation PR #1712 merged, panel continuation PR #1717 (Codex, started 2026-11-17, branch codex/ic-collector-panel-20261117)
+- [ ] In progress: publish completed collector counterfactual evidence and isolate scratch reservation/gather effects; implementation #1712 and tracking #1717 merged before results (Codex, started 2026-11-17, branch codex/ic-collector-results-20261117)
 - [x] Specialize the static IC witness dictionary and measure full-pipeline and collector effects against frozen controls; negative result retained and indexed route restored, broader performance goal continues (Codex, started 2026-11-17, branch codex/ic-static-witness-map-20261117, PR #1709)
 - [x] Measure index-driven compact IC pair preparation with exact order/witness preservation; exploratory gains and collector regressions retained, broader optimization continues (Codex, started 2026-11-17, branch codex/ic-pair-index-gather-20261117, PR #1707)
 - [x] Combine packed squaring with constant-polynomial IC preparation and measure against compact baseline; unsigned exploratory panel preserved, broader collector optimization continues (Codex, started 2026-11-16, branch codex/ic-packed-const-square-20261116, PR #1705)
