@@ -18,7 +18,7 @@ and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
 
-- [ ] Archive Curve25519 representation research with PDF, source and explicit unverified evidence status (Codex, started 2026-11-17, branch codex/curve25519-representation-research) [pcc:unverified]
+- [ ] Archive Curve25519 representation research with PDF, source and explicit unverified evidence status (Codex, started 2026-11-17, branch codex/curve25519-representation-research, PR #1728) [pcc:unverified]
 
 - [ ] Extend certified Xedni lift-success trials to the ten-coefficient `r=7..9` regime with exact rational dependence verification (Codex, started 2026-11-17, branch codex/xedni-breakthrough-20261117, PR #1722) [pcc:unverified]
 
@@ -37,3 +37,5 @@ and construction gates. [pcc:unverified]
 - [ ] <task> (<runtime>, started YYYY-MM-DD, branch <branch>, PR #<n>) -->
 
 ## Blocked / questions for the owner
+
+- Curve25519 research archive PR #1728: raw data and original PDF await artifact-store access (`AllAccessDisabled`); source/figures and pending hashes are on the PR. [pcc:unverified]
