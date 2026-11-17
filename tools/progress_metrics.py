@@ -210,6 +210,8 @@ def ic_native_walk_evidence(ref, since):
          "binary-ic-canonical-coeff-pipeline", "ic.canonical_coeff.exploratory.", "IC canonical coefficients"),
         ("benchmarks/records/20261117T0457Z-ic-compact-sevenpath-001.json",
          "binary-ic-compact-pair-table-pipeline", "ic.compact_pair_table.exploratory.", "IC compact pair table"),
+        ("benchmarks/records/20261117T0620Z-ic-simd-output-fivepath-001.json",
+         "binary-ic-simd-output-pipeline", "ic.simd_output.exploratory.", "IC SIMD output append"),
     ]
     for path, problem, prefix, label in sources:
         text = show(ref, path)

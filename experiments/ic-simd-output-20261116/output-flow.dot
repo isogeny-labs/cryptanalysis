@@ -1,10 +1,10 @@
 digraph output {
  rankdir=LR; bgcolor="white"; node [shape=box,style="rounded,filled",fillcolor="#edf5f4",fontname="Helvetica"]; edge [fontname="Helvetica",fontsize=10];
- input [label="Four normal cached pairs\nSame numerator, inverse and field formula"];
- lanes [label="SIMD abscissae\nExact four u64 values"];
- array [label="Fixed array of four Some(x_i) values\nSafe slice append to existing output"];
- fallback [label="Exceptional groups and tails\nExisting scalar fallback"];
- result [label="Same ordered Option<u64> output\nPrefix retained; no arithmetic change"];
+ input [label="Four cached pairs"];
+ lanes [label="Same SIMD arithmetic\nFour exact abscissae"];
+ array [label="Four Some(x_i) values\nSafe slice append"];
+ fallback [label="Exceptions and tails\nOriginal scalar fallback"];
+ result [label="Same ordered output\nExisting prefix retained"];
  input -> lanes -> array -> result;
  input -> fallback [label="non-normal pair"];
  fallback -> result;
