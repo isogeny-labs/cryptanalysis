@@ -170,6 +170,12 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for BinaryBatchMitmOracle {
                     .as_ref()
                     .map_or(0, |t| t.vector_const_pairs as u64),
             ),
+            (
+                "mitm_indexed_prepare_pairs".into(),
+                self.table
+                    .as_ref()
+                    .map_or(0, |t| t.indexed_prepare_pairs as u64),
+            ),
             ("mitm_scalar_prepare".into(), u64::from(self.used_scalar)),
             (
                 "mitm_vector_const_validated_pairs".into(),
