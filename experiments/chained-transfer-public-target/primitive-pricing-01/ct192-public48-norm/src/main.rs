@@ -1,7 +1,7 @@
 //! CT192 scalar-blind 48-public-packet norm operand panel.
 //! This is a source-only instrument until admitted native execution.
 //! Produces no ECDLP answer and is NOT independent PCC.
-use chained_n4_fixed_jacobian_chain::norm::EncodedClass;
+use chained_n4_fixed_jacobian_chain::{norm::EncodedClass, ELL};
 use chained_n4_fixed_jacobian_chain_norm_reuse_ct192::Runtime;
 use chained_n4_paired_fourth_preflight::models::even::back6;
 use chained_n4_public_target::CheckedInstance;
@@ -118,7 +118,7 @@ fn run() -> Result<(), String> {
     let checked = CheckedInstance::construct().map_err(|e| e.to_string())?;
     let runtime = Runtime::construct(&checked)?;
     let setup_ns = setup_start.elapsed().as_nanos();
-    let mut operands: Vec<(usize, usize, usize, u64, &str, Pt<ER>)> = Vec::new();
+    let mut operands: Vec<(usize, usize, usize, usize, u64, &str, Pt<ER>)> = Vec::new();
     for (index, row) in rows.iter().enumerate() {
         let (from, to, sector, external_label) = cohort(row)?;
         let source = &runtime.geometry.models[from].prime;
@@ -147,14 +147,14 @@ fn run() -> Result<(), String> {
             let actual = runtime.ct192_actual_norm(to, operand);
             must(actual == descend(proxy),
                  format!("row {index} {arm}: N2 actual != descended D_padd"))?;
-            operands.push((index, to, sector, external_label, arm, operand));
+            operands.push((index, from, to, sector, external_label, arm, operand));
         }
     }
     must(operands.len() == 96, "expected 96 route-specific true operands")?;
     // Only the precomputed true target operands are timed. Every physical
     // route, direction, sector, and exceptional input retains raw records.
     let mut all = Vec::with_capacity(96);
-    for (index, to, sector, external_label, arm, point) in operands {
+    for (index, from, to, sector, external_label, arm, point) in operands {
         let target = &runtime.geometry.models[to].quadratic;
         let mut slots = Vec::with_capacity(64);
         for block in 0..16 {
@@ -182,7 +182,7 @@ fn run() -> Result<(), String> {
             }
         }
         all.push(json!({
-            "packet_index":index, "target":to, "sector":sector,
+            "packet_index":index, "from":from, "to":to, "sector":sector,
             "scalar_label_outside_runtime":external_label,
             "physical_transfer_route":arm,
             "raw_slots":slots
@@ -193,6 +193,7 @@ fn run() -> Result<(), String> {
         "standing":"[pcc:unverified]",
         "scope":"same-process warm N2_actual vs D_padd, 48 selected public inputs x 2 routes; no complete ECDLP",
         "source_git_blob":ORIGINAL_BLOB, "fixture_git_blob":FROZEN_BLOB,
+        "source_prime":223, "source_group_prime":ELL,
         "admission_producer_asserted_only":true,
         "public_packets":48, "true_route_operands":96,
         "same_process_setup_ns_decimal":setup_ns.to_string(),
