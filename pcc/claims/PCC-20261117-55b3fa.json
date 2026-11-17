@@ -1,0 +1,15 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-17T06:44:18Z",
+ "id": "PCC-20261117-55b3fa",
+ "kind": "statement",
+ "producer": {
+  "commit": "dc458805ea6c156c4de2a2daa9e3c109d85be781",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [],
+ "schema": "pcc.claim/v1",
+ "scope": "experiments/ic-packed-const-square-20261116",
+ "statement": "Independent arithmetic design control for combined packed-square and constant reduction passes32768exhaustive smallest-field squares plus200040packed lane-square checks and200040canonical product checks across exact fields15/18/21/24/27, using existing PurePy field multiplication as reference. This supports the declared canonical arithmetic bounds only, not SIMD execution or native performance. Initial expanded Rust test failed because the scalar reference asserts for noncanonical out-of-domain inputs; original failure retained and protocol amended explicitly to test equal fallback behavior including assertions."
+}

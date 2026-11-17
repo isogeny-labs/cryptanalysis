@@ -16,8 +16,9 @@ _(none pinned — set one with `/goal <text>`)_
 
 ## Active items (top = next)
 
-- [x] CT177 bound CT176 child output capture and prevent unbounded process memory while preserving raw evidence (automation, started 2026-11-17, branch research/ct177-bounded-process-capture-20261117, PR #1706; scoped source CI passed)
-- [x] CT178 require explicit aggregate wall budget and refuse expired/incomplete 2,304-process panels (automation, started 2026-11-17, branch research/ct177-bounded-process-capture-20261117, PR #1706; 32/32 tests normal and optimized source CI #44042761162; no native run)
+- [x] Combine packed squaring with constant-polynomial IC preparation and measure against compact baseline; unsigned exploratory panel preserved, broader collector optimization continues (Codex, started 2026-11-16, branch codex/ic-packed-const-square-20261116, PR #1705)
+
+- [x] Measure frozen SIMD abscissa-output candidate against compact IC baseline: candidate rejected and previous source restored; broader performance goal remains open (Codex, started 2026-11-16, branch codex/ic-simd-output-20261116, PR #1703)
 
 <!-- One line per task, added as the task's first step with its draft PR:
 - [ ] <task> (<runtime>, started YYYY-MM-DD, branch <branch>, PR #<n>) -->
