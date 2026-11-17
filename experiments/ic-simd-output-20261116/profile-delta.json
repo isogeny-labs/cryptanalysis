@@ -1,0 +1,33 @@
+{
+  "standing": "unsigned whole-guest development Ir only; different binaries, no native clock inference",
+  "rows": [
+    {
+      "method": "current",
+      "baseline_ir": 113478716,
+      "patched_ir": 112848670,
+      "difference": -630046,
+      "baseline_iterator": [
+        {
+          "function": "<alloc::vec::Vec<core::option::Option<u64>> as alloc::vec::spec_extend::SpecExtend<core::option::Option<u64>, core::iter::adapters::map::Map<core::array::iter::IntoIter<u64, 4>, core::option::Option<u64>::Some>>>::spec_extend",
+          "ir": 3925152,
+          "fraction": 0.03458932334059896
+        }
+      ],
+      "patched_iterator": []
+    },
+    {
+      "method": "inverse",
+      "baseline_ir": 108516630,
+      "patched_ir": 107885973,
+      "difference": -630657,
+      "baseline_iterator": [
+        {
+          "function": "<alloc::vec::Vec<core::option::Option<u64>> as alloc::vec::spec_extend::SpecExtend<core::option::Option<u64>, core::iter::adapters::map::Map<core::array::iter::IntoIter<u64, 4>, core::option::Option<u64>::Some>>>::spec_extend",
+          "ir": 3925152,
+          "fraction": 0.03617097213579154
+        }
+      ],
+      "patched_iterator": []
+    }
+  ]
+}

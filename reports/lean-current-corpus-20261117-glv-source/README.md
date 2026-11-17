@@ -1,0 +1,7 @@
+# Current GLV source binding in the corpus bridge
+
+This is a separate current expectation. The historical November 1 receipt is retained byte for byte at `reports/lean-current-corpus-20261101-glv-cap/receipt.json`, SHA-256 `af4ce41f6ab652a4db38d16c2fbe5bdfd3d6d8ba38702004740e71fa8ea83d78`. Its source pin, theorem counts, native output hashes and historical standing are unchanged. [pcc:unverified]
+
+The new JSON is derived from that expectation by replacing exactly three `fresh_native_evidence` fields: the current GLV source commit, its SHA-256, and the maintained source-binding receipt hash. They name current source `77fb8819d2729beb0842c3954dbfcd471e143ca8`. The old sized-cap source remains bound in the maintained source-binding receipt and is replayed separately by the corpus gate. No theorem output, count, archive hash, or historical receipt is rebaselined. [pcc:unverified]
+
+`tools/lean/check_corpus_receipt_amendment.py` binds the old receipt bytes and enforces this exact three-field delta. It does not establish native execution. CI must run the complete corpus gate and compare its recomputed result to the new expectation, then check all added theorem modules. The previous CI attempt completed the native delta checks but stopped at comparison with the historical receipt; that failure is retained in run 44032581480. The new expected receipt is a derived fixture until the new CI head reproduces it. [pcc:unverified]

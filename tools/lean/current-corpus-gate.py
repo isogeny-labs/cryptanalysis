@@ -93,11 +93,15 @@ HISTORICAL_GLV_RECEIPT_SHA256 = "bb0abf96c3f9d0d655b88cafafe0c5f50d90a86c9948278
 PRIOR_LIVE_GLV_COMMIT = "8bf648dcbefe7b8131e5fb26909c77e68778332a"
 PRIOR_LIVE_GLV_SHA256 = "60796724ef7d7c5b3b7dfd89c29db85d5e188deb247b5d9d0bd69b84551afe20"
 # Size-dependent cap selector: `rcap = lg >= 40 ? 128 : 32` (PR 1341).
-LIVE_GLV_COMMIT = "e71ebecaf3a076590ddd3affa4878b4c80d85095"
-LIVE_GLV_SHA256 = "e1d624e58c54f25f9225be97481b50c0ed406cedcfdffa8ba66f01a5fbed7f63"
+HISTORICAL_SIZED_GLV_COMMIT = "e71ebecaf3a076590ddd3affa4878b4c80d85095"
+HISTORICAL_SIZED_GLV_SHA256 = "e1d624e58c54f25f9225be97481b50c0ed406cedcfdffa8ba66f01a5fbed7f63"
 # The eight-theorem fixed-cap TableBudget.lean and its native receipt, and the
 # live binding receipt of the previous pin, as they were at LIVE_GLV_COMMIT.
-HISTORICAL_TABLEBUDGET_COMMIT = LIVE_GLV_COMMIT
+HISTORICAL_TABLEBUDGET_COMMIT = HISTORICAL_SIZED_GLV_COMMIT
+# Current C source changed outside the selector; the original sized-cap pin
+# remains a separate historical control with its original theorem/receipt.
+LIVE_GLV_COMMIT = "77fb8819d2729beb0842c3954dbfcd471e143ca8"
+LIVE_GLV_SHA256 = "6d120872c2020870a7fed1f8c28af644a7e31667e7b202986dddbca34772125b"
 HISTORICAL_TABLEBUDGET_SHA256 = "823903d27e906feccfe40f29df7feb7a23669b0c96d0bdc1f79ff0e3bddf93b4"
 HISTORICAL_TABLEBUDGET_RECEIPT_SHA256 = "90c7c692c62acaadc0e38f837b34224a61d8f480ae376bd1cdc1f716eeed7ab0"
 HISTORICAL_TABLEBUDGET_THEOREMS = 8
@@ -347,6 +351,9 @@ def check_glv_historical(binding) -> None:
     glv_selector_negatives(
         binding, run(["git", "show", f"{PRIOR_LIVE_GLV_COMMIT}:src/curve.c"]).stdout.encode(),
         PRIOR_LIVE_GLV_SHA256, sized_cap=False)
+    glv_selector_negatives(
+        binding, run(["git", "show", f"{HISTORICAL_SIZED_GLV_COMMIT}:src/curve.c"]).stdout.encode(),
+        HISTORICAL_SIZED_GLV_SHA256, sized_cap=True)
     prior = f"{HISTORICAL_TABLEBUDGET_COMMIT}:experiments/glv-table-rule-confirm-20261022/"
     prior_receipt = run(["git", "show", prior + "live-source-binding.json"]).stdout.encode()
     require(hashlib.sha256(prior_receipt).hexdigest() == PRIOR_LIVE_RECEIPT_SHA256,
@@ -1088,10 +1095,110 @@ def check_receipt_bound_source(path: str) -> str:
     return digest(file)
 
 
+def registered_mathlib_sources() -> dict:
+    file = ROOT / "tools/lean/registered-mathlib-sources-20261117.json"
+    record = json.loads(file.read_text())
+    require(record["schema"] == "cryptanalysis.registered-mathlib-sources/v1" and
+            record["toolchain"] == HECKE_TOOLCHAIN and
+            record["mathlib_revision"] == HECKE_MATHLIB_REV,
+            "registered Mathlib dependency pins changed")
+    for path, row in record["sources"].items():
+        file = ROOT / path
+        require(file.resolve().is_relative_to(ROOT.resolve()) and not file.is_symlink() and
+                digest(file) == row["sha256"], "registered Mathlib source changed: " + path)
+        require(row["role"] in {"mathlib-proof", "verifier-program"},
+                "unknown registered Mathlib source role")
+        require((row["role"] == "verifier-program") ==
+                (path == "experiments/ic-s3-direct-coefficients-20261115/AuditS3.lean"),
+                "a registered proof cannot be reclassified as verifier code")
+        require(row["project_inputs"] and
+                str(Path(path).parent / "lean-toolchain") in row["project_inputs"] and
+                str(Path(path).parent / "lakefile.toml") in row["project_inputs"],
+                "registered Mathlib project inputs incomplete")
+        for name, expected in row["project_inputs"].items():
+            input_file = ROOT / name
+            require(input_file.resolve().is_relative_to(ROOT.resolve()) and
+                    not input_file.is_symlink() and digest(input_file) == expected,
+                    "registered Mathlib project input changed: " + name)
+        requested = re.findall(r"^#print axioms\s+([\w.]+)\s*$", file.read_text(), re.MULTILINE)
+        require(requested == row["requested"], "registered theorem requests changed: " + path)
+        native_names = row["native_names"]
+        require(len(native_names) == len(requested) and
+                len(set(native_names)) == len(native_names) and
+                all(native == query or native.endswith("." + query)
+                    for query, native in zip(requested, native_names)),
+                "registered native theorem identities incomplete or inconsistent: " + path)
+        if row["role"] == "mathlib-proof":
+            require(requested and len(requested) == len(set(requested)),
+                    "registered proof lacks exact declaration requests")
+    return record["sources"]
+
+
+def check_registered_mathlib_sources(paths: set[str]) -> tuple[dict[str, str], set[str]]:
+    rows = registered_mathlib_sources()
+    require(set(rows) <= paths, "registered source missing from added corpus")
+    if not rows:
+        return {}, set()
+    check_known_label_project_inputs()
+    lean_path = run(["lake", "env", "printenv", "LEAN_PATH"], cwd=HECKE_CI).stdout.strip()
+    checked, helpers = {}, set()
+    for path, row in sorted(rows.items()):
+        if row["role"] == "mathlib-proof":
+            # Audit every theorem in the unchanged compiled module, including
+            # declarations not selected by its original #print commands.
+            checked[path] = check_pinned_mathlib_source(
+                path, row["sha256"], lean_path, label="registered current Mathlib",
+                exact_names=frozenset(row["native_names"]))
+        else:
+            # A pinned audit program is source code, not a theorem module.
+            # Compile its original bytes but grant it no proof standing.
+            with tempfile.TemporaryDirectory(prefix="lean-verifier-code-") as temp:
+                run(["lake", "env", "lean", "-R", str(ROOT), "-o",
+                     str(Path(temp) / "AuditProgram.olean"), str(ROOT / path)],
+                    cwd=HECKE_CI, timeout=120, failure_diagnostics=True)
+            helpers.add(path)
+        registered_mathlib_sources()
+        check_known_label_project_inputs()
+    return checked, helpers
+
+
+def check_source_dispositions() -> dict:
+    import importlib.util
+    module_path = ROOT / "tools/lean/check_source_dispositions.py"
+    spec = importlib.util.spec_from_file_location("source_dispositions", module_path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module.check(ROOT, evidence=evidence_directory() / "source-dispositions")
+
+
 def tracked_corpus_sources() -> list[str]:
     """Discover every tracked Lean source; only the separate gate selftests differ."""
     return [path for path in run(["git", "ls-files", "--", "*.lean"]).stdout.splitlines()
             if not path.startswith("tools/lean/")]
+
+
+FORMAL_CHECKER_SHA256 = "835c51531778a08fa7294cbf81e86aaed552ddf0218c938e72a2fea31bd18e44"
+FORMAL_MANIFEST_SHA256 = "75840fb81416fbfff50e860c63ad5d4c6861ee4db2136fa869a1caf771c7ca82"
+
+
+def check_formal_projects() -> tuple[dict[str, str], set[str]]:
+    checker = ROOT / "tools/lean/check_formal_projects.py"
+    manifest = ROOT / "tools/lean/formal-projects-20261117.json"
+    require(checker.is_file() and not checker.is_symlink()
+            and digest(checker) == FORMAL_CHECKER_SHA256,
+            "formal project checker changed without review")
+    require(manifest.is_file() and not manifest.is_symlink()
+            and digest(manifest) == FORMAL_MANIFEST_SHA256,
+            "formal project bindings changed without review")
+    spec = importlib.util.spec_from_file_location("formal_project_audit", checker)
+    require(spec is not None and spec.loader is not None, "cannot load formal project checker")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    result = module.check(ROOT, argparse.Namespace(**globals()))
+    require(digest(checker) == FORMAL_CHECKER_SHA256
+            and digest(manifest) == FORMAL_MANIFEST_SHA256,
+            "formal checker or bindings changed during native replay")
+    return result
 
 
 def main() -> None:
@@ -1123,7 +1230,26 @@ def main() -> None:
     hasse_addition = HASSE_SOURCE in additions
     core_additions = {path for path in additions if core_lean_project_of(path)}
     receipt_additions = additions & set(RECEIPT_BOUND_SOURCES)
-    checked = check_new_hecke(additions - {HASSE_SOURCE} - core_additions - receipt_additions)
+    dispositions = check_source_dispositions()
+    disposition_paths = set(dispositions["proof_paths"]) | set(dispositions["archived_paths"])
+    require(disposition_paths <= additions, "source disposition overlaps frozen corpus")
+    registered, verifier_programs = check_registered_mathlib_sources(additions)
+    formal, censored_probes = check_formal_projects()
+    formal_paths = set(formal) | censored_probes
+    require(formal_paths <= additions, "formal project inputs overlap frozen corpus")
+    require(not formal_paths & (core_additions | receipt_additions | disposition_paths
+                                | set(registered) | verifier_programs | {HASSE_SOURCE}),
+            "formal project input has multiple dispositions")
+    checked = check_new_hecke(additions - {HASSE_SOURCE} - core_additions - receipt_additions
+                             - disposition_paths - set(registered) - verifier_programs
+                             - formal_paths)
+    checked.update(formal)
+    checked.update(registered)
+    checked.update({path: current[path] for path in dispositions["proof_paths"]})
+    print(f"current core modules audited: {dispositions['unique_proof_modules']}; "
+          f"theorems: {dispositions['theorems']}; "
+          f"original archived diagnostic/code inputs checked without theorem standing: "
+          f"{len(dispositions['archived_paths'])}; native verifier programs: {len(verifier_programs)}")
     checked.update(check_core_lean_projects(core_additions))
     for path in sorted(receipt_additions):
         checked[path] = check_receipt_bound_source(path)

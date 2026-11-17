@@ -1,0 +1,239 @@
+{
+  "checked_at": "2026-11-17T10:28:07.124Z",
+  "head": "39fd38b915bea265522f20a76852cfc82a4f531b",
+  "scope": "first eligible latest-head PR-triggered workflow page only; not all CI",
+  "jobs": [
+    {
+      "status": "fulfilled",
+      "value": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "jobs": [
+            {
+              "id": 133939734039,
+              "name": "gate",
+              "status": "completed",
+              "conclusion": "failure",
+              "run_id": 44054354749,
+              "logs_url": null,
+              "steps": [
+                {
+                  "name": "Set up job",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 1
+                },
+                {
+                  "name": "Run actions/checkout@v4",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 2
+                },
+                {
+                  "name": "Pull storage-backed PCC claim inputs",
+                  "status": "completed",
+                  "conclusion": "failure",
+                  "number": 3
+                },
+                {
+                  "name": "Run actions/setup-python@v7",
+                  "status": "completed",
+                  "conclusion": "skipped",
+                  "number": 4
+                },
+                {
+                  "name": "Report and graph Python source syntax",
+                  "status": "completed",
+                  "conclusion": "skipped",
+                  "number": 5
+                },
+                {
+                  "name": "GLV cap no-worse Lean input binding",
+                  "status": "completed",
+                  "conclusion": "skipped",
+                  "number": 6
+                },
+                {
+                  "name": "Sabotage canary",
+                  "status": "completed",
+                  "conclusion": "skipped",
+                  "number": 7
+                },
+                {
+                  "name": "Resolve the checked-out merge base",
+                  "status": "completed",
+                  "conclusion": "skipped",
+                  "number": 8
+                },
+                {
+                  "name": "Ledger chain, base prefix and base keyring (pull request); previous tip (push)",
+                  "status": "completed",
+                  "conclusion": "skipped",
+                  "number": 9
+                },
+                {
+                  "name": "Verify all claims (exit 2 = not covered is allowed)",
+                  "status": "completed",
+                  "conclusion": "skipped",
+                  "number": 10
+                },
+                {
+                  "name": "Strong-claim word in the PR body needs [pcc:ID] or [pcc:unverified]",
+                  "status": "completed",
+                  "conclusion": "skipped",
+                  "number": 11
+                },
+                {
+                  "name": "Advisory prose lint of changed reports",
+                  "status": "completed",
+                  "conclusion": "skipped",
+                  "number": 12
+                },
+                {
+                  "name": "pcc self-tests",
+                  "status": "completed",
+                  "conclusion": "skipped",
+                  "number": 13
+                },
+                {
+                  "name": "Post Run actions/checkout@v4",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 26
+                },
+                {
+                  "name": "Complete job",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 27
+                }
+              ]
+            },
+            {
+              "id": 133940337764,
+              "name": "sign",
+              "status": "completed",
+              "conclusion": "skipped",
+              "run_id": 44054354749,
+              "logs_url": null,
+              "steps": null
+            }
+          ]
+        },
+        "isError": false
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "jobs": [
+            {
+              "id": 133939664832,
+              "name": "induced-transfer-proof",
+              "status": "completed",
+              "conclusion": "failure",
+              "run_id": 44054333967,
+              "logs_url": null,
+              "steps": [
+                {
+                  "name": "Set up job",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 1
+                },
+                {
+                  "name": "Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 2
+                },
+                {
+                  "name": "Read the immutable original producer revision",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 3
+                },
+                {
+                  "name": "Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 4
+                },
+                {
+                  "name": "Install both pinned original Lean toolchains",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 5
+                },
+                {
+                  "name": "Replay all21 declarations and allnine exact bindings",
+                  "status": "completed",
+                  "conclusion": "failure",
+                  "number": 6
+                },
+                {
+                  "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 7
+                },
+                {
+                  "name": "Post Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 13
+                },
+                {
+                  "name": "Post Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 14
+                },
+                {
+                  "name": "Complete job",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 15
+                }
+              ]
+            }
+          ]
+        },
+        "isError": false
+      }
+    }
+  ],
+  "error_excerpts": [
+    [
+      "2026-11-17T09:19:27.6985011Z artifacts: download store/sha256/0f/0f7cb2b6704a94ae4441419a284225fb7ed6670deeb7b396d24587cde470b549: fatal error: An error occurred (403) when calling the HeadObject operation: Forbidden",
+      "2026-11-17T09:19:27.6990047Z artifacts: download store/sha256/11/11ac84949dcbe8f3986d60ca2798b6dfd85a48aaba730acec5a35c9d600c3e11: fatal error: An error occurred (403) when calling the HeadObject operation: Forbidden",
+      "2026-11-17T09:19:27.8375033Z artifacts: download store/sha256/95/954cc000b4b8c0335064920849fb81f576547629ffc3f08c89696ead00e6d5da: fatal error: An error occurred (403) when calling the HeadObject operation: Forbidden",
+      "2026-11-17T09:19:27.8385720Z artifacts: download store/sha256/eb/eb814265f158fc0ad52d9306b5a2526da476bd40752c186d3918fa9b2d36279b: fatal error: An error occurred (403) when calling the HeadObject operation: Forbidden",
+      "2026-11-17T09:19:27.8594121Z artifacts: download store/sha256/f7/f7c0e2d20e2b011b47c478d43341767fd5a31c980d084ddac27977fc08a36c5d: fatal error: An error occurred (403) when calling the HeadObject operation: Forbidden",
+      "2026-11-17T09:19:27.8810264Z artifacts: download store/sha256/ca/caf2c009d2f38d94084982c14efa831f7d402678fddb5cc1dba892a77cb66c34: fatal error: An error occurred (403) when calling the HeadObject operation: Forbidden",
+      "2026-11-17T09:19:27.8945912Z artifacts: download store/sha256/b1/b14bfb878d1268122d7da7b32e295ac6c37df59ce34a04eff13d557ae9358b86: fatal error: An error occurred (403) when calling the HeadObject operation: Forbidden",
+      "2026-11-17T09:19:27.9163780Z ##[error]Process completed with exit code 2."
+    ],
+    [
+      "2026-11-17T09:18:35.7695294Z pcc/keyring.json: FAILED",
+      "2026-11-17T09:18:35.7696767Z tools/lean/current-corpus-gate.py: FAILED",
+      "2026-11-17T09:18:35.7702790Z tools/lean/test_current_corpus_gate.py: FAILED",
+      "2026-11-17T09:18:35.7705301Z tools/pcc/pcc.py: FAILED",
+      "2026-11-17T09:18:35.7705631Z tools/pcc/test_pcc.py: FAILED",
+      "2026-11-17T09:18:35.7706022Z sha256sum: WARNING: 5 computed checksums did NOT match",
+      "2026-11-17T09:18:35.7777868Z ##[error]Process completed with exit code 1."
+    ]
+  ]
+}

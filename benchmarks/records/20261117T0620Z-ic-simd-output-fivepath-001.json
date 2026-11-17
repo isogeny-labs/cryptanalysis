@@ -1,0 +1,2243 @@
+{
+  "branch": "codex/ic-simd-output-20261116",
+  "closed_utc": "2026-11-17T06:30:21+00:00",
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "cloud/modal_run.py",
+        "run",
+        "--image",
+        "cuda",
+        "--gpu",
+        "L4",
+        "--cpu",
+        "4",
+        "--memory",
+        "8",
+        "--timeout",
+        "900",
+        "--env",
+        "CFLAGS=-g0",
+        "--out",
+        "experiments/ic-simd-output-20261116/timing-optimized-001",
+        "--detach",
+        "--",
+        "python3",
+        "experiments/ic-simd-output-20261116/run_fresh.py"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "started_utc": "2026-11-17T06:21:27+00:00",
+      "wall_s": 12.481
+    }
+  ],
+  "commit": "4c6a37f144d79cab1985294172ffde7b25d6491f",
+  "commit_dirty": false,
+  "created_utc": "2026-11-17T06:20:49+00:00",
+  "curve_uid": null,
+  "entries": [
+    "experiments/ic-simd-output-20261116"
+  ],
+  "host": {
+    "cpu": "arm",
+    "cpus_online": 14,
+    "hostname": "Mac.attlocal.net",
+    "isolation": "unstated",
+    "platform": "macOS-27.2-arm64-arm-64bit-Mach-O"
+  },
+  "id": "20261117T0620Z-ic-simd-output-fivepath-001",
+  "metrics": [
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n15_primary_vs_anchor",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9731331065487832,
+        1.0424050265601303
+      ],
+      "unit": "ratio",
+      "value": 1.006796769738565
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n15_primary_output_ordinary",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9773491004526804,
+        1.0193951684258886
+      ],
+      "unit": "ratio",
+      "value": 1.003107830043303
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n15_primary_output_inverse",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9715765073197138,
+        1.049809230769137
+      ],
+      "unit": "ratio",
+      "value": 0.9922596729227906
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n15_primary_patched_kernel",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.980941368302035,
+        1.0419374826435008
+      ],
+      "unit": "ratio",
+      "value": 1.0021991693339305
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n15_primary_old_kernel",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9772416732540401,
+        1.0249765313816719
+      ],
+      "unit": "ratio",
+      "value": 0.9964843840838911
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n15_primary_patched_ordinary_vs_anchor",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9712588296995692,
+        1.0455460092023539
+      ],
+      "unit": "ratio",
+      "value": 1.013939835951789
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n15_primary_old_ordinary_vs_anchor",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9731826727223638,
+        1.0353189374756813
+      ],
+      "unit": "ratio",
+      "value": 1.0201182061090626
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n15_collector_vs_anchor",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9795305533729561,
+        1.0333884006207086
+      ],
+      "unit": "ratio",
+      "value": 1.0122439301417545
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n15_collector_output_ordinary",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9899400130995811,
+        1.0394516973609793
+      ],
+      "unit": "ratio",
+      "value": 1.0153061600220439
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n15_collector_output_inverse",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.955123601575149,
+        1.0495046692955032
+      ],
+      "unit": "ratio",
+      "value": 0.9956056952674301
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n15_collector_patched_kernel",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9641254702961191,
+        1.034504395889904
+      ],
+      "unit": "ratio",
+      "value": 0.9916010730667897
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n15_collector_old_kernel",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9878473871333601,
+        1.056669394811999
+      ],
+      "unit": "ratio",
+      "value": 1.008085234679271
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n15_collector_patched_ordinary_vs_anchor",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9647775801640698,
+        1.0319972838055675
+      ],
+      "unit": "ratio",
+      "value": 0.9881942550398315
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n15_collector_old_ordinary_vs_anchor",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9519164072972777,
+        1.0369882198892362
+      ],
+      "unit": "ratio",
+      "value": 1.0038705732921644
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n15_table_setup_vs_anchor",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.0517857048754107,
+        1.0976995542847567
+      ],
+      "unit": "ratio",
+      "value": 1.073797517147588
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n15_table_setup_output_ordinary",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9257474007790955,
+        0.9868603381339622
+      ],
+      "unit": "ratio",
+      "value": 0.9705237479560549
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n15_table_setup_output_inverse",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9493871833494429,
+        0.990633669518806
+      ],
+      "unit": "ratio",
+      "value": 0.9637849361770124
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n15_table_setup_patched_kernel",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9926417072505291,
+        1.028069901829269
+      ],
+      "unit": "ratio",
+      "value": 1.0021494466479806
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n15_table_setup_old_kernel",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9895585079271725,
+        1.0280312102529774
+      ],
+      "unit": "ratio",
+      "value": 0.9941490732433844
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n15_table_setup_patched_ordinary_vs_anchor",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.0425501076693724,
+        1.0836842720776674
+      ],
+      "unit": "ratio",
+      "value": 1.0628850316350316
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n15_table_setup_old_ordinary_vs_anchor",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.0890369088520386,
+        1.1056493350512089
+      ],
+      "unit": "ratio",
+      "value": 1.0962906841116018
+    },
+    {
+      "baseline": 0.0005299875000000001,
+      "better": "lower",
+      "n": 30,
+      "name": "n15_patched_inverse_primary_mean",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": 0.00019326110000000003,
+      "reference_kind": "matched_rho",
+      "spread": null,
+      "unit": "wall_s",
+      "value": 0.0005260771
+    },
+    {
+      "baseline": 0.00028250853333333333,
+      "better": "lower",
+      "n": 30,
+      "name": "n15_patched_inverse_collector_mean",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": 9.052336666666667e-05,
+      "reference_kind": "matched_rho",
+      "spread": null,
+      "unit": "wall_s",
+      "value": 0.00028410966666666664
+    },
+    {
+      "baseline": 4.778046666666667e-05,
+      "better": "lower",
+      "n": 30,
+      "name": "n15_patched_inverse_table_setup_mean",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "wall_s",
+      "value": 4.91286e-05
+    },
+    {
+      "baseline": null,
+      "better": "neutral",
+      "n": 30,
+      "name": "n15_actual_patched_inverse_elements",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "count",
+      "value": 9696.0
+    },
+    {
+      "baseline": null,
+      "better": "neutral",
+      "n": 30,
+      "name": "n15_actual_patched_inverse_padded_lanes",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "count",
+      "value": 0.0
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n18_primary_vs_anchor",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.0813999780656052,
+        1.1338331989337984
+      ],
+      "unit": "ratio",
+      "value": 1.1124686467968592
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n18_primary_output_ordinary",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9699841765292408,
+        1.006859643576604
+      ],
+      "unit": "ratio",
+      "value": 0.9787467286550884
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n18_primary_output_inverse",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.961457536722794,
+        1.0032873418777046
+      ],
+      "unit": "ratio",
+      "value": 0.9749635239740113
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n18_primary_patched_kernel",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9572101985688564,
+        1.0230352606405826
+      ],
+      "unit": "ratio",
+      "value": 0.9818517718889055
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n18_primary_old_kernel",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9867660159958376,
+        1.0156811673005826
+      ],
+      "unit": "ratio",
+      "value": 0.9973805191455449
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n18_primary_patched_ordinary_vs_anchor",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.089221771265947,
+        1.1560778564922378
+      ],
+      "unit": "ratio",
+      "value": 1.1216815286780901
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n18_primary_old_ordinary_vs_anchor",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.1171812295423487,
+        1.1605150518854823
+      ],
+      "unit": "ratio",
+      "value": 1.134327156144653
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n18_collector_vs_anchor",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.064956371922229,
+        1.1183499676109718
+      ],
+      "unit": "ratio",
+      "value": 1.0856902416609793
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n18_collector_output_ordinary",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.954747351778904,
+        1.0059905426114049
+      ],
+      "unit": "ratio",
+      "value": 0.9888325471357944
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n18_collector_output_inverse",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9652342594675943,
+        1.0199149290936862
+      ],
+      "unit": "ratio",
+      "value": 0.9863121643924935
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n18_collector_patched_kernel",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.969102277661577,
+        1.0488400301757013
+      ],
+      "unit": "ratio",
+      "value": 1.0063786351847386
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n18_collector_old_kernel",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9663761353456131,
+        1.0291363528385822
+      ],
+      "unit": "ratio",
+      "value": 0.9930073279313187
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n18_collector_patched_ordinary_vs_anchor",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.0626857754949635,
+        1.1380930865599428
+      ],
+      "unit": "ratio",
+      "value": 1.0757674974468223
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n18_collector_old_ordinary_vs_anchor",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.0710949869513404,
+        1.125499306038865
+      ],
+      "unit": "ratio",
+      "value": 1.0830636562591538
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n18_table_setup_vs_anchor",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.0901938576269026,
+        1.1887699602043709
+      ],
+      "unit": "ratio",
+      "value": 1.1445103980659876
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n18_table_setup_output_ordinary",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.949009202674509,
+        1.0160565978314882
+      ],
+      "unit": "ratio",
+      "value": 0.9817186036164388
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n18_table_setup_output_inverse",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9478358040884928,
+        1.0117618941975421
+      ],
+      "unit": "ratio",
+      "value": 0.964551522376367
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n18_table_setup_patched_kernel",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9565698622930591,
+        1.0221313482718761
+      ],
+      "unit": "ratio",
+      "value": 0.9906334978140621
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n18_table_setup_old_kernel",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.954597352602276,
+        1.0293923302237071
+      ],
+      "unit": "ratio",
+      "value": 0.9917129010020516
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n18_table_setup_patched_ordinary_vs_anchor",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.113994087833925,
+        1.2208655457991766
+      ],
+      "unit": "ratio",
+      "value": 1.152748352652318
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n18_table_setup_old_ordinary_vs_anchor",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.1440046144988445,
+        1.2298129679040462
+      ],
+      "unit": "ratio",
+      "value": 1.1719364526205882
+    },
+    {
+      "baseline": 0.000733479,
+      "better": "lower",
+      "n": 30,
+      "name": "n18_patched_inverse_primary_mean",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": 0.00022328843333333336,
+      "reference_kind": "matched_rho",
+      "spread": null,
+      "unit": "wall_s",
+      "value": 0.0007520189
+    },
+    {
+      "baseline": 0.0002785149666666667,
+      "better": "lower",
+      "n": 30,
+      "name": "n18_patched_inverse_collector_mean",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": 0.00011111853333333334,
+      "reference_kind": "matched_rho",
+      "spread": null,
+      "unit": "wall_s",
+      "value": 0.00028422063333333333
+    },
+    {
+      "baseline": 0.0002192999,
+      "better": "lower",
+      "n": 30,
+      "name": "n18_patched_inverse_table_setup_mean",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "wall_s",
+      "value": 0.0002231621
+    },
+    {
+      "baseline": null,
+      "better": "neutral",
+      "n": 30,
+      "name": "n18_actual_patched_inverse_elements",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "count",
+      "value": 12128.0
+    },
+    {
+      "baseline": null,
+      "better": "neutral",
+      "n": 30,
+      "name": "n18_actual_patched_inverse_padded_lanes",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "count",
+      "value": 0.0
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n21_primary_vs_anchor",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.1520597394533183,
+        1.1653223529031225
+      ],
+      "unit": "ratio",
+      "value": 1.159900222767836
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n21_primary_output_ordinary",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9764342614751047,
+        0.9930587938238398
+      ],
+      "unit": "ratio",
+      "value": 0.9875477045237924
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n21_primary_output_inverse",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9694751054733471,
+        0.9858211840974596
+      ],
+      "unit": "ratio",
+      "value": 0.9762559707313285
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n21_primary_patched_kernel",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.0069218349340623,
+        1.023698481971362
+      ],
+      "unit": "ratio",
+      "value": 1.015564019467691
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n21_primary_old_kernel",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.0146135072435416,
+        1.0300350484147465
+      ],
+      "unit": "ratio",
+      "value": 1.0211355032602896
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n21_primary_patched_ordinary_vs_anchor",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.130145106434068,
+        1.1485784813785784
+      ],
+      "unit": "ratio",
+      "value": 1.1404587528661092
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n21_primary_old_ordinary_vs_anchor",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.1529309408214905,
+        1.167583231219543
+      ],
+      "unit": "ratio",
+      "value": 1.162420843604489
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n21_collector_vs_anchor",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.12898497754596,
+        1.1589921939896088
+      ],
+      "unit": "ratio",
+      "value": 1.148298561036925
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n21_collector_output_ordinary",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9859950954263851,
+        1.0072043539008062
+      ],
+      "unit": "ratio",
+      "value": 0.994251815546837
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n21_collector_output_inverse",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9786278599434275,
+        1.0003911469091693
+      ],
+      "unit": "ratio",
+      "value": 0.9910779537407841
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n21_collector_patched_kernel",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.0240705559957661,
+        1.040045255002199
+      ],
+      "unit": "ratio",
+      "value": 1.0340253809451707
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n21_collector_old_kernel",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.032995774942174,
+        1.044119727981156
+      ],
+      "unit": "ratio",
+      "value": 1.0395578749717096
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n21_collector_patched_ordinary_vs_anchor",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.0911135904621747,
+        1.1173021079879768
+      ],
+      "unit": "ratio",
+      "value": 1.104448742663962
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n21_collector_old_ordinary_vs_anchor",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.0978500272296623,
+        1.125673254211943
+      ],
+      "unit": "ratio",
+      "value": 1.1107222239748538
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n21_table_setup_vs_anchor",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.2373482011499775,
+        1.2663239612912012
+      ],
+      "unit": "ratio",
+      "value": 1.25406694150861
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n21_table_setup_output_ordinary",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9612781330566681,
+        1.0014101012650154
+      ],
+      "unit": "ratio",
+      "value": 0.9761233691723583
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n21_table_setup_output_inverse",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9567518785688971,
+        0.9934792083385442
+      ],
+      "unit": "ratio",
+      "value": 0.9766717901190682
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n21_table_setup_patched_kernel",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9921145514490244,
+        1.016836127159601
+      ],
+      "unit": "ratio",
+      "value": 1.0011996162141696
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n21_table_setup_old_kernel",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.991145903833077,
+        1.0244628865368632
+      ],
+      "unit": "ratio",
+      "value": 1.008094585761611
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n21_table_setup_patched_ordinary_vs_anchor",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.2310663239215591,
+        1.2631400033573947
+      ],
+      "unit": "ratio",
+      "value": 1.2484562511035806
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n21_table_setup_old_ordinary_vs_anchor",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.2579664098237597,
+        1.2899136865751877
+      ],
+      "unit": "ratio",
+      "value": 1.2753652170585001
+    },
+    {
+      "baseline": 0.0018075743333333335,
+      "better": "lower",
+      "n": 30,
+      "name": "n21_patched_inverse_primary_mean",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": 0.0004792291666666667,
+      "reference_kind": "matched_rho",
+      "spread": null,
+      "unit": "wall_s",
+      "value": 0.0018453756333333335
+    },
+    {
+      "baseline": 0.0007944955333333333,
+      "better": "lower",
+      "n": 30,
+      "name": "n21_patched_inverse_collector_mean",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": 0.0003650564,
+      "reference_kind": "matched_rho",
+      "spread": null,
+      "unit": "wall_s",
+      "value": 0.0008063946
+    },
+    {
+      "baseline": 0.0006786633333333334,
+      "better": "lower",
+      "n": 30,
+      "name": "n21_patched_inverse_table_setup_mean",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "wall_s",
+      "value": 0.0006947189666666667
+    },
+    {
+      "baseline": null,
+      "better": "neutral",
+      "n": 30,
+      "name": "n21_actual_patched_inverse_elements",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "count",
+      "value": 124720.0
+    },
+    {
+      "baseline": null,
+      "better": "neutral",
+      "n": 30,
+      "name": "n21_actual_patched_inverse_padded_lanes",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "count",
+      "value": 0.0
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n24_primary_vs_anchor",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.182262819809386,
+        1.2072348102137043
+      ],
+      "unit": "ratio",
+      "value": 1.1997302740218572
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n24_primary_output_ordinary",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9843472905876447,
+        0.9971817363595634
+      ],
+      "unit": "ratio",
+      "value": 0.9924661770926637
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n24_primary_output_inverse",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9782638705607227,
+        1.0006626040664732
+      ],
+      "unit": "ratio",
+      "value": 0.9886658080666575
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n24_primary_patched_kernel",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.0057220729809835,
+        1.0210895515661766
+      ],
+      "unit": "ratio",
+      "value": 1.0145610899094617
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n24_primary_old_kernel",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.003526342729867,
+        1.0252371203243378
+      ],
+      "unit": "ratio",
+      "value": 1.0099473366570684
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n24_primary_patched_ordinary_vs_anchor",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.1699329357157326,
+        1.189194546309317
+      ],
+      "unit": "ratio",
+      "value": 1.1816000202899508
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n24_primary_old_ordinary_vs_anchor",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.1758282425804514,
+        1.1994230673169424
+      ],
+      "unit": "ratio",
+      "value": 1.1837993149511585
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n24_collector_vs_anchor",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.0911806188997768,
+        1.128996329506933
+      ],
+      "unit": "ratio",
+      "value": 1.1103143932697213
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n24_collector_output_ordinary",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9981751941856853,
+        1.0189239894181936
+      ],
+      "unit": "ratio",
+      "value": 1.0021809032647968
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n24_collector_output_inverse",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9818092226474242,
+        1.021086624179075
+      ],
+      "unit": "ratio",
+      "value": 0.995508812721831
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n24_collector_patched_kernel",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.02473267411639,
+        1.0350328671637181
+      ],
+      "unit": "ratio",
+      "value": 1.0313610614684836
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n24_collector_old_kernel",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.0285116183072915,
+        1.0501336733063613
+      ],
+      "unit": "ratio",
+      "value": 1.0421672765358632
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n24_collector_patched_ordinary_vs_anchor",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.0637598277690659,
+        1.092944340894293
+      ],
+      "unit": "ratio",
+      "value": 1.077623428853245
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n24_collector_old_ordinary_vs_anchor",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.064491832263636,
+        1.0856079816359767
+      ],
+      "unit": "ratio",
+      "value": 1.0753450422740194
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n24_table_setup_vs_anchor",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.2476735608986655,
+        1.268671800435686
+      ],
+      "unit": "ratio",
+      "value": 1.2600151527906127
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n24_table_setup_output_ordinary",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9725875082232367,
+        0.9934185510176571
+      ],
+      "unit": "ratio",
+      "value": 0.9832908058068618
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n24_table_setup_output_inverse",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9805644737275301,
+        1.0000838594556276
+      ],
+      "unit": "ratio",
+      "value": 0.9892733503084237
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n24_table_setup_patched_kernel",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9928788752992925,
+        1.0150510600388694
+      ],
+      "unit": "ratio",
+      "value": 1.0001520956470011
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n24_table_setup_old_kernel",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9886214723996136,
+        1.0066531924334674
+      ],
+      "unit": "ratio",
+      "value": 0.9952262322904568
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n24_table_setup_patched_ordinary_vs_anchor",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.2440845920824755,
+        1.2674812802606668
+      ],
+      "unit": "ratio",
+      "value": 1.2570988823482319
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n24_table_setup_old_ordinary_vs_anchor",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.2625662363914443,
+        1.2872455657435948
+      ],
+      "unit": "ratio",
+      "value": 1.2767547789407396
+    },
+    {
+      "baseline": 0.004892874833333334,
+      "better": "lower",
+      "n": 30,
+      "name": "n24_patched_inverse_primary_mean",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": 0.0005936319666666667,
+      "reference_kind": "matched_rho",
+      "spread": null,
+      "unit": "wall_s",
+      "value": 0.004945707066666667
+    },
+    {
+      "baseline": 0.0015458771333333333,
+      "better": "lower",
+      "n": 30,
+      "name": "n24_patched_inverse_collector_mean",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": 0.00048046143333333336,
+      "reference_kind": "matched_rho",
+      "spread": null,
+      "unit": "wall_s",
+      "value": 0.0015548224
+    },
+    {
+      "baseline": 0.0028089894333333336,
+      "better": "lower",
+      "n": 30,
+      "name": "n24_patched_inverse_table_setup_mean",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "wall_s",
+      "value": 0.0028402378
+    },
+    {
+      "baseline": null,
+      "better": "neutral",
+      "n": 30,
+      "name": "n24_actual_patched_inverse_elements",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "count",
+      "value": 205232.0
+    },
+    {
+      "baseline": null,
+      "better": "neutral",
+      "n": 30,
+      "name": "n24_actual_patched_inverse_padded_lanes",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "count",
+      "value": 0.0
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n27_primary_vs_anchor",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.099971158859602,
+        1.1317680223224305
+      ],
+      "unit": "ratio",
+      "value": 1.1230417321372737
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n27_primary_output_ordinary",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9628248393835694,
+        1.0072371540198053
+      ],
+      "unit": "ratio",
+      "value": 0.992565290338572
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n27_primary_output_inverse",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9757540106021353,
+        1.0010919201562896
+      ],
+      "unit": "ratio",
+      "value": 0.9860686442404129
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n27_primary_patched_kernel",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.0156486915194538,
+        1.037215582654749
+      ],
+      "unit": "ratio",
+      "value": 1.024616566447751
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n27_primary_old_kernel",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.0175878521012667,
+        1.0390837633461811
+      ],
+      "unit": "ratio",
+      "value": 1.024513542891991
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n27_primary_patched_ordinary_vs_anchor",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.070804318878326,
+        1.1142121053205731
+      ],
+      "unit": "ratio",
+      "value": 1.0879539039368313
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n27_primary_old_ordinary_vs_anchor",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.0861812272220432,
+        1.1167377916015437
+      ],
+      "unit": "ratio",
+      "value": 1.0989629049206964
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n27_collector_vs_anchor",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.142759381645298,
+        1.1576541924781227
+      ],
+      "unit": "ratio",
+      "value": 1.1505610381426212
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n27_collector_output_ordinary",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9741952068853281,
+        1.0002657737464726
+      ],
+      "unit": "ratio",
+      "value": 0.9906537034816378
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n27_collector_output_inverse",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9802678612787229,
+        1.006646892676021
+      ],
+      "unit": "ratio",
+      "value": 0.9872711978314654
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n27_collector_patched_kernel",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.0479487377636747,
+        1.0763480213756724
+      ],
+      "unit": "ratio",
+      "value": 1.0627247479625859
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n27_collector_old_kernel",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.0407418631909238,
+        1.0674773206935686
+      ],
+      "unit": "ratio",
+      "value": 1.0520730521833552
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n27_collector_patched_ordinary_vs_anchor",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.07721707634843,
+        1.109156950706808
+      ],
+      "unit": "ratio",
+      "value": 1.091030090861131
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n27_collector_old_ordinary_vs_anchor",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.0819685053675265,
+        1.103789263051265
+      ],
+      "unit": "ratio",
+      "value": 1.095501560003885
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n27_table_setup_vs_anchor",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.0705332604457558,
+        1.1235938542779726
+      ],
+      "unit": "ratio",
+      "value": 1.1075510865627112
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n27_table_setup_output_ordinary",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.960361926793972,
+        1.0091066502417696
+      ],
+      "unit": "ratio",
+      "value": 0.985758073436812
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n27_table_setup_output_inverse",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9692273385882296,
+        0.99904293370607
+      ],
+      "unit": "ratio",
+      "value": 0.9874407391910055
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n27_table_setup_patched_kernel",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9926596618811219,
+        1.0221805113954743
+      ],
+      "unit": "ratio",
+      "value": 1.0117283440287164
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n27_table_setup_old_kernel",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9968085951082688,
+        1.01820424039308
+      ],
+      "unit": "ratio",
+      "value": 1.0039675483097075
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n27_table_setup_patched_ordinary_vs_anchor",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.0690053591453403,
+        1.124981945801982
+      ],
+      "unit": "ratio",
+      "value": 1.093466609539342
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 30,
+      "name": "n27_table_setup_old_ordinary_vs_anchor",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.088324602850189,
+        1.1439322959304001
+      ],
+      "unit": "ratio",
+      "value": 1.111744484485945
+    },
+    {
+      "baseline": 0.019560089233333335,
+      "better": "lower",
+      "n": 30,
+      "name": "n27_patched_inverse_primary_mean",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": 0.0015661094333333334,
+      "reference_kind": "matched_rho",
+      "spread": null,
+      "unit": "wall_s",
+      "value": 0.0198229047
+    },
+    {
+      "baseline": 0.007981433266666667,
+      "better": "lower",
+      "n": 30,
+      "name": "n27_patched_inverse_collector_mean",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": 0.0014433913000000001,
+      "reference_kind": "matched_rho",
+      "spread": null,
+      "unit": "wall_s",
+      "value": 0.008034711166666667
+    },
+    {
+      "baseline": 0.010642642866666668,
+      "better": "lower",
+      "n": 30,
+      "name": "n27_patched_inverse_table_setup_mean",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "wall_s",
+      "value": 0.010847185966666667
+    },
+    {
+      "baseline": null,
+      "better": "neutral",
+      "n": 30,
+      "name": "n27_actual_patched_inverse_elements",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "count",
+      "value": 1337280.0
+    },
+    {
+      "baseline": null,
+      "better": "neutral",
+      "n": 30,
+      "name": "n27_actual_patched_inverse_padded_lanes",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "count",
+      "value": 0.0
+    },
+    {
+      "baseline": null,
+      "better": "neutral",
+      "n": 150,
+      "name": "aa_failed_controls",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "count",
+      "value": 3.0
+    },
+    {
+      "baseline": null,
+      "better": "neutral",
+      "n": 750,
+      "name": "capped_ic_arms",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "count",
+      "value": 0.0
+    },
+    {
+      "baseline": null,
+      "better": "neutral",
+      "n": 1050,
+      "name": "replayed_target_answers",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "count",
+      "value": 1050.0
+    },
+    {
+      "baseline": null,
+      "better": "neutral",
+      "n": 300,
+      "name": "replayed_aa_answers",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "count",
+      "value": 300.0
+    },
+    {
+      "baseline": null,
+      "better": "neutral",
+      "n": 7680,
+      "name": "replayed_preflight_states",
+      "note": "Unsigned exploratory native panel; qualificationnull, invalid for promotion. Primary is context plus pipeline through oracle cleanup; collector has its own owned-cleanup boundary. Prior inputs/startup and later context/report destruction excluded. All A/A failures retained. Pointwise paired bootstrap95 intervals, no broad cold/performance conclusion.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "count",
+      "value": 7680.0
+    },
+    {
+      "baseline": null,
+      "better": "lower",
+      "n": 1,
+      "name": "post_current_whole_guest_ir",
+      "note": "Separate pre-timing preparation fixed-development-point Callgrind whole-guest Ir; not native timing, hardware retirement or collector-only cost. One trace per method; exact prior tool/calibration/point/work pins. Unsigned qualificationnull.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ir",
+      "value": 112848670.0
+    },
+    {
+      "baseline": null,
+      "better": "lower",
+      "n": 1,
+      "name": "post_current_generic_dispatch_exclusive_ir",
+      "note": "Separate pre-timing preparation fixed-development-point Callgrind whole-guest Ir; not native timing, hardware retirement or collector-only cost. One trace per method; exact prior tool/calibration/point/work pins. Unsigned qualificationnull.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ir",
+      "value": 0.0
+    },
+    {
+      "baseline": null,
+      "better": "lower",
+      "n": 1,
+      "name": "post_current_walker_wide_remainder_calls",
+      "note": "Separate pre-timing preparation fixed-development-point Callgrind whole-guest Ir; not native timing, hardware retirement or collector-only cost. One trace per method; exact prior tool/calibration/point/work pins. Unsigned qualificationnull.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "count",
+      "value": 0.0
+    },
+    {
+      "baseline": null,
+      "better": "lower",
+      "n": 1,
+      "name": "post_inverse_whole_guest_ir",
+      "note": "Separate pre-timing preparation fixed-development-point Callgrind whole-guest Ir; not native timing, hardware retirement or collector-only cost. One trace per method; exact prior tool/calibration/point/work pins. Unsigned qualificationnull.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ir",
+      "value": 107885973.0
+    },
+    {
+      "baseline": null,
+      "better": "lower",
+      "n": 1,
+      "name": "post_inverse_generic_dispatch_exclusive_ir",
+      "note": "Separate pre-timing preparation fixed-development-point Callgrind whole-guest Ir; not native timing, hardware retirement or collector-only cost. One trace per method; exact prior tool/calibration/point/work pins. Unsigned qualificationnull.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ir",
+      "value": 0.0
+    },
+    {
+      "baseline": null,
+      "better": "lower",
+      "n": 1,
+      "name": "post_inverse_walker_wide_remainder_calls",
+      "note": "Separate pre-timing preparation fixed-development-point Callgrind whole-guest Ir; not native timing, hardware retirement or collector-only cost. One trace per method; exact prior tool/calibration/point/work pins. Unsigned qualificationnull.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "count",
+      "value": 0.0
+    },
+    {
+      "baseline": null,
+      "better": "neutral",
+      "n": 2,
+      "name": "post_replayed_answers",
+      "note": "Separate pre-timing preparation fixed-development-point Callgrind whole-guest Ir; not native timing, hardware retirement or collector-only cost. One trace per method; exact prior tool/calibration/point/work pins. Unsigned qualificationnull.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "count",
+      "value": 2.0
+    },
+    {
+      "baseline": null,
+      "better": "neutral",
+      "n": 512,
+      "name": "post_replayed_states",
+      "note": "Separate pre-timing preparation fixed-development-point Callgrind whole-guest Ir; not native timing, hardware retirement or collector-only cost. One trace per method; exact prior tool/calibration/point/work pins. Unsigned qualificationnull.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "count",
+      "value": 512.0
+    }
+  ],
+  "problem": "binary-ic-simd-output-pipeline",
+  "raw": [
+    {
+      "bytes": 6328079,
+      "path": "experiments/ic-simd-output-20261116/raw-timing-optimized-001.tar.gz",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/ef/ef572010ce6b2c06c88ac0afdf1889c43f1eaa69b06c956f4ba7691072eaee97",
+      "sha256": "ef572010ce6b2c06c88ac0afdf1889c43f1eaa69b06c956f4ba7691072eaee97",
+      "uploaded": true
+    },
+    {
+      "bytes": 478673,
+      "path": "experiments/ic-simd-output-20261116/timing-optimized-001-bundle-receipt.json",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/4f/4f6d4cc1a2c8fcce004338df9db10f222f85a5bee6bf7c9dd265a304aba447a3",
+      "sha256": "4f6d4cc1a2c8fcce004338df9db10f222f85a5bee6bf7c9dd265a304aba447a3",
+      "uploaded": true
+    },
+    {
+      "bytes": 1639066,
+      "path": "experiments/ic-simd-output-20261116/raw-profile-optimized-001.tar.gz",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/fd/fd680f60ad11986ed2a3c12790406bfd4df353c8c8008ca3841acb798792bf6d",
+      "sha256": "fd680f60ad11986ed2a3c12790406bfd4df353c8c8008ca3841acb798792bf6d",
+      "uploaded": true
+    },
+    {
+      "bytes": 9710,
+      "path": "experiments/ic-simd-output-20261116/profile-optimized-001-bundle-receipt.json",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/ef/effdc0536e198bb8af0c85fb3388253219f759b2aa008fa7762da56a5ff8fba7",
+      "sha256": "effdc0536e198bb8af0c85fb3388253219f759b2aa008fa7762da56a5ff8fba7",
+      "uploaded": true
+    },
+    {
+      "bytes": 595,
+      "path": "experiments/ic-simd-output-20261116/fresh-job-metadata.json",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/77/77a8e1bc1017d12a5f08f7876f44510a63ac0390db95dd727c0aaf17aeac1185",
+      "sha256": "77a8e1bc1017d12a5f08f7876f44510a63ac0390db95dd727c0aaf17aeac1185",
+      "uploaded": true
+    },
+    {
+      "bytes": 2519030,
+      "path": "experiments/ic-simd-output-20261116/analysis-fresh.json",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/de/de40d0e37ac69ce95969a1333376749b6944bf22dcc228c0b78eba5abe47c23c",
+      "sha256": "de40d0e37ac69ce95969a1333376749b6944bf22dcc228c0b78eba5abe47c23c",
+      "uploaded": true
+    },
+    {
+      "bytes": 1205452,
+      "path": "experiments/ic-simd-output-20261116/analysis-post-profile.json",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/7d/7db0cc5d6629e0f159646a5ace7fae955325dfafdef1f149b357d0d627dd54d3",
+      "sha256": "7db0cc5d6629e0f159646a5ace7fae955325dfafdef1f149b357d0d627dd54d3",
+      "uploaded": true
+    },
+    {
+      "bytes": 273643,
+      "path": "experiments/ic-simd-output-20261116/independent-arithmetic-fresh.json",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/b0/b0c49505f46c9be0bb54ecc9bfde03ccad22092df760c3bf88b95dec841d302c",
+      "sha256": "b0c49505f46c9be0bb54ecc9bfde03ccad22092df760c3bf88b95dec841d302c",
+      "uploaded": true
+    },
+    {
+      "bytes": 2934,
+      "path": "experiments/ic-simd-output-20261116/independent-states-fresh.json",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/0e/0e886a83ef9e35e826ba1f122f4c00e7e1b69e3149783eabf6402f98f6468e8b",
+      "sha256": "0e886a83ef9e35e826ba1f122f4c00e7e1b69e3149783eabf6402f98f6468e8b",
+      "uploaded": true
+    },
+    {
+      "bytes": 740,
+      "path": "experiments/ic-simd-output-20261116/independent-replay-post-profile.json",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/12/1249c87eb85d9fe2df60ff53a0600cae651cfc454751c0b4b3f44cdaa57b6e5b",
+      "sha256": "1249c87eb85d9fe2df60ff53a0600cae651cfc454751c0b4b3f44cdaa57b6e5b",
+      "uploaded": true
+    },
+    {
+      "bytes": 11753,
+      "path": "experiments/ic-simd-output-20261116/fresh-identities.json",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/1c/1c726e6000ac811b05759f1eacd50e6e7903f85e837ef643c392b84a11d4aa02",
+      "sha256": "1c726e6000ac811b05759f1eacd50e6e7903f85e837ef643c392b84a11d4aa02",
+      "uploaded": true
+    },
+    {
+      "bytes": 1702,
+      "path": "experiments/ic-simd-output-20261116/fresh-input-provenance.json",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/49/49c089c10705e2c797a0062101091d6f3c1b54aae4764a8cec82d68dd40fe1b2",
+      "sha256": "49c089c10705e2c797a0062101091d6f3c1b54aae4764a8cec82d68dd40fe1b2",
+      "uploaded": true
+    },
+    {
+      "bytes": 562,
+      "path": "experiments/ic-simd-output-20261116/anchor-input.json",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/d0/d0c6ef52ef2640ab52a58f76e22397e4a0a56a430b0c00eb8960072ac7b610c2",
+      "sha256": "d0c6ef52ef2640ab52a58f76e22397e4a0a56a430b0c00eb8960072ac7b610c2",
+      "uploaded": true
+    },
+    {
+      "bytes": 657,
+      "path": "experiments/ic-simd-output-20261116/prepared-input.json",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/8f/8f4ef88d646e12fb9d1afd997ec8125805bb80d549326e3102b0067456ef83d9",
+      "sha256": "8f4ef88d646e12fb9d1afd997ec8125805bb80d549326e3102b0067456ef83d9",
+      "uploaded": true
+    },
+    {
+      "bytes": 657,
+      "path": "experiments/ic-simd-output-20261116/optimized-input.json",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/a6/a6269acc12208332522566f4849fe2d1d02c48f94dc69325f40e0b18c3099562",
+      "sha256": "a6269acc12208332522566f4849fe2d1d02c48f94dc69325f40e0b18c3099562",
+      "uploaded": true
+    },
+    {
+      "bytes": 11736,
+      "path": "experiments/ic-simd-output-20261116/REPORT.md",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/b3/b3cfe1d2ee91dcf7d7f6e791d4f0103f5e2e0a781d2b48ac1304acb79b342c4a",
+      "sha256": "b3cfe1d2ee91dcf7d7f6e791d4f0103f5e2e0a781d2b48ac1304acb79b342c4a",
+      "uploaded": true
+    },
+    {
+      "bytes": 256193,
+      "path": "experiments/ic-simd-output-20261116/REPORT.pdf",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/20/20bac8c07cf686bfe1db846bc9c0d5012afbcd7d7be9f645ee2e5db09c86cb50",
+      "sha256": "20bac8c07cf686bfe1db846bc9c0d5012afbcd7d7be9f645ee2e5db09c86cb50",
+      "uploaded": true
+    },
+    {
+      "bytes": 4320,
+      "path": "experiments/ic-simd-output-20261116/FRESH_PROTOCOL.md",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/38/3843efd2645928faf8100749756f3145ae0819449babf0e86a04472f36ade45c",
+      "sha256": "3843efd2645928faf8100749756f3145ae0819449babf0e86a04472f36ade45c",
+      "uploaded": true
+    },
+    {
+      "bytes": 1198,
+      "path": "experiments/ic-simd-output-20261116/profile-delta.json",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/b1/b1f34f96cac099b7fee40fd1ec4abf90edec2f920929c31595e44955860259d9",
+      "sha256": "b1f34f96cac099b7fee40fd1ec4abf90edec2f920929c31595e44955860259d9",
+      "uploaded": true
+    },
+    {
+      "bytes": 614,
+      "path": "experiments/ic-simd-output-20261116/rejection-decision.json",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/e7/e74006c8e2c11c85fe7f1b68984cdad5d798712b11a6c77d9b31fee19a015bdc",
+      "sha256": "e74006c8e2c11c85fe7f1b68984cdad5d798712b11a6c77d9b31fee19a015bdc",
+      "uploaded": true
+    }
+  ],
+  "repo": "cryptanalysis",
+  "reports": {
+    "pdf": "experiments/ic-simd-output-20261116/REPORT.pdf",
+    "png": [],
+    "svg": [
+      "experiments/ic-simd-output-20261116/native-primary.svg",
+      "experiments/ic-simd-output-20261116/native-setup.svg",
+      "experiments/ic-simd-output-20261116/native-collector.svg",
+      "experiments/ic-simd-output-20261116/output-flow.svg"
+    ]
+  },
+  "schema": "bench.record/v1",
+  "session": null,
+  "slug": "ic-simd-output-fivepath-001",
+  "status": "invalid",
+  "summary": "Unsigned exploratory rejection: output append does not establish native gain; N21 primary ordinary/inverse favor compact baseline. All150blocks/3failedAA retained,0caps. All1350answers/7680states replay. Previous source restored after measurement, candidate evidence unchanged. Qualificationnull.",
+  "validation": "experiments/ic-simd-output-20261116/analysis-fresh.json"
+}

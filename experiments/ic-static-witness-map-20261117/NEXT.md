@@ -1,0 +1,11 @@
+# Conditional successor after the linear-probe experiment
+
+Complete the declared linear-probe experiment and retain every result before selecting a successor. No native result exists yet. [pcc:unverified]
+
+If simpler buckets lower instruction counts but worsen query clocks, test a separate metadata-group dictionary instead of assuming an allocator/cache explanation. Keep the same packed u64 key/witness buckets and MixHasher, but scan sixteen7bit hash fingerprints together, with high-bit empty markers, no tombstones and no resize. Full-key comparison still resolves fingerprint collisions and retains the first witness. This is a proposed CPU specialization, not measured evidence. [pcc:unverified]
+
+One concrete representation is a single Vec<u64> containing buckets followed by control words and two mirrored guard words. For capacities16..2^32, pack the32bit capacity mask and32bit entry count into one u64 metadata word, preserving a32byte map body on64bit targets. All capacities/word counts must use checked arithmetic with legacy fallback. A prospective x86_64 SSE2 path can load sixteen control bytes, compare with a repeated tag and use movemask for match/empty bits; architecture admission and the sixteen-byte guard invariant must be explicit. Other architectures need a correct fallback. Avoid reading uninitialized entries; an initially zeroed safe implementation is preferable before any separate allocation optimization. [pcc:unverified]
+
+Use bounded triangular group probing, which visits the power-of-two group domain; prove this and test collision/wraparound/empty/full capacity cases, all first witnesses, maximum keys/indices and full maps before timing. Metadata should be mirrored after writes to the initial guard group. Record control bytes and capacity slack separately from8byte payload, retain identical query/semantic schedules and charge all initialization/setup. Do not infer an elapsed-time gain from fewer instructions or choose a capacity after viewing the new panel. [pcc:unverified]
+
+The separate N24 diagnostic may narrow extra-work explanations. Matching instruction work cannot establish code-layout, cache or allocator causality. Such a claim requires its own frozen counterfactual (for example, counter-only or scratch-reservation controls), not reinterpretation of the completed indexed panel. [pcc:unverified]

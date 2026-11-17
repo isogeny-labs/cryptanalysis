@@ -1,3 +1,4 @@
+# artifacts-scope: job
 name: CT146 corrected-half transport identity audit
 on:
   pull_request:
@@ -22,10 +23,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          base=experiments/chained-transfer-public-target
-          checker="$base/norm-point-reuse-01/ct146_transport_identity_canary.py"
-          original="$base/fixed-jacobian-chain-evaluator-01/src/lib.rs"
-          builder="$base/norm-point-reuse-01/build_norm_reuse.py"
+          checker=experiments/chained-transfer-public-target/norm-point-reuse-01/ct146_transport_identity_canary.py
+          original=experiments/chained-transfer-public-target/fixed-jacobian-chain-evaluator-01/src/lib.rs
+          builder=experiments/chained-transfer-public-target/norm-point-reuse-01/build_norm_reuse.py
           python3 "$checker" --original-rust "$original" --ct125-builder "$builder" > /tmp/ct146-normal.json
           python3 -O "$checker" --original-rust "$original" --ct125-builder "$builder" > /tmp/ct146-optimized.json
           cmp /tmp/ct146-normal.json /tmp/ct146-optimized.json
@@ -52,17 +52,16 @@ jobs:
           set -euo pipefail
           python3 - <<'PY'
           import pathlib,subprocess,sys,tempfile
-          base=pathlib.Path('experiments/chained-transfer-public-target')
-          rust=(base/'fixed-jacobian-chain-evaluator-01/src/lib.rs').read_text()
+          rust=pathlib.Path('experiments/chained-transfer-public-target/fixed-jacobian-chain-evaluator-01/src/lib.rs').read_text()
           target='if curve::pmul(f, e, p, 2) != q {'
           if rust.count(target)!=1:
               raise SystemExit('expected original source marker absent')
           with tempfile.TemporaryDirectory() as d:
               bad=pathlib.Path(d)/'lib.rs'
               bad.write_text(rust.replace(target,'if false {'))
-              run=subprocess.run([sys.executable,str(base/'norm-point-reuse-01/ct146_transport_identity_canary.py'),
+              run=subprocess.run([sys.executable,'experiments/chained-transfer-public-target/norm-point-reuse-01/ct146_transport_identity_canary.py',
                   '--original-rust',str(bad),'--ct125-builder',
-                  str(base/'norm-point-reuse-01/build_norm_reuse.py')],
+                  'experiments/chained-transfer-public-target/norm-point-reuse-01/build_norm_reuse.py'],
                   capture_output=True,text=True,timeout=60)
               if run.returncode==0:
                   raise SystemExit('CT146 bad original was accepted')
