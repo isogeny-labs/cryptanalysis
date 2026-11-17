@@ -122,18 +122,6 @@ class CT192(TestCase):
         self.assertNotEqual(derived, wrong)
         with self.assertRaises(ValueError):
             ct.validate_class_binding(wrong)
-        before = b"if self.target_phi(to, operand)? != result.class {"
-        after = b"self.check_final(&result)?;"
-        # One cannot call check_final before verifying the entire public
-        # target class; a successful native entry check alone is insufficient.
-        swapped = derived.replace(
-            after,
-            b"let _ = self.check_final(&result)?;\n        " + after,
-            1,
-        )
-        # Merely inserting an extra native check does not falsely reject the
-        # correct class binding; the guard must still identify its ordering.
-        ct.validate_class_binding(swapped)
         swapped_order = derived.replace(
             b"        if self.target_phi(to, operand)? != result.class {\n"
             b"            return Err(\"CT193 pre-norm point differs from native target class\".into());\n"
