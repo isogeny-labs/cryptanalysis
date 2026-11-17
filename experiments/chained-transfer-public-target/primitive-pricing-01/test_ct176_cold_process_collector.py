@@ -220,7 +220,7 @@ class CT176Tests(unittest.TestCase):
             result = panel.run_sample(child, 0, "direct_composite", self.row, 1)
             self.assertFalse(result["verified"])
             self.assertEqual(result["error"], "timeout")
-            self.assertIs(result["capture_complete"], True)
+            self.assertIs(result["capture_complete"], False)
             self.assertLess(int(result["external_wall_ns_decimal"]), 5_000_000_000)
 
     def test_nonzero_exit_retains_bounded_stderr(self):
