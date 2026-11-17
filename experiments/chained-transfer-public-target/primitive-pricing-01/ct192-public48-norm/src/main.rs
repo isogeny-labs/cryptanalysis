@@ -87,7 +87,7 @@ fn vmhwm_kib() -> Option<u64> {
 }
 fn run() -> Result<(), String> {
     let args: Vec<String> = std::env::args().skip(1).collect();
-    if args.is_empty() || args == ["--plan"] {
+    if args.is_empty() || (args.len() == 1 && args[0] == "--plan") {
         println!("{}", json!({
             "schema":"ct192-public48-norm-plan/v1",
             "standing":"[pcc:unverified]",
@@ -100,7 +100,7 @@ fn run() -> Result<(), String> {
         }));
         return Ok(());
     }
-    must(args == ["--run-admitted"],
+    must(args.len() == 1 && args[0] == "--run-admitted",
          "usage: ct192-public48-norm [--plan|--run-admitted]")?;
     // Explicit external approval is necessary but cannot be established by
     // an environmental assertion alone; caller/provider must check it.
