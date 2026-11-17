@@ -3758,7 +3758,9 @@ impl PairTable {
             } else {
                 0
             },
-            vector_packed_square_pairs: if vector_cached == 2 && curve.field.n <= 32 {
+            vector_packed_square_pairs: if (vector_cached == 2 && curve.field.n <= 32)
+                || (vector_cached == 3 && curve.has_const_vector_field())
+            {
                 vector_pairs
             } else {
                 0

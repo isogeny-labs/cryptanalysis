@@ -246,6 +246,7 @@ fn main() {
         let mut vector_pclmul128_pairs = 0;
         let mut vector_packed_square_pairs = 0;
         let mut vector_const_pairs = 0;
+        let mut vector_const_packed_square_pairs = 0;
         let mut compact_map_comparisons = 0;
         let mut compact_entry_payload_bytes = 0;
         for chunk in [1, 7, 64, 1024, 4096] {
@@ -268,6 +269,13 @@ fn main() {
                 .unwrap(),
             ] {
                 vector_const_pairs += candidate.vector_const_pairs;
+                if candidate.vector_const_pairs != 0 {
+                    assert_eq!(
+                        candidate.vector_packed_square_pairs,
+                        candidate.vector_const_pairs
+                    );
+                    vector_const_packed_square_pairs += candidate.vector_packed_square_pairs;
+                }
                 vector_pairs += candidate.vector_pairs;
                 vector_pclmul128_pairs += candidate.vector_pclmul128_pairs;
                 vector_packed_square_pairs += candidate.vector_packed_square_pairs;
@@ -284,7 +292,7 @@ fn main() {
         }
         println!(
             "{}",
-            json!({"curve_id":inst.name,"status":"pass","euclidean_inverse":inst.gf.uses_euclidean_inverse(),"vector_const_pairs":vector_const_pairs,"vector_packed_square_pairs":vector_packed_square_pairs,"vector_pclmul128_pairs":vector_pclmul128_pairs,"vector_backend":inst.fast.cached_vector_backend(),"vector_pairs":vector_pairs,"complete_map_comparisons":comparisons,"compact_map_comparisons":compact_map_comparisons,"compact_entry_payload_bytes":compact_entry_payload_bytes,"entries":reference.entries,"has_clmul":inst.gf.has_clmul()})
+            json!({"curve_id":inst.name,"status":"pass","euclidean_inverse":inst.gf.uses_euclidean_inverse(),"vector_const_pairs":vector_const_pairs,"vector_const_packed_square_pairs":vector_const_packed_square_pairs,"vector_packed_square_pairs":vector_packed_square_pairs,"vector_pclmul128_pairs":vector_pclmul128_pairs,"vector_backend":inst.fast.cached_vector_backend(),"vector_pairs":vector_pairs,"complete_map_comparisons":comparisons,"compact_map_comparisons":compact_map_comparisons,"compact_entry_payload_bytes":compact_entry_payload_bytes,"entries":reference.entries,"has_clmul":inst.gf.has_clmul()})
         );
         return;
     }

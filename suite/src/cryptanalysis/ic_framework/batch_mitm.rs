@@ -172,6 +172,16 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for BinaryBatchMitmOracle {
             ),
             ("mitm_scalar_prepare".into(), u64::from(self.used_scalar)),
             (
+                "mitm_vector_const_packed_square_pairs".into(),
+                self.table.as_ref().map_or(0, |t| {
+                    if t.vector_const_pairs != 0 {
+                        t.vector_packed_square_pairs as u64
+                    } else {
+                        0
+                    }
+                }),
+            ),
+            (
                 "mitm_vector_packed_square_pairs".into(),
                 self.table
                     .as_ref()

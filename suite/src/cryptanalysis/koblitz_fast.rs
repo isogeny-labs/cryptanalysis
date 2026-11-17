@@ -1411,6 +1411,16 @@ mod simd256 {
                 _mm256_castsi128_si256(_mm_unpackhi_epi64(p0, p1)),
                 _mm_unpackhi_epi64(p2, p3),
             );
+            self.reduce_products_const::<N, TAIL>(low, high)
+        }
+
+        #[inline]
+        #[target_feature(enable = "avx2")]
+        unsafe fn reduce_products_const<const N: u32, const TAIL: u64>(
+            &self,
+            low: __m256i,
+            high: __m256i,
+        ) -> __m256i {
             if N == 0 {
                 return self.reduce_products(low, high);
             }
@@ -1462,6 +1472,15 @@ mod simd256 {
         #[inline]
         #[target_feature(enable = "avx2,pclmulqdq")]
         unsafe fn square_packed_narrow(&self, a: __m256i) -> __m256i {
+            self.square_packed_narrow_const::<0, 0>(a)
+        }
+
+        #[inline]
+        #[target_feature(enable = "avx2,pclmulqdq")]
+        unsafe fn square_packed_narrow_const<const N: u32, const TAIL: u64>(
+            &self,
+            a: __m256i,
+        ) -> __m256i {
             let packed = _mm256_shuffle_epi32::<0xd8>(a);
             let low = _mm256_castsi256_si128(packed);
             let high = _mm256_extracti128_si256::<1>(packed);
@@ -1469,7 +1488,7 @@ mod simd256 {
                 _mm256_castsi128_si256(_mm_clmulepi64_si128::<0x00>(low, low)),
                 _mm_clmulepi64_si128::<0x00>(high, high),
             );
-            self.reduce_products(raw, _mm256_setzero_si256())
+            self.reduce_products_const::<N, TAIL>(raw, _mm256_setzero_si256())
         }
 
         #[cfg(test)]
@@ -1492,6 +1511,31 @@ mod simd256 {
                 _mm256_storeu_si256(out.as_mut_ptr() as *mut __m256i, value);
             }
             out
+        }
+
+        #[cfg(test)]
+        pub(super) fn square4_const(&self, a: &[u64; 4]) -> Option<[u64; 4]> {
+            if a.iter().any(|&x| x > self.mask) {
+                return None;
+            }
+            let mut out = [0; 4];
+            // SAFETY: new() checked CPU features; each admitted input is canonical.
+            unsafe {
+                let av = _mm256_loadu_si256(a.as_ptr().cast());
+                let tail = self.terms[..self.nterms]
+                    .iter()
+                    .fold(0u64, |value, &bit| value | (1u64 << bit));
+                let value = match (self.n, tail) {
+                    (15, 3) => self.square_packed_narrow_const::<15, 3>(av),
+                    (18, 9) => self.square_packed_narrow_const::<18, 9>(av),
+                    (21, 5) => self.square_packed_narrow_const::<21, 5>(av),
+                    (24, 27) => self.square_packed_narrow_const::<24, 27>(av),
+                    (27, 39) => self.square_packed_narrow_const::<27, 39>(av),
+                    _ => return None,
+                };
+                _mm256_storeu_si256(out.as_mut_ptr().cast(), value);
+            }
+            Some(out)
         }
 
         /// Lane-wise version of Gf2's existing four accumulators. Padding
@@ -1635,23 +1679,23 @@ mod simd256 {
                 match (curve.field.n, curve.field.irr ^ (1u64 << curve.field.n)) {
                     (15, 3) => {
                         return self
-                            .add_cached_narrow::<false, 15, 3>(curve, ps, qs, out, scratch, cache)
+                            .add_cached_narrow::<true, 15, 3>(curve, ps, qs, out, scratch, cache)
                     }
                     (18, 9) => {
                         return self
-                            .add_cached_narrow::<false, 18, 9>(curve, ps, qs, out, scratch, cache)
+                            .add_cached_narrow::<true, 18, 9>(curve, ps, qs, out, scratch, cache)
                     }
                     (21, 5) => {
                         return self
-                            .add_cached_narrow::<false, 21, 5>(curve, ps, qs, out, scratch, cache)
+                            .add_cached_narrow::<true, 21, 5>(curve, ps, qs, out, scratch, cache)
                     }
                     (24, 27) => {
                         return self
-                            .add_cached_narrow::<false, 24, 27>(curve, ps, qs, out, scratch, cache)
+                            .add_cached_narrow::<true, 24, 27>(curve, ps, qs, out, scratch, cache)
                     }
                     (27, 39) => {
                         return self
-                            .add_cached_narrow::<false, 27, 39>(curve, ps, qs, out, scratch, cache)
+                            .add_cached_narrow::<true, 27, 39>(curve, ps, qs, out, scratch, cache)
                     }
                     _ => {}
                 }
@@ -1752,6 +1796,12 @@ mod simd256 {
                     if pc[i].infinity || qc[i].infinity || pc[i].x == qc[i].x {
                         return false;
                     }
+                    // Packed squares require canonical inputs. Keep the complete
+                    // scalar group fallback for arbitrary public FastPoint values.
+                    if PACKED && N != 0 && (pc[i].x | pc[i].y | qc[i].x | qc[i].y) & !self.mask != 0
+                    {
+                        return false;
+                    }
                     let Some(&value) = cache.inverses.get((pc[i].x ^ qc[i].x) as usize) else {
                         return false;
                     };
@@ -1771,7 +1821,7 @@ mod simd256 {
                 let x = _mm256_xor_si256(
                     _mm256_xor_si256(
                         if PACKED {
-                            self.square_packed_narrow(lambda)
+                            self.square_packed_narrow_const::<N, TAIL>(lambda)
                         } else {
                             self.mul_pclmul128_reduction::<N, TAIL>(lambda, lambda)
                         },
@@ -2606,6 +2656,34 @@ mod tests {
     }
 
     #[test]
+    fn packed_const_square_matches_scalar_and_rejects_noncanonical() {
+        #[cfg(all(target_arch = "x86_64", suite_avx512))]
+        {
+            let mut rng = StdRng::seed_from_u64(0xC057_5A);
+            for n in [15, 18, 21, 24, 27] {
+                let field = nb_field(n);
+                let Some(kernel) = simd256::Simd256::new(&field) else {
+                    eprintln!("skipped: packed const square requires native SIMD");
+                    return;
+                };
+                let edge = [0, 1, field.mask, 1 << (n - 1)];
+                for i in 0..1001 {
+                    let a = if i == 0 {
+                        edge
+                    } else {
+                        std::array::from_fn(|_| rng.gen::<u64>() & field.mask)
+                    };
+                    assert_eq!(kernel.square4_const(&a), Some(a.map(|x| field.mul(x, x))));
+                }
+                assert_eq!(kernel.square4_const(&[1u64 << n, 0, 1, field.mask]), None);
+            }
+            eprintln!("SIMD packed constant squares accepted");
+        }
+        #[cfg(not(all(target_arch = "x86_64", suite_avx512)))]
+        eprintln!("skipped: packed const square requires native SIMD");
+    }
+
+    #[test]
     fn const_cached_reduction_matches_general_with_exceptions_and_tails() {
         let mut rng = StdRng::seed_from_u64(0xC057_F1E1D);
         for (n, tail) in [(15, 3u64), (18, 9), (21, 5), (24, 27), (27, 39), (19, 39)] {
@@ -2674,6 +2752,51 @@ mod tests {
                 assert_eq!(got, expected, "n={n}, len={len}");
                 if exact && len >= 4 && curve.cached_vector_backend() != "scalar" {
                     assert!(count >= 4, "specialized normal block must execute");
+                }
+            }
+            // Noncanonical inputs remain outside the field arithmetic domain.
+            // Preserve the scalar fallback's behavior, including its assertions.
+            if exact {
+                for bit in [n, 63] {
+                    let mut bad_ps = ps.clone();
+                    let mut bad_qs = qs.clone();
+                    bad_ps[4].x |= 1u64 << bit;
+                    bad_qs[4].x |= 1u64 << bit;
+                    bad_ps[4].y |= 1u64 << bit;
+                    for len in [7, 21] {
+                        let expected =
+                            std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+                                let mut out = vec![Some(987)];
+                                curve
+                                    .add_pairwise_abscissae_cached(
+                                        &bad_ps[..len],
+                                        &bad_qs[..len],
+                                        &mut out,
+                                        &mut scratch,
+                                        &cache,
+                                    )
+                                    .unwrap();
+                                out
+                            }));
+                        let got = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+                            let mut out = vec![Some(987)];
+                            curve
+                                .add_pairwise_abscissae_vector_const_cached(
+                                    &bad_ps[..len],
+                                    &bad_qs[..len],
+                                    &mut out,
+                                    &mut scratch,
+                                    &cache,
+                                )
+                                .unwrap();
+                            out
+                        }));
+                        match (expected, got) {
+                            (Ok(expected), Ok(got)) => assert_eq!(got, expected),
+                            (Err(_), Err(_)) => {},
+                            _ => panic!("noncanonical fallback behavior changed n={n}, bit={bit}, len={len}"),
+                        }
+                    }
                 }
             }
             let other = PrefixInverseTable::new(&nb_field(7), 3).unwrap();
