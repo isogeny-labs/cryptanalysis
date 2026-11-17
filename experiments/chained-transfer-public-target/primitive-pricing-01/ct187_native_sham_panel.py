@@ -235,6 +235,10 @@ def main(argv=None):
     if args.mode != "adjudicate":
         if args.panel or args.report:
             p.error("--panel and --report only for adjudicate")
+        if args.mode == "plan" and other:
+            p.error("plan mode does not accept execution flags")
+        if args.mode == "collect" and "--execute" in other:
+            p.error("collect mode supplies its own --execute; duplicate flag")
         return collect(["--fixture", str(args.fixture)] +
                        (["--execute"] if args.mode == "collect" else []) + other)
     if other or args.panel is None or args.report is None:
