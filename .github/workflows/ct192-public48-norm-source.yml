@@ -24,6 +24,10 @@ jobs:
           dir=experiments/chained-transfer-public-target/primitive-pricing-01/ct192-public48-norm
           python3 -S -m py_compile "$dir/source_contract.py" "$dir/test_source_contract.py"
           python3 -S "$dir/source_contract.py"
+          python3 -S "$dir/source_contract.py" --materialize
+          rustfmt --edition 2021 --emit stdout "$dir/derived/lib.rs" >/dev/null
+          rustfmt --edition 2021 --emit stdout "$dir/src/main.rs" >/dev/null
+          cargo read-manifest --manifest-path "$dir/Cargo.toml" >/dev/null
           python3 -S -m unittest discover -s "$dir" -p test_source_contract.py -v
           python3 -O -S -m unittest discover -s "$dir" -p test_source_contract.py -v
           echo 'CT192 source/fixture validation ONLY; no native 48 pricing, independent PCC, or complete ECDLP [pcc:unverified]'
