@@ -9,6 +9,9 @@ on:
       - 'experiments/chained-transfer-public-target/primitive-pricing-01/ct172-replay/**'
       - 'experiments/chained-transfer-public-target/primitive-pricing-01/ct171_selected_coverage.py'
       - 'experiments/chained-transfer-public-target/primitive-pricing-01/ct172_static_native_binding.py'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/CT176_*'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/ct176_*'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/test_ct176_*'
       - 'experiments/chained-transfer-public-target/evidence/fixed-chain-norm-point-native-01/literal-selected-vectors.json'
   workflow_dispatch:
 permissions:
@@ -60,6 +63,25 @@ jobs:
           assert j['name']=='ct172-real48-public-replay'
           assert [v['name'] for v in j['targets']]==['ct172-replay']
           print('CT172 manifest/target parsed; NO TYPECHECK, LINK, EXECUTION, TIMING OR SCIENTIFIC VERIFICATION')
+          PY
+      - name: CT176 exact-fixture process-collector static and mock-negative tests (no native runtime)
+        run: |
+          set -euo pipefail
+          root=experiments/chained-transfer-public-target/primitive-pricing-01
+          fixture=experiments/chained-transfer-public-target/evidence/fixed-chain-norm-point-native-01/literal-selected-vectors.json
+          python3 -S -m py_compile "$root/ct176_cold_process_collector.py" "$root/test_ct176_cold_process_collector.py"
+          python3 -S -m unittest discover -s "$root" -p 'test_ct176_cold_process_collector.py' -v
+          python3 -O -S -m unittest discover -s "$root" -p 'test_ct176_cold_process_collector.py' -v
+          python3 -S "$root/ct176_cold_process_collector.py" --fixture "$fixture" > /tmp/ct176-plan-normal.json
+          python3 -O -S "$root/ct176_cold_process_collector.py" --fixture "$fixture" > /tmp/ct176-plan-optimized.json
+          cmp /tmp/ct176-plan-normal.json /tmp/ct176-plan-optimized.json
+          python3 -S - <<'PY'
+          import json
+          j=json.load(open('/tmp/ct176-plan-normal.json'))
+          assert j['plan_only'] is True
+          assert j['processes']==2304 and j['packets']==48 and j['blocks']==8
+          assert j['fixture_git_blob']=='9ac741668dd1ffa9632ff0d58e6f4dd9f2dd18c3'
+          print('CT176 source and complete original fixture plan tested; NO native pricing or ECDLP execution')
           PY
       - name: Explicit scope
         run: echo 'SOURCE AND PARSE ONLY [pcc:unverified]; no native run, no 695/701 whole corpus, no paid benchmark, no ECDLP speedup'
