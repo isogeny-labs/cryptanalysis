@@ -204,6 +204,8 @@ def ic_native_walk_evidence(ref, since):
          "binary-ic-constant-polynomial-setup-pipeline", "ic.constant_reduction.exploratory.", "IC constant polynomial"),
         ("benchmarks/records/20261116T1701Z-ic-vector-inverse-anchor-factorial-001.json",
          "binary-ic-vector-inverse-anchor-pipeline", "ic.vector_inverse.exploratory.", "IC SIMD inverse"),
+        ("benchmarks/records/20261117T0238Z-ic-direct-m2-fivepath-001.json",
+         "binary-ic-direct-fixed-m2-pipeline", "ic.direct_m2.exploratory.", "IC fixed-m2 direct probe"),
     ]
     for path, problem, prefix, label in sources:
         text = show(ref, path)
