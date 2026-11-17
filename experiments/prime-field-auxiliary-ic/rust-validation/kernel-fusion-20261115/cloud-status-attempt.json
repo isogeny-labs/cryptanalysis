@@ -1,0 +1,12 @@
+{
+  "command": "gh workflow run cloud-ecc2k130.yml --repo isogeny-labs/cryptanalysis --ref codex/prime-field-auxiliary-ic-rho -f action=runpod-status",
+  "exit_code": 1,
+  "observed_stderr": "could not create workflow dispatch event: HTTP 422: Cannot trigger a 'workflow_dispatch' on a disabled workflow (https://api.github.com/repos/isogeny-labs/cryptanalysis/actions/workflows/367505054/dispatches)",
+  "workflow_metadata": {
+    "id": 367505054,
+    "state": "disabled_manually",
+    "updated_at": "2026-10-12T22:01:22.000Z"
+  },
+  "job_started": false,
+  "workflow_enabled_or_changed": false
+}

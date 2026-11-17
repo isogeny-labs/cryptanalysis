@@ -1,0 +1,56 @@
+{
+  "source_commit": "5e3a420242277199b8784c0999a57d80ca117e1e",
+  "scope": "targeted CLI correctness and locked strict library lint; not timing",
+  "checks": [
+    {
+      "name": "cli-tests",
+      "command": [
+        "cargo",
+        "+stable",
+        "test",
+        "--locked",
+        "--manifest-path",
+        "suite/Cargo.toml",
+        "--lib",
+        "cli::tools::ic::auxiliary::tests"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "log": "cli-tests.log",
+      "sha256": "01c135975e9a288e8069ef2ed9642a1e1d23db73e5595ae0f2bdd8a0316a22f7"
+    },
+    {
+      "name": "cli-format",
+      "command": [
+        "rustfmt",
+        "--edition",
+        "2021",
+        "--check",
+        "suite/src/cli/tools/ic/auxiliary.rs"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "log": "cli-format.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "cli-clippy",
+      "command": [
+        "cargo",
+        "+stable",
+        "clippy",
+        "--locked",
+        "--manifest-path",
+        "suite/Cargo.toml",
+        "--lib",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "log": "cli-clippy.log",
+      "sha256": "97974f0fe4d9d59ff0d4a0b3edef06f3917a819153f056745bba914d7c149ce0"
+    }
+  ]
+}

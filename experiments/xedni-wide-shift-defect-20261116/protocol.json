@@ -1,0 +1,25 @@
+{
+  "schema": "xedni-wide-shift-defect-protocol-v1",
+  "question": "For the 22 frozen fresh public hits, does a wider coefficient-independent coordinate-shift family contain an exact rational relation, and how does residual coordinate height vary with model height?",
+  "parent": "experiments/xedni-height-selected-two-image-20261116",
+  "parent_sha256": {
+    "protocol.json": "ce9232b0b6ee3f4e0af268974cc5ea891d9dae588e1ae79fdee67a6f9008611e",
+    "run-result.json": "443e3a5c5b7e1d4535c6627f5026535c999ccdb10991fa1a417ba166bd1d7966",
+    "queries.jsonl.gz": "1f3c958503b0b28aeaaa6660d008374fc6bf483a385ad57bf4e0ffe969735015",
+    "vectors.jsonl.gz": "5f33b8dc01ad082fce926998db207874cd90c26ec3f3311ee813271ef79c8db0",
+    "audit.json": "e7fa42d529f0f1e02ddd30eb5e7166ed9aa46ac1e49a58b3420c86ec8b7ee3cc"
+  },
+  "admission": "all parent vector rows with public_relation true, ordered by event_index then vector_index; independent source audit must be PASS",
+  "expected_admitted_hits": 22,
+  "expected_equal_x_hits": 0,
+  "shift_values": [-2, -1, 0, 1, 2],
+  "shift_order": "lexicographic itertools.product over x1,y1,x2,y2 shifts",
+  "candidate_law": "center source coordinates, add shift times p, interpolate A and B from both points; reject singular or wrong-reduction models",
+  "model_score_bits": "maximum numerator or denominator bit length of A,B,x1,y1,x2,y2",
+  "residual_score_bits": "maximum numerator or denominator bit length of x and y of aP1+bP2, or zero for identity",
+  "residual_digest": "SHA-256 of compact JSON array of decimal rational strings [x,y], or SHA-256 of the literal JSON null for identity",
+  "selection_rules": ["minimum model_score_bits then lexicographic shift", "minimum residual_score_bits then model_score_bits then lexicographic shift (oracle diagnostic only)"],
+  "controls": "each candidate verifies P1+(-P1)=O and correct reduction; compare the centered and prior selected candidates on the same public hit",
+  "claim_boundary": "oracle residual minimization uses the known relation vector and is diagnostic; report all candidate failures and exact relation hits; no timing speedup inference",
+  "run_cap_seconds": 1200
+}

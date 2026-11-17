@@ -1,0 +1,37 @@
+   Compiling typenum v1.20.1
+   Compiling const-oid v0.10.2
+   Compiling cryptanalysis-sys v0.1.0 (/workspace/cryptanalysis-pr/bindings/rust/cryptanalysis-sys)
+   Compiling generic-array v0.14.7
+   Compiling hybrid-array v0.4.15
+   Compiling crypto-common v0.2.2
+   Compiling block-buffer v0.12.1
+   Compiling crypto-common v0.1.7
+   Compiling block-buffer v0.10.4
+   Compiling digest v0.10.7
+   Compiling digest v0.11.3
+   Compiling sha2 v0.11.1
+   Compiling hashed-ecdl-tensor v0.1.0 (/workspace/cryptanalysis-pr/bindings/rust/hashed-ecdl-tensor)
+error[E0277]: the trait bound `Array<u8, UInt<UInt<UInt<UInt<_, B0>, B0>, B0>, B0>>: LowerHex` is not satisfied
+   --> /workspace/cryptanalysis-pr/bindings/rust/hashed-ecdl-tensor/src/structured_runner.rs:134:21
+    |
+134 |     format!("{:x}", Sha256::digest(bytes))
+    |              ----   ^^^^^^^^^^^^^^^^^^^^^ the trait `LowerHex` is not implemented for `Array<u8, UInt<UInt<UInt<UInt<UInt<_, B0>, B0>, B0>, B0>, B0>>`
+    |              |
+    |              required by this formatting parameter
+    |
+    = help: the following other types implement trait `LowerHex`:
+              &T
+              &mut T
+              BigInt
+              BigUint
+              Ratio<T>
+              Wrapping<T>
+              compiler_builtins::math::libm_math::support::big::i256
+              compiler_builtins::math::libm_math::support::big::u256
+            and 27 others
+    = note: the full name for the type has been written to '/workspace/cryptanalysis-pr/suite/target/debug/build/hashed-ecdl-tensor/4e680ba2d320a17e/out/hashed_ecdl_tensor-4e680ba2d320a17e.long-type-17183261288076488736.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+
+For more information about this error, try `rustc --explain E0277`.
+error: could not compile `hashed-ecdl-tensor` (lib) due to 1 previous error
+warning: build failed, waiting for other jobs to finish...

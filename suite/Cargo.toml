@@ -78,6 +78,7 @@ gpu-emulator = []
 rho_debug = []
 
 [dependencies]
+prime-field-auxiliary-ic = { path = "../crates/prime-field-auxiliary-ic" }
 # Pinned, hash-checked source snapshot from the crypto repository.
 crypto_analysis_core = { package = "crypto-analysis-core", path = "vendor/crypto-analysis-core" }
 redis = { version = "0.32", optional = true, default-features = false, features = ["tls-rustls"] }

@@ -22,12 +22,12 @@
       "sha256": "c36443b17548a2f9c4f2843635fbaed6abe04788a259585f38605f7447f11349"
     }
   ],
-  "latest_record": "20261112T2333Z-xedni-p67-frozen-comparison",
+  "latest_record": "20261115T0646Z-prime31-retro-gcd-native-circuit",
   "note": "Every value is quoted from the record it names, in that record's unit. Percentages and ratios under 'derived' are computed here from those values and are not measurements. Series in different units are never compared. 4 digest-pinned historical measured records are excluded from all series and derived comparisons; recorded status counts retain them. See integrity_exclusions in progress.json and PROGRESS.md for reasons.",
   "records": {
     "censored": 1,
     "invalid": 28,
-    "measured": 18,
+    "measured": 36,
     "open": 0
   },
   "repo": "cryptanalysis",
@@ -946,6 +946,482 @@
     },
     {
       "better": "lower",
+      "first": 0.007091595000019879,
+      "latest": 0.018318452001039986,
+      "latest_derived": {
+        "improvement_vs_first_percent": -158.3122,
+        "improvement_vs_previous_percent": 16.2325
+      },
+      "metric": "rho_reported_cold_wall",
+      "points": [
+        {
+          "commit": "4551d77ae4a8",
+          "date": "2026-11-15",
+          "derived": {
+            "improvement_vs_first_percent": 0.0
+          },
+          "n": 1,
+          "record": "20261115T0646Z-prime31-retro-rho-seed0",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "Retrospective unverified producer observations; Already-known single target; cold wall interval; unsigned producer checks; no online speedup qualification.",
+          "value": 0.007091595000019879
+        },
+        {
+          "commit": "4551d77ae4a8",
+          "date": "2026-11-15",
+          "derived": {
+            "improvement_vs_first_percent": -208.3681,
+            "improvement_vs_previous_percent": -208.3681
+          },
+          "n": 1,
+          "record": "20261115T0646Z-prime31-retro-rho-seed1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "Retrospective unverified producer observations; Already-known single target; cold wall interval; unsigned producer checks; no online speedup qualification.",
+          "value": 0.021868216999791912
+        },
+        {
+          "commit": "4551d77ae4a8",
+          "date": "2026-11-15",
+          "derived": {
+            "improvement_vs_first_percent": -158.3122,
+            "improvement_vs_previous_percent": 16.2325
+          },
+          "n": 1,
+          "record": "20261115T0646Z-prime31-retro-rho-seed2",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "Retrospective unverified producer observations; Already-known single target; cold wall interval; unsigned producer checks; no online speedup qualification.",
+          "value": 0.018318452001039986
+        }
+      ],
+      "problem": "ecdlp:prime31aux-retrospective",
+      "unit": "wall_s"
+    },
+    {
+      "better": "lower",
+      "first": 0.00678,
+      "latest": 0.017873999999999998,
+      "latest_derived": {
+        "improvement_vs_first_percent": -163.6283,
+        "improvement_vs_previous_percent": 16.1593
+      },
+      "metric": "rho_reported_cpu",
+      "points": [
+        {
+          "commit": "4551d77ae4a8",
+          "date": "2026-11-15",
+          "derived": {
+            "improvement_vs_first_percent": 0.0
+          },
+          "n": 1,
+          "record": "20261115T0646Z-prime31-retro-rho-seed0",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "Retrospective unverified producer observations; Already-known single target; cold wall interval; unsigned producer checks; no online speedup qualification.",
+          "value": 0.00678
+        },
+        {
+          "commit": "4551d77ae4a8",
+          "date": "2026-11-15",
+          "derived": {
+            "improvement_vs_first_percent": -214.4395,
+            "improvement_vs_previous_percent": -214.4395
+          },
+          "n": 1,
+          "record": "20261115T0646Z-prime31-retro-rho-seed1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "Retrospective unverified producer observations; Already-known single target; cold wall interval; unsigned producer checks; no online speedup qualification.",
+          "value": 0.021318999999999998
+        },
+        {
+          "commit": "4551d77ae4a8",
+          "date": "2026-11-15",
+          "derived": {
+            "improvement_vs_first_percent": -163.6283,
+            "improvement_vs_previous_percent": 16.1593
+          },
+          "n": 1,
+          "record": "20261115T0646Z-prime31-retro-rho-seed2",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "Retrospective unverified producer observations; Already-known single target; cold wall interval; unsigned producer checks; no online speedup qualification.",
+          "value": 0.017873999999999998
+        }
+      ],
+      "problem": "ecdlp:prime31aux-retrospective",
+      "unit": "cpu_s"
+    },
+    {
+      "better": "lower",
+      "first": 23.5300974089987,
+      "latest": 35.416334294999615,
+      "latest_derived": {
+        "improvement_vs_first_percent": -50.515,
+        "improvement_vs_previous_percent": 11.4621,
+        "value_over_reference": 1933.369386
+      },
+      "metric": "v1_chain_reported_cold_wall",
+      "points": [
+        {
+          "commit": "4551d77ae4a8",
+          "date": "2026-11-15",
+          "derived": {
+            "improvement_vs_first_percent": 0.0,
+            "value_over_reference": 3318.026115
+          },
+          "n": 1,
+          "record": "20261115T0646Z-prime31-retro-v1-chain-seed0",
+          "reference": 0.007091595000019879,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "Retrospective unverified producer observations; Already-known single target; cold wall interval; unsigned producer checks; no online speedup qualification.",
+          "value": 23.5300974089987
+        },
+        {
+          "commit": "4551d77ae4a8",
+          "date": "2026-11-15",
+          "derived": {
+            "improvement_vs_first_percent": -70.0006,
+            "improvement_vs_previous_percent": -70.0006,
+            "value_over_reference": 1829.198451
+          },
+          "n": 1,
+          "record": "20261115T0646Z-prime31-retro-v1-chain-seed1",
+          "reference": 0.021868216999791912,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "Retrospective unverified producer observations; Already-known single target; cold wall interval; unsigned producer checks; no online speedup qualification.",
+          "value": 40.00130867199914
+        },
+        {
+          "commit": "4551d77ae4a8",
+          "date": "2026-11-15",
+          "derived": {
+            "improvement_vs_first_percent": -50.515,
+            "improvement_vs_previous_percent": 11.4621,
+            "value_over_reference": 1933.369386
+          },
+          "n": 1,
+          "record": "20261115T0646Z-prime31-retro-v1-chain-seed2",
+          "reference": 0.018318452001039986,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "Retrospective unverified producer observations; Already-known single target; cold wall interval; unsigned producer checks; no online speedup qualification.",
+          "value": 35.416334294999615
+        }
+      ],
+      "problem": "ecdlp:prime31aux-retrospective",
+      "unit": "wall_s"
+    },
+    {
+      "better": "lower",
+      "first": 23.497882,
+      "latest": 35.408714,
+      "latest_derived": {
+        "improvement_vs_first_percent": -50.689,
+        "improvement_vs_previous_percent": 11.4542
+      },
+      "metric": "v1_chain_reported_cpu",
+      "points": [
+        {
+          "commit": "4551d77ae4a8",
+          "date": "2026-11-15",
+          "derived": {
+            "improvement_vs_first_percent": 0.0
+          },
+          "n": 1,
+          "record": "20261115T0646Z-prime31-retro-v1-chain-seed0",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "Retrospective unverified producer observations; Already-known single target; cold wall interval; unsigned producer checks; no online speedup qualification.",
+          "value": 23.497882
+        },
+        {
+          "commit": "4551d77ae4a8",
+          "date": "2026-11-15",
+          "derived": {
+            "improvement_vs_first_percent": -70.182,
+            "improvement_vs_previous_percent": -70.182
+          },
+          "n": 1,
+          "record": "20261115T0646Z-prime31-retro-v1-chain-seed1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "Retrospective unverified producer observations; Already-known single target; cold wall interval; unsigned producer checks; no online speedup qualification.",
+          "value": 39.989157999999996
+        },
+        {
+          "commit": "4551d77ae4a8",
+          "date": "2026-11-15",
+          "derived": {
+            "improvement_vs_first_percent": -50.689,
+            "improvement_vs_previous_percent": 11.4542
+          },
+          "n": 1,
+          "record": "20261115T0646Z-prime31-retro-v1-chain-seed2",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "Retrospective unverified producer observations; Already-known single target; cold wall interval; unsigned producer checks; no online speedup qualification.",
+          "value": 35.408714
+        }
+      ],
+      "problem": "ecdlp:prime31aux-retrospective",
+      "unit": "cpu_s"
+    },
+    {
+      "better": "lower",
+      "first": 9.685107568999229,
+      "latest": 11.667566436000925,
+      "latest_derived": {
+        "improvement_vs_first_percent": -20.4691,
+        "improvement_vs_previous_percent": -125.799,
+        "value_over_reference": 636.929716
+      },
+      "metric": "v2_batch_reported_cold_wall",
+      "points": [
+        {
+          "commit": "4551d77ae4a8",
+          "date": "2026-11-15",
+          "derived": {
+            "improvement_vs_first_percent": 0.0,
+            "value_over_reference": 1365.716397
+          },
+          "n": 1,
+          "record": "20261115T0646Z-prime31-retro-v2-batch-seed0",
+          "reference": 0.007091595000019879,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "Retrospective unverified producer observations; Already-known single target; cold wall interval; unsigned producer checks; no online speedup qualification.",
+          "value": 9.685107568999229
+        },
+        {
+          "commit": "4551d77ae4a8",
+          "date": "2026-11-15",
+          "derived": {
+            "improvement_vs_first_percent": 46.6476,
+            "improvement_vs_previous_percent": 46.6476,
+            "value_over_reference": 236.289749
+          },
+          "n": 1,
+          "record": "20261115T0646Z-prime31-retro-v2-batch-seed1",
+          "reference": 0.021868216999791912,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "Retrospective unverified producer observations; Already-known single target; cold wall interval; unsigned producer checks; no online speedup qualification.",
+          "value": 5.167235504999553
+        },
+        {
+          "commit": "4551d77ae4a8",
+          "date": "2026-11-15",
+          "derived": {
+            "improvement_vs_first_percent": -20.4691,
+            "improvement_vs_previous_percent": -125.799,
+            "value_over_reference": 636.929716
+          },
+          "n": 1,
+          "record": "20261115T0646Z-prime31-retro-v2-batch-seed2",
+          "reference": 0.018318452001039986,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "Retrospective unverified producer observations; Already-known single target; cold wall interval; unsigned producer checks; no online speedup qualification.",
+          "value": 11.667566436000925
+        }
+      ],
+      "problem": "ecdlp:prime31aux-retrospective",
+      "unit": "wall_s"
+    },
+    {
+      "better": "lower",
+      "first": 9.679338000000001,
+      "latest": 11.656239000000001,
+      "latest_derived": {
+        "improvement_vs_first_percent": -20.4239,
+        "improvement_vs_previous_percent": -125.7924
+      },
+      "metric": "v2_batch_reported_cpu",
+      "points": [
+        {
+          "commit": "4551d77ae4a8",
+          "date": "2026-11-15",
+          "derived": {
+            "improvement_vs_first_percent": 0.0
+          },
+          "n": 1,
+          "record": "20261115T0646Z-prime31-retro-v2-batch-seed0",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "Retrospective unverified producer observations; Already-known single target; cold wall interval; unsigned producer checks; no online speedup qualification.",
+          "value": 9.679338000000001
+        },
+        {
+          "commit": "4551d77ae4a8",
+          "date": "2026-11-15",
+          "derived": {
+            "improvement_vs_first_percent": 46.6661,
+            "improvement_vs_previous_percent": 46.6661
+          },
+          "n": 1,
+          "record": "20261115T0646Z-prime31-retro-v2-batch-seed1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "Retrospective unverified producer observations; Already-known single target; cold wall interval; unsigned producer checks; no online speedup qualification.",
+          "value": 5.16237
+        },
+        {
+          "commit": "4551d77ae4a8",
+          "date": "2026-11-15",
+          "derived": {
+            "improvement_vs_first_percent": -20.4239,
+            "improvement_vs_previous_percent": -125.7924
+          },
+          "n": 1,
+          "record": "20261115T0646Z-prime31-retro-v2-batch-seed2",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "Retrospective unverified producer observations; Already-known single target; cold wall interval; unsigned producer checks; no online speedup qualification.",
+          "value": 11.656239000000001
+        }
+      ],
+      "problem": "ecdlp:prime31aux-retrospective",
+      "unit": "cpu_s"
+    },
+    {
+      "better": "lower",
+      "first": 14.419035798999175,
+      "latest": 15.083680400999583,
+      "latest_derived": {
+        "improvement_vs_first_percent": -4.6095,
+        "improvement_vs_previous_percent": 32.3395,
+        "value_over_reference": 823.414577
+      },
+      "metric": "v2_chain_reported_cold_wall",
+      "points": [
+        {
+          "commit": "4551d77ae4a8",
+          "date": "2026-11-15",
+          "derived": {
+            "improvement_vs_first_percent": 0.0,
+            "value_over_reference": 2033.257088
+          },
+          "n": 1,
+          "record": "20261115T0646Z-prime31-retro-v2-chain-seed0",
+          "reference": 0.007091595000019879,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "Retrospective unverified producer observations; Already-known single target; cold wall interval; unsigned producer checks; no online speedup qualification.",
+          "value": 14.419035798999175
+        },
+        {
+          "commit": "4551d77ae4a8",
+          "date": "2026-11-15",
+          "derived": {
+            "improvement_vs_first_percent": -54.6095,
+            "improvement_vs_previous_percent": -54.6095,
+            "value_over_reference": 1019.433689
+          },
+          "n": 1,
+          "record": "20261115T0646Z-prime31-retro-v2-chain-seed1",
+          "reference": 0.021868216999791912,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "Retrospective unverified producer observations; Already-known single target; cold wall interval; unsigned producer checks; no online speedup qualification.",
+          "value": 22.293197133998547
+        },
+        {
+          "commit": "4551d77ae4a8",
+          "date": "2026-11-15",
+          "derived": {
+            "improvement_vs_first_percent": -4.6095,
+            "improvement_vs_previous_percent": 32.3395,
+            "value_over_reference": 823.414577
+          },
+          "n": 1,
+          "record": "20261115T0646Z-prime31-retro-v2-chain-seed2",
+          "reference": 0.018318452001039986,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "Retrospective unverified producer observations; Already-known single target; cold wall interval; unsigned producer checks; no online speedup qualification.",
+          "value": 15.083680400999583
+        }
+      ],
+      "problem": "ecdlp:prime31aux-retrospective",
+      "unit": "wall_s"
+    },
+    {
+      "better": "lower",
+      "first": 14.390779,
+      "latest": 15.080589,
+      "latest_derived": {
+        "improvement_vs_first_percent": -4.7934,
+        "improvement_vs_previous_percent": 32.2969
+      },
+      "metric": "v2_chain_reported_cpu",
+      "points": [
+        {
+          "commit": "4551d77ae4a8",
+          "date": "2026-11-15",
+          "derived": {
+            "improvement_vs_first_percent": 0.0
+          },
+          "n": 1,
+          "record": "20261115T0646Z-prime31-retro-v2-chain-seed0",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "Retrospective unverified producer observations; Already-known single target; cold wall interval; unsigned producer checks; no online speedup qualification.",
+          "value": 14.390779
+        },
+        {
+          "commit": "4551d77ae4a8",
+          "date": "2026-11-15",
+          "derived": {
+            "improvement_vs_first_percent": -54.7838,
+            "improvement_vs_previous_percent": -54.7838
+          },
+          "n": 1,
+          "record": "20261115T0646Z-prime31-retro-v2-chain-seed1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "Retrospective unverified producer observations; Already-known single target; cold wall interval; unsigned producer checks; no online speedup qualification.",
+          "value": 22.274594999999998
+        },
+        {
+          "commit": "4551d77ae4a8",
+          "date": "2026-11-15",
+          "derived": {
+            "improvement_vs_first_percent": -4.7934,
+            "improvement_vs_previous_percent": 32.2969
+          },
+          "n": 1,
+          "record": "20261115T0646Z-prime31-retro-v2-chain-seed2",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "Retrospective unverified producer observations; Already-known single target; cold wall interval; unsigned producer checks; no online speedup qualification.",
+          "value": 15.080589
+        }
+      ],
+      "problem": "ecdlp:prime31aux-retrospective",
+      "unit": "cpu_s"
+    },
+    {
+      "better": "lower",
       "first": 0.6661,
       "latest": 0.6661,
       "latest_derived": {},
@@ -1632,6 +2108,144 @@
       ],
       "problem": "kernel:n83_fieldops2_local_diag",
       "unit": "ratio"
+    },
+    {
+      "better": "lower",
+      "first": 0.001249693000318075,
+      "latest": 0.001249693000318075,
+      "latest_derived": {},
+      "metric": "v1_reported_stage_median",
+      "points": [
+        {
+          "commit": "4551d77ae4a8",
+          "date": "2026-11-15",
+          "derived": {},
+          "n": 16,
+          "record": "20261115T0646Z-prime31-retro-circuit-v1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "Retrospective unverified producer observations; Stage-only extraction: 16 fixed targets, 8 repetitions each; no end-to-end implication.",
+          "value": 0.001249693000318075
+        }
+      ],
+      "problem": "kernel:prime31aux-circuit-retrospective",
+      "unit": "wall_s"
+    },
+    {
+      "better": "lower",
+      "first": 0.00040620424988446757,
+      "latest": 0.00040620424988446757,
+      "latest_derived": {},
+      "metric": "v2_reported_stage_median",
+      "points": [
+        {
+          "commit": "4551d77ae4a8",
+          "date": "2026-11-15",
+          "derived": {},
+          "n": 16,
+          "record": "20261115T0646Z-prime31-retro-circuit-v2",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "Retrospective unverified producer observations; Stage-only extraction: 16 fixed targets, 8 repetitions each; no end-to-end implication.",
+          "value": 0.00040620424988446757
+        }
+      ],
+      "problem": "kernel:prime31aux-circuit-retrospective",
+      "unit": "wall_s"
+    },
+    {
+      "better": "lower",
+      "first": 0.19571188049985722,
+      "latest": 0.19571188049985722,
+      "latest_derived": {},
+      "metric": "blocked_gcd_reported_stage_median",
+      "points": [
+        {
+          "commit": "4551d77ae4a8",
+          "date": "2026-11-15",
+          "derived": {},
+          "n": 16,
+          "record": "20261115T0646Z-prime31-retro-gcd-blocked-gcd",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "Retrospective unverified producer observations; Stage-only extraction, original 32768-root workload; unsigned producer observations.",
+          "value": 0.19571188049985722
+        }
+      ],
+      "problem": "kernel:prime31aux-gcd-retrospective",
+      "unit": "wall_s"
+    },
+    {
+      "better": "lower",
+      "first": 0.28438695500017275,
+      "latest": 0.28438695500017275,
+      "latest_derived": {},
+      "metric": "flint_gcd_reported_stage_median",
+      "points": [
+        {
+          "commit": "4551d77ae4a8",
+          "date": "2026-11-15",
+          "derived": {},
+          "n": 16,
+          "record": "20261115T0646Z-prime31-retro-gcd-flint-gcd",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "Retrospective unverified producer observations; Stage-only extraction, original 32768-root workload; unsigned producer observations.",
+          "value": 0.28438695500017275
+        }
+      ],
+      "problem": "kernel:prime31aux-gcd-retrospective",
+      "unit": "wall_s"
+    },
+    {
+      "better": "lower",
+      "first": 0.10191574100053913,
+      "latest": 0.10191574100053913,
+      "latest_derived": {},
+      "metric": "lifted_blocked_gcd_reported_stage_median",
+      "points": [
+        {
+          "commit": "4551d77ae4a8",
+          "date": "2026-11-15",
+          "derived": {},
+          "n": 16,
+          "record": "20261115T0646Z-prime31-retro-gcd-lifted-blocked-gcd",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "Retrospective unverified producer observations; Stage-only extraction, original 32768-root workload; unsigned producer observations.",
+          "value": 0.10191574100053913
+        }
+      ],
+      "problem": "kernel:prime31aux-gcd-retrospective",
+      "unit": "wall_s"
+    },
+    {
+      "better": "lower",
+      "first": 0.001235219500358653,
+      "latest": 0.001235219500358653,
+      "latest_derived": {},
+      "metric": "native_circuit_reported_stage_median",
+      "points": [
+        {
+          "commit": "4551d77ae4a8",
+          "date": "2026-11-15",
+          "derived": {},
+          "n": 16,
+          "record": "20261115T0646Z-prime31-retro-gcd-native-circuit",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "Retrospective unverified producer observations; Stage-only extraction, original 32768-root workload; unsigned producer observations.",
+          "value": 0.001235219500358653
+        }
+      ],
+      "problem": "kernel:prime31aux-gcd-retrospective",
+      "unit": "wall_s"
     },
     {
       "better": "lower",

@@ -1,0 +1,47 @@
+{
+  "source_commit": "a4976ed56824e5b8f8ddd588f03cb8cd619e57ed",
+  "failed_hosted_source": "e24a3a3ec48a31836afcab241173847c9da53c83",
+  "scope": "README rendering only; prior algorithm/CLI result scopes remain separate",
+  "checks": [
+    {
+      "toolchain": "stable",
+      "command": [
+        "cargo",
+        "+stable",
+        "doc",
+        "--no-deps"
+      ],
+      "rustdocflags": "-D warnings",
+      "exit_code": 0,
+      "log": "rustdoc-stable.log"
+    },
+    {
+      "toolchain": "1.78.0",
+      "command": [
+        "cargo",
+        "+1.78.0",
+        "doc",
+        "--no-deps"
+      ],
+      "rustdocflags": "-D warnings",
+      "exit_code": 0,
+      "log": "rustdoc-1.78.0.log"
+    }
+  ],
+  "hosted_logs": [
+    {
+      "job_id": 133018226435,
+      "path": "hosted-133018226435.log.gz",
+      "compressed_sha256": "6e13a9d09156a949251e73b5c5bb40bd11f608f8567a6c90345abae3f9a7296b",
+      "decoded_sha256": "e3808b7cdd50b81229a3679b6503595478213ea49b1210a9e08459fc31bddc96",
+      "decoded_bytes": 19774
+    },
+    {
+      "job_id": 133018226300,
+      "path": "hosted-133018226300.log.gz",
+      "compressed_sha256": "1f17ef843c0e8d44a4bf8f470e18b6f6f2e2c7008583795f864edb694fd30a47",
+      "decoded_sha256": "c30657aefb6289b5f1446986e4f23f66ec0f92d3d7981c7f3e56640e006cae26",
+      "decoded_bytes": 19339
+    }
+  ]
+}

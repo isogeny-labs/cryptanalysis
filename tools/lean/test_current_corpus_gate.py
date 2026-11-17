@@ -759,6 +759,76 @@ class GlvSizedCapControls(unittest.TestCase):
                          gate.HISTORICAL_TABLEBUDGET_THEOREMS)
 
 
+
+
+class FieldFiberReceiptControls(unittest.TestCase):
+    """Admission plumbing/refusals; synthetic output is not native evidence."""
+    SOURCE = "experiments/prime-field-auxiliary-ic/rust-validation/field-fibers-20261115/formal/FieldFibers.lean"
+    CONFIG = SOURCE.rsplit("/", 1)[0] + "/lakefile.lean"
+
+    def setUp(self):
+        self.scratch = tempfile.TemporaryDirectory()
+        self.addCleanup(self.scratch.cleanup)
+        self.root = Path(self.scratch.name)
+        for source in [self.SOURCE, self.CONFIG]:
+            record = gate.RECEIPT_BOUND_SOURCES[source]
+            for name in [source, record["checker"]]:
+                target = self.root / name
+                target.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(REPOSITORY / name, target)
+        self.root_patch = patch.object(gate, "ROOT", self.root)
+        self.root_patch.start()
+        self.addCleanup(self.root_patch.stop)
+        self.printed = "".join("'AuxiliaryIC.FieldFibers." + name +
+            "' depends on axioms: [propext, Quot.sound]\n" for name in sorted(gate.RECEIPT_BOUND_SOURCES[self.SOURCE]["theorems"])) + "Field-fiber ring identities verified\n"
+
+    def test_registered_sources_and_checkers_match_their_pins(self):
+        for source in [self.SOURCE, self.CONFIG]:
+            record = gate.RECEIPT_BOUND_SOURCES[source]
+            self.assertEqual(gate.digest(self.root / source), record["sha256"])
+            self.assertEqual(gate.digest(self.root / record["checker"]), record["checker_sha256"])
+
+    def test_all_six_names_are_required(self):
+        with patch.object(gate, "run") as run, redirect_stdout(StringIO()):
+            run.return_value.stdout = self.printed
+            self.assertEqual(gate.check_receipt_bound_source(self.SOURCE), gate.RECEIPT_BOUND_SOURCES[self.SOURCE]["sha256"])
+            self.assertTrue(run.call_args.args[0][1].endswith("check_native.py"))
+            run.return_value.stdout = self.printed.replace("'AuxiliaryIC.FieldFibers.cube_trace' depends on axioms: [propext, Quot.sound]\n", "")
+            with self.assertRaisesRegex(ValueError, "incomplete native axiom output"):
+                gate.check_receipt_bound_source(self.SOURCE)
+
+    def test_changed_source_or_checker_refused_before_native_command(self):
+        for key in ["source", "checker"]:
+            with self.subTest(key=key):
+                relative = self.SOURCE if key == "source" else gate.RECEIPT_BOUND_SOURCES[self.SOURCE]["checker"]
+                path = self.root / relative
+                original = path.read_bytes()
+                path.write_bytes(original + b"\n-- changed\n")
+                with patch.object(gate, "run") as run:
+                    with self.assertRaisesRegex(ValueError, "changed without native review"):
+                        gate.check_receipt_bound_source(self.SOURCE)
+                    run.assert_not_called()
+                path.write_bytes(original)
+
+    def test_extra_name_or_unapproved_axiom_refused(self):
+        for output in [self.printed.replace("[propext, Quot.sound]", "[ProducerAxiom]"),
+                       "'AuxiliaryIC.FieldFibers.extra' does not depend on any axioms\n" + self.printed]:
+            with patch.object(gate, "run") as run, redirect_stdout(StringIO()):
+                run.return_value.stdout = output
+                with self.assertRaises(ValueError):
+                    gate.check_receipt_bound_source(self.SOURCE)
+
+    def test_native_failure_is_not_admission(self):
+        with patch.object(gate, "run", side_effect=ValueError("native build failed")), redirect_stdout(StringIO()):
+            with self.assertRaisesRegex(ValueError, "native build failed"):
+                gate.check_receipt_bound_source(self.SOURCE)
+
+    def test_build_configuration_also_invokes_its_native_checker(self):
+        with patch.object(gate, "run") as run, redirect_stdout(StringIO()):
+            run.return_value.stdout = "Field-fiber build configuration verified\n"
+            self.assertEqual(gate.check_receipt_bound_source(self.CONFIG), gate.RECEIPT_BOUND_SOURCES[self.CONFIG]["sha256"])
+            self.assertTrue(run.call_args.args[0][1].endswith("check_config.py"))
+
 if __name__ == "__main__":
     unittest.main()
 

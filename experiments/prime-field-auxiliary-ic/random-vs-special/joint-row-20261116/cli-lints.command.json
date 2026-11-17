@@ -1,0 +1,18 @@
+{
+  "source_commit": "d95d582ca01739e138b605db6279a906d0dd230b",
+  "argv": [
+    "/home/agent/.cargo/bin/cargo",
+    "+stable",
+    "clippy",
+    "--locked",
+    "--manifest-path",
+    "suite/Cargo.toml",
+    "--lib",
+    "--",
+    "-D",
+    "warnings"
+  ],
+  "explicit_environment": {},
+  "exit_code": 0,
+  "scope": "producer development correctness check; no benchmark"
+}

@@ -1,0 +1,98 @@
+ Downloading crates ...
+  Downloaded sha2 v0.11.0
+    Blocking waiting for file lock on package cache
+   Compiling typenum v1.20.1
+   Compiling cfg-if v1.0.5
+   Compiling libc v0.2.189
+   Compiling proc-macro2 v1.0.107
+   Compiling unicode-ident v1.0.26
+   Compiling zerocopy v0.8.57
+   Compiling quote v1.0.47
+   Compiling autocfg v1.5.1
+   Compiling version_check v0.9.5
+   Compiling num-traits v0.2.19
+   Compiling generic-array v0.14.7
+   Compiling getrandom v0.2.17
+   Compiling rand_core v0.6.4
+   Compiling syn v3.0.6
+   Compiling ppv-lite86 v0.2.21
+   Compiling shlex v2.0.1
+   Compiling serde_core v1.0.229
+   Compiling find-msvc-tools v0.1.13
+   Compiling rand_chacha v0.3.1
+   Compiling cc v1.4.7
+   Compiling hybrid-array v0.4.15
+   Compiling num-integer v0.1.47
+   Compiling rand v0.8.8
+   Compiling zmij v1.0.23
+   Compiling crossbeam-utils v0.8.23
+   Compiling serde v1.0.229
+   Compiling crypto-common v0.2.2
+   Compiling block-buffer v0.12.1
+   Compiling block-buffer v0.10.4
+   Compiling crypto-common v0.1.7
+   Compiling serde_derive v1.0.229
+   Compiling cpufeatures v0.3.1
+   Compiling crossbeam-epoch v0.9.21
+   Compiling const-oid v0.10.2
+   Compiling getrandom v0.4.3
+   Compiling serde_json v1.0.151
+   Compiling digest v0.11.3
+   Compiling digest v0.10.7
+   Compiling num-bigint v0.4.8
+   Compiling memchr v2.8.3
+   Compiling itoa v1.0.18
+   Compiling crossbeam-deque v0.8.8
+   Compiling utf8parse v0.2.2
+   Compiling anstyle-parse v1.0.0
+   Compiling num-bigint v0.5.1
+   Compiling num-rational v0.4.2
+   Compiling sha2 v0.11.0
+   Compiling cryptanalysis-sys v0.1.0 (/workspace/cryptanalysis-pr/bindings/rust/cryptanalysis-sys)
+   Compiling rayon-core v1.13.0
+   Compiling anstyle-query v1.1.5
+   Compiling is_terminal_polyfill v1.70.2
+   Compiling anstyle v1.0.14
+   Compiling colorchoice v1.0.5
+   Compiling prime-field-auxiliary-ic v0.1.0 (/workspace/cryptanalysis-pr/crates/prime-field-auxiliary-ic)
+   Compiling anstream v1.0.0
+   Compiling hashed-ecdl-tensor v0.1.0 (/workspace/cryptanalysis-pr/bindings/rust/hashed-ecdl-tensor)
+   Compiling blake3 v1.8.7
+   Compiling strsim v0.11.1
+   Compiling clap_lex v1.1.1
+   Compiling heck v0.5.0
+   Compiling cpufeatures v0.2.17
+   Compiling clap_derive v4.6.7
+   Compiling clap_builder v4.6.7
+   Compiling arrayvec v0.7.8
+   Compiling keccak v0.1.6
+   Compiling constant_time_eq v0.4.2
+   Compiling cryptanalysis-suite v0.1.0 (/workspace/cryptanalysis-pr/suite)
+   Compiling either v1.18.0
+   Compiling rayon v1.12.0
+   Compiling sha3 v0.10.9
+   Compiling clap v4.6.7
+   Compiling sha1 v0.10.7
+   Compiling sha2 v0.10.9
+   Compiling hashed-ecdl-tensor v0.1.1 (/workspace/cryptanalysis-pr/crates/hashed-ecdl-tensor)
+   Compiling streebog v0.10.2
+   Compiling crypto-analysis-core v0.1.0 (/workspace/cryptanalysis-pr/suite/vendor/crypto-analysis-core)
+   Compiling fs2 v0.4.3
+   Compiling hex v0.4.3
+   Compiling subtle v2.6.1
+   Compiling cryptanalysis v0.1.0 (/workspace/cryptanalysis-pr/bindings/rust/cryptanalysis)
+    Finished `test` profile [unoptimized] target(s) in 2m 36s
+     Running unittests src/lib.rs (suite/target/debug/build/cryptanalysis-suite/072d01775306f08e/out/cryptanalysis_suite-072d01775306f08e)
+
+running 8 tests
+test cli::tools::ic::auxiliary::tests::column_identity_is_independent_of_encoding_and_binds_curve_order_and_points ... ok
+test cli::tools::ic::auxiliary::tests::archived_public_rows_are_labeled_replay_and_never_timed_as_search ... ok
+test cli::tools::ic::auxiliary::tests::native_and_direct_cli_modes_recover_the_same_public_target ... ok
+test cli::tools::ic::auxiliary::tests::phase_reports_partition_solve_and_exhausted_intervals_without_changing_work ... ok
+test cli::tools::ic::auxiliary::tests::replay_cannot_be_compared_as_a_rho_attack ... ok
+test cli::tools::ic::auxiliary::tests::generated_field_fibers_have_matched_direct_cli_controls ... ok
+test cli::tools::ic::auxiliary::tests::relation_yield_compares_three_arms_on_the_identical_query_prefix ... ok
+test cli::tools::ic::auxiliary::tests::random_base_control_is_distinct_reproducible_and_matches_usable_columns ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 3161 filtered out; finished in 0.26s
+

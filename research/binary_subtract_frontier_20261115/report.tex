@@ -1,0 +1,70 @@
+\documentclass[10pt]{article}
+\usepackage[margin=0.8in]{geometry}
+\usepackage{amsmath,amssymb,hyperref}
+\sloppy
+\setlength{\parindent}{0pt}\setlength{\parskip}{6pt}
+\begin{document}
+\begin{center}\LARGE Production binary-subtraction frontier\end{center}
+\textbf{2026-11-15. Native implementation and correctness; timing prospective.}\\
+All outcomes below are producer observations. No signed independent verification or measured frontier claim. [pcc:unverified]
+
+The new \texttt{subtract-binary-batch} oracle uses the actual FastCurve backend in both \texttt{isogeny-labs/crypto} and \texttt{isogeny-labs/cryptanalysis}. It caches negative operands, reuses scratch and the base's indexes, and defers ordinate completion until the abscissa filter admits a candidate. Existing CLMUL/available SIMD dispatch is reused. The previous tiny-field complete-relation checker remains unchanged.
+
+\begin{center}
+\fbox{\begin{minipage}[c][0.95in][c]{0.19\textwidth}\centering\textbf{Prepare}\\Negatives and\\existing indexes\end{minipage}}
+$\to$
+\fbox{\begin{minipage}[c][0.95in][c]{0.19\textwidth}\centering\textbf{Native batch}\\Count all\\computed lanes\end{minipage}}
+$\to$
+\fbox{\begin{minipage}[c][0.95in][c]{0.19\textwidth}\centering\textbf{Filter x}\\Finish y only\\on candidates\end{minipage}}
+$\to$
+\fbox{\begin{minipage}[c][0.95in][c]{0.19\textwidth}\centering\textbf{Full key}\\Retain sign and\\first witness\end{minipage}}
+\end{center}
+Source: \texttt{model.svg}, production \texttt{binary\_subtract.rs}, canonical \texttt{binary\_subtract\_tests.rs}. No pair table; extra computed lanes before an early hit are charged. Preparation is per run, not an unreported reusable table. [pcc:unverified]
+
+\textbf{Targeted native controls pass in both repos.} [pcc:unverified]
+\begin{center}\begin{tabular}{lr}
+Exact first-witness cases against general pair enumeration&12,900\\
+Native degree 11/17/31 and re-preparation cases&880\\
+OpenSSL-backed full-point cases&90\\
+Known-answer pipeline and failed-prepare/extra-lane controls&included\\
+Targeted tests passing per repo&5/5
+\end{tabular}\end{center}
+The scalar and batched oracle recover the same public known-answer logarithm with the same target count. Controls include O, finite x=0, signs, repeated labels, arbitrary sign subsets, empty bases, multiple block sizes and preparation reuse. Expected captured panics check that failed preparation cannot leave an old run active. [pcc:unverified]
+
+\textbf{Usage:} both IC CLIs accept
+\begin{verbatim}
+--oracle subtract-binary-batch:m=2,block=32,lazy=1
+\end{verbatim}
+Crypto also registers it in ecbench. m must be 2; block is 1..4096; lazy is 0 or 1; unknown parameters fail. Default block 32 is provisional until timing. This is a first-hit workload, not complete relation enumeration.
+
+\textbf{Reproduce actual-library controls:}
+\begin{verbatim}
+cargo test --release --manifest-path \
+ research/binary_subtract_frontier_20261115/check/Cargo.toml \
+ -- --nocapture
+\end{verbatim}
+The facade reuses canonical library tests and actual production types. C++ and OpenSSL development headers are required. Broader suite status is retained separately; targeted passes do not imply whole-tree validation.
+\newpage
+\begin{center}\Large External control and frontier acceptance\end{center}
+\textbf{Concrete OpenSSL 3.5.7 edge case.} On
+$y^2+xy=x^3+1$ over GF(128), modulus 131, raw \texttt{EC\_POINT\_invert} leaves $(1,0)$ unchanged. The primary \href{https://github.com/openssl/openssl/blob/openssl-3.5.7/crypto/ec/ec2_smpl.c}{ec2\_smpl.c} inversion returns early for Y=0. The correct negative is $(1,1)$. The raw API is preserved under \texttt{--check-native-invert}; matched \texttt{--check} applies affine negation with OpenSSL BN field addition, then uses EC\_POINT\_add. This bounded control is not a statement about every point or standard subgroup. [pcc:unverified]
+
+For a base containing only $(1,0)$ and targets $(0,1),O$, the raw API reports no witness then $(0,0)$; the corrected control reports $(0,0)$ then no witness. Raw output and the initial cross-backend mismatch are retained. The matched external helper has no timer. [pcc:unverified]
+
+\textbf{Broad qualification.} Crypto's library and IC CLI release checks pass; cryptanalysis's library release check passes. Its pre-existing binding declared getrandom 0.4 while calling the removed function; switching to fill and refreshing its lock enables the build, with 64 binding tests passing. The full cryptanalysis library suite passes: 3,075 passed, 90 ignored, zero failures after tracked fixture hydration; initial missing-asset failures are retained. Crypto also has a divergent append-only PCC prefix gate, preserved without rewriting either history. Crypto's full optimized library-test compilation exceeded a 600-second local bound; the post-relocation focused rebuild also reached its 900-second compilation bound before tests ran. Earlier targeted logs stay unchanged; canonical tests pass in cryptanalysis. These are build limits, not algorithm timeouts. [pcc:unverified]
+
+\textbf{Original requirement status.}
+\begin{itemize}
+\item Production integration and native controls: implemented, producer checked; independent standing unverified.
+\item Paired PRs: crypto PR 4344 and cryptanalysis PR 1575 (baseline PR 4335 retained).
+\item Speed frontier: open. No admitted wall-time comparison, fastest claim or leaderboard promotion.
+\end{itemize}
+
+\textbf{Prospective comparison.} \texttt{PROTOCOL.md} names inherited scalar, full native batch, lazy blocks 8/32/128, cold negation-folded tables, applicable Frobenius layouts, OpenSSL and A/A. The initial native ecbench panel is K0/n13 and K1/n17 on the same dimension-5 base, eight public targets, one warmup and five alternating rounds. A separate component continuation reaches n31. Preserve exact first witnesses for equivalent searches; independently verify a different valid table witness.
+
+Cold one-target cost includes all setup, failed searches, extra batch lanes, linear algebra, recovery and verification. Query-only/setup-reuse diagnostics remain secondary. A group-add count or unit-test runtime is not a wall-time comparison. A loss retains the actual incumbent and determines the next optimization.
+
+\textbf{Admission.} Existing EKS identity, live shared budget/pool readback, L2/A-A/replay and source/image/executable pins are required; cryptanalysis also requires checkpoint custody. Proposed bounds are USD 5 including builds/failures, 4 CPU/4 GiB, original 900-second deadline, zero retries. No cloud run was submitted while budget remainder is unknown. The external timed wrapper and broader incumbent survey also remain obligations. See \path{problems/binary-subtract-speed-frontier.md}.
+
+\textbf{Sources.} Both repos' FastCurve/Gf2 implementations, scalar SubtractOracle, factor-base indexes, stage contracts and CLI dispatch; crypto root-finding and ecbench sources; OpenSSL's primary inversion source; actual targeted and failed-control logs. KB tools/fallback executable are unavailable; no novelty/absence conclusion follows. Reports and explanatory graphs change; canonical timing graphs stay unchanged because no admitted dataset exists.
+\end{document}

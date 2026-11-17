@@ -1,0 +1,21 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-15T21:04:33Z",
+ "id": "PCC-20261115-92610e",
+ "kind": "statement",
+ "producer": {
+  "commit": "d3de0872f71600f02e15e38809ac1ed7b751e74d",
+  "model": "GPT-6",
+  "session": "codex-field-fibers-integration-20261115"
+ },
+ "proofs": [
+  {
+   "kind": "recompute",
+   "path": "experiments/prime-field-auxiliary-ic/rust-validation/field-fibers-20261115/integration-checks.json",
+   "sha256": "ef0698915f71828d02cfee067c130af0ae022c72e23dcf7398a3f44d6f31207d"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "PR #1536 integration and publication checks after the field-fiber source round; required live ledger kept by exact path, artifact checks otherwise unchanged.",
+ "statement": "Integration follow-up at d3de0872 retains the concurrent owner changes and canonical main ledger prefix, migrates the getrandom 0.4 caller and locked consumers, and passes four targeted CLI tests and publication gates. This is unsigned producer build/gate evidence, not performance or independent verification."
+}

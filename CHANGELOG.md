@@ -1,5 +1,31 @@
 # Changelog
 
+## [0.1.8](https://github.com/isogeny-labs/cryptanalysis/compare/cryptanalysis-v0.1.7...cryptanalysis-v0.1.8) (2026-11-17)
+
+
+### Bug Fixes
+
+* **ct170:** bind all three frozen census partitions, not just point totals ([215ef6e](https://github.com/isogeny-labs/cryptanalysis/commit/215ef6eb5715c8ce42524d31d6c9e3c186a812d4))
+* **ct171:** bind source guard to actual frozen fixture Git blob ([8b221fe](https://github.com/isogeny-labs/cryptanalysis/commit/8b221feab72e9210f1ce01a4b556164bfca92887))
+* **ct171:** bind source guard to actual frozen fixture Git blob ([13f33d1](https://github.com/isogeny-labs/cryptanalysis/commit/13f33d1856cd99a15a527775faf20a130d171ba2))
+
+## [0.1.7](https://github.com/isogeny-labs/cryptanalysis/compare/cryptanalysis-v0.1.6...cryptanalysis-v0.1.7) (2026-11-16)
+
+
+### Bug Fixes
+
+* **ct168:** exclude harness-only public Q construction from cold timing ([40568e4](https://github.com/isogeny-labs/cryptanalysis/commit/40568e4d6ef43a26f87ca5431fe357b7bde7ded1))
+* **ct168:** fail closed on truncated census, typed values and schema spoofing ([76a8077](https://github.com/isogeny-labs/cryptanalysis/commit/76a80779735476d0a48bc632b6b0fe85b9ceb2e9))
+* **ct168:** isolate public-Q timed solvers from known verifier scalar ([c06d255](https://github.com/isogeny-labs/cryptanalysis/commit/c06d2552139400ecb3fb78124aff8c12f390ffe0))
+* **ct168:** preserve exact 22-digit integer Frobenius traces in frozen JSON ([69daaa9](https://github.com/isogeny-labs/cryptanalysis/commit/69daaa9c4f8ecfc5f7e559f9b53557e0356630d9))
+
+## [0.1.6](https://github.com/isogeny-labs/cryptanalysis/compare/cryptanalysis-v0.1.5...cryptanalysis-v0.1.6) (2026-11-16)
+
+
+### Features
+
+* **ic:** native batched binary subtraction and frontier controls ([b96d797](https://github.com/isogeny-labs/cryptanalysis/commit/b96d797fd56019a7fa42e81b4bc9e035b1cd18dd))
+
 ## [0.1.5](https://github.com/isogeny-labs/cryptanalysis/compare/cryptanalysis-v0.1.4...cryptanalysis-v0.1.5) (2026-11-16)
 
 

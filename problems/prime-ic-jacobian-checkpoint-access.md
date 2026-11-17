@@ -69,6 +69,16 @@ win would not establish an end-to-end index-calculus improvement.
 
 ## Resolution and history
 
+2026-11-15: the same environment-access obstruction affects the new
+[CM transfer complete-cost follow-up](../experiments/transfer-cold-cost-20261115/REPORT.md).
+The original checkpoint gate again reports no AWS profile, upload token or
+token file. The existing CI-only transport pins a different branch/source
+and does not provide a receipt for this changed local task. Static accounting
+code and synthetic unit checks proceeded; no experimental launch bypassed the
+gate. Provisioning the checkpoint identity and genuine native receipts remains
+necessary. This is not evidence about the candidate's performance.
+[pcc:unverified]
+
 2026-10-31: opened after the checkpoint upload and gate failed before any
 timing command. Functional release tests had passed, but performance remains
 unmeasured. Unresolved.

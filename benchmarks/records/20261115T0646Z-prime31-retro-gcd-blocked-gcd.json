@@ -1,0 +1,74 @@
+{
+  "branch": "codex/prime-field-auxiliary-ic-rho",
+  "closed_utc": "2026-11-15T06:46:58+00:00",
+  "commands": [
+    {
+      "argv": [
+        "python",
+        "algebraic/benchmark_optimized.py"
+      ],
+      "cwd": "/workspace/index_calculus_demo",
+      "exit": 0,
+      "retrospective": true,
+      "started_utc": null,
+      "wall_s": null
+    }
+  ],
+  "commit": "4551d77ae4a87fdee717e69b8f90c46420f6cc35",
+  "commit_dirty": true,
+  "created_utc": "2026-11-15T06:46:58+00:00",
+  "curve_uid": null,
+  "entries": [],
+  "host": {
+    "cpu": "Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz",
+    "cpus_online": 5,
+    "hostname": "df634043e2f7",
+    "isolation": "exploratory-retrospective; no admitted tier",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+    "role": "import host; see original manifest for recorded execution environment"
+  },
+  "id": "20261115T0646Z-prime31-retro-gcd-blocked-gcd",
+  "metrics": [
+    {
+      "baseline": null,
+      "better": "lower",
+      "n": 16,
+      "name": "blocked_gcd_reported_stage_median",
+      "note": "Stage-only extraction, original 32768-root workload; unsigned producer observations.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "wall_s",
+      "value": 0.19571188049985722
+    }
+  ],
+  "problem": "kernel:prime31aux-gcd-retrospective",
+  "raw": [
+    {
+      "bytes": 9540,
+      "path": "experiments/prime-field-auxiliary-ic/snapshot/algebraic/end_to_end/gcd_benchmark.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/bf/bf682999ab95654609b32c24838566cdad35575096841549fc1c69a278979e2c",
+      "sha256": "bf682999ab95654609b32c24838566cdad35575096841549fc1c69a278979e2c",
+      "uploaded": false
+    }
+  ],
+  "repo": "cryptanalysis",
+  "reports": {
+    "pdf": "experiments/prime-field-auxiliary-ic/IMPORT_REPORT.pdf",
+    "png": [],
+    "svg": []
+  },
+  "retrospective_import": {
+    "execution_commit": null,
+    "preregistered": false,
+    "registration_commit": "4551d77ae4a87fdee717e69b8f90c46420f6cc35",
+    "scope": "Stage-only extraction, original 32768-root workload; unsigned producer observations.",
+    "source_sha256": null
+  },
+  "schema": "bench.record/v1",
+  "session": null,
+  "slug": "prime31-retro-gcd-blocked-gcd",
+  "status": "measured",
+  "summary": "Retrospective unverified producer observations; Stage-only extraction, original 32768-root workload; unsigned producer observations.",
+  "validation": null
+}

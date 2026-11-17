@@ -166,6 +166,9 @@ fn listing() -> Value {
                 "plugins": [
                     {"name": "subtract", "summands": 2, "regimes": ["prime", "char2", "koblitz"],
                      "parameters": []},
+                    {"name": "subtract-binary-batch", "summands": 2, "regimes": ["char2", "koblitz"],
+                     "parameters": [{"name": "block", "means": "batch size 1..4096, default 32"},
+                                    {"name": "lazy", "means": "1 (default) to finish only candidate ordinates; 0 for full batch"}]},
                     {"name": "mitm", "summands": "2 or 3", "regimes": ["prime", "char2", "koblitz"],
                      "parameters": [{"name": "native_setup_pricing", "means": "0 or1, default0; whole native setup with observed arithmetic diagnostics"},{"name": "negation_folded", "means": "1 to halve the table's additions"},
                                     {"name": "m", "means": "summands, 2 or 3"}]},
@@ -517,6 +520,7 @@ fn run_binary(
         spec.seed = spec.seed.wrapping_add(rep as u64 * 0x9E37);
         let m = spec.oracle_params.u64_or("m", 2)? as u32;
         let mut subtract = SubtractOracle;
+        let mut subtract_binary = crate::cryptanalysis::ic_framework::binary_subtract::BinarySubtractOracle::new();
         let mut mitm = MitmOracle::new(m);
         let mut frob = FrobeniusMitmOracle::new(m, inst);
         let mut affine = AffineS3Oracle::new(inst);
@@ -541,6 +545,7 @@ fn run_binary(
         };
         let oracle: &mut dyn DecompositionOracle<BinaryGroup> = match or_name {
             "subtract" => &mut subtract,
+            "subtract-binary-batch" => &mut subtract_binary,
             "mitm" => &mut mitm,
             "mitm-frobenius" => &mut frob,
             "affine-s3" => &mut affine,

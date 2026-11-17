@@ -1,0 +1,24 @@
+ring source=2147483647,(x3,x2,x1),dp;
+short=0;
+poly targetX=1846645602;
+poly curveA=2;
+poly curveB=14;
+option(redSB);
+ideal inputIdeal=1*x1^0+715827871*x1^1+715827911*x1^2+715827871*x1^3+1*x1^4,
+1*x2^0+715827871*x2^1+715827911*x2^2+715827871*x2^3+1*x2^4,
+1*x3^0+715827871*x3^1+715827911*x3^2+715827871*x3^3+1*x3^4,
+((((x1)-(x2))^2)*((((x3)*(targetX)-(curveA))^2-4*(curveB)*((x3)+(targetX))))-((((x1)*(x2)-(curveA))^2-4*(curveB)*((x1)+(x2))))*(((x3)-(targetX))^2))^2-((((x1)-(x2))^2)*((-2*(((x3)+(targetX))*((x3)*(targetX)+(curveA))+2*(curveB))))-((-2*(((x1)+(x2))*((x1)*(x2)+(curveA))+2*(curveB))))*(((x3)-(targetX))^2))*(((-2*(((x1)+(x2))*((x1)*(x2)+(curveA))+2*(curveB))))*((((x3)*(targetX)-(curveA))^2-4*(curveB)*((x3)+(targetX))))-((((x1)*(x2)-(curveA))^2-4*(curveB)*((x1)+(x2))))*((-2*(((x3)+(targetX))*((x3)*(targetX)+(curveA))+2*(curveB)))));
+ideal G=std(inputIdeal);
+print("@@GB_DONE@@");
+print("@@DIM@@"+string(dim(G)));
+ring result=2147483647,(x3,x2,x1),lp;
+short=0;
+ideal H=fglm(source,G);
+int ii;
+for(ii=1;ii<=size(H);ii++){
+print("@@POLY_BEGIN@@");
+print(string(H[ii]));
+print("@@POLY_END@@");
+}
+print("@@DONE@@");
+quit;
