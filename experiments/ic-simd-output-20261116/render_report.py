@@ -25,7 +25,9 @@ for window,name,title in windows:
   ax.vlines(xs,[v['bootstrap95'][0] for v in values],[v['bootstrap95'][1] for v in values],color='#28777d');ax.scatter(xs,[v['median'] for v in values],color='#28777d',s=20)
   ax.axhline(1,ls='--',lw=1,color='#b78444');ax.set_xticks(xs);ax.set_xlabel('Field degree');ax.set_ylabel('Reference / candidate time');ax.set_title(label,fontsize=9);ax.grid(axis='y',alpha=.15)
  fig.suptitle(title,fontsize=11);fig.tight_layout()
- for ext in ['svg','png']:fig.savefig(P/(name+'.'+ext),dpi=180)
+ for ext in ['svg','png']:
+  target=P/(name+'.'+ext);fig.savefig(target,dpi=180)
+  if ext=='svg':target.write_text('\n'.join(line.rstrip() for line in target.read_text().splitlines())+'\n')
  plt.close(fig)
 styles=getSampleStyleSheet();story=[];md=[]
 def para(s,style='BodyText'):
