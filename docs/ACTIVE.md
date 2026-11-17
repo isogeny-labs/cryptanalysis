@@ -16,7 +16,7 @@ _(none pinned — set one with `/goal <text>`)_
 
 ## Active items (top = next)
 
-- [ ] CT188: randomized physical-route 48-packet crossover pilot with identifiable first-order carryover controls, source-only (automation, started 2026-11-17, branch research/ct188-physical-crossover-20261117)
+- [ ] CT188: randomized physical-route 48-packet crossover pilot with identifiable first-order carryover controls, source-only (automation, started 2026-11-17, branch research/ct188-physical-crossover-20261117, PR #1723)
 
 - [x] CT187: bounded admitted-source native 1,536-call same-route sham producer, strict evidence reader and synthetic handshake; no paid execution (automation, started 2026-11-17, branch research/ct187-native-sham-source-admission-20261117, PR #1719)
 
