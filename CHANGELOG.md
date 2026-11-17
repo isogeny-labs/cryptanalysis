@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.12](https://github.com/isogeny-labs/cryptanalysis/compare/cryptanalysis-v0.1.11...cryptanalysis-v0.1.12) (2026-11-17)
+
+
+### Bug Fixes
+
+* **ct187:** prevent plan mode execution flag bypass ([84b51b2](https://github.com/isogeny-labs/cryptanalysis/commit/84b51b22e801ccc5acc0c43fc15abc77330b2b0e))
+
 ## [0.1.11](https://github.com/isogeny-labs/cryptanalysis/compare/cryptanalysis-v0.1.10...cryptanalysis-v0.1.11) (2026-11-17)
 
 
