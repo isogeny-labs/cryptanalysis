@@ -64,6 +64,7 @@
 
 pub mod affine;
 pub mod batch_mitm;
+pub mod binary_subtract;
 pub mod hashed;
 pub mod linalg;
 pub mod plugins;
