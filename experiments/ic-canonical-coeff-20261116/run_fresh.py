@@ -94,7 +94,7 @@ try:
  for label,filename,binding,prefix,candidate_mode in [
   ('current','probe-current','prepared-input.json','experiments/ic-inverse-regression-20261116/build-optimized-001/',MODES[1]),
   ('anchor','probe-anchor','anchor-input.json','experiments/ic-constant-reduction-20261116/build-002/',MODES[0]),
-  ('optimized','probe-optimized','optimized-input.json','experiments/ic-canonical-coeff-20261116/build-optimized-001/',MODES[3])]:
+  ('optimized','probe-optimized','optimized-input.json','experiments/ic-canonical-coeff-20261116/build-optimized-002/',MODES[3])]:
   prepared=json.loads((HERE/binding).read_text())
   with tarfile.open(Path('/jobs')/prepared['source_job']/'shards/0/out.tar.gz','r:gz') as tar:
    def member(name):

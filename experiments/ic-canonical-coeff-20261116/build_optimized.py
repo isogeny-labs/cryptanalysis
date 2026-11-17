@@ -4,7 +4,7 @@ import argparse,gzip,hashlib,json,os,platform,shutil,signal,subprocess,time
 from pathlib import Path
 HERE=Path(__file__).resolve().parent;ROOT=HERE.parents[1]
 p=argparse.ArgumentParser();p.add_argument('--source-commit',required=True);args=p.parse_args()
-OUT=HERE/'build-optimized-001';OUT.mkdir(exist_ok=False)
+OUT=HERE/'build-optimized-002';OUT.mkdir(exist_ok=False)
 def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
 from source_manifest import hashes as source_hashes
 # Reconstruct the exact admitted baseline suite, then overlay only the changed file.
@@ -21,7 +21,7 @@ overlay='suite/src/cryptanalysis/ic_boundary/batched_walk.rs'
 from source_manifest import sources
 hashes={p:sha(FROZEN/p) for p in sources}
 ROOT=FROZEN
-receipt={'schema':'ic-affine-preparation/v1','source_commit':args.source_commit,'source_sha256':hashes,
+receipt={'status':'started','schema':'ic-affine-preparation/v1','source_commit':args.source_commit,'source_sha256':hashes,
  'rustc':subprocess.check_output(['rustc','-Vv'],text=True),'platform':platform.platform(),
  'environment':{k:os.environ.get(k) for k in ['RUSTFLAGS','CFLAGS','CARGO_PROFILE_RELEASE_OPT_LEVEL','CARGO_PROFILE_RELEASE_CODEGEN_UNITS']},
  'purpose':'compile and manifest correctness only; no attack timing'}
