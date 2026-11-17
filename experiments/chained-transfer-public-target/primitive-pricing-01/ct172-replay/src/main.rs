@@ -332,7 +332,10 @@ fn run() -> Result<(), String> {
             "peak_rss_kib_linux":peak_rss_kib(),
             "target_arch":std::env::consts::ARCH,
             "target_os":std::env::consts::OS,
-            "rustc_version_if_present":toolchain_version()
+            // Never spawn rustc during a cold process sample: even an
+            // unrelated rustc --version child would distort external wall time.
+            "rustc_version_if_embedded":option_env!("RUSTC_VERSION"),
+            "rustc_child_process_spawned":false
         }));
         return Ok(());
     }
