@@ -97,13 +97,14 @@ class CT183SourceTests(unittest.TestCase):
             args = self.execution_args(path)
             ix = args.index("--executable-sha256") + 1
             args[ix] = "0" * 64
-            with self.assertRaisesRegex(ValueError, "test marker never reached"):
-                # Explicitly ensure no helper is ever spawned on invalid digest.
-                with mock.patch.object(v1, "run_sample",
-                                       side_effect=ValueError("test marker never reached")):
-                    with self.assertRaises(SystemExit):
+            # No helper may spawn before the executable SHA is checked.
+            with mock.patch.object(v1, "run_sample",
+                                   side_effect=AssertionError("unexpected child")) as child:
+                with contextlib.redirect_stderr(io.StringIO()):
+                    with self.assertRaises(SystemExit) as got:
                         v2.run(args + ["--panel-wall-seconds", "1"])
-            # The wrong SHA path above raises before starting any subprocess.
+                self.assertEqual(got.exception.code, 2)
+                child.assert_not_called()
             self.assertFalse(path.exists())
 
     def test_failed_mock_sample_persists_censored_v2_evidence(self):
