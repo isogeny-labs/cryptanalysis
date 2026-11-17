@@ -153,7 +153,7 @@ class CT179SourceTests(unittest.TestCase):
                         child["native_sample"]["elapsed_ns_decimal"] = value
                     else:
                         child[key] = value
-                output = (json.dumps(child, sort_keys=True) + "\\n").encode()
+                output = (json.dumps(child, sort_keys=True) + "\n").encode()
                 sample["stdout"] = output.decode()
                 sample["stdout_base64"] = base64.b64encode(output).decode()
                 sample["stdout_sha256"] = hashlib.sha256(output).hexdigest()
@@ -167,7 +167,7 @@ class CT179SourceTests(unittest.TestCase):
         sample = self.sample(0, arm, 0, wall=230)
         child = self.child(0, arm)
         child["in_process_total_ns_decimal"] = "230"
-        output = (json.dumps(child, sort_keys=True) + "\\n").encode()
+        output = (json.dumps(child, sort_keys=True) + "\n").encode()
         sample["stdout"] = output.decode()
         sample["stdout_base64"] = base64.b64encode(output).decode()
         sample["stdout_sha256"] = hashlib.sha256(output).hexdigest()
