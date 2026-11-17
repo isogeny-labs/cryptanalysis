@@ -1108,6 +1108,9 @@ def registered_mathlib_sources() -> dict:
                 digest(file) == row["sha256"], "registered Mathlib source changed: " + path)
         require(row["role"] in {"mathlib-proof", "verifier-program"},
                 "unknown registered Mathlib source role")
+        require((row["role"] == "verifier-program") ==
+                (path == "experiments/ic-s3-direct-coefficients-20261115/AuditS3.lean"),
+                "a registered proof cannot be reclassified as verifier code")
         require(row["project_inputs"] and
                 str(Path(path).parent / "lean-toolchain") in row["project_inputs"] and
                 str(Path(path).parent / "lakefile.toml") in row["project_inputs"],

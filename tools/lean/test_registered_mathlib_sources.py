@@ -46,6 +46,13 @@ class RegisteredMathlibControls(unittest.TestCase):
                     gate.registered_mathlib_sources()
                 file.write_bytes(old)
 
+    def test_registered_proofs_cannot_be_downgraded_to_verifier_code(self):
+        row = next(row for row in self.record['sources'].values() if row['role'] == 'mathlib-proof')
+        row['role'] = 'verifier-program'
+        self.write_manifest()
+        with self.assertRaisesRegex(ValueError, 'cannot be reclassified'):
+            gate.registered_mathlib_sources()
+
     def test_dependency_pin_changes_are_not_silent(self):
         self.record['mathlib_revision'] = '0' * 40
         self.write_manifest()
