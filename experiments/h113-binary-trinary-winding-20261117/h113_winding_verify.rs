@@ -1060,8 +1060,23 @@ fn public_digit(
     Ok(p[values[channel] as usize])
 }
 
-fn decode(curve: Curve, generator: Point, target: Point, predicate: &str) -> Result<u64, String> {
+fn inverse_six_certificate(curve: Curve) -> Result<(u64, u64), String> {
     let inv6 = inverse(6, curve.r)?;
+    let inverse_product = inv6
+        .checked_mul(6)
+        .ok_or("inverse-six certificate overflow")?;
+    if inverse_product % curve.r != 1 {
+        return fail("inverse-six residue certificate failed");
+    }
+    let inverse_quotient = (inverse_product - 1) / curve.r;
+    if inverse_product != 1 + inverse_quotient * curve.r {
+        return fail("inverse-six integer certificate failed");
+    }
+    Ok((inv6, inverse_quotient))
+}
+
+fn decode(curve: Curve, generator: Point, target: Point, predicate: &str) -> Result<u64, String> {
+    let (inv6, _) = inverse_six_certificate(curve)?;
     let mut current = Some(target);
     let mut answer = 0u64;
     let mut place = 1u64;
@@ -1126,6 +1141,9 @@ fn self_test() -> Result<(), String> {
         return fail("SHA-256 known-answer test failed");
     }
     let curve = CURVES[0];
+    if inverse_six_certificate(curve)? != (14, 1) {
+        return fail("unexpected inverse-six certificate fixture");
+    }
     let base = first_point(curve)?;
     let record = winding(curve, base, Section::Canonical)?;
     if record.winding != -1 || record.numerator != -(curve.p as i64) {
