@@ -51,7 +51,7 @@ def command(argv,limit=12):
   os.killpg(p.pid,signal.SIGKILL);out,err=p.communicate();return 124,out,err+'\nprocess group killed at cap\n',time.monotonic()-started
  return p.returncode,out,err,time.monotonic()-started
 host={'platform':platform.platform(),'cpuinfo':read('/proc/cpuinfo'),'initial':snap(),'allowed_cpus':sorted(os.sched_getaffinity(0)),
- 'source_sha256':{str(p.relative_to(ROOT)):sha(p) for p in [HERE/'FRESH_PROTOCOL.md',HERE/'run_fresh.py',HERE/'analyze_fresh.py',HERE/'replay_fresh_answers.py',HERE/'replay_fresh_states.py',HERE/'fresh_common.py',HERE/'profile_optimized.py',HERE/'profile-result-input.json',HERE/'instances.json',HERE/'fresh-identities.json',HERE/'prepared-input.json',HERE/'anchor-input.json',HERE/'optimized-input.json']},
+ 'source_sha256':{str(p.relative_to(ROOT)):sha(p) for p in [HERE/'FRESH_PROTOCOL.md',HERE/'run_fresh.py',HERE/'analyze_fresh.py',HERE/'replay_fresh_answers.py',HERE/'replay_fresh_states.py',HERE/'fresh_common.py',HERE/'profile_optimized.py',HERE/'profile-result-input.json',HERE/'instances.json',HERE/'fresh-identities.json',HERE/'prepared-input.json',HERE/'anchor-input.json',HERE/'optimized-input.json',HERE/'preparation-source-label-erratum.json']},
  'qualification':'frozen exploratory protocol; CPU work on one L4 allocation',
  'physical_memory_technology':'unknown','physical_memory_speed':'unknown','physical_memory_channels':'unknown'}
 def arm(index,mode,fixture,role,binary_tag=None):
@@ -103,6 +103,13 @@ try:
    assert receipt['status']=='prepared' and receipt['source_commit']==prepared['receipt_source_commit']
    metadata=(Path('/jobs')/prepared['source_job']/'job.json').read_bytes();assert hashlib.sha256(metadata).hexdigest()==prepared['job_metadata_sha256']
    md=json.loads(metadata);assert md['git']['commit']==prepared['source_commit'] and not md['git']['dirty']
+   if label=='optimized':
+    assert sha(HERE/'preparation-source-label-erratum.json')==prepared['source_label_erratum_sha256']
+    snapshot=(Path('/jobs')/prepared['source_job']/'src.tar.gz').read_bytes();assert hashlib.sha256(snapshot).hexdigest()==prepared['snapshot_sha256']
+    import io
+    with tarfile.open(fileobj=io.BytesIO(snapshot),mode='r:gz') as src:
+     overlay=src.extractfile('suite/src/cryptanalysis/ic_boundary/batched_walk.rs').read()
+     assert hashlib.sha256(overlay).hexdigest()==receipt['source_sha256']['suite/src/cryptanalysis/ic_boundary/batched_walk.rs']
    candidate=json.loads((ROOT/'experiments/ic-bench/candidates'/(ids['0'][candidate_mode]+'.json')).read_text());assert candidate['implementation']['sources_sha256']==receipt['source_sha256']
    data=member('probe');assert hashlib.sha256(data).hexdigest()==prepared['binary_sha256']==receipt['binary_sha256']
    (OUT/filename).write_bytes(data);(OUT/filename).chmod(0o755);(OUT/(label+'-receipt.json')).write_bytes(rb)
