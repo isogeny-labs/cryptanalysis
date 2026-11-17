@@ -1721,7 +1721,7 @@ mod simd256 {
                 );
                 let mut xs = [0u64; 4];
                 _mm256_storeu_si256(xs.as_mut_ptr() as *mut __m256i, x);
-                out.extend(xs.into_iter().map(Some));
+                out.extend_from_slice(&xs.map(Some));
                 vector_pairs += 4;
             }
             curve.add_pairwise_abscissae_cached(&ps[full..], &qs[full..], out, scratch, cache)?;
@@ -1781,7 +1781,7 @@ mod simd256 {
                 );
                 let mut xs = [0u64; 4];
                 _mm256_storeu_si256(xs.as_mut_ptr() as *mut __m256i, x);
-                out.extend(xs.into_iter().map(Some));
+                out.extend_from_slice(&xs.map(Some));
                 vector_pairs += 4;
             }
             curve.add_pairwise_abscissae_cached(&ps[full..], &qs[full..], out, scratch, cache)?;
