@@ -85,7 +85,7 @@ class CT186ShamControlTests(unittest.TestCase):
         for field, value in (
             ("wall_ns", 0), ("wall_ns", True),
             ("wall_ns", 1.5), ("wall_ns", -1),
-            ("label", "B"), ("position", True),
+            ("label", "B" if self.records[0]["label"] == "A" else "A"), ("position", True),
             ("packet_index", 99), ("block", -1),
         ):
             records = copy.deepcopy(self.records)
