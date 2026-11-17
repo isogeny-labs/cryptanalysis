@@ -26,6 +26,8 @@ python3 -O -S -m unittest discover -s "$dir" -p test_source_contract.py -v
 rustfmt --edition 2021 --emit stdout "$dir/derived/lib.rs" >/dev/null
 ```
 
+**Exact-code source CI:** [run #44194419946](https://github.com/isogeny-labs/cryptanalysis/actions/runs/44194419946) on source/test head `e7bfdd4a9b08af450046b182e4fb0daac18302df` completed **success**. Its decoded job logs show **14/14 ordinary and 14/14 optimized Python tests**, materialization of the original-blob-pinned derivative, rustfmt parsing of the generated Rust and main driver, and TOML syntax parsing. Earlier [run #44194176113](https://github.com/isogeny-labs/cryptanalysis/actions/runs/44194176113) failed 1/14 tests: an attempted positive mutation duplicated the `check_final` call, which the new source-order validator correctly rejected. The extra mutation was removed at `e7bfdd4a` without changing Rust algorithm code. Subsequent handoff/report commits do not change the tested code. **[pcc:unverified]**
+
 **Validation boundary:** a passing source workflow establishes source-contract tests and Rust parsing, not native typechecking, 48-case native arithmetic, independent PCC, or a complete ECDLP solve. No real timings, paid compute, or signed verifier verdict was generated in this amendment. A native failure at any public packet must be preserved, not papered over.
 
 ## Exact next gate
