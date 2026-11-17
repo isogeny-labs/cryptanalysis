@@ -218,6 +218,8 @@ def ic_native_walk_evidence(ref, since):
          "binary-ic-indexed-pair-pipeline", "ic.indexed_pair.exploratory.", "IC index-driven pair preparation"),
         ("benchmarks/records/20261117T1037Z-ic-static-witness-sevenpath-001.json",
          "kernel:ic_static_witness_frozen_sevenpath", "ic.static_witness.exploratory.", "IC static witness dictionary"),
+        ("benchmarks/records/20261117T1629Z-ic-collector-counterfactual-sevenpath-001.json",
+         "kernel:ic_collector_setup_frozen_sevenpath", "ic.collector_setup.exploratory.", "IC collector setup controls"),
     ]
     for path, problem, prefix, label in sources:
         text = show(ref, path)
