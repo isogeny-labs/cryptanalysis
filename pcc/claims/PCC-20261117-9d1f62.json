@@ -1,0 +1,23 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-17T06:34:28Z",
+ "id": "PCC-20261117-9d1f62",
+ "kind": "statement",
+ "producer": {
+  "commit": "02ad1acfd5716cb07280ca3eb368feb12a3cc26f",
+  "model": "Codex",
+  "session": "compiler-proof-audit-20261116"
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "docs/audits/2026-11-17-induced-transfer-dual-replay.md",
+    "sha256": "9e3fb67a1dca696228bb312b2ed6bb05b72da1f27849542787977782101e7af0"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Engineering validation only; no scientific or execution standing",
+ "statement": "The induced-transfer CI repair separates unchanged historical replay from current verifier checks; local receipts do not establish signed standing."
+}
