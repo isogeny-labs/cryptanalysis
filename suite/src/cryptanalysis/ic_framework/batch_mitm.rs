@@ -151,6 +151,20 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for BinaryBatchMitmOracle {
         BTreeMap::from([
             ("mitm_batch_setup_ns".into(), self.setup_ns),
             (
+                "mitm_compact_map32_backend".into(),
+                u64::from(
+                    self.table
+                        .as_ref()
+                        .is_some_and(PairTable::uses_compact_storage),
+                ),
+            ),
+            (
+                "mitm_map_entry_payload_bytes".into(),
+                self.table
+                    .as_ref()
+                    .map_or(0, |t| t.witness_entry_payload_bytes() as u64),
+            ),
+            (
                 "mitm_vector_const_pairs".into(),
                 self.table
                     .as_ref()
