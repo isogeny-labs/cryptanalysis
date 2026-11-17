@@ -1,0 +1,1053 @@
+{
+  "schema": "cryptanalysis.lean-source-dispositions/v1",
+  "source_commit": "350886fd9dc384557aa7dd33a526baf4ee168244",
+  "toolchain": "leanprover/lean4:v4.34.1",
+  "scope": "Fresh native proof audits and explicit original archived diagnostics; archived verifier inputs carry no theorem standing. Original files and receipts are unchanged.",
+  "groups": [
+    {
+      "sha256": "be7537a2dfcaf2628d89e1763c3e9fbd0bd2496ed74c7a78c348d3986871a690",
+      "paths": [
+        "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-auditor-heap-limit-failure-03/entire-original-attempt03.lean",
+        "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-original-defaults-success-04/entire-original-attempt04.lean",
+        "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-thread-limit-failure-01/entire-original-attempt01.lean",
+        "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-thread-limit-failure-02/entire-original-attempt02.lean"
+      ],
+      "role": "core-proof",
+      "theorems": [
+        "LPGraphCases02.EvenFour.eq_1",
+        "LPGraphCases02.Triangle.eq_1",
+        "LPGraphCases02.disconnected_odd_has_lifts",
+        "LPGraphCases02.even_four_no_unit_lift",
+        "LPGraphCases02.even_four_projection_iff",
+        "LPGraphCases02.grounded_triangle_projection_iff",
+        "LPGraphCases02.half_ground_edge_has_lift",
+        "LPGraphCases02.shared_odd_projection_iff",
+        "LPGraphCases02.triangle_has_lift"
+      ]
+    },
+    {
+      "sha256": "d3d4f863fa8eb6bb99bd386ccf1ccce4dadb25a7f76fbbe201dbb9bf23f35edb",
+      "paths": [
+        "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-final-06/LPGraphCases02.lean",
+        "experiments/chained-transfer-lp-presentation-01/lean/LPGraphCases02.lean"
+      ],
+      "role": "core-proof",
+      "theorems": [
+        "LPGraphCases02.EvenFour.eq_1",
+        "LPGraphCases02.Triangle.eq_1",
+        "LPGraphCases02.disconnected_odd_has_lifts",
+        "LPGraphCases02.even_four_no_unit_lift",
+        "LPGraphCases02.even_four_projection_iff",
+        "LPGraphCases02.grounded_triangle_projection_iff",
+        "LPGraphCases02.half_ground_edge_has_lift",
+        "LPGraphCases02.parallel_edges_projection_iff",
+        "LPGraphCases02.shared_odd_projection_iff",
+        "LPGraphCases02.triangle_has_lift"
+      ]
+    },
+    {
+      "sha256": "699414e2a64de460a081a62340023d98a8a4c1100239b73af9b3456b549bd103",
+      "paths": [
+        "experiments/chained-transfer-lp-presentation-01/evidence/foundation-native-first-build-failure-01/LPProjection.first-source.lean",
+        "experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/entire-proof-source/LPProjection.lean",
+        "experiments/chained-transfer-lp-presentation-01/lean/LPProjection.lean"
+      ],
+      "role": "core-proof",
+      "theorems": [
+        "LPProjection.combine_full_kernel",
+        "LPProjection.combine_kernel",
+        "LPProjection.dot.eq_1",
+        "LPProjection.dot.eq_2",
+        "LPProjection.dot.eq_def",
+        "LPProjection.dot_add",
+        "LPProjection.dot_scale",
+        "LPProjection.dot_zero",
+        "LPProjection.even_four_cycle",
+        "LPProjection.half_ground_edge",
+        "LPProjection.odd_triangle",
+        "LPProjection.projected_kernel_iff_of_finite_spans",
+        "LPProjection.two_odd_triangles"
+      ]
+    },
+    {
+      "sha256": "e246e77304b4cc26189ddae2228c1fff2e6f0c8e632d6fcddfc0577210935e04",
+      "paths": [
+        "experiments/chained-transfer-lp-presentation-01/evidence/static-Lean-startup-VM-diagnostic-01/minimal.lean"
+      ],
+      "role": "archived-no-theorems"
+    },
+    {
+      "sha256": "e81b24ac4e8a082595de1109c5d3915c5cbefd69536b424f34e5e26d8722bdfa",
+      "paths": [
+        "experiments/chained-transfer-public-target/beta-complete-evaluator/lean/CRTProjectionIdentity.lean",
+        "experiments/chained-transfer-public-target/evidence/beta-CRT-caller-failure-01/executed-source/lean/CRTProjectionIdentity.lean",
+        "experiments/chained-transfer-public-target/evidence/beta-CRT-projection-acceptance-02/lean/CRTProjectionIdentity.lean",
+        "experiments/chained-transfer-public-target/evidence/beta-CRT-projection-acceptance-02/native/executed-source/lean/CRTProjectionIdentity.lean",
+        "experiments/chained-transfer-public-target/evidence/beta-complete-accounting-acceptance-05/executed-source/lean/CRTProjectionIdentity.lean"
+      ],
+      "role": "core-proof",
+      "theorems": [
+        "CRTProjectionIdentity.projection_scalar_identity"
+      ]
+    },
+    {
+      "sha256": "5873f71dc0984662b44d857c7a6e1c1f9a31508a156af524cc5ce494b83b5b41",
+      "paths": [
+        "experiments/chained-transfer-public-target/beta-complete-evaluator/lean/CompleteRationalBeta.lean",
+        "experiments/chained-transfer-public-target/evidence/beta-CRT-caller-failure-01/executed-source/lean/CompleteRationalBeta.lean",
+        "experiments/chained-transfer-public-target/evidence/beta-CRT-projection-acceptance-02/native/executed-source/lean/CompleteRationalBeta.lean",
+        "experiments/chained-transfer-public-target/evidence/beta-complete-Lean-acceptance-03/CompleteRationalBeta.lean",
+        "experiments/chained-transfer-public-target/evidence/beta-complete-accounting-acceptance-05/executed-source/lean/CompleteRationalBeta.lean",
+        "experiments/chained-transfer-public-target/evidence/beta-complete-exceptional-native-04/executed-source/lean/CompleteRationalBeta.lean"
+      ],
+      "role": "core-proof",
+      "theorems": [
+        "CompleteRationalBeta.Abelian.assoc",
+        "CompleteRationalBeta.Abelian.comm",
+        "CompleteRationalBeta.Abelian.mk.inj",
+        "CompleteRationalBeta.Abelian.mk.injEq",
+        "CompleteRationalBeta.Abelian.mk.sizeOf_spec",
+        "CompleteRationalBeta.Abelian.neg_right",
+        "CompleteRationalBeta.Abelian.zero_right",
+        "CompleteRationalBeta.Config.cofactor_lift",
+        "CompleteRationalBeta.Config.ell_form",
+        "CompleteRationalBeta.Config.inverse",
+        "CompleteRationalBeta.Config.mk.inj",
+        "CompleteRationalBeta.Config.mk.injEq",
+        "CompleteRationalBeta.Config.mk.sizeOf_spec",
+        "CompleteRationalBeta.Config.order",
+        "CompleteRationalBeta.Config.quotient",
+        "CompleteRationalBeta.Config.twice_beta",
+        "CompleteRationalBeta.Hom.add_map",
+        "CompleteRationalBeta.Hom.mk.inj",
+        "CompleteRationalBeta.Hom.mk.injEq",
+        "CompleteRationalBeta.Hom.mk.sizeOf_spec",
+        "CompleteRationalBeta.Hom.neg_map",
+        "CompleteRationalBeta.Hom.zero_map",
+        "CompleteRationalBeta.add_shuffle",
+        "CompleteRationalBeta.dlp_equivalence",
+        "CompleteRationalBeta.dlp_preservation",
+        "CompleteRationalBeta.double_as_nsmul",
+        "CompleteRationalBeta.evaluate_matches_beta",
+        "CompleteRationalBeta.full_rational_inverse13",
+        "CompleteRationalBeta.hom_nsmul",
+        "CompleteRationalBeta.inverse_unique",
+        "CompleteRationalBeta.neg_add",
+        "CompleteRationalBeta.neg_left",
+        "CompleteRationalBeta.neg_zero",
+        "CompleteRationalBeta.nsmul.eq_1",
+        "CompleteRationalBeta.nsmul.eq_2",
+        "CompleteRationalBeta.nsmul.eq_def",
+        "CompleteRationalBeta.nsmul_add",
+        "CompleteRationalBeta.nsmul_addpoint",
+        "CompleteRationalBeta.nsmul_mul",
+        "CompleteRationalBeta.nsmul_neg",
+        "CompleteRationalBeta.nsmul_zero",
+        "CompleteRationalBeta.odd_half",
+        "CompleteRationalBeta.rational_decomposition",
+        "CompleteRationalBeta.zero_left"
+      ]
+    },
+    {
+      "sha256": "49dcc79181e035c856244446124e804396b1f1bed85dc720a49d9e4f38fa91e9",
+      "paths": [
+        "experiments/chained-transfer-public-target/beta-rational-lift/lean/QuadraticNormIdentity.lean",
+        "experiments/chained-transfer-public-target/evidence/beta-producer-cwd-controls-01/QuadraticNormIdentity.lean",
+        "experiments/chained-transfer-public-target/evidence/beta-quadratic-norm-identity-acceptance-04/executed-QuadraticNormIdentity.lean"
+      ],
+      "role": "core-proof",
+      "theorems": [
+        "QuadraticNormIdentity.norm_multiplicative"
+      ]
+    },
+    {
+      "sha256": "c95246aeb09d6578617825420864c57fd911f3271f433237ec12029f31cbe35c",
+      "paths": [
+        "experiments/chained-transfer-public-target/beta-rational-lift/lean/QuadraticRationalLift.lean",
+        "experiments/chained-transfer-public-target/evidence/beta-quadratic-Picard-acceptance-02/executed-source/lean/QuadraticRationalLift.lean",
+        "experiments/chained-transfer-public-target/evidence/beta-rational-lift-Lean-acceptance-02/executed-QuadraticRationalLift.lean"
+      ],
+      "role": "core-proof",
+      "theorems": [
+        "QuadraticRationalLift.Abelian.assoc",
+        "QuadraticRationalLift.Abelian.comm",
+        "QuadraticRationalLift.Abelian.mk.inj",
+        "QuadraticRationalLift.Abelian.mk.injEq",
+        "QuadraticRationalLift.Abelian.mk.sizeOf_spec",
+        "QuadraticRationalLift.Abelian.neg_right",
+        "QuadraticRationalLift.Abelian.zero_right",
+        "QuadraticRationalLift.Hom.add_map",
+        "QuadraticRationalLift.Hom.mk.inj",
+        "QuadraticRationalLift.Hom.mk.injEq",
+        "QuadraticRationalLift.Hom.mk.sizeOf_spec",
+        "QuadraticRationalLift.Hom.neg_map",
+        "QuadraticRationalLift.Hom.zero_map",
+        "QuadraticRationalLift.finite_group_hypothesis_control",
+        "QuadraticRationalLift.four_torsion_lift_bound",
+        "QuadraticRationalLift.lift_images_equal",
+        "QuadraticRationalLift.neg_left",
+        "QuadraticRationalLift.quadratic_fixed_lift",
+        "QuadraticRationalLift.quadratic_kernel_fixed_is_rational",
+        "QuadraticRationalLift.zero_left"
+      ]
+    },
+    {
+      "sha256": "fce4f2a08c08c2037d858dbad66ffc4f5974bf4a14b23d86d989ed6f334eb2bc",
+      "paths": [
+        "experiments/chained-transfer-public-target/bitangents/lean/BitangentAlgebra.lean"
+      ],
+      "role": "core-proof",
+      "theorems": [
+        "Bitangent223.actual_permutation_order_six",
+        "Bitangent223.constant_factor",
+        "Bitangent223.denominator_factor",
+        "Bitangent223.resultant_is_necessary"
+      ]
+    },
+    {
+      "sha256": "8c79bf4a2e58308f163e2badaa000ca4799464770b6a8eb6005d0efd382c23fd",
+      "paths": [
+        "experiments/chained-transfer-public-target/chain-kernels/lean/ChainKernels.lean"
+      ],
+      "role": "core-proof",
+      "theorems": [
+        "ChainKernels223.free_four_kernel_iff_disjoint",
+        "ChainKernels223.kernel_type_from_order_and_two_torsion",
+        "ChainKernels223.same_product_two_steps_collapse"
+      ]
+    },
+    {
+      "sha256": "ee5003600419079b3e1891b08f0639c68e5fbb7ade5605b2b394a27e76340394",
+      "paths": [
+        "experiments/chained-transfer-public-target/evidence/arithmetic-audit-native-acceptance-04/actual-root04-cryptanalysis__experiments__chained-transfer-public-target__norm-assisted-ic__lean__NormAssistedSampling.lean",
+        "experiments/chained-transfer-public-target/evidence/original-fixed-model-sampler-compiled-01/reused-original-proofs/actual-NormAssistedSampling.lean",
+        "experiments/chained-transfer-public-target/norm-assisted-ic/lean/NormAssistedSampling.lean"
+      ],
+      "role": "core-proof",
+      "theorems": [
+        "NormAssistedSampling223.norm_half_roundtrip",
+        "NormAssistedSampling223.omitted_half_rejected",
+        "NormAssistedSampling223.prepared_sample_exact"
+      ]
+    },
+    {
+      "sha256": "4ffedaa9ae77b475b2015e0fcecc183ee52702257c98d3098dad74b6122addac",
+      "paths": [
+        "experiments/chained-transfer-public-target/evidence/beta-complete-Lean-failure-01/CompleteRationalBeta.lean"
+      ],
+      "role": "archived-build-failure",
+      "diagnostic": "unsolved goals"
+    },
+    {
+      "sha256": "c57dc07e3217283e4a7f4c04d72cd32d67695f0f4b5ad3449193dd1c218c4bbc",
+      "paths": [
+        "experiments/chained-transfer-public-target/evidence/beta-rational-lift-Lean-failure-01/QuadraticRationalLift.lean"
+      ],
+      "role": "archived-build-failure",
+      "diagnostic": "Type mismatch"
+    },
+    {
+      "sha256": "5b179749ba70051fd401332cd40a8ff283dd86f18e8f7977300ed111873a220e",
+      "paths": [
+        "experiments/chained-transfer-public-target/evidence/fixed-chain-evaluator-build-02/earlier-seven-lemma-source.lean"
+      ],
+      "role": "core-proof",
+      "theorems": [
+        "ChainDescent.corrected_half_choice_independent",
+        "ChainDescent.corrected_output_fixed",
+        "ChainDescent.equal_images_equal_targets",
+        "ChainDescent.image_fixed",
+        "ChainDescent.norm_half_difference_in_kernel",
+        "ChainDescent.rational_two_torsion_average",
+        "ChainDescent.square_cube_fixed"
+      ]
+    },
+    {
+      "sha256": "1bf35217813e02804f7dc529b30779655a7ed6e988bcef597b6268a28d634587",
+      "paths": [
+        "experiments/chained-transfer-public-target/evidence/induced-transfer-proof-CI-acceptance-01/independent-complete-receipt-check/actual-consumer-InducedFullTransfer.lean",
+        "experiments/chained-transfer-public-target/evidence/induced-transfer-proof-CI-acceptance-01/independent-complete-receipt-check/actual-producer-InducedFullTransfer.lean",
+        "experiments/chained-transfer-public-target/evidence/induced-transfer-proof-CI-acceptance-01/whole-artifact/actual-consumer-InducedFullTransfer.lean",
+        "experiments/chained-transfer-public-target/evidence/induced-transfer-proof-CI-acceptance-01/whole-artifact/actual-producer-InducedFullTransfer.lean",
+        "experiments/chained-transfer-public-target/evidence/induced-transfer-proof-CI-source-01/whole-local-original-driver/actual-consumer-InducedFullTransfer.lean",
+        "experiments/chained-transfer-public-target/evidence/induced-transfer-proof-CI-source-01/whole-local-original-driver/actual-producer-InducedFullTransfer.lean",
+        "experiments/chained-transfer-public-target/evidence/original-induced-full-transfer-proof-01/original-gates/actual-source.lean",
+        "experiments/chained-transfer-public-target/original-induced-transfer-01/lean/InducedFullTransfer.lean"
+      ],
+      "role": "core-proof",
+      "theorems": [
+        "InducedFullTransfer.CompatibleEdge.kernel_transport",
+        "InducedFullTransfer.CompatibleEdge.map_add",
+        "InducedFullTransfer.CompatibleEdge.map_linear",
+        "InducedFullTransfer.CompatibleEdge.map_sub",
+        "InducedFullTransfer.CompatibleEdge.map_zero",
+        "InducedFullTransfer.CompatibleEdge.mk.sizeOf_spec",
+        "InducedFullTransfer.Presentation.lift_image",
+        "InducedFullTransfer.Presentation.mk.sizeOf_spec",
+        "InducedFullTransfer.Presentation.phi_add",
+        "InducedFullTransfer.Presentation.phi_linear",
+        "InducedFullTransfer.Presentation.phi_sub",
+        "InducedFullTransfer.Presentation.phi_zero",
+        "InducedFullTransfer.actual_original_witnesses",
+        "InducedFullTransfer.induced_additive",
+        "InducedFullTransfer.induced_chain_collapse",
+        "InducedFullTransfer.induced_integer_linear",
+        "InducedFullTransfer.induced_on_source",
+        "InducedFullTransfer.induced_reverse_norms",
+        "InducedFullTransfer.injective_on_annihilator",
+        "InducedFullTransfer.recover_on_annihilator",
+        "InducedFullTransfer.representative_independence"
+      ]
+    },
+    {
+      "sha256": "61ffbaa49305a52c3d399ebfd70248c4952d8df42e4d27707ba3dcc8007cc242",
+      "paths": [
+        "experiments/chained-transfer-public-target/evidence/nondual13-composition-proof-01/accepted02/NondualComposition.lean",
+        "experiments/chained-transfer-public-target/nondual13-preflight/lean/NondualComposition.lean"
+      ],
+      "role": "core-proof",
+      "theorems": [
+        "NondualComposition.both_composite_169",
+        "NondualComposition.both_composite_norms"
+      ]
+    },
+    {
+      "sha256": "fe37d97cc059adc797597fdd112e13337f7d6221a76492478a253397a138c15e",
+      "paths": [
+        "experiments/chained-transfer-public-target/evidence/nondual13-composition-proof-01/failed01/NondualComposition.lean"
+      ],
+      "role": "archived-build-failure",
+      "diagnostic": "`grind` failed"
+    },
+    {
+      "sha256": "e98481af83e9562141d615fe8c7a97a694b58f5600982320e02f8ffed095a4d1",
+      "paths": [
+        "experiments/chained-transfer-public-target/evidence/nondual13-nonsquare-proof-01/attempt01/NonsquareResidues.lean"
+      ],
+      "role": "archived-build-failure",
+      "diagnostic": "maximum recursion depth has been reached"
+    },
+    {
+      "sha256": "09fb793c9168f16c0ad8ee4a334e5469112302b92eeb3a58d6a4fee5c45b051e",
+      "paths": [
+        "experiments/chained-transfer-public-target/evidence/nondual13-nonsquare-proof-01/attempt02/NonsquareResidues.lean",
+        "experiments/chained-transfer-public-target/nondual13-next-preflight/lean/NonsquareResidues.lean"
+      ],
+      "role": "core-proof",
+      "theorems": [
+        "NonsquareResidues.base_square_nonroots"
+      ]
+    },
+    {
+      "sha256": "cd72b23f3e34a3f267932c3b41d1c8753560f02e6bee25d1e0ef135ae0326eb5",
+      "paths": [
+        "experiments/chained-transfer-public-target/evidence/norm-halving-Lean-acceptance-03/rejected-attempt02/NormHalving.lean"
+      ],
+      "role": "archived-build-failure",
+      "diagnostic": "`grind` failed"
+    },
+    {
+      "sha256": "495920fb477cddf7aaf952691d5d862e2ead49b96c60bf490f19522dd2d9c21a",
+      "paths": [
+        "experiments/chained-transfer-public-target/evidence/norm-halving-Lean-acceptance-03/whole-attempt/NormHalving.lean",
+        "experiments/chained-transfer-public-target/evidence/norm-halving-complete-native-04/executed-source/lean/NormHalving.lean",
+        "experiments/chained-transfer-public-target/evidence/norm-halving-complete-native-05/native/executed-source/lean/NormHalving.lean",
+        "experiments/chained-transfer-public-target/evidence/norm-halving-context-identity-failure-03/executed-source/lean/NormHalving.lean",
+        "experiments/chained-transfer-public-target/evidence/norm-halving-fresh-full-02/driver/producer-staged-source/NormHalving.lean",
+        "experiments/chained-transfer-public-target/evidence/norm-halving-identity-and-audit-01/executed-source/lean/NormHalving.lean",
+        "experiments/chained-transfer-public-target/norm-halving-evaluator/lean/NormHalving.lean"
+      ],
+      "role": "core-proof",
+      "theorems": [
+        "NormHalving.corrected_evaluator_matches_beta",
+        "NormHalving.corrected_lift_independent",
+        "NormHalving.correction_exists_for_every_half",
+        "NormHalving.halves_differ_by_two_torsion",
+        "NormHalving.halves_fixed_by_frobenius_square",
+        "NormHalving.halving_abscissa_identity",
+        "NormHalving.halving_ordinate_identity",
+        "NormHalving.odd_class_has_explicit_norm_lift",
+        "NormHalving.preimage_from_odd_and_cofactor",
+        "NormHalving.strongest_scalar_baseline_identity"
+      ]
+    },
+    {
+      "sha256": "9baa4fbef1c3533c3a8a7e03da7172a6e238a226bdc9d8d49998d6d98acc649a",
+      "paths": [
+        "experiments/chained-transfer-public-target/evidence/norm-halving-Lean-failure-01/whole-attempt/NormHalving.lean"
+      ],
+      "role": "archived-build-failure",
+      "diagnostic": "`grind` failed"
+    },
+    {
+      "sha256": "038c25a1db7727197667f7e928cc3a8c6b1b7b9567241031451ec77baf574fd8",
+      "paths": [
+        "experiments/chained-transfer-public-target/evidence/observer-storage-proof-01/original-gates/CounterStorage.lean",
+        "experiments/chained-transfer-public-target/norm-arithmetic-storage-02/lean/CounterStorage.lean"
+      ],
+      "role": "core-proof",
+      "theorems": [
+        "CounterStorage.bump.eq_1",
+        "CounterStorage.checked_update",
+        "CounterStorage.resolve.congr_simp",
+        "CounterStorage.resolve.eq_1",
+        "CounterStorage.resolve.eq_2",
+        "CounterStorage.resolve_index"
+      ]
+    },
+    {
+      "sha256": "57764b32ae65d5c80a3d4eea2703b2522eb88c04ca208d1ba9b8c520adbeaa03",
+      "paths": [
+        "experiments/chained-transfer-public-target/evidence/odd-product-Lean-failed-01/original-OddProductChain.lean"
+      ],
+      "role": "archived-build-failure",
+      "diagnostic": "No goals to be solved"
+    },
+    {
+      "sha256": "28d8abe06f772afbba14d3e4fc6f6e9f7677ed5661580f78a0d0684bc1bf4c69",
+      "paths": [
+        "experiments/chained-transfer-public-target/evidence/original-fixed-model-IC-compiled-02/reused-original-proofs/actual-NewTargetIC.lean",
+        "experiments/chained-transfer-public-target/new-target-ic/lean/NewTargetIC.lean"
+      ],
+      "role": "core-proof",
+      "theorems": [
+        "NewTargetIC223.common_offset_log_ratio",
+        "NewTargetIC223.reflected_checked_target_solution"
+      ]
+    },
+    {
+      "sha256": "555331e3aca1e4938f2c014732337a1b1c3bdb84f03a298a35f94eade9f2bcfe",
+      "paths": [
+        "experiments/chained-transfer-public-target/evidence/original-kernel-proof-failure-01/KernelCensus.failed01.lean"
+      ],
+      "role": "archived-build-failure",
+      "diagnostic": "Tactic `decide` failed for proposition"
+    },
+    {
+      "sha256": "249c3370c8d7111f799a029f03d9121c7a07f3664a63fc268a81cd75e9901291",
+      "paths": [
+        "experiments/chained-transfer-public-target/evidence/original-relation-kernel-proof-01/original-gates/RelationKernel.lean",
+        "experiments/chained-transfer-public-target/original-relation-rank-01/lean/RelationKernel.lean"
+      ],
+      "role": "core-proof",
+      "theorems": [
+        "RelationKernel.Elementary.add.inj",
+        "RelationKernel.Elementary.add.injEq",
+        "RelationKernel.Elementary.add.sizeOf_spec",
+        "RelationKernel.Elementary.scale.inj",
+        "RelationKernel.Elementary.scale.injEq",
+        "RelationKernel.Elementary.scale.sizeOf_spec",
+        "RelationKernel.Elementary.swap.inj",
+        "RelationKernel.Elementary.swap.injEq",
+        "RelationKernel.Elementary.swap.sizeOf_spec",
+        "RelationKernel.Kernel.eq_1",
+        "RelationKernel.addRow.congr_simp",
+        "RelationKernel.addRow.eq_1",
+        "RelationKernel.add_kernel_iff",
+        "RelationKernel.conditional_three_descent_ratio",
+        "RelationKernel.dot.eq_1",
+        "RelationKernel.dot.eq_2",
+        "RelationKernel.dot.eq_def",
+        "RelationKernel.dot_add",
+        "RelationKernel.dot_scale",
+        "RelationKernel.finite_trace_kernel_iff",
+        "RelationKernel.one_free_column_proportional",
+        "RelationKernel.operation_kernel_iff",
+        "RelationKernel.scaleRow.congr_simp",
+        "RelationKernel.scaleRow.eq_1",
+        "RelationKernel.scale_kernel_iff",
+        "RelationKernel.swapRows.eq_1",
+        "RelationKernel.swap_kernel_iff"
+      ]
+    },
+    {
+      "sha256": "23b98bc5c090b8d0f5b7ba25953c94aa9281a6bc0b1040afa28b14928bacbdb3",
+      "paths": [
+        "experiments/chained-transfer-public-target/evidence/paired-fourth-discriminant-proof-01/original-gates/actual-source.lean",
+        "experiments/chained-transfer-public-target/paired-fourth-preflight/lean/FourthObstruction.lean"
+      ],
+      "role": "core-proof",
+      "theorems": [
+        "FourthObstruction.candidate_two_hop_coprime",
+        "FourthObstruction.fixed_twist_witness",
+        "FourthObstruction.nonsquare67"
+      ]
+    },
+    {
+      "sha256": "7b297d61a40480b3e913790862e627800507321fbda16b6e4d1a94806d55dbae",
+      "paths": [
+        "experiments/chained-transfer-public-target/evidence/paired-fourth-three-pair-proof-01/original-gates/actual-compiled-source.lean",
+        "experiments/chained-transfer-public-target/paired-fourth-preflight/lean/ThreePairNorm.lean"
+      ],
+      "role": "core-proof",
+      "theorems": [
+        "ThreePairNorm.fixed_scalar_gcd",
+        "ThreePairNorm.norm_injective_on_annihilator",
+        "ThreePairNorm.three_pair_norms"
+      ]
+    },
+    {
+      "sha256": "f0af5b9719639548a10babe61575a69875ad8cf23daeb238189bf48097e90cd4",
+      "paths": [
+        "experiments/chained-transfer-public-target/evidence/twisted-pair-homogeneity-proof-02/failed-tool-setup-01/TwistHomogeneity.lean",
+        "experiments/chained-transfer-public-target/evidence/twisted-pair-homogeneity-proof-02/original-gates/TwistHomogeneity.lean",
+        "experiments/chained-transfer-public-target/twisted-pair-preflight/lean/TwistHomogeneity.lean"
+      ],
+      "role": "core-proof",
+      "theorems": [
+        "TwistHomogeneity.adjugate_minor_scale",
+        "TwistHomogeneity.ciani_coefficient_scale",
+        "TwistHomogeneity.delta_scale",
+        "TwistHomogeneity.determinant_scale",
+        "TwistHomogeneity.fixed_pair_modular_witnesses",
+        "TwistHomogeneity.invertible_square_scale_zero",
+        "TwistHomogeneity.short_twist_residual",
+        "TwistHomogeneity.twisting_numerator_scale"
+      ]
+    },
+    {
+      "sha256": "fc7d09f5ed7ec3562bb94d8d8729497337ca44d1dcf14aba3a181ff531f930e4",
+      "paths": [
+        "experiments/chained-transfer-public-target/evidence/twisted-pair-inverse-factor-proof-01/original-gates/TwistingFactor.lean",
+        "experiments/chained-transfer-public-target/twisted-pair-preflight/lean/TwistingFactor.lean"
+      ],
+      "role": "core-proof",
+      "theorems": [
+        "TwistingFactor.factor_equals_symmetric_determinant",
+        "TwistingFactor.factor_scale",
+        "TwistingFactor.scaled_delta_inverse"
+      ]
+    },
+    {
+      "sha256": "77083ac517cf5618cf84ff990a92da1b71f94175218128d0b478bcd2ebff2c48",
+      "paths": [
+        "experiments/chained-transfer-public-target/evidence/twisted-pair-old-prime-proof-01/original-gates/OldPrimeObstruction.lean",
+        "experiments/chained-transfer-public-target/twisted-pair-preflight/lean/OldPrimeObstruction.lean"
+      ],
+      "role": "core-proof",
+      "theorems": [
+        "OldPrimeObstruction.coprime_annihilators",
+        "OldPrimeObstruction.fixed_orders_coprime",
+        "OldPrimeObstruction.old_prime_point_zero"
+      ]
+    },
+    {
+      "sha256": "81992c0f4f4af00a5b3e94fea24542ac32660fdc4416403f3fe9fadf521df305",
+      "paths": [
+        "experiments/chained-transfer-public-target/fixed-jacobian-chain-evaluator-01/lean/ChainDescent.lean"
+      ],
+      "role": "core-proof",
+      "theorems": [
+        "ChainDescent.corrected_half_choice_independent",
+        "ChainDescent.corrected_output_fixed",
+        "ChainDescent.equal_images_equal_targets",
+        "ChainDescent.image_fixed",
+        "ChainDescent.norm_half_difference_in_kernel",
+        "ChainDescent.rational_correction_complete",
+        "ChainDescent.rational_two_torsion_average",
+        "ChainDescent.square_cube_fixed"
+      ]
+    },
+    {
+      "sha256": "ef2940bc3bb7ce1ed2952cf18f6d93063effa27a869c1f677959eff563431d3a",
+      "paths": [
+        "experiments/chained-transfer-public-target/fixed-jacobian-chain-evaluator-01/lean/FullGroupNorm.lean"
+      ],
+      "role": "core-proof",
+      "theorems": [
+        "FullGroupNorm.actual_full_group_witnesses",
+        "FullGroupNorm.full_group_coprime",
+        "FullGroupNorm.inverse_on_full_annihilator",
+        "FullGroupNorm.retained_lift_chain",
+        "FullGroupNorm.two_pair_norm"
+      ]
+    },
+    {
+      "sha256": "02638e8a3c0945b6783e2306e381e7f3c7f6b23559a32bea5f9d44fa8e58b07c",
+      "paths": [
+        "experiments/chained-transfer-public-target/fixed-jacobian-chain-evaluator-02/lean/NormPointReuse.lean"
+      ],
+      "role": "core-proof",
+      "theorems": [
+        "NormPointReuse.corrected_lift_doubles",
+        "NormPointReuse.corrected_norm_reuse",
+        "NormPointReuse.factored_norm_reuse"
+      ]
+    },
+    {
+      "sha256": "4186723798dfff4a67474c903cbb8260ff464f0fe729ca6dc1bce898dc49acb9",
+      "paths": [
+        "experiments/chained-transfer-public-target/formal/PublicOriginConvention.lean"
+      ],
+      "role": "core-proof",
+      "theorems": [
+        "PublicOriginConvention.common_sign_preserves_affine_log_ratio",
+        "PublicOriginConvention.degree_six_reference_has_two_deltas",
+        "PublicOriginConvention.infinity_involution_origin_difference",
+        "PublicOriginConvention.transported_forward_double",
+        "PublicOriginConvention.transported_reverse_double"
+      ]
+    },
+    {
+      "sha256": "cf6c21dfc2befbc2afcb8f5ec28068228f2eaf3c4ef029a999dd17b7862b4696",
+      "paths": [
+        "experiments/chained-transfer-public-target/gluing-maps/lean/GluingChain.lean"
+      ],
+      "role": "core-proof",
+      "theorems": [
+        "GluingChain223.polarized_product_degree_one_column",
+        "GluingChain223.pullback_injective_from_actual_double_inverse",
+        "GluingChain223.two_dual_pairs_give_both_four"
+      ]
+    },
+    {
+      "sha256": "5ddd9e9f7191d7a0e223ec1f73f0e0c207913d29589ca23238761b4bbd79de9b",
+      "paths": [
+        "experiments/chained-transfer-public-target/gluing-models/lean/GluingModels.lean"
+      ],
+      "role": "core-proof",
+      "theorems": [
+        "GluingModels223.adjugate_diagonal_from_Delta",
+        "GluingModels223.even_quartic_discriminant",
+        "GluingModels223.even_quartic_map_on_jacobian",
+        "GluingModels223.even_quartic_map_residual",
+        "GluingModels223.symmetric_adjugate_cofactor",
+        "GluingModels223.symmetric_adjugate_determinant",
+        "GluingModels223.symmetric_adjugate_pair_discriminant",
+        "GluingModels223.translated_source_cubic"
+      ]
+    },
+    {
+      "sha256": "2aebd6c05489adf7d9ccdd0712cea9a9150daaad8d471a704602cef627369669",
+      "paths": [
+        "experiments/chained-transfer-public-target/kernel-census/lean/KernelStructure.lean"
+      ],
+      "role": "core-proof",
+      "theorems": [
+        "Kernel223.closed_cardinality_arithmetic",
+        "Kernel223.conjugacy_transports_stability",
+        "Kernel223.equal_count_and_inclusion_give_equal_membership",
+        "Kernel223.isometry_transports_isotropy",
+        "Kernel223.trueCount.eq_1",
+        "Kernel223.trueCount.eq_2",
+        "Kernel223.trueCount.eq_def",
+        "Kernel223.true_count_monotone"
+      ]
+    },
+    {
+      "sha256": "7a3e85c5ed25ed25b2f8fe117ce847acd85c8d21e5bd5c7576ad991d6dc52e76",
+      "paths": [
+        "experiments/chained-transfer-public-target/native/lean/PublicTargetBridge.lean"
+      ],
+      "role": "core-proof",
+      "theorems": [
+        "PublicTargetBridge.affine_offset_cancels_in_two_differences",
+        "PublicTargetBridge.exceptional_basepoint_translation",
+        "PublicTargetBridge.quartic_ordinate_sign_bridge",
+        "PublicTargetBridge.raw_reference_change",
+        "PublicTargetBridge.same_actual_class_translation",
+        "PublicTargetBridge.short_model_cleared_polynomial",
+        "PublicTargetBridge.short_model_with_unit_three",
+        "PublicTargetBridge.three_affine_log_ratio",
+        "PublicTargetBridge.translated_key_bridge_addition"
+      ]
+    },
+    {
+      "sha256": "141e52be3a9bd5f617d8ebdb0eb1880a7c10a4b8f15b0b723c1bb9e52d675874",
+      "paths": [
+        "experiments/chained-transfer-public-target/norm-arithmetic-audit/lean/QuadraticInverse.lean",
+        "experiments/chained-transfer-public-target/norm-arithmetic-storage-02/lean/QuadraticInverse.lean"
+      ],
+      "role": "core-proof",
+      "theorems": [
+        "NormArithmetic.conjugate_product",
+        "NormArithmetic.inverse_pair_norm",
+        "NormArithmetic.scaled_conjugate_inverse"
+      ]
+    },
+    {
+      "sha256": "0dfb71a9c61125b71de84893c69a300043953c62d8b698227c8e2c19baa1f583",
+      "paths": [
+        "experiments/chained-transfer-public-target/odd-product-maps/lean/OddProductChain.lean"
+      ],
+      "role": "core-proof",
+      "theorems": [
+        "OddProductChain223.both_chain_fiftytwo",
+        "OddProductChain223.original_source_point_fiftytwo"
+      ]
+    },
+    {
+      "sha256": "ae1db4172a93b35954df8be302c5f6433d466447f8205286ef9bd2f5f4ee991e",
+      "paths": [
+        "experiments/chained-transfer-public-target/odd-product-refinements/lean/OddProductRefinement.lean"
+      ],
+      "role": "core-proof",
+      "theorems": [
+        "OddProductRefinement223.identical_source_pair_elimination",
+        "OddProductRefinement223.killed_fiftytwo_primary_projectors",
+        "OddProductRefinement223.quotient_factor_and_twice_chain"
+      ]
+    },
+    {
+      "sha256": "212b4761404648acb764d5e09963be1732b24562150d3623292754502179cfdb",
+      "paths": [
+        "experiments/chained-transfer-public-target/odd-source/lean/OddSource.lean"
+      ],
+      "role": "core-proof",
+      "theorems": [
+        "OddSource223.cleared_rational_curve_map",
+        "OddSource223.normalized_scaling_residual",
+        "OddSource223.proposed_fiftytwo_odd_bezout",
+        "OddSource223.recovery_from_scalar_composition",
+        "OddSource223.thirteen_full_rational_bezout",
+        "OddSource223.thirteen_odd_bezout"
+      ]
+    },
+    {
+      "sha256": "16c66886a7632cbfadae5072995dadf2280abf4bc288408a0b6d683ad5c55b3c",
+      "paths": [
+        "experiments/chained-transfer-public-target/original-full-evaluator-01/lean/OriginalFullChain.lean"
+      ],
+      "role": "core-proof",
+      "theorems": [
+        "ChainDescent.corrected_half_choice_independent",
+        "ChainDescent.corrected_output_fixed",
+        "ChainDescent.equal_images_equal_targets",
+        "ChainDescent.image_fixed",
+        "ChainDescent.norm_half_difference_in_kernel",
+        "ChainDescent.rational_correction_complete",
+        "ChainDescent.rational_two_torsion_average",
+        "ChainDescent.square_cube_fixed",
+        "FullGroupNorm.actual_full_group_witnesses",
+        "FullGroupNorm.full_group_coprime",
+        "FullGroupNorm.inverse_on_full_annihilator",
+        "FullGroupNorm.retained_lift_chain",
+        "FullGroupNorm.two_pair_norm",
+        "NormPointReuse.corrected_lift_doubles",
+        "NormPointReuse.corrected_norm_reuse",
+        "NormPointReuse.factored_norm_reuse",
+        "OriginalFullChain.actual_original_full_witnesses",
+        "OriginalFullChain.known_point_corrected_output",
+        "OriginalFullChain.known_point_representation"
+      ]
+    },
+    {
+      "sha256": "ab8f1c6fcd714f512f4b17ccd9af1952778fc5c88306bec75a63de411f3a4d81",
+      "paths": [
+        "experiments/chained-transfer-public-target/original-full-evaluator-01/lean/PrimeRecovery.lean"
+      ],
+      "role": "core-proof",
+      "theorems": [
+        "OriginalFullPrimeRecovery.actual_original_prime_recovery_witnesses",
+        "OriginalFullPrimeRecovery.recover_prime_summand"
+      ]
+    },
+    {
+      "sha256": "5f2361e1995bae8f2f6458005206912306d03da21748fda972813386d0cb6ed7",
+      "paths": [
+        "experiments/chained-transfer-public-target/original-kernel-census-01/lean/KernelCensus.lean"
+      ],
+      "role": "core-proof",
+      "theorems": [
+        "OriginalKernelCensus.actual_data_shapes",
+        "OriginalKernelCensus.actual_path_unique",
+        "OriginalKernelCensus.actual_supported_verdict",
+        "OriginalKernelCensus.actual_transport_bijections",
+        "OriginalKernelCensus.all18_eligibility_checks",
+        "OriginalKernelCensus.complete_triple_coverage"
+      ]
+    },
+    {
+      "sha256": "5e26ee039655f31f9eb2ef02efb548dca95828b0619c9c27974584b662cecd62",
+      "paths": [
+        "experiments/chained-transfer-public-target/original-prime-chain-01/lean/PrimeReprojection.lean"
+      ],
+      "role": "core-proof",
+      "theorems": [
+        "PrimeReprojection.actual_original_witnesses",
+        "PrimeReprojection.inverse_two",
+        "PrimeReprojection.known_initial_point",
+        "PrimeReprojection.normalized_norm_pair",
+        "PrimeReprojection.reprojection_chain",
+        "PrimeReprojection.reprojection_dual_norm",
+        "PrimeReprojection.transfer_integer_linear"
+      ]
+    },
+    {
+      "sha256": "cddf4279295588fcc87e35c92e0fa58a30ff4295ef0baf8d202cb88a295f1433",
+      "paths": [
+        "experiments/chained-transfer-public-target/prime-field/NoBaseFieldCurve.lean"
+      ],
+      "role": "core-proof",
+      "theorems": [
+        "NoBaseFieldCurve223.all_hasse_candidates_fail_divisibility",
+        "NoBaseFieldCurve223.hasse_radius_integer_bounds",
+        "NoBaseFieldCurve223.no_hasse_count_divides_extension_count"
+      ]
+    },
+    {
+      "sha256": "679dbf19b54811e7a9a4bd1ffd1b01424f5226d61b5881faa46eaf1da7906bd9",
+      "paths": [
+        "experiments/chained-transfer-public-target/two-primary/FrobeniusSix.lean"
+      ],
+      "role": "core-proof",
+      "theorems": [
+        "TwoPrimary223.exact_six_from_divisor_exclusions",
+        "TwoPrimary223.exact_trace_and_parity",
+        "TwoPrimary223.no_three_cycle_partition",
+        "TwoPrimary223.sixth_iterate_on_exponent_two"
+      ]
+    },
+    {
+      "sha256": "a08e9262d56dd6a1f525e4dce11ddfe371e7f3551df850ebf23f5f9b4f6335b6",
+      "paths": [
+        "experiments/chained-transfer-reference/evidence/fp-chain-lean-03/original-gate/source.lean",
+        "experiments/chained-transfer-reference/fp-chain-checker/lean/ChainAdapter.lean"
+      ],
+      "role": "core-proof",
+      "theorems": [
+        "PrimeFieldChain.actual_c0_first_cover",
+        "PrimeFieldChain.actual_c0_reciprocal_cover",
+        "PrimeFieldChain.actual_empty_finite_fibre_and_infinity_targets",
+        "PrimeFieldChain.actual_public_constants",
+        "PrimeFieldChain.actual_repeated_finite_fibre",
+        "PrimeFieldChain.completed_degree_two_balanced_accounting",
+        "PrimeFieldChain.conditional_two_way_inverse",
+        "PrimeFieldChain.forward_component_normalization",
+        "PrimeFieldChain.inverse_norm_component_recovery",
+        "PrimeFieldChain.nonuniform_component_recovery",
+        "PrimeFieldChain.norm_diagram_uniqueness"
+      ]
+    },
+    {
+      "sha256": "895c78421770f6aab6a97533d6ec28cc5a2cf4a977cd2de965eeb8262de8d273",
+      "paths": [
+        "experiments/chained-transfer-reference/evidence/prime-norm-lean-01/original-gate/source.lean",
+        "experiments/chained-transfer-reference/norm-checker/lean/PullbackFibres.lean"
+      ],
+      "role": "core-proof",
+      "theorems": [
+        "PrimeNormPullback.actual_first_degree_drop",
+        "PrimeNormPullback.actual_first_normalized_cover",
+        "PrimeNormPullback.actual_ordinate_normalization",
+        "PrimeNormPullback.actual_public_inverse_constants",
+        "PrimeNormPullback.actual_second_degree_drop",
+        "PrimeNormPullback.actual_second_normalized_cover",
+        "PrimeNormPullback.balanced_completion_accounting",
+        "PrimeNormPullback.cleared_fibre_factorization",
+        "PrimeNormPullback.image_ordinate_substitution",
+        "PrimeNormPullback.image_support_substitution",
+        "PrimeNormPullback.unit_ordinate_recovery"
+      ]
+    },
+    {
+      "sha256": "09e446958c9db7151171a26f62e8038e127a113400cf5a95137bcc4d2e7bda88",
+      "paths": [
+        "experiments/chained-transfer-reference/g3-norm-checker/lean/CanonicalNorm.lean"
+      ],
+      "role": "core-proof",
+      "theorems": [
+        "G3CanonicalNorm.actual_odd_recovery_constants",
+        "G3CanonicalNorm.canonical_section_independence",
+        "G3CanonicalNorm.descended_norm_additive",
+        "G3CanonicalNorm.exceptional_representative_correction",
+        "G3CanonicalNorm.monogenic_companion_characteristic",
+        "G3CanonicalNorm.monogenic_relation_evaluation",
+        "G3CanonicalNorm.odd_two_recovery",
+        "G3CanonicalNorm.plane_section_reference_independence",
+        "G3CanonicalNorm.principal_push_well_defined",
+        "G3CanonicalNorm.reduced_cycle_changes_nonzero_repeated_point",
+        "G3CanonicalNorm.repeated_cycle_multiplicity",
+        "G3CanonicalNorm.reverse_composition_from_surjective_pullback",
+        "G3CanonicalNorm.two_way_odd_subgroup_recovery"
+      ]
+    },
+    {
+      "role": "archived-verifier-input",
+      "sha256": "f97280b48f1846d13e7ed96d9691753811551864162086fb25e9fe05438aa7dc",
+      "paths": [
+        "experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/original-Consumer-proof-tools/AuditAxioms.lean"
+      ]
+    },
+    {
+      "role": "archived-verifier-input",
+      "sha256": "c2ba62cad8b2678cd3058489c146ed78b2fe2c4ef5b8c059ae6426e25864c241",
+      "paths": [
+        "experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/original-Consumer-proof-tools/AuditHeckeAxioms.lean"
+      ]
+    },
+    {
+      "role": "archived-verifier-input",
+      "sha256": "469e0fc7403af8505ea39b01584c618f738020e749fff8a0cab534e271286ca1",
+      "paths": [
+        "experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/original-Consumer-proof-tools/selftest/fail/Axiom.lean"
+      ]
+    },
+    {
+      "role": "archived-verifier-input",
+      "sha256": "b14c8e1415b88614b537c69646f11af0382a2c1dd1489f981473c0212ea0608a",
+      "paths": [
+        "experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/original-Consumer-proof-tools/selftest/fail/BuildError.lean"
+      ]
+    },
+    {
+      "role": "archived-verifier-input",
+      "sha256": "f3c1774efc0a1c84a65113bd6d20f062eee02f193bedf087bb51b193a87ebd42",
+      "paths": [
+        "experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/original-Consumer-proof-tools/selftest/fail/Empty.lean"
+      ]
+    },
+    {
+      "role": "archived-verifier-input",
+      "sha256": "f63e4a2e0cb8869a54fd567b93201ed9b1983ff54eaf71934a6b37723970138d",
+      "paths": [
+        "experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/original-Consumer-proof-tools/selftest/fail/Native.lean"
+      ]
+    },
+    {
+      "role": "archived-verifier-input",
+      "sha256": "dd5845a5d194db10d355869d4e518b48b9271035809262fdc5d7361a9b74fb6b",
+      "paths": [
+        "experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/original-Consumer-proof-tools/selftest/fail/Sorry.lean"
+      ]
+    },
+    {
+      "role": "archived-verifier-input",
+      "sha256": "7cfaa4a19ba962b688ce146c16f6d2be3450106c1c4ff12aa058df11c4178ecf",
+      "paths": [
+        "experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/original-Consumer-proof-tools/selftest/pass/Good.lean"
+      ]
+    },
+    {
+      "role": "archived-verifier-input",
+      "sha256": "2d1dc22648df2d99b92135fc1e6453ef351363e12ee873c81360b78f09d63cfb",
+      "paths": [
+        "experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/original-Consumer-proof-tools/selftest/pass/Trusted.lean"
+      ]
+    },
+    {
+      "role": "archived-verifier-input",
+      "sha256": "c4aac198d49a7f58cfef0032958ffc6b44a0cdbc55d18915d0936ca3307cc28b",
+      "paths": [
+        "experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/original-Consumer-proof-tools/transfer-audit/TransferAudit.lean"
+      ]
+    },
+    {
+      "role": "archived-verifier-input",
+      "sha256": "b90d6b58c92138f4f4e4d4692a9c3152629c3aafa537e789248bebbf6ddb1929",
+      "paths": [
+        "experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/original-Root-proof-tools/AuditAxioms.lean"
+      ]
+    },
+    {
+      "role": "archived-verifier-input",
+      "sha256": "46da7d49af5e0dece4fd02897efc68460f611dd8ef39d3f436c8a0a4693142f2",
+      "paths": [
+        "experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/original-Root-proof-tools/selftest/fail/Axiom.lean"
+      ]
+    },
+    {
+      "role": "archived-verifier-input",
+      "sha256": "92267391bf83ba46b22808acc372ff7186b794b36b1e56b04f862b51245d0a59",
+      "paths": [
+        "experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/original-Root-proof-tools/selftest/fail/BuildError.lean"
+      ]
+    },
+    {
+      "role": "archived-verifier-input",
+      "sha256": "fbb6e3411fc6715e9dd952c75c6d9f27edc021670e2f091364171b87584759a2",
+      "paths": [
+        "experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/original-Root-proof-tools/selftest/fail/Empty.lean"
+      ]
+    },
+    {
+      "role": "archived-verifier-input",
+      "sha256": "a8d03989b7fab92145f8ffb2355b66b598a1c0a59d3d1a9f72480f9b820d0f58",
+      "paths": [
+        "experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/original-Root-proof-tools/selftest/fail/Native.lean"
+      ]
+    },
+    {
+      "role": "archived-verifier-input",
+      "sha256": "7d58f1535a16a9c8f4a3199e09dd4db2290371d09f3e75b5890270df0a6e7e05",
+      "paths": [
+        "experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/original-Root-proof-tools/selftest/fail/Sorry.lean"
+      ]
+    },
+    {
+      "role": "archived-verifier-input",
+      "sha256": "10623c9f40e6e49ccc1b9146ebfc43487c9c07aa60239736838350f886b0b11a",
+      "paths": [
+        "experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/original-Root-proof-tools/selftest/pass/Good.lean"
+      ]
+    },
+    {
+      "role": "archived-verifier-input",
+      "sha256": "53360b6c00dc013ea2ec3d9ab8e2273200ddbe129232a05f543a33ba3639c4fd",
+      "paths": [
+        "experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/original-Root-proof-tools/selftest/pass/Trusted.lean"
+      ]
+    },
+    {
+      "role": "archived-verifier-input",
+      "sha256": "e0c4492618a9a62e3ee59875de1c459dd1162917ce1c48831e4bca4b3f30a53b",
+      "paths": [
+        "experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/original-Root-proof-tools/selftest/project-omitted/Bad.lean"
+      ]
+    },
+    {
+      "role": "archived-verifier-input",
+      "sha256": "e7ca67af040e9fd312b78e8e9064af5f17fde5151c66d5a4a94e02dafe6e15af",
+      "paths": [
+        "experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/original-Root-proof-tools/selftest/project-omitted/Good.lean"
+      ]
+    },
+    {
+      "role": "archived-verifier-input",
+      "sha256": "cb6ffa4431d1ddc27e2ac1cd79486038d823a9ab6dee8f01336dfe17899bbb2e",
+      "paths": [
+        "experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/original-Root-proof-tools/selftest/project-quoted/Good.lean"
+      ]
+    },
+    {
+      "role": "archived-verifier-input",
+      "sha256": "4f9367f2a1c822e38e9574c44a587bf7d82055ac3a9f32321cd1e3c4cf1c6caf",
+      "paths": [
+        "experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/original-Root-proof-tools/selftest/project-quoted/hyphen-dir/Hidden.lean"
+      ]
+    },
+    {
+      "role": "archived-query-input",
+      "sha256": "a249728e2a9a198b4d181643b62291f8d7a612eae0b90d9c8b6a2b367932ce69",
+      "paths": [
+        "experiments/chained-transfer-public-target/evidence/beta-CRT-projection-acceptance-02/lean/PrintAxioms.lean"
+      ]
+    },
+    {
+      "role": "archived-query-input",
+      "sha256": "73ed033b0bed0fcae49119f784fd54f6c3c3b4c446af7d038787ec581aa93a1f",
+      "paths": [
+        "experiments/chained-transfer-public-target/evidence/beta-complete-Lean-acceptance-03/PrintAxioms.lean"
+      ]
+    },
+    {
+      "role": "archived-query-input",
+      "sha256": "8f84e0adea38956397a390f857cef4f4e52fbf56f5278e72c68a40b5d621a73f",
+      "paths": [
+        "experiments/chained-transfer-public-target/evidence/beta-quadratic-norm-identity-acceptance-04/Lean03/PrintAxioms.lean"
+      ]
+    },
+    {
+      "role": "archived-query-input",
+      "sha256": "14b96e04256f074d42e5f0c6ecc019d79ecb2fd0fed918f755cf7895b8207654",
+      "paths": [
+        "experiments/chained-transfer-public-target/evidence/beta-rational-lift-Lean-acceptance-02/PrintAxioms.lean"
+      ]
+    }
+  ],
+  "verifier_inputs": {
+    "tools/lean/proof-gate.sh": "a64f4010f3713653786e56ef7762b3e879720e2706ca78f979a0fefe2d53a7e2",
+    "tools/lean/AuditAxioms.lean": "f97280b48f1846d13e7ed96d9691753811551864162086fb25e9fe05438aa7dc",
+    "tools/lean/trusted-native.txt": "e4ee7d1a2bea1018edae795b74f47e08a6e44a3694bd1f30fed768b3d9328db9"
+  }
+}
