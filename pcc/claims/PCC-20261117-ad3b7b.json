@@ -1,0 +1,15 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-17T04:09:25Z",
+ "id": "PCC-20261117-ad3b7b",
+ "kind": "statement",
+ "producer": {
+  "commit": "aa441686a58d587332f7ebcb8d84b3815e3a50be",
+  "model": "",
+  "session": "ic-canonical-coeff-20261116"
+ },
+ "proofs": [],
+ "schema": "pcc.claim/v1",
+ "scope": "Post-merge custody and CI follow-up; source results and closed measurements unchanged",
+ "statement": "Repository history contains PR1694 merge335eabb52805f82dfd9379ea7d507cc87e91c41d and PR1695 merge088d28a02efe4400be1699b75c040b40fde3955f. Parent first CI inspection shows owned artifact-policy failures for2PDF/2PNG files, shared invalid AWS token/403 failures and induced-transfer frozen checksum mismatches in tools outside this source change. Main integration removed11unsigned claim registrations; recovery preserves all3392canonical main ledger entries byte-for-byte and appends unchanged original claim bodies via canonical append_entry. Original registrations remain in published historical commits. No all-green CI or signed-performance assertion."
+}
