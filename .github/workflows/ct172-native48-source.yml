@@ -18,6 +18,9 @@ on:
       - 'experiments/chained-transfer-public-target/primitive-pricing-01/CT181_*'
       - 'experiments/chained-transfer-public-target/primitive-pricing-01/ct181_*'
       - 'experiments/chained-transfer-public-target/primitive-pricing-01/test_ct181_*'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/CT182_*'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/ct182_*'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/test_ct182_*'
       - 'experiments/chained-transfer-public-target/evidence/fixed-chain-norm-point-native-01/literal-selected-vectors.json'
   workflow_dispatch:
 permissions:
@@ -109,5 +112,13 @@ jobs:
           cmp /tmp/ct181-normal.json /tmp/ct181-optimized.json
           cat /tmp/ct181-normal.json
           echo 'CT181 synthetic design only, no native measurement or ECDLP advantage'
+      - name: CT182 balanced-panel v2 offline adjudication and strict mutation gates (synthetic)
+        run: |
+          set -euo pipefail
+          root=experiments/chained-transfer-public-target/primitive-pricing-01
+          python3 -S -m py_compile "$root/ct182_v2_panel_adjudicator.py" "$root/test_ct182_v2_panel_adjudicator.py"
+          python3 -S -m unittest discover -s "$root" -p 'test_ct182_v2_panel_adjudicator.py' -v
+          python3 -O -S -m unittest discover -s "$root" -p 'test_ct182_v2_panel_adjudicator.py' -v
+          echo 'CT182 v2 reader tested on synthetic full panels only; NO native transfer timings or complete ECDLP solver'
       - name: Explicit scope
         run: echo 'SOURCE AND PARSE ONLY [pcc:unverified]; no native run, no 695/701 whole corpus, no paid benchmark, no ECDLP speedup'
