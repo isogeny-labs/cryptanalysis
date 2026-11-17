@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.1.8](https://github.com/isogeny-labs/cryptanalysis/compare/cryptanalysis-v0.1.7...cryptanalysis-v0.1.8) (2026-11-17)
+
+
+### Bug Fixes
+
+* **ct170:** bind all three frozen census partitions, not just point totals ([215ef6e](https://github.com/isogeny-labs/cryptanalysis/commit/215ef6eb5715c8ce42524d31d6c9e3c186a812d4))
+* **ct171:** bind source guard to actual frozen fixture Git blob ([8b221fe](https://github.com/isogeny-labs/cryptanalysis/commit/8b221feab72e9210f1ce01a4b556164bfca92887))
+* **ct171:** bind source guard to actual frozen fixture Git blob ([13f33d1](https://github.com/isogeny-labs/cryptanalysis/commit/13f33d1856cd99a15a527775faf20a130d171ba2))
+
 ## [0.1.7](https://github.com/isogeny-labs/cryptanalysis/compare/cryptanalysis-v0.1.6...cryptanalysis-v0.1.7) (2026-11-16)
 
 
