@@ -18,7 +18,7 @@ and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
 
-- [ ] Independently mirror and audit the H113 binary/trinary section-curl winding protocol and verifier (Codex, started 2026-11-17, branch research/h113-binary-trinary-winding-freeze) [pcc:unverified]
+- [ ] Independently mirror and audit the H113 binary/trinary section-curl winding protocol and verifier (Codex, started 2026-11-17, branch research/h113-binary-trinary-winding-freeze, PR #1733) [pcc:unverified]
 
 - [ ] Extend certified Xedni lift-success trials to the ten-coefficient `r=7..9` regime with exact rational dependence verification (Codex, started 2026-11-17, branch codex/xedni-breakthrough-20261117, PR #1722) [pcc:unverified]
 
