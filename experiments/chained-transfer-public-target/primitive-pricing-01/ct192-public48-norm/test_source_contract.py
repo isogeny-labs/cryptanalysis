@@ -100,5 +100,85 @@ class CT192(TestCase):
                 with self.assertRaises(ValueError):
                     ct.audit()
 
+    def test_CT193_full_target_class_binding_is_in_guarded_derivative(self):
+        derived = ct.derivative(self.original)
+        ct.validate_class_binding(derived)
+        self.assertIn(
+            b"if self.target_phi(to, operand)? != result.class {",
+            derived,
+        )
+        self.assertIn(
+            b"if result.norm != self.norm_point(to, operand) {",
+            derived,
+        )
+        self.assertTrue(ct.audit()["source_audit_passed"])
+
+    def test_CT193_reject_norm_only_or_misordered_class_validation(self):
+        derived = ct.derivative(self.original)
+        wrong = derived.replace(
+            b"if self.target_phi(to, operand)? != result.class {",
+            b"if self.norm_point(to, operand) != result.norm {",
+        )
+        self.assertNotEqual(derived, wrong)
+        with self.assertRaises(ValueError):
+            ct.validate_class_binding(wrong)
+        before = b"if self.target_phi(to, operand)? != result.class {"
+        after = b"self.check_final(&result)?;"
+        # One cannot call check_final before verifying the entire public
+        # target class; a successful native entry check alone is insufficient.
+        swapped = derived.replace(
+            after,
+            b"let _ = self.check_final(&result)?;\n        " + after,
+            1,
+        )
+        # Merely inserting an extra native check does not falsely reject the
+        # correct class binding; the guard must still identify its ordering.
+        ct.validate_class_binding(swapped)
+        swapped_order = derived.replace(
+            b"        if self.target_phi(to, operand)? != result.class {\n"
+            b"            return Err(\"CT193 pre-norm point differs from native target class\".into());\n"
+            b"        }\n"
+            b"        self.check_final(&result)?;",
+            b"        self.check_final(&result)?;\n"
+            b"        if self.target_phi(to, operand)? != result.class {\n"
+            b"            return Err(\"CT193 pre-norm point differs from native target class\".into());\n"
+            b"        }",
+        )
+        self.assertNotEqual(derived, swapped_order)
+        with self.assertRaises(ValueError):
+            ct.validate_class_binding(swapped_order)
+
+    def test_CT193_doubling_not_injective_on_F5_elliptic_curve(self):
+        # E/F_5: y^2 = x^3 - x, discriminant = 64 != 0 mod 5.
+        # P=(2,1), Q=P+(0,0)=(2,4) are distinct yet 2P=2Q.
+        prime = 5
+        def add(p, q):
+            if p is None:
+                return q
+            if q is None:
+                return p
+            x, y = p
+            X, Y = q
+            if x == X and (y + Y) % prime == 0:
+                return None
+            if p == q:
+                slope = ((3*x*x - 1) * pow(2*y, -1, prime)) % prime
+            else:
+                slope = ((Y-y) * pow(X-x, -1, prime)) % prime
+            outx = (slope*slope-x-X) % prime
+            outy = (slope*(x-outx)-y) % prime
+            return (outx, outy)
+        P, T = (2, 1), (0, 0)
+        Q = add(P, T)
+        self.assertEqual(64 % prime, 4)
+        for point in (P, T, Q):
+            x, y = point
+            self.assertEqual((y*y-x*x*x+x) % prime, 0)
+        self.assertIsNone(add(T, T))
+        self.assertNotEqual(P, Q)
+        self.assertEqual(Q, (2, 4))
+        self.assertEqual(add(P, P), (0, 0))
+        self.assertEqual(add(P, P), add(Q, Q))
+
 if __name__ == "__main__":
     main()
