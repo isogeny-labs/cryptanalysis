@@ -16,7 +16,7 @@ _(none pinned — set one with `/goal <text>`)_
 
 ## Active items (top = next)
 
-- [ ] CT181 expose and eliminate positional confounding in proposed cold transfer panel (automation, started 2026-11-17, branch research/ct181-counterbalanced-cold-design-20261117, PR #1711)
+- [ ] CT181 counterbalance source prototype passes; integrate v2 producer/adjudicator after upstream PR reconciliation (automation, started 2026-11-17, branch research/ct181-counterbalanced-cold-design-20261117, PR #1711)
 - [ ] CT180 reject impossible cold-process nested-time records (automation, started 2026-11-17, branch research/ct180-nested-cold-time-consistency-20261117, PR #1710)
 - [x] CT179 validate and adjudicate the frozen cold transfer panel without treating transfer timing as a complete solve (automation, started 2026-11-17, branch research/ct179-cold-panel-adjudication-20261117, PR #1708; source-only 9/9 normal and -O CI #44050792557, native timing pending)
 
@@ -24,3 +24,5 @@ _(none pinned — set one with `/goal <text>`)_
 - [ ] <task> (<runtime>, started YYYY-MM-DD, branch <branch>, PR #<n>) -->
 
 ## Blocked / questions for the owner
+
+- CT181 production v2 is blocked on integrating the separate CT178 collector (#1706) and CT179/180 adjudicator (#1708/#1710) branches and authorized native timing. Only synthetic 6/6 normal/-O checks have passed; no actual transfer panel has run.
