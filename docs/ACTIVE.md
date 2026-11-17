@@ -18,7 +18,7 @@ and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
 
-- [ ] CT190: falsify block-baseline confounding in CT188/189 physical crossover and add block-fixed-effect diagnostic (automation, started 2026-11-17, branch research/ct190-block-fixed-effect-crossover-20261117, PR #1732) [pcc:unverified]
+- [x] CT190 source diagnostic: block-latency 1.50x false positive exposed and 14-column fixed-effect control tested (5/5 in normal/-O CI); PR draft pending broad/PCC gates and future native implementation (automation, started 2026-11-17, branch research/ct190-block-fixed-effect-crossover-20261117, PR #1732) [pcc:unverified]
 
 - [ ] Extend certified Xedni lift-success trials to the ten-coefficient `r=7..9` regime with exact rational dependence verification (Codex, started 2026-11-17, branch codex/xedni-breakthrough-20261117, PR #1722) [pcc:unverified]
 
