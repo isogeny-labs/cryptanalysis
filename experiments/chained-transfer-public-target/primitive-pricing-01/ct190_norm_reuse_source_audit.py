@@ -102,7 +102,7 @@ def audit(sources, *, enforce_pins=True):
             "CT172 Cargo dependency is not norm-reuse evaluator")
     require("use chained_n4_fixed_jacobian_chain_norm_reuse::Runtime;" in rust,
             "CT172 Rust imports a different runtime")
-    require('args[0] == "--cold-route"' in rust and
+    require('let cold_requested = args.first().is_some_and(|a| a == "--cold-route");' in rust and
             'let native_sample = sample_route(&runtime, &packet, from, to, arm, row)?;' in rust and
             'actual_calls == row[arm]' in rust,
             "CT175 source does not cold-execute and validate selected optimized route")
