@@ -10,7 +10,8 @@
         "experiments/ic-s3-direct-coefficients-20261115/lakefile.toml": "14f9849988564ab9ee6e22ee42ffe0af6b0755dcc0b818534ee6387d4fce2764"
       },
       "requested": [],
-      "role": "verifier-program"
+      "role": "verifier-program",
+      "native_names": []
     },
     "experiments/ic-s3-direct-coefficients-20261115/S3Direct.lean": {
       "sha256": "af077454d95b008d3e82e520c006d0bb7f1054118614644f0165717ecf23a360",
@@ -22,7 +23,11 @@
         "S3Direct.direct_s3_coefficients",
         "S3Direct.cross_symmetric"
       ],
-      "role": "mathlib-proof"
+      "role": "mathlib-proof",
+      "native_names": [
+        "S3Direct.direct_s3_coefficients",
+        "S3Direct.cross_symmetric"
+      ]
     },
     "experiments/xedni-auxiliary-mod2-independence-20261116/AuxiliaryMod2Independence.lean": {
       "sha256": "bce506291e69b2fa17aca098145110e626720944e9291f71e39d85d6f5a1e3ba",
@@ -38,7 +43,14 @@
         "parity_from_exponent_two_quotient",
         "independent_of_exponent_two_quotient"
       ],
-      "role": "mathlib-proof"
+      "role": "mathlib-proof",
+      "native_names": [
+        "auxiliary_mod2_independence",
+        "parity_from_two_independent_reductions",
+        "independent_of_mod2_reduction",
+        "parity_from_exponent_two_quotient",
+        "independent_of_exponent_two_quotient"
+      ]
     },
     "experiments/xedni-rank-one-coordinate-control-20261115/RankOneCoordinate.lean": {
       "sha256": "bd845f37350f51306e2dcbe7552136a0bbd3fd84048841d931d387f87474422f",
@@ -50,7 +62,10 @@
       "requested": [
         "no_rank_gap_at_centered_slope"
       ],
-      "role": "mathlib-proof"
+      "role": "mathlib-proof",
+      "native_names": [
+        "XedniRankOneCoordinate.no_rank_gap_at_centered_slope"
+      ]
     },
     "experiments/xedni-selected-lift-height-panel-20261116/SelectedLiftHeightBound.lean": {
       "sha256": "f7ccf00c5772568d4ca0bac4ad0d35f330b3caf4df09f3c838c2e9083bebbacb",
@@ -62,7 +77,10 @@
       "requested": [
         "selected_height_ratio_lower_bound"
       ],
-      "role": "mathlib-proof"
+      "role": "mathlib-proof",
+      "native_names": [
+        "selected_height_ratio_lower_bound"
+      ]
     }
   }
 }

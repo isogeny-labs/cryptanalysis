@@ -1122,6 +1122,12 @@ def registered_mathlib_sources() -> dict:
                     "registered Mathlib project input changed: " + name)
         requested = re.findall(r"^#print axioms\s+([\w.]+)\s*$", file.read_text(), re.MULTILINE)
         require(requested == row["requested"], "registered theorem requests changed: " + path)
+        native_names = row["native_names"]
+        require(len(native_names) == len(requested) and
+                len(set(native_names)) == len(native_names) and
+                all(native == query or native.endswith("." + query)
+                    for query, native in zip(requested, native_names)),
+                "registered native theorem identities incomplete or inconsistent: " + path)
         if row["role"] == "mathlib-proof":
             require(requested and len(requested) == len(set(requested)),
                     "registered proof lacks exact declaration requests")
@@ -1142,7 +1148,7 @@ def check_registered_mathlib_sources(paths: set[str]) -> tuple[dict[str, str], s
             # declarations not selected by its original #print commands.
             checked[path] = check_pinned_mathlib_source(
                 path, row["sha256"], lean_path, label="registered current Mathlib",
-                exact_names=frozenset(row["requested"]))
+                exact_names=frozenset(row["native_names"]))
         else:
             # A pinned audit program is source code, not a theorem module.
             # Compile its original bytes but grant it no proof standing.

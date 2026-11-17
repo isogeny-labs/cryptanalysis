@@ -35,6 +35,31 @@ class RegisteredMathlibControls(unittest.TestCase):
     def test_original_sources_projects_and_queries_are_bound(self):
         self.assertEqual(len(gate.registered_mathlib_sources()), 5)
 
+    def test_namespace_resolution_keeps_original_query_and_exact_native_name(self):
+        rows = gate.registered_mathlib_sources()
+        row = next(row for path, row in rows.items() if path.endswith('/RankOneCoordinate.lean'))
+        self.assertEqual(row['requested'], ['no_rank_gap_at_centered_slope'])
+        self.assertEqual(row['native_names'], ['XedniRankOneCoordinate.no_rank_gap_at_centered_slope'])
+
+    def test_compiled_checks_receive_fully_qualified_names(self):
+        rows = gate.registered_mathlib_sources()
+        with mock.patch.object(gate, 'check_known_label_project_inputs'), \
+             mock.patch.object(gate, 'run', return_value=mock.Mock(stdout='cache')), \
+             mock.patch.object(gate, 'check_pinned_mathlib_source', return_value='checked') as check:
+            gate.check_registered_mathlib_sources(set(rows))
+        actual = {call.args[0]: call.kwargs['exact_names'] for call in check.call_args_list}
+        for path, row in rows.items():
+            if row['role'] == 'mathlib-proof':
+                self.assertEqual(actual[path], frozenset(row['native_names']))
+
+    def test_missing_duplicate_and_unrelated_native_names_are_rejected(self):
+        row = next(row for row in self.record['sources'].values() if row['role'] == 'mathlib-proof')
+        for names in [[], ['unrelated'] * len(row['requested']), [row['requested'][0]] * len(row['requested'])]:
+            row['native_names'] = names
+            self.write_manifest()
+            with self.assertRaisesRegex(ValueError, 'native theorem identities'):
+                gate.registered_mathlib_sources()
+
     def test_changed_source_and_build_inputs_fail_closed(self):
         source, row = next(iter(self.record['sources'].items()))
         for name in [source, *row['project_inputs']]:
