@@ -109,6 +109,23 @@ def derivative(original: bytes) -> bytes:
         s = replace_once(s, old, new)
     return s.encode("utf-8")
 
+def validate_class_binding(derived: bytes) -> None:
+    """Fail closed if the public pre-norm probe matches only the doubled norm."""
+    s = derived.decode("utf-8")
+    start = s.find("    pub fn ct192_pre_norm_operand(")
+    end = s.find("    pub fn ct192_actual_norm(", start)
+    if start < 0 or end < 0:
+        raise ValueError("CT193 diagnostic method boundaries missing")
+    probe = s[start:end]
+    required = (
+        "if result.norm != self.norm_point(to, operand) {",
+        "if self.target_phi(to, operand)? != result.class {",
+        "self.check_final(&result)?;",
+    )
+    positions = [probe.find(fragment) for fragment in required]
+    if any(probe.count(fragment) != 1 for fragment in required) or positions != sorted(positions):
+        raise ValueError("CT193 full-class pre-norm validation missing or reordered")
+
 def exact_key(v):
     if type(v) is not list or len(v) != 19 or any(type(x) is not int or x < 0 or x >= (1 << 32) for x in v):
         raise ValueError("canonical key must be exactly 19 u32 words")
@@ -177,6 +194,7 @@ def source_audit(main_rs: bytes, manifest: bytes) -> None:
 def audit() -> dict:
     original, frozen = ORIGINAL.read_bytes(), FROZEN.read_bytes()
     d = derivative(original)
+    validate_class_binding(d)
     f = validate_fixture(frozen)
     source_audit((HERE/"src/main.rs").read_bytes(), (HERE/"Cargo.toml").read_bytes())
     if GENERATED.exists() and GENERATED.read_bytes() != d:
