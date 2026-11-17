@@ -18,7 +18,7 @@ and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
 
-- [ ] Independently verify H114 multiradix carry records, scores, decoder evidence, and sabotage controls (Codex, started 2026-11-17, branch research/h114-multiradix-carry-verifier) [pcc:unverified]
+- [ ] Independently verify H114 multiradix carry records, scores, decoder evidence, and sabotage controls (Codex, started 2026-11-17, branch research/h114-multiradix-carry-verifier, PR #1736) [pcc:unverified]
 
 - [ ] Extend certified Xedni lift-success trials to the ten-coefficient `r=7..9` regime with exact rational dependence verification (Codex, started 2026-11-17, branch codex/xedni-breakthrough-20261117, PR #1722) [pcc:unverified]
 
