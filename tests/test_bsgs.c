@@ -134,6 +134,30 @@ int main(void)
     CHECK_EQ_U64(got, 123456);
     p.max_ops = 100;
     CHECK(ca_bsgs_solve(&g, &gen, &h, 0, 0, &p, &got, NULL) == CA_ERR_LIMIT);
+    /* The preflight's mathematical sum can exceed UINT64_MAX.  A finite
+     * budget must refuse it before attempting an unrepresentable table. */
+    {
+        ca_bsgs_params edge;
+        ca_bsgs_params_default(&edge);
+        edge.table_size = UINT64_MAX;
+        edge.max_ops = 1;
+        uint64_t answer = 123;
+        ca_stats st = {0};
+        CHECK(ca_bsgs_solve(&g, &gen, &h, 0, UINT64_MAX, &edge, &answer, &st) == CA_ERR_LIMIT);
+        edge.max_ops = UINT64_MAX;
+        CHECK(ca_bsgs_solve(&g, &gen, &h, 0, UINT64_MAX, &edge, &answer, &st) == CA_ERR_LIMIT);
+        CHECK_EQ_U64(answer, 123);
+        CHECK_EQ_U64(st.group_ops, 0);
+        ca_elem identity_target;
+        fx_instance(&g, &gen, 0, &identity_target);
+        edge.table_size = 8;
+        edge.max_ops = 15;
+        CHECK(ca_bsgs_solve(&g, &gen, &identity_target, 0, 63, &edge, &answer, NULL) == CA_OK);
+        CHECK_EQ_U64(answer, 0);
+        edge.max_ops = 14;
+        CHECK(ca_bsgs_solve(&g, &gen, &identity_target, 0, 63, &edge, &answer, NULL) ==
+              CA_ERR_LIMIT);
+    }
     /* Counts are the one-step loops' at every table size around the batch
      * width: x = lo + i m + j is found at giant step i, after m baby-step
      * ops, the lo * base shift and i giant-step ops. */
