@@ -1,0 +1,47 @@
+name: CT172 native 48-public-packet replay source gate
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/ct172-native48-source.yml'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/CT172_SELECTED48_NATIVE_PROTOCOL.md'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/ct172-replay/**'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/ct171_selected_coverage.py'
+      - 'experiments/chained-transfer-public-target/evidence/fixed-chain-norm-point-native-01/literal-selected-vectors.json'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  protocol-and-rust-parse-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: \${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Frozen original public 48-vector fixture and eight prior mutations
+        run: |
+          set -euo pipefail
+          python3 -S experiments/chained-transfer-public-target/primitive-pricing-01/ct171_selected_coverage.py --self-test > /tmp/ct172-ct171-normal.json
+          python3 -O -S experiments/chained-transfer-public-target/primitive-pricing-01/ct171_selected_coverage.py --self-test > /tmp/ct172-ct171-optimized.json
+          cmp /tmp/ct172-ct171-normal.json /tmp/ct172-ct171-optimized.json
+          cat /tmp/ct172-ct171-normal.json
+          sha256sum /tmp/ct172-ct171-normal.json
+      - name: Parse Rust and package manifest without compilation or native evaluation
+        run: |
+          set -euo pipefail
+          root=experiments/chained-transfer-public-target/primitive-pricing-01/ct172-replay
+          rustc --version
+          rustfmt --version
+          rustfmt --edition 2021 --emit stdout "$root/src/main.rs" >/dev/null
+          cargo read-manifest --manifest-path "$root/Cargo.toml" >/tmp/ct172-manifest.json
+          python3 -S - <<'PY'
+          import json
+          with open('/tmp/ct172-manifest.json') as f:
+              j=json.load(f)
+          assert j['name']=='ct172-real48-public-replay'
+          assert [v['name'] for v in j['targets']]==['ct172-replay']
+          print('CT172 manifest/target parsed; NO TYPECHECK, LINK, EXECUTION, TIMING OR SCIENTIFIC VERIFICATION')
+          PY
+      - name: Explicit scope
+        run: echo 'SOURCE AND PARSE ONLY [pcc:unverified]; no native run, no 695/701 whole corpus, no paid benchmark, no ECDLP speedup'
