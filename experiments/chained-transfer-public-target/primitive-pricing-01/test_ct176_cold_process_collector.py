@@ -120,6 +120,41 @@ class CT176Tests(unittest.TestCase):
                           "strongest_retained_lift_chain", "direct_composite"))
         self.assertEqual(panel.ARMS[-2:], ("direct_composite", "direct_composite"))
 
+    def test_explicit_aggregate_budget_validation(self):
+        self.assertEqual(panel.require_panel_budget(1), 1)
+        self.assertEqual(panel.require_panel_budget(3600), 3600)
+        for invalid in (None, 0, -1, False, True, 1.0, "3600"):
+            with self.subTest(value=invalid):
+                with self.assertRaises(ValueError):
+                    panel.require_panel_budget(invalid)
+
+    def test_aggregate_deadline_limits_child_allowance(self):
+        start = 10_000_000_000
+        deadline = start + 3_000_000_000
+        self.assertEqual(
+            panel.panel_child_timeout_seconds(deadline, 120, start), 3.0)
+        self.assertEqual(
+            panel.panel_child_timeout_seconds(deadline, 1, start), 1.0)
+        self.assertEqual(
+            panel.panel_child_timeout_seconds(deadline, 120, start + 2_500_000_000),
+            0.5)
+        self.assertIsNone(
+            panel.panel_child_timeout_seconds(deadline, 120, deadline))
+        self.assertIsNone(
+            panel.panel_child_timeout_seconds(deadline, 120, deadline + 1))
+        for invalid in (False, 0, -5, 2.0):
+            with self.subTest(value=invalid):
+                with self.assertRaises(ValueError):
+                    panel.panel_child_timeout_seconds(deadline, invalid, start)
+
+    def test_aggregate_failure_cannot_become_complete(self):
+        terminal = panel.terminal_status(
+            panel.EXPECTED_COUNTS,
+            "aggregate panel wall deadline exhausted after sample")
+        self.assertFalse(terminal["verified_complete"])
+        self.assertIn("deadline", terminal["refusal"])
+        self.assertEqual(terminal["attempted"], panel.EXPECTED_COUNTS)
+
     def test_terminal_incomplete_is_refused(self):
         terminal = panel.terminal_status(2303, None)
         self.assertFalse(terminal["verified_complete"])
