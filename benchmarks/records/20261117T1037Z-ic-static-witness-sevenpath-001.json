@@ -1,7 +1,35 @@
 {
   "branch": "codex/ic-static-witness-map-20261117",
   "closed_utc": null,
-  "commands": [],
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "cloud/modal_run.py",
+        "run",
+        "--image",
+        "cuda",
+        "--gpu",
+        "L4",
+        "--cpu",
+        "4",
+        "--memory",
+        "8",
+        "--timeout",
+        "900",
+        "--out",
+        "experiments/ic-static-witness-map-20261117/timing-optimized-001",
+        "--detach",
+        "--",
+        "python3",
+        "experiments/ic-static-witness-map-20261117/run_fresh.py"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "started_utc": "2026-11-17T10:38:30+00:00",
+      "wall_s": 11.698
+    }
+  ],
   "commit": "b08e124a01c94f8929626ccd315643bb886ccd69",
   "commit_dirty": false,
   "created_utc": "2026-11-17T10:37:51+00:00",

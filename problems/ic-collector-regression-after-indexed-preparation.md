@@ -22,7 +22,7 @@ The frozen seven-path panel uses the original N15/18/21/24/27 curves/bases, fixe
 
 ## What would unblock it
 
-- [ ] Before new fresh timing, admit matched N24 development inputs/source/units and compare compact, packed, indexed and static paths under the separate protocol.
+- [x] Before new fresh timing, admit matched N24 development inputs/source/units and compare compact, packed, indexed and static paths under the separate protocol.
 - [ ] If work counts remain unchanged, freeze a counter-only or old-scratch-reservation counterfactual before any additional timing; retain source variants and all outcomes.
 - [ ] Identify a repeatable causal contrast with independent correctness/replay, then test the remedy against the original control in a separate full primary comparison.
 
@@ -39,3 +39,5 @@ Instruction evidence can narrow the cause without resolving native timing. A fas
 ## Resolution and history
 
 2026-11-17: recorded the observed collector regression and missing causal contrast without changing the frozen indexed panel. Status remains investigating. [pcc:unverified]
+
+2026-11-17: separate preparation095854-5065 completed; four diagnostic answers independently replay. Compact/packed/indexed selected collector-root/walker/probe/lookup exclusive Ir are respectively869478/1304203/315713/377271 in all three binaries, with8583lookups; inclusive collector10265859/10265770/10265700 differs by at most159Ir. Generic dispatch remains absent. These instruction results narrow an extra-work explanation, but do not resolve the native slowdown. New static map whole Ir falls while lookup Ir rises to405429. Exact raw custody, source/binary admission and limits are in [PREPARATION.md](../experiments/ic-static-witness-map-20261117/PREPARATION.md), unsigned claim PCC-20261117-b9141d. A separate counter-only/scratch counterfactual is still required. [pcc:unverified]
