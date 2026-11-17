@@ -6,6 +6,7 @@ Default is plan-only. Actual execution requires BOTH --execute and
 permission under the existing owner/provider budget gates.
 """
 import argparse
+import base64
 import datetime
 import hashlib
 import json
@@ -76,7 +77,7 @@ def counter_object(value, expected, label):
 
 def fixture_rows(path):
     raw = Path(path).read_bytes()
-    blob = hashlib.sha1(b"blob " + str(len(raw)).encode("ascii") + b"\\0" + raw).hexdigest()
+    blob = hashlib.sha1(b"blob " + str(len(raw)).encode("ascii") + bytes([0]) + raw).hexdigest()
     if blob != FIXTURE_GIT_BLOB:
         raise ValueError(f"fixture Git blob mismatch: expected {FIXTURE_GIT_BLOB}; got {blob}")
     data = json.loads(raw)
@@ -189,6 +190,10 @@ def run_sample(binary, index, arm, row, timeout_seconds):
         exit_code = None
         stdout, stderr = exc.stdout or b"", exc.stderr or b""
         error = "timeout"
+    except OSError as exc:
+        exit_code = None
+        stdout, stderr = b"", str(exc).encode("utf-8", "backslashreplace")
+        error = "process spawn failed"
     wall_ns = time.perf_counter_ns() - start_ns
     if len(stdout) > MAX_CAPTURE or len(stderr) > MAX_CAPTURE:
         error = "unbounded stdout or stderr (capture limit exceeded)"
@@ -196,6 +201,8 @@ def run_sample(binary, index, arm, row, timeout_seconds):
         "argv": argv, "external_wall_ns_decimal": str(wall_ns),
         "exit_code": exit_code, "stdout": stdout.decode("utf-8", "backslashreplace"),
         "stderr": stderr.decode("utf-8", "backslashreplace"),
+        "stdout_base64": base64.b64encode(stdout).decode("ascii"),
+        "stderr_base64": base64.b64encode(stderr).decode("ascii"),
         "stdout_sha256": hashlib.sha256(stdout).hexdigest(),
         "stderr_sha256": hashlib.sha256(stderr).hexdigest(),
         "peak_rss_kib_linux": None, "verified": False, "error": error
@@ -282,6 +289,8 @@ def main():
             "refusal": failure, "ended_utc": datetime.datetime.now(
                 datetime.timezone.utc).isoformat(),
         })
+    if failure is None and completed != EXPECTED_COUNTS:
+        failure = "incomplete process population"
     if failure:
         print(f"CT176 REFUSED: {failure}; raw evidence retained at {args.output}",
               file=sys.stderr)
