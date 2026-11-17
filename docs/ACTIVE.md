@@ -16,7 +16,7 @@ _(none pinned — set one with `/goal <text>`)_
 
 ## Active items (top = next)
 
-- [ ] CT185 adversarial counterbalanced order-dependent latency null and necessary first-four-slot sham admission (automation, started 2026-11-17, branch research/ct185-order-locked-null-falsifier-20261117)
+- [ ] CT185 adversarial counterbalanced order-dependent latency null and necessary first-four-slot sham admission (automation, started 2026-11-17, branch research/ct185-order-locked-null-falsifier-20261117, draft PR #1715)
 
 - [x] CT184 cross-stack producer/reader pinned compatibility simulation complete (automation, 2026-11-17, branch research/ct184-cross-stack-v2-source-contract-20261117, draft PR #1714; source CI #44096935980 passed 3/3 normal and 3/3 -O; signed/native/complete-solve gates unchanged)
 
