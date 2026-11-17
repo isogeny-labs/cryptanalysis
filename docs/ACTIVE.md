@@ -16,6 +16,8 @@ _(none pinned — set one with `/goal <text>`)_
 
 ## Active items (top = next)
 
+- [ ] CT184 integrate CT183 v2 producer and CT182 offline adjudicator under an immutable read-only second checkout; generate full fake (never-native) panel, test both null/positive controls and refusal; no merges/paid runs (automation, started 2026-11-17, branch research/ct184-cross-stack-v2-source-contract-20261117, PR pending)
+
 - [ ] CT183 implement a v2 counterbalanced cold-process producer matched to CT182, with bounded capture and fail-closed source tests (automation, started 2026-11-17, branch research/ct183-v2-balanced-cold-producer-20261117, PR #1713; source CI 44087794086 passed, draft pending cross-stack reader reconciliation and PCC/native gates)
 
 - [x] CT177 bound CT176 child output capture and prevent unbounded process memory while preserving raw evidence (automation, started 2026-11-17, branch research/ct177-bounded-process-capture-20261117, PR #1706; scoped source CI passed)
