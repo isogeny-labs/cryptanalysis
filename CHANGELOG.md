@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.1.11](https://github.com/isogeny-labs/cryptanalysis/compare/cryptanalysis-v0.1.10...cryptanalysis-v0.1.11) (2026-11-17)
+
+
+### Features
+
+* **ct182:** add independent versioned counterbalanced v2 panel adjudication with strict legacy child checks ([8745412](https://github.com/isogeny-labs/cryptanalysis/commit/87454126a73744f75d0c0bc384b3035e55815226))
+
+
+### Bug Fixes
+
+* **ct178:** require total wall budget and truncate each native child allowance ([d873cfc](https://github.com/isogeny-labs/cryptanalysis/commit/d873cfcf115317427caf870e6b8c0dc7ceca1a64))
+* **ct179:** bind recorded child command and match lossless pipe rendering ([317b2a6](https://github.com/isogeny-labs/cryptanalysis/commit/317b2a6961a3c1fca7b8b626346f8ba96046821e))
+* **ct180:** encode actual JSONL newline in mutation tests ([2374402](https://github.com/isogeny-labs/cryptanalysis/commit/237440225c06ef1e82dab7a47906b15746da847d))
+* **ct180:** reject impossible nested cold-process timing transcripts ([bbf6e83](https://github.com/isogeny-labs/cryptanalysis/commit/bbf6e83e43aaca66e1f6a37f55c614cafb7128cc))
+* **ct185:** use defined pinned-reader environment variable ([0d4ce55](https://github.com/isogeny-labs/cryptanalysis/commit/0d4ce551d166358aad6c33a6452ea784dfc4d2dd))
+
 ## [0.1.10](https://github.com/isogeny-labs/cryptanalysis/compare/cryptanalysis-v0.1.9...cryptanalysis-v0.1.10) (2026-11-17)
 
 
