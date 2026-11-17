@@ -1,0 +1,24 @@
+{
+  "status": "post_execution_provenance_audit",
+  "purpose": "prepublished identities were checked against every native target; local ARM probe is identity generation only",
+  "published_admission_revision": "a0a81115131522261da839c7d5b129b6c9b4aea7",
+  "published_identities_revision": "b08e124a01c94f8929626ccd315643bb886ccd69",
+  "argv": [
+    "python3",
+    "experiments/ic-static-witness-map-20261117/freeze_fresh_inputs.py",
+    "suite/target/debug/examples/ic_affine_pipeline_probe"
+  ],
+  "local_probe_sha256_observed_now": "4497703f9d6aa220266d519335f3a42da9634cfdf815ded2c99d317a16dc4e3a",
+  "local_probe_hash_at_generation_recorded": false,
+  "limitation": "No instantaneous local identity-probe hash receipt was saved at generation; this audit is retrospective. Exact candidate/workload IDs, four native binary bindings and protocol were published before timing; every native target matched those identities.",
+  "generator_sha256": "1f44cf0fb78d356aa689e5db9bd8bdeff9af04e63260bd31631dbf6df24bc812",
+  "identities_sha256": "9e9d180ef4f26ab74739570d5e685c9ce66d8cf293817746c01c9e3e30e50530",
+  "new_candidates": 10,
+  "reused_candidates": 25,
+  "one_target_workloads": 210,
+  "fixtures": [
+    684,
+    725
+  ],
+  "native_preparation": "20261117-095854-5065"
+}
