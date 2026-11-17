@@ -1,0 +1,50 @@
+name: CT184 CT183-to-CT182 pinned source compatibility (synthetic only)
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/ct184-cross-stack-v2-source-gate.yml'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/test_ct184_cross_stack_v2.py'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/CT184_CROSS_STACK_SOURCE_CONTRACT.md'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/ct183_v2_cold_process_collector.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  pinned-reader-producer-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout tested producer at exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Checkout immutable separate CT182 reader revision, read-only
+        uses: actions/checkout@v4
+        with:
+          repository: isogeny-labs/cryptanalysis
+          ref: 92d0c646a757046f8f10a015ae17ce0ed9d0fd2c
+          path: ct182-pinned
+          persist-credentials: false
+          sparse-checkout: |
+            experiments/chained-transfer-public-target/primitive-pricing-01
+      - name: Verify both immutable source identifiers and fixture
+        run: |
+          set -euo pipefail
+          root=experiments/chained-transfer-public-target/primitive-pricing-01
+          fixture=experiments/chained-transfer-public-target/evidence/fixed-chain-norm-point-native-01/literal-selected-vectors.json
+          test "$(git -C ct182-pinned rev-parse HEAD)" = 92d0c646a757046f8f10a015ae17ce0ed9d0fd2c
+          test "$(git hash-object "$fixture")" = 9ac741668dd1ffa9632ff0d58e6f4dd9f2dd18c3
+          test "$(git hash-object "$root/ct183_v2_cold_process_collector.py")" = 5d6c027b24e2c22fb7e20d94813f55a6569b7ef2
+          test "$(git -C ct182-pinned hash-object "experiments/chained-transfer-public-target/primitive-pricing-01/ct182_v2_panel_adjudicator.py")" = da70198f0a4b4b673c50f103f02be75da292d115
+          echo 'CT184 exact immutable source and original fixture verified [pcc:unverified]'
+      - name: Full synthetic 2304-process producer bytes read by pinned independent CT182 adjudicator (normal and optimized)
+        env:
+          CT182_SOURCE_ROOT: ${{ github.workspace }}/ct182-pinned/experiments/chained-transfer-public-target/primitive-pricing-01
+        run: |
+          set -euo pipefail
+          root=experiments/chained-transfer-public-target/primitive-pricing-01
+          python3 -S -m py_compile "$root/test_ct184_cross_stack_v2.py"
+          python3 -S -m unittest discover -s "$root" -p 'test_ct184_cross_stack_v2.py' -v
+          python3 -O -S -m unittest discover -s "$root" -p 'test_ct184_cross_stack_v2.py' -v
+          echo 'SOURCE-ONLY: all native child processes mocked; no real ECDLP solve, signed PCC, or speedup claim'
