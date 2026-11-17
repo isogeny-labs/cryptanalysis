@@ -1,7 +1,35 @@
 {
   "branch": "codex/ic-pair-index-gather-20261117",
   "closed_utc": null,
-  "commands": [],
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "cloud/modal_run.py",
+        "run",
+        "--image",
+        "cuda",
+        "--gpu",
+        "L4",
+        "--cpu",
+        "4",
+        "--memory",
+        "8",
+        "--timeout",
+        "900",
+        "--out",
+        "experiments/ic-pair-index-gather-20261117/timing-optimized-001",
+        "--detach",
+        "--",
+        "python3",
+        "experiments/ic-pair-index-gather-20261117/run_fresh.py"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "started_utc": "2026-11-17T08:49:33+00:00",
+      "wall_s": 12.522
+    }
+  ],
   "commit": "21555ef7d4cebd7d844c9c3d0a8987095d5361a7",
   "commit_dirty": false,
   "created_utc": "2026-11-17T08:47:11+00:00",
