@@ -125,7 +125,7 @@ try:
  (OUT/'packed-const-unit.log').write_text(packed.stdout+packed.stderr)
  assert packed.returncode==0 and '1 passed; 0 failed' in packed.stdout and 'SIMD packed constant squares accepted' in packed.stderr and 'skipped:' not in packed.stderr
  receipt['native_packed_const_unit']='pass';receipt['native_packed_const_unit_argv']=packed_argv
- receipt['status']='prepared' 
+ receipt['status']='prepared'
 except Exception as e:receipt.update(status='failed_or_capped',error=repr(e))
 finally:
  (OUT/'receipt.json').write_text(json.dumps(receipt,indent=2)+'\n');print(json.dumps({'status':receipt['status']}),flush=True)
