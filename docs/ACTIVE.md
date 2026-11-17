@@ -17,6 +17,7 @@ _(none pinned — set one with `/goal <text>`)_
 ## Active items (top = next)
 
 - [x] CT177 bound CT176 child output capture and prevent unbounded process memory while preserving raw evidence (automation, started 2026-11-17, branch research/ct177-bounded-process-capture-20261117, PR #1706; scoped source CI passed)
+- [ ] CT178 prevent aggregate 2,304-process runtime overruns with explicit admission budget and terminal refusal (automation, started 2026-11-17, branch research/ct177-bounded-process-capture-20261117, PR #1706)
 
 <!-- One line per task, added as the task's first step with its draft PR:
 - [ ] <task> (<runtime>, started YYYY-MM-DD, branch <branch>, PR #<n>) -->
