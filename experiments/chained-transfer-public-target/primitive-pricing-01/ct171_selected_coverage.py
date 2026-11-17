@@ -13,7 +13,7 @@ import argparse
 HERE = Path(__file__).resolve().parent
 FIXTURE = HERE.parent / "evidence/fixed-chain-norm-point-native-01/literal-selected-vectors.json"
 RUST = HERE / "src/main.rs"
-FIXTURE_BLOB = "9ac741668dd1ffa9632ff0d58e6c4dd9f2dd18c3"
+FIXTURE_BLOB = "9ac741668dd1ffa9632ff0d58e6f4dd9f2dd18c3"
 RUST_BLOB = "ac4146577f5019fc17674deb342eb5d9fc749715"
 SCALARS = (0, 1, 2, 17, 12345, 2771710)
 DIRECTIONS = ((0, 2), (2, 0))
