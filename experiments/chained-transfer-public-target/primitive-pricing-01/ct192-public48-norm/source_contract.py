@@ -162,8 +162,9 @@ def source_audit(main_rs: bytes, manifest: bytes) -> None:
         raise ValueError("driver must never build a pre-norm operand from a known scalar")
     if 'scalar_OUTSIDE_runtime' not in s:
         raise ValueError("cohort scalar label metadata not retained")
-    for dep in ("chained-n4-fixed-jacobian-chain-norm-reuse-ct192",
-                "chained-n4-fixed-jacobian-chain", "chained-n4-public-target",
+    if c.count('name = "chained-n4-fixed-jacobian-chain-norm-reuse-ct192"') != 1:
+        raise ValueError("CT192 package identity changed")
+    for dep in ("chained-n4-fixed-jacobian-chain", "chained-n4-public-target",
                 "ghs-original-engines", "isogeny_algos", "serde_json"):
         if c.count(dep + " =") != 1:
             raise ValueError("required dependency missing: " + dep)
