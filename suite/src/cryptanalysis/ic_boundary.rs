@@ -676,6 +676,9 @@ impl Hasher for MixHasher {
     fn write_u64(&mut self, v: u64) {
         self.0 = (self.0.rotate_left(5) ^ v).wrapping_mul(0x9E37_79B9_7F4A_7C15);
     }
+    fn write_u32(&mut self, v: u32) {
+        self.write_u64(u64::from(v));
+    }
 }
 
 pub(crate) type FastMap<V> = HashMap<u64, V, BuildHasherDefault<MixHasher>>;
@@ -3409,8 +3412,100 @@ pub struct TableCost {
 
 /// A table of all pair sums of a base, keyed by the sum's abscissa so
 /// `S` and `−S` share one entry; the probe checks which it found.
+enum PairWitnessMap {
+    Wide(FastMap<(u32, u32)>),
+    Compact(HashMap<u32, u32, BuildHasherDefault<MixHasher>>),
+}
+
+fn compact_pair_storage_shape(degree: u32, points: usize) -> bool {
+    (1..=31).contains(&degree) && points <= usize::from(u16::MAX) + 1
+}
+
+fn compact_pair_storage_eligible(curve: &FastCurve, fb: &FactorBase<FastPoint>) -> bool {
+    compact_pair_storage_shape(curve.field.n, fb.points.len())
+        && fb
+            .points
+            .iter()
+            .all(|p| p.infinity || (p.x >> curve.field.n == 0 && p.y >> curve.field.n == 0))
+}
+
+impl PairWitnessMap {
+    fn new(capacity: usize, compact: bool) -> Self {
+        if compact {
+            Self::Compact(HashMap::with_capacity_and_hasher(
+                capacity,
+                BuildHasherDefault::default(),
+            ))
+        } else {
+            Self::Wide(fast_map(capacity))
+        }
+    }
+
+    fn len(&self) -> usize {
+        match self {
+            Self::Wide(map) => map.len(),
+            Self::Compact(map) => map.len(),
+        }
+    }
+
+    #[inline]
+    fn get(&self, key: u64) -> Option<(u32, u32)> {
+        match self {
+            Self::Wide(map) => map.get(&key).copied(),
+            Self::Compact(map) => {
+                let packed = *map.get(&u32::try_from(key).ok()?)?;
+                Some((packed >> 16, packed & u32::from(u16::MAX)))
+            }
+        }
+    }
+
+    // Select storage once per bounded flush, outside the per-pair loop.
+    fn insert_abscissae(&mut self, xs: &[Option<u64>], indices: &[(u32, u32)]) {
+        match self {
+            Self::Wide(map) => {
+                for (x, &pair) in xs.iter().zip(indices) {
+                    if let Some(x) = x {
+                        map.entry(*x + 1).or_insert(pair);
+                    }
+                }
+            }
+            Self::Compact(map) => {
+                for (x, &(i, j)) in xs.iter().zip(indices) {
+                    if let Some(x) = x {
+                        // Construction checked canonical coordinates, degree <=31,
+                        // and at most 65536 points. No key or index bits are lost.
+                        debug_assert!(*x < u64::from(u32::MAX));
+                        debug_assert!(i <= u32::from(u16::MAX) && j <= u32::from(u16::MAX));
+                        map.entry((*x + 1) as u32).or_insert((i << 16) | j);
+                    }
+                }
+            }
+        }
+    }
+
+    fn same_entries(&self, other: &Self) -> bool {
+        self.len() == other.len()
+            && match self {
+                Self::Wide(map) => map.iter().all(|(&key, &pair)| other.get(key) == Some(pair)),
+                Self::Compact(map) => map.iter().all(|(&key, &pair)| {
+                    other.get(u64::from(key)) == Some((pair >> 16, pair & u32::from(u16::MAX)))
+                }),
+            }
+    }
+
+    fn calibration_probe(&self, key: u64) -> bool {
+        // Measure a real hash-table bucket probe, not the compact lookup's
+        // early rejection of synthetic keys with nonzero upper 32 bits.
+        match self {
+            Self::Wide(map) => map.contains_key(&key),
+            Self::Compact(map) => map.contains_key(&(key as u32)),
+        }
+    }
+}
+
+/// Pair sums keyed by abscissa, retaining the first ordered witness for each key.
 pub struct PairTable {
-    map: FastMap<(u32, u32)>,
+    map: PairWitnessMap,
     /// `full` (every `i ≤ j`) or `negation_folded` (one pair per orbit
     /// under negation).
     pub kind: &'static str,
@@ -3429,7 +3524,20 @@ impl PairTable {
     /// Exact diagnostic comparison of keys and first witnesses, ignoring
     /// preparation counters, timing and allocation strategy.
     pub fn same_witness_map(&self, other: &Self) -> bool {
-        self.map == other.map
+        self.map.same_entries(&other.map)
+    }
+
+    pub fn uses_compact_storage(&self) -> bool {
+        matches!(self.map, PairWitnessMap::Compact(_))
+    }
+
+    /// Per-bucket key/value payload; excludes hash control bytes and allocation rounding.
+    pub fn witness_entry_payload_bytes(&self) -> usize {
+        if self.uses_compact_storage() {
+            std::mem::size_of::<(u32, u32)>()
+        } else {
+            std::mem::size_of::<(u64, (u32, u32))>()
+        }
     }
 
     /// The identical ordered negation-folded table, using bounded batches of
@@ -3548,7 +3656,8 @@ impl PairTable {
                 .iter()
                 .map(|x| fb.x_index.get(x).expect("every listed abscissa is indexed"))
                 .collect();
-            let mut map = fast_map(groups.len() * groups.len() + 1);
+            let compact = x_only && vector_cached == 3 && compact_pair_storage_eligible(curve, fb);
+            let mut map = PairWitnessMap::new(groups.len() * groups.len() + 1, compact);
             let mut ps = Vec::with_capacity(chunk_size);
             let mut qs = Vec::with_capacity(chunk_size);
             let mut indices = Vec::with_capacity(chunk_size);
@@ -3588,15 +3697,14 @@ impl PairTable {
                     } else {
                         curve.add_pairwise_abscissae(ps, qs, &mut abscissae, &mut scratch);
                     }
-                    for (x, &pair) in abscissae.iter().zip(indices.iter()) {
-                        if let Some(x) = x {
-                            // Match FastPoint::pack() >> 1: zero is reserved for O.
-                            map.entry(*x + 1).or_insert(pair);
-                        }
-                    }
+                    // Match FastPoint::pack() >> 1: zero is reserved for O.
+                    map.insert_abscissae(&abscissae, indices);
                 } else {
                     sums.clear();
                     curve.add_pairwise(ps, qs, &mut sums, &mut scratch);
+                    let PairWitnessMap::Wide(map) = &mut map else {
+                        unreachable!("compact storage is only selected for x-only preparation");
+                    };
                     for (sum, &pair) in sums.iter().zip(indices.iter()) {
                         if !sum.infinity {
                             map.entry(sum.pack() >> 1).or_insert(pair);
@@ -3681,7 +3789,7 @@ impl PairTable {
         Self {
             kind: "full",
             entries: map.len() as u64,
-            map,
+            map: PairWitnessMap::Wide(map),
             build_ops: ops,
             build_wall_ns: start.elapsed().as_nanos() as u64,
             prefix_inverse_bytes: 0,
@@ -3724,7 +3832,7 @@ impl PairTable {
         Self {
             kind: "negation_folded",
             entries: map.len() as u64,
-            map,
+            map: PairWitnessMap::Wide(map),
             build_ops: ops,
             build_wall_ns: start.elapsed().as_nanos() as u64,
             prefix_inverse_bytes: 0,
@@ -3766,7 +3874,7 @@ impl PairTable {
         target: G::Elt,
     ) -> Option<(usize, usize)> {
         *lookups += 1;
-        let &(i, j) = self.map.get(&(g.key(&target) >> 1))?;
+        let (i, j) = self.map.get(g.key(&target) >> 1)?;
         let (i, j) = (i as usize, j as usize);
         let s = g.add(ops, fb.points[i], fb.points[j]);
         if s == target {
@@ -3784,7 +3892,7 @@ impl PairTable {
         let start = Instant::now();
         let mut hits = 0u64;
         for i in 0..samples {
-            if self.map.contains_key(&keys[(i % 1024) as usize]) {
+            if self.map.calibration_probe(keys[(i % 1024) as usize]) {
                 hits += 1;
             }
         }
@@ -6695,6 +6803,65 @@ pub fn format_markdown(ledger: &BoundaryLedger) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn compact_pair_witness_map_preserves_first_entries_and_rejects_wide_aliases() {
+        let mut wide = PairWitnessMap::new(8, false);
+        let mut compact = PairWitnessMap::new(8, true);
+        let xs = [
+            Some(0),
+            Some(7),
+            Some(7),
+            None,
+            Some(u64::from(u32::MAX) - 1),
+        ];
+        let indices = [(0, 0), (65535, 12345), (7, 9), (11, 12), (65535, 65535)];
+        wide.insert_abscissae(&xs, &indices);
+        compact.insert_abscissae(&xs, &indices);
+        assert!(wide.same_entries(&compact) && compact.same_entries(&wide));
+        assert_eq!(compact.len(), 3);
+        assert_eq!(compact.get(8), Some((65535, 12345)));
+        assert_eq!(compact.get(u64::from(u32::MAX)), Some((65535, 65535)));
+        assert_eq!(compact.get((1u64 << 32) | 8), None);
+        assert_eq!(compact.get(u64::MAX), None);
+        assert_eq!(compact.get(0), None);
+        assert_eq!(std::mem::size_of::<(u32, u32)>(), 8);
+        assert_eq!(std::mem::size_of::<(u64, (u32, u32))>(), 16);
+    }
+
+    #[test]
+    fn compact_pair_witness_hash_matches_the_wide_key_rule() {
+        for key in (0..4096).chain([1 << 31, u32::MAX - 1, u32::MAX]) {
+            let mut narrow = MixHasher::default();
+            let mut wide = MixHasher::default();
+            std::hash::Hash::hash(&key, &mut narrow);
+            std::hash::Hash::hash(&u64::from(key), &mut wide);
+            assert_eq!(narrow.finish(), wide.finish());
+        }
+    }
+
+    #[test]
+    fn compact_pair_witness_bounds_and_complete_curve_map() {
+        assert!(compact_pair_storage_shape(1, 0));
+        assert!(compact_pair_storage_shape(31, 65536));
+        assert!(!compact_pair_storage_shape(0, 1));
+        assert!(!compact_pair_storage_shape(32, 1));
+        assert!(!compact_pair_storage_shape(31, 65537));
+        let inst = random_binary_instance(13, 3, 8).unwrap();
+        let mut fb = binary_subspace_factor_base(&inst, &[1, 2, 4]);
+        assert!(compact_pair_storage_eligible(&inst.fast, &fb));
+        let reference = PairTable::build_negation_folded(&BinaryGroup(&inst.fast), &fb);
+        let compact =
+            PairTable::build_negation_folded_binary_vector_const_cached(&inst.fast, &fb, 7)
+                .unwrap();
+        assert!(!reference.uses_compact_storage());
+        assert!(compact.uses_compact_storage());
+        assert!(reference.same_witness_map(&compact) && compact.same_witness_map(&reference));
+        assert_eq!(compact.witness_entry_payload_bytes(), 8);
+        let point = fb.points.iter_mut().find(|p| !p.infinity).unwrap();
+        point.x |= 1 << inst.n;
+        assert!(!compact_pair_storage_eligible(&inst.fast, &fb));
+    }
 
     #[test]
     fn floors_are_the_textbook_numbers() {
