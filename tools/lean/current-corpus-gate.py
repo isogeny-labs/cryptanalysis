@@ -1177,6 +1177,30 @@ def tracked_corpus_sources() -> list[str]:
             if not path.startswith("tools/lean/")]
 
 
+FORMAL_CHECKER_SHA256 = "835c51531778a08fa7294cbf81e86aaed552ddf0218c938e72a2fea31bd18e44"
+FORMAL_MANIFEST_SHA256 = "75840fb81416fbfff50e860c63ad5d4c6861ee4db2136fa869a1caf771c7ca82"
+
+
+def check_formal_projects() -> tuple[dict[str, str], set[str]]:
+    checker = ROOT / "tools/lean/check_formal_projects.py"
+    manifest = ROOT / "tools/lean/formal-projects-20261117.json"
+    require(checker.is_file() and not checker.is_symlink()
+            and digest(checker) == FORMAL_CHECKER_SHA256,
+            "formal project checker changed without review")
+    require(manifest.is_file() and not manifest.is_symlink()
+            and digest(manifest) == FORMAL_MANIFEST_SHA256,
+            "formal project bindings changed without review")
+    spec = importlib.util.spec_from_file_location("formal_project_audit", checker)
+    require(spec is not None and spec.loader is not None, "cannot load formal project checker")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    result = module.check(ROOT, argparse.Namespace(**globals()))
+    require(digest(checker) == FORMAL_CHECKER_SHA256
+            and digest(manifest) == FORMAL_MANIFEST_SHA256,
+            "formal checker or bindings changed during native replay")
+    return result
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--check-receipt", type=Path)
@@ -1210,8 +1234,16 @@ def main() -> None:
     disposition_paths = set(dispositions["proof_paths"]) | set(dispositions["archived_paths"])
     require(disposition_paths <= additions, "source disposition overlaps frozen corpus")
     registered, verifier_programs = check_registered_mathlib_sources(additions)
+    formal, censored_probes = check_formal_projects()
+    formal_paths = set(formal) | censored_probes
+    require(formal_paths <= additions, "formal project inputs overlap frozen corpus")
+    require(not formal_paths & (core_additions | receipt_additions | disposition_paths
+                                | set(registered) | verifier_programs | {HASSE_SOURCE}),
+            "formal project input has multiple dispositions")
     checked = check_new_hecke(additions - {HASSE_SOURCE} - core_additions - receipt_additions
-                             - disposition_paths - set(registered) - verifier_programs)
+                             - disposition_paths - set(registered) - verifier_programs
+                             - formal_paths)
+    checked.update(formal)
     checked.update(registered)
     checked.update({path: current[path] for path in dispositions["proof_paths"]})
     print(f"current core modules audited: {dispositions['unique_proof_modules']}; "

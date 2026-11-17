@@ -151,7 +151,7 @@ def main() -> int:
               str(frozen_producer), str(out / "historical")], frozen, 1500)
         phase("current-pcc-tests", [sys.executable, "-m", "unittest", "tools/pcc/test_pcc.py"], repo)
         phase("current-pcc-canary", [sys.executable, "tools/pcc/pcc.py", "canary"], repo)
-        phase("current-corpus-tests", [sys.executable, "-m", "unittest", "tools/lean/test_current_corpus_gate.py"], repo)
+        phase("current-corpus-tests", [sys.executable, "-m", "unittest", "tools/lean/test_current_corpus_gate.py", "tools/lean/test_source_dispositions.py", "tools/lean/test_registered_mathlib_sources.py", "tools/lean/test_formal_projects.py"], repo)
         phase("current-proof-controls", ["bash", "tools/lean/selftest/run.sh"], repo)
         current = out / "current"
         current.mkdir()
