@@ -1,0 +1,17 @@
+[package]
+name = "ct172-real48-public-replay"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[[bin]]
+name = "ct172-replay"
+path = "src/main.rs"
+
+[workspace]
+
+[dependencies]
+chained-n4-fixed-jacobian-chain-norm-reuse = { path = "../../fixed-jacobian-chain-evaluator-02" }
+chained-n4-fixed-jacobian-chain = { path = "../../fixed-jacobian-chain-01" }
+chained-n4-public-target = { path = "../../native" }
+serde_json = "=1.0.145"
