@@ -3410,11 +3410,85 @@ pub struct TableCost {
     pub native: Vec<(&'static str, u64)>,
 }
 
+/// Static nonzero-u32-key dictionary. Each bucket is key | (witness << 32).
+/// Capacity is derived from an upper bound on all scheduled insertions.
+struct StaticWitnessMap {
+    buckets: Vec<u64>,
+    len: usize,
+}
+
+impl StaticWitnessMap {
+    fn new(maximum_pairs: usize) -> Option<Self> {
+        let minimum = maximum_pairs.checked_mul(4)?.checked_add(2)? / 3;
+        let capacity = minimum.max(8).checked_next_power_of_two()?;
+        let mut buckets = Vec::new();
+        buckets.try_reserve_exact(capacity).ok()?;
+        buckets.resize(capacity, 0);
+        Some(Self { buckets, len: 0 })
+    }
+
+    #[inline]
+    fn slot(&self, key: u32) -> usize {
+        let mut hash = MixHasher::default();
+        hash.write_u32(key);
+        hash.finish() as usize & (self.buckets.len() - 1)
+    }
+
+    #[inline]
+    fn get(&self, key: u32) -> Option<u32> {
+        if key == 0 {
+            return None;
+        }
+        let mask = self.buckets.len() - 1;
+        let mut slot = self.slot(key);
+        for _ in 0..self.buckets.len() {
+            let entry = self.buckets[slot];
+            if entry == 0 {
+                return None;
+            }
+            if entry as u32 == key {
+                return Some((entry >> 32) as u32);
+            }
+            slot = (slot + 1) & mask;
+        }
+        None
+    }
+
+    #[inline]
+    fn insert_first(&mut self, key: u32, witness: u32) -> Result<(), &'static str> {
+        if key == 0 {
+            return Err("static witness key zero is reserved");
+        }
+        let mask = self.buckets.len() - 1;
+        let mut slot = self.slot(key);
+        for _ in 0..self.buckets.len() {
+            let entry = self.buckets[slot];
+            if entry == 0 {
+                self.buckets[slot] = u64::from(key) | (u64::from(witness) << 32);
+                self.len += 1;
+                return Ok(());
+            }
+            if entry as u32 == key {
+                return Ok(());
+            }
+            slot = (slot + 1) & mask;
+        }
+        Err("static witness capacity exhausted")
+    }
+
+    fn entries(&self) -> impl Iterator<Item = (u32, u32)> + '_ {
+        self.buckets
+            .iter()
+            .filter_map(|&entry| (entry != 0).then_some((entry as u32, (entry >> 32) as u32)))
+    }
+}
+
 /// A table of all pair sums of a base, keyed by the sum's abscissa so
 /// `S` and `−S` share one entry; the probe checks which it found.
 enum PairWitnessMap {
     Wide(FastMap<(u32, u32)>),
     Compact(HashMap<u32, u32, BuildHasherDefault<MixHasher>>),
+    Static(StaticWitnessMap),
 }
 
 fn compact_pair_storage_shape(degree: u32, points: usize) -> bool {
@@ -3441,10 +3515,22 @@ impl PairWitnessMap {
         }
     }
 
+    fn new_static(capacity: usize, maximum_pairs: Option<usize>, compact: bool) -> Self {
+        if let Some(map) = maximum_pairs
+            .filter(|_| compact)
+            .and_then(StaticWitnessMap::new)
+        {
+            Self::Static(map)
+        } else {
+            Self::new(capacity, compact)
+        }
+    }
+
     fn len(&self) -> usize {
         match self {
             Self::Wide(map) => map.len(),
             Self::Compact(map) => map.len(),
+            Self::Static(map) => map.len,
         }
     }
 
@@ -3454,6 +3540,10 @@ impl PairWitnessMap {
             Self::Wide(map) => map.get(&key).copied(),
             Self::Compact(map) => {
                 let packed = *map.get(&u32::try_from(key).ok()?)?;
+                Some((packed >> 16, packed & u32::from(u16::MAX)))
+            }
+            Self::Static(map) => {
+                let packed = map.get(u32::try_from(key).ok()?)?;
                 Some((packed >> 16, packed & u32::from(u16::MAX)))
             }
         }
@@ -3480,6 +3570,16 @@ impl PairWitnessMap {
                     }
                 }
             }
+            Self::Static(map) => {
+                for (x, &(i, j)) in xs.iter().zip(indices) {
+                    if let Some(x) = x {
+                        debug_assert!(*x < u64::from(u32::MAX));
+                        debug_assert!(i <= u32::from(u16::MAX) && j <= u32::from(u16::MAX));
+                        map.insert_first((*x + 1) as u32, (i << 16) | j)
+                            .expect("scheduled pair count bounds static witness capacity");
+                    }
+                }
+            }
         }
     }
 
@@ -3488,6 +3588,9 @@ impl PairWitnessMap {
             && match self {
                 Self::Wide(map) => map.iter().all(|(&key, &pair)| other.get(key) == Some(pair)),
                 Self::Compact(map) => map.iter().all(|(&key, &pair)| {
+                    other.get(u64::from(key)) == Some((pair >> 16, pair & u32::from(u16::MAX)))
+                }),
+                Self::Static(map) => map.entries().all(|(key, pair)| {
                     other.get(u64::from(key)) == Some((pair >> 16, pair & u32::from(u16::MAX)))
                 }),
             }
@@ -3499,6 +3602,7 @@ impl PairWitnessMap {
         match self {
             Self::Wide(map) => map.contains_key(&key),
             Self::Compact(map) => map.contains_key(&(key as u32)),
+            Self::Static(map) => map.get(key as u32).is_some(),
         }
     }
 }
@@ -3530,7 +3634,14 @@ impl PairTable {
     }
 
     pub fn uses_compact_storage(&self) -> bool {
-        matches!(self.map, PairWitnessMap::Compact(_))
+        matches!(
+            self.map,
+            PairWitnessMap::Compact(_) | PairWitnessMap::Static(_)
+        )
+    }
+
+    pub fn uses_static_storage(&self) -> bool {
+        matches!(self.map, PairWitnessMap::Static(_))
     }
 
     /// Per-bucket key/value payload; excludes hash control bytes and allocation rounding.
@@ -3660,7 +3771,20 @@ impl PairTable {
                 .map(|x| fb.x_index.get(x).expect("every listed abscissa is indexed"))
                 .collect();
             let compact = x_only && vector_cached == 3 && compact_pair_storage_eligible(curve, fb);
-            let mut map = PairWitnessMap::new(groups.len() * groups.len() + 1, compact);
+            let maximum_pairs = if compact {
+                groups
+                    .iter()
+                    .enumerate()
+                    .try_fold(0usize, |total, (k, group)| {
+                        (k + 1)
+                            .checked_mul(group.len())
+                            .and_then(|n| total.checked_add(n))
+                    })
+            } else {
+                None
+            };
+            let mut map =
+                PairWitnessMap::new_static(groups.len() * groups.len() + 1, maximum_pairs, compact);
             let indexed = compact && cache.is_some() && curve.has_const_vector_field();
             let mut ps = Vec::with_capacity(if indexed { 0 } else { chunk_size });
             let mut qs = Vec::with_capacity(if indexed { 0 } else { chunk_size });
@@ -6844,6 +6968,75 @@ pub fn format_markdown(ledger: &BoundaryLedger) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn static_witness_map_collision_wrap_first_witness_and_full_bound() {
+        let mut map = StaticWitnessMap::new(40).unwrap();
+        let target = map.buckets.len() - 1;
+        let keys: Vec<_> = (1u32..100_000)
+            .filter(|&key| map.slot(key) == target)
+            .take(24)
+            .collect();
+        assert_eq!(keys.len(), 24);
+        let mut reference = HashMap::new();
+        for (i, &key) in keys.iter().enumerate() {
+            let witness = (u32::from(u16::MAX) << 16) | i as u32;
+            map.insert_first(key, witness).unwrap();
+            reference.entry(key).or_insert(witness);
+            map.insert_first(key, 123).unwrap();
+        }
+        map.insert_first(u32::MAX, u32::MAX).unwrap();
+        reference.insert(u32::MAX, u32::MAX);
+        assert_eq!(map.len, reference.len());
+        assert!(reference
+            .iter()
+            .all(|(&key, &witness)| map.get(key) == Some(witness)));
+        assert_eq!(map.entries().collect::<HashMap<_, _>>(), reference);
+        assert_eq!(map.get(0), None);
+        assert!(map.insert_first(0, 1).is_err());
+        let absent = (1..100_000)
+            .find(|key| map.slot(*key) == target && !reference.contains_key(key))
+            .unwrap();
+        assert_eq!(map.get(absent), None);
+        let mut full = StaticWitnessMap::new(1).unwrap();
+        for key in 1..=full.buckets.len() as u32 {
+            full.insert_first(key, key).unwrap();
+        }
+        let absent = full.buckets.len() as u32 + 1;
+        assert_eq!(full.get(absent), None);
+        assert!(full.insert_first(absent, 0).is_err());
+        assert!(StaticWitnessMap::new(usize::MAX).is_none());
+    }
+
+    #[test]
+    fn static_witness_map_matches_wide_and_overflow_falls_back() {
+        let xs = [
+            Some(0),
+            Some(7),
+            Some(7),
+            None,
+            Some(u64::from(u32::MAX) - 1),
+        ];
+        let indices = [(0, 0), (65535, 12345), (7, 9), (11, 12), (65535, 65535)];
+        let mut wide = PairWitnessMap::new(8, false);
+        let mut compact = PairWitnessMap::new(8, true);
+        let mut fixed = PairWitnessMap::new_static(8, Some(xs.len()), true);
+        let mut overflow = PairWitnessMap::new_static(8, Some(usize::MAX), true);
+        assert!(matches!(fixed, PairWitnessMap::Static(_)));
+        assert!(matches!(overflow, PairWitnessMap::Compact(_)));
+        for map in [&mut wide, &mut compact, &mut fixed, &mut overflow] {
+            map.insert_abscissae(&xs, &indices);
+        }
+        for map in [&compact, &fixed, &overflow] {
+            assert!(wide.same_entries(map) && map.same_entries(&wide));
+            assert_eq!(map.get((1u64 << 32) | 8), None);
+            assert_eq!(map.get(0), None);
+        }
+        let empty = PairWitnessMap::new_static(0, Some(0), true);
+        assert_eq!(empty.len(), 0);
+        assert_eq!(empty.get(1), None);
+        assert!(!PairWitnessMap::new_static(8, Some(5), false).calibration_probe(0));
+    }
 
     #[test]
     fn compact_pair_witness_map_preserves_first_entries_and_rejects_wide_aliases() {

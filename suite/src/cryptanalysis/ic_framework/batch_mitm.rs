@@ -159,6 +159,14 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for BinaryBatchMitmOracle {
                 ),
             ),
             (
+                "mitm_static_map32_backend".into(),
+                u64::from(
+                    self.table
+                        .as_ref()
+                        .is_some_and(PairTable::uses_static_storage),
+                ),
+            ),
+            (
                 "mitm_map_entry_payload_bytes".into(),
                 self.table
                     .as_ref()
