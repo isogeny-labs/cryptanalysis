@@ -3610,6 +3610,21 @@ impl PairTable {
         Self::build_binary_batch(curve, fb, chunk_size, true, true, 5)
     }
 
+    /// Indexed arithmetic with observed point-buffer state. Experimental only:
+    /// 0 observes empty buffers, 1 also reserves, 2 also gathers ordered points.
+    /// The shared opaque observation prevents dead-store/allocation elimination.
+    pub fn build_negation_folded_binary_vector_const_setup_control_cached(
+        curve: &FastCurve,
+        fb: &FactorBase<FastPoint>,
+        chunk_size: usize,
+        state: u8,
+    ) -> Result<Self, &'static str> {
+        if state > 2 {
+            return Err("setup control must be0,1 or2");
+        }
+        Self::build_binary_batch(curve, fb, chunk_size, true, true, 6 + state)
+    }
+
     /// Dynamic-reduction ordinary-PCLMUL control for the constant kernel.
     pub fn build_negation_folded_binary_vector_narrow_cached(
         curve: &FastCurve,
@@ -3630,7 +3645,7 @@ impl PairTable {
         if !(1..=65536).contains(&chunk_size) {
             return Err("MITM batch size must be in1..=65536");
         }
-        let const_strategy = matches!(vector_cached, 3 | 5);
+        let const_strategy = matches!(vector_cached, 3 | 5..=8);
         let start = Instant::now();
         let cache = if prefix_cache {
             fb.subspace_basis.as_deref().and_then(|basis| {
@@ -3672,10 +3687,14 @@ impl PairTable {
                 .collect();
             let compact = x_only && const_strategy && compact_pair_storage_eligible(curve, fb);
             let mut map = PairWitnessMap::new(groups.len() * groups.len() + 1, compact);
-            let indexed =
-                compact && vector_cached == 3 && cache.is_some() && curve.has_const_vector_field();
-            let mut ps = Vec::with_capacity(if indexed { 0 } else { chunk_size });
-            let mut qs = Vec::with_capacity(if indexed { 0 } else { chunk_size });
+            let indexed = compact
+                && matches!(vector_cached, 3 | 6..=8)
+                && cache.is_some()
+                && curve.has_const_vector_field();
+            let reserve_points = !indexed || matches!(vector_cached, 7 | 8);
+            let gather_points = !indexed || vector_cached == 8;
+            let mut ps = Vec::with_capacity(if reserve_points { chunk_size } else { 0 });
+            let mut qs = Vec::with_capacity(if reserve_points { chunk_size } else { 0 });
             let mut indices = Vec::with_capacity(chunk_size);
             let mut sums = Vec::with_capacity(if x_only { 0 } else { chunk_size });
             let mut abscissae = Vec::with_capacity(if x_only { chunk_size } else { 0 });
@@ -3683,6 +3702,9 @@ impl PairTable {
             let mut flush = |ps: &mut Vec<FastPoint>,
                              qs: &mut Vec<FastPoint>,
                              indices: &mut Vec<(u32, u32)>| {
+                if matches!(vector_cached, 6..=8) {
+                    std::hint::black_box((&*ps, &*qs));
+                }
                 if indexed {
                     abscissae.clear();
                     vector_pairs += curve
@@ -3763,7 +3785,7 @@ impl PairTable {
                 let i = group[0];
                 for later in groups.iter().skip(ai) {
                     for &j in later.iter() {
-                        if !indexed {
+                        if gather_points {
                             ps.push(fb.points[i]);
                             qs.push(fb.points[j]);
                         }
@@ -6923,6 +6945,48 @@ mod tests {
                 assert!(
                     PairTable::build_negation_folded_binary_vector_const_staged_cached(
                         &inst.fast, &fb, chunk,
+                    )
+                    .is_err()
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn counterfactual_setup_state_preserves_first_witnesses() {
+        for n in [13, 15] {
+            let inst = random_binary_instance(n, 3, 8).unwrap();
+            let fb = binary_subspace_factor_base(&inst, &[1, 2, 4, 8]);
+            let scalar = PairTable::build_negation_folded(&BinaryGroup(&inst.fast), &fb);
+            for chunk in [1, 7, 64, 1024] {
+                let indexed = PairTable::build_negation_folded_binary_vector_const_cached(
+                    &inst.fast, &fb, chunk,
+                )
+                .unwrap();
+                for state in 0..=2 {
+                    let controlled =
+                        PairTable::build_negation_folded_binary_vector_const_setup_control_cached(
+                            &inst.fast, &fb, chunk, state,
+                        )
+                        .unwrap();
+                    assert!(scalar.same_witness_map(&controlled));
+                    assert!(indexed.same_witness_map(&controlled));
+                    assert_eq!(
+                        indexed.indexed_prepare_pairs,
+                        controlled.indexed_prepare_pairs
+                    );
+                    assert_eq!(indexed.vector_pairs, controlled.vector_pairs);
+                    assert_eq!(indexed.vector_const_pairs, controlled.vector_const_pairs);
+                    assert_eq!(
+                        indexed.uses_compact_storage(),
+                        controlled.uses_compact_storage()
+                    );
+                }
+            }
+            for (chunk, state) in [(0, 0), (65537, 0), (7, 3)] {
+                assert!(
+                    PairTable::build_negation_folded_binary_vector_const_setup_control_cached(
+                        &inst.fast, &fb, chunk, state,
                     )
                     .is_err()
                 );
