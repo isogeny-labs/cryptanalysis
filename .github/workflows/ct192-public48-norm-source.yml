@@ -1,0 +1,29 @@
+name: CT192 all-48 true norm operand source contract
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/ct192-public48-norm-source.yml'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/ct192-public48-norm/**'
+      - 'experiments/chained-transfer-public-target/fixed-jacobian-chain-evaluator-02/derived/lib.rs'
+      - 'experiments/chained-transfer-public-target/evidence/fixed-chain-norm-point-native-01/literal-selected-vectors.json'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Exact CT125 source and original public 48 binding (NO native Rust)
+        shell: bash
+        run: |
+          set -euo pipefail
+          dir=experiments/chained-transfer-public-target/primitive-pricing-01/ct192-public48-norm
+          python3 -S -m py_compile "$dir/source_contract.py" "$dir/test_source_contract.py"
+          python3 -S "$dir/source_contract.py"
+          python3 -S -m unittest discover -s "$dir" -p test_source_contract.py -v
+          python3 -O -S -m unittest discover -s "$dir" -p test_source_contract.py -v
+          echo 'CT192 source/fixture validation ONLY; no native 48 pricing, independent PCC, or complete ECDLP [pcc:unverified]'
