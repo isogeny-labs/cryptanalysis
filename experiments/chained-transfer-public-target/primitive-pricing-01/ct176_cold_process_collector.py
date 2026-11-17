@@ -226,6 +226,18 @@ def run_sample(binary, index, arm, row, timeout_seconds):
     return report
 
 
+def terminal_status(completed, failure):
+    if failure is None and completed != EXPECTED_COUNTS:
+        failure = "incomplete process population"
+    return {
+        "type": "terminal", "attempted": completed,
+        "planned": EXPECTED_COUNTS,
+        "verified_complete": (failure is None and completed == EXPECTED_COUNTS),
+        "refusal": failure,
+        "ended_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+    }
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--fixture", required=True, type=Path)
@@ -282,15 +294,9 @@ def main():
             if not trial["verified"]:
                 failure = trial["error"] or "unverified child"
                 break
-        jwrite(fh, {
-            "type": "terminal", "attempted": completed,
-            "planned": EXPECTED_COUNTS, "verified_complete": (
-                failure is None and completed == EXPECTED_COUNTS),
-            "refusal": failure, "ended_utc": datetime.datetime.now(
-                datetime.timezone.utc).isoformat(),
-        })
-    if failure is None and completed != EXPECTED_COUNTS:
-        failure = "incomplete process population"
+        terminal = terminal_status(completed, failure)
+        jwrite(fh, terminal)
+        failure = terminal["refusal"]
     if failure:
         print(f"CT176 REFUSED: {failure}; raw evidence retained at {args.output}",
               file=sys.stderr)
