@@ -8,6 +8,20 @@ use rand::{rngs::StdRng, Rng, SeedableRng};
 
 const LANES: usize = 16;
 
+/// Add coefficients already reduced modulo a nonzero subgroup order.
+/// If `a < m - b`, the sum is below m and fits u64. Otherwise subtracting
+/// `m - b` gives the reduced sum without forming a potentially overflowing sum.
+#[inline]
+fn add_canonical(a: u64, b: u64, m: u64) -> u64 {
+    debug_assert!(m != 0 && a < m && b < m);
+    let gap = m - b;
+    if a >= gap {
+        a - gap
+    } else {
+        a + b
+    }
+}
+
 struct Lane<E> {
     point: E,
     a: u64,
@@ -245,8 +259,8 @@ impl<E: Copy> BatchedWalker<E> {
                 };
                 self.left.push(lane.point);
                 self.right.push(point);
-                lane.a = addmod(lane.a, a, self.r);
-                lane.b = addmod(lane.b, b, self.r);
+                lane.a = add_canonical(lane.a, a, self.r);
+                lane.b = add_canonical(lane.b, b, self.r);
             }
             self.add_pairs(g, ops);
             for (lane, &point) in self.lanes[..count].iter_mut().zip(&self.output) {
@@ -479,6 +493,52 @@ mod tests {
         assert_eq!(counts["walk_batch_consumed"], 5);
         assert_eq!(counts["walk_batch_unused"], 11);
         assert_eq!(counts["walk_batch_pair_adds"], 15);
+    }
+
+    #[test]
+    fn canonical_add_matches_wide_remainder_across_moduli() {
+        let check = |a, b, m| {
+            let result = add_canonical(a, b, m);
+            assert_eq!(
+                result,
+                ((u128::from(a) + u128::from(b)) % u128::from(m)) as u64,
+                "a={a}, b={b}, m={m}"
+            );
+            assert!(result < m);
+        };
+        for m in 1..=128 {
+            for a in 0..m {
+                for b in 0..m {
+                    check(a, b, m);
+                }
+            }
+        }
+        let mut rng = StdRng::seed_from_u64(0x4341_4e4f_4e49_4341);
+        for m in [
+            1,
+            2,
+            3,
+            u32::MAX as u64,
+            1 << 32,
+            (1 << 63) - 1,
+            1 << 63,
+            (1 << 63) + 1,
+            u64::MAX - 1,
+            u64::MAX,
+        ] {
+            for a in [0, m / 2, m - 1] {
+                for b in [0, m / 2, m - 1] {
+                    check(a, b, m);
+                }
+            }
+            for _ in 0..4096 {
+                check(rng.gen_range(0..m), rng.gen_range(0..m), m);
+            }
+        }
+        for _ in 0..4096 {
+            let m = rng.gen_range(1..=u64::MAX);
+            check(rng.gen_range(0..m), rng.gen_range(0..m), m);
+        }
     }
 
     struct Additive101;

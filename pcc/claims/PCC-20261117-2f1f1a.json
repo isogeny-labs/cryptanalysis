@@ -1,0 +1,15 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-17T03:20:11Z",
+ "id": "PCC-20261117-2f1f1a",
+ "kind": "statement",
+ "producer": {
+  "commit": "2806833dd139d88c84a87a814ee9bfb94c47a5cc",
+  "model": "",
+  "session": "ic-canonical-coeff-20261116"
+ },
+ "proofs": [],
+ "schema": "pcc.claim/v1",
+ "scope": "Canonical coefficient successor, local correctness only",
+ "statement": "Canonical coefficient helper changes only the two BatchedWalker::next updates. Exact frozen baseline source a87e624356 plus this file passes six batched_walk-filter tests and strict library/probe Clippy. Full-width reference arithmetic and existing stream/restart/cap controls pass. Main locked build and two incomplete local-tree layout failures retained; full frozen source reconstruction resolves these. No native performance result or signed verdict yet."
+}

@@ -1,0 +1,12 @@
+   Compiling cryptanalysis-sys v0.1.0 (/tmp/ic-canonical-frozen-source-001/bindings/rust/cryptanalysis-sys)
+   Compiling hashed-ecdl-tensor v0.1.0 (/tmp/ic-canonical-frozen-source-001/bindings/rust/hashed-ecdl-tensor)
+error: failed to run custom build command for `cryptanalysis-sys v0.1.0 (/tmp/ic-canonical-frozen-source-001/bindings/rust/cryptanalysis-sys)`
+
+Caused by:
+  process didn't exit successfully: `/Volumes/SSD990-2/cryptanalysis-worktrees/ic-rational-current-20261115/suite/target/debug/build/cryptanalysis-sys-563b8f23fe9ee6bd/build-script-build` (exit status: 101)
+  --- stderr
+
+  thread 'main' (3821798) panicked at /tmp/ic-canonical-frozen-source-001/bindings/rust/cryptanalysis-sys/build.rs:56:9:
+  expected the C sources at /private/tmp/ic-canonical-frozen-source-001/src; the crate must live at <repo>/bindings/rust/cryptanalysis-sys
+  note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+warning: build failed, waiting for other jobs to finish...
