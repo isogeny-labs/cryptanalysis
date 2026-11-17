@@ -36,6 +36,15 @@
             "timeout": 5
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR\"/tools/goal_brief.py",
+            "timeout": 15
+          }
+        ]
       }
     ],
     "PreToolUse": [

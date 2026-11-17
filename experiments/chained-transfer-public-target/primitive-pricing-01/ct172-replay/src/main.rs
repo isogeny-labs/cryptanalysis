@@ -269,10 +269,15 @@ fn paired_price(runtime: &Runtime, rows: &[Value], setup_ns: u128) -> Result<Val
 }
 
 fn run() -> Result<(), String> {
+    // This clock starts before public fixture validation and native geometry setup.
+    // It excludes OS process loading and final stdout serialization.
+    let started_in_process = Instant::now();
     let args = std::env::args().skip(1).collect::<Vec<_>>();
+    let cold_requested = args.first().is_some_and(|a| a == "--cold-route");
     must(args.is_empty() ||
-         (args.len() == 1 && (args[0] == "--self-test" || args[0] == "--paired-price")),
-         "usage: ct172-replay [--self-test|--paired-price]")?;
+         (args.len() == 1 && (args[0] == "--self-test" || args[0] == "--paired-price")) ||
+         (args.len() == 3 && cold_requested),
+         "usage: ct172-replay [--self-test|--paired-price|--cold-route INDEX ARM]")?;
     let data: Value = serde_json::from_str(FROZEN).map_err(|e| e.to_string())?;
     must(data.as_object().is_some_and(|d| d.len() == 2
          && d.contains_key("all48") && d.contains_key("scope")),
@@ -283,6 +288,57 @@ fn run() -> Result<(), String> {
     let checked = CheckedInstance::construct().map_err(|e| e.to_string())?;
     let runtime = Runtime::construct(&checked)?;
     let setup_ns = started_setup.elapsed().as_nanos();
+    if cold_requested {
+        let literal_index = &args[1];
+        must(!literal_index.is_empty() && literal_index.bytes().all(|b| b.is_ascii_digit()),
+             "CT175: packet index must be canonical decimal digits")?;
+        let index = literal_index.parse::<usize>()
+            .map_err(|_| "CT175: packet index overflow")?;
+        must(index.to_string() == *literal_index, "CT175: packet index must be canonical")?;
+        let row = rows.get(index).ok_or("CT175: packet index outside frozen 48")?;
+        let arm = args[2].as_str();
+        must(matches!(arm, "direct_composite" | "strongest_retained_lift_chain"),
+             "CT175: arm must be direct_composite or strongest_retained_lift_chain")?;
+        let (from, to, sector, scalar_label) = cohort(row)?;
+        let source = &runtime.geometry.models[from].prime;
+        let packet = EncodedClass {
+            field: source.field_tag.clone(),
+            model: source.model_tag.clone(),
+            key: key(&row["input"], "CT175 public source packet")?,
+        };
+        // Crucially no observe(48), no inverse, no known-scalar multiplication
+        // and no warmup precede this one selected native transfer.
+        let native_sample = sample_route(&runtime, &packet, from, to, arm, row)?;
+        let actual_calls = json!(runtime.calls());
+        must(actual_calls == row[arm], "CT175: actual complete counters changed")?;
+        let expected_output = key(&row["whole_outputs_equal"], "CT175 canonical output")?;
+        let total_ns = started_in_process.elapsed().as_nanos();
+        println!("{}", json!({
+            "schema":"ct175-single-public-packet-cold-route/v1",
+            "standing":"[pcc:unverified]",
+            "scope":"one fresh in-process CT125 public-packet transfer; not external cold wall, a complete ECDLP, or independent signed execution",
+            "packet_index":index, "from":from, "to":to,
+            "sector":sector, "scalar_label_outside_runtime":scalar_label,
+            "arm":arm, "public_source_packet":packet.key,
+            "verified_canonical_target":expected_output,
+            "native_sample":native_sample,
+            "native_calls":actual_calls,
+            "fixture_rows_checked":rows.len(),
+            "preflight_native_routes":0,
+            "preflight_native_inverses":0,
+            "same_process_setup_ns_decimal":setup_ns.to_string(),
+            "in_process_total_ns_decimal":total_ns.to_string(),
+            "external_os_loader_wall_included":false,
+            "peak_rss_kib_linux":peak_rss_kib(),
+            "target_arch":std::env::consts::ARCH,
+            "target_os":std::env::consts::OS,
+            // Never spawn rustc during a cold process sample: even an
+            // unrelated rustc --version child would distort external wall time.
+            "rustc_version_if_embedded":option_env!("RUSTC_VERSION"),
+            "rustc_child_process_spawned":false
+        }));
+        return Ok(());
+    }
     let mut observations = Vec::with_capacity(48);
     for (i, row) in rows.iter().enumerate() {
         let obs = observe(&runtime, row).map_err(|e| format!("row {i}: {e}"))?;

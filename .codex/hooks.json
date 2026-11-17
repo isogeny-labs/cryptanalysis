@@ -9,6 +9,15 @@
             "timeout": 10
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'exec python3 \"$(git rev-parse --show-toplevel)/tools/goal_brief.py\" --hook-json'",
+            "timeout": 15
+          }
+        ]
       }
     ],
     "Stop": [
