@@ -273,7 +273,7 @@ def run_sample(binary, index, arm, row, timeout_seconds):
         "stderr_base64": base64.b64encode(stderr).decode("ascii"),
         "stdout_sha256": hashlib.sha256(stdout).hexdigest(),
         "stderr_sha256": hashlib.sha256(stderr).hexdigest(),
-        "capture_complete": error != "capture limit exceeded",
+        "capture_complete": error is None,
         "peak_rss_kib_linux": None, "verified": False, "error": error
     }
     if error is not None:
