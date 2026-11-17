@@ -180,9 +180,16 @@ def valid_sample(sample, row, index, arm):
     native = child.get("native_sample")
     refuse(type(native) is dict and native.get("complete_counter_match") is True,
            "native sample failed verification")
-    decimal(native.get("elapsed_ns_decimal"), "native elapsed")
-    decimal(child.get("same_process_setup_ns_decimal"), "native setup")
-    decimal(child.get("in_process_total_ns_decimal"), "native in-process")
+    # CT180: the Rust monotonic clock starts before setup, and the route
+    # timer starts only after setup. Both intervals are enclosed by total.
+    # The Python external wall clock encloses the whole fresh child process.
+    # A reversed ordering is impossible for a correctly measured sample and
+    # must not be allowed to bias the paired transfer cost estimator.
+    route_ns = decimal(native.get("elapsed_ns_decimal"), "native elapsed", True)
+    setup_ns = decimal(child.get("same_process_setup_ns_decimal"), "native setup")
+    total_ns = decimal(child.get("in_process_total_ns_decimal"), "native in-process", True)
+    refuse(setup_ns + route_ns <= total_ns, "native setup/route exceeds internal total")
+    refuse(total_ns <= elapsed, "internal total exceeds external process wall")
     rss = child.get("peak_rss_kib_linux")
     if rss is not None:
         integer(rss, "peak RSS")
