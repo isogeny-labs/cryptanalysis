@@ -200,4 +200,3 @@ The record/export plan remains 203 metrics and 25 raw references. Nine effects a
 Next discriminating experiment: retain indexed arithmetic/table contents and independently vary the old scratch reservations and old gather writes. A repeatable restored collector cost would narrow the preparation-state mechanism; no effect rejects that factor. Any candidate remedy must lower the charged primary against the frozen control on separately fresh targets. [pcc:unverified]
 
 The original extra general-dispatch work was fixed earlier. The later indexed collector regression remains unresolved at the physical-mechanism level. No new primary improvement over frozen indexed, qualified speedup, full-cold result, GPU throughput or broader mathematical breakthrough is established here. The broader performance objective remains open. [pcc:unverified]
-
