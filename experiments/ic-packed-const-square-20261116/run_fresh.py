@@ -51,7 +51,7 @@ def command(argv,limit=12):
   os.killpg(p.pid,signal.SIGKILL);out,err=p.communicate();return 124,out,err+'\nprocess group killed at cap\n',time.monotonic()-started
  return p.returncode,out,err,time.monotonic()-started
 host={'platform':platform.platform(),'cpuinfo':read('/proc/cpuinfo'),'initial':snap(),'allowed_cpus':sorted(os.sched_getaffinity(0)),
- 'source_sha256':{str(p.relative_to(ROOT)):sha(p) for p in [HERE/'FRESH_PROTOCOL.md',HERE/'run_fresh.py',HERE/'analyze_fresh.py',HERE/'replay_fresh_answers.py',HERE/'replay_fresh_states.py',HERE/'fresh_common.py',HERE/'profile_optimized.py',HERE/'profile-result-input.json',HERE/'instances.json',HERE/'fresh-identities.json',HERE/'prepared-input.json',HERE/'anchor-input.json',HERE/'optimized-input.json']},
+ 'source_sha256':{str(p.relative_to(ROOT)):sha(p) for p in [HERE/'FRESH_PROTOCOL.md',HERE/'run_fresh.py',HERE/'analyze_fresh.py',HERE/'replay_fresh_answers.py',HERE/'replay_fresh_states.py',HERE/'fresh_common.py',HERE/'profile_clean.py',HERE/'profile-result-input.json',HERE/'instances.json',HERE/'fresh-identities.json',HERE/'prepared-input.json',HERE/'anchor-input.json',HERE/'optimized-input.json']},
  'qualification':'frozen exploratory protocol; CPU work on one L4 allocation',
  'physical_memory_technology':'unknown','physical_memory_speed':'unknown','physical_memory_channels':'unknown'}
 def arm(index,mode,fixture,role,binary_tag=None):
@@ -94,7 +94,7 @@ try:
  for label,filename,binding,prefix,candidate_mode in [
   ('current','probe-current','prepared-input.json','experiments/ic-compact-pair-table-20261116/build-001/',MODES[1]),
   ('anchor','probe-anchor','anchor-input.json','experiments/ic-constant-reduction-20261116/build-002/',MODES[0]),
-  ('optimized','probe-optimized','optimized-input.json','experiments/ic-packed-const-square-20261116/build-001/',MODES[3])]:
+  ('optimized','probe-optimized','optimized-input.json','experiments/ic-packed-const-square-20261116/build-002/',MODES[3])]:
   prepared=json.loads((HERE/binding).read_text())
   with tarfile.open(Path('/jobs')/prepared['source_job']/'shards/0/out.tar.gz','r:gz') as tar:
    def member(name):
@@ -117,7 +117,7 @@ try:
    raw=arm(index,'verify-table',0,'native-host-capability',tag);check=raw.get('result',{})
    assert raw['exit_code']==0 and check.get('status')=='pass' and check.get('has_clmul') and check.get('complete_map_comparisons')==35
    if tag=='optimized':
-    assert check['vector_pairs']==2*check['vector_packed_square_pairs'] and check['vector_const_pairs']*2==check['vector_packed_square_pairs'] and check['vector_const_packed_square_pairs']==check['vector_const_pairs']>0
+    assert check['vector_pairs']==2*check['vector_packed_square_pairs'] and check['vector_const_pairs']*2==check['vector_packed_square_pairs'] and check['vector_const_validated_pairs']==check['vector_const_packed_square_pairs']==check['vector_const_pairs']>0
    else:assert check['vector_pairs']==4*check['vector_packed_square_pairs'] and check['vector_const_pairs']==check['vector_packed_square_pairs']>0
    assert check['vector_backend'] in ['avx2-pclmul128','avx2-vpclmul']
    if tag in ['current','optimized']:assert check['compact_map_comparisons']==5 and check['compact_entry_payload_bytes']==8
@@ -153,6 +153,7 @@ try:
     assert all((report(runs[m])['decomposition']['cost']['native'].get('walk_batch_inverse_vector_elements',0)>0)==(m in INVERSE) for m in MODES)
     assert all(report(runs[m])['decomposition']['setup']['native'].get('mitm_compact_map32_backend',0)==int(m in MODES[1:]) for m in MODES)
     assert all(report(runs[m])['decomposition']['setup']['native'].get('mitm_map_entry_payload_bytes')==8 for m in MODES[1:])
+    assert all(report(runs[m])['decomposition']['setup']['native'].get('mitm_vector_const_validated_pairs',0)==(report(runs[m])['decomposition']['setup']['native']['mitm_vector_pairs'] if m in MODES[3:] else 0) for m in MODES)
     assert all(report(runs[m])['decomposition']['setup']['native'].get('mitm_vector_const_packed_square_pairs',0)==(report(runs[m])['decomposition']['setup']['native']['mitm_vector_pairs'] if m in MODES[3:] else 0) for m in MODES)
     assert all(report(runs[m])['decomposition']['setup']['native']['mitm_vector_packed_square_pairs']==(report(runs[m])['decomposition']['setup']['native']['mitm_vector_pairs'] if m in MODES[3:] else 0) for m in MODES)
     triple['same_schedule_counts']=all(signature(r)==signature(reports[0]) and all(r[s][k]==reports[0][s][k] for s,k in [('decomposition','targets_tried'),('decomposition','relations_found'),('linear_algebra','rank'),('linear_algebra','rows'),('linear_algebra','dependent'),('linear_algebra','work')]) for r in reports[1:])

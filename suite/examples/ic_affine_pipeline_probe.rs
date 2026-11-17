@@ -247,6 +247,7 @@ fn main() {
         let mut vector_packed_square_pairs = 0;
         let mut vector_const_pairs = 0;
         let mut vector_const_packed_square_pairs = 0;
+        let mut vector_const_validated_pairs = 0;
         let mut compact_map_comparisons = 0;
         let mut compact_entry_payload_bytes = 0;
         for chunk in [1, 7, 64, 1024, 4096] {
@@ -281,6 +282,7 @@ fn main() {
                 vector_packed_square_pairs += candidate.vector_packed_square_pairs;
                 if candidate.uses_compact_storage() {
                     compact_map_comparisons += 1;
+                    vector_const_validated_pairs += candidate.vector_const_pairs;
                     compact_entry_payload_bytes = candidate.witness_entry_payload_bytes();
                     assert_eq!(compact_entry_payload_bytes, 8);
                 } else {
@@ -292,7 +294,7 @@ fn main() {
         }
         println!(
             "{}",
-            json!({"curve_id":inst.name,"status":"pass","euclidean_inverse":inst.gf.uses_euclidean_inverse(),"vector_const_pairs":vector_const_pairs,"vector_const_packed_square_pairs":vector_const_packed_square_pairs,"vector_packed_square_pairs":vector_packed_square_pairs,"vector_pclmul128_pairs":vector_pclmul128_pairs,"vector_backend":inst.fast.cached_vector_backend(),"vector_pairs":vector_pairs,"complete_map_comparisons":comparisons,"compact_map_comparisons":compact_map_comparisons,"compact_entry_payload_bytes":compact_entry_payload_bytes,"entries":reference.entries,"has_clmul":inst.gf.has_clmul()})
+            json!({"curve_id":inst.name,"status":"pass","euclidean_inverse":inst.gf.uses_euclidean_inverse(),"vector_const_pairs":vector_const_pairs,"vector_const_packed_square_pairs":vector_const_packed_square_pairs,"vector_const_validated_pairs":vector_const_validated_pairs,"vector_packed_square_pairs":vector_packed_square_pairs,"vector_pclmul128_pairs":vector_pclmul128_pairs,"vector_backend":inst.fast.cached_vector_backend(),"vector_pairs":vector_pairs,"complete_map_comparisons":comparisons,"compact_map_comparisons":compact_map_comparisons,"compact_entry_payload_bytes":compact_entry_payload_bytes,"entries":reference.entries,"has_clmul":inst.gf.has_clmul()})
         );
         return;
     }

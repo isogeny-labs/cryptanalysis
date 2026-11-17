@@ -23,7 +23,7 @@ for c in a['cases']:
  metric(prefix+'patched_inverse_collector_mean',m['mean_collector_s'],'wall_s','lower',30,baseline=anchor['mean_collector_s'],reference=statistics.mean(r['references']['rho-negation']['compute_s'] for r in rows))
  metric(prefix+'patched_inverse_table_setup_mean',m['mean_table_setup_s'],'wall_s','lower',30,baseline=anchor['mean_table_setup_s'])
  packed=[x['runs'][MODES[4]]['result']['report']['Ok']['decomposition']['setup']['native'] for x in json.loads((P/'timing-optimized-001/triples.json').read_text()) if x['index']==c['index']]
- assert len(packed)==30 and all(x['mitm_vector_const_packed_square_pairs']==x['mitm_vector_const_pairs']==x['mitm_vector_packed_square_pairs']==x['mitm_vector_pairs']>0 for x in packed)
+ assert len(packed)==30 and all(x['mitm_vector_const_validated_pairs']==x['mitm_vector_const_packed_square_pairs']==x['mitm_vector_const_pairs']==x['mitm_vector_packed_square_pairs']==x['mitm_vector_pairs']>0 for x in packed)
  metric(prefix+'actual_combined_packed_pairs',sum(x['mitm_vector_const_packed_square_pairs'] for x in packed),'count',n=30,scope='Actual source-reported combined packed-square/constant-reduction pair counters; positive-use diagnostic, not a native throughput or hardware-retirement measurement.')
  for counter in ['elements','padded_lanes']:
   metric(prefix+'actual_patched_inverse_'+counter,sum(r['methods'][MODES[4]]['query_counters']['walk_batch_inverse_vector_'+counter] for r in rows),'count',n=30)

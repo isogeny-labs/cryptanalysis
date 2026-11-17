@@ -3680,9 +3680,24 @@ impl PairTable {
                             } else {
                                 FastCurve::add_pairwise_abscissae_vector_cached
                             };
-                            vector_pairs +=
+                            // `compact` was checked once from the immutable base;
+                            // both point buffers contain only copies from that base.
+                            let result = if compact
+                                && vector_cached == 3
+                                && curve.has_const_vector_field()
+                            {
+                                curve.add_pairwise_abscissae_vector_const_validated_cached(
+                                    ps,
+                                    qs,
+                                    &mut abscissae,
+                                    &mut scratch,
+                                    cache,
+                                )
+                            } else {
                                 prepare(curve, ps, qs, &mut abscissae, &mut scratch, cache)
-                                    .expect("cache was constructed for this exact field");
+                            };
+                            vector_pairs +=
+                                result.expect("cache was constructed for this exact field");
                         } else {
                             curve
                                 .add_pairwise_abscissae_cached(

@@ -59,6 +59,7 @@ for triple in triples:
    setup=r['decomposition']['setup'];native=setup['native'];query=r['decomposition']['cost']['native']
    assert native.get('mitm_compact_map32_backend',0)==int(mode in MODES[1:])
    if mode in MODES[1:]:assert native['mitm_map_entry_payload_bytes']==8
+   assert native.get('mitm_vector_const_validated_pairs',0)==(native['mitm_vector_pairs'] if mode in MODES[3:] else 0)
    assert native.get('mitm_vector_const_packed_square_pairs',0)==(native['mitm_vector_pairs'] if mode in MODES[3:] else 0)
    assert native['mitm_vector_pairs']>0 and native['mitm_vector_packed_square_pairs']==(native['mitm_vector_pairs'] if mode in MODES[3:] else 0) and native['mitm_scalar_prepare']==0
    assert native['mitm_vector_const_pairs']==native['mitm_vector_pairs']==native['mitm_vector_pclmul128_pairs'] and native['mitm_vector_vpclmul_pairs']==0

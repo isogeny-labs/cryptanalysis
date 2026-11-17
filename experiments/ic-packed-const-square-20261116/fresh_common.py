@@ -14,4 +14,4 @@ assert len(Counter((row[i],row[i+1]) for row in ORDERS for i in range(4)))==20
 assert set(Counter((row[i],row[i+1]) for row in ORDERS for i in range(4)).values())=={2}
 FIXTURES=range(612,642)
 
-STORAGE_COUNTERS={'mitm_compact_map32_backend','mitm_map_entry_payload_bytes','mitm_vector_packed_square_pairs','mitm_vector_const_packed_square_pairs'}
+STORAGE_COUNTERS={'mitm_compact_map32_backend','mitm_map_entry_payload_bytes','mitm_vector_packed_square_pairs','mitm_vector_const_packed_square_pairs','mitm_vector_const_validated_pairs'}

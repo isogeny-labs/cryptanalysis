@@ -588,6 +588,42 @@ impl FastCurve {
         cache: &PrefixInverseTable,
         strategy: u8,
     ) -> Result<usize, &'static str> {
+        self.add_pairwise_abscissae_vector_cached_impl_validated::<false>(
+            ps, qs, out, scratch, cache, strategy,
+        )
+    }
+
+    /// Internal specialization for pairs copied from an immutable base whose
+    /// finite coordinates were already checked against this field's mask.
+    /// The table builder establishes that invariant once before generating pairs.
+    pub(super) fn add_pairwise_abscissae_vector_const_validated_cached(
+        &self,
+        ps: &[FastPoint],
+        qs: &[FastPoint],
+        out: &mut Vec<Option<u64>>,
+        scratch: &mut BatchScratch,
+        cache: &PrefixInverseTable,
+    ) -> Result<usize, &'static str> {
+        debug_assert!(self.has_const_vector_field());
+        debug_assert!(ps
+            .iter()
+            .chain(qs)
+            .all(|p| p.infinity || (p.x | p.y) & !self.field.mask == 0));
+        self.add_pairwise_abscissae_vector_cached_impl_validated::<true>(
+            ps, qs, out, scratch, cache, 2,
+        )
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn add_pairwise_abscissae_vector_cached_impl_validated<const CANONICAL: bool>(
+        &self,
+        ps: &[FastPoint],
+        qs: &[FastPoint],
+        out: &mut Vec<Option<u64>>,
+        scratch: &mut BatchScratch,
+        cache: &PrefixInverseTable,
+        strategy: u8,
+    ) -> Result<usize, &'static str> {
         if self.field.irr != cache.irr {
             return Err("prefix inverse cache belongs to another field");
         }
@@ -597,7 +633,9 @@ impl FastCurve {
         if let Some(kernel) = simd256::Simd256::new(&self.field) {
             // SAFETY: new() checks AVX2 and PCLMUL; its dispatcher guards VPCLMUL, field shape is checked,
             // and the kernel uses bounded four-element chunks.
-            return unsafe { kernel.add_cached(self, ps, qs, out, scratch, cache, strategy) };
+            return unsafe {
+                kernel.add_cached::<CANONICAL>(self, ps, qs, out, scratch, cache, strategy)
+            };
         }
         self.add_pairwise_abscissae_cached(ps, qs, out, scratch, cache)?;
         Ok(0)
@@ -1469,6 +1507,7 @@ mod simd256 {
             self.reduce_products(raw, _mm256_setzero_si256())
         }
 
+        #[cfg(test)]
         #[inline]
         #[target_feature(enable = "avx2,pclmulqdq")]
         unsafe fn square_packed_narrow(&self, a: __m256i) -> __m256i {
@@ -1660,7 +1699,7 @@ mod simd256 {
         }
 
         #[allow(clippy::too_many_arguments)]
-        pub(super) unsafe fn add_cached(
+        pub(super) unsafe fn add_cached<const CANONICAL: bool>(
             &self,
             curve: &FastCurve,
             ps: &[FastPoint],
@@ -1671,31 +1710,38 @@ mod simd256 {
             strategy: u8,
         ) -> Result<usize, &'static str> {
             if strategy == 3 {
-                return self.add_cached_narrow::<false, 0, 0>(curve, ps, qs, out, scratch, cache);
+                return self.add_cached_narrow::<false, 0, 0, CANONICAL>(
+                    curve, ps, qs, out, scratch, cache,
+                );
             }
             if strategy == 2 {
                 // PCLMUL is available on every admitted host. Keep this narrow
                 // specialization explicit even on VPCLMUL-capable CPUs.
                 match (curve.field.n, curve.field.irr ^ (1u64 << curve.field.n)) {
                     (15, 3) => {
-                        return self
-                            .add_cached_narrow::<true, 15, 3>(curve, ps, qs, out, scratch, cache)
+                        return self.add_cached_narrow::<true, 15, 3, CANONICAL>(
+                            curve, ps, qs, out, scratch, cache,
+                        )
                     }
                     (18, 9) => {
-                        return self
-                            .add_cached_narrow::<true, 18, 9>(curve, ps, qs, out, scratch, cache)
+                        return self.add_cached_narrow::<true, 18, 9, CANONICAL>(
+                            curve, ps, qs, out, scratch, cache,
+                        )
                     }
                     (21, 5) => {
-                        return self
-                            .add_cached_narrow::<true, 21, 5>(curve, ps, qs, out, scratch, cache)
+                        return self.add_cached_narrow::<true, 21, 5, CANONICAL>(
+                            curve, ps, qs, out, scratch, cache,
+                        )
                     }
                     (24, 27) => {
-                        return self
-                            .add_cached_narrow::<true, 24, 27>(curve, ps, qs, out, scratch, cache)
+                        return self.add_cached_narrow::<true, 24, 27, CANONICAL>(
+                            curve, ps, qs, out, scratch, cache,
+                        )
                     }
                     (27, 39) => {
-                        return self
-                            .add_cached_narrow::<true, 27, 39>(curve, ps, qs, out, scratch, cache)
+                        return self.add_cached_narrow::<true, 27, 39, CANONICAL>(
+                            curve, ps, qs, out, scratch, cache,
+                        )
                     }
                     _ => {}
                 }
@@ -1703,12 +1749,11 @@ mod simd256 {
             match (self.use_vpclmul, strategy == 1 && self.n <= 32) {
                 (true, true) => self.add_cached_wide::<true>(curve, ps, qs, out, scratch, cache),
                 (true, false) => self.add_cached_wide::<false>(curve, ps, qs, out, scratch, cache),
-                (false, true) => {
-                    self.add_cached_narrow::<true, 0, 0>(curve, ps, qs, out, scratch, cache)
-                }
-                (false, false) => {
-                    self.add_cached_narrow::<false, 0, 0>(curve, ps, qs, out, scratch, cache)
-                }
+                (false, true) => self
+                    .add_cached_narrow::<true, 0, 0, CANONICAL>(curve, ps, qs, out, scratch, cache),
+                (false, false) => self.add_cached_narrow::<false, 0, 0, CANONICAL>(
+                    curve, ps, qs, out, scratch, cache,
+                ),
             }
         }
 
@@ -1773,7 +1818,12 @@ mod simd256 {
         }
 
         #[target_feature(enable = "avx2,pclmulqdq")]
-        unsafe fn add_cached_narrow<const PACKED: bool, const N: u32, const TAIL: u64>(
+        unsafe fn add_cached_narrow<
+            const PACKED: bool,
+            const N: u32,
+            const TAIL: u64,
+            const CANONICAL: bool,
+        >(
             &self,
             curve: &FastCurve,
             ps: &[FastPoint],
@@ -1798,7 +1848,10 @@ mod simd256 {
                     }
                     // Packed squares require canonical inputs. Keep the complete
                     // scalar group fallback for arbitrary public FastPoint values.
-                    if PACKED && N != 0 && (pc[i].x | pc[i].y | qc[i].x | qc[i].y) & !self.mask != 0
+                    if PACKED
+                        && N != 0
+                        && !CANONICAL
+                        && (pc[i].x | pc[i].y | qc[i].x | qc[i].y) & !self.mask != 0
                     {
                         return false;
                     }
@@ -2750,6 +2803,20 @@ mod tests {
                 assert_eq!(dynamic, expected, "forced narrow n={n}, len={len}");
                 assert_eq!(dynamic_count, count);
                 assert_eq!(got, expected, "n={n}, len={len}");
+                if exact {
+                    let mut validated = vec![Some(123)];
+                    let validated_count = curve
+                        .add_pairwise_abscissae_vector_const_validated_cached(
+                            &ps[..len],
+                            &qs[..len],
+                            &mut validated,
+                            &mut scratch,
+                            &cache,
+                        )
+                        .unwrap();
+                    assert_eq!(validated, expected, "validated base n={n}, len={len}");
+                    assert_eq!(validated_count, count);
+                }
                 if exact && len >= 4 && curve.cached_vector_backend() != "scalar" {
                     assert!(count >= 4, "specialized normal block must execute");
                 }
