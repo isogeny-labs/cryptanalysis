@@ -19,3 +19,7 @@ The first local current-test attempt lacked sparse-checkout dependencies. The ne
 ## Follow-up: current corpus expectation
 
 The induced-transfer job passed CI at 7d2ba80d3. The separate corpus job then completed its native delta checks and failed comparison with the old November 1 expectation. Added a separate current expectation and an exact three-source-field amendment checker; five controls prohibit rewriting the historical receipt or changing theorem evidence/counts. The original receipt remains intact. New-head corpus replay is pending, and S3-dependent gates remain blocked. [pcc:unverified]
+
+## Follow-up: workflow input wiring
+
+Reconciled four unchanged workflows reported by the artifact gate. CT125 and CT146 now name exact source-only inputs instead of the whole archive ancestor; their finite-field, source mutation, derivative and refusal controls pass in a private staged copy. CT137 and the separately approved CT141 job now have the canonical pull for nondual18 model fixtures while retaining the original pinned hydrator and exact hashes. CT141 PR controls have no artifact pull, and its manual approval step remains before checkout. The global wiring check now passes without changing the checker, manifests or any frozen source/record. New-head CI is required; S3 remains unavailable. [pcc:unverified]

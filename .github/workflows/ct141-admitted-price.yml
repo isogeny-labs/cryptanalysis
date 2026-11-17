@@ -1,3 +1,4 @@
+# artifacts-scope: job
 name: CT141 admitted original/reuse native pricing (manual only)
 on:
   pull_request:
@@ -33,7 +34,9 @@ jobs:
           persist-credentials: false
           sparse-checkout-cone-mode: false
           sparse-checkout: |
-            experiments/chained-transfer-public-target/primitive-pricing-01/
+            experiments/chained-transfer-public-target/primitive-pricing-01/ct141_admitted_run.sh
+            experiments/chained-transfer-public-target/primitive-pricing-01/ct142_receipt_gate.py
+            experiments/chained-transfer-public-target/primitive-pricing-01/ct143_cost_envelope.py
       - name: Run syntax and deny-without-admission controls only; never benchmark
         shell: bash
         run: |
@@ -93,6 +96,26 @@ jobs:
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
+      - name: Pull store data this workflow reads (tools/artifacts)
+        shell: bash
+        working-directory: ${{ github.workspace }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+        run: |
+          if ! command -v aws >/dev/null; then
+            python3 -m venv "$RUNNER_TEMP/artifacts-awscli"
+            artifacts_cli_python="$RUNNER_TEMP/artifacts-awscli/bin/python"
+            artifacts_cli_aws="$RUNNER_TEMP/artifacts-awscli/bin/aws"
+            if [ -d "$RUNNER_TEMP/artifacts-awscli/Scripts" ]; then
+              artifacts_cli_python="$RUNNER_TEMP/artifacts-awscli/Scripts/python.exe"
+              artifacts_cli_aws="$RUNNER_TEMP/artifacts-awscli/Scripts/aws.exe"
+            fi
+            "$artifacts_cli_python" -m pip install --disable-pip-version-check awscli==1.46.2
+            export ARTIFACTS_AWS="$artifacts_cli_aws"
+          fi
+          python3 tools/artifacts/artifacts.py pull --jobs 16 docs/research-artifacts/chained-transfer/nondual-models-18
       - name: Checkout frozen sibling crypto graph
         uses: actions/checkout@v4
         with:
