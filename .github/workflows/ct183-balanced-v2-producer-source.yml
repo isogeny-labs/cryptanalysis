@@ -1,0 +1,52 @@
+name: CT183 balanced v2 transfer producer source gate
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/ct183-balanced-v2-producer-source.yml'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/ct183_v2_cold_process_collector.py'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/test_ct183_v2_cold_process_collector.py'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/CT183_BALANCED_V2_PRODUCER_PROTOCOL.md'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/CT183_BALANCED_V2_PRODUCER_REPORT.md'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/ct176_cold_process_collector.py'
+      - 'experiments/chained-transfer-public-target/evidence/fixed-chain-norm-point-native-01/literal-selected-vectors.json'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Python source and no-native negative controls
+        run: |
+          set -euo pipefail
+          root=experiments/chained-transfer-public-target/primitive-pricing-01
+          python3 -S -m py_compile "$root/ct183_v2_cold_process_collector.py" "$root/test_ct183_v2_cold_process_collector.py"
+          python3 -S -m unittest discover -s "$root" -p 'test_ct183_v2_cold_process_collector.py' -v
+          python3 -O -S -m unittest discover -s "$root" -p 'test_ct183_v2_cold_process_collector.py' -v
+      - name: Original frozen public fixture and normal/optimized plan-only parity
+        run: |
+          set -euo pipefail
+          root=experiments/chained-transfer-public-target/primitive-pricing-01
+          fixture=experiments/chained-transfer-public-target/evidence/fixed-chain-norm-point-native-01/literal-selected-vectors.json
+          test "$(git hash-object "$fixture")" = 9ac741668dd1ffa9632ff0d58e6f4dd9f2dd18c3
+          python3 -S "$root/ct183_v2_cold_process_collector.py" --fixture "$fixture" >/tmp/ct183-plan-normal.json
+          python3 -O -S "$root/ct183_v2_cold_process_collector.py" --fixture "$fixture" >/tmp/ct183-plan-optimized.json
+          cmp /tmp/ct183-plan-normal.json /tmp/ct183-plan-optimized.json
+          python3 -S - <<'PY'
+          import json
+          x = json.load(open('/tmp/ct183-plan-normal.json'))
+          assert x['plan_only'] is True
+          assert x['schema'] == 'ct182-counterbalanced-cold-public-process-panel/v2'
+          assert x['order_roster_sha256'] == '1dddb4839321ad6560fd429330778aa083ff3a13625393250e964c05f9fc5ee4'
+          assert x['order_schedule'] == 'ct181-block-packet-parity-ABBA-BAAB/v2'
+          assert x['processes'] == 2304 and x['packets'] == 48 and x['blocks'] == 8
+          assert 'executable_sha256' not in x
+          print('CT183 source v2 plan matches frozen CT182 schedule; NO NATIVE EXECUTION [pcc:unverified]')
+          PY
+      - name: Scientific scope
+        run: echo 'SOURCE/SYNTHETIC ONLY; no paid compute, no real 695/701 custody, no native 48 parity, no complete prime-field ECDLP speedup [pcc:unverified]'
