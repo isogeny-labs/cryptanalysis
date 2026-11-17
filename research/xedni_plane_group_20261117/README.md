@@ -89,10 +89,14 @@ verify every reported relation exactly on the lifted cubic, and check the
 shifted finite-field equation.  The existing `r=3..6` sweep is immutable and
 must not be retrofitted. [pcc:unverified]
 
-The main mathematical proof obligation is a machine-checked bridge from good
-reduction of the cubic and chord construction to the shifted scalar equation.
-The Rust controls are executable evidence, not a formal proof of that bridge.
-[pcc:unverified]
+The abstract identity translation, chord-origin scalar equation, and
+one-unknown recovery formula are kernel-checked in
+`formal/ChordOrigin.lean`; the pinned build and axiom audit are retained in
+`formal/build-output.txt`.  The remaining mathematical proof obligation is a
+machine-checked geometric bridge from good reduction of a concrete cubic and
+its chord construction to the premise that the residual source scalar is
+`-(m_j+m_k)`.  The Rust controls are executable evidence, not a formal proof
+of that geometric bridge. [pcc:unverified]
 
 ## Sources
 

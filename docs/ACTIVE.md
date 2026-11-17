@@ -18,7 +18,7 @@ and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
 
-- [ ] Extend certified Xedni lift-success trials to the ten-coefficient `r=7..9` regime with exact rational dependence verification (Codex, started 2026-11-17, branch codex/xedni-breakthrough-20261117, PR #1722) [pcc:unverified]
+- [ ] Run the frozen ten-coefficient `r=7..9` Xedni feasibility panel after checkpoint access is restored; exact chord-origin dependence and target-recovery machinery is implemented and checked (Codex, started 2026-11-17, branch codex/xedni-breakthrough-20261117, PR #1722) [pcc:unverified]
 
 - [x] CT187: bounded admitted-source native 1,536-call same-route sham producer, strict evidence reader and synthetic handshake; no paid execution (automation, started 2026-11-17, branch research/ct187-native-sham-source-admission-20261117, PR #1719)
 
@@ -35,3 +35,7 @@ and construction gates. [pcc:unverified]
 - [ ] <task> (<runtime>, started YYYY-MM-DD, branch <branch>, PR #<n>) -->
 
 ## Blocked / questions for the owner
+
+- Full-rank Xedni panel: `scripts/checkpoint.sh gate` has no upload credential;
+  no outcome row was generated.  Exit condition: attach a scoped checkpoint
+  token/profile and rerun the gate. [pcc:unverified]
