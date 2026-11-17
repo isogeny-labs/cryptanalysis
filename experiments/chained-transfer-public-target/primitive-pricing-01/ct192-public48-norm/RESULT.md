@@ -16,6 +16,10 @@ Source-only CI [run #44185526632](https://github.com/isogeny-labs/cryptanalysis/
 
 These test outcomes validate the **producer's source and fixture contract**, not compiled/native correctness. Their `[pcc:unverified]` standing remains unchanged. Actual native parity and timing numbers are **not available**. This code is not a verified new cryptanalytic technique and does not demonstrate lower solver cost.
 
+### Final-head scoped source CI
+
+[Workflow run #44186011804](https://github.com/isogeny-labs/cryptanalysis/actions/runs/44186011804) at commit `d15d83eee60bbb042250b0ce311cc339fa14a36c` **passed** on 2026-11-17. Decoded job logs show 11/11 ordinary Python and 11/11 `-O` tests passed, the exact 48 frozen-input and CT125 blob checks passed, generated derivative was materialized, and both Rust sources parsed with rustfmt plus independent TOML syntax validation. The `rustfmt` operation only parses/formats source: it is not a Rust typecheck, linkage, arithmetic replay, timing, or signed independent scientific verification. Native workload was not executed. **[pcc:unverified]**
+
 ## Reproduction / source-only
 
 ```sh
