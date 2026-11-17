@@ -1,0 +1,1821 @@
+{
+  "schema": "cryptanalysis.formal-projects/v1",
+  "source_commit": "b8b5a8a1e412bf5071901b89ee83078dba061394",
+  "toolchain": "leanprover/lean4:v4.35.0-rc4",
+  "mathlib_revision": "021c46bdd042f67b538b9f9871d556a93713a9a9",
+  "projects": {
+    "experiments/xedni-adaptive-collision-trace-20261116/formal": {
+      "inputs": {
+        "experiments/xedni-adaptive-collision-trace-20261116/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-adaptive-collision-trace-20261116/formal/lakefile.toml": "8a0106750077da1c4bff1b6880c962b4c688b5c0919d7e34f72e1454b3ba2682",
+        "experiments/xedni-adaptive-collision-trace-20261116/formal/lake-manifest.json": "08e342212c26f112b3bf40d51cbfab0950c47a997a8d473dd6f193dc920ede10"
+      }
+    },
+    "experiments/xedni-adaptive-oracle-coupling-20261116/formal": {
+      "inputs": {
+        "experiments/xedni-adaptive-oracle-coupling-20261116/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-adaptive-oracle-coupling-20261116/formal/lakefile.toml": "af2dde200a21e2f5186075e7d633adc26288437a8785a8042d220c8ba341e490",
+        "experiments/xedni-adaptive-oracle-coupling-20261116/formal/lake-manifest.json": "08e342212c26f112b3bf40d51cbfab0950c47a997a8d473dd6f193dc920ede10"
+      }
+    },
+    "experiments/xedni-adaptive-program-invariant-20261116/formal": {
+      "inputs": {
+        "experiments/xedni-adaptive-program-invariant-20261116/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-adaptive-program-invariant-20261116/formal/lakefile.toml": "ebcd116cc8cf3a1d8367a27ff90921d7f4c351a67aac59d3ccaf536d5d2692b2",
+        "experiments/xedni-adaptive-program-invariant-20261116/formal/lake-manifest.json": "08e342212c26f112b3bf40d51cbfab0950c47a997a8d473dd6f193dc920ede10"
+      }
+    },
+    "experiments/xedni-adaptive-stage-sum-20261116/formal": {
+      "inputs": {
+        "experiments/xedni-adaptive-stage-sum-20261116/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-adaptive-stage-sum-20261116/formal/lakefile.toml": "a943d7a86e786fe5b26a849de27e30c57476fcdc9707c34ddb68f47c78069cbe",
+        "experiments/xedni-adaptive-stage-sum-20261116/formal/lake-manifest.json": "08e342212c26f112b3bf40d51cbfab0950c47a997a8d473dd6f193dc920ede10"
+      }
+    },
+    "experiments/xedni-adaptive-total-bound-20261116/formal": {
+      "inputs": {
+        "experiments/xedni-adaptive-total-bound-20261116/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-adaptive-total-bound-20261116/formal/lakefile.toml": "d389e0dae3c593caac5a9d494c966b1a9ca2a67d9c28edf324fe0f053a9a611c",
+        "experiments/xedni-adaptive-total-bound-20261116/formal/lake-manifest.json": "08e342212c26f112b3bf40d51cbfab0950c47a997a8d473dd6f193dc920ede10"
+      }
+    },
+    "experiments/xedni-adaptive-zero-test-bound-20261116/formal": {
+      "inputs": {
+        "experiments/xedni-adaptive-zero-test-bound-20261116/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-adaptive-zero-test-bound-20261116/formal/lakefile.toml": "81c373982f726be16b39f7d6f976d021103ea5a029c2d83919f29bb765c63e81",
+        "experiments/xedni-adaptive-zero-test-bound-20261116/formal/lake-manifest.json": "08e342212c26f112b3bf40d51cbfab0950c47a997a8d473dd6f193dc920ede10"
+      }
+    },
+    "experiments/xedni-basis-coercivity-20261115/formal": {
+      "inputs": {
+        "experiments/xedni-basis-coercivity-20261115/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-basis-coercivity-20261115/formal/lakefile.toml": "ae120ca40bc54ca025cf5dd747ba5f29805e829916625fa92dd0b0a3192639b1",
+        "experiments/xedni-basis-coercivity-20261115/formal/lake-manifest.json": "47af1da86329fd961aed48007fe7e29b9aad28ecbb6f2835938656ecfdb30756"
+      }
+    },
+    "experiments/xedni-bounded-witness-20261030/formal": {
+      "inputs": {
+        "experiments/xedni-bounded-witness-20261030/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-bounded-witness-20261030/formal/lakefile.toml": "ebba543c6a4244c41176c874dae4bca34f979f79106e70df15d1725fea201784",
+        "experiments/xedni-bounded-witness-20261030/formal/lake-manifest.json": "2501ee303b4c65292d91158afec85e64bfac15a337da73868009a78c37b28c48"
+      }
+    },
+    "experiments/xedni-bucket-fiber-partition-20261116/formal": {
+      "inputs": {
+        "experiments/xedni-bucket-fiber-partition-20261116/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-bucket-fiber-partition-20261116/formal/lakefile.toml": "e82e3bc4d863a8b317f8e17b4c851ed5dd88b2c3b3c07bcab729fea1c6697d03",
+        "experiments/xedni-bucket-fiber-partition-20261116/formal/lake-manifest.json": "08e342212c26f112b3bf40d51cbfab0950c47a997a8d473dd6f193dc920ede10"
+      }
+    },
+    "experiments/xedni-coefficient-family-control-20261115/formal": {
+      "inputs": {
+        "experiments/xedni-coefficient-family-control-20261115/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-coefficient-family-control-20261115/formal/lakefile.toml": "6f71c5995ea96ba74788655c1188de972964eb61ac8bf0f448b21cbd7d7e208e",
+        "experiments/xedni-coefficient-family-control-20261115/formal/lake-manifest.json": "47af1da86329fd961aed48007fe7e29b9aad28ecbb6f2835938656ecfdb30756"
+      }
+    },
+    "experiments/xedni-coefficient-holdout-20261115/formal": {
+      "inputs": {
+        "experiments/xedni-coefficient-holdout-20261115/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-coefficient-holdout-20261115/formal/lakefile.toml": "c0fd1ac3189b210556edfe65ee8f56c941b4ab28bb43f2501f1173dd0fc3f024",
+        "experiments/xedni-coefficient-holdout-20261115/formal/lake-manifest.json": "47af1da86329fd961aed48007fe7e29b9aad28ecbb6f2835938656ecfdb30756"
+      }
+    },
+    "experiments/xedni-coefficient-optimization-20261115/formal": {
+      "inputs": {
+        "experiments/xedni-coefficient-optimization-20261115/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-coefficient-optimization-20261115/formal/lakefile.toml": "def41f1b9d60395ae31052207cd07f0c6331593714d678f277109ce42b82fb7a",
+        "experiments/xedni-coefficient-optimization-20261115/formal/lake-manifest.json": "47af1da86329fd961aed48007fe7e29b9aad28ecbb6f2835938656ecfdb30756"
+      }
+    },
+    "experiments/xedni-common-preimage-lift-20261116/formal": {
+      "inputs": {
+        "experiments/xedni-common-preimage-lift-20261116/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-common-preimage-lift-20261116/formal/lakefile.toml": "c93175bd87e0a896d78daae1dd9828c4be131645c8ebe2787e6d23b6301d027d",
+        "experiments/xedni-common-preimage-lift-20261116/formal/lake-manifest.json": "47af1da86329fd961aed48007fe7e29b9aad28ecbb6f2835938656ecfdb30756"
+      }
+    },
+    "experiments/xedni-constructive-doubling-lift-20261116/formal": {
+      "inputs": {
+        "experiments/xedni-constructive-doubling-lift-20261116/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-constructive-doubling-lift-20261116/formal/lakefile.toml": "acb78a4e819109ef6bb7680c64703740d59d10f256318d0c0cf96294920c718e",
+        "experiments/xedni-constructive-doubling-lift-20261116/formal/lake-manifest.json": "47af1da86329fd961aed48007fe7e29b9aad28ecbb6f2835938656ecfdb30756"
+      }
+    },
+    "experiments/xedni-crt-curve-choice-20261115/formal": {
+      "inputs": {
+        "experiments/xedni-crt-curve-choice-20261115/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-crt-curve-choice-20261115/formal/lakefile.toml": "d2c7d711b8109c59d19b8c04490b444f2524aa20b5516b681eafacfcfba7267d",
+        "experiments/xedni-crt-curve-choice-20261115/formal/lake-manifest.json": "47af1da86329fd961aed48007fe7e29b9aad28ecbb6f2835938656ecfdb30756"
+      }
+    },
+    "experiments/xedni-dependent-lift-bound-20261115/formal": {
+      "inputs": {
+        "experiments/xedni-dependent-lift-bound-20261115/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-dependent-lift-bound-20261115/formal/lakefile.toml": "731f1acfacdd3be833809f59d6182a3fa9fde397a5f5f807dc104cedf04f867c",
+        "experiments/xedni-dependent-lift-bound-20261115/formal/lake-manifest.json": "47af1da86329fd961aed48007fe7e29b9aad28ecbb6f2835938656ecfdb30756"
+      }
+    },
+    "experiments/xedni-direct-relation-control-20261115/formal": {
+      "inputs": {
+        "experiments/xedni-direct-relation-control-20261115/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-direct-relation-control-20261115/formal/lakefile.toml": "0c66aea386277a63155871dfc6ab4069779949948d72012c8d4c4e83c572b000",
+        "experiments/xedni-direct-relation-control-20261115/formal/lake-manifest.json": "47af1da86329fd961aed48007fe7e29b9aad28ecbb6f2835938656ecfdb30756"
+      }
+    },
+    "experiments/xedni-elliptic-torsion-kernel-20261116/formal": {
+      "inputs": {
+        "experiments/xedni-elliptic-torsion-kernel-20261116/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-elliptic-torsion-kernel-20261116/formal/lakefile.toml": "db9b721d0eaa183a720563eb0b74bdbf2b560e52e4cc9818e1da677ecca2d8e8",
+        "experiments/xedni-elliptic-torsion-kernel-20261116/formal/lake-manifest.json": "47af1da86329fd961aed48007fe7e29b9aad28ecbb6f2835938656ecfdb30756"
+      }
+    },
+    "experiments/xedni-euclidean-packing-20261116/formal": {
+      "inputs": {
+        "experiments/xedni-euclidean-packing-20261116/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-euclidean-packing-20261116/formal/lakefile.toml": "5b2b4a138ac12b3290af8d00f0d0b8f8e0737993b64c06ee2dafca5ea2122a66",
+        "experiments/xedni-euclidean-packing-20261116/formal/lake-manifest.json": "47af1da86329fd961aed48007fe7e29b9aad28ecbb6f2835938656ecfdb30756"
+      }
+    },
+    "experiments/xedni-finite-family-coverage-20261115/formal": {
+      "inputs": {
+        "experiments/xedni-finite-family-coverage-20261115/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-finite-family-coverage-20261115/formal/lakefile.toml": "1c2d431f2f3c7e4644c33b97430470de235988d134df9e330b8a10e1bb448146",
+        "experiments/xedni-finite-family-coverage-20261115/formal/lake-manifest.json": "47af1da86329fd961aed48007fe7e29b9aad28ecbb6f2835938656ecfdb30756"
+      }
+    },
+    "experiments/xedni-finite-height-packing-20261116/formal": {
+      "inputs": {
+        "experiments/xedni-finite-height-packing-20261116/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-finite-height-packing-20261116/formal/lakefile.toml": "7e3e4423d5f8f5e1283a89a50c1de9ed289a83d2fc7e75e5119c49c97b6b69e1",
+        "experiments/xedni-finite-height-packing-20261116/formal/lake-manifest.json": "47af1da86329fd961aed48007fe7e29b9aad28ecbb6f2835938656ecfdb30756"
+      }
+    },
+    "experiments/xedni-finite-kernel-packing-20261116/formal": {
+      "inputs": {
+        "experiments/xedni-finite-kernel-packing-20261116/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-finite-kernel-packing-20261116/formal/lakefile.toml": "525d13c2e625649f1ebc5f2b2b42848960dfbafd207e6f3d6759bf59f577d59d",
+        "experiments/xedni-finite-kernel-packing-20261116/formal/lake-manifest.json": "47af1da86329fd961aed48007fe7e29b9aad28ecbb6f2835938656ecfdb30756"
+      }
+    },
+    "experiments/xedni-first-collision-ledger-20261116/formal": {
+      "inputs": {
+        "experiments/xedni-first-collision-ledger-20261116/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-first-collision-ledger-20261116/formal/lakefile.toml": "1346c68b300b158da1af2a5b6e656a848407363f6d70908dceee11ef378f95a9",
+        "experiments/xedni-first-collision-ledger-20261116/formal/lake-manifest.json": "08e342212c26f112b3bf40d51cbfab0950c47a997a8d473dd6f193dc920ede10"
+      }
+    },
+    "experiments/xedni-first-hit-dominance-20261115/formal": {
+      "inputs": {
+        "experiments/xedni-first-hit-dominance-20261115/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-first-hit-dominance-20261115/formal/lakefile.toml": "5fefb91b1166f853a8db42f89ef191d564344e3c0d84029c2dd7af8bad724c54",
+        "experiments/xedni-first-hit-dominance-20261115/formal/lake-manifest.json": "47af1da86329fd961aed48007fe7e29b9aad28ecbb6f2835938656ecfdb30756"
+      }
+    },
+    "experiments/xedni-first-hit-partition-20261116/formal": {
+      "inputs": {
+        "experiments/xedni-first-hit-partition-20261116/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-first-hit-partition-20261116/formal/lakefile.toml": "10a689ed861c50732c5acb11cc88ecca49953fe2883fe3e18b5d9546fa7959c0",
+        "experiments/xedni-first-hit-partition-20261116/formal/lake-manifest.json": "08e342212c26f112b3bf40d51cbfab0950c47a997a8d473dd6f193dc920ede10"
+      }
+    },
+    "experiments/xedni-fixed-curve-admission-20261115/formal": {
+      "inputs": {
+        "experiments/xedni-fixed-curve-admission-20261115/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-fixed-curve-admission-20261115/formal/lakefile.toml": "b33b8a18e8776f118a4b4f47920e1eaee938fd07e8c0f22da3ffd9b335b66f78",
+        "experiments/xedni-fixed-curve-admission-20261115/formal/lake-manifest.json": "47af1da86329fd961aed48007fe7e29b9aad28ecbb6f2835938656ecfdb30756"
+      }
+    },
+    "experiments/xedni-full-hit-bound-20261116/formal": {
+      "inputs": {
+        "experiments/xedni-full-hit-bound-20261116/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-full-hit-bound-20261116/formal/lakefile.toml": "54525c19902c591d80ef9bf9e54e2952957ed8d4e8cb49ec381324cfd5be1d97",
+        "experiments/xedni-full-hit-bound-20261116/formal/lake-manifest.json": "08e342212c26f112b3bf40d51cbfab0950c47a997a8d473dd6f193dc920ede10"
+      }
+    },
+    "experiments/xedni-group-fiber-bound-20261116/formal": {
+      "inputs": {
+        "experiments/xedni-group-fiber-bound-20261116/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-group-fiber-bound-20261116/formal/lakefile.toml": "7acce8ddb11eeab6cf709491d4c45075e84ff06fd8909e132d1bbfe970684e0f",
+        "experiments/xedni-group-fiber-bound-20261116/formal/lake-manifest.json": "08e342212c26f112b3bf40d51cbfab0950c47a997a8d473dd6f193dc920ede10"
+      }
+    },
+    "experiments/xedni-group-trace-invariant-20261116/formal": {
+      "inputs": {
+        "experiments/xedni-group-trace-invariant-20261116/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-group-trace-invariant-20261116/formal/lakefile.toml": "d2bc52032c3602fd07af4e3b2a97a9d45d7a8d59cd0e3ba69088416bc4424e40",
+        "experiments/xedni-group-trace-invariant-20261116/formal/lake-manifest.json": "08e342212c26f112b3bf40d51cbfab0950c47a997a8d473dd6f193dc920ede10"
+      }
+    },
+    "experiments/xedni-height-growth-obstruction-20261116/formal": {
+      "inputs": {
+        "experiments/xedni-height-growth-obstruction-20261116/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-height-growth-obstruction-20261116/formal/lakefile.toml": "9be4648e4ef22491ee04652896ac6a0decae430d464fb270cc18efdd334234c1",
+        "experiments/xedni-height-growth-obstruction-20261116/formal/lake-manifest.json": "47af1da86329fd961aed48007fe7e29b9aad28ecbb6f2835938656ecfdb30756"
+      }
+    },
+    "experiments/xedni-height-pigeonhole-20261115/formal": {
+      "inputs": {
+        "experiments/xedni-height-pigeonhole-20261115/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-height-pigeonhole-20261115/formal/lakefile.toml": "3816b3076ea7109ec3af2e345b6b03de1123a2069da8edceec9d781891421104",
+        "experiments/xedni-height-pigeonhole-20261115/formal/lake-manifest.json": "47af1da86329fd961aed48007fe7e29b9aad28ecbb6f2835938656ecfdb30756"
+      }
+    },
+    "experiments/xedni-integral-chord-filter-20261115/formal": {
+      "inputs": {
+        "experiments/xedni-integral-chord-filter-20261115/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-integral-chord-filter-20261115/formal/lakefile.toml": "ddf02ec171e26c320ea9c888e510600cb795b46a81a4fcda47fab7c97a37617c",
+        "experiments/xedni-integral-chord-filter-20261115/formal/lake-manifest.json": "47af1da86329fd961aed48007fe7e29b9aad28ecbb6f2835938656ecfdb30756"
+      }
+    },
+    "experiments/xedni-isomorphic-family-admission-20261115/formal": {
+      "inputs": {
+        "experiments/xedni-isomorphic-family-admission-20261115/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-isomorphic-family-admission-20261115/formal/lakefile.toml": "706c6c73560bff6d8ff612294a77dddddb6aa9fcd98663aaff72d3f9613308e0",
+        "experiments/xedni-isomorphic-family-admission-20261115/formal/lake-manifest.json": "47af1da86329fd961aed48007fe7e29b9aad28ecbb6f2835938656ecfdb30756"
+      }
+    },
+    "experiments/xedni-label-conditioned-collision-20261116/formal": {
+      "inputs": {
+        "experiments/xedni-label-conditioned-collision-20261116/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-label-conditioned-collision-20261116/formal/lakefile.toml": "4e203dc221bba051de8aecd137052b6b5c80d48359c56e1fcb240d89ce43ea73",
+        "experiments/xedni-label-conditioned-collision-20261116/formal/lake-manifest.json": "08e342212c26f112b3bf40d51cbfab0950c47a997a8d473dd6f193dc920ede10"
+      }
+    },
+    "experiments/xedni-lattice-obstruction-20261028/formal": {
+      "inputs": {
+        "experiments/xedni-lattice-obstruction-20261028/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-lattice-obstruction-20261028/formal/lakefile.toml": "6ae783510affedd5b3300c2c9f372c0466d50b44d541fde5382666056180ec24",
+        "experiments/xedni-lattice-obstruction-20261028/formal/lake-manifest.json": "47af1da86329fd961aed48007fe7e29b9aad28ecbb6f2835938656ecfdb30756"
+      }
+    },
+    "experiments/xedni-leading-defect-selector-20261116/formal": {
+      "inputs": {
+        "experiments/xedni-leading-defect-selector-20261116/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-leading-defect-selector-20261116/formal/lakefile.toml": "11b5a4218eba4d31f7e969160bbaab296a4b55abe61dde1f593979c60d51d32f",
+        "experiments/xedni-leading-defect-selector-20261116/formal/lake-manifest.json": "47af1da86329fd961aed48007fe7e29b9aad28ecbb6f2835938656ecfdb30756"
+      }
+    },
+    "experiments/xedni-lift-height-search-20261116/formal": {
+      "inputs": {
+        "experiments/xedni-lift-height-search-20261116/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-lift-height-search-20261116/formal/lakefile.toml": "9e847641b141d8298de7ffdaa4c638b76ff55f1538f86b2e8ed91971cdb28146",
+        "experiments/xedni-lift-height-search-20261116/formal/lake-manifest.json": "47af1da86329fd961aed48007fe7e29b9aad28ecbb6f2835938656ecfdb30756"
+      }
+    },
+    "experiments/xedni-metric-packing-20261115/formal": {
+      "inputs": {
+        "experiments/xedni-metric-packing-20261115/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-metric-packing-20261115/formal/lakefile.toml": "fa199df179f8b55f4c79e043cd329984db5225b577e681bd0940dbee53a24ae4",
+        "experiments/xedni-metric-packing-20261115/formal/lake-manifest.json": "47af1da86329fd961aed48007fe7e29b9aad28ecbb6f2835938656ecfdb30756"
+      }
+    },
+    "experiments/xedni-nonisomorphic-expansion-20261115/formal": {
+      "inputs": {
+        "experiments/xedni-nonisomorphic-expansion-20261115/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-nonisomorphic-expansion-20261115/formal/lakefile.toml": "38f9a9819f5e8fa699e4fa112475815b80bc609ba18314410f794911bbcd4030",
+        "experiments/xedni-nonisomorphic-expansion-20261115/formal/lake-manifest.json": "47af1da86329fd961aed48007fe7e29b9aad28ecbb6f2835938656ecfdb30756"
+      }
+    },
+    "experiments/xedni-nonisomorphic-family-screen-20261115/formal": {
+      "inputs": {
+        "experiments/xedni-nonisomorphic-family-screen-20261115/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-nonisomorphic-family-screen-20261115/formal/lakefile.toml": "cff993885fb60703115c538aed74ea0e9d48d3ecf42cca0d35db021ff28607a3",
+        "experiments/xedni-nonisomorphic-family-screen-20261115/formal/lake-manifest.json": "47af1da86329fd961aed48007fe7e29b9aad28ecbb6f2835938656ecfdb30756"
+      }
+    },
+    "experiments/xedni-nonisomorphic-holdout-20261115/formal": {
+      "inputs": {
+        "experiments/xedni-nonisomorphic-holdout-20261115/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-nonisomorphic-holdout-20261115/formal/lakefile.toml": "739d4fd41bad29544d81735067679b7597e23d0bbb42b7ca2212770eb5cce9f5",
+        "experiments/xedni-nonisomorphic-holdout-20261115/formal/lake-manifest.json": "47af1da86329fd961aed48007fe7e29b9aad28ecbb6f2835938656ecfdb30756"
+      }
+    },
+    "experiments/xedni-nonisomorphic-relation-20261115/formal": {
+      "inputs": {
+        "experiments/xedni-nonisomorphic-relation-20261115/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-nonisomorphic-relation-20261115/formal/lakefile.toml": "61d990fd2276f46bf43c8446047a91a803b5c5b36adc216e70649e2f311692e0",
+        "experiments/xedni-nonisomorphic-relation-20261115/formal/lake-manifest.json": "47af1da86329fd961aed48007fe7e29b9aad28ecbb6f2835938656ecfdb30756"
+      }
+    },
+    "experiments/xedni-point-lift-shift-20261115/formal": {
+      "inputs": {
+        "experiments/xedni-point-lift-shift-20261115/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-point-lift-shift-20261115/formal/lakefile.toml": "43d34f8b53b5e0e89512521f6e2752a8a8953fd6dab1cc0878c984ddd57343d5",
+        "experiments/xedni-point-lift-shift-20261115/formal/lake-manifest.json": "47af1da86329fd961aed48007fe7e29b9aad28ecbb6f2835938656ecfdb30756"
+      }
+    },
+    "experiments/xedni-precommitted-vector-lift-20261116/formal": {
+      "inputs": {
+        "experiments/xedni-precommitted-vector-lift-20261116/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-precommitted-vector-lift-20261116/formal/lakefile.toml": "58a7cb56e69e2ee35dacbcc6b6998ffe3225028dd459af9ecc59995b4f13c9b3",
+        "experiments/xedni-precommitted-vector-lift-20261116/formal/lake-manifest.json": "47af1da86329fd961aed48007fe7e29b9aad28ecbb6f2835938656ecfdb30756"
+      }
+    },
+    "experiments/xedni-prefix-pattern-bridge-20261116/formal": {
+      "inputs": {
+        "experiments/xedni-prefix-pattern-bridge-20261116/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-prefix-pattern-bridge-20261116/formal/lakefile.toml": "68ced87ac1e0f35234cab409cc29e3cd45140623126ca014a94f77f1baa20eaa",
+        "experiments/xedni-prefix-pattern-bridge-20261116/formal/lake-manifest.json": "08e342212c26f112b3bf40d51cbfab0950c47a997a8d473dd6f193dc920ede10"
+      }
+    },
+    "experiments/xedni-public-first-large-holdout-20261115/formal": {
+      "inputs": {
+        "experiments/xedni-public-first-large-holdout-20261115/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-public-first-large-holdout-20261115/formal/lakefile.toml": "1c1515c2a3cda4078a7c489a3e954662e8ef31f209cc4974c44326ec06906f02",
+        "experiments/xedni-public-first-large-holdout-20261115/formal/lake-manifest.json": "08e342212c26f112b3bf40d51cbfab0950c47a997a8d473dd6f193dc920ede10"
+      }
+    },
+    "experiments/xedni-random-label-coupling-20261116/formal": {
+      "inputs": {
+        "experiments/xedni-random-label-coupling-20261116/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-random-label-coupling-20261116/formal/lakefile.toml": "24e4bb6f369273f6cf256593ad7308b9fbe795af502c90fff38c31e27a7c0ce1",
+        "experiments/xedni-random-label-coupling-20261116/formal/lake-manifest.json": "08e342212c26f112b3bf40d51cbfab0950c47a997a8d473dd6f193dc920ede10"
+      }
+    },
+    "experiments/xedni-random-label-oracle-step-20261116/formal": {
+      "inputs": {
+        "experiments/xedni-random-label-oracle-step-20261116/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-random-label-oracle-step-20261116/formal/lakefile.toml": "fdbaf8baaa18b607abdcb3de77396410dec26ecfddb5566e08cb53433c140d6d",
+        "experiments/xedni-random-label-oracle-step-20261116/formal/lake-manifest.json": "08e342212c26f112b3bf40d51cbfab0950c47a997a8d473dd6f193dc920ede10"
+      }
+    },
+    "experiments/xedni-rank-one-cover-20261115/formal": {
+      "inputs": {
+        "experiments/xedni-rank-one-cover-20261115/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-rank-one-cover-20261115/formal/lakefile.toml": "1b0bc889fd918c18799c685304959c0378a631e5e5ddb031ef362d162cb12d84",
+        "experiments/xedni-rank-one-cover-20261115/formal/lake-manifest.json": "47af1da86329fd961aed48007fe7e29b9aad28ecbb6f2835938656ecfdb30756"
+      }
+    },
+    "experiments/xedni-rank-sample-bridge-20261115/formal": {
+      "inputs": {
+        "experiments/xedni-rank-sample-bridge-20261115/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-rank-sample-bridge-20261115/formal/lakefile.toml": "9d4cbaff1c1390ec3d6f89fa2c90f610f6e72351e2796e18340d2927936b97a2",
+        "experiments/xedni-rank-sample-bridge-20261115/formal/lake-manifest.json": "47af1da86329fd961aed48007fe7e29b9aad28ecbb6f2835938656ecfdb30756"
+      }
+    },
+    "experiments/xedni-sampled-witness-20261115/formal": {
+      "inputs": {
+        "experiments/xedni-sampled-witness-20261115/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-sampled-witness-20261115/formal/lakefile.toml": "89bc228889a157706ad14008d8a0b8e18b482f007f8a7636f51c922e1cead6fc",
+        "experiments/xedni-sampled-witness-20261115/formal/lake-manifest.json": "47af1da86329fd961aed48007fe7e29b9aad28ecbb6f2835938656ecfdb30756"
+      }
+    },
+    "experiments/xedni-selection-law-20261115/formal": {
+      "inputs": {
+        "experiments/xedni-selection-law-20261115/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-selection-law-20261115/formal/lakefile.toml": "76a39679d61bafb0cf6e2be0f30dc105aad870a8d077280a49697acb2c3305fc",
+        "experiments/xedni-selection-law-20261115/formal/lake-manifest.json": "47af1da86329fd961aed48007fe7e29b9aad28ecbb6f2835938656ecfdb30756"
+      }
+    },
+    "experiments/xedni-stage-hit-equivalence-20261116/formal": {
+      "inputs": {
+        "experiments/xedni-stage-hit-equivalence-20261116/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-stage-hit-equivalence-20261116/formal/lakefile.toml": "8b3d145e5496eac685acd885af4b2a21de87c49e644f9062fa13dbbbefde0c2d",
+        "experiments/xedni-stage-hit-equivalence-20261116/formal/lake-manifest.json": "08e342212c26f112b3bf40d51cbfab0950c47a997a8d473dd6f193dc920ede10"
+      }
+    },
+    "experiments/xedni-symbolic-collision-bound-20261116/formal": {
+      "inputs": {
+        "experiments/xedni-symbolic-collision-bound-20261116/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-symbolic-collision-bound-20261116/formal/lakefile.toml": "88a2f79ec482ba12666fbbd18723ee55ae5571a10d479e8c244846dc5ecb32c5",
+        "experiments/xedni-symbolic-collision-bound-20261116/formal/lake-manifest.json": "08e342212c26f112b3bf40d51cbfab0950c47a997a8d473dd6f193dc920ede10"
+      }
+    },
+    "experiments/xedni-tangent-admission-20261116/formal": {
+      "inputs": {
+        "experiments/xedni-tangent-admission-20261116/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-tangent-admission-20261116/formal/lakefile.toml": "4d61bfb5b3ca8412a4aab059dc378c91666bda6ad95a2c0bfa5f3852ea8745f9",
+        "experiments/xedni-tangent-admission-20261116/formal/lake-manifest.json": "47af1da86329fd961aed48007fe7e29b9aad28ecbb6f2835938656ecfdb30756"
+      }
+    },
+    "experiments/xedni-target-diversity-holdout-20261115/formal": {
+      "inputs": {
+        "experiments/xedni-target-diversity-holdout-20261115/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-target-diversity-holdout-20261115/formal/lakefile.toml": "4e96d1dfc2aac85c5604e5e26f989098a25cb4ccedb1e1d215d343d7cf726416",
+        "experiments/xedni-target-diversity-holdout-20261115/formal/lake-manifest.json": "47af1da86329fd961aed48007fe7e29b9aad28ecbb6f2835938656ecfdb30756"
+      }
+    },
+    "experiments/xedni-torsion-section-obstruction-20261116/formal": {
+      "inputs": {
+        "experiments/xedni-torsion-section-obstruction-20261116/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-torsion-section-obstruction-20261116/formal/lakefile.toml": "f2a25e5386e5dd5d666fefe08085c5a65f89fb178c4d11f8af8f8ad65b44d74b",
+        "experiments/xedni-torsion-section-obstruction-20261116/formal/lake-manifest.json": "47af1da86329fd961aed48007fe7e29b9aad28ecbb6f2835938656ecfdb30756"
+      }
+    },
+    "experiments/xedni-transcript-determinism-20261116/formal": {
+      "inputs": {
+        "experiments/xedni-transcript-determinism-20261116/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-transcript-determinism-20261116/formal/lakefile.toml": "b3c9ba38739d98b6d1fe6053243a47a67a7eaacfa32c5e1e3dfc55cc84d217c0",
+        "experiments/xedni-transcript-determinism-20261116/formal/lake-manifest.json": "08e342212c26f112b3bf40d51cbfab0950c47a997a8d473dd6f193dc920ede10"
+      }
+    },
+    "experiments/xedni-transcript-fiber-equivalence-20261116/formal": {
+      "inputs": {
+        "experiments/xedni-transcript-fiber-equivalence-20261116/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-transcript-fiber-equivalence-20261116/formal/lakefile.toml": "8effa5333c5a6f916299805502f16bb7a3be5730cff37413d23481970ede802d",
+        "experiments/xedni-transcript-fiber-equivalence-20261116/formal/lake-manifest.json": "08e342212c26f112b3bf40d51cbfab0950c47a997a8d473dd6f193dc920ede10"
+      }
+    },
+    "experiments/xedni-two-image-precommit-20261116/formal": {
+      "inputs": {
+        "experiments/xedni-two-image-precommit-20261116/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-two-image-precommit-20261116/formal/lakefile.toml": "57f34c2df26ae919dd3039c0b9859ba6af63cdeb84bd75a9de5a54f419fe8a44",
+        "experiments/xedni-two-image-precommit-20261116/formal/lake-manifest.json": "47af1da86329fd961aed48007fe7e29b9aad28ecbb6f2835938656ecfdb30756"
+      }
+    },
+    "experiments/xedni-typed-prefix-program-20261116/formal": {
+      "inputs": {
+        "experiments/xedni-typed-prefix-program-20261116/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-typed-prefix-program-20261116/formal/lakefile.toml": "0736a716593446e54743c8acd92b099c830617667b9f4638e3262b2053858855",
+        "experiments/xedni-typed-prefix-program-20261116/formal/lake-manifest.json": "08e342212c26f112b3bf40d51cbfab0950c47a997a8d473dd6f193dc920ede10"
+      }
+    },
+    "experiments/xedni-vector-dependent-rank-one-lift-20261115/formal": {
+      "inputs": {
+        "experiments/xedni-vector-dependent-rank-one-lift-20261115/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-vector-dependent-rank-one-lift-20261115/formal/lakefile.toml": "a97797b7fe85b4d8da58391e05975f3757bdad1cd2acc65c24539fcdce51146c",
+        "experiments/xedni-vector-dependent-rank-one-lift-20261115/formal/lake-manifest.json": "47af1da86329fd961aed48007fe7e29b9aad28ecbb6f2835938656ecfdb30756"
+      }
+    },
+    "experiments/xedni-vector-shift-lift-search-20261116/formal": {
+      "inputs": {
+        "experiments/xedni-vector-shift-lift-search-20261116/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-vector-shift-lift-search-20261116/formal/lakefile.toml": "90a7bea399a9e8d14d153051ec40178742cd8ca931903387fdb8286d6aaf2fe6",
+        "experiments/xedni-vector-shift-lift-search-20261116/formal/lake-manifest.json": "47af1da86329fd961aed48007fe7e29b9aad28ecbb6f2835938656ecfdb30756"
+      }
+    }
+  },
+  "files": {
+    "experiments/xedni-adaptive-collision-trace-20261116/formal/AdaptiveCollision.lean": {
+      "mode": "100644",
+      "sha256": "629fe1a0785a6ef7119edf58a4a29856d292a00189737d11e78cd36b843773ec",
+      "body_sha256": "629fe1a0785a6ef7119edf58a4a29856d292a00189737d11e78cd36b843773ec"
+    },
+    "experiments/xedni-adaptive-oracle-coupling-20261116/formal/AdaptiveOracleCoupling.lean": {
+      "mode": "100644",
+      "sha256": "14b7b99e29e4c6117830baa37d7e5d4579d208655b0ad1a0f0018113083a642e",
+      "body_sha256": "14b7b99e29e4c6117830baa37d7e5d4579d208655b0ad1a0f0018113083a642e"
+    },
+    "experiments/xedni-adaptive-oracle-coupling-20261116/formal/OracleStep.lean": {
+      "mode": "120000",
+      "sha256": "46e2d8d147f8e3993ffc77fdb92657b4d32ecb2d00f3ac59714d816604cd99fa",
+      "target": "../../xedni-random-label-oracle-step-20261116/formal/OracleStep.lean",
+      "body_sha256": "f8259b6b45b969d3f577c47c0a827379fca5b69e262fea21feaa641bc9758b16"
+    },
+    "experiments/xedni-adaptive-oracle-coupling-20261116/formal/RandomLabelCoupling.lean": {
+      "mode": "120000",
+      "sha256": "405111d8dd457e52d5bdbfe5b92cdedbf171985254df7006602572668809233d",
+      "target": "../../xedni-random-label-coupling-20261116/formal/RandomLabelCoupling.lean",
+      "body_sha256": "46c2b60863ce5f5022507835d36329ddcda9089a3016b24524d90948f30939a3"
+    },
+    "experiments/xedni-adaptive-program-invariant-20261116/formal/AdaptiveProgramInvariant.lean": {
+      "mode": "100644",
+      "sha256": "b856e6723dc24d4d6e976cc5252d36b2e41437852f4e1262c5ad6bdde5dfc0b3",
+      "body_sha256": "b856e6723dc24d4d6e976cc5252d36b2e41437852f4e1262c5ad6bdde5dfc0b3"
+    },
+    "experiments/xedni-adaptive-program-invariant-20261116/formal/GroupTraceInvariant.lean": {
+      "mode": "120000",
+      "sha256": "0b25faabb3c5dca0ccfed03e069af25d76353ba2f0ee99ad9349e8160f06f69c",
+      "target": "../../xedni-group-trace-invariant-20261116/formal/GroupTraceInvariant.lean",
+      "body_sha256": "36fd21e7e62fd7861d37cc0bb5798cd3fcb1ff3c43a739cf32cfa44c22ebc358"
+    },
+    "experiments/xedni-adaptive-program-invariant-20261116/formal/LabelConditionedCollision.lean": {
+      "mode": "120000",
+      "sha256": "174456ec4b39d7b44e5d2f9219a9822488b41b307dc50bc964e78c57e68c28f3",
+      "target": "../../xedni-label-conditioned-collision-20261116/formal/LabelConditionedCollision.lean",
+      "body_sha256": "179d0a46ee5a3ecb97996067ec2c7de523a61703023a549aa4c294942227a809"
+    },
+    "experiments/xedni-adaptive-program-invariant-20261116/formal/RandomLabelCoupling.lean": {
+      "mode": "120000",
+      "sha256": "405111d8dd457e52d5bdbfe5b92cdedbf171985254df7006602572668809233d",
+      "target": "../../xedni-random-label-coupling-20261116/formal/RandomLabelCoupling.lean",
+      "body_sha256": "46c2b60863ce5f5022507835d36329ddcda9089a3016b24524d90948f30939a3"
+    },
+    "experiments/xedni-adaptive-program-invariant-20261116/formal/SymbolicCollision.lean": {
+      "mode": "120000",
+      "sha256": "9322f97c23fcb4fd24d507b7cef30c169dbe6973b6cc255b5f317de49084fbf8",
+      "target": "../../xedni-symbolic-collision-bound-20261116/formal/SymbolicCollision.lean",
+      "body_sha256": "7179539ab101b5dd76297d77e0b2ede93a09fa5b30998c2bcf2318e304ee632a"
+    },
+    "experiments/xedni-adaptive-stage-sum-20261116/formal/AdaptiveProgramInvariant.lean": {
+      "mode": "120000",
+      "sha256": "017ca5bd703887b6ae892c8fadaafb9253757f93b46327dd9d993b89b83ab73f",
+      "target": "../../xedni-adaptive-program-invariant-20261116/formal/AdaptiveProgramInvariant.lean",
+      "body_sha256": "b856e6723dc24d4d6e976cc5252d36b2e41437852f4e1262c5ad6bdde5dfc0b3"
+    },
+    "experiments/xedni-adaptive-stage-sum-20261116/formal/AdaptiveStageSum.lean": {
+      "mode": "100644",
+      "sha256": "95213a21320fef4da9561874103ed62642891d91d438c764c04fd7405f99d006",
+      "body_sha256": "95213a21320fef4da9561874103ed62642891d91d438c764c04fd7405f99d006"
+    },
+    "experiments/xedni-adaptive-stage-sum-20261116/formal/FirstCollisionLedger.lean": {
+      "mode": "120000",
+      "sha256": "6cac673025583d927ea7f4410b2c8fb0e1127d03a9ec80beb43ae63aaea2258b",
+      "target": "../../xedni-first-collision-ledger-20261116/formal/FirstCollisionLedger.lean",
+      "body_sha256": "20619ed6acb4b176561a8c7a73029f01e3342f7af693e1ae93c0efe462b16469"
+    },
+    "experiments/xedni-adaptive-stage-sum-20261116/formal/GroupTraceInvariant.lean": {
+      "mode": "120000",
+      "sha256": "0b25faabb3c5dca0ccfed03e069af25d76353ba2f0ee99ad9349e8160f06f69c",
+      "target": "../../xedni-group-trace-invariant-20261116/formal/GroupTraceInvariant.lean",
+      "body_sha256": "36fd21e7e62fd7861d37cc0bb5798cd3fcb1ff3c43a739cf32cfa44c22ebc358"
+    },
+    "experiments/xedni-adaptive-stage-sum-20261116/formal/LabelConditionedCollision.lean": {
+      "mode": "120000",
+      "sha256": "174456ec4b39d7b44e5d2f9219a9822488b41b307dc50bc964e78c57e68c28f3",
+      "target": "../../xedni-label-conditioned-collision-20261116/formal/LabelConditionedCollision.lean",
+      "body_sha256": "179d0a46ee5a3ecb97996067ec2c7de523a61703023a549aa4c294942227a809"
+    },
+    "experiments/xedni-adaptive-stage-sum-20261116/formal/PrefixPatternBridge.lean": {
+      "mode": "120000",
+      "sha256": "e1b54c647fa2e9410a718a3f222072801d3cd5f2ec72128f7f883d3b6f54d0c9",
+      "target": "../../xedni-prefix-pattern-bridge-20261116/formal/PrefixPatternBridge.lean",
+      "body_sha256": "d5b197b69cf1daed55910c3d861c6e5c7247fbe574a964c7d8e427a0c43cb0fc"
+    },
+    "experiments/xedni-adaptive-stage-sum-20261116/formal/RandomLabelCoupling.lean": {
+      "mode": "120000",
+      "sha256": "405111d8dd457e52d5bdbfe5b92cdedbf171985254df7006602572668809233d",
+      "target": "../../xedni-random-label-coupling-20261116/formal/RandomLabelCoupling.lean",
+      "body_sha256": "46c2b60863ce5f5022507835d36329ddcda9089a3016b24524d90948f30939a3"
+    },
+    "experiments/xedni-adaptive-stage-sum-20261116/formal/SymbolicCollision.lean": {
+      "mode": "120000",
+      "sha256": "9322f97c23fcb4fd24d507b7cef30c169dbe6973b6cc255b5f317de49084fbf8",
+      "target": "../../xedni-symbolic-collision-bound-20261116/formal/SymbolicCollision.lean",
+      "body_sha256": "7179539ab101b5dd76297d77e0b2ede93a09fa5b30998c2bcf2318e304ee632a"
+    },
+    "experiments/xedni-adaptive-stage-sum-20261116/formal/TranscriptDeterminism.lean": {
+      "mode": "120000",
+      "sha256": "3baa6c9f99418e13fe1971dbbc5332f545c5520aba8460733a67c637bad3a4bf",
+      "target": "../../xedni-transcript-determinism-20261116/formal/TranscriptDeterminism.lean",
+      "body_sha256": "cb5d419fb23f5daa97b96abd21cd628382f3d5bb51c2d2f12c3564e7a6b465e0"
+    },
+    "experiments/xedni-adaptive-total-bound-20261116/formal/AdaptiveProgramInvariant.lean": {
+      "mode": "120000",
+      "sha256": "208f7f9bc481d586b3ff3ea2839b3832920cad2672afed416ecc0fed5d6809ad",
+      "target": "../../xedni-bucket-fiber-partition-20261116/formal/AdaptiveProgramInvariant.lean",
+      "body_sha256": "b856e6723dc24d4d6e976cc5252d36b2e41437852f4e1262c5ad6bdde5dfc0b3"
+    },
+    "experiments/xedni-adaptive-total-bound-20261116/formal/AdaptiveStageSum.lean": {
+      "mode": "120000",
+      "sha256": "437c5e578e66e99447a4b9e0291067b23b89e4afc0cb5e461a29d07588493309",
+      "target": "../../xedni-bucket-fiber-partition-20261116/formal/AdaptiveStageSum.lean",
+      "body_sha256": "95213a21320fef4da9561874103ed62642891d91d438c764c04fd7405f99d006"
+    },
+    "experiments/xedni-adaptive-total-bound-20261116/formal/AdaptiveTotalBound.lean": {
+      "mode": "100644",
+      "sha256": "227818e8bd53293954c805f365f8b715b376fca6f0a8dbfa15be2ef7184442e7",
+      "body_sha256": "227818e8bd53293954c805f365f8b715b376fca6f0a8dbfa15be2ef7184442e7"
+    },
+    "experiments/xedni-adaptive-total-bound-20261116/formal/BucketFiberPartition.lean": {
+      "mode": "120000",
+      "sha256": "f11b874b1a4840ab3549de86d2b7121c99a45a5ca34915523761cbe68465460e",
+      "target": "../../xedni-bucket-fiber-partition-20261116/formal/BucketFiberPartition.lean",
+      "body_sha256": "5f1a7ba5b7a1fcc964979bff785d0894d8386ae9a644012b95b8b1b2e71295b3"
+    },
+    "experiments/xedni-adaptive-total-bound-20261116/formal/FirstCollisionLedger.lean": {
+      "mode": "120000",
+      "sha256": "aca75a8620815f6f50d5dc437a1f6aac8fce5a77974cbf7f0a74cd8729708757",
+      "target": "../../xedni-bucket-fiber-partition-20261116/formal/FirstCollisionLedger.lean",
+      "body_sha256": "20619ed6acb4b176561a8c7a73029f01e3342f7af693e1ae93c0efe462b16469"
+    },
+    "experiments/xedni-adaptive-total-bound-20261116/formal/FirstHitPartition.lean": {
+      "mode": "120000",
+      "sha256": "28ffdd8cd3b61eff3cbc2912ed19b04cf6e1890c5bb380d1f8680086620ec65f",
+      "target": "../../xedni-bucket-fiber-partition-20261116/formal/FirstHitPartition.lean",
+      "body_sha256": "e42fc8de40da8d69bc742f7d11190d41fab4704613aafd892a3e7f807a026f34"
+    },
+    "experiments/xedni-adaptive-total-bound-20261116/formal/GroupFiberBound.lean": {
+      "mode": "120000",
+      "sha256": "b05cf139f014e2c26e00aff2572ea4e02a7a0509e92b2541461d4b9e29414ef2",
+      "target": "../../xedni-group-fiber-bound-20261116/formal/GroupFiberBound.lean",
+      "body_sha256": "0ebdb0673b8bb60497a8dbe3ace084800ab6b1098f44f7fd9559ae9b74253a4c"
+    },
+    "experiments/xedni-adaptive-total-bound-20261116/formal/GroupTraceInvariant.lean": {
+      "mode": "120000",
+      "sha256": "c3433101d913bf30c40c0010be8b70e157b7ac90ef3699f3d8505b99e05751a9",
+      "target": "../../xedni-bucket-fiber-partition-20261116/formal/GroupTraceInvariant.lean",
+      "body_sha256": "36fd21e7e62fd7861d37cc0bb5798cd3fcb1ff3c43a739cf32cfa44c22ebc358"
+    },
+    "experiments/xedni-adaptive-total-bound-20261116/formal/LabelConditionedCollision.lean": {
+      "mode": "120000",
+      "sha256": "bd19aeebec655925e09b380fa5b4d0c0b57e645c3c93ee7c90bef7fa3b5d1f6f",
+      "target": "../../xedni-bucket-fiber-partition-20261116/formal/LabelConditionedCollision.lean",
+      "body_sha256": "179d0a46ee5a3ecb97996067ec2c7de523a61703023a549aa4c294942227a809"
+    },
+    "experiments/xedni-adaptive-total-bound-20261116/formal/PrefixPatternBridge.lean": {
+      "mode": "120000",
+      "sha256": "e36d0b02caf3a5bd20a461ff0e11b83312c6d73bf8adf050557986457e7ed86a",
+      "target": "../../xedni-bucket-fiber-partition-20261116/formal/PrefixPatternBridge.lean",
+      "body_sha256": "d5b197b69cf1daed55910c3d861c6e5c7247fbe574a964c7d8e427a0c43cb0fc"
+    },
+    "experiments/xedni-adaptive-total-bound-20261116/formal/RandomLabelCoupling.lean": {
+      "mode": "120000",
+      "sha256": "14e7c40c91aaebe95ac3097692ac4c2d8cc5597cae8bc12d4079c49b3397756d",
+      "target": "../../xedni-bucket-fiber-partition-20261116/formal/RandomLabelCoupling.lean",
+      "body_sha256": "46c2b60863ce5f5022507835d36329ddcda9089a3016b24524d90948f30939a3"
+    },
+    "experiments/xedni-adaptive-total-bound-20261116/formal/StageHitEquivalence.lean": {
+      "mode": "120000",
+      "sha256": "cc87060aafe0ee3c141467724569a53f4bc5e57be8b80f94fb148aae3b26a54e",
+      "target": "../../xedni-bucket-fiber-partition-20261116/formal/StageHitEquivalence.lean",
+      "body_sha256": "3950d84581de9b78b4fb009168ceab986bcef1de022fa52b60b5945594546192"
+    },
+    "experiments/xedni-adaptive-total-bound-20261116/formal/SymbolicCollision.lean": {
+      "mode": "120000",
+      "sha256": "353919dc2d9a48febc609b2c30d83313b0996a5598ade1ee322cf8f6cd5ccd52",
+      "target": "../../xedni-bucket-fiber-partition-20261116/formal/SymbolicCollision.lean",
+      "body_sha256": "7179539ab101b5dd76297d77e0b2ede93a09fa5b30998c2bcf2318e304ee632a"
+    },
+    "experiments/xedni-adaptive-total-bound-20261116/formal/TranscriptDeterminism.lean": {
+      "mode": "120000",
+      "sha256": "09d411a27b3215eda81693351cc3887da34c0ea3f2d99217402a4848413e207a",
+      "target": "../../xedni-bucket-fiber-partition-20261116/formal/TranscriptDeterminism.lean",
+      "body_sha256": "cb5d419fb23f5daa97b96abd21cd628382f3d5bb51c2d2f12c3564e7a6b465e0"
+    },
+    "experiments/xedni-adaptive-total-bound-20261116/formal/TranscriptFiberEquivalence.lean": {
+      "mode": "120000",
+      "sha256": "d9b38a9de50560a472c25f55ba34f547b9975340d25fe700fd4ce2586428f437",
+      "target": "../../xedni-bucket-fiber-partition-20261116/formal/TranscriptFiberEquivalence.lean",
+      "body_sha256": "60d4e30d87fad6d65d98acac696b85d353a01ef97c31c1d4ea82b67cfd2a9b74"
+    },
+    "experiments/xedni-adaptive-total-bound-20261116/formal/TypedPrefixProgram.lean": {
+      "mode": "120000",
+      "sha256": "987923fc89ec7906a62fede91dc82848e017215cae9ad0e5dafb6eb522d10a26",
+      "target": "../../xedni-bucket-fiber-partition-20261116/formal/TypedPrefixProgram.lean",
+      "body_sha256": "ba34f64f6ef57e39ac097b71b633ca96276e890e32aee6af7eee71200289d9bc"
+    },
+    "experiments/xedni-adaptive-zero-test-bound-20261116/formal/AdaptiveZeroTest.lean": {
+      "mode": "100644",
+      "sha256": "f52cba753d12338cc4c547b2871ae112c03574f849e920a92fdccceb1e6fa647",
+      "body_sha256": "f52cba753d12338cc4c547b2871ae112c03574f849e920a92fdccceb1e6fa647"
+    },
+    "experiments/xedni-basis-coercivity-20261115/formal/BasisCoercivity.lean": {
+      "mode": "100644",
+      "sha256": "23b3e9bb9c5bfb79f833165e640bed5ab94cec53a5df09263b3aaee79311a79c",
+      "body_sha256": "23b3e9bb9c5bfb79f833165e640bed5ab94cec53a5df09263b3aaee79311a79c"
+    },
+    "experiments/xedni-bounded-witness-20261030/formal/WitnessObstruction.lean": {
+      "mode": "100644",
+      "sha256": "6aa4475da5af80cc9db15407efb6f02ce792dbd6c18dac0d1e74f5c3fa208645",
+      "body_sha256": "6aa4475da5af80cc9db15407efb6f02ce792dbd6c18dac0d1e74f5c3fa208645"
+    },
+    "experiments/xedni-bucket-fiber-partition-20261116/formal/AdaptiveProgramInvariant.lean": {
+      "mode": "120000",
+      "sha256": "6a99d3720dae893586713f542a05737cdb372bd88b4de22d911fa6a399ec4070",
+      "target": "../../xedni-first-hit-partition-20261116/formal/AdaptiveProgramInvariant.lean",
+      "body_sha256": "b856e6723dc24d4d6e976cc5252d36b2e41437852f4e1262c5ad6bdde5dfc0b3"
+    },
+    "experiments/xedni-bucket-fiber-partition-20261116/formal/AdaptiveStageSum.lean": {
+      "mode": "120000",
+      "sha256": "95e59734a231ebe257b664c752b74817827802dd1f6e187e865ed1dad3a1c284",
+      "target": "../../xedni-first-hit-partition-20261116/formal/AdaptiveStageSum.lean",
+      "body_sha256": "95213a21320fef4da9561874103ed62642891d91d438c764c04fd7405f99d006"
+    },
+    "experiments/xedni-bucket-fiber-partition-20261116/formal/BucketFiberPartition.lean": {
+      "mode": "100644",
+      "sha256": "5f1a7ba5b7a1fcc964979bff785d0894d8386ae9a644012b95b8b1b2e71295b3",
+      "body_sha256": "5f1a7ba5b7a1fcc964979bff785d0894d8386ae9a644012b95b8b1b2e71295b3"
+    },
+    "experiments/xedni-bucket-fiber-partition-20261116/formal/FirstCollisionLedger.lean": {
+      "mode": "120000",
+      "sha256": "962bdd7f59bfb5770081e4c8c5d0e7b34ea243ed54debf15f5a89743a666c0cf",
+      "target": "../../xedni-first-hit-partition-20261116/formal/FirstCollisionLedger.lean",
+      "body_sha256": "20619ed6acb4b176561a8c7a73029f01e3342f7af693e1ae93c0efe462b16469"
+    },
+    "experiments/xedni-bucket-fiber-partition-20261116/formal/FirstHitPartition.lean": {
+      "mode": "120000",
+      "sha256": "93ba4c85c11a2d961ca223f90719b41f3a8943e24f34145fffa522915e31d8e4",
+      "target": "../../xedni-first-hit-partition-20261116/formal/FirstHitPartition.lean",
+      "body_sha256": "e42fc8de40da8d69bc742f7d11190d41fab4704613aafd892a3e7f807a026f34"
+    },
+    "experiments/xedni-bucket-fiber-partition-20261116/formal/GroupTraceInvariant.lean": {
+      "mode": "120000",
+      "sha256": "50cc0b956e4464ae2859c8f376093c1ef391b0660fcd4edb2b7badc38da622e0",
+      "target": "../../xedni-first-hit-partition-20261116/formal/GroupTraceInvariant.lean",
+      "body_sha256": "36fd21e7e62fd7861d37cc0bb5798cd3fcb1ff3c43a739cf32cfa44c22ebc358"
+    },
+    "experiments/xedni-bucket-fiber-partition-20261116/formal/LabelConditionedCollision.lean": {
+      "mode": "120000",
+      "sha256": "af9c15832d424d1ad23cad8443806d8f7a989377529e6803cd74ab5846c8ac18",
+      "target": "../../xedni-first-hit-partition-20261116/formal/LabelConditionedCollision.lean",
+      "body_sha256": "179d0a46ee5a3ecb97996067ec2c7de523a61703023a549aa4c294942227a809"
+    },
+    "experiments/xedni-bucket-fiber-partition-20261116/formal/PrefixPatternBridge.lean": {
+      "mode": "120000",
+      "sha256": "3ffd281d9358870016c8ec8af459e045faddd02b2fa62428b1a7fd2ef95c42de",
+      "target": "../../xedni-first-hit-partition-20261116/formal/PrefixPatternBridge.lean",
+      "body_sha256": "d5b197b69cf1daed55910c3d861c6e5c7247fbe574a964c7d8e427a0c43cb0fc"
+    },
+    "experiments/xedni-bucket-fiber-partition-20261116/formal/RandomLabelCoupling.lean": {
+      "mode": "120000",
+      "sha256": "f0ec974794ebde3dc4b1db509b4e7bf3da7b7c4a9e80b7bd85afaace82dae0e8",
+      "target": "../../xedni-first-hit-partition-20261116/formal/RandomLabelCoupling.lean",
+      "body_sha256": "46c2b60863ce5f5022507835d36329ddcda9089a3016b24524d90948f30939a3"
+    },
+    "experiments/xedni-bucket-fiber-partition-20261116/formal/StageHitEquivalence.lean": {
+      "mode": "120000",
+      "sha256": "83f58efab03a8db4d0df29f7bbf9fc6926085b26d8004849736ca3c7efbeb8f1",
+      "target": "../../xedni-first-hit-partition-20261116/formal/StageHitEquivalence.lean",
+      "body_sha256": "3950d84581de9b78b4fb009168ceab986bcef1de022fa52b60b5945594546192"
+    },
+    "experiments/xedni-bucket-fiber-partition-20261116/formal/SymbolicCollision.lean": {
+      "mode": "120000",
+      "sha256": "9ad6bda9a03e24ad2472faa62fc998788a320d0cdbad83d1f39ab865272a24c3",
+      "target": "../../xedni-first-hit-partition-20261116/formal/SymbolicCollision.lean",
+      "body_sha256": "7179539ab101b5dd76297d77e0b2ede93a09fa5b30998c2bcf2318e304ee632a"
+    },
+    "experiments/xedni-bucket-fiber-partition-20261116/formal/TranscriptDeterminism.lean": {
+      "mode": "120000",
+      "sha256": "7e5cd8dffeecb5c25398f1e7c46790ef21bad811f89eaea875e3d1189fcded30",
+      "target": "../../xedni-first-hit-partition-20261116/formal/TranscriptDeterminism.lean",
+      "body_sha256": "cb5d419fb23f5daa97b96abd21cd628382f3d5bb51c2d2f12c3564e7a6b465e0"
+    },
+    "experiments/xedni-bucket-fiber-partition-20261116/formal/TranscriptFiberEquivalence.lean": {
+      "mode": "120000",
+      "sha256": "5d3750c1881ec7f7c930c388c25f3ad896a5ed0241fe1df6813aa4031f92e11f",
+      "target": "../../xedni-first-hit-partition-20261116/formal/TranscriptFiberEquivalence.lean",
+      "body_sha256": "60d4e30d87fad6d65d98acac696b85d353a01ef97c31c1d4ea82b67cfd2a9b74"
+    },
+    "experiments/xedni-bucket-fiber-partition-20261116/formal/TypedPrefixProgram.lean": {
+      "mode": "120000",
+      "sha256": "1776e3e7c06744219a4e8d3f6ecfbb91789d8d9aa70022e540c8be90f962d625",
+      "target": "../../xedni-first-hit-partition-20261116/formal/TypedPrefixProgram.lean",
+      "body_sha256": "ba34f64f6ef57e39ac097b71b633ca96276e890e32aee6af7eee71200289d9bc"
+    },
+    "experiments/xedni-coefficient-family-control-20261115/formal/CoefficientFamily.lean": {
+      "mode": "100644",
+      "sha256": "c3d386ae7fd17d91e459228aeda4ddcf2c968209649fd3b8aa710f68728f3872",
+      "body_sha256": "c3d386ae7fd17d91e459228aeda4ddcf2c968209649fd3b8aa710f68728f3872"
+    },
+    "experiments/xedni-coefficient-holdout-20261115/formal/FirstFamilyHit.lean": {
+      "mode": "100644",
+      "sha256": "4e9d03ae65351b02b26e9a04a0cae408605d0666736fbe88ff494569da8ec8c6",
+      "body_sha256": "4e9d03ae65351b02b26e9a04a0cae408605d0666736fbe88ff494569da8ec8c6"
+    },
+    "experiments/xedni-coefficient-optimization-20261115/formal/CoefficientOptimization.lean": {
+      "mode": "100644",
+      "sha256": "2a4f4bad4b61e315c3967f7b0ab967a8310b8d68389dd6b7dd17d16ebdef0ef3",
+      "body_sha256": "2a4f4bad4b61e315c3967f7b0ab967a8310b8d68389dd6b7dd17d16ebdef0ef3"
+    },
+    "experiments/xedni-coefficient-optimization-20261115/formal/FiniteFamilyCoverage.lean": {
+      "mode": "100644",
+      "sha256": "fdf811a13b55e09acac1665a9c282b37b8ddd89fffee6c504cfcaabb82067381",
+      "body_sha256": "fdf811a13b55e09acac1665a9c282b37b8ddd89fffee6c504cfcaabb82067381"
+    },
+    "experiments/xedni-common-preimage-lift-20261116/formal/CommonPreimageLift.lean": {
+      "mode": "100644",
+      "sha256": "374984cbb9a89b89ec2998476f81ed3bd172035e3b6e3ea1cbcaecbed02f9bef",
+      "body_sha256": "374984cbb9a89b89ec2998476f81ed3bd172035e3b6e3ea1cbcaecbed02f9bef"
+    },
+    "experiments/xedni-constructive-doubling-lift-20261116/formal/ConstructiveDoublingLift.lean": {
+      "mode": "100644",
+      "sha256": "17bb489a65b481f0c23e13de879527db12663946f87fb34a24b121bdc113f904",
+      "body_sha256": "17bb489a65b481f0c23e13de879527db12663946f87fb34a24b121bdc113f904"
+    },
+    "experiments/xedni-crt-curve-choice-20261115/formal/RationalWitness.lean": {
+      "mode": "100644",
+      "sha256": "ba64f5503ebb9e62536843fc537c1999baec663680cceef2f884de6e13868911",
+      "body_sha256": "ba64f5503ebb9e62536843fc537c1999baec663680cceef2f884de6e13868911"
+    },
+    "experiments/xedni-crt-curve-choice-20261115/formal/TargetRecovery.lean": {
+      "mode": "100644",
+      "sha256": "9407252e39e30c2f1847537f023ff4f2859d62ecaab516be401f92df988d591e",
+      "body_sha256": "9407252e39e30c2f1847537f023ff4f2859d62ecaab516be401f92df988d591e"
+    },
+    "experiments/xedni-dependent-lift-bound-20261115/formal/HeightPigeonhole.lean": {
+      "mode": "100644",
+      "sha256": "2ba68aba33d9e1219cfe081e2ee6e4cec07c55f27a0659dc588fdfe4788908eb",
+      "body_sha256": "2ba68aba33d9e1219cfe081e2ee6e4cec07c55f27a0659dc588fdfe4788908eb"
+    },
+    "experiments/xedni-dependent-lift-bound-20261115/formal/XedniDependentLift.lean": {
+      "mode": "100644",
+      "sha256": "b1d09d998b48f5fcb998a29ab7fae0c039e1eda7ca3b38914e65525c928162d3",
+      "body_sha256": "b1d09d998b48f5fcb998a29ab7fae0c039e1eda7ca3b38914e65525c928162d3"
+    },
+    "experiments/xedni-dependent-lift-bound-20261115/formal/XedniObstruction.lean": {
+      "mode": "100644",
+      "sha256": "94d7f7af1f5644144bda652898939d10a7a62cfc7cc38b552d61f2c7ed28c882",
+      "body_sha256": "94d7f7af1f5644144bda652898939d10a7a62cfc7cc38b552d61f2c7ed28c882"
+    },
+    "experiments/xedni-direct-relation-control-20261115/formal/DirectRelation.lean": {
+      "mode": "100644",
+      "sha256": "ab7e93ecca78edab04edb9047bd181bf830e686e4470aba3b602272dd857bf53",
+      "body_sha256": "ab7e93ecca78edab04edb9047bd181bf830e686e4470aba3b602272dd857bf53"
+    },
+    "experiments/xedni-elliptic-torsion-kernel-20261116/formal/EllipticTorsionKernel.lean": {
+      "mode": "100644",
+      "sha256": "ee44b452f3269a3b9d5b57b9208e76efdf5de85e8fb88263d8e015a1c46989fa",
+      "body_sha256": "ee44b452f3269a3b9d5b57b9208e76efdf5de85e8fb88263d8e015a1c46989fa"
+    },
+    "experiments/xedni-elliptic-torsion-kernel-20261116/formal/EuclideanPacking.lean": {
+      "mode": "100644",
+      "sha256": "a06387b3b48f0b2d50305db4ad32872573cc123ff043752ea536c10860a1e952",
+      "body_sha256": "a06387b3b48f0b2d50305db4ad32872573cc123ff043752ea536c10860a1e952"
+    },
+    "experiments/xedni-elliptic-torsion-kernel-20261116/formal/FiniteKernelPacking.lean": {
+      "mode": "100644",
+      "sha256": "e75b170a95a8e1b1e610406363f6e863ab4b52576c05a5af9f6bae7c87ff307f",
+      "body_sha256": "e75b170a95a8e1b1e610406363f6e863ab4b52576c05a5af9f6bae7c87ff307f"
+    },
+    "experiments/xedni-elliptic-torsion-kernel-20261116/formal/HeightPigeonhole.lean": {
+      "mode": "100644",
+      "sha256": "2ba68aba33d9e1219cfe081e2ee6e4cec07c55f27a0659dc588fdfe4788908eb",
+      "body_sha256": "2ba68aba33d9e1219cfe081e2ee6e4cec07c55f27a0659dc588fdfe4788908eb"
+    },
+    "experiments/xedni-euclidean-packing-20261116/formal/EuclideanPacking.lean": {
+      "mode": "100644",
+      "sha256": "a06387b3b48f0b2d50305db4ad32872573cc123ff043752ea536c10860a1e952",
+      "body_sha256": "a06387b3b48f0b2d50305db4ad32872573cc123ff043752ea536c10860a1e952"
+    },
+    "experiments/xedni-euclidean-packing-20261116/formal/HeightPigeonhole.lean": {
+      "mode": "100644",
+      "sha256": "2ba68aba33d9e1219cfe081e2ee6e4cec07c55f27a0659dc588fdfe4788908eb",
+      "body_sha256": "2ba68aba33d9e1219cfe081e2ee6e4cec07c55f27a0659dc588fdfe4788908eb"
+    },
+    "experiments/xedni-finite-family-coverage-20261115/formal/FiniteFamilyCoverage.lean": {
+      "mode": "100644",
+      "sha256": "fdf811a13b55e09acac1665a9c282b37b8ddd89fffee6c504cfcaabb82067381",
+      "body_sha256": "fdf811a13b55e09acac1665a9c282b37b8ddd89fffee6c504cfcaabb82067381"
+    },
+    "experiments/xedni-finite-height-packing-20261116/formal/FiniteGridPacking.lean": {
+      "mode": "100644",
+      "sha256": "9c305613f79a09f070d89bc5b2c6b1db1103e54ea45630fccd6d6d701b711508",
+      "body_sha256": "9c305613f79a09f070d89bc5b2c6b1db1103e54ea45630fccd6d6d701b711508"
+    },
+    "experiments/xedni-finite-height-packing-20261116/formal/HeightPigeonhole.lean": {
+      "mode": "100644",
+      "sha256": "2ba68aba33d9e1219cfe081e2ee6e4cec07c55f27a0659dc588fdfe4788908eb",
+      "body_sha256": "2ba68aba33d9e1219cfe081e2ee6e4cec07c55f27a0659dc588fdfe4788908eb"
+    },
+    "experiments/xedni-finite-height-packing-20261116/formal/MetricPacking.lean": {
+      "mode": "100644",
+      "sha256": "4e5a432ba9719782eb46f2ec7a978199592e9213fedb25577ba94d7a8846ca2f",
+      "body_sha256": "4e5a432ba9719782eb46f2ec7a978199592e9213fedb25577ba94d7a8846ca2f"
+    },
+    "experiments/xedni-finite-kernel-packing-20261116/formal/EuclideanPacking.lean": {
+      "mode": "100644",
+      "sha256": "a06387b3b48f0b2d50305db4ad32872573cc123ff043752ea536c10860a1e952",
+      "body_sha256": "a06387b3b48f0b2d50305db4ad32872573cc123ff043752ea536c10860a1e952"
+    },
+    "experiments/xedni-finite-kernel-packing-20261116/formal/FiniteKernelPacking.lean": {
+      "mode": "100644",
+      "sha256": "e75b170a95a8e1b1e610406363f6e863ab4b52576c05a5af9f6bae7c87ff307f",
+      "body_sha256": "e75b170a95a8e1b1e610406363f6e863ab4b52576c05a5af9f6bae7c87ff307f"
+    },
+    "experiments/xedni-finite-kernel-packing-20261116/formal/HeightPigeonhole.lean": {
+      "mode": "100644",
+      "sha256": "2ba68aba33d9e1219cfe081e2ee6e4cec07c55f27a0659dc588fdfe4788908eb",
+      "body_sha256": "2ba68aba33d9e1219cfe081e2ee6e4cec07c55f27a0659dc588fdfe4788908eb"
+    },
+    "experiments/xedni-first-collision-ledger-20261116/formal/AdaptiveProgramInvariant.lean": {
+      "mode": "120000",
+      "sha256": "017ca5bd703887b6ae892c8fadaafb9253757f93b46327dd9d993b89b83ab73f",
+      "target": "../../xedni-adaptive-program-invariant-20261116/formal/AdaptiveProgramInvariant.lean",
+      "body_sha256": "b856e6723dc24d4d6e976cc5252d36b2e41437852f4e1262c5ad6bdde5dfc0b3"
+    },
+    "experiments/xedni-first-collision-ledger-20261116/formal/FirstCollisionLedger.lean": {
+      "mode": "100644",
+      "sha256": "20619ed6acb4b176561a8c7a73029f01e3342f7af693e1ae93c0efe462b16469",
+      "body_sha256": "20619ed6acb4b176561a8c7a73029f01e3342f7af693e1ae93c0efe462b16469"
+    },
+    "experiments/xedni-first-collision-ledger-20261116/formal/GroupTraceInvariant.lean": {
+      "mode": "120000",
+      "sha256": "0b25faabb3c5dca0ccfed03e069af25d76353ba2f0ee99ad9349e8160f06f69c",
+      "target": "../../xedni-group-trace-invariant-20261116/formal/GroupTraceInvariant.lean",
+      "body_sha256": "36fd21e7e62fd7861d37cc0bb5798cd3fcb1ff3c43a739cf32cfa44c22ebc358"
+    },
+    "experiments/xedni-first-collision-ledger-20261116/formal/LabelConditionedCollision.lean": {
+      "mode": "120000",
+      "sha256": "174456ec4b39d7b44e5d2f9219a9822488b41b307dc50bc964e78c57e68c28f3",
+      "target": "../../xedni-label-conditioned-collision-20261116/formal/LabelConditionedCollision.lean",
+      "body_sha256": "179d0a46ee5a3ecb97996067ec2c7de523a61703023a549aa4c294942227a809"
+    },
+    "experiments/xedni-first-collision-ledger-20261116/formal/RandomLabelCoupling.lean": {
+      "mode": "120000",
+      "sha256": "405111d8dd457e52d5bdbfe5b92cdedbf171985254df7006602572668809233d",
+      "target": "../../xedni-random-label-coupling-20261116/formal/RandomLabelCoupling.lean",
+      "body_sha256": "46c2b60863ce5f5022507835d36329ddcda9089a3016b24524d90948f30939a3"
+    },
+    "experiments/xedni-first-collision-ledger-20261116/formal/SymbolicCollision.lean": {
+      "mode": "120000",
+      "sha256": "9322f97c23fcb4fd24d507b7cef30c169dbe6973b6cc255b5f317de49084fbf8",
+      "target": "../../xedni-symbolic-collision-bound-20261116/formal/SymbolicCollision.lean",
+      "body_sha256": "7179539ab101b5dd76297d77e0b2ede93a09fa5b30998c2bcf2318e304ee632a"
+    },
+    "experiments/xedni-first-collision-ledger-20261116/formal/TranscriptDeterminism.lean": {
+      "mode": "120000",
+      "sha256": "3baa6c9f99418e13fe1971dbbc5332f545c5520aba8460733a67c637bad3a4bf",
+      "target": "../../xedni-transcript-determinism-20261116/formal/TranscriptDeterminism.lean",
+      "body_sha256": "cb5d419fb23f5daa97b96abd21cd628382f3d5bb51c2d2f12c3564e7a6b465e0"
+    },
+    "experiments/xedni-first-hit-dominance-20261115/formal/FirstHitDominance.lean": {
+      "mode": "100644",
+      "sha256": "d7983175cfc7845b60799c36edb16f5823652e2c6450de1320e5504d85393245",
+      "body_sha256": "d7983175cfc7845b60799c36edb16f5823652e2c6450de1320e5504d85393245"
+    },
+    "experiments/xedni-first-hit-partition-20261116/formal/AdaptiveProgramInvariant.lean": {
+      "mode": "120000",
+      "sha256": "73a25b0dee16ca543a60bd27ad8198c2889f6d052205194c5dcc23e076f988c7",
+      "target": "../../xedni-stage-hit-equivalence-20261116/formal/AdaptiveProgramInvariant.lean",
+      "body_sha256": "b856e6723dc24d4d6e976cc5252d36b2e41437852f4e1262c5ad6bdde5dfc0b3"
+    },
+    "experiments/xedni-first-hit-partition-20261116/formal/AdaptiveStageSum.lean": {
+      "mode": "120000",
+      "sha256": "4a9158b1fe299d0f4da6207d263c90e8bdfa6dc5182a7ff13b6c72fcf7de1a48",
+      "target": "../../xedni-stage-hit-equivalence-20261116/formal/AdaptiveStageSum.lean",
+      "body_sha256": "95213a21320fef4da9561874103ed62642891d91d438c764c04fd7405f99d006"
+    },
+    "experiments/xedni-first-hit-partition-20261116/formal/FirstCollisionLedger.lean": {
+      "mode": "120000",
+      "sha256": "b10e686c3f20b6706c5bdf5a805dc256db72c1960f8550df0c4e412b8918e62b",
+      "target": "../../xedni-stage-hit-equivalence-20261116/formal/FirstCollisionLedger.lean",
+      "body_sha256": "20619ed6acb4b176561a8c7a73029f01e3342f7af693e1ae93c0efe462b16469"
+    },
+    "experiments/xedni-first-hit-partition-20261116/formal/FirstHitPartition.lean": {
+      "mode": "100644",
+      "sha256": "e42fc8de40da8d69bc742f7d11190d41fab4704613aafd892a3e7f807a026f34",
+      "body_sha256": "e42fc8de40da8d69bc742f7d11190d41fab4704613aafd892a3e7f807a026f34"
+    },
+    "experiments/xedni-first-hit-partition-20261116/formal/GroupTraceInvariant.lean": {
+      "mode": "120000",
+      "sha256": "7878f46a91d7e906f5c1166ccb7cef8b3b4db4ce59505457ca96db22e4da551f",
+      "target": "../../xedni-stage-hit-equivalence-20261116/formal/GroupTraceInvariant.lean",
+      "body_sha256": "36fd21e7e62fd7861d37cc0bb5798cd3fcb1ff3c43a739cf32cfa44c22ebc358"
+    },
+    "experiments/xedni-first-hit-partition-20261116/formal/LabelConditionedCollision.lean": {
+      "mode": "120000",
+      "sha256": "18cfbb2b526273228fd3aa2c10a81eb70a0b612373d79c82dad9749b5a41ad9b",
+      "target": "../../xedni-stage-hit-equivalence-20261116/formal/LabelConditionedCollision.lean",
+      "body_sha256": "179d0a46ee5a3ecb97996067ec2c7de523a61703023a549aa4c294942227a809"
+    },
+    "experiments/xedni-first-hit-partition-20261116/formal/PrefixPatternBridge.lean": {
+      "mode": "120000",
+      "sha256": "c37f9d18f84e2d865ed7c0716d93ff7f8dbd0a626da4ca8a29deaf4ddddd5d2b",
+      "target": "../../xedni-stage-hit-equivalence-20261116/formal/PrefixPatternBridge.lean",
+      "body_sha256": "d5b197b69cf1daed55910c3d861c6e5c7247fbe574a964c7d8e427a0c43cb0fc"
+    },
+    "experiments/xedni-first-hit-partition-20261116/formal/RandomLabelCoupling.lean": {
+      "mode": "120000",
+      "sha256": "b0921afd283f6483dc2b57148d13262d43f74c6015def152ca6c64e27a98cd2c",
+      "target": "../../xedni-stage-hit-equivalence-20261116/formal/RandomLabelCoupling.lean",
+      "body_sha256": "46c2b60863ce5f5022507835d36329ddcda9089a3016b24524d90948f30939a3"
+    },
+    "experiments/xedni-first-hit-partition-20261116/formal/StageHitEquivalence.lean": {
+      "mode": "120000",
+      "sha256": "e5fedb3c49886fb26f3fd7f1a1559f1f73da9f2290e4bdf851852754be01ece3",
+      "target": "../../xedni-stage-hit-equivalence-20261116/formal/StageHitEquivalence.lean",
+      "body_sha256": "3950d84581de9b78b4fb009168ceab986bcef1de022fa52b60b5945594546192"
+    },
+    "experiments/xedni-first-hit-partition-20261116/formal/SymbolicCollision.lean": {
+      "mode": "120000",
+      "sha256": "87b4b05bac7b11a3d992872891b6556829e6eab1d402fc0dd0beb5bc8f381fc0",
+      "target": "../../xedni-stage-hit-equivalence-20261116/formal/SymbolicCollision.lean",
+      "body_sha256": "7179539ab101b5dd76297d77e0b2ede93a09fa5b30998c2bcf2318e304ee632a"
+    },
+    "experiments/xedni-first-hit-partition-20261116/formal/TranscriptDeterminism.lean": {
+      "mode": "120000",
+      "sha256": "9eb46c6c516b6de0c31a37915c0502912cdea7423e093a81866497fa0df1f056",
+      "target": "../../xedni-stage-hit-equivalence-20261116/formal/TranscriptDeterminism.lean",
+      "body_sha256": "cb5d419fb23f5daa97b96abd21cd628382f3d5bb51c2d2f12c3564e7a6b465e0"
+    },
+    "experiments/xedni-first-hit-partition-20261116/formal/TranscriptFiberEquivalence.lean": {
+      "mode": "120000",
+      "sha256": "d4f5c9729bc552f64bfc86bc3e10631b0d8c66ef8810062e9332bf4ee9535986",
+      "target": "../../xedni-stage-hit-equivalence-20261116/formal/TranscriptFiberEquivalence.lean",
+      "body_sha256": "60d4e30d87fad6d65d98acac696b85d353a01ef97c31c1d4ea82b67cfd2a9b74"
+    },
+    "experiments/xedni-first-hit-partition-20261116/formal/TypedPrefixProgram.lean": {
+      "mode": "120000",
+      "sha256": "d6c9e5d14995d6e608af8e514c628f9dcecd274a5ad46c7f3ca3d1c8ae474cd7",
+      "target": "../../xedni-stage-hit-equivalence-20261116/formal/TypedPrefixProgram.lean",
+      "body_sha256": "ba34f64f6ef57e39ac097b71b633ca96276e890e32aee6af7eee71200289d9bc"
+    },
+    "experiments/xedni-fixed-curve-admission-20261115/formal/SelectedAdmission.lean": {
+      "mode": "100644",
+      "sha256": "04a887ab028400eca35a5acc8a810ef040fe9060934b01c843faa653b78ce370",
+      "body_sha256": "04a887ab028400eca35a5acc8a810ef040fe9060934b01c843faa653b78ce370"
+    },
+    "experiments/xedni-full-hit-bound-20261116/formal/AdaptiveProgramInvariant.lean": {
+      "mode": "120000",
+      "sha256": "208f7f9bc481d586b3ff3ea2839b3832920cad2672afed416ecc0fed5d6809ad",
+      "target": "../../xedni-bucket-fiber-partition-20261116/formal/AdaptiveProgramInvariant.lean",
+      "body_sha256": "b856e6723dc24d4d6e976cc5252d36b2e41437852f4e1262c5ad6bdde5dfc0b3"
+    },
+    "experiments/xedni-full-hit-bound-20261116/formal/AdaptiveStageSum.lean": {
+      "mode": "120000",
+      "sha256": "437c5e578e66e99447a4b9e0291067b23b89e4afc0cb5e461a29d07588493309",
+      "target": "../../xedni-bucket-fiber-partition-20261116/formal/AdaptiveStageSum.lean",
+      "body_sha256": "95213a21320fef4da9561874103ed62642891d91d438c764c04fd7405f99d006"
+    },
+    "experiments/xedni-full-hit-bound-20261116/formal/AdaptiveTotalBound.lean": {
+      "mode": "120000",
+      "sha256": "fbaba16328f2576bf503fccf219ffff14f21a860b78bcb5d1bda9dfa6b7aa4be",
+      "target": "../../xedni-adaptive-total-bound-20261116/formal/AdaptiveTotalBound.lean",
+      "body_sha256": "227818e8bd53293954c805f365f8b715b376fca6f0a8dbfa15be2ef7184442e7"
+    },
+    "experiments/xedni-full-hit-bound-20261116/formal/BucketFiberPartition.lean": {
+      "mode": "120000",
+      "sha256": "f11b874b1a4840ab3549de86d2b7121c99a45a5ca34915523761cbe68465460e",
+      "target": "../../xedni-bucket-fiber-partition-20261116/formal/BucketFiberPartition.lean",
+      "body_sha256": "5f1a7ba5b7a1fcc964979bff785d0894d8386ae9a644012b95b8b1b2e71295b3"
+    },
+    "experiments/xedni-full-hit-bound-20261116/formal/FirstCollisionLedger.lean": {
+      "mode": "120000",
+      "sha256": "aca75a8620815f6f50d5dc437a1f6aac8fce5a77974cbf7f0a74cd8729708757",
+      "target": "../../xedni-bucket-fiber-partition-20261116/formal/FirstCollisionLedger.lean",
+      "body_sha256": "20619ed6acb4b176561a8c7a73029f01e3342f7af693e1ae93c0efe462b16469"
+    },
+    "experiments/xedni-full-hit-bound-20261116/formal/FirstHitPartition.lean": {
+      "mode": "120000",
+      "sha256": "28ffdd8cd3b61eff3cbc2912ed19b04cf6e1890c5bb380d1f8680086620ec65f",
+      "target": "../../xedni-bucket-fiber-partition-20261116/formal/FirstHitPartition.lean",
+      "body_sha256": "e42fc8de40da8d69bc742f7d11190d41fab4704613aafd892a3e7f807a026f34"
+    },
+    "experiments/xedni-full-hit-bound-20261116/formal/FullHitBound.lean": {
+      "mode": "100644",
+      "sha256": "752513083962ab7856df86a8c06d8fca43d81cda9aa57a0d95a6889f26822f09",
+      "body_sha256": "752513083962ab7856df86a8c06d8fca43d81cda9aa57a0d95a6889f26822f09"
+    },
+    "experiments/xedni-full-hit-bound-20261116/formal/GroupFiberBound.lean": {
+      "mode": "120000",
+      "sha256": "b05cf139f014e2c26e00aff2572ea4e02a7a0509e92b2541461d4b9e29414ef2",
+      "target": "../../xedni-group-fiber-bound-20261116/formal/GroupFiberBound.lean",
+      "body_sha256": "0ebdb0673b8bb60497a8dbe3ace084800ab6b1098f44f7fd9559ae9b74253a4c"
+    },
+    "experiments/xedni-full-hit-bound-20261116/formal/GroupTraceInvariant.lean": {
+      "mode": "120000",
+      "sha256": "c3433101d913bf30c40c0010be8b70e157b7ac90ef3699f3d8505b99e05751a9",
+      "target": "../../xedni-bucket-fiber-partition-20261116/formal/GroupTraceInvariant.lean",
+      "body_sha256": "36fd21e7e62fd7861d37cc0bb5798cd3fcb1ff3c43a739cf32cfa44c22ebc358"
+    },
+    "experiments/xedni-full-hit-bound-20261116/formal/LabelConditionedCollision.lean": {
+      "mode": "120000",
+      "sha256": "bd19aeebec655925e09b380fa5b4d0c0b57e645c3c93ee7c90bef7fa3b5d1f6f",
+      "target": "../../xedni-bucket-fiber-partition-20261116/formal/LabelConditionedCollision.lean",
+      "body_sha256": "179d0a46ee5a3ecb97996067ec2c7de523a61703023a549aa4c294942227a809"
+    },
+    "experiments/xedni-full-hit-bound-20261116/formal/PrefixPatternBridge.lean": {
+      "mode": "120000",
+      "sha256": "e36d0b02caf3a5bd20a461ff0e11b83312c6d73bf8adf050557986457e7ed86a",
+      "target": "../../xedni-bucket-fiber-partition-20261116/formal/PrefixPatternBridge.lean",
+      "body_sha256": "d5b197b69cf1daed55910c3d861c6e5c7247fbe574a964c7d8e427a0c43cb0fc"
+    },
+    "experiments/xedni-full-hit-bound-20261116/formal/RandomLabelCoupling.lean": {
+      "mode": "120000",
+      "sha256": "14e7c40c91aaebe95ac3097692ac4c2d8cc5597cae8bc12d4079c49b3397756d",
+      "target": "../../xedni-bucket-fiber-partition-20261116/formal/RandomLabelCoupling.lean",
+      "body_sha256": "46c2b60863ce5f5022507835d36329ddcda9089a3016b24524d90948f30939a3"
+    },
+    "experiments/xedni-full-hit-bound-20261116/formal/StageHitEquivalence.lean": {
+      "mode": "120000",
+      "sha256": "cc87060aafe0ee3c141467724569a53f4bc5e57be8b80f94fb148aae3b26a54e",
+      "target": "../../xedni-bucket-fiber-partition-20261116/formal/StageHitEquivalence.lean",
+      "body_sha256": "3950d84581de9b78b4fb009168ceab986bcef1de022fa52b60b5945594546192"
+    },
+    "experiments/xedni-full-hit-bound-20261116/formal/SymbolicCollision.lean": {
+      "mode": "120000",
+      "sha256": "353919dc2d9a48febc609b2c30d83313b0996a5598ade1ee322cf8f6cd5ccd52",
+      "target": "../../xedni-bucket-fiber-partition-20261116/formal/SymbolicCollision.lean",
+      "body_sha256": "7179539ab101b5dd76297d77e0b2ede93a09fa5b30998c2bcf2318e304ee632a"
+    },
+    "experiments/xedni-full-hit-bound-20261116/formal/TranscriptDeterminism.lean": {
+      "mode": "120000",
+      "sha256": "09d411a27b3215eda81693351cc3887da34c0ea3f2d99217402a4848413e207a",
+      "target": "../../xedni-bucket-fiber-partition-20261116/formal/TranscriptDeterminism.lean",
+      "body_sha256": "cb5d419fb23f5daa97b96abd21cd628382f3d5bb51c2d2f12c3564e7a6b465e0"
+    },
+    "experiments/xedni-full-hit-bound-20261116/formal/TranscriptFiberEquivalence.lean": {
+      "mode": "120000",
+      "sha256": "d9b38a9de50560a472c25f55ba34f547b9975340d25fe700fd4ce2586428f437",
+      "target": "../../xedni-bucket-fiber-partition-20261116/formal/TranscriptFiberEquivalence.lean",
+      "body_sha256": "60d4e30d87fad6d65d98acac696b85d353a01ef97c31c1d4ea82b67cfd2a9b74"
+    },
+    "experiments/xedni-full-hit-bound-20261116/formal/TypedPrefixProgram.lean": {
+      "mode": "120000",
+      "sha256": "987923fc89ec7906a62fede91dc82848e017215cae9ad0e5dafb6eb522d10a26",
+      "target": "../../xedni-bucket-fiber-partition-20261116/formal/TypedPrefixProgram.lean",
+      "body_sha256": "ba34f64f6ef57e39ac097b71b633ca96276e890e32aee6af7eee71200289d9bc"
+    },
+    "experiments/xedni-group-fiber-bound-20261116/formal/AdaptiveProgramInvariant.lean": {
+      "mode": "120000",
+      "sha256": "208f7f9bc481d586b3ff3ea2839b3832920cad2672afed416ecc0fed5d6809ad",
+      "target": "../../xedni-bucket-fiber-partition-20261116/formal/AdaptiveProgramInvariant.lean",
+      "body_sha256": "b856e6723dc24d4d6e976cc5252d36b2e41437852f4e1262c5ad6bdde5dfc0b3"
+    },
+    "experiments/xedni-group-fiber-bound-20261116/formal/AdaptiveStageSum.lean": {
+      "mode": "120000",
+      "sha256": "437c5e578e66e99447a4b9e0291067b23b89e4afc0cb5e461a29d07588493309",
+      "target": "../../xedni-bucket-fiber-partition-20261116/formal/AdaptiveStageSum.lean",
+      "body_sha256": "95213a21320fef4da9561874103ed62642891d91d438c764c04fd7405f99d006"
+    },
+    "experiments/xedni-group-fiber-bound-20261116/formal/BucketFiberPartition.lean": {
+      "mode": "120000",
+      "sha256": "f11b874b1a4840ab3549de86d2b7121c99a45a5ca34915523761cbe68465460e",
+      "target": "../../xedni-bucket-fiber-partition-20261116/formal/BucketFiberPartition.lean",
+      "body_sha256": "5f1a7ba5b7a1fcc964979bff785d0894d8386ae9a644012b95b8b1b2e71295b3"
+    },
+    "experiments/xedni-group-fiber-bound-20261116/formal/FirstCollisionLedger.lean": {
+      "mode": "120000",
+      "sha256": "aca75a8620815f6f50d5dc437a1f6aac8fce5a77974cbf7f0a74cd8729708757",
+      "target": "../../xedni-bucket-fiber-partition-20261116/formal/FirstCollisionLedger.lean",
+      "body_sha256": "20619ed6acb4b176561a8c7a73029f01e3342f7af693e1ae93c0efe462b16469"
+    },
+    "experiments/xedni-group-fiber-bound-20261116/formal/FirstHitPartition.lean": {
+      "mode": "120000",
+      "sha256": "28ffdd8cd3b61eff3cbc2912ed19b04cf6e1890c5bb380d1f8680086620ec65f",
+      "target": "../../xedni-bucket-fiber-partition-20261116/formal/FirstHitPartition.lean",
+      "body_sha256": "e42fc8de40da8d69bc742f7d11190d41fab4704613aafd892a3e7f807a026f34"
+    },
+    "experiments/xedni-group-fiber-bound-20261116/formal/GroupFiberBound.lean": {
+      "mode": "100644",
+      "sha256": "0ebdb0673b8bb60497a8dbe3ace084800ab6b1098f44f7fd9559ae9b74253a4c",
+      "body_sha256": "0ebdb0673b8bb60497a8dbe3ace084800ab6b1098f44f7fd9559ae9b74253a4c"
+    },
+    "experiments/xedni-group-fiber-bound-20261116/formal/GroupTraceInvariant.lean": {
+      "mode": "120000",
+      "sha256": "c3433101d913bf30c40c0010be8b70e157b7ac90ef3699f3d8505b99e05751a9",
+      "target": "../../xedni-bucket-fiber-partition-20261116/formal/GroupTraceInvariant.lean",
+      "body_sha256": "36fd21e7e62fd7861d37cc0bb5798cd3fcb1ff3c43a739cf32cfa44c22ebc358"
+    },
+    "experiments/xedni-group-fiber-bound-20261116/formal/LabelConditionedCollision.lean": {
+      "mode": "120000",
+      "sha256": "bd19aeebec655925e09b380fa5b4d0c0b57e645c3c93ee7c90bef7fa3b5d1f6f",
+      "target": "../../xedni-bucket-fiber-partition-20261116/formal/LabelConditionedCollision.lean",
+      "body_sha256": "179d0a46ee5a3ecb97996067ec2c7de523a61703023a549aa4c294942227a809"
+    },
+    "experiments/xedni-group-fiber-bound-20261116/formal/PrefixPatternBridge.lean": {
+      "mode": "120000",
+      "sha256": "e36d0b02caf3a5bd20a461ff0e11b83312c6d73bf8adf050557986457e7ed86a",
+      "target": "../../xedni-bucket-fiber-partition-20261116/formal/PrefixPatternBridge.lean",
+      "body_sha256": "d5b197b69cf1daed55910c3d861c6e5c7247fbe574a964c7d8e427a0c43cb0fc"
+    },
+    "experiments/xedni-group-fiber-bound-20261116/formal/RandomLabelCoupling.lean": {
+      "mode": "120000",
+      "sha256": "14e7c40c91aaebe95ac3097692ac4c2d8cc5597cae8bc12d4079c49b3397756d",
+      "target": "../../xedni-bucket-fiber-partition-20261116/formal/RandomLabelCoupling.lean",
+      "body_sha256": "46c2b60863ce5f5022507835d36329ddcda9089a3016b24524d90948f30939a3"
+    },
+    "experiments/xedni-group-fiber-bound-20261116/formal/StageHitEquivalence.lean": {
+      "mode": "120000",
+      "sha256": "cc87060aafe0ee3c141467724569a53f4bc5e57be8b80f94fb148aae3b26a54e",
+      "target": "../../xedni-bucket-fiber-partition-20261116/formal/StageHitEquivalence.lean",
+      "body_sha256": "3950d84581de9b78b4fb009168ceab986bcef1de022fa52b60b5945594546192"
+    },
+    "experiments/xedni-group-fiber-bound-20261116/formal/SymbolicCollision.lean": {
+      "mode": "120000",
+      "sha256": "353919dc2d9a48febc609b2c30d83313b0996a5598ade1ee322cf8f6cd5ccd52",
+      "target": "../../xedni-bucket-fiber-partition-20261116/formal/SymbolicCollision.lean",
+      "body_sha256": "7179539ab101b5dd76297d77e0b2ede93a09fa5b30998c2bcf2318e304ee632a"
+    },
+    "experiments/xedni-group-fiber-bound-20261116/formal/TranscriptDeterminism.lean": {
+      "mode": "120000",
+      "sha256": "09d411a27b3215eda81693351cc3887da34c0ea3f2d99217402a4848413e207a",
+      "target": "../../xedni-bucket-fiber-partition-20261116/formal/TranscriptDeterminism.lean",
+      "body_sha256": "cb5d419fb23f5daa97b96abd21cd628382f3d5bb51c2d2f12c3564e7a6b465e0"
+    },
+    "experiments/xedni-group-fiber-bound-20261116/formal/TranscriptFiberEquivalence.lean": {
+      "mode": "120000",
+      "sha256": "d9b38a9de50560a472c25f55ba34f547b9975340d25fe700fd4ce2586428f437",
+      "target": "../../xedni-bucket-fiber-partition-20261116/formal/TranscriptFiberEquivalence.lean",
+      "body_sha256": "60d4e30d87fad6d65d98acac696b85d353a01ef97c31c1d4ea82b67cfd2a9b74"
+    },
+    "experiments/xedni-group-fiber-bound-20261116/formal/TypedPrefixProgram.lean": {
+      "mode": "120000",
+      "sha256": "987923fc89ec7906a62fede91dc82848e017215cae9ad0e5dafb6eb522d10a26",
+      "target": "../../xedni-bucket-fiber-partition-20261116/formal/TypedPrefixProgram.lean",
+      "body_sha256": "ba34f64f6ef57e39ac097b71b633ca96276e890e32aee6af7eee71200289d9bc"
+    },
+    "experiments/xedni-group-trace-invariant-20261116/formal/GroupTraceInvariant.lean": {
+      "mode": "100644",
+      "sha256": "36fd21e7e62fd7861d37cc0bb5798cd3fcb1ff3c43a739cf32cfa44c22ebc358",
+      "body_sha256": "36fd21e7e62fd7861d37cc0bb5798cd3fcb1ff3c43a739cf32cfa44c22ebc358"
+    },
+    "experiments/xedni-group-trace-invariant-20261116/formal/LabelConditionedCollision.lean": {
+      "mode": "120000",
+      "sha256": "174456ec4b39d7b44e5d2f9219a9822488b41b307dc50bc964e78c57e68c28f3",
+      "target": "../../xedni-label-conditioned-collision-20261116/formal/LabelConditionedCollision.lean",
+      "body_sha256": "179d0a46ee5a3ecb97996067ec2c7de523a61703023a549aa4c294942227a809"
+    },
+    "experiments/xedni-group-trace-invariant-20261116/formal/RandomLabelCoupling.lean": {
+      "mode": "120000",
+      "sha256": "405111d8dd457e52d5bdbfe5b92cdedbf171985254df7006602572668809233d",
+      "target": "../../xedni-random-label-coupling-20261116/formal/RandomLabelCoupling.lean",
+      "body_sha256": "46c2b60863ce5f5022507835d36329ddcda9089a3016b24524d90948f30939a3"
+    },
+    "experiments/xedni-group-trace-invariant-20261116/formal/SymbolicCollision.lean": {
+      "mode": "120000",
+      "sha256": "9322f97c23fcb4fd24d507b7cef30c169dbe6973b6cc255b5f317de49084fbf8",
+      "target": "../../xedni-symbolic-collision-bound-20261116/formal/SymbolicCollision.lean",
+      "body_sha256": "7179539ab101b5dd76297d77e0b2ede93a09fa5b30998c2bcf2318e304ee632a"
+    },
+    "experiments/xedni-height-growth-obstruction-20261116/formal/HeightGrowthObstruction.lean": {
+      "mode": "100644",
+      "sha256": "ff39fa8cc8b160aba3eac2f1cb96f39d9b4b6445046724f7768ea674c5b95baa",
+      "body_sha256": "ff39fa8cc8b160aba3eac2f1cb96f39d9b4b6445046724f7768ea674c5b95baa"
+    },
+    "experiments/xedni-height-pigeonhole-20261115/formal/HeightPigeonhole.lean": {
+      "mode": "100644",
+      "sha256": "2ba68aba33d9e1219cfe081e2ee6e4cec07c55f27a0659dc588fdfe4788908eb",
+      "body_sha256": "2ba68aba33d9e1219cfe081e2ee6e4cec07c55f27a0659dc588fdfe4788908eb"
+    },
+    "experiments/xedni-integral-chord-filter-20261115/formal/IntegralChord.lean": {
+      "mode": "100644",
+      "sha256": "a59eb114d888a4658b25e2b974927132146dff77c4623a45b4c64db2faf912f0",
+      "body_sha256": "a59eb114d888a4658b25e2b974927132146dff77c4623a45b4c64db2faf912f0"
+    },
+    "experiments/xedni-isomorphic-family-admission-20261115/formal/FamilyAdmission.lean": {
+      "mode": "100644",
+      "sha256": "d19b76323621a701ebed563d8e347d28b81003bc10fc307cd90f2c9626cc5390",
+      "body_sha256": "d19b76323621a701ebed563d8e347d28b81003bc10fc307cd90f2c9626cc5390"
+    },
+    "experiments/xedni-label-conditioned-collision-20261116/formal/LabelConditionedCollision.lean": {
+      "mode": "100644",
+      "sha256": "179d0a46ee5a3ecb97996067ec2c7de523a61703023a549aa4c294942227a809",
+      "body_sha256": "179d0a46ee5a3ecb97996067ec2c7de523a61703023a549aa4c294942227a809"
+    },
+    "experiments/xedni-label-conditioned-collision-20261116/formal/RandomLabelCoupling.lean": {
+      "mode": "120000",
+      "sha256": "405111d8dd457e52d5bdbfe5b92cdedbf171985254df7006602572668809233d",
+      "target": "../../xedni-random-label-coupling-20261116/formal/RandomLabelCoupling.lean",
+      "body_sha256": "46c2b60863ce5f5022507835d36329ddcda9089a3016b24524d90948f30939a3"
+    },
+    "experiments/xedni-label-conditioned-collision-20261116/formal/SymbolicCollision.lean": {
+      "mode": "120000",
+      "sha256": "9322f97c23fcb4fd24d507b7cef30c169dbe6973b6cc255b5f317de49084fbf8",
+      "target": "../../xedni-symbolic-collision-bound-20261116/formal/SymbolicCollision.lean",
+      "body_sha256": "7179539ab101b5dd76297d77e0b2ede93a09fa5b30998c2bcf2318e304ee632a"
+    },
+    "experiments/xedni-lattice-obstruction-20261028/formal/XedniObstruction.lean": {
+      "mode": "100644",
+      "sha256": "94d7f7af1f5644144bda652898939d10a7a62cfc7cc38b552d61f2c7ed28c882",
+      "body_sha256": "94d7f7af1f5644144bda652898939d10a7a62cfc7cc38b552d61f2c7ed28c882"
+    },
+    "experiments/xedni-leading-defect-selector-20261116/formal/LeadingDefect.lean": {
+      "mode": "100644",
+      "sha256": "faa82b35b2f92618b8a8d6c60a0727cf049adfd9d1584d477b203c022bc81246",
+      "body_sha256": "faa82b35b2f92618b8a8d6c60a0727cf049adfd9d1584d477b203c022bc81246"
+    },
+    "experiments/xedni-lift-height-search-20261116/formal/HeightSearchInvariant.lean": {
+      "mode": "100644",
+      "sha256": "a6cd3c922dffa68e1af88b0422ebfc24125b912cff1ffb46c805ec9c579c9212",
+      "body_sha256": "a6cd3c922dffa68e1af88b0422ebfc24125b912cff1ffb46c805ec9c579c9212"
+    },
+    "experiments/xedni-metric-packing-20261115/formal/HeightPigeonhole.lean": {
+      "mode": "100644",
+      "sha256": "2ba68aba33d9e1219cfe081e2ee6e4cec07c55f27a0659dc588fdfe4788908eb",
+      "body_sha256": "2ba68aba33d9e1219cfe081e2ee6e4cec07c55f27a0659dc588fdfe4788908eb"
+    },
+    "experiments/xedni-metric-packing-20261115/formal/MetricPacking.lean": {
+      "mode": "100644",
+      "sha256": "4e5a432ba9719782eb46f2ec7a978199592e9213fedb25577ba94d7a8846ca2f",
+      "body_sha256": "4e5a432ba9719782eb46f2ec7a978199592e9213fedb25577ba94d7a8846ca2f"
+    },
+    "experiments/xedni-nonisomorphic-expansion-20261115/formal/ExpansionUnion.lean": {
+      "mode": "100644",
+      "sha256": "2bcc478c41d586097e7d19538ee09e37e30e99bd21f0ed48a6696e5e0e9eef2a",
+      "body_sha256": "2bcc478c41d586097e7d19538ee09e37e30e99bd21f0ed48a6696e5e0e9eef2a"
+    },
+    "experiments/xedni-nonisomorphic-family-screen-20261115/formal/UnionCount.lean": {
+      "mode": "100644",
+      "sha256": "60471cd222b98d1b0d0bbdc640e40e62011f82b33bfa0a4e08376b99d6e1c4b9",
+      "body_sha256": "60471cd222b98d1b0d0bbdc640e40e62011f82b33bfa0a4e08376b99d6e1c4b9"
+    },
+    "experiments/xedni-nonisomorphic-holdout-20261115/formal/HoldoutUnion.lean": {
+      "mode": "100644",
+      "sha256": "2551985f417e44490a3c63d75e9f9bba413970117879253598916679c88ca9a5",
+      "body_sha256": "2551985f417e44490a3c63d75e9f9bba413970117879253598916679c88ca9a5"
+    },
+    "experiments/xedni-nonisomorphic-relation-20261115/formal/RankOneRelation.lean": {
+      "mode": "100644",
+      "sha256": "2fed2fd57c446a8d160c911d8fc84ae4990e89997268ba01a4b0f5cd53cc0975",
+      "body_sha256": "2fed2fd57c446a8d160c911d8fc84ae4990e89997268ba01a4b0f5cd53cc0975"
+    },
+    "experiments/xedni-point-lift-shift-20261115/formal/PointLiftShift.lean": {
+      "mode": "100644",
+      "sha256": "6a1e27bab9bb651a42b924faaf06f2630826d6d89aac4dd3e29c23debeb1f0b1",
+      "body_sha256": "6a1e27bab9bb651a42b924faaf06f2630826d6d89aac4dd3e29c23debeb1f0b1"
+    },
+    "experiments/xedni-precommitted-vector-lift-20261116/formal/PrecommittedVectorLift.lean": {
+      "mode": "100644",
+      "sha256": "e035d50344bef8396017bc486fb067e632f6457cc63bdff2a8bfb39d24e68bdc",
+      "body_sha256": "e035d50344bef8396017bc486fb067e632f6457cc63bdff2a8bfb39d24e68bdc"
+    },
+    "experiments/xedni-prefix-pattern-bridge-20261116/formal/AdaptiveProgramInvariant.lean": {
+      "mode": "120000",
+      "sha256": "017ca5bd703887b6ae892c8fadaafb9253757f93b46327dd9d993b89b83ab73f",
+      "target": "../../xedni-adaptive-program-invariant-20261116/formal/AdaptiveProgramInvariant.lean",
+      "body_sha256": "b856e6723dc24d4d6e976cc5252d36b2e41437852f4e1262c5ad6bdde5dfc0b3"
+    },
+    "experiments/xedni-prefix-pattern-bridge-20261116/formal/FirstCollisionLedger.lean": {
+      "mode": "120000",
+      "sha256": "6cac673025583d927ea7f4410b2c8fb0e1127d03a9ec80beb43ae63aaea2258b",
+      "target": "../../xedni-first-collision-ledger-20261116/formal/FirstCollisionLedger.lean",
+      "body_sha256": "20619ed6acb4b176561a8c7a73029f01e3342f7af693e1ae93c0efe462b16469"
+    },
+    "experiments/xedni-prefix-pattern-bridge-20261116/formal/GroupTraceInvariant.lean": {
+      "mode": "120000",
+      "sha256": "0b25faabb3c5dca0ccfed03e069af25d76353ba2f0ee99ad9349e8160f06f69c",
+      "target": "../../xedni-group-trace-invariant-20261116/formal/GroupTraceInvariant.lean",
+      "body_sha256": "36fd21e7e62fd7861d37cc0bb5798cd3fcb1ff3c43a739cf32cfa44c22ebc358"
+    },
+    "experiments/xedni-prefix-pattern-bridge-20261116/formal/LabelConditionedCollision.lean": {
+      "mode": "120000",
+      "sha256": "174456ec4b39d7b44e5d2f9219a9822488b41b307dc50bc964e78c57e68c28f3",
+      "target": "../../xedni-label-conditioned-collision-20261116/formal/LabelConditionedCollision.lean",
+      "body_sha256": "179d0a46ee5a3ecb97996067ec2c7de523a61703023a549aa4c294942227a809"
+    },
+    "experiments/xedni-prefix-pattern-bridge-20261116/formal/PrefixPatternBridge.lean": {
+      "mode": "100644",
+      "sha256": "d5b197b69cf1daed55910c3d861c6e5c7247fbe574a964c7d8e427a0c43cb0fc",
+      "body_sha256": "d5b197b69cf1daed55910c3d861c6e5c7247fbe574a964c7d8e427a0c43cb0fc"
+    },
+    "experiments/xedni-prefix-pattern-bridge-20261116/formal/RandomLabelCoupling.lean": {
+      "mode": "120000",
+      "sha256": "405111d8dd457e52d5bdbfe5b92cdedbf171985254df7006602572668809233d",
+      "target": "../../xedni-random-label-coupling-20261116/formal/RandomLabelCoupling.lean",
+      "body_sha256": "46c2b60863ce5f5022507835d36329ddcda9089a3016b24524d90948f30939a3"
+    },
+    "experiments/xedni-prefix-pattern-bridge-20261116/formal/SymbolicCollision.lean": {
+      "mode": "120000",
+      "sha256": "9322f97c23fcb4fd24d507b7cef30c169dbe6973b6cc255b5f317de49084fbf8",
+      "target": "../../xedni-symbolic-collision-bound-20261116/formal/SymbolicCollision.lean",
+      "body_sha256": "7179539ab101b5dd76297d77e0b2ede93a09fa5b30998c2bcf2318e304ee632a"
+    },
+    "experiments/xedni-prefix-pattern-bridge-20261116/formal/TranscriptDeterminism.lean": {
+      "mode": "120000",
+      "sha256": "3baa6c9f99418e13fe1971dbbc5332f545c5520aba8460733a67c637bad3a4bf",
+      "target": "../../xedni-transcript-determinism-20261116/formal/TranscriptDeterminism.lean",
+      "body_sha256": "cb5d419fb23f5daa97b96abd21cd628382f3d5bb51c2d2f12c3564e7a6b465e0"
+    },
+    "experiments/xedni-public-first-large-holdout-20261115/formal/AdmissiblePairs.lean": {
+      "mode": "100644",
+      "sha256": "ee4c7a54d8e083f1651221da4f313680bbefe7624e8062f3be98332f0859ff6b",
+      "body_sha256": "ee4c7a54d8e083f1651221da4f313680bbefe7624e8062f3be98332f0859ff6b"
+    },
+    "experiments/xedni-public-first-large-holdout-20261115/formal/BoxBound.lean": {
+      "mode": "100644",
+      "sha256": "dd0f12a830433fc154d55d081987680b1793fde80c58f52c9d13cff0f38b0209",
+      "body_sha256": "dd0f12a830433fc154d55d081987680b1793fde80c58f52c9d13cff0f38b0209"
+    },
+    "experiments/xedni-public-first-large-holdout-20261115/formal/CoefficientFamily.lean": {
+      "mode": "100644",
+      "sha256": "c3d386ae7fd17d91e459228aeda4ddcf2c968209649fd3b8aa710f68728f3872",
+      "body_sha256": "c3d386ae7fd17d91e459228aeda4ddcf2c968209649fd3b8aa710f68728f3872"
+    },
+    "experiments/xedni-public-first-large-holdout-20261115/formal/ConcreteCurveRecovery.lean": {
+      "mode": "100644",
+      "sha256": "2d39497d52546f32693da0dfc3437ffcb2a6f3a99ea2484e8b0316c567cd5a68",
+      "body_sha256": "2d39497d52546f32693da0dfc3437ffcb2a6f3a99ea2484e8b0316c567cd5a68"
+    },
+    "experiments/xedni-public-first-large-holdout-20261115/formal/DistinctOffsetRecovery.lean": {
+      "mode": "100644",
+      "sha256": "ca0cc4f8d02006e4bdd4460b215c25fa1ca47628853786fe11581fcd6e7e7d12",
+      "body_sha256": "ca0cc4f8d02006e4bdd4460b215c25fa1ca47628853786fe11581fcd6e7e7d12"
+    },
+    "experiments/xedni-public-first-large-holdout-20261115/formal/ExceptionalRelation.lean": {
+      "mode": "100644",
+      "sha256": "648a1944a4bb06ebff54a8eb25722d09e1c473e55d2a75929acae8d19f1d72df",
+      "body_sha256": "648a1944a4bb06ebff54a8eb25722d09e1c473e55d2a75929acae8d19f1d72df"
+    },
+    "experiments/xedni-public-first-large-holdout-20261115/formal/FamilyBound.lean": {
+      "mode": "100644",
+      "sha256": "414b7a5a417dfdb03d2df7791e043d0aab19b78b019ba2e074afb860f200f29a",
+      "body_sha256": "414b7a5a417dfdb03d2df7791e043d0aab19b78b019ba2e074afb860f200f29a"
+    },
+    "experiments/xedni-public-first-large-holdout-20261115/formal/FamilyCount.lean": {
+      "mode": "100644",
+      "sha256": "69a3fec02424b9515c24c7920fbe5e6d7b21ec7c993c4af6b783fcf86e4e294a",
+      "body_sha256": "69a3fec02424b9515c24c7920fbe5e6d7b21ec7c993c4af6b783fcf86e4e294a"
+    },
+    "experiments/xedni-public-first-large-holdout-20261115/formal/OrderAddition.lean": {
+      "mode": "100644",
+      "sha256": "56956859f0f2d62b5074ea9de14257245e2498a2f044c79c3488bfdab14502e3",
+      "body_sha256": "56956859f0f2d62b5074ea9de14257245e2498a2f044c79c3488bfdab14502e3"
+    },
+    "experiments/xedni-public-first-large-holdout-20261115/formal/OrderArithmetic.lean": {
+      "mode": "100644",
+      "sha256": "a2cfce099d0aa8a21697d776508acd8cff0c9f8888adf84baeaecccb58ef1eff",
+      "body_sha256": "a2cfce099d0aa8a21697d776508acd8cff0c9f8888adf84baeaecccb58ef1eff"
+    },
+    "experiments/xedni-public-first-large-holdout-20261115/formal/OrderArithmetic2.lean": {
+      "mode": "100644",
+      "sha256": "4712394663fe9890764d0196d3020c5fd3af91e0afa9203c561c9df20305570c",
+      "body_sha256": "4712394663fe9890764d0196d3020c5fd3af91e0afa9203c561c9df20305570c"
+    },
+    "experiments/xedni-public-first-large-holdout-20261115/formal/OrderArithmetic3.lean": {
+      "mode": "100644",
+      "sha256": "2981999ade200d6f08ffdc8b3334a647cc172ec41fb4881839a16a68e41698ac",
+      "body_sha256": "2981999ade200d6f08ffdc8b3334a647cc172ec41fb4881839a16a68e41698ac"
+    },
+    "experiments/xedni-public-first-large-holdout-20261115/formal/OrderArithmetic4.lean": {
+      "mode": "100644",
+      "sha256": "e41c805cd89c59235f38d4f29f0f1d2b1eb17bfa39368e7f1eeb2743da12a9af",
+      "body_sha256": "e41c805cd89c59235f38d4f29f0f1d2b1eb17bfa39368e7f1eeb2743da12a9af"
+    },
+    "experiments/xedni-public-first-large-holdout-20261115/formal/OrderArithmeticRemaining.lean": {
+      "mode": "100644",
+      "sha256": "b8b1b34fc5d6aa7093f8404b8e44e1a7824cfad7776a652e00587703336ec97b",
+      "body_sha256": "b8b1b34fc5d6aa7093f8404b8e44e1a7824cfad7776a652e00587703336ec97b"
+    },
+    "experiments/xedni-public-first-large-holdout-20261115/formal/OrderCertificate.lean": {
+      "mode": "100644",
+      "sha256": "c44e51e3e1f5e34666611cff786ab384d3b2ca86631e40964896d37cba3815b2",
+      "body_sha256": "c44e51e3e1f5e34666611cff786ab384d3b2ca86631e40964896d37cba3815b2"
+    },
+    "experiments/xedni-public-first-large-holdout-20261115/formal/Panel.lean": {
+      "mode": "100644",
+      "sha256": "fada938fa9a2e565ae6078be33777245c3280a1d7975e07b25c12d2a7eef088a",
+      "body_sha256": "fada938fa9a2e565ae6078be33777245c3280a1d7975e07b25c12d2a7eef088a"
+    },
+    "experiments/xedni-public-first-large-holdout-20261115/formal/PointAddition.lean": {
+      "mode": "100644",
+      "sha256": "85d22b4cd8eddb7268cf32ffbb197387bac39aae102a02647fd3634e2a37c86e",
+      "body_sha256": "85d22b4cd8eddb7268cf32ffbb197387bac39aae102a02647fd3634e2a37c86e"
+    },
+    "experiments/xedni-public-first-large-holdout-20261115/formal/PointDoubling.lean": {
+      "mode": "100644",
+      "sha256": "f48dfe2f03d1dd851dc0ba27ab2f0aaf3a554ec7f2c2a06f51b8b7056491ad69",
+      "body_sha256": "f48dfe2f03d1dd851dc0ba27ab2f0aaf3a554ec7f2c2a06f51b8b7056491ad69"
+    },
+    "experiments/xedni-public-first-large-holdout-20261115/formal/PointDoubling2.lean": {
+      "mode": "100644",
+      "sha256": "eaceed1d155b99b81da603ec6815f4e3bc93b8d20eb47996abffa7ffcecef767",
+      "body_sha256": "eaceed1d155b99b81da603ec6815f4e3bc93b8d20eb47996abffa7ffcecef767"
+    },
+    "experiments/xedni-public-first-large-holdout-20261115/formal/PointDoubling3.lean": {
+      "mode": "100644",
+      "sha256": "ce1589659b60b00e60cb3c83340b7757c4eb9fc0610434c05bc79d47c257bc7d",
+      "body_sha256": "ce1589659b60b00e60cb3c83340b7757c4eb9fc0610434c05bc79d47c257bc7d"
+    },
+    "experiments/xedni-public-first-large-holdout-20261115/formal/PointDoubling4.lean": {
+      "mode": "100644",
+      "sha256": "28b56961e7388136e8ece0aafea30ac881685e762a29d3b2043630e90725c5d0",
+      "body_sha256": "28b56961e7388136e8ece0aafea30ac881685e762a29d3b2043630e90725c5d0"
+    },
+    "experiments/xedni-public-first-large-holdout-20261115/formal/PointDoublingRemaining.lean": {
+      "mode": "100644",
+      "sha256": "de1ef2c710babecb786ae84ae2e387460f5af93b72c014ccfac9a7988d6f3a4d",
+      "body_sha256": "de1ef2c710babecb786ae84ae2e387460f5af93b72c014ccfac9a7988d6f3a4d"
+    },
+    "experiments/xedni-public-first-large-holdout-20261115/formal/PrimeOrderRecovery.lean": {
+      "mode": "100644",
+      "sha256": "1ba6b0445aae2d87baf9d806fea7b9c06ad31709a086f78afe8e85d97ca03c8f",
+      "body_sha256": "1ba6b0445aae2d87baf9d806fea7b9c06ad31709a086f78afe8e85d97ca03c8f"
+    },
+    "experiments/xedni-public-first-large-holdout-20261115/formal/PublicGroupRecovery.lean": {
+      "mode": "100644",
+      "sha256": "fb23f0cfcaa383a7de857582e961565883a3491e3b24cc185722cd8adae0b3d7",
+      "body_sha256": "fb23f0cfcaa383a7de857582e961565883a3491e3b24cc185722cd8adae0b3d7"
+    },
+    "experiments/xedni-public-first-large-holdout-20261115/formal/PublicRecovery.lean": {
+      "mode": "100644",
+      "sha256": "6781bb451f2175559065f66a67601076d11c1d18072c25e79271e4eb48b24c15",
+      "body_sha256": "6781bb451f2175559065f66a67601076d11c1d18072c25e79271e4eb48b24c15"
+    },
+    "experiments/xedni-random-label-coupling-20261116/formal/RandomLabelCoupling.lean": {
+      "mode": "100644",
+      "sha256": "46c2b60863ce5f5022507835d36329ddcda9089a3016b24524d90948f30939a3",
+      "body_sha256": "46c2b60863ce5f5022507835d36329ddcda9089a3016b24524d90948f30939a3"
+    },
+    "experiments/xedni-random-label-oracle-step-20261116/formal/OracleStep.lean": {
+      "mode": "100644",
+      "sha256": "f8259b6b45b969d3f577c47c0a827379fca5b69e262fea21feaa641bc9758b16",
+      "body_sha256": "f8259b6b45b969d3f577c47c0a827379fca5b69e262fea21feaa641bc9758b16"
+    },
+    "experiments/xedni-random-label-oracle-step-20261116/formal/RandomLabelCoupling.lean": {
+      "mode": "120000",
+      "sha256": "405111d8dd457e52d5bdbfe5b92cdedbf171985254df7006602572668809233d",
+      "target": "../../xedni-random-label-coupling-20261116/formal/RandomLabelCoupling.lean",
+      "body_sha256": "46c2b60863ce5f5022507835d36329ddcda9089a3016b24524d90948f30939a3"
+    },
+    "experiments/xedni-rank-one-cover-20261115/formal/RankOneCover.lean": {
+      "mode": "100644",
+      "sha256": "0444dd16bd1455f7502ceef21928e2e05c54ae6311af556b7a65f8e15c94f1a4",
+      "body_sha256": "0444dd16bd1455f7502ceef21928e2e05c54ae6311af556b7a65f8e15c94f1a4"
+    },
+    "experiments/xedni-rank-sample-bridge-20261115/formal/HeightPigeonhole.lean": {
+      "mode": "100644",
+      "sha256": "2ba68aba33d9e1219cfe081e2ee6e4cec07c55f27a0659dc588fdfe4788908eb",
+      "body_sha256": "2ba68aba33d9e1219cfe081e2ee6e4cec07c55f27a0659dc588fdfe4788908eb"
+    },
+    "experiments/xedni-rank-sample-bridge-20261115/formal/RankSampleBridge.lean": {
+      "mode": "100644",
+      "sha256": "6a634d35d384a72d07ea0d1c73656656e1aa9bb5f94785b09bc9a0fca0d7424e",
+      "body_sha256": "6a634d35d384a72d07ea0d1c73656656e1aa9bb5f94785b09bc9a0fca0d7424e"
+    },
+    "experiments/xedni-rank-sample-bridge-20261115/formal/XedniObstruction.lean": {
+      "mode": "100644",
+      "sha256": "b11c4c721118b57225e44a21cc21e4a465778acc66597ba888caac386b27a2cf",
+      "body_sha256": "b11c4c721118b57225e44a21cc21e4a465778acc66597ba888caac386b27a2cf"
+    },
+    "experiments/xedni-sampled-witness-20261115/formal/XedniObstruction.lean": {
+      "mode": "100644",
+      "sha256": "b11c4c721118b57225e44a21cc21e4a465778acc66597ba888caac386b27a2cf",
+      "body_sha256": "b11c4c721118b57225e44a21cc21e4a465778acc66597ba888caac386b27a2cf"
+    },
+    "experiments/xedni-selection-law-20261115/formal/SelectionLaw.lean": {
+      "mode": "100644",
+      "sha256": "523060a541acf8295c1115148e906335d42fda38b17ad34d877a476dc7147719",
+      "body_sha256": "523060a541acf8295c1115148e906335d42fda38b17ad34d877a476dc7147719"
+    },
+    "experiments/xedni-selection-law-20261115/formal/XedniObstruction.lean": {
+      "mode": "100644",
+      "sha256": "b11c4c721118b57225e44a21cc21e4a465778acc66597ba888caac386b27a2cf",
+      "body_sha256": "b11c4c721118b57225e44a21cc21e4a465778acc66597ba888caac386b27a2cf"
+    },
+    "experiments/xedni-stage-hit-equivalence-20261116/formal/AdaptiveProgramInvariant.lean": {
+      "mode": "120000",
+      "sha256": "017ca5bd703887b6ae892c8fadaafb9253757f93b46327dd9d993b89b83ab73f",
+      "target": "../../xedni-adaptive-program-invariant-20261116/formal/AdaptiveProgramInvariant.lean",
+      "body_sha256": "b856e6723dc24d4d6e976cc5252d36b2e41437852f4e1262c5ad6bdde5dfc0b3"
+    },
+    "experiments/xedni-stage-hit-equivalence-20261116/formal/AdaptiveStageSum.lean": {
+      "mode": "120000",
+      "sha256": "a4c57b0163eca9c51a0d035edb27cd7dbef0847736ddd991db5974bec985e46d",
+      "target": "../../xedni-adaptive-stage-sum-20261116/formal/AdaptiveStageSum.lean",
+      "body_sha256": "95213a21320fef4da9561874103ed62642891d91d438c764c04fd7405f99d006"
+    },
+    "experiments/xedni-stage-hit-equivalence-20261116/formal/FirstCollisionLedger.lean": {
+      "mode": "120000",
+      "sha256": "6cac673025583d927ea7f4410b2c8fb0e1127d03a9ec80beb43ae63aaea2258b",
+      "target": "../../xedni-first-collision-ledger-20261116/formal/FirstCollisionLedger.lean",
+      "body_sha256": "20619ed6acb4b176561a8c7a73029f01e3342f7af693e1ae93c0efe462b16469"
+    },
+    "experiments/xedni-stage-hit-equivalence-20261116/formal/GroupTraceInvariant.lean": {
+      "mode": "120000",
+      "sha256": "0b25faabb3c5dca0ccfed03e069af25d76353ba2f0ee99ad9349e8160f06f69c",
+      "target": "../../xedni-group-trace-invariant-20261116/formal/GroupTraceInvariant.lean",
+      "body_sha256": "36fd21e7e62fd7861d37cc0bb5798cd3fcb1ff3c43a739cf32cfa44c22ebc358"
+    },
+    "experiments/xedni-stage-hit-equivalence-20261116/formal/LabelConditionedCollision.lean": {
+      "mode": "120000",
+      "sha256": "174456ec4b39d7b44e5d2f9219a9822488b41b307dc50bc964e78c57e68c28f3",
+      "target": "../../xedni-label-conditioned-collision-20261116/formal/LabelConditionedCollision.lean",
+      "body_sha256": "179d0a46ee5a3ecb97996067ec2c7de523a61703023a549aa4c294942227a809"
+    },
+    "experiments/xedni-stage-hit-equivalence-20261116/formal/PrefixPatternBridge.lean": {
+      "mode": "120000",
+      "sha256": "e1b54c647fa2e9410a718a3f222072801d3cd5f2ec72128f7f883d3b6f54d0c9",
+      "target": "../../xedni-prefix-pattern-bridge-20261116/formal/PrefixPatternBridge.lean",
+      "body_sha256": "d5b197b69cf1daed55910c3d861c6e5c7247fbe574a964c7d8e427a0c43cb0fc"
+    },
+    "experiments/xedni-stage-hit-equivalence-20261116/formal/RandomLabelCoupling.lean": {
+      "mode": "120000",
+      "sha256": "405111d8dd457e52d5bdbfe5b92cdedbf171985254df7006602572668809233d",
+      "target": "../../xedni-random-label-coupling-20261116/formal/RandomLabelCoupling.lean",
+      "body_sha256": "46c2b60863ce5f5022507835d36329ddcda9089a3016b24524d90948f30939a3"
+    },
+    "experiments/xedni-stage-hit-equivalence-20261116/formal/StageHitEquivalence.lean": {
+      "mode": "100644",
+      "sha256": "3950d84581de9b78b4fb009168ceab986bcef1de022fa52b60b5945594546192",
+      "body_sha256": "3950d84581de9b78b4fb009168ceab986bcef1de022fa52b60b5945594546192"
+    },
+    "experiments/xedni-stage-hit-equivalence-20261116/formal/SymbolicCollision.lean": {
+      "mode": "120000",
+      "sha256": "9322f97c23fcb4fd24d507b7cef30c169dbe6973b6cc255b5f317de49084fbf8",
+      "target": "../../xedni-symbolic-collision-bound-20261116/formal/SymbolicCollision.lean",
+      "body_sha256": "7179539ab101b5dd76297d77e0b2ede93a09fa5b30998c2bcf2318e304ee632a"
+    },
+    "experiments/xedni-stage-hit-equivalence-20261116/formal/TranscriptDeterminism.lean": {
+      "mode": "120000",
+      "sha256": "3baa6c9f99418e13fe1971dbbc5332f545c5520aba8460733a67c637bad3a4bf",
+      "target": "../../xedni-transcript-determinism-20261116/formal/TranscriptDeterminism.lean",
+      "body_sha256": "cb5d419fb23f5daa97b96abd21cd628382f3d5bb51c2d2f12c3564e7a6b465e0"
+    },
+    "experiments/xedni-stage-hit-equivalence-20261116/formal/TranscriptFiberEquivalence.lean": {
+      "mode": "120000",
+      "sha256": "2a64c2687fb347cd7c50f0996e6ca34faafd5e583e9d35f3d37633c27c8d27c2",
+      "target": "../../xedni-transcript-fiber-equivalence-20261116/formal/TranscriptFiberEquivalence.lean",
+      "body_sha256": "60d4e30d87fad6d65d98acac696b85d353a01ef97c31c1d4ea82b67cfd2a9b74"
+    },
+    "experiments/xedni-stage-hit-equivalence-20261116/formal/TypedPrefixProgram.lean": {
+      "mode": "120000",
+      "sha256": "015441437222a81483d30b38301c7f653c7cc20842feb92bd7d2f64b230c345b",
+      "target": "../../xedni-typed-prefix-program-20261116/formal/TypedPrefixProgram.lean",
+      "body_sha256": "ba34f64f6ef57e39ac097b71b633ca96276e890e32aee6af7eee71200289d9bc"
+    },
+    "experiments/xedni-symbolic-collision-bound-20261116/formal/SymbolicCollision.lean": {
+      "mode": "100644",
+      "sha256": "7179539ab101b5dd76297d77e0b2ede93a09fa5b30998c2bcf2318e304ee632a",
+      "body_sha256": "7179539ab101b5dd76297d77e0b2ede93a09fa5b30998c2bcf2318e304ee632a"
+    },
+    "experiments/xedni-tangent-admission-20261116/formal/TangentAdmission.lean": {
+      "mode": "100644",
+      "sha256": "d194f65e270bdb52000b8dbefad2e8bd334e76fd341bcc2aca8bf881b355074a",
+      "body_sha256": "d194f65e270bdb52000b8dbefad2e8bd334e76fd341bcc2aca8bf881b355074a"
+    },
+    "experiments/xedni-target-diversity-holdout-20261115/formal/VariedTargetFirstHit.lean": {
+      "mode": "100644",
+      "sha256": "cd7f338f52ac93f960a41dae53f16fa09c0da142ce675d83685e5b494d53ac6b",
+      "body_sha256": "cd7f338f52ac93f960a41dae53f16fa09c0da142ce675d83685e5b494d53ac6b"
+    },
+    "experiments/xedni-torsion-section-obstruction-20261116/formal/TorsionSection.lean": {
+      "mode": "100644",
+      "sha256": "b5c21b935db1fa515ad51c2979e21ab7c9b29df14cc31aef562a5c5e199abc0b",
+      "body_sha256": "b5c21b935db1fa515ad51c2979e21ab7c9b29df14cc31aef562a5c5e199abc0b"
+    },
+    "experiments/xedni-transcript-determinism-20261116/formal/AdaptiveProgramInvariant.lean": {
+      "mode": "120000",
+      "sha256": "017ca5bd703887b6ae892c8fadaafb9253757f93b46327dd9d993b89b83ab73f",
+      "target": "../../xedni-adaptive-program-invariant-20261116/formal/AdaptiveProgramInvariant.lean",
+      "body_sha256": "b856e6723dc24d4d6e976cc5252d36b2e41437852f4e1262c5ad6bdde5dfc0b3"
+    },
+    "experiments/xedni-transcript-determinism-20261116/formal/GroupTraceInvariant.lean": {
+      "mode": "120000",
+      "sha256": "0b25faabb3c5dca0ccfed03e069af25d76353ba2f0ee99ad9349e8160f06f69c",
+      "target": "../../xedni-group-trace-invariant-20261116/formal/GroupTraceInvariant.lean",
+      "body_sha256": "36fd21e7e62fd7861d37cc0bb5798cd3fcb1ff3c43a739cf32cfa44c22ebc358"
+    },
+    "experiments/xedni-transcript-determinism-20261116/formal/LabelConditionedCollision.lean": {
+      "mode": "120000",
+      "sha256": "174456ec4b39d7b44e5d2f9219a9822488b41b307dc50bc964e78c57e68c28f3",
+      "target": "../../xedni-label-conditioned-collision-20261116/formal/LabelConditionedCollision.lean",
+      "body_sha256": "179d0a46ee5a3ecb97996067ec2c7de523a61703023a549aa4c294942227a809"
+    },
+    "experiments/xedni-transcript-determinism-20261116/formal/RandomLabelCoupling.lean": {
+      "mode": "120000",
+      "sha256": "405111d8dd457e52d5bdbfe5b92cdedbf171985254df7006602572668809233d",
+      "target": "../../xedni-random-label-coupling-20261116/formal/RandomLabelCoupling.lean",
+      "body_sha256": "46c2b60863ce5f5022507835d36329ddcda9089a3016b24524d90948f30939a3"
+    },
+    "experiments/xedni-transcript-determinism-20261116/formal/SymbolicCollision.lean": {
+      "mode": "120000",
+      "sha256": "9322f97c23fcb4fd24d507b7cef30c169dbe6973b6cc255b5f317de49084fbf8",
+      "target": "../../xedni-symbolic-collision-bound-20261116/formal/SymbolicCollision.lean",
+      "body_sha256": "7179539ab101b5dd76297d77e0b2ede93a09fa5b30998c2bcf2318e304ee632a"
+    },
+    "experiments/xedni-transcript-determinism-20261116/formal/TranscriptDeterminism.lean": {
+      "mode": "100644",
+      "sha256": "cb5d419fb23f5daa97b96abd21cd628382f3d5bb51c2d2f12c3564e7a6b465e0",
+      "body_sha256": "cb5d419fb23f5daa97b96abd21cd628382f3d5bb51c2d2f12c3564e7a6b465e0"
+    },
+    "experiments/xedni-transcript-fiber-equivalence-20261116/formal/AdaptiveProgramInvariant.lean": {
+      "mode": "120000",
+      "sha256": "017ca5bd703887b6ae892c8fadaafb9253757f93b46327dd9d993b89b83ab73f",
+      "target": "../../xedni-adaptive-program-invariant-20261116/formal/AdaptiveProgramInvariant.lean",
+      "body_sha256": "b856e6723dc24d4d6e976cc5252d36b2e41437852f4e1262c5ad6bdde5dfc0b3"
+    },
+    "experiments/xedni-transcript-fiber-equivalence-20261116/formal/AdaptiveStageSum.lean": {
+      "mode": "120000",
+      "sha256": "a4c57b0163eca9c51a0d035edb27cd7dbef0847736ddd991db5974bec985e46d",
+      "target": "../../xedni-adaptive-stage-sum-20261116/formal/AdaptiveStageSum.lean",
+      "body_sha256": "95213a21320fef4da9561874103ed62642891d91d438c764c04fd7405f99d006"
+    },
+    "experiments/xedni-transcript-fiber-equivalence-20261116/formal/FirstCollisionLedger.lean": {
+      "mode": "120000",
+      "sha256": "6cac673025583d927ea7f4410b2c8fb0e1127d03a9ec80beb43ae63aaea2258b",
+      "target": "../../xedni-first-collision-ledger-20261116/formal/FirstCollisionLedger.lean",
+      "body_sha256": "20619ed6acb4b176561a8c7a73029f01e3342f7af693e1ae93c0efe462b16469"
+    },
+    "experiments/xedni-transcript-fiber-equivalence-20261116/formal/GroupTraceInvariant.lean": {
+      "mode": "120000",
+      "sha256": "0b25faabb3c5dca0ccfed03e069af25d76353ba2f0ee99ad9349e8160f06f69c",
+      "target": "../../xedni-group-trace-invariant-20261116/formal/GroupTraceInvariant.lean",
+      "body_sha256": "36fd21e7e62fd7861d37cc0bb5798cd3fcb1ff3c43a739cf32cfa44c22ebc358"
+    },
+    "experiments/xedni-transcript-fiber-equivalence-20261116/formal/LabelConditionedCollision.lean": {
+      "mode": "120000",
+      "sha256": "174456ec4b39d7b44e5d2f9219a9822488b41b307dc50bc964e78c57e68c28f3",
+      "target": "../../xedni-label-conditioned-collision-20261116/formal/LabelConditionedCollision.lean",
+      "body_sha256": "179d0a46ee5a3ecb97996067ec2c7de523a61703023a549aa4c294942227a809"
+    },
+    "experiments/xedni-transcript-fiber-equivalence-20261116/formal/PrefixPatternBridge.lean": {
+      "mode": "120000",
+      "sha256": "e1b54c647fa2e9410a718a3f222072801d3cd5f2ec72128f7f883d3b6f54d0c9",
+      "target": "../../xedni-prefix-pattern-bridge-20261116/formal/PrefixPatternBridge.lean",
+      "body_sha256": "d5b197b69cf1daed55910c3d861c6e5c7247fbe574a964c7d8e427a0c43cb0fc"
+    },
+    "experiments/xedni-transcript-fiber-equivalence-20261116/formal/RandomLabelCoupling.lean": {
+      "mode": "120000",
+      "sha256": "405111d8dd457e52d5bdbfe5b92cdedbf171985254df7006602572668809233d",
+      "target": "../../xedni-random-label-coupling-20261116/formal/RandomLabelCoupling.lean",
+      "body_sha256": "46c2b60863ce5f5022507835d36329ddcda9089a3016b24524d90948f30939a3"
+    },
+    "experiments/xedni-transcript-fiber-equivalence-20261116/formal/SymbolicCollision.lean": {
+      "mode": "120000",
+      "sha256": "9322f97c23fcb4fd24d507b7cef30c169dbe6973b6cc255b5f317de49084fbf8",
+      "target": "../../xedni-symbolic-collision-bound-20261116/formal/SymbolicCollision.lean",
+      "body_sha256": "7179539ab101b5dd76297d77e0b2ede93a09fa5b30998c2bcf2318e304ee632a"
+    },
+    "experiments/xedni-transcript-fiber-equivalence-20261116/formal/TranscriptDeterminism.lean": {
+      "mode": "120000",
+      "sha256": "3baa6c9f99418e13fe1971dbbc5332f545c5520aba8460733a67c637bad3a4bf",
+      "target": "../../xedni-transcript-determinism-20261116/formal/TranscriptDeterminism.lean",
+      "body_sha256": "cb5d419fb23f5daa97b96abd21cd628382f3d5bb51c2d2f12c3564e7a6b465e0"
+    },
+    "experiments/xedni-transcript-fiber-equivalence-20261116/formal/TranscriptFiberEquivalence.lean": {
+      "mode": "100644",
+      "sha256": "60d4e30d87fad6d65d98acac696b85d353a01ef97c31c1d4ea82b67cfd2a9b74",
+      "body_sha256": "60d4e30d87fad6d65d98acac696b85d353a01ef97c31c1d4ea82b67cfd2a9b74"
+    },
+    "experiments/xedni-two-image-precommit-20261116/formal/TwoImagePrecommit.lean": {
+      "mode": "100644",
+      "sha256": "521eff831df0afecf7ced59330a4079a5b172cc5d61b824263f07cfc6da74eb6",
+      "body_sha256": "521eff831df0afecf7ced59330a4079a5b172cc5d61b824263f07cfc6da74eb6"
+    },
+    "experiments/xedni-typed-prefix-program-20261116/formal/AdaptiveProgramInvariant.lean": {
+      "mode": "120000",
+      "sha256": "017ca5bd703887b6ae892c8fadaafb9253757f93b46327dd9d993b89b83ab73f",
+      "target": "../../xedni-adaptive-program-invariant-20261116/formal/AdaptiveProgramInvariant.lean",
+      "body_sha256": "b856e6723dc24d4d6e976cc5252d36b2e41437852f4e1262c5ad6bdde5dfc0b3"
+    },
+    "experiments/xedni-typed-prefix-program-20261116/formal/AdaptiveStageSum.lean": {
+      "mode": "120000",
+      "sha256": "a4c57b0163eca9c51a0d035edb27cd7dbef0847736ddd991db5974bec985e46d",
+      "target": "../../xedni-adaptive-stage-sum-20261116/formal/AdaptiveStageSum.lean",
+      "body_sha256": "95213a21320fef4da9561874103ed62642891d91d438c764c04fd7405f99d006"
+    },
+    "experiments/xedni-typed-prefix-program-20261116/formal/FirstCollisionLedger.lean": {
+      "mode": "120000",
+      "sha256": "6cac673025583d927ea7f4410b2c8fb0e1127d03a9ec80beb43ae63aaea2258b",
+      "target": "../../xedni-first-collision-ledger-20261116/formal/FirstCollisionLedger.lean",
+      "body_sha256": "20619ed6acb4b176561a8c7a73029f01e3342f7af693e1ae93c0efe462b16469"
+    },
+    "experiments/xedni-typed-prefix-program-20261116/formal/GroupTraceInvariant.lean": {
+      "mode": "120000",
+      "sha256": "0b25faabb3c5dca0ccfed03e069af25d76353ba2f0ee99ad9349e8160f06f69c",
+      "target": "../../xedni-group-trace-invariant-20261116/formal/GroupTraceInvariant.lean",
+      "body_sha256": "36fd21e7e62fd7861d37cc0bb5798cd3fcb1ff3c43a739cf32cfa44c22ebc358"
+    },
+    "experiments/xedni-typed-prefix-program-20261116/formal/LabelConditionedCollision.lean": {
+      "mode": "120000",
+      "sha256": "174456ec4b39d7b44e5d2f9219a9822488b41b307dc50bc964e78c57e68c28f3",
+      "target": "../../xedni-label-conditioned-collision-20261116/formal/LabelConditionedCollision.lean",
+      "body_sha256": "179d0a46ee5a3ecb97996067ec2c7de523a61703023a549aa4c294942227a809"
+    },
+    "experiments/xedni-typed-prefix-program-20261116/formal/PrefixPatternBridge.lean": {
+      "mode": "120000",
+      "sha256": "e1b54c647fa2e9410a718a3f222072801d3cd5f2ec72128f7f883d3b6f54d0c9",
+      "target": "../../xedni-prefix-pattern-bridge-20261116/formal/PrefixPatternBridge.lean",
+      "body_sha256": "d5b197b69cf1daed55910c3d861c6e5c7247fbe574a964c7d8e427a0c43cb0fc"
+    },
+    "experiments/xedni-typed-prefix-program-20261116/formal/RandomLabelCoupling.lean": {
+      "mode": "120000",
+      "sha256": "405111d8dd457e52d5bdbfe5b92cdedbf171985254df7006602572668809233d",
+      "target": "../../xedni-random-label-coupling-20261116/formal/RandomLabelCoupling.lean",
+      "body_sha256": "46c2b60863ce5f5022507835d36329ddcda9089a3016b24524d90948f30939a3"
+    },
+    "experiments/xedni-typed-prefix-program-20261116/formal/SymbolicCollision.lean": {
+      "mode": "120000",
+      "sha256": "9322f97c23fcb4fd24d507b7cef30c169dbe6973b6cc255b5f317de49084fbf8",
+      "target": "../../xedni-symbolic-collision-bound-20261116/formal/SymbolicCollision.lean",
+      "body_sha256": "7179539ab101b5dd76297d77e0b2ede93a09fa5b30998c2bcf2318e304ee632a"
+    },
+    "experiments/xedni-typed-prefix-program-20261116/formal/TranscriptDeterminism.lean": {
+      "mode": "120000",
+      "sha256": "3baa6c9f99418e13fe1971dbbc5332f545c5520aba8460733a67c637bad3a4bf",
+      "target": "../../xedni-transcript-determinism-20261116/formal/TranscriptDeterminism.lean",
+      "body_sha256": "cb5d419fb23f5daa97b96abd21cd628382f3d5bb51c2d2f12c3564e7a6b465e0"
+    },
+    "experiments/xedni-typed-prefix-program-20261116/formal/TranscriptFiberEquivalence.lean": {
+      "mode": "120000",
+      "sha256": "2a64c2687fb347cd7c50f0996e6ca34faafd5e583e9d35f3d37633c27c8d27c2",
+      "target": "../../xedni-transcript-fiber-equivalence-20261116/formal/TranscriptFiberEquivalence.lean",
+      "body_sha256": "60d4e30d87fad6d65d98acac696b85d353a01ef97c31c1d4ea82b67cfd2a9b74"
+    },
+    "experiments/xedni-typed-prefix-program-20261116/formal/TypedPrefixProgram.lean": {
+      "mode": "100644",
+      "sha256": "ba34f64f6ef57e39ac097b71b633ca96276e890e32aee6af7eee71200289d9bc",
+      "body_sha256": "ba34f64f6ef57e39ac097b71b633ca96276e890e32aee6af7eee71200289d9bc"
+    },
+    "experiments/xedni-vector-dependent-rank-one-lift-20261115/formal/AdaptiveInverseLift.lean": {
+      "mode": "100644",
+      "sha256": "7e553b80159c0f2408e58a7498cce59de8f972145c1c788210ff52f31c9b58b8",
+      "body_sha256": "7e553b80159c0f2408e58a7498cce59de8f972145c1c788210ff52f31c9b58b8"
+    },
+    "experiments/xedni-vector-dependent-rank-one-lift-20261115/formal/VectorDependentRankOneLift.lean": {
+      "mode": "100644",
+      "sha256": "740c7decd3cc665eab6564ef7dfde5237e005b4212660dba04d342594694d600",
+      "body_sha256": "740c7decd3cc665eab6564ef7dfde5237e005b4212660dba04d342594694d600"
+    },
+    "experiments/xedni-vector-shift-lift-search-20261116/formal/LiftFamilyContainment.lean": {
+      "mode": "100644",
+      "sha256": "8988fb6635cf9a5b87f45dbec7795a9b22294dd3d09e6756d497f44d1237eb99",
+      "body_sha256": "8988fb6635cf9a5b87f45dbec7795a9b22294dd3d09e6756d497f44d1237eb99"
+    },
+    "experiments/xedni-public-first-large-holdout-20261115/formal/probes/OrderProbe.lean": {
+      "mode": "100644",
+      "sha256": "d5854ac36b2a388c798b6d5db2fe6267a979520b8997d2fb45b5770d68254452",
+      "body_sha256": "d5854ac36b2a388c798b6d5db2fe6267a979520b8997d2fb45b5770d68254452"
+    },
+    "experiments/xedni-public-first-large-holdout-20261115/formal/probes/PointFormulaProbe.lean": {
+      "mode": "100644",
+      "sha256": "c9993a5ddf6b1a80b5af5793a317d476d0550feb826115d81e3fb17f13573fb7",
+      "body_sha256": "c9993a5ddf6b1a80b5af5793a317d476d0550feb826115d81e3fb17f13573fb7"
+    }
+  },
+  "probes": {
+    "experiments/xedni-public-first-large-holdout-20261115/formal/probes/OrderProbe.lean": {
+      "status_path": "experiments/xedni-public-first-large-holdout-20261115/formal/probes/probe-status.json",
+      "status_sha256": "bf8073d7c11d3f3a522adc8e660aa015cce6fd4a55866c8940975d1e4c30f045",
+      "timeout_seconds": 60
+    },
+    "experiments/xedni-public-first-large-holdout-20261115/formal/probes/PointFormulaProbe.lean": {
+      "status_path": "experiments/xedni-public-first-large-holdout-20261115/formal/probes/point-formula-probe-status.json",
+      "status_sha256": "fde0270eb5a7c8733850e7d8b619b705aa72ba724f0b8345acf242d3c4691742",
+      "timeout_seconds": 75
+    }
+  }
+}

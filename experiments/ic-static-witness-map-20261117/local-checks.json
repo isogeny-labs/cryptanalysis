@@ -1,0 +1,59 @@
+{
+  "status": "pass",
+  "checks": [
+    {
+      "name": "compact",
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "-j2",
+        "--manifest-path",
+        "/tmp/ic-canonical-frozen-source-001/suite/Cargo.toml",
+        "--lib",
+        "compact_pair_witness",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "framework",
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "-j2",
+        "--manifest-path",
+        "/tmp/ic-canonical-frozen-source-001/suite/Cargo.toml",
+        "--lib",
+        "ic_framework",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "clippy",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--offline",
+        "--locked",
+        "-j2",
+        "--manifest-path",
+        "/tmp/ic-canonical-frozen-source-001/suite/Cargo.toml",
+        "--lib",
+        "--example",
+        "ic_affine_pipeline_probe",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "standing": "local ARM; native static backend and timing admission pending"
+}

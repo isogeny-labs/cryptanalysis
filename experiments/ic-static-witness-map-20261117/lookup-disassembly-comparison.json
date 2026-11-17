@@ -1,0 +1,78 @@
+{
+  "status": "pass",
+  "scope": "post-analysis of existing disassembly text only; comments and RIP displacement/branch address relocations ignored, padding retained; neither binary-byte equality nor address/data/cache equivalence established; no new native timing or causal verdict",
+  "inputs_sha256": {
+    "compact": "c1a5538300d8734199b771f561d7d6ed8dd0104d47bfd3c8b9d2f9611b099d37",
+    "packed": "c8497444025a933465086ca0cd5fa342c18906820d224b4812e6f4cd390f7aed",
+    "indexed": "b6e28d822c5ac5b481bae1347b215c426adb28346c05b715964b5ce8ae145755"
+  },
+  "source_sha256": "af28c15d45ea303fe135610fa7d8268229ccb8e69b932e203d936a8505889054",
+  "rows": [
+    {
+      "function": "<cryptanalysis_suite::cryptanalysis::ic_boundary::PairTable>::probe::<cryptanalysis_suite::cryptanalysis::ic_boundary::BinaryGroup>",
+      "tag": "compact",
+      "address": 1296304,
+      "address_mod64": 48,
+      "instruction_lines": 117,
+      "normalized_sha256": "64fa13c7b977d82acb3b44e916d556c9567cec06d4abbf9020cfb9b8b4f869f1",
+      "normalized_equal_to_compact": true,
+      "paired_differences": 0,
+      "first_differences": []
+    },
+    {
+      "function": "<cryptanalysis_suite::cryptanalysis::ic_boundary::PairTable>::probe::<cryptanalysis_suite::cryptanalysis::ic_boundary::BinaryGroup>",
+      "tag": "packed",
+      "address": 1175168,
+      "address_mod64": 0,
+      "instruction_lines": 117,
+      "normalized_sha256": "64fa13c7b977d82acb3b44e916d556c9567cec06d4abbf9020cfb9b8b4f869f1",
+      "normalized_equal_to_compact": true,
+      "paired_differences": 0,
+      "first_differences": []
+    },
+    {
+      "function": "<cryptanalysis_suite::cryptanalysis::ic_boundary::PairTable>::probe::<cryptanalysis_suite::cryptanalysis::ic_boundary::BinaryGroup>",
+      "tag": "indexed",
+      "address": 1139472,
+      "address_mod64": 16,
+      "instruction_lines": 117,
+      "normalized_sha256": "64fa13c7b977d82acb3b44e916d556c9567cec06d4abbf9020cfb9b8b4f869f1",
+      "normalized_equal_to_compact": true,
+      "paired_differences": 0,
+      "first_differences": []
+    },
+    {
+      "function": "<cryptanalysis_suite::cryptanalysis::ic_boundary::PairWitnessMap>::get",
+      "tag": "compact",
+      "address": 1332336,
+      "address_mod64": 48,
+      "instruction_lines": 135,
+      "normalized_sha256": "e67a03a97a9d4cd8954e48cf8fcc4c8768bc3f5fb4ab51087f3f39653251a913",
+      "normalized_equal_to_compact": true,
+      "paired_differences": 0,
+      "first_differences": []
+    },
+    {
+      "function": "<cryptanalysis_suite::cryptanalysis::ic_boundary::PairWitnessMap>::get",
+      "tag": "packed",
+      "address": 1212832,
+      "address_mod64": 32,
+      "instruction_lines": 135,
+      "normalized_sha256": "e67a03a97a9d4cd8954e48cf8fcc4c8768bc3f5fb4ab51087f3f39653251a913",
+      "normalized_equal_to_compact": true,
+      "paired_differences": 0,
+      "first_differences": []
+    },
+    {
+      "function": "<cryptanalysis_suite::cryptanalysis::ic_boundary::PairWitnessMap>::get",
+      "tag": "indexed",
+      "address": 1178384,
+      "address_mod64": 16,
+      "instruction_lines": 135,
+      "normalized_sha256": "e67a03a97a9d4cd8954e48cf8fcc4c8768bc3f5fb4ab51087f3f39653251a913",
+      "normalized_equal_to_compact": true,
+      "paired_differences": 0,
+      "first_differences": []
+    }
+  ]
+}

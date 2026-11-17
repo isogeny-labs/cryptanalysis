@@ -14,6 +14,8 @@ import os
 from pathlib import Path
 import platform
 import random
+import selectors
+import signal
 import socket
 import subprocess
 import sys
@@ -47,6 +49,26 @@ def checked_int(value, label, minimum=0):
     if type(value) is not int or value < minimum:
         raise ValueError(f"{label}: expected integer >= {minimum}, not boolean/float")
     return value
+
+
+def require_panel_budget(value):
+    """Explicit positive aggregate wall limit; never inferred from child timeout."""
+    if value is None:
+        raise ValueError("panel-wall-seconds is required for execution")
+    return checked_int(value, "panel-wall-seconds", 1)
+
+
+def panel_child_timeout_seconds(deadline_ns, child_seconds, now_ns=None):
+    """Allow at most remaining panel time, refusing to spawn on expiry."""
+    checked_int(deadline_ns, "panel deadline")
+    checked_int(child_seconds, "per-child timeout", 1)
+    if now_ns is None:
+        now_ns = time.monotonic_ns()
+    checked_int(now_ns, "monotonic clock")
+    remaining_ns = deadline_ns - now_ns
+    if remaining_ns <= 0:
+        return None
+    return min(float(child_seconds), remaining_ns / 1_000_000_000)
 
 
 def words(value, label):
@@ -177,26 +199,92 @@ def host_metadata():
     }
 
 
+def _kill_process_group(process):
+    """Stop a timed-out or overproducing child and its inherited pipe writers."""
+    if os.name == "posix":
+        try:
+            os.killpg(process.pid, signal.SIGKILL)
+        except ProcessLookupError:
+            pass
+    if process.poll() is None:
+        try:
+            process.kill()
+        except ProcessLookupError:
+            pass
+
+
+def bounded_subprocess(argv, timeout_seconds):
+    """Concurrent, in-flight capped capture of both pipes; no unbounded communicate.
+
+    Valid output is kept losslessly. On cap/timeout refusal the bytes are only
+    bounded prefixes, never silently presented as a complete child transcript.
+    POSIX children are isolated into their own process group for reliable kill.
+    """
+    process = subprocess.Popen(argv, stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE, shell=False,
+                               start_new_session=(os.name == "posix"))
+    buffers = {"stdout": bytearray(), "stderr": bytearray()}
+    error = None
+    deadline = time.monotonic_ns() + timeout_seconds * 1_000_000_000
+    try:
+        with selectors.DefaultSelector() as selector:
+            for name, stream in (("stdout", process.stdout),
+                                 ("stderr", process.stderr)):
+                os.set_blocking(stream.fileno(), False)
+                selector.register(stream, selectors.EVENT_READ, name)
+            while selector.get_map():
+                remaining_ns = deadline - time.monotonic_ns()
+                if remaining_ns <= 0:
+                    error = "timeout"
+                    break
+                for key, _ in selector.select(remaining_ns / 1_000_000_000):
+                    target = buffers[key.data]
+                    remaining = MAX_CAPTURE + 1 - len(target)
+                    if remaining <= 0:
+                        error = "capture limit exceeded"
+                        break
+                    try:
+                        chunk = os.read(key.fd, min(65536, remaining))
+                    except BlockingIOError:
+                        continue
+                    if not chunk:
+                        selector.unregister(key.fileobj)
+                        continue
+                    target.extend(chunk)
+                    if len(target) > MAX_CAPTURE:
+                        error = "capture limit exceeded"
+                        break
+                if error is not None:
+                    break
+        if error is None:
+            remaining_ns = deadline - time.monotonic_ns()
+            if remaining_ns <= 0:
+                error = "timeout"
+            else:
+                try:
+                    process.wait(timeout=remaining_ns / 1_000_000_000)
+                except subprocess.TimeoutExpired:
+                    error = "timeout"
+    finally:
+        if error is not None or process.poll() is None:
+            _kill_process_group(process)
+        for stream in (process.stdout, process.stderr):
+            if stream is not None:
+                stream.close()
+        process.wait()
+    return process.returncode, bytes(buffers["stdout"]), bytes(buffers["stderr"]), error
+
+
 def run_sample(binary, index, arm, row, timeout_seconds):
     argv = [str(binary), "--cold-route", str(index), arm]
     start_ns = time.perf_counter_ns()
     try:
-        child = subprocess.run(argv, capture_output=True, timeout=timeout_seconds,
-                               check=False, shell=False)
-        error = None
-        exit_code = child.returncode
-        stdout, stderr = child.stdout, child.stderr
-    except subprocess.TimeoutExpired as exc:
-        exit_code = None
-        stdout, stderr = exc.stdout or b"", exc.stderr or b""
-        error = "timeout"
+        exit_code, stdout, stderr, error = bounded_subprocess(argv, timeout_seconds)
     except OSError as exc:
         exit_code = None
         stdout, stderr = b"", str(exc).encode("utf-8", "backslashreplace")
         error = "process spawn failed"
     wall_ns = time.perf_counter_ns() - start_ns
-    if len(stdout) > MAX_CAPTURE or len(stderr) > MAX_CAPTURE:
-        error = "unbounded stdout or stderr (capture limit exceeded)"
     report = {
         "argv": argv, "external_wall_ns_decimal": str(wall_ns),
         "exit_code": exit_code, "stdout": stdout.decode("utf-8", "backslashreplace"),
@@ -205,6 +293,7 @@ def run_sample(binary, index, arm, row, timeout_seconds):
         "stderr_base64": base64.b64encode(stderr).decode("ascii"),
         "stdout_sha256": hashlib.sha256(stdout).hexdigest(),
         "stderr_sha256": hashlib.sha256(stderr).hexdigest(),
+        "capture_complete": error is None,
         "peak_rss_kib_linux": None, "verified": False, "error": error
     }
     if error is not None:
@@ -245,6 +334,7 @@ def main():
     p.add_argument("--executable-sha256", type=str)
     p.add_argument("--output", type=Path)
     p.add_argument("--timeout-seconds", type=int, default=120)
+    p.add_argument("--panel-wall-seconds", type=int)
     p.add_argument("--execute", action="store_true")
     p.add_argument("--admission-approved", action="store_true")
     args = p.parse_args()
@@ -266,6 +356,10 @@ def main():
         p.error("execution requires executable, executable-sha256 and output")
     if args.timeout_seconds <= 0:
         p.error("timeout-seconds must be positive")
+    try:
+        panel_wall_seconds = require_panel_budget(args.panel_wall_seconds)
+    except ValueError as exc:
+        p.error(str(exc))
     binary = args.executable.resolve(strict=True)
     if not binary.is_file() or not os.access(binary, os.X_OK):
         p.error("binary is not an executable file")
@@ -275,6 +369,10 @@ def main():
     plan["executable_path"] = str(binary)
     plan["executable_sha256"] = digest
     plan["timeout_seconds"] = args.timeout_seconds
+    plan["panel_wall_seconds"] = panel_wall_seconds
+    # The admitted aggregate budget starts before output creation/fsync.
+    panel_started_ns = time.monotonic_ns()
+    panel_deadline_ns = panel_started_ns + panel_wall_seconds * 1_000_000_000
     # Exclusive creation means an incomplete run cannot be silently overwritten.
     with args.output.open("x", encoding="utf-8") as fh:
         jwrite(fh, {"type": "manifest", **plan,
@@ -287,10 +385,18 @@ def main():
             if host_metadata() != host:
                 failure = f"host/affinity changed before block {block}, index {index}"
                 break
-            trial = run_sample(binary, index, arm, rows[index], args.timeout_seconds)
+            allowance = panel_child_timeout_seconds(
+                panel_deadline_ns, args.timeout_seconds)
+            if allowance is None:
+                failure = "aggregate panel wall deadline exhausted before next sample"
+                break
+            trial = run_sample(binary, index, arm, rows[index], allowance)
             jwrite(fh, {"type": "sample", "block": block, "packet_index": index,
                         "position": position, "arm": arm, **trial})
             completed += 1
+            if time.monotonic_ns() >= panel_deadline_ns:
+                failure = "aggregate panel wall deadline exhausted after sample"
+                break
             if not trial["verified"]:
                 failure = trial["error"] or "unverified child"
                 break

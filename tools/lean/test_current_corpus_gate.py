@@ -677,7 +677,8 @@ class GlvSizedCapControls(unittest.TestCase):
             self.binding.require_selector(data, expected, 12, sized_cap)
 
     def test_pins_are_added_and_the_fixed_cap_pin_is_kept_as_history(self):
-        self.assertEqual(gate.LIVE_GLV_COMMIT, "e71ebecaf3a076590ddd3affa4878b4c80d85095")
+        self.assertEqual(gate.LIVE_GLV_COMMIT, "77fb8819d2729beb0842c3954dbfcd471e143ca8")
+        self.assertEqual(gate.HISTORICAL_SIZED_GLV_COMMIT, "e71ebecaf3a076590ddd3affa4878b4c80d85095")
         self.assertEqual(gate.PRIOR_LIVE_GLV_COMMIT, "8bf648dcbefe7b8131e5fb26909c77e68778332a")
         self.assertEqual(gate.PRIOR_LIVE_GLV_SHA256,
                          "60796724ef7d7c5b3b7dfd89c29db85d5e188deb247b5d9d0bd69b84551afe20")
@@ -687,6 +688,15 @@ class GlvSizedCapControls(unittest.TestCase):
                          "823903d27e906feccfe40f29df7feb7a23669b0c96d0bdc1f79ff0e3bddf93b4")
         self.assertEqual(gate.DELTA[gate.TABLEBUDGET_SOURCE], gate.TABLEBUDGET_SHA256)
         self.assertNotEqual(gate.TABLEBUDGET_SHA256, gate.HISTORICAL_TABLEBUDGET_SHA256)
+
+    def test_original_sized_cap_pin_remains_a_separate_control(self):
+        original = subprocess.run(
+            ["git", "show", f"{gate.HISTORICAL_SIZED_GLV_COMMIT}:src/curve.c"],
+            cwd=gate.ROOT, check=True, capture_output=True).stdout
+        self.assertEqual(gate.HISTORICAL_TABLEBUDGET_COMMIT, gate.HISTORICAL_SIZED_GLV_COMMIT)
+        count = gate.glv_selector_negatives(
+            self.binding, original, gate.HISTORICAL_SIZED_GLV_SHA256, sized_cap=True)
+        self.assertEqual(count, len(gate.SIZED_CAP_CONTROLS) + 1)
 
     def test_live_source_and_theorem_source_match_their_pins(self):
         self.assertEqual(hashlib.sha256(self.live).hexdigest(), gate.LIVE_GLV_SHA256)

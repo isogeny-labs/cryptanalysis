@@ -16,13 +16,14 @@ _(none pinned — set one with `/goal <text>`)_
 
 ## Active items (top = next)
 
-- [ ] CT181 counterbalance source prototype passes; integrate v2 producer/adjudicator after upstream PR reconciliation (automation, started 2026-11-17, branch research/ct181-counterbalanced-cold-design-20261117, PR #1711)
-- [ ] CT180 reject impossible cold-process nested-time records (automation, started 2026-11-17, branch research/ct180-nested-cold-time-consistency-20261117, PR #1710)
-- [x] CT179 validate and adjudicate the frozen cold transfer panel without treating transfer timing as a complete solve (automation, started 2026-11-17, branch research/ct179-cold-panel-adjudication-20261117, PR #1708; source-only 9/9 normal and -O CI #44050792557, native timing pending)
+- [ ] Isolate the indexed IC collector regression with staged/indexed and counter-presence setup contrasts in one binary, preserving frozen controls (Codex, started 2026-11-17, branch codex/ic-collector-counterfactual-20261117, PR #1712)
+- [x] Specialize the static IC witness dictionary and measure full-pipeline and collector effects against frozen controls; negative result retained and indexed route restored, broader performance goal continues (Codex, started 2026-11-17, branch codex/ic-static-witness-map-20261117, PR #1709)
+- [x] Measure index-driven compact IC pair preparation with exact order/witness preservation; exploratory gains and collector regressions retained, broader optimization continues (Codex, started 2026-11-17, branch codex/ic-pair-index-gather-20261117, PR #1707)
+- [x] Combine packed squaring with constant-polynomial IC preparation and measure against compact baseline; unsigned exploratory panel preserved, broader collector optimization continues (Codex, started 2026-11-16, branch codex/ic-packed-const-square-20261116, PR #1705)
+
+- [x] Measure frozen SIMD abscissa-output candidate against compact IC baseline: candidate rejected and previous source restored; broader performance goal remains open (Codex, started 2026-11-16, branch codex/ic-simd-output-20261116, PR #1703)
 
 <!-- One line per task, added as the task's first step with its draft PR:
 - [ ] <task> (<runtime>, started YYYY-MM-DD, branch <branch>, PR #<n>) -->
 
 ## Blocked / questions for the owner
-
-- CT181 production v2 is blocked on integrating the separate CT178 collector (#1706) and CT179/180 adjudicator (#1708/#1710) branches and authorized native timing. Only synthetic 6/6 normal/-O checks have passed; no actual transfer panel has run.
