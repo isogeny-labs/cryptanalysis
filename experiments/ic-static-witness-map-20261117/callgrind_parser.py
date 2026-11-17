@@ -31,4 +31,3 @@ def parse_capture(path):
  inv_edges=sorted((dict(caller=names[a],callee=names[b],calls=n,ir=ir) for a,b,n,ir in edges if 'Gf2>::inv' in names[b]),key=lambda x:x['ir'],reverse=True)
  all_edges=sorted((dict(caller=names[a],callee=names[b],calls=n,ir=ir) for a,b,n,ir in edges),key=lambda x:x['ir'],reverse=True)
  return dict(call_edges=all_edges,ir=totals[0],exclusive_sum=sum(own.values()),functions=functions,inversion_call_edges=inv_edges,creator=next(x[9:] for x in lines if x.startswith('creator: ')))
-
