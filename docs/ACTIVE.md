@@ -18,6 +18,8 @@ and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
 
+- [ ] CT189: implement native-eligible v3 randomized physical A/B cold crossover producer and strict evidence reader, source-only synthetic validation; native runtime gated (automation, started 2026-11-17, branch research/ct189-native-physical-crossover-20261117) [pcc:unverified]
+
 - [ ] Extend certified Xedni lift-success trials to the ten-coefficient `r=7..9` regime with exact rational dependence verification (Codex, started 2026-11-17, branch codex/xedni-breakthrough-20261117, PR #1722) [pcc:unverified]
 
 - [x] CT187: bounded admitted-source native 1,536-call same-route sham producer, strict evidence reader and synthetic handshake; no paid execution (automation, started 2026-11-17, branch research/ct187-native-sham-source-admission-20261117, PR #1719)
