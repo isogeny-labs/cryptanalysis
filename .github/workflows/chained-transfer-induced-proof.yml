@@ -8,6 +8,7 @@ on:
       - 'tools/lean/**'
       - 'tools/pcc/**'
       - 'pcc/claims/**'
+      - 'pcc/keyring.json'
       - '.github/workflows/chained-transfer-induced-proof.yml'
   push:
     branches: [main]
@@ -17,6 +18,7 @@ on:
       - 'tools/lean/**'
       - 'tools/pcc/**'
       - 'pcc/claims/**'
+      - 'pcc/keyring.json'
       - '.github/workflows/chained-transfer-induced-proof.yml'
   workflow_dispatch:
 
@@ -26,13 +28,14 @@ permissions:
 jobs:
   induced-transfer-proof:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
           path: cryptanalysis
+          fetch-depth: 0
           sparse-checkout-cone-mode: false
           sparse-checkout: |
             experiments/chained-transfer-public-target/original-induced-transfer-01
@@ -41,6 +44,17 @@ jobs:
             experiments/chained-transfer-public-target/upstream-commit.txt
             tools/lean
             tools/pcc
+            tools/ci/quartic_certificates.json
+            src/curve.c
+            docs/known-label-next-leads-20261028/Algebra.lean
+            docs/known-label-pair-index-20261029/PairIndex.lean
+            reports/ci-xedni-proof-elaboration-repair-20261030
+            experiments/hecke-432-formal-ci-20261025
+            experiments/xedni-bounded-witness-20261030/formal
+            experiments/glv-table-rule-confirm-20261022
+            experiments/glv-cap-confirm-20261106/formal/no-worse-20261108
+            experiments/prime-field-auxiliary-ic/rust-validation/field-fibers-20261115/formal
+            research/xedni_lift_optimizer_20261101/lean
             pcc/keyring.json
             pcc/claims
             .github/workflows/chained-transfer-induced-proof.yml
@@ -59,6 +73,33 @@ jobs:
           sparse-checkout-cone-mode: false
           sparse-checkout: |
             tools/lean
+      - name: Check out the sealed consumer independently
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          ref: 41e35d8c701484a6ca5406ecbf7bb83278be6073
+          persist-credentials: false
+          path: frozen/cryptanalysis
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            experiments/chained-transfer-public-target/original-induced-transfer-01
+            experiments/chained-transfer-public-target/ci_induced_transfer
+            experiments/chained-transfer-public-target/upstream-commit.txt
+            .github/workflows/chained-transfer-induced-proof.yml
+            experiments/chained-transfer-public-target/evidence/original-induced-full-transfer-proof-01
+            tools/lean
+            tools/pcc
+            pcc/keyring.json
+            pcc/claims
+      - name: Check out the sealed producer independently
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          repository: isogeny-labs/crypto
+          ref: 3d49af7f3d0a28e76b79e4825c9d2324e85853d2
+          persist-credentials: false
+          path: frozen/crypto
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            tools/lean
       - name: Install both pinned original Lean toolchains
         run: |
           set -euo pipefail
@@ -66,13 +107,19 @@ jobs:
           sh "$RUNNER_TEMP/elan-init.sh" -y --no-modify-path --default-toolchain leanprover/lean4:v4.35.0
           "$HOME/.elan/bin/elan" toolchain install leanprover/lean4:v4.34.1
           echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
-      - name: Replay all21 declarations and allnine exact bindings
+      - name: Test replay immutability and refusal controls
+        working-directory: cryptanalysis
+        run: python3 -m unittest tools/lean/test_replay_induced_transfer.py
+      - name: Replay frozen sources and separately check current verifier
         run: |
           set -euo pipefail
-          timeout 1500 bash cryptanalysis/experiments/chained-transfer-public-target/ci_induced_transfer/check-01.sh crypto "$RUNNER_TEMP/induced-full-transfer-proof"
+          python3 cryptanalysis/tools/lean/replay_induced_transfer.py \
+            --repo cryptanalysis --producer crypto \
+            --frozen-consumer frozen/cryptanalysis --frozen-producer frozen/crypto \
+            --out "$RUNNER_TEMP/induced-full-transfer-proof"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
-          name: induced-full-transfer-${{ github.event.pull_request.head.sha || github.sha }}
+          name: induced-full-transfer-dual-replay-${{ github.event.pull_request.head.sha || github.sha }}
           path: ${{ runner.temp }}/induced-full-transfer-proof
           if-no-files-found: ignore

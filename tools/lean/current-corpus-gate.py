@@ -93,11 +93,15 @@ HISTORICAL_GLV_RECEIPT_SHA256 = "bb0abf96c3f9d0d655b88cafafe0c5f50d90a86c9948278
 PRIOR_LIVE_GLV_COMMIT = "8bf648dcbefe7b8131e5fb26909c77e68778332a"
 PRIOR_LIVE_GLV_SHA256 = "60796724ef7d7c5b3b7dfd89c29db85d5e188deb247b5d9d0bd69b84551afe20"
 # Size-dependent cap selector: `rcap = lg >= 40 ? 128 : 32` (PR 1341).
-LIVE_GLV_COMMIT = "e71ebecaf3a076590ddd3affa4878b4c80d85095"
-LIVE_GLV_SHA256 = "e1d624e58c54f25f9225be97481b50c0ed406cedcfdffa8ba66f01a5fbed7f63"
+HISTORICAL_SIZED_GLV_COMMIT = "e71ebecaf3a076590ddd3affa4878b4c80d85095"
+HISTORICAL_SIZED_GLV_SHA256 = "e1d624e58c54f25f9225be97481b50c0ed406cedcfdffa8ba66f01a5fbed7f63"
 # The eight-theorem fixed-cap TableBudget.lean and its native receipt, and the
 # live binding receipt of the previous pin, as they were at LIVE_GLV_COMMIT.
-HISTORICAL_TABLEBUDGET_COMMIT = LIVE_GLV_COMMIT
+HISTORICAL_TABLEBUDGET_COMMIT = HISTORICAL_SIZED_GLV_COMMIT
+# Current C source changed outside the selector; the original sized-cap pin
+# remains a separate historical control with its original theorem/receipt.
+LIVE_GLV_COMMIT = "77fb8819d2729beb0842c3954dbfcd471e143ca8"
+LIVE_GLV_SHA256 = "6d120872c2020870a7fed1f8c28af644a7e31667e7b202986dddbca34772125b"
 HISTORICAL_TABLEBUDGET_SHA256 = "823903d27e906feccfe40f29df7feb7a23669b0c96d0bdc1f79ff0e3bddf93b4"
 HISTORICAL_TABLEBUDGET_RECEIPT_SHA256 = "90c7c692c62acaadc0e38f837b34224a61d8f480ae376bd1cdc1f716eeed7ab0"
 HISTORICAL_TABLEBUDGET_THEOREMS = 8
@@ -347,6 +351,9 @@ def check_glv_historical(binding) -> None:
     glv_selector_negatives(
         binding, run(["git", "show", f"{PRIOR_LIVE_GLV_COMMIT}:src/curve.c"]).stdout.encode(),
         PRIOR_LIVE_GLV_SHA256, sized_cap=False)
+    glv_selector_negatives(
+        binding, run(["git", "show", f"{HISTORICAL_SIZED_GLV_COMMIT}:src/curve.c"]).stdout.encode(),
+        HISTORICAL_SIZED_GLV_SHA256, sized_cap=True)
     prior = f"{HISTORICAL_TABLEBUDGET_COMMIT}:experiments/glv-table-rule-confirm-20261022/"
     prior_receipt = run(["git", "show", prior + "live-source-binding.json"]).stdout.encode()
     require(hashlib.sha256(prior_receipt).hexdigest() == PRIOR_LIVE_RECEIPT_SHA256,
