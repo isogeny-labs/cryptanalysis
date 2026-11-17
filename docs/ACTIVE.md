@@ -18,7 +18,7 @@ and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
 
-- [ ] CT192: scalar-blind all-48 true pre-norm target operands and paired N2_actual/D_padd Rust pricing, source-only validation; no native execution (Chained ECDLP Transfers, 2026-11-17, branch research/ct192-public48-norm-operand-price-20261117) [pcc:unverified]
+- [ ] CT192: scalar-blind all-48 true pre-norm target operands and paired N2_actual/D_padd Rust pricing, source-only validation; no native execution (Chained ECDLP Transfers, 2026-11-17, branch research/ct192-public48-norm-operand-price-20261117, PR #1735) [pcc:unverified]
 
 - [x] CT191: implemented a guarded Rust N2_actual primitive arm next to historical D_padd proxy; source-only CI 10/10 normal + 10/10 -O passed, NO native timings or full ECDLP evidence (Chained ECDLP Transfers, 2026-11-17, PR #1734) [pcc:unverified]
 
