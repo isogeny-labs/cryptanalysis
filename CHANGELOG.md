@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.1.9](https://github.com/isogeny-labs/cryptanalysis/compare/cryptanalysis-v0.1.8...cryptanalysis-v0.1.9) (2026-11-17)
+
+
+### Features
+
+* **ct172:** add scalar-blind exact native replay for 48 frozen public packets ([c1ca4df](https://github.com/isogeny-labs/cryptanalysis/commit/c1ca4df47acf4695b0e06c67e5871b64bf7f8f72))
+
+
+### Bug Fixes
+
+* **ct172:** bind CT125 and frozen fixture at correct sibling source root ([d213e40](https://github.com/isogeny-labs/cryptanalysis/commit/d213e409f156c7e729e299c259f1f5bbc592a284))
+* **ct172:** correct exact-head Actions ref expression ([eff1dd5](https://github.com/isogeny-labs/cryptanalysis/commit/eff1dd5b6aae9982daffdbbac9fb5d72a13c3e08))
+* **ct172:** make CLI gate explicit and type-safe ([b984778](https://github.com/isogeny-labs/cryptanalysis/commit/b9847782f39ff54005c62c51ac2a0fabe84b448b))
+
 ## [0.1.8](https://github.com/isogeny-labs/cryptanalysis/compare/cryptanalysis-v0.1.7...cryptanalysis-v0.1.8) (2026-11-17)
 
 
