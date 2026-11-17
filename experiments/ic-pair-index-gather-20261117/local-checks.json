@@ -1,0 +1,60 @@
+{
+  "status": "pass",
+  "checks": [
+    {
+      "name": "const arithmetic indexed/staged equivalence",
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "-j2",
+        "--manifest-path",
+        "/tmp/ic-canonical-frozen-source-001/suite/Cargo.toml",
+        "--lib",
+        "const_cached_reduction",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log": "local-const-test.log"
+    },
+    {
+      "name": "framework",
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "-j2",
+        "--manifest-path",
+        "/tmp/ic-canonical-frozen-source-001/suite/Cargo.toml",
+        "--lib",
+        "ic_framework",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "clippy",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--offline",
+        "--locked",
+        "-j2",
+        "--manifest-path",
+        "/tmp/ic-canonical-frozen-source-001/suite/Cargo.toml",
+        "--lib",
+        "--example",
+        "ic_affine_pipeline_probe",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "standing": "local ARM; native indexed kernel not yet executed"
+}

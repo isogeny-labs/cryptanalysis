@@ -1,0 +1,227 @@
+{
+  "status": "pass",
+  "standing": "unsigned exact-integer model only; no native implementation or timing",
+  "scope": "canonical polynomial elements n1..21; two independent raw carry-less products extracted exactly; no approximation or integer carry argument",
+  "basis_argument": "Packing, carry-less multiplication and window extraction are F2-bilinear in the two packed input vectors. Equality on all (2n)^2 monomial basis pairs proves equality on all canonical inputs. Cross-term support G..G+2n-2 misses windows0..2n-2 and2G..2G+2n-2 when G>=2n-1. Packed operand degree G+n-1 must be below64.",
+  "rows": [
+    {
+      "n": 1,
+      "gap": 32,
+      "basis_pairs": 4,
+      "edge_tuples": 256,
+      "random_tuples": 0
+    },
+    {
+      "n": 2,
+      "gap": 32,
+      "basis_pairs": 16,
+      "edge_tuples": 256,
+      "random_tuples": 0
+    },
+    {
+      "n": 3,
+      "gap": 32,
+      "basis_pairs": 36,
+      "edge_tuples": 256,
+      "random_tuples": 0
+    },
+    {
+      "n": 4,
+      "gap": 32,
+      "basis_pairs": 64,
+      "edge_tuples": 256,
+      "random_tuples": 0
+    },
+    {
+      "n": 5,
+      "gap": 32,
+      "basis_pairs": 100,
+      "edge_tuples": 256,
+      "random_tuples": 0
+    },
+    {
+      "n": 6,
+      "gap": 32,
+      "basis_pairs": 144,
+      "edge_tuples": 256,
+      "random_tuples": 0
+    },
+    {
+      "n": 7,
+      "gap": 32,
+      "basis_pairs": 196,
+      "edge_tuples": 256,
+      "random_tuples": 0
+    },
+    {
+      "n": 8,
+      "gap": 32,
+      "basis_pairs": 256,
+      "edge_tuples": 256,
+      "random_tuples": 0
+    },
+    {
+      "n": 9,
+      "gap": 32,
+      "basis_pairs": 324,
+      "edge_tuples": 256,
+      "random_tuples": 0
+    },
+    {
+      "n": 10,
+      "gap": 32,
+      "basis_pairs": 400,
+      "edge_tuples": 256,
+      "random_tuples": 0
+    },
+    {
+      "n": 11,
+      "gap": 32,
+      "basis_pairs": 484,
+      "edge_tuples": 256,
+      "random_tuples": 0
+    },
+    {
+      "n": 12,
+      "gap": 32,
+      "basis_pairs": 576,
+      "edge_tuples": 256,
+      "random_tuples": 0
+    },
+    {
+      "n": 13,
+      "gap": 32,
+      "basis_pairs": 676,
+      "edge_tuples": 256,
+      "random_tuples": 0
+    },
+    {
+      "n": 14,
+      "gap": 32,
+      "basis_pairs": 784,
+      "edge_tuples": 256,
+      "random_tuples": 0
+    },
+    {
+      "n": 15,
+      "gap": 32,
+      "basis_pairs": 900,
+      "edge_tuples": 256,
+      "random_tuples": 4096
+    },
+    {
+      "n": 16,
+      "gap": 32,
+      "basis_pairs": 1024,
+      "edge_tuples": 256,
+      "random_tuples": 0
+    },
+    {
+      "n": 17,
+      "gap": 34,
+      "basis_pairs": 1156,
+      "edge_tuples": 256,
+      "random_tuples": 0
+    },
+    {
+      "n": 18,
+      "gap": 36,
+      "basis_pairs": 1296,
+      "edge_tuples": 256,
+      "random_tuples": 4096
+    },
+    {
+      "n": 19,
+      "gap": 38,
+      "basis_pairs": 1444,
+      "edge_tuples": 256,
+      "random_tuples": 0
+    },
+    {
+      "n": 20,
+      "gap": 40,
+      "basis_pairs": 1600,
+      "edge_tuples": 256,
+      "random_tuples": 0
+    },
+    {
+      "n": 21,
+      "gap": 42,
+      "basis_pairs": 1764,
+      "edge_tuples": 256,
+      "random_tuples": 4096
+    }
+  ],
+  "mutants": {
+    "overlapping_gap": {
+      "n": 2,
+      "values": [
+        1,
+        0,
+        0,
+        1
+      ],
+      "exact": [
+        0,
+        0
+      ],
+      "mutant": [
+        4,
+        0
+      ]
+    },
+    "integer_product": {
+      "n": 2,
+      "values": [
+        0,
+        3,
+        0,
+        3
+      ],
+      "exact": [
+        0,
+        5
+      ],
+      "mutant": [
+        0,
+        1
+      ]
+    },
+    "missing_low_mask": {
+      "n": 2,
+      "values": [
+        1,
+        0,
+        0,
+        1
+      ],
+      "exact": [
+        0,
+        0
+      ],
+      "mutant": [
+        4294967296,
+        0
+      ]
+    },
+    "wrong_high_window": {
+      "n": 2,
+      "values": [
+        0,
+        1,
+        0,
+        1
+      ],
+      "exact": [
+        0,
+        1
+      ],
+      "mutant": [
+        0,
+        2
+      ]
+    }
+  },
+  "source_sha256": "f39d1d6a632e5dfbbe62cce93bd9770ce130d3bcc0b513036b290db9bb06549e",
+  "seed": 20261117
+}
