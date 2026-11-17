@@ -165,6 +165,77 @@ class CT176Tests(unittest.TestCase):
             self.assertTrue(result["stdout_sha256"])
             self.assertTrue(result["stdout_base64"])
 
+    def test_bounded_stdout_flood_during_child_execution(self):
+        # Negative control: old subprocess.run(capture_output=True) buffered all
+        # of this output and only rejected it after child termination.
+        with tempfile.TemporaryDirectory() as tmp:
+            child = Path(tmp) / "flood_stdout.py"
+            child.write_text("#!" + sys.executable + "\n" +
+                             "import os\nos.write(1, b'x' * (1024 * 1024))\n")
+            os.chmod(child, 0o700)
+            result = panel.run_sample(child, 0, "direct_composite", self.row, 5)
+            self.assertFalse(result["verified"])
+            self.assertEqual(result["error"], "capture limit exceeded")
+            self.assertIs(result["capture_complete"], False)
+            captured = __import__("base64").b64decode(result["stdout_base64"])
+            self.assertEqual(len(captured), panel.MAX_CAPTURE + 1)
+            self.assertEqual(result["stdout_sha256"],
+                             __import__("hashlib").sha256(captured).hexdigest())
+            self.assertGreater(int(result["external_wall_ns_decimal"]), 0)
+
+    def test_bounded_stderr_flood_during_child_execution(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            child = Path(tmp) / "flood_stderr.py"
+            child.write_text("#!" + sys.executable + "\n" +
+                             "import os\nos.write(2, b'e' * (1024 * 1024))\n")
+            os.chmod(child, 0o700)
+            result = panel.run_sample(child, 0, "direct_composite", self.row, 5)
+            self.assertFalse(result["verified"])
+            self.assertEqual(result["error"], "capture limit exceeded")
+            self.assertIs(result["capture_complete"], False)
+            self.assertEqual(len(__import__("base64").b64decode(
+                result["stderr_base64"])), panel.MAX_CAPTURE + 1)
+
+    def test_both_pipes_drained_concurrently_without_deadlock(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            child = Path(tmp) / "both_pipes.py"
+            child.write_text("#!" + sys.executable + "\n" +
+                             "import os\n" +
+                             "os.write(2, b'e' * 100000)\n" +
+                             "os.write(1, " + repr(json.dumps(self.obs).encode("utf-8") + b"\n") +
+                             ")\n")
+            os.chmod(child, 0o700)
+            result = panel.run_sample(child, 0, "direct_composite", self.row, 5)
+            self.assertTrue(result["verified"], result["error"])
+            self.assertIs(result["capture_complete"], True)
+            self.assertEqual(len(__import__("base64").b64decode(
+                result["stderr_base64"])), 100000)
+
+    def test_silent_child_timeout_is_terminal_refusal(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            child = Path(tmp) / "silent_sleep.py"
+            child.write_text("#!" + sys.executable + "\n" +
+                             "import time\ntime.sleep(30)\n")
+            os.chmod(child, 0o700)
+            result = panel.run_sample(child, 0, "direct_composite", self.row, 1)
+            self.assertFalse(result["verified"])
+            self.assertEqual(result["error"], "timeout")
+            self.assertIs(result["capture_complete"], True)
+            self.assertLess(int(result["external_wall_ns_decimal"]), 5_000_000_000)
+
+    def test_nonzero_exit_retains_bounded_stderr(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            child = Path(tmp) / "nonzero.py"
+            child.write_text("#!" + sys.executable + "\n" +
+                             "import sys\nsys.stderr.write('failure witness')\nsys.exit(7)\n")
+            os.chmod(child, 0o700)
+            result = panel.run_sample(child, 0, "direct_composite", self.row, 5)
+            self.assertFalse(result["verified"])
+            self.assertEqual(result["error"], "child nonzero exit")
+            self.assertEqual(result["exit_code"], 7)
+            self.assertEqual(result["stderr"], "failure witness")
+            self.assertIs(result["capture_complete"], True)
+
     def test_missing_binary_is_censored_not_crash(self):
         result = panel.run_sample(Path("/does/not/exist/ct175"), 0,
                                   "direct_composite", self.row, 1)
