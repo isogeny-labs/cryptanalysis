@@ -29,6 +29,13 @@ jobs:
           cmp /tmp/ct172-ct171-normal.json /tmp/ct172-ct171-optimized.json
           cat /tmp/ct172-ct171-normal.json
           sha256sum /tmp/ct172-ct171-normal.json
+      - name: Pin the real CT125 derivative and source model used by CT172
+        run: |
+          set -euo pipefail
+          test "$(git hash-object experiments/chained-transfer-public-target/fixed-jacobian-chain-evaluator-02/derived/lib.rs)" = b80eb91a39ae1e87f0fcde95e52ea3d3634558bc
+          test "$(git hash-object experiments/chained-transfer-public-target/fixed-jacobian-chain-evaluator-02/Cargo.toml)" = 4df33ba24e4dc58f95a253800df4c28d035f6a52
+          test "$(git hash-object experiments/chained-transfer-public-target/fixed-jacobian-chain-01/src/lib.rs)" = b2b703347e9452a1ca4c366c2130781e11231f49
+          echo 'CT125 derivative/lib and fixed-model source Git blobs exact; generated siblings remain unmaterialized'
       - name: Parse Rust and package manifest without compilation or native evaluation
         run: |
           set -euo pipefail
