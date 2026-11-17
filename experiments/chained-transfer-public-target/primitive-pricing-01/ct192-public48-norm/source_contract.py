@@ -76,7 +76,7 @@ PROBE = """
 """
 
 def blob(data: bytes) -> str:
-    return hashlib.sha1(b"blob " + str(len(data)).encode() + b"\\0" + data).hexdigest()
+    return hashlib.sha1(b"blob " + str(len(data)).encode() + b"\0" + data).hexdigest()
 
 def replace_once(s: str, a: str, b: str) -> str:
     if s.count(a) != 1:
