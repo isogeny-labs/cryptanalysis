@@ -18,7 +18,7 @@ and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
 
-- [ ] CT193: bind each true pre-norm operand to its entire target Jacobian class, not only its doubled norm; add 2-torsion alias regression (Chained ECDLP Transfers, started 2026-11-17, branch research/ct193-class-bound-pre-norm-20261117) [pcc:unverified]
+- [ ] CT193: bind each true pre-norm operand to its entire target Jacobian class, not only its doubled norm; add 2-torsion alias regression (Chained ECDLP Transfers, started 2026-11-17, branch research/ct193-class-bound-pre-norm-20261117, PR #1737) [pcc:unverified]
 
 - [ ] CT192: scalar-blind all-48 true pre-norm target operands and paired N2_actual/D_padd Rust pricing, source-only validation; no native execution (Chained ECDLP Transfers, 2026-11-17, branch research/ct192-public48-norm-operand-price-20261117, PR #1735) [pcc:unverified]
 
