@@ -10,7 +10,7 @@ import json
 import re
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "fixed-jacobian-chain-evaluator-02/derived/lib.rs"
 FIXTURE = ROOT / "evidence/fixed-chain-norm-point-native-01/literal-selected-vectors.json"
 SRC_BLOB = "b80eb91a39ae1e87f0fcde95e52ea3d3634558bc"
