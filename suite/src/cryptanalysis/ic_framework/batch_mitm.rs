@@ -1,7 +1,7 @@
 //! Opt-in binary MITM with complete native batch preparation accounting.
 use super::stages::{DecompositionOracle, InstanceCtx, Params};
 use crate::cryptanalysis::ic_boundary::{
-    decompose_mitm, BinaryGroup, FactorBase, GroupOps, OracleCounters, PairTable,
+    BinaryGroup, FactorBase, GroupOps, OracleCounters, PairTable,
 };
 use crate::cryptanalysis::koblitz_fast::FastPoint;
 use std::collections::BTreeMap;
@@ -199,7 +199,13 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for BinaryBatchMitmOracle {
         counters: &mut OracleCounters,
         point: FastPoint,
     ) -> Option<Vec<usize>> {
-        decompose_mitm(ctx.group, fb, self.table.as_ref()?, 2, ops, counters, point)
+        // This oracle accepts exactly two summands. Keep that specialization
+        // explicit: relying on inlining the general m=2/m=3 dispatcher added
+        // an extra call and general-case frame to every relation query.
+        self.table
+            .as_ref()?
+            .probe(ctx.group, fb, ops, &mut counters.lookups, point)
+            .map(|(i, j)| vec![i, j])
     }
 }
 
