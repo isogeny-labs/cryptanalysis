@@ -92,14 +92,14 @@ def derivative(original: bytes) -> bytes:
         ('#[path = "../generated/literal_halves.rs"]',
          '#[path = "../../../fixed-jacobian-chain-evaluator-02/generated/literal_halves.rs"]'),
         ('mod rational;',
-         '#[path = "../../../fixed-jacobian-chain-evaluator-02/derived/rational.rs"]\\nmod rational;'),
+         '#[path = "../../../fixed-jacobian-chain-evaluator-02/derived/rational.rs"]\nmod rational;'),
         ('include!("../generated/halving.rs");',
          'include!("../../../fixed-jacobian-chain-evaluator-02/generated/halving.rs");'),
         ('include!("../generated/parse_packet.rs");',
          'include!("../../../fixed-jacobian-chain-evaluator-02/generated/parse_packet.rs");'),
         (NORM_ANCHOR, NORM_ANCHOR + PROBE),
-        ('#[cfg(test)]\\nmod tests;',
-         '#[cfg(test)]\\n#[path = "../../../fixed-jacobian-chain-evaluator-02/derived/tests.rs"]\\nmod tests;'),
+        ('#[cfg(test)]\nmod tests;',
+         '#[cfg(test)]\n#[path = "../../../fixed-jacobian-chain-evaluator-02/derived/tests.rs"]\nmod tests;'),
     ):
         s = replace_once(s, old, new)
     return s.encode("utf-8")
