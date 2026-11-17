@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">H114 multiradix carry-cohomology mechanism</title>
+  <desc id="desc">The six multiplication orders of two, three, and five form a hexagon. Three pair windings feed a shared channel, residue permutations, CRT digit, and a conditional base-thirty decoder.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#071b2e"/>
+      <stop offset="1" stop-color="#132f46"/>
+    </linearGradient>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#7dd3fc"/>
+    </marker>
+    <style>
+      .title { font: 700 29px system-ui, sans-serif; fill: #f8fafc; }
+      .subtitle { font: 400 16px system-ui, sans-serif; fill: #bae6fd; }
+      .node { fill: #123d5a; stroke: #7dd3fc; stroke-width: 2; }
+      .nodeText { font: 700 18px ui-monospace, monospace; fill: #f8fafc; text-anchor: middle; dominant-baseline: middle; }
+      .edge { stroke: #7dd3fc; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+      .edgeLabel { font: 600 14px ui-monospace, monospace; fill: #fef08a; text-anchor: middle; }
+      .box { fill: #0b253b; stroke: #38bdf8; stroke-width: 2; rx: 14; }
+      .boxHead { font: 700 17px system-ui, sans-serif; fill: #f8fafc; }
+      .boxText { font: 500 14px ui-monospace, monospace; fill: #bae6fd; }
+      .note { font: 500 13px system-ui, sans-serif; fill: #cbd5e1; }
+      .zero { fill: #052e2b; stroke: #2dd4bf; }
+      .candidate { fill: #3b1f4a; stroke: #e879f9; }
+    </style>
+  </defs>
+  <rect width="1200" height="720" fill="url(#bg)"/>
+  <text x="55" y="55" class="title">H114: [2],[3],[5] carry cohomology → one base-30 digit</text>
+  <text x="55" y="84" class="subtitle">Structural braid certificate and frozen 11,520-predicate candidate family</text>
+
+  <!-- S3 permutohedron -->
+  <path class="edge" d="M190 180 L360 130"/>
+  <path class="edge" d="M380 145 L500 265"/>
+  <path class="edge" d="M500 295 L380 415"/>
+  <path class="edge" d="M350 425 L190 375"/>
+  <path class="edge" d="M170 355 L170 205"/>
+  <path class="edge" d="M205 195 L480 285"/>
+  <circle class="node" cx="170" cy="180" r="35"/><text class="nodeText" x="170" y="180">235</text>
+  <circle class="node" cx="375" cy="120" r="35"/><text class="nodeText" x="375" y="120">253</text>
+  <circle class="node" cx="510" cy="280" r="35"/><text class="nodeText" x="510" y="280">523</text>
+  <circle class="node" cx="375" cy="440" r="35"/><text class="nodeText" x="375" y="440">532</text>
+  <circle class="node" cx="170" cy="380" r="35"/><text class="nodeText" x="170" y="380">352</text>
+  <circle class="node" cx="170" cy="280" r="35"/><text class="nodeText" x="170" y="280">325</text>
+  <text class="edgeLabel" x="275" y="135">w₃₅ scaled</text>
+  <text class="edgeLabel" x="467" y="183">w₂₅ scaled</text>
+  <text class="edgeLabel" x="465" y="392">w₂₃ scaled</text>
+  <text class="edgeLabel" x="270" y="425">w₃₅ scaled</text>
+  <text class="edgeLabel" x="128" y="340">w₂₅</text>
+  <text class="edgeLabel" x="338" y="225">w₂₃</text>
+  <rect class="box zero" x="75" y="505" width="475" height="96"/>
+  <text class="boxHead" x="97" y="535">Structural certificate — must be exactly zero</text>
+  <text class="boxText" x="97" y="562">w₂₃(Q)+3w₂₅(Q/3)+w₃₅(Q)</text>
+  <text class="boxText" x="97" y="584">−2w₃₅(Q/2)−w₂₅(Q)−5w₂₃(Q/5) = 0</text>
+
+  <!-- candidate pipeline -->
+  <rect class="box candidate" x="625" y="120" width="500" height="112"/>
+  <text class="boxHead" x="650" y="151">Three bounded face windings</text>
+  <text class="boxText" x="650" y="179">w₃₅ ∈ [−5,3]     w₂₅ ∈ [−5,2]     w₂₃ ∈ [−3,2]</text>
+  <text class="note" x="650" y="207">One shared channel is applied to all three limbs.</text>
+  <path class="edge" d="M875 232 L875 277"/>
+  <rect class="box" x="625" y="280" width="500" height="98"/>
+  <text class="boxHead" x="650" y="310">Residues and frozen alphabet permutations</text>
+  <text class="boxText" x="650" y="340">d₂ = π₂(channel(w₃₅) mod 2)</text>
+  <text class="boxText" x="885" y="340">d₃ = π₃(channel(w₂₅) mod 3)</text>
+  <text class="boxText" x="650" y="362">d₅ = π₅(channel(w₂₃) mod 5)</text>
+  <path class="edge" d="M875 378 L875 423"/>
+  <rect class="box candidate" x="625" y="426" width="500" height="88"/>
+  <text class="boxHead" x="650" y="456">CRT candidate digit</text>
+  <text class="boxText" x="650" y="486">d = (15d₂ + 10d₃ + 6d₅) mod 30</text>
+  <path class="edge" d="M875 514 L875 559"/>
+  <rect class="box" x="625" y="562" width="500" height="100"/>
+  <text class="boxHead" x="650" y="592">Conditional decoder, only if one ID is uniformly exact</text>
+  <text class="boxText" x="650" y="620">R ← [30⁻¹ mod r](R − [d]G)</text>
+  <text class="note" x="650" y="646">28 rows • 9,096 targets • final independent [m]G = Q check</text>
+
+  <text class="note" x="55" y="685">The hexagon identity is a consistency check, not the signal. Null intersection rejects this frozen family.</text>
+</svg>
