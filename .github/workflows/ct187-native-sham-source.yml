@@ -1,0 +1,30 @@
+name: CT187 native-sham producer and reader source contracts (no native execution)
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/ct187-native-sham-source.yml'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/ct187_native_sham_panel.py'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/test_ct187_native_sham_panel.py'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/CT187_*'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-only-native-sham:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Run strict fixture, synthetic child, producer-reader tests, no native processes
+        run: |
+          set -euo pipefail
+          root=experiments/chained-transfer-public-target/primitive-pricing-01
+          python3 -S -m py_compile "$root/ct187_native_sham_panel.py" "$root/test_ct187_native_sham_panel.py"
+          python3 -S -m unittest discover -s "$root" -p 'test_ct187_native_sham_panel.py' -v
+          python3 -O -S -m unittest discover -s "$root" -p 'test_ct187_native_sham_panel.py' -v
+          python3 -S -m unittest discover -s "$root" -p 'test_ct186_same_route_sham.py' -v
+          echo 'CT187 source-only checks finished. No native child, full DLP or paid compute.'
