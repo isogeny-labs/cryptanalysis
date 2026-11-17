@@ -1,0 +1,9 @@
+digraph witness {
+ rankdir=LR; bgcolor="white"; node [shape=box,style="rounded,filled",fillcolor="#edf5f4",fontname="Helvetica",fontsize=12]; edge [fontname="Helvetica",fontsize=10];
+ plan [label="Actual scheduled pair bound\nChecked static capacity"];
+ input [label="Same ordered key + witness\nSame MixHasher"];
+ slots [label="Zeroed u64 buckets\nBounded linear probes"];
+ first [label="Retain first witness\nSame lookup answers"];
+ fallback [label="Overflow / allocation fallback\nExisting compact map"];
+ plan -> slots; input -> slots -> first; plan -> fallback -> first;
+}
