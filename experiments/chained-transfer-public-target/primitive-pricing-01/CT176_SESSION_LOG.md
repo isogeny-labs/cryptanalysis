@@ -25,3 +25,17 @@ Standing: **[pcc:unverified]**. This dedicated append-only session log accompani
 
 - Initial collector Git-blob NUL separator source was double escaped. Corrected to `bytes([0])` before any native/collector execution, commit `61679d1`.
 - Original provider budget STOP and authenticated 695/701 raw custody still unresolved. Missing local Rust/Cargo and research-KB prevent native/knowledge verification. No infrastructure gate was waived.
+
+## CT176 follow-up code audit — incomplete terminal gate
+
+### What was done (commands, files, features)
+- Read back the exact committed collector source. Found that the terminal record was emitted before the incomplete-population check: it could return failure with `"refusal":null` in the terminal JSONL. Corrected via a single `terminal_status` function before final write at `4564b8944b0a47a1aa086dcfb812864bac720c5f`; added three positive/negative terminal-state tests at `8932184be86623adbcb270dc0f1856b703e4791d`.
+
+### Decisions made (and why)
+- Fail closed with a truthful terminal record even when the process roster is unexpectedly truncated. Do not infer any execution, measured cost or independent validation from source edits.
+
+### Open threads
+- Source tests and native prerequisites remain pending exact-head confirmation and owner admission.
+
+### Errors
+- A previously authored failure path gave inconsistent JSONL and exit evidence. Corrected before any native run; preserve the code-review finding. [pcc:unverified]
