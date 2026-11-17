@@ -12,7 +12,7 @@ No original CT125 core code, 48-vector JSON, CT172/CT189/CT190 source, CT126 mea
 
 ## Evidence available and validity
 
-Source-only CI [run #44185526632](https://github.com/isogeny-labs/cryptanalysis/actions/runs/44185526632), on code head `7945795b`, **passed** 11 Python tests normally and 11 with `-O`, including 48-vector hash/field checks and deliberate arithmetic, cohort, output, dependency and source-derivative mutations. The immediately previous [run #44185379268](https://github.com/isogeny-labs/cryptanalysis/actions/runs/44185379268) **failed** because the first source guard mistakenly treated the Cargo *package name* as a dependency declaration; the guard was corrected without modifying Rust algorithm code or fixture. The later workflow adds Rust syntax/manifest parsing; cite its own exact-head status before treating those checks as passed.
+Source-only CI [run #44185526632](https://github.com/isogeny-labs/cryptanalysis/actions/runs/44185526632), on code head `7945795b`, **passed** 11 Python tests normally and 11 with `-O`, including 48-vector hash/field checks and deliberate arithmetic, cohort, output, dependency and source-derivative mutations. The immediately previous [run #44185379268](https://github.com/isogeny-labs/cryptanalysis/actions/runs/44185379268) **failed** because the first source guard mistakenly treated the Cargo *package name* as a dependency declaration; the guard was corrected without modifying Rust algorithm code or fixture. The added Rustfmt parser succeeded on both the generated library and driver in [run #44185689958](https://github.com/isogeny-labs/cryptanalysis/actions/runs/44185689958), but that job failed because Cargo tried to resolve the *unavailable pinned sibling crypto checkout*. The source workflow now parses TOML without resolving dependencies; native Cargo typechecking remains unperformed. Cite the subsequent exact-head run separately before claiming complete source CI.
 
 These test outcomes validate the **producer's source and fixture contract**, not compiled/native correctness. Their `[pcc:unverified]` standing remains unchanged. Actual native parity and timing numbers are **not available**. This code is not a verified new cryptanalytic technique and does not demonstrate lower solver cost.
 
@@ -26,7 +26,7 @@ python3 -S -m unittest discover -s "$dir" -p test_source_contract.py -v
 python3 -O -S -m unittest discover -s "$dir" -p test_source_contract.py -v
 rustfmt --edition 2021 --emit stdout "$dir/derived/lib.rs" >/dev/null
 rustfmt --edition 2021 --emit stdout "$dir/src/main.rs" >/dev/null
-cargo read-manifest --manifest-path "$dir/Cargo.toml" >/dev/null
+python3 -S -c 'import pathlib,sys,tomllib; tomllib.loads(pathlib.Path(sys.argv[1]).read_text())' "$dir/Cargo.toml"
 ```
 
 **Not authorized for automatic execution:**
