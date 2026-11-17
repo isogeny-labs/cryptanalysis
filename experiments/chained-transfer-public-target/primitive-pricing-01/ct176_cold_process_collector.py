@@ -51,6 +51,26 @@ def checked_int(value, label, minimum=0):
     return value
 
 
+def require_panel_budget(value):
+    """Explicit positive aggregate wall limit; never inferred from child timeout."""
+    if value is None:
+        raise ValueError("panel-wall-seconds is required for execution")
+    return checked_int(value, "panel-wall-seconds", 1)
+
+
+def panel_child_timeout_seconds(deadline_ns, child_seconds, now_ns=None):
+    """Allow at most remaining panel time, refusing to spawn on expiry."""
+    checked_int(deadline_ns, "panel deadline")
+    checked_int(child_seconds, "per-child timeout", 1)
+    if now_ns is None:
+        now_ns = time.monotonic_ns()
+    checked_int(now_ns, "monotonic clock")
+    remaining_ns = deadline_ns - now_ns
+    if remaining_ns <= 0:
+        return None
+    return min(float(child_seconds), remaining_ns / 1_000_000_000)
+
+
 def words(value, label):
     if type(value) is not list or len(value) != 19:
         raise ValueError(f"{label}: expected 19-word array")
@@ -314,6 +334,7 @@ def main():
     p.add_argument("--executable-sha256", type=str)
     p.add_argument("--output", type=Path)
     p.add_argument("--timeout-seconds", type=int, default=120)
+    p.add_argument("--panel-wall-seconds", type=int)
     p.add_argument("--execute", action="store_true")
     p.add_argument("--admission-approved", action="store_true")
     args = p.parse_args()
@@ -335,6 +356,10 @@ def main():
         p.error("execution requires executable, executable-sha256 and output")
     if args.timeout_seconds <= 0:
         p.error("timeout-seconds must be positive")
+    try:
+        panel_wall_seconds = require_panel_budget(args.panel_wall_seconds)
+    except ValueError as exc:
+        p.error(str(exc))
     binary = args.executable.resolve(strict=True)
     if not binary.is_file() or not os.access(binary, os.X_OK):
         p.error("binary is not an executable file")
@@ -344,6 +369,10 @@ def main():
     plan["executable_path"] = str(binary)
     plan["executable_sha256"] = digest
     plan["timeout_seconds"] = args.timeout_seconds
+    plan["panel_wall_seconds"] = panel_wall_seconds
+    # The admitted aggregate budget starts before output creation/fsync.
+    panel_started_ns = time.monotonic_ns()
+    panel_deadline_ns = panel_started_ns + panel_wall_seconds * 1_000_000_000
     # Exclusive creation means an incomplete run cannot be silently overwritten.
     with args.output.open("x", encoding="utf-8") as fh:
         jwrite(fh, {"type": "manifest", **plan,
@@ -356,10 +385,18 @@ def main():
             if host_metadata() != host:
                 failure = f"host/affinity changed before block {block}, index {index}"
                 break
-            trial = run_sample(binary, index, arm, rows[index], args.timeout_seconds)
+            allowance = panel_child_timeout_seconds(
+                panel_deadline_ns, args.timeout_seconds)
+            if allowance is None:
+                failure = "aggregate panel wall deadline exhausted before next sample"
+                break
+            trial = run_sample(binary, index, arm, rows[index], allowance)
             jwrite(fh, {"type": "sample", "block": block, "packet_index": index,
                         "position": position, "arm": arm, **trial})
             completed += 1
+            if time.monotonic_ns() >= panel_deadline_ns:
+                failure = "aggregate panel wall deadline exhausted after sample"
+                break
             if not trial["verified"]:
                 failure = trial["error"] or "unverified child"
                 break
