@@ -166,10 +166,13 @@ fn run() -> Result<(), String> {
             for (slot, treatment) in order.iter().enumerate() {
                 let start = Instant::now();
                 for _ in 0..64 {
+                    // CT194: hide the *input* in each iteration, not merely
+                    // the result, to discourage loop-invariant math hoisting.
+                    let measured_operand = black_box(point);
                     match *treatment {
-                        "N2_actual" => black_box(runtime.ct192_actual_norm(to, point)),
+                        "N2_actual" => black_box(runtime.ct192_actual_norm(to, measured_operand)),
                         "D_padd" => black_box(curve::padd(
-                            &target.f, &target.curve, &point, &point)),
+                            &target.f, &target.curve, &measured_operand, &measured_operand)),
                         _ => return Err("unexpected assigned treatment".into()),
                     };
                 }
