@@ -65,6 +65,11 @@ PROBE = """
         if result.norm != self.norm_point(to, operand) {
             return Err("CT192 pre-norm point differs from native route norm".into());
         }
+        // CT193: doubling has an E[2] kernel, so matching the norm alone
+        // does not bind the candidate to the native target Jacobian class.
+        if self.target_phi(to, operand)? != result.class {
+            return Err("CT193 pre-norm point differs from native target class".into());
+        }
         self.check_final(&result)?;
         Ok(operand)
     }
