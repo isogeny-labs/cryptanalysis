@@ -214,6 +214,10 @@ def ic_native_walk_evidence(ref, since):
          "binary-ic-simd-output-pipeline", "ic.simd_output.exploratory.", "IC SIMD output append"),
         ("benchmarks/records/20261117T0754Z-ic-packed-const-fivepath-001.json",
          "binary-ic-packed-const-pipeline", "ic.packed_const.exploratory.", "IC packed constant squares"),
+        ("benchmarks/records/20261117T0847Z-ic-indexed-pair-sevenpath-001.json",
+         "binary-ic-indexed-pair-pipeline", "ic.indexed_pair.exploratory.", "IC index-driven pair preparation"),
+        ("benchmarks/records/20261117T1037Z-ic-static-witness-sevenpath-001.json",
+         "kernel:ic_static_witness_frozen_sevenpath", "ic.static_witness.exploratory.", "IC static witness dictionary"),
     ]
     for path, problem, prefix, label in sources:
         text = show(ref, path)

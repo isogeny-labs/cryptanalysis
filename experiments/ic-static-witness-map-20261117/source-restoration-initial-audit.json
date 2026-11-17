@@ -1,0 +1,12 @@
+{
+  "status": "initial_expectation_failed",
+  "expectation": "all16 local checkout sources match reconstructed native indexed recipe",
+  "observed": "15of16 match; unchanged parent Cargo.toml differs from the reconstructed native recipe. All3 owned sources restored successfully.",
+  "differences": {
+    "suite/Cargo.toml": {
+      "native_recipe_sha256": "9913e8e031406a6f8f789f0ab3b3611957bd15f79fd6a7e643c5ee6e3b2cf1b3",
+      "unchanged_parent_checkout_sha256": "9667392627994a099ccfc035f08c20619a23243489f55843f9269820c63f8bf6"
+    }
+  },
+  "disposition": "Corrected the audit expectation; did not change Cargo.toml or any unowned source."
+}

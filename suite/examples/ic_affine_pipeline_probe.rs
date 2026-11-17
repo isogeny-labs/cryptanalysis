@@ -118,7 +118,22 @@ fn main() {
     let args: Vec<String> = std::env::args().collect();
     let records: Vec<Value> = serde_json::from_slice(&std::fs::read(&args[1]).unwrap()).unwrap();
     let index: usize = args[2].parse().unwrap();
-    let requested_mode = args[3].as_str();
+    let public_mode = args[3].as_str();
+    // (staged preparation, counter suppressed, inverse-vector queries).
+    // Normalize only configuration parsing; output retains the public mode.
+    let counterfactual = match public_mode {
+        "mitm-counterfactual-sp" => Some((true, false, true)),
+        "mitm-counterfactual-sa" => Some((true, true, true)),
+        "mitm-counterfactual-ip" => Some((false, false, true)),
+        "mitm-counterfactual-ia" => Some((false, true, true)),
+        "mitm-counterfactual-ip-ordinary" => Some((false, false, false)),
+        _ => None,
+    };
+    let requested_mode = match counterfactual {
+        Some((_, _, true)) => "mitm-walk16-vector-inverse",
+        Some((_, _, false)) => "mitm-walk16-vector-const",
+        None => public_mode,
+    };
     let euclidean = matches!(
         requested_mode,
         "mitm-euclid"
@@ -248,8 +263,13 @@ fn main() {
         let mut vector_const_pairs = 0;
         let mut vector_const_packed_square_pairs = 0;
         let mut vector_const_validated_pairs = 0;
+        let mut indexed_prepare_pairs = 0;
         let mut compact_map_comparisons = 0;
         let mut compact_entry_payload_bytes = 0;
+        let mut staged_map_comparisons = 0;
+        let mut staged_compact_map_comparisons = 0;
+        let mut staged_vector_pairs = 0;
+        let mut staged_const_pairs = 0;
         for chunk in [1, 7, 64, 1024, 4096] {
             for candidate in [
                 PairTable::build_negation_folded_binary_vector_narrow_cached(
@@ -270,6 +290,7 @@ fn main() {
                 .unwrap(),
             ] {
                 vector_const_pairs += candidate.vector_const_pairs;
+                indexed_prepare_pairs += candidate.indexed_prepare_pairs;
                 if candidate.vector_const_pairs != 0 {
                     assert_eq!(
                         candidate.vector_packed_square_pairs,
@@ -291,10 +312,22 @@ fn main() {
                 assert!(reference.same_witness_map(&candidate));
                 comparisons += 1;
             }
+            let staged = PairTable::build_negation_folded_binary_vector_const_staged_cached(
+                &inst.fast, &fb, chunk,
+            )
+            .unwrap();
+            assert_eq!(staged.indexed_prepare_pairs, 0);
+            assert!(reference.same_witness_map(&staged));
+            staged_map_comparisons += 1;
+            staged_compact_map_comparisons += usize::from(staged.uses_compact_storage());
+            staged_vector_pairs += staged.vector_pairs;
+            staged_const_pairs += staged.vector_const_pairs;
+            comparisons += 1;
         }
+        assert_eq!(staged_const_pairs, vector_const_pairs);
         println!(
             "{}",
-            json!({"curve_id":inst.name,"status":"pass","euclidean_inverse":inst.gf.uses_euclidean_inverse(),"vector_const_pairs":vector_const_pairs,"vector_const_packed_square_pairs":vector_const_packed_square_pairs,"vector_const_validated_pairs":vector_const_validated_pairs,"vector_packed_square_pairs":vector_packed_square_pairs,"vector_pclmul128_pairs":vector_pclmul128_pairs,"vector_backend":inst.fast.cached_vector_backend(),"vector_pairs":vector_pairs,"complete_map_comparisons":comparisons,"compact_map_comparisons":compact_map_comparisons,"compact_entry_payload_bytes":compact_entry_payload_bytes,"entries":reference.entries,"has_clmul":inst.gf.has_clmul()})
+            json!({"curve_id":inst.name,"status":"pass","euclidean_inverse":inst.gf.uses_euclidean_inverse(),"vector_const_pairs":vector_const_pairs,"vector_const_packed_square_pairs":vector_const_packed_square_pairs,"vector_const_validated_pairs":vector_const_validated_pairs,"indexed_prepare_pairs":indexed_prepare_pairs,"vector_packed_square_pairs":vector_packed_square_pairs,"vector_pclmul128_pairs":vector_pclmul128_pairs,"vector_backend":inst.fast.cached_vector_backend(),"vector_pairs":vector_pairs,"complete_map_comparisons":comparisons,"compact_map_comparisons":compact_map_comparisons,"compact_entry_payload_bytes":compact_entry_payload_bytes,"entries":reference.entries,"has_clmul":inst.gf.has_clmul(),"staged_map_comparisons":staged_map_comparisons,"staged_compact_map_comparisons":staged_compact_map_comparisons,"staged_vector_pairs":staged_vector_pairs,"staged_const_pairs":staged_const_pairs})
         );
         return;
     }
@@ -571,6 +604,14 @@ fn main() {
         },
     );
     spec.oracle_params.set("negation_folded", "1");
+    if let Some((staged, suppressed, _)) = counterfactual {
+        spec.oracle_params
+            .set("vector_prepare", if staged { "5" } else { "3" });
+        spec.oracle_params.set(
+            "suppress_indexed_counter",
+            if suppressed { "1" } else { "0" },
+        );
+    }
     spec.oracle_params.set("max_residual", "12");
     spec.oracle_params.set(
         "inverse_cache",
@@ -635,6 +676,6 @@ fn main() {
         "{}",
         json!({"curve_id":inst.name,"fixture":fixture,"planted":planted,"target":[target.x,target.y],
         "target_seed":target_seed,"context_ns":context_ns,"calibration_ns":calibration_ns,"computation_through_cleanup_ns":computation_through_cleanup_ns,
-        "calibration":calibration,"mode":requested_mode,"euclidean_inverse":inst.gf.uses_euclidean_inverse(),"report":report})
+        "calibration":calibration,"mode":public_mode,"euclidean_inverse":inst.gf.uses_euclidean_inverse(),"report":report})
     );
 }

@@ -1,0 +1,44 @@
+{
+  "status": "pass",
+  "bindings": [
+    [
+      "current",
+      "probe-current",
+      "prepared-input.json",
+      "experiments/ic-compact-pair-table-20261116/build-001/"
+    ],
+    [
+      "anchor",
+      "probe-anchor",
+      "anchor-input.json",
+      "experiments/ic-constant-reduction-20261116/build-002/"
+    ],
+    [
+      "indexed",
+      "probe-indexed",
+      "indexed-input.json",
+      "experiments/ic-pair-index-gather-20261117/build-001/"
+    ],
+    [
+      "optimized",
+      "probe-optimized",
+      "optimized-input.json",
+      "experiments/ic-static-witness-map-20261117/build-001/"
+    ]
+  ],
+  "methods": 7,
+  "binaries": 4,
+  "fixtures_per_field": 42,
+  "position_and_ordered_adjacency_count": 6,
+  "contrasts": 9,
+  "physical_exclusions": [
+    "mitm_compact_map32_backend",
+    "mitm_indexed_prepare_pairs",
+    "mitm_map_entry_payload_bytes",
+    "mitm_static_map32_backend",
+    "mitm_vector_const_packed_square_pairs",
+    "mitm_vector_const_validated_pairs",
+    "mitm_vector_packed_square_pairs"
+  ],
+  "fresh_ids_generated": false
+}
