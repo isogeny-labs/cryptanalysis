@@ -1,0 +1,64 @@
+{
+  "schema": "h112-recovery-provenance/v1",
+  "experiment": "H112 p3 second-digit halving carry parity oracle",
+  "scientific_payload_sha256": "3f0d58b381df5d308537942c29f80e826217105bdd7c8db4129885c4e91ea832",
+  "scientific_replay": {
+    "status": "exact_match",
+    "comparison_scope": "all deterministic scientific fields; environment and timing excluded by the frozen digest function",
+    "quick_replay_sha256": "7d52b4889623a8bd65f5451bbe1f6fbe8425d79d672fa33e6087f798401fc4b2",
+    "independent_verifier": {
+      "verified": true,
+      "curve_rows": 28,
+      "targets": 9096,
+      "rows_with_exact_predicate": 0
+    }
+  },
+  "original_lost_workspace": {
+    "raw_json_sha256": "f5434e56aee2dc7a8f6ff73f642bd626dbafe253eb202a51fe98677b029dffae",
+    "deterministic_gzip_sha256": "b1c013109cb51efd73dc8e6b832867b20ea58092ea4a2684c6b917ff85ec5281",
+    "runner_sha256": "9349910c0e50694c6e8c0dd3797e4217a814b98590bad72c0c9b5e0739820f52",
+    "independent_verifier_sha256": "cf5398ecb3feec264d641c4d74c0f4e9860b5ce5098a82f4b0a88f24e9b6af79",
+    "lean_source_sha256": "d051588a2c8f878cc80c1d391a4f5af4f0a4aca88b254640a5bfa7a7072d60",
+    "local_commits": {
+      "freeze": "8f5cc6c",
+      "implementation": "e53449b",
+      "result": "d99ff2c",
+      "manifest_pin": "ddfefa0"
+    },
+    "artifact_attachment_status": "not attached before workspace loss"
+  },
+  "recovered_replay": {
+    "raw_json_sha256": "304d84d1602b8278436775719a2b235506b613df907c4540a418c9b80698e759",
+    "deterministic_gzip_sha256": "5263425a61d4d5062fd8c5c5b15d6b95f4f403849f9e918b0027b1649725ce76",
+    "deterministic_xz_sha256": "553742acc024e8d463275f7b2e32adbfb604ab69082cb7e69df7ad731d714d6d",
+    "xz_decompressed_raw_json_sha256": "304d84d1602b8278436775719a2b235506b613df907c4540a418c9b80698e759",
+    "runner_sha256": "07e8f0670bb77ac7188c3b18ec5afaa94b0f2b7060d86282993a0f912bed9e01",
+    "independent_verifier_sha256": "e38bd00b4fd9271f4de25e4736548e7aa3a0ba208195437308dc5c6e51e73670",
+    "lean_source_sha256": "0e6a11b4b2735cb8476d11077d70f31c9286d66b99d09ab865c587edf5ae4200",
+    "environment": {
+      "python": "3.12.14",
+      "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+      "lean": "4.34.1"
+    }
+  },
+  "preregistration": {
+    "crypto_pr": 3121,
+    "crypto_merge_sha": "5b1a48263005103527772339162a730726a0babe",
+    "cryptanalysis_pr": 1351,
+    "cryptanalysis_merge_sha": "0045cfa0962d312ef85bef2357db43e00df708bb"
+  },
+  "result_pull_requests": {
+    "certificate_only_crypto": {
+      "number": 4076,
+      "merge_sha": "b87f0f78d14624fb463a94a922736f43634fefd1"
+    },
+    "certificate_only_cryptanalysis": {
+      "number": 1525,
+      "merge_sha": "c043916f23752532350217041dbdf19c4733fcf4"
+    },
+    "recovered_bundle_crypto": null,
+    "recovered_bundle_cryptanalysis": null,
+    "state_at_certificate_creation": "certificate PRs merged; full recovered bundle PRs being created"
+  },
+  "interpretation": "The identical scientific digest establishes an exact deterministic replay of the frozen evidence payload. It does not establish byte identity of timing or environment metadata."
+}
