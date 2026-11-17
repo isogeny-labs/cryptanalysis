@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.1.10](https://github.com/isogeny-labs/cryptanalysis/compare/cryptanalysis-v0.1.9...cryptanalysis-v0.1.10) (2026-11-17)
+
+
+### Features
+
+* **ct175:** measure one native public packet in a fresh process without preflight warmup ([dba326f](https://github.com/isogeny-labs/cryptanalysis/commit/dba326fdd3d0f06d38f55f755cae578a0c3a5dce))
+
+
+### Bug Fixes
+
+* **ct175:** exclude rustc child-process probe from cold sample wall time ([2b89f4a](https://github.com/isogeny-labs/cryptanalysis/commit/2b89f4a7c2d1613e6896656eb0d727f9bd0e4696))
+* **ct176:** pin actual Git blob bytes and preserve raw process failures ([61679d1](https://github.com/isogeny-labs/cryptanalysis/commit/61679d1e1a3f2cafe1bbe32727e0d1086170700b))
+* **ct176:** terminal refusal matches incomplete-panel exit status ([4564b89](https://github.com/isogeny-labs/cryptanalysis/commit/4564b8944b0a47a1aa086dcfb812864bac720c5f))
+
 ## [0.1.9](https://github.com/isogeny-labs/cryptanalysis/compare/cryptanalysis-v0.1.8...cryptanalysis-v0.1.9) (2026-11-17)
 
 
