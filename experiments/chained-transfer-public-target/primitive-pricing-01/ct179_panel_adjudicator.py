@@ -129,9 +129,9 @@ def raw_pipe(sample, prefix):
     refuse(hex_digest(digest) and hashlib.sha256(data).hexdigest() == digest,
            prefix + " digest mismatch")
     try:
-        text = data.decode("utf-8")
+        text = data.decode("utf-8", "backslashreplace")
     except UnicodeError as exc:
-        raise ValueError(prefix + " invalid UTF-8") from exc
+        raise ValueError(prefix + " decode error") from exc
     refuse(sample.get(prefix) == text, prefix + " rendered text differs")
     return text
 
@@ -270,6 +270,8 @@ def adjudicate(panel, fixture):
                "missing executable/host identity")
         integer(manifest.get("panel_wall_seconds"), "panel budget", 1)
         integer(manifest.get("timeout_seconds"), "child timeout", 1)
+        refuse(type(manifest.get("executable_path")) is str and
+               manifest["executable_path"], "missing executable path")
         matrix = {}
         rss_vals = []
         missing_rss = 0
@@ -281,6 +283,9 @@ def adjudicate(panel, fixture):
                                     ("position", pos), ("arm", arm)):
                 refuse(type(s.get(label)) is type(expected)
                        and s[label] == expected, "roster mismatch: " + label)
+            refuse(s.get("argv") == [manifest["executable_path"],
+                                    "--cold-route", str(i), arm],
+                   "spawned command mismatch")
             t, rss = valid_sample(s, rows[i], i, arm)
             matrix.setdefault((b, i), []).append(t)
             if rss is None:
