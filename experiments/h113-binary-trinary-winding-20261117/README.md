@@ -1,7 +1,7 @@
 # H113 independent binary/trinary winding audit
 
-Status: paired preregistration published before measurement; verifier and data
-are pending.
+Status: paired preregistration and independent verifier published before
+measurement; candidate data are pending.
 
 This directory mirrors the exact source freeze from crypto PR #4616 for an
 independent implementation and audit.  The paired tracking PR is
@@ -12,11 +12,20 @@ cryptanalysis #1733.
 - `CURVES.json` freezes the seven exact ICV1 toy curves.
 - `h113-binary-trinary-winding-flow.svg` is the editable mechanism diagram.
 
-The independent verifier must not import the canonical producer.  It will
-recompute the curve orbits, first-layer carries, path equality, winding range,
+`h113_winding_verify.rs` imports no producer code. It independently recomputes
+the curve orbits, first-layer carries, path equality, winding range,
 contingency matrices, complete predicate scores, controls, decoder traces, and
-scientific digest from the raw artifact.  It must reject a one-coefficient curl
-tamper and a one-label tamper.
+scientific digest from the raw artifact. Its `--tamper-test` mode must reject a
+one-coefficient curl tamper and a one-label tamper. Development checks are:
+
+```text
+rustc --edition=2021 -D warnings -O h113_winding_verify.rs -o h113_winding_verify
+./h113_winding_verify --self-test
+./h113_winding_verify --tamper-test RAW.tsv SUMMARY.json
+```
+
+The self-test independently finds the first frozen base point `(0,3)` and the
+canonical scalar-one record `(56,16,43,100,-101,-1)` on the first curve.
 
 No result is asserted by this source freeze. [pcc:unverified]
 
