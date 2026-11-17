@@ -30,7 +30,9 @@ python3 -O -S -m unittest discover -s "$root" -p 'test_ct188_physical_crossover_
 python3 -S "$root/ct188_physical_crossover_design.py"
 ```
 
-The [source-only CI workflow](../../../.github/workflows/ct188-physical-crossover-source.yml) contains the same commands; it intentionally has no native child or paid compute. Its run/standing must be inspected before stating tests passed.
+The [source-only CI workflow](../../../.github/workflows/ct188-physical-crossover-source.yml) contains the same commands; it intentionally has no native child or paid compute.
+
+**Observed exact-source CI:** [GitHub Actions run #44143583837](https://github.com/isogeny-labs/cryptanalysis/actions/runs/44143583837) completed **success** at SHA `6dba406df12de42010f33d13f446ced511e7b9c1` (job `134252579880`): **5/5 normal and 5/5 optimized Python tests passed**, compilation and source-only plan passed. Its pinned roster digest is `1bc8c26a01e7952e57d944fd535c9832607f2ab7bcc910342ad704171ab67af1`, 2,304 planned source-only positions, exact design rank 7. These are source/synthetic tests; not native performance, not full solver evidence and not independently signed PCC.
 
 ## Scientific standing and bottleneck
 
