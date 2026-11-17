@@ -1095,6 +1095,73 @@ def check_receipt_bound_source(path: str) -> str:
     return digest(file)
 
 
+def registered_mathlib_sources() -> dict:
+    file = ROOT / "tools/lean/registered-mathlib-sources-20261117.json"
+    record = json.loads(file.read_text())
+    require(record["schema"] == "cryptanalysis.registered-mathlib-sources/v1" and
+            record["toolchain"] == HECKE_TOOLCHAIN and
+            record["mathlib_revision"] == HECKE_MATHLIB_REV,
+            "registered Mathlib dependency pins changed")
+    for path, row in record["sources"].items():
+        file = ROOT / path
+        require(file.resolve().is_relative_to(ROOT.resolve()) and not file.is_symlink() and
+                digest(file) == row["sha256"], "registered Mathlib source changed: " + path)
+        require(row["role"] in {"mathlib-proof", "verifier-program"},
+                "unknown registered Mathlib source role")
+        require(row["project_inputs"] and
+                str(Path(path).parent / "lean-toolchain") in row["project_inputs"] and
+                str(Path(path).parent / "lakefile.toml") in row["project_inputs"],
+                "registered Mathlib project inputs incomplete")
+        for name, expected in row["project_inputs"].items():
+            input_file = ROOT / name
+            require(input_file.resolve().is_relative_to(ROOT.resolve()) and
+                    not input_file.is_symlink() and digest(input_file) == expected,
+                    "registered Mathlib project input changed: " + name)
+        requested = re.findall(r"^#print axioms\s+([\w.]+)\s*$", file.read_text(), re.MULTILINE)
+        require(requested == row["requested"], "registered theorem requests changed: " + path)
+        if row["role"] == "mathlib-proof":
+            require(requested and len(requested) == len(set(requested)),
+                    "registered proof lacks exact declaration requests")
+    return record["sources"]
+
+
+def check_registered_mathlib_sources(paths: set[str]) -> tuple[dict[str, str], set[str]]:
+    rows = registered_mathlib_sources()
+    require(set(rows) <= paths, "registered source missing from added corpus")
+    if not rows:
+        return {}, set()
+    check_known_label_project_inputs()
+    lean_path = run(["lake", "env", "printenv", "LEAN_PATH"], cwd=HECKE_CI).stdout.strip()
+    checked, helpers = {}, set()
+    for path, row in sorted(rows.items()):
+        if row["role"] == "mathlib-proof":
+            # Audit every theorem in the unchanged compiled module, including
+            # declarations not selected by its original #print commands.
+            checked[path] = check_pinned_mathlib_source(
+                path, row["sha256"], lean_path, label="registered current Mathlib",
+                exact_names=frozenset(row["requested"]))
+        else:
+            # A pinned audit program is source code, not a theorem module.
+            # Compile its original bytes but grant it no proof standing.
+            with tempfile.TemporaryDirectory(prefix="lean-verifier-code-") as temp:
+                run(["lake", "env", "lean", "-R", str(ROOT), "-o",
+                     str(Path(temp) / "AuditProgram.olean"), str(ROOT / path)],
+                    cwd=HECKE_CI, timeout=120, failure_diagnostics=True)
+            helpers.add(path)
+        registered_mathlib_sources()
+        check_known_label_project_inputs()
+    return checked, helpers
+
+
+def check_source_dispositions() -> dict:
+    import importlib.util
+    module_path = ROOT / "tools/lean/check_source_dispositions.py"
+    spec = importlib.util.spec_from_file_location("source_dispositions", module_path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module.check(ROOT, evidence=evidence_directory() / "source-dispositions")
+
+
 def tracked_corpus_sources() -> list[str]:
     """Discover every tracked Lean source; only the separate gate selftests differ."""
     return [path for path in run(["git", "ls-files", "--", "*.lean"]).stdout.splitlines()
@@ -1130,7 +1197,18 @@ def main() -> None:
     hasse_addition = HASSE_SOURCE in additions
     core_additions = {path for path in additions if core_lean_project_of(path)}
     receipt_additions = additions & set(RECEIPT_BOUND_SOURCES)
-    checked = check_new_hecke(additions - {HASSE_SOURCE} - core_additions - receipt_additions)
+    dispositions = check_source_dispositions()
+    disposition_paths = set(dispositions["proof_paths"]) | set(dispositions["archived_paths"])
+    require(disposition_paths <= additions, "source disposition overlaps frozen corpus")
+    registered, verifier_programs = check_registered_mathlib_sources(additions)
+    checked = check_new_hecke(additions - {HASSE_SOURCE} - core_additions - receipt_additions
+                             - disposition_paths - set(registered) - verifier_programs)
+    checked.update(registered)
+    checked.update({path: current[path] for path in dispositions["proof_paths"]})
+    print(f"current core modules audited: {dispositions['unique_proof_modules']}; "
+          f"theorems: {dispositions['theorems']}; "
+          f"original archived diagnostic/code inputs checked without theorem standing: "
+          f"{len(dispositions['archived_paths'])}; native verifier programs: {len(verifier_programs)}")
     checked.update(check_core_lean_projects(core_additions))
     for path in sorted(receipt_additions):
         checked[path] = check_receipt_bound_source(path)

@@ -1,0 +1,68 @@
+{
+  "schema": "cryptanalysis.registered-mathlib-sources/v1",
+  "toolchain": "leanprover/lean4:v4.35.0-rc4",
+  "mathlib_revision": "021c46bdd042f67b538b9f9871d556a93713a9a9",
+  "sources": {
+    "experiments/ic-s3-direct-coefficients-20261115/AuditS3.lean": {
+      "sha256": "6a7513d045c9f344571c36af0733b618ca8788f1b92fa5ab2da0182527d1f71e",
+      "project_inputs": {
+        "experiments/ic-s3-direct-coefficients-20261115/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/ic-s3-direct-coefficients-20261115/lakefile.toml": "14f9849988564ab9ee6e22ee42ffe0af6b0755dcc0b818534ee6387d4fce2764"
+      },
+      "requested": [],
+      "role": "verifier-program"
+    },
+    "experiments/ic-s3-direct-coefficients-20261115/S3Direct.lean": {
+      "sha256": "af077454d95b008d3e82e520c006d0bb7f1054118614644f0165717ecf23a360",
+      "project_inputs": {
+        "experiments/ic-s3-direct-coefficients-20261115/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/ic-s3-direct-coefficients-20261115/lakefile.toml": "14f9849988564ab9ee6e22ee42ffe0af6b0755dcc0b818534ee6387d4fce2764"
+      },
+      "requested": [
+        "S3Direct.direct_s3_coefficients",
+        "S3Direct.cross_symmetric"
+      ],
+      "role": "mathlib-proof"
+    },
+    "experiments/xedni-auxiliary-mod2-independence-20261116/AuxiliaryMod2Independence.lean": {
+      "sha256": "bce506291e69b2fa17aca098145110e626720944e9291f71e39d85d6f5a1e3ba",
+      "project_inputs": {
+        "experiments/xedni-auxiliary-mod2-independence-20261116/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-auxiliary-mod2-independence-20261116/lakefile.toml": "f13c790f6454890d06d0e17cca0629d8e43ac352e0b6fed8207d30f062e2ffd4",
+        "experiments/xedni-auxiliary-mod2-independence-20261116/lake-manifest.json": "47af1da86329fd961aed48007fe7e29b9aad28ecbb6f2835938656ecfdb30756"
+      },
+      "requested": [
+        "auxiliary_mod2_independence",
+        "parity_from_two_independent_reductions",
+        "independent_of_mod2_reduction",
+        "parity_from_exponent_two_quotient",
+        "independent_of_exponent_two_quotient"
+      ],
+      "role": "mathlib-proof"
+    },
+    "experiments/xedni-rank-one-coordinate-control-20261115/RankOneCoordinate.lean": {
+      "sha256": "bd845f37350f51306e2dcbe7552136a0bbd3fd84048841d931d387f87474422f",
+      "project_inputs": {
+        "experiments/xedni-rank-one-coordinate-control-20261115/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-rank-one-coordinate-control-20261115/lakefile.toml": "0c6da4e30a621fb44129eeab9822dc13d427735f96c432f98886410e8fa68f40",
+        "experiments/xedni-rank-one-coordinate-control-20261115/lake-manifest.json": "47af1da86329fd961aed48007fe7e29b9aad28ecbb6f2835938656ecfdb30756"
+      },
+      "requested": [
+        "no_rank_gap_at_centered_slope"
+      ],
+      "role": "mathlib-proof"
+    },
+    "experiments/xedni-selected-lift-height-panel-20261116/SelectedLiftHeightBound.lean": {
+      "sha256": "f7ccf00c5772568d4ca0bac4ad0d35f330b3caf4df09f3c838c2e9083bebbacb",
+      "project_inputs": {
+        "experiments/xedni-selected-lift-height-panel-20261116/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "experiments/xedni-selected-lift-height-panel-20261116/lakefile.toml": "a64749263f28299b56bce098771af11fa92bf2124c44bacfd130f3741e06da7a",
+        "experiments/xedni-selected-lift-height-panel-20261116/lake-manifest.json": "47af1da86329fd961aed48007fe7e29b9aad28ecbb6f2835938656ecfdb30756"
+      },
+      "requested": [
+        "selected_height_ratio_lower_bound"
+      ],
+      "role": "mathlib-proof"
+    }
+  }
+}
