@@ -36,6 +36,7 @@ jobs:
           sparse-checkout: |
             experiments/chained-transfer-public-target/primitive-pricing-01/ct141_admitted_run.sh
             experiments/chained-transfer-public-target/primitive-pricing-01/ct142_receipt_gate.py
+            experiments/chained-transfer-public-target/primitive-pricing-01/check_pair.py
             experiments/chained-transfer-public-target/primitive-pricing-01/ct143_cost_envelope.py
       - name: Run syntax and deny-without-admission controls only; never benchmark
         shell: bash
