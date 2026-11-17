@@ -614,6 +614,51 @@ impl FastCurve {
         )
     }
 
+    /// Internal pair-index path. The caller checks the immutable base once;
+    /// coordinates are loaded directly instead of staging full point buffers.
+    pub(super) fn add_indexed_abscissae_vector_const_cached(
+        &self,
+        points: &[FastPoint],
+        indices: &[(u32, u32)],
+        out: &mut Vec<Option<u64>>,
+        scratch: &mut BatchScratch,
+        cache: &PrefixInverseTable,
+    ) -> Result<usize, &'static str> {
+        if self.field.irr != cache.irr {
+            return Err("prefix inverse cache belongs to another field");
+        }
+        debug_assert!(points
+            .iter()
+            .all(|p| p.infinity || (p.x | p.y) & !self.field.mask == 0));
+        #[cfg(all(target_arch = "x86_64", suite_avx512))]
+        if self.has_const_vector_field() {
+            if let Some(kernel) = simd256::Simd256::new(&self.field) {
+                // SAFETY: new() checks AVX2/PCLMUL; field shape is checked and
+                // every coordinate access uses a bounds-checked base index.
+                return unsafe {
+                    kernel.add_indexed_const(self, points, indices, out, scratch, cache)
+                };
+            }
+        }
+        out.reserve(indices.len());
+        for pairs in indices.chunks(4) {
+            let mut ps = [FastPoint::INFINITY; 4];
+            let mut qs = [FastPoint::INFINITY; 4];
+            for (lane, &(i, j)) in pairs.iter().enumerate() {
+                ps[lane] = points[i as usize];
+                qs[lane] = points[j as usize];
+            }
+            self.add_pairwise_abscissae_cached(
+                &ps[..pairs.len()],
+                &qs[..pairs.len()],
+                out,
+                scratch,
+                cache,
+            )?;
+        }
+        Ok(0)
+    }
+
     #[allow(clippy::too_many_arguments)]
     fn add_pairwise_abscissae_vector_cached_impl_validated<const CANONICAL: bool>(
         &self,
@@ -1817,6 +1862,91 @@ mod simd256 {
             Ok(vector_pairs)
         }
 
+        pub(super) unsafe fn add_indexed_const(
+            &self,
+            curve: &FastCurve,
+            points: &[FastPoint],
+            indices: &[(u32, u32)],
+            out: &mut Vec<Option<u64>>,
+            scratch: &mut BatchScratch,
+            cache: &PrefixInverseTable,
+        ) -> Result<usize, &'static str> {
+            match (curve.field.n, curve.field.irr ^ (1u64 << curve.field.n)) {
+                (15, 3) => self
+                    .add_indexed_const_narrow::<15, 3>(curve, points, indices, out, scratch, cache),
+                (18, 9) => self
+                    .add_indexed_const_narrow::<18, 9>(curve, points, indices, out, scratch, cache),
+                (21, 5) => self
+                    .add_indexed_const_narrow::<21, 5>(curve, points, indices, out, scratch, cache),
+                (24, 27) => self.add_indexed_const_narrow::<24, 27>(
+                    curve, points, indices, out, scratch, cache,
+                ),
+                (27, 39) => self.add_indexed_const_narrow::<27, 39>(
+                    curve, points, indices, out, scratch, cache,
+                ),
+                _ => Err("indexed constant kernel needs an admitted field"),
+            }
+        }
+
+        #[target_feature(enable = "avx2,pclmulqdq")]
+        unsafe fn add_indexed_const_narrow<const N: u32, const TAIL: u64>(
+            &self,
+            curve: &FastCurve,
+            points: &[FastPoint],
+            indices: &[(u32, u32)],
+            out: &mut Vec<Option<u64>>,
+            scratch: &mut BatchScratch,
+            cache: &PrefixInverseTable,
+        ) -> Result<usize, &'static str> {
+            let mut vector_pairs = 0;
+            out.reserve(indices.len());
+            for pairs in indices.chunks(4) {
+                let mut pc = [FastPoint::INFINITY; 4];
+                let mut qc = [FastPoint::INFINITY; 4];
+                for (lane, &(i, j)) in pairs.iter().enumerate() {
+                    pc[lane] = points[i as usize];
+                    qc[lane] = points[j as usize];
+                }
+                let mut inv = [0u64; 4];
+                let normal = pairs.len() == 4
+                    && (0..4).all(|i| {
+                        if pc[i].infinity || qc[i].infinity || pc[i].x == qc[i].x {
+                            return false;
+                        }
+                        let Some(&value) = cache.inverses.get((pc[i].x ^ qc[i].x) as usize) else {
+                            return false;
+                        };
+                        inv[i] = value;
+                        value != 0
+                    });
+                if !normal {
+                    curve.add_pairwise_abscissae_cached(
+                        &pc[..pairs.len()],
+                        &qc[..pairs.len()],
+                        out,
+                        scratch,
+                        cache,
+                    )?;
+                    continue;
+                }
+                let numerator: [u64; 4] = std::array::from_fn(|i| pc[i].y ^ qc[i].y);
+                let offset: [u64; 4] = std::array::from_fn(|i| pc[i].x ^ qc[i].x ^ curve.a);
+                let lambda = self.mul_pclmul128_reduction::<N, TAIL>(
+                    _mm256_loadu_si256(numerator.as_ptr() as *const __m256i),
+                    _mm256_loadu_si256(inv.as_ptr() as *const __m256i),
+                );
+                let x = _mm256_xor_si256(
+                    _mm256_xor_si256(self.square_packed_narrow_const::<N, TAIL>(lambda), lambda),
+                    _mm256_loadu_si256(offset.as_ptr() as *const __m256i),
+                );
+                let mut xs = [0u64; 4];
+                _mm256_storeu_si256(xs.as_mut_ptr() as *mut __m256i, x);
+                out.extend(xs.into_iter().map(Some));
+                vector_pairs += 4;
+            }
+            Ok(vector_pairs)
+        }
+
         #[target_feature(enable = "avx2,pclmulqdq")]
         unsafe fn add_cached_narrow<
             const PACKED: bool,
@@ -2768,6 +2898,10 @@ mod tests {
             qs[14] = ps[14];
             qs[15] = curve.neg(ps[15]);
             let cache = PrefixInverseTable::new(&curve.field, 3).unwrap();
+            let points: Vec<_> = ps.iter().chain(&qs).copied().collect();
+            let indices: Vec<_> = (0..ps.len())
+                .map(|i| (i as u32, (ps.len() + i) as u32))
+                .collect();
             let mut scratch = BatchScratch::default();
             for len in [0, 1, 3, 4, 7, 15, 16, 17, 96, 97] {
                 let mut expected = vec![Some(123)];
@@ -2803,6 +2937,18 @@ mod tests {
                 assert_eq!(dynamic, expected, "forced narrow n={n}, len={len}");
                 assert_eq!(dynamic_count, count);
                 assert_eq!(got, expected, "n={n}, len={len}");
+                let mut indexed = vec![Some(123)];
+                let indexed_count = curve
+                    .add_indexed_abscissae_vector_const_cached(
+                        &points,
+                        &indices[..len],
+                        &mut indexed,
+                        &mut scratch,
+                        &cache,
+                    )
+                    .unwrap();
+                assert_eq!(indexed, expected, "indexed n={n}, len={len}");
+                assert_eq!(indexed_count, if exact { count } else { 0 });
                 if exact {
                     let mut validated = vec![Some(123)];
                     let validated_count = curve

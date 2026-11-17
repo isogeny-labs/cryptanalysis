@@ -1,0 +1,10 @@
+digraph indexed {
+ rankdir=LR; bgcolor="white"; node [shape=box,style="rounded,filled",fillcolor="#edf5f4",fontname="Helvetica",fontsize=12]; edge [fontname="Helvetica",fontsize=10];
+ base [label="Checked immutable base"];
+ indices [label="Original ordered index pairs\nSame chunk boundaries"];
+ lanes [label="Load four point pairs\nNo full-point chunk buffers"];
+ arithmetic [label="Unchanged packed squares\nConstant reduction"];
+ map [label="Same compact hash map\nKeep first witness"];
+ fallback [label="Exceptions / tails\nCached scalar fallback"];
+ base -> lanes; indices -> lanes; lanes -> arithmetic -> map; lanes -> fallback -> map;
+}

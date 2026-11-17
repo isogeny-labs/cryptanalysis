@@ -3518,6 +3518,8 @@ pub struct PairTable {
     pub vector_pclmul128_pairs: usize,
     pub vector_packed_square_pairs: usize,
     pub vector_const_pairs: usize,
+    /// Pairs prepared directly from immutable base indices, including fallback lanes.
+    pub indexed_prepare_pairs: usize,
 }
 
 impl PairTable {
@@ -3650,6 +3652,7 @@ impl PairTable {
         };
         let prefix_inverse_bytes = cache.as_ref().map_or(0, |c| c.bytes());
         let mut vector_pairs = 0;
+        let mut indexed_prepare_pairs = 0;
         let map = {
             let groups: Vec<_> = fb
                 .abscissa_list
@@ -3658,8 +3661,9 @@ impl PairTable {
                 .collect();
             let compact = x_only && vector_cached == 3 && compact_pair_storage_eligible(curve, fb);
             let mut map = PairWitnessMap::new(groups.len() * groups.len() + 1, compact);
-            let mut ps = Vec::with_capacity(chunk_size);
-            let mut qs = Vec::with_capacity(chunk_size);
+            let indexed = compact && cache.is_some() && curve.has_const_vector_field();
+            let mut ps = Vec::with_capacity(if indexed { 0 } else { chunk_size });
+            let mut qs = Vec::with_capacity(if indexed { 0 } else { chunk_size });
             let mut indices = Vec::with_capacity(chunk_size);
             let mut sums = Vec::with_capacity(if x_only { 0 } else { chunk_size });
             let mut abscissae = Vec::with_capacity(if x_only { chunk_size } else { 0 });
@@ -3667,7 +3671,22 @@ impl PairTable {
             let mut flush = |ps: &mut Vec<FastPoint>,
                              qs: &mut Vec<FastPoint>,
                              indices: &mut Vec<(u32, u32)>| {
-                if x_only {
+                if indexed {
+                    abscissae.clear();
+                    vector_pairs += curve
+                        .add_indexed_abscissae_vector_const_cached(
+                            &fb.points,
+                            indices,
+                            &mut abscissae,
+                            &mut scratch,
+                            cache
+                                .as_ref()
+                                .expect("indexed preparation requires a prefix cache"),
+                        )
+                        .expect("cache was constructed for this exact field");
+                    indexed_prepare_pairs += indices.len();
+                    map.insert_abscissae(&abscissae, indices);
+                } else if x_only {
                     abscissae.clear();
                     if let Some(cache) = &cache {
                         if vector_cached != 0 {
@@ -3734,16 +3753,18 @@ impl PairTable {
                 let i = group[0];
                 for later in groups.iter().skip(ai) {
                     for &j in later.iter() {
-                        ps.push(fb.points[i]);
-                        qs.push(fb.points[j]);
+                        if !indexed {
+                            ps.push(fb.points[i]);
+                            qs.push(fb.points[j]);
+                        }
                         indices.push((i as u32, j as u32));
-                        if ps.len() == chunk_size {
+                        if indices.len() == chunk_size {
                             flush(&mut ps, &mut qs, &mut indices);
                         }
                     }
                 }
             }
-            if !ps.is_empty() {
+            if !indices.is_empty() {
                 flush(&mut ps, &mut qs, &mut indices);
             }
             map
@@ -3786,6 +3807,7 @@ impl PairTable {
                 0
             },
             vector_pairs,
+            indexed_prepare_pairs,
         })
     }
 
@@ -3814,6 +3836,7 @@ impl PairTable {
             vector_pclmul128_pairs: 0,
             vector_packed_square_pairs: 0,
             vector_const_pairs: 0,
+            indexed_prepare_pairs: 0,
         }
     }
 
@@ -3857,6 +3880,7 @@ impl PairTable {
             vector_pclmul128_pairs: 0,
             vector_packed_square_pairs: 0,
             vector_const_pairs: 0,
+            indexed_prepare_pairs: 0,
         }
     }
 
@@ -6875,6 +6899,11 @@ mod tests {
         assert!(compact.uses_compact_storage());
         assert!(reference.same_witness_map(&compact) && compact.same_witness_map(&reference));
         assert_eq!(compact.witness_entry_payload_bytes(), 8);
+        if inst.fast.has_const_vector_field() {
+            assert!(compact.indexed_prepare_pairs > 0);
+        } else {
+            assert_eq!(compact.indexed_prepare_pairs, 0);
+        }
         let point = fb.points.iter_mut().find(|p| !p.infinity).unwrap();
         point.x |= 1 << inst.n;
         assert!(!compact_pair_storage_eligible(&inst.fast, &fb));
