@@ -4,7 +4,7 @@ Date: 2026-11-16. Scientific standing: **[pcc:unverified]**. This is a source-on
 
 ## Primary evidence inspected
 
-- The actual committed CT125 optimized **48 selected-call rows**, frozen at Git blob `9ac741668dd1ffa9632ff0d58e6c4dd9f2dd18c3`: [literal-selected-vectors.json](../evidence/fixed-chain-norm-point-native-01/literal-selected-vectors.json).
+- The actual committed CT125 optimized **48 selected-call rows**, frozen at Git blob `9ac741668dd1ffa9632ff0d58e6f4dd9f2dd18c3`: [literal-selected-vectors.json](../evidence/fixed-chain-norm-point-native-01/literal-selected-vectors.json).
 - Its original CT82 48-row counterpart from pinned crypto commit `4de29a113dfc1b9d32c1809820b8caa2975042a8`, blob `19bc5c1ad37d55daa51a9ec95fa0af90296385c6`, read separately. [Original fixture](https://github.com/isogeny-labs/crypto/blob/4de29a113dfc1b9d32c1809820b8caa2975042a8/research/chained_jacobian_transfers_20261110/evidence/public-n4-complete-chain-checkpoint-01/01-literal-setup-and-selected-vectors.json).
 - The actual CT126 Rust primitive benchmark, blob `ac4146577f5019fc17674deb342eb5d9fc749715`: [src/main.rs](src/main.rs). The owned [CT141 admission protocol](CT141_ADMITTED_NATIVE_PROTOCOL.md) already limits it to five public scalars; this continuation quantifies the missing original-cohort classes rather than duplicating the measured primitive experiment.
 
