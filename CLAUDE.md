@@ -1,6 +1,16 @@
-Open pull requests ready for review, never as drafts, whatever the runtime
-defaults to, and mark an existing draft ready; only a user request in the task
-makes a draft. This and the repository's other agent rules are in
+**Goal and first step** (AGENTS.md, "Goal: what to work on next" and "First
+step of every task"): the SessionStart hook prints `tools/goal_brief.py` (the
+pinned goal and items in `docs/ACTIVE.md`, then the newest session-log open
+threads); with no other instruction, take the first unchecked item and start.
+`/goal` re-reads the brief; `/goal <text>` pins a new goal. Before any other
+work on a task, add its line to `docs/ACTIVE.md`, commit that alone, push and
+open a **draft** PR; when the work is finished and checked, tick the line and
+mark the PR ready for review.
+
+A task's pull request opens as a **draft** as the task's first step, with its
+line in `docs/ACTIVE.md` (owner, 2026-11-16), and is marked ready for review as
+soon as the work is finished and checked, whatever the runtime defaults to.
+This and the repository's other agent rules are in
 [`AGENTS.md`](AGENTS.md) ("Track research work in pull requests").
 # CLAUDE.md
 

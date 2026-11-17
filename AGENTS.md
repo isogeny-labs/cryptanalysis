@@ -416,15 +416,16 @@ leaves the progress report stale.
 
 Put every agent-authored code, protocol, frozen input, run receipt, verifier,
 decision, documentation, and agent-rule change on a branch and open a pull
-request in the repository that owns it. Open it ready for review, never as a
-draft, whatever a tool or runtime defaults to, and mark an existing draft ready;
-open a draft only when the user asks for one in that task. Do not leave the only copy of completed
+request in the repository that owns it. Open it as a draft as the task's first
+step ("First step of every task", owner 2026-11-16) and mark it ready for review
+as soon as the work is finished and checked, whatever a tool or runtime
+defaults to; leave finished work in draft only when the user asks for that. Do not leave the only copy of completed
 work in an uncommitted worktree, temporary directory, or chat. Keep unrelated
 pre-existing user changes out of the branch. For stacked work, target the
 immediate parent branch, name that dependency in the PR, then retarget to
 `main` and rerun checks after the parent merges.
 
-Enable GitHub auto-merge as part of opening or refreshing the PR: `gh pr merge
+Enable GitHub auto-merge when you mark the PR ready: `gh pr merge
 <n> --auto --merge`. Auto-merge is the default for every PR in this repository,
 not an optional extra, and the authoring session still tracks the PR under the
 next section. GitHub offers auto-merge only when the base is the repository's
@@ -1162,3 +1163,44 @@ experiment or action, and the specific input or condition needed to resume.
 Never claim success from effort alone or claim that every avenue is exhausted
 without evidence. Apply this loop proportionately: routine edits need direct
 checks; substantive research needs an explicit experimental record.
+
+## Goal: what to work on next
+
+Sessions should never need a prompt to find their work. `docs/ACTIVE.md`
+holds the owner's pinned goal and ordered active items; the newest session
+logs in `docs/session-logs/` (where they exist) hold the open threads.
+`python3 tools/goal_brief.py` prints both, pinned items first, capped at 120
+lines.
+
+- **Claude** gets the brief from the SessionStart hook in
+  `.claude/settings.json`. `/goal` (`.claude/commands/goal.md`) re-reads it
+  and starts the next item; `/goal <text>` pins a new goal.
+- **Codex and other runtimes** run `python3 tools/goal_brief.py` at session
+  start (Codex gets it from `.codex/hooks.json` where that file exists) and
+  treat a bare `goal` or `/goal` message like Claude's `/goal`.
+- With no other instruction, take the first unchecked item in
+  `docs/ACTIVE.md`; if there is none, the most recent open thread that no
+  open draft PR already covers. State the choice in one line and start; ask
+  only for decisions the brief marks as the owner's.
+
+### First step of every task: record it in `docs/ACTIVE.md` and open a draft PR
+
+Owner instruction, 2026-11-16. Before any other work on a task, every
+session, skill and agent, in every runtime, does these steps first:
+
+1. Fetch the default branch and create the task branch.
+2. Add one line for the task under "Active items" in `docs/ACTIVE.md`:
+   `- [ ] <task> (<runtime>, started <YYYY-MM-DD>, branch <branch>)`. If the
+   task is already listed, mark that line in progress instead.
+3. Commit that change alone, push, and open a **draft** PR named after the
+   task. Its body says what will be done and how it will be checked. Add
+   `PR #<n>` to the line in the next commit.
+
+The draft PR is the tracking record: push to it as the work goes and keep
+the line current. When the work is finished and checked, tick the line
+(`- [x]`) or remove it, then **mark the PR ready for review** and enable
+auto-merge (`gh pr merge <n> --auto --merge`) where the repository allows it.
+A task that stops unfinished keeps its draft and its unticked line, with the
+blocker under "Blocked / questions". When `docs/ACTIVE.md` conflicts, merge
+the default branch and keep every other session's line. A subagent working
+inside the parent's task uses the parent's line and PR.
