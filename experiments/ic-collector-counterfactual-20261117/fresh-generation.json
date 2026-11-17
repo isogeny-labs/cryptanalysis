@@ -1,0 +1,34 @@
+{
+  "status": "generated_before_timing",
+  "started_utc": "2026-11-17T15:41:09Z",
+  "published_generator_revision": "07f1046ca78a8f0acd6d49f138624de1dcabd4bf",
+  "identity_probe_sha256_before_and_after": "747159d53cf020e394590286e57e4b1faddde697d5a75f2202e7e4bf2016bbf8",
+  "identity_build_receipt_sha256": "ad9c2bdf510b9cc1766cc946723383d58726e7103b915331d47ab52593b1dfc6",
+  "native_preparation_binding_sha256": "7a19ce33ce599e8b5446ff14d9ba72e842696afdc33190ef157de66971e572ec",
+  "identities_sha256": "bbafd4799987e5f64b12ae507e6ebb680c2926601715d494f4f98bfc2a7abfc9",
+  "controllers_sha256": {
+    "freeze_fresh_inputs.py": "a018d5b9e3beefbf1dc409bccc3424e071598e94311ca746cd6fd2c0f49df866",
+    "fresh_common.py": "b1829a54794dcd08fc93416b6cd8af0b104702dbc08c164dd016baae69bd6dcd",
+    "run_fresh.py": "fe45251e98680672aeddd58185fcf5f6482f1b1f5663cc210dc6088ed4492459",
+    "analyze_fresh.py": "9a3fd53698e28acba40afa8c08db5332083fd067f4e87b0c5e87634d7063c755",
+    "replay_fresh_answers.py": "03de1312014310a0ca2824bc57a5a935d4d058d71f2d7d54bc36623a96c90828",
+    "replay_fresh_states.py": "a45a8ac1e8b0afa691f7f56d767e11f3e29c24b6c199fb88481be85593dc6a05",
+    "counterfactual_checks.py": "883ee176bc926989bf4a8be22fc1438ec4545c12040fcec07bc7112129430509",
+    "record_fresh_metrics.py": "386a39f99139bbc078b73907f52d7b502c9894fd870ba35d457dff4841adce3b",
+    "FRESH_PROTOCOL.md": "59a263158558e918bc2336aabd11d525a131c90e46cfbb70f6db76ee1887d76a",
+    "raw-reference-plan.json": "944e9354bf38f1efdd71b6f9c15ffe411e201ecaf258f3283c618400096408aa"
+  },
+  "argv": [
+    "python3",
+    "experiments/ic-collector-counterfactual-20261117/freeze_fresh_inputs.py",
+    "experiments/ic-collector-counterfactual-20261117/identity-arm/probe"
+  ],
+  "new_candidates": 20,
+  "reused_candidates": 15,
+  "one_target_workloads": 210,
+  "fixtures": [
+    726,
+    767
+  ],
+  "scope": "Contemporaneous identity generation receipt; ARM probe is not the native timing binary."
+}
