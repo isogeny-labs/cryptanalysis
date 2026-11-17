@@ -4,7 +4,7 @@ import hashlib,json,os,subprocess
 from pathlib import Path
 P=Path(__file__).resolve().parent; ROOT=P.parents[1]
 prior=ROOT/'experiments/ic-static-witness-map-20261117'
-names=['instances.json','baseline-input.json','baseline-source-hashes.json','source_manifest.py','prepared-input.json','anchor-input.json','indexed-input.json','callgrind_parser.py','verify_frozen_units.py','replay_preparation.py','archive_captures.py','readback_bundles.py','checkpoint_gate.py']+[f'archive-n{n}.json' for n in [15,18,21,24,27]]
+names=['instances.json','baseline-input.json','baseline-source-hashes.json','source_manifest.py','prepared-input.json','anchor-input.json','indexed-input.json','callgrind_parser.py','verify_frozen_units.py','replay_preparation.py','archive_captures.py','readback_bundles.py']+[f'archive-n{n}.json' for n in [15,18,21,24,27]]
 for name in names:
     data=(prior/name).read_bytes(); dest=P/name
     if dest.exists(): assert dest.read_bytes()==data
