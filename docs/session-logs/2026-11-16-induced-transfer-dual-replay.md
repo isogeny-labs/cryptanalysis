@@ -15,3 +15,7 @@ Track current-head CI on #1704, review failures, and merge only after applicable
 ## Errors
 
 The first local current-test attempt lacked sparse-checkout dependencies. The next exposed the old GLV-current binding; the repair retains the old pin as history and checks the maintained source separately. An intermediate replay caught a workflow edit in its final source guard and failed. The later complete replay passed with all source guards unchanged. Failed attempts remain retained. [pcc:unverified]
+
+## Follow-up: current corpus expectation
+
+The induced-transfer job passed CI at 7d2ba80d3. The separate corpus job then completed its native delta checks and failed comparison with the old November 1 expectation. Added a separate current expectation and an exact three-source-field amendment checker; five controls prohibit rewriting the historical receipt or changing theorem evidence/counts. The original receipt remains intact. New-head corpus replay is pending, and S3-dependent gates remain blocked. [pcc:unverified]
