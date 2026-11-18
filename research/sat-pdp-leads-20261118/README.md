@@ -124,6 +124,12 @@ whether it could change the exponent at all.
 - **Kill.** The solving degree grows linearly in l, so the cost is at least
   the 2^l scan.
 - **Prior.** 5%. It is the only lead here with any exponent upside.
+- **Done (2026-11-18): killed by counting, and the premise is corrected.**
+  The leaf coefficient u = x(R − P3) is not low degree in x3's bits. With u
+  kept as free bits, the leaf's rank condition holds for 11–40% of all u,
+  and true u values pass at the same rate as random ones. So MinRank on it
+  isolates nothing. The information sits in the S3(x3, u, xR) link, which
+  is round-4 D. See [`l4_minrank/RESULT.md`](l4_minrank/RESULT.md).
 
 ### L5. Discarded by counting: char-2 interpolating-conic encoding
 
