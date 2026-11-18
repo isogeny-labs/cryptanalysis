@@ -60,16 +60,29 @@ does not close the full 486-class `GF(8)` source-law gate or establish
 catalog-wide support. Its test source remains crypto-owned and is not copied
 here. [pcc:unverified]
 
-No release archive is cited yet. Package revision, archive checksum, extracted
-binary checksum, and installed-layout corpus replay remain open until an
-actual standalone archive is published and replayed. The highest-coverage
-direct short-Weierstrass boundary now covers 20,539 maps over 675 linked EC1
-records through deterministic `u64` validation plus exactly two live 73-bit
-pilot rows over `p=5902977611310272157103` under the strict
-Sorenson--Webster `psi_13` bound. The remaining 269 wide-direct maps and 234
-bindings, normalized targets, and odd extension fields remain unsupported for
-the induced-map backend. This two-row pilot is not general wide-prime support.
+A retention-bound current-head CI package is now bound by the
+[machine-readable replay receipt](package-replay-receipt.json). Crypto release
+run `44404967464` built and uploaded artifact
+`rust-x86_64-unknown-linux-gnu` from exact head
+`74752a1e644b1c9cc8f4efeb2e2befac6e24f7bb`; its required Linux package job
+succeeded even though unrelated matrix jobs left the aggregate run
+non-green. The downloaded 97,695,979-byte ZIP has SHA-256
+`0cab958b87cd9f5c6b445090aac139bd355e1d1416f4f8d49837e61042069fb2`,
+matching GitHub's immutable artifact digest. Its safely extracted archive
+passed all three CLI help checks and an installed-layout exact-corpus replay:
+all seven checks were true, canonical bytes matched, all 174 maps and 150/150
+supported named bindings replayed, and zero records failed. This is a
+same-implementation package-integrity replay, not independent mathematics;
+the artifact expires on 2027-02-16 and a stable public release remains open.
 [pcc:unverified]
+
+The highest-coverage direct short-Weierstrass boundary now covers 20,539 maps
+over 675 linked EC1 records through deterministic `u64` validation plus
+exactly two live 73-bit pilot rows over `p=5902977611310272157103` under the
+strict Sorenson--Webster `psi_13` bound. The remaining 269 wide-direct maps
+and 234 bindings, normalized targets, and odd extension fields remain
+unsupported for the induced-map backend. This two-row pilot is not general
+wide-prime support. [pcc:unverified]
 
 ## Supported boundary
 
