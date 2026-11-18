@@ -18,7 +18,7 @@ and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
 
-- [ ] Controlled comparison of curve-coordinate relation solvers on growing toy instances with matched controls (Codex, started 2026-11-18, branch codex/curve-representation-controlled-20261118) [pcc:unverified]
+- [ ] Controlled comparison of curve-coordinate relation solvers on growing toy instances with matched controls (Codex, started 2026-11-18, branch codex/curve-representation-controlled-20261118, PR #1767) [pcc:unverified]
 
 - [ ] Mirror the general binary hyperelliptic-cover transfer interface from crypto after its source commit is frozen, with split provenance and exact parity checks (Codex, started 2026-11-18, branch codex/general-binary-cover-transfer-mirror-20261118, PR #1765) [pcc:unverified]
 
@@ -51,3 +51,5 @@ and construction gates. [pcc:unverified]
 - [ ] <task> (<runtime>, started YYYY-MM-DD, branch <branch>, PR #<n>) -->
 
 ## Blocked / questions for the owner
+
+- Controlled representation comparison PR #1767: real S3 checkpoint upload/gate failed with AllAccessDisabled; explicit CPU/Git exception question is pending. Source/protocol preparation is not a measured panel. [pcc:unverified]
