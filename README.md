@@ -12,6 +12,9 @@ rho control. Its archived producer timings are exploratory CPU observations,
 with no signed independent performance verdict or baseline promotion.
 [pcc:unverified]
 
+For genus-five hyperelliptic Jacobians over prime fields, see the
+[paired-cubic proof notes and F19 fixture](experiments/prime-field-genus5-pencils/README.md).
+
 The Rust API includes a [hashed-factor-base elliptic-curve tensor
 implementation](docs/hashed-ecdl.md) for the Bochum v0.2 paper: compact
 encodings, exact contraction and certificate replay. Correctness controls
