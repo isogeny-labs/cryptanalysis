@@ -1388,6 +1388,18 @@ ca_status ca_linsolve_mod_prime_mt(const ca_spmat *A, const uint64_t *b, uint64_
                     }
                 }
                 rc = ca_dense_solve_mod_prime(M, nc, rhs, q, xred);
+                /* A^T A x = A^T b has a solution even when A x = b has
+                 * none (an overdetermined, inconsistent system gives its
+                 * least-squares point), so check the original rows, as the
+                 * Lanczos path does, before reporting success. */
+                for (uint32_t i = 0; rc == CA_OK && i < Ared.rows; i++) {
+                    uint64_t acc = 0;
+                    for (uint32_t k = Ared.row_ptr[i]; k < Ared.row_ptr[i + 1]; k++) {
+                        uint64_t a = coef_mod(Ared.val[k], q);
+                        acc = ca_addmod(acc, ca_mulmod(a, xred[Ared.col[k]], q), q);
+                    }
+                    if (acc != bred[i]) rc = CA_ERR_SINGULAR;
+                }
             } else rc = CA_ERR_NOMEM;
             free(M); free(rhs);
         }
