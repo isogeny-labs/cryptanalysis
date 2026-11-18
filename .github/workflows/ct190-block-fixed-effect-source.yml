@@ -6,6 +6,8 @@ on:
       - 'experiments/chained-transfer-public-target/primitive-pricing-01/ct190_block_fixed_effect_diagnostic.py'
       - 'experiments/chained-transfer-public-target/primitive-pricing-01/test_ct190_block_fixed_effect_diagnostic.py'
       - 'experiments/chained-transfer-public-target/primitive-pricing-01/CT190_BLOCK_FIXED_EFFECT_PROTOCOL.md'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/CT199_CARRYOVER_STANDARDIZATION_PROTOCOL.md'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/test_ct199_route_contrasts.py'
       - 'experiments/chained-transfer-public-target/primitive-pricing-01/ct188_physical_crossover_design.py'
   workflow_dispatch:
 permissions:
@@ -26,4 +28,7 @@ jobs:
           python3 -S -m py_compile "$root/ct190_block_fixed_effect_diagnostic.py" "$root/test_ct190_block_fixed_effect_diagnostic.py"
           python3 -S -m unittest discover -s "$root" -p 'test_ct190_block_fixed_effect_diagnostic.py' -v
           python3 -O -S -m unittest discover -s "$root" -p 'test_ct190_block_fixed_effect_diagnostic.py' -v
-          echo 'CT190 CONTROLLED SYNTHETIC SOURCE ONLY [pcc:unverified]. No paid compute, native Jacobian solve or ECDLP performance claim.'
+          python3 -S -m py_compile "$root/test_ct199_route_contrasts.py"
+          python3 -S -m unittest discover -s "$root" -p 'test_ct199_route_contrasts.py' -v
+          python3 -O -S -m unittest discover -s "$root" -p 'test_ct199_route_contrasts.py' -v
+          echo 'CT190/CT199 CONTROLLED SYNTHETIC SOURCE ONLY [pcc:unverified]. No paid compute, native Jacobian solve or ECDLP performance claim.'

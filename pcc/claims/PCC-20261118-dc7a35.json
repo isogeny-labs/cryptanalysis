@@ -1,0 +1,30 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-18T05:52:51Z",
+ "id": "PCC-20261118-dc7a35",
+ "kind": "statement",
+ "producer": {
+  "commit": "fb1d3815695b00c3ffd8f22bb75a1263213c6a74",
+  "model": "Codex",
+  "session": "pr-1760"
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-subexponential/frey_ruck_witness.py",
+    "sha256": "b13db59e6393dd7345701c9f37ed68f8e606c2e23bb6934184d0a7a59fd528e0"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-subexponential/frey_ruck_witness.txt",
+    "sha256": "59ec71cd4eb3f4bf05d4ae0df1bd0f05447d79e3bf4210b69fa1a7135077c7f9"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "One retrospective producer fixture with checks of all six nonzero multiples and the recovered exponent. No timings.",
+ "statement": "The frozen Frey\u2013R\u00fcck Sage fixture over F_29 records curve point counts 31 and 889, pairing values 23 and 16, and recovery of the exponent 3 in the subgroup of order seven."
+}

@@ -32,7 +32,19 @@ polynomial-basis file and keeps its intermediate state in the requested run
 directory:
 
     ca-ic fixed --params docs/ic/params/ecc2k130-fixed.json \
+      --dir runs/ecc2k130-fixed --stage preflight --json
+    ca-ic fixed --params docs/ic/params/ecc2k130-fixed.json \
       --dir runs/ecc2k130-fixed --stage status --json
+
+The `preflight` stage is native Rust and needs no Python interpreter. It checks
+the exact curve, subgroup, generator, published target, Frobenius eigenvalue,
+polynomial/normal-basis map, and the frozen factor base. Persistent relation
+collection, linear algebra, and target descent remain in the arbitrary-width
+Python backend selected by the Rust CLI; their reports embed the native
+preflight. This makes the checked-in profile operational end to end, but it does
+not claim a recovered challenge scalar. The unresolved full-size relation-yield
+obligation is recorded in
+[the problem index](../../../problems/ecc2k130-index-calculus-relation-yield.md).
 
 The `crypto` repository's `ecdlp-nist` command offers verified interval BSGS
 on both exact curves. Give a justified interval for the published target or

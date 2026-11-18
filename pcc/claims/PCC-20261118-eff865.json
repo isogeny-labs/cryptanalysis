@@ -1,0 +1,23 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-18T05:52:51Z",
+ "id": "PCC-20261118-eff865",
+ "kind": "theorem",
+ "producer": {
+  "commit": "fb1d3815695b00c3ffd8f22bb75a1263213c6a74",
+  "model": "Codex",
+  "session": "pr-1760"
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-subexponential/prime_field_subexponential.md",
+    "sha256": "615a18b8aa55d95285c0367cf8e543de8c873366ffd1ae6160de31c66f51b647"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Independent uniform rational points, log B=o(log p), log B/log log p tends to infinity, and the hypotheses in the note on inverter success and restart. The inversion algorithm remains open.",
+ "statement": "At fixed genus g, m=(g+o(1)) log p/log B is the leading coverage threshold for sums from B sampled rational points. A p^o(1)-time inverter with p^(-o(1)) success on the specified typical-base distribution would yield a p^o(1)-time prime-subgroup discrete-logarithm algorithm."
+}
