@@ -1,22 +1,23 @@
-# Xedni affine-CVP checkpoint access
+# Xedni experiment checkpoint access
 
-- **Status:** open (p=67 toy run completed 2026-11-12 under owner waiver; credentials still missing)
+- **Status:** open (two prior toy panels completed under narrow owner waivers; credentials still missing)
 - **Kind:** access/tool limit
-- **Affected work:** [frozen xedni affine-lift protocol](../research/xedni_lift_optimizer_20261101/PROTOCOL.md)
+- **Affected work:** [frozen xedni affine-lift protocol](../research/xedni_lift_optimizer_20261101/PROTOCOL.md), [fresh target-bearing selector protocol](../research/xedni_target_relation_20261118/PROTOCOL.md), draft PR #1762
 - **Next action owner:** environment operator for checkpoint credentials; research agent for the frozen run
-- **Last updated:** 2026-11-12
+- **Last updated:** 2026-11-18
 
 ## Problem
 
-The frozen one-coset p=67 diagnostic for the xedni affine-CVP optimizer cannot
-run because the required pre-run S3 resume checkpoint cannot be uploaded from
-this managed environment.
+New frozen Xedni experiments cannot run because the required pre-run S3 resume
+checkpoint cannot be uploaded from this managed environment.  Prior narrow
+owner waivers applied only to their exact toy commands and do not authorize a
+modified fresh-seed panel. [pcc:unverified]
 
-The exact workload is the four-radius deterministic search in the linked
-protocol, using four balanced lifts on `y^2=x^3+28` over `F_67`.  The
-repository requires `scripts/checkpoint.sh gate` to pass before any evaluation
-run.  An uncheckpointed local run would violate that acceptance criterion and
-would not discharge the user's requested algorithm investigation.
+The current blocked workload is the 1,600-row paired target-bearing selector
+in the linked November 18 protocol: four primes, two curve families, two lift
+policies, ranks 6 through 9, and 25 trials per cell under a fresh master seed.
+The repository requires `scripts/checkpoint.sh gate` to pass before any natural
+row is generated. [pcc:unverified]
 
 ## Evidence and uncertainty
 
@@ -43,6 +44,14 @@ would not discharge the user's requested algorithm investigation.
   frozen evaluator again was not launched.  This transient transport error
   does not supersede the independently observed HTTP 403 and `AccessDenied`
   authorization failures.
+- **Observed on 2026-11-18:** after the target-selector protocol, runner,
+  analyzer, and `FREEZE.json` were committed and pushed at `10a28313a6`, a
+  complete `.resume/RESUME.md` passed its content check.  `checkpoint.sh`
+  then reported no permitted `ecc-challenges-new` profile, no
+  `CHECKPOINT_UPLOAD_TOKEN`, and no token file.  Installing AWS CLI 1.46.3
+  enabled the documented ambient-key fallback, but S3 rejected the exact
+  checkpoint `PutObject` with `AllAccessDisabled`; the push and gate remained
+  nonzero.  No fresh natural row was generated. [pcc:unverified]
 - **Derived or proved:** No mathematical conclusion follows from the access
   failure.  The code-level invariant checks and synthetic positive/negative
   controls establish only their tested cases.
@@ -53,19 +62,18 @@ would not discharge the user's requested algorithm investigation.
 - **Missing capability:** A valid repository checkpoint upload token or AWS
   profile authorized for
   `s3://setec-astronomy-artifacts/checkpoints/cryptanalysis/`.
-- **What this evidence does not establish:** Whether LLL/Babai is stable on
-  the frozen skew Smith basis, whether the exact neighborhood improves on
-  Babai, whether the method improves the 2000 HMM-HNF implementation, or any
-  dependence/ECDLP result.
+- **What this evidence does not establish:** whether target-bearing ordering
+  improves recovery on fresh lifts, whether it changes complete work, or any
+  end-to-end ECDLP result. [pcc:unverified]
 
 ## What would unblock it
 
 - [ ] `scripts/checkpoint.sh push` uploads the current branch state under the
   xedni branch key and `scripts/checkpoint.sh gate` exits zero without a gate
   bypass.
-- [ ] The four frozen rows run once, retain all raw JSON, and satisfy every
-  exact incidence, congruence, nonsingularity, and candidate-cap check in the
-  protocol.
+- [ ] The current frozen panel runs once, retains all rows, and satisfies every
+  exact relation, shifted-source, paired-selection, and analyzer invariant in
+  its protocol.
 
 The first condition is necessary to start.  The second completes only the
 one-coset algorithmic diagnostic; it still cannot establish ECDLP success or
@@ -73,18 +81,19 @@ transfer to binary/Koblitz curves.
 
 ## Next discriminating step
 
-- **Action or proof obligation:** Provision the scoped checkpoint transport,
-  push the current checkpoint, then run the exact reproduction command in the
-  protocol without changing the fixture, radii, or caps.
-- **Inputs and controls:** Frozen p=67 fixture, raw exact solution, Babai
-  control, exact-discriminant candidate, synthetic known-short positive
-  control, and invalid-direction negative controls.
-- **Execution limits and stop condition:** Four rows at radii 0, 1, 2, and 4;
-  caps 1, 27, 125, and 729.  Stop and retain evidence on any invariant failure.
-- **Outcomes and next actions:** A smaller exact discriminant than Babai is a
-  one-coset stage improvement; equality is a bounded null result; invariant
-  failure returns to implementation repair; another checkpoint failure keeps
-  this access record open.
+- **Action or proof obligation:** Provision scoped checkpoint transport, push
+  the current checkpoint, then run the exact command in the November 18
+  target-selector protocol without changing its seed, grid, or cap.
+- **Inputs and controls:** fresh fixed seed, paired minimum-weight selector,
+  target-bearing selector, fixed nine-point positive control, exact lifted
+  group certificates, and shifted source recovery for both arms.
+- **Execution limits and stop condition:** 1,600 sequential paired rows under
+  the frozen 1,800-second cap; stop and retain evidence on any certificate or
+  invariant failure.
+- **Outcomes and next actions:** candidate-only recoveries with no baseline
+  loss establish the specified stage improvement; equality is a bounded null;
+  certificate failure returns to implementation repair; another credential
+  failure updates this record without running. [pcc:unverified]
 - **Recheck trigger:** A valid token/profile is attached to a managed session.
 
 A planned step is not a completed experiment.  The required gate remains in
@@ -113,3 +122,9 @@ specified, with the checkpoint gate not run; result and amendment are in the
 protocol's "Amendment 2026-11-12" and `runs/run-20261112/`.  The credential
 blocker itself is not resolved, so this record stays open for runs that are
 not toy-size.
+
+2026-11-18: the owner separately waived the gate only for the exact frozen
+November 17 1,600-row panel.  That panel completed, but its waiver explicitly
+excluded larger or modified panels.  The fresh target-selector checkpoint
+push and gate failed for absent transport before any natural row.  Unresolved.
+[pcc:unverified]

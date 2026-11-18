@@ -26,6 +26,8 @@ and construction gates. [pcc:unverified]
 
 - [x] Extend certified Xedni lift-success trials to the ten-coefficient `r=7..9` regime with exact rational dependence verification; local frozen panel completed 1,600/1,600 rows with 67 certified relations and 23 recoveries (Codex, started 2026-11-17, branch codex/xedni-breakthrough-20261117, implementation PR #1730 merged, outcome draft PR #1762) [pcc:unverified]
 
+- [x] Derive and implement target-dependent chord-origin recovery, including a zero-explicit-target exact relation, Rust/Python controls, Lean algebra, diagram and PDF (Codex, started 2026-11-18, branch codex/xedni-breakthrough-20261117, draft PR #1762) [pcc:unverified]
+
 - [ ] Freeze and run a fresh-seed target-bearing relation-enumeration panel, preserving target-independent lift success and comparing complete recovery work against the frozen baseline (Codex, started 2026-11-18, branch codex/xedni-breakthrough-20261117, outcome draft PR #1762) [pcc:unverified]
 
 - [x] CT187: bounded admitted-source native 1,536-call same-route sham producer, strict evidence reader and synthetic handshake; no paid execution (automation, started 2026-11-17, branch research/ct187-native-sham-source-admission-20261117, PR #1719)
@@ -43,3 +45,5 @@ and construction gates. [pcc:unverified]
 - [ ] <task> (<runtime>, started YYYY-MM-DD, branch <branch>, PR #<n>) -->
 
 ## Blocked / questions for the owner
+
+- The fresh Xedni selector panel is frozen but cannot generate its first row: checkpoint upload has no token/profile, and the documented ambient AWS fallback returns `AllAccessDisabled`. Resume requires valid scoped checkpoint transport; the earlier local waiver explicitly excludes modified panels. [pcc:unverified]
