@@ -251,5 +251,68 @@ class CT192(TestCase):
                 with self.assertRaises(ValueError):
                     ct.validate_counter_neutral(d, altered)
 
+    def test_CT196_asserts_both_timed_norm_counter_panels(self):
+        ct.validate_timed_counter_observation(self.driver)
+        ct.source_audit(self.driver, self.cargo)
+        self.assertEqual(16 * 2 * 64, 2048)
+        self.assertEqual(96 * 2 * 2048, 393216)
+        self.assertEqual(self.driver.count(b"black_box(runtime.calls())"), 3)
+        self.assertIn(
+            b'"schema":"ct196-public48-observed-norm-counters/v1"',
+            self.driver,
+        )
+
+    def test_CT196_refuses_unobserved_or_unchecked_counter_writes(self):
+        mutations = (
+            (
+                b"let counters_after_original = black_box(runtime.calls());",
+                b"let counters_after_original = counters_before_panels;",
+            ),
+            (
+                b"let counters_after_control = black_box(runtime.calls());",
+                b"let counters_after_control = counters_after_original;",
+            ),
+            (
+                b"must(counters_after_original == expected_after_original,",
+                b"must(true,",
+            ),
+            (
+                b"must(counters_after_control == expected_after_control,",
+                b"must(true,",
+            ),
+            (
+                b"const NORM_CALLS_PER_PANEL: u64 = 16 * 2 * 64;",
+                b"const NORM_CALLS_PER_PANEL: u64 = 16 * 1 * 64;",
+            ),
+        )
+        for old, new in mutations:
+            with self.subTest(old=old):
+                corrupted = self.driver.replace(old, new)
+                self.assertNotEqual(corrupted, self.driver)
+                with self.assertRaises(ValueError):
+                    ct.validate_timed_counter_observation(corrupted)
+
+    def test_CT196_refuses_wrong_panel_order_or_silent_evidence(self):
+        mutations = (
+            (
+                b'"observed_actual_norm_calls_counter_control_panel":observed_control_norm_calls',
+                b'"observed_actual_norm_calls_counter_control_panel":0',
+            ),
+            (
+                b"must(observed_norm_calls_total == 96 * 2 * NORM_CALLS_PER_PANEL,",
+                b"must(true,",
+            ),
+            (
+                b".checked_add(observed_original_norm_calls + observed_control_norm_calls)",
+                b".checked_add(observed_original_norm_calls)",
+            ),
+        )
+        for old, new in mutations:
+            with self.subTest(old=old):
+                corrupted = self.driver.replace(old, new)
+                self.assertNotEqual(corrupted, self.driver)
+                with self.assertRaises(ValueError):
+                    ct.validate_timed_counter_observation(corrupted)
+
 if __name__ == "__main__":
     main()
