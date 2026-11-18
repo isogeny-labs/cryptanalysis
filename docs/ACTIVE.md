@@ -37,3 +37,5 @@ and construction gates. [pcc:unverified]
 - [ ] <task> (<runtime>, started YYYY-MM-DD, branch <branch>, PR #<n>) -->
 
 ## Blocked / questions for the owner
+
+- H116 target admission is source-ready but blocked before execution by missing checkpoint upload credentials; see `problems/h116-verifier-checkpoint-access.md`. [pcc:unverified]
