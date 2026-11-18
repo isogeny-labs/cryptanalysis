@@ -58,6 +58,19 @@ is the maximum **additional** attempts per collection stream or target in the
 current invocation. Attempts, including failures and timeouts, are retained.
 Changing budgets does not invalidate the campaign.
 
+Use `--stage status --json` with the same parameters and directory to check
+input and checkpoint status without collecting relations. `base_point` is
+`known` after validating the subgroup generator. A missing or null `generator`
+returns an error with `base_point: "missing"`.
+
+For each target, `scalar_known` is true after checking a saved scalar or the
+optional `known_log` field on that target against `Q = kP`. `scalar_source` is
+`checkpoint` for a saved result, `provided` for a matching `known_log`, and
+`null` when the scalar is unknown. Omit `known_log` or set it to `null` for a
+target specified only by coordinates. A supplied scalar that fails the check
+is an input error. The supplied value is a status annotation. The status report
+omits scalar values.
+
 For bounded Semaev SAT queries, use `--solver sat --pair-budget 0` and select an
 interpreter with `--python /path/to/python`. It needs `python-sat` and
 `pycryptosat`; the pair-table workflow uses the Python standard library only.

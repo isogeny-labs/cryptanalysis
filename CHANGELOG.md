@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.1.13](https://github.com/isogeny-labs/cryptanalysis/compare/cryptanalysis-v0.1.12...cryptanalysis-v0.1.13) (2026-11-18)
+
+
+### Features
+
+* certify nine-point xedni plane relations ([31c6e60](https://github.com/isogeny-labs/cryptanalysis/commit/31c6e6016c295407c9940b37c7282291ae21e45a))
+* **ct192:** bind explicit direction and source group metadata to raw 96-packet records ([87b400a](https://github.com/isogeny-labs/cryptanalysis/commit/87b400adc2b5541e4004c5d825516c13966fd60d))
+* **ct192:** exact CT125 source derivative and public-48 guarded admission ([29d4301](https://github.com/isogeny-labs/cryptanalysis/commit/29d430116ad84cce4f43c4f8c7419c96df7ebf6f))
+* **ct192:** native-eligible scalar-blind 48-operand N2_actual and D_padd paired panel ([2b4f8c4](https://github.com/isogeny-labs/cryptanalysis/commit/2b4f8c4be64042b2b80d3ecf06c6ace002f9038c))
+
+
+### Bug Fixes
+
+* **ct190:** pin real CT175 cold-request expression ([28b78f3](https://github.com/isogeny-labs/cryptanalysis/commit/28b78f3b62bb5866d7182c7833cd1e48c5eaebc3))
+* **ct192:** audit package identity separately from dependency declarations ([7945795](https://github.com/isogeny-labs/cryptanalysis/commit/7945795be4541121350241e55bf7173e2714ec11))
+* **ct192:** correct literal Git blob NUL and source newline escapes ([9a51079](https://github.com/isogeny-labs/cryptanalysis/commit/9a51079551902fbb7f7d6c0336a2f27e8eb3d354))
+* **ct192:** emit real module path newlines in materialized Rust ([cfac2b2](https://github.com/isogeny-labs/cryptanalysis/commit/cfac2b213a43cfd1d93c275e186659feba13ba9a))
+* **ct192:** use unambiguous Rust CLI admission predicates ([e8bd7de](https://github.com/isogeny-labs/cryptanalysis/commit/e8bd7de6d52eb0edd30ea5b2eab978288a9ae343))
+* **ct193:** check target Jacobian class as well as doubled norm in pre-norm probe ([e8ffd96](https://github.com/isogeny-labs/cryptanalysis/commit/e8ffd96063a708e7542f1aa0276a8f6106c45b7d))
+* **ct193:** remove mistaken positive mutation duplicating final check ([e7bfdd4](https://github.com/isogeny-labs/cryptanalysis/commit/e7bfdd4a9b08af450046b182e4fb0daac18302df))
+* **CT194:** input-opaque operand per timed primitive repetition ([b46fa91](https://github.com/isogeny-labs/cryptanalysis/commit/b46fa915025fb39f2ee2ede63d9b1b8b7ad51860))
+* restore suite build after binary subtract merge ([9b75b92](https://github.com/isogeny-labs/cryptanalysis/commit/9b75b92519d575a1e72d6085055baea6053add75))
+
 ## [0.1.12](https://github.com/isogeny-labs/cryptanalysis/compare/cryptanalysis-v0.1.11...cryptanalysis-v0.1.12) (2026-11-17)
 
 

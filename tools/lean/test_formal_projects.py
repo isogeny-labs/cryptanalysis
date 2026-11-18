@@ -163,6 +163,35 @@ class FormalProjectControls(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "cyclic"):
             formal.validate(self.root, self.record)
 
+    def test_query_coverage_preserves_relative_and_root_name_resolution(self):
+        self.assertTrue(formal.query_coverage(["A.result"], ["Outer.A.result"]))
+        self.assertTrue(formal.query_coverage(["result"], ["Outer.A.result"]))
+        self.assertTrue(formal.query_coverage(["_root_.A.result"], ["A.result"]))
+        self.assertFalse(formal.query_coverage(["_root_.A.result"], ["Outer.A.result"]))
+        self.assertFalse(formal.query_coverage(["A.result"], ["Other.result"]))
+        self.assertFalse(formal.query_coverage(["A.result", "B.result"],
+                                             ["Other.result", "Another.result"]))
+        self.assertFalse(formal.query_coverage(["result", "A.result"],
+                                             ["A.result", "A.result"]))
+        self.assertTrue(formal.query_coverage(["result", "A.result"],
+                                            ["A.result", "B.result"]))
+        self.assertFalse(formal.query_coverage(["A.result", "B.A.result", "other"],
+                                             ["B.A.result", "C.other", "D.other"]))
+
+    def test_qualified_query_does_not_accept_another_namespace(self):
+        original_run = self.gate.run
+
+        def mismatched_query(args, **kwargs):
+            result = original_run(args, **kwargs)
+            if "-o" in args:
+                module = Path(args[-1]).stem
+                result.stdout = result.stdout.replace(f"'{module}.result'", "'Other.result'")
+            return result
+
+        self.gate.run = mismatched_query
+        with self.assertRaisesRegex(ValueError, "query coverage changed"):
+            self.checked()
+
     def test_native_foundation_and_compiled_object_changes_are_refused(self):
         self.axioms = "sorryAx"
         with self.assertRaisesRegex(ValueError, "unexpected foundation"):
