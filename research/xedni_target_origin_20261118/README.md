@@ -8,8 +8,8 @@ has not been measured because the mandatory checkpoint transport is unavailable.
 [pcc:unverified]
 
 Provenance records: algebraic recovery theorem
-[`PCC-20261118-959f5a`](../../pcc/claims/PCC-20261118-959f5a.json) and fixed
-control [`PCC-20261118-868127`](../../pcc/claims/PCC-20261118-868127.json).
+[`PCC-20261118-b813f9`](../../pcc/claims/PCC-20261118-b813f9.json) and fixed
+control [`PCC-20261118-01c104`](../../pcc/claims/PCC-20261118-01c104.json).
 Both remain unverified pending an independent signed verdict. [pcc:unverified]
 
 ## Question

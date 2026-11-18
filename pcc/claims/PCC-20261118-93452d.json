@@ -1,0 +1,23 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-18T05:52:51Z",
+ "id": "PCC-20261118-93452d",
+ "kind": "theorem",
+ "producer": {
+  "commit": "fb1d3815695b00c3ffd8f22bb75a1263213c6a74",
+  "model": "Codex",
+  "session": "pr-1760"
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-subexponential/prime_field_subexponential.md",
+    "sha256": "615a18b8aa55d95285c0367cf8e543de8c873366ffd1ae6160de31c66f51b647"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Input y\u00b2=f(x) with deg f=2g+1, supplied prime-order subgroup, and g tending to infinity. This is N^o(1) for N=p^g and L_N(1/2,O(1)) for log p=O(g log g).",
+ "statement": "For odd prime p and growing genus g on squarefree imaginary hyperelliptic models, the specified prime-subgroup algorithm has expected bit complexity exp(O(log p+sqrt(g log p log(2g)))) without the ambient order."
+}
