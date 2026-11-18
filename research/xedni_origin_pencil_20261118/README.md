@@ -80,6 +80,24 @@ recovers target scalar 9 modulo 73. A separate zero-fixed-target control remains
 zero after target-origin transport. These are deterministic implementation
 controls, not natural-frequency measurements. [pcc:unverified]
 
+[`coverage_control.py`](coverage_control.py) independently summarizes the
+retained overlap in [`COVERAGE_CONTROL.json`](COVERAGE_CONTROL.json). Of 25,694
+distinct fixed vectors, 6,756 occur under all nine origins and only 12,220 are
+exclusive to one. The pencil adds 3,066 vectors with an invertible target
+coefficient to 16,492 at baseline (+18.6%), despite adding 78,300 origin-local
+candidates (+367%). In the fixed origin order, target origins 2--4 contribute
+3,262 of the 4,372 new vectors (74.6%), while the final origin contributes 42.
+These partner-specific control counts do not justify an adaptive natural
+selector. [pcc:unverified]
+
+The cost-motivated successor is a separately frozen fixed-coordinate dedup
+arm: retain the best ordered representative of each transported vector and
+exact-check that vector once, with a baseline-chart recheck. It can remove
+alias exact checks but not the cost of constructing every origin table and
+modular candidate. A stronger origin-subset arm would need a public,
+prospective selector; choosing partners from these exact-control counts would
+be circular. [pcc:unverified]
+
 The pre-existing focused Rust suite passed 13/13 release tests, and strict
 release Clippy for `ca-icx` passed. The Python sources compile, the runner
 self-test passes, and `git diff --check` is clean. [pcc:unverified]
