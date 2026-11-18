@@ -1,0 +1,31 @@
+name: CT189 source-only physical crossover producer-reader contract
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/ct189-native-physical-crossover-source.yml'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/ct189_native_physical_crossover_panel.py'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/test_ct189_native_physical_crossover_panel.py'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/CT189_NATIVE_V3_CROSSOVER_PROTOCOL.md'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/ct188_physical_crossover_design.py'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/ct176_cold_process_collector.py'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/ct179_panel_adjudicator.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Validate frozen fixture and mocked native transcript (normal and optimized Python)
+        shell: bash
+        run: |
+          set -euo pipefail
+          root=experiments/chained-transfer-public-target/primitive-pricing-01
+          python3 -S -m py_compile "$root/ct189_native_physical_crossover_panel.py" "$root/test_ct189_native_physical_crossover_panel.py"
+          python3 -S -m unittest discover -s "$root" -p 'test_ct189_native_physical_crossover_panel.py' -v
+          python3 -O -S -m unittest discover -s "$root" -p 'test_ct189_native_physical_crossover_panel.py' -v
+          echo 'CT189 SOURCE-MOCK ONLY [pcc:unverified], no native child, no ECDLP speedup'
