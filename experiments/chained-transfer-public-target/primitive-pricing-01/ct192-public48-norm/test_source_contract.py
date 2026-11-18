@@ -171,7 +171,7 @@ class CT192(TestCase):
     def test_CT194_real_both_arm_per_iteration_input_opacity(self):
         ct.validate_opaque_timing(self.driver)
         ct.source_audit(self.driver, self.cargo)
-        self.assertEqual(self.driver.count(b"let measured_operand = black_box(point);"), 1)
+        self.assertEqual(self.driver.count(b"let measured_operand = black_box(point);"), 2)
 
     def test_CT194_reject_missing_or_moved_input_barrier(self):
         removed = self.driver.replace(
@@ -211,6 +211,45 @@ class CT192(TestCase):
                 self.assertNotEqual(mutated, self.driver)
                 with self.assertRaises(ValueError):
                     ct.validate_opaque_timing(mutated)
+
+    def test_CT195_exact_counter_neutral_path_and_two_raw_panels(self):
+        derived = ct.derivative(self.original)
+        ct.validate_counter_neutral(derived, self.driver)
+        self.assertIn(b"ct195_arithmetic_norm_no_counter", derived)
+        self.assertIn(b"CT195_EXTRA_PANEL_ADMISSION_RECEIPT", self.driver)
+        self.assertEqual(self.driver.count(b"for _ in 0..64 {"), 2)
+        self.assertIn(b'"counter_control_slots":counter_control_slots', self.driver)
+        self.assertTrue(ct.audit()["source_audit_passed"])
+
+    def test_CT195_reject_non_neutral_math_or_substituted_norm(self):
+        d = ct.derivative(self.original)
+        original = b"        descend_point(curve::pmul(&target.f, &target.curve, &point, 2))\\n    }"
+        for replacement in (
+            b"        self.norm_point(to, point)\\n    }",
+            b"        self.bump(|c| c.transported_norm_doubling += 1);\\n        descend_point(curve::pmul(&target.f, &target.curve, &point, 2))\\n    }",
+            b"        descend_point(curve::pmul(&target.f, &target.curve, &point, 3))\\n    }",
+        ):
+            with self.subTest(replacement=replacement):
+                altered = d.replace(original, replacement)
+                self.assertNotEqual(d, altered)
+                with self.assertRaises(ValueError):
+                    ct.validate_counter_neutral(altered, self.driver)
+
+    def test_CT195_reject_missing_extra_admission_or_raw_control(self):
+        d = ct.derivative(self.original)
+        for old, new in (
+            (b"CT195_EXTRA_PANEL_ADMISSION_RECEIPT", b"CT192_OWNER_ADMISSION_RECEIPT"),
+            (b'extra_admission.trim().is_empty()', b'admission.trim().is_empty()'),
+            (b'counter_control_slots.push(json!({', b'slots.push(json!({'),
+            (b'"counter_control_slots":counter_control_slots', b'"counter_control_slots":[]'),
+            (b'expected.transported_norm_doubling += 1;', b'expected.transported_norm_doubling += 2;'),
+            (b'let measured_operand = black_box(point);', b'let measured_operand = point;'),
+        ):
+            with self.subTest(old=old):
+                altered = self.driver.replace(old, new)
+                self.assertNotEqual(self.driver, altered)
+                with self.assertRaises(ValueError):
+                    ct.validate_counter_neutral(d, altered)
 
 if __name__ == "__main__":
     main()
