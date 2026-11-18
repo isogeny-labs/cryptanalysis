@@ -40,8 +40,11 @@ C is base CNF + RREF rows; A is the base CNF.
 - **SAT, exploratory only and not part of the decision.** On planted
   (decomposable) targets the reduced rows cut conflicts to
   **0.358× [0.204, 0.556]** at l = 4 and 0.604× [0.484, 0.760] at l = 3.
-  Both lie outside their subsets' A/A bands. The per-file geometric mean is
-  below 1 on all 8 l = 4 SAT files, ranging from 0.066 to 0.826. It is one of six reported subsets and was
+  At l = 4 the interval lies wholly below that subset's A/A band
+  [0.858, 1.820]. At l = 3 the point estimate falls inside its wide A/A band
+  [0.496, 1.383], so it separates from noise only at l = 4. There, the
+  per-file geometric mean is below 1 on all 8 SAT files, ranging from 0.066
+  to 0.826. It is one of six reported subsets and was
   not pre-registered as a decision, so it is a hypothesis for a separate
   frozen protocol, not a finding. Its practical value for relation search
   is small: nearly every query is a non-decomposable target. Only the yield
