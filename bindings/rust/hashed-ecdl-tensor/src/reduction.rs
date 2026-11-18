@@ -8,7 +8,7 @@
 use crate::arithmetic::{floor_root, hash_prime_by, inverse, random_below, RandomSource};
 use crate::contraction::Counter;
 use crate::curve::{Curve, Point};
-use crate::encoding::{Encoder, PointWords};
+use crate::encoding::{Encoder, Multiplier, PointWords};
 use crate::network::Network;
 use crate::{integrity, invalid, overflow, BigUint, Error, Meter, Result};
 use num_integer::Integer;
@@ -182,9 +182,13 @@ fn derived_last_slot_network(
         .split_last()
         .ok_or_else(|| invalid("decomposition target or arity"))?;
     let mut encoder = Encoder::new();
+    encoder.set_multiplier(Multiplier::Auto);
     let mut sum: Option<PointWords> = None;
     for base in free {
-        let point = encoder.input_point(curve, false, meter)?;
+        // Free points as (x, parity of y); the hash reads only those free bits,
+        // so it runs before the costlier curve equation. The constraints are a
+        // conjunction, so the order changes no language.
+        let point = encoder.input_point_compressed_unchecked(curve, meter)?;
         encoder.hash_member(
             curve,
             &point,
@@ -194,6 +198,7 @@ fn derived_last_slot_network(
             &base.threshold,
             meter,
         )?;
+        encoder.assert_valid_point(curve, &point, meter)?;
         encoder.mark_point_interface(&point, meter)?;
         sum = Some(match sum {
             None => point,

@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760">
+  <defs>
+    <style>
+      .title{font:700 30px system-ui,sans-serif;fill:#0f172a}.h{font:700 18px system-ui,sans-serif;fill:#0f172a}.t{font:15px system-ui,sans-serif;fill:#334155}.mono{font:14px ui-monospace,SFMono-Regular,monospace;fill:#0f172a}.box{rx:10;stroke-width:2}.arrow{stroke:#475569;stroke-width:2.5;fill:none;marker-end:url(#m)}.tag{font:700 13px system-ui,sans-serif;letter-spacing:1px}.small{font:13px system-ui,sans-serif;fill:#475569}
+    </style>
+    <marker id="m" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#475569"/></marker>
+  </defs>
+  <rect width="1200" height="760" fill="#f8fafc"/>
+  <text x="55" y="58" class="title">H113 · binary/trinary section-curl winding</text>
+  <text x="55" y="86" class="t">Frozen before measurement · first formal layer over Z/p²Z · public inputs (G,Q)</text>
+
+  <rect x="55" y="130" width="250" height="130" fill="#dbeafe" stroke="#2563eb" class="box"/>
+  <text x="78" y="160" class="tag" fill="#1d4ed8">CANONICAL SECTION</text>
+  <text x="78" y="193" class="h">s : E(Fₚ) → E(Z/p²Z)</text>
+  <text x="78" y="223" class="t">Q, Q/2, Q/3, Q/6</text>
+
+  <rect x="465" y="112" width="290" height="165" fill="#dcfce7" stroke="#16a34a" class="box"/>
+  <text x="488" y="143" class="tag" fill="#15803d">COMMUTING PATHS</text>
+  <text x="488" y="177" class="mono">[2]C₃(Q/2)+C₂(Q)</text>
+  <text x="580" y="205" class="h">=</text>
+  <text x="488" y="233" class="mono">[3]C₂(Q/3)+C₃(Q)</text>
+  <text x="488" y="260" class="small">exact group equality; zero curl mod p</text>
+
+  <rect x="900" y="130" width="245" height="130" fill="#fef3c7" stroke="#d97706" class="box"/>
+  <text x="923" y="160" class="tag" fill="#b45309">INTEGER WINDING</text>
+  <text x="923" y="194" class="mono">w(Q)=N(Q)/p</text>
+  <text x="923" y="222" class="t">w ∈ {−3,−2,−1,0,1,2}</text>
+  <text x="923" y="247" class="small">canonical representatives only</text>
+
+  <path d="M305 195 H455" class="arrow"/><path d="M755 195 H890" class="arrow"/>
+
+  <rect x="90" y="350" width="360" height="180" fill="#ede9fe" stroke="#7c3aed" class="box"/>
+  <text x="115" y="382" class="tag" fill="#6d28d9">GENERATOR-AWARE STENCIL</text>
+  <text x="115" y="416" class="h">w(Q−G), w(Q), w(Q+G)</text>
+  <text x="115" y="450" class="t">raw · shifts · first differences</text>
+  <text x="115" y="479" class="t">curvature · anchored coboundaries</text>
+  <text x="115" y="510" class="small">8 channels, all reduced modulo 6</text>
+
+  <rect x="520" y="350" width="285" height="180" fill="#cffafe" stroke="#0891b2" class="box"/>
+  <text x="545" y="382" class="tag" fill="#0e7490">FROZEN TEST</text>
+  <text x="545" y="416" class="h">8 × 720 permutations</text>
+  <text x="545" y="448" class="t">5,760 constant predicates</text>
+  <text x="545" y="480" class="mono">prediction = k mod 6</text>
+  <text x="545" y="510" class="small">same predicate must pass 28/28 rows</text>
+
+  <rect x="875" y="350" width="270" height="180" fill="#fee2e2" stroke="#dc2626" class="box"/>
+  <text x="900" y="382" class="tag" fill="#b91c1c">MATCHED CONTROLS</text>
+  <text x="900" y="416" class="t">random global sections</text>
+  <text x="900" y="445" class="t">histogram-matched labels</text>
+  <text x="900" y="474" class="t">coordinate isomorphisms</text>
+  <text x="900" y="503" class="t">torsion zero · tamper rejection</text>
+
+  <path d="M1022 260 V320 H270 V340" class="arrow"/><path d="M450 440 H510" class="arrow"/><path d="M805 440 H865" class="arrow"/>
+
+  <rect x="260" y="625" width="680" height="90" fill="#ffffff" stroke="#64748b" class="box"/>
+  <text x="292" y="657" class="h">Conditional base-six recovery</text>
+  <text x="292" y="688" class="mono">d ← predicate(G,R);  R ← [6⁻¹](R−[d]G);  verify [k]G=Q</text>
+  <path d="M662 530 V615" class="arrow"/>
+</svg>

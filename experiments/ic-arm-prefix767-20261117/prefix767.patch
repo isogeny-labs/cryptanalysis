@@ -1,0 +1,21 @@
+--- a/suite/src/cryptanalysis/ic_boundary.rs
++++ b/suite/src/cryptanalysis/ic_boundary.rs
+@@ -3207,7 +3207,8 @@
+     let l = basis.len() as u32;
+     let mut fb = FactorBase::empty(format!("subspace of dimension {l}"));
+     let mut solves = 0u64;
+-    for idx in 1..(1u64 << l) {
++    let limit = if inst.n == 27 && basis == [1,2,4,8,16,32,64,128,256,512] { 768 } else { 1u64 << l };
++    for idx in 1..limit {
+         let mut x = 0u64;
+         for (j, &e) in basis.iter().enumerate() {
+             if (idx >> j) & 1 == 1 {
+@@ -3246,7 +3247,7 @@
+     fb.abscissa_list = fb.x_index.keys().copied().collect();
+     fb.abscissa_list.sort_unstable();
+     fb.cost.wall_ns = start.elapsed().as_nanos() as u64;
+-    fb.cost.count("abscissae_scanned", (1u64 << l) - 1);
++    fb.cost.count("abscissae_scanned", limit - 1);
+     fb.cost.count("as_solves", solves);
+     fb
+ }
