@@ -18,18 +18,7 @@ and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
 
-- [ ] CT196: audit timed Cell<Calls> counter observability on CT195 two-panel actual norm pricing, verify per-panel exact call deltas; source-only until native PCC (Chained ECDLP Transfers, started 2026-11-17, branch research/ct196-counter-observability-20261117, PR #1743) [pcc:unverified]
-
-
-- [ ] CT195: isolate CT125 norm-point counter-bookkeeping overhead from actual descent/pmul cost on the frozen 48 public packets; add an independently admitted control panel (Chained ECDLP Transfers, started 2026-11-17, branch research/ct195-counter-neutral-norm-price-20261117, PR #1740) [pcc:unverified]
-
-- [ ] CT194: make each CT192 Rust primitive timing iteration consume a compiler-opaque public point; guard against loop-invariant hoisting and retain per-route parity (Chained ECDLP Transfers, started 2026-11-17, branch research/ct194-opaque-input-timing-20261117, PR #1738) [pcc:unverified]
-
-- [ ] CT193: bind each true pre-norm operand to its entire target Jacobian class, not only its doubled norm; add 2-torsion alias regression (Chained ECDLP Transfers, started 2026-11-17, branch research/ct193-class-bound-pre-norm-20261117, PR #1737) [pcc:unverified]
-
-- [ ] CT192: scalar-blind all-48 true pre-norm target operands and paired N2_actual/D_padd Rust pricing, source-only validation; no native execution (Chained ECDLP Transfers, 2026-11-17, branch research/ct192-public48-norm-operand-price-20261117, PR #1735) [pcc:unverified]
-
-- [x] CT191: implemented a guarded Rust N2_actual primitive arm next to historical D_padd proxy; source-only CI 10/10 normal + 10/10 -O passed, NO native timings or full ECDLP evidence (Chained ECDLP Transfers, 2026-11-17, PR #1734) [pcc:unverified]
+- [x] CT188: randomized physical A/B crossover and carryover diagnostics, source-only; protocol PR #1723 merged, implementation draft PR #1725 (automation, started 2026-11-17, branch research/ct188-physical-crossover-20261117) [pcc:unverified]
 
 - [ ] Extend certified Xedni lift-success trials to the ten-coefficient `r=7..9` regime with exact rational dependence verification (Codex, started 2026-11-17, branch codex/xedni-breakthrough-20261117, PR #1722) [pcc:unverified]
 
@@ -37,7 +26,7 @@ and construction gates. [pcc:unverified]
 
 - [x] CT186: source-only first-four-slot blinded sham scorer/tests (no native approval or execution; original price gates remain) (automation, started 2026-11-17, branch research/ct186-sham-label-source-control-20261117, PR #1718)
 
-- [ ] In progress: preserve successful native buffer-state admission and prepare the separate collector timing packet; prior tracking PRs #1712/#1717/#1720 merged before final evidence (Codex, started 2026-11-17, branch codex/ic-setup-native-admission-20261117)
+- [ ] In progress: publish completed buffer-state timing evidence and pursue the next primary-cost optimization; 200blocks,9failed A/A, no new primary gain; prior tracking PRs #1712/#1717/#1720/#1724 merged before final evidence (Codex, started 2026-11-17, branch codex/ic-buffer-state-timing-20261117, PR #1727)
 - [x] Specialize the static IC witness dictionary and measure full-pipeline and collector effects against frozen controls; negative result retained and indexed route restored, broader performance goal continues (Codex, started 2026-11-17, branch codex/ic-static-witness-map-20261117, PR #1709)
 - [x] Measure index-driven compact IC pair preparation with exact order/witness preservation; exploratory gains and collector regressions retained, broader optimization continues (Codex, started 2026-11-17, branch codex/ic-pair-index-gather-20261117, PR #1707)
 - [x] Combine packed squaring with constant-polynomial IC preparation and measure against compact baseline; unsigned exploratory panel preserved, broader collector optimization continues (Codex, started 2026-11-16, branch codex/ic-packed-const-square-20261116, PR #1705)
