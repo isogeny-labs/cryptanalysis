@@ -67,6 +67,11 @@ typedef struct coord_log_entry {
     uint32_t peer;
     uint64_t seq;
     char *line;
+    /* Another line was seen under the same (peer, seq).  Peer names are
+     * not authenticated, so a twin may be a forgery or the original; a
+     * version vector cannot tell a receiver which one it holds, so every
+     * line of a conflicted pair is sent in every delta. */
+    int32_t conflicted;
 } coord_log_entry;
 
 /*
@@ -80,6 +85,7 @@ typedef struct coord_seen_slot {
     int32_t used;
     uint32_t peer;
     uint64_t seq;
+    size_t log_idx; /* the line itself decides identity, not (peer, seq) */
 } coord_seen_slot;
 
 typedef struct coord_unit_index_slot {
@@ -115,7 +121,7 @@ struct ca_coord_state {
     coord_log_entry *log;
     size_t log_cap, log_count;
 
-    /* O(1) dedup index beside the log: presence of (peer, seq). */
+    /* O(1) dedup index beside the log: (peer, seq) -> every line under it. */
     coord_seen_slot *seen;
     size_t seen_cap, seen_count;
     /* O(1) index beside units: (unit, peer) -> index into units[]. */
@@ -138,6 +144,14 @@ struct ca_coord_vv {
 int ca_coord_is_dp(const ca_coord_ctx *ctx, const ca_elem *y);
 int ca_coord_walk_one(const ca_coord_ctx *ctx, uint64_t index, uint64_t cap, ca_coord_dp *out,
                       uint64_t *steps_out);
+/* As ca_coord_walk_one, and *start_ops gets the group operations spent
+ * deriving the start point (at most CA_COORD_START_OPS_MAX). */
+int ca_coord_walk_one_counted(const ca_coord_ctx *ctx, uint64_t index, uint64_t cap,
+                              ca_coord_dp *out, uint64_t *steps_out, uint64_t *start_ops);
+/* Two 64-bit double-and-add multiplications and one addition. */
+#define CA_COORD_START_OPS_MAX 255u
+/* Largest `steps` one walker can contribute to a unit report. */
+uint64_t ca_coord_walker_steps_max(const ca_coord_ctx *ctx);
 int ca_coord_dp_verify(const ca_coord_ctx *ctx, const ca_coord_dp *dp, ca_elem *out);
 int ca_coord_solve_collision(const ca_coord_ctx *ctx, uint64_t a1, uint64_t b1, uint64_t a2,
                              uint64_t b2, uint64_t *x);
@@ -148,7 +162,8 @@ uint64_t ca_coord_claim_unit(ca_coord_state *st, const ca_coord_ctx *ctx, const 
                              uint64_t now, uint64_t lease_secs, uint32_t claim_window,
                              uint64_t *resume_from);
 
-/* Next sequence number for `peer` (above anything already logged). */
+/* Next sequence number for `peer` (above anything already logged), or 0
+ * once the peer's sequence space (CA_COORD_SEQ_MAX) is spent. */
 uint64_t ca_coord_next_seq(ca_coord_state *st, const char *peer);
 
 /* Parse "host:port[/prefix]" out of a URL.  Returns CA_OK and fills the

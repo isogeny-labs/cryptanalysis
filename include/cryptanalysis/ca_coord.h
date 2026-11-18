@@ -67,6 +67,10 @@ extern "C" {
 #define CA_COORD_DPS_MAX 64
 /* Unit reports carried by one check-in. */
 #define CA_COORD_UNITS_MAX 8
+/* Largest check-in sequence number; 0 is never a sequence number.  The
+ * bound leaves room above it, so a forged seq cannot wrap a peer's next
+ * one round to numbers it has already used. */
+#define CA_COORD_SEQ_MAX (UINT64_C(1) << 62)
 
 /* Most shards a campaign may be split across.  The bound is not physics,
  * only a limit small enough that a mistyped number is caught. */
@@ -184,7 +188,7 @@ typedef struct ca_coord_unit {
 typedef struct ca_coord_checkin {
     uint64_t job_id; /* the job this is about; a foreign one is refused */
     char peer[CA_COORD_PEER_MAX];
-    uint64_t seq;  /* per peer, strictly increasing */
+    uint64_t seq;  /* per peer, strictly increasing, in [1, CA_COORD_SEQ_MAX] */
     uint64_t time; /* the sender's unix clock, advisory only */
     uint32_t num_units;
     uint32_t num_dps;
@@ -200,7 +204,8 @@ typedef struct ca_coord_checkin {
  * The merge of every check-in seen.  Each component is conflict-free --
  * a grow-only DP table (a repeat key with different coefficients *is*
  * the collision), a per-peer max-register for unit progress, a
- * write-once verified solution, and the log keyed by (peer, seq) -- so
+ * write-once verified solution, and the log, a set of lines indexed by
+ * (peer, seq) -- so
  * merging is commutative, associative and idempotent and peers converge
  * whatever order anything arrives in, however often.
  */
@@ -208,7 +213,8 @@ typedef struct ca_coord_state ca_coord_state;
 
 /* What applying one check-in did. */
 typedef struct ca_coord_outcome {
-    int32_t fresh; /* 1 if this (peer, seq) was new */
+    int32_t fresh; /* 1 if this line was new (a different line under a known
+                    * (peer, seq) is new too: names are not authenticated) */
     uint32_t accepted_dps;
     uint32_t rejected_dps; /* failed verification; the sender is lying or broken */
     int32_t solved_now;
@@ -415,7 +421,11 @@ typedef struct ca_coord_lane_result {
  * should_stop() returns non-zero.  `on_checkin` is called with each
  * check-in *after* it has been merged locally: it is the transport hook
  * -- hand it to an agent channel, write it to a file, both.  Either
- * callback may be NULL.
+ * callback may be NULL.  A check-in that cannot be merged locally (the
+ * lane's sequence space is spent, or the state is out of memory) stops
+ * the lane with that error; `out` still holds what it did.  `steps`
+ * counts walk steps and the group operations that derive each walker's
+ * start point.
  */
 CA_API ca_status ca_coord_lane_run(const ca_coord_ctx *ctx, ca_coord_state *st,
                                    const ca_coord_lane_params *p,
