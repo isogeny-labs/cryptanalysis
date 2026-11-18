@@ -33,4 +33,10 @@ jobs:
           python3 -S -m py_compile "$dir/ct197_native_evidence.py" "$dir/test_ct197_native_evidence.py"
           python3 -S -m unittest discover -s "$dir" -p test_ct197_native_evidence.py -v
           python3 -O -S -m unittest discover -s "$dir" -p test_ct197_native_evidence.py -v
+          python3 -S -m py_compile "$dir/ct198_route_cost_audit.py" "$dir/test_ct198_route_cost_audit.py"
+          python3 -S -m unittest discover -s "$dir" -p test_ct198_route_cost_audit.py -v
+          python3 -O -S -m unittest discover -s "$dir" -p test_ct198_route_cost_audit.py -v
+          python3 -S "$dir/ct198_route_cost_audit.py" >/tmp/ct198-counter-audit.json
+          python3 -O -S "$dir/ct198_route_cost_audit.py" >/tmp/ct198-counter-audit-opt.json
+          cmp /tmp/ct198-counter-audit.json /tmp/ct198-counter-audit-opt.json
           echo 'CT192 source/fixture validation ONLY; no native 48 pricing, independent PCC, or complete ECDLP [pcc:unverified]'
