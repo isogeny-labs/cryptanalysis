@@ -762,6 +762,359 @@ pub fn plane_cubic_discriminant(c: &[BigInt]) -> Result<BigInt, String> {
     determinant_bareiss(matrix)
 }
 
+/// A primitive integral representative of a rational projective point.
+///
+/// Rational projective points admit an integral representative after clearing
+/// denominators.  Dividing by the coordinate gcd and fixing the sign makes
+/// equality structural and keeps intermediate group-law coordinates smaller.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct PlaneCubicPoint {
+    pub coordinates: [BigInt; 3],
+}
+
+impl PlaneCubicPoint {
+    pub fn new(mut coordinates: [BigInt; 3]) -> Result<Self, String> {
+        if coordinates.iter().all(BigInt::is_zero) {
+            return Err("projective point (0,0,0) is invalid".into());
+        }
+        let gcd = coordinates.iter().fold(BigInt::zero(), |gcd, x| gcd.gcd(x));
+        for coordinate in &mut coordinates {
+            *coordinate /= &gcd;
+        }
+        if coordinates
+            .iter()
+            .find(|coordinate| !coordinate.is_zero())
+            .is_some_and(Signed::is_negative)
+        {
+            for coordinate in &mut coordinates {
+                *coordinate = -&*coordinate;
+            }
+        }
+        Ok(Self { coordinates })
+    }
+}
+
+fn plane_cubic_value(c: &[BigInt], point: &PlaneCubicPoint) -> BigInt {
+    let [x, y, z] = &point.coordinates;
+    dot(&plane_cubic_incidence_row(x, y, z), c)
+}
+
+fn plane_cubic_gradient(c: &[BigInt], point: &PlaneCubicPoint) -> [BigInt; 3] {
+    let [x, y, z] = &point.coordinates;
+    let two = BigInt::from(2);
+    let three = BigInt::from(3);
+    [
+        &three * &c[0] * x * x
+            + &two * &c[1] * x * y
+            + &c[2] * y * y
+            + &two * &c[4] * x * z
+            + &c[5] * y * z
+            + &c[7] * z * z,
+        &c[1] * x * x
+            + &two * &c[2] * x * y
+            + &three * &c[3] * y * y
+            + &c[5] * x * z
+            + &two * &c[6] * y * z
+            + &c[8] * z * z,
+        &c[4] * x * x
+            + &c[5] * x * y
+            + &c[6] * y * y
+            + &two * &c[7] * x * z
+            + &two * &c[8] * y * z
+            + &three * &c[9] * z * z,
+    ]
+}
+
+fn multiply_binary_forms(a: &[BigInt], b: &[BigInt]) -> Vec<BigInt> {
+    let mut product = vec![BigInt::zero(); a.len() + b.len() - 1];
+    for (i, x) in a.iter().enumerate() {
+        for (j, y) in b.iter().enumerate() {
+            product[i + j] += x * y;
+        }
+    }
+    product
+}
+
+/// Restrict `F` to `s P + t Q`; index `i` is the coefficient of `s^(3-i)t^i`.
+fn binary_cubic_restriction(c: &[BigInt], p: &PlaneCubicPoint, q: &PlaneCubicPoint) -> [BigInt; 4] {
+    const EXPONENTS: [(usize, usize, usize); PLANE_CUBIC_COEFFICIENTS] = [
+        (3, 0, 0),
+        (2, 1, 0),
+        (1, 2, 0),
+        (0, 3, 0),
+        (2, 0, 1),
+        (1, 1, 1),
+        (0, 2, 1),
+        (1, 0, 2),
+        (0, 1, 2),
+        (0, 0, 3),
+    ];
+    let mut result = std::array::from_fn(|_| BigInt::zero());
+    for (coefficient, (ex, ey, ez)) in c.iter().zip(EXPONENTS) {
+        let mut term = vec![BigInt::from(1)];
+        for (coordinate, exponent) in [0usize, 1, 2].into_iter().zip([ex, ey, ez]) {
+            for _ in 0..exponent {
+                term = multiply_binary_forms(
+                    &term,
+                    &[
+                        p.coordinates[coordinate].clone(),
+                        q.coordinates[coordinate].clone(),
+                    ],
+                );
+            }
+        }
+        for (value, monomial) in result.iter_mut().zip(term) {
+            *value += coefficient * monomial;
+        }
+    }
+    result
+}
+
+fn combine_projective(
+    a: &BigInt,
+    p: &PlaneCubicPoint,
+    b: &BigInt,
+    q: &PlaneCubicPoint,
+) -> Result<PlaneCubicPoint, String> {
+    PlaneCubicPoint::new(std::array::from_fn(|i| {
+        a * &p.coordinates[i] + b * &q.coordinates[i]
+    }))
+}
+
+fn projective_cross_nonzero(p: &PlaneCubicPoint, q: &PlaneCubicPoint) -> bool {
+    let [px, py, pz] = &p.coordinates;
+    let [qx, qy, qz] = &q.coordinates;
+    !(py * qz - pz * qy).is_zero()
+        || !(pz * qx - px * qz).is_zero()
+        || !(px * qy - py * qx).is_zero()
+}
+
+/// Exact group arithmetic on a smooth plane cubic with any rational origin.
+///
+/// For points `P,Q`, let their line have residual intersection `R`, then let
+/// the line `R,O` have residual intersection `S`.  Hyperplane divisors give
+/// `P+Q+R ~ H ~ R+O+S`, hence `[S-O]=[P-O]+[Q-O]`.  Unlike the familiar
+/// one-line reflection formula, this two-line construction does not require
+/// the chosen origin to be a flex.
+#[derive(Clone, Debug)]
+pub struct PlaneCubicGroup {
+    coefficients: Vec<BigInt>,
+    origin: PlaneCubicPoint,
+}
+
+impl PlaneCubicGroup {
+    pub fn new(coefficients: Vec<BigInt>, origin: PlaneCubicPoint) -> Result<Self, String> {
+        if coefficients.len() != PLANE_CUBIC_COEFFICIENTS {
+            return Err(format!(
+                "expected {PLANE_CUBIC_COEFFICIENTS} plane-cubic coefficients, got {}",
+                coefficients.len()
+            ));
+        }
+        if plane_cubic_discriminant(&coefficients)?.is_zero() {
+            return Err("plane cubic is singular".into());
+        }
+        if !plane_cubic_value(&coefficients, &origin).is_zero() {
+            return Err("chosen origin is not on the plane cubic".into());
+        }
+        Ok(Self {
+            coefficients,
+            origin,
+        })
+    }
+
+    /// Choose a rational origin without consuming one of the relation points.
+    ///
+    /// The origin is the residual intersection of the chord through `p` and
+    /// `q`.  If the cubic reduces to a Weierstrass model whose flex is the
+    /// finite-field identity and `p,q` reduce to `m_p G,m_q G`, respectively,
+    /// this origin reduces to `-(m_p+m_q)G`.  Thus its source-group scalar is
+    /// known even when the lifted cubic has no rational flex.
+    pub fn with_chord_origin(
+        coefficients: Vec<BigInt>,
+        p: &PlaneCubicPoint,
+        q: &PlaneCubicPoint,
+    ) -> Result<Self, String> {
+        if !projective_cross_nonzero(p, q) {
+            return Err("chord-origin construction requires distinct points".into());
+        }
+        let provisional = Self::new(coefficients, p.clone())?;
+        let origin = provisional.third_intersection(p, q)?;
+        Self::new(provisional.coefficients, origin)
+    }
+
+    pub fn origin(&self) -> &PlaneCubicPoint {
+        &self.origin
+    }
+
+    pub fn is_on_curve(&self, point: &PlaneCubicPoint) -> bool {
+        plane_cubic_value(&self.coefficients, point).is_zero()
+    }
+
+    fn tangent_auxiliary(&self, point: &PlaneCubicPoint) -> Result<PlaneCubicPoint, String> {
+        let gradient = plane_cubic_gradient(&self.coefficients, point);
+        if gradient.iter().all(BigInt::is_zero) {
+            return Err("plane cubic point is singular".into());
+        }
+        let zero = BigInt::zero();
+        let candidates = [
+            [gradient[1].clone(), -&gradient[0], zero.clone()],
+            [gradient[2].clone(), zero.clone(), -&gradient[0]],
+            [zero, gradient[2].clone(), -&gradient[1]],
+        ];
+        for candidate in candidates {
+            if candidate.iter().all(BigInt::is_zero) {
+                continue;
+            }
+            let candidate = PlaneCubicPoint::new(candidate)?;
+            if projective_cross_nonzero(point, &candidate) {
+                return Ok(candidate);
+            }
+        }
+        Err("failed to parameterize the tangent line".into())
+    }
+
+    pub fn third_intersection(
+        &self,
+        p: &PlaneCubicPoint,
+        q: &PlaneCubicPoint,
+    ) -> Result<PlaneCubicPoint, String> {
+        if !self.is_on_curve(p) || !self.is_on_curve(q) {
+            return Err("third intersection requires two points on the cubic".into());
+        }
+        if p != q {
+            let restriction = binary_cubic_restriction(&self.coefficients, p, q);
+            if !restriction[0].is_zero() || !restriction[3].is_zero() {
+                return Err("internal error: chord endpoints do not vanish".into());
+            }
+            return combine_projective(&restriction[2], p, &(-&restriction[1]), q);
+        }
+
+        let auxiliary = self.tangent_auxiliary(p)?;
+        let restriction = binary_cubic_restriction(&self.coefficients, p, &auxiliary);
+        if !restriction[0].is_zero() || !restriction[1].is_zero() {
+            return Err("internal error: tangent does not have double contact".into());
+        }
+        combine_projective(&restriction[3], p, &(-&restriction[2]), &auxiliary)
+    }
+
+    pub fn add(&self, p: &PlaneCubicPoint, q: &PlaneCubicPoint) -> Result<PlaneCubicPoint, String> {
+        let residual = self.third_intersection(p, q)?;
+        self.third_intersection(&residual, &self.origin)
+    }
+
+    pub fn negate(&self, point: &PlaneCubicPoint) -> Result<PlaneCubicPoint, String> {
+        let tangent_residual = self.third_intersection(&self.origin, &self.origin)?;
+        self.third_intersection(point, &tangent_residual)
+    }
+
+    pub fn scalar_mul(
+        &self,
+        scalar: &BigInt,
+        point: &PlaneCubicPoint,
+    ) -> Result<PlaneCubicPoint, String> {
+        let mut scalar = scalar.clone();
+        let mut addend = point.clone();
+        if scalar.is_negative() {
+            scalar = -scalar;
+            addend = self.negate(&addend)?;
+        }
+        let mut result = self.origin.clone();
+        while !scalar.is_zero() {
+            if scalar.is_odd() {
+                result = self.add(&result, &addend)?;
+            }
+            scalar >>= 1;
+            if !scalar.is_zero() {
+                addend = self.add(&addend, &addend)?;
+            }
+        }
+        Ok(result)
+    }
+
+    pub fn relation_sum(
+        &self,
+        scalars: &[BigInt],
+        points: &[PlaneCubicPoint],
+    ) -> Result<PlaneCubicPoint, String> {
+        if scalars.len() != points.len() {
+            return Err("relation scalars and points must have the same length".into());
+        }
+        let mut sum = self.origin.clone();
+        for (scalar, point) in scalars.iter().zip(points) {
+            sum = self.add(&sum, &self.scalar_mul(scalar, point)?)?;
+        }
+        Ok(sum)
+    }
+}
+
+/// Evaluate the finite-field scalar equation induced by a shifted origin.
+///
+/// If point `i` reduces to `m_i G` and the chosen lifted origin reduces to
+/// `m_o G`, an exact lifted relation has source residue
+/// `sum_i n_i (m_i-m_o)` modulo the source subgroup order.
+pub fn shifted_source_relation_residue(
+    scalars: &[BigInt],
+    point_multipliers: &[BigInt],
+    origin_multiplier: &BigInt,
+    group_order: &BigInt,
+) -> Result<BigInt, String> {
+    if scalars.len() != point_multipliers.len() {
+        return Err("relation scalars and source multipliers must have the same length".into());
+    }
+    if group_order <= &BigInt::zero() {
+        return Err("source group order must be positive".into());
+    }
+    let residue: BigInt = scalars
+        .iter()
+        .zip(point_multipliers)
+        .map(|(scalar, multiplier)| scalar * (multiplier - origin_multiplier))
+        .sum();
+    Ok(residue.mod_floor(group_order))
+}
+
+/// Recover the one unknown source multiplier in a certified shifted relation.
+///
+/// `known_multipliers` must contain exactly one `None`.  `Ok(None)` means the
+/// unknown's relation coefficient is not invertible modulo `group_order`.
+pub fn recover_shifted_source_discrete_log(
+    scalars: &[BigInt],
+    known_multipliers: &[Option<BigInt>],
+    origin_multiplier: &BigInt,
+    group_order: &BigInt,
+) -> Result<Option<BigInt>, String> {
+    if scalars.len() != known_multipliers.len() {
+        return Err("relation scalars and source multipliers must have the same length".into());
+    }
+    if group_order <= &BigInt::zero() {
+        return Err("source group order must be positive".into());
+    }
+    let unknowns: Vec<usize> = known_multipliers
+        .iter()
+        .enumerate()
+        .filter_map(|(index, multiplier)| multiplier.is_none().then_some(index))
+        .collect();
+    if unknowns.len() != 1 {
+        return Err("exactly one source multiplier must be unknown".into());
+    }
+    let unknown = unknowns[0];
+    let coefficient = scalars[unknown].mod_floor(group_order);
+    let inverse = coefficient.extended_gcd(group_order);
+    if inverse.gcd != BigInt::from(1) {
+        return Ok(None);
+    }
+    let known_sum: BigInt = scalars
+        .iter()
+        .zip(known_multipliers)
+        .filter_map(|(scalar, multiplier)| {
+            multiplier
+                .as_ref()
+                .map(|multiplier| scalar * (multiplier - origin_multiplier))
+        })
+        .sum();
+    let rhs = &coefficient * origin_multiplier - known_sum;
+    Ok(Some((rhs * inverse.x).mod_floor(group_order)))
+}
+
 fn score_plane_cubic_lift(c: &[BigInt]) -> Result<PlaneCubicLiftScore, String> {
     if c.len() != PLANE_CUBIC_COEFFICIENTS {
         return Err(format!(
@@ -1050,6 +1403,200 @@ mod tests {
         assert!(result.optimized_score.nonsingular);
         // The planted model is y^2 = x^3 - x + 1, with Delta=-368.
         assert_eq!(result.optimized_score.discriminant, "635904");
+
+        // Close the formerly missing r=9 seam: use a chord-derived origin,
+        // certify a relation involving the ninth point, and recover its
+        // source multiplier from that shifted relation.
+        let optimized = result
+            .optimized_coefficients
+            .iter()
+            .map(|value| big(value))
+            .collect();
+        let multiples = plane_cubic_test_multiples();
+        let group =
+            PlaneCubicGroup::with_chord_origin(optimized, &multiples[0], &multiples[1]).unwrap();
+        let relation_scalars = bi(&[2, -1]);
+        let relation = group
+            .relation_sum(
+                &relation_scalars,
+                &[multiples[2].clone(), multiples[8].clone()],
+            )
+            .unwrap();
+        assert_eq!(&relation, group.origin());
+        assert_eq!(
+            recover_shifted_source_discrete_log(
+                &relation_scalars,
+                &[Some(BigInt::from(3)), None],
+                &BigInt::from(-3),
+                &BigInt::from(73),
+            )
+            .unwrap(),
+            Some(BigInt::from(9))
+        );
+    }
+
+    fn plane_cubic_test_point(x: &str, y: &str, z: &str) -> PlaneCubicPoint {
+        PlaneCubicPoint::new([big(x), big(y), big(z)]).unwrap()
+    }
+
+    fn plane_cubic_test_multiples() -> Vec<PlaneCubicPoint> {
+        [
+            ("0", "1", "1"),
+            ("2", "-7", "8"),
+            ("56", "419", "1"),
+            ("-6244", "24655", "21952"),
+            ("5232472", "-8824453", "11089567"),
+            ("8246188998", "30795303833", "588480472"),
+            ("-51055373209680", "101098481076377", "85923747076383"),
+            (
+                "1796402375990961480",
+                "-2098030206970736191",
+                "2631958890650432000",
+            ),
+            (
+                "160221897655974195623120",
+                "396235626125845757178647",
+                "25634128246348207648607",
+            ),
+        ]
+        .into_iter()
+        .map(|(x, y, z)| plane_cubic_test_point(x, y, z))
+        .collect()
+    }
+
+    #[test]
+    fn exact_plane_cubic_group_recovers_nine_known_multiples() {
+        // y^2 z = x^3 - x z^2 + z^3 with its flex at infinity as origin.
+        let coefficients = bi(&[1, 0, 0, 0, 0, 0, -1, -1, 0, 1]);
+        let infinity = plane_cubic_test_point("0", "1", "0");
+        let group = PlaneCubicGroup::new(coefficients, infinity).unwrap();
+        let multiples = plane_cubic_test_multiples();
+        let generator = &multiples[0];
+        for (index, expected) in multiples.iter().enumerate() {
+            let actual = group
+                .scalar_mul(&BigInt::from(index + 1), generator)
+                .unwrap();
+            assert_eq!(&actual, expected, "incorrect multiple {}", index + 1);
+        }
+    }
+
+    #[test]
+    fn exact_plane_cubic_group_accepts_nonflex_origin() {
+        let coefficients = bi(&[1, 0, 0, 0, 0, 0, -1, -1, 0, 1]);
+        let multiples = plane_cubic_test_multiples();
+        let standard_infinity = plane_cubic_test_point("0", "1", "0");
+        let group = PlaneCubicGroup::new(coefficients, multiples[0].clone()).unwrap();
+
+        // With O=G, the shifted law is P (+)_O Q = P+Q-G in the standard law.
+        assert_eq!(
+            group.add(&multiples[0], &multiples[3]).unwrap(),
+            multiples[3]
+        );
+        assert_eq!(
+            group.add(&multiples[1], &multiples[2]).unwrap(),
+            multiples[3]
+        );
+        assert_eq!(group.negate(&multiples[1]).unwrap(), standard_infinity);
+
+        let left = group
+            .add(
+                &group.add(&multiples[1], &multiples[2]).unwrap(),
+                &multiples[3],
+            )
+            .unwrap();
+        let right = group
+            .add(
+                &multiples[1],
+                &group.add(&multiples[2], &multiples[3]).unwrap(),
+            )
+            .unwrap();
+        assert_eq!(left, right);
+    }
+
+    #[test]
+    fn chord_origin_preserves_all_relation_points_and_known_source_shift() {
+        let coefficients = bi(&[1, 0, 0, 0, 0, 0, -1, -1, 0, 1]);
+        let multiples = plane_cubic_test_multiples();
+        let standard_infinity = plane_cubic_test_point("0", "1", "0");
+        let standard_group = PlaneCubicGroup::new(coefficients.clone(), standard_infinity).unwrap();
+        let group =
+            PlaneCubicGroup::with_chord_origin(coefficients, &multiples[0], &multiples[1]).unwrap();
+
+        // The residual chord point through G and 2G is -3G in the source law.
+        let expected_origin = standard_group
+            .scalar_mul(&BigInt::from(-3), &multiples[0])
+            .unwrap();
+        assert_eq!(group.origin(), &expected_origin);
+
+        // Relative to that origin, G + 2G - 6G is zero:
+        // 1 + 2 - 6 - (1 + 1 - 1)(-3) = 0 in source scalar coordinates.
+        let relation = group
+            .relation_sum(
+                &bi(&[1, 1, -1]),
+                &[
+                    multiples[0].clone(),
+                    multiples[1].clone(),
+                    multiples[5].clone(),
+                ],
+            )
+            .unwrap();
+        assert_eq!(&relation, group.origin());
+
+        let relation_scalars = bi(&[1, 1, -1]);
+        let source_multipliers = bi(&[1, 2, 6]);
+        let source_order = BigInt::from(73);
+        assert!(shifted_source_relation_residue(
+            &relation_scalars,
+            &source_multipliers,
+            &BigInt::from(-3),
+            &source_order,
+        )
+        .unwrap()
+        .is_zero());
+        assert_eq!(
+            recover_shifted_source_discrete_log(
+                &relation_scalars,
+                &[Some(BigInt::from(1)), Some(BigInt::from(2)), None],
+                &BigInt::from(-3),
+                &source_order,
+            )
+            .unwrap(),
+            Some(BigInt::from(6))
+        );
+    }
+
+    #[test]
+    fn exact_plane_cubic_group_certifies_integer_relations() {
+        let coefficients = bi(&[1, 0, 0, 0, 0, 0, -1, -1, 0, 1]);
+        let infinity = plane_cubic_test_point("0", "1", "0");
+        let group = PlaneCubicGroup::new(coefficients, infinity.clone()).unwrap();
+        let multiples = plane_cubic_test_multiples();
+        let relation = group
+            .relation_sum(
+                &bi(&[1, 1, -1]),
+                &[
+                    multiples[1].clone(),
+                    multiples[2].clone(),
+                    multiples[4].clone(),
+                ],
+            )
+            .unwrap();
+        assert_eq!(relation, infinity);
+    }
+
+    #[test]
+    fn exact_plane_cubic_group_rejects_invalid_models_and_points() {
+        let origin = plane_cubic_test_point("0", "1", "0");
+        let singular = bi(&[1, 0, 0, 1, 0, -3, 0, 0, 0, 1]);
+        assert!(PlaneCubicGroup::new(singular, origin.clone())
+            .unwrap_err()
+            .contains("singular"));
+
+        let coefficients = bi(&[1, 0, 0, 0, 0, 0, -1, -1, 0, 1]);
+        let off_curve = plane_cubic_test_point("1", "0", "1");
+        assert!(PlaneCubicGroup::new(coefficients, off_curve)
+            .unwrap_err()
+            .contains("not on"));
     }
 
     #[test]

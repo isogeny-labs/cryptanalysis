@@ -1,0 +1,23 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-18T01:25:12Z",
+ "id": "PCC-20261118-2f3d76",
+ "kind": "statement",
+ "producer": {
+  "commit": "8c79b510a2b8bccc8663c785e56e43a42c9b08a5",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/ic-collector-counterfactual-20261117/setup-parameter-presence-audit.json",
+    "sha256": "c25c39e48dd3a2605cd938ca751d951b58f62b8d04e8f511f6e6049250afae05"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "experiments/ic-collector-counterfactual-20261117",
+ "statement": "Post-launch source audit identifies a limitation in the predeclared opaque_observation contrast: I explicitly inserts suppress_indexed_counter=0 into pre-primary input specification while O/R/G omit that key and use the same default. Recorded controls show14versus13parameter keys in all5fields, with matching O/R/G key sets. I/O is therefore a combined configuration-presence/observation contrast, not an isolated barrier effect. No frozen input, source, row, gate or estimator is changed and no retry is launched. Preserve this limitation in interpretation."
+}
