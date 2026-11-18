@@ -18,7 +18,7 @@ and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
 
-- [ ] Complete and verify the Rust ECC2K-130 index-calculus pipeline end to end (Codex, started 2026-11-18, branch codex/ecc2k130-rust-e2e-20261118) [pcc:unverified]
+- [ ] Complete and verify the Rust ECC2K-130 index-calculus pipeline end to end (Codex, started 2026-11-18, branch codex/ecc2k130-rust-e2e-20261118, PR #1754) [pcc:unverified]
 
 - [x] Report base-point and scalar availability in fixed index-calculus status (Codex, started 2026-11-18, branch cli-dlp-input-status, PR #1750)
 
