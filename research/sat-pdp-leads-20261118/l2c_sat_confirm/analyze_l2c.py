@@ -7,6 +7,11 @@ decision, writes summary.json."""
 import json, math, random, collections, sys
 
 rows = [json.loads(l) for l in open(sys.argv[1] if len(sys.argv) > 1 else "rows.jsonl")]
+# The committed rows.jsonl drops constant fields (decomposable = True, censored = False,
+# answer_ok = answer == "SAT"; vars/clauses are in manifest.json) to stay under 64 KiB.
+for r in rows:
+    r.setdefault("censored", False)
+    r.setdefault("answer_ok", r["answer"] == "SAT")
 bad = [r for r in rows if not r["answer_ok"] or r["answer"] != "SAT" or r.get("model_ok") is False]
 cens = [r for r in rows if r["censored"]]
 by = collections.defaultdict(dict)

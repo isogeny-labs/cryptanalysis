@@ -99,7 +99,12 @@ whether it could change the exponent at all.
   KILL. On l = 4 UNSAT, the leaf-independent part (RREF rows as prefix
   chains) gives 1.061× [0.918, 1.225] conflicts, inside the A/A band.
   Exploratory, and outside the decision: on SAT targets it gives 0.358×
-  [0.204, 0.556]. See [`l2b_rref/RESULT.md`](l2b_rref/RESULT.md). See
+  [0.204, 0.556]. See [`l2b_rref/RESULT.md`](l2b_rref/RESULT.md).
+- **L2c (2026-11-18): CONFIRMED on fresh curves and targets,** under a
+  frozen protocol. On l = 4 decomposable targets the RREF rows give 0.631×
+  [0.494, 0.809] conflicts and 0.742× wall time. It is a solver effect, not
+  an IC gain: the break-even decomposable fraction is about 0.22, given the
+  UNSAT cost. See [`l2c_sat_confirm/RESULT.md`](l2c_sat_confirm/RESULT.md). See
   [`l2_sbva/RESULT.md`](l2_sbva/RESULT.md).
 
 ### L3. Usefulness gate for round-4 lead A (torsion targets) before building it
