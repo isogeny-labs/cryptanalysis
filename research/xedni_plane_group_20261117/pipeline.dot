@@ -1,0 +1,21 @@
+digraph xedni_plane_group {
+  graph [rankdir=LR, bgcolor="white", pad="0.25", nodesep="0.45", ranksep="0.65"];
+  node [shape=box, style="rounded,filled", fontname="DejaVu Sans", fontsize=11, color="#334155", fillcolor="#f8fafc"];
+  edge [fontname="DejaVu Sans", fontsize=10, color="#475569"];
+
+  source [label="Source points\nm_i G over F_p", fillcolor="#dbeafe"];
+  lift [label="Ten-coefficient lift\nthrough r <= 9 points", fillcolor="#e0f2fe"];
+  origin [label="Chord residual origin O\nm_O = -(m_1+m_2)", fillcolor="#fef3c7"];
+  relation [label="Exact two-line group law\nsum n_i(P_i-O) = 0", fillcolor="#dcfce7"];
+  reduction [label="Shifted source equation\nsum n_i(m_i-m_O) = 0", fillcolor="#ede9fe"];
+  recover [label="Recover target log\nwhen gcd(n_Q, ord G)=1", fillcolor="#dcfce7"];
+  limit [label="No relation in box\nor noninvertible n_Q", fillcolor="#fee2e2"];
+
+  source -> lift [label="coordinate lifts"];
+  lift -> origin [label="chord(P_1,P_2)"];
+  origin -> relation [label="arbitrary rational identity"];
+  relation -> reduction [label="good reduction certificate"];
+  reduction -> recover [label="invertible target coefficient"];
+  reduction -> limit [label="otherwise"];
+}
+

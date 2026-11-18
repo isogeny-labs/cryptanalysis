@@ -2842,7 +2842,7 @@ mod tests {
     fn packed_const_square_matches_scalar_and_rejects_noncanonical() {
         #[cfg(all(target_arch = "x86_64", suite_avx512))]
         {
-            let mut rng = StdRng::seed_from_u64(0xC057_5A);
+            let mut rng = StdRng::seed_from_u64(0x00C0_575A);
             for n in [15, 18, 21, 24, 27] {
                 let field = nb_field(n);
                 let Some(kernel) = simd256::Simd256::new(&field) else {
