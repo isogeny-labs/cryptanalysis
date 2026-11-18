@@ -31,7 +31,7 @@ reconstructs the frozen experiment from the five literal curve fixtures.
 The producer's point, modulus, moment, channel, score, exact-ID, control,
 decoder, count and digest fields are treated as untrusted claims.
 
-## Required verification
+## Checks to perform
 
 1. Hash raw data-record bytes, including each trailing newline and excluding
    the final summary line. Require the producer digest, record count and raw
@@ -49,7 +49,7 @@ decoder, count and digest fields are treated as untrusted claims.
 6. For every exact ID, rerun the scalar-blind group decoder from point-keyed
    public channels and independently require reconstructed `[m]G=Q`.
 7. Rerun the forbidden-oracle positive decoder separately and require 366
-   verified targets.
+   checked targets.
 8. Require all frozen record and cohort cardinalities. Runtime and producer
    operation counts are reported evidence, not trusted speed claims; exact
    deterministic channel-operation counts are recomputed.
