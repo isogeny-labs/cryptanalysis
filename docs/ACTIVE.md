@@ -17,7 +17,7 @@ prime-field lift pipeline, while continuing to track the binary/Koblitz source
 and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
-- [ ] CT201: independent complete cold single-target cost gate (four matched Rust solver arms, source-only checker; automation, started 2026-11-18, branch research/ct201-complete-single-target-gate-20261118) [pcc:unverified]
+- [ ] CT201: independent complete cold single-target cost gate (four matched Rust solver arms, source-only checker; automation, started 2026-11-18, branch research/ct201-complete-single-target-gate-20261118, PR #1766) [pcc:unverified]
 
 - [ ] Mirror the general binary hyperelliptic-cover transfer interface from crypto after its source commit is frozen, with split provenance and exact parity checks (Codex, started 2026-11-18, branch codex/general-binary-cover-transfer-mirror-20261118, PR #1765) [pcc:unverified]
 
