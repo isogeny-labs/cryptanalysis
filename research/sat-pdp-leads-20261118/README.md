@@ -97,6 +97,12 @@ whether it could change the exponent at all.
   n ≤ 23 and compare with 2^(3l−n)/6.
 - **Kill.** Count matches the estimate → mark R4-A "stage only".
 - **Prior.** 85% that the count matches.
+- **Done (2026-11-18): R4-A is "stage only".** Exact counts over 16 cells
+  with n ≤ 23 and 40 curves each: 40 T0 x-sets observed against an estimate
+  of 61.7. A random-target control gives 103 against 123.4. Every curve has
+  at most 2 x-sets, against 2^l = 8 to 256 needed. The estimate above should
+  read 2^(3l−n)/12, because the 2 global sign patterns double-count. See
+  [`l3_torsion_count/RESULT.md`](l3_torsion_count/RESULT.md).
 
 ### L4. Support-minors MinRank on the lin21 leaf (refines round-4 D/E)
 
