@@ -82,6 +82,13 @@ whether it could change the exponent at all.
   CaDiCaL, plus the ER-definitions variant, with an A/A arm.
 - **Kill.** Conflicts and wall time fall inside the A/A noise band.
 - **Prior.** 30%.
+- **Done (2026-11-18): KILL.** SBVA was tested on m = 4 dual-rail CNFs at
+  l = 3 and l = 4, with 3 shuffles each and an A/A arm. On l = 4 UNSAT, its
+  conflicts are 1.061× CaDiCaL's, 95% CI [0.979, 1.143]. That is inside the
+  A/A band [0.793, 1.108]. On the dual encoding it is worse, at 1.121×.
+  SBVA barely changes these CNFs (+6 variables, −10 clauses). The ER-mined
+  extension variables half of L2 was not run. See
+  [`l2_sbva/RESULT.md`](l2_sbva/RESULT.md).
 
 ### L3. Usefulness gate for round-4 lead A (torsion targets) before building it
 

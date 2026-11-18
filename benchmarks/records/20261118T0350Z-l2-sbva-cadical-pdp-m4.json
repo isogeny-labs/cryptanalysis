@@ -1,7 +1,28 @@
 {
   "branch": "claude/sat-solver-index-calculus-zczysc",
-  "closed_utc": null,
-  "commands": [],
+  "closed_utc": "2026-11-18T04:36:35+00:00",
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "research/sat-pdp-leads-20261118/l2_sbva/run_l2.py",
+        "--inst",
+        "/tmp/claude-0/-home-user/ca33b680-080e-5559-8c69-94b98a775c60/scratchpad/l2inst",
+        "--cadical",
+        "/tmp/claude-0/-home-user/ca33b680-080e-5559-8c69-94b98a775c60/scratchpad/solvers/cadical/build/cadical",
+        "--sbva",
+        "/tmp/claude-0/-home-user/ca33b680-080e-5559-8c69-94b98a775c60/scratchpad/solvers/SBVA/sbva",
+        "--out",
+        "research/sat-pdp-leads-20261118/l2_sbva/rows.jsonl",
+        "--workers",
+        "3"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "started_utc": "2026-11-18T03:51:09+00:00",
+      "wall_s": 1623.16
+    }
+  ],
   "commit": "042240a1d4a31bc6d27c2f721d48e065658e75d3",
   "commit_dirty": false,
   "created_utc": "2026-11-18T03:50:57+00:00",
@@ -15,19 +36,74 @@
     "platform": "Linux-6.18.44-fc-v595-x86_64-with-glibc2.39"
   },
   "id": "20261118T0350Z-l2-sbva-cadical-pdp-m4",
-  "metrics": [],
+  "metrics": [
+    {
+      "baseline": 1.0,
+      "better": "higher",
+      "n": 48,
+      "name": "conflicts_cadical_over_sbva_cadical_l4_unsat",
+      "note": "CaDiCaL-alone conflicts / SBVA->CaDiCaL conflicts, geometric mean over 16 base CNFs x 3 shuffles, 95% bootstrap CI over base CNFs; A/A band in the same orientation 1/0.948=1.055 [0.903,1.261]; inside A/A -> KILL",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.875,
+        1.021
+      ],
+      "unit": "ratio",
+      "value": 0.943
+    },
+    {
+      "baseline": 1.0,
+      "better": "higher",
+      "n": 48,
+      "name": "wall_cadical_over_sbva_cadical_l4_unsat",
+      "note": "wall incl. SBVA time; unisolated shared 4-core container, exploratory",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.87,
+        1.029
+      ],
+      "unit": "ratio",
+      "value": 0.943
+    }
+  ],
   "problem": "pdp:m4-dualrail-l3l4",
-  "raw": [],
+  "raw": [
+    {
+      "bytes": 65386,
+      "path": "research/sat-pdp-leads-20261118/l2_sbva/rows.jsonl",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/ac/ac91929eaac21fd96b0362149a113928508ce3780f8d5404235aa420a3b5c306",
+      "sha256": "ac91929eaac21fd96b0362149a113928508ce3780f8d5404235aa420a3b5c306",
+      "uploaded": false
+    },
+    {
+      "bytes": 2512,
+      "path": "research/sat-pdp-leads-20261118/l2_sbva/model_recheck.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/3f/3f1c12c320945d3bab1c703b66963f179d3506c5c3156e42ce001ade359254d8",
+      "sha256": "3f1c12c320945d3bab1c703b66963f179d3506c5c3156e42ce001ade359254d8",
+      "uploaded": false
+    },
+    {
+      "bytes": 11540,
+      "path": "research/sat-pdp-leads-20261118/l2_sbva/manifest.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/cf/cfeb314de9f1573551ebbea558fb8c68ec29f1f46b018dc2ae17608428716cff",
+      "sha256": "cfeb314de9f1573551ebbea558fb8c68ec29f1f46b018dc2ae17608428716cff",
+      "uploaded": false
+    }
+  ],
   "repo": "cryptanalysis",
   "reports": {
-    "pdf": null,
+    "pdf": "research/sat-pdp-leads-20261118/l2_sbva/l2_report.pdf",
     "png": [],
-    "svg": []
+    "svg": [
+      "research/sat-pdp-leads-20261118/l2_sbva/l2_ratios.svg"
+    ]
   },
   "schema": "bench.record/v1",
   "session": null,
   "slug": "l2-sbva-cadical-pdp-m4",
-  "status": "open",
-  "summary": "",
+  "status": "measured",
+  "summary": "L2 KILL: SBVA preprocessing before CaDiCaL on m=4 dual-rail PDP CNFs (l=3,4) gives 1.061x conflicts on l4 UNSAT [0.979,1.143], inside A/A [0.793,1.108]; no gain. [pcc:unverified]",
   "validation": null
 }

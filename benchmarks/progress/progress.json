@@ -22,12 +22,12 @@
       "sha256": "c36443b17548a2f9c4f2843635fbaed6abe04788a259585f38605f7447f11349"
     }
   ],
-  "latest_record": "20261115T0646Z-prime31-retro-gcd-native-circuit",
+  "latest_record": "20261118T0350Z-l2-sbva-cadical-pdp-m4",
   "note": "Every value is quoted from the record it names, in that record's unit. Percentages and ratios under 'derived' are computed here from those values and are not measurements. Series in different units are never compared. 4 digest-pinned historical measured records are excluded from all series and derived comparisons; recorded status counts retain them. See integrity_exclusions in progress.json and PROGRESS.md for reasons.",
   "records": {
     "censored": 1,
     "invalid": 36,
-    "measured": 36,
+    "measured": 37,
     "open": 0
   },
   "repo": "cryptanalysis",
@@ -2614,6 +2614,58 @@
         }
       ],
       "problem": "kernel:suite_gf2_koblitz",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.943,
+      "latest": 0.943,
+      "latest_derived": {},
+      "metric": "conflicts_cadical_over_sbva_cadical_l4_unsat",
+      "points": [
+        {
+          "commit": "042240a1d4a3",
+          "date": "2026-11-18",
+          "derived": {},
+          "n": 48,
+          "record": "20261118T0350Z-l2-sbva-cadical-pdp-m4",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.875,
+            1.021
+          ],
+          "summary": "L2 KILL: SBVA preprocessing before CaDiCaL on m=4 dual-rail PDP CNFs (l=3,4) gives 1.061x conflicts on l4 UNSAT [0.979,1.143], inside A/A [0.793,1.108]; no gain. [pcc:unverified]",
+          "value": 0.943
+        }
+      ],
+      "problem": "pdp:m4-dualrail-l3l4",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.943,
+      "latest": 0.943,
+      "latest_derived": {},
+      "metric": "wall_cadical_over_sbva_cadical_l4_unsat",
+      "points": [
+        {
+          "commit": "042240a1d4a3",
+          "date": "2026-11-18",
+          "derived": {},
+          "n": 48,
+          "record": "20261118T0350Z-l2-sbva-cadical-pdp-m4",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.87,
+            1.029
+          ],
+          "summary": "L2 KILL: SBVA preprocessing before CaDiCaL on m=4 dual-rail PDP CNFs (l=3,4) gives 1.061x conflicts on l4 UNSAT [0.979,1.143], inside A/A [0.793,1.108]; no gain. [pcc:unverified]",
+          "value": 0.943
+        }
+      ],
+      "problem": "pdp:m4-dualrail-l3l4",
       "unit": "ratio"
     },
     {

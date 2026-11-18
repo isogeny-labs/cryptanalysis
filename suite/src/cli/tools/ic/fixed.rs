@@ -22,7 +22,7 @@ pub struct FixedArgs {
     /// Durable campaign directory. Rerun with the same parameters to resume.
     #[arg(long)]
     pub dir: PathBuf,
-    /// Use status to check the base point and target scalars. The all stage
+    /// Use status to check subgroup membership and candidate scalars. The all stage
     /// also attempts target-specific relations when base logs are incomplete.
     #[arg(long, default_value = "all", value_parser = ["preflight", "select", "pairs", "collect", "logs", "solve", "all", "status"])]
     pub stage: String,

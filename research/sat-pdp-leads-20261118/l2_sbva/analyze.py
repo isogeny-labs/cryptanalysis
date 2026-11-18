@@ -12,7 +12,16 @@ Markdown table plus the decision.
 import json, math, random, collections, sys
 
 rows = [json.loads(l) for l in open(sys.argv[1] if len(sys.argv) > 1 else "rows.jsonl")]
-bad = [r for r in rows if not r["answer_ok"] or r.get("model_ok") is False]
+# Deviation (RESULT.md): CaDiCaL HEAD omits eliminated variables from its printed
+# model, so arm-A model checks can fail spuriously. A row with model_ok False is
+# accepted only if model_recheck.json shows a full model (--elim=0, same shuffled
+# CNF) that satisfies every clause.
+import os
+rechk = {}
+if os.path.exists("model_recheck.json"):
+    rechk = {(r["file"], r["k"]): r["sat"] and r["model_satisfies"] for r in json.load(open("model_recheck.json"))}
+bad = [r for r in rows if not r["answer_ok"]
+       or (r.get("model_ok") is False and not rechk.get((r["file"], r["k"]), False))]
 cens = [r for r in rows if r["censored"]]
 by = collections.defaultdict(dict)
 for r in rows:
