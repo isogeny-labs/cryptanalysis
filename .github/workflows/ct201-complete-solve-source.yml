@@ -22,7 +22,7 @@ jobs:
         run: |
           set -euo pipefail
           d=experiments/chained-transfer-public-target/primitive-pricing-01/ct201-complete-solve
-          python3 -S -m unittest discover -s "$d" -p 'test_ct201_complete_solve_gate.py' -v
-          python3 -O -S -m unittest discover -s "$d" -p 'test_ct201_complete_solve_gate.py' -v
-          python3 -S -m py_compile "$d/ct201_complete_solve_gate.py" "$d/test_ct201_complete_solve_gate.py"
+          python3 -S -m unittest discover -s "$d" -p 'test_ct20*_*.py' -v
+          python3 -O -S -m unittest discover -s "$d" -p 'test_ct20*_*.py' -v
+          python3 -S -m py_compile "$d/ct201_complete_solve_gate.py" "$d/test_ct201_complete_solve_gate.py" "$d/ct202_balanced_order_gate.py" "$d/test_ct202_balanced_order_gate.py"
           printf 'CT201 source/synthetic only; no native timing, independent PCC or speedup [pcc:unverified]\n'
