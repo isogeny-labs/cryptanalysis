@@ -18,7 +18,7 @@ and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
 
-- [ ] Fix second-pass audit C-F6, C-F7, C-F8, C-F10, C-F11, C-F12 (coordinator check-in forgery, sequence overflow, unverified step sums, walkers_done, ca_bench averaging, walker start-up steps) (Cursor, started 2026-11-18, branch cursor/coord-bench-audit-fixes-a95f, PR #1774)
+- [x] Fix second-pass audit C-F6, C-F7, C-F8, C-F10, C-F11, C-F12 (coordinator check-in forgery, sequence overflow, unverified step sums, walkers_done, ca_bench averaging, walker start-up steps) (Cursor, started 2026-11-18, branch cursor/coord-bench-audit-fixes-a95f, PR #1774)
 
 - [ ] Mirror the general binary hyperelliptic-cover transfer interface from crypto after its source commit is frozen, with split provenance and exact parity checks (Codex, started 2026-11-18, branch codex/general-binary-cover-transfer-mirror-20261118, PR #1765) [pcc:unverified]
 
