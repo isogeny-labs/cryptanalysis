@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.1.14](https://github.com/isogeny-labs/cryptanalysis/compare/cryptanalysis-v0.1.13...cryptanalysis-v0.1.14) (2026-11-18)
+
+
+### Features
+
+* add native ECC2K-130 index-calculus preflight ([b7abc1e](https://github.com/isogeny-labs/cryptanalysis/commit/b7abc1edf35daa60d676e24f74c12e5124d01733))
+
+
+### Bug Fixes
+
+* **ct200:** accept only audited duplicate PCC keep entry in policy drift ([d830a5e](https://github.com/isogeny-labs/cryptanalysis/commit/d830a5ee937143daeee71a6619d416e7b296274d))
+
 ## [0.1.13](https://github.com/isogeny-labs/cryptanalysis/compare/cryptanalysis-v0.1.12...cryptanalysis-v0.1.13) (2026-11-18)
 
 
