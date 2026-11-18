@@ -18,6 +18,7 @@ and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
 
+- [ ] L2 SBVA preprocessing test: SBVA+CaDiCaL vs CaDiCaL (with A/A arm) on dual-rail m=4 PDP instances from crypto:research/sat_smt_leads_20261115/A-dualrail-m4 (Claude, started 2026-11-18, branch claude/sat-solver-index-calculus-zczysc, PR #1742)
 - [x] L3 torsion-target count check (done: count matches estimate, O(1) per base; R4-A stage only): brute-force count of P1+P2+P3 = T0 relations over a polynomial-span factor base at n <= 23 vs the 2^(3l-n)/6 estimate (Claude, started 2026-11-18, branch claude/sat-solver-index-calculus-zczysc, PR #1742)
 - [x] Devise novel SAT-solver leads for point-decomposition (summation-polynomial) relation solving in index calculus; leads note only, no runs (Claude, started 2026-11-18, branch claude/sat-solver-index-calculus-zczysc, PR #1742)
 
