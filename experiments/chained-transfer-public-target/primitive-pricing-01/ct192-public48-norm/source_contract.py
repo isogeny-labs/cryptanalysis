@@ -260,8 +260,71 @@ def validate_counter_neutral(derived: bytes, main_rs: bytes) -> None:
         raise ValueError("CT195 extra authorization missing before native work")
 
 
+def validate_timed_counter_observation(main_rs: bytes) -> None:
+    """CT196: observed full counter deltas on both live timing panels.
+
+    This is a fail-closed *source* guard, not a Rust typecheck or native replay.
+    The actual native delta assertions must still execute under admission.
+    """
+    s = main_rs.decode("utf-8")
+    required = (
+        "const NORM_CALLS_PER_PANEL: u64 = 16 * 2 * 64;",
+        "let mut observed_norm_calls_total = 0u64;",
+        "let counters_before_panels = black_box(runtime.calls());",
+        "let counters_after_original = black_box(runtime.calls());",
+        "let mut expected_after_original = counters_before_panels;",
+        "let counters_after_control = black_box(runtime.calls());",
+        "let mut expected_after_control = counters_after_original;",
+        "must(counters_after_original == expected_after_original,",
+        "must(counters_after_control == expected_after_control,",
+        "checked_sub(counters_before_panels.transported_norm_doubling)",
+        "checked_sub(counters_after_original.transported_norm_doubling)",
+        "observed_norm_calls_total = observed_norm_calls_total",
+        '"observed_actual_norm_calls_original_panel":observed_original_norm_calls',
+        '"observed_actual_norm_calls_counter_control_panel":observed_control_norm_calls',
+        '"observed_actual_norm_calls_total":observed_norm_calls_total',
+        "must(observed_norm_calls_total == 96 * 2 * NORM_CALLS_PER_PANEL,",
+        '"schema":"ct196-public48-observed-norm-counters/v1"',
+    )
+    if any(s.count(token) != 1 for token in required):
+        raise ValueError("CT196 observed full-counter contract missing or duplicated")
+    if s.count("black_box(runtime.calls())") != 3 or s.count("NORM_CALLS_PER_PANEL") != 4:
+        raise ValueError("CT196 timing counter observations or expected call arithmetic changed")
+    normalized = " ".join(s.split())
+    for token in (
+        "expected_after_original.transported_norm_doubling = expected_after_original "
+        ".transported_norm_doubling.checked_add(NORM_CALLS_PER_PANEL)",
+        "expected_after_control.transported_norm_doubling = expected_after_control "
+        ".transported_norm_doubling.checked_add(NORM_CALLS_PER_PANEL)",
+        "observed_norm_calls_total = observed_norm_calls_total "
+        ".checked_add(observed_original_norm_calls + observed_control_norm_calls)",
+    ):
+        if token not in normalized:
+            raise ValueError("CT196 wrong norm-call calculation")
+    anchors = (
+        "let counters_before_panels = black_box(runtime.calls());",
+        "let mut slots = Vec::with_capacity(64);",
+        "slots.push(json!({",
+        "let counters_after_original = black_box(runtime.calls());",
+        "must(counters_after_original == expected_after_original,",
+        "let mut counter_control_slots = Vec::with_capacity(64);",
+        "counter_control_slots.push(json!({",
+        "let counters_after_control = black_box(runtime.calls());",
+        "must(counters_after_control == expected_after_control,",
+        "all.push(json!({",
+        "must(observed_norm_calls_total == 96 * 2 * NORM_CALLS_PER_PANEL,",
+        "println!(\"{}\", json!({\n        \"schema\":\"ct196-public48-observed-norm-counters/v1\"",
+    )
+    positions = [s.find(a) for a in anchors]
+    if -1 in positions or positions != sorted(positions) or len(set(positions)) != len(positions):
+        raise ValueError("CT196 observations must follow the correct timing panel")
+    if s.count("for block in 0..16 {") != 2 or s.count("for _ in 0..64 {") != 2:
+        raise ValueError("CT196 measured native panel structure changed")
+
+
 def source_audit(main_rs: bytes, manifest: bytes) -> None:
     validate_opaque_timing(main_rs)
+    validate_timed_counter_observation(main_rs)
     # Additional CT195 controls are enforced independently of CT194's panel.
     s = main_rs.decode("utf-8")
     c = manifest.decode("utf-8")
