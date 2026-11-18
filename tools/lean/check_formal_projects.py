@@ -207,6 +207,29 @@ def validate(root, record):
     return graphs, orders
 
 
+def query_coverage(requests, names):
+    """Bind full query suffixes; Lean permits relative namespace resolution."""
+    if len(requests) != len(names) or len(set(names)) != len(names):
+        return False
+    matched = {}
+
+    def assign(index, seen):
+        query = requests[index]
+        root_qualified = query.startswith("_root_.")
+        query = query.removeprefix("_root_.")
+        for name in names:
+            if name in seen or not (name == query or
+                    (not root_qualified and name.endswith("." + query))):
+                continue
+            seen.add(name)
+            if name not in matched or assign(matched[name], seen):
+                matched[name] = index
+                return True
+        return False
+
+    return all(assign(index, set()) for index in range(len(requests)))
+
+
 def context_signature(module, source, dependency_signatures):
     return sha(json.dumps([module, sha(source), dependency_signatures, TOOLCHAIN, MATHLIB],
                           sort_keys=True).encode())
@@ -298,9 +321,7 @@ def check(root, gate):
                     printed = re.findall(r"^'([^']+)' depends on axioms: \[([^]]*)\]$", result.stdout, re.M)
                     free = re.findall(r"^'([^']+)' does not depend on any axioms$", result.stdout, re.M)
                     names = [n for n, _ in printed] + free
-                    require(len(names) == len(row["requests"]) and len(set(names)) == len(names)
-                            and {n.rsplit(".", 1)[-1] for n in names}
-                            == {n.rsplit(".", 1)[-1] for n in row["requests"]},
+                    require(query_coverage(row["requests"], names),
                             "formal native query coverage changed: " + name)
                     require(all({a.strip() for a in axioms.split(",") if a.strip()} <= ALLOWED_AXIOMS
                                 for _, axioms in printed), "formal query has an unexpected foundation")
