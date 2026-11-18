@@ -18,7 +18,7 @@ and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
 
-- [ ] Independently verify H115 Frobenius--Kummer records, structural identities, controls, scores, decoder evidence and eight tamper classes (Codex, started 2026-11-18, branch research/h115-frobenius-kummer-verifier, PR pending) [pcc:unverified]
+- [ ] Independently verify H115 Frobenius--Kummer records, structural identities, controls, scores, decoder evidence and eight tamper classes (Codex, started 2026-11-18, branch research/h115-frobenius-kummer-verifier, PR #1739) [pcc:unverified]
 
 - [ ] Extend certified Xedni lift-success trials to the ten-coefficient `r=7..9` regime with exact rational dependence verification (Codex, started 2026-11-17, branch codex/xedni-breakthrough-20261117, PR #1722) [pcc:unverified]
 
