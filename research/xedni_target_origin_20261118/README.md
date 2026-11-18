@@ -7,10 +7,12 @@ by fixed exact Rust and independent-language controls.  Natural-lift frequency
 has not been measured because the mandatory checkpoint transport is unavailable.
 [pcc:unverified]
 
-Provenance records: algebraic recovery theorem
-[`PCC-20261118-b813f9`](../../pcc/claims/PCC-20261118-b813f9.json) and fixed
-control [`PCC-20261118-01c104`](../../pcc/claims/PCC-20261118-01c104.json).
-Both remain unverified pending an independent signed verdict. [pcc:unverified]
+Provenance records: kernel-audited inverse theorem
+[`PCC-20261118-f769e5`](../../pcc/claims/PCC-20261118-f769e5.json) and unsigned
+fixed-control validator
+[`PCC-20261118-489303`](../../pcc/claims/PCC-20261118-489303.json). The theorem
+proof passes locally; the control remains not covered pending an independent
+signature. [pcc:unverified]
 
 ## Question
 
@@ -64,7 +66,10 @@ source-equation expansion, recovery with an explicit inverse, and the
 zero-explicit-coefficient specialization over commutative rings.  This is the
 algebraic bridge.  As in the prior chord-origin work, a full machine-checked
 geometric theorem that concrete good reduction maps the residual chord point
-to `-(t+m_j)G` remains open. [pcc:unverified]
+to `-(t+m_j)G` remains open. The standalone
+[`formal/TargetChordOriginCore.lean`](formal/TargetChordOriginCore.lean)
+restates the essential inverse step with every algebraic law explicit for the
+repository PCC auditor. [pcc:unverified]
 
 ## Evidence and limits
 

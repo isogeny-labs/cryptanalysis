@@ -6,3 +6,10 @@ ELAN_HOME=/workspace/.elan-xedni PATH=/workspace/.elan-xedni/bin:$PATH lake env 
 'XedniTargetChordOrigin.zero_explicit_target_coefficient' depends on axioms: [propext]
 
 Exit status: 0
+
+Standalone PCC core gate:
+ELAN_HOME=/workspace/.elan-xedni PATH=/workspace/.elan-xedni/bin:$PATH tools/lean/proof-gate.sh research/xedni_target_origin_20261118/formal/TargetChordOriginCore.lean
+
+PASS                      1 thm   0 trusted  research/xedni_target_origin_20261118/formal/TargetChordOriginCore.lean
+
+Exit status: 0
