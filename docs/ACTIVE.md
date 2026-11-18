@@ -18,7 +18,7 @@ and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
 
-- [ ] CT197: strict offline CT196 96-operand paired norm-price evidence adjudicator, per-block controls and stratified negative outcomes; source/synthetic until native custody (Chained ECDLP Transfers, started 2026-11-17, branch research/ct197-native-operand-evidence-adjudicator-20261117) [pcc:unverified]
+- [ ] CT197: strict offline CT196 96-operand paired norm-price evidence adjudicator, per-block controls and stratified negative outcomes; source/synthetic until native custody (Chained ECDLP Transfers, started 2026-11-17, branch research/ct197-native-operand-evidence-adjudicator-20261117, PR #1745) [pcc:unverified]
 
 - [ ] CT196: audit timed Cell<Calls> counter observability on CT195 two-panel actual norm pricing, verify per-panel exact call deltas; source-only until native PCC (Chained ECDLP Transfers, started 2026-11-17, branch research/ct196-counter-observability-20261117, PR #1743) [pcc:unverified]
 
