@@ -171,6 +171,36 @@ fn xedni_lift_cli_supports_nine_point_general_cubic_mode() {
 }
 
 #[test]
+fn xedni_lift_cli_supports_jksst_projective_frame_mode() {
+    let fixture = concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/fixtures/xedni_lift_jksst_p67.json"
+    );
+    let v = run_json(&[
+        "xedni-lift",
+        "--model",
+        "jksst-plane-cubic",
+        "--input",
+        fixture,
+        "--radius",
+        "1",
+        "--max-candidates",
+        "32",
+    ]);
+    assert_eq!(v["operation"], "xedni-lift");
+    assert_eq!(v["model"], "jksst-plane-cubic");
+    assert_eq!(v["result"]["incidence_preserved"], true);
+    assert_eq!(v["result"]["projective_congruence_preserved"], true);
+    assert_eq!(v["result"]["discriminant_evaluated"], true);
+    assert_eq!(v["result"]["optimized_score"]["nonsingular"], true);
+    // On y^2 = x^3 - x + 1 mod 67, ord((0,1)) = 18, so 3G + 7G + 8G = O is collinear mod 67.
+    assert!(!v["result"]["pre_lift_collinear_triples"]
+        .as_array()
+        .unwrap()
+        .is_empty());
+}
+
+#[test]
 fn aliases_resolve() {
     // NIST/SEC aliases must map to the canonical curve.
     for (alias, canonical) in [("nistp256", "p256"), ("k-163", "sect163k1")] {
