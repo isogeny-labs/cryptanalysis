@@ -1,0 +1,144 @@
+{
+  "format": "correspondence-assessment-draft-v1",
+  "assessment_state": "draft",
+  "authority": "companion artifact; not a ledger record or certificate",
+  "source": {
+    "object_uid": "fresh-short-weierstrass-over-Fp",
+    "representation_uid": "affine-points-in-cyclic-source-subgroup",
+    "equations": "y^2=x^3+a*x+b over F_p",
+    "field": "F_p, p in frozen 16..32-bit manifest",
+    "dimension": 1,
+    "subgroup_order": "computed and certified per row"
+  },
+  "destination": {
+    "object_uid": "xedni-characteristic-zero-lift",
+    "representation_uid": "integral-generalized-weierstrass-model-and-selected-points",
+    "equations": "y^2+a1*x*y+a3*y=x^3+a2*x^2+a4*x+a6 over Q",
+    "field": "Q",
+    "dimension": 1,
+    "ambient_group_order": "infinite/finitely generated; rank bounded per row"
+  },
+  "transformation": {
+    "kind": "characteristic-zero lift with good-reduction specialization",
+    "family": "JKSST short-Weierstrass incidence lift",
+    "degree": null,
+    "field_of_definition": "Q with reduction at p and optional local primes",
+    "formulas": "exact incidence coset plus LLL/Babai/bounded discriminant optimization",
+    "exceptional_cases": [
+      "singular rational model",
+      "bad reduction",
+      "unsatisfied integer incidence coset",
+      "incompatible local quotient images",
+      "noninvertible target relation coefficient"
+    ],
+    "normalization": "integral generalized Weierstrass coefficients with exact residue certificates"
+  },
+  "obligations": {
+    "existence": {
+      "state": "supported",
+      "evidence": ["existing certified toy lifts; new rows require per-row certificate"],
+      "scope": "short-Weierstrass r=2..6 only"
+    },
+    "explicit_construction": {
+      "state": "supported",
+      "evidence": ["suite ca-icx xedni-lift and existing exact affine solver"],
+      "scope": "local-condition extension not yet implemented"
+    },
+    "map_correctness": {
+      "state": "supported",
+      "evidence": ["planned exact on-curve and reduction checks"],
+      "scope": "one-way specialization on admitted good-reduction rows"
+    },
+    "subgroup_preservation": {
+      "state": "supported",
+      "evidence": ["rational relations reduce to named source-subgroup relations; scalar replay required"],
+      "scope": "relation preservation only; independence is not reflected"
+    },
+    "computational_advantage": {
+      "state": "unknown",
+      "evidence": ["no natural 16..32-bit rank-decay panel"],
+      "scope": "complete single-target cost unmeasured"
+    },
+    "scaling_support": {
+      "state": "unknown",
+      "evidence": ["prior 504304-row toy boxed-relation sweep is negative evidence but measures a different, bounded-relation endpoint"],
+      "scope": "requested certified-rank and useful-recovery panel has not run"
+    }
+  },
+  "preservation_certificate": {
+    "identity": "reduce(sum n_i Ptilde_i)=sum n_i reduce(Ptilde_i)",
+    "kernel_intersection": "not required for one-way relation implication; reverse implication not claimed",
+    "recovery_map": "source linear congruence with invertible target coefficient",
+    "scalar_multiplier": "1 modulo the source subgroup order",
+    "proof_artifact": "planned exact row certificate and independent source replay"
+  },
+  "mechanism": {
+    "proposed_benefit": "increase certified dependence and useful-recovery probability",
+    "prediction": "replicated certified finite-range decay exponent below 0.8 in magnitude",
+    "falsification_condition": "no qualifying arm under the complete frozen decision rule",
+    "assumptions": [
+      "fresh source instances",
+      "outcome-independent selection",
+      "rank intervals are not coerced",
+      "all construction and rejection cost is charged"
+    ]
+  },
+  "cost_comparison": {
+    "workload": "one fresh ECDLP source instance and r selected points per row",
+    "baseline": "matched Pollard rho plus unconditional balanced Xedni arm",
+    "units": "CPU seconds, peak RSS bytes, generated/rejected/admitted rows, certified useful relations",
+    "construction": "unmeasured",
+    "transfer": "unmeasured",
+    "destination": "unmeasured rank/descent tiers",
+    "recovery": "unmeasured",
+    "verification": "unmeasured",
+    "failed_attempts_and_duplicates": "must be retained",
+    "memory_and_data": "must be retained",
+    "setup_reuse": "none assumed across fresh rows",
+    "uncertainty": "clustered rare-event intervals with adversarial unresolved allocation",
+    "evidence_label": "unmeasured"
+  },
+  "controls": [
+    "known-rank curves",
+    "planted dependent points",
+    "independent selected points",
+    "mutated residue certificate",
+    "reverse-Mestre versus neutral same-CRT-size versus no-local arms",
+    "PARI/Magma agreement"
+  ],
+  "protocol": {
+    "parameter_scope": "16..32-bit primes; generic/j0; r=2..6 executable, r=7..9 blocked; three lifts and A/B/P local arms",
+    "sample_selection": "fresh seeded sources with frozen prime manifest and paired arms",
+    "stopping_rules": "fixed stage exposures and per-tool timeouts; only predeclared replication",
+    "invalidation_rules": "certificate failure, changed manifest/hash, local incompatibility, semantic disagreement, or unresolved-sensitive conclusion",
+    "hardware_manifest": "required before natural execution",
+    "execution_route": "repository runner after checkpoint gate"
+  },
+  "exploration_boundary": {
+    "families": ["short Weierstrass generic", "short Weierstrass j=0", "exact reverse-Mestre residues"],
+    "parameters": "as frozen in PROTOCOL.md",
+    "completed_scope": "protocol and prior toy evidence only",
+    "completeness_claim": "none"
+  },
+  "composition": {
+    "edge_ids": ["selected-integral-lift", "good-reduction-specialization", "source-linear-recovery"],
+    "junction_compatibility": "checked per admitted row",
+    "weakest_open_obligation": "measured computational advantage and scaling"
+  },
+  "sources": [
+    "JKSST 2000 DOI 10.1023/A:1008312401197",
+    "research/xedni_lift_success_20261112/RESULTS.md",
+    "research/xedni_lift_optimizer_20261101/README.md"
+  ],
+  "open_obligations": [
+    "scalable source generator",
+    "compatible reverse-Mestre and neutral CRT constructors",
+    "Magma license/executable",
+    "r=7..9 plane-cubic Jacobian point map",
+    "checkpoint transport",
+    "powered discovery resource allocation",
+    "matched Pollard-rho cost"
+  ],
+  "recommended_next_action": "implement and freeze controls plus scalable generator, then pass checkpoint gate before calibration",
+  "official_status_change": "none"
+}
