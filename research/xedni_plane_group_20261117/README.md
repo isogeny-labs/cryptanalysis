@@ -2,9 +2,9 @@
 
 Date: 2026-11-17
 
-Status: implemented and covered by deterministic release-mode controls; no
-claim is PCC-verified and no natural-lift success-rate experiment has run.
-[pcc:unverified]
+Status: implemented, covered by deterministic release-mode controls, and
+exercised by the complete frozen 1,600-row local panel.  No claim is
+independently PCC-verified. [pcc:unverified]
 
 ## Outcome
 
@@ -35,6 +35,23 @@ This closes the group-arithmetic and source-reduction seam that previously
 blocked relation verification for `r=7..9`.  It does not make rational
 dependencies more frequent, establish an ECDLP speedup, or evade the
 conditional `O(1/p)` success obstruction in the classical analysis.
+[pcc:unverified]
+
+## Frozen-panel result
+
+The exact preregistered command completed all 1,600 rows locally in 660.4
+seconds.  Among 1,205 eligible rows it certified 67 exact lifted relations
+and recovered 23 planted target logarithms.  The new `r=7,8,9` regimes each
+produced certified relations and correct recoveries; `r=9` produced 24/281
+relations and 7/281 recoveries.  No certificate or group-arithmetic failure
+occurred.  Full cell counts, exclusions, digests, and claim boundaries are in
+[`RESULTS.md`](RESULTS.md). [pcc:unverified]
+
+The strongest post-outcome lead is relation selection: 44/67 certified
+relations had zero target coefficient, while all 23 relations with nonzero
+target coefficient recovered the target.  A separately frozen fresh-seed
+panel must test whether enumerating a target-bearing relation improves
+end-to-end recovery without changing the lift-success denominator.
 [pcc:unverified]
 
 ## Derivation
@@ -83,11 +100,12 @@ its [SVG rendering](pipeline.svg). [pcc:unverified]
 
 ## Remaining proof and experiment obligations
 
-The next experiment must freeze its instance law before generating outcomes,
-retain all failed lifts, search relations independently of the planted target,
-verify every reported relation exactly on the lifted cubic, and check the
-shifted finite-field equation.  The existing `r=3..6` sweep is immutable and
-must not be retrofitted. [pcc:unverified]
+The completed panel remains immutable.  A new confirmatory experiment must
+freeze a fresh instance law before generating outcomes, retain all failed
+lifts, distinguish target-independent lift success from target-aware relation
+selection, verify every reported relation exactly on the lifted cubic, and
+check the shifted finite-field equation.  Neither the existing `r=3..6`
+sweep nor this `r=6..9` panel may be retrofitted. [pcc:unverified]
 
 The abstract identity translation, chord-origin scalar equation, and
 one-unknown recovery formula are kernel-checked in
