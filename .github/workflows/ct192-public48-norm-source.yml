@@ -30,4 +30,7 @@ jobs:
           python3 -S -c 'import pathlib,sys,tomllib; tomllib.loads(pathlib.Path(sys.argv[1]).read_text())' "$dir/Cargo.toml"
           python3 -S -m unittest discover -s "$dir" -p test_source_contract.py -v
           python3 -O -S -m unittest discover -s "$dir" -p test_source_contract.py -v
+          python3 -S -m py_compile "$dir/ct197_native_evidence.py" "$dir/test_ct197_native_evidence.py"
+          python3 -S -m unittest discover -s "$dir" -p test_ct197_native_evidence.py -v
+          python3 -O -S -m unittest discover -s "$dir" -p test_ct197_native_evidence.py -v
           echo 'CT192 source/fixture validation ONLY; no native 48 pricing, independent PCC, or complete ECDLP [pcc:unverified]'
