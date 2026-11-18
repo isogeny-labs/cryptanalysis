@@ -37,3 +37,5 @@ A passing calibration would improve *measurement interpretability* only. Complet
 ## Resolution and history
 
 - 2026-11-17: CT185 protocol frozen before code. Prior source v2 controls checked, uncalibrated deterministic sequence nuisance modeled. Unresolved. [pcc:unverified]
+
+- 2026-11-17: CT188 now freezes an independent **physical** A/B six-sequence crossover with per-period balance and a seven-column exact-rank first-order carryover source-only model. [Protocol #1723](https://github.com/isogeny-labs/cryptanalysis/pull/1723) and [implementation #1725](https://github.com/isogeny-labs/cryptanalysis/pull/1725); exact source CI [#44143583837](https://github.com/isogeny-labs/cryptanalysis/actions/runs/44143583837) passed 5/5 normal and 5/5 optimized synthetic tests at 6dba406d. **This does not close the problem:** model assumptions, actual hardware sequence/carryover and signed native/cold ECDLP evidence are untested. The future v3 native collector/reader needs separate frozen protocol, original custody and paid-run admission. [pcc:unverified]
