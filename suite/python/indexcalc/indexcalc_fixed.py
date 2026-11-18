@@ -130,16 +130,25 @@ class Parameters:
         require(self.summands in (2, 3), 'fixed workflow supports two or three summands')
         require(isinstance(document['targets'], list), 'targets must be an array')
         self.targets = {}
+        self.knownLogs = set()
         for target in document['targets']:
-            keys(target, ['id', 'x', 'y'])
+            keys(target, ['id', 'x', 'y'], ['known_log'])
             name = target['id']
             require(isinstance(name, str) and 0 < len(name) <= 128 and name not in self.targets,
                     'target IDs must be unique nonempty strings of at most 128 characters')
-            self.targets[name] = self.point({'x': target['x'], 'y': target['y']})
+            point = self.point({'x': target['x'], 'y': target['y']})
+            if target.get('known_log') is not None:
+                require(self.matchesScalar(integer(target['known_log']), point),
+                        f'known_log failed the scalar certificate for target {name!r}')
+                self.knownLogs.add(name)
+            self.targets[name] = point
         # Target-independent precomputation survives adding or removing targets.
         identity = {k: document[k] for k in ('schema_version', 'curve', 'generator', 'factor_base', 'summands')}
         self.identity = digest([FORMAT, identity])
         self.document = document
+
+    def matchesScalar(self, value, target):
+        return 0 <= value < self.prime and self.curve.mul(self.generator, value) == target
 
     def coordinate(self, value):
         value = integer(value)
@@ -588,8 +597,20 @@ class Campaign:
         return results
 
     def certifySolution(self, value, target):
-        require(0 <= value < self.params.prime and self.params.curve.mul(self.params.generator, value) == target,
-                'scalar certificate failed')
+        require(self.params.matchesScalar(value, target), 'scalar certificate failed')
+
+    def targetStatus(self):
+        results = {}
+        for name, target in self.params.targets.items():
+            saved = self.db.execute('SELECT scalar FROM solutions WHERE id=?', (name,)).fetchone()
+            source = None
+            if saved is not None:
+                self.certifySolution(integer(saved[0]), target)
+                source = 'checkpoint'
+            elif name in self.params.knownLogs:
+                source = 'provided'
+            results[name] = {'scalar_known': source is not None, 'scalar_source': source}
+        return results
 
     def run(self, stage='all', attempts=32, pairBudget=10000, seconds=.25):
         require(stage in ('select', 'pairs', 'collect', 'logs', 'solve', 'all', 'status'), 'invalid stage')
@@ -599,15 +620,18 @@ class Campaign:
         report = {'schema_version': 1, 'operation': 'fixed', 'stage': stage,
                   'status': 'stopped', 'identity': self.params.identity, 'degree': self.params.onb.m,
                   'subgroup_order': str(self.params.prime), 'orbit_columns': len(self.reps),
-                  'signed_base_points': len(self.points), 'solver': self.solver, 'targets': {}}
+                  'signed_base_points': len(self.points), 'solver': self.solver, 'targets': {},
+                  'base_point': 'known'}
+        if stage == 'status':
+            with self.ledger.phase('target_status'):
+                report['targets'] = self.targetStatus()
         count = math.comb(len(self.points) + self.params.summands - 1, self.params.summands)
         denominator = self.params.prime - 1
         report['coverage_ceiling'] = {'numerator': str(min(count, denominator)), 'denominator': str(denominator),
             'fraction': min(1.0, count / denominator), 'kind': 'counting_bound_on_uniform_nonzero_targets'}
         ready = True
-        savedTargets = bool(self.params.targets) and all(self.db.execute(
+        replayOnly = stage in ('solve', 'all') and bool(self.params.targets) and all(self.db.execute(
             'SELECT 1 FROM solutions WHERE id=?', (name,)).fetchone() is not None for name in self.params.targets)
-        replayOnly = stage in ('solve', 'all') and savedTargets
         if self.solver in ('pairs', 'learned') and not replayOnly and stage not in ('select', 'status', 'logs'):
             ready = self.buildPairs(pairBudget)
             if not ready:
@@ -655,8 +679,13 @@ def main():
     parser.add_argument('--query-seconds', type=float, default=.25)
     args = parser.parse_args()
     try:
-        with Campaign(readJson(args.params), args.dir, args.solver, selectorModel=args.selector_model) as campaign:
-            report = campaign.run(args.stage, args.attempts, args.pair_budget, args.query_seconds)
+        document = readJson(args.params)
+        if args.stage == 'status' and isinstance(document, dict) and document.get('generator') is None:
+            report = {'schema_version': 1, 'operation': 'fixed', 'stage': 'status', 'status': 'error',
+                      'base_point': 'missing', 'message': 'supply the base point in generator'}
+        else:
+            with Campaign(document, args.dir, args.solver, selectorModel=args.selector_model) as campaign:
+                report = campaign.run(args.stage, args.attempts, args.pair_budget, args.query_seconds)
     except (ValueError, OSError, sqlite3.Error, RuntimeError) as error:
         report = {'schema_version': 1, 'operation': 'fixed', 'status': 'error', 'message': str(error)}
     print(json.dumps(report, sort_keys=True))

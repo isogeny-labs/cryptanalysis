@@ -14,7 +14,8 @@ pub struct FixedArgs {
     /// Durable campaign directory. Rerun with the same parameters to resume.
     #[arg(long)]
     pub dir: PathBuf,
-    /// Stage; all also attempts target-specific relations when base logs are incomplete.
+    /// Use status to check the base point and target scalars. The all stage
+    /// also attempts target-specific relations when base logs are incomplete.
     #[arg(long, default_value = "all", value_parser = ["select", "pairs", "collect", "logs", "solve", "all", "status"])]
     pub stage: String,
     /// Exact pair table, bounded SAT, or an opt-in learned policy with pair fallback.
