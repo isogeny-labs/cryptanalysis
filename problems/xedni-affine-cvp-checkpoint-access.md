@@ -2,7 +2,7 @@
 
 - **Status:** open (two prior toy panels completed under narrow owner waivers; credentials still missing)
 - **Kind:** access/tool limit
-- **Affected work:** [frozen xedni affine-lift protocol](../research/xedni_lift_optimizer_20261101/PROTOCOL.md), [fresh target-bearing selector protocol](../research/xedni_target_relation_20261118/PROTOCOL.md), draft PR #1762
+- **Affected work:** [frozen xedni affine-lift protocol](../research/xedni_lift_optimizer_20261101/PROTOCOL.md), [fresh target-bearing selector protocol](../research/xedni_target_relation_20261118/PROTOCOL.md), draft PR #1768
 - **Next action owner:** environment operator for checkpoint credentials; research agent for the frozen run
 - **Last updated:** 2026-11-18
 
