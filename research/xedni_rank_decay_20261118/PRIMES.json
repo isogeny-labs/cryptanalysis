@@ -1,0 +1,218 @@
+{
+  "bit_sizes": [
+    16,
+    18,
+    20,
+    22,
+    24,
+    26,
+    28,
+    30,
+    32
+  ],
+  "derivation": "sha256(seed|bits|slot), set top bit and odd bit, scan downward by two",
+  "generator_sha256": "24d571b810463fe7e6be40b5eaef6d356c03e1934e72782c89b0cc46897b3a0a",
+  "master_seed": "xedni-rank-decay-20261118-v1",
+  "miller_rabin_bases": [
+    2,
+    3,
+    5,
+    7,
+    11,
+    13,
+    17
+  ],
+  "primes": [
+    {
+      "bits": 16,
+      "downward_odd_steps": 1,
+      "hash_candidate": 40761,
+      "prime": 40759,
+      "slot": 0
+    },
+    {
+      "bits": 16,
+      "downward_odd_steps": 3,
+      "hash_candidate": 46357,
+      "prime": 46351,
+      "slot": 1
+    },
+    {
+      "bits": 16,
+      "downward_odd_steps": 2,
+      "hash_candidate": 36681,
+      "prime": 36677,
+      "slot": 2
+    },
+    {
+      "bits": 18,
+      "downward_odd_steps": 5,
+      "hash_candidate": 232199,
+      "prime": 232189,
+      "slot": 0
+    },
+    {
+      "bits": 18,
+      "downward_odd_steps": 0,
+      "hash_candidate": 232007,
+      "prime": 232007,
+      "slot": 1
+    },
+    {
+      "bits": 18,
+      "downward_odd_steps": 8,
+      "hash_candidate": 211635,
+      "prime": 211619,
+      "slot": 2
+    },
+    {
+      "bits": 20,
+      "downward_odd_steps": 1,
+      "hash_candidate": 1043559,
+      "prime": 1043557,
+      "slot": 0
+    },
+    {
+      "bits": 20,
+      "downward_odd_steps": 2,
+      "hash_candidate": 1046801,
+      "prime": 1046797,
+      "slot": 1
+    },
+    {
+      "bits": 20,
+      "downward_odd_steps": 25,
+      "hash_candidate": 689691,
+      "prime": 689641,
+      "slot": 2
+    },
+    {
+      "bits": 22,
+      "downward_odd_steps": 2,
+      "hash_candidate": 2373951,
+      "prime": 2373947,
+      "slot": 0
+    },
+    {
+      "bits": 22,
+      "downward_odd_steps": 0,
+      "hash_candidate": 3796939,
+      "prime": 3796939,
+      "slot": 1
+    },
+    {
+      "bits": 22,
+      "downward_odd_steps": 12,
+      "hash_candidate": 3950683,
+      "prime": 3950659,
+      "slot": 2
+    },
+    {
+      "bits": 24,
+      "downward_odd_steps": 0,
+      "hash_candidate": 14077603,
+      "prime": 14077603,
+      "slot": 0
+    },
+    {
+      "bits": 24,
+      "downward_odd_steps": 0,
+      "hash_candidate": 13167767,
+      "prime": 13167767,
+      "slot": 1
+    },
+    {
+      "bits": 24,
+      "downward_odd_steps": 5,
+      "hash_candidate": 12567809,
+      "prime": 12567799,
+      "slot": 2
+    },
+    {
+      "bits": 26,
+      "downward_odd_steps": 37,
+      "hash_candidate": 61626913,
+      "prime": 61626839,
+      "slot": 0
+    },
+    {
+      "bits": 26,
+      "downward_odd_steps": 12,
+      "hash_candidate": 53408801,
+      "prime": 53408777,
+      "slot": 1
+    },
+    {
+      "bits": 26,
+      "downward_odd_steps": 28,
+      "hash_candidate": 40523995,
+      "prime": 40523939,
+      "slot": 2
+    },
+    {
+      "bits": 28,
+      "downward_odd_steps": 15,
+      "hash_candidate": 171516589,
+      "prime": 171516559,
+      "slot": 0
+    },
+    {
+      "bits": 28,
+      "downward_odd_steps": 7,
+      "hash_candidate": 251942637,
+      "prime": 251942623,
+      "slot": 1
+    },
+    {
+      "bits": 28,
+      "downward_odd_steps": 5,
+      "hash_candidate": 157591911,
+      "prime": 157591901,
+      "slot": 2
+    },
+    {
+      "bits": 30,
+      "downward_odd_steps": 31,
+      "hash_candidate": 933882981,
+      "prime": 933882919,
+      "slot": 0
+    },
+    {
+      "bits": 30,
+      "downward_odd_steps": 23,
+      "hash_candidate": 777576179,
+      "prime": 777576133,
+      "slot": 1
+    },
+    {
+      "bits": 30,
+      "downward_odd_steps": 5,
+      "hash_candidate": 541255757,
+      "prime": 541255747,
+      "slot": 2
+    },
+    {
+      "bits": 32,
+      "downward_odd_steps": 10,
+      "hash_candidate": 4161768027,
+      "prime": 4161768007,
+      "slot": 0
+    },
+    {
+      "bits": 32,
+      "downward_odd_steps": 1,
+      "hash_candidate": 2667129031,
+      "prime": 2667129029,
+      "slot": 1
+    },
+    {
+      "bits": 32,
+      "downward_odd_steps": 0,
+      "hash_candidate": 3364257707,
+      "prime": 3364257707,
+      "slot": 2
+    }
+  ],
+  "schema": "xedni-rank-decay-primes/v1",
+  "slots_per_bit_size": 3
+}
