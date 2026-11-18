@@ -18,7 +18,7 @@ and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
 
-- [ ] Audit the frozen `r=6..9` Xedni plane-cubic panel for pre-lift integer collinearity, formalize the concrete good-reduction chord bridge in Lean 4 + Mathlib, and implement JKSST `PGL_3(F_p)` frame + 3D-LLL projective point lifting in `xedni_lift.rs` (Cursor, started 2026-11-18, branch cursor/xedni-plane-group-chase-ef34, draft PR #1779) [pcc:unverified]
+- [x] Audit the frozen `r=6..9` Xedni plane-cubic panel for pre-lift integer collinearity (`66/67` overall, `58/58` at `r=7..9`), formalize the concrete good-reduction chord bridge in Lean 4 + Mathlib (16 theorems, `0` `sorryAx`), and implement JKSST `PGL_3(F_p)` frame + 3D-LLL projective point lifting in `xedni_lift.rs` (`521` -> `223` coef bits at 28-bit `p`; natural sweep gated on checkpoint access) (Cursor, started 2026-11-18, branch cursor/xedni-plane-group-chase-ef34, PR #1779) [pcc:unverified]
 
 - [ ] Mirror the general binary hyperelliptic-cover transfer interface from crypto after its source commit is frozen, with split provenance and exact parity checks (Codex, started 2026-11-18, branch codex/general-binary-cover-transfer-mirror-20261118, PR #1765) [pcc:unverified]
 
