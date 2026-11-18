@@ -1,0 +1,30 @@
+name: CT188 randomized physical crossover design (source-only)
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/ct188-physical-crossover-source.yml'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/ct188_physical_crossover_design.py'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/test_ct188_physical_crossover_design.py'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/CT188_*'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  physical-arm-source-controls:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Design rank, controlled carryover and tamper refusals (NO native execution)
+        run: |
+          set -euo pipefail
+          root=experiments/chained-transfer-public-target/primitive-pricing-01
+          python3 -S -m py_compile "$root/ct188_physical_crossover_design.py" "$root/test_ct188_physical_crossover_design.py"
+          python3 -S -m unittest discover -s "$root" -p 'test_ct188_physical_crossover_design.py' -v
+          python3 -O -S -m unittest discover -s "$root" -p 'test_ct188_physical_crossover_design.py' -v
+          python3 -S "$root/ct188_physical_crossover_design.py"
+          echo 'CT188 synthetic/source checks completed; NO native binary, paid compute or ECDLP solve.'

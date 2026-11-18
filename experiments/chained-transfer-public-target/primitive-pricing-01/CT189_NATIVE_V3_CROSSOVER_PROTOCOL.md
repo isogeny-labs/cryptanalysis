@@ -1,0 +1,21 @@
+# CT189 — prospectively frozen v3 native-eligible physical crossover transcript
+
+2026-11-17 UTC · draft [cryptanalysis PR #1729](https://github.com/isogeny-labs/cryptanalysis/pull/1729) · **[pcc:unverified]**
+
+## Question and prior work
+
+The exact CT188 [source-only design](CT188_RANDOMIZED_PHYSICAL_CROSSOVER_PROTOCOL.md) fixes 48 original public Jacobian packets, eight independently shuffled treatment sequences per packet and six fresh-process slots per block (2,304 total). CT185 showed sequence-locked synthetic false positives; CT186/187's same-A sham cannot detect physical A/B carryover. CT176/178 implement bounded subprocess capture/aggregate deadlines, CT179/180 verify full native transcripts and clock nesting, and CT188 implements a seven-term conditional carryover diagnostic. See original [crypto #3877](https://github.com/isogeny-labs/crypto/pull/3877), [#4215](https://github.com/isogeny-labs/crypto/pull/4215), [cryptanalysis #1523](https://github.com/isogeny-labs/cryptanalysis/pull/1523), [crypto #4178](https://github.com/isogeny-labs/crypto/pull/4178), [CT172](CT172_SESSION_LOG.md) and [queue #3904](https://github.com/isogeny-labs/crypto/issues/3904). Research-KB MCP and original locked autoresearcher vault are unavailable to this session: no claim of novelty/absence.
+
+## Frozen implementation contract
+
+1. New **ct189-native-physical-crossover/v3** manifest and distinct adjudication schema; pin CT188 seed, frozen 48 Git blob, 48 × 8 × 6 roster and SHA-256. Do not edit CT188/CT187 or previous v1/v2 records.
+2. **Plan only** unless both explicit `--execute` and `--admission-approved` plus independent owner/provider budget permission are present. Mandatory exact native executable SHA256, positive aggregate deadline, positive per-child timeout, and output exclusive creation. No paid workload is authorized by this protocol.
+3. Execute the **actual physical treatment** from CT188, never a sham label. Use bounded CT176 subprocess capture, exact `[binary,"--cold-route",packet,arm]` arguments, original 19-word public inputs/outputs and all 21 original native counters; treat source scalar only as an external cohort label. Recheck stable host/CPU affinity before every child; refuse missing/nonzero/partial/timeout/changed evidence, preserve raw partial records and a terminal refusal; do not summarize incomplete panels as success.
+4. The offline reader must independently re-enumerate CT188, refuse legacy schema/incorrect roster/order, duplicate keys, oversized JSONL, wrong executable path/hash/argv, stdout or stderr byte/hash inconsistencies, 19-word/counter tampering, invalid internal/setup/route/external wall-time nesting, missing RSS indicator, absent/extra terminal or failure. Only after complete evidence validation call CT188's *pre-existing* conditional diagnostic with exact external integer wall nanoseconds; keep RSS missingness prominent.
+5. Source test protocol: plan-only no spawn; refuse no admission/no aggregate budget/wrong binary digest; full 2,304-record *mocked* child producer→offline reader with exact treatment assignments; 1.0 synthetic null; mutation controls on physical A/B, argv, stdout digest, actual 21 counters, setup/total time, terminal and truncation. Normal and `python -O` suites. Mocking is not a native parity test.
+
+## Interpretation and unchanged blockers
+
+A valid v3 panel measures **cold transfer-only** physical route latency; the per-packet seven-parameter log-time fit can still be confounded by higher-order or inter-packet carryover, cache/CPU scheduling, and other unmodeled effects. An independent same-route sham and physical negative controls remain required. This work does **not** authenticate the complete original 695/701-record corpus, prove 48-case native Rust parity, yield actual C169/C13a/C13b/N2_actual/D, or solve a single-target prime-field ECDLP.
+
+A complete positive result requires externally admitted and independently reproduced *same-host* public-target log recovery compared to matched strongest rho, BSGS and IC, with transfer, setup, memory, linear algebra, verification, uncertainty and signed independent PCC included. No native execution or unapproved EKS/Spot spending, no protected merge and no speedup claim.
