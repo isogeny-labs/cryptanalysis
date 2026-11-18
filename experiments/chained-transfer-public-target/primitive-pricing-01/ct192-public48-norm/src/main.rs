@@ -89,13 +89,15 @@ fn run() -> Result<(), String> {
     let args: Vec<String> = std::env::args().skip(1).collect();
     if args.is_empty() || (args.len() == 1 && args[0] == "--plan") {
         println!("{}", json!({
-            "schema":"ct192-public48-norm-plan/v1",
+            "schema":"ct195-public48-norm-plan/v1",
             "standing":"[pcc:unverified]",
             "status":"no native arithmetic or timing executed",
             "public_packets":48, "physical_routes":2, "operands":96,
             "warmup_blocks":4, "measured_blocks":12,
             "four_slot_samples_per_block":4,
             "repetitions_per_slot":64, "expected_measured_slots":4608,
+            "expected_counter_control_measured_slots":4608,
+            "expected_total_measured_slots":9216,
             "source_git_blob":ORIGINAL_BLOB,"fixture_git_blob":FROZEN_BLOB
         }));
         return Ok(());
@@ -107,6 +109,10 @@ fn run() -> Result<(), String> {
     let admission = std::env::var("CT192_OWNER_ADMISSION_RECEIPT")
         .map_err(|_| "missing external owner/provider admission receipt")?;
     must(!admission.trim().is_empty(), "empty admission receipt")?;
+    // CT195's extra 4,608 measured slots MUST NOT silently inherit CT192 approval.
+    let extra_admission = std::env::var("CT195_EXTRA_PANEL_ADMISSION_RECEIPT")
+        .map_err(|_| "missing distinct CT195 owner/provider extra-panel admission")?;
+    must(!extra_admission.trim().is_empty(), "empty CT195 extra-panel receipt")?;
     let total_start = Instant::now();
     let data: Value = serde_json::from_str(FROZEN).map_err(|e| e.to_string())?;
     must(data.as_object().is_some_and(|m| m.len() == 2 &&
@@ -144,7 +150,19 @@ fn run() -> Result<(), String> {
                  format!("row {index} {arm}: exact native calls mismatch"))?;
             let target = &runtime.geometry.models[to].quadratic;
             let proxy = curve::padd(&target.f, &target.curve, &operand, &operand);
+            // CT195: identical arithmetic with and without CT125's 21-field
+            // Cell<Calls> bookkeeping. Verify the diagnostic is counter-neutral.
+            let before = runtime.calls();
+            let neutral = runtime.ct195_arithmetic_norm_no_counter(to, operand);
+            must(runtime.calls() == before,
+                 format!("row {index} {arm}: arithmetic-only norm mutated counters"))?;
             let actual = runtime.ct192_actual_norm(to, operand);
+            let mut expected = before;
+            expected.transported_norm_doubling += 1;
+            must(runtime.calls() == expected,
+                 format!("row {index} {arm}: actual norm changed unexpected counters"))?;
+            must(neutral == actual,
+                 format!("row {index} {arm}: arithmetic-only norm != actual norm"))?;
             must(actual == descend(proxy),
                  format!("row {index} {arm}: N2 actual != descended D_padd"))?;
             operands.push((index, from, to, sector, external_label, arm, operand));
@@ -184,21 +202,52 @@ fn run() -> Result<(), String> {
                 }));
             }
         }
+        // Distinct CT195 control panel: the same mathematical norm, with/without
+        // CT125's Cell<Calls> bookkeeping. Preserve the original CT192 arm
+        // panel untouched and never pool these controls into its estimates.
+        let mut counter_control_slots = Vec::with_capacity(64);
+        for block in 0..16 {
+            let order = if block % 2 == 0 {
+                ["N2_actual", "N2_arith_no_counter", "N2_arith_no_counter", "N2_actual"]
+            } else {
+                ["N2_arith_no_counter", "N2_actual", "N2_actual", "N2_arith_no_counter"]
+            };
+            for (slot, treatment) in order.iter().enumerate() {
+                let start = Instant::now();
+                for _ in 0..64 {
+                    let measured_operand = black_box(point);
+                    match *treatment {
+                        "N2_actual" => black_box(runtime.ct192_actual_norm(to, measured_operand)),
+                        "N2_arith_no_counter" => black_box(runtime.ct195_arithmetic_norm_no_counter(to, measured_operand)),
+                        _ => return Err("unexpected CT195 assigned treatment".into()),
+                    };
+                }
+                let ns = start.elapsed().as_nanos();
+                counter_control_slots.push(json!({
+                    "block":block, "slot":slot, "arm":treatment,
+                    "recorded":block >= 4, "repetitions":64,
+                    "raw_slot_ns_decimal":ns.to_string()
+                }));
+            }
+        }
         all.push(json!({
             "packet_index":index, "from":from, "to":to, "sector":sector,
             "scalar_label_outside_runtime":external_label,
             "physical_transfer_route":arm,
-            "raw_slots":slots
+            "raw_slots":slots,
+            "counter_control_slots":counter_control_slots
         }));
     }
     println!("{}", json!({
-        "schema":"ct192-public48-actual-norm-price/v1",
+        "schema":"ct195-public48-counter-neutral-price/v1",
+        "parent_schema":"ct192-public48-actual-norm-price/v1",
         "standing":"[pcc:unverified]",
-        "scope":"same-process warm N2_actual vs D_padd, 48 selected public inputs x 2 routes; no complete ECDLP",
+        "scope":"same-process CT192 N2_actual vs D_padd and separate CT195 counter-neutral norm panel; no complete ECDLP",
         "source_git_blob":ORIGINAL_BLOB, "fixture_git_blob":FROZEN_BLOB,
         "source_prime":223, "source_group_prime":ELL,
         "admission_producer_asserted_only":true,
         "public_packets":48, "true_route_operands":96,
+        "original_recorded_slots":4608, "extra_counter_control_recorded_slots":4608,
         "same_process_setup_ns_decimal":setup_ns.to_string(),
         "in_process_total_ns_decimal":total_start.elapsed().as_nanos().to_string(),
         "peak_rss_kib_linux":vmhwm_kib(),

@@ -78,6 +78,13 @@ PROBE = """
     pub fn ct192_actual_norm(&self, to: usize, point: Pt<ER>) -> Pt<ER> {
         self.norm_point(to, point)
     }
+
+    /// CT195 diagnostic-only counter-neutral arithmetic path. Never replace
+    /// CT125's real norm_point path with this in actual transfer execution.
+    pub fn ct195_arithmetic_norm_no_counter(&self, to: usize, point: Pt<ER>) -> Pt<ER> {
+        let target = &self.geometry.models[to].quadratic;
+        descend_point(curve::pmul(&target.f, &target.curve, &point, 2))
+    }
 """
 
 def blob(data: bytes) -> str:
@@ -177,8 +184,8 @@ def validate_opaque_timing(main_rs: bytes) -> None:
     """CT194: forbid loop-invariant pure primitive calls with opaque outputs only."""
     s = main_rs.decode("utf-8")
     anchor = "for _ in 0..64 {"
-    if s.count(anchor) != 1:
-        raise ValueError("CT194 expected one 64-repetition timing loop")
+    if s.count(anchor) != 2:
+        raise ValueError("CT195 expects separate original and counter-control 64-repetition timing loops")
     start = s.index(anchor)
     end = s.find("let ns = start.elapsed()", start)
     if end < 0:
@@ -200,8 +207,62 @@ def validate_opaque_timing(main_rs: bytes) -> None:
         raise ValueError("CT194 raw fixed input used in measured math")
 
 
+def validate_counter_neutral(derived: bytes, main_rs: bytes) -> None:
+    """CT195: no-counter math is exact norm arithmetic and guard the added roster."""
+    rust = derived.decode("utf-8")
+    name = "    pub fn ct195_arithmetic_norm_no_counter("
+    if rust.count(name) != 1:
+        raise ValueError("CT195 missing unique no-counter method")
+    start = rust.index(name)
+    end = rust.find("\n    }", start)
+    if end < 0:
+        raise ValueError("CT195 unterminated arithmetic-only method")
+    method = rust[start:end]
+    math = "descend_point(curve::pmul(&target.f, &target.curve, &point, 2))"
+    if method.count(math) != 1 or any(x in method for x in ("self.bump", "self.norm_point", "generator()")):
+        raise ValueError("CT195 no-counter path mutated or substituted")
+    s = main_rs.decode("utf-8")
+    required = (
+        "CT195_EXTRA_PANEL_ADMISSION_RECEIPT",
+        "\"expected_counter_control_measured_slots\":4608",
+        "\"expected_total_measured_slots\":9216",
+        "let before = runtime.calls();",
+        "let neutral = runtime.ct195_arithmetic_norm_no_counter(to, operand);",
+        "must(runtime.calls() == before,",
+        "let mut expected = before;",
+        "expected.transported_norm_doubling += 1;",
+        "must(runtime.calls() == expected,",
+        "must(neutral == actual,",
+        "\"counter_control_slots\":counter_control_slots",
+        "let mut counter_control_slots = Vec::with_capacity(64);",
+        "let measured_operand = black_box(point);",
+        "\"N2_arith_no_counter\" => black_box(runtime.ct195_arithmetic_norm_no_counter(to, measured_operand))",
+        "\"N2_actual\" => black_box(runtime.ct192_actual_norm(to, measured_operand))",
+    )
+    if any(s.count(v) < 1 for v in required):
+        raise ValueError("CT195 counter-neutral admission, parity or raw panel missing")
+    begin = s.find("let mut counter_control_slots = Vec::with_capacity(64);")
+    finish = s.find("all.push(json!({", begin)
+    if begin < 0 or finish < 0 or finish <= begin:
+        raise ValueError("CT195 counter control roster boundary absent")
+    panel = s[begin:finish]
+    if panel.count("for block in 0..16 {") != 1 or panel.count("for _ in 0..64 {") != 1:
+        raise ValueError("CT195 control block or repetitions changed")
+    if panel.count("let measured_operand = black_box(point);") != 1 or panel.count("black_box(runtime.ct192_actual_norm(to, measured_operand))") != 1 or panel.count("black_box(runtime.ct195_arithmetic_norm_no_counter(to, measured_operand))") != 1:
+        raise ValueError("CT195 mismatched input/output compiler barriers")
+    if panel.count("counter_control_slots.push(json!({") != 1:
+        raise ValueError("CT195 missing raw counter control records")
+    if panel.count("\"recorded\":block >= 4") != 1 or panel.count("\"raw_slot_ns_decimal\":ns.to_string()") != 1:
+        raise ValueError("CT195 raw measured-slot evidence altered")
+    adm = s.find("let extra_admission = std::env::var(\"CT195_EXTRA_PANEL_ADMISSION_RECEIPT\")")
+    execution = s.find("let total_start = Instant::now();")
+    if adm < 0 or execution < 0 or adm > execution or "extra_admission.trim().is_empty()" not in s[adm:execution]:
+        raise ValueError("CT195 extra authorization missing before native work")
+
+
 def source_audit(main_rs: bytes, manifest: bytes) -> None:
     validate_opaque_timing(main_rs)
+    # Additional CT195 controls are enforced independently of CT194's panel.
     s = main_rs.decode("utf-8")
     c = manifest.decode("utf-8")
     for item in ("ct192_pre_norm_operand", "ct192_actual_norm", "strongest_retained_lift_chain",
@@ -223,6 +284,7 @@ def audit() -> dict:
     original, frozen = ORIGINAL.read_bytes(), FROZEN.read_bytes()
     d = derivative(original)
     validate_class_binding(d)
+    validate_counter_neutral(d, (HERE/"src/main.rs").read_bytes())
     f = validate_fixture(frozen)
     source_audit((HERE/"src/main.rs").read_bytes(), (HERE/"Cargo.toml").read_bytes())
     if GENERATED.exists() and GENERATED.read_bytes() != d:
