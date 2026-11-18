@@ -18,7 +18,7 @@ and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
 
-- [ ] Close review/CI and final-head packaging on the general hyperelliptic-cover mirror; successor prime arithmetic parity is pinned to crypto producer `153ac585`, and crypto-owned corpus revision `bb87d501` is recorded without copying its CLI, F2 oracle, or 498,477-byte corpus; the strict proof boundary adds exactly two live 73-bit pilot rows, not general wide-prime support (Codex, started 2026-11-18; tracking-only PR #1765 merged; continuation branch codex/general-binary-cover-transfer-mirror-implementation-20261118, draft PR #1770) [pcc:unverified]
+- [ ] Close review/CI and final-head packaging on the general hyperelliptic-cover mirror; successor prime arithmetic parity is pinned to crypto library revision `153ac585`, and the cleanly regenerated crypto-owned corpus at revision `74752a1e` is recorded without copying its CLI, F2 oracle, or 500,925-byte corpus; the strict proof boundary adds exactly two live 73-bit pilot rows, not general wide-prime support (Codex, started 2026-11-18; tracking-only PR #1765 merged; continuation branch codex/general-binary-cover-transfer-mirror-implementation-20261118, draft PR #1770) [pcc:unverified]
 
 - [x] Validate fixed index-calculus candidate residuals and subgroup status (Codex, started 2026-11-18, branch test-fixed-candidate-residual, PR #1755)
 

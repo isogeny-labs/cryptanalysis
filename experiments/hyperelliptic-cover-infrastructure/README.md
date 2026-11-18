@@ -19,14 +19,21 @@ repository mirrors and tests the underlying library arithmetic instead.
 
 ## Crypto-owned corpus and oracle evidence
 
-The frozen catalog producer is crypto revision
-`153ac585d3b1ece0ebb0d49312b13267f651c94b`; the rebound tracked corpus is
-pinned at crypto revision `bb87d501aa763e7243f845d4f07c8a31b88435f1`. The exact
-`docs/curves/binary-subgroup-transfer-certificates.json` bytes are 498,477
+The mirrored library implementation remains crypto revision
+`153ac585d3b1ece0ebb0d49312b13267f651c94b`. The corrected catalog producer is
+crypto revision `f402ccd4c657735e290f3a0a95b3a53024cba2cf`; the cleanly regenerated
+tracked corpus is pinned at crypto revision
+`74752a1e644b1c9cc8f4efeb2e2befac6e24f7bb`. The exact
+`docs/curves/binary-subgroup-transfer-certificates.json` bytes are 500,925
 bytes with SHA-256
-`15bcf780f98a3a787f988b737a8b5f82c20053961daaefa15f6c4a7555bfc948`
+`8c61e842945bf1e9ad8dd3adf326c6c11e55bb97018659b2abf40a5b15256941`
 and producer-source SHA-256
-`7cc3fedfaef46a6588c0f31e304be07f6948f62628baf087b9b8b89f178ec9ad`.
+`04fc744060ec7a4c1ced6c36f9190422d886c593d29e4bd263f223db77f36c65`.
+The earlier `bb87d501aa763e7243f845d4f07c8a31b88435f1` receipt is superseded:
+exact-head release replay proved that it had relabeled intermediate producer
+output instead of regenerating every record from its named source. The clean
+producer now binds the binary module routing and deterministic primality
+implementation used by exact-order evidence.
 They retain all 174 declared binary maps and 150 named bindings with zero
 failed records. Exact generated order is locally proved for 102 bindings; the
 other 48 remain explicitly unknown rather than being promoted from
