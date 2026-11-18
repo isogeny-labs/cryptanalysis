@@ -128,6 +128,31 @@ class BenchrecTest(unittest.TestCase):
         self.br(*close)
         return rec
 
+    def test_gate_rejects_nonpath_validation_without_crashing(self):
+        name = self.make_record()
+        path = self.root / name
+        record = json.loads(path.read_text())
+        for validation in ({"correct": True}, [], 7, False, ""):
+            with self.subTest(validation=validation):
+                record["validation"] = validation
+                path.write_text(json.dumps(record))
+                result = self.br("gate", check=False)
+                self.assertEqual(result.returncode, 1)
+                self.assertIn("validation must be a nonempty path string or null", result.stdout)
+                self.assertNotIn("Traceback", result.stderr)
+
+    def test_gate_validation_path_still_requires_retained_file(self):
+        name = self.make_record()
+        path = self.root / name
+        record = json.loads(path.read_text())
+        record["validation"] = "out/VALIDATION.json"
+        path.write_text(json.dumps(record))
+        result = self.br("gate", check=False)
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("validation file out/VALIDATION.json is not in the checkout", result.stdout)
+        (self.root / record["validation"]).write_text("{}\n")
+        self.br("gate")
+
     def test_one_record_has_no_self_comparison(self):
         self.make_record(value=100.0)
         progress = json.loads((self.root / "benchmarks/progress/progress.json").read_text())
