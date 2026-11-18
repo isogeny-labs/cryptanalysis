@@ -18,6 +18,7 @@ and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
 
+- [ ] L2b row-reduced XOR extension variables: CaDiCaL on m=4 PDP CNFs plus Gauss-reduced XOR rows as prefix-chain definitions, vs baseline with A/A arm (Claude, started 2026-11-18, branch claude/sat-solver-index-calculus-zczysc)
 - [x] Report candidate scalar residuals in fixed index-calculus status (Codex, started 2026-11-18, branch cli-fixed-candidate-residual, PR #1752)
 
 - [x] Report base-point and scalar availability in fixed index-calculus status (Codex, started 2026-11-18, branch cli-dlp-input-status, PR #1750)
