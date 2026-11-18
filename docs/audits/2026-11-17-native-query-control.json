@@ -21,5 +21,23 @@
   ],
   "valid_relative_and_root_names_accepted": true,
   "wrong_namespace_refused": true,
-  "scope": "Actual pinned Lean name-resolution control; not a full Mathlib corpus replay or performance benchmark."
+  "scope": "Actual pinned Lean name-resolution control; not a full Mathlib corpus replay or performance benchmark.",
+  "native_compiler_negative_controls": [
+    {
+      "case": "wrong-namespace",
+      "source": "namespace Outer\nnamespace A\ntheorem localResult : True := True.intro\ntheorem relativeResult : True := True.intro\ntheorem rootResult : True := True.intro\n#print axioms localResult\nend A\n#print axioms Other.relativeResult\n#print axioms _root_.Outer.A.rootResult\nend Outer\n",
+      "source_sha256": "2283f171fd4854458d1c7571b54496895fdfb7902bbbf24d5c3cfc81fdfd970b",
+      "returncode": 1,
+      "stdout": "'Outer.A.localResult' does not depend on any axioms\n/Volumes/SSD990-2/.codex/worktrees/ci-audit-main/.venv/tmp/maintained-path-audit-20261118/NativeQuery-wrong-namespace.lean:8:14: error(lean.unknownIdentifier): Unknown constant `Other.relativeResult`\n'Outer.A.rootResult' does not depend on any axioms\n",
+      "stderr": ""
+    },
+    {
+      "case": "wrong-root",
+      "source": "namespace Outer\nnamespace A\ntheorem localResult : True := True.intro\ntheorem relativeResult : True := True.intro\ntheorem rootResult : True := True.intro\n#print axioms localResult\nend A\n#print axioms A.relativeResult\n#print axioms _root_.A.rootResult\nend Outer\n",
+      "source_sha256": "ebd731c3df06e46e2693b7ce1f854fd5438e9fe1c2654fad6258ffeca39303cc",
+      "returncode": 1,
+      "stdout": "'Outer.A.localResult' does not depend on any axioms\n'Outer.A.relativeResult' does not depend on any axioms\n/Volumes/SSD990-2/.codex/worktrees/ci-audit-main/.venv/tmp/maintained-path-audit-20261118/NativeQuery-wrong-root.lean:9:14: error(lean.unknownIdentifier): Unknown constant `_root_.A.rootResult`\n",
+      "stderr": ""
+    }
+  ]
 }
