@@ -40,7 +40,117 @@ def transcript(campaign):
     return list(campaign.db.execute('SELECT stream,number,witness,coefficients,a,b FROM relations ORDER BY stream,number'))
 
 
+def polynomialToOnb(value, images):
+    result = 0
+    for index, image in enumerate(images):
+        if value >> index & 1:
+            result ^= image
+    return result
+
+
 class FixedTests(unittest.TestCase):
+    def checkResiduals(self, document, generator, oracle, known, images):
+        prime = int(document['curve']['subgroup_order'])
+        with fixed.Campaign(document, '.', memory=True) as campaign:
+            report = campaign.run(stage='status')
+            self.assertEqual(report['status'], 'stopped')
+            self.assertEqual(report['attempts_saved'], 0)
+            self.assertEqual(report['relations_saved'], 0)
+            self.assertIsNone(report['pair_table'])
+            self.assertIsNone(campaign.db.execute('SELECT scalar FROM solutions').fetchone())
+        for target in document['targets']:
+            name = target['id']
+            actual = report['targets'][name]
+            self.assertTrue(actual['in_base_subgroup'], name)
+            candidate = target.get('candidate_log')
+            if candidate is None:
+                self.assertNotIn('candidate_residual', actual)
+                self.assertFalse(actual['scalar_known'], name)
+                self.assertIsNone(actual['scalar_source'])
+                continue
+            # Derive the expected point directly from the planted scalar difference
+            # using polynomial-basis arithmetic, separate from the CLI's ONB subtraction.
+            expected = oracle.mul(generator, (known[name] - candidate) % prime)
+            residual = {'is_identity': expected is None}
+            if expected is not None:
+                x, y = (polynomialToOnb(coordinate, images) for coordinate in expected)
+                residual.update(basis='type-ii-onb', x=hex(x), y=hex(y))
+            self.assertEqual(actual['candidate_residual'], residual, name)
+            self.assertEqual(actual['scalar_known'], expected is None, name)
+            self.assertEqual(actual['scalar_source'], 'candidate' if expected is None else None, name)
+
+    def test_candidate_residuals_on_toy_curves_in_both_bases(self):
+        for degree in (5, 9):
+            onb = field.Onb(degree)
+            polynomial, _ = curves.findIrreduciblePoly(degree)
+            oracle = curves.CurvePb(field.Pb(degree, polynomial))
+            order = curves.curveOrder(degree) // 4
+            rng = random.Random(1760 + degree)
+            root, images, _ = curves.basisImages(onb, polynomial, degree, rng)
+            first = oracle.randomPointOfOrder(order, 4, rng)
+            document, _ = fixture(degree, targets=0)
+            for generator in (first, oracle.dbl(first)):
+                points = {scalar: oracle.mul(generator, scalar) for scalar in range(1, order)}
+                self.assertEqual(len(set(points.values()) - {None}), order - 1)
+                for basis in ('polynomial', 'type-ii-onb'):
+                    with self.subTest(degree=degree, basis=basis, generator=generator):
+                        spec = dict(document['curve'], basis=basis)
+                        if basis == 'polynomial':
+                            spec.update(polynomial=hex(polynomial), onb_root=hex(onb.toCoords(root)))
+
+                        def encoded(point):
+                            if basis == 'type-ii-onb':
+                                point = tuple(polynomialToOnb(coordinate, images) for coordinate in point)
+                            return dict(zip(('x', 'y'), point))
+
+                        known, targets = {}, []
+                        for scalar, point in points.items():
+                            for candidate in (scalar, 0, scalar % (order - 1) + 1):
+                                name = f'point-{scalar}-candidate-{candidate}'
+                                known[name] = scalar
+                                targets.append(dict(id=name, candidate_log=candidate, **encoded(point)))
+                            targets.append(dict(id=f'point-{scalar}', **encoded(point)))
+                        workload = dict(document, curve=spec, generator=encoded(generator), targets=targets)
+                        self.checkResiduals(workload, generator, oracle, known, images)
+
+                        if degree == 5 and basis == 'polynomial':
+                            compatible = set(points.values())
+                            excluded = [(x, y) for x in range(1 << degree) for y in range(1 << degree)
+                                        if oracle.onCurve((x, y)) and (x, y) not in compatible]
+                            self.assertEqual(len(excluded), 3 * order)
+                            for point in excluded:
+                                invalid = dict(workload, targets=[dict(id='outside', **encoded(point))])
+                                with self.assertRaises(fixed.TargetOutsideSubgroup):
+                                    fixed.Parameters(invalid, fixed.engine.Ledger())
+
+    def test_candidate_residuals_with_full_width_known_answers(self):
+        document = fixed.readJson(ROOT / 'docs/ic/params/ecc2k130-fixed.json')
+        spec = document['curve']
+        degree, order = spec['degree'], int(spec['subgroup_order'])
+        oracle = curves.CurvePb(field.Pb(degree, int(spec['polynomial'], 0)))
+        generator = tuple(int(document['generator'][axis], 0) for axis in ('x', 'y'))
+        onb = field.Onb(degree)
+        root = onb.fromCoords(int(spec['onb_root'], 0))
+        images, power = [], onb.one()
+        for _ in range(degree):
+            images.append(onb.toCoords(power))
+            power = onb.mul(power, root)
+
+        publicTargets = document['targets'][:]
+        known = {}
+        for index, scalar in enumerate((1, 2**128 + 17, order // 2, order - 1)):
+            x, y = oracle.mul(generator, scalar)
+            for choice, candidate in enumerate((scalar, 0, (scalar + 2**64) % order)):
+                name = f'fixture-{index}-candidate-{choice}'
+                known[name] = scalar
+                document['targets'].append({'id': name, 'x': hex(x), 'y': hex(y), 'candidate_log': candidate})
+        self.checkResiduals(document, generator, oracle, known, images)
+
+        secondGenerator = oracle.dbl(generator)
+        self.assertNotEqual(generator, secondGenerator)
+        alternate = dict(document, generator=dict(zip(('x', 'y'), secondGenerator)), targets=publicTargets)
+        self.checkResiduals(alternate, secondGenerator, oracle, {}, images)
+
     def test_complete_cold_resume_and_add_target(self):
         document, expected = fixture(9)
         with tempfile.TemporaryDirectory() as directory:
@@ -162,6 +272,9 @@ class FixedTests(unittest.TestCase):
                     with campaign.db:
                         campaign.db.execute(sql, values)
                 with fixed.Campaign(document, directory) as campaign:
+                    if 'solutions' in sql:
+                        with self.assertRaisesRegex(ValueError, message):
+                            campaign.run(stage='status')
                     with self.assertRaisesRegex(ValueError, message):
                         if 'relations' in sql:
                             campaign.matrix()

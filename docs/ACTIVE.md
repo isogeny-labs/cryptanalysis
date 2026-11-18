@@ -18,7 +18,7 @@ and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
 
-- [ ] Complete and verify the Rust ECC2K-130 index-calculus pipeline end to end (Codex, started 2026-11-18, branch codex/ecc2k130-rust-e2e-20261118, PR #1758; tracking PR #1754 merged before the implementation commit) [pcc:unverified]
+- [x] Validate fixed index-calculus candidate residuals and subgroup status (Codex, started 2026-11-18, branch test-fixed-candidate-residual, PR #1755)
 
 - [x] Report candidate scalar residuals in fixed index-calculus status (Codex, started 2026-11-18, branch cli-fixed-candidate-residual, PR #1752)
 
@@ -43,5 +43,3 @@ and construction gates. [pcc:unverified]
 - [ ] <task> (<runtime>, started YYYY-MM-DD, branch <branch>, PR #<n>) -->
 
 ## Blocked / questions for the owner
-
-- ECC2K-130 now has an exact native Rust preflight and a checked Rust-to-durable-campaign handoff in PR #1758; full scalar recovery remains blocked on full-size ordinary-target relation yield, rank, and target descent as specified in [the problem record](../problems/ecc2k130-index-calculus-relation-yield.md). [pcc:unverified]
