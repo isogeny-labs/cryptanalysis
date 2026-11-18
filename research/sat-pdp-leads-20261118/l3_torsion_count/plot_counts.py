@@ -8,7 +8,7 @@ c = [json.loads(l) for l in open('control.jsonl')][:-1]
 def agg(rows, div):
     g = collections.defaultdict(lambda: [0, 0.0, 0])
     for r in rows:
-        k = (r['n'], r['l']); g[k][0] += r['xsets']; g[k][1] += r['est_ordered'] / div; g[k][2] += 1
+        k = (r['n'], r['l']); g[k][0] += r['xsets']; g[k][1] += r['N'] ** 3 / 2 ** r['n'] / div; g[k][2] += 1
     return g
 gt, gc = agg(t, 12), agg(c, 6)
 cells = sorted(gt); x = range(len(cells))
@@ -22,4 +22,4 @@ ax.set_xticks(list(x)); ax.set_xticklabels([f"{n},{l}" for n, l in cells], rotat
 ax.set_xlabel('(n, l)'); ax.set_ylabel('x-set relations per factor base (mean, 40 curves)')
 ax.set_title('L3: exact counts of P1+P2+P3 = T0 over V = span(1, z, …, z^(l-1))')
 ax.legend(fontsize=7, loc='center right'); fig.tight_layout()
-fig.savefig('l3_counts.svg'); fig.savefig('l3_counts.png', dpi=150)
+fig.savefig('l3_counts.svg'); fig.savefig('l3_counts.png', dpi=60)

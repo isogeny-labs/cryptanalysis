@@ -86,7 +86,15 @@ factor-of-2 correction above.
 - `plot_counts.py`, `l3_counts.svg`, `l3_counts.png`: the graph.
 
 SHA-256 of `results.jsonl`:
-`5dbd85b1c1f47657b44c16899f1eb4c9cb2727b1f011f6adf81c4ae6ad547fc1`.
+`2a71898d27bce12b6b3b4f607422664ebc0a8f443395194b3d64de430046c33e`.
+
+The committed JSONL files are slimmed to stay under the repository's 64 KiB
+data-file limit (the artifact store was not writable from this container).
+They drop the modulus, the curve coefficient b and the estimate columns. All
+of these regenerate deterministically from (n, l, seed): the estimates are
+N³/2^n and the curves come from the seed derivation. The scripts still emit
+the full rows. The PNG is rendered at 60 dpi; `l3_counts.svg` is the
+full-resolution graph.
 
 To reproduce, run from this directory:
 `python3 count_t0_relations.py 40 > results.jsonl`, then the other two
