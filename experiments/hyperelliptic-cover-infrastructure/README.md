@@ -9,12 +9,45 @@ The upstream
 [audit and evidence](https://github.com/aburan28/crypto/tree/d167ce0af49c22947b6d40f373b35df75e13e82e/research/hyperelliptic_cover_infrastructure_20261006)
 separate curve construction, Jacobian arithmetic, transfer, subgroup
 preservation, and measured advantage. The upstream standalone
-[`hyperelliptic-cover`](https://github.com/isogeny-labs/crypto/blob/6cb5ab1edb141b48b9a9767fc63fe95ba1aac217/src/bin/hyperelliptic_cover.rs)
+[`hyperelliptic-cover`](https://github.com/aburan28/crypto/blob/c01ba3960ada49d73e2c48acb0e175f9e77e1680/src/bin/hyperelliptic_cover.rs)
 command exposes the certificate replay, structured arithmetic, and binary
 certificate-catalog interface. This mirror intentionally adds no solver, CLI,
 or generated catalog. Catalog export remains owned by crypto because it binds
 crypto's EC1/ICV1 registry, cover graph, schema, and packaging contract; this
 repository mirrors and tests the underlying library arithmetic instead.
+
+## Crypto-owned corpus and oracle evidence
+
+The frozen catalog producer is crypto revision
+`c01ba3960ada49d73e2c48acb0e175f9e77e1680`; the tracked corpus first appears
+at crypto revision `07f7d47bd8d58d5cb1065cc83e9f22fefd85e065`. The exact
+`docs/curves/binary-subgroup-transfer-certificates.json` bytes are 498,477
+bytes with SHA-256
+`93150649c0754adb1ca50d74fa4419df9a77c98b156e75e33084a9f31f656ce8`
+and producer-source SHA-256
+`32ca4682a05dfe5a2dca7a6b1f50d2df7f5a589a6dbd68252516e7935af5da47`.
+They retain all 174 declared binary maps and 150 named bindings with zero
+failed records. Exact generated order is locally proved for 102 bindings; the
+other 48 remain explicitly unknown rather than being promoted from
+probable-prime metadata. This repository cites those crypto-owned bytes and
+does not copy them. [pcc:unverified]
+
+Crypto revision `c01ba3960ada49d73e2c48acb0e175f9e77e1680` also adds a
+separately implemented exhaustive Picard-class oracle for the one exact
+fixture `y^2=x^6+1` over `F_5`. It checks all 36 classes, all 1,296 ordered
+sums, exceptional support, target arithmetic, and both transfer compositions
+before comparing with production arithmetic. It is producer-side
+code-path-independent evidence for that fixture, not an independent review or
+general genus-two certificate. The generic F5 and shifted F7 source-law
+oracles remain open. [pcc:unverified]
+
+No release archive is cited yet. Package revision, archive checksum, extracted
+binary checksum, and installed-layout corpus replay remain open until an
+actual standalone archive is published and replayed. The highest-coverage
+next arithmetic family is direct short-Weierstrass primes above 64 bits: 271
+maps/236 EC1 records, beginning with the two 73-bit rows over
+`p=5902977611310272157103`. Normalized targets and odd extension fields remain
+separate later families. [pcc:unverified]
 
 ## Supported boundary
 

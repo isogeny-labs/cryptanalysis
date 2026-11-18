@@ -18,7 +18,7 @@ and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
 
-- [ ] Mirror the general binary hyperelliptic-cover transfer interface from crypto after its source commit is frozen, with split provenance and exact parity checks (Codex, started 2026-11-18; tracking-only PR #1765 merged; continuation branch codex/general-binary-cover-transfer-mirror-implementation-20261118, draft PR #1770) [pcc:unverified]
+- [ ] Close review/CI on the general hyperelliptic-cover mirror; exact arithmetic parity remains pinned to crypto `6cb5ab1e`, while crypto-owned producer `c01ba396` and corpus revision `07f7d47b` are now recorded without duplicating their CLI, oracle, or 498,477-byte corpus (Codex, started 2026-11-18; tracking-only PR #1765 merged; continuation branch codex/general-binary-cover-transfer-mirror-implementation-20261118, draft PR #1770) [pcc:unverified]
 
 - [x] Validate fixed index-calculus candidate residuals and subgroup status (Codex, started 2026-11-18, branch test-fixed-candidate-residual, PR #1755)
 

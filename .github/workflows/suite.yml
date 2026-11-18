@@ -215,9 +215,15 @@ jobs:
           ref: 333c0f0a2390c57f245730ab9294e7ee905d9cd3
           fetch-depth: 1
           path: crypto-source
-      - name: Fetch the retained prime-field source revision
+      - name: Fetch every retained hyperelliptic source revision
         working-directory: crypto-source
-        run: git fetch --no-tags --depth=1 origin 3b8664a466efd56121509cd77866a07e3cb55741
+        run: |
+          jq -r '.files[].source_commit' \
+            ../experiments/hyperelliptic-cover-infrastructure/source-parity.json \
+            | sort -u \
+            | while read -r revision; do
+                git fetch --no-tags --depth=1 origin "$revision"
+              done
       - name: Pull store data this workflow reads (tools/artifacts)
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
