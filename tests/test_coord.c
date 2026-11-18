@@ -699,7 +699,7 @@ static void test_lane_charges_walker_start(void)
     CHECK_EQ_U64(res.walkers, 12);
 
     const uint64_t first = c.ci[0].units[0].unit * ca_coord_ctx_job(ctx)->unit_size;
-    const uint64_t cap = 20u << ca_coord_ctx_job(ctx)->dp_bits;
+    const uint64_t cap = (uint64_t)20 << ca_coord_ctx_job(ctx)->dp_bits;
     uint64_t walk = 0, start = 0;
     for (uint64_t k = 0; k < 12; k++) {
         uint64_t s = 0, a = 0, b = 0;
