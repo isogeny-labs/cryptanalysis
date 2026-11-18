@@ -1,5 +1,91 @@
 # GPU A/A study: literature and prior-art check
 
+## V13 controller-loss recovery and Runpod API v2 migration, 2026-11-18
+
+The v12 allocation cannot supply a scientific row.  The environment rollback
+removed its local controller receipt, result archive, preflight receipt, and
+session output, and an exact-ID provider lookup for pod `gvznipp2vh4neg` on
+2026-11-18 returned HTTP 404.  The retained operator identifiers bind that
+lookup to run
+`gpu-geometry-http-rtx5090-v12-20261102T183537Z-71c86870`, but they do not
+reconstruct the missing authenticated archive or reveal whether the workload
+completed.  Runpod's current v2 contract also defines 404 as "not found or not
+accessible to the caller," so the later lookup is not a substitute for the
+lost result or for a contemporaneous successful deletion receipt.  V12 is
+therefore an incomplete infrastructure outcome with no timing, correctness,
+geometry, or speedup conclusion.
+
+[Nosek et al., *The Preregistration Revolution* (PNAS 2018)](https://pmc.ncbi.nlm.nih.gov/articles/PMC5856500/)
+notes that outcome-aware continuation can increase misleading results, that
+deviations must be disclosed, and that all outcomes must remain visible to
+avoid selective reporting across studies.  Consequently, v13 may be one new,
+prospectively frozen transport-repair attempt, but it cannot be described as a
+continuation of usable v12 data.  V12 remains reported, no v12 sample enters a
+v13 distribution, and v13 must retain the existing fixed sample size,
+thresholds, arm order, one-allocation rule, and terminal precedence unless a
+separate prospective scientific amendment says otherwise.
+
+Because the missing v12 artifacts cannot prove that no timing rows were seen,
+the v13 analysis conservatively counts v12 and v13 as two potentially
+data-bearing campaign attempts.  The within-session design remains 20
+two-sided interval cells, but the campaign family is therefore 40 intervals
+and 80 tails: at family alpha 0.05 the exact per-tail probability becomes
+`1/1600` rather than v12's `1/800`.  V13 is terminal for this six-block
+candidate after any potentially data-bearing execution, whether its outcome
+supports, refutes, invalidates, or loses the candidate measurement.
+
+The official [API v2 overview](https://docs.runpod.io/api-reference-v2/overview.md)
+and [migration guide](https://docs.runpod.io/api-reference-v2/migrate-from-v1.md),
+checked 2026-11-18, say REST API v1 was retired on 2026-11-15 and is no longer
+available.  The live v2 OpenAPI document at
+`https://api.runpod.io/v2/openapi.json` had SHA-256
+`41f48a46a68fd023cedf9bb5a53c957a8359fb27d72d8e68b85729cc3ae9f26d` at
+review time.  Before any v13 provider write, versioned tooling and fixtures
+must bind that contract and make these changes explicit:
+
+- create one exact GPU through `POST https://api.runpod.io/v2/pods`, mapping
+  `cloudType`, `imageName`, `containerDiskInGb`, `dockerEntrypoint`,
+  `dockerStartCmd`, and the one-element `gpuTypeIds` request to `cloud`,
+  `image`, `disk`, `entrypoint`, `cmd`, and
+  `gpu: {id, count, minVcpuCountPerGpu, minRamPerGpu}`; keep
+  `ports: ["8888/http"]` explicit because v2 has no port default, and reject
+  every legacy or otherwise unknown request field;
+- require the [create](https://docs.runpod.io/api-reference-v2/pods/create-a-pod.md)
+  response to be HTTP 201, then poll the
+  [exact Pod](https://docs.runpod.io/api-reference-v2/pods/get-a-pod.md) using
+  its actual `status` through `PROVISIONING`/`STARTING` to `RUNNING`; a queued
+  HTTP 202 is unexpected because the protocol sends no queue request;
+- reconcile an ambiguous create without repeating it by walking every cursor
+  page of [List pods](https://docs.runpod.io/api-reference-v2/pods/list-pods.md)
+  and matching both the randomized name and ownership marker; and
+- use [DELETE `/v2/pods/{id}`](https://docs.runpod.io/api-reference-v2/pods/terminate-a-pod.md),
+  retain its HTTP 204 response, and describe a following same-credential 404
+  as an exact-ID visibility check rather than a global absence proof.  Rate
+  limiting follows the official [`Retry-After` contract](https://docs.runpod.io/api-reference-v2/rate-limits.md);
+  a possibly successful create is never blindly retried.
+
+Runpod's [Pod environment-variable reference](https://docs.runpod.io/pods/templates/environment-variables.md)
+confirms that `RUNPOD_POD_ID` and a Pod-scoped `RUNPOD_API_KEY` are supplied to
+the container, so the maximum-lifetime guard can migrate from the legacy
+GraphQL mutation to the v2 Pod action while the controller still performs the
+registered exact-ID deletion in `finally`.  Receipt and finalizer schemas must
+version the v2 request keys, HTTP statuses, response fields, cleanup evidence,
+and OpenAPI identity; silently accepting the v1-shaped v12 fixtures would not
+authenticate the new transport.
+
+The GPU measurement rules themselves do not change.  The official
+[CUDA C++ Best Practices timing guidance](https://docs.nvidia.com/cuda/cuda-c-best-practices-guide/index.html#timing)
+requires device synchronization around CPU timers because kernel launches are
+asynchronous, while CUDA events measure timestamps in their recorded stream.
+The [Nsight Systems guide](https://docs.nvidia.com/nsight-systems/UserGuide/index.html)
+documents tracing overhead, and the
+[Nsight Compute profiling guide](https://docs.nvidia.com/nsight-compute/ProfilingGuide/index.html#overhead)
+documents replay, cache restoration, clock effects, and potentially
+significant collection overhead.  V13 therefore keeps excluded full-workload
+warmups and fresh unprofiled alternating measurements as its timing evidence;
+post-timing Nsys data remain mechanism diagnostics, and no profiled duration
+or replay pass may enter the acceptance distribution.
+
 ## V8 prospective update-grid A/B, 2026-11-01
 
 The separately retained v7 run is now the planning baseline for one engineering
