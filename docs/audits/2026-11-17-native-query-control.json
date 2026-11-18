@@ -1,0 +1,25 @@
+{
+  "schema": "maintained-audit.native-query-control/v1",
+  "compiler": "/Users/adamburan/.elan/toolchains/leanprover--lean4---v4.35.0-rc4/bin/lean",
+  "version": "Lean (version 4.35.0-rc4, arm64-apple-darwin24.6.0, commit c29b6dda4f7c20e3eeaa717c4e565663c5cfa364, Release)",
+  "compiler_sha256": "d1d9c26a539f54fe839d2aa7760bf1ac1dd76a30b26e2c9684bebf2900038fcf",
+  "platform": "macOS-27.2-arm64-arm-64bit-Mach-O",
+  "source_sha256": "9045b403359a25de305478dcdc83d0c8220754b95d7fdeb088bec3f19e37709c",
+  "source": "namespace Outer\nnamespace A\ntheorem localResult : True := True.intro\ntheorem relativeResult : True := True.intro\ntheorem rootResult : True := True.intro\n#print axioms localResult\nend A\n#print axioms A.relativeResult\n#print axioms _root_.Outer.A.rootResult\nend Outer\n",
+  "returncode": 0,
+  "stdout": "'Outer.A.localResult' does not depend on any axioms\n'Outer.A.relativeResult' does not depend on any axioms\n'Outer.A.rootResult' does not depend on any axioms\n",
+  "stderr": "",
+  "queries": [
+    "localResult",
+    "A.relativeResult",
+    "_root_.Outer.A.rootResult"
+  ],
+  "native_names": [
+    "Outer.A.localResult",
+    "Outer.A.relativeResult",
+    "Outer.A.rootResult"
+  ],
+  "valid_relative_and_root_names_accepted": true,
+  "wrong_namespace_refused": true,
+  "scope": "Actual pinned Lean name-resolution control; not a full Mathlib corpus replay or performance benchmark."
+}
