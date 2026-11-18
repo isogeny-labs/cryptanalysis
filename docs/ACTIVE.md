@@ -18,7 +18,7 @@ and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
 
-- [ ] Independently verify the H116 blinded target census and truncated Frobenius-fiber packet before scoring (Codex, started 2026-11-18, branch research/h116-truncated-fiber-verifier) [pcc:unverified]
+- [ ] Independently verify the H116 blinded target census and truncated Frobenius-fiber packet before scoring (Codex, started 2026-11-18, branch research/h116-truncated-fiber-verifier, PR #1744) [pcc:unverified]
 
 - [ ] Extend certified Xedni lift-success trials to the ten-coefficient `r=7..9` regime with exact rational dependence verification (Codex, started 2026-11-17, branch codex/xedni-breakthrough-20261117, PR #1722) [pcc:unverified]
 
