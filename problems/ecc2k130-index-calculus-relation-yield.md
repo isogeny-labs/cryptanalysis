@@ -2,7 +2,7 @@
 
 - **Status:** `open`
 - **Kind:** empirical bottleneck and implementation gap
-- **Affected work:** [fixed-parameter workflow](../suite/docs/ic/FIXED_PARAMETERS.md), [exact parameter profile](../suite/docs/ic/params/ecc2k130-fixed.json), [cold full-rank control](../experiments/ecc2k130-cold-fullrank-20261006/RESULT.md), [PR #1754](https://github.com/isogeny-labs/cryptanalysis/pull/1754)
+- **Affected work:** [fixed-parameter workflow](../suite/docs/ic/FIXED_PARAMETERS.md), [exact parameter profile](../suite/docs/ic/params/ecc2k130-fixed.json), [cold full-rank control](../experiments/ecc2k130-cold-fullrank-20261006/RESULT.md), [PR #1758](https://github.com/isogeny-labs/cryptanalysis/pull/1758)
 - **Next action owner:** ECC2K-130 index-calculus research
 - **Last updated:** 2026-11-18
 
