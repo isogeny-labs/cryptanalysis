@@ -18,6 +18,7 @@ and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
 
+- [x] L1 inverted CDCL(T) with native lin21 leaf (done: killed on paper; parity at best on subspace bases, no linear leaf on non-subspace bases) (Claude, started 2026-11-18, branch claude/sat-solver-index-calculus-zczysc, PR #1759)
 - [x] L4 support-minors MinRank on the lin21 leaf (done: killed by counting; rank condition holds for 11-40% of all u, no information beyond round-4 D) (Claude, started 2026-11-18, branch claude/sat-solver-index-calculus-zczysc, PR #1759)
 - [ ] L2b row-reduced XOR extension variables: CaDiCaL on m=4 PDP CNFs plus Gauss-reduced XOR rows as prefix-chain definitions, vs baseline with A/A arm (Claude, started 2026-11-18, branch claude/sat-solver-index-calculus-zczysc)
 - [x] Report candidate scalar residuals in fixed index-calculus status (Codex, started 2026-11-18, branch cli-fixed-candidate-residual, PR #1752)

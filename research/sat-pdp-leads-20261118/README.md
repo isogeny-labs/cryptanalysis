@@ -65,6 +65,14 @@ whether it could change the exponent at all.
   same targets.
 - **Kill.** Wall time per decided target is at least 10x the native scan, or
   the Hamming-NB panel shows no improvement beyond the A/A band.
+- **Done (2026-11-18): killed on paper.**
+  - On subspace bases, the theory *is* the native scan, so the best case
+    is parity with the baseline.
+  - On non-subspace bases, no linear leaf exists: p = x1·x2 is dense when
+    V is not a polynomial span. The theory would revert to the root lookups
+    of Q1419–Q1592.
+  - A Frobenius-orbit union base reduces to plain V on more targets.
+  See [`l1_inverted_cdclt/RESULT.md`](l1_inverted_cdclt/RESULT.md).
 - **Prior.** 50% for a constant gain over SAT-only. About 0% for an exponent
   change on subspace bases. Its real value is opening up non-subspace bases.
 
