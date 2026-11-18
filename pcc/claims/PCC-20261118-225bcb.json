@@ -1,0 +1,23 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-18T01:11:30Z",
+ "id": "PCC-20261118-225bcb",
+ "kind": "execution",
+ "producer": {
+  "commit": "8c79b510a2b8bccc8663c785e56e43a42c9b08a5",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/ic-collector-counterfactual-20261117/setup-timing-launch-metadata.json",
+    "sha256": "bee7dcf26e3e927ed511fcce859f5920dbee4b6de7afcc5915496e3a5c0c416d"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "experiments/ic-collector-counterfactual-20261117",
+ "statement": "User-approved timing job20261118-011019-dc56 launched from clean published source8c79b510a2 with one4CPU/8GiB/L4 allocation capped900seconds. Launch metadata is retained and the checkpoint/remote restore contract passed before launch. Prospective record20261117T1809Z-ic-collector-buffer-state-eightpath-001 predates execution. No retry or replacement is authorized; results remain pending."
+}

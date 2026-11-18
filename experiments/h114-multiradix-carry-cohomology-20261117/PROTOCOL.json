@@ -1,0 +1,120 @@
+{
+  "schema": "h114.protocol/v1",
+  "freeze_date": "2026-11-17",
+  "status": "frozen_before_candidate_data",
+  "mechanism": "three pairwise first-layer multiplication-carry windings combined by CRT",
+  "ring": "Z/(p^2)Z",
+  "multipliers": [2, 3, 5],
+  "radix": 30,
+  "curve_file": "CURVES.json",
+  "curve_file_sha256": "5dff248152f4cfb3a8b5f9f39542110767d60779d4b917e4b817a935b6170385",
+  "cohort": {
+    "curves": 7,
+    "generator_multipliers": [1, 2, 3, 5],
+    "canonical_rows": 28,
+    "nonidentity_targets": 9096,
+    "require_gcd_order_30": true
+  },
+  "pair_windings": [
+    {
+      "id": "w23",
+      "outer": 2,
+      "inner": 3,
+      "integer_range": [-3, 2],
+      "crt_modulus": 5
+    },
+    {
+      "id": "w25",
+      "outer": 2,
+      "inner": 5,
+      "integer_range": [-5, 2],
+      "crt_modulus": 3
+    },
+    {
+      "id": "w35",
+      "outer": 3,
+      "inner": 5,
+      "integer_range": [-5, 3],
+      "crt_modulus": 2
+    }
+  ],
+  "path_orders": ["235", "253", "325", "352", "523", "532"],
+  "path_height_formula": "K_abc(Q)=a*b*kappa_c(Q/(a*b))+a*kappa_b(Q/a)+kappa_a(Q)",
+  "braid_coherence": "w23(Q)+3*w25(Q/3)+w35(Q)=2*w35(Q/2)+w25(Q)+5*w23(Q/5)",
+  "channels": [
+    "raw",
+    "plus",
+    "minus",
+    "forward",
+    "backward",
+    "curvature",
+    "anchor_plus",
+    "anchor_minus"
+  ],
+  "candidate_family": {
+    "shared_channel_across_limbs": true,
+    "mod2_source": "channel(w35)",
+    "mod3_source": "channel(w25)",
+    "mod5_source": "channel(w23)",
+    "permutation_order": "lexicographic",
+    "mod2_permutations": 2,
+    "mod3_permutations": 6,
+    "mod5_permutations": 120,
+    "crt_formula": "(15*d2+10*d3+6*d5) mod 30",
+    "predicates_per_channel": 1440,
+    "predicate_count": 11520,
+    "target_label": "canonical scalar mod 30",
+    "curve_sized_advice": false,
+    "post_run_features": false
+  },
+  "controls": {
+    "random_sections": {
+      "curves": 2,
+      "replicates_per_curve": 8,
+      "global_section_assignment": true,
+      "seed_domain": "H114/random-section/v1"
+    },
+    "histogram_matched_labels": {
+      "curves": 2,
+      "replicates_per_curve": 8,
+      "seed_domain": "H114/label-shuffle/v1"
+    },
+    "coordinate_isomorphisms": {
+      "curves": 2,
+      "lambda": 2
+    },
+    "torsion_section": "all pair windings and all six path heights must vanish",
+    "hexagon": "all six paths equal and braid residual is exactly zero",
+    "limb_ablations": ["zero_mod2", "zero_mod3", "zero_mod5"],
+    "verifier_tampers": ["path_coefficient", "crt_limb", "scalar_label"]
+  },
+  "prng": {
+    "name": "SplitMix64",
+    "increment": "0x9e3779b97f4a7c15",
+    "mix1": "0xbf58476d1ce4e5b9",
+    "mix2": "0x94d049bb133111eb",
+    "seed_packing": "sha256(domain || 0x00 || curve_slug || 0x00 || generator_multiplier || 0x00 || replicate), first 8 bytes big-endian"
+  },
+  "decoder": {
+    "update": "R <- [30^(-1) mod r] * (R-[digit]G)",
+    "round_bound": "Nat.log 30 scalar + 1",
+    "fallback_search": false,
+    "independent_final_ec_check": true
+  },
+  "acceptance": {
+    "same_predicate_id_exact_on_all_rows": true,
+    "uniform_rows_required": 28,
+    "all_decoded_targets_required": 9096,
+    "all_structural_controls_required": true,
+    "all_tamper_tests_must_reject": true
+  },
+  "run_policy": {
+    "backend": "isolab EKS Spot",
+    "checkpoint_required": true,
+    "source_revision_must_be_pushed": true,
+    "image_digest_required": true,
+    "budget_usd": 1.0,
+    "deadline_seconds": 1800,
+    "scientific_retries": 0
+  }
+}
