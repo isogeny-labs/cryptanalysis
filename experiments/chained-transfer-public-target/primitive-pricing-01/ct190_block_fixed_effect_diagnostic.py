@@ -43,12 +43,23 @@ def _design(packet):
     return full, centered
 
 
+def previous_b_roster_share(packet):
+    """Exact, model-based standardization weight from frozen treatment slots."""
+    prior = [original.model_row(original.order(block, packet)[:4], pos)[5]
+             for block in range(original.BLOCKS) for pos in range(4)]
+    require(len(prior) == 32 and sum(prior) == 12,
+            "CT188 previous-B roster mix changed; refuse model standardization")
+    return Fraction(sum(prior), len(prior))
+
+
 def assert_design():
     require(original.assert_design() is True and
             original.roster_sha256() == EXPECTED_ROSTER_SHA256,
             "original immutable physical roster changed")
     for packet in range(original.PACKETS):
         _design(packet)
+        require(previous_b_roster_share(packet) == Fraction(3, 8),
+                "unexpected previous-B standardization weight")
     return True
 
 
@@ -114,7 +125,19 @@ def analyze_untrusted_times(records):
                 xs.append(tuple(row[col] - xavg[col] for col in range(6)))
                 ys.append(logtime - yavg)
         coefficients.append(_solve(xs, ys))
-    contrasts = [-coeff["physical_B"] for coeff in coefficients]
+    # CT199: the historical physical_B estimate is a *conditional* effect
+    # when previous_B=0. Include both conditional contrasts, and separately
+    # standardize to the frozen (not arbitrarily chosen) previous-B mix.
+    q = previous_b_roster_share(0)
+    require(all(previous_b_roster_share(packet) == q
+                for packet in range(original.PACKETS)),
+            "packet-specific carryover standardization weights differ")
+    previous_a = [-c["physical_B"] for c in coefficients]
+    previous_b = [-(c["physical_B"] + c["physical_B_x_previous_B"])
+                  for c in coefficients]
+    standardized = [-(c["physical_B"] + float(q) * c["physical_B_x_previous_B"])
+                    for c in coefficients]
+    contrasts = previous_a  # preserved legacy alias; never a marginal ratio
     return {
         "schema": SCHEMA,
         "standing": "[pcc:unverified]",
@@ -127,7 +150,19 @@ def analyze_untrusted_times(records):
         "block_intercepts_per_packet": original.BLOCKS,
         "exact_model_columns": N_BLOCK_COLUMNS,
         "median_direct_over_retained_ratio_block_fixed":
-            math.exp(statistics.median(contrasts)),
+            math.exp(statistics.median(contrasts)),  # LEGACY previous-A only
+        "legacy_ratio_condition": "previous_B=0; NOT marginal",
+        "roster_standardization_previous_B_fraction": "3/8",
+        "median_direct_over_retained_ratio_previous_A":
+            math.exp(statistics.median(previous_a)),
+        "median_direct_over_retained_ratio_previous_B":
+            math.exp(statistics.median(previous_b)),
+        "median_direct_over_retained_ratio_roster_standardized":
+            math.exp(statistics.median(standardized)),
+        "per_packet_direct_over_retained_log_ratios": [
+            {"previous_A": a, "previous_B": b, "roster_standardized": s}
+            for a, b, s in zip(previous_a, previous_b, standardized)
+        ],
         "median_previous_B_coefficient_block_fixed":
             statistics.median(c["previous_B"] for c in coefficients),
         "median_interaction_coefficient_block_fixed":
