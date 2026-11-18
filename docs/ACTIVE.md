@@ -18,7 +18,7 @@ and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
 
-- [ ] Mirror the general binary hyperelliptic-cover transfer interface from crypto after its source commit is frozen, with split provenance and exact parity checks (Codex, started 2026-11-18, branch codex/general-binary-cover-transfer-mirror-20261118) [pcc:unverified]
+- [ ] Mirror the general binary hyperelliptic-cover transfer interface from crypto after its source commit is frozen, with split provenance and exact parity checks (Codex, started 2026-11-18, branch codex/general-binary-cover-transfer-mirror-20261118, PR #1765) [pcc:unverified]
 
 - [x] Validate fixed index-calculus candidate residuals and subgroup status (Codex, started 2026-11-18, branch test-fixed-candidate-residual, PR #1755)
 
