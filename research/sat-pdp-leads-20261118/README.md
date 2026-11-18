@@ -95,7 +95,11 @@ whether it could change the exponent at all.
   conflicts are 1.061× CaDiCaL's, 95% CI [0.979, 1.143]. That is inside the
   A/A band [0.793, 1.108]. On the dual encoding it is worse, at 1.121×.
   SBVA barely changes these CNFs (+6 variables, −10 clauses). The ER-mined
-  extension variables half of L2 was not run. See
+  extension variables half of L2 was not run at first. It was run as L2b:
+  KILL. On l = 4 UNSAT, the leaf-independent part (RREF rows as prefix
+  chains) gives 1.061× [0.918, 1.225] conflicts, inside the A/A band.
+  Exploratory, and outside the decision: on SAT targets it gives 0.358×
+  [0.204, 0.556]. See [`l2b_rref/RESULT.md`](l2b_rref/RESULT.md). See
   [`l2_sbva/RESULT.md`](l2_sbva/RESULT.md).
 
 ### L3. Usefulness gate for round-4 lead A (torsion targets) before building it
