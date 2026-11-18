@@ -1,15 +1,16 @@
 # Hyperelliptic cover infrastructure
 
 This directory records the bounded library mirror from
-[`isogeny-labs/crypto`](https://github.com/isogeny-labs/crypto/tree/6cb5ab1edb141b48b9a9767fc63fe95ba1aac217).
-The updated transfer and balanced-Jacobian files are pinned to implementation
-commit `6cb5ab1edb141b48b9a9767fc63fe95ba1aac217`; unchanged support files retain
-their original source revisions in the machine-readable manifest.
+[`isogeny-labs/crypto`](https://github.com/isogeny-labs/crypto/tree/153ac585d3b1ece0ebb0d49312b13267f651c94b).
+The widened prime transfer, balanced-Jacobian, and deterministic-primality
+files are pinned to implementation commit
+`153ac585d3b1ece0ebb0d49312b13267f651c94b`; unchanged support and binary
+files retain their original source revisions in the machine-readable manifest.
 The upstream
 [audit and evidence](https://github.com/aburan28/crypto/tree/d167ce0af49c22947b6d40f373b35df75e13e82e/research/hyperelliptic_cover_infrastructure_20261006)
 separate curve construction, Jacobian arithmetic, transfer, subgroup
 preservation, and measured advantage. The upstream standalone
-[`hyperelliptic-cover`](https://github.com/aburan28/crypto/blob/c01ba3960ada49d73e2c48acb0e175f9e77e1680/src/bin/hyperelliptic_cover.rs)
+[`hyperelliptic-cover`](https://github.com/aburan28/crypto/blob/153ac585d3b1ece0ebb0d49312b13267f651c94b/src/bin/hyperelliptic_cover.rs)
 command exposes the certificate replay, structured arithmetic, and binary
 certificate-catalog interface. This mirror intentionally adds no solver, CLI,
 or generated catalog. Catalog export remains owned by crypto because it binds
@@ -19,20 +20,20 @@ repository mirrors and tests the underlying library arithmetic instead.
 ## Crypto-owned corpus and oracle evidence
 
 The frozen catalog producer is crypto revision
-`c01ba3960ada49d73e2c48acb0e175f9e77e1680`; the tracked corpus first appears
-at crypto revision `07f7d47bd8d58d5cb1065cc83e9f22fefd85e065`. The exact
+`153ac585d3b1ece0ebb0d49312b13267f651c94b`; the rebound tracked corpus is
+pinned at crypto revision `bb87d501aa763e7243f845d4f07c8a31b88435f1`. The exact
 `docs/curves/binary-subgroup-transfer-certificates.json` bytes are 498,477
 bytes with SHA-256
-`93150649c0754adb1ca50d74fa4419df9a77c98b156e75e33084a9f31f656ce8`
+`15bcf780f98a3a787f988b737a8b5f82c20053961daaefa15f6c4a7555bfc948`
 and producer-source SHA-256
-`32ca4682a05dfe5a2dca7a6b1f50d2df7f5a589a6dbd68252516e7935af5da47`.
+`7cc3fedfaef46a6588c0f31e304be07f6948f62628baf087b9b8b89f178ec9ad`.
 They retain all 174 declared binary maps and 150 named bindings with zero
 failed records. Exact generated order is locally proved for 102 bindings; the
 other 48 remain explicitly unknown rather than being promoted from
 probable-prime metadata. This repository cites those crypto-owned bytes and
 does not copy them. [pcc:unverified]
 
-Crypto revision `c01ba3960ada49d73e2c48acb0e175f9e77e1680` also adds a
+Crypto revision `153ac585d3b1ece0ebb0d49312b13267f651c94b` retains a
 separately implemented exhaustive Picard-class oracle for the one exact
 fixture `y^2=x^6+1` over `F_5`. It checks all 36 classes, all 1,296 ordered
 sums, exceptional support, target arithmetic, and both transfer compositions
@@ -41,13 +42,27 @@ code-path-independent evidence for that fixture, not an independent review or
 general genus-two certificate. The generic F5 and shifted F7 source-law
 oracles remain open. [pcc:unverified]
 
+That producer revision also adds a separate exact `F_2` control for
+`E: y^2+xy=x^3+1`, `H: v^2+u^2v=u^7+u`, and
+`phi(u,v)=(u^3,uv+1)`. It constructs 20 source classes from principal
+divisors without production Jacobian addition, checks all 400 ordered sums
+and all 8,000 associativity triples, independently implements both maps, and
+checks both composition identities before comparison with production. This is
+partial independent source-law evidence for one tiny general-path fixture; it
+does not close the full 486-class `GF(8)` source-law gate or establish
+catalog-wide support. Its test source remains crypto-owned and is not copied
+here. [pcc:unverified]
+
 No release archive is cited yet. Package revision, archive checksum, extracted
 binary checksum, and installed-layout corpus replay remain open until an
 actual standalone archive is published and replayed. The highest-coverage
-next arithmetic family is direct short-Weierstrass primes above 64 bits: 271
-maps/236 EC1 records, beginning with the two 73-bit rows over
-`p=5902977611310272157103`. Normalized targets and odd extension fields remain
-separate later families. [pcc:unverified]
+direct short-Weierstrass boundary now covers 20,539 maps over 675 linked EC1
+records through deterministic `u64` validation plus exactly two live 73-bit
+pilot rows over `p=5902977611310272157103` under the strict
+Sorenson--Webster `psi_13` bound. The remaining 269 wide-direct maps and 234
+bindings, normalized targets, and odd extension fields remain unsupported for
+the induced-map backend. This two-row pilot is not general wide-prime support.
+[pcc:unverified]
 
 ## Supported boundary
 
@@ -73,14 +88,19 @@ separate later families. [pcc:unverified]
 - Odd-characteristic arithmetic keeps one-infinity odd-degree curves and
   split-sextic two-infinity curves in separate representations. The balanced
   `(u,v,n_plus)` implementation supports monic squarefree genus-two sextics
-  over deterministically validated prime fields of at most 64 bits. For the
+  over prime fields proved either by the complete deterministic `u64` test or
+  by the strict Sorenson--Webster `psi_13` gate. Values outside that proof
+  range return structured `unsupported_without_primality_certificate`, while
+  a deterministic compositeness witness makes the input invalid. For the
   direct short-Weierstrass `prime_quadratic_pullback_v1` family, it implements
   arbitrary-class pushforward, rational-point pullback, the deck action, and
   checked identities `pi_*pi^*=[2]` and `pi^*pi_*=1+deck_*`. Its named
   generator certificate uses a checked odd annihilator and does not assert
-  exact order or primality. Normalized targets, extension fields, larger
-  prime fields, and nonsplit infinity remain unsupported. The exhaustive
-  `F_{p²}` counter keeps its explicit `p ≤ 4096` enumeration bound.
+  exact order or primality. The widened boundary includes exactly the two
+  live 73-bit pilot rows over `p=5902977611310272157103`; it is not a general
+  claim for larger prime fields. Normalized targets, extension fields,
+  proof-uncovered primes, and nonsplit infinity remain unsupported. The
+  exhaustive `F_{p²}` counter keeps its explicit `p ≤ 4096` enumeration bound.
   [pcc:unverified]
 
 Generic pullback/pushforward across other cover families, full-Jacobian
@@ -107,8 +127,8 @@ full-Jacobian index calculus, scaling, or a speed result. See the mirrored
 
 ## Source parity
 
-The current transfer implementation source is crypto commit
-`6cb5ab1edb141b48b9a9767fc63fe95ba1aac217`; the original audit baseline is
+The current widened prime transfer implementation source is crypto commit
+`153ac585d3b1ece0ebb0d49312b13267f651c94b`; the original audit baseline is
 `5874ce8b393dccc4c735cc7ca5a47de7fe196c59`. Unchanged prime-field files remain
 bound to `3b8664a466efd56121509cd77866a07e3cb55741`. The SHA-256 values below record
 the mirrored file identities. From the repository root, run
@@ -122,12 +142,13 @@ checkout and compare the recorded source bytes.
 | `src/binary_ecc/hyperelliptic.rs` | `333c0f0a2390c57f245730ab9294e7ee905d9cd3` | `suite/src/binary_ecc/hyperelliptic.rs` | exact: `816d2316e80b74220b912ff0c3cfc8d1173d67aacc945fff4a2e63c5afa59c15` |
 | `src/binary_ecc/cover_transfer.rs` | `6cb5ab1edb141b48b9a9767fc63fe95ba1aac217` | `suite/src/binary_ecc/cover_transfer.rs` | exact: `e1336ef5e5fb6ab32d58be956e72a8732adc43aca30d46a4f8ce45b03cdcdad5` |
 | `src/binary_ecc/mod.rs` | `6cb5ab1edb141b48b9a9767fc63fe95ba1aac217` | `suite/src/binary_ecc/mod.rs` | adapter: source `22668e7636d35b175c80505307d40cae32f1a1b1e8bec9b1c0239bebb11b3d51`, mirror `dcf9aa0c6dee67aebf5cc8624288ceb4d6a5eabff67ebf7aecae274f741a0382` |
-| `src/prime_hyperelliptic/balanced.rs` | `6cb5ab1edb141b48b9a9767fc63fe95ba1aac217` | `suite/src/prime_hyperelliptic/balanced.rs` | exact: `550675a30d344a65a067fbe927203c8085eccec1acfa19f952011c570576d464` |
-| `src/prime_hyperelliptic/cover_transfer.rs` | `6cb5ab1edb141b48b9a9767fc63fe95ba1aac217` | `suite/src/prime_hyperelliptic/cover_transfer.rs` | exact: `97ffe80dd14332eb0a2854dfcafcf21d98964289366762e1f3bd8228b84d7dc3` |
+| `src/prime_hyperelliptic/balanced.rs` | `153ac585d3b1ece0ebb0d49312b13267f651c94b` | `suite/src/prime_hyperelliptic/balanced.rs` | exact: `5a5f275021cf901e44a2a2a0e3fb9238e55da2772a1620ec153d0d8e4461d451` |
+| `src/prime_hyperelliptic/cover_transfer.rs` | `153ac585d3b1ece0ebb0d49312b13267f651c94b` | `suite/src/prime_hyperelliptic/cover_transfer.rs` | exact: `4ac06190059262ab96b9ebc80f84ee27a3d9a660d8b4e05186ea7c8c5362724e` |
 | `src/prime_hyperelliptic/curve.rs` | `3b8664a466efd56121509cd77866a07e3cb55741` | `suite/src/prime_hyperelliptic/curve.rs` | exact: `7a769bfb7abfe92ce06da7c02340f2a2426827d8066ebef510375149b8c3d5ad` |
 | `src/prime_hyperelliptic/fp2.rs` | `3b8664a466efd56121509cd77866a07e3cb55741` | `suite/src/prime_hyperelliptic/fp2.rs` | exact: `b833bdff5247f2eea0cde7feb89d0378cfe8305671f9065d2dae7ab538c03e55` |
-| `src/prime_hyperelliptic/mod.rs` | `6cb5ab1edb141b48b9a9767fc63fe95ba1aac217` | `suite/src/prime_hyperelliptic/mod.rs` | operation-pricing adapter: source `03660be55198a76e3334a38e524ca1ea1ef4bf643ce6b5094c036f7cde7daff9`, mirror `fa36d063ddad804c97e9f8422259d39b0f113d13aa898bab593d276531f42c62` |
+| `src/prime_hyperelliptic/mod.rs` | `153ac585d3b1ece0ebb0d49312b13267f651c94b` | `suite/src/prime_hyperelliptic/mod.rs` | operation-pricing adapter: source `ad7a9372e68b74fa9bb158ab4f44671d9975e2fb83f6183a791876399c8627b0`, mirror `56927be3fc20e4a5f52b1f063c6371b0ca1bdd090e3bb3874693ed62e96b5838` |
 | `src/prime_hyperelliptic/fp_poly.rs` | `3b8664a466efd56121509cd77866a07e3cb55741` | `suite/src/prime_hyperelliptic/fp_poly.rs` | selected domain-binding adapter: source `b5d1a1ba5e95d8d0dd06b71757567fb559adbdd09b1ab623ae76e0049ee593c2`, mirror `44f7af14d22bed78d85c4bd009ccce7197fa9257e7ff56164c8d891303e49590` |
+| `src/prime_hyperelliptic/primality.rs` | `153ac585d3b1ece0ebb0d49312b13267f651c94b` | `suite/src/prime_hyperelliptic/primality.rs` | exact: `3b055ac166717960963e4e80b7d75eaba6c1681a7bc2e7ddfbb0d4af4d5aaf1c` |
 
 The binary module adapter preserves two existing unlinked rustdoc references,
 omits crypto-only `efd`, operation-tally, and trace-zero modules, and retains
@@ -136,6 +157,6 @@ those declared transformations. The polynomial adapter
 ports the required coefficient-field equality guard and regression test,
 while preserving cryptanalysis's pre-existing lack of crypto's unrelated
 `pow_mod` helper. The prime-module adapter omits only crypto's operation-pricing
-module; the balanced arithmetic and induced-map modules are byte-exact. Exact
-machine-readable identities and adapter rules live in
+module; the balanced arithmetic, induced-map, and deterministic-primality
+modules are byte-exact. Exact machine-readable identities and adapter rules live in
 [`source-parity.json`](source-parity.json).

@@ -27,8 +27,8 @@
 //! No cover map, subgroup claim, extension-field model, or solver is supplied
 //! here.  Exhaustive enumeration is a separate toy-field reference routine.
 
-use super::fp2::is_prime_u64;
 use super::fp_poly::FpPoly;
+use super::primality::{prime_proof_status, PrimeProofStatus, PSI13_EXCLUSIVE_BOUND_DECIMAL};
 use num_bigint::BigUint;
 use num_traits::{One, ToPrimitive, Zero};
 use std::fmt;
@@ -42,28 +42,56 @@ pub const MAX_BALANCED_ENUMERATION_PRIME: u64 = 31;
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum BalancedHyperellipticError {
     ModulusNotOddPrime,
-    UnsupportedPrimeModulusSize { maximum_bits: u32 },
+    UnsupportedPrimeModulusSize {
+        maximum_bits: u32,
+    },
+    UnsupportedPrimalityProofRange {
+        exclusive_upper_bound_decimal: &'static str,
+    },
     CurvePolynomialFieldMismatch,
     CurvePolynomialNotCanonical,
-    CurveDegreeMismatch { actual: Option<usize> },
+    CurveDegreeMismatch {
+        actual: Option<usize>,
+    },
     CurvePolynomialNotMonic,
     CurvePolynomialNotSquarefree,
     InfinityPolynomialMismatch,
-    CoordinateOutOfRange { coordinate: &'static str },
+    CoordinateOutOfRange {
+        coordinate: &'static str,
+    },
     PointNotOnCurve,
     DivisorCurveMismatch,
-    DivisorPolynomialFieldMismatch { component: &'static str },
-    NonCanonicalPolynomial { component: &'static str },
+    DivisorPolynomialFieldMismatch {
+        component: &'static str,
+    },
+    NonCanonicalPolynomial {
+        component: &'static str,
+    },
     DivisorUIsZero,
     DivisorUNotMonic,
-    DivisorDegreeTooLarge { degree: usize },
-    DivisorVNotReduced { v_degree: usize, u_degree: usize },
-    InfinityCountOutOfRange { degree: usize, n_plus: u32 },
+    DivisorDegreeTooLarge {
+        degree: usize,
+    },
+    DivisorVNotReduced {
+        v_degree: usize,
+        u_degree: usize,
+    },
+    InfinityCountOutOfRange {
+        degree: usize,
+        n_plus: u32,
+    },
     DivisorEquationMismatch,
-    NonExactDivision { stage: &'static str },
+    NonExactDivision {
+        stage: &'static str,
+    },
     ReductionProducedZero,
-    ReductionOutsideCanonicalRange { support_degree: usize, n_plus: i64 },
-    EnumerationFieldTooLarge { maximum: u64 },
+    ReductionOutsideCanonicalRange {
+        support_degree: usize,
+        n_plus: i64,
+    },
+    EnumerationFieldTooLarge {
+        maximum: u64,
+    },
 }
 
 impl fmt::Display for BalancedHyperellipticError {
@@ -73,6 +101,12 @@ impl fmt::Display for BalancedHyperellipticError {
             Self::UnsupportedPrimeModulusSize { maximum_bits } => write!(
                 out,
                 "prime modulus exceeds the deterministic {maximum_bits}-bit validation domain"
+            ),
+            Self::UnsupportedPrimalityProofRange {
+                exclusive_upper_bound_decimal,
+            } => write!(
+                out,
+                "prime modulus is outside the strict deterministic primality-proof range p < {exclusive_upper_bound_decimal}"
             ),
             Self::CurvePolynomialFieldMismatch => {
                 write!(out, "curve polynomial uses a different coefficient field")
@@ -598,17 +632,19 @@ fn canonical_polynomial(polynomial: &FpPoly, p: &BigUint) -> bool {
             .is_none_or(|coefficient| !coefficient.is_zero())
 }
 
-fn validate_modulus(p: &BigUint) -> Result<u64, BalancedHyperellipticError> {
-    if p.bits() > 64 {
-        return Err(BalancedHyperellipticError::UnsupportedPrimeModulusSize { maximum_bits: 64 });
-    }
-    let Some(word) = p.to_u64() else {
-        return Err(BalancedHyperellipticError::UnsupportedPrimeModulusSize { maximum_bits: 64 });
-    };
-    if word == 2 || !is_prime_u64(word) {
+fn validate_modulus(p: &BigUint) -> Result<(), BalancedHyperellipticError> {
+    if p == &BigUint::from(2u32) {
         return Err(BalancedHyperellipticError::ModulusNotOddPrime);
     }
-    Ok(word)
+    match prime_proof_status(p) {
+        PrimeProofStatus::ProvedU64 | PrimeProofStatus::ProvedPsi13 => Ok(()),
+        PrimeProofStatus::Composite => Err(BalancedHyperellipticError::ModulusNotOddPrime),
+        PrimeProofStatus::UnsupportedWithoutPrimalityCertificate => {
+            Err(BalancedHyperellipticError::UnsupportedPrimalityProofRange {
+                exclusive_upper_bound_decimal: PSI13_EXCLUSIVE_BOUND_DECIMAL,
+            })
+        }
+    }
 }
 
 fn polynomial_part_at_infinity(

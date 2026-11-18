@@ -25,16 +25,16 @@
 //! ```
 //!
 //! This implementation is deliberately limited to the same direct
-//! short-Weierstrass prime-field and at-most-64-bit domain as the balanced
-//! backend.  It does not implement extension fields, normalized
-//! Montgomery/Edwards target coordinates, exact subgroup-order proofs, or a
-//! discrete-log solver.
+//! short-Weierstrass prime-field and strict deterministic primality-proof
+//! domain as the balanced backend.  It does not implement extension fields,
+//! normalized Montgomery/Edwards target coordinates, exact subgroup-order
+//! proofs, or a discrete-log solver.
 
 use super::balanced::{BalancedDivisorP, BalancedHyperellipticError, SplitHyperellipticCurveP};
-use super::fp2::is_prime_u64;
 use super::fp_poly::{fp_inv, FpPoly};
+use super::primality::{prime_proof_status, PrimeProofStatus, PSI13_EXCLUSIVE_BOUND_DECIMAL};
 use num_bigint::BigUint;
-use num_traits::{One, ToPrimitive, Zero};
+use num_traits::{One, Zero};
 use std::fmt;
 
 /// A checked affine point or the identity on the direct short-Weierstrass
@@ -50,17 +50,30 @@ pub enum PrimeEllipticPointP {
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum PrimeQuadraticCoverError {
     UnsupportedCharacteristic,
-    UnsupportedPrimeModulusSize { maximum_bits: u32 },
+    UnsupportedPrimeModulusSize {
+        maximum_bits: u32,
+    },
+    UnsupportedPrimalityProofRange {
+        exclusive_upper_bound_decimal: &'static str,
+    },
     ModulusNotPrime,
-    NonCanonicalCoefficient { coefficient: &'static str },
+    NonCanonicalCoefficient {
+        coefficient: &'static str,
+    },
     SingularTarget,
     BranchValueZero,
-    PointCoordinateOutOfRange { coordinate: &'static str },
+    PointCoordinateOutOfRange {
+        coordinate: &'static str,
+    },
     PointNotOnTarget,
     Balanced(BalancedHyperellipticError),
-    NonInvertibleDenominator { stage: &'static str },
+    NonInvertibleDenominator {
+        stage: &'static str,
+    },
     InvalidSubgroupOrder,
-    CompositionIdentityMismatch { identity: &'static str },
+    CompositionIdentityMismatch {
+        identity: &'static str,
+    },
 }
 
 impl fmt::Display for PrimeQuadraticCoverError {
@@ -75,6 +88,12 @@ impl fmt::Display for PrimeQuadraticCoverError {
             Self::UnsupportedPrimeModulusSize { maximum_bits } => write!(
                 out,
                 "prime modulus exceeds the deterministic {maximum_bits}-bit validation domain"
+            ),
+            Self::UnsupportedPrimalityProofRange {
+                exclusive_upper_bound_decimal,
+            } => write!(
+                out,
+                "prime modulus is outside the strict deterministic primality-proof range p < {exclusive_upper_bound_decimal}"
             ),
             Self::ModulusNotPrime => write!(out, "modulus is not prime"),
             Self::NonCanonicalCoefficient { coefficient } => {
@@ -164,17 +183,17 @@ impl PrimeQuadraticCoverP {
         target_b: BigUint,
         shift: BigUint,
     ) -> Result<Self, PrimeQuadraticCoverError> {
-        if p.bits() > 64 {
-            return Err(PrimeQuadraticCoverError::UnsupportedPrimeModulusSize { maximum_bits: 64 });
-        }
-        let Some(word) = p.to_u64() else {
-            return Err(PrimeQuadraticCoverError::UnsupportedPrimeModulusSize { maximum_bits: 64 });
-        };
-        if word <= 3 {
+        if p <= BigUint::from(3u32) {
             return Err(PrimeQuadraticCoverError::UnsupportedCharacteristic);
         }
-        if !is_prime_u64(word) {
-            return Err(PrimeQuadraticCoverError::ModulusNotPrime);
+        match prime_proof_status(&p) {
+            PrimeProofStatus::ProvedU64 | PrimeProofStatus::ProvedPsi13 => {}
+            PrimeProofStatus::Composite => return Err(PrimeQuadraticCoverError::ModulusNotPrime),
+            PrimeProofStatus::UnsupportedWithoutPrimalityCertificate => {
+                return Err(PrimeQuadraticCoverError::UnsupportedPrimalityProofRange {
+                    exclusive_upper_bound_decimal: PSI13_EXCLUSIVE_BOUND_DECIMAL,
+                })
+            }
         }
         for (coefficient, value) in [("a", &target_a), ("b", &target_b), ("c", &shift)] {
             if value >= &p {
@@ -611,10 +630,22 @@ fn target_rhs(x: &BigUint, a: &BigUint, b: &BigUint, p: &BigUint) -> BigUint {
 mod tests {
     use super::*;
     use crate::prime_hyperelliptic::{enumerate_fp2, Fp2, Fp2Ctx};
+    use num_traits::ToPrimitive;
     use std::collections::BTreeSet;
 
     fn b(value: u64) -> BigUint {
         BigUint::from(value)
+    }
+
+    fn decimal(value: &str) -> BigUint {
+        BigUint::parse_bytes(value.as_bytes(), 10).unwrap()
+    }
+
+    fn decimal_poly(values: &[&str], p: &BigUint) -> FpPoly {
+        FpPoly::from_coeffs(
+            values.iter().map(|value| decimal(value)).collect(),
+            p.clone(),
+        )
     }
 
     fn f5_cover() -> PrimeQuadraticCoverP {
@@ -752,8 +783,8 @@ mod tests {
             PrimeQuadraticCoverError::ModulusNotPrime
         );
         assert!(matches!(
-            PrimeQuadraticCoverP::try_new(BigUint::one() << 65usize, b(1), b(1), b(0)),
-            Err(PrimeQuadraticCoverError::UnsupportedPrimeModulusSize { .. })
+            PrimeQuadraticCoverP::try_new(decimal("3317044064679887385962123"), b(1), b(1), b(0)),
+            Err(PrimeQuadraticCoverError::UnsupportedPrimalityProofRange { .. })
         ));
         assert_eq!(
             PrimeQuadraticCoverP::try_new(b(5), b(0), b(0), b(1)).unwrap_err(),
@@ -931,5 +962,206 @@ mod tests {
             branches,
             BTreeSet::from(["equal_images", "opposite_images", "s_nonzero"])
         );
+    }
+
+    #[test]
+    fn live_73_bit_direct_prime_fixtures_have_proved_transfer_certificates() {
+        let p = decimal("5902977611310272157103");
+        let order = decimal("5902977611275912361963");
+        let inverse_two = decimal("2951488805637956180982");
+        assert_eq!(prime_proof_status(&p), PrimeProofStatus::ProvedPsi13);
+        assert_eq!(prime_proof_status(&order), PrimeProofStatus::ProvedPsi13);
+
+        struct Fixture<'a> {
+            a: &'a str,
+            b: &'a str,
+            x: &'a str,
+            y: &'a str,
+            twice_x: &'a str,
+            twice_y: &'a str,
+            branch_shift: &'a str,
+            shift_zero_f: [&'a str; 7],
+            branch_f: [&'a str; 7],
+        }
+        let fixtures = [
+            Fixture {
+                a: "4168100599208664723916",
+                b: "240650161999037164785",
+                x: "1",
+                y: "1565394211633018828840",
+                twice_x: "2166449215995689752841",
+                twice_y: "655910884152868570217",
+                branch_shift: "1",
+                shift_zero_f: [
+                    "240650161999037164785",
+                    "0",
+                    "4168100599208664723916",
+                    "0",
+                    "0",
+                    "0",
+                    "1",
+                ],
+                branch_f: [
+                    "4408750761207701888702",
+                    "0",
+                    "4168100599208664723919",
+                    "0",
+                    "3",
+                    "0",
+                    "1",
+                ],
+            },
+            Fixture {
+                a: "1104650781063910579104",
+                b: "736433854042607052736",
+                x: "2",
+                y: "1317253133347025070737",
+                twice_x: "3055049816379877696639",
+                twice_y: "5305973654456394958904",
+                branch_shift: "2",
+                shift_zero_f: [
+                    "736433854042607052736",
+                    "0",
+                    "1104650781063910579104",
+                    "0",
+                    "0",
+                    "0",
+                    "1",
+                ],
+                branch_f: [
+                    "2945735416170428210952",
+                    "0",
+                    "1104650781063910579116",
+                    "0",
+                    "6",
+                    "0",
+                    "1",
+                ],
+            },
+        ];
+
+        for (index, fixture) in fixtures.iter().enumerate() {
+            let a = decimal(fixture.a);
+            let target_b = decimal(fixture.b);
+            let point = PrimeEllipticPointP::Affine {
+                x: decimal(fixture.x),
+                y: decimal(fixture.y),
+            };
+            let cover = PrimeQuadraticCoverP::try_new(
+                p.clone(),
+                a.clone(),
+                target_b.clone(),
+                BigUint::zero(),
+            )
+            .unwrap();
+            cover.validate().unwrap();
+            assert_eq!(
+                cover.source_curve().f,
+                decimal_poly(&fixture.shift_zero_f, &p)
+            );
+            cover.validate_target_point(&point).unwrap();
+            assert_ne!(point, PrimeEllipticPointP::Infinity);
+            assert_eq!(
+                cover.checked_target_add(&point, &point).unwrap(),
+                PrimeEllipticPointP::Affine {
+                    x: decimal(fixture.twice_x),
+                    y: decimal(fixture.twice_y),
+                }
+            );
+            assert_eq!(
+                cover.checked_target_scalar_mul(&point, &order).unwrap(),
+                PrimeEllipticPointP::Infinity
+            );
+
+            let pull_push = cover.pull_push_composition_certificate(&point).unwrap();
+            assert!(pull_push.identity_holds);
+            assert!(!pull_push.pullback.is_identity());
+            assert!(pull_push
+                .pullback
+                .checked_scalar_mul(&order, cover.source_curve())
+                .unwrap()
+                .is_identity());
+            assert_eq!(
+                cover
+                    .checked_target_scalar_mul(&pull_push.pushforward, &inverse_two)
+                    .unwrap(),
+                point
+            );
+            assert_eq!(
+                cover.subgroup_transfer_status(&order).unwrap(),
+                PrimeSubgroupTransferStatus::InjectiveIfExactSubgroupOrder {
+                    order: order.clone(),
+                    degree_inverse_mod_order: inverse_two.clone(),
+                }
+            );
+
+            for shift in 0u32..=3 {
+                let shifted = PrimeQuadraticCoverP::try_new(
+                    p.clone(),
+                    a.clone(),
+                    target_b.clone(),
+                    BigUint::from(shift),
+                )
+                .unwrap();
+                shifted.validate().unwrap();
+                assert!(
+                    shifted
+                        .pull_push_composition_certificate(&point)
+                        .unwrap()
+                        .identity_holds
+                );
+            }
+
+            // The first fixture has a rational source point u=1 over the
+            // shift-zero cover. It is not deck invariant and exercises the
+            // full source-side composition identity.
+            if index == 0 {
+                let divisor = BalancedDivisorP::try_from_point(
+                    cover.source_curve(),
+                    &BigUint::one(),
+                    &decimal(fixture.y),
+                    0,
+                )
+                .unwrap();
+                assert_eq!(
+                    cover
+                        .pushforward_arbitrary_balanced_class(&divisor)
+                        .unwrap(),
+                    point
+                );
+                assert!(
+                    cover
+                        .push_pull_composition_certificate(&divisor)
+                        .unwrap()
+                        .identity_holds
+                );
+            }
+
+            let branch_cover = PrimeQuadraticCoverP::try_new(
+                p.clone(),
+                a,
+                target_b,
+                decimal(fixture.branch_shift),
+            )
+            .unwrap();
+            assert_eq!(
+                branch_cover.source_curve().f,
+                decimal_poly(&fixture.branch_f, &p)
+            );
+            let branch_pullback = branch_cover.pullback_point_class(&point).unwrap();
+            assert_eq!(
+                branch_pullback.u,
+                FpPoly::from_coeffs(
+                    vec![BigUint::zero(), BigUint::zero(), BigUint::one()],
+                    p.clone(),
+                )
+            );
+            assert!(
+                branch_cover
+                    .pull_push_composition_certificate(&point)
+                    .unwrap()
+                    .identity_holds
+            );
+        }
     }
 }

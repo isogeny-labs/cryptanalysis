@@ -2,9 +2,9 @@
   "schema_version": "hyperelliptic-cover-source-parity/v3",
   "source_repository": "https://github.com/isogeny-labs/crypto",
   "source_branch": "codex/curve-transfer-implementation-20261118",
-  "source_implementation_commit": "6cb5ab1edb141b48b9a9767fc63fe95ba1aac217",
+  "source_implementation_commit": "153ac585d3b1ece0ebb0d49312b13267f651c94b",
   "source_baseline_commit": "5874ce8b393dccc4c735cc7ca5a47de7fe196c59",
-  "captured_at": "2026-11-18T09:09:58Z",
+  "captured_at": "2026-11-18T19:14:02Z",
   "files": [
     {
       "source_commit": "333c0f0a2390c57f245730ab9294e7ee905d9cd3",
@@ -32,19 +32,19 @@
       "adapter_version": "unlinked-private-field-helper-and-unrelated-module-omission/v2"
     },
     {
-      "source_commit": "6cb5ab1edb141b48b9a9767fc63fe95ba1aac217",
+      "source_commit": "153ac585d3b1ece0ebb0d49312b13267f651c94b",
       "source_path": "src/prime_hyperelliptic/balanced.rs",
       "mirror_path": "suite/src/prime_hyperelliptic/balanced.rs",
-      "source_sha256": "550675a30d344a65a067fbe927203c8085eccec1acfa19f952011c570576d464",
-      "mirror_sha256": "550675a30d344a65a067fbe927203c8085eccec1acfa19f952011c570576d464",
+      "source_sha256": "5a5f275021cf901e44a2a2a0e3fb9238e55da2772a1620ec153d0d8e4461d451",
+      "mirror_sha256": "5a5f275021cf901e44a2a2a0e3fb9238e55da2772a1620ec153d0d8e4461d451",
       "mode": "exact"
     },
     {
-      "source_commit": "6cb5ab1edb141b48b9a9767fc63fe95ba1aac217",
+      "source_commit": "153ac585d3b1ece0ebb0d49312b13267f651c94b",
       "source_path": "src/prime_hyperelliptic/cover_transfer.rs",
       "mirror_path": "suite/src/prime_hyperelliptic/cover_transfer.rs",
-      "source_sha256": "97ffe80dd14332eb0a2854dfcafcf21d98964289366762e1f3bd8228b84d7dc3",
-      "mirror_sha256": "97ffe80dd14332eb0a2854dfcafcf21d98964289366762e1f3bd8228b84d7dc3",
+      "source_sha256": "4ac06190059262ab96b9ebc80f84ee27a3d9a660d8b4e05186ea7c8c5362724e",
+      "mirror_sha256": "4ac06190059262ab96b9ebc80f84ee27a3d9a660d8b4e05186ea7c8c5362724e",
       "mode": "exact"
     },
     {
@@ -64,11 +64,11 @@
       "mode": "exact"
     },
     {
-      "source_commit": "6cb5ab1edb141b48b9a9767fc63fe95ba1aac217",
+      "source_commit": "153ac585d3b1ece0ebb0d49312b13267f651c94b",
       "source_path": "src/prime_hyperelliptic/mod.rs",
       "mirror_path": "suite/src/prime_hyperelliptic/mod.rs",
-      "source_sha256": "03660be55198a76e3334a38e524ca1ea1ef4bf643ce6b5094c036f7cde7daff9",
-      "mirror_sha256": "fa36d063ddad804c97e9f8422259d39b0f113d13aa898bab593d276531f42c62",
+      "source_sha256": "ad7a9372e68b74fa9bb158ab4f44671d9975e2fb83f6183a791876399c8627b0",
+      "mirror_sha256": "56927be3fc20e4a5f52b1f063c6371b0ca1bdd090e3bb3874693ed62e96b5838",
       "mode": "prime_module_operation_pricing_omission",
       "adapter_version": "operation-pricing-module-omission/v1"
     },
@@ -84,6 +84,14 @@
         "if self.p != other.p {\n            return false;\n        }",
         "fn equality_includes_the_coefficient_field()"
       ]
+    },
+    {
+      "source_commit": "153ac585d3b1ece0ebb0d49312b13267f651c94b",
+      "source_path": "src/prime_hyperelliptic/primality.rs",
+      "mirror_path": "suite/src/prime_hyperelliptic/primality.rs",
+      "source_sha256": "3b055ac166717960963e4e80b7d75eaba6c1681a7bc2e7ddfbb0d4af4d5aaf1c",
+      "mirror_sha256": "3b055ac166717960963e4e80b7d75eaba6c1681a7bc2e7ddfbb0d4af4d5aaf1c",
+      "mode": "exact"
     }
   ]
 }
