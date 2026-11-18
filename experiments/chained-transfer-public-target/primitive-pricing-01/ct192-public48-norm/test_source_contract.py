@@ -168,5 +168,49 @@ class CT192(TestCase):
         self.assertEqual(add(P, P), (0, 0))
         self.assertEqual(add(P, P), add(Q, Q))
 
+    def test_CT194_real_both_arm_per_iteration_input_opacity(self):
+        ct.validate_opaque_timing(self.driver)
+        ct.source_audit(self.driver, self.cargo)
+        self.assertEqual(self.driver.count(b"let measured_operand = black_box(point);"), 1)
+
+    def test_CT194_reject_missing_or_moved_input_barrier(self):
+        removed = self.driver.replace(
+            b"let measured_operand = black_box(point);",
+            b"let measured_operand = point;",
+        )
+        self.assertNotEqual(removed, self.driver)
+        with self.assertRaises(ValueError):
+            ct.validate_opaque_timing(removed)
+        old = b"                for _ in 0..64 {\n"
+        new = b"                let measured_operand = black_box(point);\n                for _ in 0..64 {\n"
+        moved = self.driver.replace(old, new).replace(
+            b"                    let measured_operand = black_box(point);\n", b"",
+        )
+        self.assertNotEqual(moved, self.driver)
+        with self.assertRaises(ValueError):
+            ct.validate_opaque_timing(moved)
+
+    def test_CT194_reject_asymmetric_opaque_input_or_output(self):
+        mutations = (
+            (
+                b"ct192_actual_norm(to, measured_operand)",
+                b"ct192_actual_norm(to, point)",
+            ),
+            (
+                b"&measured_operand, &measured_operand)),",
+                b"&point, &point)),",
+            ),
+            (
+                b'"D_padd" => black_box(curve::padd(',
+                b'"D_padd" => curve::padd(',
+            ),
+        )
+        for old, new in mutations:
+            with self.subTest(old=old):
+                mutated = self.driver.replace(old, new)
+                self.assertNotEqual(mutated, self.driver)
+                with self.assertRaises(ValueError):
+                    ct.validate_opaque_timing(mutated)
+
 if __name__ == "__main__":
     main()

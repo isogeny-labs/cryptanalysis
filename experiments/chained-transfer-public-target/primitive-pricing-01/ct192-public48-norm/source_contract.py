@@ -173,7 +173,35 @@ def validate_fixture(data: bytes) -> dict:
             "nonexceptional":40, "pre_norm_route_operands":96, "original_blob":ORIGINAL_BLOB,
             "fixture_blob":FROZEN_BLOB, "native_executed":False, "standing":"[pcc:unverified]"}
 
+def validate_opaque_timing(main_rs: bytes) -> None:
+    """CT194: forbid loop-invariant pure primitive calls with opaque outputs only."""
+    s = main_rs.decode("utf-8")
+    anchor = "for _ in 0..64 {"
+    if s.count(anchor) != 1:
+        raise ValueError("CT194 expected one 64-repetition timing loop")
+    start = s.index(anchor)
+    end = s.find("let ns = start.elapsed()", start)
+    if end < 0:
+        raise ValueError("CT194 timing loop endpoint missing")
+    block = s[start:end]
+    barrier = "let measured_operand = black_box(point);"
+    dispatch = "match *treatment {"
+    n2 = '"N2_actual" => black_box(runtime.ct192_actual_norm(to, measured_operand))'
+    doubling = '"D_padd" => black_box(curve::padd(\n                            &target.f, &target.curve, &measured_operand, &measured_operand))'
+    # Exact per-iteration barrier before dispatch, both physical primitives
+    # consume the same opaque input and both outputs remain black-boxed.
+    if block.count(barrier) != 1 or block.count(dispatch) != 1:
+        raise ValueError("CT194 missing per-iteration input barrier or dispatch")
+    if not (block.index(barrier) < block.index(dispatch)):
+        raise ValueError("CT194 input black_box placed after dispatch")
+    if block.count(n2) != 1 or block.count(doubling) != 1:
+        raise ValueError("CT194 opaque operand missing on either measured arm")
+    if "ct192_actual_norm(to, point)" in block or "&point, &point" in block:
+        raise ValueError("CT194 raw fixed input used in measured math")
+
+
 def source_audit(main_rs: bytes, manifest: bytes) -> None:
+    validate_opaque_timing(main_rs)
     s = main_rs.decode("utf-8")
     c = manifest.decode("utf-8")
     for item in ("ct192_pre_norm_operand", "ct192_actual_norm", "strongest_retained_lift_chain",
