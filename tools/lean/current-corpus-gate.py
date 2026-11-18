@@ -1177,7 +1177,7 @@ def tracked_corpus_sources() -> list[str]:
             if not path.startswith("tools/lean/")]
 
 
-FORMAL_CHECKER_SHA256 = "bf97f3a57cd2a27b7786c1c0d5d380d3e0c2011a898d95382109276d4bf471ea"
+FORMAL_CHECKER_SHA256 = "39651f83df07856f633765f6a89a23e5424cd7f65c85229386ee363379820839"
 FORMAL_MANIFEST_SHA256 = "75840fb81416fbfff50e860c63ad5d4c6861ee4db2136fa869a1caf771c7ca82"
 
 
