@@ -2,7 +2,7 @@
 
 - **Status:** open (two prior toy panels completed under narrow owner waivers; credentials still missing)
 - **Kind:** access/tool limit
-- **Affected work:** [frozen xedni affine-lift protocol](../research/xedni_lift_optimizer_20261101/PROTOCOL.md), [fresh target-bearing selector protocol](../research/xedni_target_relation_20261118/PROTOCOL.md), [target-origin-pencil protocol](../research/xedni_origin_pencil_20261118/PROTOCOL.md), draft PR #1768
+- **Affected work:** [frozen xedni affine-lift protocol](../research/xedni_lift_optimizer_20261101/PROTOCOL.md), [fresh target-bearing selector protocol](../research/xedni_target_relation_20261118/PROTOCOL.md), [target-origin-pencil protocol](../research/xedni_origin_pencil_20261118/PROTOCOL.md), [fixed-coordinate dedup protocol](../research/xedni_origin_dedup_20261118/PROTOCOL.md), draft PR #1768
 - **Next action owner:** environment operator for checkpoint credentials; research agent for the frozen run
 - **Last updated:** 2026-11-18
 
@@ -60,6 +60,11 @@ natural row is generated. [pcc:unverified]
   reported no permitted `ecc-challenges-new` profile, no
   `CHECKPOINT_UPLOAD_TOKEN`, and no token file. It exited nonzero before any
   natural row was generated. [pcc:unverified]
+- **Observed after the dedup successor freeze:** implementation `ffc1af2a` and
+  freeze `9673f3fa` were pushed, all seven source hashes and the binary hash
+  rechecked, and the updated resume capsule passed its content check. The gate
+  again exited nonzero for the same missing profile/token/token-file condition.
+  No natural dedup row was generated. [pcc:unverified]
 - **Derived or proved:** No mathematical conclusion follows from the access
   failure.  The code-level invariant checks and synthetic positive/negative
   controls establish only their tested cases.
@@ -144,3 +149,7 @@ push and gate failed for absent transport before any natural row.  Unresolved.
 mandatory gate at pushed head `422ea24b`. The resume capsule was complete, but
 no supported upload transport existed; the gate exited nonzero and no natural
 row was generated. Unresolved. [pcc:unverified]
+
+2026-11-18: the separately frozen first-representative dedup panel also reached
+the same gate at pushed head `9673f3fa`; no supported transport existed, and no
+natural row was generated. Unresolved. [pcc:unverified]
