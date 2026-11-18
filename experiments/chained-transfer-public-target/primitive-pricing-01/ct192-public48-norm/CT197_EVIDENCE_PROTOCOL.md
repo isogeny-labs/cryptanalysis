@@ -1,0 +1,23 @@
+# CT197 — prospective offline adjudication of CT196 native diagnostic packets
+
+Date: 2026-11-17 (America/Denver). Standing: **[pcc:unverified]**. This protocol precedes CT197 code. It is stacked on [CT196 #1743](https://github.com/isogeny-labs/cryptanalysis/pull/1743) and does **not** authorize native execution.
+
+## Objective and immutable inputs
+
+Consume a raw single-process JSON result of CT196's `--run-admitted` operation without modifying the CT125 runtime, CT192-196 instrument, original Git blobs or frozen 48 public source packets. The 48-packet Git blob `9ac741668dd1ffa9632ff0d58e6f4dd9f2dd18c3` is checked by the existing source_contract.py, and the original CT125 Rust source blob remains `b80eb91a39ae1e87f0fcde95e52ea3d3634558bc`. Source-only tests use synthetic JSON, never substitute synthetic packets for the original fixture in any production report.
+
+The source code prints two **different timing panels**, one comparing `N2_actual` versus `D_padd`, another comparing `N2_actual` with `N2_arith_no_counter`. They are never pooled. Each of the 48 public packets appears under two routes, for 96 operands, and has 16 blocks of 4 slots per panel. Blocks 0–3 are warmups and must not be analyzed as measured blocks. ABBA/BAAB orders alternate deterministically. All 64 slots, including warmups, contain 64 primitive invocations. Therefore: 96×12×4 = 4,608 **recorded** slots per panel; 96×16×2×64 = 196,608 actual norm calls per panel; 393,216 in both panels. The full panel total of 9,216 is recorded slots, **not** subprocesses, complete ECDLP solves or samples independent across blocks.
+
+## Fail-closed parsing and scientific decisions
+
+1. Refuse malformed, duplicate-key, missing/extra-schema, nonfinite or nonintegral JSON data; require literal original blob IDs, 48/96/4,608/4,608/393,216 headers, exact rows (index, sector, direction, public scalar label and physical route) matching the independently loaded frozen fixture.
+2. Require exactly 64 ordered slot records per panel per operand, each with original treatment assignment, block, slot, `recorded == (block>=4)`, 64 repetitions and a strictly positive finite decimal nanosecond duration. Require exactly +2,048 actual norm counters in **each** panel for **every** operand. Verify declared aggregate counters and refuse a total sum of slot durations larger than the in-process total elapsed wall (the panel timings are nested on one monotonic clock).
+3. The input is producer JSON, **not authenticated custody**. Do not assert signed PCC, executable authenticity, CPU affinity, independent arithmetic parity, memory-inclusive timing, original 695/701 custody or a complete DLP result. Missing peak RSS is explicitly retained, not imputed. Reject a producer claim to a complete solve.
+4. For blocks 4–15, compute **within-block** log ratios of means of the two A and two B timing slots. Each block is a paired position-controlled observation, *not* four independent samples. Aggregate 12 block ratios to a single per-packet/route geometric mean, then report 16 direction×sector×route strata, keeping the one exceptional packet per stratum separate from its five generic packets. Do not bootstrap 12 correlated blocks as 12 independent DLP instances; do not pool the two timing panels.
+5. Report diagnostic ratios only and always include `[pcc:unverified]`; a ratio above unity can be a transfer-primitive diagnostic, never an end-to-end speedup. A/A physical shams, host and compiler credentials, native parity, signed independently verified custody, measured 695/701 replay and full cold rho/BSGS/IC/transfer comparisons must be separately satisfied.
+
+## Reproduction and stop criteria
+
+Run Python normal and optimized tests using constructed synthetic 96-operand manifests. Mutation controls reject duplicate/missing operands, wrong arm/order, hidden warmup inclusion, incorrect counter increments, invalid durations, erroneous time containment and false complete-DLP claims. Run `python3 ct197_native_evidence.py --input PATH` only on a retained, externally approved native diagnostic artifact; no native executable is launched by the reader. Output remains a producer-only diagnostic even when the JSON passes all structural tests. Fail closed if provenance or completeness is absent; preserve raw failures and do not convert them into zero-cost samples.
+
+Next admitted measurement requires original authenticated 695/701 corpus, native Cargo parity for the 48 source packets, matched same-host C169/C13a/C13b/N2_actual/D, physical A/A and randomized crossover, and complete cold single-target rho, BSGS and IC with setup, memory, linear algebra, recovery and verification. No paid compute/merge bypass is permitted. [pcc:unverified]
