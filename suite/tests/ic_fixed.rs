@@ -147,6 +147,67 @@ fn fixed_cli_reports_missing_interpreter() {
 }
 
 #[test]
+fn fixed_cli_preflights_ecc2k130_entirely_in_rust() {
+    let path = directory();
+    let output = Command::new(env!("CARGO_BIN_EXE_ca-ic"))
+        .args(["fixed", "--params"])
+        .arg(PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("docs/ic/params/ecc2k130-fixed.json"))
+        .arg("--dir")
+        .arg(&path)
+        .args([
+            "--stage",
+            "preflight",
+            "--python",
+            "/nonexistent/not-used-by-native-preflight",
+            "--json",
+        ])
+        .output()
+        .unwrap();
+    let report: Value = serde_json::from_slice(&output.stdout)
+        .unwrap_or_else(|_| panic!("{}", String::from_utf8_lossy(&output.stderr)));
+    assert!(output.status.success(), "{report}");
+    assert_eq!(report["engine"], "rust-native");
+    assert_eq!(report["degree"], 131);
+    assert_eq!(report["generator_on_curve"], true);
+    assert_eq!(report["generator_in_subgroup"], true);
+    assert_eq!(report["target_on_curve"], true);
+    assert_eq!(report["target_in_subgroup"], true);
+    assert_eq!(report["factor_base"]["orbit_columns"], 14);
+    assert_eq!(report["factor_base"]["signed_points"], 3_668);
+    assert_eq!(report["ready_for_persistent_collection"], true);
+    assert_eq!(report["targets"]["ecc2k-130"]["scalar_known"], false);
+    assert_eq!(
+        fs::read_dir(&path).unwrap().count(),
+        0,
+        "native preflight must not create campaign state"
+    );
+    fs::remove_dir_all(path).unwrap();
+}
+
+#[test]
+fn fixed_cli_embeds_native_preflight_in_ecc2k130_campaign_reports() {
+    let path = directory();
+    let params =
+        PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("docs/ic/params/ecc2k130-fixed.json");
+    let (success, report) = run(&path, &params, "status", 0);
+    assert!(success, "{report}");
+    assert_eq!(report["degree"], 131);
+    assert_eq!(report["orbit_columns"], 14);
+    assert_eq!(report["signed_base_points"], 3_668);
+    assert_eq!(report["targets"]["ecc2k-130"]["scalar_known"], false);
+    assert_eq!(report["rust_native_preflight"]["engine"], "rust-native");
+    assert_eq!(
+        report["rust_native_preflight"]["factor_base"]["orbit_columns"],
+        report["orbit_columns"]
+    );
+    assert_eq!(
+        report["rust_native_preflight"]["factor_base"]["signed_points"],
+        report["signed_base_points"]
+    );
+    fs::remove_dir_all(path).unwrap();
+}
+
+#[test]
 fn fixed_cli_routes_with_json_model_and_checks_missing_model() {
     let path = directory();
     let model = path.join("selector model.json");

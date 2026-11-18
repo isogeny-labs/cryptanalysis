@@ -1,9 +1,11 @@
 # Fixed-parameter index calculus
 
 `ic fixed` runs a persistent CPU workflow on explicit K_0 parameters, including
-the ECC2K-130 curve over GF(2^131). It uses the existing Python arbitrary-width
-normal-basis arithmetic and Semaev engine. The Rust symbolic implementation's
-degree-63 limit still applies to the older `run` and `workflow` commands.
+the ECC2K-130 curve over GF(2^131). Its exact ECC2K-130 preflight is native Rust;
+the durable campaign stages use the existing Python arbitrary-width normal-basis
+arithmetic and Semaev engine behind the Rust CLI. The Rust symbolic
+implementation's degree-63 limit still applies to the older `run` and
+`workflow` commands.
 
 The fixed workflow supports selection, resumable pair-table construction,
 target-independent relation collection, factor-base logarithms, and target
@@ -18,13 +20,26 @@ Build the CLI, then initialize the exact public ECC2K-130 profile:
 ```sh
 cargo build --release --bin ca-ic
 target/release/ca-ic fixed --params docs/ic/params/ecc2k130-fixed.json \
+  --dir runs/ecc2k130-fixed --stage preflight --json
+target/release/ca-ic fixed --params docs/ic/params/ecc2k130-fixed.json \
   --dir runs/ecc2k130-fixed --stage select --json
 ```
 
-This validates the polynomial, its explicit image in the normal basis, the
-generator, target subgroup membership, and the selected factor base. The profile
-uses the public polynomial-basis coordinates and basis image already present in
-the upstream [`ecc2k130/codegen/gen.py`](https://github.com/aburan28/crypto/blob/main/ecc2k130/codegen/gen.py) and [`ecc2k130/generated/eccF131.h`](https://github.com/aburan28/crypto/blob/main/ecc2k130/generated/eccF131.h).
+`preflight` does not invoke Python or create campaign state. It constructs the
+exact binary curve from the published polynomial, checks the point count,
+prime subgroup, generator, and target, derives the Frobenius
+eigenvalue, reconstructs the polynomial/ONB conversion, and materializes the
+same signed Frobenius-orbit factor base used by the durable workflow. The
+acceptance check requires exactly 14 orbit columns and 3,668 signed points.
+
+`select` initializes the persistent campaign through the arbitrary-width Python
+engine. Every persistent-stage report for the exact checked-in profile embeds
+the native report as `rust_native_preflight`, so a run cannot begin after the
+two implementations disagree. The profile uses the public polynomial-basis
+coordinates and basis image already present in the upstream
+[`ecc2k130/codegen/gen.py`](https://github.com/aburan28/crypto/blob/main/ecc2k130/codegen/gen.py)
+and
+[`ecc2k130/generated/eccF131.h`](https://github.com/aburan28/crypto/blob/main/ecc2k130/generated/eccF131.h).
 
 Build a bounded number of new pair candidates and save the cursor:
 
@@ -142,7 +157,8 @@ nonzero subgroup targets. This is a functional fixed-parameter profile, with
 an extremely low-yield base. The implementation reports this counting bound and
 preserves incomplete runs. Practical completion at degree 131 has not been
 established. A wider or differently structured base still needs measured yield
-and affordable decomposition.
+and affordable decomposition. The exact remaining obligation is tracked in the
+[ECC2K-130 relation-yield problem record](../../../problems/ecc2k130-index-calculus-relation-yield.md).
 
 ## Evidence and accounting
 

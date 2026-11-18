@@ -41,3 +41,5 @@ and construction gates. [pcc:unverified]
 - [ ] <task> (<runtime>, started YYYY-MM-DD, branch <branch>, PR #<n>) -->
 
 ## Blocked / questions for the owner
+
+- ECC2K-130 now has an exact native Rust preflight and a checked Rust-to-durable-campaign handoff in PR #1754; full scalar recovery remains blocked on full-size ordinary-target relation yield, rank, and target descent as specified in [the problem record](../problems/ecc2k130-index-calculus-relation-yield.md). [pcc:unverified]
