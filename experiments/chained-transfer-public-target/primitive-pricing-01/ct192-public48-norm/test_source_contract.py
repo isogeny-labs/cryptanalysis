@@ -223,11 +223,11 @@ class CT192(TestCase):
 
     def test_CT195_reject_non_neutral_math_or_substituted_norm(self):
         d = ct.derivative(self.original)
-        original = b"        descend_point(curve::pmul(&target.f, &target.curve, &point, 2))\\n    }"
+        original = b"        descend_point(curve::pmul(&target.f, &target.curve, &point, 2))\n    }"
         for replacement in (
-            b"        self.norm_point(to, point)\\n    }",
-            b"        self.bump(|c| c.transported_norm_doubling += 1);\\n        descend_point(curve::pmul(&target.f, &target.curve, &point, 2))\\n    }",
-            b"        descend_point(curve::pmul(&target.f, &target.curve, &point, 3))\\n    }",
+            b"        self.norm_point(to, point)\n    }",
+            b"        self.bump(|c| c.transported_norm_doubling += 1);\n        descend_point(curve::pmul(&target.f, &target.curve, &point, 2))\n    }",
+            b"        descend_point(curve::pmul(&target.f, &target.curve, &point, 3))\n    }",
         ):
             with self.subTest(replacement=replacement):
                 altered = d.replace(original, replacement)
