@@ -62,6 +62,12 @@ def readJson(path):
         return json.load(stream, object_pairs_hook=unique)
 
 
+class TargetOutsideSubgroup(ValueError):
+    def __init__(self, target):
+        super().__init__(f'point is outside the declared prime subgroup for target {target!r}')
+        self.target = target
+
+
 class Parameters:
     def __init__(self, document, ledger):
         keys(document, ['schema_version', 'curve', 'generator', 'factor_base', 'summands', 'targets'], ['name'])
@@ -131,16 +137,21 @@ class Parameters:
         require(isinstance(document['targets'], list), 'targets must be an array')
         self.targets = {}
         self.knownLogs = set()
+        self.candidateLogs = {}
         for target in document['targets']:
-            keys(target, ['id', 'x', 'y'], ['known_log'])
+            keys(target, ['id', 'x', 'y'], ['known_log', 'candidate_log'])
             name = target['id']
             require(isinstance(name, str) and 0 < len(name) <= 128 and name not in self.targets,
                     'target IDs must be unique nonempty strings of at most 128 characters')
-            point = self.point({'x': target['x'], 'y': target['y']})
+            point = self.point({'x': target['x'], 'y': target['y']}, target=name)
             if target.get('known_log') is not None:
                 require(self.matchesScalar(integer(target['known_log']), point),
                         f'known_log failed the scalar certificate for target {name!r}')
                 self.knownLogs.add(name)
+            if target.get('candidate_log') is not None:
+                candidate = integer(target['candidate_log'])
+                require(candidate < self.prime, f'candidate_log is outside the scalar range for target {name!r}')
+                self.candidateLogs[name] = candidate
             self.targets[name] = point
         # Target-independent precomputation survives adding or removing targets.
         identity = {k: document[k] for k in ('schema_version', 'curve', 'generator', 'factor_base', 'summands')}
@@ -155,7 +166,7 @@ class Parameters:
         require(value < 1 << self.onb.m, 'coordinate exceeds the declared field width')
         return self.onb.fromCoords(value)
 
-    def point(self, value):
+    def point(self, value, *, target=None):
         keys(value, ['x', 'y'])
         coordinates = []
         for axis in ('x', 'y'):
@@ -170,7 +181,10 @@ class Parameters:
             coordinates.append(self.onb.fromCoords(number))
         point = tuple(coordinates)
         require(self.curve.onCurve(point), 'point is not on the declared curve')
-        require(self.curve.mul(point, self.prime) is None, 'point is outside the declared prime subgroup')
+        if self.curve.mul(point, self.prime) is not None:
+            if target is not None:
+                raise TargetOutsideSubgroup(target)
+            raise ValueError('point is outside the declared prime subgroup')
         return point
 
 
@@ -601,15 +615,28 @@ class Campaign:
 
     def targetStatus(self):
         results = {}
-        for name, target in self.params.targets.items():
+        p = self.params
+        for name, target in p.targets.items():
+            status = {'in_base_subgroup': True}
             saved = self.db.execute('SELECT scalar FROM solutions WHERE id=?', (name,)).fetchone()
             source = None
             if saved is not None:
                 self.certifySolution(integer(saved[0]), target)
                 source = 'checkpoint'
-            elif name in self.params.knownLogs:
+            elif name in p.knownLogs:
                 source = 'provided'
-            results[name] = {'scalar_known': source is not None, 'scalar_source': source}
+            candidate = p.candidateLogs.get(name)
+            if candidate is not None:
+                multiple = p.curve.mul(p.generator, candidate)
+                residual = p.curve.add(target, p.curve.neg(multiple))
+                if residual is None:
+                    status['candidate_residual'] = {'is_identity': True}
+                    source = source or 'candidate'
+                else:
+                    x, y = residual
+                    status['candidate_residual'] = {'is_identity': False, 'basis': 'type-ii-onb',
+                                                    'x': hex(p.onb.toCoords(x)), 'y': hex(p.onb.toCoords(y))}
+            results[name] = dict(status, scalar_known=source is not None, scalar_source=source)
         return results
 
     def run(self, stage='all', attempts=32, pairBudget=10000, seconds=.25):
@@ -688,6 +715,8 @@ def main():
                 report = campaign.run(args.stage, args.attempts, args.pair_budget, args.query_seconds)
     except (ValueError, OSError, sqlite3.Error, RuntimeError) as error:
         report = {'schema_version': 1, 'operation': 'fixed', 'status': 'error', 'message': str(error)}
+        if args.stage == 'status' and isinstance(error, TargetOutsideSubgroup):
+            report.update(stage='status', base_point='known', targets={error.target: {'in_base_subgroup': False}})
     print(json.dumps(report, sort_keys=True))
     return 0 if report['status'] in ('complete', 'stopped') else 2
 
