@@ -16,6 +16,9 @@ const SCALARS: [u64; 6] = [0, 1, 2, 17, 12_345, 2_771_710];
 const ROUTES: [&str; 2] = ["direct_composite", "strongest_retained_lift_chain"];
 const ORIGINAL_BLOB: &str = "b80eb91a39ae1e87f0fcde95e52ea3d3634558bc";
 const FROZEN_BLOB: &str = "9ac741668dd1ffa9632ff0d58e6f4dd9f2dd18c3";
+// CT196: both panels have sixteen ABBA/BAAB blocks, two actual-norm slots
+// per block, and sixty-four calls per slot (warmup calls count too).
+const NORM_CALLS_PER_PANEL: u64 = 16 * 2 * 64;
 
 fn must(ok: bool, why: impl Into<String>) -> Result<(), String> {
     if ok { Ok(()) } else { Err(why.into()) }
@@ -172,8 +175,12 @@ fn run() -> Result<(), String> {
     // Only the precomputed true target operands are timed. Every physical
     // route, direction, sector, and exceptional input retains raw records.
     let mut all = Vec::with_capacity(96);
+    let mut observed_norm_calls_total = 0u64;
     for (index, from, to, sector, external_label, arm, point) in operands {
         let target = &runtime.geometry.models[to].quadratic;
+        // CT196: observe the Cell<Calls> outside the timed regions so
+        // repeated norm accounting cannot be silently dropped as dead writes.
+        let counters_before_panels = black_box(runtime.calls());
         let mut slots = Vec::with_capacity(64);
         for block in 0..16 {
             let order = if block % 2 == 0 {
@@ -202,6 +209,13 @@ fn run() -> Result<(), String> {
                 }));
             }
         }
+        let counters_after_original = black_box(runtime.calls());
+        let mut expected_after_original = counters_before_panels;
+        expected_after_original.transported_norm_doubling = expected_after_original
+            .transported_norm_doubling.checked_add(NORM_CALLS_PER_PANEL)
+            .ok_or("CT196 original panel norm counter overflow")?;
+        must(counters_after_original == expected_after_original,
+             format!("row {index} {arm}: CT196 original panel full counter mismatch"))?;
         // Distinct CT195 control panel: the same mathematical norm, with/without
         // CT125's Cell<Calls> bookkeeping. Preserve the original CT192 arm
         // panel untouched and never pool these controls into its estimates.
@@ -230,16 +244,38 @@ fn run() -> Result<(), String> {
                 }));
             }
         }
+        let counters_after_control = black_box(runtime.calls());
+        let mut expected_after_control = counters_after_original;
+        expected_after_control.transported_norm_doubling = expected_after_control
+            .transported_norm_doubling.checked_add(NORM_CALLS_PER_PANEL)
+            .ok_or("CT196 control panel norm counter overflow")?;
+        must(counters_after_control == expected_after_control,
+             format!("row {index} {arm}: CT196 counter-control full counter mismatch"))?;
+        let observed_original_norm_calls = counters_after_original
+            .transported_norm_doubling
+            .checked_sub(counters_before_panels.transported_norm_doubling)
+            .ok_or("CT196 original panel norm counter regression")?;
+        let observed_control_norm_calls = counters_after_control
+            .transported_norm_doubling
+            .checked_sub(counters_after_original.transported_norm_doubling)
+            .ok_or("CT196 control panel norm counter regression")?;
+        observed_norm_calls_total = observed_norm_calls_total
+            .checked_add(observed_original_norm_calls + observed_control_norm_calls)
+            .ok_or("CT196 accumulated counter overflow")?;
         all.push(json!({
             "packet_index":index, "from":from, "to":to, "sector":sector,
             "scalar_label_outside_runtime":external_label,
             "physical_transfer_route":arm,
             "raw_slots":slots,
-            "counter_control_slots":counter_control_slots
+            "counter_control_slots":counter_control_slots,
+            "observed_actual_norm_calls_original_panel":observed_original_norm_calls,
+            "observed_actual_norm_calls_counter_control_panel":observed_control_norm_calls
         }));
     }
+    must(observed_norm_calls_total == 96 * 2 * NORM_CALLS_PER_PANEL,
+         "CT196 total observed norm calls differ from 96 true route operands")?;
     println!("{}", json!({
-        "schema":"ct195-public48-counter-neutral-price/v1",
+        "schema":"ct196-public48-observed-norm-counters/v1",
         "parent_schema":"ct192-public48-actual-norm-price/v1",
         "standing":"[pcc:unverified]",
         "scope":"same-process CT192 N2_actual vs D_padd and separate CT195 counter-neutral norm panel; no complete ECDLP",
@@ -248,6 +284,7 @@ fn run() -> Result<(), String> {
         "admission_producer_asserted_only":true,
         "public_packets":48, "true_route_operands":96,
         "original_recorded_slots":4608, "extra_counter_control_recorded_slots":4608,
+        "observed_actual_norm_calls_total":observed_norm_calls_total,
         "same_process_setup_ns_decimal":setup_ns.to_string(),
         "in_process_total_ns_decimal":total_start.elapsed().as_nanos().to_string(),
         "peak_rss_kib_linux":vmhwm_kib(),
