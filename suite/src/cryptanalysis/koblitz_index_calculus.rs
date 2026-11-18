@@ -127,7 +127,7 @@
 use std::collections::{HashMap, HashSet};
 use std::sync::atomic::{AtomicU32, AtomicU64, Ordering};
 
-use num_bigint::BigUint;
+use num_bigint::{BigInt, BigUint, Sign};
 use num_traits::{One, Zero};
 use rand::rngs::StdRng;
 use rand::{Rng, SeedableRng};
@@ -481,8 +481,10 @@ pub fn koblitz_point_count(a: u8, n: u32) -> BigUint {
         s_prev = s_cur;
         s_cur = next;
     }
-    let count = (1i128 << n) + 1 - s_cur;
-    BigUint::from(count as u128)
+    let count = (BigInt::from(1u8) << n) + BigInt::from(1u8) - BigInt::from(s_cur);
+    let (sign, bytes) = count.to_bytes_be();
+    debug_assert_eq!(sign, Sign::Plus);
+    BigUint::from_bytes_be(&bytes)
 }
 
 /// `#E(F_{q^e}) = q^e + 1 − s_e` from the trace `t` of the `q`-power
@@ -541,6 +543,88 @@ fn factorise(mut v: BigUint) -> Vec<(BigUint, u32)> {
 }
 
 impl KoblitzCurve {
+    /// Construct a Koblitz curve from exact public parameters instead of
+    /// searching and factoring a toy field. This is the wide-field entry
+    /// point used by ECC2K-130: the caller supplies the irreducible
+    /// polynomial, subgroup generator, prime subgroup order, and cofactor.
+    ///
+    /// Every supplied invariant is checked before the curve is returned:
+    /// the closed Koblitz point count, probable primality of the subgroup
+    /// order, curve membership, exact generator order, and the Frobenius
+    /// eigenvalue relation. No discrete logarithm or target scalar is used.
+    pub fn from_exact_parameters(
+        a: u8,
+        n: u32,
+        irreducible: IrreduciblePoly,
+        generator: BinaryPoint,
+        subgroup_order: BigUint,
+        cofactor: BigUint,
+    ) -> Result<Self, String> {
+        if a > 1 {
+            return Err("Koblitz coefficient a must be 0 or 1".into());
+        }
+        if n < 3 || n.is_multiple_of(2) || irreducible.degree != n {
+            return Err(
+                "exact Koblitz parameters require an odd field degree and matching polynomial"
+                    .into(),
+            );
+        }
+        if subgroup_order <= BigUint::from(2u8)
+            || !crate::cryptanalysis::factoring::arith::is_probable_prime(&subgroup_order)
+        {
+            return Err("subgroup order does not pass the probable-prime check".into());
+        }
+        if cofactor.is_zero() {
+            return Err("cofactor must be positive".into());
+        }
+
+        let group_order = koblitz_point_count(a, n);
+        if &subgroup_order * &cofactor != group_order {
+            return Err(
+                "subgroup order times cofactor does not equal the Koblitz point count".into(),
+            );
+        }
+        let curve = BinaryCurve {
+            m: n,
+            irreducible,
+            a: if a == 0 {
+                F2mElement::zero(n)
+            } else {
+                F2mElement::one(n)
+            },
+            b: F2mElement::one(n),
+            generator,
+            order: subgroup_order.clone(),
+            cofactor: cofactor.clone(),
+        };
+        if curve.generator == BinaryPoint::Infinity || !curve.is_on_curve(&curve.generator) {
+            return Err("generator is not a nonidentity point on the declared curve".into());
+        }
+        if scalar_mul(&curve, &curve.generator, &subgroup_order) != BinaryPoint::Infinity {
+            return Err("generator is not killed by the declared subgroup order".into());
+        }
+
+        let trace = if a == 0 { -1 } else { 1 };
+        let lambda = frobenius_eigenvalue(&curve, trace, &subgroup_order).ok_or_else(|| {
+            "generator does not admit the Koblitz Frobenius eigenvalue".to_string()
+        })?;
+        Ok(Self {
+            a,
+            n,
+            curve,
+            trace,
+            group_order,
+            subgroup_order,
+            cofactor,
+            lambda,
+            k: 1,
+            q: 2,
+            a_index: u64::from(a),
+            b_index: 1,
+            subfield_basis: vec![F2mElement::one(n)],
+        })
+    }
+
     /// Build `K_a` over `F_{2^n}`: pick a defining irreducible
     /// polynomial, count points, split off the largest prime-order
     /// subgroup, find a generator of it, and determine `λ`.

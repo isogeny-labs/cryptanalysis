@@ -65,6 +65,14 @@ whether it could change the exponent at all.
   same targets.
 - **Kill.** Wall time per decided target is at least 10x the native scan, or
   the Hamming-NB panel shows no improvement beyond the A/A band.
+- **Done (2026-11-18): killed on paper.**
+  - On subspace bases, the theory *is* the native scan, so the best case
+    is parity with the baseline.
+  - On non-subspace bases, no linear leaf exists: p = x1·x2 is dense when
+    V is not a polynomial span. The theory would revert to the root lookups
+    of Q1419–Q1592.
+  - A Frobenius-orbit union base reduces to plain V on more targets.
+  See [`l1_inverted_cdclt/RESULT.md`](l1_inverted_cdclt/RESULT.md).
 - **Prior.** 50% for a constant gain over SAT-only. About 0% for an exponent
   change on subspace bases. Its real value is opening up non-subspace bases.
 
@@ -87,7 +95,11 @@ whether it could change the exponent at all.
   conflicts are 1.061× CaDiCaL's, 95% CI [0.979, 1.143]. That is inside the
   A/A band [0.793, 1.108]. On the dual encoding it is worse, at 1.121×.
   SBVA barely changes these CNFs (+6 variables, −10 clauses). The ER-mined
-  extension variables half of L2 was not run. See
+  extension variables half of L2 was not run at first. It was run as L2b:
+  KILL. On l = 4 UNSAT, the leaf-independent part (RREF rows as prefix
+  chains) gives 1.061× [0.918, 1.225] conflicts, inside the A/A band.
+  Exploratory, and outside the decision: on SAT targets it gives 0.358×
+  [0.204, 0.556]. See [`l2b_rref/RESULT.md`](l2b_rref/RESULT.md). See
   [`l2_sbva/RESULT.md`](l2_sbva/RESULT.md).
 
 ### L3. Usefulness gate for round-4 lead A (torsion targets) before building it
@@ -124,6 +136,12 @@ whether it could change the exponent at all.
 - **Kill.** The solving degree grows linearly in l, so the cost is at least
   the 2^l scan.
 - **Prior.** 5%. It is the only lead here with any exponent upside.
+- **Done (2026-11-18): killed by counting, and the premise is corrected.**
+  The leaf coefficient u = x(R − P3) is not low degree in x3's bits. With u
+  kept as free bits, the leaf's rank condition holds for 11–40% of all u,
+  and true u values pass at the same rate as random ones. So MinRank on it
+  isolates nothing. The information sits in the S3(x3, u, xR) link, which
+  is round-4 D. See [`l4_minrank/RESULT.md`](l4_minrank/RESULT.md).
 
 ### L5. Discarded by counting: char-2 interpolating-conic encoding
 
