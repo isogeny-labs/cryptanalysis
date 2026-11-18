@@ -67,8 +67,25 @@ jobs:
           AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
         run: |
           set -euo pipefail
-          cmp _ct200_artifact_tools/.artifacts/config.json .artifacts/config.json
-          cmp _ct200_artifact_tools/tools/artifacts/artifacts.py tools/artifacts/artifacts.py
+          # CT137's immutable hydration program is retained. The live policy
+          # added only a duplicate keep entry for the PCC ledger after that pin;
+          # compare exact semantic object-store policy rather than falsely
+          # requiring byte identity across these two legitimate revisions.
+          test "$(git -C _ct200_artifact_tools hash-object tools/artifacts/artifacts.py)" = c49cd3de885c5b4292c283eb85e4327b872529ed
+          test "$(git -C _ct200_artifact_tools hash-object .artifacts/config.json)" = 2a9a2e9e679fb697c429597f5053ff55e264b90a
+          python3 -S - <<'PY'
+          import json
+          from pathlib import Path
+          old=json.loads(Path("_ct200_artifact_tools/.artifacts/config.json").read_text())
+          cur=json.loads(Path(".artifacts/config.json").read_text())
+          assert old["schema"] == cur["schema"] == "artifacts.config/v1"
+          assert old["remote"] == cur["remote"] == "s3://setec-astronomy-artifacts/store"
+          assert set(old) == set(cur) == {"schema", "remote", "policy"}
+          assert set(old["policy"]) == set(cur["policy"]) == {"keep"}
+          assert cur["policy"]["keep"][:-1] == old["policy"]["keep"]
+          assert cur["policy"]["keep"][-1] == "pcc/ledger.jsonl"
+          print("CT200: unchanged remote and prior policy; one duplicated PCC keep entry")
+          PY
           if ! command -v aws >/dev/null; then
             python3 -m venv "$RUNNER_TEMP/ct200-awscli"
             "$RUNNER_TEMP/ct200-awscli/bin/python" -m pip install --disable-pip-version-check awscli==1.46.2
