@@ -18,7 +18,7 @@ and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
 
-- [ ] CT196: audit timed Cell<Calls> counter observability on CT195 two-panel actual norm pricing, verify per-panel exact call deltas; source-only until native PCC (Chained ECDLP Transfers, started 2026-11-17, branch research/ct196-counter-observability-20261117) [pcc:unverified]
+- [ ] CT196: audit timed Cell<Calls> counter observability on CT195 two-panel actual norm pricing, verify per-panel exact call deltas; source-only until native PCC (Chained ECDLP Transfers, started 2026-11-17, branch research/ct196-counter-observability-20261117, PR #1743) [pcc:unverified]
 
 
 - [ ] CT195: isolate CT125 norm-point counter-bookkeeping overhead from actual descent/pmul cost on the frozen 48 public packets; add an independently admitted control panel (Chained ECDLP Transfers, started 2026-11-17, branch research/ct195-counter-neutral-norm-price-20261117, PR #1740) [pcc:unverified]
