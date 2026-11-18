@@ -1,0 +1,30 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-17T18:19:35Z",
+ "id": "PCC-20261117-801c99",
+ "kind": "execution",
+ "producer": {
+  "commit": "2a16aeb8e3b4a7bcc3aac61ffedefdef4461c193",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/ic-collector-counterfactual-20261117/setup-packet-validation-001/setup-source-pack-check.json",
+    "sha256": "367afb8e83bdf31c6cc8996057fa5fb494ea3147cee6043af40ba27ecfcc0832"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/ic-collector-counterfactual-20261117/readback-setup-packet-validation-001.json",
+    "sha256": "65d6f5e8416fe4b7ff357f093f9f7001c8c77cca65a7673ca6ab59d938d63d1d"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "experiments/ic-collector-counterfactual-20261117",
+ "statement": "Pre-execution packet checks accepted20recorded native controls and rejected80corrupted controls. A local cloud source-pack audit checked all251required controller/configuration/candidate/workload files byte-for-byte, excluding private notes and the ARM identity binary. Committed progress replay retains1444prior values and emits0new values from the open prospective record. The validation bundle retains all checks and the failed Git-index metadata offload plus successful metadata-only retry; fresh full bundle readback passed. No timing allocation has launched. Unsigned producer checks."
+}
