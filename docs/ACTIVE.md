@@ -18,6 +18,8 @@ and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
 
+- [ ] Establish current-main CPU/perf and Runpod GPU baselines, then iteratively optimize the maintained Rust, Go, C, and CUDA paths end to end with correctness and evidence gates (Codex, started 2026-11-18, branch codex/end-to-end-performance-saturation-20261118, PR #1771) [pcc:unverified]
+
 - [ ] Mirror the general binary hyperelliptic-cover transfer interface from crypto after its source commit is frozen, with split provenance and exact parity checks (Codex, started 2026-11-18, branch codex/general-binary-cover-transfer-mirror-20261118, PR #1765) [pcc:unverified]
 
 - [x] Validate fixed index-calculus candidate residuals and subgroup status (Codex, started 2026-11-18, branch test-fixed-candidate-residual, PR #1755)
