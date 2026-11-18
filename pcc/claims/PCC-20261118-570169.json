@@ -1,0 +1,23 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-18T05:52:51Z",
+ "id": "PCC-20261118-570169",
+ "kind": "theorem",
+ "producer": {
+  "commit": "fb1d3815695b00c3ffd8f22bb75a1263213c6a74",
+  "model": "Codex",
+  "session": "pr-1760"
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-subexponential/prime_field_subexponential.md",
+    "sha256": "615a18b8aa55d95285c0367cf8e543de8c873366ffd1ae6160de31c66f51b647"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Curve and subgroup supplied, odd r, sufficiently large p for the uniform point argument. Subgroup-relative subexponential complexity applies to the stated infinite subfamily with r=p^Omega(1). Curve construction and novelty of the pairing are outside the claim.",
+ "statement": "For primes p at least 11 with p congruent to 2 mod 3, the specified Weil polynomial gives an ordinary absolutely simple genus-two Jacobian isogeny class. Given a curve and a prime-order subgroup of order r dividing p\u22121, the classical Frey\u2013R\u00fcck reduction yields an expected L_p(1/2,O(1)) discrete-logorithm algorithm."
+}
