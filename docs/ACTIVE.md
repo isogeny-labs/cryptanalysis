@@ -18,6 +18,8 @@ and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
 
+- [ ] CT199: correct CT190 route cost ratio for physical-B×previous-B carryover, test conditional and roster-standardized contrasts (automation, started 2026-11-18, branch research/ct199-carryover-marginal-contrast-20261118)
+
 - [x] Report candidate scalar residuals in fixed index-calculus status (Codex, started 2026-11-18, branch cli-fixed-candidate-residual, PR #1752)
 
 - [x] Report base-point and scalar availability in fixed index-calculus status (Codex, started 2026-11-18, branch cli-dlp-input-status, PR #1750)
