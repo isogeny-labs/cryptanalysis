@@ -256,8 +256,15 @@ static ca_status k_solve_impl(const ca_group *g, const ca_elem *base, const ca_e
     ca_status rc = ca_resolve_interval(g, &lo, &hi);
     if (rc != CA_OK) return rc;
     double t0 = ca_now();
-    uint64_t width = hi - lo; /* inclusive count minus one */
     uint64_t n = g->order;
+    /* An interval of n or more values holds every residue class mod n, so
+     * one full period [lo, lo + n - 1] already contains the smallest
+     * logarithm >= lo, which is also the answer in [lo, hi].  Without this
+     * the jumps (mean ~ sqrt(hi - lo)) and the runaway guard are sized for
+     * the interval, not the group: [0, 2^64 - 1] in a group of order 10^6
+     * ran for hours.  hi >= lo + n - 1 here, so the sum cannot wrap. */
+    if (n && hi - lo >= n) hi = lo + (n - 1);
+    uint64_t width = hi - lo; /* inclusive count minus one */
 
     /* tiny interval: linear scan */
     if (width < 256) {
@@ -321,6 +328,20 @@ static ca_status k_solve_impl(const ca_group *g, const ca_elem *base, const ca_e
         double per_roo = expected / (32.0 * total);
         dp = 0;
         while (per_roo >= 2.0 && dp < 40) { per_roo /= 2; dp++; }
+    }
+    if (n) {
+        /* A kangaroo's walk on the group is a random mapping, so it enters a
+         * cycle of about sqrt(n) elements; with distinguished points rarer
+         * than that the cycle holds none, the tame/wild collision is never
+         * reported, and the guard below (which grows with 2^dp) ends a
+         * solvable search with CA_ERR_NOT_FOUND, or never fires.  Cap dp at
+         * floor(log2 n)/2 - 2, i.e. 2^dp <= sqrt(n)/4, as rho.c does.  The
+         * automatic choice above is below the cap once width < n. */
+        int lgn = 0;
+        while ((n >> lgn) > 1) lgn++;
+        int dp_cap = lgn / 2 - 2;
+        if (dp_cap < 0) dp_cap = 0;
+        if (dp > dp_cap) dp = dp_cap;
     }
     uint64_t dp_mask = dp ? ((1ULL << dp) - 1) : 0;
     /* Runaway guard for a caller that set no max_ops: a logarithm outside

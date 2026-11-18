@@ -18,6 +18,8 @@ and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
 
+- [x] Repair the second-pass C library findings (rho/gpu_rho dp_bits defeats the runaway guard; kangaroo interval wider than the group; grumpy unbounded on an unsolvable target; dense linear-solve fallback unchecked; GLV batch start-up for n >= 2^39; ca_crt2 zero modulus) and re-sync the shared pcc files to the crypto owner copy (claude, completed 2026-11-18, branch claude/codebase-assessment-report-fp044d, PR #1773; coord.c dp cap left for the owner)
+
 - [ ] Mirror the general binary hyperelliptic-cover transfer interface from crypto after its source commit is frozen, with split provenance and exact parity checks (Codex, started 2026-11-18, branch codex/general-binary-cover-transfer-mirror-20261118, PR #1765) [pcc:unverified]
 
 - [x] Validate fixed index-calculus candidate residuals and subgroup status (Codex, started 2026-11-18, branch test-fixed-candidate-residual, PR #1755)
