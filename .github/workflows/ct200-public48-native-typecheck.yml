@@ -1,0 +1,119 @@
+# CT200 typechecking only. This workflow NEVER executes the benchmark or an ECDLP solve.
+# All scientific claims remain [pcc:unverified].
+name: CT200 exact-public48 Rust release typecheck (NO BENCHMARK)
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/ct200-public48-native-typecheck.yml'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/ct192-public48-norm/**'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/CT200_NATIVE_TYPECHECK_PROTOCOL.md'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native-typecheck-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Exact source HEAD checkout, no merge-ref substitution
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Record head and check original source and 48 packet blobs
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p ct200-evidence
+          git rev-parse HEAD | tee ct200-evidence/cryptanalysis-head.txt
+          source=experiments/chained-transfer-public-target/fixed-jacobian-chain-evaluator-02/derived/lib.rs
+          fixture=experiments/chained-transfer-public-target/evidence/fixed-chain-norm-point-native-01/literal-selected-vectors.json
+          test "$(git hash-object "$source")" = b80eb91a39ae1e87f0fcde95e52ea3d3634558bc
+          test "$(git hash-object "$fixture")" = 9ac741668dd1ffa9632ff0d58e6f4dd9f2dd18c3
+          git hash-object "$source" "$fixture" | tee ct200-evidence/original-git-blobs.txt
+      - name: Checkout original sibling crypto implementation at pinned source
+        uses: actions/checkout@v4
+        with:
+          repository: isogeny-labs/crypto
+          ref: 4de29a113dfc1b9d32c1809820b8caa2975042a8
+          path: _ct200_crypto
+          persist-credentials: false
+      - name: Stage read-only sibling path without editing pinned crypto
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C _ct200_crypto rev-parse HEAD)" = 4de29a113dfc1b9d32c1809820b8caa2975042a8
+          test -d _ct200_crypto/isogeny_algos
+          test -d _ct200_crypto/research/chained_jacobian_transfers_20261110/genus3-prime-descent/engine
+          ln -s "$GITHUB_WORKSPACE/_ct200_crypto" "$(dirname "$GITHUB_WORKSPACE")/crypto"
+          test -d "$(dirname "$GITHUB_WORKSPACE")/crypto/isogeny_algos"
+          git -C _ct200_crypto rev-parse HEAD | tee ct200-evidence/crypto-head.txt
+      - name: Read-only checkout of pinned existing artifact hydration tool
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          repository: isogeny-labs/cryptanalysis
+          ref: 3de8c174cf65e6b34bf8579d97b817b8f5dc2ded
+          path: _ct200_artifact_tools
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            tools/artifacts/artifacts.py
+            .artifacts/config.json
+      - name: Restore exact original predecessor model inputs from approved manifest
+        shell: bash
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+        run: |
+          set -euo pipefail
+          cmp _ct200_artifact_tools/.artifacts/config.json .artifacts/config.json
+          cmp _ct200_artifact_tools/tools/artifacts/artifacts.py tools/artifacts/artifacts.py
+          if ! command -v aws >/dev/null; then
+            python3 -m venv "$RUNNER_TEMP/ct200-awscli"
+            "$RUNNER_TEMP/ct200-awscli/bin/python" -m pip install --disable-pip-version-check awscli==1.46.2
+            export ARTIFACTS_AWS="$RUNNER_TEMP/ct200-awscli/bin/aws"
+          fi
+          timeout 180s python3 _ct200_artifact_tools/tools/artifacts/artifacts.py pull --jobs 2 \
+            docs/research-artifacts/chained-transfer/nondual-models-18 \
+            2>&1 | tee ct200-evidence/original-model-hydration.txt
+          b=docs/research-artifacts/chained-transfer/nondual-models-18
+          test "$(sha256sum "$b/second-model-expected-native-01.json.xz" | cut -d' ' -f1)" = 22225094b7e3727332a761593b47ac44a2efd2f04bbdb1b1865abf3c35ba7267
+          test "$(sha256sum "$b/third-model-expected-native-01.json.xz" | cut -d' ' -f1)" = 1a7c90c81310a9d1a329b830c9b7f9f52a6c4504152c26162fb46f7fc5184787
+          test "$(stat -c%s "$b/second-model-expected-native-01.json.xz")" = 217960
+          test "$(stat -c%s "$b/third-model-expected-native-01.json.xz")" = 326200
+          realpath experiments/chained-transfer-public-target/nondual13-preflight/models/expected-native-01.json.xz | tee ct200-evidence/second-model-path.txt
+          realpath experiments/chained-transfer-public-target/nondual13-next-preflight/models/expected-native-01.json.xz | tee ct200-evidence/third-model-path.txt
+      - name: Reconstruct only unchanged predecessor Rust sources and guarded CT192 derivative
+        shell: bash
+        run: |
+          set -euo pipefail
+          b=experiments/chained-transfer-public-target
+          python3 -S "$b/paired-fourth-preflight/materialize.py" 2>&1 | tee ct200-evidence/paired-fourth-materialization.txt
+          python3 -S "$b/fixed-jacobian-chain-01/materialize.py" 2>&1 | tee ct200-evidence/fixed-chain-materialization.txt
+          python3 -S "$b/fixed-jacobian-chain-evaluator-01/materialize.py" 2>&1 | tee ct200-evidence/ct126-materialization.txt
+          d="$b/primitive-pricing-01/ct192-public48-norm"
+          python3 -S "$d/source_contract.py" 2>&1 | tee ct200-evidence/original-source-contract.txt
+          python3 -S "$d/source_contract.py" --materialize 2>&1 | tee ct200-evidence/ct192-derivative.txt
+          rustfmt --edition 2021 --emit stdout "$d/derived/lib.rs" >/dev/null
+          rustfmt --edition 2021 --emit stdout "$d/src/main.rs" >/dev/null
+          sha256sum "$d/derived/lib.rs" "$d/src/main.rs" | tee ct200-evidence/new-source-sha256.txt
+      - name: Actual Rust 1.99.1 release SEMANTIC TYPECHECK, no binary execution
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.99.1 --profile minimal
+          rustup default 1.99.1
+          { rustc -Vv; cargo -V; } | tee ct200-evidence/rust-toolchain.txt
+          d=experiments/chained-transfer-public-target/primitive-pricing-01/ct192-public48-norm
+          timeout 360s cargo check --release --manifest-path "$d/Cargo.toml" \
+            2>&1 | tee ct200-evidence/cargo-check-release.txt
+          echo 'CT200: Cargo release typecheck only, no native replay or timing, no signed PCC [pcc:unverified]' \
+            | tee ct200-evidence/typecheck-standing.txt
+      - name: Retain successful OR failed compiler/custody receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ct200-public48-typecheck-source-and-failure
+          path: ct200-evidence/
+          retention-days: 30
