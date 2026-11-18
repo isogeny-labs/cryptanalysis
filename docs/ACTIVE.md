@@ -18,7 +18,7 @@ and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
 
-- [ ] CT198: certify exact frozen-48 route counter identities and breakeven of C169 vs C13a+C13b, separating norm-reuse from route-selection gain (Chained ECDLP Transfers, started 2026-11-17, branch research/ct198-frozen48-route-cost-identity-20261117) [pcc:unverified]
+- [ ] CT198: certify exact frozen-48 route counter identities and breakeven of C169 vs C13a+C13b, separating norm-reuse from route-selection gain (Chained ECDLP Transfers, started 2026-11-17, branch research/ct198-frozen48-route-cost-identity-20261117, PR #1748) [pcc:unverified]
 
 - [ ] CT197: strict offline CT196 96-operand paired norm-price evidence adjudicator, per-block controls and stratified negative outcomes; source/synthetic until native custody (Chained ECDLP Transfers, started 2026-11-17, branch research/ct197-native-operand-evidence-adjudicator-20261117, PR #1745) [pcc:unverified]
 
