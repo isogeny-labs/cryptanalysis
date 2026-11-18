@@ -17,3 +17,10 @@ endpoint source scalars. [pcc:unverified]
 
 No Lean build error occurred. This is a producer-side receipt without
 independent PCC standing. [pcc:unverified]
+
+The self-contained Lake project also built all 9,040 jobs successfully. The
+repository `tools/lean/proof-gate.sh` then failed in its auditor, before
+auditing a theorem, because `AuditAxioms.lean` uses APIs absent under Lean
+4.35 (`Lean.ofReduceBool`, `Lean.trustCompiler`, and `String.trim`). The exact
+failure is retained in `PCC_GATE_FAILURE.txt`; it is an infrastructure failure
+and does not grant PCC standing. [pcc:unverified]

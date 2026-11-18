@@ -53,6 +53,13 @@ natural row is generated. [pcc:unverified]
   enabled the documented ambient-key fallback, but S3 rejected the exact
   checkpoint `PutObject` with `AllAccessDisabled`; the push and gate remained
   nonzero.  No fresh natural row was generated. [pcc:unverified]
+- **Observed later on 2026-11-18:** the target-origin-pencil implementation
+  was committed at `b31c01eb`, frozen and pushed at `422ea24b`, and all six
+  frozen source hashes plus release-binary hash rechecked clean. A complete
+  `.resume/RESUME.md` passed the content check, but `checkpoint.sh gate`
+  reported no permitted `ecc-challenges-new` profile, no
+  `CHECKPOINT_UPLOAD_TOKEN`, and no token file. It exited nonzero before any
+  natural row was generated. [pcc:unverified]
 - **Derived or proved:** No mathematical conclusion follows from the access
   failure.  The code-level invariant checks and synthetic positive/negative
   controls establish only their tested cases.
@@ -84,18 +91,20 @@ transfer to binary/Koblitz curves.
 ## Next discriminating step
 
 - **Action or proof obligation:** Provision scoped checkpoint transport, push
-  the current checkpoint, then run the exact command in the November 18
-  target-selector protocol without changing its seed, grid, or cap.
-- **Inputs and controls:** fresh fixed seed, paired minimum-weight selector,
-  target-bearing selector, fixed nine-point positive control, exact lifted
-  group certificates, and shifted source recovery for both arms.
+  the current checkpoint, then run one exact frozen November 18 panel at a
+  time without changing its seed, grid, or cap.
+- **Inputs and controls:** for the origin-pencil panel, fresh fixed seed,
+  identical source/lift per paired row, complete baseline-origin box, complete
+  target-origin pencil, fixed nine-point control, exact group certificates,
+  source replay, and baseline candidate-set digest equality.
 - **Execution limits and stop condition:** 1,600 sequential paired rows under
-  the frozen 1,800-second cap; stop and retain evidence on any certificate or
-  invariant failure.
-- **Outcomes and next actions:** candidate-only recoveries with no baseline
-  loss establish the specified stage improvement; equality is a bounded null;
-  certificate failure returns to implementation repair; another credential
-  failure updates this record without running. [pcc:unverified]
+  the origin-pencil protocol's frozen 7,200-second cap; stop and retain
+  evidence on any certificate or invariant failure.
+- **Outcomes and next actions:** pencil-only recoveries with no baseline loss
+  establish the specified stage improvement; equality is a bounded null; a
+  gain still needs duplicate-aware full-work accounting and independent
+  replay; certificate failure returns to implementation repair; another
+  credential failure updates this record without running. [pcc:unverified]
 - **Recheck trigger:** A valid token/profile is attached to a managed session.
 
 A planned step is not a completed experiment.  The required gate remains in
@@ -130,3 +139,8 @@ November 17 1,600-row panel.  That panel completed, but its waiver explicitly
 excluded larger or modified panels.  The fresh target-selector checkpoint
 push and gate failed for absent transport before any natural row.  Unresolved.
 [pcc:unverified]
+
+2026-11-18: the separately frozen target-origin-pencil panel reached the same
+mandatory gate at pushed head `422ea24b`. The resume capsule was complete, but
+no supported upload transport existed; the gate exited nonzero and no natural
+row was generated. Unresolved. [pcc:unverified]
