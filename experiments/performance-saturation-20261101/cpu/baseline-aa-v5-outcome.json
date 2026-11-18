@@ -1,0 +1,366 @@
+{
+  "schema": "performance-protocol-outcome/v1",
+  "protocol": "protocol-baseline-aa-orchestrated-v5.json",
+  "protocol_sha256": "032d98f434ae0a2df1edeb806f51fac9c4c5792053cce1711cd60627f6f3976c",
+  "protocol_file_sha256": "bf980c6f1b12b07b4ebc993681f1a85452e57e3e22207fa8917d1fdc457b4aca",
+  "tooling_commit": "ddd7b2dcec9e80a47fca81cd2becab29766fd449",
+  "registration_commit": "209b1e45c67bdf22e3e40dbaba7cc71f84037287",
+  "freeze_commit": "66cbf5b258d51306f87647e9aa7bebbc835aa43f",
+  "classification": "superseded_before_data/pre_data_infrastructure_loss",
+  "identified": "2026-11-18",
+  "reason": "A workspace restart or rollback removed the retained v4 build, selection, profiler, isolation-runner, and Rust-toolchain artifacts required by frozen v5. The v5 protocol explicitly performs no rebuild. Its create-once run root remains absent, so the runner was not invoked merely to seal a known identity block. No correctness, wall, Callgrind, perf-stat, perf-record, or scientific row exists under v5.",
+  "terminal_verdict": null,
+  "terminal_verdict_reason": "This is an append-only administrative pre-data outcome, not a runner-produced preflight_identity_blocked receipt. The frozen runner was deliberately not invoked because its root is create-once and the missing identities were already established read-only.",
+  "measurement_provider_actions": false,
+  "run_command_invoked": false,
+  "run_root": "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v5",
+  "run_root_created": false,
+  "v4_affected_paths_present": [],
+  "scientific_rows_executed": 0,
+  "scientific_rows_recovered": 0,
+  "timing_rows": 0,
+  "timing_rows_reused": 0,
+  "correctness_invocations": 0,
+  "wall_invocations": 0,
+  "callgrind_invocations": 0,
+  "perf_stat_invocations": 0,
+  "perf_record_invocations": 0,
+  "claims_admitted": [],
+  "required_file_audit": {
+    "manifest_source": "extensions.cpu_baseline_aa_v5.required_files",
+    "total": 45,
+    "exact": 7,
+    "missing": 24,
+    "content_mismatch": 0,
+    "mode_mismatch": 14,
+    "link_target_mismatch": 0,
+    "unique_missing_with_runtime_dependencies": 394,
+    "missing_groups": {
+      "retained_v4_artifacts": 7,
+      "isolated_bench": 1,
+      "valgrind_primary": 3,
+      "perf_primary": 12,
+      "rustc_primary": 1
+    }
+  },
+  "missing_required_files": {
+    "retained_v4_artifacts": [
+      {
+        "path": "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v4/build/base-rust/perfbench",
+        "bytes": 10866944,
+        "mode": "0700",
+        "sha256": "b066d0d8fefac4dd3b3891ab4804e77046302ceb2b86362095a65b632c7c8c37"
+      },
+      {
+        "path": "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v4/build/base-rust/build.json",
+        "bytes": 900,
+        "mode": "0600",
+        "sha256": "162db03afcd825a554e9d772deaee1cd5d957feba54f1ac60b491643747f3534"
+      },
+      {
+        "path": "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v4/build/base-c/ca_perfbench",
+        "bytes": 292112,
+        "mode": "0700",
+        "sha256": "6d9f3ba6845b47c01d374346a1b87ce6147a09c39fba94d5c2d06a2a2bbcd97d"
+      },
+      {
+        "path": "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v4/build/base-c/build.json",
+        "bytes": 974,
+        "mode": "0600",
+        "sha256": "0f0037faa14b6c2671a79815b6feb5cf92b04340f4f6f29b581aa7d05402f4d8"
+      },
+      {
+        "path": "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v4/registry/rust.jsonl",
+        "bytes": 44006,
+        "mode": "0600",
+        "sha256": "b225091d89a02e7400b01bb7704c1f358192049753d4bc279d70dcb352f194a0"
+      },
+      {
+        "path": "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v4/registry/c.jsonl",
+        "bytes": 4975,
+        "mode": "0600",
+        "sha256": "eafa8c3f389a88115f05ba1c5b602fc3b199cc0a6c80ed71432917c59cc97d44"
+      },
+      {
+        "path": "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v4/preflight/exact-selection.json",
+        "bytes": 3001,
+        "mode": "0600",
+        "sha256": "deb755224c3e20e6b924255d2100029f45d1d292ec97efaba2ac2ea563e7ed3b"
+      }
+    ],
+    "isolated_bench": [
+      {
+        "path": "/workspace/crypto/target/release/isolated_bench",
+        "bytes": 1481864,
+        "mode": "0700",
+        "sha256": "b48781f50cb1b1f1fdbefd8dfe91c9ea239ce80785368df8a564fa3fb388e336"
+      }
+    ],
+    "valgrind_primary": [
+      {
+        "path": "/workspace/.tools/valgrind/bin/valgrind",
+        "bytes": 62216,
+        "mode": "0755",
+        "sha256": "5cb03a5f75829113ec2a3fd25f9e7da11dd433694ab23e45600ee9a8b6935d8f"
+      },
+      {
+        "path": "/workspace/.tools/valgrind/libexec/valgrind/callgrind-amd64-linux",
+        "bytes": 13339928,
+        "mode": "0755",
+        "sha256": "c73312f6f5abedeaf4feaab95a7bbc60c66ebd7f92c2b1958871f682c0111ec6"
+      },
+      {
+        "path": "/workspace/.tools/valgrind/libexec/valgrind/vgpreload_core-amd64-linux.so",
+        "bytes": 18160,
+        "mode": "0755",
+        "sha256": "d113c4c59dc33f8409d032e9c59b8133cb49deeabf658d2ebe11aad73918c782"
+      }
+    ],
+    "perf_primary": [
+      {
+        "path": "/workspace/.tools/perf/usr/bin/perf",
+        "bytes": 10039712,
+        "mode": "0755",
+        "sha256": "40bba1aa615cb1903d137627c55cbf7b858c135e798b3cb458ff62c68dbe93ad"
+      },
+      {
+        "path": "/workspace/.tools/perf/usr/lib/x86_64-linux-gnu/libbabeltrace-ctf-metadata.so.1.0.0",
+        "bytes": 14432,
+        "mode": "0644",
+        "sha256": "45c3d1717e7729f8cd237d385eac04e43569f2260eb0e33b750256f880af9e44"
+      },
+      {
+        "path": "/workspace/.tools/perf/usr/lib/x86_64-linux-gnu/libbabeltrace-ctf-text.so.1.0.0",
+        "bytes": 47304,
+        "mode": "0644",
+        "sha256": "d6b75d353e1e7fa80b1436e51b217af2dd0e670e070443ee2111fd74c61053c1"
+      },
+      {
+        "path": "/workspace/.tools/perf/usr/lib/x86_64-linux-gnu/libbabeltrace-ctf.so.1.0.0",
+        "bytes": 346808,
+        "mode": "0644",
+        "sha256": "1aff34825fba69ec469108e010affca571a5155f7d79868d383ec8d71ca4ecc5"
+      },
+      {
+        "path": "/workspace/.tools/perf/usr/lib/x86_64-linux-gnu/libbabeltrace-dummy.so.1.0.0",
+        "bytes": 14432,
+        "mode": "0644",
+        "sha256": "c8971d99582df100a794b7a2e87d2d0074b14efd9f643351934ceadbd006777d"
+      },
+      {
+        "path": "/workspace/.tools/perf/usr/lib/x86_64-linux-gnu/libbabeltrace-lttng-live.so.1.0.0",
+        "bytes": 43104,
+        "mode": "0644",
+        "sha256": "62ff04b5a9a84ba8882cb4769371f6ded4e6074b63269e754690b51457802094"
+      },
+      {
+        "path": "/workspace/.tools/perf/usr/lib/x86_64-linux-gnu/libbabeltrace.so.1.0.0",
+        "bytes": 59536,
+        "mode": "0644",
+        "sha256": "66c61f8dbe27b775423e8870e1f9149e755a1c9b2f7c937bfb16f30a5707977a"
+      },
+      {
+        "path": "/workspace/.tools/perf/usr/lib/x86_64-linux-gnu/libdebuginfod-0.192.so",
+        "bytes": 47928,
+        "mode": "0644",
+        "sha256": "ebc7a30a482f6fc8eae26a03edef80fb9d48ab4d9d4ea410709a80c7d1777a72"
+      },
+      {
+        "path": "/workspace/.tools/perf/usr/lib/x86_64-linux-gnu/libdw-0.192.so",
+        "bytes": 762392,
+        "mode": "0644",
+        "sha256": "47b1ae7f0347f6a248e49bfbe2f6ede871a0e88cfb79710b68d2b4bad03e9413"
+      },
+      {
+        "path": "/workspace/.tools/perf/usr/lib/x86_64-linux-gnu/libopencsd.so.1.5.5",
+        "bytes": 657760,
+        "mode": "0644",
+        "sha256": "f2296c12f40c92cfdfb474addcd8d5e1578a264bdcfd816bdbe5ecc55f7eccc7"
+      },
+      {
+        "path": "/workspace/.tools/perf/usr/lib/x86_64-linux-gnu/libopencsd_c_api.so.1.5.5",
+        "bytes": 71840,
+        "mode": "0644",
+        "sha256": "63faa3c60bcd177d0a787c90419bdb0aad1789da2fe98dcee3f3aefbe5d496e6"
+      },
+      {
+        "path": "/workspace/.tools/perf/usr/lib/x86_64-linux-gnu/libtraceevent.so.1.8.4",
+        "bytes": 129936,
+        "mode": "0644",
+        "sha256": "6dd4b16b486931d4900a2698a2757eb41bd93a233453f51417977d5765693de2"
+      }
+    ],
+    "rustc_primary": [
+      {
+        "path": "/workspace/.tools/rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc",
+        "bytes": 648536,
+        "mode": "0700",
+        "sha256": "b53b780f77f952062f8ca8a3b70aef2390b1e45ad91939be94afdc9543026853"
+      }
+    ]
+  },
+  "runtime_dependency_audit": {
+    "manifest": {
+      "path": "/workspace/cryptanalysis/experiments/performance-saturation-20261101/cpu/runtime-dependencies-v5.json",
+      "bytes": 358251,
+      "mode": "0644",
+      "sha256": "05edb1bea52a9d44b6c75bdc6dfa187a80cca2ae6afe0f0671531a1437969c96"
+    },
+    "file_count": 1253,
+    "entries_sha256": "555d9e0b83c0d37613b6492b648daada064aa06eb8d6a82a4f4be787c2839772",
+    "exact": 870,
+    "missing": 383,
+    "content_mismatch": 0,
+    "mode_mismatch": 0,
+    "link_target_mismatch": 0,
+    "groups": {
+      "perf_private_runtime": {
+        "expected": 244,
+        "exact": 0,
+        "missing": 244,
+        "entries_sha256": "0cdcda929311cc4b4e46e7c0b84aebe67bd9412ac0384495a67421ec045e3bac"
+      },
+      "python_schema_runtime": {
+        "expected": 181,
+        "exact": 181,
+        "missing": 0,
+        "entries_sha256": "96cacd7f1dd3c3730c7712734b16c5c14a32b6c7dfa9bccba9258fa361a43429"
+      },
+      "python_stdlib": {
+        "expected": 689,
+        "exact": 689,
+        "missing": 0,
+        "entries_sha256": "66d66772d15f5393771ee7a2d432e1f4cef0382cdbdc29cda9f35c68cc46d36c"
+      },
+      "rustc_host_manifest_runtime": {
+        "expected": 3,
+        "exact": 0,
+        "missing": 3,
+        "entries_sha256": "0f78f49e7519ebbfb973cbc695c8fb9981b7173b0fd342159850fc89235767af"
+      },
+      "valgrind_libexec": {
+        "expected": 136,
+        "exact": 0,
+        "missing": 136,
+        "entries_sha256": "108393578802a49331397195d576717aa91e2672b6ffb3672f39ec9ee965355e"
+      }
+    },
+    "exact_missing_paths_and_hashes": "The frozen runtime-dependencies-v5.json manifest is the complete machine-readable inventory for all 383 missing runtime paths, modes, byte counts, hashes, and symlink targets."
+  },
+  "mode_only_mismatches": {
+    "expected_mode": "0644",
+    "observed_mode": "0600",
+    "content_identity": "Every listed file has the frozen byte count and SHA-256; only its materialized mode differs.",
+    "files": [
+      [
+        "/workspace/crypto-autoresearcher/tools/experiment_protocol.py",
+        "0f46a2b856bb1df2d155c4a676b46c6118d82c45cf8e5cc0492315aeb45c84e4"
+      ],
+      [
+        "/workspace/crypto-autoresearcher/schemas/experiment-protocol.v1.json",
+        "a9b948f2be323f862b98301eb7a5aa147ecc29db35041737f0aa3dfd03ad2443"
+      ],
+      [
+        "/workspace/crypto-autoresearcher/schemas/experiment-export.v1.json",
+        "108f0ae9c1be3ed141bca3c22216eba049f2c76677f11013109a4740f19bd757"
+      ],
+      [
+        "/workspace/cryptanalysis/experiments/performance-saturation-20261101/cpu/run_cpu_baseline_aa_v5.py",
+        "c21584b16dc7f834ccb7a6ec26ac992bb70b8b37a3065f2bf7c4c085e502a890"
+      ],
+      [
+        "/workspace/cryptanalysis/experiments/performance-saturation-20261101/cpu/analyze_cpu_baseline_aa_v5.py",
+        "5c4cfc002fda92d3d5550d3f375663df452d17d76f94deb82a5b7c15ecce57a1"
+      ],
+      [
+        "/workspace/cryptanalysis/experiments/performance-saturation-20261101/cpu/protocol-baseline-aa-exact-v4.json",
+        "4656a48ec4f9fccdcf0caec11e1a1444f538522064911ad56d224924179d1156"
+      ],
+      [
+        "/workspace/cryptanalysis/experiments/performance-saturation-20261101/cpu/baseline-aa-v4/artifact-binding.json",
+        "99d8e58ae60e67685965d8c75d2334bda36cae89f15be2a5396f9084b64b4e3d"
+      ],
+      [
+        "/workspace/cryptanalysis/scripts/perf/perfindex.py",
+        "28084cd77fe28d3b031f4dc1474241ee051b2072c7b62dc7a17e0049c3e3674f"
+      ],
+      [
+        "/workspace/cryptanalysis/docs/perf/weights.json",
+        "5d1ffd7585b6bf145817402f45fe122b97468ba64a2e50ea939ae469945b9ca4"
+      ],
+      [
+        "/workspace/cryptanalysis/experiments/performance-saturation-20261101/cpu/runtime-dependencies-v5.json",
+        "05edb1bea52a9d44b6c75bdc6dfa187a80cca2ae6afe0f0671531a1437969c96"
+      ],
+      [
+        "/workspace/cryptanalysis/experiments/performance-saturation-20261101/cpu/python_preflight_v5.sh",
+        "903f6d79e758c70d26ef9c6fed1ef5c499f5dd2bc163ff00fb66d33b756e7770"
+      ],
+      [
+        "/workspace/cryptanalysis/experiments/performance-saturation-20261101/cpu/python_bootstrap_v5.py",
+        "f076ee8c3313a6f1394789446a6d8bf8a525bfee2bd9e7867456b1336d78933a"
+      ],
+      [
+        "/workspace/cryptanalysis/experiments/performance-saturation-20261101/cpu/python-bootstrap-closure-v5.sha256",
+        "82135ae95bc8594be862d854863b413dfbeea170bac89b1b05f9a6c62d914e1d"
+      ],
+      [
+        "/workspace/cryptanalysis/experiments/performance-saturation-20261101/cpu/python-import-inventory-v5.txt",
+        "5359bfd7c8633d7a589c970624f48297cf9fd4c8ac44cf12d01cbe896c5491c1"
+      ]
+    ]
+  },
+  "recovery_assessment": {
+    "baseline_source": {
+      "commit": "781722ef89e74b62079d2bc0cb82217061ac188c",
+      "tree": "99c6de3f3c617d1f16917bd81590279b167758da",
+      "git_archive_sha256": "a2031be1f2c1d3f00413b141757de370811c5c916321dcb72ad5513198bbbfb4",
+      "independently_revalidated": true
+    },
+    "byte_exact_committed_copies": [
+      {
+        "missing_path": "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v4/registry/rust.jsonl",
+        "committed_copy": "experiments/performance-saturation-20261101/cpu/baseline-aa-v3/registry/rust.jsonl",
+        "sha256": "b225091d89a02e7400b01bb7704c1f358192049753d4bc279d70dcb352f194a0"
+      },
+      {
+        "missing_path": "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v4/registry/c.jsonl",
+        "committed_copy": "experiments/performance-saturation-20261101/cpu/baseline-aa-v3/registry/c.jsonl",
+        "sha256": "eafa8c3f389a88115f05ba1c5b602fc3b199cc0a6c80ed71432917c59cc97d44"
+      }
+    ],
+    "no_verified_copy_in_current_checkout_or_git": [
+      "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v4/build/base-rust/perfbench",
+      "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v4/build/base-rust/build.json",
+      "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v4/build/base-c/ca_perfbench",
+      "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v4/build/base-c/build.json",
+      "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v4/preflight/exact-selection.json"
+    ],
+    "rebuild_not_admissible": "Frozen v5 says that it performs no rebuild and requires the exact retained v4 artifacts. The build receipts also contain nondeterministic loadavg_start and build_seconds fields, so a new build cannot honestly substitute for the lost receipts even if an executable happened to hash identically.",
+    "local_cache_search": {
+      "roots": [
+        "/workspace",
+        "/opt/codex"
+      ],
+      "byte_exact_matches_for_the_five_unrecovered_retained_v4_artifacts": 0
+    },
+    "s3_check": {
+      "bucket": "setec-astronomy-artifacts",
+      "list_prefix": "checkpoints/cryptanalysis/",
+      "list_result": "AllAccessDisabled",
+      "head_key": "checkpoints/cryptanalysis/codex__performance-saturation-20261101/LATEST",
+      "head_http_status": 403,
+      "interpretation": "The current credentials expose no authenticated recovery object. These denials do not prove that no backup exists. Repository checkpoints would also need to have captured the external .benchmarks, .tools, and target roots to repair v5."
+    }
+  },
+  "replacement": "Preserve v5 unchanged and absent. Register and freeze a fresh v6 before any data, binding newly materialized source, binaries, build receipts, registries, selection receipt, isolation runner, profiler runtimes, command plan, stopping rule, and evidence tier. Rebuilding or remeasuring under v5 is forbidden.",
+  "sources_checked": [
+    "AGENTS.md",
+    "experiments/performance-saturation-20261101/cpu/LITERATURE.md",
+    "experiments/performance-saturation-20261101/cpu/protocol-baseline-aa-orchestrated-v5.json",
+    "experiments/performance-saturation-20261101/cpu/runtime-dependencies-v5.json",
+    "experiments/performance-saturation-20261101/cpu/baseline-aa-v4/artifact-binding.json",
+    "experiments/performance-saturation-20261101/cpu/run_cpu_baseline_aa_v5.py",
+    "scripts/perf/perfindex.py"
+  ]
+}
