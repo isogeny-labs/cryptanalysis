@@ -62,6 +62,12 @@ def readJson(path):
         return json.load(stream, object_pairs_hook=unique)
 
 
+class TargetOutsideSubgroup(ValueError):
+    def __init__(self, target):
+        super().__init__(f'point is outside the declared prime subgroup for target {target!r}')
+        self.target = target
+
+
 class Parameters:
     def __init__(self, document, ledger):
         keys(document, ['schema_version', 'curve', 'generator', 'factor_base', 'summands', 'targets'], ['name'])
@@ -130,23 +136,37 @@ class Parameters:
         require(self.summands in (2, 3), 'fixed workflow supports two or three summands')
         require(isinstance(document['targets'], list), 'targets must be an array')
         self.targets = {}
+        self.knownLogs = set()
+        self.candidateLogs = {}
         for target in document['targets']:
-            keys(target, ['id', 'x', 'y'])
+            keys(target, ['id', 'x', 'y'], ['known_log', 'candidate_log'])
             name = target['id']
             require(isinstance(name, str) and 0 < len(name) <= 128 and name not in self.targets,
                     'target IDs must be unique nonempty strings of at most 128 characters')
-            self.targets[name] = self.point({'x': target['x'], 'y': target['y']})
+            point = self.point({'x': target['x'], 'y': target['y']}, target=name)
+            if target.get('known_log') is not None:
+                require(self.matchesScalar(integer(target['known_log']), point),
+                        f'known_log failed the scalar certificate for target {name!r}')
+                self.knownLogs.add(name)
+            if target.get('candidate_log') is not None:
+                candidate = integer(target['candidate_log'])
+                require(candidate < self.prime, f'candidate_log is outside the scalar range for target {name!r}')
+                self.candidateLogs[name] = candidate
+            self.targets[name] = point
         # Target-independent precomputation survives adding or removing targets.
         identity = {k: document[k] for k in ('schema_version', 'curve', 'generator', 'factor_base', 'summands')}
         self.identity = digest([FORMAT, identity])
         self.document = document
+
+    def matchesScalar(self, value, target):
+        return 0 <= value < self.prime and self.curve.mul(self.generator, value) == target
 
     def coordinate(self, value):
         value = integer(value)
         require(value < 1 << self.onb.m, 'coordinate exceeds the declared field width')
         return self.onb.fromCoords(value)
 
-    def point(self, value):
+    def point(self, value, *, target=None):
         keys(value, ['x', 'y'])
         coordinates = []
         for axis in ('x', 'y'):
@@ -161,7 +181,10 @@ class Parameters:
             coordinates.append(self.onb.fromCoords(number))
         point = tuple(coordinates)
         require(self.curve.onCurve(point), 'point is not on the declared curve')
-        require(self.curve.mul(point, self.prime) is None, 'point is outside the declared prime subgroup')
+        if self.curve.mul(point, self.prime) is not None:
+            if target is not None:
+                raise TargetOutsideSubgroup(target)
+            raise ValueError('point is outside the declared prime subgroup')
         return point
 
 
@@ -588,8 +611,33 @@ class Campaign:
         return results
 
     def certifySolution(self, value, target):
-        require(0 <= value < self.params.prime and self.params.curve.mul(self.params.generator, value) == target,
-                'scalar certificate failed')
+        require(self.params.matchesScalar(value, target), 'scalar certificate failed')
+
+    def targetStatus(self):
+        results = {}
+        p = self.params
+        for name, target in p.targets.items():
+            status = {'in_base_subgroup': True}
+            saved = self.db.execute('SELECT scalar FROM solutions WHERE id=?', (name,)).fetchone()
+            source = None
+            if saved is not None:
+                self.certifySolution(integer(saved[0]), target)
+                source = 'checkpoint'
+            elif name in p.knownLogs:
+                source = 'provided'
+            candidate = p.candidateLogs.get(name)
+            if candidate is not None:
+                multiple = p.curve.mul(p.generator, candidate)
+                residual = p.curve.add(target, p.curve.neg(multiple))
+                if residual is None:
+                    status['candidate_residual'] = {'is_identity': True}
+                    source = source or 'candidate'
+                else:
+                    x, y = residual
+                    status['candidate_residual'] = {'is_identity': False, 'basis': 'type-ii-onb',
+                                                    'x': hex(p.onb.toCoords(x)), 'y': hex(p.onb.toCoords(y))}
+            results[name] = dict(status, scalar_known=source is not None, scalar_source=source)
+        return results
 
     def run(self, stage='all', attempts=32, pairBudget=10000, seconds=.25):
         require(stage in ('select', 'pairs', 'collect', 'logs', 'solve', 'all', 'status'), 'invalid stage')
@@ -599,15 +647,18 @@ class Campaign:
         report = {'schema_version': 1, 'operation': 'fixed', 'stage': stage,
                   'status': 'stopped', 'identity': self.params.identity, 'degree': self.params.onb.m,
                   'subgroup_order': str(self.params.prime), 'orbit_columns': len(self.reps),
-                  'signed_base_points': len(self.points), 'solver': self.solver, 'targets': {}}
+                  'signed_base_points': len(self.points), 'solver': self.solver, 'targets': {},
+                  'base_point': 'known'}
+        if stage == 'status':
+            with self.ledger.phase('target_status'):
+                report['targets'] = self.targetStatus()
         count = math.comb(len(self.points) + self.params.summands - 1, self.params.summands)
         denominator = self.params.prime - 1
         report['coverage_ceiling'] = {'numerator': str(min(count, denominator)), 'denominator': str(denominator),
             'fraction': min(1.0, count / denominator), 'kind': 'counting_bound_on_uniform_nonzero_targets'}
         ready = True
-        savedTargets = bool(self.params.targets) and all(self.db.execute(
+        replayOnly = stage in ('solve', 'all') and bool(self.params.targets) and all(self.db.execute(
             'SELECT 1 FROM solutions WHERE id=?', (name,)).fetchone() is not None for name in self.params.targets)
-        replayOnly = stage in ('solve', 'all') and savedTargets
         if self.solver in ('pairs', 'learned') and not replayOnly and stage not in ('select', 'status', 'logs'):
             ready = self.buildPairs(pairBudget)
             if not ready:
@@ -655,10 +706,17 @@ def main():
     parser.add_argument('--query-seconds', type=float, default=.25)
     args = parser.parse_args()
     try:
-        with Campaign(readJson(args.params), args.dir, args.solver, selectorModel=args.selector_model) as campaign:
-            report = campaign.run(args.stage, args.attempts, args.pair_budget, args.query_seconds)
+        document = readJson(args.params)
+        if args.stage == 'status' and isinstance(document, dict) and document.get('generator') is None:
+            report = {'schema_version': 1, 'operation': 'fixed', 'stage': 'status', 'status': 'error',
+                      'base_point': 'missing', 'message': 'supply the base point in generator'}
+        else:
+            with Campaign(document, args.dir, args.solver, selectorModel=args.selector_model) as campaign:
+                report = campaign.run(args.stage, args.attempts, args.pair_budget, args.query_seconds)
     except (ValueError, OSError, sqlite3.Error, RuntimeError) as error:
         report = {'schema_version': 1, 'operation': 'fixed', 'status': 'error', 'message': str(error)}
+        if args.stage == 'status' and isinstance(error, TargetOutsideSubgroup):
+            report.update(stage='status', base_point='known', targets={error.target: {'in_base_subgroup': False}})
     print(json.dumps(report, sort_keys=True))
     return 0 if report['status'] in ('complete', 'stopped') else 2
 

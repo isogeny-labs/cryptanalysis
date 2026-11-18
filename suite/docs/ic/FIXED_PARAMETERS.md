@@ -58,6 +58,32 @@ is the maximum **additional** attempts per collection stream or target in the
 current invocation. Attempts, including failures and timeouts, are retained.
 Changing budgets does not invalidate the campaign.
 
+Use `--stage status --json` with the same parameters and directory to check
+input and checkpoint status without collecting relations. `base_point` is
+`known` after validating the subgroup generator. A missing or null `generator`
+returns an error with `base_point: "missing"`.
+
+For each target, `scalar_known` is true after checking a saved scalar or the
+optional `known_log` field on that target against `Q = kP`, or after confirming
+a candidate below. `scalar_source` is `checkpoint` for a saved result,
+`provided` for a matching `known_log`, and `null` when the scalar is unknown.
+Omit `known_log` or set it to `null` for a target specified only by coordinates.
+A `known_log` that fails the check is an input error. The supplied value is a
+status annotation. The status report omits scalar values.
+
+`in_base_subgroup` answers whether some scalar could generate the target from
+the validated generator. An on-curve target outside that subgroup returns an
+input error with `in_base_subgroup: false` for its target ID.
+
+To check a particular scalar against a target, add `"candidate_log": "..."`
+to that target alongside `id`, `x`, and `y`. Use a decimal or hexadecimal
+integer in the range from zero through subgroup order minus one. Status
+reports `candidate_residual`, the point `Q - [candidate_log]P`. If
+`is_identity` is true, the candidate generates `Q` and `scalar_source` is
+`candidate` when no checkpoint or `known_log` already supplies the answer.
+A nonidentity residual gives the difference in `type-ii-onb` coordinates
+and rules out that candidate. Omit `candidate_log` for the subgroup check alone.
+
 For bounded Semaev SAT queries, use `--solver sat --pair-budget 0` and select an
 interpreter with `--python /path/to/python`. It needs `python-sat` and
 `pycryptosat`; the pair-table workflow uses the Python standard library only.

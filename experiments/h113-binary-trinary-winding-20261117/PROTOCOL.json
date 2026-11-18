@@ -1,0 +1,80 @@
+{
+  "schema": "h113.binary-trinary-winding.protocol/v1",
+  "freeze_date": "2026-11-17",
+  "status": "frozen_before_measurement",
+  "mechanism": {
+    "ring": "Z/p^2Z",
+    "multipliers": [2, 3],
+    "curl_numerator": "2*kappa3(Q/2)+kappa2(Q)-3*kappa2(Q/3)-kappa3(Q)",
+    "winding_values": [-3, -2, -1, 0, 1, 2],
+    "identity": "[2]C3(Q/2)+C2(Q)=[6]s(Q/6)-s(Q)=[3]C2(Q/3)+C3(Q)"
+  },
+  "channels": [
+    "raw",
+    "plus",
+    "minus",
+    "forward",
+    "backward",
+    "curvature",
+    "anchor_plus",
+    "anchor_minus"
+  ],
+  "predicates": {
+    "mapping_family": "all lexicographic permutations of [0,1,2,3,4,5]",
+    "permutations_per_channel": 720,
+    "total": 5760,
+    "label": "canonical scalar modulo 6",
+    "uniform_gate": "same predicate ID exact on all 28 rows"
+  },
+  "cohort": {
+    "curves_path": "CURVES.json",
+    "generator_multipliers": [1, 2, 3, 5],
+    "curve_count": 7,
+    "row_count": 28,
+    "target_count": 9096,
+    "reason_not_standard_panel": "exhaustive enumeration and direct H110-H112 comparability"
+  },
+  "controls": {
+    "primary_curve_slugs": [
+      "icv1-fp7-t19-5c8a8fbb",
+      "icv1-fp7-t19-7e6da47e"
+    ],
+    "random_section_replicates_per_curve": 8,
+    "histogram_matched_label_replicates_per_curve": 8,
+    "coordinate_isomorphism_lambda": 2,
+    "torsion_section": "all unique nonidentity points; kappa2=kappa3=w=0",
+    "tamper": "independent verifier changes one curl coefficient and must reject"
+  },
+  "determinism": {
+    "base_seed": 20261117,
+    "splitmix64_increment_hex": "9e3779b97f4a7c15",
+    "splitmix64_multiplier1_hex": "bf58476d1ce4e5b9",
+    "splitmix64_multiplier2_hex": "94d049bb133111eb",
+    "section_seed_input": "0x4831313353454354 xor base_seed xor (replicate<<48) xor (p<<32) xor (x<<16) xor y",
+    "label_seed_input": "0x483131334c41424c xor base_seed xor (replicate<<48) xor (p<<32)",
+    "section_u": "splitmix64(section_seed_input) mod p",
+    "label_shuffle": "descending Fisher-Yates; j=next_splitmix64 mod (i+1)",
+    "first_point_order": "x ascending, then nonzero y ascending"
+  },
+  "decoder": {
+    "radix": 6,
+    "update": "R=[6^-1 mod r](R-[digit]G)",
+    "maximum_queries": "ceil(log_6(r))",
+    "final_check": "[recovered]G=Q"
+  },
+  "implementation": {
+    "language": "Rust",
+    "python_execution_path_allowed": false,
+    "producer": "pending",
+    "independent_verifier": "pending",
+    "lean": "pending"
+  },
+  "measurement": {
+    "complete_enumeration": true,
+    "candidate_wall_time_is_speed_claim": false,
+    "pollard_rho_candidate": false,
+    "index_calculus_used": false,
+    "raw_result": "pending",
+    "scientific_payload_digest": "pending"
+  }
+}

@@ -16,10 +16,14 @@ fn directory() -> PathBuf {
     fs::create_dir(&path).unwrap();
     path
 }
-fn run(path: &PathBuf, stage: &str, pairs: u32) -> (bool, Value) {
+fn params() -> PathBuf {
+    PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("docs/ic/params/k0n9-fixed.json")
+}
+
+fn run(path: &PathBuf, params: &PathBuf, stage: &str, pairs: u32) -> (bool, Value) {
     let output = Command::new(env!("CARGO_BIN_EXE_ca-ic"))
         .args(["fixed", "--params"])
-        .arg(PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("docs/ic/params/k0n9-fixed.json"))
+        .arg(params)
         .arg("--dir")
         .arg(path)
         .args([
@@ -43,10 +47,22 @@ fn run(path: &PathBuf, stage: &str, pairs: u32) -> (bool, Value) {
 #[test]
 fn fixed_cli_preserves_incomplete_then_resumes_and_reuses() {
     let path = directory();
-    let (success, partial) = run(&path, "pairs", 7);
+    let params = params();
+    let (success, partial) = run(&path, &params, "pairs", 7);
     assert!(!success);
     assert_eq!(partial["status"], "pair_budget");
-    let (success, complete) = run(&path, "all", 10000);
+    let (success, pending) = run(&path, &params, "status", 0);
+    assert!(success, "{pending}");
+    assert_eq!(pending["base_point"], "known");
+    assert_eq!(pending["targets"]["target-0"]["in_base_subgroup"], true);
+    assert_eq!(pending["targets"]["target-0"]["scalar_known"], false);
+    assert!(pending["targets"]["target-0"]["scalar_source"].is_null());
+    assert!(pending["targets"]["target-0"]
+        .get("candidate_residual")
+        .is_none());
+    assert_eq!(pending["attempts_saved"], partial["attempts_saved"]);
+    assert_eq!(pending["relations_saved"], partial["relations_saved"]);
+    let (success, complete) = run(&path, &params, "all", 10000);
     assert!(success, "{complete}");
     assert_eq!(complete["status"], "complete");
     assert!(complete["targets"]
@@ -54,11 +70,112 @@ fn fixed_cli_preserves_incomplete_then_resumes_and_reuses() {
         .unwrap()
         .values()
         .all(|v| v["verified"] == true));
-    let (success, replay) = run(&path, "all", 0);
+    let (success, status) = run(&path, &params, "status", 0);
+    assert!(success, "{status}");
+    assert!(status["targets"].as_object().unwrap().values().all(|v| {
+        v["scalar_known"] == true && v["scalar_source"] == "checkpoint" && v.get("scalar").is_none()
+    }));
+    assert_eq!(status["attempts_saved"], complete["attempts_saved"]);
+    assert_eq!(status["relations_saved"], complete["relations_saved"]);
+    let (success, replay) = run(&path, &params, "all", 0);
     assert!(success, "{replay}");
     assert!(replay["reuse"]["new_attempts"].is_null());
     assert!(replay["reuse"]["pair_candidates_built"].is_null());
     assert_eq!(replay["relations_saved"], complete["relations_saved"]);
+    fs::remove_dir_all(path).unwrap();
+}
+
+#[test]
+fn fixed_cli_reports_supplied_scalar_and_missing_base_point() {
+    let path = directory();
+    let campaign = path.join("campaign");
+    let input = path.join("params.json");
+    let mut document: Value = serde_json::from_slice(&fs::read(params()).unwrap()).unwrap();
+    document["targets"][0] = serde_json::json!({
+        "id": "known",
+        "x": document["generator"]["x"],
+        "y": document["generator"]["y"],
+        "known_log": "0x1",
+    });
+    document["targets"][1]["known_log"] = Value::Null;
+
+    fs::write(&input, serde_json::to_vec(&document).unwrap()).unwrap();
+    let (success, report) = run(&campaign, &input, "status", 0);
+    assert!(success, "{report}");
+    assert_eq!(report["targets"]["known"]["scalar_known"], true);
+    assert_eq!(report["targets"]["known"]["scalar_source"], "provided");
+    assert!(report["targets"]["known"].get("scalar").is_none());
+    assert_eq!(report["targets"]["target-1"]["scalar_known"], false);
+    assert_eq!(report["attempts_saved"], 0);
+
+    document["targets"][0]["known_log"] = 2.into();
+    fs::write(&input, serde_json::to_vec(&document).unwrap()).unwrap();
+    let (success, report) = run(&campaign, &input, "status", 0);
+    assert!(!success);
+    assert!(report["message"].as_str().unwrap().contains("known_log"));
+
+    document.as_object_mut().unwrap().remove("generator");
+    fs::write(&input, serde_json::to_vec(&document).unwrap()).unwrap();
+    let absent = path.join("absent");
+    let (success, report) = run(&absent, &input, "status", 0);
+    assert!(!success);
+    assert_eq!(report["base_point"], "missing");
+    assert!(!absent.exists());
+    fs::remove_dir_all(path).unwrap();
+}
+
+#[test]
+fn fixed_cli_reports_candidate_residuals_and_subgroup_membership() {
+    use serde_json::json;
+
+    let path = directory();
+    let campaign = path.join("campaign");
+    let input = path.join("params.json");
+    let mut document: Value = serde_json::from_slice(&fs::read(params()).unwrap()).unwrap();
+    let generator = &document["generator"];
+    document["targets"] = json!([
+        {"id": "matching", "x": generator["x"], "y": generator["y"], "candidate_log": "0x1"},
+        {"id": "mismatching", "x": generator["x"], "y": generator["y"], "candidate_log": 2},
+        {"id": "zero", "x": generator["x"], "y": generator["y"], "candidate_log": 0}
+    ]);
+    fs::write(&input, serde_json::to_vec(&document).unwrap()).unwrap();
+    let (success, report) = run(&campaign, &input, "status", 0);
+    assert!(success, "{report}");
+    let targets = &report["targets"];
+    assert_eq!(
+        targets["matching"],
+        json!({"in_base_subgroup": true, "scalar_known": true, "scalar_source": "candidate",
+               "candidate_residual": {"is_identity": true}})
+    );
+    assert_eq!(targets["mismatching"]["in_base_subgroup"], true);
+    assert_eq!(targets["mismatching"]["scalar_known"], false);
+    // Q = P, so Q - [2]P = -P; on this binary curve -P = (x, x + y).
+    assert_eq!(
+        targets["mismatching"]["candidate_residual"],
+        json!({"is_identity": false, "basis": "type-ii-onb", "x": "0xc", "y": "0xe3"})
+    );
+    assert_eq!(
+        targets["zero"]["candidate_residual"],
+        json!({"is_identity": false, "basis": "type-ii-onb", "x": "0xc", "y": "0xef"})
+    );
+    assert_eq!(report["attempts_saved"], 0);
+    assert_eq!(report["relations_saved"], 0);
+
+    document["targets"][0]["candidate_log"] = document["curve"]["subgroup_order"].clone();
+    fs::write(&input, serde_json::to_vec(&document).unwrap()).unwrap();
+    let (success, report) = run(&campaign, &input, "status", 0);
+    assert!(!success);
+    assert!(report["message"].as_str().unwrap().contains("scalar range"));
+
+    // The point (0, 1) has order two and 0x1ff encodes one in the degree-nine ONB.
+    document["targets"] = json!([{"id": "torsion", "x": 0, "y": "0x1ff"}]);
+    fs::write(&input, serde_json::to_vec(&document).unwrap()).unwrap();
+    let invalid_campaign = path.join("invalid-campaign");
+    let (success, report) = run(&invalid_campaign, &input, "status", 0);
+    assert!(!success);
+    assert_eq!(report["base_point"], "known");
+    assert_eq!(report["targets"]["torsion"]["in_base_subgroup"], false);
+    assert!(!invalid_campaign.exists());
     fs::remove_dir_all(path).unwrap();
 }
 

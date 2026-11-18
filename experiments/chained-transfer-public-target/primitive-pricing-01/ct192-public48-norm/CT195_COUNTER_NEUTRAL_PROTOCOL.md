@@ -1,0 +1,22 @@
+# CT195 — prospective counter-neutral norm pricing control
+
+2026-11-18 UTC · draft [PR #1740](https://github.com/isogeny-labs/cryptanalysis/pull/1740) stacked on CT194 #1738 · **[pcc:unverified]**.
+
+## Source-level observation, not a native finding
+
+In pinned CT125 `fixed-jacobian-chain-evaluator-02/derived/lib.rs` (Git blob `b80eb91a39ae1e87f0fcde95e52ea3d3634558bc`), `norm_point(to,P)` does not *only* compute `descend_point(curve::pmul(target,P,2))`; it first calls `self.bump(|c| c.transported_norm_doubling += 1)`. The bump copies and replaces the entire 21-field `Calls` value held by `Cell<Calls>` via `get` and `set`. CT192/194's `N2_actual` timed arm invokes that wrapper, while its `D_padd` comparator invokes bare `curve::padd`. Consequently the measured difference cannot yet be attributed exclusively to point arithmetic or descent. **No magnitude, sign or actual compiler behavior is inferred.** Rust std::cell and black_box documentation: https://doc.rust-lang.org/std/cell/ and https://doc.rust-lang.org/std/hint/fn.black_box.html.
+
+## Frozen prospective amendment, before code
+
+1. Preserve CT192/193/194's complete existing 48 x two-route (96 operand) raw `N2_actual/D_padd` panel byte-for-byte in behavior: 4 warmup + 12 recorded ABBA/BAAB blocks and 64 repetitions per slot, for 4,608 existing measured slots. Preserve original preflight of 19-word canonical classes, 21 counters, full-class binding and exact original 48 fixture (`9ac741668dd1ffa9632ff0d58e6f4dd9f2dd18c3`).
+2. Add a **diagnostic-only** public method to the guarded CT125 derivative named `ct195_arithmetic_norm_no_counter`. It executes precisely `descend_point(curve::pmul(&target.f,&target.curve,&point,2))`, without `self.bump`, any `Calls` mutation, alternate scalar or generator-derived operand. Original `norm_point` and its real execution path must remain unchanged.
+3. Prior to timing on each of the 96 actual public operands, check the arithmetic-only result equals the real `N2_actual` output **and** does not change the exact `Calls` struct. Verify `N2_actual` increments the transported-norm counter by exactly one, without altering any other counter.
+4. Add a **separate** 96-operand matched warm control panel, each block's ABBA/BAAB measuring `N2_actual` and `N2_arith_no_counter` with identical per-iteration opaque public input/output. Preserve raw integer times, each block, each slot, treatment, route/direction/sector and exceptional labels, and keep this second panel in a distinct `counter_control_slots` field (64 slots per operand; 4,608 additional recorded slots).
+5. `--plan` must specify **4,608 original** and **4,608 additional** measured slots separately (9,216 overall); `--run-admitted` requires both unchanged CT192 owner/provider admission and a **distinct** CT195 extra-panel receipt prior to any native process work. A plain environmental value is only producer assertion, never independently authenticated admission. Do **not** run native code, paid EKS Spot, or claim prior approval covers the extra workload.
+6. Fail-closed static checks must reject accidental changes to CT125 anchor, inclusion of bump in no-counter diagnostic, loss of separate external admission, dropped raw panels, unequal opaque input/output, or skipped equality and no-counter preflight. Run existing exact 48 fixture guards and Python normal/-O mutation tests. Rustfmt or source CI does not establish native Cargo typechecking.
+
+## Interpretation gates
+
+If a later independently authenticated native panel finds `N2_actual` slower than arithmetic-only, it shows wrapper overhead **under that compiler, host, fixture and protocol**, not a cheaper complete ECDLP transfer. If indistinguishable, preserve the null and test whether compiler optimized counter updates away (release disassembly/counter traces). Any significant variation across packet/route/block, sham failures or carryover triggers CT189/190 randomized physical controls; deterministic warm ABBA/BAAB alone is not a causal hardware guarantee. Even a clean overhead decomposition must feed **full cold single-target solves** and native `C169,C13a,C13b,D` costs, setup, transfer, inversion, LA, recovery, verification, memory, CIs, and signed PCC before a complete speedup claim.
+
+No native 695/701 custody, toolchain, disassembly, admitted timing, paid compute or complete solver is included in this source-only experiment. Existing source and fixture remain immutable; separate code and test implementation to follow this frozen protocol. **[pcc:unverified]**.
