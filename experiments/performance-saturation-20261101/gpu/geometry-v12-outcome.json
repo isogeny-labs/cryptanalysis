@@ -1,0 +1,92 @@
+{
+  "schema": "performance-protocol-outcome/v1",
+  "protocol": "protocol-http-rtx5090-geometry-v12.json",
+  "protocol_present": false,
+  "protocol_sha256": null,
+  "registration_commit": null,
+  "freeze_commit": null,
+  "classification": "incomplete_session/evidence_unrecoverable_after_controller_loss",
+  "identified": "2026-11-18",
+  "reason": "After the controller workspace was restarted or rolled back, the v12 protocol, registration and freeze objects, preflight and controller receipts, result archive, remote metadata, session tree, export, and final verdict were absent. The immutable v12 tooling ref survived and has been recovered, but it contains none of those run-specific artifacts. A current exact-ID provider lookup proves only that the operator-retained pod ID is absent now. It does not prove why the pod is absent, whether cleanup ran, or whether any scientific execution completed.",
+  "provider_actions": null,
+  "provider_create_attempts": null,
+  "pods_created": null,
+  "scientific_rows_executed": null,
+  "scientific_rows_recovered": 0,
+  "timing_rows_reused": 0,
+  "claims_admitted": [],
+  "terminal_verdict": "incomplete_session",
+  "export_written": null,
+  "tooling_identity": {
+    "independently_revalidated": true,
+    "commit": "a79618a51c0c00db103f4534460ee875d89f495b",
+    "tree": "41af7aa93061fe1529790738d5cc28c1b42dc89f",
+    "git_archive_sha256": "6044f92fa6635dc7d19335c6fe281a7628efae2d38aa568efd89ba92efb02115",
+    "public_ref": "refs/heads/codex/runpod-http-gpu-geometry-v12-20261101",
+    "public_ref_commit": "a79618a51c0c00db103f4534460ee875d89f495b"
+  },
+  "operator_retained_context": {
+    "independently_revalidated": false,
+    "purpose": "Identifiers retained from the interrupted operator session. These strings locate the failed recovery attempt but do not authenticate a protocol, run, receipt, measurement, or cleanup event.",
+    "run_id": "gpu-geometry-http-rtx5090-v12-20261102T183537Z-71c86870",
+    "pod_id": "gvznipp2vh4neg",
+    "pod_name": "misagi-f4-geometry-v12-652d5a273b64",
+    "reported_preflight_status": "passed",
+    "reported_preflight_receipt_sha256_prefix": "ca529288",
+    "reported_protocol_canonical_sha256_prefix": "71c86870",
+    "reported_registration_commit_prefix": "92e211c4",
+    "reported_freeze_commit_prefix": "98b16626"
+  },
+  "unrecoverable_artifacts": {
+    "protocol": "protocol-http-rtx5090-geometry-v12.json",
+    "preflight_receipt": "preflight-receipts/gpu-geometry-http-rtx5090-v12-20261102T183537Z-71c86870.json",
+    "controller_receipt": "http-receipts/gpu-geometry-http-rtx5090-v12-20261102T183537Z-71c86870.json",
+    "result_archive": "http-receipts/gpu-geometry-http-rtx5090-v12-20261102T183537Z-71c86870.result.tar.gz",
+    "remote_metadata": "http-receipts/gpu-geometry-http-rtx5090-v12-20261102T183537Z-71c86870.remote",
+    "session": "runs-http/gpu-geometry-http-rtx5090-v12-20261102T183537Z-71c86870",
+    "final_verdict": "final-verdicts/gpu-geometry-http-rtx5090-v12-20261102T183537Z-71c86870.json"
+  },
+  "git_recovery_check": {
+    "independently_revalidated": true,
+    "object_prefixes_absent": [
+      "71c86870",
+      "92e211c4",
+      "98b16626"
+    ],
+    "scope": "local refs, object database, reflogs, and full unreachable-object scan",
+    "public_v12_ref_contains_tooling_only": true
+  },
+  "current_provider_observation": {
+    "independently_revalidated": true,
+    "observed_at": "2026-11-18T06:55:33.037529Z",
+    "finished_at": "2026-11-18T06:55:33.439373Z",
+    "method": "GET",
+    "url": "https://api.runpod.io/v2/pods/gvznipp2vh4neg",
+    "http_status": 404,
+    "response_body_bytes": 60,
+    "response_body_sha256": "1de32947236886eadbe5ccf285871b505dcac05a0f82e19744be1bfcc0ccc719",
+    "response": {
+      "title": "Not Found",
+      "status": 404,
+      "detail": "pod not found"
+    },
+    "interpretation": "The supplied exact ID is not present in the authenticated account now. This observation cannot establish prior ownership, execution, deletion, or deletion cause."
+  },
+  "cleanup": {
+    "delete_requested": null,
+    "absence_verified_by_exact_id": true,
+    "cause_of_absence": "unknown"
+  },
+  "replacement": "A separately registered and frozen v13 may preserve the scientific schedule, but it must reuse zero v12 rows, bind a new run identity, migrate the controller from retired Runpod REST API v1 to API v2, and pass fresh transport, preflight, cleanup, and finalization gates before one create attempt.",
+  "scientific_design_change": false,
+  "sources_checked": [
+    "AGENTS.md",
+    "experiments/performance-saturation-20261101/gpu/LITERATURE.md",
+    "experiments/performance-saturation-20261101/gpu/geometry-v11-outcome.json",
+    "experiments/performance-saturation-20261101/gpu/orchestrate_gpu_geometry_v12.py",
+    "experiments/performance-saturation-20261101/gpu/preflight_gpu_geometry_v12.py",
+    "experiments/performance-saturation-20261101/gpu/finalize_gpu_geometry_ab_v12.py",
+    "experiments/performance-saturation-20261101/gpu/run_gpu_geometry_ab_v12.sh",
+    "https://docs.runpod.io/api-reference-v2/pods/get-a-pod"
+  ]
+}
