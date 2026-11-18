@@ -1,0 +1,51 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-18T02:02:05Z",
+ "id": "PCC-20261118-f4b4ab",
+ "kind": "statement",
+ "producer": {
+  "commit": "40d7749e6c2f89ac54615c55276c21a1837b7b69",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/ic-collector-counterfactual-20261117/setup-record-remote-check.json",
+    "sha256": "09bb137cb5e7991a0a28807102813444e42c218e8d9b280f53fd0d69a3dd4bc4"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/ic-collector-counterfactual-20261117/setup-progress-replay.json",
+    "sha256": "d6440989e7d00f1f5f797aea97030a6637a7fdd2f78f93abc7fdf26559b810ea"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/ic-collector-counterfactual-20261117/phase-ceiling-derived.json",
+    "sha256": "7af7028d2a30cd9958ef958075002414a1b8719f05568f4207de2d9134427ce2"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/ic-collector-counterfactual-20261117/setup-report-visual-qa.json",
+    "sha256": "85f3f62902cefb6eed5892b901f28801d76195fdcbbf83f606b299bcf5d524cd"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/ic-collector-counterfactual-20261117/setup-progress-visual-qa.json",
+    "sha256": "f29d8cb1f74d7642c10fb1bfad5e3c23c76eaef479e4f1dc95f8569656e60120"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "experiments/ic-collector-counterfactual-20261117",
+ "statement": "The completed eight-path record is closed invalid for promotion with180metrics,25raw references and9reports. Scoped working-store object sizes and local73record validation pass; exact export replay preserves1444prior plus180new values,1624total. Derived paired-median zero-cost phase arithmetic on frozen indexed N27 leaves8.157times matched negation rho after removing table setup,9.286times after removing collector, and0.884times after removing both; this is an optimistic fixed-other-cost bound, not a measured speedup or causal cache model. Next work requires a new whole-primary cost case; no further cloud allocation is authorized by this statement."
+}
