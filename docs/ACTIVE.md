@@ -18,7 +18,7 @@ and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
 
-- [ ] Package the prime-field genus-five hyperelliptic index-calculus proof and certificate (Codex, started 2026-11-18, branch codex/prime-field-genus5-pencil-20261118)
+- [x] Package the prime-field genus-five hyperelliptic index-calculus proof and certificate (Codex, started 2026-11-18, branch codex/prime-field-genus5-pencil-20261118, PR #1757)
 
 - [x] Report candidate scalar residuals in fixed index-calculus status (Codex, started 2026-11-18, branch cli-fixed-candidate-residual, PR #1752)
 
