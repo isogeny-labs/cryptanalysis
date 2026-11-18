@@ -1,0 +1,30 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-17T18:16:40Z",
+ "id": "PCC-20261117-181647",
+ "kind": "execution",
+ "producer": {
+  "commit": "12497915ed2a7020223cdb69d3c75018f826fe59",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/ic-collector-counterfactual-20261117/setup-fresh-generation.json",
+    "sha256": "74a742e8278659959cb53574dab2cfbc146d91bdd0f35c2cd752de28f1da035d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/ic-collector-counterfactual-20261117/setup-identity-check.json",
+    "sha256": "dac09fb1c0e5ce14c6ca38ffc91233add86629ec83d77185047d83f119ba2c2a"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "experiments/ic-collector-counterfactual-20261117",
+ "statement": "Prospective buffer-state timing identities were generated after publication of protocol/controllers at12497915ed and a contemporaneous separately rebuilt ARM identity probe. The generator pins before/after binary hash and source/build receipts. Canonical audit checks40candidate identities (25new/15reused), exact declared native parameter presence and200workload identities; existing independent Python arithmetic checks all200public targets. No fresh timing allocation has launched and no performance result follows."
+}
