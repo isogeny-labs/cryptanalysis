@@ -1,0 +1,234 @@
+{
+  "schema": "experiment.protocol/v1",
+  "protocol_id": "GO-COORD-ACCEPTED-PROFILE-V1",
+  "version": 1,
+  "created": "2026-11-18",
+  "repository": "cryptanalysis",
+  "study_dir": "experiments/performance-saturation-20261101/go/profile-v1",
+  "authors": [
+    "Go coordinator performance lane"
+  ],
+  "question": "Where do cgo transitions, Go CPU samples, Go allocation objects and bytes, and Linux software-event samples occur in the six retained coordinator scan workloads on the exact accepted implementation?",
+  "claims": [
+    {
+      "id": "C-artifact-completeness",
+      "text": "Each successful attempt is bound to the exact accepted source and binary, preserves the registered correctness digest, and retains the profiler or counter artifact required by its registered mode.",
+      "class": "exact_computation",
+      "decided_by": [],
+      "if_supported": "The retained profiles may be used to select a separately preregistered engineering candidate.",
+      "if_not_supported": "Classify the session incomplete_diagnostic or wrong_answer and make no attribution claim."
+    },
+    {
+      "id": "C-speedup-out-of-scope",
+      "text": "This single-implementation profiling diagnostic does not measure, support, reject, or estimate a production speedup.",
+      "class": "out_of_scope",
+      "decided_by": [],
+      "if_supported": null,
+      "if_not_supported": null
+    }
+  ],
+  "arms": [
+    {
+      "id": "accepted-cgo-count",
+      "role": "baseline",
+      "description": "Exact accepted coordinator with no profiler; only the loop-bracketed process-wide runtime.NumCgoCall delta is interpreted.",
+      "instrument": {
+        "repo": "cryptanalysis",
+        "commit": "7c712913b7e912494e87c35e854cfd0129bad89c",
+        "build": [["/workspace/.tools/go1.27.3/bin/go", "test", "-c", "-trimpath", "-buildvcs=false", "-o", "profile-v1-run/build/coord-profile-v1.test", "."]],
+        "binary_sha256": null,
+        "flags": {
+          "cwd": "bindings/go",
+          "benchtime": "100x",
+          "benchmem": "true",
+          "count": "1",
+          "cpu": "1"
+        },
+        "env": {
+          "CGO_ENABLED": "1",
+          "GOMAXPROCS": "1",
+          "LANG": "C",
+          "LC_ALL": "C",
+          "TZ": "UTC"
+        },
+        "threads": 1,
+        "image_digest": null
+      },
+      "parameters": {
+        "mode": "cgo-count",
+        "operations": 100,
+        "production_tree": "735e671e9492fb890a4e87825644c46bace88e4a",
+        "coord_blob": "0d3f53806361e7442bc1d108c16b8b847f029918",
+        "retained_benchmark_blob": "650f6a4a953d5adef537ce87aa3e114b432f32d7",
+        "profile_overlay_sha256": "632930d8f2a43857ede76d147cee002ec809ae1d7d2ee0e94fc6d3262b9e7242"
+      },
+      "same_instrument_as": null
+    },
+    {
+      "id": "accepted-go-cpu",
+      "role": "reference",
+      "description": "The same binary with loop-bracketed runtime/pprof CPU sampling in a fresh process.",
+      "instrument": {
+        "repo": "cryptanalysis",
+        "commit": "7c712913b7e912494e87c35e854cfd0129bad89c",
+        "build": [["/workspace/.tools/go1.27.3/bin/go", "test", "-c", "-trimpath", "-buildvcs=false", "-o", "profile-v1-run/build/coord-profile-v1.test", "."]],
+        "binary_sha256": null,
+        "flags": {"cwd": "bindings/go", "benchtime": "20000x", "benchmem": "true", "count": "1", "cpu": "1"},
+        "env": {"CGO_ENABLED": "1", "GOMAXPROCS": "1", "LANG": "C", "LC_ALL": "C", "MISAGI_PROFILE_EXPECTED_N": "20000", "TZ": "UTC"},
+        "threads": 1,
+        "image_digest": null
+      },
+      "parameters": {"mode": "go-cpu", "operations": 20000, "profile_boundary": "after fixture and before correctness hashing", "profile_path_env": "MISAGI_CPU_PROFILE=<create-once absolute case path>", "profile_overlay_sha256": "632930d8f2a43857ede76d147cee002ec809ae1d7d2ee0e94fc6d3262b9e7242"},
+      "same_instrument_as": "accepted-cgo-count"
+    },
+    {
+      "id": "accepted-go-alloc",
+      "role": "reference",
+      "description": "The same binary with one cumulative allocs profile after the loop in a fresh process; startup and fixture allocation remain included and disclosed, with rate one set immediately before the fixture.",
+      "instrument": {
+        "repo": "cryptanalysis",
+        "commit": "7c712913b7e912494e87c35e854cfd0129bad89c",
+        "build": [["/workspace/.tools/go1.27.3/bin/go", "test", "-c", "-trimpath", "-buildvcs=false", "-o", "profile-v1-run/build/coord-profile-v1.test", "."]],
+        "binary_sha256": null,
+        "flags": {"cwd": "bindings/go", "benchtime": "100x", "benchmem": "true", "count": "1", "cpu": "1", "mem_profile_rate": "1"},
+        "env": {"CGO_ENABLED": "1", "GOMAXPROCS": "1", "LANG": "C", "LC_ALL": "C", "MISAGI_PROFILE_EXPECTED_N": "100", "TZ": "UTC"},
+        "threads": 1,
+        "image_digest": null
+      },
+      "parameters": {"mode": "go-alloc", "operations": 100, "profile_boundary": "cumulative process startup, deterministic fixture, and operation loop; MemProfileRate=1 immediately before fixture", "profile_path_env": "MISAGI_ALLOC_PROFILE=<create-once absolute case path>", "profile_overlay_sha256": "632930d8f2a43857ede76d147cee002ec809ae1d7d2ee0e94fc6d3262b9e7242"},
+      "same_instrument_as": "accepted-cgo-count"
+    },
+    {
+      "id": "accepted-perf-stat",
+      "role": "reference",
+      "description": "The same binary under one fixed Linux perf stat software-event set in a fresh process; fixture costs remain included and disclosed.",
+      "instrument": {
+        "repo": "cryptanalysis",
+        "commit": "7c712913b7e912494e87c35e854cfd0129bad89c",
+        "build": [["/workspace/.tools/go1.27.3/bin/go", "test", "-c", "-trimpath", "-buildvcs=false", "-o", "profile-v1-run/build/coord-profile-v1.test", "."]],
+        "binary_sha256": null,
+        "flags": {"cwd": "bindings/go", "benchtime": "20000x", "benchmem": "true", "count": "1", "cpu": "1", "events": "task-clock,cpu-clock,context-switches,cpu-migrations,page-faults"},
+        "env": {"CGO_ENABLED": "1", "GOMAXPROCS": "1", "LANG": "C", "LC_ALL": "C", "PERF_CONFIG": "/dev/null", "TZ": "UTC"},
+        "threads": 1,
+        "image_digest": null
+      },
+      "parameters": {"mode": "perf-stat", "operations": 20000, "scope": "complete fresh process including fixture", "profile_overlay_sha256": "632930d8f2a43857ede76d147cee002ec809ae1d7d2ee0e94fc6d3262b9e7242"},
+      "same_instrument_as": "accepted-cgo-count"
+    },
+    {
+      "id": "accepted-perf-record",
+      "role": "reference",
+      "description": "The same binary under Linux perf record cpu-clock sampling at 99 Hz in a fresh process; fixture samples remain included and disclosed.",
+      "instrument": {
+        "repo": "cryptanalysis",
+        "commit": "7c712913b7e912494e87c35e854cfd0129bad89c",
+        "build": [["/workspace/.tools/go1.27.3/bin/go", "test", "-c", "-trimpath", "-buildvcs=false", "-o", "profile-v1-run/build/coord-profile-v1.test", "."]],
+        "binary_sha256": null,
+        "flags": {"cwd": "bindings/go", "benchtime": "20000x", "benchmem": "true", "call_graph": "dwarf", "count": "1", "cpu": "1", "event": "cpu-clock", "frequency_hz": "99"},
+        "env": {"CGO_ENABLED": "1", "GOMAXPROCS": "1", "LANG": "C", "LC_ALL": "C", "PERF_CONFIG": "/dev/null", "TZ": "UTC"},
+        "threads": 1,
+        "image_digest": null
+      },
+      "parameters": {"mode": "perf-record", "operations": 20000, "scope": "complete fresh process including fixture", "profile_overlay_sha256": "632930d8f2a43857ede76d147cee002ec809ae1d7d2ee0e94fc6d3262b9e7242"},
+      "same_instrument_as": "accepted-cgo-count"
+    }
+  ],
+  "controls": {
+    "aa": {"present": false, "comparison": null, "not_applicable_reason": "No arm-to-arm timing or effect comparison is made."},
+    "positive": {"present": false, "arm": null, "expected_detection": null, "not_applicable_reason": "This is direct profiling of a fixed implementation, not a detector calibrated against a planted effect."},
+    "negative": {"present": false, "arm": null, "null_population": null, "not_applicable_reason": "No null-population inference or negative-result claim is made."}
+  },
+  "variable_ledger": {
+    "independent": [{"name": "diagnostic observer", "levels": ["none", "Go CPU pprof", "Go allocs pprof", "perf stat", "perf record"]}],
+    "factors": [
+      {"name": "production source", "treatment": "fixed", "value": "commit 7c712913; coord blob 0d3f538", "how": "construct and hash one synthetic tree; add only the registered experiment overlay"},
+      {"name": "case", "treatment": "crossed", "value": "three operations at 1024 and 8192 log entries", "how": "all six cases run in every diagnostic mode"},
+      {"name": "operation count", "treatment": "fixed", "value": "100 for cgo/alloc; 20000 for CPU/perf", "how": "exact -test.benchtime=Nx per mode"},
+      {"name": "toolchain and binary", "treatment": "fixed", "value": "Go 1.27.3 and one retained binary", "how": "download/hash/build manifests and a pre-data binary-binding amendment"},
+      {"name": "host state", "treatment": "measured", "value": null, "how": "record host, kernel, affinity, cgroup, PSI, steal, perf_event_paranoid, event sources and profiler versions per attempt"}
+    ],
+    "comparisons": [{"id": "C-profile-diagnostic", "arms": ["accepted-cgo-count", "accepted-go-cpu", "accepted-go-alloc", "accepted-perf-stat", "accepted-perf-record"], "differs_in": ["diagnostic observer", "operation count"], "design": "absolute", "reason": "Each artifact is interpreted only within its own observer; no ratio is formed.", "threshold": "Completeness and exact correctness only; no numerical promotion threshold."}],
+    "aa_not_applicable": "No timing comparison is made.",
+    "crosses_map": false,
+    "transfer_obligations": []
+  },
+  "randomization": {
+    "arm_order": "fixed",
+    "arm_order_reason": "Observer modes are not compared; fixed lexical case order and registered mode order make artifact accounting auditable.",
+    "seed_derivation": {"method": "explicit_list", "seeds": [24301], "nonce": null, "note": "The retained deterministic fixture uses 0x5eed."},
+    "instance_sampling": {"rule": "Run the six retained cases in the README order in every mode.", "independent_of_arm": true},
+    "blinding": {"analysis_labels_masked": false, "how": "Observer identity is required to parse each artifact; no effect comparison or threshold is analyzed.", "unmasked_at": null}
+  },
+  "sample_size": {
+    "instances": 6,
+    "replicates": 1,
+    "warmups": 0,
+    "power": {"method": "other", "alpha": 0.05, "tests_in_family": 1, "correction": "none", "rank_test_n": null, "min_attainable_two_sided_p": null, "passes": true, "note": "Fixed one diagnostic artifact per case and observer; no inferential test, confidence interval, or effect threshold exists."},
+    "preflight_runtime": {"fixed_seconds": null, "per_sample_seconds": null, "threads": 1, "estimated_total_seconds": 1800, "measured_on": "Conservative prospective bound from retained v7 operation costs; no new profile was run."}
+  },
+  "metrics": {
+    "primary": [
+      {"id": "cgo_calls_per_op", "name": "process cgo calls per operation", "unit": "calls/op", "kind": "counted", "definition": "runtime.NumCgoCall process-wide delta immediately around the fixed benchmark loop divided by b.N; fixture and correctness hashing excluded.", "source": "cgo-count benchmark cgo-calls/op field", "formula": "(NumCgoCall_after-NumCgoCall_before)/b.N", "aggregation": "per_row", "resolution": "1/b.N calls/op", "uncertainty": "none_exact"}
+    ],
+    "secondary": [
+      {"id": "go_cpu_samples", "name": "loop-bracketed Go CPU profile samples", "unit": "samples", "kind": "counted", "definition": "Samples in the CPU pprof started after fixture construction and stopped before correctness hashing.", "source": "Go CPU pprof sample count and stacks", "formula": null, "aggregation": "distribution", "resolution": "one sample at the runtime profiler rate", "uncertainty": "none_exact"},
+      {"id": "go_alloc_objects", "name": "cumulative allocation objects by stack", "unit": "objects", "kind": "counted", "definition": "alloc_objects in the cumulative fresh-process profile through startup, deterministic fixture construction, and the operation loop; rate one begins immediately before the fixture.", "source": "go tool pprof -alloc_objects allocation.pprof", "formula": null, "aggregation": "distribution", "resolution": "one allocation object for allocations sampled after the rate-one change; runtime-default sampling before it", "uncertainty": "none_exact"},
+      {"id": "go_alloc_space", "name": "cumulative allocation bytes by stack", "unit": "bytes", "kind": "counted", "definition": "alloc_space bytes in the cumulative fresh-process profile through startup, deterministic fixture construction, and the operation loop; rate one begins immediately before the fixture.", "source": "go tool pprof -alloc_space allocation.pprof", "formula": null, "aggregation": "distribution", "resolution": "one byte for allocations sampled after the rate-one change; runtime-default sampling before it", "uncertainty": "none_exact"},
+      {"id": "perf_software_counts", "name": "complete-process Linux software-event counts", "unit": "events", "kind": "counted", "definition": "Raw task-clock, cpu-clock, context switches, CPU migrations and page faults for one complete fresh benchmark process, including fixture construction.", "source": "perf stat delimited raw output", "formula": null, "aggregation": "per_row", "resolution": "one event or profiler-reported clock resolution", "uncertainty": "none_exact"},
+      {"id": "perf_cpu_clock_samples", "name": "complete-process perf cpu-clock samples", "unit": "samples", "kind": "counted", "definition": "cpu-clock samples at 99 Hz for one complete fresh benchmark process, including fixture construction.", "source": "perf.data and perf script", "formula": null, "aggregation": "distribution", "resolution": "one sample", "uncertainty": "none_exact"},
+      {"id": "correctness_fingerprint", "name": "registered operation result digest", "unit": "lowercase SHA-256 hex", "kind": "exact", "definition": "Post-loop digest of the version vector or ordered lines and reached vector, using the retained benchmark helpers.", "source": "benchmark correctness log fields", "formula": null, "aggregation": "per_row", "resolution": null, "uncertainty": "none_exact"}
+    ]
+  },
+  "measurement": {
+    "isolation_required": "none",
+    "warmups": 0,
+    "order": "sequential",
+    "clock": "counted",
+    "counters": ["runtime.NumCgoCall", "Go CPU pprof samples", "Go rate-one allocs pprof", "perf software events", "perf cpu-clock samples"],
+    "record": ["source tree and overlay hashes", "Go archive/version and binary SHA-256", "exact argv and minimal environment", "CPU model/features, kernel, affinity, cgroup, hypervisor, steal, PSI and perf_event_paranoid", "profiler/perf versions and event availability", "return code, stdout, stderr and SHA-256 for every required artifact", "correctness digests"],
+    "timed_primary_justification": null
+  },
+  "execution": {
+    "backend": "manual",
+    "queue": null,
+    "placement": {"status": "must be hash-bound by a pre-data amendment", "threads": 1, "gpu": false},
+    "measurement_class": "measurement",
+    "timeout_seconds": 1800,
+    "checkpoint": {"policy": "none", "interval_seconds": null, "grace_seconds": null, "restore_validation": "none", "after_restore": {"wall_time": "invalid", "counted_units": "valid"}},
+    "retries": {"infrastructure_only": true, "max_attempts": 1}
+  },
+  "stopping_rules": [
+    {"rule": "Before data, bind and commit the runner, analyzer, synthetic source archive, binary, Go/perf closures, backend placement, canonical exporter and exact commands; then register and freeze in separate commits.", "kind": "invalidation", "preregistered": true},
+    {"rule": "Attempt exactly six cases by five modes in README order, one fresh process per cell, for 30 attempts, then stop.", "kind": "fixed_n", "preregistered": true},
+    {"rule": "Retain every timeout, non-zero exit, unavailable event, malformed profile, missing artifact and correctness mismatch once; never replace, extend or select attempts.", "kind": "invalidation", "preregistered": true},
+    {"rule": "A correctness mismatch is terminal wrong_answer. Other missing/failed cells yield incomplete_diagnostic. Neither outcome authorizes a retry under this run ID.", "kind": "invalidation", "preregistered": true}
+  ],
+  "decision_rule": {
+    "text": "Classify wrong_answer on any correctness mismatch; otherwise complete_diagnostic only when all 30 unique attempts and required hash-valid artifacts exist; otherwise incomplete_diagnostic. Emit stack/count distributions without thresholds, ratios, confidence intervals, or a speedup claim.",
+    "comparison_ids": ["C-profile-diagnostic"],
+    "threshold": "artifact completeness and exact correctness only",
+    "statistic": "Per-case raw cgo delta and profiler/event stack distributions; no cross-arm statistic.",
+    "interval": "none; single diagnostic artifacts are not inferential samples",
+    "multiple_comparison_correction": "none",
+    "effect_size_measure": "none; observer outputs are absolute diagnostics",
+    "verdict_vocabulary": ["complete_diagnostic", "incomplete_diagnostic", "wrong_answer"]
+  },
+  "analysis_plan": {
+    "script": null,
+    "inputs": ["frozen protocol and artifact-binding amendment", "30 raw attempt records", "profile/perf files and hashes", "source/toolchain/binary/host manifests"],
+    "outputs": ["analysis.json", "rows.jsonl", "export.json"],
+    "blinded": false,
+    "frozen_before_data": false
+  },
+  "inadmissible": [
+    "Treating ns/op, profiler duration, elapsed command time, sample share or a profile top entry as a speedup or regression.",
+    "Comparing observer modes numerically; their overhead and operation counts intentionally differ.",
+    "Describing the cumulative allocation profile as loop-only or removing startup/fixture stacks after seeing their size.",
+    "Selecting hardware PMU events after preflight, merging failed attempts, changing N, replacing a case, or adding a candidate after seeing a profile.",
+    "Using v9 timing rows or a profiled row in a future decisive A/B distribution.",
+    "Inferring that one cgo call has a fixed cost or that fewer calls must improve end-to-end latency without a separately frozen comparison."
+  ],
+  "amendments": [],
+  "reporting": {"export_schema": "experiment.export/v1", "review_schema": "experiment.review/v1", "report_dir": "profile-v1/report", "graphs": ["per-case cgo calls and allocation/CPU/perf stack distributions, labeled diagnostic"]},
+  "freeze": {"status": "draft", "protocol_sha256": null, "commit": null, "frozen_at": null, "filed_before_affected_data": null}
+}
