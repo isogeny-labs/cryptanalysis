@@ -21,7 +21,7 @@ python3 -m unittest -q test_ct197_native_evidence.py
 python3 -O -m unittest -q test_ct197_native_evidence.py
 ```
 
-Both succeeded: **5/5 normal, 5/5 optimized Python tests**, each with many mutation subcases. The existing CT192 source-only workflow has been amended to execute both tests without starting native code. Exact-head hosted CI and independent PCC remain **separate** and must be read from the applicable current GitHub Actions runs; a local unit test is not an independent producer verification.
+Both succeeded: **5/5 normal, 5/5 optimized Python tests**, each with many mutation subcases. The existing CT192 source-only workflow has been amended to execute both tests without starting native code. Exact-head hosted [CT192 source-only CI #44226741731](https://github.com/isogeny-labs/cryptanalysis/actions/runs/44226741731), job `134541626621`, **passed on commit `9e05772ef021bc64c46cefa9e646c747a87eed17`**: 23/23 inherited normal and 23/23 optimized tests plus the new 5/5 normal and 5/5 optimized CT197 tests (56 executed test cases overall, including mutation subcases). Decoded logs confirm all new test names and successful completion. This is a scoped source/synthetic green check, **not** native typecheck/measurement or signed PCC; broader gates remain unresolved.
 
 To read a future real retained native JSON artifact after external admission and custody, from the original study directory:
 
