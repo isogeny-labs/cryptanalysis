@@ -18,6 +18,8 @@ and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
 
+- [ ] CT195: isolate CT125 norm-point counter-bookkeeping overhead from actual descent/pmul cost on the frozen 48 public packets; add an independently admitted control panel (Chained ECDLP Transfers, started 2026-11-17, branch research/ct195-counter-neutral-norm-price-20261117) [pcc:unverified]
+
 - [ ] CT194: make each CT192 Rust primitive timing iteration consume a compiler-opaque public point; guard against loop-invariant hoisting and retain per-route parity (Chained ECDLP Transfers, started 2026-11-17, branch research/ct194-opaque-input-timing-20261117, PR #1738) [pcc:unverified]
 
 - [ ] CT193: bind each true pre-norm operand to its entire target Jacobian class, not only its doubled norm; add 2-torsion alias regression (Chained ECDLP Transfers, started 2026-11-17, branch research/ct193-class-bound-pre-norm-20261117, PR #1737) [pcc:unverified]
