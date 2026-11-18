@@ -1,0 +1,20 @@
+--- a/suite/src/cryptanalysis/ic_boundary.rs
++++ b/suite/src/cryptanalysis/ic_boundary.rs
+@@ -3412,9 +3412,16 @@
+ 
+ /// A table of all pair sums of a base, keyed by the sum's abscissa so
+ /// `S` and `−S` share one entry; the probe checks which it found.
++#[derive(Default)]
++struct CompactHasher(u64);
++impl Hasher for CompactHasher {
++    fn write_u32(&mut self, key: u32) { self.0=u64::from(key).wrapping_mul(0x9E37_79B9_7F4A_7C15); }
++    fn finish(&self) -> u64 {self.0}
++    fn write(&mut self, _: &[u8]) {unreachable!("compact witness keys are u32")}
++}
+ enum PairWitnessMap {
+     Wide(FastMap<(u32, u32)>),
+-    Compact(HashMap<u32, u32, BuildHasherDefault<MixHasher>>),
++    Compact(HashMap<u32, u32, BuildHasherDefault<CompactHasher>>),
+ }
+ 
+ fn compact_pair_storage_shape(degree: u32, points: usize) -> bool {
