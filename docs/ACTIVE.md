@@ -18,6 +18,8 @@ and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
 
+- [x] Audit rational 2-isogeny ECDLP transfer: subgroup, kernel, image, dual/inverse, exact costs and toy DLP (automation, started 2026-11-18, branch research/examine-2isogeny-obligations-20261118, PR #1775; 64/64 local BSGS logs, independent PCC pending) [pcc:unverified]
+
 - [ ] Mirror the general binary hyperelliptic-cover transfer interface from crypto after its source commit is frozen, with split provenance and exact parity checks (Codex, started 2026-11-18, branch codex/general-binary-cover-transfer-mirror-20261118, PR #1765) [pcc:unverified]
 
 - [x] Validate fixed index-calculus candidate residuals and subgroup status (Codex, started 2026-11-18, branch test-fixed-candidate-residual, PR #1755)
