@@ -18,6 +18,9 @@ and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
 
+- [ ] CT200: bounded native Rust release typecheck for the exact CT192 all-48 public norm diagnostic, without running benchmarks or ECDLP (automation, started 2026-11-18, branch research/ct200-native48-rust-typecheck-20261118; source CI and PCC remain distinct) [pcc:unverified]
+
+
 - [x] Report candidate scalar residuals in fixed index-calculus status (Codex, started 2026-11-18, branch cli-fixed-candidate-residual, PR #1752)
 
 - [x] Report base-point and scalar availability in fixed index-calculus status (Codex, started 2026-11-18, branch cli-dlp-input-status, PR #1750)
