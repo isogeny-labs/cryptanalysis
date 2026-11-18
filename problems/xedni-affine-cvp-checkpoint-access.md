@@ -2,7 +2,7 @@
 
 - **Status:** open (two prior toy panels completed under narrow owner waivers; credentials still missing)
 - **Kind:** access/tool limit
-- **Affected work:** [frozen xedni affine-lift protocol](../research/xedni_lift_optimizer_20261101/PROTOCOL.md), [fresh target-bearing selector protocol](../research/xedni_target_relation_20261118/PROTOCOL.md), draft PR #1768
+- **Affected work:** [frozen xedni affine-lift protocol](../research/xedni_lift_optimizer_20261101/PROTOCOL.md), [fresh target-bearing selector protocol](../research/xedni_target_relation_20261118/PROTOCOL.md), [target-origin-pencil protocol](../research/xedni_origin_pencil_20261118/PROTOCOL.md), draft PR #1768
 - **Next action owner:** environment operator for checkpoint credentials; research agent for the frozen run
 - **Last updated:** 2026-11-18
 
@@ -13,11 +13,12 @@ checkpoint cannot be uploaded from this managed environment.  Prior narrow
 owner waivers applied only to their exact toy commands and do not authorize a
 modified fresh-seed panel. [pcc:unverified]
 
-The current blocked workload is the 1,600-row paired target-bearing selector
-in the linked November 18 protocol: four primes, two curve families, two lift
-policies, ranks 6 through 9, and 25 trials per cell under a fresh master seed.
-The repository requires `scripts/checkpoint.sh gate` to pass before any natural
-row is generated. [pcc:unverified]
+The current blocked workloads are the 1,600-row paired target-bearing selector
+and the separately frozen 1,600-row target-origin-pencil comparison in the
+linked November 18 protocols: four primes, two curve families, two lift
+policies, ranks 6 through 9, and 25 trials per cell under distinct fresh master
+seeds. The repository requires `scripts/checkpoint.sh gate` to pass before any
+natural row is generated. [pcc:unverified]
 
 ## Evidence and uncertainty
 
@@ -63,8 +64,9 @@ row is generated. [pcc:unverified]
   profile authorized for
   `s3://setec-astronomy-artifacts/checkpoints/cryptanalysis/`.
 - **What this evidence does not establish:** whether target-bearing ordering
-  improves recovery on fresh lifts, whether it changes complete work, or any
-  end-to-end ECDLP result. [pcc:unverified]
+  or the larger target-origin pencil improves recovery on fresh lifts, whether
+  either changes complete work favorably, or any end-to-end ECDLP result.
+  [pcc:unverified]
 
 ## What would unblock it
 
