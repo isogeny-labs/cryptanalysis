@@ -1,0 +1,30 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-18T05:06:15Z",
+ "id": "PCC-20261118-a1b0fc",
+ "kind": "theorem",
+ "producer": {
+  "commit": "a0ad798b7310ac5d7fb5322977e632fad8f3cd82",
+  "model": "Codex",
+  "session": "pr-1757"
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-genus5-pencils/cubic_transfer_theorem.md",
+    "sha256": "24d984b9fb9606d9fc4ed510ce3db46bb0b815a71c094415b421c3bda96bec3e"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-genus5-pencils/genus5-bridge.md",
+    "sha256": "35e0f478a97a7c2c1a88077cd0cb366460cd2d1f2c2d0d37b0ea1662a9abadbf"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Fixed genus five. Admissible paired cubic and a geometrically integral degree-four target pencil locus with a simply branched pencil and no g^1_3 or g^2_4. The result concerns an asymptotic bound.",
+ "statement": "For the specified nonempty open of the paired-cubic genus-five hyperelliptic family over sufficiently large prime fields F_p, the discrete logarithm problem has expected bit complexity soft-O(p^(4/3)) with the Jacobian order supplied."
+}
