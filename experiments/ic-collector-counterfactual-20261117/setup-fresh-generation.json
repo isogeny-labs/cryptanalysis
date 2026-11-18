@@ -1,0 +1,43 @@
+{
+  "status": "generated_before_timing",
+  "started_utc": "2026-11-17T18:15:14Z",
+  "published_generator_revision": "12497915ed2a7020223cdb69d3c75018f826fe59",
+  "identity_probe_sha256_before_and_after": "1a1d0bd3f8c0de8c1a39ebcb4ef9be9e27ccecf181417fafa0b8ea23cbe9b6e6",
+  "identity_build_receipt_sha256": "b308cbb6a94b0880e28a9dfd3393e82c40d9fdd9968ded8ebfdc2599307e171a",
+  "native_preparation_binding_sha256": "42c5c2a32bf070e97ce6a3a0229f66bdc8d49871b7a61e3afd9a43829a46b28a",
+  "identities_sha256": "fa1a9a71087c8a31b4ea186e56c58e37e3e6b11fbf703ef0d386a13ba2f99274",
+  "controllers_sha256": {
+    "freeze_setup_inputs.py": "154bcc3cb977b3f9ff68886ee274fcf8d4ac27ef81af19d794f9dbd45f2cfa99",
+    "setup_fresh_common.py": "9cf7dea5a18204159c0217ef21ce4ca7eae8f3b0745ca0f6914e4647005a32f6",
+    "run_setup_fresh.py": "db14391d35d3239f4f3b851d87d7a6293fd779a626bbc4f3e52ae8b1975a6bec",
+    "analyze_setup_fresh.py": "97eec74a914eabf232fb91697bf4ea2302f610ee99ea3a9d507767da8948dba4",
+    "replay_setup_fresh_answers.py": "dd176bf6637530e904bb778e28f76e22d44674dcbbf43b00097d8fd16c879042",
+    "replay_setup_fresh_states.py": "a45a8ac1e8b0afa691f7f56d767e11f3e29c24b6c199fb88481be85593dc6a05",
+    "setup_checks.py": "8182f5f45da6765d7a7570e7ea20c9e74df4cc538d4bf419c869bc5945bb3fc7",
+    "counterfactual_checks.py": "883ee176bc926989bf4a8be22fc1438ec4545c12040fcec07bc7112129430509",
+    "FRESH_SETUP_PROTOCOL.md": "5bc775d305df3ed6187168daf808a97afdba1b71f126c2fa5f51689f37525b97",
+    "setup-raw-reference-plan.json": "ca1969591c9b86c6f162abb10d19be9f15711ca0a7cbe40471eaaac702852278",
+    "seal_setup_provenance.py": "4d503b355bde9a690bfa4228b30c1bf17ca1b9498d792670bb1bd52ecde57428",
+    "record_setup_metrics.py": "19b311e5e4ffe583ba61e44ff9c2cbe922e0322cd400688921702b718942372f",
+    "setup-frozen-inputs.json": "7b48d03faabcfe9878808168731e87a3a48e9fce1df8a4aae2ad200ce89f6bc9",
+    "prepare_setup_identity.py": "f6431f43bd4ae6f79ca03a7385d392a2be175cd7f58433376f6cb198ecfc8fb9",
+    "check_setup_packet.py": "a72f4e232fe91b6c3a4cded11658ae4b8c657fa8dadbc35998eb9b5ecab0c91e",
+    "bind_setup_record.py": "6f952f2d2b61cda6a0853e342455a40f1cbc2c105bd3a19a22307df133f0fec2",
+    "check_setup_progress_export.py": "bb63ebf0328d7283045f0535a62f2fc3872c1d56e5480d39d153186e6dfa2b7c",
+    "attach_setup_record_raw.py": "72fb1f8bcc8b69ab20be45764ef8070112892e65f004cbfa00b3f4d27a7e016a",
+    "check_setup_identities.py": "da788583176db50c53bbee06f75653580f9ae7a09b138d181f085aa2c4147648"
+  },
+  "argv": [
+    "python3",
+    "experiments/ic-collector-counterfactual-20261117/freeze_setup_inputs.py",
+    "experiments/ic-collector-counterfactual-20261117/setup-identity-arm/probe"
+  ],
+  "new_candidates": 25,
+  "reused_candidates": 15,
+  "one_target_workloads": 200,
+  "fixtures": [
+    768,
+    807
+  ],
+  "scope": "Contemporaneous identity generation receipt; ARM probe is not the native timing binary."
+}
