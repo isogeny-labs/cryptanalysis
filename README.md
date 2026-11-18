@@ -25,6 +25,11 @@ adds independently implemented binary and prime-field coordinate checks and the
 Certicom ECCp-131 target. Its development checks do not recover either published
 challenge scalar or establish a practical speedup.
 
+The [prime-field subexponential research note](experiments/prime-field-subexponential/README.md)
+covers an embedding-degree-one genus-two family, a fixed-genus decomposition
+problem, and an order-free bound for growing hyperelliptic genus. It includes
+two exact Sage fixtures. [pcc:unverified]
+
 A fast, self-contained C11 library of discrete-logarithm algorithms with
 Rust, Go and Python bindings, and, in [`suite/`](suite/README.md), the Rust
 attack suite (symmetric, hash, ECDLP, nonce, lattice and post-quantum

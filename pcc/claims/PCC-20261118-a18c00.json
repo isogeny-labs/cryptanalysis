@@ -1,0 +1,30 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-18T05:52:51Z",
+ "id": "PCC-20261118-a18c00",
+ "kind": "statement",
+ "producer": {
+  "commit": "fb1d3815695b00c3ffd8f22bb75a1263213c6a74",
+  "model": "Codex",
+  "session": "pr-1760"
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-subexponential/subexp_code_check.py",
+    "sha256": "7aef88ccf25de7d378dec575ef73e1f1295d49cb05911ce9c1fb73ae619e2708"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-subexponential/subexp_code_check.json",
+    "sha256": "e600c56c065138024f3700a5751741b66d95d131ae630cf172084b72ad066f71"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "One retrospective producer fixture using exhaustive subsets. No timings.",
+ "statement": "The frozen evaluation-code fixture over F_29 records agreement between the rank criterion and Jacobian addition on 3,906 degree-five subsets, including 11 decompositions across 12 targets."
+}
