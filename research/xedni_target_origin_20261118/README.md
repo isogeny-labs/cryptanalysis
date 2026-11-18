@@ -96,9 +96,12 @@ natural-frequency, timing, asymptotic, or complete-pipeline claim.
 [pcc:unverified]
 
 The mechanism and claim boundary are shown in the [editable Graphviz source](pipeline.dot)
-and [SVG rendering](pipeline.svg). [pcc:unverified]
+and [SVG rendering](pipeline.svg). The generated PNG and three-page PDF were
+visually inspected, then omitted from the final tree because repository policy
+requires those binary artifacts to use the unavailable artifact-store route.
+[pcc:unverified]
 
-![Target-dependent chord-origin recovery](pipeline.png)
+![Target-dependent chord-origin recovery](pipeline.svg)
 
 ## Sources checked
 

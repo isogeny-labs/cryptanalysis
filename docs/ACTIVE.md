@@ -30,7 +30,7 @@ and construction gates. [pcc:unverified]
 
 - [x] Extend certified Xedni lift-success trials to the ten-coefficient `r=7..9` regime with exact rational dependence verification; local frozen panel completed 1,600/1,600 rows with 67 certified relations and 23 recoveries (Codex, started 2026-11-17, branch codex/xedni-breakthrough-20261117, implementation PR #1730 merged, outcome PR #1762 merged) [pcc:unverified]
 
-- [x] Derive and implement target-dependent chord-origin recovery, including a zero-explicit-target exact relation, Rust/Python controls, Lean algebra, diagram and PDF (Codex, started 2026-11-18, branch codex/xedni-breakthrough-20261117, draft PR #1768) [pcc:unverified]
+- [x] Derive and implement target-dependent chord-origin recovery, including a zero-explicit-target exact relation, Rust/Python controls, Lean algebra and an editable SVG diagram (Codex, started 2026-11-18, branch codex/xedni-breakthrough-20261117, draft PR #1768) [pcc:unverified]
 
 - [ ] Freeze and run a fresh-seed target-bearing relation-enumeration panel, preserving target-independent lift success and comparing complete recovery work against the frozen baseline (Codex, started 2026-11-18, branch codex/xedni-breakthrough-20261117, draft PR #1768) [pcc:unverified]
 
