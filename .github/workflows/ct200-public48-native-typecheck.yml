@@ -79,7 +79,7 @@ jobs:
             2>&1 | tee ct200-evidence/original-model-hydration.txt
           b=docs/research-artifacts/chained-transfer/nondual-models-18
           test "$(sha256sum "$b/second-model-expected-native-01.json.xz" | cut -d' ' -f1)" = 22225094b7e3727332a761593b47ac44a2efd2f04bbdb1b1865abf3c35ba7267
-          test "$(sha256sum "$b/third-model-expected-native-01.json.xz" | cut -d' ' -f1)" = 1a7c90c81310a9d1a329b830c9b7f9f52a6c4504152c26162fb46f7fc5184787
+          test "$(sha256sum "$b/third-model-expected-native-01.json.xz" | cut -d' ' -f1)" = 1a7c90c81310a9d1a329b830c9c7b9f52a6c4504152c26162fb46f7fc5184787
           test "$(stat -c%s "$b/second-model-expected-native-01.json.xz")" = 217960
           test "$(stat -c%s "$b/third-model-expected-native-01.json.xz")" = 326200
           realpath experiments/chained-transfer-public-target/nondual13-preflight/models/expected-native-01.json.xz | tee ct200-evidence/second-model-path.txt
