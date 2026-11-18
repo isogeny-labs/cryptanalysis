@@ -184,8 +184,8 @@ def validate_opaque_timing(main_rs: bytes) -> None:
     """CT194: forbid loop-invariant pure primitive calls with opaque outputs only."""
     s = main_rs.decode("utf-8")
     anchor = "for _ in 0..64 {"
-    if s.count(anchor) != 1:
-        raise ValueError("CT194 expected one 64-repetition timing loop")
+    if s.count(anchor) != 2:
+        raise ValueError("CT195 expects separate original and counter-control 64-repetition timing loops")
     start = s.index(anchor)
     end = s.find("let ns = start.elapsed()", start)
     if end < 0:
