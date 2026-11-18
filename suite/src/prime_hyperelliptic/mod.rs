@@ -11,6 +11,11 @@
 //!   and squarefree of exact degree `2g+1`.
 //! - [`curve::MumfordDivisorP`] — reduced Mumford rep `(u, v)` with
 //!   `u | v² − f`.
+//! - [`balanced::SplitHyperellipticCurveP`] and
+//!   [`balanced::BalancedDivisorP`] — a separate genus-two implementation
+//!   for monic squarefree sextics with two rational infinity points.  Its
+//!   canonical `(u, v, n_plus)` representation retains both infinity
+//!   branches and must not be interchanged with the one-infinity pair.
 //! - **Cantor's algorithm**, char-`p` form: composition `gcd(u_1,
 //!   u_2) → d_1`, `gcd(d_1, v_1 + v_2) → d`, combine; reduce by
 //!   `u_new = (f − v²)/u` until `deg u ≤ g`.  The "no `h(x)`"
@@ -32,19 +37,30 @@
 //!
 //! ## Scope
 //!
-//! - **One rational point at infinity only.**  Even-degree `2g+2` models
-//!   require different divisor bookkeeping and are rejected.  In particular,
-//!   this module does not implement the Jacobian of the repository's monic
-//!   sextic `prime_quadratic_pullback_v1` cover.
+//! - [`curve`] supports one rational point at infinity only and rejects
+//!   even-degree input.  [`balanced`] separately supports monic split sextics
+//!   of genus two over checked odd prime fields.  Extension fields,
+//!   non-split infinity, and higher-genus even-degree models remain
+//!   unsupported.
 //! - The checked Mumford arithmetic is genus-generic; exhaustive order
 //!   enumeration and the `L`-polynomial counters remain genus-2 utilities.
 //! - **Toy sizes only.**  All counting and enumeration routines are
 //!   `O(p^c)` for small `c`; appropriate for `p ≤ ~10^3`.
 
+pub mod balanced;
+pub mod cover_transfer;
 pub mod curve;
 pub mod fp2;
 pub mod fp_poly;
 
+pub use balanced::{
+    BalancedDivisorP, BalancedHyperellipticError, SplitHyperellipticCurveP,
+    MAX_BALANCED_ENUMERATION_PRIME,
+};
+pub use cover_transfer::{
+    PrimeEllipticPointP, PrimePullPushCertificate, PrimePushPullCertificate,
+    PrimeQuadraticCoverError, PrimeQuadraticCoverP, PrimeSubgroupTransferStatus,
+};
 pub use curve::{
     brute_force_jac_order, brute_force_jac_order_via_lpoly, count_points, count_points_fp2,
     fast_frob_ab, fast_point_counts, frob_ab_and_jac, jac_order_via_lpoly, FrobABForJac,

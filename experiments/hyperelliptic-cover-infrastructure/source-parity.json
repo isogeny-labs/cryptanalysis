@@ -1,10 +1,10 @@
 {
-  "schema_version": "hyperelliptic-cover-source-parity/v2",
+  "schema_version": "hyperelliptic-cover-source-parity/v3",
   "source_repository": "https://github.com/isogeny-labs/crypto",
-  "source_branch": "codex/curve-transfer-next-phase-20261118",
-  "source_implementation_commit": "333c0f0a2390c57f245730ab9294e7ee905d9cd3",
+  "source_branch": "codex/curve-transfer-implementation-20261118",
+  "source_implementation_commit": "6cb5ab1edb141b48b9a9767fc63fe95ba1aac217",
   "source_baseline_commit": "5874ce8b393dccc4c735cc7ca5a47de7fe196c59",
-  "captured_at": "2026-11-18T06:59:52Z",
+  "captured_at": "2026-11-18T09:09:58Z",
   "files": [
     {
       "source_commit": "333c0f0a2390c57f245730ab9294e7ee905d9cd3",
@@ -15,21 +15,37 @@
       "mode": "exact"
     },
     {
-      "source_commit": "333c0f0a2390c57f245730ab9294e7ee905d9cd3",
+      "source_commit": "6cb5ab1edb141b48b9a9767fc63fe95ba1aac217",
       "source_path": "src/binary_ecc/cover_transfer.rs",
       "mirror_path": "suite/src/binary_ecc/cover_transfer.rs",
-      "source_sha256": "bfddf75758b9a4e11af1944b84e40cda4dd35c557776ae8c05df9892bd3b4909",
-      "mirror_sha256": "bfddf75758b9a4e11af1944b84e40cda4dd35c557776ae8c05df9892bd3b4909",
+      "source_sha256": "e1336ef5e5fb6ab32d58be956e72a8732adc43aca30d46a4f8ce45b03cdcdad5",
+      "mirror_sha256": "e1336ef5e5fb6ab32d58be956e72a8732adc43aca30d46a4f8ce45b03cdcdad5",
       "mode": "exact"
     },
     {
-      "source_commit": "333c0f0a2390c57f245730ab9294e7ee905d9cd3",
+      "source_commit": "6cb5ab1edb141b48b9a9767fc63fe95ba1aac217",
       "source_path": "src/binary_ecc/mod.rs",
       "mirror_path": "suite/src/binary_ecc/mod.rs",
-      "source_sha256": "154732fb1266bd55dfbc2d198ce94ea7cfce420ed0196c006bf6988425d0f727",
-      "mirror_sha256": "5319e0357e47a9815ac833c33a351e5318d124f965baa87fd4b1a7b821f2497e",
+      "source_sha256": "22668e7636d35b175c80505307d40cae32f1a1b1e8bec9b1c0239bebb11b3d51",
+      "mirror_sha256": "dcf9aa0c6dee67aebf5cc8624288ceb4d6a5eabff67ebf7aecae274f741a0382",
       "mode": "binary_module_rustdoc_adapter",
       "adapter_version": "unlinked-private-field-helper-and-unrelated-module-omission/v2"
+    },
+    {
+      "source_commit": "6cb5ab1edb141b48b9a9767fc63fe95ba1aac217",
+      "source_path": "src/prime_hyperelliptic/balanced.rs",
+      "mirror_path": "suite/src/prime_hyperelliptic/balanced.rs",
+      "source_sha256": "550675a30d344a65a067fbe927203c8085eccec1acfa19f952011c570576d464",
+      "mirror_sha256": "550675a30d344a65a067fbe927203c8085eccec1acfa19f952011c570576d464",
+      "mode": "exact"
+    },
+    {
+      "source_commit": "6cb5ab1edb141b48b9a9767fc63fe95ba1aac217",
+      "source_path": "src/prime_hyperelliptic/cover_transfer.rs",
+      "mirror_path": "suite/src/prime_hyperelliptic/cover_transfer.rs",
+      "source_sha256": "97ffe80dd14332eb0a2854dfcafcf21d98964289366762e1f3bd8228b84d7dc3",
+      "mirror_sha256": "97ffe80dd14332eb0a2854dfcafcf21d98964289366762e1f3bd8228b84d7dc3",
+      "mode": "exact"
     },
     {
       "source_commit": "3b8664a466efd56121509cd77866a07e3cb55741",
@@ -48,12 +64,13 @@
       "mode": "exact"
     },
     {
-      "source_commit": "3b8664a466efd56121509cd77866a07e3cb55741",
+      "source_commit": "6cb5ab1edb141b48b9a9767fc63fe95ba1aac217",
       "source_path": "src/prime_hyperelliptic/mod.rs",
       "mirror_path": "suite/src/prime_hyperelliptic/mod.rs",
-      "source_sha256": "b6906f75b4d0eb6b7ac406a0fca1b2cef1786a528d4aedbab414e9fa1e7f7662",
-      "mirror_sha256": "b6906f75b4d0eb6b7ac406a0fca1b2cef1786a528d4aedbab414e9fa1e7f7662",
-      "mode": "exact"
+      "source_sha256": "03660be55198a76e3334a38e524ca1ea1ef4bf643ce6b5094c036f7cde7daff9",
+      "mirror_sha256": "fa36d063ddad804c97e9f8422259d39b0f113d13aa898bab593d276531f42c62",
+      "mode": "prime_module_operation_pricing_omission",
+      "adapter_version": "operation-pricing-module-omission/v1"
     },
     {
       "source_commit": "3b8664a466efd56121509cd77866a07e3cb55741",

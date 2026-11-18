@@ -8,10 +8,12 @@ use std::fs;
 use std::path::{Component, Path, PathBuf};
 use std::process::{Command, ExitCode};
 
-const SCHEMA_VERSION: &str = "hyperelliptic-cover-source-parity/v2";
+const SCHEMA_VERSION: &str = "hyperelliptic-cover-source-parity/v3";
 const BINARY_ADAPTER_MODE: &str = "binary_module_rustdoc_adapter";
 const BINARY_ADAPTER_VERSION: &str =
     "unlinked-private-field-helper-and-unrelated-module-omission/v2";
+const PRIME_MODULE_ADAPTER_MODE: &str = "prime_module_operation_pricing_omission";
+const PRIME_MODULE_ADAPTER_VERSION: &str = "operation-pricing-module-omission/v1";
 const DOMAIN_BINDING_MODE: &str = "selected_domain_binding";
 const DOMAIN_BINDING_VERSION: &str = "coefficient-field-equality/v1";
 
@@ -81,6 +83,10 @@ fn binary_module_adapter(data: &[u8]) -> Vec<u8> {
         b"pub use trace_zero::{\n    TraceZeroAffineMode, TraceZeroAffineSystem, TraceZeroCoordinates, TraceZeroError,\n    TraceZeroFactorBase, TraceZeroKummerMode, TraceZeroKummerSystem, TraceZeroSubspaceProfile,\n    TraceZeroVariety,\n};\n",
         b"",
     )
+}
+
+fn prime_module_adapter(data: &[u8]) -> Vec<u8> {
+    replace_all(data, b"pub mod ops;\n", b"")
 }
 
 fn is_lower_hex(value: &str, length: usize) -> bool {
@@ -193,6 +199,19 @@ fn validate_manifest(manifest: &Manifest, errors: &mut Vec<String>) {
                     ));
                 }
             }
+            PRIME_MODULE_ADAPTER_MODE => {
+                if record.adapter_version.as_deref() != Some(PRIME_MODULE_ADAPTER_VERSION) {
+                    errors.push(format!(
+                        "{mirror}: unsupported prime-module adapter version {:?}",
+                        record.adapter_version
+                    ));
+                }
+                if !record.required_fragments.is_empty() {
+                    errors.push(format!(
+                        "{mirror}: prime-module adapter cannot declare required_fragments"
+                    ));
+                }
+            }
             DOMAIN_BINDING_MODE => {
                 if record.adapter_version.as_deref() != Some(DOMAIN_BINDING_VERSION) {
                     errors.push(format!(
@@ -287,6 +306,13 @@ fn verify_pair(
         BINARY_ADAPTER_MODE => {
             if binary_module_adapter(source_data) != mirror_data {
                 errors.push(format!("{mirror}: unexpected adapter difference"));
+            }
+        }
+        PRIME_MODULE_ADAPTER_MODE => {
+            if prime_module_adapter(source_data) != mirror_data {
+                errors.push(format!(
+                    "{mirror}: unexpected prime-module adapter difference"
+                ));
             }
         }
         DOMAIN_BINDING_MODE => {
@@ -422,6 +448,15 @@ mod tests {
         assert_eq!(
             binary_module_adapter(source),
             b"//! `f2m::karatsuba_mul` x `f2m::flt_inverse` [other]\npub mod retained;\n"
+        );
+    }
+
+    #[test]
+    fn prime_module_adapter_omits_only_the_unmirrored_pricing_module() {
+        let source = b"pub mod balanced;\npub mod ops;\npub mod cover_transfer;\n";
+        assert_eq!(
+            prime_module_adapter(source),
+            b"pub mod balanced;\npub mod cover_transfer;\n"
         );
     }
 
