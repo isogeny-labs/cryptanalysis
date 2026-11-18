@@ -27,7 +27,7 @@ COMMIT = "a" * 40
 TREE = "b" * 40
 SOURCE_ARCHIVE = "c" * 64
 POD = "podtest123"
-LEGACY_BODY_ENV_KEYS = {
+V2_BODY_ENV_KEYS = {
     "POD_BOOT_B64", "POD_MAX_SECONDS", "RUNPOD_BATCH_BOOTSTRAP_B64",
     "RUNPOD_BATCH_CHUNK_BYTES", "RUNPOD_BATCH_COMMAND_B64",
     "RUNPOD_BATCH_COMMAND_SHA256", "RUNPOD_BATCH_JOB_ID",
@@ -37,10 +37,10 @@ LEGACY_BODY_ENV_KEYS = {
     "RUNPOD_BATCH_SOURCE_REF", "RUNPOD_BATCH_SOURCE_TREE",
     "RUNPOD_BATCH_SOURCE_URL", "RUNPOD_BATCH_TIMEOUT_SECONDS", "RUNPOD_BATCH_TOKEN",
 }
-LEGACY_GPU_SUMMARY_KEYS = {
-    "name", "cloudType", "computeType", "imageName", "containerDiskInGb", "ports",
-    "gpuTypeIds", "gpuCount", "minVCPUPerGPU", "minRAMPerGPU", "environment_keys",
-    "startup_sha256", "secrets_redacted",
+V2_GPU_SUMMARY_KEYS = {
+    "api", "name", "cloud", "image", "disk", "ports", "mounts", "gpu", "cpu",
+    "globalNetworking", "startJupyter", "startSsh", "environment_keys",
+    "startup_sha256", "entrypoint", "secrets_redacted",
 }
 
 
@@ -124,6 +124,31 @@ def catalog_row(availability="LOW"):
     }
 
 
+def v2_pod_row(pod_id=POD, name="synthetic", status="RUNNING", *,
+               compute_type="GPU", image="runpod/base:1.0.2-ubuntu2404"):
+    row = {
+        "id": pod_id, "name": name, "status": status,
+        "actions": ["stop", "terminate"], "image": image, "args": "",
+        "disk": 80, "mounts": {}, "ports": ["8888/http"],
+        "env": {"RUNPOD_BATCH_OWNERSHIP_ID": hashlib.sha256(TOKEN.encode()).hexdigest()},
+        "registry": None, "cloud": "SECURE", "dataCenterId": "EU-RO-1",
+        "cudaVersion": "13.2", "ssh": {}, "template": None, "cost": 1.19,
+        "locked": False, "runtime": None, "createdAt": "synthetic",
+        "startedAt": "synthetic", "globalNetworking": {"enabled": False},
+    }
+    if compute_type == "CPU":
+        row.update(
+            cpu={"id": "cpu3c", "vcpuCount": 32, "memory": 64},
+            cudaVersion=None, cost=0.96,
+        )
+    else:
+        row["gpu"] = {
+            "id": "NVIDIA GeForce RTX 5090", "count": 1,
+            "vcpuCount": 16, "memory": 62,
+        }
+    return row
+
+
 class FakeClient:
     def __init__(self, create_error=None, reconcile=False, wrong_name=False,
                  compute_type="GPU", image="runpod/base:1.0.2-ubuntu2404",
@@ -146,8 +171,8 @@ class FakeClient:
         if self.named_calls == self.named_error_on_call:
             raise batch.ProviderError(f"reconciliation inventory failed {TOKEN}", 503)
         if self.reconcile and self.named_calls > 1:
-            return [{"id": POD, "name": name, "env": {
-                "RUNPOD_BATCH_OWNERSHIP_ID": hashlib.sha256(TOKEN.encode()).hexdigest()}}]
+            return [v2_pod_row(POD, name, compute_type=self.compute_type,
+                               image=self.image)]
         return []
 
     def create(self, body):
@@ -160,23 +185,8 @@ class FakeClient:
     def get_v2(self, pod_id):
         if pod_id in self.deleted:
             raise batch.ProviderError("gone", 404)
-        if self.compute_type == "CPU":
-            return {
-                "id": pod_id, "name": self.name, "status": "RUNNING",
-                "cpu": {"id": "cpu3c", "vcpuCount": 32, "memory": 64},
-                "gpu": None, "cost": 0.96, "cloud": "SECURE",
-                "image": "runpod/base:1.0.2-ubuntu2404", "cudaVersion": None,
-                "ports": ["8888/http"], "dataCenterId": "EU-RO-1",
-                "createdAt": "synthetic", "startedAt": "synthetic",
-            }
-        return {
-            "id": pod_id, "name": self.name, "status": "RUNNING",
-            "gpu": {"id": "NVIDIA GeForce RTX 5090", "count": 1,
-                    "vcpuCount": 16, "memory": 62},
-            "cost": 1.19, "cloud": "SECURE", "image": self.image,
-            "cudaVersion": "13.2", "ports": ["8888/http"], "dataCenterId": "EU-RO-1",
-            "createdAt": "synthetic", "startedAt": "synthetic",
-        }
+        return v2_pod_row(
+            pod_id, self.name, compute_type=self.compute_type, image=self.image)
 
     def delete(self, pod_id):
         self.deleted.append(pod_id)
@@ -229,18 +239,33 @@ class RunpodHttpBatchTest(unittest.TestCase):
                 source_identity(), "echo fixture > results/a.json", ["results/a.json"])
         self.assertEqual(body["ports"], ["8888/http"])
         self.assertNotIn("PUBLIC_KEY", body["env"])
-        self.assertNotIn("allowedCudaVersions", body)
+        self.assertEqual(body["mounts"], {})
+        self.assertEqual(body["gpu"], {
+            "id": "NVIDIA GeForce RTX 5090", "count": 1,
+            "minVcpuCountPerGpu": 8, "minRamPerGpu": 24,
+        })
+        self.assertNotIn("allowedCudaVersions", body["gpu"])
+        self.assertFalse(body["startSsh"])
+        self.assertFalse(body["startJupyter"])
+        self.assertFalse(body["globalNetworking"])
+        self.assertNotIn("queue", body)
+        for legacy in (
+            "cloudType", "computeType", "imageName", "containerDiskInGb",
+            "gpuTypeIds", "gpuCount", "minVCPUPerGPU", "minRAMPerGPU",
+            "dockerEntrypoint", "dockerStartCmd", "volumeInGb",
+        ):
+            self.assertNotIn(legacy, body)
         self.assertFalse(any(key.startswith(("AWS_", "ARTIFACTS_AWS_")) for key in body["env"]))
         summary = json.dumps(batch.request_summary(body))
         self.assertNotIn(TOKEN, summary)
         self.assertNotIn("RUNPOD_SSH", summary)
         self.assertNotIn("cpuFlavorIds", summary)
-        self.assertEqual(set(body["env"]), LEGACY_BODY_ENV_KEYS)
-        self.assertEqual(set(batch.request_summary(body)), LEGACY_GPU_SUMMARY_KEYS)
-        self.assertEqual(body["dockerEntrypoint"], ["bash", "-c"])
+        self.assertEqual(set(body["env"]), V2_BODY_ENV_KEYS)
+        self.assertEqual(set(batch.request_summary(body)), V2_GPU_SUMMARY_KEYS)
+        self.assertEqual(body["entrypoint"], ["bash", "-c"])
         self.assertEqual(
-            hashlib.sha256(body["dockerStartCmd"][0].encode()).hexdigest(),
-            "15d32b2c8eb6e004b3b4fbb60c6be0bbd88486561dc373cca7140b3e8286ec9b",
+            hashlib.sha256(body["cmd"][0].encode()).hexdigest(),
+            hashlib.sha256(batch.V2_STAGE0.encode()).hexdigest(),
         )
         self.assertEqual(
             hashlib.sha256(base64.b64decode(body["env"]["POD_BOOT_B64"])).hexdigest(),
@@ -286,7 +311,7 @@ class RunpodHttpBatchTest(unittest.TestCase):
             "/usr/bin:/bin",
         )
         self.assertEqual(
-            body["dockerEntrypoint"],
+            body["entrypoint"],
             ["/usr/bin/bash", "--noprofile", "--norc", "-c"],
         )
         remote_boot = base64.b64decode(body["env"]["POD_BOOT_B64"], validate=True).decode()
@@ -295,7 +320,7 @@ class RunpodHttpBatchTest(unittest.TestCase):
         self.assertIn("/usr/bin/git", remote_boot)
         self.assertNotIn("apt-get", remote_boot)
         self.assertNotIn("pod_env", remote_boot)
-        stage0 = body["dockerStartCmd"][0]
+        stage0 = body["cmd"][0]
         self.assertEqual(stage0, batch.MINIMAL_STAGE0)
         self.assertIn("/usr/bin/base64 --decode", stage0)
         self.assertIn("/usr/bin/setsid /usr/bin/bash --noprofile --norc", stage0)
@@ -350,15 +375,11 @@ class RunpodHttpBatchTest(unittest.TestCase):
             body = batch.build_body(
                 args, "misagi-http-test-0123456789ab", TOKEN,
                 source_identity(), "echo fixture > results/a.json", ["results/a.json"])
-        self.assertEqual(body["computeType"], "CPU")
-        self.assertEqual(body["cpuFlavorIds"], ["cpu3c"])
-        self.assertEqual(body["cpuFlavorPriority"], "custom")
-        self.assertEqual(body["vcpuCount"], 32)
+        self.assertEqual(body["cpu"], {"id": "cpu3c", "vcpuCount": 32})
         self.assertEqual(body["ports"], ["8888/http"])
-        self.assertNotIn("gpuTypeIds", body)
+        self.assertNotIn("gpu", body)
         summary = batch.request_summary(body)
-        self.assertEqual(summary["cpuFlavorIds"], ["cpu3c"])
-        self.assertEqual(summary["vcpuCount"], 32)
+        self.assertEqual(summary["cpu"], {"id": "cpu3c", "vcpuCount": 32})
 
     def test_cpu_cli_parses_exact_memory_guard(self):
         args = batch.parse([
@@ -389,6 +410,25 @@ class RunpodHttpBatchTest(unittest.TestCase):
                 with self.subTest(changes=changes), self.assertRaises(batch.BatchError):
                     batch.validate_compute_request(args)
 
+    def test_gpu_request_requires_one_explicit_v2_gpu(self):
+        with tempfile.TemporaryDirectory() as directory:
+            base = args_for(Path(directory))
+            for gpus in ([], ["a", "b"], [""], ["x" * 201]):
+                args = SimpleNamespace(**vars(base))
+                args.gpu = gpus
+                with self.subTest(gpus=gpus), self.assertRaises(batch.BatchError):
+                    batch.validate_compute_request(args)
+            for field, value in (
+                ("gpu_count", 0), ("gpu_count", 1025),
+                ("min_vcpu", 0), ("min_vcpu", 4097),
+                ("min_ram", 0), ("min_ram", 65537),
+            ):
+                args = SimpleNamespace(**vars(base))
+                setattr(args, field, value)
+                with self.subTest(field=field, value=value), \
+                        self.assertRaises(batch.BatchError):
+                    batch.validate_compute_request(args)
+
     def test_cpu_provider_guard_is_exact_and_rejects_gpu_or_ssh(self):
         with tempfile.TemporaryDirectory() as directory:
             args = cpu_args_for(Path(directory))
@@ -416,6 +456,44 @@ class RunpodHttpBatchTest(unittest.TestCase):
                 with self.subTest(label=label), self.assertRaises(batch.BatchError):
                     batch.guard_provider(pod, POD, client.name, args)
 
+    def test_provider_guard_binds_v2_storage_network_and_ownership(self):
+        with tempfile.TemporaryDirectory() as directory:
+            args = args_for(Path(directory))
+            client = FakeClient()
+            client.name = "misagi-http-test-0123456789ab"
+            ownership = hashlib.sha256(TOKEN.encode()).hexdigest()
+            good = client.get_v2(POD)
+            batch.guard_provider(good, POD, client.name, args, ownership)
+            mutations = [
+                ("persistent-mount", lambda pod: pod.update(
+                    mounts={"persistent": {"path": "/workspace", "size": 20}})),
+                ("global-network", lambda pod: pod.update(
+                    globalNetworking={"enabled": True})),
+                ("second-port", lambda pod: pod["ports"].append("22/tcp")),
+                ("ownership", lambda pod: pod["env"].update(
+                    RUNPOD_BATCH_OWNERSHIP_ID="0" * 64)),
+            ]
+            for label, mutate in mutations:
+                pod = json.loads(json.dumps(good))
+                mutate(pod)
+                with self.subTest(label=label), self.assertRaises(batch.BatchError):
+                    batch.guard_provider(pod, POD, client.name, args, ownership)
+
+    def test_multi_gpu_guard_uses_v2_total_vcpu_and_memory_semantics(self):
+        with tempfile.TemporaryDirectory() as directory:
+            args = args_for(Path(directory))
+            args.gpu_count = 2
+            client = FakeClient()
+            client.name = "misagi-http-test-0123456789ab"
+            pod = client.get_v2(POD)
+            pod["gpu"].update(count=2, vcpuCount=16, memory=48)
+            batch.guard_provider(pod, POD, client.name, args)
+            for field, value in (("vcpuCount", 15), ("memory", 47)):
+                malformed = json.loads(json.dumps(pod))
+                malformed["gpu"][field] = value
+                with self.subTest(field=field), self.assertRaises(batch.BatchError):
+                    batch.guard_provider(malformed, POD, client.name, args)
+
     def test_cpu_dry_run_has_exact_guard_and_no_provider_action(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -428,8 +506,13 @@ class RunpodHttpBatchTest(unittest.TestCase):
         self.assertEqual(rc, 0)
         plan = json.loads(output.getvalue())
         self.assertFalse(plan["provider_actions"])
-        self.assertEqual(plan["request"]["computeType"], "CPU")
-        self.assertEqual(plan["request"]["cpuFlavorIds"], ["cpu3c"])
+        self.assertEqual(plan["schema"], "runpod.http-batch.receipt/v2")
+        self.assertEqual(plan["request"]["api"], "runpod-rest/v2")
+        self.assertEqual(plan["request"]["cpu"], {"id": "cpu3c", "vcpuCount": 32})
+        self.assertEqual(
+            plan["provider_api"]["openapi_sha256"],
+            "41f48a46a68fd023cedf9bb5a53c957a8359fb27d72d8e68b85729cc3ae9f26d",
+        )
         self.assertEqual(plan["cpu_guard"], {
             "flavor": "cpu3c", "provider_memory_value": 64,
             "no_gpu": True, "vcpu_count": 32,
@@ -446,10 +529,22 @@ class RunpodHttpBatchTest(unittest.TestCase):
             batch.validate_status([], {})
 
     def test_remote_boot_is_shell_syntax(self):
-        for script in (batch.REMOTE_BOOT, batch.MINIMAL_REMOTE_BOOT, batch.MINIMAL_STAGE0):
+        for script in (
+            batch.REMOTE_BOOT, batch.MINIMAL_REMOTE_BOOT,
+            batch.V2_STAGE0, batch.MINIMAL_STAGE0,
+        ):
             result = __import__("subprocess").run(
                 ["bash", "-n"], input=script, text=True, capture_output=True)
             self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_both_lifetime_guards_use_only_v2_stop_action(self):
+        for script in (batch.V2_STAGE0, batch.MINIMAL_STAGE0):
+            with self.subTest(minimal=script is batch.MINIMAL_STAGE0):
+                self.assertNotIn("api.runpod.io/graphql", script)
+                self.assertIn(
+                    "https://api.runpod.io/v2/pods/$RUNPOD_POD_ID/action", script)
+                self.assertIn('--request POST', script)
+                self.assertIn('--data \'{"action":"stop"}\'', script)
 
     def test_digest_qualified_image_must_echo_exactly_and_mismatch_is_cleaned(self):
         digest_image = (
@@ -494,8 +589,28 @@ class RunpodHttpBatchTest(unittest.TestCase):
             self.assertEqual((root / "results/a.json").read_text(), '{"ok":true}\n')
             receipt = json.loads(args.receipt.read_text())
             self.assertTrue(receipt["cleanup"]["absence_verified"])
+            self.assertEqual(receipt["provider_http"], {
+                "create": {"method": "POST", "path": "/v2/pods", "status": 201},
+                "cleanup": {
+                    "delete": {"method": "DELETE", "path": f"/v2/pods/{POD}",
+                               "status": 204},
+                    "absence": {"method": "GET", "path": f"/v2/pods/{POD}",
+                                "status": 404},
+                },
+            })
             self.assertEqual(receipt["pod"]["cudaVersion"], "13.2")
             self.assertNotIn(TOKEN, args.receipt.read_text())
+
+    def test_cleanup_records_already_absent_delete_and_final_404(self):
+        client = mock.Mock()
+        client.delete.side_effect = batch.ProviderError("already absent", 404)
+        client.get_v2.side_effect = batch.ProviderError("still absent", 404)
+        self.assertEqual(batch.cleanup_exact(client, POD, sleep=lambda _s: None), {
+            "id": POD, "delete_requested": True, "delete_http_status": 404,
+            "absence_http_status": 404, "absence_verified": True,
+        })
+        client.delete.assert_called_once_with(POD)
+        client.get_v2.assert_called_once_with(POD)
 
     def test_cpu_success_fetches_and_receipt_binds_exact_provider_identity(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -827,6 +942,120 @@ class RunpodHttpBatchTest(unittest.TestCase):
                     self.assertTrue(environment["JOB_CMD"].startswith("timeout "))
                     self.assertIn(" bash -c ", environment["JOB_CMD"])
                     self.assertNotIn("JOB_ENVIRONMENT_CLOSED", environment)
+
+
+class ProviderV2AdapterTest(unittest.TestCase):
+    def test_v2_pod_envelope_rejects_every_missing_required_or_legacy_shape(self):
+        good = v2_pod_row()
+        self.assertIs(batch.require_v2_pod(good), good)
+        for missing in sorted(batch.V2_POD_REQUIRED):
+            malformed = json.loads(json.dumps(good))
+            malformed.pop(missing)
+            if missing == "status":
+                malformed["desiredStatus"] = "RUNNING"
+            with self.subTest(missing=missing), self.assertRaises(batch.ProviderError):
+                batch.require_v2_pod(malformed)
+        for compute in (None, {"id": "cpu3c", "vcpuCount": 32, "memory": 64}):
+            malformed = json.loads(json.dumps(good))
+            malformed["cpu"] = compute
+            with self.subTest(cpu=compute), self.assertRaises(batch.ProviderError):
+                batch.require_v2_pod(malformed)
+
+    def test_list_pods_follows_every_cursor_and_named_filters_client_side(self):
+        client = batch.RunpodClient(key="synthetic-key")
+        pages = [
+            {"pods": [v2_pod_row("old", "target", "TERMINATED"),
+                      v2_pod_row("other", "other")],
+             "pagination": {"hasNextPage": True, "nextCursor": "next/one"}},
+            {"pods": [v2_pod_row("live", "target")],
+             "pagination": {"hasNextPage": False, "nextCursor": None}},
+        ]
+        with mock.patch.object(client, "call", side_effect=pages) as call:
+            self.assertEqual([pod["id"] for pod in client.named("target")], ["live"])
+        self.assertEqual(call.call_args_list, [
+            mock.call("GET", f"{batch.V2}/pods?limit=1000", expected_status=200),
+            mock.call(
+                "GET", f"{batch.V2}/pods?limit=1000&cursor=next%2Fone",
+                expected_status=200),
+        ])
+
+    def test_list_pods_rejects_malformed_or_cyclic_pagination(self):
+        bad_sequences = [
+            [{"pods": [], "pagination": {"hasNextPage": "false", "nextCursor": None}}],
+            [{"pods": [], "pagination": {"hasNextPage": False, "nextCursor": "extra"}}],
+            [
+                {"pods": [], "pagination": {"hasNextPage": True, "nextCursor": "same"}},
+                {"pods": [], "pagination": {"hasNextPage": True, "nextCursor": "same"}},
+            ],
+        ]
+        for pages in bad_sequences:
+            client = batch.RunpodClient(key="synthetic-key")
+            with self.subTest(pages=pages), \
+                    mock.patch.object(client, "call", side_effect=pages), \
+                    self.assertRaises(batch.ProviderError):
+                client.list_pods()
+
+    def test_create_get_delete_use_only_v2_and_exact_success_statuses(self):
+        client = batch.RunpodClient(key="synthetic-key")
+        body = {"name": "exact", "gpu": {"id": "gpu", "count": 1}}
+        response = v2_pod_row(POD, "exact")
+        with mock.patch.object(client, "call", return_value=response) as call:
+            self.assertEqual(client.create(body), response)
+            call.assert_called_once_with(
+                "POST", f"{batch.V2}/pods", body, expected_status=201)
+        with mock.patch.object(client, "call", return_value=response) as call:
+            self.assertEqual(client.get_v2(POD), response)
+            call.assert_called_once_with(
+                "GET", f"{batch.V2}/pods/{POD}", expected_status=200)
+        with mock.patch.object(client, "call", return_value=None) as call:
+            self.assertIsNone(client.delete(POD))
+            call.assert_called_once_with(
+                "DELETE", f"{batch.V2}/pods/{POD}", expected_status=204)
+        with mock.patch.object(client, "call") as call, self.assertRaises(batch.BatchError):
+            client.create({**body, "queue": {}})
+        call.assert_not_called()
+
+    def test_rfc9457_error_is_redacted_and_retains_http_status(self):
+        client = batch.RunpodClient(key="secret-key")
+        problem = json.dumps({
+            "title": "Unprocessable Entity", "status": 422,
+            "detail": "nested request is invalid", "errors": ["gpu is required"],
+        }).encode()
+        error = urllib.error.HTTPError(
+            f"{batch.V2}/pods", 422, "unprocessable", {}, io.BytesIO(problem))
+        client._opener.open = mock.Mock(side_effect=error)
+        with self.assertRaises(batch.ProviderError) as raised:
+            client.call("POST", f"{batch.V2}/pods", {}, expected_status=201)
+        self.assertEqual(raised.exception.status, 422)
+        self.assertIn("nested request is invalid", str(raised.exception))
+        self.assertNotIn("secret-key", str(raised.exception))
+
+    def test_unexpected_success_status_is_not_treated_as_created_pod(self):
+        class Response:
+            status = 202
+            def __enter__(self):
+                return self
+            def __exit__(self, *_args):
+                return False
+            def read(self, _limit):
+                return b'{"id":"queued"}'
+
+        client = batch.RunpodClient(key="synthetic-key")
+        client._opener.open = mock.Mock(return_value=Response())
+        with self.assertRaises(batch.ProviderError) as raised:
+            client.create({"name": "exact"})
+        self.assertEqual(raised.exception.status, 202)
+
+    def test_oversized_v2_request_is_refused_before_network_access(self):
+        client = batch.RunpodClient(key="synthetic-key")
+        client._opener.open = mock.Mock()
+        with self.assertRaisesRegex(batch.ProviderError, "size limit"):
+            client.call(
+                "POST", f"{batch.V2}/pods",
+                {"value": "x" * batch.MAX_PROVIDER_REQUEST_BYTES},
+                expected_status=201,
+            )
+        client._opener.open.assert_not_called()
 
 
 class HttpAdapterTest(unittest.TestCase):

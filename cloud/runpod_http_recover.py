@@ -7,8 +7,8 @@ ephemeral bearer only from that pod's provider metadata, verifies the same
 provider and result contracts as :mod:`runpod_http_batch`, installs only
 hash-bound declared outputs, and deletes only the bound pod ID in ``finally``.
 
-The design follows ``cloud/README.md`` and Runpod's official Pod REST and
-HTTPS-proxy documentation linked there.  In particular, provider metadata is
+The design follows ``cloud/README.md`` and Runpod's official REST API v2 Pod
+and HTTPS-proxy documentation linked there. In particular, provider metadata is
 used only to resume the existing authenticated GET channel; no create, start,
 or retry-allocation operation exists here.
 """
@@ -33,7 +33,7 @@ import runpod_http_batch as batch  # noqa: E402
 import runpod_pod  # noqa: E402
 
 
-SCHEMA = "runpod.http-batch.recovery-receipt/v1"
+SCHEMA = "runpod.http-batch.recovery-receipt/v2"
 TOOL_PATH = "cloud/runpod_http_recover.py"
 SAFE_REASON = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.:-]{0,159}\Z")
 SAFE_POD_NAME = re.compile(r"[A-Za-z0-9][A-Za-z0-9-]{0,99}\Z")
@@ -200,6 +200,8 @@ def execute(args, *, client=None, transport=None, repo=REPO,
             "new_allocation_attempted": False,
             "tool": tool,
         },
+        "provider_api": batch.provider_api_binding(),
+        "provider_http": {},
         "binding": None,
         "pod": None,
         "remote_status": None,
@@ -216,19 +218,29 @@ def execute(args, *, client=None, transport=None, repo=REPO,
                    if pod.get("id") == args.pod_id]
         if len(matches) != 1:
             raise batch.BatchError("exact recovery pod is absent or duplicated")
-        token, binding = environment_contract(matches[0], args)
+        listed = batch.require_v2_pod(matches[0])
+        token, binding = environment_contract(listed, args)
         receipt["binding"] = binding
-        owned_pod_id = args.pod_id
 
         provider = client.get_v2(args.pod_id)
+        receipt["provider_http"]["existing_pod"] = {
+            "method": "GET", "path": f"/v2/pods/{args.pod_id}", "status": 200,
+        }
+        if (batch.pod_identifier(provider) != args.pod_id
+                or not batch.marker_matches(
+                    provider, args.pod_name, binding["ownership_id"])):
+            raise batch.BatchError("current pod does not retain exact recovery ownership")
+        owned_pod_id = args.pod_id
         receipt["pod"] = batch.guard_provider(
-            provider, args.pod_id, args.pod_name, args)
+            provider, args.pod_id, args.pod_name, args,
+            binding["ownership_id"])
         deadline = time.monotonic() + args.wait
         status = transport.wait_status(
             batch.proxy_base(args.pod_id), token, expected, deadline,
             sleep=sleep,
             provider_monitor=lambda: batch.monitor_provider(
-                client, args.pod_id, args.pod_name, args))
+                client, args.pod_id, args.pod_name, args,
+                binding["ownership_id"]))
         receipt["remote_status"] = status
         transport.download(
             batch.proxy_base(args.pod_id), token, status, archive_path)
@@ -254,6 +266,16 @@ def execute(args, *, client=None, transport=None, repo=REPO,
             try:
                 receipt["cleanup"] = batch.cleanup_exact(
                     client, owned_pod_id, sleep=sleep)
+                receipt["provider_http"]["cleanup"] = {
+                    "delete": {
+                        "method": "DELETE", "path": f"/v2/pods/{owned_pod_id}",
+                        "status": receipt["cleanup"]["delete_http_status"],
+                    },
+                    "absence": {
+                        "method": "GET", "path": f"/v2/pods/{owned_pod_id}",
+                        "status": receipt["cleanup"]["absence_http_status"],
+                    },
+                }
             except BaseException as error:
                 receipt["cleanup"] = {
                     "id": owned_pod_id,

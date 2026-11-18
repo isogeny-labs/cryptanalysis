@@ -7,13 +7,13 @@ authenticated status and hash-bound result chunks through Runpod's HTTPS
 proxy. The controller verifies and extracts declared outputs, then deletes the
 exact pod ID returned by its create request in ``finally``.
 
-The CPU request and response contracts follow Runpod's official Pod API
-documentation (https://docs.runpod.io/api-reference/pods/POST/pods and
-https://docs.runpod.io/api-reference/pods/GET/pods-pod-id) and the captured
-OpenAPI closure at
-``experiments/ideas_gpu_20261018/diagnostics/cpu-v2-api/official-create-schema.json``.
-CPU memory is derived from the flavor, so callers bind the exact expected v2
-response value with ``--cpu-memory`` instead of sending an unsupported field.
+The request and response contracts follow Runpod's official REST API v2 Pod
+documentation (https://docs.runpod.io/api-reference-v2/pods/create-a-pod and
+https://docs.runpod.io/api-reference-v2/pods/get-a-pod). CPU memory is derived
+from the flavor, so callers bind the exact expected response value with
+``--cpu-memory`` instead of sending an unsupported field. The request exposes
+one HTTP port, supplies no storage mount or queue, and selects exactly one GPU
+or CPU flavor; API v2 has no Pod GPU-fallback list.
 
 ``--dry-run`` performs no provider or public-origin request. A real run refuses
 to allocate until ``--source-ref`` advertises ``--source-commit`` on the fixed
@@ -49,16 +49,35 @@ sys.path.insert(0, str(HERE))
 import runpod_pod  # noqa: E402
 
 
-SCHEMA = "runpod.http-batch.receipt/v1"
+SCHEMA = "runpod.http-batch.receipt/v2"
 STATUS_SCHEMA = "runpod.http-batch.status/v1"
 PUBLIC_ORIGIN = "https://github.com/isogeny-labs/cryptanalysis.git"
 V2 = "https://api.runpod.io/v2"
+RUNPOD_V2_OPENAPI_SHA256 = "41f48a46a68fd023cedf9bb5a53c957a8359fb27d72d8e68b85729cc3ae9f26d"
 HTTP_PORT = 8888
 CHUNK_BYTES = 4 << 20
 MAX_STATUS_BYTES = 4 << 20
 MAX_ARCHIVE_MEMBERS = 100_000
 MAX_PROVIDER_BYTES = 16 << 20
+MAX_PROVIDER_REQUEST_BYTES = 102_400
 MAX_MANIFEST_BYTES = 16 << 20
+V2_POD_REQUIRED = frozenset({
+    "id", "name", "status", "actions", "image", "args", "disk", "mounts",
+    "ports", "env", "registry", "cloud", "dataCenterId", "cudaVersion",  # rp-migrate: ignore
+    "ssh", "template", "cost", "locked", "runtime", "createdAt",
+    "startedAt", "globalNetworking",
+})
+V2_POD_STATUSES = frozenset({
+    "PROVISIONING", "STARTING", "RUNNING", "EXITED", "ERROR", "TERMINATED",
+})
+V2_REQUEST_SUMMARY_KEYS = frozenset({
+    "api", "name", "cloud", "image", "disk", "ports", "mounts", "gpu", "cpu",
+    "globalNetworking", "startJupyter", "startSsh", "environment_keys",
+    "startup_sha256", "entrypoint", "secrets_redacted",
+})
+V2_CLOSED_REQUEST_SUMMARY_KEYS = V2_REQUEST_SUMMARY_KEYS | {
+    "bootstrap_sha256", "remote_boot_sha256",
+}
 COMMIT = re.compile(r"[0-9a-f]{40}\Z")
 SHA256 = re.compile(r"[0-9a-f]{64}\Z")
 POD_ID = re.compile(r"[A-Za-z0-9_-]{3,100}\Z")
@@ -141,9 +160,11 @@ for tool in /usr/bin/base64 /usr/bin/bash /usr/bin/curl /usr/bin/setsid /usr/bin
   }
 done
 ( /usr/bin/sleep "$POD_MAX_SECONDS"
-  /usr/bin/curl --silent https://api.runpod.io/graphql -H 'Content-Type: application/json' \
+  /usr/bin/curl --fail --silent --show-error --request POST \
+    "https://api.runpod.io/v2/pods/$RUNPOD_POD_ID/action" \
+    -H 'Content-Type: application/json' \
     -H "Authorization: Bearer $RUNPOD_API_KEY" \
-    -d "{\"query\":\"mutation { podStop(input: {podId: \\\"$RUNPOD_POD_ID\\\"}) { id } }\"}"
+    --data '{"action":"stop"}'
 ) >/tmp/pod-lifetime.log 2>&1 &
 [[ -n ${POD_BOOT_B64:-} ]] || {
   echo 'environment-closed startup is missing POD_BOOT_B64' >&2
@@ -153,6 +174,10 @@ done
 /usr/bin/setsid /usr/bin/bash --noprofile --norc /root/pod-boot.sh \
   >>/root/pod-boot.log 2>&1 </dev/null &
 exec /usr/bin/sleep infinity"""
+
+V2_STAGE0 = runpod_pod.STAGE0
+if "api.runpod.io/graphql" in V2_STAGE0:  # rp-migrate: ignore
+    raise RuntimeError("generic Runpod startup retained a legacy GraphQL call")
 
 # An environment-closed scientific command installs and binds its own tools.
 # This bootstrap deliberately performs no package, Rust, Python, or NVRTC
@@ -389,32 +414,58 @@ def build_body(args, name: str, token: str, source: dict,
             "LD_PRELOAD": "",
             "PATH": "/usr/bin:/bin",
         })
-    body = runpod_pod.pod_body(args, "", environment)
-    if minimal:
-        body["dockerEntrypoint"] = [
-            "/usr/bin/bash", "--noprofile", "--norc", "-c",
-        ]
-        body["dockerStartCmd"] = [MINIMAL_STAGE0]
-    body["name"] = name
-    body["ports"] = [f"{HTTP_PORT}/http"]
-    body["env"].pop("PUBLIC_KEY", None)
-    body["env"].pop("SHIP_PREFETCH", None)
+    entrypoint = (["/usr/bin/bash", "--noprofile", "--norc", "-c"]
+                  if minimal else ["bash", "-c"])
+    startup = MINIMAL_STAGE0 if minimal else V2_STAGE0
+    environment["POD_MAX_SECONDS"] = str(int(args.max_hours * 3600))
+    body = {
+        "name": name,
+        "cloud": args.cloud,
+        "image": args.image or (
+            runpod_pod.CPU_IMAGE if args.cpu else runpod_pod.GPU_IMAGE),
+        "disk": args.disk,
+        "ports": [f"{HTTP_PORT}/http"],
+        "env": environment,
+        "entrypoint": entrypoint,
+        "cmd": [startup],
+        "mounts": {},
+        "globalNetworking": False,
+        "startJupyter": False,
+        "startSsh": False,
+    }
+    if args.cpu:
+        # rp-migrate: ignore start
+        body["cpu"] = {"id": args.cpu_flavor[0], "vcpuCount": args.cpu}
+        # rp-migrate: ignore end
+    else:
+        body["gpu"] = {
+            "id": args.gpu[0],
+            "count": args.gpu_count,
+            "minVcpuCountPerGpu": args.min_vcpu,
+            "minRamPerGpu": args.min_ram,
+        }
     forbidden = {key for key in body["env"] if key.startswith("AWS_") or key.startswith("ARTIFACTS_AWS_")}
-    if forbidden or "22/tcp" in body["ports"]:
+    if (forbidden or "22/tcp" in body["ports"] or "queue" in body
+            or body["mounts"] != {} or body["startSsh"] is not False):
         raise BatchError("batch body contains forbidden cloud credentials or SSH exposure")
+    if len(json.dumps(body, allow_nan=False, separators=(",", ":")).encode()) \
+            > MAX_PROVIDER_REQUEST_BYTES:
+        raise BatchError("batch body exceeds the Runpod API v2 request size limit")
     return body
 
 
 def request_summary(body: dict) -> dict:
     summary = {
-        "name": body["name"], "cloudType": body["cloudType"],
-        "computeType": body["computeType"], "imageName": body["imageName"],
-        "containerDiskInGb": body["containerDiskInGb"], "ports": body["ports"],
-        "gpuTypeIds": body.get("gpuTypeIds"), "gpuCount": body.get("gpuCount"),
-        "minVCPUPerGPU": body.get("minVCPUPerGPU"),
-        "minRAMPerGPU": body.get("minRAMPerGPU"),
+        "api": "runpod-rest/v2",
+        "name": body["name"], "cloud": body["cloud"],
+        "image": body["image"], "disk": body["disk"],
+        "ports": body["ports"], "mounts": body["mounts"],
+        "gpu": body.get("gpu"), "cpu": body.get("cpu"),
+        "globalNetworking": body["globalNetworking"],
+        "startJupyter": body["startJupyter"], "startSsh": body["startSsh"],
         "environment_keys": sorted(body["env"]),
-        "startup_sha256": hashlib.sha256(body["dockerStartCmd"][0].encode()).hexdigest(),
+        "startup_sha256": hashlib.sha256(body["cmd"][0].encode()).hexdigest(),
+        "entrypoint": list(body["entrypoint"]),
         "secrets_redacted": True,
     }
     if body["env"].get("RUNPOD_BATCH_ENVIRONMENT_CLOSED") == "1":
@@ -426,13 +477,84 @@ def request_summary(body: dict) -> dict:
         )
         summary["bootstrap_sha256"] = hashlib.sha256(bootstrap).hexdigest()
         summary["remote_boot_sha256"] = hashlib.sha256(remote_boot).hexdigest()
-        summary["entrypoint"] = list(body["dockerEntrypoint"])
-    if body["computeType"] == "CPU":
-        summary.update(
-            cpuFlavorIds=body.get("cpuFlavorIds"),
-            cpuFlavorPriority=body.get("cpuFlavorPriority"),
-            vcpuCount=body.get("vcpuCount"))
+    return validate_request_summary(summary)
+
+
+def validate_request_summary(summary: object) -> dict:
+    """Validate the incompatible v2 controller request-summary contract."""
+    if not isinstance(summary, dict) or set(summary) not in (
+            V2_REQUEST_SUMMARY_KEYS, V2_CLOSED_REQUEST_SUMMARY_KEYS):
+        raise BatchError("controller request summary is not the API v2 contract")
+    environment_keys = summary["environment_keys"]
+    if (summary["api"] != "runpod-rest/v2"
+            or not isinstance(summary["name"], str) or not summary["name"]
+            or summary["cloud"] not in {"SECURE", "COMMUNITY"}
+            or not isinstance(summary["image"], str) or not summary["image"]
+            or type(summary["disk"]) is not int or summary["disk"] < 1
+            or summary["ports"] != [f"{HTTP_PORT}/http"]
+            or summary["mounts"] != {}
+            or summary["globalNetworking"] is not False
+            or summary["startJupyter"] is not False
+            or summary["startSsh"] is not False
+            or not isinstance(environment_keys, list)
+            or not all(isinstance(key, str) for key in environment_keys)
+            or environment_keys != sorted(set(environment_keys))
+            or not {"POD_MAX_SECONDS", "RUNPOD_BATCH_OWNERSHIP_ID",
+                    "RUNPOD_BATCH_TOKEN"}.issubset(environment_keys)
+            or not isinstance(summary["startup_sha256"], str)
+            or SHA256.fullmatch(summary["startup_sha256"]) is None
+            or summary["secrets_redacted"] is not True):
+        raise BatchError("controller request summary is not the API v2 contract")
+    gpu = summary["gpu"]
+    cpu = summary["cpu"]
+    if not ((isinstance(gpu, dict) and cpu is None)
+            or (isinstance(cpu, dict) and gpu is None)):
+        raise BatchError("controller request summary has ambiguous API v2 compute")
+    if gpu is not None:
+        if (not isinstance(gpu, dict)
+                or set(gpu) != {"id", "count", "minVcpuCountPerGpu", "minRamPerGpu"}
+                or not isinstance(gpu["id"], str) or not gpu["id"]
+                or type(gpu["count"]) is not int or not 1 <= gpu["count"] <= 1024
+                or type(gpu["minVcpuCountPerGpu"]) is not int
+                or not 1 <= gpu["minVcpuCountPerGpu"] <= 4096
+                or type(gpu["minRamPerGpu"]) is not int
+                or not 1 <= gpu["minRamPerGpu"] <= 65536):
+            raise BatchError("controller request summary has invalid API v2 GPU config")
+    # rp-migrate: ignore start
+    elif (not isinstance(cpu, dict) or set(cpu) != {"id", "vcpuCount"}
+          or not isinstance(cpu["id"], str) or not cpu["id"]
+          or type(cpu["vcpuCount"]) is not int or cpu["vcpuCount"] < 2
+          or cpu["vcpuCount"] & (cpu["vcpuCount"] - 1)):
+        raise BatchError("controller request summary has invalid API v2 CPU config")
+    # rp-migrate: ignore end
+    closed = set(summary) == V2_CLOSED_REQUEST_SUMMARY_KEYS
+    if (("RUNPOD_BATCH_ENVIRONMENT_CLOSED" in environment_keys) is not closed):
+        raise BatchError("controller request summary has invalid closed-mode environment")
+    expected_entrypoint = (
+        ["/usr/bin/bash", "--noprofile", "--norc", "-c"]
+        if closed else ["bash", "-c"])
+    if summary["entrypoint"] != expected_entrypoint:
+        raise BatchError("controller request summary has invalid API v2 entrypoint")
+    if closed and any(
+            not isinstance(summary[key], str) or SHA256.fullmatch(summary[key]) is None
+            for key in ("bootstrap_sha256", "remote_boot_sha256")):
+        raise BatchError("controller request summary has invalid closed-mode hashes")
     return summary
+
+
+def provider_api_binding() -> dict:
+    """Return the reviewed, non-network API contract bound into receipts."""
+    return {
+        "name": "Runpod REST API", "version": "v2", "base_url": V2,
+        "openapi": f"{V2}/openapi.json",
+        "openapi_sha256": RUNPOD_V2_OPENAPI_SHA256,
+        "openapi_checked_at": "2026-11-18",
+        "openapi_runtime_fetch": False,
+        "create_documentation": "https://docs.runpod.io/api-reference-v2/pods/create-a-pod",  # rp-migrate: ignore
+        "list_documentation": "https://docs.runpod.io/api-reference-v2/pods/list-pods",  # rp-migrate: ignore
+        "get_documentation": "https://docs.runpod.io/api-reference-v2/pods/get-a-pod",  # rp-migrate: ignore
+        "delete_documentation": "https://docs.runpod.io/api-reference-v2/pods/terminate-a-pod",  # rp-migrate: ignore
+    }
 
 
 class RunpodClient:
@@ -443,20 +565,22 @@ class RunpodClient:
             raise BatchError("RUNPOD_API_KEY is required for a real batch run")
         self._opener = urllib.request.build_opener(NoRedirect())
 
-    def call(self, method, url, body=None):
+    def call(self, method, url, body=None, expected_status=None):
         parsed = urllib.parse.urlsplit(url)
-        allowed = (runpod_pod.REST + "/", V2 + "/")
-        if (method not in {"GET", "POST", "DELETE"} or not url.startswith(allowed)
+        if (method not in {"GET", "POST", "DELETE"} or not url.startswith(V2 + "/")
                 or parsed.scheme != "https" or parsed.username is not None
                 or parsed.password is not None or parsed.fragment or ".." in parsed.path):
             raise ProviderError("refusing provider request outside pinned HTTPS endpoints")
+        data = None if body is None else json.dumps(
+            body, allow_nan=False, separators=(",", ":")).encode()
+        if data is not None and len(data) > MAX_PROVIDER_REQUEST_BYTES:
+            raise ProviderError("provider request exceeds the API v2 size limit")
         request = urllib.request.Request(
-            url, method=method,
-            data=None if body is None else json.dumps(
-                body, allow_nan=False, separators=(",", ":")).encode(),
+            url, method=method, data=data,
             headers={"Authorization": "Bearer " + self._key,
-                     "Content-Type": "application/json", "Accept": "application/json",
-                     "User-Agent": "cryptanalysis-runpod-http-batch/1.0"})
+                     "Content-Type": "application/json",
+                     "Accept": "application/json, application/problem+json",
+                     "User-Agent": "cryptanalysis-runpod-http-batch/2.0"})
         try:
             with self._opener.open(request, timeout=60) as response:
                 raw = response.read(MAX_PROVIDER_BYTES + 1)
@@ -467,10 +591,12 @@ class RunpodClient:
             if len(raw) <= 16384:
                 try:
                     problem = json.loads(raw)
-                    if isinstance(problem, dict):
-                        candidate = problem.get("detail") or problem.get("title")
-                        if isinstance(candidate, str):
-                            detail = safe_error(candidate, (self._key,))
+                    if (isinstance(problem, dict)
+                            and isinstance(problem.get("title"), str)
+                            and type(problem.get("status")) is int
+                            and problem["status"] == error.code
+                            and isinstance(problem.get("detail"), str)):
+                        detail = safe_error(problem["detail"], (self._key,))
                 except (UnicodeDecodeError, json.JSONDecodeError):
                     pass
             raise ProviderError(f"provider HTTP {error.code}: {detail}", error.code) from None
@@ -478,6 +604,9 @@ class RunpodClient:
             raise ProviderError("provider request transport failure") from error
         if len(raw) > MAX_PROVIDER_BYTES:
             raise ProviderError("provider response exceeds size limit", status)
+        if expected_status is not None and status != expected_status:
+            raise ProviderError(
+                f"provider returned unexpected HTTP status {status}", status)
         if status == 204 or not raw.strip():
             return None
         try:
@@ -486,31 +615,127 @@ class RunpodClient:
             raise ProviderError("provider returned invalid JSON", status) from error
 
     def list_pods(self):
-        value = self.call("GET", f"{runpod_pod.REST}/pods")
-        return value if isinstance(value, list) else value.get("pods", [])
+        pods = []
+        cursor = None
+        seen = set()
+        for _page in range(10_000):
+            query = {"limit": 1000}
+            if cursor is not None:
+                query["cursor"] = cursor
+            value = self.call(
+                "GET", f"{V2}/pods?{urllib.parse.urlencode(query)}",
+                expected_status=200)
+            if not isinstance(value, dict) or not isinstance(value.get("pods"), list):
+                raise ProviderError("provider returned an invalid Pod list")
+            for pod in value["pods"]:
+                require_v2_pod(pod)
+            pagination = value.get("pagination")
+            if (not isinstance(pagination, dict)
+                    or type(pagination.get("hasNextPage")) is not bool):
+                raise ProviderError("provider returned invalid Pod pagination")
+            pods.extend(value["pods"])
+            if not pagination["hasNextPage"]:
+                if pagination.get("nextCursor") is not None:
+                    raise ProviderError("provider returned a terminal Pod cursor")
+                return pods
+            cursor = pagination.get("nextCursor")
+            if (not isinstance(cursor, str) or not cursor or len(cursor) > 4096
+                    or cursor in seen or any(ch in cursor for ch in "\r\n\0")):
+                raise ProviderError("provider returned an invalid Pod cursor")
+            seen.add(cursor)
+        raise ProviderError("provider Pod pagination exceeded page limit")
 
     def gpu_catalog(self, cloud: str, count: int):
         query = urllib.parse.urlencode({
             "include": "AVAILABILITY", "product": "POD",
             "count": count, "cloud": cloud,
         })
-        value = self.call("GET", f"{V2}/catalog/gpus?{query}")
+        value = self.call(
+            "GET", f"{V2}/catalog/gpus?{query}", expected_status=200)
         if not isinstance(value, dict) or not isinstance(value.get("gpus"), list):
             raise ProviderError("provider returned an invalid GPU catalog")
         return value["gpus"]
 
     def named(self, name):
         return [pod for pod in self.list_pods()
-                if pod.get("name") == name and pod.get("desiredStatus") != "TERMINATED"]
+                if pod.get("name") == name and pod.get("status") != "TERMINATED"]
 
     def create(self, body):
-        return self.call("POST", f"{runpod_pod.REST}/pods", body)
+        if "queue" in body:
+            raise BatchError("batch transport never permits queued Pod creation")
+        return require_v2_pod(
+            self.call("POST", f"{V2}/pods", body, expected_status=201))
 
     def get_v2(self, pod_id):
-        return self.call("GET", f"{V2}/pods/{pod_id}")
+        return require_v2_pod(self.call(
+            "GET", f"{V2}/pods/{pod_id}", expected_status=200))
 
     def delete(self, pod_id):
-        return self.call("DELETE", f"{runpod_pod.REST}/pods/{pod_id}")
+        return self.call(
+            "DELETE", f"{V2}/pods/{pod_id}", expected_status=204)
+
+
+def require_v2_pod(pod: object) -> dict:
+    """Fail closed unless *pod* has the required REST API v2 Pod envelope."""
+    # rp-migrate: ignore start
+    if not isinstance(pod, dict) or not V2_POD_REQUIRED.issubset(pod):
+        raise ProviderError("provider returned a malformed API v2 Pod")
+    cost = pod["cost"]
+    if (not isinstance(pod["id"], str) or POD_ID.fullmatch(pod["id"]) is None
+            or not isinstance(pod["name"], str) or not pod["name"]
+            or not isinstance(pod["status"], str)
+            or pod["status"] not in V2_POD_STATUSES
+            or not isinstance(pod["actions"], list)
+            or not all(isinstance(action, str) for action in pod["actions"])
+            or not isinstance(pod["image"], str) or not pod["image"]
+            or not isinstance(pod["args"], str)
+            or type(pod["disk"]) is not int or pod["disk"] < 1
+            or not isinstance(pod["mounts"], dict)
+            or not isinstance(pod["ports"], list)
+            or not all(isinstance(port, str) for port in pod["ports"])
+            or not isinstance(pod["env"], dict)
+            or not all(isinstance(key, str) and isinstance(value, str)
+                       for key, value in pod["env"].items())
+            or not (pod["registry"] is None or isinstance(pod["registry"], str))
+            or not isinstance(pod["cloud"], str)
+            or not (pod["dataCenterId"] is None
+                    or isinstance(pod["dataCenterId"], str))
+            or not (pod["cudaVersion"] is None
+                    or isinstance(pod["cudaVersion"], str))
+            or not isinstance(pod["ssh"], dict)
+            or not (pod["template"] is None or isinstance(pod["template"], str))
+            or not isinstance(cost, (int, float)) or isinstance(cost, bool)
+            or not math.isfinite(cost)
+            or type(pod["locked"]) is not bool
+            or not (pod["runtime"] is None or isinstance(pod["runtime"], dict))
+            or not isinstance(pod["createdAt"], str) or not pod["createdAt"]
+            or not (pod["startedAt"] is None
+                    or isinstance(pod["startedAt"], str))
+            or not isinstance(pod["globalNetworking"], dict)
+            or type(pod["globalNetworking"].get("enabled")) is not bool
+            or sum(isinstance(pod.get(key), dict) for key in ("gpu", "cpu")) != 1
+            or ("gpu" in pod and not isinstance(pod["gpu"], dict))
+            or ("cpu" in pod and not isinstance(pod["cpu"], dict))):
+        raise ProviderError("provider returned a malformed API v2 Pod")
+    if "gpu" in pod:
+        gpu = pod["gpu"]
+        if (not isinstance(gpu.get("id"), str) or not gpu["id"]
+                or type(gpu.get("count")) is not int or gpu["count"] < 1
+                or not isinstance(gpu.get("vcpuCount"), (int, float))
+                or isinstance(gpu["vcpuCount"], bool)
+                or not math.isfinite(gpu["vcpuCount"]) or gpu["vcpuCount"] < 1
+                or not isinstance(gpu.get("memory"), (int, float))
+                or isinstance(gpu["memory"], bool)
+                or not math.isfinite(gpu["memory"]) or gpu["memory"] < 1):
+            raise ProviderError("provider returned a malformed API v2 GPU Pod")
+    else:
+        cpu = pod["cpu"]
+        if (not isinstance(cpu.get("id"), str) or not cpu["id"]
+                or type(cpu.get("vcpuCount")) is not int or cpu["vcpuCount"] < 2
+                or type(cpu.get("memory")) is not int or cpu["memory"] < 1):
+            raise ProviderError("provider returned a malformed API v2 CPU Pod")
+    # rp-migrate: ignore end
+    return pod
 
 
 def pod_identifier(pod: dict) -> str:
@@ -534,7 +759,7 @@ def reconcile_ambiguous(client, name: str, ownership_id: str, seconds: int,
         if progress is not None:
             progress.update({"attempts": attempts, "last_match_count": None})
         matches = [pod for pod in client.named(name)
-                   if marker_matches(pod, name, ownership_id)]
+                   if marker_matches(require_v2_pod(pod), name, ownership_id)]
         if progress is not None:
             progress["last_match_count"] = len(matches)
         if len(matches) > 1:
@@ -610,11 +835,13 @@ def wait_gpu_capacity(client, args, sleep=time.sleep) -> dict:
 
 
 def provider_summary(pod: dict) -> dict:
+    # rp-migrate: ignore start
     summary = {key: pod.get(key) for key in (
         "id", "name", "status", "gpu", "cost", "cloud", "image", "cudaVersion",
         "dataCenterId", "createdAt", "startedAt")}
     if pod.get("cpu") is not None:
         summary["cpu"] = pod["cpu"]
+    # rp-migrate: ignore end
     return summary
 
 
@@ -624,6 +851,9 @@ def validate_compute_request(args) -> None:
     gpus = getattr(args, "gpu", [])
     flavors = getattr(args, "cpu_flavor", [])
     memory = getattr(args, "cpu_memory", 0)
+    gpu_count = getattr(args, "gpu_count", 0)
+    min_vcpu = getattr(args, "min_vcpu", 0)
+    min_ram = getattr(args, "min_ram", 0)
     if cpu:
         if (gpus or getattr(args, "cloud", None) != "SECURE"
                 or type(cpu) is not int or cpu < 2 or cpu & (cpu - 1)
@@ -633,11 +863,20 @@ def validate_compute_request(args) -> None:
             raise BatchError(
                 "CPU batch requires Secure cloud, one exact --cpu-flavor, "
                 "power-of-two --cpu, positive --cpu-memory, and no --gpu")
-    elif flavors or memory:
-        raise BatchError("--cpu-flavor and --cpu-memory require --cpu")
+    elif (flavors or memory or len(gpus) != 1
+          or not isinstance(gpus[0], str) or not gpus[0] or len(gpus[0]) > 200):
+        raise BatchError(
+            "GPU batch requires exactly one explicit --gpu; API v2 has no fallback list")
+    if not cpu and (
+            type(gpu_count) is not int or not 1 <= gpu_count <= 1024
+            or type(min_vcpu) is not int or not 1 <= min_vcpu <= 4096
+            or type(min_ram) is not int or not 1 <= min_ram <= 65536):
+        raise BatchError("GPU count/vCPU/RAM constraints are outside API v2 limits")
 
 
-def guard_provider(pod: dict, expected_id: str, name: str, args) -> dict:
+def guard_provider(pod: dict, expected_id: str, name: str, args,
+                   ownership_id: str | None = None) -> dict:
+    pod = require_v2_pod(pod)
     validate_compute_request(args)
     cost = pod.get("cost")
     if (pod_identifier(pod) != expected_id or pod.get("name") != name
@@ -646,12 +885,16 @@ def guard_provider(pod: dict, expected_id: str, name: str, args) -> dict:
                 runpod_pod.CPU_IMAGE if args.cpu else runpod_pod.GPU_IMAGE))
             or not isinstance(cost, (int, float)) or isinstance(cost, bool)
             or not math.isfinite(cost) or not 0 < cost <= args.max_price
-            or f"{HTTP_PORT}/http" not in (pod.get("ports") or [])):
+            or pod.get("ports") != [f"{HTTP_PORT}/http"]
+            or pod.get("mounts") != {}
+            or (pod.get("globalNetworking") or {}).get("enabled") is not False
+            or (ownership_id is not None
+                and not marker_matches(pod, name, ownership_id))):
         raise BatchError("allocated pod identity/compute/price/HTTP guard failed")
     if args.cpu:
+        # rp-migrate: ignore start
         cpu = pod.get("cpu") or {}
         if (pod.get("gpu") is not None or pod.get("cudaVersion") is not None
-                or pod.get("ports") != [f"{HTTP_PORT}/http"]
                 or cpu.get("id") != args.cpu_flavor[0]
                 or type(cpu.get("vcpuCount")) is not int
                 or cpu["vcpuCount"] != args.cpu
@@ -659,31 +902,35 @@ def guard_provider(pod: dict, expected_id: str, name: str, args) -> dict:
                 or cpu["memory"] != args.cpu_memory):
             raise BatchError(
                 "allocated pod identity/CPU/vCPU/RAM/no-GPU/HTTP guard failed")
+        # rp-migrate: ignore end
     else:
+        # rp-migrate: ignore start
         gpu = pod.get("gpu") or {}
         allowed = args.gpu or runpod_pod.DEFAULT_GPUS
         cuda = pod.get("cudaVersion")
         if (gpu.get("id") not in allowed or gpu.get("count") != args.gpu_count
                 or not isinstance(gpu.get("vcpuCount"), (int, float))
                 or isinstance(gpu.get("vcpuCount"), bool)
-                or gpu["vcpuCount"] < args.min_vcpu
+                or gpu["vcpuCount"] < args.min_vcpu * args.gpu_count
                 or not isinstance(gpu.get("memory"), (int, float))
                 or isinstance(gpu.get("memory"), bool)
-                or gpu["memory"] < args.min_ram
+                or gpu["memory"] < args.min_ram * args.gpu_count
                 or not isinstance(cuda, str)
                 or not re.fullmatch(r"[0-9]+\.[0-9]+", cuda)):
             raise BatchError("allocated pod identity/GPU/CUDA/price/HTTP guard failed")
+        # rp-migrate: ignore end
     return provider_summary(pod)
 
 
-def wait_provider(client, pod_id: str, name: str, args, sleep=time.sleep) -> dict:
+def wait_provider(client, pod_id: str, name: str, args,
+                  ownership_id: str | None = None, sleep=time.sleep) -> dict:
     deadline = time.monotonic() + args.wait
     last = None
     while time.monotonic() < deadline:
         try:
             last = client.get_v2(pod_id)
             if last.get("status") == "RUNNING":
-                return guard_provider(last, pod_id, name, args)
+                return guard_provider(last, pod_id, name, args, ownership_id)
             if last.get("status") in ("ERROR", "EXITED", "TERMINATED"):
                 raise BatchError(f"pod entered terminal state {last.get('status')}")
         except ProviderError as error:
@@ -693,7 +940,8 @@ def wait_provider(client, pod_id: str, name: str, args, sleep=time.sleep) -> dic
     raise BatchError(f"pod did not become RUNNING within {args.wait} seconds")
 
 
-def monitor_provider(client, pod_id: str, name: str, args) -> None:
+def monitor_provider(client, pod_id: str, name: str, args,
+                     ownership_id: str | None = None) -> None:
     try:
         pod = client.get_v2(pod_id)
     except ProviderError as error:
@@ -703,7 +951,7 @@ def monitor_provider(client, pod_id: str, name: str, args) -> None:
     status = pod.get("status")
     if status != "RUNNING":
         raise BatchError(f"pod left RUNNING state during result polling: {status}")
-    guard_provider(pod, pod_id, name, args)
+    guard_provider(pod, pod_id, name, args, ownership_id)
 
 
 def validate_status(status: dict, expected: dict) -> dict:
@@ -947,11 +1195,13 @@ def extract_verified(archive_path: Path, outputs: list[str], repo: Path,
 
 
 def cleanup_exact(client, pod_id: str, sleep=time.sleep) -> dict:
+    delete_status = 204
     try:
         client.delete(pod_id)
     except ProviderError as error:
         if error.status != 404:
             raise
+        delete_status = 404
     for _ in range(6):
         try:
             visible = client.get_v2(pod_id)
@@ -960,6 +1210,8 @@ def cleanup_exact(client, pod_id: str, sleep=time.sleep) -> dict:
         except ProviderError as error:
             if error.status == 404:
                 return {"id": pod_id, "delete_requested": True,
+                        "delete_http_status": delete_status,
+                        "absence_http_status": 404,
                         "absence_verified": True}
             if error.status not in (429, 500, 502, 503, 504):
                 raise
@@ -988,6 +1240,7 @@ def execute(args, *, client=None, transport=None, repo=REPO,
         "outputs": outputs, "request": request_summary(body),
         "transport": {"kind": "runpod-https-proxy", "port": HTTP_PORT,
                       "chunk_bytes": CHUNK_BYTES, "authentication": "ephemeral bearer"},
+        "provider_api": provider_api_binding(),
     }
     capacity_enabled = getattr(args, "catalog_wait_seconds", 0) > 0
     if capacity_enabled:
@@ -1043,6 +1296,9 @@ def execute(args, *, client=None, transport=None, repo=REPO,
             if capacity_enabled:
                 receipt["capacity_gate"]["create_attempted"] = True
             created = client.create(body)
+            receipt["provider_http"] = {
+                "create": {"method": "POST", "path": "/v2/pods", "status": 201},
+            }
             candidate_id = pod_identifier(created)
             if created.get("name") != name:
                 raise BatchError("create response name mismatch")
@@ -1081,7 +1337,8 @@ def execute(args, *, client=None, transport=None, repo=REPO,
                 "pod creation response was refused or ambiguous; no retry"
             ) from create_error
 
-        summary = wait_provider(client, pod_id, name, args, sleep=sleep)
+        summary = wait_provider(
+            client, pod_id, name, args, ownership_id, sleep=sleep)
         receipt["pod"] = {**summary, "creation_response_ambiguous": False}
         expected = {
             "job_id": name, "commit": source["commit"], "tree": source["tree"],
@@ -1098,7 +1355,8 @@ def execute(args, *, client=None, transport=None, repo=REPO,
         deadline = time.monotonic() + args.timeout + args.wait
         status = transport.wait_status(
             proxy_base(pod_id), token, expected, deadline, sleep=sleep,
-            provider_monitor=lambda: monitor_provider(client, pod_id, name, args))
+            provider_monitor=lambda: monitor_provider(
+                client, pod_id, name, args, ownership_id))
         receipt["remote_status"] = status
         transport.download(proxy_base(pod_id), token, status, archive_path)
         verified = extract_verified(
@@ -1116,6 +1374,12 @@ def execute(args, *, client=None, transport=None, repo=REPO,
         if pod_id is not None:
             try:
                 receipt["cleanup"] = cleanup_exact(client, pod_id, sleep=sleep)
+                receipt.setdefault("provider_http", {})["cleanup"] = {
+                    "delete": {"method": "DELETE", "path": f"/v2/pods/{pod_id}",
+                               "status": receipt["cleanup"]["delete_http_status"]},
+                    "absence": {"method": "GET", "path": f"/v2/pods/{pod_id}",
+                                "status": receipt["cleanup"]["absence_http_status"]},
+                }
             except BaseException as error:
                 receipt["cleanup"] = {"id": pod_id, "delete_requested": False,
                                       "absence_verified": False,

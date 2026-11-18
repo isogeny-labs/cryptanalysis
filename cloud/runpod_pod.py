@@ -65,9 +65,11 @@ DEFAULT_GPUS = [
 # makes a runner), if any, in the background; then the image's /start.sh,
 # which installs PUBLIC_KEY and starts sshd.
 STAGE0 = r"""( sleep "$POD_MAX_SECONDS"
-  curl -s https://api.runpod.io/graphql -H 'Content-Type: application/json' \
+  curl --fail --silent --show-error --request POST \
+    "https://api.runpod.io/v2/pods/$RUNPOD_POD_ID/action" \
+    -H 'Content-Type: application/json' \
     -H "Authorization: Bearer $RUNPOD_API_KEY" \
-    -d "{\"query\":\"mutation { podStop(input: {podId: \\\"$RUNPOD_POD_ID\\\"}) { id } }\"}"
+    --data '{"action":"stop"}'
 ) >/tmp/pod-lifetime.log 2>&1 &
 if [ -n "${SHIP_PREFETCH:-}" ]; then
   (

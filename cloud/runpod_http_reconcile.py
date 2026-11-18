@@ -21,7 +21,7 @@ sys.path.insert(0, str(HERE))
 import runpod_http_batch as batch  # noqa: E402
 
 
-SCHEMA = "runpod.http-batch.ambiguous-create-reconciliation/v1"
+SCHEMA = "runpod.http-batch.ambiguous-create-reconciliation/v2"
 SAFE_NAME = re.compile(r"[A-Za-z0-9][A-Za-z0-9-]{0,99}\Z")
 
 
@@ -36,6 +36,9 @@ def load_binding(path: Path) -> tuple[dict, str, str]:
     )
     name = request.get("name")
     ownership_id = reconciliation.get("ownership_id")
+    if value.get("provider_api") != batch.provider_api_binding():
+        raise batch.BatchError("controller receipt lacks the reviewed API v2 binding")
+    batch.validate_request_summary(request)
     if (
         not isinstance(name, str) or SAFE_NAME.fullmatch(name) is None
         or reconciliation.get("name") != name
@@ -80,6 +83,8 @@ def execute(args, *, client=None, sleep=None) -> int:
             "sha256": batch.sha256_file(args.controller_receipt),
         },
         "binding": {"name": name, "ownership_id": ownership_id},
+        "provider_api": batch.provider_api_binding(),
+        "provider_http": {},
         "matched_pod_id": None,
         "cleanup": None,
         "absence_verified_by_name_and_marker": False,
@@ -90,8 +95,12 @@ def execute(args, *, client=None, sleep=None) -> int:
     try:
         matches = [
             pod for pod in client.named(name)
-            if batch.marker_matches(pod, name, ownership_id)
+            if batch.marker_matches(batch.require_v2_pod(pod), name, ownership_id)
         ]
+        record["provider_http"]["inventory"] = {
+            "method": "GET", "path": "/v2/pods", "status": 200,
+            "pagination": "complete",
+        }
         if len(matches) > 1:
             raise batch.BatchError("multiple exact-name ownership-bound pods; refusing deletion")
         if not matches:
@@ -99,7 +108,25 @@ def execute(args, *, client=None, sleep=None) -> int:
         else:
             pod_id = batch.pod_identifier(matches[0])
             record["matched_pod_id"] = pod_id
+            current = batch.require_v2_pod(client.get_v2(pod_id))
+            record["provider_http"]["ownership"] = {
+                "method": "GET", "path": f"/v2/pods/{pod_id}", "status": 200,
+            }
+            if (batch.pod_identifier(current) != pod_id
+                    or not batch.marker_matches(current, name, ownership_id)):
+                raise batch.BatchError(
+                    "current pod does not retain exact reconciliation ownership")
             record["cleanup"] = batch.cleanup_exact(client, pod_id, sleep=sleeper)
+            record["provider_http"]["cleanup"] = {
+                "delete": {
+                    "method": "DELETE", "path": f"/v2/pods/{pod_id}",
+                    "status": record["cleanup"]["delete_http_status"],
+                },
+                "absence": {
+                    "method": "GET", "path": f"/v2/pods/{pod_id}",
+                    "status": record["cleanup"]["absence_http_status"],
+                },
+            }
     except BaseException as error:
         pending = error
         record["error"] = batch.error_record(error)

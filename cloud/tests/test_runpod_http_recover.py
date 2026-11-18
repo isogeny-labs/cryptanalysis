@@ -72,11 +72,17 @@ def listed_pod(args):
 
 def provider_pod(args):
     return {
+        **listed_pod(args),
         "id": args.pod_id, "name": args.pod_name, "status": "RUNNING",
-        "cloud": args.cloud, "image": args.image, "cost": 1.19,
+        "actions": ["stop", "terminate"], "args": "", "disk": args.disk,
+        "registry": None, "ssh": {}, "template": None, "locked": False,
+        "runtime": None, "createdAt": "synthetic", "startedAt": "synthetic",
+        "cloud": args.cloud, "dataCenterId": "EU-RO-1",
+        "image": args.image, "cost": 1.19,
         "ports": [f"{batch.HTTP_PORT}/http"], "cudaVersion": "13.2",
         "gpu": {"id": args.gpu[0], "count": 1, "vcpuCount": 16,
                 "memory": 62},
+        "mounts": {}, "globalNetworking": {"enabled": False},
     }
 
 
@@ -123,7 +129,7 @@ class FakeClient:
         self.deleted = []
 
     def list_pods(self):
-        return [listed_pod(self.args)]
+        return [provider_pod(self.args)]
 
     def get_v2(self, pod_id):
         if pod_id in self.deleted:
@@ -201,6 +207,20 @@ class RecoveryTests(unittest.TestCase):
             receipt = json.loads(args.receipt.read_text())
             self.assertEqual(receipt["schema"], recover.SCHEMA)
             self.assertTrue(receipt["cleanup"]["absence_verified"])
+            self.assertEqual(receipt["provider_api"]["version"], "v2")
+            self.assertEqual(receipt["provider_http"], {
+                "existing_pod": {
+                    "method": "GET", "path": f"/v2/pods/{POD}", "status": 200,
+                },
+                "cleanup": {
+                    "delete": {
+                        "method": "DELETE", "path": f"/v2/pods/{POD}", "status": 204,
+                    },
+                    "absence": {
+                        "method": "GET", "path": f"/v2/pods/{POD}", "status": 404,
+                    },
+                },
+            })
             self.assertEqual(receipt["remote_status"]["returncode"], 0)
             self.assertEqual(receipt["result"]["archive_sha256"],
                              hashlib.sha256(data).hexdigest())
@@ -225,6 +245,33 @@ class RecoveryTests(unittest.TestCase):
             text = args.receipt.read_text()
             self.assertNotIn(TOKEN, text)
             self.assertIn("<redacted>", text)
+
+    def test_changed_current_ownership_marker_is_never_deleted(self):
+        class ChangedOwnershipClient(FakeClient):
+            def get_v2(self, pod_id):
+                pod = super().get_v2(pod_id)
+                pod["env"]["RUNPOD_BATCH_OWNERSHIP_ID"] = "0" * 64
+                return pod
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            repo = root / "repo"
+            repo.mkdir()
+            args = args_for(root)
+            client = ChangedOwnershipClient(args)
+            with self.assertRaisesRegex(batch.BatchError, "exact recovery ownership"):
+                recover.execute(
+                    args, client=client,
+                    transport=FakeTransport(args, result_archive()),
+                    repo=repo, sleep=lambda _s: None,
+                    tool_binding_fn=lambda _repo, commit: {
+                        "path": recover.TOOL_PATH, "commit": commit,
+                        "sha256": "f" * 64},
+                )
+            self.assertEqual(client.deleted, [])
+            receipt = json.loads(args.receipt.read_text())
+            self.assertIsNone(receipt["cleanup"])
+            self.assertEqual(receipt["provider_http"]["existing_pod"]["status"], 200)
 
 
 if __name__ == "__main__":

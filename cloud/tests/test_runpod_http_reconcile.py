@@ -27,7 +27,24 @@ def controller_receipt() -> dict:
     return {
         "schema": batch.SCHEMA,
         "provider_actions": True,
-        "request": {"name": NAME},
+        "request": {
+            "api": "runpod-rest/v2", "name": NAME, "cloud": "SECURE",
+            "image": "synthetic/image:v2", "disk": 1,
+            "ports": ["8888/http"], "mounts": {},
+            "gpu": {
+                "id": "synthetic-gpu", "count": 1,
+                "minVcpuCountPerGpu": 1, "minRamPerGpu": 1,
+            },
+            "cpu": None, "globalNetworking": False,
+            "startJupyter": False, "startSsh": False,
+            "environment_keys": [
+                "POD_MAX_SECONDS", "RUNPOD_BATCH_OWNERSHIP_ID",
+                "RUNPOD_BATCH_TOKEN",
+            ],
+            "startup_sha256": "1" * 64, "entrypoint": ["bash", "-c"],
+            "secrets_redacted": True,
+        },
+        "provider_api": batch.provider_api_binding(),
         "reconciliation": {
             "name": NAME,
             "ownership_id": OWNERSHIP,
@@ -39,6 +56,21 @@ def controller_receipt() -> dict:
         "pod": None,
         "cleanup": None,
         "error": {"type": "BatchError", "detail": "ambiguous create"},
+    }
+
+
+def v2_pod(pod_id=POD_ID, ownership=OWNERSHIP):
+    return {
+        "id": pod_id, "name": NAME, "status": "RUNNING",
+        "actions": ["stop", "terminate"], "image": "synthetic/image:v2",
+        "args": "", "disk": 1, "mounts": {}, "ports": ["8888/http"],
+        "env": {"RUNPOD_BATCH_OWNERSHIP_ID": ownership}, "registry": None,
+        "cloud": "SECURE", "dataCenterId": "SYNTHETIC", "cudaVersion": "13.2",
+        "ssh": {}, "template": None, "cost": 0.1, "locked": False,
+        "runtime": None, "createdAt": "synthetic", "startedAt": "synthetic",
+        "globalNetworking": {"enabled": False},
+        "gpu": {"id": "synthetic-gpu", "count": 1,
+                "vcpuCount": 1, "memory": 1},
     }
 
 
@@ -77,40 +109,63 @@ class AmbiguousCreateReconciliationTests(unittest.TestCase):
         args, out, client = self.run_case(FakeClient([]))
         self.assertEqual(reconcile.execute(args, client=client, sleep=lambda _s: None), 0)
         record = json.loads(out.read_text(encoding="utf-8"))
+        self.assertEqual(
+            record["schema"], "runpod.http-batch.ambiguous-create-reconciliation/v2")
+        self.assertEqual(record["provider_api"]["version"], "v2")
+        self.assertEqual(record["provider_http"]["inventory"], {
+            "method": "GET", "path": "/v2/pods", "status": 200,
+            "pagination": "complete",
+        })
         self.assertTrue(record["absence_verified_by_name_and_marker"])
         self.assertIsNone(record["matched_pod_id"])
         self.assertEqual(client.deleted, [])
 
     def test_one_exact_owned_pod_is_deleted_and_404_verified(self):
-        pod = {
-            "id": POD_ID, "name": NAME,
-            "env": {"RUNPOD_BATCH_OWNERSHIP_ID": OWNERSHIP},
-        }
+        pod = v2_pod()
         args, out, client = self.run_case(FakeClient([pod]))
         self.assertEqual(reconcile.execute(args, client=client, sleep=lambda _s: None), 0)
         record = json.loads(out.read_text(encoding="utf-8"))
         self.assertEqual(record["matched_pod_id"], POD_ID)
         self.assertEqual(client.deleted, [POD_ID])
         self.assertEqual(record["cleanup"], {
-            "id": POD_ID, "delete_requested": True, "absence_verified": True,
+            "id": POD_ID, "delete_requested": True,
+            "delete_http_status": 204, "absence_http_status": 404,
+            "absence_verified": True,
+        })
+        self.assertEqual(record["provider_http"]["cleanup"], {
+            "delete": {
+                "method": "DELETE", "path": f"/v2/pods/{POD_ID}", "status": 204,
+            },
+            "absence": {
+                "method": "GET", "path": f"/v2/pods/{POD_ID}", "status": 404,
+            },
         })
 
     def test_wrong_ownership_marker_is_never_deleted(self):
-        pod = {
-            "id": POD_ID, "name": NAME,
-            "env": {"RUNPOD_BATCH_OWNERSHIP_ID": "0" * 64},
-        }
+        pod = v2_pod(ownership="0" * 64)
         args, out, client = self.run_case(FakeClient([pod]))
         self.assertEqual(reconcile.execute(args, client=client, sleep=lambda _s: None), 0)
         self.assertEqual(client.deleted, [])
         self.assertTrue(json.loads(out.read_text())["absence_verified_by_name_and_marker"])
 
+    def test_changed_current_ownership_marker_is_never_deleted(self):
+        class ChangedOwnershipClient(FakeClient):
+            def get_v2(self, pod_id):
+                return v2_pod(pod_id, ownership="0" * 64)
+
+        args, out, client = self.run_case(ChangedOwnershipClient([v2_pod()]))
+        with self.assertRaisesRegex(batch.BatchError, "reconciliation ownership"):
+            reconcile.execute(args, client=client, sleep=lambda _s: None)
+        self.assertEqual(client.deleted, [])
+        record = json.loads(out.read_text())
+        self.assertEqual(record["matched_pod_id"], POD_ID)
+        self.assertEqual(record["provider_http"]["ownership"], {
+            "method": "GET", "path": f"/v2/pods/{POD_ID}", "status": 200,
+        })
+        self.assertIsNotNone(record["error"])
+
     def test_multiple_owned_matches_fail_closed_without_delete(self):
-        pods = [
-            {"id": POD_ID + suffix, "name": NAME,
-             "env": {"RUNPOD_BATCH_OWNERSHIP_ID": OWNERSHIP}}
-            for suffix in ("a", "b")
-        ]
+        pods = [v2_pod(POD_ID + suffix) for suffix in ("a", "b")]
         args, out, client = self.run_case(FakeClient(pods))
         with self.assertRaises(batch.BatchError):
             reconcile.execute(args, client=client, sleep=lambda _s: None)
@@ -124,6 +179,21 @@ class AmbiguousCreateReconciliationTests(unittest.TestCase):
         with self.assertRaises(batch.BatchError):
             reconcile.execute(args, client=client, sleep=lambda _s: None)
         self.assertEqual(client.deleted, [])
+
+    def test_legacy_or_unbound_transport_receipt_is_refused(self):
+        mutations = {
+            "missing-v2-api": lambda value: value["request"].pop("api"),
+            "legacy-request-key": lambda value: value["request"].update(
+                cloudType="SECURE"),
+            "wrong-openapi": lambda value: value["provider_api"].update(
+                openapi_sha256="0" * 64),
+        }
+        for label, mutate in mutations.items():
+            args, out, client = self.run_case(FakeClient([]), mutate)
+            with self.subTest(label=label), self.assertRaises(batch.BatchError):
+                reconcile.execute(args, client=client, sleep=lambda _s: None)
+            self.assertFalse(out.exists())
+            self.assertEqual(client.deleted, [])
 
     def test_capacity_timeout_without_create_attempt_is_refused(self):
         def mark_unspent(value):

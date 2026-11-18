@@ -59,7 +59,12 @@ class PodBodyTest(unittest.TestCase):
         self.assertTrue(args.keep)
 
     def test_pid1_hands_over_to_the_image_start_script(self):
-        self.assertIn("podStop", runpod_pod.STAGE0)
+        self.assertNotIn("api.runpod.io/graphql", runpod_pod.STAGE0)
+        self.assertIn(
+            "https://api.runpod.io/v2/pods/$RUNPOD_POD_ID/action",
+            runpod_pod.STAGE0,
+        )
+        self.assertIn('--data \'{"action":"stop"}\'', runpod_pod.STAGE0)
         self.assertTrue(runpod_pod.STAGE0.rstrip().endswith("exec sleep infinity"))
         self.assertIn("exec /start.sh", runpod_pod.STAGE0)
         # The checkout's commit is fetched and the boot script started before
