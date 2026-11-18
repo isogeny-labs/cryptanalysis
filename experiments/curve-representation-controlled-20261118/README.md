@@ -22,7 +22,7 @@ The collector interval includes query construction, per-query audit and artifact
 
 `export_panel.py` adapts actual captured rows through the canonical unified exporter, retains raw-file hashes and leaves independent verification/timing qualification unset. No export has been produced before execution. [pcc:unverified]
 
-`run_panel.py` refuses an unfrozen/modified protocol or changed source. Normal execution requires the repository checkpoint and GPU-host admission. A CPU-only/Git-checkpoint alternative additionally requires the user's actual explicit exception; `admission.example.json` is deliberately not an authorization. The asynchronous clarification question is pending. No held-out panel inputs, observations or measured comparisons have been produced in this continuation. [pcc:unverified]
+`run_panel.py` refuses an unfrozen/modified protocol or changed source. Normal execution requires the repository checkpoint and GPU-host admission. A CPU-only/Git-checkpoint alternative additionally requires the user's actual explicit exception; `admission.example.json` is deliberately not an authorization. The user authorized Git checkpoint storage on 2026-11-18 ("Upload to git"); execution-host admission remains unresolved. No held-out panel inputs, observations or measured comparisons have been produced in this continuation. [pcc:unverified]
 
 The source is ready for an admitted bounded panel, not certified as a production F4 implementation. Full performance qualification, canonical identity promotion and signed independent scientific review remain separate gates. [pcc:unverified]
 
