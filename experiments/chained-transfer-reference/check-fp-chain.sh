@@ -3,7 +3,12 @@
 set -euo pipefail
 study_dir=$(cd -- "$(dirname -- "$0")" && pwd)
 repo_root=$(git -C "$study_dir" rev-parse --show-toplevel)
+[[ $# -eq 3 ]] || {
+  echo 'usage: check-fp-chain.sh UPSTREAM_ROOT RUN_DIR PREDECESSOR_ROOT' >&2
+  exit 2
+}
 upstream_root=$(cd -- "${1:-$repo_root/../crypto}" && pwd)
+predecessor_root=$(cd -- "$3" && pwd)
 for required_tool in bash git grep awk timeout sha256sum cargo rustfmt lean find sort xargs cmp mktemp date python3 cat wc tee; do
   command -v "$required_tool" >/dev/null || { echo "missing fp-chain replay tool:$required_tool" >&2; exit 2; }
 done
@@ -33,6 +38,10 @@ for name in "${identity_names[@]}"; do protected_paths+=("$upstream_study/eviden
 consumer_paths=(
   "$consumer_study/src" "$consumer_study/kernel-checker"
   "$consumer_study/norm-checker" "$consumer_study/check-prime-norms.sh"
+  "$consumer_study/check.sh" "$consumer_study/check-fp-chain.sh"
+  "$consumer_study/verify-fp-chain-input-transition.py"
+  "$consumer_study/reference.sha256"
+  "$consumer_study/evidence/fp-chain-successor-inputs-01/transition.json"
   "$consumer_study/fp-chain-upstream-commit.txt"
   "$consumer_study/PRIME_NORM_REPLAY_PROTOCOL.md"
   "$consumer_study/PRIME_NORM_PULLBACK_DERIVATION.md"
@@ -41,7 +50,7 @@ consumer_paths=(
 )
 
 consumer_paths+=(
-  "$consumer_study/fp-chain-checker" "$consumer_study/check-fp-chain.sh"
+  "$consumer_study/fp-chain-checker"
   "$consumer_study/FP_CHAIN_ADAPTER_PROTOCOL.md"
   "$consumer_study/FP_CHAIN_ADAPTER_DERIVATION.md"
   "$consumer_study/FP_CHAIN_INDEPENDENT_PROOF.md"
@@ -110,28 +119,21 @@ assert_clean() {
   [[ -z $dirty ]] || { echo 'fp-chain consumer has modified or untracked protected inputs' >&2; return 2; }
 }
 assert_clean || exit 2
-# Baseline retention is a byte check, not an execution-proof claim.
-python3 - "$repo_root" "$study_dir" <<'BASELINE'
-from pathlib import Path
-import json,hashlib,sys
-repo,study=map(Path,sys.argv[1:]);baseline=json.loads((study/'evidence/fp-chain-primary-01/baseline.json').read_text())
-for name,want in baseline['non_workflow_inputs'].items():
-    if hashlib.sha256((repo/name).read_bytes()).hexdigest()!=want:
-        raise SystemExit('changed frozen prior replay input:'+name)
-old=(study/'evidence/fp-chain-primary-01/five-original-jobs.yml').read_bytes()
-if not (repo/'.github/workflows/chained-transfer-reference.yml').read_bytes().startswith(old):
-    raise SystemExit('changed complete five-job prefix')
-BASELINE
 dependency_root=$(cd -- "$study_dir/../../../crypto" && pwd)
 [[ $dependency_root == "$upstream_root" ]] || { echo 'fp-chain dependency layout mismatch' >&2; exit 2; }
-if [[ $# -ge 2 ]]; then
-  run_dir=$2
-  [[ ! -e $run_dir ]] || { echo 'fp-chain output directory already exists' >&2; exit 2; }
-  mkdir -- "$run_dir"
-else
-  run_dir=$(mktemp -d "${TMPDIR:-/tmp}/chained-fp-chain.XXXXXXXX")
-fi
+run_dir=$2
+[[ ! -e $run_dir ]] || { echo 'fp-chain output directory already exists' >&2; exit 2; }
+mkdir -- "$run_dir"
 run_dir=$(cd -- "$run_dir" && pwd)
+python3 "$study_dir/verify-fp-chain-input-transition.py" full \
+  --repo "$repo_root" \
+  --predecessor-root "$predecessor_root" \
+  --transition "$study_dir/evidence/fp-chain-successor-inputs-01/transition.json" \
+  | tee "$run_dir/input-transition-verification.json"
+git -C "$repo_root" rev-parse HEAD > "$run_dir/current-commit.txt"
+git -C "$repo_root" rev-parse 'HEAD^{tree}' > "$run_dir/current-tree.txt"
+git -C "$predecessor_root" rev-parse HEAD > "$run_dir/predecessor-commit.txt"
+git -C "$predecessor_root" rev-parse 'HEAD^{tree}' > "$run_dir/predecessor-tree.txt"
 build_root=$(mktemp -d "${TMPDIR:-/tmp}/chained-fp-chain-build.XXXXXXXX")
 printf '%s\n' "$build_root" > "$run_dir/build-cache-path.txt"
 date -u +%Y-%m-%dT%H:%M:%SZ > "$run_dir/start.txt"
@@ -290,4 +292,4 @@ run_phase chain-cli 5m chain_cli_phase
 run_phase chain-proofs 10m chain_proof_phase
 awk '/^PASS[[:space:]]/ {modules++;compiled+=$2;trusted+=$4} END {if(modules!=1 || compiled!=11 || trusted!=0) exit 1;printf "PASS chain consumer proofs:1module/11compiled/11written/0trusted\n"}' "$run_dir/chain-proofs.txt" | tee "$run_dir/chain-proof-summary.txt"
 find "$build_root" -path '*/.fingerprint/*/lib-isogeny_algos.json' -type f -print -exec sha256sum {} \; > "$run_dir/dependency-fingerprints.txt"
-printf 'PASS fp-chain integration:43native/24algebra/elevenexactidentities/botholdnativeJSONcmp/40upstreammodules238compiled212written0trusted/oldkernel4+CLI/newnorm4+CLI/consumer11Lean/newchain4+boundedCLI/newchain11Lean/old50+fivejobprefixretained/whole-inputguards;unsigned\n'
+printf 'PASS fp-chain integration:43native/24algebra/elevenexactidentities/botholdnativeJSONcmp/40upstreammodules238compiled212written0trusted/oldkernel4+CLI/newnorm4+CLI/consumer11Lean/newchain4+boundedCLI/newchain11Lean/predecessor50+successor49plus1+declaredfivejobprefixtransition/whole-inputguards;unsigned\n'

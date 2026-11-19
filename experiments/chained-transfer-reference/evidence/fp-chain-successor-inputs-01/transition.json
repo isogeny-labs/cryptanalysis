@@ -1,0 +1,138 @@
+{
+  "schema": "chained-transfer-input-transition/v1",
+  "record_state": "declared_successor_inputs",
+  "authority": "input declaration; not a replay receipt or scientific certificate",
+  "predecessor": {
+    "repository": "aburan28/cryptanalysis",
+    "commit": "635bd2d2b57af89fb474039db6fcba72631bf681",
+    "tree": "b328e41853425da220fd19904a2a270745dfd0a9",
+    "baseline": {
+      "path": "experiments/chained-transfer-reference/evidence/fp-chain-primary-01/baseline.json",
+      "bytes": 7133,
+      "sha256": "f36ff1dc4e863500e4676550b0d9e588965d3a57323775bd7054492639645053",
+      "entry_count": 50
+    },
+    "reference_manifest": {
+      "path": "experiments/chained-transfer-reference/reference.sha256",
+      "bytes": 418,
+      "sha256": "2234198b617666889eaf69cc26d8192b69de24f63e99d477628c6fc0d31c4fd2",
+      "entry_count": 4
+    },
+    "workflow_prefix": {
+      "path": "experiments/chained-transfer-reference/evidence/fp-chain-primary-01/five-original-jobs.yml",
+      "bytes": 16651,
+      "sha256": "bf131a55292cc9a9a5fe511737e364d1d1b6a15e90cee0c47357cb4ce1650180"
+    }
+  },
+  "successor": {
+    "retained_baseline_entry_count": 49,
+    "replaced_baseline_entries": [
+      {
+        "path": "suite/src/prime_hyperelliptic/mod.rs",
+        "predecessor_bytes": 2688,
+        "predecessor_sha256": "b6906f75b4d0eb6b7ac406a0fca1b2cef1786a528d4aedbab414e9fa1e7f7662",
+        "successor_bytes": 4632,
+        "successor_sha256": "32b996fe614230480c11edd695cd778018fac0d7443d6a1f3907d4bf79c78bed"
+      }
+    ],
+    "new_reference_paths": [
+      "suite/src/prime_hyperelliptic/balanced.rs",
+      "suite/src/prime_hyperelliptic/cover_transfer.rs",
+      "suite/src/prime_hyperelliptic/model_transfer.rs",
+      "suite/src/prime_hyperelliptic/normalized_cover_transfer.rs",
+      "suite/src/prime_hyperelliptic/primality.rs"
+    ],
+    "reference_manifest_serialization": "sorted ASCII '<sha256>  <path>\\n'",
+    "reference_manifest_bytes": 988,
+    "reference_manifest_sha256": "934583411129ac6ca7aa7cfab5a687ac14b242fa3866861a5fb7f529866744c8",
+    "reference_inputs": [
+      [
+        "suite/src/prime_hyperelliptic/balanced.rs",
+        41245,
+        "5a5f275021cf901e44a2a2a0e3fb9238e55da2772a1620ec153d0d8e4461d451"
+      ],
+      [
+        "suite/src/prime_hyperelliptic/cover_transfer.rs",
+        42227,
+        "10bb0b0fd2c35b8fafb9e5570c01c5ff597f43a71bdac49a9b9f7e51ad5093a4"
+      ],
+      [
+        "suite/src/prime_hyperelliptic/curve.rs",
+        58596,
+        "7a769bfb7abfe92ce06da7c02340f2a2426827d8066ebef510375149b8c3d5ad"
+      ],
+      [
+        "suite/src/prime_hyperelliptic/fp2.rs",
+        12739,
+        "b833bdff5247f2eea0cde7feb89d0378cfe8305671f9065d2dae7ab538c03e55"
+      ],
+      [
+        "suite/src/prime_hyperelliptic/fp_poly.rs",
+        11867,
+        "44f7af14d22bed78d85c4bd009ccce7197fa9257e7ff56164c8d891303e49590"
+      ],
+      [
+        "suite/src/prime_hyperelliptic/mod.rs",
+        4632,
+        "32b996fe614230480c11edd695cd778018fac0d7443d6a1f3907d4bf79c78bed"
+      ],
+      [
+        "suite/src/prime_hyperelliptic/model_transfer.rs",
+        17517,
+        "cf8d723a0aadd9a4bbdcd2dd56e581ee4bdc0253513d6da9deba95fc5f67ec50"
+      ],
+      [
+        "suite/src/prime_hyperelliptic/normalized_cover_transfer.rs",
+        20963,
+        "35f81b57d72b4f12e1c14a2392e2510982ca9225843117798c0f1e80d16a571a"
+      ],
+      [
+        "suite/src/prime_hyperelliptic/primality.rs",
+        8218,
+        "3b055ac166717960963e4e80b7d75eaba6c1681a7bc2e7ddfbb0d4af4d5aaf1c"
+      ]
+    ],
+    "workflow_prefix": {
+      "bytes": 16651,
+      "sha256": "0adde6d199b330517bb4498f8568a306f8252a21a420075e98d12c637c608407",
+      "allowed_replacements": [
+        {
+          "zero_based_byte_offset": 4908,
+          "length": 40,
+          "before": "ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "after": "cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+          "change_commit": "9468130a586f5c70d2a25a19872d8f1c178f3e42",
+          "merge_commit": "84628f6a93438f1544050815cd46999f07592a78"
+        }
+      ]
+    },
+    "full_workflow": {
+      "path": ".github/workflows/chained-transfer-reference.yml",
+      "bytes": 26045,
+      "sha256": "ca1fe1a20cb8a2738541772368b270534ad475fcc8dd1c47f15a45f0c50af47c"
+    },
+    "implementation_files": {
+      "check_sh": {
+        "path": "experiments/chained-transfer-reference/check.sh",
+        "bytes": 1497,
+        "sha256": "fc5f80887fbe88a9f3d2b5d1668b9a3df54798a7f5968f87558624022526962c"
+      },
+      "check_fp_chain_sh": {
+        "path": "experiments/chained-transfer-reference/check-fp-chain.sh",
+        "bytes": 16602,
+        "sha256": "332801d719638508a5a136f6acdc1c85f1451bb1e7846c60d0a3d39967d4574d"
+      },
+      "verifier": {
+        "path": "experiments/chained-transfer-reference/verify-fp-chain-input-transition.py",
+        "bytes": 25927,
+        "sha256": "00702d8cf9e70f383f9eb0ed6cdae20788690403a6c13f42f9997d813e32a6a5"
+      }
+    }
+  },
+  "claims": {
+    "historical_inputs_verified": true,
+    "historical_run_reexecuted": false,
+    "successor_replay_required": true,
+    "mathematical_claim_changed": false
+  }
+}
