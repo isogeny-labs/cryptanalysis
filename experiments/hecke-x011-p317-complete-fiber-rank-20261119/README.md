@@ -9,6 +9,13 @@ rows retain rank **38 over F61** and **39 over Q** when embedded with a zero
 40th column. Thus the direct rows supply the new column's missing rank
 direction in both fields.
 
+The regularization `j(16,60)=-121` and a stronger Lean proof of that map
+were established earlier in the D=−1407 regular-branch experiment at
+`experiments/hecke-d1407-f6-20261023/RESULT.md` in the research archive.
+The present contribution is its p317 class-ledger consequence and the
+complete 40-column rank comparison. The earlier broad branch census did
+not include this p317 class receipt among its 63 saved outputs.
+
 | Relation rows on 40 columns | Rows | Rank over F61 | Rank over Q |
 | --- | ---: | ---: | ---: |
 | Archived base | 18 | 18 | 18 |
