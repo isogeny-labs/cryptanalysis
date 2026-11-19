@@ -99,7 +99,12 @@ whether it could change the exponent at all.
   KILL. On l = 4 UNSAT, the leaf-independent part (RREF rows as prefix
   chains) gives 1.061× [0.918, 1.225] conflicts, inside the A/A band.
   Exploratory, and outside the decision: on SAT targets it gives 0.358×
-  [0.204, 0.556]. See [`l2b_rref/RESULT.md`](l2b_rref/RESULT.md). See
+  [0.204, 0.556]. See [`l2b_rref/RESULT.md`](l2b_rref/RESULT.md).
+- **L2c (2026-11-18): CONFIRMED on fresh curves and targets,** under a
+  frozen protocol. On l = 4 decomposable targets the RREF rows give 0.631×
+  [0.494, 0.809] conflicts and 0.742× wall time. It is a solver effect, not
+  an IC gain: the break-even decomposable fraction is about 0.22, given the
+  UNSAT cost. See [`l2c_sat_confirm/RESULT.md`](l2c_sat_confirm/RESULT.md). See
   [`l2_sbva/RESULT.md`](l2_sbva/RESULT.md).
 
 ### L3. Usefulness gate for round-4 lead A (torsion targets) before building it
@@ -142,6 +147,13 @@ whether it could change the exponent at all.
   and true u values pass at the same rate as random ones. So MinRank on it
   isolates nothing. The information sits in the S3(x3, u, xR) link, which
   is round-4 D. See [`l4_minrank/RESULT.md`](l4_minrank/RESULT.md).
+- **Round-4 D (2026-11-19): KILL, after a documented control amendment; by
+  the letter of the frozen rule, INCONCLUSIVE.** Affine Macaulay matrices
+  of the bilinear (t; q) system certify L = 1 linear relation at every
+  bidegree up to (2,2), at n = 13 and n = 17, against L_max = 21–34. A
+  random null gives L = 0. A planted overdetermined control is solved at
+  (2,2), so the instrument works at this size. See
+  [`r4d_macaulay/RESULT.md`](r4d_macaulay/RESULT.md).
 
 ### L5. Discarded by counting: char-2 interpolating-conic encoding
 
