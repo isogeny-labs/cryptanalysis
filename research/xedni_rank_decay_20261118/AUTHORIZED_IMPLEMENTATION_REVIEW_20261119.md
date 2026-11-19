@@ -117,3 +117,7 @@ clean freeze, the freeze authorizes rows, and the full production preflight
 passes. `r=7..9`, complete negative relation labels, cluster-bootstrap
 inference, and powered discovery/replication remain separate gates after the
 `r=2..6` feasibility calibration. [pcc:unverified]
+
+The scoped implementation-control statement is registered as
+`PCC-20261119-de90e5`; its current standing is unverified. Producer tests and
+unsigned reviews are not signed execution verification. [pcc:unverified]
