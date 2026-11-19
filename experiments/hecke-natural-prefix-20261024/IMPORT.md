@@ -1,12 +1,13 @@
 # Focused p20023 first-frontier evidence import
 
-This branch imports the frozen p20023 first-frontier evidence from historical commit `b4de8810a9dbc46c900844fda00c1f9615ff670b` onto current `main`. It retains the source generator, two saved frontier comparison inputs, the complete natural-prefix experiment, and its checked structural Lean module. The import preserves the original JSON bytes, protocols, row lists, logs, and audit receipts. `replay-runtime-info.json` records the accepted Sage installation used for this import's validation pass.
+This branch imports the frozen p20023 first-frontier evidence from historical commit `b4de8810a9dbc46c900844fda00c1f9615ff670b` onto current `main`. It retains the source generator, two saved frontier comparison inputs, the complete natural-prefix experiment, and its checked structural Lean module. The 3.6 MB frontier comparison JSON is stored as deterministic gzip under `p20023-frontier-source.json.gz`; `unpack_frontier.py` restores its exact original bytes and checks SHA-256 `edf82463f015d47331da701cd55dfd4be4e92358d5378c4e9e325279ccb1de2f`. All other original JSON bytes, protocols, row lists, logs, and audit receipts are unchanged. `replay-runtime-info.json` records the accepted Sage installation used for this import's validation pass.
 
 The imported first frontier has 1,760 projected columns, 1,506 accepted degree-two/three rows, and radius-three quotient rank 312 on 312 components. The saved logs replay on the order-4,021 subgroup, and every subgroup point reaches the table within ten generator additions. These are the exact preparation inputs for the separate fresh-target comparison.
 
 Current-checkout validation:
 
 ```sh
+python3 experiments/hecke-natural-prefix-20261024/unpack_frontier.py
 python3 experiments/hecke-natural-prefix-20261024/validate_fresh.py
 /Volumes/SSD990/cryptanalysis/sage --runtime-info > experiments/hecke-natural-prefix-20261024/replay-runtime-info.json
 /Volumes/SSD990/cryptanalysis/sage -python experiments/hecke-natural-prefix-20261024/validate_screen.py
