@@ -267,6 +267,16 @@ Run `lake build ProjectivePrimitiveExistence`; `build-projective-primitive-exist
 
 Run `lake build ProjectivePrimitiveReductionMap`; `build-projective-primitive-map-output.txt` records the registered build, direct module check, and axiom audit. The displayed axioms are `propext`, `Classical.choice`, and `Quot.sound`.
 
+`ProjectivePrimitiveCurveEquation.lean` lifts the homogeneous Weierstrass equation to nonzero projective classes and proves that the primitive reduction map preserves it. For an integral Weierstrass model `W`, a nonzero rational class satisfying `W.map (Int.castRingHom ℚ)` has a primitive representative satisfying the integral equation. Mapping that representative and the coefficients through any `g : ℤ →+* S` gives a class satisfying `W.map g`. The proof uses the injective cast into `ℚ` to recover the integral polynomial identity, then the ring-homomorphic equation map. It does not require the target ring to be a field; the nonzero target-class theorem requires a nontrivial ring.
+
+| Result | Lean declaration | Exact hypotheses and status |
+| --- | --- | --- |
+| Integral representative satisfies curve equation | `XedniProjectivePrimitiveCurveEquation.representative_equation` | Integral Weierstrass model and nonzero rational class satisfying its rational base change; checked |
+| Reduced representative satisfies reduced equation | `XedniProjectivePrimitiveCurveEquation.reduced_representative_equation` | Same data and any ring homomorphism `ℤ →+* S`; checked |
+| Nonzero curve class maps to reduced curve class | `XedniProjectivePrimitiveCurveEquation.reduceNonzero_onCurve` | Same data with nontrivial commutative target ring; checked |
+
+Run `lake build ProjectivePrimitiveCurveEquation`; `build-projective-primitive-equation-output.txt` records the registered build, direct module check, and `#print axioms` audit. The audited declarations use only `propext`, `Classical.choice`, and `Quot.sound`.
+
 | Result | Lean declaration | Exact hypotheses and status |
 | --- | --- | --- |
 | Primitive reduction remains nonzero | `XedniProjectivePrimitiveUniqueness.primitive_map_ne_zero` | Integer triple with Bézout certificate, homomorphism to nontrivial commutative ring; checked |
