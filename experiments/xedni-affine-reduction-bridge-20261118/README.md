@@ -222,7 +222,17 @@ Run `lake build ProjectiveClassReduction` in this directory. `build-projective-s
 
 ## Coalescing inputs and projective normalization
 
-`ProjectiveAddMapCounterexample.lean` gives a smooth-reduction counterexample to extending the raw `PointClass` map to all `addMap` branches. On `E/ℤ : y²=x³−25x+1`, the checked source points `P=(0,1)` and `T=(5,1)` both reduce to `(0,1)` in `ZMod 5`; the reduced discriminant is `3≠0`. Source `addXYZ` is `(625,125,−125)`, so coordinatewise reduction produces the zero vector. The reduced `addMap` instead doubles `(0,1)` and has nonzero projective `Z` coordinate. `raw_mapClass_not_addMap` proves the two resulting projective classes differ. Dividing the source triple by its common factor `125` gives the primitive representative `(−5,−1,1)`, whose residue is the correct doubled point; that division is not unit scaling over `ℤ`. Thus the remaining local-group bridge requires a point model or normalization rule that retains primitive representatives when addition formulas develop a common nonunit factor. Run `lake build ProjectiveAddMapCounterexample`; `build-projective-addmap-counterexample-output.txt` records the theorem build and axiom audit.
+`ProjectiveAddMapCounterexample.lean` gives a smooth-reduction counterexample to extending the raw `PointClass` map to all `addMap` branches. On `E/ℤ : y²=x³−25x+1`, the checked source points `P=(0,1)` and `T=(5,1)` both reduce to `(0,1)` in `ZMod 5`; the reduced discriminant is `3≠0`. Source `addXYZ` is `(625,125,−125)`, so coordinatewise reduction produces the zero vector. The reduced `addMap` instead doubles `(0,1)` and has nonzero projective `Z` coordinate. `raw_mapClass_not_addMap` proves the two resulting projective classes differ.
+
+`ProjectivePrimitiveNormalization.lean` proves the exact factorization `addXYZ W P T = (−125) • U` with `U=(−5,−1,1)`, proves `U` lies on the integral curve and has `Z=1`, and proves that the projective class of `U` after reduction equals the target `addMap` doubling class. In the last proof the target doubling vector is exactly `3 • (f ∘ U)` over `ZMod 5`. These facts identify the source factor that must be removed at coalescence; a general local normalization operation remains to be constructed.
+
+| Result | Lean declaration | Exact hypotheses and status |
+| --- | --- | --- |
+| Source chord factorization | `XedniProjectivePrimitiveNormalization.source_chord_factorization` | Fixed integral curve and points above; checked |
+| Primitive point equation and coordinate | `XedniProjectivePrimitiveNormalization.primitive_on_curve`, `primitive_z_eq_one` | Fixed integral curve and vector `U`; checked |
+| Primitive reduction agrees with target doubling | `XedniProjectivePrimitiveNormalization.primitive_reduction_eq_double` | Fixed ring homomorphism `ℤ → ZMod 5` and projective classes; checked |
+
+Run `lake build ProjectivePrimitiveNormalization`; `build-projective-primitive-normalization-output.txt` records the build and axiom audit. The four declarations use only `propext`, `Classical.choice`, and `Quot.sound` among their audited axioms.
 
 ## Reproduction
 
