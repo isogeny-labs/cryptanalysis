@@ -41,6 +41,7 @@ consumer_paths=(
   "$consumer_study/check.sh" "$consumer_study/check-fp-chain.sh"
   "$consumer_study/verify-fp-chain-input-transition.py"
   "$consumer_study/reference.sha256"
+  "$consumer_study/Cargo.toml" "$consumer_study/Cargo.lock"
   "$consumer_study/evidence/fp-chain-successor-inputs-01/transition.json"
   "$consumer_study/fp-chain-upstream-commit.txt"
   "$consumer_study/PRIME_NORM_REPLAY_PROTOCOL.md"
@@ -130,6 +131,10 @@ python3 "$study_dir/verify-fp-chain-input-transition.py" full \
   --predecessor-root "$predecessor_root" \
   --transition "$study_dir/evidence/fp-chain-successor-inputs-01/transition.json" \
   | tee "$run_dir/input-transition-verification.json"
+python3 "$study_dir/verify-fp-chain-input-transition.py" --self-test \
+  --repo "$repo_root" \
+  --transition "$study_dir/evidence/fp-chain-successor-inputs-01/transition.json" \
+  | tee "$run_dir/input-transition-selftest.txt"
 git -C "$repo_root" rev-parse HEAD > "$run_dir/current-commit.txt"
 git -C "$repo_root" rev-parse 'HEAD^{tree}' > "$run_dir/current-tree.txt"
 git -C "$predecessor_root" rev-parse HEAD > "$run_dir/predecessor-commit.txt"
@@ -292,4 +297,4 @@ run_phase chain-cli 5m chain_cli_phase
 run_phase chain-proofs 10m chain_proof_phase
 awk '/^PASS[[:space:]]/ {modules++;compiled+=$2;trusted+=$4} END {if(modules!=1 || compiled!=11 || trusted!=0) exit 1;printf "PASS chain consumer proofs:1module/11compiled/11written/0trusted\n"}' "$run_dir/chain-proofs.txt" | tee "$run_dir/chain-proof-summary.txt"
 find "$build_root" -path '*/.fingerprint/*/lib-isogeny_algos.json' -type f -print -exec sha256sum {} \; > "$run_dir/dependency-fingerprints.txt"
-printf 'PASS fp-chain integration:43native/24algebra/elevenexactidentities/botholdnativeJSONcmp/40upstreammodules238compiled212written0trusted/oldkernel4+CLI/newnorm4+CLI/consumer11Lean/newchain4+boundedCLI/newchain11Lean/predecessor50+successor49plus1+declaredfivejobprefixtransition/whole-inputguards;unsigned\n'
+printf 'PASS fp-chain integration:43native/24algebra/elevenexactidentities/botholdnativeJSONcmp/40upstreammodules238compiled212written0trusted/oldkernel4+CLI/newnorm4+CLI/consumer11Lean/newchain4+boundedCLI/newchain11Lean/predecessor50+successor47plus3+exactharness+declaredfivejobprefixtransition/whole-inputguards;unsigned\n'

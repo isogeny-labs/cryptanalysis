@@ -18,7 +18,7 @@ and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
 
-- [ ] Close required review, hydration-blocked CI, and stable publication for the general hyperelliptic-cover mirror; successor arithmetic parity remains pinned to crypto library revision `153ac585`, the clean 500,925-byte corpus remains crypto-owned at `74752a1e`, and a retention-bound current-head Linux package has been downloaded and replayed outside either checkout with its exact receipt recorded here; the strict proof boundary adds exactly two live 73-bit pilot rows, not general wide-prime support (Codex, started 2026-11-18; tracking-only PR #1765 merged; continuation branch codex/general-binary-cover-transfer-mirror-implementation-20261118, draft PR #1770) [pcc:unverified]
+- [ ] Close required review, artifact-auth-blocked CI, fresh chained replay, and stable publication for the general hyperelliptic-cover mirror; the exact/adapted 12-record mirror now reaches crypto producer `5c6e43a6`, while crypto-owned odd-catalog producer `8c948314` records the successor `675/240/15/9/1` support partition without promoting any Montgomery row; the earlier installed-package receipt remains retention-bound and pre-current-head, and repaired reference/G3 successor-input custody still requires an exact remote replay (Codex, started 2026-11-18; tracking-only PR #1765 merged; continuation branch codex/general-binary-cover-transfer-mirror-implementation-20261118, draft PR #1770) [pcc:unverified]
 
 - [x] Validate fixed index-calculus candidate residuals and subgroup status (Codex, started 2026-11-18, branch test-fixed-candidate-residual, PR #1755)
 

@@ -25,7 +25,7 @@
     }
   },
   "successor": {
-    "retained_baseline_entry_count": 49,
+    "retained_baseline_entry_count": 47,
     "replaced_baseline_entries": [
       {
         "path": "suite/src/prime_hyperelliptic/mod.rs",
@@ -33,8 +33,34 @@
         "predecessor_sha256": "b6906f75b4d0eb6b7ac406a0fca1b2cef1786a528d4aedbab414e9fa1e7f7662",
         "successor_bytes": 4632,
         "successor_sha256": "32b996fe614230480c11edd695cd778018fac0d7443d6a1f3907d4bf79c78bed"
+      },
+      {
+        "path": "experiments/chained-transfer-reference/src/main.rs",
+        "predecessor_bytes": 9178,
+        "predecessor_sha256": "9043538f18ca55032db06b7f8f65f9af1f4b4b71621a2271287150182b2d255c",
+        "successor_bytes": 9399,
+        "successor_sha256": "cad27d86a308109110654ac157d0b0bd3ddd0d57a1ae54ab2ed76abb00c43915"
+      },
+      {
+        "path": "experiments/chained-transfer-reference/src/seven.rs",
+        "predecessor_bytes": 11314,
+        "predecessor_sha256": "bb640465bfe9406e5b5e275b5127c73417b48cec5a90006d2f2bb87f72f40ae9",
+        "successor_bytes": 11347,
+        "successor_sha256": "6d6270118d33c133e7b24ee7ab4a422faa2652c0633f295e4ac31b5f77c1ca9e"
       }
     ],
+    "harness_files": {
+      "cargo_toml": {
+        "path": "experiments/chained-transfer-reference/Cargo.toml",
+        "bytes": 707,
+        "sha256": "90217411120ccef1f5886e3af29b55e708017032be905ab577e381ad4e7dd85e"
+      },
+      "cargo_lock": {
+        "path": "experiments/chained-transfer-reference/Cargo.lock",
+        "bytes": 6461,
+        "sha256": "ef293c677ca00cfeda4ab29db64a9daa4b6926b564c39e9b53edb47073410521"
+      }
+    },
     "new_reference_paths": [
       "suite/src/prime_hyperelliptic/balanced.rs",
       "suite/src/prime_hyperelliptic/cover_transfer.rs",
@@ -108,8 +134,8 @@
     },
     "full_workflow": {
       "path": ".github/workflows/chained-transfer-reference.yml",
-      "bytes": 26045,
-      "sha256": "ca1fe1a20cb8a2738541772368b270534ad475fcc8dd1c47f15a45f0c50af47c"
+      "bytes": 27474,
+      "sha256": "4b62af0a920872ae88efe9da4436cc5da49f143c859d2b36f074541ea822655a"
     },
     "implementation_files": {
       "check_sh": {
@@ -119,13 +145,13 @@
       },
       "check_fp_chain_sh": {
         "path": "experiments/chained-transfer-reference/check-fp-chain.sh",
-        "bytes": 16602,
-        "sha256": "332801d719638508a5a136f6acdc1c85f1451bb1e7846c60d0a3d39967d4574d"
+        "bytes": 16903,
+        "sha256": "d8dfd82bf8daf2a95e16bc04d81dd5bbcf14a757178d000e14b87efcd60b7f77"
       },
       "verifier": {
         "path": "experiments/chained-transfer-reference/verify-fp-chain-input-transition.py",
-        "bytes": 25927,
-        "sha256": "00702d8cf9e70f383f9eb0ed6cdae20788690403a6c13f42f9997d813e32a6a5"
+        "bytes": 28684,
+        "sha256": "81253f15b1dc92add5ec70fa6d99782f93c684b2dd3fd93578fcabaa56d338ff"
       }
     }
   },

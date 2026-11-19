@@ -49,15 +49,54 @@ CURRENT_WORKFLOW_PATH = ".github/workflows/chained-transfer-reference.yml"
 CURRENT_PREFIX_SHA256 = (
     "0adde6d199b330517bb4498f8568a306f8252a21a420075e98d12c637c608407"
 )
-REPLACED_PATH = "suite/src/prime_hyperelliptic/mod.rs"
-REPLACED_OLD_BYTES = 2_688
-REPLACED_OLD_SHA256 = (
-    "b6906f75b4d0eb6b7ac406a0fca1b2cef1786a528d4aedbab414e9fa1e7f7662"
-)
-REPLACED_NEW_BYTES = 4_632
-REPLACED_NEW_SHA256 = (
-    "32b996fe614230480c11edd695cd778018fac0d7443d6a1f3907d4bf79c78bed"
-)
+BASELINE_REPLACEMENTS = [
+    {
+        "path": "suite/src/prime_hyperelliptic/mod.rs",
+        "predecessor_bytes": 2_688,
+        "predecessor_sha256": (
+            "b6906f75b4d0eb6b7ac406a0fca1b2cef1786a528d4aedbab414e9fa1e7f7662"
+        ),
+        "successor_bytes": 4_632,
+        "successor_sha256": (
+            "32b996fe614230480c11edd695cd778018fac0d7443d6a1f3907d4bf79c78bed"
+        ),
+    },
+    {
+        "path": "experiments/chained-transfer-reference/src/main.rs",
+        "predecessor_bytes": 9_178,
+        "predecessor_sha256": (
+            "9043538f18ca55032db06b7f8f65f9af1f4b4b71621a2271287150182b2d255c"
+        ),
+        "successor_bytes": 9_399,
+        "successor_sha256": (
+            "cad27d86a308109110654ac157d0b0bd3ddd0d57a1ae54ab2ed76abb00c43915"
+        ),
+    },
+    {
+        "path": "experiments/chained-transfer-reference/src/seven.rs",
+        "predecessor_bytes": 11_314,
+        "predecessor_sha256": (
+            "bb640465bfe9406e5b5e275b5127c73417b48cec5a90006d2f2bb87f72f40ae9"
+        ),
+        "successor_bytes": 11_347,
+        "successor_sha256": (
+            "6d6270118d33c133e7b24ee7ab4a422faa2652c0633f295e4ac31b5f77c1ca9e"
+        ),
+    },
+]
+BASELINE_REPLACEMENT_PATHS = {record["path"] for record in BASELINE_REPLACEMENTS}
+HARNESS_FILES = {
+    "cargo_toml": {
+        "path": "experiments/chained-transfer-reference/Cargo.toml",
+        "bytes": 707,
+        "sha256": "90217411120ccef1f5886e3af29b55e708017032be905ab577e381ad4e7dd85e",
+    },
+    "cargo_lock": {
+        "path": "experiments/chained-transfer-reference/Cargo.lock",
+        "bytes": 6_461,
+        "sha256": "ef293c677ca00cfeda4ab29db64a9daa4b6926b564c39e9b53edb47073410521",
+    },
+}
 PREFIX_REPLACEMENT = {
     "zero_based_byte_offset": 4_908,
     "length": 40,
@@ -92,7 +131,11 @@ REFERENCE_INPUTS = [
         11_867,
         "44f7af14d22bed78d85c4bd009ccce7197fa9257e7ff56164c8d891303e49590",
     ),
-    (REPLACED_PATH, REPLACED_NEW_BYTES, REPLACED_NEW_SHA256),
+    (
+        "suite/src/prime_hyperelliptic/mod.rs",
+        4_632,
+        "32b996fe614230480c11edd695cd778018fac0d7443d6a1f3907d4bf79c78bed",
+    ),
     (
         "suite/src/prime_hyperelliptic/model_transfer.rs",
         17_517,
@@ -231,22 +274,13 @@ def validate_transition(value: dict[str, Any]) -> None:
     successor = value.get("successor")
     require(isinstance(successor, dict), "missing successor record")
     require(
-        successor.get("retained_baseline_entry_count") == 49,
+        successor.get("retained_baseline_entry_count") == 47,
         "wrong retained baseline count",
     )
     replacements = successor.get("replaced_baseline_entries")
-    require(isinstance(replacements, list) and len(replacements) == 1, "wrong replacements")
-    require(
-        replacements[0]
-        == {
-            "path": REPLACED_PATH,
-            "predecessor_bytes": REPLACED_OLD_BYTES,
-            "predecessor_sha256": REPLACED_OLD_SHA256,
-            "successor_bytes": REPLACED_NEW_BYTES,
-            "successor_sha256": REPLACED_NEW_SHA256,
-        },
-        "wrong replacement record",
-    )
+    require(replacements == BASELINE_REPLACEMENTS, "wrong replacement records")
+    harness = successor.get("harness_files")
+    require(harness == HARNESS_FILES, "wrong successor harness file records")
     require(
         set(successor.get("new_reference_paths", [])) == NEW_REFERENCE_PATHS,
         "wrong new reference path set",
@@ -351,7 +385,11 @@ def load_baseline(root: Path) -> dict[str, str]:
         baseline.get("five_whole_job_prefix_sha256") == FROZEN_WORKFLOW_SHA256,
         "wrong baseline workflow-prefix digest",
     )
-    require(mapping.get(REPLACED_PATH) == REPLACED_OLD_SHA256, "baseline replacement mismatch")
+    for record in BASELINE_REPLACEMENTS:
+        require(
+            mapping.get(record["path"]) == record["predecessor_sha256"],
+            f"baseline replacement mismatch:{record['path']}",
+        )
     return mapping
 
 
@@ -393,13 +431,21 @@ def verify_current(
     baseline = load_baseline(repo)
     retained = 0
     for relative, digest in sorted(baseline.items()):
-        if relative == REPLACED_PATH:
+        if relative in BASELINE_REPLACEMENT_PATHS:
             continue
         data = read_bytes(repo, relative)
         require(sha256_bytes(data) == digest, f"changed retained baseline input:{relative}")
         retained += 1
-    require(retained == 49, "wrong checked retained baseline count")
-    check_bytes(repo, REPLACED_PATH, REPLACED_NEW_BYTES, REPLACED_NEW_SHA256)
+    require(retained == 47, "wrong checked retained baseline count")
+    for record in BASELINE_REPLACEMENTS:
+        check_bytes(
+            repo,
+            record["path"],
+            record["successor_bytes"],
+            record["successor_sha256"],
+        )
+    for record in HARNESS_FILES.values():
+        check_bytes(repo, record["path"], record["bytes"], record["sha256"])
 
     suite_dir = repo / "suite/src/prime_hyperelliptic"
     actual_suite = {
@@ -428,9 +474,10 @@ def verify_current(
     result = {
         "aggregate_manifest_bytes": len(aggregate),
         "aggregate_manifest_sha256": sha256_bytes(aggregate),
+        "harness_files": HARNESS_FILES,
         "reference_input_count": len(REFERENCE_INPUTS),
         "retained_baseline_entry_count": retained,
-        "replacement_count": 1,
+        "replacement_count": len(BASELINE_REPLACEMENTS),
     }
     if check_full_workflow:
         expected_prefix = reconstructed_prefix(frozen)
@@ -488,6 +535,13 @@ def verify_predecessor(predecessor_root: Path) -> dict[str, Any]:
             sha256_bytes(read_bytes(predecessor_root, relative)) == digest,
             f"changed predecessor baseline input:{relative}",
         )
+    for record in BASELINE_REPLACEMENTS:
+        check_bytes(
+            predecessor_root,
+            record["path"],
+            record["predecessor_bytes"],
+            record["predecessor_sha256"],
+        )
     historical_workflow = check_bytes(
         predecessor_root,
         CURRENT_WORKFLOW_PATH,
@@ -513,6 +567,7 @@ def copy_current_fixture(repo: Path, destination: Path, transition: dict[str, An
             REFERENCE_MANIFEST_PATH,
             FROZEN_WORKFLOW_PATH,
             CURRENT_WORKFLOW_PATH,
+            *(record["path"] for record in HARNESS_FILES.values()),
             *IMPLEMENTATION_PATHS.values(),
         }
     )
@@ -528,7 +583,9 @@ def run_self_test(repo: Path, transition_path: Path) -> None:
     transition = load_json(transition_path)
     verify_current(repo, transition, check_full_workflow=True)
     baseline = load_baseline(repo)
-    retained_path = next(path for path in sorted(baseline) if path != REPLACED_PATH)
+    retained_path = next(
+        path for path in sorted(baseline) if path not in BASELINE_REPLACEMENT_PATHS
+    )
 
     with tempfile.TemporaryDirectory(prefix="fp-chain-transition-self-test-") as temp:
         seed = Path(temp) / "seed"
@@ -550,11 +607,30 @@ def run_self_test(repo: Path, transition_path: Path) -> None:
                 (root / retained_path).read_bytes() + b"self-test"
             ),
         )
-        expect_file_failure("missing-mod", lambda root: (root / REPLACED_PATH).unlink())
-        expect_file_failure(
-            "wrong-mod",
-            lambda root: (root / REPLACED_PATH).write_bytes(b"wrong successor module\n"),
-        )
+        for index, record in enumerate(BASELINE_REPLACEMENTS):
+            relative = record["path"]
+            expect_file_failure(
+                f"missing-replacement-{index}",
+                lambda root, relative=relative: (root / relative).unlink(),
+            )
+            expect_file_failure(
+                f"wrong-replacement-{index}",
+                lambda root, relative=relative: (root / relative).write_bytes(
+                    b"wrong successor input\n"
+                ),
+            )
+        for key, record in HARNESS_FILES.items():
+            relative = record["path"]
+            expect_file_failure(
+                f"missing-harness-{key}",
+                lambda root, relative=relative: (root / relative).unlink(),
+            )
+            expect_file_failure(
+                f"wrong-harness-{key}",
+                lambda root, relative=relative: (root / relative).write_bytes(
+                    b"wrong successor harness input\n"
+                ),
+            )
         expect_file_failure(
             "unexpected-suite-file",
             lambda root: (
@@ -636,7 +712,7 @@ def main() -> int:
         if args.self_test:
             require(args.mode is None, "--self-test does not take a mode")
             run_self_test(repo, transition_path)
-            print("PASS fp-chain input-transition verifier self-test:14 rejection classes")
+            print("PASS fp-chain input-transition verifier self-test:22 rejection classes")
             return 0
         require(args.mode is not None, "a verification mode is required")
         transition = load_json(transition_path)
