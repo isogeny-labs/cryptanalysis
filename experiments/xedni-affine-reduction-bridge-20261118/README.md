@@ -106,6 +106,19 @@ The proof first maps a selected rational relation to `a(w−t₁)+b(w−t₂)=0`
 
 Run `lake build SharedTargetSelectorBound` in this directory. `build-shared-selector-output.txt` records the actual build and `#print axioms` for all three theorems; each uses only `propext`, `Classical.choice`, and `Quot.sound`. The pinned Lean toolchain and Mathlib revision are the same as the adjacent selector and shared-target modules. `lean4checker --fresh` is unavailable on this host.
 
+## Fixed-family target impossibility theorem
+
+`SharedTargetSelectorImpossibility.lean` turns the capacity bound into a universal-coverage obstruction. Suppose the coefficient pairs `S` and offset pairs `T` are committed before the target scalar is known, and every coefficient sum is nonzero modulo prime subgroup order `q`. A lift selector may choose a different additive group and different points for every public pair, provided its reduction map is additive and the selected points reduce to that pair. If **every nonzero target** has an exact selected relation, then `|T|·|S| ≥ q−1`. Consequently, when `|T|·|S| < q−1`, Lean constructs the logical existence of a nonzero target with no such relation.
+
+The proof counts the `q−1` nonzero scalars in `ZMod q`. Full coverage makes the hit set equal to that nonzero set, while `precommitted_nonzero_card_bound` puts the hit count at most `|T|·|S|`. These inequalities give the lower bound; its contrapositive gives a missed target. This theorem rules out universal coverage by a sublinear fixed coefficient-offset family under its explicit homomorphism premise. It leaves adaptive coefficients, other relation forms, and the construction cost of the selector to their separate analyses.
+
+| Result | Lean declaration | Exact hypotheses and status |
+| --- | --- | --- |
+| Universal coverage requires linear family size | `XedniSharedTargetSelectorImpossibility.full_nonzero_coverage_requires_linear_family` | Prime `q`; fixed `S,T`; each coefficient sum nonzero modulo `q`; arbitrary public-pair-dependent additive lift groups, reduction homomorphisms, and correct selectors; every nonzero target hit; checked |
+| Subthreshold family misses a nonzero target | `XedniSharedTargetSelectorImpossibility.exists_nonzero_target_without_selected_relation` | Same setup and `|T|·|S| < q−1`; checked |
+
+Run `lake build SharedTargetSelectorImpossibility`; `build-shared-selector-impossibility-output.txt` records the registered build, direct module check, and `#print axioms` audit. Both declarations use only `propext`, `Classical.choice`, and `Quot.sound`.
+
 ## Finite regular-sum reduction
 
 The reduction bridge now covers an arbitrary finite sequence of affine additions, with a unit slope denominator certified at each step. For a list `P₁,…,Pₙ` of local short-Weierstrass points whose certified sum has endpoint `Q`, the coefficient and point reduction map sends `Q` to the elliptic-group sum of the reduced `Pᵢ`. Consequently, two such sums with the same local endpoint give equal finite-field group sums. This supports relations with varying addends, beyond the repeated-addend chain proved earlier.
