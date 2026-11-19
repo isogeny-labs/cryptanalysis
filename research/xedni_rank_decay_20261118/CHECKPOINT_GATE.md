@@ -39,3 +39,7 @@ User authorization resolved the human permission question but did not provide
 the required checkpoint transport. The Magma, executor, anti-circularity,
 provenance, inference, relation-inventory, point-map, and powered-allocation
 gates also remain independently open. [pcc:unverified]
+
+The authorized retry statement is registered as `PCC-20261119-e03654` with
+unverified standing. Its producer attestation is not an independent execution
+proof. [pcc:unverified]
