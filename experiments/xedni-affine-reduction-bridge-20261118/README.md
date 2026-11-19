@@ -1,0 +1,21 @@
+# Regular affine reduction on known-relation lifts
+
+The thirteen exact known-relation lifts admit 54 consecutive rational additions from their recorded rational point `T` to the multiples needed for `P1` and `P2`. Every step has integral input and output coordinates at its row's prime, a unit slope denominator, and the same result after reduction as finite-field addition. The steps consist of 13 tangents and 41 chords. The source is fixed by SHA-256 in `protocol.json`; `python3 run.py` independently recomputes and asserts each check, with all step-level observations in `result.json`.
+
+The generic mathematical statement is: for a commutative ring `R`, field `S`, and ring homomorphism `f : R →+* S`, an affine chord or tangent with unit denominator in `R` has slope and output coordinates that commute with `f`. The written proof is substitution into the Weierstrass addition formulas. A unit `d` satisfies `f(d) f(d⁻¹)=1`, so the mapped rational slope equals the quotient of mapped numerator and denominator. The output coordinates are polynomials in the inputs and slope, and ring homomorphisms preserve those polynomials.
+
+## Proof map
+
+| Result | Lean declaration | Hypotheses and status |
+| --- | --- | --- |
+| Unit-denominator slope transfer | `map_regularSlope` | `R` commutative ring, `S` field, `f` ring homomorphism, denominator a unit of `R`; checked by `lake build AffineReductionBridge` |
+| Coordinate polynomial transfer | `map_addX`, `map_addY` | Same rings and homomorphism; checked by the same build |
+| Chord formula transfer | `regular_chord_reduction` | Chord denominator is a source unit equal to `x₂ - x₁`; checked by the same build |
+| Tangent formula transfer | `regular_tangent_reduction` | Tangent denominator is a source unit equal to `2*y`; checked by the same build |
+| Exact rational addition paths on 13 recorded lifts | `run.py`, `result.json` | Fraction-level replay, finite-field replay, all 54 steps asserted; computational certificate, not a Lean theorem about the elliptic-curve group |
+
+The Lean statement currently transfers the regular affine formulas. A full formal point-level reduction homomorphism would additionally define the `p`-local rational coordinate ring and residue map, curve points and infinity, the vertical branch, and the group law, then identify each recorded rational point in that model. That bridge is open. The experiment supplies exact regular paths for these thirteen rows; it does not itself establish the group-level theorem for arbitrary rational points.
+
+## Reproduction
+
+From this directory, run `python3 run.py` and `lake build AffineReductionBridge`. The Lean version is pinned in `lean-toolchain`, mathlib in `lake-manifest.json`; `build-output.txt` records the theorem build and `#print axioms` output. The replay needs only the Python standard library and its source JSON at the sibling path named in the protocol.
