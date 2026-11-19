@@ -22,6 +22,11 @@ The corrected exceptional finite/infinite counts are eight at `p=317`, four at `
 
 The original [checked-Sage audit](audit_sage.py) verified the v1 finite-point ledger under its stated denominator-exclusion policy. The [v2 checked-Sage audit](audit_v2_sage.py) independently divides the exact integer polynomial norm of the numerator by `(x−16)^11`, checks zero remainder and the quotient value giving `j(16,60)=-121`, verifies that only three ledger rows change, and recounts their canonical curves. It passed on all **2,222 finite-point rows** with the repository Sage launcher; [audit-v2.json](audit-v2.json) and [runtime-v2.json](runtime-v2.json) retain its receipts.
 
+The pinned Lean [norm and branch-value module](formal/NormBranch.lean) checks
+the exact polynomial identities. Its [proof map](formal/PROOF_MAP.md)
+identifies the local-ring implication and modular interpretation that remain
+outside this formalization.
+
 The archive comparison was added **after** the original census. [archived-class-points.json](archived-class-points.json) retains the two prior point sets and their source-result hashes. Its [v1 comparison](archived-comparison-result.json) passed under the v1 exclusion policy. Under v2, the p317 list is missing `(16,60)`; the p941 `(50)` list remains complete. The original receipt remains frozen, and the discrepancy is recorded in [AMENDMENT.md](AMENDMENT.md).
 
 The earlier [global Fricke result in PR #1195](https://github.com/isogeny-labs/cryptanalysis/pull/1195) records the degree-one modular parametrization and its model identification. That result's modular-curve identification is a written mathematical argument with a partial Lean bridge; this experiment adds exact finite-point and trace-fiber evidence. The next discriminating experiment is to measure the cost of moving from an arbitrary target's inverse image into the prepared trace fiber, including inverse-parametrization and cross-fiber connection work, against same-point rho.

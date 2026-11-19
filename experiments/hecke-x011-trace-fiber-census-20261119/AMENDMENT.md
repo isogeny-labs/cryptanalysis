@@ -13,6 +13,10 @@ Write the pinned numerator as `A(x,y)=a(x)+b(x)y` on
 `N(x)=a(x)²-a(x)b(x)-b(x)²(x³−x²−10x−20)`.
 The [independent Sage audit](audit_v2_sage.py) proves by exact integer
 division that `N(x)` is divisible by `(x−16)^11`, with zero remainder.
+The pinned Lean [norm certificate](formal/NormBranch.lean) checks this
+identity for all integer `x` and the exact branch evaluations; its
+[proof map](formal/PROOF_MAP.md) states the local-ring bridge still to be
+formalized.
 At `(16,60)`, `A=0`; at the conjugate `(16,-61)`,
 `A'=81402749386839761113321 ≠ 0`. The quotient's value at 16 is
 `−9849732675807611094711841 = −121 A'(16)`. Because `2·60+1=121`
