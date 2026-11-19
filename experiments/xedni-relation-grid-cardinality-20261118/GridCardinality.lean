@@ -1,5 +1,6 @@
 import Mathlib.Data.Fintype.Fin
 import Mathlib.Data.Fintype.Prod
+import Mathlib.Data.Fin.Rev
 import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Finset.Card
 import Mathlib.Data.Int.GCD
@@ -260,6 +261,56 @@ theorem centered_mod_grid_image_card (H a b q : ℕ)
   rw [himg, htrans]
   exact mod_grid_image_card H a b q ha hb hab hnowrap
 
+def reflectFirst {L : ℕ} (p : Fin L × Fin L) : Fin L × Fin L :=
+  (p.1.rev, p.2)
+
+theorem reflectFirst_involutive (L : ℕ) :
+    Function.Involutive (reflectFirst (L := L)) := by
+  intro p
+  ext <;> simp [reflectFirst, Fin.rev_rev]
+
+def centeredNegativeModImage (q H a b : ℕ)
+    (p : Fin (2 * H + 1) × Fin (2 * H + 1)) : ZMod q :=
+  (((-(b : ℤ)) * ((p.1.val : ℤ) - H) -
+      (a : ℤ) * ((p.2.val : ℤ) - H) : ℤ) : ZMod q)
+
+theorem centered_negative_mod_grid_image_card (H a b q : ℕ)
+    (ha : 0 < a) (hb : 0 < b)
+    (hab : Int.gcd (a : ℤ) (b : ℤ) = 1)
+    (hnowrap : (2 * H) * (a + b) < q) :
+    ((grid (2 * H + 1)).image (centeredNegativeModImage q H a b)).card =
+      (2 * H + 1) ^ 2 - ((2 * H + 1) - a) * ((2 * H + 1) - b) := by
+  classical
+  let L := 2 * H + 1
+  have hfun (p : Fin L × Fin L) :
+      centeredNegativeModImage q H a b p =
+        centeredModImage q H a b (reflectFirst p) := by
+    have hrev : ((p.1.rev.val : ℤ) - H) = -((p.1.val : ℤ) - H) := by
+      simp only [Fin.val_rev]
+      omega
+    have hint :
+        -(b : ℤ) * ((p.1.val : ℤ) - H) - (a : ℤ) * ((p.2.val : ℤ) - H) =
+        (b : ℤ) * ((p.1.rev.val : ℤ) - H) - (a : ℤ) * ((p.2.val : ℤ) - H) := by
+      rw [hrev]
+      ring
+    exact congrArg (fun z : ℤ => (z : ZMod q)) hint
+  have himg : (grid L).image (centeredNegativeModImage q H a b) =
+      (grid L).image (fun p => centeredModImage q H a b (reflectFirst p)) := by
+    congr 1
+    funext p
+    exact hfun p
+  have hperm : (grid L).image (fun p => centeredModImage q H a b (reflectFirst p)) =
+      (grid L).image (centeredModImage q H a b) := by
+    ext z
+    simp only [grid, Finset.mem_image, Finset.mem_univ, true_and]
+    constructor
+    · rintro ⟨p, rfl⟩
+      exact ⟨reflectFirst p, rfl⟩
+    · rintro ⟨p, rfl⟩
+      exact ⟨reflectFirst p, by rw [reflectFirst_involutive]⟩
+  rw [himg, hperm]
+  exact centered_mod_grid_image_card H a b q ha hb hab hnowrap
+
 #print axioms card_starts
 #print axioms linearImage_injOn_starts
 #print axioms exists_start_same_image
@@ -267,5 +318,7 @@ theorem centered_mod_grid_image_card (H a b q : ℕ)
 #print axioms integer_grid_image_card
 #print axioms mod_grid_image_card
 #print axioms centered_mod_grid_image_card
+#print axioms reflectFirst_involutive
+#print axioms centered_negative_mod_grid_image_card
 
 end XedniGridCardinality

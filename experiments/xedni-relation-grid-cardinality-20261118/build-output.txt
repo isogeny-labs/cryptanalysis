@@ -1,29 +1,32 @@
-⚠ [1250/1251] Built GridCardinality (41s)
+⚠ [1250/1251] Built GridCardinality (62s)
 warning: GridCardinality.lean: imports `Mathlib.Data.Fintype.Fin` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
 warning: GridCardinality.lean: imports `Mathlib.Data.Fintype.Prod` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: GridCardinality.lean: imports `Mathlib.Data.Fin.Rev` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
 warning: GridCardinality.lean: imports `Mathlib.Data.Finset.Prod` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
 warning: GridCardinality.lean: imports `Mathlib.Data.Finset.Card` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
 warning: GridCardinality.lean: imports `Mathlib.Data.Int.GCD` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
 warning: GridCardinality.lean: imports `Mathlib.Data.ZMod.Basic` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
 warning: GridCardinality.lean: imports `Mathlib.Tactic.Linarith` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
 warning: GridCardinality.lean: imports `Mathlib.Tactic.Ring` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
-warning: GridCardinality.lean:43:63: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+warning: GridCardinality.lean:44:63: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
 
 Note: This linter can be disabled with `set_option linter.unusedTactic false`
-warning: GridCardinality.lean:43:63: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+warning: GridCardinality.lean:44:63: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
 
 Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
-warning: GridCardinality.lean:86:18: Variable name `hb` is not explicitly referenced.
+warning: GridCardinality.lean:87:18: Variable name `hb` is not explicitly referenced.
 
 Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
   [apply] _hb
 
 Note: This linter can be disabled with `set_option linter.unusedVariables false`
-info: GridCardinality.lean:263:0: 'XedniGridCardinality.card_starts' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: GridCardinality.lean:264:0: 'XedniGridCardinality.linearImage_injOn_starts' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: GridCardinality.lean:265:0: 'XedniGridCardinality.exists_start_same_image' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: GridCardinality.lean:266:0: 'XedniGridCardinality.image_starts_eq_grid' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: GridCardinality.lean:267:0: 'XedniGridCardinality.integer_grid_image_card' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: GridCardinality.lean:268:0: 'XedniGridCardinality.mod_grid_image_card' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: GridCardinality.lean:269:0: 'XedniGridCardinality.centered_mod_grid_image_card' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: GridCardinality.lean:314:0: 'XedniGridCardinality.card_starts' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: GridCardinality.lean:315:0: 'XedniGridCardinality.linearImage_injOn_starts' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: GridCardinality.lean:316:0: 'XedniGridCardinality.exists_start_same_image' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: GridCardinality.lean:317:0: 'XedniGridCardinality.image_starts_eq_grid' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: GridCardinality.lean:318:0: 'XedniGridCardinality.integer_grid_image_card' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: GridCardinality.lean:319:0: 'XedniGridCardinality.mod_grid_image_card' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: GridCardinality.lean:320:0: 'XedniGridCardinality.centered_mod_grid_image_card' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: GridCardinality.lean:321:0: 'XedniGridCardinality.reflectFirst_involutive' depends on axioms: [propext]
+info: GridCardinality.lean:322:0: 'XedniGridCardinality.centered_negative_mod_grid_image_card' depends on axioms: [propext, Classical.choice, Quot.sound]
 Build completed successfully (1251 jobs).
