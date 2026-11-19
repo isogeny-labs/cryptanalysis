@@ -255,6 +255,18 @@ Run `lake build ProjectiveClassCoalescence`; `build-projective-class-coalescence
 
 Run `lake build ProjectivePrimitiveExistence`; `build-projective-primitive-existence-output.txt` records the registered build and axiom audit. The resulting reduction on rational projective classes can be defined by choosing the primitive representative, with choice independence supplied by the preceding uniqueness theorem.
 
+`ProjectivePrimitiveReductionMap.lean` constructs that map explicitly. Its domain is the subtype of rational projective classes distinct from the zero-vector class. It chooses a primitive integral representative and maps its coordinates through any ring homomorphism `ℤ →+* S`, where `S` is a nontrivial commutative ring. The result is again a nonzero projective class, and `reduceNonzero_eq_of_rep` proves that every primitive integral representative computes the same result. This establishes the projective normalization step; preservation of the curve equation and compatibility with the full curve group law require their own hypotheses and proofs.
+
+| Result | Lean declaration | Exact hypotheses and status |
+| --- | --- | --- |
+| Chosen representative is primitive | `XedniProjectivePrimitiveReductionMap.representative_primitive` | Nonzero rational projective class; checked |
+| Chosen representative has the source class | `XedniProjectivePrimitiveReductionMap.representative_class` | Nonzero rational projective class; checked |
+| Reduction is choice independent | `XedniProjectivePrimitiveReductionMap.reduceClass_eq_of_rep` | Nonzero rational class, any primitive integral representative with that rational class, ring homomorphism `ℤ →+* S`; checked |
+| Reduced class remains nonzero | `XedniProjectivePrimitiveReductionMap.reduceClass_ne_zero` | Same source class, nontrivial commutative target ring; checked |
+| Nonzero-class reduction map | `XedniProjectivePrimitiveReductionMap.reduceNonzero_eq_of_rep` | Same hypotheses as choice independence, nontrivial target ring; checked |
+
+Run `lake build ProjectivePrimitiveReductionMap`; `build-projective-primitive-map-output.txt` records the registered build, direct module check, and axiom audit. The displayed axioms are `propext`, `Classical.choice`, and `Quot.sound`.
+
 | Result | Lean declaration | Exact hypotheses and status |
 | --- | --- | --- |
 | Primitive reduction remains nonzero | `XedniProjectivePrimitiveUniqueness.primitive_map_ne_zero` | Integer triple with Bézout certificate, homomorphism to nontrivial commutative ring; checked |
