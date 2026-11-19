@@ -54,3 +54,6 @@ This closes neither the full inference gate nor the experiment:
 Therefore the only supported conclusion is that the aggregate
 conditional-Poisson subproblem has a tested prospective optimizer. No natural
 decay result or slope is reported. [pcc:unverified]
+
+This scoped statement is registered as `PCC-20261119-f9077b`; its current
+standing is unverified. [pcc:unverified]
