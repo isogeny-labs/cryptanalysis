@@ -45,6 +45,7 @@ target coefficient as a Xedni success. [pcc:unverified]
 | Relation proposal and replay | Implemented for controls; not integrated into a natural executor | bounded PARI height-pairing/LLL proposals followed by exact rational/source replay; not an exhaustive independence certificate |
 | Strict analyzer | Implemented, producer controls pass | separate rank/dependence/useful endpoints, `A/G/U`, partial identification, clustered-factor cells, signed profile slope, fail-closed decision |
 | Deterministic runner | Plans rosters and exercises controls; natural executor absent | calibration plan: 1,080 executable plus 648 blocked rows; sentinel: 12,150 executable plus 7,290 blocked rows; no natural row command |
+| Blocked freeze manifest | Committed as non-authorizing | [`FREEZE.json`](FREEZE.json) binds the implementation, rosters, analysis parameters, and available tool identity while setting `natural_rows_authorized=false` |
 | Lean decision proof | Built and axiom-audited | core Lean 4.34.1; four theorems, no nonstandard axioms |
 | Natural calibration/sentinel/discovery/replication | Not run | mandatory checkpoint gate has not passed |
 
@@ -88,6 +89,26 @@ successful candidate counts after exact rational-relation and source-scalar
 replay. A failed, trivial, or noninvertible candidate does **not** certify that
 no other useful relation exists; those ranked rows stay unresolved until a
 complete relation-lattice or independence certificate exists. [pcc:unverified]
+
+## Fixed implementation-control observations
+
+[`CONTROL_RESULTS.json`](CONTROL_RESULTS.json) preserves a fixed `p=101`
+control outside the natural manifest. At `r=4`, the optimized lift reduced the
+construction-discriminant size from 495 bits for the balanced lift (789 for the
+wide lift) to 177 bits. The minimal-model ratio
+`log(abs(Delta_min))/max hhat(P_i)` moved only from about `13.7088` to
+`13.5781`; moreover, the height inputs are numerical and no rigorous global
+minimum-height lower bound or saturated Mordell--Weil regulator is available.
+[pcc:unverified]
+
+On the same control, PARI returned exact rank bounds `[2,2]`, `[6,6]`, `[5,5]`,
+and `[7,7]` for optimized `r=2,3,4,5`, respectively, while `r=6` timed out at
+60 seconds. The bounded relation proposer found no exact rational relation for
+`r=2..6`; that is a bounded no-hit, not an independence certificate. Separate
+planted controls for every `r=2..6` were recovered and passed exact rational
+and source replay. These observations suggest that equation-size optimization
+helps tool feasibility, but they neither measure a decay rate nor establish a
+useful Xedni relation. [pcc:unverified]
 
 ## Six mechanism panels
 
