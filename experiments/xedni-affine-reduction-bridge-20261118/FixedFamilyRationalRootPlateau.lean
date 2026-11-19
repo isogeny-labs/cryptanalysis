@@ -17,12 +17,86 @@ private def rationalRoot (e : (ℤ × ℤ) × (ℤ × ℤ)) : ℤ × ℤ := Id.r
   let d' := d / g
   if d' < 0 then return (-n', -d') else return (n', d')
 
+private def normalizePair (n d : ℤ) : ℤ × ℤ := Id.run do
+  let g : ℤ := Int.gcd n d
+  let n' := n / g
+  let d' := d / g
+  if d' < 0 then return (-n', -d') else return (n', d')
+
+/-- Dividing both integer coordinates by their gcd and adjusting their sign
+preserves the fraction's cross-product. -/
+private theorem normalizePair_cross (n d : ℤ) :
+    n * (normalizePair n d).2 = (normalizePair n d).1 * d := by
+  have hn : ((Int.gcd n d : ℕ) : ℤ) ∣ n := Int.gcd_dvd_left n d
+  have hd : ((Int.gcd n d : ℕ) : ℤ) ∣ d := Int.gcd_dvd_right n d
+  have hne : n / (Int.gcd n d : ℤ) * (Int.gcd n d : ℤ) = n :=
+    Int.ediv_mul_cancel hn
+  have hde : d / (Int.gcd n d : ℤ) * (Int.gcd n d : ℤ) = d :=
+    Int.ediv_mul_cancel hd
+  have hcross : n * (d / (Int.gcd n d : ℤ)) =
+      (n / (Int.gcd n d : ℤ)) * d := by
+    calc
+      n * (d / (Int.gcd n d : ℤ)) =
+          ((n / (Int.gcd n d : ℤ)) * (Int.gcd n d : ℤ)) *
+            (d / (Int.gcd n d : ℤ)) := by rw [hne]
+      _ = (n / (Int.gcd n d : ℤ)) *
+            ((d / (Int.gcd n d : ℤ)) * (Int.gcd n d : ℤ)) := by ring
+      _ = (n / (Int.gcd n d : ℤ)) * d := by rw [hde]
+  simp only [normalizePair]
+  split_ifs <;> simp_all
+
+/-- Each raw coefficient-offset numerator and denominator have the same
+cross-product as the canonical rational-root pair. -/
+private theorem rationalRoot_cross (e : (ℤ × ℤ) × (ℤ × ℤ)) :
+    (e.1.1 * e.2.1 + e.1.2 * e.2.2) * (rationalRoot e).2 =
+      (rationalRoot e).1 * (e.1.1 + e.1.2) := by
+  simpa only [rationalRoot, normalizePair] using
+    normalizePair_cross (e.1.1 * e.2.1 + e.1.2 * e.2.2) (e.1.1 + e.1.2)
+
 private def rootsFor (ab : ℤ × ℤ) : List (ℤ × ℤ) :=
   offsets.flatMap fun t₁ =>
     (offsets.filter (· ≠ t₁)).map fun t₂ => rationalRoot (ab, (t₁, t₂))
 
+private def entriesFor (ab : ℤ × ℤ) : List ((ℤ × ℤ) × (ℤ × ℤ)) :=
+  offsets.flatMap fun t₁ =>
+    (offsets.filter (· ≠ t₁)).map fun t₂ => (ab, (t₁, t₂))
+
+private def entries : List ((ℤ × ℤ) × (ℤ × ℤ)) :=
+  vectors.flatMap entriesFor
+
+private theorem entries_map_rationalRoot :
+    entries.map rationalRoot = vectors.flatMap rootsFor := by
+  unfold entries entriesFor rootsFor
+  simp [List.map_flatMap, List.map_map, Function.comp_def]
+
+private theorem entriesFor_first (ab : ℤ × ℤ)
+    (e : (ℤ × ℤ) × (ℤ × ℤ)) (he : e ∈ entriesFor ab) : e.1 = ab := by
+  simp only [entriesFor, List.mem_flatMap, List.mem_map] at he
+  obtain ⟨t₁, _, t₂, _, rfl⟩ := he
+  rfl
+
+private theorem entries_first_mem_vectors (e : (ℤ × ℤ) × (ℤ × ℤ))
+    (he : e ∈ entries) : e.1 ∈ vectors := by
+  simp only [entries, List.mem_flatMap] at he
+  obtain ⟨ab, hab, heab⟩ := he
+  rw [entriesFor_first ab e heab]
+  exact hab
+
+private theorem vectors_sum_bound :
+    ∀ ab ∈ vectors, 0 < (ab.1 + ab.2).natAbs ∧
+      (ab.1 + ab.2).natAbs ≤ 11 := by
+  decide
+
 def rationalRoots : List (ℤ × ℤ) :=
   (vectors.flatMap rootsFor).eraseDups
+
+private theorem rationalRoot_mem_rationalRoots
+    (e : (ℤ × ℤ) × (ℤ × ℤ)) (he : e ∈ entries) :
+    rationalRoot e ∈ rationalRoots := by
+  have h : rationalRoot e ∈ entries.map rationalRoot :=
+    List.mem_map.mpr ⟨e, he, rfl⟩
+  rw [entries_map_rationalRoot] at h
+  simpa only [rationalRoots, List.mem_eraseDups] using h
 
 private theorem rootsFor_first :
     rootsFor (1, -6) = [(6, 5), (12, 5), (18, 5), (6, 1), (48, 5), (78, 5), (126, 5), (-1, 5), (11, 5), (17, 5), (29, 5), (47, 5), (77, 5), (25, 1), (-2, 5), (4, 5), (16, 5), (28, 5), (46, 5), (76, 5), (124, 5), (-3, 5), (3, 5), (9, 5), (27, 5), (9, 1), (15, 1), (123, 5), (-1, 1), (1, 5), (7, 5), (13, 5), (43, 5), (73, 5), (121, 5), (-8, 5), (-2, 5), (4, 5), (2, 1), (22, 5), (14, 1), (118, 5), (-13, 5), (-7, 5), (-1, 5), (1, 1), (17, 5), (7, 1), (113, 5), (-21, 5), (-3, 1), (-9, 5), (-3, 5), (9, 5), (27, 5), (57, 5)] := by decide
@@ -94,6 +168,23 @@ theorem modular_roots_distinct_of_det_bound (q : ℕ) [Fact (Nat.Prime q)]
 
 private def modularRoot (q : ℕ) [Fact (Nat.Prime q)]
     (r : ℤ × ℤ) : ZMod q := (r.1 : ZMod q) / (r.2 : ZMod q)
+
+private def rawRoot (q : ℕ) [Fact (Nat.Prime q)]
+    (e : (ℤ × ℤ) × (ℤ × ℤ)) : ZMod q :=
+  ((e.1.1 * e.2.1 + e.1.2 * e.2.2 : ℤ) : ZMod q) /
+    ((e.1.1 + e.1.2 : ℤ) : ZMod q)
+
+/-- Gcd normalization preserves each public modular quotient whenever its
+raw and canonical denominators survive modulo the prime. -/
+theorem rawRoot_eq_modularRoot (q : ℕ) [Fact (Nat.Prime q)]
+    (e : (ℤ × ℤ) × (ℤ × ℤ))
+    (hd : ((e.1.1 + e.1.2 : ℤ) : ZMod q) ≠ 0)
+    (hrd : (((rationalRoot e).2 : ℤ) : ZMod q) ≠ 0) :
+    rawRoot q e = modularRoot q (rationalRoot e) := by
+  apply (div_eq_div_iff hd hrd).mpr
+  have hcross := rationalRoot_cross e
+  simp only [← Int.cast_mul]
+  exact congrArg (fun z : ℤ => (z : ZMod q)) hcross
 
 /-- A finite certificate of bounded, pairwise nonzero cross-determinants
 gives an injective modular root map. -/
@@ -268,6 +359,55 @@ theorem canonical_modular_roots_card_419
   have h := modular_nonzero_root_image_card_of_certificate q R hden hdet hzero
   simpa [R, hRcard] using h
 
+/-- Every frozen coefficient-offset quotient equals its canonical modular
+fraction above the denominator bound. -/
+theorem frozen_rawRoot_eq_modularRoot
+    (q : ℕ) [Fact (Nat.Prime q)] (hq : 4202 < q)
+    (e : (ℤ × ℤ) × (ℤ × ℤ)) (he : e ∈ entries) :
+    rawRoot q e = modularRoot q (rationalRoot e) := by
+  have hv := vectors_sum_bound e.1 (entries_first_mem_vectors e he)
+  have hd0 : e.1.1 + e.1.2 ≠ 0 := by
+    intro hz
+    simp [hz] at hv
+  have hdBound : (e.1.1 + e.1.2).natAbs < q := by omega
+  have hd := cast_ne_zero_of_natAbs_lt q _ hd0 hdBound
+  have hr := rationalRoots_denominator_bound (rationalRoot e)
+    (rationalRoot_mem_rationalRoots e he)
+  have hrd0 : (rationalRoot e).2 ≠ 0 := ne_of_gt hr.1
+  have hrdBound : (rationalRoot e).2.natAbs < q := by omega
+  have hrd := cast_ne_zero_of_natAbs_lt q _ hrd0 hrdBound
+  exact rawRoot_eq_modularRoot q e hd hrd
+
+/-- The raw public equations of the frozen family have exactly 419 distinct
+nonzero roots for every prime above the checked determinant threshold. -/
+theorem frozen_raw_roots_card_419
+    (q : ℕ) [Fact (Nat.Prime q)] (hq : 4202 < q) :
+    (((entries.toFinset).image (rawRoot q)).erase 0).card = 419 := by
+  classical
+  have hmap : entries.toFinset.image rationalRoot = rationalRoots.toFinset := by
+    ext r
+    simp only [Finset.mem_image, List.mem_toFinset]
+    constructor
+    · rintro ⟨e, he, rfl⟩
+      exact rationalRoot_mem_rationalRoots e he
+    · intro hr
+      have h : r ∈ entries.map rationalRoot := by
+        rw [entries_map_rationalRoot]
+        simpa only [rationalRoots, List.mem_eraseDups] using hr
+      obtain ⟨e, he, rfl⟩ := List.mem_map.mp h
+      exact ⟨e, he, rfl⟩
+  have hraw : entries.toFinset.image (rawRoot q) =
+      entries.toFinset.image (fun e => modularRoot q (rationalRoot e)) := by
+    apply Finset.image_congr
+    intro e he
+    exact frozen_rawRoot_eq_modularRoot q hq e (by simpa using he)
+  have hcomp : entries.toFinset.image (fun e => modularRoot q (rationalRoot e)) =
+      (entries.toFinset.image rationalRoot).image (modularRoot q) := by
+    rw [Finset.image_image]
+    rfl
+  rw [hraw, hcomp, hmap]
+  exact canonical_modular_roots_card_419 q hq
+
 #print axioms rationalRoots_card
 #print axioms rationalRoots_eq_certificate
 #print axioms rationalRoots_nonzero_card
@@ -281,5 +421,8 @@ theorem canonical_modular_roots_card_419
 #print axioms modular_root_image_card_of_certificate
 #print axioms modular_nonzero_root_image_card_of_certificate
 #print axioms canonical_modular_roots_card_419
+#print axioms rawRoot_eq_modularRoot
+#print axioms frozen_rawRoot_eq_modularRoot
+#print axioms frozen_raw_roots_card_419
 
 end XedniFixedFamilyRationalRootPlateau
