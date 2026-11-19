@@ -119,6 +119,75 @@ theorem elliptic_relation_for_subgroup
       (v : ZMod q) = -(a : ZMod q) / (b : ZMod q) :=
   integer_relation_for_subgroup q P Q horder hQ a b hb hrel
 
+section PublicOracle
+
+variable {H : Type u} [AddCommGroup H] [DecidableEq H]
+
+/-- The public point associated with a scalar residue and base point. -/
+def pointOfScalar (P : H) (v : ZMod q) : H := v.val • P
+
+/-- Verify a public integer-coefficient relation and extract its scalar
+certificate. The computation uses only `P`, `Q`, and the candidate pair. -/
+def extractScalar (P Q : H) : Option (ℤ × ℤ) → Option (ZMod q)
+  | none => none
+  | some (a, b) =>
+    if (b : ZMod q) ≠ 0 ∧ a • P + b • Q = 0 then
+      some (-(a : ZMod q) / (b : ZMod q))
+    else none
+
+/-- The extractor returns the target scalar exactly when its candidate is a
+valid public relation for that target. -/
+theorem extractScalar_iff_valid (P : H) (horder : addOrderOf P = q)
+    (v : ZMod q) (o : Option (ℤ × ℤ)) :
+    extractScalar q P (pointOfScalar q P v) o = some v ↔
+      ∃ a b : ℤ, o = some (a, b) ∧
+        (b : ZMod q) ≠ 0 ∧ a • P + b • pointOfScalar q P v = 0 := by
+  cases o with
+  | none => simp [extractScalar]
+  | some ab =>
+    obtain ⟨a, b⟩ := ab
+    by_cases hv : (b : ZMod q) ≠ 0 ∧ a • P + b • pointOfScalar q P v = 0
+    · have hlog : v = -(a : ZMod q) / (b : ZMod q) := by
+        have h := integer_relation_recovers_scalar q P horder (v.val : ℤ) a b hv.1
+        have hrel : a • P + b • ((v.val : ℤ) • P) = 0 := by
+          simpa only [pointOfScalar, natCast_zsmul] using hv.2
+        have hres := h hrel
+        simpa using hres
+      simp [extractScalar, hv, hlog]
+    · simp [extractScalar, hv]
+
+/-- A Boolean check of a candidate public relation. -/
+def validRelationOutput (P Q : H) : Option (ℤ × ℤ) → Bool
+  | none => false
+  | some (a, b) => decide ((b : ZMod q) ≠ 0 ∧ a • P + b • Q = 0)
+
+theorem validRelationOutput_iff (P Q : H) (o : Option (ℤ × ℤ)) :
+    validRelationOutput q P Q o = true ↔
+      ∃ a b : ℤ, o = some (a, b) ∧
+        (b : ZMod q) ≠ 0 ∧ a • P + b • Q = 0 := by
+  cases o with
+  | none => simp [validRelationOutput]
+  | some ab =>
+    obtain ⟨a, b⟩ := ab
+    simp [validRelationOutput]
+
+/-- For any fixed set of scalar inputs, a public-input coefficient oracle
+and the verified scalar extractor succeed on exactly the same targets. -/
+theorem extractor_success_set_eq (P : H) (horder : addOrderOf P = q)
+    (oracle : H → Option (ℤ × ℤ)) (targets : Finset (ZMod q)) :
+    targets.filter (fun v =>
+      extractScalar q P (pointOfScalar q P v)
+        (oracle (pointOfScalar q P v)) = some v) =
+    targets.filter (fun v =>
+      validRelationOutput q P (pointOfScalar q P v)
+        (oracle (pointOfScalar q P v)) = true) := by
+  ext v
+  simp only [Finset.mem_filter]
+  rw [extractScalar_iff_valid q P horder v (oracle (pointOfScalar q P v)),
+    validRelationOutput_iff]
+
+end PublicOracle
+
 #print axioms relation_certificate_verifies
 #print axioms relation_certificate_recovers
 #print axioms known_scalar_gives_relation
@@ -126,5 +195,8 @@ theorem elliptic_relation_for_subgroup
 #print axioms integer_relation_recovers_scalar
 #print axioms integer_relation_for_subgroup
 #print axioms elliptic_relation_for_subgroup
+#print axioms extractScalar_iff_valid
+#print axioms validRelationOutput_iff
+#print axioms extractor_success_set_eq
 
 end XedniAdaptivePublicRelationReduction
