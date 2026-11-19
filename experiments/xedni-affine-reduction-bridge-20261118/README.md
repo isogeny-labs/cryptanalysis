@@ -65,6 +65,16 @@ Let `F` be a finite field of size `q`, and fix coefficients `a, b ∈ F` with `b
 
 When coefficients may be chosen after seeing the scalar pair `(u,v)`, the choice `(a,b)=(v,−u)` gives `a u+b v=0` whenever `u≠0`, and `b` remains nonzero. If `u=v=0`, choose `(0,1)`. For `u=0,v≠0`, the equation reduces to `b v=0`, which is impossible with `b≠0`. Thus the exact success condition is `u≠0` or `v=0`, and the finite-field count is `q²−(q−1)=q²−q+1`. `AdaptiveCoefficientBoundary.lean` proves this equivalence and cardinality. The coefficient choice uses the scalar coordinates themselves; deriving those coordinates from elliptic-curve public points is a separate computation.
 
+`AdaptivePublicRelationReduction.lean` identifies the corresponding public-point computation. In any `ZMod q`-module `G` for prime `q`, a valid relation `a • P + b • Q = 0` with `b ≠ 0` certifies `Q = (−a/b) • P`. If `P ≠ 0` and `Q = v • P`, it recovers the unique scalar `v = −a/b`. Conversely, a known scalar gives the relation `(-v) • P + 1 • Q = 0`. Thus a procedure returning valid adaptive coefficients for an unknown public target also returns its discrete logarithm by one field division; the Lean result is a reduction from relation output to scalar recovery, with no runtime claim. Applying it to a concrete elliptic-curve subgroup requires its `ZMod q`-module structure and a nonzero base point.
+
+| Result | Lean declaration | Exact hypotheses and status |
+| --- | --- | --- |
+| Public relation certificate | `XedniAdaptivePublicRelationReduction.relation_certificate_verifies` | Prime `q`, `ZMod q`-module `G`, `b ≠ 0`, `a • P + b • Q = 0`; proves `Q = (−a/b) • P`; checked |
+| Scalar extraction | `XedniAdaptivePublicRelationReduction.relation_certificate_recovers` | Same module, `P ≠ 0`, `Q = v • P`; proves `v = −a/b`; checked |
+| Converse and span characterization | `XedniAdaptivePublicRelationReduction.known_scalar_gives_relation`, `relation_certificate_iff_span` | Known scalar yields coefficients `(-v,1)`; a valid relation exists exactly when `Q` lies in the `ZMod q`-span of `P`; checked |
+
+Run `lake build AdaptivePublicRelationReduction`; `build-adaptive-public-relation-output.txt` records the registered build, direct module check, and `#print axioms` audit. The toolchain and Mathlib revision are pinned beside this module; `lean4checker --fresh` is unavailable on this host.
+
 The frozen [adaptive census protocol](adaptive-coefficient-protocol.json) admits all ordered pairs over `F₇`, `F₁₁`, and `F₃₁`. [The result](adaptive-coefficient-result.json) compares a fixed `(1,1)` relation, the explicit adaptive rule, and an exhaustive search over every `a` and nonzero `b`:
 
 | `q` | Total pairs | Fixed hits | Adaptive hits | Exhaustive disagreement |
