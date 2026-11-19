@@ -3,7 +3,7 @@
 - **Date**: 2026-11-19
 - **Crate**: `crates/xedni-phase2` (`cargo test --release`, `cargo run --release --bin run_phase2`)
 - **Deterministic Receipt**: `experiments/xedni-phase2-20261119/RESULTS.json` (`seed = 20261119`)
-- **Lean 4 Obstruction Proofs**: `experiments/xedni-phase2-20261119/formal/Phase2Obstructions.lean` (`PASS`, `5` kernel theorems, `0` non-standard axioms via `tools/lean/proof-gate.sh`)
+- **Lean 4 Obstruction Proofs**: `experiments/xedni-phase2-20261119/formal/Phase2Obstructions.lean` (`PASS`, `6` kernel theorems, `0` non-standard axioms via `tools/lean/proof-gate.sh`)
 - **Standing**: Empirical measurements and complexity extrapolations are tagged `[pcc:unverified]`; discrete dimension and scalar-cancellation identities in `formal/Phase2Obstructions.lean` are Lean-kernel checked `[pcc:unverified]`.
 
 ![Phase 2 Escapes Structural Taxonomy](phase2_escapes_taxonomy.svg)

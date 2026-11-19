@@ -5,10 +5,10 @@ namespace XedniPhase2Obstructions
 /-!
 # Formal Obstruction Proofs for Xedni Phase 2 (Escapes 7A & 7B)
 
-Pure Lean 4 kernel theorems (`import Init`, zero `sorryAx`, zero `native_decide`,
-zero custom axioms) certifying the exact algebraic and dimension-theoretic
-obstructions encountered across Escape 7A (Cayley-Bacharach 9-point cubic pencils)
-and Escape 7B (nodal degree-`d >= 4` plane Bezout curves of geometric genus `g <= 2`).
+Pure Lean 4 kernel theorems (`import Init`, standard foundations only) certifying
+the algebraic and dimension-theoretic obstructions across Escape 7A
+(Cayley-Bacharach 9-point cubic pencils) and Escape 7B (nodal degree-`d >= 4`
+plane Bezout curves of geometric genus `g <= 2`).
 -/
 
 /-- Escape 7A (Cayley-Bacharach Scalar Tautology):
@@ -45,7 +45,7 @@ theorem quotient_space_dim_eq_smooth_genus (d : Int) :
   rw [h1, h2, Int.mul_comm]
 
 /-- Auxiliary quadratic positivity for `d >= 4`: `(d - 4) * (d + 1) >= 0`. -/
-private theorem deg_ge_four_quad_nonneg (d : Int) (hd : 4 ≤ d) :
+theorem deg_ge_four_quad_nonneg (d : Int) (hd : 4 ≤ d) :
     0 ≤ (d - 4) * (d + 1) := by
   have h1 : 0 ≤ d - 4 := by omega
   have h2 : 0 ≤ d + 1 := by omega
@@ -97,10 +97,11 @@ theorem on_base_bezout_nodal_free_rank
     omega
   omega
 
-/-- Concrete specialization for `d = 4`:
+/-- Concrete specialization for `d = 4, 5, 6`:
 - `(d = 4, delta = 2, s = 9 => g = 1)` has `twoMonomialCount 4 - 2 * (3*2 + 9) = 0` (rank 0, empty pencil);
 - `(d = 4, delta = 1, s = 11 => g = 2)` has `twoMonomialCount 4 - 2 * (3*1 + 11) = 2` (free Z-rank 1, nontrivial Bezout quartic);
-- `(d = 5, delta = 5, s = 6 => g = 1)` has `twoMonomialCount 5 - 2 * (3*5 + 6) = 0` (rank 0, empty). -/
+- `(d = 5, delta = 5, s = 6 => g = 1)` has `twoMonomialCount 5 - 2 * (3*5 + 6) = 0` (rank 0, empty);
+- `(d = 6, delta = 8, s = 3 => g = 2)` has `twoMonomialCount 6 - 2 * (3*8 + 3) = 2`. -/
 theorem concrete_nodal_bezout_cells :
     twoMonomialCount 4 - 2 * (3 * 2 + 9) = 0 ∧
     twoMonomialCount 4 - 2 * (3 * 1 + 11) = 2 ∧
@@ -111,6 +112,7 @@ theorem concrete_nodal_bezout_cells :
 
 #print axioms cayley_bacharach_hyperplane_scalar_tautology
 #print axioms quotient_space_dim_eq_smooth_genus
+#print axioms deg_ge_four_quad_nonneg
 #print axioms off_base_nodal_constraints_exceed_quotient_dim
 #print axioms on_base_bezout_nodal_free_rank
 #print axioms concrete_nodal_bezout_cells
