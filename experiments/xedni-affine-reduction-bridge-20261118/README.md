@@ -277,6 +277,16 @@ Run `lake build ProjectivePrimitiveReductionMap`; `build-projective-primitive-ma
 
 Run `lake build ProjectivePrimitiveCurveEquation`; `build-projective-primitive-equation-output.txt` records the registered build, direct module check, and `#print axioms` audit. The audited declarations use only `propext`, `Classical.choice`, and `Quot.sound`.
 
+`ProjectivePrimitiveAddition.lean` connects the new reduction map to a noncoalescing addition branch. If the integral `addXYZ` triple of the chosen primitive input representatives factors as `c • U`, with `U` the chosen primitive representative of a rational class `E`, then a nonzero `c` identifies `E` as the rational sum. If the reduced inputs remain projectively distinct and `g c` is a unit, the reduced `addMap` equals the reduction of `E`. The combined theorem supplies both identities from one factorization. The factorization and unit conditions remain explicit; the residue-coalescing branch is a separate proof obligation.
+
+| Result | Lean declaration | Exact hypotheses and status |
+| --- | --- | --- |
+| Factorization identifies rational sum | `XedniProjectivePrimitiveAddition.rational_add_eq_of_factor` | Integral model, three nonzero rational classes, distinct integral input representatives, exact `addXYZ` factorization, nonzero factor; checked |
+| Normalized reduction commutes with addition | `XedniProjectivePrimitiveAddition.reduceNonzero_add_eq_of_unit_factor` | Same factorization, target ring nontrivial, mapped inputs distinct, mapped factor a unit; checked |
+| Joint rational and reduced identity | `XedniProjectivePrimitiveAddition.rational_and_reduced_add_of_unit_factor` | Mapped-input and unit conditions above; checked |
+
+Run `lake build ProjectivePrimitiveAddition`; `build-projective-primitive-addition-output.txt` records the registered build, direct module check, and `#print axioms` audit. The audited declarations use only `propext`, `Classical.choice`, and `Quot.sound`.
+
 | Result | Lean declaration | Exact hypotheses and status |
 | --- | --- | --- |
 | Primitive reduction remains nonzero | `XedniProjectivePrimitiveUniqueness.primitive_map_ne_zero` | Integer triple with Bézout certificate, homomorphism to nontrivial commutative ring; checked |
