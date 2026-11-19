@@ -244,6 +244,16 @@ Run `lake build ProjectiveClassCoalescence`; `build-projective-class-coalescence
 
 `ProjectiveAffineNormalizationUniqueness.lean` closes the choice-of-representative question for the affine integral slice. Over a nontrivial domain, equivalent projective vectors whose `Z` coordinates both equal 1 are identical. In particular, two integral `Z=1` vectors representing the same rational projective class are equal over `ℤ`, so every coefficientwise ring reduction gives the same class. This provides a canonical normalized reduction wherever the rational sum admits an integral affine `Z=1` representative; a local construction for nonintegral affine coordinates or the point at infinity remains a separate step.
 
+`ProjectivePrimitiveUniqueness.lean` extends choice independence to all primitive integral projective triples, including infinity. It records primitivity as an explicit Bézout identity among the three coordinates. If two primitive triples represent the same rational projective class, the rational scaling factor is an integer in both directions and hence an integer unit; their reductions are the same class for every ring map from `ℤ`. A primitive triple maps to a nonzero vector in every nontrivial target ring. The existence of such a primitive integral representative for every rational projective point is the next construction step; this module proves uniqueness and nonvanishing once one is supplied.
+
+| Result | Lean declaration | Exact hypotheses and status |
+| --- | --- | --- |
+| Primitive reduction remains nonzero | `XedniProjectivePrimitiveUniqueness.primitive_map_ne_zero` | Integer triple with Bézout certificate, homomorphism to nontrivial commutative ring; checked |
+| Rational equality descends to integer unit scaling | `XedniProjectivePrimitiveUniqueness.int_equiv_of_rational_equiv_primitive` | Two primitive integer triples and rational projective equivalence; checked |
+| Primitive reduction is choice independent | `XedniProjectivePrimitiveUniqueness.primitive_reduction_independent` | Same hypotheses and any ring homomorphism from `ℤ`; checked |
+
+Run `lake build ProjectivePrimitiveUniqueness`; `build-projective-primitive-uniqueness-output.txt` records the registered build and `#print axioms` audit.
+
 | Result | Lean declaration | Exact hypotheses and status |
 | --- | --- | --- |
 | Unit-normalized equivalence is equality | `XedniProjectiveAffineNormalizationUniqueness.affine_z_one_equiv_iff_eq` | Nontrivial commutative domain, two vectors with `Z=1`; checked |
