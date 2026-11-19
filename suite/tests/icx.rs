@@ -201,6 +201,25 @@ fn xedni_lift_cli_supports_jksst_projective_frame_mode() {
 }
 
 #[test]
+fn xedni_solve_cli_recovers_non_collinear_discrete_log_and_reports_rho_gap() {
+    let fixture = concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/fixtures/xedni_solve_p67_ord53.json"
+    );
+    let v = run_json(&["xedni-solve", "--input", fixture]);
+    assert_eq!(v["operation"], "xedni-solve");
+    assert_eq!(v["result"]["verified"], true);
+    assert_eq!(v["result"]["recovered_discrete_log"], "29");
+    assert!(
+        v["result"]["non_collinear_relations_found"]
+            .as_u64()
+            .unwrap()
+            >= 1
+    );
+    assert!(v["result"]["work_over_rho"].as_f64().unwrap() > 0.0);
+}
+
+#[test]
 fn aliases_resolve() {
     // NIST/SEC aliases must map to the canonical curve.
     for (alias, canonical) in [("nistp256", "p256"), ("k-163", "sect163k1")] {
