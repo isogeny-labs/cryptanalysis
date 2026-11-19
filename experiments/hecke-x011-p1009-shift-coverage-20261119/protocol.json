@@ -1,0 +1,14 @@
+{
+  "schema": "x011-p1009-shift-coverage-protocol-v1",
+  "question": "For the frozen 84-point prepared fiber in the cyclic group of order 1020, what is the exact first-hit shift distribution over all public points, and where does the frozen public target fall?",
+  "source_prepared_logs": "../hecke-x011-p1009-one-target-20261119/prepared-logs.json",
+  "source_prepared_logs_sha256": "15f8a201bfba4d6325f276b84503a8d686bb1b34e5e822cca2d7cf06cbc6f7fa",
+  "source_public_point": "../hecke-x011-p1009-one-target-20261119/public.json",
+  "source_public_point_sha256": "ecec558d687a1e5b16b629d1f433f3964ba5c222e9e64ecb33c12bf7f8408ae4",
+  "group_order": 1020,
+  "generator": [2, 155],
+  "algorithm": "For each scalar x=0..1019, compute the least k>=0 such that x+k mod 1020 is in the frozen prepared-log set; tabulate k. Independently replay with Sage point addition and the ordered fiber points.",
+  "public_target_point": [75, 527],
+  "candidate_id": null,
+  "timing_claim": null
+}
