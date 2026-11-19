@@ -106,6 +106,37 @@ The proof first maps a selected rational relation to `a(w−t₁)+b(w−t₂)=0`
 
 Run `lake build SharedTargetSelectorBound` in this directory. `build-shared-selector-output.txt` records the actual build and `#print axioms` for all three theorems; each uses only `propext`, `Classical.choice`, and `Quot.sound`. The pinned Lean toolchain and Mathlib revision are the same as the adjacent selector and shared-target modules. `lean4checker --fresh` is unavailable on this host.
 
+## Fixed-family target impossibility theorem
+
+`SharedTargetSelectorImpossibility.lean` turns the capacity bound into a universal-coverage obstruction. Suppose the coefficient pairs `S` and offset pairs `T` are committed before the target scalar is known, and every coefficient sum is nonzero modulo prime subgroup order `q`. A lift selector may choose a different additive group and different points for every public pair, provided its reduction map is additive and the selected points reduce to that pair. If **every nonzero target** has an exact selected relation, then `|T|·|S| ≥ q−1`. Consequently, when `|T|·|S| < q−1`, Lean constructs the logical existence of a nonzero target with no such relation.
+
+The proof counts the `q−1` nonzero scalars in `ZMod q`. Full coverage makes the hit set equal to that nonzero set, while `precommitted_nonzero_card_bound` puts the hit count at most `|T|·|S|`. These inequalities give the lower bound; its contrapositive gives a missed target. This theorem rules out universal coverage by a sublinear fixed coefficient-offset family under its explicit homomorphism premise. It leaves adaptive coefficients, other relation forms, and the construction cost of the selector to their separate analyses.
+
+| Result | Lean declaration | Exact hypotheses and status |
+| --- | --- | --- |
+| Universal coverage requires linear family size | `XedniSharedTargetSelectorImpossibility.full_nonzero_coverage_requires_linear_family` | Prime `q`; fixed `S,T`; each coefficient sum nonzero modulo `q`; arbitrary public-pair-dependent additive lift groups, reduction homomorphisms, and correct selectors; every nonzero target hit; checked |
+| Subthreshold family misses a nonzero target | `XedniSharedTargetSelectorImpossibility.exists_nonzero_target_without_selected_relation` | Same setup and `|T|·|S| < q−1`; checked |
+| Missed-target count lower bound | `XedniSharedTargetSelectorImpossibility.missed_nonzero_target_count_lower_bound` | Same fixed-family and additive-reduction setup; at least `q−1−|T|·|S|` nonzero target scalars are outside the selected hit set, with truncated natural subtraction; checked |
+
+Run `lake build SharedTargetSelectorImpossibility`; `build-shared-selector-impossibility-output.txt` records the registered build, direct module check, and `#print axioms` audit. All three declarations use only `propext`, `Classical.choice`, and `Quot.sound`. The [frozen root census](../xedni-fixed-family-root-census-20261119/README.md) independently enumerates the necessary public-relation roots above this bound's capacity threshold.
+
+`FixedFamilyRationalRootPlateau.lean` checks the complete 13-vector by 56-offset-pair rational enumeration in 13 kernel-checked chunks. Its 420-element first-occurrence certificate has 419 nonzero reduced fractions, positive denominators at most 11, numerator absolute values at most 191, and coprime coordinates. Distinct fractions have nonzero cross-determinants. A checked ten-class numerator envelope, grouped by reduced denominator, proves the sharp uniform cross-determinant bound 2,046, attained by `5/11` and `191/11`. Gcd divisibility proves that every raw coefficient-offset quotient equals its normalized modular fraction when the denominators survive, and the frozen vector sums make that condition automatic here. Consequently, the Lean theorem proves that the **raw public relation family has exactly 419 nonzero modular roots and misses exactly `q−420` nonzero targets for every prime `q > 2046`**. The independently replayed exact-arithmetic [plateau certificate](../xedni-fixed-family-root-census-20261119/README.md) agrees with the root count and sharp threshold.
+
+| Result | Lean declaration | Exact hypotheses and status |
+| --- | --- | --- |
+| Bounded integer survives reduction | `XedniFixedFamilyRationalRootPlateau.cast_ne_zero_of_natAbs_lt` | Prime `q`, nonzero integer with `natAbs < q`; checked |
+| Distinct fraction images | `XedniFixedFamilyRationalRootPlateau.modular_roots_distinct_of_det_bound` | Prime `q`, denominators nonzero modulo `q`, nonzero cross-determinant with `natAbs < q`; checked |
+| Modular image cardinality | `XedniFixedFamilyRationalRootPlateau.modular_root_image_card_of_certificate` | Finite pair set, every denominator and pairwise determinant satisfies the bounds; checked |
+| Nonzero modular image cardinality | `XedniFixedFamilyRationalRootPlateau.modular_nonzero_root_image_card_of_certificate` | Same data, canonical zero pair `(0,1)` present; checked |
+| Frozen rational-root enumeration | `XedniFixedFamilyRationalRootPlateau.rationalRoots_eq_certificate`, `rationalRoots_card`, `rationalRoots_nonzero_card` | All 728 ordered coefficient-offset combinations; exact first-occurrence list of 420 fractions, 419 nonzero; checked |
+| Reduced coordinates and determinant | `XedniFixedFamilyRationalRootPlateau.rationalRoots_denominator_bound`, `rationalRoots_numerator_bound`, `rationalRoots_coprime`, `rationalRoots_crossdet_ne`, `rationalRoots_crossdet_bound_4202` | Positive denominator at most 11; numerator absolute value at most 191; coprime coordinates; distinct fractions have nonzero determinant of absolute value at most 4,202; checked |
+| Sharp determinant bound | `XedniFixedFamilyRationalRootPlateau.rationalRoots_crossdet_bound_2046`, `rationalRoots_crossdet_bound_attained` | Ten checked denominator-class numerator envelopes; every pair has determinant absolute value at most 2,046, attained by two certified fractions; checked |
+| All-primes canonical-root plateau | `XedniFixedFamilyRationalRootPlateau.canonical_modular_roots_card_419` | Prime `q > 2046`; exactly 419 nonzero modular images of the normalized rational-root list; checked |
+| Raw-to-normalized quotient and raw-family plateau | `XedniFixedFamilyRationalRootPlateau.rawRoot_eq_modularRoot`, `frozen_rawRoot_eq_modularRoot`, `frozen_raw_roots_card_419` | Prime `q > 2046`; all 728 raw public quotients have exactly 419 distinct nonzero modular roots; checked |
+| Exact necessary-public-root miss count | `XedniFixedFamilyRationalRootPlateau.frozen_missed_nonzero_targets_card` | Prime `q > 2046`; among `q−1` nonzero target scalars, exactly `q−420` are outside the raw public-relation root set; checked |
+
+Run `lake build FixedFamilyRationalRootPlateau`; `build-fixed-family-root-plateau-output.txt` records the registered build, direct module check, and axiom audit. The checked structural declarations use only `propext`, `Classical.choice`, and `Quot.sound`.
+
 ## Finite regular-sum reduction
 
 The reduction bridge now covers an arbitrary finite sequence of affine additions, with a unit slope denominator certified at each step. For a list `P₁,…,Pₙ` of local short-Weierstrass points whose certified sum has endpoint `Q`, the coefficient and point reduction map sends `Q` to the elliptic-group sum of the reduced `Pᵢ`. Consequently, two such sums with the same local endpoint give equal finite-field group sums. This supports relations with varying addends, beyond the repeated-addend chain proved earlier.
