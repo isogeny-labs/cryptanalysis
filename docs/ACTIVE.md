@@ -18,6 +18,8 @@ and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
 
+- [x] Execute preregistered 5-encoding/3-arm auxiliary-IC benchmark panel, implement division-free m=3,4 split-S3 resultant evaluation in `crates/prime-field-auxiliary-ic`, and audit disjoint 3-window CDCL(T) nogood width + CT186 prime-field cost floor; KN-FIND-007 yield conservation confirmed across 5 fresh 31-bit targets, Multiplicative(126) m=3,4 circuit beats same-base direct by 1.32x/1.23x, CDCL(T) slope e=2.00 refutes sub-birthday gate (Cursor, started 2026-11-19, branch cursor/aux-ic-m34-and-cdclt-audit-3858, PR #1845) [pcc:unverified]
+
 - [ ] Mirror the general binary hyperelliptic-cover transfer interface from crypto after its source commit is frozen, with split provenance and exact parity checks (Codex, started 2026-11-18, branch codex/general-binary-cover-transfer-mirror-20261118, PR #1765) [pcc:unverified]
 
 - [x] Validate fixed index-calculus candidate residuals and subgroup status (Codex, started 2026-11-18, branch test-fixed-candidate-residual, PR #1755)
