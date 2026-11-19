@@ -9,7 +9,25 @@ and useful target recovery as separate endpoints. A valid positive result needs
 replication, exact recovery replay, complete work, and simultaneous signed
 slope lower bounds above `-0.8`; controls or bounded relation hits do not count.
 
-## Current branch and state
+## Lead / hypothesis
+
+The two strongest prospective mechanisms are a public constant-size bank that
+minimizes normalized minimal discriminant, and quotient-compatible
+reverse-Mestre local data matched against neutral CRT cost. Four additional
+panels cover a public nonlinear selector, genuine `r=7..9` cubics, small-degree
+isogeny neighbors, and nonisomorphic rank-one families. A mechanism signal is
+insufficient: only replicated exact target recovery with the frozen decay rule
+can defeat the finite-range model.
+
+## Spec
+
+The binding design is in
+`research/xedni_rank_decay_20261118/{PROTOCOL.md,AMENDMENT.md,PRIMES.json}`.
+The lower event cutoff is 20 bits, the simultaneous profile count is 4,320,
+and the hierarchical bootstrap count is 172,800. The blocked `FREEZE.json`
+records exact implementation/file/roster/tool hashes but is not authorization.
+
+## State
 
 - Repository: `/workspace/cryptanalysis`
 - Branch: `codex/xedni-breakthrough-20261117`
@@ -87,7 +105,11 @@ The consolidated problem is
 `problems/xedni-rank-decay-tool-map-and-power.md`; checkpoint transport is in
 `problems/xedni-affine-cvp-checkpoint-access.md`.
 
-## Exact next steps
+## Runs in flight
+
+None. No natural process or container is running.
+
+## Next steps
 
 1. Commit this resume update and push the branch.
 2. Run `scripts/checkpoint.sh status`, `scripts/checkpoint.sh push`, and
@@ -118,7 +140,7 @@ python3 tools/pcc/pcc.py ledger verify --base origin/main
 python3 tools/pcc/pcc.py standing PCC-20261119-f7f325 --json
 ```
 
-## Stop condition
+## Stop and success conditions
 
 Do not generate a natural source, lift, or outcome row while any blocker above
 is open. A checkpoint failure, missing Magma, absent executor, or
