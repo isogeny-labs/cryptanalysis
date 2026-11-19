@@ -3,6 +3,8 @@ on:
   pull_request:
     paths:
       - 'experiments/chained-transfer-public-target/norm-point-reuse-01/ct244_primitive_probe.py'
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/ct248_scoped_sample_audit.py'
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT248_SCOPED_PRIMITIVE_SAMPLES_PROTOCOL.md'
       - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT244_PRIMITIVE_PRICING_PROTOCOL.md'
       - '.github/workflows/ct244-source-primitive-probe.yml'
 permissions:
@@ -28,6 +30,14 @@ jobs:
           python3 -m py_compile "$root/norm-point-reuse-01/ct244_primitive_probe.py"
           python3 -S "$root/norm-point-reuse-01/ct244_primitive_probe.py" --original "$root/fixed-jacobian-chain-evaluator-01" --self-test
           python3 -O -S "$root/norm-point-reuse-01/ct244_primitive_probe.py" --original "$root/fixed-jacobian-chain-evaluator-01" --self-test
+      - name: CT248 independent sample-integrity control (synthetic only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          script=experiments/chained-transfer-public-target/norm-point-reuse-01/ct248_scoped_sample_audit.py
+          python3 -m py_compile "$script"
+          python3 -S "$script" --self-test
+          python3 -O -S "$script" --self-test
       - name: Create separate guarded Rust package and parse with rustfmt
         shell: bash
         run: |
@@ -49,7 +59,13 @@ jobs:
           assert s.count('ct244_record(')==3
           assert 'if ep(n.norm(&entry.class)?) != entry.norm {' in s
           assert 'CT244_PRIMITIVE_TIMING' in s
-          print('CT244_SOURCE_GUARD_PASS seven slots; no native timing')
+          assert 'CT248_PRIMITIVE_SAMPLE' in s
+          assert 'CT248 C13: epoch clock' in s
+          assert 'CT248 C169: epoch clock' in s
+          assert 'CT248 D: epoch clock' in s
+          assert r['ct248_selected_tests_blob']=='bcd27773a7b179c3beeb3d5782a5de97a7df19f2'
+          assert r['ct248_source_arms']==144
+          print('CT248_SOURCE_GUARD_PASS seven slots and 144 scoped epochs; no native timing')
           PY
       - name: Scope
         run: echo "Source-only and rustfmt parsing; does not attest native compilation, all 695-record parity, primitive pricing, physical timing or PCC."
