@@ -123,11 +123,34 @@ their actual domains.
 | Homomorphic lift logarithm vanishes | `XedniCanonicalLiftTorsionObstruction.homomorphic_lift_log_zero` | Additive lift `G →+ L` and additive logarithm `L →+ A` under the preceding hypotheses; checked |
 | Torsion-free homomorphic section forces trivial source | `XedniCanonicalLiftTorsionObstruction.torsion_free_section_trivial` | Additive torsion-free `L` and an exact section of `L →+ G`; checked |
 | Set-theoretic section has a defect | `XedniCanonicalLiftTorsionObstruction.section_has_additive_defect` | Nontrivial finite `G`, additive torsion-free `L`, additive reduction and section; an explicit existential pair fails additivity; checked |
+| Defect reduces to zero | `XedniCanonicalLiftDefect.defect_reduces_to_zero` | Abelian lift and residue groups, additive reduction, exact set-theoretic section; checked |
+| Defect cocycle | `XedniCanonicalLiftDefect.defect_cocycle` | Arbitrary map between abelian groups; the two ways of adding three inputs have equal accumulated defect; checked |
+| Zero defect characterizes additivity | `XedniCanonicalLiftDefect.defect_zero_iff_additive` | Arbitrary map between abelian groups; checked |
+
+For a section `s` and additive reduction `r`, define
+`d(x,y)=s(x+y)−s(x)−s(y)`. The kernel theorem says `r(d(x,y))=0`.
+The cocycle identity is
+`d(x,y)+d(x+y,z)=d(y,z)+d(x,y+z)`; it accounts for every
+reassociation of a longer relation for one fixed section. The section may be
+selected after public inputs are known, but the same selected map must be used
+throughout that relation. The reduction-kernel statement
+does not imply that the defect is numerically small or recoverable.
+
+The frozen [section-defect protocol](section-defect-protocol.json) uses the
+recorded row-0 subgroup order 331 and the exact integer section
+`s(k)=k` for `0≤k<331`. [The exhaustive result](section-defect-result.json)
+covers all 109,561 ordered pairs. There are 54,946 defects equal to zero and
+54,615 defects equal to `−331`; every defect reduces to zero modulo 331.
+Indeed, `d(x,y)=0` when `x+y<331` and `−331` otherwise, giving the two
+counts `331·332/2` and `331·330/2`. The pair `(330,1)` is a wrap witness.
+Run `python3 run_section_defect_census.py` to reproduce the exact census;
+its result records the frozen protocol SHA-256. This integer section is an
+algebraic control for the lift obstruction, with no p-adic curve arithmetic.
 
 Run `lake build CanonicalLiftTorsionObstruction` in this directory. The
 project pins Lean `v4.35.0-rc4` and Mathlib revision
 `021c46bdd042f67b538b9f9871d556a93713a9a9`. The build output and all
-four `#print axioms` results are in `build-canonical-lift-torsion-output.txt`;
+seven `#print axioms` results are in `build-canonical-lift-torsion-output.txt`;
 each theorem uses only `propext`, `Classical.choice`, and `Quot.sound`.
 
 ## Selector-invariant fixed-family bound

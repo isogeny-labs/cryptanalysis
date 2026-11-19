@@ -69,3 +69,44 @@ theorem section_has_additive_defect [IsAddTorsionFree L] [Nontrivial G]
 #print axioms XedniCanonicalLiftTorsionObstruction.section_has_additive_defect
 
 end XedniCanonicalLiftTorsionObstruction
+
+namespace XedniCanonicalLiftDefect
+
+variable {G L : Type*} [AddCommGroup G] [AddCommGroup L]
+
+/-- The additive defect of an arbitrary selected lift. -/
+def defect (lift : G → L) (x y : G) : L :=
+  lift (x + y) - lift x - lift y
+
+/-- An exact section's additive defect lies in the reduction kernel. -/
+theorem defect_reduces_to_zero (reduce : L →+ G) (lift : G → L)
+    (hsection : ∀ x, reduce (lift x) = x) (x y : G) :
+    reduce (defect lift x y) = 0 := by
+  simp [defect, hsection]
+
+/-- Additive defects satisfy the cocycle identity for every selected lift. -/
+theorem defect_cocycle (lift : G → L) (x y z : G) :
+    defect lift x y + defect lift (x + y) z =
+      defect lift y z + defect lift x (y + z) := by
+  simp only [defect, add_assoc]
+  abel
+
+/-- A selected lift is additive exactly when all its defects vanish. -/
+theorem defect_zero_iff_additive (lift : G → L) :
+    (∀ x y, defect lift x y = 0) ↔
+      (∀ x y, lift (x + y) = lift x + lift y) := by
+  constructor
+  · intro h x y
+    have := h x y
+    dsimp [defect] at this
+    have hxy : lift (x + y) - lift x = lift y := sub_eq_zero.mp this
+    have hsum : lift (x + y) = lift y + lift x := sub_eq_iff_eq_add.mp hxy
+    simpa only [add_comm] using hsum
+  · intro h x y
+    simp [defect, h x y]
+
+#print axioms XedniCanonicalLiftDefect.defect_reduces_to_zero
+#print axioms XedniCanonicalLiftDefect.defect_cocycle
+#print axioms XedniCanonicalLiftDefect.defect_zero_iff_additive
+
+end XedniCanonicalLiftDefect
