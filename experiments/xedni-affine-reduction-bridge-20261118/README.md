@@ -240,6 +240,16 @@ Run `lake build ProjectiveClassCoalescence`; `build-projective-class-coalescence
 
 `ProjectiveCoalescenceFamily.lean` proves a family behind the concrete example. For each integer offset `d`, take `E_d : y² = x³ − d²x + 1`, `P=(0,1)`, `T_d=(d,1)`, and `U_d=(-d,-1,1)`. Lean checks that both inputs and `U_d` lie on `E_d`, and that `addXYZ E_d P T_d = (-d³) • U_d`. For `d=5^k`, the chord `Z` coordinate is exactly `-5^(3k)`. For every `k≥1`, the source inputs remain inequivalent, the mod-5 curve has discriminant `3` and is elliptic, the primitive source vector reduces to target doubling, and the raw source `addMap` class does not. The growing common factor shows why raw coordinate reduction requires normalization at arbitrarily large 5-adic depths in this family.
 
+`ProjectiveGenericNormalization.lean` proves the general bridge for a source chord with factorization `addXYZ W P Q = c • U`. If the source classes are distinct and a ring homomorphism sends `c` to a unit, the mapped source `addMap` class equals the mapped class of `U`. If the mapped inputs remain distinct as well, the target `addMap` class itself equals the mapped class of `U`. Applying this with `ℤ → ℚ` to the family proves that `U_d` is the actual rational projective sum for every `d≠0`; this is recorded by `rational_generic_add_eq_primitive` and its `5^(k+1)` specialization in `ProjectiveCoalescenceFamily.lean`. Reduction of that integral primitive representative is covered by `primitive_reduction_eq_double`.
+
+| Result | Lean declaration | Exact hypotheses and status |
+| --- | --- | --- |
+| Factored mapped source sum | `XedniProjectiveGenericNormalization.mapClass_addMap_eq_primitive_of_unit_factor` | Commutative rings, ring homomorphism, inequivalent source representatives, exact factorization, mapped factor a unit; checked |
+| Factored target sum | `XedniProjectiveGenericNormalization.addMap_map_eq_primitive_of_unit_factor` | Same factorization and unit condition, mapped representatives inequivalent; checked |
+| Rational family sum | `XedniProjectiveCoalescenceFamily.rational_generic_add_eq_primitive`, `power_family_rational_add_eq_primitive` | Integer offset `d≠0`, respectively offset `5^(k+1)`; checked |
+
+Run `lake build ProjectiveGenericNormalization ProjectiveCoalescenceFamily`; `build-projective-generic-normalization-output.txt` and `build-projective-coalescence-family-output.txt` record the registered builds and axiom audits.
+
 | Result | Lean declaration | Exact hypotheses and status |
 | --- | --- | --- |
 | Parametric factorization | `XedniProjectiveCoalescenceFamily.source_chord_factorization` | Integer `d`, fixed curve and points as above; checked |
