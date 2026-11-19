@@ -87,6 +87,18 @@ H112_MODULE_THEOREMS = H112_THEOREMS | frozenset(
         "carry.eq_1", "reconstruct.eq_1", "reconstruct.eq_2", "reconstruct.eq_def",
     ))
 
+CHORD_ORIGIN_SOURCE = "research/xedni_plane_group_20261117/formal/ChordOrigin.lean"
+CHORD_ORIGIN_SHA256 = "a39502fa742dea436d8a04c6011c18c8d65fbaf85a1c64a1cdb699a48a01d839"
+CHORD_ORIGIN_THEOREMS = frozenset("XedniChordOrigin." + name for name in (
+    "shifted_relation_identity", "chord_origin_scalar_identity",
+    "shifted_target_linear", "shifted_target_recovers",
+))
+CHORD_ORIGIN_PROJECT_INPUTS = {
+    "lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+    "lakefile.toml": "0b319f57000ee23f5ad7f2b85184945cd153edc39d3ed1f71f435e6b40432d54",
+    "lake-manifest.json": "4f5e0931ffce635571fed2a65f8b8f4141a3173308dcd41498f1f5ac2926db4f"
+}
+
 HASSE_FORMAL = ROOT / "bindings/rust/curve-audit/formal"
 HASSE_SOURCE = "bindings/rust/curve-audit/formal/HasseSquareBounds.lean"
 HASSE_SHA256 = "26e3e7bbf28aad0f60f72137fca027427b435f05bcef9f5de5881d7979307c42"
@@ -589,6 +601,23 @@ def check_reviewed_quartic(path: str, expected: str, lean_path: str) -> str:
                                       label="reviewed quartic")
 
 
+def check_chord_origin(lean_path: str) -> str:
+    """Audit four algebra identities; concrete good-reduction geometry is separate."""
+    def project_guard() -> None:
+        check_known_label_project_inputs()
+        for name, expected in CHORD_ORIGIN_PROJECT_INPUTS.items():
+            file = (ROOT / CHORD_ORIGIN_SOURCE).parent / name
+            require(not file.is_symlink() and digest(file) == expected,
+                    f"chord-origin original project input changed: {name}")
+    project_guard()
+    checked = check_pinned_mathlib_source(
+        CHORD_ORIGIN_SOURCE, CHORD_ORIGIN_SHA256, lean_path,
+        label="chord-origin algebra", exact_names=CHORD_ORIGIN_THEOREMS,
+        expected_theorems=4, exact_module_theorems=CHORD_ORIGIN_THEOREMS)
+    project_guard()
+    return checked
+
+
 def check_h112_interface(lean_path: str) -> str:
     """Fresh compatibility replay, including all four generated equation theorems."""
     def project_guard() -> None:
@@ -847,6 +876,9 @@ def check_new_hecke(paths: set[str]) -> dict[str, str]:
     lean_path = run(["lake", "env", "printenv", "LEAN_PATH"], cwd=HECKE_CI).stdout.strip()
     checked = {}
     for path in sorted(paths):
+        if path == CHORD_ORIGIN_SOURCE:
+            checked[path] = check_chord_origin(lean_path)
+            continue
         if path == H112_SOURCE:
             checked[path] = check_h112_interface(lean_path)
             continue

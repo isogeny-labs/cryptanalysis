@@ -64,7 +64,7 @@ jobs:
       - name: Exercise positive and negative proof fixtures
         run: tools/lean/selftest/run.sh
       - name: Refuse changed quartic sources and build pins
-        run: python3 -m unittest tools/lean/test_current_corpus_gate.py tools/lean/test_h112_admission.py
+        run: python3 -m unittest tools/lean/test_current_corpus_gate.py tools/lean/test_h112_admission.py tools/lean/test_chord_origin_admission.py
       - name: Detect Hecke theorem sources
         id: hecke
         run: |
