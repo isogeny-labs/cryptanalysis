@@ -51,28 +51,31 @@ other 48 remain explicitly unknown rather than being promoted from
 probable-prime metadata. This repository cites those crypto-owned bytes and
 does not copy them. [pcc:unverified]
 
-Crypto evidence head `e0bb87e6e99ec8020f0c6437a4640f315fa79850`
-adds a separate 17,879,352-byte odd-characteristic corpus with SHA-256
-`7c60fc122c73abbe7b0df1413d24abbb064a9842bb35c2da8248d30c87f65670`.
-Its clean producer is `e0ae0fe5d09c0492a8b50600e88d0b9da68afef1`, with framed source digest
-`3116ef637921b9aade22bbbaa0bd5f3eaaa798e6d7517474dab912a9dc8c2768`.
-It retains all 22,243 odd maps and 940 named records: 675 supported, 233
-proof-range unsupported, 0 kernel-intersection unsupported, 22 normalized
-backend unsupported, 9 extension backend unsupported, 1 invalid target
-generator, and no other invalid or transfer-arithmetic failures. Canonical
-same-implementation replay exits 1 because incomplete rows are retained;
-Git-tree source replay exits 0. This repository cites those crypto-owned bytes
-and does not copy the exporter, corpus, registry, graph, or schema.
-[pcc:unverified]
+Crypto producer `8c94831426fa35040fa7b38b1379299bf6e6d957` generated the
+current 17,879,292-byte odd-characteristic successor corpus at SHA-256
+`1ecfabcdaecc3e00d78ab2ce7eebeb94607e1c2c224f261fb5718a4f53b65268`.
+Its framed 29-source digest is
+`a5412b92e5e027b281d79c541cc34df130e16d9c71a7034f2065c6e181d8b3ef`.
+It retains all 22,243 odd maps and 940 named bindings: 675 supported, 240
+unsupported without an accepted primality certificate, 15 unsupported Edwards
+normalized-transfer backends, 9 unsupported extension-field transfer backends,
+and 1 invalid target generator, with no transfer-arithmetic failures. The six
+live Montgomery maps and seven named bindings moved only from the historical
+normalized-backend bucket into the proof-range bucket; none was promoted to
+support. Canonical replay is same-implementation evidence, while source replay
+binds the recorded Git tree and does not independently prove the maps. Their
+retained receipts have SHA-256
+`c371c4ce15eb3a279dbb58c2c5f75fcc99cbcb4de5944f6170a1f6faf1a3f50e`
+and `19fb8345d4c132f4e9fca977bbb6096d0e5a67b102504d628f3b84110167b39f`,
+respectively. This repository cites those crypto-owned bytes and does not copy
+the exporter, corpus, registry, graph, or schema. [pcc:unverified]
 
-That odd corpus predates the composed Montgomery backend and remains immutable.
-The six live Montgomery maps and seven named bindings are all outside the
-accepted primality-proof range, so composition promotes no live row. A future
-crypto-owned successor export is expected to retain 675 supported bindings
-while moving those seven records from the historical normalized-backend bucket
-to the proof-range bucket: 240 proof-range unsupported, 15 Edwards-backend
-unsupported, 9 extension-backend unsupported, and 1 invalid generator. This is
-a disposition correction, not new subgroup support. [pcc:unverified]
+The immutable pre-composition corpus remains historical evidence: producer
+`e0ae0fe5d09c0492a8b50600e88d0b9da68afef1`, 17,879,352 bytes, SHA-256
+`7c60fc122c73abbe7b0df1413d24abbb064a9842bb35c2da8248d30c87f65670`,
+and partition `675/233/22/9/1`. The successor is an additive disposition
+correction, not a rewrite of that receipt or new subgroup support.
+[pcc:unverified]
 
 Crypto revision `153ac585d3b1ece0ebb0d49312b13267f651c94b` retains a
 separately implemented exhaustive Picard-class oracle for the one exact
@@ -127,18 +130,60 @@ shapes. The retention-bound artifact expires on 2027-02-17. This is
 same-implementation package-integrity evidence, not signed standing,
 independent mathematics, a stable public release, a packaged run of the full
 fixed-`GF(8)` integration-test oracle, a Jacobian solver, or speed evidence.
+It predates the `8c948314...` odd-corpus successor and does not replay that
+successor from an installed current-head package.
 [pcc:unverified]
 
 The highest-coverage direct short-Weierstrass boundary now covers 20,539 maps
 over 675 linked EC1 records through deterministic `u64` validation plus
 exactly two live 73-bit pilot rows over `p=5902977611310272157103` under the
-strict Sorenson--Webster `psi_13` bound. The final odd corpus separates the
-remaining population into its immutable pre-composition partition of 233
-proof-range gaps, 22 normalized-backend gaps, 9 extension-backend gaps, and one
-invalid generator. The composed Montgomery backend changes the prospective
-successor disposition of seven normalized records to proof-range gaps, but does
-not widen the accepted field proof boundary. This two-row pilot is not general
-wide-prime support. [pcc:unverified]
+strict Sorenson--Webster `psi_13` bound. The successor odd corpus separates the
+remaining population into 240 proof-range gaps, 15 Edwards normalized-backend
+gaps, 9 extension-backend gaps, and one invalid generator. The composed
+Montgomery backend changed the disposition of seven normalized records to
+proof-range gaps but did not widen the accepted field proof boundary. This
+two-row pilot is not general wide-prime support. [pcc:unverified]
+
+## Exact-head mirror replay
+
+Cryptanalysis repair head
+`69b803d2a31f39737674e2a33da623197a304157` preserves the frozen G3 driver,
+manifest, six-job snapshot, and 2,576-byte arithmetic/proof replay body. Its
+27,552-byte workflow has SHA-256
+`084795e244e5854fbc18c0a8023c8ef548a6687d968644e096fb8e4e848a809e`;
+the unchanged 7,803-byte successor driver has SHA-256
+`7ac0e9892f1e08c399ab5431716cd13628c2f74f8330db41ea1766ecb5618d9a`;
+the 29,406-byte G3 verifier has SHA-256
+`e21b1b79e46717965772e16d854165ae07a50d5e992f35d006918fe386fe064c`;
+the 4,489-byte G3 transition has SHA-256
+`2e121138eec70ab8dfca51cc811351a9d987a223d20afc2ab369df91e0c574b0`;
+and the 6,307-byte FP transition, whose full-workflow pin changed, has SHA-256
+`d8bfa5aff2bf039878bec961b90482deadd0e74fc4745ba0f4b3d5398ed8dd7a`.
+[pcc:unverified]
+
+Manual exact-head run `44570090434` ran from 2026-11-19 16:47:38Z through
+17:12:12Z and passed all seven jobs. G3 reached the arithmetic/proof stage:
+producer and consumer tests passed; Lean `Descent` (12 theorems),
+`ModelTransport` (2), and `CanonicalNorm` (13) passed with zero trusted
+declarations; and the final receipt records
+`predecessor437+successor431plus6/allinputguards`. The uploaded artifacts are:
+
+| Job (job ID) | Artifact ID | Bytes | SHA-256 |
+|---|---:|---:|---|
+| `reference` (`135722447910`) | `14555861884` | 21,298 | `a6d1f9c90d0156bca4e614ea4ebdeb86d1e8104b586831e5b71e245e2bfe982d` |
+| `partial-frobenius` (`135722447458`) | `14553517955` | 127,508 | `0dd68634e82ee19fe57bcd9451fada42bff46ea587faae0279abaf0e1c19e69a` |
+| `prime-norms` (`135722447830`) | `14553913254` | 176,171 | `f9af655384bffc1a98f6e517b1808a7b66161068408ffc30800698110e16e629` |
+| `fp-chain` (`135722448090`) | `14553658295` | 186,869 | `3d70544d2fcee5640a7168dc5b9957c2bbda9369946b0990d77a241fc9524ddd` |
+| `proper-t20` (`135722448095`) | `14552979740` | 159,095 | `221c06fc27aa179fa61fb13585c2df877171e66944fd97e79c3c95bb27710c6b` |
+| `independent` (`135722448065`) | `14554482915` | 109,264 | `6f5ccb68322bee688072c1ca10bd36c6ba15ef6ebdaa5726b91b29e54edf70db` |
+| `g3-canonical-norm` (`135722448213`) | `14553252727` | 68,150 | `8baf6047ef49bb8ab130a46cd512fe42d2af8cae91b81bdb2cfc8e1a3cf8f4ce` |
+
+This closes the specific blobless-checkout fixture defect and supplies a
+remote replay receipt for this exact head. It does not provide signed PCC
+standing, required review, stable current-head package publication,
+catalog-wide independent divisor-map evidence, support for proof-gated or
+unsupported rows, a Jacobian index-calculus solver, or computational advantage.
+[pcc:unverified]
 
 ## Supported boundary
 

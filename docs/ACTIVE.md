@@ -18,7 +18,7 @@ and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
 
-- [ ] Close required review, artifact-auth-blocked CI, fresh chained replay, and stable publication for the general hyperelliptic-cover mirror; the exact/adapted 12-record mirror now reaches crypto producer `5c6e43a6`, while crypto-owned odd-catalog producer `8c948314` records the successor `675/240/15/9/1` support partition without promoting any Montgomery row; the earlier installed-package receipt remains retention-bound and pre-current-head, and repaired reference/G3 successor-input custody still requires an exact remote replay (Codex, started 2026-11-18; tracking-only PR #1765 merged; continuation branch codex/general-binary-cover-transfer-mirror-implementation-20261118, draft PR #1770) [pcc:unverified]
+- [ ] Close required review, artifact-auth-blocked PR CI, and stable publication for the bounded hyperelliptic-cover mirror; exact cryptanalysis head `69b803d2a31f39737674e2a33da623197a304157` passed all seven jobs in chained replay `44570090434`, including repaired G3 arithmetic/proof replay, while the exact/adapted 12-record mirror remains tied to crypto implementation producer `5c6e43a6` and crypto-owned odd-catalog producer `8c948314` records the successor `675/240/15/9/1` partition without promoting any Montgomery row; the earlier installed-package receipt remains retention-bound and pre-current-head (Codex, started 2026-11-18; tracking-only PR #1765 merged; continuation branch codex/general-binary-cover-transfer-mirror-implementation-20261118, draft PR #1770) [pcc:unverified]
 
 - [x] Validate fixed index-calculus candidate residuals and subgroup status (Codex, started 2026-11-18, branch test-fixed-candidate-residual, PR #1755)
 
