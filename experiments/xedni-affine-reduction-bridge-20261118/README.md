@@ -16,6 +16,8 @@ The generic mathematical statement is: for a commutative ring `R`, field `S`, an
 | Point membership under reduction | `XedniRegularChainReduction.mapPoint` | A short-Weierstrass point over `R` maps to a point on the coefficient-reduced curve over `S` |
 | One regular addition step under reduction | `XedniRegularChainReduction.map_regularStep` | A chord or tangent with a source-unit denominator, recorded endpoint point, and exact affine addition formulas maps to a field step |
 | Finite regular path under reduction | `XedniRegularChainReduction.map_regularChain` | Every step in the source chain satisfies `RegularStep`; the mapped start, addend, intermediates, and endpoint satisfy `FieldChain` |
+| Finite regular sum under reduction | `XedniRegularSumReduction.reduce_regularSum` | Any nonempty ordered list of local curve points with a `RegularStep` certificate at each addition; reduced elliptic endpoint equals the group sum of the reduced inputs; checked |
+| Equal regular endpoints give equal reduced sums | `XedniRegularSumReduction.equal_regularSums` | Two certified regular sums with equal local endpoints and elliptic coefficient-reduced curve; checked |
 | Field step is elliptic-curve addition | `XedniRegularGroupLaw.fieldStep_group_add` | Over a field, with the reduced short curve elliptic, a `FieldStep` is equality to mathlib's point-group addition; covers distinct-x chords and nonvertical doubling |
 | Field chain gives a group relation | `XedniRegularGroupLaw.fieldChain_group_relation` | The field endpoint equals its start plus a natural-number multiple of the fixed addend |
 | Reduced regular chain gives a group relation | `XedniRegularGroupLaw.reduced_regularChain_group_relation` | Combines the source-chain reduction theorem and field group law; requires ellipticity of the coefficient-reduced short curve |
@@ -90,6 +92,19 @@ The proof first maps a selected rational relation to `a(w−t₁)+b(w−t₂)=0`
 | Nonzero target restriction | `XedniSharedTargetSelectorBound.precommitted_nonzero_card_bound` | Same hypotheses, with target scalar restricted to `w≠0`; checked |
 
 Run `lake build SharedTargetSelectorBound` in this directory. `build-shared-selector-output.txt` records the actual build and `#print axioms` for all three theorems; each uses only `propext`, `Classical.choice`, and `Quot.sound`. The pinned Lean toolchain and Mathlib revision are the same as the adjacent selector and shared-target modules. `lean4checker --fresh` is unavailable on this host.
+
+## Finite regular-sum reduction
+
+The reduction bridge now covers an arbitrary finite sequence of affine additions, with a unit slope denominator certified at each step. For a list `P₁,…,Pₙ` of local short-Weierstrass points whose certified sum has endpoint `Q`, the coefficient and point reduction map sends `Q` to the elliptic-group sum of the reduced `Pᵢ`. Consequently, two such sums with the same local endpoint give equal finite-field group sums. This supports relations with varying addends, beyond the repeated-addend chain proved earlier.
+
+The proof is induction on the `RegularSum` certificate. Each final step maps through `map_regularStep` and becomes a genuine group addition by `fieldStep_group_add`; the induction hypothesis then identifies the preceding endpoint with the list sum. The unit-denominator condition is explicit, so vertical and infinity cases need their own certified path before this theorem can be applied to them. In particular, the theorem gives a concrete sufficient condition for the reduction-homomorphism premise used in the fixed-family counting results on any relation represented by such a path.
+
+| Result | Lean declaration | Exact hypotheses and status |
+| --- | --- | --- |
+| Reduction of a certified finite sum | `XedniRegularSumReduction.reduce_regularSum` | Commutative source ring, target field, ring homomorphism, elliptic reduced short curve, nonempty `RegularSum` certificate whose every `RegularStep` has a source-unit denominator; checked |
+| Equality of two reduced sums | `XedniRegularSumReduction.equal_regularSums` | Two such certificates and equality of their local endpoints; checked |
+
+Run `lake build RegularSumReduction` in this directory. `build-regular-sum-output.txt` records the build and `#print axioms` output; both declarations depend only on `propext`, `Classical.choice`, and `Quot.sound`. The toolchain and Mathlib revisions are pinned as above.
 
 ## Reproduction
 
