@@ -13,7 +13,12 @@
 //!   plane cubic this is computed directly from the cubic and its Hessian,
 //!   avoiding a potentially unavailable rational-flex conversion;
 //! * exact linear constraints and coefficient congruences are checked before
-//!   the search and again on the result.
+//!   the search and again on the result;
+//! * for general plane cubics over `F_p` (`JksstPlaneCubicProblem`), Steps 3--6
+//!   normalize four general-position points via `PGL_3(F_p)` to the standard
+//!   projective frame, lift the remaining `r - 4` points in `Z^3` via 3D LLL,
+//!   detect curve-independent collinear triples (`collinear_point_triples`),
+//!   and optimize the homogeneous projective-congruence sublattice.
 //!
 //! This is a lift optimizer, not a discrete-log attack.  It can improve a
 //! constant in the classic prime-field construction, but it does not evade the
@@ -1186,6 +1191,995 @@ pub fn optimize_plane_cubic_lift(
     })
 }
 
+/// Strategy used to lift non-frame projective points from `P^2(F_p)` to `Z^3`.
+#[derive(Clone, Copy, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum JksstPointLiftMode {
+    /// 3D-LLL shortest primitive preimage in `{v in Z^3 : v = t * P (mod p)}`,
+    /// achieving `O(p^(2/3))` coordinates and `O(p^2)` cubic monomials.
+    #[default]
+    ProjectiveLll,
+    /// Balanced affine lift `(bal(X/Z), bal(Y/Z), 1)` when `Z != 0 mod p`.
+    AffineBalanced,
+}
+
+/// Source-faithful JKSST Steps 3--9 plane-cubic lifting problem over `F_p`.
+#[derive(Clone, Debug)]
+pub struct JksstPlaneCubicProblem {
+    pub modulus: BigInt,
+    pub source_coefficients: Vec<BigInt>,
+    pub source_points: Vec<[BigInt; 3]>,
+    pub frame_indices: Option<[usize; 4]>,
+    pub point_lift_mode: JksstPointLiftMode,
+    pub max_frames: usize,
+    pub reject_collinear_lifts: bool,
+}
+
+/// Decimal-string JSON input for `ca-icx xedni-lift --model jksst-plane-cubic`.
+#[derive(Clone, Debug, Deserialize)]
+pub struct JksstPlaneCubicInput {
+    pub modulus: String,
+    pub source_coefficients: Vec<String>,
+    pub source_points: Vec<[String; 3]>,
+    #[serde(default)]
+    pub frame_indices: Option<[usize; 4]>,
+    #[serde(default)]
+    pub point_lift_mode: JksstPointLiftMode,
+    #[serde(default = "default_jksst_max_frames")]
+    pub max_frames: usize,
+    #[serde(default)]
+    pub reject_collinear_lifts: bool,
+}
+
+fn default_jksst_max_frames() -> usize {
+    126
+}
+
+impl TryFrom<JksstPlaneCubicInput> for JksstPlaneCubicProblem {
+    type Error = String;
+
+    fn try_from(value: JksstPlaneCubicInput) -> Result<Self, Self::Error> {
+        let modulus = parse_decimal(&value.modulus, "modulus")?;
+        let source_coefficients = value
+            .source_coefficients
+            .iter()
+            .map(|x| parse_decimal(x, "source_coefficients"))
+            .collect::<Result<_, _>>()?;
+        let source_points = value
+            .source_points
+            .iter()
+            .map(|pt| {
+                Ok([
+                    parse_decimal(&pt[0], "source_points")?,
+                    parse_decimal(&pt[1], "source_points")?,
+                    parse_decimal(&pt[2], "source_points")?,
+                ])
+            })
+            .collect::<Result<_, String>>()?;
+        Ok(Self {
+            modulus,
+            source_coefficients,
+            source_points,
+            frame_indices: value.frame_indices,
+            point_lift_mode: value.point_lift_mode,
+            max_frames: value.max_frames,
+            reject_collinear_lifts: value.reject_collinear_lifts,
+        })
+    }
+}
+
+/// Certified `PGL_3(F_p)` frame sending `(1:0:0), (0:1:0), (0:0:1), (1:1:1)`
+/// to four chosen general-position source points.
+#[derive(Clone, Debug)]
+pub struct JksstProjectiveFrame {
+    pub modulus: BigInt,
+    pub frame_indices: [usize; 4],
+    pub matrix_to_source: [[BigInt; 3]; 3],
+    pub matrix_from_source: [[BigInt; 3]; 3],
+    pub transformed_source_cubic: Vec<BigInt>,
+    pub transformed_points_mod_p: Vec<[BigInt; 3]>,
+}
+
+/// Certified output of JKSST projective-frame + homogeneous-congruence lifting.
+#[derive(Clone, Debug, Serialize)]
+pub struct JksstPlaneCubicOptimization {
+    pub method: &'static str,
+    pub coefficient_order: &'static str,
+    pub point_lift_mode: JksstPointLiftMode,
+    pub frame_indices: [usize; 4],
+    pub matrix_to_source_mod_p: [[String; 3]; 3],
+    pub matrix_from_source_mod_p: [[String; 3]; 3],
+    pub transformed_source_cubic_mod_p: Vec<String>,
+    pub lifted_points: Vec<[String; 3]>,
+    pub max_point_coordinate_bits: u64,
+    pub pre_lift_collinear_triples: Vec<[usize; 3]>,
+    pub homogeneous_scale_mod_p: String,
+    pub optimized_coefficients: Vec<String>,
+    pub optimized_score: PlaneCubicLiftScore,
+    pub frames_evaluated: usize,
+    pub candidates_evaluated: usize,
+    pub incidence_preserved: bool,
+    pub projective_congruence_preserved: bool,
+    pub discriminant_evaluated: bool,
+}
+
+fn projective_determinant_3x3(p: &[BigInt; 3], q: &[BigInt; 3], r: &[BigInt; 3]) -> BigInt {
+    &p[0] * (&q[1] * &r[2] - &q[2] * &r[1]) - &p[1] * (&q[0] * &r[2] - &q[2] * &r[0])
+        + &p[2] * (&q[0] * &r[1] - &q[1] * &r[0])
+}
+
+/// Return all index triples `(i < j < k)` whose lifted projective points are
+/// collinear over `Q` (`det([P_i, P_j, P_k]) = 0`).
+///
+/// Any such triple cuts a curve-independent hyperplane divisor `P_i + P_j + P_k ~ H`
+/// on every smooth plane cubic through the lifted points, producing a five-term
+/// shifted relation `(P_i - O) + (P_j - O) + (P_k - O) - (P_u - O) - (P_v - O) = 0`
+/// regardless of the Step-9 cubic optimizer.
+pub fn collinear_point_triples(points: &[PlaneCubicPoint]) -> Vec<[usize; 3]> {
+    let mut triples = Vec::new();
+    for i in 0..points.len() {
+        for j in (i + 1)..points.len() {
+            for k in (j + 1)..points.len() {
+                if projective_determinant_3x3(
+                    &points[i].coordinates,
+                    &points[j].coordinates,
+                    &points[k].coordinates,
+                )
+                .is_zero()
+                {
+                    triples.push([i, j, k]);
+                }
+            }
+        }
+    }
+    triples
+}
+
+fn mod_pos(value: &BigInt, modulus: &BigInt) -> BigInt {
+    value.mod_floor(modulus)
+}
+
+fn mod_inv(value: &BigInt, modulus: &BigInt) -> Result<BigInt, String> {
+    let reduced = mod_pos(value, modulus);
+    let egcd = reduced.extended_gcd(modulus);
+    if egcd.gcd != BigInt::from(1) {
+        return Err(format!("{reduced} is not invertible modulo {modulus}"));
+    }
+    Ok(mod_pos(&egcd.x, modulus))
+}
+
+fn canonical_projective_mod_p(
+    point: &[BigInt; 3],
+    modulus: &BigInt,
+) -> Result<[BigInt; 3], String> {
+    let reduced: [BigInt; 3] = std::array::from_fn(|i| mod_pos(&point[i], modulus));
+    let Some(pivot) = reduced.iter().position(|x| !x.is_zero()) else {
+        return Err("projective point reduces to (0,0,0) mod p".into());
+    };
+    let inv = mod_inv(&reduced[pivot], modulus)?;
+    Ok(std::array::from_fn(|i| {
+        mod_pos(&(&reduced[i] * &inv), modulus)
+    }))
+}
+
+fn invert_3x3_mod_p(matrix: &[[BigInt; 3]; 3], modulus: &BigInt) -> Option<[[BigInt; 3]; 3]> {
+    let m = matrix;
+    let det = &m[0][0] * (&m[1][1] * &m[2][2] - &m[1][2] * &m[2][1])
+        - &m[0][1] * (&m[1][0] * &m[2][2] - &m[1][2] * &m[2][0])
+        + &m[0][2] * (&m[1][0] * &m[2][1] - &m[1][1] * &m[2][0]);
+    let det_mod = mod_pos(&det, modulus);
+    let egcd = det_mod.extended_gcd(modulus);
+    if egcd.gcd != BigInt::from(1) {
+        return None;
+    }
+    let inv_det = mod_pos(&egcd.x, modulus);
+    let adj = [
+        [
+            &m[1][1] * &m[2][2] - &m[1][2] * &m[2][1],
+            &m[0][2] * &m[2][1] - &m[0][1] * &m[2][2],
+            &m[0][1] * &m[1][2] - &m[0][2] * &m[1][1],
+        ],
+        [
+            &m[1][2] * &m[2][0] - &m[1][0] * &m[2][2],
+            &m[0][0] * &m[2][2] - &m[0][2] * &m[2][0],
+            &m[0][2] * &m[1][0] - &m[0][0] * &m[1][2],
+        ],
+        [
+            &m[1][0] * &m[2][1] - &m[1][1] * &m[2][0],
+            &m[0][1] * &m[2][0] - &m[0][0] * &m[2][1],
+            &m[0][0] * &m[1][1] - &m[0][1] * &m[1][0],
+        ],
+    ];
+    Some(std::array::from_fn(|r| {
+        std::array::from_fn(|c| mod_pos(&(&adj[r][c] * &inv_det), modulus))
+    }))
+}
+
+fn mat_vec_mod_p(matrix: &[[BigInt; 3]; 3], v: &[BigInt; 3], modulus: &BigInt) -> [BigInt; 3] {
+    std::array::from_fn(|r| {
+        mod_pos(
+            &(&matrix[r][0] * &v[0] + &matrix[r][1] * &v[1] + &matrix[r][2] * &v[2]),
+            modulus,
+        )
+    })
+}
+
+fn pullback_plane_cubic_mod_p(
+    c: &[BigInt],
+    matrix: &[[BigInt; 3]; 3],
+    modulus: &BigInt,
+) -> Result<Vec<BigInt>, String> {
+    const EXPONENTS: [(usize, usize, usize); PLANE_CUBIC_COEFFICIENTS] = [
+        (3, 0, 0),
+        (2, 1, 0),
+        (1, 2, 0),
+        (0, 3, 0),
+        (2, 0, 1),
+        (1, 1, 1),
+        (0, 2, 1),
+        (1, 0, 2),
+        (0, 1, 2),
+        (0, 0, 3),
+    ];
+    let rows: [Vec<BigInt>; 3] = std::array::from_fn(|r| matrix[r].to_vec());
+    let mut out = vec![BigInt::zero(); PLANE_CUBIC_COEFFICIENTS];
+    for (coeff, (ex, ey, ez)) in c.iter().zip(EXPONENTS) {
+        if mod_pos(coeff, modulus).is_zero() {
+            continue;
+        }
+        let mut factors: Vec<&[BigInt]> = Vec::with_capacity(3);
+        for _ in 0..ex {
+            factors.push(&rows[0]);
+        }
+        for _ in 0..ey {
+            factors.push(&rows[1]);
+        }
+        for _ in 0..ez {
+            factors.push(&rows[2]);
+        }
+        let quad = multiply_linear_forms(factors[0], factors[1]);
+        let cubic = multiply_quadratic_linear(&quad, factors[2]);
+        for (slot, term) in out.iter_mut().zip(cubic) {
+            *slot = mod_pos(&(&*slot + coeff * term), modulus);
+        }
+    }
+    let Some(first) = out.iter().position(|x| !x.is_zero()) else {
+        return Err("pulled-back source cubic vanishes modulo p".into());
+    };
+    let inv = mod_inv(&out[first], modulus)?;
+    Ok(out
+        .into_iter()
+        .map(|x| mod_pos(&(x * &inv), modulus))
+        .collect())
+}
+
+/// Construct JKSST's `PGL_3(F_p)` frame normalization sending `(1:0:0)`,
+/// `(0:1:0)`, `(0:0:1)`, `(1:1:1)` to `source_points[frame_indices[0..4]]`.
+pub fn jksst_projective_frame_mod_p(
+    modulus: &BigInt,
+    source_coefficients: &[BigInt],
+    source_points: &[[BigInt; 3]],
+    frame_indices: [usize; 4],
+) -> Result<JksstProjectiveFrame, String> {
+    if modulus <= &BigInt::from(3) {
+        return Err("JKSST projective frame requires prime modulus p > 3".into());
+    }
+    if source_coefficients.len() != PLANE_CUBIC_COEFFICIENTS {
+        return Err(format!(
+            "expected {PLANE_CUBIC_COEFFICIENTS} source cubic coefficients, got {}",
+            source_coefficients.len()
+        ));
+    }
+    for (a_idx, &i) in frame_indices.iter().enumerate() {
+        if i >= source_points.len() {
+            return Err("frame index out of bounds".into());
+        }
+        if frame_indices[..a_idx].contains(&i) {
+            return Err("frame indices must be distinct".into());
+        }
+    }
+    let canonical_pts: Vec<[BigInt; 3]> = source_points
+        .iter()
+        .map(|pt| canonical_projective_mod_p(pt, modulus))
+        .collect::<Result<_, _>>()?;
+    for pt in &canonical_pts {
+        let val = dot(
+            &plane_cubic_incidence_row(&pt[0], &pt[1], &pt[2]),
+            source_coefficients,
+        );
+        if !mod_pos(&val, modulus).is_zero() {
+            return Err("a supplied source point is not on the source cubic modulo p".into());
+        }
+    }
+
+    let base_cols: [[BigInt; 3]; 3] = std::array::from_fn(|r| {
+        std::array::from_fn(|c| canonical_pts[frame_indices[c]][r].clone())
+    });
+    let Some(base_inv) = invert_3x3_mod_p(&base_cols, modulus) else {
+        return Err("first three frame points are collinear modulo p".into());
+    };
+    let fourth = &canonical_pts[frame_indices[3]];
+    let scales = mat_vec_mod_p(&base_inv, fourth, modulus);
+    if scales
+        .iter()
+        .any(|s| s.extended_gcd(modulus).gcd != BigInt::from(1))
+    {
+        return Err("fourth frame point is collinear with two frame vertices modulo p".into());
+    }
+    let matrix_to_source: [[BigInt; 3]; 3] = std::array::from_fn(|r| {
+        std::array::from_fn(|c| mod_pos(&(&base_cols[r][c] * &scales[c]), modulus))
+    });
+    let Some(matrix_from_source) = invert_3x3_mod_p(&matrix_to_source, modulus) else {
+        return Err("projective frame matrix is not invertible modulo p".into());
+    };
+    let transformed_points_mod_p: Vec<[BigInt; 3]> = canonical_pts
+        .iter()
+        .map(|pt| {
+            let mapped = mat_vec_mod_p(&matrix_from_source, pt, modulus);
+            canonical_projective_mod_p(&mapped, modulus)
+        })
+        .collect::<Result<_, _>>()?;
+    let transformed_source_cubic =
+        pullback_plane_cubic_mod_p(source_coefficients, &matrix_to_source, modulus)?;
+
+    // Certify exact standard-frame image and cubic incidence mod p.
+    let expected_frame = [
+        [BigInt::from(1), BigInt::zero(), BigInt::zero()],
+        [BigInt::zero(), BigInt::from(1), BigInt::zero()],
+        [BigInt::zero(), BigInt::zero(), BigInt::from(1)],
+        [BigInt::from(1), BigInt::from(1), BigInt::from(1)],
+    ];
+    for (slot, expected) in frame_indices.iter().zip(&expected_frame) {
+        if &transformed_points_mod_p[*slot] != expected {
+            return Err("internal error: frame normalization missed a standard vertex".into());
+        }
+    }
+    for pt in &transformed_points_mod_p {
+        let val = dot(
+            &plane_cubic_incidence_row(&pt[0], &pt[1], &pt[2]),
+            &transformed_source_cubic,
+        );
+        if !mod_pos(&val, modulus).is_zero() {
+            return Err("internal error: transformed point left pulled-back source cubic".into());
+        }
+    }
+    Ok(JksstProjectiveFrame {
+        modulus: modulus.clone(),
+        frame_indices,
+        matrix_to_source,
+        matrix_from_source,
+        transformed_source_cubic,
+        transformed_points_mod_p,
+    })
+}
+
+fn balanced_residue(value: &BigInt, modulus: &BigInt) -> BigInt {
+    let r = mod_pos(value, modulus);
+    let half = modulus >> 1;
+    if r > half {
+        r - modulus
+    } else {
+        r
+    }
+}
+
+/// Lift one projective point from `P^2(F_p)` to a short primitive integer vector
+/// in `{v in Z^3 : v in <point_mod_p> + p Z^3}` via 3D LLL (`O(p^(2/3))` norm).
+pub fn lift_projective_point_lll(
+    point_mod_p: &[BigInt; 3],
+    modulus: &BigInt,
+) -> Result<PlaneCubicPoint, String> {
+    if modulus <= &BigInt::from(3) {
+        return Err("modulus must exceed 3".into());
+    }
+    let canon = canonical_projective_mod_p(point_mod_p, modulus)?;
+    let pivot = canon
+        .iter()
+        .position(|x| x == &BigInt::from(1))
+        .ok_or_else(|| "canonical projective point lacks unit pivot".to_string())?;
+    let mut basis = Vec::with_capacity(3);
+    basis.push(vec![
+        balanced_residue(&canon[0], modulus),
+        balanced_residue(&canon[1], modulus),
+        balanced_residue(&canon[2], modulus),
+    ]);
+    for j in 0..3 {
+        if j != pivot {
+            let mut row = vec![BigInt::zero(); 3];
+            row[j] = modulus.clone();
+            basis.push(row);
+        }
+    }
+    lll_reduce_hp(&mut basis, 0.99).map_err(str::to_string)?;
+
+    let mut best: Option<(BigInt, [BigInt; 3])> = None;
+    for c0 in -1i64..=1 {
+        for c1 in -1i64..=1 {
+            for c2 in -1i64..=1 {
+                if c0 == 0 && c1 == 0 && c2 == 0 {
+                    continue;
+                }
+                let candidate: [BigInt; 3] = std::array::from_fn(|k| {
+                    &basis[0][k] * c0 + &basis[1][k] * c1 + &basis[2][k] * c2
+                });
+                if candidate.iter().all(|x| mod_pos(x, modulus).is_zero()) {
+                    continue;
+                }
+                let prim = PlaneCubicPoint::new(candidate)?;
+                let norm2: BigInt = prim.coordinates.iter().map(|x| x * x).sum();
+                let replace = match &best {
+                    None => true,
+                    Some((best_norm, best_coords)) => {
+                        (&norm2, &prim.coordinates) < (best_norm, best_coords)
+                    }
+                };
+                if replace {
+                    best = Some((norm2, prim.coordinates));
+                }
+            }
+        }
+    }
+    let (_, chosen) = best.ok_or_else(|| "no valid projective LLL preimage found".to_string())?;
+    if canonical_projective_mod_p(&chosen, modulus)? != canon {
+        return Err("internal error: 3D-LLL point lift changed projective class mod p".into());
+    }
+    PlaneCubicPoint::new(chosen)
+}
+
+fn lift_projective_point_affine_balanced(
+    point_mod_p: &[BigInt; 3],
+    modulus: &BigInt,
+) -> Result<PlaneCubicPoint, String> {
+    let canon = canonical_projective_mod_p(point_mod_p, modulus)?;
+    if canon[2].is_zero() {
+        return lift_projective_point_lll(&canon, modulus);
+    }
+    let z_inv = mod_inv(&canon[2], modulus)?;
+    let x = balanced_residue(&(&canon[0] * &z_inv), modulus);
+    let y = balanced_residue(&(&canon[1] * &z_inv), modulus);
+    PlaneCubicPoint::new([x, y, BigInt::from(1)])
+}
+
+/// Compute a saturated integer basis of `{c in Z^ncols : rows * c = 0}` using
+/// unimodular column reduction.
+pub fn integer_kernel_basis(
+    rows: &[Vec<BigInt>],
+    ncols: usize,
+) -> Result<Vec<Vec<BigInt>>, String> {
+    let nrows = rows.len();
+    if rows.iter().any(|r| r.len() != ncols) {
+        return Err("matrix row length mismatch".into());
+    }
+    let mut h: Vec<Vec<BigInt>> = rows.to_vec();
+    let mut u: Vec<Vec<BigInt>> = (0..ncols)
+        .map(|i| (0..ncols).map(|j| BigInt::from(i == j)).collect())
+        .collect();
+    let mut col = 0usize;
+    for r in 0..nrows {
+        if col >= ncols {
+            break;
+        }
+        loop {
+            let nonzero: Vec<usize> = (col..ncols).filter(|&j| !h[r][j].is_zero()).collect();
+            if nonzero.len() <= 1 {
+                break;
+            }
+            let pivot_col = *nonzero
+                .iter()
+                .min_by(|&&a, &&b| h[r][a].magnitude().cmp(h[r][b].magnitude()))
+                .expect("nonempty");
+            for &j in &nonzero {
+                if j == pivot_col {
+                    continue;
+                }
+                let q = h[r][j].div_floor(&h[r][pivot_col]);
+                let q = if q.is_zero() {
+                    if h[r][j].sign() == h[r][pivot_col].sign() {
+                        BigInt::from(1)
+                    } else {
+                        BigInt::from(-1)
+                    }
+                } else {
+                    q
+                };
+                for row_h in h.iter_mut().take(nrows) {
+                    let delta = &q * &row_h[pivot_col];
+                    row_h[j] -= delta;
+                }
+                for row_u in u.iter_mut().take(ncols) {
+                    let delta = &q * &row_u[pivot_col];
+                    row_u[j] -= delta;
+                }
+            }
+        }
+        let Some(pivot_col) = (col..ncols).find(|&j| !h[r][j].is_zero()) else {
+            continue;
+        };
+        if pivot_col != col {
+            for row_h in h.iter_mut().take(nrows) {
+                row_h.swap(col, pivot_col);
+            }
+            for row_u in u.iter_mut().take(ncols) {
+                row_u.swap(col, pivot_col);
+            }
+        }
+        col += 1;
+    }
+    let mut basis = Vec::with_capacity(ncols.saturating_sub(col));
+    for j in col..ncols {
+        let vec: Vec<BigInt> = (0..ncols).map(|i| u[i][j].clone()).collect();
+        if vec.iter().all(BigInt::is_zero) {
+            return Err("internal error: zero unimodular kernel column".into());
+        }
+        if rows.iter().any(|row| !dot(row, &vec).is_zero()) {
+            return Err("internal error: kernel column violates incidence constraint".into());
+        }
+        basis.push(vec);
+    }
+    Ok(basis)
+}
+
+fn row_hermite_basis(mut rows: Vec<Vec<BigInt>>, ncols: usize) -> Vec<Vec<BigInt>> {
+    let mut rank = 0usize;
+    for col in 0..ncols {
+        loop {
+            let active: Vec<usize> = (rank..rows.len())
+                .filter(|&i| !rows[i][col].is_zero())
+                .collect();
+            if active.len() <= 1 {
+                break;
+            }
+            let piv = *active
+                .iter()
+                .min_by(|&&a, &&b| rows[a][col].magnitude().cmp(rows[b][col].magnitude()))
+                .expect("nonempty");
+            for &i in &active {
+                if i == piv {
+                    continue;
+                }
+                let q = rows[i][col].div_floor(&rows[piv][col]);
+                let piv_row = rows[piv].clone();
+                for (entry, p_val) in rows[i].iter_mut().zip(&piv_row) {
+                    *entry -= &q * p_val;
+                }
+            }
+        }
+        let Some(piv) = (rank..rows.len()).find(|&i| !rows[i][col].is_zero()) else {
+            continue;
+        };
+        rows.swap(rank, piv);
+        if rows[rank][col].is_negative() {
+            for entry in &mut rows[rank] {
+                *entry = -&*entry;
+            }
+        }
+        for i in 0..rank {
+            let q = rows[i][col].div_floor(&rows[rank][col]);
+            if !q.is_zero() {
+                let rank_row = rows[rank].clone();
+                for (entry, r_val) in rows[i].iter_mut().zip(&rank_row) {
+                    *entry -= &q * r_val;
+                }
+            }
+        }
+        rank += 1;
+        if rank == ncols {
+            break;
+        }
+    }
+    rows.truncate(rank);
+    rows
+}
+
+fn homogeneous_scale_factor_mod_p(
+    candidate: &[BigInt],
+    target_mod_p: &[BigInt],
+    modulus: &BigInt,
+) -> Option<BigInt> {
+    let pivot = target_mod_p
+        .iter()
+        .position(|x| !mod_pos(x, modulus).is_zero())?;
+    let t_inv = mod_inv(&target_mod_p[pivot], modulus).ok()?;
+    let scale = mod_pos(&(&candidate[pivot] * t_inv), modulus);
+    if scale.is_zero() || scale.extended_gcd(modulus).gcd != BigInt::from(1) {
+        return None;
+    }
+    let ok = candidate
+        .iter()
+        .zip(target_mod_p)
+        .all(|(c, t)| mod_pos(&(c - &scale * t), modulus).is_zero());
+    ok.then_some(scale)
+}
+
+/// Construct an exact integer basis of the homogeneous congruence sublattice
+/// `{c in ker_Z(B) : exists mu in Z, c = mu * target_cubic (mod p)}`.
+pub fn homogeneous_congruence_sublattice(
+    kernel_basis: &[Vec<BigInt>],
+    target_cubic_mod_p: &[BigInt],
+    modulus: &BigInt,
+) -> Result<Vec<Vec<BigInt>>, String> {
+    let d = kernel_basis.len();
+    if d == 0 {
+        return Err("empty incidence kernel".into());
+    }
+    let nvars = d + 1;
+    let mut mat = vec![vec![BigInt::zero(); nvars]; PLANE_CUBIC_COEFFICIENTS];
+    for row in 0..PLANE_CUBIC_COEFFICIENTS {
+        for (col, kvec) in kernel_basis.iter().enumerate() {
+            mat[row][col] = mod_pos(&kvec[row], modulus);
+        }
+        mat[row][d] = mod_pos(&(-&target_cubic_mod_p[row]), modulus);
+    }
+
+    // Modular RREF over F_p.
+    let mut pivot_cols = Vec::new();
+    let mut rank = 0usize;
+    for col in 0..nvars {
+        let Some(piv) = (rank..PLANE_CUBIC_COEFFICIENTS)
+            .find(|&r| mat[r][col].extended_gcd(modulus).gcd == BigInt::from(1))
+        else {
+            continue;
+        };
+        mat.swap(rank, piv);
+        let inv = mod_inv(&mat[rank][col], modulus)?;
+        for entry in &mut mat[rank][col..] {
+            *entry = mod_pos(&(&*entry * &inv), modulus);
+        }
+        let piv_row = mat[rank].clone();
+        for (r_idx, row_vec) in mat.iter_mut().enumerate() {
+            if r_idx == rank || row_vec[col].is_zero() {
+                continue;
+            }
+            let factor = row_vec[col].clone();
+            for c_idx in col..nvars {
+                row_vec[c_idx] = mod_pos(&(&row_vec[c_idx] - &factor * &piv_row[c_idx]), modulus);
+            }
+        }
+        pivot_cols.push(col);
+        rank += 1;
+        if rank == PLANE_CUBIC_COEFFICIENTS {
+            break;
+        }
+    }
+
+    let free_cols: Vec<usize> = (0..nvars).filter(|c| !pivot_cols.contains(c)).collect();
+    let mut null_vectors = Vec::new();
+    let mut has_nonzero_mu = false;
+    for &free in &free_cols {
+        let mut v = vec![BigInt::zero(); nvars];
+        v[free] = BigInt::from(1);
+        for (row_idx, &pcol) in pivot_cols.iter().enumerate() {
+            v[pcol] = mod_pos(&(-&mat[row_idx][free]), modulus);
+        }
+        if !v[d].is_zero() {
+            has_nonzero_mu = true;
+        }
+        null_vectors.push(v);
+    }
+    if !has_nonzero_mu {
+        return Err("kernel contains no projective preimage of the source cubic modulo p".into());
+    }
+
+    let mut alpha_generators: Vec<Vec<BigInt>> = null_vectors
+        .into_iter()
+        .map(|v| v[..d].to_vec())
+        .filter(|alpha| alpha.iter().any(|x| !x.is_zero()))
+        .collect();
+    for i in 0..d {
+        let mut p_row = vec![BigInt::zero(); d];
+        p_row[i] = modulus.clone();
+        alpha_generators.push(p_row);
+    }
+    let alpha_basis = row_hermite_basis(alpha_generators, d);
+    if alpha_basis.len() != d {
+        return Err("internal error: homogeneous sublattice lost rank".into());
+    }
+    let mut sublattice = Vec::with_capacity(d);
+    for alpha in alpha_basis {
+        let mut vec = vec![BigInt::zero(); PLANE_CUBIC_COEFFICIENTS];
+        for (coeff, kvec) in alpha.iter().zip(kernel_basis) {
+            for (slot, val) in vec.iter_mut().zip(kvec) {
+                *slot += coeff * val;
+            }
+        }
+        sublattice.push(vec);
+    }
+    Ok(sublattice)
+}
+
+fn primitivize_cubic(mut c: Vec<BigInt>) -> Vec<BigInt> {
+    let g = c.iter().fold(BigInt::zero(), |acc, x| acc.gcd(x));
+    if g > BigInt::from(1) {
+        for x in &mut c {
+            *x /= &g;
+        }
+    }
+    if c.iter()
+        .find(|x| !x.is_zero())
+        .is_some_and(Signed::is_negative)
+    {
+        for x in &mut c {
+            *x = -&*x;
+        }
+    }
+    c
+}
+
+fn enumerate_homogeneous_lattice(
+    depth: usize,
+    radius: i64,
+    coeffs: &mut [i64],
+    basis: &[Vec<BigInt>],
+    target_mod_p: &[BigInt],
+    modulus: &BigInt,
+    evaluated: &mut usize,
+    limit: usize,
+    best: &mut Option<(Vec<BigInt>, PlaneCubicLiftScore, BigInt)>,
+) -> Result<(), String> {
+    if *evaluated >= limit {
+        return Ok(());
+    }
+    if depth == coeffs.len() {
+        let Some(&first_nz) = coeffs.iter().find(|&&x| x != 0) else {
+            return Ok(());
+        };
+        if first_nz < 0 {
+            return Ok(());
+        }
+        let mut raw = vec![BigInt::zero(); PLANE_CUBIC_COEFFICIENTS];
+        for (&mult, bvec) in coeffs.iter().zip(basis) {
+            if mult != 0 {
+                for (slot, val) in raw.iter_mut().zip(bvec) {
+                    *slot += val * mult;
+                }
+            }
+        }
+        let candidate = primitivize_cubic(raw);
+        let Some(scale) = homogeneous_scale_factor_mod_p(&candidate, target_mod_p, modulus) else {
+            return Ok(());
+        };
+        let score = score_plane_cubic_lift(&candidate)?;
+        *evaluated += 1;
+        let replace = match best {
+            None => true,
+            Some((_, best_score, _)) => better_plane_cubic(&score, best_score),
+        };
+        if replace {
+            *best = Some((candidate, score, scale));
+        }
+        return Ok(());
+    }
+    for val in -radius..=radius {
+        coeffs[depth] = val;
+        enumerate_homogeneous_lattice(
+            depth + 1,
+            radius,
+            coeffs,
+            basis,
+            target_mod_p,
+            modulus,
+            evaluated,
+            limit,
+            best,
+        )?;
+        if *evaluated >= limit {
+            break;
+        }
+    }
+    Ok(())
+}
+
+/// Execute JKSST Steps 3--9 for `4 <= r <= 9` source points:
+/// normalize four points to `(1:0:0), (0:1:0), (0:0:1), (1:1:1)` via `PGL_3(F_p)`,
+/// lift the remaining `r - 4` points projectively by 3D LLL (`O(p^(2/3))`),
+/// and optimize the homogeneous projective-congruence plane-cubic sublattice.
+pub fn optimize_jksst_plane_cubic_lift(
+    problem: &JksstPlaneCubicProblem,
+    options: LiftSearchOptions,
+) -> Result<JksstPlaneCubicOptimization, String> {
+    let r = problem.source_points.len();
+    if !(4..=9).contains(&r) {
+        return Err("JKSST projective-frame plane-cubic mode requires 4 through 9 points".into());
+    }
+    if options.neighborhood_radius < 0 || options.max_candidates == 0 {
+        return Err("search radius must be nonnegative and candidate cap positive".into());
+    }
+    if problem.max_frames == 0 {
+        return Err("max_frames must be positive".into());
+    }
+
+    let mut candidate_frames: Vec<[usize; 4]> = Vec::new();
+    if let Some(explicit) = problem.frame_indices {
+        candidate_frames.push(explicit);
+    } else {
+        for i0 in 0..r {
+            for i1 in (i0 + 1)..r {
+                for i2 in (i1 + 1)..r {
+                    for i3 in (i2 + 1)..r {
+                        candidate_frames.push([i0, i1, i2, i3]);
+                    }
+                }
+            }
+        }
+    }
+
+    let mut frames_evaluated = 0usize;
+    let mut total_candidates = 0usize;
+    let mut best_bundle: Option<(
+        JksstProjectiveFrame,
+        Vec<PlaneCubicPoint>,
+        Vec<[usize; 3]>,
+        Vec<BigInt>,
+        PlaneCubicLiftScore,
+        BigInt,
+    )> = None;
+
+    for frame_indices in candidate_frames {
+        if frames_evaluated >= problem.max_frames {
+            break;
+        }
+        let Ok(frame) = jksst_projective_frame_mod_p(
+            &problem.modulus,
+            &problem.source_coefficients,
+            &problem.source_points,
+            frame_indices,
+        ) else {
+            continue;
+        };
+        frames_evaluated += 1;
+
+        let mut lifted_points = Vec::with_capacity(r);
+        for (idx, pt_mod_p) in frame.transformed_points_mod_p.iter().enumerate() {
+            let pt = if frame_indices.contains(&idx) {
+                PlaneCubicPoint::new(pt_mod_p.clone())?
+            } else {
+                match problem.point_lift_mode {
+                    JksstPointLiftMode::ProjectiveLll => {
+                        lift_projective_point_lll(pt_mod_p, &problem.modulus)?
+                    }
+                    JksstPointLiftMode::AffineBalanced => {
+                        lift_projective_point_affine_balanced(pt_mod_p, &problem.modulus)?
+                    }
+                }
+            };
+            lifted_points.push(pt);
+        }
+        let collinear = collinear_point_triples(&lifted_points);
+        if problem.reject_collinear_lifts && !collinear.is_empty() {
+            continue;
+        }
+
+        let incidence_rows: Vec<Vec<BigInt>> = lifted_points
+            .iter()
+            .map(|pt| {
+                let [x, y, z] = &pt.coordinates;
+                plane_cubic_incidence_row(x, y, z)
+            })
+            .collect();
+        let kernel = integer_kernel_basis(&incidence_rows, PLANE_CUBIC_COEFFICIENTS)?;
+        if kernel.is_empty() {
+            continue;
+        }
+        let Ok(mut sublattice) = homogeneous_congruence_sublattice(
+            &kernel,
+            &frame.transformed_source_cubic,
+            &problem.modulus,
+        ) else {
+            continue;
+        };
+        if sublattice.len() > 1 {
+            lll_reduce_hp(&mut sublattice, 0.99).map_err(str::to_string)?;
+        }
+
+        let mut frame_best: Option<(Vec<BigInt>, PlaneCubicLiftScore, BigInt)> = None;
+        let mut evaluated = 0usize;
+        for bvec in &sublattice {
+            if evaluated >= options.max_candidates {
+                break;
+            }
+            let cand = primitivize_cubic(bvec.clone());
+            if let Some(scale) = homogeneous_scale_factor_mod_p(
+                &cand,
+                &frame.transformed_source_cubic,
+                &problem.modulus,
+            ) {
+                let score = score_plane_cubic_lift(&cand)?;
+                evaluated += 1;
+                let replace = match &frame_best {
+                    None => true,
+                    Some((_, best_s, _)) => better_plane_cubic(&score, best_s),
+                };
+                if replace {
+                    frame_best = Some((cand, score, scale));
+                }
+            }
+        }
+        if sublattice.len() > 1
+            && options.neighborhood_radius > 0
+            && evaluated < options.max_candidates
+        {
+            let mut coeffs = vec![0i64; sublattice.len()];
+            enumerate_homogeneous_lattice(
+                0,
+                options.neighborhood_radius,
+                &mut coeffs,
+                &sublattice,
+                &frame.transformed_source_cubic,
+                &problem.modulus,
+                &mut evaluated,
+                options.max_candidates,
+                &mut frame_best,
+            )?;
+        }
+        total_candidates += evaluated;
+
+        let Some((cand, score, scale)) = frame_best else {
+            continue;
+        };
+        let replace = match &best_bundle {
+            None => true,
+            Some((_, _, _, _, best_score, _)) => better_plane_cubic(&score, best_score),
+        };
+        if replace {
+            best_bundle = Some((frame, lifted_points, collinear, cand, score, scale));
+        }
+    }
+
+    let Some((frame, lifted_points, collinear, optimized, score, scale)) = best_bundle else {
+        return Err("no admissible JKSST projective-frame lift found".into());
+    };
+
+    let incidence_preserved = lifted_points
+        .iter()
+        .all(|pt| plane_cubic_value(&optimized, pt).is_zero());
+    let projective_congruence_preserved = homogeneous_scale_factor_mod_p(
+        &optimized,
+        &frame.transformed_source_cubic,
+        &problem.modulus,
+    ) == Some(scale.clone());
+    if !incidence_preserved || !projective_congruence_preserved {
+        return Err("internal error: JKSST plane-cubic lift failed output certification".into());
+    }
+    let max_point_coordinate_bits = lifted_points
+        .iter()
+        .flat_map(|pt| pt.coordinates.iter())
+        .map(abs_bits)
+        .max()
+        .unwrap_or(0);
+
+    Ok(JksstPlaneCubicOptimization {
+        method: "PGL3(F_p) 4-point frame + 3D-LLL projective point lift + homogeneous-congruence plane-cubic LLL",
+        coefficient_order: "X^3,X^2Y,XY^2,Y^3,X^2Z,XYZ,Y^2Z,XZ^2,YZ^2,Z^3",
+        point_lift_mode: problem.point_lift_mode,
+        frame_indices: frame.frame_indices,
+        matrix_to_source_mod_p: frame
+            .matrix_to_source
+            .map(|row| row.map(|v| v.to_string())),
+        matrix_from_source_mod_p: frame
+            .matrix_from_source
+            .map(|row| row.map(|v| v.to_string())),
+        transformed_source_cubic_mod_p: frame
+            .transformed_source_cubic
+            .iter()
+            .map(ToString::to_string)
+            .collect(),
+        lifted_points: lifted_points
+            .iter()
+            .map(|pt| pt.coordinates.clone().map(|v| v.to_string()))
+            .collect(),
+        max_point_coordinate_bits,
+        pre_lift_collinear_triples: collinear,
+        homogeneous_scale_mod_p: scale.to_string(),
+        optimized_coefficients: optimized.iter().map(ToString::to_string).collect(),
+        optimized_score: score,
+        frames_evaluated,
+        candidates_evaluated: total_candidates,
+        incidence_preserved,
+        projective_congruence_preserved,
+        discriminant_evaluated: true,
+    })
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -1628,5 +2622,145 @@ mod tests {
         };
         let error = optimize_weierstrass_lift(&problem, LiftSearchOptions::default()).unwrap_err();
         assert!(error.contains("residue class"));
+    }
+
+    #[test]
+    fn collinear_point_detector_separates_line_aliases_from_cubic_relations() {
+        let multiples = plane_cubic_test_multiples();
+        // Positive multiples G..9G of an infinite-order point have m_a+m_b+m_c >= 3 > 0,
+        // so none are collinear over Q.
+        assert!(collinear_point_triples(&multiples).is_empty());
+
+        let with_line = vec![
+            plane_cubic_test_point("0", "1", "1"),
+            plane_cubic_test_point("3", "7", "1"),
+            plane_cubic_test_point("6", "13", "1"),
+            plane_cubic_test_point("2", "9", "1"),
+        ];
+        assert_eq!(collinear_point_triples(&with_line), vec![[0, 1, 2]]);
+    }
+
+    #[test]
+    fn jksst_projective_frame_pulls_back_cubic_and_preserves_chord_origin() {
+        // y^2 = x^3 - x + 1 over F_67, where G = (0, 1) has prime order 73.
+        let p = BigInt::from(67);
+        let source_cubic = bi(&[1, 0, 0, 0, 0, 0, -1, -1, 0, 1]);
+        let multiples_q = plane_cubic_test_multiples();
+        let source_pts: Vec<[BigInt; 3]> = multiples_q
+            .iter()
+            .map(|pt| canonical_projective_mod_p(&pt.coordinates, &p).unwrap())
+            .collect();
+
+        let frame =
+            jksst_projective_frame_mod_p(&p, &source_cubic, &source_pts, [0, 1, 2, 3]).unwrap();
+        // Standard vertices (1:0:0), (0:1:0), (0:0:1) force c0 = c3 = c9 = 0 mod p.
+        assert!(frame.transformed_source_cubic[0].is_zero());
+        assert!(frame.transformed_source_cubic[3].is_zero());
+        assert!(frame.transformed_source_cubic[9].is_zero());
+
+        // Check GL_3(F_p) equivariance of the binary-cubic chord formula mod p:
+        // chordRaw(c', Q0, Q1) mapped by M equals chordRaw(c, P0, P1) in P^2(F_67).
+        let p0 = PlaneCubicPoint::new(source_pts[0].clone()).unwrap();
+        let p1 = PlaneCubicPoint::new(source_pts[1].clone()).unwrap();
+        let res_src = binary_cubic_restriction(&source_cubic, &p0, &p1);
+        let chord_src: [BigInt; 3] = std::array::from_fn(|i| {
+            &res_src[2] * &p0.coordinates[i] - &res_src[1] * &p1.coordinates[i]
+        });
+        let chord_src_mod = canonical_projective_mod_p(&chord_src, &p).unwrap();
+
+        let q0 = PlaneCubicPoint::new(frame.transformed_points_mod_p[0].clone()).unwrap();
+        let q1 = PlaneCubicPoint::new(frame.transformed_points_mod_p[1].clone()).unwrap();
+        let res_framed = binary_cubic_restriction(&frame.transformed_source_cubic, &q0, &q1);
+        let chord_framed: [BigInt; 3] = std::array::from_fn(|i| {
+            &res_framed[2] * &q0.coordinates[i] - &res_framed[1] * &q1.coordinates[i]
+        });
+        let mapped_back = mat_vec_mod_p(&frame.matrix_to_source, &chord_framed, &p);
+        assert_eq!(
+            canonical_projective_mod_p(&mapped_back, &p).unwrap(),
+            chord_src_mod
+        );
+    }
+
+    #[test]
+    fn jksst_projective_lll_point_lift_reduces_coordinate_height_to_two_thirds_exponent() {
+        let p = BigInt::from(268_435_399i64); // 28-bit prime (p = 3 mod 4)
+        let pt = [
+            BigInt::from(193_847_261i64),
+            BigInt::from(118_273_645i64),
+            BigInt::from(1),
+        ];
+        let lifted = lift_projective_point_lll(&pt, &p).unwrap();
+        assert_eq!(
+            canonical_projective_mod_p(&lifted.coordinates, &p).unwrap(),
+            canonical_projective_mod_p(&pt, &p).unwrap()
+        );
+        let max_bits = lifted.coordinates.iter().map(abs_bits).max().unwrap();
+        // Minkowski on covolume p^2 in Z^3 bounds the shortest vector near p^(2/3) (~19 bits),
+        // well below the 27-bit affine balanced coordinate floor.
+        assert!(
+            max_bits <= 20,
+            "expected <= 20-bit coordinates, got {max_bits}"
+        );
+    }
+
+    #[test]
+    fn jksst_frame_and_homogeneous_congruence_halves_r9_cubic_height() {
+        // Deterministic 9-point set on y^2 = x^3 + 3x + 5 over F_65519 (p = 3 mod 4).
+        let p = BigInt::from(65_519i64);
+        let exp = (&p + 1i64) >> 2;
+        let mut pts = Vec::new();
+        let mut x = 14_231i64;
+        while pts.len() < 9 {
+            let bx = BigInt::from(x);
+            let rhs = mod_pos(&(&bx * &bx * &bx + 3i64 * &bx + 5i64), &p);
+            let y = rhs.modpow(&exp, &p);
+            if mod_pos(&(&y * &y), &p) == rhs && !y.is_zero() {
+                pts.push([bx, y, BigInt::from(1)]);
+            }
+            x = (x + 29_989) % 65_519;
+        }
+        let source_cubic = bi(&[1, 0, 0, 0, 0, 0, -1, 3, 0, 5]);
+
+        // Naive Z=1 balanced r=9 kernel representative.
+        let naive_rows: Vec<Vec<BigInt>> = pts
+            .iter()
+            .map(|pt| {
+                let bx = balanced_residue(&pt[0], &p);
+                let by = balanced_residue(&pt[1], &p);
+                plane_cubic_incidence_row(&bx, &by, &BigInt::from(1))
+            })
+            .collect();
+        let naive_kernel = integer_kernel_basis(&naive_rows, PLANE_CUBIC_COEFFICIENTS).unwrap();
+        assert_eq!(naive_kernel.len(), 1);
+        let naive_score =
+            score_plane_cubic_lift(&primitivize_cubic(naive_kernel[0].clone())).unwrap();
+
+        let problem = JksstPlaneCubicProblem {
+            modulus: p.clone(),
+            source_coefficients: source_cubic,
+            source_points: pts,
+            frame_indices: None,
+            point_lift_mode: JksstPointLiftMode::ProjectiveLll,
+            max_frames: 32,
+            reject_collinear_lifts: true,
+        };
+        let jksst = optimize_jksst_plane_cubic_lift(
+            &problem,
+            LiftSearchOptions {
+                neighborhood_radius: 1,
+                max_candidates: 64,
+            },
+        )
+        .unwrap();
+        assert!(jksst.incidence_preserved);
+        assert!(jksst.projective_congruence_preserved);
+        assert!(jksst.optimized_score.nonsingular);
+        assert!(jksst.pre_lift_collinear_triples.is_empty());
+        assert!(
+            jksst.optimized_score.coefficient_height_bits * 2 < naive_score.coefficient_height_bits,
+            "expected >2x bit reduction: jksst={} vs naive={}",
+            jksst.optimized_score.coefficient_height_bits,
+            naive_score.coefficient_height_bits
+        );
     }
 }

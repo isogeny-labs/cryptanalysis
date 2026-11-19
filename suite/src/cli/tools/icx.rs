@@ -386,29 +386,49 @@ fn xedni_cmd(args: &XedniArgs) -> Result<Value, String> {
 fn xedni_lift_cmd(args: &XedniLiftArgs) -> Result<Value, String> {
     let bytes =
         std::fs::read(&args.input).map_err(|e| format!("read {}: {e}", args.input.display()))?;
-    let input: xedni_lift::AffineLiftInput = serde_json::from_slice(&bytes)
-        .map_err(|e| format!("parse {}: {e}", args.input.display()))?;
-    let problem = xedni_lift::AffineLiftProblem::try_from(input)?;
     let options = xedni_lift::LiftSearchOptions {
         neighborhood_radius: args.radius,
         max_candidates: args.max_candidates,
     };
     let (model, scope, result) = match args.model.as_str() {
-        "weierstrass" => (
-            "weierstrass",
-            "prime-field xedni Steps 7-9 seven-coefficient coset optimization; no dependence or ECDLP success claim",
-            serde_json::to_value(xedni_lift::optimize_weierstrass_lift(&problem, options)?)
+        "weierstrass" => {
+            let input: xedni_lift::AffineLiftInput = serde_json::from_slice(&bytes)
+                .map_err(|e| format!("parse {}: {e}", args.input.display()))?;
+            let problem = xedni_lift::AffineLiftProblem::try_from(input)?;
+            (
+                "weierstrass",
+                "prime-field xedni Steps 7-9 seven-coefficient coset optimization; no dependence or ECDLP success claim",
+                serde_json::to_value(xedni_lift::optimize_weierstrass_lift(&problem, options)?)
+                    .map_err(|e| format!("serialize lift result: {e}"))?,
+            )
+        }
+        "plane-cubic" => {
+            let input: xedni_lift::AffineLiftInput = serde_json::from_slice(&bytes)
+                .map_err(|e| format!("parse {}: {e}", args.input.display()))?;
+            let problem = xedni_lift::AffineLiftProblem::try_from(input)?;
+            (
+                "plane-cubic",
+                "prime-field xedni Step 7 ten-coefficient coset optimization for up to nine incidence rows; no Step-8 conversion, discriminant, dependence, or ECDLP success claim",
+                serde_json::to_value(xedni_lift::optimize_plane_cubic_lift(&problem, options)?)
+                    .map_err(|e| format!("serialize lift result: {e}"))?,
+            )
+        }
+        "jksst-plane-cubic" => {
+            let input: xedni_lift::JksstPlaneCubicInput = serde_json::from_slice(&bytes)
+                .map_err(|e| format!("parse {}: {e}", args.input.display()))?;
+            let problem = xedni_lift::JksstPlaneCubicProblem::try_from(input)?;
+            (
+                "jksst-plane-cubic",
+                "prime-field xedni Steps 3-9 PGL3(F_p) 4-point frame normalization, 3D-LLL projective point lift, and homogeneous-congruence plane-cubic optimization; no dependence-rate or ECDLP speedup claim",
+                serde_json::to_value(xedni_lift::optimize_jksst_plane_cubic_lift(
+                    &problem, options,
+                )?)
                 .map_err(|e| format!("serialize lift result: {e}"))?,
-        ),
-        "plane-cubic" => (
-            "plane-cubic",
-            "prime-field xedni Step 7 ten-coefficient coset optimization for up to nine incidence rows; no Step-8 conversion, discriminant, dependence, or ECDLP success claim",
-            serde_json::to_value(xedni_lift::optimize_plane_cubic_lift(&problem, options)?)
-                .map_err(|e| format!("serialize lift result: {e}"))?,
-        ),
+            )
+        }
         other => {
             return Err(format!(
-                "unknown xedni lift model {other:?}; use weierstrass|plane-cubic"
+                "unknown xedni lift model {other:?}; use weierstrass|plane-cubic|jksst-plane-cubic"
             ));
         }
     };
@@ -805,9 +825,10 @@ fn update_cmd(args: &UpdateArgs) -> Result<Value, String> {
         if let Some(head) = run_git_optional(repo, &["rev-parse", "--short", "HEAD"]) {
             report["git_head"] = json!(head);
         }
-        if let Some(upstream) =
-            run_git_optional(repo, &["rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{u}"])
-        {
+        if let Some(upstream) = run_git_optional(
+            repo,
+            &["rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{u}"],
+        ) {
             report["git_upstream"] = json!(upstream);
             if let Some(behind) = run_git_optional(repo, &["rev-list", "--count", "HEAD..@{u}"]) {
                 if let Ok(behind) = behind.parse::<u64>() {

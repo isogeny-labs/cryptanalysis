@@ -1,0 +1,382 @@
+{
+  "by_lift": {
+    "balanced": {
+      "certified": 61,
+      "collinear_certified": 60,
+      "cubic_dependent_certified": 1,
+      "eligible": 596
+    },
+    "wide": {
+      "certified": 6,
+      "collinear_certified": 6,
+      "cubic_dependent_certified": 0,
+      "eligible": 609
+    }
+  },
+  "by_prime": {
+    "127": {
+      "certified": 9,
+      "collinear_certified": 9,
+      "cubic_dependent_certified": 0,
+      "eligible": 341
+    },
+    "251": {
+      "certified": 3,
+      "collinear_certified": 3,
+      "cubic_dependent_certified": 0,
+      "eligible": 363
+    },
+    "31": {
+      "certified": 32,
+      "collinear_certified": 31,
+      "cubic_dependent_certified": 1,
+      "eligible": 197
+    },
+    "67": {
+      "certified": 23,
+      "collinear_certified": 23,
+      "cubic_dependent_certified": 0,
+      "eligible": 304
+    }
+  },
+  "by_r": {
+    "6": {
+      "certified": 9,
+      "collinear_certified": 8,
+      "cubic_dependent_certified": 1,
+      "eligible": 322,
+      "point_triples_per_trial": 20,
+      "recovered_selected": 5,
+      "rows_with_target_collinear": 4
+    },
+    "7": {
+      "certified": 16,
+      "collinear_certified": 16,
+      "cubic_dependent_certified": 0,
+      "eligible": 310,
+      "point_triples_per_trial": 35,
+      "recovered_selected": 4,
+      "rows_with_target_collinear": 5
+    },
+    "8": {
+      "certified": 18,
+      "collinear_certified": 18,
+      "cubic_dependent_certified": 0,
+      "eligible": 292,
+      "point_triples_per_trial": 56,
+      "recovered_selected": 7,
+      "rows_with_target_collinear": 9
+    },
+    "9": {
+      "certified": 24,
+      "collinear_certified": 24,
+      "cubic_dependent_certified": 0,
+      "eligible": 281,
+      "point_triples_per_trial": 84,
+      "recovered_selected": 7,
+      "rows_with_target_collinear": 7
+    }
+  },
+  "certified_relations": 67,
+  "cubic_dependent_examples": [
+    {
+      "dl_recovered": 1,
+      "family": "generic",
+      "fixed_flex_relation": [
+        0,
+        -1,
+        -1,
+        0,
+        1,
+        1
+      ],
+      "idx": 9,
+      "lift": "balanced",
+      "local_relation": [
+        0,
+        -1,
+        -1,
+        0,
+        1,
+        1
+      ],
+      "multipliers": [
+        12,
+        10,
+        2,
+        7,
+        8,
+        4
+      ],
+      "origin_pair": [
+        0,
+        1
+      ],
+      "p": 31,
+      "r": 6,
+      "support_points": {
+        "1": [
+          -7,
+          -1,
+          1
+        ],
+        "2": [
+          0,
+          -1,
+          1
+        ],
+        "4": [
+          -10,
+          -7,
+          1
+        ],
+        "5": [
+          -12,
+          -15,
+          1
+        ]
+      }
+    }
+  ],
+  "eligible_rows": 1205,
+  "genuine_cubic_dependent_relations": 1,
+  "height_scaling": {
+    "r=6/p=127/lift=balanced": {
+      "coef_bits_per_log2_p": 3.5772,
+      "count": 43,
+      "disc_bits_per_log2_p": 35.1998,
+      "median_coefficient_bits": 25,
+      "median_discriminant_bits": 246
+    },
+    "r=6/p=127/lift=wide": {
+      "coef_bits_per_log2_p": 4.5788,
+      "count": 44,
+      "disc_bits_per_log2_p": 45.4306,
+      "median_coefficient_bits": 32.0,
+      "median_discriminant_bits": 317.5
+    },
+    "r=6/p=251/lift=balanced": {
+      "coef_bits_per_log2_p": 3.7634,
+      "count": 45,
+      "disc_bits_per_log2_p": 37.2575,
+      "median_coefficient_bits": 30,
+      "median_discriminant_bits": 297
+    },
+    "r=6/p=251/lift=wide": {
+      "coef_bits_per_log2_p": 4.6415,
+      "count": 49,
+      "disc_bits_per_log2_p": 46.0388,
+      "median_coefficient_bits": 37,
+      "median_discriminant_bits": 367
+    },
+    "r=6/p=31/lift=balanced": {
+      "coef_bits_per_log2_p": 3.0277,
+      "count": 29,
+      "disc_bits_per_log2_p": 28.2589,
+      "median_coefficient_bits": 15,
+      "median_discriminant_bits": 140
+    },
+    "r=6/p=31/lift=wide": {
+      "coef_bits_per_log2_p": 4.4407,
+      "count": 28,
+      "disc_bits_per_log2_p": 42.6911,
+      "median_coefficient_bits": 22.0,
+      "median_discriminant_bits": 211.5
+    },
+    "r=6/p=67/lift=balanced": {
+      "coef_bits_per_log2_p": 3.4619,
+      "count": 44,
+      "disc_bits_per_log2_p": 34.0417,
+      "median_coefficient_bits": 21.0,
+      "median_discriminant_bits": 206.5
+    },
+    "r=6/p=67/lift=wide": {
+      "coef_bits_per_log2_p": 4.6158,
+      "count": 40,
+      "disc_bits_per_log2_p": 44.5922,
+      "median_coefficient_bits": 28.0,
+      "median_discriminant_bits": 270.5
+    },
+    "r=7/p=127/lift=balanced": {
+      "coef_bits_per_log2_p": 4.7219,
+      "count": 43,
+      "disc_bits_per_log2_p": 47.0761,
+      "median_coefficient_bits": 33,
+      "median_discriminant_bits": 329
+    },
+    "r=7/p=127/lift=wide": {
+      "coef_bits_per_log2_p": 6.0097,
+      "count": 47,
+      "disc_bits_per_log2_p": 60.3833,
+      "median_coefficient_bits": 42,
+      "median_discriminant_bits": 422
+    },
+    "r=7/p=251/lift=balanced": {
+      "coef_bits_per_log2_p": 5.0178,
+      "count": 43,
+      "disc_bits_per_log2_p": 49.5513,
+      "median_coefficient_bits": 40,
+      "median_discriminant_bits": 395
+    },
+    "r=7/p=251/lift=wide": {
+      "coef_bits_per_log2_p": 6.1469,
+      "count": 47,
+      "disc_bits_per_log2_p": 61.845,
+      "median_coefficient_bits": 49,
+      "median_discriminant_bits": 493
+    },
+    "r=7/p=31/lift=balanced": {
+      "coef_bits_per_log2_p": 4.2388,
+      "count": 24,
+      "disc_bits_per_log2_p": 41.5809,
+      "median_coefficient_bits": 21.0,
+      "median_discriminant_bits": 206.0
+    },
+    "r=7/p=31/lift=wide": {
+      "coef_bits_per_log2_p": 5.7527,
+      "count": 28,
+      "disc_bits_per_log2_p": 56.0131,
+      "median_coefficient_bits": 28.5,
+      "median_discriminant_bits": 277.5
+    },
+    "r=7/p=67/lift=balanced": {
+      "coef_bits_per_log2_p": 4.451,
+      "count": 40,
+      "disc_bits_per_log2_p": 45.0043,
+      "median_coefficient_bits": 27.0,
+      "median_discriminant_bits": 273.0
+    },
+    "r=7/p=67/lift=wide": {
+      "coef_bits_per_log2_p": 6.0171,
+      "count": 38,
+      "disc_bits_per_log2_p": 59.9233,
+      "median_coefficient_bits": 36.5,
+      "median_discriminant_bits": 363.5
+    },
+    "r=8/p=127/lift=balanced": {
+      "coef_bits_per_log2_p": 6.5821,
+      "count": 43,
+      "disc_bits_per_log2_p": 68.3963,
+      "median_coefficient_bits": 46,
+      "median_discriminant_bits": 478
+    },
+    "r=8/p=127/lift=wide": {
+      "coef_bits_per_log2_p": 8.7284,
+      "count": 41,
+      "disc_bits_per_log2_p": 90.4319,
+      "median_coefficient_bits": 61,
+      "median_discriminant_bits": 632
+    },
+    "r=8/p=251/lift=balanced": {
+      "coef_bits_per_log2_p": 7.2759,
+      "count": 44,
+      "disc_bits_per_log2_p": 74.3896,
+      "median_coefficient_bits": 58.0,
+      "median_discriminant_bits": 593.0
+    },
+    "r=8/p=251/lift=wide": {
+      "coef_bits_per_log2_p": 9.0321,
+      "count": 45,
+      "disc_bits_per_log2_p": 94.3356,
+      "median_coefficient_bits": 72,
+      "median_discriminant_bits": 752
+    },
+    "r=8/p=31/lift=balanced": {
+      "coef_bits_per_log2_p": 5.1472,
+      "count": 22,
+      "disc_bits_per_log2_p": 54.6002,
+      "median_coefficient_bits": 25.5,
+      "median_discriminant_bits": 270.5
+    },
+    "r=8/p=31/lift=wide": {
+      "coef_bits_per_log2_p": 8.074,
+      "count": 23,
+      "disc_bits_per_log2_p": 80.5378,
+      "median_coefficient_bits": 40,
+      "median_discriminant_bits": 399
+    },
+    "r=8/p=67/lift=balanced": {
+      "coef_bits_per_log2_p": 6.1819,
+      "count": 38,
+      "disc_bits_per_log2_p": 63.2203,
+      "median_coefficient_bits": 37.5,
+      "median_discriminant_bits": 383.5
+    },
+    "r=8/p=67/lift=wide": {
+      "coef_bits_per_log2_p": 8.325,
+      "count": 36,
+      "disc_bits_per_log2_p": 83.3321,
+      "median_coefficient_bits": 50.5,
+      "median_discriminant_bits": 505.5
+    },
+    "r=9/p=127/lift=balanced": {
+      "coef_bits_per_log2_p": 12.1625,
+      "count": 38,
+      "disc_bits_per_log2_p": 134.8609,
+      "median_coefficient_bits": 85.0,
+      "median_discriminant_bits": 942.5
+    },
+    "r=9/p=127/lift=wide": {
+      "coef_bits_per_log2_p": 16.6698,
+      "count": 42,
+      "disc_bits_per_log2_p": 180.8638,
+      "median_coefficient_bits": 116.5,
+      "median_discriminant_bits": 1264.0
+    },
+    "r=9/p=251/lift=balanced": {
+      "coef_bits_per_log2_p": 13.2346,
+      "count": 44,
+      "disc_bits_per_log2_p": 142.0051,
+      "median_coefficient_bits": 105.5,
+      "median_discriminant_bits": 1132.0
+    },
+    "r=9/p=251/lift=wide": {
+      "coef_bits_per_log2_p": 16.8725,
+      "count": 46,
+      "disc_bits_per_log2_p": 183.2769,
+      "median_coefficient_bits": 134.5,
+      "median_discriminant_bits": 1461.0
+    },
+    "r=9/p=31/lift=balanced": {
+      "coef_bits_per_log2_p": 8.2758,
+      "count": 22,
+      "disc_bits_per_log2_p": 89.8228,
+      "median_coefficient_bits": 41.0,
+      "median_discriminant_bits": 445.0
+    },
+    "r=9/p=31/lift=wide": {
+      "coef_bits_per_log2_p": 15.1387,
+      "count": 21,
+      "disc_bits_per_log2_p": 166.1218,
+      "median_coefficient_bits": 75,
+      "median_discriminant_bits": 823
+    },
+    "r=9/p=67/lift=balanced": {
+      "coef_bits_per_log2_p": 10.7977,
+      "count": 34,
+      "disc_bits_per_log2_p": 116.3023,
+      "median_coefficient_bits": 65.5,
+      "median_discriminant_bits": 705.5
+    },
+    "r=9/p=67/lift=wide": {
+      "coef_bits_per_log2_p": 15.9081,
+      "count": 34,
+      "disc_bits_per_log2_p": 169.9612,
+      "median_coefficient_bits": 96.5,
+      "median_discriminant_bits": 1031.0
+    }
+  },
+  "irreducible_six_point_conic_rows": 0,
+  "missed_pre_lift_collinear_rows": 0,
+  "pre_lift_collinear_aliases": 66,
+  "r789_certified_relations": 58,
+  "r789_collinear_aliases": 58,
+  "r789_cubic_dependent_relations": 0,
+  "rows_with_any_pre_lift_collinear_triple": 66,
+  "rows_with_multiple_collinear_triples": 7,
+  "rows_with_target_bearing_collinear_triple": 25,
+  "scheduled_rows": 1600,
+  "schema": "cryptanalysis.xedni-nov17-panel-decomposition/v1",
+  "source_rows_path": "research/xedni_plane_group_20261117/run/rows.jsonl",
+  "source_rows_sha256": "2226d6fdfb56f87022eac8ed5ee7f38ad1e115375aaa057d69dfe67c40f3f773"
+}
