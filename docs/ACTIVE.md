@@ -18,6 +18,8 @@ and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
 
+- [ ] PDP Lead 3B: Aut-equivariant signed multi-orbit coefficient-box (`wsum`) relation collector on Generic/J1728/J0 prime curves in `prime_orbit_index_calculus` (Cursor, started 2026-11-19, branch cursor/pdp-lead-3b-orbit-wsum-20261119) [pcc:unverified]
+
 - [ ] Mirror the general binary hyperelliptic-cover transfer interface from crypto after its source commit is frozen, with split provenance and exact parity checks (Codex, started 2026-11-18, branch codex/general-binary-cover-transfer-mirror-20261118, PR #1765) [pcc:unverified]
 
 - [x] Validate fixed index-calculus candidate residuals and subgroup status (Codex, started 2026-11-18, branch test-fixed-candidate-residual, PR #1755)
