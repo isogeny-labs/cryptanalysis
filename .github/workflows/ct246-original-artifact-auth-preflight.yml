@@ -24,7 +24,7 @@ jobs:
           AWS_PAGER: ''
         run: |
           set -uo pipefail
-          echo "CT246_READONLY_SOURCE git_sha=${GITHUB_SHA} event=${GITHUB_EVENT_NAME}; no checkout"
+          echo "CT246_READONLY_SOURCE pr_head=${{ github.event.pull_request.head.sha }} event=${GITHUB_EVENT_NAME}; no checkout"
           echo "CT246_SCOPE one approved immutable HeadObject, one STS identity-existence check; stdout and raw stderr suppressed"
           if [[ -z "${AWS_ACCESS_KEY_ID:-}" || -z "${AWS_SECRET_ACCESS_KEY:-}" ]]; then
             echo "CT246_CREDENTIALS_PRESENT=false"
@@ -56,17 +56,23 @@ jobs:
             fi
           }
           : > "$err_file"
-          aws sts get-caller-identity --region "$AWS_REGION" --output json > /dev/null 2> "$err_file"
-          sts_exit=$?
+          if aws sts get-caller-identity --region "$AWS_REGION" --output json > /dev/null 2> "$err_file"; then
+            sts_exit=0
+          else
+            sts_exit=$?
+          fi
           if [[ "$sts_exit" == 0 ]]; then sts_class=accepted_by_sts
           else sts_class="$(classify)"
           fi
           : > "$err_file"
-          aws s3api head-object \
+          if aws s3api head-object \
             --bucket setec-astronomy-artifacts \
             --key store/sha256/22/22225094b7e3727332a761593b47ac44a2efd2f04bbdb1b1865abf3c35ba7267 \
-            --region "$AWS_REGION" --output json > /dev/null 2> "$err_file"
-          head_exit=$?
+            --region "$AWS_REGION" --output json > /dev/null 2> "$err_file"; then
+            head_exit=0
+          else
+            head_exit=$?
+          fi
           if [[ "$head_exit" == 0 ]]; then head_class=approved_object_head_succeeded
           else head_class="$(classify)"
           fi
