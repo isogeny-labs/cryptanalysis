@@ -21,3 +21,25 @@ smaller substitute workload, or producer assertions in place of certificates.
 
 Every narrower control or implementation result remains separately labeled and
 does not discharge the natural experiment. [pcc:unverified]
+
+## Final continuation status
+
+The completed producer-side evidence, adversarial corrections, validation
+commands, exact prospective exposure arithmetic, and remaining gates are in
+[`CONTINUATION_RESULTS_20261119.md`](CONTINUATION_RESULTS_20261119.md).
+Claim `PCC-20261119-0bba90` records the scoped producer statement and currently
+has unverified standing.
+[pcc:unverified]
+
+| Continuation requirement | Final status |
+| --- | --- |
+| Integrate row execution | Nine-component committed-byte diagnostic implemented; deliberately blocked, zero rows, no natural command |
+| Finish mixed censoring | Exact bounded nested row/cluster optimizer implemented with strict plain-JSON binding and workload ceilings; outside freeze |
+| Support `r=7..9` | Supplied-map verifier and bounded controls implemented; natural general-cubic constructor/global certificate absent |
+| Certify dependence/absence | Conditional complete-lattice verifier implemented; full saturated basis finder/trusted certificate absent |
+| Strengthen provenance | Strict signed-receipt verifier implemented; repository execution trust remains `NOT_COVERED` |
+| Freeze power/cost | Exact reference manifest implemented; discovery scale only, replication/resources `UNALLOCATED`, not powered |
+| Run natural rows | Still blocked by checkpoint, Magma, verifier, freeze, constructor/basis, and resource gates; zero rows started |
+
+No continuation result measures a rank-event or useful-recovery decay rate.
+[pcc:unverified]

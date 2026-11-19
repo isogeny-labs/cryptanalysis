@@ -38,7 +38,7 @@ and construction gates. [pcc:unverified]
 
 - [ ] Prospectively implement and freeze a first-representative fixed-coordinate dedup arm for the target-origin pencil, requiring semantic parity and full work accounting before any optimization claim (Codex, started 2026-11-18, branch codex/xedni-breakthrough-20261117, draft PR #1768) [pcc:unverified]
 
-- [ ] Implement and freeze the full Xedni rank-decay falsification program over 16--32-bit primes with independent lift, r, and exact Silverman/JKSST local-condition factors; retain rank intervals and powered/underpowered boundaries (Codex, started 2026-11-18, branch codex/xedni-breakthrough-20261117, PR #1768) [pcc:unverified]
+- [ ] Complete the production freeze and run the full Xedni rank-decay falsification program over 16--32-bit primes with independent lift, r, and exact Silverman/JKSST local-condition factors; six local control gates now pass but remain non-production and zero natural rows exist (Codex, started 2026-11-18, branch codex/xedni-breakthrough-20261117, PR #1768) [pcc:unverified]
 
 - [x] CT187: bounded admitted-source native 1,536-call same-route sham producer, strict evidence reader and synthetic handshake; no paid execution (automation, started 2026-11-17, branch research/ct187-native-sham-source-admission-20261117, PR #1719)
 
@@ -59,3 +59,4 @@ and construction gates. [pcc:unverified]
 ## Blocked / questions for the owner
 
 - The fresh Xedni selector panel is frozen but cannot generate its first row: checkpoint upload has no token/profile, and the documented ambient AWS fallback returns `AllAccessDisabled`. Resume requires valid scoped checkpoint transport; the earlier local waiver explicitly excludes modified panels. [pcc:unverified]
+- The rank-decay panel additionally needs licensed pinned Magma, a trusted execution-verifier/keyring, an integrated authorizing freeze, a natural `r=7..9` constructor/global map certificate, a trusted full saturated-basis route, fresh replication primes, and committed powered compute. The current runner diagnostic is intentionally `BLOCKED_NON_PRODUCTION` with zero rows. [pcc:unverified]

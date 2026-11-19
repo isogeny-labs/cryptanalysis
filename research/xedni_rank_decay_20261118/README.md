@@ -4,10 +4,13 @@ Date: 2026-11-18
 
 Status: prospective protocol and executable controls implemented; the natural
 rank-decay panel has not run. The finite-range decay heuristic is therefore
-**not defeated**. The checkpoint gate, licensed Magma cross-check, certified
-`r=7..9` cubic point map, natural-row executor, evidence provenance, complete
-relation inventory, rigorous mixed-censoring optimization, and powered
-exposure remain open. [pcc:unverified]
+**neither defeated nor reproduced**. Bounded controls now cover the runner
+boundary, nested mixed censoring, supplied `r=7..9` maps, conditional complete
+relation lattices, signed receipt verification, and exact prospective exposure
+arithmetic. Every path remains non-production. Checkpoint transport, licensed
+Magma, a trusted execution verifier, a clean authorizing freeze, a natural
+general-cubic constructor, a proven full saturated basis, and committed
+discovery/replication resources remain open. [pcc:unverified]
 
 On 2026-11-19 the user explicitly authorized execution. The exact pushed-head
 checkpoint retry still failed for absent upload transport, so zero natural
@@ -15,6 +18,12 @@ rows started. Post-authorization public-boundary, resumable-executor,
 provenance, and mixed-censoring scaffolds were implemented and adversarially
 tested but deliberately remain outside the authorizing freeze; see
 [`AUTHORIZED_IMPLEMENTATION_REVIEW_20261119.md`](AUTHORIZED_IMPLEMENTATION_REVIEW_20261119.md).
+[pcc:unverified]
+
+The next continuation implemented and adversarially reviewed all six remaining
+locally actionable control gates without starting a row; see
+[`CONTINUATION_RESULTS_20261119.md`](CONTINUATION_RESULTS_20261119.md).
+The scoped producer statement is `PCC-20261119-0bba90`, currently unverified.
 [pcc:unverified]
 
 ## Result boundary
@@ -63,12 +72,33 @@ target coefficient as a Xedni success. [pcc:unverified]
 - **Relation proposal and replay — implemented for controls; not integrated
   into a natural executor.** Bounded PARI height-pairing/LLL proposals receive
   exact rational/source replay, but no exhaustive independence certificate.
+- **Conditional complete relation-lattice verifier — implemented; producer
+  controls pass.** Exact free/torsion decompositions, primitive kernel, point
+  replay, and target arithmetic are checked, but a proven full saturated
+  Mordell--Weil basis and trusted basis receipt are unavailable.
+- **Supplied cubic-to-Jacobian map verifier — implemented; producer controls
+  pass.** Degree-one `r=7..9` controls check polynomial identities, inverse,
+  origin translation, selected points, reduction, subgroup, and relation
+  replay. No pinned natural-family constructor or global nonlinear exceptional
+  certificate exists.
 - **Strict analyzer — implemented; producer controls pass.** Separate
   rank/dependence/useful endpoints, `A/G/U`, partial identification,
   clustered-factor cells, signed profile slopes, and a fail-closed decision.
-- **Deterministic runner — roster/control planner only.** Calibration has 1,080
-  executable plus 648 blocked rows; sentinel has 12,150 executable plus 7,290
-  blocked rows; no natural-row command exists.
+- **Exact bounded mixed-censoring controls — implemented.** Aggregate and
+  row-level nested cluster paths exhaust admitted allocation boxes within
+  explicit state/fit/plan/row-visit ceilings. Strict inputs use a bounded
+  plain-JSON boundary; the module remains outside the freeze.
+- **Deterministic runner — roster planner plus zero-row diagnostic.**
+  Calibration has 1,080 executable plus 648 blocked rows; sentinel has 12,150
+  executable plus 7,290 blocked rows. `validate-executor` binds nine committed
+  components and retains exact blockers, but no natural-row command exists.
+- **Signed verifier-receipt interface — implemented; trust not covered.**
+  Receipt payload, key, verifier, checkpoint, base, keyring, purpose, and time
+  bindings replay, but the repository has no trusted execution-verifier digest.
+- **Prospective power/cost arithmetic — implemented; unallocated.**
+  [`POWER_ALLOCATION_20261119.json`](POWER_ALLOCATION_20261119.json) is exactly
+  regenerable, binds discovery primes, reserves fresh replication identities,
+  and deliberately makes no powered or resource-commitment claim.
 - **Blocked freeze manifest — committed as non-authorizing.**
   [`FREEZE.json`](FREEZE.json) binds the implementation, rosters, analysis
   parameters, and available tool identity while setting
@@ -199,6 +229,15 @@ optimization:
 | `p^-0.75` | 503,316,480 |
 | `p^-0.5` | 1,966,080 |
 
+Those are one-cell expected-count references, not the protocol's global rule
+of 30 *observed* high-bit useful events and not a power calculation. The
+optional stronger 16--24-bit, 90-cell, two-stage reference matrix totals
+20,112,998,400, 362,947,860, and 7,142,400 rows at exponents `-1`, `-0.75`,
+and `-0.5`, respectively. Discovery prime identities are bound; fresh
+replication primes and every compute resource remain `UNALLOCATED`. See
+[`POWER_ALLOCATION_20261119.json`](POWER_ALLOCATION_20261119.json).
+[pcc:unverified]
+
 With a `p^-0.75` rate, 50,260,046 zero-event trials are required before the
 binomial zero probability drops below 0.05. A small 26--32-bit sentinel can
 detect a gross departure; it cannot distinguish exponent `1` from `0.75`.
@@ -239,21 +278,21 @@ and no natural row was generated. [pcc:unverified]
 1. [`scripts/checkpoint.sh gate`](../../scripts/checkpoint.sh) must upload the
    current resume capsule and return zero without bypass.
 2. A licensed pinned Magma must pass known-rank and PARI-agreement controls.
-3. `r=7..9` needs a certified plane-cubic-to-Jacobian point map.
-4. The runner still needs a natural executor that composes source, local, lift,
-   invariant, relation, rank, work-accounting, and raw-transcript artifacts.
-5. That executor must create hash-linked redacted public-selector and private
-   evaluator objects and enforce a process boundary: selectors and relation
-   proposal must never receive source scalars or the target scalar.
-6. Every analysis row must be executable-bound to its frozen roster, prime,
-   stage seed, raw adapter transcripts, and exact relation/recovery proofs;
-   complete candidate/relation coexistence inventories must be retained.
-7. The three required slope models need a rigorous minimization over every
-   per-prime unresolved count, because the two uniform corner allocations do
-   not bound the worst slope.
-8. A discovery/replication allocation must reach the frozen effect-size power,
-   or use a fixed-inclusion-probability two-phase design with equivalent
-   effective exposure.
+3. A producer-independent trusted execution verifier, immutable keyring/base
+   pin, and signed receipts must be configured.
+4. A natural runner command must compose the existing public/private,
+   executor, provenance, map, relation, censoring, rank, and work-accounting
+   controls, including the required process boundary and complete inventories.
+5. A new clean freeze must bind those exact implementations and explicitly
+   authorize the next stage; the committed freeze still refuses rows.
+6. `r=7..9` needs a pinned natural general-cubic constructor plus a complete
+   global exceptional-locus/reduction certificate, not only supplied-map
+   controls.
+7. Negative relation labels need a trusted proof of a full saturated
+   Mordell--Weil basis; the conditional lattice verifier does not find one.
+8. The exact mixed-censoring path needs a freeze-bound compute allocation, and
+   discovery/replication needs a powered resource commitment with fresh
+   replication primes rather than the prospective scale manifest.
 
 The access issue is tracked in
 [`problems/xedni-affine-cvp-checkpoint-access.md`](../../problems/xedni-affine-cvp-checkpoint-access.md);
@@ -279,10 +318,16 @@ docker run --rm --network=none -v "$PWD:/work:ro" --entrypoint python3 \
 python3 -m unittest -v test_lift_builder.py test_invariants_pari.py \
   test_relation_certificate.py test_relation_pari.py test_mechanism_panels.py \
   test_analyze.py test_runner.py
+python3 -m unittest -v test_mixed_censoring.py test_cubic_jacobian_map.py \
+  test_relation_lattice.py test_verifier_receipts.py test_allocation_planner.py
+python3 allocation_planner.py --check POWER_ALLOCATION_20261119.json
+python3 runner.py validate-executor --output /tmp/xedni-executor-validation.json
 (cd formal && lake build && lake env lean XedniRankClassification/Decision.lean)
 ```
 
-These are implementation controls, not the natural factorial experiment.
+The runner diagnostic intentionally exits 2 with `BLOCKED_NON_PRODUCTION` and
+zero rows. These are implementation controls, not the natural factorial
+experiment.
 [pcc:unverified]
 
 ## Diagram and sources
@@ -291,6 +336,10 @@ The editable flow is [`pipeline.dot`](pipeline.dot), rendered as
 [`pipeline.svg`](pipeline.svg).
 
 ![Prospective Xedni rank-decay pipeline](pipeline.png)
+
+The supplied-map transfer flow and its source-linked assessment are
+[`cubic_transfer.svg`](cubic_transfer.svg) and
+[`CUBIC_TRANSFER_REPORT_20261119.pdf`](CUBIC_TRANSFER_REPORT_20261119.pdf).
 
 Primary source: M. J. Jacobson Jr., N. Koblitz, J. H. Silverman, A. Stein,
 and E. Teske, “Analysis of the Xedni Calculus Attack,” *Designs, Codes and
