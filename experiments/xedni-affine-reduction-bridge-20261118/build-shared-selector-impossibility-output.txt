@@ -2997,12 +2997,15 @@ info: SharedTargetSelectorBound.lean:126:0: 'XedniSharedTargetSelectorBound.prec
 info: SharedTargetSelectorBound.lean:127:0: 'XedniSharedTargetSelectorBound.precommitted_nonzero_card_bound' depends on axioms: [propext,
  Classical.choice,
  Quot.sound]
-⚠ [9059/9060] Built SharedTargetSelectorImpossibility (8.2s)
+⚠ [9059/9060] Built SharedTargetSelectorImpossibility (36s)
 warning: SharedTargetSelectorImpossibility.lean: imports `Mathlib.Tactic` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
-info: SharedTargetSelectorImpossibility.lean:78:0: 'XedniSharedTargetSelectorImpossibility.full_nonzero_coverage_requires_linear_family' depends on axioms: [propext,
+info: SharedTargetSelectorImpossibility.lean:114:0: 'XedniSharedTargetSelectorImpossibility.full_nonzero_coverage_requires_linear_family' depends on axioms: [propext,
  Classical.choice,
  Quot.sound]
-info: SharedTargetSelectorImpossibility.lean:79:0: 'XedniSharedTargetSelectorImpossibility.exists_nonzero_target_without_selected_relation' depends on axioms: [propext,
+info: SharedTargetSelectorImpossibility.lean:115:0: 'XedniSharedTargetSelectorImpossibility.exists_nonzero_target_without_selected_relation' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: SharedTargetSelectorImpossibility.lean:116:0: 'XedniSharedTargetSelectorImpossibility.missed_nonzero_target_count_lower_bound' depends on axioms: [propext,
  Classical.choice,
  Quot.sound]
 Build completed successfully (9060 jobs).
@@ -3010,5 +3013,8 @@ Build completed successfully (9060 jobs).
  Classical.choice,
  Quot.sound]
 'XedniSharedTargetSelectorImpossibility.exists_nonzero_target_without_selected_relation' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'XedniSharedTargetSelectorImpossibility.missed_nonzero_target_count_lower_bound' depends on axioms: [propext,
  Classical.choice,
  Quot.sound]

@@ -116,8 +116,9 @@ The proof counts the `q−1` nonzero scalars in `ZMod q`. Full coverage makes th
 | --- | --- | --- |
 | Universal coverage requires linear family size | `XedniSharedTargetSelectorImpossibility.full_nonzero_coverage_requires_linear_family` | Prime `q`; fixed `S,T`; each coefficient sum nonzero modulo `q`; arbitrary public-pair-dependent additive lift groups, reduction homomorphisms, and correct selectors; every nonzero target hit; checked |
 | Subthreshold family misses a nonzero target | `XedniSharedTargetSelectorImpossibility.exists_nonzero_target_without_selected_relation` | Same setup and `|T|·|S| < q−1`; checked |
+| Missed-target count lower bound | `XedniSharedTargetSelectorImpossibility.missed_nonzero_target_count_lower_bound` | Same fixed-family and additive-reduction setup; at least `q−1−|T|·|S|` nonzero target scalars are outside the selected hit set, with truncated natural subtraction; checked |
 
-Run `lake build SharedTargetSelectorImpossibility`; `build-shared-selector-impossibility-output.txt` records the registered build, direct module check, and `#print axioms` audit. Both declarations use only `propext`, `Classical.choice`, and `Quot.sound`.
+Run `lake build SharedTargetSelectorImpossibility`; `build-shared-selector-impossibility-output.txt` records the registered build, direct module check, and `#print axioms` audit. All three declarations use only `propext`, `Classical.choice`, and `Quot.sound`. The [frozen root census](../xedni-fixed-family-root-census-20261119/README.md) independently enumerates the necessary public-relation roots above this bound's capacity threshold.
 
 ## Finite regular-sum reduction
 
