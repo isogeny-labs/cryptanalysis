@@ -1,0 +1,21 @@
+{
+  "schema": "xedni-hensel-transfer-protocol-v1",
+  "question": "Does the frozen width-eight beam height gain transfer across every distinct-x public relation hit in the original fresh 512-query panel?",
+  "source_protocol": "experiments/xedni-height-selected-two-image-20261116/protocol.json",
+  "source_protocol_sha256": "ce9232b0b6ee3f4e0af268974cc5ea891d9dae588e1ae79fdee67a6f9008611e",
+  "beam_commit": "77e25abe94ed9903921569f7390cc47f73f68450",
+  "beam_result_normalized_sha256": "2e80f0c75e043db49ff8097186d4132ae23d775f35397e12d0b500d66bdce52f",
+  "public_panel": "same eight fields, four SHA256(xedni-hensel-height-v1|p|j) targets per field, 16 first valid ordered queries per target, and 13 fixed vectors; enumerate all 512 queries and 6656 vector tests",
+  "admission": "every public relation hit with distinct x coordinates, in field/target/query/vector order; retain equal-x public hits as excluded rows; no other outcome-dependent selection",
+  "initial_shift": [0,0,0,0],
+  "maximum_target_depth": 8,
+  "first_axis_control": "exactly the frozen first-axis rule from xedni-hensel-height-20261118: at each k, if t is already zero modulo p^(k+1) retain shift; otherwise probe x1,y1,x2,y2 in order and use the first nonzero derivative with the canonical unsigned digit 0..p-1",
+  "beam_width": 8,
+  "minimum_radius_search_limit": 8,
+  "radius_slack": 2,
+  "beam_rule": "exactly the frozen xedni-height-beam-20261118 candidate and ranking laws: per retained state find first feasible signed-digit radius <=8; enumerate all cancelling tuples through min(h+2,(p-1)/2); score interpolated rational model before testing candidate group residual; deduplicate shifts and retain first eight by (model_bits,max_abs_shift,sum_abs_shift,shift_tuple,parent_id,digit_tuple)",
+  "exact_controls": "for every admitted hit and selected state verify nonsingular rational curve, correct reduction of coefficients and points, exact group sum R=aP1+bP2, t=-x(R)/y(R), and attained p-adic depth; retain all failures and capped paths",
+  "ledger": "one canonical sorted-key JSONL gzip per admitted hit for all beam parent/candidate rows, with raw and compressed SHA256 and deterministic mtime zero",
+  "comparison": "pair first-axis and beam final model heights only on identical public hit and achieved depth eight; report all incomplete arms and per-hit height differences without extrapolating relation yield",
+  "run_cap_seconds": 1200
+}
