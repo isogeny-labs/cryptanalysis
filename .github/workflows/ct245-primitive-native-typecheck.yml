@@ -64,6 +64,8 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_SESSION_TOKEN: ${{ secrets.ARTIFACTS_AWS_SESSION_TOKEN }}
+          AWS_EC2_METADATA_DISABLED: 'true'
           AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
         run: |
           set -euo pipefail
@@ -87,6 +89,42 @@ jobs:
             "$RUNNER_TEMP/ct245-awscli/bin/python" -m pip install --disable-pip-version-check awscli==1.46.2
             export ARTIFACTS_AWS="$RUNNER_TEMP/ct245-awscli/bin/aws"
           fi
+          # CT247: authentication admission before immutable model retrieval.
+          # STS returns identity metadata; never emit it, the credentials, or raw stderr.
+          ct247_cli="${ARTIFACTS_AWS:-aws}"
+          if [[ -z "${AWS_ACCESS_KEY_ID:-}" || -z "${AWS_SECRET_ACCESS_KEY:-}" ]]; then
+            echo "CT247_STS_CLASS=missing_credentials; artifact pull not attempted"
+            exit 42
+          fi
+          if [[ -n "${AWS_SESSION_TOKEN:-}" ]]; then
+            echo "CT247_SESSION_TOKEN_PRESENT=true"
+          else
+            echo "CT247_SESSION_TOKEN_PRESENT=false"
+          fi
+          ct247_stderr="$(mktemp "$RUNNER_TEMP/ct247-sts.XXXXXX")"
+          trap 'rm -f "$ct247_stderr"' EXIT
+          if timeout 20s "$ct247_cli" sts get-caller-identity --region "$AWS_REGION" --output json > /dev/null 2> "$ct247_stderr"; then
+            echo "CT247_STS_CLASS=accepted; original six-object custody still required"
+          else
+            ct247_exit=$?
+            if grep -Eqi 'ExpiredToken|RequestExpired' "$ct247_stderr"; then
+              ct247_class=expired_token
+            elif grep -Eqi 'InvalidClientTokenId|InvalidAccessKeyId|UnrecognizedClientException' "$ct247_stderr"; then
+              ct247_class=invalid_token
+            elif grep -Eqi 'SignatureDoesNotMatch|InvalidSignature' "$ct247_stderr"; then
+              ct247_class=invalid_signature
+            elif grep -Eqi 'AccessDenied|UnauthorizedOperation' "$ct247_stderr"; then
+              ct247_class=access_denied
+            elif [[ "$ct247_exit" == 124 ]]; then
+              ct247_class=timed_out
+            else
+              ct247_class=other_or_unknown
+            fi
+            echo "CT247_STS_EXIT=$ct247_exit CT247_STS_CLASS=$ct247_class; artifact pull not attempted"
+            exit 42
+          fi
+          rm -f "$ct247_stderr"
+          trap - EXIT
           timeout 180s python3 _ct245_artifact_tools/tools/artifacts/artifacts.py pull --jobs 2 \
             docs/research-artifacts/chained-transfer/nondual-models-18 \
             2>&1 | tee ct245-evidence/model-hydration.txt
