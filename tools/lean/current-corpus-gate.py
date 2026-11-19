@@ -73,6 +73,20 @@ PAIR_INDEX_THEOREMS = frozenset({
     "KnownLabelPairIndex.label_recovery", "KnownLabelPairIndex.signed_square",
     "KnownLabelPairIndex.semaev_pair_identity",
 })
+# Separate maintained replay context for the unchanged recovered H112 source.
+# This does not reproduce or revise the historical Lean 4.34.1 build receipt.
+H112_SOURCE = "experiments/p3-second-digit-carry-20261101/H112P3SecondDigitCarry.lean"
+H112_SHA256 = "0e6a11b4b2735cb8476d11077d70f31c9286d66b99d09ab865c587edf5ae4200"
+H112_THEOREMS = frozenset("H112P3SecondDigitCarry." + name for name in (
+    "carry_mem_reduction_kernel", "homomorphic_section_carry_zero",
+    "digit_recombination", "highDigit_lt", "exact_predicate_supplies_parity",
+    "reconstruct_eq", "verified_scalar_unique", "totalCost_bound",
+))
+H112_MODULE_THEOREMS = H112_THEOREMS | frozenset(
+    "H112P3SecondDigitCarry." + name for name in (
+        "carry.eq_1", "reconstruct.eq_1", "reconstruct.eq_2", "reconstruct.eq_def",
+    ))
+
 HASSE_FORMAL = ROOT / "bindings/rust/curve-audit/formal"
 HASSE_SOURCE = "bindings/rust/curve-audit/formal/HasseSquareBounds.lean"
 HASSE_SHA256 = "26e3e7bbf28aad0f60f72137fca027427b435f05bcef9f5de5881d7979307c42"
@@ -575,6 +589,22 @@ def check_reviewed_quartic(path: str, expected: str, lean_path: str) -> str:
                                       label="reviewed quartic")
 
 
+def check_h112_interface(lean_path: str) -> str:
+    """Fresh compatibility replay, including all four generated equation theorems."""
+    def project_guard() -> None:
+        for name, expected in KNOWN_LABEL_PROJECT_INPUTS.items():
+            file = HECKE_CI / name
+            require(not file.is_symlink() and digest(file) == expected,
+                    f"H112 maintained project input changed: {name}")
+    project_guard()
+    checked = check_pinned_mathlib_source(
+        H112_SOURCE, H112_SHA256, lean_path, label="H112 maintained interface",
+        exact_names=H112_THEOREMS, expected_theorems=8,
+        exact_module_theorems=H112_MODULE_THEOREMS)
+    project_guard()
+    return checked
+
+
 def check_known_label_algebra(lean_path: str) -> str:
     """Check the fixed proposed ring lemmas; no elliptic-group bridge is asserted."""
     check_known_label_project_inputs()
@@ -662,16 +692,57 @@ def check_compiled_identity(output: Path, expected: dict[str, str]) -> None:
     require(compiled_identity(output) == expected, "compiled object changed between phases")
 
 
+def code_without_comments(source):
+    """Ignore nested Lean comments while preserving strings and line positions."""
+    result, index, depth = [], 0, 0
+    while index < len(source):
+        if depth:
+            if source.startswith("/-", index):
+                depth += 1
+                index += 2
+            elif source.startswith("-/", index):
+                depth -= 1
+                index += 2
+            else:
+                result.append("\n" if source[index] == "\n" else " ")
+                index += 1
+        elif source.startswith("/-", index):
+            result.append(" ")
+            depth = 1
+            index += 2
+        elif source.startswith("--", index):
+            end = source.find("\n", index)
+            index = len(source) if end < 0 else end
+        elif source[index] == '"':
+            result.append(source[index])
+            index += 1
+            while index < len(source):
+                char = source[index]
+                result.append(char)
+                index += 1
+                if char == "\\" and index < len(source):
+                    result.append(source[index])
+                    index += 1
+                elif char == '"':
+                    break
+        else:
+            result.append(source[index])
+            index += 1
+    require(depth == 0, "unterminated Lean comment")
+    return "".join(result)
+
+
 def check_pinned_mathlib_source(path: str, expected: str, lean_path: str, *,
                                label: str, exact_names: frozenset[str] | None = None,
-                               expected_theorems: int | None = None) -> str:
+                               expected_theorems: int | None = None,
+                               exact_module_theorems: frozenset[str] | None = None) -> str:
     """Compile original bytes; audit requested declarations and non-internal theorems."""
     file = ROOT / path
     require(file.resolve().is_relative_to(ROOT.resolve()) and not file.is_symlink(),
             f"{label} source escapes repository: {path}")
     require(digest(file) == expected, f"{label} source changed: {path}")
     source = file.read_text()
-    require(not re.search(r"\b(?:sorry|admit|sorryAx|native_decide|axiom)\b", source),
+    require(not re.search(r"\b(?:sorry|admit|sorryAx|native_decide|axiom)\b", code_without_comments(source)),
             f"forbidden proof escape in {path}")
     requested = re.findall(r"^#print axioms\s+([\w.]+)\s*$", source, re.MULTILINE)
     require(requested and len(requested) == len(set(requested)),
@@ -736,8 +807,14 @@ def check_pinned_mathlib_source(path: str, expected: str, lean_path: str, *,
                 f"incomplete exhaustive theorem audit in {path}")
         if expected_theorems is not None:
             require(len(requested) == expected_theorems and
-                    int(summary[0]) == expected_theorems,
+                    int(summary[0]) == (len(exact_module_theorems)
+                                        if exact_module_theorems is not None else expected_theorems),
                     f"reviewed theorem count changed in {path}")
+        if exact_module_theorems is not None:
+            audited_names = set(re.findall(r"^ok    (\S+)  \[", audit.stdout, re.MULTILINE))
+            require(len(re.findall(r"^ok    ", audit.stdout, re.MULTILINE)) == len(exact_module_theorems)
+                    and audited_names == exact_module_theorems,
+                    f"native module theorem identities changed in {path}")
         if exact_names is not None:
             audited_names = set(re.findall(r"^ok    (\S+)  \[", audit.stdout, re.MULTILINE))
             require(exact_names <= audited_names,
@@ -747,7 +824,7 @@ def check_pinned_mathlib_source(path: str, expected: str, lean_path: str, *,
         require(digest(file) == expected, f"{label} source changed during audit: {path}")
         if exact_names is not None:
             check_compiled_identity(output, object_identity)
-            collect_elaborated_types(path, exact_names, scratch, lean_path)
+            collect_elaborated_types(path, exact_module_theorems or exact_names, scratch, lean_path)
             check_compiled_identity(output, object_identity)
             require(digest(auditor) == digest(audit_input) == AUDITOR_SHA256,
                     "runtime auditor changed")
@@ -770,6 +847,9 @@ def check_new_hecke(paths: set[str]) -> dict[str, str]:
     lean_path = run(["lake", "env", "printenv", "LEAN_PATH"], cwd=HECKE_CI).stdout.strip()
     checked = {}
     for path in sorted(paths):
+        if path == H112_SOURCE:
+            checked[path] = check_h112_interface(lean_path)
+            continue
         if path == KNOWN_LABEL_SOURCE:
             checked[path] = check_known_label_algebra(lean_path)
             continue
