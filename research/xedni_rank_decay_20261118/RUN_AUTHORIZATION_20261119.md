@@ -111,3 +111,9 @@ The authorization/preflight statement is registered as
 `PCC-20261119-557206`. Its standing is unverified; the attached attestation is
 producer evidence and does not independently verify execution.
 [pcc:unverified]
+
+At pushed head `bfefa7c0a`, `scripts/checkpoint.sh push` and
+`scripts/checkpoint.sh gate` were attempted without bypass. Both exited 1;
+the gate again reported no AWS profile, upload token, or token file. The exact
+retry transcript is appended to [`CHECKPOINT_GATE.md`](CHECKPOINT_GATE.md).
+Zero natural rows were started. [pcc:unverified]
