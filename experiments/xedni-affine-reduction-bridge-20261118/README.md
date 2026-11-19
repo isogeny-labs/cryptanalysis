@@ -242,6 +242,16 @@ Run `lake build ProjectiveClassCoalescence`; `build-projective-class-coalescence
 
 `ProjectiveGenericNormalization.lean` proves the general bridge for a source chord with factorization `addXYZ W P Q = c • U`. If the source classes are distinct and a ring homomorphism sends `c` to a unit, the mapped source `addMap` class equals the mapped class of `U`. If the mapped inputs remain distinct as well, the target `addMap` class itself equals the mapped class of `U`. Applying this with `ℤ → ℚ` to the family proves that `U_d` is the actual rational projective sum for every `d≠0`; this is recorded by `rational_generic_add_eq_primitive` and its `5^(k+1)` specialization in `ProjectiveCoalescenceFamily.lean`. Reduction of that integral primitive representative is covered by `primitive_reduction_eq_double`.
 
+`ProjectiveAffineNormalizationUniqueness.lean` closes the choice-of-representative question for the affine integral slice. Over a nontrivial domain, equivalent projective vectors whose `Z` coordinates both equal 1 are identical. In particular, two integral `Z=1` vectors representing the same rational projective class are equal over `ℤ`, so every coefficientwise ring reduction gives the same class. This provides a canonical normalized reduction wherever the rational sum admits an integral affine `Z=1` representative; a local construction for nonintegral affine coordinates or the point at infinity remains a separate step.
+
+| Result | Lean declaration | Exact hypotheses and status |
+| --- | --- | --- |
+| Unit-normalized equivalence is equality | `XedniProjectiveAffineNormalizationUniqueness.affine_z_one_equiv_iff_eq` | Nontrivial commutative domain, two vectors with `Z=1`; checked |
+| Integral affine representative uniqueness | `XedniProjectiveAffineNormalizationUniqueness.integral_affine_representative_unique` | Two integer vectors with `Z=1`, equal images as rational projective classes; checked |
+| Reduction independence | `XedniProjectiveAffineNormalizationUniqueness.integral_affine_reduction_independent` | Same rational-class hypotheses and any ring map from `ℤ`; checked |
+
+Run `lake build ProjectiveAffineNormalizationUniqueness`; `build-projective-affine-uniqueness-output.txt` records the registered build and axiom audit.
+
 | Result | Lean declaration | Exact hypotheses and status |
 | --- | --- | --- |
 | Factored mapped source sum | `XedniProjectiveGenericNormalization.mapClass_addMap_eq_primitive_of_unit_factor` | Commutative rings, ring homomorphism, inequivalent source representatives, exact factorization, mapped factor a unit; checked |
