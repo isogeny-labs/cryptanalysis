@@ -9,6 +9,7 @@ explain the gap and what would let the work move past it.
 
 | Problem | Status | What it blocks | What would unblock it |
 | --- | --- | --- | --- |
+| [Native PCC original PDF recovery](native-pcc-original-pdf-recovery.md) | investigating | Native PCC original-input hydration | Recover the exact 92135-byte PDF with its retained SHA-256, then run unchanged gates |
 | [H116 verifier checkpoint access](h116-verifier-checkpoint-access.md) | open; source gate pushed, [pcc:unverified] | First H116 target-admission run and every later packet replay in PR #1744 | Valid checkpoint upload token or configured permitted AWS profile, successful push and passing gate |
 | [Chained-transfer v2 sequence-timing confounding](chained-transfer-v2-order-timing-confounding.md) | investigating; synthetic-null falsifier, [pcc:unverified] | Causal interpretation of deterministic ABBA/BAAB cold transfer timing without sequence-conditioned nuisance controls | Independently checked first-four-slot same-route sham and randomized-order calibration, then authorized native matched cold panel |
 | [Fixed-nu12 geometric prime-field Hom obstruction](fixed-nu12-geometric-prime-field-hom-obstruction.md) | investigating; fixed class algebraically excluded, [pcc:unverified] | Algebraic F223 elliptic ECDLP transfer into fixed-nu12 Weil-restriction class, over any finite extension | New source-matched geometric CM target and explicit subgroup-injective map; independent whole native 695/701, admitted primitive costs and full matched cold ECDLP |
