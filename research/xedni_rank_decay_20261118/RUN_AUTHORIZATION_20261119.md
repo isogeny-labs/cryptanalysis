@@ -106,3 +106,8 @@ Observed selection: `c1`. A valid natural executor must replace arbitrary
 caller-supplied feature maps with a formula-bound implementation digest and an
 OS-enforced public-only process before M3 rows can be admitted.
 [pcc:unverified]
+
+The authorization/preflight statement is registered as
+`PCC-20261119-557206`. Its standing is unverified; the attached attestation is
+producer evidence and does not independently verify execution.
+[pcc:unverified]
