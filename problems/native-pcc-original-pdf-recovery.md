@@ -45,3 +45,5 @@ Exact byte recovery is necessary to resume the gate. It is insufficient to estab
 ## Resolution and history
 
 2026-11-19: recorded exact observed identities and bounded recovery evidence. Unresolved. Creating or merging this note does not close the gate or establish a research result. [pcc:unverified]
+
+2026-11-19: [Recovery follow-up CI](https://github.com/isogeny-labs/cryptanalysis/actions/runs/44612428312) at `0db5c8c621410b054cbae8a3949bb68d413885b1` passed its unit controls and parity. Hydration now reports one missing original, the exact PDF above, and stops before claim verification; signing is skipped. The [follow-up receipt](../docs/audits/2026-11-19-native-pcc-recovery-followup.json) retains the log digest and observed identity. The obstruction remains unresolved. [pcc:unverified]
