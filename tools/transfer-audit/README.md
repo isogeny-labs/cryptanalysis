@@ -5,6 +5,11 @@ evaluated Frobenius isogenies, same-field genus-three pullbacks, and explicitly
 bounded isogeny-class classification. This is a transfer/certificate tool, not
 an ECDLP solver or a universal weakness classifier.
 
+The current native dependency includes the general binary residue-field norm.
+The dated `REPORT.md`, PDF, and `evidence/` receipts remain frozen at their
+original pre-norm implementation revision; they are not silently relabelled as
+evidence for the newer capability.
+
 ```sh
 cargo build --release --locked --manifest-path tools/transfer-audit/Cargo.toml
 tools/transfer-audit/target/release/transfer-audit audit \
@@ -30,7 +35,7 @@ replay, not a signature, independent implementation, or formal proof of Rust.
 | Classical GHS | augmented Frobenius rank over F2 for each subfield | formal genus only; no GHS/gGHS quotient or twist selection |
 | Frobenius isogeny orbit | evaluated coefficient and generator images under (x,y) -> (x²,y²) | complete coefficient orbit, not entire isogeny class |
 | Full small-field ordinary class | all canonical models, exact orders and equal-trace classification | explicitly requested, degree at most 8; no paths to every member |
-| Same-field genus three | native geometry, Mumford pullback, image order, pull/push and public 37G control | no unknown-log solve, generic Jacobian norm, descent or speed claim |
+| Same-field genus three | native geometry, Mumford pullback, image order, pull/push, general norm certificate on the supplied generator image, and public 37G control | no independent norm oracle, arbitrary off-image input, unknown-log solve, descent or speed claim |
 | Supplied spectral targets | exact gcd over Q with restriction-of-scalars polynomial | target curve and its Frobenius polynomial must independently be established |
 
 To request small-field class enumeration, set `exhaustive_class: true`; see
