@@ -106,6 +106,30 @@ The frozen [adaptive census protocol](adaptive-coefficient-protocol.json) admits
 
 Run `python3 run_adaptive_coefficient_census.py` to reproduce these rows. The protocol SHA-256 is `0678db96b117e812dcf435c2eef435672070c2c138ec50e5418c2b0d712e5662`; the result retains all three fields and zero disagreement counts.
 
+## Canonical-lift additive obstruction
+
+A homomorphic lift of a finite subgroup carries no signal through an additive
+logarithm into a torsion-free group. More sharply, if the lift group is
+torsion-free, every set-theoretic section of reduction on a nontrivial finite
+subgroup has an additive defect at some pair of inputs. The latter theorem
+identifies exactly where a proposed nonhomomorphic lift must account for an
+extra term. The statements are group-theoretic: an elliptic-curve or p-adic
+application must supply the stated additive logarithm and reduction map on
+their actual domains.
+
+| Result | Lean declaration | Exact hypotheses and status |
+| --- | --- | --- |
+| Finite-source additive map vanishes | `XedniCanonicalLiftTorsionObstruction.finite_log_zero` | Finite additive group `G`, additive torsion-free group `A`, additive homomorphism `G →+ A`; checked |
+| Homomorphic lift logarithm vanishes | `XedniCanonicalLiftTorsionObstruction.homomorphic_lift_log_zero` | Additive lift `G →+ L` and additive logarithm `L →+ A` under the preceding hypotheses; checked |
+| Torsion-free homomorphic section forces trivial source | `XedniCanonicalLiftTorsionObstruction.torsion_free_section_trivial` | Additive torsion-free `L` and an exact section of `L →+ G`; checked |
+| Set-theoretic section has a defect | `XedniCanonicalLiftTorsionObstruction.section_has_additive_defect` | Nontrivial finite `G`, additive torsion-free `L`, additive reduction and section; an explicit existential pair fails additivity; checked |
+
+Run `lake build CanonicalLiftTorsionObstruction` in this directory. The
+project pins Lean `v4.35.0-rc4` and Mathlib revision
+`021c46bdd042f67b538b9f9871d556a93713a9a9`. The build output and all
+four `#print axioms` results are in `build-canonical-lift-torsion-output.txt`;
+each theorem uses only `propext`, `Classical.choice`, and `Quot.sound`.
+
 ## Selector-invariant fixed-family bound
 
 Let `q` be prime and `S` a fixed finite family of integer pairs `(a,b)` with `b mod q ≠ 0`. For **each** public pair `uv ∈ (ZMod q)²`, permit a different additive group `L(uv)`, a homomorphism `reduce_uv : L(uv) →+ ZMod q`, and a selector of two points in `L(uv)` reducing to the two coordinates of `uv`. If one selected pair satisfies `a P+b Q=0` for some vector in `S`, the homomorphism gives `(a mod q)u+(b mod q)v=0`. Hence every selected success lies in the union of the public relation lines indexed by `S`. Each line has `q` pairs, so **at most `|S|q` of the `q²` public pairs can succeed**, regardless of how the curve and lift are selected from the public pair. Under the separate assumption that the public pair is uniform over `(ZMod q)²`, the success fraction is at most `min(1, |S|/q)`.
