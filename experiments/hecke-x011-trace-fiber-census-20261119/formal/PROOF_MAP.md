@@ -4,6 +4,9 @@
 from `jfun.json` (`A(x,y)=a(x)+b(x)y`). Its `X011.norm_factor` proves for
 every integer `x` that the numerator norm on
 `y²+y=x³−x²−10x−20` equals `(x−16)^11 q(x)`.
+This is an independent check of an identity and regularization already
+formalized more fully in the archived D=−1407 module
+`experiments/hecke-d1407-f6-20261023/formal/RegularBranch.lean`.
 `X011.branch_values` checks `A(16,60)=0`, the nonzero conjugate numerator
 `A(16,-61)=81402749386839761113321`, and
 `q(16)=−121 A(16,-61)`. Both declarations are kernel-checked with no

@@ -4,6 +4,12 @@ The original census classified both points with `x=16` as denominator
 exceptions. Exact polynomial arithmetic shows that the pinned rational
 function has a removable branch at `(16,60)` and a genuine pole at
 `(16,-61)`. The corrected value is **`j(16,60)=-121` over the integers**.
+This regularization and a stronger Lean proof were established previously
+in the D=−1407 regular-branch experiment at
+`experiments/hecke-d1407-f6-20261023/RESULT.md` in the research archive.
+The present amendment applies that known map to the p317, p941 and p1009
+census fields and corrects their saved trace-fiber ledgers. The earlier
+broad regular-branch census did not include this p317 class receipt.
 The original protocol, producer, ledger, audit and result remain unchanged;
 the v2 files add the correction.
 
