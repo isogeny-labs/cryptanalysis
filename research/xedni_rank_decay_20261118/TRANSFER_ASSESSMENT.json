@@ -41,18 +41,24 @@
     },
     "explicit_construction": {
       "state": "supported",
-      "evidence": ["suite ca-icx xedni-lift and existing exact affine solver"],
-      "scope": "local-condition extension not yet implemented"
+      "evidence": [
+        "lift_builder.py exact seven-coefficient affine-coset construction and replay controls",
+        "local_conditions.py exact A/B/P/+1/+2/incompatible incidence and quotient certificates"
+      ],
+      "scope": "implemented producer controls for short-Weierstrass r=2..6; not integrated into a natural-row executor"
     },
     "map_correctness": {
       "state": "supported",
-      "evidence": ["planned exact on-curve and reduction checks"],
-      "scope": "one-way specialization on admitted good-reduction rows"
+      "evidence": ["lift_builder.py exact on-curve, residue, incidence, and source-reduction replay controls"],
+      "scope": "one-way specialization on admitted good-reduction short-Weierstrass controls; r=7..9 cubic map absent"
     },
     "subgroup_preservation": {
       "state": "supported",
-      "evidence": ["rational relations reduce to named source-subgroup relations; scalar replay required"],
-      "scope": "relation preservation only; independence is not reflected"
+      "evidence": [
+        "relation_certificate.py replays supplied relations exactly over Q and in the named finite source subgroup",
+        "target recovery requires an invertible coefficient and exact scalar replay"
+      ],
+      "scope": "producer controls for positive relation preservation only; independence and exhaustive absence are not reflected"
     },
     "computational_advantage": {
       "state": "unknown",
@@ -70,7 +76,7 @@
     "kernel_intersection": "not required for one-way relation implication; reverse implication not claimed",
     "recovery_map": "source linear congruence with invertible target coefficient",
     "scalar_multiplier": "1 modulo the source subgroup order",
-    "proof_artifact": "planned exact row certificate and independent source replay"
+    "proof_artifact": "relation_certificate.py exact rational/source replay for supplied candidates; production row binding remains open"
   },
   "mechanism": {
     "proposed_benefit": "increase certified dependence and useful-recovery probability",
@@ -104,26 +110,28 @@
     "independent selected points",
     "mutated residue certificate",
     "reverse-Mestre versus neutral same-CRT-size versus no-local arms",
-    "PARI/Magma agreement"
+    "PARI/Magma agreement",
+    "planted exact rational relations and a no-relation control for the bounded PARI proposer",
+    "public-selector leakage and permuted-score controls"
   ],
   "protocol": {
     "parameter_scope": "16..32-bit primes; generic/j0; r=2..6 executable, r=7..9 blocked; three lifts and A/B/P local arms",
     "sample_selection": "fresh seeded sources with frozen prime manifest and paired arms",
     "stopping_rules": "fixed stage exposures and per-tool timeouts; only predeclared replication",
     "invalidation_rules": "certificate failure, changed manifest/hash, local incompatibility, semantic disagreement, or unresolved-sensitive conclusion",
-    "hardware_manifest": "required before natural execution",
-    "execution_route": "repository runner after checkpoint gate"
+    "hardware_manifest": "HARDWARE.json records the control host and immutable PARI image; natural isolation remains unqualified",
+    "execution_route": "runner.py deterministic roster/preflight after freeze and checkpoint gate; natural-row executor intentionally absent"
   },
   "exploration_boundary": {
     "families": ["short Weierstrass generic", "short Weierstrass j=0", "exact reverse-Mestre residues"],
     "parameters": "as frozen in PROTOCOL.md",
-    "completed_scope": "protocol and prior toy evidence only",
+    "completed_scope": "protocol plus producer-side source/local/lift/rank/invariant/relation/analyzer/runner controls; no natural rows",
     "completeness_claim": "none"
   },
   "composition": {
     "edge_ids": ["selected-integral-lift", "good-reduction-specialization", "source-linear-recovery"],
     "junction_compatibility": "checked per admitted row",
-    "weakest_open_obligation": "measured computational advantage and scaling"
+    "weakest_open_obligation": "enforceable non-circular public/private boundary and natural evidence chain before measured scaling"
   },
   "sources": [
     "JKSST 2000 DOI 10.1023/A:1008312401197",
@@ -131,14 +139,18 @@
     "research/xedni_lift_optimizer_20261101/README.md"
   ],
   "open_obligations": [
-    "scalable source generator",
-    "compatible reverse-Mestre and neutral CRT constructors",
     "Magma license/executable",
     "r=7..9 plane-cubic Jacobian point map",
+    "natural-row executor composing all adapters and complete work accounting",
+    "hash-linked redacted public selector record and evaluator process boundary",
+    "freeze-bound raw transcript and relation-inventory provenance validator",
+    "rigorous mixed per-prime unresolved-allocation optimizer for every slope model",
+    "exhaustive relation-lattice or selected-point independence certificate for negative useful-recovery labels",
+    "rigorous minimum-height lower-bound certificate for the strongest M1 interpretation",
     "checkpoint transport",
     "powered discovery resource allocation",
     "matched Pollard-rho cost"
   ],
-  "recommended_next_action": "implement and freeze controls plus scalable generator, then pass checkpoint gate before calibration",
+  "recommended_next_action": "complete the natural executor, public/private process separation, provenance and mixed-allocation validators; freeze them; obtain Magma and checkpoint access; then run only the excluded 16/18-bit calibration before any inference stage",
   "official_status_change": "none"
 }

@@ -3,9 +3,11 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import math
 from pathlib import Path
+import tempfile
 import unittest
 
 import field
@@ -140,6 +142,7 @@ class SourceTests(unittest.TestCase):
         self.assertEqual(len(set(points) | set(negatives)), 18)
         subgroup_order = first["source_subgroup_order"]
         cofactor = first["source_cofactor"]
+        self.assertGreaterEqual(first["scalar_sampling_attempts"], first["max_r"])
         self.assertTrue(prime_manifest.is_prime_u32(subgroup_order))
         self.assertEqual(subgroup_order * cofactor, first["cardinality"])
         self.assertIsNotNone(tuple(first["base_point"]))
@@ -151,6 +154,45 @@ class SourceTests(unittest.TestCase):
                 first["p"],
             )
         )
+        self.assertIsNone(first["cardinality_evidence"])
+
+    def test_pari_backend_retains_full_cardinality_transcript(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            fake = Path(temporary) / "fake-gp"
+            fake.write_text(
+                "#!/usr/bin/env python3\n"
+                "import sys\n"
+                "program = sys.stdin.read()\n"
+                "assert 'ellcard' in program and 'factor' in program\n"
+                "print(17)\n"
+                "print('17 1')\n"
+            )
+            fake.chmod(0o755)
+            backend = source_generator.PariBackend(str(fake))
+            cardinality, factors = backend.cardinality_and_factors(17, 1, 3)
+        self.assertEqual(cardinality, 17)
+        self.assertEqual(factors, [(17, 1)])
+        evidence = backend.last_evidence
+        self.assertEqual(evidence["status"], "complete")
+        self.assertEqual(evidence["returncode"], 0)
+        self.assertFalse(evidence["timed_out"])
+        self.assertIn("ellcard", evidence["program"])
+        self.assertEqual(evidence["stdout"], "17\n17 1\n")
+        self.assertEqual(evidence["stderr"], "")
+        self.assertGreaterEqual(evidence["wall_ns"], 0)
+        self.assertRegex(evidence["program_sha256"], r"^[0-9a-f]{64}$")
+        self.assertRegex(evidence["stdout_sha256"], r"^[0-9a-f]{64}$")
+        self.assertRegex(
+            evidence["tool_identity"]["executable_sha256"], r"^[0-9a-f]{64}$"
+        )
+        retained = dict(evidence)
+        retained.pop("evidence_sha256")
+        self.assertEqual(
+            evidence["evidence_sha256"],
+            hashlib.sha256(
+                json.dumps(retained, sort_keys=True, separators=(",", ":")).encode()
+            ).hexdigest(),
+        )
 
     def test_factorization_validation_and_fail_closed_backend(self):
         source_generator.validate_factorization(2**3 * 5, [(2, 3), (5, 1)])
@@ -161,16 +203,26 @@ class SourceTests(unittest.TestCase):
             source_generator.PariBackend("definitely-no-such-gp-executable")
         with self.assertRaises(source_generator.BackendUnavailable):
             source_generator.PariContainerBackend(
-                "xedni-pari@sha256:control", "definitely-no-such-runtime"
+                f"xedni-pari@sha256:{'0' * 64}", "definitely-no-such-runtime"
             )
+        repo_digest = f"xedni-pari@sha256:{'0' * 64}"
         container = source_generator.PariContainerBackend(
-            "xedni-pari@sha256:control", "true"
+            repo_digest, "true"
         )
         self.assertIn("--network=none", container.command)
         self.assertEqual(
             container.command[container.command.index("--entrypoint") + 1], "gp"
         )
-        self.assertEqual(container.command[-3:], ["xedni-pari@sha256:control", "-q", "-f"])
+        self.assertEqual(container.command[-3:], [repo_digest, "-q", "-f"])
+        self.assertTrue(container.tool_identity["image_is_digest_pinned"])
+        self.assertEqual(
+            container.tool_identity["image_inspect_command"][-1], repo_digest
+        )
+        image_id = f"sha256:{'1' * 64}"
+        by_id = source_generator.PariContainerBackend(image_id, "true")
+        self.assertEqual(by_id.image, image_id)
+        with self.assertRaises(ValueError):
+            source_generator.PariContainerBackend("xedni-pari:latest", "true")
 
     def test_hasse_formula_uses_constant_time_integer_bound(self):
         for row in prime_manifest.derive_primes():

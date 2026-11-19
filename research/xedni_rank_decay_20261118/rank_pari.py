@@ -24,6 +24,7 @@ SCHEMA_VERSION = 1
 ADAPTER = "pari-ellrank-interval-v1"
 BEGIN = "XEDNI_RANK_BEGIN"
 END = "XEDNI_RANK_END"
+DEFAULT_PARISIZEMAX = 2_147_483_648
 
 
 def _canonical(value) -> str:
@@ -60,9 +61,12 @@ def validate_row(row) -> tuple[str, int, tuple[int, ...]]:
     return row_id, r, ainvs
 
 
-def make_script(ainvs: tuple[int, ...], effort: int) -> str:
+def make_script(
+    ainvs: tuple[int, ...], effort: int, parisizemax: int = DEFAULT_PARISIZEMAX
+) -> str:
     coefficients = ",".join(str(value) for value in ainvs)
     return (
+        f"default(parisizemax,{parisizemax});\n"
         f"E=ellinit([{coefficients}]);\n"
         f"R=ellrank(E,{effort});\n"
         f'print("{BEGIN}");\n'
@@ -70,6 +74,7 @@ def make_script(ainvs: tuple[int, ...], effort: int) -> str:
         'print("UPPER=",R[2]);\n'
         'print("SHA2_RANK=",R[3]);\n'
         'print("POINT_COUNT=",#R[4]);\n'
+        'print("PARISIZEMAX=",default(parisizemax));\n'
         f'print("{END}");\n'
         "quit();\n"
     )
@@ -89,7 +94,7 @@ def parse_transcript(stdout: str) -> dict[str, int]:
     if len(matches) != 1:
         raise ValueError(f"expected one complete marker block, found {len(matches)}")
     values: dict[str, int] = {}
-    allowed = {"LOWER", "UPPER", "SHA2_RANK", "POINT_COUNT"}
+    allowed = {"LOWER", "UPPER", "SHA2_RANK", "POINT_COUNT", "PARISIZEMAX"}
     for line in matches[0].group("body").splitlines():
         match = re.fullmatch(r"([A-Z0-9_]+)=([+-]?[0-9]+)", line.strip())
         if not match:
@@ -103,7 +108,7 @@ def parse_transcript(stdout: str) -> dict[str, int]:
     lower, upper = values["LOWER"], values["UPPER"]
     if lower < 0 or upper < 0 or lower > upper:
         raise ValueError(f"invalid rank interval [{lower},{upper}]")
-    if values["SHA2_RANK"] < 0 or values["POINT_COUNT"] < 0:
+    if values["SHA2_RANK"] < 0 or values["POINT_COUNT"] < 0 or values["PARISIZEMAX"] <= 0:
         raise ValueError("negative auxiliary rank output")
     return values
 
@@ -138,6 +143,13 @@ def probe_tool(executable: str) -> dict:
             "version_timed_out": False,
             "version_timeout_seconds": 15.0,
             "version_wall_ns": 0,
+            "image_probe_command": [executable, "--xedni-image-id"],
+            "image_probe_returncode": None,
+            "image_probe_stdout": "",
+            "image_probe_stderr": "",
+            "image_probe_timed_out": False,
+            "image_probe_wall_ns": 0,
+            "image_digest": None,
         }
     command = [resolved, "--version"]
     started = time.perf_counter_ns()
@@ -154,6 +166,36 @@ def probe_tool(executable: str) -> dict:
     except OSError as error:
         returncode = None
         stdout, stderr = "", f"{type(error).__name__}: {error}"
+    version_wall_ns = time.perf_counter_ns() - started
+    image_command = [resolved, "--xedni-image-id"]
+    image_started = time.perf_counter_ns()
+    image_timed_out = False
+    try:
+        image_completed = subprocess.run(
+            image_command,
+            stdin=subprocess.DEVNULL,
+            capture_output=True,
+            text=True,
+            timeout=15,
+            check=False,
+        )
+        image_returncode = image_completed.returncode
+        image_stdout, image_stderr = image_completed.stdout, image_completed.stderr
+    except subprocess.TimeoutExpired as error:
+        image_timed_out = True
+        image_returncode = None
+        image_stdout = _text(error.stdout)
+        image_stderr = _text(error.stderr)
+    except OSError as error:
+        image_returncode = None
+        image_stdout, image_stderr = "", f"{type(error).__name__}: {error}"
+    image_candidate = image_stdout.strip()
+    image_digest = (
+        image_candidate.lower()
+        if image_returncode == 0
+        and re.fullmatch(r"sha256:[0-9a-fA-F]{64}", image_candidate)
+        else None
+    )
     return {
         "available": True,
         "executable_requested": executable,
@@ -164,7 +206,14 @@ def probe_tool(executable: str) -> dict:
         "version_stderr": stderr,
         "version_timed_out": timed_out,
         "version_timeout_seconds": 15.0,
-        "version_wall_ns": time.perf_counter_ns() - started,
+        "version_wall_ns": version_wall_ns,
+        "image_probe_command": image_command,
+        "image_probe_returncode": image_returncode,
+        "image_probe_stdout": image_stdout,
+        "image_probe_stderr": image_stderr,
+        "image_probe_timed_out": image_timed_out,
+        "image_probe_wall_ns": time.perf_counter_ns() - image_started,
+        "image_digest": image_digest,
     }
 
 
@@ -181,7 +230,9 @@ def _base(row, tool: dict) -> dict:
     }
 
 
-def process_row(row, tool: dict, timeout: float, effort: int) -> dict:
+def process_row(
+    row, tool: dict, timeout: float, effort: int, parisizemax: int = DEFAULT_PARISIZEMAX
+) -> dict:
     output = _base(row, tool)
     try:
         row_id, r, ainvs = validate_row(row)
@@ -197,7 +248,7 @@ def process_row(row, tool: dict, timeout: float, effort: int) -> dict:
         output["error"] = f"executable not found: {tool['executable_requested']}"
         return output
 
-    script = make_script(ainvs, effort)
+    script = make_script(ainvs, effort, parisizemax)
     command = [tool["executable_resolved"], "-q", "-f"]
     execution = {
         "command": command,
@@ -245,11 +296,19 @@ def process_row(row, tool: dict, timeout: float, effort: int) -> dict:
         output["error"] = str(error)
         return output
     lower, upper = parsed["LOWER"], parsed["UPPER"]
+    if parsed["PARISIZEMAX"] != parisizemax:
+        output["reason"] = "parisizemax_mismatch"
+        output["pari"] = {
+            "configured_parisizemax": parisizemax,
+            "reported_parisizemax": parsed["PARISIZEMAX"],
+        }
+        return output
     output["classification"], output["reason"] = classify(lower, upper, r)
     output["rank_bounds"] = {"lower": lower, "upper": upper}
     output["pari"] = {
         "points_found": parsed["POINT_COUNT"],
         "sha2_quotient_rank": parsed["SHA2_RANK"],
+        "parisizemax": parsed["PARISIZEMAX"],
     }
     return output
 
@@ -267,9 +326,10 @@ def main(argv=None) -> int:
     parser.add_argument("--gp", default="gp")
     parser.add_argument("--timeout", type=float, default=60.0)
     parser.add_argument("--effort", type=int, default=0)
+    parser.add_argument("--parisizemax", type=int, default=DEFAULT_PARISIZEMAX)
     args = parser.parse_args(argv)
-    if args.timeout <= 0 or args.effort < 0:
-        parser.error("timeout must be positive and effort nonnegative")
+    if args.timeout <= 0 or args.effort < 0 or args.parisizemax <= 0:
+        parser.error("timeout and parisizemax must be positive and effort nonnegative")
     tool = probe_tool(args.gp)
     source, destination = _streams(args.input, args.output)
     close_source, close_destination = source is not sys.stdin, destination is not sys.stdout
@@ -285,7 +345,9 @@ def main(argv=None) -> int:
                 result["reason"] = "invalid_json"
                 result["error"] = str(error)
             else:
-                result = process_row(row, tool, args.timeout, args.effort)
+                result = process_row(
+                    row, tool, args.timeout, args.effort, args.parisizemax
+                )
             destination.write(_canonical(result) + "\n")
             destination.flush()
     finally:

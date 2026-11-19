@@ -4,12 +4,15 @@
 from __future__ import annotations
 
 import argparse
+import copy
+import hashlib
 import json
 import math
 from pathlib import Path
 import re
 import shutil
 import subprocess
+import time
 
 from field import (
     HashStream,
@@ -39,20 +42,80 @@ class PariBackend:
         self.executable = resolved
         self.timeout_seconds = timeout_seconds
         self.command = [self.executable, "-q", "-f"]
-
-    def cardinality_and_factors(self, prime: int, a: int, b: int):
-        program = (
-            f"E=ellinit([Mod({a},{prime}),Mod({b},{prime})]);\n"
-            "N=ellcard(E); F=factor(N); print(N); "
-            "for(i=1,matsize(F)[1],print(F[i,1],\" \",F[i,2]));\nquit\n"
-        )
-        completed = subprocess.run(
-            self.command,
-            input=program,
+        self.last_evidence = None
+        version_started = time.perf_counter_ns()
+        version = subprocess.run(
+            [resolved, "--version"],
             capture_output=True,
             text=True,
-            timeout=self.timeout_seconds,
+            timeout=15,
             check=False,
+        )
+        image_id = None
+        image_probe = subprocess.run(
+            [resolved, "--xedni-image-id"],
+            capture_output=True,
+            text=True,
+            timeout=15,
+            check=False,
+        )
+        if image_probe.returncode == 0 and re.fullmatch(
+            r"sha256:[0-9a-fA-F]{64}", image_probe.stdout.strip()
+        ):
+            image_id = image_probe.stdout.strip()
+        self.tool_identity = {
+            "kind": "host_executable",
+            "executable_requested": executable,
+            "executable_resolved": resolved,
+            "executable_sha256": _file_sha256(Path(resolved)),
+            "version_command": [resolved, "--version"],
+            "version_returncode": version.returncode,
+            "version_stdout": version.stdout,
+            "version_stderr": version.stderr,
+            "version_wall_ns": time.perf_counter_ns() - version_started,
+            "wrapper_image_probe_command": [resolved, "--xedni-image-id"],
+            "wrapper_image_probe_returncode": image_probe.returncode,
+            "wrapper_image_probe_stdout": image_probe.stdout,
+            "wrapper_image_id": image_id,
+        }
+
+    def cardinality_and_factors(self, prime: int, a: int, b: int):
+        program = cardinality_program(prime, a, b)
+        started = time.perf_counter_ns()
+        try:
+            completed = subprocess.run(
+                self.command,
+                input=program,
+                capture_output=True,
+                text=True,
+                timeout=self.timeout_seconds,
+                check=False,
+            )
+        except subprocess.TimeoutExpired as error:
+            wall_ns = time.perf_counter_ns() - started
+            stdout = _text(error.stdout)
+            stderr = _text(error.stderr)
+            self.last_evidence = _cardinality_evidence(
+                self,
+                program,
+                None,
+                stdout,
+                stderr,
+                wall_ns,
+                timed_out=True,
+            )
+            raise RuntimeError(
+                f"PARI ellcard/factor exceeded {self.timeout_seconds} seconds"
+            ) from error
+        wall_ns = time.perf_counter_ns() - started
+        self.last_evidence = _cardinality_evidence(
+            self,
+            program,
+            completed.returncode,
+            completed.stdout,
+            completed.stderr,
+            wall_ns,
+            timed_out=False,
         )
         if completed.returncode != 0:
             raise RuntimeError(
@@ -85,6 +148,10 @@ class PariContainerBackend(PariBackend):
             raise BackendUnavailable(f"container runtime not found: {runtime}")
         if not image:
             raise ValueError("PARI container image must be nonempty")
+        if not _is_pinned_container_image(image):
+            raise ValueError(
+                "PARI container image must be name@sha256:<64 hex> or sha256:<64 hex>"
+            )
         self.executable = resolved
         self.image = image
         self.timeout_seconds = timeout_seconds
@@ -101,6 +168,112 @@ class PariContainerBackend(PariBackend):
             "-q",
             "-f",
         ]
+        self.last_evidence = None
+        inspect_command = [
+            resolved,
+            "image",
+            "inspect",
+            "--format",
+            "{{.Id}}",
+            image,
+        ]
+        inspect_started = time.perf_counter_ns()
+        inspect = subprocess.run(
+            inspect_command,
+            capture_output=True,
+            text=True,
+            timeout=min(timeout_seconds, 30),
+            check=False,
+        )
+        observed_image_id = inspect.stdout.strip() or None
+        self.tool_identity = {
+            "kind": "container",
+            "container_runtime_requested": runtime,
+            "container_runtime_resolved": resolved,
+            "container_runtime_sha256": _file_sha256(Path(resolved)),
+            "image": image,
+            "image_is_digest_pinned": True,
+            "image_inspect_command": inspect_command,
+            "image_inspect_returncode": inspect.returncode,
+            "image_inspect_stdout": inspect.stdout,
+            "image_inspect_stderr": inspect.stderr,
+            "image_inspect_wall_ns": time.perf_counter_ns() - inspect_started,
+            "observed_image_id": observed_image_id,
+            "exact_image_id_matches": (
+                image.lower() == observed_image_id.lower()
+                if image.lower().startswith("sha256:")
+                and isinstance(observed_image_id, str)
+                else None
+            ),
+        }
+
+
+def _file_sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as stream:
+        for block in iter(lambda: stream.read(1 << 20), b""):
+            digest.update(block)
+    return digest.hexdigest()
+
+
+def cardinality_program(prime: int, a: int, b: int) -> str:
+    """Return the exact GP program bound into source-cardinality evidence."""
+    for name, value in (("prime", prime), ("a", a), ("b", b)):
+        if isinstance(value, bool) or not isinstance(value, int):
+            raise ValueError(f"{name} must be an integer")
+    if prime <= 2 or not 0 <= a < prime or not 0 <= b < prime:
+        raise ValueError("curve coefficients must be reduced modulo an odd prime")
+    return (
+        f"E=ellinit([Mod({a},{prime}),Mod({b},{prime})]);\n"
+        "N=ellcard(E); F=factor(N); print(N); "
+        "for(i=1,matsize(F)[1],print(F[i,1],\" \",F[i,2]));\nquit\n"
+    )
+
+
+def _is_pinned_container_image(image: str) -> bool:
+    return bool(
+        re.fullmatch(r"(?:[^@\s]+@)?sha256:[0-9a-fA-F]{64}", image)
+    )
+
+
+def _text(value) -> str:
+    if value is None:
+        return ""
+    if isinstance(value, bytes):
+        return value.decode(errors="replace")
+    return value
+
+
+def _cardinality_evidence(
+    backend,
+    program: str,
+    returncode: int | None,
+    stdout: str,
+    stderr: str,
+    wall_ns: int,
+    *,
+    timed_out: bool,
+) -> dict:
+    evidence = {
+        "status": "timeout" if timed_out else "complete" if returncode == 0 else "nonzero_exit",
+        "backend": backend.name,
+        "command": list(backend.command),
+        "program": program,
+        "program_sha256": hashlib.sha256(program.encode()).hexdigest(),
+        "returncode": returncode,
+        "stdout": stdout,
+        "stdout_sha256": hashlib.sha256(stdout.encode()).hexdigest(),
+        "stderr": stderr,
+        "stderr_sha256": hashlib.sha256(stderr.encode()).hexdigest(),
+        "timed_out": timed_out,
+        "timeout_seconds": backend.timeout_seconds,
+        "wall_ns": wall_ns,
+        "tool_identity": copy.deepcopy(backend.tool_identity),
+    }
+    evidence["evidence_sha256"] = hashlib.sha256(
+        json.dumps(evidence, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+    return evidence
 
 
 def validate_factorization(cardinality: int, factors) -> None:
@@ -173,6 +346,7 @@ def generate_source(
     stream = HashStream(seed)
     a, b, curve_attempts = generate_curve(stream, prime, family)
     cardinality, factors = backend.cardinality_and_factors(prime, a, b)
+    cardinality_evidence = copy.deepcopy(getattr(backend, "last_evidence", None))
     validate_factorization(cardinality, factors)
     radius = hasse_radius(prime)
     if not prime + 1 - radius <= cardinality <= prime + 1 + radius:
@@ -238,11 +412,13 @@ def generate_source(
         "cardinality": cardinality,
         "cardinality_factors": [[q, e] for q, e in factors],
         "cardinality_backend": getattr(backend, "name", type(backend).__name__),
+        "cardinality_evidence": cardinality_evidence,
         "source_subgroup_order": subgroup_order,
         "source_cofactor": source_cofactor,
         "base_point": list(base),
         "base_point_order": subgroup_order,
         "point_sampling_attempts": point_attempts,
+        "scalar_sampling_attempts": scalar_attempts,
         "max_r": max_r,
         "ordered_scalars": scalars,
         "ordered_points": [list(point) for point in points],

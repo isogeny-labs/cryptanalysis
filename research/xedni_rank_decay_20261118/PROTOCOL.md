@@ -8,6 +8,12 @@ the implementation, exact tool images, source hashes, seeds, manifests, and a
 `FREEZE.json` are committed and `scripts/checkpoint.sh gate` exits zero without
 a bypass. [pcc:unverified]
 
+Implementation clarification, 2026-11-19, still before any natural row: the
+lower event cutoff is fixed at 20 bits; the full primary inference roster has
+4,320 profiles; and the hierarchical-bootstrap count is fixed at 172,800.
+These values may not be selected from calibration or natural outcomes.
+[pcc:unverified]
+
 ## Requested question and claim boundary
 
 Test primes from approximately `2^16` through `2^32`, controlling independently
@@ -135,9 +141,13 @@ UNKNOWN  otherwise.
 ```
 
 PARI `ellrank` returns unconditional `[lower,upper,s,L]`; only these inequalities
-classify a row. PARI tiers are capped at 60 and 300 seconds. Every `UNKNOWN`
-and apparent event is sent to Magma `RankBounds`/2-descent at 300 and 1,800
-seconds. Missing Magma, timeouts, or disagreeing bounds remain `UNKNOWN`.
+classify a row. PARI tiers are capped at 60 and 300 seconds. A PARI lower bound
+at least `r` enters `CERT_GE` without a Magma call. A PARI upper bound below
+`r` enters `CERT_LT` only when Magma independently confirms that side. A
+certified PARI interval straddling `r` may be resolved by a compatible Magma
+`RankBounds`/2-descent interval at 300 and 1,800 seconds; a missing or failed
+PARI result cannot be rescued by Magma alone. Missing Magma, timeouts, or
+disagreeing bounds remain `UNKNOWN`.
 Retain exact tool versions/image digests, commands, transcripts, return codes,
 CPU, RSS, and proof flags. Selected-subgroup rank, exact relation, saturation,
 height-pairing status, and source recovery are recorded separately; floating
@@ -149,6 +159,14 @@ For each cell let `A` be `CERT_LT`, `G` be `CERT_GE`, `U` be unresolved, and
 `N=A+G+U`. Report `q_min=A/N` and `q_max=(A+U)/N`. Every conclusion must survive
 adversarial allocation of unresolved rows; otherwise it is `UNRESOLVED`.
 Timeout and construction-failure rates are reported by cell. [pcc:unverified]
+
+Useful-recovery censoring is independent of rank censoring. An exactly replayed
+nontrivial relation with an invertible target coefficient and exact source
+scalar replay is `CERT_YES`. Rejection of one candidate, a trivial relation, a
+noninvertible coefficient, or `rank(E(Q))>=r` does not prove `CERT_NO`; absent a
+complete relation inventory plus an exhaustive relation-lattice or independence
+certificate, a ranked non-success is `UNKNOWN`. Local or construction rejection
+is a proposal-level failure, not selected-point independence. [pcc:unverified]
 
 The rare-event model is binomial with complementary-log-log link:
 
@@ -184,7 +202,9 @@ Execution stages are:
    the discovery threshold is crossed.
 
 Classify `DEFEATED_IN_SCOPE` only with at least 30 doubly certified nontrivial
-useful events above the frozen lower cutoff; a simultaneous confidence bound
+useful events at or above the frozen 20-bit lower cutoff; useful events at the
+three adjacent sizes 20, 22, and 24 in both discovery and replication; a
+simultaneous confidence bound
 showing decay exponent `<0.8` (equivalently slope `beta>-0.8` in the signed
 `q=kappa*p^beta` convention); survival under adversarial unresolved allocation;
 fresh-seed replication with PARI/Magma agreement; no domination by trivial
@@ -192,6 +212,22 @@ line relations; and complete work accounting. Any missing condition leaves the
 heuristic not defeated. A conditional local arm speaks only for that selected
 population unless known proposal probabilities reconstruct the unconditional
 population. [pcc:unverified]
+
+The primary roster count is fixed as `2 stages * 2 curve families * 3 lift
+strategies * 3 primary local arms * 5 executable r values = 180` series, then
+`180 * 2 endpoints * 2 denominators * 2 diagnostic unresolved allocations * 3
+models = 4,320` simultaneous profiles. With familywise alpha `0.05`, the
+hierarchical prime-then-source/curve bootstrap uses 172,800 replicates, the
+minimum `ceil(2*4320/0.05)`. Both named uniform allocations remain diagnostics:
+production classification is blocked until each model rigorously minimizes its
+signed-slope lower bound over the full per-prime integer box
+`S_i in [A_i,A_i+U_i]`. [pcc:unverified]
+
+Production classification is also blocked until an executable validator binds
+each row to the exact frozen factor roster, prime manifest, stage seed, raw
+PARI/Magma transcripts, relation proposals, exact replay proofs, and complete
+coexisting relation inventory. Self-declared identifiers or digests are not
+sufficient. [pcc:unverified]
 
 ## Cost-reduction and end-to-end boundary
 
@@ -202,6 +238,13 @@ known weights is circular. Complete cost includes source generation, local
 rejection, lift, rank/relation work, linear algebra, recovery, verification,
 memory, and failed attempts. No stage result is an end-to-end advantage until
 that total beats matched single-target Pollard rho. [pcc:unverified]
+
+The public selector/lift/relation-proposal phase must consume a redacted,
+hash-linked public record that omits every source scalar and target scalar. A
+separate evaluator may use the private source record only for exact replay.
+These phases must be separated by an enforceable process boundary; a Boolean
+claim that scalars were unused is not a certificate of non-circularity.
+[pcc:unverified]
 
 ## Sources
 

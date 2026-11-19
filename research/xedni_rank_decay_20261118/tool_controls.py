@@ -56,6 +56,7 @@ print(f"UPPER={upper}")
 if is_pari:
     print("SHA2_RANK=0")
     print("POINT_COUNT=0")
+    print("PARISIZEMAX=2147483648")
 if "9104" not in source:
     print("XEDNI_RANK_END")
 if "9108" in source:

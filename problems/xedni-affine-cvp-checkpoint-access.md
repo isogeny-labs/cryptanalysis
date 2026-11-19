@@ -2,7 +2,7 @@
 
 - **Status:** open (two prior toy panels completed under narrow owner waivers; credentials still missing)
 - **Kind:** access/tool limit
-- **Affected work:** [frozen xedni affine-lift protocol](../research/xedni_lift_optimizer_20261101/PROTOCOL.md), [fresh target-bearing selector protocol](../research/xedni_target_relation_20261118/PROTOCOL.md), [target-origin-pencil protocol](../research/xedni_origin_pencil_20261118/PROTOCOL.md), [fixed-coordinate dedup protocol](../research/xedni_origin_dedup_20261118/PROTOCOL.md), draft PR #1768
+- **Affected work:** [frozen xedni affine-lift protocol](../research/xedni_lift_optimizer_20261101/PROTOCOL.md), [fresh target-bearing selector protocol](../research/xedni_target_relation_20261118/PROTOCOL.md), [target-origin-pencil protocol](../research/xedni_origin_pencil_20261118/PROTOCOL.md), [fixed-coordinate dedup protocol](../research/xedni_origin_dedup_20261118/PROTOCOL.md), [rank-decay falsification protocol](../research/xedni_rank_decay_20261118/PROTOCOL.md), draft PR #1768
 - **Next action owner:** environment operator for checkpoint credentials; research agent for the frozen run
 - **Last updated:** 2026-11-18
 
@@ -19,6 +19,11 @@ linked November 18 protocols: four primes, two curve families, two lift
 policies, ranks 6 through 9, and 25 trials per cell under distinct fresh master
 seeds. The repository requires `scripts/checkpoint.sh gate` to pass before any
 natural row is generated. [pcc:unverified]
+
+The separately frozen rank-decay program is also an unwaived natural run. Its
+controls and tool adapters may be tested without an outcome row, but its
+calibration, sentinel, discovery, and replication stages must pass the same
+gate. [pcc:unverified]
 
 ## Evidence and uncertainty
 

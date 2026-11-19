@@ -25,20 +25,20 @@ class IntervalSemanticsTests(unittest.TestCase):
     def test_pari_parser_exact_block(self):
         transcript = (
             "XEDNI_RANK_BEGIN\n"
-            "LOWER=1\nUPPER=3\nSHA2_RANK=2\nPOINT_COUNT=1\n"
+            "LOWER=1\nUPPER=3\nSHA2_RANK=2\nPOINT_COUNT=1\nPARISIZEMAX=2147483648\n"
             "XEDNI_RANK_END\n"
         )
         self.assertEqual(
             rank_pari.parse_transcript(transcript),
-            {"LOWER": 1, "UPPER": 3, "SHA2_RANK": 2, "POINT_COUNT": 1},
+            {"LOWER": 1, "UPPER": 3, "SHA2_RANK": 2, "POINT_COUNT": 1, "PARISIZEMAX": 2147483648},
         )
 
     def test_pari_parser_rejects_mutations(self):
         mutations = [
-            "LOWER=0\nUPPER=0\nSHA2_RANK=0\nPOINT_COUNT=0\n",
-            "XEDNI_RANK_BEGIN\nLOWER=2\nUPPER=1\nSHA2_RANK=0\nPOINT_COUNT=0\nXEDNI_RANK_END\n",
-            "XEDNI_RANK_BEGIN\nLOWER=0\nUPPER=0\nPOINT_COUNT=0\nXEDNI_RANK_END\n",
-            "XEDNI_RANK_BEGIN\nLOWER=0\nUPPER=0\nSHA2_RANK=0\nPOINT_COUNT=0\nXEDNI_RANK_END\nXEDNI_RANK_END\n",
+            "LOWER=0\nUPPER=0\nSHA2_RANK=0\nPOINT_COUNT=0\nPARISIZEMAX=2147483648\n",
+            "XEDNI_RANK_BEGIN\nLOWER=2\nUPPER=1\nSHA2_RANK=0\nPOINT_COUNT=0\nPARISIZEMAX=2147483648\nXEDNI_RANK_END\n",
+            "XEDNI_RANK_BEGIN\nLOWER=0\nUPPER=0\nPOINT_COUNT=0\nPARISIZEMAX=2147483648\nXEDNI_RANK_END\n",
+            "XEDNI_RANK_BEGIN\nLOWER=0\nUPPER=0\nSHA2_RANK=0\nPOINT_COUNT=0\nPARISIZEMAX=2147483648\nXEDNI_RANK_END\nXEDNI_RANK_END\n",
         ]
         for transcript in mutations:
             with self.subTest(transcript=transcript), self.assertRaises(ValueError):
@@ -60,6 +60,7 @@ class IntervalSemanticsTests(unittest.TestCase):
         magma = rank_magma.make_script((0, 0, 1, -1, 0), 2)
         self.assertEqual(pari, rank_pari.make_script((0, 0, 1, -1, 0), 0))
         self.assertIn("ellrank(E,0)", pari)
+        self.assertIn("default(parisizemax,2147483648)", pari)
         self.assertIn("SetSeed(1);", magma)
         self.assertIn("RankBounds(E : Effort := 2)", magma)
         self.assertNotIn("TwoSelmerGroup", magma)

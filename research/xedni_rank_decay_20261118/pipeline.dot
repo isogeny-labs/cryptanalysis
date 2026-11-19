@@ -1,0 +1,32 @@
+digraph xedni_rank_decay {
+  graph [rankdir=TB, bgcolor="white", pad="0.25", nodesep="0.42", ranksep="0.55"];
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10,
+        color="#25445f", fillcolor="#eef5fa"];
+  edge [fontname="Helvetica", fontsize=9, color="#45677f"];
+
+  source [label="Frozen fresh source instances\n3 primes at each 16..32-bit level", fillcolor="#fff2cc"];
+  direct [label="Mandatory direct finite-field\nrelation baseline + full cost"];
+  local [label="Independent local factor\nnone | compatible reverse-Mestre\nneutral matched CRT | incompatible control", fillcolor="#fde9d9"];
+  lifts [label="Independent lift factor\nbalanced | wide | fixed bank\nmin raw Delta | min Delta_min | min rho"];
+  mechanisms [label="Separate prospective panels\nnonlinear selector | mapped r=7..9 cubics\nisogeny neighbors | public rank predictor"];
+  certificates [label="Exact admission certificates\non-curve, reduction, quotient compatibility\npoint map, target replay", fillcolor="#e2f0d9"];
+  pari [label="PARI ellrank bounds\nCERT_LT | CERT_GE | UNKNOWN"];
+  magma [label="Magma RankBounds / 2-descent\nall events and UNKNOWN rows"];
+  endpoints [label="Keep distinct\ncurve rank < r | selected-point dependence\nnontrivial invertible target recovery", fillcolor="#d9eaf7"];
+  inference [label="A/G/U partial identification\nclustered decay fit + unresolved extremes\ndiscovery and held-out replication"];
+  rule [label="DEFEATED_IN_SCOPE only if every gate passes\n>=30 useful events, beta lower > -0.8,\nreplication, two tools, complete cost", fillcolor="#f4cccc"];
+  blocked [label="Current natural-run gate\ncheckpoint transport + Magma license\nr=7..9 certified point map", shape=octagon, fillcolor="#eeeeee"];
+
+  source -> direct;
+  source -> local;
+  local -> lifts;
+  lifts -> mechanisms;
+  direct -> certificates;
+  mechanisms -> certificates;
+  certificates -> pari;
+  pari -> magma [label="event or unresolved"];
+  magma -> endpoints;
+  endpoints -> inference;
+  inference -> rule;
+  blocked -> certificates [style=dashed, label="must clear"];
+}
