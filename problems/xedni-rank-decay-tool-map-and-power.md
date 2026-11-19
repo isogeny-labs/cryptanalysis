@@ -46,11 +46,30 @@ events needs `50,260,046` independent rows merely to reject a rate at least
   Selector material omits them by convention, but there is no hash-linked
   redacted public object plus separate evaluator process that makes scalar
   access impossible for the selector/proposer. [pcc:unverified]
+- **Observed after explicit user authorization:** at pushed head
+  `bfefa7c0a2a668643e3aabef5b6796b70a743b93`, checkpoint `push` and `gate`
+  both exited 1 because the environment still had no upload profile, token,
+  or token file. Zero natural rows started. Authorization resolved permission,
+  not checkpoint transport. Claim `PCC-20261119-e03654` has unverified
+  standing. [pcc:unverified]
+- **Demonstrated anti-circularity gap:** M3 accepted values standing in for
+  private scalar-derived data under the innocuous feature name
+  `proxy_curvature` and used them for selection. The current key-name filter
+  and selector hash therefore do not certify feature provenance. This canary
+  does not assert intentional scalar use by an existing selector.
+  [pcc:unverified]
 - **Demonstrated implementation gap:** uniform all-failure and all-success
   allocations do not bound a slope. With admitted counts `(10,7)` and unknown
   counts `(90,93)` at `(p,4p)`, the two uniform signed slopes are about
   `-0.257` and `0`, while the mixed low-p-success/high-p-failure allocation is
   about `-1.918`. [pcc:unverified]
+- **Partial implementation:** `mixed_censoring.py` now exhausts the full
+  integer allocation box for bounded cases and has an independently
+  brute-force-checked conditional-Poisson optimizer for the aggregate
+  per-prime box. Binomial-cloglog remains exhaustive and state-limited, and
+  cluster bootstrap correctly returns `BLOCKED` because aggregate per-prime
+  totals do not determine within-cluster allocations. It is not integrated
+  into the production analyzer. [pcc:unverified]
 - **Observed:** the archived plane-cubic panel evaluates exact relations through
   `r=9`, but does not provide the certified cubic-to-Jacobian selected-point map
   required for full curve or selected-subgroup rank classification.
@@ -132,3 +151,9 @@ additional independent production gates: no natural executor, no enforceable
 redacted public/evaluator process boundary, no complete row/relation-inventory
 provenance validator, and no rigorous mixed per-prime censoring optimizer.
 Producer controls do not close these gates. Unresolved. [pcc:unverified]
+
+2026-11-19: user explicitly authorized execution. A pushed-head checkpoint
+retry still failed for absent upload transport, and an adversarial M3 canary
+showed that innocuous-key feature smuggling passes the current interface.
+Authorization did not launch or validate a natural row. Unresolved.
+[pcc:unverified]
