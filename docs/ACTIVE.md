@@ -38,7 +38,7 @@ and construction gates. [pcc:unverified]
 
 - [ ] Prospectively implement and freeze a first-representative fixed-coordinate dedup arm for the target-origin pencil, requiring semantic parity and full work accounting before any optimization claim (Codex, started 2026-11-18, branch codex/xedni-breakthrough-20261117, draft PR #1768) [pcc:unverified]
 
-- [ ] Complete the production freeze and run the full Xedni rank-decay falsification program over 16--32-bit primes with independent lift, r, and exact Silverman/JKSST local-condition factors; six local control gates now pass but remain non-production and zero natural rows exist (Codex, started 2026-11-18, branch codex/xedni-breakthrough-20261117, PR #1768) [pcc:unverified]
+- [ ] Actively attempt to disprove the Xedni rank-decay heuristic over 16--32-bit primes with independent lift, r, and exact Silverman/JKSST local-condition factors; preserve the frozen signed-slope/useful-recovery criterion, close production gates, and run the first admissible rows without downscaling (Codex, started 2026-11-18, resumed 2026-11-19, branch codex/xedni-breakthrough-20261117, PR #1768) [pcc:unverified]
 
 - [x] CT187: bounded admitted-source native 1,536-call same-route sham producer, strict evidence reader and synthetic handshake; no paid execution (automation, started 2026-11-17, branch research/ct187-native-sham-source-admission-20261117, PR #1719)
 
