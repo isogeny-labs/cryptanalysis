@@ -19,6 +19,10 @@
 //!   branches and must not be interchanged with the one-infinity pair. This
 //!   backend accepts only primes proved by the complete word-sized test or
 //!   the strict Sorenson--Webster `psi_13` bound.
+//! - [`normalized_cover_transfer::PrimeMontgomeryQuadraticCoverP`] — the
+//!   checked composition of the split-sextic cover with an everywhere-defined
+//!   projective short-Weierstrass/Montgomery isomorphism. Edwards birational
+//!   charts remain separate and unsupported.
 //! - **Cantor's algorithm**, char-`p` form: composition `gcd(u_1,
 //!   u_2) → d_1`, `gcd(d_1, v_1 + v_2) → d`, combine; reduce by
 //!   `u_new = (f − v²)/u` until `deg u ≤ g`.  The "no `h(x)`"
@@ -57,6 +61,7 @@ pub mod curve;
 pub mod fp2;
 pub mod fp_poly;
 pub mod model_transfer;
+pub mod normalized_cover_transfer;
 pub mod primality;
 
 pub use balanced::{
@@ -78,6 +83,10 @@ pub use fp_poly::FpPoly;
 pub use model_transfer::{
     PrimeMontgomeryAdapterError, PrimeMontgomeryAdapterP, PrimeMontgomeryPointP,
     PrimeProjectivePointP,
+};
+pub use normalized_cover_transfer::{
+    PrimeMontgomeryPullPushCertificate, PrimeMontgomeryPushPullCertificate,
+    PrimeMontgomeryQuadraticCoverError, PrimeMontgomeryQuadraticCoverP,
 };
 pub use primality::{
     prime_proof_evidence, prime_proof_status, PrimeProofEvidence, PrimeProofStatus,

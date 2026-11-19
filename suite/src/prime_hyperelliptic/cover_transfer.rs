@@ -27,8 +27,11 @@
 //! This implementation is deliberately limited to the same direct
 //! short-Weierstrass prime-field and strict deterministic primality-proof
 //! domain as the balanced backend.  It does not implement extension fields,
-//! normalized Montgomery/Edwards target coordinates, exact subgroup-order
-//! proofs, or a discrete-log solver.
+//! normalized target coordinates, exact subgroup-order proofs, or a
+//! discrete-log solver.  The separate
+//! [`super::normalized_cover_transfer`] module composes this backend with the
+//! everywhere-defined Montgomery isomorphism; Edwards exceptional charts
+//! remain unsupported.
 
 use super::balanced::{BalancedDivisorP, BalancedHyperellipticError, SplitHyperellipticCurveP};
 use super::fp_poly::{fp_inv, FpPoly};

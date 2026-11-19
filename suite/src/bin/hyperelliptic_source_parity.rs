@@ -453,11 +453,10 @@ mod tests {
 
     #[test]
     fn prime_module_adapter_omits_only_the_unmirrored_pricing_module() {
-        let source =
-            b"pub mod balanced;\npub mod model_transfer;\npub mod ops;\npub mod cover_transfer;\n";
+        let source = b"pub mod balanced;\npub mod model_transfer;\npub mod normalized_cover_transfer;\npub mod ops;\npub mod cover_transfer;\n";
         assert_eq!(
             prime_module_adapter(source),
-            b"pub mod balanced;\npub mod model_transfer;\npub mod cover_transfer;\n"
+            b"pub mod balanced;\npub mod model_transfer;\npub mod normalized_cover_transfer;\npub mod cover_transfer;\n"
         );
     }
 

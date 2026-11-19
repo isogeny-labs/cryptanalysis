@@ -1,13 +1,15 @@
 # Hyperelliptic cover infrastructure
 
 This directory records the bounded library mirror from
-[`isogeny-labs/crypto`](https://github.com/isogeny-labs/crypto/tree/e0ae0fe5d09c0492a8b50600e88d0b9da68afef1).
-The generic Montgomery/short-Weierstrass model adapter and prime-module routing
-are pinned to implementation commit
-`e0ae0fe5d09c0492a8b50600e88d0b9da68afef1`. The widened prime transfer,
-balanced-Jacobian, and deterministic-primality files remain pinned to
-`153ac585d3b1ece0ebb0d49312b13267f651c94b`; unchanged support and binary
-files retain their original source revisions in the machine-readable manifest.
+[`isogeny-labs/crypto`](https://github.com/isogeny-labs/crypto/tree/5c6e43a6f0cffe0afc4c962ff54056716cf6437e).
+The composed Montgomery degree-two cover, direct cover dependency, and
+prime-module routing are pinned to implementation commit
+`5c6e43a6f0cffe0afc4c962ff54056716cf6437e`. The underlying degree-one
+Montgomery/short-Weierstrass model adapter remains byte-identical to producer
+`e0ae0fe5d09c0492a8b50600e88d0b9da68afef1`; balanced-Jacobian and
+deterministic-primality files remain pinned to
+`153ac585d3b1ece0ebb0d49312b13267f651c94b`. Unchanged support and binary files
+retain their original source revisions in the machine-readable manifest.
 The upstream
 [audit and evidence](https://github.com/aburan28/crypto/tree/d167ce0af49c22947b6d40f373b35df75e13e82e/research/hyperelliptic_cover_infrastructure_20261006)
 separate curve construction, Jacobian arithmetic, transfer, subgroup
@@ -15,17 +17,19 @@ preservation, and measured advantage. The upstream standalone
 [`hyperelliptic-cover`](https://github.com/aburan28/crypto/blob/153ac585d3b1ece0ebb0d49312b13267f651c94b/src/bin/hyperelliptic_cover.rs)
 command exposes the certificate replay, structured arithmetic, and binary
 certificate-catalog interface. This mirror intentionally adds no solver, CLI,
-or generated catalog. Catalog export remains owned by crypto because it binds
+or generated catalog. It mirrors the reusable composed library API and bounded
+public controls only. Catalog export remains owned by crypto because it binds
 crypto's EC1/ICV1 registry, cover graph, schema, and packaging contract; this
 repository mirrors and tests the underlying library arithmetic and generic
 model isomorphism instead. [pcc:unverified]
 
 ## Crypto-owned corpus and oracle evidence
 
-The newest mirrored library component is the generic model adapter from crypto
-revision `e0ae0fe5d09c0492a8b50600e88d0b9da68afef1`; the balanced and induced-map
-implementation remains pinned to
-`153ac585d3b1ece0ebb0d49312b13267f651c94b`. The current binary catalog
+The newest mirrored library component is the typed Montgomery cover composition
+from crypto revision `5c6e43a6f0cffe0afc4c962ff54056716cf6437e`; its direct cover dependency is
+pinned to that same revision. The degree-one model adapter remains pinned to
+`e0ae0fe5d09c0492a8b50600e88d0b9da68afef1`, while balanced arithmetic remains
+pinned to `153ac585d3b1ece0ebb0d49312b13267f651c94b`. The current binary catalog
 successor was cleanly regenerated from producer
 `e0ae0fe5d09c0492a8b50600e88d0b9da68afef1` and is carried by final package
 head `22f195741f2f68f37e56ffe134fe2b48fe172245`. The exact
@@ -60,6 +64,15 @@ same-implementation replay exits 1 because incomplete rows are retained;
 Git-tree source replay exits 0. This repository cites those crypto-owned bytes
 and does not copy the exporter, corpus, registry, graph, or schema.
 [pcc:unverified]
+
+That odd corpus predates the composed Montgomery backend and remains immutable.
+The six live Montgomery maps and seven named bindings are all outside the
+accepted primality-proof range, so composition promotes no live row. A future
+crypto-owned successor export is expected to retain 675 supported bindings
+while moving those seven records from the historical normalized-backend bucket
+to the proof-range bucket: 240 proof-range unsupported, 15 Edwards-backend
+unsupported, 9 extension-backend unsupported, and 1 invalid generator. This is
+a disposition correction, not new subgroup support. [pcc:unverified]
 
 Crypto revision `153ac585d3b1ece0ebb0d49312b13267f651c94b` retains a
 separately implemented exhaustive Picard-class oracle for the one exact
@@ -120,9 +133,12 @@ The highest-coverage direct short-Weierstrass boundary now covers 20,539 maps
 over 675 linked EC1 records through deterministic `u64` validation plus
 exactly two live 73-bit pilot rows over `p=5902977611310272157103` under the
 strict Sorenson--Webster `psi_13` bound. The final odd corpus separates the
-remaining population into 233 proof-range gaps, 22 normalized-backend gaps,
-9 extension-backend gaps, and one invalid generator. This two-row pilot is not
-general wide-prime support. [pcc:unverified]
+remaining population into its immutable pre-composition partition of 233
+proof-range gaps, 22 normalized-backend gaps, 9 extension-backend gaps, and one
+invalid generator. The composed Montgomery backend changes the prospective
+successor disposition of seven normalized records to proof-range gaps, but does
+not widen the accepted field proof boundary. This two-row pilot is not general
+wide-prime support. [pcc:unverified]
 
 ## Supported boundary
 
@@ -158,8 +174,10 @@ general wide-prime support. [pcc:unverified]
   generator certificate uses a checked odd annihilator and does not assert
   exact order or primality. The widened boundary includes exactly the two
   live 73-bit pilot rows over `p=5902977611310272157103`; it is not a general
-  claim for larger prime fields. Normalized targets, extension fields,
-  proof-uncovered primes, and nonsplit infinity remain unsupported. The
+  claim for larger prime fields. A separate typed composition now supports
+  Montgomery targets admitted by the same proof gate. Edwards targets,
+  extension fields, proof-uncovered primes, and nonsplit infinity remain
+  unsupported. The
   exhaustive `F_{p²}` counter keeps its explicit `p ≤ 4096` enumeration bound.
   [pcc:unverified]
 - The mirrored `PrimeMontgomeryAdapterP` implements the checked degree-one
@@ -167,9 +185,16 @@ general wide-prime support. [pcc:unverified]
   `B*y^2=x^3+A*x^2+x` and its short-Weierstrass model. It validates canonical
   affine/projective points, preserves infinity, and exposes both directions.
   Exhaustive small-field tests and one implementation-separated small
-  group-law control exercise only this generic model conversion. It is not a
-  cover constructor, induced Jacobian map, subgroup-transfer certificate,
-  independent catalog oracle, solver, or speedup. [pcc:unverified]
+  group-law control exercise this generic model conversion. The mirrored
+  `PrimeMontgomeryQuadraticCoverP` composes that degree-one isomorphism with
+  the degree-two split-sextic cover, retains original Montgomery coordinates
+  at its public target boundary, and supplies target arithmetic, pullback,
+  arbitrary-class pushforward, deck action, and certificates for
+  `pi_*pi^*=[2]` and `pi^*pi_*=1+deck_*`. Its public controls exhaust one
+  `F_7` fixture with 12 target points and 72 balanced classes and separately
+  exercise `B=2,c=1` on a 120-class source. Those are bounded production-path
+  controls, not an independent combined-map oracle, catalog-wide subgroup
+  certificate, solver, or speedup. [pcc:unverified]
 
 Generic pullback/pushforward across other cover families, full-Jacobian
 relation collection or target decomposition, production key recovery,
@@ -196,9 +221,11 @@ full-Jacobian index calculus, scaling, or a speed result. See the mirrored
 ## Source parity
 
 The latest mirrored implementation source is crypto commit
-`e0ae0fe5d09c0492a8b50600e88d0b9da68afef1` for the generic model adapter and
-prime-module routing. The widened prime transfer remains pinned to
-`153ac585d3b1ece0ebb0d49312b13267f651c94b`; the original audit baseline is
+`5c6e43a6f0cffe0afc4c962ff54056716cf6437e` for the composed Montgomery
+transfer, direct cover dependency, and prime-module routing. The degree-one
+model adapter remains pinned to `e0ae0fe5d09c0492a8b50600e88d0b9da68afef1`;
+balanced arithmetic and deterministic primality remain pinned to
+`153ac585d3b1ece0ebb0d49312b13267f651c94b`. The original audit baseline is
 `5874ce8b393dccc4c735cc7ca5a47de7fe196c59`. Unchanged prime-field files remain
 bound to `3b8664a466efd56121509cd77866a07e3cb55741`. The SHA-256 values below record
 the mirrored file identities. From the repository root, run
@@ -213,11 +240,12 @@ checkout and compare the recorded source bytes.
 | `src/binary_ecc/cover_transfer.rs` | `6cb5ab1edb141b48b9a9767fc63fe95ba1aac217` | `suite/src/binary_ecc/cover_transfer.rs` | exact: `e1336ef5e5fb6ab32d58be956e72a8732adc43aca30d46a4f8ce45b03cdcdad5` |
 | `src/binary_ecc/mod.rs` | `6cb5ab1edb141b48b9a9767fc63fe95ba1aac217` | `suite/src/binary_ecc/mod.rs` | adapter: source `22668e7636d35b175c80505307d40cae32f1a1b1e8bec9b1c0239bebb11b3d51`, mirror `dcf9aa0c6dee67aebf5cc8624288ceb4d6a5eabff67ebf7aecae274f741a0382` |
 | `src/prime_hyperelliptic/balanced.rs` | `153ac585d3b1ece0ebb0d49312b13267f651c94b` | `suite/src/prime_hyperelliptic/balanced.rs` | exact: `5a5f275021cf901e44a2a2a0e3fb9238e55da2772a1620ec153d0d8e4461d451` |
-| `src/prime_hyperelliptic/cover_transfer.rs` | `153ac585d3b1ece0ebb0d49312b13267f651c94b` | `suite/src/prime_hyperelliptic/cover_transfer.rs` | exact: `4ac06190059262ab96b9ebc80f84ee27a3d9a660d8b4e05186ea7c8c5362724e` |
+| `src/prime_hyperelliptic/cover_transfer.rs` | `5c6e43a6f0cffe0afc4c962ff54056716cf6437e` | `suite/src/prime_hyperelliptic/cover_transfer.rs` | exact: `10bb0b0fd2c35b8fafb9e5570c01c5ff597f43a71bdac49a9b9f7e51ad5093a4` |
 | `src/prime_hyperelliptic/curve.rs` | `3b8664a466efd56121509cd77866a07e3cb55741` | `suite/src/prime_hyperelliptic/curve.rs` | exact: `7a769bfb7abfe92ce06da7c02340f2a2426827d8066ebef510375149b8c3d5ad` |
 | `src/prime_hyperelliptic/fp2.rs` | `3b8664a466efd56121509cd77866a07e3cb55741` | `suite/src/prime_hyperelliptic/fp2.rs` | exact: `b833bdff5247f2eea0cde7feb89d0378cfe8305671f9065d2dae7ab538c03e55` |
 | `src/prime_hyperelliptic/model_transfer.rs` | `e0ae0fe5d09c0492a8b50600e88d0b9da68afef1` | `suite/src/prime_hyperelliptic/model_transfer.rs` | exact: `cf8d723a0aadd9a4bbdcd2dd56e581ee4bdc0253513d6da9deba95fc5f67ec50` |
-| `src/prime_hyperelliptic/mod.rs` | `e0ae0fe5d09c0492a8b50600e88d0b9da68afef1` | `suite/src/prime_hyperelliptic/mod.rs` | operation-pricing adapter: source `c87c2681b51c052582e3f1389b9bcd58c5ca38797c58e6a8914459cef21b0ffd`, mirror `868f49f44274ca5239447eccd4b1a4b0caf259c874612aa0b670301ec4fb63e2` |
+| `src/prime_hyperelliptic/normalized_cover_transfer.rs` | `5c6e43a6f0cffe0afc4c962ff54056716cf6437e` | `suite/src/prime_hyperelliptic/normalized_cover_transfer.rs` | exact: `35f81b57d72b4f12e1c14a2392e2510982ca9225843117798c0f1e80d16a571a` |
+| `src/prime_hyperelliptic/mod.rs` | `5c6e43a6f0cffe0afc4c962ff54056716cf6437e` | `suite/src/prime_hyperelliptic/mod.rs` | operation-pricing adapter: source `e199bbc9bd33e6df119f4f71a153737f7bdf6e1da3303fc702f6347a4a8e6766`, mirror `32b996fe614230480c11edd695cd778018fac0d7443d6a1f3907d4bf79c78bed` |
 | `src/prime_hyperelliptic/fp_poly.rs` | `3b8664a466efd56121509cd77866a07e3cb55741` | `suite/src/prime_hyperelliptic/fp_poly.rs` | selected domain-binding adapter: source `b5d1a1ba5e95d8d0dd06b71757567fb559adbdd09b1ab623ae76e0049ee593c2`, mirror `44f7af14d22bed78d85c4bd009ccce7197fa9257e7ff56164c8d891303e49590` |
 | `src/prime_hyperelliptic/primality.rs` | `153ac585d3b1ece0ebb0d49312b13267f651c94b` | `suite/src/prime_hyperelliptic/primality.rs` | exact: `3b055ac166717960963e4e80b7d75eaba6c1681a7bc2e7ddfbb0d4af4d5aaf1c` |
 
@@ -228,7 +256,8 @@ those declared transformations. The polynomial adapter
 ports the required coefficient-field equality guard and regression test,
 while preserving cryptanalysis's pre-existing lack of crypto's unrelated
 `pow_mod` helper. The prime-module adapter omits only crypto's operation-pricing
-module while retaining the model adapter and its public exports. The model
-adapter, balanced arithmetic, induced-map, and deterministic-primality modules
-are byte-exact. Exact machine-readable identities and adapter rules live in
-[`source-parity.json`](source-parity.json).
+module while retaining the model adapter, composed-cover module, and their
+public exports. The model adapter, composed Montgomery transfer, direct cover,
+balanced arithmetic, and deterministic-primality modules are byte-exact at
+their recorded per-file revisions. Exact machine-readable identities and
+adapter rules live in [`source-parity.json`](source-parity.json).
