@@ -153,6 +153,41 @@ project pins Lean `v4.35.0-rc4` and Mathlib revision
 seven `#print axioms` results are in `build-canonical-lift-torsion-output.txt`;
 each theorem uses only `propext`, `Classical.choice`, and `Quot.sound`.
 
+## Ordinary anomalous exception
+
+The prime-to-`p` premise in a canonical-lift argument needs an explicit
+group-order condition. The actual nonsingular elliptic curve
+`E: y²=x³+3x+2` over `F₅` has four affine solutions,
+`(1,1), (1,4), (2,1), (2,4)`, plus infinity. Thus `#E(F₅)=5` and its
+Frobenius trace is `5+1−5=1`. The curve is ordinary by the standard
+[trace criterion](https://math.mit.edu/classes/18.783/2015/LectureNotes14.pdf):
+supersingularity over a finite field is equivalent to trace divisible by its
+characteristic. Nevertheless its group order is divisible by the field prime.
+
+The older `research/exotic_ecdlp_20261021/PROOFS.md` T3 sketch states both
+that the Frobenius-fixed subgroup is isomorphic to `E(F_p)` and that it has
+prime-to-`p` order for every ordinary curve. The two statements cannot both
+hold for this curve. Its formal-group step also uses the stronger condition
+that the unit-root eigenvalue differs from one modulo `p`; ordinary reduction
+alone gives a nonzero unit root. State `p ∤ #E(F_p)` (equivalently trace
+`≠1 mod p`) when using that step. The earlier H3 digit measurements used
+recorded non-anomalous curves, so this exception changes the proof hypothesis
+and does not alter those measured rows.
+
+| Result | Lean declaration | Exact hypotheses and status |
+| --- | --- | --- |
+| Smooth curve over `F₅` | `XedniAnomalousOrdinaryException.curve_elliptic` | Discriminant of the exact short model is nonzero in `ZMod 5`; checked |
+| Coordinate equation matches Mathlib's point predicate | `XedniAnomalousOrdinaryException.nonsingular_iff_coordinates` | Same curve and field; checked |
+| Actual elliptic group has five points | `XedniAnomalousOrdinaryException.curve_group_card` | Equivalence to four checked affine coordinate solutions plus infinity; checked |
+| Anomalous order and trace one | `XedniAnomalousOrdinaryException.anomalous_order`, `trace_one` | Actual point-group cardinality equals the field prime and trace is one; checked |
+
+Run `lake build AnomalousOrdinaryException`. The pinned build and all five
+`#print axioms` audits are preserved in `build-anomalous-exception-output.txt`;
+each uses only `propext`, `Classical.choice`, and `Quot.sound`. Mathlib does
+not expose an ordinarity predicate for this curve here, so the final
+ordinary classification uses the cited finite-field trace criterion and the
+Lean-checked exact trace.
+
 ## Selector-invariant fixed-family bound
 
 Let `q` be prime and `S` a fixed finite family of integer pairs `(a,b)` with `b mod q ≠ 0`. For **each** public pair `uv ∈ (ZMod q)²`, permit a different additive group `L(uv)`, a homomorphism `reduce_uv : L(uv) →+ ZMod q`, and a selector of two points in `L(uv)` reducing to the two coordinates of `uv`. If one selected pair satisfies `a P+b Q=0` for some vector in `S`, the homomorphism gives `(a mod q)u+(b mod q)v=0`. Hence every selected success lies in the union of the public relation lines indexed by `S`. Each line has `q` pairs, so **at most `|S|q` of the `q²` public pairs can succeed**, regardless of how the curve and lift are selected from the public pair. Under the separate assumption that the public pair is uniform over `(ZMod q)²`, the success fraction is at most `min(1, |S|/q)`.
