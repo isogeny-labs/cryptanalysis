@@ -32,7 +32,7 @@ records exact implementation/file/roster/tool hashes but is not authorization.
 - Repository: `/workspace/cryptanalysis`
 - Branch: `codex/xedni-breakthrough-20261117`
 - Draft PR: `#1768`
-- Current committed head before the authorization record: `e8a6ee3ad`
+- Current committed head before this resume update: `12eba9ab8`
 - Core implementation commit: `cb8c4cf48bfba1e76f90536a62c029810c45c1a4`
 - Blocked freeze/control commit: `e5fb9a69a715ea9ebfce48d0fad873c650443917`
 - Control PCC record: `PCC-20261119-f7f325`, standing `unverified`
@@ -50,6 +50,18 @@ request-to-evidence ledger. This resolves the human authorization question but
 does not waive or satisfy the independently required checkpoint, tool,
 executor, certificate, inference, map, or power gates. No natural row was
 started in response to the authorization.
+
+The authorization evidence and exact checkpoint retry are now committed. The
+retry at pushed head `bfefa7c0a2a668643e3aabef5b6796b70a743b93` still failed
+for absent upload transport and started zero rows. Locally solvable scaffolds
+were then added in `public_boundary.py`, `natural_executor.py`,
+`row_provenance.py`, and `mixed_censoring.py`. The full host suite now has 271
+passes and six expected host-`gp` skips. These modules deliberately remain
+outside `FREEZE.json`: public boundary and executor declare
+`PRODUCTION_READY=false`, provenance returns `HASH_GRAPH_ONLY` with
+`production_eligible=false`, and cluster-bootstrap censoring remains blocked.
+The review is `AUTHORIZED_IMPLEMENTATION_REVIEW_20261119.md`; claim
+`PCC-20261119-de90e5` is unverified.
 
 At pushed head `cd0e9e91c`, `checkpoint.sh push` and `gate` both exited 1.
 The gate reported no `ecc-challenges-new` profile, no
@@ -102,13 +114,16 @@ Evidence summary: `research/xedni_rank_decay_20261118/CONTROL_RESULTS.json`.
 1. `scripts/checkpoint.sh push` and `gate` have not succeeded for this head.
 2. `FREEZE.json` explicitly refuses natural authorization.
 3. No licensed immutable Magma executable/image is available.
-4. The natural executor and complete work-accounting artifact chain are absent.
-5. A hash-linked redacted public object/private evaluator subprocess boundary
-   is absent; in-process `uses_source_scalars=false` assertions are insufficient.
-6. The exact frozen-row/raw-transcript/relation-inventory provenance validator
-   is incomplete.
-7. Production inference lacks rigorous minimization over all mixed per-prime
-   unresolved allocations.
+4. A non-production natural-executor state machine exists, but no runner
+   command, signed verifier backend, or freeze integration exists.
+5. A hash-linked redacted public/private module and isolated M3 formula/direct
+   baseline exist, but full lift/relation execution is not runner-integrated
+   or freeze-authorized.
+6. The provenance validator replays many semantics but deliberately remains
+   `HASH_GRAPH_ONLY`; full freeze/tool/lift/local/rank-cascade verification is
+   incomplete.
+7. Aggregate conditional-Poisson mixed allocation is implemented; binomial is
+   state-limited and cluster-bootstrap nested allocation remains blocked.
 8. Negative useful-recovery labels lack an exhaustive relation-lattice or
    selected-point independence certificate.
 9. The `r=7..9` cubic-to-Jacobian selected-point map is absent.
@@ -132,8 +147,8 @@ None. No natural process or container is running.
    without `CHECKPOINT_SKIP`.
 3. If checkpoint transport still has no token/profile, preserve the exact
    failure and request the missing transport credential.
-4. If transport succeeds, still run no natural row: Magma,
-   executor, public/private separation, provenance, mixed-censoring, relation
+4. If transport succeeds, still run no natural row: Magma, signed verifier,
+   runner/freeze integration, full provenance, cluster censoring, relation
    inventory, map, and power gates remain independently open.
 5. The first future allowed natural stage, after every gate is closed and a new
    authorizing freeze is committed/checkpointed, is the excluded two-row per
