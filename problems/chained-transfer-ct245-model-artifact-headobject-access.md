@@ -4,7 +4,7 @@
 - **Kind:** access/tool limit; downstream native measurement qualification remains open
 - **Affected work:** [CT244/CT245 PR #1871](https://github.com/isogeny-labs/cryptanalysis/pull/1871), [CT245 preregistered protocol](../experiments/chained-transfer-public-target/norm-point-reuse-01/CT245_NATIVE_TYPECHECK_PROTOCOL.md), [CT125 PR #1533](https://github.com/isogeny-labs/cryptanalysis/pull/1533), and the owner-priority original 695/701-record norm reuse experiment
 - **Next action owner:** approved object-storage credential / access-policy administrator; native typecheck maintainer after access recovery
-- **Last updated:** 2026-11-19
+- **Last updated:** 2026-11-19 (CT246 credential preflight added)
 
 ## Problem
 
@@ -39,3 +39,18 @@ The first two conditions only unblock typechecking; they are insufficient for a 
 ## Resolution and history
 
 2026-11-19 — first authenticated exact-head typecheck attempt stopped at three forbidden object reads. Source identity and source-only checks passed. All native compilation and performance conclusions remain **unresolved**. [pcc:unverified]
+
+## CT246 read-only credential discriminator — new diagnostic evidence (2026-11-19)
+
+The preregistered [CT246 protocol](../experiments/chained-transfer-public-target/norm-point-reuse-01/CT246_AUTH_PREFLIGHT_PROTOCOL.md) used only the preapproved GitHub Secrets and a bounded **read-only** STS existence check plus `HeadObject` on one already-pinned manifest key. [GitHub Actions run #44626537182](https://github.com/isogeny-labs/cryptanalysis/actions/runs/44626537182), job `135921752895`, **completed the diagnostic successfully** on PR head `3ed98e1f052d9442ec257d9e9581d88edc6bb27f`. Its sanitized trace reported:
+
+```text
+CT246_CREDENTIALS_PRESENT=true
+CT246_STS_EXIT=254 CT246_STS_CLASS=invalid_token
+CT246_HEAD_EXIT=254 CT246_HEAD_CLASS=forbidden_403
+CT246_RESULT=auth_not_established_or_STS_policy_denied
+```
+
+This **narrows the infrastructure blocker**: the credentials were injected and the read-only caller-identity operation was rejected with a token-invalid error class, before we can attribute S3's 403 to an object ACL or missing object. Classification is from a bounded error-pattern matcher (`InvalidClientTokenId`, `InvalidAccessKeyId` or `UnrecognizedClientException`), **not** a disclosure of which credential, account ID, IAM principal or underlying token failed. A valid-but-unauthorized S3 object remains untested until usable credentials are restored. The [first diagnostic run #44626363002](https://github.com/isogeny-labs/cryptanalysis/actions/runs/44626363002) had exited early due to GitHub Bash's inherited `-e`; commit `3ed98e1f` fixed that **diagnostic control-flow bug**, without modifying the original data path.
+
+**Revised next discriminating step:** the authorized credential administrator should verify current `ARTIFACTS_AWS_ACCESS_KEY_ID` / `ARTIFACTS_AWS_SECRET_ACCESS_KEY` secret values and their intended AWS identity/rotation (including any required temporary session credential) **privately**, without posting secrets in CI or PRs. First require a successful sanitized STS caller-identity-existence result, then recheck the same exact object key and all six original SHA/length-verified manifest objects via the unchanged CT245 workflow. If STS succeeds and S3 still denies, investigate bucket/key permissions at that point. No alternate bucket, synthetic model, broader IAM grant or bypass is authorized. This is a credential-authentication diagnostic, **not** a demonstrated native compile, norm-reuse cost, full 695/701 replay, complete ECDLP advantage or signed PCC. [pcc:unverified]
