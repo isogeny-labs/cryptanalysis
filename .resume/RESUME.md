@@ -32,7 +32,7 @@ records exact implementation/file/roster/tool hashes but is not authorization.
 - Repository: `/workspace/cryptanalysis`
 - Branch: `codex/xedni-breakthrough-20261117`
 - Draft PR: `#1768`
-- Current committed head before this resume update: `b3ca94099`
+- Current committed head before the authorization record: `e8a6ee3ad`
 - Core implementation commit: `cb8c4cf48bfba1e76f90536a62c029810c45c1a4`
 - Blocked freeze/control commit: `e5fb9a69a715ea9ebfce48d0fad873c650443917`
 - Control PCC record: `PCC-20261119-f7f325`, standing `unverified`
@@ -43,6 +43,13 @@ The prospective design is in
 parameters, PARI image, and release binary, but deliberately sets
 `natural_rows_authorized=false`. `runner.py` has no natural-row command. No
 natural calibration, sentinel, discovery, or replication row exists.
+
+At 2026-11-19T05:34:20Z the user explicitly said `Authorized to run`.
+`research/xedni_rank_decay_20261118/RUN_AUTHORIZATION_20261119.md` records the
+request-to-evidence ledger. This resolves the human authorization question but
+does not waive or satisfy the independently required checkpoint, tool,
+executor, certificate, inference, map, or power gates. No natural row was
+started in response to the authorization.
 
 At pushed head `cd0e9e91c`, `checkpoint.sh push` and `gate` both exited 1.
 The gate reported no `ecc-challenges-new` profile, no
@@ -117,14 +124,18 @@ None. No natural process or container is running.
 
 ## Next steps
 
-1. Keep `natural_rows_authorized=false` and run no natural row.
-2. If a valid checkpoint profile or token is attached, rerun
+1. Keep `natural_rows_authorized=false` while the independently required
+   technical gates remain open; do not misrecord user authorization as a
+   completed or executable freeze.
+2. Commit and push the authorization ledger, then rerun
    `scripts/checkpoint.sh push` and `gate` on the then-current pushed head,
    without `CHECKPOINT_SKIP`.
-3. If transport succeeds, still run no natural row: Magma,
+3. If checkpoint transport still has no token/profile, preserve the exact
+   failure and request the missing transport credential.
+4. If transport succeeds, still run no natural row: Magma,
    executor, public/private separation, provenance, mixed-censoring, relation
    inventory, map, and power gates remain independently open.
-4. The first future allowed natural stage, after every gate is closed and a new
+5. The first future allowed natural stage, after every gate is closed and a new
    authorizing freeze is committed/checkpointed, is the excluded two-row per
    cell 16/18-bit calibration. It is not an inference result.
 
