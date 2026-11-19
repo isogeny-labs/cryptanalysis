@@ -68,7 +68,7 @@ that reshape the next experiment [pcc:unverified]:
 - `paired_jksst_runner.py run` invokes `scripts/checkpoint.sh gate` before row
   zero and aborts nonzero if `.resume/RESUME.md` is incomplete or S3 upload is
   unavailable (tracked in
-  `problems/xedni-affine-cvp-checkpoint-access.md`). [pcc:unverified]
+  `problems/xedni-full-rank-checkpoint-access.md`). [pcc:unverified]
 
 ## Frozen command (to run only after `scripts/checkpoint.sh gate` passes)
 

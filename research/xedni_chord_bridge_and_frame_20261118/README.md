@@ -149,7 +149,7 @@ cubic-dependent relations. [pcc:unverified]
 | Fixed-flex divisor transport & collinear-alias equivalence | Implemented, kernel-checked locally (`[pcc:unverified]`) | `origin_local_iff_fixed_transport` and `collinear_triple_shifted_relation` in `GoodReductionChordBridge.lean` |
 | Forensic audit of immutable Nov 17 `r=6..9` panel | Complete (`[pcc:unverified]`) | `audit_nov17_panel.py` + `PANEL_DECOMPOSITION.json` (`66/67` overall and `58/58` `r=7..9` are pre-lift `Z^2` collinearities) |
 | JKSST `PGL_3(F_p)` + 3D-LLL + homogeneous cubic lift in Rust & CLI | Implemented, tested (`[pcc:unverified]`) | `suite/src/cryptanalysis/xedni_lift.rs`, `ca-icx --model jksst-plane-cubic`, 16 unit + 3 CLI tests, strict Clippy, `check.py` binding |
-| Fresh-seed natural-lift JKSST non-collinear panel | Blocked on S3 checkpoint access (`[pcc:unverified]`) | Prospective `PROTOCOL.md` + `paired_jksst_runner.py` ready; `scripts/checkpoint.sh gate` lacks upload token/profile (`problems/xedni-affine-cvp-checkpoint-access.md`) |
+| Fresh-seed natural-lift JKSST non-collinear panel | Blocked on S3 checkpoint access (`[pcc:unverified]`) | Prospective `PROTOCOL.md` + `paired_jksst_runner.py` ready; `scripts/checkpoint.sh gate` lacks upload token/profile (`problems/xedni-full-rank-checkpoint-access.md`) |
 | Sub-rho prime-field ECDLP improvement | Not established (`[pcc:unverified]`) | Lowering `r=9` height from `~18.6` to `~8.0 log_2(p)` bits is a representation/height improvement; conditional JKSST / Theorem X `O(|M|/q)` barrier and matched Pollard-rho comparison remain open |
 
 ## Sources checked

@@ -22,11 +22,16 @@ import json
 import math
 from pathlib import Path
 import subprocess
+import sys
 import tempfile
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from audit_nov17_panel import det_bareiss, old as old_sweep  # noqa: E402
 
 
 ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_BINARY = ROOT / "suite/target/release/ca-icx"
+XEDNI_LIFT_RS = ROOT / "suite/src/cryptanalysis/xedni_lift.rs"
 CONTROL_PRIMES = (67, 251, 4091, 65519, 1048571, 268435399)
 
 
@@ -63,26 +68,6 @@ def balanced(val: int, p: int) -> int:
 def incidence(pt: tuple[int, int, int]) -> list[int]:
     x, y, z = pt
     return [x**3, x * x * y, x * y * y, y**3, x * x * z, x * y * z, y * y * z, x * z * z, y * z * z, z**3]
-
-
-def det_bareiss(mat: list[list[int]]) -> int:
-    n = len(mat)
-    a = [row[:] for row in mat]
-    sign = 1
-    prev = 1
-    for k in range(n - 1):
-        piv = next((i for i in range(k, n) if a[i][k] != 0), None)
-        if piv is None:
-            return 0
-        if piv != k:
-            a[k], a[piv] = a[piv], a[k]
-            sign = -sign
-        for i in range(k + 1, n):
-            for j in range(k + 1, n):
-                a[i][j] = (a[i][j] * a[k][k] - a[i][k] * a[k][j]) // prev
-            a[i][k] = 0
-        prev = a[k][k]
-    return sign * a[n - 1][n - 1]
 
 
 def prim_kernel_9x10(pts: list[tuple[int, int, int]]) -> list[int]:
@@ -213,18 +198,10 @@ def run_ca_icx_jksst(
 def run_ca_icx_naive_affine(
     binary: Path, p: int, source_cubic: list[int], pts: list[tuple[int, int, int]]
 ) -> dict:
-    # Exact replica of sweep.py's Z=1 balanced affine-congruence call.
-    spec = importlib.util.spec_from_file_location(
-        "old_sweep", ROOT / "research/xedni_lift_success_20261112/sweep.py"
-    )
-    assert spec and spec.loader
-    old_mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(old_mod)
-
     bal_pts = [(balanced(x, p), balanced(y, p), 1) for x, y, _ in pts]
     matrix = [incidence(pt) for pt in bal_pts]
     values = [sum(a * b for a, b in zip(row, source_cubic)) for row in matrix]
-    sol = old_mod.solve_affine(matrix, [-v // p for v in values], 10)
+    sol = old_sweep.solve_affine(matrix, [-v // p for v in values], 10)
     assert sol is not None
     delta, kernel, rank = sol
     assert rank == len(pts)
@@ -320,7 +297,7 @@ def planted_unimodular_frame_recovery_control() -> dict:
 
 
 def build_control_report(binary: Path) -> dict:
-    binary_sha = hashlib.sha256(binary.read_bytes()).hexdigest()
+    rust_source_sha = hashlib.sha256(XEDNI_LIFT_RS.read_bytes()).hexdigest()
     source_cubic = [1, 0, 0, 0, 0, 0, -1, 3, 0, 5]
     rows = []
 
@@ -403,8 +380,8 @@ def build_control_report(binary: Path) -> dict:
     planted = planted_unimodular_frame_recovery_control()
     return {
         "schema": "cryptanalysis.xedni-jksst-frame-height-control/v1",
-        "binary_path": str(binary.relative_to(ROOT)),
-        "binary_sha256": binary_sha,
+        "rust_source_path": str(XEDNI_LIFT_RS.relative_to(ROOT)),
+        "rust_source_sha256": rust_source_sha,
         "curve_equation_mod_p": "y^2 = x^3 + 3x + 5",
         "scope": "deterministic fixed-instance representation and height-scaling controls; not a natural-lift relation-yield or timing benchmark",
         "r9_scaling_rows": rows,
@@ -423,8 +400,8 @@ def main() -> None:
     args = parser.parse_args()
 
     if args.command == "selftest":
-        planted = planted_unimodular_frame_recovery_control()
         report = build_control_report(args.binary)
+        planted = report["planted_gl3_frame_recovery_control"]
         last = report["r9_scaling_rows"][-1]
         assert last["p"] == 268435399
         assert last["jksst_126frames_projective_lll"]["coefficient_bits"] * 2 < (

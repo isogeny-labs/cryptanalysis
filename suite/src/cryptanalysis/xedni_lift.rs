@@ -13,7 +13,12 @@
 //!   plane cubic this is computed directly from the cubic and its Hessian,
 //!   avoiding a potentially unavailable rational-flex conversion;
 //! * exact linear constraints and coefficient congruences are checked before
-//!   the search and again on the result.
+//!   the search and again on the result;
+//! * for general plane cubics over `F_p` (`JksstPlaneCubicProblem`), Steps 3--6
+//!   normalize four general-position points via `PGL_3(F_p)` to the standard
+//!   projective frame, lift the remaining `r - 4` points in `Z^3` via 3D LLL,
+//!   detect curve-independent collinear triples (`collinear_point_triples`),
+//!   and optimize the homogeneous projective-congruence sublattice.
 //!
 //! This is a lift optimizer, not a discrete-log attack.  It can improve a
 //! constant in the classic prime-field construction, but it does not evade the

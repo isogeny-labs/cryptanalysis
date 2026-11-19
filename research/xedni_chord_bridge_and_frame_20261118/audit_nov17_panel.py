@@ -67,12 +67,27 @@ def det_bareiss(matrix: list[list[int]]) -> int:
     return sign * a[n - 1][n - 1]
 
 
-def transport_to_fixed_flex(local_relation: list[int], origin_pair: list[int]) -> list[int]:
+def transport_to_fixed_flex(local_relation: list[int] | tuple[int, ...], origin_pair: list[int] | tuple[int, int]) -> list[int]:
     s = sum(local_relation)
     fixed = list(local_relation)
     fixed[origin_pair[0]] += s
     fixed[origin_pair[1]] += s
     return fixed
+
+
+def is_collinear_alias(
+    local_relation: list[int] | tuple[int, ...],
+    origin_pair: list[int] | tuple[int, int],
+    points: list[tuple[int, int, int]],
+) -> bool:
+    fixed = transport_to_fixed_flex(local_relation, origin_pair)
+    supp = [i for i, val in enumerate(fixed) if val != 0]
+    return (
+        len(supp) == 3
+        and {abs(fixed[i]) for i in supp} == {1}
+        and fixed[supp[0]] == fixed[supp[1]] == fixed[supp[2]]
+        and det3(points[supp[0]], points[supp[1]], points[supp[2]]) == 0
+    )
 
 
 def reconstruct_trial_points(
@@ -240,13 +255,7 @@ def analyze_panel(rows_path: Path = ROWS_PATH) -> dict:
 
             fixed = transport_to_fixed_flex(row["relation"], row["origin_pair"])
             supp = [i for i, val in enumerate(fixed) if val != 0]
-            is_collinear_alias = (
-                len(supp) == 3
-                and {abs(fixed[i]) for i in supp} == {1}
-                and fixed[supp[0]] == fixed[supp[1]] == fixed[supp[2]]
-                and det3(points[supp[0]], points[supp[1]], points[supp[2]]) == 0
-            )
-            if is_collinear_alias:
+            if is_collinear_alias(row["relation"], row["origin_pair"], points):
                 collinear_certified += 1
                 by_r[r_key]["collinear_certified"] += 1
                 by_prime[p_key]["collinear_certified"] += 1

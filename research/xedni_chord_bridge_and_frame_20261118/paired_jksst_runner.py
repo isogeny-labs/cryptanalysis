@@ -16,8 +16,12 @@ import os
 from pathlib import Path
 import random
 import subprocess
+import sys
 import tempfile
 import time
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from audit_nov17_panel import is_collinear_alias as _is_collinear_alias  # noqa: E402
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -29,34 +33,10 @@ nov17 = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(nov17)
 
 
-def det3(p1: tuple[int, int, int], p2: tuple[int, int, int], p3: tuple[int, int, int]) -> int:
-    return (
-        p1[0] * (p2[1] * p3[2] - p2[2] * p3[1])
-        - p1[1] * (p2[0] * p3[2] - p2[2] * p3[0])
-        + p1[2] * (p2[0] * p3[1] - p2[1] * p3[0])
-    )
-
-
-def transport_to_fixed_flex(relation: tuple[int, ...], u: int, v: int) -> list[int]:
-    s = sum(relation)
-    fixed = list(relation)
-    fixed[u] += s
-    fixed[v] += s
-    return fixed
-
-
 def is_collinear_alias(
     relation: tuple[int, ...], u: int, v: int, points: list[tuple[int, int, int]]
 ) -> bool:
-    fixed = transport_to_fixed_flex(relation, u, v)
-    supp = [i for i, val in enumerate(fixed) if val != 0]
-    if len(supp) != 3:
-        return False
-    if {abs(fixed[i]) for i in supp} != {1}:
-        return False
-    if not (fixed[supp[0]] == fixed[supp[1]] == fixed[supp[2]]):
-        return False
-    return det3(points[supp[0]], points[supp[1]], points[supp[2]]) == 0
+    return _is_collinear_alias(relation, (u, v), points)
 
 
 def find_noncollinear_target_first_relation(

@@ -332,7 +332,7 @@ def write_vector_pdf(panel_data: dict, frame_data: dict, out_path: Path) -> None
         ("F1", 9.0, "  beats O(p^2/3), converting mod-p collinear triples (O(r^3/p)) into Z-collinear lifts deterministically."),
         ("F1", 9.0, "  Those events remain O(1/p) finite-field triple coincidences and do not speed up ECDLP."),
         ("F1", 9.0, "- What is NOT established: no new natural-lift experiment row was run (scripts/checkpoint.sh gate has no"),
-        ("F1", 9.0, "  S3 upload token/profile in this container; tracked in problems/xedni-affine-cvp-checkpoint-access.md)."),
+        ("F1", 9.0, "  S3 upload token/profile in this container; tracked in problems/xedni-full-rank-checkpoint-access.md)."),
         ("F1", 9.0, "  Lowering cubic height from ~18.6 log2(p) to ~8.0 log2(p) does not overturn the conditional JKSST /"),
         ("F1", 9.0, "  Theorem X O(|M|/q) per-trial barrier or beat Pollard rho. PROTOCOL.md specifies the fresh-seed paired"),
         ("F1", 9.0, "  JKSST non-collinear panel and selected-lift canonical-height measurement to run once checkpointed."),
