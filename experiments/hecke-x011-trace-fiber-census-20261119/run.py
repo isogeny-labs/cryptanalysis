@@ -1,6 +1,7 @@
 """Partition regular X_0(11)(F_p) points by absolute source trace."""
 from collections import Counter, defaultdict
 from pathlib import Path
+import gzip
 import hashlib
 import json
 import time
@@ -85,11 +86,14 @@ for p in P["primes"]:
     assert time.monotonic() - started < P["resource_cap_seconds"]
 
 raw = "".join(json.dumps(x, sort_keys=True, separators=(",", ":")) + "\n" for x in ledger)
-(H / "points.jsonl").write_text(raw)
+packed = gzip.compress(raw.encode(), compresslevel=9, mtime=0)
+(H / "points.jsonl.gz").write_bytes(packed)
 result = {"schema": "x011-trace-fiber-result-v1", "status": "complete",
           "protocol_sha256": hashlib.sha256((H / "protocol.json").read_bytes()).hexdigest(),
           "source_sha256": P["j_source_sha256"],
           "ledger_sha256": hashlib.sha256(raw.encode()).hexdigest(),
+          "ledger_gzip_sha256": hashlib.sha256(packed).hexdigest(),
+          "ledger_gzip_bytes": len(packed),
           "ledger_rows": len(ledger), "summary": summary,
           "elapsed_wall_seconds": round(time.monotonic() - started, 3)}
 (H / "result.json").write_text(json.dumps(result, sort_keys=True, indent=2) + "\n")

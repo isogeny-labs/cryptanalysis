@@ -1,6 +1,7 @@
 """Independent checked-Sage replay of the trace-fiber point ledger."""
 from collections import Counter
 from pathlib import Path
+import gzip
 import hashlib
 import json
 from sage.all import EllipticCurve, GF
@@ -13,7 +14,10 @@ source = H / P["j_source"]
 blob = source.read_bytes()
 assert hashlib.sha256(blob).hexdigest() == P["j_source_sha256"]
 terms = json.loads(blob)["A_terms"]
-raw = (H / "points.jsonl").read_bytes()
+packed = (H / "points.jsonl.gz").read_bytes()
+assert len(packed) == R["ledger_gzip_bytes"]
+assert hashlib.sha256(packed).hexdigest() == R["ledger_gzip_sha256"]
+raw = gzip.decompress(packed)
 assert hashlib.sha256(raw).hexdigest() == R["ledger_sha256"]
 ledger = [json.loads(line) for line in raw.splitlines()]
 assert len(ledger) == R["ledger_rows"]

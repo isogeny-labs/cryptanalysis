@@ -1,11 +1,12 @@
 """Retrospective exact-set comparison with two archived D79 class records."""
 from pathlib import Path
+import gzip
 import hashlib
 import json
 
 H = Path(__file__).resolve().parent
 R = json.loads((H / "result.json").read_text())
-ledger = [json.loads(line) for line in (H / "points.jsonl").read_text().splitlines()]
+ledger = [json.loads(line) for line in gzip.decompress((H / "points.jsonl.gz").read_bytes()).splitlines()]
 source = H / "archived-class-points.json"
 archive = json.loads(source.read_text())
 assert archive["schema"] == "x011-archived-class-points-v1"
