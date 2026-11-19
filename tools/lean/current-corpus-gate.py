@@ -1161,10 +1161,79 @@ RECEIPT_BOUND_SOURCES = {
         "checker": "research/xedni_lift_optimizer_20261101/lean/check.py",
         "checker_sha256": "2de54fd792c4664c9426f671f118faffd59c346fea31254fe18061fede261834",
         "namespace": "XedniAffineCoset",
+        "receipt": "research/xedni_lift_optimizer_20261101/lean/receipt.json",
+        "receipt_sha256": "061866fe58a06b0ed1e32efbf795a0d311360e2e14a3924c04e57b2f707396af",
+        "source_commit": "545de2e1c91a301b342b45317f402be4497647ba",
         "theorems": frozenset({"direction_span_closed", "candidate_preserves_divisibility",
                                "candidate_preserves"}),
     },
 }
+
+
+def receipt_source_context(path: str, record: dict) -> tuple[Path, dict[str, str]]:
+    """Replay an immutable historical receipt on its declared source revision."""
+    if "source_commit" not in record:
+        return ROOT, {}
+    revision = record["source_commit"]
+    require(isinstance(revision, str) and re.fullmatch(r"[0-9a-f]{40}", revision) is not None,
+            "invalid receipt source commit")
+    names = [path, record["checker"], record["receipt"]]
+    for name in names:
+        relative = Path(name)
+        require(not relative.is_absolute() and ".." not in relative.parts,
+                "unsafe receipt input path")
+        file = ROOT / relative
+        require(file.is_file() and not file.is_symlink()
+                and file.resolve().is_relative_to(ROOT.resolve()),
+                f"unsafe receipt input: {name}")
+    proof = (ROOT / path).read_bytes()
+    checker = (ROOT / record["checker"]).read_bytes()
+    raw_receipt = (ROOT / record["receipt"]).read_bytes()
+    require(hashlib.sha256(proof).hexdigest() == record["sha256"]
+            and hashlib.sha256(checker).hexdigest() == record["checker_sha256"],
+            "receipt proof or checker changed")
+    require(hashlib.sha256(raw_receipt).hexdigest() == record["receipt_sha256"],
+            "frozen receipt changed")
+    receipt = json.loads(raw_receipt)
+    require(isinstance(receipt, dict)
+            and receipt.get("schema") == "cryptanalysis.xedni-affine-lean-receipt/v1"
+            and receipt.get("source_commit") == revision,
+            "receipt source commit does not match its admission pin")
+    inputs = {path: proof, record["checker"]: checker, record["receipt"]: raw_receipt}
+    for field, relative in (("rust_sha256", "suite/src/cryptanalysis/xedni_lift.rs"),
+                            ("lattice_sha256", "suite/src/cryptanalysis/lattice.rs"),
+                            ("toolchain_sha256", "lean-toolchain")):
+        result = subprocess.run(["git", "cat-file", "blob", f"{revision}:{relative}"],
+                                cwd=ROOT, capture_output=True, timeout=60, check=False)
+        require(result.returncode == 0,
+                f"pinned historical source unavailable: {relative} at {revision}")
+        require(hashlib.sha256(result.stdout).hexdigest() == receipt[field],
+                f"pinned historical source hash mismatch: {relative}")
+        inputs[relative] = result.stdout
+    require(len(inputs) == 6, "overlapping receipt inputs")
+    context = Path(tempfile.mkdtemp(prefix="historical-receipt-", dir=evidence_directory()))
+    for relative, data in inputs.items():
+        target = context / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(data)
+    hashes = {name: hashlib.sha256(data).hexdigest() for name, data in inputs.items()}
+    (context / "context.json").write_text(json.dumps({
+        "schema": "cryptanalysis.receipt-source-context/v1",
+        "binding_scope": "historical_source_revision",
+        "source_commit": revision, "gate_sha256": LOADED_GATE_SHA256,
+        "github_sha": os.environ.get("GITHUB_SHA"), "inputs": hashes,
+    }, indent=2) + "\n")
+    hashes["context.json"] = digest(context / "context.json")
+    print(f"replaying historical source binding at {revision}: {context}", flush=True)
+    return context, hashes
+
+
+def check_receipt_context(context: Path, hashes: dict[str, str]) -> None:
+    for relative, expected in hashes.items():
+        file = context / relative
+        require(file.is_file() and not file.is_symlink()
+                and file.resolve().is_relative_to(context.resolve()) and digest(file) == expected,
+                f"historical receipt input changed during audit: {relative}")
 
 
 def check_receipt_bound_source(path: str) -> str:
@@ -1186,7 +1255,13 @@ def check_receipt_bound_source(path: str) -> str:
             and len(declared) == len(requested) == len(record["theorems"]),
             f"incomplete declaration audit in {path}")
     print(f"running receipt-bound checker: {record['checker']}", flush=True)
-    result = run(["python3", str(checker)], cwd=ROOT, timeout=900, failure_diagnostics=True)
+    context, context_hashes = receipt_source_context(path, record)
+    result = run(["python3", str(context / record["checker"])], cwd=context,
+                 timeout=900, failure_diagnostics=True)
+    check_receipt_context(context, context_hashes)
+    if context_hashes:
+        require(digest(ROOT / record["receipt"]) == record["receipt_sha256"],
+                "frozen receipt changed during audit")
     printed = re.findall(r"^'([^']+)' depends on axioms: \[([^]]*)\]$", result.stdout, re.MULTILINE)
     axiom_free = re.findall(r"^'([^']+)' does not depend on any axioms$", result.stdout, re.MULTILINE)
     printed_names = [name for name, _ in printed] + axiom_free

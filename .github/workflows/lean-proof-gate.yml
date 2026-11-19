@@ -64,7 +64,28 @@ jobs:
       - name: Exercise positive and negative proof fixtures
         run: tools/lean/selftest/run.sh
       - name: Refuse changed quartic sources and build pins
-        run: python3 -m unittest tools/lean/test_current_corpus_gate.py tools/lean/test_h112_admission.py tools/lean/test_chord_origin_admission.py
+        run: python3 -m unittest tools/lean/test_current_corpus_gate.py tools/lean/test_h112_admission.py tools/lean/test_chord_origin_admission.py tools/lean/test_historical_receipt_context.py
+      - name: Replay the exact historical affine-coset receipt context
+        env:
+          LEAN_CORPUS_EVIDENCE_DIR: ${{ runner.temp }}/lean-corpus-evidence
+        run: |
+          set -euo pipefail
+          head_before=$(git rev-parse HEAD)
+          git cat-file -e '545de2e1c91a301b342b45317f402be4497647ba^{commit}'
+          git -c gc.auto=0 fetch --no-tags --filter=blob:none origin \
+            718788b9a05908367346f393be954539f68a13b2 \
+            aa6ee7e2b1f757a7a78417b7322213eb52d0dd17 \
+            ba8ebf2dbaf6a668cd2a0e086186d6d569b69ff5
+          test "$(git rev-parse HEAD)" = "$head_before"
+          python3 - <<'PY_NATIVE'
+          import importlib.util
+          from pathlib import Path
+          path = Path('tools/lean/current-corpus-gate.py')
+          spec = importlib.util.spec_from_file_location('receipt_native_gate', path)
+          gate = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(gate)
+          gate.check_receipt_bound_source('research/xedni_lift_optimizer_20261101/lean/XedniAffineCoset.lean')
+          PY_NATIVE
       - name: Detect Hecke theorem sources
         id: hecke
         run: |
