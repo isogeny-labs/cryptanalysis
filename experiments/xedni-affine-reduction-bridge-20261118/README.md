@@ -21,6 +21,7 @@ The generic mathematical statement is: for a commutative ring `R`, field `S`, an
 | Certified identity and inverse additions | `XedniExceptionalSumReduction.reduce_certifiedStep` | The source point at infinity acts as identity, exact local inverses cancel, and regular unit-denominator affine additions reduce to field group addition; checked |
 | Finite sums with certified exceptional steps | `XedniExceptionalSumReduction.reduce_certifiedSum`, `equal_certifiedSums` | Nonempty finite lists of local affine points or infinity; every addition carries an identity, exact inverse, or regular affine certificate; checked |
 | Residue-vertical chord and projective limit | `XedniResidueVerticalObstruction.no_integral_chord_x`, `chord_numerators_correct`, `homogeneous_chord_at_infinity`, `residue_inverse_affine_obstruction` | A reduced x-difference of zero and reduced y-difference nonzero exclude an integral affine chord endpoint; the homogeneous chord triple reduces to infinity, and inverse reduced points have zero group sum; checked |
+| Residue chord is the projective zero point | `XedniResidueProjectiveZero.chordResidueTriple_projective_zero` | The reduced homogeneous chord triple is a nonsingular projective point equal to the point at infinity; field-valued residue map, reduced x-difference zero, reduced y-difference nonzero; checked |
 | Field step is elliptic-curve addition | `XedniRegularGroupLaw.fieldStep_group_add` | Over a field, with the reduced short curve elliptic, a `FieldStep` is equality to mathlib's point-group addition; covers distinct-x chords and nonvertical doubling |
 | Field chain gives a group relation | `XedniRegularGroupLaw.fieldChain_group_relation` | The field endpoint equals its start plus a natural-number multiple of the fixed addend |
 | Reduced regular chain gives a group relation | `XedniRegularGroupLaw.reduced_regularChain_group_relation` | Combines the source-chain reduction theorem and field group law; requires ellipticity of the coefficient-reduced short curve |
@@ -138,7 +139,20 @@ Set `X=n²−(x₁+x₂)d²` and `Y=n(x₁d²−X)−y₁d³`. When `d≠0` over
 
 The exact-arithmetic replay `python3 run_residue_vertical_witness.py` writes [its result](residue-vertical-witness-result.json). It verifies smooth reduction (discriminant `2 mod 5`), inverse residue points `(4,1)` and `(4,4)`, chord slope `−32/5`, and rational sum `(699/25,18418/125)` on the curve. The coordinate valuations are `−2` and `−3`, respectively. Lean independently checks this witness and the universal coordinate theorems. `lake build ResidueVerticalObstruction` produces `build-residue-vertical-output.txt` with `#print axioms`; every new declaration lists only `propext`, `Classical.choice`, and `Quot.sound`.
 
-The homogeneous result is a coordinate statement, not yet a full local projective group-law homomorphism. The remaining proof obligation is to construct the local projective point and show its reduction respects every addition case, including pairs that become inverse only in the residue field.
+The homogeneous result above identifies the three reduced coordinates. The next module constructs their nonsingular projective point and proves equality to the projective zero. A source-ring projective group law still requires proving that the source homogeneous chord triple is on its curve and that reduction respects its group operation.
+
+## Projective point at the residue boundary
+
+`ResidueProjectiveZero.lean` lifts the coordinate conclusion to mathlib's projective point type over the residue field. The reduced chord triple is a nonzero scalar multiple of `(0,1,0)`, so it is nonsingular; its projective class and the zero point are equal. This is a checked point-level consequence of the residue-vertical hypotheses, with no extra ellipticity assumption on the reduced curve.
+
+| Result | Lean declaration | Exact hypotheses and status |
+| --- | --- | --- |
+| Triple equals a scaled zero representative | `XedniResidueProjectiveZero.chordResidueTriple_eq_smul_zero` | Commutative source ring, field target, ring homomorphism, reduced chord x-difference zero and y-difference nonzero; checked |
+| Nonsingular projective zero point | `XedniResidueProjectiveZero.chordResidueTriple_projective_zero` | Same hypotheses; constructs a nonsingularity proof for the reduced triple and proves its `Projective.Point` equals zero; checked |
+
+The exact remaining source obligation is the polynomial identity `Y² = X³ + A X d⁴ + B d⁶`, where `d=x₂−x₁` and `X,Y` are the chord numerators above, for two source-ring points satisfying the curve equation. That identity would certify the source triple `(Xd,Y,d³)` lies on the source projective curve. A direct Lean `linear_combination` attempt on the expanded identity did not complete in the interactive run and was interrupted; the source equation formalization remains open. The subsequent group-law reduction across all projective addition cases also remains open.
+
+Run `lake build ResidueProjectiveZero` in this directory. `build-residue-projective-output.txt` records the fresh build and `#print axioms` output for both checked declarations; each lists only `propext`, `Classical.choice`, and `Quot.sound`.
 
 ## Reproduction
 
