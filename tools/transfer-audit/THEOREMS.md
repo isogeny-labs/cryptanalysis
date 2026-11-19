@@ -162,7 +162,8 @@ the arithmetic lemmas as complete geometric proofs.
   describes GHS construction and divisor maps; parameter c changes the target.
 - The existing native same-field genus-three construction is documented in
   `suite/src/binary_ecc/cover_transfer.rs` and
-  `.agents/skills/ecdlp-surfaces/references/higher-genus.md`. This audit reuses it.
+  `isogeny-labs/workspace:.agents/skills/ecdlp-surfaces/references/higher-genus.md`
+  (the workspace trunk's skill). This audit reuses it.
 - Pocklington's n−1 criterion: the checked prime factors supply F|n−1,
   F²>n and the Fermat/gcd witnesses. For every prime l|n the witnesses force
   F|l−1, hence l>sqrt(n); n is therefore prime. This explains the verifier's
