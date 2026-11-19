@@ -53,9 +53,9 @@ REPLACEMENTS = [
         "predecessor_sha256": (
             "2de4d8510b610416106df77d97b80f4af68bd681d8a9db0f91b5bfee0cdd3086"
         ),
-        "successor_bytes": 27_474,
+        "successor_bytes": 27_552,
         "successor_sha256": (
-            "4b62af0a920872ae88efe9da4436cc5da49f143c859d2b36f074541ea822655a"
+            "084795e244e5854fbc18c0a8023c8ef548a6687d968644e096fb8e4e848a809e"
         ),
     },
     {
@@ -316,8 +316,9 @@ def verify_predecessor(root: Path) -> None:
         )
 
 
-def verify_current(repo: Path, upstream: Path, transition: dict[str, Any]) -> None:
-    require(git(upstream, "rev-parse", "HEAD") == UPSTREAM_COMMIT, "producer HEAD mismatch")
+def verify_current_closure(
+    repo: Path, upstream: Path, transition: dict[str, Any]
+) -> None:
     rows = verify_immutable(repo)
     workflow_path = repo / CURRENT_WORKFLOW_PATH
     require(workflow_path.is_file(), "missing successor workflow")
@@ -364,6 +365,11 @@ def verify_current(repo: Path, upstream: Path, transition: dict[str, Any]) -> No
             target = repo / path
         require(target.is_file(), f"missing manifest input:{path}")
         require(digest(target.read_bytes()) == expected, f"undeclared manifest drift:{path}")
+
+
+def verify_current(repo: Path, upstream: Path, transition: dict[str, Any]) -> None:
+    require(git(upstream, "rev-parse", "HEAD") == UPSTREAM_COMMIT, "producer HEAD mismatch")
+    verify_current_closure(repo, upstream, transition)
 
 
 def run_process(
@@ -430,36 +436,11 @@ def current_filesystem_selftest(
     current_fixture = temporary / "current"
     current_fixture.mkdir()
     producer_fixture = temporary / "producer"
-    run_process(
-        [
-            "git",
-            "clone",
-            "--quiet",
-            "--shared",
-            "--no-checkout",
-            str(upstream),
-            str(producer_fixture),
-        ]
-    )
-    run_process(
-        [
-            "git",
-            "-C",
-            str(producer_fixture),
-            "update-ref",
-            "refs/heads/g3-selftest",
-            UPSTREAM_COMMIT,
-        ]
-    )
-    run_process(
-        [
-            "git",
-            "-C",
-            str(producer_fixture),
-            "symbolic-ref",
-            "HEAD",
-            "refs/heads/g3-selftest",
-        ]
+    initialize_alternate_repository(
+        upstream,
+        producer_fixture,
+        UPSTREAM_COMMIT,
+        shallow=True,
     )
     consumer_paths = {
         MANIFEST_PATH,
@@ -517,57 +498,102 @@ def current_filesystem_selftest(
     return rejected
 
 
-def predecessor_filesystem_selftest(predecessor: Path, temporary: Path) -> int:
-    predecessor_fixture = temporary / "predecessor"
+def absolute_git_path(root: Path, name: str) -> Path:
+    value = Path(
+        git(root, "rev-parse", "--path-format=absolute", "--git-path", name)
+    )
+    require(value.is_absolute(), f"Git returned a relative path:{name}")
+    return value
+
+
+def initialize_alternate_repository(
+    source: Path,
+    destination: Path,
+    commit: str,
+    *,
+    shallow: bool,
+) -> None:
+    source_objects = absolute_git_path(source, "objects")
+    require(source_objects.is_dir(), "source object store is missing")
+    require("\n" not in str(source_objects), "source object path contains a newline")
+    run_process(["git", "init", "--quiet", str(destination)])
+    alternates = absolute_git_path(destination, "objects/info/alternates")
+    alternates.parent.mkdir(parents=True, exist_ok=True)
+    alternates.write_text(f"{source_objects}\n", encoding="utf-8")
+    no_fetch_env = os.environ.copy()
+    no_fetch_env["GIT_NO_LAZY_FETCH"] = "1"
     run_process(
         [
             "git",
-            "clone",
-            "--quiet",
-            "--shared",
-            "--no-checkout",
-            str(predecessor),
-            str(predecessor_fixture),
-        ]
+            "-C",
+            str(destination),
+            "update-ref",
+            "refs/heads/g3-selftest",
+            commit,
+        ],
+        env=no_fetch_env,
     )
+    run_process(
+        [
+            "git",
+            "-C",
+            str(destination),
+            "symbolic-ref",
+            "HEAD",
+            "refs/heads/g3-selftest",
+        ],
+        env=no_fetch_env,
+    )
+    if shallow:
+        shallow_file = absolute_git_path(destination, "shallow")
+        shallow_file.write_text(f"{commit}\n", encoding="ascii")
+    require(git(destination, "remote") == "", "self-test fixture unexpectedly has a remote")
+    require(git(destination, "rev-parse", "HEAD") == commit, "self-test fixture HEAD mismatch")
+    require(
+        git(destination, "rev-parse", "--is-shallow-repository")
+        == ("true" if shallow else "false"),
+        "self-test fixture shallow state mismatch",
+    )
+
+
+def materialize_sparse_checkout(destination: Path, paths: list[str]) -> None:
+    no_fetch_env = os.environ.copy()
+    no_fetch_env["GIT_NO_LAZY_FETCH"] = "1"
+    run_process(
+        [
+            "git",
+            "-C",
+            str(destination),
+            "sparse-checkout",
+            "set",
+            "--no-cone",
+            *paths,
+        ],
+        env=no_fetch_env,
+    )
+    run_process(
+        ["git", "-C", str(destination), "reset", "--hard", "--quiet", "HEAD"],
+        env=no_fetch_env,
+    )
+
+
+def predecessor_filesystem_selftest(predecessor: Path, temporary: Path) -> int:
     predecessor_paths = [
         MANIFEST_PATH,
         FROZEN_PREFIX_PATH,
         *REPLACEMENT_BY_PATH,
         "experiments/chained-transfer-reference/G3_NORM_REPLAY_PROTOCOL.md",
     ]
-    run_process(
-        [
-            "git",
-            "-C",
-            str(predecessor_fixture),
-            "sparse-checkout",
-            "set",
-            "--no-cone",
-            *predecessor_paths,
-        ]
+    predecessor_fixture = temporary / "predecessor"
+    initialize_alternate_repository(
+        predecessor,
+        predecessor_fixture,
+        PREDECESSOR_COMMIT,
+        shallow=True,
     )
-    run_process(
-        [
-            "git",
-            "-C",
-            str(predecessor_fixture),
-            "checkout",
-            "--quiet",
-            "--detach",
-            PREDECESSOR_COMMIT,
-        ]
-    )
+    materialize_sparse_checkout(predecessor_fixture, predecessor_paths)
     verify_predecessor(predecessor_fixture)
     rejected = 0
-
-    parent = git(predecessor_fixture, "rev-parse", f"{PREDECESSOR_COMMIT}^")
-    run_process(["git", "-C", str(predecessor_fixture), "update-ref", "HEAD", parent])
-    expect_rejection("predecessor-wrong-tree", lambda: verify_predecessor(predecessor_fixture))
-    rejected += 1
-    run_process(
-        ["git", "-C", str(predecessor_fixture), "update-ref", "HEAD", PREDECESSOR_COMMIT]
-    )
 
     commit_env = os.environ.copy()
     commit_env.update(
@@ -580,6 +606,24 @@ def predecessor_filesystem_selftest(predecessor: Path, temporary: Path) -> int:
             "GIT_COMMITTER_DATE": "2000-01-01T00:00:00Z",
         }
     )
+    empty_tree = run_process(
+        ["git", "-C", str(predecessor_fixture), "mktree"],
+        input_text="",
+    )
+    wrong_tree_commit = run_process(
+        ["git", "-C", str(predecessor_fixture), "commit-tree", empty_tree],
+        input_text="G3 input-transition wrong-tree self-test\n",
+        env=commit_env,
+    )
+    run_process(
+        ["git", "-C", str(predecessor_fixture), "update-ref", "HEAD", wrong_tree_commit]
+    )
+    expect_rejection("predecessor-wrong-tree", lambda: verify_predecessor(predecessor_fixture))
+    rejected += 1
+    run_process(
+        ["git", "-C", str(predecessor_fixture), "update-ref", "HEAD", PREDECESSOR_COMMIT]
+    )
+
     same_tree_commit = run_process(
         ["git", "-C", str(predecessor_fixture), "commit-tree", PREDECESSOR_TREE],
         input_text="G3 input-transition self-test\n",
