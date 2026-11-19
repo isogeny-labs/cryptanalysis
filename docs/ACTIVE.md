@@ -18,7 +18,7 @@ and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
 
-- [ ] Execute preregistered 5-encoding/3-arm auxiliary-IC benchmark panel, implement division-free m=3,4 split-S3 resultant evaluation in `crates/prime-field-auxiliary-ic`, and audit disjoint 3-window CDCL(T) nogood width + CT186 prime-field cost floor (Cursor, started 2026-11-19, branch cursor/aux-ic-m34-and-cdclt-audit-3858) [pcc:unverified]
+- [ ] Execute preregistered 5-encoding/3-arm auxiliary-IC benchmark panel, implement division-free m=3,4 split-S3 resultant evaluation in `crates/prime-field-auxiliary-ic`, and audit disjoint 3-window CDCL(T) nogood width + CT186 prime-field cost floor (Cursor, started 2026-11-19, branch cursor/aux-ic-m34-and-cdclt-audit-3858, PR #1845) [pcc:unverified]
 
 - [ ] Mirror the general binary hyperelliptic-cover transfer interface from crypto after its source commit is frozen, with split provenance and exact parity checks (Codex, started 2026-11-18, branch codex/general-binary-cover-transfer-mirror-20261118, PR #1765) [pcc:unverified]
 
