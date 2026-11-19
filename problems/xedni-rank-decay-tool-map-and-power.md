@@ -70,10 +70,23 @@ events needs `50,260,046` independent rows merely to reject a rate at least
   cluster bootstrap correctly returns `BLOCKED` because aggregate per-prime
   totals do not determine within-cluster allocations. It is not integrated
   into the production analyzer. [pcc:unverified]
+- **Post-authorization scaffolding:** `public_boundary.py` passed 33 focused
+  controls including fully rehashed direct-DLP mutations; `natural_executor.py`
+  passed 21 state-machine and durability controls; and `row_provenance.py`
+  passed 48 mutation/path/inventory controls. All three fail closed for
+  production: they are not wired into `runner.py` or `FREEZE.json`, there is
+  no signed independent verifier backend, and provenance returns only
+  `HASH_GRAPH_ONLY`, `production_eligible=false`. [pcc:unverified]
 - **Observed:** the archived plane-cubic panel evaluates exact relations through
   `r=9`, but does not provide the certified cubic-to-Jacobian selected-point map
   required for full curve or selected-subgroup rank classification.
   [pcc:unverified]
+- **Implementation route identified:** pinned Sage can construct an exact
+  birational map with `EllipticCurve_from_cubic(..., morphism=True)`; the group
+  map must translate by the image of the chosen chord origin and then verify
+  every selected point and reduction identity. PARI `ellfromeqn` supplies only
+  Jacobian coefficients. This environment has neither Sage/eclib nor Magma,
+  and no adapter/verifier has been implemented. [pcc:unverified]
 - **Derived:** the exposure numbers above follow directly from `30/q` and from
   `ceil(log(0.05)/log(1-2^-24))`; they are prospective power calculations, not
   measurements. [pcc:unverified]
@@ -157,3 +170,10 @@ retry still failed for absent upload transport, and an adversarial M3 canary
 showed that innocuous-key feature smuggling passes the current interface.
 Authorization did not launch or validate a natural row. Unresolved.
 [pcc:unverified]
+
+2026-11-19: added non-production public-boundary, resumable-executor,
+row-provenance, and mixed-censoring scaffolds with adversarial mutation tests.
+The new code narrows locally implementable gaps but remains outside the freeze;
+checkpoint transport, Magma, signed verification, runner wiring, complete
+relation lattices, cluster inference, the cubic map, and powered exposure stay
+open. Unresolved. [pcc:unverified]

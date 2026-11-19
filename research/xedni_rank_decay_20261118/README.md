@@ -9,6 +9,14 @@ rank-decay panel has not run. The finite-range decay heuristic is therefore
 relation inventory, rigorous mixed-censoring optimization, and powered
 exposure remain open. [pcc:unverified]
 
+On 2026-11-19 the user explicitly authorized execution. The exact pushed-head
+checkpoint retry still failed for absent upload transport, so zero natural
+rows started. Post-authorization public-boundary, resumable-executor,
+provenance, and mixed-censoring scaffolds were implemented and adversarially
+tested but deliberately remain outside the authorizing freeze; see
+[`AUTHORIZED_IMPLEMENTATION_REVIEW_20261119.md`](AUTHORIZED_IMPLEMENTATION_REVIEW_20261119.md).
+[pcc:unverified]
+
 ## Result boundary
 
 The requested question is whether public characteristic-zero lifts of fresh
