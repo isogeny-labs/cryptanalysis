@@ -18,6 +18,10 @@ and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
 
+- [ ] Xedni scaling Phase 2: test Cayley--Bacharach pencil-enforced lifting (`dim ker_Q B = 2`) and shared coordinate-factor-base decomposition above `11` bits (Cursor, follow-up to PR #1810) [pcc:unverified]
+
+- [x] Advance Xedni toward cryptographic scale (Phase 1): native Rust multi-prime subgroup-kernel LLL relation extractor, order-statistic 3D-LLL preselection, `ca-icx xedni-solve` (verified non-collinear solves through `p = 1021`), and Lean 4 modular-kernel + function-field section specialization bridge (Cursor, started 2026-11-18, branch cursor/xedni-crypto-scale-ef34, PR #1810) [pcc:unverified]
+
 - [x] Prove Xedni chord-origin good-reduction bridge in Lean 4, decompose Nov 17 `r=6..9` panel collinearities, and implement JKSST `PGL_3(F_p)` + 3D-LLL plane-cubic lift (Cursor, started 2026-11-18, branch cursor/xedni-plane-group-chase-ef34, PR #1779) [pcc:unverified]
 
 - [ ] Mirror the general binary hyperelliptic-cover transfer interface from crypto after its source commit is frozen, with split provenance and exact parity checks (Codex, started 2026-11-18, branch codex/general-binary-cover-transfer-mirror-20261118, PR #1765) [pcc:unverified]
