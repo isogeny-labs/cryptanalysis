@@ -32,22 +32,43 @@ target coefficient as a Xedni success. [pcc:unverified]
 
 ## What is implemented
 
-| Component | Status | Scope and evidence boundary |
-| --- | --- | --- |
-| Prospective protocol and six-mechanism amendment | Complete, producer-authored | Frozen before new natural rows; no result implied |
-| Prime manifest | Implemented, controls pass | Three deterministic primes at each even bit size 16--32; [`PRIMES.json`](PRIMES.json) |
-| Scalable finite-field source generation | Implemented, controls pass | Miller--Rabin, Tonelli--Shanks, PARI `ellcard`, prime-order subgroup projection; no `O(p)` table/scan |
-| Exact local-condition layer | Implemented, producer controls pass | no-local, strict/weak reverse-Mestre, neutral matched CRT, incompatible control, incidence and quotient certificates |
-| Seven-coefficient rational lift | Implemented, producer controls pass | `r=2..6`; exact CRT/incidence/reduction certificates; `r>=7` fails closed |
-| PARI rank adapter | Implemented, controls pass | `ellrank` lower/upper interval only; all transcripts and failures retained |
-| Magma adapter | Implemented, syntax checked; local execution blocked | `RankBounds`/2-descent script; no licensed local executable |
-| Minimal-discriminant/height invariant adapter | Implemented, producer container controls pass | exact minimal-model maps/discriminants and conductor; numerical canonical heights/Gram determinant with two-precision stability; no rigorous global minimum-height lower bound |
-| Relation proposal and replay | Implemented for controls; not integrated into a natural executor | bounded PARI height-pairing/LLL proposals followed by exact rational/source replay; not an exhaustive independence certificate |
-| Strict analyzer | Implemented, producer controls pass | separate rank/dependence/useful endpoints, `A/G/U`, partial identification, clustered-factor cells, signed profile slope, fail-closed decision |
-| Deterministic runner | Plans rosters and exercises controls; natural executor absent | calibration plan: 1,080 executable plus 648 blocked rows; sentinel: 12,150 executable plus 7,290 blocked rows; no natural row command |
-| Blocked freeze manifest | Committed as non-authorizing | [`FREEZE.json`](FREEZE.json) binds the implementation, rosters, analysis parameters, and available tool identity while setting `natural_rows_authorized=false` |
-| Lean decision proof | Built and axiom-audited | core Lean 4.34.1; four theorems, no nonstandard axioms |
-| Natural calibration/sentinel/discovery/replication | Not run | mandatory checkpoint gate has not passed |
+- **Prospective protocol and six-mechanism amendment — complete,
+  producer-authored.** Frozen before new natural rows; no result implied.
+- **Prime manifest — implemented; controls pass.** Three deterministic primes
+  at each even bit size 16--32; see [`PRIMES.json`](PRIMES.json).
+- **Scalable finite-field source generation — implemented; controls pass.**
+  Miller--Rabin, Tonelli--Shanks, PARI `ellcard`, and prime-order subgroup
+  projection, with no `O(p)` table or scan.
+- **Exact local-condition layer — implemented; producer controls pass.**
+  No-local, strict/weak reverse-Mestre, neutral matched CRT, incompatible
+  control, incidence, and quotient certificates.
+- **Seven-coefficient rational lift — implemented; producer controls pass.**
+  Exact CRT/incidence/reduction certificates for `r=2..6`; `r>=7` fails closed.
+- **PARI rank adapter — implemented; controls pass.** `ellrank` lower/upper
+  intervals only, with transcripts and failures retained.
+- **Magma adapter — implemented and syntax checked; local execution blocked.**
+  The `RankBounds`/2-descent script has no licensed local executable.
+- **Minimal-discriminant/height invariant adapter — implemented; producer
+  container controls pass.** Exact minimal-model maps, discriminants, and
+  conductor; numerical canonical heights/Gram determinant with two-precision
+  stability; no rigorous global minimum-height lower bound.
+- **Relation proposal and replay — implemented for controls; not integrated
+  into a natural executor.** Bounded PARI height-pairing/LLL proposals receive
+  exact rational/source replay, but no exhaustive independence certificate.
+- **Strict analyzer — implemented; producer controls pass.** Separate
+  rank/dependence/useful endpoints, `A/G/U`, partial identification,
+  clustered-factor cells, signed profile slopes, and a fail-closed decision.
+- **Deterministic runner — roster/control planner only.** Calibration has 1,080
+  executable plus 648 blocked rows; sentinel has 12,150 executable plus 7,290
+  blocked rows; no natural-row command exists.
+- **Blocked freeze manifest — committed as non-authorizing.**
+  [`FREEZE.json`](FREEZE.json) binds the implementation, rosters, analysis
+  parameters, and available tool identity while setting
+  `natural_rows_authorized=false`.
+- **Lean decision proof — built and axiom-audited.** Core Lean 4.34.1; four
+  theorems, no nonstandard axioms.
+- **Natural calibration/sentinel/discovery/replication — not run.** The
+  mandatory checkpoint gate has not passed.
 
 All “controls pass” entries are producer-side assertions until independent PCC
 standing exists. [pcc:unverified]
@@ -100,6 +121,10 @@ wide lift) to 177 bits. The minimal-model ratio
 `13.5781`; moreover, the height inputs are numerical and no rigorous global
 minimum-height lower bound or saturated Mordell--Weil regulator is available.
 [pcc:unverified]
+
+The control record is registered as `PCC-20261119-f7f325`. Its current standing
+is **unverified**: the producer attestation is deliberately not an independent
+or signed execution proof. [pcc:unverified]
 
 On the same control, PARI returned exact rank bounds `[2,2]`, `[6,6]`, `[5,5]`,
 and `[7,7]` for optimized `r=2,3,4,5`, respectively, while `r=6` timed out at
