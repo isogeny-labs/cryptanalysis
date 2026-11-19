@@ -320,11 +320,55 @@ theorem rationalRoots_crossdet_bound_4202 :
   exact_mod_cast hnat
 
 set_option maxRecDepth 8192 in
+/-- Exact numerator intervals by reduced denominator for the frozen family. -/
+private theorem rationalRoots_numerator_envelope :
+    ∀ r ∈ rationalRoots,
+      (r.2 = 1 ∧ -105 ≤ r.1 ∧ r.1 ≤ 126) ∨
+      (r.2 = 2 ∧ -3 ≤ r.1 ∧ r.1 ≤ 51) ∨
+      (r.2 = 3 ∧ -17 ≤ r.1 ∧ r.1 ≤ 83) ∨
+      (r.2 = 4 ∧ -21 ≤ r.1 ∧ r.1 ≤ 105) ∨
+      (r.2 = 5 ∧ -21 ≤ r.1 ∧ r.1 ≤ 126) ∨
+      (r.2 = 6 ∧ 1 ≤ r.1 ∧ r.1 ≤ 113) ∨
+      (r.2 = 7 ∧ 1 ≤ r.1 ∧ r.1 ≤ 139) ∨
+      (r.2 = 8 ∧ 3 ≤ r.1 ∧ r.1 ≤ 129) ∨
+      (r.2 = 9 ∧ 4 ≤ r.1 ∧ r.1 ≤ 157) ∨
+      (r.2 = 11 ∧ 5 ≤ r.1 ∧ r.1 ≤ 191) := by
+  rw [rationalRoots_eq_certificate]
+  decide
+
+/-- The denominator-class envelopes give the sharp cross-determinant bound
+without a quadratic pairwise enumeration. -/
+theorem rationalRoots_crossdet_bound_2046 :
+    ∀ r ∈ rationalRoots, ∀ s ∈ rationalRoots,
+      (r.1 * s.2 - s.1 * r.2).natAbs ≤ 2046 := by
+  intro r hr s hs
+  have hrE := rationalRoots_numerator_envelope r hr
+  have hsE := rationalRoots_numerator_envelope s hs
+  rcases hrE with h | h | h | h | h | h | h | h | h | h <;>
+    rcases hsE with h' | h' | h' | h' | h' | h' | h' | h' | h' | h' <;>
+    rcases h with ⟨hrd, hrlo, hrhi⟩ <;>
+    rcases h' with ⟨hsd, hslo, hshi⟩ <;>
+    rw [hrd, hsd] <;>
+    omega
+
+/-- Two certified fractions attain the determinant bound. -/
+theorem rationalRoots_crossdet_bound_attained :
+    (5, 11) ∈ rationalRoots ∧ (191, 11) ∈ rationalRoots ∧
+      ((5 : ℤ) * 11 - 191 * 11).natAbs = 2046 := by
+  constructor
+  · rw [rationalRoots_eq_certificate]
+    decide
+  constructor
+  · rw [rationalRoots_eq_certificate]
+    decide
+  norm_num
+
+set_option maxRecDepth 8192 in
 set_option maxHeartbeats 0 in
 /-- The certified canonical roots have 419 distinct nonzero images for every
-prime above the checked coordinate-bound threshold. -/
+prime above the checked sharp determinant threshold. -/
 theorem canonical_modular_roots_card_419
-    (q : ℕ) [Fact (Nat.Prime q)] (hq : 4202 < q) :
+    (q : ℕ) [Fact (Nat.Prime q)] (hq : 2046 < q) :
     (((rationalRoots.toFinset).image (modularRoot q)).erase 0).card = 419 := by
   classical
   let R : Finset (ℤ × ℤ) := rationalRoots.toFinset
@@ -351,7 +395,7 @@ theorem canonical_modular_roots_card_419
     have hrList : r ∈ rationalRoots := by simpa [R] using hr
     have hsList : s ∈ rationalRoots := by simpa [R] using hs
     exact ⟨rationalRoots_crossdet_ne r hrList s hsList hne,
-      lt_of_le_of_lt (rationalRoots_crossdet_bound_4202 r hrList s hsList) hq⟩
+      lt_of_le_of_lt (rationalRoots_crossdet_bound_2046 r hrList s hsList) hq⟩
   have hzero : (0, 1) ∈ R := by
     change (0, 1) ∈ rationalRoots.toFinset
     rw [List.mem_toFinset, rationalRoots_eq_certificate]
@@ -362,7 +406,7 @@ theorem canonical_modular_roots_card_419
 /-- Every frozen coefficient-offset quotient equals its canonical modular
 fraction above the denominator bound. -/
 theorem frozen_rawRoot_eq_modularRoot
-    (q : ℕ) [Fact (Nat.Prime q)] (hq : 4202 < q)
+    (q : ℕ) [Fact (Nat.Prime q)] (hq : 2046 < q)
     (e : (ℤ × ℤ) × (ℤ × ℤ)) (he : e ∈ entries) :
     rawRoot q e = modularRoot q (rationalRoot e) := by
   have hv := vectors_sum_bound e.1 (entries_first_mem_vectors e he)
@@ -381,7 +425,7 @@ theorem frozen_rawRoot_eq_modularRoot
 /-- The raw public equations of the frozen family have exactly 419 distinct
 nonzero roots for every prime above the checked determinant threshold. -/
 theorem frozen_raw_roots_card_419
-    (q : ℕ) [Fact (Nat.Prime q)] (hq : 4202 < q) :
+    (q : ℕ) [Fact (Nat.Prime q)] (hq : 2046 < q) :
     (((entries.toFinset).image (rawRoot q)).erase 0).card = 419 := by
   classical
   have hmap : entries.toFinset.image rationalRoot = rationalRoots.toFinset := by
@@ -408,6 +452,25 @@ theorem frozen_raw_roots_card_419
   rw [hraw, hcomp, hmap]
   exact canonical_modular_roots_card_419 q hq
 
+/-- Among nonzero target scalars, exactly `q - 420` lie outside the frozen
+family's necessary public-relation root set. -/
+theorem frozen_missed_nonzero_targets_card
+    (q : ℕ) [Fact (Nat.Prime q)] (hq : 2046 < q) :
+    (((Finset.univ.erase (0 : ZMod q)) \
+      ((entries.toFinset.image (rawRoot q)).erase 0))).card = q - 420 := by
+  classical
+  have hsubset : (entries.toFinset.image (rawRoot q)).erase 0 ⊆
+      Finset.univ.erase (0 : ZMod q) := by
+    intro x hx
+    simp only [Finset.mem_erase] at hx ⊢
+    exact ⟨hx.1, Finset.mem_univ x⟩
+  have huniv : (Finset.univ.erase (0 : ZMod q)).card = q - 1 := by
+    rw [Finset.card_erase_of_mem (Finset.mem_univ (0 : ZMod q))]
+    simp
+  rw [Finset.card_sdiff_of_subset hsubset, huniv,
+    frozen_raw_roots_card_419 q hq]
+  omega
+
 #print axioms rationalRoots_card
 #print axioms rationalRoots_eq_certificate
 #print axioms rationalRoots_nonzero_card
@@ -416,6 +479,8 @@ theorem frozen_raw_roots_card_419
 #print axioms rationalRoots_coprime
 #print axioms rationalRoots_crossdet_ne
 #print axioms rationalRoots_crossdet_bound_4202
+#print axioms rationalRoots_crossdet_bound_2046
+#print axioms rationalRoots_crossdet_bound_attained
 #print axioms cast_ne_zero_of_natAbs_lt
 #print axioms modular_roots_distinct_of_det_bound
 #print axioms modular_root_image_card_of_certificate
@@ -424,5 +489,6 @@ theorem frozen_raw_roots_card_419
 #print axioms rawRoot_eq_modularRoot
 #print axioms frozen_rawRoot_eq_modularRoot
 #print axioms frozen_raw_roots_card_419
+#print axioms frozen_missed_nonzero_targets_card
 
 end XedniFixedFamilyRationalRootPlateau
