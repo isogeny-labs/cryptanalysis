@@ -120,6 +120,17 @@ The proof counts the `q−1` nonzero scalars in `ZMod q`. Full coverage makes th
 
 Run `lake build SharedTargetSelectorImpossibility`; `build-shared-selector-impossibility-output.txt` records the registered build, direct module check, and `#print axioms` audit. All three declarations use only `propext`, `Classical.choice`, and `Quot.sound`. The [frozen root census](../xedni-fixed-family-root-census-20261119/README.md) independently enumerates the necessary public-relation roots above this bound's capacity threshold.
 
+`FixedFamilyRationalRootPlateau.lean` proves the structural step behind the rational-root plateau: a nonzero integer below modulus in absolute value remains nonzero after reduction; distinct fractions with nonzero denominators and cross-determinant smaller than the prime modulus stay distinct; and a finite certificate with those bounds has an injective modular root map, with one fewer nonzero root when it contains zero. The paired exact-arithmetic [plateau certificate](../xedni-fixed-family-root-census-20261119/README.md) reports 420 rational roots, 419 nonzero, denominator bound 11, and cross-determinant bound 2,046. The finite enumeration and bounds are independently replayed in Python; their Lean proofs remain open after a direct `decide` attempt exceeded two minutes. Thus the all-primes-above-2,046 cardinality statement has a written proof and exact certificate, with **partial Lean formalization**.
+
+| Result | Lean declaration | Exact hypotheses and status |
+| --- | --- | --- |
+| Bounded integer survives reduction | `XedniFixedFamilyRationalRootPlateau.cast_ne_zero_of_natAbs_lt` | Prime `q`, nonzero integer with `natAbs < q`; checked |
+| Distinct fraction images | `XedniFixedFamilyRationalRootPlateau.modular_roots_distinct_of_det_bound` | Prime `q`, denominators nonzero modulo `q`, nonzero cross-determinant with `natAbs < q`; checked |
+| Modular image cardinality | `XedniFixedFamilyRationalRootPlateau.modular_root_image_card_of_certificate` | Finite pair set, every denominator and pairwise determinant satisfies the bounds; checked |
+| Nonzero modular image cardinality | `XedniFixedFamilyRationalRootPlateau.modular_nonzero_root_image_card_of_certificate` | Same data, canonical zero pair `(0,1)` present; checked |
+
+Run `lake build FixedFamilyRationalRootPlateau`; `build-fixed-family-root-plateau-output.txt` records the registered build, direct module check, and axiom audit. The checked structural declarations use only `propext`, `Classical.choice`, and `Quot.sound`.
+
 ## Finite regular-sum reduction
 
 The reduction bridge now covers an arbitrary finite sequence of affine additions, with a unit slope denominator certified at each step. For a list `P₁,…,Pₙ` of local short-Weierstrass points whose certified sum has endpoint `Q`, the coefficient and point reduction map sends `Q` to the elliptic-group sum of the reduced `Pᵢ`. Consequently, two such sums with the same local endpoint give equal finite-field group sums. This supports relations with varying addends, beyond the repeated-addend chain proved earlier.
