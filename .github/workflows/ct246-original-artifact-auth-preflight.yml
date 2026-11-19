@@ -19,6 +19,7 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_SESSION_TOKEN: ${{ secrets.ARTIFACTS_AWS_SESSION_TOKEN }}
           AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
           AWS_EC2_METADATA_DISABLED: 'true'
           AWS_PAGER: ''
@@ -34,6 +35,11 @@ jobs:
             exit 0
           fi
           echo "CT246_CREDENTIALS_PRESENT=true (values and identity suppressed)"
+          if [[ -n "${AWS_SESSION_TOKEN:-}" ]]; then
+            echo "CT247_SESSION_TOKEN_PRESENT=true"
+          else
+            echo "CT247_SESSION_TOKEN_PRESENT=false"
+          fi
           if ! command -v aws >/dev/null 2>&1; then
             python3 -m venv "$RUNNER_TEMP/ct246-awscli" >/dev/null 2>&1 || exit 2
             "$RUNNER_TEMP/ct246-awscli/bin/python" -m pip install --disable-pip-version-check -q awscli==1.46.2 >/dev/null 2>&1 || exit 2
