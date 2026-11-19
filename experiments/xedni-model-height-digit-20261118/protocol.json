@@ -1,0 +1,21 @@
+{
+  "schema": "xedni-model-height-digit-protocol-v1",
+  "question": "Does precommitted exact model-height scoring among bounded four-coordinate Hensel digits improve the depth-eight rational model height on the same public relation?",
+  "parent_short_digit_commit": "a4f90688b8ac964a9f933be84ce267e0343d6b90",
+  "parent_short_digit_result_normalized_sha256": "206efe7e985d04d2eb51aa2ac23ad53494d94a96e674c3b60b1e03044b6c7198",
+  "baseline_result_normalized_sha256": "9b9fd644f1eccd12873387397dc749c2d510b5784a396d07e5774421855fbe78",
+  "public_hit": "the same first eligible public hit pinned in the baseline and short-digit results",
+  "initial_shift": [0,0,0,0],
+  "maximum_target_depth": 8,
+  "minimum_radius_search_limit": 8,
+  "radius_slack": 2,
+  "derivative_rule": "evaluate the exact rational formal parameter t(R) modulo p^(k+1) and its four +p^k coordinate probes; d_i=(t_probe-t_before)/p^k mod p",
+  "candidate_rule": "find smallest signed-digit radius h<=8 with a linearized cancelling tuple; enumerate every tuple with each digit in [-min(h+2,(p-1)/2),min(h+2,(p-1)/2)] that satisfies the linearized congruence; interpolate A and B before computing any resulting group residual; reject invalid models; choose lexicographic minimum (model_height_bits, maximum_absolute_digit, sum_absolute_digits, signed_digit_tuple)",
+  "model_height_bits": "maximum numerator or denominator bit length among A,B,x1,y1,x2,y2",
+  "coordinate_update": "shift_i += p^(k-1)*digit_i",
+  "controls": "retain every admissible tuple and model score; after selecting, verify exact rational curve, both points, R=aP1+bP2, formal parameter, and p-adic depth; independently replay with Fraction arithmetic and brute-force enumeration",
+  "comparison": "pair depths and exact model bit heights with both previous paths on the same public hit; selection never reads the candidate group residual",
+  "stop_rule": "exact relation, radius exhaustion, no valid model, modular or exact mismatch, depth 8, or 1200 seconds",
+  "claim_boundary": "a bounded representation-height selector on one fixed public relation; no relation-yield or end-to-end speed claim",
+  "run_cap_seconds": 1200
+}
