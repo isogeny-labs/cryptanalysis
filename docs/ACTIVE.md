@@ -18,7 +18,7 @@ and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
 
-- [ ] Round-4 D: Macaulay solving degree of the bilinear (t; q) leaf system, L vs L_max with planted/null controls, n=13/17 (Claude, started 2026-11-19, branch claude/sat-solver-index-calculus-zczysc, PR #1772)
+- [x] Round-4 D (done: KILL after control amendment, by-letter INCONCLUSIVE; L=1 vs L_max 21-34 up to (2,2)): Macaulay solving degree of the bilinear (t; q) leaf system, L vs L_max with planted/null controls, n=13/17 (Claude, started 2026-11-19, branch claude/sat-solver-index-calculus-zczysc, PR #1772)
 - [x] L2c confirmatory test (done: CONFIRMED 0.631x [0.494,0.809] on fresh SAT targets; solver effect, not an IC gain): RREF prefix-chain rows speed up CaDiCaL on decomposable (SAT) m=4 PDP targets, fresh curves and targets, frozen protocol (Claude, started 2026-11-18, branch claude/sat-solver-index-calculus-zczysc, PR #1772)
 - [ ] Mirror the general binary hyperelliptic-cover transfer interface from crypto after its source commit is frozen, with split provenance and exact parity checks (Codex, started 2026-11-18, branch codex/general-binary-cover-transfer-mirror-20261118, PR #1765) [pcc:unverified]
 

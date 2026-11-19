@@ -147,6 +147,13 @@ whether it could change the exponent at all.
   and true u values pass at the same rate as random ones. So MinRank on it
   isolates nothing. The information sits in the S3(x3, u, xR) link, which
   is round-4 D. See [`l4_minrank/RESULT.md`](l4_minrank/RESULT.md).
+- **Round-4 D (2026-11-19): KILL, after a documented control amendment; by
+  the letter of the frozen rule, INCONCLUSIVE.** Affine Macaulay matrices
+  of the bilinear (t; q) system certify L = 1 linear relation at every
+  bidegree up to (2,2), at n = 13 and n = 17, against L_max = 21–34. A
+  random null gives L = 0. A planted overdetermined control is solved at
+  (2,2), so the instrument works at this size. See
+  [`r4d_macaulay/RESULT.md`](r4d_macaulay/RESULT.md).
 
 ### L5. Discarded by counting: char-2 interpolating-conic encoding
 
