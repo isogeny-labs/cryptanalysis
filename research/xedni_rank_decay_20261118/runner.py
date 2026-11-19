@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 """Fail-closed planning and control integration for the Xedni decay panel.
 
-``plan`` is read-only. ``preflight-natural`` validates a committed freeze,
+``plan`` is read-only. ``validate-executor`` binds the prospective executor
+components to the committed checkout and proves that production stays closed;
+it invokes read-only administrative Git commands but never a checkpoint,
+scientific tool, or natural stage. ``preflight-natural``
+validates a committed freeze,
 required tools, and the r<=6 map boundary before invoking the mandatory resume
 checkpoint gate.  This module intentionally has no natural-row command yet:
 the retained source evidence and bounded relation proposer are not yet wired
@@ -37,15 +41,25 @@ if str(HERE) not in sys.path:
 
 import lift_builder
 import local_conditions
+import allocation_planner
+import cubic_jacobian_map
+import mixed_censoring
+import natural_executor
 import prime_manifest
+import public_boundary
 import rank_magma
 import rank_pari
+import relation_lattice
+import row_provenance
 import source_generator
+import verifier_receipts
 
 
 SCHEMA = "xedni.rank-decay-runner/v1"
 ROSTER_SCHEMA = "xedni.rank-decay-roster/v1"
 CONTROL_SCHEMA = "xedni.rank-decay-control-row/v1"
+EXECUTOR_VALIDATION_SCHEMA = "xedni.executor-integration-validation/v1"
+PRODUCTION_READY = False
 MASTER_SEED = "xedni-rank-decay-20261118-v1"
 FAMILIES = ("generic", "j0")
 R_VALUES = tuple(range(2, 10))
@@ -69,9 +83,14 @@ PARI_TIERS = ((60.0, 0), (300.0, 1))
 MAGMA_TIERS = ((300.0, 1), (1800.0, 2))
 CHECKPOINT_TIMEOUT_SECONDS = 600.0
 DEFAULT_GP = str(HERE / "gp_container_wrapper.sh")
+STRICT_PARI_VERSION = "2.17.2"
+STRICT_PARI_IMAGE_DIGEST = (
+    "sha256:923e7e41d2fe1716fc3f1a6e06486d469b608baa6d6b4b0fdbb6e43b132049cf"
+)
+STRICT_MAGMA_VERSION = "2.29-10"
 NATURAL_IMPLEMENTATION_GAPS = (
     "relation proposer/certificate outcomes are not integrated into natural rows",
-    "no hash-linked public/evaluator subprocess boundary prevents source-scalar access by construction",
+    "prospective public/evaluator and provenance modules are not freeze-authorized or signed",
     "M1-M6 natural banks/selectors/direct-source baselines and M4/M5 map gates are not integrated",
 )
 REQUIRED_FROZEN_FILES = (
@@ -96,6 +115,102 @@ REQUIRED_FROZEN_FILES = (
     "research/xedni_rank_decay_20261118/runner.py",
     "research/xedni_lift_success_20261112/sweep.py",
 )
+EXECUTOR_COMPONENTS = {
+    "runner": {
+        "path": "research/xedni_rank_decay_20261118/runner.py",
+        "schemas": {
+            "root": "xedni.rank-decay-runner/v1",
+            "executor_validation": "xedni.executor-integration-validation/v1",
+        },
+        "production_ready": False,
+        "blocker": "no_natural_run_command",
+    },
+    "public_boundary": {
+        "path": "research/xedni_rank_decay_20261118/public_boundary.py",
+        "schemas": {
+            "private_source": "xedni-rank-decay-source/v1",
+            "public_source": "xedni-public-source/v1",
+            "link": "xedni-public-private-link/v1",
+            "formula_spec": "xedni-m3-formula-spec/v1",
+        },
+        "production_ready": False,
+        "blocker": "not_runner_or_freeze_authorized",
+    },
+    "natural_executor": {
+        "path": "research/xedni_rank_decay_20261118/natural_executor.py",
+        "schemas": {
+            "root": "xedni.natural-executor/v1",
+            "preflight": "xedni.natural-executor-preflight/v1",
+            "row": "xedni.natural-executor-row/v1",
+        },
+        "production_ready": False,
+        "blocker": "production_mode_hard_disabled",
+    },
+    "row_provenance": {
+        "path": "research/xedni_rank_decay_20261118/row_provenance.py",
+        "schemas": {
+            "root": "xedni.rank-decay-row-provenance/v1",
+            "inventory": "xedni.relation-inventory/v1",
+            "work": "xedni.row-work-accounting/v1",
+        },
+        "production_ready": None,
+        "blocker": "hash_graph_only_no_independent_execution_verifier",
+    },
+    "mixed_censoring": {
+        "path": "research/xedni_rank_decay_20261118/mixed_censoring.py",
+        "schemas": {
+            "root": "xedni.mixed-censoring/v1",
+            "cluster_row": "xedni.mixed-censoring-cluster-row/v1",
+        },
+        "production_ready": False,
+        "blocker": "bounded_optimizer_not_freeze_authorized",
+    },
+    "cubic_jacobian_map": {
+        "path": "research/xedni_rank_decay_20261118/cubic_jacobian_map.py",
+        "schemas": {
+            "certificate": "xedni.cubic-jacobian-map/v1",
+            "verification": "xedni.cubic-jacobian-map-verification/v1",
+        },
+        "production_ready": False,
+        "blocker": (
+            "no_pinned_general_cubic_constructor_or_global_exception_certificate"
+        ),
+    },
+    "relation_lattice": {
+        "path": "research/xedni_rank_decay_20261118/relation_lattice.py",
+        "schemas": {
+            "input": "xedni.relation-lattice-input/v1",
+            "certificate": "xedni.relation-lattice-certificate/v1",
+            "basis_receipt": "xedni.full-mw-basis-receipt/v1",
+            "basis_verifier": "xedni.full-mw-basis-verifier-result/v1",
+            "assessment": "xedni.full-mw-basis-control-assessment/v1",
+        },
+        "production_ready": False,
+        "blocker": "no_proven_full_saturated_mordell_weil_basis_receipt",
+    },
+    "verifier_receipts": {
+        "path": "research/xedni_rank_decay_20261118/verifier_receipts.py",
+        "schemas": {
+            "receipt": "xedni.verifier-receipt/v1",
+            "payload": "xedni.verifier-receipt-payload/v1",
+            "signature": "xedni.verifier-receipt-signature/v1",
+            "assessment": "xedni.verifier-receipt-assessment/v1",
+            "keyring": "pcc.keyring/v1",
+        },
+        "production_ready": False,
+        "blocker": (
+            "repository_trust_not_covered_no_trusted_execution_verifier_digest"
+        ),
+    },
+    "allocation_planner": {
+        "path": "research/xedni_rank_decay_20261118/allocation_planner.py",
+        "schemas": {"root": "xedni.rank-decay-power-allocation/v1"},
+        "production_ready": False,
+        "blocker": (
+            "reference_scale_unallocated_not_powered_and_replication_manifest_missing"
+        ),
+    },
+}
 
 
 class RunnerError(RuntimeError):
@@ -407,6 +522,514 @@ def _git_file_state(relative: str) -> dict:
         "ls_files_returncode": tracked.returncode,
         "diff_returncode": changed.returncode,
     }
+
+
+def _head_file_sha256(relative: str) -> str:
+    """Hash the exact bytes committed at HEAD, not the working-tree claim."""
+    completed = subprocess.run(
+        ["git", "show", f"HEAD:{relative}"],
+        cwd=REPOSITORY,
+        capture_output=True,
+        check=False,
+    )
+    if completed.returncode != 0:
+        raise RunnerError(
+            "executor_component_head",
+            f"cannot read committed executor component {relative}",
+            {
+                "path": relative,
+                "returncode": completed.returncode,
+                "stderr": completed.stderr.decode(errors="replace"),
+            },
+        )
+    return hashlib.sha256(completed.stdout).hexdigest()
+
+
+def _component_schema_values(name: str) -> dict[str, str]:
+    if name == "runner":
+        return {
+            "root": SCHEMA,
+            "executor_validation": EXECUTOR_VALIDATION_SCHEMA,
+        }
+    if name == "public_boundary":
+        return {
+            "private_source": public_boundary.PRIVATE_SOURCE_SCHEMA,
+            "public_source": public_boundary.PUBLIC_SOURCE_SCHEMA,
+            "link": public_boundary.LINK_SCHEMA,
+            "formula_spec": public_boundary.M3_FORMULA_SPEC_SCHEMA,
+        }
+    if name == "natural_executor":
+        return {
+            "root": natural_executor.SCHEMA,
+            "preflight": natural_executor.PREFLIGHT_SCHEMA,
+            "row": natural_executor.ROW_SCHEMA,
+        }
+    if name == "row_provenance":
+        return {
+            "root": row_provenance.SCHEMA,
+            "inventory": row_provenance.INVENTORY_SCHEMA,
+            "work": row_provenance.WORK_SCHEMA,
+        }
+    if name == "mixed_censoring":
+        return {
+            "root": mixed_censoring.SCHEMA,
+            "cluster_row": mixed_censoring.CLUSTER_ROW_SCHEMA,
+        }
+    if name == "cubic_jacobian_map":
+        return {
+            "certificate": cubic_jacobian_map.SCHEMA,
+            "verification": cubic_jacobian_map.VERIFY_SCHEMA,
+        }
+    if name == "relation_lattice":
+        return {
+            "input": relation_lattice.INPUT_SCHEMA,
+            "certificate": relation_lattice.CERTIFICATE_SCHEMA,
+            "basis_receipt": relation_lattice.RECEIPT_SCHEMA,
+            "basis_verifier": relation_lattice.VERIFIER_SCHEMA,
+            "assessment": relation_lattice.CONTROL_ASSESSMENT_SCHEMA,
+        }
+    if name == "verifier_receipts":
+        return {
+            "receipt": verifier_receipts.RECEIPT_SCHEMA,
+            "payload": verifier_receipts.PAYLOAD_SCHEMA,
+            "signature": verifier_receipts.SIGNATURE_SCHEMA,
+            "assessment": verifier_receipts.ASSESSMENT_SCHEMA,
+            "keyring": verifier_receipts.KEYRING_SCHEMA,
+        }
+    if name == "allocation_planner":
+        return {"root": allocation_planner.SCHEMA}
+    raise RunnerError("executor_component", f"unknown executor component {name!r}")
+
+
+def _validate_executor_components(freeze: dict) -> list[dict]:
+    """Bind prospective modules to committed bytes and their exact schemas."""
+    frozen_files = freeze.get("files") if isinstance(freeze.get("files"), dict) else {}
+    checks = []
+    errors = []
+    modules = {
+        "runner": sys.modules[__name__],
+        "public_boundary": public_boundary,
+        "natural_executor": natural_executor,
+        "row_provenance": row_provenance,
+        "mixed_censoring": mixed_censoring,
+        "cubic_jacobian_map": cubic_jacobian_map,
+        "relation_lattice": relation_lattice,
+        "verifier_receipts": verifier_receipts,
+        "allocation_planner": allocation_planner,
+    }
+    for name, specification in EXECUTOR_COMPONENTS.items():
+        relative = specification["path"]
+        path = REPOSITORY / relative
+        actual_sha256 = file_sha256(path) if path.is_file() else None
+        head_sha256 = _head_file_sha256(relative)
+        state = _git_file_state(relative)
+        schemas = _component_schema_values(name)
+        production_ready = getattr(modules[name], "PRODUCTION_READY", None)
+        check = {
+            **state,
+            "component": name,
+            "actual_sha256": actual_sha256,
+            "head_sha256": head_sha256,
+            "committed_bytes_match": actual_sha256 == head_sha256,
+            "schemas": schemas,
+            "expected_schemas": copy.deepcopy(specification["schemas"]),
+            "schemas_match": schemas == specification["schemas"],
+            "production_ready": production_ready,
+            "expected_production_ready": specification["production_ready"],
+            "production_blocker": specification["blocker"],
+            "freeze_sha256": frozen_files.get(relative),
+            "freeze_bound": frozen_files.get(relative) == actual_sha256,
+        }
+        checks.append(check)
+        if (
+            not state["tracked"]
+            or not state["clean_against_head"]
+            or not check["committed_bytes_match"]
+            or not check["schemas_match"]
+            or production_ready != specification["production_ready"]
+        ):
+            errors.append(name)
+    if errors:
+        raise RunnerError(
+            "executor_component_mismatch",
+            "prospective executor component validation failed",
+            {"errors": errors, "components": checks, "natural_rows_started": 0},
+        )
+    return checks
+
+
+def _strict_tool_pin_status(freeze: dict) -> dict:
+    """Validate exact supported versions and cryptographic identity shapes."""
+    tools = freeze.get("tools") if isinstance(freeze.get("tools"), dict) else {}
+    requirements = {
+        "pari": {
+            "version": STRICT_PARI_VERSION,
+            "fields": ("version", "image_digest", "wrapper_sha256"),
+        },
+        "magma": {
+            "version": STRICT_MAGMA_VERSION,
+            "fields": (
+                "version",
+                "executable_sha256",
+                "license_fingerprint_sha256",
+            ),
+        },
+    }
+    reports = {}
+    for name, requirement in requirements.items():
+        fields = requirement["fields"]
+        pin = tools.get(name) if isinstance(tools.get(name), dict) else {}
+        missing = [
+            field
+            for field in fields
+            if not isinstance(pin.get(field), str) or not pin[field]
+        ]
+        invalid = []
+        if pin.get("version") != requirement["version"]:
+            invalid.append("version")
+        if name == "pari":
+            image = pin.get("image_digest")
+            wrapper = pin.get("wrapper_sha256")
+            if (
+                not isinstance(image, str)
+                or re.fullmatch(r"sha256:[0-9a-f]{64}", image) is None
+                or image != STRICT_PARI_IMAGE_DIGEST
+            ):
+                invalid.append("image_digest")
+            expected_wrapper = file_sha256(Path(DEFAULT_GP))
+            if (
+                not isinstance(wrapper, str)
+                or re.fullmatch(r"[0-9a-f]{64}", wrapper) is None
+                or wrapper != expected_wrapper
+            ):
+                invalid.append("wrapper_sha256")
+        else:
+            executable = pin.get("executable_sha256")
+            license_fingerprint = pin.get("license_fingerprint_sha256")
+            if (
+                not isinstance(executable, str)
+                or re.fullmatch(r"[0-9a-f]{64}", executable) is None
+                or executable == "0" * 64
+            ):
+                invalid.append("executable_sha256")
+            if (
+                not isinstance(license_fingerprint, str)
+                or re.fullmatch(r"[0-9a-f]{64}", license_fingerprint) is None
+                or license_fingerprint == "0" * 64
+            ):
+                invalid.append("license_fingerprint_sha256")
+        if pin.get("available") is not True:
+            missing.append("available=true")
+            invalid.append("available")
+        observed = {field: pin.get(field) for field in fields}
+        required_identity = (
+            {
+                "image_digest": STRICT_PARI_IMAGE_DIGEST,
+                "wrapper_sha256": file_sha256(Path(DEFAULT_GP)),
+            }
+            if name == "pari"
+            else {
+                "executable_sha256": "committed nonzero lowercase SHA-256",
+                "license_fingerprint_sha256": "committed nonzero lowercase SHA-256",
+            }
+        )
+        reports[name] = {
+            "required_fields": list(fields),
+            "required_version": requirement["version"],
+            "required_identity": required_identity,
+            "observed": observed,
+            "identity_sha256": object_sha256(observed),
+            "available": pin.get("available"),
+            "missing": sorted(set(missing)),
+            "invalid": sorted(set(invalid)),
+            "pin_schema_complete": not missing and not invalid,
+            "runtime_identity_observed": False,
+            "identity_observation_blocker": (
+                "validate-executor deliberately invokes no scientific tool probe"
+            ),
+        }
+    return reports
+
+
+def _row_provenance_behavioral_receipt() -> dict:
+    """Exercise the diagnostic-only return state without reading evidence files."""
+    roles = set(row_provenance.BASE_ARTIFACT_BINDINGS) | {
+        "relation_proposer",
+        "work_report",
+    }
+    digests = {
+        role: hashlib.sha256(f"runner-canary:{role}".encode()).hexdigest()
+        for role in roles
+    }
+    bindings = {
+        binding: digests[role]
+        for role, binding in row_provenance.BASE_ARTIFACT_BINDINGS.items()
+    }
+    bindings.update(
+        {
+            "master_seed_sha256": "1" * 64,
+            "stage_seed_sha256": "2" * 64,
+            "p": 101,
+            "bits": 7,
+            "r": 2,
+        }
+    )
+    artifacts = [
+        {
+            "role": role,
+            "path": role.replace("/", "__") + ".json",
+            "sha256": digests[role],
+            "bytes": 1,
+            "media_type": "application/json",
+        }
+        for role in sorted(roles)
+    ]
+    inventory = row_provenance.seal_inventory(
+        {
+            "schema": row_provenance.INVENTORY_SCHEMA,
+            "status": "bounded_no_hit",
+            "selected_dependence": "UNKNOWN",
+            "proposer_report_sha256": digests["relation_proposer"],
+            "replay_report_sha256": None,
+            "complete_for_frozen_budget": True,
+            "complete_relation_lattice": False,
+            "absence_certificate_sha256": None,
+            "candidate_count": 0,
+            "replayed_count": 0,
+            "exact_relation_count": 0,
+            "counted_relation_count": 0,
+            "candidates": [],
+        }
+    )
+    work = row_provenance.seal_work(
+        {
+            "schema": row_provenance.WORK_SCHEMA,
+            "complete": True,
+            "source_generation_candidates": 1,
+            "local_construction_candidates": 1,
+            "lift_candidates": 1,
+            "relation_candidates": 0,
+            "relation_replays": 0,
+            "rank_calls": 0,
+            "rejected_candidates": 0,
+            "duplicate_candidates": 0,
+            "cpu_ns": 1,
+            "wall_ns": 1,
+            "peak_rss_bytes": 1,
+            "retained_bytes": 1,
+            "work_report_sha256": digests["work_report"],
+        }
+    )
+    envelope = row_provenance.seal_envelope(
+        {
+            "schema": row_provenance.SCHEMA,
+            "row_id": "runner-diagnostic-canary",
+            "bindings": bindings,
+            "artifacts": artifacts,
+            "tools": [],
+            "relation_inventory": inventory,
+            "work": work,
+        }
+    )
+    result = row_provenance.validate_envelope(envelope)
+    if (
+        result.get("status") != "HASH_GRAPH_ONLY"
+        or result.get("production_eligible") is not False
+        or result.get("files_verified") is not False
+    ):
+        raise RunnerError(
+            "provenance_production_gate",
+            "row provenance diagnostic canary changed production state",
+            {"result": result, "natural_rows_started": 0},
+        )
+    return {
+        "status": result["status"],
+        "production_eligible": result["production_eligible"],
+        "files_verified": result["files_verified"],
+        "envelope_sha256": result["envelope_sha256"],
+        "scope": "structural diagnostic without evidence files",
+    }
+
+
+def _executor_git_command_inventory() -> list[dict]:
+    commands = []
+    for specification in EXECUTOR_COMPONENTS.values():
+        relative = specification["path"]
+        commands.extend(
+            [
+                {
+                    "purpose": "read_committed_component_bytes",
+                    "command": ["git", "show", f"HEAD:{relative}"],
+                },
+                {
+                    "purpose": "confirm_component_tracked",
+                    "command": ["git", "ls-files", "--error-unmatch", "--", relative],
+                },
+                {
+                    "purpose": "confirm_component_clean",
+                    "command": ["git", "diff", "--quiet", "HEAD", "--", relative],
+                },
+            ]
+        )
+    commands.append(
+        {"purpose": "bind_validation_commit", "command": ["git", "rev-parse", "HEAD"]}
+    )
+    return commands
+
+
+def _production_gate_canaries(
+    freeze_sha256: str, roster_sha256: str, implementation_commit: str
+) -> dict:
+    """Exercise rejection paths only; no external gate or row is invoked."""
+    tool_pins = {
+        "pari": {
+            "version": "2.17.2",
+            "image_digest": "sha256:" + "1" * 64,
+            "wrapper_sha256": "2" * 64,
+        },
+        "magma": {
+            "version": "2.29-10",
+            "executable_sha256": "3" * 64,
+            "license_fingerprint_sha256": "4" * 64,
+        },
+    }
+    config = natural_executor.ExecutorConfig(
+        run_id="runner-validation-control",
+        stage="calibration",
+        natural_rows_authorized=True,
+        freeze_sha256=freeze_sha256,
+        roster_sha256=roster_sha256,
+        implementation_commit=implementation_commit,
+        command=("runner.py", "validate-executor"),
+        tool_pins=tool_pins,
+        row_token_nonce_sha256="5" * 64,
+        verifier_identity_sha256="6" * 64,
+        production=True,
+    )
+    try:
+        config.validate()
+    except natural_executor.ExecutorError as error:
+        executor_rejection = {
+            "rejected": True,
+            "code": error.code,
+            "evidence": error.evidence,
+        }
+    else:
+        raise RunnerError(
+            "executor_production_gate",
+            "prospective executor unexpectedly accepted production mode",
+            {"natural_rows_started": 0},
+        )
+    if executor_rejection["code"] != "production_blocked":
+        raise RunnerError(
+            "executor_production_gate",
+            "executor production canary failed for the wrong reason",
+            {"canary": executor_rejection, "natural_rows_started": 0},
+        )
+
+    schema_canaries = {}
+    for name, validator, invalid in (
+        (
+            "public_boundary",
+            public_boundary.validate_public_source,
+            {"schema": public_boundary.PUBLIC_SOURCE_SCHEMA},
+        ),
+        (
+            "row_provenance",
+            row_provenance.validate_envelope,
+            {"schema": row_provenance.SCHEMA},
+        ),
+    ):
+        try:
+            validator(invalid)
+        except (public_boundary.BoundaryError, row_provenance.ProvenanceError) as error:
+            schema_canaries[name] = {
+                "rejected": True,
+                "error_type": type(error).__name__,
+            }
+        else:
+            raise RunnerError(
+                "executor_schema_gate",
+                f"{name} accepted an incomplete schema canary",
+                {"natural_rows_started": 0},
+            )
+    return {
+        "executor_production": executor_rejection,
+        "strict_schema_rejections": schema_canaries,
+        "row_provenance_diagnostic": _row_provenance_behavioral_receipt(),
+        "schema_scope": "exported constants plus incomplete-object rejection canaries",
+    }
+
+
+def validate_executor_integration(freeze_path: Path | None = None) -> dict:
+    """Validate committed scaffolding while proving that zero rows can start."""
+    selected = HERE / "FREEZE.json" if freeze_path is None else freeze_path
+    try:
+        freeze = json.loads(selected.read_text())
+    except (OSError, json.JSONDecodeError) as error:
+        raise RunnerError("freeze_json", f"cannot parse freeze: {error}") from error
+    if not isinstance(freeze, dict):
+        raise RunnerError("freeze_schema", "freeze root must be a JSON object")
+    components = _validate_executor_components(freeze)
+    roster = build_roster("calibration")
+    commit = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        cwd=REPOSITORY,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    implementation_commit = commit.stdout.strip() if commit.returncode == 0 else ""
+    if not re.fullmatch(r"[0-9a-f]{40}", implementation_commit):
+        raise RunnerError(
+            "executor_commit", "cannot bind executor validation to committed HEAD"
+        )
+    freeze_sha256 = file_sha256(selected)
+    tool_pins = _strict_tool_pin_status(freeze)
+    canaries = _production_gate_canaries(
+        freeze_sha256, roster["roster_sha256"], implementation_commit
+    )
+    blockers = []
+    if freeze.get("natural_rows_authorized") is not True:
+        blockers.append("freeze_not_authorized")
+    blockers.extend(
+        f"component_not_freeze_bound:{item['component']}"
+        for item in components
+        if not item["freeze_bound"]
+    )
+    blockers.extend(
+        f"tool_pin_schema_incomplete:{name}"
+        for name, item in tool_pins.items()
+        if not item["pin_schema_complete"]
+    )
+    blockers.extend(
+        f"component_gate:{name}:{specification['blocker']}"
+        for name, specification in EXECUTOR_COMPONENTS.items()
+    )
+    blockers.append("no_natural_run_command")
+    report = {
+        "schema": EXECUTOR_VALIDATION_SCHEMA,
+        "operation": "validate_executor",
+        "status": "BLOCKED_NON_PRODUCTION",
+        "freeze": {
+            "path": str(selected),
+            "sha256": freeze_sha256,
+            "natural_rows_authorized": freeze.get("natural_rows_authorized"),
+        },
+        "implementation_commit": implementation_commit,
+        "roster_sha256": roster["roster_sha256"],
+        "components": components,
+        "tool_pins": tool_pins,
+        "gate_canaries": canaries,
+        "blockers": sorted(set(blockers)),
+        "checkpoint_invoked": False,
+        "scientific_tools_invoked": False,
+        "administrative_git_commands": _executor_git_command_inventory(),
+        "stage_adapters_invoked": False,
+        "natural_rows_started": 0,
+    }
+    report["validation_sha256"] = object_sha256(report)
+    return report
 
 
 def validate_freeze(
@@ -1078,6 +1701,14 @@ def main(argv=None) -> int:
     plan = subparsers.add_parser("plan", help="read-only deterministic roster")
     plan.add_argument("--stage", choices=tuple(STAGES) + tuple(BLOCKED_STAGES), required=True)
     plan.add_argument("--output", type=Path)
+    validate_executor = subparsers.add_parser(
+        "validate-executor",
+        help="bind non-production executor components and prove zero-row closure",
+    )
+    validate_executor.add_argument(
+        "--freeze", type=Path, default=HERE / "FREEZE.json"
+    )
+    validate_executor.add_argument("--output", type=Path)
     preflight = subparsers.add_parser(
         "preflight-natural", help="validate freeze/tools and invoke mandatory checkpoint gate"
     )
@@ -1093,6 +1724,10 @@ def main(argv=None) -> int:
         if args.command == "plan":
             _write_json(build_roster(args.stage), args.output)
             return 0
+        if args.command == "validate-executor":
+            report = validate_executor_integration(args.freeze)
+            _write_json(report, args.output)
+            return 2
         try:
             r_values = tuple(int(value) for value in args.r_values.split(",") if value)
         except ValueError as error:

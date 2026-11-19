@@ -4,11 +4,14 @@
 from __future__ import annotations
 
 import copy
+import contextlib
+import json
 from pathlib import Path
 import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -367,6 +370,271 @@ class PreflightTests(unittest.TestCase):
                     "missing-ca-icx",
                 )
         self.assertEqual(caught.exception.code, "natural_rows_not_authorized")
+
+
+class ExecutorIntegrationTests(unittest.TestCase):
+    def _committed_component_state(self):
+        """Model the post-commit state while this change is still uncommitted."""
+        stack = contextlib.ExitStack()
+        stack.enter_context(
+            mock.patch.object(
+                runner,
+                "_head_file_sha256",
+                side_effect=lambda relative: runner.file_sha256(
+                    runner.REPOSITORY / relative
+                ),
+            )
+        )
+        stack.enter_context(
+            mock.patch.object(
+                runner,
+                "_git_file_state",
+                return_value={
+                    "path": "prospective-post-commit",
+                    "tracked": True,
+                    "clean_against_head": True,
+                    "ls_files_returncode": 0,
+                    "diff_returncode": 0,
+                },
+            )
+        )
+        return stack
+
+    def test_validation_binds_committed_components_and_starts_zero_rows(self):
+        with self._committed_component_state(), mock.patch.object(
+            runner,
+            "checkpoint_gate",
+            side_effect=AssertionError("checkpoint must not be invoked"),
+        ):
+            report = runner.validate_executor_integration()
+        self.assertEqual(report["schema"], runner.EXECUTOR_VALIDATION_SCHEMA)
+        self.assertEqual(report["status"], "BLOCKED_NON_PRODUCTION")
+        self.assertEqual(report["natural_rows_started"], 0)
+        self.assertFalse(report["checkpoint_invoked"])
+        self.assertFalse(report["scientific_tools_invoked"])
+        self.assertFalse(report["stage_adapters_invoked"])
+        self.assertEqual(
+            len(report["administrative_git_commands"]),
+            3 * len(runner.EXECUTOR_COMPONENTS) + 1,
+        )
+        self.assertEqual(
+            report["administrative_git_commands"][-1]["command"],
+            ["git", "rev-parse", "HEAD"],
+        )
+        for retained in report["administrative_git_commands"]:
+            self.assertEqual(retained["command"][0], "git")
+        self.assertEqual(len(report["components"]), len(runner.EXECUTOR_COMPONENTS))
+        self.assertEqual(
+            {component["component"] for component in report["components"]},
+            set(runner.EXECUTOR_COMPONENTS),
+        )
+        for component in report["components"]:
+            self.assertTrue(component["tracked"])
+            self.assertTrue(component["clean_against_head"])
+            self.assertTrue(component["committed_bytes_match"])
+            self.assertTrue(component["schemas_match"])
+            self.assertFalse(component["freeze_bound"])
+            self.assertEqual(
+                component["production_blocker"],
+                runner.EXECUTOR_COMPONENTS[component["component"]]["blocker"],
+            )
+            self.assertIn(
+                "component_gate:"
+                f"{component['component']}:"
+                f"{component['production_blocker']}",
+                report["blockers"],
+            )
+        self.assertFalse(report["tool_pins"]["pari"]["pin_schema_complete"])
+        self.assertFalse(report["tool_pins"]["magma"]["pin_schema_complete"])
+        self.assertFalse(report["tool_pins"]["pari"]["runtime_identity_observed"])
+        self.assertFalse(report["tool_pins"]["magma"]["runtime_identity_observed"])
+        self.assertIn(
+            "wrapper_sha256", report["tool_pins"]["pari"]["missing"]
+        )
+        self.assertIn(
+            "license_fingerprint_sha256",
+            report["tool_pins"]["magma"]["missing"],
+        )
+        self.assertEqual(
+            report["gate_canaries"]["executor_production"]["code"],
+            "production_blocked",
+        )
+        provenance = report["gate_canaries"]["row_provenance_diagnostic"]
+        self.assertEqual(provenance["status"], "HASH_GRAPH_ONLY")
+        self.assertFalse(provenance["production_eligible"])
+        self.assertFalse(provenance["files_verified"])
+        self.assertIn("constants", report["gate_canaries"]["schema_scope"])
+        expected_hash = runner.object_sha256(
+            {key: value for key, value in report.items() if key != "validation_sha256"}
+        )
+        self.assertEqual(report["validation_sha256"], expected_hash)
+
+    def test_component_hash_and_schema_mutations_fail_closed(self):
+        with self._committed_component_state(), mock.patch.object(
+            runner, "_head_file_sha256", return_value="0" * 64
+        ):
+            with self.assertRaises(runner.RunnerError) as caught:
+                runner.validate_executor_integration()
+        self.assertEqual(caught.exception.code, "executor_component_mismatch")
+        self.assertEqual(caught.exception.evidence["natural_rows_started"], 0)
+
+        with self._committed_component_state(), mock.patch.object(
+            runner.public_boundary,
+            "PUBLIC_SOURCE_SCHEMA",
+            "forged-public-source/v1",
+        ):
+            with self.assertRaises(runner.RunnerError) as caught:
+                runner.validate_executor_integration()
+        self.assertEqual(caught.exception.code, "executor_component_mismatch")
+        self.assertEqual(caught.exception.evidence["natural_rows_started"], 0)
+
+    def test_each_new_component_byte_mutation_fails_closed(self):
+        new_components = {
+            "mixed_censoring",
+            "cubic_jacobian_map",
+            "relation_lattice",
+            "verifier_receipts",
+            "allocation_planner",
+        }
+        for selected in sorted(new_components):
+            selected_path = runner.EXECUTOR_COMPONENTS[selected]["path"]
+
+            def head_hash(relative, *, changed=selected_path):
+                if relative == changed:
+                    return "0" * 64
+                return runner.file_sha256(runner.REPOSITORY / relative)
+
+            with self.subTest(component=selected), self._committed_component_state(), mock.patch.object(
+                runner, "_head_file_sha256", side_effect=head_hash
+            ):
+                with self.assertRaises(runner.RunnerError) as caught:
+                    runner.validate_executor_integration()
+                self.assertEqual(caught.exception.code, "executor_component_mismatch")
+                self.assertEqual(caught.exception.evidence["errors"], [selected])
+                self.assertEqual(caught.exception.evidence["natural_rows_started"], 0)
+
+    def test_each_new_component_schema_mutation_fails_closed(self):
+        mutations = {
+            "mixed_censoring": (runner.mixed_censoring, "SCHEMA"),
+            "cubic_jacobian_map": (runner.cubic_jacobian_map, "VERIFY_SCHEMA"),
+            "relation_lattice": (runner.relation_lattice, "CERTIFICATE_SCHEMA"),
+            "verifier_receipts": (runner.verifier_receipts, "RECEIPT_SCHEMA"),
+            "allocation_planner": (runner.allocation_planner, "SCHEMA"),
+        }
+        for selected, (module, attribute) in mutations.items():
+            with self.subTest(component=selected), self._committed_component_state(), mock.patch.object(
+                module, attribute, "forged-schema/v1"
+            ):
+                with self.assertRaises(runner.RunnerError) as caught:
+                    runner.validate_executor_integration()
+                self.assertEqual(caught.exception.code, "executor_component_mismatch")
+                self.assertEqual(caught.exception.evidence["errors"], [selected])
+                self.assertEqual(caught.exception.evidence["natural_rows_started"], 0)
+
+    def test_production_flag_mutation_is_rejected_before_any_gate(self):
+        modules = {
+            "runner": runner,
+            "public_boundary": runner.public_boundary,
+            "natural_executor": runner.natural_executor,
+            "mixed_censoring": runner.mixed_censoring,
+            "cubic_jacobian_map": runner.cubic_jacobian_map,
+            "relation_lattice": runner.relation_lattice,
+            "verifier_receipts": runner.verifier_receipts,
+            "allocation_planner": runner.allocation_planner,
+        }
+        for selected, module in modules.items():
+            with self.subTest(component=selected), self._committed_component_state(), mock.patch.object(
+                module, "PRODUCTION_READY", True
+            ), mock.patch.object(
+                runner,
+                "checkpoint_gate",
+                side_effect=AssertionError("checkpoint must not be invoked"),
+            ):
+                with self.assertRaises(runner.RunnerError) as caught:
+                    runner.validate_executor_integration()
+                self.assertEqual(caught.exception.code, "executor_component_mismatch")
+                self.assertEqual(caught.exception.evidence["errors"], [selected])
+                self.assertEqual(caught.exception.evidence["natural_rows_started"], 0)
+
+    def test_strict_tool_pin_shape_and_version_mutations_are_rejected(self):
+        freeze = {
+            "tools": {
+                "pari": {
+                    "available": True,
+                    "version": "x",
+                    "image_digest": "x",
+                    "wrapper_sha256": "x",
+                },
+                "magma": {
+                    "available": True,
+                    "version": "x",
+                    "executable_sha256": "x",
+                    "license_fingerprint_sha256": "x",
+                },
+            }
+        }
+        report = runner._strict_tool_pin_status(freeze)
+        self.assertFalse(report["pari"]["pin_schema_complete"])
+        self.assertFalse(report["magma"]["pin_schema_complete"])
+        self.assertEqual(
+            set(report["pari"]["invalid"]),
+            {"version", "image_digest", "wrapper_sha256"},
+        )
+        self.assertEqual(
+            set(report["magma"]["invalid"]),
+            {"version", "executable_sha256", "license_fingerprint_sha256"},
+        )
+
+        zero_identity = copy.deepcopy(freeze)
+        zero_identity["tools"]["pari"].update(
+            version="2.17.2",
+            image_digest="sha256:" + "0" * 64,
+            wrapper_sha256="0" * 64,
+        )
+        zero_identity["tools"]["magma"].update(
+            version="2.29-10",
+            executable_sha256="0" * 64,
+            license_fingerprint_sha256="0" * 64,
+        )
+        zero_report = runner._strict_tool_pin_status(zero_identity)
+        self.assertFalse(zero_report["pari"]["pin_schema_complete"])
+        self.assertFalse(zero_report["magma"]["pin_schema_complete"])
+
+        valid = copy.deepcopy(freeze)
+        valid["tools"]["pari"].update(
+            version=runner.STRICT_PARI_VERSION,
+            image_digest=runner.STRICT_PARI_IMAGE_DIGEST,
+            wrapper_sha256=runner.file_sha256(Path(runner.DEFAULT_GP)),
+        )
+        valid["tools"]["magma"].update(
+            version=runner.STRICT_MAGMA_VERSION,
+            executable_sha256="1" * 64,
+            license_fingerprint_sha256="2" * 64,
+        )
+        valid_report = runner._strict_tool_pin_status(valid)
+        self.assertTrue(valid_report["pari"]["pin_schema_complete"])
+        self.assertTrue(valid_report["magma"]["pin_schema_complete"])
+        self.assertFalse(valid_report["pari"]["runtime_identity_observed"])
+        self.assertFalse(valid_report["magma"]["runtime_identity_observed"])
+
+        pari_unavailable = copy.deepcopy(valid)
+        pari_unavailable["tools"]["pari"]["available"] = False
+        unavailable_report = runner._strict_tool_pin_status(pari_unavailable)
+        self.assertFalse(unavailable_report["pari"]["pin_schema_complete"])
+        self.assertIn("available", unavailable_report["pari"]["invalid"])
+        self.assertIn("available=true", unavailable_report["pari"]["missing"])
+
+    def test_validate_executor_cli_writes_only_blocked_zero_row_evidence(self):
+        with self._committed_component_state(), tempfile.TemporaryDirectory() as temporary:
+            output = Path(temporary) / "executor-validation.json"
+            exit_code = runner.main(
+                ["validate-executor", "--output", str(output)]
+            )
+            retained = json.loads(output.read_text())
+        self.assertEqual(exit_code, 2)
+        self.assertEqual(retained["status"], "BLOCKED_NON_PRODUCTION")
+        self.assertEqual(retained["natural_rows_started"], 0)
+        self.assertFalse(retained["checkpoint_invoked"])
 
 
 class IntegrationTests(unittest.TestCase):
