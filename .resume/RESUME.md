@@ -44,6 +44,12 @@ parameters, PARI image, and release binary, but deliberately sets
 `natural_rows_authorized=false`. `runner.py` has no natural-row command. No
 natural calibration, sentinel, discovery, or replication row exists.
 
+At pushed head `cd0e9e91c`, `checkpoint.sh push` and `gate` both exited 1.
+The gate reported no `ecc-challenges-new` profile, no
+`CHECKPOINT_UPLOAD_TOKEN`, and no token file. No bypass was used. The exact
+transcript is in
+`research/xedni_rank_decay_20261118/CHECKPOINT_GATE.md`.
+
 ## Implemented scope
 
 - Deterministic 27-prime manifest: three primes per even size 16--32.
@@ -111,15 +117,14 @@ None. No natural process or container is running.
 
 ## Next steps
 
-1. Commit this resume update and push the branch.
-2. Run `scripts/checkpoint.sh status`, `scripts/checkpoint.sh push`, and
-   `scripts/checkpoint.sh gate` without `CHECKPOINT_SKIP`.
-3. If push or gate fails, record the exact transcript in the checkpoint-access
-   problem, keep `natural_rows_authorized=false`, and run no natural row.
-4. If transport unexpectedly succeeds, still run no natural row: Magma,
+1. Keep `natural_rows_authorized=false` and run no natural row.
+2. If a valid checkpoint profile or token is attached, rerun
+   `scripts/checkpoint.sh push` and `gate` on the then-current pushed head,
+   without `CHECKPOINT_SKIP`.
+3. If transport succeeds, still run no natural row: Magma,
    executor, public/private separation, provenance, mixed-censoring, relation
    inventory, map, and power gates remain independently open.
-5. The first future allowed natural stage, after every gate is closed and a new
+4. The first future allowed natural stage, after every gate is closed and a new
    authorizing freeze is committed/checkpointed, is the excluded two-row per
    cell 16/18-bit calibration. It is not an inference result.
 

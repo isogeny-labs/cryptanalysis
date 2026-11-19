@@ -223,6 +223,11 @@ certificate; those remain computational and independent-review obligations.
 The natural panel remains stopped before its first row for independently
 checkable reasons:
 
+The mandatory checkpoint attempt at pushed head `cd0e9e91c` failed because no
+authorized AWS profile, upload token, or token file exists; the exact transcript
+is retained in [`CHECKPOINT_GATE.md`](CHECKPOINT_GATE.md). No bypass was used
+and no natural row was generated. [pcc:unverified]
+
 1. [`scripts/checkpoint.sh gate`](../../scripts/checkpoint.sh) must upload the
    current resume capsule and return zero without bypass.
 2. A licensed pinned Magma must pass known-rank and PARI-agreement controls.

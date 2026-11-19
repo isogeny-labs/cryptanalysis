@@ -4,7 +4,7 @@
 - **Kind:** access/tool limit
 - **Affected work:** [frozen xedni affine-lift protocol](../research/xedni_lift_optimizer_20261101/PROTOCOL.md), [fresh target-bearing selector protocol](../research/xedni_target_relation_20261118/PROTOCOL.md), [target-origin-pencil protocol](../research/xedni_origin_pencil_20261118/PROTOCOL.md), [fixed-coordinate dedup protocol](../research/xedni_origin_dedup_20261118/PROTOCOL.md), [rank-decay falsification protocol](../research/xedni_rank_decay_20261118/PROTOCOL.md), draft PR #1768
 - **Next action owner:** environment operator for checkpoint credentials; research agent for the frozen run
-- **Last updated:** 2026-11-18
+- **Last updated:** 2026-11-19
 
 ## Problem
 
@@ -158,3 +158,13 @@ row was generated. Unresolved. [pcc:unverified]
 2026-11-18: the separately frozen first-representative dedup panel also reached
 the same gate at pushed head `9673f3fa`; no supported transport existed, and no
 natural row was generated. Unresolved. [pcc:unverified]
+
+2026-11-19: the Xedni rank-decay control harness, non-authorizing freeze,
+report, PCC control record, and resume capsule were pushed at head
+`cd0e9e91c`. Status reported zero unpushed commits and a complete resume
+capsule. `checkpoint.sh push` exited 1; `checkpoint.sh gate` then exited 1
+because there was no `ecc-challenges-new` profile, no
+`CHECKPOINT_UPLOAD_TOKEN`, and no token file. No bypass and no natural
+rank-decay row were used. The exact transcript is retained in
+[`CHECKPOINT_GATE.md`](../research/xedni_rank_decay_20261118/CHECKPOINT_GATE.md).
+Unresolved. [pcc:unverified]
