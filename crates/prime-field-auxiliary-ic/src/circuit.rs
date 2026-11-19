@@ -1215,8 +1215,8 @@ impl<const B: u32> FactorBase<B> {
         workspace: &mut CandidateWorkspace,
     ) -> Result<Option<(SignedTerm, SignedTerm)>> {
         let Some(r) = residual else {
-            for ia in min_idx..self.points.len() {
-                if self.points[ia].y() == 0 {
+            for (ia, point) in self.points.iter().enumerate().skip(min_idx) {
+                if point.y() == 0 {
                     if ia == min_idx && prev_neg {
                         continue;
                     }
@@ -1236,9 +1236,7 @@ impl<const B: u32> FactorBase<B> {
         };
         if self.uses_circuit() {
             self.zero_indices_from(min_idx, r.x(), workspace)?;
-            let hits = workspace.indices.len();
-            for pos in 0..hits {
-                let ia = workspace.indices[pos];
+            for &ia in &workspace.indices {
                 for neg_a in [false, true] {
                     if self.points[ia].y() == 0 && neg_a {
                         continue;

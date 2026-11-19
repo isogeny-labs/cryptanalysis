@@ -249,8 +249,8 @@ fn group_mask<const B: u32, O: Packed<B>>(
     }
     circuit.evaluate::<B, O, 3>(&mut d, &mut c, &mut h);
     let mut zero_bits = 0;
-    for k in 0..3 {
-        zero_bits |= O::zero_bits(h[k]) << (k * O::WIDTH);
+    for (k, &hk) in h.iter().enumerate() {
+        zero_bits |= O::zero_bits(hk) << (k * O::WIDTH);
     }
     zero_bits
 }
