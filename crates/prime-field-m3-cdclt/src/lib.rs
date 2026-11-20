@@ -21,9 +21,9 @@ pub use field::{
     is_square_mod, sqrt_mod_canonical, DeterministicRng, FpOps, MontDomain,
 };
 pub use proof::{
-    verify_signed_group_replay, verify_unsat_transcript, ChunkedProofBuffer,
-    IndependentFpExplanationChecker, MutationKind, ProofVerifyStats, StreamingDrattChecker,
-    VerificationError,
+    mutate_sat_certificate, mutate_unsat_transcript, verify_signed_group_replay,
+    verify_unsat_transcript, ChunkedProofBuffer, IndependentFpExplanationChecker, MutationKind,
+    ProofVerifyStats, StreamingDrattChecker, VerificationError,
 };
 pub use selector::{
     sizing_comparison_row, CompactBinarySelector, Lit, SinzOneHotSelector, SizingComparisonRow,

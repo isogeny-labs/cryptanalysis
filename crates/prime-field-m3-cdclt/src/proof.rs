@@ -13,8 +13,10 @@
 use std::collections::HashMap;
 
 use crate::cdclt::{ProofEvent, ProofSink};
-use crate::curve::{semaev_s3, CurveFp, M3Instance, PointFp, SignedWitness};
-use crate::field::{inv_mod, is_square_mod, sqrt_mod_canonical, FpOps};
+use crate::curve::{CurveFp, M3Instance, PointFp, SignedWitness};
+use crate::field::{
+    add_mod, inv_mod, is_square_mod, mul_mod, neg_mod, sqrt_mod_canonical, sub_mod, FpOps,
+};
 use crate::selector::{lit_polarity, var_index, CompactBinarySelector, Lit};
 
 /// Detailed rejection reason from independent witness or UNSAT proof verification.
@@ -62,7 +64,7 @@ pub fn verify_signed_group_replay(
     ops: &mut FpOps,
 ) -> Result<(), VerificationError> {
     let p = inst.curve.p;
-    let mut pts = [PointFp::INFINITY; 3];
+    let mut pts = [PointFp::identity(); 3];
     for k in 0..3 {
         let lim = inst.windows[k].len();
         let idx = w.indices[k];
@@ -92,7 +94,7 @@ pub fn verify_signed_group_replay(
             return Err(VerificationError::NonRationalAbscissa { window: k, x });
         };
         let pt = inst.curve.point_from_canonical_lift(x, y_canon, w.signs[k]);
-        if !inst.curve.is_on_curve(pt, ops) {
+        if !inst.curve.on_curve(pt, ops) {
             return Err(VerificationError::OffCurveSummand { window: k });
         }
         pts[k] = pt;
@@ -112,43 +114,48 @@ pub fn verify_signed_group_replay(
 
     // Step 1 chained S_3 + quadratic lambda lift:
     // t_{01} = x_1 - x_0 != 0 (disjoint windows), s_0 = -y_0, lam_1 = (y_1 - y_0) / (2 t_{01}).
-    if semaev_s3(pts[0].x, pts[1].x, u_pt.x, inst.curve.a, inst.curve.b, p, ops) != 0 {
+    if inst.curve.semaev_s3(pts[0].x, pts[1].x, u_pt.x, ops) != 0 {
         return Err(VerificationError::ChainedS3Violation { step: 1 });
     }
-    let t01 = FpOps::sub_mod(pts[1].x, pts[0].x, p, ops);
-    let two_t01 = FpOps::add_mod(t01, t01, p, ops);
-    let num1 = FpOps::sub_mod(pts[1].y, pts[0].y, p, ops);
-    let lam1 = FpOps::mul_mod(num1, inv_mod(two_t01, p, ops), p, ops);
-    let neg_y0 = FpOps::neg_mod(pts[0].y, p, ops);
-    if !inst.curve.check_lambda_lift(pts[1].x, pts[0].x, neg_y0, lam1, ops) {
+    let t01 = sub_mod(pts[1].x, pts[0].x, p, ops);
+    let two_t01 = add_mod(t01, t01, p, ops);
+    let num1 = sub_mod(pts[1].y, pts[0].y, p, ops);
+    let lam1 = mul_mod(num1, inv_mod(two_t01, p, ops), p, ops);
+    let neg_y0 = neg_mod(pts[0].y, p, ops);
+    if !inst.curve.check_lambda_lift(pts[1].x, t01, neg_y0, lam1, ops) {
         return Err(VerificationError::LambdaLiftViolation { step: 1 });
     }
 
     // Step 2 chained S_3 + quadratic lambda lift (or explicit t == 0 tangency):
-    if semaev_s3(u_pt.x, pts[2].x, inst.target.x, inst.curve.a, inst.curve.b, p, ops) != 0 {
+    if inst
+        .curve
+        .semaev_s3(u_pt.x, pts[2].x, inst.target.x, ops)
+        != 0
+    {
         return Err(VerificationError::ChainedS3Violation { step: 2 });
     }
-    let tu = FpOps::sub_mod(u_pt.x, inst.target.x, p, ops);
+    let tu = sub_mod(u_pt.x, inst.target.x, p, ops);
     if tu == 0 {
-        // Exceptional tangency `u == x_R`: requires `U == -R` and `P_2 == 2R`!
+        // Exceptional tangency `u == x_R`: requires `U == -R` and `P_2 == 2R`.
         let neg_r = inst.curve.neg(inst.target, ops);
         let two_r = inst.curve.add(inst.target, inst.target, ops);
         if u_pt != neg_r || pts[2] != two_r {
             return Err(VerificationError::LambdaLiftViolation { step: 2 });
         }
     } else {
-        let two_tu = FpOps::add_mod(tu, tu, p, ops);
-        let num2 = FpOps::add_mod(u_pt.y, inst.target.y, p, ops);
-        let lam2 = FpOps::mul_mod(num2, inv_mod(two_tu, p, ops), p, ops);
+        let two_tu = add_mod(tu, tu, p, ops);
+        let num2 = add_mod(u_pt.y, inst.target.y, p, ops);
+        let lam2 = mul_mod(num2, inv_mod(two_tu, p, ops), p, ops);
         if !inst
             .curve
-            .check_lambda_lift(u_pt.x, inst.target.x, inst.target.y, lam2, ops)
+            .check_lambda_lift(u_pt.x, tu, inst.target.y, lam2, ops)
         {
             return Err(VerificationError::LambdaLiftViolation { step: 2 });
         }
+        let tc = sub_mod(pts[2].x, inst.target.x, p, ops);
         if !inst
             .curve
-            .check_lambda_lift(pts[2].x, inst.target.x, inst.target.y, lam2, ops)
+            .check_lambda_lift(pts[2].x, tc, inst.target.y, lam2, ops)
         {
             return Err(VerificationError::LambdaLiftViolation { step: 2 });
         }
@@ -774,9 +781,34 @@ impl ChunkedProofBuffer {
 
 impl ProofSink for ChunkedProofBuffer {
     #[inline]
-    fn emit(&mut self, event: ProofEvent) {
+    fn emit_theory(&mut self, id: u64, lits: &[Lit]) {
         self.total_events += 1;
-        self.buffer.push(event);
+        self.buffer.push(ProofEvent::AddTheory {
+            id,
+            lits: lits.to_vec(),
+        });
+    }
+
+    #[inline]
+    fn emit_rup(&mut self, id: u64, lits: &[Lit]) {
+        self.total_events += 1;
+        self.buffer.push(ProofEvent::AddRup {
+            id,
+            lits: lits.to_vec(),
+        });
+    }
+
+    #[inline]
+    fn emit_delete(&mut self, id: u64) {
+        self.total_events += 1;
+        self.buffer.push(ProofEvent::Delete { id });
+    }
+}
+
+impl ChunkedProofBuffer {
+    /// Drain buffered proof events (for a dedicated verification timing block).
+    pub fn take_events(&mut self) -> Vec<ProofEvent> {
+        std::mem::take(&mut self.buffer)
     }
 }
 
@@ -795,4 +827,161 @@ pub enum MutationKind {
     TruncatedUnsatProof,
     /// Spoof a false `t = 0` (`u == x_R`) theory conflict on an instance where `P_0 + P_1 = -R` and `2R in W_2`.
     TZeroExceptionSpoof,
+}
+
+/// Apply a single soundness mutation to a valid `SAT` witness / instance pair.
+/// Returns mutated `(instance, witness)` that must be rejected by `verify_signed_group_replay`.
+pub fn mutate_sat_certificate(
+    inst: &M3Instance,
+    w: &SignedWitness,
+    kind: MutationKind,
+) -> Option<(M3Instance, SignedWitness)> {
+    match kind {
+        MutationKind::WrongCurveA => {
+            let mut mutated = inst.clone();
+            mutated.curve.a = (mutated.curve.a + 1) % mutated.curve.p;
+            Some((mutated, *w))
+        }
+        MutationKind::FlippedSignBit => {
+            let mut mw = *w;
+            mw.signs[0] = 1 - mw.signs[0];
+            Some((inst.clone(), mw))
+        }
+        MutationKind::OutOfRangeBinarySelector => {
+            let mut mw = *w;
+            mw.indices[0] = inst.windows[0].len();
+            Some((inst.clone(), mw))
+        }
+        MutationKind::CorruptedTheoryExplanation
+        | MutationKind::TruncatedUnsatProof
+        | MutationKind::TZeroExceptionSpoof => None,
+    }
+}
+
+/// Apply a soundness mutation to an `UNSAT` proof transcript. Returns a transcript that the
+/// independent DRAT(T) checker must reject.
+pub fn mutate_unsat_transcript(events: &[ProofEvent], kind: MutationKind) -> Option<Vec<ProofEvent>> {
+    match kind {
+        MutationKind::TruncatedUnsatProof => {
+            let mut out = events.to_vec();
+            while let Some(last) = out.last() {
+                match last {
+                    ProofEvent::AddRup { lits, .. } | ProofEvent::AddTheory { lits, .. }
+                        if lits.is_empty() =>
+                    {
+                        out.pop();
+                        return Some(out);
+                    }
+                    _ => {
+                        out.pop();
+                    }
+                }
+            }
+            Some(out)
+        }
+        MutationKind::CorruptedTheoryExplanation => {
+            let mut out = events.to_vec();
+            for ev in &mut out {
+                if let ProofEvent::AddTheory { lits, .. } = ev {
+                    if lits.len() >= 2 {
+                        lits.pop();
+                        return Some(out);
+                    }
+                }
+            }
+            None
+        }
+        _ => None,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::cdclt::{
+        enumerate_all_models_compact_cdclt, CdclOutcome, ChainedS3LambdaTheory,
+        PreparedChainedS3Setup, TranscriptProofSink,
+    };
+    use crate::curve::{
+        canonical_ir, exhaustive_fp2_models, generate_instance_for_class, make_development_fixture,
+        validate_instance, PreparedTwoWindow, TargetClass,
+    };
+    use crate::field::FpOps;
+    use crate::selector::sizing_comparison_row;
+
+    #[test]
+    fn development_fixture_sat_replay_and_mutations() {
+        let inst = make_development_fixture();
+        validate_instance(&inst, true).expect("fixture validates");
+        let (fp2_models, _) = exhaustive_fp2_models(&inst);
+        assert!(!fp2_models.is_empty());
+
+        let ir_bytes = canonical_ir(&inst).len();
+        let setup = PreparedChainedS3Setup::prepare(inst.curve, inst.windows.clone(), ir_bytes);
+        let (models, _) = enumerate_all_models_compact_cdclt(&setup, inst.target);
+        assert!(!models.is_empty());
+        let mut ops = FpOps::default();
+        for w in &models {
+            verify_signed_group_replay(&inst, w, &mut ops).expect("SAT replay");
+            assert!(fp2_models.contains(&w.model_key()));
+        }
+
+        let w0 = models[0];
+        for kind in [
+            MutationKind::WrongCurveA,
+            MutationKind::FlippedSignBit,
+            MutationKind::OutOfRangeBinarySelector,
+        ] {
+            let (mi, mw) = mutate_sat_certificate(&inst, &w0, kind).unwrap();
+            let mut mops = FpOps::default();
+            assert!(
+                verify_signed_group_replay(&mi, &mw, &mut mops).is_err(),
+                "mutation {kind:?} must be rejected"
+            );
+        }
+    }
+
+    #[test]
+    fn small_rung_exact_unsat_proof_replays() {
+        use crate::curve::generate_rung_curve_and_windows;
+        use crate::field::DeterministicRng;
+
+        let rung_s = 2u32;
+        let (curve, order, windows) =
+            generate_rung_curve_and_windows("lead2b-unsat-unit-20261120", rung_s);
+        let prepared = PreparedTwoWindow::prepare(curve, windows.clone());
+        let mut rng = DeterministicRng::from_label("lead2b-unsat-unit-20261120:exact");
+        let mut inst = generate_instance_for_class(
+            "lead2b-unsat-unit".into(),
+            rung_s,
+            &prepared,
+            TargetClass::ExactUnsat,
+            &mut rng,
+        );
+        inst.group_order = order;
+        validate_instance(&inst, true).expect("exact-UNSAT validates");
+
+        let ir_bytes = canonical_ir(&inst).len();
+        let setup = PreparedChainedS3Setup::prepare(inst.curve, inst.windows.clone(), ir_bytes);
+        let mut solver = setup.base_solver.clone();
+        let mut stats = crate::cdclt::CdcltStats::default();
+        let mut theory = ChainedS3LambdaTheory::new(&setup, inst.target, &mut stats);
+        let mut sink = TranscriptProofSink::default();
+        match solver.solve_with_theory(&mut theory, &mut sink, &mut stats) {
+            CdclOutcome::Unsat => {}
+            CdclOutcome::Sat(_) => panic!("expected UNSAT on exact-UNSAT target"),
+        }
+        verify_unsat_transcript(&inst, &sink.events).expect("UNSAT transcript verifies");
+
+        let truncated =
+            mutate_unsat_transcript(&sink.events, MutationKind::TruncatedUnsatProof).unwrap();
+        assert!(verify_unsat_transcript(&inst, &truncated).is_err());
+    }
+
+    #[test]
+    fn sizing_row_matches_sinz_formula() {
+        let row = sizing_comparison_row(27);
+        assert_eq!(row.sinz_total_vars_no_sign, 805_306_365);
+        assert_eq!(row.compact_total_vars, 3 * 27 + 3);
+    }
 }
