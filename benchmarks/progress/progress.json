@@ -22,12 +22,12 @@
       "sha256": "c36443b17548a2f9c4f2843635fbaed6abe04788a259585f38605f7447f11349"
     }
   ],
-  "latest_record": "20261118T0527Z-l2b-rref-xor-cadical-pdp-m4",
+  "latest_record": "20261120T0929Z-split-descent-m4-lprime",
   "note": "Every value is quoted from the record it names, in that record's unit. Percentages and ratios under 'derived' are computed here from those values and are not measurements. Series in different units are never compared. 4 digest-pinned historical measured records are excluded from all series and derived comparisons; recorded status counts retain them. See integrity_exclusions in progress.json and PROGRESS.md for reasons.",
   "records": {
     "censored": 1,
     "invalid": 36,
-    "measured": 38,
+    "measured": 42,
     "open": 0
   },
   "repo": "cryptanalysis",
@@ -1963,6 +1963,3106 @@
         }
       ],
       "problem": "ic:N53",
+      "unit": "ratio"
+    },
+    {
+      "better": "lower",
+      "first": 23.276,
+      "latest": 23.276,
+      "latest_derived": {
+        "value_over_reference": 13.004805
+      },
+      "metric": "cost/fp2-16/fp2-weil",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "value_over_reference": 13.004805
+          },
+          "n": 6,
+          "record": "20261120T0900Z-fp2-representation-panel",
+          "reference": 1.7898,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "fp2 panel (direct ic bench, not a registry regime): fp2-weil beats table mitm 7x-284x (k=16..28) but S/rho grows 13->61; rep-join ties mitm; all verified",
+          "value": 23.276
+        }
+      ],
+      "problem": "ic:fp2-subfield",
+      "unit": "S"
+    },
+    {
+      "better": "lower",
+      "first": 160.9024,
+      "latest": 160.9024,
+      "latest_derived": {
+        "value_over_reference": 89.899654
+      },
+      "metric": "cost/fp2-16/mitm",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "value_over_reference": 89.899654
+          },
+          "n": 6,
+          "record": "20261120T0900Z-fp2-representation-panel",
+          "reference": 1.7898,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "fp2 panel (direct ic bench, not a registry regime): fp2-weil beats table mitm 7x-284x (k=16..28) but S/rho grows 13->61; rep-join ties mitm; all verified",
+          "value": 160.9024
+        }
+      ],
+      "problem": "ic:fp2-subfield",
+      "unit": "S"
+    },
+    {
+      "better": "lower",
+      "first": 178.6037,
+      "latest": 178.6037,
+      "latest_derived": {
+        "value_over_reference": 99.789753
+      },
+      "metric": "cost/fp2-16/rep-join_m_3_filter_bits_4",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "value_over_reference": 99.789753
+          },
+          "n": 6,
+          "record": "20261120T0900Z-fp2-representation-panel",
+          "reference": 1.7898,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "fp2 panel (direct ic bench, not a registry regime): fp2-weil beats table mitm 7x-284x (k=16..28) but S/rho grows 13->61; rep-join ties mitm; all verified",
+          "value": 178.6037
+        }
+      ],
+      "problem": "ic:fp2-subfield",
+      "unit": "S"
+    },
+    {
+      "better": "lower",
+      "first": 161.4463,
+      "latest": 161.4463,
+      "latest_derived": {
+        "value_over_reference": 90.203542
+      },
+      "metric": "cost/fp2-16/rep-join_m_3",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "value_over_reference": 90.203542
+          },
+          "n": 6,
+          "record": "20261120T0900Z-fp2-representation-panel",
+          "reference": 1.7898,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "fp2 panel (direct ic bench, not a registry regime): fp2-weil beats table mitm 7x-284x (k=16..28) but S/rho grows 13->61; rep-join ties mitm; all verified",
+          "value": 161.4463
+        }
+      ],
+      "problem": "ic:fp2-subfield",
+      "unit": "S"
+    },
+    {
+      "better": "lower",
+      "first": 161.7478,
+      "latest": 161.7478,
+      "latest_derived": {
+        "value_over_reference": 90.371997
+      },
+      "metric": "cost/fp2-16/rep-join_m_4",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "value_over_reference": 90.371997
+          },
+          "n": 6,
+          "record": "20261120T0900Z-fp2-representation-panel",
+          "reference": 1.7898,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "fp2 panel (direct ic bench, not a registry regime): fp2-weil beats table mitm 7x-284x (k=16..28) but S/rho grows 13->61; rep-join ties mitm; all verified",
+          "value": 161.7478
+        }
+      ],
+      "problem": "ic:fp2-subfield",
+      "unit": "S"
+    },
+    {
+      "better": "lower",
+      "first": 33.9126,
+      "latest": 33.9126,
+      "latest_derived": {
+        "value_over_reference": 22.230482
+      },
+      "metric": "cost/fp2-20/fp2-weil",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "value_over_reference": 22.230482
+          },
+          "n": 6,
+          "record": "20261120T0900Z-fp2-representation-panel",
+          "reference": 1.5255,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "fp2 panel (direct ic bench, not a registry regime): fp2-weil beats table mitm 7x-284x (k=16..28) but S/rho grows 13->61; rep-join ties mitm; all verified",
+          "value": 33.9126
+        }
+      ],
+      "problem": "ic:fp2-subfield",
+      "unit": "S"
+    },
+    {
+      "better": "lower",
+      "first": 1142.4461,
+      "latest": 1142.4461,
+      "latest_derived": {
+        "value_over_reference": 748.899443
+      },
+      "metric": "cost/fp2-20/mitm",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "value_over_reference": 748.899443
+          },
+          "n": 6,
+          "record": "20261120T0900Z-fp2-representation-panel",
+          "reference": 1.5255,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "fp2 panel (direct ic bench, not a registry regime): fp2-weil beats table mitm 7x-284x (k=16..28) but S/rho grows 13->61; rep-join ties mitm; all verified",
+          "value": 1142.4461
+        }
+      ],
+      "problem": "ic:fp2-subfield",
+      "unit": "S"
+    },
+    {
+      "better": "lower",
+      "first": 1177.2811,
+      "latest": 1177.2811,
+      "latest_derived": {
+        "value_over_reference": 771.734579
+      },
+      "metric": "cost/fp2-20/rep-join_m_3_filter_bits_4",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "value_over_reference": 771.734579
+          },
+          "n": 6,
+          "record": "20261120T0900Z-fp2-representation-panel",
+          "reference": 1.5255,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "fp2 panel (direct ic bench, not a registry regime): fp2-weil beats table mitm 7x-284x (k=16..28) but S/rho grows 13->61; rep-join ties mitm; all verified",
+          "value": 1177.2811
+        }
+      ],
+      "problem": "ic:fp2-subfield",
+      "unit": "S"
+    },
+    {
+      "better": "lower",
+      "first": 1144.6707,
+      "latest": 1144.6707,
+      "latest_derived": {
+        "value_over_reference": 750.357719
+      },
+      "metric": "cost/fp2-20/rep-join_m_3",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "value_over_reference": 750.357719
+          },
+          "n": 6,
+          "record": "20261120T0900Z-fp2-representation-panel",
+          "reference": 1.5255,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "fp2 panel (direct ic bench, not a registry regime): fp2-weil beats table mitm 7x-284x (k=16..28) but S/rho grows 13->61; rep-join ties mitm; all verified",
+          "value": 1144.6707
+        }
+      ],
+      "problem": "ic:fp2-subfield",
+      "unit": "S"
+    },
+    {
+      "better": "lower",
+      "first": 1144.7105,
+      "latest": 1144.7105,
+      "latest_derived": {
+        "value_over_reference": 750.383809
+      },
+      "metric": "cost/fp2-20/rep-join_m_4",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "value_over_reference": 750.383809
+          },
+          "n": 6,
+          "record": "20261120T0900Z-fp2-representation-panel",
+          "reference": 1.5255,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "fp2 panel (direct ic bench, not a registry regime): fp2-weil beats table mitm 7x-284x (k=16..28) but S/rho grows 13->61; rep-join ties mitm; all verified",
+          "value": 1144.7105
+        }
+      ],
+      "problem": "ic:fp2-subfield",
+      "unit": "S"
+    },
+    {
+      "better": "lower",
+      "first": 49.4492,
+      "latest": 49.4492,
+      "latest_derived": {
+        "value_over_reference": 33.869315
+      },
+      "metric": "cost/fp2-24/fp2-weil",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "value_over_reference": 33.869315
+          },
+          "n": 6,
+          "record": "20261120T0900Z-fp2-representation-panel",
+          "reference": 1.46,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "fp2 panel (direct ic bench, not a registry regime): fp2-weil beats table mitm 7x-284x (k=16..28) but S/rho grows 13->61; rep-join ties mitm; all verified",
+          "value": 49.4492
+        }
+      ],
+      "problem": "ic:fp2-subfield",
+      "unit": "S"
+    },
+    {
+      "better": "lower",
+      "first": 6205.9142,
+      "latest": 6205.9142,
+      "latest_derived": {
+        "value_over_reference": 4250.626164
+      },
+      "metric": "cost/fp2-24/mitm",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "value_over_reference": 4250.626164
+          },
+          "n": 6,
+          "record": "20261120T0900Z-fp2-representation-panel",
+          "reference": 1.46,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "fp2 panel (direct ic bench, not a registry regime): fp2-weil beats table mitm 7x-284x (k=16..28) but S/rho grows 13->61; rep-join ties mitm; all verified",
+          "value": 6205.9142
+        }
+      ],
+      "problem": "ic:fp2-subfield",
+      "unit": "S"
+    },
+    {
+      "better": "lower",
+      "first": 6271.2677,
+      "latest": 6271.2677,
+      "latest_derived": {
+        "value_over_reference": 4295.388836
+      },
+      "metric": "cost/fp2-24/rep-join_m_3_filter_bits_4",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "value_over_reference": 4295.388836
+          },
+          "n": 6,
+          "record": "20261120T0900Z-fp2-representation-panel",
+          "reference": 1.46,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "fp2 panel (direct ic bench, not a registry regime): fp2-weil beats table mitm 7x-284x (k=16..28) but S/rho grows 13->61; rep-join ties mitm; all verified",
+          "value": 6271.2677
+        }
+      ],
+      "problem": "ic:fp2-subfield",
+      "unit": "S"
+    },
+    {
+      "better": "lower",
+      "first": 6208.798,
+      "latest": 6208.798,
+      "latest_derived": {
+        "value_over_reference": 4252.60137
+      },
+      "metric": "cost/fp2-24/rep-join_m_3",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "value_over_reference": 4252.60137
+          },
+          "n": 6,
+          "record": "20261120T0900Z-fp2-representation-panel",
+          "reference": 1.46,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "fp2 panel (direct ic bench, not a registry regime): fp2-weil beats table mitm 7x-284x (k=16..28) but S/rho grows 13->61; rep-join ties mitm; all verified",
+          "value": 6208.798
+        }
+      ],
+      "problem": "ic:fp2-subfield",
+      "unit": "S"
+    },
+    {
+      "better": "lower",
+      "first": 6208.3419,
+      "latest": 6208.3419,
+      "latest_derived": {
+        "value_over_reference": 4252.288973
+      },
+      "metric": "cost/fp2-24/rep-join_m_4",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "value_over_reference": 4252.288973
+          },
+          "n": 6,
+          "record": "20261120T0900Z-fp2-representation-panel",
+          "reference": 1.46,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "fp2 panel (direct ic bench, not a registry regime): fp2-weil beats table mitm 7x-284x (k=16..28) but S/rho grows 13->61; rep-join ties mitm; all verified",
+          "value": 6208.3419
+        }
+      ],
+      "problem": "ic:fp2-subfield",
+      "unit": "S"
+    },
+    {
+      "better": "lower",
+      "first": 73.6109,
+      "latest": 73.6109,
+      "latest_derived": {
+        "value_over_reference": 60.49548
+      },
+      "metric": "cost/fp2-28/fp2-weil",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "value_over_reference": 60.49548
+          },
+          "n": 6,
+          "record": "20261120T0900Z-fp2-representation-panel",
+          "reference": 1.2168,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "fp2 panel (direct ic bench, not a registry regime): fp2-weil beats table mitm 7x-284x (k=16..28) but S/rho grows 13->61; rep-join ties mitm; all verified",
+          "value": 73.6109
+        }
+      ],
+      "problem": "ic:fp2-subfield",
+      "unit": "S"
+    },
+    {
+      "better": "lower",
+      "first": 20555.0297,
+      "latest": 20555.0297,
+      "latest_derived": {
+        "value_over_reference": 16892.693705
+      },
+      "metric": "cost/fp2-28/mitm",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "value_over_reference": 16892.693705
+          },
+          "n": 6,
+          "record": "20261120T0900Z-fp2-representation-panel",
+          "reference": 1.2168,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "fp2 panel (direct ic bench, not a registry regime): fp2-weil beats table mitm 7x-284x (k=16..28) but S/rho grows 13->61; rep-join ties mitm; all verified",
+          "value": 20555.0297
+        }
+      ],
+      "problem": "ic:fp2-subfield",
+      "unit": "S"
+    },
+    {
+      "better": "lower",
+      "first": 20632.9543,
+      "latest": 20632.9543,
+      "latest_derived": {
+        "value_over_reference": 16956.734303
+      },
+      "metric": "cost/fp2-28/rep-join_m_3_filter_bits_4",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "value_over_reference": 16956.734303
+          },
+          "n": 6,
+          "record": "20261120T0900Z-fp2-representation-panel",
+          "reference": 1.2168,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "fp2 panel (direct ic bench, not a registry regime): fp2-weil beats table mitm 7x-284x (k=16..28) but S/rho grows 13->61; rep-join ties mitm; all verified",
+          "value": 20632.9543
+        }
+      ],
+      "problem": "ic:fp2-subfield",
+      "unit": "S"
+    },
+    {
+      "better": "lower",
+      "first": 20557.4697,
+      "latest": 20557.4697,
+      "latest_derived": {
+        "value_over_reference": 16894.698964
+      },
+      "metric": "cost/fp2-28/rep-join_m_3",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "value_over_reference": 16894.698964
+          },
+          "n": 6,
+          "record": "20261120T0900Z-fp2-representation-panel",
+          "reference": 1.2168,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "fp2 panel (direct ic bench, not a registry regime): fp2-weil beats table mitm 7x-284x (k=16..28) but S/rho grows 13->61; rep-join ties mitm; all verified",
+          "value": 20557.4697
+        }
+      ],
+      "problem": "ic:fp2-subfield",
+      "unit": "S"
+    },
+    {
+      "better": "lower",
+      "first": 20558.3271,
+      "latest": 20558.3271,
+      "latest_derived": {
+        "value_over_reference": 16895.4036
+      },
+      "metric": "cost/fp2-28/rep-join_m_4",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "value_over_reference": 16895.4036
+          },
+          "n": 6,
+          "record": "20261120T0900Z-fp2-representation-panel",
+          "reference": 1.2168,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "fp2 panel (direct ic bench, not a registry regime): fp2-weil beats table mitm 7x-284x (k=16..28) but S/rho grows 13->61; rep-join ties mitm; all verified",
+          "value": 20558.3271
+        }
+      ],
+      "problem": "ic:fp2-subfield",
+      "unit": "S"
+    },
+    {
+      "better": "higher",
+      "first": 6.9794,
+      "latest": 6.9794,
+      "latest_derived": {},
+      "metric": "speedup/fp2-16/fp2-weil",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {},
+          "n": 6,
+          "record": "20261120T0900Z-fp2-representation-panel",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            6.2849,
+            7.8324
+          ],
+          "summary": "fp2 panel (direct ic bench, not a registry regime): fp2-weil beats table mitm 7x-284x (k=16..28) but S/rho grows 13->61; rep-join ties mitm; all verified",
+          "value": 6.9794
+        }
+      ],
+      "problem": "ic:fp2-subfield",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.901,
+      "latest": 0.901,
+      "latest_derived": {},
+      "metric": "speedup/fp2-16/rep-join_m_3_filter_bits_4",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {},
+          "n": 6,
+          "record": "20261120T0900Z-fp2-representation-panel",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.8915,
+            0.9101
+          ],
+          "summary": "fp2 panel (direct ic bench, not a registry regime): fp2-weil beats table mitm 7x-284x (k=16..28) but S/rho grows 13->61; rep-join ties mitm; all verified",
+          "value": 0.901
+        }
+      ],
+      "problem": "ic:fp2-subfield",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.9966,
+      "latest": 0.9966,
+      "latest_derived": {},
+      "metric": "speedup/fp2-16/rep-join_m_3",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {},
+          "n": 6,
+          "record": "20261120T0900Z-fp2-representation-panel",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.9949,
+            0.9981
+          ],
+          "summary": "fp2 panel (direct ic bench, not a registry regime): fp2-weil beats table mitm 7x-284x (k=16..28) but S/rho grows 13->61; rep-join ties mitm; all verified",
+          "value": 0.9966
+        }
+      ],
+      "problem": "ic:fp2-subfield",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.9948,
+      "latest": 0.9948,
+      "latest_derived": {},
+      "metric": "speedup/fp2-16/rep-join_m_4",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {},
+          "n": 6,
+          "record": "20261120T0900Z-fp2-representation-panel",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.9937,
+            0.9959
+          ],
+          "summary": "fp2 panel (direct ic bench, not a registry regime): fp2-weil beats table mitm 7x-284x (k=16..28) but S/rho grows 13->61; rep-join ties mitm; all verified",
+          "value": 0.9948
+        }
+      ],
+      "problem": "ic:fp2-subfield",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 35.1615,
+      "latest": 35.1615,
+      "latest_derived": {},
+      "metric": "speedup/fp2-20/fp2-weil",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {},
+          "n": 6,
+          "record": "20261120T0900Z-fp2-representation-panel",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            27.9347,
+            44.5296
+          ],
+          "summary": "fp2 panel (direct ic bench, not a registry regime): fp2-weil beats table mitm 7x-284x (k=16..28) but S/rho grows 13->61; rep-join ties mitm; all verified",
+          "value": 35.1615
+        }
+      ],
+      "problem": "ic:fp2-subfield",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.9705,
+      "latest": 0.9705,
+      "latest_derived": {},
+      "metric": "speedup/fp2-20/rep-join_m_3_filter_bits_4",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {},
+          "n": 6,
+          "record": "20261120T0900Z-fp2-representation-panel",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.9646,
+            0.9786
+          ],
+          "summary": "fp2 panel (direct ic bench, not a registry regime): fp2-weil beats table mitm 7x-284x (k=16..28) but S/rho grows 13->61; rep-join ties mitm; all verified",
+          "value": 0.9705
+        }
+      ],
+      "problem": "ic:fp2-subfield",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.9981,
+      "latest": 0.9981,
+      "latest_derived": {},
+      "metric": "speedup/fp2-20/rep-join_m_3",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {},
+          "n": 6,
+          "record": "20261120T0900Z-fp2-representation-panel",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.9974,
+            0.9987
+          ],
+          "summary": "fp2 panel (direct ic bench, not a registry regime): fp2-weil beats table mitm 7x-284x (k=16..28) but S/rho grows 13->61; rep-join ties mitm; all verified",
+          "value": 0.9981
+        }
+      ],
+      "problem": "ic:fp2-subfield",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.998,
+      "latest": 0.998,
+      "latest_derived": {},
+      "metric": "speedup/fp2-20/rep-join_m_4",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {},
+          "n": 6,
+          "record": "20261120T0900Z-fp2-representation-panel",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.9978,
+            0.9983
+          ],
+          "summary": "fp2 panel (direct ic bench, not a registry regime): fp2-weil beats table mitm 7x-284x (k=16..28) but S/rho grows 13->61; rep-join ties mitm; all verified",
+          "value": 0.998
+        }
+      ],
+      "problem": "ic:fp2-subfield",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 127.8318,
+      "latest": 127.8318,
+      "latest_derived": {},
+      "metric": "speedup/fp2-24/fp2-weil",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {},
+          "n": 6,
+          "record": "20261120T0900Z-fp2-representation-panel",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            110.0265,
+            149.803
+          ],
+          "summary": "fp2 panel (direct ic bench, not a registry regime): fp2-weil beats table mitm 7x-284x (k=16..28) but S/rho grows 13->61; rep-join ties mitm; all verified",
+          "value": 127.8318
+        }
+      ],
+      "problem": "ic:fp2-subfield",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.9896,
+      "latest": 0.9896,
+      "latest_derived": {},
+      "metric": "speedup/fp2-24/rep-join_m_3_filter_bits_4",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {},
+          "n": 6,
+          "record": "20261120T0900Z-fp2-representation-panel",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.9886,
+            0.9907
+          ],
+          "summary": "fp2 panel (direct ic bench, not a registry regime): fp2-weil beats table mitm 7x-284x (k=16..28) but S/rho grows 13->61; rep-join ties mitm; all verified",
+          "value": 0.9896
+        }
+      ],
+      "problem": "ic:fp2-subfield",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.9995,
+      "latest": 0.9995,
+      "latest_derived": {},
+      "metric": "speedup/fp2-24/rep-join_m_3",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {},
+          "n": 6,
+          "record": "20261120T0900Z-fp2-representation-panel",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.9994,
+            0.9997
+          ],
+          "summary": "fp2 panel (direct ic bench, not a registry regime): fp2-weil beats table mitm 7x-284x (k=16..28) but S/rho grows 13->61; rep-join ties mitm; all verified",
+          "value": 0.9995
+        }
+      ],
+      "problem": "ic:fp2-subfield",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.9996,
+      "latest": 0.9996,
+      "latest_derived": {},
+      "metric": "speedup/fp2-24/rep-join_m_4",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {},
+          "n": 6,
+          "record": "20261120T0900Z-fp2-representation-panel",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.9995,
+            0.9997
+          ],
+          "summary": "fp2 panel (direct ic bench, not a registry regime): fp2-weil beats table mitm 7x-284x (k=16..28) but S/rho grows 13->61; rep-join ties mitm; all verified",
+          "value": 0.9996
+        }
+      ],
+      "problem": "ic:fp2-subfield",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 284.3816,
+      "latest": 284.3816,
+      "latest_derived": {},
+      "metric": "speedup/fp2-28/fp2-weil",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {},
+          "n": 6,
+          "record": "20261120T0900Z-fp2-representation-panel",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            249.6542,
+            341.0347
+          ],
+          "summary": "fp2 panel (direct ic bench, not a registry regime): fp2-weil beats table mitm 7x-284x (k=16..28) but S/rho grows 13->61; rep-join ties mitm; all verified",
+          "value": 284.3816
+        }
+      ],
+      "problem": "ic:fp2-subfield",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.9962,
+      "latest": 0.9962,
+      "latest_derived": {},
+      "metric": "speedup/fp2-28/rep-join_m_3_filter_bits_4",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {},
+          "n": 6,
+          "record": "20261120T0900Z-fp2-representation-panel",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.996,
+            0.9965
+          ],
+          "summary": "fp2 panel (direct ic bench, not a registry regime): fp2-weil beats table mitm 7x-284x (k=16..28) but S/rho grows 13->61; rep-join ties mitm; all verified",
+          "value": 0.9962
+        }
+      ],
+      "problem": "ic:fp2-subfield",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.9999,
+      "latest": 0.9999,
+      "latest_derived": {},
+      "metric": "speedup/fp2-28/rep-join_m_3",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {},
+          "n": 6,
+          "record": "20261120T0900Z-fp2-representation-panel",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.9999,
+            0.9999
+          ],
+          "summary": "fp2 panel (direct ic bench, not a registry regime): fp2-weil beats table mitm 7x-284x (k=16..28) but S/rho grows 13->61; rep-join ties mitm; all verified",
+          "value": 0.9999
+        }
+      ],
+      "problem": "ic:fp2-subfield",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.9998,
+      "latest": 0.9998,
+      "latest_derived": {},
+      "metric": "speedup/fp2-28/rep-join_m_4",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {},
+          "n": 6,
+          "record": "20261120T0900Z-fp2-representation-panel",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.9998,
+            0.9999
+          ],
+          "summary": "fp2 panel (direct ic bench, not a registry regime): fp2-weil beats table mitm 7x-284x (k=16..28) but S/rho grows 13->61; rep-join ties mitm; all verified",
+          "value": 0.9998
+        }
+      ],
+      "problem": "ic:fp2-subfield",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.0333,
+      "latest": 0.0333,
+      "latest_derived": {},
+      "metric": "relations_per_target/m2",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {},
+          "n": 30,
+          "record": "20261120T0929Z-split-descent-m4-lprime",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "descent-algebraic m=4 balanced split, l=4..13 at char2 n=17: at most 1 relation / 30 targets, l>=11 all over budget; m=2 control 1/30 at 0.03 s/target; m=3 control killed at wall",
+          "value": 0.0333
+        }
+      ],
+      "problem": "ic:lead-descent-split",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.0333,
+      "latest": 0.0333,
+      "latest_derived": {},
+      "metric": "relations_per_target/m4l10",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {},
+          "n": 30,
+          "record": "20261120T0929Z-split-descent-m4-lprime",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "descent-algebraic m=4 balanced split, l=4..13 at char2 n=17: at most 1 relation / 30 targets, l>=11 all over budget; m=2 control 1/30 at 0.03 s/target; m=3 control killed at wall",
+          "value": 0.0333
+        }
+      ],
+      "problem": "ic:lead-descent-split",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.0,
+      "latest": 0.0,
+      "latest_derived": {},
+      "metric": "relations_per_target/m4l11",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {},
+          "n": 30,
+          "record": "20261120T0929Z-split-descent-m4-lprime",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "descent-algebraic m=4 balanced split, l=4..13 at char2 n=17: at most 1 relation / 30 targets, l>=11 all over budget; m=2 control 1/30 at 0.03 s/target; m=3 control killed at wall",
+          "value": 0.0
+        }
+      ],
+      "problem": "ic:lead-descent-split",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.0,
+      "latest": 0.0,
+      "latest_derived": {},
+      "metric": "relations_per_target/m4l12",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {},
+          "n": 30,
+          "record": "20261120T0929Z-split-descent-m4-lprime",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "descent-algebraic m=4 balanced split, l=4..13 at char2 n=17: at most 1 relation / 30 targets, l>=11 all over budget; m=2 control 1/30 at 0.03 s/target; m=3 control killed at wall",
+          "value": 0.0
+        }
+      ],
+      "problem": "ic:lead-descent-split",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.0,
+      "latest": 0.0,
+      "latest_derived": {},
+      "metric": "relations_per_target/m4l13",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {},
+          "n": 30,
+          "record": "20261120T0929Z-split-descent-m4-lprime",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "descent-algebraic m=4 balanced split, l=4..13 at char2 n=17: at most 1 relation / 30 targets, l>=11 all over budget; m=2 control 1/30 at 0.03 s/target; m=3 control killed at wall",
+          "value": 0.0
+        }
+      ],
+      "problem": "ic:lead-descent-split",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.0,
+      "latest": 0.0,
+      "latest_derived": {},
+      "metric": "relations_per_target/m4l4",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {},
+          "n": 30,
+          "record": "20261120T0929Z-split-descent-m4-lprime",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "descent-algebraic m=4 balanced split, l=4..13 at char2 n=17: at most 1 relation / 30 targets, l>=11 all over budget; m=2 control 1/30 at 0.03 s/target; m=3 control killed at wall",
+          "value": 0.0
+        }
+      ],
+      "problem": "ic:lead-descent-split",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.0,
+      "latest": 0.0,
+      "latest_derived": {},
+      "metric": "relations_per_target/m4l6",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {},
+          "n": 30,
+          "record": "20261120T0929Z-split-descent-m4-lprime",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "descent-algebraic m=4 balanced split, l=4..13 at char2 n=17: at most 1 relation / 30 targets, l>=11 all over budget; m=2 control 1/30 at 0.03 s/target; m=3 control killed at wall",
+          "value": 0.0
+        }
+      ],
+      "problem": "ic:lead-descent-split",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.0,
+      "latest": 0.0,
+      "latest_derived": {},
+      "metric": "relations_per_target/m4l8",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {},
+          "n": 30,
+          "record": "20261120T0929Z-split-descent-m4-lprime",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "descent-algebraic m=4 balanced split, l=4..13 at char2 n=17: at most 1 relation / 30 targets, l>=11 all over budget; m=2 control 1/30 at 0.03 s/target; m=3 control killed at wall",
+          "value": 0.0
+        }
+      ],
+      "problem": "ic:lead-descent-split",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 1.0,
+      "latest": 0.483,
+      "latest_derived": {
+        "improvement_vs_first_percent": -51.7,
+        "improvement_vs_previous_percent": -51.7
+      },
+      "metric": "speedup/bench-char2-17/m2",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 6,
+          "record": "20261120T0857Z-rep-join-generic-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            1.0,
+            1.0
+          ],
+          "summary": "lead-sweep phase 1 FAIL: generic rep-join (filter_bits=0) at m=2..9 never beats the registry baseline; m=2 reproduces it exactly; registry e840213ad5cf",
+          "value": 1.0
+        },
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -51.7,
+            "improvement_vs_previous_percent": -51.7
+          },
+          "n": 6,
+          "record": "20261120T0858Z-rep-join-filtered-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.392,
+            0.612
+          ],
+          "summary": "lead-sweep phase 1 FAIL: rep-join with a 2^-2 abscissa filter is worse than baseline and than the unfiltered join at every m; registry e840213ad5cf",
+          "value": 0.483
+        }
+      ],
+      "problem": "ic:lead-rep-join",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.479,
+      "latest": 0.296,
+      "latest_derived": {
+        "improvement_vs_first_percent": -38.2046,
+        "improvement_vs_previous_percent": -38.2046
+      },
+      "metric": "speedup/bench-char2-17/m3",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 6,
+          "record": "20261120T0857Z-rep-join-generic-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.417,
+            0.529
+          ],
+          "summary": "lead-sweep phase 1 FAIL: generic rep-join (filter_bits=0) at m=2..9 never beats the registry baseline; m=2 reproduces it exactly; registry e840213ad5cf",
+          "value": 0.479
+        },
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -38.2046,
+            "improvement_vs_previous_percent": -38.2046
+          },
+          "n": 6,
+          "record": "20261120T0858Z-rep-join-filtered-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.257,
+            0.341
+          ],
+          "summary": "lead-sweep phase 1 FAIL: rep-join with a 2^-2 abscissa filter is worse than baseline and than the unfiltered join at every m; registry e840213ad5cf",
+          "value": 0.296
+        }
+      ],
+      "problem": "ic:lead-rep-join",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.455,
+      "latest": 0.28,
+      "latest_derived": {
+        "improvement_vs_first_percent": -38.4615,
+        "improvement_vs_previous_percent": -38.4615
+      },
+      "metric": "speedup/bench-char2-17/m4",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 6,
+          "record": "20261120T0857Z-rep-join-generic-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.415,
+            0.497
+          ],
+          "summary": "lead-sweep phase 1 FAIL: generic rep-join (filter_bits=0) at m=2..9 never beats the registry baseline; m=2 reproduces it exactly; registry e840213ad5cf",
+          "value": 0.455
+        },
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -38.4615,
+            "improvement_vs_previous_percent": -38.4615
+          },
+          "n": 6,
+          "record": "20261120T0858Z-rep-join-filtered-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.25,
+            0.315
+          ],
+          "summary": "lead-sweep phase 1 FAIL: rep-join with a 2^-2 abscissa filter is worse than baseline and than the unfiltered join at every m; registry e840213ad5cf",
+          "value": 0.28
+        }
+      ],
+      "problem": "ic:lead-rep-join",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.478,
+      "latest": 0.257,
+      "latest_derived": {
+        "improvement_vs_first_percent": -46.2343,
+        "improvement_vs_previous_percent": -46.2343
+      },
+      "metric": "speedup/bench-char2-17/m5",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 6,
+          "record": "20261120T0857Z-rep-join-generic-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.393,
+            0.581
+          ],
+          "summary": "lead-sweep phase 1 FAIL: generic rep-join (filter_bits=0) at m=2..9 never beats the registry baseline; m=2 reproduces it exactly; registry e840213ad5cf",
+          "value": 0.478
+        },
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -46.2343,
+            "improvement_vs_previous_percent": -46.2343
+          },
+          "n": 6,
+          "record": "20261120T0858Z-rep-join-filtered-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.223,
+            0.303
+          ],
+          "summary": "lead-sweep phase 1 FAIL: rep-join with a 2^-2 abscissa filter is worse than baseline and than the unfiltered join at every m; registry e840213ad5cf",
+          "value": 0.257
+        }
+      ],
+      "problem": "ic:lead-rep-join",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.443,
+      "latest": 0.241,
+      "latest_derived": {
+        "improvement_vs_first_percent": -45.5982,
+        "improvement_vs_previous_percent": -45.5982
+      },
+      "metric": "speedup/bench-char2-17/m6",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 6,
+          "record": "20261120T0857Z-rep-join-generic-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.385,
+            0.505
+          ],
+          "summary": "lead-sweep phase 1 FAIL: generic rep-join (filter_bits=0) at m=2..9 never beats the registry baseline; m=2 reproduces it exactly; registry e840213ad5cf",
+          "value": 0.443
+        },
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -45.5982,
+            "improvement_vs_previous_percent": -45.5982
+          },
+          "n": 6,
+          "record": "20261120T0858Z-rep-join-filtered-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.219,
+            0.265
+          ],
+          "summary": "lead-sweep phase 1 FAIL: rep-join with a 2^-2 abscissa filter is worse than baseline and than the unfiltered join at every m; registry e840213ad5cf",
+          "value": 0.241
+        }
+      ],
+      "problem": "ic:lead-rep-join",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.462,
+      "latest": 0.26,
+      "latest_derived": {
+        "improvement_vs_first_percent": -43.7229,
+        "improvement_vs_previous_percent": -43.7229
+      },
+      "metric": "speedup/bench-char2-17/m7",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 6,
+          "record": "20261120T0857Z-rep-join-generic-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.43,
+            0.49
+          ],
+          "summary": "lead-sweep phase 1 FAIL: generic rep-join (filter_bits=0) at m=2..9 never beats the registry baseline; m=2 reproduces it exactly; registry e840213ad5cf",
+          "value": 0.462
+        },
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -43.7229,
+            "improvement_vs_previous_percent": -43.7229
+          },
+          "n": 6,
+          "record": "20261120T0858Z-rep-join-filtered-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.245,
+            0.278
+          ],
+          "summary": "lead-sweep phase 1 FAIL: rep-join with a 2^-2 abscissa filter is worse than baseline and than the unfiltered join at every m; registry e840213ad5cf",
+          "value": 0.26
+        }
+      ],
+      "problem": "ic:lead-rep-join",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.492,
+      "latest": 0.283,
+      "latest_derived": {
+        "improvement_vs_first_percent": -42.4797,
+        "improvement_vs_previous_percent": -42.4797
+      },
+      "metric": "speedup/bench-char2-17/m8",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 6,
+          "record": "20261120T0857Z-rep-join-generic-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.454,
+            0.536
+          ],
+          "summary": "lead-sweep phase 1 FAIL: generic rep-join (filter_bits=0) at m=2..9 never beats the registry baseline; m=2 reproduces it exactly; registry e840213ad5cf",
+          "value": 0.492
+        },
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -42.4797,
+            "improvement_vs_previous_percent": -42.4797
+          },
+          "n": 6,
+          "record": "20261120T0858Z-rep-join-filtered-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.247,
+            0.327
+          ],
+          "summary": "lead-sweep phase 1 FAIL: rep-join with a 2^-2 abscissa filter is worse than baseline and than the unfiltered join at every m; registry e840213ad5cf",
+          "value": 0.283
+        }
+      ],
+      "problem": "ic:lead-rep-join",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.393,
+      "latest": 0.286,
+      "latest_derived": {
+        "improvement_vs_first_percent": -27.2265,
+        "improvement_vs_previous_percent": -27.2265
+      },
+      "metric": "speedup/bench-char2-17/m9",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 6,
+          "record": "20261120T0857Z-rep-join-generic-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.32,
+            0.471
+          ],
+          "summary": "lead-sweep phase 1 FAIL: generic rep-join (filter_bits=0) at m=2..9 never beats the registry baseline; m=2 reproduces it exactly; registry e840213ad5cf",
+          "value": 0.393
+        },
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -27.2265,
+            "improvement_vs_previous_percent": -27.2265
+          },
+          "n": 6,
+          "record": "20261120T0858Z-rep-join-filtered-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.231,
+            0.34
+          ],
+          "summary": "lead-sweep phase 1 FAIL: rep-join with a 2^-2 abscissa filter is worse than baseline and than the unfiltered join at every m; registry e840213ad5cf",
+          "value": 0.286
+        }
+      ],
+      "problem": "ic:lead-rep-join",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 1.0,
+      "latest": 0.407,
+      "latest_derived": {
+        "improvement_vs_first_percent": -59.3,
+        "improvement_vs_previous_percent": -59.3
+      },
+      "metric": "speedup/bench-char2-21/m2",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 6,
+          "record": "20261120T0857Z-rep-join-generic-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            1.0,
+            1.0
+          ],
+          "summary": "lead-sweep phase 1 FAIL: generic rep-join (filter_bits=0) at m=2..9 never beats the registry baseline; m=2 reproduces it exactly; registry e840213ad5cf",
+          "value": 1.0
+        },
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -59.3,
+            "improvement_vs_previous_percent": -59.3
+          },
+          "n": 6,
+          "record": "20261120T0858Z-rep-join-filtered-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.297,
+            0.542
+          ],
+          "summary": "lead-sweep phase 1 FAIL: rep-join with a 2^-2 abscissa filter is worse than baseline and than the unfiltered join at every m; registry e840213ad5cf",
+          "value": 0.407
+        }
+      ],
+      "problem": "ic:lead-rep-join",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.262,
+      "latest": 0.149,
+      "latest_derived": {
+        "improvement_vs_first_percent": -43.1298,
+        "improvement_vs_previous_percent": -43.1298
+      },
+      "metric": "speedup/bench-char2-21/m3",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 6,
+          "record": "20261120T0857Z-rep-join-generic-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.218,
+            0.311
+          ],
+          "summary": "lead-sweep phase 1 FAIL: generic rep-join (filter_bits=0) at m=2..9 never beats the registry baseline; m=2 reproduces it exactly; registry e840213ad5cf",
+          "value": 0.262
+        },
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -43.1298,
+            "improvement_vs_previous_percent": -43.1298
+          },
+          "n": 6,
+          "record": "20261120T0858Z-rep-join-filtered-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.119,
+            0.18
+          ],
+          "summary": "lead-sweep phase 1 FAIL: rep-join with a 2^-2 abscissa filter is worse than baseline and than the unfiltered join at every m; registry e840213ad5cf",
+          "value": 0.149
+        }
+      ],
+      "problem": "ic:lead-rep-join",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.162,
+      "latest": 0.099,
+      "latest_derived": {
+        "improvement_vs_first_percent": -38.8889,
+        "improvement_vs_previous_percent": -38.8889
+      },
+      "metric": "speedup/bench-char2-21/m4",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 6,
+          "record": "20261120T0857Z-rep-join-generic-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.132,
+            0.198
+          ],
+          "summary": "lead-sweep phase 1 FAIL: generic rep-join (filter_bits=0) at m=2..9 never beats the registry baseline; m=2 reproduces it exactly; registry e840213ad5cf",
+          "value": 0.162
+        },
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -38.8889,
+            "improvement_vs_previous_percent": -38.8889
+          },
+          "n": 6,
+          "record": "20261120T0858Z-rep-join-filtered-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.076,
+            0.128
+          ],
+          "summary": "lead-sweep phase 1 FAIL: rep-join with a 2^-2 abscissa filter is worse than baseline and than the unfiltered join at every m; registry e840213ad5cf",
+          "value": 0.099
+        }
+      ],
+      "problem": "ic:lead-rep-join",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.135,
+      "latest": 0.093,
+      "latest_derived": {
+        "improvement_vs_first_percent": -31.1111,
+        "improvement_vs_previous_percent": -31.1111
+      },
+      "metric": "speedup/bench-char2-21/m5",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 6,
+          "record": "20261120T0857Z-rep-join-generic-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.11,
+            0.163
+          ],
+          "summary": "lead-sweep phase 1 FAIL: generic rep-join (filter_bits=0) at m=2..9 never beats the registry baseline; m=2 reproduces it exactly; registry e840213ad5cf",
+          "value": 0.135
+        },
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -31.1111,
+            "improvement_vs_previous_percent": -31.1111
+          },
+          "n": 6,
+          "record": "20261120T0858Z-rep-join-filtered-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.074,
+            0.118
+          ],
+          "summary": "lead-sweep phase 1 FAIL: rep-join with a 2^-2 abscissa filter is worse than baseline and than the unfiltered join at every m; registry e840213ad5cf",
+          "value": 0.093
+        }
+      ],
+      "problem": "ic:lead-rep-join",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.148,
+      "latest": 0.1,
+      "latest_derived": {
+        "improvement_vs_first_percent": -32.4324,
+        "improvement_vs_previous_percent": -32.4324
+      },
+      "metric": "speedup/bench-char2-21/m6",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 6,
+          "record": "20261120T0857Z-rep-join-generic-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.127,
+            0.177
+          ],
+          "summary": "lead-sweep phase 1 FAIL: generic rep-join (filter_bits=0) at m=2..9 never beats the registry baseline; m=2 reproduces it exactly; registry e840213ad5cf",
+          "value": 0.148
+        },
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -32.4324,
+            "improvement_vs_previous_percent": -32.4324
+          },
+          "n": 6,
+          "record": "20261120T0858Z-rep-join-filtered-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.088,
+            0.113
+          ],
+          "summary": "lead-sweep phase 1 FAIL: rep-join with a 2^-2 abscissa filter is worse than baseline and than the unfiltered join at every m; registry e840213ad5cf",
+          "value": 0.1
+        }
+      ],
+      "problem": "ic:lead-rep-join",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.152,
+      "latest": 0.088,
+      "latest_derived": {
+        "improvement_vs_first_percent": -42.1053,
+        "improvement_vs_previous_percent": -42.1053
+      },
+      "metric": "speedup/bench-char2-21/m7",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 6,
+          "record": "20261120T0857Z-rep-join-generic-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.125,
+            0.195
+          ],
+          "summary": "lead-sweep phase 1 FAIL: generic rep-join (filter_bits=0) at m=2..9 never beats the registry baseline; m=2 reproduces it exactly; registry e840213ad5cf",
+          "value": 0.152
+        },
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -42.1053,
+            "improvement_vs_previous_percent": -42.1053
+          },
+          "n": 6,
+          "record": "20261120T0858Z-rep-join-filtered-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.072,
+            0.11
+          ],
+          "summary": "lead-sweep phase 1 FAIL: rep-join with a 2^-2 abscissa filter is worse than baseline and than the unfiltered join at every m; registry e840213ad5cf",
+          "value": 0.088
+        }
+      ],
+      "problem": "ic:lead-rep-join",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.16,
+      "latest": 0.11,
+      "latest_derived": {
+        "improvement_vs_first_percent": -31.25,
+        "improvement_vs_previous_percent": -31.25
+      },
+      "metric": "speedup/bench-char2-21/m8",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 6,
+          "record": "20261120T0857Z-rep-join-generic-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.125,
+            0.21
+          ],
+          "summary": "lead-sweep phase 1 FAIL: generic rep-join (filter_bits=0) at m=2..9 never beats the registry baseline; m=2 reproduces it exactly; registry e840213ad5cf",
+          "value": 0.16
+        },
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -31.25,
+            "improvement_vs_previous_percent": -31.25
+          },
+          "n": 6,
+          "record": "20261120T0858Z-rep-join-filtered-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.094,
+            0.135
+          ],
+          "summary": "lead-sweep phase 1 FAIL: rep-join with a 2^-2 abscissa filter is worse than baseline and than the unfiltered join at every m; registry e840213ad5cf",
+          "value": 0.11
+        }
+      ],
+      "problem": "ic:lead-rep-join",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.158,
+      "latest": 0.106,
+      "latest_derived": {
+        "improvement_vs_first_percent": -32.9114,
+        "improvement_vs_previous_percent": -32.9114
+      },
+      "metric": "speedup/bench-char2-21/m9",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 6,
+          "record": "20261120T0857Z-rep-join-generic-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.13,
+            0.198
+          ],
+          "summary": "lead-sweep phase 1 FAIL: generic rep-join (filter_bits=0) at m=2..9 never beats the registry baseline; m=2 reproduces it exactly; registry e840213ad5cf",
+          "value": 0.158
+        },
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -32.9114,
+            "improvement_vs_previous_percent": -32.9114
+          },
+          "n": 6,
+          "record": "20261120T0858Z-rep-join-filtered-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.088,
+            0.129
+          ],
+          "summary": "lead-sweep phase 1 FAIL: rep-join with a 2^-2 abscissa filter is worse than baseline and than the unfiltered join at every m; registry e840213ad5cf",
+          "value": 0.106
+        }
+      ],
+      "problem": "ic:lead-rep-join",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.023,
+      "latest": 0.023,
+      "latest_derived": {
+        "improvement_vs_first_percent": -0.0,
+        "improvement_vs_previous_percent": -0.0
+      },
+      "metric": "speedup/bench-koblitz-23/m2",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 6,
+          "record": "20261120T0857Z-rep-join-generic-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.023,
+            0.023
+          ],
+          "summary": "lead-sweep phase 1 FAIL: generic rep-join (filter_bits=0) at m=2..9 never beats the registry baseline; m=2 reproduces it exactly; registry e840213ad5cf",
+          "value": 0.023
+        },
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -0.0,
+            "improvement_vs_previous_percent": -0.0
+          },
+          "n": 6,
+          "record": "20261120T0858Z-rep-join-filtered-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.023,
+            0.023
+          ],
+          "summary": "lead-sweep phase 1 FAIL: rep-join with a 2^-2 abscissa filter is worse than baseline and than the unfiltered join at every m; registry e840213ad5cf",
+          "value": 0.023
+        }
+      ],
+      "problem": "ic:lead-rep-join",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.023,
+      "latest": 0.023,
+      "latest_derived": {
+        "improvement_vs_first_percent": -0.0,
+        "improvement_vs_previous_percent": -0.0
+      },
+      "metric": "speedup/bench-koblitz-23/m3",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 6,
+          "record": "20261120T0857Z-rep-join-generic-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.023,
+            0.023
+          ],
+          "summary": "lead-sweep phase 1 FAIL: generic rep-join (filter_bits=0) at m=2..9 never beats the registry baseline; m=2 reproduces it exactly; registry e840213ad5cf",
+          "value": 0.023
+        },
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -0.0,
+            "improvement_vs_previous_percent": -0.0
+          },
+          "n": 6,
+          "record": "20261120T0858Z-rep-join-filtered-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.023,
+            0.023
+          ],
+          "summary": "lead-sweep phase 1 FAIL: rep-join with a 2^-2 abscissa filter is worse than baseline and than the unfiltered join at every m; registry e840213ad5cf",
+          "value": 0.023
+        }
+      ],
+      "problem": "ic:lead-rep-join",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.023,
+      "latest": 0.023,
+      "latest_derived": {
+        "improvement_vs_first_percent": -0.0,
+        "improvement_vs_previous_percent": -0.0
+      },
+      "metric": "speedup/bench-koblitz-23/m4",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 6,
+          "record": "20261120T0857Z-rep-join-generic-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.023,
+            0.023
+          ],
+          "summary": "lead-sweep phase 1 FAIL: generic rep-join (filter_bits=0) at m=2..9 never beats the registry baseline; m=2 reproduces it exactly; registry e840213ad5cf",
+          "value": 0.023
+        },
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -0.0,
+            "improvement_vs_previous_percent": -0.0
+          },
+          "n": 6,
+          "record": "20261120T0858Z-rep-join-filtered-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.023,
+            0.023
+          ],
+          "summary": "lead-sweep phase 1 FAIL: rep-join with a 2^-2 abscissa filter is worse than baseline and than the unfiltered join at every m; registry e840213ad5cf",
+          "value": 0.023
+        }
+      ],
+      "problem": "ic:lead-rep-join",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.023,
+      "latest": 0.023,
+      "latest_derived": {
+        "improvement_vs_first_percent": -0.0,
+        "improvement_vs_previous_percent": -0.0
+      },
+      "metric": "speedup/bench-koblitz-23/m5",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 6,
+          "record": "20261120T0857Z-rep-join-generic-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.023,
+            0.023
+          ],
+          "summary": "lead-sweep phase 1 FAIL: generic rep-join (filter_bits=0) at m=2..9 never beats the registry baseline; m=2 reproduces it exactly; registry e840213ad5cf",
+          "value": 0.023
+        },
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -0.0,
+            "improvement_vs_previous_percent": -0.0
+          },
+          "n": 6,
+          "record": "20261120T0858Z-rep-join-filtered-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.023,
+            0.023
+          ],
+          "summary": "lead-sweep phase 1 FAIL: rep-join with a 2^-2 abscissa filter is worse than baseline and than the unfiltered join at every m; registry e840213ad5cf",
+          "value": 0.023
+        }
+      ],
+      "problem": "ic:lead-rep-join",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.023,
+      "latest": 0.023,
+      "latest_derived": {
+        "improvement_vs_first_percent": -0.0,
+        "improvement_vs_previous_percent": -0.0
+      },
+      "metric": "speedup/bench-koblitz-23/m6",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 6,
+          "record": "20261120T0857Z-rep-join-generic-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.023,
+            0.023
+          ],
+          "summary": "lead-sweep phase 1 FAIL: generic rep-join (filter_bits=0) at m=2..9 never beats the registry baseline; m=2 reproduces it exactly; registry e840213ad5cf",
+          "value": 0.023
+        },
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -0.0,
+            "improvement_vs_previous_percent": -0.0
+          },
+          "n": 6,
+          "record": "20261120T0858Z-rep-join-filtered-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.023,
+            0.023
+          ],
+          "summary": "lead-sweep phase 1 FAIL: rep-join with a 2^-2 abscissa filter is worse than baseline and than the unfiltered join at every m; registry e840213ad5cf",
+          "value": 0.023
+        }
+      ],
+      "problem": "ic:lead-rep-join",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.023,
+      "latest": 0.023,
+      "latest_derived": {
+        "improvement_vs_first_percent": -0.0,
+        "improvement_vs_previous_percent": -0.0
+      },
+      "metric": "speedup/bench-koblitz-23/m7",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 6,
+          "record": "20261120T0857Z-rep-join-generic-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.023,
+            0.023
+          ],
+          "summary": "lead-sweep phase 1 FAIL: generic rep-join (filter_bits=0) at m=2..9 never beats the registry baseline; m=2 reproduces it exactly; registry e840213ad5cf",
+          "value": 0.023
+        },
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -0.0,
+            "improvement_vs_previous_percent": -0.0
+          },
+          "n": 6,
+          "record": "20261120T0858Z-rep-join-filtered-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.023,
+            0.023
+          ],
+          "summary": "lead-sweep phase 1 FAIL: rep-join with a 2^-2 abscissa filter is worse than baseline and than the unfiltered join at every m; registry e840213ad5cf",
+          "value": 0.023
+        }
+      ],
+      "problem": "ic:lead-rep-join",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.023,
+      "latest": 0.023,
+      "latest_derived": {
+        "improvement_vs_first_percent": -0.0,
+        "improvement_vs_previous_percent": -0.0
+      },
+      "metric": "speedup/bench-koblitz-23/m8",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 6,
+          "record": "20261120T0857Z-rep-join-generic-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.023,
+            0.023
+          ],
+          "summary": "lead-sweep phase 1 FAIL: generic rep-join (filter_bits=0) at m=2..9 never beats the registry baseline; m=2 reproduces it exactly; registry e840213ad5cf",
+          "value": 0.023
+        },
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -0.0,
+            "improvement_vs_previous_percent": -0.0
+          },
+          "n": 6,
+          "record": "20261120T0858Z-rep-join-filtered-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.023,
+            0.023
+          ],
+          "summary": "lead-sweep phase 1 FAIL: rep-join with a 2^-2 abscissa filter is worse than baseline and than the unfiltered join at every m; registry e840213ad5cf",
+          "value": 0.023
+        }
+      ],
+      "problem": "ic:lead-rep-join",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.023,
+      "latest": 0.023,
+      "latest_derived": {
+        "improvement_vs_first_percent": -0.0,
+        "improvement_vs_previous_percent": -0.0
+      },
+      "metric": "speedup/bench-koblitz-23/m9",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 6,
+          "record": "20261120T0857Z-rep-join-generic-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.023,
+            0.023
+          ],
+          "summary": "lead-sweep phase 1 FAIL: generic rep-join (filter_bits=0) at m=2..9 never beats the registry baseline; m=2 reproduces it exactly; registry e840213ad5cf",
+          "value": 0.023
+        },
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -0.0,
+            "improvement_vs_previous_percent": -0.0
+          },
+          "n": 6,
+          "record": "20261120T0858Z-rep-join-filtered-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.023,
+            0.023
+          ],
+          "summary": "lead-sweep phase 1 FAIL: rep-join with a 2^-2 abscissa filter is worse than baseline and than the unfiltered join at every m; registry e840213ad5cf",
+          "value": 0.023
+        }
+      ],
+      "problem": "ic:lead-rep-join",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 1.0,
+      "latest": 0.74,
+      "latest_derived": {
+        "improvement_vs_first_percent": -26.0,
+        "improvement_vs_previous_percent": -26.0
+      },
+      "metric": "speedup/bench-prime-16/m2",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 6,
+          "record": "20261120T0857Z-rep-join-generic-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            1.0,
+            1.0
+          ],
+          "summary": "lead-sweep phase 1 FAIL: generic rep-join (filter_bits=0) at m=2..9 never beats the registry baseline; m=2 reproduces it exactly; registry e840213ad5cf",
+          "value": 1.0
+        },
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -26.0,
+            "improvement_vs_previous_percent": -26.0
+          },
+          "n": 6,
+          "record": "20261120T0858Z-rep-join-filtered-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.646,
+            0.859
+          ],
+          "summary": "lead-sweep phase 1 FAIL: rep-join with a 2^-2 abscissa filter is worse than baseline and than the unfiltered join at every m; registry e840213ad5cf",
+          "value": 0.74
+        }
+      ],
+      "problem": "ic:lead-rep-join",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.825,
+      "latest": 0.584,
+      "latest_derived": {
+        "improvement_vs_first_percent": -29.2121,
+        "improvement_vs_previous_percent": -29.2121
+      },
+      "metric": "speedup/bench-prime-16/m3",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 6,
+          "record": "20261120T0857Z-rep-join-generic-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.771,
+            0.874
+          ],
+          "summary": "lead-sweep phase 1 FAIL: generic rep-join (filter_bits=0) at m=2..9 never beats the registry baseline; m=2 reproduces it exactly; registry e840213ad5cf",
+          "value": 0.825
+        },
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -29.2121,
+            "improvement_vs_previous_percent": -29.2121
+          },
+          "n": 6,
+          "record": "20261120T0858Z-rep-join-filtered-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.565,
+            0.609
+          ],
+          "summary": "lead-sweep phase 1 FAIL: rep-join with a 2^-2 abscissa filter is worse than baseline and than the unfiltered join at every m; registry e840213ad5cf",
+          "value": 0.584
+        }
+      ],
+      "problem": "ic:lead-rep-join",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.793,
+      "latest": 0.571,
+      "latest_derived": {
+        "improvement_vs_first_percent": -27.995,
+        "improvement_vs_previous_percent": -27.995
+      },
+      "metric": "speedup/bench-prime-16/m4",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 6,
+          "record": "20261120T0857Z-rep-join-generic-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.756,
+            0.833
+          ],
+          "summary": "lead-sweep phase 1 FAIL: generic rep-join (filter_bits=0) at m=2..9 never beats the registry baseline; m=2 reproduces it exactly; registry e840213ad5cf",
+          "value": 0.793
+        },
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -27.995,
+            "improvement_vs_previous_percent": -27.995
+          },
+          "n": 6,
+          "record": "20261120T0858Z-rep-join-filtered-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.529,
+            0.616
+          ],
+          "summary": "lead-sweep phase 1 FAIL: rep-join with a 2^-2 abscissa filter is worse than baseline and than the unfiltered join at every m; registry e840213ad5cf",
+          "value": 0.571
+        }
+      ],
+      "problem": "ic:lead-rep-join",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.749,
+      "latest": 0.523,
+      "latest_derived": {
+        "improvement_vs_first_percent": -30.1736,
+        "improvement_vs_previous_percent": -30.1736
+      },
+      "metric": "speedup/bench-prime-16/m5",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 6,
+          "record": "20261120T0857Z-rep-join-generic-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.715,
+            0.785
+          ],
+          "summary": "lead-sweep phase 1 FAIL: generic rep-join (filter_bits=0) at m=2..9 never beats the registry baseline; m=2 reproduces it exactly; registry e840213ad5cf",
+          "value": 0.749
+        },
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -30.1736,
+            "improvement_vs_previous_percent": -30.1736
+          },
+          "n": 6,
+          "record": "20261120T0858Z-rep-join-filtered-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.492,
+            0.569
+          ],
+          "summary": "lead-sweep phase 1 FAIL: rep-join with a 2^-2 abscissa filter is worse than baseline and than the unfiltered join at every m; registry e840213ad5cf",
+          "value": 0.523
+        }
+      ],
+      "problem": "ic:lead-rep-join",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.757,
+      "latest": 0.536,
+      "latest_derived": {
+        "improvement_vs_first_percent": -29.1942,
+        "improvement_vs_previous_percent": -29.1942
+      },
+      "metric": "speedup/bench-prime-16/m6",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 6,
+          "record": "20261120T0857Z-rep-join-generic-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.714,
+            0.801
+          ],
+          "summary": "lead-sweep phase 1 FAIL: generic rep-join (filter_bits=0) at m=2..9 never beats the registry baseline; m=2 reproduces it exactly; registry e840213ad5cf",
+          "value": 0.757
+        },
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -29.1942,
+            "improvement_vs_previous_percent": -29.1942
+          },
+          "n": 6,
+          "record": "20261120T0858Z-rep-join-filtered-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.505,
+            0.572
+          ],
+          "summary": "lead-sweep phase 1 FAIL: rep-join with a 2^-2 abscissa filter is worse than baseline and than the unfiltered join at every m; registry e840213ad5cf",
+          "value": 0.536
+        }
+      ],
+      "problem": "ic:lead-rep-join",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.766,
+      "latest": 0.545,
+      "latest_derived": {
+        "improvement_vs_first_percent": -28.8512,
+        "improvement_vs_previous_percent": -28.8512
+      },
+      "metric": "speedup/bench-prime-16/m7",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 6,
+          "record": "20261120T0857Z-rep-join-generic-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.715,
+            0.812
+          ],
+          "summary": "lead-sweep phase 1 FAIL: generic rep-join (filter_bits=0) at m=2..9 never beats the registry baseline; m=2 reproduces it exactly; registry e840213ad5cf",
+          "value": 0.766
+        },
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -28.8512,
+            "improvement_vs_previous_percent": -28.8512
+          },
+          "n": 6,
+          "record": "20261120T0858Z-rep-join-filtered-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.517,
+            0.571
+          ],
+          "summary": "lead-sweep phase 1 FAIL: rep-join with a 2^-2 abscissa filter is worse than baseline and than the unfiltered join at every m; registry e840213ad5cf",
+          "value": 0.545
+        }
+      ],
+      "problem": "ic:lead-rep-join",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.788,
+      "latest": 0.562,
+      "latest_derived": {
+        "improvement_vs_first_percent": -28.6802,
+        "improvement_vs_previous_percent": -28.6802
+      },
+      "metric": "speedup/bench-prime-16/m8",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 6,
+          "record": "20261120T0857Z-rep-join-generic-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.752,
+            0.828
+          ],
+          "summary": "lead-sweep phase 1 FAIL: generic rep-join (filter_bits=0) at m=2..9 never beats the registry baseline; m=2 reproduces it exactly; registry e840213ad5cf",
+          "value": 0.788
+        },
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -28.6802,
+            "improvement_vs_previous_percent": -28.6802
+          },
+          "n": 6,
+          "record": "20261120T0858Z-rep-join-filtered-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.514,
+            0.601
+          ],
+          "summary": "lead-sweep phase 1 FAIL: rep-join with a 2^-2 abscissa filter is worse than baseline and than the unfiltered join at every m; registry e840213ad5cf",
+          "value": 0.562
+        }
+      ],
+      "problem": "ic:lead-rep-join",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.747,
+      "latest": 0.542,
+      "latest_derived": {
+        "improvement_vs_first_percent": -27.4431,
+        "improvement_vs_previous_percent": -27.4431
+      },
+      "metric": "speedup/bench-prime-16/m9",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 6,
+          "record": "20261120T0857Z-rep-join-generic-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.713,
+            0.785
+          ],
+          "summary": "lead-sweep phase 1 FAIL: generic rep-join (filter_bits=0) at m=2..9 never beats the registry baseline; m=2 reproduces it exactly; registry e840213ad5cf",
+          "value": 0.747
+        },
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -27.4431,
+            "improvement_vs_previous_percent": -27.4431
+          },
+          "n": 6,
+          "record": "20261120T0858Z-rep-join-filtered-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.512,
+            0.577
+          ],
+          "summary": "lead-sweep phase 1 FAIL: rep-join with a 2^-2 abscissa filter is worse than baseline and than the unfiltered join at every m; registry e840213ad5cf",
+          "value": 0.542
+        }
+      ],
+      "problem": "ic:lead-rep-join",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 1.0,
+      "latest": 0.789,
+      "latest_derived": {
+        "improvement_vs_first_percent": -21.1,
+        "improvement_vs_previous_percent": -21.1
+      },
+      "metric": "speedup/bench-prime-18/m2",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 6,
+          "record": "20261120T0857Z-rep-join-generic-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            1.0,
+            1.0
+          ],
+          "summary": "lead-sweep phase 1 FAIL: generic rep-join (filter_bits=0) at m=2..9 never beats the registry baseline; m=2 reproduces it exactly; registry e840213ad5cf",
+          "value": 1.0
+        },
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -21.1,
+            "improvement_vs_previous_percent": -21.1
+          },
+          "n": 6,
+          "record": "20261120T0858Z-rep-join-filtered-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.721,
+            0.879
+          ],
+          "summary": "lead-sweep phase 1 FAIL: rep-join with a 2^-2 abscissa filter is worse than baseline and than the unfiltered join at every m; registry e840213ad5cf",
+          "value": 0.789
+        }
+      ],
+      "problem": "ic:lead-rep-join",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.759,
+      "latest": 0.541,
+      "latest_derived": {
+        "improvement_vs_first_percent": -28.722,
+        "improvement_vs_previous_percent": -28.722
+      },
+      "metric": "speedup/bench-prime-18/m3",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 6,
+          "record": "20261120T0857Z-rep-join-generic-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.734,
+            0.782
+          ],
+          "summary": "lead-sweep phase 1 FAIL: generic rep-join (filter_bits=0) at m=2..9 never beats the registry baseline; m=2 reproduces it exactly; registry e840213ad5cf",
+          "value": 0.759
+        },
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -28.722,
+            "improvement_vs_previous_percent": -28.722
+          },
+          "n": 6,
+          "record": "20261120T0858Z-rep-join-filtered-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.522,
+            0.558
+          ],
+          "summary": "lead-sweep phase 1 FAIL: rep-join with a 2^-2 abscissa filter is worse than baseline and than the unfiltered join at every m; registry e840213ad5cf",
+          "value": 0.541
+        }
+      ],
+      "problem": "ic:lead-rep-join",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.759,
+      "latest": 0.519,
+      "latest_derived": {
+        "improvement_vs_first_percent": -31.6206,
+        "improvement_vs_previous_percent": -31.6206
+      },
+      "metric": "speedup/bench-prime-18/m4",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 6,
+          "record": "20261120T0857Z-rep-join-generic-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.724,
+            0.793
+          ],
+          "summary": "lead-sweep phase 1 FAIL: generic rep-join (filter_bits=0) at m=2..9 never beats the registry baseline; m=2 reproduces it exactly; registry e840213ad5cf",
+          "value": 0.759
+        },
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -31.6206,
+            "improvement_vs_previous_percent": -31.6206
+          },
+          "n": 6,
+          "record": "20261120T0858Z-rep-join-filtered-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.499,
+            0.538
+          ],
+          "summary": "lead-sweep phase 1 FAIL: rep-join with a 2^-2 abscissa filter is worse than baseline and than the unfiltered join at every m; registry e840213ad5cf",
+          "value": 0.519
+        }
+      ],
+      "problem": "ic:lead-rep-join",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.749,
+      "latest": 0.507,
+      "latest_derived": {
+        "improvement_vs_first_percent": -32.3097,
+        "improvement_vs_previous_percent": -32.3097
+      },
+      "metric": "speedup/bench-prime-18/m5",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 6,
+          "record": "20261120T0857Z-rep-join-generic-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.709,
+            0.792
+          ],
+          "summary": "lead-sweep phase 1 FAIL: generic rep-join (filter_bits=0) at m=2..9 never beats the registry baseline; m=2 reproduces it exactly; registry e840213ad5cf",
+          "value": 0.749
+        },
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -32.3097,
+            "improvement_vs_previous_percent": -32.3097
+          },
+          "n": 6,
+          "record": "20261120T0858Z-rep-join-filtered-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.49,
+            0.525
+          ],
+          "summary": "lead-sweep phase 1 FAIL: rep-join with a 2^-2 abscissa filter is worse than baseline and than the unfiltered join at every m; registry e840213ad5cf",
+          "value": 0.507
+        }
+      ],
+      "problem": "ic:lead-rep-join",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.753,
+      "latest": 0.544,
+      "latest_derived": {
+        "improvement_vs_first_percent": -27.7556,
+        "improvement_vs_previous_percent": -27.7556
+      },
+      "metric": "speedup/bench-prime-18/m6",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 6,
+          "record": "20261120T0857Z-rep-join-generic-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.707,
+            0.794
+          ],
+          "summary": "lead-sweep phase 1 FAIL: generic rep-join (filter_bits=0) at m=2..9 never beats the registry baseline; m=2 reproduces it exactly; registry e840213ad5cf",
+          "value": 0.753
+        },
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -27.7556,
+            "improvement_vs_previous_percent": -27.7556
+          },
+          "n": 6,
+          "record": "20261120T0858Z-rep-join-filtered-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.523,
+            0.572
+          ],
+          "summary": "lead-sweep phase 1 FAIL: rep-join with a 2^-2 abscissa filter is worse than baseline and than the unfiltered join at every m; registry e840213ad5cf",
+          "value": 0.544
+        }
+      ],
+      "problem": "ic:lead-rep-join",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.728,
+      "latest": 0.513,
+      "latest_derived": {
+        "improvement_vs_first_percent": -29.533,
+        "improvement_vs_previous_percent": -29.533
+      },
+      "metric": "speedup/bench-prime-18/m7",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 6,
+          "record": "20261120T0857Z-rep-join-generic-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.709,
+            0.748
+          ],
+          "summary": "lead-sweep phase 1 FAIL: generic rep-join (filter_bits=0) at m=2..9 never beats the registry baseline; m=2 reproduces it exactly; registry e840213ad5cf",
+          "value": 0.728
+        },
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -29.533,
+            "improvement_vs_previous_percent": -29.533
+          },
+          "n": 6,
+          "record": "20261120T0858Z-rep-join-filtered-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.503,
+            0.523
+          ],
+          "summary": "lead-sweep phase 1 FAIL: rep-join with a 2^-2 abscissa filter is worse than baseline and than the unfiltered join at every m; registry e840213ad5cf",
+          "value": 0.513
+        }
+      ],
+      "problem": "ic:lead-rep-join",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.746,
+      "latest": 0.546,
+      "latest_derived": {
+        "improvement_vs_first_percent": -26.8097,
+        "improvement_vs_previous_percent": -26.8097
+      },
+      "metric": "speedup/bench-prime-18/m8",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 6,
+          "record": "20261120T0857Z-rep-join-generic-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.712,
+            0.777
+          ],
+          "summary": "lead-sweep phase 1 FAIL: generic rep-join (filter_bits=0) at m=2..9 never beats the registry baseline; m=2 reproduces it exactly; registry e840213ad5cf",
+          "value": 0.746
+        },
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -26.8097,
+            "improvement_vs_previous_percent": -26.8097
+          },
+          "n": 6,
+          "record": "20261120T0858Z-rep-join-filtered-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.512,
+            0.585
+          ],
+          "summary": "lead-sweep phase 1 FAIL: rep-join with a 2^-2 abscissa filter is worse than baseline and than the unfiltered join at every m; registry e840213ad5cf",
+          "value": 0.546
+        }
+      ],
+      "problem": "ic:lead-rep-join",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.735,
+      "latest": 0.527,
+      "latest_derived": {
+        "improvement_vs_first_percent": -28.2993,
+        "improvement_vs_previous_percent": -28.2993
+      },
+      "metric": "speedup/bench-prime-18/m9",
+      "points": [
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 6,
+          "record": "20261120T0857Z-rep-join-generic-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.711,
+            0.764
+          ],
+          "summary": "lead-sweep phase 1 FAIL: generic rep-join (filter_bits=0) at m=2..9 never beats the registry baseline; m=2 reproduces it exactly; registry e840213ad5cf",
+          "value": 0.735
+        },
+        {
+          "commit": "4029af2b8fb0",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -28.2993,
+            "improvement_vs_previous_percent": -28.2993
+          },
+          "n": 6,
+          "record": "20261120T0858Z-rep-join-filtered-phase1",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.514,
+            0.54
+          ],
+          "summary": "lead-sweep phase 1 FAIL: rep-join with a 2^-2 abscissa filter is worse than baseline and than the unfiltered join at every m; registry e840213ad5cf",
+          "value": 0.527
+        }
+      ],
+      "problem": "ic:lead-rep-join",
       "unit": "ratio"
     },
     {

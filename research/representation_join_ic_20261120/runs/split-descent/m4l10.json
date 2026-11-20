@@ -1,0 +1,288 @@
+{
+  "all_verified": false,
+  "calibration": {
+    "ns_per_add": 77.51134,
+    "ns_per_as_solve": 14.509035,
+    "ns_per_canon": null,
+    "ns_per_double": 77.691095,
+    "ns_per_frobenius": 17.077135,
+    "ns_per_inversion": null,
+    "ns_per_legendre": null,
+    "ns_per_lookup": 0.0,
+    "ns_per_row_op": 3.2613564453125,
+    "ns_per_s4_pair": null,
+    "ns_per_sqrt": null,
+    "ns_per_word_xor": 0.42938916015625,
+    "pinned_units": []
+  },
+  "calibration_pins": {
+    "measured": [
+      "ns_per_double",
+      "ns_per_lookup",
+      "ns_per_row_op",
+      "ns_per_as_solve",
+      "ns_per_word_xor",
+      "ns_per_frobenius"
+    ],
+    "pinned": []
+  },
+  "configurations_run": 1,
+  "configurations_skipped": [],
+  "elapsed_seconds": 436.109767241,
+  "instance": "random-binary-n17-b16",
+  "markdown": "| instance | configuration | base | cols | pts/col | hit rate | trials | rows | rank | D_solve | D_sr | S | vs rho | correct |\n|:--|:--|--:|--:|--:|--:|--:|--:|--:|--:|:--|--:|--:|:--|\n| random-binary-n17-b16 | binary-subspace[dimension=6] + descent-algebraic[inter_dim=10,m=4] + sat-cdcl + walk | 78 | 39 | 2.0 | 0.033 | 30 | 1 | 1 | — | 10 | 38020050.572 | — | gave up |\n",
+  "operation": "bench",
+  "regime": "char2",
+  "rho_reference": null,
+  "rho_reference_candidates": [],
+  "rho_reference_plain": null,
+  "rho_reference_rule": "negation map (A = 2): the only eligible automorphism of this curve",
+  "rows": [
+    {
+      "collector_wall_seconds": 436.109378362,
+      "decomposition": {
+        "cost": {
+          "gae": 5620153106.174027,
+          "group_ops": {
+            "adds": 254,
+            "doubles": 426,
+            "scalar_mults": 34
+          },
+          "native": {
+            "canonicalisations": 0,
+            "direct_relations_skipped": 0,
+            "frobfold_mismatches": 0,
+            "inversions": 0,
+            "lift_failures": 0,
+            "lookups": 0,
+            "relations": 1,
+            "repeated_targets_skipped": 0,
+            "s4_hits": 0,
+            "s4_pairs": 0,
+            "solver_budget_exceeded": 23,
+            "solver_calls": 30,
+            "solver_ops": 5679085,
+            "sqrt_solves": 0,
+            "symbolic_descent_ns": 5996004,
+            "target_guard_probes": 30,
+            "trials": 30,
+            "unliftable_systems": 0,
+            "walk_jumps": 16,
+            "walk_pool_offsets": 0,
+            "walk_pool_ops": 0,
+            "walk_pool_restarts": 0,
+            "walk_restarts": 1,
+            "walk_steps": 29
+          },
+          "wall_ns": 436109338659
+        },
+        "description": "Weil-descend S_5 over the base's abscissa subspace and solve with sat-cdcl",
+        "hit_rate": 0.03333333333333333,
+        "name": "descent-algebraic",
+        "relations_found": 1,
+        "setup": {
+          "gae": 2599.271280821619,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {
+            "symbolic_descent_ns": 201473
+          },
+          "wall_ns": 205993
+        },
+        "solver": {
+          "budget_exceeded": 23,
+          "calls": 30,
+          "degree_over_bound": null,
+          "extra": {
+            "decisions": 5977273,
+            "learnt_clauses": 5678955,
+            "native_xor_encoding": 0,
+            "native_xor_rows": 0,
+            "original_clauses": 460798,
+            "propagations": 1430697728,
+            "restarts": 14639,
+            "xor_propagations": 0
+          },
+          "gae": 5620075069.699478,
+          "name": "sat-cdcl",
+          "ns_per_op": 76705.93934639118,
+          "op_unit": "conflicts",
+          "ops": 5679085,
+          "peak_bytes": 0,
+          "priced_by": "measured",
+          "semi_regular_degree": 10,
+          "solving_degree_max": 0,
+          "solving_degree_mean": null,
+          "wall_ns": 435619549553
+        },
+        "summands": 4,
+        "system": {
+          "degrees": [
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2
+          ],
+          "n_equations": 51,
+          "n_vars": 44,
+          "semi_regular_degree": 10
+        },
+        "targets_tried": 30
+      },
+      "exhausted": true,
+      "factor_base": {
+        "abscissae": 39,
+        "columns": 39,
+        "cost": {
+          "gae": 11.792715814227956,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {
+            "abscissae_scanned": 63,
+            "as_solves": 63
+          },
+          "wall_ns": 41396
+        },
+        "description": "points whose abscissa lies in the 6-dimensional subspace spanned by {1, z, …}",
+        "name": "binary-subspace",
+        "points_per_column": 2.0,
+        "signed_points": 78
+      },
+      "group_order": 131106,
+      "instance": "random-binary-n17-b16",
+      "label": "binary-subspace[dimension=6] + descent-algebraic[inter_dim=10,m=4] + sat-cdcl + walk",
+      "linear_algebra": {
+        "cost": {
+          "gae": 0.21037931000241383,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {
+            "columns": 40,
+            "pinned_by_repeated_row": 0,
+            "rank": 1,
+            "repeated_column_rows": 0,
+            "row_ops": 5,
+            "rows": 1,
+            "single_column_rows": 0,
+            "two_column_rows": 0
+          },
+          "wall_ns": 7271
+        },
+        "dependent": 0,
+        "name": "incremental-gauss",
+        "rank": 1,
+        "rows": 1,
+        "work": 5,
+        "work_unit": "row_ops"
+      },
+      "log2_r": 14.41541168499744,
+      "r": 21851,
+      "recovered": null,
+      "rho_s": null,
+      "s": 38020050.57200209,
+      "s_over_rho": null,
+      "spec": {
+        "factor_base": "binary-subspace",
+        "factor_base_params": {
+          "dimension": "6"
+        },
+        "linalg": "incremental-gauss",
+        "max_trials": 30,
+        "oracle": "descent-algebraic",
+        "oracle_params": {
+          "inter_dim": "10",
+          "m": "4"
+        },
+        "seed": 123212651130,
+        "solver": "sat-cdcl",
+        "solver_budget_seconds": 30,
+        "solver_params": {},
+        "targets": "Walk"
+      },
+      "total_gae": 5620155717.448403,
+      "verified": false,
+      "verify": {
+        "gae": 0.0,
+        "group_ops": {
+          "adds": 0,
+          "doubles": 0,
+          "scalar_mults": 0
+        },
+        "native": {},
+        "wall_ns": 0
+      },
+      "wall_seconds": 436.109675163
+    }
+  ],
+  "schema_version": 1,
+  "software": {
+    "arch": "x86_64",
+    "binary_blake3": "fa4f56af9ddae10f7ea46b7152ebfc01c8aafe6f5841d1fbd705cd5c90b5bfa4",
+    "git_commit": "4029af2b8fb0bdda18d5022959bd8c5f4cfbc82b",
+    "os": "linux",
+    "version": "0.1.0"
+  },
+  "status": "incomplete",
+  "what_this_is": "Index-calculus configurations -- each a choice of factor base, target source, decomposition oracle, polynomial solver and relation matrix -- run end to end against a planted logarithm, with every stage's cost in group-addition equivalents and the total divided by sqrt(r).",
+  "what_this_is_not": [
+    "not a speed claim: a configuration on a toy instance is a measurement, and a comparison needs the matched reference rows AGENTS.md section 1 asks for",
+    "not a wall-clock benchmark: operation counts are the metric, wall time rides along",
+    "not a claim about any deployed curve"
+  ]
+}

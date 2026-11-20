@@ -1,0 +1,807 @@
+{
+  "branch": "claude/representation-join-ic-20261120",
+  "closed_utc": "2026-11-20T10:50:21+00:00",
+  "commands": [
+    {
+      "argv": [
+        "/home/user/cryptanalysis/research/representation_join_ic_20261120/fp2_panel.sh",
+        "/home/user/cryptanalysis/suite/target/release/ca-ic",
+        "/home/user/cryptanalysis/research/representation_join_ic_20261120/runs/fp2-panel"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "started_utc": "2026-11-20T09:00:07+00:00",
+      "wall_s": 1533.384
+    }
+  ],
+  "commit": "4029af2b8fb0bdda18d5022959bd8c5f4cfbc82b",
+  "commit_dirty": false,
+  "created_utc": "2026-11-20T09:00:06+00:00",
+  "curve_uid": null,
+  "entries": [],
+  "host": {
+    "cpu": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+    "cpus_online": 4,
+    "hostname": "vm",
+    "isolation": "unstated",
+    "platform": "Linux-6.18.44-fc-v726-x86_64-with-glibc2.39"
+  },
+  "id": "20261120T0900Z-fp2-representation-panel",
+  "metrics": [
+    {
+      "baseline": null,
+      "better": "lower",
+      "n": 6,
+      "name": "cost/fp2-16/mitm",
+      "note": "",
+      "reference": 1.7898,
+      "reference_kind": "matched_rho",
+      "spread": null,
+      "unit": "S",
+      "value": 160.9024
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 6,
+      "name": "speedup/fp2-16/fp2-weil",
+      "note": "mitm S / arm S, paired per repeat, 95% bootstrap",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        6.2849,
+        7.8324
+      ],
+      "unit": "ratio",
+      "value": 6.9794
+    },
+    {
+      "baseline": null,
+      "better": "lower",
+      "n": 6,
+      "name": "cost/fp2-16/fp2-weil",
+      "note": "",
+      "reference": 1.7898,
+      "reference_kind": "matched_rho",
+      "spread": null,
+      "unit": "S",
+      "value": 23.276
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 6,
+      "name": "speedup/fp2-16/rep-join_m_3",
+      "note": "mitm S / arm S, paired per repeat, 95% bootstrap",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9949,
+        0.9981
+      ],
+      "unit": "ratio",
+      "value": 0.9966
+    },
+    {
+      "baseline": null,
+      "better": "lower",
+      "n": 6,
+      "name": "cost/fp2-16/rep-join_m_3",
+      "note": "",
+      "reference": 1.7898,
+      "reference_kind": "matched_rho",
+      "spread": null,
+      "unit": "S",
+      "value": 161.4463
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 6,
+      "name": "speedup/fp2-16/rep-join_m_4",
+      "note": "mitm S / arm S, paired per repeat, 95% bootstrap",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9937,
+        0.9959
+      ],
+      "unit": "ratio",
+      "value": 0.9948
+    },
+    {
+      "baseline": null,
+      "better": "lower",
+      "n": 6,
+      "name": "cost/fp2-16/rep-join_m_4",
+      "note": "",
+      "reference": 1.7898,
+      "reference_kind": "matched_rho",
+      "spread": null,
+      "unit": "S",
+      "value": 161.7478
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 6,
+      "name": "speedup/fp2-16/rep-join_m_3_filter_bits_4",
+      "note": "mitm S / arm S, paired per repeat, 95% bootstrap",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.8915,
+        0.9101
+      ],
+      "unit": "ratio",
+      "value": 0.901
+    },
+    {
+      "baseline": null,
+      "better": "lower",
+      "n": 6,
+      "name": "cost/fp2-16/rep-join_m_3_filter_bits_4",
+      "note": "",
+      "reference": 1.7898,
+      "reference_kind": "matched_rho",
+      "spread": null,
+      "unit": "S",
+      "value": 178.6037
+    },
+    {
+      "baseline": null,
+      "better": "lower",
+      "n": 6,
+      "name": "cost/fp2-20/mitm",
+      "note": "",
+      "reference": 1.5255,
+      "reference_kind": "matched_rho",
+      "spread": null,
+      "unit": "S",
+      "value": 1142.4461
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 6,
+      "name": "speedup/fp2-20/fp2-weil",
+      "note": "mitm S / arm S, paired per repeat, 95% bootstrap",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        27.9347,
+        44.5296
+      ],
+      "unit": "ratio",
+      "value": 35.1615
+    },
+    {
+      "baseline": null,
+      "better": "lower",
+      "n": 6,
+      "name": "cost/fp2-20/fp2-weil",
+      "note": "",
+      "reference": 1.5255,
+      "reference_kind": "matched_rho",
+      "spread": null,
+      "unit": "S",
+      "value": 33.9126
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 6,
+      "name": "speedup/fp2-20/rep-join_m_3",
+      "note": "mitm S / arm S, paired per repeat, 95% bootstrap",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9974,
+        0.9987
+      ],
+      "unit": "ratio",
+      "value": 0.9981
+    },
+    {
+      "baseline": null,
+      "better": "lower",
+      "n": 6,
+      "name": "cost/fp2-20/rep-join_m_3",
+      "note": "",
+      "reference": 1.5255,
+      "reference_kind": "matched_rho",
+      "spread": null,
+      "unit": "S",
+      "value": 1144.6707
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 6,
+      "name": "speedup/fp2-20/rep-join_m_4",
+      "note": "mitm S / arm S, paired per repeat, 95% bootstrap",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9978,
+        0.9983
+      ],
+      "unit": "ratio",
+      "value": 0.998
+    },
+    {
+      "baseline": null,
+      "better": "lower",
+      "n": 6,
+      "name": "cost/fp2-20/rep-join_m_4",
+      "note": "",
+      "reference": 1.5255,
+      "reference_kind": "matched_rho",
+      "spread": null,
+      "unit": "S",
+      "value": 1144.7105
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 6,
+      "name": "speedup/fp2-20/rep-join_m_3_filter_bits_4",
+      "note": "mitm S / arm S, paired per repeat, 95% bootstrap",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9646,
+        0.9786
+      ],
+      "unit": "ratio",
+      "value": 0.9705
+    },
+    {
+      "baseline": null,
+      "better": "lower",
+      "n": 6,
+      "name": "cost/fp2-20/rep-join_m_3_filter_bits_4",
+      "note": "",
+      "reference": 1.5255,
+      "reference_kind": "matched_rho",
+      "spread": null,
+      "unit": "S",
+      "value": 1177.2811
+    },
+    {
+      "baseline": null,
+      "better": "lower",
+      "n": 6,
+      "name": "cost/fp2-24/mitm",
+      "note": "",
+      "reference": 1.46,
+      "reference_kind": "matched_rho",
+      "spread": null,
+      "unit": "S",
+      "value": 6205.9142
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 6,
+      "name": "speedup/fp2-24/fp2-weil",
+      "note": "mitm S / arm S, paired per repeat, 95% bootstrap",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        110.0265,
+        149.803
+      ],
+      "unit": "ratio",
+      "value": 127.8318
+    },
+    {
+      "baseline": null,
+      "better": "lower",
+      "n": 6,
+      "name": "cost/fp2-24/fp2-weil",
+      "note": "",
+      "reference": 1.46,
+      "reference_kind": "matched_rho",
+      "spread": null,
+      "unit": "S",
+      "value": 49.4492
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 6,
+      "name": "speedup/fp2-24/rep-join_m_3",
+      "note": "mitm S / arm S, paired per repeat, 95% bootstrap",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9994,
+        0.9997
+      ],
+      "unit": "ratio",
+      "value": 0.9995
+    },
+    {
+      "baseline": null,
+      "better": "lower",
+      "n": 6,
+      "name": "cost/fp2-24/rep-join_m_3",
+      "note": "",
+      "reference": 1.46,
+      "reference_kind": "matched_rho",
+      "spread": null,
+      "unit": "S",
+      "value": 6208.798
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 6,
+      "name": "speedup/fp2-24/rep-join_m_4",
+      "note": "mitm S / arm S, paired per repeat, 95% bootstrap",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9995,
+        0.9997
+      ],
+      "unit": "ratio",
+      "value": 0.9996
+    },
+    {
+      "baseline": null,
+      "better": "lower",
+      "n": 6,
+      "name": "cost/fp2-24/rep-join_m_4",
+      "note": "",
+      "reference": 1.46,
+      "reference_kind": "matched_rho",
+      "spread": null,
+      "unit": "S",
+      "value": 6208.3419
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 6,
+      "name": "speedup/fp2-24/rep-join_m_3_filter_bits_4",
+      "note": "mitm S / arm S, paired per repeat, 95% bootstrap",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9886,
+        0.9907
+      ],
+      "unit": "ratio",
+      "value": 0.9896
+    },
+    {
+      "baseline": null,
+      "better": "lower",
+      "n": 6,
+      "name": "cost/fp2-24/rep-join_m_3_filter_bits_4",
+      "note": "",
+      "reference": 1.46,
+      "reference_kind": "matched_rho",
+      "spread": null,
+      "unit": "S",
+      "value": 6271.2677
+    },
+    {
+      "baseline": null,
+      "better": "lower",
+      "n": 6,
+      "name": "cost/fp2-28/mitm",
+      "note": "",
+      "reference": 1.2168,
+      "reference_kind": "matched_rho",
+      "spread": null,
+      "unit": "S",
+      "value": 20555.0297
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 6,
+      "name": "speedup/fp2-28/fp2-weil",
+      "note": "mitm S / arm S, paired per repeat, 95% bootstrap",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        249.6542,
+        341.0347
+      ],
+      "unit": "ratio",
+      "value": 284.3816
+    },
+    {
+      "baseline": null,
+      "better": "lower",
+      "n": 6,
+      "name": "cost/fp2-28/fp2-weil",
+      "note": "",
+      "reference": 1.2168,
+      "reference_kind": "matched_rho",
+      "spread": null,
+      "unit": "S",
+      "value": 73.6109
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 6,
+      "name": "speedup/fp2-28/rep-join_m_3",
+      "note": "mitm S / arm S, paired per repeat, 95% bootstrap",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9999,
+        0.9999
+      ],
+      "unit": "ratio",
+      "value": 0.9999
+    },
+    {
+      "baseline": null,
+      "better": "lower",
+      "n": 6,
+      "name": "cost/fp2-28/rep-join_m_3",
+      "note": "",
+      "reference": 1.2168,
+      "reference_kind": "matched_rho",
+      "spread": null,
+      "unit": "S",
+      "value": 20557.4697
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 6,
+      "name": "speedup/fp2-28/rep-join_m_4",
+      "note": "mitm S / arm S, paired per repeat, 95% bootstrap",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9998,
+        0.9999
+      ],
+      "unit": "ratio",
+      "value": 0.9998
+    },
+    {
+      "baseline": null,
+      "better": "lower",
+      "n": 6,
+      "name": "cost/fp2-28/rep-join_m_4",
+      "note": "",
+      "reference": 1.2168,
+      "reference_kind": "matched_rho",
+      "spread": null,
+      "unit": "S",
+      "value": 20558.3271
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 6,
+      "name": "speedup/fp2-28/rep-join_m_3_filter_bits_4",
+      "note": "mitm S / arm S, paired per repeat, 95% bootstrap",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.996,
+        0.9965
+      ],
+      "unit": "ratio",
+      "value": 0.9962
+    },
+    {
+      "baseline": null,
+      "better": "lower",
+      "n": 6,
+      "name": "cost/fp2-28/rep-join_m_3_filter_bits_4",
+      "note": "",
+      "reference": 1.2168,
+      "reference_kind": "matched_rho",
+      "spread": null,
+      "unit": "S",
+      "value": 20632.9543
+    }
+  ],
+  "problem": "ic:fp2-subfield",
+  "raw": [
+    {
+      "bytes": 0,
+      "path": "research/representation_join_ic_20261120/runs/fp2-panel/k16_fp2-weil.err",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/e3/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uploaded": false
+    },
+    {
+      "bytes": 33129,
+      "path": "research/representation_join_ic_20261120/runs/fp2-panel/k16_fp2-weil.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/bc/bc7adcd7a45896667a367061300a17b13c5bd5d871c58503bc1850a37da32e68",
+      "sha256": "bc7adcd7a45896667a367061300a17b13c5bd5d871c58503bc1850a37da32e68",
+      "uploaded": false
+    },
+    {
+      "bytes": 0,
+      "path": "research/representation_join_ic_20261120/runs/fp2-panel/k16_mitm.err",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/e3/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uploaded": false
+    },
+    {
+      "bytes": 31276,
+      "path": "research/representation_join_ic_20261120/runs/fp2-panel/k16_mitm.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/ad/ad9766b91e2660d77d1df3a164edac068a1d392cf421aaabece076b28fa08717",
+      "sha256": "ad9766b91e2660d77d1df3a164edac068a1d392cf421aaabece076b28fa08717",
+      "uploaded": false
+    },
+    {
+      "bytes": 0,
+      "path": "research/representation_join_ic_20261120/runs/fp2-panel/k16_rep-join_m_3.err",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/e3/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uploaded": false
+    },
+    {
+      "bytes": 32773,
+      "path": "research/representation_join_ic_20261120/runs/fp2-panel/k16_rep-join_m_3.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/a3/a344c7b4ddad74c1d9f9c84def5d8e1bf12d5c883cf169250f7e846c11c119c3",
+      "sha256": "a344c7b4ddad74c1d9f9c84def5d8e1bf12d5c883cf169250f7e846c11c119c3",
+      "uploaded": false
+    },
+    {
+      "bytes": 0,
+      "path": "research/representation_join_ic_20261120/runs/fp2-panel/k16_rep-join_m_3_filter_bits_4.err",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/e3/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uploaded": false
+    },
+    {
+      "bytes": 33181,
+      "path": "research/representation_join_ic_20261120/runs/fp2-panel/k16_rep-join_m_3_filter_bits_4.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/78/7861d10e2e0a3f2126f7ae8755f2b4adcf78157feb5a6d26af390fc3a7819a48",
+      "sha256": "7861d10e2e0a3f2126f7ae8755f2b4adcf78157feb5a6d26af390fc3a7819a48",
+      "uploaded": false
+    },
+    {
+      "bytes": 0,
+      "path": "research/representation_join_ic_20261120/runs/fp2-panel/k16_rep-join_m_4.err",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/e3/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uploaded": false
+    },
+    {
+      "bytes": 32782,
+      "path": "research/representation_join_ic_20261120/runs/fp2-panel/k16_rep-join_m_4.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/be/bef65fb36f5d0c2055c9134f5dda58e88c9d749fac5701fee13c1e25daac7e08",
+      "sha256": "bef65fb36f5d0c2055c9134f5dda58e88c9d749fac5701fee13c1e25daac7e08",
+      "uploaded": false
+    },
+    {
+      "bytes": 0,
+      "path": "research/representation_join_ic_20261120/runs/fp2-panel/k20_fp2-weil.err",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/e3/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uploaded": false
+    },
+    {
+      "bytes": 33293,
+      "path": "research/representation_join_ic_20261120/runs/fp2-panel/k20_fp2-weil.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/d2/d2ef323d146817075d73d0c6668ead16a7e0563ee5d512bf2fc97d47430bac0b",
+      "sha256": "d2ef323d146817075d73d0c6668ead16a7e0563ee5d512bf2fc97d47430bac0b",
+      "uploaded": false
+    },
+    {
+      "bytes": 0,
+      "path": "research/representation_join_ic_20261120/runs/fp2-panel/k20_mitm.err",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/e3/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uploaded": false
+    },
+    {
+      "bytes": 31433,
+      "path": "research/representation_join_ic_20261120/runs/fp2-panel/k20_mitm.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/74/747349642603344c878fcf6f413df48c4ddd0374977583e525c98a14b3b294ad",
+      "sha256": "747349642603344c878fcf6f413df48c4ddd0374977583e525c98a14b3b294ad",
+      "uploaded": false
+    },
+    {
+      "bytes": 0,
+      "path": "research/representation_join_ic_20261120/runs/fp2-panel/k20_rep-join_m_3.err",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/e3/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uploaded": false
+    },
+    {
+      "bytes": 32952,
+      "path": "research/representation_join_ic_20261120/runs/fp2-panel/k20_rep-join_m_3.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/f9/f989103cde2c12474dea4f970d32a2862f1f1aee14f2c7c47c3aa617d9083e43",
+      "sha256": "f989103cde2c12474dea4f970d32a2862f1f1aee14f2c7c47c3aa617d9083e43",
+      "uploaded": false
+    },
+    {
+      "bytes": 0,
+      "path": "research/representation_join_ic_20261120/runs/fp2-panel/k20_rep-join_m_3_filter_bits_4.err",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/e3/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uploaded": false
+    },
+    {
+      "bytes": 33379,
+      "path": "research/representation_join_ic_20261120/runs/fp2-panel/k20_rep-join_m_3_filter_bits_4.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/17/17cf6609e5081a5d1747cbc600c9ce167a790dad72d0c257433e2dfbcf012dac",
+      "sha256": "17cf6609e5081a5d1747cbc600c9ce167a790dad72d0c257433e2dfbcf012dac",
+      "uploaded": false
+    },
+    {
+      "bytes": 0,
+      "path": "research/representation_join_ic_20261120/runs/fp2-panel/k20_rep-join_m_4.err",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/e3/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uploaded": false
+    },
+    {
+      "bytes": 32968,
+      "path": "research/representation_join_ic_20261120/runs/fp2-panel/k20_rep-join_m_4.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/fb/fb474ca7a61a0e5f5f5d4ffb88bc15c01f04b97d5a422d1ccc6ef43031d59268",
+      "sha256": "fb474ca7a61a0e5f5f5d4ffb88bc15c01f04b97d5a422d1ccc6ef43031d59268",
+      "uploaded": false
+    },
+    {
+      "bytes": 0,
+      "path": "research/representation_join_ic_20261120/runs/fp2-panel/k24_fp2-weil.err",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/e3/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uploaded": false
+    },
+    {
+      "bytes": 33470,
+      "path": "research/representation_join_ic_20261120/runs/fp2-panel/k24_fp2-weil.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/90/90a91b77a0275febdcf4e21b0b022f748057d5674ec48c46cc12a02034e12e6c",
+      "sha256": "90a91b77a0275febdcf4e21b0b022f748057d5674ec48c46cc12a02034e12e6c",
+      "uploaded": false
+    },
+    {
+      "bytes": 0,
+      "path": "research/representation_join_ic_20261120/runs/fp2-panel/k24_mitm.err",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/e3/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uploaded": false
+    },
+    {
+      "bytes": 31618,
+      "path": "research/representation_join_ic_20261120/runs/fp2-panel/k24_mitm.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/ba/bab50c63242938cf7a3b55da476ef42d0f8088d883b57ab796f4480ee0a9ee51",
+      "sha256": "bab50c63242938cf7a3b55da476ef42d0f8088d883b57ab796f4480ee0a9ee51",
+      "uploaded": false
+    },
+    {
+      "bytes": 0,
+      "path": "research/representation_join_ic_20261120/runs/fp2-panel/k24_rep-join_m_3.err",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/e3/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uploaded": false
+    },
+    {
+      "bytes": 33172,
+      "path": "research/representation_join_ic_20261120/runs/fp2-panel/k24_rep-join_m_3.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/51/516296fbe35668cfbd0fd3b02addf93cdbe6b161998a6c12a7bead920a14a43c",
+      "sha256": "516296fbe35668cfbd0fd3b02addf93cdbe6b161998a6c12a7bead920a14a43c",
+      "uploaded": false
+    },
+    {
+      "bytes": 0,
+      "path": "research/representation_join_ic_20261120/runs/fp2-panel/k24_rep-join_m_3_filter_bits_4.err",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/e3/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uploaded": false
+    },
+    {
+      "bytes": 33597,
+      "path": "research/representation_join_ic_20261120/runs/fp2-panel/k24_rep-join_m_3_filter_bits_4.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/9b/9b070b140b42d02c3cc62400bb5dd01e22351b99275eda65485dd2dbce2e0bae",
+      "sha256": "9b070b140b42d02c3cc62400bb5dd01e22351b99275eda65485dd2dbce2e0bae",
+      "uploaded": false
+    },
+    {
+      "bytes": 0,
+      "path": "research/representation_join_ic_20261120/runs/fp2-panel/k24_rep-join_m_4.err",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/e3/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uploaded": false
+    },
+    {
+      "bytes": 33215,
+      "path": "research/representation_join_ic_20261120/runs/fp2-panel/k24_rep-join_m_4.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/26/2645f1cb06d9cb7736bf7f8266ba771c79f45dbef33cb2b11dfef6eddce10ddb",
+      "sha256": "2645f1cb06d9cb7736bf7f8266ba771c79f45dbef33cb2b11dfef6eddce10ddb",
+      "uploaded": false
+    },
+    {
+      "bytes": 0,
+      "path": "research/representation_join_ic_20261120/runs/fp2-panel/k28_fp2-weil.err",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/e3/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uploaded": false
+    },
+    {
+      "bytes": 33652,
+      "path": "research/representation_join_ic_20261120/runs/fp2-panel/k28_fp2-weil.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/01/0172f88db5c93e94b09cbe2de7f1ef3e626dfde69d829a15b7874fbaa74501c0",
+      "sha256": "0172f88db5c93e94b09cbe2de7f1ef3e626dfde69d829a15b7874fbaa74501c0",
+      "uploaded": false
+    },
+    {
+      "bytes": 0,
+      "path": "research/representation_join_ic_20261120/runs/fp2-panel/k28_mitm.err",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/e3/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uploaded": false
+    },
+    {
+      "bytes": 31853,
+      "path": "research/representation_join_ic_20261120/runs/fp2-panel/k28_mitm.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/36/362a23da2b20af656e2622ca2edb6e13eac0e8c930ba71817eec616fa7c5a666",
+      "sha256": "362a23da2b20af656e2622ca2edb6e13eac0e8c930ba71817eec616fa7c5a666",
+      "uploaded": false
+    },
+    {
+      "bytes": 0,
+      "path": "research/representation_join_ic_20261120/runs/fp2-panel/k28_rep-join_m_3.err",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/e3/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uploaded": false
+    },
+    {
+      "bytes": 33443,
+      "path": "research/representation_join_ic_20261120/runs/fp2-panel/k28_rep-join_m_3.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/dc/dc2029ae0cac2ea377e0c3e55b23008eb44d5da24b0e8802a70ef71ba0bde107",
+      "sha256": "dc2029ae0cac2ea377e0c3e55b23008eb44d5da24b0e8802a70ef71ba0bde107",
+      "uploaded": false
+    },
+    {
+      "bytes": 0,
+      "path": "research/representation_join_ic_20261120/runs/fp2-panel/k28_rep-join_m_3_filter_bits_4.err",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/e3/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uploaded": false
+    },
+    {
+      "bytes": 33847,
+      "path": "research/representation_join_ic_20261120/runs/fp2-panel/k28_rep-join_m_3_filter_bits_4.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/98/98d7fd67f72609b468fce014f03a91875ee04200a3723ce9a70b59d43e076efe",
+      "sha256": "98d7fd67f72609b468fce014f03a91875ee04200a3723ce9a70b59d43e076efe",
+      "uploaded": false
+    },
+    {
+      "bytes": 0,
+      "path": "research/representation_join_ic_20261120/runs/fp2-panel/k28_rep-join_m_4.err",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/e3/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uploaded": false
+    },
+    {
+      "bytes": 33461,
+      "path": "research/representation_join_ic_20261120/runs/fp2-panel/k28_rep-join_m_4.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/75/750672cfa9e446ba9393123eceb558654c8487742ee4308dd87b419ae72607ef",
+      "sha256": "750672cfa9e446ba9393123eceb558654c8487742ee4308dd87b419ae72607ef",
+      "uploaded": false
+    }
+  ],
+  "repo": "cryptanalysis",
+  "reports": {
+    "pdf": "research/representation_join_ic_20261120/REPORT.pdf",
+    "png": [],
+    "svg": []
+  },
+  "schema": "bench.record/v1",
+  "session": null,
+  "slug": "fp2-representation-panel",
+  "status": "measured",
+  "summary": "fp2 panel (direct ic bench, not a registry regime): fp2-weil beats table mitm 7x-284x (k=16..28) but S/rho grows 13->61; rep-join ties mitm; all verified",
+  "validation": null
+}

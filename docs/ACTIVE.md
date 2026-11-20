@@ -18,7 +18,7 @@ and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
 
-- [ ] Representation technique (Delaplace–May 2019 / DFKM 2020) in `ic bench`: (a) `descent-algebraic` m = 4 balanced split with intermediates restricted to a subspace V' (sweep ℓ'), (b) generic filtered m-list join oracle `rep-join` (m = 2..9, filter density), (c) an F_{p^2} regime with the subfield abscissa base; each through the trunk lead-sweep protocol against the fixed baseline (Claude Code, started 2026-11-20, branch claude/representation-join-ic-20261120) [pcc:unverified]
+- [x] Representation technique (Delaplace–May 2019 / DFKM 2020) in `ic bench`: (a) `descent-algebraic` m = 4 balanced split with intermediates restricted to a subspace V' (sweep ℓ'), (b) generic filtered m-list join oracle `rep-join` (m = 2..9, filter density), (c) an F_{p^2} regime with the subfield abscissa base; each through the trunk lead-sweep protocol against the fixed baseline (Claude Code, completed 2026-11-20, branch claude/representation-join-ic-20261120, PR #1877; (b) both leads FAIL phase 1, (a) no cheaper relation at l'=4..13, (c) fp2-weil 7x-284x over table mitm but S/rho 13->61; research/representation_join_ic_20261120) [pcc:unverified]
 
 - [ ] Mirror the general binary hyperelliptic-cover transfer interface from crypto after its source commit is frozen, with split provenance and exact parity checks (Codex, started 2026-11-18, branch codex/general-binary-cover-transfer-mirror-20261118, PR #1765) [pcc:unverified]
 

@@ -1,0 +1,1134 @@
+{
+  "all_verified": true,
+  "calibration": {
+    "ns_per_add": 128.88937,
+    "ns_per_as_solve": null,
+    "ns_per_canon": null,
+    "ns_per_double": 142.43655,
+    "ns_per_fp_mul": 6.3594970703125,
+    "ns_per_frobenius": null,
+    "ns_per_inversion": 30.30767822265625,
+    "ns_per_legendre": 26.156005859375,
+    "ns_per_lookup": 2.674181,
+    "ns_per_row_op": 3.12276953125,
+    "ns_per_s4_pair": null,
+    "ns_per_sqrt": 124.40887451171875,
+    "ns_per_word_xor": 0.412578369140625,
+    "pinned_units": []
+  },
+  "calibration_pins": {
+    "measured": [
+      "ns_per_double",
+      "ns_per_lookup",
+      "ns_per_row_op",
+      "ns_per_sqrt",
+      "ns_per_word_xor",
+      "ns_per_legendre",
+      "ns_per_inversion",
+      "ns_per_fp_mul"
+    ],
+    "pinned": []
+  },
+  "configurations_run": 6,
+  "configurations_skipped": [],
+  "elapsed_seconds": 0.018135876,
+  "instance": "fp2-16bit-p293",
+  "instance_detail": {
+    "a": [
+      249,
+      91
+    ],
+    "b": [
+      199,
+      192
+    ],
+    "cofactor": 1,
+    "curves_tried": 3,
+    "field": {
+      "delta": 2,
+      "kind": "fp2",
+      "p": 293,
+      "q": 85849,
+      "representation": "F_p[i]/(i^2 - delta), element (x0, x1) = x0 + x1 i"
+    },
+    "generator": {
+      "x": [
+        107,
+        192
+      ],
+      "y": [
+        204,
+        9
+      ]
+    },
+    "group_order": 85793,
+    "name": "fp2-16bit-p293",
+    "subgroup_order": 85793
+  },
+  "markdown": "| instance | configuration | base | cols | pts/col | hit rate | trials | rows | rank | D_solve | D_sr | S | vs rho | correct |\n|:--|:--|--:|--:|--:|--:|--:|--:|--:|--:|:--|--:|--:|:--|\n| fp2-16bit-p293 | fp2-subfield + fp2-weil + — + walk | 302 | 151 | 2.0 | 0.431 | 174 | 75 | 75 | — | — | 18.311 | 10.23× | yes |\n| fp2-16bit-p293 | fp2-subfield + fp2-weil + — + walk | 302 | 151 | 2.0 | 0.388 | 242 | 94 | 94 | — | — | 24.088 | 13.46× | yes |\n| fp2-16bit-p293 | fp2-subfield + fp2-weil + — + walk | 302 | 151 | 2.0 | 0.394 | 198 | 78 | 78 | — | — | 20.304 | 11.34× | yes |\n| fp2-16bit-p293 | fp2-subfield + fp2-weil + — + walk | 302 | 151 | 2.0 | 0.412 | 262 | 108 | 108 | — | — | 25.229 | 14.10× | yes |\n| fp2-16bit-p293 | fp2-subfield + fp2-weil + — + walk | 302 | 151 | 2.0 | 0.451 | 237 | 107 | 107 | — | — | 23.775 | 13.28× | yes |\n| fp2-16bit-p293 | fp2-subfield + fp2-weil + — + walk | 302 | 151 | 2.0 | 0.410 | 290 | 119 | 119 | — | — | 27.949 | 15.62× | yes |\n",
+  "operation": "bench",
+  "regime": "fp2",
+  "rho_reference": {
+    "all_verified": true,
+    "automorphisms": 2,
+    "max_s": 2.8541733729140386,
+    "mean_s": 1.7898330032896945,
+    "mean_s_walk": 1.1834065136200103,
+    "method": "negation-map r-adding walk: look-ahead, short-cycle escape by doubling, distinguished points, stride starts",
+    "min_s": 0.9218024051277397,
+    "per_run": [
+      {
+        "planted": 14209,
+        "s": 2.1064891998659827,
+        "s_walk": 1.4817120141682927,
+        "seed": 1400727040,
+        "steps": 405,
+        "steps_over_expected": 1.6719329684226325,
+        "verified": true
+      },
+      {
+        "planted": 54712,
+        "s": 1.6763147441397044,
+        "s_walk": 1.068607973351787,
+        "seed": 1400727041,
+        "steps": 291,
+        "steps_over_expected": 1.2057949749223134,
+        "verified": true
+      },
+      {
+        "planted": 9423,
+        "s": 1.8538470592013432,
+        "s_walk": 1.2597966203412443,
+        "seed": 1400727042,
+        "steps": 348,
+        "steps_over_expected": 1.421528261170395,
+        "verified": true
+      },
+      {
+        "planted": 49926,
+        "s": 1.5841345036269303,
+        "s_walk": 1.0003263137126952,
+        "seed": 1400727043,
+        "steps": 273,
+        "steps_over_expected": 1.1287473726908557,
+        "verified": true
+      },
+      {
+        "planted": 4637,
+        "s": 1.8606752251652523,
+        "s_walk": 1.2188276245577891,
+        "seed": 1400727044,
+        "steps": 335,
+        "steps_over_expected": 1.3752996998315203,
+        "verified": true
+      },
+      {
+        "planted": 45140,
+        "s": 0.9218024051277397,
+        "s_walk": 0.40627587485259636,
+        "seed": 1400727045,
+        "steps": 115,
+        "steps_over_expected": 0.45843323327717345,
+        "verified": true
+      },
+      {
+        "planted": 14209,
+        "s": 2.8541733729140386,
+        "s_walk": 2.1577004445953016,
+        "seed": 1400727046,
+        "steps": 589,
+        "steps_over_expected": 2.434704230514064,
+        "verified": true
+      },
+      {
+        "planted": 54712,
+        "s": 1.461227516276565,
+        "s_walk": 0.8740052433803754,
+        "seed": 1400727047,
+        "steps": 244,
+        "steps_over_expected": 0.9862093085626589,
+        "verified": true
+      }
+    ],
+    "runs": 8
+  },
+  "rho_reference_candidates": [],
+  "rho_reference_plain": {
+    "all_verified": true,
+    "automorphisms": 1,
+    "max_s": 7.5690219709933295,
+    "mean_s": 5.7540101057117194,
+    "mean_s_walk": 1.8478724139829228,
+    "method": "r-adding walk, distinguished points, 16 jumps",
+    "min_s": 4.291502308316922,
+    "per_run": [
+      {
+        "planted": 14209,
+        "s": 4.807028838592065,
+        "s_walk": 0.9252164881096943,
+        "seed": 1400727040,
+        "steps": 271,
+        "steps_over_expected": 0.7382159512629729,
+        "verified": true
+      },
+      {
+        "planted": 54712,
+        "s": 4.752403510880791,
+        "s_walk": 1.4441571013667922,
+        "seed": 1400727041,
+        "steps": 423,
+        "steps_over_expected": 1.1522706545543822,
+        "verified": true
+      },
+      {
+        "planted": 9423,
+        "s": 6.288740852760357,
+        "s_walk": 2.021137125317118,
+        "seed": 1400727042,
+        "steps": 592,
+        "steps_over_expected": 1.6126341075560147,
+        "verified": true
+      },
+      {
+        "planted": 49926,
+        "s": 6.951072951259548,
+        "s_walk": 1.946027299714117,
+        "seed": 1400727043,
+        "steps": 570,
+        "steps_over_expected": 1.5527051373427843,
+        "verified": true
+      },
+      {
+        "planted": 4637,
+        "s": 6.408233757128768,
+        "s_walk": 2.1099032828479376,
+        "seed": 1400727044,
+        "steps": 618,
+        "steps_over_expected": 1.6834592541716504,
+        "verified": true
+      },
+      {
+        "planted": 45140,
+        "s": 4.291502308316922,
+        "s_walk": 1.0037403966946499,
+        "seed": 1400727045,
+        "steps": 294,
+        "steps_over_expected": 0.8008689655768045,
+        "verified": true
+      },
+      {
+        "planted": 14209,
+        "s": 4.964076655761976,
+        "s_walk": 1.3827036076916095,
+        "seed": 1400727046,
+        "steps": 405,
+        "steps_over_expected": 1.1032378607435573,
+        "verified": true
+      },
+      {
+        "planted": 54712,
+        "s": 7.5690219709933295,
+        "s_walk": 3.9500940101214623,
+        "seed": 1400727047,
+        "steps": 1157,
+        "steps_over_expected": 3.151719024395792,
+        "verified": true
+      }
+    ],
+    "runs": 8
+  },
+  "rho_reference_rule": "negation map (A = 2): a generic curve over F_{p^2} not defined over F_p, so no Frobenius endomorphism acts on it; the negation is the only eligible automorphism",
+  "rows": [
+    {
+      "collector_wall_seconds": 0.000826169,
+      "decomposition": {
+        "cost": {
+          "gae": 5119.705752169597,
+          "group_ops": {
+            "adds": 838,
+            "doubles": 515,
+            "scalar_mults": 36
+          },
+          "native": {
+            "canonicalisations": 0,
+            "direct_relations_skipped": 0,
+            "fp2_weil_calls": 173,
+            "fp2_weil_candidates": 75,
+            "fp2_weil_degenerate": 0,
+            "fp2_weil_disc_nonresidue": 58,
+            "fp2_weil_not_in_base": 0,
+            "fp2_weil_roots": 181,
+            "fp_muls": 66651,
+            "frobfold_mismatches": 0,
+            "inversions": 1237,
+            "lift_failures": 0,
+            "lookups": 150,
+            "relations": 75,
+            "repeated_targets_skipped": 1,
+            "s4_hits": 0,
+            "s4_pairs": 0,
+            "sqrt_solves": 187,
+            "target_guard_probes": 174,
+            "trials": 174,
+            "unliftable_systems": 0,
+            "walk_jumps": 17,
+            "walk_pool_offsets": 1,
+            "walk_pool_ops": 48,
+            "walk_pool_restarts": 1,
+            "walk_restarts": 2,
+            "walk_steps": 172
+          },
+          "wall_ns": 691735
+        },
+        "description": "Weil-restrict S3(x1, x2, x_R) to F_p in (x1 + x2, x1 x2), eliminate x1 x2, root the quartic by gcd with X^p - X and Cantor-Zassenhaus",
+        "hit_rate": 0.43103448275862066,
+        "name": "fp2-weil",
+        "relations_found": 75,
+        "setup": {
+          "gae": 0.0,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {},
+          "wall_ns": 1572
+        },
+        "solver": null,
+        "summands": 2,
+        "system": null,
+        "targets_tried": 174
+      },
+      "exhausted": false,
+      "factor_base": {
+        "abscissae": 151,
+        "columns": 151,
+        "cost": {
+          "gae": 205.2104821993187,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {
+            "abscissae_scanned": 293,
+            "legendre_symbols": 293,
+            "sqrt_solves": 151
+          },
+          "wall_ns": 1966933
+        },
+        "description": "every abscissa in F_p carrying a point (about p/2), one column each",
+        "name": "fp2-subfield",
+        "points_per_column": 2.0,
+        "signed_points": 302
+      },
+      "group_order": 85793,
+      "instance": "fp2-16bit-p293",
+      "label": "fp2-subfield + fp2-weil + — + walk",
+      "linear_algebra": {
+        "cost": {
+          "gae": 19.38263508464662,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {
+            "columns": 152,
+            "pinned_by_repeated_row": 0,
+            "rank": 75,
+            "repeated_column_rows": 0,
+            "row_ops": 800,
+            "rows": 75,
+            "single_column_rows": 2,
+            "two_column_rows": 73
+          },
+          "wall_ns": 103510
+        },
+        "dependent": 0,
+        "name": "incremental-gauss",
+        "rank": 75,
+        "rows": 75,
+        "work": 800,
+        "work_unit": "row_ops"
+      },
+      "log2_r": 16.388572320080016,
+      "r": 85793,
+      "recovered": 14209,
+      "rho_s": 1.7898330032896945,
+      "s": 18.310747397337707,
+      "s_over_rho": 10.230422259329638,
+      "spec": {
+        "factor_base": "fp2-subfield",
+        "factor_base_params": {},
+        "linalg": "incremental-gauss",
+        "max_trials": 2000000,
+        "oracle": "fp2-weil",
+        "oracle_params": {},
+        "seed": 20261120,
+        "solver": null,
+        "solver_budget_seconds": 120,
+        "solver_params": {},
+        "targets": "Walk"
+      },
+      "total_gae": 5363.2988694535625,
+      "verified": true,
+      "verify": {
+        "gae": 19.0,
+        "group_ops": {
+          "adds": 6,
+          "doubles": 13,
+          "scalar_mults": 1
+        },
+        "native": {},
+        "wall_ns": 2455
+      },
+      "wall_seconds": 0.003747929
+    },
+    {
+      "collector_wall_seconds": 0.001037154,
+      "decomposition": {
+        "cost": {
+          "gae": 6802.648601921985,
+          "group_ops": {
+            "adds": 963,
+            "doubles": 488,
+            "scalar_mults": 34
+          },
+          "native": {
+            "canonicalisations": 0,
+            "direct_relations_skipped": 0,
+            "fp2_weil_calls": 242,
+            "fp2_weil_candidates": 94,
+            "fp2_weil_degenerate": 0,
+            "fp2_weil_disc_nonresidue": 98,
+            "fp2_weil_not_in_base": 0,
+            "fp2_weil_roots": 253,
+            "fp_muls": 94647,
+            "frobfold_mismatches": 0,
+            "inversions": 1761,
+            "lift_failures": 0,
+            "lookups": 188,
+            "relations": 94,
+            "repeated_targets_skipped": 0,
+            "s4_hits": 0,
+            "s4_pairs": 0,
+            "sqrt_solves": 268,
+            "target_guard_probes": 242,
+            "trials": 242,
+            "unliftable_systems": 0,
+            "walk_jumps": 16,
+            "walk_pool_offsets": 0,
+            "walk_pool_ops": 0,
+            "walk_pool_restarts": 0,
+            "walk_restarts": 1,
+            "walk_steps": 241
+          },
+          "wall_ns": 843480
+        },
+        "description": "Weil-restrict S3(x1, x2, x_R) to F_p in (x1 + x2, x1 x2), eliminate x1 x2, root the quartic by gcd with X^p - X and Cantor-Zassenhaus",
+        "hit_rate": 0.3884297520661157,
+        "name": "fp2-weil",
+        "relations_found": 94,
+        "setup": {
+          "gae": 0.0,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {},
+          "wall_ns": 612
+        },
+        "solver": null,
+        "summands": 2,
+        "system": null,
+        "targets_tried": 242
+      },
+      "exhausted": false,
+      "factor_base": {
+        "abscissae": 151,
+        "columns": 151,
+        "cost": {
+          "gae": 205.2104821993187,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {
+            "abscissae_scanned": 293,
+            "legendre_symbols": 293,
+            "sqrt_solves": 151
+          },
+          "wall_ns": 144435
+        },
+        "description": "every abscissa in F_p carrying a point (about p/2), one column each",
+        "name": "fp2-subfield",
+        "points_per_column": 2.0,
+        "signed_points": 302
+      },
+      "group_order": 85793,
+      "instance": "fp2-16bit-p293",
+      "label": "fp2-subfield + fp2-weil + — + walk",
+      "linear_algebra": {
+        "cost": {
+          "gae": 24.5917182636454,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {
+            "columns": 152,
+            "pinned_by_repeated_row": 0,
+            "rank": 94,
+            "repeated_column_rows": 0,
+            "row_ops": 1015,
+            "rows": 94,
+            "single_column_rows": 0,
+            "two_column_rows": 94
+          },
+          "wall_ns": 180645
+        },
+        "dependent": 0,
+        "name": "incremental-gauss",
+        "rank": 94,
+        "rows": 94,
+        "work": 1015,
+        "work_unit": "row_ops"
+      },
+      "log2_r": 16.388572320080016,
+      "r": 85793,
+      "recovered": 54712,
+      "rho_s": 1.7898330032896945,
+      "s": 24.087894514440322,
+      "s_over_rho": 13.458179880562612,
+      "spec": {
+        "factor_base": "fp2-subfield",
+        "factor_base_params": {},
+        "linalg": "incremental-gauss",
+        "max_trials": 2000000,
+        "oracle": "fp2-weil",
+        "oracle_params": {},
+        "seed": 20301623,
+        "solver": null,
+        "solver_budget_seconds": 120,
+        "solver_params": {},
+        "targets": "Walk"
+      },
+      "total_gae": 7055.450802384949,
+      "verified": true,
+      "verify": {
+        "gae": 23.0,
+        "group_ops": {
+          "adds": 8,
+          "doubles": 15,
+          "scalar_mults": 1
+        },
+        "native": {},
+        "wall_ns": 2798
+      },
+      "wall_seconds": 0.00119077
+    },
+    {
+      "collector_wall_seconds": 0.002398178,
+      "decomposition": {
+        "cost": {
+          "gae": 5702.911400710202,
+          "group_ops": {
+            "adds": 882,
+            "doubles": 555,
+            "scalar_mults": 38
+          },
+          "native": {
+            "canonicalisations": 0,
+            "direct_relations_skipped": 0,
+            "fp2_weil_calls": 196,
+            "fp2_weil_candidates": 78,
+            "fp2_weil_degenerate": 0,
+            "fp2_weil_disc_nonresidue": 71,
+            "fp2_weil_not_in_base": 0,
+            "fp2_weil_roots": 197,
+            "fp_muls": 75408,
+            "frobfold_mismatches": 0,
+            "inversions": 1409,
+            "lift_failures": 0,
+            "lookups": 156,
+            "relations": 78,
+            "repeated_targets_skipped": 2,
+            "s4_hits": 0,
+            "s4_pairs": 0,
+            "sqrt_solves": 214,
+            "target_guard_probes": 198,
+            "trials": 198,
+            "unliftable_systems": 0,
+            "walk_jumps": 18,
+            "walk_pool_offsets": 2,
+            "walk_pool_ops": 79,
+            "walk_pool_restarts": 2,
+            "walk_restarts": 3,
+            "walk_steps": 195
+          },
+          "wall_ns": 2215963
+        },
+        "description": "Weil-restrict S3(x1, x2, x_R) to F_p in (x1 + x2, x1 x2), eliminate x1 x2, root the quartic by gcd with X^p - X and Cantor-Zassenhaus",
+        "hit_rate": 0.3939393939393939,
+        "name": "fp2-weil",
+        "relations_found": 78,
+        "setup": {
+          "gae": 0.0,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {},
+          "wall_ns": 376
+        },
+        "solver": null,
+        "summands": 2,
+        "system": null,
+        "targets_tried": 198
+      },
+      "exhausted": false,
+      "factor_base": {
+        "abscissae": 151,
+        "columns": 151,
+        "cost": {
+          "gae": 205.2104821993187,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {
+            "abscissae_scanned": 293,
+            "legendre_symbols": 293,
+            "sqrt_solves": 151
+          },
+          "wall_ns": 100917
+        },
+        "description": "every abscissa in F_p carrying a point (about p/2), one column each",
+        "name": "fp2-subfield",
+        "points_per_column": 2.0,
+        "signed_points": 302
+      },
+      "group_order": 85793,
+      "instance": "fp2-16bit-p293",
+      "label": "fp2-subfield + fp2-weil + — + walk",
+      "linear_algebra": {
+        "cost": {
+          "gae": 19.14035214608854,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {
+            "columns": 152,
+            "pinned_by_repeated_row": 0,
+            "rank": 78,
+            "repeated_column_rows": 0,
+            "row_ops": 790,
+            "rows": 78,
+            "single_column_rows": 0,
+            "two_column_rows": 78
+          },
+          "wall_ns": 163869
+        },
+        "dependent": 0,
+        "name": "incremental-gauss",
+        "rank": 78,
+        "rows": 78,
+        "work": 790,
+        "work_unit": "row_ops"
+      },
+      "log2_r": 16.388572320080016,
+      "r": 85793,
+      "recovered": 9423,
+      "rho_s": 1.7898330032896945,
+      "s": 20.304446785924583,
+      "s_over_rho": 11.344324721136116,
+      "spec": {
+        "factor_base": "fp2-subfield",
+        "factor_base_params": {},
+        "linalg": "incremental-gauss",
+        "max_trials": 2000000,
+        "oracle": "fp2-weil",
+        "oracle_params": {},
+        "seed": 20342126,
+        "solver": null,
+        "solver_budget_seconds": 120,
+        "solver_params": {},
+        "targets": "Walk"
+      },
+      "total_gae": 5947.262235055609,
+      "verified": true,
+      "verify": {
+        "gae": 20.0,
+        "group_ops": {
+          "adds": 7,
+          "doubles": 13,
+          "scalar_mults": 1
+        },
+        "native": {},
+        "wall_ns": 3099
+      },
+      "wall_seconds": 0.002516878
+    },
+    {
+      "collector_wall_seconds": 0.002016453,
+      "decomposition": {
+        "cost": {
+          "gae": 7131.749898669093,
+          "group_ops": {
+            "adds": 1102,
+            "doubles": 489,
+            "scalar_mults": 34
+          },
+          "native": {
+            "canonicalisations": 0,
+            "direct_relations_skipped": 0,
+            "fp2_weil_calls": 262,
+            "fp2_weil_candidates": 108,
+            "fp2_weil_degenerate": 0,
+            "fp2_weil_disc_nonresidue": 106,
+            "fp2_weil_not_in_base": 0,
+            "fp2_weil_roots": 269,
+            "fp_muls": 97498,
+            "frobfold_mismatches": 0,
+            "inversions": 1856,
+            "lift_failures": 0,
+            "lookups": 216,
+            "relations": 108,
+            "repeated_targets_skipped": 0,
+            "s4_hits": 0,
+            "s4_pairs": 0,
+            "sqrt_solves": 294,
+            "target_guard_probes": 262,
+            "trials": 262,
+            "unliftable_systems": 0,
+            "walk_jumps": 16,
+            "walk_pool_offsets": 0,
+            "walk_pool_ops": 0,
+            "walk_pool_restarts": 0,
+            "walk_restarts": 1,
+            "walk_steps": 261
+          },
+          "wall_ns": 1848465
+        },
+        "description": "Weil-restrict S3(x1, x2, x_R) to F_p in (x1 + x2, x1 x2), eliminate x1 x2, root the quartic by gcd with X^p - X and Cantor-Zassenhaus",
+        "hit_rate": 0.4122137404580153,
+        "name": "fp2-weil",
+        "relations_found": 108,
+        "setup": {
+          "gae": 0.0,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {},
+          "wall_ns": 547
+        },
+        "solver": null,
+        "summands": 2,
+        "system": null,
+        "targets_tried": 262
+      },
+      "exhausted": false,
+      "factor_base": {
+        "abscissae": 151,
+        "columns": 151,
+        "cost": {
+          "gae": 205.2104821993187,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {
+            "abscissae_scanned": 293,
+            "legendre_symbols": 293,
+            "sqrt_solves": 151
+          },
+          "wall_ns": 124921
+        },
+        "description": "every abscissa in F_p carrying a point (about p/2), one column each",
+        "name": "fp2-subfield",
+        "points_per_column": 2.0,
+        "signed_points": 302
+      },
+      "group_order": 85793,
+      "instance": "fp2-16bit-p293",
+      "label": "fp2-subfield + fp2-weil + — + walk",
+      "linear_algebra": {
+        "cost": {
+          "gae": 32.805109880764405,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {
+            "columns": 152,
+            "pinned_by_repeated_row": 0,
+            "rank": 108,
+            "repeated_column_rows": 0,
+            "row_ops": 1354,
+            "rows": 108,
+            "single_column_rows": 1,
+            "two_column_rows": 107
+          },
+          "wall_ns": 153888
+        },
+        "dependent": 0,
+        "name": "incremental-gauss",
+        "rank": 108,
+        "rows": 108,
+        "work": 1354,
+        "work_unit": "row_ops"
+      },
+      "log2_r": 16.388572320080016,
+      "r": 85793,
+      "recovered": 49926,
+      "rho_s": 1.7898330032896945,
+      "s": 25.229272602602084,
+      "s_over_rho": 14.0958807644238,
+      "spec": {
+        "factor_base": "fp2-subfield",
+        "factor_base_params": {},
+        "linalg": "incremental-gauss",
+        "max_trials": 2000000,
+        "oracle": "fp2-weil",
+        "oracle_params": {},
+        "seed": 20382629,
+        "solver": null,
+        "solver_budget_seconds": 120,
+        "solver_params": {},
+        "targets": "Walk"
+      },
+      "total_gae": 7389.765490749177,
+      "verified": true,
+      "verify": {
+        "gae": 20.0,
+        "group_ops": {
+          "adds": 5,
+          "doubles": 15,
+          "scalar_mults": 1
+        },
+        "native": {},
+        "wall_ns": 2591
+      },
+      "wall_seconds": 0.002153447
+    },
+    {
+      "collector_wall_seconds": 0.001805947,
+      "decomposition": {
+        "cost": {
+          "gae": 6706.252661731002,
+          "group_ops": {
+            "adds": 1022,
+            "doubles": 496,
+            "scalar_mults": 34
+          },
+          "native": {
+            "canonicalisations": 0,
+            "direct_relations_skipped": 0,
+            "fp2_weil_calls": 237,
+            "fp2_weil_candidates": 107,
+            "fp2_weil_degenerate": 0,
+            "fp2_weil_disc_nonresidue": 84,
+            "fp2_weil_not_in_base": 0,
+            "fp2_weil_roots": 256,
+            "fp_muls": 91602,
+            "frobfold_mismatches": 0,
+            "inversions": 1695,
+            "lift_failures": 0,
+            "lookups": 214,
+            "relations": 107,
+            "repeated_targets_skipped": 0,
+            "s4_hits": 0,
+            "s4_pairs": 0,
+            "sqrt_solves": 270,
+            "target_guard_probes": 237,
+            "trials": 237,
+            "unliftable_systems": 0,
+            "walk_jumps": 16,
+            "walk_pool_offsets": 0,
+            "walk_pool_ops": 0,
+            "walk_pool_restarts": 0,
+            "walk_restarts": 1,
+            "walk_steps": 236
+          },
+          "wall_ns": 1651427
+        },
+        "description": "Weil-restrict S3(x1, x2, x_R) to F_p in (x1 + x2, x1 x2), eliminate x1 x2, root the quartic by gcd with X^p - X and Cantor-Zassenhaus",
+        "hit_rate": 0.45147679324894513,
+        "name": "fp2-weil",
+        "relations_found": 107,
+        "setup": {
+          "gae": 0.0,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {},
+          "wall_ns": 578
+        },
+        "solver": null,
+        "summands": 2,
+        "system": null,
+        "targets_tried": 237
+      },
+      "exhausted": false,
+      "factor_base": {
+        "abscissae": 151,
+        "columns": 151,
+        "cost": {
+          "gae": 205.2104821993187,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {
+            "abscissae_scanned": 293,
+            "legendre_symbols": 293,
+            "sqrt_solves": 151
+          },
+          "wall_ns": 121497
+        },
+        "description": "every abscissa in F_p carrying a point (about p/2), one column each",
+        "name": "fp2-subfield",
+        "points_per_column": 2.0,
+        "signed_points": 302
+      },
+      "group_order": 85793,
+      "instance": "fp2-16bit-p293",
+      "label": "fp2-subfield + fp2-weil + — + walk",
+      "linear_algebra": {
+        "cost": {
+          "gae": 35.252167560201045,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {
+            "columns": 152,
+            "pinned_by_repeated_row": 0,
+            "rank": 107,
+            "repeated_column_rows": 0,
+            "row_ops": 1455,
+            "rows": 107,
+            "single_column_rows": 0,
+            "two_column_rows": 107
+          },
+          "wall_ns": 141019
+        },
+        "dependent": 0,
+        "name": "incremental-gauss",
+        "rank": 107,
+        "rows": 107,
+        "work": 1455,
+        "work_unit": "row_ops"
+      },
+      "log2_r": 16.388572320080016,
+      "r": 85793,
+      "recovered": 4637,
+      "rho_s": 1.7898330032896945,
+      "s": 23.77470193613641,
+      "s_over_rho": 13.283195634698183,
+      "spec": {
+        "factor_base": "fp2-subfield",
+        "factor_base_params": {},
+        "linalg": "incremental-gauss",
+        "max_trials": 2000000,
+        "oracle": "fp2-weil",
+        "oracle_params": {},
+        "seed": 20423132,
+        "solver": null,
+        "solver_budget_seconds": 120,
+        "solver_params": {},
+        "targets": "Walk"
+      },
+      "total_gae": 6963.715311490522,
+      "verified": true,
+      "verify": {
+        "gae": 17.0,
+        "group_ops": {
+          "adds": 5,
+          "doubles": 12,
+          "scalar_mults": 1
+        },
+        "native": {},
+        "wall_ns": 2388
+      },
+      "wall_seconds": 0.001939319
+    },
+    {
+      "collector_wall_seconds": 0.0020132,
+      "decomposition": {
+        "cost": {
+          "gae": 7922.460311276269,
+          "group_ops": {
+            "adds": 1133,
+            "doubles": 499,
+            "scalar_mults": 34
+          },
+          "native": {
+            "canonicalisations": 0,
+            "direct_relations_skipped": 0,
+            "fp2_weil_calls": 290,
+            "fp2_weil_candidates": 119,
+            "fp2_weil_degenerate": 0,
+            "fp2_weil_disc_nonresidue": 97,
+            "fp2_weil_not_in_base": 0,
+            "fp2_weil_roots": 292,
+            "fp_muls": 111447,
+            "frobfold_mismatches": 0,
+            "inversions": 2076,
+            "lift_failures": 0,
+            "lookups": 238,
+            "relations": 119,
+            "repeated_targets_skipped": 0,
+            "s4_hits": 0,
+            "s4_pairs": 0,
+            "sqrt_solves": 303,
+            "target_guard_probes": 290,
+            "trials": 290,
+            "unliftable_systems": 0,
+            "walk_jumps": 16,
+            "walk_pool_offsets": 0,
+            "walk_pool_ops": 0,
+            "walk_pool_restarts": 0,
+            "walk_restarts": 1,
+            "walk_steps": 289
+          },
+          "wall_ns": 1791171
+        },
+        "description": "Weil-restrict S3(x1, x2, x_R) to F_p in (x1 + x2, x1 x2), eliminate x1 x2, root the quartic by gcd with X^p - X and Cantor-Zassenhaus",
+        "hit_rate": 0.4103448275862069,
+        "name": "fp2-weil",
+        "relations_found": 119,
+        "setup": {
+          "gae": 0.0,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {},
+          "wall_ns": 481
+        },
+        "solver": null,
+        "summands": 2,
+        "system": null,
+        "targets_tried": 290
+      },
+      "exhausted": false,
+      "factor_base": {
+        "abscissae": 151,
+        "columns": 151,
+        "cost": {
+          "gae": 205.2104821993187,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {
+            "abscissae_scanned": 293,
+            "legendre_symbols": 293,
+            "sqrt_solves": 151
+          },
+          "wall_ns": 103835
+        },
+        "description": "every abscissa in F_p carrying a point (about p/2), one column each",
+        "name": "fp2-subfield",
+        "points_per_column": 2.0,
+        "signed_points": 302
+      },
+      "group_order": 85793,
+      "instance": "fp2-16bit-p293",
+      "label": "fp2-subfield + fp2-weil + — + walk",
+      "linear_algebra": {
+        "cost": {
+          "gae": 38.61990040615839,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {
+            "columns": 152,
+            "pinned_by_repeated_row": 0,
+            "rank": 119,
+            "repeated_column_rows": 0,
+            "row_ops": 1594,
+            "rows": 119,
+            "single_column_rows": 0,
+            "two_column_rows": 119
+          },
+          "wall_ns": 205389
+        },
+        "dependent": 0,
+        "name": "incremental-gauss",
+        "rank": 119,
+        "rows": 119,
+        "work": 1594,
+        "work_unit": "row_ops"
+      },
+      "log2_r": 16.388572320080016,
+      "r": 85793,
+      "recovered": 45140,
+      "rho_s": 1.7898330032896945,
+      "s": 27.94867574331491,
+      "s_over_rho": 15.615242143789692,
+      "spec": {
+        "factor_base": "fp2-subfield",
+        "factor_base_params": {},
+        "linalg": "incremental-gauss",
+        "max_trials": 2000000,
+        "oracle": "fp2-weil",
+        "oracle_params": {},
+        "seed": 20463635,
+        "solver": null,
+        "solver_budget_seconds": 120,
+        "solver_params": {},
+        "targets": "Walk"
+      },
+      "total_gae": 8186.290693881746,
+      "verified": true,
+      "verify": {
+        "gae": 20.0,
+        "group_ops": {
+          "adds": 5,
+          "doubles": 15,
+          "scalar_mults": 1
+        },
+        "native": {},
+        "wall_ns": 2857
+      },
+      "wall_seconds": 0.002130797
+    }
+  ],
+  "schema_version": 1,
+  "software": {
+    "arch": "x86_64",
+    "binary_blake3": "fa4f56af9ddae10f7ea46b7152ebfc01c8aafe6f5841d1fbd705cd5c90b5bfa4",
+    "git_commit": "4029af2b8fb0bdda18d5022959bd8c5f4cfbc82b",
+    "os": "linux",
+    "version": "0.1.0"
+  },
+  "status": "complete",
+  "what_this_is": "Index-calculus configurations -- each a choice of factor base, target source, decomposition oracle, polynomial solver and relation matrix -- run end to end against a planted logarithm, with every stage's cost in group-addition equivalents and the total divided by sqrt(r).",
+  "what_this_is_not": [
+    "not a speed claim: a configuration on a toy instance is a measurement, and a comparison needs the matched reference rows AGENTS.md section 1 asks for",
+    "not a wall-clock benchmark: operation counts are the metric, wall time rides along",
+    "not a claim about any deployed curve"
+  ]
+}
