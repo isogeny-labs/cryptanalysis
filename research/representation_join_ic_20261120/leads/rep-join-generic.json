@@ -1,0 +1,21 @@
+{
+  "schema": "lead-testing.lead/v1",
+  "id": "LEAD-rep-join-generic",
+  "title": "Representation technique as a generic list join (rep-join, no filter): signed m-list MITM at m = 2..9",
+  "hypothesis": "Generic signed m-list meet in the middle (rep-join, filter_bits=0) does not lower counted S against the registry's MITM baseline at any m in 2..9 on any regime: once the m-sums cover the group, cost per relation is about N/|pair table| for every m, and below that it is worse by up to C(m,2). Falsified by a phase-1 PASS at any m.",
+  "prior_art": [
+    "Delaplace, May, Can we beat the square root bound for ECDLP over F_{p^2} via representations?, NuTMiC 2019, ePrint 2019/800 (slides nutmic2019.imj-prg.fr/slides/Delaplace_Nutmic.pdf; not readable from this session, network policy)",
+    "Delaplace, Fouque, Kirchner, May 2020, hal-02427655",
+    "crypto:research/representation_join_20261021 (bounded C++ reference of DFKM 2020, no timings)",
+    "crypto:research/lead_sweep_20261110/LEAD-ICP-representation-subset-sum (timed out, no data)",
+    "crypto:research/representation_leads_20261109 (binary representation leads R1'-R5, derivations only)",
+    "research-kb MCP not reachable from this session; searched with gh code search org:isogeny-labs for Delaplace, representation technique ECDLP"
+  ],
+  "kind": "bench",
+  "regimes": ["prime", "char2", "koblitz"],
+  "bench": {
+    "prime": {"factor_base": "prime-abscissa", "oracle": "rep-join:m={m},filter_bits=0"},
+    "char2": {"factor_base": "binary-subspace", "oracle": "rep-join:m={m},filter_bits=0"},
+    "koblitz": {"factor_base": "koblitz-orbit", "oracle": "rep-join:m={m},filter_bits=0"}
+  }
+}
