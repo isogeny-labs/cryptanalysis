@@ -18,6 +18,8 @@ and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
 
+- [ ] Complete or obstruct the P-256 full-bitangent Frobenius/Hilbert-90 descent, with all 28 lines, cocycle verification, and exact base-field round-trip checks (Codex, started 2026-11-20, branch codex/nist-333-transfer-evidence-20261120, PR #1876) [pcc:unverified]
+
 - [x] Integrate the NIST P-224/P-256 genus-3 (3,3,3)-isogeny reconstruction and the bounded genus-3 HECDLP cover-reduction evidence, preserving quartic/Kummer maps, empirical controls, and open transfer obligations (Codex, completed 2026-11-20, branch codex/nist-333-transfer-evidence-20261120, PR #1876) [pcc:unverified]
 
 - [ ] Mirror the general binary hyperelliptic-cover transfer interface from crypto after its source commit is frozen, with split provenance and exact parity checks (Codex, started 2026-11-18, branch codex/general-binary-cover-transfer-mirror-20261118, PR #1765) [pcc:unverified]
