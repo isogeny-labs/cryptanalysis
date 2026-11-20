@@ -22,12 +22,12 @@
       "sha256": "c36443b17548a2f9c4f2843635fbaed6abe04788a259585f38605f7447f11349"
     }
   ],
-  "latest_record": "20261120T1852Z-ic-threads-scaling",
+  "latest_record": "20261120T1913Z-ic-threads-gate",
   "note": "Every value is quoted from the record it names, in that record's unit. Percentages and ratios under 'derived' are computed here from those values and are not measurements. Series in different units are never compared. 4 digest-pinned historical measured records are excluded from all series and derived comparisons; recorded status counts retain them. See integrity_exclusions in progress.json and PROGRESS.md for reasons.",
   "records": {
     "censored": 1,
     "invalid": 38,
-    "measured": 40,
+    "measured": 41,
     "open": 0
   },
   "repo": "cryptanalysis",
@@ -2086,14 +2086,19 @@
     {
       "better": "higher",
       "first": 0.821,
-      "latest": 0.821,
-      "latest_derived": {},
+      "latest": 0.917,
+      "latest_derived": {
+        "improvement_vs_first_percent": 11.6931,
+        "improvement_vs_previous_percent": 11.6931
+      },
       "metric": "speedup_t4_koblitz43_frobmitm",
       "points": [
         {
           "commit": "94fa0d60b299",
           "date": "2026-11-20",
-          "derived": {},
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
           "n": 5,
           "record": "20261120T1852Z-ic-threads-scaling",
           "reference": null,
@@ -2104,6 +2109,24 @@
           ],
           "summary": "ic --threads 4 vs 1, relation phase, counts identical: subtract 3.22x, descent-algebraic+f4 2.75x; cheap oracles 0.82-0.87x at this build (gate fixed in 77e4f1d)",
           "value": 0.821
+        },
+        {
+          "commit": "3aa360c1cd66",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": 11.6931,
+            "improvement_vs_previous_percent": 11.6931
+          },
+          "n": 5,
+          "record": "20261120T1913Z-ic-threads-gate",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.86,
+            0.977
+          ],
+          "summary": "77e4f1d: cheap oracles probe-gated to the --threads 1 loop; --threads 4 vs 1 relation phase koblitz43 0.92x [0.86,0.98], mitm2 0.85x [0.70,1.04] (0.03 s phase); counts identical",
+          "value": 0.917
         }
       ],
       "problem": "ic:relation-phase-threads",
@@ -2112,14 +2135,19 @@
     {
       "better": "higher",
       "first": 0.874,
-      "latest": 0.874,
-      "latest_derived": {},
+      "latest": 0.854,
+      "latest_derived": {
+        "improvement_vs_first_percent": -2.2883,
+        "improvement_vs_previous_percent": -2.2883
+      },
       "metric": "speedup_t4_prime24_mitm2",
       "points": [
         {
           "commit": "94fa0d60b299",
           "date": "2026-11-20",
-          "derived": {},
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
           "n": 5,
           "record": "20261120T1852Z-ic-threads-scaling",
           "reference": null,
@@ -2130,6 +2158,24 @@
           ],
           "summary": "ic --threads 4 vs 1, relation phase, counts identical: subtract 3.22x, descent-algebraic+f4 2.75x; cheap oracles 0.82-0.87x at this build (gate fixed in 77e4f1d)",
           "value": 0.874
+        },
+        {
+          "commit": "3aa360c1cd66",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -2.2883,
+            "improvement_vs_previous_percent": -2.2883
+          },
+          "n": 5,
+          "record": "20261120T1913Z-ic-threads-gate",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.703,
+            1.037
+          ],
+          "summary": "77e4f1d: cheap oracles probe-gated to the --threads 1 loop; --threads 4 vs 1 relation phase koblitz43 0.92x [0.86,0.98], mitm2 0.85x [0.70,1.04] (0.03 s phase); counts identical",
+          "value": 0.854
         }
       ],
       "problem": "ic:relation-phase-threads",
