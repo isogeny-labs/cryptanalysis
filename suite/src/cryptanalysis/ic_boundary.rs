@@ -181,6 +181,11 @@ pub struct Calibration {
     /// coordinates and the least of `n` rotations, with its shift),
     /// Koblitz regime, measured on the instance's field.
     pub ns_per_canon: Option<f64>,
+    /// One `F_p` multiplication, `fp2` regime (the `fp2-weil` oracle's
+    /// field work); absent elsewhere, so other regimes' records are
+    /// unchanged.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ns_per_fp_mul: Option<f64>,
     /// The factors above that [`Calibration::pin`] replaced with a
     /// ratio from the repository's table, by field name.  A consumer
     /// that labels a price `pinned` must check here: a factor that is
@@ -281,6 +286,7 @@ impl Calibration {
             ("ns_per_inversion", &mut self.ns_per_inversion),
             ("ns_per_frobenius", &mut self.ns_per_frobenius),
             ("ns_per_canon", &mut self.ns_per_canon),
+            ("ns_per_fp_mul", &mut self.ns_per_fp_mul),
         ] {
             apply(name, slot, &mut out);
         }
@@ -5145,6 +5151,7 @@ pub fn price_phase(phase: &mut PhaseCost, calib: &Calibration) {
     gae += conv("inversions", calib.ns_per_inversion);
     gae += conv("frobenius_maps", calib.ns_per_frobenius);
     gae += conv("canonicalisations", calib.ns_per_canon);
+    gae += conv("fp_muls", calib.ns_per_fp_mul);
     gae += conv("target_guard_probes", Some(calib.ns_per_lookup));
     // This counter is measured nanoseconds, disjoint from solver work and
     // group operations; convert with one nanosecond per recorded unit.
