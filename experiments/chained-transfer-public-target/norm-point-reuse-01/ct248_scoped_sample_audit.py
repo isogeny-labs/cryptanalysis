@@ -13,6 +13,9 @@ from pathlib import Path
 
 SAMPLE = "CT248_PRIMITIVE_SAMPLE "
 VECTORS = "N4_FIXED_CHAIN_SELECTED_CALL_VECTORS "
+LIFETIME = "CT244_PRIMITIVE_TIMING "
+SLOTS = ("C13_0_to_1", "C13_1_to_0", "C13_1_to_2", "C13_2_to_1",
+         "C169_0_to_2", "C169_2_to_0", "D_target_norm")
 ROUTES = ("direct_composite", "literal_sequential_Jacobian_maps",
           "strongest_retained_lift_chain")
 
@@ -29,16 +32,18 @@ def exact(obj, keys, field):
 
 
 def decode(raw):
-    samples, vector_rows = [], []
+    samples, vector_rows, lifetime_rows = [], [], []
     for line in raw.splitlines():
         if line.startswith(SAMPLE):
             samples.append(json.loads(line[len(SAMPLE):]))
         elif line.startswith(VECTORS):
             vector_rows.append(json.loads(line[len(VECTORS):]))
-    if len(samples) != 144 or len(vector_rows) != 1:
-        raise ValueError(f"CT248 requires 144 samples and one 48-vector source: "
-                         f"{len(samples)}/{len(vector_rows)}")
-    return samples, vector_rows[0]
+        elif line.startswith(LIFETIME):
+            lifetime_rows.append(json.loads(line[len(LIFETIME):]))
+    if len(samples) != 144 or len(vector_rows) != 1 or len(lifetime_rows) != 1:
+        raise ValueError(f"CT249 requires 144 samples, one 48-vector and one lifetime: "
+                         f"{len(samples)}/{len(vector_rows)}/{len(lifetime_rows)}")
+    return samples, vector_rows[0], lifetime_rows[0]
 
 
 def expected_slots(from_side, to_side, arm):
@@ -66,7 +71,7 @@ def expected_slots(from_side, to_side, arm):
 
 
 def audit(raw):
-    samples, v = decode(raw)
+    samples, v, lifetime = decode(raw)
     if type(v) is not dict or set(v) != {"all48", "scope"}:
         raise ValueError("original selected-vector envelope changed")
     rows = v["all48"]
@@ -135,6 +140,37 @@ def audit(raw):
 
     if len(samples_by_row) != 48:
         raise ValueError("48 complete selected arm triplets required")
+    # Reconcile the real native Runtime drop record, not a modeled C13/C169 price.
+    # This is a necessary producer-internal consistency check, never an
+    # independent timing replay or complete route cost.
+    exact(lifetime, ("schema", "scope", "slots", "calls", "scoped_samples_emitted",
+                     "elapsed_ns", "measured_complete_solve", "pcc"), "lifetime")
+    if lifetime["schema"] != "ct244-primitives-v1":
+        raise ValueError("CT249 native lifetime schema changed")
+    if lifetime["scope"] != "runtime_lifetime_after_constructor; eval-only; uncalibrated":
+        raise ValueError("CT249 lifetime clock scope changed")
+    if type(lifetime["slots"]) is not list or tuple(lifetime["slots"]) != SLOTS:
+        raise ValueError("CT249 directed lifetime slots changed")
+    if lifetime["measured_complete_solve"] is not False or lifetime["pcc"] != "unverified":
+        raise ValueError("CT249 lifetime record misrepresents standing")
+    if nat(lifetime["scoped_samples_emitted"], "lifetime emitted") != 144:
+        raise ValueError("CT249 lifetime record omitted or added epochs")
+    total_calls, total_ns = lifetime["calls"], lifetime["elapsed_ns"]
+    if type(total_calls) is not list or type(total_ns) is not list or (
+            len(total_calls), len(total_ns)) != (7, 7):
+        raise ValueError("CT249 lifetime must contain two seven-slot vectors")
+    scoped_calls = [sum(x["calls"][j] for x in samples) for j in range(7)]
+    scoped_ns = [sum(x["elapsed_ns"][j] for x in samples) for j in range(7)]
+    extra_calls, extra_ns = [], []
+    for j in range(7):
+        n_calls = nat(total_calls[j], f"lifetime calls[{j}]")
+        n_ns = nat(total_ns[j], f"lifetime elapsed_ns[{j}]")
+        if n_calls == 0 and n_ns:
+            raise ValueError(f"CT249 nonzero elapsed time in uncalled lifetime slot {j}")
+        if n_calls < scoped_calls[j] or n_ns < scoped_ns[j]:
+            raise ValueError(f"CT249 scoped epoch totals exceed lifetime in slot {j}")
+        extra_calls.append(n_calls - scoped_calls[j])
+        extra_ns.append(n_ns - scoped_ns[j])
     # These sums are measured expressions only: NOT elapsed whole routes/solver.
     paired_deltas = []
     for direct, literal, retained in samples_by_row:
@@ -147,6 +183,9 @@ def audit(raw):
         "scoped_samples": len(samples),
         "median_direct_minus_retained_eval_and_d_ns": statistics.median(paired_deltas),
         "strict_counter_parity": True,
+        "lifetime_clock_reconciled": True,
+        "unscoped_lifetime_calls": extra_calls,
+        "unscoped_lifetime_elapsed_ns": extra_ns,
         "native_timing_reproduced_by_independent_runner": False,
         "complete_single_target_cost": None,
         "pcc": "unverified",
@@ -173,44 +212,83 @@ def synthetic():
     return samples, {"all48": rows, "scope": "synthetic; not a measurement"}
 
 
-def encode(samples, vectors):
+def synthetic_lifetime(samples, extra_calls=None, extra_ns=None):
+    if extra_calls is None:
+        extra_calls = [1] * 7  # Explicit nonzero outside-epoch work.
+    if extra_ns is None:
+        extra_ns = [100] * 7
+    return {"schema": "ct244-primitives-v1",
+            "scope": "runtime_lifetime_after_constructor; eval-only; uncalibrated",
+            "slots": list(SLOTS),
+            "calls": [sum(x["calls"][j] for x in samples) + extra_calls[j]
+                      for j in range(7)],
+            "scoped_samples_emitted": len(samples),
+            "elapsed_ns": [sum(x["elapsed_ns"][j] for x in samples) + extra_ns[j]
+                           for j in range(7)],
+            "measured_complete_solve": False, "pcc": "unverified"}
+
+
+def encode(samples, vectors, lifetime):
     return "\n".join([SAMPLE + json.dumps(x, sort_keys=True) for x in samples] +
-                     [VECTORS + json.dumps(vectors, sort_keys=True)]) + "\n"
+                     [VECTORS + json.dumps(vectors, sort_keys=True),
+                      LIFETIME + json.dumps(lifetime, sort_keys=True)]) + "\n"
 
 
 def self_test():
     samples, vec = synthetic()
-    raw = encode(samples, vec)
-    assert audit(raw)["scoped_samples"] == 144
+    lifetime = synthetic_lifetime(samples)
+    raw = encode(samples, vec, lifetime)
+    normal = audit(raw)
+    if (normal["scoped_samples"], normal["unscoped_lifetime_calls"],
+            normal["unscoped_lifetime_elapsed_ns"]) != (144, [1]*7, [100]*7):
+        raise AssertionError("CT249 synthetic positive with unscoped work failed")
+    zero = audit(encode(samples, vec, synthetic_lifetime(samples, [0]*7, [0]*7)))
+    if zero["unscoped_lifetime_calls"] != [0]*7 or zero["unscoped_lifetime_elapsed_ns"] != [0]*7:
+        raise AssertionError("CT249 zero-unscoped control failed")
     tests = []
     def mutation(fn):
-        a, b = copy.deepcopy(samples), copy.deepcopy(vec)
-        fn(a, b)
-        tests.append(encode(a, b))
-    mutation(lambda a,b: a.pop())
-    mutation(lambda a,b: a.append(copy.deepcopy(a[0])))
-    mutation(lambda a,b: a[1].update(sequence=0))
-    mutation(lambda a,b: a[0]["calls"].__setitem__(4, True))
-    mutation(lambda a,b: a[0]["calls"].__setitem__(4, -1))
-    mutation(lambda a,b: a[0]["calls"].pop())
-    mutation(lambda a,b: a[0]["elapsed_ns"].__setitem__(0, 9))
-    mutation(lambda a,b: a[0].update(source_C169=0))
-    mutation(lambda a,b: a[1]["calls"].__setitem__(0, 3))
-    mutation(lambda a,b: a[1].update(schema="ct248-unknown"))
-    mutation(lambda a,b: a[1].update(measured_complete_solve=True))
-    mutation(lambda a,b: b["all48"][0].update(to=1))
-    mutation(lambda a,b: b["all48"][0]["direct_composite"].update(norm_point_doubling=2))
-    mutation(lambda a,b: b["all48"][0].update(sector=True))
-    mutation(lambda a,b: b["all48"].pop())
-    mutation(lambda a,b: b.update(scope=False, all48=[]))
+        a, b, c = copy.deepcopy(samples), copy.deepcopy(vec), copy.deepcopy(lifetime)
+        fn(a, b, c)
+        tests.append(encode(a, b, c))
+    mutation(lambda a,b,c: a.pop())
+    mutation(lambda a,b,c: a.append(copy.deepcopy(a[0])))
+    mutation(lambda a,b,c: a[1].update(sequence=0))
+    mutation(lambda a,b,c: a[0]["calls"].__setitem__(4, True))
+    mutation(lambda a,b,c: a[0]["calls"].__setitem__(4, -1))
+    mutation(lambda a,b,c: a[0]["calls"].pop())
+    mutation(lambda a,b,c: a[0]["elapsed_ns"].__setitem__(0, 9))
+    mutation(lambda a,b,c: a[0].update(source_C169=0))
+    mutation(lambda a,b,c: a[1]["calls"].__setitem__(0, 3))
+    mutation(lambda a,b,c: a[1].update(schema="ct248-unknown"))
+    mutation(lambda a,b,c: a[1].update(measured_complete_solve=True))
+    mutation(lambda a,b,c: b["all48"][0].update(to=1))
+    mutation(lambda a,b,c: b["all48"][0]["direct_composite"].update(norm_point_doubling=2))
+    mutation(lambda a,b,c: b["all48"][0].update(sector=True))
+    mutation(lambda a,b,c: b["all48"].pop())
+    mutation(lambda a,b,c: b.update(scope=False, all48=[]))
     tests.append(raw + VECTORS + json.dumps(vec) + "\n")
+    tests.append("\n".join(line for line in raw.splitlines()
+                           if not line.startswith(LIFETIME)) + "\n")
+    tests.append(raw + LIFETIME + json.dumps(lifetime) + "\n")
+    mutation(lambda a,b,c: c["calls"].__setitem__(4, 0))
+    mutation(lambda a,b,c: c["elapsed_ns"].__setitem__(0, 0))
+    mutation(lambda a,b,c: c["slots"].__setitem__(0, "C13_WRONG"))
+    mutation(lambda a,b,c: c.update(scope="wrong"))
+    mutation(lambda a,b,c: c.update(schema="ct249-unknown"))
+    mutation(lambda a,b,c: c.update(scoped_samples_emitted=143))
+    mutation(lambda a,b,c: c.update(measured_complete_solve=True))
+    mutation(lambda a,b,c: c.update(pcc="verified"))
+    mutation(lambda a,b,c: c["calls"].__setitem__(6, False))
+    mutation(lambda a,b,c: c["elapsed_ns"].__setitem__(1, True))
+    mutation(lambda a,b,c: c["elapsed_ns"].pop())
+    mutation(lambda a,b,c: c.update(unexpected_key=1))
     for i, test in enumerate(tests):
         try:
             audit(test)
         except (ValueError, TypeError, KeyError):
             continue
         raise AssertionError(f"CT248 corruption {i} escaped fail-closed audit")
-    print(f"CT248_AUDITOR_SELFTEST_PASS {len(tests)} mutations; no native run or cost")
+    print(f"CT249_AUDITOR_SELFTEST_PASS {len(tests)} mutations and two positive controls; no native run or cost")
 
 
 def main():
