@@ -26,6 +26,7 @@ use crate::cryptanalysis::ic_boundary::{
 };
 use crate::cryptanalysis::ic_framework::affine::AffineS3Oracle;
 use crate::cryptanalysis::ic_framework::batch_mitm::BinaryBatchMitmOracle;
+use crate::cryptanalysis::ic_framework::rep_join::RepJoinOracle;
 use crate::cryptanalysis::ic_framework::hashed::{HashedAffineBase, HashedTensorOracle};
 use crate::cryptanalysis::ic_framework::linalg::MATRIX_NAMES;
 use crate::cryptanalysis::ic_framework::plugins::{
@@ -172,6 +173,11 @@ fn listing() -> Value {
                     {"name": "mitm", "summands": "2 or 3", "regimes": ["prime", "char2", "koblitz"],
                      "parameters": [{"name": "native_setup_pricing", "means": "0 or1, default0; whole native setup with observed arithmetic diagnostics"},{"name": "negation_folded", "means": "1 to halve the table's additions"},
                                     {"name": "m", "means": "summands, 2 or 3"}]},
+                    {"name": "rep-join", "summands": "2..9", "regimes": ["prime", "char2", "koblitz"],
+                     "parameters": [{"name": "m", "means": "summands, 2..=9"},
+                                    {"name": "filter_bits", "means": "d in 0..=32: pair sums kept only when their abscissa hash lies in a 2^-d subset (the representation filter); 0 = plain MITM at m"},
+                                    {"name": "filter_seed", "means": "filter hash seed, default 1"}],
+                     "needs": "generic: the (m-2)-tuple search is exhaustive, so the filter saves memory and lookups, never additions (Delaplace-May 2019 without the summation-polynomial enumeration)"},
                     {"name": "hashed-tensor", "summands": "2..8", "regimes": ["prime"],
                      "parameters": [
                         {"name": "slots", "means": "independent affine-hashed slot bases, 2..=8; must match hashed-affine"},
@@ -189,8 +195,8 @@ fn listing() -> Value {
                                     {"name":"column_solver","means":"0 or1, default0; direct projected column elimination"},
                                     {"name":"inverse_cache","means":"0 or1, default0; prefix inverse-square preparation"}],
                      "needs":"a subspace factor base; native affine projection and exact signed lifts"},
-                    {"name": "descent-algebraic", "summands": "2 or 3", "regimes": ["char2", "koblitz"],
-                     "parameters": [{"name": "m", "means": "summands, 2 (descends S3) or 3 (descends S4)"}],
+                    {"name": "descent-algebraic", "summands": "2, 3 or 4", "regimes": ["char2", "koblitz"],
+                     "parameters": [{"name": "m", "means": "summands, 2 (descends S3), 3 (descends S4) or 4 (balanced split of S5)"},{"name": "inter_dim", "means": "m = 4 only: dimension of the subspace span(1..z^(l-1)) the two intermediates are restricted to (the representation filter); default n"}],
                      "needs": "a subspace factor base (binary-subspace or koblitz-orbit) and --solver"},
                 ],
             },
@@ -462,13 +468,15 @@ fn run_prime(
         let mut subtract = SubtractOracle;
         let mut mitm = MitmOracle::new(m);
         let mut hashed = HashedTensorOracle::new();
+        let mut rep_join = RepJoinOracle::new(m);
         let oracle: &mut dyn DecompositionOracle<_> = match or_name {
             "subtract" => &mut subtract,
             "mitm" => &mut mitm,
+            "rep-join" => &mut rep_join,
             "hashed-tensor" => &mut hashed,
             other => {
                 return Err(format!(
-                    "oracle `{other}` is not available on a prime-field curve; try subtract, mitm or hashed-tensor"
+                    "oracle `{other}` is not available on a prime-field curve; try subtract, mitm, rep-join or hashed-tensor"
                 ))
             }
         };
@@ -525,6 +533,7 @@ fn run_binary(
         let mut frob = FrobeniusMitmOracle::new(m, inst);
         let mut affine = AffineS3Oracle::new(inst);
         let mut batch_mitm = BinaryBatchMitmOracle::default();
+        let mut rep_join = RepJoinOracle::new(m);
         let mut algebraic = match or_name {
             "descent-algebraic" => {
                 let raw = spec.solver.as_deref().ok_or(
@@ -550,6 +559,7 @@ fn run_binary(
             "mitm-frobenius" => &mut frob,
             "affine-s3" => &mut affine,
             "mitm-batched" => &mut batch_mitm,
+            "rep-join" => &mut rep_join,
             "descent-algebraic" => algebraic.as_mut().expect("built above"),
             other => return Err(format!("oracle `{other}` is not available here")),
         };
