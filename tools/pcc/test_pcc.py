@@ -345,6 +345,68 @@ class RoundTripTests(unittest.TestCase):
         self.assertIn("broken ledger", r.stderr)
 
 
+class ClaimIdentityTests(unittest.TestCase):
+    def claim(self):
+        return {"schema": pcc.CLAIM_SCHEMA, "id": "PCC-20261120-abcdef",
+                "kind": "statement", "statement": "identity control", "claim_type": "data",
+                "proofs": [], "producer": {"commit": "a" * 40},
+                "created_at": "2026-11-20T00:00:00Z"}
+
+    def test_producer_commit_is_an_exact_string(self):
+        for value in ("0" * 40, "a" * 40):
+            with self.subTest(valid=value):
+                c = self.claim()
+                c["producer"]["commit"] = value
+                reasons = []
+                self.assertTrue(pcc.validate_claim(c, reasons), reasons)
+        for value in (int("1" * 40), None, True, [], {}, "a" * 39,
+                      "a" * 41, "A" * 40, "a" * 40 + "\n"):
+            with self.subTest(invalid=value):
+                c = self.claim()
+                c["producer"]["commit"] = value
+                reasons = []
+                self.assertFalse(pcc.validate_claim(c, reasons))
+                self.assertIn("claim: producer.commit must be a 40-hex commit", reasons)
+
+    def test_claim_id_has_no_trailing_linebreak(self):
+        c = self.claim()
+        c["id"] += "\n"
+        reasons = []
+        self.assertFalse(pcc.validate_claim(c, reasons))
+        self.assertIn("claim: id must match PCC-YYYYMMDD-xxxxxx", reasons)
+
+    def test_cli_rejects_malformed_identity_before_proofs(self):
+        with tempfile.TemporaryDirectory() as td:
+            repo = Path(td)
+            (repo / "pcc").mkdir()
+            (repo / pcc.KEYRING_PATH).write_text(json.dumps(
+                {"schema": pcc.KEYRING_SCHEMA, "keys": [], "trusted_verifiers": []}))
+            for field, value in (("commit", int("1" * 40)), ("commit", "a" * 40 + "\n"),
+                                 ("id", "PCC-20261120-abcdef\n")):
+                with self.subTest(field=field, value=value):
+                    c = self.claim()
+                    (c["producer"] if field == "commit" else c)[field] = value
+                    path = repo / "claim.json"
+                    path.write_text(json.dumps(c))
+                    result = run(["verify", str(path), "--json"], repo)
+                    self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+                    verdict = json.loads(result.stdout)
+                    self.assertEqual(verdict["verdict"], "fail")
+                    self.assertEqual(verdict["proofs"], [])
+
+    def test_cli_preserves_canonical_statement_result(self):
+        with tempfile.TemporaryDirectory() as td:
+            repo = Path(td)
+            (repo / "pcc").mkdir()
+            (repo / pcc.KEYRING_PATH).write_text(json.dumps(
+                {"schema": pcc.KEYRING_SCHEMA, "keys": [], "trusted_verifiers": []}))
+            path = repo / "claim.json"
+            path.write_text(json.dumps(self.claim()))
+            result = run(["verify", str(path), "--json"], repo)
+            self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+            self.assertEqual(json.loads(result.stdout)["verdict"], "not_covered")
+
+
 class ClaimTypeTests(unittest.TestCase):
     setUp = RoundTripTests.setUp
     tearDown = RoundTripTests.tearDown

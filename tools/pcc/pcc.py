@@ -1108,7 +1108,7 @@ def validate_claim(claim: Any, reasons: list[str]) -> bool:
         reasons.append(f"claim: schema is not {CLAIM_SCHEMA}")
         return False
     ok = True
-    if not CLAIM_ID_RE.match(str(claim.get("id", ""))):
+    if not isinstance(claim.get("id"), str) or not CLAIM_ID_RE.fullmatch(claim["id"]):
         reasons.append("claim: id must match PCC-YYYYMMDD-xxxxxx")
         ok = False
     if not isinstance(claim.get("kind"), str) or claim["kind"] not in CLAIM_KINDS:
@@ -1131,7 +1131,8 @@ def validate_claim(claim: Any, reasons: list[str]) -> bool:
         reasons.append(f"claim: {problem}")
         ok = False
     prod = claim.get("producer")
-    if not isinstance(prod, dict) or not re.match(r"^[0-9a-f]{40}$", str(prod.get("commit", ""))):
+    if (not isinstance(prod, dict) or not isinstance(prod.get("commit"), str)
+            or not re.fullmatch(r"[0-9a-f]{40}", prod["commit"])):
         reasons.append("claim: producer.commit must be a 40-hex commit")
         ok = False
     return ok
