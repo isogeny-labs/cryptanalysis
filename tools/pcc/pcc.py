@@ -1108,10 +1108,10 @@ def validate_claim(claim: Any, reasons: list[str]) -> bool:
         reasons.append(f"claim: schema is not {CLAIM_SCHEMA}")
         return False
     ok = True
-    if not CLAIM_ID_RE.match(str(claim.get("id", ""))):
+    if not isinstance(claim.get("id"), str) or not CLAIM_ID_RE.fullmatch(claim["id"]):
         reasons.append("claim: id must match PCC-YYYYMMDD-xxxxxx")
         ok = False
-    if claim.get("kind") not in CLAIM_KINDS:
+    if not isinstance(claim.get("kind"), str) or claim["kind"] not in CLAIM_KINDS:
         reasons.append(f"claim: kind must be one of {sorted(CLAIM_KINDS)}")
         ok = False
     if not isinstance(claim.get("statement"), str) or not claim["statement"].strip():
@@ -1122,7 +1122,8 @@ def validate_claim(claim: Any, reasons: list[str]) -> bool:
         reasons.append("claim: proofs must be a list")
         return False
     for i, pr in enumerate(proofs):
-        if not isinstance(pr, dict) or pr.get("kind") not in PROOF_KINDS:
+        if (not isinstance(pr, dict) or not isinstance(pr.get("kind"), str)
+                or pr["kind"] not in PROOF_KINDS):
             reasons.append(f"claim: proofs[{i}] kind must be one of {sorted(PROOF_KINDS)}")
             ok = False
     problem = claim_type_problem(claim)
@@ -1130,16 +1131,30 @@ def validate_claim(claim: Any, reasons: list[str]) -> bool:
         reasons.append(f"claim: {problem}")
         ok = False
     prod = claim.get("producer")
-    if not isinstance(prod, dict) or not re.match(r"^[0-9a-f]{40}$", str(prod.get("commit", ""))):
+    if (not isinstance(prod, dict) or not isinstance(prod.get("commit"), str)
+            or not re.fullmatch(r"[0-9a-f]{40}", prod["commit"])):
         reasons.append("claim: producer.commit must be a 40-hex commit")
         ok = False
     return ok
 
 
 def verify_claim(claim: dict[str, Any], repo: Path, kr: dict[str, Any]) -> dict[str, Any]:
+    """Apply the same registration-date type cutoff as standing and the ledger gate."""
+    dates = _claim_entry_dates(read_ledger(repo / LEDGER_PATH))
+    return _verify_claim(claim, repo, kr, dates)
+
+
+def _verify_claim(claim: dict[str, Any], repo: Path, kr: dict[str, Any],
+                  registration_dates: dict[str, str]) -> dict[str, Any]:
     reasons: list[str] = []
     results: list[dict[str, Any]] = []
-    if not validate_claim(claim, reasons):
+    valid = validate_claim(claim, reasons)
+    if valid:
+        problem = claim_type_problem(claim, registration_dates.get(str(claim.get("id")), ""))
+        if problem:
+            reasons.append(f"claim: {problem}")
+            valid = False
+    if not valid:
         return {"schema": VERDICT_SCHEMA, "claim_id": claim.get("id") if isinstance(claim, dict) else None,
                 "claim_sha256": claim_digest(claim) if isinstance(claim, dict) else None,
                 "verdict": "fail", "reasons": reasons, "proofs": results, "commit": head_commit(repo),
@@ -1276,9 +1291,14 @@ def verdict_subject(verdict: dict[str, Any]) -> str:
 
 
 def standing(claim: dict[str, Any], entries: list[dict[str, Any]], kr: dict[str, Any]) -> dict[str, Any]:
-    """verified | scoped | failed | not_covered | unverified, from signed verdicts only."""
+    """A schema-valid payload and a current signed verdict are both required."""
     digest = claim_digest(claim)
     result = {"claim_id": claim.get("id"), "claim_sha256": digest, "standing": "unverified", "verdicts": []}
+    schema_reasons: list[str] = []
+    validate_claim(claim, schema_reasons)
+    type_problem = claim_type_problem(claim, _claim_entry_dates(entries).get(str(claim.get("id")), ""))
+    if type_problem and f"claim: {type_problem}" not in schema_reasons:
+        schema_reasons.append(f"claim: {type_problem}")
     for e in entries:
         if e.get("type") != "verdict" or not isinstance(e.get("body"), dict):
             continue
@@ -1295,10 +1315,13 @@ def standing(claim: dict[str, Any], entries: list[dict[str, Any]], kr: dict[str,
         row["reasons"] = reasons
         result["verdicts"].append(row)
     current = [r for r in result["verdicts"] if r["signed"] and r["current"]]
-    if current:
+    if current and not schema_reasons:
         last = current[-1]
         result["standing"] = {"pass": "verified", "fail": "failed", "not_covered": "not_covered",
                               "scoped": "scoped"}.get(str(last["verdict"]), "unverified")
+    if schema_reasons:
+        result["standing"] = "failed"
+        result["schema_rejected"] = schema_reasons
     return result
 
 
@@ -1487,6 +1510,14 @@ def _run_canaries(fx: Fixture) -> list[tuple[str, str, str, list[str]]]:
             got = v["verdict"]
             reasons = list(v["reasons"]) + [r for p in v["proofs"] for r in p["reasons"]]
             rows.append((name, expected, got, reasons))
+
+    def backdated_new_registration(copy: Path, claim: dict[str, Any]):
+        claim.pop("claim_type", None)
+        append_entry(copy / LEDGER_PATH, "genesis", {"repo": "fixture"})
+        append_entry(copy / LEDGER_PATH, "claim",
+                     {"claim_id": claim["id"], "claim_sha256": claim_digest(claim)})
+    check("claim: new registration cannot borrow legacy payload dates", "fail", "solve",
+          backdated_new_registration)
 
     def rewrite(copy: Path, rel: str, fn):
         p = copy / rel
@@ -1886,10 +1917,57 @@ def _claim_entry_dates(entries: list[dict[str, Any]]) -> dict[str, str]:
     return out
 
 
-def check_claim_types(repo: Path, entries: list[dict[str, Any]], errors: list[str]) -> None:
+SCHEMA_REJECTIONS_PATH = "pcc/schema-rejections.json"
+SCHEMA_REJECTIONS_SCHEMA = "pcc.schema-rejections/v1"
+
+
+def schema_rejections(repo: Path, base: str | None, errors: list[str]) -> dict[str, Any]:
+    """Audit immutable rejected payloads; this never validates a claim or its proofs."""
+    path = repo / SCHEMA_REJECTIONS_PATH
+    prior = file_at_ref(repo, base, SCHEMA_REJECTIONS_PATH, "schema rejections") if base else None
+    if not path.exists():
+        if prior is not None:
+            errors.append("schema rejections: the base manifest cannot be removed")
+        return {}
+    try:
+        data = load_json(path)
+        if not isinstance(data, dict) or data.get("schema") != SCHEMA_REJECTIONS_SCHEMA or not isinstance(data.get("records"), dict):
+            raise ValueError("invalid schema or records map")
+        records = data["records"]
+        old = json.loads(prior)["records"] if prior is not None else {}
+        if not isinstance(old, dict) or any(records.get(k) != v for k, v in old.items()):
+            raise ValueError("base rejection entries may only be appended to")
+        for name, pin in records.items():
+            if not re.fullmatch(r"pcc/claims/PCC-[0-9]{8}-[0-9a-f]{6}\.json", name):
+                raise ValueError(f"unsafe or noncanonical claim path: {name}")
+            if (not isinstance(pin, dict) or pin.get("issue") != "missing_claim_type"
+                    or pin.get("disposition") != "rejected"
+                    or not isinstance(pin.get("reason"), str) or not pin["reason"].strip()
+                    or not HEX64_RE.fullmatch(str(pin.get("sha256", "")))):
+                raise ValueError(f"{name}: needs an exact hash, rejected disposition and specific reason")
+            raw = (repo / name).read_bytes()
+            claim = json.loads(raw)
+            if (sha256_bytes(raw) != pin["sha256"] or not isinstance(claim, dict)
+                    or claim.get("schema") != CLAIM_SCHEMA or claim.get("id") != Path(name).stem
+                    or "claim_type" in claim or claim_type_problem(claim) is None):
+                raise ValueError(f"{name}: payload or expected missing-type defect changed")
+            if base:
+                original = file_at_ref(repo, base, name, "rejected claim")
+                if original != raw:
+                    raise ValueError(f"{name}: rejection requires the unchanged payload already present in the base")
+        return records
+    except (ValueError, KeyError, OSError) as exc:
+        errors.append(f"schema rejections: {exc}")
+        return {}
+
+
+def check_claim_types(repo: Path, entries: list[dict[str, Any]], errors: list[str],
+                      *, base: str | None = None) -> list[str]:
     """Every claim file must carry a valid claim_type unless it is a legacy
     claim; the ledger entry's own date also counts against the exemption."""
     dates = _claim_entry_dates(entries)
+    rejected = schema_rejections(repo, base, errors)
+    notes: list[str] = []
     for p in sorted((repo / CLAIMS_DIR).glob("*.json")) if (repo / CLAIMS_DIR).is_dir() else []:
         try:
             c = load_json(p)
@@ -1899,7 +1977,12 @@ def check_claim_types(repo: Path, entries: list[dict[str, Any]], errors: list[st
             continue
         problem = claim_type_problem(c, dates.get(str(c.get("id")), ""))
         if problem:
-            errors.append(f"claim {c.get('id')}: {problem}")
+            name = p.relative_to(repo).as_posix()
+            if name in rejected:
+                notes.append(f"claim {c.get('id')}: rejected missing-type payload, exact hash retained; ineligible as evidence")
+            else:
+                errors.append(f"claim {c.get('id')}: {problem}")
+    return notes
 
 
 def _all_claims(repo: Path) -> list[dict[str, Any]]:
@@ -2093,12 +2176,26 @@ def main(argv: list[str] | None = None) -> int:
             if rest.startswith("{"):
                 proofs.append({"kind": kind, **json.loads(rest)})
             else:
+                if kind == "execution":
+                    raise PccError("execution requires structured JSON with receipt, verifier, "
+                                   "image_id and journal_binds; native logs are not execution proofs. "
+                                   "Use attestation:PATH for unsigned producer artifacts")
                 p = (repo / rest).resolve()
                 if not p.is_file():
                     raise PccError(f"no such proof file {rest}")
                 pin = {"path": rest, "sha256": sha256_file(p)}
                 proofs.append({"kind": kind, "subject": pin} if kind == "attestation"
                               else {"kind": kind, **pin})
+            if kind == "execution":
+                proof = proofs[-1]
+                for field in ("receipt", "verifier", "journal_binds"):
+                    pin = proof.get(field)
+                    if (not isinstance(pin, dict) or not isinstance(pin.get("path"), str)
+                            or not pin["path"] or not isinstance(pin.get("sha256"), str)
+                            or not re.fullmatch(r"[0-9a-f]{64}", pin["sha256"])):
+                        raise PccError(f"execution requires {field} {{path, sha256}}")
+                if not isinstance(proof.get("image_id"), str) or not proof["image_id"]:
+                    raise PccError("execution requires a nonempty image_id")
         claim = {"schema": CLAIM_SCHEMA, "id": new_claim_id(), "kind": a.kind, "statement": a.statement,
                  "scope": a.scope, "proofs": proofs,
                  "producer": {"commit": head_commit(repo), "session": a.session, "model": a.model},
@@ -2131,8 +2228,9 @@ def main(argv: list[str] | None = None) -> int:
 
     if a.cmd == "verify-all":
         worst = 0
+        dates = _claim_entry_dates(read_ledger(repo / LEDGER_PATH))
         for p in sorted((repo / CLAIMS_DIR).glob("*.json")) if (repo / CLAIMS_DIR).is_dir() else []:
-            v = verify_claim(load_json(p), repo, kr)
+            v = _verify_claim(load_json(p), repo, kr, dates)
             _print_verdict(v, a.json, out)
             worst = max(worst, _exit_for(v["verdict"]), key=lambda x: {0: 0, 2: 1, 1: 2}[x])
         return worst
@@ -2176,7 +2274,9 @@ def main(argv: list[str] | None = None) -> int:
                     check_chain(base, errors)
                     check_prefix(base, head, errors)
         if not errors:
-            check_claim_types(repo, head, errors)
+            notes = check_claim_types(repo, head, errors, base=a.base)
+            for note in notes:
+                print(note, file=out)
         for err in errors:
             print(err, file=out)
         print(f"ledger: {len(head)} entries, {'BROKEN' if errors else 'chain ok'}", file=out)

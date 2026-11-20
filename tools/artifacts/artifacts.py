@@ -33,6 +33,7 @@ import argparse
 import base64
 import concurrent.futures as cf
 import fnmatch
+import gzip
 import hashlib
 import json
 import os
@@ -356,8 +357,25 @@ class Remote:
                          "--metadata", f"sha256={digest}", "--no-progress", "--only-show-errors")
 
     def get_args(self, digest: str, dest: Path) -> list[str]:
-        return self._aws("s3", "cp", f"s3://{self.bucket}/{self.key(digest)}", str(dest),
-                         "--no-progress", "--only-show-errors")
+        # The object key is already exact. High-level `s3 cp` first issues a
+        # HEAD request, whose generic 403 hides S3's useful GetObject errors
+        # (notably AllAccessDisabled). Stream the object directly instead.
+        # ensure_cached still checks both SHA-256 and length before publishing.
+        return self._aws("s3api", "get-object", "--bucket", self.bucket,
+                         "--key", self.key(digest), str(dest))
+
+    def download_error(self, digest: str, stderr: str) -> str:
+        message = f"download {self.key(digest)} from {self.describe()}: {stderr.strip()}"
+        if "AllAccessDisabled" in stderr:
+            return message + ("; S3 has disabled access to this resource. The bucket owner must "
+                              "restore access or provide a verified replacement store "
+                              "(ARTIFACTS_REMOTE); changing IAM grants or retrying cannot repair it.")
+        if "NoSuchKey" in stderr or "(404)" in stderr:
+            return message + "; object is absent: restore the exact manifest SHA-256 bytes to the store."
+        if "AccessDenied" in stderr or "(403)" in stderr:
+            return message + ("; verify the remote and s3:GetObject permission. Without s3:ListBucket, "
+                              "S3 can also return 403 for a missing key; do not treat it as absence.")
+        return message
 
     def _run(self, argv: list[str]) -> subprocess.CompletedProcess:
         try:
@@ -369,7 +387,11 @@ class Remote:
         """Size of the stored object, or None when absent."""
         if self.kind == "file":
             p = self.dir / object_key(digest)
-            return p.stat().st_size if p.exists() else None
+            if not p.exists():
+                return None
+            if sha256_file(p) != digest:
+                die(f"{self.key(digest)}: stored object checksum mismatch; refused")
+            return p.stat().st_size
         if self.kind == "http":
             req = urllib.request.Request(self._url(digest), method="HEAD")
             try:
@@ -403,10 +425,25 @@ class Remote:
         if self.kind == "file":
             dest = self.dir / object_key(digest)
             dest.parent.mkdir(parents=True, exist_ok=True)
-            tmp = dest.with_name(dest.name + f".tmp{os.getpid()}")
-            shutil.copyfile(src, tmp)
-            os.replace(tmp, dest)
-            return True
+            fd, name = tempfile.mkstemp(prefix=dest.name + ".tmp-", dir=dest.parent)
+            os.close(fd)
+            tmp = Path(name)
+            try:
+                shutil.copyfile(src, tmp)
+                if tmp.stat().st_size != size or sha256_file(tmp) != digest:
+                    die(f"{self.key(digest)}: source changed before publication; refused")
+                tmp.chmod(0o644)
+                try:
+                    # Same-filesystem link publishes only when the key is absent.
+                    # Concurrent writers keep independent, verified temporary files.
+                    os.link(tmp, dest)
+                except FileExistsError:
+                    if self.head(digest) != size:
+                        die(f"{self.key(digest)}: concurrent object size mismatch; refused")
+                    return False
+                return True
+            finally:
+                tmp.unlink(missing_ok=True)
         argv = self.put_multipart_args(digest, src) if size > SINGLE_PUT_MAX else self.put_args(digest, src)
         p = self._run(argv)
         if p.returncode != 0:
@@ -440,18 +477,96 @@ class Remote:
         p = self._run(self.get_args(digest, dest))
         if p.returncode != 0:
             dest.unlink(missing_ok=True)
-            die(f"download {self.key(digest)}: {p.stderr.strip()}")
+            die(self.download_error(digest, p.stderr))
 
 
 # ---------------------------------------------------------------------------
 # Cache: verified, read-only objects shared with `crypto store`
 
 
+class GitHistory:
+    """Read an artifact's original bytes from the current commit's history.
+
+    Partial clones may fetch Git blobs from their existing promisor remote;
+    no artifact store or AWS credentials are used. A historical version is
+    accepted only when both its length and SHA-256 match the manifest.
+    """
+
+    def __init__(self, cfg: Config, source: Path, size: int):
+        self.cfg, self.source, self.size = cfg, rel(cfg.root, source), size
+
+    def get(self, digest: str, dest: Path) -> None:
+        recovery = self.cfg.root / ".artifacts/recovery"
+        index = recovery / "index.json"
+        if index.is_file():
+            catalog = json.loads(index.read_text())
+            if catalog.get("schema") != "artifacts.recovery/v1":
+                die("invalid artifact recovery index schema")
+            entry = catalog.get("objects", {}).get(digest)
+            if entry is not None:
+                if set(entry) == {"git_blob"}:
+                    oid = entry["git_blob"]
+                    if not isinstance(oid, str) or len(oid) not in (40, 64) or any(c not in "0123456789abcdef" for c in oid):
+                        die("invalid artifact recovery Git blob")
+                    with dest.open("wb") as output:
+                        result = subprocess.run(["git", "-C", str(self.cfg.root), "cat-file", "blob", oid],
+                                                stdout=output, stderr=subprocess.PIPE)
+                    if result.returncode:
+                        die("cannot read artifact recovery Git blob: " + result.stderr.decode(errors="replace").strip())
+                elif set(entry) == {"gzip"}:
+                    name = entry["gzip"]
+                    if not isinstance(name, str) or name != Path(name).name or name in ("", ".", "..") or "\\" in name:
+                        die("invalid artifact recovery bundle path")
+                    source = recovery / name
+                    if source.is_symlink():
+                        die("artifact recovery bundle must not be a symlink")
+                    with gzip.open(source, "rb") as payload, dest.open("wb") as output:
+                        # Bound decompression by the manifest size, including
+                        # one extra byte so oversized payloads fail validation.
+                        remaining = self.size + 1
+                        while remaining:
+                            block = payload.read(min(1 << 20, remaining))
+                            if not block:
+                                break
+                            output.write(block)
+                            remaining -= len(block)
+                else:
+                    die("invalid artifact recovery entry")
+                # The shared cache path performs the manifest hash/size check.
+                return
+        objects = git(self.cfg.root, "rev-list", "--full-history", "--objects", "--no-object-names",
+                      "HEAD", "--", self.source)
+        if objects:
+            metadata = git(self.cfg.root, "cat-file",
+                           "--batch-check=%(objectname) %(objecttype) %(objectsize)", input=objects)
+            for line in metadata.splitlines():
+                fields = line.split()
+                if len(fields) != 3 or fields[1] != b"blob" or fields[2] != str(self.size).encode():
+                    continue
+                # Stream potentially large blobs rather than buffering them.
+                with dest.open("wb") as output:
+                    result = subprocess.run(
+                        ["git", "-C", str(self.cfg.root), "cat-file", "blob", fields[0].decode()],
+                        stdout=output, stderr=subprocess.PIPE,
+                    )
+                if result.returncode:
+                    dest.unlink(missing_ok=True)
+                    die(f"cannot read historical Git blob for {self.source}: "
+                        + result.stderr.decode(errors="replace").strip())
+                if dest.stat().st_size == self.size and sha256_file(dest) == digest:
+                    return
+        dest.unlink(missing_ok=True)
+        die(f"{self.source}: no Git-history object matches manifest SHA-256 {digest} "
+            f"({self.size} bytes). S3 was not contacted. Use a full-history checkout "
+            "or populate the verified cache from an approved copy; data never committed "
+            "to Git still requires recovery from its original store.")
+
+
 def cache_path(cfg: Config, digest: str) -> Path:
     return cfg.cache / object_key(digest)
 
 
-def ensure_cached(cfg: Config, remote: Remote, digest: str, size: int) -> Path:
+def ensure_cached(cfg: Config, remote: Remote | GitHistory, digest: str, size: int) -> Path:
     c = cache_path(cfg, digest)
     if c.exists() and c.stat().st_size == size and sha256_file(c) == digest:
         return c
@@ -640,11 +755,19 @@ def cmd_pull(cfg: Config, args) -> int:
     if not todo:
         print(f"{len(items)} files already present", file=sys.stderr)
         return 0
-    remote = Remote(cfg)
+    # Temporary S3-free default while the configured bucket is disabled.
+    # File/HTTP remotes retain their normal behavior. Explicit remote reads
+    # remain available once the owner restores or replaces the store.
+    source = getattr(args, "source", "auto")
+    from_git = source == "git" or (source == "auto" and cfg.remote.startswith("s3://"))
+    remote = None if from_git else Remote(cfg)
+    if from_git:
+        print("using verified cache, Git recovery bundles and full Git history; no S3 reads", file=sys.stderr)
 
     def one(item):
         f, e = item
-        c = ensure_cached(cfg, remote, e["sha256"], e["bytes"])
+        reader = GitHistory(cfg, f, e["bytes"]) if from_git else remote
+        c = ensure_cached(cfg, reader, e["sha256"], e["bytes"])
         place_copy(c, f)
 
     with cf.ThreadPoolExecutor(args.jobs) as ex:
@@ -783,6 +906,9 @@ def main(argv: list[str] | None = None) -> int:
     s.add_argument("--jobs", type=int, default=16)
     s = sub.add_parser("pull", help="hydrate files from the store")
     s.add_argument("paths", nargs="*")
+    s.add_argument("--source", choices=("auto", "git", "remote"),
+                   default=os.environ.get("ARTIFACTS_PULL_SOURCE", "auto"),
+                   help="auto uses Git history for S3 remotes, otherwise the configured remote")
     s.add_argument("--jobs", type=int, default=16)
     s.add_argument("--fast", action="store_true", help="trust a present file of the right size")
     s = sub.add_parser("verify")
