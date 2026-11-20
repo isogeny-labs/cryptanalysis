@@ -543,6 +543,15 @@ pub fn run(args: PrimeArgs, quiet: bool) -> Result<Value, String> {
             if !quiet {
                 let sized = match opts.sizing() {
                     BaseSizing::Explicit => "as given".to_string(),
+                    BaseSizing::Wsum => format!(
+                        "wsum box, C={} orbits, B={}",
+                        base_orbits(c, &opts, targets.len()),
+                        if opts.wsum_bound != 0 {
+                            opts.wsum_bound.to_string()
+                        } else {
+                            "auto".to_string()
+                        }
+                    ),
                     BaseSizing::Batch => {
                         format!("to the batch, {} per target", opts.orbits_per_target)
                     }
