@@ -1,0 +1,129 @@
+{
+  "all_checks_pass": true,
+  "dual_identity": "phi_dual(phi(P))=[2]P",
+  "environment": {
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "sympy": "1.14.0"
+  },
+  "format": "signed-isogeny-transfer-control-v1",
+  "map": "explicit rational 2-isogeny with kernel {O,(0,0)}",
+  "recovery": "[2^(-1) mod r] phi_dual on each odd prime-order subgroup",
+  "rows": [
+    {
+      "curve": "y^2=x^3+1*x^2+5*x",
+      "field_prime": 1009,
+      "group_order": 1004,
+      "identities": {
+        "dlog_preserved": true,
+        "dual_composition_is_2": true,
+        "images_on_quotient_curve": true,
+        "signed_recovery": true,
+        "source_generator_on_curve": true
+      },
+      "median_dual_recovery_nanoseconds": 8683.0,
+      "median_transfer_nanoseconds": 741.0,
+      "quotient_curve": "y^2=x^3+1007*x^2+990*x (coefficients mod p)",
+      "repetitions": 2000,
+      "secret": 63,
+      "subgroup_order": 251
+    },
+    {
+      "curve": "y^2=x^3+1*x^2+2*x",
+      "field_prime": 1013,
+      "group_order": 1018,
+      "identities": {
+        "dlog_preserved": true,
+        "dual_composition_is_2": true,
+        "images_on_quotient_curve": true,
+        "signed_recovery": true,
+        "source_generator_on_curve": true
+      },
+      "median_dual_recovery_nanoseconds": 10456.0,
+      "median_transfer_nanoseconds": 741.0,
+      "quotient_curve": "y^2=x^3+1011*x^2+1006*x (coefficients mod p)",
+      "repetitions": 2000,
+      "secret": 66,
+      "subgroup_order": 509
+    },
+    {
+      "curve": "y^2=x^3+1*x^2+4*x",
+      "field_prime": 1019,
+      "group_order": 1004,
+      "identities": {
+        "dlog_preserved": true,
+        "dual_composition_is_2": true,
+        "images_on_quotient_curve": true,
+        "signed_recovery": true,
+        "source_generator_on_curve": true
+      },
+      "median_dual_recovery_nanoseconds": 8762.0,
+      "median_transfer_nanoseconds": 751.0,
+      "quotient_curve": "y^2=x^3+1017*x^2+1004*x (coefficients mod p)",
+      "repetitions": 2000,
+      "secret": 20,
+      "subgroup_order": 251
+    },
+    {
+      "curve": "y^2=x^3+3*x^2+1*x",
+      "field_prime": 5003,
+      "group_order": 4916,
+      "identities": {
+        "dlog_preserved": true,
+        "dual_composition_is_2": true,
+        "images_on_quotient_curve": true,
+        "signed_recovery": true,
+        "source_generator_on_curve": true
+      },
+      "median_dual_recovery_nanoseconds": 11437.0,
+      "median_transfer_nanoseconds": 841.0,
+      "quotient_curve": "y^2=x^3+4997*x^2+5*x (coefficients mod p)",
+      "repetitions": 2000,
+      "secret": 771,
+      "subgroup_order": 1229
+    },
+    {
+      "curve": "y^2=x^3+4*x^2+5*x",
+      "field_prime": 10007,
+      "group_order": 10078,
+      "identities": {
+        "dlog_preserved": true,
+        "dual_composition_is_2": true,
+        "images_on_quotient_curve": true,
+        "signed_recovery": true,
+        "source_generator_on_curve": true
+      },
+      "median_dual_recovery_nanoseconds": 13219.0,
+      "median_transfer_nanoseconds": 871.0,
+      "quotient_curve": "y^2=x^3+9999*x^2+10003*x (coefficients mod p)",
+      "repetitions": 2000,
+      "secret": 2805,
+      "subgroup_order": 5039
+    },
+    {
+      "curve": "y^2=x^3+1*x^2+2*x",
+      "field_prime": 20011,
+      "group_order": 20198,
+      "identities": {
+        "dlog_preserved": true,
+        "dual_composition_is_2": true,
+        "images_on_quotient_curve": true,
+        "signed_recovery": true,
+        "source_generator_on_curve": true
+      },
+      "median_dual_recovery_nanoseconds": 15623.0,
+      "median_transfer_nanoseconds": 911.0,
+      "quotient_curve": "y^2=x^3+20009*x^2+20004*x (coefficients mod p)",
+      "repetitions": 2000,
+      "secret": 8139,
+      "subgroup_order": 10099
+    }
+  ],
+  "scope": {
+    "analogue_only": "dimension-one 2-isogenies over toy prime fields",
+    "measured": "signed point transfer, preserved DLP scalar, dual composition, and recovery",
+    "not_measured": "the missing signed P-224 E^3-to-J_C map or its (3,3,3) dual"
+  },
+  "seed": 2333,
+  "total_seconds": 0.1719042469994747
+}

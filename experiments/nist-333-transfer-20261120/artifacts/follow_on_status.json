@@ -1,0 +1,85 @@
+{
+  "format": "nist-333-six-follow-ons-v1",
+  "items": {
+    "1_p224_source_to_jacobian_map": {
+      "completed": "exact 64-coordinate source-to-quotient Kummer map",
+      "evidence": "artifacts/p224_point_map_status.json",
+      "exact_sign_pair_collision": true,
+      "open": "recover a signed degree-three divisor on the descended quartic from the Kummer coordinates",
+      "status": "partial"
+    },
+    "2_kernel_and_dual_composition": {
+      "completed": "all three selected kernel generators collapse exactly; a transverse 3-torsion control does not; theorem-level [3]/[9] recovery scalars are exact",
+      "evidence": [
+        "artifacts/p224_point_map_status.json",
+        "../hecdlp-cover-reduction/artifacts/signed_transfer_benchmark.json"
+      ],
+      "open": "signed divisor map and executable polarized dual are required for an end-to-end composition test",
+      "signed_dual_analogue_checks_pass": true,
+      "status": "partial"
+    },
+    "3_practical_jacobian_representation": {
+      "checks_pass": true,
+      "completed": "two rational smooth contact points, rational canonical divisor, and degree-zero/basepoint encoding",
+      "evidence": "artifacts/p224_jacobian_prerequisites.json",
+      "open": "general plane-quartic Jacobian addition/reduction and the source isogeny point map",
+      "status": "partial"
+    },
+    "4_p256_reconstruction_and_descent": {
+      "completed": "exact F_(p^3) quartic candidate with 28/36 theta pattern and seven bitangent checks",
+      "evidence": [
+        "artifacts/p256_finite_field_theta.json",
+        "artifacts/p256_descent_status.json",
+        "artifacts/p256_aronhold_frobenius.json",
+        "handoff/p256_descent_diagnostic.m"
+      ],
+      "obstruction_type": "computational validation obstruction, not a proven mathematical non-descent",
+      "open": "equations for the remaining 21 bitangents or a ternary-quartic isomorphism/Galois-descent computation over a 256-bit finite field",
+      "status": "partial_with_obstruction_certificate"
+    },
+    "5_complexity_changing_mechanisms": {
+      "complete_toy_hecdlp": {
+        "all_target_logs_recovered": true,
+        "curves_solved": 7,
+        "relation_candidates_vs_q_slope": 1.1216171563600468,
+        "rho_additions_vs_group_order_slope": 0.5046907263591482,
+        "scope": "complete toy genus-3 HECDLPs; not the unresolved P-224 signed transfer"
+      },
+      "completed": "prime-field subfield obstruction and same-field exponent comparison",
+      "conclusion": "no standard same-field cover/isogeny route changes the NIST ECDLP exponent; only the explicit pass conditions merit further search",
+      "evidence": [
+        "../hecdlp-cover-reduction/artifacts/complexity_gate.json",
+        "../hecdlp-cover-reduction/artifacts/empirical_benchmark.json",
+        "../hecdlp-cover-reduction/artifacts/end_to_end_hecdlp.json",
+        "../hecdlp-cover-reduction/artifacts/signed_transfer_benchmark.json"
+      ],
+      "same_field_route_passes": false,
+      "status": "complete_for_standard_cover_isogeny_routes",
+      "toy_measured_slopes": {
+        "quartic_candidate_lines_vs_q": 0.9990193403777372,
+        "rho_group_multiplications_vs_order": 0.5127775735308033,
+        "scope": "measured primitives only; not an end-to-end NIST DLP solve"
+      }
+    },
+    "6_p224_frobenius_l_polynomial": {
+      "completed": "exact expected (1-t*T+p*T^2)^3 polynomial and functional-equation checks; one explicit rational bitangent",
+      "evidence": "artifacts/p224_frobenius_certificate.json",
+      "full_independent_certification": false,
+      "open": "compute the quartic L-polynomial independently of the quotient construction (or certify it on enough prime-power torsion) and compare every coefficient",
+      "status": "partial"
+    }
+  },
+  "summary": {
+    "fully_closed_items": [
+      5
+    ],
+    "honest_terminal_state": "all six addressed; unavailable end-to-end stages carry executable reproducers or explicit obstruction certificates",
+    "materially_advanced_items": [
+      1,
+      2,
+      3,
+      4,
+      6
+    ]
+  }
+}
