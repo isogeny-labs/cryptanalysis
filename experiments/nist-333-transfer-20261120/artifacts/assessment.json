@@ -1,0 +1,378 @@
+[
+  {
+    "format": "correspondence-assessment-draft-v1",
+    "assessment_state": "draft",
+    "authority": "companion artifact; not a ledger record or independent certificate",
+    "curve": "P-224",
+    "source": {
+      "object_uid": "nist-p-224-cube",
+      "representation_uid": "short-weierstrass-product-with-explicit-3-torsion-basis",
+      "equations": "E: y^2=x^3+(0xfffffffffffffffffffffffffffffffefffffffffffffffffffffffe)x+(0xb4050a850c04b3abf54132565044b0b7d7bfd8ba270b39432355ffb4); source E^3",
+      "field": "F_p, p=0xffffffffffffffffffffffffffffffff000000000000000000000001",
+      "dimension": 3,
+      "subgroup_order": "0xffffffffffffffffffffffffffff16a2e0b8f03e13dd29455c5c2a3d"
+    },
+    "destination": {
+      "object_uid": "quotient-p-224-cube-by-lambda",
+      "representation_uid": "p224-descended-plane-quartic-v1",
+      "equations": "artifacts/p224_descended_quartic.json",
+      "field": "F_p, p=0xffffffffffffffffffffffffffffffff000000000000000000000001; direct Frobenius/Hilbert-90 descent verified",
+      "dimension": 3,
+      "ambient_group_order": null
+    },
+    "transformation": {
+      "kind": "principally-polarized quotient isogeny candidate",
+      "family": "(3,3,3)-isogeny / Tian normal-Weil-set reconstruction",
+      "degree": 27,
+      "field_of_definition": "kernel and descended plane quartic are F_p-rational",
+      "formulas": null,
+      "exceptional_cases": [
+        "scalar diagonal subgroups of repeated E^3 are audited, but non-scalar End(E)-linear elliptic subvarieties remain",
+        "signed divisor-map twist compatibility remains unverified",
+        "point-map exceptional divisors not available before reconstruction"
+      ],
+      "normalization": "product principal polarization; standard symplectic E[3] basis"
+    },
+    "obligations": {
+      "existence": {
+        "state": "supported",
+        "evidence": [
+          "artifacts/evidence.json: exact 27-element F_p-rational maximal isotropic kernel",
+          "factor intersections all have cardinality one",
+          "artifacts/complex_theta_diagnostic.json: 36 nonzero even theta constants on three sampled complex fibers"
+        ],
+        "scope": "explicit nonsingular P-224 plane quartic closes the ppav-to-Jacobian existence/descent gate"
+      },
+      "explicit_construction": {
+        "state": "supported",
+        "evidence": [
+          "artifacts/p224_finite_field_theta.json: corrected quartic with exact 28/36 theta pattern and seven bitangents",
+          "artifacts/tian_523_control_validation.txt: corrected implementation reproduces Tian's published control quartic",
+          "artifacts/p224_magma_validation.txt: Frobenius-rational moduli and direct Hilbert-90 descent pass",
+          "artifacts/p224_descended_quartic.json: explicit nonsingular 15-term F_p quartic"
+        ],
+        "scope": "P-224 quotient plane-quartic construction and descent; signed point map remains open"
+      },
+      "map_correctness": {
+        "state": "partial",
+        "evidence": [
+          "artifacts/p224_point_map_status.json: exact 64-coordinate Kummer map",
+          "all three kernel generators collapse and a transverse 3-torsion control is distinguished"
+        ],
+        "scope": "signed divisor recovery, homomorphism, exceptional points, and dual composition remain untested"
+      },
+      "subgroup_preservation": {
+        "state": "supported",
+        "evidence": [
+          "gcd(n,3)=1",
+          "ker(pi)=Lambda is killed by 3",
+          "conditional polarized-dual certificate pi^dagger o pi=[3]"
+        ],
+        "scope": "theorem conditional on constructing the polarized quotient isogeny"
+      },
+      "computational_advantage": {
+        "state": "refuted",
+        "evidence": [
+          "published Tian destination substitution is 2^112.174621 above the rho operation scale before polylogs and transfer costs"
+        ],
+        "scope": "only the published genus-3 index-calculus route with q=p; new relation mechanisms remain unknown"
+      },
+      "scaling_support": {
+        "state": "supported",
+        "evidence": [
+          "Tian: soft-O(q) for a source E(F_{q^3})",
+          "prime-field substitution q=p gives soft-O(p), versus rho O(sqrt(n)) with n approximately p"
+        ],
+        "scope": "modeled asymptotics, not measured end-to-end timings"
+      }
+    },
+    "preservation_certificate": {
+      "identity": "pi^dagger o pi = [3] for a polarized (3,3,3)-isogeny",
+      "kernel_intersection": "Lambda intersect Delta(E[n]) is trivial because Lambda is 3-primary and gcd(n,3)=1",
+      "recovery_map": "[3^{-1} mod n] o pi^dagger on the image subgroup",
+      "scalar_multiplier": 3,
+      "composed_diagonal_identity": "Sum o pi^dagger o pi o Delta = [9], since Sum o Delta=[3]",
+      "composed_recovery_to_E": "[9^{-1} mod n] o Sum o pi^dagger",
+      "composed_recovery_scalar": "0xe38e38e38e38e38e38e38e38e38d697455f9b91abc52cf5a19357ae1",
+      "proof_artifact": "report.md, Subgroup-preservation certificate"
+    },
+    "mechanism": {
+      "proposed_benefit": "genus-3 factor-base/index-calculus geometry",
+      "prediction": "the published Tian route does not beat rho after replacing a cubic-extension source by a prime-field NIST subgroup",
+      "falsification_condition": "an explicit NIST transfer plus complete relation collection, linear algebra, descent, and recovery below the matched rho cost",
+      "assumptions": [
+        "the destination is a genus-3 Jacobian over F_p",
+        "the published soft-O(p) relation machinery is the destination solver"
+      ]
+    },
+    "cost_comparison": {
+      "workload": "single discrete logarithm in the prime-order NIST subgroup",
+      "baseline": "Pollard rho with negation-map constant 0.886*sqrt(n)",
+      "units": "modeled log2 group/field scale; no wall-time equivalence claimed",
+      "construction": "unmeasured",
+      "transfer": "unmeasured",
+      "destination": "soft-O(p) after substituting q=p for a prime-field NIST destination",
+      "recovery": "unmeasured",
+      "verification": "kernel and normal-Weil identities measured; Tian source control, Frobenius moduli, cocycle, Hilbert-90 descent, smoothness, descended-moduli equality, and Kummer kernel-fiber checks pass",
+      "failed_attempts_and_duplicates": "see attempts.md",
+      "memory_and_data": "unmeasured for quotient and destination solver",
+      "setup_reuse": "not credited",
+      "uncertainty": "soft-O factors and field/group-operation conversion omitted; omission favors the candidate",
+      "evidence_label": "modeled"
+    },
+    "controls": [
+      "P-192, P-384, and P-521 mod-3 profiles: zero admissible kernels",
+      "exhaustive 1120-Lagrangian census",
+      "27 distinct kernel elements and three trivial factor intersections",
+      "OpenSSL recomputation of all five p,t mod-3 profiles",
+      "complete 13-line scalar-diagonal incidence census for every admissible kernel",
+      "three complex periods per kernel with all 36 even theta constants nonzero",
+      "729 exact kernel and 4096 exact quotient normal-Weil multiplication identities",
+      "Tian q=523 published-quartic source control (passes after unique two-sign correction)",
+      "Magma 2.29 Dixmier-Ohno Frobenius-moduli control (P-224 passes)",
+      "P-224 exact Kummer images for three kernel generators and one transverse control",
+      "P-224 exact Kummer sign collision: the test point and its negative have identical 64-coordinate digests",
+      "P-256 exact 28/36 theta pattern and seven Aronhold bitangents",
+      "P-256 exact 28-bitangent Frobenius orbit audit (one fixed line, nine 3-cycles)",
+      "Q1/Q2 symplectic-pair relabeling changes candidate moduli (failed invariance control)",
+      "constant-free and displayed two-Weil-constant candidates have equal moduli (positive scaling control)",
+      "all 64 squared theta nulls are invariant under Q1/Q2 relabeling after characteristic permutation"
+    ],
+    "protocol": {
+      "parameter_scope": "NIST P-224 and P-256; ell=3; direct product E^3 over F_p",
+      "sample_selection": "complete Lagrangian enumeration, not random sampling",
+      "stopping_rules": "construction is complete only after a quartic, map, and dual-composition certificate exist",
+      "invalidation_rules": "non-rational kernel, nontrivial factor intersection, singular/non-descending quartic, failed homomorphism, or lost subgroup invalidates the path",
+      "hardware_manifest": {
+        "cpu_count": 5,
+        "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+        "processor": "",
+        "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+        "sympy": "1.14.0",
+        "timestamp_utc": "2026-11-19T16:46:55Z"
+      },
+      "execution_route": "python src/nist_333.py --out artifacts/evidence.json; python src/complex_theta_diagnostic.py --out artifacts/complex_theta_diagnostic.json; python src/finite_field_theta.py --out artifacts/p224_finite_field_theta.json; python src/export_quartic_descent.py; python tests/test_nist_333.py -v; python tests/test_complex_theta_diagnostic.py -v; python tests/test_finite_field_theta.py -v"
+    },
+    "exploration_boundary": {
+      "families": [
+        "direct E^3 (3,3,3) gluing",
+        "Tian normal-Weil-set reconstruction"
+      ],
+      "parameters": "ell=3 on NIST P-224/P-256",
+      "completed_scope": "torsion fields, exact kernel, finite-field normal-Weil audits, explicit P-224 quartic/descent, Kummer point map, kernel-fiber controls, preservation proof, and asymptotic cost substitution",
+      "completeness_claim": "P-224 plane-quartic construction/descent and Kummer map only; none for the signed divisor map or new destination solvers"
+    },
+    "composition": {
+      "edge_ids": [
+        "diagonal-embedding",
+        "quotient-by-lambda",
+        "p224-ppav-to-jacobian-descended",
+        "source-to-kummer-map",
+        "signed-divisor-map-unconstructed"
+      ],
+      "junction_compatibility": "P-224 quotient curve/descent and Kummer representation are explicit; signed divisor representation is missing",
+      "weakest_open_obligation": "signed source-to-Jacobian divisor map and executable dual composition"
+    },
+    "sources": [
+      "https://doi.org/10.1007/s00145-023-09474-2",
+      "https://arxiv.org/abs/2012.07173",
+      "https://csrc.nist.gov/pubs/fips/186-5/final",
+      "https://www.secg.org/sec2-v2.pdf"
+    ],
+    "open_obligations": [
+      "preserve the accepted P-224 quartic/descent certificate",
+      "recover and verify a signed source-to-Jacobian divisor map",
+      "check pi^dagger o pi=[3] in the executable representation",
+      "measure a complete destination workload only if a mechanism different from the already-refuted published substitution is proposed"
+    ],
+    "recommended_next_action": "implement Tian's zeta/Groebner signed-divisor recovery, then verify pi^dagger o pi=[3]",
+    "official_status_change": "none"
+  },
+  {
+    "format": "correspondence-assessment-draft-v1",
+    "assessment_state": "draft",
+    "authority": "companion artifact; not a ledger record or independent certificate",
+    "curve": "P-256",
+    "source": {
+      "object_uid": "nist-p-256-cube",
+      "representation_uid": "short-weierstrass-product-with-explicit-3-torsion-basis",
+      "equations": "E: y^2=x^3+(0xffffffff00000001000000000000000000000000fffffffffffffffffffffffc)x+(0x5ac635d8aa3a93e7b3ebbd55769886bc651d06b0cc53b0f63bce3c3e27d2604b); source E^3",
+      "field": "F_p, p=0xffffffff00000001000000000000000000000000ffffffffffffffffffffffff",
+      "dimension": 3,
+      "subgroup_order": "0xffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc632551"
+    },
+    "destination": {
+      "object_uid": "quotient-p-256-cube-by-lambda",
+      "representation_uid": "p256-cubic-quartic-candidate-v1",
+      "equations": "artifacts/p256_finite_field_theta.json",
+      "field": "F_(p^3) candidate, p=0xffffffff00000001000000000000000000000000ffffffffffffffffffffffff; F_p descent unverified",
+      "dimension": 3,
+      "ambient_group_order": null
+    },
+    "transformation": {
+      "kind": "principally-polarized quotient isogeny candidate",
+      "family": "(3,3,3)-isogeny / Tian normal-Weil-set reconstruction",
+      "degree": 27,
+      "field_of_definition": "kernel is F_p-rational; candidate quartic is over F_(p^3); F_p descent unverified",
+      "formulas": null,
+      "exceptional_cases": [
+        "scalar diagonal subgroups of repeated E^3 are audited, but non-scalar End(E)-linear elliptic subvarieties remain",
+        "Frobenius/Hilbert-90 descent and Serre twist remain unverified",
+        "point-map exceptional divisors not available before reconstruction"
+      ],
+      "normalization": "product principal polarization; standard symplectic E[3] basis"
+    },
+    "obligations": {
+      "existence": {
+        "state": "supported",
+        "evidence": [
+          "artifacts/evidence.json: exact 27-element F_p-rational maximal isotropic kernel",
+          "factor intersections all have cardinality one",
+          "artifacts/complex_theta_diagnostic.json: 36 nonzero even theta constants on three sampled complex fibers"
+        ],
+        "scope": "an exact F_(p^3) plane quartic candidate exists; F_p descent remains open"
+      },
+      "explicit_construction": {
+        "state": "partial",
+        "evidence": [
+          "artifacts/p256_finite_field_theta.json: exact 28/36 theta pattern, 15-term quartic, and seven bitangent checks",
+          "artifacts/p256_descent_status.json: coefficients are exactly in F_(p^3), not fixed in the displayed coordinates by p-Frobenius",
+          "artifacts/p256_aronhold_frobenius.json: one fixed odd characteristic and nine 3-cycles; only one known Aronhold line stays in the selected system",
+          "handoff/p256_descent_diagnostic.m: preserved independent descent diagnostic"
+        ],
+        "scope": "P-256 extension-field quotient candidate; F_p descent remains open"
+      },
+      "map_correctness": {
+        "state": "unknown",
+        "evidence": [
+          "no executable P-256 source-to-Jacobian map exists"
+        ],
+        "scope": "signed divisor recovery, homomorphism, exceptional points, and dual composition remain untested"
+      },
+      "subgroup_preservation": {
+        "state": "supported",
+        "evidence": [
+          "gcd(n,3)=1",
+          "ker(pi)=Lambda is killed by 3",
+          "conditional polarized-dual certificate pi^dagger o pi=[3]"
+        ],
+        "scope": "theorem conditional on constructing the polarized quotient isogeny"
+      },
+      "computational_advantage": {
+        "state": "refuted",
+        "evidence": [
+          "published Tian destination substitution is 2^128.174621 above the rho operation scale before polylogs and transfer costs"
+        ],
+        "scope": "only the published genus-3 index-calculus route with q=p; new relation mechanisms remain unknown"
+      },
+      "scaling_support": {
+        "state": "supported",
+        "evidence": [
+          "Tian: soft-O(q) for a source E(F_{q^3})",
+          "prime-field substitution q=p gives soft-O(p), versus rho O(sqrt(n)) with n approximately p"
+        ],
+        "scope": "modeled asymptotics, not measured end-to-end timings"
+      }
+    },
+    "preservation_certificate": {
+      "identity": "pi^dagger o pi = [3] for a polarized (3,3,3)-isogeny",
+      "kernel_intersection": "Lambda intersect Delta(E[n]) is trivial because Lambda is 3-primary and gcd(n,3)=1",
+      "recovery_map": "[3^{-1} mod n] o pi^dagger on the image subgroup",
+      "scalar_multiplier": 3,
+      "composed_diagonal_identity": "Sum o pi^dagger o pi o Delta = [9], since Sum o Delta=[3]",
+      "composed_recovery_to_E": "[9^{-1} mod n] o Sum o pi^dagger",
+      "composed_recovery_scalar": "0x8e38e38daaaaaaab38e38e38e38e38e368f2197ceb0d1f2d6af570a536e1bf66",
+      "proof_artifact": "report.md, Subgroup-preservation certificate"
+    },
+    "mechanism": {
+      "proposed_benefit": "genus-3 factor-base/index-calculus geometry",
+      "prediction": "the published Tian route does not beat rho after replacing a cubic-extension source by a prime-field NIST subgroup",
+      "falsification_condition": "an explicit NIST transfer plus complete relation collection, linear algebra, descent, and recovery below the matched rho cost",
+      "assumptions": [
+        "the destination is a genus-3 Jacobian over F_p",
+        "the published soft-O(p) relation machinery is the destination solver"
+      ]
+    },
+    "cost_comparison": {
+      "workload": "single discrete logarithm in the prime-order NIST subgroup",
+      "baseline": "Pollard rho with negation-map constant 0.886*sqrt(n)",
+      "units": "modeled log2 group/field scale; no wall-time equivalence claimed",
+      "construction": "unmeasured",
+      "transfer": "unmeasured",
+      "destination": "soft-O(p) after substituting q=p for a prime-field NIST destination",
+      "recovery": "unmeasured",
+      "verification": "kernel and finite-field theta checks measured; extension-field quartic exists; base-field descent unverified",
+      "failed_attempts_and_duplicates": "see attempts.md",
+      "memory_and_data": "unmeasured for quotient and destination solver",
+      "setup_reuse": "not credited",
+      "uncertainty": "soft-O factors and field/group-operation conversion omitted; omission favors the candidate",
+      "evidence_label": "modeled"
+    },
+    "controls": [
+      "P-192, P-384, and P-521 mod-3 profiles: zero admissible kernels",
+      "exhaustive 1120-Lagrangian census",
+      "27 distinct kernel elements and three trivial factor intersections",
+      "OpenSSL recomputation of all five p,t mod-3 profiles",
+      "complete 13-line scalar-diagonal incidence census for every admissible kernel",
+      "three complex periods per kernel with all 36 even theta constants nonzero",
+      "729 exact kernel and 4096 exact quotient normal-Weil multiplication identities",
+      "Tian q=523 published-quartic source control (passes after unique two-sign correction)",
+      "Magma 2.29 Dixmier-Ohno Frobenius-moduli control (P-224 passes)",
+      "P-224 exact Kummer images for three kernel generators and one transverse control",
+      "P-224 exact Kummer sign collision: the test point and its negative have identical 64-coordinate digests",
+      "P-256 exact 28/36 theta pattern and seven Aronhold bitangents",
+      "P-256 exact 28-bitangent Frobenius orbit audit (one fixed line, nine 3-cycles)",
+      "Q1/Q2 symplectic-pair relabeling changes candidate moduli (failed invariance control)",
+      "constant-free and displayed two-Weil-constant candidates have equal moduli (positive scaling control)",
+      "all 64 squared theta nulls are invariant under Q1/Q2 relabeling after characteristic permutation"
+    ],
+    "protocol": {
+      "parameter_scope": "NIST P-224 and P-256; ell=3; direct product E^3 over F_p",
+      "sample_selection": "complete Lagrangian enumeration, not random sampling",
+      "stopping_rules": "construction is complete only after a quartic, map, and dual-composition certificate exist",
+      "invalidation_rules": "non-rational kernel, nontrivial factor intersection, singular/non-descending quartic, failed homomorphism, or lost subgroup invalidates the path",
+      "hardware_manifest": {
+        "cpu_count": 5,
+        "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+        "processor": "",
+        "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+        "sympy": "1.14.0",
+        "timestamp_utc": "2026-11-19T16:46:55Z"
+      },
+      "execution_route": "python src/nist_333.py --out artifacts/evidence.json; python src/complex_theta_diagnostic.py --out artifacts/complex_theta_diagnostic.json; python src/finite_field_theta.py --out artifacts/p224_finite_field_theta.json; python src/export_quartic_descent.py; python tests/test_nist_333.py -v; python tests/test_complex_theta_diagnostic.py -v; python tests/test_finite_field_theta.py -v"
+    },
+    "exploration_boundary": {
+      "families": [
+        "direct E^3 (3,3,3) gluing",
+        "Tian normal-Weil-set reconstruction"
+      ],
+      "parameters": "ell=3 on NIST P-224/P-256",
+      "completed_scope": "torsion fields, exact kernel, scalar-diagonal census, exact F_(p^3) quartic candidate, preservation proof, and asymptotic cost substitution",
+      "completeness_claim": "P-256 extension-field quartic candidate only; none for F_p descent, signed point map, or new destination solvers"
+    },
+    "composition": {
+      "edge_ids": [
+        "diagonal-embedding",
+        "quotient-by-lambda",
+        "p256-cubic-quartic-candidate",
+        "fp-descent-unverified"
+      ],
+      "junction_compatibility": "P-256 exact F_(p^3) quartic exists; F_p descent and point map are missing",
+      "weakest_open_obligation": "F_p descent followed by a signed source-to-Jacobian map"
+    },
+    "sources": [
+      "https://doi.org/10.1007/s00145-023-09474-2",
+      "https://arxiv.org/abs/2012.07173",
+      "https://csrc.nist.gov/pubs/fips/186-5/final",
+      "https://www.secg.org/sec2-v2.pdf"
+    ],
+    "open_obligations": [
+      "finish indecomposability testing against elliptic subvarieties defined by non-scalar elements of End(E)",
+      "recover and verify a signed source-to-Jacobian divisor map",
+      "check pi^dagger o pi=[3] in the executable representation",
+      "measure a complete destination workload only if a mechanism different from the already-refuted published substitution is proposed"
+    ],
+    "recommended_next_action": "run handoff/p256_descent_diagnostic.m in Magma and complete Hilbert-90 descent if the cocycle passes",
+    "official_status_change": "none"
+  }
+]
