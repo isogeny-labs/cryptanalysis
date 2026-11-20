@@ -13,6 +13,8 @@ CONFIGS = {
  "prime24-mitm2": "--bits 24 --factor-base prime-abscissa:size=256 --oracle mitm --repeats 8",
 }
 THREADS=[1,2,3,4]; ROUNDS=int(os.environ.get("ROUNDS","5"))
+if os.environ.get("CONFIGS"):  # comma-separated subset
+    CONFIGS={k:v for k,v in CONFIGS.items() if k in os.environ["CONFIGS"].split(",")}
 SKIP=('parallel','threads','wall','ns','seconds','elapsed','bytes','calibration','software','markdown','gae','rho')
 def leaves(o,p=''):
     if isinstance(o,dict):
