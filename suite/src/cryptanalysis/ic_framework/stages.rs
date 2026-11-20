@@ -244,6 +244,38 @@ pub trait DecompositionOracle<G: CountedGroup> {
     fn solver_totals(&self) -> Option<SolverTotals> {
         None
     }
+
+    /// **A copy for another thread**, sharing whatever `prepare` built
+    /// (read-only), for [`collect_and_solve_parallel`].  `None`, the
+    /// default, keeps the oracle on the serial loop.  A fork's
+    /// [`decompose`] must answer exactly as this oracle would.
+    ///
+    /// [`collect_and_solve_parallel`]: crate::cryptanalysis::ic_boundary::collect_and_solve_parallel
+    /// [`decompose`]: DecompositionOracle::decompose
+    fn fork(&self) -> Option<Box<dyn DecompositionOracle<G> + Send + '_>> {
+        None
+    }
+
+    /// What this oracle accumulated internally (solver totals, native
+    /// counters) since the last call, reset to zero.  Called on a fork
+    /// after every decomposition, so that only the committed ones reach
+    /// the report.
+    fn take_delta(&mut self) -> OracleDelta {
+        OracleDelta::default()
+    }
+
+    /// Fold a committed fork decomposition's [`OracleDelta`] into this
+    /// oracle, as if it had made the call itself.
+    fn absorb_delta(&mut self, _delta: &OracleDelta) {}
+}
+
+/// An oracle's internal accounting for some of its calls; see
+/// [`DecompositionOracle::take_delta`].
+#[derive(Clone, Debug, Default)]
+pub struct OracleDelta {
+    pub solver: Option<SolverTotals>,
+    pub native: BTreeMap<String, u64>,
+    pub unliftable: u64,
 }
 
 /// Totals an algebraic oracle accumulates over its solver calls.
@@ -290,6 +322,28 @@ impl SolverTotals {
             self.calls_with_a_degree += 1;
         }
         for (k, v) in &c.extra {
+            *self.extra.entry(k.clone()).or_insert(0) += v;
+        }
+    }
+
+    /// Fold totals over later calls into these, with the same result as
+    /// absorbing those calls one by one after these.
+    pub fn merge(&mut self, o: &SolverTotals) {
+        if o.calls > 0 {
+            self.shape = o.shape.clone();
+        }
+        self.calls += o.calls;
+        self.budget_exceeded += o.budget_exceeded;
+        self.ops += o.ops;
+        if self.op_unit.is_empty() {
+            self.op_unit = o.op_unit.clone();
+        }
+        self.wall_ns += o.wall_ns;
+        self.peak_bytes = self.peak_bytes.max(o.peak_bytes);
+        self.solving_degree_sum += o.solving_degree_sum;
+        self.solving_degree_max = self.solving_degree_max.max(o.solving_degree_max);
+        self.calls_with_a_degree += o.calls_with_a_degree;
+        for (k, v) in &o.extra {
             *self.extra.entry(k.clone()).or_insert(0) += v;
         }
     }

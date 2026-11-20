@@ -909,6 +909,13 @@ pub struct GroupPairScratch {
     binary: crate::cryptanalysis::koblitz_fast::BatchScratch,
 }
 
+/// Scratch is reusable storage, not state: a clone starts empty.
+impl Clone for GroupPairScratch {
+    fn clone(&self) -> Self {
+        Self::default()
+    }
+}
+
 mod batched_walk;
 
 /// One bounded diagnostic state, before the collector's matrix consumes it.
@@ -4377,6 +4384,21 @@ pub struct OracleCounters {
     pub frobfold_mismatches: u64,
 }
 
+impl OracleCounters {
+    /// Add another run's counters to these.
+    pub fn merge(&mut self, o: &OracleCounters) {
+        self.lookups += o.lookups;
+        self.sqrt_solves += o.sqrt_solves;
+        self.inversions += o.inversions;
+        self.s4_pairs += o.s4_pairs;
+        self.s4_hits += o.s4_hits;
+        self.lift_failures += o.lift_failures;
+        self.unliftable_systems += o.unliftable_systems;
+        self.canonicalisations += o.canonicalisations;
+        self.frobfold_mismatches += o.frobfold_mismatches;
+    }
+}
+
 /// Resolve the signs of a witness of abscissae: which points above them
 /// sum to the target.  Costs at most `2·2^m` additions.  `None` when no
 /// choice of signs sums to the target, or when an abscissa has no point
@@ -4838,6 +4860,14 @@ pub fn collect_and_solve<G: CountedGroup>(
 /// verification are identical; only the matrix differs.  Sharing the
 /// loop is what keeps a framework result comparable with the ledger's
 /// instead of being a second implementation that drifts.
+///
+/// The loop is two halves that share no state: [`TargetGen`] draws the
+/// targets (the walk, its restarts and the repeat guard) and [`Commit`]
+/// turns decompositions into rows and stops the moment the logarithm is
+/// pinned.  Nothing the oracle answers changes which target comes next,
+/// which is what lets [`collect_and_solve_parallel`] decompose many
+/// targets at once and still commit exactly the rows this loop commits.
+#[allow(clippy::too_many_arguments)]
 pub fn collect_and_solve_with<G: CountedGroup, L: RelationSolver + ?Sized>(
     g: &G,
     generator: G::Elt,
@@ -4852,349 +4882,759 @@ pub fn collect_and_solve_with<G: CountedGroup, L: RelationSolver + ?Sized>(
     matrix: &mut L,
     mut oracle: impl FnMut(&mut GroupOps, &mut OracleCounters, G::Elt) -> Option<Vec<usize>>,
 ) -> PipelineOutcome {
-    let mut rng = StdRng::seed_from_u64(seed ^ 0x5245_4C41_5449_4F4E);
-    let mut rel = PhaseCost::default();
-    let mut la = PhaseCost::default();
-    let mut ver = PhaseCost::default();
-    let mut ctr = OracleCounters::default();
-    let cols = fb.columns + 1;
-    let d_col = fb.columns;
-    let mut trials = 0u64;
-    let mut found = 0u64;
-    let mut recovered = None;
-    let mut verified = false;
-    let rel_start = Instant::now();
-    let mut la_ns = 0u64;
-    let h_mod = h % r;
-    let mut direct_skipped = 0u64;
-    let (mut single_column_rows, mut two_column_rows) = (0u64, 0u64);
-    // Rows whose column part repeats an earlier row's: with different
-    // coefficients `a, b` such a pair pins `d` by itself, which is what a
-    // rho collision does.  Zero on an honest relation search.
-    let mut column_parts: FastMap<()> = fast_map(64);
-    let (mut repeated_column_rows, mut pinned_by_repeated_row) = (0u64, false);
+    let mut commit = Commit::new(generator, target, r, h, fb, matrix);
+    let mut gen = TargetGen::new(
+        g, generator, target, r, seed, max_trials, targets, pool_mode,
+    );
+    let mut seen: FastMap<()> = fast_map(if targets.is_guarded() { 1 << 12 } else { 0 });
+    while let Some(t) = gen.next(g, &mut seen, None) {
+        let mut ops = GroupOps::default();
+        let mut ctr = OracleCounters::default();
+        let summands = oracle(&mut ops, &mut ctr, t.point);
+        if commit.take(g, t, summands, ops, &ctr) {
+            break;
+        }
+    }
+    commit.finish(g, &gen)
+}
 
-    // The walk: jumps with known coefficients, the current point with
-    // its coefficients.  The guard is shared by both target sources.
-    //
-    // A restart must break the segment without letting the next one
-    // merge into the path this one walked.  Round 2 redrew all sixteen
-    // jumps, at two scalar multiplications each — about 1,170 additions
-    // on a 24-bit curve, which on the binary rungs cost more than every
-    // walk step put together.  Instead, the walk jumps **once**, keeps a
-    // small pool of offsets `[c]G + [d]Q` drawn with them, and restarts
-    // by adding one pool offset to the current point (one addition, the
-    // coefficients add) while **permuting** which jump each hash value
-    // selects.  The restart then costs one group operation instead of
-    // thirty-two scalar multiplications, and two segments still have
-    // different step functions.
-    //
-    // The permutation is what makes that last clause true.  A rotation
-    // would give only `jump_count` distinct index maps, so after enough
-    // restarts two segments would share one and merge exactly as §10.2's
-    // shared jump table let them — the guard catches the repeated target,
-    // but the steps that reached it are wasted, and the waste was
-    // measurable: on the Koblitz `m = 2` rungs a rotating restart roughly
-    // doubled the walk steps per relation and multiplied the
-    // guard-forced restarts by six.  Two *permutations* of the same
-    // sixteen jumps agree on about one index in sixteen, so two segments
-    // that do collide diverge again within a step or two.  Shuffling
-    // sixteen indices costs no group operation at all.
-    //
-    // The pool is drawn **on first use**, one offset at a time (§13).
-    // Rounds 3 and 4 drew all sixteen at setup, at two scalar
-    // multiplications each, and 110 of the ladder's 204 walk rows then
-    // restarted exactly once — that is, never took an offset at all —
-    // so more than half the rows paid thirty-two scalar multiplications
-    // for nothing, and on the smallest rungs that setup was most of the
-    // relation phase.  Drawing lazily charges a row for exactly the
-    // offsets it used.
-    //
-    // Two details make the lazy and the eager arm comparable rather than
-    // merely similar.  The offsets come off a **stream of their own**,
-    // so moving the draw cannot shift the walk's randomness; and a
-    // restart takes offset `k mod 16` rather than a random one, so the
-    // selection consumes no randomness either.  The two arms therefore
-    // walk bit-identical trajectories and differ in exactly one thing:
-    // the offsets they paid for.  `walk_pool_ops` reports that cost, so
-    // the difference between the arms is checkable rather than argued.
-    let jump_count = 16usize;
-    let pool_count = 16usize;
-    let shared_jumps = targets == TargetSource::WalkSharedJumps;
-    let guarded = targets.is_guarded();
-    let mut jumps: Vec<(G::Elt, u64, u64)> = Vec::new();
-    let mut pool: Vec<(G::Elt, u64, u64)> = Vec::new();
-    let mut pool_rng = StdRng::seed_from_u64(seed ^ 0x504F_4F4C_5F4F_4646);
-    let mut pool_ops = GroupOps::default();
-    let mut pool_taken = 0u64;
-    let mut jump_perm: Vec<usize> = (0..jump_count).collect();
-    let mut walk_point = g.identity();
-    let (mut wa, mut wb) = (0u64, 0u64);
-    let mut walk_fresh = true;
-    let segment_cap = ((r as f64).sqrt() * 4.0) as u64 + 65_536;
-    let mut segment_steps = 0u64;
-    let mut seen: FastMap<()> = fast_map(if guarded { 1 << 12 } else { 0 });
-    let (mut walk_steps, mut walk_restarts, mut repeats_skipped, mut guard_probes, mut walk_jumps) =
-        (0u64, 0u64, 0u64, 0u64, 0u64);
-    if targets.is_walk() && !targets.is_batched() {
-        jumps = draw_jumps(
-            g,
+/// One target the generator handed out: the point and its coefficients.
+#[derive(Clone, Copy, Debug)]
+pub struct TrialTarget<E> {
+    pub point: E,
+    pub a: u64,
+    pub b: u64,
+}
+
+/// One decomposition, held apart from the run's ledgers until its target
+/// is committed: a speculative answer the run never reaches costs `S`
+/// nothing.
+#[derive(Clone, Debug)]
+pub struct Decomposed<D> {
+    pub summands: Option<Vec<usize>>,
+    pub ops: GroupOps,
+    pub counters: OracleCounters,
+    pub delta: D,
+}
+
+/// What [`collect_and_solve_parallel`] did beyond the serial loop.  None
+/// of it is in `S`: the committed rows, counters and logarithm are the
+/// serial run's, and this records the wall-clock machinery around them.
+#[derive(Clone, Debug, Default, Serialize)]
+pub struct ParallelReport {
+    pub threads: usize,
+    /// Speculation windows decomposed.
+    pub chunks: u64,
+    pub largest_chunk: usize,
+    /// Targets decomposed by the workers, committed or not.
+    pub decomposed: u64,
+    /// Decomposed past the target that pinned the logarithm and thrown
+    /// away, with their counters: wasted wall time, not cost.
+    pub discarded: u64,
+    /// Targets regenerated to rewind the generator to the stopping trial.
+    pub replayed: u64,
+    /// Wall time inside the parallel decomposition windows.
+    pub parallel_wall_ns: u64,
+    /// Read before quoting `S` from a parallel row.
+    pub note: &'static str,
+}
+
+/// [`ParallelReport::note`].
+pub const PARALLEL_NOTE: &str = "counts, rows and the logarithm are the serial run's; a counter priced in measured nanoseconds (symbolic_descent_ns, a solver priced `measured`) was timed while other threads ran and reads high under contention, so quote S for such an oracle from --threads 1";
+
+/// The target half of the relation loop: the walk (or the random draw),
+/// its restarts and the repeat guard.  Cloned at the start of every
+/// speculation window so a run that stops inside one can be rewound to
+/// the exact trial the serial loop stopped at.
+#[derive(Clone)]
+struct TargetGen<E: Copy> {
+    generator: E,
+    target: E,
+    r: u64,
+    max_trials: u64,
+    targets: TargetSource,
+    shared_jumps: bool,
+    guarded: bool,
+    rng: StdRng,
+    /// Every group operation the targets cost; the oracle's are added at
+    /// commit.
+    ops: GroupOps,
+    jumps: Vec<(E, u64, u64)>,
+    pool: Vec<(E, u64, u64)>,
+    pool_rng: StdRng,
+    pool_ops: GroupOps,
+    pool_taken: u64,
+    jump_perm: Vec<usize>,
+    walk_point: E,
+    wa: u64,
+    wb: u64,
+    walk_fresh: bool,
+    segment_cap: u64,
+    segment_steps: u64,
+    walk_steps: u64,
+    walk_restarts: u64,
+    repeats_skipped: u64,
+    guard_probes: u64,
+    walk_jumps: u64,
+    trials: u64,
+    direct_skipped: u64,
+    batch_walk: Option<batched_walk::BatchedWalker<E>>,
+}
+
+const JUMP_COUNT: usize = 16;
+const POOL_COUNT: usize = 16;
+
+impl<E: Copy + PartialEq> TargetGen<E> {
+    #[allow(clippy::too_many_arguments)]
+    fn new<G: CountedGroup<Elt = E>>(
+        g: &G,
+        generator: E,
+        target: E,
+        r: u64,
+        seed: u64,
+        max_trials: u64,
+        targets: TargetSource,
+        pool_mode: RestartPool,
+    ) -> Self {
+        let mut rng = StdRng::seed_from_u64(seed ^ 0x5245_4C41_5449_4F4E);
+        let mut ops = GroupOps::default();
+
+        // The walk: jumps with known coefficients, the current point with
+        // its coefficients.  The guard is shared by both target sources.
+        //
+        // A restart must break the segment without letting the next one
+        // merge into the path this one walked.  Round 2 redrew all sixteen
+        // jumps, at two scalar multiplications each — about 1,170 additions
+        // on a 24-bit curve, which on the binary rungs cost more than every
+        // walk step put together.  Instead, the walk jumps **once**, keeps a
+        // small pool of offsets `[c]G + [d]Q` drawn with them, and restarts
+        // by adding one pool offset to the current point (one addition, the
+        // coefficients add) while **permuting** which jump each hash value
+        // selects.  The restart then costs one group operation instead of
+        // thirty-two scalar multiplications, and two segments still have
+        // different step functions.
+        //
+        // The permutation is what makes that last clause true.  A rotation
+        // would give only `jump_count` distinct index maps, so after enough
+        // restarts two segments would share one and merge exactly as §10.2's
+        // shared jump table let them — the guard catches the repeated target,
+        // but the steps that reached it are wasted, and the waste was
+        // measurable: on the Koblitz `m = 2` rungs a rotating restart roughly
+        // doubled the walk steps per relation and multiplied the
+        // guard-forced restarts by six.  Two *permutations* of the same
+        // sixteen jumps agree on about one index in sixteen, so two segments
+        // that do collide diverge again within a step or two.  Shuffling
+        // sixteen indices costs no group operation at all.
+        //
+        // The pool is drawn **on first use**, one offset at a time (§13).
+        // Rounds 3 and 4 drew all sixteen at setup, at two scalar
+        // multiplications each, and 110 of the ladder's 204 walk rows then
+        // restarted exactly once — that is, never took an offset at all —
+        // so more than half the rows paid thirty-two scalar multiplications
+        // for nothing, and on the smallest rungs that setup was most of the
+        // relation phase.  Drawing lazily charges a row for exactly the
+        // offsets it used.
+        //
+        // Two details make the lazy and the eager arm comparable rather than
+        // merely similar.  The offsets come off a **stream of their own**,
+        // so moving the draw cannot shift the walk's randomness; and a
+        // restart takes offset `k mod 16` rather than a random one, so the
+        // selection consumes no randomness either.  The two arms therefore
+        // walk bit-identical trajectories and differ in exactly one thing:
+        // the offsets they paid for.  `walk_pool_ops` reports that cost, so
+        // the difference between the arms is checkable rather than argued.
+        let shared_jumps = targets == TargetSource::WalkSharedJumps;
+        let mut jumps: Vec<(E, u64, u64)> = Vec::new();
+        let mut pool: Vec<(E, u64, u64)> = Vec::new();
+        let mut pool_rng = StdRng::seed_from_u64(seed ^ 0x504F_4F4C_5F4F_4646);
+        let mut pool_ops = GroupOps::default();
+        let mut walk_jumps = 0u64;
+        if targets.is_walk() && !targets.is_batched() {
+            jumps = draw_jumps(g, generator, target, r, &mut rng, &mut ops, JUMP_COUNT);
+            walk_jumps += JUMP_COUNT as u64;
+            if !shared_jumps && pool_mode == RestartPool::Eager {
+                for _ in 0..POOL_COUNT {
+                    let off = draw_pool_offset(
+                        g,
+                        generator,
+                        target,
+                        r,
+                        &mut pool_rng,
+                        &mut ops,
+                        &mut pool_ops,
+                    );
+                    pool.push(off);
+                }
+            }
+        }
+        let batch_walk = targets.is_batched().then(|| {
+            let mut walker = batched_walk::BatchedWalker::new(
+                g,
+                generator,
+                target,
+                r,
+                seed,
+                max_trials,
+                matches!(
+                    targets,
+                    TargetSource::WalkBatch
+                        | TargetSource::WalkBatchVector
+                        | TargetSource::WalkBatchVectorInverse
+                ),
+                pool_mode,
+                &mut ops,
+            );
+            if targets == TargetSource::WalkBatchVectorInverse {
+                walker.enable_vector_inverse();
+            } else if targets == TargetSource::WalkBatchVector {
+                walker.enable_vector();
+            }
+            walker
+        });
+        Self {
             generator,
             target,
             r,
-            &mut rng,
-            &mut rel.group_ops,
-            jump_count,
-        );
-        walk_jumps += jump_count as u64;
-        if !shared_jumps && pool_mode == RestartPool::Eager {
-            for _ in 0..pool_count {
-                let off = draw_pool_offset(
-                    g,
-                    generator,
-                    target,
-                    r,
-                    &mut pool_rng,
-                    &mut rel.group_ops,
-                    &mut pool_ops,
-                );
-                pool.push(off);
-            }
+            max_trials,
+            targets,
+            shared_jumps,
+            guarded: targets.is_guarded(),
+            rng,
+            ops,
+            jumps,
+            pool,
+            pool_rng,
+            pool_ops,
+            pool_taken: 0,
+            jump_perm: (0..JUMP_COUNT).collect(),
+            walk_point: g.identity(),
+            wa: 0,
+            wb: 0,
+            walk_fresh: true,
+            segment_cap: ((r as f64).sqrt() * 4.0) as u64 + 65_536,
+            segment_steps: 0,
+            walk_steps: 0,
+            walk_restarts: 0,
+            repeats_skipped: 0,
+            guard_probes: 0,
+            walk_jumps,
+            trials: 0,
+            direct_skipped: 0,
+            batch_walk,
         }
     }
 
-    let mut batch_walk = targets.is_batched().then(|| {
-        let mut walker = batched_walk::BatchedWalker::new(
-            g,
+    /// The next target that passes the guard, or `None` when the run is
+    /// out of trials (or the batched walk is exhausted).  Keys the guard
+    /// inserts are appended to `log` when one is given, so a speculation
+    /// window can be taken back.
+    fn next<G: CountedGroup<Elt = E>>(
+        &mut self,
+        g: &G,
+        seen: &mut FastMap<()>,
+        mut log: Option<&mut Vec<u64>>,
+    ) -> Option<TrialTarget<E>> {
+        let (generator, target, r) = (self.generator, self.target, self.r);
+        while self.trials < self.max_trials {
+            let mut active_lane = None;
+            let (point, a, b) = match self.targets {
+                TargetSource::Random | TargetSource::RandomUnguarded => {
+                    let a = self.rng.gen_range(1..r);
+                    let b = self.rng.gen_range(1..r);
+                    let ag = g.mul(&mut self.ops, generator, a);
+                    let bq = g.mul(&mut self.ops, target, b);
+                    let point = g.add(&mut self.ops, ag, bq);
+                    if g.is_identity(&point) {
+                        self.direct_skipped += 1;
+                        continue;
+                    }
+                    (point, a, b)
+                }
+                TargetSource::WalkBatch
+                | TargetSource::WalkBatchScalar
+                | TargetSource::WalkBatchVector
+                | TargetSource::WalkBatchVectorInverse => {
+                    let walker = self.batch_walk.as_mut().expect("batch source has state");
+                    let (point, a, b, lane) = walker.next(g, &mut self.ops)?;
+                    active_lane = Some(lane);
+                    if g.is_identity(&point) {
+                        walker.restart(lane);
+                        self.direct_skipped += 1;
+                        continue;
+                    }
+                    (point, a, b)
+                }
+                TargetSource::Walk | TargetSource::WalkSharedJumps => {
+                    if self.walk_fresh || self.segment_steps >= self.segment_cap {
+                        if self.walk_restarts == 0 || self.shared_jumps {
+                            // The first segment, and every segment of the
+                            // unguarded diagnostic, starts from a fresh
+                            // `[a]G + [b]Q`.
+                            self.wa = self.rng.gen_range(1..r);
+                            self.wb = self.rng.gen_range(1..r);
+                            let ag = g.mul(&mut self.ops, generator, self.wa);
+                            let bq = g.mul(&mut self.ops, target, self.wb);
+                            self.walk_point = g.add(&mut self.ops, ag, bq);
+                        } else {
+                            // Offset `k mod 16` for the k-th restart, drawn
+                            // here if this is the first restart to reach it.
+                            let idx = (self.pool_taken as usize) % POOL_COUNT;
+                            self.pool_taken += 1;
+                            if idx == self.pool.len() {
+                                let off = draw_pool_offset(
+                                    g,
+                                    generator,
+                                    target,
+                                    r,
+                                    &mut self.pool_rng,
+                                    &mut self.ops,
+                                    &mut self.pool_ops,
+                                );
+                                self.pool.push(off);
+                            }
+                            let (op, oa, ob) = self.pool[idx];
+                            self.walk_point = g.add(&mut self.ops, self.walk_point, op);
+                            self.wa = addmod(self.wa, oa, r);
+                            self.wb = addmod(self.wb, ob, r);
+                            // A fresh index map for the segment: Fisher–Yates
+                            // over the sixteen jumps, no group operation.
+                            for i in (1..JUMP_COUNT).rev() {
+                                self.jump_perm.swap(i, self.rng.gen_range(0..i + 1));
+                            }
+                        }
+                        self.walk_fresh = false;
+                        self.walk_restarts += 1;
+                        self.segment_steps = 0;
+                    } else {
+                        let hsh = mix(g.key(&self.walk_point));
+                        let j = self.jump_perm[((hsh >> 24) as usize) % JUMP_COUNT];
+                        let (jp, aj, bj) = self.jumps[j];
+                        self.walk_point = g.add(&mut self.ops, self.walk_point, jp);
+                        self.wa = addmod(self.wa, aj, r);
+                        self.wb = addmod(self.wb, bj, r);
+                        self.walk_steps += 1;
+                        self.segment_steps += 1;
+                    }
+                    if g.is_identity(&self.walk_point) {
+                        self.walk_fresh = true;
+                        self.direct_skipped += 1;
+                        continue;
+                    }
+                    (self.walk_point, self.wa, self.wb)
+                }
+            };
+            self.trials += 1;
+            // The guard: a target this run has already decomposed carries no
+            // relation the matrix does not hold, and taking it again would
+            // pin the logarithm by collision rather than by relation.
+            if self.guarded {
+                self.guard_probes += 1;
+                let key = g.key(&point);
+                if seen.insert(key, ()).is_some() {
+                    self.repeats_skipped += 1;
+                    if let (Some(walker), Some(lane)) = (self.batch_walk.as_mut(), active_lane) {
+                        walker.restart(lane);
+                    }
+                    self.walk_fresh = true;
+                    continue;
+                }
+                if let Some(log) = log.as_mut() {
+                    log.push(key);
+                }
+            }
+            return Some(TrialTarget { point, a, b });
+        }
+        None
+    }
+}
+
+/// The row half of the relation loop: a decomposition becomes a row, the
+/// elimination takes it, and a pinned logarithm is verified.
+struct Commit<'c, E, L: RelationSolver + ?Sized> {
+    generator: E,
+    target: E,
+    r: u64,
+    h_mod: u64,
+    fb: &'c FactorBase<E>,
+    matrix: &'c mut L,
+    cols: usize,
+    d_col: usize,
+    oracle_ops: GroupOps,
+    ctr: OracleCounters,
+    la: PhaseCost,
+    ver: PhaseCost,
+    found: u64,
+    recovered: Option<u64>,
+    verified: bool,
+    rel_start: Instant,
+    la_ns: u64,
+    single_column_rows: u64,
+    two_column_rows: u64,
+    // Rows whose column part repeats an earlier row's: with different
+    // coefficients `a, b` such a pair pins `d` by itself, which is what a
+    // rho collision does.  Zero on an honest relation search.
+    column_parts: FastMap<()>,
+    repeated_column_rows: u64,
+    pinned_by_repeated_row: bool,
+}
+
+impl<'c, E: Copy + PartialEq, L: RelationSolver + ?Sized> Commit<'c, E, L> {
+    fn new(
+        generator: E,
+        target: E,
+        r: u64,
+        h: u64,
+        fb: &'c FactorBase<E>,
+        matrix: &'c mut L,
+    ) -> Self {
+        Self {
             generator,
             target,
             r,
-            seed,
-            max_trials,
-            matches!(
-                targets,
-                TargetSource::WalkBatch
-                    | TargetSource::WalkBatchVector
-                    | TargetSource::WalkBatchVectorInverse
-            ),
-            pool_mode,
-            &mut rel.group_ops,
-        );
-        if targets == TargetSource::WalkBatchVectorInverse {
-            walker.enable_vector_inverse();
-        } else if targets == TargetSource::WalkBatchVector {
-            walker.enable_vector();
+            h_mod: h % r,
+            fb,
+            matrix,
+            cols: fb.columns + 1,
+            d_col: fb.columns,
+            oracle_ops: GroupOps::default(),
+            ctr: OracleCounters::default(),
+            la: PhaseCost::default(),
+            ver: PhaseCost::default(),
+            found: 0,
+            recovered: None,
+            verified: false,
+            rel_start: Instant::now(),
+            la_ns: 0,
+            single_column_rows: 0,
+            two_column_rows: 0,
+            column_parts: fast_map(64),
+            repeated_column_rows: 0,
+            pinned_by_repeated_row: false,
         }
-        walker
-    });
-    while trials < max_trials {
-        let mut active_lane = None;
-        let (point, a, b) = match targets {
-            TargetSource::Random | TargetSource::RandomUnguarded => {
-                let a = rng.gen_range(1..r);
-                let b = rng.gen_range(1..r);
-                let ag = g.mul(&mut rel.group_ops, generator, a);
-                let bq = g.mul(&mut rel.group_ops, target, b);
-                let point = g.add(&mut rel.group_ops, ag, bq);
-                if g.is_identity(&point) {
-                    direct_skipped += 1;
-                    continue;
-                }
-                (point, a, b)
-            }
-            TargetSource::WalkBatch
-            | TargetSource::WalkBatchScalar
-            | TargetSource::WalkBatchVector
-            | TargetSource::WalkBatchVectorInverse => {
-                let walker = batch_walk.as_mut().expect("batch source has state");
-                let Some((point, a, b, lane)) = walker.next(g, &mut rel.group_ops) else {
-                    break;
-                };
-                active_lane = Some(lane);
-                if g.is_identity(&point) {
-                    walker.restart(lane);
-                    direct_skipped += 1;
-                    continue;
-                }
-                (point, a, b)
-            }
-            TargetSource::Walk | TargetSource::WalkSharedJumps => {
-                if walk_fresh || segment_steps >= segment_cap {
-                    if walk_restarts == 0 || shared_jumps {
-                        // The first segment, and every segment of the
-                        // unguarded diagnostic, starts from a fresh
-                        // `[a]G + [b]Q`.
-                        wa = rng.gen_range(1..r);
-                        wb = rng.gen_range(1..r);
-                        let ag = g.mul(&mut rel.group_ops, generator, wa);
-                        let bq = g.mul(&mut rel.group_ops, target, wb);
-                        walk_point = g.add(&mut rel.group_ops, ag, bq);
-                    } else {
-                        // Offset `k mod 16` for the k-th restart, drawn
-                        // here if this is the first restart to reach it.
-                        let idx = (pool_taken as usize) % pool_count;
-                        pool_taken += 1;
-                        if idx == pool.len() {
-                            let off = draw_pool_offset(
-                                g,
-                                generator,
-                                target,
-                                r,
-                                &mut pool_rng,
-                                &mut rel.group_ops,
-                                &mut pool_ops,
-                            );
-                            pool.push(off);
-                        }
-                        let (op, oa, ob) = pool[idx];
-                        walk_point = g.add(&mut rel.group_ops, walk_point, op);
-                        wa = addmod(wa, oa, r);
-                        wb = addmod(wb, ob, r);
-                        // A fresh index map for the segment: Fisher–Yates
-                        // over the sixteen jumps, no group operation.
-                        for i in (1..jump_count).rev() {
-                            jump_perm.swap(i, rng.gen_range(0..i + 1));
-                        }
-                    }
-                    walk_fresh = false;
-                    walk_restarts += 1;
-                    segment_steps = 0;
-                } else {
-                    let hsh = mix(g.key(&walk_point));
-                    let j = jump_perm[((hsh >> 24) as usize) % jump_count];
-                    let (jp, aj, bj) = jumps[j];
-                    walk_point = g.add(&mut rel.group_ops, walk_point, jp);
-                    wa = addmod(wa, aj, r);
-                    wb = addmod(wb, bj, r);
-                    walk_steps += 1;
-                    segment_steps += 1;
-                }
-                if g.is_identity(&walk_point) {
-                    walk_fresh = true;
-                    direct_skipped += 1;
-                    continue;
-                }
-                (walk_point, wa, wb)
-            }
+    }
+
+    /// Take one target's decomposition, in trial order.  `true` when the
+    /// run stops here.
+    fn take<G: CountedGroup<Elt = E>>(
+        &mut self,
+        g: &G,
+        t: TrialTarget<E>,
+        summands: Option<Vec<usize>>,
+        ops: GroupOps,
+        ctr: &OracleCounters,
+    ) -> bool {
+        let r = self.r;
+        self.oracle_ops.merge(ops);
+        self.ctr.merge(ctr);
+        let Some(summands) = summands else {
+            return false;
         };
-        trials += 1;
-        // The guard: a target this run has already decomposed carries no
-        // relation the matrix does not hold, and taking it again would
-        // pin the logarithm by collision rather than by relation.
-        if guarded {
-            guard_probes += 1;
-            if seen.insert(g.key(&point), ()).is_some() {
-                repeats_skipped += 1;
-                if let (Some(walker), Some(lane)) = (batch_walk.as_mut(), active_lane) {
-                    walker.restart(lane);
-                }
-                walk_fresh = true;
-                continue;
-            }
-        }
-        let Some(summands) = oracle(&mut rel.group_ops, &mut ctr, point) else {
-            continue;
-        };
-        found += 1;
+        self.found += 1;
         let la_start = Instant::now();
-        let mut row = vec![0u64; cols];
+        let mut row = vec![0u64; self.cols];
         for &i in &summands {
-            let c = fb.col_of[i];
-            row[c] = addmod(row[c], fb.coef_of[i], r);
+            let c = self.fb.col_of[i];
+            row[c] = addmod(row[c], self.fb.coef_of[i], r);
         }
         // How many columns the row touches: with orbit columns a sum of
         // two points of one signed orbit is a single-column row, and two
         // of those on one column pin the logarithm by themselves.
+        let d_col = self.d_col;
         let support = row[..d_col].iter().filter(|&&c| c != 0).count();
         match support {
-            1 => single_column_rows += 1,
-            2 => two_column_rows += 1,
+            1 => self.single_column_rows += 1,
+            2 => self.two_column_rows += 1,
             _ => {}
         }
-        let repeated = column_parts
+        let repeated = self
+            .column_parts
             .insert(column_part_key(&row[..d_col]), ())
             .is_some();
         if repeated {
-            repeated_column_rows += 1;
+            self.repeated_column_rows += 1;
         }
         // h·a + h·b·d = Σ coef·x  ⇒  Σ coef·x − h·b·d = h·a
-        row[d_col] = submod(0, mulmod(h_mod, b, r), r);
-        let rhs = mulmod(h_mod, a, r);
-        match matrix.add_row(row, rhs) {
+        row[d_col] = submod(0, mulmod(self.h_mod, t.b, r), r);
+        let rhs = mulmod(self.h_mod, t.a, r);
+        match self.matrix.add_row(row, rhs) {
             RowStatus::Inconsistent => {
-                la_ns += la_start.elapsed().as_nanos() as u64;
-                la.count("inconsistent", 1);
-                break;
+                self.la_ns += la_start.elapsed().as_nanos() as u64;
+                self.la.count("inconsistent", 1);
+                return true;
             }
             RowStatus::Dependent => {}
             RowStatus::Independent => {}
         }
-        if let Some(d) = matrix.pinned(d_col) {
-            pinned_by_repeated_row = repeated;
-            la_ns += la_start.elapsed().as_nanos() as u64;
+        if let Some(d) = self.matrix.pinned(d_col) {
+            self.pinned_by_repeated_row = repeated;
+            self.la_ns += la_start.elapsed().as_nanos() as u64;
             let v_start = Instant::now();
-            let check = g.mul(&mut ver.group_ops, generator, d);
-            ver.wall_ns = v_start.elapsed().as_nanos() as u64;
-            if check == target {
-                recovered = Some(d);
-                verified = true;
-                break;
+            let check = g.mul(&mut self.ver.group_ops, self.generator, d);
+            self.ver.wall_ns = v_start.elapsed().as_nanos() as u64;
+            if check == self.target {
+                self.recovered = Some(d);
+                self.verified = true;
+                return true;
             }
-            ver.count("verification_failures", 1);
+            self.ver.count("verification_failures", 1);
+            return true;
+        }
+        self.la_ns += la_start.elapsed().as_nanos() as u64;
+        false
+    }
+
+    fn finish<G: CountedGroup<Elt = E>>(self, g: &G, gen: &TargetGen<E>) -> PipelineOutcome {
+        let mut rel = PhaseCost::default();
+        let mut la = self.la;
+        let ver = self.ver;
+        let ctr = self.ctr;
+        rel.group_ops = gen.ops;
+        rel.group_ops.merge(self.oracle_ops);
+        rel.wall_ns = (self.rel_start.elapsed().as_nanos() as u64)
+            .saturating_sub(self.la_ns)
+            .saturating_sub(ver.wall_ns);
+        rel.count("trials", gen.trials);
+        rel.count("relations", self.found);
+        rel.count("lookups", ctr.lookups);
+        rel.count("sqrt_solves", ctr.sqrt_solves);
+        rel.count("inversions", ctr.inversions);
+        rel.count("s4_pairs", ctr.s4_pairs);
+        rel.count("s4_hits", ctr.s4_hits);
+        rel.count("lift_failures", ctr.lift_failures);
+        rel.count("unliftable_systems", ctr.unliftable_systems);
+        rel.count("canonicalisations", ctr.canonicalisations);
+        rel.count("frobfold_mismatches", ctr.frobfold_mismatches);
+        rel.count("direct_relations_skipped", gen.direct_skipped);
+        rel.count("repeated_targets_skipped", gen.repeats_skipped);
+        rel.count("target_guard_probes", gen.guard_probes);
+        if let Some(walker) = &gen.batch_walk {
+            for (name, value) in walker.counters(g) {
+                rel.count(name, value);
+            }
+        } else if gen.targets.is_walk() {
+            rel.count("walk_jumps", gen.walk_jumps + gen.pool.len() as u64);
+            rel.count("walk_pool_offsets", gen.pool.len() as u64);
+            rel.count("walk_pool_ops", gen.pool_ops.adds + gen.pool_ops.doubles);
+            rel.count("walk_pool_restarts", gen.pool_taken);
+            rel.count("walk_steps", gen.walk_steps);
+            rel.count("walk_restarts", gen.walk_restarts);
+        }
+        la.wall_ns = self.la_ns;
+        let matrix = self.matrix;
+        let (work, work_unit) = matrix.work();
+        la.count(work_unit, work);
+        la.count("rows", self.found);
+        la.count("single_column_rows", self.single_column_rows);
+        la.count("two_column_rows", self.two_column_rows);
+        la.count("repeated_column_rows", self.repeated_column_rows);
+        la.count(
+            "pinned_by_repeated_row",
+            u64::from(self.pinned_by_repeated_row),
+        );
+        la.count("columns", self.cols as u64);
+        la.count("rank", matrix.rank() as u64);
+        PipelineOutcome {
+            relations: rel,
+            linear_algebra: la,
+            verify: ver,
+            trials: gen.trials,
+            relations_found: self.found,
+            independent: matrix.rank() as u64,
+            dependent: matrix.dependent(),
+            rank: matrix.rank() as u64,
+            recovered: self.recovered,
+            verified: self.verified,
+            counters: ctr,
+        }
+    }
+}
+
+/// **The relation loop on many cores, committing exactly the serial rows.**
+///
+/// Targets are drawn serially — a walk step is one addition — in
+/// windows; every worker decomposes targets of the window with its own
+/// oracle (`workers[i]`, one per thread) while the window lasts; then the
+/// answers are committed **in trial order** through the same [`Commit`]
+/// as [`collect_and_solve_with`].  A run that stops inside a window
+/// rewinds the generator to the stopping trial and drops the answers past
+/// it with their counters, so every count, row and the logarithm are the
+/// serial run's for any number of threads; only `ParallelReport` and wall
+/// times differ.  `decompose` returns, beside the answer, whatever the
+/// worker's oracle accumulated internally (`D`); the committed ones are
+/// returned in order for the caller to fold back.
+#[allow(clippy::too_many_arguments)]
+pub fn collect_and_solve_parallel<G, L, W, D, F>(
+    g: &G,
+    generator: G::Elt,
+    target: G::Elt,
+    r: u64,
+    h: u64,
+    fb: &FactorBase<G::Elt>,
+    seed: u64,
+    max_trials: u64,
+    targets: TargetSource,
+    pool_mode: RestartPool,
+    matrix: &mut L,
+    workers: &mut [W],
+    decompose: F,
+) -> (PipelineOutcome, Vec<D>, ParallelReport)
+where
+    G: CountedGroup + Sync,
+    G::Elt: Send + Sync,
+    L: RelationSolver + ?Sized,
+    W: Send,
+    D: Send,
+    F: Fn(&mut W, &mut GroupOps, &mut OracleCounters, G::Elt) -> (Option<Vec<usize>>, D) + Sync,
+{
+    assert!(!workers.is_empty(), "at least one worker");
+    let threads = workers.len();
+    let mut report = ParallelReport {
+        threads,
+        note: PARALLEL_NOTE,
+        ..Default::default()
+    };
+    let mut commit = Commit::new(generator, target, r, h, fb, matrix);
+    let mut gen = TargetGen::new(
+        g, generator, target, r, seed, max_trials, targets, pool_mode,
+    );
+    let mut seen: FastMap<()> = fast_map(if targets.is_guarded() { 1 << 12 } else { 0 });
+    let mut deltas = Vec::new();
+    // The window grows while a window decomposes in under 4 ms and shrinks
+    // above 64 ms: large enough to amortise the thread hand-off on a cheap
+    // oracle, small enough that the discarded tail stays short on a slow one.
+    let max_window = 1usize << 16;
+    let mut window = threads * 2;
+    let mut batch: Vec<TrialTarget<G::Elt>> = Vec::with_capacity(window);
+    let mut inserted: Vec<u64> = Vec::new();
+    'run: loop {
+        let snapshot = gen.clone();
+        batch.clear();
+        inserted.clear();
+        while batch.len() < window {
+            match gen.next(g, &mut seen, Some(&mut inserted)) {
+                Some(t) => batch.push(t),
+                None => break,
+            }
+        }
+        if batch.is_empty() {
             break;
         }
-        la_ns += la_start.elapsed().as_nanos() as u64;
-    }
-    rel.wall_ns = rel_start.elapsed().as_nanos() as u64 - la_ns - ver.wall_ns;
-    rel.count("trials", trials);
-    rel.count("relations", found);
-    rel.count("lookups", ctr.lookups);
-    rel.count("sqrt_solves", ctr.sqrt_solves);
-    rel.count("inversions", ctr.inversions);
-    rel.count("s4_pairs", ctr.s4_pairs);
-    rel.count("s4_hits", ctr.s4_hits);
-    rel.count("lift_failures", ctr.lift_failures);
-    rel.count("unliftable_systems", ctr.unliftable_systems);
-    rel.count("canonicalisations", ctr.canonicalisations);
-    rel.count("frobfold_mismatches", ctr.frobfold_mismatches);
-    rel.count("direct_relations_skipped", direct_skipped);
-    rel.count("repeated_targets_skipped", repeats_skipped);
-    rel.count("target_guard_probes", guard_probes);
-    if let Some(walker) = &batch_walk {
-        for (name, value) in walker.counters(g) {
-            rel.count(name, value);
+        let last_window = batch.len() < window;
+        let started = Instant::now();
+        let answers = decompose_window(workers, &batch, &decompose);
+        let spent = started.elapsed().as_nanos() as u64;
+        report.chunks += 1;
+        report.largest_chunk = report.largest_chunk.max(batch.len());
+        report.decomposed += batch.len() as u64;
+        report.parallel_wall_ns += spent;
+        let n = batch.len();
+        for (i, (t, d)) in batch.iter().zip(answers).enumerate() {
+            deltas.push(d.delta);
+            if commit.take(g, *t, d.summands, d.ops, &d.counters) {
+                report.discarded += (n - i - 1) as u64;
+                if i + 1 < n {
+                    // Rewind: forget this window's guard entries, restore
+                    // the generator and draw the committed prefix again.
+                    for key in &inserted {
+                        seen.remove(key);
+                    }
+                    gen = snapshot;
+                    for want in &batch[..=i] {
+                        let again = gen
+                            .next(g, &mut seen, None)
+                            .expect("the replay draws the committed targets");
+                        assert!(
+                            again.point == want.point && again.a == want.a && again.b == want.b,
+                            "the target generator is not deterministic"
+                        );
+                        report.replayed += 1;
+                    }
+                }
+                break 'run;
+            }
         }
-    } else if targets.is_walk() {
-        rel.count("walk_jumps", walk_jumps + pool.len() as u64);
-        rel.count("walk_pool_offsets", pool.len() as u64);
-        rel.count("walk_pool_ops", pool_ops.adds + pool_ops.doubles);
-        rel.count("walk_pool_restarts", pool_taken);
-        rel.count("walk_steps", walk_steps);
-        rel.count("walk_restarts", walk_restarts);
+        if last_window {
+            break;
+        }
+        if spent < 4_000_000 && window < max_window {
+            window *= 2;
+        } else if spent > 64_000_000 && window > threads {
+            window = (window / 2).max(threads);
+        }
     }
-    la.wall_ns = la_ns;
-    let (work, work_unit) = matrix.work();
-    la.count(work_unit, work);
-    la.count("rows", found);
-    la.count("single_column_rows", single_column_rows);
-    la.count("two_column_rows", two_column_rows);
-    la.count("repeated_column_rows", repeated_column_rows);
-    la.count("pinned_by_repeated_row", u64::from(pinned_by_repeated_row));
-    la.count("columns", cols as u64);
-    la.count("rank", matrix.rank() as u64);
-    PipelineOutcome {
-        relations: rel,
-        linear_algebra: la,
-        verify: ver,
-        trials,
-        relations_found: found,
-        independent: matrix.rank() as u64,
-        dependent: matrix.dependent(),
-        rank: matrix.rank() as u64,
-        recovered,
-        verified,
-        counters: ctr,
+    (commit.finish(g, &gen), deltas, report)
+}
+
+/// Decompose one window on `workers.len()` threads, each with its own
+/// worker; answers come back in window order.  Threads pull small blocks
+/// off a shared counter, so a slow solve does not hold up the others.
+fn decompose_window<E, W, D, F>(
+    workers: &mut [W],
+    batch: &[TrialTarget<E>],
+    decompose: &F,
+) -> Vec<Decomposed<D>>
+where
+    E: Copy + Send + Sync,
+    W: Send,
+    D: Send,
+    F: Fn(&mut W, &mut GroupOps, &mut OracleCounters, E) -> (Option<Vec<usize>>, D) + Sync,
+{
+    let one = |w: &mut W, t: &TrialTarget<E>| {
+        let mut ops = GroupOps::default();
+        let mut counters = OracleCounters::default();
+        let (summands, delta) = decompose(w, &mut ops, &mut counters, t.point);
+        Decomposed {
+            summands,
+            ops,
+            counters,
+            delta,
+        }
+    };
+    let n = batch.len();
+    if workers.len() == 1 || n == 1 {
+        let w = &mut workers[0];
+        return batch.iter().map(|t| one(w, t)).collect();
     }
+    let grain = (n / (workers.len() * 8)).max(1);
+    let next = std::sync::atomic::AtomicUsize::new(0);
+    let parts: Vec<Vec<(usize, Decomposed<D>)>> = std::thread::scope(|s| {
+        let handles: Vec<_> = workers
+            .iter_mut()
+            .map(|w| {
+                let (next, one) = (&next, &one);
+                s.spawn(move || {
+                    let mut out = Vec::new();
+                    loop {
+                        let start = next.fetch_add(grain, std::sync::atomic::Ordering::Relaxed);
+                        if start >= n {
+                            break;
+                        }
+                        for (i, t) in batch
+                            .iter()
+                            .enumerate()
+                            .take((start + grain).min(n))
+                            .skip(start)
+                        {
+                            out.push((i, one(w, t)));
+                        }
+                    }
+                    out
+                })
+            })
+            .collect();
+        handles
+            .into_iter()
+            .map(|h| h.join().expect("a decomposition worker panicked"))
+            .collect()
+    });
+    let mut slots: Vec<Option<Decomposed<D>>> = (0..n).map(|_| None).collect();
+    for (i, d) in parts.into_iter().flatten() {
+        slots[i] = Some(d);
+    }
+    slots
+        .into_iter()
+        .map(|d| d.expect("every target decomposed"))
+        .collect()
 }
 
 // ── Calibration ────────────────────────────────────────────────────

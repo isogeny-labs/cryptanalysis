@@ -34,8 +34,8 @@
 use std::time::{Duration, Instant};
 
 use super::stages::{
-    BooleanSystem, DecompositionOracle, FactorBaseBuilder, InstanceCtx, Params, SolverCost,
-    SolverTotals, SolverVerdict, SystemShape, SystemSolver,
+    BooleanSystem, DecompositionOracle, FactorBaseBuilder, InstanceCtx, OracleDelta, Params,
+    SolverCost, SolverTotals, SolverVerdict, SystemShape, SystemSolver,
 };
 use crate::cryptanalysis::ic_boundary::{
     binary_subspace_factor_base, decompose_mitm, decompose_mitm_frobenius, koblitz_factor_base,
@@ -232,6 +232,10 @@ impl<G: CountedGroup> DecompositionOracle<G> for SubtractOracle {
         "for each signed base point P, test whether R − P is in the base".into()
     }
 
+    fn fork(&self) -> Option<Box<dyn DecompositionOracle<G> + Send + '_>> {
+        Some(Box::new(SubtractOracle))
+    }
+
     fn decompose(
         &mut self,
         ctx: &InstanceCtx<G>,
@@ -256,7 +260,7 @@ impl<G: CountedGroup> DecompositionOracle<G> for SubtractOracle {
 /// that makes a two-summand search `O(1)` a target instead of `O(|F|)`.
 pub struct MitmOracle {
     m: u32,
-    table: Option<PairTable>,
+    table: Option<std::sync::Arc<PairTable>>,
     native_setup_ns: u64,
 }
 
@@ -318,7 +322,7 @@ impl<G: CountedGroup> DecompositionOracle<G> for MitmOracle {
         if native == 0 {
             ops.merge(table.build_ops);
         }
-        self.table = Some(table);
+        self.table = Some(std::sync::Arc::new(table));
         self.native_setup_ns = if native == 1 {
             started.elapsed().as_nanos() as u64
         } else {
@@ -354,6 +358,14 @@ impl<G: CountedGroup> DecompositionOracle<G> for MitmOracle {
         let table = self.table.as_ref()?;
         decompose_mitm(ctx.group, fb, table, self.m, ops, counters, point)
     }
+
+    fn fork(&self) -> Option<Box<dyn DecompositionOracle<G> + Send + '_>> {
+        Some(Box::new(MitmOracle {
+            m: self.m,
+            table: self.table.clone(),
+            native_setup_ns: 0,
+        }))
+    }
 }
 
 /// Meet in the middle on a table folded by the signed Frobenius: the
@@ -361,7 +373,7 @@ impl<G: CountedGroup> DecompositionOracle<G> for MitmOracle {
 pub struct FrobeniusMitmOracle<'i> {
     m: u32,
     instance: &'i BinaryInstance,
-    table: Option<FrobeniusPairTable>,
+    table: Option<std::sync::Arc<FrobeniusPairTable>>,
 }
 
 impl<'i> FrobeniusMitmOracle<'i> {
@@ -397,7 +409,7 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for FrobeniusMitmOracle<'_> {
         let table = FrobeniusPairTable::build(self.instance, fb)
             .ok_or("this instance has no Koblitz structure to fold by")?;
         ops.merge(table.build_ops);
-        self.table = Some(table);
+        self.table = Some(std::sync::Arc::new(table));
         Ok(())
     }
 
@@ -411,6 +423,14 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for FrobeniusMitmOracle<'_> {
     ) -> Option<Vec<usize>> {
         let table = self.table.as_ref()?;
         decompose_mitm_frobenius(ctx.group, fb, table, self.m, ops, counters, point)
+    }
+
+    fn fork(&self) -> Option<Box<dyn DecompositionOracle<BinaryGroup<'a>> + Send + '_>> {
+        Some(Box::new(FrobeniusMitmOracle {
+            m: self.m,
+            instance: self.instance,
+            table: self.table.clone(),
+        }))
     }
 }
 
@@ -691,5 +711,46 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for DescentAlgebraicOracle<'_> {
 
     fn solver_totals(&self) -> Option<SolverTotals> {
         Some(self.totals.clone())
+    }
+
+    /// A fork solves with a fresh engine of the same name and
+    /// parameters; an engine the registry cannot build again (a test
+    /// double) keeps the oracle serial.
+    fn fork(&self) -> Option<Box<dyn DecompositionOracle<BinaryGroup<'a>> + Send + '_>> {
+        let solver = super::solvers::solver_by_name(self.harness.solver.name()).ok()?;
+        let mut fork = DescentAlgebraicOracle::new(
+            self.summands,
+            self.instance,
+            solver,
+            self.harness.params.clone(),
+            self.harness.budget,
+        );
+        fork.v_basis = self.v_basis.clone();
+        Some(Box::new(fork))
+    }
+
+    fn take_delta(&mut self) -> OracleDelta {
+        let fresh = SolverTotals {
+            solver: self.totals.solver.clone(),
+            ..Default::default()
+        };
+        OracleDelta {
+            solver: Some(std::mem::replace(&mut self.totals, fresh)),
+            native: std::collections::BTreeMap::from([(
+                "symbolic_descent_ns".into(),
+                std::mem::take(&mut self.descent_relation_ns),
+            )]),
+            unliftable: std::mem::take(&mut self.unliftable),
+        }
+    }
+
+    fn absorb_delta(&mut self, delta: &OracleDelta) {
+        if let Some(t) = &delta.solver {
+            self.totals.merge(t);
+        }
+        if let Some(ns) = delta.native.get("symbolic_descent_ns") {
+            self.descent_relation_ns = self.descent_relation_ns.saturating_add(*ns);
+        }
+        self.unliftable += delta.unliftable;
     }
 }
