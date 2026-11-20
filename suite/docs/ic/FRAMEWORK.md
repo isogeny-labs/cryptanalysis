@@ -656,33 +656,37 @@ How (`ic_boundary::collect_and_solve_parallel`):
    time) leaves each fork per call through `take_delta` and is folded back
    only for committed calls (`absorb_delta`).
 
-5. **The probe gate.** The first 256 targets are decomposed on one
-   thread and timed. Threads are used only if a decomposition costs at
-   least 2 µs and at least twice a draw; otherwise the run continues as
-   the plain serial loop on one fork (`parallel.mode = "serial"`). Drawing
-   is serial, so a cheap oracle cannot gain, and before the gate four
-   threads made Koblitz-43 `mitm-frobenius` 1.8x and prime-24 `mitm` 5x
-   *slower*.
+5. **The probe gate.** Before the run, one fork decomposes 64 throwaway
+   points `[k]G` (no ledger) and the time of a decomposition is set
+   against the time of a draw. Threads are used only if a decomposition
+   costs at least 2 µs and at least twice a draw (`parallel_pays`);
+   otherwise the run is exactly the `--threads 1` loop and the report says
+   `parallel.mode = "serial"` with the probe's times. Drawing is serial, so
+   a cheap oracle cannot gain, and running one through the split loop made
+   Koblitz-43 `mitm-frobenius` 0.82x and prime-24 `mitm` 0.87x of
+   `--threads 1`.
 
 Measured (4-vCPU cloud VM, exploratory tier; relation phase, 4 threads
 vs 1, geometric mean of 5 interleaved pairs with 95 % bootstrap CI; every
 run count-for-count identical to `--threads 1`):
 
-| configuration | per-target decomposition | 4 threads |
+| configuration | probe: decomposition / draw | 4 threads |
 |:--|--:|:--|
-| prime-24, `subtract`, base 256 | ~90 µs | 3.35x [3.31, 3.39] |
-| char2-23, `descent-algebraic` + `f4-f2` | ~74 µs | 2.63x [2.57, 2.69] |
-| Koblitz-43, `mitm-frobenius` | ~0.3 µs | 0.98x [0.94, 1.03] (gated serial) |
-| prime-24, `mitm` m = 2 | ~0.2 µs | 0.98x [0.93, 1.02] (gated serial) |
+| prime-24, `subtract`, base 256 | ~53 µs / 0.3 µs | 3.22x [3.15, 3.28] |
+| char2-23, `descent-algebraic` + `f4-f2` | ~109 µs / 0.4 µs | 2.75x [2.69, 2.81] |
+| char2-21, `mitm` m = 3 | ~9 µs / 0.2 µs | parallel |
+| Koblitz-43, `mitm-frobenius` | ~0.06 µs / 0.1 µs | 0.92x [0.86, 0.98], whole process 0.99x (serial loop) |
+| prime-24, `mitm` m = 2 | ~0.03 µs / 0.2 µs | 0.85x [0.70, 1.04] on a 0.03 s phase (serial loop) |
 
-Record: `benchmarks/records/*-ic-threads-scaling.json`. A table oracle
+Records: `benchmarks/records/20261120T1852Z-ic-threads-scaling.json`,
+`…-ic-instance-search-wall.json` and `20261120T1913Z-ic-threads-gate.json`. A table oracle
 at these sizes is bounded by the serial walk, not by cores; what scales
 is an oracle that does real work per target.
 
 `RunReport.parallel` (absent when serial, so serial records are
 byte-for-byte unchanged) records threads, mode, the probe's per-target draw and decomposition
-times, windows, targets decomposed, discarded and replayed, and the wall
-time spent in decomposition windows.
+times and, when parallel, windows, targets decomposed, discarded and
+replayed, and the wall time spent in decomposition windows.
 
 Which oracles fork: `subtract`, `mitm`, `mitm-frobenius` (tables shared
 through `Arc`) and `descent-algebraic` (a fresh engine of the same name
@@ -703,7 +707,9 @@ of a prime-24 process and 117 s of a char2-29 one, against 0.02-0.2 s
 for the whole pipeline. They now take the order from baby-step
 giant-step over the Hasse interval (a single annihilator there is `#E`
 exactly; otherwise the `O(q)` count runs), pick the same curves, and
-take milliseconds. Across cells, `tools/lead_sweep.py run --jobs N` in
+take milliseconds: at the registry's phase-3 settings a whole `ic bench`
+cell went from 39.9 s to 0.34 s (prime-24), 15.7 s to 0.44 s (char2-27)
+and 355.7 s to 1.40 s (char2-29), with identical counts. Across cells, `tools/lead_sweep.py run --jobs N` in
 the workspace trunk runs independent cells side by side.
 
 ---
