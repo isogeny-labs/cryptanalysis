@@ -656,9 +656,33 @@ How (`ic_boundary::collect_and_solve_parallel`):
    time) leaves each fork per call through `take_delta` and is folded back
    only for committed calls (`absorb_delta`).
 
+5. **The probe gate.** The first 256 targets are decomposed on one
+   thread and timed. Threads are used only if a decomposition costs at
+   least 2 µs and at least twice a draw; otherwise the run continues as
+   the plain serial loop on one fork (`parallel.mode = "serial"`). Drawing
+   is serial, so a cheap oracle cannot gain, and before the gate four
+   threads made Koblitz-43 `mitm-frobenius` 1.8x and prime-24 `mitm` 5x
+   *slower*.
+
+Measured (4-vCPU cloud VM, exploratory tier; relation phase, 4 threads
+vs 1, geometric mean of 5 interleaved pairs with 95 % bootstrap CI; every
+run count-for-count identical to `--threads 1`):
+
+| configuration | per-target decomposition | 4 threads |
+|:--|--:|:--|
+| prime-24, `subtract`, base 256 | ~90 µs | 3.35x [3.31, 3.39] |
+| char2-23, `descent-algebraic` + `f4-f2` | ~74 µs | 2.63x [2.57, 2.69] |
+| Koblitz-43, `mitm-frobenius` | ~0.3 µs | 0.98x [0.94, 1.03] (gated serial) |
+| prime-24, `mitm` m = 2 | ~0.2 µs | 0.98x [0.93, 1.02] (gated serial) |
+
+Record: `benchmarks/records/*-ic-threads-scaling.json`. A table oracle
+at these sizes is bounded by the serial walk, not by cores; what scales
+is an oracle that does real work per target.
+
 `RunReport.parallel` (absent when serial, so serial records are
-byte-for-byte unchanged) records threads, windows, targets decomposed,
-discarded and replayed, and the wall time spent in parallel windows.
+byte-for-byte unchanged) records threads, mode, the probe's per-target draw and decomposition
+times, windows, targets decomposed, discarded and replayed, and the wall
+time spent in decomposition windows.
 
 Which oracles fork: `subtract`, `mitm`, `mitm-frobenius` (tables shared
 through `Arc`) and `descent-algebraic` (a fresh engine of the same name
