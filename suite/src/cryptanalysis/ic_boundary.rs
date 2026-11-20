@@ -5867,7 +5867,6 @@ where
     // the bar the run continues as the plain serial loop with one fork;
     // either way the committed rows are the same.
     const PROBE: usize = 256;
-    const MIN_DECOMPOSE_NS: u64 = 2_000;
     let mut probing = true;
     let max_window = 1usize << 16;
     let mut window = PROBE;
@@ -5933,8 +5932,7 @@ where
             probing = false;
             report.probe_draw_ns = draw_ns / n as u64;
             report.probe_decompose_ns = spent / n as u64;
-            let pays = report.probe_decompose_ns >= MIN_DECOMPOSE_NS
-                && report.probe_decompose_ns >= 2 * report.probe_draw_ns;
+            let pays = parallel_pays(report.probe_draw_ns, report.probe_decompose_ns);
             if !pays {
                 report.mode = "serial";
                 // No speculation from here on, so the worker's internal
@@ -5961,6 +5959,13 @@ where
         }
     }
     (commit.finish(g, &gen), report)
+}
+
+/// Whether threads can pay for an oracle: a decomposition of at least
+/// 2 µs and at least twice the cost of drawing a target, both measured on
+/// one thread.  Below that the serial draw bounds the run.
+pub fn parallel_pays(draw_ns: u64, decompose_ns: u64) -> bool {
+    decompose_ns >= 2_000 && decompose_ns >= 2 * draw_ns
 }
 
 /// One decomposition with its own ledgers.

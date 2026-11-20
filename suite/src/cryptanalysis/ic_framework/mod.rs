@@ -77,9 +77,9 @@ use std::time::Instant;
 use serde::Serialize;
 
 use crate::cryptanalysis::ic_boundary::{
-    collect_and_solve_parallel, collect_and_solve_with, price_phase, Calibration, CountedGroup,
-    GroupOps, ParallelReport, PhaseCost, PipelineOutcome, RelationSolver, RestartPool,
-    TargetSource,
+    collect_and_solve_parallel, collect_and_solve_with, parallel_pays, price_phase, Calibration,
+    CountedGroup, GroupOps, OracleCounters, ParallelReport, PhaseCost, PipelineOutcome,
+    RelationSolver, RestartPool, TargetSource, PARALLEL_NOTE,
 };
 use linalg::matrix_by_name;
 use stages::{DecompositionOracle, FactorBaseBuilder, InstanceCtx, Params, SystemShape, Targets};
@@ -331,6 +331,7 @@ where
     // internal accounting for the committed targets is folded back into
     // `oracle`, so the report reads exactly as the serial run's.
     let mut committed = stages::OracleDelta::default();
+    let mut gated: Option<ParallelReport> = None;
     let parallel_run = {
         let shared: &dyn DecompositionOracle<G> = &*oracle;
         let forks = (spec.threads > 1)
@@ -340,6 +341,25 @@ where
                     .collect::<Option<Vec<_>>>()
             })
             .flatten();
+        // Before the run, time the oracle on throwaway points (never the
+        // run's targets, never in a ledger): a cheap oracle cannot gain
+        // from threads, since drawing targets is serial, and must then run
+        // the very loop `--threads 1` runs.
+        let forks = forks.and_then(|mut forks| {
+            let (draw_ns, decompose_ns) = probe_oracle_cost(ctx, &fb, &mut *forks[0], spec.seed);
+            if parallel_pays(draw_ns, decompose_ns) {
+                return Some(forks);
+            }
+            gated = Some(ParallelReport {
+                threads: spec.threads,
+                note: PARALLEL_NOTE,
+                mode: "serial",
+                probe_draw_ns: draw_ns,
+                probe_decompose_ns: decompose_ns,
+                ..Default::default()
+            });
+            None
+        });
         forks.map(|mut forks| {
             collect_and_solve_parallel(
                 ctx.group,
@@ -384,7 +404,7 @@ where
                 matrix.as_mut(),
                 |ops, counters, point| oracle.decompose(ctx, &fb, ops, counters, point),
             ),
-            None,
+            gated,
         ),
     };
 
@@ -515,6 +535,39 @@ where
 }
 
 /// The table a sweep prints.
+/// Nanoseconds per target of drawing one (a group addition) and of one
+/// decomposition, on 64 throwaway points `[k]G`, `k` from the seed.
+/// Nothing here reaches a ledger or the run: the fork's own accounting is
+/// drained and dropped.
+fn probe_oracle_cost<G: CountedGroup>(
+    ctx: &InstanceCtx<G>,
+    fb: &crate::cryptanalysis::ic_boundary::FactorBase<G::Elt>,
+    fork: &mut (dyn DecompositionOracle<G> + Send + '_),
+    seed: u64,
+) -> (u64, u64) {
+    const N: u64 = 64;
+    let mut ops = GroupOps::default();
+    let k = (seed ^ 0x5052_4F42_4521) % ctx.r.max(2) + 1;
+    let mut p = ctx.group.mul(&mut ops, ctx.generator, k);
+    let mut points = Vec::with_capacity(N as usize);
+    let started = Instant::now();
+    for _ in 0..N {
+        p = ctx.group.add(&mut ops, p, ctx.generator);
+        points.push(p);
+    }
+    let draw_ns = started.elapsed().as_nanos() as u64 / N;
+    let mut ctr = OracleCounters::default();
+    let started = Instant::now();
+    for &pt in &points {
+        if !ctx.group.is_identity(&pt) {
+            std::hint::black_box(fork.decompose(ctx, fb, &mut ops, &mut ctr, pt));
+        }
+    }
+    let decompose_ns = started.elapsed().as_nanos() as u64 / N;
+    let _ = fork.take_delta();
+    (draw_ns, decompose_ns)
+}
+
 pub fn format_markdown(rows: &[RunReport]) -> String {
     let mut out = String::new();
     out.push_str(
