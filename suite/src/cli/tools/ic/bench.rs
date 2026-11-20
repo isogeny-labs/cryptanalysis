@@ -4,6 +4,7 @@
 //! ic bench --list                       what can be plugged in where
 //! ic bench --bits 16 --factor-base prime-abscissa:size=24 \
 //!          --oracle mitm:negation_folded=1 --targets walk
+//! ic bench --fp2-bits 20 --factor-base fp2-subfield --oracle fp2-weil
 //! ic bench --sweep sweep.json --out docs/ic/runs/sweep-YYYY-MM-DD.json
 //! ```
 //!
@@ -23,6 +24,9 @@ use crate::cryptanalysis::ic_boundary::{
     rho_reference, rho_reference_negation, roster_prime_instance, signed_frobenius_rho,
     BinaryGroup, BinaryInstance, Calibration, CountedGroup, GroupOps, PinOutcome, PrimeCurve,
     PrimeInstance, RhoResult,
+};
+use crate::cryptanalysis::ic_fp2::{
+    calibrate_fp_units, find_fp2_curve, Fp2Curve, Fp2Instance, Fp2SubfieldBase, Fp2WeilOracle,
 };
 use crate::cryptanalysis::ic_framework::affine::AffineS3Oracle;
 use crate::cryptanalysis::ic_framework::batch_mitm::BinaryBatchMitmOracle;
@@ -56,6 +60,10 @@ pub struct BenchArgs {
     /// Koblitz instance of this field degree.
     #[arg(long)]
     pub koblitz_degree: Option<u32>,
+    /// `F_{p²}` instance whose prime-order subgroup has about this many
+    /// bits (`p ≈ 2^{bits/2}`, random curve not defined over `F_p`).
+    #[arg(long)]
+    pub fp2_bits: Option<u32>,
     /// Largest cofactor a random binary curve may have.  The boundary
     /// ladders use 8, so `S = ops / sqrt(r)` is taken over a subgroup
     /// close to the whole group, as on every ledger row; a larger bound
@@ -145,6 +153,8 @@ fn listing() -> Value {
                         {"name": "steps", "means": "enumeration and per-target contraction budget in charged primitive steps"}]},
                     {"name": "binary-subspace", "regimes": ["char2", "koblitz"],
                      "parameters": [{"name": "dimension", "means": "F_2-dimension of the abscissa subspace"}]},
+                    {"name": "fp2-subfield", "regimes": ["fp2"],
+                     "parameters": [{"name": "size", "means": "abscissae in F_p in the base, smallest x0 first; default all (about p/2)"}]},
                     {"name": "koblitz-orbit", "regimes": ["koblitz"],
                      "parameters": [
                         {"name": "divisor", "means": "comma-separated factor indices selecting the Frobenius-invariant subspace"},
@@ -165,15 +175,15 @@ fn listing() -> Value {
                 "trait": "DecompositionOracle",
                 "what_it_chooses": "how a target is written as a sum of factor-base points",
                 "plugins": [
-                    {"name": "subtract", "summands": 2, "regimes": ["prime", "char2", "koblitz"],
+                    {"name": "subtract", "summands": 2, "regimes": ["prime", "char2", "koblitz", "fp2"],
                      "parameters": []},
                     {"name": "subtract-binary-batch", "summands": 2, "regimes": ["char2", "koblitz"],
                      "parameters": [{"name": "block", "means": "batch size 1..4096, default 32"},
                                     {"name": "lazy", "means": "1 (default) to finish only candidate ordinates; 0 for full batch"}]},
-                    {"name": "mitm", "summands": "2 or 3", "regimes": ["prime", "char2", "koblitz"],
+                    {"name": "mitm", "summands": "2 or 3", "regimes": ["prime", "char2", "koblitz", "fp2"],
                      "parameters": [{"name": "native_setup_pricing", "means": "0 or1, default0; whole native setup with observed arithmetic diagnostics"},{"name": "negation_folded", "means": "1 to halve the table's additions"},
                                     {"name": "m", "means": "summands, 2 or 3"}]},
-                    {"name": "rep-join", "summands": "2..9", "regimes": ["prime", "char2", "koblitz"],
+                    {"name": "rep-join", "summands": "2..9", "regimes": ["prime", "char2", "koblitz", "fp2"],
                      "parameters": [{"name": "m", "means": "summands, 2..=9"},
                                     {"name": "filter_bits", "means": "d in 0..=32: pair sums kept only when their abscissa hash lies in a 2^-d subset (the representation filter); 0 = plain MITM at m"},
                                     {"name": "filter_seed", "means": "filter hash seed, default 1"}],
@@ -186,6 +196,9 @@ fn listing() -> Value {
                         {"name": "s", "means": "shared hash prime; must match hashed-affine"},
                         {"name": "steps", "means": "per-target contraction budget in charged primitive steps"}],
                      "needs": "hashed-affine with identical slots, seed, tau and s; contraction primitive steps are uncalibrated, so do not read S as a priced end-to-end cost"},
+                    {"name": "fp2-weil", "summands": 2, "regimes": ["fp2"],
+                     "parameters": [],
+                     "needs": "fp2-subfield: Gaudry/Diem n = 2, the Weil restriction of S3(x1, x2, x_R) over F_p in (x1 + x2, x1 x2), roots by gcd(g, X^p - X) and Cantor-Zassenhaus; F_p multiplications, inversions and square roots counted and priced at this host's measured F_p units"},
                     {"name": "mitm-frobenius", "summands": "2 or 3", "regimes": ["koblitz"],
                      "parameters": [{"name": "m", "means": "summands, 2 or 3"}]},
                     {"name": "mitm-batched", "summands": "2", "regimes": ["char2", "koblitz"],
@@ -385,6 +398,19 @@ fn matched_rho(instance: &Instance, seed: u64, repeats: usize, runs: usize) -> R
                 rule: "negation map (A = 2): the only eligible automorphism of this curve",
             }
         }
+        Instance::Fp2(i) => {
+            let (g, gen, r) = (&i.curve, i.generator, i.r);
+            RhoReferences {
+                matched: rho_reference_for(g, gen, r, seed, repeats, runs, |t, _, s, cap| {
+                    rho_reference_negation(g, gen, t, r, s, cap)
+                }),
+                plain: rho_reference_for(g, gen, r, seed, repeats, runs, |t, _, s, cap| {
+                    rho_reference(g, gen, t, r, s, cap)
+                }),
+                candidates: Vec::new(),
+                rule: "negation map (A = 2): a generic curve over F_{p^2} not defined over F_p, so no Frobenius endomorphism acts on it; the negation is the only eligible automorphism",
+            }
+        }
         Instance::Binary(i) => {
             let bg = BinaryGroup(&i.fast);
             let (gen, r) = (i.generator, i.r);
@@ -570,11 +596,72 @@ fn run_binary(
     Ok(out)
 }
 
+/// One `F_{p²}` configuration, over `repeats` targets.
+fn run_fp2(
+    inst: &Fp2Instance,
+    spec: &PipelineSpec,
+    args: &BenchArgs,
+    calib: &Calibration,
+    rho_s: Option<f64>,
+) -> Result<Vec<RunReport>, String> {
+    let fb_name = spec.factor_base.as_str();
+    let or_name = spec.oracle.as_str();
+    let subfield = Fp2SubfieldBase { instance: inst };
+    let base: &dyn FactorBaseBuilder<Fp2Curve> = match fb_name {
+        "fp2-subfield" => &subfield,
+        other => {
+            return Err(format!(
+                "factor base `{other}` is not available on an F_{{p^2}} curve; try fp2-subfield"
+            ))
+        }
+    };
+    let mut out = Vec::new();
+    for rep in 0..args.repeats.max(1) {
+        let mut ops = GroupOps::default();
+        let g = inst.generator;
+        let planted = planted_log(spec.seed, rep, inst.r);
+        let q = inst.curve.mul(&mut ops, g, planted);
+        let ctx = InstanceCtx {
+            group: &inst.curve,
+            generator: g,
+            target: q,
+            r: inst.r,
+            cofactor: inst.cofactor,
+            group_order: inst.group_order,
+            name: inst.name.clone(),
+            field_degree: None,
+        };
+        let mut spec = spec.clone();
+        spec.seed = spec.seed.wrapping_add(rep as u64 * 0x9E37);
+        let m = spec.oracle_params.u64_or("m", 2)? as u32;
+        let mut subtract = SubtractOracle;
+        let mut mitm = MitmOracle::new(m);
+        let mut rep_join = RepJoinOracle::new(m);
+        let mut weil = Fp2WeilOracle::new(inst);
+        let oracle: &mut dyn DecompositionOracle<_> = match or_name {
+            "subtract" => &mut subtract,
+            "mitm" => &mut mitm,
+            "rep-join" => &mut rep_join,
+            "fp2-weil" => &mut weil,
+            other => {
+                return Err(format!(
+                    "oracle `{other}` is not available on an F_{{p^2}} curve; try subtract, mitm, rep-join or fp2-weil"
+                ))
+            }
+        };
+        out.push(run_pipeline(
+            &ctx, &spec, base, oracle, planted, calib, rho_s,
+        )?);
+    }
+    Ok(out)
+}
+
 /// The instance a sweep runs every configuration on, built once.  The
 /// binary instance carries its field tables, so it is boxed.
 enum Instance {
     Prime(PrimeInstance),
     Binary(Box<BinaryInstance>),
+    Fp2(Fp2Instance),
 }
 
 impl Instance {
@@ -582,6 +669,7 @@ impl Instance {
         match self {
             Instance::Prime(i) => &i.name,
             Instance::Binary(i) => &i.name,
+            Instance::Fp2(i) => &i.name,
         }
     }
 }
@@ -732,12 +820,18 @@ pub fn run(args: BenchArgs, json_only: bool) -> Result<Value, String> {
             )
         }
         None => {
-            let (regime, degree) = match (args.bits, args.char2_degree, args.koblitz_degree) {
-                (Some(b), None, None) => ("prime".to_string(), b),
-                (None, Some(n), None) => ("char2".to_string(), n),
-                (None, None, Some(n)) => ("koblitz".to_string(), n),
+            let (regime, degree) = match (
+                args.bits,
+                args.char2_degree,
+                args.koblitz_degree,
+                args.fp2_bits,
+            ) {
+                (Some(b), None, None, None) => ("prime".to_string(), b),
+                (None, Some(n), None, None) => ("char2".to_string(), n),
+                (None, None, Some(n), None) => ("koblitz".to_string(), n),
+                (None, None, None, Some(k)) => ("fp2".to_string(), k),
                 _ => return Err(
-                    "choose exactly one of --bits, --char2-degree, --koblitz-degree, or --sweep"
+                    "choose exactly one of --bits, --char2-degree, --koblitz-degree, --fp2-bits, or --sweep"
                         .into(),
                 ),
             };
@@ -787,9 +881,17 @@ pub fn run(args: BenchArgs, json_only: bool) -> Result<Value, String> {
                 .or_else(|| koblitz_instance(0, degree))
                 .ok_or_else(|| format!("no Koblitz instance at degree {degree}"))?,
         )),
+        "fp2" => Instance::Fp2(find_fp2_curve(degree, args.seed, args.max_cofactor).ok_or_else(
+            || {
+                format!(
+                    "no F_{{p^2}} instance at {degree} bits (12..=60) with cofactor at most {}",
+                    args.max_cofactor
+                )
+            },
+        )?),
         other => {
             return Err(format!(
-                "unknown regime `{other}`; try prime, char2 or koblitz"
+                "unknown regime `{other}`; try prime, char2, koblitz or fp2"
             ))
         }
     };
@@ -799,6 +901,27 @@ pub fn run(args: BenchArgs, json_only: bool) -> Result<Value, String> {
             calibration_for(&i.curve, &sample_prime_points(i), "prime", &i.name, i.r)
         }
         Instance::Binary(i) => calibration_for_binary(i, &regime),
+        Instance::Fp2(i) => {
+            let mut ops = GroupOps::default();
+            let points: Vec<_> = (1..=8u64)
+                .map(|k| i.curve.mul(&mut ops, i.generator, k))
+                .collect();
+            let (mut calib, _) = calibration_for(&i.curve, &points, "fp2", &i.name, i.r);
+            // The F_p units the fp2 base and the fp2-weil oracle count.
+            // The repository's table has no fp2 entry, so every factor is
+            // this host's measurement; re-pin to record that.
+            calibrate_fp_units(i.p(), &mut calib);
+            // One pair-table probe, measured on a real table over a small
+            // subfield base.  (The prime path leaves this unit at the
+            // pinned ratio, or zero on a generated curve; measuring it here
+            // keeps the oracles' lookups from being free.)
+            let small = crate::cryptanalysis::ic_fp2::fp2_subfield_factor_base(i, Some(64));
+            calib.ns_per_lookup =
+                crate::cryptanalysis::ic_boundary::PairTable::build(&i.curve, &small)
+                    .calibrate_lookup(1_000_000);
+            let pins = calib.pin("fp2", &i.name);
+            (calib, pins)
+        }
     };
 
     let started = std::time::Instant::now();
@@ -844,6 +967,7 @@ pub fn run(args: BenchArgs, json_only: bool) -> Result<Value, String> {
         let outcome = match &instance {
             Instance::Prime(i) => run_prime(i, &spec, &args, &calib, rho_s),
             Instance::Binary(i) => run_binary(i, &spec, &args, &calib, rho_s),
+            Instance::Fp2(i) => run_fp2(i, &spec, &args, &calib, rho_s),
         };
         match outcome {
             Ok(mut got) => rows.append(&mut got),
@@ -859,7 +983,7 @@ pub fn run(args: BenchArgs, json_only: bool) -> Result<Value, String> {
             eprintln!("  skipped: {}", f["configuration"].as_str().unwrap_or("?"));
         }
     }
-    Ok(json!({
+    let mut report = json!({
         "schema_version": 1,
         "operation": "bench",
         "status": if all_verified { "complete" } else { "incomplete" },
@@ -887,5 +1011,11 @@ pub fn run(args: BenchArgs, json_only: bool) -> Result<Value, String> {
         "elapsed_seconds": started.elapsed().as_secs_f64(),
         "markdown": markdown,
         "rows": rows,
-    }))
+    });
+    // An F_{p^2} curve is generated, not a roster entry: record its
+    // field, coefficients and generator so the instance can be rebuilt.
+    if let Instance::Fp2(i) = &instance {
+        report["instance_detail"] = i.describe();
+    }
+    Ok(report)
 }
