@@ -1,0 +1,49 @@
+{
+  "schema": "engineering.native-replay-budget-amendment/v1",
+  "standing": "pcc:unverified",
+  "baseline_source": "405c43dd65dd746ccf17963bfb95f93bb07e08c8",
+  "hosted_run": 44611914662,
+  "corpus": {
+    "job": 135870473907,
+    "result": "success",
+    "projects": 63,
+    "fresh_contexts": 88,
+    "source_and_alias_paths": 242,
+    "original_input_paths": 435,
+    "original_input_source_commit": "b8b5a8a1e412bf5071901b89ee83078dba061394",
+    "historical_censored_probes": 2,
+    "retained_command_records": 538,
+    "command_returns_zero": 538,
+    "retained_file_hashes_checked": 1746,
+    "bad_hashes": 0,
+    "archive_sha256": "0279d34a9982c0459f3f77e780ff1814713dda1cd8021797c76a3122465a2375"
+  },
+  "standalone": {
+    "job": 135870473394,
+    "result": "incomplete: job wall-time limit",
+    "github_annotation": "The job has exceeded the maximum execution time of 2h0m0s",
+    "completed_main_command_records": 254,
+    "completed_main_command_returns_zero": 254,
+    "main_final_project_receipt_present": false,
+    "positive_and_negative_control_commands": 25,
+    "expected_nonzero_control_records": 1,
+    "expected_failure_case": "invalid dependency change",
+    "archive_sha256": "99a58823b6e5af0ed5f59006c4dc3fc55eb781f3e137f83e72484fab5f6f90c0"
+  },
+  "amendment": {
+    "old_standalone_job_minutes": 120,
+    "new_standalone_job_minutes": 180,
+    "corpus_job_budget_unchanged": true,
+    "commands_and_coverage_assertions_unchanged": true,
+    "toolchains_and_manifest_unchanged": true,
+    "no_proof_or_frozen_input_edits": true,
+    "job_timeout_does_not_become_success": true
+  },
+  "validation": [
+    "Only one standalone timeout line changes",
+    "YAML semantic comparison permits only120-to180 budget",
+    "Bash syntax checked for every run step"
+  ],
+  "scientific_measurement": false,
+  "new_budget_complete_ci_result": "pending"
+}

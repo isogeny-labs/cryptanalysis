@@ -1,0 +1,13 @@
+{
+  "scope": "Controlled native cache-boundary regression, not admitted mathematical evidence",
+  "current_checker_admitted_paths": 4,
+  "fresh_contexts_reported": 3,
+  "second_context_Z_reused": true,
+  "fresh_second_context_compile_exit": 1,
+  "fresh_second_context_stdout": "/Volumes/SSD990-2/.codex/worktrees/ci-audit-main/.venv/tmp/maintained-path-audit-20261118/native-header-cache-control/fresh-second/Z.lean:4:0: error: Not a definitional equality: the left-hand side\n  B.n\nis not definitionally equal to the right-hand side\n  1\n/Volumes/SSD990-2/.codex/worktrees/ci-audit-main/.venv/tmp/maintained-path-audit-20261118/native-header-cache-control/fresh-second/Z.lean:4:28: error: Type mismatch\n  rfl\nhas type\n  ?m.5 = ?m.5\nbut is expected to have type\n  B.n = 1\n'Z.result' depends on axioms: [sorryAx]\n",
+  "fresh_second_context_stderr": "",
+  "source_Z": "import\n B\nnamespace Z\ntheorem result : B.n = 1 := rfl\n#print axioms Z.result\nend Z\n",
+  "baseline_commit": "f082ee00f05126c1e53e70ebcc5a5a33e3cd1baa",
+  "baseline_checker_sha256": "bf97f3a57cd2a27b7786c1c0d5d380d3e0c2011a898d95382109276d4bf471ea",
+  "raw_control_receipt_sha256": "2a875572649f6ac7d3d074089075d3e4cca44be75c38a2a643dee5f044833f8e"
+}
