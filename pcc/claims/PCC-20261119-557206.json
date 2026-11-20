@@ -1,0 +1,23 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-19T05:38:29Z",
+ "id": "PCC-20261119-557206",
+ "kind": "statement",
+ "producer": {
+  "commit": "b3d36d604157c5cf6ae1f782ce5a5486ee7d8135",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "research/xedni_rank_decay_20261118/RUN_AUTHORIZATION_20261119.md",
+    "sha256": "533f4771f17a59badb8424a0bf80f2586e5bd1716d481cf47e6b73f8211882d7"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "The 2026-11-19 authorization/preflight attempt only; environment and producer-attested status, not a decay measurement, natural-row result, absence proof, or future-run claim.",
+ "statement": "After user authorization, the frozen Xedni calibration preflight exited 2 with natural_rows_not_authorized and natural_rows_started=0; the environment also lacked checkpoint upload transport and a licensed Magma runtime."
+}

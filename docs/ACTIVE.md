@@ -28,9 +28,17 @@ and construction gates. [pcc:unverified]
 
 - [x] CT188: randomized physical A/B crossover and carryover diagnostics, source-only; protocol PR #1723 merged, implementation draft PR #1725 (automation, started 2026-11-17, branch research/ct188-physical-crossover-20261117) [pcc:unverified]
 
-- [x] Extend certified Xedni lift-success trials to the ten-coefficient `r=7..9` regime with exact rational dependence verification; local frozen panel completed 1,600/1,600 rows with 67 certified relations and 23 recoveries (Codex, started 2026-11-17, branch codex/xedni-breakthrough-20261117, implementation PR #1730 merged, outcome draft PR #1762) [pcc:unverified]
+- [x] Extend certified Xedni lift-success trials to the ten-coefficient `r=7..9` regime with exact rational dependence verification; local frozen panel completed 1,600/1,600 rows with 67 certified relations and 23 recoveries (Codex, started 2026-11-17, branch codex/xedni-breakthrough-20261117, implementation PR #1730 merged, outcome PR #1762 merged) [pcc:unverified]
 
-- [ ] Freeze and run a fresh-seed target-bearing relation-enumeration panel, preserving target-independent lift success and comparing complete recovery work against the frozen baseline (Codex, started 2026-11-18, branch codex/xedni-breakthrough-20261117, outcome draft PR #1762) [pcc:unverified]
+- [x] Derive and implement target-dependent chord-origin recovery, including a zero-explicit-target exact relation, Rust/Python controls, Lean algebra and an editable SVG diagram (Codex, started 2026-11-18, branch codex/xedni-breakthrough-20261117, draft PR #1768) [pcc:unverified]
+
+- [ ] Freeze and run a fresh-seed target-bearing relation-enumeration panel, preserving target-independent lift success and comparing complete recovery work against the frozen baseline (Codex, started 2026-11-18, branch codex/xedni-breakthrough-20261117, draft PR #1768) [pcc:unverified]
+
+- [ ] Derive, formalize and prospectively freeze a target-origin-pencil relation search that expands bounded target-bearing coefficient coverage without claiming new relation information; measure it only after checkpoint transport is restored (Codex, started 2026-11-18, branch codex/xedni-breakthrough-20261117, draft PR #1768) [pcc:unverified]
+
+- [ ] Prospectively implement and freeze a first-representative fixed-coordinate dedup arm for the target-origin pencil, requiring semantic parity and full work accounting before any optimization claim (Codex, started 2026-11-18, branch codex/xedni-breakthrough-20261117, draft PR #1768) [pcc:unverified]
+
+- [ ] Actively attempt to disprove the Xedni rank-decay heuristic over 16--32-bit primes with independent lift, r, and exact Silverman/JKSST local-condition factors; preserve the frozen signed-slope/useful-recovery criterion, close production gates, and run the first admissible rows without downscaling (Codex, started 2026-11-18, resumed 2026-11-19, branch codex/xedni-breakthrough-20261117, PR #1768) [pcc:unverified]
 
 - [x] CT187: bounded admitted-source native 1,536-call same-route sham producer, strict evidence reader and synthetic handshake; no paid execution (automation, started 2026-11-17, branch research/ct187-native-sham-source-admission-20261117, PR #1719)
 
@@ -49,3 +57,6 @@ and construction gates. [pcc:unverified]
 - [ ] <task> (<runtime>, started YYYY-MM-DD, branch <branch>, PR #<n>) -->
 
 ## Blocked / questions for the owner
+
+- The fresh Xedni selector panel is frozen but cannot generate its first row: checkpoint upload has no token/profile, and the documented ambient AWS fallback returns `AllAccessDisabled`. Resume requires valid scoped checkpoint transport; the earlier local waiver explicitly excludes modified panels. [pcc:unverified]
+- The rank-decay panel additionally needs licensed pinned Magma, a trusted execution-verifier/keyring, an integrated authorizing freeze, a natural `r=7..9` constructor/global map certificate, a trusted full saturated-basis route, fresh replication primes, and committed powered compute. The current runner diagnostic is intentionally `BLOCKED_NON_PRODUCTION` with zero rows. [pcc:unverified]
