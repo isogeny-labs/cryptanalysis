@@ -163,6 +163,10 @@ fn listing() -> Value {
                 "plugins": [
                     {"name": "random", "means": "a fresh [a]G + [b]Q per trial: two scalar multiplications"},
                     {"name": "walk", "means": "an r-adding walk: one addition per trial, with a repeat guard"},
+                    {"name": "walk-batch16", "means": "sixteen walk lanes stepped together with one shared inversion; native pair addition where the group has it"},
+                    {"name": "walk-batch16-scalar", "means": "the same sixteen lanes added one at a time: the control for walk-batch16"},
+                    {"name": "walk-batch16-vector", "means": "sixteen lanes with the vector pair formulas after the shared inverse"},
+                    {"name": "walk-batch16-vector-inverse", "means": "sixteen lanes with a vectorised shared inverse as well"},
                 ],
             },
             {
@@ -189,7 +193,7 @@ fn listing() -> Value {
                     {"name": "mitm-frobenius", "summands": "2 or 3", "regimes": ["koblitz"],
                      "parameters": [{"name": "m", "means": "summands, 2 or 3"}]},
                     {"name": "mitm-batched", "summands": "2", "regimes": ["char2", "koblitz"],
-                     "parameters": [{"name":"vector_prepare","means":"0 scalar default,1 vector,2 vector with packed squaring <=32 bits; guarded AVX2/PCLMUL, exact fallback"},{"name":"scalar_prepare","means":"0 or1, default0; original preparation, fixed-m2 queries"},{"name":"adaptive_prepare","means":"0 or1, default0; scalar at <=64 abscissae, cached above"},{"name":"prefix_inverse_cache","means":"0 or1, default0; bounded inverse reuse, generic fallback"},{"name":"x_only","means":"0 or1, default0; abscissa-only preparation"},{"name":"batch_size","means":"1..=65536, default1024; ordered batch preparation"}]},
+                     "parameters": [{"name":"vector_prepare","means":"0 scalar default,1 vector,2 vector with packed squaring <=32 bits; guarded AVX2/PCLMUL, exact fallback"},{"name":"scalar_prepare","means":"0 or1, default0; original preparation, fixed-m2 queries"},{"name":"adaptive_prepare","means":"0 or1, default0; scalar at <=64 abscissae, cached above"},{"name":"prefix_inverse_cache","means":"0 or1, default0; bounded inverse reuse, generic fallback"},{"name":"x_only","means":"0 or1, default0; abscissa-only preparation"},{"name":"batch_size","means":"1..=65536, default1024; ordered batch preparation"},{"name":"suppress_indexed_counter","means":"0 default or1; setup-state experiment omitting only the indexed-pair metadata entry"}]},
                     {"name": "affine-s3", "summands": "2", "regimes": ["char2", "koblitz"],
                      "parameters": [{"name":"max_residual","means":"0..20, default12; complete subtraction fallback beyond it"},
                                     {"name":"column_solver","means":"0 or1, default0; direct projected column elimination"},
@@ -732,6 +736,300 @@ fn spec_from(
     })
 }
 
+// ── Checking a configuration before any work ───────────────────────
+
+/// Edit distance, for "did you mean".
+fn edit_distance(a: &str, b: &str) -> usize {
+    let b: Vec<char> = b.chars().collect();
+    let mut row: Vec<usize> = (0..=b.len()).collect();
+    for (i, ca) in a.chars().enumerate() {
+        let mut prev = row[0];
+        row[0] = i + 1;
+        for (j, &cb) in b.iter().enumerate() {
+            let cur = row[j + 1];
+            row[j + 1] = (prev + usize::from(ca != cb)).min(row[j] + 1).min(cur + 1);
+            prev = cur;
+        }
+    }
+    row[b.len()]
+}
+
+/// The closest of `candidates` to `word`, when it is close enough to be a typo.
+fn did_you_mean<'a>(word: &str, candidates: impl IntoIterator<Item = &'a str>) -> Option<&'a str> {
+    let limit = (word.chars().count() / 3).max(2);
+    candidates
+        .into_iter()
+        .map(|c| (edit_distance(word, c), c))
+        .filter(|(d, _)| *d <= limit)
+        .min_by_key(|(d, _)| *d)
+        .map(|(_, c)| c)
+}
+
+fn hint(word: &str, candidates: &[&str]) -> String {
+    match did_you_mean(word, candidates.iter().copied()) {
+        Some(c) => format!("; did you mean `{c}`?"),
+        None => format!("; choose one of {}", candidates.join(", ")),
+    }
+}
+
+/// What checking a configuration up front found.
+#[derive(Debug, Default, PartialEq)]
+struct Checked {
+    /// The configuration cannot mean anything: a misspelt name or key, a
+    /// summand count the oracle does not take.  Fatal before any work.
+    errors: Vec<String>,
+    /// Real plug-ins that do not apply to this regime.  Fatal for a
+    /// single configuration; a sweep matrix reports them as skipped.
+    inapplicable: Vec<String>,
+    /// Keys the catalogue does not declare and nothing resembles: passed
+    /// through to the plug-in, which may read them, with a note.
+    warnings: Vec<String>,
+}
+
+/// Summand counts a catalogue entry admits: `2`, `"2"`, `"2 or 3"`, `"2..8"`.
+fn summand_range(v: &Value) -> Option<(u64, u64)> {
+    if let Some(n) = v.as_u64() {
+        return Some((n, n));
+    }
+    let s = v.as_str()?.replace(' ', "");
+    if let Some((a, b)) = s.split_once("..") {
+        return Some((
+            a.trim_start_matches('=').parse().ok()?,
+            b.trim_start_matches('=').parse().ok()?,
+        ));
+    }
+    if let Some((a, b)) = s.split_once("or") {
+        return Some((a.parse().ok()?, b.parse().ok()?));
+    }
+    let n = s.parse().ok()?;
+    Some((n, n))
+}
+
+/// Check one stage's plug-in against the catalogue: its name, regime and
+/// parameter keys.  Returns the catalogue entry when the name is known.
+fn check_plugin<'c>(
+    stage_label: &str,
+    flag: &str,
+    name: &str,
+    params: &Params,
+    regime: &str,
+    entries: &'c [Value],
+    implicit: &[&str],
+    out: &mut Checked,
+) -> Option<&'c Value> {
+    let names: Vec<&str> = entries.iter().filter_map(|e| e["name"].as_str()).collect();
+    let Some(entry) = entries.iter().find(|e| e["name"] == name) else {
+        out.errors.push(format!(
+            "unknown {stage_label} `{name}` ({flag}){}",
+            hint(name, &names)
+        ));
+        return None;
+    };
+    if let Some(regimes) = entry["regimes"].as_array() {
+        if !regimes.iter().any(|r| r == regime) {
+            let here: Vec<&str> = entries
+                .iter()
+                .filter(|e| {
+                    e["regimes"]
+                        .as_array()
+                        .is_some_and(|rs| rs.iter().any(|r| r == regime))
+                })
+                .filter_map(|e| e["name"].as_str())
+                .collect();
+            let on: Vec<&str> = regimes.iter().filter_map(|r| r.as_str()).collect();
+            out.inapplicable.push(format!(
+                "{stage_label} `{name}` runs on {} curves, not {regime}; on {regime} use {}",
+                on.join("/"),
+                here.join(", ")
+            ));
+        }
+    }
+    let mut declared: Vec<&str> = entry["parameters"]
+        .as_array()
+        .into_iter()
+        .flatten()
+        .filter_map(|p| p["name"].as_str())
+        .collect();
+    for k in implicit {
+        if !declared.contains(k) {
+            declared.push(k);
+        }
+    }
+    for key in params.0.keys() {
+        if declared.contains(&key.as_str()) {
+            continue;
+        }
+        match did_you_mean(key, declared.iter().copied()) {
+            Some(c) => out.errors.push(format!(
+                "{stage_label} `{name}` has no parameter `{key}`; did you mean `{c}`?"
+            )),
+            None => out.warnings.push(format!(
+                "{stage_label} `{name}` does not declare `{key}` (declared: {}); passing it through",
+                if declared.is_empty() { "none".to_string() } else { declared.join(", ") }
+            )),
+        }
+    }
+    Some(entry)
+}
+
+/// Check a whole configuration against `ic bench --list`, the regime and
+/// the CLI defaults.  Nothing is built or run.
+fn check_config(
+    cfg: &std::collections::BTreeMap<String, String>,
+    args: &BenchArgs,
+    regime: &str,
+    catalogue: &Value,
+) -> Checked {
+    let mut out = Checked::default();
+    let stage = |name: &str| -> Vec<Value> {
+        catalogue["stages"]
+            .as_array()
+            .into_iter()
+            .flatten()
+            .find(|s| s["stage"] == name)
+            .and_then(|s| s["plugins"].as_array().cloned())
+            .unwrap_or_default()
+    };
+    for key in cfg.keys() {
+        const KEYS: &[&str] = &["factor_base", "oracle", "targets", "solver", "linalg"];
+        if !KEYS.contains(&key.as_str()) {
+            out.errors.push(format!(
+                "configuration key `{key}` is not one of {}{}",
+                KEYS.join(", "),
+                hint(key, KEYS)
+                    .split(';')
+                    .next_back()
+                    .map(|h| format!(";{h}"))
+                    .unwrap_or_default()
+            ));
+        }
+    }
+    let fb = cfg.get("factor_base").or(args.factor_base.as_ref());
+    let or = cfg.get("oracle").or(args.oracle.as_ref());
+    match fb {
+        None => out.errors.push(
+            "no factor base: pass --factor-base NAME[:k=v,...] (ic bench --list shows them)".into(),
+        ),
+        Some(raw) => match parse_plugin(raw) {
+            Err(e) => out.errors.push(format!("--factor-base `{raw}`: {e}")),
+            Ok((name, params)) => {
+                check_plugin(
+                    "factor base",
+                    "--factor-base",
+                    &name,
+                    &params,
+                    regime,
+                    &stage("factor base"),
+                    &[],
+                    &mut out,
+                );
+            }
+        },
+    }
+    match or {
+        None => out.errors.push(
+            "no decomposition oracle: pass --oracle NAME[:k=v,...] (ic bench --list shows them)"
+                .into(),
+        ),
+        Some(raw) => match parse_plugin(raw) {
+            Err(e) => out.errors.push(format!("--oracle `{raw}`: {e}")),
+            Ok((name, params)) => {
+                let entries = stage("point decomposition");
+                // Every oracle may be given `m`: the runner reads it for all of them.
+                if let Some(entry) = check_plugin(
+                    "oracle",
+                    "--oracle",
+                    &name,
+                    &params,
+                    regime,
+                    &entries,
+                    &["m"],
+                    &mut out,
+                ) {
+                    if let Some(raw_m) = params.get("m") {
+                        match raw_m.parse::<u64>() {
+                            Err(_) => out
+                                .errors
+                                .push(format!("oracle `{name}`: m = `{raw_m}` is not a number")),
+                            Ok(m) => {
+                                if let Some((lo, hi)) = summand_range(&entry["summands"]) {
+                                    if m < lo || m > hi {
+                                        let takes = if lo == hi {
+                                            format!("m = {lo}")
+                                        } else if hi == lo + 1 {
+                                            format!("m = {lo} or {hi}")
+                                        } else {
+                                            format!("m = {lo}..{hi}")
+                                        };
+                                        out.errors.push(format!(
+                                            "oracle `{name}` takes {takes}, not m = {m}"
+                                        ));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    let algebraic = entry["needs"]
+                        .as_str()
+                        .is_some_and(|n| n.contains("--solver"));
+                    let solver = cfg.get("solver").or(args.solver.as_ref());
+                    if algebraic && solver.is_none() {
+                        out.errors.push(format!("oracle `{name}` needs --solver NAME (ic bench --list shows the engines)"));
+                    }
+                    if !algebraic
+                        && solver.is_some()
+                        && cfg.get("solver").is_none()
+                        && args.sweep.is_none()
+                    {
+                        out.warnings.push(format!(
+                            "oracle `{name}` solves no polynomial system; --solver is ignored"
+                        ));
+                    }
+                }
+            }
+        },
+    }
+    let tg = cfg.get("targets").unwrap_or(&args.targets);
+    if Targets::parse(tg).is_err() {
+        const TARGETS: &[&str] = &[
+            "random",
+            "walk",
+            "walk-batch16",
+            "walk-batch16-scalar",
+            "walk-batch16-vector",
+            "walk-batch16-vector-inverse",
+        ];
+        out.errors.push(format!(
+            "unknown target source `{tg}` (--targets){}",
+            hint(tg, TARGETS)
+        ));
+    }
+    let la = cfg.get("linalg").unwrap_or(&args.linalg);
+    let matrices: Vec<&str> = MATRIX_NAMES.iter().map(|(n, _)| *n).collect();
+    if !la.is_empty() && !matrices.contains(&la.as_str()) {
+        out.errors.push(format!(
+            "unknown relation matrix `{la}` (--linalg){}",
+            hint(la, &matrices)
+        ));
+    }
+    if let Some(raw) = cfg.get("solver").or(args.solver.as_ref()) {
+        if let Ok((name, _)) = parse_plugin(raw) {
+            if solver_by_name(&name).is_err() {
+                let names: Vec<String> = solver_registry()
+                    .iter()
+                    .map(|s| s.name().to_string())
+                    .collect();
+                let refs: Vec<&str> = names.iter().map(|s| s.as_str()).collect();
+                out.errors.push(format!(
+                    "unknown solver `{name}` (--solver){}",
+                    hint(&name, &refs)
+                ));
+            }
+        }
+    }
+    out
+}
+
 /// `--threads 0` is every core this process may run on.
 fn resolve_threads(threads: usize) -> usize {
     if threads == 0 {
@@ -744,23 +1042,12 @@ fn resolve_threads(threads: usize) -> usize {
 pub fn run(args: BenchArgs, json_only: bool) -> Result<Value, String> {
     if args.list {
         let l = listing();
-        if !json_only {
-            eprintln!("{}", serde_json::to_string_pretty(&l).unwrap_or_default());
-        }
         return Ok(json!({
             "schema_version": 1,
             "operation": "bench-list",
             "status": "complete",
             "registry": l,
         }));
-    }
-
-    // Validate the solver name up front, so a typo fails before a long
-    // run rather than after it.
-    if let Some(name) = &args.solver {
-        let (n, params) = parse_plugin(name)?;
-        solver_by_name(&n)?;
-        validate_solver_params(&n, &params)?;
     }
 
     // Either a sweep file or the flags describe the work.
@@ -815,6 +1102,53 @@ pub fn run(args: BenchArgs, json_only: bool) -> Result<Value, String> {
             ((regime, degree), vec![one], args.clone())
         }
     };
+
+    // Every configuration is checked against the catalogue before the
+    // instance, the calibration or the rho runs: a misspelt name or key,
+    // or a summand count an oracle does not take, fails in milliseconds
+    // with a suggestion instead of after minutes as a skipped row.
+    let catalogue = listing();
+    let mut usage: Vec<String> = Vec::new();
+    let mut inapplicable: Vec<Value> = Vec::new();
+    let sweep = args.sweep.is_some();
+    for (k, cfg) in configs.iter().enumerate() {
+        let checked = check_config(cfg, &args, &instance_spec.0, &catalogue);
+        let at = |m: &String| {
+            if configs.len() > 1 {
+                format!("configuration {}: {m}", k + 1)
+            } else {
+                m.clone()
+            }
+        };
+        usage.extend(checked.errors.iter().map(at));
+        if sweep {
+            if !checked.inapplicable.is_empty() && checked.errors.is_empty() {
+                inapplicable.push(json!({"index": k, "why": checked.inapplicable.join("; ")}));
+            }
+        } else {
+            usage.extend(checked.inapplicable.iter().map(at));
+        }
+        if !json_only {
+            for w in &checked.warnings {
+                eprintln!("ic bench: note: {}", at(w));
+            }
+        }
+    }
+    if !usage.is_empty() {
+        return Err(format!(
+            "usage: ic bench was not started:\n  {}\n(ic bench --list shows every plug-in, its parameters and the regimes it runs on)",
+            usage.join("\n  ")
+        ));
+    }
+    if !json_only {
+        for s in &inapplicable {
+            eprintln!(
+                "ic bench: configuration {} will be skipped: {}",
+                s["index"].as_u64().unwrap_or(0) + 1,
+                s["why"].as_str().unwrap_or("")
+            );
+        }
+    }
 
     // A sweep may override the CLI default solver per configuration.
     // Reject malformed SAT encoding before calibrations, rho or a target.
@@ -925,7 +1259,11 @@ pub fn run(args: BenchArgs, json_only: bool) -> Result<Value, String> {
     if !json_only {
         eprintln!("\n{markdown}");
         for f in &failures {
-            eprintln!("  skipped: {}", f["configuration"].as_str().unwrap_or("?"));
+            eprintln!(
+                "  skipped: {} — {}",
+                f["configuration"].as_str().unwrap_or("?"),
+                f["why"].as_str().unwrap_or("no reason given")
+            );
         }
     }
     Ok(json!({
@@ -957,4 +1295,207 @@ pub fn run(args: BenchArgs, json_only: bool) -> Result<Value, String> {
         "markdown": markdown,
         "rows": rows,
     }))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use clap::Parser;
+
+    #[derive(Parser)]
+    struct Wrap {
+        #[command(flatten)]
+        args: BenchArgs,
+    }
+
+    fn args(extra: &[&str]) -> BenchArgs {
+        let mut v = vec!["bench"];
+        v.extend_from_slice(extra);
+        Wrap::parse_from(v).args
+    }
+
+    fn one(a: &BenchArgs) -> std::collections::BTreeMap<String, String> {
+        let mut c = std::collections::BTreeMap::new();
+        if let Some(v) = &a.factor_base {
+            c.insert("factor_base".into(), v.clone());
+        }
+        if let Some(v) = &a.oracle {
+            c.insert("oracle".into(), v.clone());
+        }
+        c.insert("targets".into(), a.targets.clone());
+        c
+    }
+
+    fn check(regime: &str, flags: &[&str]) -> Checked {
+        let a = args(flags);
+        check_config(&one(&a), &a, regime, &listing())
+    }
+
+    #[test]
+    fn a_typo_is_caught_with_the_name_it_meant() {
+        assert_eq!(did_you_mean("mitmm", ["mitm", "subtract"]), Some("mitm"));
+        assert_eq!(
+            did_you_mean("prime-abscisa", ["prime-abscissa"]),
+            Some("prime-abscissa")
+        );
+        assert_eq!(did_you_mean("zzz", ["mitm", "subtract"]), None);
+        let c = check(
+            "prime",
+            &[
+                "--factor-base",
+                "prime-abscisa:sise=40",
+                "--oracle",
+                "mitmm",
+                "--targets",
+                "walkk",
+            ],
+        );
+        let all = c.errors.join("\n");
+        assert!(all.contains("did you mean `prime-abscissa`"), "{all}");
+        assert!(all.contains("did you mean `mitm`"), "{all}");
+        assert!(all.contains("did you mean `walk`"), "{all}");
+        let c = check(
+            "prime",
+            &[
+                "--factor-base",
+                "prime-abscissa:sise=40",
+                "--oracle",
+                "mitm",
+            ],
+        );
+        assert!(
+            c.errors.join("\n").contains("did you mean `size`"),
+            "{:?}",
+            c.errors
+        );
+    }
+
+    #[test]
+    fn a_summand_count_the_oracle_does_not_take_is_refused() {
+        assert_eq!(summand_range(&json!(2)), Some((2, 2)));
+        assert_eq!(summand_range(&json!("2 or 3")), Some((2, 3)));
+        assert_eq!(summand_range(&json!("2..8")), Some((2, 8)));
+        let c = check(
+            "prime",
+            &[
+                "--factor-base",
+                "prime-abscissa:size=40",
+                "--oracle",
+                "mitm:m=9",
+            ],
+        );
+        assert_eq!(
+            c.errors,
+            vec!["oracle `mitm` takes m = 2 or 3, not m = 9".to_string()]
+        );
+        assert!(check(
+            "prime",
+            &[
+                "--factor-base",
+                "prime-abscissa:size=40",
+                "--oracle",
+                "mitm:m=3"
+            ]
+        )
+        .errors
+        .is_empty());
+    }
+
+    #[test]
+    fn a_plugin_from_another_regime_is_named_with_the_ones_that_apply() {
+        let c = check(
+            "prime",
+            &[
+                "--factor-base",
+                "binary-subspace:dimension=6",
+                "--oracle",
+                "mitm",
+            ],
+        );
+        assert!(c.errors.is_empty(), "{:?}", c.errors);
+        assert_eq!(c.inapplicable.len(), 1);
+        assert!(
+            c.inapplicable[0].contains("on prime use prime-abscissa"),
+            "{}",
+            c.inapplicable[0]
+        );
+    }
+
+    #[test]
+    fn an_undeclared_key_nothing_resembles_passes_through_with_a_note() {
+        let c = check(
+            "prime",
+            &[
+                "--factor-base",
+                "prime-abscissa:size=40",
+                "--oracle",
+                "mitm:frob=1",
+            ],
+        );
+        assert!(c.errors.is_empty(), "{:?}", c.errors);
+        assert_eq!(c.warnings.len(), 1);
+    }
+
+    #[test]
+    fn an_algebraic_oracle_without_a_solver_is_refused_before_any_work() {
+        let c = check(
+            "char2",
+            &[
+                "--factor-base",
+                "binary-subspace:dimension=6",
+                "--oracle",
+                "descent-algebraic",
+            ],
+        );
+        assert!(
+            c.errors.join("\n").contains("needs --solver"),
+            "{:?}",
+            c.errors
+        );
+        let c = check(
+            "char2",
+            &[
+                "--factor-base",
+                "binary-subspace:dimension=6",
+                "--oracle",
+                "descent-algebraic",
+                "--solver",
+                "f4f2",
+            ],
+        );
+        assert!(
+            c.errors.join("\n").contains("did you mean `f4-f2`"),
+            "{:?}",
+            c.errors
+        );
+    }
+
+    /// The check must not refuse anything the committed sweeps run.
+    #[test]
+    fn every_committed_sweep_passes_the_check() {
+        let dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("docs/ic/sweeps");
+        let mut seen = 0;
+        for entry in std::fs::read_dir(&dir).unwrap() {
+            let path = entry.unwrap().path();
+            if path.extension().is_none_or(|e| e != "json") {
+                continue;
+            }
+            let file: SweepFile =
+                serde_json::from_str(&std::fs::read_to_string(&path).unwrap()).unwrap();
+            let mut configs = file.configurations.clone();
+            configs.extend(expand_matrix(&file.matrix));
+            let a = args(&[]);
+            for cfg in &configs {
+                let c = check_config(cfg, &a, &file.instance.regime, &listing());
+                assert!(
+                    c.errors.is_empty(),
+                    "{}: {cfg:?}: {:?}",
+                    path.display(),
+                    c.errors
+                );
+            }
+            seen += 1;
+        }
+        assert!(seen > 0);
+    }
 }
