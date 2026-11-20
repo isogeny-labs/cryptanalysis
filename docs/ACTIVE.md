@@ -18,6 +18,8 @@ and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
 
+- [x] Lead 2B: implement compact binary-selector arity-three disjoint-window chained-S3 native Fp CDCL(T) solver with checked explanations and run s=5..12 scaling screen (Cursor, started 2026-11-19, branch cursor/pdp-lead-2b-m3-cdclt-fp-20261119, PR #1847) [pcc:unverified]
+
 - [ ] Mirror the general binary hyperelliptic-cover transfer interface from crypto after its source commit is frozen, with split provenance and exact parity checks (Codex, started 2026-11-18, branch codex/general-binary-cover-transfer-mirror-20261118, PR #1765) [pcc:unverified]
 
 - [x] Validate fixed index-calculus candidate residuals and subgroup status (Codex, started 2026-11-18, branch test-fixed-candidate-residual, PR #1755)
