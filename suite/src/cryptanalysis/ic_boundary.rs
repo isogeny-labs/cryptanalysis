@@ -4937,6 +4937,13 @@ pub struct ParallelReport {
     pub parallel_wall_ns: u64,
     /// Read before quoting `S` from a parallel row.
     pub note: &'static str,
+    /// `parallel`, or `serial` when the probe found the oracle too cheap
+    /// for threads to pay (see [`collect_and_solve_parallel`]).
+    pub mode: &'static str,
+    /// Probe window, on one thread: drawing a target and decomposing one,
+    /// in nanoseconds per target.
+    pub probe_draw_ns: u64,
+    pub probe_decompose_ns: u64,
 }
 
 /// [`ParallelReport::note`].
@@ -5460,8 +5467,10 @@ impl<'c, E: Copy + PartialEq, L: RelationSolver + ?Sized> Commit<'c, E, L> {
 /// it with their counters, so every count, row and the logarithm are the
 /// serial run's for any number of threads; only `ParallelReport` and wall
 /// times differ.  `decompose` returns, beside the answer, whatever the
-/// worker's oracle accumulated internally (`D`); the committed ones are
-/// returned in order for the caller to fold back.
+/// worker's oracle accumulated internally (`D`); `fold` receives the
+/// committed ones, in trial order.  `plain` is `decompose` without the
+/// per-call `D` and `drain` takes a worker's `D`: the serial fallback uses
+/// them so a cheap oracle pays nothing per target for speculation.
 #[allow(clippy::too_many_arguments)]
 pub fn collect_and_solve_parallel<G, L, W, D, F>(
     g: &G,
@@ -5477,7 +5486,10 @@ pub fn collect_and_solve_parallel<G, L, W, D, F>(
     matrix: &mut L,
     workers: &mut [W],
     decompose: F,
-) -> (PipelineOutcome, Vec<D>, ParallelReport)
+    plain: impl Fn(&mut W, &mut GroupOps, &mut OracleCounters, G::Elt) -> Option<Vec<usize>>,
+    drain: impl Fn(&mut W) -> D,
+    mut fold: impl FnMut(D),
+) -> (PipelineOutcome, ParallelReport)
 where
     G: CountedGroup + Sync,
     G::Elt: Send + Sync,
@@ -5491,6 +5503,7 @@ where
     let mut report = ParallelReport {
         threads,
         note: PARALLEL_NOTE,
+        mode: "parallel",
         ..Default::default()
     };
     let mut commit = Commit::new(generator, target, r, h, fb, matrix);
@@ -5498,18 +5511,28 @@ where
         g, generator, target, r, seed, max_trials, targets, pool_mode,
     );
     let mut seen: FastMap<()> = fast_map(if targets.is_guarded() { 1 << 12 } else { 0 });
-    let mut deltas = Vec::new();
     // The window grows while a window decomposes in under 4 ms and shrinks
     // above 64 ms: large enough to amortise the thread hand-off on a cheap
     // oracle, small enough that the discarded tail stays short on a slow one.
+    // The first window is a probe, decomposed on one thread: drawing a
+    // target is serial, so threads pay only when a decomposition costs
+    // well above a draw and above the hand-off (measured: on a Koblitz
+    // n = 43 table oracle, about 1 µs a decomposition beside 0.4 µs a
+    // walk step, four threads ran the relation phase 1.8x slower).  Below
+    // the bar the run continues as the plain serial loop with one fork;
+    // either way the committed rows are the same.
+    const PROBE: usize = 256;
+    const MIN_DECOMPOSE_NS: u64 = 2_000;
+    let mut probing = true;
     let max_window = 1usize << 16;
-    let mut window = threads * 2;
+    let mut window = PROBE;
     let mut batch: Vec<TrialTarget<G::Elt>> = Vec::with_capacity(window);
     let mut inserted: Vec<u64> = Vec::new();
     'run: loop {
         let snapshot = gen.clone();
         batch.clear();
         inserted.clear();
+        let draw_started = Instant::now();
         while batch.len() < window {
             match gen.next(g, &mut seen, Some(&mut inserted)) {
                 Some(t) => batch.push(t),
@@ -5519,9 +5542,14 @@ where
         if batch.is_empty() {
             break;
         }
+        let draw_ns = draw_started.elapsed().as_nanos() as u64;
         let last_window = batch.len() < window;
         let started = Instant::now();
-        let answers = decompose_window(workers, &batch, &decompose);
+        let answers = if probing {
+            decompose_window(&mut workers[..1], &batch, &decompose)
+        } else {
+            decompose_window(workers, &batch, &decompose)
+        };
         let spent = started.elapsed().as_nanos() as u64;
         report.chunks += 1;
         report.largest_chunk = report.largest_chunk.max(batch.len());
@@ -5529,7 +5557,7 @@ where
         report.parallel_wall_ns += spent;
         let n = batch.len();
         for (i, (t, d)) in batch.iter().zip(answers).enumerate() {
-            deltas.push(d.delta);
+            fold(d.delta);
             if commit.take(g, *t, d.summands, d.ops, &d.counters) {
                 report.discarded += (n - i - 1) as u64;
                 if i + 1 < n {
@@ -5556,13 +5584,54 @@ where
         if last_window {
             break;
         }
+        if probing {
+            probing = false;
+            report.probe_draw_ns = draw_ns / n as u64;
+            report.probe_decompose_ns = spent / n as u64;
+            let pays = report.probe_decompose_ns >= MIN_DECOMPOSE_NS
+                && report.probe_decompose_ns >= 2 * report.probe_draw_ns;
+            if !pays {
+                report.mode = "serial";
+                // No speculation from here on, so the worker's internal
+                // accounting is drained once at the end, not per target.
+                let w = &mut workers[0];
+                while let Some(t) = gen.next(g, &mut seen, None) {
+                    let mut ops = GroupOps::default();
+                    let mut ctr = OracleCounters::default();
+                    let found = plain(w, &mut ops, &mut ctr, t.point);
+                    if commit.take(g, t, found, ops, &ctr) {
+                        break;
+                    }
+                }
+                fold(drain(w));
+                break 'run;
+            }
+            window = threads * 2;
+            continue;
+        }
         if spent < 4_000_000 && window < max_window {
             window *= 2;
         } else if spent > 64_000_000 && window > threads {
             window = (window / 2).max(threads);
         }
     }
-    (commit.finish(g, &gen), deltas, report)
+    (commit.finish(g, &gen), report)
+}
+
+/// One decomposition with its own ledgers.
+fn decompose_one<E: Copy, W, D, F>(w: &mut W, t: &TrialTarget<E>, decompose: &F) -> Decomposed<D>
+where
+    F: Fn(&mut W, &mut GroupOps, &mut OracleCounters, E) -> (Option<Vec<usize>>, D),
+{
+    let mut ops = GroupOps::default();
+    let mut counters = OracleCounters::default();
+    let (summands, delta) = decompose(w, &mut ops, &mut counters, t.point);
+    Decomposed {
+        summands,
+        ops,
+        counters,
+        delta,
+    }
 }
 
 /// Decompose one window on `workers.len()` threads, each with its own
@@ -5579,17 +5648,7 @@ where
     D: Send,
     F: Fn(&mut W, &mut GroupOps, &mut OracleCounters, E) -> (Option<Vec<usize>>, D) + Sync,
 {
-    let one = |w: &mut W, t: &TrialTarget<E>| {
-        let mut ops = GroupOps::default();
-        let mut counters = OracleCounters::default();
-        let (summands, delta) = decompose(w, &mut ops, &mut counters, t.point);
-        Decomposed {
-            summands,
-            ops,
-            counters,
-            delta,
-        }
-    };
+    let one = |w: &mut W, t: &TrialTarget<E>| decompose_one(w, t, decompose);
     let n = batch.len();
     if workers.len() == 1 || n == 1 {
         let w = &mut workers[0];

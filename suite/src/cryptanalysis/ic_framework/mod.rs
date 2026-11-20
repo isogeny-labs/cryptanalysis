@@ -330,6 +330,7 @@ where
     // with the decompositions spread over one fork per thread; the forks'
     // internal accounting for the committed targets is folded back into
     // `oracle`, so the report reads exactly as the serial run's.
+    let mut committed = stages::OracleDelta::default();
     let parallel_run = {
         let shared: &dyn DecompositionOracle<G> = &*oracle;
         let forks = (spec.threads > 1)
@@ -357,14 +358,15 @@ where
                     let found = w.decompose(ctx, &fb, ops, counters, point);
                     (found, w.take_delta())
                 },
+                |w, ops, counters, point| w.decompose(ctx, &fb, ops, counters, point),
+                |w| w.take_delta(),
+                |delta| committed.merge(delta),
             )
         })
     };
     let (mut outcome, parallel): (PipelineOutcome, Option<ParallelReport>) = match parallel_run {
-        Some((outcome, deltas, report)) => {
-            for delta in &deltas {
-                oracle.absorb_delta(delta);
-            }
+        Some((outcome, report)) => {
+            oracle.absorb_delta(&committed);
             (outcome, Some(report))
         }
         None => (

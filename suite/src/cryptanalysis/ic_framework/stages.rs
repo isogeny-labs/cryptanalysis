@@ -278,6 +278,22 @@ pub struct OracleDelta {
     pub unliftable: u64,
 }
 
+impl OracleDelta {
+    /// Fold a later call's delta into this one: absorbing the merged delta
+    /// equals absorbing the two in order.
+    pub fn merge(&mut self, later: OracleDelta) {
+        match (&mut self.solver, later.solver) {
+            (Some(t), Some(l)) => t.merge(&l),
+            (slot @ None, l) => *slot = l,
+            (Some(_), None) => {}
+        }
+        for (k, v) in later.native {
+            *self.native.entry(k).or_insert(0) += v;
+        }
+        self.unliftable += later.unliftable;
+    }
+}
+
 /// Totals an algebraic oracle accumulates over its solver calls.
 #[derive(Clone, Debug, Default, Serialize)]
 pub struct SolverTotals {
