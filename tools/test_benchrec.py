@@ -128,6 +128,91 @@ class BenchrecTest(unittest.TestCase):
         self.br(*close)
         return rec
 
+    def test_gate_and_report_reject_malformed_problem_key_without_writing(self):
+        name = self.make_record()
+        path = self.root / name
+        original = json.loads(path.read_text())
+        progress = self.root / "benchmarks/progress"
+        before = {p.name: p.read_bytes() for p in progress.iterdir() if p.is_file()}
+        for problem in (None, True, 0, [], {}, "", "   "):
+            with self.subTest(problem=problem):
+                record = dict(original, problem=problem)
+                path.write_text(json.dumps(record))
+                for command in ("report", "check"):
+                    with self.subTest(command=command):
+                        result = self.br(command, check=False)
+                        self.assertEqual(result.returncode, 1)
+                        self.assertIn("problem must be a nonempty string",
+                                      result.stdout + result.stderr)
+                        self.assertNotIn("Traceback", result.stderr)
+                        self.assertEqual(
+                            {p.name: p.read_bytes() for p in progress.iterdir() if p.is_file()},
+                            before,
+                        )
+
+    def test_gate_rejects_nonstring_commit_without_crashing(self):
+        name = self.make_record()
+        path = self.root / name
+        original = json.loads(path.read_text())
+        for value in (None, 7, False, {}):
+            with self.subTest(commit=value):
+                record = dict(original, commit=value)
+                path.write_text(json.dumps(record))
+                result = self.br("gate", check=False)
+                self.assertEqual(result.returncode, 1)
+                self.assertIn("commit is not a 40-hex sha", result.stdout + result.stderr)
+                self.assertNotIn("Traceback", result.stderr)
+        path.write_text(json.dumps(original))
+        self.br("gate")
+
+    def test_gate_rejects_nonstring_metric_unit_without_crashing(self):
+        name = self.make_record()
+        path = self.root / name
+        original = path.read_text()
+        for value in ({}, [], 7, False):
+            with self.subTest(unit=value):
+                record = json.loads(original)
+                record["metrics"][0]["unit"] = value
+                path.write_text(json.dumps(record))
+                result = self.br("gate", check=False)
+                self.assertEqual(result.returncode, 1)
+                self.assertIn("unknown unit", result.stdout + result.stderr)
+                self.assertNotIn("Traceback", result.stderr)
+        path.write_text(original)
+        self.br("gate")
+
+    def test_gate_rejects_malformed_metrics_in_invalid_and_censored_records(self):
+        name = self.make_record()
+        path = self.root / name
+        original = path.read_text()
+        for status in ("invalid", "censored"):
+            for metrics in (None, {}, [17], [None]):
+                with self.subTest(status=status, metrics=metrics):
+                    record = json.loads(original)
+                    record.update(status=status, metrics=metrics)
+                    path.write_text(json.dumps(record))
+                    result = self.br("gate", check=False)
+                    self.assertEqual(result.returncode, 1)
+                    self.assertRegex(result.stdout, r"metric(?:s must be a list of objects| must be an object)")
+                    self.assertNotIn("Traceback", result.stderr)
+        path.write_text(original)
+        self.br("gate")
+
+    def test_gate_and_record_loader_reject_nonobject_json(self):
+        name = self.make_record()
+        path = self.root / name
+        original = path.read_text()
+        for value in (None, [], 7, True):
+            with self.subTest(record=value):
+                path.write_text(json.dumps(value))
+                for command in (("gate",), ("run", name, "--", sys.executable, "-c", "raise SystemExit(99)")):
+                    result = self.br(*command, check=False)
+                    self.assertNotEqual(result.returncode, 0)
+                    self.assertRegex(result.stdout + result.stderr, r"not a (?:readable )?bench\.record/v1 record")
+                    self.assertNotIn("Traceback", result.stderr)
+        path.write_text(original)
+        self.br("gate")
+
     def test_gate_rejects_nonpath_validation_without_crashing(self):
         name = self.make_record()
         path = self.root / name
@@ -152,6 +237,78 @@ class BenchrecTest(unittest.TestCase):
         self.assertIn("validation file out/VALIDATION.json is not in the checkout", result.stdout)
         (self.root / record["validation"]).write_text("{}\n")
         self.br("gate")
+
+    def test_gate_rejects_nonpath_report_entry_and_raw_fields_without_crashing(self):
+        # Regression: a dict in reports/entries/raw reached Path / dict in
+        # record_errors and stored_ok and crashed the push hook with TypeError.
+        name = self.make_record()
+        path = self.root / name
+        original = json.loads(path.read_text())
+        cases = [
+            (lambda r: r["reports"].__setitem__("pdf", {"path": "report.pdf"}), "reports.pdf must be"),
+            (lambda r: r["reports"].__setitem__("svg", [{"path": "g.svg"}]), "reports.svg must be"),
+            (lambda r: r["reports"].__setitem__("png", "g.png"), "reports.png must be"),
+            (lambda r: r.__setitem__("reports", ["report.pdf"]), "reports must be an object"),
+            (lambda r: r.__setitem__("entries", [{"dir": "x"}]), "entries must be a list"),
+            (lambda r: r["raw"][0].__setitem__("path", {"p": "x"}), "raw must be a list"),
+        ]
+        for mutate, message in cases:
+            with self.subTest(message=message):
+                record = json.loads(json.dumps(original))
+                mutate(record)
+                path.write_text(json.dumps(record))
+                result = self.br("gate", check=False)
+                self.assertEqual(result.returncode, 1)
+                self.assertIn(message, result.stdout)
+                self.assertNotIn("Traceback", result.stderr)
+
+    def _encoded_validation(self, name):
+        """Point the record at run/analysis.json kept only as a gzip archive with a receipt."""
+        import gzip
+        import hashlib
+        run = self.root / "run"
+        (run / "derived-encodings").mkdir(parents=True)
+        original = b'{"verdict": "pass"}\n'
+        archive = gzip.compress(original, mtime=0)
+        receipt = {
+            "original_path": "analysis.json", "archive_path": "analysis.json.gz",
+            "encoding": "gzip6mtime0",
+            "original_sha256": hashlib.sha256(original).hexdigest(), "original_bytes": len(original),
+            "archive_sha256": hashlib.sha256(archive).hexdigest(), "archive_bytes": len(archive),
+        }
+        (run / "derived-encodings" / "analysis.json").write_text(json.dumps(receipt))
+        path = self.root / name
+        record = json.loads(path.read_text())
+        record["validation"] = "run/analysis.json"
+        path.write_text(json.dumps(record))
+        return run, archive, receipt
+
+    def test_validation_kept_as_store_backed_gzip_receipt_is_retained(self):
+        name = self.make_record()
+        run, archive, receipt = self._encoded_validation(name)
+        manifest = run / ".artifacts.json"
+        manifest.write_text(json.dumps({"files": {"analysis.json.gz": {
+            "sha256": receipt["archive_sha256"], "bytes": receipt["archive_bytes"]}}}))
+        self.br("gate")
+        # The manifest must pin the archive the receipt names.
+        manifest.write_text(json.dumps({"files": {"analysis.json.gz": {"sha256": "0" * 64}}}))
+        result = self.br("gate", check=False)
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("validation file run/analysis.json is not in the checkout", result.stdout)
+        # Without the receipt, an archive alone does not stand in for the logical file.
+        manifest.write_text(json.dumps({"files": {"analysis.json.gz": {"sha256": receipt["archive_sha256"]}}}))
+        (run / "derived-encodings" / "analysis.json").unlink()
+        self.assertEqual(self.br("gate", check=False).returncode, 1)
+
+    def test_validation_gzip_receipt_checks_local_archive_bytes(self):
+        name = self.make_record()
+        run, archive, _ = self._encoded_validation(name)
+        (run / "analysis.json.gz").write_bytes(archive)
+        self.br("gate")
+        (run / "analysis.json.gz").write_bytes(archive + b"\0")
+        result = self.br("gate", check=False)
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("validation file run/analysis.json is not in the checkout", result.stdout)
 
     def test_one_record_has_no_self_comparison(self):
         self.make_record(value=100.0)
