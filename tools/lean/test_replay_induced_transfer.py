@@ -110,7 +110,7 @@ p = roots["frozen"] / r.REFERENCE
 p.parent.mkdir(parents=True)
 p.write_bytes(reference)
 script = roots["frozen"] / r.STUDY / "ci_induced_transfer/check-01.sh"
-code = "from pathlib import Path; import os,sys,time; Path(sys.argv[1]).write_text(str(os.getpid()))\nwhile True: time.sleep(1)\n"
+code = "from pathlib import Path; import os,sys,time; p=Path(sys.argv[1]); t=p.with_suffix('.ready'); t.write_text(str(os.getpid())); t.replace(p)\nwhile True: time.sleep(1)\n"
 script.write_text("exec " + shlex.quote(sys.executable) + " -c " + shlex.quote(code) + " " + shlex.quote(str(root / "child.pid")) + "\n")
 def head(path):
     if path == roots["frozen"]: return r.HISTORICAL
@@ -128,7 +128,7 @@ sys.argv = [str(source), "--repo", str(roots["repo"]), "--producer", str(roots["
             "--out", str(root / "out")]
 original_wait = r.subprocess.Popen.wait
 def limited_wait(self, timeout=None):
-    return original_wait(self, timeout=1 if force_timeout and timeout == 1500 else timeout)
+    return original_wait(self, timeout=3 if force_timeout and timeout == 1500 else timeout)
 with mock.patch.object(r.subprocess.Popen, "wait", new=limited_wait), mock.patch.object(r, "head", side_effect=head), mock.patch.object(r, "verify_files", side_effect=guards), mock.patch.object(r.subprocess, "check_output", return_value=reference):
     code = r.main()
 (root / "handlers-restored.json").write_text(json.dumps({str(s): signal.getsignal(s) == h for s, h in before.items()}))
