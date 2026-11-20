@@ -77,8 +77,9 @@ use std::time::Instant;
 use serde::Serialize;
 
 use crate::cryptanalysis::ic_boundary::{
-    collect_and_solve_with, price_phase, Calibration, CountedGroup, GroupOps, PhaseCost,
-    PipelineOutcome, RelationSolver, RestartPool, TargetSource,
+    collect_and_solve_parallel, collect_and_solve_with, parallel_pays, price_phase, Calibration,
+    CountedGroup, GroupOps, OracleCounters, ParallelReport, PhaseCost, PipelineOutcome,
+    RelationSolver, RestartPool, TargetSource, PARALLEL_NOTE,
 };
 use linalg::matrix_by_name;
 use stages::{DecompositionOracle, FactorBaseBuilder, InstanceCtx, Params, SystemShape, Targets};
@@ -101,6 +102,16 @@ pub struct PipelineSpec {
     pub seed: u64,
     /// Per-solver-call wall-clock budget, in seconds; zero for none.
     pub solver_budget_seconds: u64,
+    /// Decomposition threads for the relation phase; 0 or 1 is the serial
+    /// loop.  Changes wall time only: every count, row and the logarithm
+    /// are the serial run's.  Left out of the JSON when serial, so serial
+    /// records are unchanged.
+    #[serde(skip_serializing_if = "is_serial")]
+    pub threads: usize,
+}
+
+fn is_serial(threads: &usize) -> bool {
+    *threads <= 1
 }
 
 impl PipelineSpec {
@@ -248,13 +259,17 @@ pub struct RunReport {
     /// dropped: the sweep column that matters most is often which
     /// choices fail.
     pub exhausted: bool,
+    /// How the relation phase was spread over threads, when it was.  Not
+    /// a cost: `S` and every count above are the serial run's.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub parallel: Option<ParallelReport>,
 }
 
 /// Run one configuration end to end.
 ///
 /// `planted` is the logarithm the runner checks the answer against.  No
 /// stage receives it: a stage that could read it could fake a relation.
-pub fn run_pipeline<G: CountedGroup>(
+pub fn run_pipeline<G: CountedGroup + Sync>(
     ctx: &InstanceCtx<G>,
     spec: &PipelineSpec,
     base_builder: &dyn FactorBaseBuilder<G>,
@@ -262,7 +277,10 @@ pub fn run_pipeline<G: CountedGroup>(
     planted: u64,
     calib: &Calibration,
     rho_s: Option<f64>,
-) -> Result<RunReport, String> {
+) -> Result<RunReport, String>
+where
+    G::Elt: Send + Sync,
+{
     let started = Instant::now();
 
     // ── Stage 1: the factor base ───────────────────────────────────
@@ -308,20 +326,87 @@ pub fn run_pipeline<G: CountedGroup>(
         Targets::WalkBatchVector => TargetSource::WalkBatchVector,
         Targets::WalkBatchVectorInverse => TargetSource::WalkBatchVectorInverse,
     };
-    let mut outcome: PipelineOutcome = collect_and_solve_with(
-        ctx.group,
-        ctx.generator,
-        ctx.target,
-        ctx.r,
-        ctx.cofactor,
-        &fb,
-        spec.seed,
-        spec.max_trials,
-        source,
-        RestartPool::Lazy,
-        matrix.as_mut(),
-        |ops, counters, point| oracle.decompose(ctx, &fb, ops, counters, point),
-    );
+    // With `threads > 1` and an oracle that forks, the same loop runs
+    // with the decompositions spread over one fork per thread; the forks'
+    // internal accounting for the committed targets is folded back into
+    // `oracle`, so the report reads exactly as the serial run's.
+    let mut committed = stages::OracleDelta::default();
+    let mut gated: Option<ParallelReport> = None;
+    let parallel_run = {
+        let shared: &dyn DecompositionOracle<G> = &*oracle;
+        let forks = (spec.threads > 1)
+            .then(|| {
+                (0..spec.threads)
+                    .map(|_| shared.fork())
+                    .collect::<Option<Vec<_>>>()
+            })
+            .flatten();
+        // Before the run, time the oracle on throwaway points (never the
+        // run's targets, never in a ledger): a cheap oracle cannot gain
+        // from threads, since drawing targets is serial, and must then run
+        // the very loop `--threads 1` runs.
+        let forks = forks.and_then(|mut forks| {
+            let (draw_ns, decompose_ns) = probe_oracle_cost(ctx, &fb, &mut *forks[0], spec.seed);
+            if parallel_pays(draw_ns, decompose_ns) {
+                return Some(forks);
+            }
+            gated = Some(ParallelReport {
+                threads: spec.threads,
+                note: PARALLEL_NOTE,
+                mode: "serial",
+                probe_draw_ns: draw_ns,
+                probe_decompose_ns: decompose_ns,
+                ..Default::default()
+            });
+            None
+        });
+        forks.map(|mut forks| {
+            collect_and_solve_parallel(
+                ctx.group,
+                ctx.generator,
+                ctx.target,
+                ctx.r,
+                ctx.cofactor,
+                &fb,
+                spec.seed,
+                spec.max_trials,
+                source,
+                RestartPool::Lazy,
+                matrix.as_mut(),
+                &mut forks,
+                |w, ops, counters, point| {
+                    let found = w.decompose(ctx, &fb, ops, counters, point);
+                    (found, w.take_delta())
+                },
+                |w, ops, counters, point| w.decompose(ctx, &fb, ops, counters, point),
+                |w| w.take_delta(),
+                |delta| committed.merge(delta),
+            )
+        })
+    };
+    let (mut outcome, parallel): (PipelineOutcome, Option<ParallelReport>) = match parallel_run {
+        Some((outcome, report)) => {
+            oracle.absorb_delta(&committed);
+            (outcome, Some(report))
+        }
+        None => (
+            collect_and_solve_with(
+                ctx.group,
+                ctx.generator,
+                ctx.target,
+                ctx.r,
+                ctx.cofactor,
+                &fb,
+                spec.seed,
+                spec.max_trials,
+                source,
+                RestartPool::Lazy,
+                matrix.as_mut(),
+                |ops, counters, point| oracle.decompose(ctx, &fb, ops, counters, point),
+            ),
+            gated,
+        ),
+    };
 
     let (work, work_unit) = matrix.work();
     drop(matrix);
@@ -445,10 +530,44 @@ pub fn run_pipeline<G: CountedGroup>(
         wall_seconds: started.elapsed().as_secs_f64(),
         collector_wall_seconds,
         exhausted: outcome.recovered.is_none(),
+        parallel,
     })
 }
 
 /// The table a sweep prints.
+/// Nanoseconds per target of drawing one (a group addition) and of one
+/// decomposition, on 64 throwaway points `[k]G`, `k` from the seed.
+/// Nothing here reaches a ledger or the run: the fork's own accounting is
+/// drained and dropped.
+fn probe_oracle_cost<G: CountedGroup>(
+    ctx: &InstanceCtx<G>,
+    fb: &crate::cryptanalysis::ic_boundary::FactorBase<G::Elt>,
+    fork: &mut (dyn DecompositionOracle<G> + Send + '_),
+    seed: u64,
+) -> (u64, u64) {
+    const N: u64 = 64;
+    let mut ops = GroupOps::default();
+    let k = (seed ^ 0x5052_4F42_4521) % ctx.r.max(2) + 1;
+    let mut p = ctx.group.mul(&mut ops, ctx.generator, k);
+    let mut points = Vec::with_capacity(N as usize);
+    let started = Instant::now();
+    for _ in 0..N {
+        p = ctx.group.add(&mut ops, p, ctx.generator);
+        points.push(p);
+    }
+    let draw_ns = started.elapsed().as_nanos() as u64 / N;
+    let mut ctr = OracleCounters::default();
+    let started = Instant::now();
+    for &pt in &points {
+        if !ctx.group.is_identity(&pt) {
+            std::hint::black_box(fork.decompose(ctx, fb, &mut ops, &mut ctr, pt));
+        }
+    }
+    let decompose_ns = started.elapsed().as_nanos() as u64 / N;
+    let _ = fork.take_delta();
+    (draw_ns, decompose_ns)
+}
+
 pub fn format_markdown(rows: &[RunReport]) -> String {
     let mut out = String::new();
     out.push_str(
@@ -563,6 +682,88 @@ mod tests {
         assert!(report.s > 0.0 && report.s.is_finite());
         assert!(report.factor_base.columns > 0);
         assert!(report.decomposition.relations_found >= report.linear_algebra.rank);
+    }
+
+    /// **Threads change wall time and nothing else.**  Every count, row
+    /// and the logarithm of a parallel run equal the serial run's, for
+    /// every target source and thread count, including runs that stop
+    /// inside a speculation window and rewind the generator.
+    #[test]
+    fn a_parallel_relation_phase_reports_exactly_the_serial_run() {
+        let inst = roster_prime_instance(18).unwrap();
+        let (ctx, planted) = ctx_and_planted(&inst);
+        let base = PrimeAbscissaBase { instance: &inst };
+        let mut rewound = 0;
+        for (oracle_name, targets) in [
+            ("mitm", Targets::Walk),
+            ("mitm", Targets::Random),
+            ("mitm", Targets::WalkBatch),
+            ("subtract", Targets::Walk),
+        ] {
+            for seed in [3u64, 11, 29] {
+                let run = |threads: usize| {
+                    let mut spec = PipelineSpec {
+                        factor_base: "prime-abscissa".into(),
+                        oracle: oracle_name.into(),
+                        targets,
+                        max_trials: 2_000_000,
+                        seed,
+                        threads,
+                        ..Default::default()
+                    };
+                    spec.factor_base_params.set("size", "40");
+                    let mut mitm = MitmOracle::new(2);
+                    let mut subtract = SubtractOracle;
+                    let oracle: &mut dyn DecompositionOracle<_> = if oracle_name == "mitm" {
+                        &mut mitm
+                    } else {
+                        &mut subtract
+                    };
+                    run_pipeline(
+                        &ctx,
+                        &spec,
+                        &base,
+                        oracle,
+                        planted,
+                        &Calibration::default(),
+                        None,
+                    )
+                    .unwrap()
+                };
+                let serial = run(1);
+                assert!(serial.verified);
+                assert!(serial.parallel.is_none());
+                for threads in [2, 3, 4, 7] {
+                    let par = run(threads);
+                    let p = par.parallel.as_ref().expect("the oracle forks");
+                    assert_eq!(p.threads, threads);
+                    rewound += u64::from(p.replayed > 0);
+                    assert_eq!(par.recovered, serial.recovered);
+                    assert_eq!(par.verified, serial.verified);
+                    let d = &par.decomposition;
+                    let e = &serial.decomposition;
+                    assert_eq!(
+                        d.cost.group_ops, e.cost.group_ops,
+                        "{oracle_name} {targets:?} t={threads}"
+                    );
+                    assert_eq!(
+                        d.cost.native, e.cost.native,
+                        "{oracle_name} {targets:?} t={threads}"
+                    );
+                    assert_eq!(d.relations_found, e.relations_found);
+                    assert_eq!(
+                        par.linear_algebra.cost.native,
+                        serial.linear_algebra.cost.native
+                    );
+                    assert_eq!(par.verify.group_ops, serial.verify.group_ops);
+                    assert_eq!(par.total_gae, serial.total_gae);
+                }
+            }
+        }
+        assert!(
+            rewound > 0,
+            "no run stopped inside a window; the rewind went untested"
+        );
     }
 
     /// **Two oracles on the same base must agree on the answer and

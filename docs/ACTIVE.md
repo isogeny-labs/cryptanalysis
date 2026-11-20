@@ -18,6 +18,8 @@ and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
 
+- [x] Massively parallel `ic` relation collection: speculative multi-core decomposition with in-order commit (bit-identical `S`, relations and logarithm to the serial run), forkable oracles, `--threads`; strong-scaling curve and exact-dlog parity checks (Claude Code, completed 2026-11-20, branch claude/ic-parallel-relations, PR #1878; O(q^1/4) instance search 35-254x per phase-3 cell, --threads 3.22x subtract / 2.75x descent+f4 at 4 threads, counts identical; records 20261120T1852Z-ic-*, 20261120T1913Z-ic-threads-gate) [pcc:unverified]
+
 - [ ] Mirror the general binary hyperelliptic-cover transfer interface from crypto after its source commit is frozen, with split provenance and exact parity checks (Codex, started 2026-11-18, branch codex/general-binary-cover-transfer-mirror-20261118, PR #1765) [pcc:unverified]
 
 - [x] Validate fixed index-calculus candidate residuals and subgroup status (Codex, started 2026-11-18, branch test-fixed-candidate-residual, PR #1755)
