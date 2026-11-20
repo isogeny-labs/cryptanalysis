@@ -18,7 +18,7 @@ and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
 
-- [ ] `ic bench` CLI: validate every configuration before the instance, calibration and rho run (plug-in names per regime, parameter keys, targets, solver, oracle m range) with did-you-mean suggestions and exit 2; show skip reasons on the terminal; human-readable `--list` (Claude Code, started 2026-11-20, branch claude/ic-bench-cli-ux) [pcc:unverified]
+- [x] `ic bench` CLI: validate every configuration before the instance, calibration and rho run (plug-in names per regime, parameter keys, targets, solver, oracle m range) with did-you-mean suggestions and exit 2; show skip reasons on the terminal; human-readable `--list` (Claude Code, completed 2026-11-20, branch claude/ic-bench-cli-ux, PR #1881) [pcc:unverified]
 
 - [x] Massively parallel `ic` relation collection: speculative multi-core decomposition with in-order commit (bit-identical `S`, relations and logarithm to the serial run), forkable oracles, `--threads`; strong-scaling curve and exact-dlog parity checks (Claude Code, completed 2026-11-20, branch claude/ic-parallel-relations, PR #1878; O(q^1/4) instance search 35-254x per phase-3 cell, --threads 3.22x subtract / 2.75x descent+f4 at 4 threads, counts identical; records 20261120T1852Z-ic-*, 20261120T1913Z-ic-threads-gate) [pcc:unverified]
 
