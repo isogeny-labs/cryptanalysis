@@ -2566,6 +2566,117 @@ impl PrimeCurve {
         }
         count
     }
+
+    /// `#E`, the same number [`PrimeCurve::point_count`] returns, in
+    /// `O(p^{1/4})` group operations instead of `O(p)` Legendre symbols.
+    ///
+    /// Every `M` in the Hasse interval with `[M]P = O` is found by
+    /// baby-step giant-step for a few points `P`; `#E` is always among
+    /// them, so when exactly one survives it *is* `#E`.  When none of the
+    /// points pins it down (an order-2 heavy group on a tiny field), the
+    /// exact sum is computed instead, so the answer is never a guess.
+    pub fn point_count_fast(&self) -> u64 {
+        let p = self.p;
+        let points = (0..p).filter_map(|x| {
+            let v = self.rhs(x);
+            if v == 0 || self.legendre(v) != 1 {
+                return None;
+            }
+            let y = self.sqrt(v)?;
+            (mulmod(y, y, p) == v).then(|| PrimePoint::affine(x, y))
+        });
+        order_in_hasse_interval(self, points, p).unwrap_or_else(|| self.point_count())
+    }
+}
+
+/// `⌊√n⌋` for any word.
+fn isqrt_u64(n: u64) -> u64 {
+    let mut r = (n as f64).sqrt() as u64;
+    while r.saturating_mul(r) > n {
+        r -= 1;
+    }
+    while (r + 1).saturating_mul(r + 1) <= n {
+        r += 1;
+    }
+    r
+}
+
+/// Every `M` in `[lo, lo + width]` with `[M]P = O`, by baby-step
+/// giant-step in `O(√width)` group operations.  `None` when two baby
+/// steps coincide (the order of `P` is below the step) or two keys
+/// collide: the caller then has no complete list and must count.
+pub(crate) fn hasse_annihilators<G: CountedGroup>(
+    g: &G,
+    p: G::Elt,
+    lo: u64,
+    width: u64,
+) -> Option<Vec<u64>> {
+    let mut ops = GroupOps::default();
+    let m = isqrt_u64(width) + 1;
+    let mut table: FastMap<u64> = fast_map(m as usize * 2);
+    let mut babies = Vec::with_capacity(m as usize);
+    let mut cur = g.identity();
+    for j in 0..m {
+        if table.insert(g.key(&cur), j).is_some() {
+            return None;
+        }
+        babies.push(cur);
+        cur = g.add(&mut ops, cur, p);
+    }
+    // `cur` is [m]P; walk R_k = −[lo]P − [k·m]P and match R_k = [j]P.
+    let step = g.neg(cur);
+    let mut r = g.neg(g.mul(&mut ops, p, lo));
+    let mut out = Vec::new();
+    let mut k = 0u64;
+    while k * m <= width {
+        if let Some(&j) = table.get(&g.key(&r)) {
+            if babies[j as usize] != r {
+                return None;
+            }
+            let i = k * m + j;
+            if i <= width {
+                out.push(lo + i);
+            }
+        }
+        r = g.add(&mut ops, r, step);
+        k += 1;
+    }
+    Some(out)
+}
+
+/// The group order of a curve over a field of `q` elements, from points
+/// of it: the unique `M` in the Hasse interval `|M − (q + 1)| ≤ 2√q`
+/// that every tried point annihilates.  At most eight points are tried;
+/// `None` if they leave more than one candidate, which a caller answers
+/// with an exact count.  `#E` annihilates every point, so it is always a
+/// candidate and a single survivor is exact, not probable.
+pub(crate) fn order_in_hasse_interval<G: CountedGroup>(
+    g: &G,
+    points: impl Iterator<Item = G::Elt>,
+    q: u64,
+) -> Option<u64> {
+    let half = isqrt_u64(q.checked_mul(4)?);
+    let lo = (q + 1).saturating_sub(half).max(1);
+    let width = q + 1 + half - lo;
+    let mut alive: Option<Vec<u64>> = None;
+    for pt in points.take(8) {
+        let Some(found) = hasse_annihilators(g, pt, lo, width) else {
+            continue;
+        };
+        let next: Vec<u64> = match alive {
+            None => found,
+            Some(prev) => prev.into_iter().filter(|m| found.contains(m)).collect(),
+        };
+        if next.len() == 1 {
+            return Some(next[0]);
+        }
+        if next.is_empty() {
+            // Impossible for a correct group law: #E is always a candidate.
+            return None;
+        }
+        alive = Some(next);
+    }
+    None
 }
 
 fn jacobi(mut a: u64, mut n: u64) -> i32 {
@@ -2688,7 +2799,7 @@ pub fn find_prime_order_curve(bits: u32, seed: u64) -> PrimeInstance {
             if disc == 0 {
                 continue;
             }
-            let order = curve.point_count();
+            let order = curve.point_count_fast();
             if !is_prime_u64(order) {
                 continue;
             }
@@ -2986,6 +3097,42 @@ pub fn binary_point_count(gf: &Gf2, ash: &ArtinSchreier, a: u64, b: u64) -> u64 
     count
 }
 
+/// [`binary_point_count`] in `O(2^{n/4})` group operations: the unique
+/// annihilator in the Hasse interval of a few points (see
+/// [`order_in_hasse_interval`]).  `None` when the curve has no fast
+/// arithmetic or the points leave the order ambiguous; the caller then
+/// counts exactly.
+pub fn binary_point_count_fast(
+    irreducible: &IrreduciblePoly,
+    gf: &Gf2,
+    ash: &ArtinSchreier,
+    n: u32,
+    a: u64,
+    b: u64,
+) -> Option<u64> {
+    if n >= 62 {
+        return None;
+    }
+    let curve = BinaryCurve {
+        m: n,
+        irreducible: irreducible.clone(),
+        a: gf.to_element(a),
+        b: gf.to_element(b),
+        generator: BinaryPoint::Infinity,
+        order: BigUint::from(1u32),
+        cofactor: BigUint::from(1u32),
+    };
+    let fast = FastCurve::new(&curve)?;
+    let group = BinaryGroup(&fast);
+    let points = (1..=gf.mask).filter_map(|x| {
+        let inv = gf.inv(x);
+        let c = x ^ a ^ gf.mul(b, gf.sqr(inv));
+        let u = ash.solve(c)?;
+        Some(FastPoint::affine(x, gf.mul(x, u)))
+    });
+    order_in_hasse_interval(&group, points, 1u64 << n)
+}
+
 /// **A random binary curve** over `F_{2^n}` with a large prime-order
 /// subgroup (`r² ∤ #E`, cofactor at most `max_cofactor`), found by
 /// counting points of random `(a, b)` until one qualifies.  The search
@@ -3001,7 +3148,8 @@ pub fn random_binary_instance(n: u32, seed: u64, max_cofactor: u64) -> Option<Bi
         if b == 0 || b == 1 {
             continue;
         }
-        let order = binary_point_count(&gf, &ash, a, b);
+        let order = binary_point_count_fast(&irreducible, &gf, &ash, n, a, b)
+            .unwrap_or_else(|| binary_point_count(&gf, &ash, a, b));
         let factors = factorise_u64(order);
         let Some(&(r, e)) = factors.last() else {
             continue;
@@ -7435,6 +7583,116 @@ mod tests {
                 .map(|x| points_with_x(&curve, &gf.to_element(x)).len() as u64)
                 .sum::<u64>();
         assert_eq!(binary_point_count(&gf, &ash, a, b), brute);
+    }
+
+    #[test]
+    fn the_hasse_interval_count_equals_the_exact_count_on_prime_curves() {
+        let mut rng = StdRng::seed_from_u64(0x4A55E);
+        let (mut checked, mut primes) = (0, 0);
+        while checked < 400 {
+            let bits = rng.gen_range(5..=16u32);
+            let p = (rng.gen::<u64>() & ((1u64 << bits) - 1)) | (1u64 << (bits - 1)) | 1;
+            if !is_prime_u64(p) || p < 5 {
+                continue;
+            }
+            let curve = PrimeCurve {
+                p,
+                a: rng.gen_range(0..p),
+                b: rng.gen_range(0..p),
+            };
+            let disc = addmod(
+                mulmod(4, mulmod(mulmod(curve.a, curve.a, p), curve.a, p), p),
+                mulmod(27, mulmod(curve.b, curve.b, p), p),
+                p,
+            );
+            if disc == 0 {
+                continue;
+            }
+            let exact = curve.point_count();
+            assert_eq!(
+                curve.point_count_fast(),
+                exact,
+                "p={p} a={} b={}",
+                curve.a,
+                curve.b
+            );
+            primes += u64::from(is_prime_u64(exact));
+            checked += 1;
+        }
+        assert!(primes > 0);
+    }
+
+    #[test]
+    fn the_hasse_interval_count_equals_the_exact_count_on_binary_curves() {
+        let mut rng = StdRng::seed_from_u64(0xB1A5E);
+        let mut fast_hits = 0;
+        let mut total = 0;
+        for n in 5..=15u32 {
+            let irr = find_irreducible_sparse(n).unwrap();
+            let gf = Gf2::new(&irr);
+            let ash = ArtinSchreier::new(&gf);
+            for _ in 0..24 {
+                let a = rng.gen_range(0..2u64);
+                let b = (rng.gen::<u64>() & gf.mask) | 2;
+                let exact = binary_point_count(&gf, &ash, a, b);
+                if let Some(fast) = binary_point_count_fast(&irr, &gf, &ash, n, a, b) {
+                    assert_eq!(fast, exact, "n={n} a={a} b={b:x}");
+                    fast_hits += 1;
+                }
+                total += 1;
+            }
+        }
+        // The fallback is for rare ambiguous groups, not the common path.
+        assert!(fast_hits * 10 >= total * 9, "{fast_hits}/{total} pinned");
+    }
+
+    #[test]
+    fn the_prime_order_search_keeps_its_curves() {
+        // Pins the curves the O(p) count chose before the Hasse-interval
+        // count replaced it; a changed curve would move every bench row.
+        for (bits, seed) in [
+            (12u32, 1u64),
+            (14, 7),
+            (16, 0x1C_B0_0B_DA_7A),
+            (18, 0x1C_B0_0B_DA_7A),
+        ] {
+            let inst = find_prime_order_curve(bits, seed);
+            assert_eq!(inst.curve.point_count(), inst.group_order);
+            assert!(is_prime_u64(inst.group_order));
+            let mut rng = StdRng::seed_from_u64(seed ^ (bits as u64) << 40);
+            // The same draw sequence, counted exactly, lands on the same curve.
+            let reference = loop {
+                let p = loop {
+                    let cand = (rng.gen::<u64>() & ((1u64 << bits) - 1)) | (1u64 << (bits - 1)) | 1;
+                    if is_prime_u64(cand) {
+                        break cand;
+                    }
+                };
+                let mut hit = None;
+                for _ in 0..64 {
+                    let a = rng.gen_range(0..p);
+                    let b = rng.gen_range(1..p);
+                    let curve = PrimeCurve { p, a, b };
+                    let disc = addmod(
+                        mulmod(4, mulmod(mulmod(a, a, p), a, p), p),
+                        mulmod(27, mulmod(b, b, p), p),
+                        p,
+                    );
+                    if disc == 0 || !is_prime_u64(curve.point_count()) {
+                        continue;
+                    }
+                    hit = Some(curve);
+                    break;
+                }
+                if let Some(c) = hit {
+                    break c;
+                }
+            };
+            assert_eq!(
+                (inst.curve.p, inst.curve.a, inst.curve.b),
+                (reference.p, reference.a, reference.b)
+            );
+        }
     }
 
     #[test]
