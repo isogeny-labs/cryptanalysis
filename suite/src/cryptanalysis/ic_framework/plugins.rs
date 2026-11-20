@@ -505,6 +505,9 @@ pub struct DescentAlgebraicOracle<'i> {
     summands: u32,
     instance: &'i BinaryInstance,
     v_basis: Vec<u64>,
+    /// `m = 4` only: basis of the subspace the two intermediates of the
+    /// balanced split are restricted to (the representation filter).
+    inter_basis: Vec<u64>,
     harness: SolverHarness,
     totals: SolverTotals,
     descent_setup_ns: u64,
@@ -536,6 +539,7 @@ impl<'i> DescentAlgebraicOracle<'i> {
             summands,
             instance,
             v_basis: Vec::new(),
+            inter_basis: Vec::new(),
             harness: SolverHarness::new(solver, solver_params, budget),
             totals,
             descent_setup_ns: 0,
@@ -550,22 +554,56 @@ impl<'i> DescentAlgebraicOracle<'i> {
 
     /// The descended system for a target abscissa; its `lift` maps a
     /// solution back to abscissae.  `prepare` must have run.
-    fn descend(&self, x_r: u64) -> SymbolicDescent {
-        descend(
-            &self.instance.gf,
-            self.instance.b,
-            x_r,
-            &self.v_basis,
-            self.summands,
+    fn descend(&self, x_r: u64) -> Descended {
+        if self.summands == 4 {
+            return Descended::Split(
+                crate::cryptanalysis::pq_descent_symbolic::descend_split4(
+                    &self.instance.gf,
+                    self.instance.b,
+                    x_r,
+                    &self.v_basis,
+                    &self.inter_basis,
+                )
+                .expect("prepare checked the dimension"),
+            );
+        }
+        Descended::Plain(
+            descend(
+                &self.instance.gf,
+                self.instance.b,
+                x_r,
+                &self.v_basis,
+                self.summands,
+            )
+            .expect("prepare checked the dimension"),
         )
-        .expect("prepare checked the dimension")
     }
 }
 
-fn system_of(sys: &SymbolicDescent) -> BooleanSystem {
+/// Either descent the oracle builds: `S_{m+1}` directly (`m = 2, 3`) or
+/// the balanced representation split of `S_5` (`m = 4`).
+enum Descended {
+    Plain(SymbolicDescent),
+    Split(crate::cryptanalysis::pq_descent_symbolic::SplitDescent),
+}
+
+impl Descended {
+    fn lift(&self, v: u64) -> Vec<u64> {
+        match self {
+            Descended::Plain(s) => s.lift(v),
+            Descended::Split(s) => s.lift(v),
+        }
+    }
+}
+
+fn system_of(sys: &Descended) -> BooleanSystem {
+    let (equations, n_vars) = match sys {
+        Descended::Plain(s) => (&s.equations, s.n_vars),
+        Descended::Split(s) => (&s.equations, s.n_vars),
+    };
     BooleanSystem {
-        equations: sys.equations.clone(),
-        n_vars: sys.n_vars,
+        equations: equations.clone(),
+        n_vars,
     }
 }
 
@@ -587,7 +625,13 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for DescentAlgebraicOracle<'_> {
     }
 
     fn parameters(&self) -> &[(&str, &str)] {
-        &[("m", "summands, 2 (descends S3) or 3 (descends S4)")]
+        &[
+            ("m", "summands, 2 (descends S3), 3 (descends S4) or 4 (balanced split of S5)"),
+            (
+                "inter_dim",
+                "m = 4 only: dimension l' of the subspace span(1, z, ..., z^(l'-1)) the two intermediates are restricted to; default n (unrestricted chain)",
+            ),
+        ]
     }
 
     fn setup_native(&self) -> std::collections::BTreeMap<String, u64> {
@@ -602,12 +646,12 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for DescentAlgebraicOracle<'_> {
         &mut self,
         _ctx: &InstanceCtx<BinaryGroup<'a>>,
         fb: &FactorBase<FastPoint>,
-        _params: &Params,
+        params: &Params,
         _ops: &mut GroupOps,
     ) -> Result<(), String> {
-        if !(2..=3).contains(&self.summands) {
+        if !(2..=4).contains(&self.summands) {
             return Err(format!(
-                "descent-algebraic takes m = 2 or 3, got {}",
+                "descent-algebraic takes m = 2, 3 or 4, got {}",
                 self.summands
             ));
         }
@@ -615,7 +659,26 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for DescentAlgebraicOracle<'_> {
             "descent-algebraic needs a factor base whose abscissae form an F_2-subspace; \
              use binary-subspace or koblitz-orbit",
         )?;
-        let cap = max_n_prime(self.summands);
+        if self.summands == 4 {
+            let n = self.instance.n;
+            let l = params.u64_or("inter_dim", n as u64)? as u32;
+            if l == 0 || l > n {
+                return Err(format!("inter_dim must be 1..={n}, got {l}"));
+            }
+            let vars = 4 * basis.len() as u32 + 2 * l;
+            if vars > 64 {
+                return Err(format!(
+                    "the split descent needs 4·{} + 2·{l} = {vars} boolean variables; the mask holds 64",
+                    basis.len()
+                ));
+            }
+            self.inter_basis = (0..l).map(|k| 1u64 << k).collect();
+        }
+        let cap = if self.summands == 4 {
+            16
+        } else {
+            max_n_prime(self.summands)
+        };
         if basis.len() as u32 > cap {
             return Err(format!(
                 "the descent's monomial mask holds n' ≤ {cap} at m = {}; this base has n' = {}",
