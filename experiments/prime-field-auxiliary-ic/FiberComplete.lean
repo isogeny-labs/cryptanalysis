@@ -214,4 +214,62 @@ theorem checkFlat_exact {F : Type} [Field F] [DecidableEq F] (roots : List F)
     exact p.mem_iff.symm.trans (check_exact _ _ _ ht x)
 
 #print axioms checkFlat_exact
+/-- Count internal nodes, one sibling-product check per node on acceptance. -/
+def InputTree.pairCount : InputTree F → Nat
+  | .leaf _ => 0
+  | .branch l r => l.pairCount + r.pairCount + 1
+
+/-- Sum of the leaf depths. Independent evaluation of every leaf traverses
+each such edge once for that leaf. -/
+def InputTree.independentSteps : InputTree F → Nat
+  | .leaf _ => 0
+  | .branch l r =>
+    l.independentSteps + r.independentSteps + l.leaves.length + r.leaves.length
+
+/-- Structural work on a successful check. This counts map steps and sibling
+checks, and leaves out list construction, allocation, lifting, and timing. -/
+theorem check_work {F : Type} [Add F] [Sub F] [Mul F] [OfNat F 0] [DecidableEq F]
+    (t : InputTree F) (ms : List (Parameters F)) (z : F) (ok : check t ms = some z) :
+    t.leaves.length = 2^ms.length ∧ t.pairCount + 1 = t.leaves.length ∧
+    t.independentSteps = ms.length * t.leaves.length := by
+  induction t generalizing ms z with
+  | leaf x =>
+    cases ms with
+    | nil => simp [InputTree.leaves, InputTree.pairCount, InputTree.independentSteps]
+    | cons _ _ => simp [check] at ok
+  | branch l r il ir =>
+    cases ms with
+    | nil => simp [check] at ok
+    | cons m ms =>
+      cases hl : check l ms with
+      | none => simp [check, hl] at ok
+      | some x =>
+        cases hr : check r ms with
+        | none => simp [check, hl, hr] at ok
+        | some y =>
+          obtain ⟨nl, pl, sl⟩ := il _ _ hl
+          obtain ⟨nr, pr, sr⟩ := ir _ _ hr
+          simp only [InputTree.leaves, InputTree.pairCount, InputTree.independentSteps,
+            List.length_append, List.length_cons, Nat.pow_succ, Nat.mul_two,
+            Nat.succ_mul, Nat.mul_add]
+          omega
+
+/-- Recover the count for the original flat input, including preservation
+of its length through the half-stride rearrangement. -/
+theorem flat_work {F : Type} [Add F] [Sub F] [Mul F] [OfNat F 0] [DecidableEq F]
+    (roots : List F) (ms : List (Parameters F)) (z : F)
+    (ok : checkFlat roots ms = some z) :
+    ∃ t : InputTree F, collapse ms.length (roots.map InputTree.leaf) = some t ∧
+      roots.length = 2^ms.length ∧ t.pairCount + 1 = roots.length ∧
+      t.independentSteps = ms.length * roots.length := by
+  cases h : collapse ms.length (roots.map InputTree.leaf) with
+  | none => simp [checkFlat,h] at ok
+  | some t =>
+    have ht : check t ms = some z := by simpa [checkFlat,h] using ok
+    have len : t.leaves.length = roots.length := by
+      simpa [leavesOf, List.flatMap_map, Function.comp_def, InputTree.leaves] using
+        (collapse_perm _ _ _ h).length_eq
+    exact ⟨t, rfl, len ▸ check_work t ms z ht⟩
+
+#print axioms flat_work
 end FiberComplete
