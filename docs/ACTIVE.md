@@ -52,4 +52,4 @@ and construction gates. [pcc:unverified]
 
 ## Blocked / questions for the owner
 
-- PR #1883: registered PKM phase-1 measurement cannot start until checkpoint S3 upload access is restored; token HTTP 403, fallback profile InvalidAccessKeyId, default profile AllAccessDisabled. See `research/pkm_tower_registered_m5m6_20261121/PREPARATION.md`. [pcc:unverified]
+- PR #1883: registered PKM phase-1 measurement cannot start until checkpoint S3 upload access is restored; token HTTP 403; refresh agent exits 1 on S3 listing; configured AWS profiles return InvalidAccessKeyId or AllAccessDisabled. See `research/pkm_tower_registered_m5m6_20261121/PREPARATION.md`. [pcc:unverified]
