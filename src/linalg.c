@@ -273,11 +273,11 @@ ca_status ca_dense_solve_mod_prime(uint64_t *M, uint32_t n, uint64_t *rhs, uint6
 
 /* ---- modular vector helpers ------------------------------------------- */
 
-/* small signed coefficient reduced into [0, q) */
+/* small signed coefficient reduced into [0, q) — Barrett via ca_u128_mod */
 static inline uint64_t coef_mod(int64_t v, uint64_t q)
 {
-    if (v >= 0) return (uint64_t)v % q;
-    uint64_t m = (uint64_t)(-v) % q;
+    if (v >= 0) return ca_u128_mod((ca_u128)(uint64_t)v, q);
+    uint64_t m = ca_u128_mod((ca_u128)(uint64_t)(-v), q);
     return m ? q - m : 0;
 }
 

@@ -491,12 +491,18 @@ static ca_status k_solve_impl(const ca_group *g, const ca_elem *base, const ca_e
                         hs[i] = ca_group_hash(g, &r->Y);
                         restarts++;
                     } else {
-                        /* tame position T, wild distance D: x = T - D */
+                        /* tame position T, wild distance D: x = T - D mod n */
                         uint64_t T = tame ? r->dist : od;
                         uint64_t D = tame ? od : r->dist;
-                        uint64_t cand = T - D;
-                        if (n) cand = (uint64_t)(((ca_i128)T - (ca_i128)D) % (ca_i128)n);
-                        if (n && (ca_i128)T - (ca_i128)D < 0) cand = (cand + n) % n;
+                        uint64_t cand;
+                        if (!n) {
+                            cand = T - D;
+                        } else if (T >= D) {
+                            cand = ca_u128_mod((ca_u128)(T - D), n);
+                        } else {
+                            uint64_t rmod = ca_u128_mod((ca_u128)(D - T), n);
+                            cand = rmod ? n - rmod : 0;
+                        }
                         if (ca_verify_log(g, base, target, cand) &&
                             ca_fit_interval_base(g, base, &cand, lo, hi)) {
                             /* The header promises x in [lo, hi].  A verified

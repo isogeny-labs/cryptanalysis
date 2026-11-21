@@ -314,12 +314,12 @@ typedef struct cheon_f2 {
 
 static uint64_t cheon_mulmod(uint64_t a, uint64_t b, uint64_t p)
 {
-    return (uint64_t)(((ca_u128)a * b) % p);
+    return ca_mulmod(a, b, p);
 }
 
 static uint64_t cheon_addmod(uint64_t a, uint64_t b, uint64_t p)
 {
-    return (uint64_t)(((ca_u128)a + b) % p);
+    return ca_addmod(a, b, p);
 }
 
 static uint64_t cheon_submod(uint64_t a, uint64_t b, uint64_t p)

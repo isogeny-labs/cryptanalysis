@@ -64,9 +64,75 @@ static inline uint64_t ca_submod(uint64_t a, uint64_t b, uint64_t m)
     return a >= b ? a - b : a + (m - b);
 }
 
+/* Reduce a 128-bit product modulo m without ARM64's software __udivmodti4.
+ * A thread-local Barrett / Möller–Granlund reciprocal is rebuilt only when
+ * m changes, so hot loops over a fixed modulus pay one 128÷64 setup. */
+static inline uint64_t ca_u128_mod(ca_u128 x, uint64_t m)
+{
+#if defined(__aarch64__)
+    static _Thread_local uint64_t c_m, c_qn, c_v, c_mu64;
+    static _Thread_local unsigned c_s;
+    if (__builtin_expect(m != c_m, 0)) {
+        unsigned s = 0;
+        uint64_t t = m;
+        while ((t & (UINT64_C(1) << 63)) == 0) {
+            t <<= 1;
+            s++;
+        }
+        c_m = m;
+        c_qn = t;
+        c_s = s;
+        c_mu64 = UINT64_MAX / m;
+        c_v = (uint64_t)((~((ca_u128)0)) / t);
+    }
+    uint64_t hi = (uint64_t)(x >> 64), lo = (uint64_t)x;
+    if (__builtin_expect(hi == 0, 1)) {
+        if (lo < c_m) return lo;
+        uint64_t quo = (uint64_t)(((ca_u128)lo * c_mu64) >> 64);
+        uint64_t r = lo - quo * c_m;
+        return r >= c_m ? r - c_m : r;
+    }
+    unsigned s = c_s;
+    uint64_t qn = c_qn, v = c_v;
+    if (s == 0) {
+        if (hi >= qn) hi -= qn;
+        ca_u128 q = (ca_u128)hi * v + (((ca_u128)hi << 64) | lo);
+        uint64_t q1 = (uint64_t)(q >> 64) + 1;
+        uint64_t q0 = (uint64_t)q;
+        uint64_t r = lo - q1 * qn;
+        if (r > q0) r += qn;
+        if (r >= qn) r -= qn;
+        return r;
+    }
+    uint64_t u2 = hi >> (64 - s);
+    uint64_t u1 = (hi << s) | (lo >> (64 - s));
+    uint64_t u0 = lo << s;
+    if (__builtin_expect(u2 != 0 || u1 >= qn, 0)) {
+        ca_u128 q = (ca_u128)u2 * v + (((ca_u128)u2 << 64) | u1);
+        uint64_t q1 = (uint64_t)(q >> 64) + 1;
+        uint64_t q0 = (uint64_t)q;
+        uint64_t r = u1 - q1 * qn;
+        if (r > q0) r += qn;
+        if (r >= qn) r -= qn;
+        u1 = r;
+    }
+    {
+        ca_u128 q = (ca_u128)u1 * v + (((ca_u128)u1 << 64) | u0);
+        uint64_t q1 = (uint64_t)(q >> 64) + 1;
+        uint64_t q0 = (uint64_t)q;
+        uint64_t r = u0 - q1 * qn;
+        if (r > q0) r += qn;
+        if (r >= qn) r -= qn;
+        return r >> s;
+    }
+#else
+    return (uint64_t)(x % m);
+#endif
+}
+
 static inline uint64_t ca_mulmod(uint64_t a, uint64_t b, uint64_t m)
 {
-    return (uint64_t)(((ca_u128)a * b) % m);
+    return ca_u128_mod((ca_u128)a * b, m);
 }
 
 CA_API uint64_t ca_powmod(uint64_t base, uint64_t exp, uint64_t m);

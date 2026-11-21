@@ -3167,6 +3167,8 @@ mod tests {
                 field,
                 #[cfg(all(target_arch = "x86_64", suite_avx512))]
                 simd: None,
+                #[cfg(target_arch = "aarch64")]
+                simd_neon: None,
             };
             let exact = matches!(n, 15 | 18 | 21 | 24 | 27);
             if exact {
@@ -3503,7 +3505,10 @@ mod tests {
                 a: 1,
                 b: 1,
                 field,
+                #[cfg(all(target_arch = "x86_64", suite_avx512))]
                 simd: None,
+                #[cfg(target_arch = "aarch64")]
+                simd_neon: None,
             };
             let mut ps: Vec<_> = (0..37)
                 .map(|_| {
