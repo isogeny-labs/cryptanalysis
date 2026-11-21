@@ -18,7 +18,7 @@ and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
 
-- [ ] Run the registered PKM tower phase-1 comparison at feasible m=5,6 with the frozen baseline, planted controls and resource limits; report full cell outcomes (Codex, started 2026-11-21, branch codex/pkm-high-arity-phase1-20261121)
+- [ ] Run the registered PKM tower phase-1 comparison at feasible m=5,6 with the frozen baseline, planted controls and resource limits; report full cell outcomes (Codex, started 2026-11-21, branch codex/pkm-high-arity-phase1-20261121, PR #1883)
 
 - [ ] Mirror the general binary hyperelliptic-cover transfer interface from crypto after its source commit is frozen, with split provenance and exact parity checks (Codex, started 2026-11-18, branch codex/general-binary-cover-transfer-mirror-20261118, PR #1765) [pcc:unverified]
 
