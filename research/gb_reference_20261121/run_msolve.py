@@ -71,10 +71,15 @@ def main() -> int:
     logs.mkdir(exist_ok=True)
     version = subprocess.run(["dpkg-query", "-W", "-f=${Version}", "msolve"],
                              capture_output=True, text=True).stdout.strip() or "unknown"
+    done = set()
+    if Path(a.out).exists():
+        done = {json.loads(l)["id"] for l in Path(a.out).read_text().splitlines() if l.strip()}
     with open(a.out, "a") as out:
         for ms in sorted(d.glob("*.ms")):
             if a.only and a.only not in ms.name:
                 continue
+            if ms.name[: -len(".ms")] in done:
+                continue  # resumable: a row already exists for this system
             sid = ms.name[: -len(".ms")]
             gb = logs / f"{sid}.gb"
             log = logs / f"{sid}.log"
