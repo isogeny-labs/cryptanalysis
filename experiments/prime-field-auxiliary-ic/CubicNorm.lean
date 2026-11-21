@@ -78,4 +78,39 @@ theorem wholeProduct (h : Cubic F) {ms z xs} (tree : Paired ms z xs) :
     simp only [through,push_eval _ _ _ _ hp,leafProduct_append,il,ir]
 
 #print axioms wholeProduct
+def scale (t : F) (h : Cubic F) : Cubic F :=
+  ⟨t*h.a,t*h.b,t*h.c,t*h.d⟩
+
+private theorem shift_scale (t : F) (h : Cubic F) (r : F) :
+    shift (scale t h) r = scale t (shift h r) := by
+  unfold shift scale eval
+  congr 1 <;> grind
+
+private theorem product_scale (t : F) (h : Cubic F) (b : F) :
+    productCubic (scale t h) b = scale (t*t) (productCubic h b) := by
+  simp only [productCubic, scale, Cubic.mk.injEq]
+  exact ⟨by grind, by grind, by grind, by grind⟩
+
+theorem push_scale (t : F) (h : Cubic F) (m : MapData F) :
+    push (scale t h) m = scale (t*t) (push h m) := by
+  simp only [push,shift_scale,product_scale]
+
+/-- A nonempty norm chain loses the global sign already at its first pair. -/
+theorem through_neg (h : Cubic F) (m : MapData F) (ms : List (MapData F)) :
+    through (scale (-1) h) (m::ms) = through h (m::ms) := by
+  induction ms generalizing m with
+  | nil =>
+    simp only [through,push_scale]
+    have unit : (-1:F)*(-1)=1 := by grind
+    rw [unit]
+    generalize push h m = a
+    cases a
+    unfold scale
+    congr 1 <;> grind
+  | cons n ns ih =>
+    change push (through (scale (-1) h) (n::ns)) m = push (through h (n::ns)) m
+    rw [ih n]
+
+#print axioms push_scale
+#print axioms through_neg
 end CubicNorm
