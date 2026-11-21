@@ -385,6 +385,20 @@ pub struct FastCurve {
 }
 
 impl FastCurve {
+    /// Build a single-word curve from raw `u64` coefficients.  `g` is left
+    /// at infinity; callers that need a generator set it explicitly.
+    /// Returns `None` when `p` is not an odd prime fitting the Montgomery field.
+    pub fn from_u64(p: u64, a: u64, b: u64, n: u64) -> Option<Self> {
+        let f = FastField::new(p)?;
+        Some(Self {
+            f,
+            a: f.to_mont(a % p),
+            b: f.to_mont(b % p),
+            n,
+            g: FastPoint::INFINITY,
+        })
+    }
+
     /// Adopt a [`CurveParams`] whose prime, order and coordinates all fit
     /// a single word.  Returns `None` when they do not -- callers stay on
     /// the general arithmetic then.
