@@ -304,6 +304,8 @@ pub struct Relation {
 /// Statistics of a relation search.
 #[derive(Clone, Debug, Default)]
 pub struct SearchStats {
+    /// The trial cap was reached before `count` relations were found.
+    pub exhausted: bool,
     pub trials: u64,
     pub smooth: u64,
     pub duplicates: u64,
@@ -421,7 +423,8 @@ pub fn collect_relations<C: IndexCalculusCurve>(
                 break 'walks;
             }
             if stats.trials >= params.max_trials {
-                return Err(HgError::Exhausted("relation search trials"));
+                stats.exhausted = true;
+                break 'walks;
             }
             let hx = curve.hash64(&x);
             if recent.contains(&hx) {
@@ -620,6 +623,24 @@ pub fn lattice_index(
     minors: usize,
     seed: u64,
 ) -> Result<BigUint, HgError> {
+    // Places that occur in no relation are unconstrained: drop their
+    // columns and compute the index of the lattice of the places that do
+    // occur (the order of the subgroup they generate).
+    let mut used = vec![false; fb_size];
+    for r in relations {
+        for &(i, _) in &r.coeffs {
+            used[i] = true;
+        }
+    }
+    let mut col_of = vec![usize::MAX; fb_size];
+    let mut ncols = 0;
+    for i in 0..fb_size {
+        if used[i] {
+            col_of[i] = ncols;
+            ncols += 1;
+        }
+    }
+    let fb_size = ncols;
     if relations.len() < fb_size {
         return Err(HgError::Unsupported(
             "fewer relations than factor-base elements",
@@ -630,7 +651,7 @@ pub fn lattice_index(
         .map(|r| {
             let mut row = vec![0i64; fb_size];
             for &(i, c) in &r.coeffs {
-                row[i] = c;
+                row[col_of[i]] = c;
             }
             row
         })
@@ -683,8 +704,11 @@ pub fn index_calculus_group_order<C: IndexCalculusCurve>(
     params: &IcParams,
 ) -> Result<OrderReport, HgError> {
     let mut rng = StdRng::seed_from_u64(params.seed);
-    let count = fb.len() + params.extra_relations;
+    let count = fb.len() + params.extra_relations.max(fb.len() / 4);
     let (relations, stats) = collect_relations(curve, fb, None, count, params, &mut rng)?;
+    if stats.exhausted {
+        return Err(HgError::Exhausted("relation search trials (order mode)"));
+    }
     let t0 = Instant::now();
     let order = lattice_index(&relations, fb.len(), 3, params.seed ^ 0xabcd)?;
     let la_ms = t0.elapsed().as_millis();
@@ -757,6 +781,7 @@ pub fn index_calculus_dlp<C: IndexCalculusCurve>(
             params,
             &mut rng,
         )?;
+        let exhausted = stats.exhausted;
         stats_total.trials += stats.trials;
         stats_total.smooth += stats.smooth;
         stats_total.duplicates += stats.duplicates;
@@ -764,9 +789,16 @@ pub fn index_calculus_dlp<C: IndexCalculusCurve>(
         stats_total.setup_ops += stats.setup_ops;
         stats_total.walks += stats.walks;
         all.extend(rels);
+        if exhausted {
+            return Err(HgError::Exhausted("relation search trials (dlp mode)"));
+        }
         let t0 = Instant::now();
         if std::env::var_os("HG_VERBOSE").is_some() {
-            eprintln!("[ic] solving with {} relations over {} places", all.len(), fb.len());
+            eprintln!(
+                "[ic] solving with {} relations over {} places",
+                all.len(),
+                fb.len()
+            );
         }
         let (sol, dim) = solve_log_mod_n(&all, fb.len(), n64);
         let la_ms = t0.elapsed().as_millis();

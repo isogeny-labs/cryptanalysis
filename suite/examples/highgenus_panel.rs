@@ -71,6 +71,24 @@ enum Cmd {
         #[arg(long, default_value_t = 1)]
         seed: u64,
     },
+    /// Relation-rate probe: build the factor base and run the relation
+    /// walk for a bounded number of trials, reporting the smoothness rate
+    /// and cost per trial (no solve).
+    Probe {
+        #[arg(long, value_delimiter = ',')]
+        genera: Vec<u32>,
+        #[arg(long)]
+        p: u64,
+        #[arg(long)]
+        bound: usize,
+        /// hyper | trigonal | all
+        #[arg(long, default_value = "all")]
+        family: String,
+        #[arg(long, default_value_t = 1)]
+        seed: u64,
+        #[arg(long, default_value_t = 200_000)]
+        max_trials: u64,
+    },
     /// Index calculus on a random curve over a small field: group order
     /// from the relation lattice, then a DLP in the largest prime subgroup.
     IcOrder {
@@ -169,7 +187,7 @@ fn run_rho<G: JacobianGroup>(label: &str, model: &str, inst: &Instance<G>, seed:
 fn power_params_for_genus(g: u32) -> Option<(u32, u32)> {
     // Smallest m ≥ 3 with (m−1)(n−1) = 2g, gcd(m,n) = 1, n ≥ 2.
     for m in 3..=(2 * g + 1) {
-        if (2 * g) % (m - 1) != 0 {
+        if !(2 * g).is_multiple_of(m - 1) {
             continue;
         }
         let n = 2 * g / (m - 1) + 1;
@@ -415,9 +433,146 @@ fn run_ic_order<C: IndexCalculusCurve>(
     );
 }
 
+fn run_probe<C: IndexCalculusCurve>(
+    label: &str,
+    model: &str,
+    curve: &C,
+    desc: &str,
+    bound: usize,
+    seed: u64,
+    max_trials: u64,
+) {
+    use cryptanalysis_suite::highgenus::ic::collect_relations;
+    let mut rng = StdRng::seed_from_u64(seed);
+    let p = curve.field().p();
+    let g = curve.genus();
+    let t0 = Instant::now();
+    let fb = match build_factor_base(curve, bound, &mut rng) {
+        Ok(fb) => fb,
+        Err(e) => {
+            emit(
+                serde_json::json!({"schema": "highgenus.panel/v1", "task": "probe", "model": model, "label": label, "genus": g, "p": p, "error": e.to_string()}),
+                &[
+                    label.into(),
+                    model.into(),
+                    g.to_string(),
+                    p.to_string(),
+                    bound.to_string(),
+                    "-".into(),
+                    "-".into(),
+                    "-".into(),
+                    "-".into(),
+                    "-".into(),
+                    format!("error: {e}"),
+                ],
+            );
+            return;
+        }
+    };
+    let fb_wall = t0.elapsed().as_secs_f64();
+    let params = IcParams {
+        seed,
+        max_trials,
+        ..Default::default()
+    };
+    let t1 = Instant::now();
+    let (rels, stats) = collect_relations(curve, &fb, None, fb.len() + 16, &params, &mut rng)
+        .expect("factor base non-empty");
+    let wall = t1.elapsed().as_secs_f64();
+    let per_trial_ms = if stats.trials > 0 {
+        1000.0 * wall / stats.trials as f64
+    } else {
+        0.0
+    };
+    emit(
+        serde_json::json!({
+            "schema": "highgenus.panel/v1", "task": "probe", "model": model, "label": label, "genus": g, "p": p, "curve": desc,
+            "bound": bound, "fb_size": fb.len(), "fb_wall_s": fb_wall, "trials": stats.trials, "smooth": stats.smooth, "relations": rels.len(),
+            "needed": fb.len() + 16, "smooth_rate": stats.smooth_rate(), "walk_ops": stats.walk_ops, "ms_per_trial": per_trial_ms,
+            "exhausted": stats.exhausted, "wall_s": wall, "pcc": "unverified"
+        }),
+        &[
+            label.into(),
+            model.into(),
+            g.to_string(),
+            p.to_string(),
+            bound.to_string(),
+            fb.len().to_string(),
+            stats.trials.to_string(),
+            format!("{:.2e}", stats.smooth_rate()),
+            format!("{}/{}", rels.len(), fb.len() + 16),
+            format!("{per_trial_ms:.3}"),
+            format!("{wall:.1}"),
+        ],
+    );
+}
+
 fn main() {
     let cli = Cli::parse();
     match cli.cmd {
+        Cmd::Probe {
+            genera,
+            p,
+            bound,
+            family,
+            seed,
+            max_trials,
+        } => {
+            md_row(
+                &[
+                    "label",
+                    "model",
+                    "g",
+                    "p",
+                    "B",
+                    "|FB|",
+                    "trials",
+                    "smooth rate",
+                    "relations/needed",
+                    "ms/trial",
+                    "wall s",
+                ]
+                .map(String::from),
+            );
+            md_row(&["---"; 11].map(String::from));
+            let field = Fp::new(p).expect("prime");
+            for g in genera {
+                let mut rng = StdRng::seed_from_u64(seed ^ (g as u64) << 8);
+                if (family == "hyper" || family == "all") && field.is_odd() {
+                    let c = HyperellipticCurve::random(field, g, &mut rng).expect("curve");
+                    let desc = format!("y² = {}", c.f);
+                    run_probe(
+                        "hyperelliptic random",
+                        "cantor",
+                        &c,
+                        &desc,
+                        bound,
+                        seed,
+                        max_trials,
+                    );
+                }
+                if (family == "trigonal" || family == "all") && p != 3 {
+                    let c = SuperellipticCurve::random_trigonal(field, g, &mut rng).expect("curve");
+                    let desc = format!(
+                        "y³ = {} · ({})²",
+                        c.factors[0].0,
+                        c.factors
+                            .get(1)
+                            .map(|f| f.0.to_string())
+                            .unwrap_or_default()
+                    );
+                    run_probe(
+                        "non-hyperelliptic trigonal random",
+                        "kummer",
+                        &c,
+                        &desc,
+                        bound,
+                        seed,
+                        max_trials,
+                    );
+                }
+            }
+        }
         Cmd::Rho {
             genera,
             nbits,
