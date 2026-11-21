@@ -900,6 +900,24 @@ static int trial_factor32(uint32_t v, const ca_ic_ctx *ctx, uint32_t col0, relat
 
 /* ---- linear sieve ------------------------------------------------------- */
 
+/* Barrett / Lemire residue for x < 2^64 using mu = floor((2^64 - 1) / q)
+ * (the same constant stored in ic_fbdiv.lim).  Exact for every q > 1. */
+static inline uint64_t ic_mod_u64(uint64_t x, uint64_t q, uint64_t mu)
+{
+    if (x < q) return x;
+    uint64_t quo = (uint64_t)(((ca_u128)x * mu) >> 64);
+    uint64_t r = x - quo * q;
+    return r >= q ? r - q : r;
+}
+
+/* Canonical x mod q for a signed sieve coordinate. */
+static inline uint64_t ic_mod_i64(int64_t x, uint64_t q, uint64_t mu)
+{
+    if (x >= 0) return ic_mod_u64((uint64_t)x, q, mu);
+    uint64_t r = ic_mod_u64((uint64_t)(-x), q, mu);
+    return r ? q - r : 0;
+}
+
 typedef struct sieve_shared {
     uint64_t p, H, J;             /* H = ceil(sqrt p), J = H^2 - p */
     uint32_t B, C;
@@ -993,16 +1011,21 @@ static void *sieve_thread(void *arg)
         memset(arr, 0, n);
         for (uint32_t i = 0; i < nfb; i++) {
             uint64_t q = s->fb[i];
+            uint64_t mu = s->fb_div[i].lim; /* floor((2^64-1)/q) */
             /* a = (H + c1) mod q, b = (J + c1 H) mod q ; root: c2 = -b / a */
-            uint64_t c1m = (uint64_t)(((c1 % (int64_t)q) + (int64_t)q) % (int64_t)q);
-            uint64_t a = (hmod[i] + c1m) % q;
+            uint64_t c1m = ic_mod_i64(c1, q, mu);
+            uint64_t a = hmod[i] + c1m;
+            if (a >= q) a -= q;
             if (a == 0) continue;
-            uint64_t b = (jmod[i] + c1m * hmod[i]) % q;
+            /* c1m,hmod < q ⇒ product + jmod < q^2; Barrett closes it. */
+            uint64_t b = ic_mod_u64(jmod[i] + c1m * hmod[i], q, mu);
             uint64_t inv = ca_invmod(a, q);
-            uint64_t root = (q - ca_mulmod(b, inv, q)) % q; /* c2 == root (mod q) */
+            uint64_t prod = ca_mulmod(b, inv, q);
+            uint64_t root = prod ? q - prod : 0; /* c2 == root (mod q) */
             /* first c2 >= c2lo with c2 == root mod q */
-            int64_t c2lo_m = ((c2lo % (int64_t)q) + (int64_t)q) % (int64_t)q;
-            int64_t start = c2lo + (int64_t)((root + q - (uint64_t)c2lo_m) % q);
+            uint64_t c2lo_m = ic_mod_i64(c2lo, q, mu);
+            uint64_t gap = root >= c2lo_m ? root - c2lo_m : root + q - c2lo_m;
+            int64_t start = c2lo + (int64_t)gap;
             uint8_t lg = s->fb_log2[i];
             for (int64_t c2 = start; c2 <= c2hi; c2 += (int64_t)q) arr[c2 - c2lo] += lg;
         }
