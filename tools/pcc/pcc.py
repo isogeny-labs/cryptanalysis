@@ -558,6 +558,9 @@ def _instance(cert: dict[str, Any], reasons: list[str]):
     if curve.mul(curve.n, P) is not None:
         reasons.append("certificate: [n]P is not the point at infinity")
         return None
+    if curve.mul(curve.n, Q) is not None:
+        reasons.append("certificate: [n]Q is not the point at infinity")
+        return None
     return curve, P, Q
 
 
@@ -614,6 +617,9 @@ def verify_zk_solve_certificate(cert: Any, reasons: list[str]) -> bool:
     s = proof.get("s")
     if R is None or not curve.on_curve(R):
         reasons.append("zk certificate: R is not on the curve")
+        return False
+    if curve.mul(curve.n, R) is not None:
+        reasons.append("zk certificate: [n]R is not the point at infinity")
         return False
     if not isinstance(s, int) or isinstance(s, bool) or not (0 <= s < curve.n):
         reasons.append("zk certificate: s is not an integer in [0, n)")

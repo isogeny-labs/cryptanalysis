@@ -64,6 +64,43 @@ class Ed25519Tests(unittest.TestCase):
         self.assertEqual(theirs.sign(msg), pcc.ed25519_sign(secret, msg))
 
 
+class CertificateSubgroupTests(unittest.TestCase):
+    def setUp(self):
+        self.curve = pcc.Curve(97, 2, 3, 5)
+        self.p = (3, 6)
+        assert self.curve.mul(5, self.p) is None
+
+    def certificate(self, q, proof):
+        return {"schema": pcc.ZK_SOLVE_CERT_SCHEMA,
+                "curve": {"p": 97, "a": 2, "b": 3, "n": 5},
+                "P": list(self.p), "Q": list(q), "proof": proof}
+
+    def test_rejects_target_outside_declared_subgroup_even_when_challenge_is_zero(self):
+        q = (0, 87)
+        r = (80, 10)
+        self.assertIsNotNone(self.curve.mul(5, q))
+        self.assertEqual(pcc.schnorr_challenge(self.curve, self.p, q, r), 0)
+        cert = self.certificate(q, {"R": list(r), "s": 2})
+        reasons = []
+        self.assertFalse(pcc.verify_zk_solve_certificate(cert, reasons))
+        self.assertIn("certificate: [n]Q is not the point at infinity", reasons)
+
+    def test_rejects_proof_point_outside_declared_subgroup(self):
+        q = self.curve.mul(2, self.p)
+        r = (0, 87)
+        self.assertIsNotNone(self.curve.mul(5, r))
+        cert = self.certificate(q, {"R": list(r), "s": 2})
+        reasons = []
+        self.assertFalse(pcc.verify_zk_solve_certificate(cert, reasons))
+        self.assertIn("zk certificate: [n]R is not the point at infinity", reasons)
+
+    def test_valid_subgroup_proof_still_passes(self):
+        q = self.curve.mul(2, self.p)
+        cert = self.certificate(q, pcc.schnorr_prove(self.curve, self.p, q, 2, r=1))
+        reasons = []
+        self.assertTrue(pcc.verify_zk_solve_certificate(cert, reasons), reasons)
+
+
 class CanaryTests(unittest.TestCase):
     def test_every_sabotage_class_is_rejected(self):
         out = io.StringIO()
