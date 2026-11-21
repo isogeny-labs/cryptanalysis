@@ -18,7 +18,7 @@ and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
 
-- [ ] WP0 symmetric cipher IR (sym_ir): types, eval, GF(2) matrices, primitive descriptions and bit-exact regression tests against symmetric/* and hash/* (Claude Code, started 2026-11-21, branch claude/sym-ir-wp0, plan docs/plans/2026-11-21-generic-symmetric-cryptanalysis.md in workspace PR #62)
+- [ ] WP0 symmetric cipher IR (sym_ir): types, eval, GF(2) matrices, primitive descriptions and bit-exact regression tests against symmetric/* and hash/* (Claude Code, started 2026-11-21, branch claude/sym-ir-wp0, plan docs/plans/2026-11-21-generic-symmetric-cryptanalysis.md in workspace PR #62, PR #1890)
 
 - [ ] Mirror the general binary hyperelliptic-cover transfer interface from crypto after its source commit is frozen, with split provenance and exact parity checks (Codex, started 2026-11-18, branch codex/general-binary-cover-transfer-mirror-20261118, PR #1765) [pcc:unverified]
 
