@@ -89,6 +89,7 @@ pub struct SuperellipticCurve {
     pub m_inv: u64,
     pub genus: u32,
     ops: Cell<u64>,
+    different_two_gens: std::sync::OnceLock<(Elt, Elt)>,
 }
 
 /// An integral ideal in row Hermite normal form (`rows[i][j]`, pivot `rows[i][i]` monic).
@@ -124,6 +125,22 @@ impl Ideal {
 
 /// Coordinate vector of an element of `O` (or of `K` after scaling).
 pub type Elt = Vec<Poly>;
+
+thread_local! {
+    static EUCLID_ITERS: std::cell::Cell<u64> = const { std::cell::Cell::new(0) };
+    /// Diagnostic accumulators (seconds): [hnf, mul_elt, two_generators, adjugate, minimal_element].
+    static PROFILE: std::cell::RefCell<[f64; 5]> = const { std::cell::RefCell::new([0.0; 5]) };
+}
+
+/// Snapshot and reset the thread-local diagnostic timers
+/// `[hnf, mul_elt, two_generators, adjugate, minimal_element]` in seconds.
+pub fn profile_snapshot() -> [f64; 5] {
+    PROFILE.with(|p| std::mem::take(&mut *p.borrow_mut()))
+}
+
+fn profile_add(slot: usize, t: std::time::Instant) {
+    PROFILE.with(|p| p.borrow_mut()[slot] += t.elapsed().as_secs_f64());
+}
 
 impl SuperellipticCurve {
     /// Checked construction from `m` and the factored right-hand side.
@@ -225,6 +242,7 @@ impl SuperellipticCurve {
             m_inv,
             genus,
             ops: Cell::new(0),
+            different_two_gens: std::sync::OnceLock::new(),
         })
     }
 
@@ -294,6 +312,7 @@ impl SuperellipticCurve {
 
     /// Product of two elements of `O` in coordinates.
     pub fn mul_elt(&self, a: &Elt, b: &Elt) -> Elt {
+        let _t = std::time::Instant::now();
         let k = &self.field;
         let m = self.mm();
         let mut out = vec![Poly::zero(); m];
@@ -310,6 +329,7 @@ impl SuperellipticCurve {
                 out[idx].add_assign(&prod, k);
             }
         }
+        profile_add(1, _t);
         out
     }
 
@@ -369,9 +389,42 @@ impl SuperellipticCurve {
 
     /// Row Hermite normal form of the lattice spanned by `gens` (each of
     /// length `m`); panics if the lattice has rank below `m`.
-    pub fn hnf(&self, mut gens: Vec<Elt>) -> Ideal {
+    pub fn hnf(&self, gens: Vec<Elt>) -> Ideal {
+        self.hnf_mod(gens, None)
+    }
+
+    /// Row Hermite normal form of the lattice spanned by `gens`, reducing
+    /// every entry modulo `modulus` when one is given. The modulus must be
+    /// a monic polynomial `D` with `D·F_p[x]^m ⊆ lattice` (for an ideal,
+    /// any multiple of its norm): the rows `D·e_j` are then added to the
+    /// generators and no entry ever exceeds degree `deg D`, which is what
+    /// keeps the elimination from the degree swell of a plain Euclidean
+    /// Hermite form.
+    pub fn hnf_mod(&self, mut gens: Vec<Elt>, modulus: Option<&Poly>) -> Ideal {
+        let _t = std::time::Instant::now();
         let k = &self.field;
         let m = self.mm();
+        if let Some(d) = modulus {
+            for g in gens.iter_mut() {
+                for x in g.iter_mut() {
+                    if x.deg() >= d.deg() {
+                        *x = x.rem(d, k);
+                    }
+                }
+            }
+            for j in 0..m {
+                let mut e = vec![Poly::zero(); m];
+                e[j] = d.clone();
+                gens.push(e);
+            }
+        }
+        let reduce = |x: &mut Poly| {
+            if let Some(d) = modulus {
+                if x.deg() >= d.deg() {
+                    *x = x.rem(d, k);
+                }
+            }
+        };
         let mut rows: Vec<Elt> = Vec::with_capacity(m);
         for col in 0..m {
             // Euclid on column `col` over the remaining generators.
@@ -381,6 +434,20 @@ impl SuperellipticCurve {
                     .collect();
                 if nz.len() <= 1 {
                     break;
+                }
+                EUCLID_ITERS.with(|c| c.set(c.get() + 1));
+                if std::env::var_os("HG_DEBUG_HNF").is_some() {
+                    let maxdeg = gens
+                        .iter()
+                        .flat_map(|r| r.iter())
+                        .map(|p| p.deg())
+                        .max()
+                        .unwrap_or(-1);
+                    eprintln!(
+                        "  col {col}: {} gens, {} nonzero, maxdeg {maxdeg}",
+                        gens.len(),
+                        nz.len()
+                    );
                 }
                 nz.sort_by_key(|&i| gens[i][col].degree().unwrap_or(0));
                 let pivot_i = nz[0];
@@ -396,6 +463,7 @@ impl SuperellipticCurve {
                         }
                         let sub = q.mul(&pivot_row[c], k);
                         gens[i][c].sub_assign(&sub, k);
+                        reduce(&mut gens[i][c]);
                     }
                 }
             }
@@ -425,8 +493,28 @@ impl SuperellipticCurve {
                     }
                     let sub = q.mul(&pivot_row[c], k);
                     rows[r][c].sub_assign(&sub, k);
+                    reduce(&mut rows[r][c]);
                 }
             }
+        }
+        profile_add(0, _t);
+        if std::env::var_os("HG_DEBUG_HNF").is_some() {
+            let maxdeg = rows
+                .iter()
+                .flat_map(|r| r.iter())
+                .map(|p| p.deg())
+                .max()
+                .unwrap_or(-1);
+            let total: isize = rows
+                .iter()
+                .flat_map(|r| r.iter())
+                .map(|p| p.deg().max(0))
+                .sum();
+            eprintln!(
+                "hnf: m={m} out maxdeg {maxdeg} total {total} time {:?} euclid_iters {}",
+                _t.elapsed(),
+                EUCLID_ITERS.with(|c| c.get())
+            );
         }
         Ideal { rows }
     }
@@ -443,6 +531,11 @@ impl SuperellipticCurve {
 
     /// Ideal generated (as an `O`-ideal) by the given elements.
     pub fn ideal_from_generators(&self, gens: &[Elt]) -> Ideal {
+        self.ideal_from_generators_mod(gens, None)
+    }
+
+    /// [`Self::ideal_from_generators`] with a known lattice modulus.
+    pub fn ideal_from_generators_mod(&self, gens: &[Elt], modulus: Option<&Poly>) -> Ideal {
         let m = self.mm();
         let mut lattice_gens = Vec::with_capacity(gens.len() * m);
         for g in gens {
@@ -452,23 +545,98 @@ impl SuperellipticCurve {
                 lattice_gens.push(self.mul_elt(g, &bj));
             }
         }
-        self.hnf(lattice_gens)
+        self.hnf_mod(lattice_gens, modulus)
     }
 
     /// The principal ideal `(φ)`.
     pub fn principal(&self, phi: &Elt) -> Ideal {
-        self.ideal_from_generators(std::slice::from_ref(phi))
+        let n = self.norm_elt(phi);
+        self.ideal_from_generators_mod(std::slice::from_ref(phi), Some(&n))
+    }
+
+    /// `N(φ)` (monic): determinant of the regular representation of `φ`,
+    /// by fraction-free (Bareiss) elimination over `F_p[x]`.
+    pub fn norm_elt(&self, phi: &Elt) -> Poly {
+        let k = &self.field;
+        let m = self.mm();
+        let mut mat: Vec<Vec<Poly>> = Vec::with_capacity(m);
+        for j in 0..m {
+            let mut bj = vec![Poly::zero(); m];
+            bj[j] = Poly::one();
+            mat.push(self.mul_elt(phi, &bj));
+        }
+        let d = det_poly(&mat, k);
+        d.monic(k)
+    }
+
+    /// Rank above which ideals are multiplied through a two-element
+    /// `O`-generating set instead of all `m²` basis products.
+    const TWO_GENERATOR_RANK: usize = 7;
+
+    /// Two elements `(N(I), γ)` generating `I` as an `O`-ideal (Dedekind
+    /// domains are 1½-generated; a random `γ ∈ I` works with high
+    /// probability and the result is verified by a Hermite form).
+    pub fn two_generators(&self, ideal: &Ideal) -> (Elt, Elt) {
+        let _t = std::time::Instant::now();
+        let k = &self.field;
+        let m = self.mm();
+        let n = self.elt_poly(&ideal.norm(k));
+        let mut seed = 0x9e37_79b9u64 ^ (ideal.degree() as u64);
+        for _ in 0..64 {
+            // γ = Σ c_i r_i with small random polynomial coefficients.
+            let mut gamma = vec![Poly::zero(); m];
+            for r in &ideal.rows {
+                seed = seed
+                    .wrapping_mul(6364136223846793005)
+                    .wrapping_add(1442695040888963407);
+                let c0 = (seed >> 33) % k.p();
+                seed = seed
+                    .wrapping_mul(6364136223846793005)
+                    .wrapping_add(1442695040888963407);
+                let c1 = (seed >> 33) % k.p();
+                let c = Poly::from_coeffs(vec![c0, c1], k);
+                if c.is_zero() {
+                    continue;
+                }
+                for j in 0..m {
+                    if !r[j].is_zero() {
+                        gamma[j].add_assign(&r[j].mul(&c, k), k);
+                    }
+                }
+            }
+            if gamma.iter().all(|x| x.is_zero()) {
+                continue;
+            }
+            let test = self.ideal_from_generators_mod(&[n.clone(), gamma.clone()], Some(&n[0]));
+            if test == *ideal {
+                profile_add(2, _t);
+                return (n, gamma);
+            }
+        }
+        panic!("could not find two generators of the ideal");
     }
 
     /// Product of two ideals.
     pub fn mul_ideals(&self, a: &Ideal, b: &Ideal) -> Ideal {
+        let m = self.mm();
+        let k = &self.field;
+        let modulus = a.norm(k).mul(&b.norm(k), k);
+        if m > Self::TWO_GENERATOR_RANK {
+            let (ga, gb) = self.two_generators(a);
+            let mut gens = Vec::with_capacity(2 * m);
+            for s in &b.rows {
+                gens.push(self.mul_elt(&ga, s));
+                gens.push(self.mul_elt(&gb, s));
+            }
+            return self.hnf_mod(gens, Some(&modulus));
+        }
         let mut gens = Vec::with_capacity(a.rows.len() * b.rows.len());
         for r in &a.rows {
             for s in &b.rows {
                 gens.push(self.mul_elt(r, s));
             }
         }
-        self.hnf(gens)
+        self.hnf_mod(gens, Some(&modulus))
     }
 
     /// Whether `e ∈ I` (solve the triangular system).
@@ -496,6 +664,7 @@ impl SuperellipticCurve {
 
     /// A nonzero element of `I` of minimal pole order (weighted Popov reduction).
     pub fn minimal_element(&self, ideal: &Ideal) -> Elt {
+        let _t = std::time::Instant::now();
         let k = &self.field;
         let m = self.mm();
         let mut rows: Vec<Elt> = ideal.rows.clone();
@@ -542,32 +711,46 @@ impl SuperellipticCurve {
                 best = i;
             }
         }
+        profile_add(4, _t);
         rows.swap_remove(best)
     }
 
     // ── Inversion and reduction ────────────────────────────────────────
 
-    /// Adjugate of the transpose of the HNF matrix: `adj(Mᵀ)`.
+    /// Adjugate of the transpose of the HNF matrix: `adj(Mᵀ)`, by forward
+    /// substitution (`Mᵀ` is lower triangular and `adj = det · inverse`,
+    /// whose entries are polynomials): column `j` solves `Mᵀ c = det·e_j`.
     fn adjugate_transpose(&self, ideal: &Ideal) -> Vec<Vec<Poly>> {
+        let _t = std::time::Instant::now();
         let k = &self.field;
         let m = self.mm();
-        // adj(Mᵀ) = adj(M)ᵀ; adj(M)_{ij} = (−1)^{i+j} det(minor of M without row j, column i).
-        // For upper-triangular M we still compute general minors (m is small).
-        let mt: Vec<Vec<Poly>> = (0..m)
-            .map(|i| (0..m).map(|j| ideal.rows[j][i].clone()).collect())
-            .collect();
+        let det = ideal.norm(k);
+        // A[i][l] = M[l][i] (lower triangular).
+        let a = |i: usize, l: usize| &ideal.rows[l][i];
         let mut adj = vec![vec![Poly::zero(); m]; m];
-        for i in 0..m {
-            for j in 0..m {
-                // adj(A)_{ij} = (−1)^{i+j} det(A with row j and column i removed)
-                let minor = det_minor(&mt, j, i, k);
-                adj[i][j] = if (i + j) % 2 == 0 {
-                    minor
-                } else {
-                    minor.neg(k)
-                };
+        for j in 0..m {
+            // c[i] = 0 for i < j; c[j] = det / A[j][j]; then forward.
+            let mut c = vec![Poly::zero(); m];
+            c[j] = det.div_exact(a(j, j), k).expect("pivot divides det");
+            for i in j + 1..m {
+                let mut acc = Poly::zero();
+                for l in j..i {
+                    if !c[l].is_zero() && !a(i, l).is_zero() {
+                        acc.add_assign(&a(i, l).mul(&c[l], k), k);
+                    }
+                }
+                if !acc.is_zero() {
+                    c[i] = acc
+                        .neg(k)
+                        .div_exact(a(i, i), k)
+                        .expect("adjugate entries are polynomials");
+                }
+            }
+            for i in 0..m {
+                adj[i][j] = std::mem::take(&mut c[i]);
             }
         }
+        profile_add(3, _t);
         adj
     }
 
@@ -587,12 +770,19 @@ impl SuperellipticCurve {
             }
             dprime.push(d);
         }
-        // φ · (𝔇_jj b_j) for each j.
+        // φ · δ for δ over O-generators of the different (all m diagonal
+        // elements at small rank, two generators at high rank).
         let mut phi_d: Vec<Elt> = Vec::with_capacity(m);
-        for j in 0..m {
-            let mut bj = vec![Poly::zero(); m];
-            bj[j] = self.different_diag[j].clone();
-            phi_d.push(self.mul_elt(phi, &bj));
+        if m > Self::TWO_GENERATOR_RANK {
+            let (da, db) = self.different_generators();
+            phi_d.push(self.mul_elt(phi, &da));
+            phi_d.push(self.mul_elt(phi, &db));
+        } else {
+            for j in 0..m {
+                let mut bj = vec![Poly::zero(); m];
+                bj[j] = self.different_diag[j].clone();
+                phi_d.push(self.mul_elt(phi, &bj));
+            }
         }
         let mut gens = Vec::with_capacity(m * m);
         for d in &dprime {
@@ -600,9 +790,11 @@ impl SuperellipticCurve {
                 gens.push(self.mul_elt(d, pd));
             }
         }
-        let scaled = self.hnf(gens);
-        // Divide by m·N(I)·R exactly.
+        // The scaled lattice (N(I)·R)·J contains N(I)·R·N(φ)·F_p[x]^m since N(J) | N(φ).
         let den = n_i.mul(&self.radical, k);
+        let modulus = den.mul(&self.norm_elt(phi), k);
+        let scaled = self.hnf_mod(gens, Some(&modulus));
+        // Divide by m·N(I)·R exactly.
         let mut rows = Vec::with_capacity(m);
         for r in scaled.rows {
             let mut out = Vec::with_capacity(m);
@@ -614,7 +806,25 @@ impl SuperellipticCurve {
         }
         // Scaling by a constant keeps pivots monic only up to the constant m⁻¹·lc;
         // renormalise to a proper HNF.
-        self.hnf(rows)
+        let nj = self.norm_elt(phi).div_exact(&n_i, k).expect("N(I) | N(φ)");
+        self.hnf_mod(rows, Some(&nj))
+    }
+
+    /// The different as an ideal.
+    pub fn different(&self) -> Ideal {
+        let m = self.mm();
+        let mut rows = vec![vec![Poly::zero(); m]; m];
+        for (i, r) in rows.iter_mut().enumerate() {
+            r[i] = self.different_diag[i].clone();
+        }
+        Ideal { rows }
+    }
+
+    /// Two `O`-generators of the different (cached).
+    fn different_generators(&self) -> (Elt, Elt) {
+        self.different_two_gens
+            .get_or_init(|| self.two_generators(&self.different()))
+            .clone()
     }
 
     /// One reduction step: the minimal-degree representative of `−[I]`.
@@ -665,7 +875,7 @@ impl SuperellipticCurve {
         y_minus_r[0] = r.neg(k);
         y_minus_r[1 % m].add_assign(&self.denominators[1 % m], k);
         let gens = vec![self.elt_poly(pi), y_minus_r];
-        self.ideal_from_generators(&gens)
+        self.ideal_from_generators_mod(&gens, Some(pi))
     }
 
     /// Evaluate the element at `y = r` modulo `π^a` (for `π ∤ F`):
@@ -819,19 +1029,7 @@ fn gcd_u64(mut a: u64, mut b: u64) -> u64 {
     a
 }
 
-/// Determinant of the matrix with row `skip_row` and column `skip_col` removed.
-fn det_minor(a: &[Vec<Poly>], skip_row: usize, skip_col: usize, k: &Fp) -> Poly {
-    let n = a.len();
-    let rows: Vec<usize> = (0..n).filter(|&r| r != skip_row).collect();
-    let cols: Vec<usize> = (0..n).filter(|&c| c != skip_col).collect();
-    let sub: Vec<Vec<Poly>> = rows
-        .iter()
-        .map(|&r| cols.iter().map(|&c| a[r][c].clone()).collect())
-        .collect();
-    det_poly(&sub, k)
-}
-
-/// Determinant over `F_p[x]` by Laplace expansion for `n ≤ 3`, Bareiss otherwise.
+/// Determinant over `F_p[x]` by Laplace expansion for `n ≤ 2`, Bareiss otherwise.
 fn det_poly(a: &[Vec<Poly>], k: &Fp) -> Poly {
     let n = a.len();
     match n {
@@ -839,7 +1037,6 @@ fn det_poly(a: &[Vec<Poly>], k: &Fp) -> Poly {
         1 => a[0][0].clone(),
         2 => a[0][0].mul(&a[1][1], k).sub(&a[0][1].mul(&a[1][0], k), k),
         _ => {
-            // Bareiss fraction-free elimination.
             let mut m: Vec<Vec<Poly>> = a.to_vec();
             let mut sign = false;
             let mut prev = Poly::one();
@@ -1052,6 +1249,36 @@ mod tests {
             let lhs = c.scalar_mul(&(&m1 + &m2), &a);
             let rhs = c.add_classes(&c.scalar_mul(&m1, &a), &c.scalar_mul(&m2, &a));
             assert_eq!(lhs, rhs, "distributive p={p} m={m}");
+        }
+    }
+
+    #[test]
+    fn trigonal_group_axioms_at_genus_47_and_131() {
+        let mut rng = StdRng::seed_from_u64(8);
+        for &(p, g) in &[(7u64, 47u32), (2, 131)] {
+            let k = Fp::new(p).unwrap();
+            let c = SuperellipticCurve::random_trigonal(k, g, &mut rng).unwrap();
+            assert_eq!(c.genus, g);
+            let a = c.random_element(3, &mut rng);
+            let b = c.random_element(3, &mut rng);
+            let d = c.random_element(3, &mut rng);
+            assert!(c.is_canonical(&a), "p={p} g={g}");
+            let ab = c.add_classes(&a, &b);
+            assert_eq!(ab, c.add_classes(&b, &a), "commutative p={p} g={g}");
+            assert_eq!(
+                c.add_classes(&ab, &d),
+                c.add_classes(&a, &c.add_classes(&b, &d)),
+                "associative p={p} g={g}"
+            );
+            assert!(
+                c.add_classes(&a, &c.neg_class(&a)).is_unit(),
+                "inverse p={p} g={g}"
+            );
+            let m1 = BigUint::from(5u32);
+            let m2 = BigUint::from(12u32);
+            let lhs = c.scalar_mul(&(&m1 + &m2), &a);
+            let rhs = c.add_classes(&c.scalar_mul(&m1, &a), &c.scalar_mul(&m2, &a));
+            assert_eq!(lhs, rhs, "distributive p={p} g={g}");
         }
     }
 
