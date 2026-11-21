@@ -485,16 +485,33 @@ static inline void vdot3(const lz_ctx *z, const uint64_t *w, const uint64_t *Bw,
     uint64_t r0 = 0, r1 = 0, r2 = 0, q = z->q;
     for (uint32_t i0 = 0; i0 < n;) {
         uint32_t i1 = n - i0 > z->dot_chunk ? i0 + z->dot_chunk : n;
-        ca_u128 a0 = 0, a1 = 0, a2 = 0;
-        for (uint32_t i = i0; i < i1; i++) {
+        /* Two independent mul-accumulate chains hide the u64×u64→u128
+         * product latency on Apple Silicon; sums stay exact in 128 bits. */
+        ca_u128 a0 = 0, a1 = 0, a2 = 0, b0 = 0, b1 = 0, b2 = 0;
+        uint32_t i = i0;
+        for (; i + 1 < i1; i += 2) {
+            const uint64_t w0 = w[i], w1 = w[i + 1], x0 = Bw[i], x1 = Bw[i + 1];
+            a0 += (ca_u128)w0 * x0;
+            b0 += (ca_u128)w1 * x1;
+            a1 += (ca_u128)w0 * bp[i];
+            b1 += (ca_u128)w1 * bp[i + 1];
+            a2 += (ca_u128)x0 * x0;
+            b2 += (ca_u128)x1 * x1;
+        }
+        if (i < i1) {
             const uint64_t wi = w[i], bi = Bw[i];
             a0 += (ca_u128)wi * bi;
             a1 += (ca_u128)wi * bp[i];
             a2 += (ca_u128)bi * bi;
         }
+        /* Reduce each chain alone: each holds ≤ half the terms the single
+         * accumulator was sized for, so a0+b0 could exceed 128 bits. */
         r0 = ca_addmod(r0, lz_u128_mod(z, a0), q);
+        r0 = ca_addmod(r0, lz_u128_mod(z, b0), q);
         r1 = ca_addmod(r1, lz_u128_mod(z, a1), q);
+        r1 = ca_addmod(r1, lz_u128_mod(z, b1), q);
         r2 = ca_addmod(r2, lz_u128_mod(z, a2), q);
+        r2 = ca_addmod(r2, lz_u128_mod(z, b2), q);
         i0 = i1;
     }
     out[0] = r0;

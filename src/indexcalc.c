@@ -1084,15 +1084,15 @@ static void *sieve_thread(void *arg)
             uint8_t lg = s->fb_log2[i];
             for (int64_t c2 = start; c2 <= c2hi; c2 += (int64_t)q) arr[c2 - c2lo] += lg;
         }
-        /* scan candidates */
+        /* scan candidates: reject by log-sieve surplus without bitlen —
+         * av >= 2^lim ⇒ bitlen(av) > lim = arr[k]+6, same filter as before. */
         for (size_t k = 0; k < n; k++) {
+            unsigned lim = (unsigned)arr[k] + 6;
             int64_t c2 = c2lo + (int64_t)k;
             ca_i128 v = sieve_value(s, c1, c2);
             uint64_t av = v < 0 ? (uint64_t)(-v) : (uint64_t)v;
             if (av == 0) continue;
-            unsigned bl = bitlen(av);
-            /* allow ~ the largest prime unaccounted (prime powers) */
-            if ((unsigned)arr[k] + 6 < bl) continue;
+            if (lim < 64 && (av >> lim)) continue;
             cand_count++;
             relation rel;
             memset(&rel, 0, sizeof(rel));
