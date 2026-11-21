@@ -113,4 +113,56 @@ theorem through_neg (h : Cubic F) (m : MapData F) (ms : List (MapData F)) :
 
 #print axioms push_scale
 #print axioms through_neg
+/-- Add the two child values of a cubic, using their known coordinate
+product to express the sum in the parent coordinate. -/
+def traceStep (h : Cubic F) (m : MapData F) : Cubic F :=
+  let q := shift h m.pole
+  shift ⟨q.a, q.b, q.c-3*q.a*m.residue, 2*q.d-2*q.b*m.residue⟩ (-m.offset)
+
+theorem traceStep_eval (h : Cubic F) (m : MapData F) (x y : F)
+    (pair : (x-m.pole)*(y-m.pole)=m.residue) :
+    eval (traceStep h m) ((x-m.pole)+(y-m.pole)+m.offset) = eval h x + eval h y := by
+  unfold traceStep
+  rw [shift_eval]
+  simp only [shift, eval]
+  grind
+
+def traceThrough (h : Cubic F) : List (MapData F) → Cubic F
+| [] => h
+| m :: ms => traceStep (traceThrough h ms) m
+
+def leafSum (h : Cubic F) : List F → F
+| [] => 0
+| x :: xs => eval h x + leafSum h xs
+
+private theorem leafSum_append (h : Cubic F) (xs ys : List F) :
+    leafSum h (xs++ys) = leafSum h xs + leafSum h ys := by
+  induction xs with
+  | nil => simp only [List.nil_append,leafSum]; grind
+  | cons x xs ih => simp only [List.cons_append,leafSum,ih]; grind
+
+theorem wholeSum (h : Cubic F) {ms z xs} (tree : Paired ms z xs) :
+    eval (traceThrough h ms) z = leafSum h xs := by
+  induction tree with
+  | leaf x => simp only [traceThrough,leafSum]; grind
+  | branch m tl tr hp il ir =>
+    simp only [traceThrough,traceStep_eval _ _ _ _ hp,leafSum_append,il,ir]
+
+theorem leafSum_scale (k : F) (h : Cubic F) (xs : List F) :
+    leafSum (scale k h) xs = k * leafSum h xs := by
+  induction xs with
+  | nil => simp only [leafSum]; grind
+  | cons x xs ih =>
+    change eval (scale k h) x + leafSum (scale k h) xs = k * (eval h x + leafSum h xs)
+    rw [ih]
+    simp only [eval,scale]
+    grind
+
+theorem trace_scale_at_terminal (k : F) (h : Cubic F) {ms z xs}
+    (tree : Paired ms z xs) :
+    eval (traceThrough (scale k h) ms) z = k * eval (traceThrough h ms) z := by
+  rw [wholeSum _ tree, wholeSum _ tree, leafSum_scale]
+
+#print axioms trace_scale_at_terminal
+#print axioms wholeSum
 end CubicNorm
