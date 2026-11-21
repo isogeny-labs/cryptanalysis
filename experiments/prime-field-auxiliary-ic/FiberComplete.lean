@@ -72,4 +72,69 @@ theorem certified_exact {F : Type} [Field F] {fs z xs}
 #print axioms sibling_fiber
 #print axioms pole_excluded
 #print axioms exact_fiber
+structure Parameters (F : Type) where
+  pole : F
+  offset : F
+  residue : F
+
+inductive InputTree (F : Type)
+| leaf (value : F)
+| branch (left right : InputTree F)
+
+def InputTree.leaves : InputTree F → List F
+  | .leaf x => [x]
+  | .branch l r => l.leaves ++ r.leaves
+
+private def relations {F : Type} [Field F] (ms : List (Parameters F)) :=
+  ms.map fun m => mapsTo m.pole m.offset m.residue
+
+/-- Bottom-up verifier. A tree with a different depth from its map list fails. -/
+def check {F : Type} [Add F] [Sub F] [Mul F] [OfNat F 0] [DecidableEq F] :
+    InputTree F → List (Parameters F) → Option F
+  | .leaf x, [] => some x
+  | .branch left right, m :: ms => do
+    let l ← check left ms
+    let r ← check right ms
+    if m.residue ≠ 0 ∧ l ≠ r ∧ (l-m.pole)*(r-m.pole) = m.residue then
+      some ((l-m.pole)+(r-m.pole)+m.offset)
+    else none
+  | _, _ => none
+
+private theorem check_certifies {F : Type} [Field F] [DecidableEq F]
+    (tree : InputTree F) (ms : List (Parameters F)) (z : F)
+    (ok : check tree ms = some z) : Certified (relations ms) z tree.leaves := by
+  induction tree generalizing ms z with
+  | leaf x =>
+    cases ms with
+    | nil =>
+      have h : x = z := by simpa [check] using ok
+      subst z
+      exact .leaf x
+    | cons m ms => simp [check] at ok
+  | branch left right il ir =>
+    cases ms with
+    | nil => simp [check] at ok
+    | cons m ms =>
+      cases hl : check left ms with
+      | none => simp [check, hl] at ok
+      | some l =>
+        cases hr : check right ms with
+        | none => simp [check, hl, hr] at ok
+        | some r =>
+          by_cases h : m.residue ≠ 0 ∧ l ≠ r ∧ (l-m.pole)*(r-m.pole) = m.residue
+          · have hz : (l-m.pole)+(r-m.pole)+m.offset = z := by
+              simpa [check, hl, hr, h] using ok
+            subst z
+            exact .branch (il _ _ hl) (ir _ _ hr) h.1 h.2.1 h.2.2
+          · simp [check, hl, hr, h] at ok
+
+/-- Once the computed root matches the expected terminal, the leaf list is
+an exact description of that terminal's finite fiber. -/
+theorem check_exact {F : Type} [Field F] [DecidableEq F]
+    (tree : InputTree F) (ms : List (Parameters F)) (z : F)
+    (ok : check tree ms = some z) (x : F) :
+    x ∈ tree.leaves ↔ Path (ms.map fun m => mapsTo m.pole m.offset m.residue) x z :=
+  certified_exact (check_certifies tree ms z ok) x
+
+#print axioms check_exact
 end FiberComplete
