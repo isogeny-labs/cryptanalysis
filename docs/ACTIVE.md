@@ -47,6 +47,6 @@ and construction gates. [pcc:unverified]
 
 <!-- One line per task, added as the task's first step with its draft PR:
 - [ ] <task> (<runtime>, started YYYY-MM-DD, branch <branch>, PR #<n>) -->
-- [ ] Speed up prime-field index-calculus relation finding and solving in `ic bench`: batched x-only pair-table preparation and m=3 probes with complete native accounting, faster prime arithmetic, gated by the lead-testing protocol (Claude Code, started 2026-11-21, branch claude/ic-prime-batched-relations-20261121) [pcc:unverified]
+- [ ] Speed up prime-field index-calculus relation finding and solving in `ic bench`: batched x-only pair-table preparation and m=3 probes with complete native accounting, faster prime arithmetic, gated by the lead-testing protocol (Claude Code, started 2026-11-21, branch claude/ic-prime-batched-relations-20261121, PR #1891) [pcc:unverified]
 
 ## Blocked / questions for the owner
