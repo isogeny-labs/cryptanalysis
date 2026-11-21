@@ -424,6 +424,71 @@ static inline uint32_t rho_next_index(const rho_shared *sh, uint32_t i)
     return sh->r_mask ? (i + 1) & sh->r_mask : (i + 1) % sh->r;
 }
 
+static inline uint64_t rho_mul_ops_count(uint64_t k)
+{
+    return k ? (uint64_t)__builtin_popcountll(k) + (uint64_t)(63 - __builtin_clzll(k)) : 0;
+}
+
+/* Compute out[i] = a[i]*base + b[i]*target for i in [0, count) using a 2-bit
+ * joint Shamir table and ca_group_batch_op (one Montgomery inversion per
+ * batched doubling/addition across all `count` slots), while charging the
+ * exact `ca_group_mul` + `ca_group_op` operation count to *ops. */
+static int rho_batch_lincomb(const ca_group *g, const ca_elem *base, const ca_elem *target,
+                             const uint64_t *a, const uint64_t *b, ca_elem *out, uint32_t count,
+                             uint64_t *ops)
+{
+    if (count == 0) return 1;
+    ca_elem *add = malloc((size_t)count * sizeof(ca_elem));
+    uint64_t *scratch = malloc(2 * (size_t)count * sizeof(uint64_t));
+    if (!add || !scratch) {
+        free(add);
+        free(scratch);
+        return 0;
+    }
+    ca_elem T[16];
+    ca_group_identity(g, &T[0]);
+    T[1] = *base;
+    ca_group_dbl(g, &T[2], &T[1]);
+    ca_group_op(g, &T[3], &T[2], &T[1]);
+    T[4] = *target;
+    ca_group_dbl(g, &T[8], &T[4]);
+    ca_group_op(g, &T[12], &T[8], &T[4]);
+    for (int v = 1; v < 4; v++)
+        for (int u = 1; u < 4; u++)
+            ca_group_op(g, &T[4 * v + u], &T[u], &T[4 * v]);
+
+    uint64_t or_all = 0;
+    for (uint32_t i = 0; i < count; i++) {
+        or_all |= a[i] | b[i];
+        if (ops) *ops += rho_mul_ops_count(a[i]) + rho_mul_ops_count(b[i]) + 1;
+    }
+    if (or_all == 0) {
+        for (uint32_t i = 0; i < count; i++) out[i] = T[0];
+        free(add);
+        free(scratch);
+        return 1;
+    }
+    int top = (63 - __builtin_clzll(or_all)) / 2;
+    int sh = 2 * top;
+    for (uint32_t i = 0; i < count; i++) {
+        unsigned idx = (unsigned)(((a[i] >> sh) & 3u) | (((b[i] >> sh) & 3u) << 2));
+        out[i] = T[idx];
+    }
+    for (int w = top - 1; w >= 0; w--) {
+        sh = 2 * w;
+        ca_group_batch_op(g, out, out, out, count, scratch);
+        ca_group_batch_op(g, out, out, out, count, scratch);
+        for (uint32_t i = 0; i < count; i++) {
+            unsigned idx = (unsigned)(((a[i] >> sh) & 3u) | (((b[i] >> sh) & 3u) << 2));
+            add[i] = T[idx];
+        }
+        ca_group_batch_op(g, out, out, add, count, scratch);
+    }
+    free(add);
+    free(scratch);
+    return 1;
+}
+
 static inline void exp_add(uint64_t n, uint64_t *a, uint64_t d) { *a = ca_addmod(*a, d, n); }
 
 /* k * (the base the table was built from) as the sum of the stored
@@ -764,7 +829,44 @@ static void *rho_thread_main(void *arg)
     ca_rng rng;
     ca_rng_seed(&rng, sh->seed ^ (0x9E3779B97F4A7C15ULL * (th->id + 1)));
     uint64_t ops = 0;
-    for (uint32_t w = 0; w < W; w++) walk_restart(sh, &walks[w], &rng, &ops);
+    {
+        uint64_t *wa = malloc((size_t)W * sizeof(uint64_t));
+        uint64_t *wb = malloc((size_t)W * sizeof(uint64_t));
+        if (wa && wb) {
+            for (uint32_t w = 0; w < W; w++) {
+                wa[w] = ca_rng_below(&rng, sh->n);
+                wb[w] = ca_rng_below(&rng, sh->n);
+            }
+            if (rho_batch_lincomb(g, &sh->base, &sh->target, wa, wb, Yn, W, &ops)) {
+                for (uint32_t w = 0; w < W; w++) {
+                    rho_walk *wk = &walks[w];
+                    wk->a = wa[w];
+                    wk->b = wb[w];
+                    wk->Y = Yn[w];
+                    if (sh->negmap && ca_group_canonicalize(g, &wk->Y)) {
+                        wk->a = wk->a ? sh->n - wk->a : 0;
+                        wk->b = wk->b ? sh->n - wk->b : 0;
+                    }
+                    wk->h = ca_group_hash(g, &wk->Y);
+                    wk->retry = 0;
+                    wk->since_dp = 0;
+                    wk->win = 0;
+#ifdef CA_RHO_TRACE
+                    wk->ring_n = 0;
+                    wk->charged = 0;
+                    wk->merged = 0;
+                    wk->trail = (uint32_t)++sh->tr.trail_counter;
+#endif
+                }
+            } else {
+                for (uint32_t w = 0; w < W; w++) walk_restart(sh, &walks[w], &rng, &ops);
+            }
+        } else {
+            for (uint32_t w = 0; w < W; w++) walk_restart(sh, &walks[w], &rng, &ops);
+        }
+        free(wa);
+        free(wb);
+    }
 #ifdef CA_RHO_TRACE
     sh->tr.start_ops = ops;
 #    define RHO_RESTART(kind)                                          \
@@ -1220,7 +1322,10 @@ static ca_status rho_solve_impl(const ca_group *g, const ca_elem *base, const ca
     for (uint32_t i = 0; i < sh.r; i++) {
         sh.alpha[i] = ca_rng_below(&rng, n);
         sh.beta[i] = ca_rng_below(&rng, n);
-        rho_start_point(&sh, &sh.M[i], sh.alpha[i], sh.beta[i], &setup_ops);
+    }
+    if (!rho_batch_lincomb(g, base, target, sh.alpha, sh.beta, sh.M, sh.r, &setup_ops)) {
+        for (uint32_t i = 0; i < sh.r; i++)
+            rho_start_point(&sh, &sh.M[i], sh.alpha[i], sh.beta[i], &setup_ops);
     }
     sh.setup_ops = setup_ops;
 #ifdef CA_RHO_TRACE

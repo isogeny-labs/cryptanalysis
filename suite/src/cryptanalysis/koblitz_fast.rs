@@ -113,6 +113,10 @@ pub struct FastCurve {
     /// the CPU has it and the field's reduction polynomial suits it.
     #[cfg(all(target_arch = "x86_64", suite_avx512))]
     simd: Option<simd512::Simd512>,
+    /// The eight-lane (4 × `poly64x2_t`) AArch64 NEON PMULL kernel for
+    /// [`Self::add_many_lazy`].
+    #[cfg(target_arch = "aarch64")]
+    simd_neon: Option<simdaarch64::SimdNeon>,
 }
 
 impl FastCurve {
@@ -131,6 +135,8 @@ impl FastCurve {
         Some(Self {
             #[cfg(all(target_arch = "x86_64", suite_avx512))]
             simd: simd512::Simd512::new(&field),
+            #[cfg(target_arch = "aarch64")]
+            simd_neon: simdaarch64::SimdNeon::new(&field),
             field,
             n: curve.m,
             a,
@@ -293,6 +299,12 @@ impl FastCurve {
     ) {
         #[cfg(all(target_arch = "x86_64", suite_avx512))]
         if let Some(simd) = &self.simd {
+            if simd.add_many_lazy(self, p, qs, out, lambdas, scratch) {
+                return;
+            }
+        }
+        #[cfg(target_arch = "aarch64")]
+        if let Some(simd) = &self.simd_neon {
             if simd.add_many_lazy(self, p, qs, out, lambdas, scratch) {
                 return;
             }
@@ -1134,6 +1146,23 @@ impl FrobeniusCanon {
             }
             return;
         }
+        #[cfg(target_arch = "aarch64")]
+        if self.n <= 28 && canon_simd_neon_enabled() {
+            let mut chunks = xs.chunks_exact_mut(8);
+            for chunk in &mut chunks {
+                let mut c = [0u64; 8];
+                for (slot, &x) in c.iter_mut().zip(chunk.iter()) {
+                    *slot = self.coords(x);
+                }
+                // SAFETY: NEON is baseline on `aarch64`, and `1 <= self.n <= 63`.
+                let mins = unsafe { least_rotation8_neon(&c, self.n, self.mask) };
+                chunk.copy_from_slice(&mins);
+            }
+            for x in chunks.into_remainder() {
+                *x = self.canon(*x);
+            }
+            return;
+        }
         for x in xs {
             *x = self.canon(*x);
         }
@@ -1236,6 +1265,44 @@ fn canon_simd_enabled() -> bool {
     })
 }
 
+#[cfg(target_arch = "aarch64")]
+fn canon_simd_neon_enabled() -> bool {
+    static ON: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
+    *ON.get_or_init(|| std::env::var("KIC_SCAN_SIMD").as_deref() != Ok("0"))
+}
+
+/// Branchless NEON cyclic rotation minimum over 8 `n`-bit words in four
+/// interleaved `uint64x2_t` registers, avoiding branch mispredictions in
+/// `canon_in_place`.
+#[cfg(target_arch = "aarch64")]
+#[inline]
+unsafe fn least_rotation8_neon(c: &[u64; 8], n: u32, mask: u64) -> [u64; 8] {
+    use std::arch::aarch64::*;
+    let m = vdupq_n_u64(mask);
+    let back = vdupq_n_s64(-((n - 1) as i64));
+    let mut v0 = vld1q_u64(c.as_ptr());
+    let mut v1 = vld1q_u64(c.as_ptr().add(2));
+    let mut v2 = vld1q_u64(c.as_ptr().add(4));
+    let mut v3 = vld1q_u64(c.as_ptr().add(6));
+    let (mut b0, mut b1, mut b2, mut b3) = (v0, v1, v2, v3);
+    for _ in 1..n {
+        v0 = vandq_u64(vorrq_u64(vshlq_n_u64::<1>(v0), vshlq_u64(v0, back)), m);
+        v1 = vandq_u64(vorrq_u64(vshlq_n_u64::<1>(v1), vshlq_u64(v1, back)), m);
+        v2 = vandq_u64(vorrq_u64(vshlq_n_u64::<1>(v2), vshlq_u64(v2, back)), m);
+        v3 = vandq_u64(vorrq_u64(vshlq_n_u64::<1>(v3), vshlq_u64(v3, back)), m);
+        b0 = vbslq_u64(vcgtq_u64(b0, v0), v0, b0);
+        b1 = vbslq_u64(vcgtq_u64(b1, v1), v1, b1);
+        b2 = vbslq_u64(vcgtq_u64(b2, v2), v2, b2);
+        b3 = vbslq_u64(vcgtq_u64(b3, v3), v3, b3);
+    }
+    let mut out = [0u64; 8];
+    vst1q_u64(out.as_mut_ptr(), b0);
+    vst1q_u64(out.as_mut_ptr().add(2), b1);
+    vst1q_u64(out.as_mut_ptr().add(4), b2);
+    vst1q_u64(out.as_mut_ptr().add(6), b3);
+    out
+}
+
 /// The least cyclic rotation of each of sixteen `n`-bit words.
 ///
 /// Rotation by one is `((v << 1) | (v >> (n − 1))) & mask`, one
@@ -1307,9 +1374,9 @@ pub struct BatchScratch {
     dens: Vec<u64>,
     acc: Vec<u64>,
     /// Structure-of-arrays copies of a block's addends, for the SIMD path.
-    #[cfg(all(target_arch = "x86_64", suite_avx512))]
+    #[cfg(any(all(target_arch = "x86_64", suite_avx512), target_arch = "aarch64"))]
     qx: Vec<u64>,
-    #[cfg(all(target_arch = "x86_64", suite_avx512))]
+    #[cfg(any(all(target_arch = "x86_64", suite_avx512), target_arch = "aarch64"))]
     qy: Vec<u64>,
 }
 
@@ -2238,6 +2305,228 @@ mod simd512 {
                 _mm512_storeu_si512(out.as_mut_ptr() as *mut _, r);
             }
             out
+        }
+    }
+}
+
+#[cfg(target_arch = "aarch64")]
+mod simdaarch64 {
+    use super::{BatchScratch, FastCurve, FastPoint};
+    use crate::cryptanalysis::semaev_decomp::Gf2;
+    use std::arch::aarch64::*;
+
+    /// Eight-lane (4 × `poly64x2_t`) AArch64 NEON PMULL kernel for
+    /// [`FastCurve::add_many_lazy`].
+    #[derive(Clone, Copy, Debug)]
+    pub(super) struct SimdNeon {
+        n: u32,
+        mask: u64,
+        has_const_one: bool,
+        pos_terms: [u32; 7],
+        npos_terms: usize,
+    }
+
+    impl SimdNeon {
+        pub(super) fn new(field: &Gf2) -> Option<Self> {
+            #[cfg(not(target_feature = "aes"))]
+            if !std::arch::is_aarch64_feature_detected!("aes") {
+                return None;
+            }
+            if std::env::var("KIC_SCAN_SIMD").as_deref() == Ok("0") {
+                return None;
+            }
+            Self::for_field(field)
+        }
+
+        pub(super) fn for_field(field: &Gf2) -> Option<Self> {
+            let n = field.n;
+            if !(2..=63).contains(&n) {
+                return None;
+            }
+            let tail = field.irr ^ (1u64 << n);
+            let t_max = 63 - tail.leading_zeros();
+            if n + t_max > 64 || 2 * t_max > n + 1 || tail.count_ones() as usize > 8 {
+                return None;
+            }
+            let has_const_one = (tail & 1) == 1;
+            let mut pos_terms = [0u32; 7];
+            let mut npos_terms = 0;
+            for t in 1..n {
+                if (tail >> t) & 1 == 1 {
+                    if npos_terms >= 7 {
+                        return None;
+                    }
+                    pos_terms[npos_terms] = t;
+                    npos_terms += 1;
+                }
+            }
+            Some(Self {
+                n,
+                mask: (1u64 << n) - 1,
+                has_const_one,
+                pos_terms,
+                npos_terms,
+            })
+        }
+
+        pub(super) fn add_many_lazy(
+            &self,
+            curve: &FastCurve,
+            p: FastPoint,
+            qs: &[FastPoint],
+            out: &mut Vec<FastPoint>,
+            lambdas: &mut Vec<u64>,
+            scratch: &mut BatchScratch,
+        ) -> bool {
+            if p.infinity || qs.is_empty() {
+                return false;
+            }
+            let padded = qs.len().div_ceil(8) * 8;
+            let BatchScratch { dens, acc, qx, qy } = scratch;
+            dens.clear();
+            qx.clear();
+            qy.clear();
+            for q in qs {
+                if q.infinity || q.x == p.x {
+                    return false;
+                }
+                qx.push(q.x);
+                qy.push(q.y);
+                dens.push(p.x ^ q.x);
+            }
+            qx.resize(padded, 0);
+            qy.resize(padded, 0);
+            dens.resize(padded, 1);
+            acc.clear();
+            acc.resize(padded, 0);
+            // SAFETY: `SimdNeon` verified `aes` (`PMULL`) support and `padded` is a multiple of 8.
+            unsafe { self.kernel(curve, p, dens, acc, qx, qy) };
+            out.reserve(qs.len());
+            lambdas.reserve(qs.len());
+            out.extend(acc[..qs.len()].iter().map(|&x| FastPoint::affine(x, 0)));
+            lambdas.extend_from_slice(&dens[..qs.len()]);
+            true
+        }
+
+        #[cfg_attr(not(target_feature = "aes"), target_feature(enable = "aes"))]
+        unsafe fn kernel(
+            &self,
+            curve: &FastCurve,
+            p: FastPoint,
+            dens: &mut [u64],
+            pre: &mut [u64],
+            qx: &[u64],
+            qy: &[u64],
+        ) {
+            let groups = dens.len() / 8;
+            let mut acc0 = vdupq_n_u64(1);
+            let mut acc1 = vdupq_n_u64(1);
+            let mut acc2 = vdupq_n_u64(1);
+            let mut acc3 = vdupq_n_u64(1);
+            for g in 0..groups {
+                let off = 8 * g;
+                vst1q_u64(pre.as_mut_ptr().add(off), acc0);
+                vst1q_u64(pre.as_mut_ptr().add(off + 2), acc1);
+                vst1q_u64(pre.as_mut_ptr().add(off + 4), acc2);
+                vst1q_u64(pre.as_mut_ptr().add(off + 6), acc3);
+                acc0 = self.mul2(acc0, vld1q_u64(dens.as_ptr().add(off)));
+                acc1 = self.mul2(acc1, vld1q_u64(dens.as_ptr().add(off + 2)));
+                acc2 = self.mul2(acc2, vld1q_u64(dens.as_ptr().add(off + 4)));
+                acc3 = self.mul2(acc3, vld1q_u64(dens.as_ptr().add(off + 6)));
+            }
+            let mut lanes = [0u64; 8];
+            vst1q_u64(lanes.as_mut_ptr(), acc0);
+            vst1q_u64(lanes.as_mut_ptr().add(2), acc1);
+            vst1q_u64(lanes.as_mut_ptr().add(4), acc2);
+            vst1q_u64(lanes.as_mut_ptr().add(6), acc3);
+            let mut tmp = Vec::with_capacity(8);
+            curve.field.batch_inv(&mut lanes, &mut tmp);
+            let mut inv0 = vld1q_u64(lanes.as_ptr());
+            let mut inv1 = vld1q_u64(lanes.as_ptr().add(2));
+            let mut inv2 = vld1q_u64(lanes.as_ptr().add(4));
+            let mut inv3 = vld1q_u64(lanes.as_ptr().add(6));
+            let py = vdupq_n_u64(p.y);
+            let px_a = vdupq_n_u64(p.x ^ curve.a);
+            for g in (0..groups).rev() {
+                let off = 8 * g;
+                let d0 = vld1q_u64(dens.as_ptr().add(off));
+                let d1 = vld1q_u64(dens.as_ptr().add(off + 2));
+                let d2 = vld1q_u64(dens.as_ptr().add(off + 4));
+                let d3 = vld1q_u64(dens.as_ptr().add(off + 6));
+
+                let di0 = self.mul2(inv0, vld1q_u64(pre.as_ptr().add(off)));
+                let di1 = self.mul2(inv1, vld1q_u64(pre.as_ptr().add(off + 2)));
+                let di2 = self.mul2(inv2, vld1q_u64(pre.as_ptr().add(off + 4)));
+                let di3 = self.mul2(inv3, vld1q_u64(pre.as_ptr().add(off + 6)));
+                inv0 = self.mul2(inv0, d0);
+                inv1 = self.mul2(inv1, d1);
+                inv2 = self.mul2(inv2, d2);
+                inv3 = self.mul2(inv3, d3);
+
+                let l0 = self.mul2(veorq_u64(py, vld1q_u64(qy.as_ptr().add(off))), di0);
+                let l1 = self.mul2(veorq_u64(py, vld1q_u64(qy.as_ptr().add(off + 2))), di1);
+                let l2 = self.mul2(veorq_u64(py, vld1q_u64(qy.as_ptr().add(off + 4))), di2);
+                let l3 = self.mul2(veorq_u64(py, vld1q_u64(qy.as_ptr().add(off + 6))), di3);
+
+                let x0 = veorq_u64(
+                    veorq_u64(self.mul2(l0, l0), l0),
+                    veorq_u64(px_a, vld1q_u64(qx.as_ptr().add(off))),
+                );
+                let x1 = veorq_u64(
+                    veorq_u64(self.mul2(l1, l1), l1),
+                    veorq_u64(px_a, vld1q_u64(qx.as_ptr().add(off + 2))),
+                );
+                let x2 = veorq_u64(
+                    veorq_u64(self.mul2(l2, l2), l2),
+                    veorq_u64(px_a, vld1q_u64(qx.as_ptr().add(off + 4))),
+                );
+                let x3 = veorq_u64(
+                    veorq_u64(self.mul2(l3, l3), l3),
+                    veorq_u64(px_a, vld1q_u64(qx.as_ptr().add(off + 6))),
+                );
+
+                vst1q_u64(pre.as_mut_ptr().add(off), x0);
+                vst1q_u64(pre.as_mut_ptr().add(off + 2), x1);
+                vst1q_u64(pre.as_mut_ptr().add(off + 4), x2);
+                vst1q_u64(pre.as_mut_ptr().add(off + 6), x3);
+                vst1q_u64(dens.as_mut_ptr().add(off), l0);
+                vst1q_u64(dens.as_mut_ptr().add(off + 2), l1);
+                vst1q_u64(dens.as_mut_ptr().add(off + 4), l2);
+                vst1q_u64(dens.as_mut_ptr().add(off + 6), l3);
+            }
+        }
+
+        #[inline(always)]
+        #[cfg_attr(not(target_feature = "aes"), target_feature(enable = "aes"))]
+        unsafe fn mul2(&self, a: uint64x2_t, b: uint64x2_t) -> uint64x2_t {
+            let p0 = vreinterpretq_u64_p128(vmull_p64(vgetq_lane_u64(a, 0), vgetq_lane_u64(b, 0)));
+            let p1 = vreinterpretq_u64_p128(vmull_high_p64(
+                vreinterpretq_p64_u64(a),
+                vreinterpretq_p64_u64(b),
+            ));
+            let lo = vuzp1q_u64(p0, p1);
+            let hi = vuzp2q_u64(p0, p1);
+            let sn_neg = vdupq_n_s64(-(self.n as i64));
+            let sn_comp = vdupq_n_s64((64 - self.n) as i64);
+            let mask = vdupq_n_u64(self.mask);
+            let h = vorrq_u64(vshlq_u64(lo, sn_neg), vshlq_u64(hi, sn_comp));
+            let f = self.times_tail(h);
+            let low = vandq_u64(veorq_u64(lo, f), mask);
+            let f2 = self.times_tail(vshlq_u64(f, sn_neg));
+            veorq_u64(low, f2)
+        }
+
+        #[inline(always)]
+        unsafe fn times_tail(&self, h: uint64x2_t) -> uint64x2_t {
+            let mut acc = if self.has_const_one {
+                h
+            } else {
+                vdupq_n_u64(0)
+            };
+            for &t in &self.pos_terms[..self.npos_terms] {
+                acc = veorq_u64(acc, vshlq_u64(h, vdupq_n_s64(i64::from(t))));
+            }
+            acc
         }
     }
 }
@@ -3293,5 +3582,36 @@ mod tests {
     fn refuses_fields_wider_than_a_word() {
         let curve = BinaryCurve::sect113r1();
         assert!(FastCurve::new(&curve).is_none());
+    }
+
+    #[cfg(target_arch = "aarch64")]
+    #[test]
+    fn simd_neon_lazy_matches_scalar() {
+        for &n in &[19u32, 31, 41, 53] {
+            let kc = KoblitzCurve::new(0, n).unwrap();
+            let fc = FastCurve::new(&kc.curve).unwrap();
+            assert!(fc.simd_neon.is_some(), "SimdNeon should enable for n={n}");
+            let pts: Vec<FastPoint> = random_points(&kc, 35, 17)
+                .iter()
+                .map(|p| fc.lift(p))
+                .collect();
+            let p = pts.iter().copied().find(|q| !q.infinity).unwrap();
+            let qs: Vec<FastPoint> = pts
+                .iter()
+                .copied()
+                .filter(|q| !q.infinity && q.x != p.x)
+                .collect();
+            let (mut out_v, mut lam_v, mut scr_v) =
+                (Vec::new(), Vec::new(), BatchScratch::default());
+            let (mut out_s, mut lam_s, mut scr_s) =
+                (Vec::new(), Vec::new(), BatchScratch::default());
+            assert!(fc
+                .simd_neon
+                .unwrap()
+                .add_many_lazy(&fc, p, &qs, &mut out_v, &mut lam_v, &mut scr_v));
+            fc.add_many_lazy_scalar(p, &qs, &mut out_s, &mut lam_s, &mut scr_s);
+            assert_eq!(out_v, out_s);
+            assert_eq!(lam_v, lam_s);
+        }
     }
 }

@@ -281,12 +281,89 @@ static inline uint64_t coef_mod(int64_t v, uint64_t q)
     return m ? q - m : 0;
 }
 
+/* ---- division-free 128-to-64 modular reduction (Moller-Granlund) -------- */
+
+/* Precomputed reciprocal for fast (u128 % q) without __umodti3 / __udivmodti4.
+ * On ARM64 there is no 128/64 hardware divide instruction, so (ca_u128)x % q
+ * calls into libcompiler_rt (__udivmodti4).  Normalising q by s = clz(q) so
+ * qn >= 2^63 and precomputing v = floor((2^128 - 1) / qn) - 2^64 (one 128-bit
+ * divide per solve) turns every 128-bit remainder into multiplications and
+ * shifts, returning the exact canonical residue x % q for all 128-bit x. */
+typedef struct mod128_ctx {
+    uint64_t q;
+    uint64_t qn;
+    uint64_t v;
+    uint64_t mu64; /* floor((2^64 - 1) / q): 1-mul exact 64-bit Barrett for x < 2^64 */
+    unsigned s;
+} mod128_ctx;
+
+static inline void mod128_init(mod128_ctx *mc, uint64_t q)
+{
+    unsigned s = 0;
+    uint64_t t = q;
+    while ((t & (UINT64_C(1) << 63)) == 0) {
+        t <<= 1;
+        s++;
+    }
+    mc->q = q;
+    mc->qn = t;
+    mc->s = s;
+    mc->mu64 = UINT64_MAX / q;
+    /* (~0_u128) / qn = 2^64 + v; subtract 2^64 via cast to uint64_t. */
+    ca_u128 num = ~((ca_u128)0);
+    mc->v = (uint64_t)(num / t);
+}
+
+/* Remainder of (u1 * 2^64 + u0) mod qn, requiring u1 < qn (qn >= 2^63). */
+static inline uint64_t rem2by1_norm(uint64_t u1, uint64_t u0, uint64_t qn, uint64_t v)
+{
+    ca_u128 q = (ca_u128)u1 * v + (((ca_u128)u1 << 64) | u0);
+    uint64_t q1 = (uint64_t)(q >> 64) + 1;
+    uint64_t q0 = (uint64_t)q;
+    uint64_t r = u0 - q1 * qn;
+    if (r > q0) r += qn;
+    if (r >= qn) r -= qn;
+    return r;
+}
+
+static inline uint64_t u128_mod_fast(ca_u128 x, const mod128_ctx *mc)
+{
+    uint64_t hi = (uint64_t)(x >> 64);
+    uint64_t lo = (uint64_t)x;
+    if (__builtin_expect(hi == 0, 1)) {
+        uint64_t quo = (uint64_t)(((ca_u128)lo * mc->mu64) >> 64);
+        uint64_t r = lo - quo * mc->q;
+        return r >= mc->q ? r - mc->q : r;
+    }
+    unsigned s = mc->s;
+    uint64_t qn = mc->qn, v = mc->v;
+    if (s == 0) {
+        if (hi >= qn) hi -= qn; /* x < 2^128 < 2*qn*2^64 since qn >= 2^63 */
+        return rem2by1_norm(hi, lo, qn, v);
+    }
+    uint64_t u2 = hi >> (64 - s);
+    uint64_t u1 = (hi << s) | (lo >> (64 - s));
+    uint64_t u0 = lo << s;
+    if (__builtin_expect(u2 != 0 || u1 >= qn, 0))
+        u1 = rem2by1_norm(u2, u1, qn, v);
+    return rem2by1_norm(u1, u0, qn, v) >> s;
+}
+
 /* v mod q for a signed 128-bit v, canonical. */
 static inline uint64_t i128_mod(ca_i128 v, uint64_t q)
 {
-    if (v >= 0) return (uint64_t)((ca_u128)v % q);
-    uint64_t m = (uint64_t)((ca_u128)(-v) % q);
+    mod128_ctx mc;
+    mod128_init(&mc, q);
+    if (v >= 0) return u128_mod_fast((ca_u128)v, &mc);
+    uint64_t m = u128_mod_fast((ca_u128)(-v), &mc);
     return m ? q - m : 0;
+}
+
+static inline uint64_t i128_mod_fast(ca_i128 v, const mod128_ctx *mc)
+{
+    if (v >= 0) return u128_mod_fast((ca_u128)v, mc);
+    uint64_t m = u128_mod_fast((ca_u128)(-v), mc);
+    return m ? mc->q - m : 0;
 }
 
 /* y = A v (mod q) with one signed 128-bit accumulator per row: each term is
@@ -296,6 +373,8 @@ static inline uint64_t i128_mod(ca_i128 v, uint64_t q)
  * data-dependent branch and with one reduction a row instead of two. */
 static void spmv(const ca_spmat *A, const uint64_t *v, uint64_t *y, uint64_t q)
 {
+    mod128_ctx mc;
+    mod128_init(&mc, q);
     for (uint32_t i = 0; i < A->rows; i++) {
         ca_i128 acc = 0;
         uint32_t cnt = 0;
@@ -303,12 +382,12 @@ static void spmv(const ca_spmat *A, const uint64_t *v, uint64_t *y, uint64_t q)
         for (uint32_t k = A->row_ptr[i]; k < A->row_ptr[i + 1]; k++) {
             acc += (ca_i128)A->val[k] * (ca_i128)v[A->col[k]];
             if (++cnt == 1u << 30) { /* never in practice */
-                r = ca_addmod(r, i128_mod(acc, q), q);
+                r = ca_addmod(r, i128_mod_fast(acc, &mc), q);
                 acc = 0;
                 cnt = 0;
             }
         }
-        y[i] = ca_addmod(r, i128_mod(acc, q), q);
+        y[i] = ca_addmod(r, i128_mod_fast(acc, &mc), q);
     }
 }
 
@@ -316,6 +395,8 @@ static void spmv(const ca_spmat *A, const uint64_t *v, uint64_t *y, uint64_t q)
  * are below 2^95 in size, so up to 2^31 rows fit. */
 static void spmtv(const ca_spmat *A, const uint64_t *w, uint64_t *z, uint64_t q, ca_i128 *acc)
 {
+    mod128_ctx mc;
+    mod128_init(&mc, q);
     memset(acc, 0, A->cols * sizeof(ca_i128));
     for (uint32_t i = 0; i < A->rows; i++) {
         uint64_t wi = w[i];
@@ -323,7 +404,7 @@ static void spmtv(const ca_spmat *A, const uint64_t *w, uint64_t *z, uint64_t q,
         for (uint32_t k = A->row_ptr[i]; k < A->row_ptr[i + 1]; k++)
             acc[A->col[k]] += (ca_i128)A->val[k] * (ca_i128)wi;
     }
-    for (uint32_t j = 0; j < A->cols; j++) z[j] = i128_mod(acc[j], q);
+    for (uint32_t j = 0; j < A->cols; j++) z[j] = i128_mod_fast(acc[j], &mc);
 }
 
 /* ---- the Lanczos kernels ------------------------------------------------ */
@@ -367,15 +448,16 @@ typedef struct lz_ctx {
     uint64_t npi;       /* q^{-1} mod 2^64, for lz_redc */
     uint64_t onep;      /* Shoup constant of 1: floor(2^64 / q), a remainder by q */
     ca_u128 bias128;    /* K q, K the largest row or column sum of |val|, for the 128-bit gather */
+    mod128_ctx mc;      /* Barrett / Moller-Granlund for q >= 2^63 and scatter kernels */
 } lz_ctx;
 
 /* v mod q for an unsigned 128-bit v: below 2^63 as hi * (2^64 mod q) + lo
  * with two Shoup products (lo mod q is lo * 1), no division; otherwise by
- * the library's 128-bit remainder.  Canonical either way. */
+ * Barrett / Moller-Granlund (no __udivmodti4).  Canonical either way. */
 static inline uint64_t lz_u128_mod(const lz_ctx *z, ca_u128 v)
 {
     uint64_t hi = (uint64_t)(v >> 64), lo = (uint64_t)v, q = z->q;
-    if (q >= ((uint64_t)1 << 63)) return (uint64_t)(v % q);
+    if (q >= ((uint64_t)1 << 63)) return u128_mod_fast(v, &z->mc);
     uint64_t l = shoup_mul(lo, 1, z->onep, q);
     if (!hi) return l;
     return ca_addmod(shoup_mul(hi, z->r64, z->r64p, q), l, q);
@@ -581,6 +663,7 @@ static ca_status lz_init(lz_ctx *z, const ca_spmat *A, uint64_t q)
 {
     memset(z, 0, sizeof(*z));
     z->q = q;
+    mod128_init(&z->mc, q);
     uint32_t bits = 64 - (uint32_t)__builtin_clzll(q - 1);
     const uint32_t room = 128 - 2 * bits; /* products a 128-bit sum holds: 2^room */
     z->dot_chunk = room >= 32 ? UINT32_MAX : (uint32_t)1 << (room & 31);
