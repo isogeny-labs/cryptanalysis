@@ -125,4 +125,46 @@ theorem sum_products_correct (a b c d : BitVec 64)
   rw [ab, cd]
   omega
 
+/-- The high bits wrapped into the low end of a 31-bit rotation do not
+overlap the shifted low bits. -/
+private theorem rotate_toNat (x : BitVec 31) (k : Nat) (hk : k < 31) :
+    (x.rotateLeft k).toNat =
+      2^k * (x.toNat % 2^(31-k)) + x.toNat / 2^(31-k) := by
+  have splitPow : 2^31 = 2^(31-k) * 2^k := by
+    rw [← Nat.pow_add]
+    congr 1
+    omega
+  have hi : x.toNat / 2^(31-k) < 2^k := by
+    apply (Nat.div_lt_iff_lt_mul (Nat.two_pow_pos _)).mpr
+    rw [Nat.mul_comm, ← splitPow]
+    exact x.isLt
+  rw [BitVec.toNat_rotateLeft, Nat.mod_eq_of_lt hk, Nat.shiftLeft_eq,
+    Nat.shiftRight_eq_div_pow, splitPow, Nat.mul_mod_mul_right,
+    Nat.mul_comm (x.toNat % _), ← Nat.two_pow_add_eq_or_of_lt hi]
+
+/-- A cyclic left rotation multiplies a canonical M31 residue by a power of two.
+The canonicality assumption excludes the all-ones representation of zero. -/
+theorem rotate_correct (x : BitVec 31) (k : Nat) (hk : k < 31)
+    (hx : x.toNat < modulus) :
+    (x.rotateLeft k).toNat = (2^k * x.toNat) % modulus := by
+  rw [rotate_toNat x k hk]
+  have h := Nat.mod_add_div x.toNat (2^(31-k))
+  unfold modulus at *
+  -- Each shift fixes the divisor, so the remaining identity is linear.
+  iterate 31
+    cases k <;> first | omega | rename_i k
+
+/-- Negate the rotated canonical representative, retaining zero as zero. -/
+theorem negative_rotate_correct (x : BitVec 31) (k : Nat) (hk : k < 31)
+    (hx : x.toNat < modulus) :
+    (if x.toNat = 0 then 0 else modulus - (x.rotateLeft k).toNat) =
+      ((modulus - 2^k) * x.toNat) % modulus := by
+  rw [rotate_toNat x k hk]
+  have h := Nat.mod_add_div x.toNat (2^(31-k))
+  unfold modulus at *
+  split
+  · simp_all
+  · iterate 31
+      cases k <;> first | omega | rename_i k
+
 end M31Reduction
