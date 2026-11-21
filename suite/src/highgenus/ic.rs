@@ -432,6 +432,17 @@ pub fn collect_relations<C: IndexCalculusCurve>(
             }
             recent.push_back(hx);
             stats.trials += 1;
+            if stats.trials.is_multiple_of(100_000) && std::env::var_os("HG_VERBOSE").is_some() {
+                eprintln!(
+                    "[ic] trials {} smooth {} relations {}/{} walks {} ops {}",
+                    stats.trials,
+                    stats.smooth,
+                    relations.len(),
+                    count,
+                    stats.walks,
+                    curve.group_ops() - walk0
+                );
+            }
             if let Some(dec) = curve.decompose(&x, fb.bound, rng) {
                 stats.smooth += 1;
                 // Relation: Σ (c_P − e_P) P = α D₁ + β D₂.
@@ -754,8 +765,14 @@ pub fn index_calculus_dlp<C: IndexCalculusCurve>(
         stats_total.walks += stats.walks;
         all.extend(rels);
         let t0 = Instant::now();
+        if std::env::var_os("HG_VERBOSE").is_some() {
+            eprintln!("[ic] solving with {} relations over {} places", all.len(), fb.len());
+        }
         let (sol, dim) = solve_log_mod_n(&all, fb.len(), n64);
         let la_ms = t0.elapsed().as_millis();
+        if std::env::var_os("HG_VERBOSE").is_some() {
+            eprintln!("[ic] solve {la_ms} ms dim {dim} -> {sol:?}");
+        }
         if let Some(x) = sol {
             let k = BigUint::from(x);
             if curve.scalar_mul(&k, d1) == *d2 {
