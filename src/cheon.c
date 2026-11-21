@@ -277,7 +277,7 @@ ca_status ca_cheon_solve(const ca_group *g, const ca_elem *gen, const ca_elem *g
     rc = orbit_bsgs(g, &base2, g_alpha, theta, d, p, params->max_exps, &k2, st);
     if (rc != CA_OK) return rc;
     /* alpha = zeta^(k1 + ord1 * k2) */
-    uint64_t k = (uint64_t)(((ca_u128)k1 + (ca_u128)ord1 * k2) % (p - 1));
+    uint64_t k = ca_u128_mod((ca_u128)k1 + (ca_u128)ord1 * k2, p - 1);
     uint64_t a = ca_powmod(zeta, k, p);
     ca_elem chk;
     ca_group_mul(g, &chk, gen, a, NULL);
@@ -596,7 +596,7 @@ static ca_status cheon_pair_bsgs(const ca_group *g, cheon_f2 zeta_hat, uint64_t 
 
         uint64_t j;
         if (cheon_pair_find(&tab, g, &l0, &l1, &j)) {
-            *answer = (uint64_t)(((ca_u128)j + (ca_u128)m * v) % order);
+            *answer = ca_u128_mod((ca_u128)j + (ca_u128)m * v, order);
             rc = CA_OK;
             goto out;
         }
@@ -721,7 +721,7 @@ ca_status ca_cheon_solve_p_plus_1(const ca_group *g, const ca_elem *powers,
                          &ops, &exps, &table_entries, &bytes_peak);
     if (rc != CA_OK) goto done;
 
-    uint64_t k = (uint64_t)(((ca_u128)k0 + (ca_u128)k1 * n) % (p + 1));
+    uint64_t k = ca_u128_mod((ca_u128)k0 + (ca_u128)k1 * n, p + 1);
     cheon_f2 gamma = cheon_f2_pow(zeta, k, u, p);
 
     /* alpha = theta(1+gamma)/(1-gamma), which must lie in F_p. */

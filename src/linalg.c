@@ -217,7 +217,7 @@ ca_status ca_dense_solve_mod_prime(uint64_t *M, uint32_t n, uint64_t *rhs, uint6
     const uint32_t bits = 64 - (uint32_t)__builtin_clzll(q - 1 ? q - 1 : 1);
     const uint32_t room = 128 - 2 * bits; /* products a 128-bit sum holds: 2^room */
     const uint32_t chunk = room >= 32 ? UINT32_MAX : (uint32_t)1 << (room & 31);
-    const uint64_t r64 = (uint64_t)((((ca_u128)1) << 64) % q), r64p = shoup_pre(r64, q);
+    const uint64_t r64 = ca_u128_mod((ca_u128)1 << 64, q), r64p = shoup_pre(r64, q);
     const uint64_t onep = shoup_pre(1, q);
     ca_status rc = CA_OK;
     for (uint32_t c = 0; c < n; c++) {
@@ -668,7 +668,7 @@ static ca_status lz_init(lz_ctx *z, const ca_spmat *A, uint64_t q)
     const uint32_t room = 128 - 2 * bits; /* products a 128-bit sum holds: 2^room */
     z->dot_chunk = room >= 32 ? UINT32_MAX : (uint32_t)1 << (room & 31);
     if (q >= ((uint64_t)1 << 63)) return CA_OK;
-    z->r64 = (uint64_t)((((ca_u128)1) << 64) % q);
+    z->r64 = ca_u128_mod((ca_u128)1 << 64, q);
     z->r64p = shoup_pre(z->r64, q);
     z->onep = shoup_pre(1, q);
     {

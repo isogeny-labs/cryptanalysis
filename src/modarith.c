@@ -9,7 +9,8 @@
 
 /* a*b mod m for a, b < m (so the high word of the product is < m and the
  * quotient fits 64 bits): one hardware 128/64 division on x86-64 instead of
- * the __umodti3 call the compiler emits for a 128-bit '%'.  Same residue. */
+ * the __umodti3 call the compiler emits for a 128-bit '%'.  On ARM64 use the
+ * shared Barrett / Möller–Granlund path (no __udivmodti4).  Same residue. */
 static inline uint64_t mulmod_lt(uint64_t a, uint64_t b, uint64_t m)
 {
 #if defined(__x86_64__) && defined(__GNUC__)
@@ -18,7 +19,7 @@ static inline uint64_t mulmod_lt(uint64_t a, uint64_t b, uint64_t m)
     __asm__("divq %2" : "+a"(q), "+d"(rem) : "r"(m) : "cc");
     return rem;
 #else
-    return (uint64_t)(((ca_u128)a * b) % m);
+    return ca_u128_mod((ca_u128)a * b, m);
 #endif
 }
 
