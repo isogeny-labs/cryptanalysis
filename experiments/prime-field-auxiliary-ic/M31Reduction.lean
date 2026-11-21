@@ -44,4 +44,85 @@ theorem mul_correct (a b : BitVec 64) (ha : a.toNat < modulus)
     change ¬ 2147483647 ≤ s.toNat at h
     exact (Nat.mod_eq_of_lt (by unfold modulus; omega)).symm
 
+/-- One Mersenne fold on an arbitrary unsigned word. -/
+def foldWord (x : BitVec 64) : BitVec 64 :=
+  (x >>> 31) + (x &&& 2147483647)
+
+private abbrev foldNat (x : Nat) := x / 2147483648 + x % 2147483648
+
+private theorem foldWord_toNat (x : BitVec 64) :
+    (foldWord x).toNat = foldNat x.toNat := by
+  have hi : (x >>> 31).toNat = x.toNat / 2147483648 := by
+    rw [BitVec.toNat_ushiftRight, Nat.shiftRight_eq_div_pow]
+  have lo : (x &&& 2147483647).toNat = x.toNat % 2147483648 := by
+    rw [BitVec.toNat_and]
+    exact Nat.and_two_pow_sub_one_eq_mod x.toNat 31
+  have hx := x.isLt
+  unfold foldWord foldNat
+  rw [BitVec.toNat_add_of_lt, hi, lo]
+  rw [hi, lo]
+  omega
+
+private theorem fold_mod (x : Nat) : foldNat x % modulus = x % modulus := by
+  have h := Nat.mod_add_div x 2147483648
+  unfold foldNat modulus
+  omega
+
+/-- Canonicalize any 64-bit accumulator, including values larger than a field product. -/
+def reduceWord (x : BitVec 64) : BitVec 64 :=
+  let s := foldWord (foldWord x)
+  if 2147483647 ≤ s then s - 2147483647 else s
+
+theorem reduceWord_correct (x : BitVec 64) :
+    (reduceWord x).toNat = x.toNat % modulus := by
+  let s := foldWord (foldWord x)
+  have hs : s.toNat = foldNat (foldNat x.toNat) := by
+    dsimp only [s]
+    rw [foldWord_toNat, foldWord_toNat]
+  have hx := x.isLt
+  have small : s.toNat < 2 * modulus := by
+    unfold foldNat at hs
+    unfold modulus
+    omega
+  have congr : s.toNat % modulus = x.toNat % modulus := by
+    rw [hs, fold_mod, fold_mod]
+  rw [← congr]
+  change (if (2147483647 : BitVec 64) ≤ s then s - 2147483647 else s).toNat = _
+  split
+  next h =>
+    rw [BitVec.toNat_sub_of_le h]
+    change 2147483647 ≤ s.toNat at h
+    change s.toNat - 2147483647 = s.toNat % 2147483647
+    unfold modulus at small
+    omega
+  next h =>
+    change ¬ 2147483647 ≤ s.toNat at h
+    exact (Nat.mod_eq_of_lt (by unfold modulus; omega)).symm
+
+private theorem product_bound {a b : Nat} (ha : a < modulus) (hb : b < modulus) :
+    a*b ≤ 2147483646 * 2147483646 :=
+  Nat.mul_le_mul (by unfold modulus at ha; omega) (by unfold modulus at hb; omega)
+
+/-- Four products of canonical representatives fit in one unsigned accumulator. -/
+theorem four_products_fit (a b c d e f g h : Fin modulus) :
+    a.val*b.val + c.val*d.val + e.val*f.val + g.val*h.val < 2^64 := by
+  have h₁ := product_bound a.isLt b.isLt
+  have h₂ := product_bound c.isLt d.isLt
+  have h₃ := product_bound e.isLt f.isLt
+  have h₄ := product_bound g.isLt h.isLt
+  omega
+
+/-- Word multiplication and accumulation are exact before the fused reduction. -/
+theorem sum_products_correct (a b c d : BitVec 64)
+    (ha : a.toNat < modulus) (hb : b.toNat < modulus)
+    (hc : c.toNat < modulus) (hd : d.toNat < modulus) :
+    (reduceWord (a*b+c*d)).toNat = (a.toNat*b.toNat+c.toNat*d.toNat) % modulus := by
+  have h₁ := product_bound ha hb
+  have h₂ := product_bound hc hd
+  have ab : (a*b).toNat = a.toNat*b.toNat := BitVec.toNat_mul_of_lt (by omega)
+  have cd : (c*d).toNat = c.toNat*d.toNat := BitVec.toNat_mul_of_lt (by omega)
+  rw [reduceWord_correct, BitVec.toNat_add_of_lt, ab, cd]
+  rw [ab, cd]
+  omega
+
 end M31Reduction
