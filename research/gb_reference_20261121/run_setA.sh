@@ -7,7 +7,7 @@ PILOT=${PILOT:-$HERE/../../suite/target/release/examples/pkm_tower_pilot}
 TRUNK=${TRUNK:-/home/user/workspace}
 OUT=${OUT:-$HERE/data/setA}
 mkdir -p "$OUT"
-for m in 2 3 4 5 6 7 8 9; do
+for m in ${MS:-2 3 4 5 6 7 8 9}; do
   tmin=$(python3 -c "import math;print(max(1,math.ceil(math.log2($m))))")  # = lead_sweep plan
   python3 "$TRUNK/tools/lead_sweep.py" watch --mem-gib 12 --wall 3600 --log "$OUT/m$m.log" -- \
     "$PILOT" --p 786433 --m $m --kinds kummer,dickson,isogeny --t-min $tmin --max-t 8 \
