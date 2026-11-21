@@ -137,4 +137,81 @@ theorem check_exact {F : Type} [Field F] [DecidableEq F]
   certified_exact (check_certifies tree ms z ok) x
 
 #print axioms check_exact
+/-- Pair corresponding entries from the two halves of a layer. Unequal
+halves are malformed and must not be truncated. -/
+private def pairLayer {F : Type} : List (InputTree F) → List (InputTree F) →
+    Option (List (InputTree F))
+  | [], [] => some []
+  | l :: ls, r :: rs => (pairLayer ls rs).map fun rest => .branch l r :: rest
+  | _, _ => none
+
+private def leavesOf {F : Type} (ts : List (InputTree F)) := ts.flatMap InputTree.leaves
+
+private theorem pairLayer_perm {F : Type} (ls rs out : List (InputTree F))
+    (ok : pairLayer ls rs = some out) :
+    (leavesOf out).Perm (leavesOf ls ++ leavesOf rs) := by
+  induction ls generalizing rs out with
+  | nil =>
+    cases rs <;> simp_all [pairLayer, leavesOf]
+  | cons l ls ih =>
+    cases rs with
+    | nil => simp [pairLayer] at ok
+    | cons r rs =>
+      cases h : pairLayer ls rs with
+      | none => simp [pairLayer, h] at ok
+      | some rest =>
+        have e : .branch l r :: rest = out := by simpa [pairLayer,h] using ok
+        subst out
+        have p := ih rs rest h
+        simp only [leavesOf, List.flatMap_cons, InputTree.leaves, List.append_assoc] at *
+        apply List.Perm.append_left
+        exact ((p.append_left _).trans (List.perm_append_comm_assoc _ _ _))
+
+/-- Apply the same half-stride pairing at each level, requiring one terminal
+tree after exactly the declared number of levels. -/
+private def collapse {F : Type} : Nat → List (InputTree F) → Option (InputTree F)
+  | 0, [tree] => some tree
+  | 0, _ => none
+  | n+1, ts => do
+    let half := ts.length / 2
+    let parents ← pairLayer (ts.take half) (ts.drop half)
+    collapse n parents
+
+private theorem collapse_perm {F : Type} (n : Nat) (ts : List (InputTree F)) (t : InputTree F)
+    (ok : collapse n ts = some t) : t.leaves.Perm (leavesOf ts) := by
+  induction n generalizing ts t with
+  | zero =>
+    cases ts with
+    | nil => simp [collapse] at ok
+    | cons x xs =>
+      cases xs with
+      | nil => simp_all [collapse, leavesOf]
+      | cons y ys => simp [collapse] at ok
+  | succ n ih =>
+    cases h : pairLayer (ts.take (ts.length / 2)) (ts.drop (ts.length / 2)) with
+    | none => simp [collapse,h] at ok
+    | some ps =>
+      have o : collapse n ps = some t := by simpa [collapse,h] using ok
+      have p := (ih ps t o).trans (pairLayer_perm _ _ _ h)
+      simpa [leavesOf, ← List.flatMap_append] using p
+
+/-- Roots are in generator order. Maps are outermost first, as in `check`. -/
+def checkFlat {F : Type} [Add F] [Sub F] [Mul F] [OfNat F 0] [DecidableEq F]
+    (roots : List F) (ms : List (Parameters F)) : Option F := do
+  let tree ← collapse ms.length (roots.map InputTree.leaf)
+  check tree ms
+
+theorem checkFlat_exact {F : Type} [Field F] [DecidableEq F] (roots : List F)
+    (ms : List (Parameters F)) (z x : F) (ok : checkFlat roots ms = some z) :
+    x ∈ roots ↔ Path (ms.map fun m => mapsTo m.pole m.offset m.residue) x z := by
+  cases h : collapse ms.length (roots.map InputTree.leaf) with
+  | none => simp [checkFlat,h] at ok
+  | some t =>
+    have ht : check t ms = some z := by simpa [checkFlat,h] using ok
+    have p : t.leaves.Perm roots := by
+      simpa [leavesOf, List.flatMap_map, Function.comp_def, InputTree.leaves] using
+        collapse_perm _ _ _ h
+    exact p.mem_iff.symm.trans (check_exact _ _ _ ht x)
+
+#print axioms checkFlat_exact
 end FiberComplete
