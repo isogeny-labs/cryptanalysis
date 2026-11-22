@@ -909,6 +909,10 @@ CORE_LEAN_PROJECTS = {
         "toolchain": "leanprover/lean4:v4.34.1",
         "library": "BasePointIndependence",
     },
+    "research/xedni_rank_decay_20261118/formal": {
+        "toolchain": "leanprover/lean4:v4.34.1",
+        "library": "XedniRankClassification",
+    },
 }
 CORE_FORBIDDEN = re.compile(
     r"\b(?:sorry|admit|sorryAx|native_decide|axiom|unsafe|implemented_by|extern)\b")

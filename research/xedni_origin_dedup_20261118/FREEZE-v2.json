@@ -1,0 +1,40 @@
+{
+  "analysis_amendment": {
+    "base_commit": "8becda5e17f301f8bb5935ee45e8c7bfa68a2d80",
+    "binding": "The file hashes below bind the additive analysis amendment; FREEZE.json and all version-1 files remain unchanged.",
+    "candidate_semantics_unchanged": true,
+    "supersedes_analysis_only": "research/xedni_origin_dedup_20261118/FREEZE.json"
+  },
+  "analyzer_selftest_command": "python3 research/xedni_origin_dedup_20261118/analyze-v2.py --selftest",
+  "binary": {
+    "path": "suite/target/release/ca-icx",
+    "sha256": "f6b75d48dc957350ba9c9de0c7239cf6c30b4ea7396c7d051b84ee5f97dcf78e"
+  },
+  "commands": [
+    "timeout 7200 python3 research/xedni_origin_dedup_20261118/runner.py run --binary suite/target/release/ca-icx --output research/xedni_origin_dedup_20261118/run/rows.jsonl --master xedni-origin-pencil-20261118-v1 --primes 31,67,127,251 --families generic,j0 --lifts balanced,wide --r-values 6,7,8,9 --trials 25",
+    "python3 research/xedni_origin_dedup_20261118/analyze-v2.py research/xedni_origin_dedup_20261118/run/rows.jsonl research/xedni_origin_dedup_20261118/run/summary-v2.json"
+  ],
+  "files": {
+    "research/xedni_lift_success_20261112/sweep.py": "19892a888a1e2bb99b16cf43e8d31b07773e843441f488c1db0dbf4e1b16a3ba",
+    "research/xedni_origin_dedup_20261118/AMENDMENT.md": "cc6742d085a5b007b6664508ea4bedde644275381ec29d1277f6543e06edc01c",
+    "research/xedni_origin_dedup_20261118/FREEZE.json": "baeb45981d2a6932d74ab9fce7a7d9bb07b3e3769630475e4960d5257ed1463d",
+    "research/xedni_origin_dedup_20261118/PROTOCOL.md": "7a2a7cf286b9a2b6108575504f9b6f8d2a3cc009464ec2554bd64503c9b9ba55",
+    "research/xedni_origin_dedup_20261118/analyze-v2.py": "7e969de202c183c18308678614f8726dfc859456ba8260e1384eb3c0d17aaea2",
+    "research/xedni_origin_dedup_20261118/analyze.py": "bd6e321c0e4ba6b83c47bc48d00e376d6481b9dd0b24755b1d99e33f6303016f",
+    "research/xedni_origin_dedup_20261118/formal/Dedup.lean": "72c8df1d8df151942f54ad369810c79a36cbf17f8a8855adc0d11503568cd015",
+    "research/xedni_origin_dedup_20261118/runner.py": "91a8bb6071ee1cf4afca207d0eb0a4bf595cf43ff638604ce3be9e7bd9253a4a",
+    "research/xedni_origin_pencil_20261118/runner.py": "5dafb1bf5de067d1468359cfee6ee9cd143e29128067a7219d255848be0429ee",
+    "research/xedni_plane_group_20261117/sweep.py": "3ba120d6a7cb27205a7c24e1c1eb97a50e395e9768760a5b70cd4eb26bb039d5"
+  },
+  "frozen_at_utc": "2026-11-18T22:11:51Z",
+  "grid": {
+    "families": ["generic", "j0"],
+    "lifts": ["balanced", "wide"],
+    "primes": [31, 67, 127, 251],
+    "r_values": [6, 7, 8, 9],
+    "trials_per_cell": 25
+  },
+  "master_seed": "xedni-origin-pencil-20261118-v1",
+  "runner_git_commit": "ffc1af2a4e5e8634f028fc5682e654dd639e3396",
+  "schema_version": 2
+}
