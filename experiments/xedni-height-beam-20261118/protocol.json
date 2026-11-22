@@ -1,0 +1,22 @@
+{
+  "schema": "xedni-height-beam-protocol-v1",
+  "question": "Does a precommitted width-eight beam of low-height coordinate lifts reduce the final rational model height at fixed 313-adic residual depth eight?",
+  "parent_model_height_commit": "56b732de5c2b885e56a24fc7eb247437ae911ced",
+  "baseline_result_normalized_sha256": "9b9fd644f1eccd12873387397dc749c2d510b5784a396d07e5774421855fbe78",
+  "short_digit_result_normalized_sha256": "206efe7e985d04d2eb51aa2ac23ad53494d94a96e674c3b60b1e03044b6c7198",
+  "greedy_model_result_normalized_sha256": "40ace87cbbd582fd1503d3530d3bf8072c248dce3cc5fdb3e8e0a93a7514ede5",
+  "public_hit": "reuse the identical first eligible distinct-x hit from the three pinned results",
+  "initial_shift": [0,0,0,0],
+  "maximum_target_depth": 8,
+  "beam_width": 8,
+  "minimum_radius_search_limit": 8,
+  "radius_slack": 2,
+  "candidate_rule": "for each retained state at depth k, compute t(R) mod p^(k+1) and four +p^k coordinate probes; find minimum feasible signed-digit radius h<=8; enumerate all tuples through min(h+2,(p-1)/2) satisfying the linearized cancellation; interpolate A,B and reject invalid models without evaluating candidate group residuals",
+  "candidate_rank": "deduplicate by full integer shift tuple, retaining the least (model_bits,max_abs_shift,sum_abs_shift,shift_tuple,parent_id,digit_tuple); select the first eight by that same rank; no candidate residual may affect ranking",
+  "exact_validation": "after selection, build exact rational curve and points, compute R=aP1+bP2 and t=-x(R)/y(R); any selected state failing expected depth stops the run with an explicit row",
+  "ledger": "write one canonical sorted-key JSONL gzip file per depth with mtime zero; retain every attempted model, invalid status, parent derivatives, selected state, and SHA-256 digests in the result manifest",
+  "comparison": "compare best final model bits and all depth-wise retained minima against first-axis, signed-digit, and greedy model paths on the same public relation",
+  "stop_rule": "stop at exact relation, no valid candidate, derivative/radius exhaustion, selected-state exact mismatch, depth eight, or 1200 seconds; preserve all attempted rows",
+  "claim_boundary": "bounded beam search on one preselected public relation; stage-level representation-height result, not natural relation yield or same-target IC/rho timing",
+  "run_cap_seconds": 1200
+}

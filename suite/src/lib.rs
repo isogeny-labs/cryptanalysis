@@ -16,6 +16,7 @@
 //! | `kdf`                | HKDF and PBKDF2, exercised by the TLS key-schedule analyses               |
 //! | `ecc_safety`         | curve-parameter safety auditor built on the structural attacks           |
 //! | `ct_bignum`, `utils` | arithmetic, randomness and encoding helpers                              |
+//! | `benchfmt`           | Go benchmark format reader/writer and `testing.B`-style harness          |
 //! | `visualize`          | the ASCII renderers every attack report uses                             |
 //!
 //! Nothing in this crate is constant-time or audited.  The primitives exist
@@ -23,6 +24,7 @@
 //! for what the suite does and does not claim.
 
 pub mod asymmetric;
+pub mod benchfmt;
 pub mod binary_ecc;
 pub mod cli;
 pub mod cryptanalysis;
