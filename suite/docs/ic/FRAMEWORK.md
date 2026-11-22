@@ -27,7 +27,8 @@ is visible where it lands, not only in the total.
 ```bash
 cargo build --release --bin ca-ic
 
-# What can be plugged in where, and what parameters each plug-in reads.
+# What can be plugged in where, and what parameters each plug-in reads
+# (readable; add --json for the full catalogue).
 ic bench --list
 
 # One configuration, end to end, on an 18-bit prime-order curve.
@@ -77,6 +78,20 @@ Read across a row and the trade-off is explicit: a bigger base raises
 the hit rate (`0.001 → 0.110`), which cuts the targets needed
 (`2219 → 757`), which raises the matrix rows (`3 → 83`). `S` is the sum
 of all of it, and it is not monotone — that is the point.
+
+---
+
+Every configuration is checked against `ic bench --list` before the
+instance, the calibration or the rho runs: a misspelt plug-in, parameter
+key, target source, matrix or solver, a summand count the oracle does not
+take (`mitm:m=9`), a plug-in from another regime, or an algebraic oracle
+without `--solver` stops the command in milliseconds with exit code 2 and
+a suggestion (`unknown oracle `mitmm`; did you mean `mitm`?`). In a sweep,
+a combination that only does not apply to the instance's regime is
+announced and skipped, as before. A key the catalogue does not declare
+and nothing resembles is passed through with a note. Without `--json`
+the terminal shows the table, each skipped configuration with its reason
+and a one-line summary; `--json` and `--out` carry the full report.
 
 ---
 
