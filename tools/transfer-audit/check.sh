@@ -35,6 +35,10 @@ assert text.rstrip().endswith('audited 12 theorems in [TransferAudit]; 0 failing
 c = json.loads((p / 'b163-certificate.json').read_text())
 assert c['source']['generator_exact_order_verified']
 assert c['same_field_genus_three']['source_generator_image_order_verified']
+assert c['same_field_genus_three']['arbitrary_jacobian_norm_supported']
+assert c['same_field_genus_three']['arbitrary_jacobian_norm_generator_certificate_executed']
+assert c['same_field_genus_three']['arbitrary_jacobian_norm_agrees_with_typed_pullback']
+assert not c['same_field_genus_three']['arbitrary_jacobian_norm_independent_oracle']
 assert c['subfields'][0]['excluded_genus_interval_inclusive'] == [0,63]
 assert c['all_possible_transfers_ruled_out'] is False
 (p / 'completed.json').write_text(json.dumps({'scope':'fixed-fixture correctness, not a research sweep or speed measurement',

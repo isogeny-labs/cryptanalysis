@@ -17,10 +17,11 @@ The relation solver eliminates the quadratic Semaev variable through a
 homogeneous, centered resultant circuit. It evaluates the resulting exact
 polynomial at the known base coordinates and verifies surviving signed sums
 in the target group. This avoids constructing a high-degree resultant or
-running a generic polynomial GCD for this complete known-root case. It is an
-exact solver specialized to two-term decompositions (`m=2`), not a general
-multivariate Gröbner solver. These are producer implementation assertions.
-`[pcc:unverified]`
+running a generic polynomial GCD for this complete known-root case. It supports
+exact `m=2` decompositions directly and `m=3` / `m=4` split-`S_3` chains via
+batched outer base shifts (`FactorBase::decompose_multi` and `solve_multi`),
+not a general multivariate Gröbner solver. These are producer implementation
+assertions. `[pcc:unverified]`
 
 The implementation includes these optimization choices:
 
@@ -191,9 +192,13 @@ the archived public manifest:
   Soft deadlines may be affected by instrumentation. Yield-only collection
   has zero graph and certificate-replay phases. Replay/decomposition-only
   modes cannot request these attack-search phases.
-- `--replay-relations rows.jsonl` replays public `a,b,i,j,si,sj` rows. The
-  report identifies certificate replay and leaves attack-time/query fields
-  null. It cannot be combined with `--rho`.
+- `--replay-relations rows.jsonl` replays public `a,b,i,j,si,sj` rows (or
+  `a,b,terms` rows when `--summands` is `3` or `4`). The report identifies
+  certificate replay and leaves attack-time/query fields null. It cannot be
+  combined with `--rho`.
+- `--summands 2|3|4` selects two-term (`m=2`, default), three-term (`m=3`), or
+  four-term (`m=4`) signed factor-base decompositions and sparse mod-`n`
+  certificate recovery (`verify_multi_certificate`). `[pcc:unverified]`
 - `--max-queries`, `--walk-lanes`, `--max-relations`, `--max-proof-nodes`,
   `--max-millis`, `--backend`, and `--seed` specify execution limits.
 

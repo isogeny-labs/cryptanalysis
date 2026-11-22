@@ -13,7 +13,7 @@ usage() {
 Usage: bash scripts/openresearch.sh <setup|doctor|up|skill> [arguments...]
 
   setup   Install the pinned CLI if absent; disable anonymous telemetry.
-  doctor  Check the CLI and repository skill without network access.
+  doctor  Check the CLI and locate the trunk's orx skill without network access.
   up      Open the loopback dashboard; add this checkout as an existing project.
   skill   Print the bundled CLI guide (optional module name).
 
@@ -32,6 +32,20 @@ resolve_orx() {
     orx_bin="$(command -v orx || true)"
   fi
   [[ -n "$orx_bin" && -x "$orx_bin" ]]
+}
+
+# The orx agent skill lives in the lab's workspace trunk (isogeny-labs/workspace,
+# .agents/skills/orx/), not in this repository, since 2026-11-19. This checkout
+# is normally repos/cryptanalysis inside a workspace checkout; WORKSPACE_ROOT
+# names the trunk explicitly.
+readonly ORX_SKILL_URL='https://github.com/isogeny-labs/workspace/blob/main/.agents/skills/orx/SKILL.md'
+orx_skill_location() {
+  local trunk="${WORKSPACE_ROOT:-$repo_root/../..}"
+  if [[ -r "$trunk/.agents/skills/orx/SKILL.md" ]]; then
+    printf '%s\n' "$(cd -- "$trunk" && pwd)/.agents/skills/orx/SKILL.md"
+  else
+    printf '%s\n' "$ORX_SKILL_URL"
+  fi
 }
 
 require_orx() {
@@ -74,7 +88,7 @@ setup() {
     exit 1
   fi
   "$orx_bin" telemetry off
-  echo "OpenResearch $ORX_VERSION ready; repository skill: .agents/skills/orx/SKILL.md"
+  echo "OpenResearch $ORX_VERSION ready; agent skill (workspace trunk): $(orx_skill_location)"
 }
 
 cd -- "$repo_root"
@@ -86,8 +100,7 @@ case "$command_name" in
   doctor)
     require_orx
     "$orx_bin" --version
-    test -r .agents/skills/orx/SKILL.md
-    test -r .claude/skills/orx/SKILL.md
+    printf 'Agent skill (workspace trunk): %s\n' "$(orx_skill_location)"
     "$orx_bin" telemetry status
     printf 'Repository: %s\nDashboard: http://127.0.0.1:4791\n' "$repo_root"
     ;;

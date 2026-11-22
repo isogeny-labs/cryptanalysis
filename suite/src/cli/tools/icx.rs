@@ -25,7 +25,7 @@ use clap::{Args, Parser, Subcommand};
 use serde_json::{json, Value};
 
 use crate::cryptanalysis::curve_catalog::{self, CatalogCurve, Family};
-use crate::cryptanalysis::{ic_engine, xedni, xedni_lift};
+use crate::cryptanalysis::{ic_engine, xedni, xedni_lift, xedni_solver};
 
 #[derive(Parser)]
 #[command(
@@ -64,6 +64,8 @@ enum Action {
     Xedni(XedniArgs),
     /// Optimize one certified prime-field xedni coefficient-lift coset.
     XedniLift(XedniLiftArgs),
+    /// Run the end-to-end JKSST + multi-prime-kernel-LLL Xedni ECDLP solver.
+    XedniSolve(XedniSolveArgs),
     /// Run the index-calculus pipeline on the curve (or a same-family analogue).
     Run(RunArgs),
     /// Solve a quadratic Boolean system with the FES kernel (CPU or GPU worker).
@@ -216,6 +218,13 @@ struct XedniLiftArgs {
     /// Hard cap on exact objective evaluations.
     #[arg(long, default_value_t = 50_000)]
     max_candidates: usize,
+}
+
+#[derive(Args)]
+struct XedniSolveArgs {
+    /// JSON file specifying the prime curve, generator, subgroup_order, target, and solver parameters.
+    #[arg(long)]
+    input: std::path::PathBuf,
 }
 
 fn provenance() -> Value {
@@ -386,29 +395,49 @@ fn xedni_cmd(args: &XedniArgs) -> Result<Value, String> {
 fn xedni_lift_cmd(args: &XedniLiftArgs) -> Result<Value, String> {
     let bytes =
         std::fs::read(&args.input).map_err(|e| format!("read {}: {e}", args.input.display()))?;
-    let input: xedni_lift::AffineLiftInput = serde_json::from_slice(&bytes)
-        .map_err(|e| format!("parse {}: {e}", args.input.display()))?;
-    let problem = xedni_lift::AffineLiftProblem::try_from(input)?;
     let options = xedni_lift::LiftSearchOptions {
         neighborhood_radius: args.radius,
         max_candidates: args.max_candidates,
     };
     let (model, scope, result) = match args.model.as_str() {
-        "weierstrass" => (
-            "weierstrass",
-            "prime-field xedni Steps 7-9 seven-coefficient coset optimization; no dependence or ECDLP success claim",
-            serde_json::to_value(xedni_lift::optimize_weierstrass_lift(&problem, options)?)
+        "weierstrass" => {
+            let input: xedni_lift::AffineLiftInput = serde_json::from_slice(&bytes)
+                .map_err(|e| format!("parse {}: {e}", args.input.display()))?;
+            let problem = xedni_lift::AffineLiftProblem::try_from(input)?;
+            (
+                "weierstrass",
+                "prime-field xedni Steps 7-9 seven-coefficient coset optimization; no dependence or ECDLP success claim",
+                serde_json::to_value(xedni_lift::optimize_weierstrass_lift(&problem, options)?)
+                    .map_err(|e| format!("serialize lift result: {e}"))?,
+            )
+        }
+        "plane-cubic" => {
+            let input: xedni_lift::AffineLiftInput = serde_json::from_slice(&bytes)
+                .map_err(|e| format!("parse {}: {e}", args.input.display()))?;
+            let problem = xedni_lift::AffineLiftProblem::try_from(input)?;
+            (
+                "plane-cubic",
+                "prime-field xedni Step 7 ten-coefficient coset optimization for up to nine incidence rows; no Step-8 conversion, discriminant, dependence, or ECDLP success claim",
+                serde_json::to_value(xedni_lift::optimize_plane_cubic_lift(&problem, options)?)
+                    .map_err(|e| format!("serialize lift result: {e}"))?,
+            )
+        }
+        "jksst-plane-cubic" => {
+            let input: xedni_lift::JksstPlaneCubicInput = serde_json::from_slice(&bytes)
+                .map_err(|e| format!("parse {}: {e}", args.input.display()))?;
+            let problem = xedni_lift::JksstPlaneCubicProblem::try_from(input)?;
+            (
+                "jksst-plane-cubic",
+                "prime-field xedni Steps 3-9 PGL3(F_p) 4-point frame normalization, 3D-LLL projective point lift, and homogeneous-congruence plane-cubic optimization; no dependence-rate or ECDLP speedup claim",
+                serde_json::to_value(xedni_lift::optimize_jksst_plane_cubic_lift(
+                    &problem, options,
+                )?)
                 .map_err(|e| format!("serialize lift result: {e}"))?,
-        ),
-        "plane-cubic" => (
-            "plane-cubic",
-            "prime-field xedni Step 7 ten-coefficient coset optimization for up to nine incidence rows; no Step-8 conversion, discriminant, dependence, or ECDLP success claim",
-            serde_json::to_value(xedni_lift::optimize_plane_cubic_lift(&problem, options)?)
-                .map_err(|e| format!("serialize lift result: {e}"))?,
-        ),
+            )
+        }
         other => {
             return Err(format!(
-                "unknown xedni lift model {other:?}; use weierstrass|plane-cubic"
+                "unknown xedni lift model {other:?}; use weierstrass|plane-cubic|jksst-plane-cubic"
             ));
         }
     };
@@ -424,6 +453,22 @@ fn xedni_lift_cmd(args: &XedniLiftArgs) -> Result<Value, String> {
             "max_candidates": args.max_candidates,
         },
         "result": result,
+    }))
+}
+
+fn xedni_solve_cmd(args: &XedniSolveArgs) -> Result<Value, String> {
+    let bytes =
+        std::fs::read(&args.input).map_err(|e| format!("read {}: {e}", args.input.display()))?;
+    let cfg: xedni_solver::XedniSolveConfig = serde_json::from_slice(&bytes)
+        .map_err(|e| format!("parse {}: {e}", args.input.display()))?;
+    let report = xedni_solver::solve_xedni_ecdlp(&cfg)?;
+    Ok(json!({
+        "schema_version": 1,
+        "operation": "xedni-solve",
+        "status": "complete",
+        "scope": "prime-field JKSST PGL3(F_p) + order-statistic 3D-LLL preselection + multi-prime subgroup-kernel LLL ECDLP solver with matched Pollard-rho cost ratio",
+        "input": args.input,
+        "result": report,
     }))
 }
 
@@ -527,6 +572,23 @@ fn display(report: &Value) {
                 );
             }
             println!("\nScope: {}", report["scope"].as_str().unwrap_or("?"));
+        }
+        Some("xedni-solve") => {
+            let r = &report["result"];
+            println!(
+                "Xedni solve [p={}  ord={} ({:.2}b)  mode={}  r={}  W={}]: verified={}  log={}  trials={}  non_collinear={}  S/rho={}",
+                r["modulus"].as_str().unwrap_or("?"),
+                r["subgroup_order"].as_str().unwrap_or("?"),
+                r["subgroup_bits"].as_f64().unwrap_or(0.0),
+                r["mode"].as_str().unwrap_or("?"),
+                r["rank_points"],
+                r["pool_size"],
+                r["verified"],
+                r["recovered_discrete_log"].as_str().unwrap_or("none"),
+                r["trials_attempted"],
+                r["non_collinear_relations_found"],
+                r["work_over_rho"],
+            );
         }
         Some("run") => {
             let r = &report["result"];
@@ -805,9 +867,10 @@ fn update_cmd(args: &UpdateArgs) -> Result<Value, String> {
         if let Some(head) = run_git_optional(repo, &["rev-parse", "--short", "HEAD"]) {
             report["git_head"] = json!(head);
         }
-        if let Some(upstream) =
-            run_git_optional(repo, &["rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{u}"])
-        {
+        if let Some(upstream) = run_git_optional(
+            repo,
+            &["rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{u}"],
+        ) {
             report["git_upstream"] = json!(upstream);
             if let Some(behind) = run_git_optional(repo, &["rev-list", "--count", "HEAD..@{u}"]) {
                 if let Ok(behind) = behind.parse::<u64>() {
@@ -854,6 +917,7 @@ fn execute(cli: &Cli) -> Result<Value, String> {
         Some(Action::Estimate(a)) => estimate(a),
         Some(Action::Xedni(a)) => xedni_cmd(a),
         Some(Action::XedniLift(a)) => xedni_lift_cmd(a),
+        Some(Action::XedniSolve(a)) => xedni_solve_cmd(a),
         Some(Action::Run(a)) => run_cmd(a, cli.json),
         Some(Action::Fes(a)) => fes_cmd(a),
         Some(Action::Install(a)) => install_cmd(a),

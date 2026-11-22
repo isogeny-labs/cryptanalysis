@@ -1,0 +1,23 @@
+Published Tian q=523 control validation
+Date: 2026-11-19 UTC
+Magma: V2.29-10
+Expected curve: the F_523 quartic printed in Song Tian, arXiv:2012.07173
+
+Historical failed implementation (preserved):
+- the signs printed in the 2020 preprint for alpha_32 and alpha_33 produced a
+  nonsingular internally consistent curve, but not Tian's published moduli
+- square-root constants, all six two-torsion root orderings, and the transposed
+  d_2 refinement did not repair the comparison
+
+Exhaustive reduced-characteristic sign audit:
+- all 2^6 sign choices for the six nontrivial Aronhold coefficients were tested
+- unique matching mask: 48
+- mask 48 flips alpha_32 and alpha_33 only
+- calculator seed 228096748; time 14.919 s; memory 32.09 MB
+- corrected candidate equals Tian's published Dixmier-Ohno moduli: true
+- corrected candidate moduli Frobenius-rational: true
+
+Interpretation:
+Tian's published q=523 source control now passes.  The defect was precisely the
+two reduced-characteristic signs, not the normal-Weil set, theta values,
+elliptic constants, two-torsion ordering, or Riemann linear algebra.

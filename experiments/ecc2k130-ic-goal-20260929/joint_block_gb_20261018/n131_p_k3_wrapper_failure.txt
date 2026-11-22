@@ -1,0 +1,9 @@
+Case: n131_p_k3
+Wrapper command: ./sage -python experiments/ecc2k130-ic-goal-20260929/joint_block_gb_20261018/run_case.py n131_p_k3
+Wrapper exit code: 0 (shell loop exit; Python traceback)
+Observed traceback:
+  File "run_case.py", line 60, in <module>
+    os.killpg(child.pid, signal.SIGTERM)
+PermissionError: [Errno 1] Operation not permitted
+Classification: INFRASTRUCTURE_FAILURE_NO_RESOURCE_RECEIPT
+The child wrote n131_p_k3_result.json with GB_COMPLETE and codes (3,16722); its full monitored wall and peak RSS are unknown because the wrapper failed before writing its receipt. The stdout file contains the final result line. This record does not classify the run as within the 600-second/4-GiB gate.

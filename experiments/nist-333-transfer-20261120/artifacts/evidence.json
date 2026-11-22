@@ -1,0 +1,1131 @@
+{
+  "claims": {
+    "computational_advantage": "refuted for the published Tian destination-cost substitution; unknown for any new relation mechanism",
+    "explicit_isogeny": "not constructed",
+    "explicit_kernel": "supported for P-224 and P-256",
+    "genus3_quotient": "not constructed",
+    "subgroup_preservation": "supported conditionally on a quotient isogeny with this kernel"
+  },
+  "curves": {
+    "P-224": {
+      "basis": {
+        "P": {
+          "x": {
+            "a": [
+              "0x10b321f632430c8adc27f39ef29714947427c734dd0b5345087ab9e0"
+            ],
+            "b": [
+              "0x0"
+            ]
+          },
+          "y": {
+            "a": [
+              "0x0"
+            ],
+            "b": [
+              "0x1"
+            ]
+          }
+        },
+        "Q": {
+          "x": {
+            "a": [
+              "0x17e593d097a17b91dc66911d798276726c0fdc60ac69bde4e04c75b4"
+            ],
+            "b": [
+              "0x0"
+            ]
+          },
+          "y": {
+            "a": [
+              "0x0"
+            ],
+            "b": [
+              "0x422e3037e33c67870e33122986d9068ec8d4942a538a252acfd067b5"
+            ]
+          }
+        }
+      },
+      "cost_model": {
+        "baseline": "Pollard rho with negation-map constant 0.886*sqrt(n)",
+        "baseline_log2_group_operations": 111.82537860389293,
+        "construction": "unmeasured",
+        "destination_log2_field_scale_excluding_polylogs": 224.0,
+        "destination_minus_rho_log2": 112.17462139610707,
+        "interpretation": "the published destination term alone is asymptotically larger; no end-to-end speedup is established",
+        "published_tian_destination_model": "soft-O(p) after substituting q=p for a prime-field NIST destination",
+        "recovery": "unmeasured",
+        "transfer": "unmeasured"
+      },
+      "curve": "P-224",
+      "frobenius_matrix_mod_3": [
+        [
+          2,
+          0
+        ],
+        [
+          0,
+          2
+        ]
+      ],
+      "kernel": {
+        "all_elements_killed_by_3": true,
+        "cardinality": 27,
+        "coordinate_basis_order": [
+          "P1",
+          "Q1",
+          "P2",
+          "Q2",
+          "P3",
+          "Q3"
+        ],
+        "factor_intersection_cardinalities": [
+          1,
+          1,
+          1
+        ],
+        "frobenius_action_on_generator_coordinates_mod_3": [
+          [
+            2,
+            0,
+            0
+          ],
+          [
+            0,
+            2,
+            0
+          ],
+          [
+            0,
+            0,
+            2
+          ]
+        ],
+        "frobenius_stable": true,
+        "generator_matrix_mod_3": [
+          [
+            1,
+            0,
+            0,
+            1,
+            0,
+            1
+          ],
+          [
+            0,
+            1,
+            0,
+            2,
+            1,
+            0
+          ],
+          [
+            0,
+            0,
+            1,
+            1,
+            2,
+            2
+          ]
+        ],
+        "generators": [
+          [
+            {
+              "x": {
+                "a": [
+                  "0x10b321f632430c8adc27f39ef29714947427c734dd0b5345087ab9e0"
+                ],
+                "b": [
+                  "0x0"
+                ]
+              },
+              "y": {
+                "a": [
+                  "0x0"
+                ],
+                "b": [
+                  "0x1"
+                ]
+              }
+            },
+            {
+              "x": {
+                "a": [
+                  "0x17e593d097a17b91dc66911d798276726c0fdc60ac69bde4e04c75b4"
+                ],
+                "b": [
+                  "0x0"
+                ]
+              },
+              "y": {
+                "a": [
+                  "0x0"
+                ],
+                "b": [
+                  "0x422e3037e33c67870e33122986d9068ec8d4942a538a252acfd067b5"
+                ]
+              }
+            },
+            {
+              "x": {
+                "a": [
+                  "0x17e593d097a17b91dc66911d798276726c0fdc60ac69bde4e04c75b4"
+                ],
+                "b": [
+                  "0x0"
+                ]
+              },
+              "y": {
+                "a": [
+                  "0x0"
+                ],
+                "b": [
+                  "0x422e3037e33c67870e33122986d9068ec8d4942a538a252acfd067b5"
+                ]
+              }
+            }
+          ],
+          [
+            {
+              "x": {
+                "a": [
+                  "0x17e593d097a17b91dc66911d798276726c0fdc60ac69bde4e04c75b4"
+                ],
+                "b": [
+                  "0x0"
+                ]
+              },
+              "y": {
+                "a": [
+                  "0x0"
+                ],
+                "b": [
+                  "0x422e3037e33c67870e33122986d9068ec8d4942a538a252acfd067b5"
+                ]
+              }
+            },
+            {
+              "x": {
+                "a": [
+                  "0x17e593d097a17b91dc66911d798276726c0fdc60ac69bde4e04c75b4"
+                ],
+                "b": [
+                  "0x0"
+                ]
+              },
+              "y": {
+                "a": [
+                  "0x0"
+                ],
+                "b": [
+                  "0xbdd1cfc81cc39878f1ccedd67926f970372b6bd5ac75dad5302f984c"
+                ]
+              }
+            },
+            {
+              "x": {
+                "a": [
+                  "0x10b321f632430c8adc27f39ef29714947427c734dd0b5345087ab9e0"
+                ],
+                "b": [
+                  "0x0"
+                ]
+              },
+              "y": {
+                "a": [
+                  "0x0"
+                ],
+                "b": [
+                  "0x1"
+                ]
+              }
+            }
+          ],
+          [
+            null,
+            {
+              "x": {
+                "a": [
+                  "0x61e523018891b5bbb2e8327a924476a5ac1e25d4115f3e152f8297eb"
+                ],
+                "b": [
+                  "0x0"
+                ]
+              },
+              "y": {
+                "a": [
+                  "0x0"
+                ],
+                "b": [
+                  "0x9b5a8e68c52bae63c7808bba551bfe9891d90557918075bbf2c87974"
+                ]
+              }
+            },
+            {
+              "x": {
+                "a": [
+                  "0x61e523018891b5bbb2e8327a924476a5ac1e25d4115f3e152f8297eb"
+                ],
+                "b": [
+                  "0x0"
+                ]
+              },
+              "y": {
+                "a": [
+                  "0x0"
+                ],
+                "b": [
+                  "0x64a571973ad4519c387f7445aae401666e26faa86e7f8a440d37868d"
+                ]
+              }
+            }
+          ]
+        ],
+        "maximal_isotropic": true,
+        "symplectic_gram_mod_3": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ]
+        ]
+      },
+      "lagrangian_census": {
+        "factor_transverse": 768,
+        "frobenius_stable": 1120,
+        "scalar_diagonal_incidence_histogram": {
+          "0": 192,
+          "1": 240,
+          "2": 288,
+          "4": 48
+        },
+        "total": 1120
+      },
+      "parameters": {
+        "a": "0xfffffffffffffffffffffffffffffffefffffffffffffffffffffffe",
+        "b": "0xb4050a850c04b3abf54132565044b0b7d7bfd8ba270b39432355ffb4",
+        "composed_diagonal_recovery_scalar_9_inverse_mod_n": "0xe38e38e38e38e38e38e38e38e38d697455f9b91abc52cf5a19357ae1",
+        "gcd_n_3": 1,
+        "n": "0xffffffffffffffffffffffffffff16a2e0b8f03e13dd29455c5c2a3d",
+        "n_is_prime": true,
+        "p": "0xffffffffffffffffffffffffffffffff000000000000000000000001",
+        "recovery_scalar_3_inverse_mod_n": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaa0f17407b4ad40d3e1b8392e81c29",
+        "t": "0xe95c1f470fc1ec22d6baa3a3d5c5"
+      },
+      "psi3_factor_degrees": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "psi3_unit": "0x3",
+      "torsion_field": {
+        "degree": 2,
+        "description": "F_p[u]/(u^2-r0)",
+        "nonsquare_check": true,
+        "r0": "0xdce4cb7c96b55e9337419f69e55fd6e13962dad3612dff8d56d6894b"
+      },
+      "zero_scalar_diagonal_incidence_alternate_kernel": {
+        "cardinality": 27,
+        "coordinate_basis_order": [
+          "P1",
+          "Q1",
+          "P2",
+          "Q2",
+          "P3",
+          "Q3"
+        ],
+        "factor_transverse": true,
+        "frobenius_stable": true,
+        "generator_matrix_mod_3": [
+          [
+            1,
+            0,
+            0,
+            0,
+            0,
+            1
+          ],
+          [
+            0,
+            1,
+            0,
+            1,
+            1,
+            0
+          ],
+          [
+            0,
+            0,
+            1,
+            1,
+            0,
+            1
+          ]
+        ],
+        "generators": [
+          [
+            {
+              "x": {
+                "a": [
+                  "0x10b321f632430c8adc27f39ef29714947427c734dd0b5345087ab9e0"
+                ],
+                "b": [
+                  "0x0"
+                ]
+              },
+              "y": {
+                "a": [
+                  "0x0"
+                ],
+                "b": [
+                  "0x1"
+                ]
+              }
+            },
+            null,
+            {
+              "x": {
+                "a": [
+                  "0x17e593d097a17b91dc66911d798276726c0fdc60ac69bde4e04c75b4"
+                ],
+                "b": [
+                  "0x0"
+                ]
+              },
+              "y": {
+                "a": [
+                  "0x0"
+                ],
+                "b": [
+                  "0x422e3037e33c67870e33122986d9068ec8d4942a538a252acfd067b5"
+                ]
+              }
+            }
+          ],
+          [
+            {
+              "x": {
+                "a": [
+                  "0x17e593d097a17b91dc66911d798276726c0fdc60ac69bde4e04c75b4"
+                ],
+                "b": [
+                  "0x0"
+                ]
+              },
+              "y": {
+                "a": [
+                  "0x0"
+                ],
+                "b": [
+                  "0x422e3037e33c67870e33122986d9068ec8d4942a538a252acfd067b5"
+                ]
+              }
+            },
+            {
+              "x": {
+                "a": [
+                  "0x17e593d097a17b91dc66911d798276726c0fdc60ac69bde4e04c75b4"
+                ],
+                "b": [
+                  "0x0"
+                ]
+              },
+              "y": {
+                "a": [
+                  "0x0"
+                ],
+                "b": [
+                  "0x422e3037e33c67870e33122986d9068ec8d4942a538a252acfd067b5"
+                ]
+              }
+            },
+            {
+              "x": {
+                "a": [
+                  "0x10b321f632430c8adc27f39ef29714947427c734dd0b5345087ab9e0"
+                ],
+                "b": [
+                  "0x0"
+                ]
+              },
+              "y": {
+                "a": [
+                  "0x0"
+                ],
+                "b": [
+                  "0x1"
+                ]
+              }
+            }
+          ],
+          [
+            null,
+            {
+              "x": {
+                "a": [
+                  "0x61e523018891b5bbb2e8327a924476a5ac1e25d4115f3e152f8297eb"
+                ],
+                "b": [
+                  "0x0"
+                ]
+              },
+              "y": {
+                "a": [
+                  "0x0"
+                ],
+                "b": [
+                  "0x9b5a8e68c52bae63c7808bba551bfe9891d90557918075bbf2c87974"
+                ]
+              }
+            },
+            {
+              "x": {
+                "a": [
+                  "0x17e593d097a17b91dc66911d798276726c0fdc60ac69bde4e04c75b4"
+                ],
+                "b": [
+                  "0x0"
+                ]
+              },
+              "y": {
+                "a": [
+                  "0x0"
+                ],
+                "b": [
+                  "0x422e3037e33c67870e33122986d9068ec8d4942a538a252acfd067b5"
+                ]
+              }
+            }
+          ]
+        ],
+        "maximal_isotropic": true,
+        "scalar_diagonal_incidence": [],
+        "scope_note": "stronger repeated-factor diagnostic, not a complete End(E)-linear indecomposability certificate"
+      }
+    },
+    "P-256": {
+      "basis": {
+        "P": {
+          "x": {
+            "a": [
+              "0x0",
+              "0x1",
+              "0x0"
+            ],
+            "b": [
+              "0x0",
+              "0x0",
+              "0x0"
+            ]
+          },
+          "y": {
+            "a": [
+              "0x0",
+              "0x0",
+              "0x0"
+            ],
+            "b": [
+              "0x1",
+              "0x0",
+              "0x0"
+            ]
+          }
+        },
+        "Q": {
+          "x": {
+            "a": [
+              "0x163151dfc1e70884f929d2acfb81c9eaa921d255b45078c8ad0c90b6621a316",
+              "0x97762ad6cef92400fe330432e47dcc63554aeafdb5f90b7cef32212afbd8039",
+              "0xb4b581df6f45e4bd35afc05ef8d776b0684a6f0bf408262f58f1828cdd97651b"
+            ],
+            "b": [
+              "0x0",
+              "0x0",
+              "0x0"
+            ]
+          },
+          "y": {
+            "a": [
+              "0x0",
+              "0x0",
+              "0x0"
+            ],
+            "b": [
+              "0x59cfc2e9fd63274f8f5127875ae5df41390a1c8c614f42777d09d8c53b159f9e",
+              "0x9ca973932c4c326e2d3e90a971230800db23ccba18d6fd6f3374f437b8c3c415",
+              "0x48d99b739757d5779592dd5bcf40532124eef5045f4e951b6edf6114c90d61b3"
+            ]
+          }
+        }
+      },
+      "cost_model": {
+        "baseline": "Pollard rho with negation-map constant 0.886*sqrt(n)",
+        "baseline_log2_group_operations": 127.82537860372497,
+        "construction": "unmeasured",
+        "destination_log2_field_scale_excluding_polylogs": 255.99999999966408,
+        "destination_minus_rho_log2": 128.1746213959391,
+        "interpretation": "the published destination term alone is asymptotically larger; no end-to-end speedup is established",
+        "published_tian_destination_model": "soft-O(p) after substituting q=p for a prime-field NIST destination",
+        "recovery": "unmeasured",
+        "transfer": "unmeasured"
+      },
+      "curve": "P-256",
+      "frobenius_matrix_mod_3": [
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "kernel": {
+        "all_elements_killed_by_3": true,
+        "cardinality": 27,
+        "coordinate_basis_order": [
+          "P1",
+          "Q1",
+          "P2",
+          "Q2",
+          "P3",
+          "Q3"
+        ],
+        "factor_intersection_cardinalities": [
+          1,
+          1,
+          1
+        ],
+        "frobenius_action_on_generator_coordinates_mod_3": [
+          [
+            0,
+            1,
+            2
+          ],
+          [
+            2,
+            1,
+            1
+          ],
+          [
+            0,
+            0,
+            2
+          ]
+        ],
+        "frobenius_stable": true,
+        "generator_matrix_mod_3": [
+          [
+            1,
+            0,
+            0,
+            1,
+            0,
+            1
+          ],
+          [
+            0,
+            1,
+            0,
+            2,
+            1,
+            0
+          ],
+          [
+            0,
+            0,
+            1,
+            1,
+            2,
+            2
+          ]
+        ],
+        "generators": [
+          [
+            {
+              "x": {
+                "a": [
+                  "0x0",
+                  "0x1",
+                  "0x0"
+                ],
+                "b": [
+                  "0x0",
+                  "0x0",
+                  "0x0"
+                ]
+              },
+              "y": {
+                "a": [
+                  "0x0",
+                  "0x0",
+                  "0x0"
+                ],
+                "b": [
+                  "0x1",
+                  "0x0",
+                  "0x0"
+                ]
+              }
+            },
+            {
+              "x": {
+                "a": [
+                  "0x163151dfc1e70884f929d2acfb81c9eaa921d255b45078c8ad0c90b6621a316",
+                  "0x97762ad6cef92400fe330432e47dcc63554aeafdb5f90b7cef32212afbd8039",
+                  "0xb4b581df6f45e4bd35afc05ef8d776b0684a6f0bf408262f58f1828cdd97651b"
+                ],
+                "b": [
+                  "0x0",
+                  "0x0",
+                  "0x0"
+                ]
+              },
+              "y": {
+                "a": [
+                  "0x0",
+                  "0x0",
+                  "0x0"
+                ],
+                "b": [
+                  "0x59cfc2e9fd63274f8f5127875ae5df41390a1c8c614f42777d09d8c53b159f9e",
+                  "0x9ca973932c4c326e2d3e90a971230800db23ccba18d6fd6f3374f437b8c3c415",
+                  "0x48d99b739757d5779592dd5bcf40532124eef5045f4e951b6edf6114c90d61b3"
+                ]
+              }
+            },
+            {
+              "x": {
+                "a": [
+                  "0x163151dfc1e70884f929d2acfb81c9eaa921d255b45078c8ad0c90b6621a316",
+                  "0x97762ad6cef92400fe330432e47dcc63554aeafdb5f90b7cef32212afbd8039",
+                  "0xb4b581df6f45e4bd35afc05ef8d776b0684a6f0bf408262f58f1828cdd97651b"
+                ],
+                "b": [
+                  "0x0",
+                  "0x0",
+                  "0x0"
+                ]
+              },
+              "y": {
+                "a": [
+                  "0x0",
+                  "0x0",
+                  "0x0"
+                ],
+                "b": [
+                  "0x59cfc2e9fd63274f8f5127875ae5df41390a1c8c614f42777d09d8c53b159f9e",
+                  "0x9ca973932c4c326e2d3e90a971230800db23ccba18d6fd6f3374f437b8c3c415",
+                  "0x48d99b739757d5779592dd5bcf40532124eef5045f4e951b6edf6114c90d61b3"
+                ]
+              }
+            }
+          ],
+          [
+            {
+              "x": {
+                "a": [
+                  "0x163151dfc1e70884f929d2acfb81c9eaa921d255b45078c8ad0c90b6621a316",
+                  "0x97762ad6cef92400fe330432e47dcc63554aeafdb5f90b7cef32212afbd8039",
+                  "0xb4b581df6f45e4bd35afc05ef8d776b0684a6f0bf408262f58f1828cdd97651b"
+                ],
+                "b": [
+                  "0x0",
+                  "0x0",
+                  "0x0"
+                ]
+              },
+              "y": {
+                "a": [
+                  "0x0",
+                  "0x0",
+                  "0x0"
+                ],
+                "b": [
+                  "0x59cfc2e9fd63274f8f5127875ae5df41390a1c8c614f42777d09d8c53b159f9e",
+                  "0x9ca973932c4c326e2d3e90a971230800db23ccba18d6fd6f3374f437b8c3c415",
+                  "0x48d99b739757d5779592dd5bcf40532124eef5045f4e951b6edf6114c90d61b3"
+                ]
+              }
+            },
+            {
+              "x": {
+                "a": [
+                  "0x163151dfc1e70884f929d2acfb81c9eaa921d255b45078c8ad0c90b6621a316",
+                  "0x97762ad6cef92400fe330432e47dcc63554aeafdb5f90b7cef32212afbd8039",
+                  "0xb4b581df6f45e4bd35afc05ef8d776b0684a6f0bf408262f58f1828cdd97651b"
+                ],
+                "b": [
+                  "0x0",
+                  "0x0",
+                  "0x0"
+                ]
+              },
+              "y": {
+                "a": [
+                  "0x0",
+                  "0x0",
+                  "0x0"
+                ],
+                "b": [
+                  "0xa6303d15029cd8b170aed878a51a20bec6f5e3749eb0bd8882f6273ac4ea6061",
+                  "0x63568c6bd3b3cd92d2c16f568edcf7ff24dc3346e7290290cc8b0bc8473c3bea",
+                  "0xb726648b68a82a896a6d22a430bfacdedb110afca0b16ae491209eeb36f29e4c"
+                ]
+              }
+            },
+            {
+              "x": {
+                "a": [
+                  "0x0",
+                  "0x1",
+                  "0x0"
+                ],
+                "b": [
+                  "0x0",
+                  "0x0",
+                  "0x0"
+                ]
+              },
+              "y": {
+                "a": [
+                  "0x0",
+                  "0x0",
+                  "0x0"
+                ],
+                "b": [
+                  "0x1",
+                  "0x0",
+                  "0x0"
+                ]
+              }
+            }
+          ],
+          [
+            null,
+            {
+              "x": {
+                "a": [
+                  "0xefdde3b32872a9effcf3b94cbf73aa7b39f9683ece9121b9852167f4e3da609b",
+                  "0x0",
+                  "0x0"
+                ],
+                "b": [
+                  "0x0",
+                  "0x0",
+                  "0x0"
+                ]
+              },
+              "y": {
+                "a": [
+                  "0x0",
+                  "0x0",
+                  "0x0"
+                ],
+                "b": [
+                  "0xd48fb68890839609d3c41e61463a7e6c078a3e3c430d69a1cb9618e52196bd24",
+                  "0xf6d3223b18fab7dbe0c60db58e4565a454b71c0a7255dcf20533e22e49ac102",
+                  "0x544a4ddf24fb41e2691e6a3276949915c165045e2ca0a6888ac54172a2acde50"
+                ]
+              }
+            },
+            {
+              "x": {
+                "a": [
+                  "0xefdde3b32872a9effcf3b94cbf73aa7b39f9683ece9121b9852167f4e3da609b",
+                  "0x0",
+                  "0x0"
+                ],
+                "b": [
+                  "0x0",
+                  "0x0",
+                  "0x0"
+                ]
+              },
+              "y": {
+                "a": [
+                  "0x0",
+                  "0x0",
+                  "0x0"
+                ],
+                "b": [
+                  "0x2b7049766f7c69f72c3be19eb9c58193f875c1c4bcf2965e3469e71ade6942db",
+                  "0xf092cddb4e70548341f39f24a71ba9a5bab48e4058daa230dfacc1dd1b653efd",
+                  "0xabb5b21fdb04be1e96e195cd896b66ea3e9afba2d35f5977753abe8d5d5321af"
+                ]
+              }
+            }
+          ]
+        ],
+        "maximal_isotropic": true,
+        "symplectic_gram_mod_3": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ]
+        ]
+      },
+      "lagrangian_census": {
+        "factor_transverse": 12,
+        "frobenius_stable": 13,
+        "scalar_diagonal_incidence_histogram": {
+          "4": 12
+        },
+        "total": 1120
+      },
+      "parameters": {
+        "a": "0xffffffff00000001000000000000000000000000fffffffffffffffffffffffc",
+        "b": "0x5ac635d8aa3a93e7b3ebbd55769886bc651d06b0cc53b0f63bce3c3e27d2604b",
+        "composed_diagonal_recovery_scalar_9_inverse_mod_n": "0x8e38e38daaaaaaab38e38e38e38e38e368f2197ceb0d1f2d6af570a536e1bf66",
+        "gcd_n_3": 1,
+        "n": "0xffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc632551",
+        "n_is_prime": true,
+        "p": "0xffffffff00000001000000000000000000000000ffffffffffffffffffffffff",
+        "recovery_scalar_3_inverse_mod_n": "0xaaaaaaaa00000000aaaaaaaaaaaaaaaa7def51c91a0fbf034d26872ca84218e1",
+        "t": "0x4319055358e8617b0c46353d039cdaaf"
+      },
+      "psi3_factor_degrees": [
+        1,
+        3
+      ],
+      "psi3_unit": "0x3",
+      "torsion_field": {
+        "degree": 6,
+        "description": "F_p[z,u]/(g(z), u^2-r(z))",
+        "g_low_to_high": [
+          "0xdad5606ffcd413458884e0fc1c45d0e45eb87d6e6c01c6cb57095a8ec0d6cc7a",
+          "0xa5858faff0a3b9c724f071c5f67f97ee454f48451db9ee94301bb85e4334ed18",
+          "0xefdde3b32872a9effcf3b94cbf73aa7b39f9683ece9121b9852167f4e3da609b",
+          "0x1"
+        ],
+        "nonsquare_check": true,
+        "r_low_to_high": [
+          "0x7ff0d567ad6680a32b66dc595a52b5d8066489436051ea2ae4c4e1af66fb93d0",
+          "0x5a7a704f0f5c4639db0f8e3a09806811bab0b7bbe246116bcfe447a1bccb12e4",
+          "0x10221c4bd78d5611030c46b3408c5584c60697c2316ede467ade980b1c259f64"
+        ]
+      }
+    }
+  },
+  "environment": {
+    "cpu_count": 5,
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+    "processor": "",
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "sympy": "1.14.0",
+    "timestamp_utc": "2026-11-19T16:46:55Z"
+  },
+  "format": "nist-333-evidence-v1",
+  "kernel_matrix_symplectic_gram": [
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0
+    ]
+  ],
+  "negative_controls": {
+    "P-192": {
+      "census": {
+        "factor_transverse": 0,
+        "frobenius_stable": 0,
+        "scalar_diagonal_incidence_histogram": {},
+        "total": 1120
+      },
+      "profile": [
+        2,
+        1
+      ]
+    },
+    "P-384": {
+      "census": {
+        "factor_transverse": 0,
+        "frobenius_stable": 0,
+        "scalar_diagonal_incidence_histogram": {},
+        "total": 1120
+      },
+      "profile": [
+        2,
+        2
+      ]
+    },
+    "P-521": {
+      "census": {
+        "factor_transverse": 0,
+        "frobenius_stable": 0,
+        "scalar_diagonal_incidence_histogram": {},
+        "total": 1120
+      },
+      "profile": [
+        1,
+        0
+      ]
+    }
+  },
+  "openssl_profile_checks": {
+    "P-192": {
+      "a": "0xfffffffffffffffffffffffffffffffefffffffffffffffc",
+      "b": "0x64210519e59c80e70fa7e9ab72243049feb8deecc146b9b1",
+      "n": "0xffffffffffffffffffffffff99def836146bc9b1b4d22831",
+      "n_mod_3": 2,
+      "p": "0xfffffffffffffffffffffffffffffffeffffffffffffffff",
+      "p_mod_3": 2,
+      "t_mod_3": 1
+    },
+    "P-224": {
+      "a": "0xfffffffffffffffffffffffffffffffefffffffffffffffffffffffe",
+      "b": "0xb4050a850c04b3abf54132565044b0b7d7bfd8ba270b39432355ffb4",
+      "exact_target_parameters_match": true,
+      "n": "0xffffffffffffffffffffffffffff16a2e0b8f03e13dd29455c5c2a3d",
+      "n_mod_3": 1,
+      "p": "0xffffffffffffffffffffffffffffffff000000000000000000000001",
+      "p_mod_3": 1,
+      "t_mod_3": 1
+    },
+    "P-256": {
+      "a": "0xffffffff00000001000000000000000000000000fffffffffffffffffffffffc",
+      "b": "0x5ac635d8aa3a93e7b3ebbd55769886bc651d06b0cc53b0f63bce3c3e27d2604b",
+      "exact_target_parameters_match": true,
+      "n": "0xffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc632551",
+      "n_mod_3": 1,
+      "p": "0xffffffff00000001000000000000000000000000ffffffffffffffffffffffff",
+      "p_mod_3": 1,
+      "t_mod_3": 1
+    },
+    "P-384": {
+      "a": "0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffeffffffff0000000000000000fffffffc",
+      "b": "0xb3312fa7e23ee7e4988e056be3f82d19181d9c6efe8141120314088f5013875ac656398d8a2ed19d2a85c8edd3ec2aef",
+      "n": "0xffffffffffffffffffffffffffffffffffffffffffffffffc7634d81f4372ddf581a0db248b0a77aecec196accc52973",
+      "n_mod_3": 1,
+      "p": "0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffeffffffff0000000000000000ffffffff",
+      "p_mod_3": 2,
+      "t_mod_3": 2
+    },
+    "P-521": {
+      "a": "0x1fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffc",
+      "b": "0x51953eb9618e1c9a1f929a21a0b68540eea2da725b99b315f3b8b489918ef109e156193951ec7e937b1652c0bd3bb1bf073573df883d2c34f1ef451fd46b503f00",
+      "n": "0x1fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffa51868783bf2f966b7fcc0148f709a5d03bb5c9b8899c47aebb6fb71e91386409",
+      "n_mod_3": 2,
+      "p": "0x1ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "p_mod_3": 1,
+      "t_mod_3": 0
+    }
+  },
+  "repeated_factor_diagnostic": {
+    "p224_zero_incidence_alternate": {
+      "factor_transverse": true,
+      "frobenius_stable": true,
+      "generator_matrix_mod_3": [
+        [
+          1,
+          0,
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          1,
+          0,
+          1,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          1,
+          0,
+          1
+        ]
+      ],
+      "incidence": [],
+      "symplectic_gram_mod_3": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ]
+    },
+    "scope": "exact intersections with the 13 scalar diagonal E_v[3] subgroups; not a complete End(E)-linear indecomposability test",
+    "shared_kernel_incidence": [
+      {
+        "intersection_dimension": 1,
+        "vector": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "intersection_dimension": 1,
+        "vector": [
+          1,
+          0,
+          1
+        ]
+      },
+      {
+        "intersection_dimension": 1,
+        "vector": [
+          1,
+          1,
+          0
+        ]
+      },
+      {
+        "intersection_dimension": 1,
+        "vector": [
+          1,
+          2,
+          2
+        ]
+      }
+    ]
+  },
+  "scope": "public NIST curve structure and transfer assessment; no DLP solving"
+}

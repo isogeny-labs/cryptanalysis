@@ -1,0 +1,11 @@
+# Proof and verification map
+
+| Claim | Evidence | Exact boundary |
+| --- | --- | --- |
+| The shared Frobenius map factors out of five pair states | [CommonFactor.lean](../n41_common_frob_factor_20261012/CommonFactor.lean), [N131 target projection](../n41_common_frob_factor_20261012/n131_projection_result.json) | The abstract five-summand identity is Lean checked without theorem axioms. Checked Sage establishes the concrete subgroup eigenvalue, inverse, public point, and four transported raw preimages. |
+| The W18 source has ten distinct folded columns and exact pair equations | [Circuit](circuit.py), [support](../n131_w16_w18_sixpair_width_gate_20261010/support_w18.tsv), [control](control_result.json) | Exact BDD membership, pair-product source equation, pairwise column shield, and nonzero reciprocal chart. The prior W18 S3/source proof map supplies the arithmetic identities; this implementation's concrete CNF/XOR soundness is checked by a complete positive assignment, not fully formalized in Lean. |
+| The constructed five-pair relation is group correct | [Checked Sage fixture](fixture.json), [frozen fixture protocol](fixture_protocol.json) | Five pair points, three intermediate sums, raw total, fourfold subgroup projection, and common-Frobenius image on the exact N131 field. This is a constructed correctness control. |
+| The public query is a capped search on the declared input | [Query receipt](query_result.json), [terminal audit](audit_result.json), [raw solver stream](solver.stdout), [verifier](verify.py) | One worker, 600-second parent cap, sampled combined RSS below 4 GiB, four raw target fibers, no terminal SAT/UNSAT line. The mathematical outcome is `BOUNDED_UNKNOWN`. |
+| Original formula bytes are preserved | [Archive receipt](archive_result.json), [verifier](verify.py) | Deterministic gzip contains byte-identical control and public XCNFs; the terminal audit regenerated both before compression. |
+
+No new group-theoretic theorem is introduced by this circuit beyond the preceding common-factor identity and the previously proved reciprocal S3 relation. Full Lean formalization of the concrete binary-curve group law, the W18 support table, and every CNF/XOR gate remains open; the exact missing bridges are the field/curve definitions and the imported source/circuit semantics.

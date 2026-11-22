@@ -1,0 +1,35 @@
+{
+  "attempts": [
+    {
+      "command": [
+        "clang++",
+        "-O2",
+        "-std=c++17",
+        "native_batch.cpp",
+        "-o",
+        "native_batch_o2_probe"
+      ],
+      "exit_code": 1,
+      "label": "o2",
+      "status": "COMPILER_FAILURE",
+      "stderr_sha256": "a9348906f37ce30678da86005af4fcad92da62be02f92d6768071961012d330f",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "clang++",
+        "-O3",
+        "-std=c++17",
+        "native_batch.cpp",
+        "-o",
+        "native_batch_o3_probe"
+      ],
+      "exit_code": 1,
+      "label": "o3",
+      "status": "COMPILER_FAILURE",
+      "stderr_sha256": "021382422f1633713ac2faa1b602c683d98849549b2ecdead15d0d492876f7ed",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "source_sha256": "bf4c1b23eadf4fe71c8ffa29d0f38b3a79d4e255f14a541c36792e840500c028"
+}
