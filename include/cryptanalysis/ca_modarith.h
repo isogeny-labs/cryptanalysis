@@ -106,6 +106,7 @@ static inline uint64_t ca_u128_mod(ca_u128 x, uint64_t m)
     }
     uint64_t u2 = hi >> (64 - s);
     uint64_t u1 = (hi << s) | (lo >> (64 - s));
+    uint64_t u0 = lo << s;
     if (__builtin_expect(u2 != 0 || u1 >= qn, 0)) {
         ca_u128 q = (ca_u128)u2 * v + (((ca_u128)u2 << 64) | u1);
         uint64_t q1 = (uint64_t)(q >> 64) + 1;
@@ -116,7 +117,6 @@ static inline uint64_t ca_u128_mod(ca_u128 x, uint64_t m)
         u1 = r;
     }
     {
-        uint64_t u0 = lo << s;
         ca_u128 q = (ca_u128)u1 * v + (((ca_u128)u1 << 64) | u0);
         uint64_t q1 = (uint64_t)(q >> 64) + 1;
         uint64_t q0 = (uint64_t)q;
