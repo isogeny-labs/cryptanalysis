@@ -300,8 +300,10 @@ impl PairTable {
         if !scratch.pending.is_empty() {
             flush_pairs(&base, &mut scratch, &mut map);
         }
-        let mut build_ops = GroupOps::default();
-        build_ops.adds = scalar_adds;
+        let build_ops = GroupOps {
+            adds: scalar_adds,
+            ..Default::default()
+        };
         Ok(Self {
             kind: if folded {
                 "negation_folded_prime_batch_xonly"

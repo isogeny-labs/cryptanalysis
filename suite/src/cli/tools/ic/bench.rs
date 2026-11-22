@@ -28,11 +28,11 @@ use crate::cryptanalysis::ic_framework::affine::AffineS3Oracle;
 use crate::cryptanalysis::ic_framework::batch_mitm::BinaryBatchMitmOracle;
 use crate::cryptanalysis::ic_framework::hashed::{HashedAffineBase, HashedTensorOracle};
 use crate::cryptanalysis::ic_framework::linalg::MATRIX_NAMES;
-use crate::cryptanalysis::ic_framework::prime_batch_mitm::PrimeBatchMitmOracle;
 use crate::cryptanalysis::ic_framework::plugins::{
     BinarySubspaceBase, DescentAlgebraicOracle, FrobeniusMitmOracle, KoblitzOrbitBase, MitmOracle,
     PrimeAbscissaBase, SubtractOracle,
 };
+use crate::cryptanalysis::ic_framework::prime_batch_mitm::PrimeBatchMitmOracle;
 use crate::cryptanalysis::ic_framework::solvers::{
     solver_by_name, solver_registry, validate_solver_params,
 };
