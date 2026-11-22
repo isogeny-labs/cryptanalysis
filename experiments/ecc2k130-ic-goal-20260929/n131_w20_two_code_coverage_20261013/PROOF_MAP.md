@@ -1,0 +1,10 @@
+# Proof map
+
+| Result | Declaration or check | Exact assumptions and status |
+| --- | --- | --- |
+| A target chosen using at most `C` advice values and at most `k` fixed-code proposals per value is covered by at most `CkM` target entries | `CodeCoverage.successful_targets_le` with `codes.length ≤ Ck` and `cap=M` | Lean checked for finite lists, distinct targets, and an explicit upper bound on each proposal's completion list. The inequality `codes.length ≤ Ck` is elementary arithmetic in the report. |
+| `517380077` two-code proposals have a coverage ceiling below half of the N131 prime subgroup, while `517380078` reaches the half threshold | `CodeCoverage.proposals_517380077_below_half`, `CodeCoverage.proposals_517380078_reach_half_ceiling` | Lean kernel checked exact natural-number arithmetic with `M=16·528180^5` and pinned `r`. Neither theorem uses an axiom. |
+| The W20 pair-product code maps injectively from the 19-bit selector, and a fixed valid edge admits four point-sign states | `basis_result.json`, `count_result_v2.json`, and source audit cited in `RESULT.md` | The basis check enumerated all 524,288 codes; the pair count and four signs are finite source receipts. A concrete GF(2^131) and curve bridge to Lean remains open. |
+| The full source law has at most `4^f S^(7-f)` labeled state tuples after fixing `f` codes | `count.py`, checked against exact integer result; `CodeCoverage.successful_targets_le` uses this as its `cap` hypothesis | Elementary Cartesian-product argument in `RESULT.md`; not yet a separate Lean theorem relating the concrete source data to the finite-list cap. Formalization of this bridge remains partial. |
+
+Lean 4.34.1, pinned by `lean-toolchain`, checked `CodeCoverage.lean` with `lean CodeCoverage.lean`. The theorem audit in `lean_check.log` reports standard foundations `propext`, `Classical.choice`, and `Quot.sound` for the generic finite-list theorem, and no axioms for the two arithmetic theorems. `lean4checker --fresh` was unavailable on this host.

@@ -1,0 +1,11 @@
+{
+  "builder_sha256": "b2b1c6ea0bc3b776e5381684260fb957b52091fca1c30d59c73973e04f780dfa",
+  "circuit_sha256": "f6646c0b28e04ec7161a76447ad29bb12436330ed07c531932894978b6e6bdf2",
+  "exit_code": 1,
+  "failed_assertion": "F.inv(state[\"raw_sum\"][0]) == prior.frob(state[\"z\"], block[\"rotation\"])",
+  "formula_written": false,
+  "protocol_sha256": "82e232d00245930741a0c7466542d611c3180146cd2a579f9bcf93d0e576b052",
+  "reason": "geometry z is 1/(x+1), while balanced S3 circuit out is 1/x",
+  "result_written": false,
+  "status": "PRODUCER_FAILURE_COORDINATE_MISMATCH"
+}

@@ -1,0 +1,55 @@
+{
+  "candidate_id": null,
+  "curve_id": "EC1N131Ckb1heb5f1998f20b",
+  "formula_bytes": 7431498,
+  "formula_counts": {
+    "and_gates": 76859,
+    "clauses": 232429,
+    "generic_mul_calls": 12,
+    "sparse_mul_calls": 1,
+    "variables": 121204,
+    "xor_rows": 42502
+  },
+  "formula_sha256": "81b730fc6cdfc16907548003ccc16de065ff88957ec33de96cdc6291359e8fe0",
+  "model_decoded": false,
+  "monitor_degraded": false,
+  "parent_ru_maxrss_raw": 90750976,
+  "phase_ns": {
+    "formula_construction_ns": 2481917292,
+    "formula_serialization_ns": 7417667,
+    "solver_search_ns": 592546819291,
+    "target_conversion_ns": 6377541,
+    "terminal_parse_and_model_check_ns": 2636959
+  },
+  "protocol_sha256": "f5357ef0b8f0ffd47d881b5d23b7dedfb93c2127e80051ef78bb7900f785e41d",
+  "public_target": [
+    1052727368764798954359115163823647684025,
+    2071227447786120917960296877345506689833
+  ],
+  "raw_point": [
+    877610862732227974378969808549299291499,
+    2063336771837286479337213121437715536874
+  ],
+  "raw_preimage_index": 0,
+  "restart_rows": 3454,
+  "sampled_peak_combined_rss_bytes": 541933568,
+  "solver_command": [
+    "/opt/homebrew/bin/cryptominisat5",
+    "--threads=1",
+    "--maxtime=580",
+    "--zero-exit-status",
+    "--verb=1",
+    "--printsol=1",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_fivepair_w9_w29_20261017/n131_ordinary.xcnf"
+  ],
+  "solver_exit_code": -9,
+  "solver_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "solver_stdout_sha256": "29e9792bb68f58c0dbdd1b4ec455134fe53cf4918adb7c901b537fc26fd70ac6",
+  "status": "BOUNDED_UNKNOWN",
+  "status_lines": [],
+  "stop_reason": "TARGET_DEPENDENT_TIMEOUT",
+  "target_dependent_attempt_ns": 595045168750,
+  "target_reciprocal": 770794657550069419943936485965613853151,
+  "worker_count": 1,
+  "workload_id": "cc09e7eb202a"
+}
