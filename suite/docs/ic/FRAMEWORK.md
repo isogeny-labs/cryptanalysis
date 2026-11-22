@@ -724,7 +724,7 @@ worse than none:
 | factor base | `FactorBaseBuilder` | `prime-abscissa`, `hashed-affine`, `binary-subspace`, `koblitz-orbit` |
 | targets | `Targets` | `random`, `walk` |
 | point decomposition | `DecompositionOracle` | `subtract`, `mitm`, `hashed-tensor`, `mitm-frobenius`, `descent-algebraic` |
-| polynomial solver | `SystemSolver` | `f4-f2`, `buchberger-f2`, `matrix-f4`, `matrix-f5`, `inherited-f4`, `crossbred-f2`, `xl-f2`, `sat-cdcl`, `fes-f2`, `fes-f2-wide`, `exhaustive` |
+| polynomial solver | `SystemSolver` | `f4-f2`, `buchberger-f2`, `matrix-f4`, `matrix-f5`, `inherited-f4`, `crossbred-f2`, `xl-f2`, `sat-cdcl`, `fes-f2`, `fes-f2-wide`, `tn-f2`, `exhaustive` |
 | relation matrix | `RelationSolver` | `incremental-gauss`, `structured-gauss` |
 
 ### Hashed-affine / hashed-tensor

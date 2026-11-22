@@ -68,6 +68,7 @@ pub mod binary_subtract;
 pub mod hashed;
 pub mod linalg;
 pub mod plugins;
+pub mod solver_tn;
 pub mod solvers;
 pub mod stages;
 pub(crate) mod u32_reciprocal;

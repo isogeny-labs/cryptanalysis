@@ -22,6 +22,7 @@
 //! | `sat-cdcl` | CDCL with Tseitin monomials; parity encoded as CNF by default, native XOR opt-in | conflicts |
 //! | `fes-f2` | fast exhaustive search, libfes-lite Gray code, quadratic systems only | word XORs (Gray-code steps) |
 //! | `fes-f2-wide` | the same over 8 or 16 sub-cubes per step in the lanes of an AVX2 or AVX-512 register, ≤ 32 equations | vector XORs (Gray-code steps) |
+//! | `tn-f2` | tensor-network contraction: bucket elimination (min-fill), dense bit tables, aborts above an induced-width budget | table entries |
 //! | `exhaustive` | evaluate every equation at every point, stopping at the first that fails | monomial tests |
 //!
 //! The exhaustive searches are not strawmen.  They are the
@@ -981,6 +982,7 @@ pub fn solver_registry() -> Vec<Box<dyn SystemSolver>> {
         Box::new(FesF2),
         Box::new(FesWide),
         Box::new(Exhaustive),
+        Box::new(super::solver_tn::TnF2),
     ]
 }
 
