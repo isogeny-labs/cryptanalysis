@@ -1273,6 +1273,19 @@ static ca_status rho_solve_impl(const ca_group *g, const ca_elem *base, const ca
         if (dp < 0) dp = 0;
         if (dp > 48) dp = 48;
     }
+    {
+        /* A walk falls into a cycle of about sqrt(n) steps after its first
+         * collision; with distinguished points rarer than that the cycle
+         * holds none, the collision is never reported, and the runaway guard
+         * below (which grows with 2^dp) ends a solvable search with
+         * CA_ERR_NOT_FOUND, or never fires.  Cap an explicit dp_bits at
+         * floor(log2 n)/2 - 2, i.e. 2^dp <= sqrt(n)/4: about four
+         * distinguished points per cycle.  The automatic choice above is
+         * always below this cap, so it is unchanged. */
+        int dp_cap = ilog2_u64(n) / 2 - 2;
+        if (dp_cap < 0) dp_cap = 0;
+        if (dp > dp_cap) dp = dp_cap;
+    }
     sh.dp_bits = dp;
     sh.dp_mask = dp ? ((1ULL << dp) - 1) : 0;
     if (sh.max_ops == 0) {

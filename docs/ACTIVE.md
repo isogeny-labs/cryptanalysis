@@ -19,6 +19,8 @@ and construction gates. [pcc:unverified]
 ## Active items (top = next)
 - [ ] CT201–CT203: complete cold ECDLP source adjudication (matched five-arm rho/BSGS/IC, Williams order, distinct-Q per-block prospective gate; automation, started 2026-11-18, branch research/ct201-complete-single-target-gate-20261118, PR #1766; source CI 44/44 normal and -O at 36807d15; native/PCC blocked) [pcc:unverified]
 
+- [x] Repair the second-pass C library findings (rho/gpu_rho dp_bits defeats the runaway guard; kangaroo interval wider than the group; grumpy unbounded on an unsolvable target; dense linear-solve fallback unchecked; GLV batch start-up for n >= 2^39; ca_crt2 zero modulus) and re-sync the shared pcc files to the crypto owner copy (claude, completed 2026-11-18, branch claude/codebase-assessment-report-fp044d, PR #1773; coord.c dp cap left for the owner)
+
 - [ ] Trace the documented and reproducible origins of the NIST/ANSI elliptic-curve base points, including bounded negative generator searches (Codex, started 2026-11-18, branch codex/nist-base-point-origins-20261118, PR #1769) [pcc:unverified]
 
 - [x] Audit rational 2-isogeny ECDLP transfer: subgroup, kernel, image, dual/inverse, exact costs and toy DLP (automation, started 2026-11-18, branch research/examine-2isogeny-obligations-20261118, PR #1775; 64/64 local BSGS logs, independent PCC pending) [pcc:unverified]
