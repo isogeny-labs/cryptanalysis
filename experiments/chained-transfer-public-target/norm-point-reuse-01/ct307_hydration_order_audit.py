@@ -72,8 +72,10 @@ def selftest():
                 f'          python3 tools/artifacts/artifacts.py pull {MODEL}\n')
     a = source('ct200', prefetch)
     b = source('ct245')
-    assert audit(a, 'ct200')['class'] == 'known_pre_hydration_hazard'
-    assert audit(b, 'ct245')['class'] == 'sts_first_no_observed_literal_prefetch'
+    if audit(a, 'ct200')['class'] != 'known_pre_hydration_hazard':
+        raise AssertionError('CT200 hazard positive failed')
+    if audit(b, 'ct245')['class'] != 'sts_first_no_observed_literal_prefetch':
+        raise AssertionError('CT245 structural positive failed')
     failures = [(source('ct245', prefetch), 'ct245'),
                 (b.replace('sts get-caller-identity', 'echo mock-identity'), 'ct245'),
                 (b.replace('exit 42', 'exit 0'), 'ct245'),
