@@ -103,4 +103,25 @@ theorem extensionProductDimension {d : ℕ} (hd : 0 < d) (indices : List ℕ)
     · have hb := ih (fun k hk => pos k (List.mem_cons_of_mem _ hk)) h
       omega
 
+/-- Exact least totient of a vanishing cyclotomic factor after extension of degree d. -/
+theorem leastExtensionDegree {d : ℕ} (hd : 0 < d) :
+    IsLeast {s : ℕ | ∃ m : ℕ, 0 < m ∧ (cyclotomic m R).IsRoot (a ^ d) ∧ s = m.totient}
+      ((1073752646 / Nat.gcd 1073752646 d).totient) := by
+  have ho := orderOf_pow' (x := a) (Nat.ne_of_gt hd)
+  rw [exactOrder] at ho
+  rw [← ho]
+  have hn : 0 < orderOf (a ^ d) := by
+    apply Nat.pos_of_dvd_of_pos (orderOf_pow_dvd (x := a) d)
+    rw [exactOrder]
+    decide
+  constructor
+  · have hp : IsPrimitiveRoot (a ^ d) (orderOf (a ^ d)) :=
+      ⟨pow_orderOf_eq_one _, fun _ h => orderOf_dvd_of_pow_eq_one h⟩
+    exact ⟨_, hn, hp.isRoot_cyclotomic hn, rfl⟩
+  · rintro _ ⟨m, hm, hroot, rfl⟩
+    have hx := hroot.dvd (cyclotomic.dvd_X_pow_sub_one m R)
+    have he : (a ^ d) ^ m = 1 := by simpa [IsRoot, sub_eq_zero] using hx
+    exact Nat.le_of_dvd (Nat.totient_pos.mpr hm)
+      (Nat.totient_dvd_of_dvd (orderOf_dvd_of_pow_eq_one he))
+
 end M31Torus
