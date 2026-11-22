@@ -70,11 +70,12 @@ uint64_t ca_cheon_best_divisor(uint64_t p, double *cost_exps)
 }
 
 #ifndef CA_GLV_FIELD_COUNT
-/* Four independent Z_p^* ladders with a shared exponent, interleaved.  One
+/* Independent Z_p^* ladders with a shared exponent, interleaved.  One
  * ladder is a chain of dependent Montgomery squarings, so the multiplier
- * idles most of the time; four chains in lockstep fill it.  w[l] becomes
- * w[l]^e (Montgomery form), the residue ca_mont_pow computes for each. */
-#    define CHEON_LANES 4
+ * idles most of the time; CHEON_LANES chains in lockstep fill it.  w[l]
+ * becomes w[l]^e (Montgomery form), the residue ca_mont_pow computes for
+ * each.  8 lanes (was 4) keep the multiplier busier on the orbit walk. */
+#    define CHEON_LANES 8
 #    define CHEON_SEG   128
 #    define CHEON_BLOCK ((uint64_t)CHEON_LANES * CHEON_SEG)
 
@@ -133,9 +134,9 @@ static ca_status orbit_bsgs(const ca_group *g, const ca_elem *base, const ca_ele
     ca_elem cur = *base;
     uint64_t j0 = 0;
 #ifndef CA_GLV_FIELD_COUNT
-    /* Native Z_p, subgroup inputs, enough steps for a block: walk four
-     * segments of the orbit at once (same table, same insertion order, same
-     * charges).  Anything else takes the serial loops below. */
+    /* Native Z_p, subgroup inputs, enough steps for a block: walk
+     * CHEON_LANES segments of the orbit at once (same table, same insertion
+     * order, same charges).  Anything else takes the serial loops below. */
     int fast = 0;
     if (g->kind == CA_GROUP_ZP && ca_zp_group_is_native(g) && eta != 0 && m >= CHEON_BLOCK) {
         ca_elem t1, t2;
