@@ -1,0 +1,36 @@
+name: CT318 joint cold/group source-only gate
+
+on:
+  pull_request:
+    paths:
+      - "experiments/chained-transfer-public-target/norm-point-reuse-01/ct318_joint_cold_group_gate.py"
+      - "experiments/chained-transfer-public-target/norm-point-reuse-01/ct315_complete_cold_panel.py"
+      - "experiments/chained-transfer-public-target/norm-point-reuse-01/ct317_group_replay.py"
+      - ".github/workflows/ct318-joint-cold-source-gate.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile three auditors
+        run: |
+          python3 -m py_compile experiments/chained-transfer-public-target/norm-point-reuse-01/ct315_complete_cold_panel.py
+          python3 -m py_compile experiments/chained-transfer-public-target/norm-point-reuse-01/ct317_group_replay.py
+          python3 -m py_compile experiments/chained-transfer-public-target/norm-point-reuse-01/ct318_joint_cold_group_gate.py
+      - name: Independently exercise all three source-only gates (normal and optimized)
+        run: |
+          set -eu
+          d=experiments/chained-transfer-public-target/norm-point-reuse-01
+          python3 "$d/ct315_complete_cold_panel.py" --self-test
+          python3 "$d/ct317_group_replay.py" --self-test
+          python3 "$d/ct318_joint_cold_group_gate.py" --self-test
+          python3 -O "$d/ct315_complete_cold_panel.py" --self-test
+          python3 -O "$d/ct317_group_replay.py" --self-test
+          python3 -O "$d/ct318_joint_cold_group_gate.py" --self-test
+          echo CT318_JOINT_SOURCE_ONLY_PASS
