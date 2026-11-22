@@ -1,0 +1,18 @@
+Traceback (most recent call last):
+  File "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_phi_torsion_frobenius_domains_20261005/m12_d13_full_pipeline/run_d13_m12_single_target.py", line 966, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_phi_torsion_frobenius_domains_20261005/m12_d13_full_pipeline/run_d13_m12_single_target.py", line 937, in main
+    return run_one_target(args)
+  File "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_phi_torsion_frobenius_domains_20261005/m12_d13_full_pipeline/run_d13_m12_single_target.py", line 628, in run_one_target
+    rows, details = common.solve_relation(
+                    ~~~~~~~~~~~~~~~~~~~~~^
+        context, precompute_target, scalar, query_dir,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        int(run_control["precomputation_solver_seed"]) + relation_index * 16,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        formula_receipt, MAX_MODELS_PER_RELATION)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_phi_torsion_frobenius_domains_20261005/m15_d10_static/run_d10_m15_single_target.py", line 656, in solve_relation
+    raise ValueError("target formula counts differ from frozen d10/m15 receipt")
+ValueError: target formula counts differ from frozen d10/m15 receipt

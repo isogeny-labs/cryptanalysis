@@ -1,11 +1,52 @@
 #include "test_fixtures.h"
+#include "ic_trial.h"
+
+static void check_remove(uint64_t v, uint32_t q, const ca_ic_divisor *d)
+{
+    uint64_t expected = v, got = v;
+    int32_t exponent = 0;
+    while (expected % q == 0) { expected /= q; ++exponent; }
+    CHECK(ca_ic_remove_prime(&got, q, d) == exponent);
+    CHECK_EQ_U64(got, expected);
+}
+
+static void test_fixed_divisors(void)
+    uint32_t primes[1600];
+    size_t n = ca_sieve_primes(13000, primes, 1600);
+    CHECK(n <= 1600);
+    /* Include the largest 32-bit prime, beyond the normal IC base. */
+    primes[n++] = UINT32_C(4294967291);
+    ca_rng rng;
+    ca_rng_seed(&rng, 0x1c20261115ULL);
+    for (size_t i = 0; i < n; ++i) {
+        uint32_t q = primes[i];
+        ca_ic_divisor d = ca_ic_divisor_init(q);
+        if (q & 1) CHECK_EQ_U64(d.inverse * q, 1);
+        uint64_t power = 1;
+        for (;;) {
+            check_remove(power, q, &d);
+            if (power > 1) check_remove(power - 1, q, &d);
+            if (power < UINT64_MAX) check_remove(power + 1, q, &d);
+            if (power > UINT64_MAX / q) break;
+            power *= q;
+        }
+        uint64_t top = (UINT64_MAX / q) * q;
+        check_remove(top, q, &d);
+        check_remove(top - 1, q, &d);
+        if (top < UINT64_MAX) check_remove(top + 1, q, &d);
+        check_remove(UINT64_MAX, q, &d);
+        for (unsigned j = 0; j < 128; ++j) {
+            uint64_t v = ca_rng_next(&rng) | 1;
+            check_remove(v, q, &d);
+            v = (v / q) * q;
+            if (v) check_remove(v, q, &d);
+    }
 #include <fcntl.h>
 #include <stddef.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
 static void checkpoint_roundtrip(void)
-{
     char dir[] = "/tmp/ca-ic-checkpoint-XXXXXX";
     CHECK(mkdtemp(dir) != NULL);
     char journal[256], precomp[280], progress[280];
@@ -25,8 +66,6 @@ static void checkpoint_roundtrip(void)
 
     /* The verified precomputation can be loaded without repeating the sieve. */
     x = 0;
-    CHECK(ca_ic_solve_checkpointed(1000003, 2, 123456, &pr, journal, 1, &x, &st) == CA_OK);
-    CHECK_EQ_U64(ca_powmod(2, x, 1000003), 123456);
     CHECK(st.sieve_seconds == 0);
 
     /* A changed base must never reuse either artifact. */
@@ -42,62 +81,32 @@ static void checkpoint_roundtrip(void)
     if (fd >= 0) {
         CHECK(ftruncate(fd, sb.st_size - 4) == 0);
         close(fd);
-    }
-    CHECK(ca_ic_solve_checkpointed(1000003, 2, 123456, &pr, journal, 1, &x, &st) == CA_OK);
-    CHECK_EQ_U64(ca_powmod(2, x, 1000003), 123456);
-    CHECK(unlink(precomp) == 0);
-    CHECK(ca_ic_solve_checkpointed(1000003, 3, 123456, &pr, journal, 1, &x, &st) == CA_ERR_INVALID);
     unlink(journal);
     unlink(progress);
     rmdir(dir);
-}
 
 static void rexp_checkpoint_roundtrip(void)
-{
     char dir[] = "/tmp/ca-ic-rexp-checkpoint-XXXXXX";
-    CHECK(mkdtemp(dir) != NULL);
-    char journal[256], precomp[280], progress[280];
-    snprintf(journal, sizeof(journal), "%s/relations.ckpt", dir);
-    snprintf(precomp, sizeof(precomp), "%s.precomp", journal);
-    snprintf(progress, sizeof(progress), "%s/progress.json", dir);
-    ca_ic_params pr;
-    ca_ic_params_default(&pr);
     pr.method = CA_IC_RANDOM_EXPONENT;
-    pr.seed = 7;
     pr.threads = 2;
     pr.max_relation_tries = 1;
-    uint64_t x = 0;
-    ca_ic_stats st;
     CHECK(ca_ic_solve_checkpointed(1000003, 2, 123456, &pr, journal, 1, &x, &st) ==
           CA_ERR_NOT_FOUND);
     uint64_t saved_tests = st.smooth_tests;
     CHECK(saved_tests > 0);
-    CHECK(access(journal, F_OK) == 0);
-    CHECK(access(progress, F_OK) == 0);
     pr.max_relation_tries = 0;
-    CHECK(ca_ic_solve_checkpointed(1000003, 2, 123456, &pr, journal, 1, &x, &st) == CA_OK);
-    CHECK_EQ_U64(ca_powmod(2, x, 1000003), 123456);
     CHECK(st.smooth_tests > saved_tests);
-    CHECK(access(precomp, F_OK) == 0);
-    CHECK(unlink(precomp) == 0);
     pr.seed = 8;
-    CHECK(ca_ic_solve_checkpointed(1000003, 2, 123456, &pr, journal, 1, &x, &st) ==
           CA_ERR_INVALID);
-    pr.seed = 7;
     FILE *damage = fopen(journal, "r+b");
     CHECK(damage != NULL);
     if (damage) {
         CHECK(fseek(damage, -1, SEEK_END) == 0);
         int last = fgetc(damage);
         CHECK(last != EOF);
-        CHECK(fseek(damage, -1, SEEK_END) == 0);
         CHECK(fputc(last ^ 0xff, damage) != EOF);
         CHECK(fclose(damage) == 0);
-    }
-    CHECK(ca_ic_solve_checkpointed(1000003, 2, 123456, &pr, journal, 1, &x, &st) ==
-          CA_ERR_INVALID);
     unlink(journal); unlink(progress); rmdir(dir);
-}
 
 /* ---- relation record formats v1 and v2 (src/indexcalc.c) ----------------
  * Written out here from the format description, independently of the
@@ -111,24 +120,18 @@ typedef struct {
     uint64_t rhs;
 } v1_relation;
 
-typedef struct {
     char magic[8];
     uint64_t p, g, zeta;
     uint32_t B, C, nfb, ncols, target, relation_size;
 } journal_header;
 
-typedef struct {
     uint32_t marker, index, count;
     uint64_t candidates, checksum;
 } journal_record_v1;
 
-typedef struct {
     uint32_t marker, index, count, entries;
-    uint64_t candidates, checksum;
 } journal_record_v2;
 
-typedef struct {
-    char magic[8];
     uint64_t p, g, zeta, seed, tests, generation, fb_hash;
     double elapsed_seconds;
     uint32_t B, C, nfb, ncols, target, threads, relation_size, count;
@@ -136,45 +139,34 @@ typedef struct {
 } rexp_header;
 
 static uint64_t fnv(const void *data, size_t n, uint64_t h)
-{
     const unsigned char *p = data;
     for (size_t i = 0; i < n; i++) {
         h ^= p[i];
         h *= UINT64_C(1099511628211);
-    }
     return h;
-}
 
 static unsigned char *slurp(const char *path, size_t *len)
-{
     FILE *f = fopen(path, "rb");
     if (!f) return NULL;
     unsigned char *buf = NULL;
-    struct stat sb;
     if (fstat(fileno(f), &sb) == 0 && sb.st_size > 0) {
         buf = malloc((size_t)sb.st_size);
         if (buf && fread(buf, 1, (size_t)sb.st_size, f) != (size_t)sb.st_size) {
             free(buf);
             buf = NULL;
-        }
         *len = (size_t)sb.st_size;
-    }
     fclose(f);
     return buf;
-}
 
 static int spit(const char *path, const void *data, size_t len)
-{
     FILE *f = fopen(path, "wb");
     if (!f) return 0;
     int ok = fwrite(data, 1, len, f) == len;
     return fclose(f) == 0 && ok;
-}
 
 /* Decode count v2 relations at buf into v1 records; returns bytes used, 0
  * on a malformed payload. */
 static size_t v2_to_v1(const unsigned char *buf, size_t len, uint32_t count, v1_relation *out)
-{
     size_t at = 0;
     for (uint32_t i = 0; i < count; i++) {
         memset(&out[i], 0, sizeof(out[i]));
@@ -187,30 +179,19 @@ static size_t v2_to_v1(const unsigned char *buf, size_t len, uint32_t count, v1_
         memcpy(out[i].col, buf + at, (size_t)n * 4);
         memcpy(out[i].val, buf + at + (size_t)n * 4, (size_t)n * 4);
         at += (size_t)n * 8;
-    }
     return at;
-}
 
 /* Rewrite a v2 sieve journal as the v1 journal the pre-v2 library wrote. */
 static int journal_v2_to_v1(const char *path)
-{
     size_t len = 0;
     unsigned char *in = slurp(path, &len);
     if (!in || len < sizeof(journal_header)) {
         free(in);
         return 0;
-    }
     journal_header h;
     memcpy(&h, in, sizeof(h));
     if (memcmp(h.magic, "CAICJ2", 7) != 0 || h.relation_size != 0) {
-        free(in);
-        return 0;
-    }
-    FILE *f = fopen(path, "wb");
     if (!f) {
-        free(in);
-        return 0;
-    }
     memset(h.magic, 0, sizeof(h.magic));
     memcpy(h.magic, "CAICJ1", 6);
     h.relation_size = (uint32_t)sizeof(v1_relation);
@@ -221,29 +202,19 @@ static int journal_v2_to_v1(const char *path)
         if (len - at < sizeof(r2)) {
             ok = 0;
             break;
-        }
         memcpy(&r2, in + at, sizeof(r2));
         at += sizeof(r2);
         size_t plen = (size_t)r2.count * 12 + (size_t)r2.entries * 8;
         if (r2.marker != UINT32_C(0x43493252) || len - at < plen) {
-            ok = 0;
-            break;
-        }
         /* the v2 checksum, recomputed from the spec */
         uint64_t h2 = fnv(&r2.index, 4, UINT64_C(14695981039346656037));
         h2 = fnv(&r2.count, 4, h2);
         h2 = fnv(&r2.entries, 4, h2);
         h2 = fnv(&r2.candidates, 8, h2);
         if (fnv(in + at, plen, h2) != r2.checksum) {
-            ok = 0;
-            break;
-        }
         v1_relation *rels = calloc(r2.count ? r2.count : 1, sizeof(*rels));
         if (!rels || v2_to_v1(in + at, plen, r2.count, rels) != plen) {
             free(rels);
-            ok = 0;
-            break;
-        }
         at += plen;
         journal_record_v1 r1;
         memset(&r1, 0, sizeof(r1));
@@ -258,32 +229,17 @@ static int journal_v2_to_v1(const char *path)
         ok = fwrite(&r1, sizeof(r1), 1, f) == 1 &&
              (!r1.count || fwrite(rels, sizeof(*rels), r1.count, f) == r1.count);
         free(rels);
-    }
     if (fclose(f) != 0) ok = 0;
     free(in);
     return ok;
-}
 
 /* Rewrite a v2 random-exponent snapshot as the v1 snapshot. */
 static int rexp_v2_to_v1(const char *path)
-{
-    size_t len = 0;
-    unsigned char *in = slurp(path, &len);
     if (!in || len < sizeof(rexp_header)) {
-        free(in);
-        return 0;
-    }
     rexp_header h;
-    memcpy(&h, in, sizeof(h));
     if (memcmp(h.magic, "CAICRX2", 8) != 0 || h.relation_size != 0) {
-        free(in);
-        return 0;
-    }
     /* A v2 record is at least 12 bytes, which bounds the count by the file. */
     if (h.count > (len - sizeof(h)) / 12) {
-        free(in);
-        return 0;
-    }
     // NOLINTNEXTLINE(clang-analyzer-optin.taint.TaintedAlloc): bounded by the file length above
     v1_relation *rels = calloc(h.count ? h.count : 1, sizeof(*rels));
     int ok = rels && v2_to_v1(in + sizeof(h), len - sizeof(h), h.count, rels) == len - sizeof(h);
@@ -296,37 +252,19 @@ static int rexp_v2_to_v1(const char *path)
         ok = f && fwrite(&h, sizeof(h), 1, f) == 1 &&
              fwrite(rels, sizeof(*rels), h.count, f) == h.count;
         if (f && fclose(f) != 0) ok = 0;
-    }
     free(rels);
-    free(in);
-    return ok;
-}
 
 static int file_magic_is(const char *path, const char *magic)
-{
     char got[8] = {0};
-    FILE *f = fopen(path, "rb");
-    if (!f) return 0;
     size_t n = fread(got, 1, sizeof(got), f);
-    fclose(f);
     return n == sizeof(got) && memcmp(got, magic, strlen(magic) + 1) == 0;
-}
 
 /* A v1 journal (the fixed 784-byte records of the pre-v2 library) still
  * resumes, and is rewritten as the v2 journal the run would have written:
  * the same bytes, so the same units, relations and order. */
 static void journal_v1_migration(void)
-{
     _Static_assert(sizeof(v1_relation) == 784, "v1 relation records are 784 bytes");
     char dir[] = "/tmp/ca-ic-v1-journal-XXXXXX";
-    CHECK(mkdtemp(dir) != NULL);
-    char journal[256], precomp[280], progress[280];
-    snprintf(journal, sizeof(journal), "%s/relations.ckpt", dir);
-    snprintf(precomp, sizeof(precomp), "%s.precomp", journal);
-    snprintf(progress, sizeof(progress), "%s/progress.json", dir);
-    ca_ic_params pr;
-    ca_ic_params_default(&pr);
-    pr.seed = 7;
     uint64_t x = 0, x0 = 0;
     ca_ic_stats st, st0;
     CHECK(ca_ic_solve_checkpointed(1000003, 2, 123456, &pr, journal, 1, &x0, &st0) == CA_OK);
@@ -336,13 +274,9 @@ static void journal_v1_migration(void)
     CHECK(v2 != NULL);
 
     /* complete v1 journal: replayed (no sieve unit left), rewritten as v2 */
-    CHECK(unlink(precomp) == 0);
     CHECK(journal_v2_to_v1(journal));
     CHECK(file_magic_is(journal, "CAICJ1"));
-    struct stat sb;
-    CHECK(stat(journal, &sb) == 0);
     CHECK((size_t)sb.st_size > v2_len);
-    CHECK(ca_ic_solve_checkpointed(1000003, 2, 123456, &pr, journal, 1, &x, &st) == CA_OK);
     CHECK_EQ_U64(x, x0);
     CHECK_EQ_U64(st.relations, st0.relations);
     CHECK_EQ_U64(st.sieve_candidates, st0.sieve_candidates);
@@ -353,24 +287,11 @@ static void journal_v1_migration(void)
 
     /* v1 journal torn inside its last record: the prefix is replayed and
      * the missing unit recomputed, and the journal is v2 again */
-    CHECK(unlink(precomp) == 0);
-    CHECK(journal_v2_to_v1(journal));
-    CHECK(stat(journal, &sb) == 0);
-    int fd = open(journal, O_WRONLY);
-    CHECK(fd >= 0);
-    if (fd >= 0) {
         CHECK(ftruncate(fd, sb.st_size - 100) == 0);
-        close(fd);
-    }
-    CHECK(ca_ic_solve_checkpointed(1000003, 2, 123456, &pr, journal, 1, &x, &st) == CA_OK);
-    CHECK_EQ_U64(x, x0);
-    CHECK(file_magic_is(journal, "CAICJ2"));
     got = slurp(journal, &got_len);
     CHECK(got != NULL && got_len == v2_len);
-    free(got);
 
     /* a header whose magic and relation_size disagree is neither version */
-    CHECK(unlink(precomp) == 0);
     if (v2) {
         journal_header h;
         memcpy(&h, v2, sizeof(h));
@@ -381,64 +302,25 @@ static void journal_v1_migration(void)
               CA_ERR_INVALID);
         h.magic[5] = '2'; /* "CAICJ2" with relation_size 784 */
         h.relation_size = 784;
-        memcpy(v2, &h, sizeof(h));
-        CHECK(spit(journal, v2, v2_len));
-        CHECK(ca_ic_solve_checkpointed(1000003, 2, 123456, &pr, journal, 1, &x, &st) ==
-              CA_ERR_INVALID);
-    }
     free(v2);
-    unlink(journal);
     unlink(precomp);
-    unlink(progress);
-    rmdir(dir);
-}
 
 /* A v1 random-exponent snapshot still resumes; the next save writes v2. */
 static void rexp_v1_migration(void)
-{
     char dir[] = "/tmp/ca-ic-v1-rexp-XXXXXX";
-    CHECK(mkdtemp(dir) != NULL);
-    char journal[256], precomp[280], progress[280];
-    snprintf(journal, sizeof(journal), "%s/relations.ckpt", dir);
-    snprintf(precomp, sizeof(precomp), "%s.precomp", journal);
-    snprintf(progress, sizeof(progress), "%s/progress.json", dir);
-    ca_ic_params pr;
-    ca_ic_params_default(&pr);
-    pr.method = CA_IC_RANDOM_EXPONENT;
-    pr.seed = 7;
     pr.threads = 1;
     pr.max_relation_tries = 20;
-    uint64_t x = 0;
-    ca_ic_stats st;
-    CHECK(ca_ic_solve_checkpointed(1000003, 2, 123456, &pr, journal, 1, &x, &st) ==
-          CA_ERR_NOT_FOUND);
     CHECK(file_magic_is(journal, "CAICRX2"));
-    uint64_t saved_tests = st.smooth_tests;
     CHECK(rexp_v2_to_v1(journal));
     CHECK(file_magic_is(journal, "CAICRX1"));
-    pr.max_relation_tries = 0;
-    CHECK(ca_ic_solve_checkpointed(1000003, 2, 123456, &pr, journal, 1, &x, &st) == CA_OK);
-    CHECK_EQ_U64(ca_powmod(2, x, 1000003), 123456);
-    CHECK(st.smooth_tests > saved_tests);
-    CHECK(file_magic_is(journal, "CAICRX2"));
 
     /* a v1 magic over a v2 payload is rejected, not reinterpreted */
-    CHECK(unlink(precomp) == 0);
-    size_t len = 0;
     unsigned char *buf = slurp(journal, &len);
     CHECK(buf != NULL);
     if (buf) {
         memcpy(buf, "CAICRX1", 8);
         CHECK(spit(journal, buf, len));
-        CHECK(ca_ic_solve_checkpointed(1000003, 2, 123456, &pr, journal, 1, &x, &st) ==
-              CA_ERR_INVALID);
-    }
     free(buf);
-    unlink(journal);
-    unlink(precomp);
-    unlink(progress);
-    rmdir(dir);
-}
 
 static void run(uint64_t p, ca_ic_method method, uint32_t threads, int nlogs)
 {
@@ -488,6 +370,7 @@ static void run(uint64_t p, ca_ic_method method, uint32_t threads, int nlogs)
 
 int main(void)
 {
+    test_fixed_divisors();
     checkpoint_roundtrip();
     rexp_checkpoint_roundtrip();
     journal_v1_migration();

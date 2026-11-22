@@ -1120,6 +1120,90 @@ pub fn recover_shifted_source_discrete_log(
     Ok(Some((rhs * inverse.x).mod_floor(group_order)))
 }
 
+/// Evaluate the source residue when the chord origin uses the unknown target.
+///
+/// If `target_index` reduces to `t G` and `chord_known_index` reduces to
+/// `m_j G`, their residual chord point reduces to `-(t+m_j)G`. This helper is
+/// for certificate generation, where the planted target multiplier is known.
+pub fn target_chord_source_relation_residue(
+    scalars: &[BigInt],
+    point_multipliers: &[BigInt],
+    target_index: usize,
+    chord_known_index: usize,
+    group_order: &BigInt,
+) -> Result<BigInt, String> {
+    if scalars.len() != point_multipliers.len() {
+        return Err("relation scalars and source multipliers must have the same length".into());
+    }
+    if target_index >= point_multipliers.len() || chord_known_index >= point_multipliers.len() {
+        return Err("target or chord-known index is out of range".into());
+    }
+    if target_index == chord_known_index {
+        return Err("target and chord-known indices must be distinct".into());
+    }
+    let origin_multiplier =
+        -(&point_multipliers[target_index] + &point_multipliers[chord_known_index]);
+    shifted_source_relation_residue(scalars, point_multipliers, &origin_multiplier, group_order)
+}
+
+/// Recover an unknown target whose point participates in the chord origin.
+///
+/// Let `S=sum_i n_i`. With chord origin `O=-(t+m_j)G`, reduction of an exact
+/// lifted relation gives
+///
+/// `(n_t + S)t + sum_{i != t} n_i m_i + S m_j = 0 (mod group_order)`.
+///
+/// Thus the origin supplies a target coefficient even when `n_t=0`.
+/// `known_multipliers` must contain exactly one `None`, and the chord partner
+/// must be a different point with a known source multiplier. `Ok(None)` means
+/// the effective coefficient `n_t+S` is not invertible.
+pub fn recover_target_chord_source_discrete_log(
+    scalars: &[BigInt],
+    known_multipliers: &[Option<BigInt>],
+    chord_known_index: usize,
+    group_order: &BigInt,
+) -> Result<Option<BigInt>, String> {
+    if scalars.len() != known_multipliers.len() {
+        return Err("relation scalars and source multipliers must have the same length".into());
+    }
+    if group_order <= &BigInt::zero() {
+        return Err("source group order must be positive".into());
+    }
+    let unknowns: Vec<usize> = known_multipliers
+        .iter()
+        .enumerate()
+        .filter_map(|(index, multiplier)| multiplier.is_none().then_some(index))
+        .collect();
+    if unknowns.len() != 1 {
+        return Err("exactly one source multiplier must be unknown".into());
+    }
+    let target_index = unknowns[0];
+    if chord_known_index >= known_multipliers.len() {
+        return Err("chord-known index is out of range".into());
+    }
+    if chord_known_index == target_index {
+        return Err("chord partner must have a known source multiplier".into());
+    }
+    let chord_multiplier = known_multipliers[chord_known_index]
+        .as_ref()
+        .ok_or_else(|| "chord partner must have a known source multiplier".to_string())?;
+    let coefficient_sum: BigInt = scalars.iter().sum();
+    let effective_coefficient = (&scalars[target_index] + &coefficient_sum).mod_floor(group_order);
+    let inverse = effective_coefficient.extended_gcd(group_order);
+    if inverse.gcd != BigInt::from(1) {
+        return Ok(None);
+    }
+    let known_sum: BigInt = scalars
+        .iter()
+        .zip(known_multipliers)
+        .filter_map(|(scalar, multiplier)| {
+            multiplier.as_ref().map(|multiplier| scalar * multiplier)
+        })
+        .sum::<BigInt>()
+        + coefficient_sum * chord_multiplier;
+    Ok(Some((-known_sum * inverse.x).mod_floor(group_order)))
+}
+
 fn score_plane_cubic_lift(c: &[BigInt]) -> Result<PlaneCubicLiftScore, String> {
     if c.len() != PLANE_CUBIC_COEFFICIENTS {
         return Err(format!(
@@ -2556,6 +2640,70 @@ mod tests {
             )
             .unwrap(),
             Some(BigInt::from(6))
+        );
+    }
+
+    #[test]
+    fn target_chord_origin_recovers_zero_explicit_target_coefficient() {
+        let coefficients = bi(&[1, 0, 0, 0, 0, 0, -1, -1, 0, 1]);
+        let multiples = plane_cubic_test_multiples();
+        let standard_infinity = plane_cubic_test_point("0", "1", "0");
+        let standard_group = PlaneCubicGroup::new(coefficients.clone(), standard_infinity).unwrap();
+        let group =
+            PlaneCubicGroup::with_chord_origin(coefficients, &multiples[8], &multiples[0]).unwrap();
+
+        // The residual chord point through target 9G and known G is -10G.
+        let expected_origin = standard_group
+            .scalar_mul(&BigInt::from(-10), &multiples[0])
+            .unwrap();
+        assert_eq!(group.origin(), &expected_origin);
+
+        // Relative to -10G, -2(G-O) -(2G-O) +2(7G-O)=0. The explicit
+        // coefficient of target 9G is zero, but the coefficient sum is -1,
+        // so the target enters through O=-(9G+G).
+        let relation_scalars = bi(&[-2, -1, 0, 0, 0, 0, 2, 0, 0]);
+        assert!(relation_scalars[8].is_zero());
+        assert_eq!(relation_scalars.iter().sum::<BigInt>(), BigInt::from(-1));
+        let relation = group.relation_sum(&relation_scalars, &multiples).unwrap();
+        assert_eq!(&relation, group.origin());
+
+        let source_multipliers = bi(&[1, 2, 3, 4, 5, 6, 7, 8, 9]);
+        let source_order = BigInt::from(73);
+        assert!(target_chord_source_relation_residue(
+            &relation_scalars,
+            &source_multipliers,
+            8,
+            0,
+            &source_order,
+        )
+        .unwrap()
+        .is_zero());
+        assert_eq!(
+            recover_target_chord_source_discrete_log(
+                &relation_scalars,
+                &[
+                    Some(BigInt::from(1)),
+                    Some(BigInt::from(2)),
+                    Some(BigInt::from(3)),
+                    Some(BigInt::from(4)),
+                    Some(BigInt::from(5)),
+                    Some(BigInt::from(6)),
+                    Some(BigInt::from(7)),
+                    Some(BigInt::from(8)),
+                    None,
+                ],
+                0,
+                &source_order,
+            )
+            .unwrap(),
+            Some(BigInt::from(9))
+        );
+
+        let mut mutated = relation_scalars;
+        mutated[6] += 1;
+        assert_ne!(
+            group.relation_sum(&mutated, &multiples).unwrap(),
+            *group.origin()
         );
     }
 

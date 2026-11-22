@@ -92,12 +92,26 @@ impl P256ProjectivePoint {
         self.z.ct_is_zero()
     }
 
+    #[inline]
     pub fn cmov(a: &Self, b: &Self, choice: Choice) -> Self {
         P256ProjectivePoint {
             x: P256FieldElement::cmov(&a.x, &b.x, choice),
             y: P256FieldElement::cmov(&a.y, &b.y, choice),
             z: P256FieldElement::cmov(&a.z, &b.z, choice),
         }
+    }
+
+    #[inline]
+    pub fn cswap(a: &mut Self, b: &mut Self, choice: Choice) {
+        P256FieldElement::cswap(&mut a.x, &mut b.x, choice);
+        P256FieldElement::cswap(&mut a.y, &mut b.y, choice);
+        P256FieldElement::cswap(&mut a.z, &mut b.z, choice);
+    }
+
+    #[inline]
+    fn mul_neg3(v: &P256FieldElement) -> P256FieldElement {
+        let v2 = v.add(v);
+        v2.add(v).neg()
     }
 
     pub fn from_textbook(p: &Point) -> Self {
@@ -145,7 +159,7 @@ impl P256ProjectivePoint {
         t5 = t5.mul(&x3); // 16. t5 = t5*X3
         x3 = t1.add(&t2); // 17. X3 = t1+t2
         t5 = t5.sub(&x3); // 18. t5 = t5-X3
-        let mut z3 = A_FE.mul(&t4); // 19. Z3 = a*t4
+        let mut z3 = Self::mul_neg3(&t4); // 19. Z3 = a*t4
         x3 = B3_FE.mul(&t2); // 20. X3 = b3*t2
         z3 = x3.add(&z3); // 21. Z3 = X3+Z3
         x3 = t1.sub(&z3); // 22. X3 = t1-Z3
@@ -153,11 +167,11 @@ impl P256ProjectivePoint {
         let mut y3 = x3.mul(&z3); // 24. Y3 = X3*Z3
         t1 = t0.add(&t0); // 25. t1 = t0+t0
         t1 = t1.add(&t0); // 26. t1 = t1+t0
-        t2 = A_FE.mul(&t2); // 27. t2 = a*t2
+        t2 = Self::mul_neg3(&t2); // 27. t2 = a*t2
         t4 = B3_FE.mul(&t4); // 28. t4 = b3*t4
         t1 = t1.add(&t2); // 29. t1 = t1+t2
-        t2 = t0.sub(&t2); // 30. t2 = t0-t2
-        t2 = A_FE.mul(&t2); // 31. t2 = a*t2
+        t2 = t0.sub(&t2); // 30. t0-t2
+        t2 = Self::mul_neg3(&t2); // 31. t2 = a*t2
         t4 = t4.add(&t2); // 32. t4 = t4+t2
         t0 = t1.mul(&t4); // 33. t0 = t1*t4
         y3 = y3.add(&t0); // 34. Y3 = Y3+t0
@@ -178,17 +192,18 @@ impl P256ProjectivePoint {
     /// Renes–Costello–Batina **Algorithm 3**: complete doubling for
     /// arbitrary short Weierstrass curves.  13 multiplications total
     /// (8 generic + 3·a + 2·b3) and 14 add/subs.
+    #[inline]
     pub fn double(&self) -> Self {
         let (x, y, z) = (&self.x, &self.y, &self.z);
 
-        let mut t0 = x.mul(x); // 1.  t0 = X*X
-        let t1 = y.mul(y); // 2.  t1 = Y*Y
-        let mut t2 = z.mul(z); // 3.  t2 = Z*Z
+        let mut t0 = x.sqr(); // 1.  t0 = X*X
+        let t1 = y.sqr(); // 2.  t1 = Y*Y
+        let mut t2 = z.sqr(); // 3.  t2 = Z*Z
         let mut t3 = x.mul(y); // 4.  t3 = X*Y
         t3 = t3.add(&t3); // 5.  t3 = t3+t3
         let mut z3 = x.mul(z); // 6.  Z3 = X*Z
         z3 = z3.add(&z3); // 7.  Z3 = Z3+Z3
-        let mut x3 = A_FE.mul(&z3); // 8.  X3 = a*Z3
+        let mut x3 = Self::mul_neg3(&z3); // 8.  X3 = a*Z3
         let mut y3 = B3_FE.mul(&t2); // 9.  Y3 = b3*t2
         y3 = x3.add(&y3); // 10. Y3 = X3+Y3
         x3 = t1.sub(&y3); // 11. X3 = t1-Y3
@@ -196,9 +211,9 @@ impl P256ProjectivePoint {
         y3 = x3.mul(&y3); // 13. Y3 = X3*Y3
         x3 = t3.mul(&x3); // 14. X3 = t3*X3
         z3 = B3_FE.mul(&z3); // 15. Z3 = b3*Z3
-        t2 = A_FE.mul(&t2); // 16. t2 = a*t2
+        t2 = Self::mul_neg3(&t2); // 16. t2 = a*t2
         t3 = t0.sub(&t2); // 17. t3 = t0-t2
-        t3 = A_FE.mul(&t3); // 18. t3 = a*t3
+        t3 = Self::mul_neg3(&t3); // 18. t3 = a*t3
         t3 = t3.add(&z3); // 19. t3 = t3+Z3
         z3 = t0.add(&t0); // 20. Z3 = t0+t0
         t0 = z3.add(&t0); // 21. t0 = Z3+t0
@@ -236,15 +251,66 @@ impl P256ProjectivePoint {
     pub fn scalar_mul_ct(&self, k: &BigUint, scalar_bits: usize) -> Self {
         let mut r0 = P256ProjectivePoint::IDENTITY;
         let mut r1 = *self;
+        let mut prev_bit = Choice::from(0u8);
         for i in (0..scalar_bits).rev() {
             let bit = Choice::from(k.bit(i as u64) as u8);
-            let sum = r0.add(&r1);
-            let r0_dbl = r0.double();
-            let r1_dbl = r1.double();
-            r0 = P256ProjectivePoint::cmov(&r0_dbl, &sum, bit);
-            r1 = P256ProjectivePoint::cmov(&sum, &r1_dbl, bit);
+            let swap = prev_bit ^ bit;
+            P256ProjectivePoint::cswap(&mut r0, &mut r1, swap);
+            prev_bit = bit;
+            r1 = r0.add(&r1);
+            r0 = r0.double();
         }
+        P256ProjectivePoint::cswap(&mut r0, &mut r1, prev_bit);
         r0
+    }
+
+    /// 2-bit × 2-bit Shamir multi-scalar multiplication `[u₁]P + [u₂]Q` in
+    /// projective P-256 Montgomery arithmetic (public inputs, e.g. ECDSA verify).
+    pub fn lincomb(p: &Self, u1: &BigUint, q: &Self, u2: &BigUint) -> Self {
+        let max_bits = u1.bits().max(u2.bits()) as usize;
+        if max_bits == 0 {
+            return P256ProjectivePoint::IDENTITY;
+        }
+        let p2 = p.double();
+        let p3 = p2.add(p);
+        let row_p = [P256ProjectivePoint::IDENTITY, *p, p2, p3];
+
+        let q2 = q.double();
+        let q3 = q2.add(q);
+        let row_q = [P256ProjectivePoint::IDENTITY, *q, q2, q3];
+
+        let mut tab = [P256ProjectivePoint::IDENTITY; 16];
+        for dq in 0..4 {
+            for dp in 0..4 {
+                tab[dp + 4 * dq] = match (dp, dq) {
+                    (0, 0) => P256ProjectivePoint::IDENTITY,
+                    (_, 0) => row_p[dp],
+                    (0, _) => row_q[dq],
+                    _ => row_p[dp].add(&row_q[dq]),
+                };
+            }
+        }
+
+        let top_pair = max_bits.div_ceil(2);
+        let mut acc = P256ProjectivePoint::IDENTITY;
+        for step in (0..top_pair).rev() {
+            if !bool::from(acc.is_identity()) {
+                acc = acc.double().double();
+            }
+            let b_lo = (2 * step) as u64;
+            let b_hi = b_lo + 1;
+            let dp = (u1.bit(b_lo) as usize) | ((u1.bit(b_hi) as usize) << 1);
+            let dq = (u2.bit(b_lo) as usize) | ((u2.bit(b_hi) as usize) << 1);
+            let idx = dp + 4 * dq;
+            if idx != 0 {
+                acc = if bool::from(acc.is_identity()) {
+                    tab[idx]
+                } else {
+                    acc.add(&tab[idx])
+                };
+            }
+        }
+        acc
     }
 }
 

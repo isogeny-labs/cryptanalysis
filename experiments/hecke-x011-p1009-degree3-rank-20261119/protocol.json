@@ -1,0 +1,22 @@
+{
+  "schema": "x011-p1009-degree3-rank-protocol-v1",
+  "p": 1009,
+  "curve": "11a1: y^2+y=x^3-x^2-10x-20",
+  "curve_order": 1020,
+  "largest_prime_factor": 17,
+  "fiber_abs_trace": 20,
+  "expected_fiber_size": 84,
+  "point_order": "sorted by integer affine coordinates (x,y) from the corrected ledger",
+  "corrected_ledger": "../hecke-x011-trace-fiber-census-20261119/points_v2.jsonl.gz",
+  "corrected_ledger_sha256": "0fea606b245a4889df66d551a41d8b7dc403438a9a95fdd940ff15f5082b3087",
+  "regularized_hecke_source_sha256": "d13a8663c1beb145c0b66147305831bb15678208d126df5b69ddf5e17962b32b",
+  "hecke_degrees": [3],
+  "hecke_row_policy": "For every source, record the degree-3 neighbor-x quartic and its factorization. Accept a row only if the complete four-point rational neighbor multiset is uniquely reconstructed, contained in the frozen fiber, verifies the Hecke group sum, and passes finite-j modular-polynomial checks. Preserve all rejected source statuses.",
+  "direct_control": "Reuse the exact independently replayed signed support-1/2/3 rows from the degree-2 experiment on the identical ordered 84-point fiber. Reverify each row against the Sage group law and recompute ranks.",
+  "degree2_result_sha256": "5d7db9433729a0f11552fa0c08aa647de2e12d8403245497aa84f5df18809581",
+  "degree2_direct_rows_gzip_sha256": "56a70b5d4c954980beb9d4df3953e080b72d4c97a56365fc1b163a6abb9ad41a",
+  "rank_fields": ["QQ", "F17"],
+  "resource_cap_seconds": 300,
+  "candidate_id": null,
+  "target_online_ms": null
+}

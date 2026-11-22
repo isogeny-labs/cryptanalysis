@@ -1,0 +1,55 @@
+{
+  "bookkeeping_ns": 12209500,
+  "build": {
+    "exit_code": 0,
+    "sampled_peak_combined_rss_bytes": 139870208,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "b1b1a3990d5a1ea05c17796f0e02dd4539f72298148a9c8db6ad50b53be10a9d",
+    "stop_reason": null,
+    "wall_ns": 4570375209
+  },
+  "candidate_id": null,
+  "curve_id": "EC1N131Ckb1heb5f1998f20b",
+  "peak_combined_rss_bytes_sampled": 293175296,
+  "protocol_sha256": "4ad9be88f5b821c7e56091c2a2d4d5f22dc5872da7f419d83b3eb2e87fc38654",
+  "public_point": [
+    1052727368764798954359115163823647684025,
+    2071227447786120917960296877345506689833
+  ],
+  "solver": {
+    "exit_code": -9,
+    "sampled_peak_combined_rss_bytes": 293175296,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "59880abab3f3d34a9d1716e6e5eb04bc20df68ca7441d53acdc23f42fb9e954a",
+    "stop_reason": "PARENT_TIME_CAP",
+    "wall_ns": 584240377166
+  },
+  "solver_command": [
+    "/opt/homebrew/bin/cryptominisat5",
+    "--threads=1",
+    "--maxtime=540",
+    "--maxmatrixrows=4000",
+    "--maxmatrixcols=10000",
+    "--maxnummatrices=6",
+    "--zero-exit-status",
+    "--verb=1",
+    "--printsol=1",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_common_frob_inverse_trace_retry1_20261012/public.xcnf"
+  ],
+  "solver_restart_rows": 720,
+  "solver_terminal_lines": [],
+  "status": "PARENT_TIME_CAP",
+  "target_dependent_attempt_ns": 600155675667,
+  "target_projection": {
+    "exit_code": 0,
+    "sampled_peak_combined_rss_bytes": 269533184,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "712d79605dc1057966dbd191be55eaf6ec4dd98a82e2860d575ebf7a99acec30",
+    "stop_reason": null,
+    "wall_ns": 11332713792
+  },
+  "transformed_target": [
+    1011194589287210738281611435711478792573,
+    464867644853173232674848580669299498572
+  ]
+}

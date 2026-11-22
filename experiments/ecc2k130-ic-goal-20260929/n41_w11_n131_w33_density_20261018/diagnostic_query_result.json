@@ -1,0 +1,58 @@
+{
+  "arm_results": [
+    {
+      "arm": "all5",
+      "command": [
+        "/opt/homebrew/Cellar/cryptominisat/5.14.7/bin/cryptominisat5",
+        "--threads=1",
+        "--maxtime=110",
+        "--zero-exit-status",
+        "--verb=1",
+        "--printsol=1",
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w11_n131_w33_density_20261018/all5_formula.xcnf"
+      ],
+      "last_restart_line": "c rst  geom  svd   vs   768  317K   13490 11771   23K    3.03    2.34   956   536 19905    37  262.58  262.13",
+      "monitor_error": null,
+      "rss_samples": 1130,
+      "sampled_peak_combined_rss_bytes": 107888640,
+      "solver_exit_code": -15,
+      "solver_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "solver_stdout_sha256": "df6ffdba6a3ad3b684084ba25080bddee65d805c4535dd2723c6ff9fa35f4265",
+      "solver_terminal_indeterminate": false,
+      "solver_terminal_sat": false,
+      "solver_terminal_unsat": false,
+      "status": "BOUNDED_UNKNOWN",
+      "stop_reason": "WALL_CAP",
+      "wall_seconds": 120.09525179099728
+    },
+    {
+      "arm": "first3",
+      "command": [
+        "/opt/homebrew/Cellar/cryptominisat/5.14.7/bin/cryptominisat5",
+        "--threads=1",
+        "--maxtime=110",
+        "--zero-exit-status",
+        "--verb=1",
+        "--printsol=1",
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w11_n131_w33_density_20261018/first3_formula.xcnf"
+      ],
+      "last_restart_line": "c rst  luby  svd  vmt   615  226K   15421 13437   26K    3.03    2.34   457   244   34K    33   97.90   97.81",
+      "monitor_error": null,
+      "rss_samples": 1127,
+      "sampled_peak_combined_rss_bytes": 93585408,
+      "solver_exit_code": -15,
+      "solver_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "solver_stdout_sha256": "9602c267b4ed953ea5f093cee8e4acf6ebe3f7c382d352754e32578ed2f9b55e",
+      "solver_terminal_indeterminate": false,
+      "solver_terminal_sat": false,
+      "solver_terminal_unsat": false,
+      "status": "BOUNDED_UNKNOWN",
+      "stop_reason": "WALL_CAP",
+      "wall_seconds": 120.10697087500012
+    }
+  ],
+  "candidate_id": null,
+  "curve_id": "EC1N41Ckb1h7d5e80d3c4d0",
+  "protocol_sha256": "aa9a0ab312ef8e28b6c1ac0abe578277de9690b8a0746c8dcc468d068f23e2e8",
+  "status": "COMPLETE_N41_W11_KNOWN_CODE_DIAGNOSTIC_PANEL"
+}

@@ -156,6 +156,34 @@ class RoundTripTests(unittest.TestCase):
         bad = pcc.verify_claim(legacy, self.repo, pcc.load_keyring(self.repo / pcc.KEYRING_PATH))
         self.assertEqual(bad["verdict"], "fail", bad)
 
+    def test_execution_creation_rejects_incomplete_inputs_before_writes(self):
+        artifact = self.repo / "artifact.txt"
+        artifact.write_text('{"synthetic": true}\n')
+        pin = {"path": "artifact.txt", "sha256": pcc.sha256_file(artifact)}
+        complete = {"receipt": pin, "verifier": pin, "journal_binds": pin,
+                    "image_id": "synthetic-untrusted-image"}
+        bad = ["execution:artifact.txt", "execution:{}"]
+        for field in complete:
+            missing = dict(complete)
+            del missing[field]
+            bad.append("execution:" + json.dumps(missing))
+        bad.append("execution:" + json.dumps(dict(complete, receipt={"path": "artifact.txt", "sha256": "bad"})))
+        before = (self.repo / pcc.LEDGER_PATH).read_bytes()
+        for spec in bad:
+            with self.subTest(spec=spec):
+                result = run(["claim", "new", "--kind", "execution", "--statement", "fixture",
+                              "--proof", "attestation:artifact.txt", "--proof", spec], self.repo)
+                self.assertEqual(result.returncode, 3, result.stdout + result.stderr)
+                self.assertIn("execution requires", result.stderr)
+                self.assertEqual((self.repo / pcc.LEDGER_PATH).read_bytes(), before)
+                self.assertFalse((self.repo / pcc.CLAIMS_DIR).exists())
+        made = run(["claim", "new", "--kind", "execution", "--statement", "fixture",
+                    "--claim-type", "data", "--proof", "execution:" + json.dumps(complete)], self.repo)
+        self.assertEqual(made.returncode, 0, made.stderr)
+        checked = run(["verify", Path(made.stdout.strip()).stem, "--json"], self.repo)
+        self.assertEqual(checked.returncode, 2, checked.stdout + checked.stderr)
+        self.assertEqual(json.loads(checked.stdout)["verdict"], "not_covered")
+
     def test_ledger_prefix_against_base(self):
         cid = self.make_solve()
         self.commit("claim")
@@ -365,6 +393,70 @@ class ClaimTypeTests(unittest.TestCase):
         cid = self.make_solve()
         c = json.loads((self.repo / pcc.CLAIMS_DIR / f"{cid}.json").read_text())
         self.assertEqual(c["claim_type"], "data")
+
+    def reject_missing_type(self, cid):
+        path = self.repo / pcc.CLAIMS_DIR / f"{cid}.json"
+        manifest = {"schema": pcc.SCHEMA_REJECTIONS_SCHEMA, "records": {
+            path.relative_to(self.repo).as_posix(): {
+                "sha256": pcc.sha256_file(path), "issue": "missing_claim_type",
+                "disposition": "rejected", "reason": "Retained untyped payload is ineligible as evidence."}}}
+        (self.repo / pcc.SCHEMA_REJECTIONS_PATH).write_text(json.dumps(manifest))
+        return manifest
+
+    def test_historical_rejection_preserves_payload_and_never_admits_claim(self):
+        cid = "PCC-20261112-111111"
+        self.write_claim(cid, "2026-11-12T00:00:00Z", None)
+        path = self.repo / pcc.CLAIMS_DIR / f"{cid}.json"
+        original = path.read_bytes()
+        self.commit("inherited untyped payload")
+        self.reject_missing_type(cid)
+        result = run(["ledger", "verify", "--base", "HEAD"], self.repo)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("ineligible as evidence", result.stdout)
+        claim = json.loads(original)
+        self.assertIsNone(pcc.claim_type_of(claim))
+        self.assertFalse(pcc.validate_claim(claim, []))
+        self.assertEqual(pcc.standing(claim, [], {})["standing"], "failed")
+        self.assertEqual(path.read_bytes(), original)
+
+    def test_rejection_cannot_cover_a_new_claim_or_mutated_payload(self):
+        cid = "PCC-20261112-222222"
+        self.write_claim(cid, "2026-11-12T00:00:00Z", None)
+        self.reject_missing_type(cid)
+        result = run(["ledger", "verify", "--base", "HEAD"], self.repo)
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("already present in the base", result.stdout)
+        self.commit("retained rejection")
+        path = self.repo / pcc.CLAIMS_DIR / f"{cid}.json"
+        path.write_bytes(path.read_bytes() + b" ")
+        result = run(["ledger", "verify", "--base", "HEAD"], self.repo)
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("payload or expected", result.stdout)
+
+    def test_rejection_manifest_cannot_drop_or_rewrite_existing_entries(self):
+        cid = "PCC-20261112-333333"
+        self.write_claim(cid, "2026-11-12T00:00:00Z", None)
+        manifest = self.reject_missing_type(cid)
+        self.commit("retained rejection")
+        manifest["records"] = {}
+        (self.repo / pcc.SCHEMA_REJECTIONS_PATH).write_text(json.dumps(manifest))
+        result = run(["ledger", "verify", "--base", "HEAD"], self.repo)
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("only be appended", result.stdout)
+
+    def test_current_signed_pass_cannot_promote_schema_invalid_payload(self):
+        cid = "PCC-20261112-444444"
+        self.write_claim(cid, "2026-11-12T00:00:00Z", None)
+        claim = json.loads((self.repo / pcc.CLAIMS_DIR / f"{cid}.json").read_text())
+        verdict = {"type": "verdict", "body": {"claim_id": cid,
+            "claim_sha256": pcc.claim_digest(claim), "verdict": "pass", "commit": "a" * 40}}
+        # The key and keyring belong only to this disposable test repository.
+        verdict["sig"] = pcc.make_signature(pcc.read_secret(self.key), "ci-main", "verdict",
+                                            pcc.verdict_subject(verdict["body"]))
+        result = pcc.standing(claim, [verdict], pcc.load_keyring(self.repo / pcc.KEYRING_PATH))
+        self.assertTrue(result["verdicts"][0]["signed"])
+        self.assertEqual(result["standing"], "failed")
+        self.assertTrue(result["schema_rejected"])
 
     def populate(self):
         for i in range(30):
