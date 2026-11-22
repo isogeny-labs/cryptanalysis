@@ -18,6 +18,8 @@ The generic mathematical statement is: for a commutative ring `R`, field `S`, an
 | Finite regular path under reduction | `XedniRegularChainReduction.map_regularChain` | Every step in the source chain satisfies `RegularStep`; the mapped start, addend, intermediates, and endpoint satisfy `FieldChain` |
 | Finite regular sum under reduction | `XedniRegularSumReduction.reduce_regularSum` | Any nonempty ordered list of local curve points with a `RegularStep` certificate at each addition; reduced elliptic endpoint equals the group sum of the reduced inputs; checked |
 | Equal regular endpoints give equal reduced sums | `XedniRegularSumReduction.equal_regularSums` | Two certified regular sums with equal local endpoints and elliptic coefficient-reduced curve; checked |
+| Certified identity and inverse additions | `XedniExceptionalSumReduction.reduce_certifiedStep` | The source point at infinity acts as identity, exact local inverses cancel, and regular unit-denominator affine additions reduce to field group addition; checked |
+| Finite sums with certified exceptional steps | `XedniExceptionalSumReduction.reduce_certifiedSum`, `equal_certifiedSums` | Nonempty finite lists of local affine points or infinity; every addition carries an identity, exact inverse, or regular affine certificate; checked |
 | Field step is elliptic-curve addition | `XedniRegularGroupLaw.fieldStep_group_add` | Over a field, with the reduced short curve elliptic, a `FieldStep` is equality to mathlib's point-group addition; covers distinct-x chords and nonvertical doubling |
 | Field chain gives a group relation | `XedniRegularGroupLaw.fieldChain_group_relation` | The field endpoint equals its start plus a natural-number multiple of the fixed addend |
 | Reduced regular chain gives a group relation | `XedniRegularGroupLaw.reduced_regularChain_group_relation` | Combines the source-chain reduction theorem and field group law; requires ellipticity of the coefficient-reduced short curve |
@@ -105,6 +107,19 @@ The proof is induction on the `RegularSum` certificate. Each final step maps thr
 | Equality of two reduced sums | `XedniRegularSumReduction.equal_regularSums` | Two such certificates and equality of their local endpoints; checked |
 
 Run `lake build RegularSumReduction` in this directory. `build-regular-sum-output.txt` records the build and `#print axioms` output; both declarations depend only on `propext`, `Classical.choice`, and `Quot.sound`. The toolchain and Mathlib revisions are pinned as above.
+
+## Certified identity and inverse additions
+
+The finite-sum bridge also accepts the point at infinity and exact inverse cancellation. `ExceptionalSumReduction.lean` represents a local finite point as `some P` and infinity as `none`. Its certified step relation covers addition with infinity, a regular affine chord or tangent, and `P + (−P) = O` in either order. Affine inverse is `(x,y) ↦ (x,−y)` on the short model; the theorem proves that this operation commutes with coordinate reduction. Induction over certified steps then identifies the reduced endpoint with the sum of the reduced inputs. Equal certified endpoints give equal field-group sums.
+
+| Result | Lean declaration | Exact hypotheses and status |
+| --- | --- | --- |
+| Negation commutes with reduction | `XedniExceptionalSumReduction.image_neg` | Commutative local ring, target field, ring homomorphism, elliptic reduced short curve, local affine curve point; checked |
+| Certified step commutes with reduction | `XedniExceptionalSumReduction.reduce_certifiedStep` | Step is identity on either side, regular affine addition with source-unit denominator, or exact local inverse cancellation; checked |
+| Finite certified sum commutes with reduction | `XedniExceptionalSumReduction.reduce_certifiedSum` | Nonempty ordered list and one certificate per addition; checked |
+| Equal endpoints imply equal reduced sums | `XedniExceptionalSumReduction.equal_certifiedSums` | Two certified sums with equal local optional endpoints; checked |
+
+The inverse case requires the two local affine points to be exact negatives. A pair that becomes inverse only after reduction needs another argument; the certificate does not silently infer a local group law from residue equality. Run `lake build ExceptionalSumReduction` in this directory. `build-exceptional-sum-output.txt` records the fresh build and `#print axioms` output. Each declaration uses only `propext`, `Classical.choice`, and `Quot.sound`.
 
 ## Reproduction
 
