@@ -7,9 +7,13 @@
 //! description, not separate code.
 
 pub mod aes128;
+pub mod blake2b;
 pub mod chacha;
+pub mod md5_compress;
 pub mod present80;
+pub mod salsa20;
 pub mod sha256_compress;
+pub mod sha512_compress;
 pub mod simon;
 pub mod speck;
 pub mod toyspn;

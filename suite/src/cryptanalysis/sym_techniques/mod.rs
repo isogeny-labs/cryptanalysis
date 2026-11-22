@@ -389,3 +389,5 @@ pub mod zero_correlation;
 pub mod mitm;
 // WP4: ARX techniques (differential-linear, PNB, rotational).
 pub mod arx;
+// WP5: hash techniques (local collisions, Merkle-Damgard generic attacks).
+pub mod hash;
