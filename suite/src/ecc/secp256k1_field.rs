@@ -52,6 +52,167 @@ pub const R_MOD_P: U256 = Uint([0x0000_0001_0000_03D1, 0, 0, 0]);
 /// `tests::r_squared_constant_is_correct`.
 pub const R_SQUARED_MOD_P: U256 = Uint([0x0000_07A2_000E_90A1, 1, 0, 0]);
 
+/// Constant `K = 2^256 - p = 2^32 + 977 = 0x1_0000_03D1`.
+const SECP_K: u64 = 0x0000_0001_0000_03D1;
+
+/// Specialised constant-time Montgomery reduction of a 512-bit product
+/// `t[0..8]` modulo secp256k1's `p = 2^256 - K`.
+///
+/// Since `p_0 = 2^64 - K`, `m = t[i] * P_INV_LOW mod 2^64` satisfies
+/// `m * K ≡ t[i] (mod 2^64)`.  Adding `m * p * 2^{64i} = m * 2^{64(i+4)}
+/// - (m * K) * 2^{64i}` therefore clears limb `t[i]` with zero low-limb
+/// borrow, subtracts only `w_hi = (m * K) >> 64` at `t[i+1..i+4]`, and
+/// adds `m` at `t[i+4]`: 4 single-word multiplies for the whole reduction
+/// instead of 16, returning the exact canonical residue `T * R^{-1} mod p`.
+#[inline(always)]
+fn secp_mont_reduce(t: [u64; 8]) -> U256 {
+    let mut buf = [t[0], t[1], t[2], t[3], t[4], t[5], t[6], t[7], 0u64];
+    for i in 0..4 {
+        let m = buf[i].wrapping_mul(P_INV_LOW);
+        let w_hi = (((m as u128) * (SECP_K as u128)) >> 64) as u64;
+        let (d1, b1) = buf[i + 1].overflowing_sub(w_hi);
+        buf[i + 1] = d1;
+        let (d2, b2) = buf[i + 2].overflowing_sub(b1 as u64);
+        buf[i + 2] = d2;
+        let (d3, b3) = buf[i + 3].overflowing_sub(b2 as u64);
+        buf[i + 3] = d3;
+        // If m == 0 then w_hi == 0 and b3 == false, else m >= 1 >= b3: s4 >= 0 always.
+        let s4 = (buf[i + 4] as u128) + (m as u128) - (b3 as u128);
+        buf[i + 4] = s4 as u64;
+        let mut carry = (s4 >> 64) as u64;
+        for slot in &mut buf[(i + 5)..9] {
+            let s = (*slot as u128) + (carry as u128);
+            *slot = s as u64;
+            carry = (s >> 64) as u64;
+        }
+    }
+    let result = Uint([buf[4], buf[5], buf[6], buf[7]]);
+    let extra = buf[8];
+    let (sub, borrow) = U256::sbb(&result, &P);
+    let need_sub = Choice::from(((extra | (borrow ^ 1)) & 1) as u8);
+    U256::cmov(&result, &sub, need_sub)
+}
+
+#[inline(always)]
+fn secp_mont_mul(a: &U256, b: &U256) -> U256 {
+    let (a0, a1, a2, a3) = (
+        a.0[0] as u128,
+        a.0[1] as u128,
+        a.0[2] as u128,
+        a.0[3] as u128,
+    );
+    let (b0, b1, b2, b3) = (
+        b.0[0] as u128,
+        b.0[1] as u128,
+        b.0[2] as u128,
+        b.0[3] as u128,
+    );
+    let mut t = [0u64; 8];
+
+    let s = a0 * b0;
+    t[0] = s as u64;
+    let s = a0 * b1 + (s >> 64);
+    t[1] = s as u64;
+    let s = a0 * b2 + (s >> 64);
+    t[2] = s as u64;
+    let s = a0 * b3 + (s >> 64);
+    t[3] = s as u64;
+    t[4] = (s >> 64) as u64;
+
+    let s = (t[1] as u128) + a1 * b0;
+    t[1] = s as u64;
+    let s = (t[2] as u128) + a1 * b1 + (s >> 64);
+    t[2] = s as u64;
+    let s = (t[3] as u128) + a1 * b2 + (s >> 64);
+    t[3] = s as u64;
+    let s = (t[4] as u128) + a1 * b3 + (s >> 64);
+    t[4] = s as u64;
+    t[5] = (s >> 64) as u64;
+
+    let s = (t[2] as u128) + a2 * b0;
+    t[2] = s as u64;
+    let s = (t[3] as u128) + a2 * b1 + (s >> 64);
+    t[3] = s as u64;
+    let s = (t[4] as u128) + a2 * b2 + (s >> 64);
+    t[4] = s as u64;
+    let s = (t[5] as u128) + a2 * b3 + (s >> 64);
+    t[5] = s as u64;
+    t[6] = (s >> 64) as u64;
+
+    let s = (t[3] as u128) + a3 * b0;
+    t[3] = s as u64;
+    let s = (t[4] as u128) + a3 * b1 + (s >> 64);
+    t[4] = s as u64;
+    let s = (t[5] as u128) + a3 * b2 + (s >> 64);
+    t[5] = s as u64;
+    let s = (t[6] as u128) + a3 * b3 + (s >> 64);
+    t[6] = s as u64;
+    t[7] = (s >> 64) as u64;
+
+    secp_mont_reduce(t)
+}
+
+#[inline(always)]
+fn secp_mont_sqr(a: &U256) -> U256 {
+    let (a0, a1, a2, a3) = (
+        a.0[0] as u128,
+        a.0[1] as u128,
+        a.0[2] as u128,
+        a.0[3] as u128,
+    );
+    // 6 off-diagonal products accumulated row by row (no u128 overflow).
+    let s = a0 * a1;
+    let t1 = s as u64;
+    let s = a0 * a2 + (s >> 64);
+    let t2 = s as u64;
+    let s = a0 * a3 + (s >> 64);
+    let mut t3 = s as u64;
+    let mut t4 = (s >> 64) as u64;
+
+    let s = (t3 as u128) + a1 * a2;
+    t3 = s as u64;
+    let s = (t4 as u128) + a1 * a3 + (s >> 64);
+    t4 = s as u64;
+    let mut t5 = (s >> 64) as u64;
+
+    let s = (t5 as u128) + a2 * a3;
+    t5 = s as u64;
+    let t6 = (s >> 64) as u64;
+
+    let u1 = t1 << 1;
+    let u2 = (t2 << 1) | (t1 >> 63);
+    let u3 = (t3 << 1) | (t2 >> 63);
+    let u4 = (t4 << 1) | (t3 >> 63);
+    let u5 = (t5 << 1) | (t4 >> 63);
+    let u6 = (t6 << 1) | (t5 >> 63);
+    let u7 = t6 >> 63;
+
+    let d0 = a0 * a0;
+    let r0 = d0 as u64;
+    let s = (u1 as u128) + (d0 >> 64);
+    let r1 = s as u64;
+
+    let d1 = a1 * a1;
+    let s = (u2 as u128) + (d1 & 0xFFFF_FFFF_FFFF_FFFF) + (s >> 64);
+    let r2 = s as u64;
+    let s = (u3 as u128) + (d1 >> 64) + (s >> 64);
+    let r3 = s as u64;
+
+    let d2 = a2 * a2;
+    let s = (u4 as u128) + (d2 & 0xFFFF_FFFF_FFFF_FFFF) + (s >> 64);
+    let r4 = s as u64;
+    let s = (u5 as u128) + (d2 >> 64) + (s >> 64);
+    let r5 = s as u64;
+
+    let d3 = a3 * a3;
+    let s = (u6 as u128) + (d3 & 0xFFFF_FFFF_FFFF_FFFF) + (s >> 64);
+    let r6 = s as u64;
+    let s = (u7 as u128) + (d3 >> 64) + (s >> 64);
+    let r7 = s as u64;
+
+    secp_mont_reduce([r0, r1, r2, r3, r4, r5, r6, r7])
+}
+
 /// A field element over secp256k1's prime, stored in Montgomery form.
 #[derive(Copy, Clone, Debug)]
 pub struct SecpFieldElement(U256);
@@ -111,26 +272,31 @@ impl SecpFieldElement {
 
     /// Field addition.  Constant-time conditional reduction via
     /// [`U256::add_mod`].
+    #[inline]
     pub fn add(&self, other: &Self) -> Self {
         SecpFieldElement(self.0.add_mod(&other.0, &P))
     }
 
     /// Field subtraction.
+    #[inline]
     pub fn sub(&self, other: &Self) -> Self {
         SecpFieldElement(self.0.sub_mod(&other.0, &P))
     }
 
-    /// Field multiplication via Montgomery multiplication.
+    /// Field multiplication via specialised secp256k1 Montgomery reduction.
+    #[inline]
     pub fn mul(&self, other: &Self) -> Self {
-        SecpFieldElement(U256::mont_mul(&self.0, &other.0, &P, P_INV_LOW))
+        SecpFieldElement(secp_mont_mul(&self.0, &other.0))
     }
 
-    /// Field squaring.
+    /// Field squaring (10-product squaring + 4-product secp256k1 reduction).
+    #[inline]
     pub fn sqr(&self) -> Self {
-        SecpFieldElement(U256::mont_sqr(&self.0, &P, P_INV_LOW))
+        SecpFieldElement(secp_mont_sqr(&self.0))
     }
 
     /// Additive inverse: `0 - self mod p`.  Reduces to one [`U256::sub_mod`].
+    #[inline]
     pub fn neg(&self) -> Self {
         SecpFieldElement(U256::ZERO.sub_mod(&self.0, &P))
     }
@@ -138,37 +304,11 @@ impl SecpFieldElement {
     /// Multiplicative inverse via Fermat's little theorem:
     /// `a^(p-2) mod p`.
     ///
-    /// Uses a Montgomery-style ladder over the Montgomery-form
-    /// `mul`/`sqr`: iteration count is fixed at 256, every step
-    /// performs exactly one multiplication and one squaring, and the
-    /// branch on `bit` is replaced with [`U256::cmov`] over the two
-    /// candidate next-states.
-    ///
-    /// Returns `Self::ZERO` if `self.is_zero()`.  Callers that care
-    /// about the zero case must check explicitly — there is no `Option`
-    /// return because branching on zero would itself leak.
+    /// Uses the constant-time fixed addition chain [`Self::inv_chain`]
+    /// (257 squarings + 14 multiplications, input-independent), returning
+    /// `Self::ZERO` if `self.is_zero()`.
     pub fn inv(&self) -> Self {
-        // exp = p - 2.  Since p[0] = 0x...FC2F is far above 2, this is
-        // just (p[0] - 2, p[1], p[2], p[3]).
-        let exp = Uint([P.0[0].wrapping_sub(2), P.0[1], P.0[2], P.0[3]]);
-        let mut r0 = SecpFieldElement::ONE;
-        let mut r1 = *self;
-        for i in (0..256).rev() {
-            let limb = i / 64;
-            let bit_in_limb = i % 64;
-            let bit = (exp.0[limb] >> bit_in_limb) & 1;
-            let choice = Choice::from(bit as u8);
-
-            // Always compute all three; the cmov picks the right pair.
-            // bit == 1: r0 ← r0 * r1, r1 ← r1²
-            // bit == 0: r0 ← r0²,     r1 ← r0 * r1
-            let prod = r0.mul(&r1);
-            let r0_sq = r0.sqr();
-            let r1_sq = r1.sqr();
-            r0 = SecpFieldElement::cmov(&r0_sq, &prod, choice);
-            r1 = SecpFieldElement::cmov(&prod, &r1_sq, choice);
-        }
-        r0
+        self.inv_chain()
     }
 
     /// Fixed secp256k1 field inversion chain: 257 squarings and 14
@@ -218,8 +358,15 @@ impl SecpFieldElement {
     }
 
     /// Constant-time conditional move: returns `b` iff `choice == 1`.
+    #[inline]
     pub fn cmov(a: &Self, b: &Self, choice: Choice) -> Self {
         SecpFieldElement(U256::cmov(&a.0, &b.0, choice))
+    }
+
+    /// Constant-time conditional swap: swaps `a` and `b` iff `choice == 1`.
+    #[inline]
+    pub fn cswap(a: &mut Self, b: &mut Self, choice: Choice) {
+        U256::cswap(&mut a.0, &mut b.0, choice);
     }
 
     /// Internal accessor for tests and lower-level interop.  The raw

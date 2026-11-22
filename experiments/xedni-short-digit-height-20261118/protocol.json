@@ -1,0 +1,19 @@
+{
+  "schema": "xedni-short-digit-height-protocol-v1",
+  "question": "Can a precommitted four-coordinate signed-digit Hensel rule reach the same p-adic residual depth with smaller exact rational model height than the first-axis rule?",
+  "baseline_commit": "315d07f723f23605cf57ada80b74edaed444c22b",
+  "baseline_protocol": "experiments/xedni-hensel-height-20261118/protocol.json",
+  "baseline_protocol_sha256": "5b880b5c02a42d52dbc3028ad10f9cc3b610d8354fa8950be3f3248b1e895ca5",
+  "baseline_result_normalized_sha256": "9b9fd644f1eccd12873387397dc749c2d510b5784a396d07e5774421855fbe78",
+  "public_hit": "copy the first eligible distinct-x public hit from the baseline result; do not reselect",
+  "initial_shift": [0,0,0,0],
+  "maximum_target_depth": 8,
+  "digit_rule": "at depth k, evaluate t(R) modulo p^(k+1) and the four finite differences from +p^k coordinate probes; if t already vanishes retain shifts; otherwise find signed digits delta_i in [-(p-1)/2,(p-1)/2] satisfying sum_i d_i*delta_i = -t/p^k (mod p), minimizing (max_i abs(delta_i), sum_i abs(delta_i), signed digit tuple lexicographically)",
+  "digit_solver": "meet-in-the-middle pair sums; enumerate radii h=0,1,..., and record the complete minimum-radius candidate count and tie score; independently verify no smaller or better digit tuple",
+  "coordinate_update": "shift_i += p^(k-1)*delta_i, so lifted coordinate_i += p^k*delta_i",
+  "exact_controls": "after each accepted step compute exact rational A,B,P1,P2,R and t=-x(R)/y(R), check curve/reduction and depth; independently replay every derivative and digit choice with Fraction group arithmetic",
+  "comparison": "paired same public hit, same starting rational model, same target depth, same checked Sage runtime; report per-depth model and residual heights for both paths; time is diagnostic only",
+  "stop_rule": "stop at exact relation, derivative exhaustion, modular or exact mismatch, depth 8, or 1200 seconds; preserve failed probes",
+  "claim_boundary": "this is a representation-height comparison for one preselected public relation, not an estimate of natural relation yield or an end-to-end IC/rho comparison",
+  "run_cap_seconds": 1200
+}
