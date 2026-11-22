@@ -1,0 +1,123 @@
+{
+  "environment": {
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "sympy": "1.14.0"
+  },
+  "format": "hecdlp-toy-empirical-benchmark-v1",
+  "measured_conclusion": "At these toy sizes, real rho logarithms and real split-line quartic relations were computed; the fitted operation-count slopes may be compared with the modeled 1/2 and 1 exponents.",
+  "plane_quartic_relation_collection": {
+    "curve": "Klein quartic X^3*Y + Y^3*Z + Z^3*X = 0",
+    "fitted_exponent_candidate_lines_vs_q": 0.9990193403777372,
+    "fitted_exponent_seconds_vs_q": 1.1558493617472472,
+    "relation_primitive": "factor F(x,m*x+b,1) and retain lines whose four intersections are F_q-rational",
+    "relation_target": "ceil(0.25*q) raw relations",
+    "rows": [
+      {
+        "all_intersection_points_verified": true,
+        "candidate_lines_per_relation": 27.76923076923077,
+        "candidate_lines_tested": 722,
+        "distinct_affine_points_seen": 61,
+        "field_size_q": 101,
+        "relations_collected": 26,
+        "relations_sha256": "41a50c656afcac898d7ee4a177716bbc399212cb055c7ff00ed88bbf873093b4",
+        "seconds": 0.2678151139989495,
+        "target_relations": 26
+      },
+      {
+        "all_intersection_points_verified": true,
+        "candidate_lines_per_relation": 14.056603773584905,
+        "candidate_lines_tested": 745,
+        "distinct_affine_points_seen": 147,
+        "field_size_q": 211,
+        "relations_collected": 53,
+        "relations_sha256": "22894aeed21778d52bd0bb0dc43597e2fd8ffcecd2a596c0fdc584953c2f008d",
+        "seconds": 0.3478051019992563,
+        "target_relations": 53
+      },
+      {
+        "all_intersection_points_verified": true,
+        "candidate_lines_per_relation": 19.554455445544555,
+        "candidate_lines_tested": 1975,
+        "distinct_affine_points_seen": 249,
+        "field_size_q": 401,
+        "relations_collected": 101,
+        "relations_sha256": "beac36b2659733c3d575eb4342065a8b55e8e7256074bcb7fadad32d51c21755",
+        "seconds": 0.971833493998929,
+        "target_relations": 101
+      },
+      {
+        "all_intersection_points_verified": true,
+        "candidate_lines_per_relation": 25.862068965517242,
+        "candidate_lines_tested": 5250,
+        "distinct_affine_points_seen": 511,
+        "field_size_q": 809,
+        "relations_collected": 203,
+        "relations_sha256": "7557e6911d6c8e8ba7caa6ea5dcc4e96541c50f9fd69a6c2b362209426b6c68a",
+        "seconds": 2.735330884999712,
+        "target_relations": 203
+      }
+    ]
+  },
+  "rho": {
+    "fitted_exponent_group_multiplications_vs_order": 0.5127775735308033,
+    "fitted_exponent_seconds_vs_order": 0.47866750940735414,
+    "model": "Pollard rho in a safe-prime multiplicative subgroup",
+    "rows": [
+      {
+        "all_logs_verified": true,
+        "median_group_multiplications": 330,
+        "median_seconds": 0.0001274780006497167,
+        "modulus": 16487,
+        "requested_bits": 14,
+        "subgroup_order": 8243,
+        "trials": 7
+      },
+      {
+        "all_logs_verified": true,
+        "median_group_multiplications": 1155,
+        "median_seconds": 0.00021438600015244447,
+        "modulus": 262643,
+        "requested_bits": 18,
+        "subgroup_order": 131321,
+        "trials": 7
+      },
+      {
+        "all_logs_verified": true,
+        "median_group_multiplications": 5328,
+        "median_seconds": 0.0010010930000134977,
+        "modulus": 4195259,
+        "requested_bits": 22,
+        "subgroup_order": 2097629,
+        "trials": 7
+      },
+      {
+        "all_logs_verified": true,
+        "median_group_multiplications": 18492,
+        "median_seconds": 0.003689008999572252,
+        "modulus": 67109543,
+        "requested_bits": 26,
+        "subgroup_order": 33554771,
+        "trials": 7
+      },
+      {
+        "all_logs_verified": true,
+        "median_group_multiplications": 100443,
+        "median_seconds": 0.023324562000198057,
+        "modulus": 1073742623,
+        "requested_bits": 30,
+        "subgroup_order": 536871311,
+        "trials": 7
+      }
+    ]
+  },
+  "scope_limits": [
+    "not a NIST-size run",
+    "rho group is a safe-prime multiplicative subgroup, used as a concrete generic group",
+    "quartic benchmark collects raw principal-divisor relations but does not perform rank filtering, sparse linear algebra, or individual-log descent",
+    "the two wall-clock columns use different arithmetic primitives and are not direct equivalent-cost comparisons",
+    "small-size fitted slopes are descriptive measurements, not asymptotic proofs or cryptographic extrapolations"
+  ],
+  "seed": 3332026,
+  "total_seconds": 4.520813879000343
+}

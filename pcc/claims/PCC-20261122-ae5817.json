@@ -1,0 +1,21 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-22T00:13:28Z",
+ "id": "PCC-20261122-ae5817",
+ "kind": "speedup",
+ "producer": {
+  "commit": "225cd56637e7d650831e64b0213d2a3bea180bee",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "recompute",
+   "path": "suite/docs/ic/runs/prime-batched-mitm-20261121/validator-report.json",
+   "sha256": "8b0bc5915ed29906d40e950eabb094b6ff7c5a7b36891afcd10535ca2b9c6d81"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "cryptanalysis 225cd56; registry e840213ad5cfcc8c; cloud 4 vCPU host; S includes natively priced setup and probes, which depend on the host's ns per addition",
+ "statement": "On the lead-testing registry's prime instances (16, 18, 20, 22, 24 subgroup bits; sizes 40, 63, 100, 160, 256; 6/6/8/8/8 planted targets per instance), the ic bench oracle mitm-prime-batched lowers counted end-to-end S against the registry baseline arm prime-abscissa + mitm by a paired geometric-mean factor of 1.98, 2.96, 2.91, 3.71 and 4.86 at m = 2 and 1.67, 2.14, 2.68, 3.68 and 4.65 at m = 3, with 95 % bootstrap lower bounds above 1.5 on every instance, the same table entries and witnesses as mitm, the same trials, and every recovered logarithm verified [d]G = Q. Preparation and m = 3 candidate arithmetic are charged as measured nanoseconds at the host's nanoseconds per addition (the convention of the binary mitm-batched oracle); the counted-pricing control (native_setup_pricing=0) lands on the negation fold's factor of two. Matched rho (negation walk) remains 4.2-11.5 times cheaper than the lead: an engineering improvement of the pair-table family, not an advance."
+}

@@ -1,0 +1,43 @@
+{
+  "format": "nist-p224-descended-plane-quartic-v1",
+  "date_utc": "2026-11-19",
+  "field": {
+    "type": "prime",
+    "p": "26959946667150639794667015087019630673557916260026308143510066298881"
+  },
+  "variables": ["X", "Y", "Z"],
+  "normalization": "coefficient of X^4 is 1",
+  "terms": [
+    {"exponents_xyz": [4, 0, 0], "coefficient": "1"},
+    {"exponents_xyz": [3, 1, 0], "coefficient": "4125740498905222226979527852321032948724687650253994173794289918150"},
+    {"exponents_xyz": [3, 0, 1], "coefficient": "1710945751490975587055129803251052201632728476860674548324660397912"},
+    {"exponents_xyz": [2, 2, 0], "coefficient": "4397609325665826811043210170048936510164239011430023556885725889345"},
+    {"exponents_xyz": [2, 1, 1], "coefficient": "18488040474615195577215417244148329512856079582698758119102453778645"},
+    {"exponents_xyz": [2, 0, 2], "coefficient": "15595736566798449334316014770932178930698725802035249086972188567835"},
+    {"exponents_xyz": [1, 3, 0], "coefficient": "7818594255296894566294992172131942498062600248344910647308628226477"},
+    {"exponents_xyz": [1, 2, 1], "coefficient": "3590376189749669651424556682327149105168157848385610464816044676698"},
+    {"exponents_xyz": [1, 1, 2], "coefficient": "9075477206355480721534528702205171939424512829043956351876074452242"},
+    {"exponents_xyz": [1, 0, 3], "coefficient": "2136553969048946425706583461895193558057581807329126279116741838244"},
+    {"exponents_xyz": [0, 4, 0], "coefficient": "4820844509965210903154656650018691395109768803919309923232483592888"},
+    {"exponents_xyz": [0, 3, 1], "coefficient": "2606918536317247384401097258492456910336664868908690228525338871688"},
+    {"exponents_xyz": [0, 2, 2], "coefficient": "2191122478227970367639344059218507829246517678805047955930149305147"},
+    {"exponents_xyz": [0, 1, 3], "coefficient": "4891274673068042537139598676961274321798020328245007740267703397722"},
+    {"exponents_xyz": [0, 0, 4], "coefficient": "16357462546507975892052026681520860983692116115217410288188390587272"}
+  ],
+  "validation": {
+    "nonsingular": true,
+    "frobenius_rational_moduli": true,
+    "normalized_invariants_in_prime_field": 13,
+    "frobenius_isomorphism_unique": true,
+    "hilbert_90_cocycle_valid": true,
+    "extension_and_descended_moduli_equal": true,
+    "magma_version": "2.29-10",
+    "calculator_seed": 1371805104
+  },
+  "open_obligations": [
+    "construct the source-to-Jacobian point map",
+    "verify the map kernel is the selected rank-three subgroup",
+    "verify the polarized-dual composition",
+    "measure a complete destination discrete-log workload before claiming a speedup"
+  ]
+}

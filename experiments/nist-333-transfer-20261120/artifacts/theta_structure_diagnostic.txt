@@ -1,0 +1,26 @@
+Tian q=523 theta-structure and sign diagnostic
+Date: 2026-11-19 UTC
+Magma: V2.29-10 public calculator
+
+Resolved defect:
+- all 64 raw h(0) values and all 64 squared normalized theta values transform
+  correctly under Q1/Q2 exchange
+- every one of the 15 four-theta Weber products also transforms with ratio +1
+- the missing information was the reduced-characteristic sign pattern in the
+  signed Weber sums
+- an exhaustive 2^6 audit found a unique correction: flip alpha_32 and
+  alpha_33 (mask 48)
+- with these signs, Tian's published q=523 quartic is reproduced exactly at
+  the level of weighted-projective Dixmier-Ohno invariants
+
+Controls ruled out before the correction:
+- omitting versus including Tian's displayed elliptic two-Weil constants gives
+  equal candidate moduli
+- all six orderings of Q1,Q2,Q3 fail with the preprint signs
+- transposing the d_2 bilinear refinement fails
+- changing the generic normalization point does not change candidate moduli
+- all 729 kernel and 4096 quotient normal-Weil identities remain exact
+
+The historical failures are retained in attempts.md.  The theta/sign blocker
+is closed; the remaining project blocker is the explicit point map and its
+composition certificate.

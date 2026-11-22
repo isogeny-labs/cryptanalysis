@@ -1,0 +1,39 @@
+{
+  "schema": "engineering.induced-transfer-interruption-audit/v1",
+  "at": "2026-11-20T19:54:45.456074+00:00",
+  "baseline_heads": {
+    "base": "304b7b3a6fc483267450f8472d0efb2df3ff7db4",
+    "consumer": "63932ec8023b4566a17e56ea5f04058e910625e2"
+  },
+  "baseline_source_sha256": "9a5fab92b8708c43890c73c436fb240d0faa9cbb0d41d6063b2fdbdd600c590a",
+  "candidate_source_sha256": "4e681a379f327800385595833d31fa601157e04db1c1f4a56599bc84faa098c0",
+  "candidate_test_sha256": "67b11d80264d7b66293a7683c469524e038e5305ace2660d9d2c023bacae8122",
+  "baseline_controls": {
+    "tests": 11,
+    "failures": 3,
+    "child_alive_after_parent_interrupt": 3,
+    "log_sha256": "974f36559f6f2f6637778a407fee3ad0b22e06913d18f0b8b9213ccefeca83db"
+  },
+  "candidate_controls": {
+    "tests": 11,
+    "failures": 0,
+    "errors": 0,
+    "child_alive_after_parent_interrupt": 0,
+    "log_sha256": "752a07d6035f2f8f7f5b2f558e1891af2335d55147418dc7fd9f85184846a337"
+  },
+  "lifecycle_control_scope": "disposable processes with mocked source guards; timeout shortened only in the control",
+  "original_guard_tests_unchanged": 7,
+  "actual_source_guard_bindings": {
+    "base": 73,
+    "consumer": 73
+  },
+  "source_guard_functions_ast_unchanged": true,
+  "phase_commands_ast_unchanged": true,
+  "phase_limits_unchanged": true,
+  "signal_handlers_restored": true,
+  "final_guard_failure_retains_failure": true,
+  "keyrings_and_historical_sources_changed": false,
+  "s3_accessed": false,
+  "kernel_replay_result": "pending current-head CI",
+  "performance_claim": null
+}

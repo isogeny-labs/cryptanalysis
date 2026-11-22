@@ -47,7 +47,7 @@ permissions:
 jobs:
   corpus:
     runs-on: ubuntu-24.04
-    timeout-minutes: 120
+    timeout-minutes: 180
     steps:
       - uses: actions/checkout@v7
         with:
@@ -64,7 +64,28 @@ jobs:
       - name: Exercise positive and negative proof fixtures
         run: tools/lean/selftest/run.sh
       - name: Refuse changed quartic sources and build pins
-        run: python3 tools/lean/test_current_corpus_gate.py
+        run: python3 -m unittest tools/lean/test_current_corpus_gate.py tools/lean/test_h112_admission.py tools/lean/test_chord_origin_admission.py tools/lean/test_historical_receipt_context.py
+      - name: Replay the exact historical affine-coset receipt context
+        env:
+          LEAN_CORPUS_EVIDENCE_DIR: ${{ runner.temp }}/lean-corpus-evidence
+        run: |
+          set -euo pipefail
+          head_before=$(git rev-parse HEAD)
+          git cat-file -e '545de2e1c91a301b342b45317f402be4497647ba^{commit}'
+          git -c gc.auto=0 fetch --no-tags --filter=blob:none origin \
+            718788b9a05908367346f393be954539f68a13b2 \
+            aa6ee7e2b1f757a7a78417b7322213eb52d0dd17 \
+            ba8ebf2dbaf6a668cd2a0e086186d6d569b69ff5
+          test "$(git rev-parse HEAD)" = "$head_before"
+          python3 - <<'PY_NATIVE'
+          import importlib.util
+          from pathlib import Path
+          path = Path('tools/lean/current-corpus-gate.py')
+          spec = importlib.util.spec_from_file_location('receipt_native_gate', path)
+          gate = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(gate)
+          gate.check_receipt_bound_source('research/xedni_lift_optimizer_20261101/lean/XedniAffineCoset.lean')
+          PY_NATIVE
       - name: Detect Hecke theorem sources
         id: hecke
         run: |
@@ -109,4 +130,122 @@ jobs:
         with:
           name: lean-corpus-evidence-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/lean-corpus-evidence
+          if-no-files-found: warn
+
+  standalone-formal:
+    # This additional job verifies Git-bound standalone inputs independently.
+    # The existing corpus job and all artifact/custody checks remain required.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 1
+          filter: blob:none
+          sparse-checkout: |
+            .github/workflows
+            tools/lean
+            experiments/hecke-432-formal-ci-20261025
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
+        with:
+          python-version: '3.12'
+      - name: Materialize every original standalone input from Git
+        run: |
+          python3 - <<'PYTHON'
+          import hashlib
+          import importlib.util
+          import json
+          import subprocess
+          from pathlib import Path, PurePosixPath
+          if not __debug__:
+              raise RuntimeError('Native input assertions must be enabled')
+          record = json.load(open('tools/lean/formal-projects-20261117.json'))
+          projects = sorted(record['projects'])
+          assert len(projects) == 63
+          assert all(p.startswith('experiments/xedni-') and p.endswith('/formal')
+                     and '..' not in PurePosixPath(p).parts for p in projects)
+          subprocess.run(['git', 'sparse-checkout', 'add', '--', *projects], check=True)
+          inputs = set(record['files'])
+          for project in record['projects'].values():
+              inputs.update(project['inputs'])
+          inputs.update(p['status_path'] for p in record.get('probes', {}).values())
+          inputs.update('experiments/hecke-432-formal-ci-20261025/' + name for name in
+                        ('lean-toolchain', 'lakefile.toml', 'lake-manifest.json'))
+          assert all(not PurePosixPath(p).is_absolute() and '..' not in PurePosixPath(p).parts
+                     for p in inputs)
+          subprocess.run(['git', 'ls-files', '--error-unmatch', '--', *sorted(inputs)],
+                         check=True, stdout=subprocess.DEVNULL)
+          def load(name, path):
+              spec = importlib.util.spec_from_file_location(name, path)
+              module = importlib.util.module_from_spec(spec)
+              spec.loader.exec_module(module)
+              return module
+          gate = load('input_gate', Path('tools/lean/current-corpus-gate.py'))
+          checker = Path('tools/lean/check_formal_projects.py')
+          manifest = Path('tools/lean/formal-projects-20261117.json')
+          assert hashlib.sha256(checker.read_bytes()).hexdigest() == gate.FORMAL_CHECKER_SHA256
+          assert hashlib.sha256(manifest.read_bytes()).hexdigest() == gate.FORMAL_MANIFEST_SHA256
+          gate.check_known_label_project_inputs()
+          load('input_checker', checker).validate(Path.cwd(), record)
+          PYTHON
+      - name: Install the exact standalone Lean toolchain
+        run: |
+          set -euo pipefail
+          toolchain="$(cat experiments/hecke-432-formal-ci-20261025/lean-toolchain)"
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/84d03798dd00e4f887183add4b577dac8ceebdcd/elan-init.sh | sh -s -- -y --default-toolchain "$toolchain"
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Reclaim ephemeral runner space for pinned dependencies
+        run: |
+          for sdk in /usr/local/lib/android /usr/share/dotnet /usr/local/share/powershell; do
+            if [ -d "$sdk" ]; then sudo rm -rf -- "$sdk"; fi
+          done
+          df -h /
+      - name: Fetch the exact upstream Mathlib dependency cache
+        working-directory: experiments/hecke-432-formal-ci-20261025
+        run: |
+          lean --version
+          lake exe cache get
+      - name: Check standalone cache and refusal controls
+        run: python3 -m unittest tools/lean/test_formal_projects.py
+      - name: Exercise actual native import-cache positive and negative controls
+        run: python3 tools/lean/test_formal_projects_native.py --evidence-dir "${{ runner.temp }}/standalone-import-cache-controls"
+      - name: Replay every original standalone proof context
+        env:
+          LEAN_CORPUS_EVIDENCE_DIR: ${{ runner.temp }}/standalone-formal-evidence
+        run: |
+          python3 -u - <<'PYTHON'
+          import importlib.util
+          import json
+          import os
+          from pathlib import Path
+          if not __debug__:
+              raise RuntimeError('Native coverage assertions must be enabled')
+          source = Path('tools/lean/current-corpus-gate.py')
+          spec = importlib.util.spec_from_file_location('standalone_gate', source)
+          gate = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(gate)
+          checked, probes = gate.check_formal_projects()
+          manifest = json.load(open('tools/lean/formal-projects-20261117.json'))
+          expected = set(manifest['files']) - set(manifest.get('probes', {}))
+          assert set(checked) == expected and len(checked) == 242
+          assert probes == set(manifest['probes']) and len(probes) == 2
+          evidence = Path(os.environ['LEAN_CORPUS_EVIDENCE_DIR'])
+          receipts = list(evidence.glob('formal-project-receipt-*/record.json'))
+          assert len(receipts) == 1
+          result = json.loads(receipts[0].read_text())
+          assert result['projects'] == 63 and result['fresh_native_module_contexts'] == 88
+          assert result['proof_source_and_alias_paths'] == 242
+          print('COMPLETE_STANDALONE_NATIVE_REPLAY ' + json.dumps({
+              'projects': 63, 'fresh_native_contexts': 88, 'checked_paths': 242,
+              'original_censored_inputs_without_theorem_standing': 2,
+              'github_sha': os.environ.get('GITHUB_SHA')}), flush=True)
+          PYTHON
+      - name: Retain standalone native diagnostics even on failure
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: standalone-formal-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/standalone-formal-evidence
+            ${{ runner.temp }}/standalone-import-cache-controls
           if-no-files-found: warn

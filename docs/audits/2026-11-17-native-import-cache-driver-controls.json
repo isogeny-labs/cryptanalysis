@@ -1,0 +1,22 @@
+{
+  "schema": "cryptanalysis.native-import-cache-controls/v1",
+  "scope": "Known-answer software controls; no fixture theorem standing",
+  "lean_version": "Lean (version 4.35.0-rc4, arm64-apple-darwin24.6.0, commit c29b6dda4f7c20e3eeaa717c4e565663c5cfa364, Release)",
+  "checker_sha256": "39651f83df07856f633765f6a89a23e5424cd7f65c85229386ee363379820839",
+  "driver_sha256": "5676071aa71c2dee5832c031ee1a24b460a90b1b5d9dda8f4454c5fe6a863c65",
+  "cases": [
+    {
+      "case": "invalid dependency change",
+      "refused": true,
+      "native_failure_records": [
+        "invalid-change/command-owjnsyzz/record.json"
+      ]
+    },
+    {
+      "case": "valid dependency change",
+      "checked_paths": 4,
+      "fresh_native_contexts": 4,
+      "receipt": "valid-change/formal-project-receipt-f98769p7/record.json"
+    }
+  ]
+}
