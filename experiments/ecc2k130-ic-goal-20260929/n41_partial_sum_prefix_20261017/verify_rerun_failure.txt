@@ -1,0 +1,1 @@
+After the first successful terminal write, a readback rerun of verify.py failed at terminal.json.open('x') with FileExistsError. All assertions before that write had passed. The verifier was corrected to compare an existing terminal receipt byte-independent via parsed JSON; the original terminal.json was retained.

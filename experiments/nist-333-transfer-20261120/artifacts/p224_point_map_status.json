@@ -1,0 +1,78 @@
+{
+  "elapsed_seconds": 181.95455884933472,
+  "format": "nist-p224-point-map-status-v1",
+  "implemented_map": {
+    "base_image_sha256": "b2920c811eb77e9e5a1eb5acc355ebaae894e35ce067e42f1e58c414b5365705",
+    "codomain": "level-2 projective Kummer coordinates of E^3/Lambda",
+    "coordinate_count": 64,
+    "domain": "E^3 over the exact degree-six working field",
+    "exact_sign_pair_collision": true,
+    "executable_entry_point": "P224ThetaEngine.quotient_kummer_image",
+    "formula": "scalar_i*g_i(P)^3*Theta(P+D_i)^2/Theta(P)^2",
+    "negative_image_sha256": "b2920c811eb77e9e5a1eb5acc355ebaae894e35ce067e42f1e58c414b5365705",
+    "sign_information": "lost: K(Q)=K(-Q), verified exactly on the test point"
+  },
+  "kernel_fiber_checks": {
+    "generator_checks": [
+      {
+        "exact_projective_equality": true,
+        "image_sha256": "b2920c811eb77e9e5a1eb5acc355ebaae894e35ce067e42f1e58c414b5365705",
+        "kernel_coefficients": [
+          1,
+          0,
+          0
+        ]
+      },
+      {
+        "exact_projective_equality": true,
+        "image_sha256": "b2920c811eb77e9e5a1eb5acc355ebaae894e35ce067e42f1e58c414b5365705",
+        "kernel_coefficients": [
+          0,
+          1,
+          0
+        ]
+      },
+      {
+        "exact_projective_equality": true,
+        "image_sha256": "b2920c811eb77e9e5a1eb5acc355ebaae894e35ce067e42f1e58c414b5365705",
+        "kernel_coefficients": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "interpretation": "exact function evaluation confirms the selected generators act trivially and one transverse 3-torsion direction does not",
+    "selected_kernel_order": 27,
+    "test_point": "generic source point translated by (P,0,0)",
+    "three_generators_exactly_collapsed": true,
+    "transverse_nonkernel_three_torsion_distinguished": true
+  },
+  "polarized_dual_certificate": {
+    "diagonal_then_sum_identity": "Sum o pi^dagger o pi o Diagonal = [9] on E",
+    "executable_signed_dual_composition_complete": false,
+    "gcd_9_n": 1,
+    "recovery_scalar_9_inverse_mod_n": "23964397037467235373037346744017445280406940190599459308162419882721",
+    "subgroup_order_n": "26959946667150639794667015087019625940457807714424391721682722368061",
+    "symbolic_certificate_complete": true,
+    "theorem_identity": "pi^dagger o pi = [3] on E^3 for a polarized (3,3,3)-isogeny"
+  },
+  "remaining_obstruction": {
+    "available_software_gap": "no local Magma/Sage/general plane-quartic Jacobian implementation and no public Tian point-map implementation was found",
+    "missing_stage": "recover a signed degree-three divisor on the descended quartic from the Kummer coordinates",
+    "required_construction": [
+      "construct the codomain Jacobian level-2 Weil functions xi using Riemann-Roch",
+      "interpolate Tian's eight low-degree symmetric zeta functions",
+      "solve the resulting Groebner system for an effective degree-three divisor",
+      "transport through the Hilbert-90 coordinate descent",
+      "implement the polarized dual on the same divisor representation"
+    ],
+    "why_current_map_is_insufficient": "Kummer coordinates cannot distinguish Q from -Q, so they cannot by themselves support a homomorphism or dual-composition test"
+  },
+  "status": {
+    "end_to_end_dual_composition": "open",
+    "kernel_test_at_kummer_stage": "complete for a generating set plus a transverse control",
+    "source_to_kummer_map": "complete and exact on tested points",
+    "source_to_signed_jacobian_divisor_map": "open"
+  }
+}

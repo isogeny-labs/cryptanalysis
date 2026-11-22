@@ -1,0 +1,32 @@
+{
+  "build_sha256": "57b79e8a595260627f4d6e9ff84666cd31c1f80f1e2c202bb0f30b6fde0f0cec",
+  "candidate_id": null,
+  "input_law": "same frozen N131 public raw point; SAT-stage diagnostic; source rotation schedule varies",
+  "inputs": {
+    "all_aligned": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_all_aligned_20261019/formula.xcnf",
+      "sha256": "94a21de8fe0bd7f678b87c42fea7bb1fc3b5f0057c873fcc2a083464b1f5133c"
+    },
+    "paired_aligned": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w29_staged_target_20261018/formula.xcnf",
+      "sha256": "c6fb714b67d5709c6053ed48c3e0ddf7fae299ba4561e82d7bd388bb3af5731a"
+    },
+    "triple_pair": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_triple_pair_20261019/formula.xcnf",
+      "sha256": "6a916d2f842b6cd06bf9e23fd4545417cd796f9dfb8358e27022f22a70bc9757"
+    }
+  },
+  "order": [
+    "paired_aligned",
+    "triple_pair",
+    "all_aligned"
+  ],
+  "rss_cap_bytes": 4294967296,
+  "runtime_sha256": "073ca37250b100a7f961de3475da8a4d489f3f2140c15f4c72457816893f3f01",
+  "script_sha256": "32a1907379e78320090a35a5f4975afdb7986340a1daeec6aa433f604a06609e",
+  "solver": "/opt/homebrew/Cellar/cryptominisat/5.14.7/bin/cryptominisat5",
+  "solver_sha256": "a3f85c3709b5e2a040bf82a4a604d1c7b9f10219bbf180a9e0f72319a2e892ac",
+  "status": "FROZEN_BEFORE_N131_THREE_WAY_STAGE_PROBE",
+  "wall_cap_seconds_per_arm": 60,
+  "worker_count": 1
+}

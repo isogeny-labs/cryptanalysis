@@ -1,0 +1,28 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-18T20:00:13Z",
+ "id": "PCC-20261118-61669d",
+ "kind": "theorem",
+ "producer": {
+  "commit": "5dc140c7abd1f758d812e647681985e975af1c66",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "674984462f0a6e913e13e5b28bb3afebaca9bf79545af71fe8228c35f9049137",
+   "kind": "lean",
+   "project": "research/xedni_origin_dedup_20261118/formal",
+   "theorem": "XedniOriginDedup.exactness_constant_on_fixed_key"
+  },
+  {
+   "decl_sha256": "52d59bf0295229325873004c80848d54a2b46726ba4608ca1f44fc9a85cfa008",
+   "kind": "lean",
+   "project": "research/xedni_origin_dedup_20261118/formal",
+   "theorem": "XedniOriginDedup.recovery_constant_on_fixed_key"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Abstract key-factorization implication only. The concrete geometric factorization for the plane-cubic implementation remains external and was exercised only by deterministic controls. The repository axiom auditor is incompatible with Lean 4.35, so this claim remains unverified.",
+ "statement": "If exactness and recovery factor through a transported fixed-coordinate key, then two origin-local representatives with the same key have identical exactness and recovery."
+}

@@ -1,0 +1,110 @@
+{
+  "cpu_protocol_sha256": "73d538946ddc637ce161a4f3dd0d1c78c0ee872baa9b2e40a097535fc3a8dcc1",
+  "cpu_ratios": {
+    "ordinary": {
+      "baseline_cpu_s": 14.316733,
+      "baseline_over_batch": 1.6429218320922536,
+      "batch_cpu_s": 8.714190000000002
+    },
+    "positive": {
+      "baseline_cpu_s": 14.656718000000001,
+      "baseline_over_batch": 1.6859953062239124,
+      "batch_cpu_s": 8.693214
+    }
+  },
+  "eight_terminal_queries_checked": 8,
+  "lean_stdout_sha256": "83b97a51886ca6079b89fe43fade1a62c8db332c073085d996a1955c1d57d6be",
+  "n41_result_sha256": "fe6c771851cc2550a0e66d59dfd2428fc37141bf99863337fa0420f85313fe00",
+  "protocol_sha256": "edfa9a039753c6e2a7715a5b750400d1f085be4774169393d7a5e3b91338aca1",
+  "rows": [
+    {
+      "child_system_cpu_s": null,
+      "child_user_cpu_s": null,
+      "implementation": "baseline",
+      "mode": "positive",
+      "parent_wall_s": 38.89420316699761,
+      "pass": "abba",
+      "peak_rss_bytes": 16465920,
+      "query_s": 27.6863995,
+      "setup_s": 11.129106458
+    },
+    {
+      "child_system_cpu_s": null,
+      "child_user_cpu_s": null,
+      "implementation": "batch",
+      "mode": "positive",
+      "parent_wall_s": 72.58419108299859,
+      "pass": "abba",
+      "peak_rss_bytes": 88391680,
+      "query_s": 45.102560833,
+      "setup_s": 27.23719125
+    },
+    {
+      "child_system_cpu_s": null,
+      "child_user_cpu_s": null,
+      "implementation": "batch",
+      "mode": "ordinary",
+      "parent_wall_s": 41.2717841670019,
+      "pass": "abba",
+      "peak_rss_bytes": 88375296,
+      "query_s": 13.698205958,
+      "setup_s": 27.545293416
+    },
+    {
+      "child_system_cpu_s": null,
+      "child_user_cpu_s": null,
+      "implementation": "baseline",
+      "mode": "ordinary",
+      "parent_wall_s": 82.27456741599963,
+      "pass": "abba",
+      "peak_rss_bytes": 16482304,
+      "query_s": 73.5450405,
+      "setup_s": 8.690389375
+    },
+    {
+      "child_system_cpu_s": 0.505725,
+      "child_user_cpu_s": 13.811008,
+      "implementation": "baseline",
+      "mode": "ordinary",
+      "parent_wall_s": 68.97938900000008,
+      "pass": "reverse",
+      "peak_rss_bytes": 16465920,
+      "query_s": 40.819215375,
+      "setup_s": 28.113257958
+    },
+    {
+      "child_system_cpu_s": 0.23502299999999998,
+      "child_user_cpu_s": 8.479167000000002,
+      "implementation": "batch",
+      "mode": "ordinary",
+      "parent_wall_s": 15.110125084000174,
+      "pass": "reverse",
+      "peak_rss_bytes": 88391680,
+      "query_s": 8.466696708,
+      "setup_s": 6.5773015
+    },
+    {
+      "child_system_cpu_s": 0.22298600000000002,
+      "child_user_cpu_s": 8.470227999999999,
+      "implementation": "batch",
+      "mode": "positive",
+      "parent_wall_s": 15.5996555419988,
+      "pass": "reverse",
+      "peak_rss_bytes": 88375296,
+      "query_s": 8.394920959,
+      "setup_s": 7.154829
+    },
+    {
+      "child_system_cpu_s": 0.6399130000000001,
+      "child_user_cpu_s": 14.016805000000002,
+      "implementation": "baseline",
+      "mode": "positive",
+      "parent_wall_s": 75.960386499999,
+      "pass": "reverse",
+      "peak_rss_bytes": 16465920,
+      "query_s": 69.139462167,
+      "setup_s": 6.760938041
+    }
+  ],
+  "status": "BATCHED_N131_ORACLE_MATCHED_OUTPUT_AUDIT_PASS"
+}

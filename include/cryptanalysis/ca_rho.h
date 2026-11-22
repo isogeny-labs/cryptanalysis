@@ -24,7 +24,10 @@ extern "C" {
 typedef struct ca_rho_params {
     uint32_t threads;          /* worker threads, 0 => 1 */
     uint32_t r;                /* adding-walk multipliers, 0 => auto (32 / 1024 with negation) */
-    int32_t dp_bits;           /* distinguished-point bits, -1 => auto, clamped to 58 */
+    /* Distinguished-point bits, -1 => auto.  An explicit value is clamped
+     * to floor(log2 n)/2 - 2 (2^dp_bits <= sqrt(n)/4): rarer distinguished
+     * points miss a walk's post-collision cycle, and the search never ends. */
+    int32_t dp_bits;
     uint32_t walks_per_thread; /* simultaneous walks per thread (batched inversion), 0 => auto */
     int      negation_map;     /* 1 to use the negation map when the group supports it */
     uint64_t seed;             /* 0 => random */
