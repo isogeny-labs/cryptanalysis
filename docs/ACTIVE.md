@@ -17,6 +17,7 @@ prime-field lift pipeline, while continuing to track the binary/Koblitz source
 and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
+- [ ] CT201–CT203: complete cold ECDLP source adjudication (matched five-arm rho/BSGS/IC, Williams order, distinct-Q per-block prospective gate; automation, started 2026-11-18, branch research/ct201-complete-single-target-gate-20261118, PR #1766; source CI 44/44 normal and -O at 36807d15; native/PCC blocked) [pcc:unverified]
 
 - [ ] Coset filter behind the BASELINES n = 41 K_0 row: Koblitz base builder at n >= 41 and the filter wired into that row's pair-table pipeline (Claude Code, started 2026-11-22, branch claude/coset-filter-n41-koblitz) [pcc:unverified]
 
