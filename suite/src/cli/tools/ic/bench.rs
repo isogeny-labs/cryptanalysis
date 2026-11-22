@@ -100,6 +100,12 @@ pub struct BenchArgs {
     /// averaged into the `vs rho` column; 0 leaves the column empty.
     #[arg(long, default_value_t = 16)]
     pub rho_runs: usize,
+    /// Threads for the relation phase (and the matched rho runs); 0 is
+    /// every available core.  Wall time only: every count, row, `S` and
+    /// recovered logarithm are those of `--threads 1`.  An oracle that
+    /// cannot fork stays serial.
+    #[arg(long, default_value_t = 1)]
+    pub threads: usize,
     /// A JSON file of configurations to sweep.  See the framework
     /// documentation for the schema.
     #[arg(long)]
@@ -317,27 +323,52 @@ struct RhoReference {
 /// logarithms.  `walk(target, planted, seed, max_steps)` runs one; the
 /// seeds and targets are the same for every walk, so two references on
 /// one instance are paired.
-fn rho_reference_for<G: CountedGroup>(
+///
+/// The runs are independent (each has its own seed and target), so with
+/// `threads > 1` they run concurrently and are collected in run order:
+/// the reference is the serial one, sooner.
+#[allow(clippy::too_many_arguments)]
+fn rho_reference_for<G: CountedGroup + Sync>(
     g: &G,
     generator: G::Elt,
     r: u64,
     seed: u64,
     repeats: usize,
     runs: usize,
-    mut walk: impl FnMut(G::Elt, u64, u64, u64) -> RhoResult,
-) -> Option<RhoReference> {
+    threads: usize,
+    walk: impl Fn(G::Elt, u64, u64, u64) -> RhoResult + Sync,
+) -> Option<RhoReference>
+where
+    G::Elt: Send + Sync,
+{
+    use rayon::prelude::*;
     if runs == 0 || r < 3 {
         return None;
     }
     let max_steps = (generic_floor_ops(r as f64, 1.0) * 64.0) as u64 + 4096;
-    let mut per_run = Vec::with_capacity(runs);
-    let (mut method, mut automorphisms) = (String::new(), 1);
-    for k in 0..runs {
+    let one = |k: usize| {
         let planted = planted_log(seed, k % repeats.max(1), r);
         let mut ops = GroupOps::default();
         let target = g.mul(&mut ops, generator, planted);
         let run_seed = seed ^ (0x5248_4F00 + k as u64);
-        let res = walk(target, planted, run_seed, max_steps);
+        (
+            planted,
+            run_seed,
+            walk(target, planted, run_seed, max_steps),
+        )
+    };
+    let results: Vec<(u64, u64, RhoResult)> = if threads > 1 {
+        rayon::ThreadPoolBuilder::new()
+            .num_threads(threads)
+            .build()
+            .map(|pool| pool.install(|| (0..runs).into_par_iter().map(one).collect()))
+            .unwrap_or_else(|_| (0..runs).map(one).collect())
+    } else {
+        (0..runs).map(one).collect()
+    };
+    let mut per_run = Vec::with_capacity(runs);
+    let (mut method, mut automorphisms) = (String::new(), 1);
+    for (planted, run_seed, res) in results {
         method = res.method.clone();
         automorphisms = res.automorphisms;
         per_run.push(RhoRun {
@@ -385,17 +416,37 @@ struct RhoReferences {
 /// `S`, because on toy subgroups the signed walk's set-up (thirty-two
 /// parallel walks started by scalar multiplications) outweighs what
 /// the Frobenius saves.  The plain walk rides along as the before mark.
-fn matched_rho(instance: &Instance, seed: u64, repeats: usize, runs: usize) -> RhoReferences {
+fn matched_rho(
+    instance: &Instance,
+    seed: u64,
+    repeats: usize,
+    runs: usize,
+    threads: usize,
+) -> RhoReferences {
     match instance {
         Instance::Prime(i) => {
             let (g, gen, r) = (&i.curve, i.generator_point(), i.r);
             RhoReferences {
-                matched: rho_reference_for(g, gen, r, seed, repeats, runs, |t, _, s, cap| {
-                    rho_reference_negation(g, gen, t, r, s, cap)
-                }),
-                plain: rho_reference_for(g, gen, r, seed, repeats, runs, |t, _, s, cap| {
-                    rho_reference(g, gen, t, r, s, cap)
-                }),
+                matched: rho_reference_for(
+                    g,
+                    gen,
+                    r,
+                    seed,
+                    repeats,
+                    runs,
+                    threads,
+                    |t, _, s, cap| rho_reference_negation(g, gen, t, r, s, cap),
+                ),
+                plain: rho_reference_for(
+                    g,
+                    gen,
+                    r,
+                    seed,
+                    repeats,
+                    runs,
+                    threads,
+                    |t, _, s, cap| rho_reference(g, gen, t, r, s, cap),
+                ),
                 candidates: Vec::new(),
                 rule: "negation map (A = 2): the only eligible automorphism of this curve",
             }
@@ -416,12 +467,14 @@ fn matched_rho(instance: &Instance, seed: u64, repeats: usize, runs: usize) -> R
         Instance::Binary(i) => {
             let bg = BinaryGroup(&i.fast);
             let (gen, r) = (i.generator, i.r);
-            let negation = rho_reference_for(&bg, gen, r, seed, repeats, runs, |t, _, s, cap| {
-                rho_reference_negation(&bg, gen, t, r, s, cap)
-            });
-            let plain = rho_reference_for(&bg, gen, r, seed, repeats, runs, |t, _, s, cap| {
-                rho_reference(&bg, gen, t, r, s, cap)
-            });
+            let negation =
+                rho_reference_for(&bg, gen, r, seed, repeats, runs, threads, |t, _, s, cap| {
+                    rho_reference_negation(&bg, gen, t, r, s, cap)
+                });
+            let plain =
+                rho_reference_for(&bg, gen, r, seed, repeats, runs, threads, |t, _, s, cap| {
+                    rho_reference(&bg, gen, t, r, s, cap)
+                });
             if i.koblitz.is_none() {
                 return RhoReferences {
                     matched: negation,
@@ -430,10 +483,19 @@ fn matched_rho(instance: &Instance, seed: u64, repeats: usize, runs: usize) -> R
                     rule: "negation map (A = 2): the only eligible automorphism of this curve",
                 };
             }
-            let signed = rho_reference_for(&bg, gen, r, seed, repeats, runs, |t, planted, s, _| {
-                signed_frobenius_rho(i, t, planted, s)
-                    .expect("a Koblitz instance carries its curve")
-            });
+            let signed = rho_reference_for(
+                &bg,
+                gen,
+                r,
+                seed,
+                repeats,
+                runs,
+                threads,
+                |t, planted, s, _| {
+                    signed_frobenius_rho(i, t, planted, s)
+                        .expect("a Koblitz instance carries its curve")
+                },
+            );
             let mut candidates: Vec<RhoReference> = signed.into_iter().chain(negation).collect();
             // The cheaper of the eligible walks, among those that verified.
             let best = candidates
@@ -556,7 +618,8 @@ fn run_binary(
         spec.seed = spec.seed.wrapping_add(rep as u64 * 0x9E37);
         let m = spec.oracle_params.u64_or("m", 2)? as u32;
         let mut subtract = SubtractOracle;
-        let mut subtract_binary = crate::cryptanalysis::ic_framework::binary_subtract::BinarySubtractOracle::new();
+        let mut subtract_binary =
+            crate::cryptanalysis::ic_framework::binary_subtract::BinarySubtractOracle::new();
         let mut mitm = MitmOracle::new(m);
         let mut frob = FrobeniusMitmOracle::new(m, inst);
         let mut affine = AffineS3Oracle::new(inst);
@@ -765,7 +828,17 @@ fn spec_from(
         max_trials: defaults.max_trials,
         seed: defaults.seed,
         solver_budget_seconds: defaults.solver_budget_seconds,
+        threads: resolve_threads(defaults.threads),
     })
+}
+
+/// `--threads 0` is every core this process may run on.
+fn resolve_threads(threads: usize) -> usize {
+    if threads == 0 {
+        std::thread::available_parallelism().map_or(1, |n| n.get())
+    } else {
+        threads
+    }
 }
 
 pub fn run(args: BenchArgs, json_only: bool) -> Result<Value, String> {
@@ -929,7 +1002,13 @@ pub fn run(args: BenchArgs, json_only: bool) -> Result<Value, String> {
     let started = std::time::Instant::now();
     // The method boundary on this instance, before any configuration:
     // every row's `vs rho` is its S over the matched reference's mean.
-    let references = matched_rho(&instance, args.seed, args.repeats, args.rho_runs);
+    let references = matched_rho(
+        &instance,
+        args.seed,
+        args.repeats,
+        args.rho_runs,
+        resolve_threads(args.threads),
+    );
     let rho = &references.matched;
     let rho_s = rho.as_ref().filter(|r| r.all_verified).map(|r| r.mean_s);
     if !json_only {

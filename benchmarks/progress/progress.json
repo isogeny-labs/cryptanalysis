@@ -22,12 +22,12 @@
       "sha256": "c36443b17548a2f9c4f2843635fbaed6abe04788a259585f38605f7447f11349"
     }
   ],
-  "latest_record": "20261118T1710Z-l2c-rref-sat-confirm-pdp-m4",
+  "latest_record": "20261120T1913Z-ic-threads-gate",
   "note": "Every value is quoted from the record it names, in that record's unit. Percentages and ratios under 'derived' are computed here from those values and are not measurements. Series in different units are never compared. 4 digest-pinned historical measured records are excluded from all series and derived comparisons; recorded status counts retain them. See integrity_exclusions in progress.json and PROGRESS.md for reasons.",
   "records": {
     "censored": 1,
-    "invalid": 36,
-    "measured": 39,
+    "invalid": 38,
+    "measured": 41,
     "open": 0
   },
   "repo": "cryptanalysis",
@@ -1963,6 +1963,248 @@
         }
       ],
       "problem": "ic:N53",
+      "unit": "ratio"
+    },
+    {
+      "better": "lower",
+      "first": 0.444,
+      "latest": 0.444,
+      "latest_derived": {},
+      "metric": "cell_wall_char2_27",
+      "points": [
+        {
+          "commit": "94fa0d60b299",
+          "date": "2026-11-20",
+          "derived": {},
+          "n": 1,
+          "record": "20261120T1852Z-ic-instance-search-wall",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "phase-3 ic bench cell wall, previous vs this binary, counts identical: prime-24 39.9->0.34 s, char2-27 15.7->0.44 s, char2-29 355.7->1.40 s, koblitz-43 13.9->14.5 s (no curve search there)",
+          "value": 0.444
+        }
+      ],
+      "problem": "ic:bench-cell-wall-phase3",
+      "unit": "wall_s"
+    },
+    {
+      "better": "lower",
+      "first": 1.4,
+      "latest": 1.4,
+      "latest_derived": {},
+      "metric": "cell_wall_char2_29",
+      "points": [
+        {
+          "commit": "94fa0d60b299",
+          "date": "2026-11-20",
+          "derived": {},
+          "n": 1,
+          "record": "20261120T1852Z-ic-instance-search-wall",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "phase-3 ic bench cell wall, previous vs this binary, counts identical: prime-24 39.9->0.34 s, char2-27 15.7->0.44 s, char2-29 355.7->1.40 s, koblitz-43 13.9->14.5 s (no curve search there)",
+          "value": 1.4
+        }
+      ],
+      "problem": "ic:bench-cell-wall-phase3",
+      "unit": "wall_s"
+    },
+    {
+      "better": "lower",
+      "first": 14.45,
+      "latest": 14.45,
+      "latest_derived": {},
+      "metric": "cell_wall_koblitz_43",
+      "points": [
+        {
+          "commit": "94fa0d60b299",
+          "date": "2026-11-20",
+          "derived": {},
+          "n": 1,
+          "record": "20261120T1852Z-ic-instance-search-wall",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "phase-3 ic bench cell wall, previous vs this binary, counts identical: prime-24 39.9->0.34 s, char2-27 15.7->0.44 s, char2-29 355.7->1.40 s, koblitz-43 13.9->14.5 s (no curve search there)",
+          "value": 14.45
+        }
+      ],
+      "problem": "ic:bench-cell-wall-phase3",
+      "unit": "wall_s"
+    },
+    {
+      "better": "lower",
+      "first": 0.342,
+      "latest": 0.342,
+      "latest_derived": {},
+      "metric": "cell_wall_prime_24",
+      "points": [
+        {
+          "commit": "94fa0d60b299",
+          "date": "2026-11-20",
+          "derived": {},
+          "n": 1,
+          "record": "20261120T1852Z-ic-instance-search-wall",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "phase-3 ic bench cell wall, previous vs this binary, counts identical: prime-24 39.9->0.34 s, char2-27 15.7->0.44 s, char2-29 355.7->1.40 s, koblitz-43 13.9->14.5 s (no curve search there)",
+          "value": 0.342
+        }
+      ],
+      "problem": "ic:bench-cell-wall-phase3",
+      "unit": "wall_s"
+    },
+    {
+      "better": "higher",
+      "first": 2.75,
+      "latest": 2.75,
+      "latest_derived": {},
+      "metric": "speedup_t4_char2_23_descent_f4",
+      "points": [
+        {
+          "commit": "94fa0d60b299",
+          "date": "2026-11-20",
+          "derived": {},
+          "n": 5,
+          "record": "20261120T1852Z-ic-threads-scaling",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            2.692,
+            2.811
+          ],
+          "summary": "ic --threads 4 vs 1, relation phase, counts identical: subtract 3.22x, descent-algebraic+f4 2.75x; cheap oracles 0.82-0.87x at this build (gate fixed in 77e4f1d)",
+          "value": 2.75
+        }
+      ],
+      "problem": "ic:relation-phase-threads",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.821,
+      "latest": 0.917,
+      "latest_derived": {
+        "improvement_vs_first_percent": 11.6931,
+        "improvement_vs_previous_percent": 11.6931
+      },
+      "metric": "speedup_t4_koblitz43_frobmitm",
+      "points": [
+        {
+          "commit": "94fa0d60b299",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 5,
+          "record": "20261120T1852Z-ic-threads-scaling",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.784,
+            0.861
+          ],
+          "summary": "ic --threads 4 vs 1, relation phase, counts identical: subtract 3.22x, descent-algebraic+f4 2.75x; cheap oracles 0.82-0.87x at this build (gate fixed in 77e4f1d)",
+          "value": 0.821
+        },
+        {
+          "commit": "3aa360c1cd66",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": 11.6931,
+            "improvement_vs_previous_percent": 11.6931
+          },
+          "n": 5,
+          "record": "20261120T1913Z-ic-threads-gate",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.86,
+            0.977
+          ],
+          "summary": "77e4f1d: cheap oracles probe-gated to the --threads 1 loop; --threads 4 vs 1 relation phase koblitz43 0.92x [0.86,0.98], mitm2 0.85x [0.70,1.04] (0.03 s phase); counts identical",
+          "value": 0.917
+        }
+      ],
+      "problem": "ic:relation-phase-threads",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.874,
+      "latest": 0.854,
+      "latest_derived": {
+        "improvement_vs_first_percent": -2.2883,
+        "improvement_vs_previous_percent": -2.2883
+      },
+      "metric": "speedup_t4_prime24_mitm2",
+      "points": [
+        {
+          "commit": "94fa0d60b299",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 5,
+          "record": "20261120T1852Z-ic-threads-scaling",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.811,
+            0.954
+          ],
+          "summary": "ic --threads 4 vs 1, relation phase, counts identical: subtract 3.22x, descent-algebraic+f4 2.75x; cheap oracles 0.82-0.87x at this build (gate fixed in 77e4f1d)",
+          "value": 0.874
+        },
+        {
+          "commit": "3aa360c1cd66",
+          "date": "2026-11-20",
+          "derived": {
+            "improvement_vs_first_percent": -2.2883,
+            "improvement_vs_previous_percent": -2.2883
+          },
+          "n": 5,
+          "record": "20261120T1913Z-ic-threads-gate",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.703,
+            1.037
+          ],
+          "summary": "77e4f1d: cheap oracles probe-gated to the --threads 1 loop; --threads 4 vs 1 relation phase koblitz43 0.92x [0.86,0.98], mitm2 0.85x [0.70,1.04] (0.03 s phase); counts identical",
+          "value": 0.854
+        }
+      ],
+      "problem": "ic:relation-phase-threads",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 3.216,
+      "latest": 3.216,
+      "latest_derived": {},
+      "metric": "speedup_t4_prime24_subtract",
+      "points": [
+        {
+          "commit": "94fa0d60b299",
+          "date": "2026-11-20",
+          "derived": {},
+          "n": 5,
+          "record": "20261120T1852Z-ic-threads-scaling",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            3.153,
+            3.282
+          ],
+          "summary": "ic --threads 4 vs 1, relation phase, counts identical: subtract 3.22x, descent-algebraic+f4 2.75x; cheap oracles 0.82-0.87x at this build (gate fixed in 77e4f1d)",
+          "value": 3.216
+        }
+      ],
+      "problem": "ic:relation-phase-threads",
       "unit": "ratio"
     },
     {
