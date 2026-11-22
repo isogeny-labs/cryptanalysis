@@ -748,7 +748,24 @@ and `hashed_limit_hits` (queries stopped by `steps`) stay as diagnostics.
 Because the pricing is wall time, `S` for this arm is host-dependent;
 compare it only with an arm measured in the same process run or session.
 
-`ic bench --list` prints this with every parameter each plug-in reads.
+`engine=join` (both stages, default `tensor`) replaces the crate's Boolean
+network with the finite-size form of the short-box formulation: each slot is
+enumerated natively along its inverse-hash coordinate `t in [0, tau)`
+(`z = alpha^-1 (t - beta) mod s`, `z < 2p`, one square root per label), the
+same points in the same order as the crate's enumeration, and a query is an
+exact ordered meet-in-the-middle over those lists (the first `ceil(m/2)`
+slots tabulated once, the rest walked per query). A miss over the whole
+right box certifies that no ordered witness exists, as the crate's
+`Ok(None)` does; every returned witness is replayed to the target sum. It is
+not the Gauss-reduced two-dimensional box, the floor-sum cancellation or the
+parity extraction of the Lead 2C derivation, and it is a meet-in-the-middle
+over the hashed slots, not a subexponential algorithm. `prime_cert` (default
+`mr`) certifies the hash prime `s` with deterministic Miller-Rabin
+(exact for every `u64`); `prime_cert=aks` keeps the crate's AKS. With
+`engine=tensor` the crate's `FactorBase::new` still runs AKS inside every
+slot base, which the plug-in cannot bypass (`cert_steps` gives that its own
+budget). `ic bench --list` prints this with every parameter each plug-in
+reads.
 
 ### Source map
 
