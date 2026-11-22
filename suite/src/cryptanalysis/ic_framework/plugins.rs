@@ -252,12 +252,106 @@ impl<G: CountedGroup> DecompositionOracle<G> for SubtractOracle {
     }
 }
 
+/// How a pair table's coset filter labelled the base, for the report.
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
+pub struct CosetFilter {
+    /// `off` (not asked, `m ≠ 2` or cofactor 1), `trace` (cofactor 2, the
+    /// free `Tr(x) = Tr(a)` test) or `scalar` (`[r]P` per base point,
+    /// charged as scalar multiplications).
+    pub mode: &'static str,
+    /// Points of the base that lie in the subgroup `⟨G⟩`.
+    pub in_subgroup: u64,
+    /// Distinct classes seen among the base points.
+    pub classes: u64,
+}
+
+/// The coset filter for a two-summand pair table.
+///
+/// A target `R = [a]G + [b]Q` lies in the subgroup `⟨G⟩` of index `h`
+/// (the cofactor), and `P_i + P_j = R` forces the classes of `P_i` and
+/// `P_j` in `E/⟨G⟩` to cancel.  Every other pair of the table is an
+/// addition that no subgroup target can ever hit; with `h` classes about
+/// `1 − 1/h` of a full table is such dead weight, and the table is the
+/// bulk of the two-summand cost on every binary ledger instance.  The
+/// relations a filtered table yields are identical: a key that a subgroup
+/// target can hit is only ever witnessed by a pair whose classes cancel
+/// (`±R` share a class), and the surviving pairs are visited in the full
+/// build's order, so the first witness is the same.
+///
+/// Returns the per-point class keys `(key(T_i), key(−T_i))` with
+/// `T_i = [r]P_i ∈ E[h]`, or the parity classes when the group reads them
+/// for free and the cofactor is 2; `None` when the filter does nothing.
+pub fn coset_classes<G: CountedGroup>(
+    ctx: &InstanceCtx<G>,
+    fb: &FactorBase<G::Elt>,
+    ops: &mut GroupOps,
+    report: &mut CosetFilter,
+) -> Option<Vec<(u64, u64)>> {
+    let g = ctx.group;
+    if ctx.cofactor <= 1 {
+        report.mode = "off";
+        return None;
+    }
+    let parity: Option<Vec<u8>> = if ctx.cofactor == 2 {
+        fb.points.iter().map(|p| g.coset_parity(p)).collect()
+    } else {
+        None
+    };
+    let classes: Vec<(u64, u64)> = match parity {
+        Some(par) => {
+            report.mode = "trace";
+            // Class 0 is the subgroup; with two classes each is its own
+            // negative, so the pair key is the class itself.
+            par.iter().map(|&c| (c as u64, c as u64)).collect()
+        }
+        None => {
+            report.mode = "scalar";
+            // One `[r]P` per ± pair: `[r](−P) = −[r]P`, so the negative's
+            // keys are the same pair swapped.
+            let mut out: Vec<Option<(u64, u64)>> = vec![None; fb.points.len()];
+            for i in 0..fb.points.len() {
+                if out[i].is_some() {
+                    continue;
+                }
+                let t = g.mul(ops, fb.points[i], ctx.r);
+                let (k, nk) = (g.key(&t), g.key(&g.neg(t)));
+                out[i] = Some((k, nk));
+                let j = fb.neg_index[i];
+                if j < out.len() && out[j].is_none() {
+                    out[j] = Some((nk, k));
+                }
+            }
+            out.into_iter().map(|c| c.expect("every point labelled")).collect()
+        }
+    };
+    let identity_key = if report.mode == "trace" {
+        0
+    } else {
+        g.key(&g.identity())
+    };
+    report.in_subgroup = classes.iter().filter(|(k, _)| *k == identity_key).count() as u64;
+    let mut seen: Vec<u64> = classes.iter().map(|(k, _)| *k).collect();
+    seen.sort_unstable();
+    seen.dedup();
+    report.classes = seen.len() as u64;
+    Some(classes)
+}
+
+fn read_coset_flag(params: &Params) -> Result<bool, String> {
+    match params.u64_or("coset_filter", 0)? {
+        0 => Ok(false),
+        1 => Ok(true),
+        _ => Err("coset_filter must be 0 or 1".into()),
+    }
+}
+
 /// Meet in the middle over a pair table: memory for time, the lever
 /// that makes a two-summand search `O(1)` a target instead of `O(|F|)`.
 pub struct MitmOracle {
     m: u32,
     table: Option<PairTable>,
     native_setup_ns: u64,
+    pub coset: CosetFilter,
 }
 
 impl MitmOracle {
@@ -266,6 +360,7 @@ impl MitmOracle {
             m,
             table: None,
             native_setup_ns: 0,
+            coset: CosetFilter::default(),
         }
     }
 }
@@ -281,11 +376,16 @@ impl<G: CountedGroup> DecompositionOracle<G> for MitmOracle {
 
     fn describe(&self, params: &Params) -> String {
         format!(
-            "a table of pair sums probed once per target (m = 2) or once per R − P (m = 3), {}",
+            "a table of pair sums probed once per target (m = 2) or once per R − P (m = 3), {}{}",
             if params.flag("negation_folded") {
                 "built with the negation fold"
             } else {
                 "built in full"
+            },
+            if params.flag("coset_filter") {
+                ", coset-filtered to the pairs whose classes in E/⟨G⟩ cancel"
+            } else {
+                ""
             }
         )
     }
@@ -294,7 +394,8 @@ impl<G: CountedGroup> DecompositionOracle<G> for MitmOracle {
         &[(
             "negation_folded",
             "1 to build only one of each ±pair, halving the table's additions",
-        ), ("native_setup_pricing", "0 or1, default0; price whole preparation in nanoseconds and retain additions as diagnostics")]
+        ), ("native_setup_pricing", "0 or1, default0; price whole preparation in nanoseconds and retain additions as diagnostics"),
+        ("coset_filter", "1 to build only the pairs whose coset classes in E/<G> cancel: with cofactor h only those can sum to a subgroup target, so about 1 - 1/h of the table's additions are skipped; m = 2 only, no-op at m = 3 and with cofactor 1; cofactor 2 reads the class from Tr(x) = Tr(a) for free, larger cofactors charge one [r]P per base point")]
     }
 
     fn prepare(
@@ -309,12 +410,26 @@ impl<G: CountedGroup> DecompositionOracle<G> for MitmOracle {
             return Err("native_setup_pricing must be0 or1".into());
         }
         let started = Instant::now();
-        let table = if params.flag("negation_folded") {
-            PairTable::build_negation_folded(ctx.group, fb)
+        let mut label_ops = GroupOps::default();
+        self.coset = CosetFilter { mode: "off", ..Default::default() };
+        let classes = if read_coset_flag(params)? && self.m == 2 {
+            coset_classes(ctx, fb, &mut label_ops, &mut self.coset)
         } else {
-            PairTable::build(ctx.group, fb)
+            None
         };
-        // The table's construction is part of the pipeline's cost.
+        let keep = classes
+            .as_ref()
+            .map(|c| move |i: usize, j: usize| c[i].0 == c[j].1);
+        let keep_ref: Option<&dyn Fn(usize, usize) -> bool> =
+            keep.as_ref().map(|k| k as &dyn Fn(usize, usize) -> bool);
+        let table = if params.flag("negation_folded") {
+            PairTable::build_negation_folded_filtered(ctx.group, fb, keep_ref)
+        } else {
+            PairTable::build_filtered(ctx.group, fb, keep_ref)
+        };
+        // The table's construction is part of the pipeline's cost, and so
+        // are the class labels when they cost group operations.
+        ops.merge(label_ops);
         if native == 0 {
             ops.merge(table.build_ops);
         }
@@ -328,11 +443,20 @@ impl<G: CountedGroup> DecompositionOracle<G> for MitmOracle {
     }
 
     fn setup_native(&self) -> std::collections::BTreeMap<String, u64> {
+        let mut out = std::collections::BTreeMap::new();
+        if self.coset.mode != "off" && !self.coset.mode.is_empty() {
+            out.insert("mitm_coset_filter_in_subgroup".into(), self.coset.in_subgroup);
+            out.insert("mitm_coset_filter_classes".into(), self.coset.classes);
+            out.insert(
+                "mitm_coset_filter_scalar_labels".into(),
+                u64::from(self.coset.mode == "scalar"),
+            );
+        }
         if self.native_setup_ns == 0 {
-            return Default::default();
+            return out;
         }
         let observed = self.table.as_ref().unwrap().build_ops;
-        std::collections::BTreeMap::from([
+        out.extend([
             ("mitm_native_setup_ns".into(), self.native_setup_ns),
             ("mitm_setup_observed_adds".into(), observed.adds),
             ("mitm_setup_observed_doubles".into(), observed.doubles),
@@ -340,7 +464,8 @@ impl<G: CountedGroup> DecompositionOracle<G> for MitmOracle {
                 "mitm_setup_observed_scalar_mults".into(),
                 observed.scalar_mults,
             ),
-        ])
+        ]);
+        out
     }
 
     fn decompose(
@@ -362,6 +487,7 @@ pub struct FrobeniusMitmOracle<'i> {
     m: u32,
     instance: &'i BinaryInstance,
     table: Option<FrobeniusPairTable>,
+    pub coset: CosetFilter,
 }
 
 impl<'i> FrobeniusMitmOracle<'i> {
@@ -370,6 +496,7 @@ impl<'i> FrobeniusMitmOracle<'i> {
             m,
             instance,
             table: None,
+            coset: CosetFilter::default(),
         }
     }
 }
@@ -383,19 +510,57 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for FrobeniusMitmOracle<'_> {
         self.m
     }
 
-    fn describe(&self, _params: &Params) -> String {
-        "a pair table folded by the signed Frobenius, one entry per orbit".into()
+    fn describe(&self, params: &Params) -> String {
+        format!(
+            "a pair table folded by the signed Frobenius, one entry per orbit{}",
+            if params.flag("coset_filter") {
+                ", coset-filtered to the pairs whose classes in E/⟨G⟩ cancel"
+            } else {
+                ""
+            }
+        )
+    }
+
+    fn parameters(&self) -> &[(&str, &str)] {
+        &[("coset_filter", "1 to build only the representative-point pairs whose coset classes in E/<G> cancel (the Frobenius preserves the class); m = 2 only, no-op at m = 3 and with cofactor 1")]
+    }
+
+    fn setup_native(&self) -> std::collections::BTreeMap<String, u64> {
+        if self.coset.mode == "off" || self.coset.mode.is_empty() {
+            return Default::default();
+        }
+        std::collections::BTreeMap::from([
+            ("mitm_coset_filter_in_subgroup".into(), self.coset.in_subgroup),
+            ("mitm_coset_filter_classes".into(), self.coset.classes),
+            (
+                "mitm_coset_filter_scalar_labels".into(),
+                u64::from(self.coset.mode == "scalar"),
+            ),
+        ])
     }
 
     fn prepare(
         &mut self,
-        _ctx: &InstanceCtx<BinaryGroup<'a>>,
+        ctx: &InstanceCtx<BinaryGroup<'a>>,
         fb: &FactorBase<FastPoint>,
-        _params: &Params,
+        params: &Params,
         ops: &mut GroupOps,
     ) -> Result<(), String> {
-        let table = FrobeniusPairTable::build(self.instance, fb)
+        let mut label_ops = GroupOps::default();
+        self.coset = CosetFilter { mode: "off", ..Default::default() };
+        let classes = if read_coset_flag(params)? && self.m == 2 {
+            coset_classes(ctx, fb, &mut label_ops, &mut self.coset)
+        } else {
+            None
+        };
+        let keep = classes
+            .as_ref()
+            .map(|c| move |i: usize, j: usize| c[i].0 == c[j].1);
+        let keep_ref: Option<&dyn Fn(usize, usize) -> bool> =
+            keep.as_ref().map(|k| k as &dyn Fn(usize, usize) -> bool);
+        let table = FrobeniusPairTable::build_filtered(self.instance, fb, keep_ref)
             .ok_or("this instance has no Koblitz structure to fold by")?;
+        ops.merge(label_ops);
         ops.merge(table.build_ops);
         self.table = Some(table);
         Ok(())
@@ -754,5 +919,169 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for DescentAlgebraicOracle<'_> {
 
     fn solver_totals(&self) -> Option<SolverTotals> {
         Some(self.totals.clone())
+    }
+}
+
+#[cfg(test)]
+mod coset_filter_tests {
+    use super::*;
+    use crate::cryptanalysis::ic_boundary::{random_binary_instance, FrobeniusPairTable};
+    use rand::rngs::StdRng;
+    use rand::{Rng, SeedableRng};
+
+    fn ctx_for<'a>(inst: &'a BinaryInstance, g: &'a BinaryGroup<'a>) -> InstanceCtx<'a, BinaryGroup<'a>> {
+        InstanceCtx {
+            group: g,
+            generator: inst.generator,
+            target: inst.generator,
+            r: inst.r,
+            cofactor: inst.cofactor,
+            group_order: inst.group_order,
+            name: inst.name.clone(),
+            field_degree: Some(inst.n),
+        }
+    }
+
+    /// Instances with cofactor 2, 4 and 8 where the search finds them.
+    fn instances() -> Vec<BinaryInstance> {
+        let mut out = Vec::new();
+        for (n, max_h) in [(13u32, 2u64), (15, 4), (17, 8), (14, 8)] {
+            for seed in 1..40u64 {
+                if let Some(inst) = random_binary_instance(n, seed, max_h) {
+                    if inst.cofactor > 1
+                        && !out.iter().any(|o: &BinaryInstance| o.cofactor == inst.cofactor && o.n == n)
+                    {
+                        out.push(inst);
+                        break;
+                    }
+                }
+            }
+        }
+        assert!(out.len() >= 3, "need cofactor-2, -4 and -8 instances");
+        out
+    }
+
+    /// **The trace test is the coset class when the cofactor is 2.**
+    /// `P ∈ 2E ⇔ Tr(x) = Tr(a)`, and `2E` is the index-2 subgroup.
+    #[test]
+    fn trace_parity_is_the_subgroup_test_at_cofactor_two() {
+        let inst = instances().into_iter().find(|i| i.cofactor == 2).expect("a cofactor-2 instance");
+        let g = BinaryGroup(&inst.fast);
+        let fb = binary_subspace_factor_base(&inst, &[1, 2, 4, 8, 16]);
+        let mut ops = GroupOps::default();
+        let (mut zero, mut one) = (0, 0);
+        for &p in &fb.points {
+            let in_subgroup = g.is_identity(&g.mul(&mut ops, p, inst.r));
+            let parity = g.coset_parity(&p).expect("binary groups read the parity");
+            assert_eq!(parity == 0, in_subgroup, "x = {:#x}", p.x);
+            if parity == 0 { zero += 1 } else { one += 1 }
+        }
+        assert!(zero > 0 && one > 0, "the base must straddle both cosets ({zero}/{one})");
+    }
+
+    /// **A coset-filtered table decomposes every subgroup target exactly
+    /// as the full table does, with fewer additions.**  Same witnesses,
+    /// same `None`s, on cofactors 2, 4 and 8, folded and unfolded.
+    #[test]
+    fn coset_filtered_table_agrees_with_the_full_table_on_subgroup_targets() {
+        for inst in instances() {
+            let g = BinaryGroup(&inst.fast);
+            let ctx = ctx_for(&inst, &g);
+            let fb = binary_subspace_factor_base(&inst, &[1, 2, 4, 8, 16, 32]);
+            let mut label_ops = GroupOps::default();
+            let mut report = CosetFilter::default();
+            let classes = coset_classes(&ctx, &fb, &mut label_ops, &mut report)
+                .expect("cofactor > 1 yields classes");
+            assert_eq!(report.mode, if inst.cofactor == 2 { "trace" } else { "scalar" });
+            assert!(report.classes >= 2 && report.classes <= inst.cofactor, "{report:?}");
+            let keep = |i: usize, j: usize| classes[i].0 == classes[j].1;
+            for folded in [false, true] {
+                let (full, filtered) = if folded {
+                    (
+                        PairTable::build_negation_folded(&g, &fb),
+                        PairTable::build_negation_folded_filtered(&g, &fb, Some(&keep)),
+                    )
+                } else {
+                    (PairTable::build(&g, &fb), PairTable::build_filtered(&g, &fb, Some(&keep)))
+                };
+                assert!(
+                    filtered.build_ops.adds * 3 <= full.build_ops.adds * 2,
+                    "h = {}: filtered {} vs full {} additions",
+                    inst.cofactor,
+                    filtered.build_ops.adds,
+                    full.build_ops.adds
+                );
+                let mut rng = StdRng::seed_from_u64(inst.cofactor * 1000 + inst.n as u64);
+                let (mut hits, mut ops_a, mut ops_b, mut la, mut lb) =
+                    (0, GroupOps::default(), GroupOps::default(), 0u64, 0u64);
+                for _ in 0..400 {
+                    let k = rng.gen_range(1..inst.r);
+                    let target = g.mul(&mut GroupOps::default(), inst.generator, k);
+                    let a = full.probe(&g, &fb, &mut ops_a, &mut la, target);
+                    let b = filtered.probe(&g, &fb, &mut ops_b, &mut lb, target);
+                    assert_eq!(a, b, "h = {} folded = {folded}: k = {k}", inst.cofactor);
+                    hits += usize::from(a.is_some());
+                }
+                assert!(hits > 0, "h = {}: no target decomposed", inst.cofactor);
+            }
+        }
+    }
+
+    /// **The Frobenius-folded table obeys the same identity on a Koblitz
+    /// instance**, where the cofactor is 2 or 4.
+    #[test]
+    fn coset_filtered_frobenius_table_agrees_with_the_full_one() {
+        use crate::cryptanalysis::ic_boundary::koblitz_instance;
+        let Some(inst) = koblitz_instance(1, 13) else {
+            return;
+        };
+        if inst.cofactor <= 1 {
+            return;
+        }
+        let g = BinaryGroup(&inst.fast);
+        let ctx = ctx_for(&inst, &g);
+        let Some(frob) = build_frobenius_factor_base_from_divisor(inst.koblitz.as_ref().unwrap(), &[0]) else {
+            return;
+        };
+        let Some(fb) = koblitz_factor_base(&inst, &frob, ColumnFold::SignedFrobeniusOrbit, String::new()) else {
+            return;
+        };
+        let mut report = CosetFilter::default();
+        let classes = coset_classes(&ctx, &fb, &mut GroupOps::default(), &mut report).unwrap();
+        let keep = |i: usize, j: usize| classes[i].0 == classes[j].1;
+        let full = FrobeniusPairTable::build(&inst, &fb).unwrap();
+        let filtered = FrobeniusPairTable::build_filtered(&inst, &fb, Some(&keep)).unwrap();
+        assert!(filtered.build_ops.adds < full.build_ops.adds);
+        let mut rng = StdRng::seed_from_u64(13);
+        let mut hits = 0;
+        for _ in 0..300 {
+            let k = rng.gen_range(1..inst.r);
+            let target = g.mul(&mut GroupOps::default(), inst.generator, k);
+            let (mut ca, mut cb) = (OracleCounters::default(), OracleCounters::default());
+            let a = full.probe(&g, &fb, &mut GroupOps::default(), &mut ca, target);
+            let b = filtered.probe(&g, &fb, &mut GroupOps::default(), &mut cb, target);
+            assert_eq!(a, b, "k = {k}");
+            hits += usize::from(a.is_some());
+        }
+        assert!(hits > 0);
+    }
+
+    /// The flag is a no-op at m = 3 and rejects values other than 0/1.
+    #[test]
+    fn the_flag_is_ignored_at_three_summands_and_validated() {
+        let inst = instances().remove(0);
+        let g = BinaryGroup(&inst.fast);
+        let ctx = ctx_for(&inst, &g);
+        let fb = binary_subspace_factor_base(&inst, &[1, 2, 4, 8]);
+        let mut params = Params::default();
+        params.set("coset_filter", "1");
+        let mut three = MitmOracle::new(3);
+        three.prepare(&ctx, &fb, &params, &mut GroupOps::default()).unwrap();
+        assert_eq!(three.coset.mode, "off");
+        let mut two = MitmOracle::new(2);
+        two.prepare(&ctx, &fb, &params, &mut GroupOps::default()).unwrap();
+        assert_ne!(two.coset.mode, "off");
+        params.set("coset_filter", "2");
+        assert!(MitmOracle::new(2).prepare(&ctx, &fb, &params, &mut GroupOps::default()).is_err());
     }
 }
