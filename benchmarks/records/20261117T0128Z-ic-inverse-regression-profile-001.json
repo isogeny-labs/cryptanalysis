@@ -1,0 +1,362 @@
+{
+  "branch": "codex/ic-inverse-regression-profile-20261116",
+  "closed_utc": "2026-11-17T02:01:33+00:00",
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "cloud/modal_run.py",
+        "run",
+        "--image",
+        "cuda",
+        "--gpu",
+        "L4",
+        "--cpu",
+        "4",
+        "--memory",
+        "8",
+        "--timeout",
+        "900",
+        "--apt",
+        "time",
+        "--out",
+        "experiments/ic-inverse-regression-20261116/profile-001",
+        "--detach",
+        "--",
+        "python3",
+        "experiments/ic-inverse-regression-20261116/run_profile.py",
+        "--run-id",
+        "profile-001"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "started_utc": "2026-11-17T01:30:17+00:00",
+      "wall_s": 11.865
+    }
+  ],
+  "commit": "fa95ae69c9b57cb139931c693ee557c18fbd16f4",
+  "commit_dirty": false,
+  "created_utc": "2026-11-17T01:28:06+00:00",
+  "curve_uid": null,
+  "entries": [],
+  "host": {
+    "cpu": "arm",
+    "cpus_online": 14,
+    "hostname": "Mac.attlocal.net",
+    "isolation": "unstated",
+    "platform": "macOS-27.2-arm64-arm-64bit-Mach-O"
+  },
+  "id": "20261117T0128Z-ic-inverse-regression-profile-001",
+  "metrics": [
+    {
+      "baseline": 111367568.0,
+      "better": "lower",
+      "n": 2,
+      "name": "anchor_whole_guest_ir",
+      "note": "Whole-guest Callgrind Ir on one fixed development point; not native wall, hardware retirement or collector-only cost. Unsigned exploratory qualificationnull. Two IC traces, one trace per rho variant; repeated extrema are not a native confidence interval.",
+      "reference": 11343351.0,
+      "reference_kind": "matched_rho",
+      "spread": [
+        111367568.0,
+        111367568.0
+      ],
+      "unit": "ir",
+      "value": 111367568.0
+    },
+    {
+      "baseline": 111367568.0,
+      "better": "lower",
+      "n": 2,
+      "name": "current_whole_guest_ir",
+      "note": "Whole-guest Callgrind Ir on one fixed development point; not native wall, hardware retirement or collector-only cost. Unsigned exploratory qualificationnull. Two IC traces, one trace per rho variant; repeated extrema are not a native confidence interval.",
+      "reference": 11343351.0,
+      "reference_kind": "matched_rho",
+      "spread": [
+        113105531.0,
+        113105545.0
+      ],
+      "unit": "ir",
+      "value": 113105538.0
+    },
+    {
+      "baseline": 111367568.0,
+      "better": "lower",
+      "n": 2,
+      "name": "inverse_whole_guest_ir",
+      "note": "Whole-guest Callgrind Ir on one fixed development point; not native wall, hardware retirement or collector-only cost. Unsigned exploratory qualificationnull. Two IC traces, one trace per rho variant; repeated extrema are not a native confidence interval.",
+      "reference": 11343351.0,
+      "reference_kind": "matched_rho",
+      "spread": [
+        108121144.0,
+        108121148.0
+      ],
+      "unit": "ir",
+      "value": 108121146.0
+    },
+    {
+      "baseline": null,
+      "better": "lower",
+      "n": 1,
+      "name": "rho-plain_whole_guest_ir",
+      "note": "Whole-guest Callgrind Ir on one fixed development point; not native wall, hardware retirement or collector-only cost. Unsigned exploratory qualificationnull. Two IC traces, one trace per rho variant; repeated extrema are not a native confidence interval.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ir",
+      "value": 10358485.0
+    },
+    {
+      "baseline": null,
+      "better": "lower",
+      "n": 1,
+      "name": "rho-negation_whole_guest_ir",
+      "note": "Whole-guest Callgrind Ir on one fixed development point; not native wall, hardware retirement or collector-only cost. Unsigned exploratory qualificationnull. Two IC traces, one trace per rho variant; repeated extrema are not a native confidence interval.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ir",
+      "value": 11343351.0
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 2,
+      "name": "anchor_over_current_ir",
+      "note": "Whole-guest Callgrind Ir on one fixed development point; not native wall, hardware retirement or collector-only cost. Unsigned exploratory qualificationnull. Two IC traces, one trace per rho variant; repeated extrema are not a native confidence interval.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ratio",
+      "value": 0.9846340857332733
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 2,
+      "name": "current_over_inverse_ir",
+      "note": "Whole-guest Callgrind Ir on one fixed development point; not native wall, hardware retirement or collector-only cost. Unsigned exploratory qualificationnull. Two IC traces, one trace per rho variant; repeated extrema are not a native confidence interval.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ratio",
+      "value": 1.046100066308953
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 2,
+      "name": "anchor_over_inverse_ir",
+      "note": "Whole-guest Callgrind Ir on one fixed development point; not native wall, hardware retirement or collector-only cost. Unsigned exploratory qualificationnull. Two IC traces, one trace per rho variant; repeated extrema are not a native confidence interval.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ratio",
+      "value": 1.0300257823756327
+    },
+    {
+      "baseline": 0.0,
+      "better": "neutral",
+      "n": 2,
+      "name": "current_general_dispatch_calls",
+      "note": "Whole-guest Callgrind Ir on one fixed development point; not native wall, hardware retirement or collector-only cost. Unsigned exploratory qualificationnull. Two IC traces, one trace per rho variant; repeated extrema are not a native confidence interval.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "count",
+      "value": 55163.0
+    },
+    {
+      "baseline": 0.0,
+      "better": "neutral",
+      "n": 2,
+      "name": "current_general_dispatch_exclusive_ir",
+      "note": "Whole-guest Callgrind Ir on one fixed development point; not native wall, hardware retirement or collector-only cost. Unsigned exploratory qualificationnull. Two IC traces, one trace per rho variant; repeated extrema are not a native confidence interval.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ir",
+      "value": 1933760.0
+    },
+    {
+      "baseline": null,
+      "better": "neutral",
+      "n": 2,
+      "name": "ordinary_pairwise_extra_inclusive_ir",
+      "note": "Whole-guest Callgrind Ir on one fixed development point; not native wall, hardware retirement or collector-only cost. Unsigned exploratory qualificationnull. Two IC traces, one trace per rho variant; repeated extrema are not a native confidence interval.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ir",
+      "value": 34511.0
+    },
+    {
+      "baseline": null,
+      "better": "neutral",
+      "n": 8,
+      "name": "replayed_answers",
+      "note": "Whole-guest Callgrind Ir on one fixed development point; not native wall, hardware retirement or collector-only cost. Unsigned exploratory qualificationnull. Two IC traces, one trace per rho variant; repeated extrema are not a native confidence interval.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "count",
+      "value": 8.0
+    },
+    {
+      "baseline": null,
+      "better": "neutral",
+      "n": 1024,
+      "name": "replayed_states",
+      "note": "Whole-guest Callgrind Ir on one fixed development point; not native wall, hardware retirement or collector-only cost. Unsigned exploratory qualificationnull. Two IC traces, one trace per rho variant; repeated extrema are not a native confidence interval.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "count",
+      "value": 1024.0
+    }
+  ],
+  "problem": "binary-ic-inverse-regression-instructions",
+  "raw": [
+    {
+      "bytes": 5859731,
+      "path": "experiments/ic-inverse-regression-20261116/raw-profile-001.tar.gz",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/24/246d7beb01b242106a3d73880a185a2604b6d1b39020e8b7fa90d7ae54733d2f",
+      "sha256": "246d7beb01b242106a3d73880a185a2604b6d1b39020e8b7fa90d7ae54733d2f",
+      "uploaded": true
+    },
+    {
+      "bytes": 30995,
+      "path": "experiments/ic-inverse-regression-20261116/profile-001-bundle-receipt.json",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/34/343807c108a453823c54c733b806c462a24bd42b4b1b653c8b5626b7db554371",
+      "sha256": "343807c108a453823c54c733b806c462a24bd42b4b1b653c8b5626b7db554371",
+      "uploaded": true
+    },
+    {
+      "bytes": 4485503,
+      "path": "experiments/ic-inverse-regression-20261116/analysis-profile-001.json",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/83/8308df88dde79556937bcf3056841ebbdc6ab957edd4f2ec6fa289bd54bcc394",
+      "sha256": "8308df88dde79556937bcf3056841ebbdc6ab957edd4f2ec6fa289bd54bcc394",
+      "uploaded": true
+    },
+    {
+      "bytes": 1496,
+      "path": "experiments/ic-inverse-regression-20261116/independent-replay-profile001.json",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/20/20e9fe4060e1a596f6c46898e272275d13639d6c863d6d0444644eb5048b5abe",
+      "sha256": "20e9fe4060e1a596f6c46898e272275d13639d6c863d6d0444644eb5048b5abe",
+      "uploaded": true
+    },
+    {
+      "bytes": 2088,
+      "path": "experiments/ic-inverse-regression-20261116/profile-input.json",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/4d/4d36dc83ca9d2156919735bfdadff330f41a0f6b297192324963b11133e424d5",
+      "sha256": "4d36dc83ca9d2156919735bfdadff330f41a0f6b297192324963b11133e424d5",
+      "uploaded": true
+    },
+    {
+      "bytes": 475,
+      "path": "experiments/ic-inverse-regression-20261116/profile-result-input.json",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/af/afa3deb773e484cabc90d116a6c6f0837b8722c00624cb77f026cc2e3090d3b4",
+      "sha256": "afa3deb773e484cabc90d116a6c6f0837b8722c00624cb77f026cc2e3090d3b4",
+      "uploaded": true
+    },
+    {
+      "bytes": 563,
+      "path": "experiments/ic-inverse-regression-20261116/profile-job-metadata.json",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/f4/f41f0c00d837c693e902d6d782f9768597c343f3fdd2ce30a0b49a245ba078f1",
+      "sha256": "f41f0c00d837c693e902d6d782f9768597c343f3fdd2ce30a0b49a245ba078f1",
+      "uploaded": true
+    },
+    {
+      "bytes": 3402,
+      "path": "experiments/ic-inverse-regression-20261116/PROTOCOL.md",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/50/506a8e3e3cb25269907e3b842846c8f6d5b42ddf83ba36a126988c01a97dfef1",
+      "sha256": "506a8e3e3cb25269907e3b842846c8f6d5b42ddf83ba36a126988c01a97dfef1",
+      "uploaded": true
+    },
+    {
+      "bytes": 152783,
+      "path": "experiments/ic-inverse-regression-20261116/REPORT-profile001.pdf",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/35/35934d02e0fb7f88fec343830f32f0ebe50562c9abf6b0f5e9a65b651068d7f8",
+      "sha256": "35934d02e0fb7f88fec343830f32f0ebe50562c9abf6b0f5e9a65b651068d7f8",
+      "uploaded": true
+    },
+    {
+      "bytes": 9693,
+      "path": "experiments/ic-inverse-regression-20261116/profile-totals.svg",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/14/147658f2cbb107ddecb5d10e31391cbd3bde236c83ff94db487d17a0ad996037",
+      "sha256": "147658f2cbb107ddecb5d10e31391cbd3bde236c83ff94db487d17a0ad996037",
+      "uploaded": true
+    },
+    {
+      "bytes": 41587,
+      "path": "experiments/ic-inverse-regression-20261116/profile-totals.png",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/01/01a9cfeaee5567bd842591b0b7d8a92ae5414a34a9f57f9c14d8d405042dc75f",
+      "sha256": "01a9cfeaee5567bd842591b0b7d8a92ae5414a34a9f57f9c14d8d405042dc75f",
+      "uploaded": true
+    },
+    {
+      "bytes": 8899,
+      "path": "experiments/ic-inverse-regression-20261116/profile-deltas.svg",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/96/96287240315880b5fe24315599d48667fd5e6f128ba598882e61c88e9ff9d3e8",
+      "sha256": "96287240315880b5fe24315599d48667fd5e6f128ba598882e61c88e9ff9d3e8",
+      "uploaded": true
+    },
+    {
+      "bytes": 43206,
+      "path": "experiments/ic-inverse-regression-20261116/profile-deltas.png",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/b7/b7a948d4fa77f24b30164e3415d7de8e7b516fcca80e8028d052cb7293618c9f",
+      "sha256": "b7a948d4fa77f24b30164e3415d7de8e7b516fcca80e8028d052cb7293618c9f",
+      "uploaded": true
+    },
+    {
+      "bytes": 6621,
+      "path": "experiments/ic-inverse-regression-20261116/profile-flow.svg",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/02/02d69be9649e6fc2d2de20cf48e826ef108a913b7c4402aac3a417eb8e713c6f",
+      "sha256": "02d69be9649e6fc2d2de20cf48e826ef108a913b7c4402aac3a417eb8e713c6f",
+      "uploaded": true
+    },
+    {
+      "bytes": 43274,
+      "path": "experiments/ic-inverse-regression-20261116/profile-flow.png",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/a1/a14268db39c3b9a6eadbc256f0160bf955bf4d20db99097ae9ca82e5b50c7515",
+      "sha256": "a14268db39c3b9a6eadbc256f0160bf955bf4d20db99097ae9ca82e5b50c7515",
+      "uploaded": true
+    },
+    {
+      "bytes": 2570,
+      "path": "experiments/ic-inverse-regression-20261116/pairwise-codegen.json",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/b3/b351a33f77b6f3098af0f1370a5950914287f1764ce891db87d28950eeab3781",
+      "sha256": "b351a33f77b6f3098af0f1370a5950914287f1764ce891db87d28950eeab3781",
+      "uploaded": true
+    },
+    {
+      "bytes": 4041,
+      "path": "experiments/ic-inverse-regression-20261116/profile-findings.json",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/e0/e068f5a83261f33015cb4d4d280c33b9dd942c9f6387d9911a20cb1918e7168e",
+      "sha256": "e068f5a83261f33015cb4d4d280c33b9dd942c9f6387d9911a20cb1918e7168e",
+      "uploaded": true
+    },
+    {
+      "bytes": 263,
+      "path": "experiments/ic-inverse-regression-20261116/remote-profile-replay.json",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/0d/0dbed63db7976059bd34a7f4620faf8b48bc7705e6ac667ab4a72a4d10e04f75",
+      "sha256": "0dbed63db7976059bd34a7f4620faf8b48bc7705e6ac667ab4a72a4d10e04f75",
+      "uploaded": true
+    }
+  ],
+  "repo": "cryptanalysis",
+  "reports": {
+    "pdf": "experiments/ic-inverse-regression-20261116/REPORT-profile001.pdf",
+    "png": [],
+    "svg": [
+      "experiments/ic-inverse-regression-20261116/profile-totals.svg",
+      "experiments/ic-inverse-regression-20261116/profile-deltas.svg",
+      "experiments/ic-inverse-regression-20261116/profile-flow.svg"
+    ]
+  },
+  "schema": "bench.record/v1",
+  "session": null,
+  "slug": "ic-inverse-regression-profile-001",
+  "status": "invalid",
+  "summary": "Frozen three-path whole-guest Ir attribution,6IC+2rho captures.8answers+1024states replayed. Current adds55163general-m dispatcher calls/1933760exclusiveIr; direct probe work unchanged. Source fix proposed and locally checked; native speed pending. Unsigned exploratory qualificationnull, no promotion.113raw captures archived before closing.",
+  "validation": "experiments/ic-inverse-regression-20261116/analysis-profile-001.json"
+}

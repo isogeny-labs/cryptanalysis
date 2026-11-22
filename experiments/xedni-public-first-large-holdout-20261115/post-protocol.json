@@ -1,0 +1,31 @@
+{
+  "admission": "t1 and t2 are in ZMod q, neither equals w, and t1 differs from t2",
+  "audit_sha256": "06d0279d2a4f3641dec90c8686c5473158457ac177630816ef4ebb692d729972",
+  "claim_boundary": "exact full-population count and derived reference expectation; the saved SHA256 sample is deterministic and is not an iid random experiment",
+  "falsifiers": [
+    "a selected coefficient or coefficient sum vanishes modulo a panel subgroup",
+    "two coefficient directions coincide modulo a panel subgroup",
+    "an exhaustive field count differs from the checked q-1 line formula",
+    "any admitted pair has multiple selected-vector hits"
+  ],
+  "family_sha256": "82b340802ae37e8aaa3b1b0c2774911c27de88ef0e7d99e54fd9378b53f92894",
+  "field_panel": [
+    313,
+    421,
+    431,
+    547,
+    571,
+    593,
+    617,
+    677
+  ],
+  "full_census": "enumerate every admitted ordered pair and test all 13 frozen vectors modulo q; count event multiplicity and pair overlap",
+  "lean_source_sha256": "c3d386ae7fd17d91e459228aeda4ddcf2c968209649fd3b8aa710f68728f3872",
+  "parent_protocol_sha256": "b0efd7f2f18d8d9df1290651230970f357c5485ce2fc9b4fd9b416f95a937bb7",
+  "parent_result_sha256": "9dceedf802afb9070974c0842bb6e26969e3d52b543d998e92996ba5282e35e9",
+  "producer_sha256": "4bc509bd2c51c3f24a6383d1d0c69bb66c66f0d425f5d22016ac8a818dfe6e65",
+  "question": "Does exhaustive admission at the larger-order panel reproduce the exact 13(q-1) disjoint public relation lines predicted by the checked finite-field lemmas?",
+  "reference_model": "for independent uniform admitted pairs, each vector has q-1 hits among (q-1)(q-2) pairs; with distinct directions union probability is 13/(q-2)",
+  "schema": "xedni-public-first-large-holdout-post-protocol-v1",
+  "target_scalar": 17
+}

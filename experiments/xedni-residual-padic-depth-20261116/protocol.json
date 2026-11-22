@@ -1,0 +1,20 @@
+{
+  "schema": "xedni-residual-padic-depth-protocol-v1",
+  "question": "How deeply into the reduction kernel do the 13,750 wide-shift rational residuals lie, and does the coefficient-independent minimum-model rule favor deeper residuals?",
+  "parent": "experiments/xedni-wide-shift-defect-20261116",
+  "parent_sha256": {
+    "protocol.json": "2e6ddfe855acfc94d83be593d9bd4dd1e25eb4a64e5026525f1f0988ebfe1c73",
+    "run-result.json": "c6d3f8be4f73a17dae6df13fad1d5440780cc271822ec01c10c28f88055f5378",
+    "audit.json": "90e60bfe73de6c546f36a2651843c8dca1a9789c00ecc584b0159bb75e8fbb5f",
+    "run.py": "d4116bbcfc294c19f202f51740d655339c9c4520a6be47ca1442f7d3a73a7d85",
+    "audit.py": "dcf656ef5f4bdc962d16f00dbce15c36f04a4569ce7d434afb1f9570aba7afdb"
+  },
+  "admission": "every pass row in the 22 parent candidate parts, in parent order; preserve failures if present",
+  "expected_candidate_attempts": 13750,
+  "valuation": "v_p(z)=v_p(numerator)-v_p(denominator) for a nonzero reduced rational fraction; infinity for zero",
+  "formal_parameter": "t=-x/y at each nonidentity rational residual, k=v_p(t)",
+  "pattern_check": "for a nonidentity residual in the good-reduction kernel, record whether v_p(x)=-2k, v_p(y)=-3k and k>=1",
+  "selection_comparison": "compare parent minimum-model choice, prior 81-grid choice, and vector-aware maximum-k oracle; use model score then lexicographic shift for oracle ties",
+  "claim_boundary": "the oracle uses the known public relation vector and is diagnostic; formal parameter depth is not an exact relation or target solve; all attempts and mismatches remain recorded",
+  "run_cap_seconds": 1200
+}

@@ -1,0 +1,69 @@
+# artifacts-scope: job
+name: CT146 corrected-half transport identity audit
+on:
+  pull_request:
+    paths:
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT146_*'
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/ct146_transport_identity_canary.py'
+      - '.github/workflows/ct146-correction-torsion.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - name: Exhaust finite-field identity and pinned original-versus-derivative contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          checker=experiments/chained-transfer-public-target/norm-point-reuse-01/ct146_transport_identity_canary.py
+          original=experiments/chained-transfer-public-target/fixed-jacobian-chain-evaluator-01/src/lib.rs
+          builder=experiments/chained-transfer-public-target/norm-point-reuse-01/build_norm_reuse.py
+          python3 "$checker" --original-rust "$original" --ct125-builder "$builder" > /tmp/ct146-normal.json
+          python3 -O "$checker" --original-rust "$original" --ct125-builder "$builder" > /tmp/ct146-optimized.json
+          cmp /tmp/ct146-normal.json /tmp/ct146-optimized.json
+          python3 - <<'PY'
+          import json
+          with open('/tmp/ct146-normal.json',encoding='utf-8') as f:
+              x=json.load(f)
+          required={'extension_points':36,'two_torsion':4,'rational_two_torsion':2,
+                    'corrected_lifts':144,'direct_homomorphism_checks':720,
+                    'composed_homomorphism_checks':432,
+                    'rational_double_nonrational_trace_witnesses':24}
+          for k,v in required.items():
+              if x.get(k)!=v:
+                  raise SystemExit('CT146 source canary failed '+k)
+          if x.get('source',{}).get('original_git_blob')!='8016634385d76207b23a3eb3a4dae9b0366ac68d':
+              raise SystemExit('CT146 failed source SHA')
+          if len(x.get('negative_controls',[]))!=2:
+              raise SystemExit('CT146 negative controls missing')
+          print('CT146 source-only arithmetic/transport guards passed [pcc:unverified]')
+          PY
+      - name: Source mutation must be rejected
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import pathlib,subprocess,sys,tempfile
+          rust=pathlib.Path('experiments/chained-transfer-public-target/fixed-jacobian-chain-evaluator-01/src/lib.rs').read_text()
+          target='if curve::pmul(f, e, p, 2) != q {'
+          if rust.count(target)!=1:
+              raise SystemExit('expected original source marker absent')
+          with tempfile.TemporaryDirectory() as d:
+              bad=pathlib.Path(d)/'lib.rs'
+              bad.write_text(rust.replace(target,'if false {'))
+              run=subprocess.run([sys.executable,'experiments/chained-transfer-public-target/norm-point-reuse-01/ct146_transport_identity_canary.py',
+                  '--original-rust',str(bad),'--ct125-builder',
+                  'experiments/chained-transfer-public-target/norm-point-reuse-01/build_norm_reuse.py'],
+                  capture_output=True,text=True,timeout=60)
+              if run.returncode==0:
+                  raise SystemExit('CT146 bad original was accepted')
+          print('CT146 altered-source control rejected')
+          PY

@@ -1,0 +1,11 @@
+digraph coefficients {
+ graph [rankdir=LR,bgcolor="white",pad="0.3",nodesep="0.5",ranksep="0.6"];
+ node [shape=box,style="rounded,filled",fillcolor="#eef6f4",fontname="Helvetica",fontsize=13];
+ start [label="Canonical coefficients\n0 <= a,b < m"];
+ old [label="Baseline: widen, add\nu128 remainder by m",fillcolor="#faeee2"];
+ gap [label="Candidate: gap = m - b\ncompare a with gap"];
+ low [label="a < gap\na + b < m fits u64"];
+ high [label="a >= gap\na - gap = a+b-m"];
+ end [label="Same reduced coefficient\nsame walk schedule"];
+ start -> old -> end; start -> gap; gap -> low -> end; gap -> high -> end;
+}

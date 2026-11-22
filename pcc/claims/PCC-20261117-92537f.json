@@ -1,0 +1,15 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-17T03:36:35Z",
+ "id": "PCC-20261117-92537f",
+ "kind": "statement",
+ "producer": {
+  "commit": "330d26b987ae018f5b6e4b174ac4a1ef7ef0c355",
+  "model": "",
+  "session": "ic-canonical-coeff-20261116"
+ },
+ "proofs": [],
+ "schema": "pcc.claim/v1",
+ "scope": "Recovery preparation source-label erratum; admission obligations remain open until native controls finish",
+ "statement": "Recovery preparation002 command transcribed its source-commit label incorrectly. Actual clean job snapshot is commit330d26b987ae018f5b6e4b174ac4a1ef7ef0c355; declared receipt label330d26b987ae9540d393747f89143cd0f21c0461 is retained as erroneous data. Before any fresh inputs or timing, source admission now requires full job archive SHA plus overlay/controller byte equality to the actual Git revision, baseline archive pin and compiled source manifest equality. This is a provenance correction, not a performance result or a replacement of raw receipt bytes."
+}

@@ -1,0 +1,29 @@
+{
+  "job": "20261117-045933-f4fd",
+  "created": 1794891573.8353221,
+  "command": "python3 experiments/ic-compact-pair-table-20261116/run_fresh.py",
+  "image": "cuda",
+  "cpu": 4.0,
+  "memory_gib": 8.0,
+  "gpu": "L4",
+  "timeout": 900,
+  "shards": 1,
+  "outs": [
+    "experiments/ic-compact-pair-table-20261116/timing-optimized-001",
+    "experiments/ic-compact-pair-table-20261116/profile-optimized-001",
+    "experiments/ic-compact-pair-table-20261116/post-profile-controller.log"
+  ],
+  "changed": false,
+  "git": {
+    "commit": "fc6a64b21b982b069dcdf624358304a0bdb8853b",
+    "branch": "codex/ic-compact-pair-table-20261116",
+    "dirty": true
+  },
+  "pack": {
+    "files": 12663,
+    "bytes": 41293035
+  },
+  "sandboxes": [
+    "sb-jn0a73IBlkWsY7gR494ABf"
+  ]
+}

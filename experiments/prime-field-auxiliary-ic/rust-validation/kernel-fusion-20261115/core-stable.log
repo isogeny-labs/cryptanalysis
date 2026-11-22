@@ -1,0 +1,35 @@
+    Blocking waiting for file lock on package cache
+    Finished `release` profile [optimized] target(s) in 0.06s
+     Running unittests src/lib.rs (crates/prime-field-auxiliary-ic/target/release/build/prime-field-auxiliary-ic/5b5e3acf2dc6ffba/out/prime_field_auxiliary_ic-5b5e3acf2dc6ffba)
+
+running 5 tests
+test field::tests::primality_handles_small_values_and_pseudoprimes ... ok
+test graph::tests::anchors_and_balanced_cycles_match_dense_elimination ... ok
+test field::tests::batched_exceptions_match_individual_additions ... ok
+test field::tests::reduction_and_fixed_inverse_match_integer_reference ... ok
+test graph::tests::random_signed_systems_match_rank_first_recovery_and_all_returned_proofs ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/pipeline.rs (crates/prime-field-auxiliary-ic/target/release/build/prime-field-auxiliary-ic/e83bd5952036420c/out/pipeline-e83bd5952036420c)
+
+running 9 tests
+test complete_small_solves_use_distinct_nontrivial_rows ... ok
+test direct_control_has_identical_rows_and_recovery_on_identical_walks ... ok
+test malformed_fibers_and_subgroups_are_rejected ... ok
+test resource_boundaries_are_explicit_and_do_not_report_recovery ... ok
+test original_31_bit_rows_recover_without_search_or_private_input ... ok
+test zero_and_mixed_center_shifts_match_the_explicit_polynomial ... ok
+test zero_masks_cross_vector_tiles_and_discard_padding ... ok
+test scalar_and_simd_are_exact_products_in_both_fields ... ok
+test nonzero_first_pole_and_root_order_are_supported ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+   Doc-tests prime_field_auxiliary_ic
+
+running 1 test
+test src/lib.rs - (line 59) ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.53s
+

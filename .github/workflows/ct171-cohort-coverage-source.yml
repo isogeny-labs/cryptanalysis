@@ -1,0 +1,30 @@
+name: CT171 original-prime native pricing cohort source guard
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/ct171-cohort-coverage-source.yml'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/ct171_selected_coverage.py'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/CT171_COHORT_COVERAGE_REPORT.md'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/src/main.rs'
+      - 'experiments/chained-transfer-public-target/evidence/fixed-chain-norm-point-native-01/literal-selected-vectors.json'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  finite-cohort-source-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Pinned exact source, real 48-row cohort and 8 negative controls
+        run: |
+          set -euo pipefail
+          python3 -S experiments/chained-transfer-public-target/primitive-pricing-01/ct171_selected_coverage.py --self-test | tee ct171-normal.json
+          python3 -O -S experiments/chained-transfer-public-target/primitive-pricing-01/ct171_selected_coverage.py --self-test | tee ct171-optimized.json
+          cmp ct171-normal.json ct171-optimized.json
+          sha256sum ct171-normal.json ct171-optimized.json
+      - name: Scope reminder
+        run: echo 'SOURCE ONLY [pcc:unverified]; no paid native compute, no signed proof or ECDLP cost claim'

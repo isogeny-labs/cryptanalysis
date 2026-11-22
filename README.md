@@ -2,6 +2,19 @@
 
 [OpenResearch setup and agent integration](docs/openresearch.md).
 
+The native [prime-field auxiliary IC crate](crates/prime-field-auxiliary-ic/README.md)
+is available through the safe Rust bindings and `ca-ic auxiliary`, including a
+random-base and same-base direct controls, fixed-prefix relation collection, and an optional repository rho reference.
+
+A [retrospective prime-field auxiliary-map IC import](experiments/prime-field-auxiliary-ic/README.md)
+contains the standalone resultant/GCD/SIMD implementation and shared-arithmetic
+rho control. Its archived producer timings are exploratory CPU observations,
+with no signed independent performance verdict or baseline promotion.
+[pcc:unverified]
+
+For genus-five hyperelliptic Jacobians over prime fields, see the
+[paired-cubic proof notes and F19 fixture](experiments/prime-field-genus5-pencils/README.md).
+
 The Rust API includes a [hashed-factor-base elliptic-curve tensor
 implementation](docs/hashed-ecdl.md) for the Bochum v0.2 paper: compact
 encodings, exact contraction and certificate replay. Correctness controls
@@ -11,6 +24,11 @@ A separate [scalar tensor companion](experiments/hashed-ecdl-tensor-reference/RE
 adds independently implemented binary and prime-field coordinate checks and the
 Certicom ECCp-131 target. Its development checks do not recover either published
 challenge scalar or establish a practical speedup.
+
+The [prime-field subexponential research note](experiments/prime-field-subexponential/README.md)
+covers an embedding-degree-one genus-two family, a fixed-genus decomposition
+problem, and an order-free bound for growing hyperelliptic genus. It includes
+two exact Sage fixtures. [pcc:unverified]
 
 A fast, self-contained C11 library of discrete-logarithm algorithms with
 Rust, Go and Python bindings, and, in [`suite/`](suite/README.md), the Rust

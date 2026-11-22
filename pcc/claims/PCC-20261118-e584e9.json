@@ -1,0 +1,23 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-18T01:04:13Z",
+ "id": "PCC-20261118-e584e9",
+ "kind": "execution",
+ "producer": {
+  "commit": "88f02ea035b5ae6efee4dbd3d3cc387106415d44",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/ic-collector-counterfactual-20261117/ci-diagnostics-001/summary.json",
+    "sha256": "7266b9363cca512b42fd15447cef2229b84ff48bb9e78240be01e93d55eadc6d"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "experiments/ic-collector-counterfactual-20261117",
+ "statement": "Current PR1727 checks pcc-gate run44149657073/job134274145154 and ic-bench run44149590464/job134273909114 fail at S3 artifact retrieval with HeadObject403 errors. Provider-masked logs and exact run/head metadata are retained. These failed jobs do not establish an arithmetic test failure or a performance verdict. Working local profile/store access does not establish GitHub credential access; no repository-wide storage configuration, credential or verification gate was changed. Timing allocation approval remains pending."
+}

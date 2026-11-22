@@ -166,8 +166,12 @@ fn listing() -> Value {
                 "plugins": [
                     {"name": "subtract", "summands": 2, "regimes": ["prime", "char2", "koblitz"],
                      "parameters": []},
+                    {"name": "subtract-binary-batch", "summands": 2, "regimes": ["char2", "koblitz"],
+                     "parameters": [{"name": "block", "means": "batch size 1..4096, default 32"},
+                                    {"name": "lazy", "means": "1 (default) to finish only candidate ordinates; 0 for full batch"}]},
                     {"name": "mitm", "summands": "2 or 3", "regimes": ["prime", "char2", "koblitz"],
                      "parameters": [{"name": "native_setup_pricing", "means": "0 or1, default0; whole native setup with observed arithmetic diagnostics"},{"name": "negation_folded", "means": "1 to halve the table's additions"},
+                                    {"name": "coset_filter", "means": "1 to build only the pairs whose coset classes in E/<G> cancel (m = 2, cofactor > 1); cofactor 2 reads the class from Tr(x) = Tr(a) for free"},
                                     {"name": "m", "means": "summands, 2 or 3"}]},
                     {"name": "hashed-tensor", "summands": "2..8", "regimes": ["prime"],
                      "parameters": [
@@ -178,7 +182,8 @@ fn listing() -> Value {
                         {"name": "steps", "means": "per-target contraction budget in charged primitive steps"}],
                      "needs": "hashed-affine with identical slots, seed, tau and s; contraction primitive steps are uncalibrated, so do not read S as a priced end-to-end cost"},
                     {"name": "mitm-frobenius", "summands": "2 or 3", "regimes": ["koblitz"],
-                     "parameters": [{"name": "m", "means": "summands, 2 or 3"}]},
+                     "parameters": [{"name": "m", "means": "summands, 2 or 3"},
+                                    {"name": "coset_filter", "means": "1 to build only the representative-point pairs whose coset classes in E/<G> cancel (m = 2, cofactor > 1)"}]},
                     {"name": "mitm-batched", "summands": "2", "regimes": ["char2", "koblitz"],
                      "parameters": [{"name":"vector_prepare","means":"0 scalar default,1 vector,2 vector with packed squaring <=32 bits; guarded AVX2/PCLMUL, exact fallback"},{"name":"scalar_prepare","means":"0 or1, default0; original preparation, fixed-m2 queries"},{"name":"adaptive_prepare","means":"0 or1, default0; scalar at <=64 abscissae, cached above"},{"name":"prefix_inverse_cache","means":"0 or1, default0; bounded inverse reuse, generic fallback"},{"name":"x_only","means":"0 or1, default0; abscissa-only preparation"},{"name":"batch_size","means":"1..=65536, default1024; ordered batch preparation"}]},
                     {"name": "affine-s3", "summands": "2", "regimes": ["char2", "koblitz"],
@@ -517,6 +522,7 @@ fn run_binary(
         spec.seed = spec.seed.wrapping_add(rep as u64 * 0x9E37);
         let m = spec.oracle_params.u64_or("m", 2)? as u32;
         let mut subtract = SubtractOracle;
+        let mut subtract_binary = crate::cryptanalysis::ic_framework::binary_subtract::BinarySubtractOracle::new();
         let mut mitm = MitmOracle::new(m);
         let mut frob = FrobeniusMitmOracle::new(m, inst);
         let mut affine = AffineS3Oracle::new(inst);
@@ -541,6 +547,7 @@ fn run_binary(
         };
         let oracle: &mut dyn DecompositionOracle<BinaryGroup> = match or_name {
             "subtract" => &mut subtract,
+            "subtract-binary-batch" => &mut subtract_binary,
             "mitm" => &mut mitm,
             "mitm-frobenius" => &mut frob,
             "affine-s3" => &mut affine,

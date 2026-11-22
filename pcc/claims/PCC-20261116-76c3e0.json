@@ -1,0 +1,21 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T00:37:51Z",
+ "id": "PCC-20261116-76c3e0",
+ "kind": "statement",
+ "producer": {
+  "commit": "a4976ed56824e5b8f8ddd588f03cb8cd619e57ed",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "recompute",
+   "path": "experiments/prime-field-auxiliary-ic/random-vs-special/rustdoc-followup/rustdoc-validator.json",
+   "sha256": "d37dc28b2c8505e6ccfdae16d3678382577056be24c098a2d5fb283cac50dcf1"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Local documentation qualification only, with failed prior hosted logs preserved and full CI still pending.",
+ "statement": "A README-only correction at a4976ed5 renders the unsigned evidence marker as literal text. Strict rustdoc with -D warnings passes locally on stable and Rust 1.78. Both failed hosted logs on e24a3a3e are retained: test suites completed before rustdoc rejected the bare marker as an intra-doc link. No check was disabled or warning suppressed. This does not establish complete new-head hosted CI or any timing advantage; earlier algorithm and CLI result scopes remain separate."
+}

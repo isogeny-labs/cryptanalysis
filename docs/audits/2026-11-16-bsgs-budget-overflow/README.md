@@ -1,0 +1,9 @@
+# BSGS finite-budget boundary repair
+
+The preflight compared `m + (hi - lo) / m` with a finite `max_ops`. With `m = UINT64_MAX` and interval `[0, UINT64_MAX]`, that unsigned sum wraps to zero. It bypasses the budget refusal and reaches the existing unrepresentable-table guard. The allocation guard already prevents the oversized allocation; this repair corrects budget admission and its returned status. [pcc:unverified]
+
+The subtraction comparison first rejects `m > budget`, then compares the remaining giant-step bound with `budget - m`. Short-circuit evaluation keeps the subtraction within range. It preserves the mathematical comparison for finite budgets and keeps zero as the existing unlimited-budget setting. Group arithmetic, batching, public structures and historical counters are unchanged. [pcc:unverified]
+
+The original source fails two new overflow-boundary assertions in a 2,088-check run. The repaired source passes 2,091 checks, including three additional finite-bound assertions: equality is admitted, the verified zero scalar is returned, and one less than the required bound is refused. Both overflowing-budget refusals preserve the caller's result and zero work counter. All 21 configured CPU CTests pass, with warnings treated as errors. This configuration disables CLI tools and CUDA hardware execution; the software GPU-emulator tests are included. These are local correctness checks, not a hardware or speed result. [pcc:unverified]
+
+PCC-20261117-40fdec pins the [receipt](receipt.json) as unsigned data. Its standing is `not_covered`, with no independent signature. The receipt retains the source/test hashes, negative baseline, passing controls and every initial sparse-fixture build/test failure. Primary sources are `ca_bsgs.h`, `ca_resolve_interval`, the existing hash-table representability guard, and the unchanged BSGS behavior/counting controls. Frozen artifacts are not edited. [pcc:unverified]

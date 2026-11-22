@@ -1,0 +1,9 @@
+{
+  "schema": "ic-preparation-source-label-erratum/v1",
+  "job": "20261117-033328-8366",
+  "actual_snapshot_commit": "330d26b987ae018f5b6e4b174ac4a1ef7ef0c355",
+  "declared_receipt_commit": "330d26b987ae9540d393747f89143cd0f21c0461",
+  "cause": "source-commit argument incorrectly transcribed; this argument labels the receipt and does not select compiled files",
+  "required_admission": "retain original receipt; pin full job source archive; verify overlay bytes against actual git commit and receipt source_sha256; baseline archive already pinned; no admission on label alone",
+  "standing": "unsigned producer correction; no performance conclusion"
+}

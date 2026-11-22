@@ -1,0 +1,138 @@
+{
+  "candidate_chunk_queries": 16,
+  "claim_boundary": "selection optimizes model representation size, not relation probability; report all failed candidates, natural relation yield and operation counts; no online speedup inference",
+  "controls": "for every chosen curve verify P+(-P)=O and its public reduction; control is separate from natural vector yield",
+  "curve_coefficients": [
+    -1,
+    -2
+  ],
+  "distinct_x_candidates": "center both finite points; enumerate shifts (-1,0,1)^4 lexicographically on x1,y1,x2,y2, adding shift times p; interpolate A=(f1-f2)/(x1-x2), B=f1-A*x1; reject singular or bad-reduction models",
+  "equal_x_exception": "when U,V are distinct opposite points with same x, use centered P=(x,y), R=(x,-y), A=-1, B=y^2-x^3+x; count one construction attempt",
+  "expected_queries": 512,
+  "falsifiers": [
+    "candidate construction or chosen lift reduction fails",
+    "selection uses vector outcome",
+    "rational relation lacks public relation",
+    "independent replay disagrees with any raw attempt"
+  ],
+  "field_registry": "experiments/xedni-large-order-admission-20261115/result.json",
+  "field_registry_sha256": "b18127c392b904559ac12512642ab0322eaa3b9b72a61f45dacf4a2fb8c9a25c",
+  "fields": [
+    {
+      "order": 331,
+      "p": 313,
+      "q": 331
+    },
+    {
+      "order": 439,
+      "p": 421,
+      "q": 439
+    },
+    {
+      "order": 419,
+      "p": 431,
+      "q": 419
+    },
+    {
+      "order": 571,
+      "p": 547,
+      "q": 571
+    },
+    {
+      "order": 599,
+      "p": 571,
+      "q": 599
+    },
+    {
+      "order": 626,
+      "p": 593,
+      "q": 313
+    },
+    {
+      "order": 586,
+      "p": 617,
+      "q": 293
+    },
+    {
+      "order": 706,
+      "p": 677,
+      "q": 353
+    }
+  ],
+  "full_model_score": "max numerator or denominator bit length of A,B,x1,y1,x2,y2",
+  "generator_law": "first x ascending then y ascending whose cofactor multiple has exact prime order q",
+  "offsets": [
+    0,
+    1,
+    2,
+    3,
+    5,
+    8,
+    13,
+    21
+  ],
+  "public_attempts": 6656,
+  "query_law": "first 16 lexicographic ordered distinct offsets with both public U=Q-t1G and V=Q-t2G nonidentity",
+  "question": "Does a precommitted minimum-model-height two-image lift rule produce selected rational relations on fresh public queries when all candidate curves and vector tests are charged?",
+  "run_cap_seconds": 1200,
+  "schema": "xedni-height-selected-two-image-protocol-v1",
+  "selection_rule": "choose minimum full-model score among valid candidates, break ties by lexicographic shift; commit the chosen curve and both points before testing any coefficient vector",
+  "target_law": "w=1+int(SHA256(xedni-height-selected-v1|p|j),16) mod (q-1), j=0..3; independent seed label from parent",
+  "vector_family_source": "experiments/xedni-large-order-height-admission-20261116/protocol.json",
+  "vector_family_source_sha256": "a84d901d47138c196c56e870a574f7a76761bf93aaaec3dac4fd4e9d50c4e24c",
+  "vector_tests_per_query": 13,
+  "vectors": [
+    [
+      1,
+      -6
+    ],
+    [
+      2,
+      -1
+    ],
+    [
+      6,
+      5
+    ],
+    [
+      5,
+      4
+    ],
+    [
+      6,
+      1
+    ],
+    [
+      5,
+      3
+    ],
+    [
+      4,
+      -5
+    ],
+    [
+      6,
+      -1
+    ],
+    [
+      5,
+      -1
+    ],
+    [
+      6,
+      -5
+    ],
+    [
+      1,
+      5
+    ],
+    [
+      4,
+      -1
+    ],
+    [
+      4,
+      1
+    ]
+  ]
+}

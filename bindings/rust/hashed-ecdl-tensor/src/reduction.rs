@@ -8,7 +8,7 @@
 use crate::arithmetic::{floor_root, hash_prime_by, inverse, random_below, RandomSource};
 use crate::contraction::Counter;
 use crate::curve::{Curve, Point};
-use crate::encoding::{Encoder, PointWords};
+use crate::encoding::{Encoder, Multiplier, PointWords};
 use crate::network::Network;
 use crate::{integrity, invalid, overflow, BigUint, Error, Meter, Result};
 use num_integer::Integer;
@@ -182,9 +182,13 @@ fn derived_last_slot_network(
         .split_last()
         .ok_or_else(|| invalid("decomposition target or arity"))?;
     let mut encoder = Encoder::new();
+    encoder.set_multiplier(Multiplier::Auto);
     let mut sum: Option<PointWords> = None;
     for base in free {
-        let point = encoder.input_point(curve, false, meter)?;
+        // Free points as (x, parity of y); the hash reads only those free bits,
+        // so it runs before the costlier curve equation. The constraints are a
+        // conjunction, so the order changes no language.
+        let point = encoder.input_point_compressed_unchecked(curve, meter)?;
         encoder.hash_member(
             curve,
             &point,
@@ -194,6 +198,7 @@ fn derived_last_slot_network(
             &base.threshold,
             meter,
         )?;
+        encoder.assert_valid_point(curve, &point, meter)?;
         encoder.mark_point_interface(&point, meter)?;
         sum = Some(match sum {
             None => point,
@@ -370,9 +375,9 @@ impl Config {
 /// A successful group equation in one fixed-seed trial.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Relation {
-    /// Uniform public scalar multiplying P.
+    /// Public scalar multiplying P; independent sampling is a solver policy.
     pub u: BigUint,
-    /// Uniform public scalar multiplying Q.
+    /// Public scalar multiplying Q; independent sampling is a solver policy.
     pub v: BigUint,
     /// Exactly one nonidentity point per slot.
     pub points: Vec<Point>,
@@ -412,7 +417,7 @@ json_record!(
     optional {}
 );
 
-fn threshold(
+pub(crate) fn threshold(
     curve: &Curve,
     prime: &BigUint,
     config: &Config,
@@ -437,7 +442,7 @@ fn threshold(
 
 // Streaming elimination stores at most N pivot rows and their expression in
 // the input rows. It selects the first dependency deterministically from M only.
-fn row_dependency(
+pub(crate) fn row_dependency(
     matrix: &[Vec<BigUint>],
     modulus: &BigUint,
     meter: &mut Meter,
@@ -484,7 +489,7 @@ fn row_dependency(
     Err(integrity("N+1 rows lacked a dependency"))
 }
 
-fn indexed_bases(
+pub(crate) fn indexed_bases(
     curve: &Curve,
     bases: &[FactorBase],
     rng: &mut impl RandomSource,
@@ -505,7 +510,7 @@ fn indexed_bases(
     Ok(indexes)
 }
 
-fn matrix_row(
+pub(crate) fn matrix_row(
     relation: &Relation,
     indexes: &[BTreeMap<Point, usize>],
     columns: usize,
@@ -523,7 +528,7 @@ fn matrix_row(
     Ok(row)
 }
 
-fn combined_scalars(
+pub(crate) fn combined_scalars(
     relations: &[Relation],
     dependency: &[BigUint],
     modulus: &BigUint,

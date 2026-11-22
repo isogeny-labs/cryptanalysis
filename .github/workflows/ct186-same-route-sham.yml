@@ -1,0 +1,29 @@
+name: CT186 same-route sham falsification (source-only)
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/ct186-same-route-sham.yml'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/ct186_same_route_sham.py'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/test_ct186_same_route_sham.py'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/CT186_*'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-only-sham:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Run blinded-placebo source tests in normal and optimized Python
+        run: |
+          set -euo pipefail
+          root=experiments/chained-transfer-public-target/primitive-pricing-01
+          python3 -S -m py_compile "$root/ct186_same_route_sham.py" "$root/test_ct186_same_route_sham.py"
+          python3 -S -m unittest discover -s "$root" -p 'test_ct186_same_route_sham.py' -v
+          python3 -O -S -m unittest discover -s "$root" -p 'test_ct186_same_route_sham.py' -v
+          python3 -S "$root/ct186_same_route_sham.py" | python3 -c 'import json,sys; x=json.load(sys.stdin); assert x["processes_if_later_admitted"]==1536; assert x["order_roster_sha256"]=="7cf758b05c82adf2d1e9edc675d10dc5a0bb603a004d51a42f9375a077d75228"; print("CT186 source roster pinned; no native execution")'

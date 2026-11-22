@@ -1,0 +1,38 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.22s
+     Running unittests src/lib.rs (suite/target/debug/deps/cryptanalysis_suite-41506936d1e77cdf)
+
+running 27 tests
+test cryptanalysis::ic_framework::linalg::tests::an_inconsistent_row_is_reported ... ok
+test cryptanalysis::ic_framework::linalg::tests::the_registry_resolves_every_matrix_it_advertises ... ok
+test cryptanalysis::ic_framework::linalg::tests::structured_and_dense_agree_row_by_row ... ok
+
+thread 'cryptanalysis::ic_framework::solvers::tests::sat_cdcl_parity_modes_are_equivalent_and_reported' (4703244) panicked at src/cryptanalysis/ic_framework/solvers.rs:864:14:
+sat-cdcl configuration must be validated before a timed solve: "invalid sat_xor_encoding `nativ`; expected cnf or native"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test cryptanalysis::ic_framework::solvers::tests::the_registry_resolves_every_name_it_advertises ... ok
+test cryptanalysis::ic_framework::batch_mitm::tests::batched_walk_vector_inverse_matches_vector_schedule ... ok
+test cryptanalysis::ic_framework::batch_mitm::tests::batched_walk_pipeline_matches_scalar_schedule_and_counts_unused_work ... ok
+test cryptanalysis::ic_framework::affine::tests::pipeline_recovers_the_scalar_with_setup_and_query_charges ... ok
+test cryptanalysis::ic_framework::solvers::tests::the_exhaustive_count_is_the_work_performed ... ok
+test cryptanalysis::ic_framework::batch_mitm::tests::batched_walk_vector_matches_ordinary_batch_schedule ... ok
+test cryptanalysis::ic_framework::solvers::tests::the_wide_search_filters_the_equations_past_a_lane ... ok
+test cryptanalysis::ic_framework::tests::a_composed_pipeline_recovers_the_planted_logarithm ... ok
+test cryptanalysis::ic_framework::affine::tests::every_curve_target_matches_complete_signed_pair_enumeration ... ok
+test cryptanalysis::ic_framework::solvers::tests::every_solver_refutes_an_unsatisfiable_system ... ok
+test cryptanalysis::ic_framework::solvers::tests::sat_cdcl_parity_modes_are_equivalent_and_reported ... ok
+test cryptanalysis::ic_framework::solvers::tests::every_solver_finds_the_same_solution_set ... ok
+test cryptanalysis::ic_framework::tests::the_structured_matrix_agrees_with_the_dense_one_end_to_end ... ok
+test cryptanalysis::ic_framework::tests::the_report_shows_what_a_column_fold_does ... ok
+test cryptanalysis::ic_framework::tests::a_word_xor_price_is_pinned_only_when_the_calibration_says_so ... ok
+test cryptanalysis::ic_framework::tests::swapping_the_oracle_keeps_the_answer_and_moves_the_cost ... ok
+test cryptanalysis::ic_framework::batch_mitm::tests::complete_pipeline_prices_native_preparation_without_individual_adds ... ok
+test cryptanalysis::ic_framework::u32_reciprocal::tests::boundary_and_random_full_width_numerators ... ok
+test cryptanalysis::ic_framework::tests::the_algebraic_and_combinatorial_oracles_agree_on_the_answer ... ok
+test cryptanalysis::ic_framework::u32_reciprocal::tests::exhaustive_small_numerators_and_moduli ... ok
+test cryptanalysis::ic_framework::tests::the_algebraic_oracle_recovers_the_logarithm_and_its_solver_is_in_s ... ok
+test cryptanalysis::ic_framework::solvers::tests::fes_finds_exactly_the_solutions_at_every_size ... ok
+test cryptanalysis::ic_framework::solvers::tests::every_engine_agrees_on_descent_systems ... ok
+test cryptanalysis::ic_framework::solvers::tests::every_engine_agrees_on_random_quadratic_systems ... ok
+
+test result: ok. 27 passed; 0 failed; 0 ignored; 0 measured; 3159 filtered out; finished in 42.02s
+

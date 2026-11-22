@@ -1,0 +1,37 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-17T17:59:40Z",
+ "id": "PCC-20261117-a665d2",
+ "kind": "execution",
+ "producer": {
+  "commit": "d421be9d55cba2ced486076ba156d78cac6a7792",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/ic-collector-counterfactual-20261117/setup-input.json",
+    "sha256": "42c5c2a32bf070e97ce6a3a0229f66bdc8d49871b7a61e3afd9a43829a46b28a"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/ic-collector-counterfactual-20261117/independent-setup-preparation.json",
+    "sha256": "674a0eac97907d993d24e058464edab8729c7111855ad065dc168e597df76d9a"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/ic-collector-counterfactual-20261117/readback-setup-build-001-setup-cell-smoke-001.json",
+    "sha256": "fa15abb90ec2240e75f229631557c763308c7eea797c2ca45471713f1a32f3d5"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "experiments/ic-collector-counterfactual-20261117",
+ "statement": "Native setup-state admission job20261117-174511-27db exited0 in641.781seconds,within the approved900second4CPU/8GiB/L4 allocation. Source d421be9d55 and full snapshot/binary binding passed producer checks; all5fields use avx2-pclmul128,each with40existing and15additional complete map comparisons. Native29framework,4counterfactual,6walker,2full-vector,3inverse,3compact,1packed-const,1const-cache tests and strict Clippy passed. Existing independent Python arithmetic replay checked2560states and20pipeline answers. All91output files were uploaded and fresh bundle downloads checked every member size/hash. Correctness admission only; no native timing or speedup is established. Unsigned evidence."
+}

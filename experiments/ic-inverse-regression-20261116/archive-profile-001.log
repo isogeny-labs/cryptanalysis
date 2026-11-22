@@ -1,0 +1,36 @@
+Traceback (most recent call last):
+  File "/Volumes/SSD990-2/cryptanalysis-worktrees/ic-rational-current-20261115/tools/artifacts/artifacts.py", line 810, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/Volumes/SSD990-2/cryptanalysis-worktrees/ic-rational-current-20261115/tools/artifacts/artifacts.py", line 803, in main
+    return {
+           ~
+        "status": cmd_status, "plan": cmd_plan, "push": cmd_push, "pull": cmd_pull,
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        "verify": cmd_verify, "ls": cmd_ls, "check": cmd_check, "migrate": cmd_migrate,
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    }[args.cmd](cfg, args)
+    ~~~~~~~~~~~^^^^^^^^^^^
+  File "/Volumes/SSD990-2/cryptanalysis-worktrees/ic-rational-current-20261115/tools/artifacts/artifacts.py", line 590, in cmd_push
+    for i, res in enumerate(ex.map(one, targets), 1):
+                  ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/concurrent/futures/_base.py", line 619, in result_iterator
+    yield _result_or_cancel(fs.pop())
+          ~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/concurrent/futures/_base.py", line 317, in _result_or_cancel
+    return fut.result(timeout)
+           ~~~~~~~~~~^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/concurrent/futures/_base.py", line 456, in result
+    return self.__get_result()
+           ~~~~~~~~~~~~~~~~~^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/concurrent/futures/_base.py", line 401, in __get_result
+    raise self._exception
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/concurrent/futures/thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/Volumes/SSD990-2/cryptanalysis-worktrees/ic-rational-current-20261115/tools/artifacts/artifacts.py", line 582, in one
+    cache_insert(cfg, path, digest)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/SSD990-2/cryptanalysis-worktrees/ic-rational-current-20261115/tools/artifacts/artifacts.py", line 488, in cache_insert
+    os.replace(tmp, c)
+    ~~~~~~~~~~^^^^^^^^
+OSError: [Errno 18] Cross-device link: '/Users/adamburan/.cache/crypto-store/tmp/tmpummk7cee' -> '/Users/adamburan/.cache/crypto-store/sha256/34/343807c108a453823c54c733b806c462a24bd42b4b1b653c8b5626b7db554371'

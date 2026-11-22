@@ -1,0 +1,39 @@
+name: CT166 geometric CM obstruction source-only replay
+on:
+  pull_request:
+    paths:
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/ct166_*'
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT166_*'
+      - '.github/workflows/ct166-geometric-cm.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  cm-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Original CT160 input, independent canonical outputs and mutants
+        shell: bash
+        run: |
+          set -euo pipefail
+          D=experiments/chained-transfer-public-target/norm-point-reuse-01
+          python3 -S "$D/ct166_geometric_cm.py" --fixtures "$D" --self-test > /tmp/ct166-py.json
+          python3 -O -S "$D/ct166_geometric_cm.py" --fixtures "$D" --self-test > /tmp/ct166-opt.json
+          node "$D/ct166_geometric_cm_independent.mjs" "$D" --self-test > /tmp/ct166-js.json
+          cmp /tmp/ct166-py.json /tmp/ct166-opt.json
+          cmp /tmp/ct166-py.json /tmp/ct166-js.json
+          python3 -S "$D/ct166_geometric_cm.py" --fixtures "$D" > /tmp/ct166-frozen.json
+          cmp /tmp/ct166-frozen.json "$D/CT166_RESULT.json"
+          python3 - <<'PY'
+          import json
+          p=json.load(open('/tmp/ct166-py.json'))
+          assert p['target_cm_squarefree_radicand'] == -9234523
+          assert p['hasse_traces_checked'] == 59
+          assert p['ordinary_source_traces_checked'] == 58
+          assert p['geometric_algebraic_hom_possible'] is False
+          assert len(p['negative_controls_rejected']) == 9
+          print("SOURCE-ONLY geometric CM arithmetic replay passed; PCC still unverified")
+          PY
+          sha256sum /tmp/ct166-py.json

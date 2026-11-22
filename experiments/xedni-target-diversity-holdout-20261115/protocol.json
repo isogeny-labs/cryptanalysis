@@ -1,0 +1,14 @@
+{
+  "schema": "xedni-target-diversity-protocol-v1",
+  "question": "Does the previously frozen 14-vector family retain its query-35 first hit when the public target scalar changes across the eight held-out fields?",
+  "parent_family_protocol_sha256": "d28101f6869b012f8fd4f7e0c3208c6174597076c631e8f784d95e52e8f321a4",
+  "parent_family_source_sha256": "ad0c3289321157ab998cf942f6a274cbd22269fa68c1d381ee8919598680cd52",
+  "holdout_selection_sha256": "abfd11c34823f59f0b1b38a57a948bb5723d5e9e4103d05cd8c006fca777e093",
+  "target_law": "For each selected (p,q), take d=1+(int(SHA256(UTF-8('xedni-target-diversity-v1|'+str(p)+'|'+str(q))),16) mod (q-1)); construct Q=dG outside the search interval. There is no rejection or reseeding.",
+  "query_law": "Complete lexicographic (t1,t2) in [0,q)^2; public R_i=Q-t_i G",
+  "admission": "Both public points nonidentity and distinct",
+  "test_order": "At each admitted query test the unchanged 14 coefficient vectors in the parent listed order; stop immediately at the first relation with nonzero coefficient sum",
+  "cost_boundary": "Count every query reached, each actual vector test, and every target-dependent abstract group-add call including lazy query generation through first hit; fixture construction and independent scalar replay are separate",
+  "falsifiers": ["query-35 pattern persists across the varied targets", "first-hit scalar fails independent replay", "observed prefix disagrees with exact modular relation law"],
+  "claim_boundary": "Exact finite-field first-hit operation counts for a deterministic varied-target panel; no wall-time or asymptotic claim"
+}

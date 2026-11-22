@@ -1,0 +1,107 @@
+{
+  "case": {
+    "baseline": {
+      "ncols": 0,
+      "rows": []
+    },
+    "expected_full_nullity": 2,
+    "expected_projection_dimension": 0,
+    "expected_zero_projections": 2,
+    "full": {
+      "ncols": 2,
+      "rows": []
+    },
+    "lp_columns": 2,
+    "name": "no_FB_columns",
+    "uncapped": {
+      "ncols": 0,
+      "rows": []
+    }
+  },
+  "certificate": {
+    "a": {
+      "input": {
+        "ncols": 2,
+        "rows": []
+      },
+      "kernel": [
+        [
+          1,
+          0
+        ],
+        [
+          0,
+          1
+        ]
+      ],
+      "modulus": 101,
+      "operations": [],
+      "pivots": [],
+      "rref": {
+        "ncols": 2,
+        "rows": []
+      }
+    },
+    "c": {
+      "input": {
+        "ncols": 0,
+        "rows": []
+      },
+      "kernel": [],
+      "modulus": 101,
+      "operations": [],
+      "pivots": [],
+      "rref": {
+        "ncols": 0,
+        "rows": []
+      }
+    },
+    "constraint_kernel_lifts": [],
+    "lp_columns": 2,
+    "p": {
+      "input": {
+        "ncols": 0,
+        "rows": [
+          [],
+          []
+        ]
+      },
+      "kernel": [],
+      "modulus": 101,
+      "operations": [],
+      "pivots": [],
+      "rref": {
+        "ncols": 0,
+        "rows": [
+          [],
+          []
+        ]
+      }
+    },
+    "transformed_full_lifts": [
+      [
+        1,
+        0
+      ],
+      [
+        0,
+        1
+      ]
+    ],
+    "u": {
+      "input": {
+        "ncols": 0,
+        "rows": []
+      },
+      "kernel": [],
+      "modulus": 101,
+      "operations": [],
+      "pivots": [],
+      "rref": {
+        "ncols": 0,
+        "rows": []
+      }
+    }
+  },
+  "schema": "chained.lp.synthetic-projection/v1"
+}

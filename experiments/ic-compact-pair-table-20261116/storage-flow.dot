@@ -1,0 +1,10 @@
+digraph storage {
+ graph [rankdir=LR,bgcolor="white",pad="0.25",nodesep="0.5",ranksep="0.55"];
+ node [shape=box,style="rounded,filled",fillcolor="#eef6f4",fontname="Helvetica",fontsize=13];
+ input [label="Exact abscissa key + first witness\ncanonical finite coordinates"];
+ guard [label="Degree 1..31\nAt most 65536 base points",fillcolor="#f5efd9"];
+ narrow [label="Compact payload: 8 bytes\nu32 key + u32 packed (u16 i, u16 j)"];
+ wide [label="Wide payload: 16 bytes\nu64 key + (u32 i, u32 j)"];
+ probe [label="Exact key lookup\nDecode original indices\nCheck point sum / negation"];
+ input -> guard; guard -> narrow [label="bounds hold"]; guard -> wide [label="fallback"]; narrow -> probe;wide -> probe;
+}

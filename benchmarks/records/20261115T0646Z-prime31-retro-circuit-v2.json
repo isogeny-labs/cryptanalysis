@@ -1,0 +1,74 @@
+{
+  "branch": "codex/prime-field-auxiliary-ic-rho",
+  "closed_utc": "2026-11-15T06:46:58+00:00",
+  "commands": [
+    {
+      "argv": [
+        "python",
+        "algebraic/optimized/benchmark_circuit.py"
+      ],
+      "cwd": "/workspace/index_calculus_demo",
+      "exit": 0,
+      "retrospective": true,
+      "started_utc": null,
+      "wall_s": null
+    }
+  ],
+  "commit": "4551d77ae4a87fdee717e69b8f90c46420f6cc35",
+  "commit_dirty": true,
+  "created_utc": "2026-11-15T06:46:58+00:00",
+  "curve_uid": null,
+  "entries": [],
+  "host": {
+    "cpu": "Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz",
+    "cpus_online": 5,
+    "hostname": "df634043e2f7",
+    "isolation": "exploratory-retrospective; no admitted tier",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+    "role": "import host; see original manifest for recorded execution environment"
+  },
+  "id": "20261115T0646Z-prime31-retro-circuit-v2",
+  "metrics": [
+    {
+      "baseline": null,
+      "better": "lower",
+      "n": 16,
+      "name": "v2_reported_stage_median",
+      "note": "Stage-only extraction: 16 fixed targets, 8 repetitions each; no end-to-end implication.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "wall_s",
+      "value": 0.00040620424988446757
+    }
+  ],
+  "problem": "kernel:prime31aux-circuit-retrospective",
+  "raw": [
+    {
+      "bytes": 5209,
+      "path": "experiments/prime-field-auxiliary-ic/snapshot/algebraic/optimized/circuit_results.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/e4/e447a22ad1d7c2f518377649b86dba6664cd50c3c2bbe2b8624fd491452ef212",
+      "sha256": "e447a22ad1d7c2f518377649b86dba6664cd50c3c2bbe2b8624fd491452ef212",
+      "uploaded": false
+    }
+  ],
+  "repo": "cryptanalysis",
+  "reports": {
+    "pdf": "experiments/prime-field-auxiliary-ic/IMPORT_REPORT.pdf",
+    "png": [],
+    "svg": []
+  },
+  "retrospective_import": {
+    "execution_commit": null,
+    "preregistered": false,
+    "registration_commit": "4551d77ae4a87fdee717e69b8f90c46420f6cc35",
+    "scope": "Stage-only extraction: 16 fixed targets, 8 repetitions each; no end-to-end implication.",
+    "source_sha256": null
+  },
+  "schema": "bench.record/v1",
+  "session": null,
+  "slug": "prime31-retro-circuit-v2",
+  "status": "measured",
+  "summary": "Retrospective unverified producer observations; Stage-only extraction: 16 fixed targets, 8 repetitions each; no end-to-end implication.",
+  "validation": null
+}

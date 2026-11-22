@@ -1,0 +1,108 @@
+name: CT138 original-source guarded batch-width sweep
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/ct138-batch-width-sweep.yml"
+      - "experiments/chained-transfer-public-target/ct130-prime31/ct138_generate.py"
+      - "experiments/chained-transfer-public-target/ct130-prime31/ct138_verify.py"
+      - "experiments/chained-transfer-public-target/ct130-prime31/CT138_PROTOCOL.md"
+  workflow_dispatch:
+    inputs:
+      admitted_bounded_cpu_run:
+        description: "I authorize bounded same-host GitHub Actions CPU trial within quota (no EKS/Spot)"
+        required: true
+        type: boolean
+        default: false
+permissions:
+  contents: read
+jobs:
+  source-guards:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - name: Checkout exact PR head, not synthetic merge
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Guard frozen original sources, generate variant and compile
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p ct138-evidence
+          {
+            git rev-parse HEAD
+            git hash-object experiments/chained-transfer-public-target/ct130-prime31/ct136_native.cpp
+            git hash-object experiments/chained-transfer-public-target/ct130-prime31/ct135_native.cpp
+            g++ --version | head -n1
+            python3 --version
+            uname -a
+            grep -m1 'model name' /proc/cpuinfo || true
+            cat /sys/fs/cgroup/cpu.max 2>/dev/null || true
+            cat /sys/fs/cgroup/memory.max 2>/dev/null || true
+          } | tee ct138-evidence/host.txt
+          test "$(git hash-object experiments/chained-transfer-public-target/ct130-prime31/ct136_native.cpp)" = 2d063737bae8262ef39d9af4a9df8b022ef2da60
+          test "$(git hash-object experiments/chained-transfer-public-target/ct130-prime31/ct135_native.cpp)" = 4d94fc9163e86689a09c6d6685dd017c5c4c9698
+          base=experiments/chained-transfer-public-target/ct130-prime31
+          test "$(sha256sum "$base/ct136_verify.py" | cut -d' ' -f1)" = ce3a9e5af959ad5ec3a81ce78151587a099fa8f86029bc7fa059bf9a384abc2f
+          python3 -S -m py_compile "$base/ct138_generate.py" "$base/ct138_verify.py"
+          python3 -S "$base/ct138_generate.py" "$RUNNER_TEMP/ct138-generated" | tee ct138-evidence/generated-sha256.txt
+          for width in 16 32 64; do
+            g++ -O3 -std=c++17 -Wall -Wextra -Werror -I "$base" -fsyntax-only "$RUNNER_TEMP/ct138-generated/ct138_width$width.cpp"
+          done
+          python3 -S - "$base" <<'PY'
+          import importlib.util, pathlib, sys
+          base = pathlib.Path(sys.argv[1])
+          spec=importlib.util.spec_from_file_location("audit",base/"ct138_verify.py")
+          m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
+          m.original_verifier().preflight()
+          for width in m.WIDTHS:
+              bad="schema,ct138-width999-cold-v1\n"
+              try: m.normalize(bad,width,m.SEEDS[0])
+              except ValueError: pass
+              else: raise RuntimeError("accepted invalid width")
+          print("independent verifier preflight and width mutation passed")
+          PY
+      - name: Authorized full cold experiment (manual only)
+        if: github.event_name == 'workflow_dispatch' && inputs.admitted_bounded_cpu_run == true
+        shell: bash
+        run: |
+          set -euo pipefail
+          base=experiments/chained-transfer-public-target/ct130-prime31
+          # Only applies to this manual native subprocess cohort; max virtual size 2 GiB.
+          ulimit -v 2097152
+          mkdir -p ct138-evidence/results
+          for width in 16 32 64; do
+            g++ -O3 -std=c++17 -Wall -Wextra -Werror -I "$base" \
+              "$RUNNER_TEMP/ct138-generated/ct138_width$width.cpp" \
+              -o "$RUNNER_TEMP/ct138-width$width"
+          done
+          # Predeclared rotating-order same-host cohort: mitigate width/thermal drift.
+          for seed in 20261340 20261341 20261342 20261343; do
+            case "$seed" in
+              20261340) widths="16 32 64" ;;
+              20261341) widths="32 64 16" ;;
+              20261342) widths="64 16 32" ;;
+              20261343) widths="64 32 16" ;;
+            esac
+            for width in $widths; do
+              echo "$seed:$width" >> ct138-evidence/sequence.txt
+              /usr/bin/time -f 'wall_seconds=%e maxrss_kb=%M' \
+                -o "ct138-evidence/results/width$width-$seed.time" \
+                timeout 120s "$RUNNER_TEMP/ct138-width$width" 32 "$seed" \
+                > "ct138-evidence/results/width$width-$seed.csv" \
+                2> "ct138-evidence/results/width$width-$seed.stderr"
+            done
+          done
+          python3 -S "$base/ct138_verify.py" ct138-evidence/results > ct138-evidence/audit.json
+          python3 -O -S "$base/ct138_verify.py" ct138-evidence/results > ct138-evidence/audit-optimized.json
+          cmp ct138-evidence/audit.json ct138-evidence/audit-optimized.json
+          sha256sum ct138-evidence/results/*.csv | tee ct138-evidence/raw-sha256.txt
+          cat ct138-evidence/audit.json
+      - name: Preserve source guard, compiler outputs and any raw measurements
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ct138-batch-width-evidence
+          path: ct138-evidence/
+          retention-days: 30
