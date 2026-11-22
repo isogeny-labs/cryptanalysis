@@ -80,17 +80,16 @@ def smoke(fixture, collector_source):
         if json.loads((stored/'terminal.json').read_text())['status'] != 'internal_consistency_only':
             raise AssertionError('mock producer mislabeled scientific standing')
 
-        # CT311 must use the actual complete CT304 accepted producer bundle,
-        # not merely extract an unverified selected-only timing subset.
-        scoped = ct311.admitted_capture(stored, fixture)
-        assert scoped["full_695_dual_native_transcript_admitted"] is True
-        assert scoped["whole_cold_single_target_ecdlp_cost"] is None
-        assert scoped["native_execution_independently_verified"] is False
-        for direction in ("0_to_2", "2_to_0"):
-            assert scoped["directions"][direction]["n"] == 24
-            assert scoped["directions"][direction]["zero"] == 24
-            for sector in range(4):
-                assert scoped["direction_sectors"][direction][str(sector)]["n"] == 6
+        # CT312 separates *whole-source* admission from physical pricing:
+        # the mock's 144 zero-ns records are allowed as source-consistency
+        # evidence, but cannot be given a directional price by CT311.
+        try:
+            ct311.admitted_capture(stored, fixture)
+        except ValueError as exc:
+            if "unpriced called primitive" not in str(exc):
+                raise
+        else:
+            raise AssertionError("CT311 priced a whole-population zero-clock mock")
 
         # A second full capture with one fabricated event missing must retain
         # both receipts and an explicit refusal, not promote a subset as native.
@@ -129,7 +128,7 @@ def smoke(fixture, collector_source):
                 'producer_auditor_mock_acceptances':1,
                 'mutated_full_log_mock_rejections':1,
                 'benign_python_child_processes':4,
-                'ct311_full_pair_scoped_mock_acceptances':1,
+                'ct311_full_pair_zero_clock_rejections':1,
                 'ct311_corrupted_pair_mock_rejections':1,
                 'original_native_model_executions':0,
                 'physical_primitive_prices':0,
