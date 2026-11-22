@@ -97,8 +97,11 @@ pub struct PnbRow {
     pub backward: BackwardEstimate,
     /// Complexity from `ε* = ε_d · ε_a` (the paper's formula).
     pub complexity: PnbComplexity,
-    /// Complexity from the directly measured `ε*` (no product assumption).
-    pub complexity_direct: PnbComplexity,
+    /// Complexity from the directly measured `ε*` (no product assumption),
+    /// `None` unless the direct estimate is itself significant
+    /// ([`PnbRow::significant_direct`]): an ungated direct `ε*` is sampling
+    /// noise and its complexity would be meaningless.
+    pub complexity_direct: Option<PnbComplexity>,
 }
 
 impl PnbRow {
@@ -107,6 +110,13 @@ impl PnbRow {
     /// determined by the sampling error, not by the attack.
     pub fn significant(&self) -> bool {
         self.backward.eps_a.z >= 3.0
+    }
+
+    /// Whether the directly measured `ε*` is statistically nonzero (`z >= 3`,
+    /// the same gate as [`PnbRow::significant`]). Only then is
+    /// [`PnbRow::complexity_direct`] filled in.
+    pub fn significant_direct(&self) -> bool {
+        self.backward.eps_star_direct.z.abs() >= 3.0
     }
 }
 
@@ -551,12 +561,14 @@ impl<'a> PnbTarget<'a> {
                 let pnb = select_pnb(gammas_measured, g);
                 let b = self.backward_bias(dist, &pnb, samples, seed);
                 let eps_star = dist.eps_d * b.eps_a.eps;
+                let direct_ok = b.eps_star_direct.z.abs() >= 3.0;
                 PnbRow {
                     gamma: g,
                     m: pnb.len(),
                     backward: b,
                     complexity: attack_complexity(n, pnb.len(), eps_star),
-                    complexity_direct: attack_complexity(n, pnb.len(), b.eps_star_direct.eps),
+                    complexity_direct: direct_ok
+                        .then(|| attack_complexity(n, pnb.len(), b.eps_star_direct.eps)),
                 }
             })
             .collect()

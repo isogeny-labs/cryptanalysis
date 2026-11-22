@@ -76,7 +76,8 @@ fn lin_corr_add_matches_brute_force() {
             rng.gen::<u64>() & 255,
         );
         if i % 2 == 0 {
-            // structured: v = t = u keeps the correlation nonzero often
+            // structured: v = u and t = u plus a sparse random perturbation keep
+            // the correlation nonzero often
             v = u;
             t = u ^ (rng.gen::<u64>() & rng.gen::<u64>() & 255);
         }
@@ -159,11 +160,16 @@ fn machine_matches_ir_and_inverts() {
 
 /// Aumasson et al. (FSE 2008): ID = bit 13 of state word 13 (our block bit
 /// `13*32 + 13`, RFC 8439 word order, bit `k` = value `2^k`), OD = bit 0 of
-/// word 11 after 3 rounds, published bias `0.026`. Measured at full 32-bit
-/// width with 2^22 pairs (random key and counter/nonce, constants fixed,
-/// state before the feed-forward). The published figure is given to two
-/// digits without an error bar; the assertion is that the measured `|ε|` is
-/// within 3σ of 0.026 (σ of our estimate), with the sign negative here.
+/// word 11 after 3 rounds. The bias is usually quoted as `|ε_d| ≈ 0.0272`
+/// (a commonly quoted value; this was not checked against the paper or the
+/// research-kb, and it is given to three digits without an error bar).
+/// Measured at full 32-bit width with 2^24 pairs (random key and
+/// counter/nonce, constants fixed, state before the feed-forward). The
+/// assertion is that `ε` is negative with `|ε|` in `[0.0262, 0.0282]`, a
+/// window that covers the rounding of the quoted figure and an independently
+/// measured `ε = -0.0270 ± 0.0001`; at this `N` the sampling error is
+/// `σ = 0.00024`, so the window is about ±20σ wide and does not depend on
+/// the seed.
 #[test]
 fn chacha_3round_published_differential_linear() {
     let p = chacha::chacha(3);
@@ -171,14 +177,17 @@ fn chacha_3round_published_differential_linear() {
     assert!(t.uses_compiled_evaluator());
     let id = bit_vector(512, &[13 * 32 + 13]);
     let od = bit_vector(512, &[11 * 32]);
-    let n = 1u64 << 22;
+    let n = 1u64 << 24;
     let e = t.estimate_bias(&id, &od, n, 0xA11CE);
     let sigma = 1.0 / (n as f64).sqrt();
     println!(
-        "ChaCha 3 rounds, ID (13,13) -> OD (11,0): eps = {:+.5} (p1 = {:.6}), N = 2^22, sigma = {:.5}, published 0.026, |diff| = {:.1} sigma",
-        e.eps, e.p1, sigma, (e.eps.abs() - 0.026).abs() / sigma
+        "ChaCha 3 rounds, ID (13,13) -> OD (11,0): eps = {:+.5} (p1 = {:.6}), N = 2^24, sigma = {:.5}, commonly quoted |eps| 0.0272, |eps| - 0.0272 = {:+.1} sigma",
+        e.eps, e.p1, sigma, (e.eps.abs() - 0.0272) / sigma
     );
-    assert!((e.eps.abs() - 0.026).abs() < 3.0 * sigma, "{e:?}");
+    assert!(
+        e.eps < 0.0 && (0.0262..=0.0282).contains(&e.eps.abs()),
+        "{e:?}"
+    );
     assert!(e.z.abs() > 40.0);
     // an unrelated output bit is unbiased at the same budget
     let od2 = bit_vector(512, &[5 * 32 + 3]);
@@ -194,7 +203,8 @@ fn diag_group(j: usize) -> [usize; 4] {
         .unwrap()
 }
 
-/// Negative-result record: single-bit differences (words 12..15) against all
+/// Negative-result record (single-bit masks, reduced widths only): single-bit
+/// differences (words 12..15) against all
 /// single-bit masks on reduced-width ChaCha (w = 8: 3, 4, 5 rounds; w = 16:
 /// 3, 4 rounds), 2^18 pairs per input bit, top candidates re-estimated with
 /// 2^22 fresh pairs: none is distinguishable from zero.
@@ -213,7 +223,9 @@ fn explore_small_single_bit() {
     }
 }
 
-/// Negative-result record: all 128 single-bit differences of words 12..15
+/// Negative-result record (single-bit masks only; multi-bit masks such as the
+/// four-bit mask of `chacha_4round_four_bit_mask_positive_control` are not
+/// covered): all 128 single-bit differences of words 12..15
 /// against all 512 single-bit masks on 4 full-width ChaCha rounds (2^20 pairs
 /// each, top 6 re-estimated with 2^24 fresh pairs): every confirmation has
 /// `|z| < 1.3`. Run manually with `--ignored --nocapture`.
@@ -229,12 +241,14 @@ fn explore_full_4round_all_ids() {
     }
 }
 
-/// Negative-result record: for nine strongly biased round-3 bits (ID (13,13)),
-/// every XOR of at most three bits of the round-4 quarter round that updates
-/// the word is scored by correlation with the round-3 bit (2^17 pairs; the
-/// best correlations, about 0.013, are at the 4.5 sigma noise level of that
-/// budget); the four best predicted masks are re-measured with 2^25 pairs
-/// and are consistent with zero. Run manually with `--ignored --nocapture`.
+/// Exploration (weight at most 3 only): for nine strongly biased round-3 bits
+/// (ID (13,13)), every XOR of at most three bits of the round-4 quarter round
+/// that updates the word is scored by correlation with the round-3 bit (2^17
+/// pairs), and the four best predicted masks are re-measured with 2^25
+/// pairs. This scan **cannot** contain the weight-4 mask that extends the
+/// round-3 bit (11,0) (see `chacha_4round_extension_search_finds_four_bit_mask`),
+/// so its output is not evidence about whether a 4-round differential-linear
+/// bias exists. Run manually with `--ignored --nocapture`.
 #[test]
 #[ignore = "exploration"]
 fn explore_ext4() {
@@ -275,7 +289,8 @@ fn explore_ext4() {
     }
 }
 
-/// Negative-result record: all two-bit masks against single-bit differences on
+/// Negative-result record (reduced widths, two-bit masks only; says nothing
+/// about the full-width four-bit mask): all two-bit masks against single-bit differences on
 /// 4 rounds of w = 16 and w = 8 ChaCha (2^20 pairs, top 3 re-estimated with
 /// 2^24): none is distinguishable from zero. Run manually.
 #[test]
@@ -333,19 +348,40 @@ fn explore_speck_table() {
 
 // ---- PNB end to end -------------------------------------------------------
 
-/// Full-width ChaCha6 and ChaCha7 PNB estimates with the published
-/// distinguisher (13,13) -> (11,0) on r = 3 rounds, `ε_d` measured with 2^22
-/// pairs, neutrality with 2^12 draws, `ε_a` with 2^20 draws for each of the
-/// fixed thresholds `γ in {0.9, 0.8, 0.7, 0.6, 0.5, 0.4}`. The best
-/// significant row is reported (the threshold grid is fixed in advance and
-/// nothing is tuned toward a target). Published: 2^139 (ChaCha6) and 2^248
-/// (ChaCha7), Aumasson et al. 2008; 2^77.4 for 6 rounds is a later line.
+/// Full-width ChaCha6 and ChaCha7 PNB estimates with the (13,13) -> (11,0)
+/// distinguisher on r = 3 rounds, `ε_d` measured with 2^22 pairs, neutrality
+/// with 2^12 draws, `ε_a` with 2^20 draws for each of the fixed thresholds
+/// `γ in {0.9, 0.8, 0.7, 0.6, 0.5, 0.4}`. Rows are gated on `z >= 3` of
+/// `ε_a`; the direct `ε*` column and its complexity are shown only where the
+/// direct estimate is itself significant.
+///
+/// These are **estimates under the 2008 method**, not a reproduction: the
+/// best rows come out 3 to 4 bits below the published 2^139 (ChaCha6) and
+/// 2^248 (ChaCha7, Aumasson et al. 2008); the gap comes from a measured
+/// `ε_a` about twice the value implied by the paper, and its cause has not
+/// been identified. The ChaCha6 `γ = 0.5` row (about 2^129) sits at a cliff
+/// edge (its direct `ε*` is only about 2.7σ even at 2^30 draws in an
+/// independent run) and is not asserted; the asserted windows use the
+/// robust rows (`γ >= 0.6` for ChaCha6, `γ >= 0.4` for ChaCha7), and the
+/// PNB counts `m` are compared with independently obtained counts (ChaCha6
+/// `γ = 0.6`: 147, `γ = 0.5`: 161; ChaCha7 `γ = 0.5`: 35, `γ = 0.4`: 40)
+/// within ±3.
 #[test]
 fn chacha_pnb_full_width_estimates() {
     let nb = 512;
     let id = bit_vector(nb, &[13 * 32 + 13]);
     let od = bit_vector(nb, &[11 * 32]);
-    for (big_r, lo, hi) in [(6usize, 110.0, 160.0), (7, 200.0, 256.0)] {
+    let fmt = |c: &Option<PnbComplexity>| {
+        c.as_ref()
+            .map_or("n/s".to_string(), |c| format!("{:.1}", c.log2_time))
+    };
+    // (R, robust gamma floor, log2 T window of the best robust row,
+    //  independent m counts (gamma, m))
+    let cases: [(usize, f64, (f64, f64), [(f64, usize); 2]); 2] = [
+        (6, 0.6, (133.0, 139.0), [(0.6, 147), (0.5, 161)]),
+        (7, 0.4, (241.0, 249.0), [(0.5, 35), (0.4, 40)]),
+    ];
+    for (big_r, g_floor, (lo, hi), ms) in cases {
         let p = chacha::chacha(big_r);
         let t = PnbTarget::chacha(&p);
         let (d, e) = t.distinguisher(3, id.clone(), od.clone(), 1 << 22, 41);
@@ -353,23 +389,47 @@ fn chacha_pnb_full_width_estimates() {
         let rows = t.sweep(&d, &g, &[0.9, 0.8, 0.7, 0.6, 0.5, 0.4], 1 << 20, 43);
         for r in &rows {
             println!(
-                "ChaCha{big_r} r=3 gamma {:.1}: m {:3} eps_a {:+.4} (z {:.1}) eps_d {:+.4} eps* prod {:+.2e} direct {:+.2e}  log2 N {:.1} alpha {:.0} log2 T {:.1} (direct-eps* log2 T {:.1}){}",
+                "ChaCha{big_r} r=3 gamma {:.1}: m {:3} eps_a {:+.4} (z {:.1}) eps_d {:+.4} eps* prod {:+.2e}; direct eps* {} (z {:.1}), log2 N {:.1} alpha {:.0} log2 T {:.1} (direct log2 T {}){}",
                 r.gamma, r.m, r.backward.eps_a.eps, r.backward.eps_a.z, d.eps_d, d.eps_d * r.backward.eps_a.eps,
-                r.backward.eps_star_direct.eps, r.complexity.log2_data_pairs, r.complexity.alpha, r.complexity.log2_time,
-                r.complexity_direct.log2_time, if r.significant() { "" } else { "  [not significant]" }
+                if r.significant_direct() { format!("{:+.2e}", r.backward.eps_star_direct.eps) } else { "n/s".into() },
+                r.backward.eps_star_direct.z,
+                r.complexity.log2_data_pairs, r.complexity.alpha, r.complexity.log2_time,
+                fmt(&r.complexity_direct), if r.significant() { "" } else { "  [eps_a not significant]" }
             );
+            assert_eq!(r.complexity_direct.is_some(), r.significant_direct());
         }
         let best = best_significant(&rows).expect("a significant row");
         println!(
-            "ChaCha{big_r}: eps_d = {:+.5} (N = 2^22); best significant: gamma {:.1}, m = {}, log2 time = {:.1}, log2 data (pairs) = {:.1}; published {}",
+            "ChaCha{big_r}: eps_d = {:+.5} (N = 2^22); best significant row (any gamma): gamma {:.1}, m = {}, log2 time = {:.1}, log2 data (pairs) = {:.1}; published {}",
             e.eps, best.gamma, best.m, best.complexity.log2_time, best.complexity.log2_data_pairs,
-            if big_r == 6 { "2^139 (Aumasson et al. 2008); later line 2^77.4" } else { "2^248 (Aumasson et al. 2008)" }
+            if big_r == 6 { "2^139 (Aumasson et al. 2008)" } else { "2^248 (Aumasson et al. 2008)" }
+        );
+        let robust = best_significant(
+            &rows
+                .iter()
+                .filter(|r| r.gamma >= g_floor - 1e-9)
+                .cloned()
+                .collect::<Vec<_>>(),
+        )
+        .cloned()
+        .expect("a significant robust row");
+        println!(
+            "ChaCha{big_r}: best robust row (gamma >= {g_floor}): gamma {:.1}, m = {}, log2 time = {:.1}",
+            robust.gamma, robust.m, robust.complexity.log2_time
         );
         assert!(
-            best.complexity.log2_time > lo && best.complexity.log2_time < hi,
-            "{best:?}"
+            robust.complexity.log2_time > lo && robust.complexity.log2_time < hi,
+            "{robust:?}"
         );
-        assert!(best.complexity.beats_brute_force);
+        assert!(robust.complexity.beats_brute_force);
+        for (gam, m) in ms {
+            let r = rows.iter().find(|r| (r.gamma - gam).abs() < 1e-9).unwrap();
+            assert!(
+                r.m.abs_diff(m) <= 3,
+                "ChaCha{big_r} gamma {gam}: m {} vs {m}",
+                r.m
+            );
+        }
     }
 }
 
@@ -477,17 +537,21 @@ fn speck_one_round_rotational_exact() {
 }
 
 /// Speck64/128 at 2 and 3 rounds, `γ = 1`, 2^19 pairs: the chained estimate
-/// (product of exact per-addition probabilities, additions assumed
-/// independent) is compared with the measured probability. **The estimates
-/// do not agree within 3σ**: the measured probability is about twice the
-/// estimate (the additions of consecutive rounds, and the round-key
-/// addition in the key schedule, are not independent: the second operand of
-/// a round's addition is built from the first). The test records that
-/// discrepancy: the independence estimate is a lower bound here and is
-/// within a factor 3 of the measurement, and the 1-round estimate (one
-/// addition, no independence assumption) is exact (previous test).
+/// (product of exact per-addition probabilities, one trajectory) is compared
+/// with the measured probability of the predicted output difference. **The
+/// estimates do not agree within 3σ**: the measured probability is about
+/// twice the estimate (about 2.07 in an independent measurement). This is
+/// not dependence between the additions: an independent measurement found
+/// `P(all additions rotational) = 0.0524` against `0.375^3 = 0.0527` for
+/// three additions. It is clustering: the estimate follows a single
+/// trajectory of per-addition differences, but several trajectories reach
+/// the same output difference, for example the round-2 data addition and the
+/// key-schedule addition can fail with the same XOR error, which then cancels
+/// in `x ^= k`. The estimate is therefore a lower bound on the probability of
+/// the output difference here, within a factor 3 of the measurement, and the
+/// 1-round estimate (one addition) is exact (previous test).
 #[test]
-fn speck_multi_round_independence_estimate_is_conservative() {
+fn speck_multi_round_rx_trajectory_estimate_is_lower_bound_by_clustering() {
     let p = speck::speck64_128();
     let (zb, zk) = (vec![0u64; 1], vec![0u64; 2]);
     let n = 1u64 << 19;
@@ -510,15 +574,78 @@ fn speck_multi_round_independence_estimate_is_conservative() {
     }
 }
 
-/// Four single ChaCha rounds at full width, input difference (13,13): the
-/// 512 single-bit output masks are scanned with 2^22 pairs, and the three
-/// best are re-estimated with 2^23 fresh pairs. No single-bit mask is
-/// distinguishable from zero at this budget (all confirmations have
-/// `|z| < 6`): **the "clearly nonzero 4-round bias" control is not met by
-/// single-bit masks here** (see also the ignored scans in this file for
-/// two-bit and weight-3 extension masks, also negative).
+/// Mask of the 4-round bias: the round-4 diagonal quarter round `(1, 6, 11, 12)`
+/// at bit 0 gives `Δx3_{11,0} = Δx4_{1,0} ⊕ Δx4_{11,0} ⊕ Δx4_{12,0} ⊕ Δx4_{12,8}`
+/// with probability 1 (Choudhuri–Maitra 2016 style), so the 3-round bias of
+/// (11,0) carries over unchanged. Block bits `(word, bit) -> word*32 + bit`.
+const CHACHA4_MASK: [usize; 4] = [32, 11 * 32, 12 * 32, 12 * 32 + 8];
+
+/// Positive control for the 4-round distinguisher: ID (13,13) against the
+/// four-bit mask `(1,0) ⊕ (11,0) ⊕ (12,0) ⊕ (12,8)` after 4 rounds (full
+/// width, before the feed-forward) has the same bias as the 3-round
+/// `(11,0)` distinguisher, `ε ≈ -0.0270`. Asserted: `|ε - (-0.0270)| < 4σ`
+/// at `N = 2^24` (`σ = 0.00024`).
 #[test]
-fn chacha_4round_single_bit_bias_below_resolution() {
+fn chacha_4round_four_bit_mask_positive_control() {
+    let p = chacha::chacha(4);
+    let t = dl_chacha(&p, 4);
+    let n = 1u64 << 24;
+    let e = t.estimate_bias_bits(&[13 * 32 + 13], &CHACHA4_MASK, n, 0x4B17);
+    let sigma = 1.0 / (n as f64).sqrt();
+    println!(
+        "ChaCha 4 rounds, ID (13,13) -> mask (1,0)^(11,0)^(12,0)^(12,8): eps = {:+.5} (p1 = {:.6}), N = 2^24, sigma = {:.5}, z = {:.1}, (eps + 0.0270) = {:+.1} sigma",
+        e.eps, e.p1, sigma, e.z, (e.eps + 0.0270) / sigma
+    );
+    assert!((e.eps - (-0.0270)).abs() < 4.0 * sigma, "{e:?}");
+}
+
+/// Quick search control: the extension search starting from the round-3 bit
+/// (11,0) (ID (13,13)), over the 128 block bits of the round-4 quarter round
+/// `(1, 6, 11, 12)` with masks of up to four bits, finds the four-bit mask
+/// `(1,0) ⊕ (11,0) ⊕ (12,0) ⊕ (12,8)` as its top candidate with correlation
+/// 1 using only 2^12 pairs (a weight-4 scan over 128 bits is 10.6 million
+/// subsets), and a fresh 2^22-pair run confirms its 4-round bias against the
+/// 3-round value (within 4σ).
+#[test]
+fn chacha_4round_extension_search_finds_four_bit_mask() {
+    let p = chacha::chacha(4);
+    let t = dl_chacha(&p, 4);
+    let id = 13 * 32 + 13;
+    let win: Vec<usize> = diag_group(11)
+        .iter()
+        .flat_map(|&j| (0..32).map(move |b| j * 32 + b))
+        .collect();
+    let r = t.search_extension_masks(id, 3, 11 * 32, &win, 4, 1 << 12, 3, 77);
+    for (bits, c) in &r {
+        println!(
+            "extension search r3 (11,0) -> r4 mask {:?}: corr {c:+.4} (N = 2^12)",
+            bits.iter().map(|b| (b / 32, b % 32)).collect::<Vec<_>>()
+        );
+    }
+    let (bits, corr) = &r[0];
+    let mut got = bits.clone();
+    got.sort_unstable();
+    assert_eq!(got, CHACHA4_MASK.to_vec(), "top candidate {r:?}");
+    assert!(*corr > 0.99, "{corr}");
+    let n = 1u64 << 22;
+    let e = t.estimate_bias_bits(&[id], bits, n, 5);
+    let sigma = 1.0 / (n as f64).sqrt();
+    println!(
+        "confirm found mask: eps = {:+.5}, N = 2^22, sigma = {:.5}, z = {:.1}",
+        e.eps, sigma, e.z
+    );
+    assert!((e.eps - (-0.0270)).abs() < 4.0 * sigma, "{e:?}");
+}
+
+/// Documented negative: the **single-bit** 4-round masks. Four single ChaCha
+/// rounds at full width, input difference (13,13): the 512 single-bit output
+/// masks are scanned with 2^22 pairs and the three best are re-estimated with
+/// 2^23 fresh pairs; none is distinguishable from zero at this budget (all
+/// confirmations have `|z| < 6`). This says nothing about multi-bit masks:
+/// the four-bit mask of `chacha_4round_four_bit_mask_positive_control` has
+/// `ε ≈ -0.027` on the same input difference.
+#[test]
+fn chacha_4round_single_bit_masks_have_no_resolvable_bias() {
     let p = chacha::chacha(4);
     let t = dl_chacha(&p, 4);
     let c = t.search_single_bit(&[13 * 32 + 13], 1 << 22, 3, 1 << 23, 0xBEE5);

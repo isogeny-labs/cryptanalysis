@@ -510,14 +510,16 @@ impl<'a> DlTarget<'a> {
     /// For input difference `in_bit` the pair is run to round
     /// `target_round` (`< rounds`), where `target_bit` of the difference is
     /// the known biased bit `t`, and on to the target's `rounds`. Every XOR
-    /// of at most `max_weight` bits taken from `window` (block bits of the
+    /// of at most `max_weight` (1 to 4) bits taken from `window` (block bits of the
     /// final difference) is scored by its correlation with `t`,
     /// `corr = 1 − 2·Pr[t ≠ λ·ΔOut]`, estimated from `n` pairs. By the
     /// piling-up heuristic a mask with correlation `c` onto a bit of bias
     /// `ε_t` gives a differential-linear bias `ε_t · c` over the longer
     /// run; callers must confirm that with [`DlTarget::estimate_bias`].
     /// Returns the `top_k` masks by `|corr|` as `(bits, corr)`. Requires the
-    /// compiled evaluator.
+    /// compiled evaluator. The cost is `C(|window|, max_weight)` passes over
+    /// `n / 64` words: weight 4 over a 128-bit window is 10.6 million
+    /// subsets, which is seconds at `n = 2^12` and minutes at `2^17`.
     #[allow(clippy::too_many_arguments)]
     pub fn search_extension_masks(
         &self,
@@ -531,7 +533,7 @@ impl<'a> DlTarget<'a> {
         seed: u64,
     ) -> Vec<(Vec<usize>, f64)> {
         let mc = self.machine.as_ref().expect("compiled evaluator required");
-        assert!(target_round < self.rounds && (1..=3).contains(&max_weight));
+        assert!(target_round < self.rounds && (1..=4).contains(&max_weight));
         assert!(n.is_multiple_of(CHUNK));
         let w = mc.word_bits;
         let nw = words_for(self.prim.block_bits);
@@ -586,31 +588,70 @@ impl<'a> DlTarget<'a> {
         drop(parts);
         let col = |i: usize| &cols[(i + 1) * total_words..(i + 2) * total_words];
         let t = &cols[..total_words];
-        let score = |ids: &[usize]| -> f64 {
-            let mism: u64 = (0..total_words)
-                .map(|k| {
-                    let mut v = t[k];
-                    for &i in ids {
-                        v ^= col(i)[k];
-                    }
-                    v.count_ones() as u64
-                })
-                .sum();
+        let score_of = |v: &[u64]| -> f64 {
+            let mism: u64 = v.iter().map(|x| x.count_ones() as u64).sum();
             1.0 - 2.0 * mism as f64 / n as f64
         };
+        // Depth-first enumeration of the subsets in increasing index order
+        // with the running XOR kept per depth, so a leaf costs one pass over
+        // `total_words`. Each worker keeps a bounded candidate list.
+        #[allow(clippy::too_many_arguments)]
+        fn walk(
+            cols: &[u64],
+            total_words: usize,
+            score_of: &dyn Fn(&[u64]) -> f64,
+            nwin: usize,
+            max_weight: usize,
+            top_k: usize,
+            ids: &mut Vec<usize>,
+            acc: &[u64],
+            out: &mut Vec<(Vec<usize>, f64)>,
+        ) {
+            let start = ids.last().map_or(0, |&l| l + 1);
+            for i in start..nwin {
+                let c = &cols[(i + 1) * total_words..(i + 2) * total_words];
+                let next: Vec<u64> = acc.iter().zip(c).map(|(a, b)| a ^ b).collect();
+                ids.push(i);
+                out.push((ids.clone(), score_of(&next)));
+                if out.len() >= 8 * top_k.max(16) {
+                    out.sort_by(|a, b| b.1.abs().total_cmp(&a.1.abs()));
+                    out.truncate(top_k);
+                }
+                if ids.len() < max_weight {
+                    walk(
+                        cols,
+                        total_words,
+                        score_of,
+                        nwin,
+                        max_weight,
+                        top_k,
+                        ids,
+                        &next,
+                        out,
+                    );
+                }
+                ids.pop();
+            }
+        }
         let mut all: Vec<(Vec<usize>, f64)> = (0..nwin)
             .into_par_iter()
             .flat_map_iter(|i| {
-                let mut v = vec![(vec![i], score(&[i]))];
+                let mut v = Vec::new();
+                let next: Vec<u64> = t.iter().zip(col(i)).map(|(a, b)| a ^ b).collect();
+                let mut ids = vec![i];
+                v.push((ids.clone(), score_of(&next)));
                 if max_weight >= 2 {
-                    for j in (i + 1)..nwin {
-                        v.push((vec![i, j], score(&[i, j])));
-                        if max_weight >= 3 {
-                            for k in (j + 1)..nwin {
-                                v.push((vec![i, j, k], score(&[i, j, k])));
-                            }
-                        }
-                    }
+                    walk(
+                        &cols,
+                        total_words,
+                        &score_of,
+                        nwin,
+                        max_weight,
+                        top_k,
+                        &mut ids,
+                        &next,
+                        &mut v,
+                    );
                 }
                 v.sort_by(|a, b| b.1.abs().total_cmp(&a.1.abs()));
                 v.truncate(top_k);

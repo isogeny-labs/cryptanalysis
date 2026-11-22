@@ -60,7 +60,10 @@ pub fn rotl(x: u64, k: usize, w: usize) -> u64 {
 
 fn op_invertible(op: &ArxOp) -> bool {
     match *op {
-        ArxOp::Add { dst, a, b } | ArxOp::Xor { dst, a, b } => dst == a || dst == b,
+        // in place on exactly one source: `dst` aliasing both (`x += x`,
+        // `x ^= x`) loses information, `dst` aliasing neither overwrites a
+        // fresh register from two others
+        ArxOp::Add { dst, a, b } | ArxOp::Xor { dst, a, b } => (dst == a) != (dst == b),
         ArxOp::Rotl { dst, src, .. } => dst == src,
         ArxOp::XorConst { .. } | ArxOp::AddConst { .. } => true,
         _ => false,
@@ -216,5 +219,36 @@ impl ArxMachine {
             .iter()
             .flat_map(|v| v.to_le_bytes()[..nb].to_vec())
             .collect()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// `op_invertible` accepts in-place updates with one aliased source and
+    /// rejects self-aliased and non-in-place operations.
+    #[test]
+    fn op_invertible_rejects_self_aliased() {
+        for mk in [
+            |dst, a, b| ArxOp::Add { dst, a, b },
+            |dst, a, b| ArxOp::Xor { dst, a, b },
+        ] {
+            assert!(op_invertible(&mk(0, 0, 1)));
+            assert!(op_invertible(&mk(0, 1, 0)));
+            assert!(!op_invertible(&mk(0, 0, 0)), "dst == a == b");
+            assert!(!op_invertible(&mk(0, 1, 2)), "dst aliases no source");
+            assert!(!op_invertible(&mk(0, 1, 1)), "a == b, dst fresh");
+        }
+        assert!(op_invertible(&ArxOp::Rotl {
+            dst: 2,
+            src: 2,
+            k: 3
+        }));
+        assert!(!op_invertible(&ArxOp::Rotl {
+            dst: 2,
+            src: 1,
+            k: 3
+        }));
     }
 }
