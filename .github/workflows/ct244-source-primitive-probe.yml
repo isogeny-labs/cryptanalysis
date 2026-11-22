@@ -7,6 +7,8 @@ on:
       - 'experiments/chained-transfer-public-target/norm-point-reuse-01/ct300_authentic_fixture_guard.py'
       - 'experiments/chained-transfer-public-target/norm-point-reuse-01/ct302_full_native_gate.py'
       - 'experiments/chained-transfer-public-target/norm-point-reuse-01/ct304_execution_receipt_gate.py'
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/ct310_bounded_native_pair_producer.py'
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT310_BOUNDED_FULL_PAIR_PRODUCER_PROTOCOL.md'
       - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT304_RAW_CAPTURE_CUSTODY_PROTOCOL.md'
       - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT309_NATIVE_WALL_NESTING_PROTOCOL.md'
       - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT302_FULL_NATIVE_POPULATION_ADMISSION_PROTOCOL.md'
@@ -162,6 +164,52 @@ jobs:
             echo 'ERROR: CT304 admitted a one-sided receipt' >&2; exit 1
           fi
           grep -F 'CT304 requires both raw logs' /tmp/ct304-partial.err
+      - name: Checkout immutable CT176 bounded capture source (read-only, not model objects)
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          ref: e89b9db54d358d3a2749acf6d5277b0300bc3ba2
+          path: _ct310_pinned
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            experiments/chained-transfer-public-target/primitive-pricing-01/ct176_cold_process_collector.py
+      - name: CT310 plan-only full-log capture producer (mock inputs, bounded benign subprocess)
+        shell: bash
+        run: |
+          set -euo pipefail
+          script=experiments/chained-transfer-public-target/norm-point-reuse-01/ct310_bounded_native_pair_producer.py
+          python3 -W error -m py_compile "$script"
+          python3 -W error -S "$script" > /tmp/ct310-plan.json
+          python3 -W error -S "$script" --self-test > /tmp/ct310-normal.json
+          python3 -W error -O -S "$script" --self-test > /tmp/ct310-opt.json
+          cmp /tmp/ct310-normal.json /tmp/ct310-opt.json
+          python3 -S - <<'PY'
+          from pathlib import Path
+          import sys
+          sys.path.insert(0, str(Path('experiments/chained-transfer-public-target/norm-point-reuse-01').resolve()))
+          import ct310_bounded_native_pair_producer as ct310
+          import json
+          plan=json.loads(Path('/tmp/ct310-plan.json').read_text())
+          test=json.loads(Path('/tmp/ct310-normal.json').read_text())
+          assert plan['native_models_executed']==0
+          assert (test['mock_positive'],test['mock_mutations_rejected'])==(1,7)
+          assert test['native_models_executed']==0 and test['authenticated_s3_artifacts']==0
+          source=Path('_ct310_pinned/experiments/chained-transfer-public-target/primitive-pricing-01/ct176_cold_process_collector.py')
+          child=ct310.locked_collector(source)
+          rc,out,err,error=child.bounded_subprocess([sys.executable,'-c','print("CT310_BENIGN_MOCK_ONLY")'],2)
+          assert (rc,error)==(0,None) and out.strip()==b'CT310_BENIGN_MOCK_ONLY'
+          child.MAX_CAPTURE=1024
+          rc,out,err,error=child.bounded_subprocess([sys.executable,'-c','print("Z"*5000)'],2)
+          assert error=='capture limit exceeded' and len(out)<=1025
+          rc,out,err,error=child.bounded_subprocess([sys.executable,'-c','import time;time.sleep(2)'],0.2)
+          assert error=='timeout'
+          print('CT310_SOURCE_ONLY_PASS: plan-only; 7 synthetic mutations; 3 benign process captures; 0 native models')
+          PY
+          if python3 -S "$script" --execute --timeout-seconds 1 --panel-wall-seconds 1 > /tmp/ct310-unadmitted.out 2> /tmp/ct310-unadmitted.err; then
+            echo "CT310 improperly accepted execution without owner/provider admission" >&2
+            exit 1
+          fi
+          grep -F 'real execution additionally needs owner/provider approval' /tmp/ct310-unadmitted.err
       - name: Create separate guarded Rust package and parse with rustfmt
         shell: bash
         run: |
