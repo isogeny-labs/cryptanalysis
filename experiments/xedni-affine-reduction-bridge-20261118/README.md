@@ -226,6 +226,16 @@ Run `lake build ProjectiveClassReduction` in this directory. `build-projective-s
 
 `ProjectiveCoalescenceObstruction.lean` proves the corresponding general branch obstruction for a ring homomorphism `f : R →+* S`: when source representatives are inequivalent but map to the same vector, mapped source `add` is the zero vector and its raw class map is the zero-vector class. If the target doubling `Z` coordinate is nonzero, the raw class map does not preserve `addMap`. The three checked declarations are `mapped_source_add_vector_zero`, `mapClass_source_addMap_zero`, and `mapClass_addMap_ne_addMap_of_coalescence` in namespace `XedniProjectiveCoalescenceObstruction`. Run `lake build ProjectiveCoalescenceObstruction`; `build-projective-coalescence-output.txt` records the direct Lean check and axiom audit, which lists only `propext`, `Classical.choice`, and `Quot.sound`.
 
+`ProjectiveClassCoalescence.lean` strengthens that obstruction to equality of *reduced projective classes*. Its hypothesis `(f ∘ P) ≈ (f ∘ Q)` allows any unit scaling between reduced representatives. The mapped source chord is still the zero vector. When the target doubling `Z` coordinate is nonzero, the raw class map still fails to preserve `addMap`. This removes dependence on a particular reduced coordinate normalization while keeping the exact source-inequivalence and target-nonzero hypotheses.
+
+| Result | Lean declaration | Exact hypotheses and status |
+| --- | --- | --- |
+| Mapped source chord vanishes | `XedniProjectiveClassCoalescence.mapped_source_add_vector_zero_of_equiv` | Commutative rings `R,S`, ring homomorphism `f`, arbitrary Weierstrass curve, source projective classes inequivalent, mapped classes equivalent; checked |
+| Raw mapped source sum is zero-vector class | `XedniProjectiveClassCoalescence.mapClass_source_addMap_zero_of_equiv` | Same hypotheses; checked |
+| Raw `addMap` incompatibility | `XedniProjectiveClassCoalescence.mapClass_addMap_ne_addMap_of_equiv` | Same hypotheses plus nonzero `Z` of target doubling vector; checked |
+
+Run `lake build ProjectiveClassCoalescence`; `build-projective-class-coalescence-output.txt` records the build and `#print axioms` audit. All three declarations list only `propext`, `Classical.choice`, and `Quot.sound`.
+
 `ProjectivePrimitiveNormalization.lean` proves the exact factorization `addXYZ W P T = (−125) • U` with `U=(−5,−1,1)`, proves `U` lies on the integral curve and has `Z=1`, and proves that the projective class of `U` after reduction equals the target `addMap` doubling class. In the last proof the target doubling vector is exactly `3 • (f ∘ U)` over `ZMod 5`. These facts identify the source factor that must be removed at coalescence; a general local normalization operation remains to be constructed.
 
 | Result | Lean declaration | Exact hypotheses and status |
