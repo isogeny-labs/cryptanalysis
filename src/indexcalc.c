@@ -6,6 +6,7 @@
 #include "cryptanalysis/ca_pohlig.h"
 #include "linalg.h"
 #include "ca_internal.h"
+#include "ic_trial.h"
 #include "ic_rational.h"
 #include "ic_trial32.h"
 #include <limits.h>
@@ -25,6 +26,7 @@
 
 #define IC_SMALL_Q (1ULL << 24)   /* prime factors of p-1 up to this: Pohlig-Hellman */
 #define IC_MAX_REL_COLS 96
+#define IC_STEP_POWERS 4096
 #define IC_STEP_POWERS  4096
 
 /* Exact division by an odd factor-base prime q without a divide
@@ -43,6 +45,8 @@ struct ca_ic_ctx {
     uint64_t ord_g;
     uint32_t nfb;
     uint32_t *fb;                 /* factor base primes */
+    ca_ic_divisor *fb_div;         /* fixed-divisor smoothness arithmetic */
+    uint64_t *step_power;         /* reusable zeta^s, Montgomery form */
     ic_fbdiv *fb_div;             /* their exact-division constants */
     uint64_t *step_power;         /* reusable zeta^s in Montgomery form */
     uint32_t *fb_inv32, *fb_lim32; /* optional bounded-integer scan */
@@ -975,6 +979,7 @@ typedef struct sieve_shared {
     uint64_t p, H, J;             /* H = ceil(sqrt p), J = H^2 - p */
     uint32_t B, C;
     const uint32_t *fb;
+    const ca_ic_divisor *fb_div;
     const ic_fbdiv *fb_div;
     uint32_t nfb;
     const uint8_t *fb_log2;       /* rounded log2 of each prime */
@@ -1257,6 +1262,7 @@ typedef struct rexp_shared {
     uint64_t p, zeta;
     const uint64_t *step_power;
     const uint32_t *fb;
+    const ca_ic_divisor *fb_div;
     const ic_fbdiv *fb_div;
     uint32_t nfb;
     uint32_t col_prime0;
@@ -1487,16 +1493,18 @@ static ca_status build_matrix(const rel_list *rels, uint32_t ncols, uint64_t pm1
 /* Exact elimination for linear-sieve relations. Included after relation's
  * definition. Auxiliary columns occur as h_u+h_v or 2*h_u. */
 
-static ca_status build_graph_matrix(const rel_list *rels, uint32_t ncols, uint32_t nfb,
-                                    uint64_t modulus, ca_spmat *A, uint64_t **b_out)
+#include <limits.h>
+
+static ca_status build_graph_matrix(const rel_list *rels, uint32_t ncols,
+                                    uint32_t nfb, uint64_t modulus,
+                                    ca_spmat *A, uint64_t **b_out)
 {
     const uint32_t none = UINT32_MAX;
     uint32_t nv = ncols - nfb;
     /* Bound the dense expression workspace; larger instances use CSR as
      * before. All persistent relation output remains sparse. */
-    if (!nv || !nfb || (size_t)nv > ((size_t)64 * 1024 * 1024) / sizeof(int32_t) / nfb ||
-        rels->n > UINT32_MAX / 2)
-        return CA_ERR_INVALID;
+    if (!nv || !nfb || (size_t)nv > (64u * 1024u * 1024u) / sizeof(int32_t) / nfb ||
+        rels->n > UINT32_MAX / 2) return CA_ERR_INVALID;
     ca_status rc = CA_ERR_NOMEM;
     uint32_t *u = malloc((size_t)rels->n * sizeof(*u));
     uint32_t *v = malloc((size_t)rels->n * sizeof(*v));
@@ -1512,48 +1520,28 @@ static ca_status build_graph_matrix(const rel_list *rels, uint32_t ncols, uint32
     int32_t *vals = malloc(((size_t)nfb + 1) * sizeof(*vals));
     uint64_t *rhs = calloc(rels->n ? rels->n : 1, sizeof(*rhs));
     int initialized = 0;
-    if (!u || !v || !head || !next || !queue || !component || !sign || !expr || !constant || !row ||
-        !cols || !vals || !rhs)
-        goto done;
+    if (!u || !v || !head || !next || !queue || !component || !sign || !expr ||
+        !constant || !row || !cols || !vals || !rhs) goto done;
     for (uint32_t j = 0; j < nv; ++j) head[j] = none;
     for (uint32_t i = 0; i < rels->n; ++i) {
-        const uint32_t len = rel_len(rels, i);
-        const uint32_t *rcol = rel_cols(rels, i);
-        const int32_t *rval = rel_vals(rels, i);
+        const relation *r = &rels->r[i];
         u[i] = v[i] = none;
         unsigned count = 0;
-        for (uint32_t k = 0; k < len; ++k) {
-            if (rcol[k] < nfb) continue;
-            if (rcol[k] >= ncols || ++count > 2) {
-                rc = CA_ERR_INVALID;
-                goto done;
-            }
-            uint32_t node = rcol[k] - nfb;
-            if (rval[k] == 2 && count == 1)
-                u[i] = v[i] = node;
-            else if (rval[k] == 1) {
-                if (count == 1)
-                    u[i] = node;
-                else if (v[i] == none)
-                    v[i] = node;
-                else {
-                    rc = CA_ERR_INVALID;
-                    goto done;
-                }
-            } else {
-                rc = CA_ERR_INVALID;
-                goto done;
-            }
+        for (uint32_t k = 0; k < r->n; ++k) {
+            if (r->col[k] < nfb) continue;
+            if (r->col[k] >= ncols || ++count > 2) { rc = CA_ERR_INVALID; goto done; }
+            uint32_t node = r->col[k] - nfb;
+            if (r->val[k] == 2 && count == 1) u[i] = v[i] = node;
+            else if (r->val[k] == 1) {
+                if (count == 1) u[i] = node;
+                else if (v[i] == none) v[i] = node;
+                else { rc = CA_ERR_INVALID; goto done; }
+            } else { rc = CA_ERR_INVALID; goto done; }
         }
         if (!count) continue;
-        if (u[i] == none || v[i] == none) {
-            rc = CA_ERR_INVALID;
-            goto done;
-        }
-        next[(size_t)2 * i] = head[u[i]];
-        head[u[i]] = 2 * i;
-        next[(size_t)2 * i + 1] = head[v[i]];
-        head[v[i]] = 2 * i + 1;
+        if (u[i] == none || v[i] == none) { rc = CA_ERR_INVALID; goto done; }
+        next[2 * i] = head[u[i]]; head[u[i]] = 2 * i;
+        next[2 * i + 1] = head[v[i]]; head[v[i]] = 2 * i + 1;
     }
     uint32_t nc = 0;
     for (uint32_t root = 0; root < nv; ++root) {
@@ -1570,42 +1558,27 @@ static ca_status build_graph_matrix(const rel_list *rels, uint32_t ncols, uint32
                 if (sign[child]) continue;
                 sign[child] = (int8_t)-sign[parent];
                 component[child] = component[parent];
-                constant[child] = ca_submod(rels->rhs[i] % modulus, constant[parent], modulus);
+                constant[child] = ca_submod(rels->r[i].rhs % modulus, constant[parent], modulus);
                 int32_t *dst = expr + (size_t)child * nfb;
                 const int32_t *src = expr + (size_t)parent * nfb;
                 for (uint32_t j = 0; j < nfb; ++j) {
-                    if (src[j] == INT32_MIN) {
-                        rc = CA_ERR_INVALID;
-                        goto done;
-                    }
+                    if (src[j] == INT32_MIN) { rc = CA_ERR_INVALID; goto done; }
                     dst[j] = -src[j];
                 }
-                const uint32_t len = rel_len(rels, i);
-                const uint32_t *rcol = rel_cols(rels, i);
-                const int32_t *rval = rel_vals(rels, i);
-                for (uint32_t k = 0; k < len; ++k) {
-                    uint32_t j = rcol[k];
+                const relation *r = &rels->r[i];
+                for (uint32_t k = 0; k < r->n; ++k) {
+                    uint32_t j = r->col[k];
                     if (j >= nfb) continue;
-                    int64_t value = (int64_t)dst[j] - rval[k];
-                    if (value <= INT32_MIN || value > INT32_MAX) {
-                        rc = CA_ERR_INVALID;
-                        goto done;
-                    }
+                    int64_t value = (int64_t)dst[j] - r->val[k];
+                    if (value <= INT32_MIN || value > INT32_MAX) { rc = CA_ERR_INVALID; goto done; }
                     dst[j] = (int32_t)value;
-                }
                 queue[end++] = child;
             }
-        }
-    }
     rc = ca_spmat_init(A, nfb + nc, rels->n, rels->n * 16);
     if (rc != CA_OK) goto done;
     initialized = 1;
-    for (uint32_t i = 0; i < rels->n; ++i) {
-        const uint32_t len = rel_len(rels, i);
-        const uint32_t *rcol = rel_cols(rels, i);
-        const int32_t *rval = rel_vals(rels, i);
         memset(row, 0, (size_t)nfb * sizeof(*row));
-        uint64_t b = rels->rhs[i] % modulus;
+        uint64_t b = r->rhs % modulus;
         int root_coef = 0;
         if (u[i] != none) {
             const int32_t *eu = expr + (size_t)u[i] * nfb;
@@ -1613,33 +1586,84 @@ static ca_status build_graph_matrix(const rel_list *rels, uint32_t ncols, uint32
             for (uint32_t j = 0; j < nfb; ++j) row[j] = (int64_t)eu[j] + ev[j];
             root_coef = sign[u[i]] + sign[v[i]];
             b = ca_submod(ca_submod(b, constant[u[i]], modulus), constant[v[i]], modulus);
-        }
-        for (uint32_t k = 0; k < len; ++k)
-            if (rcol[k] < nfb) row[rcol[k]] += rval[k];
+        for (uint32_t k = 0; k < r->n; ++k)
+            if (r->col[k] < nfb) row[r->col[k]] += r->val[k];
         uint32_t count = 0;
         for (uint32_t j = 0; j < nfb; ++j) {
             if (!row[j]) continue;
-            if (row[j] <= INT32_MIN || row[j] > INT32_MAX) {
-                rc = CA_ERR_INVALID;
-                goto done;
-            }
-            cols[count] = j;
-            vals[count++] = (int32_t)row[j];
-        }
+            if (row[j] <= INT32_MIN || row[j] > INT32_MAX) { rc = CA_ERR_INVALID; goto done; }
+            cols[count] = j; vals[count++] = (int32_t)row[j];
         if (root_coef) {
             cols[count] = nfb + component[u[i]];
             vals[count++] = root_coef;
-        }
         if (!count && !b) continue; /* spanning-tree equations become 0=0 */
         rhs[A->rows] = b;
         rc = ca_spmat_add_row(A, cols, vals, count);
         if (rc != CA_OK) goto done;
-    }
     *b_out = rhs;
     rhs = NULL;
     rc = CA_OK;
 done:
     if (rc != CA_OK && initialized) ca_spmat_free(A);
+    free(u); free(v); free(head); free(next); free(queue); free(component);
+    free(sign); free(expr); free(constant); free(row); free(cols); free(vals); free(rhs);
+    return rc;
+}
+
+
+static ca_status build_graph_matrix(const rel_list *rels, uint32_t ncols, uint32_t nfb,
+                                    uint64_t modulus, ca_spmat *A, uint64_t **b_out)
+    if (!nv || !nfb || (size_t)nv > ((size_t)64 * 1024 * 1024) / sizeof(int32_t) / nfb ||
+        rels->n > UINT32_MAX / 2)
+        return CA_ERR_INVALID;
+    if (!u || !v || !head || !next || !queue || !component || !sign || !expr || !constant || !row ||
+        !cols || !vals || !rhs)
+        goto done;
+        const uint32_t len = rel_len(rels, i);
+        const uint32_t *rcol = rel_cols(rels, i);
+        const int32_t *rval = rel_vals(rels, i);
+        for (uint32_t k = 0; k < len; ++k) {
+            if (rcol[k] < nfb) continue;
+            if (rcol[k] >= ncols || ++count > 2) {
+                rc = CA_ERR_INVALID;
+                goto done;
+            uint32_t node = rcol[k] - nfb;
+            if (rval[k] == 2 && count == 1)
+                u[i] = v[i] = node;
+            else if (rval[k] == 1) {
+                if (count == 1)
+                    u[i] = node;
+                else if (v[i] == none)
+                    v[i] = node;
+                else {
+                    rc = CA_ERR_INVALID;
+                    goto done;
+            } else {
+        if (u[i] == none || v[i] == none) {
+            rc = CA_ERR_INVALID;
+            goto done;
+        next[(size_t)2 * i] = head[u[i]];
+        head[u[i]] = 2 * i;
+        next[(size_t)2 * i + 1] = head[v[i]];
+        head[v[i]] = 2 * i + 1;
+                constant[child] = ca_submod(rels->rhs[i] % modulus, constant[parent], modulus);
+                    if (src[j] == INT32_MIN) {
+                        rc = CA_ERR_INVALID;
+                        goto done;
+                    }
+                const uint32_t len = rel_len(rels, i);
+                const uint32_t *rcol = rel_cols(rels, i);
+                const int32_t *rval = rel_vals(rels, i);
+                for (uint32_t k = 0; k < len; ++k) {
+                    uint32_t j = rcol[k];
+                    int64_t value = (int64_t)dst[j] - rval[k];
+                    if (value <= INT32_MIN || value > INT32_MAX) {
+        uint64_t b = rels->rhs[i] % modulus;
+        for (uint32_t k = 0; k < len; ++k)
+            if (rcol[k] < nfb) row[rcol[k]] += rval[k];
+            if (row[j] <= INT32_MIN || row[j] > INT32_MAX) {
+            cols[count] = j;
+            vals[count++] = (int32_t)row[j];
     free(u);
     free(v);
     free(head);
@@ -1653,8 +1677,6 @@ done:
     free(cols);
     free(vals);
     free(rhs);
-    return rc;
-}
 
 /* Solve the matrix modulo q^e for a large prime q: Lanczos mod q + Hensel. */
 static ca_status large_part_logs(const ca_spmat *A, const uint64_t *b, uint64_t q, unsigned e,
@@ -1774,6 +1796,7 @@ static ca_status ic_precompute_impl(uint64_t p, uint64_t g, const ca_ic_params *
     /* factor base */
     size_t nfb = ca_sieve_primes(B, NULL, 0);
     ctx->fb = malloc(nfb * sizeof(uint32_t));
+    ctx->fb_div = malloc(nfb * sizeof(ca_ic_divisor));
     ctx->fb_log = calloc(nfb, sizeof(uint64_t));
     ctx->fb_known = calloc(nfb, 1);
     ctx->fb_div = malloc(nfb * sizeof(ic_fbdiv));
@@ -2169,6 +2192,8 @@ static ca_status ic_precompute_impl(uint64_t p, uint64_t g, const ca_ic_params *
                     rc = build_graph_matrix(&rels, ncols, ctx->nfb, pm1, &A, &b);
                 if (rc != CA_OK) rc = build_matrix(&rels, ncols, pm1, &A, &b);
                 if (rc != CA_OK) goto done;
+                vlog(params, "[ic] relation matrix: %u rows, %u columns, %u entries (original %u columns)\n",
+                     A.rows, A.cols, A.nnz, ncols);
                 have_matrix = 1;
                 /* the matrix is a copy: nothing reads the relations again */
                 rel_free(&rels);
@@ -2248,6 +2273,8 @@ void ca_ic_free(ca_ic_ctx *ctx)
 {
     if (!ctx) return;
     free(ctx->fb);
+    free(ctx->fb_div);
+    free(ctx->step_power);
     free(ctx->fb_log);
     free(ctx->fb_known);
     free(ctx->fb_div);

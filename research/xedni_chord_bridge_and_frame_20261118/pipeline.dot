@@ -1,0 +1,48 @@
+digraph XedniChordBridgeAndFrame {
+    rankdir=TB;
+    fontname="Helvetica";
+    fontsize=11;
+    node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+    edge [fontname="Helvetica", fontsize=9, color="#334155"];
+
+    subgraph cluster_source {
+        label="Source ECDLP Instance over F_p";
+        style="rounded,dashed";
+        color="#64748b";
+        src [label="Weierstrass E/F_p : y^2 + a1 xy + a3 y = x^3 + a2 x^2 + a4 x + a6\nPoints P_i = m_i G (i=1..r-1), Target P_r = t G (4 <= r <= 9)", fillcolor="#e0f2fe", color="#0284c7"];
+    }
+
+    subgraph cluster_nov17 {
+        label="Nov 17 Panel Audit (1,205 ok rows, 67 certified)";
+        style="rounded,dashed";
+        color="#b45309";
+        naive [label="Naive Z=1 Affine Lift + c = 1*c_src (mod p)\nr=9 height ~ 18.6 log2(p) bits (521b at 28-bit p)", fillcolor="#fef3c7", color="#d97706"];
+        alias [label="Chord-Origin Divisor Alias:\nP_a + P_b + P_c ~ H ~ P_u + P_v + O\n66/67 (98.5%) overall & 58/58 (100%) at r=7..9\nare curve-independent det(P_a,P_b,P_c)=0 lines", fillcolor="#fee2e2", color="#dc2626"];
+        naive -> alias [label="origin shift rewrites\n(1,1,1) as wt-5 vector"];
+    }
+
+    subgraph cluster_jksst {
+        label="Implemented JKSST Steps 3-9 Lift (ca-icx --model jksst-plane-cubic)";
+        style="rounded,dashed";
+        color="#0f766e";
+        frame [label="Step 3-5: PGL_3(F_p) Frame Normalization\n4 pts -> (1:0:0), (0:1:0), (0:0:1), (1:1:1)\nPullback c'_src = M^* c_src (c0=c3=c9=0 mod p)", fillcolor="#ccfbf1", color="#0d9488"];
+        lll3d [label="Step 6: 3D-LLL Projective Point Lift\nr-4 pts in Lambda_j (covol p^2) -> O(p^(2/3)) coords\nExplicit collinear_point_triples() detector", fillcolor="#ccfbf1", color="#0d9488"];
+        hom [label="Step 7-9: Homogeneous Sublattice L_hom\nB c = 0 & exists mu != 0: c = mu c'_src (mod p)\nr=9 height -> 7.96 log2(p) bits (223b at 28-bit p)", fillcolor="#ccfbf1", color="#0d9488"];
+        frame -> lll3d -> hom;
+    }
+
+    subgraph cluster_bridge {
+        label="Kernel-Checked Lean 4 + Mathlib Good-Reduction Bridge";
+        style="rounded,dashed";
+        color="#4338ca";
+        lean [label="GoodReductionChordBridge.lean (16 theorems, 0 sorryAx)\n1. binaryRestriction_spec & chordRaw_on_cubic\n2. GL_3 & homogeneous (mu * u^2 * v^2) equivariance\n3. Automatic primitive non-collapse (phi(g) != 0)\n4. toAffine W (phi o O) = -(m_j + m_k) G in W.toAffine.Point\n5. Shifted scalar sum_i n_i (m_i + m_j + m_k) G = 0", fillcolor="#e0e7ff", color="#4f46e5"];
+    }
+
+    gate [label="Next Confirmatory Gate (Blocked on S3 Checkpoint Credential)\nFresh-seed JKSST panel separating pre-lift collinearity\nfrom genuine non-collinear cubic relations [pcc:unverified]", fillcolor="#f1f5f9", color="#475569"];
+
+    src -> naive [label="prior path"];
+    src -> frame [label="source-faithful path"];
+    hom -> lean [label="exact chord origin O\n& projective reduction"];
+    alias -> gate [label="must exclude/separate\npre-lift line aliases"];
+    lean -> gate [label="certified source scalar\n-(m_j + m_k) mod ord(G)"];
+}

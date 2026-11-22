@@ -1,0 +1,69 @@
+{
+  "protocol_sha256": "5d0ff37791feb6f814ee88c128e0adc56afa068db32f6fea3cd5da71ec01c761",
+  "rows": [
+    {
+      "command": [
+        "/opt/homebrew/bin/cryptominisat5",
+        "--threads=1",
+        "--maxconfl=100000",
+        "--maxtime=60",
+        "--zero-exit-status",
+        "--verb=1",
+        "--printsol=1",
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w9_lazy_source_20261017/exact5.xcnf"
+      ],
+      "elapsed_ns": 20243419750,
+      "exit_code": 0,
+      "last_restart": "c rst  geom ibes   vs   332  100K   17346 15054   30K    3.02    2.34   486   405   24K    32  321.10  320.71",
+      "status_lines": [
+        "s INDETERMINATE"
+      ],
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "1c573fcf79618b8e182dd856c3bde1d629be7c5799dce7ea871d6a5c81faa3d5",
+      "variant": "exact5"
+    },
+    {
+      "command": [
+        "/opt/homebrew/bin/cryptominisat5",
+        "--threads=1",
+        "--maxconfl=100000",
+        "--maxtime=60",
+        "--zero-exit-status",
+        "--verb=1",
+        "--printsol=1",
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w9_lazy_source_20261017/exact3.xcnf"
+      ],
+      "elapsed_ns": 18031151917,
+      "exit_code": 0,
+      "last_restart": "c rst  geom ibes   vs   332  100K   16536 14398   28K    3.02    2.34   437   380   24K    26  300.06  299.76",
+      "status_lines": [
+        "s INDETERMINATE"
+      ],
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "d656712e9aeca87cba621ca78965c2945d1e24280f3aa3ce1fb2f506ef425bdf",
+      "variant": "exact3"
+    },
+    {
+      "command": [
+        "/opt/homebrew/bin/cryptominisat5",
+        "--threads=1",
+        "--maxconfl=100000",
+        "--maxtime=60",
+        "--zero-exit-status",
+        "--verb=1",
+        "--printsol=1",
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w9_lazy_source_20261017/table5.xcnf"
+      ],
+      "elapsed_ns": 17033151666,
+      "exit_code": 0,
+      "last_restart": "c rst  geom ibes   vs   336  100K   15321 13976   26K    3.15    2.39   501   444   24K    27  306.87  306.55",
+      "status_lines": [
+        "s INDETERMINATE"
+      ],
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "1012dea039a58d1e891337041db5910a536bb3363dd054ecc11ff9257c24db7b",
+      "variant": "table5"
+    }
+  ],
+  "status": "COMPLETE_EXPLORATORY_FIXED_CONFLICT_PROBE"
+}

@@ -1,0 +1,124 @@
+{
+  "candidate_id": null,
+  "known_codes": {
+    "n131": [
+      3,
+      18,
+      19,
+      22,
+      29
+    ],
+    "n41": [
+      2,
+      3,
+      5,
+      6,
+      7
+    ]
+  },
+  "rss_cap_bytes": 4294967296,
+  "slices": {
+    "n131": [
+      {
+        "anchor_code": 2147483648,
+        "free_code_bits": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11
+        ],
+        "name": "low12"
+      },
+      {
+        "anchor_code": 2147483648,
+        "free_code_bits": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21
+        ],
+        "name": "middle12"
+      },
+      {
+        "anchor_code": 1,
+        "free_code_bits": [
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31
+        ],
+        "name": "high12"
+      }
+    ],
+    "n41": [
+      {
+        "anchor_code": 512,
+        "free_code_bits": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "name": "high_anchor_9_free"
+      }
+    ]
+  },
+  "sources": {
+    "n131_positive": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w33_sign_norm_20261019/positive_gate.json",
+      "sha256": "36c8b38aa8cd5b02832b6be9bf6cce1650d8551266dca4caed4ecb48386a9488"
+    },
+    "n131_source": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w33_freecode_resultant_20261018/coefficients.json",
+      "sha256": "9109e2222876f4fd8c413f16dd7dac542fd04b7ab70a4784721638301311bb60"
+    },
+    "n41_valid_codes": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w11_n131_w33_density_20261018/n41_count_result.json",
+      "sha256": "a2bded37b3e3c824161435ccbc5a5fedfd6ff7e6604c4bca1c800d1eef02b49a"
+    },
+    "script": {
+      "path": "/private/tmp/ecc2k130-inverse-anf-20261019/measure_v2.py",
+      "sha256": "10afd49d66f77b49719d84def4999f33504e04a1241469fda5cecff974e7b9ba"
+    },
+    "v1_failure": {
+      "path": "/private/tmp/ecc2k130-inverse-anf-20261019/first_attempt.json",
+      "sha256": "697ed44cf68d489bf81002d7f100317e69361013169756d8b97d063fb46283fa"
+    },
+    "v1_protocol": {
+      "path": "/private/tmp/ecc2k130-inverse-anf-20261019/protocol.json",
+      "sha256": "e1d175444ff4200379546c6fb541c3ef831a03da8591acc1b5944ade482244ba"
+    }
+  },
+  "status": "FROZEN_BEFORE_INVERSE_TRACE_ANF_V2",
+  "wall_cap_seconds": 120,
+  "worker_count": 1
+}

@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_sixpair_three_norm_hybrid_20261017/audit_formula.py", line 13, in <module>
+    assert sha(path) == digest, path
+           ~~~^^^^^^
+  File "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_sixpair_three_norm_hybrid_20261017/audit_formula.py", line 10, in <lambda>
+    sha = lambda path: hashlib.sha256(path.read_bytes()).hexdigest()
+                                      ^^^^^^^^^^^^^^^
+AttributeError: 'str' object has no attribute 'read_bytes'

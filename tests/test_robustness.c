@@ -11,6 +11,7 @@
 #include "test_fixtures.h"
 #include "linalg.h"
 #include "dlog_internal.h"
+#include "cryptanalysis/ca_curve.h"
 #include <signal.h>
 #include <unistd.h>
 
@@ -61,6 +62,11 @@ static void zero_modulus(void)
     CHECK_EQ_U64(ca_powmod(3, 100, 1000003), 189751);
     CHECK(ca_legendre(2, 7) == 1 && ca_legendre(3, 7) == -1 && ca_legendre(14, 7) == 0);
     CHECK_EQ_U64(ca_mult_order(2, 7), 3);
+    /* C-F9: ca_crt2 divided by a zero modulus (SIGFPE); it returns 0 */
+    CHECK_EQ_U64(ca_crt2(1, 0, 2, 5), 0);
+    CHECK_EQ_U64(ca_crt2(1, 5, 2, 0), 0);
+    CHECK_EQ_U64(ca_crt2(0, 0, 0, 0), 0);
+    CHECK_EQ_U64(ca_crt2(2, 3, 3, 5), 8);
 }
 
 /* ---- S-1: square roots and curve detection on a composite order --------- */
@@ -368,6 +374,230 @@ static void kangaroo_log_outside_interval(void)
     UNWATCH();
 }
 
+/* ---- C-F1: an explicit dp_bits too large for the group ------------------ */
+
+static void rho_large_dp_bits(void)
+{
+    /* Z_p^*, n = p - 1, base g^2, target g^(2 * 12345): solvable.  A walk
+     * enters a cycle of about sqrt(n) steps after its first collision; with
+     * distinguished points much rarer than that the cycle held none, the
+     * collision was never reported, and dp_bits = 16 ended with
+     * CA_ERR_NOT_FOUND while 30 ran on past a minute. */
+    const uint64_t p = 1000003;
+    ca_group g;
+    CHECK(ca_group_zp_init(&g, p, 0) == CA_OK);
+    const uint64_t root = ca_primitive_root(p);
+    const uint64_t bv = ca_powmod(root, 2, p), tv = ca_powmod(bv, 12345, p);
+    ca_elem base, target;
+    zp_elem(&g, &base, bv);
+    zp_elem(&g, &target, tv);
+    const int32_t dps[] = {12, 16, 20, 30, 58, 200};
+    for (size_t i = 0; i < sizeof dps / sizeof dps[0]; i++) {
+        ca_rho_params rp;
+        ca_rho_params_default(&rp);
+        rp.seed = 3;
+        rp.dp_bits = dps[i];
+        uint64_t x = 0;
+        WATCH("ca_rho_solve solvable, large dp_bits");
+        CHECK(ca_rho_solve(&g, &base, &target, &rp, &x, NULL) == CA_OK);
+        CHECK_EQ_U64(ca_powmod(bv, x, p), tv);
+
+        ca_gpu_rho_params gp;
+        ca_gpu_rho_params_default(&gp);
+        gp.backend = CA_GPU_BACKEND_EMULATE;
+        gp.seed = 3;
+        gp.dp_bits = dps[i];
+        x = 0;
+        WATCH("ca_gpu_rho_solve solvable, large dp_bits");
+        CHECK(ca_gpu_rho_solve(&g, &base, &target, &gp, &x, NULL) == CA_OK);
+        CHECK_EQ_U64(ca_powmod(bv, x, p), tv);
+    }
+    UNWATCH();
+}
+
+/* ---- C-F2: kangaroo interval wider than the group order ----------------- */
+
+static void kangaroo_interval_wider_than_order(void)
+{
+    /* The jumps and the runaway guard were sized for hi - lo, not for the
+     * group: [0, 2^64 - 1] with n = 10^6 ran for hours.  The answer is the
+     * smallest logarithm >= lo. */
+    const uint64_t p = 1000003, n = p - 1, k = 777777;
+    ca_group g;
+    CHECK(ca_group_zp_init(&g, p, 0) == CA_OK);
+    const uint64_t root = ca_primitive_root(p);
+    ca_elem base, target;
+    zp_elem(&g, &base, root);
+    zp_elem(&g, &target, ca_powmod(root, k, p));
+    const struct {
+        uint64_t lo, hi;
+        int32_t dp;
+    } cs[] = {
+        {0, UINT64_MAX, -1},
+        {0, ((uint64_t)1 << 40) - 1, -1},
+        {5000000, UINT64_MAX, -1},
+        {UINT64_MAX - 3 * n, UINT64_MAX, -1},
+        {123, 123 + n, -1}, /* one value more than a period */
+        {0, UINT64_MAX, 40},
+        {0, 100000, 40}, /* a narrow interval, x = k mod n is outside it... */
+    };
+    for (size_t i = 0; i < sizeof cs / sizeof cs[0]; i++) {
+        const uint64_t lo = cs[i].lo, hi = cs[i].hi;
+        ca_kangaroo_params kp;
+        ca_kangaroo_params_default(&kp);
+        kp.seed = 9;
+        kp.dp_bits = cs[i].dp;
+        uint64_t x = 0;
+        ca_stats st = {0};
+        WATCH("ca_kangaroo_solve, interval wider than the order");
+        const ca_status rc = ca_kangaroo_solve(&g, &base, &target, lo, hi, &kp, &x, &st);
+        if (hi - lo < n) {
+            /* ...so only the explicit dp_bits is under test: it ends */
+            CHECK(rc == CA_ERR_NOT_FOUND);
+            continue;
+        }
+        CHECK(rc == CA_OK);
+        CHECK_EQ_U64(x, lo + (k + n - lo % n) % n);
+        CHECK(st.group_ops < ((uint64_t)1 << 20));
+    }
+    /* an explicit dp_bits on an interval inside one period still solves */
+    {
+        ca_kangaroo_params kp;
+        ca_kangaroo_params_default(&kp);
+        kp.seed = 9;
+        kp.dp_bits = 40;
+        uint64_t x = 0;
+        WATCH("ca_kangaroo_solve, large dp_bits inside the period");
+        CHECK(ca_kangaroo_solve(&g, &base, &target, 700000, 800000, &kp, &x, NULL) == CA_OK);
+        CHECK_EQ_U64(x, k);
+    }
+    UNWATCH();
+}
+
+/* ---- C-F3: grumpy giants on a target with no logarithm ------------------ */
+
+static void grumpy_unsolvable_bounded(void)
+{
+    /* Z_p^*, n = p - 1 composite, base g^2, target g: n * target = 1 passes
+     * the membership test, and no logarithm exists.  It used to take width + 2
+     * iterations and a table of n entries. */
+    const uint64_t p = 1000003;
+    ca_group g;
+    CHECK(ca_group_zp_init(&g, p, 0) == CA_OK);
+    const uint64_t root = ca_primitive_root(p);
+    ca_elem base, target;
+    zp_elem(&g, &base, ca_powmod(root, 2, p));
+    zp_elem(&g, &target, root);
+    const uint64_t sq = ca_isqrt(p - 1) + 1;
+    uint64_t x = 0;
+    ca_stats st = {0};
+    WATCH("ca_grumpy_solve unsolvable, composite order");
+    CHECK(ca_grumpy_solve(&g, &base, &target, 0, 0, NULL, &x, &st) == CA_ERR_NOT_FOUND);
+    CHECK(st.group_ops < 16 * sq);
+    CHECK(st.table_entries < 12 * sq);
+
+    /* a target outside the order-q subgroup is refused before any walk */
+    {
+        ca_group zg;
+        ca_elem zgen, outside;
+        fx_zp_safe(&zg, &zgen, 2000000579ULL);
+        zp_elem(&zg, &outside, zg.p - 1);
+        memset(&st, 0, sizeof st);
+        WATCH("ca_grumpy_solve target outside the subgroup");
+        CHECK(ca_grumpy_solve(&zg, &zgen, &outside, 0, 0, NULL, &x, &st) == CA_ERR_NOT_FOUND);
+        CHECK_EQ_U64(st.group_ops, 0);
+    }
+
+    /* every logarithm of a small group, at several giant steps, is still
+     * found under the new iteration bound; and inside a sub-interval */
+    {
+        const uint64_t sp = 1019;
+        ca_group sg;
+        CHECK(ca_group_zp_init(&sg, sp, 0) == CA_OK);
+        const uint64_t sr = ca_primitive_root(sp);
+        ca_elem sb, sh;
+        zp_elem(&sg, &sb, sr);
+        const uint64_t ms[] = {0, 1, 2, 7, 22, 31, 1000, 5000};
+        WATCH("ca_grumpy_solve, every logarithm mod 1018");
+        for (size_t mi = 0; mi < sizeof ms / sizeof ms[0]; mi++) {
+            ca_grumpy_params gp;
+            ca_grumpy_params_default(&gp);
+            gp.m = ms[mi];
+            for (uint64_t kk = 0; kk < sp - 1; kk++) {
+                zp_elem(&sg, &sh, ca_powmod(sr, kk, sp));
+                uint64_t got = UINT64_MAX;
+                CHECK(ca_grumpy_solve(&sg, &sb, &sh, 0, 0, &gp, &got, NULL) == CA_OK);
+                CHECK_EQ_U64(got, kk);
+                if (kk >= 100 && kk <= 900) {
+                    got = UINT64_MAX;
+                    CHECK(ca_grumpy_solve(&sg, &sb, &sh, 100, 900, &gp, &got, NULL) == CA_OK);
+                    CHECK_EQ_U64(got, kk);
+                }
+            }
+        }
+    }
+    UNWATCH();
+}
+
+/* ---- C-F4: dense fallback on an inconsistent system --------------------- */
+
+static void linsolve_inconsistent(void)
+{
+    /* x0 + 2 x1 = 3, x0 + x1 = 2, 2 x0 + x1 = 50 (mod 101) has no solution;
+     * the normal equations do, and (86, 39) was returned with CA_OK. */
+    const uint32_t cols[2] = {0, 1};
+    const int32_t r0[2] = {1, 2}, r1[2] = {1, 1}, r2[2] = {2, 1};
+    for (int consistent = 0; consistent < 2; consistent++) {
+        ca_spmat A;
+        CHECK(ca_spmat_init(&A, 2, 3, 6) == CA_OK);
+        CHECK(ca_spmat_add_row(&A, cols, r0, 2) == CA_OK);
+        CHECK(ca_spmat_add_row(&A, cols, r1, 2) == CA_OK);
+        CHECK(ca_spmat_add_row(&A, cols, r2, 2) == CA_OK);
+        /* consistent: 2 x0 + x1 = 3, solved by (1, 1) */
+        const uint64_t b[3] = {3, 2, consistent ? 3 : 50};
+        uint64_t xs[2] = {0, 0};
+        uint8_t known[2] = {0, 0};
+        ca_linsolve_report rep;
+        const ca_status rc = ca_linsolve_mod_prime(&A, b, 101, xs, known, 1, &rep);
+        if (consistent) {
+            CHECK(rc == CA_OK);
+            CHECK_EQ_U64(xs[0], 1);
+            CHECK_EQ_U64(xs[1], 1);
+        } else {
+            CHECK(rc == CA_ERR_SINGULAR);
+        }
+        ca_spmat_free(&A);
+    }
+}
+
+/* ---- C-F5: GLV batch start-up with a 128-entry multiplier table --------- */
+
+static void glv_batch_startup_large_order(void)
+{
+    /* j = 0, prime order n = 883445914963 (2^39.7): from 40 bits curve.c
+     * asks for 128 multipliers, and the batch evaluator refused more than
+     * 32, so every batch start-up mode returned CA_ERR_INTERNAL. */
+    const uint64_t p = 883444221937ULL, b = 625438080091ULL, n = 883445914963ULL;
+    ca_group g;
+    ca_curve_info info;
+    CHECK(ca_curve_group(&g, p, 0, b, n, &info) == CA_OK);
+    ca_elem G, H;
+    CHECK(ca_group_find_generator(&g, &G, 1) == CA_OK);
+    ca_group_mul(&g, &H, &G, 12345, NULL);
+    WATCH("ca_curve_solve_startup batch modes, 128 multipliers");
+    for (int mode = CA_CURVE_STARTUP_TAU_PAIRED2_BATCH;
+         mode <= CA_CURVE_STARTUP_TAU_PAIRED2_TAUPAIR_STEER_BATCH; mode++) {
+        uint64_t x = 0;
+        ca_curve_startup_stats ss;
+        memset(&ss, 0, sizeof ss);
+        CHECK(ca_curve_solve_startup(&g, &G, &H, 7, &x, (ca_curve_startup_mode)mode, &ss, NULL,
+                                     NULL) == CA_OK);
+        CHECK_EQ_U64(x, 12345);
+        CHECK_EQ_U64(ss.table_batch_size, 128);
+    }
+    UNWATCH();
+}
+
 /* ---- S-4: checkpointed BSGS counts each baby step once ------------------- */
 
 static const ca_group_vtable *count_inner;
@@ -597,6 +827,11 @@ int main(int argc, char **argv)
         {"interval-fit", interval_fit_bounds},
         {"oversized-table", oversized_tables},
         {"dense-composite", dense_composite_modulus},
+        {"rho-large-dp", rho_large_dp_bits},
+        {"kangaroo-wide-interval", kangaroo_interval_wider_than_order},
+        {"grumpy-unsolvable", grumpy_unsolvable_bounded},
+        {"linsolve-inconsistent", linsolve_inconsistent},
+        {"glv-batch-startup", glv_batch_startup_large_order},
     };
     const char *secs = getenv("CA_TEST_WATCHDOG_SECONDS");
     if (secs && strtoul(secs, NULL, 10) > 0) watch_seconds = (unsigned)strtoul(secs, NULL, 10);

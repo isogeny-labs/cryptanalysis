@@ -282,6 +282,9 @@ static ca_status grumpy_solve_impl(const ca_group *g, const ca_elem *base, const
     double t0 = ca_now();
     uint64_t width = hi - lo;
     uint64_t n = g->order;
+    /* As in the other solvers: a target outside the order-n subgroup has no
+     * logarithm, and the walk below would only find that out at its end. */
+    if (n && !ca_check_members(g, base, target, n, "grumpy")) return CA_ERR_NOT_FOUND;
     grumpy_ctx c = { g, base, target, lo, hi, n, 0, 0 };
     uint64_t sq = ca_isqrt(width) + 1;
     uint64_t m = params->m;
@@ -377,9 +380,22 @@ static ca_status grumpy_solve_impl(const ca_group *g, const ca_elem *base, const
         goto out;
     }
     if (rc == CA_OK) goto out;
-    /* Upper bound on iterations: the baby walk alone finds x' in at most
-     * width+1 steps (it meets U_0 = H'). */
+    /* Upper bound on iterations.  The baby walk alone finds x' in at most
+     * width+1 steps (it meets U_0 = H').  The baby and the second giant do
+     * better: B_j = V_i exactly when j + i (m+1) = 2x', and for x' <= width
+     * the choice i = floor(2x' / (m+1)), j = 2x' - i (m+1) <= m has both
+     * indices at most max(m, 2 width / (m+1)).  Once both points are in the
+     * table the collision is seen, so that many iterations (plus slack)
+     * settle every x' in the interval: about 2.9 sqrt(width) with the
+     * default m = 0.7 sqrt(width).  A target that passes the membership
+     * test but is not a power of the base (n composite) has no x' at all,
+     * and used to cost width+2 iterations and a table of the same size. */
     uint64_t max_iter = width > UINT64_MAX - 2 ? UINT64_MAX : width + 2;
+    {
+        ca_u128 v_bound = (ca_u128)2 * width / ((ca_u128)m + 1);
+        if (v_bound < m) v_bound = m;
+        if (v_bound + 3 < max_iter) max_iter = (uint64_t)v_bound + 3;
+    }
     if (laned) {
         ls = malloc(sizeof(*ls));
         if (!ls) {

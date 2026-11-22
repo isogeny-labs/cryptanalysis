@@ -1,0 +1,46 @@
+{
+  "candidate_id": null,
+  "curve_id": "EC1N131Ckb1heb5f1998f20b",
+  "formula_bytes": 7425417,
+  "formula_sha256": "fc7b60020e6c34b5e3a7eed976ddf90773e8cddd07859b335b21787c18a607fc",
+  "model_decoded": false,
+  "parent_ru_maxrss_raw": 87375872,
+  "phase_ns": {
+    "formula_construction_ns": 8867716083,
+    "formula_serialization_ns": 272213458,
+    "solver_search_ns": 585917537125,
+    "target_conversion_ns": 18058625,
+    "terminal_parse_and_model_check_ns": 12330125
+  },
+  "protocol_sha256": "51f638bf4020bfcd75cc7ad2adadeed926f184860f2de2111befa59762d923de",
+  "public_target": [
+    1052727368764798954359115163823647684025,
+    2071227447786120917960296877345506689833
+  ],
+  "raw_point": [
+    877610862732227974378969808549299291499,
+    2063336771837286479337213121437715536874
+  ],
+  "raw_preimage_index": 0,
+  "sampled_peak_combined_rss_bytes": 164954112,
+  "solver_command": [
+    "/opt/homebrew/bin/cryptominisat5",
+    "--threads=1",
+    "--maxtime=580",
+    "--zero-exit-status",
+    "--verb=1",
+    "--printsol=1",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_trace_parity_20261017/n131_trace_query.xcnf"
+  ],
+  "solver_exit_code": -9,
+  "solver_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "solver_stdout_sha256": "6767d36dea841b98485338c339a6053e6c6d3b1c57e9382ef6ae35cccf4c5124",
+  "status": "BOUNDED_UNKNOWN",
+  "status_lines": [],
+  "stop_reason": "TARGET_DEPENDENT_TIMEOUT",
+  "target_dependent_attempt_ns": 595087855416,
+  "target_reciprocal": 770794657550069419943936485965613853151,
+  "target_trace": 0,
+  "worker_count": 1,
+  "workload_id": "cc09e7eb202a"
+}
