@@ -75,6 +75,92 @@
 //! to demonstrate the elimination mechanism on a runnable scale.
 
 use super::reduced::{ReducedAes128, INV_SBOX};
+use crate::cryptanalysis::sym_ir::primitives::aes128;
+use crate::cryptanalysis::sym_ir::{eval_rounds, Primitive};
+use crate::cryptanalysis::sym_techniques::impossible as generic;
+use crate::cryptanalysis::sym_techniques::impossible::{
+    CellValue, FinalRound, Model, SearchBudget,
+};
+use crate::cryptanalysis::sym_techniques::mitm::with_independent_round_keys;
+
+/// A [`ReducedAes128`] key schedule combined with the round function of
+/// the IR description of AES. The IR is evaluated with *independent* round
+/// keys taken from the schedule of the cipher object, so every ciphertext
+/// below comes from the generic IR interpreter, not from
+/// [`ReducedAes128::encrypt`].
+struct IrAes {
+    prim: Primitive,
+    key: Vec<u8>,
+    nr: usize,
+}
+
+impl IrAes {
+    fn new(c: &ReducedAes128) -> Self {
+        let prim = with_independent_round_keys(&aes128::reduced(c.nr, c.final_mix_columns))
+            .expect("AES round keys are byte-sized");
+        let mut key = Vec::with_capacity(16 * (c.nr + 1));
+        for i in 0..=c.nr {
+            for w in &c.round_keys[4 * i..4 * i + 4] {
+                key.extend_from_slice(w);
+            }
+        }
+        IrAes {
+            prim,
+            key,
+            nr: c.nr,
+        }
+    }
+
+    fn encrypt(&self, block: &[u8; 16]) -> [u8; 16] {
+        eval_rounds(&self.prim, &self.key, block, self.nr)
+            .try_into()
+            .expect("16-byte block")
+    }
+}
+
+/// Pairs `(input byte, output byte)` for which the one-active-byte to
+/// one-active-byte truncated differential over `nr` rounds is excluded by
+/// the generic word-level miss-in-the-middle search on the IR description
+/// of AES (`final_mix_columns` as in [`ReducedAes128::new`]). Byte
+/// `4c + r` is column `c`, row `r`. Pairs the model cannot exclude are
+/// absent; that does not show they are possible.
+pub fn derived_impossible_byte_pairs(nr: usize, final_mix_columns: bool) -> Vec<(usize, usize)> {
+    let p = aes128::reduced(nr, final_mix_columns);
+    let mut out = Vec::new();
+    for i in 0..16 {
+        for j in 0..16 {
+            let hit = generic::check_impossible_differential(
+                &p,
+                nr,
+                FinalRound::AsGiven,
+                Model::Word,
+                &[CellValue {
+                    cell: i,
+                    value: None,
+                }],
+                &[CellValue {
+                    cell: j,
+                    value: None,
+                }],
+            )
+            .expect("AES IR is modelled");
+            if hit.is_some() {
+                out.push((i, j));
+            }
+        }
+    }
+    out
+}
+
+/// Longest impossible differential the generic search reaches on the
+/// AES-128 IR within `budget`: `(rounds, last MixColumns dropped)`, or
+/// `None` if none is found.
+pub fn longest_derived_impossible_differential(budget: &SearchBudget) -> Option<(usize, bool)> {
+    generic::longest_impossible_differential(&aes128::aes128(), budget)
+        .ok()?
+        .best
+        .map(|d| (d.rounds, d.final_linear_dropped))
+}
 
 /// Count the active bytes (nonzero positions) in a 16-byte difference.
 pub fn active_byte_count(diff: &[u8; 16]) -> u32 {
@@ -127,6 +213,7 @@ pub fn verify_4_round_impossibility(
     seed: u64,
 ) -> ImpossibilityReport {
     assert_eq!(cipher.nr, 4, "distinguisher targets 4-round AES");
+    let ir = IrAes::new(cipher);
     let mut state = seed;
     let mut byte = || {
         state = state
@@ -145,7 +232,7 @@ pub fn verify_4_round_impossibility(
         }
         let mut p2 = p;
         p2[0] ^= alpha;
-        let d = diff(&cipher.encrypt(&p), &cipher.encrypt(&p2));
+        let d = diff(&ir.encrypt(&p), &ir.encrypt(&p2));
         let active = active_byte_count(&d);
         if active == 1 {
             one += 1;
@@ -204,6 +291,7 @@ pub fn elimination_demonstration(
     seed: u64,
 ) -> (usize, usize) {
     assert_eq!(cipher.nr, 5);
+    let ir = IrAes::new(cipher);
     let quartet = [0usize, 7, 10, 13];
     let rk5 = cipher.round_key(5);
     // The true four bytes of K_R5 we'd be guessing in a full attack.
@@ -230,8 +318,8 @@ pub fn elimination_demonstration(
         }
         let mut p2 = p;
         p2[0] ^= alpha;
-        let c1 = cipher.encrypt(&p);
-        let c2 = cipher.encrypt(&p2);
+        let c1 = ir.encrypt(&p);
+        let c2 = ir.encrypt(&p2);
         // True-key inversion of column 0 of state_R4.
         let mut true_state = [0u8; 16];
         for (idx, &flat) in quartet.iter().enumerate() {
@@ -333,5 +421,19 @@ mod tests {
         assert_eq!(true_hits, 0);
         // 2²⁰ pairs at rate ~2⁻²⁴ → ≈ 1/16 expected; allow up to 0–4.
         assert!(wrong_hits < 16, "unexpectedly high: {wrong_hits}");
+    }
+
+    /// The generic search on the IR derives the one-to-one impossible
+    /// differential used by this module, and nothing at five rounds.
+    #[test]
+    fn derived_pairs_match_distinguisher() {
+        assert_eq!(derived_impossible_byte_pairs(4, false).len(), 256);
+        assert!(derived_impossible_byte_pairs(4, true).is_empty());
+        assert!(derived_impossible_byte_pairs(5, false).is_empty());
+        let b = SearchBudget {
+            max_rounds: 6,
+            ..SearchBudget::default()
+        };
+        assert_eq!(longest_derived_impossible_differential(&b), Some((4, true)));
     }
 }
