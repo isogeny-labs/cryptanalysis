@@ -1,0 +1,56 @@
+# artifacts-scope: job
+name: CT125 pinned native norm reuse source guards
+on:
+  pull_request:
+    paths:
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/**'
+      - '.github/workflows/chained-transfer-norm-point-reuse.yml'
+  push:
+    branches:
+      - 'research/ct125-native-norm-point-reuse-20261114'
+    paths:
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/**'
+      - '.github/workflows/chained-transfer-norm-point-reuse.yml'
+permissions:
+  contents: read
+jobs:
+  strict-source-derivative:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            experiments/chained-transfer-public-target/fixed-jacobian-chain-evaluator-01
+            experiments/chained-transfer-public-target/norm-point-reuse-01
+      - name: Syntax and six fail-closed mutation controls
+        run: |
+          set -euo pipefail
+          python3 -m py_compile experiments/chained-transfer-public-target/norm-point-reuse-01/*.py
+          python3 -S experiments/chained-transfer-public-target/norm-point-reuse-01/compare_norm_reuse.py --self-test
+          python3 -O -S experiments/chained-transfer-public-target/norm-point-reuse-01/compare_norm_reuse.py --self-test
+      - name: Derive exact original Rust source, without editing original
+        run: |
+          set -euo pipefail
+          python3 -S experiments/chained-transfer-public-target/norm-point-reuse-01/build_norm_reuse.py \
+            --original experiments/chained-transfer-public-target/fixed-jacobian-chain-evaluator-01 \
+            --out experiments/chained-transfer-public-target/fixed-jacobian-chain-reuse-01 > /tmp/ct125-derivative-receipt.json
+          python3 -S - <<'PY'
+          import json
+          from pathlib import Path
+          base=Path('experiments/chained-transfer-public-target/fixed-jacobian-chain-reuse-01')
+          receipt=json.loads((base/'NORM_REUSE_SOURCE_RECEIPT.json').read_text())
+          assert receipt['original_git_blob']=='8016634385d76207b23a3eb3a4dae9b0366ac68d'
+          assert len(receipt['replacements'])==5
+          src=(base/'src/lib.rs').read_text()
+          assert src.count('norm_from_target_point(to, ')==2
+          assert src.count('norm_point_doubling += 1')==1
+          assert 'if ep(n.norm(&entry.class)?) != entry.norm {' in src
+          print('exact Git blob guard and derivative call sites passed')
+          PY
+          rustfmt --edition 2021 --config skip_children=true --emit stdout experiments/chained-transfer-public-target/fixed-jacobian-chain-reuse-01/src/lib.rs > /dev/null
+      - name: Note scoped standing
+        run: echo 'Static generated-source gate only. Native 695-record parity, full CPU primitive timing, paired rho/IC and signed PCC remain pending.'

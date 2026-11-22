@@ -1,0 +1,21 @@
+[package]
+name = "n83-knownlog-gen"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+# The known-log base generator of koblitz-n83-knownlog-20261019: seeded
+# scalars a_i, representatives R_i = [a_i]G, their signed-Frobenius orbits in
+# B's header layout, and the factor-log table logs[i] = a_i. No dependencies:
+# GF(2^83) and the curve are written out in src/main.rs, so the generator
+# shares no code with the producer that reads its output, and the pinned
+# pure-Python oracle (check_knownlog.py) verifies every point independently.
+[[bin]]
+name = "knownlog_base"
+path = "src/main.rs"
+
+[dependencies]
+
+[profile.release]
+opt-level = 3
+debug = false

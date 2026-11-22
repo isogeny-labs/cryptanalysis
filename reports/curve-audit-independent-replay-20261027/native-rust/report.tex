@@ -1,0 +1,51 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[margin=18mm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{array}
+\usepackage{hyperref}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\begin{document}
+\section*{P-192 / P-224 curve audit: native Rust followup}
+\textbf{27 October 2026 UTC.} Conductor T-510 and T-511. The first locked
+build failed before tests ran because the pinned \texttt{sha2 0.11.1} digest
+array does not implement \texttt{LowerHex}. That exact failure is preserved.
+
+\begin{center}
+\fbox{\parbox{0.30\linewidth}{\textbf{Before fix}\par
+\texttt{cargo test} exit 101\par Two E0277 digest formatting errors}}
+\quad$\longrightarrow$\quad
+\fbox{\parbox{0.47\linewidth}{\textbf{After byte-hex fix}\par
+15/15 locked Rust tests passed. Fresh P-192 and P-224 CLI audits matched
+archived order, trace, twist, and status fields.}}
+
+$\Downarrow$
+
+\fbox{\parbox{0.84\linewidth}{\textbf{Open obligations}\par
+Full Lean proof of actual curve cardinality and Rust correspondence;
+fresh Sage point count; broad parser and criterion coverage.}}
+\end{center}
+
+\section*{Fresh execution and controls}
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.40\linewidth}p{0.49\linewidth}}
+Locked package test & Exit 0; 15 passed, 0 failed; known SHA-256 vector passed.\\
+Locked binary build & Exit 0; exact built binary digest in the JSON receipt.\\
+P-192 / P-224 CLI with exact certificates & Both exit 0; archived mathematical fields and verdict match.\\
+P-192 without a certificate & Exit 0; supplied order remains \texttt{supplied\_unverified}.\\
+Altered P-192 input with original certificate & Exit 2; input-byte binding rejects it.\\
+\end{tabular}
+
+The fresh binary embeds a recomputed digest of its four Rust source files;
+both CLI outputs agree with an independent digest computation. The digest
+differs from the old producer because the source repair changed
+\texttt{main.rs}. The original Python replay remains separate. These tests
+validate the stated fixtures and selected failure paths, not all 61 criteria
+or a formal proof of the curve orders. The overall audit verdict for both
+curves is \texttt{incomplete\_assessment}. No benchmark was run, so no
+performance plot or dashboard value changes.
+
+Exact commands, timestamps, input and output hashes, stderr, stdout, and
+the comparison are in \texttt{report.md} and JSON receipts beside this PDF.
+The editable vector diagram is \texttt{validation-boundary.svg}.
+\end{document}

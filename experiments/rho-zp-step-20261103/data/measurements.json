@@ -1,0 +1,9 @@
+{
+ "instance": {"group": "zp", "p": 4503599627372423, "order": 2251799813686211, "g": 1377747092617056, "h": 3666041038937390},
+ "solve_seed2": {"x": 230086908134825, "ops": 14606732, "iterations": 238, "table_entries": 237},
+ "callgrind_ir_solve_seed2": {"main 0045cfa09": 1834275912, "native Z_p step": 1563271817},
+ "ir_per_op_seed2": {"main 0045cfa09": 125.58, "native Z_p step": 107.02},
+ "identical_outputs": {"seeds": [1, 2, 3], "fields": ["x", "ops", "iterations", "table_entries"], "seed1": [230086908134825, 103317083, 1565, 1564], "seed3": [230086908134825, 50399197, 742, 741]},
+ "perfindex_instr": {"dlp/c_rho_zp40": [273556841, 233308726], "dlp/c_rho_ec36": [189530435, 190785114], "note": "base Ir, cand Ir; every other dlp and field_ec kernel 1.000; out-of-line variant of the Z_p step measured 235070337 / 190785071 and was not kept"},
+ "perfindex_compare_wall": {"dlp/c_rho_zp40": {"base_ms": 32.752, "cand_ms": 29.187, "speedup": 1.111, "ci95": [1.092, 1.135], "aa_noise": "±2.7%"}, "dlp/c_rho_ec36": {"base_ms": 20.101, "cand_ms": 19.094, "speedup": 1.032, "ci95": [1.009, 1.053], "aa_noise": "±3.6%", "verdict": "neutral"}, "rounds": 7, "taskset": 3}
+}

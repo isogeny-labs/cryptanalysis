@@ -1,0 +1,22 @@
+digraph Fricke {
+  graph [rankdir=TB, bgcolor="white", pad="0.25", nodesep="0.35", ranksep="0.4"];
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=12, fillcolor="#eaf2fa"];
+  edge [fontname="Helvetica", fontsize=10];
+  model [label="FIXED MODEL OVER Q: 11a1 = X_0(11)\ny^2 + y = x^3 - x^2 - 10x - 20\nOrigin O = cusp infinity; T = (16,-61) = cusp zero"];
+  modular [label="WRITTEN MODULI INPUT\nDualize the cyclic 11-isogeny\nW11(O) = T and W11(T) = O"];
+  affine [label="WRITTEN AUTOMORPHISM INPUT\nW11(P) = T + u(P)\nj = -122023936/161051 is neither 0 nor 1728\nCharacteristic zero: u is +1 or -1"];
+  order [label="SAVED EXACT SAGE CHECK\nT has order 5, so 2T is nonzero\nverification.json; no new computation"];
+  conditional [label="CHECKED CONDITIONAL LEAN STEP\nCusp exchange + u in {+1,-1} + 2T nonzero\nexclude u=+1; hence T+u(P)=T-P", fillcolor="#e8f4e9"];
+  result [label="WRITTEN GLOBAL CONCLUSION\nW11(P) = T-P for every geometric point\nW11 squared is identity; O and T are exchanged", fillcolor="#e8f4e9"];
+  finite [label="SAVED IMPLEMENTATION CONTROLS\n10 points over F7; 10 over F13; 25 over F23\n3 distinguished points over F23743\nThese finite checks do not prove the global identity"];
+  open [label="OPEN LEAN BRIDGE\nModular-curve model, moduli automorphism,\ncoordinate isomorphism and automorphism classification\nare mathematical inputs, not proved in FrickeAffine.lean", fillcolor="#fff1d9"];
+  model -> modular;
+  model -> affine;
+  model -> order;
+  modular -> conditional;
+  affine -> conditional;
+  order -> conditional;
+  conditional -> result;
+  result -> finite [style=dashed, label="corroborated by"];
+  open -> result [style=dashed, label="formalization still required"];
+}

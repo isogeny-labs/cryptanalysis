@@ -1,0 +1,11 @@
+--- a/src/rho.c	2026-10-31 16:27:34.660240430 +0000
++++ b/src/rho.c	2026-10-31 16:31:03.843962591 +0000
+@@ -917,7 +917,7 @@
+         /* Distinguished points per walk: more of them shorten the wait between
+          * a collision and its detection; 128 with the negation map, where the
+          * wait is a larger share of the cost. */
+-        double per_walk = expected / ((sh.negmap ? 128.0 : 32.0) * total_walks);
++        double per_walk = expected / ((sh.negmap ? 32.0 : 32.0) * total_walks);
+         dp = per_walk >= 2.0 ? ilog2_u64((uint64_t)per_walk) : 0;
+         /* keep the DP table under ~2^24 entries */
+         int min_dp = ilog2_u64((uint64_t)expected) - 24;

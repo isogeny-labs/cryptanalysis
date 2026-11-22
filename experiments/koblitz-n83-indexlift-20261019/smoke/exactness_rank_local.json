@@ -1,0 +1,165 @@
+{
+ "archived_kP_K1": {
+  "probes": 2385634,
+  "rank_padd": {
+   "fallback_states": 0,
+   "irregular_inputs": 0,
+   "plant_checked_inputs": 0,
+   "resolved_hits": 600,
+   "swapped_pairs": 308
+  },
+  "rank_relations_blake3": "6c99bff2dd802cdbc5aadbf60a352e78508f4db8948cbd1c61e9034c43770942",
+  "rank_root_calls_total": 491547414,
+  "relation": [
+   52563,
+   90300,
+   13948,
+   94652
+  ],
+  "scalar": 29550818704994,
+  "seed": 301,
+  "source": "koblitz-n83-rankprobe-20261019 run 39214027289, block K1, arm kP (rank seed 301, point s000 of rankprobe-cold-v1)"
+ },
+ "equal_to_archived_kP_K1": {
+  "kP": {
+   "probes": true,
+   "rank_attempt_probes": true,
+   "rank_padd": true,
+   "rank_relations_blake3": true,
+   "rank_root_calls_total": true,
+   "relation": true,
+   "scalar": true
+  },
+  "kPI": {
+   "probes": true,
+   "rank_attempt_probes": true,
+   "rank_padd": true,
+   "rank_relations_blake3": true,
+   "rank_root_calls_total": true,
+   "relation": true,
+   "scalar": true
+  }
+ },
+ "host": "cloud-agent VM (diagnostic only; processes ran concurrently)",
+ "one_index_digest_set": true,
+ "one_relation_scalar_probes": true,
+ "processes": {
+  "kP": {
+   "diagnostic_ms": {
+    "index_build": 30375.794881,
+    "online": 804.153415,
+    "rank_stage": 223344.721568,
+    "setup_complete": 256534.730739
+   },
+   "group_verified": true,
+   "index_canonicalizer": "selected",
+   "index_digest": {
+    "accounting": "after the last target; outside setup and every online interval",
+    "logical_states": 29880000,
+    "logical_states_blake3": "baf46d5a34732aa2aeba1fc0ca4f57036e3c324ade0bf8791431c838fe15d7ec",
+    "stored_states_blake3": "d8cfe443259ece37ae9af5004de0bade1d043c359a729b39ebba97cce27bf719",
+    "table_entries": 29878182,
+    "table_map_sum64": "be14a80705232396",
+    "table_map_xor64": "8132bdcfd619010f",
+    "table_slots_blake3": "5f53764ede1a6c1e8f979ae16a842d44671e682e9f988ea2250a2d8d945aaa6d"
+   },
+   "index_plant_checked_inputs": 0,
+   "logs_equal_B": true,
+   "probes": 2385634,
+   "rank": 600,
+   "rank_attempt_probes_total": 982994775,
+   "rank_attempts": 600,
+   "rank_frame": {
+    "builds": 600,
+    "plant_checked_inputs": 0
+   },
+   "rank_padd": {
+    "fallback_states": 0,
+    "irregular_inputs": 0,
+    "plant_checked_inputs": 0,
+    "resolved_hits": 600,
+    "swapped_pairs": 308
+   },
+   "rank_relations_blake3": "6c99bff2dd802cdbc5aadbf60a352e78508f4db8948cbd1c61e9034c43770942",
+   "rank_root_calls_total": 491547414,
+   "relation": [
+    52563,
+    90300,
+    13948,
+    94652
+   ],
+   "returncode": 0,
+   "root_table_entries": 29878182,
+   "scalar": 29550818704994,
+   "scan_order_selftest": {
+    "accounting": "setup (setup_input_control), before setup_complete",
+    "bijection": true,
+    "keys": 2,
+    "mode": "full",
+    "ms": 2239.188328,
+    "states": 29880000
+   },
+   "stderr_tail": "",
+   "stored_states": 14940300
+  },
+  "kPI": {
+   "diagnostic_ms": {
+    "index_build": 18016.09161,
+    "online": 734.757292,
+    "rank_stage": 222534.31059799998,
+    "setup_complete": 243353.980243
+   },
+   "group_verified": true,
+   "index_canonicalizer": "lift",
+   "index_digest": {
+    "accounting": "after the last target; outside setup and every online interval",
+    "logical_states": 29880000,
+    "logical_states_blake3": "baf46d5a34732aa2aeba1fc0ca4f57036e3c324ade0bf8791431c838fe15d7ec",
+    "stored_states_blake3": "d8cfe443259ece37ae9af5004de0bade1d043c359a729b39ebba97cce27bf719",
+    "table_entries": 29878182,
+    "table_map_sum64": "be14a80705232396",
+    "table_map_xor64": "8132bdcfd619010f",
+    "table_slots_blake3": "5f53764ede1a6c1e8f979ae16a842d44671e682e9f988ea2250a2d8d945aaa6d"
+   },
+   "index_plant_checked_inputs": 0,
+   "logs_equal_B": true,
+   "probes": 2385634,
+   "rank": 600,
+   "rank_attempt_probes_total": 982994775,
+   "rank_attempts": 600,
+   "rank_frame": {
+    "builds": 600,
+    "plant_checked_inputs": 0
+   },
+   "rank_padd": {
+    "fallback_states": 0,
+    "irregular_inputs": 0,
+    "plant_checked_inputs": 0,
+    "resolved_hits": 600,
+    "swapped_pairs": 308
+   },
+   "rank_relations_blake3": "6c99bff2dd802cdbc5aadbf60a352e78508f4db8948cbd1c61e9034c43770942",
+   "rank_root_calls_total": 491547414,
+   "relation": [
+    52563,
+    90300,
+    13948,
+    94652
+   ],
+   "returncode": 0,
+   "root_table_entries": 29878182,
+   "scalar": 29550818704994,
+   "scan_order_selftest": {
+    "accounting": "setup (setup_input_control), before setup_complete",
+    "bijection": true,
+    "keys": 2,
+    "mode": "full",
+    "ms": 2219.059195,
+    "states": 29880000
+   },
+   "stderr_tail": "",
+   "stored_states": 14940300
+  }
+ },
+ "what": "rank"
+}

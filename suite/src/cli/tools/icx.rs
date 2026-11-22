@@ -1,0 +1,902 @@
+//! # `icx` — index calculus across every standardized curve.
+//!
+//! One command that accepts any standardized elliptic curve by name and, per
+//! `docs/ic/ENGINE_AUDIT_AND_DESIGN.md`:
+//!
+//! - `icx list` — enumerate the catalog (filter by `--family`);
+//! - `icx inspect <curve>` — verify the curve's parameters;
+//! - `icx estimate <curve>` — the generic-attack cost and the honest IC
+//!   picture for this size, with heuristics named;
+//! - `icx xedni [curve]` — audit xedni's lift domain and evidence gates;
+//! - `icx <curve>` — shorthand for `inspect`.
+//!
+//! `icx run` (execute the pipeline on an in-envelope curve or a same-family
+//! analogue) is layered on top of this in the same crate and lands with the
+//! solver wiring; this binary is the catalog-and-estimate front door and never
+//! claims to solve what it has not.
+//!
+//! Every subcommand supports `--json` for a machine-readable report carrying a
+//! provenance block (binary hash, git commit, host, dispatched field backend).
+
+use std::path::{Path, PathBuf};
+use std::process::{Command, ExitCode};
+
+use clap::{Args, Parser, Subcommand};
+use serde_json::{json, Value};
+
+use crate::cryptanalysis::curve_catalog::{self, CatalogCurve, Family};
+use crate::cryptanalysis::{ic_engine, xedni, xedni_lift};
+
+#[derive(Parser)]
+#[command(
+    name = "icx",
+    version,
+    about = "Index calculus across every standardized elliptic curve",
+    long_about = "Inspect, estimate, audit xedni applicability and (where feasible) \
+                  run index calculus on \
+                  any standardized curve — prime, binary, Koblitz, extension \
+                  field, or characteristic three — selected by name. See \
+                  `icx list` for the catalog and \
+                  docs/ic/ENGINE_AUDIT_AND_DESIGN.md for the honest scope."
+)]
+pub struct Cli {
+    #[command(subcommand)]
+    command: Option<Action>,
+    /// Shorthand: inspect this curve. Use `icx list` for names.
+    #[arg(value_name = "CURVE")]
+    curve: Option<String>,
+    /// Emit a machine-readable JSON report.
+    #[arg(long, global = true)]
+    json: bool,
+}
+
+#[derive(Subcommand)]
+enum Action {
+    /// Solve on an exact Certicom curve with rho, BSGS, or index calculus.
+    Solve(crate::cryptanalysis::certicom_dlp_cli::SolveArgs),
+    /// List catalog curves, optionally filtered by field family.
+    List(ListArgs),
+    /// Verify a curve's parameters (generator on curve, n·G = O, Hasse).
+    Inspect(CurveArg),
+    /// Report the generic-attack cost and the IC picture for this curve.
+    Estimate(EstimateArgs),
+    /// Audit xedni lift applicability and evidence gates by curve family.
+    Xedni(XedniArgs),
+    /// Optimize one certified prime-field xedni coefficient-lift coset.
+    XedniLift(XedniLiftArgs),
+    /// Run the index-calculus pipeline on the curve (or a same-family analogue).
+    Run(RunArgs),
+    /// Solve a quadratic Boolean system with the FES kernel (CPU or GPU worker).
+    Fes(FesArgs),
+    /// Install `ca-icx` with `cargo install` from this source checkout.
+    Install(InstallArgs),
+    /// Reinstall `ca-icx` from its source checkout, or check for a newer one.
+    Update(UpdateArgs),
+}
+
+#[derive(Args)]
+struct InstallArgs {
+    /// Cargo install root (default: $CARGO_HOME, usually ~/.cargo).
+    #[arg(long)]
+    root: Option<PathBuf>,
+    /// Reinstall even when the package version is already installed.
+    #[arg(long)]
+    force: bool,
+    /// Source suite directory; defaults to the directory this binary was built from.
+    #[arg(long)]
+    source: Option<PathBuf>,
+    /// Print the command without running it.
+    #[arg(long)]
+    dry_run: bool,
+}
+
+#[derive(Args)]
+struct UpdateArgs {
+    /// Cargo install root (default: $CARGO_HOME, usually ~/.cargo).
+    #[arg(long)]
+    root: Option<PathBuf>,
+    /// Source suite directory; defaults to the directory this binary was built from.
+    #[arg(long)]
+    source: Option<PathBuf>,
+    /// Fetch the upstream branch and report whether a newer commit exists.
+    #[arg(long)]
+    check: bool,
+    /// Fast-forward the source checkout before reinstalling.
+    #[arg(long)]
+    pull: bool,
+    /// Print the commands without running them.
+    #[arg(long)]
+    dry_run: bool,
+}
+
+#[derive(Args)]
+struct FesArgs {
+    /// Variables in the generated quadratic system.
+    #[arg(long, default_value_t = 18)]
+    n: usize,
+    /// Equations in the generated quadratic system.
+    #[arg(long, default_value_t = 20)]
+    m: usize,
+    #[arg(long, default_value_t = 1)]
+    seed: u64,
+    /// Backend: `cpu` (in-process), `gpu` (an external CUDA/Metal/host worker),
+    /// or `auto` (a discovered worker if present, else cpu).
+    #[arg(long, default_value = "auto")]
+    backend: String,
+    /// Explicit worker executable (overrides discovery); it must speak the
+    /// gpu/fes file contract.
+    #[arg(long)]
+    worker: Option<String>,
+}
+
+#[derive(Args)]
+struct RunArgs {
+    /// Curve name or alias.
+    curve: String,
+    /// Factor base plugin: `name` or `name:k=v,...` (default per family).
+    #[arg(long)]
+    factor_base: Option<String>,
+    /// Decomposition oracle (subtract | mitm | mitm-frobenius | descent-algebraic).
+    #[arg(long)]
+    oracle: Option<String>,
+    /// Polynomial solver for descent-algebraic (f4-f2 | matrix-f5 | xl-f2 |
+    /// crossbred-f2 | fes-f2 | fes-f2-wide | sat-cdcl | buchberger-f2 | exhaustive).
+    #[arg(long)]
+    solver: Option<String>,
+    /// Relation matrix (incremental-gauss | structured-gauss).
+    #[arg(long, default_value = "incremental-gauss")]
+    linalg: String,
+    /// Analogue field degree for binary/Koblitz families.
+    #[arg(long)]
+    degree: Option<u32>,
+    /// Analogue prime size in bits (7|10|12|14|16|18|20).
+    #[arg(long)]
+    bits: Option<u32>,
+    #[arg(long, default_value_t = 20_260_922)]
+    seed: u64,
+    #[arg(long, default_value_t = 2_000_000)]
+    max_trials: u64,
+    #[arg(long, default_value_t = 1)]
+    repeats: usize,
+    /// Counted Pollard-rho reference runs to average (0 to skip).
+    #[arg(long, default_value_t = 8)]
+    rho_runs: usize,
+    /// End-to-end envelope in subgroup-order bits.
+    #[arg(long, default_value_t = ic_engine::ATTACK_ENVELOPE_BITS)]
+    envelope: u64,
+    /// Per-solver-call budget in seconds (0 for none).
+    #[arg(long, default_value_t = 60)]
+    solver_budget_seconds: u64,
+}
+
+#[derive(Args)]
+struct ListArgs {
+    /// Restrict to one family: prime | binary | koblitz | extension | char3.
+    #[arg(long)]
+    family: Option<String>,
+}
+
+#[derive(Args)]
+struct CurveArg {
+    /// Curve name or alias.
+    curve: String,
+}
+
+#[derive(Args)]
+struct EstimateArgs {
+    /// Curve name or alias.
+    curve: String,
+    /// End-to-end envelope in subgroup-order bits (default: demonstrated max).
+    #[arg(long, default_value_t = ic_engine::ATTACK_ENVELOPE_BITS)]
+    envelope: u64,
+}
+
+#[derive(Args)]
+struct XedniArgs {
+    /// Assess one curve or alias; omit to assess the whole catalog.
+    curve: Option<String>,
+    /// Restrict a catalog-wide audit to prime | binary | koblitz | extension | char3.
+    #[arg(long)]
+    family: Option<String>,
+}
+
+#[derive(Args)]
+struct XedniLiftArgs {
+    /// JSON file containing decimal-string particular, directions,
+    /// exact_constraints, and congruence_modulus fields.
+    #[arg(long)]
+    input: std::path::PathBuf,
+    /// Coefficient model: `weierstrass` (seven terms, discriminant objective)
+    /// or `plane-cubic` (ten terms, exact Step-7 height objective).
+    #[arg(long, default_value = "weierstrass")]
+    model: String,
+    /// Exact-search distance around each Babai coefficient.
+    #[arg(long, default_value_t = 2)]
+    radius: i64,
+    /// Hard cap on exact objective evaluations.
+    #[arg(long, default_value_t = 50_000)]
+    max_candidates: usize,
+}
+
+fn provenance() -> Value {
+    json!({
+        "version": env!("CARGO_PKG_VERSION"),
+        "os": std::env::consts::OS,
+        "arch": std::env::consts::ARCH,
+        "field_backend": field_backend_label(),
+    })
+}
+
+/// Which carry-less-multiply backend this build will use at runtime, for the
+/// provenance block. (The dispatch itself lands with the field-backend work;
+/// this reports what the host supports.)
+fn field_backend_label() -> &'static str {
+    #[cfg(target_arch = "x86_64")]
+    {
+        if std::arch::is_x86_feature_detected!("vpclmulqdq") {
+            "x86_64:vpclmulqdq"
+        } else if std::arch::is_x86_feature_detected!("pclmulqdq") {
+            "x86_64:pclmulqdq"
+        } else {
+            "x86_64:portable"
+        }
+    }
+    #[cfg(target_arch = "aarch64")]
+    {
+        if std::arch::is_aarch64_feature_detected!("aes") {
+            "aarch64:pmull"
+        } else {
+            "aarch64:portable"
+        }
+    }
+    #[cfg(not(any(target_arch = "x86_64", target_arch = "aarch64")))]
+    {
+        "portable"
+    }
+}
+
+fn family_of(curve: &CatalogCurve) -> &'static str {
+    curve.family.tag()
+}
+
+fn list(args: &ListArgs) -> Result<Value, String> {
+    let filter = match &args.family {
+        Some(f) => Some(Family::parse(f).ok_or_else(|| {
+            format!("unknown family '{f}'; use prime|binary|koblitz|extension|char3")
+        })?),
+        None => None,
+    };
+    let mut rows = Vec::new();
+    for c in curve_catalog::all() {
+        if let Some(f) = filter {
+            if c.family != f {
+                continue;
+            }
+        }
+        let field = c.field();
+        let est = ic_engine::estimate(&c, ic_engine::ATTACK_ENVELOPE_BITS);
+        rows.push(json!({
+            "name": c.name,
+            "aliases": c.aliases,
+            "family": family_of(&c),
+            "standard": c.standard,
+            "field": field.label,
+            "field_bits": field.bits,
+            "order_bits": c.order_bits(),
+            "rho_security_bits": round1(c.rho_security_bits()),
+            "ic_relevant": est.ic_relevant,
+            "regime": est.regime.tag(),
+        }));
+    }
+    Ok(json!({
+        "schema_version": 1,
+        "operation": "list",
+        "status": "complete",
+        "count": rows.len(),
+        "curves": rows,
+    }))
+}
+
+fn inspect(name: &str) -> Result<Value, String> {
+    let c = curve_catalog::by_name(name)
+        .ok_or_else(|| format!("unknown curve '{name}'; try `icx list`"))?;
+    let field = c.field();
+    let checks = c.verify();
+    let all_passed = checks.iter().all(|k| k.passed);
+    let checks_json: Vec<Value> = checks
+        .iter()
+        .map(|k| json!({"name": k.name, "status": if k.passed {"pass"} else {"fail"}, "detail": k.detail}))
+        .collect();
+    Ok(json!({
+        "schema_version": 1,
+        "operation": "inspect",
+        "status": if all_passed {"checks_passed"} else {"checks_failed"},
+        "curve": {
+            "name": c.name,
+            "aliases": c.aliases,
+            "family": family_of(&c),
+            "standard": c.standard,
+            "field": {"kind": field.kind, "label": field.label, "bits": field.bits},
+            "order_bits": c.order_bits(),
+            "subgroup_order": c.subgroup_order().to_string(),
+            "cofactor": c.cofactor().to_string(),
+            "group_order": c.group_order().to_string(),
+            "rho_security_bits": round1(c.rho_security_bits()),
+        },
+        "checks": checks_json,
+        "verified": all_passed,
+    }))
+}
+
+fn estimate(args: &EstimateArgs) -> Result<Value, String> {
+    let c = curve_catalog::by_name(&args.curve)
+        .ok_or_else(|| format!("unknown curve '{}'; try `icx list`", args.curve))?;
+    let est = ic_engine::estimate(&c, args.envelope);
+    Ok(json!({
+        "schema_version": 1,
+        "operation": "estimate",
+        "status": "complete",
+        "curve": est.curve,
+        "family": est.family,
+        "field": est.field_label,
+        "field_bits": est.field_bits,
+        "order_bits": est.order_bits,
+        "generic_attack": {
+            "algorithm": "pollard-rho",
+            "log2_operations": round2(est.rho_log2_ops),
+            "security_bits": round1(est.rho_security_bits),
+        },
+        "index_calculus": {
+            "relevant": est.ic_relevant,
+            "regime": est.regime.tag(),
+        },
+        "notes": est.notes,
+    }))
+}
+
+fn xedni_cmd(args: &XedniArgs) -> Result<Value, String> {
+    if args.curve.is_some() && args.family.is_some() {
+        return Err("supply either a curve or --family, not both".into());
+    }
+    let filter = match &args.family {
+        Some(f) => Some(Family::parse(f).ok_or_else(|| {
+            format!("unknown family '{f}'; use prime|binary|koblitz|extension|char3")
+        })?),
+        None => None,
+    };
+    let curves = match &args.curve {
+        Some(name) => vec![curve_catalog::by_name(name)
+            .ok_or_else(|| format!("unknown curve '{name}'; try `icx list`"))?],
+        None => curve_catalog::all()
+            .into_iter()
+            .filter(|curve| filter.is_none_or(|family| curve.family == family))
+            .collect(),
+    };
+    let assessments: Vec<_> = curves.iter().map(xedni::assess).collect();
+    Ok(json!({
+        "schema_version": 1,
+        "operation": "xedni",
+        "status": "complete",
+        "scope": "structural applicability and literature gates; no attack execution or performance claim",
+        "count": assessments.len(),
+        "assessments": assessments,
+    }))
+}
+
+fn xedni_lift_cmd(args: &XedniLiftArgs) -> Result<Value, String> {
+    let bytes =
+        std::fs::read(&args.input).map_err(|e| format!("read {}: {e}", args.input.display()))?;
+    let input: xedni_lift::AffineLiftInput = serde_json::from_slice(&bytes)
+        .map_err(|e| format!("parse {}: {e}", args.input.display()))?;
+    let problem = xedni_lift::AffineLiftProblem::try_from(input)?;
+    let options = xedni_lift::LiftSearchOptions {
+        neighborhood_radius: args.radius,
+        max_candidates: args.max_candidates,
+    };
+    let (model, scope, result) = match args.model.as_str() {
+        "weierstrass" => (
+            "weierstrass",
+            "prime-field xedni Steps 7-9 seven-coefficient coset optimization; no dependence or ECDLP success claim",
+            serde_json::to_value(xedni_lift::optimize_weierstrass_lift(&problem, options)?)
+                .map_err(|e| format!("serialize lift result: {e}"))?,
+        ),
+        "plane-cubic" => (
+            "plane-cubic",
+            "prime-field xedni Step 7 ten-coefficient coset optimization for up to nine incidence rows; no Step-8 conversion, discriminant, dependence, or ECDLP success claim",
+            serde_json::to_value(xedni_lift::optimize_plane_cubic_lift(&problem, options)?)
+                .map_err(|e| format!("serialize lift result: {e}"))?,
+        ),
+        other => {
+            return Err(format!(
+                "unknown xedni lift model {other:?}; use weierstrass|plane-cubic"
+            ));
+        }
+    };
+    Ok(json!({
+        "schema_version": 1,
+        "operation": "xedni-lift",
+        "status": "complete",
+        "scope": scope,
+        "model": model,
+        "input": args.input,
+        "search": {
+            "radius": args.radius,
+            "max_candidates": args.max_candidates,
+        },
+        "result": result,
+    }))
+}
+
+fn round1(x: f64) -> f64 {
+    (x * 10.0).round() / 10.0
+}
+fn round2(x: f64) -> f64 {
+    (x * 100.0).round() / 100.0
+}
+
+fn display(report: &Value) {
+    match report["operation"].as_str() {
+        Some("solve") => crate::cryptanalysis::certicom_dlp_cli::display(report),
+        Some("list") => {
+            println!(
+                "{:<22} {:<10} {:<9} {:>10} {:>9}  regime",
+                "curve", "family", "field", "order_bits", "rho_bits"
+            );
+            for c in report["curves"].as_array().into_iter().flatten() {
+                println!(
+                    "{:<22} {:<10} {:<9} {:>10} {:>9}  {}",
+                    c["name"].as_str().unwrap_or("?"),
+                    c["family"].as_str().unwrap_or("?"),
+                    c["field"].as_str().unwrap_or("?"),
+                    c["order_bits"].as_u64().unwrap_or(0),
+                    format!("{:.1}", c["rho_security_bits"].as_f64().unwrap_or(0.0)),
+                    c["regime"].as_str().unwrap_or("?"),
+                );
+            }
+            println!("\n{} curves.", report["count"]);
+        }
+        Some("inspect") => {
+            let cu = &report["curve"];
+            println!(
+                "Curve: {} [{}]",
+                cu["name"].as_str().unwrap_or("?"),
+                cu["family"].as_str().unwrap_or("?")
+            );
+            println!("Standard: {}", cu["standard"].as_str().unwrap_or("?"));
+            println!(
+                "Field: {} ({} bits); subgroup order {} bits; cofactor {}",
+                cu["field"]["label"].as_str().unwrap_or("?"),
+                cu["field"]["bits"],
+                cu["order_bits"],
+                cu["cofactor"].as_str().unwrap_or("?"),
+            );
+            println!("Generic (rho) security: {} bits", cu["rho_security_bits"]);
+            for k in report["checks"].as_array().into_iter().flatten() {
+                println!(
+                    "  {:<22} {:<5} {}",
+                    k["name"].as_str().unwrap_or("?"),
+                    k["status"].as_str().unwrap_or("?"),
+                    k["detail"].as_str().unwrap_or("")
+                );
+            }
+            println!(
+                "Verified: {}",
+                if report["verified"] == true {
+                    "yes"
+                } else {
+                    "NO"
+                }
+            );
+        }
+        Some("estimate") => {
+            println!(
+                "Curve: {} [{}]  field {} ({} bits)  order {} bits",
+                report["curve"].as_str().unwrap_or("?"),
+                report["family"].as_str().unwrap_or("?"),
+                report["field"].as_str().unwrap_or("?"),
+                report["field_bits"],
+                report["order_bits"],
+            );
+            let ga = &report["generic_attack"];
+            println!(
+                "Generic attack (rho): ~2^{} operations, {} security bits",
+                ga["log2_operations"], ga["security_bits"]
+            );
+            println!(
+                "Index calculus: relevant={}  regime={}",
+                report["index_calculus"]["relevant"],
+                report["index_calculus"]["regime"].as_str().unwrap_or("?"),
+            );
+            for n in report["notes"].as_array().into_iter().flatten() {
+                println!("  - {}", n.as_str().unwrap_or(""));
+            }
+        }
+        Some("xedni") => {
+            println!(
+                "{:<22} {:<10} {:<12} {:>10}  status",
+                "curve", "family", "field", "min [K:Q]"
+            );
+            for row in report["assessments"].as_array().into_iter().flatten() {
+                println!(
+                    "{:<22} {:<10} {:<12} {:>10}  {}",
+                    row["curve"].as_str().unwrap_or("?"),
+                    row["family"].as_str().unwrap_or("?"),
+                    row["field"].as_str().unwrap_or("?"),
+                    row["minimum_global_field_degree"].as_u64().unwrap_or(0),
+                    row["applicability"].as_str().unwrap_or("?"),
+                );
+            }
+            println!("\nScope: {}", report["scope"].as_str().unwrap_or("?"));
+        }
+        Some("run") => {
+            let r = &report["result"];
+            let an = &r["analogue"];
+            println!(
+                "Run: {} [{}]  regime={}  ic_relevant={}",
+                r["curve"].as_str().unwrap_or("?"),
+                an["family"].as_str().unwrap_or("?"),
+                r["regime"].as_str().unwrap_or("?"),
+                r["ic_relevant"],
+            );
+            println!(
+                "Instance run: {} (order {} bits){}",
+                an["instance"].as_str().unwrap_or("?"),
+                an["run_order_bits"],
+                if an["is_named_curve"] == true {
+                    " — the named curve"
+                } else {
+                    " — scaled analogue"
+                },
+            );
+            println!("Config: {}", r["config_label"].as_str().unwrap_or("?"));
+            for (i, rep) in r["reports"].as_array().into_iter().flatten().enumerate() {
+                let s = rep["s"].as_f64().unwrap_or(0.0);
+                let sr = rep.get("s_over_rho").and_then(|v| v.as_f64());
+                println!(
+                    "  config {}: verified={}  S={:.3e}{}",
+                    i + 1,
+                    rep["verified"],
+                    s,
+                    sr.map(|x| format!("  ({x:.2}x rho)")).unwrap_or_default(),
+                );
+            }
+            if let Some(rho) = r.get("rho").filter(|v| !v.is_null()) {
+                println!(
+                    "Rho reference: {} runs, mean S={:.3e}, all verified={}",
+                    rho["runs"],
+                    rho["mean_s"].as_f64().unwrap_or(0.0),
+                    rho["all_verified"],
+                );
+            }
+            if let Some(note) = r["extrapolation_note"].as_str() {
+                println!("\nScope: {note}");
+            }
+        }
+        Some("fes") => {
+            let sy = &report["system"];
+            println!(
+                "FES: {}-var, {}-eq quadratic system (seed {})",
+                sy["n"], sy["m"], sy["seed"]
+            );
+            println!("Backend: {}", report["backend"].as_str().unwrap_or("?"));
+            println!(
+                "Solutions: {} verified of {} proposed",
+                report["verified"], report["proposed"]
+            );
+            println!(
+                "Planted solution {}: {}",
+                report["planted"],
+                if report["planted_found"] == true {
+                    "found"
+                } else {
+                    "NOT found"
+                }
+            );
+        }
+        Some("error") => {
+            eprintln!("icx: {}", report["message"].as_str().unwrap_or("failed"));
+        }
+        _ => {
+            println!("{}", serde_json::to_string_pretty(report).unwrap());
+        }
+    }
+}
+
+fn run_cmd(args: &RunArgs, json: bool) -> Result<Value, String> {
+    use crate::cryptanalysis::ic_progress::ProgressReporter;
+    use crate::cryptanalysis::ic_run::{run_curve, RunConfig};
+
+    let curve = curve_catalog::by_name(&args.curve)
+        .ok_or_else(|| format!("unknown curve '{}'; try `icx list`", args.curve))?;
+    let cfg = RunConfig {
+        factor_base: args.factor_base.clone(),
+        oracle: args.oracle.clone(),
+        solver: args.solver.clone(),
+        linalg: args.linalg.clone(),
+        degree: args.degree,
+        bits: args.bits,
+        seed: args.seed,
+        max_trials: args.max_trials,
+        repeats: args.repeats,
+        rho_runs: args.rho_runs,
+        envelope_bits: args.envelope,
+        solver_budget_seconds: args.solver_budget_seconds,
+    };
+    // In JSON mode the progress log would interleave with the document, so
+    // silence it; in human mode it streams the CADO-style stage lines to stderr.
+    let mut progress = ProgressReporter::new(false, json);
+    let result = run_curve(&curve, &cfg, &mut progress)?;
+    let verified_any = result.reports.iter().any(|r| r.verified);
+    if !json {
+        progress.summary(&format!(
+            "{} — {} of {} configuration(s) verified",
+            result.curve,
+            result.reports.iter().filter(|r| r.verified).count(),
+            result.reports.len()
+        ));
+    }
+    Ok(json!({
+        "schema_version": 1,
+        "operation": "run",
+        "status": if verified_any { "complete" } else { "incomplete" },
+        "verified": verified_any,
+        "result": serde_json::to_value(&result).map_err(|e| e.to_string())?,
+    }))
+}
+
+fn fes_cmd(args: &FesArgs) -> Result<Value, String> {
+    use crate::cryptanalysis::fes_gpu::{self, FesBackend};
+
+    let (sys, planted) = fes_gpu::random_system(args.n, args.m, args.seed);
+    let backend = match (args.worker.as_deref(), args.backend.as_str()) {
+        (Some(path), _) => FesBackend::Worker(std::path::PathBuf::from(path)),
+        (None, "cpu") => FesBackend::Cpu,
+        (None, "auto") => FesBackend::Auto,
+        (None, "gpu") => match fes_gpu::discover_worker() {
+            Some(w) => FesBackend::Worker(w),
+            None => {
+                return Err(
+                    "no FES worker found; build one with `make -C gpu/fes host-worker` \
+                            (or cuda / metal-worker) or set ICX_FES_WORKER, or use --backend cpu"
+                        .into(),
+                )
+            }
+        },
+        (None, other) => return Err(format!("unknown backend '{other}'; use cpu|gpu|auto")),
+    };
+    let res = fes_gpu::solve(&sys, &backend)?;
+    let planted_found = res.solutions.contains(&planted);
+    Ok(json!({
+        "schema_version": 1,
+        "operation": "fes",
+        "status": "complete",
+        "system": {"n": args.n, "m": args.m, "seed": args.seed},
+        "backend": res.backend,
+        "proposed": res.proposed,
+        "verified": res.verified,
+        "solutions": res.solutions.len(),
+        "planted": planted,
+        "planted_found": planted_found,
+    }))
+}
+
+fn source_dir(flag: Option<&PathBuf>) -> Result<PathBuf, String> {
+    let source = flag
+        .cloned()
+        .unwrap_or_else(|| PathBuf::from(env!("CARGO_MANIFEST_DIR")));
+    if !source.join("Cargo.toml").is_file() {
+        return Err(format!(
+            "source directory {} has no Cargo.toml; pass --source",
+            source.display()
+        ));
+    }
+    Ok(source)
+}
+
+fn cargo_install_command(source: &Path, root: Option<&Path>, force: bool) -> Command {
+    let cargo = std::env::var_os("CARGO").unwrap_or_else(|| "cargo".into());
+    let mut command = Command::new(cargo);
+    command
+        .arg("install")
+        .arg("--path")
+        .arg(source)
+        .arg("--bin")
+        .arg("ca-icx");
+    if let Some(root) = root {
+        command.arg("--root").arg(root);
+    }
+    if force {
+        command.arg("--force");
+    }
+    command
+}
+
+fn command_line(command: &Command) -> String {
+    let mut parts = vec![command.get_program().to_string_lossy().to_string()];
+    for arg in command.get_args() {
+        let arg = arg.to_string_lossy();
+        if arg.chars().any(char::is_whitespace) {
+            parts.push(format!("{arg:?}"));
+        } else {
+            parts.push(arg.into_owned());
+        }
+    }
+    parts.join(" ")
+}
+
+fn run_captured(mut command: Command) -> Result<(String, String), String> {
+    let name = command.get_program().to_string_lossy().to_string();
+    let output = command
+        .output()
+        .map_err(|e| format!("failed to run {name}: {e}"))?;
+    let stdout = String::from_utf8_lossy(&output.stdout).trim().to_string();
+    let stderr = String::from_utf8_lossy(&output.stderr).trim().to_string();
+    if !output.status.success() {
+        return Err(format!(
+            "{name} exited with {}: {}",
+            output.status,
+            if stderr.is_empty() { &stdout } else { &stderr }
+        ));
+    }
+    Ok((stdout, stderr))
+}
+
+fn run_git(repo: &Path, args: &[&str]) -> Result<String, String> {
+    let mut command = Command::new("git");
+    command.arg("-C").arg(repo).args(args);
+    run_captured(command).map(|(stdout, _)| stdout)
+}
+
+fn run_git_optional(repo: &Path, args: &[&str]) -> Option<String> {
+    let mut command = Command::new("git");
+    command.arg("-C").arg(repo).args(args);
+    let output = command.output().ok()?;
+    if output.status.success() {
+        Some(String::from_utf8_lossy(&output.stdout).trim().to_string())
+    } else {
+        None
+    }
+}
+
+fn install_cmd(args: &InstallArgs) -> Result<Value, String> {
+    let source = source_dir(args.source.as_ref())?;
+    let command = cargo_install_command(&source, args.root.as_deref(), args.force);
+    let rendered = command_line(&command);
+    if args.dry_run {
+        return Ok(json!({
+            "schema_version": 1,
+            "operation": "install",
+            "status": "dry_run",
+            "source": source,
+            "command": rendered,
+        }));
+    }
+    let (stdout, stderr) = run_captured(command)?;
+    Ok(json!({
+        "schema_version": 1,
+        "operation": "install",
+        "status": "complete",
+        "source": source,
+        "command": rendered,
+        "stdout": stdout,
+        "stderr": stderr,
+    }))
+}
+
+fn update_cmd(args: &UpdateArgs) -> Result<Value, String> {
+    let source = source_dir(args.source.as_ref())?;
+    let repo = source
+        .parent()
+        .ok_or_else(|| format!("source directory {} has no parent", source.display()))?;
+    let mut report = json!({
+        "schema_version": 1,
+        "operation": "update",
+        "status": "checking",
+        "version": env!("CARGO_PKG_VERSION"),
+        "source": source,
+        "repo": repo,
+        "update_available": Value::Null,
+    });
+
+    if repo.join(".git").exists() {
+        if let Err(error) = run_git(repo, &["fetch", "--quiet"]) {
+            report["fetch_error"] = json!(error);
+        }
+        if let Some(head) = run_git_optional(repo, &["rev-parse", "--short", "HEAD"]) {
+            report["git_head"] = json!(head);
+        }
+        if let Some(upstream) =
+            run_git_optional(repo, &["rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{u}"])
+        {
+            report["git_upstream"] = json!(upstream);
+            if let Some(behind) = run_git_optional(repo, &["rev-list", "--count", "HEAD..@{u}"]) {
+                if let Ok(behind) = behind.parse::<u64>() {
+                    report["commits_behind"] = json!(behind);
+                    report["update_available"] = json!(behind > 0);
+                }
+            }
+        }
+    } else {
+        report["git"] = json!("not a git checkout");
+    }
+
+    if args.check {
+        report["status"] = json!("checks_passed");
+        return Ok(report);
+    }
+
+    if args.pull {
+        if !repo.join(".git").exists() {
+            return Err("--pull needs a git checkout to fast-forward".into());
+        }
+        report["pull"] = json!(run_git(repo, &["pull", "--ff-only"])?);
+    }
+
+    let command = cargo_install_command(&source, args.root.as_deref(), true);
+    let rendered = command_line(&command);
+    report["command"] = json!(rendered);
+    if args.dry_run {
+        report["status"] = json!("dry_run");
+        return Ok(report);
+    }
+    let (stdout, stderr) = run_captured(command)?;
+    report["status"] = json!("complete");
+    report["stdout"] = json!(stdout);
+    report["stderr"] = json!(stderr);
+    Ok(report)
+}
+
+fn execute(cli: &Cli) -> Result<Value, String> {
+    match &cli.command {
+        Some(Action::Solve(a)) => crate::cryptanalysis::certicom_dlp_cli::run(a),
+        Some(Action::List(a)) => list(a),
+        Some(Action::Inspect(a)) => inspect(&a.curve),
+        Some(Action::Estimate(a)) => estimate(a),
+        Some(Action::Xedni(a)) => xedni_cmd(a),
+        Some(Action::XedniLift(a)) => xedni_lift_cmd(a),
+        Some(Action::Run(a)) => run_cmd(a, cli.json),
+        Some(Action::Fes(a)) => fes_cmd(a),
+        Some(Action::Install(a)) => install_cmd(a),
+        Some(Action::Update(a)) => update_cmd(a),
+        None => {
+            let name = cli
+                .curve
+                .as_deref()
+                .ok_or("supply a curve name or a subcommand; see `icx --help`")?;
+            inspect(name)
+        }
+    }
+}
+
+/// Run the `ca-icx` command line on `args` (the first item is the program
+/// name, as in `std::env::args_os`).
+pub fn run_from<I, T>(args: I) -> ExitCode
+where
+    I: IntoIterator<Item = T>,
+    T: Into<std::ffi::OsString> + Clone,
+{
+    let cli = Cli::parse_from(args);
+    let mut report = match execute(&cli) {
+        Ok(v) => v,
+        Err(message) => json!({
+            "schema_version": 1, "operation": "error", "status": "error", "message": message
+        }),
+    };
+    if report.get("operation").is_some() {
+        report["software"] = provenance();
+    }
+    let ok = matches!(
+        report["status"].as_str(),
+        Some("complete" | "checks_passed" | "dry_run")
+    );
+    if cli.json {
+        println!("{}", serde_json::to_string_pretty(&report).unwrap());
+    } else {
+        display(&report);
+    }
+    if ok {
+        ExitCode::SUCCESS
+    } else {
+        ExitCode::FAILURE
+    }
+}

@@ -1,0 +1,50 @@
+{
+ "attempts": 600,
+ "collisions_on_the_k600_stored_set": 0,
+ "distinct_rotation_keys": 29878182,
+ "exactness_local": "every local rank stage (frame, rotkey twice, rotkey_plant) reproduced the archived kP row of run 39214027289 block K1: relation digest, all 600 per-attempt probe counts, root calls, point-addition counters, B's factor-log table, the target relation/probes/scalar and B's index digests",
+ "extra_memory": "one more 2^26 x 16-byte table (1 GiB): peak RSS of a rank process about 2.88 GB against 1.83 GB",
+ "hit_time_cost": "one lift_scan + one compact-table lookup per verified hit, 600 per rank stage (about 0.1 ms) against 1.0e9 probes",
+ "key": "rotkey(v) = v^83 in F2[X]/(X^83+1): 5 squarings + 3 multiplications, 19 pclmulqdq (Karatsuba), branch-free, 83-bit output",
+ "key_ns_per_word_batch": [
+  21.8,
+  22.26
+ ],
+ "label": "LOCAL DIAGNOSTICS (cloud-agent VM); exactness results exact, times not timing evidence; see smoke/README.md",
+ "lift_scan_ns_per_word_batch": [
+  38.48,
+  43.81
+ ],
+ "ns_per_probe_local_concurrent": {
+  "run1": {
+   "frame": 366.2775007720667,
+   "rotkey": 277.2077402405318
+  },
+  "run2": {
+   "frame": 309.7199215112817,
+   "rotkey": 270.01254937189265
+  }
+ },
+ "planted_probes_checked_false_hits": {
+  "mismatches": 0,
+  "probes_checked": 983094828
+ },
+ "rank_stage_s_local_concurrent": {
+  "run1_three_processes": {
+   "frame": 360.253641698,
+   "rotkey": 279.76359127,
+   "rotkey_plant": 718.678156797
+  },
+  "run2_two_processes_swapped_cpus": {
+   "frame": 304.648603197,
+   "rotkey": 274.407285048
+  }
+ },
+ "stored_canonical_keys": 29878182,
+ "table_build_ms_local": [
+  6968.314346,
+  7843.123393,
+  8772.677643
+ ],
+ "verified_hits_per_rank_stage": 600
+}

@@ -1,0 +1,52 @@
+{
+  "accounting": {
+    "correctness": "first-witness lookup samples, equal state and root counts, and equal target outcomes",
+    "cpu_speedup_status": "exploratory without host-isolation receipt",
+    "index_build": "target-independent S3 roots, insertion, packed sort, and prefix-directory construction",
+    "target_query": "target-dependent S3 probes and relation checks"
+  },
+  "candidate_id": null,
+  "claim_boundary": "bounded S3 root-index and one-target query stage only; no complete relation-rank solve, target DLP, rho comparison, or IC speedup claim",
+  "comparison_variable": "root lookup backend: open-addressed first-witness hash versus exact 83-bit-reversed sorted records with a 20, 21, 22, or 23-bit prefix directory",
+  "curve_id": "EC1N83Ckb1h876c2921cb64",
+  "inputs_sha256": {
+    "bridge": "7937fdbb7810c6fa25d3fe5872480970f5be6e40dcbe3e9419bd6427f95b5c99",
+    "cargo_lock": "a62aa7a2fb65c0e23b30b4d0bbba5a3a5a0cffbf81fb4432939924b33458f371",
+    "cargo_manifest": "648f205a827ebe8ad09844cb1d1e2bfe914e9755a177db32918ef1c71599af49",
+    "crypto_rust_source_tree": "096f22c18ddb8af81a5ec764be290f927e36f3612a820595730398f7677da5bf",
+    "native_source": "7a45501ce2b30816fe1ad07c3ed5c1cf47eb06c607db410549303d9787684c5a",
+    "parent_manifest": "8a46edb5763b48aedb8dbf241c6f5840533ade184d83abbc80ae2877da13ca8c",
+    "representatives": "46e8431a2ab5c3be53679d136dbac572ebdfdc2c0860f5301a398f967433fb40",
+    "runner": "f41b1292392792f1d3782f52674a8b12bf394e64e343a888cf93c7d292e50586"
+  },
+  "kind": "paired_n83_packed_root_index_stage_protocol",
+  "limits": {
+    "index_s3_window_size": 4096,
+    "pair_state_cap": 2000000,
+    "peak_rss_cap_mib": 1024,
+    "target_orientations_per_state": 1,
+    "target_s3_window_schedule": [
+      4096
+    ]
+  },
+  "proposal_id": "Q2026101902",
+  "run_id": null,
+  "run_order": [
+    "hash",
+    "packed-rev",
+    "packed-rev21",
+    "packed-rev22",
+    "packed-rev23",
+    "packed-rev21",
+    "packed-rev22",
+    "packed-rev23",
+    "hash",
+    "packed-rev",
+    "packed-rev23",
+    "hash",
+    "packed-rev",
+    "packed-rev21",
+    "packed-rev22"
+  ],
+  "workload_id": "981ac530e67e"
+}

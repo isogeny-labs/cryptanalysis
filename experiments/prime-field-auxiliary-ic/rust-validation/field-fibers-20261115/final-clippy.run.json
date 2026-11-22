@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/home/agent/.cargo/bin/cargo",
+    "clippy",
+    "--manifest-path",
+    "crates/prime-field-auxiliary-ic/Cargo.toml",
+    "--all-targets",
+    "--",
+    "-D",
+    "warnings"
+  ],
+  "cwd": "/workspace/cryptanalysis-pr",
+  "exit_code": 0,
+  "output": "final-clippy.log"
+}

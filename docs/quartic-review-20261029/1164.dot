@@ -1,0 +1,14 @@
+digraph evidence {
+graph [rankdir=TB, bgcolor="white", pad="0.25"];
+node [shape=box, style="rounded,filled", fillcolor="#eff6ff", color="#155e75", fontname="DejaVu Sans", fontsize=12, margin="0.18"];
+edge [fontname="DejaVu Sans", fontsize=10, color="#475569"];
+n0 [label="K = Q(alpha), degree 18"];
+n1 [label="L = K(s), s^2 = 2"];
+n2 [label="Q4 = u4 q2 q2-conjugate\nQ8 = u8 q4 q4-conjugate"];
+n3 [label="Finite-field specialization:\n2 nonsquare + denominators nonzero\n+ coprime specialized pairs"];
+n4 [label="Frobenius-fixed root would belong\nto both conjugates: contradiction"];
+n0 -> n1 [label="scope condition / recorded check", style=solid];
+n1 -> n2 [label="scope condition / recorded check", style=solid];
+n2 -> n3 [label="scope condition / recorded check", style=solid];
+n3 -> n4 [label="scope condition / recorded check", style=dashed];
+}

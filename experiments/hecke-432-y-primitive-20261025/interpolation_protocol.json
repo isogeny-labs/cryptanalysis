@@ -1,0 +1,9 @@
+{
+  "status": "FROZEN_BEFORE_Y_FIBER_INTERPOLATION",
+  "frozen_utc": "2026-10-26T00:50:13Z",
+  "input": "all 24 paired (y_E,x_E) coordinates in the frozen GF(997^4) geometric-fiber evaluation",
+  "field": "GF(997)[u]/(u^4+4u^2+622u+7)",
+  "construction": "M(T)=product(T-y_i); Lagrange interpolate the unique polynomial P(T) of degree at most 23 with P(y_i)=x_i",
+  "checks": ["all 24 y_i distinct", "M and P have coefficients in GF(997)", "M(y_i)=0 and P(y_i)=x_i for all 24", "M divides P(T)^3-T^2+432 over GF(997)"],
+  "interpretation": "a complete specialized fiber polynomial and coordinate recovery map, not yet a global rational function over Q(X0(27))"
+}

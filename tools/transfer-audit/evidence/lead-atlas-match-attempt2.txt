@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/workspace/crypto-autoresearcher/tools/lead_atlas.py", line 728, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/workspace/crypto-autoresearcher/tools/lead_atlas.py", line 678, in main
+    res = match(a.match, a.limit)
+          ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/crypto-autoresearcher/tools/lead_atlas.py", line 527, in match
+    import build_frontier_map as bfm  # noqa: E402
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ModuleNotFoundError: No module named 'build_frontier_map'

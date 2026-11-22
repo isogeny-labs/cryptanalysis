@@ -1,4 +1,5 @@
 #include "test_fixtures.h"
+#include <unistd.h>
 
 static void run(const ca_group *g, const ca_elem *gen, uint64_t width, int reps, double *ratio)
 {
@@ -30,6 +31,49 @@ int main(void)
     ca_elem gen;
     double ratio;
     fx_zp_safe(&g, &gen, 2000000579ULL);
+    {
+        char dir[] = "/tmp/ca-kangaroo-resume-XXXXXX";
+        CHECK(mkdtemp(dir) != NULL);
+        char path[128], progress[160];
+        snprintf(path, sizeof(path), "%s/herd.ckpt", dir);
+        snprintf(progress, sizeof(progress), "%s.progress.json", path);
+        ca_elem target;
+        fx_instance(&g, &gen, 424242, &target);
+        ca_kangaroo_params cp;
+        ca_kangaroo_params_default(&cp);
+        cp.seed = 17;
+        cp.dp_bits = 0;
+        cp.herd_size = 2;
+        cp.max_ops = 400;
+        uint64_t answer = 0;
+        ca_stats first = {0}, second = {0};
+        CHECK(ca_kangaroo_solve_checkpointed(&g, &gen, &target, 0, 1u << 20,
+            &cp, path, 1, 1, 0, &answer, &first) == CA_ERR_LIMIT);
+        CHECK(first.table_entries > 0);
+        CHECK(access(path, F_OK) == 0 && access(progress, F_OK) == 0);
+        cp.seed = 18;
+        CHECK(ca_kangaroo_solve_checkpointed(&g, &gen, &target, 0, 1u << 20,
+            &cp, path, 1, 1, 0, &answer, NULL) == CA_ERR_INVALID);
+        cp.seed = 17;
+        cp.max_ops = 1000000;
+        CHECK(ca_kangaroo_solve_checkpointed(&g, &gen, &target, 0, 1u << 20,
+            &cp, path, 1, 1, 0, &answer, &second) == CA_OK);
+        CHECK_EQ_U64(answer, 424242);
+        CHECK(second.group_ops > first.group_ops);
+        FILE *f = fopen(path, "rb+");
+        CHECK(f != NULL);
+        if (f) {
+            CHECK(fseek(f, -1, SEEK_END) == 0);
+            int last = fgetc(f);
+            CHECK(last != EOF);
+            CHECK(fseek(f, -1, SEEK_END) == 0);
+            CHECK(fputc(last ^ 1, f) != EOF);
+            CHECK(fclose(f) == 0);
+        }
+        CHECK(ca_kangaroo_solve_checkpointed(&g, &gen, &target, 0, 1u << 20,
+            &cp, path, 1, 1, 0, &answer, NULL) == CA_ERR_INVALID);
+        unlink(progress); unlink(path); rmdir(dir);
+    }
     run(&g, &gen, 1ULL << 26, 8, &ratio);
     printf("zp  width 2^26 ops/sqrt(w) = %.2f\n", ratio);
     CHECK(ratio < 8.0);
@@ -99,5 +143,58 @@ int main(void)
     ca_status hrc = ca_kangaroo_solve(&g, &gen, &h, 0, 100000, &hp, &hx, NULL);
     CHECK(hrc == CA_OK || hrc == CA_ERR_LIMIT || hrc == CA_ERR_NOT_FOUND || hrc == CA_ERR_NOMEM);
     if (hrc == CA_OK) CHECK_EQ_U64(hx, 4242);
+
+    /* Regression: the base is the identity and the target is not.  Past the
+     * linear scan the herd hopped until max_ops (forever without one). */
+    {
+        ca_elem idb, tgt;
+        ca_group_identity(&g, &idb);
+        ca_kangaroo_params ip;
+        ca_kangaroo_params_default(&ip);
+        ip.seed = 1;
+        ip.max_ops = 1000000;
+        ca_stats ist = {0};
+        uint64_t ix = 0;
+        CHECK(ca_kangaroo_solve(&g, &idb, &h, 0, 100000, &ip, &ix, &ist) == CA_ERR_NOT_FOUND);
+        CHECK_EQ_U64(ist.group_ops, 0);
+        ca_group_identity(&g, &tgt);
+        CHECK(ca_kangaroo_solve(&g, &idb, &tgt, 5, 100000, &ip, &ix, NULL) == CA_OK);
+        CHECK_EQ_U64(ix, 5);
+    }
+
+    /* Regression: a target outside the order-n subgroup has no logarithm;
+     * the herd used to hop until max_ops.  p - 1 = -1 is a non-residue in
+     * the order-q subgroup of the safe prime p, so (p - 1)^q != 1. */
+    {
+        ca_group zg;
+        ca_elem zgen, outside;
+        fx_zp_safe(&zg, &zgen, 2000000579ULL);
+        const uint64_t wm1[4] = {zg.p - 1, 0, 0, 0};
+        CHECK(ca_group_encode(&zg, &outside, wm1));
+        ca_kangaroo_params op;
+        ca_kangaroo_params_default(&op);
+        op.seed = 1;
+        op.max_ops = 1000000;
+        uint64_t ox = 0;
+        CHECK(ca_kangaroo_solve(&zg, &zgen, &outside, 0, 100000, &op, &ox, NULL) ==
+              CA_ERR_NOT_FOUND);
+    }
+
+    /* Regression: the abandon threshold 32 << dp_bits wrapped to 0 for
+     * dp_bits >= 59 (dp_bits is clamped to 62), which restarted every
+     * kangaroo at every hop.  No distinguished point is reachable at these
+     * widths, so there must be no restart at all. */
+    fx_instance(&g, &gen, 4242, &h);
+    for (int32_t dpb = 59; dpb <= 62; dpb++) {
+        ca_kangaroo_params ap;
+        ca_kangaroo_params_default(&ap);
+        ap.seed = 3;
+        ap.dp_bits = dpb;
+        ap.max_ops = 20000;
+        ca_stats ast = {0};
+        uint64_t ax = 0;
+        CHECK(ca_kangaroo_solve(&g, &gen, &h, 0, 100000, &ap, &ax, &ast) == CA_ERR_LIMIT);
+        CHECK_EQ_U64(ast.collisions, 0);
+    }
     TEST_MAIN_END();
 }

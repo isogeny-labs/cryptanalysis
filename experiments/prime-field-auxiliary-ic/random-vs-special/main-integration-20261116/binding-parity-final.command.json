@@ -1,0 +1,22 @@
+{
+  "source_commit": "f748c746854479e3a04546b2f860026b345df8b7",
+  "argv": [
+    "/home/agent/.cargo/bin/cargo",
+    "+stable",
+    "test",
+    "--locked",
+    "--manifest-path",
+    "bindings/rust/Cargo.toml",
+    "-p",
+    "cryptanalysis",
+    "--test",
+    "auxiliary_ic"
+  ],
+  "explicit_environment": {
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_PROFILE_TEST_DEBUG": "0"
+  },
+  "timeout_seconds": 300,
+  "exit_code": 0,
+  "scope": "producer development correctness check; no benchmark"
+}

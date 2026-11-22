@@ -1,0 +1,29 @@
+[
+  {
+    "argv": [
+      "/workspace/.cargo/bin/cargo",
+      "run",
+      "--release",
+      "--locked",
+      "--offline",
+      "--manifest-path",
+      "experiments/ghs-sweeper/Cargo.toml",
+      "--example",
+      "three_gluing_kernel",
+      "--",
+      "twist",
+      "--certificate",
+      "experiments/ghs-sweeper/kernel-checks/certificate-a0.json"
+    ],
+    "exit_code": 0
+  },
+  {
+    "argv": [
+      "experiments/ghs-sweeper/target/release/examples/three_gluing_kernel",
+      "verify",
+      "--certificate",
+      "experiments/ghs-sweeper/kernel-checks/transported-twist-a1.json"
+    ],
+    "exit_code": 0
+  }
+]

@@ -1,0 +1,29 @@
+name: CT191 exact norm point price source contract
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/ct191-actual-norm-source.yml'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/ct191-actual-norm/**'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/src/main.rs'
+      - 'experiments/chained-transfer-public-target/fixed-jacobian-chain-evaluator-02/derived/lib.rs'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Source-only exact CT126/CT125 binding and mutation tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          dir=experiments/chained-transfer-public-target/primitive-pricing-01/ct191-actual-norm
+          python3 -S -m py_compile "$dir/source_contract.py" "$dir/test_source_contract.py"
+          python3 -S "$dir/source_contract.py"
+          python3 -S -m unittest discover -s "$dir" -p test_source_contract.py -v
+          python3 -O -S -m unittest discover -s "$dir" -p test_source_contract.py -v
+          echo 'CT191 ONLY source-level Rust differential guard; no native benchmark or ECDLP speedup [pcc:unverified]'

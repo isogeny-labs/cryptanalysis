@@ -1,0 +1,29 @@
+⚠ [9039/9040] Built BoundedRankCoverage (105s)
+warning: BoundedRankCoverage.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: BoundedRankCoverage.lean:20:24: This simp argument is unused:
+  Fintype.card_fun
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [coefficientBox]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: BoundedRankCoverage.lean:22:0: automatically included section variable(s) unused in theorem `XedniBoundedRankCoverage.image_card_le`:
+  [Fintype C]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Fintype C] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: BoundedRankCoverage.lean:32:2: `push_neg` has been deprecated. Prefer using `push Not` instead.
+If you'd rather continue using `push_neg` in your project, you can implement it as follows:
+```
+open Lean.Parser.Tactic in
+macro "push_neg" cfg:optConfig loc:(location)? : tactic =>
+  `(tactic| push $cfg:optConfig Not $[$loc]?)
+```
+info: BoundedRankCoverage.lean:60:0: 'XedniBoundedRankCoverage.coefficientBox_card' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: BoundedRankCoverage.lean:61:0: 'XedniBoundedRankCoverage.image_card_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: BoundedRankCoverage.lean:62:0: 'XedniBoundedRankCoverage.exists_unreachable' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: BoundedRankCoverage.lean:63:0: 'XedniBoundedRankCoverage.reachable_fraction_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: BoundedRankCoverage.lean:64:0: 'XedniBoundedRankCoverage.group_reachable_card_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: BoundedRankCoverage.lean:65:0: 'XedniBoundedRankCoverage.group_exists_unreachable' depends on axioms: [propext, Classical.choice, Quot.sound]
+Build completed successfully (9040 jobs).

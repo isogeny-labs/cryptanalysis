@@ -1,0 +1,173 @@
+import Std.Tactic
+import Init.Grind.Ring.Basic
+set_option autoImplicit false
+
+namespace RelationKernel
+open Lean.Grind
+
+def dot {C K : Type} [CommRing K] (columns : List C) (r z : C → K) : K :=
+  match columns with
+  | [] => 0
+  | c :: cs => r c * z c + dot cs r z
+
+theorem dot_add {C K : Type} [CommRing K]
+    (columns : List C) (r s z : C → K) :
+    dot columns (fun c => r c + s c) z = dot columns r z + dot columns s z := by
+  induction columns with
+  | nil => simp only [dot]; grind
+  | cons c cs ih => simp only [dot, ih]; grind
+
+theorem dot_scale {C K : Type} [CommRing K]
+    (columns : List C) (u : K) (r z : C → K) :
+    dot columns (fun c => u * r c) z = u * dot columns r z := by
+  induction columns with
+  | nil => simp only [dot]; grind
+  | cons c cs ih => simp only [dot, ih]; grind
+
+def Kernel {I C K : Type} [CommRing K]
+    (columns : List C) (M : I → C → K) (z : C → K) : Prop :=
+  ∀ i, dot columns (M i) z = 0
+
+def swapRows {I C K : Type} [DecidableEq I] (M : I → C → K) (a b : I) : I → C → K :=
+  fun i => if i = a then M b else if i = b then M a else M i
+
+theorem swap_kernel_iff {I C K : Type} [DecidableEq I] [CommRing K]
+    (columns : List C) (M : I → C → K) (z : C → K) (a b : I) (hab : a ≠ b) :
+    Kernel columns (swapRows M a b) z ↔ Kernel columns M z := by
+  constructor
+  · intro h i
+    by_cases ha : i = a
+    · subst i
+      simpa [Kernel, swapRows, hab, Ne.symm hab] using h b
+    · by_cases hb : i = b
+      · subst i
+        simpa [Kernel, swapRows, hab, Ne.symm hab] using h a
+      · simpa [Kernel, swapRows, ha, hb] using h i
+  · intro h i
+    by_cases ha : i = a
+    · simpa [swapRows, ha] using h b
+    · by_cases hb : i = b
+      · simpa [swapRows, ha, hb, hab, Ne.symm hab] using h a
+      · simpa [swapRows, ha, hb] using h i
+
+def scaleRow {I C K : Type} [DecidableEq I] [CommRing K]
+    (M : I → C → K) (a : I) (u : K) : I → C → K :=
+  fun i => if i = a then (fun c => u * M a c) else M i
+
+theorem scale_kernel_iff {I C K : Type} [DecidableEq I] [CommRing K]
+    (columns : List C) (M : I → C → K) (z : C → K)
+    (a : I) (u v : K) (unit : u * v = 1) :
+    Kernel columns (scaleRow M a u) z ↔ Kernel columns M z := by
+  constructor
+  · intro h i
+    by_cases hi : i = a
+    · subst i
+      have hs : u * dot columns (M a) z = 0 := by
+        simpa [scaleRow, dot_scale] using h a
+      have hm := congrArg (fun x : K => v * x) hs
+      grind
+    · simpa [scaleRow, hi] using h i
+  · intro h i
+    by_cases hi : i = a
+    · subst i
+      suffices hz : dot columns (fun c => u * M a c) z = 0 by
+        simpa [scaleRow] using hz
+      rw [dot_scale, h a]
+      grind
+    · simpa [scaleRow, hi] using h i
+
+def addRow {I C K : Type} [DecidableEq I] [CommRing K]
+    (M : I → C → K) (dst src : I) (u : K) : I → C → K :=
+  fun i => if i = dst then (fun c => M dst c + u * M src c) else M i
+
+theorem add_kernel_iff {I C K : Type} [DecidableEq I] [CommRing K]
+    (columns : List C) (M : I → C → K) (z : C → K)
+    (dst src : I) (u : K) (different : dst ≠ src) :
+    Kernel columns (addRow M dst src u) z ↔ Kernel columns M z := by
+  constructor
+  · intro h i
+    by_cases hi : i = dst
+    · subst i
+      have hs : dot columns (M src) z = 0 := by
+        simpa [addRow, Ne.symm different] using h src
+      have hd : dot columns (fun c => M dst c + u * M src c) z = 0 := by
+        simpa [addRow] using h dst
+      rw [dot_add, dot_scale, hs] at hd
+      grind
+    · simpa [addRow, hi] using h i
+  · intro h i
+    by_cases hi : i = dst
+    · subst i
+      suffices hz : dot columns (fun c => M dst c + u * M src c) z = 0 by
+        simpa [addRow] using hz
+      rw [dot_add, dot_scale, h dst, h src]
+      grind
+    · simpa [addRow, hi] using h i
+
+inductive Elementary (I K : Type) [CommRing K] where
+  | swap (a b : I) (different : a ≠ b)
+  | scale (a : I) (u v : K) (unit : u * v = 1)
+  | add (dst src : I) (u : K) (different : dst ≠ src)
+
+def applyOp {I C K : Type} [DecidableEq I] [CommRing K]
+    (op : Elementary I K) (M : I → C → K) : I → C → K :=
+  match op with
+  | .swap a b _ => swapRows M a b
+  | .scale a u _ _ => scaleRow M a u
+  | .add dst src u _ => addRow M dst src u
+
+theorem operation_kernel_iff {I C K : Type} [DecidableEq I] [CommRing K]
+    (columns : List C) (M : I → C → K) (z : C → K) (op : Elementary I K) :
+    Kernel columns (applyOp op M) z ↔ Kernel columns M z := by
+  cases op with
+  | swap a b different => exact swap_kernel_iff columns M z a b different
+  | scale a u v unit => exact scale_kernel_iff columns M z a u v unit
+  | add dst src u different => exact add_kernel_iff columns M z dst src u different
+
+def replay {I C K : Type} [DecidableEq I] [CommRing K]
+    (ops : List (Elementary I K)) (M : I → C → K) : I → C → K :=
+  match ops with
+  | [] => M
+  | op :: tail => replay tail (applyOp op M)
+
+theorem finite_trace_kernel_iff {I C K : Type} [DecidableEq I] [CommRing K]
+    (columns : List C) (M : I → C → K) (z : C → K) (ops : List (Elementary I K)) :
+    Kernel columns (replay ops M) z ↔ Kernel columns M z := by
+  induction ops generalizing M with
+  | nil => rfl
+  | cons op tail ih =>
+    exact (ih (applyOp op M)).trans (operation_kernel_iff columns M z op)
+
+/-- The equations are the explicit one-free-column RREF shape, not a global
+Picard-character hypothesis. Specializing numeric certificates remains open. -/
+theorem one_free_column_proportional {C K : Type} [CommRing K]
+    (z w coefficient : C → K) (free : C) (inverse : K)
+    (unit : w free * inverse = 1)
+    (zrows : ∀ c, c ≠ free → z c + coefficient c * z free = 0)
+    (wrows : ∀ c, c ≠ free → w c + coefficient c * w free = 0) :
+    ∀ c, z c = (z free * inverse) * w c := by
+  intro c
+  by_cases hc : c = free
+  · subst c; grind
+  · have hz := zrows c hc
+    have hw := wrows c hc
+    grind
+
+/-- A genuine additive/scalar character and the three computed-value bridges
+are explicit assumptions. Finite matrix membership alone does not supply them. -/
+theorem conditional_three_descent_ratio {J K : Type} [CommRing K]
+    (addJ : J → J → J) (scalar : K → J → J) (character : J → K)
+    (additive : ∀ x y, character (addJ x y) = character x + character y)
+    (linear : ∀ a x, character (scalar a x) = a * character x)
+    (R G Q : J) (k multiplier offset y0 y1 y2 inverse : K)
+    (target : Q = scalar k G)
+    (first : y0 = multiplier * character R - offset)
+    (second : y1 = multiplier * character (addJ R G) - offset)
+    (third : y2 = multiplier * character (addJ R Q) - offset)
+    (unit : (y1 - y0) * inverse = 1) :
+    (y2 - y0) * inverse = k := by
+  rw [first, second, additive] at unit
+  rw [third, first, additive, target, linear]
+  grind
+
+end RelationKernel

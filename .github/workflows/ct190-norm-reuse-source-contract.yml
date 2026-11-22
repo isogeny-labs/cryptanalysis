@@ -1,0 +1,36 @@
+name: CT190 optimized norm-point route source contract (no native workload)
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/ct190-norm-reuse-source-contract.yml'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/ct190_norm_reuse_source_audit.py'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/test_ct190_norm_reuse_source_audit.py'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/CT190_NORM_REUSE_PROVENANCE_PROTOCOL.md'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/ct172-replay/**'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/ct176_cold_process_collector.py'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/ct179_panel_adjudicator.py'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/ct189_native_physical_crossover_panel.py'
+      - 'experiments/chained-transfer-public-target/fixed-jacobian-chain-evaluator-01/src/lib.rs'
+      - 'experiments/chained-transfer-public-target/fixed-jacobian-chain-evaluator-02/derived/lib.rs'
+      - 'experiments/chained-transfer-public-target/evidence/fixed-chain-norm-point-native-01/literal-selected-vectors.json'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  static-source-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Audit exact original versus optimized source and 48 public counter fixtures
+        shell: bash
+        run: |
+          set -euo pipefail
+          root=experiments/chained-transfer-public-target/primitive-pricing-01
+          python3 -S -m py_compile "$root/ct190_norm_reuse_source_audit.py" "$root/test_ct190_norm_reuse_source_audit.py"
+          python3 -S -m unittest discover -s "$root" -p 'test_ct190_norm_reuse_source_audit.py' -v
+          python3 -O -S -m unittest discover -s "$root" -p 'test_ct190_norm_reuse_source_audit.py' -v
+          python3 -S "$root/ct190_norm_reuse_source_audit.py"
+          echo 'CT190 static source-only [pcc:unverified]; no compiled runtime, signed provenance or complete ECDLP timing'

@@ -1,0 +1,9 @@
+/workspace/cryptanalysis/tools/lean/AuditAxioms.lean:49:37: warning: `String.trim` has been deprecated: Use `String.trimAscii` instead
+
+Note: The updated constant has a different type:
+  String → String.Slice
+instead of
+  String → String
+ok    OriginalFullPrimeRecovery.actual_original_prime_recovery_witnesses  []
+ok    OriginalFullPrimeRecovery.recover_prime_summand  [propext, Classical.choice, Quot.sound]
+audited 2 theorems in [PrimeRecovery]; 0 failing, 0 trusted (native_decide)

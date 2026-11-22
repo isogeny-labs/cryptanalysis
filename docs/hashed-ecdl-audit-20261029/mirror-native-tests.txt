@@ -1,0 +1,56 @@
+    Updating crates.io index
+ Downloading crates ...
+  Downloaded libc v0.2.190
+   Compiling libc v0.2.190
+   Compiling getrandom v0.2.17
+   Compiling hashed-ecdl-tensor v0.1.0 (/workspace/cryptanalysis/bindings/rust/hashed-ecdl-tensor)
+    Finished `release` profile [optimized] target(s) in 13.13s
+     Running unittests src/lib.rs (/workspace/crypto/crates/hashed-ecdl-tensor/target/release/deps/hashed_ecdl_tensor-11962db036771e70)
+
+running 30 tests
+test arithmetic::tests::exact_small_primality_and_square_roots ... ok
+test contraction::deformation::tests::packet_entries_keep_creation_time_representatives ... ok
+test contraction::packing::tests::conditional_expectations_do_not_assume_disjoint_ports ... ok
+test arithmetic::tests::limits_do_not_turn_unknown_primes_into_true_or_false ... ok
+test contraction::deformation::tests::integral_kernel_and_geometric_mode_series_match ... ok
+test arithmetic::tests::aks_cyclic_identity_and_large_prime_path ... ok
+test contraction::recursive::coupled_controls::both_taper_levels_match_direct_counts_for_crossing_and_local_ports ... ok
+test contraction::recursive::tests::tapered_hermite_recovers_the_constant_without_rounding ... ok
+test contraction::recursive::tests::weighted_enumeration_has_no_missing_or_repeated_monomials ... ok
+test contraction::tests::counts_and_prefix_witnesses_match_truth_tables ... ok
+test contraction::tests::exact_sampling_uses_counts_and_preserves_auxiliary_multiplicity ... ok
+test contraction::tests::functional_leaf_count_equals_complete_edge_enumeration ... ok
+test contraction::tests::sampling_respects_pins_empty_languages_and_failure_boundaries ... ok
+test curve::tests::prime_order_certificate_and_point_encoding ... ok
+test contraction::recursive::tests::forced_small_packet_recursion_matches_independent_direct_contraction ... ok
+test encoding::tests::hash_membership_and_cofactor_clear_are_coordinate_predicates ... ok
+test encoding::tests::modular_words_are_canonical_and_invalid_inputs_have_no_witness ... ok
+test encoding::tests::fourier_products_match_independent_integer_products_and_size_bounds ... ok
+test encoding::tests::ripple_arithmetic_and_shared_word_copies ... ok
+test network::tests::incomplete_graphs_and_duplicate_interfaces_are_rejected ... ok
+test network::tests::parallel_edges_pins_and_isolated_scalars ... ok
+test contraction::recursive::coupled_controls::coupled_nested_contraction_preserves_old_packet_creation_precision ... ok
+test reduction::tests::exhausted_tensor_work_is_unknown_and_identity_has_an_exact_certificate ... ok
+test reduction::tests::inverse_hash_enumeration_matches_independent_subgroup_scan ... ok
+test encoding::tests::point_network_handles_every_pair_and_rejects_counterfeit_outputs ... ok
+test ring::tests::creation_precision_lifts_are_not_silently_ring_homomorphisms ... ok
+test ring::tests::units_and_interpolation_over_nonfields ... ok
+test contraction::recursive::coupled_controls::coupled_packets_match_direct_counts_with_parallel_ports_and_quadratic_modes ... ok
+test reduction::tests::cofactor_tensor_projection_finds_only_subgroup_points has been running for over 60 seconds
+test reduction::tests::tensor_relation_pipeline_recovers_and_replays_without_scalar_leakage has been running for over 60 seconds
+test reduction::tests::cofactor_tensor_projection_finds_only_subgroup_points ... ok
+test reduction::tests::tensor_relation_pipeline_recovers_and_replays_without_scalar_leakage ... ok
+
+test result: ok. 30 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 263.07s
+
+     Running unittests src/bin/hashed-ecdl.rs (/workspace/crypto/crates/hashed-ecdl-tensor/target/release/deps/hashed_ecdl-1adba597a2b08e12)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests hashed_ecdl_tensor
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s

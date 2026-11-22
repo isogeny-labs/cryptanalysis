@@ -1,0 +1,72 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-14T16:19:44Z",
+ "id": "PCC-20261114-ee232d",
+ "kind": "statement",
+ "producer": {
+  "commit": "cf9ca8f5eee66745848fae2673f655561b1de90f",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/norm-arithmetic-reused-vectors-01/actual-vector-projection.bin.custody.json",
+    "sha256": "fd78fe3a1615fd8a7d692e08bed008d85972f38cfde2dbe099f984c8f0c1cdbf"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/norm-arithmetic-reused-vectors-01/actual-vector-projection.rs",
+    "sha256": "de5f7db95644bcc42eb677248913ec69526702a166b4338b31463f43f6cd74c7"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/norm-arithmetic-reused-vectors-01/reused-render-data.json.custody.json",
+    "sha256": "1ff797ae8a7ef995083cc775f93a38314aa7bfa0f8efebe9b839d0f74f782ddf"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/norm-arithmetic-reused-vectors-01/scope.json",
+    "sha256": "387c3c85628014ea3200508ebb87d6c778233d74563db2656fd72542364aceaa"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/norm-arithmetic-reused-vectors-01/vector-compile.exit",
+    "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/norm-arithmetic-reused-vectors-01/vector-compile.txt",
+    "sha256": "cca764e88f42530f497df8dee4ce04701edcf0c590883a96bd7ef76f3da545cc"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/norm-arithmetic-reused-vectors-01/vector-native.exit",
+    "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/norm-arithmetic-reused-vectors-01/vector-native.txt",
+    "sha256": "7467a33e98d6efb43640f761747f4eeb5df22cf694f17d5517d78a0757fd26bb"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Native reused-context rendering projection build0/native0 retains all classified unit rows and checks event conservation including excluded API/aux/encoding/moduli. Fixed60-case transfer phase q223 source mul events baseline16792793/direct91064595; atomic inv97858/24422. Arm construction mul347475059/263218246 andinv259813/184046; common admission/output validation/fullinverse costs are separate and retained. This is an unpriced source-vector tradeoff, not calibrated cost, timing/ECDLP advantage or complete cold comparison. Original full cold comparator remains rejected; whole outputs pending genuine17. Unsigned."
+}

@@ -56,3 +56,17 @@ An earlier development run without `serde_json` arbitrary precision failed
 before index construction. The first runner overwrote its stderr files when
 rerun, so the [failure note](development_failure.json) is retrospective and
 is not a raw receipt. It is excluded from the table above.
+
+
+
+
+
+
+The PR includes the three frozen parent inputs used by that runner:
+`../adaptive_all_orientations_20261004/all83_ordinary_manifest.json`,
+`../adaptive_all_orientations_20261004/inputs/n83_onb_poly_bridge.json`, and
+`../adaptive_all_orientations_20261004/inputs/n83_x_representatives.bin`.
+The captured build also depends on the sibling Rust checkout at
+`/Volumes/SSD990/crypto`; its source tree hash is recorded in the protocol.
+
+

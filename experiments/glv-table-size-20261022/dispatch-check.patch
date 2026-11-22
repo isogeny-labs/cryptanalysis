@@ -1,0 +1,14 @@
+--- curve.3ce4c29.c	2026-10-22 06:49:34.113646304 +0000
++++ curve.dispatch.c	2026-10-22 06:52:58.432927513 +0000
+@@ -954,6 +954,11 @@
+     }
+     if (g->order && !ca_check_members(g, base, target, g->order, "glv rho"))
+         return CA_ERR_NOT_FOUND;
++#ifdef CA_J0_RHO_COVARIANT_WALK
++    if (mode == CA_CURVE_STARTUP_GENERIC && g->kind == CA_GROUP_EC &&
++        g->endo_kind == CA_CURVE_ENDO_J0)
++        return glv_covariant_rho_solve(g, base, target, seed, x, st);
++#endif
+     if (g->kind == CA_GROUP_EC && g->endo_kind != 0)
+         return glv_rho_solve(g, base, target, seed, x, st,
+                              mode != CA_CURVE_STARTUP_GENERIC,

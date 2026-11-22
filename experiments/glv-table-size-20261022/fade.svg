@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="470" font-family="sans-serif" font-size="12">
+<rect width="980" height="470" fill="white"/>
+<text x="10" y="22" font-size="15" font-weight="bold">Why the cycle escape fades with size: the multiplier table grows from 8 to 32</text>
+<text x="10" y="42" fill="#444">30 curves x 40 targets per family and size, same curves and targets in every build; main 3ce4c29 + v2-curve.patch walks, traced</text>
+<line x1="60" x2="460" y1="360.0" y2="360.0" stroke="#e3e3e3"/><text x="54" y="364.0" text-anchor="end">0.1</text>
+<line x1="60" x2="460" y1="306.1" y2="306.1" stroke="#e3e3e3"/><text x="54" y="310.1" text-anchor="end">0.3</text>
+<line x1="60" x2="460" y1="247.0" y2="247.0" stroke="#e3e3e3"/><text x="54" y="251.0" text-anchor="end">1</text>
+<line x1="60" x2="460" y1="193.0" y2="193.0" stroke="#e3e3e3"/><text x="54" y="197.0" text-anchor="end">3</text>
+<line x1="60" x2="460" y1="133.9" y2="133.9" stroke="#e3e3e3"/><text x="54" y="137.9" text-anchor="end">10</text>
+<line x1="60" x2="460" y1="80.0" y2="80.0" stroke="#e3e3e3"/><text x="54" y="84.0" text-anchor="end">30</text>
+<text x="15" y="220.0" transform="rotate(-90 15 220.0)" text-anchor="middle">cycle entries per 10^4 steps</text>
+<text x="90.0" y="376" text-anchor="middle">24</text><text x="90.0" y="390" text-anchor="middle" fill="#666" font-size="10">r=8</text>
+<text x="180.0" y="376" text-anchor="middle">28</text><text x="180.0" y="390" text-anchor="middle" fill="#666" font-size="10">r=8</text>
+<text x="270.0" y="376" text-anchor="middle">32</text><text x="270.0" y="390" text-anchor="middle" fill="#666" font-size="10">r=8/16</text>
+<text x="360.0" y="376" text-anchor="middle">36</text><text x="360.0" y="390" text-anchor="middle" fill="#666" font-size="10">r=32</text>
+<text x="450.0" y="376" text-anchor="middle">40</text><text x="450.0" y="390" text-anchor="middle" fill="#666" font-size="10">r=32</text>
+<text x="260.0" y="408" text-anchor="middle">subgroup bits (r = multiplier-table size chosen by main)</text>
+<polyline fill="none" stroke="#2a6f97" stroke-width="2" stroke-dasharray="" points="90.0,141.5 180.0,143.1 270.0,174.0 360.0,312.0 450.0,307.7"/>
+<circle cx="90.0" cy="141.5" r="3" fill="#2a6f97"/>
+<circle cx="180.0" cy="143.1" r="3" fill="#2a6f97"/>
+<circle cx="270.0" cy="174.0" r="3" fill="#2a6f97"/>
+<circle cx="360.0" cy="312.0" r="3" fill="#2a6f97"/>
+<circle cx="450.0" cy="307.7" r="3" fill="#2a6f97"/>
+<polyline fill="none" stroke="#2a6f97" stroke-width="2" stroke-dasharray="5,4" points="90.0,285.0 180.0,298.8 270.0,294.9"/>
+<circle cx="90.0" cy="285.0" r="3" fill="#2a6f97"/>
+<circle cx="180.0" cy="298.8" r="3" fill="#2a6f97"/>
+<circle cx="270.0" cy="294.9" r="3" fill="#2a6f97"/>
+<polyline fill="none" stroke="#d1495b" stroke-width="2" stroke-dasharray="" points="90.0,163.4 180.0,170.7 270.0,181.2 360.0,352.9 450.0,345.9"/>
+<circle cx="90.0" cy="163.4" r="3" fill="#d1495b"/>
+<circle cx="180.0" cy="170.7" r="3" fill="#d1495b"/>
+<circle cx="270.0" cy="181.2" r="3" fill="#d1495b"/>
+<circle cx="360.0" cy="352.9" r="3" fill="#d1495b"/>
+<circle cx="450.0" cy="345.9" r="3" fill="#d1495b"/>
+<polyline fill="none" stroke="#d1495b" stroke-width="2" stroke-dasharray="5,4" points="90.0,311.9 180.0,331.5 270.0,333.0"/>
+<circle cx="90.0" cy="311.9" r="3" fill="#d1495b"/>
+<circle cx="180.0" cy="331.5" r="3" fill="#d1495b"/>
+<circle cx="270.0" cy="333.0" r="3" fill="#d1495b"/>
+<text x="60" y="68" font-weight="bold">A. Main's walk without escape: fruitless-cycle entries</text>
+<line x1="560" x2="960" y1="360.0" y2="360.0" stroke="#e3e3e3"/><text x="554" y="364.0" text-anchor="end">0.50</text>
+<line x1="560" x2="960" y1="290.0" y2="290.0" stroke="#e3e3e3"/><text x="554" y="294.0" text-anchor="end">0.75</text>
+<line x1="560" x2="960" y1="220.0" y2="220.0" stroke="#999"/><text x="554" y="224.0" text-anchor="end">1.00</text>
+<line x1="560" x2="960" y1="150.0" y2="150.0" stroke="#e3e3e3"/><text x="554" y="154.0" text-anchor="end">1.25</text>
+<line x1="560" x2="960" y1="80.0" y2="80.0" stroke="#e3e3e3"/><text x="554" y="84.0" text-anchor="end">1.50</text>
+<text x="590.0" y="376" text-anchor="middle">24</text>
+<text x="680.0" y="376" text-anchor="middle">28</text>
+<text x="770.0" y="376" text-anchor="middle">32</text>
+<text x="860.0" y="376" text-anchor="middle">36</text>
+<text x="950.0" y="376" text-anchor="middle">40</text>
+<text x="760.0" y="408" text-anchor="middle">subgroup bits</text>
+<line x1="586.0" x2="586.0" y1="341.5" y2="319.0" stroke="#2a6f97"/>
+<line x1="676.0" x2="676.0" y1="336.2" y2="323.4" stroke="#2a6f97"/>
+<line x1="766.0" x2="766.0" y1="297.0" y2="267.5" stroke="#2a6f97"/>
+<line x1="856.0" x2="856.0" y1="238.9" y2="224.4" stroke="#2a6f97"/>
+<line x1="946.0" x2="946.0" y1="229.7" y2="214.1" stroke="#2a6f97"/>
+<polyline fill="none" stroke="#2a6f97" stroke-width="2" stroke-dasharray="" points="586.0,330.3 676.0,329.8 766.0,282.8 856.0,231.8 946.0,222.1"/>
+<circle cx="586.0" cy="330.3" r="3" fill="#2a6f97"/>
+<circle cx="676.0" cy="329.8" r="3" fill="#2a6f97"/>
+<circle cx="766.0" cy="282.8" r="3" fill="#2a6f97"/>
+<circle cx="856.0" cy="231.8" r="3" fill="#2a6f97"/>
+<circle cx="946.0" cy="222.1" r="3" fill="#2a6f97"/>
+<line x1="586.0" x2="586.0" y1="151.0" y2="130.6" stroke="#2a6f97"/>
+<line x1="676.0" x2="676.0" y1="227.6" y2="205.9" stroke="#2a6f97"/>
+<line x1="766.0" x2="766.0" y1="248.0" y2="222.8" stroke="#2a6f97"/>
+<polyline fill="none" stroke="#2a6f97" stroke-width="2" stroke-dasharray="5,4" points="586.0,141.0 676.0,217.2 766.0,236.1"/>
+<circle cx="586.0" cy="141.0" r="3" fill="#2a6f97"/>
+<circle cx="676.0" cy="217.2" r="3" fill="#2a6f97"/>
+<circle cx="766.0" cy="236.1" r="3" fill="#2a6f97"/>
+<line x1="594.0" x2="594.0" y1="293.7" y2="276.2" stroke="#d1495b"/>
+<line x1="684.0" x2="684.0" y1="292.1" y2="278.6" stroke="#d1495b"/>
+<line x1="774.0" x2="774.0" y1="282.3" y2="262.8" stroke="#d1495b"/>
+<line x1="864.0" x2="864.0" y1="235.7" y2="221.7" stroke="#d1495b"/>
+<line x1="954.0" x2="954.0" y1="226.2" y2="206.5" stroke="#d1495b"/>
+<polyline fill="none" stroke="#d1495b" stroke-width="2" stroke-dasharray="" points="594.0,285.0 684.0,285.4 774.0,272.8 864.0,229.0 954.0,216.9"/>
+<circle cx="594.0" cy="285.0" r="3" fill="#d1495b"/>
+<circle cx="684.0" cy="285.4" r="3" fill="#d1495b"/>
+<circle cx="774.0" cy="272.8" r="3" fill="#d1495b"/>
+<circle cx="864.0" cy="229.0" r="3" fill="#d1495b"/>
+<circle cx="954.0" cy="216.9" r="3" fill="#d1495b"/>
+<line x1="594.0" x2="594.0" y1="97.9" y2="75.1" stroke="#d1495b"/>
+<line x1="684.0" x2="684.0" y1="213.9" y2="195.4" stroke="#d1495b"/>
+<line x1="774.0" x2="774.0" y1="246.6" y2="227.4" stroke="#d1495b"/>
+<polyline fill="none" stroke="#d1495b" stroke-width="2" stroke-dasharray="5,4" points="594.0,87.0 684.0,205.0 774.0,237.5"/>
+<circle cx="594.0" cy="87.0" r="3" fill="#d1495b"/>
+<circle cx="684.0" cy="205.0" r="3" fill="#d1495b"/>
+<circle cx="774.0" cy="237.5" r="3" fill="#d1495b"/>
+<text x="560" y="68" font-weight="bold">B. Paired curve_solve operations, ratio (95% CI)</text>
+<line x1="10" x2="36" y1="448" y2="448" stroke="#2a6f97" stroke-width="2" stroke-dasharray=""/><text x="42" y="452">j = 1728</text>
+<line x1="106" x2="132" y1="448" y2="448" stroke="#d1495b" stroke-width="2" stroke-dasharray=""/><text x="138" y="452">j = 0</text>
+<line x1="181" x2="207" y1="448" y2="448" stroke="#555" stroke-width="2" stroke-dasharray=""/><text x="213" y="452">A: table chosen by main · B: escape / no escape</text>
+<line x1="550" x2="576" y1="448" y2="448" stroke="#555" stroke-width="2" stroke-dasharray="5,4"/><text x="582" y="452">A: table forced to 32 · B: table 32 / main (both with escape)</text>
+</svg>

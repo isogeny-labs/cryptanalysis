@@ -1,0 +1,25 @@
+{
+  "at": "2026-11-15T16:33:50.981116+00:00",
+  "source_head": "5408b9dba50bc06f53f7a9033f2733a1f90d8a87",
+  "source_sha256": "fc12eccebdaf8534a478d2a11c4b5e35c0b6274bd84ee3c35e31a3f207f4d907",
+  "whole_input_sha256": "af8da26bc4583e3042a57c5bac420f8fac59fe73252fba397653cd3f7e98f8cb",
+  "binary_sha256": "13c9f87415cc5082950b043dec7267557bd8a34d765869e9a7d90c1f1e7bf09c",
+  "actual_compile_command": [
+    "timeout",
+    "120",
+    "rustc",
+    "--edition",
+    "2021",
+    "-O",
+    "/workspace/scratch/ct103-character-summary-source-01/summary.rs",
+    "--extern",
+    "serde_json=/dev/shm/ct102-original-relation-rank-target-01/release/deps/libserde_json-0b8980775758992f.rlib",
+    "-L",
+    "dependency=/dev/shm/ct102-original-relation-rank-target-01/release/deps",
+    "-o",
+    "/workspace/scratch/ct103-character-summary-native-01/actual-summary.bin"
+  ],
+  "reporting_only": true,
+  "all60_call_results_consumed": true,
+  "scope": "unsigned derived reporting from complete already accepted auditor; no new solver or mathematical experiment"
+}

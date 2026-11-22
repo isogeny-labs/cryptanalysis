@@ -1,0 +1,47 @@
+{
+ "prior": {
+  "source": "volcano-ic/rho-arm-20261014/results/arms.jsonl (tau6 rows, run 38520305068)",
+  "cold_cpu_s": [
+   29.15546892699997,
+   38.55680784199997,
+   41.05519806599996,
+   44.296693366000184,
+   39.41518875199991,
+   35.04018640900013,
+   28.832755523000014,
+   56.099261225000376,
+   51.76225950999988,
+   42.37941533500016
+  ]
+ },
+ "model": {
+  "sigma_log_per_process": 0.1,
+  "sims": 400,
+  "bootstrap_draws": 2000
+ },
+ "lower_bound_above_1_rate": {
+  "n8_delta1.00": 0.07,
+  "n8_delta1.05": 0.2325,
+  "n8_delta1.10": 0.5625,
+  "n8_delta1.20": 0.935,
+  "n8_delta1.50": 1.0,
+  "n8_delta2.00": 1.0,
+  "n12_delta1.00": 0.0325,
+  "n12_delta1.05": 0.2775,
+  "n12_delta1.10": 0.68,
+  "n12_delta1.20": 0.99,
+  "n12_delta1.50": 1.0,
+  "n12_delta2.00": 1.0,
+  "n16_delta1.00": 0.035,
+  "n16_delta1.05": 0.3125,
+  "n16_delta1.10": 0.7925,
+  "n16_delta1.20": 1.0,
+  "n16_delta1.50": 1.0,
+  "n16_delta2.00": 1.0
+ },
+ "min_delta": 1.2,
+ "chosen_points": 16,
+ "power_at_min_delta": 1.0,
+ "rejection_rate_at_no_effect": 0.035,
+ "note": "the expected effect (local diagnostics: per-call solve 14 us native against 7.4 ms archived Sage) is far above min_delta; min_delta 1.20 is the smallest effect the protocol is sized to detect"
+}

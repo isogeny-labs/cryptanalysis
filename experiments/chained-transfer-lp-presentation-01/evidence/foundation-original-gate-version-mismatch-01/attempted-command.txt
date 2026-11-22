@@ -1,0 +1,2 @@
+PATH=/home/agent/.elan/bin:$PATH ELAN_TOOLCHAIN=leanprover/lean4:v4.35.0 timeout120 bash tools/lean/proof-gate.sh --out RAW/original-Lean435-gate experiments/chained-transfer-lp-presentation-01/lean/LPProjection.lean
+The Consumer original gate is Lean4.34-specific; next command uses unchanged Root gate for4.35, not a source or gate edit.

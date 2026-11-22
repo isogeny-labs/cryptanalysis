@@ -1,0 +1,15 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-17T03:32:30Z",
+ "id": "PCC-20261117-15e79e",
+ "kind": "statement",
+ "producer": {
+  "commit": "258901816f0737fde85046ffa38809db51017cbd",
+  "model": "",
+  "session": "ic-canonical-coeff-20261116"
+ },
+ "proofs": [],
+ "schema": "pcc.claim/v1",
+ "scope": "Preparation interruption provenance only; no performance conclusion",
+ "statement": "Preparation job20261117-032103-5b3e was interrupted by producer termination after an incorrect suspicion about omitted CFLAGS. Its partial receipt records matched compiler/environment pass, including CFLAGS=-g0, and no final preparation status. Retained job status reports exit1 after50.2s with2outputs; sandbox terminal137 after termination. No native timing or fresh510..539inputs were produced. Amendment002 retains this censored attempt and allows one same-cap interruption-recovery preparation with explicit flag and distinct output."
+}

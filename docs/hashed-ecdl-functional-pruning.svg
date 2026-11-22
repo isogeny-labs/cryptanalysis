@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="570" viewBox="0 0 980 570">
+  <rect width="980" height="570" fill="#f8fafc"/>
+  <g font-family="sans-serif" fill="#162436">
+    <text x="38" y="44" font-size="25" font-weight="bold">Exact rejection pruning in functional leaves</text>
+    <text x="38" y="73" font-size="16">T-873 · fixed software fixture · correctness and visited inputs, not runtime</text>
+    <rect x="38" y="102" width="240" height="82" rx="10" fill="#dbeafe" stroke="#2563eb"/>
+    <text x="58" y="134" font-size="18" font-weight="bold">Free inputs: a, b0...b3</text>
+    <text x="58" y="161" font-size="16">a changes slowest</text>
+    <path d="M278 143H334" stroke="#334155" stroke-width="2"/>
+    <path d="M326 137L334 143L326 149" fill="none" stroke="#334155" stroke-width="2"/>
+    <rect x="335" y="102" width="260" height="82" rx="10" fill="#e0e7ff" stroke="#6366f1"/>
+    <text x="355" y="134" font-size="18" font-weight="bold">z = NOT(NOT(a))</text>
+    <text x="355" y="161" font-size="16">z depends only on a</text>
+    <path d="M595 143H651" stroke="#334155" stroke-width="2"/>
+    <path d="M643 137L651 143L643 149" fill="none" stroke="#334155" stroke-width="2"/>
+    <rect x="652" y="102" width="290" height="82" rx="10" fill="#fee2e2" stroke="#dc2626"/>
+    <text x="672" y="134" font-size="18" font-weight="bold">Require z = 1</text>
+    <text x="672" y="161" font-size="16">a = 0 rejects all 16 b choices</text>
+    <text x="38" y="222" font-size="18" font-weight="bold">Canonical witness search: same returned word [1, 0, 0, 0, 0]</text>
+    <text x="38" y="264" font-size="17">Exhaustive control</text>
+    <rect x="252" y="243" width="510" height="30" fill="#94a3b8"/>
+    <text x="779" y="265" font-size="18">17 visited</text>
+    <text x="38" y="311" font-size="17">Dependency pruning</text>
+    <rect x="252" y="290" width="60" height="30" fill="#2563eb"/>
+    <text x="330" y="312" font-size="18">2 visited · 1 rejected block skipped</text>
+    <text x="252" y="350" font-size="15">Unit: complete free-input evaluations; one deterministic regression fixture</text>
+    <rect x="38" y="379" width="904" height="101" rx="10" fill="#dcfce7" stroke="#15803d"/>
+    <text x="58" y="408" font-size="18" font-weight="bold">Exact counts preserve successful multiplicity</text>
+    <text x="58" y="437" font-size="17">Counting still accepts all 16 successful inputs: result = 16, visited = 17.</text>
+    <text x="58" y="462" font-size="16">Derived pins keep their dependencies. Every accepted witness passes full graph evaluation.</text>
+    <text x="38" y="518" font-size="15">Source: contraction.rs tests dependency_pruning_skips_only_rejected_input_blocks</text>
+    <text x="38" y="543" font-size="15">No timing, uncertainty estimate, challenge recovery, or general ECDLP speedup is established.</text>
+  </g>
+</svg>

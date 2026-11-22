@@ -1,0 +1,28 @@
+{
+  "kind": "unit correctness/refusal controls; simulated gate outputs are not native Lean proof evidence",
+  "command": [
+    "python",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "/workspace/known-label-pair-index-20261029/docs/known-label-pair-index-20261029",
+    "-p",
+    "test_pair_index.py",
+    "-v"
+  ],
+  "recorded_at_utc": "2026-10-29T14:59:59.530523+00:00",
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": "test_actual_seven_root_coset_is_filtered_to_curve_points (test_pair_index.PairIndexTests.test_actual_seven_root_coset_is_filtered_to_curve_points) ... ok\ntest_all_pair_factors_and_exact_coverage (test_pair_index.PairIndexTests.test_all_pair_factors_and_exact_coverage) ... ok\ntest_batch_localization_matches_complete_point_control (test_pair_index.PairIndexTests.test_batch_localization_matches_complete_point_control) ... ok\ntest_full_witness_graph_and_label_replay (test_pair_index.PairIndexTests.test_full_witness_graph_and_label_replay) ... ok\ntest_invalid_or_unsupported_index_inputs_refused (test_pair_index.PairIndexTests.test_invalid_or_unsupported_index_inputs_refused) ... ok\ntest_symbolic_cleared_addition_identity (test_pair_index.PairIndexTests.test_symbolic_cleared_addition_identity) ... ok\ntest_balanced_even_cycle_needs_anchor (test_pair_index.SignedCycleTests.test_balanced_even_cycle_needs_anchor) ... ok\ntest_cycle_defect_is_dlp_certificate (test_pair_index.SignedCycleTests.test_cycle_defect_is_dlp_certificate) ... ok\ntest_difference_cycles_keep_root_free (test_pair_index.SignedCycleTests.test_difference_cycles_keep_root_free) ... ok\ntest_unbalanced_even_cycle_recovers_without_anchor (test_pair_index.SignedCycleTests.test_unbalanced_even_cycle_recovers_without_anchor) ... ok\n\n----------------------------------------------------------------------\nRan 10 tests in 0.064s\n\nOK\n",
+  "lean_available": false,
+  "lake_available": false,
+  "code_sha256": {
+    "docs/known-label-pair-index-20261029/pair_index.py": "36045afc2b0dbebccbad87fb53c7a43ec7f198b78627b3daee71d4cca0b618eb",
+    "docs/known-label-pair-index-20261029/signed_labels.py": "dad9c3ab57a25c7c567c53764dc2f334262a65a2efe60aac6f17172e916f3f2c",
+    "docs/known-label-pair-index-20261029/test_pair_index.py": "4785df2cecfa601e633301d006b731edbc573a98a3d386f14cc965e48bec7986",
+    "docs/known-label-pair-index-20261029/PairIndex.lean": "68dd10106b5499ad8b3fba35b95980a5ed1e6c46c0433047e0d5034e90c135c8",
+    "tools/lean/current-corpus-gate.py": "ec1169f565821f29b67b9c2d15ead2ac35e590e6add2a62c2cbc75531e740560",
+    "tools/lean/test_current_corpus_gate.py": "6bbe1977ac1b6b64661581285f35970d9301101261e942ee956c2484f397d3ba"
+  }
+}

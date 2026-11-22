@@ -1,0 +1,14 @@
+digraph evidence {
+graph [rankdir=TB, bgcolor="white", pad="0.25"];
+node [shape=box, style="rounded,filled", fillcolor="#eff6ff", color="#155e75", fontname="DejaVu Sans", fontsize=12, margin="0.18"];
+edge [fontname="DejaVu Sans", fontsize=10, color="#475569"];
+n0 [label="83,047 prime cells\np < 10,000,000; p = 11 mod 24"];
+n1 [label="Exact norm/denominator gate"];
+n2 [label="83,036 certified gate cells"];
+n3 [label="11 excluded cells:\nrequires direct source-fiber classification"];
+n4 [label="New exception p = 1,237,499:\n2 rational C points, zero E roots"];
+n0 -> n1 [label="scope condition / recorded check", style=solid];
+n1 -> n2 [label="scope condition / recorded check", style=solid];
+n1 -> n3 [label="scope condition / recorded check", style=solid];
+n3 -> n4 [label="scope condition / recorded check", style=dashed];
+}

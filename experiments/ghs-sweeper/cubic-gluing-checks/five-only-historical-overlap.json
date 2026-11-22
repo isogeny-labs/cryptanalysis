@@ -1,0 +1,1156 @@
+{
+  "kind": "five-only-source-trace-historical-overlap/v1",
+  "revision": "dee8ef6e6806e0e49ee65ce1836fd45f5016eb6e",
+  "database": "runs/smoke.sqlite",
+  "database_sha256": "8290f8fbb6abc6c2e16e8ce30484c45d979c785e2098d4332f1e1478e621bd1c",
+  "sql": "SELECT spectral_model_id, model, source, raw_verified FROM candidates WHERE source IS NOT NULL ORDER BY spectral_model_id",
+  "predicate": "base_degree=3, relative_degree=3, exact source trace, raw_verified=true, source order independently verified",
+  "five_only_source_models": 252,
+  "source_trace_classes": 12,
+  "previously_recorded_trace_classes": 12,
+  "rows": [
+    {
+      "trace": -43,
+      "verified_historical_matches": 3,
+      "witness": {
+        "spectral_model_id": "0959e48f2acd797635834d7ce989d141d6a817b8debb9e89f11b835a1fb558f0",
+        "model": {
+          "A": 6,
+          "H": [
+            4,
+            1,
+            0,
+            1
+          ],
+          "H_encoding": 524,
+          "R": [
+            3,
+            2,
+            5
+          ],
+          "R_encoding": 339,
+          "base_degree": 3,
+          "base_embeddings": [
+            [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            [
+              0,
+              1,
+              14,
+              15,
+              23,
+              22,
+              25,
+              24
+            ],
+            [
+              0,
+              1,
+              252,
+              253,
+              302,
+              303,
+              466,
+              467
+            ]
+          ],
+          "c": 0,
+          "direct_counts_checked": true,
+          "elliptic_trace": -43,
+          "field_moduli": [
+            11,
+            67,
+            515
+          ],
+          "genus": 3,
+          "point_counts": [
+            9,
+            65,
+            642
+          ],
+          "relative_degree": 3,
+          "source_order": 556,
+          "spectral_model_id": "0959e48f2acd797635834d7ce989d141d6a817b8debb9e89f11b835a1fb558f0"
+        },
+        "source": {
+          "a": 0,
+          "absolute_degree": 9,
+          "b": 45,
+          "b_absolute_degree": 9,
+          "canonical_baseline": {
+            "augmented_frobenius_rank": 3,
+            "canonical_frobenius_lift_exists": true,
+            "coefficient_rank": 3,
+            "formal_canonical_ghs_genus": 4,
+            "scope": "Canonical split-pole formula only; formal genus does not certify descent; no cover or full gGHS exclusion"
+          },
+          "elliptic_trace": -43,
+          "equation": "y^2+x*y=x^3+a*x^2+b",
+          "explicit_map_to_target_verified": false,
+          "identification_batch_wall_seconds": 0.001107111,
+          "modulus": 515,
+          "order": 556,
+          "order_independently_verified": true,
+          "timing_scope": "source identification and independent order checks; not DLP transfer"
+        },
+        "raw_verified": true
+      }
+    },
+    {
+      "trace": -37,
+      "verified_historical_matches": 9,
+      "witness": {
+        "spectral_model_id": "12fb3d854ebe55621fafb3e5ca3c0b5c5d2b6ebe1bf15b96b5db803478622b00",
+        "model": {
+          "A": 2,
+          "H": [
+            6,
+            1,
+            0,
+            1
+          ],
+          "H_encoding": 526,
+          "R": [
+            3,
+            0,
+            4
+          ],
+          "R_encoding": 259,
+          "base_degree": 3,
+          "base_embeddings": [
+            [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            [
+              0,
+              1,
+              14,
+              15,
+              23,
+              22,
+              25,
+              24
+            ],
+            [
+              0,
+              1,
+              252,
+              253,
+              302,
+              303,
+              466,
+              467
+            ]
+          ],
+          "c": 1,
+          "direct_counts_checked": true,
+          "elliptic_trace": -37,
+          "field_moduli": [
+            11,
+            67,
+            515
+          ],
+          "genus": 3,
+          "point_counts": [
+            9,
+            65,
+            624
+          ],
+          "relative_degree": 3,
+          "source_order": 550,
+          "spectral_model_id": "12fb3d854ebe55621fafb3e5ca3c0b5c5d2b6ebe1bf15b96b5db803478622b00"
+        },
+        "source": {
+          "a": 1,
+          "absolute_degree": 9,
+          "b": 7,
+          "b_absolute_degree": 9,
+          "canonical_baseline": {
+            "augmented_frobenius_rank": 3,
+            "canonical_frobenius_lift_exists": false,
+            "coefficient_rank": 3,
+            "formal_canonical_ghs_genus": 4,
+            "scope": "Canonical split-pole formula only; formal genus does not certify descent; no cover or full gGHS exclusion"
+          },
+          "elliptic_trace": -37,
+          "equation": "y^2+x*y=x^3+a*x^2+b",
+          "explicit_map_to_target_verified": false,
+          "identification_batch_wall_seconds": 0.001107111,
+          "modulus": 515,
+          "order": 550,
+          "order_independently_verified": true,
+          "timing_scope": "source identification and independent order checks; not DLP transfer"
+        },
+        "raw_verified": true
+      }
+    },
+    {
+      "trace": -23,
+      "verified_historical_matches": 36,
+      "witness": {
+        "spectral_model_id": "151cadf23d0f96904ee69f37cd8546e74a3be51b86fcccd1aa12dba19d4282ba",
+        "model": {
+          "A": 7,
+          "H": [
+            2,
+            1,
+            0,
+            1
+          ],
+          "H_encoding": 522,
+          "R": [
+            7,
+            0,
+            3
+          ],
+          "R_encoding": 199,
+          "base_degree": 3,
+          "base_embeddings": [
+            [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            [
+              0,
+              1,
+              14,
+              15,
+              23,
+              22,
+              25,
+              24
+            ],
+            [
+              0,
+              1,
+              252,
+              253,
+              302,
+              303,
+              466,
+              467
+            ]
+          ],
+          "c": 0,
+          "direct_counts_checked": true,
+          "elliptic_trace": -23,
+          "field_moduli": [
+            11,
+            67,
+            515
+          ],
+          "genus": 3,
+          "point_counts": [
+            9,
+            65,
+            582
+          ],
+          "relative_degree": 3,
+          "source_order": 536,
+          "spectral_model_id": "151cadf23d0f96904ee69f37cd8546e74a3be51b86fcccd1aa12dba19d4282ba"
+        },
+        "source": {
+          "a": 0,
+          "absolute_degree": 9,
+          "b": 58,
+          "b_absolute_degree": 9,
+          "canonical_baseline": {
+            "augmented_frobenius_rank": 3,
+            "canonical_frobenius_lift_exists": true,
+            "coefficient_rank": 3,
+            "formal_canonical_ghs_genus": 4,
+            "scope": "Canonical split-pole formula only; formal genus does not certify descent; no cover or full gGHS exclusion"
+          },
+          "elliptic_trace": -23,
+          "equation": "y^2+x*y=x^3+a*x^2+b",
+          "explicit_map_to_target_verified": false,
+          "identification_batch_wall_seconds": 0.001107111,
+          "modulus": 515,
+          "order": 536,
+          "order_independently_verified": true,
+          "timing_scope": "source identification and independent order checks; not DLP transfer"
+        },
+        "raw_verified": true
+      }
+    },
+    {
+      "trace": -17,
+      "verified_historical_matches": 30,
+      "witness": {
+        "spectral_model_id": "0171213f69387af55c012d619ca884e94c7b4d58bd64181da90e74b1c73fdc1a",
+        "model": {
+          "A": 3,
+          "H": [
+            2,
+            1,
+            0,
+            1
+          ],
+          "H_encoding": 522,
+          "R": [
+            5,
+            0,
+            2
+          ],
+          "R_encoding": 133,
+          "base_degree": 3,
+          "base_embeddings": [
+            [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            [
+              0,
+              1,
+              14,
+              15,
+              23,
+              22,
+              25,
+              24
+            ],
+            [
+              0,
+              1,
+              252,
+              253,
+              302,
+              303,
+              466,
+              467
+            ]
+          ],
+          "c": 1,
+          "direct_counts_checked": true,
+          "elliptic_trace": -17,
+          "field_moduli": [
+            11,
+            67,
+            515
+          ],
+          "genus": 3,
+          "point_counts": [
+            9,
+            65,
+            564
+          ],
+          "relative_degree": 3,
+          "source_order": 530,
+          "spectral_model_id": "0171213f69387af55c012d619ca884e94c7b4d58bd64181da90e74b1c73fdc1a"
+        },
+        "source": {
+          "a": 1,
+          "absolute_degree": 9,
+          "b": 22,
+          "b_absolute_degree": 9,
+          "canonical_baseline": {
+            "augmented_frobenius_rank": 3,
+            "canonical_frobenius_lift_exists": true,
+            "coefficient_rank": 2,
+            "formal_canonical_ghs_genus": 3,
+            "scope": "Canonical split-pole formula only; formal genus does not certify descent; no cover or full gGHS exclusion"
+          },
+          "elliptic_trace": -17,
+          "equation": "y^2+x*y=x^3+a*x^2+b",
+          "explicit_map_to_target_verified": false,
+          "identification_batch_wall_seconds": 0.001107111,
+          "modulus": 515,
+          "order": 530,
+          "order_independently_verified": true,
+          "timing_scope": "source identification and independent order checks; not DLP transfer"
+        },
+        "raw_verified": true
+      }
+    },
+    {
+      "trace": -13,
+      "verified_historical_matches": 27,
+      "witness": {
+        "spectral_model_id": "027af2bda54c90ae71616d4f87a8f1acb14f0b3d9638431e0877d158fec1500f",
+        "model": {
+          "A": 7,
+          "H": [
+            2,
+            1,
+            0,
+            1
+          ],
+          "H_encoding": 522,
+          "R": [
+            1,
+            6,
+            6
+          ],
+          "R_encoding": 433,
+          "base_degree": 3,
+          "base_embeddings": [
+            [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            [
+              0,
+              1,
+              14,
+              15,
+              23,
+              22,
+              25,
+              24
+            ],
+            [
+              0,
+              1,
+              252,
+              253,
+              302,
+              303,
+              466,
+              467
+            ]
+          ],
+          "c": 1,
+          "direct_counts_checked": true,
+          "elliptic_trace": -13,
+          "field_moduli": [
+            11,
+            67,
+            515
+          ],
+          "genus": 3,
+          "point_counts": [
+            9,
+            65,
+            552
+          ],
+          "relative_degree": 3,
+          "source_order": 526,
+          "spectral_model_id": "027af2bda54c90ae71616d4f87a8f1acb14f0b3d9638431e0877d158fec1500f"
+        },
+        "source": {
+          "a": 1,
+          "absolute_degree": 9,
+          "b": 49,
+          "b_absolute_degree": 9,
+          "canonical_baseline": {
+            "augmented_frobenius_rank": 3,
+            "canonical_frobenius_lift_exists": false,
+            "coefficient_rank": 3,
+            "formal_canonical_ghs_genus": 4,
+            "scope": "Canonical split-pole formula only; formal genus does not certify descent; no cover or full gGHS exclusion"
+          },
+          "elliptic_trace": -13,
+          "equation": "y^2+x*y=x^3+a*x^2+b",
+          "explicit_map_to_target_verified": false,
+          "identification_batch_wall_seconds": 0.001107111,
+          "modulus": 515,
+          "order": 526,
+          "order_independently_verified": true,
+          "timing_scope": "source identification and independent order checks; not DLP transfer"
+        },
+        "raw_verified": true
+      }
+    },
+    {
+      "trace": -7,
+      "verified_historical_matches": 45,
+      "witness": {
+        "spectral_model_id": "05fdc864966d8be967fb8a52c2e4a77d7666185cde7fdaf6564e31b3f0499d49",
+        "model": {
+          "A": 7,
+          "H": [
+            4,
+            1,
+            0,
+            1
+          ],
+          "H_encoding": 524,
+          "R": [
+            7,
+            1,
+            7
+          ],
+          "R_encoding": 463,
+          "base_degree": 3,
+          "base_embeddings": [
+            [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            [
+              0,
+              1,
+              14,
+              15,
+              23,
+              22,
+              25,
+              24
+            ],
+            [
+              0,
+              1,
+              252,
+              253,
+              302,
+              303,
+              466,
+              467
+            ]
+          ],
+          "c": 0,
+          "direct_counts_checked": true,
+          "elliptic_trace": -7,
+          "field_moduli": [
+            11,
+            67,
+            515
+          ],
+          "genus": 3,
+          "point_counts": [
+            9,
+            65,
+            534
+          ],
+          "relative_degree": 3,
+          "source_order": 520,
+          "spectral_model_id": "05fdc864966d8be967fb8a52c2e4a77d7666185cde7fdaf6564e31b3f0499d49"
+        },
+        "source": {
+          "a": 0,
+          "absolute_degree": 9,
+          "b": 48,
+          "b_absolute_degree": 9,
+          "canonical_baseline": {
+            "augmented_frobenius_rank": 3,
+            "canonical_frobenius_lift_exists": true,
+            "coefficient_rank": 3,
+            "formal_canonical_ghs_genus": 4,
+            "scope": "Canonical split-pole formula only; formal genus does not certify descent; no cover or full gGHS exclusion"
+          },
+          "elliptic_trace": -7,
+          "equation": "y^2+x*y=x^3+a*x^2+b",
+          "explicit_map_to_target_verified": false,
+          "identification_batch_wall_seconds": 0.001107111,
+          "modulus": 515,
+          "order": 520,
+          "order_independently_verified": true,
+          "timing_scope": "source identification and independent order checks; not DLP transfer"
+        },
+        "raw_verified": true
+      }
+    },
+    {
+      "trace": 7,
+      "verified_historical_matches": 45,
+      "witness": {
+        "spectral_model_id": "0200c1e84bf933fec0d542b4eb18b1599b3e5f4d1bcd11bdf9eeee0120fc473b",
+        "model": {
+          "A": 5,
+          "H": [
+            4,
+            1,
+            0,
+            1
+          ],
+          "H_encoding": 524,
+          "R": [
+            7,
+            5,
+            4
+          ],
+          "R_encoding": 303,
+          "base_degree": 3,
+          "base_embeddings": [
+            [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            [
+              0,
+              1,
+              14,
+              15,
+              23,
+              22,
+              25,
+              24
+            ],
+            [
+              0,
+              1,
+              252,
+              253,
+              302,
+              303,
+              466,
+              467
+            ]
+          ],
+          "c": 1,
+          "direct_counts_checked": true,
+          "elliptic_trace": 7,
+          "field_moduli": [
+            11,
+            67,
+            515
+          ],
+          "genus": 3,
+          "point_counts": [
+            9,
+            65,
+            492
+          ],
+          "relative_degree": 3,
+          "source_order": 506,
+          "spectral_model_id": "0200c1e84bf933fec0d542b4eb18b1599b3e5f4d1bcd11bdf9eeee0120fc473b"
+        },
+        "source": {
+          "a": 1,
+          "absolute_degree": 9,
+          "b": 48,
+          "b_absolute_degree": 9,
+          "canonical_baseline": {
+            "augmented_frobenius_rank": 3,
+            "canonical_frobenius_lift_exists": false,
+            "coefficient_rank": 3,
+            "formal_canonical_ghs_genus": 4,
+            "scope": "Canonical split-pole formula only; formal genus does not certify descent; no cover or full gGHS exclusion"
+          },
+          "elliptic_trace": 7,
+          "equation": "y^2+x*y=x^3+a*x^2+b",
+          "explicit_map_to_target_verified": false,
+          "identification_batch_wall_seconds": 0.001107111,
+          "modulus": 515,
+          "order": 506,
+          "order_independently_verified": true,
+          "timing_scope": "source identification and independent order checks; not DLP transfer"
+        },
+        "raw_verified": true
+      }
+    },
+    {
+      "trace": 13,
+      "verified_historical_matches": 27,
+      "witness": {
+        "spectral_model_id": "06d11f6e1bdfa6e8cd981422a08f31549b62d7acb3eb9b6f52073432a63dce64",
+        "model": {
+          "A": 5,
+          "H": [
+            4,
+            1,
+            0,
+            1
+          ],
+          "H_encoding": 524,
+          "R": [
+            2,
+            7,
+            7
+          ],
+          "R_encoding": 506,
+          "base_degree": 3,
+          "base_embeddings": [
+            [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            [
+              0,
+              1,
+              14,
+              15,
+              23,
+              22,
+              25,
+              24
+            ],
+            [
+              0,
+              1,
+              252,
+              253,
+              302,
+              303,
+              466,
+              467
+            ]
+          ],
+          "c": 0,
+          "direct_counts_checked": true,
+          "elliptic_trace": 13,
+          "field_moduli": [
+            11,
+            67,
+            515
+          ],
+          "genus": 3,
+          "point_counts": [
+            9,
+            65,
+            474
+          ],
+          "relative_degree": 3,
+          "source_order": 500,
+          "spectral_model_id": "06d11f6e1bdfa6e8cd981422a08f31549b62d7acb3eb9b6f52073432a63dce64"
+        },
+        "source": {
+          "a": 0,
+          "absolute_degree": 9,
+          "b": 49,
+          "b_absolute_degree": 9,
+          "canonical_baseline": {
+            "augmented_frobenius_rank": 3,
+            "canonical_frobenius_lift_exists": true,
+            "coefficient_rank": 3,
+            "formal_canonical_ghs_genus": 4,
+            "scope": "Canonical split-pole formula only; formal genus does not certify descent; no cover or full gGHS exclusion"
+          },
+          "elliptic_trace": 13,
+          "equation": "y^2+x*y=x^3+a*x^2+b",
+          "explicit_map_to_target_verified": false,
+          "identification_batch_wall_seconds": 0.001107111,
+          "modulus": 515,
+          "order": 500,
+          "order_independently_verified": true,
+          "timing_scope": "source identification and independent order checks; not DLP transfer"
+        },
+        "raw_verified": true
+      }
+    },
+    {
+      "trace": 17,
+      "verified_historical_matches": 30,
+      "witness": {
+        "spectral_model_id": "028c519c2fc71b11219f14c7168ad011d49389f8e28c1f88a9e41a4e91828833",
+        "model": {
+          "A": 2,
+          "H": [
+            4,
+            1,
+            0,
+            1
+          ],
+          "H_encoding": 524,
+          "R": [
+            1,
+            5,
+            4
+          ],
+          "R_encoding": 297,
+          "base_degree": 3,
+          "base_embeddings": [
+            [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            [
+              0,
+              1,
+              14,
+              15,
+              23,
+              22,
+              25,
+              24
+            ],
+            [
+              0,
+              1,
+              252,
+              253,
+              302,
+              303,
+              466,
+              467
+            ]
+          ],
+          "c": 0,
+          "direct_counts_checked": true,
+          "elliptic_trace": 17,
+          "field_moduli": [
+            11,
+            67,
+            515
+          ],
+          "genus": 3,
+          "point_counts": [
+            9,
+            65,
+            462
+          ],
+          "relative_degree": 3,
+          "source_order": 496,
+          "spectral_model_id": "028c519c2fc71b11219f14c7168ad011d49389f8e28c1f88a9e41a4e91828833"
+        },
+        "source": {
+          "a": 0,
+          "absolute_degree": 9,
+          "b": 22,
+          "b_absolute_degree": 9,
+          "canonical_baseline": {
+            "augmented_frobenius_rank": 3,
+            "canonical_frobenius_lift_exists": true,
+            "coefficient_rank": 2,
+            "formal_canonical_ghs_genus": 3,
+            "scope": "Canonical split-pole formula only; formal genus does not certify descent; no cover or full gGHS exclusion"
+          },
+          "elliptic_trace": 17,
+          "equation": "y^2+x*y=x^3+a*x^2+b",
+          "explicit_map_to_target_verified": false,
+          "identification_batch_wall_seconds": 0.001107111,
+          "modulus": 515,
+          "order": 496,
+          "order_independently_verified": true,
+          "timing_scope": "source identification and independent order checks; not DLP transfer"
+        },
+        "raw_verified": true
+      }
+    },
+    {
+      "trace": 23,
+      "verified_historical_matches": 36,
+      "witness": {
+        "spectral_model_id": "045d92712036baa267de6895570f1af13c7d1c2aaa10c9b35b83f84ae836ff45",
+        "model": {
+          "A": 5,
+          "H": [
+            6,
+            1,
+            0,
+            1
+          ],
+          "H_encoding": 526,
+          "R": [
+            7,
+            4,
+            5
+          ],
+          "R_encoding": 359,
+          "base_degree": 3,
+          "base_embeddings": [
+            [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            [
+              0,
+              1,
+              14,
+              15,
+              23,
+              22,
+              25,
+              24
+            ],
+            [
+              0,
+              1,
+              252,
+              253,
+              302,
+              303,
+              466,
+              467
+            ]
+          ],
+          "c": 1,
+          "direct_counts_checked": true,
+          "elliptic_trace": 23,
+          "field_moduli": [
+            11,
+            67,
+            515
+          ],
+          "genus": 3,
+          "point_counts": [
+            9,
+            65,
+            444
+          ],
+          "relative_degree": 3,
+          "source_order": 490,
+          "spectral_model_id": "045d92712036baa267de6895570f1af13c7d1c2aaa10c9b35b83f84ae836ff45"
+        },
+        "source": {
+          "a": 1,
+          "absolute_degree": 9,
+          "b": 58,
+          "b_absolute_degree": 9,
+          "canonical_baseline": {
+            "augmented_frobenius_rank": 3,
+            "canonical_frobenius_lift_exists": false,
+            "coefficient_rank": 3,
+            "formal_canonical_ghs_genus": 4,
+            "scope": "Canonical split-pole formula only; formal genus does not certify descent; no cover or full gGHS exclusion"
+          },
+          "elliptic_trace": 23,
+          "equation": "y^2+x*y=x^3+a*x^2+b",
+          "explicit_map_to_target_verified": false,
+          "identification_batch_wall_seconds": 0.001107111,
+          "modulus": 515,
+          "order": 490,
+          "order_independently_verified": true,
+          "timing_scope": "source identification and independent order checks; not DLP transfer"
+        },
+        "raw_verified": true
+      }
+    },
+    {
+      "trace": 37,
+      "verified_historical_matches": 9,
+      "witness": {
+        "spectral_model_id": "3afe384f8e1990c7cdd326bb8f3a82da46315921cc297a760dfc4dad4433eda3",
+        "model": {
+          "A": 3,
+          "H": [
+            4,
+            1,
+            0,
+            1
+          ],
+          "H_encoding": 524,
+          "R": [
+            7,
+            2,
+            2
+          ],
+          "R_encoding": 151,
+          "base_degree": 3,
+          "base_embeddings": [
+            [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            [
+              0,
+              1,
+              14,
+              15,
+              23,
+              22,
+              25,
+              24
+            ],
+            [
+              0,
+              1,
+              252,
+              253,
+              302,
+              303,
+              466,
+              467
+            ]
+          ],
+          "c": 0,
+          "direct_counts_checked": true,
+          "elliptic_trace": 37,
+          "field_moduli": [
+            11,
+            67,
+            515
+          ],
+          "genus": 3,
+          "point_counts": [
+            9,
+            65,
+            402
+          ],
+          "relative_degree": 3,
+          "source_order": 476,
+          "spectral_model_id": "3afe384f8e1990c7cdd326bb8f3a82da46315921cc297a760dfc4dad4433eda3"
+        },
+        "source": {
+          "a": 0,
+          "absolute_degree": 9,
+          "b": 7,
+          "b_absolute_degree": 9,
+          "canonical_baseline": {
+            "augmented_frobenius_rank": 3,
+            "canonical_frobenius_lift_exists": true,
+            "coefficient_rank": 3,
+            "formal_canonical_ghs_genus": 4,
+            "scope": "Canonical split-pole formula only; formal genus does not certify descent; no cover or full gGHS exclusion"
+          },
+          "elliptic_trace": 37,
+          "equation": "y^2+x*y=x^3+a*x^2+b",
+          "explicit_map_to_target_verified": false,
+          "identification_batch_wall_seconds": 0.001107111,
+          "modulus": 515,
+          "order": 476,
+          "order_independently_verified": true,
+          "timing_scope": "source identification and independent order checks; not DLP transfer"
+        },
+        "raw_verified": true
+      }
+    },
+    {
+      "trace": 43,
+      "verified_historical_matches": 3,
+      "witness": {
+        "spectral_model_id": "08d381abd7ee7822f2270bf6f1c7275d25f95ff2125d3a88d2f7477b178a40be",
+        "model": {
+          "A": 4,
+          "H": [
+            2,
+            1,
+            0,
+            1
+          ],
+          "H_encoding": 522,
+          "R": [
+            7,
+            6,
+            3
+          ],
+          "R_encoding": 247,
+          "base_degree": 3,
+          "base_embeddings": [
+            [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            [
+              0,
+              1,
+              14,
+              15,
+              23,
+              22,
+              25,
+              24
+            ],
+            [
+              0,
+              1,
+              252,
+              253,
+              302,
+              303,
+              466,
+              467
+            ]
+          ],
+          "c": 1,
+          "direct_counts_checked": true,
+          "elliptic_trace": 43,
+          "field_moduli": [
+            11,
+            67,
+            515
+          ],
+          "genus": 3,
+          "point_counts": [
+            9,
+            65,
+            384
+          ],
+          "relative_degree": 3,
+          "source_order": 470,
+          "spectral_model_id": "08d381abd7ee7822f2270bf6f1c7275d25f95ff2125d3a88d2f7477b178a40be"
+        },
+        "source": {
+          "a": 1,
+          "absolute_degree": 9,
+          "b": 45,
+          "b_absolute_degree": 9,
+          "canonical_baseline": {
+            "augmented_frobenius_rank": 3,
+            "canonical_frobenius_lift_exists": false,
+            "coefficient_rank": 3,
+            "formal_canonical_ghs_genus": 4,
+            "scope": "Canonical split-pole formula only; formal genus does not certify descent; no cover or full gGHS exclusion"
+          },
+          "elliptic_trace": 43,
+          "equation": "y^2+x*y=x^3+a*x^2+b",
+          "explicit_map_to_target_verified": false,
+          "identification_batch_wall_seconds": 0.001107111,
+          "modulus": 515,
+          "order": 470,
+          "order_independently_verified": true,
+          "timing_scope": "source identification and independent order checks; not DLP transfer"
+        },
+        "raw_verified": true
+      }
+    }
+  ],
+  "explicit_historical_maps_verified": false,
+  "exact_b_model_identity_inferred": false,
+  "publication_priority_established": false
+}

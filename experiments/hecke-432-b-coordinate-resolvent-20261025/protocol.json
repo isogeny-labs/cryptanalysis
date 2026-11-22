@@ -1,0 +1,27 @@
+{
+  "curve_B": "432a1: y^2=x^3-16",
+  "curve_C": "27a1: y^2+y=x^3-7",
+  "fields": [
+    997,
+    1009
+  ],
+  "frozen_at_utc": "2026-10-26T02:13:28.837232+00:00",
+  "holdout_exponents": [
+    1701,
+    1850
+  ],
+  "monomials": "x_C^a*y_C^b*x_B^c; a>=0, b in {0,1}, 0<=c<=12, 2a+3b+2c<=D",
+  "source_qseries": "experiments/hecke-432-relative-resolvent-20261025/qseries_extended.json",
+  "source_sha256": "436396e4e401eb437ab3b2ae661f3099625702f19798361b97eea34f25f2b3fd",
+  "status": "FROZEN_BEFORE_B_COORDINATE_SCREEN",
+  "stop_rule": "Compute in increasing D; stop after both primes have a nonzero kernel and the selected vectors vanish on holdout.",
+  "training_exponents": "-D..1700 inclusive",
+  "weighted_degrees": [
+    24,
+    40,
+    56,
+    72,
+    88,
+    104
+  ]
+}

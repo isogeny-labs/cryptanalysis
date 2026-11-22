@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "kind": "crax-square-corpus-acceptance",
+  "checked_at_utc": "2026-10-23T19:00:16.767512+00:00",
+  "source_parent_commit": "b607029ef08aec56a417d82f535c08b02cdecc47",
+  "remote": "s3://setec-astronomy-artifacts/ic/v1/acceptance/crax-square-20261023T190016Z-835f72ec",
+  "objects": {
+    "training": {
+      "name": "evidence/crax-square/crax-square-20261023T190016Z-835f72ec/training.json",
+      "key": "ic/v1/acceptance/crax-square-20261023T190016Z-835f72ec/sha256/cc/cc1f5a94f0c51a67e15bb1d1a75f2d49f3791730a39aeb54e25d38cfb68aa26f",
+      "sha256": "cc1f5a94f0c51a67e15bb1d1a75f2d49f3791730a39aeb54e25d38cfb68aa26f",
+      "bytes": 94605,
+      "head_size_matches": true
+    },
+    "heldout": {
+      "name": "evidence/crax-square/crax-square-20261023T190016Z-835f72ec/heldout.json",
+      "key": "ic/v1/acceptance/crax-square-20261023T190016Z-835f72ec/sha256/e2/e24c4224f81382270cb2b269222275b2651cd40e178b85553feba8dac6743a13",
+      "sha256": "e24c4224f81382270cb2b269222275b2651cd40e178b85553feba8dac6743a13",
+      "bytes": 31629,
+      "head_size_matches": true
+    }
+  },
+  "checks": {
+    "fresh_cache_store_and_digest_import": {
+      "status": "verified",
+      "key": "914f6da1c78305bb2957ee104d826cfa",
+      "training_matches": 768,
+      "verification_matches": 256,
+      "lambda_sets_used": 3
+    },
+    "unverified_external_status": "candidate",
+    "negative_cases": {
+      "wrong_model": {
+        "rejected": true,
+        "error": "AES corpus schema, model, technique, or round count differs"
+      },
+      "missing_pair": {
+        "rejected": true,
+        "error": "Square recovery needs 1..=6 complete lambda sets"
+      },
+      "duplicate_plaintext": {
+        "rejected": true,
+        "error": "Square training plaintexts must be distinct"
+      },
+      "tampered_ciphertext": {
+        "rejected": true,
+        "error": "Square corpus has no last-round key candidate at byte 0"
+      },
+      "reused_training_as_verification": {
+        "rejected": true,
+        "error": "Square verification plaintexts must be distinct from training and each other"
+      }
+    },
+    "same_export_path_rejected_before_create": true
+  },
+  "cleanup": {
+    "training": {
+      "delete_exit": 0,
+      "head_after_delete_404": true
+    },
+    "heldout": {
+      "delete_exit": 0,
+      "head_after_delete_404": true
+    }
+  },
+  "cross_cli": {
+    "crypto_export_imported_by_crax": true,
+    "crax_export_imported_by_crypto": true,
+    "master_key_hex": "914f6da1c78305bb2957ee104d826cfa"
+  },
+  "source_sha256": {
+    "suite/src/cli/aes_attack.rs": "455bdf2c6e4ad066182b3a492e1bcf8412d964e1ae683647953e9e70b04bf787",
+    "suite/src/cryptanalysis/aes/square.rs": "8e1d25e41a4b7c2a592156076c27e7e0ec9af88ca07ad840518954cae46c9fe5"
+  },
+  "validation": {
+    "focused_square_test": "1 passed",
+    "release_crax_build": "passed",
+    "rustfmt_touched_files": "passed",
+    "git_diff_check": "passed",
+    "json_parse_check": "passed",
+    "full_release_suite": "18 suites: 3113 passed, 0 failed, 99 ignored"
+  }
+}

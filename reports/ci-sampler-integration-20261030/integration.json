@@ -1,0 +1,36 @@
+{
+  "observed_at": "2026-10-30T03:55:29.400755+00:00",
+  "original_pr_head": "b27ae2e5f525dc5a5a28d5fa935f67c9eeab965f",
+  "integrated_main": "910b7388d2bba67cd96969333e783285e9260acb",
+  "merge": "438963feba175251ca0bf1965d83cde85e184e55",
+  "conflicts": {
+    "contraction.rs": "Combined RandomSource/random_below imports with main Evaluation import. Git auto-merged non-conflicting production implementations. Both test modules append only to the identical base test module; preserved all original tests and both exact appended test sets, followed by rustfmt whitespace normalization.",
+    "session_log": "Preserved both complete ordered parent histories."
+  },
+  "source_sha256": {
+    "bindings/rust/hashed-ecdl-tensor/Cargo.lock": "f467bbd37fd31e3d4382cf69723446517f475333af59eaa6ba990d16a70bd873",
+    "bindings/rust/hashed-ecdl-tensor/Cargo.toml": "6a0d91f6a4cbf6431a0f9e2dac0fcd854ed275a71360f0efbcbcb17e1eb96fc1",
+    "bindings/rust/hashed-ecdl-tensor/src/arithmetic.rs": "48a26c332ba4a954bdb5eb8a9a956aa64485e3cb792f62c42082d2489514f4c7",
+    "bindings/rust/hashed-ecdl-tensor/src/bin/hashed-ecdl-panel.rs": "8ca8e51aad7463497fef7519f014a31e93bf54386f64ec7c9abe10602ff75b2b",
+    "bindings/rust/hashed-ecdl-tensor/src/bin/hashed-ecdl.rs": "68c067576d8018a961a67d699c1b4281604d938de6550a847a7898474156bb23",
+    "bindings/rust/hashed-ecdl-tensor/src/contraction/coupled_controls.rs": "34c69e7d1b7c1cd6561e6d75583051158c0902a009a7b525b9dae03860d654e8",
+    "bindings/rust/hashed-ecdl-tensor/src/contraction/deformation.rs": "e50c2226d11bf623994daaafc40fea5e012afd6be0091551b9fe6fd5dc555963",
+    "bindings/rust/hashed-ecdl-tensor/src/contraction/packing.rs": "127af2da46476506dc3d425b46ecf84eb3121c60dd4c70b282f9b6d9bce99880",
+    "bindings/rust/hashed-ecdl-tensor/src/contraction/recursive.rs": "830b3a372469c966be4789302d9760461253bcb2c55a565a5916c9114fa60da2",
+    "bindings/rust/hashed-ecdl-tensor/src/contraction.rs": "2fa18387b39484fa103df91d87fb006a13de21ea2feab4c6b45e3fbd9d34e3a0",
+    "bindings/rust/hashed-ecdl-tensor/src/curve.rs": "042f9f5a7d2b59cc26a2ed28ae370bc91daf7ef02ae32df69bb5831049a243e3",
+    "bindings/rust/hashed-ecdl-tensor/src/encoding.rs": "f701983587d30cc2cd1c3650784f3a39688d3eea1d1c9cb7b8c418f1c98236b8",
+    "bindings/rust/hashed-ecdl-tensor/src/lib.rs": "2c0c5e01398b67123c5c3baf8d5e6b8fd09c381eb0222b1b9ad01cccbf08b2d8",
+    "bindings/rust/hashed-ecdl-tensor/src/network.rs": "55accd8c18a9c94cdeee19568da1517b9fca7b0661044eef3b4dde8feaf388a0",
+    "bindings/rust/hashed-ecdl-tensor/src/primality.rs": "752f5b533f376a12b74210f8213cc9e08029a62dc5adbe0f147086a09b536776",
+    "bindings/rust/hashed-ecdl-tensor/src/reduction.rs": "43f1b2f5c7768d8bd5921698f8375cc3a4b85962395e21209fcc2b8347f47dba",
+    "bindings/rust/hashed-ecdl-tensor/src/ring.rs": "70180a474b596a751f0be46becde69cabf26a4148e2bee0bc42bd897d62062d0",
+    "bindings/rust/hashed-ecdl-tensor/src/serialization.rs": "b388798af39d58bef0e34b0d53a97be90f397fac49c8da200bd103e07738627c",
+    "bindings/rust/hashed-ecdl-tensor/tests/strict_json.rs": "beefce8fd1eb0a457683cbf4e1db89411a2c0c624633b32d01342e7b216498d5"
+  },
+  "validation": {
+    "cargo_fmt_all_check": "passed",
+    "fresh_native_correctness": "pending new published head; workflow1304 now lands on main and triggers before merge"
+  },
+  "scientific_scope": "No new trial, performance result, complexity theorem or security claim. Original source-bound audit reports/manifests preserved; this current-source manifest is separate."
+}

@@ -135,3 +135,36 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+
+import sys
+
+
+
+
+
+
+    archive = sys.argv[1:] == ["--archive"]
+    if sys.argv[1:] and not archive:
+        raise SystemExit("usage: validate.py [--archive]")
+        source = (HERE / ("reference.rs" if name == "reference" else "candidate.rs")
+                  if archive else Path(bound["source_path"]))
+        assert sha(source) == bound["source_sha256"]
+        if not archive:
+            assert sha(Path(bound["binary_path"])) == bound["binary_sha256"]
+
+        "diagnostic_binary_sha256": None if archive else sha(diagnostic_binary),
+    if archive:
+        recorded = load(HERE / "validated_result.json")
+        for key, value in result.items():
+            if key != "diagnostic_binary_sha256":
+                assert recorded[key] == value, key
+        print(json.dumps({"status": "verified_archival_receipts",
+                          "binary_hashes_checked": False,
+                          "source_hashes_checked": True,
+                          "raw_output_rows": len(rows)}, sort_keys=True))
+    else:
+        (HERE / "validated_result.json").write_text(json.dumps(result, sort_keys=True, indent=2) + "\n")
+        print(json.dumps(result, sort_keys=True))
+
+

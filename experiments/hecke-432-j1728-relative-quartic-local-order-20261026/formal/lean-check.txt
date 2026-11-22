@@ -1,0 +1,16 @@
+Command (working directory: experiments/hecke-two-sheet-small-order-20261023/formal):
+lake env lean /Volumes/SSD990/cryptanalysis/experiments/hecke-432-j1728-relative-quartic-local-order-20261026/formal/IdealSupport.lean
+Exit: 0
+'J1728QuarticIdealSupport.fixed_generator_in_transport' depends on axioms: [propext, Quot.sound]
+'J1728QuarticIdealSupport.fixed_generator_excludes_prime' depends on axioms: [propext, Quot.sound]
+'J1728QuarticIdealSupport.selected_primes_do_not_divide_96' depends on axioms: [propext]
+Command (same working directory):
+lake env lean /Volumes/SSD990/cryptanalysis/experiments/hecke-432-j1728-relative-quartic-local-order-20261026/formal/QuarticLocalTables.lean
+Exit: 0
+'J1728QuarticLocalTables.prime_7_index_table' does not depend on any axioms
+'J1728QuarticLocalTables.prime_11_index_table' does not depend on any axioms
+'J1728QuarticLocalTables.prime_23_index_table' does not depend on any axioms
+'J1728QuarticLocalTables.prime_31_index_table' does not depend on any axioms
+Toolchain: leanprover/lean4:v4.35.0-rc4
+Dependency: mathlib4 revision 021c46bdd042f67b538b9f9871d556a93713a9a9
+lean4checker --fresh: unavailable on this host

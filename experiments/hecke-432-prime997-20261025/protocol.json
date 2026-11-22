@@ -1,0 +1,17 @@
+{
+  "status": "FROZEN_BEFORE_SOURCE_AND_PROJECTION_EVALUATION",
+  "frozen_utc": "2026-10-25T23:38:31Z",
+  "prime": 997,
+  "selection_source": "experiments/hecke-432-prime937-20261025/screen_result.json",
+  "selection_rule": "smallest prime greater than 937 with p mod 12 = 1 and positive noncuspidal X0(432) count",
+  "precomputed_screen": {"X0_points": 1836, "rational_cusps": 36, "noncuspidal_points": 1800, "B_group_order": 1008},
+  "question": "Do nonempty E-projection fibers at a prime with a rational degree-three kernel saturate the three B lifts at the modular degree 24?",
+  "source_policy": "All 997 j-values; one representative per generic quadratic-twist pair; three j=0 sextic representatives and two j=1728 quartic representatives paired under quadratic twist; cyclic nonbacktracking 16- and 27-isogeny chains",
+  "source_gate": "Paired chain count must equal the independently screened Hecke point count 1836 minus 36 rational cusps",
+  "intermediate_map_sha256": "1f73ef2bc230820cd3605df20402dd5a32f5a5d31cc100218f5a219f2aeec5c2",
+  "projection_policy": "Evaluate every noncuspidal chain with intermediate j-invariants, Frobenius-fixed quarter-shifts, exact twist, and all rational preimages of the dual 3-isogeny",
+  "projection_gate": "One filtered coordinate point per shift, one Frobenius-fixed pair, one E output and exactly three rational B preimages per source; independent source, E/B equation, isogeny, and fiber audits",
+  "degree_bound": "Each B fiber contains at most 24 rational source points; an E fiber of size 72 with three rational B preimages forces all three B fibers to contain 24 points",
+  "primary_outputs": ["noncuspidal source count", "E-projection image count", "E-projection fiber-size histogram", "B-image count forced by the degree bound, if any"],
+  "interpretation_rule": "Report partial bounds when projected fibers do not all saturate 72; do not select an arbitrary B lift from a three-point coset"
+}

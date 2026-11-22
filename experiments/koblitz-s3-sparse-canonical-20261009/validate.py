@@ -95,3 +95,45 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+
+import statistics
+import sys
+
+
+
+
+
+    archive = sys.argv[1:] == ["--archive"]
+    if sys.argv[1:] and not archive:
+        raise SystemExit("usage: validate.py [--archive]")
+    assert summary["freeze_sha256"] == sha(HERE / "freeze_receipt.json")
+        source = HERE / ("reference.rs" if name == "reference" else "candidate.rs") if archive else Path(bound["source_path"])
+        assert sha(source) == bound["source_sha256"]
+        if not archive:
+            assert sha(Path(bound["binary_path"])) == bound["binary_sha256"]
+    assert summary["pairs"] == 5
+    orders = []
+    paired_ratios = []
+    for pair in range(1, 6):
+        pair_rows = sorted((row for row in rows if row["pair"] == pair),
+                           key=lambda row: row["position"])
+        assert len(pair_rows) == 2
+        orders.append([row["variant"] for row in pair_rows])
+        reference = next(row for row in pair_rows if row["variant"] == "reference")
+        sparse = next(row for row in pair_rows if row["variant"] == "sparse")
+        paired_ratios.append(reference["online_ms"] / sparse["online_ms"])
+    assert orders == summary["orders"]
+    assert paired_ratios == summary["paired_ratios"]
+    assert statistics.median(paired_ratios) == summary["median_paired_reference_over_sparse"]
+    for name in ("reference", "sparse"):
+        assert statistics.median(row["online_ms"] for row in rows if row["variant"] == name) == summary[f"{name}_online_median_ms"]
+    if archive:
+        assert replay["base_source_sha256"] == sha(HERE / "replay_base.json")
+        assert result == load(HERE / "validated_result.json")
+        print(json.dumps({"status": "verified_archival_result", "result": result}, sort_keys=True))
+    else:
+        (HERE / "validated_result.json").write_text(json.dumps(result, sort_keys=True, indent=2) + "\n")
+        print(json.dumps(result, sort_keys=True))
+
+

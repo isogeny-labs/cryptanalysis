@@ -1,0 +1,25 @@
+Debian clang version 19.1.7 (3+b1)
+1.5.1 (1f227d9 (release tag v1.5.1))
+include/cryptanalysis/ca_modarith.h: OK
+include/cryptanalysis/ca_types.h: OK
+Debian clang version 19.1.7 (3+b1)
+Target: x86_64-pc-linux-gnu
+Thread model: posix
+InstalledDir: /workspace/toolchains/clang19/usr/lib/llvm-19/bin
+1.5.1 (1f227d9 (release tag v1.5.1))
+ae164157f4776d6c15551eb0f673a30401d6a999c6e414c7484723803d045ed5  sources.sha256
+d3aa607f74cf5f938f3b35382ebc68b0fee9371460055f2ee2a3ce26df4e3f0f  harness.c
+33e9da4ef481a5994434aaea6e9d9e44b13c7ae966a9c72c4725bfe1a8ec79cf  Modarith.cry
+cc40c6854750bdc2d4ea00481d51a97a2b71eaa9997794ff288fe5019db7bc92  modarith.saw
+cd72e372389bfac1838da4413f7265b0172132721f00d4ef6685407489edf7ef  build/native.bc
+Loading file "modarith.saw"
+Stack trace:
+   (builtin) (at top level)
+Cryptol error:
+[error] at Modarith.cry:5:27--5:28 and Modarith.cry:5:36--5:37
+    The fixities of
+      • (Cryptol::<) (precedence 30, non-associative)
+      • (Cryptol::<) (precedence 30, non-associative)
+    are not compatible.
+    You may use explicit parentheses to disambiguate.
+

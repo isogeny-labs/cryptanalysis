@@ -1,0 +1,15 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-17T07:50:45Z",
+ "id": "PCC-20261117-60919d",
+ "kind": "measurement",
+ "producer": {
+  "commit": "539ae8a1166c8134f1d48b79c798317e3e7cccf4",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [],
+ "schema": "pcc.claim/v1",
+ "scope": "experiments/ic-packed-const-square-20261116",
+ "statement": "Clean native preparation 20261117-073403-af3a admitted exact clean source 539ae8a1166c8134f1d48b79c798317e3e7cccf4 and binary d238dda783d99df00c2b896186063b2f1c1e78f7e9ab59b28f965e829acfad29. Native correctness suites including packed constant squares, full table comparisons, walker and strict Clippy passed. Existing independent Python arithmetic replayed 2560 preparation states and two profiling answers plus512states. On the fixed N27 profiling input whole-guest instrumented Ir was112254788 ordinary and107276068 inverse versus compact baseline113478716 and108516630; initial guarded candidate116313411 and111331401 retained separately. These instruction counts are component profiling, not native wall-clock speedup or a breakthrough; all claims remain unsigned."
+}

@@ -1,0 +1,74 @@
+{
+  "schema": "producer-retained-log-validator/v1",
+  "status": "pass",
+  "overall_ci_status": "blocked",
+  "independent": false,
+  "scope": "Proof-metadata format correction only. Extract the reported selected binary-test summary and preserve the earlier compiler failure. No rerun or new source/execution binding is asserted.",
+  "format_repair_source": "b85bca1e27bde3b3b4d30f6037986c15f32d3a56",
+  "original_claim_id": "PCC-20261115-8d2645",
+  "original_producer": {
+    "commit": "9f467175fd5a0fe8fe6623a8715f9cb80e987305",
+    "model": "",
+    "session": "courtois-native-20261115"
+  },
+  "raw_data": [
+    {
+      "path": "native-binary-tests.txt",
+      "sha256": "dc1ac633b864f151ec95106d2c4adfac8754fe6c8be63e050ce49771c9e222ad"
+    },
+    {
+      "path": "build-before.txt",
+      "sha256": "395dba239bf9832a9e5e6ee6d25db5288531fe056de52d5efbd3c50a09fefb9a"
+    },
+    {
+      "path": "original-claim-8d2645.json",
+      "sha256": "3f26c04141cc196a9c4736e375bd19514268cf4f1ab900cf47f4088a21db4222"
+    },
+    {
+      "path": "experiments/prime-field-auxiliary-ic/random-vs-special/pcc-format-followup/base-reproduction.log",
+      "sha256": "53b0c38009e237b673182cdd829272d6dd956ecaf261ab0bb88d62cbbd4bcafa"
+    },
+    {
+      "path": "experiments/prime-field-auxiliary-ic/random-vs-special/pcc-format-followup/head-reproduction.log",
+      "sha256": "53b0c38009e237b673182cdd829272d6dd956ecaf261ab0bb88d62cbbd4bcafa"
+    },
+    {
+      "path": "experiments/prime-field-auxiliary-ic/random-vs-special/pcc-format-followup/base-head-comparison.json",
+      "sha256": "31de5c1ac90f875795d6a9764280eae05772a82caf3370430d42f97edf1d3e4e"
+    }
+  ],
+  "headline": [
+    {
+      "name": "reported-selected-binary-tests-passed",
+      "claimed": 5,
+      "recomputed": 5,
+      "rel_tol": 0
+    },
+    {
+      "name": "reported-tests-filtered-out",
+      "claimed": 59,
+      "recomputed": 59,
+      "rel_tol": 0
+    }
+  ],
+  "retained_outcomes": {
+    "native_binary_tests": {
+      "reported_summary": [
+        5,
+        0,
+        0,
+        0,
+        59
+      ],
+      "process_exit_status": null,
+      "command_and_compile_source_binding": "Not supplied by these text logs; no stronger claim is made."
+    },
+    "build_before": {
+      "reported_error": "E0425 missing getrandom::getrandom",
+      "process_exit_status": null
+    }
+  },
+  "original_plain_text_proofs_are_not_json_validators": true,
+  "claim_statement_scope_and_producer_unchanged": true,
+  "qualified_speedup": null
+}

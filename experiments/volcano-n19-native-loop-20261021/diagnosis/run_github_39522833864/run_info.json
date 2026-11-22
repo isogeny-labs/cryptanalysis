@@ -1,0 +1,14 @@
+{
+ "run": 39522833864,
+ "workflow": ".github/workflows/n19-native-loop.yml",
+ "head_sha": "610517bb654ca6ddb3ae98e8c9d0e368309083ec",
+ "job": "profile",
+ "conclusion": "failure",
+ "failed_step": "Profile arm N in the pinned Sage image (untimed diagnostic)",
+ "failure": "diagnosis/profile_n.sage line 264: os.path.abspath(opt('--lib')) with opt('--lib') None (TypeError); no timers, no cProfile output, no function-level profile",
+ "artifact": "n19-native-loop-profile-39522833864-1 (id 12315452902)",
+ "omitted_from_archive": "lib/libtau6native.so (build product; digest in sha256.txt)",
+ "queued_from": "2026-10-21T00:41:27Z",
+ "started": "2026-10-21T02:17:39Z",
+ "completed": "2026-10-21T02:20:07Z"
+}

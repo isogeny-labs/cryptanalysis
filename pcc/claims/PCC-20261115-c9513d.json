@@ -1,0 +1,37 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-15T10:44:54Z",
+ "id": "PCC-20261115-c9513d",
+ "kind": "statement",
+ "producer": {
+  "commit": "5417e9d1e6fcb99c205ab0cee405338294b3b70f",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/unheld-thirdparty-compiler-cache-cleanup-12/original-command.py",
+    "sha256": "8140b14da12072f8402b6aec8921f58b9285d8d9a40ae4900209b108b35b147d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/unheld-thirdparty-compiler-cache-cleanup-12/outcome.json",
+    "sha256": "005530b7b1ae51223e35a09d401e25b9364767ef141361b8d7fcc8a40168bed1"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/unheld-thirdparty-compiler-cache-cleanup-12/whole-removed-cache-inventory.json.xz",
+    "sha256": "4cb95e84b8e9fdee02707e360795cb7c0a5161b7137384b5c884e31c0f741b8d"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Continuation storage12 removes302unheld registry-thirdparty .rlib/.rmeta/compilerplugin.so onlyinfourclosedold/tmpbuildcaches. Every51583priorinputpath andeverymodern-legacyPCCsubject excluded; dependencyfilesmustidentifyregistry source andnoworkspace source, allretained/sourcefilerecords unchanged, no activecompiler. Full20676Bremoved-file/hash inventory retained,488312420logicalB/488693760allocatedB, actualavailable15163392to503832576B. All207retainedexecutables includingbothdifferent263MBdiagnostics/all3Gitstatuses unchanged. No scientificsource/raw/research-executable/field-engine-workspace library/fullpreparedcopy/currentct57-ct80cache removed. Unsignedstorageonly/no cold orperformanceacceptance."
+}

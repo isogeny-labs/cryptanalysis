@@ -1,0 +1,37 @@
+{
+  "completed_primes": [],
+  "receipts": {
+    "attempt.json": {
+      "elapsed_seconds": 600.259,
+      "status": "TIME_LIMIT",
+      "stdout_tail": "{\"phase\": \"base_field_constructed\"}\n{\"phase\": \"relative_base_constructed\"}\n{\"phase\": \"quartic_checked\"}\nPARI stack size set to 4294967296 bytes, maximum size set to 4294967296\n{\"bytes\": 9260825, \"phase\": \"rnf_checkpoint_loaded\"}\n"
+    },
+    "attempt_1gb_stack.json": {
+      "elapsed_seconds": 63.097,
+      "status": "SAGE_ERROR",
+      "stdout_tail": ""
+    },
+    "attempt_2gb_stack.json": {
+      "elapsed_seconds": 69.713,
+      "status": "SAGE_ERROR",
+      "stdout_tail": "PARI stack size set to 2147483648 bytes, maximum size set to 2147483648\n"
+    },
+    "attempt_4gb_binding_error.json": {
+      "elapsed_seconds": 279.326,
+      "status": "SAGE_ERROR",
+      "stdout_tail": "PARI stack size set to 4294967296 bytes, maximum size set to 4294967296\n{\"phase\": \"rnfinit_complete\", \"relative_degree\": 4}\n"
+    },
+    "attempt_4gb_checkpoint_saved_timeout.json": {
+      "elapsed_seconds": 600.355,
+      "status": "TIME_LIMIT",
+      "stdout_tail": "{\"phase\": \"base_field_constructed\"}\n{\"phase\": \"relative_base_constructed\"}\n{\"phase\": \"quartic_checked\"}\nPARI stack size set to 4294967296 bytes, maximum size set to 4294967296\n{\"phase\": \"pari_nf_started\"}\n{\"phase\": \"pari_nf_complete\"}\n{\"phase\": \"rnfinit_started\"}\n{\"phase\": \"rnfinit_complete\"}\n{\"phase\": \"checkpoint_write_started\"}\n{\"bytes\": 9260825, \"phase\": \"rnf_checkpoint_saved\"}\n"
+    },
+    "attempt_4gb_checkpoint_timeout.json": {
+      "elapsed_seconds": 600.284,
+      "status": "TIME_LIMIT",
+      "stdout_tail": ""
+    }
+  },
+  "result_status": "BOUNDED_UNKNOWN",
+  "status": "PASS_AUDIT"
+}

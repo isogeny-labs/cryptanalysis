@@ -1,0 +1,11 @@
+{
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "tools.artifacts.test_artifacts.RoundTrip.test_pull_recreates_parent_outside_sparse_checkout"
+  ],
+  "exit_status": 1,
+  "elapsed_seconds_execution_receipt_only": 0.5508269499987364,
+  "change": "assert the failed subprocess status with its full stderr to expose the underlying missing-parent error"
+}

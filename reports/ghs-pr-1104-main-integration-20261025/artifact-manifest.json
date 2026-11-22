@@ -1,0 +1,174 @@
+{
+  "schema": "cryptanalysis.ghs_pr_1104_main_integration/v1",
+  "merged_main": "d90192b50b13f25d2f8356bf40133a05554285a2",
+  "frozen_code_commit": "a74d5404df4b4e0be5ef6308f9027650bc590f2e",
+  "scientific_results_changed": false,
+  "explicit_version_transitions": [
+    {
+      "path": "tools/artifacts/wire_workflows.py",
+      "old_commit": "fd03d2f9fc47b0b8f9019466a6b4e8e7d3c91e2b",
+      "old_sha256": "a896c150b71813a042cbfdb11b8affe6ec8e31f418d713b1b031b22ae78e287e",
+      "new_sha256": "f97a38106085ea460c031a6d984cc5e1f0df2a3ea4bca275ea3e5a8a52682916"
+    },
+    {
+      "path": "tools/lean/current-corpus-gate.py",
+      "old_commit": "fd03d2f9fc47b0b8f9019466a6b4e8e7d3c91e2b",
+      "old_sha256": "9615d45b805bd9442f59e88d1a20f6b9a3519439d1993be80ae379898030efb9",
+      "new_sha256": "f8f4efdfe587923318f309f2ad3cb4f499ff6c06b989650d93abfc1cbff06d76"
+    },
+    {
+      "path": "tools/lean/README.md",
+      "old_commit": "fd03d2f9fc47b0b8f9019466a6b4e8e7d3c91e2b",
+      "old_sha256": "48b73369b713aa34d12bc25dc1485c64ca8cd4fbf27209528c00b82a513c92be",
+      "new_sha256": "139258199c9d1dec192755995f4d005d3343230a4baf3552a830b8e72fb8b19d"
+    },
+    {
+      "path": ".github/workflows/lean-proof-gate.yml",
+      "old_commit": "fd03d2f9fc47b0b8f9019466a6b4e8e7d3c91e2b",
+      "old_sha256": "e5d268d8420daeb53bc50f195a2a36847f9bc2ea44ac52829b6b517568ef34b8",
+      "new_sha256": "5c745643024aea2d457aa34a5cb54b6d91e95626d51909cdc610ae752a171d2a"
+    },
+    {
+      "path": "problems/README.md",
+      "old_commit": "fd03d2f9fc47b0b8f9019466a6b4e8e7d3c91e2b",
+      "old_sha256": "30b5e532093c9112f81a9e3b43f0864f69b956f4ad1d238fb91eff2e8479d617",
+      "new_sha256": "8cf46bc2c83d4032b8babb5111142bdef68a7718b69c8afeede8cd615dc9c63d"
+    },
+    {
+      "path": "problems/ghs-pr-1104-inherited-ci-failures.md",
+      "old_commit": "fd03d2f9fc47b0b8f9019466a6b4e8e7d3c91e2b",
+      "old_sha256": "4c76f047bb1148189d5ea3740d341e297f3059afd77008e5d9a934505fb08cfc",
+      "new_sha256": "963387af92c3fcae0d5a851a4a00dae41763af81fe44143958ed5545d11ef42d"
+    },
+    {
+      "path": "experiments/glv-table-rule-confirm-20261022/check_lean_source_binding.py",
+      "old_commit": "fd03d2f9fc47b0b8f9019466a6b4e8e7d3c91e2b",
+      "old_sha256": "7f151a8ba61fd2940997543d32ed73a3fde9ac4d183dc0f144a301332b48af8a",
+      "new_sha256": "b841a8213e4a052ddaeafd264520f1d03cca5e75795ac58e7eddc8f4dcdfe059"
+    },
+    {
+      "path": "experiments/glv-table-rule-confirm-20261022/live-source-binding.json",
+      "old_commit": "fd03d2f9fc47b0b8f9019466a6b4e8e7d3c91e2b",
+      "old_sha256": "bb0abf96c3f9d0d655b88cafafe0c5f50d90a86c9948278381e727ed193ab534",
+      "new_sha256": "8439b5e825d0b845ad1d47d2326990f599176f4fecda13efdd9015365e96f1e1"
+    }
+  ],
+  "files": {
+    ".github/workflows/lean-proof-gate.yml": {
+      "bytes": 2018,
+      "sha256": "5c745643024aea2d457aa34a5cb54b6d91e95626d51909cdc610ae752a171d2a"
+    },
+    "experiments/glv-table-rule-confirm-20261022/check_lean_source_binding.py": {
+      "bytes": 4289,
+      "sha256": "b841a8213e4a052ddaeafd264520f1d03cca5e75795ac58e7eddc8f4dcdfe059"
+    },
+    "experiments/glv-table-rule-confirm-20261022/live-source-binding.json": {
+      "bytes": 482,
+      "sha256": "8439b5e825d0b845ad1d47d2326990f599176f4fecda13efdd9015365e96f1e1"
+    },
+    "problems/README.md": {
+      "bytes": 6462,
+      "sha256": "8cf46bc2c83d4032b8babb5111142bdef68a7718b69c8afeede8cd615dc9c63d"
+    },
+    "problems/ghs-pr-1104-inherited-ci-failures.md": {
+      "bytes": 7533,
+      "sha256": "963387af92c3fcae0d5a851a4a00dae41763af81fe44143958ed5545d11ef42d"
+    },
+    "reports/ghs-pr-1104-main-integration-20261025/.gitattributes": {
+      "bytes": 24,
+      "sha256": "bcded5feb953ebe264f03dfe849be2f6a01f7421dc8c64d5e4d382f095a2b5df"
+    },
+    "reports/ghs-pr-1104-main-integration-20261025/CHECKS.md": {
+      "bytes": 1551,
+      "sha256": "4cb41c8a841800afd3937673de3a91358785c8c6f12a6ad815bd26d790290a95"
+    },
+    "reports/ghs-pr-1104-main-integration-20261025/README.md": {
+      "bytes": 4484,
+      "sha256": "5913ae1d9f0044395a0d030b6cb287bfe676456b4d28d2f9a95009f92cd27592"
+    },
+    "reports/ghs-pr-1104-main-integration-20261025/artifact-tests-attempt-1.json": {
+      "bytes": 526,
+      "sha256": "9593e686ab13dadaa8f4a75d3598ebd96909f2247bc16d986626c054f0ade2ba"
+    },
+    "reports/ghs-pr-1104-main-integration-20261025/artifact-tests-attempt-1.stderr.txt": {
+      "bytes": 161,
+      "sha256": "d054d8f0f2fb460f0e676551346c884e33e6cd3afb82b4172c2769f24d900e43"
+    },
+    "reports/ghs-pr-1104-main-integration-20261025/artifact-tests-attempt-1.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "reports/ghs-pr-1104-main-integration-20261025/corpus-attempt-1.json": {
+      "bytes": 485,
+      "sha256": "5ae0ddd0c305a89fb1cea7da7cbcbaf368b0b526984adbc21183a8f9320bee2e"
+    },
+    "reports/ghs-pr-1104-main-integration-20261025/corpus-attempt-1.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "reports/ghs-pr-1104-main-integration-20261025/corpus-attempt-1.stdout.txt": {
+      "bytes": 3289,
+      "sha256": "49bb0a6c1fedb168f0858bf158cde3cbe2ce3db3736a16cfd6fb3ad076907b84"
+    },
+    "reports/ghs-pr-1104-main-integration-20261025/frozen-evidence-replay.json": {
+      "bytes": 9260,
+      "sha256": "760778d158de221fe809ab341011d26f87bb4f3b1e956e34abc1f751496f8f40"
+    },
+    "reports/ghs-pr-1104-main-integration-20261025/imported-main-inputs.json": {
+      "bytes": 8496,
+      "sha256": "bcf0f8ffe590dad7d6304c9d531a9207b28637fb3e9f45b7de95c726414a197e"
+    },
+    "reports/ghs-pr-1104-main-integration-20261025/integration-snapshot.json": {
+      "bytes": 3583,
+      "sha256": "24799ed6177667d843e80d5327f66793cbf8087b8067d04f89caa7a9d13e3cfb"
+    },
+    "reports/ghs-pr-1104-main-integration-20261025/prior-check_lean_source_binding.py": {
+      "bytes": 4289,
+      "sha256": "7f151a8ba61fd2940997543d32ed73a3fde9ac4d183dc0f144a301332b48af8a"
+    },
+    "reports/ghs-pr-1104-main-integration-20261025/prior-live-source-binding.json": {
+      "bytes": 482,
+      "sha256": "bb0abf96c3f9d0d655b88cafafe0c5f50d90a86c9948278381e727ed193ab534"
+    },
+    "reports/ghs-pr-1104-main-integration-20261025/workflow-wiring-attempt-1.json": {
+      "bytes": 518,
+      "sha256": "cf6923218115e825f0d7f0865f7852687010497ee5f9a5289b243014cd104b88"
+    },
+    "reports/ghs-pr-1104-main-integration-20261025/workflow-wiring-attempt-1.stderr.txt": {
+      "bytes": 61,
+      "sha256": "1ef0d99d3ba29c1c9dc4889fabbb41d82ce8d9bbbaaf8ebf5856c9bf077bce57"
+    },
+    "reports/ghs-pr-1104-main-integration-20261025/workflow-wiring-attempt-1.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "reports/lean-current-corpus-20261025-main-update/README.md": {
+      "bytes": 692,
+      "sha256": "8d3eec930a0300b617b5b8549a32717e77b280aeb40437d3bb19e51f81ef28f9"
+    },
+    "reports/lean-current-corpus-20261025-main-update/receipt.json": {
+      "bytes": 3289,
+      "sha256": "49bb0a6c1fedb168f0858bf158cde3cbe2ce3db3736a16cfd6fb3ad076907b84"
+    },
+    "tools/artifacts/artifacts.py": {
+      "bytes": 28076,
+      "sha256": "1c6c4a5308ff8af6bdb8319828e0ceea7d4be3703e161dea6173e74a5ce6488c"
+    },
+    "tools/artifacts/test_artifacts.py": {
+      "bytes": 10447,
+      "sha256": "890cb9a2f48e1b91ca8994ec7c18609ded50170230c12b45275ed92e790729e1"
+    },
+    "tools/artifacts/wire_workflows.py": {
+      "bytes": 6754,
+      "sha256": "f97a38106085ea460c031a6d984cc5e1f0df2a3ea4bca275ea3e5a8a52682916"
+    },
+    "tools/lean/README.md": {
+      "bytes": 2432,
+      "sha256": "139258199c9d1dec192755995f4d005d3343230a4baf3552a830b8e72fb8b19d"
+    },
+    "tools/lean/current-corpus-gate.py": {
+      "bytes": 16948,
+      "sha256": "f8f4efdfe587923318f309f2ad3cb4f499ff6c06b989650d93abfc1cbff06d76"
+    }
+  }
+}

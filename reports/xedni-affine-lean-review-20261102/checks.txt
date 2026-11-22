@@ -1,0 +1,35 @@
+Independent review checks, 2026-11-02 UTC
+
+Producer theorem bytes: cryptanalysis@d243c3ce88e077a593c3be2c2ba502d976564534
+Repair branch checked locally: cryptanalysis@937b387b978b595de0143b112be948addc6d81d4
+Command: python3 research/xedni_lift_optimizer_20261101/lean/check.py
+Exit: 0
+'XedniAffineCoset.candidate_preserves_divisibility' depends on axioms: [propext, Quot.sound]
+'XedniAffineCoset.direction_span_closed' depends on axioms: [propext, Quot.sound]
+'XedniAffineCoset.candidate_preserves' depends on axioms: [propext, Quot.sound]
+Xedni affine-coset proof and source binding verified
+
+Control: change receipt lattice_sha256 to 64 zeroes; checker exit 1 with
+suite/src/cryptanalysis/lattice.rs SHA-256 mismatch. The original receipt
+and source were restored without changing tracked bytes.
+
+Independence checker: crypto-autoresearcher@8b77d405e297f275a15cba425cdebb09fcc799c3
+Checker source SHA-256: ccb6fa518bec26e7d8ee625a19cc22a15800362a5a50a78185cee93eb25a38a7
+Command: python3 reports/xedni-affine-lean-review-20261102/check_independence.py --checker /home/ec2-user/crypto-autoresearcher/tools/check_review_independence.py
+Exit: 0
+independence checker: 0 problem(s)
+
+Input plan SHA-256: 3b5ba368fc1718c62f6f8e376a36275736ff50d90f8a2e78f15483dab017bf72
+Blind attestation SHA-256: 596afd8ae8737f9f47ffb01283ac7d97b27ac48cf4f71a08a94e1095c1817034
+Source attestation SHA-256: 84e8662f82c6ab995e96fc57725a2d6137f1ef8ad29855f7e1a645339884a01c
+
+The checker verifies the declared fields after the documented field-name
+adapter; it does not authenticate reviewer identity or undisclosed reads.
+
+Hosted repair evidence:
+PR #1377 head 937b387b978b595de0143b112be948addc6d81d4; all 28
+applicable checks passed, including proof-and-source-binding run 41507496535.
+Merge commit 15d52632da342f995d8d00013b3688a05a17a54a; push run
+41510072421 completed success on that exact merge commit.
+Historical first merge 749d807be2c82175641c17c589e6883ba8b10abb
+push run 41505334499 failed at the first-use elan workflow setup boundary.

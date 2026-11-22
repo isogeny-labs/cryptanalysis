@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1700" height="860" viewBox="0 0 1700 860">
+  <rect width="1700" height="860" fill="#f8fafc"/>
+  <style>.t{font:700 34px sans-serif;fill:#14213d}.h{font:700 21px sans-serif;fill:#14213d}.s{font:18px sans-serif;fill:#475569}.b{stroke-width:2}.a{stroke:#334155;stroke-width:3;fill:none;marker-end:url(#m)}</style>
+  <defs><marker id="m" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#334155"/></marker></defs>
+  <text x="70" y="65" class="t">H112: public half → p³ section carry → two digits → parity → reconstruction</text>
+  <text x="70" y="100" class="s">No scalar interpolation, fitted coefficient, or low-digit-only predicate.</text>
+  <rect x="70" y="160" width="250" height="150" rx="8" fill="#dbeafe" stroke="#2563eb" class="b"/><text x="95" y="200" class="h">PUBLIC TARGET</text><text x="95" y="238" class="s">Q=[k]G</text><text x="95" y="270" class="s">H=[(r+1)/2]Q</text>
+  <rect x="390" y="160" width="280" height="150" rx="8" fill="#ffedd5" stroke="#f97316" class="b"/><text x="415" y="200" class="h">TWO-DIGIT SECTION</text><text x="415" y="238" class="s">s_(0,0)(H), s_(0,0)(Q)</text><text x="415" y="270" class="s">Hensel lift mod p³</text>
+  <rect x="740" y="160" width="300" height="150" rx="8" fill="#dcfce7" stroke="#16a34a" class="b"/><text x="765" y="200" class="h">BINARY COCYCLE</text><text x="765" y="238" class="s">C₃=[2]s(H)-s(Q)</text><text x="765" y="270" class="s">K=κ₀+pκ₁ mod p²</text>
+  <rect x="1110" y="160" width="330" height="150" rx="8" fill="#f3e8ff" stroke="#9333ea" class="b"/><text x="1135" y="200" class="h">144 FROZEN PREDICATES</text><text x="1135" y="238" class="s">κ₁ / κ₀±κ₁ channels</text><text x="1135" y="270" class="s">cross-digit XOR; complements</text>
+  <path d="M320 235 H380" class="a"/><path d="M670 235 H730" class="a"/><path d="M1040 235 H1100" class="a"/>
+  <rect x="250" y="410" width="430" height="150" rx="8" fill="#fee2e2" stroke="#ef4444" class="b"/><text x="280" y="450" class="h">FROZEN CONTROLS</text><text x="280" y="488" class="s">random p³ sections; matched labels</text><text x="280" y="520" class="s">coordinate isomorphisms; torsion carry=0</text>
+  <rect x="820" y="410" width="430" height="150" rx="8" fill="#fef3c7" stroke="#d97706" class="b"/><text x="850" y="450" class="h">CONDITIONAL POSITIVE PATH</text><text x="850" y="488" class="s">exact parity-guided halving</text><text x="850" y="520" class="s">recover k and verify [k]G=Q</text>
+  <path d="M1235 310 C1235 360 660 365 540 400" class="a"/><path d="M1275 310 C1275 360 1110 370 1060 400" class="a"/>
+  <rect x="600" y="670" width="500" height="110" rx="8" fill="#ede9fe" stroke="#7c3aed" class="b"/><text x="630" y="715" class="h">PROMOTION GATE</text><text x="630" y="750" class="s">28/28 exact + uniform proof + Lean + complete total cost</text>
+  <path d="M1035 560 C1035 620 940 630 900 660" class="a"/>
+</svg>

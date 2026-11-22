@@ -1,0 +1,207 @@
+{
+  "actual_usable_points_B": 30977592,
+  "candidate_id": null,
+  "complete_target_dlp": false,
+  "cpu_timing_claim": "exploratory stage costs only; no host isolation receipt",
+  "curve_id": "EC1N83Ckb1h876c2921cb64",
+  "distinct_root_keys": 4000000,
+  "folded_columns_K": 186612,
+  "ic_online_ms": null,
+  "index_satisfiable_states": 2000000,
+  "invariant_mismatches": {},
+  "kind": "n83_packed_root_index_stage_comparison",
+  "medians": {
+    "compact-hash": {
+      "index_build_ns": 1839459458,
+      "peak_rss_bytes": 658997248,
+      "rss_after_index_bytes": 592232448,
+      "table_allocated_bytes": 134217728,
+      "target_stage_ns": 4071326000
+    },
+    "hash": {
+      "index_build_ns": 1848000750,
+      "peak_rss_bytes": 759644160,
+      "rss_after_index_bytes": 692928512,
+      "table_allocated_bytes": 201326592,
+      "target_stage_ns": 4032284125
+    },
+    "split-hash": {
+      "index_build_ns": 1851893125,
+      "peak_rss_bytes": 658948096,
+      "rss_after_index_bytes": 592199680,
+      "table_allocated_bytes": 134217728,
+      "target_stage_ns": 4027830083
+    }
+  },
+  "online_speedup": null,
+  "paired_rows": [
+    {
+      "index_build_ns": 1927258125,
+      "mode": "hash",
+      "peak_rss_bytes": 759644160,
+      "rss_after_index_bytes": 692928512,
+      "sequence_number": 1,
+      "status": "state_cap_no_relation",
+      "table_allocated_bytes": 201326592,
+      "table_slots_or_records": 8388608,
+      "target_lookup_comparisons_or_probes": 18616995,
+      "target_stage_ns": 4038263375,
+      "verified_relation": false
+    },
+    {
+      "index_build_ns": 1839459458,
+      "mode": "compact-hash",
+      "peak_rss_bytes": 658915328,
+      "rss_after_index_bytes": 592216064,
+      "sequence_number": 2,
+      "status": "state_cap_no_relation",
+      "table_allocated_bytes": 134217728,
+      "table_slots_or_records": 8388608,
+      "target_lookup_comparisons_or_probes": 18616995,
+      "target_stage_ns": 4081684583,
+      "verified_relation": false
+    },
+    {
+      "index_build_ns": 1818265750,
+      "mode": "split-hash",
+      "peak_rss_bytes": 658948096,
+      "rss_after_index_bytes": 592232448,
+      "sequence_number": 3,
+      "status": "state_cap_no_relation",
+      "table_allocated_bytes": 134217728,
+      "table_slots_or_records": 8388608,
+      "target_lookup_comparisons_or_probes": 18616995,
+      "target_stage_ns": 4080911459,
+      "verified_relation": false
+    },
+    {
+      "index_build_ns": 1850991333,
+      "mode": "compact-hash",
+      "peak_rss_bytes": 658997248,
+      "rss_after_index_bytes": 592232448,
+      "sequence_number": 4,
+      "status": "state_cap_no_relation",
+      "table_allocated_bytes": 134217728,
+      "table_slots_or_records": 8388608,
+      "target_lookup_comparisons_or_probes": 18616995,
+      "target_stage_ns": 4071326000,
+      "verified_relation": false
+    },
+    {
+      "index_build_ns": 1857402750,
+      "mode": "split-hash",
+      "peak_rss_bytes": 658964480,
+      "rss_after_index_bytes": 592183296,
+      "sequence_number": 5,
+      "status": "state_cap_no_relation",
+      "table_allocated_bytes": 134217728,
+      "table_slots_or_records": 8388608,
+      "target_lookup_comparisons_or_probes": 18616995,
+      "target_stage_ns": 4027830083,
+      "verified_relation": false
+    },
+    {
+      "index_build_ns": 1848000750,
+      "mode": "hash",
+      "peak_rss_bytes": 759660544,
+      "rss_after_index_bytes": 692928512,
+      "sequence_number": 6,
+      "status": "state_cap_no_relation",
+      "table_allocated_bytes": 201326592,
+      "table_slots_or_records": 8388608,
+      "target_lookup_comparisons_or_probes": 18616995,
+      "target_stage_ns": 4032284125,
+      "verified_relation": false
+    },
+    {
+      "index_build_ns": 1851893125,
+      "mode": "split-hash",
+      "peak_rss_bytes": 658931712,
+      "rss_after_index_bytes": 592199680,
+      "sequence_number": 7,
+      "status": "state_cap_no_relation",
+      "table_allocated_bytes": 134217728,
+      "table_slots_or_records": 8388608,
+      "target_lookup_comparisons_or_probes": 18616995,
+      "target_stage_ns": 3834206292,
+      "verified_relation": false
+    },
+    {
+      "index_build_ns": 1642365917,
+      "mode": "hash",
+      "peak_rss_bytes": 759644160,
+      "rss_after_index_bytes": 692928512,
+      "sequence_number": 8,
+      "status": "state_cap_no_relation",
+      "table_allocated_bytes": 201326592,
+      "table_slots_or_records": 8388608,
+      "target_lookup_comparisons_or_probes": 18616995,
+      "target_stage_ns": 3543739041,
+      "verified_relation": false
+    },
+    {
+      "index_build_ns": 1618033083,
+      "mode": "compact-hash",
+      "peak_rss_bytes": 658997248,
+      "rss_after_index_bytes": 592232448,
+      "sequence_number": 9,
+      "status": "state_cap_no_relation",
+      "table_allocated_bytes": 134217728,
+      "table_slots_or_records": 8388608,
+      "target_lookup_comparisons_or_probes": 18616995,
+      "target_stage_ns": 3717238166,
+      "verified_relation": false
+    }
+  ],
+  "proposal_id": "Q2026101904",
+  "protocol_sha256": "44ceb6cef2e5101aca4be950599a30cf0fa540215a01c3d993a57c4b962f5071",
+  "ranges": {
+    "compact-hash": {
+      "index_build_ns": [
+        1618033083,
+        1850991333
+      ],
+      "peak_rss_bytes": [
+        658915328,
+        658997248
+      ],
+      "target_stage_ns": [
+        3717238166,
+        4081684583
+      ]
+    },
+    "hash": {
+      "index_build_ns": [
+        1642365917,
+        1927258125
+      ],
+      "peak_rss_bytes": [
+        759644160,
+        759660544
+      ],
+      "target_stage_ns": [
+        3543739041,
+        4038263375
+      ]
+    },
+    "split-hash": {
+      "index_build_ns": [
+        1818265750,
+        1857402750
+      ],
+      "peak_rss_bytes": [
+        658931712,
+        658964480
+      ],
+      "target_stage_ns": [
+        3834206292,
+        4080911459
+      ]
+    }
+  },
+  "rho_online_ms": null,
+  "run_id": null,
+  "source_sha256": "e2729e7a853300753f9c69ca1c8963490179fa7c616ffaf66c7bf7eef676a626",
+  "status": "validated_stage_comparison",
+  "workload_id": "981ac530e67e"
+}

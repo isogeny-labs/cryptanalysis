@@ -1,0 +1,178 @@
+{
+ "aa_control": {
+  "band": [
+   0.97,
+   1.03
+  ],
+  "cold_point_estimate_inside_band_rate": 1.0,
+  "e2e_point_estimate_inside_band_rate": 1.0,
+  "pairs": 24
+ },
+ "candidate_model": {
+  "index_build_factor": 0.959234530809639,
+  "online_factor": 0.9517570378286465,
+  "rank_stage_factor": 0.9839991447422456,
+  "selftest_factor": 1.065577185612121,
+  "source": "inputs/local_profile.json modelled (LOCAL DIAGNOSTIC)"
+ },
+ "cells": {
+  "1.00": {
+   "index_build_factor": 1.0,
+   "mc_se": 0.0049749371855331,
+   "median_ci_hi_over_lo": 1.0131065675807593,
+   "median_estimate": 0.9999438656931161,
+   "online_factor": 1.0,
+   "power": 0.01,
+   "rank_stage_factor": 1.0,
+   "selftest_factor": 1.0
+  },
+  "1.01": {
+   "index_build_factor": 0.979964549677006,
+   "mc_se": 0.016676611616272652,
+   "median_ci_hi_over_lo": 1.013123149545238,
+   "median_estimate": 1.010375180765565,
+   "online_factor": 0.9762895045435469,
+   "power": 0.8725,
+   "rank_stage_factor": 0.9921358849288564,
+   "selftest_factor": 1.0322299355495723
+  },
+  "1.02": {
+   "index_build_factor": 0.9603219513211292,
+   "mc_se": 5e-08,
+   "median_ci_hi_over_lo": 1.0128566451463934,
+   "median_estimate": 1.0201028341550895,
+   "online_factor": 0.9530439207627102,
+   "power": 1.0,
+   "rank_stage_factor": 0.984425968192441,
+   "selftest_factor": 1.0638279115785654
+  },
+  "1.03": {
+   "index_build_factor": 0.9410607626420656,
+   "mc_se": 5e-08,
+   "median_ci_hi_over_lo": 1.0129769932741857,
+   "median_estimate": 1.0297959413284405,
+   "online_factor": 0.9302497075407247,
+   "power": 1.0,
+   "rank_stage_factor": 0.9768657585771211,
+   "selftest_factor": 1.0948123346749563
+  },
+  "1.05": {
+   "index_build_factor": 0.903639024637028,
+   "mc_se": 5e-08,
+   "median_ci_hi_over_lo": 1.0132043776147175,
+   "median_estimate": 1.0500793172702843,
+   "online_factor": 0.8859638075665819,
+   "power": 1.0,
+   "rank_stage_factor": 0.9621773513244998,
+   "selftest_factor": 1.155010642405087
+  },
+  "1.10": {
+   "index_build_factor": 0.816038137943417,
+   "mc_se": 5e-08,
+   "median_ci_hi_over_lo": 1.01355185313516,
+   "median_estimate": 1.1001911374062385,
+   "online_factor": 0.7822945417180196,
+   "power": 1.0,
+   "rank_stage_factor": 0.927793125255863,
+   "selftest_factor": 1.2959294082278936
+  },
+  "modelled": {
+   "index_build_factor": 0.959234530809639,
+   "mc_se": 5e-08,
+   "median_ci_hi_over_lo": 1.012837342968367,
+   "median_estimate": 1.020634993767295,
+   "online_factor": 0.9517570378286465,
+   "power": 1.0,
+   "rank_stage_factor": 0.9839991447422456,
+   "selftest_factor": 1.065577185612121
+  }
+ },
+ "design": {
+  "aa_pairs_per_point": 2,
+  "attempts_per_rank_block": 16,
+  "distinct_rank_seeds": 36,
+  "planted_pairs_per_point": 1,
+  "points": 12,
+  "primary_pairs": 36,
+  "primary_pairs_per_point": 3
+ },
+ "expected_index_build_ratio": 1.04249791670443,
+ "expected_online_ratio": 1.0506883167172745,
+ "expected_rank_stage_ratio": 1.0162610458995325,
+ "expected_ratio_at_prior_means": 1.020559391024481,
+ "expected_selftest_ratio": 0.938458530740361,
+ "law_gate": {
+  "archived_attempts": 576,
+  "archived_pooled_ratio": 0.9788588429249455,
+  "attempts": 576,
+  "band": [
+   0.8,
+   1.2
+  ],
+  "pass_rate_at_archived_law": 1.0,
+  "rejection_rate_for_law_1.5x_worse": 1.0
+ },
+ "method": "simulated receipts drawn from the prior; primary statistic and two-stage paired bootstrap of verify_receipt.py (400 simulations per cell, 500 bootstrap draws each)",
+ "min_delta": 1.02,
+ "planted_control": {
+  "lower_bound_above_1_rate": 1.0,
+  "modelled_index_build_factor": 1.5,
+  "pairs": 12
+ },
+ "power_at_min_delta": 1.0,
+ "prior": "inputs/power_prior.json (run 41869146827, the parent's archived run, the current row's producer)",
+ "prior_means_ms": {
+  "E2E_A": 8975.731336027777,
+  "E2E_B_modelled": 8794.913274981043,
+  "cold_ms": 5815.937192694444,
+  "index_ms": 4439.3957775,
+  "online_ms": 171.20159505555554,
+  "rank_stage_ms": 3159.7941433333335,
+  "scan_selftest_ms": 899.3169041944444
+ },
+ "runtime": {
+  "fits_one_job": true,
+  "fixed_after_schedule_min": 2.0,
+  "fixed_before_schedule_min": 17.0,
+  "job_limit_min": 180,
+  "job_total_min": 61.359110159788756,
+  "job_total_min_on_a_1.5x_slower_host": 91.03866523968313,
+  "mean_process_wall_s": {
+   "cM10FO": 7.559754133,
+   "cM10R1": 7.429495480685042,
+   "cM38FO": 7.594991840726028,
+   "cM38R1": 7.46473318841107,
+   "cM38R1X": 16.46473318841107,
+   "cM38R1aa": 7.46473318841107,
+   "cPFO": 7.55389807,
+   "cPR1": 7.423639417685042,
+   "kM38FO": 10.804668704733333,
+   "kM38R1": 10.632109915760537,
+   "kM38R1aa": 10.632109915760537,
+   "rT": 2.2369917123333334
+  },
+  "point_segment_s": 208.04334145473481,
+  "processes_per_point": {
+   "cM38FO": 3,
+   "cM38R1": 6,
+   "cM38R1X": 1,
+   "cM38R1aa": 2,
+   "kM38FO": 3,
+   "kM38R1": 5,
+   "kM38R1aa": 2,
+   "rT": 1
+  },
+  "q0_processes": {
+   "cM10FO": 1,
+   "cM10R1": 1,
+   "cM38FO": 1,
+   "cM38R1": 1,
+   "cPFO": 1,
+   "cPR1": 1
+  },
+  "schedule_min": 42.359110159788756,
+  "time_guard_deadline_min": 165
+ },
+ "schema": 1,
+ "type_i_at_1.00": 0.01
+}

@@ -1,0 +1,47 @@
+   Compiling prime-field-auxiliary-ic v0.1.0 (/workspace/cryptanalysis-pr/crates/prime-field-auxiliary-ic)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 5.59s
+     Running unittests src/lib.rs (crates/prime-field-auxiliary-ic/target/debug/deps/prime_field_auxiliary_ic-4ca990083931dbe2)
+
+running 5 tests
+test field::tests::primality_handles_small_values_and_pseudoprimes ... ok
+test field::tests::batched_exceptions_match_individual_additions ... ok
+test graph::tests::anchors_and_balanced_cycles_match_dense_elimination ... ok
+test field::tests::reduction_and_fixed_inverse_match_integer_reference ... ok
+test graph::tests::random_signed_systems_match_rank_first_recovery_and_all_returned_proofs ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+     Running tests/field_fibers.rs (crates/prime-field-auxiliary-ic/target/debug/deps/field_fibers-ecc43a3409470ab8)
+
+running 4 tests
+test malformed_field_fibers_are_rejected ... ok
+test field_circuits_and_direct_controls_have_identical_full_recoveries ... ok
+empty target lift: B=61, raw_roots=9, first_root=3, error=Invalid("factor base contains no rational target points")
+test torus_fibers_match_explicit_products_and_direct_rows_in_both_fields ... ok
+test power_fibers_match_explicit_products_and_direct_rows_in_both_fields ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.47s
+
+     Running tests/pipeline.rs (crates/prime-field-auxiliary-ic/target/debug/deps/pipeline-8720b37def34974e)
+
+running 10 tests
+test malformed_fibers_and_subgroups_are_rejected ... ok
+test direct_control_has_identical_rows_and_recovery_on_identical_walks ... ok
+test resource_boundaries_are_explicit_and_do_not_report_recovery ... ok
+test original_31_bit_rows_recover_without_search_or_private_input ... ok
+test split_terminal_handles_one_map_and_symmetric_unit_roots ... ok
+test zero_and_mixed_center_shifts_match_the_explicit_polynomial ... ok
+test complete_small_solves_use_distinct_nontrivial_rows ... ok
+test zero_masks_cross_vector_tiles_and_discard_padding ... ok
+test scalar_and_simd_are_exact_products_in_both_fields ... ok
+test nonzero_first_pole_and_root_order_are_supported ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.35s
+
+   Doc-tests prime-field-auxiliary-ic
+
+running 1 test
+test src/lib.rs - (line 81) ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.68s
+

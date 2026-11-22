@@ -1,0 +1,37 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T12:58:27Z",
+ "id": "PCC-20261116-dab183",
+ "kind": "statement",
+ "producer": {
+  "commit": "adb8a8519990a3b85bf72267b23e984bdf9a57f2",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/original-docs-hydration-whole-payload-layout-review-06/immutable-original-config.json",
+    "sha256": "29311c8d761a281ecc9c7ea8e6fd8a51740bfac7065932c58751baf12bc11446"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/original-docs-hydration-whole-payload-layout-review-06/immutable-original-pcc-gate.yml",
+    "sha256": "03bcb807933377080970454cd2e459fe4190f7aa3f452c2acba1a55c5760206d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-lp-presentation-01/evidence/original-docs-hydration-whole-payload-layout-review-06/primary-custody-layout-review.json",
+    "sha256": "4111ee1edfcfd900dafcd4d0199373f596027e5075a3e025f42d8274bb397c71"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Primary source review finds the actual frozen original Consumer PCC gate/sign already hydrate docs recursively. Test whole-data custody using complete regular payloads under a docs subtree and original addresses as explicit relative symlinks, preserving exact SHA/size/mode/address map and every raw byte, followed by genuine original migration/full remote replay/current CI. Original attestation verifier hashes actual resolved bytes and must retain real hydrated targets; symlink text or missing payload is never evidence. This is a file layout proposal with original policy/tools/workflow/source guards unchanged, not an uploaded or accepted result; no sharding/truncation/extension exception/PCC bypass/paid/native science. KB unavailable5cc67f, original docs/artifact/verifier/frozen workflow primary sources reviewed."
+}

@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "/Volumes/SSD990/cryptanalysis/experiments/xedni-nonisomorphic-holdout-20261115/screen.py", line 7, in <module>
+    import subprocess
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/subprocess.py", line 125, in <module>
+    import selectors
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/selectors.py", line 281, in <module>
+    class SelectSelector(_BaseSelectorImpl):
+    ...<45 lines>...
+            return ready
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/selectors.py", line 308, in SelectSelector
+    _select = select.select
+              ^^^^^^^^^^^^^
+AttributeError: module 'select' has no attribute 'select' (consider renaming '/Volumes/SSD990/cryptanalysis/experiments/xedni-nonisomorphic-holdout-20261115/select.py' since it has the same name as the standard library module named 'select' and prevents importing that standard library module)

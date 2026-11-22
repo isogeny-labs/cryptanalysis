@@ -1,0 +1,24 @@
+    Updating crates.io index
+     Locking 5 packages to highest compatible versions
+      Adding num-bigint v0.4.8 (available: v0.5.1)
+ Downloading crates ...
+  Downloaded num-traits v0.2.19
+  Downloaded num-bigint v0.4.8
+  Downloaded autocfg v1.5.1
+  Downloaded num-integer v0.1.47
+   Compiling autocfg v1.5.1
+   Compiling chained-jacobian-transfer v0.1.0 (/workspace/crypto/research/chained_jacobian_transfers_20261110/native)
+   Compiling num-traits v0.2.19
+   Compiling num-integer v0.1.47
+   Compiling num-bigint v0.4.8
+   Compiling chained-transfer-reference v0.1.0 (/workspace/cryptanalysis/experiments/chained-transfer-reference)
+    Finished `release` profile [optimized] target(s) in 7.06s
+     Running unittests src/main.rs (experiments/chained-transfer-reference/target/release/deps/chained_transfer_reference-fbb4a76035f5e7ac)
+
+running 1 test
+PASS 10404 canonical additions and inverses against pre-existing cryptanalysis BigUint implementation
+Development correctness only; no timing or independent signed verification
+test compares_every_canonical_source_class ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 23 filtered out; finished in 3.04s
+

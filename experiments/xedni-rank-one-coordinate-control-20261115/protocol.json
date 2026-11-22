@@ -1,0 +1,16 @@
+{
+  "schema": "xedni-rank-one-coordinate-control-protocol-v1",
+  "question": "Does a fixed rank-one rational-curve lift of every sampled subgroup point satisfy the L=4 bounded-coordinate premise?",
+  "base_curve_coefficients": [0, 0, 0, -1, -2],
+  "rational_generator": [2, 2],
+  "input_selection_result_sha256": "b18127c392b904559ac12512642ab0322eaa3b9b72a61f45dacf4a2fb8c9a25c",
+  "field_rule": "all eight selected fields in the pinned larger-order admission result",
+  "subgroup_generator": "m times reduction of P, where m=ord(P mod p)/q and q is the selected prime subgroup order",
+  "target": "Q=17G",
+  "query_law": "complete t in [0,q) for each of the two independent offsets",
+  "lift_rule": "for u=(17-t) mod q, centered(u)=u if u<=floor(q/2) else u-q; lift is m*centered(u)*P over Q",
+  "coefficient_radius_L": 4,
+  "coordinate_radius_measure": "maximum absolute rank-one coordinate for all two-point sums with coefficients in [-L,L]^2 and independent full t laws",
+  "rank_gap_target": {"d": 1, "T": 1, "K_over_L_slope_c": 1},
+  "claim_boundary": "complete algebraic coordinate control; the lift rule uses subgroup scalar coordinates and is not an efficient ECDLP algorithm"
+}

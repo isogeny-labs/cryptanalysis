@@ -1,0 +1,124 @@
+{
+ "K600": {
+  "bad_columns": [],
+  "checker": "oracle.py pure-Python field arithmetic (pinned harness), not the producer",
+  "checks": {
+   "base_hash": true,
+   "every_log_maps_G_to_its_representative": true,
+   "kind": true,
+   "n_a_r": true,
+   "range": true,
+   "width": true
+  },
+  "columns": 600,
+  "logs_sha256": "785e298f63de76636f6dc98203c4d483b3ecae5fb97ce18b8c3a989e8e65c0a6",
+  "status": "PASS",
+  "table": "/home/runner/work/cryptanalysis/cryptanalysis/experiments/koblitz-n83-rankfinder-20261021/../koblitz-single-target-n83-tier1-20261014/tier1_github_38523707244/precompute/factor_logs_n83_K600.json",
+  "table_sha256": "a771716f284bb826e7407e1e7b5ef882409c9e7e1df8b8a3ed5b60b421d9f17e"
+ },
+ "M10": {
+  "base": "/home/runner/work/cryptanalysis/cryptanalysis/experiments/koblitz-n83-rankfinder-20261021/snapshots/closure/base_n83_closure_M10.jsonl",
+  "base_check": {
+   "checks": {
+    "all_x_distinct": true,
+    "base_hash": true,
+    "column_representatives_are_B_first_K": true,
+    "every_member_and_label": true,
+    "every_orbit_in_prime_order_subgroup": true,
+    "every_orbit_is_alpha_of_its_column": true,
+    "identity": true,
+    "multipliers": true,
+    "orbits_distinct_up_to_sign_and_frobenius": true
+   },
+   "notes": {
+    "orbits": 600,
+    "orbits_per_column": 10,
+    "repeated_orbits": []
+   },
+   "status": "PASS"
+  },
+  "base_hash": "446de514c6b87d6f3e9a84f25ca8ab1901c8404114ee3c12021d7072d63c2d33",
+  "base_sha256": "ba99464a8f85e41aa188ff698c987cc093a3c9fa98e1fee74640b8554df2b598",
+  "checker": "oracle.py pure-Python field arithmetic (pinned harness), not the producer",
+  "logs_equal_B_first_columns": true,
+  "planted_controls": {
+   "caught": {
+    "duplicated_orbit": true,
+    "label_coefficient_off_by_one": true,
+    "log_off_by_one": true
+   },
+   "status": "PASS"
+  },
+  "status": "PASS",
+  "table": "/home/runner/work/cryptanalysis/cryptanalysis/experiments/koblitz-n83-rankfinder-20261021/inputs/factor_logs_n83_closure_M10.json",
+  "table_check": {
+   "bad_columns": [],
+   "bad_orbits": [],
+   "checks": {
+    "base_hash": true,
+    "every_column_log_maps_G_to_R_c": true,
+    "every_orbit_log_maps_G_to_its_representative": true,
+    "kind": true,
+    "n_a_r": true,
+    "range": true,
+    "width": true
+   },
+   "logs_sha256": "afc40ad031333be79252c9389bc1ec26e53d04d090a44d1468b92e4aea192427",
+   "status": "PASS"
+  },
+  "table_sha256": "353e124a86189fb5e593ed9ddbf995c7e7d4e01db12696798b5a4f3bc5c66a5e"
+ },
+ "M38": {
+  "base": "/home/runner/work/cryptanalysis/cryptanalysis/experiments/koblitz-n83-rankfinder-20261021/snapshots/closure/base_n83_closure_M38.jsonl",
+  "base_check": {
+   "checks": {
+    "all_x_distinct": true,
+    "base_hash": true,
+    "column_representatives_are_B_first_K": true,
+    "every_member_and_label": true,
+    "every_orbit_in_prime_order_subgroup": true,
+    "every_orbit_is_alpha_of_its_column": true,
+    "identity": true,
+    "multipliers": true,
+    "orbits_distinct_up_to_sign_and_frobenius": true
+   },
+   "notes": {
+    "orbits": 608,
+    "orbits_per_column": 38,
+    "repeated_orbits": []
+   },
+   "status": "PASS"
+  },
+  "base_hash": "827f49bdf3e419e90955533ea086ebf14420ed46523486f34161cff2c0c96b01",
+  "base_sha256": "42e0de3d4394ab1f98a22d685acbc0288a95e62de8d7457692ea771325a216ca",
+  "checker": "oracle.py pure-Python field arithmetic (pinned harness), not the producer",
+  "logs_equal_B_first_columns": true,
+  "planted_controls": {
+   "caught": {
+    "duplicated_orbit": true,
+    "label_coefficient_off_by_one": true,
+    "log_off_by_one": true
+   },
+   "status": "PASS"
+  },
+  "status": "PASS",
+  "table": "/home/runner/work/cryptanalysis/cryptanalysis/experiments/koblitz-n83-rankfinder-20261021/inputs/factor_logs_n83_closure_M38.json",
+  "table_check": {
+   "bad_columns": [],
+   "bad_orbits": [],
+   "checks": {
+    "base_hash": true,
+    "every_column_log_maps_G_to_R_c": true,
+    "every_orbit_log_maps_G_to_its_representative": true,
+    "kind": true,
+    "n_a_r": true,
+    "range": true,
+    "width": true
+   },
+   "logs_sha256": "7d2539c86dd65af04852cdde59805d0275a0aca8b4f3f8d47aea77554afff3a9",
+   "status": "PASS"
+  },
+  "table_sha256": "06b9c079c69625948bb500681591b481b5949ef92694698fb6e95f5f1dfea4ee"
+ },
+ "status": "PASS"
+}

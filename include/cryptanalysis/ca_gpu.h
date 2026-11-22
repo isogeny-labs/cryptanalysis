@@ -36,6 +36,8 @@ typedef struct ca_gpu_rho_params {
     ca_gpu_backend backend;
     int32_t device;             /* CUDA device ordinal */
     uint32_t threads_per_block; /* 0 => 128 */
+    /* The effective walk count must fit 32-bit walk IDs and host buffers;
+     * oversized launches return CA_ERR_INVALID. */
     uint32_t blocks;            /* 0 => auto from the group size (and the device) */
     uint32_t steps_per_launch;  /* 0 => auto */
     uint32_t r;                 /* adding-walk multipliers, 0 => auto */
@@ -46,13 +48,31 @@ typedef struct ca_gpu_rho_params {
     int32_t dp_bits;
     int32_t negation_map; /* 1 => use on curves */
     uint64_t seed;        /* 0 => random */
-    uint64_t max_ops;     /* 0 => unlimited */
+    /* Abort with CA_ERR_LIMIT once this many group ops are done (checked
+     * between launches).  0 sets no limit and keeps the built-in runaway
+     * guard, 64 * (sqrt(n) + walks * (2^dp_bits + steps_per_launch)) + 2^20;
+     * a run that reaches it returns CA_ERR_NOT_FOUND (the target is not a
+     * power of the base). */
+    uint64_t max_ops;
 } ca_gpu_rho_params;
 
 CA_API void ca_gpu_rho_params_default(ca_gpu_rho_params *p);
 
 CA_API ca_status ca_gpu_rho_solve(const ca_group *g, const ca_elem *base, const ca_elem *target,
                                   const ca_gpu_rho_params *params, uint64_t *x, ca_stats *st);
+
+/* Preserve the host distinguished-point corpus across invocations. A resumed
+ * run rebuilds the same multiplier table and starts fresh device walk streams
+ * against those points. NULL checkpoint_path enables progress without disk
+ * state; zero intervals select 5-second progress and 60-second checkpoints. */
+CA_API ca_status ca_gpu_rho_solve_checkpointed(const ca_group *g, const ca_elem *base,
+                                                const ca_elem *target,
+                                                const ca_gpu_rho_params *params,
+                                                const char *checkpoint_path,
+                                                uint32_t progress_interval,
+                                                uint32_t checkpoint_interval,
+                                                int verbose, uint64_t *x,
+                                                ca_stats *st);
 
 /* 1 if the library was built with the CUDA backend (CA_CUDA=ON). */
 CA_API int ca_gpu_cuda_compiled(void);

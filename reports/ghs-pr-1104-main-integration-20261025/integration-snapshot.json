@@ -1,0 +1,93 @@
+{
+  "observed_utc": "2026-10-25 15:06:41 UTC",
+  "observed_pr": {
+    "url": "https://github.com/aburan28/cryptanalysis/pull/1104",
+    "state": "open",
+    "merged": false,
+    "draft": false,
+    "mergeable": false,
+    "head_sha": "fd03d2f9fc47b0b8f9019466a6b4e8e7d3c91e2b",
+    "base_sha": "c5aa7b39bfa30e8cdbd46a158c7cbadaa8be3503",
+    "merged_at": null,
+    "merge_commit_sha": "a42c82a436f826f3e88af5edb004bbe9cad416fa",
+    "updated_at": "2026-10-25T11:09:14Z"
+  },
+  "actual_main": "d90192b50b13f25d2f8356bf40133a05554285a2",
+  "upstream_repair": {
+    "url": "https://github.com/aburan28/cryptanalysis/pull/1114",
+    "state": "closed",
+    "merged": true,
+    "head_sha": "dac1e8b4501a60e7ca8db819455752bca8811a82",
+    "base_sha": "c5aa7b39bfa30e8cdbd46a158c7cbadaa8be3503",
+    "merge_commit_sha": "d90192b50b13f25d2f8356bf40133a05554285a2",
+    "merged_at": "2026-10-25T14:04:36Z",
+    "title": "Repair cryptanalysis required analysis gates"
+  },
+  "old_head_runs": [
+    {
+      "id": 40176114160,
+      "name": "Lean source evidence audit",
+      "status": "completed",
+      "conclusion": "success",
+      "run_number": 21,
+      "jobs_url": "https://api.github.com/repos/aburan28/cryptanalysis/actions/runs/40176114160/jobs",
+      "logs_url": "https://api.github.com/repos/aburan28/cryptanalysis/actions/runs/40176114160/logs",
+      "workflow_id": 392520392
+    },
+    {
+      "id": 40176114156,
+      "name": "Rust GHS sweeper",
+      "status": "completed",
+      "conclusion": "success",
+      "run_number": 23,
+      "jobs_url": "https://api.github.com/repos/aburan28/cryptanalysis/actions/runs/40176114156/jobs",
+      "logs_url": "https://api.github.com/repos/aburan28/cryptanalysis/actions/runs/40176114156/logs",
+      "workflow_id": 391842033
+    },
+    {
+      "id": 40176114283,
+      "name": "Lean corpus evidence bridge",
+      "status": "completed",
+      "conclusion": "success",
+      "run_number": 22,
+      "jobs_url": "https://api.github.com/repos/aburan28/cryptanalysis/actions/runs/40176114283/jobs",
+      "logs_url": "https://api.github.com/repos/aburan28/cryptanalysis/actions/runs/40176114283/logs",
+      "workflow_id": 386133664
+    },
+    {
+      "id": 40176114316,
+      "name": "artifacts",
+      "status": "completed",
+      "conclusion": "failure",
+      "run_number": 49,
+      "jobs_url": "https://api.github.com/repos/aburan28/cryptanalysis/actions/runs/40176114316/jobs",
+      "logs_url": "https://api.github.com/repos/aburan28/cryptanalysis/actions/runs/40176114316/logs",
+      "workflow_id": 395300251
+    },
+    {
+      "id": 40176114164,
+      "name": "ci",
+      "status": "completed",
+      "conclusion": "success",
+      "run_number": 6145,
+      "jobs_url": "https://api.github.com/repos/aburan28/cryptanalysis/actions/runs/40176114164/jobs",
+      "logs_url": "https://api.github.com/repos/aburan28/cryptanalysis/actions/runs/40176114164/logs",
+      "workflow_id": 362015679
+    },
+    {
+      "id": 40176114191,
+      "name": "analysis",
+      "status": "completed",
+      "conclusion": "failure",
+      "run_number": 4859,
+      "jobs_url": "https://api.github.com/repos/aburan28/cryptanalysis/actions/runs/40176114191/jobs",
+      "logs_url": "https://api.github.com/repos/aburan28/cryptanalysis/actions/runs/40176114191/logs",
+      "workflow_id": 362093647
+    }
+  ],
+  "integration_code_commit": "a74d5404df4b4e0be5ef6308f9027650bc590f2e",
+  "conflicts": [
+    "tools/artifacts/artifacts.py"
+  ],
+  "resolution": "Keep --no-abbrev (full IDs); preserve regressions; import all other main changes unchanged."
+}

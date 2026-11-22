@@ -1,0 +1,118 @@
+{
+ "detail": {
+  "counts_and_log_identical_per_point_failed_points": [
+   "v3p00",
+   "v3p01"
+  ],
+  "digest_failures": {},
+  "execution_cpu": 0,
+  "generator_equals_archived_failed_points": [
+   "v3p00",
+   "v3p01"
+  ],
+  "host_class": "AMD EPYC 9V74 80-Core Processor | avx512=y gfni=y vpclmulqdq=y avx2=y bmi2=y",
+  "invalid_rows": [
+   {
+    "arm": "N2X",
+    "issues": [
+     "status invalid"
+    ],
+    "row_issues": [
+     "nonzero exit 1",
+     "no row file"
+    ],
+    "serial": 9
+   },
+   {
+    "arm": "N2X",
+    "issues": [
+     "status invalid"
+    ],
+    "row_issues": [
+     "nonzero exit 1",
+     "no row file"
+    ],
+    "serial": 16
+   }
+  ],
+  "native_sha256": {
+   "bin": "7e5b763ea36f5e4738d964281e43c52643bba6ec46a5e840ee376914d15a08de",
+   "lib": "261bfc016cd8d3b44b0c97c2724ad6351f518bcfecde7a77453077a60b01979b",
+   "v3lib": "d92534fa1984a7754217233ef985b9c8189db6bf052d71ebc3c855468b4d87f2"
+  },
+  "planted_compared_every_item_failed_points": [
+   "v3p00",
+   "v3p01"
+  ],
+  "problems": [],
+  "relations_identical_per_point_failed_points": [
+   "v3p00",
+   "v3p01"
+  ],
+  "rho_verified_failed_points": [],
+  "s0": {
+   "bruteforce_equal": 2982,
+   "multi": 2375,
+   "nonempty_sage": 2381,
+   "order_equal": 2982,
+   "order_equal_multi": 2375,
+   "set_equal": 2982,
+   "systems": 2982,
+   "third_checked": 607,
+   "third_equal": 607
+  },
+  "s0b": {
+   "multi": 2375,
+   "nonempty": 2381,
+   "systems": 2982
+  },
+  "setup_identical_per_point_failed_points": [
+   "v3p00",
+   "v3p01"
+  ],
+  "warm_batch_reproduced_failed_points": []
+ },
+ "gate_names": {
+  "missing": [],
+  "not_true": [
+   "counts_and_log_identical_per_point",
+   "every_scheduled_row_valid",
+   "field_check_every_native_process",
+   "generator_equals_archived",
+   "planted_compared_every_item",
+   "relations_identical_per_point",
+   "setup_identical_per_point",
+   "smoke_points_equal_v3_archive"
+  ],
+  "protocol_differs": [],
+  "unknown": []
+ },
+ "gates": {
+  "counts_and_log_identical_per_point": false,
+  "every_scheduled_row_valid": false,
+  "field_check_every_native_process": false,
+  "generator_equals_archived": false,
+  "host_cpu_identity_unchanged": true,
+  "native_artifacts_one_digest": true,
+  "o1_passed": true,
+  "o2_passed": true,
+  "placement_pinned_every_process": true,
+  "planted_compared_every_item": false,
+  "raw_records_verified": true,
+  "receipt_rows_match_schedule": true,
+  "relation_digests_recomputed": true,
+  "relations_identical_per_point": false,
+  "rho_verified": true,
+  "rows_in_schedule_order": true,
+  "runner_identity_matches_frozen_files": true,
+  "s0_binary_passed": true,
+  "s0_passed": true,
+  "schedule_and_panel_regenerate": true,
+  "setup_identical_per_point": false,
+  "smoke_points_equal_v3_archive": false,
+  "tier1_counters_recorded": true,
+  "warm_batch_reproduced": true
+ },
+ "kind": "Sage smoke gate (untimed; correctness only)",
+ "smoke_gate_passed": false
+}

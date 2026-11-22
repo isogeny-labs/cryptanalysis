@@ -1,0 +1,9 @@
+# Visible native compiler failure diagnostics
+
+Current-source corpus job123958270613/run41024184539 failed in the native new-source compilation stage. It retained the exact command and complete binary stdout/stderr as command-n6vlrqgd, but printed only the artifact directory. The artifact-storage endpoint returns403 in this environment, so the precise failing source and Lean error are not guessed here. The five Xedni successor declarations remain unqualified by a successful current native build.
+
+The gate now prints the source it is compiling and, on an opted-in compiler failure, the last8192raw bytes of each stream with a pointer to its complete retained file. Invalid UTF-8 uses backslash escapes in the console; original bytes and hashes remain unchanged. The same nonzero exit still fails the gate. Success output and every proof admission/foundation check remain unchanged. No new privileged workflow, policy exception, theorem or artifact-storage bypass is introduced.
+
+All46software controls pass, including real child-process failure output, bounded tails, invalid UTF-8 custody, successful-command behavior, source/object/workspace tampering and namespace/foundation refusal. These controls are not Lean proof evidence. Initial local test attempts lacked21tracked auditor/tool files and6project/source fixtures; exact Git versions were restored and the entire suite passed. Both setup-failure logs remain separate.
+
+All9original sealed Xedni files and the new WitnessObstruction.lean source remain byte-exact. The mathematical report, diagram and PDF are unchanged because this is a CI diagnostics repair, with no new mathematical or experimental result. Primary behavior was checked against the installed Python subprocess.run, bytes.decode and codecs.backslashreplace_errors contracts. Require fresh native compilation/audits and all applicable checks before resolving the original P1 or merging.

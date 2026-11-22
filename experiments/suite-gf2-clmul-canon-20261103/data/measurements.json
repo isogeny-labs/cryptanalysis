@@ -1,0 +1,204 @@
+{
+ "baseline": "main a9dcdb258+ (perfindex build --ref origin/main)",
+ "valid_instr": true,
+ "valid_wall": true,
+ "wall_index": 1.0325651388456805,
+ "rows": [
+  {
+   "id": "dlp/koblitz_signed_rho_k0_n41",
+   "base_ir": 560831640,
+   "cand_ir": 441241420,
+   "ir_ratio": 1.2710312644719528,
+   "wall_base_ms": 50.202361,
+   "wall_cand_ms": 49.474759,
+   "wall_speedup": 1.0121826782948284,
+   "wall_ci95": [
+    0.9998487874417941,
+    1.0268656535074772
+   ],
+   "wall_verdict": "neutral"
+  },
+  {
+   "id": "field_ec/koblitz_curve_mul_n53_1k",
+   "base_ir": 102657009,
+   "cand_ir": 96250347,
+   "ir_ratio": 1.0665624821072073,
+   "wall_base_ms": 4.995827,
+   "wall_cand_ms": 4.833464,
+   "wall_speedup": 1.0184408428578084,
+   "wall_ci95": [
+    0.9665291679722157,
+    1.0361224987161746
+   ],
+   "wall_verdict": "neutral"
+  },
+  {
+   "id": "field_ec/koblitz_n53_add_many_lazy_64x2k",
+   "base_ir": 72409072,
+   "cand_ir": 66163632,
+   "ir_ratio": 1.0943938506882451,
+   "wall_base_ms": 4.579046,
+   "wall_cand_ms": 4.57162,
+   "wall_speedup": 1.0024537088483219,
+   "wall_ci95": [
+    0.9911081066801068,
+    1.0372133616050758
+   ],
+   "wall_verdict": "neutral"
+  },
+  {
+   "id": "field_ec/koblitz_n53_fast_mul_2k",
+   "base_ir": 167323097,
+   "cand_ir": 148905037,
+   "ir_ratio": 1.1236899729590746,
+   "wall_base_ms": 9.898334,
+   "wall_cand_ms": 9.329332,
+   "wall_speedup": 1.0631257635961036,
+   "wall_ci95": [
+    1.0552464581213732,
+    1.0904416944041673
+   ],
+   "wall_verdict": "faster"
+  },
+  {
+   "id": "pdp/pair_table_build_n31_l10",
+   "base_ir": 808474004,
+   "cand_ir": 724467567,
+   "ir_ratio": 1.115956104629871,
+   "wall_base_ms": 62.888771,
+   "wall_cand_ms": 56.854441,
+   "wall_speedup": 1.0883011584450233,
+   "wall_ci95": [
+    1.0605401683349098,
+    1.099603599475605
+   ],
+   "wall_verdict": "faster"
+  },
+  {
+   "id": "relation/koblitz_collect_k0n41_w164_u4096",
+   "base_ir": 470182704,
+   "cand_ir": 381318583,
+   "ir_ratio": 1.233044296716061,
+   "wall_base_ms": 20.576303,
+   "wall_cand_ms": 19.37661,
+   "wall_speedup": 1.0619144938149656,
+   "wall_ci95": [
+    1.046591373609564,
+    1.087070747540982
+   ],
+   "wall_verdict": "neutral"
+  },
+  {
+   "id": "relation/koblitz_collect_k0n53_w477_u1024",
+   "base_ir": 401451260,
+   "cand_ir": 331685302,
+   "ir_ratio": 1.210337803874107,
+   "wall_base_ms": 23.63812,
+   "wall_cand_ms": 22.255467,
+   "wall_speedup": 1.0465225617841947,
+   "wall_ci95": [
+    1.0223557205067861,
+    1.1734180286372629
+   ],
+   "wall_verdict": "neutral"
+  },
+  {
+   "id": "relation/koblitz_descent_k0n53_m2_x4",
+   "base_ir": 888648815,
+   "cand_ir": 771557180,
+   "ir_ratio": 1.1517601521121221,
+   "wall_base_ms": 53.875948,
+   "wall_cand_ms": 52.827771,
+   "wall_speedup": 1.012056722494083,
+   "wall_ci95": [
+    0.9910534216826675,
+    1.0570962127073043
+   ],
+   "wall_verdict": "neutral"
+  },
+  {
+   "id": "relation/koblitz_pair_table_k0n41_folded",
+   "base_ir": 231062807,
+   "cand_ir": 191714565,
+   "ir_ratio": 1.2052438843131192,
+   "wall_base_ms": 18.853052,
+   "wall_cand_ms": 17.893983,
+   "wall_speedup": 1.037598360950786,
+   "wall_ci95": [
+    1.0255801940246805,
+    1.065178484398938
+   ],
+   "wall_verdict": "neutral"
+  },
+  {
+   "id": "relation/koblitz_rung_k0n31",
+   "base_ir": 313464830,
+   "cand_ir": 267788086,
+   "ir_ratio": 1.1705704860969803,
+   "wall_base_ms": 17.474309,
+   "wall_cand_ms": 16.743542,
+   "wall_speedup": 0.9876623215201565,
+   "wall_ci95": [
+    0.9823747691952517,
+    1.0538807281072318
+   ],
+   "wall_verdict": "neutral"
+  },
+  {
+   "id": "relation/orbit_ic_j0_34bit_x8",
+   "base_ir": 220670313,
+   "cand_ir": 220701087,
+   "ir_ratio": 0.999860562535426,
+   "wall_base_ms": 59.055716,
+   "wall_cand_ms": 62.429407,
+   "wall_speedup": 0.9859841853054924,
+   "wall_ci95": [
+    0.9592348643327988,
+    1.0273085345215927
+   ],
+   "wall_verdict": "neutral"
+  },
+  {
+   "id": "sat/koblitz_bool_cnf_m3_n15_b1500_x2",
+   "base_ir": 1036026184,
+   "cand_ir": 985059314,
+   "ir_ratio": 1.051739899593498,
+   "wall_base_ms": 163.885854,
+   "wall_cand_ms": 164.420149,
+   "wall_speedup": 1.0357472550398918,
+   "wall_ci95": [
+    0.9885044170702293,
+    1.039279067462667
+   ],
+   "wall_verdict": "neutral"
+  },
+  {
+   "id": "sat/koblitz_bool_native_m2_n19_x2",
+   "base_ir": 1190045502,
+   "cand_ir": 1188671485,
+   "ir_ratio": 1.0011559266099497,
+   "wall_base_ms": 147.047094,
+   "wall_cand_ms": 149.407271,
+   "wall_speedup": 1.0018308186603841,
+   "wall_ci95": [
+    0.9447494176354698,
+    1.0312371638618731
+   ],
+   "wall_verdict": "neutral"
+  },
+  {
+   "id": "sat/koblitz_bool_native_m3_n15_x3",
+   "base_ir": 547997519,
+   "cand_ir": 550469038,
+   "ir_ratio": 0.9955101580118298,
+   "wall_base_ms": 59.94765,
+   "wall_cand_ms": 59.489809,
+   "wall_speedup": 1.0076961248942655,
+   "wall_ci95": [
+    0.9744858939186027,
+    1.0158025236410215
+   ],
+   "wall_verdict": "neutral"
+  }
+ ]
+}

@@ -23,15 +23,25 @@ extern "C" {
 
 typedef struct ca_grumpy_params {
     uint64_t m;           /* giant step; 0 => round(alpha * sqrt(width)) */
-    double   alpha;       /* step factor used when m == 0; 0 => 0.7 */
+    double alpha;         /* finite step factor used when m == 0; <= 0 => 0.7 */
     uint64_t max_ops;     /* 0 => none */
 } ca_grumpy_params;
 
 CA_API void ca_grumpy_params_default(ca_grumpy_params *p);
 
+/* Automatic step selection rejects non-finite alpha and rounded steps >= 2^64.
+ * An explicit m bypasses alpha. */
 CA_API ca_status ca_grumpy_solve(const ca_group *g, const ca_elem *base, const ca_elem *target,
                                  uint64_t lo, uint64_t hi, const ca_grumpy_params *params,
                                  uint64_t *x, ca_stats *st);
+
+/* Save the three walks and collision table for an exact interval resume.
+ * NULL checkpoint_path enables live progress without persistence. */
+CA_API ca_status ca_grumpy_solve_checkpointed(
+    const ca_group *g, const ca_elem *base, const ca_elem *target,
+    uint64_t lo, uint64_t hi, const ca_grumpy_params *params,
+    const char *checkpoint_path, uint32_t progress_interval,
+    uint32_t checkpoint_interval, int verbose, uint64_t *x, ca_stats *st);
 
 #ifdef __cplusplus
 }

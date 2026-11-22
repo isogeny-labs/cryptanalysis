@@ -1,0 +1,80 @@
+{
+ "design": {
+  "points": 20,
+  "primary_pairs_per_point": 3,
+  "aa_pairs_per_point": 3,
+  "statistic": "ratio of sums, two-stage paired bootstrap",
+  "sims": 200,
+  "bootstrap_draws": 1000
+ },
+ "prior": {
+  "v2_runner": [
+   67.6,
+   84.5,
+   69.0,
+   98.8,
+   66.6,
+   83.5,
+   90.2,
+   81.0,
+   64.8,
+   57.1,
+   63.8,
+   64.4,
+   69.9,
+   63.1,
+   68.7,
+   83.9
+  ],
+  "archived": [
+   29.15546892699997,
+   38.55680784199997,
+   41.05519806599996,
+   44.296693366000184,
+   39.41518875199991,
+   35.04018640900013,
+   28.832755523000014,
+   56.099261225000376,
+   51.76225950999988,
+   42.37941533500016
+  ]
+ },
+ "sigmas_log_per_process": [
+  0.1,
+  0.2
+ ],
+ "deltas": [
+  1.0,
+  1.05,
+  1.1,
+  1.2
+ ],
+ "lower_bound_above_1_rate": {
+  "v2_runner_sigma0.10_delta1.00": 0.005,
+  "v2_runner_sigma0.10_delta1.05": 0.625,
+  "v2_runner_sigma0.10_delta1.10": 0.995,
+  "v2_runner_sigma0.10_delta1.20": 1.0,
+  "v2_runner_sigma0.20_delta1.00": 0.005,
+  "v2_runner_sigma0.20_delta1.05": 0.16,
+  "v2_runner_sigma0.20_delta1.10": 0.53,
+  "v2_runner_sigma0.20_delta1.20": 0.995,
+  "archived_sigma0.10_delta1.00": 0.015,
+  "archived_sigma0.10_delta1.05": 0.645,
+  "archived_sigma0.10_delta1.10": 0.995,
+  "archived_sigma0.10_delta1.20": 1.0,
+  "archived_sigma0.20_delta1.00": 0.015,
+  "archived_sigma0.20_delta1.05": 0.12,
+  "archived_sigma0.20_delta1.10": 0.52,
+  "archived_sigma0.20_delta1.20": 0.98
+ },
+ "aa_false_fail_rate": {
+  "v2_runner_sigma0.10": 0.02,
+  "v2_runner_sigma0.20": 0.18,
+  "archived_sigma0.10": 0.01,
+  "archived_sigma0.20": 0.23
+ },
+ "min_delta": 1.2,
+ "power_at_min_delta_worst": 0.98,
+ "rejection_rate_at_no_effect_worst": 0.015,
+ "note": "the expected effect is far above min_delta (v2 run 39376405326: B processes 57-99 s, N processes 1.8-2.2 s of launcher wall including about 1.5 s of Sage start-up); min_delta 1.20 is the smallest effect the design is sized to detect"
+}

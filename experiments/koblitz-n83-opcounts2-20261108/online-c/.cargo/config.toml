@@ -1,0 +1,6 @@
+# koblitz-n83-fieldops2-20261107: both sides are built with the carry-less
+# multiply enabled (side A as the field-ops row was built, side B likewise), so
+# the producers' field products (fast_field) inline on both. Each producer
+# asserts the CPU has it before any use (fast_field::check).
+[build]
+rustflags = ["-C", "target-feature=+pclmulqdq"]

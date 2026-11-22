@@ -1,0 +1,169 @@
+_RNvMs1_NtNtCseRqN0d7Y2SB_19cryptanalysis_suite13cryptanalysis12koblitz_fastNtB5_9FastCurve19add_pairwise_vector
+  13a660:      	pushq	%rbp
+  13a661:      	pushq	%r15
+  13a663:      	pushq	%r14
+  13a665:      	pushq	%r13
+  13a667:      	pushq	%r12
+  13a669:      	pushq	%rbx
+  13a66a:      	subq	$0x98, %rsp
+  13a671:      	movq	%rdx, 0x8(%rsp)
+  13a676:      	movq	%r8, 0x20(%rsp)
+  13a67b:      	cmpq	%r8, %rdx
+  13a67e:      	jne	0x13a733 <_RNvMs1_NtNtCseRqN0d7Y2SB_19cryptanalysis_suite13cryptanalysis12koblitz_fastNtB5_9FastCurve19add_pairwise_vector+0xd3>
+  13a684:      	movq	%r9, %r14
+  13a687:      	movq	%rcx, %r15
+  13a68a:      	movq	%rdx, %rbx
+  13a68d:      	movq	%rsi, %r12
+  13a690:      	movq	%rdi, %r13
+  13a693:      	movq	0xd0(%rsp), %rbp
+  13a69b:      	leaq	0x40(%rdi), %rsi
+  13a69f:      	leaq	0x60(%rsp), %rdi
+  13a6a4:      	callq	0x138cd0 <_RNvMNtNtNtCseRqN0d7Y2SB_19cryptanalysis_suite13cryptanalysis12koblitz_fast7simd256NtB2_7Simd2563new>
+  13a6a9:      	cmpb	$0x2, 0x94(%rsp)
+  13a6b1:      	jne	0x13a6db <_RNvMs1_NtNtCseRqN0d7Y2SB_19cryptanalysis_suite13cryptanalysis12koblitz_fastNtB5_9FastCurve19add_pairwise_vector+0x7b>
+  13a6b3:      	subq	$0x8, %rsp
+  13a6b7:      	movq	%r13, %rdi
+  13a6ba:      	movq	%r12, %rsi
+  13a6bd:      	movq	%rbx, %rdx
+  13a6c0:      	movq	%r15, %rcx
+  13a6c3:      	movq	%rbx, %r8
+  13a6c6:      	movq	%r14, %r9
+  13a6c9:      	pushq	%rbp
+  13a6ca:      	callq	*0x64768(%rip)          # 0x19ee38 <writev+0x19ee38>
+  13a6d0:      	addq	$0x10, %rsp
+  13a6d4:      	xorl	%eax, %eax
+  13a6d6:      	jmp	0x13a89e <_RNvMs1_NtNtCseRqN0d7Y2SB_19cryptanalysis_suite13cryptanalysis12koblitz_fastNtB5_9FastCurve19add_pairwise_vector+0x23e>
+  13a6db:      	movq	0x90(%rsp), %rax
+  13a6e3:      	movq	%rax, 0x50(%rsp)
+  13a6e8:      	movups	0x60(%rsp), %xmm0
+  13a6ed:      	movups	0x70(%rsp), %xmm1
+  13a6f2:      	movups	0x80(%rsp), %xmm2
+  13a6fa:      	movaps	%xmm2, 0x40(%rsp)
+  13a6ff:      	movaps	%xmm1, 0x30(%rsp)
+  13a704:      	movaps	%xmm0, 0x20(%rsp)
+  13a709:      	movq	$0x0, 0x10(%rbp)
+  13a711:      	cmpq	(%rbp), %rbx
+  13a715:      	ja	0x13a759 <_RNvMs1_NtNtCseRqN0d7Y2SB_19cryptanalysis_suite13cryptanalysis12koblitz_fastNtB5_9FastCurve19add_pairwise_vector+0xf9>
+  13a717:      	xorl	%edx, %edx
+  13a719:      	testq	%rbx, %rbx
+  13a71c:      	je	0x13a822 <_RNvMs1_NtNtCseRqN0d7Y2SB_19cryptanalysis_suite13cryptanalysis12koblitz_fastNtB5_9FastCurve19add_pairwise_vector+0x1c2>
+  13a722:      	movq	0x8(%rbp), %rax
+  13a726:      	cmpq	$0x1, %rbx
+  13a72a:      	jne	0x13a77f <_RNvMs1_NtNtCseRqN0d7Y2SB_19cryptanalysis_suite13cryptanalysis12koblitz_fastNtB5_9FastCurve19add_pairwise_vector+0x11f>
+  13a72c:      	xorl	%esi, %esi
+  13a72e:      	jmp	0x13a7f6 <_RNvMs1_NtNtCseRqN0d7Y2SB_19cryptanalysis_suite13cryptanalysis12koblitz_fastNtB5_9FastCurve19add_pairwise_vector+0x196>
+  13a733:      	leaq	-0x799cc(%rip), %rcx    # 0xc0d6e <anon.a060cfe9dd72f413c9ef9c5c70341b63.331.llvm.9386338835352603219+0x189>
+  13a73a:      	leaq	0x61377(%rip), %r9      # 0x19bab8 <anon.a060cfe9dd72f413c9ef9c5c70341b63.508.llvm.9386338835352603219+0x218>
+  13a741:      	leaq	0x8(%rsp), %rsi
+  13a746:      	leaq	0x20(%rsp), %rdx
+  13a74b:      	movl	$0x49, %r8d
+  13a751:      	xorl	%edi, %edi
+  13a753:      	callq	*0x641ef(%rip)          # 0x19e948 <writev+0x19e948>
+  13a759:      	movl	$0x8, %ecx
+  13a75e:      	movl	$0x8, %r8d
+  13a764:      	movq	%rbp, %rdi
+  13a767:      	xorl	%esi, %esi
+  13a769:      	movq	%rbx, %rdx
+  13a76c:      	callq	0x119250 <_RINvNvMs2_NtCs6i54tJFfzR_5alloc7raw_vecINtB8_11RawVecInnerpE7reserve21do_reserve_and_handleNtNtBa_5alloc6GlobalECseRqN0d7Y2SB_19cryptanalysis_suite>
+  13a771:      	movq	0x10(%rbp), %rdx
+  13a775:      	movq	0x8(%rbp), %rax
+  13a779:      	cmpq	$0x1, %rbx
+  13a77d:      	je	0x13a72c <_RNvMs1_NtNtCseRqN0d7Y2SB_19cryptanalysis_suite13cryptanalysis12koblitz_fastNtB5_9FastCurve19add_pairwise_vector+0xcc>
+  13a77f:      	movabsq	$0x7fffffffffffffe, %rcx # imm = 0x7FFFFFFFFFFFFFE
+  13a789:      	andq	%rbx, %rcx
+  13a78c:      	leaq	(%rax,%rdx,8), %rdi
+  13a790:      	addq	$0x8, %rdi
+  13a794:      	movl	$0x5, %r8d
+  13a79a:      	xorl	%r9d, %r9d
+  13a79d:      	xorl	%esi, %esi
+  13a79f:      	nop
+  13a7a0:      	movq	-0x28(%r15,%r8,8), %r10
+  13a7a5:      	movzbl	-0x18(%r15,%r8,8), %r11d
+  13a7ab:      	orb	-0x18(%r12,%r8,8), %r11b
+  13a7b0:      	xorq	-0x28(%r12,%r8,8), %r10
+  13a7b5:      	testb	$0x1, %r11b
+  13a7b9:      	cmovneq	%r9, %r10
+  13a7bd:      	movq	%r10, -0x8(%rdi,%rsi,8)
+  13a7c2:      	movq	-0x10(%r15,%r8,8), %r10
+  13a7c7:      	movzbl	(%r15,%r8,8), %r11d
+  13a7cc:      	orb	(%r12,%r8,8), %r11b
+  13a7d0:      	xorq	-0x10(%r12,%r8,8), %r10
+  13a7d5:      	testb	$0x1, %r11b
+  13a7d9:      	cmovneq	%r9, %r10
+  13a7dd:      	movq	%r10, (%rdi,%rsi,8)
+  13a7e1:      	addq	$0x2, %rsi
+  13a7e5:      	addq	$0x6, %r8
+  13a7e9:      	cmpq	%rsi, %rcx
+  13a7ec:      	jne	0x13a7a0 <_RNvMs1_NtNtCseRqN0d7Y2SB_19cryptanalysis_suite13cryptanalysis12koblitz_fastNtB5_9FastCurve19add_pairwise_vector+0x140>
+  13a7ee:      	addq	%rsi, %rdx
+  13a7f1:      	testb	$0x1, %bl
+  13a7f4:      	je	0x13a822 <_RNvMs1_NtNtCseRqN0d7Y2SB_19cryptanalysis_suite13cryptanalysis12koblitz_fastNtB5_9FastCurve19add_pairwise_vector+0x1c2>
+  13a7f6:      	shlq	$0x3, %rsi
+  13a7fa:      	leaq	(%rsi,%rsi,2), %rcx
+  13a7fe:      	movq	(%r15,%rcx), %rsi
+  13a802:      	movzbl	0x10(%r15,%rcx), %edi
+  13a808:      	orb	0x10(%r12,%rcx), %dil
+  13a80d:      	xorq	(%r12,%rcx), %rsi
+  13a811:      	xorl	%ecx, %ecx
+  13a813:      	testb	$0x1, %dil
+  13a817:      	cmoveq	%rsi, %rcx
+  13a81b:      	movq	%rcx, (%rax,%rdx,8)
+  13a81f:      	incq	%rdx
+  13a822:      	movq	%rdx, 0x10(%rbp)
+  13a826:      	movq	0x8(%rbp), %rsi
+  13a82a:      	leaq	0x18(%rbp), %rcx
+  13a82e:      	leaq	0x40(%r13), %rdi
+  13a832:      	callq	*0x64530(%rip)          # 0x19ed68 <writev+0x19ed68>
+  13a838:      	movq	0x8(%rbp), %rax
+  13a83c:      	movq	0x10(%rbp), %rcx
+  13a840:      	movq	%rbx, 0x10(%rsp)
+  13a845:      	movq	%rcx, 0x18(%rsp)
+  13a84a:      	cmpq	%rcx, %rbx
+  13a84d:      	jne	0x13a8b0 <_RNvMs1_NtNtCseRqN0d7Y2SB_19cryptanalysis_suite13cryptanalysis12koblitz_fastNtB5_9FastCurve19add_pairwise_vector+0x250>
+  13a84f:      	cmpb	$0x0, 0x54(%rsp)
+  13a854:      	je	0x13a879 <_RNvMs1_NtNtCseRqN0d7Y2SB_19cryptanalysis_suite13cryptanalysis12koblitz_fastNtB5_9FastCurve19add_pairwise_vector+0x219>
+  13a856:      	subq	$0x8, %rsp
+  13a85a:      	leaq	0x28(%rsp), %rdi
+  13a85f:      	movq	%r13, %rsi
+  13a862:      	movq	%r12, %rdx
+  13a865:      	movq	%rbx, %rcx
+  13a868:      	movq	%r15, %r8
+  13a86b:      	movq	%rbx, %r9
+  13a86e:      	pushq	%r14
+  13a870:      	pushq	%rbx
+  13a871:      	pushq	%rax
+  13a872:      	callq	0x1368d0 <_RNvMNtNtNtCseRqN0d7Y2SB_19cryptanalysis_suite13cryptanalysis12koblitz_fast7simd256NtB2_7Simd25613add_full_wide>
+  13a877:      	jmp	0x13a89a <_RNvMs1_NtNtCseRqN0d7Y2SB_19cryptanalysis_suite13cryptanalysis12koblitz_fastNtB5_9FastCurve19add_pairwise_vector+0x23a>
+  13a879:      	subq	$0x8, %rsp
+  13a87d:      	leaq	0x28(%rsp), %rdi
+  13a882:      	movq	%r13, %rsi
+  13a885:      	movq	%r12, %rdx
+  13a888:      	movq	%rbx, %rcx
+  13a88b:      	movq	%r15, %r8
+  13a88e:      	movq	%rbx, %r9
+  13a891:      	pushq	%r14
+  13a893:      	pushq	%rbx
+  13a894:      	pushq	%rax
+  13a895:      	callq	0x1374a0 <_RNvMNtNtNtCseRqN0d7Y2SB_19cryptanalysis_suite13cryptanalysis12koblitz_fast7simd256NtB2_7Simd25615add_full_narrow>
+  13a89a:      	addq	$0x20, %rsp
+  13a89e:      	addq	$0x98, %rsp
+  13a8a5:      	popq	%rbx
+  13a8a6:      	popq	%r12
+  13a8a8:      	popq	%r13
+  13a8aa:      	popq	%r14
+  13a8ac:      	popq	%r15
+  13a8ae:      	popq	%rbp
+  13a8af:      	retq
+  13a8b0:      	leaq	0x611d1(%rip), %r9      # 0x19ba88 <anon.a060cfe9dd72f413c9ef9c5c70341b63.508.llvm.9386338835352603219+0x1e8>
+  13a8b7:      	leaq	0x10(%rsp), %rsi
+  13a8bc:      	leaq	0x18(%rsp), %rdx
+  13a8c1:      	xorl	%edi, %edi
+  13a8c3:      	xorl	%ecx, %ecx
+  13a8c5:      	callq	*0x6407d(%rip)          # 0x19e948 <writev+0x19e948>
+  13a8cb:      	int3
+  13a8cc:      	int3
+  13a8cd:      	int3
+  13a8ce:      	int3
+  13a8cf:      	int3
+
+

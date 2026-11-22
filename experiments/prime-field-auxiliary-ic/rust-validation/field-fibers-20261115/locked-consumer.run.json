@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/home/agent/.cargo/bin/cargo",
+    "check",
+    "--locked",
+    "--manifest-path",
+    "tools/binary-genus2-cover/Cargo.toml",
+    "-j",
+    "2"
+  ],
+  "cwd": "/workspace/cryptanalysis-pr",
+  "exit_code": 0,
+  "output": "locked-consumer.log"
+}

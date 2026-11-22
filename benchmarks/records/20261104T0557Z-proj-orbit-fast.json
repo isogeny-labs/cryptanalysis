@@ -1,0 +1,184 @@
+{
+  "branch": "claude/proj-orbit-fast",
+  "closed_utc": "2026-11-04T06:15:15+00:00",
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "scripts/perf/perfindex.py",
+        "instr",
+        "--base",
+        "/tmp/claude-0/-home-user/a473be4d-01cb-5509-b9a8-ebaa867004d0/scratchpad/pb-base/perfbench",
+        "--cand",
+        "/tmp/claude-0/-home-user/a473be4d-01cb-5509-b9a8-ebaa867004d0/scratchpad/pb-proj/perfbench",
+        "--out",
+        "/tmp/claude-0/-home-user/a473be4d-01cb-5509-b9a8-ebaa867004d0/scratchpad/ir-proj",
+        "--filter",
+        "relation/koblitz,relation/sparse_solve,dlp/koblitz"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "started_utc": "2026-11-04T06:05:46+00:00",
+      "wall_s": 87.717
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/perf/perfindex.py",
+        "compare",
+        "--base",
+        "/tmp/claude-0/-home-user/a473be4d-01cb-5509-b9a8-ebaa867004d0/scratchpad/pb-base/perfbench",
+        "--cand",
+        "/tmp/claude-0/-home-user/a473be4d-01cb-5509-b9a8-ebaa867004d0/scratchpad/pb-proj/perfbench",
+        "--out",
+        "/tmp/claude-0/-home-user/a473be4d-01cb-5509-b9a8-ebaa867004d0/scratchpad/wall-proj",
+        "--filter",
+        "relation/koblitz,relation/sparse_solve,dlp/koblitz",
+        "--rounds",
+        "7",
+        "--threads",
+        "1",
+        "--taskset",
+        "3"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "started_utc": "2026-11-04T06:07:14+00:00",
+      "wall_s": 169.504
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/perf/perfindex.py",
+        "compare",
+        "--base",
+        "/tmp/claude-0/-home-user/a473be4d-01cb-5509-b9a8-ebaa867004d0/scratchpad/pb-base/perfbench",
+        "--cand",
+        "/tmp/claude-0/-home-user/a473be4d-01cb-5509-b9a8-ebaa867004d0/scratchpad/pb-proj/perfbench",
+        "--out",
+        "/tmp/claude-0/-home-user/a473be4d-01cb-5509-b9a8-ebaa867004d0/scratchpad/wall-proj2",
+        "--filter",
+        "relation/koblitz_descent_k0n53_m2_x4,relation/koblitz_rung_k0n31",
+        "--rounds",
+        "15",
+        "--threads",
+        "1",
+        "--taskset",
+        "3"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "started_utc": "2026-11-04T06:10:11+00:00",
+      "wall_s": 224.199
+    }
+  ],
+  "commit": "dfa95aaed0cce7f546e561ed309a6e6fd61b2448",
+  "commit_dirty": false,
+  "created_utc": "2026-11-04T05:57:41+00:00",
+  "curve_uid": null,
+  "entries": [
+    "benchmarks/20261104-proj-orbit-fast"
+  ],
+  "host": {
+    "cpu": "Intel(R) Xeon(R) Processor @ 2.80GHz",
+    "cpus_online": 4,
+    "hostname": "vm",
+    "isolation": "L0",
+    "platform": "Linux-6.18.44-fc-v233-x86_64-with-glibc2.39"
+  },
+  "id": "20261104T0557Z-proj-orbit-fast",
+  "metrics": [
+    {
+      "baseline": 731165938.0,
+      "better": "lower",
+      "n": 1,
+      "name": "ir.koblitz_descent_k0n53_m2_x4",
+      "note": "Callgrind, main d3a0f1320 baseline",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ir",
+      "value": 573015816.0
+    },
+    {
+      "baseline": 231453917.0,
+      "better": "lower",
+      "n": 1,
+      "name": "ir.koblitz_rung_k0n31",
+      "note": "Callgrind, main d3a0f1320 baseline",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ir",
+      "value": 202615780.0
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 15,
+      "name": "wall_ratio.koblitz_descent_k0n53_m2_x4",
+      "note": "main / change, A/A +-12.9%",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.118,
+        1.371
+      ],
+      "unit": "ratio",
+      "value": 1.254
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 15,
+      "name": "wall_ratio.koblitz_rung_k0n31",
+      "note": "main / change, A/A +-15.0%",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.088,
+        1.396
+      ],
+      "unit": "ratio",
+      "value": 1.151
+    }
+  ],
+  "problem": "ic:N53",
+  "raw": [
+    {
+      "bytes": 33382,
+      "path": "experiments/proj-orbit-fast-20261104/data/perfindex-compare-15r.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/51/51289591070e72c795f33e430a2353dc67ad10a02166a6120af618d6295c46ca",
+      "sha256": "51289591070e72c795f33e430a2353dc67ad10a02166a6120af618d6295c46ca",
+      "uploaded": false
+    },
+    {
+      "bytes": 56057,
+      "path": "experiments/proj-orbit-fast-20261104/data/perfindex-compare-7r.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/f9/f95b6b649247d081868b3b8079206f608b84c87709dbf71ca976cc1769ad152d",
+      "sha256": "f95b6b649247d081868b3b8079206f608b84c87709dbf71ca976cc1769ad152d",
+      "uploaded": false
+    },
+    {
+      "bytes": 3547,
+      "path": "experiments/proj-orbit-fast-20261104/data/perfindex-instr.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/90/908d265993f9dca43e47f18bbc7bfcdf96571795ee2aa597bd09e508d1f33049",
+      "sha256": "908d265993f9dca43e47f18bbc7bfcdf96571795ee2aa597bd09e508d1f33049",
+      "uploaded": false
+    }
+  ],
+  "repo": "cryptanalysis",
+  "reports": {
+    "pdf": "benchmarks/20261104-proj-orbit-fast/report.pdf",
+    "png": [],
+    "svg": [
+      "benchmarks/20261104-proj-orbit-fast/proj.svg"
+    ]
+  },
+  "schema": "bench.record/v1",
+  "session": null,
+  "slug": "proj-orbit-fast",
+  "status": "measured",
+  "summary": "Cofactor projection of the factor base by one scalar product per Frobenius orbit: Callgrind Ir k0n53 descent 1.276x, k0n31 rung 1.142x vs main d3a0f1320, fingerprints identical; wall 1.254x / 1.151x (neutral at L0 noise)",
+  "validation": null
+}

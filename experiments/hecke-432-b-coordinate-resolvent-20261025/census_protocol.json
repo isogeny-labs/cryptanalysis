@@ -1,0 +1,33 @@
+{
+  "checks": [
+    "D nonzero",
+    "xB cubic maps to supplied xE",
+    "recovered yB lies on B",
+    "recovered B point belongs to independently enumerated isogeny preimages"
+  ],
+  "frozen_at_utc": "2026-10-26T02:23:01.552402+00:00",
+  "inputs": {
+    "branch": {
+      "path": "experiments/hecke-432-b-coordinate-resolvent-20261025/branch_formula.json",
+      "sha256": "14f7fef3e32d9b65062ea3cf0a9c026b128ef7228e6e58f0320924a024ee930b"
+    },
+    "source_CE": {
+      "path": "experiments/hecke-432-original-C-lift-20261025/result.json",
+      "sha256": "30a51d70e8853d78b189f4882e1dc292b1d841bb0e1b09318a8a4fc27b0fbdf5"
+    },
+    "source_EB": {
+      "path": "experiments/hecke-432-prime997-20261025/image.json",
+      "sha256": "2d4c96722eb06a4b7e2c9ea3d0e764840a305a25a09464f6b43acb092c455350"
+    }
+  },
+  "join_key": [
+    "source_ainvs",
+    "source_j",
+    "source_label",
+    "pair"
+  ],
+  "preserve_exceptions": true,
+  "prime": 997,
+  "receipt_revision": "Source hash refreshed after lossless compact encoding of the frozen screen matrix; audit inputs and checks unchanged.",
+  "status": "FROZEN_BEFORE_1800_ROW_BRANCH_AUDIT"
+}

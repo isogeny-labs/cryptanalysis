@@ -131,3 +131,45 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+
+import sys
+
+
+ARCHIVE_BASE_FILE = HERE / "replay_base.json"
+
+
+
+
+
+
+
+
+    archive = sys.argv[1:] == ["--archive"]
+    if sys.argv[1:] and not archive:
+        raise SystemExit("usage: replay_sage.py [--archive]")
+    if receipt.exists() and not archive:
+        source = HERE / ("reference.rs" if name == "reference" else "candidate.rs") if archive else Path(bound["source_path"])
+        assert sha(source) == bound["source_sha256"]
+        if not archive:
+            assert sha(Path(bound["binary_path"])) == bound["binary_sha256"]
+
+
+
+
+
+    base_file = ARCHIVE_BASE_FILE if archive else BASE_FILE
+    base = load(base_file)
+        "base_source_sha256": sha(base_file),
+    if archive:
+        recorded = load(receipt)
+        assert {key: value for key, value in result.items() if key != "sage_version"} == {
+            key: value for key, value in recorded.items() if key != "sage_version"
+        }
+        print(json.dumps({"status": "verified_archival_replay", "sage_version": SAGE_VERSION,
+                          "receipt_sha256": sha(receipt)}, sort_keys=True))
+    else:
+        receipt.write_text(json.dumps(result, sort_keys=True, indent=2) + "\n")
+        print(json.dumps(result, sort_keys=True))
+
+

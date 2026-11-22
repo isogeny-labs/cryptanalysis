@@ -1,0 +1,5 @@
+First local invocation of run_gate.py exited 1 before starting checked Sage.
+Python's subprocess import loaded this directory's then-named select.py in
+place of the standard library select module; that file imported sage.all under
+the system Python and raised ModuleNotFoundError: No module named 'sage'.
+The selector was renamed select_candidate.py before the gate rerun.

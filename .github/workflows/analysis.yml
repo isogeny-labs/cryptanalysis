@@ -1,12 +1,14 @@
 name: analysis
+# artifacts-scope: job
 
 # Static analysis, formatting and coverage.  Everything here is a gate: the
 # tree is clean under all of it today, so a new finding means new code, not a
 # backlog.  Building and testing lives in ci.yml.
 on:
   push:
-    branches: ["**"]
+    branches: [main]
   pull_request:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -27,7 +29,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Install clang-tidy
         # The runner image ships a packages.microsoft.com apt source that
@@ -54,7 +56,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Install cppcheck
         # See the clang-tidy job: a flaky bundled apt repo must not fail update.
@@ -76,7 +78,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Build with the analyzer, warnings as errors
         # -fanalyzer is a separate engine from clang-analyzer and catches a
@@ -94,9 +96,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
+          filter: blob:none
 
       - name: Install clang-format
         run: |
@@ -109,12 +112,28 @@ jobs:
         # New and edited code still has to match the style.
         run: |
           set -eu
-          base="${{ github.event.pull_request.base.sha }}"
-          if [ -z "$base" ]; then
+          if [ "${{ github.event_name }}" = pull_request ]; then
+            # A PR checkout is a synthetic merge. Its first parent is the
+            # exact base used for this checkout, even if the base branch
+            # advanced while the workflow waited for a runner.
+            base=$(git rev-parse "HEAD^1")
+          else
             base=$(git rev-parse "HEAD^" 2>/dev/null || git rev-parse HEAD)
           fi
           echo "comparing against $base"
-          diff=$(git-clang-format --diff --extensions c,h,cu,cuh "$base" || true)
+          # Generated arithmetic headers and frozen campaign source snapshots
+          # are bound into experiment manifests. Format live source, not the
+          # immutable measurement artifacts.
+          mapfile -t paths < <(
+            git diff --name-only --diff-filter=ACMR "$base"...HEAD -- \
+              '*.c' '*.h' '*.cu' '*.cuh' |
+              grep -Ev -f .clang-format-exclusions || true
+          )
+          if [ "${#paths[@]}" -eq 0 ]; then
+            echo "no non-generated C/CUDA files changed"
+            exit 0
+          fi
+          diff=$(git-clang-format --diff --extensions c,h,cu,cuh "$base" -- "${paths[@]}" || true)
           case "$diff" in
             ""|*"no modified files to format"*|*"clang-format did not modify any files"*)
               echo "formatting is clean"
@@ -132,19 +151,24 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: shellcheck
         run: |
           sudo apt-get update || true
           sudo apt-get install -y --no-install-recommends shellcheck
-          shellcheck scripts/*.sh
+          shellcheck scripts/*.sh deploy/*/*.sh usecases/ecc2k130/deploy/helm/check.sh
+          python3 -m unittest discover -s tests -p test_checkpoint_quoting.py -v
+
+      - uses: actions/setup-go@v7
+        with:
+          go-version: '1.23'
 
       - name: actionlint
         # Also runs shellcheck over every `run:` block in these workflows.
-        uses: docker://rhysd/actionlint:1.7.7
-        with:
-          args: -color
+        run: |
+          GOBIN="$RUNNER_TEMP/actionlint-bin" go install github.com/rhysd/actionlint/cmd/actionlint@v1.7.7
+          "$RUNNER_TEMP/actionlint-bin/actionlint" -color
 
   # ----------------------------------------------------------- coverage ----
   coverage:
@@ -152,7 +176,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Install gcovr
         run: |
@@ -196,7 +220,7 @@ jobs:
 
       - name: Upload the HTML report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: coverage
           path: coverage-html/

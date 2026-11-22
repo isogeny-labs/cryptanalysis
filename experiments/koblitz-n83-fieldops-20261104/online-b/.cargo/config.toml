@@ -1,0 +1,5 @@
+# koblitz-n83-fieldops-20261104: side B is built with the carry-less multiply
+# enabled, so the producer's field products (fast_field) inline. The
+# producer asserts the CPU has it before any use (fast_field::check).
+[build]
+rustflags = ["-C", "target-feature=+pclmulqdq"]

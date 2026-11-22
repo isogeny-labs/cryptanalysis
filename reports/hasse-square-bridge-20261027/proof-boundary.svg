@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1020" height="310" viewBox="0 0 1020 310">
+<rect width="1020" height="310" fill="white"/>
+<text x="25" y="30" font-family="sans-serif" font-weight="bold" font-size="19">From squared integer checks to unique multiple</text>
+<defs><marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0 0 L9 3 L0 6 Z" fill="#333"/></marker></defs>
+<rect x="25" y="65" width="270" height="136" rx="7" fill="#e7f0ff" stroke="#326195"/>
+<text x="40" y="90" font-family="sans-serif" font-size="16">Verifier arithmetic</text>
+<text x="40" y="119" font-family="sans-serif" font-size="14">delta(N,p+1)² ≤ 4p</text>
+<text x="40" y="146" font-family="sans-serif" font-size="14">delta(M,p+1)² ≤ 4p</text>
+<text x="40" y="173" font-family="sans-serif" font-size="14">r² &gt; 16p; r divides N and M</text>
+<path d="M300 130 L358 130" stroke="#333" stroke-width="3" marker-end="url(#a)"/>
+<rect x="360" y="77" width="272" height="110" rx="7" fill="#e5f5e9" stroke="#267645"/>
+<text x="380" y="105" font-family="sans-serif" font-size="16">Lean proves</text>
+<text x="380" y="135" font-family="sans-serif" font-size="15">delta(N,p+1)+delta(M,p+1) &lt; r</text>
+<text x="380" y="165" font-family="sans-serif" font-size="21" font-weight="bold">N = M</text>
+<rect x="680" y="65" width="312" height="136" rx="7" fill="#fff0df" stroke="#b36b16"/>
+<text x="696" y="90" font-family="sans-serif" font-size="16">Still external to Lean</text>
+<text x="696" y="118" font-family="sans-serif" font-size="14">Actual curve order meets Hasse</text>
+<text x="696" y="145" font-family="sans-serif" font-size="14">Point order and Lagrange</text>
+<text x="696" y="172" font-family="sans-serif" font-size="14">Rust BigUint/parser correspondence</text>
+<text x="25" y="242" font-family="sans-serif" font-size="15">Sharp boundary: p=1, r=4, N=0, M=4 gives r²=16p and N≠M.</text>
+<text x="25" y="270" font-family="sans-serif" font-size="13" fill="#555">T-504 · producer f1c2dca · pure arithmetic, no performance measurements</text>
+</svg>

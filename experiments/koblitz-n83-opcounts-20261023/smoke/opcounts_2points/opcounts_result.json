@@ -1,0 +1,568 @@
+{
+  "band": {
+    "arms": {
+      "S": {
+        "cost_gae": {
+          "0": [
+            101083.5,
+            101083.5
+          ],
+          "0.1": [
+            309359669.3,
+            309359669.3
+          ],
+          "1": [
+            3092686941.5,
+            3092686941.5
+          ]
+        },
+        "family": "ic",
+        "mean_bounded_scalar_muls": 0.0,
+        "mean_group_ops": 101083.5,
+        "mean_unpriced_native_ops": 3092585858.0
+      },
+      "rT": {
+        "cost_gae": {
+          "0": [
+            9279709.0,
+            9283349.0
+          ],
+          "0.1": [
+            11149975.15,
+            11153615.15
+          ],
+          "1": [
+            27982370.5,
+            27986010.5
+          ]
+        },
+        "family": "rho",
+        "mean_bounded_scalar_muls": 35.0,
+        "mean_group_ops": 9279709.0,
+        "mean_unpriced_native_ops": 18702661.5
+      }
+    },
+    "frobenius_as_group": false,
+    "gap_to_reference": {
+      "S": {
+        "0": [
+          {
+            "ci95": [
+              0.007122915765142142,
+              0.0231409930774357
+            ],
+            "ratio": 0.010892960113296657,
+            "rho_scalar_mul_gae": 0.0
+          },
+          {
+            "ci95": [
+              0.007121089232250588,
+              0.023121725762205617
+            ],
+            "ratio": 0.010888688984977296,
+            "rho_scalar_mul_gae": 104.0
+          }
+        ],
+        "0.1": [
+          {
+            "ci95": [
+              18.135360243145993,
+              58.96614842145771
+            ],
+            "ratio": 27.745323656618194,
+            "rho_scalar_mul_gae": 0.0
+          },
+          {
+            "ci95": [
+              18.13148967812663,
+              58.92528213374268
+            ],
+            "ratio": 27.736268926223442,
+            "rho_scalar_mul_gae": 104.0
+          }
+        ],
+        "1": [
+          {
+            "ci95": [
+              72.24135220151506,
+              234.89336586567987
+            ],
+            "ratio": 110.52269290409117,
+            "rho_scalar_mul_gae": 0.0
+          },
+          {
+            "ci95": [
+              72.23520783275895,
+              234.8284710593289
+            ],
+            "ratio": 110.50831777183818,
+            "rho_scalar_mul_gae": 104.0
+          }
+        ]
+      }
+    },
+    "pairs": [
+      {
+        "arms": [
+          "S",
+          "rT"
+        ],
+        "cells": [
+          {
+            "ci95": [
+              0.007122915765142142,
+              0.0231409930774357
+            ],
+            "ratio": 0.010892960113296657,
+            "rho_scalar_mul_gae": 0.0,
+            "weight_gae": 0.0
+          },
+          {
+            "ci95": [
+              0.007121089232250588,
+              0.023121725762205617
+            ],
+            "ratio": 0.010888688984977296,
+            "rho_scalar_mul_gae": 104.0,
+            "weight_gae": 0.0
+          },
+          {
+            "ci95": [
+              18.135360243145993,
+              58.96614842145771
+            ],
+            "ratio": 27.745323656618194,
+            "rho_scalar_mul_gae": 0.0,
+            "weight_gae": 0.1
+          },
+          {
+            "ci95": [
+              18.13148967812663,
+              58.92528213374268
+            ],
+            "ratio": 27.736268926223442,
+            "rho_scalar_mul_gae": 104.0,
+            "weight_gae": 0.1
+          },
+          {
+            "ci95": [
+              72.24135220151506,
+              234.89336586567987
+            ],
+            "ratio": 110.52269290409117,
+            "rho_scalar_mul_gae": 0.0,
+            "weight_gae": 1.0
+          },
+          {
+            "ci95": [
+              72.23520783275895,
+              234.8284710593289
+            ],
+            "ratio": 110.50831777183818,
+            "rho_scalar_mul_gae": 104.0,
+            "weight_gae": 1.0
+          }
+        ],
+        "ranked": false,
+        "statement": "unresolved: the order of S and rT is not the same at every weight (it changes by w = 0.1, 1)"
+      }
+    ],
+    "points": [
+      "s000",
+      "s001"
+    ],
+    "reference": "rT",
+    "rho_scalar_mul_bound_gae": [
+      0.0,
+      104.0
+    ],
+    "schema": "ic-band/v1",
+    "weights_gae": [
+      0.0,
+      0.1,
+      1.0
+    ]
+  },
+  "band_frobenius_as_group": {
+    "arms": {
+      "S": {
+        "cost_gae": {
+          "0": [
+            497981835.5,
+            497981835.5
+          ],
+          "0.1": [
+            757452346.1,
+            757452346.1
+          ],
+          "1": [
+            3092686941.5,
+            3092686941.5
+          ]
+        },
+        "family": "ic",
+        "mean_bounded_scalar_muls": 0.0,
+        "mean_group_ops": 497981835.5,
+        "mean_unpriced_native_ops": 2594705106.0
+      },
+      "rT": {
+        "cost_gae": {
+          "0": [
+            9279709.0,
+            9283349.0
+          ],
+          "0.1": [
+            11149975.15,
+            11153615.15
+          ],
+          "1": [
+            27982370.5,
+            27986010.5
+          ]
+        },
+        "family": "rho",
+        "mean_bounded_scalar_muls": 35.0,
+        "mean_group_ops": 9279709.0,
+        "mean_unpriced_native_ops": 18702661.5
+      }
+    },
+    "frobenius_as_group": true,
+    "gap_to_reference": {
+      "S": {
+        "0": [
+          {
+            "ci95": [
+              35.0760604482808,
+              114.05002267535282
+            ],
+            "ratio": 53.66351848964229,
+            "rho_scalar_mul_gae": 0.0
+          },
+          {
+            "ci95": [
+              35.067065876362875,
+              113.95506401340037
+            ],
+            "ratio": 53.642477030649175,
+            "rho_scalar_mul_gae": 104.0
+          }
+        ],
+        "0.1": [
+          {
+            "ci95": [
+              44.403234502824134,
+              144.37685562832215
+            ],
+            "ratio": 67.93309724102838,
+            "rho_scalar_mul_gae": 0.0
+          },
+          {
+            "ci95": [
+              44.39375767943,
+              144.2767957417695
+            ],
+            "ratio": 67.91092716696434,
+            "rho_scalar_mul_gae": 104.0
+          }
+        ],
+        "1": [
+          {
+            "ci95": [
+              72.24135220151506,
+              234.89336586567987
+            ],
+            "ratio": 110.52269290409117,
+            "rho_scalar_mul_gae": 0.0
+          },
+          {
+            "ci95": [
+              72.23520783275895,
+              234.8284710593289
+            ],
+            "ratio": 110.50831777183818,
+            "rho_scalar_mul_gae": 104.0
+          }
+        ]
+      }
+    },
+    "pairs": [
+      {
+        "arms": [
+          "S",
+          "rT"
+        ],
+        "cells": [
+          {
+            "ci95": [
+              35.0760604482808,
+              114.05002267535282
+            ],
+            "ratio": 53.66351848964229,
+            "rho_scalar_mul_gae": 0.0,
+            "weight_gae": 0.0
+          },
+          {
+            "ci95": [
+              35.067065876362875,
+              113.95506401340037
+            ],
+            "ratio": 53.642477030649175,
+            "rho_scalar_mul_gae": 104.0,
+            "weight_gae": 0.0
+          },
+          {
+            "ci95": [
+              44.403234502824134,
+              144.37685562832215
+            ],
+            "ratio": 67.93309724102838,
+            "rho_scalar_mul_gae": 0.0,
+            "weight_gae": 0.1
+          },
+          {
+            "ci95": [
+              44.39375767943,
+              144.2767957417695
+            ],
+            "ratio": 67.91092716696434,
+            "rho_scalar_mul_gae": 104.0,
+            "weight_gae": 0.1
+          },
+          {
+            "ci95": [
+              72.24135220151506,
+              234.89336586567987
+            ],
+            "ratio": 110.52269290409117,
+            "rho_scalar_mul_gae": 0.0,
+            "weight_gae": 1.0
+          },
+          {
+            "ci95": [
+              72.23520783275895,
+              234.8284710593289
+            ],
+            "ratio": 110.50831777183818,
+            "rho_scalar_mul_gae": 104.0,
+            "weight_gae": 1.0
+          }
+        ],
+        "cheaper": "rT",
+        "ranked": true,
+        "statement": "rT is cheaper than S at every weight of the band"
+      }
+    ],
+    "points": [
+      "s000",
+      "s001"
+    ],
+    "reference": "rT",
+    "rho_scalar_mul_bound_gae": [
+      0.0,
+      104.0
+    ],
+    "schema": "ic-band/v1",
+    "weights_gae": [
+      0.0,
+      0.1,
+      1.0
+    ]
+  },
+  "checks": {
+    "all_runs_valid": true,
+    "identical_to_archived_run": true,
+    "one_scalar_per_point": true
+  },
+  "cold_setup_phases": {
+    "cS": {
+      "canonicalizations": 29880600,
+      "descent_mulmods": 0,
+      "ec_add": 0,
+      "ec_add_trivial": 0,
+      "ec_double": 0,
+      "ec_frobenius": 0,
+      "ec_lift_x": 0,
+      "ec_scalar_mul": 0,
+      "field_half_trace": 14940702,
+      "field_inv": 14941747,
+      "field_mul": 119533531,
+      "field_sqr": 29884694,
+      "fold_rotations": 0,
+      "frobenius_x": 49800,
+      "la_inversions": 0,
+      "la_mulmods": 0,
+      "la_row_eliminations": 0,
+      "relation_lifts": 0,
+      "root_filter_inserts": 0,
+      "root_filter_queries": 0,
+      "root_index_inserts": 29880600,
+      "root_index_probes": 0,
+      "s3_root_solves": 14942347,
+      "s3_root_solves_library": 2647
+    }
+  },
+  "mismatches": [],
+  "rank_phases": {
+    "kS": {
+      "s000": {
+        "after_targets_index_digest": {
+          "canonicalizations": 0,
+          "descent_mulmods": 0,
+          "ec_add": 0,
+          "ec_add_trivial": 0,
+          "ec_double": 0,
+          "ec_frobenius": 0,
+          "ec_lift_x": 0,
+          "ec_scalar_mul": 0,
+          "field_half_trace": 0,
+          "field_inv": 0,
+          "field_mul": 0,
+          "field_sqr": 0,
+          "fold_rotations": 29520000,
+          "frobenius_x": 0,
+          "la_inversions": 0,
+          "la_mulmods": 0,
+          "la_row_eliminations": 0,
+          "relation_lifts": 0,
+          "root_filter_inserts": 0,
+          "root_filter_queries": 0,
+          "root_index_inserts": 0,
+          "root_index_probes": 0,
+          "s3_root_solves": 0,
+          "s3_root_solves_library": 0
+        },
+        "between_linear_algebra_and_targets": {
+          "canonicalizations": 0,
+          "descent_mulmods": 0,
+          "ec_add": 0,
+          "ec_add_trivial": 0,
+          "ec_double": 0,
+          "ec_frobenius": 0,
+          "ec_lift_x": 0,
+          "ec_scalar_mul": 0,
+          "field_half_trace": 0,
+          "field_inv": 0,
+          "field_mul": 0,
+          "field_sqr": 0,
+          "fold_rotations": 0,
+          "frobenius_x": 0,
+          "la_inversions": 0,
+          "la_mulmods": 0,
+          "la_row_eliminations": 0,
+          "relation_lifts": 0,
+          "root_filter_inserts": 0,
+          "root_filter_queries": 0,
+          "root_index_inserts": 0,
+          "root_index_probes": 0,
+          "s3_root_solves": 0,
+          "s3_root_solves_library": 0
+        },
+        "linear_algebra": {
+          "canonicalizations": 0,
+          "descent_mulmods": 0,
+          "ec_add": 15167,
+          "ec_add_trivial": 600,
+          "ec_double": 30513,
+          "ec_frobenius": 0,
+          "ec_lift_x": 0,
+          "ec_scalar_mul": 600,
+          "field_half_trace": 0,
+          "field_inv": 45680,
+          "field_mul": 91360,
+          "field_sqr": 76193,
+          "fold_rotations": 0,
+          "frobenius_x": 0,
+          "la_inversions": 0,
+          "la_mulmods": 179700,
+          "la_row_eliminations": 0,
+          "relation_lifts": 0,
+          "root_filter_inserts": 0,
+          "root_filter_queries": 0,
+          "root_index_inserts": 0,
+          "root_index_probes": 0,
+          "s3_root_solves": 0,
+          "s3_root_solves_library": 0
+        },
+        "rank_stage": {
+          "canonicalizations": 1000554708,
+          "descent_mulmods": 0,
+          "ec_add": 24874,
+          "ec_add_trivial": 600,
+          "ec_double": 30444,
+          "ec_frobenius": 0,
+          "ec_lift_x": 0,
+          "ec_scalar_mul": 600,
+          "field_half_trace": 500277354,
+          "field_inv": 3069037,
+          "field_mul": 5503161530,
+          "field_sqr": 1000640470,
+          "fold_rotations": 2981110,
+          "frobenius_x": 494249916,
+          "la_inversions": 600,
+          "la_mulmods": 15692741,
+          "la_row_eliminations": 60197,
+          "relation_lifts": 600,
+          "root_filter_inserts": 0,
+          "root_filter_queries": 0,
+          "root_index_inserts": 0,
+          "root_index_probes": 1000454051,
+          "s3_root_solves": 500277354,
+          "s3_root_solves_library": 0
+        },
+        "setup": {
+          "canonicalizations": 29880600,
+          "descent_mulmods": 0,
+          "ec_add": 0,
+          "ec_add_trivial": 0,
+          "ec_double": 0,
+          "ec_frobenius": 0,
+          "ec_lift_x": 0,
+          "ec_scalar_mul": 0,
+          "field_half_trace": 14940702,
+          "field_inv": 14941747,
+          "field_mul": 119533531,
+          "field_sqr": 29884694,
+          "fold_rotations": 0,
+          "frobenius_x": 49800,
+          "la_inversions": 0,
+          "la_mulmods": 0,
+          "la_row_eliminations": 0,
+          "relation_lifts": 0,
+          "root_filter_inserts": 0,
+          "root_filter_queries": 0,
+          "root_index_inserts": 29880600,
+          "root_index_probes": 0,
+          "s3_root_solves": 14942347,
+          "s3_root_solves_library": 2647
+        },
+        "targets": {
+          "canonicalizations": 1627796,
+          "descent_mulmods": 4,
+          "ec_add": 34,
+          "ec_add_trivial": 1,
+          "ec_double": 52,
+          "ec_frobenius": 0,
+          "ec_lift_x": 0,
+          "ec_scalar_mul": 1,
+          "field_half_trace": 813898,
+          "field_inv": 4989,
+          "field_mul": 8953050,
+          "field_sqr": 1627934,
+          "fold_rotations": 4912,
+          "frobenius_x": 804092,
+          "la_inversions": 0,
+          "la_mulmods": 0,
+          "la_row_eliminations": 0,
+          "relation_lifts": 1,
+          "root_filter_inserts": 0,
+          "root_filter_queries": 0,
+          "root_index_inserts": 0,
+          "root_index_probes": 1627469,
+          "s3_root_solves": 813898,
+          "s3_root_solves_library": 0
+        }
+      }
+    }
+  },
+  "verdict": "counts_identical"
+}

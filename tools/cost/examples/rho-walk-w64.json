@@ -1,0 +1,11 @@
+{
+  "name": "rho walk step, 64 simultaneous walks (the same step, one quarter the batch)",
+  "unit": "Montgomery multiplications per step",
+  "source": "src/rho.c rho_thread_main, ec branch; same rows as the 256-walk ledger with the inversion share scaled",
+  "rows": [
+    {"stage": "affine add", "per": "step", "count": 3, "note": "lambda, x3, y3"},
+    {"stage": "batch-inverse products", "per": "step", "count": 3, "note": "suffix product, di, running inverse"},
+    {"stage": "batch inversion", "per": "step", "count": "2.8125", "note": "one inversion per 64 steps, 180 multiplications each"}
+  ],
+  "declared_total": 8.8125
+}

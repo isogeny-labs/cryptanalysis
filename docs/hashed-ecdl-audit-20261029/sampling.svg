@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="460" viewBox="0 0 980 460">
+<rect width="980" height="460" fill="#f6f8fc"/>
+<g font-family="sans-serif" fill="#14263e">
+<text x="30" y="35" font-size="22" font-weight="bold">Lemma 1: exact counts determine the next bit</text>
+<text x="30" y="61" font-size="15">Example predicate x OR y; all three satisfying assignments have one auxiliary completion.</text>
+<g stroke="#5b7393" stroke-width="2"><path d="M490 115 L270 195 M490 115 L710 195 M270 215 L170 310 M270 215 L370 310 M710 215 L610 310 M710 215 L810 310"/></g>
+<g fill="#e0eafb" stroke="#7396c9"><rect x="420" y="80" width="140" height="50" rx="10"/><rect x="200" y="175" width="140" height="50" rx="10"/><rect x="640" y="175" width="140" height="50" rx="10"/></g>
+<g text-anchor="middle" font-size="18"><text x="490" y="112">C(empty) = 3</text><text x="270" y="207">C(0) = 1</text><text x="710" y="207">C(1) = 2</text></g>
+<g font-size="15" text-anchor="middle"><text x="338" y="151">0 with probability 1/3</text><text x="644" y="151">1 with probability 2/3</text></g>
+<g text-anchor="middle" font-size="18"><text x="170" y="334" fill="#8793a2">00: count 0</text><text x="370" y="334">01: count 1</text><text x="610" y="334">10: count 1</text><text x="810" y="334">11: count 1</text></g>
+<g text-anchor="middle" font-size="15"><text x="370" y="361">probability 1/3</text><text x="610" y="361">probability 1/3</text><text x="810" y="361">probability 1/3</text></g>
+<text x="30" y="401" font-size="16">Hide y: the two interface words x=0 and x=1 have weights 1:2, rather than equal probability.</text>
+<text x="30" y="428" font-size="15">Software controls verify both distributions. General contraction correctness and complexity remain unaudited.</text>
+</g></svg>

@@ -1,0 +1,46 @@
+#!/usr/bin/env python3
+"""Render the source-evidence diagram from the committed corpus receipt."""
+import argparse
+import json
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--check", action="store_true")
+    args = parser.parse_args()
+    receipt = json.loads((HERE / "receipt.json").read_text())
+    older = receipt["archived_byte_identical_files"]
+    fresh = len(receipt["fresh_native_files"])
+    total = receipt["current_lean_files"]
+    if (older, fresh, total) != (91, 3, 94):
+        raise ValueError("source-evidence count changed")
+    left = 70
+    width = 760
+    older_width = width * older // total
+    fresh_width = width - older_width
+    svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="900" height="330" viewBox="0 0 900 330">
+<rect width="900" height="330" fill="#fbfcfe"/>
+<text x="70" y="48" font-family="sans-serif" font-size="22" font-weight="700" fill="#142337">Current Lean source evidence</text>
+<text x="70" y="76" font-family="sans-serif" font-size="14" fill="#40566d">94 tracked research files in the reviewed source tree</text>
+<rect x="{left}" y="104" width="{older_width}" height="48" rx="4" fill="#247ca3"/>
+<rect x="{left + older_width}" y="104" width="{fresh_width}" height="48" rx="4" fill="#f2a93b"/>
+<text x="70" y="181" font-family="sans-serif" font-size="15" fill="#142337">91 unchanged files: source and toolchain pins match the October 21 native build archive</text>
+<text x="70" y="207" font-family="sans-serif" font-size="15" fill="#142337">3 changed or new files: fresh Orbit and GLV builds with checked axiom output</text>
+<rect x="70" y="236" width="760" height="63" rx="5" fill="#eef2f6" stroke="#8192a2" stroke-dasharray="5 4"/>
+<text x="88" y="262" font-family="sans-serif" font-size="15" font-weight="600" fill="#263c52">Historical experiment and theorem meaning coverage</text>
+<text x="88" y="284" font-family="sans-serif" font-size="14" fill="#40566d">No complete claim denominator or semantic theorem-to-run matrix yet</text>
+</svg>
+'''
+    output = HERE / "coverage.svg"
+    if args.check:
+        if output.read_text() != svg:
+            raise ValueError("rendered figure differs from receipt")
+    else:
+        output.write_text(svg)
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,1717 @@
+{
+ "experiment": "volcano-n19-native-tau6-v2-20261019",
+ "protocol_frozen_at_utc": "2026-10-19T22:47:22Z",
+ "gates": {
+  "every scheduled row ran, exit 0, verified": {
+   "pass": false,
+   "detail": [
+    "p00-B",
+    "p00-Naa",
+    "p00-N",
+    "p00-NX",
+    "p01-N",
+    "p01-NX",
+    "p01-Naa",
+    "p01-B",
+    "p02-N",
+    "p02-Naa",
+    "p02-B",
+    "p02-NX",
+    "p03-Naa",
+    "p03-NX",
+    "p03-N",
+    "p03-B",
+    "p04-Naa",
+    "p04-B",
+    "p04-NX",
+    "p04-N",
+    "p05-NX",
+    "p05-B",
+    "p05-N",
+    "p05-Naa",
+    "p06-Naa",
+    "p06-B",
+    "p06-NX",
+    "p06-N",
+    "p07-NX",
+    "p07-B",
+    "p07-Naa",
+    "p07-N",
+    "p08-NX",
+    "p08-N",
+    "p08-Naa",
+    "p08-B",
+    "p09-N",
+    "p09-Naa",
+    "p09-NX",
+    "p09-B",
+    "p10-NX",
+    "p10-B",
+    "p10-Naa",
+    "p10-N",
+    "p11-B",
+    "p11-NX",
+    "p11-Naa",
+    "p11-N",
+    "p12-Naa",
+    "p12-B",
+    "p12-N",
+    "p12-NX",
+    "p13-NX",
+    "p13-Naa",
+    "p13-N",
+    "p13-B",
+    "p14-B",
+    "p14-Naa",
+    "p14-N",
+    "p14-NX",
+    "p15-B",
+    "p15-N",
+    "p15-Naa",
+    "p15-NX"
+   ]
+  },
+  "S0 Sage variety == native (as sets and in order) == brute force on every system; direct S3 == native on the 7 v1 and 300 new systems": {
+   "pass": true,
+   "detail": {
+    "systems": 2682,
+    "v1_systems": 7,
+    "new_systems": 300,
+    "multi_systems": 2375,
+    "set_equal": 2682,
+    "order_equal": 2682,
+    "third_checked": 307,
+    "third_equal": 307,
+    "bruteforce_equal": 2682,
+    "nonempty_sage": 2379,
+    "nonempty_native": 2379,
+    "nonempty_third": 4,
+    "multi": 2375,
+    "order_equal_multi": 2375
+   }
+  },
+  "O1 archived counts and logs (run 38520305068) reproduced on all ten scalars": {
+   "pass": true,
+   "detail": [
+    {
+     "targets": [
+      251,
+      251
+     ],
+     "gb_calls": [
+      4367,
+      4367
+     ],
+     "spurious": [
+      2,
+      2
+     ],
+     "relations": [
+      39,
+      39
+     ],
+     "log": [
+      2003,
+      2003
+     ]
+    },
+    {
+     "targets": [
+      302,
+      302
+     ],
+     "gb_calls": [
+      5346,
+      5346
+     ],
+     "spurious": [
+      2,
+      2
+     ],
+     "relations": [
+      39,
+      39
+     ],
+     "log": [
+      107405,
+      107405
+     ]
+    },
+    {
+     "targets": [
+      305,
+      305
+     ],
+     "gb_calls": [
+      5425,
+      5425
+     ],
+     "spurious": [
+      0,
+      0
+     ],
+     "relations": [
+      39,
+      39
+     ],
+     "log": [
+      123121,
+      123121
+     ]
+    },
+    {
+     "targets": [
+      283,
+      283
+     ],
+     "gb_calls": [
+      5047,
+      5047
+     ],
+     "spurious": [
+      1,
+      1
+     ],
+     "relations": [
+      39,
+      39
+     ],
+     "log": [
+      86605,
+      86605
+     ]
+    },
+    {
+     "targets": [
+      347,
+      347
+     ],
+     "gb_calls": [
+      6177,
+      6177
+     ],
+     "spurious": [
+      0,
+      0
+     ],
+     "relations": [
+      39,
+      39
+     ],
+     "log": [
+      119755,
+      119755
+     ]
+    },
+    {
+     "targets": [
+      311,
+      311
+     ],
+     "gb_calls": [
+      5537,
+      5537
+     ],
+     "spurious": [
+      1,
+      1
+     ],
+     "relations": [
+      39,
+      39
+     ],
+     "log": [
+      71624,
+      71624
+     ]
+    },
+    {
+     "targets": [
+      233,
+      233
+     ],
+     "gb_calls": [
+      4055,
+      4055
+     ],
+     "spurious": [
+      1,
+      1
+     ],
+     "relations": [
+      39,
+      39
+     ],
+     "log": [
+      82716,
+      82716
+     ]
+    },
+    {
+     "targets": [
+      372,
+      372
+     ],
+     "gb_calls": [
+      6653,
+      6653
+     ],
+     "spurious": [
+      20,
+      20
+     ],
+     "relations": [
+      39,
+      39
+     ],
+     "log": [
+      91944,
+      91944
+     ]
+    },
+    {
+     "targets": [
+      331,
+      331
+     ],
+     "gb_calls": [
+      5928,
+      5928
+     ],
+     "spurious": [
+      1,
+      1
+     ],
+     "relations": [
+      39,
+      39
+     ],
+     "log": [
+      19034,
+      19034
+     ]
+    },
+    {
+     "targets": [
+      322,
+      322
+     ],
+     "gb_calls": [
+      5801,
+      5801
+     ],
+     "spurious": [
+      1,
+      1
+     ],
+     "relations": [
+      39,
+      39
+     ],
+     "log": [
+      73233,
+      73233
+     ]
+    }
+   ]
+  },
+  "every native process: the native field is Sage's field (modulus and 256 products)": {
+   "pass": true,
+   "detail": {}
+  },
+  "one pinned CPU for every process": {
+   "pass": true,
+   "detail": [
+    [
+     0
+    ]
+   ]
+  },
+  "one native library digest across every native process": {
+   "pass": true,
+   "detail": [
+    "d92534fa1984a7754217233ef985b9c8189db6bf052d71ebc3c855468b4d87f2"
+   ]
+  },
+  "p00 counts and log equal across B, N, Naa, NX": {
+   "pass": false,
+   "detail": {
+    "B": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "N": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "Naa": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "NX": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ]
+   }
+  },
+  "p00 relation rows and decompositions equal across B, N, Naa, NX": {
+   "pass": false,
+   "detail": {
+    "B": [
+     null,
+     null,
+     null
+    ],
+    "N": [
+     null,
+     null,
+     null
+    ],
+    "Naa": [
+     null,
+     null,
+     null
+    ],
+    "NX": [
+     null,
+     null,
+     null
+    ]
+   }
+  },
+  "p00 ordered decompositions equal across B, N, Naa, NX (v2: native order = Sage order)": {
+   "pass": true,
+   "detail": null
+  },
+  "p00 NX compared every shift system with Sage, in order on every multi-solution system": {
+   "pass": false,
+   "detail": {}
+  },
+  "p00 generator equals the archived P": {
+   "pass": false,
+   "detail": null
+  },
+  "p00 rho: 64 reps verified": {
+   "pass": true,
+   "detail": null
+  },
+  "p00 warm batch reproduced the cold relations": {
+   "pass": false,
+   "detail": [
+    null,
+    null
+   ]
+  },
+  "p01 counts and log equal across B, N, Naa, NX": {
+   "pass": false,
+   "detail": {
+    "B": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "N": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "Naa": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "NX": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ]
+   }
+  },
+  "p01 relation rows and decompositions equal across B, N, Naa, NX": {
+   "pass": false,
+   "detail": {
+    "B": [
+     null,
+     null,
+     null
+    ],
+    "N": [
+     null,
+     null,
+     null
+    ],
+    "Naa": [
+     null,
+     null,
+     null
+    ],
+    "NX": [
+     null,
+     null,
+     null
+    ]
+   }
+  },
+  "p01 ordered decompositions equal across B, N, Naa, NX (v2: native order = Sage order)": {
+   "pass": true,
+   "detail": null
+  },
+  "p01 NX compared every shift system with Sage, in order on every multi-solution system": {
+   "pass": false,
+   "detail": {}
+  },
+  "p01 generator equals the archived P": {
+   "pass": false,
+   "detail": null
+  },
+  "p01 rho: 64 reps verified": {
+   "pass": true,
+   "detail": null
+  },
+  "p01 warm batch reproduced the cold relations": {
+   "pass": false,
+   "detail": [
+    null,
+    null
+   ]
+  },
+  "p02 counts and log equal across B, N, Naa, NX": {
+   "pass": false,
+   "detail": {
+    "B": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "N": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "Naa": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "NX": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ]
+   }
+  },
+  "p02 relation rows and decompositions equal across B, N, Naa, NX": {
+   "pass": false,
+   "detail": {
+    "B": [
+     null,
+     null,
+     null
+    ],
+    "N": [
+     null,
+     null,
+     null
+    ],
+    "Naa": [
+     null,
+     null,
+     null
+    ],
+    "NX": [
+     null,
+     null,
+     null
+    ]
+   }
+  },
+  "p02 ordered decompositions equal across B, N, Naa, NX (v2: native order = Sage order)": {
+   "pass": true,
+   "detail": null
+  },
+  "p02 NX compared every shift system with Sage, in order on every multi-solution system": {
+   "pass": false,
+   "detail": {}
+  },
+  "p02 generator equals the archived P": {
+   "pass": false,
+   "detail": null
+  },
+  "p02 rho: 64 reps verified": {
+   "pass": true,
+   "detail": null
+  },
+  "p02 warm batch reproduced the cold relations": {
+   "pass": false,
+   "detail": [
+    null,
+    null
+   ]
+  },
+  "p03 counts and log equal across B, N, Naa, NX": {
+   "pass": false,
+   "detail": {
+    "B": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "N": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "Naa": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "NX": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ]
+   }
+  },
+  "p03 relation rows and decompositions equal across B, N, Naa, NX": {
+   "pass": false,
+   "detail": {
+    "B": [
+     null,
+     null,
+     null
+    ],
+    "N": [
+     null,
+     null,
+     null
+    ],
+    "Naa": [
+     null,
+     null,
+     null
+    ],
+    "NX": [
+     null,
+     null,
+     null
+    ]
+   }
+  },
+  "p03 ordered decompositions equal across B, N, Naa, NX (v2: native order = Sage order)": {
+   "pass": true,
+   "detail": null
+  },
+  "p03 NX compared every shift system with Sage, in order on every multi-solution system": {
+   "pass": false,
+   "detail": {}
+  },
+  "p03 generator equals the archived P": {
+   "pass": false,
+   "detail": null
+  },
+  "p03 rho: 64 reps verified": {
+   "pass": true,
+   "detail": null
+  },
+  "p03 warm batch reproduced the cold relations": {
+   "pass": false,
+   "detail": [
+    null,
+    null
+   ]
+  },
+  "p04 counts and log equal across B, N, Naa, NX": {
+   "pass": false,
+   "detail": {
+    "B": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "N": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "Naa": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "NX": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ]
+   }
+  },
+  "p04 relation rows and decompositions equal across B, N, Naa, NX": {
+   "pass": false,
+   "detail": {
+    "B": [
+     null,
+     null,
+     null
+    ],
+    "N": [
+     null,
+     null,
+     null
+    ],
+    "Naa": [
+     null,
+     null,
+     null
+    ],
+    "NX": [
+     null,
+     null,
+     null
+    ]
+   }
+  },
+  "p04 ordered decompositions equal across B, N, Naa, NX (v2: native order = Sage order)": {
+   "pass": true,
+   "detail": null
+  },
+  "p04 NX compared every shift system with Sage, in order on every multi-solution system": {
+   "pass": false,
+   "detail": {}
+  },
+  "p04 generator equals the archived P": {
+   "pass": false,
+   "detail": null
+  },
+  "p04 rho: 64 reps verified": {
+   "pass": true,
+   "detail": null
+  },
+  "p04 warm batch reproduced the cold relations": {
+   "pass": false,
+   "detail": [
+    null,
+    null
+   ]
+  },
+  "p05 counts and log equal across B, N, Naa, NX": {
+   "pass": false,
+   "detail": {
+    "B": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "N": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "Naa": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "NX": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ]
+   }
+  },
+  "p05 relation rows and decompositions equal across B, N, Naa, NX": {
+   "pass": false,
+   "detail": {
+    "B": [
+     null,
+     null,
+     null
+    ],
+    "N": [
+     null,
+     null,
+     null
+    ],
+    "Naa": [
+     null,
+     null,
+     null
+    ],
+    "NX": [
+     null,
+     null,
+     null
+    ]
+   }
+  },
+  "p05 ordered decompositions equal across B, N, Naa, NX (v2: native order = Sage order)": {
+   "pass": true,
+   "detail": null
+  },
+  "p05 NX compared every shift system with Sage, in order on every multi-solution system": {
+   "pass": false,
+   "detail": {}
+  },
+  "p05 generator equals the archived P": {
+   "pass": false,
+   "detail": null
+  },
+  "p05 rho: 64 reps verified": {
+   "pass": true,
+   "detail": null
+  },
+  "p05 warm batch reproduced the cold relations": {
+   "pass": false,
+   "detail": [
+    null,
+    null
+   ]
+  },
+  "p06 counts and log equal across B, N, Naa, NX": {
+   "pass": false,
+   "detail": {
+    "B": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "N": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "Naa": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "NX": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ]
+   }
+  },
+  "p06 relation rows and decompositions equal across B, N, Naa, NX": {
+   "pass": false,
+   "detail": {
+    "B": [
+     null,
+     null,
+     null
+    ],
+    "N": [
+     null,
+     null,
+     null
+    ],
+    "Naa": [
+     null,
+     null,
+     null
+    ],
+    "NX": [
+     null,
+     null,
+     null
+    ]
+   }
+  },
+  "p06 ordered decompositions equal across B, N, Naa, NX (v2: native order = Sage order)": {
+   "pass": true,
+   "detail": null
+  },
+  "p06 NX compared every shift system with Sage, in order on every multi-solution system": {
+   "pass": false,
+   "detail": {}
+  },
+  "p06 generator equals the archived P": {
+   "pass": false,
+   "detail": null
+  },
+  "p06 rho: 64 reps verified": {
+   "pass": true,
+   "detail": null
+  },
+  "p06 warm batch reproduced the cold relations": {
+   "pass": false,
+   "detail": [
+    null,
+    null
+   ]
+  },
+  "p07 counts and log equal across B, N, Naa, NX": {
+   "pass": false,
+   "detail": {
+    "B": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "N": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "Naa": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "NX": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ]
+   }
+  },
+  "p07 relation rows and decompositions equal across B, N, Naa, NX": {
+   "pass": false,
+   "detail": {
+    "B": [
+     null,
+     null,
+     null
+    ],
+    "N": [
+     null,
+     null,
+     null
+    ],
+    "Naa": [
+     null,
+     null,
+     null
+    ],
+    "NX": [
+     null,
+     null,
+     null
+    ]
+   }
+  },
+  "p07 ordered decompositions equal across B, N, Naa, NX (v2: native order = Sage order)": {
+   "pass": true,
+   "detail": null
+  },
+  "p07 NX compared every shift system with Sage, in order on every multi-solution system": {
+   "pass": false,
+   "detail": {}
+  },
+  "p07 generator equals the archived P": {
+   "pass": false,
+   "detail": null
+  },
+  "p07 rho: 64 reps verified": {
+   "pass": true,
+   "detail": null
+  },
+  "p07 warm batch reproduced the cold relations": {
+   "pass": false,
+   "detail": [
+    null,
+    null
+   ]
+  },
+  "p08 counts and log equal across B, N, Naa, NX": {
+   "pass": false,
+   "detail": {
+    "B": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "N": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "Naa": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "NX": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ]
+   }
+  },
+  "p08 relation rows and decompositions equal across B, N, Naa, NX": {
+   "pass": false,
+   "detail": {
+    "B": [
+     null,
+     null,
+     null
+    ],
+    "N": [
+     null,
+     null,
+     null
+    ],
+    "Naa": [
+     null,
+     null,
+     null
+    ],
+    "NX": [
+     null,
+     null,
+     null
+    ]
+   }
+  },
+  "p08 ordered decompositions equal across B, N, Naa, NX (v2: native order = Sage order)": {
+   "pass": true,
+   "detail": null
+  },
+  "p08 NX compared every shift system with Sage, in order on every multi-solution system": {
+   "pass": false,
+   "detail": {}
+  },
+  "p08 generator equals the archived P": {
+   "pass": false,
+   "detail": null
+  },
+  "p08 rho: 64 reps verified": {
+   "pass": true,
+   "detail": null
+  },
+  "p08 warm batch reproduced the cold relations": {
+   "pass": false,
+   "detail": [
+    null,
+    null
+   ]
+  },
+  "p09 counts and log equal across B, N, Naa, NX": {
+   "pass": false,
+   "detail": {
+    "B": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "N": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "Naa": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "NX": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ]
+   }
+  },
+  "p09 relation rows and decompositions equal across B, N, Naa, NX": {
+   "pass": false,
+   "detail": {
+    "B": [
+     null,
+     null,
+     null
+    ],
+    "N": [
+     null,
+     null,
+     null
+    ],
+    "Naa": [
+     null,
+     null,
+     null
+    ],
+    "NX": [
+     null,
+     null,
+     null
+    ]
+   }
+  },
+  "p09 ordered decompositions equal across B, N, Naa, NX (v2: native order = Sage order)": {
+   "pass": true,
+   "detail": null
+  },
+  "p09 NX compared every shift system with Sage, in order on every multi-solution system": {
+   "pass": false,
+   "detail": {}
+  },
+  "p09 generator equals the archived P": {
+   "pass": false,
+   "detail": null
+  },
+  "p09 rho: 64 reps verified": {
+   "pass": true,
+   "detail": null
+  },
+  "p09 warm batch reproduced the cold relations": {
+   "pass": false,
+   "detail": [
+    null,
+    null
+   ]
+  },
+  "p10 counts and log equal across B, N, Naa, NX": {
+   "pass": false,
+   "detail": {
+    "B": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "N": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "Naa": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "NX": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ]
+   }
+  },
+  "p10 relation rows and decompositions equal across B, N, Naa, NX": {
+   "pass": false,
+   "detail": {
+    "B": [
+     null,
+     null,
+     null
+    ],
+    "N": [
+     null,
+     null,
+     null
+    ],
+    "Naa": [
+     null,
+     null,
+     null
+    ],
+    "NX": [
+     null,
+     null,
+     null
+    ]
+   }
+  },
+  "p10 ordered decompositions equal across B, N, Naa, NX (v2: native order = Sage order)": {
+   "pass": true,
+   "detail": null
+  },
+  "p10 NX compared every shift system with Sage, in order on every multi-solution system": {
+   "pass": false,
+   "detail": {}
+  },
+  "p10 generator equals the archived P": {
+   "pass": false,
+   "detail": null
+  },
+  "p10 rho: 64 reps verified": {
+   "pass": true,
+   "detail": null
+  },
+  "p10 warm batch reproduced the cold relations": {
+   "pass": false,
+   "detail": [
+    null,
+    null
+   ]
+  },
+  "p11 counts and log equal across B, N, Naa, NX": {
+   "pass": false,
+   "detail": {
+    "B": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "N": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "Naa": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "NX": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ]
+   }
+  },
+  "p11 relation rows and decompositions equal across B, N, Naa, NX": {
+   "pass": false,
+   "detail": {
+    "B": [
+     null,
+     null,
+     null
+    ],
+    "N": [
+     null,
+     null,
+     null
+    ],
+    "Naa": [
+     null,
+     null,
+     null
+    ],
+    "NX": [
+     null,
+     null,
+     null
+    ]
+   }
+  },
+  "p11 ordered decompositions equal across B, N, Naa, NX (v2: native order = Sage order)": {
+   "pass": true,
+   "detail": null
+  },
+  "p11 NX compared every shift system with Sage, in order on every multi-solution system": {
+   "pass": false,
+   "detail": {}
+  },
+  "p11 generator equals the archived P": {
+   "pass": false,
+   "detail": null
+  },
+  "p11 rho: 64 reps verified": {
+   "pass": true,
+   "detail": null
+  },
+  "p11 warm batch reproduced the cold relations": {
+   "pass": false,
+   "detail": [
+    null,
+    null
+   ]
+  },
+  "p12 counts and log equal across B, N, Naa, NX": {
+   "pass": false,
+   "detail": {
+    "B": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "N": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "Naa": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "NX": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ]
+   }
+  },
+  "p12 relation rows and decompositions equal across B, N, Naa, NX": {
+   "pass": false,
+   "detail": {
+    "B": [
+     null,
+     null,
+     null
+    ],
+    "N": [
+     null,
+     null,
+     null
+    ],
+    "Naa": [
+     null,
+     null,
+     null
+    ],
+    "NX": [
+     null,
+     null,
+     null
+    ]
+   }
+  },
+  "p12 ordered decompositions equal across B, N, Naa, NX (v2: native order = Sage order)": {
+   "pass": true,
+   "detail": null
+  },
+  "p12 NX compared every shift system with Sage, in order on every multi-solution system": {
+   "pass": false,
+   "detail": {}
+  },
+  "p12 generator equals the archived P": {
+   "pass": false,
+   "detail": null
+  },
+  "p12 rho: 64 reps verified": {
+   "pass": true,
+   "detail": null
+  },
+  "p12 warm batch reproduced the cold relations": {
+   "pass": false,
+   "detail": [
+    null,
+    null
+   ]
+  },
+  "p13 counts and log equal across B, N, Naa, NX": {
+   "pass": false,
+   "detail": {
+    "B": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "N": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "Naa": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "NX": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ]
+   }
+  },
+  "p13 relation rows and decompositions equal across B, N, Naa, NX": {
+   "pass": false,
+   "detail": {
+    "B": [
+     null,
+     null,
+     null
+    ],
+    "N": [
+     null,
+     null,
+     null
+    ],
+    "Naa": [
+     null,
+     null,
+     null
+    ],
+    "NX": [
+     null,
+     null,
+     null
+    ]
+   }
+  },
+  "p13 ordered decompositions equal across B, N, Naa, NX (v2: native order = Sage order)": {
+   "pass": true,
+   "detail": null
+  },
+  "p13 NX compared every shift system with Sage, in order on every multi-solution system": {
+   "pass": false,
+   "detail": {}
+  },
+  "p13 generator equals the archived P": {
+   "pass": false,
+   "detail": null
+  },
+  "p13 rho: 64 reps verified": {
+   "pass": true,
+   "detail": null
+  },
+  "p13 warm batch reproduced the cold relations": {
+   "pass": false,
+   "detail": [
+    null,
+    null
+   ]
+  },
+  "p14 counts and log equal across B, N, Naa, NX": {
+   "pass": false,
+   "detail": {
+    "B": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "N": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "Naa": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "NX": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ]
+   }
+  },
+  "p14 relation rows and decompositions equal across B, N, Naa, NX": {
+   "pass": false,
+   "detail": {
+    "B": [
+     null,
+     null,
+     null
+    ],
+    "N": [
+     null,
+     null,
+     null
+    ],
+    "Naa": [
+     null,
+     null,
+     null
+    ],
+    "NX": [
+     null,
+     null,
+     null
+    ]
+   }
+  },
+  "p14 ordered decompositions equal across B, N, Naa, NX (v2: native order = Sage order)": {
+   "pass": true,
+   "detail": null
+  },
+  "p14 NX compared every shift system with Sage, in order on every multi-solution system": {
+   "pass": false,
+   "detail": {}
+  },
+  "p14 generator equals the archived P": {
+   "pass": false,
+   "detail": null
+  },
+  "p14 rho: 64 reps verified": {
+   "pass": true,
+   "detail": null
+  },
+  "p14 warm batch reproduced the cold relations": {
+   "pass": false,
+   "detail": [
+    null,
+    null
+   ]
+  },
+  "p15 counts and log equal across B, N, Naa, NX": {
+   "pass": false,
+   "detail": {
+    "B": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "N": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "Naa": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "NX": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ]
+   }
+  },
+  "p15 relation rows and decompositions equal across B, N, Naa, NX": {
+   "pass": false,
+   "detail": {
+    "B": [
+     null,
+     null,
+     null
+    ],
+    "N": [
+     null,
+     null,
+     null
+    ],
+    "Naa": [
+     null,
+     null,
+     null
+    ],
+    "NX": [
+     null,
+     null,
+     null
+    ]
+   }
+  },
+  "p15 ordered decompositions equal across B, N, Naa, NX (v2: native order = Sage order)": {
+   "pass": true,
+   "detail": null
+  },
+  "p15 NX compared every shift system with Sage, in order on every multi-solution system": {
+   "pass": false,
+   "detail": {}
+  },
+  "p15 generator equals the archived P": {
+   "pass": false,
+   "detail": null
+  },
+  "p15 rho: 64 reps verified": {
+   "pass": true,
+   "detail": null
+  },
+  "p15 warm batch reproduced the cold relations": {
+   "pass": false,
+   "detail": [
+    null,
+    null
+   ]
+  }
+ },
+ "verdict": "invalid",
+ "failed": [
+  "every scheduled row ran, exit 0, verified",
+  "p00 counts and log equal across B, N, Naa, NX",
+  "p00 relation rows and decompositions equal across B, N, Naa, NX",
+  "p00 NX compared every shift system with Sage, in order on every multi-solution system",
+  "p00 generator equals the archived P",
+  "p00 warm batch reproduced the cold relations",
+  "p01 counts and log equal across B, N, Naa, NX",
+  "p01 relation rows and decompositions equal across B, N, Naa, NX",
+  "p01 NX compared every shift system with Sage, in order on every multi-solution system",
+  "p01 generator equals the archived P",
+  "p01 warm batch reproduced the cold relations",
+  "p02 counts and log equal across B, N, Naa, NX",
+  "p02 relation rows and decompositions equal across B, N, Naa, NX",
+  "p02 NX compared every shift system with Sage, in order on every multi-solution system",
+  "p02 generator equals the archived P",
+  "p02 warm batch reproduced the cold relations",
+  "p03 counts and log equal across B, N, Naa, NX",
+  "p03 relation rows and decompositions equal across B, N, Naa, NX",
+  "p03 NX compared every shift system with Sage, in order on every multi-solution system",
+  "p03 generator equals the archived P",
+  "p03 warm batch reproduced the cold relations",
+  "p04 counts and log equal across B, N, Naa, NX",
+  "p04 relation rows and decompositions equal across B, N, Naa, NX",
+  "p04 NX compared every shift system with Sage, in order on every multi-solution system",
+  "p04 generator equals the archived P",
+  "p04 warm batch reproduced the cold relations",
+  "p05 counts and log equal across B, N, Naa, NX",
+  "p05 relation rows and decompositions equal across B, N, Naa, NX",
+  "p05 NX compared every shift system with Sage, in order on every multi-solution system",
+  "p05 generator equals the archived P",
+  "p05 warm batch reproduced the cold relations",
+  "p06 counts and log equal across B, N, Naa, NX",
+  "p06 relation rows and decompositions equal across B, N, Naa, NX",
+  "p06 NX compared every shift system with Sage, in order on every multi-solution system",
+  "p06 generator equals the archived P",
+  "p06 warm batch reproduced the cold relations",
+  "p07 counts and log equal across B, N, Naa, NX",
+  "p07 relation rows and decompositions equal across B, N, Naa, NX",
+  "p07 NX compared every shift system with Sage, in order on every multi-solution system",
+  "p07 generator equals the archived P",
+  "p07 warm batch reproduced the cold relations",
+  "p08 counts and log equal across B, N, Naa, NX",
+  "p08 relation rows and decompositions equal across B, N, Naa, NX",
+  "p08 NX compared every shift system with Sage, in order on every multi-solution system",
+  "p08 generator equals the archived P",
+  "p08 warm batch reproduced the cold relations",
+  "p09 counts and log equal across B, N, Naa, NX",
+  "p09 relation rows and decompositions equal across B, N, Naa, NX",
+  "p09 NX compared every shift system with Sage, in order on every multi-solution system",
+  "p09 generator equals the archived P",
+  "p09 warm batch reproduced the cold relations",
+  "p10 counts and log equal across B, N, Naa, NX",
+  "p10 relation rows and decompositions equal across B, N, Naa, NX",
+  "p10 NX compared every shift system with Sage, in order on every multi-solution system",
+  "p10 generator equals the archived P",
+  "p10 warm batch reproduced the cold relations",
+  "p11 counts and log equal across B, N, Naa, NX",
+  "p11 relation rows and decompositions equal across B, N, Naa, NX",
+  "p11 NX compared every shift system with Sage, in order on every multi-solution system",
+  "p11 generator equals the archived P",
+  "p11 warm batch reproduced the cold relations",
+  "p12 counts and log equal across B, N, Naa, NX",
+  "p12 relation rows and decompositions equal across B, N, Naa, NX",
+  "p12 NX compared every shift system with Sage, in order on every multi-solution system",
+  "p12 generator equals the archived P",
+  "p12 warm batch reproduced the cold relations",
+  "p13 counts and log equal across B, N, Naa, NX",
+  "p13 relation rows and decompositions equal across B, N, Naa, NX",
+  "p13 NX compared every shift system with Sage, in order on every multi-solution system",
+  "p13 generator equals the archived P",
+  "p13 warm batch reproduced the cold relations",
+  "p14 counts and log equal across B, N, Naa, NX",
+  "p14 relation rows and decompositions equal across B, N, Naa, NX",
+  "p14 NX compared every shift system with Sage, in order on every multi-solution system",
+  "p14 generator equals the archived P",
+  "p14 warm batch reproduced the cold relations",
+  "p15 counts and log equal across B, N, Naa, NX",
+  "p15 relation rows and decompositions equal across B, N, Naa, NX",
+  "p15 NX compared every shift system with Sage, in order on every multi-solution system",
+  "p15 generator equals the archived P",
+  "p15 warm batch reproduced the cold relations"
+ ]
+}

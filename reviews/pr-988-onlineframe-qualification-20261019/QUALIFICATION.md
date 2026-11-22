@@ -1,0 +1,11 @@
+# PR #988 measurement qualification
+
+This note supplements the frozen report for `koblitz-n83-onlineframe-20261019`, run `39303742695`. It preserves the run's measurements and its frozen-protocol verdict.
+
+The archived primary compares one cS and one cF timing per point across 64 points, with arm order randomized within each point. The cF/cFaa repetitions are a separate A/A control; they are not repeated alternating cS/cF primary pairs. The frozen protocol classifies the online-stage result as an improvement, with ratio 1.5733 [1.5714, 1.5753]. The repository's current Tier 1 speedup gate requires repeated alternating pairs and a 95% paired confidence interval whose lower bound exceeds 1. This single primary pair per point does not meet the repeated-pair requirement. Treat the estimate as a historical, instance-scoped online-stage result, not a qualified Tier 1 speedup claim. The independent end-to-end secondary is 1.0008 [1.0006, 1.0010] with shared rank-stage cost; the experiment reports that result as a pipeline improvement under its frozen rule, but it also has only the same one paired observation per point.
+
+The report's per-arm `peak RSS` values come from the producer's `getrusage(RUSAGE_SELF)` field `peak_rss_bytes`, so the reported per-process peak-RSS comparison is available. The runner also records `child_peak_rss_kb_cumulative` from `RUSAGE_CHILDREN.ru_maxrss`; that field is a cumulative child-process high-water mark, not a per-row peak. Runner cgroup counters are allocation-level. Process user/system CPU-time and wall-time observations remain in the archived per-run rows. These distinctions do not change the recorded timing estimate or the frozen protocol checks.
+
+Policy reference: current `AGENTS.md`, “CPU performance isolation gate,” Tier 1 paragraph (repeated alternating pairs; paired 95% lower bound above 1). This is a current reporting qualification; it does not change the historical experiment's frozen rule.
+
+Validation: derived from the exact PR head `6c59e4da048ce9a64204a1fafc73ee681175ea6c`, main base `517073ab2dfed83584ddc1115721b7c251620e5b`; full archived receipt replay passed with pinned sources. See PR body for source and replay evidence.

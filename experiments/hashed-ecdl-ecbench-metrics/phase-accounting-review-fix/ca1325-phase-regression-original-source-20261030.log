@@ -1,0 +1,36 @@
+   Compiling autocfg v1.5.1
+   Compiling serde_core v1.0.229
+   Compiling zmij v1.0.23
+   Compiling serde v1.0.229
+   Compiling libc v0.2.191
+   Compiling serde_json v1.0.154
+   Compiling num-traits v0.2.19
+   Compiling memchr v2.8.3
+   Compiling num-integer v0.1.47
+   Compiling itoa v1.0.18
+   Compiling cfg-if v1.0.5
+   Compiling getrandom v0.2.17
+   Compiling num-rational v0.4.2
+   Compiling num-bigint v0.5.1
+   Compiling hashed-ecdl-tensor v0.1.0 (/workspace/cryptanalysis-phase-accounting-repair/bindings/rust/hashed-ecdl-tensor)
+    Finished `release` profile [optimized] target(s) in 15.82s
+     Running tests/finite_extensions.rs (/workspace/native-phase-repair-target/release/deps/finite_extensions-c8bb7531c973b33a)
+
+running 1 test
+test external_oracle_replay_has_independent_group_work_and_matrix_accounting ... FAILED
+
+failures:
+
+---- external_oracle_replay_has_independent_group_work_and_matrix_accounting stdout ----
+
+thread 'external_oracle_replay_has_independent_group_work_and_matrix_accounting' (1460470) panicked at tests/finite_extensions.rs:231:5:
+membership needs subgroup replay
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    external_oracle_replay_has_independent_group_work_and_matrix_accounting
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 10 filtered out; finished in 0.00s
+
+error: test failed, to rerun pass `--test finite_extensions`

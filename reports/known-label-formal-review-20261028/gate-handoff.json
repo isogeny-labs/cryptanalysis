@@ -1,0 +1,50 @@
+{
+  "handoff": {
+    "id": "TASK-20261028-298dc6",
+    "from": "coordinator",
+    "to": "reviewer",
+    "objective": "Review only J3 as prospectively assigned",
+    "uncertainty_reduced": "Independent scoped evidence, with native status kept separate",
+    "inputs": [
+      "reports/known-label-formal-review-20261028/review-plan.json",
+      "reports/known-label-formal-review-20261028/inputs.json",
+      "tools/lean/current-corpus-gate.py",
+      "tools/lean/test_current_corpus_gate.py",
+      "tools/lean/AuditHeckeAxioms.lean",
+      "tools/lean/hecke-audit-selftest.py",
+      "tools/lean/README.md",
+      ".github/workflows/lean-proof-gate.yml",
+      "tools/ci/quartic_certificates.json",
+      "experiments/hecke-432-formal-ci-20261025/lean-toolchain",
+      "experiments/hecke-432-formal-ci-20261025/lakefile.toml",
+      "experiments/hecke-432-formal-ci-20261025/lake-manifest.json"
+    ],
+    "constraints": [
+      "mutual blindness",
+      "no heavy build, experiment, cloud call, source edit or PR mutation",
+      "write only assigned scratch output; coordinator archives later"
+    ],
+    "deliverables": [
+      "report.md",
+      "attestation.json",
+      "optional minimal diagnostic source/output"
+    ],
+    "artifact_paths": [
+      "/home/ec2-user/scratch/known-label-review-20261028/TASK-20261028-298dc6"
+    ],
+    "archived_by": "TASK-20261028-871ca0",
+    "inference": {
+      "policy": "review-adversarial",
+      "reasoning_effort": "xhigh",
+      "fallback_allowed": false,
+      "degraded_allowed": false,
+      "independent_session_required": true,
+      "delivery": "interactive"
+    },
+    "completion_gate": [
+      "report covers only owned joint with actual reads and concrete checks",
+      "attestation declares truthful blindness and deviations"
+    ],
+    "return_format": "report.md plus JSON review_attestation"
+  }
+}

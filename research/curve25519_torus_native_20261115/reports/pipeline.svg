@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="470" viewBox="0 0 1080 470">
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8" fill="#42566b"/></marker></defs>
+<rect width="1080" height="470" fill="#fff"/>
+<g font-family="DejaVu Sans,sans-serif" fill="#162b43">
+<text x="40" y="44" font-size="25" font-weight="bold">Curve25519 torus/S4: native Rust qualification</text>
+<text x="40" y="74" font-size="16">Development observations [pcc:unverified] — full-M solver run pending</text>
+<g fill="#eaf2fa" stroke="#3e6d99" stroke-width="2">
+<rect x="40" y="110" width="270" height="106" rx="10"/><rect x="405" y="110" width="270" height="106" rx="10"/><rect x="770" y="110" width="270" height="106" rx="10"/>
+</g>
+<g font-size="18" text-anchor="middle"><text x="175" y="145">Public actual-field inputs</text><text x="175" y="176" font-size="15">p = 2^255 - 19; A = 486662</text><text x="175" y="198" font-size="15">M=1 controls + full-M cases</text>
+<text x="540" y="145">Rust sparse compiler</text><text x="540" y="176" font-size="15">Chebyshev DAG + Edwards-y S4</text><text x="540" y="198" font-size="15">No factor-base enumeration</text>
+<text x="905" y="145">Frozen quadratic inputs</text><text x="905" y="176" font-size="15">395 variables / 396 equations</text><text x="905" y="198" font-size="15">Counts describe the full-M input</text></g>
+<g stroke="#42566b" stroke-width="2" fill="none" marker-end="url(#arrow)"><path d="M310 162 H400"/><path d="M675 162 H765"/><path d="M540 216 V264"/><path d="M905 216 V264"/></g>
+<rect x="405" y="270" width="270" height="106" rx="10" fill="#eef6ed" stroke="#487447" stroke-width="2"/>
+<rect x="770" y="270" width="270" height="106" rx="10" fill="#fff6e8" stroke="#b57c2f" stroke-width="2" stroke-dasharray="7 5"/>
+<g text-anchor="middle" font-size="17"><text x="540" y="303">Separate point checks</text><text x="540" y="332" font-size="15">Lift, Chebyshev membership, signs</text><text x="540" y="356" font-size="15">Compare sum to the raw target</text>
+<text x="905" y="303">Native algebraic solver</text><text x="905" y="332" font-size="15">M=1 std controls checked</text><text x="905" y="356" font-size="15">Full-M roots and cost: pending</text></g>
+<text x="40" y="419" font-size="15">Sources: torus-s4/tests/native.rs; tests/backend.rs; cryptanalysis qualification manifests.</text>
+<text x="40" y="446" font-size="15">Circuit sparsity is structural evidence. It does not price factor-base decomposition.</text>
+</g></svg>

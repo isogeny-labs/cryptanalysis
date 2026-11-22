@@ -1,0 +1,29 @@
+{
+  "run_id": 39384735073,
+  "run_url": "https://github.com/aburan28/cryptanalysis/actions/runs/39384735073",
+  "workflow": ".github/workflows/n19-native-tau6-v3.yml",
+  "event": "push",
+  "head_sha": "92d85f14862b3f7555c519bc3b99c74ac43c1ac9",
+  "queued_at": "2026-10-20T07:09:51Z",
+  "jobs": {
+    "sage-smoke": {
+      "id": 118501768589, "conclusion": "failure",
+      "started_at": "2026-10-20T07:29:16Z", "completed_at": "2026-10-20T07:30:23Z",
+      "failed_step": "Freeze runner and source identity (step 3)",
+      "steps_skipped": ["planted-corruption check", "toolchain, test and build", "Sage image pull", "digest_repro.sage diagnosis", "smoke part", "smoke gate"],
+      "steps_run_after_failure": ["Preserve the smoke receipt, library and diagnosis (if: always)"]
+    },
+    "timed": {"id": 118508948584, "conclusion": "skipped", "reason": "needs sage-smoke, which failed"}
+  },
+  "artifacts": [
+    {"id": 12247104264, "name": "n19-native-tau6-v3-smoke-39384735073-1", "bytes": 3040,
+     "sha256": "d8da435a0cdcfe9d0355f7141032d3e88a32aefa4d29e9180950a9467609fef0",
+     "contents": ["host-probe.json"]}
+  ],
+  "timed_artifact": null,
+  "failure": {
+    "log_excerpt": "Traceback (most recent call last):\n  File \"<stdin>\", line 20, in <module>\n  File \"<frozen os>\", line 685, in __getitem__\nKeyError: 'N19_RD'\n##[error]Process completed with exit code 1.",
+    "cause": "Step 3 appends N19_RD to $GITHUB_ENV and, in the same step, a Python heredoc reads os.environ['N19_RD']. A GITHUB_ENV write is visible only to later steps, so the lookup raised KeyError. Workflow defect; no experiment code ran."
+  },
+  "verdict": "invalid"
+}

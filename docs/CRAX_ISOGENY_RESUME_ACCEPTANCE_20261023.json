@@ -1,0 +1,180 @@
+{
+  "schema_version": 1,
+  "kind": "crax-isogeny-experiment-checkpoint-acceptance",
+  "checked_at_utc": "2026-10-23T05:07:56.584122+00:00",
+  "command": [
+    "isogeny",
+    "experiment",
+    "--bits",
+    "9",
+    "--trials",
+    "2",
+    "--ell-list",
+    "2",
+    "--rho-cap",
+    "1024"
+  ],
+  "binary_sha256": {
+    "ca_suite": "132a7ad0d9618988b81bbf63a81e57cf24b586929769bdfef88521349e221c10",
+    "crax": "2e8fd910cd038420cda39ac0d06407760e9fc19ab6c8e664f7805adea525c2f2"
+  },
+  "binary_blake3_from_checkpoints": {
+    "ca_suite": "35a3700f7e30ae5154290d9bbafd533bdc033ce49cf77e65fdfa65805f3ccc82",
+    "crax": "40629605a9703591d50be4ec6393f9a04e523691bc0999117fcff833a60d43d8"
+  },
+  "partial": {
+    "status": "partial",
+    "completed_curves": 1,
+    "planned_curves": 2,
+    "identity_blake3": "7560fc3fdefe64ad0b419cb30f2a429aec7c12157c0a1694f513e43ee0604e79",
+    "report": null
+  },
+  "complete": {
+    "status": "complete",
+    "completed_curves": 2,
+    "planned_curves": 2,
+    "identity_blake3": "7560fc3fdefe64ad0b419cb30f2a429aec7c12157c0a1694f513e43ee0604e79",
+    "report": {
+      "config": {
+        "bits": 9,
+        "num_curves": 2,
+        "primes": [
+          2
+        ],
+        "max_graph_nodes": 16,
+        "rho_max_iters": 1024,
+        "seed": 12648430
+      },
+      "per_curve": [
+        {
+          "start": [
+            521,
+            491,
+            155
+          ],
+          "class_size": 1,
+          "class": [
+            {
+              "curve": [
+                521,
+                491,
+                155
+              ],
+              "cm": {
+                "p": 521,
+                "trace": 27,
+                "order": 495,
+                "frobenius_disc": -1355,
+                "fundamental_disc": -1355,
+                "conductor": 1,
+                "endomorphism_disc": -1355,
+                "anomalous": false,
+                "supersingular": false
+              },
+              "rho_iters": 1,
+              "rho_success": true,
+              "embedding_degree": 10,
+              "mov_feasible": false,
+              "smart_applies": false,
+              "glv_speedup_available": false
+            }
+          ],
+          "mean_rho_iters": 1.0,
+          "median_rho_iters": 1.0,
+          "stddev_rho_iters": 0.0
+        },
+        {
+          "start": [
+            521,
+            218,
+            66
+          ],
+          "class_size": 2,
+          "class": [
+            {
+              "curve": [
+                521,
+                218,
+                66
+              ],
+              "cm": {
+                "p": 521,
+                "trace": -6,
+                "order": 528,
+                "frobenius_disc": -2048,
+                "fundamental_disc": -8,
+                "conductor": 16,
+                "endomorphism_disc": -2048,
+                "anomalous": false,
+                "supersingular": false
+              },
+              "rho_iters": 7,
+              "rho_success": true,
+              "embedding_degree": 10,
+              "mov_feasible": false,
+              "smart_applies": false,
+              "glv_speedup_available": false
+            },
+            {
+              "curve": [
+                521,
+                319,
+                346
+              ],
+              "cm": {
+                "p": 521,
+                "trace": -6,
+                "order": 528,
+                "frobenius_disc": -2048,
+                "fundamental_disc": -8,
+                "conductor": 16,
+                "endomorphism_disc": -2048,
+                "anomalous": false,
+                "supersingular": false
+              },
+              "rho_iters": 5,
+              "rho_success": true,
+              "embedding_degree": 10,
+              "mov_feasible": false,
+              "smart_applies": false,
+              "glv_speedup_available": false
+            }
+          ],
+          "mean_rho_iters": 6.0,
+          "median_rho_iters": 7.0,
+          "stddev_rho_iters": 1.4142135623730951
+        }
+      ],
+      "aggregate": {
+        "total_curves": 2,
+        "total_isogenous_vertices": 3,
+        "curves_with_smart_applicable": 0,
+        "curves_with_mov_feasible": 0,
+        "curves_with_glv": 0,
+        "overall_mean_rho_iters": 4.333333333333333
+      }
+    }
+  },
+  "fresh_report_sha256": "de162b157c1edc940246024eaa97b6a6d49c1da99409aa177b0d41b4abdbfddd",
+  "resumed_equals_fresh": true,
+  "crax_partial_and_resume": {
+    "partial_status": "partial",
+    "complete_status": "complete",
+    "complete_equals_fresh": true
+  },
+  "crax_json_wrapper": {
+    "status": "ok",
+    "inner_status": "partial"
+  },
+  "rejections": {
+    "changed_configuration": "error: isogeny experiment checkpoint identity differs",
+    "changed_executable": "error: isogeny experiment checkpoint identity differs",
+    "corrupt_checksum": "error: isogeny experiment checkpoint checksum differs"
+  },
+  "scope": "Two deterministic ordinary curves over F_521, with coefficients (a,b)=(491,155) and (218,66), degree-2 graph edges, rho cap 1024, and local checkpoint only.",
+  "release_isogeny_module_tests": {
+    "passed": 64,
+    "failed": 0,
+    "ignored": 0
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "schema": "curve-audit.native-rust.v1",
+  "source_head_before_fix": "50bd627d77df9568a6466546a78b910ac498d9f6",
+  "command": [
+    "cargo",
+    "test",
+    "--locked",
+    "--manifest-path",
+    "bindings/rust/Cargo.toml",
+    "-p",
+    "ca-curve-audit"
+  ],
+  "cwd": "/tmp/cryptanalysis-curve-replay-20261027",
+  "target_dir": "/var/tmp/curve-audit-native-20261027-target",
+  "start_unix": 1793080002.882466,
+  "end_unix": 1793080008.327387,
+  "exit_code": 0,
+  "input_sha256_before": {
+    "bindings/rust/Cargo.lock": "d4829e60047ecef3362fb63e6351edc41fde1bb790e82cde6ea3989c375065d9",
+    "bindings/rust/Cargo.toml": "af6b193157e38232069b3fb4a7387ce52b743a91e3e0e1abcc76893d5f49c0a6",
+    "bindings/rust/curve-audit/Cargo.toml": "99082c61e83973c5924c7f0dd092c5934a8309dcdb3c4c5716bd0ff9a57e0bda",
+    "bindings/rust/curve-audit/src/arithmetic.rs": "8fc8dfeccb5a2da2473589771ba51fd0f6ba9ff301c149b921d0f11ce2695f40",
+    "bindings/rust/curve-audit/src/certificates.rs": "465297e36bf9b5b5fdf7ad7cdf3521cf87b1f215e07e3c8a3bf9abfa85320591",
+    "bindings/rust/curve-audit/src/input.rs": "fddc12b6add294fb4c325f302f1cd69d30de69332dfa7ec654daa074eff07ef7",
+    "bindings/rust/curve-audit/src/main.rs": "8e9a872c2c032253079bd6d108b493b6f11e2ebff7f4e60f43a4409159ea886b",
+    "bindings/rust/curve-audit/examples/nist-p192.json": "546cc91e069dbd8fdb808a597ba4c4c5312b20ebeaae9da515745bceb752b653",
+    "bindings/rust/curve-audit/examples/nist-p192-pratt.json": "4de20aebb2c4b1199dc8aa454b4064f3cb0d4f94e08b14fbf1c5984f5ec3fa3a",
+    "bindings/rust/curve-audit/examples/nist-p224.json": "912c66431d711c5bd9704ea26cc80e2d6a93f7529c51dce45abab4c4a499affe",
+    "bindings/rust/curve-audit/examples/nist-p224-pratt.json": "bd4051168c2ce4c5809ffe4e2008312fe8b24a32d9185d6cf3200ca20cf28a2e"
+  },
+  "input_sha256_after": {
+    "bindings/rust/Cargo.lock": "d4829e60047ecef3362fb63e6351edc41fde1bb790e82cde6ea3989c375065d9",
+    "bindings/rust/Cargo.toml": "af6b193157e38232069b3fb4a7387ce52b743a91e3e0e1abcc76893d5f49c0a6",
+    "bindings/rust/curve-audit/Cargo.toml": "99082c61e83973c5924c7f0dd092c5934a8309dcdb3c4c5716bd0ff9a57e0bda",
+    "bindings/rust/curve-audit/src/arithmetic.rs": "8fc8dfeccb5a2da2473589771ba51fd0f6ba9ff301c149b921d0f11ce2695f40",
+    "bindings/rust/curve-audit/src/certificates.rs": "465297e36bf9b5b5fdf7ad7cdf3521cf87b1f215e07e3c8a3bf9abfa85320591",
+    "bindings/rust/curve-audit/src/input.rs": "fddc12b6add294fb4c325f302f1cd69d30de69332dfa7ec654daa074eff07ef7",
+    "bindings/rust/curve-audit/src/main.rs": "8e9a872c2c032253079bd6d108b493b6f11e2ebff7f4e60f43a4409159ea886b",
+    "bindings/rust/curve-audit/examples/nist-p192.json": "546cc91e069dbd8fdb808a597ba4c4c5312b20ebeaae9da515745bceb752b653",
+    "bindings/rust/curve-audit/examples/nist-p192-pratt.json": "4de20aebb2c4b1199dc8aa454b4064f3cb0d4f94e08b14fbf1c5984f5ec3fa3a",
+    "bindings/rust/curve-audit/examples/nist-p224.json": "912c66431d711c5bd9704ea26cc80e2d6a93f7529c51dce45abab4c4a499affe",
+    "bindings/rust/curve-audit/examples/nist-p224-pratt.json": "bd4051168c2ce4c5809ffe4e2008312fe8b24a32d9185d6cf3200ca20cf28a2e"
+  },
+  "stdout_sha256": "ab492299fac37f4025350a4a7b365104f09519d5b4afdb96cada7a97a9a66559",
+  "stderr_sha256": "8e9f1cb1ec028e1d99ca97e12431ce5b82071f9930105779f4b9ea775e990280"
+}

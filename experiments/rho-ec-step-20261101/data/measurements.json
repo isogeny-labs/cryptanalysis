@@ -1,0 +1,205 @@
+{
+ "curve": {
+  "p": 17592186044399,
+  "a": 17592186044396,
+  "b": 95,
+  "n": 17592192476281,
+  "G": "3059076832945,1187200924441",
+  "H": "7378758875510,11599828042334",
+  "bits": 44
+ },
+ "solve": {
+  "seed": 1,
+  "threads": 1,
+  "x": 1797554627005,
+  "ops": 4907163,
+  "iterations": 18496,
+  "table_entries": 18495
+ },
+ "callgrind_ir": {
+  "baseline (main 8a93e468d)": 1530505869,
+  "v1 inline dispatch, idx batch": 1426400812,
+  "v2 fused add in bookkeeping": 1415879588,
+  "v3 four interleaved chains (negation unconditional)": 1426627381,
+  "v4 = v3, negation gated on negmap, ec_batch_op through the shared helpers": 1436152319,
+  "v5 = v4 with the helper returning by value (rejected)": 1492948269,
+  "kept: v4 arithmetic, ec_batch_op as on main": 1436152339
+ },
+ "wall_seconds_internal": {
+  "note": "ca solve --alg rho ... --threads 1 --seed 1, pinned to CPU 3 with taskset, interleaved rounds baseline / candidate / baseline (A/A), L0 shared 4-vCPU VM",
+  "v3_rounds": [
+   [
+    "2",
+    "0.231020",
+    "0.189752",
+    "0.222767"
+   ],
+   [
+    "3",
+    "0.217075",
+    "0.186766",
+    "0.226337"
+   ],
+   [
+    "4",
+    "0.234799",
+    "0.186739",
+    "0.212511"
+   ],
+   [
+    "5",
+    "0.226462",
+    "0.187770",
+    "0.224376"
+   ],
+   [
+    "6",
+    "0.221324",
+    "0.192034",
+    "0.231923"
+   ],
+   [
+    "7",
+    "0.229138",
+    "0.199659",
+    "0.229189"
+   ],
+   [
+    "8",
+    "0.220035",
+    "0.189735",
+    "0.224284"
+   ],
+   [
+    "9",
+    "0.231282",
+    "0.190473",
+    "0.224264"
+   ]
+  ],
+  "fused_rounds": [
+   [
+    "2",
+    "0.254626",
+    "0.240912",
+    "0.246120"
+   ],
+   [
+    "3",
+    "0.246949",
+    "0.237261",
+    "0.234033"
+   ],
+   [
+    "4",
+    "0.230035",
+    "0.240539",
+    "0.234499"
+   ],
+   [
+    "5",
+    "0.232600",
+    "0.242654",
+    "0.228083"
+   ],
+   [
+    "6",
+    "0.226046",
+    "0.256766",
+    "0.232426"
+   ],
+   [
+    "7",
+    "0.229292",
+    "0.252529",
+    "0.264765"
+   ]
+  ],
+  "final_rounds": [
+   [
+    "1",
+    "0.230879",
+    "0.185462",
+    "0.214948"
+   ],
+   [
+    "2",
+    "0.228658",
+    "0.192252",
+    "0.217254"
+   ],
+   [
+    "3",
+    "0.213858",
+    "0.192439",
+    "0.238074"
+   ],
+   [
+    "4",
+    "0.216501",
+    "0.189608",
+    "0.215875"
+   ],
+   [
+    "5",
+    "0.215927",
+    "0.183537",
+    "0.223684"
+   ],
+   [
+    "6",
+    "0.218327",
+    "0.192551",
+    "0.231037"
+   ],
+   [
+    "7",
+    "0.233583",
+    "0.193644",
+    "0.211845"
+   ],
+   [
+    "8",
+    "0.220172",
+    "0.179039",
+    "0.212601"
+   ],
+   [
+    "9",
+    "0.218979",
+    "0.197119",
+    "0.231855"
+   ]
+  ],
+  "final_note": "kept binary (build/ca, v4 arithmetic, ec_batch_op as on main) against the main 8a93e468d build, ca solve --alg rho ... --threads 1 --seed 1, taskset -c 3, nine interleaved rounds baseline / candidate / baseline (A/A), 2026-11-01T02:46Z, host load 0.7 with nothing else of ours running; v3_rounds is the earlier pass over the v3 code on a busy host"
+ },
+ "ir_per_op": {
+  "baseline (main 8a93e468d)": 311.8922010538472,
+  "v1 inline dispatch, idx batch": 290.6772837992135,
+  "v2 fused add in bookkeeping": 288.53322948514244,
+  "v3 four interleaved chains (negation unconditional)": 290.7234548760659,
+  "v4 = v3, negation gated on negmap, ec_batch_op through the shared helpers": 292.6644823088208,
+  "v5 = v4 with the helper returning by value (rejected)": 304.2385730818398,
+  "kept: v4 arithmetic, ec_batch_op as on main": 292.6644863844955
+ },
+ "callgrind_ir_note": "Whole-process Ir of `ca solve --alg rho` on the 44-bit curve, seed 1, one thread. v3's count was taken before the branch-free negation was gated on the negation map (the generic Z_p^* path had paid for it); v4 is that gate plus ec_batch_op rewritten over the shared inline helpers (instruction-identical kernels); v5 returned the sum by value (perfindex c_ec_batch_add 0.921x, c_ec_count_points 0.950x, c_rho_ec36 1.021x: rejected); a local-temporary form of ec_batch_op measured the same as v5 on those kernels and was rejected too. The kept code is v4's walk and helpers with ec_batch_op's body as on main (its shared-helper form is not visible to clang's static analyzer at that call depth).",
+ "perfindex_instr_final": {
+  "dlp/c_rho_ec36": [
+   199957434,
+   189530435
+  ],
+  "dlp/c_rho_zp40": [
+   270988160,
+   273556841
+  ],
+  "field_ec/c_ec_batch_add": [
+   233479793,
+   233479793
+  ],
+  "field_ec/c_ec_count_points": [
+   57787732,
+   57999568
+  ],
+  "note": "base Ir, cand Ir; data/perfindex-instr-dlp.md and data/perfindex-instr-field_ec.md; every fingerprint identical"
+ }
+}

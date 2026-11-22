@@ -1,0 +1,27 @@
+{
+  "independent": false,
+  "attempts": [
+    {
+      "purpose": "Initial wiring development probe",
+      "status": "failed",
+      "diagnostic": "n83-opcounts.yml needs the generated pull step; generated diff removed one blank separator after the existing replay restore. This displayed diagnostic/diff is a transcript summary, not a captured raw subprocess log.",
+      "correction": "Retain trailing separator lines when removing and regenerating bootstrap steps."
+    },
+    {
+      "purpose": "First source-only harness launch",
+      "exit_code": 1,
+      "script": "initial-source-only-check.py",
+      "script_sha256": "30d1c24c100bfd91a7b7a45e2712e10da2b727ec2761517648de48892a9c69f9",
+      "output": "initial-harness-path-failure.log",
+      "output_sha256": "f139ea451ba4a4bea59bba90418d8a6d0d0d2f7cc5646c3b6eaef53aa4acfde8",
+      "correction": "Use the repository directory (parents[4]) rather than /workspace (parents[5]); failure happened before analysis execution."
+    },
+    {
+      "purpose": "Full artifact suite on f7d0e2c8",
+      "status": "failed",
+      "command_receipt": "artifact-tests.command.json",
+      "output": "artifact-tests.log",
+      "correction": "The new fixture separator prevented a string replacement from creating its conditional checkout. Corrected fixture anchor and added an explicit precondition on source2ce59d8a. No test assertion was removed."
+    }
+  ]
+}

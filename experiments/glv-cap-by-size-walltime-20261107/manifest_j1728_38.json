@@ -1,0 +1,53 @@
+{
+ "schema": 1,
+ "workdir": "/tmp/x",
+ "repetitions": 15,
+ "timeout_s": 900,
+ "isolation": {
+  "tier": "tier1",
+  "cpus": "0",
+  "execution_cpu": 0,
+  "mem_nodes": "0",
+  "cgroup": "/sys/fs/cgroup",
+  "allocation": {
+   "provider": "github_actions",
+   "instance_id": "placeholder",
+   "receipt": "placeholder.json"
+  }
+ },
+ "artifacts": [
+  "placeholder.json",
+  "bench_glv_panel.c",
+  "panel_j1728_38.txt"
+ ],
+ "measurement_boundary": "after every group and target is set up: ca_curve_solve on each panel target plus its replay check, summed",
+ "pair_fields": [
+  "targets",
+  "first_x",
+  "first_y",
+  "seed"
+ ],
+ "result_field": "result",
+ "cases": [
+  {
+   "id": "glv-j1728-38",
+   "expected_fields": {
+    "targets": "20",
+    "first_x": "963958611043",
+    "first_y": "1132254377442",
+    "seed": "7"
+   },
+   "expected_result": "df0e321174cab70d",
+   "reference": [
+    "glv-panel-ref",
+    "panel_j1728_38.txt",
+    "7"
+   ],
+   "candidate": [
+    "glv-panel-cand",
+    "panel_j1728_38.txt",
+    "7"
+   ]
+  }
+ ]
+}

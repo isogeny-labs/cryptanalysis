@@ -1,0 +1,17 @@
+digraph ThreeGluing {
+  graph [rankdir=TB, bgcolor="white", nodesep=0.28, ranksep=0.32,
+    label="Derived recognition and remaining obligations; no instantiated attack or novelty claim",
+    labelloc=t, fontsize=10, fontname="DejaVu Sans"];
+  node [shape=box, style="rounded,filled", fillcolor="#edf4fa", color="#45627c",
+    fontname="DejaVu Sans", fontsize=10, margin="0.12,0.09"];
+  edge [color="#45627c", arrowsize=0.65, fontname="DejaVu Sans", fontsize=9];
+  input [label="Ordinary E over F_(2^(3d)): y^2+xy=x^3+a*x^2+b\nCompute rational roots of X^4+X^3+b"];
+  test [label="d odd: Tr(cube_root(b))=0, giving two roots\nd even: four roots\nExact rational, coordinate-transverse 3-torsion condition"];
+  module [label="Explicit abstract module kernel, rank 3\nWeighted pairing: J + qJ + q^2J\nFrobenius stability and zero coordinate intersections"];
+  geometry [label="Additional hypotheses: d >= 2 and absolute degree(b)=3d\nNo degree 1 or 2 isogenies between conjugate factors\nThe principally polarized quotient is geometrically indecomposable"];
+  existence [label="Arithmetic Torelli: a genus-three Jacobian for ONE twist\nAn isogeny with 3-primary kernel exists\nPrime subgroups of order other than 3 survive"];
+  unresolved [label="Still needed: publication-priority audit, selected twist,\nsource torsion coordinates, target equation, evaluated isogeny\nand independently verified planted-log transfer",
+    fillcolor="#fff3dc", color="#95712b"];
+  input -> test -> module -> geometry -> existence;
+  existence -> unresolved [style=dashed, label="not supplied by the recognition test", color="#95712b"];
+}

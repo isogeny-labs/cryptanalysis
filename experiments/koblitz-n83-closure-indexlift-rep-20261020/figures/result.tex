@@ -1,0 +1,67 @@
+% Editable source for result.pdf, written by make_result_figure.py from run_github_39359922687/panel/result.json
+\documentclass[tikz,border=6pt]{standalone}
+\usepackage[T1]{fontenc}
+\begin{document}
+\begin{tikzpicture}[font=\sffamily\footnotesize,x=9mm,y=-5.6mm]
+\draw[gray!35] (-2.0000,-0.6) -- (-2.0000,12); \node[gray] at (-2.0000,12.5) {0.25};
+\draw[gray!35] (-1.0000,-0.6) -- (-1.0000,12); \node[gray] at (-1.0000,12.5) {0.5};
+\draw[gray!35] (0.0000,-0.6) -- (0.0000,12); \node[gray] at (0.0000,12.5) {1};
+\draw[gray!35] (1.0000,-0.6) -- (1.0000,12); \node[gray] at (1.0000,12.5) {2};
+\draw[gray!35] (2.0000,-0.6) -- (2.0000,12); \node[gray] at (2.0000,12.5) {4};
+\draw[gray!35] (3.0000,-0.6) -- (3.0000,12); \node[gray] at (3.0000,12.5) {8};
+\draw[gray!35] (4.0000,-0.6) -- (4.0000,12); \node[gray] at (4.0000,12.5) {16};
+\draw[gray!35] (5.0000,-0.6) -- (5.0000,12); \node[gray] at (5.0000,12.5) {32};
+\draw[gray!35] (6.0000,-0.6) -- (6.0000,12); \node[gray] at (6.0000,12.5) {64};
+\draw[red!70!black,dashed] (0,-0.6) -- (0,12);
+\node at (0,13.3) {ratio (log scale); bars: estimate; whiskers: 95\% bootstrap};
+\node[anchor=west,font=\sffamily\bfseries] at (-11,-1.5) {Primary verdict: improvement};
+\node[anchor=east] at (-2.1000,0) {PRIMARY end-to-end cold A / B (30 pairs)};
+\fill[orange!60] (0,-0.300000) rectangle (2.8901,0.300000);
+\draw (2.8480,0) -- (2.9329,0); \draw (2.8480,-0.150000) -- (2.8480,0.150000); \draw (2.9329,-0.150000) -- (2.9329,0.150000);
+\node[anchor=west,font=\sffamily\scriptsize] at (6.1000,0) {7.4133 [7.1999, 7.6362]};
+\node[anchor=east] at (-2.1000,1) {rank stage A / B};
+\fill[blue!30] (0,0.700000) rectangle (5.2605,1.300000);
+\draw (5.1253,1) -- (5.4118,1); \draw (5.1253,0.850000) -- (5.1253,1.150000); \draw (5.4118,0.850000) -- (5.4118,1.150000);
+\node[anchor=west,font=\sffamily\scriptsize] at (6.1000,1) {38.3338 [34.9034, 42.5698]};
+\node[anchor=east] at (-2.1000,2) {process CPU time A / B};
+\fill[blue!30] (0,1.700000) rectangle (2.0770,2.300000);
+\draw (2.0446,2) -- (2.1099,2); \draw (2.0446,1.850000) -- (2.0446,2.150000); \draw (2.1099,1.850000) -- (2.1099,2.150000);
+\node[anchor=west,font=\sffamily\scriptsize] at (6.1000,2) {4.2193 [4.1257, 4.3167]};
+\node[anchor=east] at (-2.1000,3) {cold without rank A / B};
+\fill[blue!30] (0,2.700000) rectangle (-0.0309,3.300000);
+\draw (-0.0643,3) -- (0.0033,3); \draw (-0.0643,2.850000) -- (-0.0643,3.150000); \draw (0.0033,2.850000) -- (0.0033,3.150000);
+\node[anchor=west,font=\sffamily\scriptsize] at (6.1000,3) {0.9788 [0.9564, 1.0023]};
+\node[anchor=east] at (-2.1000,4) {setup A / B};
+\fill[blue!30] (0,3.700000) rectangle (-0.0318,4.300000);
+\draw (-0.0384,4) -- (-0.0249,4); \draw (-0.0384,3.850000) -- (-0.0384,4.150000); \draw (-0.0249,3.850000) -- (-0.0249,4.150000);
+\node[anchor=west,font=\sffamily\scriptsize] at (6.1000,4) {0.9782 [0.9737, 0.9829]};
+\node[anchor=east] at (-2.1000,5) {index build A / B};
+\fill[blue!30] (0,4.700000) rectangle (-0.0395,5.300000);
+\draw (-0.0465,5) -- (-0.0324,5); \draw (-0.0465,4.850000) -- (-0.0465,5.150000); \draw (-0.0324,4.850000) -- (-0.0324,5.150000);
+\node[anchor=west,font=\sffamily\scriptsize] at (6.1000,5) {0.9730 [0.9683, 0.9778]};
+\node[anchor=east] at (-2.1000,6) {online A / B};
+\fill[blue!30] (0,5.700000) rectangle (0.0127,6.300000);
+\draw (-1.8424,6) -- (1.6871,6); \draw (-1.8424,5.850000) -- (-1.8424,6.150000); \draw (1.6871,5.850000) -- (1.6871,6.150000);
+\node[anchor=west,font=\sffamily\scriptsize] at (6.1000,6) {1.0088 [0.2789, 3.2201]};
+\node[anchor=east] at (-2.1000,7) {probe law kPI (probes per relation / law)};
+\fill[blue!30] (0,6.700000) rectangle (-0.0017,7.300000);
+\draw (-0.0282,7) -- (0.0261,7); \draw (-0.0282,6.850000) -- (-0.0282,7.150000); \draw (0.0261,6.850000) -- (0.0261,7.150000);
+\node[anchor=west,font=\sffamily\scriptsize] at (6.1000,7) {0.9988 [0.9806, 1.0182]};
+\node[anchor=east] at (-2.1000,8) {probe law kM38I (gate band 0.80-1.20)};
+\fill[blue!30] (0,7.700000) rectangle (-0.0169,8.300000);
+\draw (-0.1920,8) -- (0.1589,8); \draw (-0.1920,7.850000) -- (-0.1920,8.150000); \draw (0.1589,7.850000) -- (0.1589,8.150000);
+\node[anchor=west,font=\sffamily\scriptsize] at (6.1000,8) {0.9883 [0.8754, 1.1164]};
+\node[anchor=east] at (-2.1000,9) {A/A e2e B / Baa (control, 0.97-1.03)};
+\fill[gray!45] (0,8.700000) rectangle (-0.0013,9.300000);
+\draw (-0.0084,9) -- (0.0070,9); \draw (-0.0084,8.850000) -- (-0.0084,9.150000); \draw (0.0070,8.850000) -- (0.0070,9.150000);
+\node[anchor=west,font=\sffamily\scriptsize] at (6.1000,9) {0.9991 [0.9942, 1.0049]};
+\node[anchor=east] at (-2.1000,10) {A/A cold B / Baa (control, 0.97-1.03)};
+\fill[gray!45] (0,9.700000) rectangle (-0.0031,10.300000);
+\draw (-0.0096,10) -- (0.0032,10); \draw (-0.0096,9.850000) -- (-0.0096,10.150000); \draw (0.0032,9.850000) -- (0.0032,10.150000);
+\node[anchor=west,font=\sffamily\scriptsize] at (6.1000,10) {0.9979 [0.9933, 1.0022]};
+\node[anchor=east] at (-2.1000,11) {planted rank per attempt kM38IX / kM38I};
+\fill[gray!45] (0,10.700000) rectangle (0.9574,11.300000);
+\draw (0.9315,11) -- (0.9816,11); \draw (0.9315,10.850000) -- (0.9315,11.150000); \draw (0.9816,10.850000) -- (0.9816,11.150000);
+\node[anchor=west,font=\sffamily\scriptsize] at (6.1000,11) {1.9418 [1.9072, 1.9747]};
+\end{tikzpicture}
+\end{document}

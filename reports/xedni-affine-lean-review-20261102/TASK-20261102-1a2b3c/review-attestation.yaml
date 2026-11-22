@@ -1,0 +1,17 @@
+task_id: TASK-20261102-1a2b3c
+joints_owned:
+  - algebra-and-exceptions
+sources_read:
+  - /var/tmp/cryptanalysis-xedni-review-20261102/reports/xedni-affine-lean-review-20261102/review-plan.yaml
+  - /var/tmp/cryptanalysis-xedni-review-20261102/reports/xedni-affine-lean-review-20261102/blind-input.md
+  - /var/tmp/cryptanalysis-xedni-review-20261102/reports/xedni-affine-lean-review-20261102/TASK-20261102-1a2b3c/task.md
+read_sibling_reports: false
+blind_derivation_compliance: true
+producer_proof_or_source_read: false
+controls_tried:
+  - "n=1, u=0, B=1, q=2, D=1, c=1: row and residue both fail"
+  - "n=1, u=0, B=0, q=2, D=1, c=1: row holds, residue fails"
+  - "n=1, u=0, B=1, q=2, D=2, c=1: residue holds, row fails"
+verdict: holds
+scope: mathematical finite-sum invariant under stated hypotheses
+report: report.md

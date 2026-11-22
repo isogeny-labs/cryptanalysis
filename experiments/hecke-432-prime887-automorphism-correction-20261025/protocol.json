@@ -1,0 +1,45 @@
+{
+  "checks": [
+    "replay special-source full kernel polynomials",
+    "quotient j0 and j1728 paths by geometric source automorphisms",
+    "compare base and twist orbits over a common extension",
+    "re-evaluate omitted j1728 twist representatives",
+    "rebuild complete rational source and B fiber census",
+    "independently audit B equations and source-key coverage"
+  ],
+  "expected": {
+    "X0_rational_points_from_Hecke": 880,
+    "prior_B_affine_image": 109,
+    "prior_retained_rows": 872,
+    "rational_cusps": 8,
+    "raw_chain_pairs": 888
+  },
+  "inputs": {
+    "census": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-prime887-20261025/census.json",
+      "sha256": "fa17b0caa23830e7482baf38bd3cf51e092286ec6bf2cc5597c6830f9a9ab1de"
+    },
+    "coordinate_map": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-27-coordinate-bridge-20261025/coordinate_map.json",
+      "sha256": "f244804792e0527781be5cedd78522b470bb34ed75545cc6bd7179f52b85eae1"
+    },
+    "forward_evaluator": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-prime887-20261025/evaluate_sage.py",
+      "sha256": "c2683a7a87606725958f180acdad9ea2ea8b5fcf44a461df3c10670df210f8e1"
+    },
+    "intermediate_j": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-prime887-20261025/intermediate_j.json",
+      "sha256": "1f73ef2bc230820cd3605df20402dd5a32f5a5d31cc100218f5a219f2aeec5c2"
+    },
+    "kernel_transport": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-kernel-transport-20261025/evaluate_sage.py",
+      "sha256": "a2f72399ff84bb91065b8a16ad1cecb9470fe4b4719354145ba0760f3fd05546"
+    },
+    "previous_image": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-prime887-20261025/image.json",
+      "sha256": "c9e8b4214ff06cd276d386d3f9416d3b88da0a4e60b03cfce3200333eeacb572"
+    }
+  },
+  "prime": 887,
+  "status": "FROZEN_BEFORE_P887_AUTOMORPHISM_CORRECTION"
+}

@@ -20,10 +20,9 @@
  * e > 1).  Every factor-base logarithm is verified (g^log == prime) before
  * use, so a wrong answer is never returned.
  *
- * Individual logarithms: each h g^e is reconstructed as a signed rational
- * a/b with numerator and denominator near sqrt(p), then both are tested
- * for B-smoothness over the verified factor base. Reusable Montgomery
- * step powers avoid repeated short exponentiation in the search walk.
+ * Individual logarithms: signed rational reconstruction writes h g^e as
+ * a/b with numerator and denominator near sqrt(p). Both are tested over
+ * the verified factor base; reusable step powers accelerate the walk.
  *
  * Scope: p < 2^64.  This is a working single-machine index calculus, not
  * the number field sieve; see docs/ALGORITHMS.md for the relationship to
@@ -48,7 +47,7 @@ typedef struct ca_ic_params {
     ca_ic_method method;
     uint32_t factor_base_bound;  /* B; 0 => auto from the size of p */
     uint32_t sieve_radius;       /* C (linear sieve only); 0 => auto */
-    uint32_t threads;            /* relation collection threads; 0 => 1 */
+    uint32_t threads;            /* relation collection and Lanczos threads; 0 => 1 */
     uint32_t extra_relations;    /* relations beyond #unknowns; 0 => auto */
     uint64_t seed;               /* 0 => random */
     uint64_t max_relation_tries; /* random-exponent method: abort bound (0 = none) */
@@ -89,6 +88,15 @@ CA_API ca_status ca_ic_log(ca_ic_ctx *ctx, uint64_t h, uint64_t *x, ca_stats *st
 /* One-shot convenience wrapper. */
 CA_API ca_status ca_ic_solve(uint64_t p, uint64_t g, uint64_t h, const ca_ic_params *params,
                              uint64_t *x, ca_ic_stats *st);
+
+/* CLI-oriented variant.  A checkpoint path enables durable linear-sieve units
+ * or random-exponent relations, plus a verified precomputation cache.  NULL
+ * preserves the ordinary solve.  progress_interval is in seconds (0 => 5)
+ * and is also the random-exponent snapshot interval.  The ca_ic_params ABI
+ * is unchanged. */
+CA_API ca_status ca_ic_solve_checkpointed(uint64_t p, uint64_t g, uint64_t h,
+                                          const ca_ic_params *params, const char *checkpoint_path,
+                                          uint32_t progress_interval, uint64_t *x, ca_ic_stats *st);
 
 /* Introspection */
 CA_API uint64_t ca_ic_modulus(const ca_ic_ctx *ctx);

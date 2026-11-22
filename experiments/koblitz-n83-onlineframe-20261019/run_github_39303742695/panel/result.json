@@ -1,0 +1,2873 @@
+{
+ "checks": {
+  "all_executed_rows_valid": true,
+  "all_points_complete": true,
+  "every_scheduled_row_present": true,
+  "one_relation_probe_count_root_calls_and_relation_checks_per_point_every_ic_process": true,
+  "one_scalar_per_point_ic_and_rho": true,
+  "oracle_replay": true,
+  "q0_matches_archived_feistel_identity": true,
+  "rank_table_equal_archived": true,
+  "receipt_matches_schedule": true,
+  "shared_rank_process_present": true
+ },
+ "classification": "pipeline improvement (end-to-end lower bound above 1)",
+ "contention_flags": [],
+ "controls": {
+  "aa_cold_inside_0.97_1.03": true,
+  "aa_online_inside_0.97_1.03": true,
+  "planted_lower_bound_above_1": true
+ },
+ "decision": "improvement",
+ "detail": {
+  "identity_failures": [],
+  "invalid_rows": [],
+  "online_counters": {
+   "q0/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "q0/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 994008,
+    "s3plant_checked_states": 5988,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "q0/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s000/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s000/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 2276358,
+    "s3plant_checked_states": 13713,
+    "s3plant_swapped_pairs": 2276358,
+    "swapped_pairs": 1
+   },
+   "s000/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s000/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s001/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s001/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 1739680,
+    "s3plant_checked_states": 10480,
+    "s3plant_swapped_pairs": 1739680,
+    "swapped_pairs": 1
+   },
+   "s001/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s001/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s002/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s002/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 55112,
+    "s3plant_checked_states": 332,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s002/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s002/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s003/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s003/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 153716,
+    "s3plant_checked_states": 926,
+    "s3plant_swapped_pairs": 153716,
+    "swapped_pairs": 1
+   },
+   "s003/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s003/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s004/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s004/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 1225412,
+    "s3plant_checked_states": 7382,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s004/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s004/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s005/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s005/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 315068,
+    "s3plant_checked_states": 1898,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s005/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s005/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s006/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s006/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 24070,
+    "s3plant_checked_states": 145,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s006/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s006/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s007/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s007/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 4262880,
+    "s3plant_checked_states": 25680,
+    "s3plant_swapped_pairs": 4262880,
+    "swapped_pairs": 1
+   },
+   "s007/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s007/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s008/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s008/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 240202,
+    "s3plant_checked_states": 1447,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s008/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s008/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s009/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s009/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 479906,
+    "s3plant_checked_states": 2891,
+    "s3plant_swapped_pairs": 479906,
+    "swapped_pairs": 1
+   },
+   "s009/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s009/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s010/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s010/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 284026,
+    "s3plant_checked_states": 1711,
+    "s3plant_swapped_pairs": 284026,
+    "swapped_pairs": 1
+   },
+   "s010/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s010/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s011/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s011/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 495178,
+    "s3plant_checked_states": 2983,
+    "s3plant_swapped_pairs": 495178,
+    "swapped_pairs": 1
+   },
+   "s011/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s011/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s012/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s012/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 314404,
+    "s3plant_checked_states": 1894,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s012/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s012/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s013/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s013/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 446208,
+    "s3plant_checked_states": 2688,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s013/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s013/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s014/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s014/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 3207286,
+    "s3plant_checked_states": 19321,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s014/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s014/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s015/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s015/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 2574328,
+    "s3plant_checked_states": 15508,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s015/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s015/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s016/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s016/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 405538,
+    "s3plant_checked_states": 2443,
+    "s3plant_swapped_pairs": 405538,
+    "swapped_pairs": 1
+   },
+   "s016/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s016/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s017/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s017/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 164008,
+    "s3plant_checked_states": 988,
+    "s3plant_swapped_pairs": 164008,
+    "swapped_pairs": 1
+   },
+   "s017/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s017/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s018/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s018/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 643748,
+    "s3plant_checked_states": 3878,
+    "s3plant_swapped_pairs": 643748,
+    "swapped_pairs": 1
+   },
+   "s018/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s018/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s019/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s019/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 99932,
+    "s3plant_checked_states": 602,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s019/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s019/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s020/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s020/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 1018078,
+    "s3plant_checked_states": 6133,
+    "s3plant_swapped_pairs": 1018078,
+    "swapped_pairs": 1
+   },
+   "s020/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s020/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s021/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s021/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 442224,
+    "s3plant_checked_states": 2664,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s021/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s021/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s022/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s022/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 562076,
+    "s3plant_checked_states": 3386,
+    "s3plant_swapped_pairs": 562076,
+    "swapped_pairs": 1
+   },
+   "s022/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s022/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s023/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s023/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 11288,
+    "s3plant_checked_states": 68,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s023/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s023/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s024/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s024/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 1038994,
+    "s3plant_checked_states": 6259,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s024/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s024/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s025/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s025/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 398400,
+    "s3plant_checked_states": 2400,
+    "s3plant_swapped_pairs": 398400,
+    "swapped_pairs": 1
+   },
+   "s025/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s025/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s026/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s026/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 671636,
+    "s3plant_checked_states": 4046,
+    "s3plant_swapped_pairs": 671636,
+    "swapped_pairs": 1
+   },
+   "s026/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s026/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s027/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s027/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 2529508,
+    "s3plant_checked_states": 15238,
+    "s3plant_swapped_pairs": 2529508,
+    "swapped_pairs": 1
+   },
+   "s027/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s027/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s028/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s028/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 2003620,
+    "s3plant_checked_states": 12070,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s028/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s028/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s029/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s029/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 1288824,
+    "s3plant_checked_states": 7764,
+    "s3plant_swapped_pairs": 1288824,
+    "swapped_pairs": 1
+   },
+   "s029/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s029/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s030/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s030/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 2416794,
+    "s3plant_checked_states": 14559,
+    "s3plant_swapped_pairs": 2416794,
+    "swapped_pairs": 1
+   },
+   "s030/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s030/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s031/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s031/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 2116666,
+    "s3plant_checked_states": 12751,
+    "s3plant_swapped_pairs": 2116666,
+    "swapped_pairs": 1
+   },
+   "s031/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s031/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s031/kP": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s032/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s032/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 384124,
+    "s3plant_checked_states": 2314,
+    "s3plant_swapped_pairs": 384124,
+    "swapped_pairs": 1
+   },
+   "s032/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s032/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s033/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s033/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 30046,
+    "s3plant_checked_states": 181,
+    "s3plant_swapped_pairs": 30046,
+    "swapped_pairs": 1
+   },
+   "s033/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s033/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s034/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s034/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 1005296,
+    "s3plant_checked_states": 6056,
+    "s3plant_swapped_pairs": 1005296,
+    "swapped_pairs": 1
+   },
+   "s034/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s034/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s035/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s035/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 116532,
+    "s3plant_checked_states": 702,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s035/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s035/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s036/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s036/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 1251640,
+    "s3plant_checked_states": 7540,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s036/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s036/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s037/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s037/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 537342,
+    "s3plant_checked_states": 3237,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s037/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s037/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s038/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s038/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 712306,
+    "s3plant_checked_states": 4291,
+    "s3plant_swapped_pairs": 712306,
+    "swapped_pairs": 1
+   },
+   "s038/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s038/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s039/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s039/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 3203966,
+    "s3plant_checked_states": 19301,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s039/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s039/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s040/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s040/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 542322,
+    "s3plant_checked_states": 3267,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s040/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s040/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s041/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s041/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 140934,
+    "s3plant_checked_states": 849,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s041/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s041/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s042/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s042/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 979566,
+    "s3plant_checked_states": 5901,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s042/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s042/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s043/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s043/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 958318,
+    "s3plant_checked_states": 5773,
+    "s3plant_swapped_pairs": 958318,
+    "swapped_pairs": 1
+   },
+   "s043/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s043/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s044/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s044/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 457662,
+    "s3plant_checked_states": 2757,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s044/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s044/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s045/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s045/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 642752,
+    "s3plant_checked_states": 3872,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s045/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s045/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s046/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s046/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 203516,
+    "s3plant_checked_states": 1226,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s046/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s046/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s047/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s047/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 2172940,
+    "s3plant_checked_states": 13090,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s047/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s047/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s048/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s048/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 468286,
+    "s3plant_checked_states": 2821,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s048/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s048/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s049/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s049/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 126160,
+    "s3plant_checked_states": 760,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s049/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s049/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s050/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s050/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 773892,
+    "s3plant_checked_states": 4662,
+    "s3plant_swapped_pairs": 773892,
+    "swapped_pairs": 1
+   },
+   "s050/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s050/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s051/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s051/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 1126642,
+    "s3plant_checked_states": 6787,
+    "s3plant_swapped_pairs": 1126642,
+    "swapped_pairs": 1
+   },
+   "s051/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s051/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s052/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s052/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 747830,
+    "s3plant_checked_states": 4505,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s052/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s052/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s053/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s053/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 5478,
+    "s3plant_checked_states": 33,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s053/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s053/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s054/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s054/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 194884,
+    "s3plant_checked_states": 1174,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s054/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s054/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s055/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s055/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 450358,
+    "s3plant_checked_states": 2713,
+    "s3plant_swapped_pairs": 450358,
+    "swapped_pairs": 1
+   },
+   "s055/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s055/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s056/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s056/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 1312230,
+    "s3plant_checked_states": 7905,
+    "s3plant_swapped_pairs": 1312230,
+    "swapped_pairs": 1
+   },
+   "s056/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s056/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s057/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s057/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 54282,
+    "s3plant_checked_states": 327,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s057/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s057/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s058/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s058/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 309922,
+    "s3plant_checked_states": 1867,
+    "s3plant_swapped_pairs": 309922,
+    "swapped_pairs": 1
+   },
+   "s058/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s058/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s059/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s059/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 6640,
+    "s3plant_checked_states": 40,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s059/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s059/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s060/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s060/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 1828158,
+    "s3plant_checked_states": 11013,
+    "s3plant_swapped_pairs": 1828158,
+    "swapped_pairs": 1
+   },
+   "s060/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s060/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s061/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s061/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 167992,
+    "s3plant_checked_states": 1012,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s061/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s061/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s062/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s062/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 1870488,
+    "s3plant_checked_states": 11268,
+    "s3plant_swapped_pairs": 1870488,
+    "swapped_pairs": 1
+   },
+   "s062/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s062/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s063/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s063/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 645574,
+    "s3plant_checked_states": 3889,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s063/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s063/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   }
+  },
+  "rank_frame_counters": {
+   "kP": {
+    "builds": 600,
+    "plant_checked_inputs": 0
+   }
+  },
+  "rank_padd_counters": {
+   "kP": {
+    "fallback_states": 0,
+    "irregular_inputs": 0,
+    "plant_checked_inputs": 0,
+    "resolved_hits": 600,
+    "swapped_pairs": 303
+   }
+  },
+  "scalar_failures": [],
+  "units_seen": 65
+ },
+ "kind": "n83-onlineframe-online-tier1",
+ "problems": [],
+ "skipped_time_guard": 0,
+ "statistics": {
+  "S_cold_without_rank": {
+   "cF": 0.8543925100392271,
+   "cFX": 0.8708784681783576,
+   "cFaa": 0.8544452255851005,
+   "cS": 0.859526138170928
+  },
+  "S_e2e_cold": {
+   "cF": 6.577563557488261,
+   "cS": 6.582697185619962
+  },
+  "S_online": {
+   "cF": 0.00977220445007317,
+   "cFX": 0.026436219399053437,
+   "cFaa": 0.009785973012286306,
+   "cS": 0.015374648484553043
+  },
+  "S_rho_cold": 0.0989575467205308,
+  "S_rho_online": 0.08970089866100672,
+  "aa_cold_cF_over_cFaa": {
+   "ci95": [
+    0.9989473664460965,
+    1.000763705764834
+   ],
+   "estimate": 0.9999383043590216,
+   "n": 64
+  },
+  "aa_online_cF_over_cFaa": {
+   "ci95": [
+    0.9974683233075946,
+    0.9997782518607295
+   ],
+   "estimate": 0.9985930308416087,
+   "n": 64
+  },
+  "cold_cS_over_cF": {
+   "ci95": [
+    1.0043283423671068,
+    1.0078299023632462
+   ],
+   "estimate": 1.0060085125646352,
+   "n": 64
+  },
+  "complete_points": 64,
+  "delta_S_e2e_cold_cS_to_cF": -0.005133628131700263,
+  "delta_S_online_cS_to_cF": -0.005602444034479874,
+  "e2e_cold_gap_cF_over_rT": {
+   "bootstrap": "the shared rank process's attempts resampled (its non-attempt time kept; the same K on both sides); points resampled, paired; 10000 draws",
+   "ci95": [
+    58.23745880796662,
+    76.57833479910366
+   ],
+   "estimate": 66.46853903991952,
+   "n_points": 64,
+   "rank_attempts": 600
+  },
+  "e2e_cold_gap_cS_over_rT": {
+   "bootstrap": "the shared rank process's attempts resampled (its non-attempt time kept; the same K on both sides); points resampled, paired; 10000 draws",
+   "ci95": [
+    58.25099555651115,
+    76.53896074835436
+   ],
+   "estimate": 66.52041611551233,
+   "n_points": 64,
+   "rank_attempts": 600
+  },
+  "e2e_ms": {
+   "cF": 170729.47714925001,
+   "cS": 170862.7273473125,
+   "rank_stage_K": 148552.574525
+  },
+  "index_build_cS_over_cF": {
+   "ci95": [
+    0.9989126784122287,
+    1.0000865505841268
+   ],
+   "estimate": 0.9994947567671256,
+   "n": 64
+  },
+  "mean_cold_ms": {
+   "cF": 22176.90262425,
+   "cFX": 22604.817761640625,
+   "cFaa": 22178.270926890626,
+   "cS": 22310.1528223125
+  },
+  "mean_index_ms": {
+   "cF": 19557.142538375,
+   "cFX": 19553.64899375,
+   "cFaa": 19561.0507540625,
+   "cS": 19547.261424453125
+  },
+  "mean_online_ms": {
+   "cF": 253.65066285937502,
+   "cFX": 686.187503375,
+   "cFaa": 254.00804434375,
+   "cS": 399.06960596875
+  },
+  "mean_online_probes": 1791508.875,
+  "mean_peak_rss_bytes": {
+   "cF": 1875228672,
+   "cFX": 1875151552,
+   "cFaa": 1875245696,
+   "cS": 1875198848
+  },
+  "mean_setup_ms": {
+   "cF": 21923.251961390626,
+   "cFX": 21918.630258265624,
+   "cFaa": 21924.262882546875,
+   "cS": 21911.08321634375
+  },
+  "online_cS_over_cF_geometric": {
+   "ci95": [
+    1.563282304556697,
+    1.5727837104787366
+   ],
+   "estimate": 1.568197312360197,
+   "n": 64
+  },
+  "online_cS_over_cF_long_tercile": {
+   "ci95": [
+    1.5719865821423293,
+    1.5765823947321178
+   ],
+   "estimate": 1.5741850087635647,
+   "n": 22
+  },
+  "online_cS_over_cF_middle_tercile": {
+   "ci95": [
+    1.5694171695588648,
+    1.5760075021283864
+   ],
+   "estimate": 1.5727610579357594,
+   "n": 21
+  },
+  "online_cS_over_cF_short_tercile": {
+   "ci95": [
+    1.551461041516224,
+    1.5737615508842075
+   ],
+   "estimate": 1.5631767223789652,
+   "n": 21
+  },
+  "online_cS_over_cFaa": {
+   "ci95": [
+    1.569014991341498,
+    1.5731830291124003
+   ],
+   "estimate": 1.571090423532759,
+   "n": 64
+  },
+  "online_gap_cF_over_rT": {
+   "ci95": [
+    0.07910191003583458,
+    0.1449334287499513
+   ],
+   "estimate": 0.10894210198499582,
+   "n": 64
+  },
+  "online_gap_cS_over_rT": {
+   "ci95": [
+    0.12488185424404558,
+    0.22728528338919882
+   ],
+   "estimate": 0.1713990463201062,
+   "n": 64
+  },
+  "online_ns_per_probe": {
+   "cF": 141.58493234334384,
+   "cFX": 383.0221066446015,
+   "cFaa": 141.78441864752136,
+   "cS": 222.75614234328032
+  },
+  "peak_rss_cS_over_cF": {
+   "ci95": [
+    0.9999137619393387,
+    1.0000537884803504
+   ],
+   "estimate": 0.9999840958063166,
+   "n": 64
+  },
+  "planted_online_cFX_over_cF": {
+   "ci95": [
+    2.697854243216867,
+    2.7127196743120425
+   ],
+   "estimate": 2.705246245524007,
+   "n": 64
+  },
+  "primary_online_cS_over_cF": {
+   "ci95": [
+    1.5713691326161838,
+    1.5753312043679597
+   ],
+   "estimate": 1.5733040137568883,
+   "n": 64
+  },
+  "rho_mean_cold_ms": 2568.575744484375,
+  "rho_mean_online_ms": 2328.307038671875,
+  "rho_ms_per_step": 0.0002803873821133332,
+  "secondary_e2e_cS_over_cF": {
+   "bootstrap": "the shared rank process's attempts resampled (its non-attempt time kept; the same K on both sides); points resampled, paired; 10000 draws",
+   "ci95": [
+    1.0005556190494602,
+    1.0010306690808568
+   ],
+   "estimate": 1.0007804756406886,
+   "n_points": 64,
+   "rank_attempts": 600
+  },
+  "setup_cS_over_cF": {
+   "ci95": [
+    0.998893886183815,
+    1.0000115407729702
+   ],
+   "estimate": 0.9994449388681795,
+   "n": 64
+  },
+  "shared_rank_stage": {
+   "attempts": 600,
+   "mean_attempt_probes": 1746427.9033333333,
+   "ns_per_probe": 141.64844957308105,
+   "process_cold_ms": 171400.850204,
+   "rank_stage_ms": 148552.574525
+  }
+ }
+}

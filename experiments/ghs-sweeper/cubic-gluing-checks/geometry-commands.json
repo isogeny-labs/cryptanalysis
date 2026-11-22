@@ -1,0 +1,46 @@
+[
+  {
+    "command": [
+      "/workspace/.cargo/bin/cargo",
+      "test",
+      "--release",
+      "--locked",
+      "--manifest-path",
+      "experiments/ghs-sweeper/Cargo.toml",
+      "--example",
+      "five_gluing_geometry"
+    ],
+    "cwd": "/workspace/cryptanalysis",
+    "revision": "b71fec1c7b6906aed707629e8477dd83ce490081",
+    "exit_status": 0,
+    "elapsed_seconds_execution_receipt_only": 0.5580458641052246,
+    "output": "experiments/ghs-sweeper/cubic-gluing-checks/geometry-tests-attempt-1.txt",
+    "uncompressed_sha256": "46e01e270f4bf7b72420810d2e8398d9b247aea032dcab5291bf69ff78bf16bb",
+    "stored_sha256": "46e01e270f4bf7b72420810d2e8398d9b247aea032dcab5291bf69ff78bf16bb",
+    "stderr_sha256": "21169f7e9bf560ce21a6d7a8b66c861f70b5e2d8cd9c391b6f8796dfbbd8e0bc",
+    "source_sha256": "df6e974de5297329a72c997731a67dd7e998015bf2915021ffef72e386e23317",
+    "performance_claim": false
+  },
+  {
+    "command": [
+      "/workspace/.cargo/bin/cargo",
+      "run",
+      "--release",
+      "--locked",
+      "--manifest-path",
+      "experiments/ghs-sweeper/Cargo.toml",
+      "--example",
+      "five_gluing_geometry"
+    ],
+    "cwd": "/workspace/cryptanalysis",
+    "revision": "b71fec1c7b6906aed707629e8477dd83ce490081",
+    "exit_status": 0,
+    "elapsed_seconds_execution_receipt_only": 0.6099534034729004,
+    "output": "experiments/ghs-sweeper/cubic-gluing-checks/geometry-census-attempt-1.json.gz",
+    "uncompressed_sha256": "5be441a221d2fa8c91afc4687d373d15edfb9a75c78339168854427826b1eced",
+    "stored_sha256": "c8a4ac17c3d641925fc236db72f88477fa33e4e33e7875db7bdf43008ee9099c",
+    "stderr_sha256": "51ff948abfbed4df27588e676a5f12bb341154a07290622fb348a735aa9b9f6a",
+    "source_sha256": "df6e974de5297329a72c997731a67dd7e998015bf2915021ffef72e386e23317",
+    "performance_claim": false
+  }
+]

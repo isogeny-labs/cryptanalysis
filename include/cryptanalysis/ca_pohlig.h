@@ -43,6 +43,16 @@ CA_API void ca_dlog_params_default(ca_dlog_params *p);
 CA_API ca_status ca_pohlig_hellman(const ca_group *g, const ca_elem *base, const ca_elem *target,
                                    const ca_dlog_params *params, uint64_t *x, ca_stats *st);
 
+/* Save completed Pohlig-Hellman digits and delegate the current digit to its
+ * checkpointed prime-order solver.  checkpoint_prefix is the path without a
+ * suffix (e.g. state_dir/dlog); NULL enables live stderr progress only.
+ * The parent checkpoint is prefix.ckpt and digit artifacts use distinct names. */
+CA_API ca_status ca_pohlig_hellman_checkpointed(
+    const ca_group *g, const ca_elem *base, const ca_elem *target,
+    const ca_dlog_params *params, const char *checkpoint_prefix,
+    uint32_t progress_interval, uint32_t checkpoint_interval, int verbose,
+    uint64_t *x, ca_stats *st);
+
 /* Solve a discrete log in a prime-order group directly with the chosen
  * solver (no Pohlig-Hellman).  lo/hi as in the interval solvers. */
 CA_API ca_status ca_dlog_prime_order(const ca_group *g, const ca_elem *base,

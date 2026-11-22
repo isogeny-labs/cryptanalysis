@@ -1,0 +1,70 @@
+[
+  {
+    "command": [
+      "experiments/ghs-sweeper/target/release/examples/cubic_gluing",
+      "matrix",
+      "--q",
+      "3",
+      "--entries",
+      "3",
+      "0",
+      "0",
+      "4"
+    ],
+    "exit_status": 0,
+    "expected_exit": 0,
+    "stdout_sha256": "f889ca812f8a842bdbcd17809064f52964ebc1af0f2fa13fb8611a003948d0eb",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "command": [
+      "experiments/ghs-sweeper/target/release/examples/cubic_gluing",
+      "matrix",
+      "--q",
+      "1",
+      "--entries",
+      "1",
+      "0",
+      "0",
+      "1"
+    ],
+    "exit_status": 0,
+    "expected_exit": 0,
+    "stdout_sha256": "7bd2f28ad9aac2b7b894e8545103492ca1cbbf56ecb908bf7e95031554e8a30b",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "command": [
+      "experiments/ghs-sweeper/target/release/examples/cubic_gluing",
+      "matrix",
+      "--q",
+      "1",
+      "--entries",
+      "1",
+      "1",
+      "0",
+      "1"
+    ],
+    "exit_status": 0,
+    "expected_exit": 0,
+    "stdout_sha256": "e49aa1cf6b576c02d71213499acf618609c28a47e19b7dab4f7749eaa78fe9f5",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "command": [
+      "experiments/ghs-sweeper/target/release/examples/cubic_gluing",
+      "matrix",
+      "--q",
+      "2",
+      "--entries",
+      "3",
+      "0",
+      "0",
+      "4"
+    ],
+    "exit_status": 1,
+    "expected_exit": 1,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "1823f8af0d196f2359722a4233850949d49e322ce1bc6889d43ae1bd0b3a6df7"
+  }
+]

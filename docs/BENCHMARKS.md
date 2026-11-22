@@ -171,6 +171,17 @@ it is off.
 
 ## GLV endomorphism-accelerated rho (`ca_bench glv`)
 
+The table below predates the j0 `tau` scalar setup.  Its operation counts use
+the original affine scalar backend.  For paired online wall times with the
+new setup and the same target, see
+[the j0 tau experiment](../experiments/prime-j0-tau-20260930/README.md).
+The current j0 default uses an oriented quotient walk; its paired wall-time
+panel and correctness checks are in
+[the oriented-walk experiment](../experiments/prime-j0-rho-coordinate-canon-20261002/README.md).
+Those wall ratios were collected on a contended host and remain exploratory
+until an [isolated replay](ISOLATED_BENCHMARKS.md) passes its host and noise
+gates.
+
 Curve-aware dispatch (`ca_curve.h`): on a CM curve the rho walk is folded by
 the automorphism group `<psi>` (order 6 for j-invariant 0, 4 for j-invariant
 1728), against the plain negation-map rho on the same curve.  `S = group
@@ -194,6 +205,14 @@ the folding, not the wall clock: it is a smaller constant in front of the
 same `sqrt(n)`, applied automatically once the curve's j-invariant is
 recognised.  `ca curve --name <name>` reports the structure and the chosen
 solver without running anything.
+
+The later [held-out GLV table-rule experiment](../experiments/glv-table-rule-confirm-20261022/REPORT.md)
+compares divisor 12 with divisor 48 on paired 28–34-bit inputs. Its archived
+group-operation ratios and chart are unchanged. The [Lean addendum](../experiments/glv-table-rule-confirm-20261022/LEAN_PROOF.md)
+proves the source-bound table selector is nondecreasing when the divisor
+changes from 48 to 12, and records a byte-identical replay of the archived
+analysis. That theorem concerns table size; it does not prove the measured
+operation-count ratios or wall-time speedups.
 
 ## Index calculus in `Z_p^*` (`ca_bench ic --threads 4`)
 

@@ -1,0 +1,45 @@
+   Compiling libc v0.2.189
+   Compiling zerocopy v0.8.57
+   Compiling getrandom v0.2.17
+   Compiling rand_core v0.6.4
+   Compiling ppv-lite86 v0.2.21
+   Compiling rand_chacha v0.3.1
+   Compiling rand v0.8.8
+   Compiling serde v1.0.229
+   Compiling num-bigint v0.4.8
+   Compiling serde_json v1.0.151
+   Compiling num-rational v0.4.2
+   Compiling num-bigint v0.5.1
+   Compiling getrandom v0.4.3
+   Compiling hashed-ecdl-tensor v0.1.0 (/workspace/cryptanalysis/bindings/rust/hashed-ecdl-tensor)
+   Compiling cryptanalysis-sys v0.1.0 (/workspace/cryptanalysis/bindings/rust/cryptanalysis-sys)
+   Compiling either v1.18.0
+   Compiling blake3 v1.8.7
+   Compiling rayon v1.12.0
+   Compiling cryptanalysis v0.1.0 (/workspace/cryptanalysis/bindings/rust/cryptanalysis)
+   Compiling clap v4.6.7
+   Compiling hashed-ecdl-tensor v0.1.1 (/workspace/cryptanalysis/crates/hashed-ecdl-tensor)
+   Compiling crypto-analysis-core v0.1.0 (/workspace/cryptanalysis/suite/vendor/crypto-analysis-core)
+   Compiling fs2 v0.4.3
+   Compiling cryptanalysis-suite v0.1.0 (/workspace/cryptanalysis/suite)
+error: couldn't read `src/cryptanalysis/../../fixtures/f4_linear_algebra_contract.json`: No such file or directory (os error 2)
+   --> src/cryptanalysis/f4_rref_tests.rs:802:60
+    |
+802 |       let contract: serde_json::Value = serde_json::from_str(include_str!(
+    |  ____________________________________________________________^
+803 | |         "../../fixtures/f4_linear_algebra_contract.json"
+804 | |     ))
+    | |_____^
+
+warning: variable does not need to be mutable
+   --> src/cryptanalysis/weak_curves/fixed.rs:192:13
+    |
+192 |         let mut draw = |rng: &mut StdRng| {
+    |             ----^^^^
+    |             |
+    |             help: remove this `mut`
+    |
+    = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+warning: `cryptanalysis-suite` (lib test) generated 1 warning
+error: could not compile `cryptanalysis-suite` (lib test) due to 1 previous error; 1 warning emitted

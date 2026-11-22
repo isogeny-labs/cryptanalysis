@@ -1,0 +1,15 @@
+{
+  "status": "FROZEN_BEFORE_SOURCE_AND_PROJECTION_EVALUATION",
+  "frozen_utc": "2026-10-25T23:33:30Z",
+  "prime": 937,
+  "selection_reason": "p is 1 mod 24, so the rational dual 3-isogeny kernel has three points; this tests fiber behavior beyond the bijective-dual primes 883, 907, and 919",
+  "question": "What are the complete E-projection fiber sizes, and do they force every rational B lift to have 24 source points through the geometric degree bound?",
+  "source_policy": "All 937 j-values; one representative per generic quadratic-twist pair; three j=0 sextic representatives and two j=1728 quartic representatives paired under quadratic twist; cyclic nonbacktracking 16- and 27-isogeny chains",
+  "source_gate": "Paired chain count must equal the independent weight-two Hecke point count minus the rational cusp count",
+  "intermediate_map_sha256": "1f73ef2bc230820cd3605df20402dd5a32f5a5d31cc100218f5a219f2aeec5c2",
+  "projection_policy": "Evaluate every noncuspidal chain with intermediate j-invariants, Frobenius conjugacy, the exact twist, and all rational preimages of the dual 3-isogeny",
+  "projection_gate": "One filtered coordinate point per shift, one Frobenius pair, one E output and exactly three rational B preimages per source; independent source, E/B equation, isogeny, and fiber audits",
+  "degree_bound": "Each B fiber contains at most 24 rational source points because the certified modular map is separable of degree 24 at this good prime; an E fiber of size 72 with three B preimages forces all three B fibers to contain 24 points",
+  "primary_outputs": ["noncuspidal source count", "E-projection image count", "E-projection fiber-size histogram", "inferred B-image count where the degree bound is sharp"],
+  "interpretation_rule": "Report the E-projection result even if it does not force a unique B-image count; do not pick one B preimage from a three-point coset without a direct map certificate"
+}

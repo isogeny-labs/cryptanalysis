@@ -79,3 +79,16 @@ The next promotion experiment is a disjoint public-point panel with the same
 candidate manifests, explicit per-run timeout, complete one-target phase and
 peak-memory receipts, and the repository's isolated CPU service. Keep the
 exact-table path selected until that gate resolves the complete online cost.
+
+The [review and replay instructions](REPRODUCE.md) include the factor-base
+data needed to check the archived Sage result from this PR checkout.
+
+
+
+
+
+
+
+| A1 three-summand pair-index target scan | The separate local 24-target conjugate-x Bloom replay validates raw-conjugate rejection before 52 field squarings. Its direct aligned loader retains the verified scan while reducing transient load memory. Bind any transfer to its exact index and recheck witness order. That experiment is outside this PR. |
+| Boolean F4/F5 | [`solve.py`](../pdp-scaling/solve.py) and the sibling `crypto/src/cryptanalysis/koblitz_groebner.rs` reduce polynomial rows and signatures. They do not perform this S3 root-table lookup inside the matrix kernel, so this filter has no direct insertion point there. |
+

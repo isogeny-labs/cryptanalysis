@@ -1,0 +1,34 @@
+name: CT190 block-effect falsification source-only
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/ct190-block-fixed-effect-source.yml'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/ct190_block_fixed_effect_diagnostic.py'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/test_ct190_block_fixed_effect_diagnostic.py'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/CT190_BLOCK_FIXED_EFFECT_PROTOCOL.md'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/CT199_CARRYOVER_STANDARDIZATION_PROTOCOL.md'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/test_ct199_route_contrasts.py'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/ct188_physical_crossover_design.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Exact roster/rank and controlled block-confound/positive tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          root=experiments/chained-transfer-public-target/primitive-pricing-01
+          python3 -S -m py_compile "$root/ct190_block_fixed_effect_diagnostic.py" "$root/test_ct190_block_fixed_effect_diagnostic.py"
+          python3 -S -m unittest discover -s "$root" -p 'test_ct190_block_fixed_effect_diagnostic.py' -v
+          python3 -O -S -m unittest discover -s "$root" -p 'test_ct190_block_fixed_effect_diagnostic.py' -v
+          python3 -S -m py_compile "$root/test_ct199_route_contrasts.py"
+          python3 -S -m unittest discover -s "$root" -p 'test_ct199_route_contrasts.py' -v
+          python3 -O -S -m unittest discover -s "$root" -p 'test_ct199_route_contrasts.py' -v
+          echo 'CT190/CT199 CONTROLLED SYNTHETIC SOURCE ONLY [pcc:unverified]. No paid compute, native Jacobian solve or ECDLP performance claim.'

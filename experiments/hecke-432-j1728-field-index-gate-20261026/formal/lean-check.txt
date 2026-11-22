@@ -1,0 +1,13 @@
+Command (working directory: experiments/hecke-two-sheet-small-order-20261023/formal):
+lake env lean /Volumes/SSD990/cryptanalysis/experiments/hecke-432-j1728-field-index-gate-20261026/formal/FieldIndex.lean
+Exit: 0
+'J1728FieldIndex.polynomial_field_index_identity' depends on axioms: [propext]
+'J1728FieldIndex.field_discriminant_factors' depends on axioms: [propext]
+'J1728FieldIndex.order_index_factors' depends on axioms: [propext]
+Command (same working directory):
+lake env lean /Volumes/SSD990/cryptanalysis/experiments/hecke-432-j1728-field-index-gate-20261026/formal/GramChangeBasis.lean
+Exit: 0
+'J1728FieldIndex.gram_change_basis' depends on axioms: [propext, Classical.choice, Quot.sound]
+Toolchain: leanprover/lean4:v4.35.0-rc4
+Dependency: mathlib4 revision 021c46bdd042f67b538b9f9871d556a93713a9a9
+lean4checker --fresh: unavailable on this host

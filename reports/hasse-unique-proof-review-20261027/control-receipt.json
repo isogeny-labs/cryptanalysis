@@ -1,0 +1,60 @@
+{
+  "schema": "cryptanalysis.hasse_controls.v1",
+  "inputs": {
+    "FalseControl.lean": "2dda80b69b6303cfe882fe7a170d29d38a21b8aff6d36de676e921747f0cf30d",
+    "BoundaryControl.lean": "f3c6640fe3bd2cfefa02f87e91a8b58344d5d136e4bd77a35584e54c35b9a973",
+    "AuditAxioms.lean": "f97280b48f1846d13e7ed96d9691753811551864162086fb25e9fe05438aa7dc"
+  },
+  "steps": [
+    {
+      "name": "false-build",
+      "command": [
+        "lean",
+        "-o",
+        "FalseControl.olean",
+        "FalseControl.lean"
+      ],
+      "exit_code": 0,
+      "seconds": 5.562,
+      "stdout_sha256": "c2185df7c041f8370185e30798e76ed6271b5acff5d5f6367d0aa136a6dddff3",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "false-audit",
+      "command": [
+        "lean",
+        "--run",
+        "AuditAxioms.lean",
+        "FalseControl"
+      ],
+      "exit_code": 1,
+      "seconds": 26.825,
+      "stdout_sha256": "c348a1c357e3e97ab886aed062854091c2fb5bca35e1a3350afbe218cdbeb3d2",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "wrong-name",
+      "command": [
+        "lean",
+        "--run",
+        "AuditAxioms.lean",
+        "MissingModule"
+      ],
+      "exit_code": 1,
+      "seconds": 15.125,
+      "stdout_sha256": "725f200dfc5caee1b3dc722a0402d60f0c5e703b72852e5a60c3cef9773bc279",
+      "stderr_sha256": "eb37d1f4752d16c0e8d5ff970a346b92d518550dff3df0c71d1148d9dac5b8ce"
+    },
+    {
+      "name": "boundary-build",
+      "command": [
+        "lean",
+        "BoundaryControl.lean"
+      ],
+      "exit_code": 0,
+      "seconds": 2.09,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

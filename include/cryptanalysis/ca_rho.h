@@ -28,7 +28,12 @@ typedef struct ca_rho_params {
     uint32_t walks_per_thread; /* simultaneous walks per thread (batched inversion), 0 => auto */
     int      negation_map;     /* 1 to use the negation map when the group supports it */
     uint64_t seed;             /* 0 => random */
-    uint64_t max_ops;          /* abort with CA_ERR_LIMIT after this many group ops (0 = none) */
+    /* Abort with CA_ERR_LIMIT after this many group ops.  0 sets no limit
+     * and keeps the built-in runaway guard, 64 * (sqrt(n) + walks * 2^dp_bits)
+     * + 2^20 walk steps, far above the cost of any instance that has a
+     * solution; a run that reaches it returns CA_ERR_NOT_FOUND (the target
+     * is not a power of the base). */
+    uint64_t max_ops;
     uint64_t max_table_entries;/* abort when the DP table grows beyond this (0 = none) */
 } ca_rho_params;
 
@@ -36,6 +41,16 @@ CA_API void ca_rho_params_default(ca_rho_params *p);
 
 CA_API ca_status ca_rho_solve(const ca_group *g, const ca_elem *base, const ca_elem *target,
                               const ca_rho_params *params, uint64_t *x, ca_stats *st);
+
+/* Preserve the distinguished-point table between runs.  A resumed run keeps
+ * the same walk multipliers and starts fresh lanes against the saved table.
+ * NULL checkpoint_path enables live progress without persistence.  Intervals
+ * are seconds; zero selects defaults (5 for progress, 60 for checkpoint). */
+CA_API ca_status ca_rho_solve_checkpointed(const ca_group *g, const ca_elem *base,
+                                           const ca_elem *target, const ca_rho_params *params,
+                                           const char *checkpoint_path, uint32_t progress_interval,
+                                           uint32_t checkpoint_interval, int verbose,
+                                           uint64_t *x, ca_stats *st);
 
 #ifdef __cplusplus
 }

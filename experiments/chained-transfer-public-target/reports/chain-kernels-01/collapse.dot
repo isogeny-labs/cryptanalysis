@@ -1,0 +1,7 @@
+digraph C {graph[rankdir=LR,bgcolor="transparent",ranksep=.45];node[shape=box,style="rounded,filled",fillcolor="#edf5fb",fontname="DejaVu Sans",fontsize=11];edge[fontname="DejaVu Sans",fontsize=10];I[label="Jold / F223
+fixed original"];B[label="Jb / F223
+any of4 eligible models"];C[label="Jc / F223
+any of4 eligible models"];I->B[label="PhiB Nold"];B->C[label="PhiC NB"];I->C[label="composition = [2] direct(PhiC Nold)
+ALL128 actual route checks",color="#43836b"];S[label="Same A used in both edges
+Longer path = known scalar x direct
+No implementation cost lower bound",fillcolor="#fff1d8"];B->S[style=dashed,arrowhead=none];}

@@ -1,0 +1,33 @@
+{
+  "audit_policy": "Independent all-j source census and source image only after frozen source-free prediction and direct inverse; preserve all zeros and exceptions.",
+  "inputs": {
+    "b_resolvent": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-b-coordinate-resolvent-20261025/relative_b_resolvent.json",
+      "sha256": "a68adf5a4902ae3744a3db85799934f871e806788aa8d29e666a805c952d23aa"
+    },
+    "branch": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-b-coordinate-resolvent-20261025/branch_formula.json",
+      "sha256": "14f7fef3e32d9b65062ea3cf0a9c026b128ef7228e6e58f0320924a024ee930b"
+    },
+    "inverse_filter": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-inverse-filter-crossprime-20261025/inverse_filter.py",
+      "sha256": "92766978eb1ef3d481e4ed49c1574ffda722a7576cfbcd71ebe6f7c0acd52183"
+    },
+    "resolvent": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-relative-resolvent-20261025/relative_resolvent.json",
+      "sha256": "3b127f8d71971b2a54c85137992cc1db560c5dab982fae0ec52146114b1fcc6b"
+    },
+    "sieve_protocol": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-sign-branch-holdout-20261026/sieve_protocol.json",
+      "sha256": "aeac80d1c5dca41a64d87f8deb3e16a77fb76b065c050d61d4ece06146f46788"
+    },
+    "sieve_result": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-sign-branch-holdout-20261026/sieve_result.json",
+      "sha256": "a658a314680d7a13707a905c9dc5209ab1164c270a6566c622b16e1e1d49d499"
+    }
+  },
+  "prediction": "Every valid rational C,E,B triple is double iff D_C(P_B)=0 and 2*y_B*d_T(P_B)=0; otherwise singleton. At p1319, the selected sign-branch critical triples have d_T(P_B) nonzero.",
+  "prime": 1319,
+  "prime_selection": "Frozen sign-branch sieve selected first p>1279 below 5000 with a valid rational y_B=0, D_C(P_B)=0, d_T(P_B) nonzero triple; p=1319",
+  "status": "FROZEN_BEFORE_P1319_SOURCE_FREE_SCREEN"
+}

@@ -1,0 +1,37 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-15T21:03:16Z",
+ "id": "PCC-20261115-1aa62b",
+ "kind": "statement",
+ "producer": {
+  "commit": "8a3bc795bbb9d6359d63c75dd6e8e4c2ce0cc073",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/whole-diagnostic-CI-publication-lineage-01/ct118-merged1564-info.json",
+    "sha256": "0214eeb74a33087f95779555149f4ecb36224c9cd4085d86318f44c4a14ce667"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/whole-diagnostic-CI-publication-lineage-01/ct118-new1573-info.json",
+    "sha256": "6174797be60c37aabcbeba1f00bc7848dc19b96a085abfa5fe1c001d91794482"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/whole-diagnostic-CI-publication-lineage-01/publication.json",
+    "sha256": "4b92225f07e9545686621557a928f2bcb7a3e2dfb3f8940701754a10ae807d8d"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Full diagnosticCI source8a3bc795/b1f07d/5c5c9b normallypublished. OriginalGitHubAPI confirms1564mergedonly1e426e19at2026-11-15T20:47:32Z/mergef41f7594, so completedhistoricalresult e73eb11e andfreshCIsource8a3wereoutsidehistorical1564. Newready1573at8a3targetsfeaturebasef41; correctedclosed1564bodyandpublicqueue3904/Root3877. FreshCIpending and stackedautomergeunavailable; no bypass/rechain/sourceorledgerrewrite. Unsigned publication/API data only."
+}

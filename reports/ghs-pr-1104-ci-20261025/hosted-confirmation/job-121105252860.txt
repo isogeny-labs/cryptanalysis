@@ -1,0 +1,478 @@
+﻿2026-10-25T07:53:10.8589192Z Current runner version: '2.338.0'
+2026-10-25T07:53:10.8612847Z ##[group]Runner Image Provisioner
+2026-10-25T07:53:10.8613704Z Hosted Compute Agent
+2026-10-25T07:53:10.8614121Z Version: 20261021.618
+2026-10-25T07:53:10.8614589Z Commit: 21505ad2541d5be6135ed84fc33697146cf75b8e
+2026-10-25T07:53:10.8615072Z Build Date: 2026-10-21T00:45:21Z
+2026-10-25T07:53:10.8615515Z Worker ID: {c9ea5941-2723-4667-8d69-d4d48e24f942}
+2026-10-25T07:53:10.8616004Z Region: westus2
+2026-10-25T07:53:10.8616442Z Cloud: Azure
+2026-10-25T07:53:10.8616833Z ##[endgroup]
+2026-10-25T07:53:10.8617745Z ##[group]Operating System
+2026-10-25T07:53:10.8618155Z Ubuntu
+2026-10-25T07:53:10.8618544Z 24.04.5
+2026-10-25T07:53:10.8618939Z LTS
+2026-10-25T07:53:10.8619300Z ##[endgroup]
+2026-10-25T07:53:10.8619695Z ##[group]Runner Image
+2026-10-25T07:53:10.8620098Z Image: ubuntu-24.04
+2026-10-25T07:53:10.8620564Z Version: 20261012.334.1
+2026-10-25T07:53:10.8621428Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261012.334/images/ubuntu/Ubuntu2404-Readme.md
+2026-10-25T07:53:10.8622451Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261012.334
+2026-10-25T07:53:10.8623066Z ##[endgroup]
+2026-10-25T07:53:10.8624001Z ##[group]GITHUB_TOKEN Permissions
+2026-10-25T07:53:10.8625465Z Contents: read
+2026-10-25T07:53:10.8625942Z Metadata: read
+2026-10-25T07:53:10.8626309Z ##[endgroup]
+2026-10-25T07:53:10.8628033Z Secret source: Actions
+2026-10-25T07:53:10.8628648Z Cache mode: write
+2026-10-25T07:53:10.8629155Z Prepare workflow directory
+2026-10-25T07:53:10.9578109Z Prepare all required actions
+2026-10-25T07:53:10.9615092Z Getting action download info
+2026-10-25T07:53:11.2887072Z Download action repository 'actions/checkout@v7' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+2026-10-25T07:53:11.4794158Z Complete job name: cppcheck
+2026-10-25T07:53:11.5405675Z ##[group]Run actions/checkout@v7
+2026-10-25T07:53:11.5406193Z with:
+2026-10-25T07:53:11.5406508Z   repository: aburan28/cryptanalysis
+2026-10-25T07:53:11.5408837Z   token: ***
+2026-10-25T07:53:11.5409139Z   ssh-strict: true
+2026-10-25T07:53:11.5409453Z   ssh-user: git
+2026-10-25T07:53:11.5409779Z   persist-credentials: true
+2026-10-25T07:53:11.5410115Z   clean: true
+2026-10-25T07:53:11.5410434Z   sparse-checkout-cone-mode: true
+2026-10-25T07:53:11.5410791Z   fetch-depth: 1
+2026-10-25T07:53:11.5411092Z   fetch-tags: false
+2026-10-25T07:53:11.5411399Z   show-progress: true
+2026-10-25T07:53:11.5411713Z   lfs: false
+2026-10-25T07:53:11.5412003Z   submodules: false
+2026-10-25T07:53:11.5412309Z   set-safe-directory: true
+2026-10-25T07:53:11.5412661Z   allow-unsafe-pr-checkout: false
+2026-10-25T07:53:11.5413095Z ##[endgroup]
+2026-10-25T07:53:11.6252514Z Syncing repository: aburan28/cryptanalysis
+2026-10-25T07:53:11.6255676Z ##[group]Getting Git version info
+2026-10-25T07:53:11.6256846Z Working directory is '/home/runner/work/cryptanalysis/cryptanalysis'
+2026-10-25T07:53:11.6258017Z [command]/usr/bin/git version
+2026-10-25T07:53:11.6318483Z git version 2.55.0
+2026-10-25T07:53:11.6335800Z ##[endgroup]
+2026-10-25T07:53:11.6345579Z Temporarily overriding HOME='/home/runner/work/_temp/39a26053-8b3b-431d-9793-83df4465ba91' before making global git config changes
+2026-10-25T07:53:11.6347527Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-25T07:53:11.6352212Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/cryptanalysis/cryptanalysis
+2026-10-25T07:53:11.6413940Z Deleting the contents of '/home/runner/work/cryptanalysis/cryptanalysis'
+2026-10-25T07:53:11.6415559Z ##[group]Determining repository object format
+2026-10-25T07:53:11.6416923Z ##[endgroup]
+2026-10-25T07:53:11.6418152Z ##[group]Initializing the repository
+2026-10-25T07:53:11.6421800Z [command]/usr/bin/git init /home/runner/work/cryptanalysis/cryptanalysis
+2026-10-25T07:53:11.6559096Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-25T07:53:11.6560520Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-25T07:53:11.6561948Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-25T07:53:11.6562712Z hint: call:
+2026-10-25T07:53:11.6563134Z hint:
+2026-10-25T07:53:11.6563845Z hint: 	git config --global init.defaultBranch <name>
+2026-10-25T07:53:11.6564495Z hint:
+2026-10-25T07:53:11.6565097Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-25T07:53:11.6566037Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-25T07:53:11.6566777Z hint:
+2026-10-25T07:53:11.6567219Z hint: 	git branch -m <name>
+2026-10-25T07:53:11.6568242Z hint:
+2026-10-25T07:53:11.6568901Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-25T07:53:11.6569958Z Initialized empty Git repository in /home/runner/work/cryptanalysis/cryptanalysis/.git/
+2026-10-25T07:53:11.6571382Z [command]/usr/bin/git remote add origin https://github.com/aburan28/cryptanalysis
+2026-10-25T07:53:11.6601067Z ##[endgroup]
+2026-10-25T07:53:11.6601759Z ##[group]Disabling automatic garbage collection
+2026-10-25T07:53:11.6606517Z [command]/usr/bin/git config --local gc.auto 0
+2026-10-25T07:53:11.6640223Z ##[endgroup]
+2026-10-25T07:53:11.6641336Z ##[group]Setting up auth
+2026-10-25T07:53:11.6642382Z Removing SSH command configuration
+2026-10-25T07:53:11.6646374Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-25T07:53:11.6678373Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-25T07:53:11.6999287Z Removing HTTP extra header
+2026-10-25T07:53:11.7004974Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-25T07:53:11.7036922Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-25T07:53:11.7316786Z Removing includeIf entries pointing to credentials config files
+2026-10-25T07:53:11.7317841Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-25T07:53:11.7319827Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-25T07:53:11.7511366Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-297e9605-f964-4cc8-96ef-94f2a572b0b1.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-25T07:53:11.7555882Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git.path /home/runner/work/_temp/git-credentials-297e9605-f964-4cc8-96ef-94f2a572b0b1.config
+2026-10-25T07:53:11.7588833Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-297e9605-f964-4cc8-96ef-94f2a572b0b1.config
+2026-10-25T07:53:11.7624626Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-297e9605-f964-4cc8-96ef-94f2a572b0b1.config
+2026-10-25T07:53:11.7655923Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-297e9605-f964-4cc8-96ef-94f2a572b0b1.config
+2026-10-25T07:53:11.7686039Z ##[endgroup]
+2026-10-25T07:53:11.7687370Z ##[group]Fetching the repository
+2026-10-25T07:53:11.7692041Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +a3000e9f9b0234b0b46bb0122a86240aab3b05f9:refs/remotes/pull/1104/merge
+2026-10-25T07:53:20.7057336Z From https://github.com/aburan28/cryptanalysis
+2026-10-25T07:53:20.7058512Z  * [new ref]           a3000e9f9b0234b0b46bb0122a86240aab3b05f9 -> pull/1104/merge
+2026-10-25T07:53:20.7080753Z ##[endgroup]
+2026-10-25T07:53:20.7082013Z ##[group]Determining the checkout info
+2026-10-25T07:53:20.7082683Z ##[endgroup]
+2026-10-25T07:53:20.7083168Z [command]/usr/bin/git sparse-checkout disable
+2026-10-25T07:53:20.7124921Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-10-25T07:53:20.7155422Z ##[group]Checking out the ref
+2026-10-25T07:53:20.7157664Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/1104/merge
+2026-10-25T07:53:21.7518083Z Updating files:  35% (21082/59014)
+2026-10-25T07:53:21.7738082Z Updating files:  36% (21246/59014)
+2026-10-25T07:53:21.8030003Z Updating files:  37% (21836/59014)
+2026-10-25T07:53:21.8276247Z Updating files:  38% (22426/59014)
+2026-10-25T07:53:21.8555269Z Updating files:  39% (23016/59014)
+2026-10-25T07:53:21.8829187Z Updating files:  40% (23606/59014)
+2026-10-25T07:53:21.9100258Z Updating files:  41% (24196/59014)
+2026-10-25T07:53:21.9390910Z Updating files:  42% (24786/59014)
+2026-10-25T07:53:21.9700566Z Updating files:  43% (25377/59014)
+2026-10-25T07:53:22.0011068Z Updating files:  44% (25967/59014)
+2026-10-25T07:53:22.0265669Z Updating files:  45% (26557/59014)
+2026-10-25T07:53:22.0571265Z Updating files:  46% (27147/59014)
+2026-10-25T07:53:22.0837535Z Updating files:  47% (27737/59014)
+2026-10-25T07:53:22.1105661Z Updating files:  48% (28327/59014)
+2026-10-25T07:53:22.1381031Z Updating files:  49% (28917/59014)
+2026-10-25T07:53:22.1657976Z Updating files:  50% (29507/59014)
+2026-10-25T07:53:22.1949205Z Updating files:  51% (30098/59014)
+2026-10-25T07:53:22.2240038Z Updating files:  52% (30688/59014)
+2026-10-25T07:53:22.2515315Z Updating files:  53% (31278/59014)
+2026-10-25T07:53:22.2741757Z Updating files:  54% (31868/59014)
+2026-10-25T07:53:22.2966879Z Updating files:  55% (32458/59014)
+2026-10-25T07:53:22.3184723Z Updating files:  56% (33048/59014)
+2026-10-25T07:53:22.3364347Z Updating files:  57% (33638/59014)
+2026-10-25T07:53:22.3535588Z Updating files:  58% (34229/59014)
+2026-10-25T07:53:22.3716821Z Updating files:  59% (34819/59014)
+2026-10-25T07:53:22.3894904Z Updating files:  60% (35409/59014)
+2026-10-25T07:53:22.4072466Z Updating files:  61% (35999/59014)
+2026-10-25T07:53:22.4258466Z Updating files:  62% (36589/59014)
+2026-10-25T07:53:22.4437754Z Updating files:  63% (37179/59014)
+2026-10-25T07:53:22.4607692Z Updating files:  64% (37769/59014)
+2026-10-25T07:53:22.4773636Z Updating files:  65% (38360/59014)
+2026-10-25T07:53:22.4948813Z Updating files:  66% (38950/59014)
+2026-10-25T07:53:22.5171009Z Updating files:  67% (39540/59014)
+2026-10-25T07:53:22.5388899Z Updating files:  68% (40130/59014)
+2026-10-25T07:53:22.5651886Z Updating files:  69% (40720/59014)
+2026-10-25T07:53:22.7724693Z Updating files:  70% (41310/59014)
+2026-10-25T07:53:22.7806922Z Updating files:  70% (41647/59014)
+2026-10-25T07:53:22.8064897Z Updating files:  71% (41900/59014)
+2026-10-25T07:53:22.8446764Z Updating files:  72% (42491/59014)
+2026-10-25T07:53:22.9065079Z Updating files:  73% (43081/59014)
+2026-10-25T07:53:22.9417224Z Updating files:  74% (43671/59014)
+2026-10-25T07:53:22.9870224Z Updating files:  75% (44261/59014)
+2026-10-25T07:53:23.0353200Z Updating files:  76% (44851/59014)
+2026-10-25T07:53:23.0873818Z Updating files:  77% (45441/59014)
+2026-10-25T07:53:23.1330223Z Updating files:  78% (46031/59014)
+2026-10-25T07:53:23.1790211Z Updating files:  79% (46622/59014)
+2026-10-25T07:53:23.2186753Z Updating files:  80% (47212/59014)
+2026-10-25T07:53:23.2672693Z Updating files:  81% (47802/59014)
+2026-10-25T07:53:23.3312604Z Updating files:  82% (48392/59014)
+2026-10-25T07:53:23.3717275Z Updating files:  83% (48982/59014)
+2026-10-25T07:53:23.3935785Z Updating files:  84% (49572/59014)
+2026-10-25T07:53:23.4088071Z Updating files:  85% (50162/59014)
+2026-10-25T07:53:23.4431608Z Updating files:  86% (50753/59014)
+2026-10-25T07:53:23.4956554Z Updating files:  87% (51343/59014)
+2026-10-25T07:53:23.6072482Z Updating files:  88% (51933/59014)
+2026-10-25T07:53:23.6314425Z Updating files:  89% (52523/59014)
+2026-10-25T07:53:23.6487048Z Updating files:  90% (53113/59014)
+2026-10-25T07:53:23.6671540Z Updating files:  91% (53703/59014)
+2026-10-25T07:53:23.6890749Z Updating files:  92% (54293/59014)
+2026-10-25T07:53:23.7297680Z Updating files:  93% (54884/59014)
+2026-10-25T07:53:23.7472236Z Updating files:  94% (55474/59014)
+2026-10-25T07:53:23.7509829Z Updating files:  94% (55968/59014)
+2026-10-25T07:53:23.7724778Z Updating files:  95% (56064/59014)
+2026-10-25T07:53:23.7993997Z Updating files:  96% (56654/59014)
+2026-10-25T07:53:23.8175325Z Updating files:  97% (57244/59014)
+2026-10-25T07:53:23.8769047Z Updating files:  98% (57834/59014)
+2026-10-25T07:53:23.9338713Z Updating files:  99% (58424/59014)
+2026-10-25T07:53:23.9341165Z Updating files: 100% (59014/59014)
+2026-10-25T07:53:23.9341791Z Updating files: 100% (59014/59014), done.
+2026-10-25T07:53:24.0208817Z Note: switching to 'refs/remotes/pull/1104/merge'.
+2026-10-25T07:53:24.0209536Z 
+2026-10-25T07:53:24.0210097Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-10-25T07:53:24.0210702Z changes and commit them, and you can discard any commits you make in this
+2026-10-25T07:53:24.0211284Z state without impacting any branches by switching back to a branch.
+2026-10-25T07:53:24.0211672Z 
+2026-10-25T07:53:24.0211973Z If you want to create a new branch to retain commits you create, you may
+2026-10-25T07:53:24.0212532Z do so (now or later) by using -c with the switch command. Example:
+2026-10-25T07:53:24.0212896Z 
+2026-10-25T07:53:24.0213131Z   git switch -c <new-branch-name>
+2026-10-25T07:53:24.0213704Z 
+2026-10-25T07:53:24.0213940Z Or undo this operation with:
+2026-10-25T07:53:24.0214220Z 
+2026-10-25T07:53:24.0214438Z   git switch -
+2026-10-25T07:53:24.0214686Z 
+2026-10-25T07:53:24.0215015Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-10-25T07:53:24.0215426Z 
+2026-10-25T07:53:24.0216244Z HEAD is now at a3000e9f Merge 8ffc01a1ca3419da97c6142caa70c153d6cdada6 into c5aa7b39bfa30e8cdbd46a158c7cbadaa8be3503
+2026-10-25T07:53:24.0315267Z ##[endgroup]
+2026-10-25T07:53:24.0377337Z [command]/usr/bin/git log -1 --format=%H
+2026-10-25T07:53:24.0396138Z a3000e9f9b0234b0b46bb0122a86240aab3b05f9
+2026-10-25T07:53:24.0684635Z ##[group]Run python3 tools/artifacts/artifacts.py pull --jobs 16 experiments/koblitz-pair-claw-20260929/runs experiments/sage-ic-campaign
+2026-10-25T07:53:24.0685249Z [36;1mpython3 tools/artifacts/artifacts.py pull --jobs 16 experiments/koblitz-pair-claw-20260929/runs experiments/sage-ic-campaign[0m
+2026-10-25T07:53:24.1277218Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-25T07:53:24.1277566Z env:
+2026-10-25T07:53:24.1279614Z   AWS_ACCESS_KEY_ID: ***
+2026-10-25T07:53:24.1279922Z   AWS_SECRET_ACCESS_KEY: ***
+2026-10-25T07:53:24.1280153Z   AWS_REGION: us-west-2
+2026-10-25T07:53:24.1280356Z ##[endgroup]
+2026-10-25T07:53:28.7427857Z hydrated 6 files (3.8 MB); 0 already present
+2026-10-25T07:53:28.7617101Z ##[group]Run sudo apt-get update || true
+2026-10-25T07:53:28.7617410Z [36;1msudo apt-get update || true[0m
+2026-10-25T07:53:28.7617636Z [36;1msudo apt-get install -y --no-install-recommends cppcheck[0m
+2026-10-25T07:53:28.7671872Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-25T07:53:28.7672192Z ##[endgroup]
+2026-10-25T07:53:28.8723743Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+2026-10-25T07:53:28.9496905Z Get:6 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease [3600 B]
+2026-10-25T07:53:29.0605398Z Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
+2026-10-25T07:53:29.0634955Z Get:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+2026-10-25T07:53:29.0850840Z Get:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+2026-10-25T07:53:29.1228515Z Get:7 https://packages.microsoft.com/ubuntu/24.04/prod noble/main arm64 Packages [598 kB]
+2026-10-25T07:53:29.1425542Z Get:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+2026-10-25T07:53:29.1484689Z Get:8 https://packages.microsoft.com/ubuntu/24.04/prod noble/main amd64 Packages [660 kB]
+2026-10-25T07:53:29.1534293Z Get:9 https://packages.microsoft.com/ubuntu/24.04/prod noble/main armhf Packages [12.4 kB]
+2026-10-25T07:53:29.2447608Z Get:10 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [1400 kB]
+2026-10-25T07:53:29.2634119Z Get:11 http://azure.archive.ubuntu.com/ubuntu noble-updates/main Translation-en [310 kB]
+2026-10-25T07:53:29.2724620Z Get:12 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [1706 kB]
+2026-10-25T07:53:29.2924512Z Get:13 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe Translation-en [342 kB]
+2026-10-25T07:53:29.3244615Z Get:14 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [1805 kB]
+2026-10-25T07:53:29.3438315Z Get:15 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted Translation-en [411 kB]
+2026-10-25T07:53:29.3837681Z Get:16 http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 Packages [1146 kB]
+2026-10-25T07:53:29.4044305Z Get:17 http://azure.archive.ubuntu.com/ubuntu noble-security/main Translation-en [231 kB]
+2026-10-25T07:53:29.4335285Z Get:18 http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 Packages [1222 kB]
+2026-10-25T07:53:29.4516659Z Get:19 http://azure.archive.ubuntu.com/ubuntu noble-security/universe Translation-en [246 kB]
+2026-10-25T07:53:29.5266478Z Get:20 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted amd64 Packages [1713 kB]
+2026-10-25T07:53:29.5539111Z Get:21 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted Translation-en [392 kB]
+2026-10-25T07:53:36.5894637Z Fetched 12.6 MB in 1s (9868 kB/s)
+2026-10-25T07:53:37.3783685Z Reading package lists...
+2026-10-25T07:53:37.4064681Z Reading package lists...
+2026-10-25T07:53:37.6379762Z Building dependency tree...
+2026-10-25T07:53:37.6386914Z Reading state information...
+2026-10-25T07:53:37.8628923Z Suggested packages:
+2026-10-25T07:53:37.8629310Z   cppcheck-gui clang clang-tidy
+2026-10-25T07:53:37.8811520Z The following NEW packages will be installed:
+2026-10-25T07:53:37.8834158Z   cppcheck
+2026-10-25T07:53:37.9024412Z 0 upgraded, 1 newly installed, 0 to remove and 100 not upgraded.
+2026-10-25T07:53:37.9025148Z Need to get 2136 kB of archives.
+2026-10-25T07:53:37.9025572Z After this operation, 9501 kB of additional disk space will be used.
+2026-10-25T07:53:37.9026112Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+2026-10-25T07:53:38.0732153Z Get:2 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 cppcheck amd64 2.13.0-2ubuntu3 [2136 kB]
+2026-10-25T07:53:38.8099014Z Fetched 2136 kB in 1s (3019 kB/s)
+2026-10-25T07:53:38.8272718Z Selecting previously unselected package cppcheck.
+2026-10-25T07:53:38.8531488Z (Reading database ... 
+2026-10-25T07:53:38.8532183Z (Reading database ... 5%
+2026-10-25T07:53:38.8532469Z (Reading database ... 10%
+2026-10-25T07:53:38.8533046Z (Reading database ... 15%
+2026-10-25T07:53:38.8533461Z (Reading database ... 20%
+2026-10-25T07:53:38.8533719Z (Reading database ... 25%
+2026-10-25T07:53:38.8533984Z (Reading database ... 30%
+2026-10-25T07:53:38.8534236Z (Reading database ... 35%
+2026-10-25T07:53:38.8534552Z (Reading database ... 40%
+2026-10-25T07:53:38.8534892Z (Reading database ... 45%
+2026-10-25T07:53:38.8535197Z (Reading database ... 50%
+2026-10-25T07:53:38.8570047Z (Reading database ... 55%
+2026-10-25T07:53:38.9966027Z (Reading database ... 60%
+2026-10-25T07:53:39.2042939Z (Reading database ... 65%
+2026-10-25T07:53:39.3922172Z (Reading database ... 70%
+2026-10-25T07:53:39.5969324Z (Reading database ... 75%
+2026-10-25T07:53:39.7594344Z (Reading database ... 80%
+2026-10-25T07:53:39.9472643Z (Reading database ... 85%
+2026-10-25T07:53:40.1061625Z (Reading database ... 90%
+2026-10-25T07:53:40.2624504Z (Reading database ... 95%
+2026-10-25T07:53:40.2625100Z (Reading database ... 100%
+2026-10-25T07:53:40.2625785Z (Reading database ... 203540 files and directories currently installed.)
+2026-10-25T07:53:40.2663024Z Preparing to unpack .../cppcheck_2.13.0-2ubuntu3_amd64.deb ...
+2026-10-25T07:53:40.2781398Z Unpacking cppcheck (2.13.0-2ubuntu3) ...
+2026-10-25T07:53:40.4148621Z Setting up cppcheck (2.13.0-2ubuntu3) ...
+2026-10-25T07:53:40.4164292Z Processing triggers for man-db (2.12.0-4build2) ...
+2026-10-25T07:53:40.4182401Z Not building database; man-db/auto-update is not 'true'.
+2026-10-25T07:53:40.8747111Z 
+2026-10-25T07:53:40.8748038Z Running kernel seems to be up-to-date.
+2026-10-25T07:53:40.8748509Z 
+2026-10-25T07:53:40.8748743Z No services need to be restarted.
+2026-10-25T07:53:40.8749030Z 
+2026-10-25T07:53:40.8749254Z No containers need to be restarted.
+2026-10-25T07:53:40.8749542Z 
+2026-10-25T07:53:40.8749791Z No user sessions are running outdated binaries.
+2026-10-25T07:53:40.8750108Z 
+2026-10-25T07:53:40.8750414Z No VM guests are running outdated hypervisor (qemu) binaries on this host.
+2026-10-25T07:53:41.9032615Z ##[group]Run cppcheck --enable=warning,performance,portability,style \
+2026-10-25T07:53:41.9032952Z [36;1mcppcheck --enable=warning,performance,portability,style \[0m
+2026-10-25T07:53:41.9033229Z [36;1m         --inline-suppr --std=c11 --error-exitcode=1 \[0m
+2026-10-25T07:53:41.9033844Z [36;1m         --suppress=missingIncludeSystem \[0m
+2026-10-25T07:53:41.9034047Z [36;1m         -Iinclude -Isrc -Icuda --quiet \[0m
+2026-10-25T07:53:41.9034226Z [36;1m         src tools tests[0m
+2026-10-25T07:53:41.9086117Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-25T07:53:41.9086324Z ##[endgroup]
+2026-10-25T07:53:42.2839536Z src/bsgs.c:505:19: style: Condition 'steps==0' is always false [knownConditionTrueFalse]
+2026-10-25T07:53:42.2840162Z         if (steps == 0) {
+2026-10-25T07:53:42.2840536Z                   ^
+2026-10-25T07:53:42.2841061Z src/bsgs.c:504:41: note: Assignment 'steps=width_m1/t.m+1', assigned value is greater than 0
+2026-10-25T07:53:42.2841817Z         uint64_t steps = width_m1 / t.m + 1;
+2026-10-25T07:53:42.2847291Z                                         ^
+2026-10-25T07:53:42.2847786Z src/bsgs.c:505:19: note: Condition 'steps==0' is always false
+2026-10-25T07:53:42.2848254Z         if (steps == 0) {
+2026-10-25T07:53:42.2848587Z                   ^
+2026-10-25T07:53:43.8710096Z src/cheon.c:446:16: style: Condition 'rc!=CA_OK' is always false [knownConditionTrueFalse]
+2026-10-25T07:53:43.8710916Z         if (rc != CA_OK) goto out;
+2026-10-25T07:53:43.8711331Z                ^
+2026-10-25T07:53:43.8711734Z src/cheon.c:445:31: note: Calling function 'cheon_pair_insert' returns 0
+2026-10-25T07:53:43.8712284Z         rc = cheon_pair_insert(&tab, g, &x, &y, j);
+2026-10-25T07:53:43.8712689Z                               ^
+2026-10-25T07:53:43.8713178Z src/cheon.c:445:31: note: Assignment 'rc=cheon_pair_insert(&tab,g,&x,&y,j)', assigned value is 0
+2026-10-25T07:53:43.8714020Z         rc = cheon_pair_insert(&tab, g, &x, &y, j);
+2026-10-25T07:53:43.8714450Z                               ^
+2026-10-25T07:53:43.8714863Z src/cheon.c:446:16: note: Condition 'rc!=CA_OK' is always false
+2026-10-25T07:53:43.8715309Z         if (rc != CA_OK) goto out;
+2026-10-25T07:53:43.8715676Z                ^
+2026-10-25T07:53:52.2590345Z src/curve_internal.h:44:14: style: Variable 'y' can be declared as const array [constVariable]
+2026-10-25T07:53:52.2591353Z     uint64_t y[2] = {Y->w[1], Y->w[1] ? g->p - Y->w[1] : 0};
+2026-10-25T07:53:52.2591837Z              ^
+2026-10-25T07:53:52.2607714Z src/curve_internal.h:45:14: style: Variable 'yh' can be declared as const array [constVariable]
+2026-10-25T07:53:52.2608433Z     uint64_t yh[2] = {ca_mix64(y[0]), ca_mix64(y[1])};
+2026-10-25T07:53:52.2608780Z              ^
+2026-10-25T08:00:34.6110239Z src/grumpy.c:355:8: style: Variable 'rc' is reassigned a value before the old one has been used. [redundantAssignment]
+2026-10-25T08:00:34.6111100Z     rc = CA_ERR_NOT_FOUND;
+2026-10-25T08:00:34.6111580Z        ^
+2026-10-25T08:00:34.6111962Z src/grumpy.c:310:8: note: rc is assigned
+2026-10-25T08:00:34.6112374Z     rc = CA_ERR_INTERNAL;
+2026-10-25T08:00:34.6112729Z        ^
+2026-10-25T08:00:34.6113075Z src/grumpy.c:355:8: note: rc is overwritten
+2026-10-25T08:00:34.6114277Z     rc = CA_ERR_NOT_FOUND;
+2026-10-25T08:00:34.6114630Z        ^
+2026-10-25T08:01:39.0381025Z src/rho.c:154:26: style: struct member 'rho_checkpoint_header::threads' is never used. [unusedStructMember]
+2026-10-25T08:01:39.0381777Z     uint32_t entry_size, threads, walks;
+2026-10-25T08:01:39.0382585Z                          ^
+2026-10-25T08:01:39.0383167Z src/rho.c:154:35: style: struct member 'rho_checkpoint_header::walks' is never used. [unusedStructMember]
+2026-10-25T08:01:39.0384055Z     uint32_t entry_size, threads, walks;
+2026-10-25T08:01:39.0384386Z                                   ^
+2026-10-25T08:01:53.5622337Z src/sixclass.c:32:18: style: Variable 'encoded' can be declared as const array [constVariable]
+2026-10-25T08:01:53.5623822Z         uint64_t encoded[4] = {xx[j], *key, 0, 0};
+2026-10-25T08:01:53.5624352Z                  ^
+2026-10-25T08:01:53.5627075Z src/sixclass.c:68:14: style: Variable 'inverse' can be declared as const array [constVariable]
+2026-10-25T08:01:53.5636200Z     uint64_t inverse[6] = {1, l2, lambda, n - 1, n - l2, n - lambda};
+2026-10-25T08:01:53.5636692Z              ^
+2026-10-25T08:01:53.5637151Z src/sixclass.c:67:14: style: Variable 'units' can be declared as const array [constVariable]
+2026-10-25T08:01:53.5637717Z     uint64_t units[6] = {1, lambda, l2, n - 1, n - lambda, n - l2};
+2026-10-25T08:01:53.5638125Z              ^
+2026-10-25T08:02:13.8975835Z tools/ca_cli.c:729:20: style: Variable 'e' can be declared as pointer to const [constVariablePointer]
+2026-10-25T08:02:13.8976602Z     struct dirent *e;
+2026-10-25T08:02:13.8977219Z                    ^
+2026-10-25T08:03:30.7244614Z tests/test_bsgs.c:77:9: warning: Either the condition 'f!=NULL' is redundant or there is possible null pointer dereference: f. [nullPointerRedundantCheck]
+2026-10-25T08:03:30.7245512Z         CHECK(fseek(f, -1, SEEK_END) == 0);
+2026-10-25T08:03:30.7245841Z         ^
+2026-10-25T08:03:30.7246208Z tests/test_bsgs.c:76:9: note: Assuming that condition 'f!=NULL' is not redundant
+2026-10-25T08:03:30.7246655Z         CHECK(f != NULL);
+2026-10-25T08:03:30.7246925Z         ^
+2026-10-25T08:03:30.7247216Z tests/test_bsgs.c:77:9: note: Null pointer dereference
+2026-10-25T08:03:30.7247583Z         CHECK(fseek(f, -1, SEEK_END) == 0);
+2026-10-25T08:03:30.7247893Z         ^
+2026-10-25T08:03:32.4088447Z tests/test_coord.c:1681:41: style: Assignment of function parameter has no effect outside the function. [uselessAssignmentArg]
+2026-10-25T08:03:32.4089233Z     if (b > c) { double tmp = b; b = c; c = tmp; }
+2026-10-25T08:03:32.4092049Z                                         ^
+2026-10-25T08:03:32.4092877Z tests/test_coord.c:1682:34: style: Assignment of function parameter has no effect outside the function. [uselessAssignmentArg]
+2026-10-25T08:03:32.4094031Z     if (a > b) { double tmp = a; a = b; b = tmp; }
+2026-10-25T08:03:32.4094443Z                                  ^
+2026-10-25T08:03:32.4417873Z tests/test_coord.c:1681:43: style: Variable 'c' is assigned a value that is never used. [unreadVariable]
+2026-10-25T08:03:32.4418540Z     if (b > c) { double tmp = b; b = c; c = tmp; }
+2026-10-25T08:03:32.4418978Z                                           ^
+2026-10-25T08:03:32.4424294Z tests/test_coord.c:1682:36: style: Variable 'a' is assigned a value that is never used. [unreadVariable]
+2026-10-25T08:03:32.4424926Z     if (a > b) { double tmp = a; a = b; b = tmp; }
+2026-10-25T08:03:32.4425384Z                                    ^
+2026-10-25T08:03:36.4884732Z tests/test_curve.c:495:5: style: int result is assigned to long variable. If the variable is long to avoid loss of information, then you have loss of information. [truncLongCastAssignment]
+2026-10-25T08:03:36.4885978Z     CHECK_EQ_U64(endo_doubles, 8 * (endo_pre.positions - 1));
+2026-10-25T08:03:36.4886537Z     ^
+2026-10-25T08:03:36.4887579Z tests/test_curve.c:496:5: style: int result is assigned to long variable. If the variable is long to avoid loss of information, then you have loss of information. [truncLongCastAssignment]
+2026-10-25T08:03:36.4888524Z     CHECK_EQ_U64(endo_adds, 127 * endo_pre.positions);
+2026-10-25T08:03:36.4889471Z     ^
+2026-10-25T08:03:36.4890144Z tests/test_curve.c:504:5: style: int result is assigned to long variable. If the variable is long to avoid loss of information, then you have loss of information. [truncLongCastAssignment]
+2026-10-25T08:03:36.4890926Z     CHECK_EQ_U64(joint_doubles, 4 * (joint_pre.positions - 1));
+2026-10-25T08:03:36.4891324Z     ^
+2026-10-25T08:03:36.4891981Z tests/test_curve.c:505:5: style: int result is assigned to long variable. If the variable is long to avoid loss of information, then you have loss of information. [truncLongCastAssignment]
+2026-10-25T08:03:36.4892745Z     CHECK_EQ_U64(joint_adds, 85 * joint_pre.positions);
+2026-10-25T08:03:36.4893120Z     ^
+2026-10-25T08:03:36.4894240Z tests/test_curve.c:506:5: style: int result is assigned to long variable. If the variable is long to avoid loss of information, then you have loss of information. [truncLongCastAssignment]
+2026-10-25T08:03:36.4895132Z     CHECK_EQ_U64(joint_rotations, 8 * joint_pre.positions);
+2026-10-25T08:03:36.4895578Z     ^
+2026-10-25T08:03:49.3366461Z tests/test_grumpy.c:63:9: warning: Either the condition 'f!=NULL' is redundant or there is possible null pointer dereference: f. [nullPointerRedundantCheck]
+2026-10-25T08:03:49.3367304Z         CHECK(fseek(f, -1, SEEK_END) == 0);
+2026-10-25T08:03:49.3367721Z         ^
+2026-10-25T08:03:49.3368210Z tests/test_grumpy.c:62:9: note: Assuming that condition 'f!=NULL' is not redundant
+2026-10-25T08:03:49.3368706Z         CHECK(f != NULL);
+2026-10-25T08:03:49.3369050Z         ^
+2026-10-25T08:03:49.3369429Z tests/test_grumpy.c:63:9: note: Null pointer dereference
+2026-10-25T08:03:49.3369871Z         CHECK(fseek(f, -1, SEEK_END) == 0);
+2026-10-25T08:03:49.3370248Z         ^
+2026-10-25T08:03:50.2603814Z tests/test_joint_tau.c:220:14: style: Variable 'words' can be declared as const array [constVariable]
+2026-10-25T08:03:50.2604582Z     uint64_t words[4] = {base_x, base_y, 0, 0};
+2026-10-25T08:03:50.2605069Z              ^
+2026-10-25T08:03:51.7042389Z tests/test_kangaroo.c:65:9: warning: Either the condition 'f!=NULL' is redundant or there is possible null pointer dereference: f. [nullPointerRedundantCheck]
+2026-10-25T08:03:51.7043422Z         CHECK(fseek(f, -1, SEEK_END) == 0);
+2026-10-25T08:03:51.7043991Z         ^
+2026-10-25T08:03:51.7044439Z tests/test_kangaroo.c:64:9: note: Assuming that condition 'f!=NULL' is not redundant
+2026-10-25T08:03:51.7044976Z         CHECK(f != NULL);
+2026-10-25T08:03:51.7045303Z         ^
+2026-10-25T08:03:51.7045669Z tests/test_kangaroo.c:65:9: note: Null pointer dereference
+2026-10-25T08:03:51.7046129Z         CHECK(fseek(f, -1, SEEK_END) == 0);
+2026-10-25T08:03:51.7046503Z         ^
+2026-10-25T08:03:53.0784769Z tests/test_pohlig.c:8:23: style: struct member 'test_ph_checkpoint::identity' is never used. [unusedStructMember]
+2026-10-25T08:03:53.0785499Z     uint64_t version, identity, n, fi, k, result, modulus, xk, qk;
+2026-10-25T08:03:53.0785874Z                       ^
+2026-10-25T08:03:53.0786423Z tests/test_pohlig.c:8:33: style: struct member 'test_ph_checkpoint::n' is never used. [unusedStructMember]
+2026-10-25T08:03:53.0786976Z     uint64_t version, identity, n, fi, k, result, modulus, xk, qk;
+2026-10-25T08:03:53.0787337Z                                 ^
+2026-10-25T08:03:53.0787961Z tests/test_pohlig.c:8:36: style: struct member 'test_ph_checkpoint::fi' is never used. [unusedStructMember]
+2026-10-25T08:03:53.0788578Z     uint64_t version, identity, n, fi, k, result, modulus, xk, qk;
+2026-10-25T08:03:53.0799693Z                                    ^
+2026-10-25T08:03:53.0800292Z tests/test_pohlig.c:8:40: style: struct member 'test_ph_checkpoint::k' is never used. [unusedStructMember]
+2026-10-25T08:03:53.0800897Z     uint64_t version, identity, n, fi, k, result, modulus, xk, qk;
+2026-10-25T08:03:53.0801278Z                                        ^
+2026-10-25T08:03:53.0801865Z tests/test_pohlig.c:8:43: style: struct member 'test_ph_checkpoint::result' is never used. [unusedStructMember]
+2026-10-25T08:03:53.0802865Z     uint64_t version, identity, n, fi, k, result, modulus, xk, qk;
+2026-10-25T08:03:53.0818747Z                                           ^
+2026-10-25T08:03:53.0819415Z tests/test_pohlig.c:8:51: style: struct member 'test_ph_checkpoint::modulus' is never used. [unusedStructMember]
+2026-10-25T08:03:53.0820039Z     uint64_t version, identity, n, fi, k, result, modulus, xk, qk;
+2026-10-25T08:03:53.0820444Z                                                   ^
+2026-10-25T08:03:53.0820969Z tests/test_pohlig.c:8:60: style: struct member 'test_ph_checkpoint::xk' is never used. [unusedStructMember]
+2026-10-25T08:03:53.0821553Z     uint64_t version, identity, n, fi, k, result, modulus, xk, qk;
+2026-10-25T08:03:53.0822213Z                                                            ^
+2026-10-25T08:03:53.0822722Z tests/test_pohlig.c:8:64: style: struct member 'test_ph_checkpoint::qk' is never used. [unusedStructMember]
+2026-10-25T08:03:53.0823435Z     uint64_t version, identity, n, fi, k, result, modulus, xk, qk;
+2026-10-25T08:03:53.0823843Z                                                                ^
+2026-10-25T08:03:53.0824501Z tests/test_pohlig.c:10:14: style: struct member 'test_ph_checkpoint::checksum' is never used. [unusedStructMember]
+2026-10-25T08:03:53.0825099Z     uint64_t checksum;
+2026-10-25T08:03:53.0833185Z              ^
+2026-10-25T08:03:54.2052089Z tests/test_rho.c:125:9: warning: Either the condition 'f!=NULL' is redundant or there is possible null pointer dereference: f. [nullPointerRedundantCheck]
+2026-10-25T08:03:54.2052880Z         CHECK(fputc(0, f) != EOF);
+2026-10-25T08:03:54.2053187Z         ^
+2026-10-25T08:03:54.2053697Z tests/test_rho.c:124:9: note: Assuming that condition 'f!=NULL' is not redundant
+2026-10-25T08:03:54.2054127Z         CHECK(f != NULL);
+2026-10-25T08:03:54.2054420Z         ^
+2026-10-25T08:03:54.2054706Z tests/test_rho.c:125:9: note: Null pointer dereference
+2026-10-25T08:03:54.2074194Z         CHECK(fputc(0, f) != EOF);
+2026-10-25T08:03:54.2077186Z         ^
+2026-10-25T08:03:55.0359983Z nofile:0:0: information: Too many #ifdef configurations - cppcheck only checks 12 configurations. Use --force to check all configurations. For more details, use --enable=information. [toomanyconfigs]
+2026-10-25T08:03:55.0360927Z 
+2026-10-25T08:03:55.1748493Z ##[error]Process completed with exit code 1.
+2026-10-25T08:03:55.1834720Z Post job cleanup.
+2026-10-25T08:03:55.2395124Z [command]/usr/bin/git version
+2026-10-25T08:03:55.2433931Z git version 2.55.0
+2026-10-25T08:03:55.2448246Z Temporarily overriding HOME='/home/runner/work/_temp/f1650a30-1b93-487e-8d13-73886e108050' before making global git config changes
+2026-10-25T08:03:55.2453959Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-25T08:03:55.2456609Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/cryptanalysis/cryptanalysis
+2026-10-25T08:03:55.2475548Z Removing SSH command configuration
+2026-10-25T08:03:55.2480949Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-25T08:03:55.2509479Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-25T08:03:55.2715160Z Removing HTTP extra header
+2026-10-25T08:03:55.2716191Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-25T08:03:55.2744658Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-25T08:03:55.2943086Z Removing includeIf entries pointing to credentials config files
+2026-10-25T08:03:55.2947588Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-25T08:03:55.2984176Z includeif.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git.path
+2026-10-25T08:03:55.2997447Z includeif.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git/worktrees/*.path
+2026-10-25T08:03:55.3004039Z includeif.gitdir:/github/workspace/.git.path
+2026-10-25T08:03:55.3004548Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-10-25T08:03:55.3017594Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git.path
+2026-10-25T08:03:55.3018329Z /home/runner/work/_temp/git-credentials-297e9605-f964-4cc8-96ef-94f2a572b0b1.config
+2026-10-25T08:03:55.3019806Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git.path \/home\/runner\/work\/_temp\/git\-credentials\-297e9605\-f964\-4cc8\-96ef\-94f2a572b0b1\.config
+2026-10-25T08:03:55.3058416Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git/worktrees/*.path
+2026-10-25T08:03:55.3072680Z /home/runner/work/_temp/git-credentials-297e9605-f964-4cc8-96ef-94f2a572b0b1.config
+2026-10-25T08:03:55.3085420Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git/worktrees/*.path \/home\/runner\/work\/_temp\/git\-credentials\-297e9605\-f964\-4cc8\-96ef\-94f2a572b0b1\.config
+2026-10-25T08:03:55.3108950Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-10-25T08:03:55.3126341Z /github/runner_temp/git-credentials-297e9605-f964-4cc8-96ef-94f2a572b0b1.config
+2026-10-25T08:03:55.3135111Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-297e9605\-f964\-4cc8\-96ef\-94f2a572b0b1\.config
+2026-10-25T08:03:55.3182359Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-10-25T08:03:55.3200165Z /github/runner_temp/git-credentials-297e9605-f964-4cc8-96ef-94f2a572b0b1.config
+2026-10-25T08:03:55.3207537Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-297e9605\-f964\-4cc8\-96ef\-94f2a572b0b1\.config
+2026-10-25T08:03:55.3239599Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-25T08:03:55.3436298Z Removing credentials config '/home/runner/work/_temp/git-credentials-297e9605-f964-4cc8-96ef-94f2a572b0b1.config'
+2026-10-25T08:03:55.3557505Z Cleaning up orphan processes

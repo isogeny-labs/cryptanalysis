@@ -1,0 +1,71 @@
+{
+  "branch": "codex/ic-rational-current-20261115",
+  "closed_utc": "2026-11-16T02:36:44+00:00",
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "cloud/modal_run.py",
+        "run",
+        "--image",
+        "cuda",
+        "--gpu",
+        "L4",
+        "--cpu",
+        "4",
+        "--memory",
+        "8",
+        "--timeout",
+        "900",
+        "--apt",
+        "numactl",
+        "--out",
+        "experiments/ic-native-current-20261115/run-001",
+        "--detach",
+        "--",
+        "python3",
+        "experiments/ic-native-current-20261115/run.py"
+      ],
+      "cwd": ".",
+      "exit": 1,
+      "started_utc": "2026-11-16T02:34:58+00:00",
+      "wall_s": 6.356
+    }
+  ],
+  "commit": "37de354a7a97b1abefacf7ca6f144ceed6a16312",
+  "commit_dirty": false,
+  "created_utc": "2026-11-16T02:34:03+00:00",
+  "curve_uid": null,
+  "entries": [],
+  "host": {
+    "cpu": "arm",
+    "cpus_online": 14,
+    "hostname": "Mac.attlocal.net",
+    "isolation": "unstated",
+    "platform": "macOS-27.2-arm64-arm-64bit-Mach-O"
+  },
+  "id": "20261116T0234Z-ic-native-current-modal-001",
+  "metrics": [],
+  "problem": "ic:zp-current-native",
+  "raw": [
+    {
+      "bytes": 4013,
+      "path": "experiments/ic-native-current-20261115/launch-001/launcher.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/8a/8a90a9acbe11ce543cf5a04cd269bef2ab24299607615a9a92ef4e6668aa4e10",
+      "sha256": "8a90a9acbe11ce543cf5a04cd269bef2ab24299607615a9a92ef4e6668aa4e10",
+      "uploaded": false
+    }
+  ],
+  "repo": "cryptanalysis",
+  "reports": {
+    "pdf": null,
+    "png": [],
+    "svg": []
+  },
+  "schema": "bench.record/v1",
+  "session": null,
+  "slug": "ic-native-current-modal-001",
+  "status": "invalid",
+  "summary": "Launcher stopped before creating a sandbox: sparse checkout omitted ecc2k130/scripts/fetch_cuda.sh required by the CUDA image mount. No timing arms ran. Hydrate that dependency and use a new run record.",
+  "validation": null
+}

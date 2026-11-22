@@ -1,0 +1,105 @@
+diff --git a/lib/gf_p_simple.hpp b/lib/gf_p_simple.hpp
+index ab56ecf..2532f38 100644
+--- a/lib/gf_p_simple.hpp
++++ b/lib/gf_p_simple.hpp
+@@ -247,6 +247,92 @@ namespace gb
+ 		}
+ 
+ 		/* vectorizable operations */
++#ifndef M4GB_ARITH_KERNELS
++#define M4GB_ARITH_KERNELS 1
++#endif
++#if M4GB_ARITH_KERNELS
++		// Arithmetic kernels: plain integer operations with a compile-time
++		// modulus, so the compiler can vectorize them (16 or 32 lanes per
++		// AVX2 operation) instead of one table gather per coefficient.
++		// wide_t holds P*(P-1), the largest value of l + c*r.
++		typedef typename detail::least_unsigned_integer_t< detail::nrbytes_t<P*(P-1)>::value >::type wide_t;
++		typedef typename detail::least_unsigned_integer_t< detail::nrbytes_t<2*(P-1)>::value >::type sum_t;
++		// t mod P for 0 <= t <= P*(P-1).  When P*(P-1)*(P-1) < 2^16 the
++		// quotient floor(t/P) equals (t * ceil(2^16/P)) >> 16 exactly, which
++		// is one 16-bit multiply-high per lane; otherwise the compiler's
++		// own constant-modulus sequence is used.
++		static const bool small_magic = (P * (P - 1) * (P - 1) < 65536);
++		inline static elem_t reduce(wide_t t)
++		{
++			if (small_magic)
++			{
++				const std::uint32_t M = (65536 + P - 1) / P;
++				std::uint16_t q = (std::uint16_t)(((std::uint32_t)(std::uint16_t)(t) * M) >> 16);
++				return (elem_t)((std::uint16_t)(t) - q * (std::uint16_t)(P));
++			}
++			return (elem_t)(t % (wide_t)(P));
++		}
++		inline static void mul_to(elem_t* l, const elem_t c, int len)
++		{
++			if (c == 0)
++			{
++				for (int i = 0; i < len; ++i)
++					l[i] = 0;
++			}
++			else if (c == 1)
++			{
++			}
++			else if (c == gfsize - 1)
++			{
++				for (int i = 0; i < len; ++i)
++				{
++					sum_t t = (sum_t)(gfsize) - (sum_t)(l[i]);
++					l[i] = (elem_t)(t == (sum_t)(gfsize) ? 0 : t);
++				}
++			}
++			else
++			{
++				const wide_t cc = c;
++				for (int i = 0; i < len; ++i)
++					l[i] = reduce((wide_t)(l[i]) * cc);
++			}
++		}
++		inline static void add_to(elem_t* l, const elem_t c, const elem_t* r, int len)
++		{
++			if (c == 0)
++				return;
++			if (c == 1)
++			{
++				add_to(l, r, len);
++			}
++			else if (c == gfsize - 1)
++			{
++				substract_to(l, r, len);
++			}
++			else
++			{
++				const wide_t cc = c;
++				for (int i = 0; i < len; ++i)
++					l[i] = reduce((wide_t)(l[i]) + cc * (wide_t)(r[i]));
++			}
++		}
++		inline static void add_to(elem_t* l, const elem_t* r, int len)
++		{
++			for (int i = 0; i < len; ++i)
++			{
++				sum_t t = (sum_t)(l[i]) + (sum_t)(r[i]);
++				l[i] = (elem_t)(t >= (sum_t)(gfsize) ? t - (sum_t)(gfsize) : t);
++			}
++		}
++		inline static void substract_to(elem_t* l, const elem_t* r, int len)
++		{
++			for (int i = 0; i < len; ++i)
++			{
++				sum_t t = (sum_t)(l[i]) + (sum_t)(gfsize) - (sum_t)(r[i]);
++				l[i] = (elem_t)(t >= (sum_t)(gfsize) ? t - (sum_t)(gfsize) : t);
++			}
++		}
++#else
+ 		inline static void mul_to(elem_t* l, const elem_t c, int len)
+ 		{
+ 			if (c == 0)
+@@ -325,6 +411,7 @@ namespace gb
+ 			for (int i = 0; i < len; ++i)
+ 				l[i] = sub(l[i], r[i]);
+ 		}
++#endif // M4GB_ARITH_KERNELS
+ 	};
+ 
+ 	template<std::size_t P>

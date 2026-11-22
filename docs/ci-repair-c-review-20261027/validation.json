@@ -1,0 +1,41 @@
+{
+  "parent_pr": 1214,
+  "parent_head": "6977dc0cfd4de8ae4186c83a35639e41aa9ad0e8",
+  "integrated_pr": 1224,
+  "integrated_head": "262e666dc61e5bf1bce106f9210b54bb98e4b3ff",
+  "source_sha256": {
+    "src/linalg.c": "3cde370105a00fd0edb1756fbd62334f9ad8029194146bea8708512697a18843",
+    "tests/test_coord.c": "8c19d0e009ab7ae29db80caa4a90e2190edd23a753884cab66bfe605a8eb7eed",
+    "tests/test_linalg.c": "f5b3172eb0ac89daaf12c90f072bd8aac9718071283b118d0b64c63c16fac628"
+  },
+  "sanitizer_ctest": {
+    "passed": 19,
+    "total": 19,
+    "returncode": 0,
+    "CA_SANITIZE": "ON",
+    "CA_WERROR": "ON"
+  },
+  "clang_tidy": {
+    "version": "21.1.8",
+    "scope": [
+      "src/linalg.c",
+      "tests/test_coord.c",
+      "tests/test_linalg.c"
+    ],
+    "returncode": 0
+  },
+  "cppcheck": {
+    "version": "2.19.0",
+    "scope": [
+      "src/linalg.c",
+      "tests/test_coord.c",
+      "tests/test_linalg.c"
+    ],
+    "returncode": 0
+  },
+  "git_clang_format": {
+    "returncode": 0,
+    "comparison": "HEAD (the parent repair)"
+  },
+  "platform": "Linux-6.18.55-x86_64-with-glibc2.41"
+}

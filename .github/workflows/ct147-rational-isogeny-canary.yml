@@ -1,0 +1,49 @@
+name: CT147 bounded rational isogeny canary
+on:
+  pull_request:
+    paths:
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT147_*'
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/ct147_rational_isogeny_canary.py'
+      - '.github/workflows/ct147-rational-isogeny-canary.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  finite-rational-map:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - name: Full F25 degree-two rational isogeny / dual / kernel control
+        shell: bash
+        run: |
+          set -euo pipefail
+          testfile=experiments/chained-transfer-public-target/norm-point-reuse-01/ct147_rational_isogeny_canary.py
+          python3 "$testfile" > /tmp/ct147-normal.json
+          python3 -O "$testfile" > /tmp/ct147-optimized.json
+          cmp /tmp/ct147-normal.json /tmp/ct147-optimized.json
+          python3 - <<'PY'
+          import json
+          with open('/tmp/ct147-normal.json', encoding='utf-8') as file:
+              got = json.load(file)
+          required = {
+              'source_points': 32, 'target_points': 32, 'image_points': 16,
+              'two_torsion': 4, 'map_addition_checks': 1024,
+              'corrected_lift_checks': 128, 'frob_checks': 32,
+              'dual_double_checks': 32,
+              'non_e2_kernel_corrections': 4,
+              'kernel_correction_checks': 128,
+              'wrong_correction_rejections': 32,
+          }
+          for name, expected in required.items():
+              if got.get(name) != expected:
+                  raise SystemExit(f'CT147 FAIL: {name}={got.get(name)} != {expected}')
+          if got.get('negative_controls') != [
+              'wrong_correction_with_nonzero_phi_double',
+              'nonhomomorphic_translation'
+          ]:
+              raise SystemExit('CT147 FAIL: negative control roster')
+          print('CT147 bounded rational isogeny canary passed [pcc:unverified]')
+          PY

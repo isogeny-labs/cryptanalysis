@@ -1,0 +1,102 @@
+{
+  "id": "IDC1h759a01773a079656",
+  "independence": "Unchanged original identity module invoked by producing developer; unsigned deterministic development checks. Proof is only a pointer; separate original Lean gates must be inspected.",
+  "modulus": 2305843009213693951,
+  "points": 32,
+  "proof": {
+    "kind": "lean4",
+    "path": "experiments/chained-transfer-lp-presentation-01/lean/LPProjection.lean",
+    "sha256": "699414e2a64de460a081a62340023d98a8a4c1100239b73af9b3456b549bd103"
+  },
+  "schema": "identity.certificate/v1",
+  "seed": 1280323633,
+  "statement": {
+    "degree_bound": 1,
+    "lhs": {
+      "args": [
+        {
+          "args": [
+            {
+              "args": [
+                {
+                  "args": "a",
+                  "op": "var"
+                },
+                {
+                  "args": "b",
+                  "op": "var"
+                }
+              ],
+              "op": "add"
+            },
+            {
+              "args": {
+                "args": [
+                  {
+                    "args": "b",
+                    "op": "var"
+                  },
+                  {
+                    "args": "c",
+                    "op": "var"
+                  }
+                ],
+                "op": "add"
+              },
+              "op": "neg"
+            }
+          ],
+          "op": "add"
+        },
+        {
+          "args": [
+            {
+              "args": [
+                {
+                  "args": "c",
+                  "op": "var"
+                },
+                {
+                  "args": "d",
+                  "op": "var"
+                }
+              ],
+              "op": "add"
+            },
+            {
+              "args": {
+                "args": [
+                  {
+                    "args": "d",
+                    "op": "var"
+                  },
+                  {
+                    "args": "a",
+                    "op": "var"
+                  }
+                ],
+                "op": "add"
+              },
+              "op": "neg"
+            }
+          ],
+          "op": "add"
+        }
+      ],
+      "op": "add"
+    },
+    "name": "even_four_cycle",
+    "rhs": {
+      "args": 0,
+      "op": "const"
+    },
+    "source": "Known cancellation; LPProjection.even_four_cycle, ../lean/LPProjection.lean. Development only, no q223 population or novelty claim.",
+    "variables": [
+      "a",
+      "b",
+      "c",
+      "d"
+    ]
+  },
+  "value_digest": "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1"
+}

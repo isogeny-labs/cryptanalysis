@@ -1,0 +1,1751 @@
+{
+  "binaries_sha256": {
+    "frozen": "40d0fee8d8826ce4356e4cf5704ec29375e5c12a3dc132eb5960a16c6f5338d9",
+    "off": "9b74190d65646cb5ffb5b43ab60841c27e6494d665dd0d35ad3c29a314e74f16",
+    "on": "146af9854a52b31aa9e42e248384f9b829174c1e03bcc5714ab147e08c59e084"
+  },
+  "checks": {
+    "cold_all_valid": true,
+    "cold_frozen_has_no_counts": true,
+    "cold_off_counts_disabled": true,
+    "cold_on_counts_deterministic": true,
+    "cold_on_counts_enabled": true,
+    "cold_outputs_identical_frozen_off_on": true,
+    "rank_off_equals_archived_K1": true,
+    "rank_off_valid": true,
+    "rank_on_equals_archived_K1": true,
+    "rank_on_equals_off": true,
+    "rank_on_valid": true
+  },
+  "clocks": [
+    {
+      "frozen": {
+        "cold_in_process_ms": 28739.185128999998,
+        "index_build_ms": 25491.271955,
+        "online_ms": 567.132022,
+        "rank_stage_ms": 0.041082,
+        "setup_ms": 28172.053107
+      },
+      "off": {
+        "cold_in_process_ms": 27833.364095,
+        "index_build_ms": 24578.52268,
+        "online_ms": 591.126927,
+        "rank_stage_ms": 0.031141,
+        "setup_ms": 27242.237168
+      },
+      "on": {
+        "cold_in_process_ms": 29305.945745999998,
+        "index_build_ms": 26036.793879,
+        "online_ms": 631.909512,
+        "rank_stage_ms": 0.038957,
+        "setup_ms": 28674.036234
+      }
+    },
+    {
+      "frozen": {
+        "cold_in_process_ms": 27278.156404,
+        "index_build_ms": 23911.269111999998,
+        "online_ms": 658.375273,
+        "rank_stage_ms": 0.033934,
+        "setup_ms": 26619.781131
+      },
+      "off": {
+        "cold_in_process_ms": 30806.076764,
+        "index_build_ms": 27542.048289,
+        "online_ms": 624.4050289999999,
+        "rank_stage_ms": 0.033304,
+        "setup_ms": 30181.671735
+      },
+      "on": {
+        "cold_in_process_ms": 28947.982222,
+        "index_build_ms": 25712.318798999997,
+        "online_ms": 561.322955,
+        "rank_stage_ms": 0.053593,
+        "setup_ms": 28386.659267
+      }
+    },
+    {
+      "frozen": {
+        "cold_in_process_ms": 28983.745815,
+        "index_build_ms": 25724.924344000003,
+        "online_ms": 592.720188,
+        "rank_stage_ms": 0.044582000000000004,
+        "setup_ms": 28391.025627
+      },
+      "off": {
+        "cold_in_process_ms": 28294.515979,
+        "index_build_ms": 24889.202045,
+        "online_ms": 653.356538,
+        "rank_stage_ms": 0.042514,
+        "setup_ms": 27641.159441
+      },
+      "on": {
+        "cold_in_process_ms": 28421.281432,
+        "index_build_ms": 25036.919819000002,
+        "online_ms": 650.175403,
+        "rank_stage_ms": 0.029924,
+        "setup_ms": 27771.106029
+      }
+    }
+  ],
+  "cold": [
+    {
+      "frozen": {
+        "comparable": [
+          {
+            "filter_passes": 1987852,
+            "fold_audit_probes": 0,
+            "group_verified": true,
+            "pinned_intermediates": [
+              "1312246933445753867829609",
+              "3074331483260591722817353"
+            ],
+            "point_indices": [
+              77273,
+              22971,
+              54962,
+              62539
+            ],
+            "probes": 1987852,
+            "recovered_scalar": 3141592653589793,
+            "relation_checks": 1,
+            "root_calls": 994008,
+            "scan_start_or_key": 15162876847734331897,
+            "skipped_symmetric_states": 1,
+            "x_codes": [
+              "2082252129314471344655738",
+              "5378913234883251640729967",
+              "7778583904603320805282086",
+              "8170287396569539840033367"
+            ]
+          },
+          {
+            "base_hash": "d4a4da26d6e7cb09367de922d9806631fe49989f70d378cae76f347f8d76a9f7",
+            "index_digest": {
+              "accounting": "after the last target; outside setup and every online interval",
+              "logical_states": 29880000,
+              "logical_states_blake3": "baf46d5a34732aa2aeba1fc0ca4f57036e3c324ade0bf8791431c838fe15d7ec",
+              "table_entries": 29878182,
+              "table_map_sum64": "be14a80705232396",
+              "table_map_xor64": "8132bdcfd619010f"
+            },
+            "rank": 0,
+            "rank_attempt_probes": [],
+            "rank_attempts": 0,
+            "rank_failures": 0,
+            "rank_probes_total": 0,
+            "rank_relations": 0,
+            "rank_relations_blake3": "db6dfe19abeccfd24065da7ba7b1e6a2733cf644b1cc3857e06403ec89c4d505",
+            "rank_root_calls_total": 0,
+            "rank_rows_without_gain": 0,
+            "rank_skipped_symmetric_states": 0,
+            "regular_states": 29880000,
+            "root_table_entries": 29878182,
+            "root_table_slots": 67108864,
+            "stored_states": 14940300
+          }
+        ],
+        "issues": [],
+        "op_counts": null,
+        "returncode": 0,
+        "target_op_counts": null
+      },
+      "off": {
+        "comparable": [
+          {
+            "filter_passes": 1987852,
+            "fold_audit_probes": 0,
+            "group_verified": true,
+            "pinned_intermediates": [
+              "1312246933445753867829609",
+              "3074331483260591722817353"
+            ],
+            "point_indices": [
+              77273,
+              22971,
+              54962,
+              62539
+            ],
+            "probes": 1987852,
+            "recovered_scalar": 3141592653589793,
+            "relation_checks": 1,
+            "root_calls": 994008,
+            "scan_start_or_key": 15162876847734331897,
+            "skipped_symmetric_states": 1,
+            "x_codes": [
+              "2082252129314471344655738",
+              "5378913234883251640729967",
+              "7778583904603320805282086",
+              "8170287396569539840033367"
+            ]
+          },
+          {
+            "base_hash": "d4a4da26d6e7cb09367de922d9806631fe49989f70d378cae76f347f8d76a9f7",
+            "index_digest": {
+              "accounting": "after the last target; outside setup and every online interval",
+              "logical_states": 29880000,
+              "logical_states_blake3": "baf46d5a34732aa2aeba1fc0ca4f57036e3c324ade0bf8791431c838fe15d7ec",
+              "table_entries": 29878182,
+              "table_map_sum64": "be14a80705232396",
+              "table_map_xor64": "8132bdcfd619010f"
+            },
+            "rank": 0,
+            "rank_attempt_probes": [],
+            "rank_attempts": 0,
+            "rank_failures": 0,
+            "rank_probes_total": 0,
+            "rank_relations": 0,
+            "rank_relations_blake3": "db6dfe19abeccfd24065da7ba7b1e6a2733cf644b1cc3857e06403ec89c4d505",
+            "rank_root_calls_total": 0,
+            "rank_rows_without_gain": 0,
+            "rank_skipped_symmetric_states": 0,
+            "regular_states": 29880000,
+            "root_table_entries": 29878182,
+            "root_table_slots": 67108864,
+            "stored_states": 14940300
+          }
+        ],
+        "issues": [],
+        "op_counts": {
+          "enabled": false
+        },
+        "returncode": 0,
+        "target_op_counts": null
+      },
+      "on": {
+        "comparable": [
+          {
+            "filter_passes": 1987852,
+            "fold_audit_probes": 0,
+            "group_verified": true,
+            "pinned_intermediates": [
+              "1312246933445753867829609",
+              "3074331483260591722817353"
+            ],
+            "point_indices": [
+              77273,
+              22971,
+              54962,
+              62539
+            ],
+            "probes": 1987852,
+            "recovered_scalar": 3141592653589793,
+            "relation_checks": 1,
+            "root_calls": 994008,
+            "scan_start_or_key": 15162876847734331897,
+            "skipped_symmetric_states": 1,
+            "x_codes": [
+              "2082252129314471344655738",
+              "5378913234883251640729967",
+              "7778583904603320805282086",
+              "8170287396569539840033367"
+            ]
+          },
+          {
+            "base_hash": "d4a4da26d6e7cb09367de922d9806631fe49989f70d378cae76f347f8d76a9f7",
+            "index_digest": {
+              "accounting": "after the last target; outside setup and every online interval",
+              "logical_states": 29880000,
+              "logical_states_blake3": "baf46d5a34732aa2aeba1fc0ca4f57036e3c324ade0bf8791431c838fe15d7ec",
+              "table_entries": 29878182,
+              "table_map_sum64": "be14a80705232396",
+              "table_map_xor64": "8132bdcfd619010f"
+            },
+            "rank": 0,
+            "rank_attempt_probes": [],
+            "rank_attempts": 0,
+            "rank_failures": 0,
+            "rank_probes_total": 0,
+            "rank_relations": 0,
+            "rank_relations_blake3": "db6dfe19abeccfd24065da7ba7b1e6a2733cf644b1cc3857e06403ec89c4d505",
+            "rank_root_calls_total": 0,
+            "rank_rows_without_gain": 0,
+            "rank_skipped_symmetric_states": 0,
+            "regular_states": 29880000,
+            "root_table_entries": 29878182,
+            "root_table_slots": 67108864,
+            "stored_states": 14940300
+          }
+        ],
+        "issues": [],
+        "op_counts": {
+          "accounting": "setup = process start to the index built (base, normal basis and self-test, index); rank_stage = the timed rank interval; linear_algebra = echelon solve or cached-table load plus the verification of every factor log; targets = every target's online interval and the code between them; end_to_end = process start to the last target; after_targets_index_digest is diagnostic work outside every interval and outside end_to_end",
+          "enabled": true,
+          "end_to_end": {
+            "canonicalizations": 31868616,
+            "descent_mulmods": 4,
+            "ec_add": 15212,
+            "ec_add_trivial": 601,
+            "ec_double": 30564,
+            "ec_frobenius": 0,
+            "ec_lift_x": 0,
+            "ec_scalar_mul": 601,
+            "field_half_trace": 15934710,
+            "field_inv": 14993511,
+            "field_mul": 130559171,
+            "field_sqr": 31949050,
+            "fold_rotations": 5928,
+            "frobenius_x": 1031832,
+            "la_inversions": 0,
+            "la_mulmods": 0,
+            "la_row_eliminations": 0,
+            "relation_lifts": 1,
+            "root_filter_inserts": 0,
+            "root_filter_queries": 0,
+            "root_index_inserts": 29880600,
+            "root_index_probes": 1987852,
+            "s3_root_solves": 15936355,
+            "s3_root_solves_library": 2647
+          },
+          "kinds": {
+            "canonicalizations": "native",
+            "descent_mulmods": "native",
+            "ec_add": "group",
+            "ec_add_trivial": "group_trivial",
+            "ec_double": "group",
+            "ec_frobenius": "endomorphism",
+            "ec_lift_x": "native",
+            "ec_scalar_mul": "group_composite",
+            "field_half_trace": "field",
+            "field_inv": "field",
+            "field_mul": "field",
+            "field_sqr": "field",
+            "fold_rotations": "endomorphism",
+            "frobenius_x": "endomorphism",
+            "la_inversions": "native",
+            "la_mulmods": "native",
+            "la_row_eliminations": "native_grouping",
+            "relation_lifts": "native",
+            "root_filter_inserts": "native",
+            "root_filter_queries": "native",
+            "root_index_inserts": "native",
+            "root_index_probes": "native",
+            "s3_root_solves": "native",
+            "s3_root_solves_library": "native"
+          },
+          "phases": {
+            "after_targets_index_digest": {
+              "canonicalizations": 0,
+              "descent_mulmods": 0,
+              "ec_add": 0,
+              "ec_add_trivial": 0,
+              "ec_double": 0,
+              "ec_frobenius": 0,
+              "ec_lift_x": 0,
+              "ec_scalar_mul": 0,
+              "field_half_trace": 0,
+              "field_inv": 0,
+              "field_mul": 0,
+              "field_sqr": 0,
+              "fold_rotations": 29520000,
+              "frobenius_x": 0,
+              "la_inversions": 0,
+              "la_mulmods": 0,
+              "la_row_eliminations": 0,
+              "relation_lifts": 0,
+              "root_filter_inserts": 0,
+              "root_filter_queries": 0,
+              "root_index_inserts": 0,
+              "root_index_probes": 0,
+              "s3_root_solves": 0,
+              "s3_root_solves_library": 0
+            },
+            "between_linear_algebra_and_targets": {
+              "canonicalizations": 0,
+              "descent_mulmods": 0,
+              "ec_add": 0,
+              "ec_add_trivial": 0,
+              "ec_double": 0,
+              "ec_frobenius": 0,
+              "ec_lift_x": 0,
+              "ec_scalar_mul": 0,
+              "field_half_trace": 0,
+              "field_inv": 0,
+              "field_mul": 0,
+              "field_sqr": 0,
+              "fold_rotations": 0,
+              "frobenius_x": 0,
+              "la_inversions": 0,
+              "la_mulmods": 0,
+              "la_row_eliminations": 0,
+              "relation_lifts": 0,
+              "root_filter_inserts": 0,
+              "root_filter_queries": 0,
+              "root_index_inserts": 0,
+              "root_index_probes": 0,
+              "s3_root_solves": 0,
+              "s3_root_solves_library": 0
+            },
+            "linear_algebra": {
+              "canonicalizations": 0,
+              "descent_mulmods": 0,
+              "ec_add": 15167,
+              "ec_add_trivial": 600,
+              "ec_double": 30513,
+              "ec_frobenius": 0,
+              "ec_lift_x": 0,
+              "ec_scalar_mul": 600,
+              "field_half_trace": 0,
+              "field_inv": 45680,
+              "field_mul": 91360,
+              "field_sqr": 76193,
+              "fold_rotations": 0,
+              "frobenius_x": 0,
+              "la_inversions": 0,
+              "la_mulmods": 0,
+              "la_row_eliminations": 0,
+              "relation_lifts": 0,
+              "root_filter_inserts": 0,
+              "root_filter_queries": 0,
+              "root_index_inserts": 0,
+              "root_index_probes": 0,
+              "s3_root_solves": 0,
+              "s3_root_solves_library": 0
+            },
+            "rank_stage": {
+              "canonicalizations": 0,
+              "descent_mulmods": 0,
+              "ec_add": 0,
+              "ec_add_trivial": 0,
+              "ec_double": 0,
+              "ec_frobenius": 0,
+              "ec_lift_x": 0,
+              "ec_scalar_mul": 0,
+              "field_half_trace": 0,
+              "field_inv": 0,
+              "field_mul": 0,
+              "field_sqr": 0,
+              "fold_rotations": 0,
+              "frobenius_x": 0,
+              "la_inversions": 0,
+              "la_mulmods": 0,
+              "la_row_eliminations": 0,
+              "relation_lifts": 0,
+              "root_filter_inserts": 0,
+              "root_filter_queries": 0,
+              "root_index_inserts": 0,
+              "root_index_probes": 0,
+              "s3_root_solves": 0,
+              "s3_root_solves_library": 0
+            },
+            "setup": {
+              "canonicalizations": 29880600,
+              "descent_mulmods": 0,
+              "ec_add": 0,
+              "ec_add_trivial": 0,
+              "ec_double": 0,
+              "ec_frobenius": 0,
+              "ec_lift_x": 0,
+              "ec_scalar_mul": 0,
+              "field_half_trace": 14940702,
+              "field_inv": 14941747,
+              "field_mul": 119533531,
+              "field_sqr": 29884694,
+              "fold_rotations": 0,
+              "frobenius_x": 49800,
+              "la_inversions": 0,
+              "la_mulmods": 0,
+              "la_row_eliminations": 0,
+              "relation_lifts": 0,
+              "root_filter_inserts": 0,
+              "root_filter_queries": 0,
+              "root_index_inserts": 29880600,
+              "root_index_probes": 0,
+              "s3_root_solves": 14942347,
+              "s3_root_solves_library": 2647
+            },
+            "targets": {
+              "canonicalizations": 1988016,
+              "descent_mulmods": 4,
+              "ec_add": 45,
+              "ec_add_trivial": 1,
+              "ec_double": 51,
+              "ec_frobenius": 0,
+              "ec_lift_x": 0,
+              "ec_scalar_mul": 1,
+              "field_half_trace": 994008,
+              "field_inv": 6084,
+              "field_mul": 10934280,
+              "field_sqr": 1988163,
+              "fold_rotations": 5928,
+              "frobenius_x": 982032,
+              "la_inversions": 0,
+              "la_mulmods": 0,
+              "la_row_eliminations": 0,
+              "relation_lifts": 1,
+              "root_filter_inserts": 0,
+              "root_filter_queries": 0,
+              "root_index_inserts": 0,
+              "root_index_probes": 1987852,
+              "s3_root_solves": 994008,
+              "s3_root_solves_library": 0
+            }
+          },
+          "producer": "koblitz-n83-opcounts-20261023 ic_online_stacked_counted_r770 (feature op-counts)",
+          "schema": "ic-op-counts/v1"
+        },
+        "returncode": 0,
+        "target_op_counts": {
+          "canonicalizations": 1988016,
+          "descent_mulmods": 4,
+          "ec_add": 45,
+          "ec_add_trivial": 1,
+          "ec_double": 51,
+          "ec_frobenius": 0,
+          "ec_lift_x": 0,
+          "ec_scalar_mul": 1,
+          "field_half_trace": 994008,
+          "field_inv": 6084,
+          "field_mul": 10934280,
+          "field_sqr": 1988163,
+          "fold_rotations": 5928,
+          "frobenius_x": 982032,
+          "la_inversions": 0,
+          "la_mulmods": 0,
+          "la_row_eliminations": 0,
+          "relation_lifts": 1,
+          "root_filter_inserts": 0,
+          "root_filter_queries": 0,
+          "root_index_inserts": 0,
+          "root_index_probes": 1987852,
+          "s3_root_solves": 994008,
+          "s3_root_solves_library": 0
+        }
+      }
+    },
+    {
+      "frozen": {
+        "comparable": [
+          {
+            "filter_passes": 1987852,
+            "fold_audit_probes": 0,
+            "group_verified": true,
+            "pinned_intermediates": [
+              "1312246933445753867829609",
+              "3074331483260591722817353"
+            ],
+            "point_indices": [
+              77273,
+              22971,
+              54962,
+              62539
+            ],
+            "probes": 1987852,
+            "recovered_scalar": 3141592653589793,
+            "relation_checks": 1,
+            "root_calls": 994008,
+            "scan_start_or_key": 15162876847734331897,
+            "skipped_symmetric_states": 1,
+            "x_codes": [
+              "2082252129314471344655738",
+              "5378913234883251640729967",
+              "7778583904603320805282086",
+              "8170287396569539840033367"
+            ]
+          },
+          {
+            "base_hash": "d4a4da26d6e7cb09367de922d9806631fe49989f70d378cae76f347f8d76a9f7",
+            "index_digest": {
+              "accounting": "after the last target; outside setup and every online interval",
+              "logical_states": 29880000,
+              "logical_states_blake3": "baf46d5a34732aa2aeba1fc0ca4f57036e3c324ade0bf8791431c838fe15d7ec",
+              "table_entries": 29878182,
+              "table_map_sum64": "be14a80705232396",
+              "table_map_xor64": "8132bdcfd619010f"
+            },
+            "rank": 0,
+            "rank_attempt_probes": [],
+            "rank_attempts": 0,
+            "rank_failures": 0,
+            "rank_probes_total": 0,
+            "rank_relations": 0,
+            "rank_relations_blake3": "db6dfe19abeccfd24065da7ba7b1e6a2733cf644b1cc3857e06403ec89c4d505",
+            "rank_root_calls_total": 0,
+            "rank_rows_without_gain": 0,
+            "rank_skipped_symmetric_states": 0,
+            "regular_states": 29880000,
+            "root_table_entries": 29878182,
+            "root_table_slots": 67108864,
+            "stored_states": 14940300
+          }
+        ],
+        "issues": [],
+        "op_counts": null,
+        "returncode": 0,
+        "target_op_counts": null
+      },
+      "off": {
+        "comparable": [
+          {
+            "filter_passes": 1987852,
+            "fold_audit_probes": 0,
+            "group_verified": true,
+            "pinned_intermediates": [
+              "1312246933445753867829609",
+              "3074331483260591722817353"
+            ],
+            "point_indices": [
+              77273,
+              22971,
+              54962,
+              62539
+            ],
+            "probes": 1987852,
+            "recovered_scalar": 3141592653589793,
+            "relation_checks": 1,
+            "root_calls": 994008,
+            "scan_start_or_key": 15162876847734331897,
+            "skipped_symmetric_states": 1,
+            "x_codes": [
+              "2082252129314471344655738",
+              "5378913234883251640729967",
+              "7778583904603320805282086",
+              "8170287396569539840033367"
+            ]
+          },
+          {
+            "base_hash": "d4a4da26d6e7cb09367de922d9806631fe49989f70d378cae76f347f8d76a9f7",
+            "index_digest": {
+              "accounting": "after the last target; outside setup and every online interval",
+              "logical_states": 29880000,
+              "logical_states_blake3": "baf46d5a34732aa2aeba1fc0ca4f57036e3c324ade0bf8791431c838fe15d7ec",
+              "table_entries": 29878182,
+              "table_map_sum64": "be14a80705232396",
+              "table_map_xor64": "8132bdcfd619010f"
+            },
+            "rank": 0,
+            "rank_attempt_probes": [],
+            "rank_attempts": 0,
+            "rank_failures": 0,
+            "rank_probes_total": 0,
+            "rank_relations": 0,
+            "rank_relations_blake3": "db6dfe19abeccfd24065da7ba7b1e6a2733cf644b1cc3857e06403ec89c4d505",
+            "rank_root_calls_total": 0,
+            "rank_rows_without_gain": 0,
+            "rank_skipped_symmetric_states": 0,
+            "regular_states": 29880000,
+            "root_table_entries": 29878182,
+            "root_table_slots": 67108864,
+            "stored_states": 14940300
+          }
+        ],
+        "issues": [],
+        "op_counts": {
+          "enabled": false
+        },
+        "returncode": 0,
+        "target_op_counts": null
+      },
+      "on": {
+        "comparable": [
+          {
+            "filter_passes": 1987852,
+            "fold_audit_probes": 0,
+            "group_verified": true,
+            "pinned_intermediates": [
+              "1312246933445753867829609",
+              "3074331483260591722817353"
+            ],
+            "point_indices": [
+              77273,
+              22971,
+              54962,
+              62539
+            ],
+            "probes": 1987852,
+            "recovered_scalar": 3141592653589793,
+            "relation_checks": 1,
+            "root_calls": 994008,
+            "scan_start_or_key": 15162876847734331897,
+            "skipped_symmetric_states": 1,
+            "x_codes": [
+              "2082252129314471344655738",
+              "5378913234883251640729967",
+              "7778583904603320805282086",
+              "8170287396569539840033367"
+            ]
+          },
+          {
+            "base_hash": "d4a4da26d6e7cb09367de922d9806631fe49989f70d378cae76f347f8d76a9f7",
+            "index_digest": {
+              "accounting": "after the last target; outside setup and every online interval",
+              "logical_states": 29880000,
+              "logical_states_blake3": "baf46d5a34732aa2aeba1fc0ca4f57036e3c324ade0bf8791431c838fe15d7ec",
+              "table_entries": 29878182,
+              "table_map_sum64": "be14a80705232396",
+              "table_map_xor64": "8132bdcfd619010f"
+            },
+            "rank": 0,
+            "rank_attempt_probes": [],
+            "rank_attempts": 0,
+            "rank_failures": 0,
+            "rank_probes_total": 0,
+            "rank_relations": 0,
+            "rank_relations_blake3": "db6dfe19abeccfd24065da7ba7b1e6a2733cf644b1cc3857e06403ec89c4d505",
+            "rank_root_calls_total": 0,
+            "rank_rows_without_gain": 0,
+            "rank_skipped_symmetric_states": 0,
+            "regular_states": 29880000,
+            "root_table_entries": 29878182,
+            "root_table_slots": 67108864,
+            "stored_states": 14940300
+          }
+        ],
+        "issues": [],
+        "op_counts": {
+          "accounting": "setup = process start to the index built (base, normal basis and self-test, index); rank_stage = the timed rank interval; linear_algebra = echelon solve or cached-table load plus the verification of every factor log; targets = every target's online interval and the code between them; end_to_end = process start to the last target; after_targets_index_digest is diagnostic work outside every interval and outside end_to_end",
+          "enabled": true,
+          "end_to_end": {
+            "canonicalizations": 31868616,
+            "descent_mulmods": 4,
+            "ec_add": 15212,
+            "ec_add_trivial": 601,
+            "ec_double": 30564,
+            "ec_frobenius": 0,
+            "ec_lift_x": 0,
+            "ec_scalar_mul": 601,
+            "field_half_trace": 15934710,
+            "field_inv": 14993511,
+            "field_mul": 130559171,
+            "field_sqr": 31949050,
+            "fold_rotations": 5928,
+            "frobenius_x": 1031832,
+            "la_inversions": 0,
+            "la_mulmods": 0,
+            "la_row_eliminations": 0,
+            "relation_lifts": 1,
+            "root_filter_inserts": 0,
+            "root_filter_queries": 0,
+            "root_index_inserts": 29880600,
+            "root_index_probes": 1987852,
+            "s3_root_solves": 15936355,
+            "s3_root_solves_library": 2647
+          },
+          "kinds": {
+            "canonicalizations": "native",
+            "descent_mulmods": "native",
+            "ec_add": "group",
+            "ec_add_trivial": "group_trivial",
+            "ec_double": "group",
+            "ec_frobenius": "endomorphism",
+            "ec_lift_x": "native",
+            "ec_scalar_mul": "group_composite",
+            "field_half_trace": "field",
+            "field_inv": "field",
+            "field_mul": "field",
+            "field_sqr": "field",
+            "fold_rotations": "endomorphism",
+            "frobenius_x": "endomorphism",
+            "la_inversions": "native",
+            "la_mulmods": "native",
+            "la_row_eliminations": "native_grouping",
+            "relation_lifts": "native",
+            "root_filter_inserts": "native",
+            "root_filter_queries": "native",
+            "root_index_inserts": "native",
+            "root_index_probes": "native",
+            "s3_root_solves": "native",
+            "s3_root_solves_library": "native"
+          },
+          "phases": {
+            "after_targets_index_digest": {
+              "canonicalizations": 0,
+              "descent_mulmods": 0,
+              "ec_add": 0,
+              "ec_add_trivial": 0,
+              "ec_double": 0,
+              "ec_frobenius": 0,
+              "ec_lift_x": 0,
+              "ec_scalar_mul": 0,
+              "field_half_trace": 0,
+              "field_inv": 0,
+              "field_mul": 0,
+              "field_sqr": 0,
+              "fold_rotations": 29520000,
+              "frobenius_x": 0,
+              "la_inversions": 0,
+              "la_mulmods": 0,
+              "la_row_eliminations": 0,
+              "relation_lifts": 0,
+              "root_filter_inserts": 0,
+              "root_filter_queries": 0,
+              "root_index_inserts": 0,
+              "root_index_probes": 0,
+              "s3_root_solves": 0,
+              "s3_root_solves_library": 0
+            },
+            "between_linear_algebra_and_targets": {
+              "canonicalizations": 0,
+              "descent_mulmods": 0,
+              "ec_add": 0,
+              "ec_add_trivial": 0,
+              "ec_double": 0,
+              "ec_frobenius": 0,
+              "ec_lift_x": 0,
+              "ec_scalar_mul": 0,
+              "field_half_trace": 0,
+              "field_inv": 0,
+              "field_mul": 0,
+              "field_sqr": 0,
+              "fold_rotations": 0,
+              "frobenius_x": 0,
+              "la_inversions": 0,
+              "la_mulmods": 0,
+              "la_row_eliminations": 0,
+              "relation_lifts": 0,
+              "root_filter_inserts": 0,
+              "root_filter_queries": 0,
+              "root_index_inserts": 0,
+              "root_index_probes": 0,
+              "s3_root_solves": 0,
+              "s3_root_solves_library": 0
+            },
+            "linear_algebra": {
+              "canonicalizations": 0,
+              "descent_mulmods": 0,
+              "ec_add": 15167,
+              "ec_add_trivial": 600,
+              "ec_double": 30513,
+              "ec_frobenius": 0,
+              "ec_lift_x": 0,
+              "ec_scalar_mul": 600,
+              "field_half_trace": 0,
+              "field_inv": 45680,
+              "field_mul": 91360,
+              "field_sqr": 76193,
+              "fold_rotations": 0,
+              "frobenius_x": 0,
+              "la_inversions": 0,
+              "la_mulmods": 0,
+              "la_row_eliminations": 0,
+              "relation_lifts": 0,
+              "root_filter_inserts": 0,
+              "root_filter_queries": 0,
+              "root_index_inserts": 0,
+              "root_index_probes": 0,
+              "s3_root_solves": 0,
+              "s3_root_solves_library": 0
+            },
+            "rank_stage": {
+              "canonicalizations": 0,
+              "descent_mulmods": 0,
+              "ec_add": 0,
+              "ec_add_trivial": 0,
+              "ec_double": 0,
+              "ec_frobenius": 0,
+              "ec_lift_x": 0,
+              "ec_scalar_mul": 0,
+              "field_half_trace": 0,
+              "field_inv": 0,
+              "field_mul": 0,
+              "field_sqr": 0,
+              "fold_rotations": 0,
+              "frobenius_x": 0,
+              "la_inversions": 0,
+              "la_mulmods": 0,
+              "la_row_eliminations": 0,
+              "relation_lifts": 0,
+              "root_filter_inserts": 0,
+              "root_filter_queries": 0,
+              "root_index_inserts": 0,
+              "root_index_probes": 0,
+              "s3_root_solves": 0,
+              "s3_root_solves_library": 0
+            },
+            "setup": {
+              "canonicalizations": 29880600,
+              "descent_mulmods": 0,
+              "ec_add": 0,
+              "ec_add_trivial": 0,
+              "ec_double": 0,
+              "ec_frobenius": 0,
+              "ec_lift_x": 0,
+              "ec_scalar_mul": 0,
+              "field_half_trace": 14940702,
+              "field_inv": 14941747,
+              "field_mul": 119533531,
+              "field_sqr": 29884694,
+              "fold_rotations": 0,
+              "frobenius_x": 49800,
+              "la_inversions": 0,
+              "la_mulmods": 0,
+              "la_row_eliminations": 0,
+              "relation_lifts": 0,
+              "root_filter_inserts": 0,
+              "root_filter_queries": 0,
+              "root_index_inserts": 29880600,
+              "root_index_probes": 0,
+              "s3_root_solves": 14942347,
+              "s3_root_solves_library": 2647
+            },
+            "targets": {
+              "canonicalizations": 1988016,
+              "descent_mulmods": 4,
+              "ec_add": 45,
+              "ec_add_trivial": 1,
+              "ec_double": 51,
+              "ec_frobenius": 0,
+              "ec_lift_x": 0,
+              "ec_scalar_mul": 1,
+              "field_half_trace": 994008,
+              "field_inv": 6084,
+              "field_mul": 10934280,
+              "field_sqr": 1988163,
+              "fold_rotations": 5928,
+              "frobenius_x": 982032,
+              "la_inversions": 0,
+              "la_mulmods": 0,
+              "la_row_eliminations": 0,
+              "relation_lifts": 1,
+              "root_filter_inserts": 0,
+              "root_filter_queries": 0,
+              "root_index_inserts": 0,
+              "root_index_probes": 1987852,
+              "s3_root_solves": 994008,
+              "s3_root_solves_library": 0
+            }
+          },
+          "producer": "koblitz-n83-opcounts-20261023 ic_online_stacked_counted_r770 (feature op-counts)",
+          "schema": "ic-op-counts/v1"
+        },
+        "returncode": 0,
+        "target_op_counts": {
+          "canonicalizations": 1988016,
+          "descent_mulmods": 4,
+          "ec_add": 45,
+          "ec_add_trivial": 1,
+          "ec_double": 51,
+          "ec_frobenius": 0,
+          "ec_lift_x": 0,
+          "ec_scalar_mul": 1,
+          "field_half_trace": 994008,
+          "field_inv": 6084,
+          "field_mul": 10934280,
+          "field_sqr": 1988163,
+          "fold_rotations": 5928,
+          "frobenius_x": 982032,
+          "la_inversions": 0,
+          "la_mulmods": 0,
+          "la_row_eliminations": 0,
+          "relation_lifts": 1,
+          "root_filter_inserts": 0,
+          "root_filter_queries": 0,
+          "root_index_inserts": 0,
+          "root_index_probes": 1987852,
+          "s3_root_solves": 994008,
+          "s3_root_solves_library": 0
+        }
+      }
+    },
+    {
+      "frozen": {
+        "comparable": [
+          {
+            "filter_passes": 1987852,
+            "fold_audit_probes": 0,
+            "group_verified": true,
+            "pinned_intermediates": [
+              "1312246933445753867829609",
+              "3074331483260591722817353"
+            ],
+            "point_indices": [
+              77273,
+              22971,
+              54962,
+              62539
+            ],
+            "probes": 1987852,
+            "recovered_scalar": 3141592653589793,
+            "relation_checks": 1,
+            "root_calls": 994008,
+            "scan_start_or_key": 15162876847734331897,
+            "skipped_symmetric_states": 1,
+            "x_codes": [
+              "2082252129314471344655738",
+              "5378913234883251640729967",
+              "7778583904603320805282086",
+              "8170287396569539840033367"
+            ]
+          },
+          {
+            "base_hash": "d4a4da26d6e7cb09367de922d9806631fe49989f70d378cae76f347f8d76a9f7",
+            "index_digest": {
+              "accounting": "after the last target; outside setup and every online interval",
+              "logical_states": 29880000,
+              "logical_states_blake3": "baf46d5a34732aa2aeba1fc0ca4f57036e3c324ade0bf8791431c838fe15d7ec",
+              "table_entries": 29878182,
+              "table_map_sum64": "be14a80705232396",
+              "table_map_xor64": "8132bdcfd619010f"
+            },
+            "rank": 0,
+            "rank_attempt_probes": [],
+            "rank_attempts": 0,
+            "rank_failures": 0,
+            "rank_probes_total": 0,
+            "rank_relations": 0,
+            "rank_relations_blake3": "db6dfe19abeccfd24065da7ba7b1e6a2733cf644b1cc3857e06403ec89c4d505",
+            "rank_root_calls_total": 0,
+            "rank_rows_without_gain": 0,
+            "rank_skipped_symmetric_states": 0,
+            "regular_states": 29880000,
+            "root_table_entries": 29878182,
+            "root_table_slots": 67108864,
+            "stored_states": 14940300
+          }
+        ],
+        "issues": [],
+        "op_counts": null,
+        "returncode": 0,
+        "target_op_counts": null
+      },
+      "off": {
+        "comparable": [
+          {
+            "filter_passes": 1987852,
+            "fold_audit_probes": 0,
+            "group_verified": true,
+            "pinned_intermediates": [
+              "1312246933445753867829609",
+              "3074331483260591722817353"
+            ],
+            "point_indices": [
+              77273,
+              22971,
+              54962,
+              62539
+            ],
+            "probes": 1987852,
+            "recovered_scalar": 3141592653589793,
+            "relation_checks": 1,
+            "root_calls": 994008,
+            "scan_start_or_key": 15162876847734331897,
+            "skipped_symmetric_states": 1,
+            "x_codes": [
+              "2082252129314471344655738",
+              "5378913234883251640729967",
+              "7778583904603320805282086",
+              "8170287396569539840033367"
+            ]
+          },
+          {
+            "base_hash": "d4a4da26d6e7cb09367de922d9806631fe49989f70d378cae76f347f8d76a9f7",
+            "index_digest": {
+              "accounting": "after the last target; outside setup and every online interval",
+              "logical_states": 29880000,
+              "logical_states_blake3": "baf46d5a34732aa2aeba1fc0ca4f57036e3c324ade0bf8791431c838fe15d7ec",
+              "table_entries": 29878182,
+              "table_map_sum64": "be14a80705232396",
+              "table_map_xor64": "8132bdcfd619010f"
+            },
+            "rank": 0,
+            "rank_attempt_probes": [],
+            "rank_attempts": 0,
+            "rank_failures": 0,
+            "rank_probes_total": 0,
+            "rank_relations": 0,
+            "rank_relations_blake3": "db6dfe19abeccfd24065da7ba7b1e6a2733cf644b1cc3857e06403ec89c4d505",
+            "rank_root_calls_total": 0,
+            "rank_rows_without_gain": 0,
+            "rank_skipped_symmetric_states": 0,
+            "regular_states": 29880000,
+            "root_table_entries": 29878182,
+            "root_table_slots": 67108864,
+            "stored_states": 14940300
+          }
+        ],
+        "issues": [],
+        "op_counts": {
+          "enabled": false
+        },
+        "returncode": 0,
+        "target_op_counts": null
+      },
+      "on": {
+        "comparable": [
+          {
+            "filter_passes": 1987852,
+            "fold_audit_probes": 0,
+            "group_verified": true,
+            "pinned_intermediates": [
+              "1312246933445753867829609",
+              "3074331483260591722817353"
+            ],
+            "point_indices": [
+              77273,
+              22971,
+              54962,
+              62539
+            ],
+            "probes": 1987852,
+            "recovered_scalar": 3141592653589793,
+            "relation_checks": 1,
+            "root_calls": 994008,
+            "scan_start_or_key": 15162876847734331897,
+            "skipped_symmetric_states": 1,
+            "x_codes": [
+              "2082252129314471344655738",
+              "5378913234883251640729967",
+              "7778583904603320805282086",
+              "8170287396569539840033367"
+            ]
+          },
+          {
+            "base_hash": "d4a4da26d6e7cb09367de922d9806631fe49989f70d378cae76f347f8d76a9f7",
+            "index_digest": {
+              "accounting": "after the last target; outside setup and every online interval",
+              "logical_states": 29880000,
+              "logical_states_blake3": "baf46d5a34732aa2aeba1fc0ca4f57036e3c324ade0bf8791431c838fe15d7ec",
+              "table_entries": 29878182,
+              "table_map_sum64": "be14a80705232396",
+              "table_map_xor64": "8132bdcfd619010f"
+            },
+            "rank": 0,
+            "rank_attempt_probes": [],
+            "rank_attempts": 0,
+            "rank_failures": 0,
+            "rank_probes_total": 0,
+            "rank_relations": 0,
+            "rank_relations_blake3": "db6dfe19abeccfd24065da7ba7b1e6a2733cf644b1cc3857e06403ec89c4d505",
+            "rank_root_calls_total": 0,
+            "rank_rows_without_gain": 0,
+            "rank_skipped_symmetric_states": 0,
+            "regular_states": 29880000,
+            "root_table_entries": 29878182,
+            "root_table_slots": 67108864,
+            "stored_states": 14940300
+          }
+        ],
+        "issues": [],
+        "op_counts": {
+          "accounting": "setup = process start to the index built (base, normal basis and self-test, index); rank_stage = the timed rank interval; linear_algebra = echelon solve or cached-table load plus the verification of every factor log; targets = every target's online interval and the code between them; end_to_end = process start to the last target; after_targets_index_digest is diagnostic work outside every interval and outside end_to_end",
+          "enabled": true,
+          "end_to_end": {
+            "canonicalizations": 31868616,
+            "descent_mulmods": 4,
+            "ec_add": 15212,
+            "ec_add_trivial": 601,
+            "ec_double": 30564,
+            "ec_frobenius": 0,
+            "ec_lift_x": 0,
+            "ec_scalar_mul": 601,
+            "field_half_trace": 15934710,
+            "field_inv": 14993511,
+            "field_mul": 130559171,
+            "field_sqr": 31949050,
+            "fold_rotations": 5928,
+            "frobenius_x": 1031832,
+            "la_inversions": 0,
+            "la_mulmods": 0,
+            "la_row_eliminations": 0,
+            "relation_lifts": 1,
+            "root_filter_inserts": 0,
+            "root_filter_queries": 0,
+            "root_index_inserts": 29880600,
+            "root_index_probes": 1987852,
+            "s3_root_solves": 15936355,
+            "s3_root_solves_library": 2647
+          },
+          "kinds": {
+            "canonicalizations": "native",
+            "descent_mulmods": "native",
+            "ec_add": "group",
+            "ec_add_trivial": "group_trivial",
+            "ec_double": "group",
+            "ec_frobenius": "endomorphism",
+            "ec_lift_x": "native",
+            "ec_scalar_mul": "group_composite",
+            "field_half_trace": "field",
+            "field_inv": "field",
+            "field_mul": "field",
+            "field_sqr": "field",
+            "fold_rotations": "endomorphism",
+            "frobenius_x": "endomorphism",
+            "la_inversions": "native",
+            "la_mulmods": "native",
+            "la_row_eliminations": "native_grouping",
+            "relation_lifts": "native",
+            "root_filter_inserts": "native",
+            "root_filter_queries": "native",
+            "root_index_inserts": "native",
+            "root_index_probes": "native",
+            "s3_root_solves": "native",
+            "s3_root_solves_library": "native"
+          },
+          "phases": {
+            "after_targets_index_digest": {
+              "canonicalizations": 0,
+              "descent_mulmods": 0,
+              "ec_add": 0,
+              "ec_add_trivial": 0,
+              "ec_double": 0,
+              "ec_frobenius": 0,
+              "ec_lift_x": 0,
+              "ec_scalar_mul": 0,
+              "field_half_trace": 0,
+              "field_inv": 0,
+              "field_mul": 0,
+              "field_sqr": 0,
+              "fold_rotations": 29520000,
+              "frobenius_x": 0,
+              "la_inversions": 0,
+              "la_mulmods": 0,
+              "la_row_eliminations": 0,
+              "relation_lifts": 0,
+              "root_filter_inserts": 0,
+              "root_filter_queries": 0,
+              "root_index_inserts": 0,
+              "root_index_probes": 0,
+              "s3_root_solves": 0,
+              "s3_root_solves_library": 0
+            },
+            "between_linear_algebra_and_targets": {
+              "canonicalizations": 0,
+              "descent_mulmods": 0,
+              "ec_add": 0,
+              "ec_add_trivial": 0,
+              "ec_double": 0,
+              "ec_frobenius": 0,
+              "ec_lift_x": 0,
+              "ec_scalar_mul": 0,
+              "field_half_trace": 0,
+              "field_inv": 0,
+              "field_mul": 0,
+              "field_sqr": 0,
+              "fold_rotations": 0,
+              "frobenius_x": 0,
+              "la_inversions": 0,
+              "la_mulmods": 0,
+              "la_row_eliminations": 0,
+              "relation_lifts": 0,
+              "root_filter_inserts": 0,
+              "root_filter_queries": 0,
+              "root_index_inserts": 0,
+              "root_index_probes": 0,
+              "s3_root_solves": 0,
+              "s3_root_solves_library": 0
+            },
+            "linear_algebra": {
+              "canonicalizations": 0,
+              "descent_mulmods": 0,
+              "ec_add": 15167,
+              "ec_add_trivial": 600,
+              "ec_double": 30513,
+              "ec_frobenius": 0,
+              "ec_lift_x": 0,
+              "ec_scalar_mul": 600,
+              "field_half_trace": 0,
+              "field_inv": 45680,
+              "field_mul": 91360,
+              "field_sqr": 76193,
+              "fold_rotations": 0,
+              "frobenius_x": 0,
+              "la_inversions": 0,
+              "la_mulmods": 0,
+              "la_row_eliminations": 0,
+              "relation_lifts": 0,
+              "root_filter_inserts": 0,
+              "root_filter_queries": 0,
+              "root_index_inserts": 0,
+              "root_index_probes": 0,
+              "s3_root_solves": 0,
+              "s3_root_solves_library": 0
+            },
+            "rank_stage": {
+              "canonicalizations": 0,
+              "descent_mulmods": 0,
+              "ec_add": 0,
+              "ec_add_trivial": 0,
+              "ec_double": 0,
+              "ec_frobenius": 0,
+              "ec_lift_x": 0,
+              "ec_scalar_mul": 0,
+              "field_half_trace": 0,
+              "field_inv": 0,
+              "field_mul": 0,
+              "field_sqr": 0,
+              "fold_rotations": 0,
+              "frobenius_x": 0,
+              "la_inversions": 0,
+              "la_mulmods": 0,
+              "la_row_eliminations": 0,
+              "relation_lifts": 0,
+              "root_filter_inserts": 0,
+              "root_filter_queries": 0,
+              "root_index_inserts": 0,
+              "root_index_probes": 0,
+              "s3_root_solves": 0,
+              "s3_root_solves_library": 0
+            },
+            "setup": {
+              "canonicalizations": 29880600,
+              "descent_mulmods": 0,
+              "ec_add": 0,
+              "ec_add_trivial": 0,
+              "ec_double": 0,
+              "ec_frobenius": 0,
+              "ec_lift_x": 0,
+              "ec_scalar_mul": 0,
+              "field_half_trace": 14940702,
+              "field_inv": 14941747,
+              "field_mul": 119533531,
+              "field_sqr": 29884694,
+              "fold_rotations": 0,
+              "frobenius_x": 49800,
+              "la_inversions": 0,
+              "la_mulmods": 0,
+              "la_row_eliminations": 0,
+              "relation_lifts": 0,
+              "root_filter_inserts": 0,
+              "root_filter_queries": 0,
+              "root_index_inserts": 29880600,
+              "root_index_probes": 0,
+              "s3_root_solves": 14942347,
+              "s3_root_solves_library": 2647
+            },
+            "targets": {
+              "canonicalizations": 1988016,
+              "descent_mulmods": 4,
+              "ec_add": 45,
+              "ec_add_trivial": 1,
+              "ec_double": 51,
+              "ec_frobenius": 0,
+              "ec_lift_x": 0,
+              "ec_scalar_mul": 1,
+              "field_half_trace": 994008,
+              "field_inv": 6084,
+              "field_mul": 10934280,
+              "field_sqr": 1988163,
+              "fold_rotations": 5928,
+              "frobenius_x": 982032,
+              "la_inversions": 0,
+              "la_mulmods": 0,
+              "la_row_eliminations": 0,
+              "relation_lifts": 1,
+              "root_filter_inserts": 0,
+              "root_filter_queries": 0,
+              "root_index_inserts": 0,
+              "root_index_probes": 1987852,
+              "s3_root_solves": 994008,
+              "s3_root_solves_library": 0
+            }
+          },
+          "producer": "koblitz-n83-opcounts-20261023 ic_online_stacked_counted_r770 (feature op-counts)",
+          "schema": "ic-op-counts/v1"
+        },
+        "returncode": 0,
+        "target_op_counts": {
+          "canonicalizations": 1988016,
+          "descent_mulmods": 4,
+          "ec_add": 45,
+          "ec_add_trivial": 1,
+          "ec_double": 51,
+          "ec_frobenius": 0,
+          "ec_lift_x": 0,
+          "ec_scalar_mul": 1,
+          "field_half_trace": 994008,
+          "field_inv": 6084,
+          "field_mul": 10934280,
+          "field_sqr": 1988163,
+          "fold_rotations": 5928,
+          "frobenius_x": 982032,
+          "la_inversions": 0,
+          "la_mulmods": 0,
+          "la_row_eliminations": 0,
+          "relation_lifts": 1,
+          "root_filter_inserts": 0,
+          "root_filter_queries": 0,
+          "root_index_inserts": 0,
+          "root_index_probes": 1987852,
+          "s3_root_solves": 994008,
+          "s3_root_solves_library": 0
+        }
+      }
+    }
+  ],
+  "cpu": 2,
+  "host": "vm",
+  "identical": true,
+  "overhead": {
+    "cold_in_process_ms": {
+      "off_over_frozen": {
+        "median": 0.9762201255697149,
+        "per_round": [
+          0.9684813250642255,
+          1.1293313341176778,
+          0.9762201255697149
+        ]
+      },
+      "on_over_frozen": {
+        "median": 1.019720831138949,
+        "per_round": [
+          1.019720831138949,
+          1.0612147607510285,
+          0.980593799483678
+        ]
+      },
+      "on_over_off": {
+        "median": 1.0044802128120547,
+        "per_round": [
+          1.0529070667122316,
+          0.9396841552971986,
+          1.0044802128120547
+        ]
+      }
+    },
+    "index_build_ms": {
+      "off_over_frozen": {
+        "median": 0.9675131289863279,
+        "per_round": [
+          0.964193655121985,
+          1.151843850696234,
+          0.9675131289863279
+        ]
+      },
+      "on_over_frozen": {
+        "median": 1.021400341456598,
+        "per_round": [
+          1.021400341456598,
+          1.0753222122407602,
+          0.9732553333957435
+        ]
+      },
+      "on_over_off": {
+        "median": 1.0059350144585963,
+        "per_round": [
+          1.0593311167634427,
+          0.9335659617323823,
+          1.0059350144585963
+        ]
+      }
+    },
+    "online_ms": {
+      "off_over_frozen": {
+        "median": 1.0423092050337444,
+        "per_round": [
+          1.0423092050337444,
+          0.9484029164017523,
+          1.1023018132798945
+        ]
+      },
+      "on_over_frozen": {
+        "median": 1.0969348035771644,
+        "per_round": [
+          1.1142194189133618,
+          0.8525881484616449,
+          1.0969348035771644
+        ]
+      },
+      "on_over_off": {
+        "median": 0.9951310887471366,
+        "per_round": [
+          1.0689912489809483,
+          0.8989725081154016,
+          0.9951310887471366
+        ]
+      }
+    },
+    "rank_stage_ms": {
+      "on_over_off": 1.0233182117135522
+    },
+    "setup_ms": {
+      "off_over_frozen": {
+        "median": 0.9735879148625447,
+        "per_round": [
+          0.9669950949095376,
+          1.133806156649876,
+          0.9735879148625447
+        ]
+      },
+      "on_over_frozen": {
+        "median": 1.0178184786566113,
+        "per_round": [
+          1.0178184786566113,
+          1.0663746304789254,
+          0.9781649452843135
+        ]
+      },
+      "on_over_off": {
+        "median": 1.004701198887021,
+        "per_round": [
+          1.0525580574447777,
+          0.940526406762339,
+          1.004701198887021
+        ]
+      }
+    }
+  },
+  "rank": {
+    "off": {
+      "issues": [],
+      "op_counts": {
+        "enabled": false
+      },
+      "rank_relations_blake3": "de271a96c982e07f0b8b32a07c38153a2b8414ac767d89d27a6bacd5992bb2ca",
+      "returncode": 0,
+      "target_op_counts": null
+    },
+    "on": {
+      "issues": [],
+      "op_counts": {
+        "accounting": "setup = process start to the index built (base, normal basis and self-test, index); rank_stage = the timed rank interval; linear_algebra = echelon solve or cached-table load plus the verification of every factor log; targets = every target's online interval and the code between them; end_to_end = process start to the last target; after_targets_index_digest is diagnostic work outside every interval and outside end_to_end",
+        "enabled": true,
+        "end_to_end": {
+          "canonicalizations": 1032063104,
+          "descent_mulmods": 4,
+          "ec_add": 40075,
+          "ec_add_trivial": 1201,
+          "ec_double": 61009,
+          "ec_frobenius": 0,
+          "ec_lift_x": 0,
+          "ec_scalar_mul": 1201,
+          "field_half_trace": 516031954,
+          "field_inv": 18061453,
+          "field_mul": 5631739471,
+          "field_sqr": 1032229291,
+          "fold_rotations": 2986022,
+          "frobenius_x": 495103808,
+          "la_inversions": 600,
+          "la_mulmods": 15872441,
+          "la_row_eliminations": 60197,
+          "relation_lifts": 601,
+          "root_filter_inserts": 0,
+          "root_filter_queries": 0,
+          "root_index_inserts": 29880600,
+          "root_index_probes": 1002081520,
+          "s3_root_solves": 516033599,
+          "s3_root_solves_library": 2647
+        },
+        "kinds": {
+          "canonicalizations": "native",
+          "descent_mulmods": "native",
+          "ec_add": "group",
+          "ec_add_trivial": "group_trivial",
+          "ec_double": "group",
+          "ec_frobenius": "endomorphism",
+          "ec_lift_x": "native",
+          "ec_scalar_mul": "group_composite",
+          "field_half_trace": "field",
+          "field_inv": "field",
+          "field_mul": "field",
+          "field_sqr": "field",
+          "fold_rotations": "endomorphism",
+          "frobenius_x": "endomorphism",
+          "la_inversions": "native",
+          "la_mulmods": "native",
+          "la_row_eliminations": "native_grouping",
+          "relation_lifts": "native",
+          "root_filter_inserts": "native",
+          "root_filter_queries": "native",
+          "root_index_inserts": "native",
+          "root_index_probes": "native",
+          "s3_root_solves": "native",
+          "s3_root_solves_library": "native"
+        },
+        "phases": {
+          "after_targets_index_digest": {
+            "canonicalizations": 0,
+            "descent_mulmods": 0,
+            "ec_add": 0,
+            "ec_add_trivial": 0,
+            "ec_double": 0,
+            "ec_frobenius": 0,
+            "ec_lift_x": 0,
+            "ec_scalar_mul": 0,
+            "field_half_trace": 0,
+            "field_inv": 0,
+            "field_mul": 0,
+            "field_sqr": 0,
+            "fold_rotations": 29520000,
+            "frobenius_x": 0,
+            "la_inversions": 0,
+            "la_mulmods": 0,
+            "la_row_eliminations": 0,
+            "relation_lifts": 0,
+            "root_filter_inserts": 0,
+            "root_filter_queries": 0,
+            "root_index_inserts": 0,
+            "root_index_probes": 0,
+            "s3_root_solves": 0,
+            "s3_root_solves_library": 0
+          },
+          "between_linear_algebra_and_targets": {
+            "canonicalizations": 0,
+            "descent_mulmods": 0,
+            "ec_add": 0,
+            "ec_add_trivial": 0,
+            "ec_double": 0,
+            "ec_frobenius": 0,
+            "ec_lift_x": 0,
+            "ec_scalar_mul": 0,
+            "field_half_trace": 0,
+            "field_inv": 0,
+            "field_mul": 0,
+            "field_sqr": 0,
+            "fold_rotations": 0,
+            "frobenius_x": 0,
+            "la_inversions": 0,
+            "la_mulmods": 0,
+            "la_row_eliminations": 0,
+            "relation_lifts": 0,
+            "root_filter_inserts": 0,
+            "root_filter_queries": 0,
+            "root_index_inserts": 0,
+            "root_index_probes": 0,
+            "s3_root_solves": 0,
+            "s3_root_solves_library": 0
+          },
+          "linear_algebra": {
+            "canonicalizations": 0,
+            "descent_mulmods": 0,
+            "ec_add": 15167,
+            "ec_add_trivial": 600,
+            "ec_double": 30513,
+            "ec_frobenius": 0,
+            "ec_lift_x": 0,
+            "ec_scalar_mul": 600,
+            "field_half_trace": 0,
+            "field_inv": 45680,
+            "field_mul": 91360,
+            "field_sqr": 76193,
+            "fold_rotations": 0,
+            "frobenius_x": 0,
+            "la_inversions": 0,
+            "la_mulmods": 179700,
+            "la_row_eliminations": 0,
+            "relation_lifts": 0,
+            "root_filter_inserts": 0,
+            "root_filter_queries": 0,
+            "root_index_inserts": 0,
+            "root_index_probes": 0,
+            "s3_root_solves": 0,
+            "s3_root_solves_library": 0
+          },
+          "rank_stage": {
+            "canonicalizations": 1000554708,
+            "descent_mulmods": 0,
+            "ec_add": 24874,
+            "ec_add_trivial": 600,
+            "ec_double": 30444,
+            "ec_frobenius": 0,
+            "ec_lift_x": 0,
+            "ec_scalar_mul": 600,
+            "field_half_trace": 500277354,
+            "field_inv": 3069037,
+            "field_mul": 5503161530,
+            "field_sqr": 1000640470,
+            "fold_rotations": 2981110,
+            "frobenius_x": 494249916,
+            "la_inversions": 600,
+            "la_mulmods": 15692741,
+            "la_row_eliminations": 60197,
+            "relation_lifts": 600,
+            "root_filter_inserts": 0,
+            "root_filter_queries": 0,
+            "root_index_inserts": 0,
+            "root_index_probes": 1000454051,
+            "s3_root_solves": 500277354,
+            "s3_root_solves_library": 0
+          },
+          "setup": {
+            "canonicalizations": 29880600,
+            "descent_mulmods": 0,
+            "ec_add": 0,
+            "ec_add_trivial": 0,
+            "ec_double": 0,
+            "ec_frobenius": 0,
+            "ec_lift_x": 0,
+            "ec_scalar_mul": 0,
+            "field_half_trace": 14940702,
+            "field_inv": 14941747,
+            "field_mul": 119533531,
+            "field_sqr": 29884694,
+            "fold_rotations": 0,
+            "frobenius_x": 49800,
+            "la_inversions": 0,
+            "la_mulmods": 0,
+            "la_row_eliminations": 0,
+            "relation_lifts": 0,
+            "root_filter_inserts": 0,
+            "root_filter_queries": 0,
+            "root_index_inserts": 29880600,
+            "root_index_probes": 0,
+            "s3_root_solves": 14942347,
+            "s3_root_solves_library": 2647
+          },
+          "targets": {
+            "canonicalizations": 1627796,
+            "descent_mulmods": 4,
+            "ec_add": 34,
+            "ec_add_trivial": 1,
+            "ec_double": 52,
+            "ec_frobenius": 0,
+            "ec_lift_x": 0,
+            "ec_scalar_mul": 1,
+            "field_half_trace": 813898,
+            "field_inv": 4989,
+            "field_mul": 8953050,
+            "field_sqr": 1627934,
+            "fold_rotations": 4912,
+            "frobenius_x": 804092,
+            "la_inversions": 0,
+            "la_mulmods": 0,
+            "la_row_eliminations": 0,
+            "relation_lifts": 1,
+            "root_filter_inserts": 0,
+            "root_filter_queries": 0,
+            "root_index_inserts": 0,
+            "root_index_probes": 1627469,
+            "s3_root_solves": 813898,
+            "s3_root_solves_library": 0
+          }
+        },
+        "producer": "koblitz-n83-opcounts-20261023 ic_online_stacked_counted_r770 (feature op-counts)",
+        "schema": "ic-op-counts/v1"
+      },
+      "rank_relations_blake3": "de271a96c982e07f0b8b32a07c38153a2b8414ac767d89d27a6bacd5992bb2ca",
+      "returncode": 0,
+      "target_op_counts": {
+        "canonicalizations": 1627796,
+        "descent_mulmods": 4,
+        "ec_add": 34,
+        "ec_add_trivial": 1,
+        "ec_double": 52,
+        "ec_frobenius": 0,
+        "ec_lift_x": 0,
+        "ec_scalar_mul": 1,
+        "field_half_trace": 813898,
+        "field_inv": 4989,
+        "field_mul": 8953050,
+        "field_sqr": 1627934,
+        "fold_rotations": 4912,
+        "frobenius_x": 804092,
+        "la_inversions": 0,
+        "la_mulmods": 0,
+        "la_row_eliminations": 0,
+        "relation_lifts": 1,
+        "root_filter_inserts": 0,
+        "root_filter_queries": 0,
+        "root_index_inserts": 0,
+        "root_index_probes": 1627469,
+        "s3_root_solves": 813898,
+        "s3_root_solves_library": 0
+      }
+    }
+  },
+  "rank_clocks": {
+    "off": {
+      "cold_in_process_ms": 332958.64502,
+      "index_build_ms": 23579.675475999997,
+      "online_ms": 506.37419900000003,
+      "rank_stage_ms": 306222.55311499996,
+      "setup_ms": 332452.270821
+    },
+    "on": {
+      "cold_in_process_ms": 341573.52535799996,
+      "index_build_ms": 24971.382542,
+      "online_ms": 541.346097,
+      "rank_stage_ms": 313363.11544,
+      "setup_ms": 341032.179261
+    }
+  }
+}

@@ -65,3 +65,19 @@ remains `null` pending a disjoint supplied-point panel on the repository's
 isolated benchmark service, with a peak-memory receipt. The next code
 transfer is to apply the small-degree guard to the sibling fastindex
 canonicalizer, then test the sparse method on a different S3 root workload.
+
+The sibling dependency's tracked sources match `crypto` revision
+`8ab924b935923df9faac25915ed7d9849974de0b`.
+
+
+
+
+also pass. The [validator](validate.py) checks source and binary bindings in
+the frozen workspace. Its [archive mode](REPRODUCE.md) verifies the published
+source, raw outputs, all five exclusive online phase sums, semantic equality,
+and Sage receipt without the original binary files. Peak RSS was unavailable from the existing
+
+An earlier exploratory screen used the unguarded sparse routine copied from
+could calculate `n-k` with `k>=n` at small degrees. The published panel uses
+only the corrected, re-frozen source and new runs.
+

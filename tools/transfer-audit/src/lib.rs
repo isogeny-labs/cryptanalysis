@@ -1,0 +1,848 @@
+//! Exact, bounded certificates. No claim of universal computational transfer discovery.
+use anyhow::{ensure, Context, Result};
+use num_bigint::{BigInt, BigUint, Sign};
+use num_traits::{One, ToPrimitive, Zero};
+use serde::{Deserialize, Serialize};
+use serde_json::{json, Value};
+use sha2::{Digest, Sha256};
+// Preserve the native suite module lint policy (suite/Cargo.toml), without
+// applying those allowances to the new audit implementation.
+#[allow(clippy::too_many_arguments, clippy::needless_range_loop)]
+#[path = "../../../suite/src/binary_ecc/mod.rs"]
+pub mod binary_ecc;
+/// Compatibility function required by the existing native arithmetic module.
+/// The audit does not invoke its rho solver.
+pub mod utils {
+    use num_bigint::{BigInt, BigUint, ToBigInt};
+    use num_traits::{One, Zero};
+    pub fn mod_inverse(a: &BigUint, n: &BigUint) -> Option<BigUint> {
+        if n <= &BigUint::one() {
+            return None;
+        }
+        let modulus = n.to_bigint()?;
+        let (mut r, mut s) = (modulus.clone(), a.to_bigint()? % &modulus);
+        let (mut x, mut y) = (BigInt::zero(), BigInt::one());
+        while !s.is_zero() {
+            let q = &r / &s;
+            (r, s) = (s.clone(), r - &q * &s);
+            (x, y) = (y.clone(), x - q * y);
+        }
+        if !r.is_one() {
+            return None;
+        }
+        ((x % &modulus + &modulus) % &modulus).to_biguint()
+    }
+}
+
+pub const SCHEMA: &str = "binary-transfer-audit/v1";
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct Point {
+    pub x: String,
+    pub y: String,
+}
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct PrimeFactor {
+    pub prime: String,
+    pub exponent: u32,
+    pub witness: String,
+    #[serde(default)]
+    pub certificate: Option<Box<PrimeCertificate>>,
+}
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct PrimeCertificate {
+    pub factors: Vec<PrimeFactor>,
+}
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct SpectralTarget {
+    pub base_degree: u32,
+    pub coefficients: Vec<String>,
+}
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct Input {
+    pub degree: u32,
+    pub modulus: String,
+    pub a: String,
+    pub b: String,
+    pub subgroup_order: String,
+    #[serde(default)]
+    pub prime_certificate: Option<PrimeCertificate>,
+    #[serde(default)]
+    pub generator: Option<Point>,
+    #[serde(default)]
+    pub max_genus: u32,
+    #[serde(default)]
+    pub exhaustive_class: bool,
+    #[serde(default)]
+    pub spectral_targets: Vec<SpectralTarget>,
+}
+pub fn number(s: &str) -> Result<BigUint> {
+    let (radix, digits) = s.strip_prefix("0x").map_or((10, s), |x| (16, x));
+    ensure!(
+        !digits.is_empty() && digits.len() <= 4096,
+        "integer length outside supported range"
+    );
+    BigUint::parse_bytes(digits.as_bytes(), radix).context("invalid unsigned integer")
+}
+fn gcd(mut a: BigUint, mut b: BigUint) -> BigUint {
+    while !b.is_zero() {
+        let t = &a % &b;
+        a = b;
+        b = t;
+    }
+    a
+}
+fn prime64(n: u64) -> bool {
+    if n < 2 {
+        return false;
+    }
+    for p in [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37] {
+        if n.is_multiple_of(p) {
+            return n == p;
+        }
+    }
+    let d = (n - 1) >> ((n - 1).trailing_zeros());
+    let s = (n - 1).trailing_zeros();
+    let modulus = BigUint::from(n);
+    'bases: for a in [2, 325, 9375, 28178, 450775, 9780504, 1795265022u64] {
+        if a % n == 0 {
+            continue;
+        }
+        let mut x = BigUint::from(a % n).modpow(&BigUint::from(d), &modulus);
+        if x.is_one() || x == &modulus - 1u32 {
+            continue;
+        }
+        for _ in 1..s {
+            x = (&x * &x) % &modulus;
+            if x == &modulus - 1u32 {
+                continue 'bases;
+            }
+        }
+        return false;
+    }
+    true
+}
+pub fn certified_prime(n: &BigUint, c: Option<&PrimeCertificate>, depth: u32) -> Result<bool> {
+    ensure!(depth <= 64, "prime certificate recursion limit");
+    if let Some(s) = n.to_u64() {
+        return Ok(prime64(s));
+    }
+    let Some(c) = c else { return Ok(false) };
+    ensure!(
+        !c.factors.is_empty() && c.factors.len() <= 128,
+        "invalid Pocklington factor count"
+    );
+    let nm = n - 1u32;
+    let mut f = BigUint::one();
+    let mut seen = std::collections::BTreeSet::new();
+    for item in &c.factors {
+        let p = number(&item.prime)?;
+        let a = number(&item.witness)?;
+        ensure!(
+            p < *n && seen.insert(p.clone()) && (1..=4096).contains(&item.exponent),
+            "invalid or duplicate prime factor"
+        );
+        ensure!(
+            certified_prime(&p, item.certificate.as_deref(), depth + 1)?,
+            "uncertified factor"
+        );
+        f *= p.pow(item.exponent);
+        ensure!(
+            &nm % &f == BigUint::zero(),
+            "factor product must divide n-1"
+        );
+        ensure!(
+            a.modpow(&nm, n).is_one(),
+            "Pocklington Fermat witness failed"
+        );
+        let x = a.modpow(&(&nm / &p), n);
+        let xm = if x.is_zero() { n - 1u32 } else { x - 1u32 };
+        ensure!(
+            gcd(xm, n.clone()).is_one(),
+            "Pocklington gcd witness failed"
+        );
+    }
+    ensure!(&f * &f > *n, "Pocklington known factor must exceed sqrt(n)");
+    Ok(true)
+}
+
+#[derive(Clone)]
+pub struct Field {
+    pub n: u32,
+    pub modulus: BigUint,
+}
+fn remainder(mut a: BigUint, b: &BigUint) -> BigUint {
+    while !a.is_zero() && a.bits() >= b.bits() {
+        let shift = a.bits() - b.bits();
+        a ^= b << shift as usize;
+    }
+    a
+}
+fn poly_gcd(mut a: BigUint, mut b: BigUint) -> BigUint {
+    while !b.is_zero() {
+        let t = remainder(a, &b);
+        a = b;
+        b = t;
+    }
+    a
+}
+impl Field {
+    pub fn new(n: u32, modulus: BigUint) -> Result<Self> {
+        ensure!(
+            (1..=571).contains(&n) && modulus.bits() == u64::from(n) + 1 && modulus.bit(0),
+            "invalid field modulus or degree"
+        );
+        let f = Self { n, modulus };
+        let x = remainder(BigUint::from(2u32), &f.modulus);
+        let mut t = x.clone();
+        for i in 1..=n {
+            t = f.mul(&t, &t);
+            if i <= n / 2 {
+                ensure!(
+                    poly_gcd(&t ^ &x, f.modulus.clone()).is_one(),
+                    "reducible modulus"
+                );
+            }
+        }
+        ensure!(t == x, "Rabin Frobenius test failed");
+        Ok(f)
+    }
+    pub fn mul(&self, a: &BigUint, b: &BigUint) -> BigUint {
+        let mut a = a.clone();
+        let mut out = BigUint::zero();
+        for i in 0..self.n {
+            if b.bit(u64::from(i)) {
+                out ^= &a;
+            }
+            a <<= 1usize;
+            if a.bit(u64::from(self.n)) {
+                a ^= &self.modulus;
+            }
+        }
+        out
+    }
+    pub fn square(&self, a: &BigUint) -> BigUint {
+        self.mul(a, a)
+    }
+    pub fn frobenius(&self, a: &BigUint, d: u32) -> BigUint {
+        let mut a = a.clone();
+        for _ in 0..d {
+            a = self.square(&a);
+        }
+        a
+    }
+    fn inverse(&self, a: &BigUint) -> BigUint {
+        assert!(!a.is_zero());
+        let mut t = a.clone();
+        for _ in 1..self.n - 1 {
+            t = self.mul(&self.square(&t), a);
+        }
+        self.square(&t)
+    }
+    fn trace(&self, a: &BigUint) -> u32 {
+        let mut t = a.clone();
+        let mut s = a.clone();
+        for _ in 1..self.n {
+            t = self.square(&t);
+            s ^= &t;
+        }
+        assert!(s.bits() <= 1);
+        s.to_u32().unwrap()
+    }
+    pub fn order(&self, a: &BigUint, b: &BigUint) -> u64 {
+        assert!(self.n <= 8);
+        let mut count = 2;
+        for x in 1..1u32 << self.n {
+            let x = BigUint::from(x);
+            let inv = self.inverse(&x);
+            let z = &x ^ a ^ self.mul(b, &self.square(&inv));
+            if self.trace(&z) == 0 {
+                count += 2
+            }
+        }
+        count
+    }
+    fn on_curve(&self, a: &BigUint, b: &BigUint, p: &(BigUint, BigUint)) -> bool {
+        let (x, y) = p;
+        self.square(y) ^ self.mul(x, y)
+            == self.mul(&self.square(x), x) ^ self.mul(a, &self.square(x)) ^ b
+    }
+    fn add(
+        &self,
+        a: &BigUint,
+        p: Option<(BigUint, BigUint)>,
+        q: Option<(BigUint, BigUint)>,
+    ) -> Option<(BigUint, BigUint)> {
+        let (Some((x, y)), Some((u, v))) = (p.clone(), q.clone()) else {
+            return p.or(q);
+        };
+        if x == u {
+            if y != v || x.is_zero() {
+                return None;
+            }
+            let l = &x ^ self.mul(&y, &self.inverse(&x));
+            let z = self.square(&l) ^ &l ^ a;
+            let w = self.square(&x) ^ self.mul(&(&l ^ BigUint::one()), &z);
+            return Some((z, w));
+        }
+        let l = self.mul(&(&y ^ &v), &self.inverse(&(&x ^ &u)));
+        let z = self.square(&l) ^ &l ^ &x ^ &u ^ a;
+        let w = self.mul(&l, &(&x ^ &z)) ^ &z ^ &y;
+        Some((z, w))
+    }
+    fn scalar(
+        &self,
+        a: &BigUint,
+        p: (BigUint, BigUint),
+        r: &BigUint,
+    ) -> Option<(BigUint, BigUint)> {
+        let mut out = None;
+        let mut p = Some(p);
+        for i in 0..r.bits() {
+            if r.bit(i) {
+                out = self.add(a, out, p.clone());
+            }
+            p = self.add(a, p.clone(), p);
+        }
+        out
+    }
+}
+/// Exact floor((sqrt(q)+1)^(2g)), using (q+1+2 sqrt(q))^g=A+B sqrt(q).
+pub fn weil_bound(q: &BigUint, g: u32) -> BigUint {
+    let mut a = BigUint::one();
+    let mut b = BigUint::zero();
+    let c = q + 1u32;
+    for _ in 0..g {
+        let next = &a * &c + &b * q * 2u32;
+        b = &a * 2u32 + &b * &c;
+        a = next;
+    }
+    a + (&b * &b * q).sqrt()
+}
+pub fn ghs_rank(f: &Field, b: &BigUint, d: u32) -> u32 {
+    let mut basis = vec![BigUint::zero(); f.n as usize + 1];
+    let mut b = b.clone();
+    let mut rank = 0;
+    for _ in 0..f.n / d {
+        let mut col = (BigUint::one() << f.n as usize) ^ &b;
+        while !col.is_zero() {
+            let k = col.bits() as usize - 1;
+            if basis[k].is_zero() {
+                basis[k] = col;
+                rank += 1;
+                break;
+            }
+            col ^= &basis[k];
+        }
+        b = f.frobenius(&b, d);
+    }
+    rank
+}
+fn hex(a: &BigUint) -> String {
+    format!("0x{a:x}")
+}
+fn prime_degree_min_rank(n: u32) -> Option<u32> {
+    if n < 3 || !prime64(u64::from(n)) {
+        return None;
+    }
+    let mut x = 2 % n;
+    let mut t = 1;
+    while x != 1 {
+        x = x * 2 % n;
+        t += 1;
+    }
+    Some(t + 1)
+}
+pub fn audit(input: &Input) -> Result<Value> {
+    ensure!(input.max_genus <= 256, "max_genus must be <=256");
+    let f = Field::new(input.degree, number(&input.modulus)?)?;
+    let a = number(&input.a)?;
+    let b = number(&input.b)?;
+    let r = number(&input.subgroup_order)?;
+    ensure!(
+        a.bits() <= u64::from(f.n) && b.bits() <= u64::from(f.n) && !b.is_zero(),
+        "invalid ordinary curve coefficients"
+    );
+    ensure!(
+        r > BigUint::one() && r.bits() <= u64::from(f.n) + 2,
+        "subgroup order outside Hasse-sized input range"
+    );
+    let prime = certified_prime(&r, input.prime_certificate.as_ref(), 0)?;
+    let mut point = if let Some(p) = &input.generator {
+        let p = (number(&p.x)?, number(&p.y)?);
+        ensure!(
+            p.0.bits() <= u64::from(f.n) && p.1.bits() <= u64::from(f.n) && f.on_curve(&a, &b, &p),
+            "generator is not on curve"
+        );
+        ensure!(
+            f.scalar(&a, p.clone(), &r).is_none(),
+            "r does not annihilate generator"
+        );
+        Some(p)
+    } else {
+        None
+    };
+    let exact_order = prime && point.is_some();
+    let source_order = if f.n <= 8 {
+        Some(BigUint::from(f.order(&a, &b)))
+    } else if exact_order {
+        let q = BigUint::one() << f.n as usize;
+        let center = &q + 1u32;
+        let radius = (&q * 4u32).sqrt();
+        let first = (&center - &radius + &r - 1u32) / &r;
+        let last = (&center + &radius) / &r;
+        if first == last {
+            Some(first * &r)
+        } else {
+            None
+        }
+    } else {
+        None
+    };
+    if let Some(order) = &source_order {
+        ensure!(
+            (order % &r).is_zero(),
+            "declared subgroup order does not divide verified source order"
+        );
+    }
+    let spectral = spectral_reports(input, &source_order)?;
+    let cover_report = cover_transfer(&f, &a, &b, &r, point.as_ref(), exact_order)?;
+    let mut subfields = Vec::new();
+    for d in 1..=f.n {
+        if f.n % d != 0 {
+            continue;
+        }
+        let q = BigUint::one() << d as usize;
+        let bound = weil_bound(&q, input.max_genus);
+        let obstruction = bound < r;
+        let mut lo = 0;
+        let mut hi = input.max_genus + 1;
+        while lo < hi {
+            let mid = (lo + hi) / 2;
+            if mid > input.max_genus || weil_bound(&q, mid) >= r {
+                hi = mid
+            } else {
+                lo = mid + 1
+            }
+        }
+        let rank = ghs_rank(&f, &b, d);
+        let formal = (BigUint::one() << rank.saturating_sub(1) as usize).to_str_radix(10);
+        subfields.push(json!({"base_degree":d,"relative_degree":f.n/d,"proper":d<f.n,
+            "weil_bound_at_max_genus":bound.to_str_radix(10),"all_target_genera_through_max_excluded_conditional_on_order":obstruction,
+            "minimum_genus_from_bound":if lo<=input.max_genus{Some(lo)}else{None},
+            "excluded_genus_interval_inclusive":[0,lo.saturating_sub(1)],
+            "classical_ghs_rank":rank,"formal_ghs_genus_options":[formal.clone(),(number(&formal)?-1u32).to_str_radix(10)],
+            "ghs_cover_and_map_evaluated":false}));
+    }
+    let mut orbit = Vec::new();
+    let mut aa = a.clone();
+    let mut bb = b.clone();
+    for i in 0..f.n {
+        if let Some(p) = &point {
+            ensure!(f.on_curve(&aa, &bb, p), "Frobenius image not on target");
+        }
+        orbit.push(json!({"step":i,"a":hex(&aa),"b":hex(&bb),"degree_from_source":(BigUint::one()<<i as usize).to_str_radix(10),
+            "generator":point.as_ref().map(|(x,y)|json!({"x":hex(x),"y":hex(y)})),"subgroup_order_preserved":exact_order}));
+        aa = f.square(&aa);
+        bb = f.square(&bb);
+        point = point.map(|(x, y)| (f.square(&x), f.square(&y)));
+        if aa == a && bb == b {
+            break;
+        }
+    }
+    let class = if input.exhaustive_class {
+        ensure!(
+            f.n <= 8,
+            "exhaustive class enumeration supports degree <=8; request remains unperformed"
+        );
+        let order = f.order(&a, &b);
+        let twist = (1..1u32 << f.n)
+            .map(BigUint::from)
+            .find(|x| f.trace(x) == 1)
+            .unwrap();
+        let mut rows = Vec::new();
+        for bv in 1..1u32 << f.n {
+            for av in [BigUint::zero(), twist.clone()] {
+                let bv = BigUint::from(bv);
+                if f.order(&av, &bv) == order {
+                    rows.push(
+                        json!({"a":hex(&av),"b":hex(&bv),"ghs_rank_to_f2":ghs_rank(&f,&bv,1)}),
+                    );
+                }
+            }
+        }
+        json!({"status":"complete_ordinary_isomorphism_class_enumeration_by_trace","source_order":order,
+            "models_tested":2*((1u64<<f.n)-1),"members":rows,"explicit_paths_between_all_members":false,
+            "trust_basis":"ordinary binary normal form and elliptic finite-field isogeny theorem"})
+    } else {
+        json!({"status":"not_requested","explicit_paths_between_all_members":false})
+    };
+    Ok(
+        json!({"schema":SCHEMA,"input":input,"input_sha256":hash(&serde_json::to_vec(input)?),
+        "implementation_sha256":implementation_hash(),"source":{"field_irreducible":true,"r_certified_prime":prime,
+        "generator_exact_order_verified":exact_order,"curve_order_verified":source_order.as_ref().map(|x|x.to_str_radix(10)),"order_premise":if exact_order{"verified"}else{"conditional; exact source subgroup not certified"}},
+        "subfields":subfields,"frobenius_isogeny_orbit":{"status":"complete_coefficient_orbit","edges":"relative Frobenius (x,y)->(x^2,y^2)","members":orbit,
+        "closing_generator_image":point.as_ref().map(|(x,y)|json!({"x":hex(x),"y":hex(y)})),"closing_edge_degree":2},
+        "isogeny_class":class,"prime_absolute_degree_classical_ghs_nonconstant_min_rank":prime_degree_min_rank(f.n),
+        "same_field_genus_three":cover_report,
+        "spectral_targets":spectral,
+        "all_possible_transfers_ruled_out":false,
+        "open_coverage":["arbitrary GHS/gGHS quotient maps and twist selection","arbitrary isogeny edges and evaluated paths outside Frobenius orbit","target families above the declared genus bound","base-field enlargements","efficient construction and inversion of abstract group maps","general Jacobian targets and explicit subgroup transports"],
+        "claims":{"new_weak_family":false,"publication_novelty":false,"cost_or_speedup_measured":false}}),
+    )
+}
+pub fn hash(data: &[u8]) -> String {
+    format!("{:x}", Sha256::digest(data))
+}
+pub fn implementation_hash() -> String {
+    hash(
+        concat!(
+            include_str!("lib.rs"),
+            include_str!("main.rs"),
+            include_str!("../Cargo.toml"),
+            include_str!("../Cargo.lock"),
+            include_str!("../../../suite/src/binary_ecc/mod.rs"),
+            include_str!("../../../suite/src/binary_ecc/f2m.rs"),
+            include_str!("../../../suite/src/binary_ecc/curve.rs"),
+            include_str!("../../../suite/src/binary_ecc/poly_f2m.rs"),
+            include_str!("../../../suite/src/binary_ecc/hyperelliptic.rs"),
+            include_str!("../../../suite/src/binary_ecc/cover_transfer.rs")
+        )
+        .as_bytes(),
+    )
+}
+fn cover_transfer(
+    f: &Field,
+    a: &BigUint,
+    b: &BigUint,
+    r: &BigUint,
+    p: Option<&(BigUint, BigUint)>,
+    exact_order: bool,
+) -> Result<Value> {
+    use binary_ecc::{
+        BinaryPoint, F2mElement, IrreduciblePoly, MumfordDivisor, OrdinaryBinaryCover,
+    };
+    let elt = |x: &BigUint| F2mElement::from_biguint(x, f.n);
+    let irr = IrreduciblePoly {
+        degree: f.n,
+        low_terms: (0..f.n).filter(|i| f.modulus.bit(u64::from(*i))).collect(),
+    };
+    let cover = OrdinaryBinaryCover::new(f.n, irr, elt(a), elt(b))?;
+    cover.verify_certificate()?;
+    let mut out = json!({"applicable":true,"genus":3,"degree":3,"same_field":true,"geometry_checked":true,
+        "subgroup_injectivity_conditional_on_exact_order":gcd(r.clone(),BigUint::from(3u32)).is_one(),
+        "map_and_divisor_arithmetic_executed":false,"source_generator_image_order_verified":false,
+        "reference":"suite/src/binary_ecc/cover_transfer.rs","arbitrary_jacobian_norm_supported":false});
+    if let Some(p) = p {
+        let native = BinaryPoint::Affine {
+            x: elt(&p.0),
+            y: elt(&p.1),
+        };
+        ensure!(
+            cover.target_is_on_curve(&native),
+            "native source check disagrees"
+        );
+        let d = cover.pullback_point_class(&native)?;
+        let witness = cover.pull_push_composition_certificate(&native)?;
+        let image_order = exact_order
+            && !d.is_identity()
+            && d.try_scalar_mul(r, cover.source_curve())?.is_identity();
+        ensure!(
+            !exact_order
+                || !out["subgroup_injectivity_conditional_on_exact_order"]
+                    .as_bool()
+                    .unwrap()
+                || image_order,
+            "image lost subgroup order"
+        );
+        let divisor = |d: &MumfordDivisor| json!({"u":d.u.coeffs.iter().map(|e|hex(&e.to_biguint())).collect::<Vec<_>>(),"v":d.v.coeffs.iter().map(|e|hex(&e.to_biguint())).collect::<Vec<_>>()});
+        // Public known-answer control, never an unknown discrete-log solve.
+        let q = f.scalar(a, p.clone(), &37u32.into());
+        let native_q = q.map_or(BinaryPoint::Infinity, |(x, y)| BinaryPoint::Affine {
+            x: elt(&x),
+            y: elt(&y),
+        });
+        let dq = cover.pullback_point_class(&native_q)?;
+        let scalar_ok = d.try_scalar_mul(&37u32.into(), cover.source_curve())? == dq;
+        ensure!(
+            witness.identity_holds && scalar_ok,
+            "native pullback composition/scalar check failed"
+        );
+        out["map_and_divisor_arithmetic_executed"] = json!(true);
+        out["source_generator_image_order_verified"] = json!(image_order);
+        out["generator_image"] = divisor(&d);
+        out["public_known_answer_control"] = json!({"scalar":37,"image":divisor(&dq),"scalar_relation_verified":scalar_ok,"unknown_log_solved":false});
+        out["pull_push_equals_three_times_generator"] = json!(witness.identity_holds);
+    }
+    Ok(out)
+}
+pub fn verify(cert: &Value) -> Result<()> {
+    let input: Input = serde_json::from_value(cert.get("input").context("missing input")?.clone())?;
+    ensure!(
+        *cert == audit(&input)?,
+        "certificate differs from exact replay"
+    );
+    Ok(())
+}
+
+fn primitive(mut p: Vec<BigInt>) -> Vec<BigInt> {
+    while p.last().is_some_and(Zero::is_zero) {
+        p.pop();
+    }
+    if p.is_empty() {
+        return p;
+    }
+    let mut g = BigUint::zero();
+    for c in &p {
+        g = gcd(g, c.magnitude().clone());
+    }
+    let sign = if p.last().unwrap().sign() == Sign::Minus {
+        -1
+    } else {
+        1
+    };
+    let d = BigInt::from(g) * sign;
+    for c in &mut p {
+        *c /= &d;
+    }
+    p
+}
+/// Primitive pseudo-remainder Euclidean algorithm over Q; no floating point.
+fn polynomial_gcd(mut a: Vec<BigInt>, mut b: Vec<BigInt>) -> Vec<BigInt> {
+    a = primitive(a);
+    b = primitive(b);
+    while !b.is_empty() {
+        let mut r = a;
+        while r.len() >= b.len() && !r.is_empty() {
+            let offset = r.len() - b.len();
+            let lead = r.last().unwrap().clone();
+            let scale = b.last().unwrap();
+            for c in &mut r {
+                *c *= scale;
+            }
+            for (i, c) in b.iter().enumerate() {
+                r[i + offset] -= &lead * c;
+            }
+            r = primitive(r);
+        }
+        a = b;
+        b = r;
+    }
+    a
+}
+fn spectral_reports(input: &Input, order: &Option<BigUint>) -> Result<Vec<Value>> {
+    ensure!(
+        input.spectral_targets.len() <= 32,
+        "too many spectral targets"
+    );
+    let mut out = Vec::new();
+    for target in &input.spectral_targets {
+        let d = target.base_degree;
+        ensure!(
+            d > 0 && input.degree.is_multiple_of(d),
+            "target field is not a subfield"
+        );
+        ensure!(
+            target.coefficients.len() >= 3
+                && target.coefficients.len() <= 513
+                && target.coefficients.len() % 2 == 1,
+            "target polynomial must have positive even degree <=512"
+        );
+        let p: Vec<BigInt> = target
+            .coefficients
+            .iter()
+            .map(|c| {
+                ensure!(c.len() <= 4096, "coefficient too large");
+                c.parse().context("invalid signed decimal coefficient")
+            })
+            .collect::<Result<_>>()?;
+        ensure!(
+            p.last() == Some(&BigInt::one()),
+            "target polynomial must be monic"
+        );
+        let g = (p.len() - 1) / 2;
+        let q = BigInt::from(BigUint::one() << d as usize);
+        for i in 0..=g {
+            ensure!(
+                p[i] == &p[2 * g - i] * q.pow((g - i) as u32),
+                "target polynomial is not q reciprocal"
+            );
+        }
+        if let Some(order) = order {
+            let degree = input.degree / d;
+            let mut source = vec![BigInt::zero(); 2 * degree as usize + 1];
+            let qn = BigUint::one() << input.degree as usize;
+            let trace = BigInt::from(&qn + 1u32) - BigInt::from(order.clone());
+            source[0] = qn.into();
+            source[degree as usize] = -trace;
+            source[2 * degree as usize] = BigInt::one();
+            let common = polynomial_gcd(source.clone(), p.clone());
+            let coprime = common.len() == 1;
+            out.push(json!({"base_degree":d,"source_weil_coefficients":source.iter().map(ToString::to_string).collect::<Vec<_>>(),
+                "target_weil_coefficients":target.coefficients,"gcd_over_q":common.iter().map(ToString::to_string).collect::<Vec<_>>(),
+                "algebraic_hom_obstruction_conditional_on_actual_target_weil_polynomial":coprime,
+                "nonzero_hom_up_to_isogeny_conditional_on_actual_target_weil_polynomial":!coprime,
+                "actual_target_curve_and_weil_polynomial_verified":false,"explicit_map_constructed":false,
+                "trust_basis":"finite-field Tate isogeny theorem; supplied target polynomial must be the actual Frobenius polynomial"}));
+        } else {
+            out.push(json!({"base_degree":d,"status":"unresolved_source_order","algebraic_hom_obstruction_conditional_on_actual_target_weil_polynomial":false}));
+        }
+    }
+    Ok(out)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn exact_bounds() {
+        assert_eq!(weil_bound(&2u32.into(), 1), 5u32.into());
+        assert_eq!(weil_bound(&4u32.into(), 3), 729u32.into());
+        assert_eq!(weil_bound(&2u32.into(), 0), 1u32.into());
+    }
+    #[test]
+    fn fields() {
+        assert!(Field::new(4, 0x15u32.into()).is_err());
+        let f = Field::new(4, 0x13u32.into()).unwrap();
+        for x in 1..16 {
+            let a = BigUint::from(x as u32);
+            assert_eq!(f.mul(&a, &f.inverse(&a)), BigUint::one());
+        }
+    }
+    #[test]
+    fn primes() {
+        for n in [2, 3, 53, 239, 18446744073709551557] {
+            assert!(prime64(n));
+        }
+        for n in [0, 1, 9, 341, 3215031751] {
+            assert!(!prime64(n));
+        }
+    }
+    #[test]
+    fn rank() {
+        let f = Field::new(3, 11u32.into()).unwrap();
+        assert_eq!(ghs_rank(&f, &1u32.into(), 1), 1);
+        assert_eq!(ghs_rank(&f, &2u32.into(), 1), 3);
+        assert_eq!(prime_degree_min_rank(163), Some(163));
+        assert_eq!(prime_degree_min_rank(233), Some(30));
+    }
+    #[test]
+    fn replay_and_tamper() {
+        let i:Input=serde_json::from_value(json!({"degree":3,"modulus":"11","a":"0","b":"2","subgroup_order":"2","max_genus":1,"exhaustive_class":true})).unwrap();
+        let mut c = audit(&i).unwrap();
+        verify(&c).unwrap();
+        c["isogeny_class"]["models_tested"] = json!(13);
+        assert!(verify(&c).is_err());
+    }
+    #[test]
+    fn b163_parameters_and_obstruction() {
+        let input: Input = serde_json::from_str(include_str!("../fixtures/b163.json")).unwrap();
+        let r = number(&input.subgroup_order).unwrap();
+        assert!(certified_prime(&r, input.prime_certificate.as_ref(), 0).unwrap());
+        assert!(weil_bound(&2u32.into(), 63) < r);
+        assert!(weil_bound(&2u32.into(), 64) >= r);
+        assert_eq!(
+            weil_bound(&2u32.into(), 63).to_str_radix(10),
+            "1697213011467681896483704108875603013010097288197"
+        );
+        let c = audit(&input).unwrap();
+        assert_eq!(c["source"]["generator_exact_order_verified"], true);
+        assert_eq!(
+            c["subfields"][0]["excluded_genus_interval_inclusive"],
+            json!([0, 63])
+        );
+        assert_eq!(c["subfields"][0]["classical_ghs_rank"], 163);
+        assert_eq!(
+            c["frobenius_isogeny_orbit"]["members"]
+                .as_array()
+                .unwrap()
+                .len(),
+            163
+        );
+        verify(&c).unwrap();
+    }
+    #[test]
+    fn independent_point_counts() {
+        for (n, modulus) in [(1, 3u32), (2, 7), (3, 11), (4, 19)] {
+            let f = Field::new(n, modulus.into()).unwrap();
+            for av in 0..1u32 << n {
+                for bv in 1..1u32 << n {
+                    let a = BigUint::from(av);
+                    let b = BigUint::from(bv);
+                    let mut count = 1;
+                    for x in 0..1u32 << n {
+                        for y in 0..1u32 << n {
+                            if f.on_curve(&a, &b, &(x.into(), y.into())) {
+                                count += 1;
+                            }
+                        }
+                    }
+                    assert_eq!(count, f.order(&a, &b));
+                }
+            }
+        }
+    }
+    #[test]
+    fn invalid_inputs_and_proofs() {
+        let mut i: Input = serde_json::from_str(include_str!("../fixtures/b163.json")).unwrap();
+        i.exhaustive_class = true;
+        assert!(audit(&i).is_err());
+        i.exhaustive_class = false;
+        i.prime_certificate.as_mut().unwrap().factors[0].witness = "1".into();
+        assert!(audit(&i).is_err());
+        assert!(serde_json::from_value::<Input>(json!({"degree":3,"modulus":"11","a":"0","b":"1","subgroup_order":"3","all_transfers":true})).is_err());
+    }
+    #[test]
+    fn spectral_classification_controls() {
+        let mut i: Input = serde_json::from_str(include_str!("../fixtures/toy-f8.json")).unwrap();
+        let f = Field::new(3, 11u32.into()).unwrap();
+        let order = f.order(&0u32.into(), &2u32.into());
+        let trace = 9i64 - order as i64;
+        i.spectral_targets = vec![
+            SpectralTarget {
+                base_degree: 3,
+                coefficients: vec!["8".into(), (-trace).to_string(), "1".into()],
+            },
+            SpectralTarget {
+                base_degree: 3,
+                coefficients: vec!["8".into(), trace.to_string(), "1".into()],
+            },
+        ];
+        let report = audit(&i).unwrap();
+        assert_eq!(
+            report["spectral_targets"][0]
+                ["algebraic_hom_obstruction_conditional_on_actual_target_weil_polynomial"],
+            false
+        );
+        assert_eq!(
+            report["spectral_targets"][1]
+                ["algebraic_hom_obstruction_conditional_on_actual_target_weil_polynomial"],
+            true
+        );
+        i.spectral_targets[0].coefficients[0] = "7".into();
+        assert!(audit(&i).is_err());
+    }
+    #[test]
+    fn impossible_source_subgroup_is_rejected() {
+        let mut i: Input = serde_json::from_str(include_str!("../fixtures/toy-f8.json")).unwrap();
+        i.subgroup_order = "3".into();
+        assert!(audit(&i)
+            .unwrap_err()
+            .to_string()
+            .contains("does not divide verified source order"));
+    }
+    #[test]
+    fn gcd_requires_multiple_euclidean_steps() {
+        let a = vec![(-2).into(), (-1).into(), 1.into()]; // (x-2)(x+1)
+        let b = vec![(-3).into(), (-2).into(), 1.into()]; // (x-3)(x+1)
+        assert_eq!(polynomial_gcd(a, b), vec![1.into(), 1.into()]);
+        assert_eq!(
+            polynomial_gcd(vec![2.into(), 0.into(), 1.into()], vec![1.into(), 1.into()]),
+            vec![1.into()]
+        );
+    }
+}

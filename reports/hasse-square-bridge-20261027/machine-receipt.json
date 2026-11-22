@@ -1,0 +1,158 @@
+{
+  "schema": "cryptanalysis.hasse_square_native_review.v1",
+  "producer_commit": "f1c2dca",
+  "base_commit": "dc73f9791dc7d2c61e0c77572d2c3aaeedb30436",
+  "toolchain": "leanprover/lean4:v4.34.1",
+  "python_version": "3.9.25",
+  "observed_utc": "2026-10-27T05:35:05.217848+00:00",
+  "scratch": "/tmp/hasse-square-native-20261027",
+  "inputs_before": {
+    "HasseUnique.lean": "0e0b14f032203329328910ac0bc0f03db88f508087c4fdb236fd1bbe6d7e49f7",
+    "HasseSquareBounds.lean": "26e3e7bbf28aad0f60f72137fca027427b435f05bcef9f5de5881d7979307c42",
+    "lean-toolchain": "d5edba4e4b8faad9c1baeadb265716d20d03be4d1a2647dc5e35b0c0325bea7b",
+    "AuditAxioms.lean": "f97280b48f1846d13e7ed96d9691753811551864162086fb25e9fe05438aa7dc",
+    "SquareControls.lean": "0ba8bb3e3a75e115ef13ae06a52dcbeca4cc319a6472ff0737d079db40422c13",
+    "FalseControl.lean": "2dda80b69b6303cfe882fe7a170d29d38a21b8aff6d36de676e921747f0cf30d"
+  },
+  "inputs_after": {
+    "HasseUnique.lean": "0e0b14f032203329328910ac0bc0f03db88f508087c4fdb236fd1bbe6d7e49f7",
+    "HasseSquareBounds.lean": "26e3e7bbf28aad0f60f72137fca027427b435f05bcef9f5de5881d7979307c42",
+    "lean-toolchain": "d5edba4e4b8faad9c1baeadb265716d20d03be4d1a2647dc5e35b0c0325bea7b",
+    "AuditAxioms.lean": "f97280b48f1846d13e7ed96d9691753811551864162086fb25e9fe05438aa7dc",
+    "SquareControls.lean": "0ba8bb3e3a75e115ef13ae06a52dcbeca4cc319a6472ff0737d079db40422c13",
+    "FalseControl.lean": "2dda80b69b6303cfe882fe7a170d29d38a21b8aff6d36de676e921747f0cf30d"
+  },
+  "steps": [
+    {
+      "name": "base-build",
+      "command": [
+        "lean",
+        "-o",
+        "HasseUnique.olean",
+        "HasseUnique.lean"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 46.941,
+      "stdout_sha256": "fa5ef807ccf40b36346a82fd3f4ff8d21d6ab02ecb4c9c946042eeb372c1ae41",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "source-build",
+      "command": [
+        "lean",
+        "-o",
+        "HasseSquareBounds.olean",
+        "HasseSquareBounds.lean"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 98.623,
+      "stdout_sha256": "308072619955f0974043e9334e34043f0f01f77e20df57455789e225f756cd24",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "source-audit",
+      "command": [
+        "lean",
+        "--run",
+        "AuditAxioms.lean",
+        "HasseSquareBounds"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 132.023,
+      "stdout_sha256": "6a5cbb40a5d65357db1f56ccf4b29a3f172f879a44393aaa74b55edc7433dc02",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "base-audit",
+      "command": [
+        "lean",
+        "--run",
+        "AuditAxioms.lean",
+        "HasseUnique"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 33.469,
+      "stdout_sha256": "c392b0e56fe8a17d91548699bde857d8e2138be9d044934a0b5b9d489df6d97a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "control-build",
+      "command": [
+        "lean",
+        "-o",
+        "SquareControls.olean",
+        "SquareControls.lean"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 31.898,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "control-audit",
+      "command": [
+        "lean",
+        "--run",
+        "AuditAxioms.lean",
+        "SquareControls"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 69.224,
+      "stdout_sha256": "c5596dd6722f9237c69841bfacf16431b688e75d4c026a993980eb781ac4cda1",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "false-build",
+      "command": [
+        "lean",
+        "-o",
+        "FalseControl.olean",
+        "FalseControl.lean"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 6.171,
+      "stdout_sha256": "c2185df7c041f8370185e30798e76ed6271b5acff5d5f6367d0aa136a6dddff3",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "false-audit",
+      "command": [
+        "lean",
+        "--run",
+        "AuditAxioms.lean",
+        "FalseControl"
+      ],
+      "exit_code": 1,
+      "wall_seconds": 56.826,
+      "stdout_sha256": "c348a1c357e3e97ab886aed062854091c2fb5bca35e1a3350afbe218cdbeb3d2",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "wrong-module",
+      "command": [
+        "lean",
+        "--run",
+        "AuditAxioms.lean",
+        "MissingModule"
+      ],
+      "exit_code": 1,
+      "wall_seconds": 21.507,
+      "stdout_sha256": "725f200dfc5caee1b3dc722a0402d60f0c5e703b72852e5a60c3cef9773bc279",
+      "stderr_sha256": "ecbc262212e3b9d84e039ef0a9320e2f8d24c2ddb7f778cf2008263c68ed0190"
+    }
+  ],
+  "expected_exits": {
+    "base-build": 0,
+    "source-build": 0,
+    "source-audit": 0,
+    "base-audit": 0,
+    "control-build": 0,
+    "control-audit": 0,
+    "false-build": 0,
+    "false-audit": 1,
+    "wrong-module": 1
+  },
+  "expected_exits_met": true,
+  "inputs_unchanged": true,
+  "trust_boundary": "installed pinned Lean kernel; independent lean4checker --fresh unavailable"
+}

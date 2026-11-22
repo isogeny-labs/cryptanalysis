@@ -1,0 +1,38 @@
+[
+  {
+    "mode": "field",
+    "launch": {
+      "mode": "field",
+      "command": [
+        "/workspace/cryptanalysis-quartic-review/sage",
+        "-python",
+        "/workspace/quartic-field-successor-prepared-20261029/worktree/experiments/hecke-432-j1728-field-index-gate-20261026/run_sage.py"
+      ],
+      "timeout_seconds": 240,
+      "source_sha256": "9014a61d2cd706eacebc0a471887e54514a55d1dd665b08483024c9d3d14cd93",
+      "protocol_sha256": "ae6abdc7e023d23a35ffdeec5616e41a2bdf948415d6ae3809ed7228b9e97343",
+      "original_manifest_sha256": "98a5a500c53a1a579524a23063f1eef96e09d0bde646a4a235b2e1cb6ae56078",
+      "status": "PREPARED_ONLY"
+    },
+    "originals_preserved": true,
+    "real_sage_job_executed": false
+  },
+  {
+    "mode": "basis",
+    "launch": {
+      "mode": "basis",
+      "command": [
+        "/workspace/cryptanalysis-quartic-review/sage",
+        "-python",
+        "/workspace/quartic-basis-successor-prepared-20261029/worktree/experiments/hecke-432-j1728-field-index-gate-20261026/basis_audit_sage.py"
+      ],
+      "timeout_seconds": 120,
+      "source_sha256": "399c55fc790b62ea29e4c9801eedea5909f010b84b1ffdee54b1ed18f0c13971",
+      "protocol_sha256": "1e772e194c33edad50ac11cd5bb6aff7b371c5030221d6a3a920d6594a340c2b",
+      "original_manifest_sha256": "98a5a500c53a1a579524a23063f1eef96e09d0bde646a4a235b2e1cb6ae56078",
+      "status": "PREPARED_ONLY"
+    },
+    "originals_preserved": true,
+    "real_sage_job_executed": false
+  }
+]

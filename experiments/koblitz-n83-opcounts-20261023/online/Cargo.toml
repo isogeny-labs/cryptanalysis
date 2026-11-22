@@ -1,0 +1,33 @@
+[package]
+name = "n83-opcounts-online"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+# koblitz-n83-opcounts-20261023. The counted producer is the frozen stacked
+# producer (koblitz-n83-stacked-20261016, derived source 83b58988...) plus the
+# op counters of ../make_counted_source.py, written to ../derived/. The library
+# is the stacked experiment's crypto 770f6a69 snapshot (restored and
+# digest-checked by that experiment's restore.py); lift2 is that experiment's
+# lift2 through a #[path] module. Build with `--features op-counts` for the
+# counting producer; without it every counter is compiled out (the
+# bit-identity and overhead control). The frozen binary ic_online_stacked_r770
+# is built from ../../koblitz-n83-stacked-20261016/online, unchanged. The
+# dependency set and Cargo.lock are that crate's (package renamed).
+[[bin]]
+name = "ic_online_stacked_counted_r770"
+path = "../derived/koblitz_orbit_dlp_fast_online_stacked_counted.rs"
+
+[features]
+op-counts = []
+
+[dependencies]
+crypto_lib = { package = "crypto", path = "../../koblitz-n83-stacked-20261016/snapshots/r770", default-features = false }
+blake3 = "1.5"
+hex = "0.4"
+libc = "0.2"
+num-bigint = { version = "0.4", features = ["rand"] }
+num-traits = "0.2"
+rand = { version = "0.8", features = ["small_rng"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = { version = "1.0", features = ["arbitrary_precision", "raw_value"] }
