@@ -18,7 +18,7 @@ and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
 
-- [ ] Audit high-genus order-certification claims and gate unproved exact-order language (ChatGPT, started 2026-11-21, branch audit/highgenus-order-certification-20261121) [pcc:unverified]
+- [ ] Audit high-genus order-certification claims and gate unproved exact-order language (ChatGPT, started 2026-11-21, branch audit/highgenus-order-certification-20261121, PR #1897) [pcc:unverified]
 
 - [x] Expand higher-genus support: genus-generic index calculus and Pollard rho for hyperelliptic and non-hyperelliptic (superelliptic one-point) Jacobians over F_p, genus 5..131 (`suite/src/highgenus/`; rho verified at g = 5..131 hyperelliptic and g = 5, 7, 11, 23, 97 non-hyperelliptic; IC with order-from-relations verified to g = 47; `suite/docs/highgenus/RESULTS.md`) (Claude Code, completed 2026-11-21, branch claude/higher-genus-5-131, PR #1884) [pcc:unverified]
 
