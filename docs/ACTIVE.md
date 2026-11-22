@@ -1,6 +1,8 @@
 # Active research tasks
 
 ## Active items
+- [ ] CT319 bind CT315 reported per-run wall/RSS/argv/binary/host fields to original CT304 bounded-process capture receipts, raw stderr and retained executable bytes (ChatGPT, started 2026-11-22, existing draft PR #1920, branch research/ct318-joint-cold-admission-20261122): source-only protocol and synthetic controls; original S3 custody and native complete-solve timing still blocked. [pcc:unverified]
+
 - [ ] CT318 combine CT315 full cold seven-arm timing/RSS gate and CT317 independent Q=[k]P raw-output replay in a single fail-closed source-auditable admission (ChatGPT, started 2026-11-22, branch research/ct318-joint-cold-admission-20261122, PR #1920); native S3/STS/cold physical benchmark and signed PCC blocked. [pcc:unverified]
 
 - [ ] hashed-tensor lead sweep (workspace PROTOCOL.md, m = 2..9, prime regime): plug-in spec, phase 1 vs prime-abscissa+mitm; calibrate contraction steps and fix the `root_u` floor if the oracle cannot run (Claude Code, started 2026-11-22, branch claude/hashed-tensor-lead-sweep-20261122, PR #1915; built at 80c9f4dd9 + this PR's pricing commit because main does not build) [pcc:unverified]
