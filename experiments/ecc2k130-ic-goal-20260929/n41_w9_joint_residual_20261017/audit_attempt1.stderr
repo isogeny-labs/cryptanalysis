@@ -1,0 +1,130 @@
+Traceback (most recent call last):
+  File "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w9_joint_residual_20261017/audit_sage.py", line 94, in <module>
+    value = add(residual, neg(point(prior["point"])))
+                              ~~~~~^^^^^^^^^^^^^^^^
+  File "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w9_joint_residual_20261017/audit_sage.py", line 53, in point
+    return dec(raw[0]), dec(raw[1])
+           ~~~^^^^^^^^
+  File "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w9_joint_residual_20261017/audit_sage.py", line 45, in dec
+    return F(R([(int(value) >> i) & 1 for i in range(41)]))
+  File "sage/structure/parent.pyx", line 899, in sage.structure.parent.Parent.__call__
+    return mor._call_(x)
+  File "sage/structure/coerce_maps.pyx", line 92, in sage.structure.coerce_maps.DefaultConvertMap_unique._call_
+    raise
+  File "sage/structure/coerce_maps.pyx", line 87, in sage.structure.coerce_maps.DefaultConvertMap_unique._call_
+    return C._element_constructor(x)
+  File "/Volumes/SSD990/cryptanalysis/third_party/sage-binary/local/var/lib/sage/venv-python3.14/lib/python3.14/site-packages/sage/rings/finite_rings/finite_field_ntl_gf2e.py", line 213, in _element_constructor_
+    return self._cache.import_data(e)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^
+  File "sage/rings/finite_rings/element_ntl_gf2e.pyx", line 326, in sage.rings.finite_rings.element_ntl_gf2e.Cache_ntl_gf2e.import_data
+    return e(self._parent.gen())
+  File "sage/rings/polynomial/polynomial_element.pyx", line 880, in sage.rings.polynomial.polynomial_element.Polynomial.__call__
+    return pol._compiled.eval(a)
+  File "sage/rings/polynomial/polynomial_compiled.pyx", line 124, in sage.rings.polynomial.polynomial_compiled.CompiledPolynomialFunction.eval
+    pd_eval(self._dag, x, self._coeffs)  #see further down
+  File "sage/rings/polynomial/polynomial_compiled.pyx", line 346, in sage.rings.polynomial.polynomial_compiled.pd_eval
+    pd.eval(vars, coeffs)
+  File "sage/rings/polynomial/polynomial_compiled.pyx", line 486, in sage.rings.polynomial.polynomial_compiled.mul_pd.eval
+    pd_eval(self.left, vars, coeffs)
+  File "sage/rings/polynomial/polynomial_compiled.pyx", line 346, in sage.rings.polynomial.polynomial_compiled.pd_eval
+    pd.eval(vars, coeffs)
+  File "sage/rings/polynomial/polynomial_compiled.pyx", line 504, in sage.rings.polynomial.polynomial_compiled.abc_pd.eval
+    pd_eval(self.left, vars, coeffs)
+  File "sage/rings/polynomial/polynomial_compiled.pyx", line 346, in sage.rings.polynomial.polynomial_compiled.pd_eval
+    pd.eval(vars, coeffs)
+  File "sage/rings/polynomial/polynomial_compiled.pyx", line 504, in sage.rings.polynomial.polynomial_compiled.abc_pd.eval
+    pd_eval(self.left, vars, coeffs)
+  File "sage/rings/polynomial/polynomial_compiled.pyx", line 346, in sage.rings.polynomial.polynomial_compiled.pd_eval
+    pd.eval(vars, coeffs)
+  File "sage/rings/polynomial/polynomial_compiled.pyx", line 504, in sage.rings.polynomial.polynomial_compiled.abc_pd.eval
+    pd_eval(self.left, vars, coeffs)
+  File "sage/rings/polynomial/polynomial_compiled.pyx", line 346, in sage.rings.polynomial.polynomial_compiled.pd_eval
+    pd.eval(vars, coeffs)
+  File "sage/rings/polynomial/polynomial_compiled.pyx", line 504, in sage.rings.polynomial.polynomial_compiled.abc_pd.eval
+    pd_eval(self.left, vars, coeffs)
+  File "sage/rings/polynomial/polynomial_compiled.pyx", line 346, in sage.rings.polynomial.polynomial_compiled.pd_eval
+    pd.eval(vars, coeffs)
+  File "sage/rings/polynomial/polynomial_compiled.pyx", line 504, in sage.rings.polynomial.polynomial_compiled.abc_pd.eval
+    pd_eval(self.left, vars, coeffs)
+  File "sage/rings/polynomial/polynomial_compiled.pyx", line 346, in sage.rings.polynomial.polynomial_compiled.pd_eval
+    pd.eval(vars, coeffs)
+  File "sage/rings/polynomial/polynomial_compiled.pyx", line 504, in sage.rings.polynomial.polynomial_compiled.abc_pd.eval
+    pd_eval(self.left, vars, coeffs)
+  File "sage/rings/polynomial/polynomial_compiled.pyx", line 346, in sage.rings.polynomial.polynomial_compiled.pd_eval
+    pd.eval(vars, coeffs)
+  File "sage/rings/polynomial/polynomial_compiled.pyx", line 504, in sage.rings.polynomial.polynomial_compiled.abc_pd.eval
+    pd_eval(self.left, vars, coeffs)
+  File "sage/rings/polynomial/polynomial_compiled.pyx", line 346, in sage.rings.polynomial.polynomial_compiled.pd_eval
+    pd.eval(vars, coeffs)
+  File "sage/rings/polynomial/polynomial_compiled.pyx", line 504, in sage.rings.polynomial.polynomial_compiled.abc_pd.eval
+    pd_eval(self.left, vars, coeffs)
+  File "sage/rings/polynomial/polynomial_compiled.pyx", line 346, in sage.rings.polynomial.polynomial_compiled.pd_eval
+    pd.eval(vars, coeffs)
+  File "sage/rings/polynomial/polynomial_compiled.pyx", line 504, in sage.rings.polynomial.polynomial_compiled.abc_pd.eval
+    pd_eval(self.left, vars, coeffs)
+  File "sage/rings/polynomial/polynomial_compiled.pyx", line 346, in sage.rings.polynomial.polynomial_compiled.pd_eval
+    pd.eval(vars, coeffs)
+  File "sage/rings/polynomial/polynomial_compiled.pyx", line 504, in sage.rings.polynomial.polynomial_compiled.abc_pd.eval
+    pd_eval(self.left, vars, coeffs)
+  File "sage/rings/polynomial/polynomial_compiled.pyx", line 346, in sage.rings.polynomial.polynomial_compiled.pd_eval
+    pd.eval(vars, coeffs)
+  File "sage/rings/polynomial/polynomial_compiled.pyx", line 504, in sage.rings.polynomial.polynomial_compiled.abc_pd.eval
+    pd_eval(self.left, vars, coeffs)
+  File "sage/rings/polynomial/polynomial_compiled.pyx", line 346, in sage.rings.polynomial.polynomial_compiled.pd_eval
+    pd.eval(vars, coeffs)
+  File "sage/rings/polynomial/polynomial_compiled.pyx", line 504, in sage.rings.polynomial.polynomial_compiled.abc_pd.eval
+    pd_eval(self.left, vars, coeffs)
+  File "sage/rings/polynomial/polynomial_compiled.pyx", line 346, in sage.rings.polynomial.polynomial_compiled.pd_eval
+    pd.eval(vars, coeffs)
+  File "sage/rings/polynomial/polynomial_compiled.pyx", line 504, in sage.rings.polynomial.polynomial_compiled.abc_pd.eval
+    pd_eval(self.left, vars, coeffs)
+  File "sage/rings/polynomial/polynomial_compiled.pyx", line 346, in sage.rings.polynomial.polynomial_compiled.pd_eval
+    pd.eval(vars, coeffs)
+  File "sage/rings/polynomial/polynomial_compiled.pyx", line 504, in sage.rings.polynomial.polynomial_compiled.abc_pd.eval
+    pd_eval(self.left, vars, coeffs)
+  File "sage/rings/polynomial/polynomial_compiled.pyx", line 346, in sage.rings.polynomial.polynomial_compiled.pd_eval
+    pd.eval(vars, coeffs)
+  File "sage/rings/polynomial/polynomial_compiled.pyx", line 504, in sage.rings.polynomial.polynomial_compiled.abc_pd.eval
+    pd_eval(self.left, vars, coeffs)
+  File "sage/rings/polynomial/polynomial_compiled.pyx", line 346, in sage.rings.polynomial.polynomial_compiled.pd_eval
+    pd.eval(vars, coeffs)
+  File "sage/rings/polynomial/polynomial_compiled.pyx", line 504, in sage.rings.polynomial.polynomial_compiled.abc_pd.eval
+    pd_eval(self.left, vars, coeffs)
+  File "sage/rings/polynomial/polynomial_compiled.pyx", line 346, in sage.rings.polynomial.polynomial_compiled.pd_eval
+    pd.eval(vars, coeffs)
+  File "sage/rings/polynomial/polynomial_compiled.pyx", line 504, in sage.rings.polynomial.polynomial_compiled.abc_pd.eval
+    pd_eval(self.left, vars, coeffs)
+  File "sage/rings/polynomial/polynomial_compiled.pyx", line 346, in sage.rings.polynomial.polynomial_compiled.pd_eval
+    pd.eval(vars, coeffs)
+  File "sage/rings/polynomial/polynomial_compiled.pyx", line 504, in sage.rings.polynomial.polynomial_compiled.abc_pd.eval
+    pd_eval(self.left, vars, coeffs)
+  File "sage/rings/polynomial/polynomial_compiled.pyx", line 346, in sage.rings.polynomial.polynomial_compiled.pd_eval
+    pd.eval(vars, coeffs)
+  File "sage/rings/polynomial/polynomial_compiled.pyx", line 504, in sage.rings.polynomial.polynomial_compiled.abc_pd.eval
+    pd_eval(self.left, vars, coeffs)
+  File "sage/rings/polynomial/polynomial_compiled.pyx", line 346, in sage.rings.polynomial.polynomial_compiled.pd_eval
+    pd.eval(vars, coeffs)
+  File "sage/rings/polynomial/polynomial_compiled.pyx", line 504, in sage.rings.polynomial.polynomial_compiled.abc_pd.eval
+    pd_eval(self.left, vars, coeffs)
+  File "sage/rings/polynomial/polynomial_compiled.pyx", line 346, in sage.rings.polynomial.polynomial_compiled.pd_eval
+    pd.eval(vars, coeffs)
+  File "sage/rings/polynomial/polynomial_compiled.pyx", line 504, in sage.rings.polynomial.polynomial_compiled.abc_pd.eval
+    pd_eval(self.left, vars, coeffs)
+  File "sage/rings/polynomial/polynomial_compiled.pyx", line 346, in sage.rings.polynomial.polynomial_compiled.pd_eval
+    pd.eval(vars, coeffs)
+  File "sage/rings/polynomial/polynomial_compiled.pyx", line 506, in sage.rings.polynomial.polynomial_compiled.abc_pd.eval
+    self.value = self.left.value * self.right.value + coeffs[self.index]
+  File "sage/structure/element.pyx", line 1217, in sage.structure.element.Element.__add__
+    return coercion_model.bin_op(left, right, add)
+  File "sage/structure/coerce.pyx", line 1249, in sage.structure.coerce.CoercionModel.bin_op
+    xy = self.canonical_coercion(x, y)
+  File "sage/structure/coerce.pyx", line 1365, in sage.structure.coerce.CoercionModel.canonical_coercion
+    y_elt = (<Map>y_map)._call_(y)
+  File "sage/rings/finite_rings/hom_prime_finite_field.pyx", line 91, in sage.rings.finite_rings.hom_prime_finite_field.FiniteFieldHomomorphism_prime._call_
+    return self._codomain._element_constructor_(x)
+  File "/Volumes/SSD990/cryptanalysis/third_party/sage-binary/local/var/lib/sage/venv-python3.14/lib/python3.14/site-packages/sage/rings/finite_rings/finite_field_ntl_gf2e.py", line 213, in _element_constructor_
+    return self._cache.import_data(e)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^
+  File "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w9_joint_residual_20261017/audit_sage.py", line 25, in timeout
+    raise TimeoutError("frozen independent Sage joint-support audit cap")
+TimeoutError: frozen independent Sage joint-support audit cap

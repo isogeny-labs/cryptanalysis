@@ -1,0 +1,22 @@
+digraph target_origin {
+  graph [rankdir=TB, bgcolor="white", pad="0.25", nodesep="0.55", ranksep="0.55"];
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=11,
+        color="#24425c", fillcolor="#eef5fa"];
+  edge [fontname="Helvetica", fontsize=10, color="#3d5f78"];
+
+  target [label="Public target point\nT = tG", fillcolor="#fff2cc"];
+  known [label="Known point\nPj = mjG"];
+  origin [label="Chord residual origin\nO = -(t + mj)G", fillcolor="#fde9d9"];
+  relation [label="Exact lifted relation\nΣ ni(Pi - O) = 0", fillcolor="#e2f0d9"];
+  reduction [label="Source equation\n(nt + Σni)t + known = 0"];
+  recovery [label="Recover t when\ngcd(nt + Σni, ord(G)) = 1", fillcolor="#d9eaf7"];
+
+  target -> origin [label="chord"];
+  known -> origin [label="chord"];
+  origin -> relation [label="identity for group law"];
+  target -> relation [label="selected point remains active"];
+  relation -> reduction [label="good reduction"];
+  reduction -> recovery [label="invert effective coefficient"];
+
+  { rank=same; target; known; }
+}

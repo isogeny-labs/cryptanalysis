@@ -750,6 +750,18 @@ static cx_fit fit_power_law(const double *N, const double *cost, int m, double t
 
 enum { CX_BSGS, CX_RHO, CX_KANG, CX_GRUMPY, CX_PBUILD, CX_PONLINE, CX_NALG };
 
+/* Every run is charged, failed or not: a failure cost what it cost, and a
+ * mean that sums only the successes but divides by every run understates
+ * the price of the algorithm.  A run counts as solved only when its answer
+ * is the planted one. */
+static void cx_charge(double *acc, unsigned *solved, unsigned *runs, const ca_stats *st,
+                      ca_status rc, uint64_t got, uint64_t x)
+{
+    *acc += (double)st->group_ops;
+    *solved += rc == CA_OK && got == x;
+    (*runs)++;
+}
+
 static void run_complexity(const unsigned *bits, int nb, unsigned reps, int ec)
 {
     static const char *names[CX_NALG] = {"bsgs",   "rho",           "kangaroo",
@@ -758,6 +770,7 @@ static void run_complexity(const unsigned *bits, int nb, unsigned reps, int ec)
     static const double theory[CX_NALG] = {0.5, 0.5, 0.5, 0.5, 2.0 / 3.0, 1.0 / 3.0};
     double Nv[16] = {0};
     double cost[CX_NALG][16];
+    unsigned solved[CX_NALG] = {0}, runs[CX_NALG] = {0};
     if (nb > 16) nb = 16;
 
     for (int si = 0; si < nb; si++) {
@@ -812,28 +825,29 @@ static void run_complexity(const unsigned *bits, int nb, unsigned reps, int ec)
             st = (ca_stats){0};
             got = 0;
             rc = ca_bsgs_solve(&g, &gen, &h, 0, 0, &dp.bsgs, &got, &st);
-            if (rc == CA_OK) acc[CX_BSGS] += (double)st.group_ops;
+            cx_charge(&acc[CX_BSGS], &solved[CX_BSGS], &runs[CX_BSGS], &st, rc, got, x);
             json_row(&jg, names[CX_BSGS], r, x, NULL, &st, rc, got, NULL);
             st = (ca_stats){0};
             got = 0;
             rc = ca_rho_solve(&g, &gen, &h, &dp.rho, &got, &st);
-            if (rc == CA_OK) acc[CX_RHO] += (double)st.group_ops;
+            cx_charge(&acc[CX_RHO], &solved[CX_RHO], &runs[CX_RHO], &st, rc, got, x);
             json_row(&jg, names[CX_RHO], r, x, &seed, &st, rc, got, NULL);
             st = (ca_stats){0};
             got = 0;
             rc = ca_kangaroo_solve(&g, &gen, &h, 0, 0, &dp.kangaroo, &got, &st);
-            if (rc == CA_OK) acc[CX_KANG] += (double)st.group_ops;
+            cx_charge(&acc[CX_KANG], &solved[CX_KANG], &runs[CX_KANG], &st, rc, got, x);
             json_row(&jg, names[CX_KANG], r, x, &seed, &st, rc, got, NULL);
             st = (ca_stats){0};
             got = 0;
             rc = ca_grumpy_solve(&g, &gen, &h, 0, 0, &dp.grumpy, &got, &st);
-            if (rc == CA_OK) acc[CX_GRUMPY] += (double)st.group_ops;
+            cx_charge(&acc[CX_GRUMPY], &solved[CX_GRUMPY], &runs[CX_GRUMPY], &st, rc, got, x);
             json_row(&jg, names[CX_GRUMPY], r, x, NULL, &st, rc, got, NULL);
             if (tab) {
                 st = (ca_stats){0};
                 got = 0;
                 rc = ca_precomp_table_solve(tab, &h, &got, &st);
-                if (rc == CA_OK) acc[CX_PONLINE] += (double)st.group_ops;
+                cx_charge(&acc[CX_PONLINE], &solved[CX_PONLINE], &runs[CX_PONLINE], &st, rc, got,
+                          x);
                 json_row(&jg, "precomp-online", r, x, NULL, &st, rc, got, precomp_extra);
             }
         }
@@ -847,12 +861,16 @@ static void run_complexity(const unsigned *bits, int nb, unsigned reps, int ec)
 
     printf("\n%s:  cost ~ C * N^alpha, fitted over %d sizes (N = group order).\n",
            ec ? "E(F_p)" : "Z_p^*", nb);
-    printf("| algorithm       | scope  | theory   | fitted alpha | R^2    | const @ N^theory |\n");
-    printf("|-----------------|--------|----------|--------------|--------|------------------|\n");
+    printf("| algorithm       | scope  | theory   | fitted alpha | R^2    | const @ N^theory |"
+           " solved      |\n");
+    printf("|-----------------|--------|----------|--------------|--------|------------------|"
+           "-------------|\n");
     for (int a = 0; a < CX_NALG; a++) {
         cx_fit f = fit_power_law(Nv, cost[a], nb, theory[a]);
-        printf("| %-15s | %-6s | N^%.3f | %12.3f | %6.4f | %16.3f |\n", names[a], scope[a],
-               theory[a], f.alpha, f.r2, f.c_theory);
+        char sv[24] = "-";
+        if (a != CX_PBUILD) snprintf(sv, sizeof sv, "%u/%u", solved[a], runs[a]);
+        printf("| %-15s | %-6s | N^%.3f | %12.3f | %6.4f | %16.3f | %-11s |\n", names[a], scope[a],
+               theory[a], f.alpha, f.r2, f.c_theory, sv);
     }
 }
 

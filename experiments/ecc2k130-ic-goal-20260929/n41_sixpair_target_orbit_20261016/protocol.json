@@ -1,0 +1,46 @@
+{
+  "candidate_id": null,
+  "curve_id": "EC1N41Ckb1h7d5e80d3c4d0",
+  "parent_wall_cap_seconds": 185,
+  "public_raw_point": [
+    2026560328086,
+    1928332930914
+  ],
+  "public_subgroup_point": [
+    1654986373106,
+    1310318707590
+  ],
+  "rotations": [
+    0,
+    6,
+    12,
+    18,
+    24,
+    30
+  ],
+  "rss_cap_bytes": 4294967296,
+  "selector_policy": "exactly one of 41 field Frobenius powers of one raw public preimage",
+  "solver_flags": [
+    "--threads=1",
+    "--maxtime=180",
+    "--zero-exit-status",
+    "--verb=1",
+    "--printsol=1"
+  ],
+  "solver_path": "/opt/homebrew/bin/cryptominisat5",
+  "solver_sha256": "a3f85c3709b5e2a040bf82a4a604d1c7b9f10219bbf180a9e0f72319a2e892ac",
+  "solver_wall_cap_seconds": 180,
+  "sources": {
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w20_selector_elimination_v2_20261013/selector.py": "87c4056ccbde23639898163caa40dca42033e3ef031b5575ff74009272c4bb1c",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_basis_aware_quartic_20261011/replay.py": "d328efbbde595868d7731c0463b04660c9ae87f072e8741f815675949e2b820a",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_sixpair_shared_target_20261017/join_audit_result.json": "65f69704f74b97515b848590bd9df660d2db1cac57558dae4d2b448d27ecc502",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_sixpair_shared_target_20261017/public_result.json": "a205f7c7bd7066ffa6eaf2504d9bf4f8686c3eba2a9d4c407d1be19f8ce38924",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_sixpair_target_orbit_20261016/build.py": "313c363468834146c50342b38372ee3d939fa917975b9cc0303a3b2cd47b965c",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_sixpair_target_orbit_20261016/circuit.py": "3ae53a28399e926d4a8cb37c76e513ff42c36365586b8792a82c7651718408bb",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_sixpair_target_orbit_20261016/run_public.py": "d57978e2428f8ebe8e4367e7a3ee96d1d76bb8c41049f6d05ef274e1c43ade67",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w8_fixed_sum_table_20261009/geometry.json": "d100282312b509a4e93dd8896b8d79f7c664537e224e25b607eab28e6c87dcae"
+  },
+  "status": "FROZEN_N41_SIXPAIR_PUBLIC_FROBENIUS_ORBIT_QUERY",
+  "target_orbit_size": 41,
+  "worker_count": 1
+}

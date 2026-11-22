@@ -1,0 +1,31 @@
+# Exact N41 source-root lookup in the six-pair public-point circuit
+
+An exact 40-edge, two-root source lookup reduced the balanced six-pair public-point formula to **17,871 variables, 15,369 AND gates, 51,692 clauses, and 2,092 native XOR rows**. A Lean-checked sign-lifting theorem shows that locally realizable links in this balanced tree admit one coherent assignment of leaf signs; its concrete S3-to-group bridge remains conditional. The independently audited public relation satisfies every clause and XOR row. The frozen unpinned one-worker query reached its solver limit with `INDETERMINATE`, leaving this encoding at `candidate_id: null`.
+
+| Same N41 public point | Source treatment | Variables | AND gates | Clauses | XOR rows | Unpinned result |
+| --- | --- | ---: | ---: | ---: | ---: | --- |
+| Prior three-exact control | Trace and inverse gates in three slots | 21,246 | 17,712 | 55,652 | 2,959 | `BOUNDED_UNKNOWN`, 180.013 s parent cap |
+| Prior all-deferred control | Pair quadratic in all six slots | 19,857 | 16,851 | 52,940 | 2,554 | `BOUNDED_UNKNOWN`, 120.013 s parent cap |
+| This control | Exact edge and reciprocal-root lookup in all six slots | **17,871** | **15,369** | **51,692** | **2,092** | `BOUNDED_UNKNOWN`, solver `INDETERMINATE` after 179.907 s parent wall |
+
+All three formulas use the raw N41 point `(344545435656,924092594889)` on `EC1N41Ckb1h7d5e80d3c4d0`. The different query caps and source constraints prevent a runtime ranking. This query used one CryptoMiniSat worker, `--maxtime=170`, a 180-second parent cap, and a 4 GiB combined-RSS cap. The solver emitted `s INDETERMINATE` with exit code zero; no parent stop was needed. The sampled combined peak was 576,569,344 bytes. Formula construction and correctness checking took 1.374 seconds outside the solver interval.
+
+## Exact source map and first failure
+
+Each slot selects exactly one of the 40 source edges and one of its two reciprocal pair-output roots. The 40 edge selectors are one-hot. One branch bit chooses the second root; the output bits are XORs of selected first-root constants and the selected root difference. The five reciprocal `S3` links then constrain the six pair outputs to the public target. Across slots, 690 binary clauses exclude shared folded factor-base columns.
+
+The lookup is built from all 960 archived signed pair states: 40 edges, four sign assignments, six rotations. Each edge has exactly two reciprocal x-coordinate roots, each appearing for two sign assignments in every slot. An [independent sign audit](source_sign_audit_result.json) checked all 480 same-root point pairs: their two points are distinct, both lie on the curve, and their group sum is the identity. The builder checks the archived coordinate conversion, root consistency across Frobenius rotations, all folded-column conflicts, and the independently audited relation. Its witness uses edge indices `[38,30,26,0,34,8]` and branches `[1,1,0,1,0,0]`; after deterministic circuit completion, all 51,692 clauses and 2,092 XOR rows hold. Independent group addition of the six archived pair points reproduces the raw public target.
+
+The first frozen build failed before writing a formula because the geometry archive's `z` denotes `1/(x+1)`, while this circuit's reciprocal `S3` chart uses `1/x`. The original source and protocol are retained with [the failure receipt](build_failure_v1.json). The corrected v2 build derives `1/x` from each archived pair point, reverses its Frobenius rotation, and is frozen separately. This is a coordinate correction, not a changed public target or source law.
+
+## N131 capacity gate and next experiment
+
+The N131 W29 source has 67,109,836 valid codes. A packed one-root-per-code array at 17 bytes per field element would occupy **1,140,867,212 bytes** before its validity index and other pipeline state. A direct six-slot one-hot formula would require **402,659,016 selector variables** and, with this implementation's pairwise at-most-one clauses, **13,511,190,062,511,180 clauses**. That direct representation cannot meet the 4 GiB constraint. A compressed or lazy source lookup is still possible, but this N41 run shows that source arithmetic removal alone does not make the five-link SAT search finish under its cap.
+
+The next experiment should evaluate a *target-conditioned projection* before expanding pair roots: for a frozen family of source-code prefixes, derive an exact partial-sum feasibility predicate, count whole-family rejections, and charge its construction and query work. The predicate must preserve all genuine decompositions and fit the N131 one-worker, 600-second, 4-GiB envelope before the public-point gate. The present lookup remains a source-encoding diagnostic; it does not establish relation yield or a complete IC candidate.
+
+## Reproduction and proof map
+
+The checked repository Sage launcher and its [runtime receipt](sage_runtime_info.json) preceded the measured build and independent sign audit. `build_protocol_v2.json`, `query_protocol.json`, and `source_sign_audit_protocol.json` bind code, source geometry, public relation, solver binary, and limits. The `.xcnf`, `.stdout`, `.stderr`, and result JSON retain the exact run. `python3 verify.py` checks the frozen hashes and outcomes.
+
+[`TreeLift.lean`](TreeLift.lean) proves a structural sign-lifting result over an arbitrary additive commutative group: if each of the five balanced links has some representatives differing from its two children and parent only by sign, then one global choice of six leaf signs sums to the specified target. Its proof works by flipping both child representatives when the chosen parent sign differs, then recursing through the tree. The exact hypotheses, proof status, and missing concrete curve bridge appear in [PROOF_MAP.md](PROOF_MAP.md). The source table supplies both signs for each of its pair-output x roots by exhaustive 40-edge, four-sign evaluation. The characteristic-two reciprocal `S3` identity is formalized in [`FourPreimage.lean`](../n41_fourpreimage_s3_join_20261016/FourPreimage.lean); [`SixPairSum.lean`](../n41_w8_sixpair_sat_20261016/SixPairSum.lean) proves the balanced group-addition topology under its stated group hypotheses. A future solver model still requires independent source-point and full group-sum replay before relation promotion.

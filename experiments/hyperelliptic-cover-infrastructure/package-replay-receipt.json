@@ -1,0 +1,160 @@
+{
+  "schema_version": "hyperelliptic-cover-package-replay-receipt/v1",
+  "recorded_at_utc": "2026-11-18T22:08:24Z",
+  "status": "verified_current_head_ci_package",
+  "producer": {
+    "repository": "https://github.com/isogeny-labs/crypto",
+    "pull_request": "https://github.com/isogeny-labs/crypto/pull/4697",
+    "branch": "codex/curve-transfer-implementation-20261118",
+    "head_commit": "74752a1e644b1c9cc8f4efeb2e2befac6e24f7bb",
+    "catalog_producer_commit": "f402ccd4c657735e290f3a0a95b3a53024cba2cf",
+    "catalog_producer_source_sha256": "04fc744060ec7a4c1ced6c36f9190422d886c593d29e4bd263f223db77f36c65"
+  },
+  "workflow": {
+    "run_id": 44404967464,
+    "run_attempt": 1,
+    "event": "workflow_dispatch",
+    "url": "https://github.com/isogeny-labs/crypto/actions/runs/44404967464",
+    "created_at": "2026-11-18T21:46:49Z",
+    "updated_at": "2026-11-18T22:00:13Z",
+    "overall_conclusion": "cancelled",
+    "overall_conclusion_note": "The required Linux Rust package job succeeded. The aggregate run was non-green because unrelated native and isogeny jobs could not hydrate historical recovery objects, the macOS runner configuration was unsupported, and feature-branch release publication was intentionally skipped.",
+    "package_job": {
+      "id": 135157866145,
+      "name": "rust (x86_64-unknown-linux-gnu, ubuntu-latest)",
+      "url": "https://github.com/isogeny-labs/crypto/actions/runs/44404967464/job/135157866145",
+      "started_at": "2026-11-18T21:47:15Z",
+      "completed_at": "2026-11-18T22:00:13Z",
+      "conclusion": "success",
+      "successful_stages": [
+        "release build with source provenance",
+        "installed-layout smoke tests",
+        "archive staging",
+        "artifact upload"
+      ]
+    }
+  },
+  "artifact": {
+    "id": 14476770268,
+    "name": "rust-x86_64-unknown-linux-gnu",
+    "api_url": "https://api.github.com/repos/isogeny-labs/crypto/actions/artifacts/14476770268/zip",
+    "created_at": "2026-11-18T22:00:09Z",
+    "expires_at": "2027-02-16T21:46:51Z",
+    "retention_bound": true,
+    "expired_when_verified": false,
+    "size_bytes": 97695979,
+    "api_digest": "sha256:0cab958b87cd9f5c6b445090aac139bd355e1d1416f4f8d49837e61042069fb2",
+    "downloaded_zip": {
+      "file_name": "rust-x86_64-unknown-linux-gnu.zip",
+      "size_bytes": 97695979,
+      "sha256": "0cab958b87cd9f5c6b445090aac139bd355e1d1416f4f8d49837e61042069fb2",
+      "matches_api_digest": true,
+      "transport": "GitHub connector artifact downloader to File Service, then materialized locally",
+      "file_service_id": "file_00000000473081fdbe8a583653206ecb",
+      "shell_download_note": "gh run download and direct authenticated REST download both reached GitHub's redirect, but the execution proxy rejected the Azure artifact-CDN CONNECT tunnel with HTTP 403. This was a transport restriction, not an artifact-content rejection."
+    }
+  },
+  "inner_archive": {
+    "file_name": "crypto-v0.1.7262-x86_64-unknown-linux-gnu.tar.gz",
+    "package_version_tag": "v0.1.7262",
+    "size_bytes": 98436811,
+    "sha256": "f3d2361dace4b6240de65b3797bfdd7b33dc3123aa88bceaad20c0918b19701c",
+    "member_count": 109,
+    "sorted_member_list_sha256": "4cefc324beca234033f10d758bda142eeec4cb27a40d476b7d884430105dc939",
+    "sorted_member_list_digest_command": "LC_ALL=C tar -tzf crypto-v0.1.7262-x86_64-unknown-linux-gnu.tar.gz | LC_ALL=C sort | sha256sum",
+    "safe_relative_paths": true,
+    "links_present": false,
+    "extracted_root": "crypto-v0.1.7262-x86_64-unknown-linux-gnu"
+  },
+  "packaged_files": {
+    "hyperelliptic_cover": {
+      "path": "hyperelliptic-cover",
+      "size_bytes": 9460992,
+      "sha256": "6b962c1ee587e18cba3ce84cd4877576e9a931305ae23a662fe57fc3ae497314"
+    },
+    "curve_transfer_sweep": {
+      "path": "curve-transfer-sweep",
+      "size_bytes": 7878656,
+      "sha256": "b1dc55b0ca5dd2d613bb30a715138e15a5a9d97b782f96be518158768d4852f9"
+    },
+    "ecdlp_audit": {
+      "path": "ecdlp-audit",
+      "size_bytes": 8007904,
+      "sha256": "cea5b9cb2b11712084a22590fe1dbb9bbee074cffa4bd2c556cd0cf525ec564d"
+    },
+    "transfer_corpus": {
+      "path": "docs/curves/binary-subgroup-transfer-certificates.json",
+      "size_bytes": 500925,
+      "sha256": "8c61e842945bf1e9ad8dd3adf326c6c11e55bb97018659b2abf40a5b15256941"
+    },
+    "registry": {
+      "path": "docs/curves/registry.json",
+      "size_bytes": 22548033,
+      "sha256": "b7046bad4a8e0b9e261a851b20e54affc035bd3dda12bc893796c38db5dc6183"
+    },
+    "cover_graph": {
+      "path": "docs/curves/cover-links.yaml",
+      "size_bytes": 62132486,
+      "sha256": "4f5ecf4db98098ad3a2bdf35481d123ab0ba3e0eaea1cfdf1bf61f67bcfafa28"
+    },
+    "traits": {
+      "path": "docs/curves/traits.json",
+      "size_bytes": 13679071,
+      "sha256": "ffce05374cc02628afda44c123f7184d7a3f3d2d15fed66496b85cf58830d2fc"
+    }
+  },
+  "installed_layout_checks": {
+    "working_directory": "/tmp/release-44404967464.fMDe58/extracted/crypto-v0.1.7262-x86_64-unknown-linux-gnu",
+    "working_directory_note": "This was the extracted package root and was outside both repository checkouts; the /tmp path is execution-local rather than a durable package location.",
+    "help": [
+      {
+        "command": "./hyperelliptic-cover --help",
+        "exit_code": 0
+      },
+      {
+        "command": "./curve-transfer-sweep --help",
+        "exit_code": 0
+      },
+      {
+        "command": "./ecdlp-audit --help",
+        "exit_code": 0
+      }
+    ],
+    "version_note": "These three CLIs do not implement --version; the inner archive name records package tag v0.1.7262.",
+    "catalog_replay": {
+      "command": "./hyperelliptic-cover transfer-catalog-verify --input docs/curves/binary-subgroup-transfer-certificates.json --registry docs/curves/registry.json --cover-graph docs/curves/cover-links.yaml --traits docs/curves/traits.json --expected-sha256 8c61e842945bf1e9ad8dd3adf326c6c11e55bb97018659b2abf40a5b15256941 --expected-bytes 500925 --output /tmp/release-44404967464.fMDe58/package-replay.json",
+      "exit_code": 0,
+      "captured_combined_output": "",
+      "output_capture_note": "The execution tool reported an empty combined output field; stdout and stderr byte counts were not measured separately.",
+      "response_file": "/tmp/release-44404967464.fMDe58/package-replay.json",
+      "response_size_bytes": 1682,
+      "response_sha256": "8569b72b154c254421d93fb4751eb621040ed7c5a9380e2001c487ebba9a0a22",
+      "schema_version": "binary-subgroup-transfer-catalog-verification/v1",
+      "status": "verified_complete",
+      "checks": {
+        "all_maps_and_named_generators_replayed": true,
+        "all_records_supported": true,
+        "canonical_bytes_equal": true,
+        "complete_value_regenerated": true,
+        "cover_graph_rebuilt_exactly": true,
+        "optional_raw_hash_and_size": true,
+        "schema_and_metadata_reparsed": true
+      },
+      "summary": {
+        "binary_maps": 174,
+        "maps_with_named_subgroups": 147,
+        "maps_without_named_subgroups": 27,
+        "named_subgroup_records": 150,
+        "supported_named_subgroup_records": 150,
+        "failed_named_subgroup_records": 0
+      },
+      "recorded_producer": {
+        "attestation": "caller_supplied_unverified",
+        "git_commit": "f402ccd4c657735e290f3a0a95b3a53024cba2cf",
+        "rustc_version": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+        "source_sha256": "04fc744060ec7a4c1ced6c36f9190422d886c593d29e4bd263f223db77f36c65"
+      }
+    }
+  },
+  "claim_boundary": "This is a same-implementation, post-download installed-layout replay of a retention-bound feature-branch CI artifact. It verifies package integrity, startup, exact corpus regeneration, recorded construction/map checks, and supported named-binding replay. It is not an independent mathematical implementation, a stable public GitHub Release, proof of exact orders marked unknown, a Jacobian index-calculus solver, key recovery, or evidence of a DLP advantage."
+}

@@ -1,0 +1,3 @@
+Lean 4.34.1 first proof build failed at BlockCertificate.lean line 33:
+the simplifier left the goal `multiplier j x * 0 = 0` open.
+The source was revised to cite `Semiring.mul_zero` explicitly; the final build and `#print axioms` output are in lean.stdout and lean.stderr.

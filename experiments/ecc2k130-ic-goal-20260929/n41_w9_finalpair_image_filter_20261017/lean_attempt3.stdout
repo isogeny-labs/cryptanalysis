@@ -1,0 +1,127 @@
+FinalPairImage.lean:65:5: error: unknown tactic
+FinalPairImage.lean:59:4: error: `grind` failed
+case grind
+F : Type
+inst : Field F
+charTwo : ∀ (x : F), x + x = 0
+A B D C H p e : F
+source : C * e * e + p * e + H = 0
+target : A * e * e + B * e + D = 0
+h : ¬C * (A * e * e + B * e + D) = (A * p + C * B) * e + (A * H + C * D)
+⊢ False
+[grind] Goal diagnostics
+  [facts] Asserted facts
+    [prop] ∀ (x : F), x + x = 0
+    [prop] C * e * e + p * e + H = 0
+    [prop] A * e * e + B * e + D = 0
+    [prop] ¬C * (A * e * e + B * e + D) = (A * p + C * B) * e + (A * H + C * D)
+  [eqc] True propositions
+    [prop] ∀ (x : F), x + x = 0
+  [eqc] False propositions
+    [prop] C * (A * e * e + B * e + D) = (A * p + C * B) * e + (A * H + C * D)
+  [eqc] Equivalence classes
+    [eqc] {0, A * e * e + B * e + D, C * e * e + p * e + H, C * (A * e * e + B * e + D)}
+    [eqc] {1,
+        (C * (A * e * e + B * e + D) - ((A * p + C * B) * e + (A * H + C * D))) *
+          (C * (A * e * e + B * e + D) - ((A * p + C * B) * e + (A * H + C * D)))⁻¹}
+  [ematch] E-matching patterns
+    [thm] charTwo: [@HAdd.hAdd `[F] `[F] `[F] `[instHAdd] #0 #0]
+  [ring] Ring `F`
+    [basis] Basis
+      [_] 2 * (C * H ^ 2 * A * (C * (A * e * e + B * e + D) - ((A * p + C * B) * e + (A * H + C * D)))⁻¹) +
+                  -1 * (C * e * p) +
+                -1 * p ^ 2 +
+              C * H =
+            0
+      [_] 2 * (C * H * A * B * (C * (A * e * e + B * e + D) - ((A * p + C * B) * e + (A * H + C * D)))⁻¹) +
+                  -2 * (C * p * A * D * (C * (A * e * e + B * e + D) - ((A * p + C * B) * e + (A * H + C * D)))⁻¹) +
+                -1 * (p * A) +
+              C * B =
+            0
+      [_] 2 * (H ^ 2 * A * B * (C * (A * e * e + B * e + D) - ((A * p + C * B) * e + (A * H + C * D)))⁻¹) +
+                      -2 * (p * H * B ^ 2 * (C * (A * e * e + B * e + D) - ((A * p + C * B) * e + (A * H + C * D)))⁻¹) +
+                    2 * (p ^ 2 * B * D * (C * (A * e * e + B * e + D) - ((A * p + C * B) * e + (A * H + C * D)))⁻¹) +
+                  -2 * (C * p * D ^ 2 * (C * (A * e * e + B * e + D) - ((A * p + C * B) * e + (A * H + C * D)))⁻¹) +
+                H * B +
+              -1 * (p * D) =
+            0
+      [_] 2 * (C * H * B ^ 2 * (C * (A * e * e + B * e + D) - ((A * p + C * B) * e + (A * H + C * D)))⁻¹) +
+                          -4 *
+                            (C * H * A * D *
+                              (C * (A * e * e + B * e + D) - ((A * p + C * B) * e + (A * H + C * D)))⁻¹) +
+                        -2 *
+                          (C * p * B * D * (C * (A * e * e + B * e + D) - ((A * p + C * B) * e + (A * H + C * D)))⁻¹) +
+                      2 * (C ^ 2 * D ^ 2 * (C * (A * e * e + B * e + D) - ((A * p + C * B) * e + (A * H + C * D)))⁻¹) +
+                    C * e * B +
+                  -2 * (H * A) +
+                p * B +
+              C * D =
+            0
+      [_] 2 * (C ^ 2 * e * D * (C * (A * e * e + B * e + D) - ((A * p + C * B) * e + (A * H + C * D)))⁻¹) +
+                    -2 * (C * H * B * (C * (A * e * e + B * e + D) - ((A * p + C * B) * e + (A * H + C * D)))⁻¹) +
+                  2 * (C * p * D * (C * (A * e * e + B * e + D) - ((A * p + C * B) * e + (A * H + C * D)))⁻¹) +
+                C * e +
+              p =
+            0
+      [_] 2 * (C * e * p * D * (C * (A * e * e + B * e + D) - ((A * p + C * B) * e + (A * H + C * D)))⁻¹) +
+                    2 * (H ^ 2 * A * (C * (A * e * e + B * e + D) - ((A * p + C * B) * e + (A * H + C * D)))⁻¹) +
+                  -2 * (p * H * B * (C * (A * e * e + B * e + D) - ((A * p + C * B) * e + (A * H + C * D)))⁻¹) +
+                2 * (p ^ 2 * D * (C * (A * e * e + B * e + D) - ((A * p + C * B) * e + (A * H + C * D)))⁻¹) +
+              H =
+            0
+      [_] 2 * (C * e * A * D * (C * (A * e * e + B * e + D) - ((A * p + C * B) * e + (A * H + C * D)))⁻¹) + e * A + B =
+            0
+      [_] 2 * (C * H * A * D * (C * (A * e * e + B * e + D) - ((A * p + C * B) * e + (A * H + C * D)))⁻¹) +
+                  -1 * (C * e * B) +
+                H * A +
+              -1 * (p * B) =
+            0
+      [_] 2 * (C * A * D ^ 2 * (C * (A * e * e + B * e + D) - ((A * p + C * B) * e + (A * H + C * D)))⁻¹) +
+                  -1 * (e * A * B) +
+                -1 * B ^ 2 +
+              A * D =
+            0
+      [_] H ^ 2 * A ^ 2 + -1 * (p * H * A * B) + C * H * B ^ 2 + p ^ 2 * A * D + -2 * (C * H * A * D) +
+                -1 * (C * p * B * D) +
+              C ^ 2 * D ^ 2 =
+            0
+      [_] C * e * H * B + -1 * (C * e * p * D) + -1 * (H ^ 2 * A) + p * H * B + -1 * (p ^ 2 * D) + C * H * D = 0
+      [_] 2 * (C * e * B * (C * (A * e * e + B * e + D) - ((A * p + C * B) * e + (A * H + C * D)))⁻¹) +
+                2 * (C * D * (C * (A * e * e + B * e + D) - ((A * p + C * B) * e + (A * H + C * D)))⁻¹) +
+              1 =
+            0
+      [_] 2 * (e * p * B * (C * (A * e * e + B * e + D) - ((A * p + C * B) * e + (A * H + C * D)))⁻¹) +
+                  -2 * (C * e * D * (C * (A * e * e + B * e + D) - ((A * p + C * B) * e + (A * H + C * D)))⁻¹) +
+                2 * (H * B * (C * (A * e * e + B * e + D) - ((A * p + C * B) * e + (A * H + C * D)))⁻¹) +
+              -1 * e =
+            0
+      [_] C * e ^ 2 + e * p + H = 0
+      [_] e ^ 2 * A + e * B + D = 0
+      [_] e * p * A + -1 * (C * e * B) + H * A + -1 * (C * D) = 0
+      [_] e * H * A + -1 * (C * e * D) + H * B + -1 * (p * D) = 0
+FinalPairImage.lean:63:39: error: unsolved goals
+F : Type
+inst✝ : Field F
+charTwo : ∀ (x : F), x + x = 0
+A B D C H p e : F
+source : C * e * e + p * e + H = 0
+target : A * e * e + B * e + D = 0
+hg : C * (A * e * e + B * e + D) = (A * p + C * B) * e + (A * H + C * D)
+hn : (A * p + C * B) * e * e + (B * H + p * D) = 0
+⊢ C * 0 = 0
+FinalPairImage.lean:55:17: error: unsolved goals
+F : Type
+inst✝ : Field F
+charTwo : ∀ (x : F), x + x = 0
+A B D C H p e : F
+source : C * e * e + p * e + H = 0
+target : A * e * e + B * e + D = 0
+hg : C * (A * e * e + B * e + D) = (A * p + C * B) * e + (A * H + C * D)
+hn : (A * p + C * B) * e * e + (B * H + p * D) = 0
+hm : (A * p + C * B) * e + (A * H + C * D) = 0
+⊢ (A * H + C * D) * (A * H + C * D) + (A * p + C * B) * (B * H + p * D) = 0
+'FinalPairImage.map_additive' depends on axioms: [propext, Classical.choice, Quot.sound]
+'FinalPairImage.equal_output_two_preimages' depends on axioms: [propext, Classical.choice, Quot.sound]
+'FinalPairImage.second_root' depends on axioms: [propext, Classical.choice, Quot.sound]
+'FinalPairImage.shared_root_resultant_zero' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'FinalPairImage.unrestricted_product_from_root' depends on axioms: [propext, Classical.choice, Quot.sound]
