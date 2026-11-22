@@ -26,6 +26,22 @@ static inline uint64_t mulmod_lt(uint64_t a, uint64_t b, uint64_t m)
 /* base^exp mod m; 0 when m is 0 or 1.  (Contract notes for a zero or
  * composite modulus live here, not in ca_modarith.h: that header is pinned
  * byte for byte by verification/pqc-assay/sources.sha256.) */
+/* Thread-local Montgomery context for the last odd modulus used by
+ * ca_powmod / ca_sqrtmod_prime.  Init is three multiplications; reusing it
+ * across Legendre / Tonelli / (p+1)/4 ladders on a fixed p removes that from
+ * every call.  Same residues (ca_mont_init is a function of p alone). */
+static _Thread_local ca_mont ca_pow_mont;
+static _Thread_local uint64_t ca_pow_mont_p;
+
+static ca_mont *ca_pow_mont_for(uint64_t m)
+{
+    if (ca_pow_mont_p != m) {
+        ca_mont_init(&ca_pow_mont, m);
+        ca_pow_mont_p = m;
+    }
+    return &ca_pow_mont;
+}
+
 uint64_t ca_powmod(uint64_t base, uint64_t exp, uint64_t m)
 {
     if (m <= 1) return 0; /* m == 0 is not a modulus: 0, as ca_invmod answers it */
@@ -33,9 +49,8 @@ uint64_t ca_powmod(uint64_t base, uint64_t exp, uint64_t m)
      * multiply has no 128-bit division.  Setting it up costs three, so
      * short exponents stay on the plain ladder.  Same residue either way. */
     if ((m & 1) && exp >= 16) {
-        ca_mont mo;
-        ca_mont_init(&mo, m);
-        return ca_mont_from(&mo, ca_mont_pow(&mo, ca_mont_to(&mo, base), exp));
+        ca_mont *mo = ca_pow_mont_for(m);
+        return ca_mont_from(mo, ca_mont_pow(mo, ca_mont_to(mo, base), exp));
     }
     uint64_t r = 1;
     base %= m;
@@ -117,11 +132,21 @@ static uint64_t invmod_euclid(uint64_t a, uint64_t m)
  * unique, so the result equals invmod_euclid's. */
 static uint64_t invmod_binary_odd(uint64_t a, uint64_t m)
 {
-    uint64_t ninv = (m * 3) ^ 2; /* m^-1 mod 2^5; Newton doubles the bits */
-    ninv *= 2 - m * ninv;
-    ninv *= 2 - m * ninv;
-    ninv *= 2 - m * ninv;
-    ninv *= 2 - m * ninv; /* m^-1 mod 2^64 */
+    /* m^-1 mod 2^64 depends only on m; reuse across inversions on a fixed
+     * modulus (affine EC, batch lift_x, the invmod bench). */
+    static _Thread_local uint64_t ninv_m, ninv_val;
+    uint64_t ninv;
+    if (ninv_m == m) {
+        ninv = ninv_val;
+    } else {
+        ninv = (m * 3) ^ 2; /* m^-1 mod 2^5; Newton doubles the bits */
+        ninv *= 2 - m * ninv;
+        ninv *= 2 - m * ninv;
+        ninv *= 2 - m * ninv;
+        ninv *= 2 - m * ninv; /* m^-1 mod 2^64 */
+        ninv_m = m;
+        ninv_val = ninv;
+    }
     const uint64_t neg_ninv = (uint64_t)0 - ninv;
 
     uint64_t u = m, v = a, s = 1, r = 0, flip = 0;
@@ -226,17 +251,47 @@ uint64_t ca_iroot(uint64_t n, unsigned k)
     return lo;
 }
 
-/* Legendre symbol; 0 when p is 0. */
+/* Legendre symbol; 0 when p is 0.  For odd p this is the Jacobi symbol
+ * via quadratic reciprocity (same value as a^((p-1)/2) when p is an odd
+ * prime, without a modular exponentiation).  p = 2 keeps the Euler
+ * criterion: 0 at even a, +1 at odd a. */
 int ca_legendre(uint64_t a, uint64_t p)
 {
     if (p == 0) return 0;
     a %= p;
     if (a == 0) return 0;
-    uint64_t r = ca_powmod(a, (p - 1) / 2, p);
-    if (r == 1) return 1;
-    if (r == p - 1) return -1;
-    return 0; /* p not prime */
+    if (p == 2) return 1;
+    if ((p & 1) == 0) {
+        /* Even composite: Euler criterion still terminates and matches the
+         * historical powmod answers the robustness tests pin. */
+        uint64_t r = ca_powmod(a, (p - 1) / 2, p);
+        if (r == 1) return 1;
+        if (r == p - 1) return -1;
+        return 0;
+    }
+    int t = 1;
+    uint64_t n = a, m = p;
+    while (n) {
+        unsigned z = (unsigned)__builtin_ctzll(n);
+        n >>= z;
+        if (z & 1) {
+            uint64_t m8 = m & 7;
+            if (m8 == 3 || m8 == 5) t = -t;
+        }
+        /* Quadratic reciprocity on the odd parts. */
+        if ((n & 3) == 3 && (m & 3) == 3) t = -t;
+        uint64_t tmp = m % n;
+        m = n;
+        n = tmp;
+    }
+    return m == 1 ? t : 0;
 }
+
+/* Tonelli–Shanks non-residue and 2-adic data for the last p.  The least
+ * non-residue is unique for a given search order, so caching it (and q, s)
+ * does not change any root. */
+static _Thread_local uint64_t ca_ts_p, ca_ts_z, ca_ts_q;
+static _Thread_local unsigned ca_ts_s;
 
 /* Returns 0 when a is a non-residue or p is 0.  A composite p is outside the
  * contract: the call terminates, and returns 0 unless p passes for a prime at
@@ -252,40 +307,56 @@ int ca_sqrtmod_prime(uint64_t a, uint64_t p, uint64_t *root)
         *root = ca_powmod(a, (p + 1) / 4, p);
         return 1;
     }
-    /* Tonelli-Shanks */
-    uint64_t q = p - 1;
-    unsigned s = 0;
-    while ((q & 1) == 0) { q >>= 1; s++; }
-    /* A prime p has a non-residue below p.  A composite p may have none, but
-     * its symbol is 0 at the first z sharing a factor with p (and at z = p),
-     * so stopping there bounds the search for every modulus. */
-    uint64_t z = 2;
-    for (;;) {
-        int l = ca_legendre(z, p);
-        if (l == -1) break;
-        if (l == 0) return 0; /* p is not prime */
-        z++;
+    /* Tonelli-Shanks in Montgomery form: the inner squaring loop for
+     * p = 1 mod 2^k is the hot path, and mulmod_lt's Barrett reduction is
+     * heavier than REDC once the context is warm. */
+    uint64_t z, q;
+    unsigned s;
+    if (ca_ts_p == p) {
+        z = ca_ts_z;
+        q = ca_ts_q;
+        s = ca_ts_s;
+    } else {
+        q = p - 1;
+        s = 0;
+        while ((q & 1) == 0) { q >>= 1; s++; }
+        /* A prime p has a non-residue below p.  A composite p may have none, but
+         * its symbol is 0 at the first z sharing a factor with p (and at z = p),
+         * so stopping there bounds the search for every modulus. */
+        z = 2;
+        for (;;) {
+            int l = ca_legendre(z, p);
+            if (l == -1) break;
+            if (l == 0) return 0; /* p is not prime */
+            z++;
+        }
+        ca_ts_p = p;
+        ca_ts_z = z;
+        ca_ts_q = q;
+        ca_ts_s = s;
     }
-    uint64_t c = ca_powmod(z, q, p);
-    uint64_t r = ca_powmod(a, (q + 1) / 2, p);
-    uint64_t t = ca_powmod(a, q, p);
+    ca_mont *mo = ca_pow_mont_for(p);
+    const uint64_t one = mo->r1;
+    uint64_t c = ca_mont_pow(mo, ca_mont_to(mo, z), q);
+    uint64_t r = ca_mont_pow(mo, ca_mont_to(mo, a), (q + 1) / 2);
+    uint64_t t = ca_mont_pow(mo, ca_mont_to(mo, a), q);
     unsigned m = s;
-    while (t != 1) {
+    while (t != one) {
         unsigned i = 0;
         uint64_t tt = t;
-        while (tt != 1) {
-            tt = mulmod_lt(tt, tt, p);
+        while (tt != one) {
+            tt = ca_mont_sqr(mo, tt);
             i++;
             if (i >= m) return 0;
         }
         uint64_t b = c;
-        for (unsigned j = 0; j + i + 1 < m; j++) b = mulmod_lt(b, b, p);
-        r = mulmod_lt(r, b, p);
-        c = mulmod_lt(b, b, p);
-        t = mulmod_lt(t, c, p);
+        for (unsigned j = 0; j + i + 1 < m; j++) b = ca_mont_sqr(mo, b);
+        r = ca_mont_mul(mo, r, b);
+        c = ca_mont_sqr(mo, b);
+        t = ca_mont_mul(mo, t, c);
         m = i;
     }
-    *root = r;
+    *root = ca_mont_from(mo, r);
     return 1;
 }
 

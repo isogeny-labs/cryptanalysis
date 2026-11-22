@@ -89,10 +89,28 @@ CA_API ca_status ca_group_ec_init(ca_group *g, uint64_t p, uint64_t a, uint64_t 
 
 /* ---- element operations (thin wrappers around the vtable) -------------- */
 
+/* Native (Z/pZ)^* vtable address: ca_group_op compares against this so a
+ * long mul-chain skips the indirect call, while diagnostic wrappers that
+ * replace vt (op-counting tests) still go through their hooks. */
+CA_API extern const ca_group_vtable *const ca_zp_vt_ptr;
+
+/* (Z/pZ)^* is a single Montgomery multiply.  Same residue as zp_op / zp_dbl. */
 static inline void ca_group_op(const ca_group *g, ca_elem *r, const ca_elem *a, const ca_elem *b)
-{ g->vt->op(g, r, a, b); }
+{
+    if (g->vt == ca_zp_vt_ptr) {
+        r->w[0] = ca_mont_mul(&g->mont, a->w[0], b->w[0]);
+        return;
+    }
+    g->vt->op(g, r, a, b);
+}
 static inline void ca_group_dbl(const ca_group *g, ca_elem *r, const ca_elem *a)
-{ g->vt->dbl(g, r, a); }
+{
+    if (g->vt == ca_zp_vt_ptr) {
+        r->w[0] = ca_mont_sqr(&g->mont, a->w[0]);
+        return;
+    }
+    g->vt->dbl(g, r, a);
+}
 static inline void ca_group_inv(const ca_group *g, ca_elem *r, const ca_elem *a)
 { g->vt->inv(g, r, a); }
 static inline void ca_group_identity(const ca_group *g, ca_elem *r)

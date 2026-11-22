@@ -78,6 +78,10 @@ static const ca_group_vtable zp_vt = {
     zp_batch_op, zp_encode, zp_decode, zp_is_valid, NULL,
 };
 
+/* Address published for ca_group_op's inline Zp fast path (pointer compare,
+ * no call).  Wrapped diagnostic vtables must not match. */
+const ca_group_vtable *const ca_zp_vt_ptr = &zp_vt;
+
 int ca_zp_group_is_native(const ca_group *g) { return g->vt == &zp_vt; }
 
 /* k*a in (Z/pZ)^*: the square-and-multiply of ca_group_mul on the one
