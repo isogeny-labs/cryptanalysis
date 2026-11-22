@@ -114,41 +114,25 @@ static uint64_t invmod_euclid(uint64_t a, uint64_t m)
 }
 
 #ifndef CA_GLV_FIELD_COUNT
-/* Division-free binary extended gcd for an odd modulus m >= 3 and
- * 0 < a < m, entirely in 64-bit words (Kaliski's almost-inverse with the
- * shifts batched by ctz, then one exact division by 2^k).
- *
- * The pairs (u, s) and (v, r) keep the integer identity u*s + v*r = m with
- * u, v odd and all four values in [0, m], so nothing overflows, and
- *     a*s = (-1)^f v 2^k,  a*r = -(-1)^f u 2^k   (mod m),
- * where f counts label swaps.  One step replaces the larger odd value by
- * |u - v| / 2^z (odd), shifts its coefficient left by z and adds it to the
- * other coefficient; the smaller value is kept.  The loop ends at u == v ==
- * gcd(a, m); if that is 1 then s + r = m and a^-1 = (f ? r : s) * 2^-k.
- * The critical path is one subtract, ctz and shift per step; the swap and
- * the coefficients are selected, not branched on.  k < 128 (each step
- * removes at least one bit from u*v < 2^128), and 2^-k is applied in at most
- * three exact Montgomery-style divisions by 2^j, j <= 63.  The inverse is
- * unique, so the result equals invmod_euclid's. */
-static uint64_t invmod_binary_odd(uint64_t a, uint64_t m)
+/* m^{-1} mod 2^64, cached per odd modulus (affine EC, batch lift_x, benches). */
+static uint64_t odd_ninv(uint64_t m)
 {
-    /* m^-1 mod 2^64 depends only on m; reuse across inversions on a fixed
-     * modulus (affine EC, batch lift_x, the invmod bench). */
     static _Thread_local uint64_t ninv_m, ninv_val;
-    uint64_t ninv;
-    if (ninv_m == m) {
-        ninv = ninv_val;
-    } else {
-        ninv = (m * 3) ^ 2; /* m^-1 mod 2^5; Newton doubles the bits */
-        ninv *= 2 - m * ninv;
-        ninv *= 2 - m * ninv;
-        ninv *= 2 - m * ninv;
-        ninv *= 2 - m * ninv; /* m^-1 mod 2^64 */
-        ninv_m = m;
-        ninv_val = ninv;
-    }
-    const uint64_t neg_ninv = (uint64_t)0 - ninv;
+    if (ninv_m == m) return ninv_val;
+    uint64_t ninv = (m * 3) ^ 2; /* m^-1 mod 2^5; Newton doubles the bits */
+    ninv *= 2 - m * ninv;
+    ninv *= 2 - m * ninv;
+    ninv *= 2 - m * ninv;
+    ninv *= 2 - m * ninv; /* m^-1 mod 2^64 */
+    ninv_m = m;
+    ninv_val = ninv;
+    return ninv;
+}
 
+/* Kaliski almost-inverse: 0 < a < m odd, returns s with a*s ≡ ±2^k (mod m)
+ * and writes k, or 0 if gcd(a, m) != 1. */
+static uint64_t almost_inv_odd(uint64_t a, uint64_t m, unsigned *k_out)
+{
     uint64_t u = m, v = a, s = 1, r = 0, flip = 0;
     unsigned k = (unsigned)__builtin_ctzll(v);
     v >>= k;
@@ -170,9 +154,14 @@ static uint64_t invmod_binary_odd(uint64_t a, uint64_t m)
         k += z;
     }
     if (u != 1) return 0;
-    uint64_t x = flip ? r : s; /* in [1, m) */
+    *k_out = k;
+    return flip ? r : s; /* in [1, m) */
+}
+
+/* x * 2^{-k} mod m via exact Montgomery-style divisions by 2^j, j <= 63. */
+static uint64_t scale_pow2_inv(uint64_t x, unsigned k, uint64_t m, uint64_t neg_ninv)
+{
     while (k) {
-        /* x * 2^-j mod m: add the multiple of m that clears the low j bits. */
         const unsigned j = k > 63 ? 63 : k;
         const uint64_t t = (x * neg_ninv) & (((uint64_t)1 << j) - 1);
         x = (uint64_t)(((ca_u128)t * m + x) >> j); /* < 2m */
@@ -180,6 +169,51 @@ static uint64_t invmod_binary_odd(uint64_t a, uint64_t m)
         k -= j;
     }
     return x;
+}
+
+/* Division-free binary extended gcd for an odd modulus m >= 3 and
+ * 0 < a < m, entirely in 64-bit words (Kaliski's almost-inverse with the
+ * shifts batched by ctz, then one exact division by 2^k).
+ *
+ * The pairs (u, s) and (v, r) keep the integer identity u*s + v*r = m with
+ * u, v odd and all four values in [0, m], so nothing overflows, and
+ *     a*s = (-1)^f v 2^k,  a*r = -(-1)^f u 2^k   (mod m),
+ * where f counts label swaps.  One step replaces the larger odd value by
+ * |u - v| / 2^z (odd), shifts its coefficient left by z and adds it to the
+ * other coefficient; the smaller value is kept.  The loop ends at u == v ==
+ * gcd(a, m); if that is 1 then s + r = m and a^-1 = (f ? r : s) * 2^-k.
+ * The critical path is one subtract, ctz and shift per step; the swap and
+ * the coefficients are selected, not branched on.  k < 128 (each step
+ * removes at least one bit from u*v < 2^128), and 2^-k is applied in at most
+ * three exact Montgomery-style divisions by 2^j, j <= 63.  The inverse is
+ * unique, so the result equals invmod_euclid's. */
+static uint64_t invmod_binary_odd(uint64_t a, uint64_t m)
+{
+    /* Keep the almost-inverse loop in this function so ca_invmod stays a
+     * single hot leaf; ca_mont_inv reuses almost_inv_odd separately. */
+    const uint64_t neg_ninv = (uint64_t)0 - odd_ninv(m);
+    uint64_t u = m, v = a, s = 1, r = 0, flip = 0;
+    unsigned k = (unsigned)__builtin_ctzll(v);
+    v >>= k;
+    for (;;) {
+        const uint64_t d = u - v, e = v - u;
+        if (d == 0) break;
+        const int lt = u < v;
+        const uint64_t sw = (uint64_t)0 - (uint64_t)lt;
+        const unsigned z = (unsigned)__builtin_ctzll(d);
+        const uint64_t big = lt ? e : d;
+        const uint64_t small = lt ? u : v;
+        const uint64_t cb = (s & ~sw) | (r & sw);
+        const uint64_t cs = (r & ~sw) | (s & sw);
+        u = big >> z;
+        v = small;
+        s = cb << z;
+        r = cs + cb;
+        flip ^= sw;
+        k += z;
+    }
+    if (u != 1) return 0;
+    return scale_pow2_inv(flip ? r : s, k, m, neg_ninv);
 }
 #endif
 
@@ -415,11 +449,39 @@ uint64_t ca_mont_pow(const ca_mont *m, uint64_t a, uint64_t e)
 
 uint64_t ca_mont_inv(const ca_mont *m, uint64_t a)
 {
-    /* a = x*R; invmod gives x^{-1} R^{-1}; multiply by R^3 with one REDC:
-     * x^{-1} R^{-1} * R^3 * R^{-1} = x^{-1} R. */
-    uint64_t inv = ca_invmod(a, m->p);
-    if (inv == 0) return 0;
-    return ca_mont_mul(m, inv, m->r3);
+    /* a = x*R in Montgomery form.  Classic path: invmod(a)*R^2 via REDC with
+     * R^3.  Fused Kaliski: almost-inverse a*s=±2^k, then s*2^{128-k} =
+     * a^{-1}*R^2 = x^{-1}*R — same residue, no separate invmod+mul. */
+    const uint64_t p = m->p;
+    if (a >= p) a %= p;
+    if (a == 0) return 0;
+    CA_FC_ADD(CA_FC_INV, 1);
+#ifdef CA_GLV_FIELD_COUNT
+    {
+        uint64_t inv = invmod_euclid(a, p);
+        if (inv == 0) return 0;
+        return ca_mont_mul(m, inv, m->r3);
+    }
+#else
+    if ((p & 1) == 0) {
+        uint64_t inv = invmod_euclid(a, p);
+        if (inv == 0) return 0;
+        return ca_mont_mul(m, inv, m->r3);
+    }
+    {
+        unsigned k;
+        uint64_t s = almost_inv_odd(a, p, &k);
+        if (!s) return 0;
+        /* s * 2^{128-k} = x^{-1} R.  Only the k >= 64 short-scale path is
+         * faster than classic full scale + *R^2; smaller k uses classic. */
+        if (k >= 64) {
+            uint64_t t = scale_pow2_inv(s, k - 64, p, (uint64_t)0 - odd_ninv(p));
+            return ca_mont_mul(m, t, m->r2);
+        }
+        uint64_t inv = scale_pow2_inv(s, k, p, (uint64_t)0 - odd_ninv(p));
+        return ca_mont_mul(m, inv, m->r3);
+    }
+#endif
 }
 
 /* ---- primality -------------------------------------------------------- */
