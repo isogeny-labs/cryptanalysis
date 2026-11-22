@@ -135,7 +135,10 @@ def _fixture(root, candidate_ns):
 def self_test():
     refusals = 0
     with tempfile.TemporaryDirectory(prefix="ct319-source-mock-") as d:
-        root = Path(d)
+        root = Path(d) / "positive"
+        root.mkdir()
+        negative_root = Path(d) / "negative"
+        negative_root.mkdir()
         p, w, fixture = _fixture(root, 700)
         pos = audit(encoded(p), encoded(w), root, fixture)
         if pos["raw_receipts_bound_to_cold_wall_and_peak_rss"] != 28:
@@ -143,8 +146,8 @@ def self_test():
         if not (pos["provisional_best_baseline_over_candidate_exact"]["numerator"]
                 > pos["provisional_best_baseline_over_candidate_exact"]["denominator"]):
             raise AssertionError("CT319 synthetic favorable ratio absent")
-        q, v, _ = _fixture(root, 1700)
-        neg = audit(encoded(q), encoded(v), root, fixture)
+        q, v, negative_fixture = _fixture(negative_root, 1700)
+        neg = audit(encoded(q), encoded(v), negative_root, negative_fixture)
         if not (neg["provisional_best_baseline_over_candidate_exact"]["numerator"]
                 < neg["provisional_best_baseline_over_candidate_exact"]["denominator"]):
             raise AssertionError("CT319 synthetic negative ratio not preserved")
