@@ -17,6 +17,7 @@ import tempfile
 import time
 
 import ct304_execution_receipt_gate as audit
+import ct316_process_rss as ct316
 
 CT176_BLOB = '9595589127758b235291449d1c852c8bd13bab92'
 MAX_PIPE_BYTES = 4 * 1024 * 1024
@@ -138,7 +139,8 @@ def retain_binary(original, destination, expected_sha):
 
 
 def capture_one(role, binary, argv, source_commit, fixture_bytes, root, collector,
-                child_seconds, deadline_ns, expected_host):
+                child_seconds, deadline_ns, expected_host, rss_time_binary=None,
+                rss_time_sha256=None):
     if host() != expected_host:
         refuse('host/affinity changed before subprocess')
     remaining = (deadline_ns - time.monotonic_ns()) / 1_000_000_000
@@ -146,9 +148,16 @@ def capture_one(role, binary, argv, source_commit, fixture_bytes, root, collecto
         refuse('aggregate deadline expired before subprocess')
     timeout = min(remaining, float(number(child_seconds, 'child timeout')))
     exe_hash = digest(source_bytes(binary))
+    # CT316: the time wrapper records Linux wait4 ru_maxrss for this one
+    # exact child, not a monotone maximum over earlier sibling runs.
+    meter_output = root / (role + '.rss.txt')
+    actual_argv = argv
+    if rss_time_binary is not None:
+        actual_argv = ct316.invocation(
+            rss_time_binary, rss_time_sha256, argv, meter_output)
     start = time.perf_counter_ns()
     try:
-        code, stdout, stderr, error = collector.bounded_subprocess(argv, timeout)
+        code, stdout, stderr, error = collector.bounded_subprocess(actual_argv, timeout)
     except OSError as exc:
         code, stdout, stderr, error = None, b'', str(exc).encode('utf-8', 'backslashreplace'), 'spawn failed'
     wall_ns = time.perf_counter_ns() - start
@@ -157,6 +166,20 @@ def capture_one(role, binary, argv, source_commit, fixture_bytes, root, collecto
     new_file(err, stderr)
     post_binary_sha = digest(source_bytes(binary))
     post_host = host()
+    peak_rss = None
+    meter_record = None
+    if (rss_time_binary is not None and error is None and
+            type(code) is int and code == 0 and
+            post_binary_sha == exe_hash and post_host == expected_host):
+        try:
+            meter_record = ct316.produce_receipt(
+                meter_output, rss_time_binary, rss_time_sha256, argv, actual_argv)
+            peak_rss = ct316.check_receipt(
+                meter_record, meter_output, rss_time_binary, rss_time_sha256, argv)
+        except (ValueError, OSError) as exc:
+            # A zero-exit child with missing/malformed RSS is an *unadmitted*
+            # collector failure, not a memory-free success.
+            error = 'CT316 RSS evidence refused: ' + str(exc)
     # CT313: preserve exact bounded stdout/stderr and a SEPARATE negative
     # receipt on unsuccessful execution. Never pass it to CT304 admission.
     failure = (('binary_changed' if post_binary_sha != exe_hash else None)
@@ -193,8 +216,13 @@ def capture_one(role, binary, argv, source_commit, fixture_bytes, root, collecto
         'exit_code': code, 'timed_out': False, 'capture_complete': True,
         'stdout_sha256': digest(stdout), 'stdout_bytes': len(stdout),
         'stderr_sha256': digest(stderr), 'stderr_bytes': len(stderr),
-        'external_wall_ns': max(1, wall_ns), 'peak_rss_kib': None,
+        'external_wall_ns': max(1, wall_ns), 'peak_rss_kib': peak_rss,
     }
+    if meter_record is not None:
+        new_json(root / (role + '.rss.json'), meter_record)
+        if ct316.verify(root / (role + '.rss.json'), meter_output,
+                        rss_time_binary, rss_time_sha256, argv) != peak_rss:
+            refuse(role + ' RSS independent byte audit disagreed')
     receipt = root / (role + '.receipt.json')
     new_json(receipt, record)
     audit.check_capture(receipt, role, out, err, binary,
@@ -210,9 +238,11 @@ def run(args):
     required = ('fixture','ct176_source','original_executable','reuse_executable',
                 'original_sha256','reuse_sha256','original_source_sha','reuse_source_sha',
                 'original_argv_json','reuse_argv_json','output_dir',
-                'model_custody_receipt','model_custody_sha256')
+                'model_custody_receipt','model_custody_sha256',
+                'rss_time_binary','rss_time_sha256')
     if any(getattr(args, x) is None for x in required):
         refuse('two complete binary/fixture/source/custody/command locks required')
+    ct316.check_meter_binary(args.rss_time_binary, args.rss_time_sha256)
     bound_custody = custody_lock(args.model_custody_receipt, args.model_custody_sha256)
     fixture = source_bytes(args.fixture)
     if audit.gitblob(fixture) != audit.FROZEN_BLOB:
@@ -236,6 +266,8 @@ def run(args):
         'schema':'ct310-producer-source-locks/v1', 'ct176_source_git_blob':CT176_BLOB,
         'frozen_fixture_git_blob':audit.FROZEN_BLOB, 'custody_receipt_sha256':bound_custody,
         'external_s3_custody_independently_verified':False,
+        'ct316_time_executable_sha256':args.rss_time_sha256,
+        'ct316_rss_source_bound_not_independent_execution':True,
         'independent_native_execution_verified':False, 'pcc':'unverified'
     })
     try:
@@ -244,9 +276,11 @@ def run(args):
         original_argv = [str(retained_original)] + original_argv[1:]
         reuse_argv = [str(retained_reuse)] + reuse_argv[1:]
         capture_one('original', retained_original, original_argv, args.original_source_sha,
-                    fixture, root, collector, args.timeout_seconds, deadline, machine)
+                    fixture, root, collector, args.timeout_seconds, deadline, machine,
+                    args.rss_time_binary, args.rss_time_sha256)
         capture_one('reuse', retained_reuse, reuse_argv, args.reuse_source_sha,
-                    fixture, root, collector, args.timeout_seconds, deadline, machine)
+                    fixture, root, collector, args.timeout_seconds, deadline, machine,
+                    args.rss_time_binary, args.rss_time_sha256)
         result = audit.verify_pair(root/'original.stdout',root/'reuse.stdout',
                     root/'original.stderr',root/'reuse.stderr',retained_original,retained_reuse,
                     root/'original.receipt.json',root/'reuse.receipt.json',args.fixture)
@@ -383,10 +417,11 @@ def main():
     p.add_argument('--execute',action='store_true')
     p.add_argument('--admission-approved',action='store_true')
     for name in ('fixture','ct176-source','original-executable','reuse-executable',
-                 'output-dir','model-custody-receipt'):
+                 'output-dir','model-custody-receipt','rss-time-binary'):
         p.add_argument('--'+name,type=Path)
     for name in ('original-sha256','reuse-sha256','original-source-sha','reuse-source-sha',
-                 'original-argv-json','reuse-argv-json','model-custody-sha256'):
+                 'original-argv-json','reuse-argv-json','model-custody-sha256',
+                 'rss-time-sha256'):
         p.add_argument('--'+name)
     p.add_argument('--timeout-seconds',type=int)
     p.add_argument('--panel-wall-seconds',type=int)
