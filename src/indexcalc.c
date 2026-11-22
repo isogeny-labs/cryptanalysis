@@ -781,11 +781,18 @@ static int trial_factor(uint64_t v, const uint32_t *fb, const ic_fbdiv *div, uin
     }
     uint32_t stop = v > 1 ? tf_square_bound(fb, i, nfb, v) : i;
     while (v > 1) {
-        /* four primes a step, one branch for the four tests; a hit is
+        /* eight primes a step, one branch for the eight tests; a hit is
          * located by the scalar loop below */
+        for (; i + 8 <= stop; i += 8) {
+            const ic_fbdiv *d = div + i;
+            const unsigned h0 = v * d[0].inv <= d[0].lim, h1 = v * d[1].inv <= d[1].lim;
+            const unsigned h2 = v * d[2].inv <= d[2].lim, h3 = v * d[3].inv <= d[3].lim;
+            const unsigned h4 = v * d[4].inv <= d[4].lim, h5 = v * d[5].inv <= d[5].lim;
+            const unsigned h6 = v * d[6].inv <= d[6].lim, h7 = v * d[7].inv <= d[7].lim;
+            if (h0 | h1 | h2 | h3 | h4 | h5 | h6 | h7) break;
+        }
         for (; i + 4 <= stop; i += 4) {
             const ic_fbdiv *d = div + i;
-            /* all four tests, then one branch (|| would branch on each) */
             const unsigned h0 = v * d[0].inv <= d[0].lim, h1 = v * d[1].inv <= d[1].lim;
             const unsigned h2 = v * d[2].inv <= d[2].lim, h3 = v * d[3].inv <= d[3].lim;
             if (h0 | h1 | h2 | h3) break;
@@ -900,6 +907,70 @@ static int trial_factor32(uint32_t v, const ca_ic_ctx *ctx, uint32_t col0, relat
 
 /* ---- linear sieve ------------------------------------------------------- */
 
+/* Barrett / Lemire residue for x < 2^64 using mu = floor((2^64 - 1) / q)
+ * (the same constant stored in ic_fbdiv.lim).  Exact for every q > 1. */
+static inline uint64_t ic_mod_u64(uint64_t x, uint64_t q, uint64_t mu)
+{
+    if (x < q) return x;
+    uint64_t quo = (uint64_t)(((ca_u128)x * mu) >> 64);
+    uint64_t r = x - quo * q;
+    return r >= q ? r - q : r;
+}
+
+/* Canonical x mod q for a signed sieve coordinate. */
+static inline uint64_t ic_mod_i64(int64_t x, uint64_t q, uint64_t mu)
+{
+    if (x >= 0) return ic_mod_u64((uint64_t)x, q, mu);
+    uint64_t r = ic_mod_u64((uint64_t)(-x), q, mu);
+    return r ? q - r : 0;
+}
+
+/* a^{-1} mod q for an odd factor-base prime q < 2^32 and 0 < a < q.
+ * Same value as ca_invmod(a, q): a 32-bit binary almost-inverse (no 64-bit
+ * division, no u128 Newton cleanup) because every fb prime fits in 32 bits
+ * and the sieve's root setup is one inversion per prime per unit. */
+static inline uint32_t ic_invmod_fb(uint32_t a, uint32_t q)
+{
+    uint32_t ninv = (q * 3u) ^ 2u;
+    ninv *= 2u - q * ninv;
+    ninv *= 2u - q * ninv;
+    ninv *= 2u - q * ninv;
+    ninv *= 2u - q * ninv; /* q^{-1} mod 2^32 */
+    const uint32_t neg_ninv = 0u - ninv;
+
+    uint32_t u = q, v = a, s = 1, r = 0, flip = 0;
+    unsigned k = (unsigned)__builtin_ctz(v);
+    v >>= k;
+    for (;;) {
+        const uint32_t d = u - v;
+        if (d == 0) break;
+        const int lt = u < v;
+        const uint32_t sw = 0u - (uint32_t)lt;
+        const unsigned z = (unsigned)__builtin_ctz(d);
+        const uint32_t big = lt ? (v - u) : d;
+        const uint32_t small = lt ? u : v;
+        const uint32_t cb = (s & ~sw) | (r & sw);
+        const uint32_t cs = (r & ~sw) | (s & sw);
+        u = big >> z;
+        v = small;
+        s = cb << z;
+        r = cs + cb;
+        flip ^= sw;
+        k += z;
+    }
+    if (u != 1) return 0;
+    uint32_t x = flip ? r : s;
+    while (k) {
+        const unsigned j = k > 31 ? 31 : k;
+        const uint32_t t = (x * neg_ninv) & ((1u << j) - 1u);
+        uint64_t xx = ((uint64_t)t * q + x) >> j;
+        if (xx >= q) xx -= q;
+        x = (uint32_t)xx;
+        k -= j;
+    }
+    return x;
+}
+
 typedef struct sieve_shared {
     uint64_t p, H, J;             /* H = ceil(sqrt p), J = H^2 - p */
     uint32_t B, C;
@@ -993,28 +1064,35 @@ static void *sieve_thread(void *arg)
         memset(arr, 0, n);
         for (uint32_t i = 0; i < nfb; i++) {
             uint64_t q = s->fb[i];
+            uint64_t mu = s->fb_div[i].lim; /* floor((2^64-1)/q) */
             /* a = (H + c1) mod q, b = (J + c1 H) mod q ; root: c2 = -b / a */
-            uint64_t c1m = (uint64_t)(((c1 % (int64_t)q) + (int64_t)q) % (int64_t)q);
-            uint64_t a = (hmod[i] + c1m) % q;
+            uint64_t c1m = ic_mod_i64(c1, q, mu);
+            uint64_t a = hmod[i] + c1m;
+            if (a >= q) a -= q;
             if (a == 0) continue;
-            uint64_t b = (jmod[i] + c1m * hmod[i]) % q;
-            uint64_t inv = ca_invmod(a, q);
-            uint64_t root = (q - ca_mulmod(b, inv, q)) % q; /* c2 == root (mod q) */
+            /* c1m,hmod < q ⇒ product + jmod < q^2; Barrett closes it. */
+            uint64_t b = ic_mod_u64(jmod[i] + c1m * hmod[i], q, mu);
+            /* Factor-base primes are uint32_t; 32-bit inv matches ca_invmod.
+             * q = 2 is even: a is 1 and its inverse is 1. */
+            uint64_t inv = q == 2 ? 1 : ic_invmod_fb((uint32_t)a, (uint32_t)q);
+            uint64_t prod = ic_mod_u64(b * inv, q, mu);
+            uint64_t root = prod ? q - prod : 0; /* c2 == root (mod q) */
             /* first c2 >= c2lo with c2 == root mod q */
-            int64_t c2lo_m = ((c2lo % (int64_t)q) + (int64_t)q) % (int64_t)q;
-            int64_t start = c2lo + (int64_t)((root + q - (uint64_t)c2lo_m) % q);
+            uint64_t c2lo_m = ic_mod_i64(c2lo, q, mu);
+            uint64_t gap = root >= c2lo_m ? root - c2lo_m : root + q - c2lo_m;
+            int64_t start = c2lo + (int64_t)gap;
             uint8_t lg = s->fb_log2[i];
             for (int64_t c2 = start; c2 <= c2hi; c2 += (int64_t)q) arr[c2 - c2lo] += lg;
         }
-        /* scan candidates */
+        /* scan candidates: reject by log-sieve surplus without bitlen —
+         * av >= 2^lim ⇒ bitlen(av) > lim = arr[k]+6, same filter as before. */
         for (size_t k = 0; k < n; k++) {
+            unsigned lim = (unsigned)arr[k] + 6;
             int64_t c2 = c2lo + (int64_t)k;
             ca_i128 v = sieve_value(s, c1, c2);
             uint64_t av = v < 0 ? (uint64_t)(-v) : (uint64_t)v;
             if (av == 0) continue;
-            unsigned bl = bitlen(av);
-            /* allow ~ the largest prime unaccounted (prime powers) */
-            if ((unsigned)arr[k] + 6 < bl) continue;
+            if (lim < 64 && (av >> lim)) continue;
             cand_count++;
             relation rel;
             memset(&rel, 0, sizeof(rel));
