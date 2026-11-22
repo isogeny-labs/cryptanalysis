@@ -1,4 +1,4 @@
-import ProjectiveClassCoalescence
+import ProjectiveGenericNormalization
 import Mathlib.Tactic
 
 /-! A parametric family of coalescing chords whose source addition formula
@@ -10,6 +10,7 @@ open WeierstrassCurve.Projective
 
 private def W (d : ℤ) : WeierstrassCurve ℤ := ⟨0, 0, 0, -(d ^ 2), 1⟩
 private def f : ℤ →+* ZMod 5 := Int.castRingHom (ZMod 5)
+private def fQ : ℤ →+* ℚ := Int.castRingHom ℚ
 private def P : Fin 3 → ℤ := ![0, 1, 1]
 private def T (d : ℤ) : Fin 3 → ℤ := ![d, 1, 1]
 private def U (d : ℤ) : Fin 3 → ℤ := ![-d, -1, 1]
@@ -165,6 +166,34 @@ theorem power_family_raw_mapClass_not_addMap (k : ℕ) :
       WeierstrassCurve.Projective.negY]
     all_goals decide
 
+/-- The primitive vector represents the actual projective sum on the rational
+generic fiber whenever the offset is nonzero. -/
+theorem rational_generic_add_eq_primitive (d : ℤ) (hd : d ≠ 0) :
+    WeierstrassCurve.Projective.addMap ((W d).map fQ)
+      (mapClass fQ ⟦P⟧) (mapClass fQ ⟦T d⟧) =
+      mapClass fQ (⟦U d⟧ : WeierstrassCurve.Projective.PointClass ℤ) := by
+  apply XedniProjectiveGenericNormalization.addMap_map_eq_primitive_of_unit_factor
+    fQ (W d) P (T d) (U d) (-(d ^ 3))
+  · apply WeierstrassCurve.Projective.not_equiv_of_X_ne
+    have hdQ : (0 : ℚ) ≠ d := by exact_mod_cast hd.symm
+    simpa [fQ, P, T] using hdQ
+  · exact source_chord_factorization d
+  · have hfactor : (-(d ^ 3) : ℤ) ≠ 0 :=
+      neg_ne_zero.mpr (pow_ne_zero 3 hd)
+    have hfactorQ : ((-(d ^ 3) : ℤ) : ℚ) ≠ 0 := by
+      exact_mod_cast hfactor
+    exact hfactorQ.isUnit
+
+theorem power_family_rational_add_eq_primitive (k : ℕ) :
+    WeierstrassCurve.Projective.addMap
+      ((W ((5 : ℤ) ^ (k + 1))).map fQ)
+      (mapClass fQ ⟦P⟧)
+      (mapClass fQ ⟦T ((5 : ℤ) ^ (k + 1))⟧) =
+      mapClass fQ (⟦U ((5 : ℤ) ^ (k + 1))⟧ :
+        WeierstrassCurve.Projective.PointClass ℤ) :=
+  rational_generic_add_eq_primitive _
+    (pow_ne_zero (k + 1) (by norm_num : (5 : ℤ) ≠ 0))
+
 #print axioms P_on_curve
 #print axioms T_on_curve
 #print axioms source_chord_factorization
@@ -179,5 +208,7 @@ theorem power_family_raw_mapClass_not_addMap (k : ℕ) :
 #print axioms power_family_primitive_reduction
 #print axioms power_family_reduced_curve_elliptic
 #print axioms power_family_raw_mapClass_not_addMap
+#print axioms rational_generic_add_eq_primitive
+#print axioms power_family_rational_add_eq_primitive
 
 end XedniProjectiveCoalescenceFamily
