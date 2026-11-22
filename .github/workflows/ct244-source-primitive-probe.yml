@@ -8,6 +8,7 @@ on:
       - 'experiments/chained-transfer-public-target/norm-point-reuse-01/ct302_full_native_gate.py'
       - 'experiments/chained-transfer-public-target/norm-point-reuse-01/ct304_execution_receipt_gate.py'
       - 'experiments/chained-transfer-public-target/norm-point-reuse-01/ct310_bounded_native_pair_producer.py'
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/ct310_source_mock_full_pair_smoke.py'
       - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT310_BOUNDED_FULL_PAIR_PRODUCER_PROTOCOL.md'
       - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT304_RAW_CAPTURE_CUSTODY_PROTOCOL.md'
       - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT309_NATIVE_WALL_NESTING_PROTOCOL.md'
@@ -237,6 +238,29 @@ jobs:
             exit 1
           fi
           grep -F 'real execution additionally needs owner/provider approval' /tmp/ct310-unadmitted.err
+      - name: CT310 whole-695 mocked producer-to-CT304 auditor handshake (benign Python scripts only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          script=experiments/chained-transfer-public-target/norm-point-reuse-01/ct310_source_mock_full_pair_smoke.py
+          fixture=experiments/chained-transfer-public-target/evidence/fixed-chain-norm-point-native-01/literal-selected-vectors.json
+          collector=_ct310_pinned/experiments/chained-transfer-public-target/primitive-pricing-01/ct176_cold_process_collector.py
+          python3 -W error -m py_compile "$script"
+          python3 -W error -S "$script" --fixture "$fixture" --ct176-source "$collector" > /tmp/ct310-full-mock-normal.json
+          python3 -W error -O -S "$script" --fixture "$fixture" --ct176-source "$collector" > /tmp/ct310-full-mock-opt.json
+          cmp /tmp/ct310-full-mock-normal.json /tmp/ct310-full-mock-opt.json
+          python3 -S - <<'PY'
+          import json
+          v=json.load(open('/tmp/ct310-full-mock-normal.json'))
+          assert v['original_selected_authentic_rows']==48
+          assert v['synthetic_other_rows']==694 and v['synthetic_scoped_clocks']==144
+          assert v['producer_auditor_mock_acceptances']==1
+          assert v['mutated_full_log_mock_rejections']==1
+          assert v['benign_python_child_processes']==4
+          assert v['original_native_model_executions']==0 and v['ecdlp_complete_solve'] is False
+          assert v['pcc']=='unverified'
+          print('CT310_FULL_MOCK_HANDSHAKE_PASS: four benign Python subprocesses; 695 source rows with 694 fabricated; no native math')
+          PY
       - name: Create separate guarded Rust package and parse with rustfmt
         shell: bash
         run: |
