@@ -1,0 +1,41 @@
+{
+  "amendment_reason": "The historical circuit_sat import points to a missing main-checkout independent_replay.py; pin an identical local helper snapshot before building.",
+  "amends_protocol_sha256": "fd4736087b8c24098215e5feb7d42b294d22a106a28e50bc1fb068b4570b7f27",
+  "builder_sha256": "8c97ec18c1fe1fd08a02163ab28248d56eebcc8c1a2613e56d44c86e85e83b84",
+  "candidate_id": null,
+  "circuit_sha256": "771f19a69707079ef78a7a8432dce0f80abe0c88ca00ce48df945fbca57d5f07",
+  "curve_id": "EC1N41Ckb1h7d5e80d3c4d0",
+  "decision_gate": "First require complete-assignment positive control; then freeze a one-worker ordinary SAT query and independently replay any model. Formula size alone is diagnostic.",
+  "failed_attempt_status_sha256": "c6454f06c732b7d40a13ce2ff9eb82fa6ecf00534e9a43cb8ec88674e09890f7",
+  "frozen_utc": "2026-11-15T09:02:33.956674+00:00",
+  "helper_source_sha256": "1df6fc9295cf525be198a19842dfdca7391ac985bfa79ffa1acf8e546cc05ce1",
+  "hypothesis": "A six-bit exact lookup for each 64-x union slot combined with the balanced five-link S3 circuit accepts the known ordinary N41 relation without pinning its selectors.",
+  "kind": "n41_w6_adjacent_union_s3_formula_protocol_v2",
+  "positive_control_ids": [
+    91,
+    0,
+    19,
+    19,
+    10,
+    15
+  ],
+  "public_target": [
+    1458168294740,
+    1672312028033
+  ],
+  "rss_cap_bytes": 4294967296,
+  "sage_runtime_info_sha256": "073ca37250b100a7f961de3475da8a4d489f3f2140c15f4c72457816893f3f01",
+  "source_sha256": {
+    "n131_w20_output_inverse_linear_20261012/linear.py": "9352cf381013bc20ed3d66fdb9be28ca13f39d71cf77bc54349b296e7f6c9b3b",
+    "n131_w20_selector_elimination_v2_20261013/selector.py": "87c4056ccbde23639898163caa40dca42033e3ef031b5575ff74009272c4bb1c",
+    "n41_basis_aware_quartic_20261011/replay.py": "d328efbbde595868d7731c0463b04660c9ae87f072e8741f815675949e2b820a",
+    "n41_sixpair_shared_target_20261017/circuit.py": "29aee53f5f0907eb146fbeaec79832498169ca02c648abd9e76c423d26827816",
+    "n41_w6_adjacent_union_screen_20261115/ordinary_receipt.json": "f2ce2d47a9464e4f1c64cedab5b76ba761d7c473f68cd671a03f055b529cd869",
+    "n41_w6_adjacent_union_screen_20261115/replay_result.json": "fefd26e59ae99807aa6a31c2c2f856acfb95f097de05884740cb7cbbcfc2ee6b",
+    "n41_w6_adjacent_union_screen_20261115/union_rows.json": "19be694cfc678d3524d213f3be1b48dd5c2bc8efa07c7b7183ed4294f1257e62"
+  },
+  "status": "FROZEN_AMENDED_BEFORE_BUILD",
+  "target_count": 1,
+  "wall_cap_seconds": 180,
+  "workload_id": "0a9ad56165ec"
+}

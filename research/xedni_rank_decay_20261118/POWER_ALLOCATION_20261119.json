@@ -1,0 +1,1553 @@
+{
+  "allocation_decision": {
+    "next_admissible_stage": "the frozen 1080-row calibration after every production gate passes; it is not discovery or a decay result",
+    "no_downscaling": true,
+    "reasons": [
+      "no checkpoint upload transport",
+      "no licensed pinned Magma runtime",
+      "no externally committed workers, wall time, or storage",
+      "kappa and proxy-stratum event rates are not bounded",
+      "no target probability for observing at least thirty events is frozen",
+      "cluster/censoring power and two-phase variance equivalence are not established"
+    ],
+    "status": "UNALLOCATED"
+  },
+  "calibration": {
+    "bit_sizes": [
+      16,
+      18
+    ],
+    "executable_r_values": [
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "factor_cells": 90,
+    "feasibility": "NOT_ESTABLISHED",
+    "hardware_logical_cpus_available_not_committed": 5,
+    "magma_timeout_seconds_per_row": 2100,
+    "pari_timeout_seconds_per_row": 360,
+    "prime_slots_per_bit": 3,
+    "rank_timeout_ceiling": {
+      "ideal_wall_days_at_workers": {
+        "decimal": "6.15",
+        "denominator": 20,
+        "numerator": 123
+      },
+      "ideal_wall_hours_at_workers": {
+        "decimal": "147.6",
+        "denominator": 5,
+        "numerator": 738
+      },
+      "ideal_wall_seconds_at_workers": {
+        "decimal": "531360",
+        "denominator": 1,
+        "numerator": 531360
+      },
+      "scope": "rank timeout ceiling only; excludes all other charged work",
+      "worker_hours": {
+        "decimal": "738",
+        "denominator": 1,
+        "numerator": 738
+      },
+      "worker_seconds": 2656800,
+      "workers": 5
+    },
+    "rank_timeout_seconds_per_row": 2460,
+    "reason": "The ideal five-worker timeout ceiling exceeds six days and excludes construction/relation/verification work; Magma and checkpoint transport are absent.",
+    "row_formula": "2 bit sizes * 3 prime slots * 90 factor cells * 2 rows",
+    "rows": 1080,
+    "rows_per_factor_cell_prime": 2
+  },
+  "date": "2026-11-19",
+  "frozen_requirements": {
+    "analyzer_note": "The current analyzer evaluates a decision candidate within one factor cell; it does not require all 90 factor cells to each pass.",
+    "bit_sizes": [
+      16,
+      18,
+      20,
+      22,
+      24,
+      26,
+      28,
+      30,
+      32
+    ],
+    "bootstrap_minimum_formula": "ceil(2*M/alpha)",
+    "bootstrap_minimum_recomputed": 172800,
+    "bootstrap_replicates": 172800,
+    "factor_cell_formula": "2 curve families * 3 lifts * 3 local arms * 5 r values",
+    "factor_cells": 90,
+    "familywise_alpha": {
+      "decimal": "0.05",
+      "denominator": 20,
+      "numerator": 1
+    },
+    "inference_bit_sizes": [
+      20,
+      22,
+      24
+    ],
+    "minimum_observed_high_bit_useful_events_combined_stages": 30,
+    "observation_rule_scope": "global protocol rule; not an expected-event sample-size formula",
+    "required_useful_event_sizes_per_stage": [
+      20,
+      22,
+      24
+    ],
+    "signed_beta_lower_gate": "beta_lower > -0.8",
+    "simultaneous_profiles": 4320,
+    "stages": [
+      "discovery",
+      "replication"
+    ]
+  },
+  "manifest_sha256": "fce59ef5b6d07004937a9b6aea9f5b8b0dfbe567f79d15086e3c8456f169cfe0",
+  "natural_rows_included": false,
+  "optional_execution_matrix": {
+    "bits": [
+      16,
+      18,
+      20,
+      22,
+      24
+    ],
+    "prime_identity_reuse_between_stages_permitted": false,
+    "shared_exposure_matrix_by_bit": [
+      {
+        "bits": 16,
+        "scenarios": [
+          {
+            "beta": "-1/1",
+            "factor_rows_all_cells_by_slot": [
+              9830430,
+              9830430,
+              9830340
+            ],
+            "rows_per_factor_cell_stage": 327680,
+            "source_index_stop_exclusive_per_curve_family_by_slot": [
+              109227,
+              109227,
+              109226
+            ],
+            "status": "OPTIONAL_SCALE_ONLY_UNALLOCATED",
+            "trials_per_factor_cell_stage_by_slot": [
+              109227,
+              109227,
+              109226
+            ],
+            "unique_sources_all_curve_families_by_slot": [
+              218454,
+              218454,
+              218452
+            ],
+            "unique_sources_per_curve_family_by_slot": [
+              109227,
+              109227,
+              109226
+            ]
+          },
+          {
+            "beta": "-3/4",
+            "factor_rows_all_cells_by_slot": [
+              614430,
+              614430,
+              614340
+            ],
+            "rows_per_factor_cell_stage": 20480,
+            "source_index_stop_exclusive_per_curve_family_by_slot": [
+              6827,
+              6827,
+              6826
+            ],
+            "status": "OPTIONAL_SCALE_ONLY_UNALLOCATED",
+            "trials_per_factor_cell_stage_by_slot": [
+              6827,
+              6827,
+              6826
+            ],
+            "unique_sources_all_curve_families_by_slot": [
+              13654,
+              13654,
+              13652
+            ],
+            "unique_sources_per_curve_family_by_slot": [
+              6827,
+              6827,
+              6826
+            ]
+          },
+          {
+            "beta": "-1/2",
+            "factor_rows_all_cells_by_slot": [
+              38430,
+              38430,
+              38340
+            ],
+            "rows_per_factor_cell_stage": 1280,
+            "source_index_stop_exclusive_per_curve_family_by_slot": [
+              427,
+              427,
+              426
+            ],
+            "status": "OPTIONAL_SCALE_ONLY_UNALLOCATED",
+            "trials_per_factor_cell_stage_by_slot": [
+              427,
+              427,
+              426
+            ],
+            "unique_sources_all_curve_families_by_slot": [
+              854,
+              854,
+              852
+            ],
+            "unique_sources_per_curve_family_by_slot": [
+              427,
+              427,
+              426
+            ]
+          }
+        ]
+      },
+      {
+        "bits": 18,
+        "scenarios": [
+          {
+            "beta": "-1/1",
+            "factor_rows_all_cells_by_slot": [
+              39321630,
+              39321630,
+              39321540
+            ],
+            "rows_per_factor_cell_stage": 1310720,
+            "source_index_stop_exclusive_per_curve_family_by_slot": [
+              436907,
+              436907,
+              436906
+            ],
+            "status": "OPTIONAL_SCALE_ONLY_UNALLOCATED",
+            "trials_per_factor_cell_stage_by_slot": [
+              436907,
+              436907,
+              436906
+            ],
+            "unique_sources_all_curve_families_by_slot": [
+              873814,
+              873814,
+              873812
+            ],
+            "unique_sources_per_curve_family_by_slot": [
+              436907,
+              436907,
+              436906
+            ]
+          },
+          {
+            "beta": "-3/4",
+            "factor_rows_all_cells_by_slot": [
+              1737810,
+              1737810,
+              1737810
+            ],
+            "rows_per_factor_cell_stage": 57927,
+            "source_index_stop_exclusive_per_curve_family_by_slot": [
+              19309,
+              19309,
+              19309
+            ],
+            "status": "OPTIONAL_SCALE_ONLY_UNALLOCATED",
+            "trials_per_factor_cell_stage_by_slot": [
+              19309,
+              19309,
+              19309
+            ],
+            "unique_sources_all_curve_families_by_slot": [
+              38618,
+              38618,
+              38618
+            ],
+            "unique_sources_per_curve_family_by_slot": [
+              19309,
+              19309,
+              19309
+            ]
+          },
+          {
+            "beta": "-1/2",
+            "factor_rows_all_cells_by_slot": [
+              76860,
+              76770,
+              76770
+            ],
+            "rows_per_factor_cell_stage": 2560,
+            "source_index_stop_exclusive_per_curve_family_by_slot": [
+              854,
+              853,
+              853
+            ],
+            "status": "OPTIONAL_SCALE_ONLY_UNALLOCATED",
+            "trials_per_factor_cell_stage_by_slot": [
+              854,
+              853,
+              853
+            ],
+            "unique_sources_all_curve_families_by_slot": [
+              1708,
+              1706,
+              1706
+            ],
+            "unique_sources_per_curve_family_by_slot": [
+              854,
+              853,
+              853
+            ]
+          }
+        ]
+      },
+      {
+        "bits": 20,
+        "scenarios": [
+          {
+            "beta": "-1/1",
+            "factor_rows_all_cells_by_slot": [
+              157286430,
+              157286430,
+              157286340
+            ],
+            "rows_per_factor_cell_stage": 5242880,
+            "source_index_stop_exclusive_per_curve_family_by_slot": [
+              1747627,
+              1747627,
+              1747626
+            ],
+            "status": "OPTIONAL_SCALE_ONLY_UNALLOCATED",
+            "trials_per_factor_cell_stage_by_slot": [
+              1747627,
+              1747627,
+              1747626
+            ],
+            "unique_sources_all_curve_families_by_slot": [
+              3495254,
+              3495254,
+              3495252
+            ],
+            "unique_sources_per_curve_family_by_slot": [
+              1747627,
+              1747627,
+              1747626
+            ]
+          },
+          {
+            "beta": "-3/4",
+            "factor_rows_all_cells_by_slot": [
+              4915260,
+              4915170,
+              4915170
+            ],
+            "rows_per_factor_cell_stage": 163840,
+            "source_index_stop_exclusive_per_curve_family_by_slot": [
+              54614,
+              54613,
+              54613
+            ],
+            "status": "OPTIONAL_SCALE_ONLY_UNALLOCATED",
+            "trials_per_factor_cell_stage_by_slot": [
+              54614,
+              54613,
+              54613
+            ],
+            "unique_sources_all_curve_families_by_slot": [
+              109228,
+              109226,
+              109226
+            ],
+            "unique_sources_per_curve_family_by_slot": [
+              54614,
+              54613,
+              54613
+            ]
+          },
+          {
+            "beta": "-1/2",
+            "factor_rows_all_cells_by_slot": [
+              153630,
+              153630,
+              153540
+            ],
+            "rows_per_factor_cell_stage": 5120,
+            "source_index_stop_exclusive_per_curve_family_by_slot": [
+              1707,
+              1707,
+              1706
+            ],
+            "status": "OPTIONAL_SCALE_ONLY_UNALLOCATED",
+            "trials_per_factor_cell_stage_by_slot": [
+              1707,
+              1707,
+              1706
+            ],
+            "unique_sources_all_curve_families_by_slot": [
+              3414,
+              3414,
+              3412
+            ],
+            "unique_sources_per_curve_family_by_slot": [
+              1707,
+              1707,
+              1706
+            ]
+          }
+        ]
+      },
+      {
+        "bits": 22,
+        "scenarios": [
+          {
+            "beta": "-1/1",
+            "factor_rows_all_cells_by_slot": [
+              629145630,
+              629145630,
+              629145540
+            ],
+            "rows_per_factor_cell_stage": 20971520,
+            "source_index_stop_exclusive_per_curve_family_by_slot": [
+              6990507,
+              6990507,
+              6990506
+            ],
+            "status": "OPTIONAL_SCALE_ONLY_UNALLOCATED",
+            "trials_per_factor_cell_stage_by_slot": [
+              6990507,
+              6990507,
+              6990506
+            ],
+            "unique_sources_all_curve_families_by_slot": [
+              13981014,
+              13981014,
+              13981012
+            ],
+            "unique_sources_per_curve_family_by_slot": [
+              6990507,
+              6990507,
+              6990506
+            ]
+          },
+          {
+            "beta": "-3/4",
+            "factor_rows_all_cells_by_slot": [
+              13902300,
+              13902300,
+              13902300
+            ],
+            "rows_per_factor_cell_stage": 463410,
+            "source_index_stop_exclusive_per_curve_family_by_slot": [
+              154470,
+              154470,
+              154470
+            ],
+            "status": "OPTIONAL_SCALE_ONLY_UNALLOCATED",
+            "trials_per_factor_cell_stage_by_slot": [
+              154470,
+              154470,
+              154470
+            ],
+            "unique_sources_all_curve_families_by_slot": [
+              308940,
+              308940,
+              308940
+            ],
+            "unique_sources_per_curve_family_by_slot": [
+              154470,
+              154470,
+              154470
+            ]
+          },
+          {
+            "beta": "-1/2",
+            "factor_rows_all_cells_by_slot": [
+              307260,
+              307170,
+              307170
+            ],
+            "rows_per_factor_cell_stage": 10240,
+            "source_index_stop_exclusive_per_curve_family_by_slot": [
+              3414,
+              3413,
+              3413
+            ],
+            "status": "OPTIONAL_SCALE_ONLY_UNALLOCATED",
+            "trials_per_factor_cell_stage_by_slot": [
+              3414,
+              3413,
+              3413
+            ],
+            "unique_sources_all_curve_families_by_slot": [
+              6828,
+              6826,
+              6826
+            ],
+            "unique_sources_per_curve_family_by_slot": [
+              3414,
+              3413,
+              3413
+            ]
+          }
+        ]
+      },
+      {
+        "bits": 24,
+        "scenarios": [
+          {
+            "beta": "-1/1",
+            "factor_rows_all_cells_by_slot": [
+              2516582430,
+              2516582430,
+              2516582340
+            ],
+            "rows_per_factor_cell_stage": 83886080,
+            "source_index_stop_exclusive_per_curve_family_by_slot": [
+              27962027,
+              27962027,
+              27962026
+            ],
+            "status": "OPTIONAL_SCALE_ONLY_UNALLOCATED",
+            "trials_per_factor_cell_stage_by_slot": [
+              27962027,
+              27962027,
+              27962026
+            ],
+            "unique_sources_all_curve_families_by_slot": [
+              55924054,
+              55924054,
+              55924052
+            ],
+            "unique_sources_per_curve_family_by_slot": [
+              27962027,
+              27962027,
+              27962026
+            ]
+          },
+          {
+            "beta": "-3/4",
+            "factor_rows_all_cells_by_slot": [
+              39321630,
+              39321630,
+              39321540
+            ],
+            "rows_per_factor_cell_stage": 1310720,
+            "source_index_stop_exclusive_per_curve_family_by_slot": [
+              436907,
+              436907,
+              436906
+            ],
+            "status": "OPTIONAL_SCALE_ONLY_UNALLOCATED",
+            "trials_per_factor_cell_stage_by_slot": [
+              436907,
+              436907,
+              436906
+            ],
+            "unique_sources_all_curve_families_by_slot": [
+              873814,
+              873814,
+              873812
+            ],
+            "unique_sources_per_curve_family_by_slot": [
+              436907,
+              436907,
+              436906
+            ]
+          },
+          {
+            "beta": "-1/2",
+            "factor_rows_all_cells_by_slot": [
+              614430,
+              614430,
+              614340
+            ],
+            "rows_per_factor_cell_stage": 20480,
+            "source_index_stop_exclusive_per_curve_family_by_slot": [
+              6827,
+              6827,
+              6826
+            ],
+            "status": "OPTIONAL_SCALE_ONLY_UNALLOCATED",
+            "trials_per_factor_cell_stage_by_slot": [
+              6827,
+              6827,
+              6826
+            ],
+            "unique_sources_all_curve_families_by_slot": [
+              13654,
+              13654,
+              13652
+            ],
+            "unique_sources_per_curve_family_by_slot": [
+              6827,
+              6827,
+              6826
+            ]
+          }
+        ]
+      }
+    ],
+    "slot_order_for_all_arrays": [
+      0,
+      1,
+      2
+    ],
+    "slot_split_rule": "quotient plus one for the lowest remainder slots",
+    "source_sharing": {
+      "families_per_prime_slot": 2,
+      "rows_per_unique_source": 45,
+      "source_identity": "stage|p|family|source_index",
+      "source_index_rule": "within each bound stage/prime/family, allocate consecutive source_index values from zero through trials_per_factor_cell-1"
+    },
+    "stage_matrices": [
+      {
+        "exposure_matrix_reference": "shared_exposure_matrix_by_bit",
+        "prime_binding": {
+          "path": "PRIMES.json",
+          "rows": [
+            {
+              "bits": 16,
+              "slot_primes": [
+                40759,
+                46351,
+                36677
+              ]
+            },
+            {
+              "bits": 18,
+              "slot_primes": [
+                232189,
+                232007,
+                211619
+              ]
+            },
+            {
+              "bits": 20,
+              "slot_primes": [
+                1043557,
+                1046797,
+                689641
+              ]
+            },
+            {
+              "bits": 22,
+              "slot_primes": [
+                2373947,
+                3796939,
+                3950659
+              ]
+            },
+            {
+              "bits": 24,
+              "slot_primes": [
+                14077603,
+                13167767,
+                12567799
+              ]
+            }
+          ],
+          "sha256": "6136c983b416d31a5e3baf99458d3c884f5e0421e0d116c766ce4f1caf75b246",
+          "status": "FROZEN_MANIFEST_AVAILABLE_SCALE_ONLY"
+        },
+        "reason": "prime identities exist, but execution resources are not committed",
+        "stage": "discovery",
+        "status": "SCALE_ONLY_UNALLOCATED"
+      },
+      {
+        "exposure_matrix_reference": "shared_exposure_matrix_by_bit",
+        "prime_binding": {
+          "path": null,
+          "rows": [
+            {
+              "bits": 16,
+              "slot_primes": [
+                null,
+                null,
+                null
+              ]
+            },
+            {
+              "bits": 18,
+              "slot_primes": [
+                null,
+                null,
+                null
+              ]
+            },
+            {
+              "bits": 20,
+              "slot_primes": [
+                null,
+                null,
+                null
+              ]
+            },
+            {
+              "bits": 22,
+              "slot_primes": [
+                null,
+                null,
+                null
+              ]
+            },
+            {
+              "bits": 24,
+              "slot_primes": [
+                null,
+                null,
+                null
+              ]
+            }
+          ],
+          "sha256": null,
+          "status": "UNALLOCATED_MISSING_FRESH_PRIME_MANIFEST"
+        },
+        "reason": "protocol requires fresh replication seed/primes; no fresh prime manifest or execution resources are committed",
+        "stage": "replication",
+        "status": "UNALLOCATED"
+      }
+    ],
+    "stages_with_identical_exposure_targets": [
+      "discovery",
+      "replication"
+    ],
+    "status": "DISCOVERY_SCALE_ONLY_REPLICATION_UNALLOCATED"
+  },
+  "optional_stronger_full_factorial_scale": [
+    {
+      "allocation_kind": "OPTIONAL_STRONGER_FULL_FACTORIAL_EXPECTED_EVENT_SCALE",
+      "beta": "-1/1",
+      "buckets": [
+        {
+          "bits": 16,
+          "rate_expression": "2^(16*-1/1)",
+          "reference_prime_scale": "2^16",
+          "rows_per_factor_cell_stage": 327680,
+          "target_expected_events_per_factor_cell_stage": 5
+        },
+        {
+          "bits": 18,
+          "rate_expression": "2^(18*-1/1)",
+          "reference_prime_scale": "2^18",
+          "rows_per_factor_cell_stage": 1310720,
+          "target_expected_events_per_factor_cell_stage": 5
+        },
+        {
+          "bits": 20,
+          "rate_expression": "2^(20*-1/1)",
+          "reference_prime_scale": "2^20",
+          "rows_per_factor_cell_stage": 5242880,
+          "target_expected_events_per_factor_cell_stage": 5
+        },
+        {
+          "bits": 22,
+          "rate_expression": "2^(22*-1/1)",
+          "reference_prime_scale": "2^22",
+          "rows_per_factor_cell_stage": 20971520,
+          "target_expected_events_per_factor_cell_stage": 5
+        },
+        {
+          "bits": 24,
+          "rate_expression": "2^(24*-1/1)",
+          "reference_prime_scale": "2^24",
+          "rows_per_factor_cell_stage": 83886080,
+          "target_expected_events_per_factor_cell_stage": 5
+        }
+      ],
+      "high_bit_rows_per_factor_cell_per_stage": 110100480,
+      "kappa": 1,
+      "matrix_bits": [
+        16,
+        18,
+        20,
+        22,
+        24
+      ],
+      "not_powered_reason": "Thirty expected events does not fix the probability of observing thirty, the intercept kappa is not theorem-bounded, and cluster/censoring power is unspecified.",
+      "optional_expected_events_per_factor_cell_all_bits_combined_stages": 50,
+      "optional_expected_high_bit_events_per_factor_cell_combined_stages": 30,
+      "rank_timeout_ceiling": {
+        "ideal_wall_days_at_workers": {
+          "decimal": "114532352",
+          "denominator": 1,
+          "numerator": 114532352
+        },
+        "ideal_wall_hours_at_workers": {
+          "decimal": "2748776448",
+          "denominator": 1,
+          "numerator": 2748776448
+        },
+        "ideal_wall_seconds_at_workers": {
+          "decimal": "9.89559521280e+12",
+          "denominator": 1,
+          "numerator": 9895595212800
+        },
+        "scope": "rank timeout ceiling only; excludes all other charged work",
+        "worker_hours": {
+          "decimal": "13743882240",
+          "denominator": 1,
+          "numerator": 13743882240
+        },
+        "worker_seconds": 49477976064000,
+        "workers": 5
+      },
+      "rows_per_factor_cell_both_stages": 223477760,
+      "rows_per_factor_cell_per_stage": 111738880,
+      "scope_warning": "This allocates the expected-event scale to every one of 90 factor cells. It is stronger than the protocol observation rule and is not the committed design.",
+      "stages_with_identical_exposure_targets": [
+        "discovery",
+        "replication"
+      ],
+      "status": "SCALE_ONLY",
+      "total_factor_cells": 90,
+      "total_rows_all_factor_cells_both_stages_if_executed": 20112998400
+    },
+    {
+      "allocation_kind": "OPTIONAL_STRONGER_FULL_FACTORIAL_EXPECTED_EVENT_SCALE",
+      "beta": "-3/4",
+      "buckets": [
+        {
+          "bits": 16,
+          "rate_expression": "2^(16*-3/4)",
+          "reference_prime_scale": "2^16",
+          "rows_per_factor_cell_stage": 20480,
+          "target_expected_events_per_factor_cell_stage": 5
+        },
+        {
+          "bits": 18,
+          "rate_expression": "2^(18*-3/4)",
+          "reference_prime_scale": "2^18",
+          "rows_per_factor_cell_stage": 57927,
+          "target_expected_events_per_factor_cell_stage": 5
+        },
+        {
+          "bits": 20,
+          "rate_expression": "2^(20*-3/4)",
+          "reference_prime_scale": "2^20",
+          "rows_per_factor_cell_stage": 163840,
+          "target_expected_events_per_factor_cell_stage": 5
+        },
+        {
+          "bits": 22,
+          "rate_expression": "2^(22*-3/4)",
+          "reference_prime_scale": "2^22",
+          "rows_per_factor_cell_stage": 463410,
+          "target_expected_events_per_factor_cell_stage": 5
+        },
+        {
+          "bits": 24,
+          "rate_expression": "2^(24*-3/4)",
+          "reference_prime_scale": "2^24",
+          "rows_per_factor_cell_stage": 1310720,
+          "target_expected_events_per_factor_cell_stage": 5
+        }
+      ],
+      "high_bit_rows_per_factor_cell_per_stage": 1937970,
+      "kappa": 1,
+      "matrix_bits": [
+        16,
+        18,
+        20,
+        22,
+        24
+      ],
+      "not_powered_reason": "Thirty expected events does not fix the probability of observing thirty, the intercept kappa is not theorem-bounded, and cluster/censoring power is unspecified.",
+      "optional_expected_events_per_factor_cell_all_bits_combined_stages": 50,
+      "optional_expected_high_bit_events_per_factor_cell_combined_stages": 30,
+      "rank_timeout_ceiling": {
+        "ideal_wall_days_at_workers": {
+          "decimal": "2066786.425",
+          "denominator": 40,
+          "numerator": 82671457
+        },
+        "ideal_wall_hours_at_workers": {
+          "decimal": "49602874.2",
+          "denominator": 5,
+          "numerator": 248014371
+        },
+        "ideal_wall_seconds_at_workers": {
+          "decimal": "178570347120",
+          "denominator": 1,
+          "numerator": 178570347120
+        },
+        "scope": "rank timeout ceiling only; excludes all other charged work",
+        "worker_hours": {
+          "decimal": "248014371",
+          "denominator": 1,
+          "numerator": 248014371
+        },
+        "worker_seconds": 892851735600,
+        "workers": 5
+      },
+      "rows_per_factor_cell_both_stages": 4032754,
+      "rows_per_factor_cell_per_stage": 2016377,
+      "scope_warning": "This allocates the expected-event scale to every one of 90 factor cells. It is stronger than the protocol observation rule and is not the committed design.",
+      "stages_with_identical_exposure_targets": [
+        "discovery",
+        "replication"
+      ],
+      "status": "SCALE_ONLY",
+      "total_factor_cells": 90,
+      "total_rows_all_factor_cells_both_stages_if_executed": 362947860
+    },
+    {
+      "allocation_kind": "OPTIONAL_STRONGER_FULL_FACTORIAL_EXPECTED_EVENT_SCALE",
+      "beta": "-1/2",
+      "buckets": [
+        {
+          "bits": 16,
+          "rate_expression": "2^(16*-1/2)",
+          "reference_prime_scale": "2^16",
+          "rows_per_factor_cell_stage": 1280,
+          "target_expected_events_per_factor_cell_stage": 5
+        },
+        {
+          "bits": 18,
+          "rate_expression": "2^(18*-1/2)",
+          "reference_prime_scale": "2^18",
+          "rows_per_factor_cell_stage": 2560,
+          "target_expected_events_per_factor_cell_stage": 5
+        },
+        {
+          "bits": 20,
+          "rate_expression": "2^(20*-1/2)",
+          "reference_prime_scale": "2^20",
+          "rows_per_factor_cell_stage": 5120,
+          "target_expected_events_per_factor_cell_stage": 5
+        },
+        {
+          "bits": 22,
+          "rate_expression": "2^(22*-1/2)",
+          "reference_prime_scale": "2^22",
+          "rows_per_factor_cell_stage": 10240,
+          "target_expected_events_per_factor_cell_stage": 5
+        },
+        {
+          "bits": 24,
+          "rate_expression": "2^(24*-1/2)",
+          "reference_prime_scale": "2^24",
+          "rows_per_factor_cell_stage": 20480,
+          "target_expected_events_per_factor_cell_stage": 5
+        }
+      ],
+      "high_bit_rows_per_factor_cell_per_stage": 35840,
+      "kappa": 1,
+      "matrix_bits": [
+        16,
+        18,
+        20,
+        22,
+        24
+      ],
+      "not_powered_reason": "Thirty expected events does not fix the probability of observing thirty, the intercept kappa is not theorem-bounded, and cluster/censoring power is unspecified.",
+      "optional_expected_events_per_factor_cell_all_bits_combined_stages": 50,
+      "optional_expected_high_bit_events_per_factor_cell_combined_stages": 30,
+      "rank_timeout_ceiling": {
+        "ideal_wall_days_at_workers": {
+          "decimal": "40672",
+          "denominator": 1,
+          "numerator": 40672
+        },
+        "ideal_wall_hours_at_workers": {
+          "decimal": "976128",
+          "denominator": 1,
+          "numerator": 976128
+        },
+        "ideal_wall_seconds_at_workers": {
+          "decimal": "3514060800",
+          "denominator": 1,
+          "numerator": 3514060800
+        },
+        "scope": "rank timeout ceiling only; excludes all other charged work",
+        "worker_hours": {
+          "decimal": "4880640",
+          "denominator": 1,
+          "numerator": 4880640
+        },
+        "worker_seconds": 17570304000,
+        "workers": 5
+      },
+      "rows_per_factor_cell_both_stages": 79360,
+      "rows_per_factor_cell_per_stage": 39680,
+      "scope_warning": "This allocates the expected-event scale to every one of 90 factor cells. It is stronger than the protocol observation rule and is not the committed design.",
+      "stages_with_identical_exposure_targets": [
+        "discovery",
+        "replication"
+      ],
+      "status": "SCALE_ONLY",
+      "total_factor_cells": 90,
+      "total_rows_all_factor_cells_both_stages_if_executed": 7142400
+    }
+  ],
+  "reference_model": {
+    "beta_scenarios": [
+      "-1/1",
+      "-3/4",
+      "-1/2"
+    ],
+    "intercept_alpha": "log(kappa)=0",
+    "kappa": 1,
+    "model": "q(p)=kappa*p^beta",
+    "prime_scale": "p=2^b (conservative within each b-bit manifest stratum for beta<0)",
+    "scope": "transparent expected-event arithmetic, not a theorem-derived rate lower bound"
+  },
+  "resource_commitment": {
+    "reason": "no external resource commitment was supplied",
+    "status": "UNALLOCATED"
+  },
+  "schema": "xedni.rank-decay-power-allocation/v1",
+  "status": "UNALLOCATED",
+  "top_bit_expected_count_check": {
+    "rows": [
+      {
+        "beta": "-1/1",
+        "bits": 32,
+        "reference_target_expected_events_per_single_cell": 30,
+        "trials": 128849018880
+      },
+      {
+        "beta": "-3/4",
+        "bits": 32,
+        "reference_target_expected_events_per_single_cell": 30,
+        "trials": 503316480
+      },
+      {
+        "beta": "-1/2",
+        "bits": 32,
+        "reference_target_expected_events_per_single_cell": 30,
+        "trials": 1966080
+      }
+    ],
+    "scope": "legacy one-cell expected-count reference arithmetic; distinct from the global protocol observation rule",
+    "status": "REFERENCE_SCALE_ONLY_NOT_POWERED"
+  },
+  "two_phase_scenarios": {
+    "equivalent_power_status": "NOT_ESTABLISHED",
+    "formula": {
+      "expected_retained": "H + pi*(N-H)",
+      "kish_proxy": "N^2/(H+(N-H)/pi)",
+      "negative_weight": "1/pi"
+    },
+    "full_census_rows_by_beta": [
+      {
+        "beta": "-1/1",
+        "rank_timeout_ceiling": {
+          "ideal_wall_days_at_workers": {
+            "decimal": "114532352",
+            "denominator": 1,
+            "numerator": 114532352
+          },
+          "ideal_wall_hours_at_workers": {
+            "decimal": "2748776448",
+            "denominator": 1,
+            "numerator": 2748776448
+          },
+          "ideal_wall_seconds_at_workers": {
+            "decimal": "9.89559521280e+12",
+            "denominator": 1,
+            "numerator": 9895595212800
+          },
+          "scope": "rank timeout ceiling only; excludes all other charged work",
+          "worker_hours": {
+            "decimal": "13743882240",
+            "denominator": 1,
+            "numerator": 13743882240
+          },
+          "worker_seconds": 49477976064000,
+          "workers": 5
+        },
+        "rows": 20112998400
+      },
+      {
+        "beta": "-3/4",
+        "rank_timeout_ceiling": {
+          "ideal_wall_days_at_workers": {
+            "decimal": "2066786.425",
+            "denominator": 40,
+            "numerator": 82671457
+          },
+          "ideal_wall_hours_at_workers": {
+            "decimal": "49602874.2",
+            "denominator": 5,
+            "numerator": 248014371
+          },
+          "ideal_wall_seconds_at_workers": {
+            "decimal": "178570347120",
+            "denominator": 1,
+            "numerator": 178570347120
+          },
+          "scope": "rank timeout ceiling only; excludes all other charged work",
+          "worker_hours": {
+            "decimal": "248014371",
+            "denominator": 1,
+            "numerator": 248014371
+          },
+          "worker_seconds": 892851735600,
+          "workers": 5
+        },
+        "rows": 362947860
+      },
+      {
+        "beta": "-1/2",
+        "rank_timeout_ceiling": {
+          "ideal_wall_days_at_workers": {
+            "decimal": "40672",
+            "denominator": 1,
+            "numerator": 40672
+          },
+          "ideal_wall_hours_at_workers": {
+            "decimal": "976128",
+            "denominator": 1,
+            "numerator": 976128
+          },
+          "ideal_wall_seconds_at_workers": {
+            "decimal": "3514060800",
+            "denominator": 1,
+            "numerator": 3514060800
+          },
+          "scope": "rank timeout ceiling only; excludes all other charged work",
+          "worker_hours": {
+            "decimal": "4880640",
+            "denominator": 1,
+            "numerator": 4880640
+          },
+          "worker_seconds": 17570304000,
+          "workers": 5
+        },
+        "rows": 7142400
+      }
+    ],
+    "reason": "No proxy-positive fraction, proxy-stratum event rate, or weighted cluster variance is measured or committed. Only inclusion 1 is generically exposure-equivalent.",
+    "sampled_negative_scenarios": [
+      {
+        "assumed_proxy_positive_fraction": {
+          "decimal": "0.01",
+          "denominator": 100,
+          "numerator": 1
+        },
+        "negative_inclusion_probability": {
+          "decimal": "0.1",
+          "denominator": 10,
+          "numerator": 1
+        },
+        "negative_inverse_probability_weight": 10,
+        "rows_by_beta": [
+          {
+            "beta": "-1/1",
+            "expected_retained_rows_ceiling": 2192316826,
+            "full_population_rows": 20112998400,
+            "kish_effective_fraction_proxy": {
+              "decimal": "0.100908173562",
+              "denominator": 991,
+              "numerator": 100
+            },
+            "kish_effective_rows_proxy": {
+              "decimal": "2029565933.40",
+              "denominator": 991,
+              "numerator": 2011299840000
+            },
+            "rank_timeout_ceiling_at_retained_rows_ceiling": {
+              "ideal_wall_days_at_workers": {
+                "decimal": "12484026.3703",
+                "denominator": 3600,
+                "numerator": 44942494933
+              },
+              "ideal_wall_hours_at_workers": {
+                "decimal": "299616632.887",
+                "denominator": 150,
+                "numerator": 44942494933
+              },
+              "ideal_wall_seconds_at_workers": {
+                "decimal": "1.07861987839e+12",
+                "denominator": 1,
+                "numerator": 1078619878392
+              },
+              "scope": "rank timeout ceiling only; excludes all other charged work",
+              "worker_hours": {
+                "decimal": "1498083164.43",
+                "denominator": 30,
+                "numerator": 44942494933
+              },
+              "worker_seconds": 5393099391960,
+              "workers": 5
+            }
+          },
+          {
+            "beta": "-3/4",
+            "expected_retained_rows_ceiling": 39561318,
+            "full_population_rows": 362947860,
+            "kish_effective_fraction_proxy": {
+              "decimal": "0.100908173663",
+              "denominator": 399645921,
+              "numerator": 40327540
+            },
+            "kish_effective_rows_proxy": {
+              "decimal": "36624405.6875",
+              "denominator": 133215307,
+              "numerator": 4878931447354800
+            },
+            "rank_timeout_ceiling_at_retained_rows_ceiling": {
+              "ideal_wall_days_at_workers": {
+                "decimal": "225279.7275",
+                "denominator": 400,
+                "numerator": 90111891
+              },
+              "ideal_wall_hours_at_workers": {
+                "decimal": "5406713.46",
+                "denominator": 50,
+                "numerator": 270335673
+              },
+              "ideal_wall_seconds_at_workers": {
+                "decimal": "19464168456",
+                "denominator": 1,
+                "numerator": 19464168456
+              },
+              "scope": "rank timeout ceiling only; excludes all other charged work",
+              "worker_hours": {
+                "decimal": "27033567.3",
+                "denominator": 10,
+                "numerator": 270335673
+              },
+              "worker_seconds": 97320842280,
+              "workers": 5
+            }
+          },
+          {
+            "beta": "-1/2",
+            "expected_retained_rows_ceiling": 778522,
+            "full_population_rows": 7142400,
+            "kish_effective_fraction_proxy": {
+              "decimal": "0.100908173562",
+              "denominator": 991,
+              "numerator": 100
+            },
+            "kish_effective_rows_proxy": {
+              "decimal": "720726.538850",
+              "denominator": 991,
+              "numerator": 714240000
+            },
+            "rank_timeout_ceiling_at_retained_rows_ceiling": {
+              "ideal_wall_days_at_workers": {
+                "decimal": "4433.25027778",
+                "denominator": 3600,
+                "numerator": 15959701
+              },
+              "ideal_wall_hours_at_workers": {
+                "decimal": "106398.006667",
+                "denominator": 150,
+                "numerator": 15959701
+              },
+              "ideal_wall_seconds_at_workers": {
+                "decimal": "383032824",
+                "denominator": 1,
+                "numerator": 383032824
+              },
+              "scope": "rank timeout ceiling only; excludes all other charged work",
+              "worker_hours": {
+                "decimal": "531990.033333",
+                "denominator": 30,
+                "numerator": 15959701
+              },
+              "worker_seconds": 1915164120,
+              "workers": 5
+            }
+          }
+        ],
+        "status": "SCENARIO_ONLY_NOT_POWER_EQUIVALENT"
+      },
+      {
+        "assumed_proxy_positive_fraction": {
+          "decimal": "0.1",
+          "denominator": 10,
+          "numerator": 1
+        },
+        "negative_inclusion_probability": {
+          "decimal": "0.1",
+          "denominator": 10,
+          "numerator": 1
+        },
+        "negative_inverse_probability_weight": 10,
+        "rows_by_beta": [
+          {
+            "beta": "-1/1",
+            "expected_retained_rows_ceiling": 3821469696,
+            "full_population_rows": 20112998400,
+            "kish_effective_fraction_proxy": {
+              "decimal": "0.109890109890",
+              "denominator": 91,
+              "numerator": 10
+            },
+            "kish_effective_rows_proxy": {
+              "decimal": "2210219604.40",
+              "denominator": 91,
+              "numerator": 201129984000
+            },
+            "rank_timeout_ceiling_at_retained_rows_ceiling": {
+              "ideal_wall_days_at_workers": {
+                "decimal": "21761146.88",
+                "denominator": 25,
+                "numerator": 544028672
+              },
+              "ideal_wall_hours_at_workers": {
+                "decimal": "522267525.12",
+                "denominator": 25,
+                "numerator": 13056688128
+              },
+              "ideal_wall_seconds_at_workers": {
+                "decimal": "1.88016309043e+12",
+                "denominator": 1,
+                "numerator": 1880163090432
+              },
+              "scope": "rank timeout ceiling only; excludes all other charged work",
+              "worker_hours": {
+                "decimal": "2611337625.6",
+                "denominator": 5,
+                "numerator": 13056688128
+              },
+              "worker_seconds": 9400815452160,
+              "workers": 5
+            }
+          },
+          {
+            "beta": "-3/4",
+            "expected_retained_rows_ceiling": 68960094,
+            "full_population_rows": 362947860,
+            "kish_effective_fraction_proxy": {
+              "decimal": "0.109890109890",
+              "denominator": 91,
+              "numerator": 10
+            },
+            "kish_effective_rows_proxy": {
+              "decimal": "39884380.2198",
+              "denominator": 91,
+              "numerator": 3629478600
+            },
+            "rank_timeout_ceiling_at_retained_rows_ceiling": {
+              "ideal_wall_days_at_workers": {
+                "decimal": "392689.424167",
+                "denominator": 1200,
+                "numerator": 471227309
+              },
+              "ideal_wall_hours_at_workers": {
+                "decimal": "9424546.18",
+                "denominator": 50,
+                "numerator": 471227309
+              },
+              "ideal_wall_seconds_at_workers": {
+                "decimal": "33928366248",
+                "denominator": 1,
+                "numerator": 33928366248
+              },
+              "scope": "rank timeout ceiling only; excludes all other charged work",
+              "worker_hours": {
+                "decimal": "47122730.9",
+                "denominator": 10,
+                "numerator": 471227309
+              },
+              "worker_seconds": 169641831240,
+              "workers": 5
+            }
+          },
+          {
+            "beta": "-1/2",
+            "expected_retained_rows_ceiling": 1357056,
+            "full_population_rows": 7142400,
+            "kish_effective_fraction_proxy": {
+              "decimal": "0.109890109890",
+              "denominator": 91,
+              "numerator": 10
+            },
+            "kish_effective_rows_proxy": {
+              "decimal": "784879.120879",
+              "denominator": 91,
+              "numerator": 71424000
+            },
+            "rank_timeout_ceiling_at_retained_rows_ceiling": {
+              "ideal_wall_days_at_workers": {
+                "decimal": "7727.68",
+                "denominator": 25,
+                "numerator": 193192
+              },
+              "ideal_wall_hours_at_workers": {
+                "decimal": "185464.32",
+                "denominator": 25,
+                "numerator": 4636608
+              },
+              "ideal_wall_seconds_at_workers": {
+                "decimal": "667671552",
+                "denominator": 1,
+                "numerator": 667671552
+              },
+              "scope": "rank timeout ceiling only; excludes all other charged work",
+              "worker_hours": {
+                "decimal": "927321.6",
+                "denominator": 5,
+                "numerator": 4636608
+              },
+              "worker_seconds": 3338357760,
+              "workers": 5
+            }
+          }
+        ],
+        "status": "SCENARIO_ONLY_NOT_POWER_EQUIVALENT"
+      },
+      {
+        "assumed_proxy_positive_fraction": {
+          "decimal": "0.5",
+          "denominator": 2,
+          "numerator": 1
+        },
+        "negative_inclusion_probability": {
+          "decimal": "0.1",
+          "denominator": 10,
+          "numerator": 1
+        },
+        "negative_inverse_probability_weight": 10,
+        "rows_by_beta": [
+          {
+            "beta": "-1/1",
+            "expected_retained_rows_ceiling": 11062149120,
+            "full_population_rows": 20112998400,
+            "kish_effective_fraction_proxy": {
+              "decimal": "0.181818181818",
+              "denominator": 11,
+              "numerator": 2
+            },
+            "kish_effective_rows_proxy": {
+              "decimal": "3656908800",
+              "denominator": 1,
+              "numerator": 3656908800
+            },
+            "rank_timeout_ceiling_at_retained_rows_ceiling": {
+              "ideal_wall_days_at_workers": {
+                "decimal": "62992793.6",
+                "denominator": 5,
+                "numerator": 314963968
+              },
+              "ideal_wall_hours_at_workers": {
+                "decimal": "1511827046.4",
+                "denominator": 5,
+                "numerator": 7559135232
+              },
+              "ideal_wall_seconds_at_workers": {
+                "decimal": "5.44257736704e+12",
+                "denominator": 1,
+                "numerator": 5442577367040
+              },
+              "scope": "rank timeout ceiling only; excludes all other charged work",
+              "worker_hours": {
+                "decimal": "7559135232",
+                "denominator": 1,
+                "numerator": 7559135232
+              },
+              "worker_seconds": 27212886835200,
+              "workers": 5
+            }
+          },
+          {
+            "beta": "-3/4",
+            "expected_retained_rows_ceiling": 199621323,
+            "full_population_rows": 362947860,
+            "kish_effective_fraction_proxy": {
+              "decimal": "0.181818181818",
+              "denominator": 11,
+              "numerator": 2
+            },
+            "kish_effective_rows_proxy": {
+              "decimal": "65990520",
+              "denominator": 1,
+              "numerator": 65990520
+            },
+            "rank_timeout_ceiling_at_retained_rows_ceiling": {
+              "ideal_wall_days_at_workers": {
+                "decimal": "1136732.53375",
+                "denominator": 800,
+                "numerator": 909386027
+              },
+              "ideal_wall_hours_at_workers": {
+                "decimal": "27281580.81",
+                "denominator": 100,
+                "numerator": 2728158081
+              },
+              "ideal_wall_seconds_at_workers": {
+                "decimal": "98213690916",
+                "denominator": 1,
+                "numerator": 98213690916
+              },
+              "scope": "rank timeout ceiling only; excludes all other charged work",
+              "worker_hours": {
+                "decimal": "136407904.05",
+                "denominator": 20,
+                "numerator": 2728158081
+              },
+              "worker_seconds": 491068454580,
+              "workers": 5
+            }
+          },
+          {
+            "beta": "-1/2",
+            "expected_retained_rows_ceiling": 3928320,
+            "full_population_rows": 7142400,
+            "kish_effective_fraction_proxy": {
+              "decimal": "0.181818181818",
+              "denominator": 11,
+              "numerator": 2
+            },
+            "kish_effective_rows_proxy": {
+              "decimal": "1298618.18182",
+              "denominator": 11,
+              "numerator": 14284800
+            },
+            "rank_timeout_ceiling_at_retained_rows_ceiling": {
+              "ideal_wall_days_at_workers": {
+                "decimal": "22369.6",
+                "denominator": 5,
+                "numerator": 111848
+              },
+              "ideal_wall_hours_at_workers": {
+                "decimal": "536870.4",
+                "denominator": 5,
+                "numerator": 2684352
+              },
+              "ideal_wall_seconds_at_workers": {
+                "decimal": "1932733440",
+                "denominator": 1,
+                "numerator": 1932733440
+              },
+              "scope": "rank timeout ceiling only; excludes all other charged work",
+              "worker_hours": {
+                "decimal": "2684352",
+                "denominator": 1,
+                "numerator": 2684352
+              },
+              "worker_seconds": 9663667200,
+              "workers": 5
+            }
+          }
+        ],
+        "status": "SCENARIO_ONLY_NOT_POWER_EQUIVALENT"
+      }
+    ]
+  },
+  "zero_event_reference_check": {
+    "alpha": {
+      "decimal": "0.05",
+      "denominator": 20,
+      "numerator": 1
+    },
+    "beta": "-3/4",
+    "bits": 32,
+    "decimal_precision": 120,
+    "formula": "ceil(log(alpha)/log(1-q0))",
+    "minimality_certificate": "(1-2^-24)^50260046 <= 0.05 < (1-2^-24)^50260045",
+    "multiplicity_cluster_censoring_included": false,
+    "q0": "2^-24",
+    "scope": "one fixed-rate independent Bernoulli cell; not a multi-profile power calculation",
+    "trials": 50260046
+  }
+}

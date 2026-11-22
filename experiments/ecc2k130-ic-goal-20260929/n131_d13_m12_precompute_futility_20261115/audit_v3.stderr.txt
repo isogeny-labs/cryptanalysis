@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_d13_m12_precompute_futility_20261115/audit_v3.py", line 115, in <module>
+    main()
+    ~~~~^^
+  File "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_d13_m12_precompute_futility_20261115/audit_v3.py", line 60, in main
+    assert protocol['source_sha256']['first_seven'] == sha(PREFIX.read_bytes())
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+KeyError: 'first_seven'

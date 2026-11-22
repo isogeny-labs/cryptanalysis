@@ -1,0 +1,28 @@
+{
+  "candidate_id": null,
+  "command": "/Volumes/SSD990/cryptanalysis/sage -python run_early_solver.py",
+  "comparison_input_protocol": "query_protocol.json",
+  "model_status": "unverified until independent group replay",
+  "rss_cap_bytes": 4294967296,
+  "solver_argv": [
+    "/opt/homebrew/bin/cryptominisat5",
+    "--threads=1",
+    "--maxtime=580",
+    "--zero-exit-status",
+    "--verb=1",
+    "--printsol=1",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w9_implicit_fivepair_tower_20261017/formula_early.xcnf"
+  ],
+  "source_sha256": {
+    "build": "c40bfc55d83438db23b47ee58267525cd36b889f4ef4b3aef5ce775db33e7687",
+    "fixture": "db9062becccc79958c081085c0325b7f36760c08af7823680b6a6a2417ea1727",
+    "formula": "7cda04b70699b8622f1e11cd10451e494b5cc0defa252fb968c4fcf504e4435a",
+    "runtime": "073ca37250b100a7f961de3475da8a4d489f3f2140c15f4c72457816893f3f01",
+    "script": "25b4760ca5ad894ee4d01a99f65996173c737045be5341645f3047b7c6c63cbd",
+    "solver": "a3f85c3709b5e2a040bf82a4a604d1c7b9f10219bbf180a9e0f72319a2e892ac",
+    "wires": "4814ee872997806812cf785f7ebf1fc617b3928aa30d449a3fc7463eeb6362f3"
+  },
+  "target_input": "same frozen orientation-6 N41 public point; all five aligned W9 source codes unpinned",
+  "wall_cap_seconds": 600,
+  "worker_count": 1
+}
