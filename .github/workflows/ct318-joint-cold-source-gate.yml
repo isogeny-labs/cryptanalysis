@@ -5,6 +5,7 @@ on:
     paths:
       - "experiments/chained-transfer-public-target/norm-point-reuse-01/ct318_joint_cold_group_gate.py"
       - "experiments/chained-transfer-public-target/norm-point-reuse-01/ct319_receipt_cost_binding.py"
+      - "experiments/chained-transfer-public-target/norm-point-reuse-01/ct320_distinct_public_targets.py"
       - "experiments/chained-transfer-public-target/norm-point-reuse-01/ct304_execution_receipt_gate.py"
       - "experiments/chained-transfer-public-target/norm-point-reuse-01/ct315_complete_cold_panel.py"
       - "experiments/chained-transfer-public-target/norm-point-reuse-01/ct317_group_replay.py"
@@ -20,14 +21,15 @@ jobs:
     timeout-minutes: 4
     steps:
       - uses: actions/checkout@v4
-      - name: Compile five source auditors
+      - name: Compile six source auditors
         run: |
           python3 -m py_compile experiments/chained-transfer-public-target/norm-point-reuse-01/ct304_execution_receipt_gate.py
           python3 -m py_compile experiments/chained-transfer-public-target/norm-point-reuse-01/ct315_complete_cold_panel.py
           python3 -m py_compile experiments/chained-transfer-public-target/norm-point-reuse-01/ct317_group_replay.py
           python3 -m py_compile experiments/chained-transfer-public-target/norm-point-reuse-01/ct318_joint_cold_group_gate.py
           python3 -m py_compile experiments/chained-transfer-public-target/norm-point-reuse-01/ct319_receipt_cost_binding.py
-      - name: Independently exercise all three source-only gates (normal and optimized)
+          python3 -m py_compile experiments/chained-transfer-public-target/norm-point-reuse-01/ct320_distinct_public_targets.py
+      - name: Exercise all four source-only gates (normal and optimized)
         run: |
           set -eu
           d=experiments/chained-transfer-public-target/norm-point-reuse-01
@@ -35,8 +37,10 @@ jobs:
           python3 "$d/ct317_group_replay.py" --self-test
           python3 "$d/ct318_joint_cold_group_gate.py" --self-test
           python3 "$d/ct319_receipt_cost_binding.py" --self-test
+          python3 "$d/ct320_distinct_public_targets.py" --self-test
           python3 -O "$d/ct315_complete_cold_panel.py" --self-test
           python3 -O "$d/ct317_group_replay.py" --self-test
           python3 -O "$d/ct318_joint_cold_group_gate.py" --self-test
           python3 -O "$d/ct319_receipt_cost_binding.py" --self-test
-          echo CT319_RECEIPT_BOUND_SOURCE_ONLY_PASS
+          python3 -O "$d/ct320_distinct_public_targets.py" --self-test
+          echo CT320_DISTINCT_PUBLIC_TARGET_SOURCE_ONLY_PASS
