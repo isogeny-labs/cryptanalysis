@@ -28,6 +28,7 @@ use crate::cryptanalysis::ic_framework::affine::AffineS3Oracle;
 use crate::cryptanalysis::ic_framework::batch_mitm::BinaryBatchMitmOracle;
 use crate::cryptanalysis::ic_framework::hashed::{HashedAffineBase, HashedTensorOracle};
 use crate::cryptanalysis::ic_framework::linalg::MATRIX_NAMES;
+use crate::cryptanalysis::ic_framework::prime_batch_mitm::PrimeBatchMitmOracle;
 use crate::cryptanalysis::ic_framework::plugins::{
     BinarySubspaceBase, DescentAlgebraicOracle, FrobeniusMitmOracle, KoblitzOrbitBase, MitmOracle,
     PrimeAbscissaBase, SubtractOracle,
@@ -172,6 +173,14 @@ fn listing() -> Value {
                     {"name": "mitm", "summands": "2 or 3", "regimes": ["prime", "char2", "koblitz"],
                      "parameters": [{"name": "native_setup_pricing", "means": "0 or1, default0; whole native setup with observed arithmetic diagnostics"},{"name": "negation_folded", "means": "1 to halve the table's additions"},
                                     {"name": "m", "means": "summands, 2 or 3"}]},
+                    {"name": "mitm-prime-batched", "summands": "2 or 3", "regimes": ["prime"],
+                     "parameters": [{"name": "m", "means": "summands, 2 or 3"},
+                                    {"name": "negation_folded", "means": "1 (default) to charge the folded build's additions, 0 the full build's; same table either way"},
+                                    {"name": "native_setup_pricing", "means": "1 (default) charges the batched preparation as measured nanoseconds; 0 charges the scalar build's additions"},
+                                    {"name": "native_probe_pricing", "means": "1 (default) charges m = 3 candidate arithmetic as measured nanoseconds; 0 charges one addition per candidate point"},
+                                    {"name": "chunk", "means": "pairs per batched inversion while preparing, default 1024"},
+                                    {"name": "probe_chunk", "means": "abscissae per batched inversion while probing at m = 3, default 16"}],
+                     "needs": "the mitm pair table (same entries and witnesses) prepared with one inversion per abscissa pair and Montgomery batch inversion; lookups and hit verification stay counted as for mitm"},
                     {"name": "hashed-tensor", "summands": "2..8", "regimes": ["prime"],
                      "parameters": [
                         {"name": "slots", "means": "independent affine-hashed slot bases, 2..=8; must match hashed-affine"},
@@ -462,13 +471,15 @@ fn run_prime(
         let mut subtract = SubtractOracle;
         let mut mitm = MitmOracle::new(m);
         let mut hashed = HashedTensorOracle::new();
+        let mut prime_batched = PrimeBatchMitmOracle::new(m);
         let oracle: &mut dyn DecompositionOracle<_> = match or_name {
             "subtract" => &mut subtract,
             "mitm" => &mut mitm,
+            "mitm-prime-batched" => &mut prime_batched,
             "hashed-tensor" => &mut hashed,
             other => {
                 return Err(format!(
-                    "oracle `{other}` is not available on a prime-field curve; try subtract, mitm or hashed-tensor"
+                    "oracle `{other}` is not available on a prime-field curve; try subtract, mitm, mitm-prime-batched or hashed-tensor"
                 ))
             }
         };

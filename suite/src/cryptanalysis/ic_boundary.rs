@@ -689,15 +689,32 @@ pub(crate) fn fast_map<V>(capacity: usize) -> FastMap<V> {
 
 // ── Modular arithmetic on u64 ──────────────────────────────────────
 
+/// `a·b mod m`.  When everything fits a word the product fits two, and
+/// the reduction is one 64-bit division instead of the 128-bit routine;
+/// the result is the same.
 #[inline]
 fn mulmod(a: u64, b: u64, m: u64) -> u64 {
-    ((a as u128 * b as u128) % m as u128) as u64
+    if (a | b) <= u32::MAX as u64 {
+        (a * b) % m
+    } else {
+        ((a as u128 * b as u128) % m as u128) as u64
+    }
 }
 
+/// `a + b mod m`, without a 128-bit division when both are reduced.
 #[inline]
 fn addmod(a: u64, b: u64, m: u64) -> u64 {
-    let s = a as u128 + b as u128;
-    (s % m as u128) as u64
+    if a < m && b < m {
+        let s = a.wrapping_add(b);
+        if s >= m || s < a {
+            s.wrapping_sub(m)
+        } else {
+            s
+        }
+    } else {
+        let s = a as u128 + b as u128;
+        (s % m as u128) as u64
+    }
 }
 
 #[inline]
@@ -723,7 +740,48 @@ fn powmod(mut a: u64, mut e: u64, m: u64) -> u64 {
 }
 
 /// Modular inverse by the extended Euclidean algorithm.
+///
+/// For a modulus below `2^63` the remainders are words and the Bézout
+/// coefficient stays within `±m`, so the whole run is word arithmetic
+/// (32-bit when the modulus allows it); only a larger modulus takes the
+/// 128-bit route.  Every branch returns the one inverse in `[0, m)`, or
+/// `None` when `a ≡ 0` or the operands are not coprime.
 pub fn invmod(a: u64, m: u64) -> Option<u64> {
+    if m <= u32::MAX as u64 {
+        let m32 = m as u32;
+        let (mut old_r, mut r) = ((a % m) as u32, m32);
+        let (mut old_s, mut s) = (1i64, 0i64);
+        while r != 0 {
+            let q = old_r / r;
+            (old_r, r) = (r, old_r - q * r);
+            (old_s, s) = (s, old_s - q as i64 * s);
+        }
+        if old_r != 1 {
+            return None;
+        }
+        return Some(if old_s < 0 {
+            (old_s + m as i64) as u64
+        } else {
+            old_s as u64
+        });
+    }
+    if m < 1u64 << 63 {
+        let (mut old_r, mut r) = (a % m, m);
+        let (mut old_s, mut s) = (1i64, 0i64);
+        while r != 0 {
+            let q = old_r / r;
+            (old_r, r) = (r, old_r - q * r);
+            (old_s, s) = (s, old_s - q as i64 * s);
+        }
+        if old_r != 1 {
+            return None;
+        }
+        return Some(if old_s < 0 {
+            (old_s + m as i64) as u64
+        } else {
+            old_s as u64
+        });
+    }
     let (mut old_r, mut r) = (a as i128 % m as i128, m as i128);
     let (mut old_s, mut s) = (1i128, 0i128);
     while r != 0 {
@@ -907,9 +965,11 @@ impl IncrementalGauss {
 #[derive(Default)]
 pub struct GroupPairScratch {
     binary: crate::cryptanalysis::koblitz_fast::BatchScratch,
+    prime: prime_batch::PrimePairScratch,
 }
 
 mod batched_walk;
+pub mod prime_batch;
 
 /// One bounded diagnostic state, before the collector's matrix consumes it.
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -2524,6 +2584,12 @@ impl PrimeCurve {
         }
     }
 
+    /// The affine addition itself, uncounted: for the batched routines'
+    /// scalar lanes and their tests.
+    pub(crate) fn add_scalar(&self, a: PrimePoint, b: PrimePoint) -> PrimePoint {
+        self.add_raw(a, b)
+    }
+
     fn add_raw(&self, a: PrimePoint, b: PrimePoint) -> PrimePoint {
         if a.infinity {
             return b;
@@ -2602,6 +2668,23 @@ impl CountedGroup for PrimeCurve {
     fn add(&self, ops: &mut GroupOps, p: PrimePoint, q: PrimePoint) -> PrimePoint {
         ops.adds += 1;
         self.add_raw(p, q)
+    }
+    /// One counted addition per pair; the lanes share one inversion
+    /// (Montgomery's trick) and give the same points as `add`.
+    fn add_pairwise(
+        &self,
+        ops: &mut GroupOps,
+        ps: &[PrimePoint],
+        qs: &[PrimePoint],
+        out: &mut Vec<PrimePoint>,
+        scratch: &mut GroupPairScratch,
+    ) {
+        assert_eq!(ps.len(), qs.len());
+        ops.adds += ps.len() as u64;
+        prime_batch::add_pairwise_prime(self, ps, qs, out, &mut scratch.prime);
+    }
+    fn has_native_pairwise(&self) -> bool {
+        true
     }
     fn double(&self, ops: &mut GroupOps, p: PrimePoint) -> PrimePoint {
         ops.doubles += 1;
@@ -5152,6 +5235,7 @@ pub fn price_phase(phase: &mut PhaseCost, calib: &Calibration) {
     gae += conv("affine_s3_ns", Some(1.0));
     gae += conv("mitm_batch_setup_ns", Some(1.0));
     gae += conv("mitm_native_setup_ns", Some(1.0));
+    gae += conv("mitm_native_probe_ns", Some(1.0));
     phase.gae = gae;
 }
 
