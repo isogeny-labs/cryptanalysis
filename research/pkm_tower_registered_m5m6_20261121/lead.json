@@ -1,0 +1,20 @@
+{
+  "schema": "lead-testing.lead/v1",
+  "id": "PKM-TOWER-REGISTERED-M5M6-20261121",
+  "title": "Registered phase-1 PKM tower engine comparison, including m=5 and m=6",
+  "hypothesis": "Solving the PKM tower system in the tower quotient ring (tower equations as rewriting rules) needs narrower F4 matrices than the raw presentation at the same p, m, t and targets, for every tower kind.",
+  "prior_art": [
+    "crypto:research/notes/index-calculus/RESEARCH_PKM_TOWER_ORACLE.md section 11",
+    "crypto:research/pkm_tower_round2_20260925 (first f4_fp_tower round)",
+    "workspace:docs/notes/subexp-algo-20261121/H_LP.md, 2026-11-21 scope amendment: m=5,t=2 invalid; m=5,6 solver scaling unresolved"
+  ],
+  "kind": "pkm",
+  "pkm": {
+    "args": [
+      "--engine",
+      "tower"
+    ],
+    "m_max": 6
+  },
+  "pkm_m_max_why": "f4_fp_tower holds at most MAX_FREE = 4 free variables; m >= 7 panics (index out of bounds in TowerRing::from_raw), found by this sweep on 2026-11-19"
+}

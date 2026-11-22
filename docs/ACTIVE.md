@@ -19,6 +19,8 @@ and construction gates. [pcc:unverified]
 ## Active items (top = next)
 - [ ] CT201–CT203: complete cold ECDLP source adjudication (matched five-arm rho/BSGS/IC, Williams order, distinct-Q per-block prospective gate; automation, started 2026-11-18, branch research/ct201-complete-single-target-gate-20261118, PR #1766; source CI 44/44 normal and -O at 36807d15; native/PCC blocked) [pcc:unverified]
 
+- [ ] Run the registered PKM tower phase-1 comparison at feasible m=5,6 with the frozen baseline, planted controls and resource limits; report full cell outcomes; prepared and checkpoint upload blocked (Codex, started 2026-11-21, branch codex/pkm-high-arity-phase1-20261121, PR #1883)
+
 - [ ] Complete native import-cache verification (Codex, started 2026-11-17, branch fix/native-import-cache-followup-20261117; tracking PR #1763 merged before implementation; full CI pending).
 
 - [x] Massively parallel `ic` relation collection: speculative multi-core decomposition with in-order commit (bit-identical `S`, relations and logarithm to the serial run), forkable oracles, `--threads`; strong-scaling curve and exact-dlog parity checks (Claude Code, completed 2026-11-20, branch claude/ic-parallel-relations, PR #1878; O(q^1/4) instance search 35-254x per phase-3 cell, --threads 3.22x subtract / 2.75x descent+f4 at 4 threads, counts identical; records 20261120T1852Z-ic-*, 20261120T1913Z-ic-threads-gate) [pcc:unverified]
@@ -106,6 +108,8 @@ and construction gates. [pcc:unverified]
 - [ ] Gröbner reference table: `f4_fp` vs msolve on PKM tower + direct Semaev systems (workspace goal GB-1/GB-2) (Claude Code, started 2026-11-21, branch claude/gb-reference-20261121, PR #1882)
 
 ## Blocked / questions for the owner
+
+- PR #1883: registered PKM phase-1 measurement cannot start until checkpoint S3 upload access is restored; token HTTP 403; refresh agent exits 1 on S3 listing; configured AWS profiles return InvalidAccessKeyId or AllAccessDisabled. See `research/pkm_tower_registered_m5m6_20261121/PREPARATION.md`. [pcc:unverified]
 
 - The fresh Xedni selector panel is frozen but cannot generate its first row: checkpoint upload has no token/profile, and the documented ambient AWS fallback returns `AllAccessDisabled`. Resume requires valid scoped checkpoint transport; the earlier local waiver explicitly excludes modified panels. [pcc:unverified]
 - The rank-decay panel additionally needs licensed pinned Magma, a trusted execution-verifier/keyring, an integrated authorizing freeze, a natural `r=7..9` constructor/global map certificate, a trusted full saturated-basis route, fresh replication primes, and committed powered compute. The current runner diagnostic is intentionally `BLOCKED_NON_PRODUCTION` with zero rows. [pcc:unverified]
