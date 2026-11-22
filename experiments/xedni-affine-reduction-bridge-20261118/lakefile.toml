@@ -1,6 +1,6 @@
 name = "xedniAffineReductionBridge"
 version = "0.1.0"
-defaultTargets = ["AffineReductionBridge", "RegularChainReduction", "RegularGroupLaw"]
+defaultTargets = ["AffineReductionBridge", "RegularChainReduction", "RegularGroupLaw", "PrimeLocalReduction"]
 
 [[require]]
 name = "mathlib"
@@ -15,3 +15,6 @@ name = "RegularChainReduction"
 
 [[lean_lib]]
 name = "RegularGroupLaw"
+
+[[lean_lib]]
+name = "PrimeLocalReduction"
