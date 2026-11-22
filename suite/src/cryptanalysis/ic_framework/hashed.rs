@@ -8,9 +8,14 @@
 //! The construction follows Bochum v0.2 §3 (affine hash, inverse-hash
 //! enumeration) and the October 25 manuscript Appendix D.4 (recursive
 //! contraction), both as pinned by the crate. The tensor backend's work is
-//! reported as an uncalibrated native step count: `see the notes on
-//! S-accounting in `docs/ic/FRAMEWORK.md`. Never read an S for this arm as a
-//! priced end-to-end cost until the contraction steps have a calibration.
+//! priced as measured wall nanoseconds (`hashed_tensor_ns`, one group-addition
+//! equivalent per `ns_per_add` nanoseconds, like `affine_s3_ns`): the factor
+//! base build (hash-prime certification and slot enumeration), the oracle's
+//! `prepare` and every `decompose` call, failures included. The crate's own
+//! curve additions and square roots happen inside those intervals, so they
+//! are kept as diagnostics (`hashed_curve_additions`, `hashed_square_roots`)
+//! and not charged a second time. `hashed_tensor_steps` stays as the crate's
+//! uncalibrated primitive count. See docs/ic/FRAMEWORK.md.
 
 use std::collections::BTreeMap;
 
@@ -308,11 +313,12 @@ impl FactorBaseBuilder<PrimeCurve> for HashedAffineBase<'_> {
         params: &Params,
         ops: &mut GroupOps,
     ) -> Result<FactorBase<PrimePoint>, String> {
+        let started = std::time::Instant::now();
+        let _ = &ops; // all native work is priced as measured ns below
         let limits = limits_from(params)?;
         let spec = slot_spec(ctx, params)?;
         let curve = tensor_curve(ctx, &limits)?;
         let (slots, steps, additions, square_roots) = enumerate_slots(&curve, &spec, &limits)?;
-        ops.adds = ops.adds.saturating_add(additions);
         let starting_wall = std::time::Instant::now();
         let mut fb = FactorBase::empty(self.describe(params));
         fb.columns = slots.iter().map(Vec::len).sum();
@@ -347,8 +353,12 @@ impl FactorBaseBuilder<PrimeCurve> for HashedAffineBase<'_> {
         fb.cost.count("hashed_slots", spec.slots as u64);
         fb.cost.count("hashed_points", fb.points.len() as u64);
         fb.cost.count("hashed_tensor_steps", steps);
-        fb.cost.count("sqrt_solves", square_roots);
-        fb.cost.wall_ns = starting_wall.elapsed().as_nanos() as u64;
+        fb.cost.count("hashed_curve_additions", additions);
+        fb.cost.count("hashed_square_roots", square_roots);
+        let _ = starting_wall;
+        let native = started.elapsed().as_nanos() as u64;
+        fb.cost.count("hashed_tensor_ns", native);
+        fb.cost.wall_ns = native;
         Ok(fb)
     }
 }
@@ -363,7 +373,12 @@ pub struct HashedTensorOracle {
     slot_index: Vec<std::collections::HashMap<u64, usize>>,
     setup_steps: u64,
     setup_square_roots: u64,
+    setup_additions: u64,
+    setup_ns: u64,
     relation_steps: u64,
+    relation_ns: u64,
+    relation_additions: u64,
+    relation_square_roots: u64,
     limit_hits: u64,
     integrity_failures: u64,
 }
@@ -413,12 +428,14 @@ impl DecompositionOracle<PrimeCurve> for HashedTensorOracle {
         params: &Params,
         ops: &mut GroupOps,
     ) -> Result<(), String> {
+        let started = std::time::Instant::now();
+        let _ = &ops; // priced as measured ns (setup_native)
         let limits = limits_from(params)?;
         let spec = slot_spec(ctx, params)?;
         let curve = tensor_curve(ctx, &limits)?;
         let bases = tensor_bases(&curve, &spec, &mut Meter::new(limits.clone()))?;
         let (slots, steps, additions, square_roots) = enumerate_slots(&curve, &spec, &limits)?;
-        ops.adds = ops.adds.saturating_add(additions);
+        self.setup_additions = additions;
         let all: Vec<PrimePoint> = slots.iter().flatten().copied().collect();
         if all != fb.points {
             return Err(
@@ -442,6 +459,7 @@ impl DecompositionOracle<PrimeCurve> for HashedTensorOracle {
         self.limits = Some(limits);
         self.setup_steps = steps;
         self.setup_square_roots = square_roots;
+        self.setup_ns = started.elapsed().as_nanos() as u64;
         Ok(())
     }
 
@@ -451,8 +469,10 @@ impl DecompositionOracle<PrimeCurve> for HashedTensorOracle {
             out.insert("hashed_tensor_steps".to_string(), self.setup_steps);
         }
         if self.setup_square_roots > 0 {
-            out.insert("sqrt_solves".to_string(), self.setup_square_roots);
+            out.insert("hashed_square_roots".to_string(), self.setup_square_roots);
         }
+        out.insert("hashed_curve_additions".to_string(), self.setup_additions);
+        out.insert("hashed_tensor_ns".to_string(), self.setup_ns);
         out
     }
 
@@ -462,6 +482,39 @@ impl DecompositionOracle<PrimeCurve> for HashedTensorOracle {
         _fb: &FactorBase<PrimePoint>,
         ops: &mut GroupOps,
         counters: &mut OracleCounters,
+        point: PrimePoint,
+    ) -> Option<Vec<usize>> {
+        let started = std::time::Instant::now();
+        let result = self.decompose_inner(ctx, ops, counters, point);
+        self.relation_ns = self
+            .relation_ns
+            .saturating_add(started.elapsed().as_nanos() as u64);
+        result
+    }
+
+    fn relation_counters(&self) -> BTreeMap<String, u64> {
+        let mut out = BTreeMap::new();
+        out.insert("hashed_tensor_steps".to_string(), self.relation_steps);
+        out.insert("hashed_tensor_ns".to_string(), self.relation_ns);
+        out.insert("hashed_curve_additions".to_string(), self.relation_additions);
+        out.insert("hashed_square_roots".to_string(), self.relation_square_roots);
+        out.insert("hashed_limit_hits".to_string(), self.limit_hits);
+        out.insert(
+            "hashed_integrity_failures".to_string(),
+            self.integrity_failures,
+        );
+        out
+    }
+}
+
+impl HashedTensorOracle {
+    /// One query. Its wall time, crate curve additions and square roots
+    /// included, is charged by `decompose` as `hashed_tensor_ns`.
+    fn decompose_inner(
+        &mut self,
+        ctx: &InstanceCtx<PrimeCurve>,
+        _ops: &mut GroupOps,
+        _counters: &mut OracleCounters,
         point: PrimePoint,
     ) -> Option<Vec<usize>> {
         let curve = self.curve.as_ref()?;
@@ -476,8 +529,10 @@ impl DecompositionOracle<PrimeCurve> for HashedTensorOracle {
         let mut counter = tensor::contraction::Counter::default();
         let witness = decompose(curve, &self.bases, &target, &mut counter, &mut meter);
         self.relation_steps = self.relation_steps.saturating_add(meter.used);
-        ops.adds = ops.adds.saturating_add(meter.curve_additions);
-        counters.sqrt_solves = counters.sqrt_solves.saturating_add(meter.square_roots);
+        self.relation_additions = self.relation_additions.saturating_add(meter.curve_additions);
+        self.relation_square_roots = self
+            .relation_square_roots
+            .saturating_add(meter.square_roots);
         match witness {
             Ok(None) => None,
             Ok(Some(points)) => {
@@ -520,14 +575,4 @@ impl DecompositionOracle<PrimeCurve> for HashedTensorOracle {
         }
     }
 
-    fn relation_counters(&self) -> BTreeMap<String, u64> {
-        let mut out = BTreeMap::new();
-        out.insert("hashed_tensor_steps".to_string(), self.relation_steps);
-        out.insert("hashed_limit_hits".to_string(), self.limit_hits);
-        out.insert(
-            "hashed_integrity_failures".to_string(),
-            self.integrity_failures,
-        );
-        out
-    }
 }

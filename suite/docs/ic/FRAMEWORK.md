@@ -836,12 +836,17 @@ tensor-contraction oracle over those slots, from the vendored
 two specifications must agree, and `prepare` refuses the run when the base
 is not the same point list.
 
-The contraction's Boolean edge-assignment work is reported as
-`hashed_tensor_steps`, an **uncalibrated** charged-primitive count; curve
-additions and Tonelli-Shanks calls are charged to `GroupOps` and
-`sqrt_solves`. Because the Boolean steps have no ratio, `S` does not price
-most of the relation phase. Treat this arm as a stage diagnostic, not as a
-comparable end-to-end `S`, until that step has a calibration.
+Both plug-ins are priced by **measured wall time**, `hashed_tensor_ns`
+(one group-addition equivalent per `ns_per_add` nanoseconds, like
+`affine_s3_ns`): the base build (hash-prime certification and slot
+enumeration), the oracle's `prepare`, and every `decompose` call,
+failures and step-limit hits included. The crate's own curve additions
+and square roots run inside those intervals, so they are kept as the
+diagnostics `hashed_curve_additions` and `hashed_square_roots` and are not
+charged again. `hashed_tensor_steps` (the crate's charged primitive count)
+and `hashed_limit_hits` (queries stopped by `steps`) stay as diagnostics.
+Because the pricing is wall time, `S` for this arm is host-dependent;
+compare it only with an arm measured in the same process run or session.
 
 `ic bench --list` prints this with every parameter each plug-in reads.
 
