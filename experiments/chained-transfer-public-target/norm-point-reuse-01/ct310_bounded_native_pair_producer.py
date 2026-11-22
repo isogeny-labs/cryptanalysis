@@ -272,7 +272,7 @@ def self_test():
             if argv[1] == 'overflow': return -9, b'x' * 17, b'', 'capture limit exceeded'
             if argv[1] == 'spawn': raise OSError('synthetic child launch refusal')
             raise AssertionError('unsupported mock case')
-    successes, refusals, failed_receipts, forged_hash_refusals = 0, 0, 0, 0
+    successes, refusals, failed_receipts, forged_hash_refusals, status_contradictions = 0, 0, 0, 0, 0
     with tempfile.TemporaryDirectory(prefix='ct310-source-only-mock-') as d:
         root = Path(d)
         binary = root/'mock-not-executable'
@@ -327,6 +327,36 @@ def self_test():
                     forged_hash_refusals += 1
                 else:
                     raise AssertionError('tampered failed-capture SHA256 was admitted')
+                # CT314: raw bytes and hashes can be correct while a producer
+                # mislabels the failed process. The independent checker must
+                # derive the failure reason from exit/error fields, not trust
+                # an arbitrary status string.
+                if case == 'nonzero':
+                    contradictions = (
+                        {'status':'timeout', 'exit_code':0, 'collector_error':None},
+                        {'status':'nonzero_exit', 'exit_code':0, 'collector_error':None},
+                        {'status':'overflow', 'exit_code':1, 'collector_error':None},
+                        {'status':'spawn', 'exit_code':None, 'collector_error':None},
+                        {'status':'invalid_exit', 'exit_code':1, 'collector_error':None},
+                        {'status':'collector_error', 'exit_code':1, 'collector_error':None},
+                        {'status':'nonzero_exit', 'exit_code':1, 'collector_error':'timeout'},
+                        {'status':'nonzero_exit', 'exit_code':1,
+                         'collector_error':'capture limit exceeded'},
+                        {'status':'nonzero_exit', 'exit_code':1,
+                         'collector_error':'unrecognized collector failure'},
+                    )
+                    for alteration in contradictions:
+                        forged_status = dict(record)
+                        forged_status.update(alteration)
+                        try:
+                            independent_negative.check(
+                                forged_status, sub, 'original', fixture_path)
+                        except ValueError as exc:
+                            if 'inconsistent failure classification' not in str(exc):
+                                raise
+                            status_contradictions += 1
+                        else:
+                            raise AssertionError('forged negative status was admitted')
                 refusals += 1
         for argv in ('["wrong"]','{"malformed":true}','[false]'):
             try: argv_lock(argv, binary)
@@ -335,12 +365,14 @@ def self_test():
         try: hex_lock('no',40,'source commit')
         except ValueError: refusals += 1
         else: raise AssertionError('bad commit accepted')
-    if (successes, refusals, failed_receipts, forged_hash_refusals) != (1,8,4,4):
-        raise AssertionError('CT313 failure custody mock controls changed')
+    if (successes, refusals, failed_receipts, forged_hash_refusals,
+            status_contradictions) != (1,8,4,4,9):
+        raise AssertionError('CT313/CT314 failure custody mock controls changed')
     return {'schema':'ct310-source-mock-test/v1','mock_positive':successes,
             'mock_mutations_rejected':refusals,
             'failed_partial_capture_receipts':failed_receipts,
             'synthetic_digest_mutations_detected':forged_hash_refusals,
+            'synthetic_failure_status_mutations_rejected':status_contradictions,
             'native_models_executed':0,
             'authenticated_s3_artifacts':0,'pcc':'unverified'}
 
