@@ -2,7 +2,7 @@
 
 ## Active items
 
-- [ ] Document the matched single-large-prime control for `ca-ic prime` (Codex, started 2026-11-20, branch codex/document-prime-large-prime-control)
+- [x] Document the matched single-large-prime control for `ca-ic prime` (Codex, started 2026-11-20, branch codex/document-prime-large-prime-control, PR #1925)
 
 - [ ] hashed-tensor lead sweep (workspace PROTOCOL.md, m = 2..9, prime regime): plug-in spec, phase 1 vs prime-abscissa+mitm; calibrate contraction steps and fix the `root_u` floor if the oracle cannot run (Claude Code, started 2026-11-22, branch claude/hashed-tensor-lead-sweep-20261122, PR #1915; built at 80c9f4dd9 + this PR's pricing commit because main does not build) [pcc:unverified]
 
