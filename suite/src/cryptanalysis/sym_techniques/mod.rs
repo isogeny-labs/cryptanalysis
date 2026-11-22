@@ -381,3 +381,9 @@ mod tests {
 pub mod trails;
 // WP2: division-property integral distinguishers.
 pub mod integral;
+// WP3: impossible-differential (miss-in-the-middle) search.
+pub mod impossible;
+// WP3: zero-correlation linear hulls.
+pub mod zero_correlation;
+// WP3: Demirci-Selcuk delta-set meet-in-the-middle cost table.
+pub mod mitm;
