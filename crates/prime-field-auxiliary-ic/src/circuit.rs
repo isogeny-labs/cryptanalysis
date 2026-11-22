@@ -142,7 +142,12 @@ pub struct CandidateWorkspace {
     indices: Vec<usize>,
     active: usize,
     differences: Vec<Option<Point>>,
+    inner_differences: Vec<Option<Point>>,
+    pair_points: Vec<Option<Point>>,
+    pair_steps: Vec<Option<Point>>,
+    pair_meta: Vec<(usize, bool, usize, bool)>,
     batch: BatchScratch,
+    inner_batch: BatchScratch,
 }
 
 impl CandidateWorkspace {
@@ -153,6 +158,120 @@ impl CandidateWorkspace {
     /// Indices at which the most recent exact scalar value was zero.
     pub fn indices(&self) -> &[usize] {
         &self.indices
+    }
+}
+
+/// One signed factor-base representative in a multi-summand decomposition.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub struct SignedTerm {
+    /// Representative index in [`FactorBase::representatives`].
+    pub index: usize,
+    /// Negate the stored representative when `true`.
+    pub negative: bool,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
+pub(crate) struct CanonicalRowKey {
+    entries: [(usize, i8); 4],
+    len: u8,
+}
+
+/// A signed decomposition into `2..=4` stored factor-base representatives.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct MultiSignedRelation {
+    terms: [SignedTerm; 4],
+    len: u8,
+}
+
+impl MultiSignedRelation {
+    /// Construct a multi-summand relation from `2..=4` signed base terms.
+    pub fn new(summands: &[SignedTerm]) -> Result<Self> {
+        if !(2..=4).contains(&summands.len()) {
+            return Err(Error::Invalid("summand count must be 2, 3, or 4"));
+        }
+        let mut terms = [SignedTerm::default(); 4];
+        terms[..summands.len()].copy_from_slice(summands);
+        Ok(Self {
+            terms,
+            len: summands.len() as u8,
+        })
+    }
+    /// Lift a two-point [`SignedRelation`] into [`MultiSignedRelation`].
+    pub fn from_pair(relation: SignedRelation) -> Self {
+        Self {
+            terms: [
+                SignedTerm {
+                    index: relation.i,
+                    negative: relation.negative_i,
+                },
+                SignedTerm {
+                    index: relation.j,
+                    negative: relation.negative_j,
+                },
+                SignedTerm::default(),
+                SignedTerm::default(),
+            ],
+            len: 2,
+        }
+    }
+    /// Signed summands in canonical order.
+    pub fn summands(&self) -> &[SignedTerm] {
+        &self.terms[..usize::from(self.len)]
+    }
+    /// Number of summands (`2`, `3`, or `4`).
+    pub fn arity(&self) -> usize {
+        usize::from(self.len)
+    }
+    pub(crate) fn key(self) -> Option<CanonicalRowKey> {
+        let n = self.arity();
+        if !(2..=4).contains(&n) {
+            return None;
+        }
+        let mut raw = [(0usize, 0i8); 4];
+        for (slot, term) in raw.iter_mut().zip(self.summands()) {
+            *slot = (term.index, if term.negative { -1 } else { 1 });
+        }
+        for i in 1..n {
+            let mut j = i;
+            while j > 0 && raw[j - 1].0 > raw[j].0 {
+                raw.swap(j - 1, j);
+                j -= 1;
+            }
+        }
+        let mut merged = [(0usize, 0i8); 4];
+        let mut m_len = 0usize;
+        let mut idx = 0usize;
+        while idx < n {
+            let col = raw[idx].0;
+            let mut coeff = raw[idx].1;
+            idx += 1;
+            while idx < n && raw[idx].0 == col {
+                coeff += raw[idx].1;
+                idx += 1;
+            }
+            if coeff != 0 {
+                merged[m_len] = (col, coeff);
+                m_len += 1;
+            }
+        }
+        if m_len == 0 {
+            return None;
+        }
+        if merged[0].1 < 0 {
+            for item in &mut merged[..m_len] {
+                item.1 = -item.1;
+            }
+        }
+        Some(CanonicalRowKey {
+            entries: merged,
+            len: m_len as u8,
+        })
+    }
+}
+
+impl From<SignedRelation> for MultiSignedRelation {
+    fn from(value: SignedRelation) -> Self {
+        Self::from_pair(value)
     }
 }
 
@@ -179,6 +298,44 @@ impl SignedRelation {
             self.i.max(self.j),
             self.negative_i != self.negative_j,
         ))
+    }
+}
+
+#[derive(Clone, Copy)]
+struct S3QueryConsts {
+    a: u64,
+    two_b: u64,
+    four_b: u64,
+    target: u64,
+    target_squared: u64,
+    first_r: u64,
+    first_r2: u64,
+    twice_r: u64,
+}
+
+impl S3QueryConsts {
+    #[inline(always)]
+    fn coeffs<const B: u32>(self, x: u64, x_squared: u64) -> (u64, u64, u64) {
+        let product = F::<B>::mul(x, self.target);
+        let sum = F::<B>::add(x, self.target);
+        let d = F::<B>::sub(
+            F::<B>::add(x_squared, self.target_squared),
+            F::<B>::add(product, product),
+        );
+        let mid = F::<B>::add(F::<B>::mul(sum, F::<B>::add(product, self.a)), self.two_b);
+        let mut c = F::<B>::add(mid, mid);
+        let mut h = F::<B>::sub(
+            F::<B>::sq(F::<B>::sub(product, self.a)),
+            F::<B>::mul(self.four_b, sum),
+        );
+        if self.first_r != 0 {
+            h = F::<B>::add(
+                F::<B>::sub(h, F::<B>::mul(self.first_r, c)),
+                F::<B>::mul(self.first_r2, d),
+            );
+            c = F::<B>::sub(c, F::<B>::mul(self.twice_r, d));
+        }
+        (d, c, h)
     }
 }
 
@@ -293,14 +450,10 @@ impl<const B: u32> FactorBase<B> {
             xs.resize(xs.len().div_ceil(tile) * tile, xs[0]);
         }
         let squares = xs.iter().map(|&x| F::<B>::sq(x)).collect();
-        let direct_steps = if circuit.is_none() {
-            points
-                .iter()
-                .flat_map(|&p| [Some(curve.neg_inner(p)), Some(p)])
-                .collect()
-        } else {
-            Vec::new()
-        };
+        let direct_steps = points
+            .iter()
+            .flat_map(|&p| [Some(curve.neg_inner(p)), Some(p)])
+            .collect();
         Ok(Self {
             curve,
             points,
@@ -705,7 +858,12 @@ impl<const B: u32> FactorBase<B> {
             indices: Vec::with_capacity(self.points.len()),
             active: 0,
             differences: vec![None; self.direct_steps.len()],
+            inner_differences: vec![None; self.direct_steps.len()],
+            pair_points: Vec::with_capacity(256),
+            pair_steps: Vec::with_capacity(256),
+            pair_meta: Vec::with_capacity(256),
             batch: BatchScratch::default(),
+            inner_batch: BatchScratch::default(),
         }
     }
     /// Evaluate the exact circuit at all usable coordinates, without a GCD.
@@ -752,47 +910,137 @@ impl<const B: u32> FactorBase<B> {
                 };
             }
             Backend::Scalar => {
-                for i in 0..self.points.len() {
-                    let value = self.scalar_value(self.xs[i], self.squares[i], target_x, x2);
-                    workspace.values[i] = value;
-                    if value == 0 {
-                        workspace.indices.push(i);
-                    }
-                }
+                self.evaluate_scalar_all(target_x, x2, workspace);
             }
             _ => return Err(Error::UnsupportedBackend),
         }
         workspace.active = self.points.len();
         Ok(())
     }
-    fn scalar_value(&self, x: u64, x_squared: u64, target: u64, target_squared: u64) -> u64 {
-        let product = F::<B>::mul(x, target);
-        let sum = F::<B>::add(x, target);
-        let d = F::<B>::sub(
-            F::<B>::add(x_squared, target_squared),
-            F::<B>::add(product, product),
-        );
-        let mid = F::<B>::add(
-            F::<B>::mul(sum, F::<B>::add(product, self.curve.a)),
-            F::<B>::add(self.curve.b, self.curve.b),
-        );
-        let mut c = F::<B>::add(mid, mid);
-        let mut h = F::<B>::sub(
-            F::<B>::sq(F::<B>::sub(product, self.curve.a)),
-            F::<B>::mul(F::<B>::mul(4, self.curve.b), sum),
-        );
+    fn s3_query(&self, target: u64, target_squared: u64) -> S3QueryConsts {
         let circuit = self.circuit.as_ref().expect("compiled circuit");
         let r = circuit.first_pole;
-        if r != 0 {
-            h = F::<B>::add(
-                F::<B>::sub(h, F::<B>::mul(r, c)),
-                F::<B>::mul(F::<B>::sq(r), d),
-            );
-            c = F::<B>::sub(c, F::<B>::mul(F::<B>::add(r, r), d));
+        S3QueryConsts {
+            a: self.curve.a,
+            two_b: F::<B>::add(self.curve.b, self.curve.b),
+            four_b: F::<B>::mul(4, self.curve.b),
+            target,
+            target_squared,
+            first_r: r,
+            first_r2: if r == 0 { 0 } else { F::<B>::sq(r) },
+            twice_r: if r == 0 { 0 } else { F::<B>::add(r, r) },
         }
-        let (mut d, mut c, mut h) = ([d], [c], [h]);
-        circuit.evaluate::<B, Scalar, 1>(&mut d, &mut c, &mut h);
-        h[0]
+    }
+    fn evaluate_scalar_all(
+        &self,
+        target: u64,
+        target_squared: u64,
+        workspace: &mut CandidateWorkspace,
+    ) {
+        let circuit = self.circuit.as_ref().expect("compiled circuit");
+        let q = self.s3_query(target, target_squared);
+        let len = self.points.len();
+        let mut i = 0;
+        while i + 4 <= len {
+            let mut d = [0; 4];
+            let mut c = [0; 4];
+            let mut h = [0; 4];
+            for lane in 0..4 {
+                let (di, ci, hi) = q.coeffs::<B>(self.xs[i + lane], self.squares[i + lane]);
+                d[lane] = di;
+                c[lane] = ci;
+                h[lane] = hi;
+            }
+            circuit.evaluate::<B, Scalar, 4>(&mut d, &mut c, &mut h);
+            for (lane, &value) in h.iter().enumerate() {
+                workspace.values[i + lane] = value;
+                if value == 0 {
+                    workspace.indices.push(i + lane);
+                }
+            }
+            i += 4;
+        }
+        while i < len {
+            let (di, ci, hi) = q.coeffs::<B>(self.xs[i], self.squares[i]);
+            let (mut d, mut c, mut h) = ([di], [ci], [hi]);
+            circuit.evaluate::<B, Scalar, 1>(&mut d, &mut c, &mut h);
+            let value = h[0];
+            workspace.values[i] = value;
+            if value == 0 {
+                workspace.indices.push(i);
+            }
+            i += 1;
+        }
+    }
+    fn zero_indices_from(
+        &self,
+        start: usize,
+        target_x: u64,
+        workspace: &mut CandidateWorkspace,
+    ) -> Result<()> {
+        let x2 = F::<B>::sq(target_x);
+        workspace.indices.clear();
+        workspace.active = 0;
+        if start >= self.points.len() {
+            return Ok(());
+        }
+        match self.backend {
+            #[cfg(target_arch = "x86_64")]
+            Backend::Avx2 => {
+                // SAFETY: selection checked CPU support and xs/squares are tile-padded.
+                unsafe {
+                    x86::evaluate_zeros_from_avx2(self, start, target_x, x2, &mut workspace.indices)
+                };
+            }
+            #[cfg(all(target_arch = "x86_64", auxiliary_ic_avx512))]
+            Backend::Avx512 => {
+                // SAFETY: same checked feature and array-length invariants.
+                unsafe {
+                    x86::evaluate_zeros_from_avx512(
+                        self,
+                        start,
+                        target_x,
+                        x2,
+                        &mut workspace.indices,
+                    )
+                };
+            }
+            Backend::Scalar => {
+                let circuit = self.circuit.as_ref().expect("compiled circuit");
+                let q = self.s3_query(target_x, x2);
+                let len = self.points.len();
+                let mut i = start;
+                while i + 4 <= len {
+                    let mut d = [0; 4];
+                    let mut c = [0; 4];
+                    let mut h = [0; 4];
+                    for lane in 0..4 {
+                        let (di, ci, hi) = q.coeffs::<B>(self.xs[i + lane], self.squares[i + lane]);
+                        d[lane] = di;
+                        c[lane] = ci;
+                        h[lane] = hi;
+                    }
+                    circuit.evaluate::<B, Scalar, 4>(&mut d, &mut c, &mut h);
+                    for (lane, &val) in h.iter().enumerate() {
+                        if val == 0 {
+                            workspace.indices.push(i + lane);
+                        }
+                    }
+                    i += 4;
+                }
+                while i < len {
+                    let (di, ci, hi) = q.coeffs::<B>(self.xs[i], self.squares[i]);
+                    let (mut d, mut c, mut h) = ([di], [ci], [hi]);
+                    circuit.evaluate::<B, Scalar, 1>(&mut d, &mut c, &mut h);
+                    if h[0] == 0 {
+                        workspace.indices.push(i);
+                    }
+                    i += 1;
+                }
+            }
+            _ => return Err(Error::UnsupportedBackend),
+        }
+        Ok(())
     }
     /// Find the first verified signed decomposition; no pair table is stored.
     pub fn decompose(
@@ -804,6 +1052,285 @@ impl<const B: u32> FactorBase<B> {
             return Err(Error::Invalid("target is not on target curve"));
         }
         self.decompose_inner(target, workspace)
+    }
+    /// Find the first verified non-cancelling `2..=4`-summand decomposition.
+    ///
+    /// For `m = 3`, shifts `R' = R - s_1 P_{i_1}` are computed with one shared
+    /// Montgomery batch inversion and pushed through the division-free centered
+    /// resultant circuit (or batched direct subtraction in direct controls).
+    /// For `m = 4`, canonical non-cancelling outer pairs `(s_1 P_{i_1}, s_2 P_{i_2})`
+    /// shift `R` in bounded batches before evaluating the resultant circuit on
+    /// the inner pair `s_3 P_{i_3} + s_4 P_{i_4} = R''`.
+    pub fn decompose_multi(
+        &self,
+        summands: u8,
+        target: Point,
+        workspace: &mut CandidateWorkspace,
+    ) -> Result<Option<MultiSignedRelation>> {
+        if !(2..=4).contains(&summands) {
+            return Err(Error::Invalid("summand count must be 2, 3, or 4"));
+        }
+        if !self.curve.contains(Some(target)) {
+            return Err(Error::Invalid("target is not on target curve"));
+        }
+        self.decompose_multi_inner(summands, target, workspace)
+    }
+    pub(crate) fn decompose_multi_inner(
+        &self,
+        summands: u8,
+        target: Point,
+        workspace: &mut CandidateWorkspace,
+    ) -> Result<Option<MultiSignedRelation>> {
+        if summands == 2 {
+            return Ok(self
+                .decompose_inner(target, workspace)?
+                .map(MultiSignedRelation::from_pair));
+        }
+        let k = self.points.len();
+        workspace.differences.clear();
+        workspace.differences.resize(2 * k, Some(target));
+        workspace.active = 0;
+        workspace.indices.clear();
+        self.curve.batch_add_inner(
+            &mut workspace.differences,
+            &self.direct_steps,
+            &mut workspace.batch,
+        );
+        if summands == 3 {
+            for i1 in 0..k {
+                for neg1 in [false, true] {
+                    if self.points[i1].y() == 0 && neg1 {
+                        continue;
+                    }
+                    let r1 = workspace.differences[2 * i1 + usize::from(neg1)];
+                    if let Some((t2, t3)) = self.find_pair_from(i1, neg1, r1, workspace)? {
+                        let rel = MultiSignedRelation {
+                            terms: [
+                                SignedTerm {
+                                    index: i1,
+                                    negative: neg1,
+                                },
+                                t2,
+                                t3,
+                                SignedTerm::default(),
+                            ],
+                            len: 3,
+                        };
+                        if self.multi_relation_point(rel) == Some(target) && rel.key().is_some() {
+                            return Ok(Some(rel));
+                        }
+                    }
+                }
+            }
+            return Ok(None);
+        }
+        debug_assert_eq!(summands, 4);
+        const PAIR_CHUNK: usize = 256;
+        workspace.pair_points.clear();
+        workspace.pair_steps.clear();
+        workspace.pair_meta.clear();
+        for i1 in 0..k {
+            for neg1 in [false, true] {
+                if self.points[i1].y() == 0 && neg1 {
+                    continue;
+                }
+                let r1 = workspace.differences[2 * i1 + usize::from(neg1)];
+                for i2 in i1..k {
+                    for neg2 in [false, true] {
+                        if self.points[i2].y() == 0 && neg2 {
+                            continue;
+                        }
+                        if i2 == i1 && neg2 != neg1 {
+                            continue;
+                        }
+                        workspace.pair_points.push(r1);
+                        workspace
+                            .pair_steps
+                            .push(self.direct_steps[2 * i2 + usize::from(neg2)]);
+                        workspace.pair_meta.push((i1, neg1, i2, neg2));
+                        if workspace.pair_points.len() == PAIR_CHUNK {
+                            if let Some(rel) = self.flush_m4_chunk(target, workspace)? {
+                                return Ok(Some(rel));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if !workspace.pair_points.is_empty() {
+            if let Some(rel) = self.flush_m4_chunk(target, workspace)? {
+                return Ok(Some(rel));
+            }
+        }
+        Ok(None)
+    }
+    fn flush_m4_chunk(
+        &self,
+        target: Point,
+        workspace: &mut CandidateWorkspace,
+    ) -> Result<Option<MultiSignedRelation>> {
+        self.curve.batch_add_inner(
+            &mut workspace.pair_points,
+            &workspace.pair_steps,
+            &mut workspace.batch,
+        );
+        let count = workspace.pair_points.len();
+        for idx in 0..count {
+            let (i1, neg1, i2, neg2) = workspace.pair_meta[idx];
+            let r2 = workspace.pair_points[idx];
+            if let Some((t3, t4)) = self.find_pair_from(i2, neg2, r2, workspace)? {
+                let rel = MultiSignedRelation {
+                    terms: [
+                        SignedTerm {
+                            index: i1,
+                            negative: neg1,
+                        },
+                        SignedTerm {
+                            index: i2,
+                            negative: neg2,
+                        },
+                        t3,
+                        t4,
+                    ],
+                    len: 4,
+                };
+                if self.multi_relation_point(rel) == Some(target) && rel.key().is_some() {
+                    workspace.pair_points.clear();
+                    workspace.pair_steps.clear();
+                    workspace.pair_meta.clear();
+                    return Ok(Some(rel));
+                }
+            }
+        }
+        workspace.pair_points.clear();
+        workspace.pair_steps.clear();
+        workspace.pair_meta.clear();
+        Ok(None)
+    }
+    fn find_pair_from(
+        &self,
+        min_idx: usize,
+        prev_neg: bool,
+        residual: Option<Point>,
+        workspace: &mut CandidateWorkspace,
+    ) -> Result<Option<(SignedTerm, SignedTerm)>> {
+        let Some(r) = residual else {
+            for (ia, point) in self.points.iter().enumerate().skip(min_idx) {
+                if point.y() == 0 {
+                    if ia == min_idx && prev_neg {
+                        continue;
+                    }
+                    return Ok(Some((
+                        SignedTerm {
+                            index: ia,
+                            negative: false,
+                        },
+                        SignedTerm {
+                            index: ia,
+                            negative: false,
+                        },
+                    )));
+                }
+            }
+            return Ok(None);
+        };
+        if self.uses_circuit() {
+            self.zero_indices_from(min_idx, r.x(), workspace)?;
+            for &ia in &workspace.indices {
+                for neg_a in [false, true] {
+                    if self.points[ia].y() == 0 && neg_a {
+                        continue;
+                    }
+                    if ia == min_idx && neg_a != prev_neg {
+                        continue;
+                    }
+                    let step_a = self.direct_steps[2 * ia + usize::from(neg_a)];
+                    let Some(pb) = self.curve.add_inner(Some(r), step_a) else {
+                        continue;
+                    };
+                    let Ok(rel_ib) = self.points[ia..].binary_search_by_key(&pb.x(), |p| p.x())
+                    else {
+                        continue;
+                    };
+                    let ib = ia + rel_ib;
+                    let neg_b = pb.y() != self.points[ib].y();
+                    if ib == ia && neg_b != neg_a {
+                        continue;
+                    }
+                    let pa = self.signed_point(SignedTerm {
+                        index: ia,
+                        negative: neg_a,
+                    });
+                    let pb_rep = self.signed_point(SignedTerm {
+                        index: ib,
+                        negative: neg_b,
+                    });
+                    if self.curve.add_inner(Some(pa), Some(pb_rep)) == Some(r) {
+                        return Ok(Some((
+                            SignedTerm {
+                                index: ia,
+                                negative: neg_a,
+                            },
+                            SignedTerm {
+                                index: ib,
+                                negative: neg_b,
+                            },
+                        )));
+                    }
+                }
+            }
+            return Ok(None);
+        }
+        let slice = &self.direct_steps[2 * min_idx..];
+        workspace.inner_differences.clear();
+        workspace.inner_differences.resize(slice.len(), Some(r));
+        self.curve.batch_add_inner(
+            &mut workspace.inner_differences,
+            slice,
+            &mut workspace.inner_batch,
+        );
+        for (offset, &pb_opt) in workspace.inner_differences.iter().enumerate() {
+            let ia = min_idx + offset / 2;
+            let neg_a = offset % 2 == 1;
+            if self.points[ia].y() == 0 && neg_a {
+                continue;
+            }
+            if ia == min_idx && neg_a != prev_neg {
+                continue;
+            }
+            let Some(pb) = pb_opt else {
+                continue;
+            };
+            let Ok(rel_ib) = self.points[ia..].binary_search_by_key(&pb.x(), |p| p.x()) else {
+                continue;
+            };
+            let ib = ia + rel_ib;
+            let neg_b = pb.y() != self.points[ib].y();
+            if ib == ia && neg_b != neg_a {
+                continue;
+            }
+            let pa = self.signed_point(SignedTerm {
+                index: ia,
+                negative: neg_a,
+            });
+            let pb_rep = self.signed_point(SignedTerm {
+                index: ib,
+                negative: neg_b,
+            });
+            if self.curve.add_inner(Some(pa), Some(pb_rep)) == Some(r) {
+                return Ok(Some((
+                    SignedTerm {
+                        index: ia,
+                        negative: neg_a,
+                    },
+                    SignedTerm {
+                        index: ib,
+                        negative: neg_b,
+                    },
+                )));
+            }
+        }
+        Ok(None)
     }
     pub(crate) fn decompose_inner(
         &self,
@@ -885,9 +1412,46 @@ impl<const B: u32> FactorBase<B> {
             && self.curve.contains(target)
             && self.relation_point(relation) == target
     }
+    /// Replay a `2..=4`-summand signed row in the actual target group.
+    pub fn check_multi_relation(
+        &self,
+        target: Option<Point>,
+        relation: MultiSignedRelation,
+    ) -> bool {
+        (2..=4).contains(&relation.arity())
+            && relation
+                .summands()
+                .iter()
+                .all(|t| t.index < self.points.len())
+            && self.curve.contains(target)
+            && self.multi_relation_point(relation) == target
+    }
     pub(crate) fn relation_point(&self, relation: SignedRelation) -> Option<Point> {
         let (p, q) = self.signed_points(relation);
         self.curve.add_inner(Some(p), Some(q))
+    }
+    pub(crate) fn multi_relation_point(&self, relation: MultiSignedRelation) -> Option<Point> {
+        let mut acc = None;
+        for &term in relation.summands() {
+            acc = self.curve.add_inner(acc, Some(self.signed_point(term)));
+        }
+        acc
+    }
+    pub(crate) fn signed_point(&self, term: SignedTerm) -> Point {
+        let p = self.points[term.index];
+        if term.negative {
+            self.curve.neg_inner(p)
+        } else {
+            p
+        }
+    }
+    pub(crate) fn multi_signed_points(&self, relation: MultiSignedRelation) -> ([Point; 4], usize) {
+        let mut out = [self.points[0]; 4];
+        let summands = relation.summands();
+        for (slot, &term) in out.iter_mut().zip(summands) {
+            *slot = self.signed_point(term);
+        }
+        (out, summands.len())
     }
     pub(crate) fn signed_points(&self, relation: SignedRelation) -> (Point, Point) {
         let p = self.points[relation.i];

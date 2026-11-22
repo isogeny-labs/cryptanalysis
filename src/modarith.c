@@ -396,6 +396,10 @@ int ca_sqrtmod_prime(uint64_t a, uint64_t p, uint64_t *root)
 
 uint64_t ca_crt2(uint64_t r1, uint64_t m1, uint64_t r2, uint64_t m2)
 {
+    /* Contract (the public header, ca_modarith.h, is pinned by digest, so it
+     * is stated here): a zero modulus is not a modulus, and the result is 0.
+     * Both reductions below divide by m1 and m2, which raised SIGFPE. */
+    if (m1 == 0 || m2 == 0) return 0;
     /* x = r1 + m1 * ((r2 - r1) * m1^{-1} mod m2), with r1 reduced first:
      * an unreduced r1 gave a result outside [0, m1 m2). */
     r1 %= m1;

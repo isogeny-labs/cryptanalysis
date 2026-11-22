@@ -1,0 +1,53 @@
+experiments/ecc2k130-ic-goal-20260929/n131_w23_residual_coverage_bound_20261016/Coverage.lean:21:17: warning: `List.Sublist.cons₂` has been deprecated: Use `List.Sublist.cons_cons` instead
+experiments/ecc2k130-ic-goal-20260929/n131_w23_residual_coverage_bound_20261016/Coverage.lean:30:6: error: unsolved goals
+case cons.isTrue
+α : Type u
+inst✝ : DecidableEq α
+a x : α
+xs : List α
+ih : a ∈ unique xs ↔ a ∈ xs
+h✝ : x ∈ xs
+⊢ a = x → a ∈ xs
+experiments/ecc2k130-ic-goal-20260929/n131_w23_residual_coverage_bound_20261016/Coverage.lean:30:14: warning: This simp argument is unused:
+  ih
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [*]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+experiments/ecc2k130-ic-goal-20260929/n131_w23_residual_coverage_bound_20261016/Coverage.lean:31:14: warning: This simp argument is unused:
+  ih
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [*]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+experiments/ecc2k130-ic-goal-20260929/n131_w23_residual_coverage_bound_20261016/Coverage.lean:41:14: warning: This simp argument is unused:
+  ih
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [unique_mem, *]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+experiments/ecc2k130-ic-goal-20260929/n131_w23_residual_coverage_bound_20261016/Coverage.lean:54:23: error: unsolved goals
+case cons
+T : Type u
+J : Type v
+G : Type w
+orientations : List J
+target : T → J → G
+tuple : T
+tail : List T
+ih : (emitted tail orientations target).length = tail.length * orientations.length
+⊢ orientations.length + (List.map (fun a => orientations.length) tail).sum =
+    tail.length * orientations.length + orientations.length
+experiments/ecc2k130-ic-goal-20260929/n131_w23_residual_coverage_bound_20261016/Coverage.lean:55:21: warning: This simp argument is unused:
+  ih
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [emitted, Nat.succ_mul]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'TargetOrbitCoverage.unique_mem' depends on axioms: [propext, sorryAx]
+'TargetOrbitCoverage.unique_nodup' depends on axioms: [propext, sorryAx]
+'TargetOrbitCoverage.distinct_target_bound' depends on axioms: [propext, sorryAx]

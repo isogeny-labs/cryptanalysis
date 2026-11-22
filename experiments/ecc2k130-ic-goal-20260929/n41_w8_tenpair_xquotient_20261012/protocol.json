@@ -1,0 +1,40 @@
+{
+  "candidate_id": null,
+  "combined_rss_cap_bytes": 4294967296,
+  "compiler": "Apple clang version 17.0.0 (clang-1700.0.13.5)",
+  "curve": "y^2+xy=x^3+1",
+  "field": "GF(2)[t]/(t^41+t^3+1)",
+  "left_kept_cap": 5000000,
+  "left_slots": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "method": "canonicalize each left point under global negation; index x; recover global sign from target minus right sum; replay all five left states and full point sum",
+  "random_generator": "xorshift64star_seed_4d595df4d0f33173",
+  "right_kept_cap": 5000000,
+  "right_slots": [
+    5,
+    0,
+    1,
+    2,
+    3
+  ],
+  "sha256": {
+    "baseline_protocol": "72cd5345c5c93372ce8ac8f744b7367e8490e234e42436112e89aa5e8be728cc",
+    "baseline_receipt": "29c25fee8cff54f47c55106a225eafb44c297c47619a4b0c3e6f856c7fe116fa",
+    "binary": "646f736fd5a2cd83f497045abf642ef1f66392a530545ac5c9ad0a5b69af385c",
+    "included_group_source": "b0a74e93f5daf4f66c22e866c6594b7e6e3e4df024cba2989e4df7e1ac5129db",
+    "input": "1f99b78210c3ec6c30945f3a9d261c1fd58cbb3a509e3a050fb5bdd4a75f06dd",
+    "ninepair_public_point_audit": "66cb3a8653b77a7fb8ee50c3309c2c7c79d6a8b5c3b0f0149badb94bd6d7578d",
+    "runner": "80ddfe6dcd2762c1a1ac44d79d79087791a4458eeb8332fcbf6bba13722fd961",
+    "source": "7bd642d67adc6e2a7b8d5258b614e9acf0da5e1c464883e0863c98c7acd674ce"
+  },
+  "source_law": "ten_free_signed_W8_pairs_slots_0_1_2_3_4_5_0_1_2_3",
+  "status": "FROZEN_XQUOTIENT_N41_TENPAIR_PUBLIC_POINT_CONTROL",
+  "target_law": "four_raw_preimages_of_one_frozen_public_point",
+  "total_wall_cap_seconds": 180,
+  "worker_count": 1
+}

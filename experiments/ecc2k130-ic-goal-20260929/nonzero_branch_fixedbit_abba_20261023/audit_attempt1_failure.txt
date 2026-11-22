@@ -1,0 +1,4 @@
+Command: python3 experiments/ecc2k130-ic-goal-20260929/nonzero_branch_fixedbit_abba_20261023/audit_anf.py
+Exit: 1
+Failure: AttributeError: 'int' object has no attribute 'bit_count' at the final degree assertion.
+The exact coefficient-map equality and monomial-count assertions had already passed. The host's plain python3 lacks int.bit_count; the corrected audit uses bin(m).count('1') and passes both frozen target rows.
