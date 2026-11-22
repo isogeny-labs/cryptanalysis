@@ -1,0 +1,12 @@
+SignatureCollision.lean:24:2: error: Tactic `rfl` failed: The left-hand side
+  false && decide (other x = false)
+is not definitionally equal to the right-hand side
+  true
+
+α : Type
+bit0 other : α → Bool
+trace_zero : ∀ (x : α), bit0 x = false
+x : α
+⊢ (false && decide (other x = false)) = true
+'SignatureCollision.pair_collision_implies_four_term_zero' depends on axioms: [propext]
+'SignatureCollision.zero_coordinate_product' depends on axioms: [sorryAx]

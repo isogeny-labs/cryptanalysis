@@ -1,0 +1,49 @@
+{
+  "branch_rule": "low first-code bit is one",
+  "candidate_id": null,
+  "cases": {
+    "n131_o_k4": {
+      "field_degree": 131,
+      "first_base_code": 0,
+      "first_free_bits": 4,
+      "target_index": 1,
+      "wall_cap_seconds": 600
+    },
+    "n131_p_k4": {
+      "field_degree": 131,
+      "first_base_code": 0,
+      "first_free_bits": 4,
+      "target_index": 0,
+      "wall_cap_seconds": 600
+    },
+    "n41_o_k5": {
+      "field_degree": 41,
+      "first_base_code": 224,
+      "first_free_bits": 5,
+      "target_index": 1,
+      "wall_cap_seconds": 120
+    },
+    "n41_p_k5": {
+      "field_degree": 41,
+      "first_base_code": 224,
+      "first_free_bits": 5,
+      "target_index": 0,
+      "wall_cap_seconds": 120
+    }
+  },
+  "curve_ids": {
+    "131": "EC1N131Ckb1heb5f1998f20b",
+    "41": "EC1N41Ckb1h7d5e80d3c4d0"
+  },
+  "sources": {
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/joint_block_order_20261018/panel_verification.json": "67aa9757072f327df8aa705d965af1db0d22ba62f8d1b7211c85ced5e65a593f",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w33_freecode_resultant_20261018/coefficients.json": "9109e2222876f4fd8c413f16dd7dac542fd04b7ab70a4784721638301311bb60",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w11_freecode_resultant_20261018/resultant_input.tsv": "e0e884a501ec57685a7bed70bf168ed94bf2c278fb70a9c8d0ca9d8c8f0450c9",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/resultant_degree1_syzygy_20261019/DegreeFall.lean": "313045b68158a52a9729f9249a7ac345dcbf5ddb3104a49470bb4a8197b7e6ba",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/resultant_degree1_syzygy_20261019/verification_result.json": "061478bf9ebd01997d71c3c3b22fbf9e27dd740ecd0fc07e4ffa5534ab6bc33a",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/resultant_nonzero_branch_20261019/branch_gb.py": "dfa578bf772aa9695c8685e9ce2a92f2525f4db3a960ebbad98ed463c8f75d39"
+  },
+  "status": "FROZEN_BEFORE_NONZERO_BRANCH_GB",
+  "term_order": "degrevlex",
+  "worker_count": 1
+}

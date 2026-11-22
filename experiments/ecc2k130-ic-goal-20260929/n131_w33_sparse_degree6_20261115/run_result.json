@@ -1,0 +1,63 @@
+{
+  "candidate_id": null,
+  "curve_id": "EC1N131Ckb1heb5f1998f20b",
+  "protocol_sha256": "6b6ba8dd543a5bd36e5026278313e923123f6a82471f6423b53c3b6e4438425b",
+  "rows": [
+    {
+      "child_result": null,
+      "command": [
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w33_sparse_degree6_20261115/sparse_degree6",
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w33_sparse_degree6_20261115/equations_0.txt",
+        "78076",
+        "numeric",
+        "180"
+      ],
+      "exit_code": -15,
+      "name": "constructed_positive",
+      "parent_stop": "EXTERNAL_TIMEOUT",
+      "parent_wall_seconds": 190.12672137499612,
+      "peak_child_rss_sample_bytes": 413319168,
+      "status": "EXTERNAL_TIMEOUT",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "target_index": 0
+    },
+    {
+      "child_result": {
+        "constant_in_span": false,
+        "loop_s": 187.771,
+        "max_row_words": 64470,
+        "maxrss_raw": 392691712,
+        "mode": "numeric",
+        "rank": 4752,
+        "raw_equation_support": 105812,
+        "rows_processed": 4752,
+        "setup_s": 0.0105908,
+        "status": "BOUNDED_TIME",
+        "stored_words": 47915805,
+        "target_index": 1,
+        "total_rows": 78076,
+        "wall_s": 187.782,
+        "xor_count": 544911,
+        "zero_rows": 0
+      },
+      "command": [
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w33_sparse_degree6_20261115/sparse_degree6",
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w33_sparse_degree6_20261115/equations_1.txt",
+        "78076",
+        "numeric",
+        "180"
+      ],
+      "exit_code": 0,
+      "name": "frozen_public_raw_point",
+      "parent_stop": null,
+      "parent_wall_seconds": 188.09737533300358,
+      "peak_child_rss_sample_bytes": 392577024,
+      "status": "BOUNDED_TIME",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "cddf29e27eca5fffb8dd159840155ced80f0056ef6268cf6fefd3e8da343328d",
+      "target_index": 1
+    }
+  ],
+  "status": "COMPLETE_SPARSE_DEGREE6_SUPERVISION"
+}
