@@ -203,7 +203,34 @@ jobs:
           assert error=='capture limit exceeded' and len(out)<=1025
           rc,out,err,error=child.bounded_subprocess([sys.executable,'-c','import time;time.sleep(2)'],0.2)
           assert error=='timeout'
-          print('CT310_SOURCE_ONLY_PASS: plan-only; 7 synthetic mutations; 3 benign process captures; 0 native models')
+          import hashlib, tempfile
+          with tempfile.TemporaryDirectory(prefix='ct310-retention-mock-') as td:
+              d=Path(td)
+              exe=d/'mock-src'; exe.write_bytes(b'mock-executable-bytes')
+              h=hashlib.sha256(exe.read_bytes()).hexdigest()
+              retained=ct310.retain_binary(exe,d/'retained.bin',h)
+              assert retained.read_bytes()==exe.read_bytes()
+              try: ct310.retain_binary(exe,d/'forged.bin','0'*64)
+              except ValueError: pass
+              else: raise AssertionError('forged retained binary admitted')
+              document={'schema':'ct310-external-six-object-custody-reference/v1',
+                'remote':'s3','sts_preflight_success':True,
+                'tool_source_commit':'a'*40,'config_git_blob':'b'*40,
+                'owner_approval_reference':'SYNTHETIC-ONLY-NOT-A-REAL-APPROVAL',
+                'objects':[{'key':f'mock-object-{i}', 'bytes':i+1,'sha256':f'{i:064x}'} for i in range(6)]}
+              custody=d/'source-custody.json'
+              custody.write_text(json.dumps(document))
+              bound=hashlib.sha256(custody.read_bytes()).hexdigest()
+              assert ct310.custody_lock(custody,bound)==bound
+              document['sts_preflight_success']=False
+              custody.write_text(json.dumps(document))
+              try: ct310.custody_lock(custody,hashlib.sha256(custody.read_bytes()).hexdigest())
+              except ValueError: pass
+              else: raise AssertionError('failed STS mock accepted')
+              try: ct310.custody_lock(custody,bound)
+              except ValueError: pass
+              else: raise AssertionError('changed custody receipt SHA accepted')
+          print('CT310_SOURCE_ONLY_PASS: plan-only; 7 base synthetic mutations; bounded benign process; mock retention/custody refusals; 0 native models')
           PY
           if python3 -S "$script" --execute --timeout-seconds 1 --panel-wall-seconds 1 > /tmp/ct310-unadmitted.out 2> /tmp/ct310-unadmitted.err; then
             echo "CT310 improperly accepted execution without owner/provider admission" >&2
