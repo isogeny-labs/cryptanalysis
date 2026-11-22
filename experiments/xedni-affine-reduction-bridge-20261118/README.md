@@ -25,6 +25,10 @@ The generic mathematical statement is: for a commutative ring `R`, field `S`, an
 | Source homogeneous chord lies on its projective curve | `XedniSourceChordEquation.sourceChordTriple_on_curve` | Any two source-ring affine points on the same short-Weierstrass curve; no denominator invertibility; checked |
 | Source chord is nonsingular at a residue-vertical boundary | `XedniSourceChordNonsingular.sourceChordTriple_nonsingular` | Source projective curve point, field-valued reduction, reduced x-difference zero and reduced y-difference nonzero; checked |
 | Local projective chord derivative is a unit | `XedniLocalChordUnitDerivative.chordZDerivative_isUnit`, `primeLocal_chordZDerivative_isUnit` | Source local ring with its canonical residue field, or the recorded integer prime-local ring; reduced x-difference zero and y-difference nonzero; checked |
+| Source chord equals projective addition coordinates | `XedniSourceChordAddition.addXYZ_eq_neg_sourceChordTriple` | Two affine source points on a short-Weierstrass curve over any commutative ring; mathlib's `addXYZ` equals the source chord triple scaled by `-1`; checked |
+| Distinct source chord selects addition branch | `XedniSourceChordDistinctAddition.addMap_eq_sourceChordClass` | Distinct source x-coordinates; mathlib's projective `addMap` is the chord class; checked |
+| Residue-vertical source addition reduces to zero | `XedniResidueAdditionZero.reduced_source_add_point_zero` | Ring map from a commutative source ring to a field, reduced x-difference zero, reduced y-difference nonzero; reduced source addition is a nonsingular zero point; checked |
+| Residue-vertical projective addition commutes with class reduction | `XedniProjectiveClassReduction.mapClass_addMap_residue_vertical` | Same ring map and residue conditions; class map preserves the source `addMap` result in this branch; checked |
 | Field step is elliptic-curve addition | `XedniRegularGroupLaw.fieldStep_group_add` | Over a field, with the reduced short curve elliptic, a `FieldStep` is equality to mathlib's point-group addition; covers distinct-x chords and nonvertical doubling |
 | Field chain gives a group relation | `XedniRegularGroupLaw.fieldChain_group_relation` | The field endpoint equals its start plus a natural-number multiple of the fixed addend |
 | Reduced regular chain gives a group relation | `XedniRegularGroupLaw.reduced_regularChain_group_relation` | Combines the source-chain reduction theorem and field group law; requires ellipticity of the coefficient-reduced short curve |
@@ -194,7 +198,23 @@ At the residue-vertical chord, the projective `Z` derivative of the source short
 | Local derivative is a unit | `XedniLocalChordUnitDerivative.chordZDerivative_isUnit` | Local commutative ring, canonical residue field, reduced chord x-difference zero and y-difference nonzero; checked |
 | Prime-local specialization | `XedniLocalChordUnitDerivative.primeLocal_chordZDerivative_isUnit` | Localization of `ℤ` at a prime ideal with the existing `reduce P` map and the same residue conditions; checked |
 
-Run `lake build LocalChordUnitDerivative` in this directory. `build-local-chord-unit-output.txt` records the fresh build and `#print axioms` for all three declarations; each lists only `propext`, `Classical.choice`, and `Quot.sound`. The remaining structural obligation is to define the local projective addition law and prove that this source chord representative is the sum of its inputs and that reduction preserves it in every addition case.
+Run `lake build LocalChordUnitDerivative` in this directory. `build-local-chord-unit-output.txt` records the fresh build and `#print axioms` for all three declarations; each lists only `propext`, `Classical.choice`, and `Quot.sound`.
+
+## Projective addition and residue-vertical reduction
+
+`SourceChordAddition.lean` identifies the homogeneous source chord triple with mathlib's denominator-free `addXYZ` coordinates up to the unit `-1` over any commutative ring. `SourceChordDistinctAddition.lean` proves that unequal source x-coordinates select this chord branch of `Projective.add` and give the same projective point class. `ResidueAdditionZero.lean` uses the broader condition of unequal source y-coordinates: at a residue-vertical chord, reduced y-difference nonzero selects the chord branch even when source x-coordinates coincide. The coordinatewise reduction of the source addition representative then defines the nonsingular zero point of the reduced curve.
+
+`ProjectiveClassReduction.lean` defines `mapClass` by descending coordinatewise ring maps to projective equivalence classes. A ring map sends units to units, so the definition is independent of the representative. At the residue-vertical branch, `mapClass_addMap_residue_vertical` proves that mapping the source `addMap` class equals `addMap` of the mapped input classes on the reduced curve. This is an addition-compatibility theorem for that branch under the exact residue conditions; other branches and a full local reduction group homomorphism remain separate proof obligations.
+
+| Result | Lean declaration | Exact hypotheses and status |
+| --- | --- | --- |
+| Chord coordinate identity | `XedniSourceChordAddition.addXYZ_eq_neg_sourceChordTriple` | Commutative source ring, two source curve points; checked |
+| Distinct-x addition class | `XedniSourceChordDistinctAddition.addMap_eq_sourceChordClass` | Same data and unequal source x-coordinates; checked |
+| Residue-vertical source addition | `XedniResidueAdditionZero.source_add_eq_neg_chord_of_y_ne`, `reduced_source_add_point_zero` | Same source data, field-valued ring map, reduced x-difference zero and reduced y-difference nonzero for the point theorem; checked |
+| Ring-homomorphic class map | `XedniProjectiveClassReduction.map_equiv`, `mapClass_mk` | Commutative source and target rings, any ring homomorphism; checked |
+| Residue-vertical class compatibility | `XedniProjectiveClassReduction.mapClass_addMap_residue_vertical` | Commutative source ring, field target, reduced x-difference zero and y-difference nonzero; checked |
+
+Run `lake build ProjectiveClassReduction` in this directory. `build-projective-stack-output.txt` records the registered build and `#print axioms` for this stack; every displayed declaration lists only `propext`, `Classical.choice`, and `Quot.sound`. The module-specific `build-*-output.txt` files retain the direct Lean checks made while the shared registration files were leased.
 
 ## Reproduction
 
