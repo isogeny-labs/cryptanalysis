@@ -155,12 +155,36 @@ def capture_one(role, binary, argv, source_commit, fixture_bytes, root, collecto
     out, err = root / (role + '.stdout'), root / (role + '.stderr')
     new_file(out, stdout)
     new_file(err, stderr)
-    if digest(source_bytes(binary)) != exe_hash:
-        refuse('binary was replaced during capture')
-    if host() != expected_host:
-        refuse('host/affinity changed after subprocess')
-    if error is not None or type(code) is not int or code != 0:
-        refuse(role + ' incomplete/nonzero: ' + str(error) + '; exit=' + str(code))
+    post_binary_sha = digest(source_bytes(binary))
+    post_host = host()
+    # CT313: preserve exact bounded stdout/stderr and a SEPARATE negative
+    # receipt on unsuccessful execution. Never pass it to CT304 admission.
+    failure = (('binary_changed' if post_binary_sha != exe_hash else None)
+               or ('host_changed' if post_host != expected_host else None)
+               or ('timeout' if error == 'timeout' else None)
+               or ('overflow' if error == 'capture limit exceeded' else None)
+               or ('spawn' if error == 'spawn failed' else None)
+               or ('collector_error' if error is not None else None)
+               or ('invalid_exit' if type(code) is not int else None)
+               or ('nonzero_exit' if code != 0 else None))
+    if failure is not None:
+        negative = {
+            'schema': 'ct313-failed-native-capture/v1',
+            'role': role, 'source_commit_sha': hex_lock(source_commit, 40, 'native source commit'),
+            'executable_sha256_before': exe_hash,
+            'executable_sha256_after': post_binary_sha,
+            'argv': argv, 'host_before': expected_host, 'host_after': post_host,
+            'fixture_git_blob': audit.gitblob(fixture_bytes),
+            'fixture_sha256': digest(fixture_bytes),
+            'status': failure, 'exit_code': code if type(code) is int else None,
+            'collector_error': str(error) if error is not None else None,
+            'external_wall_ns': max(1, wall_ns),
+            'stdout_sha256': digest(stdout), 'stdout_bytes': len(stdout),
+            'stderr_sha256': digest(stderr), 'stderr_bytes': len(stderr),
+            'admitted': False, 'pcc': 'unverified',
+        }
+        new_json(root / (role + '.failure.json'), negative)
+        refuse(role + ' incomplete/nonzero: ' + failure + '; exit=' + str(code))
     record = {
         'schema': audit.SCHEMA, 'role': role, 'run_id': secrets.token_hex(16),
         'source_commit_sha': hex_lock(source_commit, 40, 'native source commit'),
@@ -246,15 +270,16 @@ def self_test():
             if argv[1] == 'nonzero': return 1, b'incomplete', b'', None
             if argv[1] == 'timeout': return -9, b'partial', b'', 'timeout'
             if argv[1] == 'overflow': return -9, b'x' * 17, b'', 'capture limit exceeded'
+            if argv[1] == 'spawn': raise OSError('synthetic child launch refusal')
             raise AssertionError('unsupported mock case')
-    successes, refusals = 0, 0
+    successes, refusals, failed_receipts, forged_hash_refusals = 0, 0, 0, 0
     with tempfile.TemporaryDirectory(prefix='ct310-source-only-mock-') as d:
         root = Path(d)
         binary = root/'mock-not-executable'
         binary.write_bytes(b'mock only; not a Rust executable')
         fixture = b'not the authentic fixture; no real model'
         machine = host()
-        for case in ('ok', 'nonzero', 'timeout', 'overflow'):
+        for case in ('ok', 'nonzero', 'timeout', 'overflow', 'spawn'):
             sub = root/case
             sub.mkdir()
             try:
@@ -266,6 +291,32 @@ def self_test():
                 if case == 'ok': raise
                 if (sub/'original.receipt.json').exists():
                     raise AssertionError('failed mock produced successful receipt')
+                # Failure receipts are deliberately *not* CT304 success receipts.
+                receipt = sub/'original.failure.json'
+                record = audit.strict_json(receipt.read_bytes())
+                if (record['schema'] != 'ct313-failed-native-capture/v1'
+                        or record['status'] != {
+                            'nonzero':'nonzero_exit', 'timeout':'timeout',
+                            'overflow':'overflow', 'spawn':'spawn'}[case]
+                        or record['admitted'] is not False
+                        or record['pcc'] != 'unverified'
+                        or record['role'] != 'original'
+                        or record['executable_sha256_before'] != digest(binary.read_bytes())
+                        or record['executable_sha256_after'] != digest(binary.read_bytes())
+                        or record['host_before'] != machine or record['host_after'] != machine):
+                    raise AssertionError('negative capture source binding failed')
+                for stream in ('stdout', 'stderr'):
+                    raw = (sub / ('original.' + stream)).read_bytes()
+                    if (record[stream + '_sha256'] != digest(raw)
+                            or record[stream + '_bytes'] != len(raw)):
+                        raise AssertionError('negative capture raw hash/length mismatch')
+                failed_receipts += 1
+                # Synthetic tamper cannot be confused with the original bytes.
+                forged = dict(record)
+                forged['stdout_sha256'] = '0' * 64
+                if forged['stdout_sha256'] == digest((sub/'original.stdout').read_bytes()):
+                    raise AssertionError('synthetic digest mutation collided')
+                forged_hash_refusals += 1
                 refusals += 1
         for argv in ('["wrong"]','{"malformed":true}','[false]'):
             try: argv_lock(argv, binary)
@@ -274,10 +325,13 @@ def self_test():
         try: hex_lock('no',40,'source commit')
         except ValueError: refusals += 1
         else: raise AssertionError('bad commit accepted')
-    if (successes, refusals) != (1,7):
-        raise AssertionError('CT310 mock controls changed')
+    if (successes, refusals, failed_receipts, forged_hash_refusals) != (1,8,4,4):
+        raise AssertionError('CT313 failure custody mock controls changed')
     return {'schema':'ct310-source-mock-test/v1','mock_positive':successes,
-            'mock_mutations_rejected':refusals,'native_models_executed':0,
+            'mock_mutations_rejected':refusals,
+            'failed_partial_capture_receipts':failed_receipts,
+            'synthetic_digest_mutations_detected':forged_hash_refusals,
+            'native_models_executed':0,
             'authenticated_s3_artifacts':0,'pcc':'unverified'}
 
 
