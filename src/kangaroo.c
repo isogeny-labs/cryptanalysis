@@ -339,9 +339,12 @@ static ca_status k_solve_impl(const ca_group *g, const ca_elem *base, const ca_e
     if (existing < 0) return CA_ERR_INVALID;
     uint64_t seed = existing ? saved.seed : ca_seed_or_random(params->seed);
 
-    /* jump table */
+    /* jump table: AoS for generic/Z_p paths, plus SoA (Jx, Jy) for the
+     * native-EC Montgomery-trick hop (affine addends only). */
     ca_elem *J = calloc(nj, sizeof(ca_elem));
     uint64_t *jsz = calloc(nj, sizeof(uint64_t));
+    uint64_t *Jx = calloc(nj, sizeof(uint64_t));
+    uint64_t *Jy = calloc(nj, sizeof(uint64_t));
     roo *roos = calloc(total, sizeof(roo));
     ca_elem *Yn = calloc(total, sizeof(ca_elem));
     ca_elem *B = calloc(total, sizeof(ca_elem));
@@ -352,10 +355,12 @@ static ca_status k_solve_impl(const ca_group *g, const ca_elem *base, const ca_e
      * next jump, and hashing twice was a third of a Z_p hop. */
     uint64_t *hs = calloc(total, sizeof(uint64_t));
     ca_htab tab;
-    if (!J || !jsz || !roos || !Yn || !B || !scratch || !jidx || !hs ||
+    if (!J || !jsz || !Jx || !Jy || !roos || !Yn || !B || !scratch || !jidx || !hs ||
         ca_htab_init(&tab, 4096) != CA_OK) {
         free(J);
         free(jsz);
+        free(Jx);
+        free(Jy);
         free(roos);
         free(Yn);
         free(B);
@@ -370,6 +375,8 @@ static ca_status k_solve_impl(const ca_group *g, const ca_elem *base, const ca_e
     for (uint32_t j = 0; j < nj; j++) {
         jsz[j] = 1ULL << j;
         ca_group_mul(g, &J[j], base, jsz[j], &ops);
+        Jx[j] = J[j].w[0];
+        Jy[j] = J[j].w[1];
     }
     ca_rng rng;
     ca_rng_seed(&rng, seed);
@@ -438,8 +445,42 @@ static ca_status k_solve_impl(const ca_group *g, const ca_elem *base, const ca_e
     }
     uint64_t batches = 0;
     const int zp = ca_zp_group_is_native(g);
+    const int ec = !zp && ca_ec_group_is_native(g);
+    const ca_ec_consts ecc = ec ? ca_ec_consts_of(g) : (ca_ec_consts){0, 0, 0, 0};
     while (running) {
-        if (!zp) {
+        if (ec) {
+            /* Native E(F_p): same Montgomery-trick batch as rho's EC walk —
+             * dens from (Y, J[j]) in place, four interleaved product chains,
+             * then ca_ec_add_with_di into Y (aliases OK).  Skips the Yn/B
+             * element copies the generic batch_op path needed for AoS roos. */
+#define K_CHAINS 4u
+#define BM(x, y) (CA_FC_ADD(CA_FC_MUL, 1), ca_ec_bmul((x), (y), ecc.p, ecc.npi))
+            uint64_t *const den = scratch, *const suf = scratch + total;
+            const uint32_t k = total < K_CHAINS ? total : K_CHAINS;
+            for (uint32_t i = 0; i < total; i++) {
+                jidx[i] = (uint32_t)(((ca_u128)(nj_magic * (hs[i] >> 32)) * nj) >> 64);
+                den[i] = ca_ec_add_den_xy(&ecc, &roos[i].Y, Jx[jidx[i]], Jy[jidx[i]]);
+            }
+            for (uint32_t i = total; i-- > 0;)
+                suf[i] = i + k < total ? BM(den[i], suf[i + k]) : den[i];
+            uint64_t before[K_CHAINS], after[K_CHAINS], inv[K_CHAINS];
+            before[0] = ecc.one;
+            for (uint32_t j = 1; j < k; j++) before[j] = BM(before[j - 1], suf[j - 1]);
+            after[k - 1] = ecc.one;
+            for (uint32_t j = k - 1; j-- > 0;) after[j] = BM(after[j + 1], suf[j + 1]);
+            uint64_t all = BM(before[k - 1], suf[k - 1]);
+            all = ca_mont_inv(&g->mont, all);
+            for (uint32_t j = 0; j < k; j++) inv[j] = BM(all, BM(before[j], after[j]));
+            for (uint32_t i = 0, j = 0; i < total; i++) {
+                const uint32_t ji = jidx[i];
+                uint64_t di = i + k < total ? BM(inv[j], suf[i + k]) : inv[j];
+                inv[j] = BM(inv[j], den[i]);
+                ca_ec_add_with_di_xy(&ecc, &roos[i].Y, &roos[i].Y, Jx[ji], Jy[ji], di);
+                j = j + 1 == k ? 0 : j + 1;
+            }
+#undef BM
+#undef K_CHAINS
+        } else if (!zp) {
             for (uint32_t i = 0; i < total; i++) {
                 jidx[i] = (uint32_t)(((ca_u128)(nj_magic * (hs[i] >> 32)) * nj) >> 64);
                 B[i] = J[jidx[i]];
@@ -457,9 +498,18 @@ static ca_status k_solve_impl(const ca_group *g, const ca_elem *base, const ca_e
                  * batch/hash calls).  Same words, same order of effects as
                  * the batch path: later lanes are untouched on a break. */
                 const uint32_t ji = (uint32_t)(((ca_u128)(nj_magic * (hs[i] >> 32)) * nj) >> 64);
-                r->Y.w[0] = ca_mont_mul(&g->mont, r->Y.w[0], J[ji].w[0]);
+                {
+                    const uint64_t p = g->mont.p;
+                    if (p < (1ULL << 62))
+                        r->Y.w[0] = ca_mont_mul_lazy(r->Y.w[0], J[ji].w[0], p, g->mont.pinv);
+                    else
+                        r->Y.w[0] = ca_mont_mul(&g->mont, r->Y.w[0], J[ji].w[0]);
+                }
                 r->dist += jsz[ji];
-                h = ca_zp_hash_word(r->Y.w[0]);
+                h = ca_zp_hash_residue(r->Y.w[0], g->p);
+            } else if (ec) {
+                r->dist += jsz[jidx[i]];
+                h = ca_ec_hash_words(r->Y.w[0], r->Y.w[1], r->Y.w[2]);
             } else {
                 r->Y = Yn[i];
                 r->dist += jsz[jidx[i]];
@@ -491,12 +541,18 @@ static ca_status k_solve_impl(const ca_group *g, const ca_elem *base, const ca_e
                         hs[i] = ca_group_hash(g, &r->Y);
                         restarts++;
                     } else {
-                        /* tame position T, wild distance D: x = T - D */
+                        /* tame position T, wild distance D: x = T - D mod n */
                         uint64_t T = tame ? r->dist : od;
                         uint64_t D = tame ? od : r->dist;
-                        uint64_t cand = T - D;
-                        if (n) cand = (uint64_t)(((ca_i128)T - (ca_i128)D) % (ca_i128)n);
-                        if (n && (ca_i128)T - (ca_i128)D < 0) cand = (cand + n) % n;
+                        uint64_t cand;
+                        if (!n) {
+                            cand = T - D;
+                        } else if (T >= D) {
+                            cand = ca_u128_mod((ca_u128)(T - D), n);
+                        } else {
+                            uint64_t rmod = ca_u128_mod((ca_u128)(D - T), n);
+                            cand = rmod ? n - rmod : 0;
+                        }
                         if (ca_verify_log(g, base, target, cand) &&
                             ca_fit_interval_base(g, base, &cand, lo, hi)) {
                             /* The header promises x in [lo, hi].  A verified
@@ -575,6 +631,8 @@ cleanup:
     ca_htab_free(&tab);
     free(J);
     free(jsz);
+    free(Jx);
+    free(Jy);
     free(roos);
     free(Yn);
     free(B);
