@@ -245,7 +245,7 @@ def self_test():
             refusals += 1
         else:
             raise AssertionError("CT319 admitted missing stderr")
-    if refusals != 13:
+    if refusals != 14:
         raise AssertionError("CT319 lost corruption controls: " + str(refusals))
     return {
         "schema": "ct319-source-only-selftest/v1",
