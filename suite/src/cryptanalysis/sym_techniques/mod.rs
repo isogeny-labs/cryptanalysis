@@ -17,6 +17,23 @@ use crate::cryptanalysis::sym_ir::{FeedForward, Kind, Layer, Primitive};
 use serde::{Deserialize, Serialize};
 use std::time::{Duration, Instant};
 
+// WP2: differential and linear trail search (branch and bound, MILP, SAT).
+pub mod trails;
+// WP2: division-property integral distinguishers.
+pub mod integral;
+// WP3: impossible-differential (miss-in-the-middle) search.
+pub mod impossible;
+// WP3: zero-correlation linear hulls.
+pub mod zero_correlation;
+// WP3: Demirci-Selcuk delta-set meet-in-the-middle cost table.
+pub mod mitm;
+// WP4: ARX techniques (differential-linear, PNB, rotational).
+pub mod arx;
+// WP5: hash techniques (local collisions, Merkle-Damgard generic attacks).
+pub mod hash;
+// Panel wrappers that register the packages' entry points as `Technique`s.
+pub mod panel;
+
 /// Identifier of a technique in the plan's section 2.2 table (plus the
 /// pre-existing S-box and rectangle analyses).
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
@@ -152,21 +169,29 @@ pub fn ir_facts(p: &Primitive) -> IrFacts {
 /// (`sym_bridge::is_invertible`). Applicability says the technique can be
 /// pointed at the primitive, not that it will find anything.
 ///
-/// Rules:
+/// Rules (each is the condition under which the panel wrapper in
+/// [`panel`] actually runs the technique; a wrapper may still report
+/// `unsupported` or `not_found` for the instance):
 /// * S-box analysis: at least one S-box layer.
 /// * Differential/linear trails, MILP, SAT: S-box layers all at most 8 bits
-///   wide.
+///   wide and the trail model of the whole primitive can be built (MILP and
+///   SAT use the differential model).
 /// * Division property: S-boxes at most 8 bits wide (bit-based) or ARX
 ///   layers (word-based).
 /// * Impossible differential, zero correlation: an SPN with a linear layer.
-/// * Delta-set MITM: an SPN with 8-bit S-boxes.
+/// * Delta-set MITM: an SPN with 8-bit S-boxes (the cost table of a window
+///   of `min(4, rounds)` rounds, see [`panel::delta_set_window`]).
 /// * Boomerang: invertible primitive; rectangle: any keyed or unkeyed block
 ///   function with a non-empty block.
-/// * ARX techniques: ARX layers; PNB: additionally an unkeyed-style
-///   [`Kind::Permutation`]; rotational and RX: ARX layers.
-/// * Hash techniques: ARX/Permutation compression with a feed-forward and a
-///   key (message) input.
+/// * ARX diff-linear, rotational, RX: ARX layers. PNB: the primitive
+///   computes the reduced-width ChaCha permutation of its round count
+///   ([`panel::chacha_word_bits`]).
+/// * Hash local collision: the primitive computes the first `n` steps of
+///   SHA-256 or SHA-512 ([`panel::sha2_family`]); generic Merkle-Damgard
+///   attacks: SHA-256, SHA-512 or MD5 steps.
 pub fn applicable_techniques(p: &Primitive) -> Vec<TechniqueId> {
+    use panel::Sha2Family;
+    use trails::Direction;
     use TechniqueId::*;
     let f = ir_facts(p);
     let small_sboxes = !f.sbox_widths.is_empty() && f.sbox_widths.iter().all(|&w| w <= 8);
@@ -175,7 +200,12 @@ pub fn applicable_techniques(p: &Primitive) -> Vec<TechniqueId> {
         out.push(SboxAnalysis);
     }
     if small_sboxes {
-        out.extend([DifferentialTrails, LinearTrails, MilpTrails, SatTrails]);
+        if panel::trail_model_ok(p, Direction::Differential) {
+            out.extend([DifferentialTrails, MilpTrails, SatTrails]);
+        }
+        if panel::trail_model_ok(p, Direction::Linear) {
+            out.push(LinearTrails);
+        }
     }
     if small_sboxes || f.has_arx {
         out.push(DivisionProperty);
@@ -194,12 +224,16 @@ pub fn applicable_techniques(p: &Primitive) -> Vec<TechniqueId> {
     }
     if f.has_arx {
         out.extend([ArxDiffLinear, ArxRotational, ArxRx]);
-        if f.kind == Kind::Permutation {
-            out.push(ArxPnb);
+    }
+    if panel::chacha_word_bits(p).is_some() {
+        out.push(ArxPnb);
+    }
+    match panel::sha2_family(p) {
+        Some(Sha2Family::Sha256 | Sha2Family::Sha512) => {
+            out.extend([HashLocalCollision, HashMdGeneric])
         }
-        if f.has_feed_forward && f.keyed && matches!(f.kind, Kind::Arx | Kind::Permutation) {
-            out.extend([HashLocalCollision, HashMdGeneric]);
-        }
+        Some(Sha2Family::Md5) => out.push(HashMdGeneric),
+        None => {}
     }
     out.sort();
     out.dedup();
@@ -236,9 +270,11 @@ pub struct TechniqueParams {
     pub boomerang_pairs: usize,
     /// Pool size for the rectangle attack.
     pub rectangle_pool: usize,
-    /// Trail-search threshold: keep trails with `p >= threshold`.
+    /// Trail-search threshold: the panel reports whether the best concrete
+    /// trail has `p >= threshold`.
     pub trail_threshold: f64,
-    /// Maximum number of trails to report.
+    /// Maximum number of trails to report (kept for CLI compatibility; the
+    /// panel's trail cells report one optimal trail and do not use it).
     pub trail_top_k: usize,
 }
 
@@ -257,9 +293,9 @@ impl Default for Budget {
     fn default() -> Self {
         Budget {
             max_data: 1 << 20,
-            max_time_evals: 1 << 22,
+            max_time_evals: 1 << 26,
             max_memory: 1 << 30,
-            max_wall: Duration::from_secs(60),
+            max_wall: Duration::from_secs(15),
             params: TechniqueParams::default(),
             key: None,
             started: Instant::now(),
@@ -376,18 +412,3 @@ mod tests {
         }
     }
 }
-
-// WP2: differential and linear trail search (branch and bound, MILP, SAT).
-pub mod trails;
-// WP2: division-property integral distinguishers.
-pub mod integral;
-// WP3: impossible-differential (miss-in-the-middle) search.
-pub mod impossible;
-// WP3: zero-correlation linear hulls.
-pub mod zero_correlation;
-// WP3: Demirci-Selcuk delta-set meet-in-the-middle cost table.
-pub mod mitm;
-// WP4: ARX techniques (differential-linear, PNB, rotational).
-pub mod arx;
-// WP5: hash techniques (local collisions, Merkle-Damgard generic attacks).
-pub mod hash;

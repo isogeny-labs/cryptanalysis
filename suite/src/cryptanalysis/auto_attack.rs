@@ -12,8 +12,11 @@
 //! techniques to [`default_techniques`].
 //!
 //! The first registered techniques are the pre-existing analyses: S-box
-//! report, boomerang distinguisher, rectangle attack, and the legacy 4x4-bit
-//! SPN differential trail search (ToySpn-shaped primitives only).
+//! report, boomerang distinguisher and rectangle attack. The work-package
+//! techniques follow ([`panel`]); the legacy 4x4-bit differential trail
+//! search that was registered under
+//! [`TechniqueId::DifferentialTrails`] is replaced by
+//! `trails::differential::min_active_sboxes`.
 //!
 //! ## What this does NOT do
 //!
@@ -24,13 +27,11 @@
 //! - Emit `experiment.export/v1` records: the JSON row is this panel's own
 //!   format (see [`CELL_SCHEMA`]).
 
-use crate::cryptanalysis::boomerang::{
-    boomerang_distinguisher, differential_trail_search, rectangle_attack, SpnTrailModel, ToySpn,
-};
+use crate::cryptanalysis::boomerang::{boomerang_distinguisher, rectangle_attack};
 use crate::cryptanalysis::cipher_registry::{first_sbox, CipherEntry, RegisteredCipher};
-use crate::cryptanalysis::sym_ir::{Kind, Layer, Primitive};
+use crate::cryptanalysis::sym_ir::Primitive;
 use crate::cryptanalysis::sym_techniques::{
-    ir_facts, Budget, Cost, Technique, TechniqueId, TechniqueParams, TechniqueResult,
+    panel, Budget, Cost, Technique, TechniqueId, TechniqueParams, TechniqueResult,
 };
 use serde_json::json;
 use std::time::Instant;
@@ -97,15 +98,18 @@ impl AutoAttackOptions {
     }
 }
 
-/// The registered techniques, in report order. Later work packages append
-/// their implementations here.
+/// The registered techniques, in report order: the three pre-existing
+/// analyses, then the work-package techniques of
+/// [`panel::wp_techniques`] (trail search, MILP/SAT bounds, division
+/// property, miss-in-the-middle, delta-set cost table, ARX, hash).
 pub fn default_techniques() -> Vec<Box<dyn Technique>> {
-    vec![
+    let mut v: Vec<Box<dyn Technique>> = vec![
         Box::new(SboxTechnique),
         Box::new(BoomerangTechnique),
         Box::new(RectangleTechnique),
-        Box::new(LegacyTrailTechnique),
-    ]
+    ];
+    v.extend(panel::wp_techniques());
+    v
 }
 
 /// **Run the default panel** on `cipher_name` with default options.
@@ -427,111 +431,6 @@ impl Technique for RectangleTechnique {
     }
 }
 
-/// The permutation of ToySpn's bit layer is the only linear layer the legacy
-/// [`SpnTrailModel`] can express, so the legacy search applies to a primitive
-/// iff it is a 16-bit SPN with 4-bit S-boxes whose permute layers match it.
-fn matches_toyspn_layer(p: &Primitive) -> bool {
-    let f = ir_facts(p);
-    if p.kind != Kind::Spn || p.block_bits != 16 || f.sbox_widths != [4] || p.scratch_bits != 0 {
-        return false;
-    }
-    let mut all_layers_ok = true;
-    for r in &p.rounds {
-        for l in &r.layers {
-            match l {
-                Layer::Permute { perm } => {
-                    all_layers_ok &= (0..16).all(|i| {
-                        let y = ToySpn::bit_permutation(1u16 << i);
-                        perm.len() == 16 && perm[y.trailing_zeros() as usize] == i
-                    });
-                }
-                Layer::LinearGf2 { .. } | Layer::Arx { .. } => all_layers_ok = false,
-                _ => {}
-            }
-        }
-    }
-    all_layers_ok
-}
-
-/// Branch-and-bound differential trail search over the legacy
-/// [`SpnTrailModel`] (4x4-bit ToySpn-shaped SPNs). Registered under
-/// [`TechniqueId::DifferentialTrails`]; a general IR-based search replaces it.
-pub struct LegacyTrailTechnique;
-
-impl Technique for LegacyTrailTechnique {
-    fn id(&self) -> TechniqueId {
-        TechniqueId::DifferentialTrails
-    }
-    fn title(&self) -> String {
-        "Differential trail search".into()
-    }
-    fn applies_to(&self, p: &Primitive) -> bool {
-        matches_toyspn_layer(p)
-    }
-    fn run(&self, p: &Primitive, budget: &Budget) -> TechniqueResult {
-        let e = canonical(p);
-        let sbox = first_sbox(p).expect("matches_toyspn_layer implies an S-box");
-        let model = SpnTrailModel {
-            ddt: sbox.ddt(),
-            sbox_bits: 4,
-            n_sboxes: 4,
-            linear_layer: |x| ToySpn::bit_permutation(x as u16) as u64,
-        };
-        let alpha = u16::from_le_bytes([e.canonical_alpha[0], e.canonical_alpha[1]]) as u64;
-        let th = budget.params.trail_threshold;
-        let mut trails = differential_trail_search(&model, alpha, p.rounds.len(), th);
-        trails.truncate(budget.params.trail_top_k);
-        let rows: Vec<_> = trails
-            .iter()
-            .map(|t| {
-                json!({
-                    "alpha": t.alpha,
-                    "omega": t.omega,
-                    "probability": t.probability,
-                    "log2_probability": t.probability.log2(),
-                })
-            })
-            .collect();
-        TechniqueResult {
-            technique: self.id(),
-            primitive: p.name.clone(),
-            cost: Cost::default(),
-            outcome: json!({
-                "model": "legacy 4x4-bit SPN (ToySpn permutation)",
-                "seed_alpha": hex(&e.canonical_alpha),
-                "threshold_log2": th.log2().round() as i32,
-                "trails": rows,
-            }),
-            budget_exhausted: false,
-        }
-    }
-    fn markdown(&self, r: &TechniqueResult) -> String {
-        let o = &r.outcome;
-        let trails = o["trails"].as_array().cloned().unwrap_or_default();
-        let mut s = format!(
-            "Branch-and-bound over a 4×4-bit SPN model, threshold `2^{{{}}}`, seeded with `α = {}`.\n\n- **trails found**: {}\n\n",
-            o["threshold_log2"],
-            o["seed_alpha"].as_str().unwrap_or(""),
-            trails.len()
-        );
-        if !trails.is_empty() {
-            s.push_str("| rank | input α | output ω | probability | log₂ p |\n");
-            s.push_str("|----:|---------|----------|------------:|-------:|\n");
-            for (rank, t) in trails.iter().enumerate() {
-                s.push_str(&format!(
-                    "| {} | 0x{:04x} | 0x{:04x} | {:.4e} | {:.2} |\n",
-                    rank + 1,
-                    t["alpha"].as_u64().unwrap_or(0),
-                    t["omega"].as_u64().unwrap_or(0),
-                    t["probability"].as_f64().unwrap_or(0.0),
-                    t["log2_probability"].as_f64().unwrap_or(0.0),
-                ));
-            }
-        }
-        s
-    }
-}
-
 /// Format a byte slice as `0x` hex.
 fn hex(bytes: &[u8]) -> String {
     let mut s = String::from("0x");
@@ -546,6 +445,7 @@ fn hex(bytes: &[u8]) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::cryptanalysis::sym_techniques::applicable_techniques;
 
     /// **Auto-attack runs on each registered cipher**: produces a
     /// non-empty Markdown report with at least one section that ran.
@@ -575,6 +475,12 @@ mod tests {
         }
     }
 
+    fn applicable_row(r: &AutoAttackReport, technique: &str) -> bool {
+        r.rows
+            .iter()
+            .any(|x| x["technique"] == technique && x["applicable"] == true)
+    }
+
     /// **Auto-attack rejects unknown cipher**.
     #[test]
     fn auto_attack_rejects_unknown_cipher() {
@@ -597,15 +503,34 @@ mod tests {
             report.markdown.contains("Differential trail search"),
             "expected trail-search section"
         );
-        assert!(
-            report.sections_run == 4,
-            "toyspn-2r should run all 4 sections, got {}",
-            report.sections_run
+        // The three pre-existing sections and the trail search all run; the
+        // work-package techniques add more cells, so the total is whatever
+        // the IR-derived applicability says.
+        for t in [
+            "sbox_analysis",
+            "boomerang",
+            "rectangle",
+            "differential_trails",
+        ] {
+            assert!(applicable_row(&report, t), "toyspn-2r should run {t}");
+        }
+        assert_eq!(
+            report.sections_run,
+            applicable_techniques(
+                &RegisteredCipher::from_name("toyspn-2r")
+                    .unwrap()
+                    .primitive()
+                    .clone()
+            )
+            .len()
         );
     }
 
-    /// **Auto-attack on AES skips the trail search** (8-bit S-box not
-    /// in the SPN trail-search model).
+    /// **Auto-attack on AES**: the ARX cells are skipped. (Before the
+    /// work-package panel the trail search was also skipped on AES, since
+    /// the legacy 4x4-bit model could not express an 8-bit S-box; it now runs
+    /// through the word engine, so the expectation of exactly 3 sections
+    /// became "the 3 pre-existing sections plus the trail search run".)
     #[test]
     fn auto_attack_aes_skips_trail_search() {
         let opts = AutoAttackOptions {
@@ -616,8 +541,18 @@ mod tests {
         };
         let report = auto_attack_with("aes-2r", opts).unwrap();
         assert!(report.markdown.contains("_Skipped._"));
-        // 3 sections: sbox + boomerang + rectangle.
-        assert_eq!(report.sections_run, 3);
+        for t in [
+            "sbox_analysis",
+            "boomerang",
+            "rectangle",
+            "differential_trails",
+        ] {
+            assert!(applicable_row(&report, t), "aes-2r should run {t}");
+        }
+        assert!(!applicable_row(&report, "arx_diff_linear"));
+        let a = &report.rows[3]["result"]["outcome"];
+        assert_eq!(a["status"], "ok");
+        assert_eq!(a["min_active_sboxes"], 5, "AES 2 rounds: 5 active S-boxes");
     }
 
     /// **Report is well-formed Markdown**: starts with a level-1 header.
@@ -634,8 +569,10 @@ mod tests {
     }
 
     /// **`present80-4r` runs end to end**: S-box, boomerang and rectangle
-    /// cells run, the legacy 16-bit trail search is skipped, and the JSON
-    /// rows carry the technique ids and costs.
+    /// cells run, the JSON rows carry the technique ids and costs, and the
+    /// first four rows are the pre-existing ones (the trail search, skipped
+    /// by the legacy 16-bit model, now runs: PRESENT 4 rounds, 6 active
+    /// S-boxes).
     #[test]
     fn auto_present80_4r_end_to_end() {
         let opts = AutoAttackOptions {
@@ -645,15 +582,14 @@ mod tests {
             trail_top_k: 3,
         };
         let r = auto_attack_with("present80-4r", opts).unwrap();
-        assert_eq!(r.sections_run, 3);
-        assert_eq!(r.rows.len(), 4);
+        assert_eq!(r.rows.len(), default_techniques().len());
         let ids: Vec<_> = r
             .rows
             .iter()
             .map(|x| x["technique"].as_str().unwrap())
             .collect();
         assert_eq!(
-            ids,
+            ids[..4],
             [
                 "sbox_analysis",
                 "boomerang",
@@ -661,10 +597,14 @@ mod tests {
                 "differential_trails"
             ]
         );
+        for t in &ids[..3] {
+            assert!(applicable_row(&r, t));
+        }
         assert_eq!(r.rows[1]["result"]["outcome"]["n_pairs"], 512);
         assert_eq!(r.rows[1]["result"]["cost"]["data"], 2048);
-        assert_eq!(r.rows[3]["applicable"], false);
-        assert_eq!(rows_jsonl(&r).lines().count(), 4);
+        assert_eq!(r.rows[3]["applicable"], true);
+        assert_eq!(r.rows[3]["result"]["outcome"]["min_active_sboxes"], 6);
+        assert_eq!(rows_jsonl(&r).lines().count(), r.rows.len());
     }
 
     /// **`speck64-128-6r` runs end to end**: no S-box cell, boomerang and
@@ -678,7 +618,9 @@ mod tests {
             trail_top_k: 3,
         };
         let r = auto_attack_with("speck64-128-6r", opts).unwrap();
-        assert_eq!(r.sections_run, 2);
+        // Boomerang and rectangle run (plus the ARX and division-property
+        // cells of the work-package panel); there is still no S-box cell.
+        assert!(applicable_row(&r, "rectangle"));
         assert!(r.markdown.contains("## Boomerang distinguisher"));
         assert_eq!(r.rows[1]["applicable"], true);
         assert_eq!(r.rows[0]["applicable"], false);

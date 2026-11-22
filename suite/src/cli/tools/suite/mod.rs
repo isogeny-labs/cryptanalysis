@@ -532,6 +532,14 @@ fn run(op: Cmd) {
                     std::process::exit(1);
                 }
             };
+            if !c.keyed().is_invertible() {
+                eprintln!(
+                    "error: `{}` has no decryption (feed-forward or non-invertible primitive); \
+                     the boomerang distinguisher needs a decryption oracle",
+                    cipher
+                );
+                std::process::exit(1);
+            }
             let entry = c.entry();
             let alpha_bytes = match alpha {
                 Some(h) => from_hex(&h).expect("bad alpha hex"),
