@@ -18,6 +18,24 @@ SLOTS = ("C13_0_to_1", "C13_1_to_0", "C13_1_to_2", "C13_2_to_1",
          "C169_0_to_2", "C169_2_to_0", "D_target_norm")
 ROUTES = ("direct_composite", "literal_sequential_Jacobian_maps",
           "strongest_retained_lift_chain")
+# Pinned selected-vectors Rust test (blob bcd27773a7b179c3beeb3d5782a5de97a7df19f2),
+# not a trust assertion about an unauthenticated native transcript.
+SOURCE_SCOPE = ("actual selected source entries only; all setup/primitive work "
+                "unpriced and complete primitive census still open; no measured speed advantage")
+SCALARS = (0, 1, 2, 17, 12345, 2773072)  # ELL=2773073 in pinned original source
+PIC_KEY_WORDS = 19  # PicClass.key().0: [u32;19]
+CALL_FIELDS = (
+    "external_packet_parse", "external_norm_and_geometry", "external_full_order",
+    "infinity_halves", "two_torsion_halves", "generic_halving_factorization",
+    "generic_ordinate", "explicit_half_check", "quadratic_source_phi",
+    "correction_difference", "correction_dictionary_lookup",
+    "matching_corrections_checked", "source_lift_addition",
+    "degree13_elliptic_evaluation", "degree169_elliptic_evaluation",
+    "norm_point_doubling", "quadratic_target_phi", "target_correction_addition",
+    "final_actual_norm", "final_full_order", "inverse_full_group_scalar")
+COMMON_CALLS = ("external_packet_parse", "external_norm_and_geometry",
+                "external_full_order", "final_actual_norm", "final_full_order")
+
 
 
 def nat(x, field):
@@ -29,6 +47,14 @@ def nat(x, field):
 def exact(obj, keys, field):
     if type(obj) is not dict or set(obj) != set(keys):
         raise ValueError(f"{field}: unexpected keys or type")
+
+
+def pic_key(value, field):
+    if type(value) is not list or len(value) != PIC_KEY_WORDS:
+        raise ValueError(f"{field}: expected exact 19-word PicClass key")
+    for j, word in enumerate(value):
+        if nat(word, f"{field}[{j}]") >= 2**32:
+            raise ValueError(f"{field}[{j}]: outside u32")
 
 
 def decode(raw):
@@ -74,6 +100,8 @@ def audit(raw):
     samples, v, lifetime = decode(raw)
     if type(v) is not dict or set(v) != {"all48", "scope"}:
         raise ValueError("original selected-vector envelope changed")
+    if v["scope"] != SOURCE_SCOPE:
+        raise ValueError("original source vector scope changed")
     rows = v["all48"]
     if type(rows) is not list or len(rows) != 48:
         raise ValueError("original selected-vector population is not 48")
@@ -120,15 +148,24 @@ def audit(raw):
             raise ValueError("selected direction/order changed")
         if nat(row["sector"], "sector") != row_idx % 4:
             raise ValueError("selected sector/order changed")
-        nat(row["scalar_OUTSIDE_runtime"], "scalar")
-        if type(row["input"]) is not list or type(row["whole_outputs_equal"]) is not list:
-            raise ValueError("selected source/target class type changed")
+        scalar = nat(row["scalar_OUTSIDE_runtime"], "scalar")
+        if scalar != SCALARS[(row_idx % 24) // 4]:
+            raise ValueError(f"selected vector {row_idx}: scalar schedule changed")
+        pic_key(row["input"], "input")
+        pic_key(row["whole_outputs_equal"], "whole_outputs_equal")
         expected = expected_slots(from_side, to_side, arm)
         if c != expected:
             raise ValueError(f"sample {i}: directed primitive call pattern differs")
         source = row[ROUTES[arm]]
-        if type(source) is not dict:
-            raise ValueError("original route counters missing")
+        exact(source, CALL_FIELDS, "original native Calls")
+        for field in CALL_FIELDS:
+            nat(source[field], f"original Calls.{field}")
+        for field in COMMON_CALLS:
+            if source[field] != 1:
+                raise ValueError(f"selected source {field}: common full route charge changed")
+        for field in ("quadratic_source_phi", "quadratic_target_phi"):
+            if source[field] != (2 if arm == 1 else 1):
+                raise ValueError(f"selected route {arm}: {field} changed")
         for field, claimed in (
                 ("degree13_elliptic_evaluation", sample["source_C13"]),
                 ("degree169_elliptic_evaluation", sample["source_C169"]),
@@ -196,20 +233,27 @@ def synthetic():
     rows, samples = [], []
     for i in range(48):
         f, t = ((0, 2) if i < 24 else (2, 0))
-        row = {"from": f, "to": t, "scalar_OUTSIDE_runtime": (0,1,2,17,12345,99999)[(i%24)//4],
-               "sector": i % 4, "input": [i], "whole_outputs_equal": [i]}
+        row = {"from": f, "to": t, "scalar_OUTSIDE_runtime": SCALARS[(i%24)//4],
+               "sector": i % 4, "input": [i] + [0]*18,
+               "whole_outputs_equal": [i] + [0]*18}
         for arm, key in enumerate(ROUTES):
             c = expected_slots(f, t, arm)
-            row[key] = {"degree13_elliptic_evaluation": sum(c[:4]),
-                        "degree169_elliptic_evaluation": sum(c[4:6]),
-                        "norm_point_doubling": c[6]}
+            counters = {field: 0 for field in CALL_FIELDS}
+            counters.update({"degree13_elliptic_evaluation": sum(c[:4]),
+                             "degree169_elliptic_evaluation": sum(c[4:6]),
+                             "norm_point_doubling": c[6],
+                             "quadratic_source_phi": 2 if arm == 1 else 1,
+                             "quadratic_target_phi": 2 if arm == 1 else 1})
+            for field in COMMON_CALLS:
+                counters[field] = 1
+            row[key] = counters
             samples.append({"schema": "ct248-scoped-primitives-v1", "sequence": i*3+arm,
                 "scope": "reset_calls_to_calls; eval_and_padd_only",
                 "calls": c, "elapsed_ns": [x*1000 for x in c],
                 "source_C13": sum(c[:4]), "source_C169": sum(c[4:6]),
                 "source_D": c[6], "measured_complete_solve": False, "pcc": "unverified"})
         rows.append(row)
-    return samples, {"all48": rows, "scope": "synthetic; not a measurement"}
+    return samples, {"all48": rows, "scope": SOURCE_SCOPE}  # data are synthetic in self-test only
 
 
 def synthetic_lifetime(samples, extra_calls=None, extra_ns=None):
@@ -282,13 +326,23 @@ def self_test():
     mutation(lambda a,b,c: c["elapsed_ns"].__setitem__(1, True))
     mutation(lambda a,b,c: c["elapsed_ns"].pop())
     mutation(lambda a,b,c: c.update(unexpected_key=1))
+    # CT299: previously accepted transcript mutations, now rejected.
+    mutation(lambda a,b,c: b["all48"][0].update(scalar_OUTSIDE_runtime=999))
+    mutation(lambda a,b,c: b.update(scope="synthetic; not a native source record"))
+    mutation(lambda a,b,c: b["all48"][0]["input"].pop())
+    mutation(lambda a,b,c: b["all48"][0]["whole_outputs_equal"].__setitem__(0, True))
+    mutation(lambda a,b,c: b["all48"][0]["input"].__setitem__(1, 2**32))
+    mutation(lambda a,b,c: b["all48"][0][ROUTES[0]].update(external_packet_parse=0))
+    mutation(lambda a,b,c: b["all48"][0][ROUTES[0]].update(quadratic_source_phi=0))
+    mutation(lambda a,b,c: b["all48"][0][ROUTES[0]].update(external_full_order=False))
+    mutation(lambda a,b,c: b["all48"][0][ROUTES[0]].update(unexpected_counter=1))
     for i, test in enumerate(tests):
         try:
             audit(test)
         except (ValueError, TypeError, KeyError):
             continue
         raise AssertionError(f"CT248 corruption {i} escaped fail-closed audit")
-    print(f"CT249_AUDITOR_SELFTEST_PASS {len(tests)} mutations and two positive controls; no native run or cost")
+    print(f"CT299_AUDITOR_SELFTEST_PASS {len(tests)} mutations and two synthetic positive controls; no native run or cost")
 
 
 def main():
