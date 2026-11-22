@@ -40,10 +40,12 @@ use super::stages::{
 use crate::cryptanalysis::ic_boundary::{
     binary_subspace_factor_base, decompose_mitm, decompose_mitm_frobenius, koblitz_factor_base,
     prime_factor_base, BinaryGroup, BinaryInstance, ColumnFold, CountedGroup, FactorBase,
-    FrobeniusPairTable, GroupOps, OracleCounters, PairTable, PrimeCurve, PrimeInstance, PrimePoint,
+    FrobeniusPairTable, DEFAULT_MAX_TABLE_BYTES, GroupOps, OracleCounters, PairTable, PrimeCurve, PrimeInstance, PrimePoint,
 };
 use crate::cryptanalysis::koblitz_fast::FastPoint;
-use crate::cryptanalysis::koblitz_index_calculus::build_frobenius_factor_base_from_divisor;
+use crate::cryptanalysis::koblitz_index_calculus::{
+    build_frobenius_factor_base_from_divisor, build_subgroup_orbit_factor_base_with_cost,
+};
 use crate::cryptanalysis::pq_descent_symbolic::{descend, max_n_prime, SymbolicDescent};
 
 // ── Factor bases ───────────────────────────────────────────────────
@@ -139,6 +141,17 @@ impl<'a> FactorBaseBuilder<BinaryGroup<'a>> for KoblitzOrbitBase<'_> {
     }
 
     fn describe(&self, params: &Params) -> String {
+        if let Some(points) = params.get("points") {
+            return format!(
+                "Frobenius orbits of {points} subgroup points sampled from seed {}, {}",
+                params.get("seed").unwrap_or("1"),
+                if params.flag("no_fold") {
+                    "one column per abscissa (the unfolded control)"
+                } else {
+                    "each signed Frobenius orbit folded onto one column"
+                }
+            );
+        }
         format!(
             "the Frobenius-invariant subspace spanned by divisor factors {}, {}",
             params.get("divisor").unwrap_or("?"),
@@ -159,6 +172,14 @@ impl<'a> FactorBaseBuilder<BinaryGroup<'a>> for KoblitzOrbitBase<'_> {
                  the knob that chooses the base, so sweeping it sweeps factor bases",
             ),
             (
+                "points",
+                "instead of a divisor: sample Frobenius orbits of prime-order-subgroup points until \
+                 the base holds at least this many signed points (n < 64). The recipe of the \
+                 BASELINES n = 41 to 61 rows (6560 points at n = 41); a divisor base at n = 41 \
+                 has 2^20 points or more, because the order of 2 mod 41 is 20",
+            ),
+            ("seed", "with `points`: the sampling seed, default 1"),
+            (
                 "no_fold",
                 "1 to give every abscissa its own column: the control that shows what the fold buys",
             ),
@@ -169,13 +190,47 @@ impl<'a> FactorBaseBuilder<BinaryGroup<'a>> for KoblitzOrbitBase<'_> {
         &self,
         _ctx: &InstanceCtx<BinaryGroup<'a>>,
         params: &Params,
-        _ops: &mut GroupOps,
+        ops: &mut GroupOps,
     ) -> Result<FactorBase<FastPoint>, String> {
         let kc = self
             .instance
             .koblitz
             .as_ref()
             .ok_or("this instance is not a Koblitz curve, so it has no Frobenius to fold by")?;
+        let fold = if params.flag("no_fold") {
+            ColumnFold::Abscissa
+        } else {
+            ColumnFold::SignedFrobeniusOrbit
+        };
+        if params.get("points").is_some() {
+            let points = params.u64_or("points", 0)? as usize;
+            let seed = params.u64_or("seed", 1)?;
+            let (frob, sel) = build_subgroup_orbit_factor_base_with_cost(kc, seed, points)?;
+            let mut fb = koblitz_factor_base(
+                self.instance,
+                &frob,
+                fold,
+                format!("{points} subgroup points, seed {seed}, {} signed points", frob.points.len()),
+            )
+            .ok_or("the sampled orbits produced no usable factor base")?;
+            // Selection is a phase like any other: one quadratic solve per
+            // draw, one cofactor multiplication per lift (charged as the
+            // cofactor's doublings and additions) and one squaring per
+            // orbit member.  `koblitz_factor_base` counted the subspace
+            // scan it does not do here, so replace those counts.
+            let h = self.instance.cofactor.max(1);
+            let bits = 63 - h.leading_zeros() as u64;
+            ops.doubles += sel.cofactor_multiplications * bits;
+            ops.adds += sel.cofactor_multiplications * (u64::from(h.count_ones()).saturating_sub(1));
+            fb.cost.native.insert("abscissae_scanned".into(), sel.abscissae_drawn);
+            fb.cost.native.insert("as_solves".into(), sel.abscissae_drawn);
+            fb.cost.native.insert(
+                "frobenius_maps".into(),
+                sel.frobenius_squarings + frob.points.len() as u64,
+            );
+            fb.cost.count("selection_rebuilds", u64::from(sel.rebuilds));
+            return Ok(fb);
+        }
         let raw = params
             .get("divisor")
             .ok_or("missing parameter `divisor`; try 0 or 0,1")?;
@@ -194,11 +249,6 @@ impl<'a> FactorBaseBuilder<BinaryGroup<'a>> for KoblitzOrbitBase<'_> {
         }
         let frob = build_frobenius_factor_base_from_divisor(kc, &idx)
             .ok_or_else(|| format!("no invariant subspace for divisor {idx:?} on this curve"))?;
-        let fold = if params.flag("no_fold") {
-            ColumnFold::Abscissa
-        } else {
-            ColumnFold::SignedFrobeniusOrbit
-        };
         koblitz_factor_base(
             self.instance,
             &frob,
@@ -534,7 +584,8 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for FrobeniusMitmOracle<'_> {
     }
 
     fn parameters(&self) -> &[(&str, &str)] {
-        &[("coset_filter", "1 to build only the representative-point pairs whose coset classes in E/<G> cancel (the Frobenius preserves the class); m = 2 only, no-op at m = 3 and with cofactor 1")]
+        &[("coset_filter", "1 to build only the representative-point pairs whose coset classes in E/<G> cancel (the Frobenius preserves the class); m = 2 only, no-op at m = 3 and with cofactor 1"),
+          ("max_table_gib", "refuse the build, before allocating, when the planned table (member index plus entries) exceeds this many GiB; default 4")]
     }
 
     fn setup_native(&self) -> std::collections::BTreeMap<String, u64> {
@@ -570,8 +621,13 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for FrobeniusMitmOracle<'_> {
             .map(|c| move |i: usize, j: usize| c[i].0 == c[j].1);
         let keep_ref: Option<&dyn Fn(usize, usize) -> bool> =
             keep.as_ref().map(|k| k as &dyn Fn(usize, usize) -> bool);
-        let table = FrobeniusPairTable::build_filtered(self.instance, fb, keep_ref)
-            .ok_or("this instance has no Koblitz structure to fold by")?;
+        let max_gib = params.u64_or("max_table_gib", DEFAULT_MAX_TABLE_BYTES >> 30)?;
+        let table = FrobeniusPairTable::try_build_filtered(
+            self.instance,
+            fb,
+            keep_ref,
+            max_gib.saturating_mul(1 << 30),
+        )?;
         ops.merge(label_ops);
         ops.merge(table.build_ops);
         self.table = Some(std::sync::Arc::new(table));
@@ -1144,5 +1200,117 @@ mod coset_filter_tests {
         assert_ne!(two.coset.mode, "off");
         params.set("coset_filter", "2");
         assert!(MitmOracle::new(2).prepare(&ctx, &fb, &params, &mut GroupOps::default()).is_err());
+    }
+
+    /// The byte estimate reproduces, to the byte, the two allocations the
+    /// old `f²/(4n)` capacity hint asked the allocator for at Koblitz
+    /// n = 41 (`oom_alloc`, PR #1892): 146,028,888,080 bytes for divisor 1
+    /// (1,048,371 base points) and 584,115,552,272 for divisor `0;1`
+    /// (2,096,989 base points).
+    #[test]
+    fn table_byte_estimate_reproduces_the_n41_failures() {
+        use crate::cryptanalysis::ic_boundary::hash_table_bytes;
+        let entry = std::mem::size_of::<(u64, (u32, u32))>() as u64;
+        let hint = |f: u64| f * f / (4 * 41) + 1;
+        assert_eq!(hash_table_bytes(hint(1_048_371), entry), 146_028_888_080);
+        assert_eq!(hash_table_bytes(hint(2_096_989), entry), 584_115_552_272);
+    }
+
+    fn koblitz_orbit_base(inst: &BinaryInstance, params: &[(&str, &str)]) -> FactorBase<FastPoint> {
+        let g = BinaryGroup(&inst.fast);
+        let ctx = ctx_for(inst, &g);
+        let p = Params(params.iter().map(|(k, v)| (k.to_string(), v.to_string())).collect());
+        KoblitzOrbitBase { instance: inst }
+            .build(&ctx, &p, &mut GroupOps::default())
+            .expect("base builds")
+    }
+
+    /// **The plan counts exactly the additions a build performs**, filtered
+    /// or not, so the capacity it reserves is an upper bound on the entries
+    /// and the filtered reservation is the survivors, not the full table's.
+    #[test]
+    fn frobenius_table_plan_counts_the_build_additions() {
+        use crate::cryptanalysis::ic_boundary::koblitz_instance;
+        let inst = koblitz_instance(0, 13).expect("K_0 / GF(2^13), cofactor 4");
+        assert!(inst.cofactor > 1);
+        let g = BinaryGroup(&inst.fast);
+        let ctx = ctx_for(&inst, &g);
+        // A divisor base mixes cofactor classes; a subgroup-orbit base lies
+        // wholly in <G> (every point is [h]P), so the filter keeps all pairs there.
+        let fb = koblitz_orbit_base(&inst, &[("divisor", "1")]);
+        let mut report = CosetFilter::default();
+        let classes = coset_classes(&ctx, &fb, &mut GroupOps::default(), &mut report).unwrap();
+        let keep = |i: usize, j: usize| classes[i].0 == classes[j].1;
+        let full_plan = FrobeniusPairTable::plan(inst.n, &fb, None);
+        let kept_plan = FrobeniusPairTable::plan(inst.n, &fb, Some(&keep));
+        let full = FrobeniusPairTable::build(&inst, &fb).unwrap();
+        let kept = FrobeniusPairTable::build_filtered(&inst, &fb, Some(&keep)).unwrap();
+        assert_eq!(full_plan.pairs, full.build_ops.adds);
+        assert_eq!(kept_plan.pairs, kept.build_ops.adds);
+        assert!(kept_plan.pairs < full_plan.pairs, "{kept_plan:?} vs {full_plan:?}");
+        assert!(full.entries <= full_plan.pairs && kept.entries <= kept_plan.pairs);
+        assert!(kept_plan.table_bytes <= full_plan.table_bytes);
+    }
+
+    /// **A table over the memory limit is refused with a reason, before
+    /// anything is allocated**; at the default limit the same base builds.
+    #[test]
+    fn oversized_frobenius_table_is_refused_not_allocated() {
+        use crate::cryptanalysis::ic_boundary::{koblitz_instance, DEFAULT_MAX_TABLE_BYTES};
+        let inst = koblitz_instance(0, 19).expect("K_0 / GF(2^19), cofactor 4");
+        let fb = koblitz_orbit_base(&inst, &[("points", "300")]);
+        let plan = FrobeniusPairTable::plan(inst.n, &fb, None);
+        let err = match FrobeniusPairTable::try_build_filtered(&inst, &fb, None, plan.bytes() - 1) {
+            Ok(_) => panic!("a build one byte over the limit must be refused"),
+            Err(e) => e,
+        };
+        assert!(err.contains("needs about") && err.contains("limit"), "{err}");
+        assert!(FrobeniusPairTable::build_filtered(&inst, &fb, None).is_some());
+        assert!(FrobeniusPairTable::try_build_filtered(&inst, &fb, None, plan.bytes()).is_ok());
+        assert!(plan.bytes() < DEFAULT_MAX_TABLE_BYTES);
+    }
+
+    /// **`koblitz-orbit:points=` samples subgroup orbits**: reproducible from
+    /// `(points, seed)`, closed under the Frobenius and negation, every point
+    /// in the prime-order subgroup, at least `points` of them, and the
+    /// Frobenius table builds on it where a divisor base at this degree
+    /// would be too large.
+    #[test]
+    fn koblitz_orbit_points_samples_a_subgroup_base() {
+        use crate::cryptanalysis::ic_boundary::koblitz_instance;
+        let inst = koblitz_instance(0, 19).expect("K_0 / GF(2^19), cofactor 4");
+        let g = BinaryGroup(&inst.fast);
+        let a = koblitz_orbit_base(&inst, &[("points", "300"), ("seed", "3")]);
+        let b = koblitz_orbit_base(&inst, &[("points", "300"), ("seed", "3")]);
+        let c = koblitz_orbit_base(&inst, &[("points", "300"), ("seed", "4")]);
+        let key = |fb: &FactorBase<FastPoint>| fb.points.iter().map(|p| p.pack()).collect::<Vec<_>>();
+        assert_eq!(key(&a), key(&b));
+        assert_ne!(key(&a), key(&c));
+        assert!(a.points.len() >= 300 && a.columns > 1);
+        let mut ops = GroupOps::default();
+        for &p in &a.points {
+            assert!(g.is_identity(&g.mul(&mut ops, p, inst.r)), "x = {:#x}", p.x);
+            assert!(a.point_index.contains_key(&inst.fast.frobenius_k(p, 1).pack()));
+            assert!(a.point_index.contains_key(&inst.fast.neg(p).pack()));
+        }
+        assert!(FrobeniusPairTable::build(&inst, &a).is_some());
+        // Every such point is in <G>, so all share one coset class and the
+        // coset filter keeps every pair (it is inert on this base).
+        let mut report = CosetFilter::default();
+        let ctx = ctx_for(&inst, &g);
+        let _ = coset_classes(&ctx, &a, &mut GroupOps::default(), &mut report);
+        assert_eq!(report.classes, 1, "{report:?}");
+        assert_eq!(report.in_subgroup, a.points.len() as u64);
+        // The no_fold control gives one column per abscissa.
+        let nf = koblitz_orbit_base(&inst, &[("points", "300"), ("seed", "3"), ("no_fold", "1")]);
+        assert_eq!(nf.points.len(), a.points.len());
+        assert!(nf.columns > a.columns);
+        // Selection is charged: one quadratic solve per draw, doublings on `ops`.
+        let p = Params([("points", "300")].iter().map(|(k, v)| (k.to_string(), v.to_string())).collect());
+        let mut sel_ops = GroupOps::default();
+        let ctx = ctx_for(&inst, &g);
+        let fb = KoblitzOrbitBase { instance: &inst }.build(&ctx, &p, &mut sel_ops).unwrap();
+        assert!(fb.cost.get("as_solves") >= fb.columns as u64);
+        assert!(sel_ops.doubles > 0);
     }
 }
