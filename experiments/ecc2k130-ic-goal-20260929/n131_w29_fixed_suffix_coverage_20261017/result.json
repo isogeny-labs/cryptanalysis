@@ -1,0 +1,50 @@
+{
+  "candidate_id": null,
+  "model": "uniform subgroup target; each fixed suffix independent of target within an advice value; exact two-code completion; at most K suffixes per advice value",
+  "n131": {
+    "canonical_code_upper_bound": 268435456,
+    "curve_id": "EC1N131Ckb1heb5f1998f20b",
+    "half_coverage_min_advice_bits_at_K": 30,
+    "half_coverage_min_advice_values_at_K": 983826355,
+    "half_coverage_min_target_independent_suffixes": 590295812557728915461,
+    "hypothetical_suffixes_per_advice": 600000000000,
+    "hypothetical_uniform_coverage_bound": {
+      "denominator": 680564733841876926932320129493409985129,
+      "numerator": 345876450093563904000000000000
+    },
+    "max_two_code_completions_per_suffix": 576460750155939840,
+    "numerical_certificate": {
+      "billion_scaled_numerator": 345876450093563904000000000000000000000,
+      "denominator": 680564733841876926932320129493409985129,
+      "strictly_below_one_billionth": true
+    },
+    "one_suffix_uniform_coverage_bound": {
+      "denominator": 680564733841876926932320129493409985129,
+      "numerator": 576460750155939840
+    },
+    "signed_states_per_slot_upper_bound": 1073741824
+  },
+  "n41": {
+    "code_count": 71,
+    "curve_id": "EC1N41Ckb1h7d5e80d3c4d0",
+    "max_two_code_completions_per_suffix": 39760,
+    "observed_panel": {
+      "frozen_miss_suffixes": 64,
+      "miss_hits": 0,
+      "retrospective_relation_suffix_hits": 1
+    },
+    "signed_states_per_slot": 284,
+    "target_independent_64_suffix_reference": {
+      "denominator": 549756390943,
+      "numerator": 2544640
+    }
+  },
+  "protocol_sha256": "572a54687c51969709855a81801e647a393d79b5829b23552cdabc34f0de4258",
+  "source_sha256": {
+    "advice_theorem": "c9d06add21cdce896a6009fa4c101e79b5ff0be8c44d9a7f2ded3a82c0c05ca8",
+    "n131_sample": "2473876a4c2bbbbe1cd4f1b433ab92d9e5c5d401a1ef31ff057b0a09800499b8",
+    "n41_source": "bff6f50a6b62ff627c79002b2fc19a5e5dcdc80b254d5c9e7e7a7949a763795b",
+    "s3_panel": "d4b238f0502dc658406a1166d655f21b83f152a6ab0721c702f232300c7323df"
+  },
+  "status": "PASS_FIXED_SUFFIX_CARDINALITY_AUDIT"
+}

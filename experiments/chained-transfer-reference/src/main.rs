@@ -4,6 +4,10 @@
 #[allow(dead_code, unused_imports, clippy::wrong_self_convention)]
 #[path = "../../../suite/src/prime_hyperelliptic/mod.rs"]
 mod reference;
+// The byte-exact mirrored modules name their production crate root in focused
+// unit tests. Keep the reference mount private while supplying that same path.
+#[cfg(test)]
+pub(crate) use reference as prime_hyperelliptic;
 
 use chained_jacobian_transfer as chain;
 use num_bigint::BigUint;

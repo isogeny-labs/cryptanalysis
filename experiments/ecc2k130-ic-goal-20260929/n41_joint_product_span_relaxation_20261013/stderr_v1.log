@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_joint_product_span_relaxation_20261013/run.py", line 200, in <module>
+    main()
+  File "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_joint_product_span_relaxation_20261013/run.py", line 164, in main
+    outputs, witnesses, ranks, assignments, enum_s = relaxed_outputs()
+  File "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_joint_product_span_relaxation_20261013/run.py", line 118, in relaxed_outputs
+    basis = kernel_basis(rows, N + D + 1)
+  File "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_joint_product_span_relaxation_20261013/run.py", line 48, in kernel_basis
+    assert all((row & vector).bit_count() % 2 == 0 for row in rows)
+  File "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_joint_product_span_relaxation_20261013/run.py", line 48, in <genexpr>
+    assert all((row & vector).bit_count() % 2 == 0 for row in rows)
+AttributeError: 'int' object has no attribute 'bit_count'

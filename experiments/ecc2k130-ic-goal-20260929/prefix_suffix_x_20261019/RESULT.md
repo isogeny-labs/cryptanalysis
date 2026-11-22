@@ -1,0 +1,18 @@
+# Exact target-conditioned three-plus-two partial-sum lookup
+
+An x-bucket lookup reduces the finite five-slot query from 1,024 complete group sums per box to 64 target-conditioned residual x queries. It builds all 64 three-slot and 16 two-slot partial sums once, folds each sign pair into one x bucket, and checks any bucket matches with the full group law. On the frozen N41 and N131 panels it preserved one independently audited constructed relation in each positive box and agreed with direct enumeration in all 18 boxes.
+
+For a prefix point \(P\) in the x bucket represented by \(A\), the binary-curve x fiber gives \(P=A\) or \(P=-A\). If \(P+S=Q\), the suffix x must therefore occur at one of \(x(Q-A)\) and \(x(Q+A)\). The suffix table is reusable; the two residual keys depend on the target. Identity-point keys are represented by `None`. Every possible table hit is checked by exact point addition before output. The generic completeness implication is Lean-checked in `PrefixSuffix.lean`; the paired exhaustive check verifies completeness for these finite panels; a Lean proof of the curve-specific x-fiber property remains open.
+
+| Frozen run | Boxes | Verified positive | Public/ordinary finite-box hits | Partial-sum preparation | Target query | Direct enumeration | Parent wall / sampled combined RSS |
+| --- | ---: | --- | ---: | ---: | ---: | ---: | --- |
+| N41 W11 | 9 | One archived public relation | 0 in eight ordinary boxes | 0.119 s | 0.045 s | 0.240 s | 4.673 s / 286,408,704 B |
+| N131 W33 | 9 | One constructed control | 0 in eight public boxes | 0.116 s | 0.049 s | 0.186 s | 2.260 s / 284,049,408 B |
+
+The N41 run was unpinned: all four states per slot entered the lookup, and the known relation emerged from the target query. Its result was hash-bound and checked before the N131 protocol was frozen. Each box had 32 prefix x buckets and eight suffix x buckets; all nine N131 boxes together needed four final group checks. The eight public N131 boxes contain 8,192 complete state assignments. Their zero-hit outcome is a finite observation under the frozen source choices and public point.
+
+These times are single-run ordinary-host component diagnostics. The N131 target-dependent query alone is 0.049 s with the partial-sum tables ready; preparing them adds 0.116 s. The direct loop on the same boxes took 0.186 s. The measured benefit depends on reusing or compactly generating the partial sums, and the full W33 source has 32 free bits per slot. Enumerating its three-slot table is far outside this 600 s/4 GiB experiment. This lookup is a correctness and cost baseline for a symbolic pre-tuple constraint over source bits, not a complete IC pipeline; `candidate_id: null`.
+
+The next experiment should derive a target-conditioned constraint on the *code variables* without enumerating the three-slot source combinations. Its cheapest falsifier is to freeze one W33 source family, count exact rejected code tuples before group addition, and compare full charged preparation plus query against this lookup and direct enumeration. An ordinary N131 relation remains the next goal gate.
+
+The [terminal verifier](verify_terminal.py) checks source hashes, runtime receipts, positive witnesses, direct-enumeration equality, bounds, and Lean axioms. The saved Sage runtime receipt identifies the accepted repository build. The temporary disk-space workaround preserved an older generated build-output directory under `/private/tmp/eisenstein-steiner-target-preserved-20261019` and left its original `.tmp/eisenstein-steiner-target` path as a symlink; it did not enter the experiment's hashed inputs.

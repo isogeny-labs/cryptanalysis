@@ -1,0 +1,12 @@
+import Std
+import Init.Grind.Ring.Basic
+
+namespace FunctionSelector
+open Lean.Grind
+
+theorem normalize_nonzero {K : Type} [Field K] (c : K) (hc : c ≠ 0) :
+    c⁻¹ * c = 1 := by
+  exact inv_mul_cancel₀ hc
+
+#print axioms normalize_nonzero
+end FunctionSelector

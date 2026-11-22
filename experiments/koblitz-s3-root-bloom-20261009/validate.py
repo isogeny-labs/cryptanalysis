@@ -6,7 +6,6 @@ from __future__ import annotations
 import hashlib
 import json
 import statistics
-import sys
 from pathlib import Path
 
 from run_panel import normalized, sha
@@ -19,9 +18,6 @@ def load(path: Path) -> dict:
 
 
 def main() -> None:
-    archive = sys.argv[1:] == ["--archive"]
-    if sys.argv[1:] and not archive:
-        raise SystemExit("usage: validate.py [--archive]")
     freeze = load(HERE / "freeze_receipt.json")
     summary = load(HERE / "panel_summary.json")
     rows_path = HERE / "runs/panel_rows.jsonl"
@@ -43,11 +39,8 @@ def main() -> None:
         assert row["candidate_id"] == manifest["candidate_id"]
         assert row["workload_id"] == bound["workload_id"] == freeze["workload_id"]
         assert row["run_id"] == f'{row["candidate_id"]}W{row["workload_id"]}R{row["pair"]}'
-        source = (HERE / ("reference.rs" if name == "reference" else "candidate.rs")
-                  if archive else Path(bound["source_path"]))
-        assert sha(source) == bound["source_sha256"]
-        if not archive:
-            assert sha(Path(bound["binary_path"])) == bound["binary_sha256"]
+        assert sha(Path(bound["source_path"])) == bound["source_sha256"]
+        assert sha(Path(bound["binary_path"])) == bound["binary_sha256"]
         stem = f'R{row["pair"]}_{name}'
         path = HERE / "runs" / f"{stem}.jsonl"
         assert sha(path) == row["output_sha256"]
@@ -118,7 +111,7 @@ def main() -> None:
         "semantic_sha256": summary["semantic_sha256"],
         "independent_sage_replay_sha256": sha(HERE / "independent_sage_replay.json"),
         "diagnostic_source_sha256": sha(diagnostic_source),
-        "diagnostic_binary_sha256": None if archive else sha(diagnostic_binary),
+        "diagnostic_binary_sha256": sha(diagnostic_binary),
         "diagnostic_output_sha256": sha(diagnostic_output),
         "canonical_root_probes": checks,
         "bloom_negative_probes": negatives,
@@ -136,6 +129,31 @@ def main() -> None:
         "controlled_online_speedup": None,
         "timing_status": "exploratory_unisolated_host",
     }
+    (HERE / "validated_result.json").write_text(json.dumps(result, sort_keys=True, indent=2) + "\n")
+    print(json.dumps(result, sort_keys=True))
+
+
+if __name__ == "__main__":
+    main()
+
+
+import sys
+
+
+
+
+
+
+    archive = sys.argv[1:] == ["--archive"]
+    if sys.argv[1:] and not archive:
+        raise SystemExit("usage: validate.py [--archive]")
+        source = (HERE / ("reference.rs" if name == "reference" else "candidate.rs")
+                  if archive else Path(bound["source_path"]))
+        assert sha(source) == bound["source_sha256"]
+        if not archive:
+            assert sha(Path(bound["binary_path"])) == bound["binary_sha256"]
+
+        "diagnostic_binary_sha256": None if archive else sha(diagnostic_binary),
     if archive:
         recorded = load(HERE / "validated_result.json")
         for key, value in result.items():
@@ -150,5 +168,3 @@ def main() -> None:
         print(json.dumps(result, sort_keys=True))
 
 
-if __name__ == "__main__":
-    main()

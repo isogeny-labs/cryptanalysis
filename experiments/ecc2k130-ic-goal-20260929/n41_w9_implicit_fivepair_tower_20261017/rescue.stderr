@@ -1,0 +1,18 @@
+Traceback (most recent call last):
+  File "/Volumes/SSD990/cryptanalysis/third_party/sage-binary/local/var/lib/sage/venv-python3.14/lib/python3.14/site-packages/psutil/__init__.py", line 1272, in _send_signal
+    os.kill(pid, sig)
+    ~~~~~~~^^^^^^^^^^
+PermissionError: [Errno 1] Operation not permitted
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w9_implicit_fivepair_tower_20261017/rescue_monitor.py", line 51, in <module>
+    proc.terminate()
+    ~~~~~~~~~~~~~~^^
+  File "/Volumes/SSD990/cryptanalysis/third_party/sage-binary/local/var/lib/sage/venv-python3.14/lib/python3.14/site-packages/psutil/__init__.py", line 1326, in terminate
+    self._send_signal(signal.SIGTERM)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/Volumes/SSD990/cryptanalysis/third_party/sage-binary/local/var/lib/sage/venv-python3.14/lib/python3.14/site-packages/psutil/__init__.py", line 1281, in _send_signal
+    raise AccessDenied(pid, name) from err
+psutil.AccessDenied: (pid=9241, name='cryptominisat5')
