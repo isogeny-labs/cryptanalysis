@@ -1,0 +1,20 @@
+{
+  "schema": "x011-p1009-degree2-rank-protocol-v1",
+  "p": 1009,
+  "curve": "11a1: y^2+y=x^3-x^2-10x-20",
+  "curve_order": 1020,
+  "largest_prime_factor": 17,
+  "fiber_abs_trace": 20,
+  "expected_fiber_size": 84,
+  "point_order": "sorted by integer affine coordinates (x,y) from the corrected ledger",
+  "corrected_ledger": "../hecke-x011-trace-fiber-census-20261119/points_v2.jsonl.gz",
+  "corrected_ledger_sha256": "0fea606b245a4889df66d551a41d8b7dc403438a9a95fdd940ff15f5082b3087",
+  "regularized_hecke_source_sha256": "d13a8663c1beb145c0b66147305831bb15678208d126df5b69ddf5e17962b32b",
+  "hecke_degrees": [2],
+  "hecke_row_policy": "For each frozen fiber point, evaluate the degree-2 neighbor-x polynomial and mixed moments. Accept one row only when the complete three-point neighbor multiset is rational, uniquely reconstructed, contained in the frozen fiber, verifies the Hecke group sum, and passes finite-j modular-polynomial checks. Retain every other source status.",
+  "direct_control": "Exhaust all distinct support-1, support-2 and support-3 signed group-law relations with the first coefficient +1 and subsequent coefficients in order [-1,+1]. Verify each row, retain all candidates and ranks.",
+  "rank_fields": ["QQ", "F17"],
+  "resource_cap_seconds": 180,
+  "candidate_id": null,
+  "target_online_ms": null
+}

@@ -1,0 +1,17 @@
+{
+  "status": "FROZEN_BEFORE_FRESH_STAGE0_SOLVE",
+  "input": "fresh_result.json regenerated from the trace-64 seed and first complete Hecke frontier",
+  "subgroup_order": 4021,
+  "generator": "G=5(1,8630)",
+  "anchor_log": 1,
+  "shift_radius": 3,
+  "shift_equation": "log(Q+jG)=log(Q)+j modulo 4021 for every internal table hit and 1<=j<=3",
+  "solve_rule": "assign weighted component offsets from checked point identities, solve retained Hecke rows plus anchor on component logs over GF(4021), reconstruct every column log",
+  "target_seed": "hecke-natural-stage0-frozen-unseen-target-20261024-v1",
+  "target_rule": "construct the public point from SHA-256 of target seed modulo 4021 before target-dependent work; scan Q+jG for j>=0 until a prepared point matches; subtract j and scalar-replay",
+  "target_count": 1,
+  "coverage_audit": "enumerate all 4021 subgroup points separately and record the minimum nonnegative shift to a prepared table point",
+  "timing_class": "ordinary-host diagnostic, no CPU benchmark tier or paired rho wall-time claim",
+  "candidate_id": null,
+  "timing_claim": null
+}

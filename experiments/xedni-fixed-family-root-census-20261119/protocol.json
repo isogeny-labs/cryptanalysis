@@ -1,0 +1,14 @@
+{
+  "schema": "xedni-fixed-family-root-census-v1",
+  "source_protocol": "experiments/xedni-shared-target-hit-law-20261119/protocol.json",
+  "source_protocol_sha256": "9348d6c7eecb4c6096ef9116c5e8263f9cf1fa209bf26789cd148a5601a3c62f",
+  "offsets": [0, 1, 2, 3, 5, 8, 13, 21],
+  "vectors": [[1, -6], [2, -1], [6, 5], [5, 4], [6, 1], [5, 3], [4, -5], [6, -1], [5, -1], [6, -5], [1, 5], [4, -1], [4, 1]],
+  "prime_orders": [1009, 10007, 65537],
+  "offset_pair_law": "all ordered distinct pairs from offsets; 56 pairs at each order",
+  "target_law": "all nonzero residues w in 1..q-1",
+  "root_equation": "(a+b)w = a*t1+b*t2 mod q",
+  "statistics": ["distinct_nonzero_roots", "missed_nonzero_targets", "zero_roots", "duplicate_pair_roots", "capacity_missed_lower_bound"],
+  "claim_boundary": "exact public-relation root census; necessary condition for selected lift relations; no elliptic-point construction or solve timing",
+  "resource_cap_seconds": 90
+}
