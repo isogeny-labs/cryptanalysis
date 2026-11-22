@@ -19,6 +19,10 @@ and construction gates. [pcc:unverified]
 ## Active items (top = next)
 - [ ] CT201–CT203: complete cold ECDLP source adjudication (matched five-arm rho/BSGS/IC, Williams order, distinct-Q per-block prospective gate; automation, started 2026-11-18, branch research/ct201-complete-single-target-gate-20261118, PR #1766; source CI 44/44 normal and -O at 36807d15; native/PCC blocked) [pcc:unverified]
 
+- [ ] Complete or obstruct the P-256 full-bitangent Frobenius/Hilbert-90 descent, with all 28 lines, cocycle verification, and exact base-field round-trip checks (Codex, started 2026-11-20, branch codex/nist-333-transfer-evidence-20261120, PR #1876) [pcc:unverified]
+
+- [x] Integrate the NIST P-224/P-256 genus-3 (3,3,3)-isogeny reconstruction and the bounded genus-3 HECDLP cover-reduction evidence, preserving quartic/Kummer maps, empirical controls, and open transfer obligations (Codex, completed 2026-11-20, branch codex/nist-333-transfer-evidence-20261120, PR #1876) [pcc:unverified]
+
 - [x] Move agent skills to the workspace trunk: delete local `.agents/skills`/`.claude/skills` copies, point docs and checks at isogeny-labs/workspace (Claude, started 2026-11-19, branch claude/skills-to-trunk-20261119, PR #1852)
 
 - [x] Lead 2D: evaluate prescribed-singularity (nodal) degree-`d >= 4` plane Bezout lifts (`d in {4, 5, 6}`) and Cayley-Bacharach 9-point cubic pencils + shared `CoordinateFb` preimage sieve (Cursor, started 2026-11-19, branch cursor/pdp-lead-2d-xedni-cb-nodal-20261119, PR #1849) [pcc:unverified] Lean 14/14 [pcc:unverified]
