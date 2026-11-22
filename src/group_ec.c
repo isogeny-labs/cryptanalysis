@@ -18,6 +18,30 @@ static inline uint64_t ec_field_mul(const ca_group *g, uint64_t a, uint64_t b) {
 static inline uint64_t ec_field_sqr(const ca_group *g, uint64_t a) { return ca_mont_sqr(&g->mont, a); }
 static inline uint64_t ec_field_inv(const ca_group *g, uint64_t a) { return ca_mont_inv(&g->mont, a); }
 
+/* Jacobian coords for p < 2^62 stay in lazy Montgomery form [0, 2p): mul
+ * skips the final conditional subtract; add/sub close under 2p.  Zero-tests
+ * and the affine conversion canonicalize.  Affine batch_op keeps strict
+ * residues (lazy there was slower). */
+static inline int ec_fp_is_zero_lazy(uint64_t x, uint64_t p) { return x == 0 || x == p; }
+static inline uint64_t ec_jac_add(uint64_t a, uint64_t b, uint64_t p2)
+{
+    uint64_t s = a + b;
+    if (s >= p2) s -= p2;
+    return s;
+}
+static inline uint64_t ec_jac_sub(uint64_t a, uint64_t b, uint64_t p2)
+{
+    return a >= b ? a - b : a + p2 - b;
+}
+static inline uint64_t ec_jac_mul(uint64_t a, uint64_t b, uint64_t p, uint64_t np)
+{
+    return ca_mont_mul_lazy(a, b, p, np);
+}
+static inline uint64_t ec_jac_sqr(uint64_t a, uint64_t p, uint64_t np)
+{
+    return ca_mont_sqr_lazy(a, p, np);
+}
+
 static void ec_identity(const ca_group *g, ca_elem *r)
 {
     (void)g;
@@ -257,8 +281,30 @@ static void ec_jac_to_affine(const ca_group *g, ca_elem *r, const ec_jac *acc);
 static void ec_jac_dbl(const ca_group *g, ec_jac *r)
 {
     if (r->inf) return;
-    if (r->y == 0) {
+    const uint64_t p = g->p;
+    if (ec_fp_is_zero_lazy(r->y, p)) {
         r->inf = 1;
+        return;
+    }
+    if (p < (1ULL << 62)) {
+        const uint64_t np = g->mont.pinv, p2 = p << 1, am = g->a_mont;
+        uint64_t xx = ec_jac_sqr(r->x, p, np), yy = ec_jac_sqr(r->y, p, np);
+        uint64_t yyyy = ec_jac_sqr(yy, p, np), zz = ec_jac_sqr(r->z, p, np);
+        uint64_t t = ec_jac_add(r->x, yy, p2);
+        uint64_t s = ec_jac_sub(ec_jac_sub(ec_jac_sqr(t, p, np), xx, p2), yyyy, p2);
+        s = ec_jac_add(s, s, p2);
+        uint64_t m = ec_jac_add(ec_jac_add(ec_jac_add(xx, xx, p2), xx, p2),
+                                ec_jac_mul(am, ec_jac_sqr(zz, p, np), p, np), p2);
+        uint64_t x3 = ec_jac_sub(ec_jac_sub(ec_jac_sqr(m, p, np), s, p2), s, p2);
+        uint64_t y8 = ec_jac_add(yyyy, yyyy, p2);
+        y8 = ec_jac_add(y8, y8, p2);
+        y8 = ec_jac_add(y8, y8, p2);
+        uint64_t y3 = ec_jac_sub(ec_jac_mul(m, ec_jac_sub(s, x3, p2), p, np), y8, p2);
+        uint64_t yz = ec_jac_add(r->y, r->z, p2);
+        uint64_t z3 = ec_jac_sub(ec_jac_sub(ec_jac_sqr(yz, p, np), yy, p2), zz, p2);
+        r->x = x3;
+        r->y = y3;
+        r->z = z3;
         return;
     }
     uint64_t xx = ec_field_sqr(g, r->x), yy = ec_field_sqr(g, r->y), yyyy = ec_field_sqr(g, yy), zz = ec_field_sqr(g, r->z);
@@ -286,6 +332,37 @@ static void ec_jac_add_affine(const ca_group *g, ec_jac *r, uint64_t x2, uint64_
         r->y = y2;
         r->z = g->mont.r1;
         r->inf = 0;
+        return;
+    }
+    const uint64_t p = g->p;
+    if (p < (1ULL << 62)) {
+        const uint64_t np = g->mont.pinv, p2 = p << 1;
+        uint64_t z1z1 = ec_jac_sqr(r->z, p, np);
+        uint64_t u2 = ec_jac_mul(x2, z1z1, p, np);
+        uint64_t s2 = ec_jac_mul(ec_jac_mul(y2, r->z, p, np), z1z1, p, np);
+        uint64_t h = ec_jac_sub(u2, r->x, p2);
+        uint64_t rr = ec_jac_sub(s2, r->y, p2);
+        if (ec_fp_is_zero_lazy(h, p)) {
+            if (ec_fp_is_zero_lazy(rr, p))
+                ec_jac_dbl(g, r);
+            else
+                r->inf = 1;
+            return;
+        }
+        rr = ec_jac_add(rr, rr, p2);
+        uint64_t hh = ec_jac_sqr(h, p, np);
+        uint64_t i = ec_jac_add(hh, hh, p2);
+        i = ec_jac_add(i, i, p2);
+        uint64_t j = ec_jac_mul(h, i, p, np);
+        uint64_t v = ec_jac_mul(r->x, i, p, np);
+        uint64_t x3 = ec_jac_sub(ec_jac_sub(ec_jac_sub(ec_jac_sqr(rr, p, np), j, p2), v, p2), v, p2);
+        uint64_t y1j = ec_jac_mul(r->y, j, p, np);
+        uint64_t y3 = ec_jac_sub(ec_jac_sub(ec_jac_mul(rr, ec_jac_sub(v, x3, p2), p, np), y1j, p2), y1j, p2);
+        uint64_t zh = ec_jac_add(r->z, h, p2);
+        uint64_t z3 = ec_jac_sub(ec_jac_sub(ec_jac_sqr(zh, p, np), z1z1, p2), hh, p2);
+        r->x = x3;
+        r->y = y3;
+        r->z = z3;
         return;
     }
     uint64_t z1z1 = ec_field_sqr(g, r->z);
@@ -359,8 +436,11 @@ int ca_ec_group_mul(const ca_group *g, ca_elem *r, const ca_elem *a, uint64_t k)
             continue;
         }
         uint64_t zi = invz[t], zi2 = ec_field_sqr(g, zi);
-        FX(&odd[t]) = ec_field_mul(g, J[t].x, zi2);
-        FY(&odd[t]) = ec_field_mul(g, J[t].y, ec_field_mul(g, zi2, zi));
+        uint64_t x = ec_field_mul(g, J[t].x, zi2);
+        uint64_t y = ec_field_mul(g, J[t].y, ec_field_mul(g, zi2, zi));
+        /* Jacobian may leave lazy residues; affine table rows stay in [0, p). */
+        FX(&odd[t]) = ca_fp_canon(x, g->p);
+        FY(&odd[t]) = ca_fp_canon(y, g->p);
         FINF(&odd[t]) = 0;
         odd[t].w[3] = 0;
     }
@@ -392,9 +472,9 @@ static void ec_jac_to_affine(const ca_group *g, ca_elem *r, const ec_jac *acc)
         ec_identity(g, r);
         return;
     }
-    uint64_t zi = ec_field_inv(g, acc->z), zi2 = ec_field_sqr(g, zi);
-    FX(r) = ec_field_mul(g, acc->x, zi2);
-    FY(r) = ec_field_mul(g, acc->y, ec_field_mul(g, zi2, zi));
+    uint64_t zi = ec_field_inv(g, ca_fp_canon(acc->z, g->p)), zi2 = ec_field_sqr(g, zi);
+    FX(r) = ca_fp_canon(ec_field_mul(g, ca_fp_canon(acc->x, g->p), zi2), g->p);
+    FY(r) = ca_fp_canon(ec_field_mul(g, ca_fp_canon(acc->y, g->p), ec_field_mul(g, zi2, zi)), g->p);
     FINF(r) = 0;
     r->w[3] = 0;
 }
