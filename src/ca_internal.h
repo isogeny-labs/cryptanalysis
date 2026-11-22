@@ -135,8 +135,13 @@ struct ca_group;
  * table entries where they lie instead of copying them first. */
 
 /* zp_hash on the residue word: the vtable's zp_hash calls this, and the
- * rho walk inlines it for the native (Z/pZ)^* group. */
+ * rho walk inlines it for the native (Z/pZ)^* group.  Lazy Montgomery
+ * paths may leave x in [0, 2p); hash the canonical representative. */
 static inline uint64_t ca_zp_hash_word(uint64_t x) { return ca_mix64(x ^ 0x5bd1e995ULL); }
+static inline uint64_t ca_zp_hash_residue(uint64_t x, uint64_t p)
+{
+    return ca_zp_hash_word(ca_fp_canon(x, p));
+}
 
 /* ec_hash: equal points hash equal; the walk's index and distinguished-
  * point test read it. */
@@ -207,23 +212,33 @@ static inline uint64_t ca_ec_add_den(const ca_ec_consts *c, const ca_elem *a, co
     return ca_submod(b->w[0], a->w[0], c->p);
 }
 
-/* r = a + b given di, the inverse of ca_ec_add_den(c, a, b): the affine
- * group law with its special cases (the same points ca_group_op gives), its
- * multiplications and squarings counted as ec_batch_op counts them.  r may
- * alias a or b. */
-static inline void ca_ec_add_with_di(const ca_ec_consts *c, ca_elem *r, const ca_elem *a,
-                                     const ca_elem *b, uint64_t di)
+/* Denominator for a + (bx, by) when the addend is known affine (jump /
+ * multiplier tables): same cases as ca_ec_add_den with b->w[2] == 0. */
+static inline uint64_t ca_ec_add_den_xy(const ca_ec_consts *c, const ca_elem *a, uint64_t bx,
+                                       uint64_t by)
+{
+    if (a->w[2]) return c->one;
+    if (a->w[0] == bx) {
+        if (a->w[1] == by && a->w[1] != 0) return ca_addmod(a->w[1], a->w[1], c->p);
+        return c->one;
+    }
+    return ca_submod(bx, a->w[0], c->p);
+}
+
+/* r = a + (bx, by) for a known-affine addend (SoA jump / multiplier tables).
+ * Same residues as ca_ec_add_with_di with an affine b.  r may alias a. */
+static inline void ca_ec_add_with_di_xy(const ca_ec_consts *c, ca_elem *r, const ca_elem *a,
+                                        uint64_t bx, uint64_t by, uint64_t di)
 {
     if (a->w[2]) {
-        *r = *b;
-        return;
-    }
-    if (b->w[2]) {
-        *r = *a;
+        r->w[0] = bx;
+        r->w[1] = by;
+        r->w[2] = 0;
+        r->w[3] = 0;
         return;
     }
     const uint64_t P = c->p, NPI = c->npi;
-    const uint64_t ax = a->w[0], ay = a->w[1], bx = b->w[0], by = b->w[1];
+    const uint64_t ax = a->w[0], ay = a->w[1];
     uint64_t lam;
     if (ax == bx) {
         if (ay == by && ay != 0) {
@@ -250,6 +265,24 @@ static inline void ca_ec_add_with_di(const ca_ec_consts *c, ca_elem *r, const ca
     r->w[1] = y3;
     r->w[2] = 0;
     r->w[3] = 0;
+}
+
+/* r = a + b given di, the inverse of ca_ec_add_den(c, a, b): the affine
+ * group law with its special cases (the same points ca_group_op gives), its
+ * multiplications and squarings counted as ec_batch_op counts them.  r may
+ * alias a or b. */
+static inline void ca_ec_add_with_di(const ca_ec_consts *c, ca_elem *r, const ca_elem *a,
+                                     const ca_elem *b, uint64_t di)
+{
+    if (a->w[2]) {
+        *r = *b;
+        return;
+    }
+    if (b->w[2]) {
+        *r = *a;
+        return;
+    }
+    ca_ec_add_with_di_xy(c, r, a, b->w[0], b->w[1], di);
 }
 
 /* ---- open addressing hash table: u64 key to two u64 values ------------- */
@@ -297,6 +330,9 @@ typedef struct ca_htab1 {
 
 ca_status ca_htab1_init(ca_htab1 *t, size_t expected);
 void ca_htab1_free(ca_htab1 *t);
+/* Drop every entry; keep the allocation.  For a second BSGS pass of the
+ * same size (Mestre retries) this is a warm memset instead of free+calloc. */
+void ca_htab1_clear(ca_htab1 *t);
 int ca_htab1_insert(ca_htab1 *t, uint64_t key, uint64_t v0, uint64_t *old0);
 int ca_htab1_find(const ca_htab1 *t, uint64_t key, uint64_t *v0);
 size_t ca_htab1_bytes(const ca_htab1 *t);

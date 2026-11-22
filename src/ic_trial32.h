@@ -55,6 +55,24 @@ static uint32_t ca_ic_scan32_neon(uint32_t value, const uint32_t *inverse, const
 {
     uint32x4_t v = vdupq_n_u32(value);
     uint32_t i = start;
+    for (; stop - i >= 8; i += 8) {
+        uint32x4_t p0 = vmulq_u32(v, vld1q_u32(inverse + i));
+        uint32x4_t p1 = vmulq_u32(v, vld1q_u32(inverse + i + 4));
+        uint32x4_t m0 = vcgtq_u32(p0, vld1q_u32(limit + i));
+        uint32x4_t m1 = vcgtq_u32(p1, vld1q_u32(limit + i + 4));
+        if (vminvq_u32(m0) != UINT32_MAX) {
+            if (!vgetq_lane_u32(m0, 0)) return i;
+            if (!vgetq_lane_u32(m0, 1)) return i + 1;
+            if (!vgetq_lane_u32(m0, 2)) return i + 2;
+            return i + 3;
+        }
+        if (vminvq_u32(m1) != UINT32_MAX) {
+            if (!vgetq_lane_u32(m1, 0)) return i + 4;
+            if (!vgetq_lane_u32(m1, 1)) return i + 5;
+            if (!vgetq_lane_u32(m1, 2)) return i + 6;
+            return i + 7;
+        }
+    }
     for (; stop - i >= 4; i += 4) {
         uint32x4_t product = vmulq_u32(v, vld1q_u32(inverse + i));
         uint32x4_t miss = vcgtq_u32(product, vld1q_u32(limit + i));
