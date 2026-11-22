@@ -9,6 +9,7 @@ explain the gap and what would let the work move past it.
 
 | Problem | Status | What it blocks | What would unblock it |
 | --- | --- | --- | --- |
+| [NIST base-point generation provenance](nist-base-point-generation-provenance.md) | investigating; six older `Gx` sources recovered, 14 origins open | Complete generator/seed/root-rule provenance for later NIST prime, binary and Koblitz sample points; retained bounded search | Checkpoint access for the frozen run, plus historical source or an exact full-point reconstruction |
 | [Controlled curve-representation launch](curve-representation-controlled-admission.md) | open [pcc:unverified] | Timed growing-instance panel, including all requested metrics | Working checkpoint/host admission or the explicit CPU/Git exception, then execute the frozen panel |
 | [H116 verifier checkpoint access](h116-verifier-checkpoint-access.md) | open; source gate pushed, [pcc:unverified] | First H116 target-admission run and every later packet replay in PR #1744 | Valid checkpoint upload token or configured permitted AWS profile, successful push and passing gate |
 | [Chained-transfer v2 sequence-timing confounding](chained-transfer-v2-order-timing-confounding.md) | investigating; synthetic-null falsifier, [pcc:unverified] | Causal interpretation of deterministic ABBA/BAAB cold transfer timing without sequence-conditioned nuisance controls | Independently checked first-four-slot same-route sham and randomized-order calibration, then authorized native matched cold panel |
