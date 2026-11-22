@@ -1,0 +1,35 @@
+------------------------------------------------------------------------
+0   signals.cpython-314-darwin.so       0x0000000104ee64ec sigdie + 92
+1   signals.cpython-314-darwin.so       0x0000000104ee633c cysigs_signal_handler + 276
+2   libsystem_platform.dylib            0x0000000187aa9744 _sigtramp + 56
+3   libsystem_pthread.dylib             0x0000000187a9f8d8 pthread_kill + 296
+4   libsystem_c.dylib                   0x00000001879a5978 abort + 148
+5   libntl.45.dylib                     0x000000010c311070 _ZN3NTL12CharToIntValEl + 0
+6   libntl.45.dylib                     0x000000010c27d5e4 _ZN3NTL5buildERNS_13ZZ_pEXModulusERKNS_6ZZ_pEXE + 132
+7   polynomial_zz_pex.cpython-314-darwi 0x000000015b4c5bb8 _ZL88__pyx_f_4sage_5rings_10polynomial_17polynomial_zz_pex_17Polynomial_ZZ_pEX__powmod_bigexpP73__pyx_obj_4sage_5rings_10polynomial_17polynomial_zz_pex_Polynomial_ZZ_pEXP39__pyx_obj_4sage_5rings_7integer_IntegerS0_ + 436
+8   polynomial_zz_pex.cpython-314-darwi 0x000000015b4df90c _ZL84__pyx_pw_4sage_5rings_10polynomial_17polynomial_zz_pex_17Polynomial_ZZ_pEX_27__pow__P7_objectS0_S0_ + 1560
+9   libpython3.14.dylib                 0x0000000106023a2c PyNumber_Power + 108
+10  finite_field_base.cpython-314-darwi 0x000000014f4e6a58 __pyx_pw_4sage_5rings_12finite_rings_17finite_field_base_11FiniteField_96_roots_univariate_polynomial + 1996
+11  libpython3.14.dylib                 0x0000000105eea9b4 _PyObject_VectorcallDictTstate + 196
+12  polynomial_element.cpython-314-darw 0x000000014e607fe0 __pyx_pf_4sage_5rings_10polynomial_18polynomial_element_10Polynomial_269roots + 2816
+13  polynomial_element.cpython-314-darw 0x000000014e6346a0 __pyx_pw_4sage_5rings_10polynomial_18polynomial_element_10Polynomial_270roots + 1056
+14  libpython3.14.dylib                 0x0000000105ee4bd4 PyObject_Vectorcall + 88
+15  libpython3.14.dylib                 0x0000000105f1849c _TAIL_CALL_CALL_KW.llvm.15611777270348804602 + 656
+16  libpython3.14.dylib                 0x0000000105fe35c4 _PyEval_Vector + 780
+17  libpython3.14.dylib                 0x0000000105ffd860 PyEval_EvalCode + 160
+18  libpython3.14.dylib                 0x00000001060095e8 run_mod.llvm.14073533226210396525 + 292
+19  libpython3.14.dylib                 0x0000000105f557fc pyrun_file + 164
+20  libpython3.14.dylib                 0x0000000105f54330 _PyRun_SimpleFileObject + 256
+21  libpython3.14.dylib                 0x0000000105f540d4 _PyRun_AnyFileObject + 80
+22  libpython3.14.dylib                 0x0000000105f53fc8 pymain_run_file_obj + 164
+23  libpython3.14.dylib                 0x00000001060d17c8 pymain_run_file + 72
+24  libpython3.14.dylib                 0x00000001060cddcc Py_RunMain + 1136
+25  libpython3.14.dylib                 0x000000010607eee0 pymain_main + 464
+26  libpython3.14.dylib                 0x000000010607ed04 Py_BytesMain + 36
+27  dyld                                0x00000001876d44e4 start + 6992
+------------------------------------------------------------------------
+Unhandled SIGABRT: An abort() occurred.
+This probably occurred because a *compiled* module has a bug
+in it and is not properly wrapped with sig_on(), sig_off().
+Python will now terminate.
+------------------------------------------------------------------------

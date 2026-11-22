@@ -61,14 +61,17 @@ pub mod hyperelliptic;
 pub mod poly_f2m;
 
 pub use cover_transfer::{
-    BinaryCoverCertificate, BinaryCoverPoint, CoverTransferError, OrdinaryBinaryCover,
-    PullPushCompositionCertificate, PullbackFiberKind, SubgroupTransferStatus,
-    UnsupportedCoverOperation,
+    BinaryCoverCertificate, BinaryCoverPoint, ClosedPointPushforwardCertificate,
+    CoverTransferError, GeneratedSubgroupTransferCertificate, ImageEndomorphismCertificate,
+    JacobianPushforwardCertificate, OrdinaryBinaryCover, PullPushCompositionCertificate,
+    PullbackClosedPointCertificate, PullbackFiberKind, SubgroupTransferStatus,
+    TorsionProjectorCertificate, UnsupportedCoverOperation,
 };
 pub use curve::{BinaryCurve, BinaryPoint};
 pub use f2m::{F2mElement, IrreduciblePoly};
 pub use hyperelliptic::{
-    hcdlp_bsgs, hcdlp_pollard_rho, HyperellipticCurve, HyperellipticError, MumfordDivisor,
+    hcdlp_bsgs, hcdlp_bsgs_counted, hcdlp_pollard_rho, hcdlp_pollard_rho_counted, HcdlpGroupOps,
+    HcdlpSolveOutcome, HyperellipticCurve, HyperellipticError, MumfordDivisor,
     MAX_CHECKED_FIELD_DEGREE,
 };
 pub use poly_f2m::F2mPoly;

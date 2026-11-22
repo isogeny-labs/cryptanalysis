@@ -629,6 +629,91 @@ Sweeps that ship, under [`docs/ic/sweeps/`](sweeps):
 
 ---
 
+## 6a. Many cores: `--threads`
+
+`ic bench --threads N` (`0` = every core) spreads the relation phase
+and the matched rho runs over `N` threads. **It changes wall time and
+nothing else**: every count, every row, `S` (for count-priced oracles)
+and the recovered logarithm are those of `--threads 1`, and the test
+`a_parallel_relation_phase_reports_exactly_the_serial_run` holds that
+for every target source and several thread counts.
+
+How (`ic_boundary::collect_and_solve_parallel`):
+
+1. The relation loop is two halves. `TargetGen` draws targets (walk,
+   restarts, repeat guard); `Commit` turns a decomposition into a row,
+   eliminates and verifies. No oracle answer changes the next target.
+2. Targets are drawn serially, a window at a time (a walk step is one
+   addition). Each thread decomposes targets of the window with its own
+   **fork** of the oracle (`DecompositionOracle::fork`), pulling small
+   blocks off a shared counter.
+3. Answers are committed **in trial order**. If the logarithm is pinned
+   inside a window, the generator is restored from the window's snapshot,
+   the window's guard keys are removed and the committed prefix is drawn
+   again (asserted equal). Answers past the stop are dropped with their
+   counters: wasted wall time, never `S`.
+4. An oracle's internal accounting (solver totals, measured descent
+   time) leaves each fork per call through `take_delta` and is folded back
+   only for committed calls (`absorb_delta`).
+
+5. **The probe gate.** Before the run, one fork decomposes 64 throwaway
+   points `[k]G` (no ledger) and the time of a decomposition is set
+   against the time of a draw. Threads are used only if a decomposition
+   costs at least 2 µs and at least twice a draw (`parallel_pays`);
+   otherwise the run is exactly the `--threads 1` loop and the report says
+   `parallel.mode = "serial"` with the probe's times. Drawing is serial, so
+   a cheap oracle cannot gain, and running one through the split loop made
+   Koblitz-43 `mitm-frobenius` 0.82x and prime-24 `mitm` 0.87x of
+   `--threads 1`.
+
+Measured (4-vCPU cloud VM, exploratory tier; relation phase, 4 threads
+vs 1, geometric mean of 5 interleaved pairs with 95 % bootstrap CI; every
+run count-for-count identical to `--threads 1`):
+
+| configuration | probe: decomposition / draw | 4 threads |
+|:--|--:|:--|
+| prime-24, `subtract`, base 256 | ~53 µs / 0.3 µs | 3.22x [3.15, 3.28] |
+| char2-23, `descent-algebraic` + `f4-f2` | ~109 µs / 0.4 µs | 2.75x [2.69, 2.81] |
+| char2-21, `mitm` m = 3 | ~9 µs / 0.2 µs | parallel |
+| Koblitz-43, `mitm-frobenius` | ~0.06 µs / 0.1 µs | 0.92x [0.86, 0.98], whole process 0.99x (serial loop) |
+| prime-24, `mitm` m = 2 | ~0.03 µs / 0.2 µs | 0.85x [0.70, 1.04] on a 0.03 s phase (serial loop) |
+
+Records: `benchmarks/records/20261120T1852Z-ic-threads-scaling.json`,
+`…-ic-instance-search-wall.json` and `20261120T1913Z-ic-threads-gate.json`. A table oracle
+at these sizes is bounded by the serial walk, not by cores; what scales
+is an oracle that does real work per target.
+
+`RunReport.parallel` (absent when serial, so serial records are
+byte-for-byte unchanged) records threads, mode, the probe's per-target draw and decomposition
+times and, when parallel, windows, targets decomposed, discarded and
+replayed, and the wall time spent in decomposition windows.
+
+Which oracles fork: `subtract`, `mitm`, `mitm-frobenius` (tables shared
+through `Arc`) and `descent-algebraic` (a fresh engine of the same name
+and parameters). The rest run serially under `--threads` and report no
+`parallel` block; adding `fork` to one is a few lines.
+
+**Caveat, measured.** A counter priced in *measured nanoseconds*
+(`symbolic_descent_ns`, a solver priced `measured`) is timed while the
+other threads run, and reads high under contention: on a 4-vCPU host,
+`descent-algebraic` + `f4-f2` at `n = 21` gave `S` 5-20 % above the
+serial A/A spread at 4 threads, with identical solver operation counts.
+Quote `S` for such an oracle from `--threads 1`; the report's
+`parallel.note` says so.
+
+Where wall time went before this. `find_prime_order_curve` and
+`random_binary_instance` counted every candidate curve in `O(q)`: 55 s
+of a prime-24 process and 117 s of a char2-29 one, against 0.02-0.2 s
+for the whole pipeline. They now take the order from baby-step
+giant-step over the Hasse interval (a single annihilator there is `#E`
+exactly; otherwise the `O(q)` count runs), pick the same curves, and
+take milliseconds: at the registry's phase-3 settings a whole `ic bench`
+cell went from 39.9 s to 0.34 s (prime-24), 15.7 s to 0.44 s (char2-27)
+and 355.7 s to 1.40 s (char2-29), with identical counts. Across cells, `tools/lead_sweep.py run --jobs N` in
+the workspace trunk runs independent cells side by side.
+
+---
+
 ## 7. Reporting what comes out
 
 The repository's reporting rules are in [`AGENTS.md`](https://github.com/aburan28/crypto/blob/main/AGENTS.md)

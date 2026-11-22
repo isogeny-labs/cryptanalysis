@@ -307,9 +307,16 @@ fitted `alpha` with its `R^2` next to the theoretical exponent.  `scope` is
 `global` for a whole algorithm and `step` for one phase of a method -- so the
 two phases of the precomputation method, which have genuinely different orders
 (`n^{2/3}` to build, `n^{1/3}` per online target), are measured separately.
-The last column is the normalised constant `mean(cost / N^theory)` -- the
+The `const` column is the normalised constant `mean(cost / N^theory)` -- the
 familiar `S`, meaningful precisely because the fitted `alpha` confirms the
-exponent.
+exponent.  Each size's cost is the mean over every run, failed runs included,
+and the `solved` column counts runs whose answer is the planted logarithm.
+
+The table below was produced before 2026-11-18, when a run's operations were
+added only if it returned `CA_OK` but the sum was still divided by every run
+(audit finding C-F11). Every run in it may have succeeded, so its constants
+can still be correct, but the table has no `solved` column to show that;
+rerun the mode before citing them.
 
 `ca_bench complexity --bits 20,24,28,32,36 --reps 5`:
 

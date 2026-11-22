@@ -1,0 +1,1660 @@
+{
+  "all_verified": true,
+  "calibration": {
+    "ns_per_add": 151.58605,
+    "ns_per_as_solve": 70.33743,
+    "ns_per_canon": null,
+    "ns_per_double": 151.43306,
+    "ns_per_frobenius": 18.98487,
+    "ns_per_inversion": null,
+    "ns_per_legendre": null,
+    "ns_per_lookup": 0.0,
+    "ns_per_row_op": 3.2194140625,
+    "ns_per_s4_pair": null,
+    "ns_per_sqrt": null,
+    "ns_per_word_xor": 0.4135999755859375,
+    "pinned_units": []
+  },
+  "calibration_pins": {
+    "measured": [
+      "ns_per_double",
+      "ns_per_lookup",
+      "ns_per_row_op",
+      "ns_per_as_solve",
+      "ns_per_word_xor",
+      "ns_per_frobenius"
+    ],
+    "pinned": []
+  },
+  "configurations_run": 8,
+  "configurations_skipped": [],
+  "elapsed_seconds": 13.767706812,
+  "instance": "K_1 / GF(2^43)",
+  "markdown": "| instance | configuration | base | cols | pts/col | hit rate | trials | rows | rank | D_solve | D_sr | S | vs rho | correct |\n|:--|:--|--:|--:|--:|--:|--:|--:|--:|--:|:--|--:|--:|:--|\n| K_1 / GF(2^43) | koblitz-orbit[divisor=1] + mitm-frobenius + — + walk | 17201 | 201 | 85.6 | 0.000 | 1619797 | 43 | 43 | — | — | 49.575 | 220.89× | yes |\n| K_1 / GF(2^43) | koblitz-orbit[divisor=1] + mitm-frobenius + — + walk | 17201 | 201 | 85.6 | 0.000 | 2060633 | 56 | 56 | — | — | 56.043 | 249.71× | yes |\n| K_1 / GF(2^43) | koblitz-orbit[divisor=1] + mitm-frobenius + — + walk | 17201 | 201 | 85.6 | 0.000 | 1322888 | 43 | 43 | — | — | 45.218 | 201.47× | yes |\n| K_1 / GF(2^43) | koblitz-orbit[divisor=1] + mitm-frobenius + — + walk | 17201 | 201 | 85.6 | 0.000 | 930525 | 28 | 28 | — | — | 39.461 | 175.82× | yes |\n| K_1 / GF(2^43) | koblitz-orbit[divisor=1] + mitm-frobenius + — + walk | 17201 | 201 | 85.6 | 0.000 | 1792240 | 51 | 51 | — | — | 52.105 | 232.16× | yes |\n| K_1 / GF(2^43) | koblitz-orbit[divisor=1] + mitm-frobenius + — + walk | 17201 | 201 | 85.6 | 0.000 | 2735357 | 77 | 77 | — | — | 65.946 | 293.83× | yes |\n| K_1 / GF(2^43) | koblitz-orbit[divisor=1] + mitm-frobenius + — + walk | 17201 | 201 | 85.6 | 0.000 | 1924807 | 51 | 51 | — | — | 54.051 | 240.83× | yes |\n| K_1 / GF(2^43) | koblitz-orbit[divisor=1] + mitm-frobenius + — + walk | 17201 | 201 | 85.6 | 0.000 | 653623 | 33 | 33 | — | — | 35.397 | 157.72× | yes |\n",
+  "operation": "bench",
+  "regime": "koblitz",
+  "rho_reference": {
+    "all_verified": true,
+    "automorphisms": 86,
+    "max_s": 0.3613210322244223,
+    "mean_s": 0.22443571341956434,
+    "mean_s_walk": 0.15509652489042955,
+    "method": "signed-Frobenius r-adding walk, distinguished points (koblitz_signed_frobenius_rho_reference)",
+    "min_s": 0.0983797203667549,
+    "per_run": [
+      {
+        "planted": 20261105,
+        "s": 0.2574299396437936,
+        "s_walk": 0.18823657282829165,
+        "seed": 1400727536,
+        "steps": 12828,
+        "steps_over_expected": 1.392814547714414,
+        "verified": true
+      },
+      {
+        "planted": 20301608,
+        "s": 0.2117207936849436,
+        "s_walk": 0.14249807910317588,
+        "seed": 1400727537,
+        "steps": 9711,
+        "steps_over_expected": 1.0543827621495694,
+        "verified": true
+      },
+      {
+        "planted": 20342111,
+        "s": 0.12527694814928206,
+        "s_walk": 0.05592216861931863,
+        "seed": 1400727538,
+        "steps": 3811,
+        "steps_over_expected": 0.41378361719205115,
+        "verified": true
+      },
+      {
+        "planted": 20382614,
+        "s": 0.14546821134009352,
+        "s_walk": 0.0763482139402558,
+        "seed": 1400727539,
+        "steps": 5203,
+        "steps_over_expected": 0.5649215849515199,
+        "verified": true
+      },
+      {
+        "planted": 20423117,
+        "s": 0.1634877398272421,
+        "s_walk": 0.09401556923221582,
+        "seed": 1400727540,
+        "steps": 6407,
+        "steps_over_expected": 0.6956472409733592,
+        "verified": true
+      },
+      {
+        "planted": 20463620,
+        "s": 0.34432867555657376,
+        "s_walk": 0.2746217228314217,
+        "seed": 1400727541,
+        "steps": 18715,
+        "steps_over_expected": 2.0320022030305003,
+        "verified": true
+      },
+      {
+        "planted": 20504123,
+        "s": 0.29082769765417654,
+        "s_walk": 0.22139954870854883,
+        "seed": 1400727542,
+        "steps": 15088,
+        "steps_over_expected": 1.6381965930710227,
+        "verified": true
+      },
+      {
+        "planted": 20544626,
+        "s": 0.22392946445148074,
+        "s_walk": 0.15463338045404876,
+        "seed": 1400727543,
+        "steps": 10538,
+        "steps_over_expected": 1.144175218569886,
+        "verified": true
+      },
+      {
+        "planted": 20261105,
+        "s": 0.23396640051435505,
+        "s_walk": 0.16462629486752448,
+        "seed": 1400727544,
+        "steps": 11219,
+        "steps_over_expected": 1.2181155605556604,
+        "verified": true
+      },
+      {
+        "planted": 20301608,
+        "s": 0.0983797203667549,
+        "s_walk": 0.029377114031980033,
+        "seed": 1400727545,
+        "steps": 2002,
+        "steps_over_expected": 0.21736940478050024,
+        "verified": true
+      },
+      {
+        "planted": 20342111,
+        "s": 0.27678479149603225,
+        "s_walk": 0.20734196866727167,
+        "seed": 1400727546,
+        "steps": 14130,
+        "steps_over_expected": 1.534180664110124,
+        "verified": true
+      },
+      {
+        "planted": 20382614,
+        "s": 0.2009648373485593,
+        "s_walk": 0.13174212276679156,
+        "seed": 1400727547,
+        "steps": 8978,
+        "steps_over_expected": 0.9747964615980675,
+        "verified": true
+      },
+      {
+        "planted": 20423117,
+        "s": 0.21851480157545644,
+        "s_walk": 0.1492774131105559,
+        "seed": 1400727548,
+        "steps": 10173,
+        "steps_over_expected": 1.104544932483531,
+        "verified": true
+      },
+      {
+        "planted": 20463620,
+        "s": 0.3613210322244223,
+        "s_walk": 0.2914526667848089,
+        "seed": 1400727549,
+        "steps": 19862,
+        "steps_over_expected": 2.1565390198552925,
+        "verified": true
+      },
+      {
+        "planted": 20504123,
+        "s": 0.2558745080317108,
+        "s_walk": 0.18641701131981736,
+        "seed": 1400727550,
+        "steps": 12704,
+        "steps_over_expected": 1.37935110805768,
+        "verified": true
+      },
+      {
+        "planted": 20544626,
+        "s": 0.18269585284815212,
+        "s_walk": 0.11363455098084584,
+        "seed": 1400727551,
+        "steps": 7744,
+        "steps_over_expected": 0.8408135217883086,
+        "verified": true
+      }
+    ],
+    "runs": 16
+  },
+  "rho_reference_candidates": [
+    {
+      "all_verified": true,
+      "automorphisms": 2,
+      "max_s": 1.5319387251871546,
+      "mean_s": 0.8634708961875426,
+      "mean_s_walk": 0.8546106221283843,
+      "method": "negation-map r-adding walk: look-ahead, short-cycle escape by doubling, distinguished points, stride starts",
+      "min_s": 0.2366750610498531,
+      "per_run": [
+        {
+          "planted": 20261105,
+          "s": 1.0048381691717925,
+          "s_walk": 0.9955349272655611,
+          "seed": 1400727536,
+          "steps": 65604,
+          "steps_over_expected": 1.1233408720424056,
+          "verified": true
+        },
+        {
+          "planted": 20301608,
+          "s": 0.3409916962413347,
+          "s_walk": 0.3342710577664861,
+          "seed": 1400727537,
+          "steps": 22026,
+          "steps_over_expected": 0.37718449774668356,
+          "verified": true
+        },
+        {
+          "planted": 20342111,
+          "s": 0.2366750610498531,
+          "s_walk": 0.23002779199066883,
+          "seed": 1400727538,
+          "steps": 15173,
+          "steps_over_expected": 0.2595585683352507,
+          "verified": true
+        },
+        {
+          "planted": 20382614,
+          "s": 1.0405690746002998,
+          "s_walk": 1.0314125715253968,
+          "seed": 1400727539,
+          "steps": 67967,
+          "steps_over_expected": 1.1638244583896682,
+          "verified": true
+        },
+        {
+          "planted": 20423117,
+          "s": 0.8548270619045938,
+          "s_walk": 0.8456558849465581,
+          "seed": 1400727540,
+          "steps": 55720,
+          "steps_over_expected": 0.9542204831054159,
+          "verified": true
+        },
+        {
+          "planted": 20463620,
+          "s": 0.8065940080468923,
+          "s_walk": 0.7977309826346466,
+          "seed": 1400727541,
+          "steps": 52589,
+          "steps_over_expected": 0.9001430217515674,
+          "verified": true
+        },
+        {
+          "planted": 20504123,
+          "s": 0.4841794478517548,
+          "s_walk": 0.4767251152202634,
+          "seed": 1400727542,
+          "steps": 31364,
+          "steps_over_expected": 0.5379266884457531,
+          "verified": true
+        },
+        {
+          "planted": 20544626,
+          "s": 1.1824655244950284,
+          "s_walk": 1.1723992406658885,
+          "seed": 1400727543,
+          "steps": 77209,
+          "steps_over_expected": 1.3229108786859867,
+          "verified": true
+        },
+        {
+          "planted": 20261105,
+          "s": 0.9480502414476354,
+          "s_walk": 0.9391138466197253,
+          "seed": 1400727544,
+          "steps": 61831,
+          "steps_over_expected": 1.0596765000566286,
+          "verified": true
+        },
+        {
+          "planted": 20301608,
+          "s": 1.3642749365111286,
+          "s_walk": 1.3533869152265487,
+          "seed": 1400727545,
+          "steps": 89123,
+          "steps_over_expected": 1.527133600161298,
+          "verified": true
+        },
+        {
+          "planted": 20342111,
+          "s": 1.5319387251871546,
+          "s_walk": 1.5204344008109945,
+          "seed": 1400727546,
+          "steps": 100072,
+          "steps_over_expected": 1.715626502810475,
+          "verified": true
+        },
+        {
+          "planted": 20382614,
+          "s": 0.9277269133086282,
+          "s_walk": 0.9191426916759068,
+          "seed": 1400727547,
+          "steps": 60568,
+          "steps_over_expected": 1.037141464875187,
+          "verified": true
+        },
+        {
+          "planted": 20423117,
+          "s": 0.8558982553732923,
+          "s_walk": 0.8469471866622496,
+          "seed": 1400727548,
+          "steps": 55733,
+          "steps_over_expected": 0.9556775610598368,
+          "verified": true
+        },
+        {
+          "planted": 20463620,
+          "s": 0.6526796478663536,
+          "s_walk": 0.6446383599095479,
+          "seed": 1400727549,
+          "steps": 42483,
+          "steps_over_expected": 0.7273964956325529,
+          "verified": true
+        },
+        {
+          "planted": 20504123,
+          "s": 0.5524276783026735,
+          "s_walk": 0.5445331291771963,
+          "seed": 1400727550,
+          "steps": 35847,
+          "steps_over_expected": 0.614439838756878,
+          "verified": true
+        },
+        {
+          "planted": 20544626,
+          "s": 1.031397897642264,
+          "s_walk": 1.0218158519565084,
+          "seed": 1400727551,
+          "steps": 67345,
+          "steps_over_expected": 1.1529957199556764,
+          "verified": true
+        }
+      ],
+      "runs": 16
+    }
+  ],
+  "rho_reference_plain": {
+    "all_verified": true,
+    "automorphisms": 1,
+    "max_s": 9.564422352113164,
+    "mean_s": 2.691976136431307,
+    "mean_s_walk": 2.6633950805592836,
+    "method": "r-adding walk, distinguished points, 16 jumps",
+    "min_s": 0.4193795799370576,
+    "per_run": [
+      {
+        "planted": 20261105,
+        "s": 2.4960568686652684,
+        "s_walk": 2.458799879390944,
+        "seed": 1400727536,
+        "steps": 167563,
+        "steps_over_expected": 1.961838461869982,
+        "verified": true
+      },
+      {
+        "planted": 20301608,
+        "s": 1.5541109626009018,
+        "s_walk": 1.524396349256866,
+        "seed": 1400727537,
+        "steps": 103885,
+        "steps_over_expected": 1.216292311616306,
+        "verified": true
+      },
+      {
+        "planted": 20342111,
+        "s": 7.992423925973309,
+        "s_walk": 7.941373486554099,
+        "seed": 1400727538,
+        "steps": 541191,
+        "steps_over_expected": 6.336299296490737,
+        "verified": true
+      },
+      {
+        "planted": 20382614,
+        "s": 9.564422352113164,
+        "s_walk": 9.51381212918794,
+        "seed": 1400727539,
+        "steps": 648350,
+        "steps_over_expected": 7.590923812258093,
+        "verified": true
+      },
+      {
+        "planted": 20423117,
+        "s": 0.4193795799370576,
+        "s_walk": 0.40360515556923615,
+        "seed": 1400727540,
+        "steps": 27505,
+        "steps_over_expected": 0.3220303222891322,
+        "verified": true
+      },
+      {
+        "planted": 20463620,
+        "s": 1.6522352191103176,
+        "s_walk": 1.6245749494048818,
+        "seed": 1400727541,
+        "steps": 110712,
+        "steps_over_expected": 1.2962232699972516,
+        "verified": true
+      },
+      {
+        "planted": 20504123,
+        "s": 0.8415325237862252,
+        "s_walk": 0.8230581049219581,
+        "seed": 1400727542,
+        "steps": 56090,
+        "steps_over_expected": 0.6567053545608953,
+        "verified": true
+      },
+      {
+        "planted": 20544626,
+        "s": 0.8845416752486296,
+        "s_walk": 0.865803126487971,
+        "seed": 1400727543,
+        "steps": 59003,
+        "steps_over_expected": 0.6908109473196025,
+        "verified": true
+      },
+      {
+        "planted": 20261105,
+        "s": 0.9030014202297638,
+        "s_walk": 0.8816802680377224,
+        "seed": 1400727544,
+        "steps": 60085,
+        "steps_over_expected": 0.7034790734318308,
+        "verified": true
+      },
+      {
+        "planted": 20301608,
+        "s": 4.03250047597421,
+        "s_walk": 4.004649445788047,
+        "seed": 1400727545,
+        "steps": 272910,
+        "steps_over_expected": 3.195247964222035,
+        "verified": true
+      },
+      {
+        "planted": 20342111,
+        "s": 1.6253526652109234,
+        "s_walk": 1.5909864309137718,
+        "seed": 1400727546,
+        "steps": 108423,
+        "steps_over_expected": 1.2694235096729531,
+        "verified": true
+      },
+      {
+        "planted": 20382614,
+        "s": 1.9011629725761063,
+        "s_walk": 1.8776260640310036,
+        "seed": 1400727547,
+        "steps": 127957,
+        "steps_over_expected": 1.49812884745139,
+        "verified": true
+      },
+      {
+        "planted": 20423117,
+        "s": 1.4893404424524703,
+        "s_walk": 1.4672855961037858,
+        "seed": 1400727548,
+        "steps": 99993,
+        "steps_over_expected": 1.17072452341964,
+        "verified": true
+      },
+      {
+        "planted": 20463620,
+        "s": 3.821284602159864,
+        "s_walk": 3.79881888708346,
+        "seed": 1400727549,
+        "steps": 258883,
+        "steps_over_expected": 3.0310189392902167,
+        "verified": true
+      },
+      {
+        "planted": 20504123,
+        "s": 2.7691084860014747,
+        "s_walk": 2.73246779981873,
+        "seed": 1400727550,
+        "steps": 186213,
+        "steps_over_expected": 2.1801938703663395,
+        "verified": true
+      },
+      {
+        "planted": 20544626,
+        "s": 1.1251640108612213,
+        "s_walk": 1.1053836163981299,
+        "seed": 1400727551,
+        "steps": 75330,
+        "steps_over_expected": 0.8819685212885049,
+        "verified": true
+      }
+    ],
+    "runs": 16
+  },
+  "rho_reference_rule": "Koblitz curve: the signed-Frobenius walk (A = 2n) and the negation walk (A = 2) on the same seeds; the lower mean S prices the column, the other is kept in rho_reference_candidates",
+  "rows": [
+    {
+      "collector_wall_seconds": 0.606904743,
+      "decomposition": {
+        "cost": {
+          "gae": 1622828.0,
+          "group_ops": {
+            "adds": 1620820,
+            "doubles": 2008,
+            "scalar_mults": 66
+          },
+          "native": {
+            "canonicalisations": 1619571,
+            "direct_relations_skipped": 0,
+            "frobfold_mismatches": 0,
+            "inversions": 0,
+            "lift_failures": 0,
+            "lookups": 1619571,
+            "relations": 43,
+            "repeated_targets_skipped": 226,
+            "s4_hits": 0,
+            "s4_pairs": 0,
+            "sqrt_solves": 0,
+            "target_guard_probes": 1619797,
+            "trials": 1619797,
+            "unliftable_systems": 0,
+            "walk_jumps": 32,
+            "walk_pool_offsets": 16,
+            "walk_pool_ops": 1452,
+            "walk_pool_restarts": 226,
+            "walk_restarts": 227,
+            "walk_steps": 1619570
+          },
+          "wall_ns": 605642930
+        },
+        "description": "a pair table folded by the signed Frobenius, one entry per orbit",
+        "hit_rate": 0.000026546536386967008,
+        "name": "mitm-frobenius",
+        "relations_found": 43,
+        "setup": {
+          "gae": 1745801.0,
+          "group_ops": {
+            "adds": 1745801,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {},
+          "wall_ns": 517079755
+        },
+        "solver": null,
+        "summands": 2,
+        "system": null,
+        "targets_tried": 1619797
+      },
+      "exhausted": false,
+      "factor_base": {
+        "abscissae": 8601,
+        "columns": 201,
+        "cost": {
+          "gae": 9756.618118817662,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {
+            "abscissae_scanned": 16384,
+            "as_solves": 16384,
+            "derived_counts": 1,
+            "frobenius_maps": 17201
+          },
+          "wall_ns": 28502092
+        },
+        "description": "the Frobenius-invariant subspace spanned by divisor factors 1, each signed Frobenius orbit folded onto one column",
+        "name": "koblitz-orbit",
+        "points_per_column": 85.57711442786069,
+        "signed_points": 17201
+      },
+      "group_order": 8796094020926,
+      "instance": "K_1 / GF(2^43)",
+      "label": "koblitz-orbit[divisor=1] + mitm-frobenius + — + walk",
+      "linear_algebra": {
+        "cost": {
+          "gae": 6.498887616142778,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {
+            "columns": 202,
+            "pinned_by_repeated_row": 0,
+            "rank": 43,
+            "repeated_column_rows": 0,
+            "row_ops": 306,
+            "rows": 43,
+            "single_column_rows": 0,
+            "two_column_rows": 43
+          },
+          "wall_ns": 351489
+        },
+        "dependent": 0,
+        "name": "incremental-gauss",
+        "rank": 43,
+        "rows": 43,
+        "work": 306,
+        "work_unit": "row_ops"
+      },
+      "log2_r": 32.112779548336775,
+      "r": 4644189029,
+      "recovered": 20261105,
+      "rho_s": 0.22443571341956434,
+      "s": 49.574644687827956,
+      "s_over_rho": 220.88572238568906,
+      "spec": {
+        "factor_base": "koblitz-orbit",
+        "factor_base_params": {
+          "divisor": "1"
+        },
+        "linalg": "incremental-gauss",
+        "max_trials": 8000000,
+        "oracle": "mitm-frobenius",
+        "oracle_params": {},
+        "seed": 20261104,
+        "solver": null,
+        "solver_budget_seconds": 600,
+        "solver_params": {},
+        "targets": "Walk"
+      },
+      "total_gae": 3378427.117006434,
+      "verified": true,
+      "verify": {
+        "gae": 35.0,
+        "group_ops": {
+          "adds": 11,
+          "doubles": 24,
+          "scalar_mults": 1
+        },
+        "native": {},
+        "wall_ns": 5962
+      },
+      "wall_seconds": 1.152511187
+    },
+    {
+      "collector_wall_seconds": 0.843088508,
+      "decomposition": {
+        "cost": {
+          "gae": 2063638.0,
+          "group_ops": {
+            "adds": 2061689,
+            "doubles": 1949,
+            "scalar_mults": 66
+          },
+          "native": {
+            "canonicalisations": 2060176,
+            "direct_relations_skipped": 0,
+            "frobfold_mismatches": 0,
+            "inversions": 0,
+            "lift_failures": 0,
+            "lookups": 2060176,
+            "relations": 56,
+            "repeated_targets_skipped": 457,
+            "s4_hits": 0,
+            "s4_pairs": 0,
+            "sqrt_solves": 0,
+            "target_guard_probes": 2060633,
+            "trials": 2060633,
+            "unliftable_systems": 0,
+            "walk_jumps": 32,
+            "walk_pool_offsets": 16,
+            "walk_pool_ops": 1437,
+            "walk_pool_restarts": 457,
+            "walk_restarts": 458,
+            "walk_steps": 2060175
+          },
+          "wall_ns": 840677093
+        },
+        "description": "a pair table folded by the signed Frobenius, one entry per orbit",
+        "hit_rate": 0.000027176115300492615,
+        "name": "mitm-frobenius",
+        "relations_found": 56,
+        "setup": {
+          "gae": 1745801.0,
+          "group_ops": {
+            "adds": 1745801,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {},
+          "wall_ns": 579182453
+        },
+        "solver": null,
+        "summands": 2,
+        "system": null,
+        "targets_tried": 2060633
+      },
+      "exhausted": false,
+      "factor_base": {
+        "abscissae": 8601,
+        "columns": 201,
+        "cost": {
+          "gae": 9756.618118817662,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {
+            "abscissae_scanned": 16384,
+            "as_solves": 16384,
+            "derived_counts": 1,
+            "frobenius_maps": 17201
+          },
+          "wall_ns": 25799701
+        },
+        "description": "the Frobenius-invariant subspace spanned by divisor factors 1, each signed Frobenius orbit folded onto one column",
+        "name": "koblitz-orbit",
+        "points_per_column": 85.57711442786069,
+        "signed_points": 17201
+      },
+      "group_order": 8796094020926,
+      "instance": "K_1 / GF(2^43)",
+      "label": "koblitz-orbit[divisor=1] + mitm-frobenius + — + walk",
+      "linear_algebra": {
+        "cost": {
+          "gae": 9.429758501854227,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {
+            "columns": 202,
+            "pinned_by_repeated_row": 0,
+            "rank": 56,
+            "repeated_column_rows": 0,
+            "row_ops": 444,
+            "rows": 56,
+            "single_column_rows": 0,
+            "two_column_rows": 56
+          },
+          "wall_ns": 522243
+        },
+        "dependent": 0,
+        "name": "incremental-gauss",
+        "rank": 56,
+        "rows": 56,
+        "work": 444,
+        "work_unit": "row_ops"
+      },
+      "log2_r": 32.112779548336775,
+      "r": 4644189029,
+      "recovered": 20301608,
+      "rho_s": 0.22443571341956434,
+      "s": 56.04308211887957,
+      "s_over_rho": 249.70661426825407,
+      "spec": {
+        "factor_base": "koblitz-orbit",
+        "factor_base_params": {
+          "divisor": "1"
+        },
+        "linalg": "incremental-gauss",
+        "max_trials": 8000000,
+        "oracle": "mitm-frobenius",
+        "oracle_params": {},
+        "seed": 20301607,
+        "solver": null,
+        "solver_budget_seconds": 600,
+        "solver_params": {},
+        "targets": "Walk"
+      },
+      "total_gae": 3819240.0478773196,
+      "verified": true,
+      "verify": {
+        "gae": 35.0,
+        "group_ops": {
+          "adds": 11,
+          "doubles": 24,
+          "scalar_mults": 1
+        },
+        "native": {},
+        "wall_ns": 6449
+      },
+      "wall_seconds": 1.4481091830000001
+    },
+    {
+      "collector_wall_seconds": 0.523129294,
+      "decomposition": {
+        "cost": {
+          "gae": 1325911.0,
+          "group_ops": {
+            "adds": 1323932,
+            "doubles": 1979,
+            "scalar_mults": 66
+          },
+          "native": {
+            "canonicalisations": 1322700,
+            "direct_relations_skipped": 0,
+            "frobfold_mismatches": 0,
+            "inversions": 0,
+            "lift_failures": 0,
+            "lookups": 1322700,
+            "relations": 43,
+            "repeated_targets_skipped": 188,
+            "s4_hits": 0,
+            "s4_pairs": 0,
+            "sqrt_solves": 0,
+            "target_guard_probes": 1322888,
+            "trials": 1322888,
+            "unliftable_systems": 0,
+            "walk_jumps": 32,
+            "walk_pool_offsets": 16,
+            "walk_pool_ops": 1442,
+            "walk_pool_restarts": 188,
+            "walk_restarts": 189,
+            "walk_steps": 1322699
+          },
+          "wall_ns": 522725371
+        },
+        "description": "a pair table folded by the signed Frobenius, one entry per orbit",
+        "hit_rate": 0.00003250464136041751,
+        "name": "mitm-frobenius",
+        "relations_found": 43,
+        "setup": {
+          "gae": 1745801.0,
+          "group_ops": {
+            "adds": 1745801,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {},
+          "wall_ns": 518150051
+        },
+        "solver": null,
+        "summands": 2,
+        "system": null,
+        "targets_tried": 1322888
+      },
+      "exhausted": false,
+      "factor_base": {
+        "abscissae": 8601,
+        "columns": 201,
+        "cost": {
+          "gae": 9756.618118817662,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {
+            "abscissae_scanned": 16384,
+            "as_solves": 16384,
+            "derived_counts": 1,
+            "frobenius_maps": 17201
+          },
+          "wall_ns": 25825860
+        },
+        "description": "the Frobenius-invariant subspace spanned by divisor factors 1, each signed Frobenius orbit folded onto one column",
+        "name": "koblitz-orbit",
+        "points_per_column": 85.57711442786069,
+        "signed_points": 17201
+      },
+      "group_order": 8796094020926,
+      "instance": "K_1 / GF(2^43)",
+      "label": "koblitz-orbit[divisor=1] + mitm-frobenius + — + walk",
+      "linear_algebra": {
+        "cost": {
+          "gae": 6.668793174734746,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {
+            "columns": 202,
+            "pinned_by_repeated_row": 0,
+            "rank": 43,
+            "repeated_column_rows": 0,
+            "row_ops": 314,
+            "rows": 43,
+            "single_column_rows": 0,
+            "two_column_rows": 43
+          },
+          "wall_ns": 367953
+        },
+        "dependent": 0,
+        "name": "incremental-gauss",
+        "rank": 43,
+        "rows": 43,
+        "work": 314,
+        "work_unit": "row_ops"
+      },
+      "log2_r": 32.112779548336775,
+      "r": 4644189029,
+      "recovered": 20342111,
+      "rho_s": 0.22443571341956434,
+      "s": 45.217765844493115,
+      "s_over_rho": 201.4731307934142,
+      "spec": {
+        "factor_base": "koblitz-orbit",
+        "factor_base_params": {
+          "divisor": "1"
+        },
+        "linalg": "incremental-gauss",
+        "max_trials": 8000000,
+        "oracle": "mitm-frobenius",
+        "oracle_params": {},
+        "seed": 20342110,
+        "solver": null,
+        "solver_budget_seconds": 600,
+        "solver_params": {},
+        "targets": "Walk"
+      },
+      "total_gae": 3081513.286911993,
+      "verified": true,
+      "verify": {
+        "gae": 38.0,
+        "group_ops": {
+          "adds": 14,
+          "doubles": 24,
+          "scalar_mults": 1
+        },
+        "native": {},
+        "wall_ns": 6400
+      },
+      "wall_seconds": 1.067126889
+    },
+    {
+      "collector_wall_seconds": 0.326862027,
+      "decomposition": {
+        "cost": {
+          "gae": 933580.0,
+          "group_ops": {
+            "adds": 931612,
+            "doubles": 1968,
+            "scalar_mults": 66
+          },
+          "native": {
+            "canonicalisations": 930428,
+            "direct_relations_skipped": 0,
+            "frobfold_mismatches": 0,
+            "inversions": 0,
+            "lift_failures": 0,
+            "lookups": 930428,
+            "relations": 28,
+            "repeated_targets_skipped": 97,
+            "s4_hits": 0,
+            "s4_pairs": 0,
+            "sqrt_solves": 0,
+            "target_guard_probes": 930525,
+            "trials": 930525,
+            "unliftable_systems": 0,
+            "walk_jumps": 32,
+            "walk_pool_offsets": 16,
+            "walk_pool_ops": 1467,
+            "walk_pool_restarts": 97,
+            "walk_restarts": 98,
+            "walk_steps": 930427
+          },
+          "wall_ns": 326610715
+        },
+        "description": "a pair table folded by the signed Frobenius, one entry per orbit",
+        "hit_rate": 0.000030090540286397464,
+        "name": "mitm-frobenius",
+        "relations_found": 28,
+        "setup": {
+          "gae": 1745801.0,
+          "group_ops": {
+            "adds": 1745801,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {},
+          "wall_ns": 568942469
+        },
+        "solver": null,
+        "summands": 2,
+        "system": null,
+        "targets_tried": 930525
+      },
+      "exhausted": false,
+      "factor_base": {
+        "abscissae": 8601,
+        "columns": 201,
+        "cost": {
+          "gae": 9756.618118817662,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {
+            "abscissae_scanned": 16384,
+            "as_solves": 16384,
+            "derived_counts": 1,
+            "frobenius_maps": 17201
+          },
+          "wall_ns": 24287566
+        },
+        "description": "the Frobenius-invariant subspace spanned by divisor factors 1, each signed Frobenius orbit folded onto one column",
+        "name": "koblitz-orbit",
+        "points_per_column": 85.57711442786069,
+        "signed_points": 17201
+      },
+      "group_order": 8796094020926,
+      "instance": "K_1 / GF(2^43)",
+      "label": "koblitz-orbit[divisor=1] + mitm-frobenius + — + walk",
+      "linear_algebra": {
+        "cost": {
+          "gae": 4.162686185503217,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {
+            "columns": 202,
+            "pinned_by_repeated_row": 0,
+            "rank": 28,
+            "repeated_column_rows": 0,
+            "row_ops": 196,
+            "rows": 28,
+            "single_column_rows": 0,
+            "two_column_rows": 28
+          },
+          "wall_ns": 218431
+        },
+        "dependent": 0,
+        "name": "incremental-gauss",
+        "rank": 28,
+        "rows": 28,
+        "work": 196,
+        "work_unit": "row_ops"
+      },
+      "log2_r": 32.112779548336775,
+      "r": 4644189029,
+      "recovered": 20382614,
+      "rho_s": 0.22443571341956434,
+      "s": 39.46066580512565,
+      "s_over_rho": 175.8216872167628,
+      "spec": {
+        "factor_base": "koblitz-orbit",
+        "factor_base_params": {
+          "divisor": "1"
+        },
+        "linalg": "incremental-gauss",
+        "max_trials": 8000000,
+        "oracle": "mitm-frobenius",
+        "oracle_params": {},
+        "seed": 20382613,
+        "solver": null,
+        "solver_budget_seconds": 600,
+        "solver_params": {},
+        "targets": "Walk"
+      },
+      "total_gae": 2689176.7808050034,
+      "verified": true,
+      "verify": {
+        "gae": 35.0,
+        "group_ops": {
+          "adds": 11,
+          "doubles": 24,
+          "scalar_mults": 1
+        },
+        "native": {},
+        "wall_ns": 6293
+      },
+      "wall_seconds": 0.920115184
+    },
+    {
+      "collector_wall_seconds": 0.662817403,
+      "decomposition": {
+        "cost": {
+          "gae": 1795294.0,
+          "group_ops": {
+            "adds": 1793294,
+            "doubles": 2000,
+            "scalar_mults": 66
+          },
+          "native": {
+            "canonicalisations": 1791934,
+            "direct_relations_skipped": 0,
+            "frobfold_mismatches": 0,
+            "inversions": 0,
+            "lift_failures": 0,
+            "lookups": 1791934,
+            "relations": 51,
+            "repeated_targets_skipped": 306,
+            "s4_hits": 0,
+            "s4_pairs": 0,
+            "sqrt_solves": 0,
+            "target_guard_probes": 1792240,
+            "trials": 1792240,
+            "unliftable_systems": 0,
+            "walk_jumps": 32,
+            "walk_pool_offsets": 16,
+            "walk_pool_ops": 1442,
+            "walk_pool_restarts": 306,
+            "walk_restarts": 307,
+            "walk_steps": 1791933
+          },
+          "wall_ns": 662400708
+        },
+        "description": "a pair table folded by the signed Frobenius, one entry per orbit",
+        "hit_rate": 0.000028456010355755926,
+        "name": "mitm-frobenius",
+        "relations_found": 51,
+        "setup": {
+          "gae": 1745801.0,
+          "group_ops": {
+            "adds": 1745801,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {},
+          "wall_ns": 523268516
+        },
+        "solver": null,
+        "summands": 2,
+        "system": null,
+        "targets_tried": 1792240
+      },
+      "exhausted": false,
+      "factor_base": {
+        "abscissae": 8601,
+        "columns": 201,
+        "cost": {
+          "gae": 9756.618118817662,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {
+            "abscissae_scanned": 16384,
+            "as_solves": 16384,
+            "derived_counts": 1,
+            "frobenius_maps": 17201
+          },
+          "wall_ns": 25069210
+        },
+        "description": "the Frobenius-invariant subspace spanned by divisor factors 1, each signed Frobenius orbit folded onto one column",
+        "name": "koblitz-orbit",
+        "points_per_column": 85.57711442786069,
+        "signed_points": 17201
+      },
+      "group_order": 8796094020926,
+      "instance": "K_1 / GF(2^43)",
+      "label": "koblitz-orbit[divisor=1] + mitm-frobenius + — + walk",
+      "linear_algebra": {
+        "cost": {
+          "gae": 8.537754319246394,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {
+            "columns": 202,
+            "pinned_by_repeated_row": 0,
+            "rank": 51,
+            "repeated_column_rows": 0,
+            "row_ops": 402,
+            "rows": 51,
+            "single_column_rows": 0,
+            "two_column_rows": 51
+          },
+          "wall_ns": 380445
+        },
+        "dependent": 0,
+        "name": "incremental-gauss",
+        "rank": 51,
+        "rows": 51,
+        "work": 402,
+        "work_unit": "row_ops"
+      },
+      "log2_r": 32.112779548336775,
+      "r": 4644189029,
+      "recovered": 20423117,
+      "rho_s": 0.22443571341956434,
+      "s": 52.10544988207729,
+      "s_over_rho": 232.1620257675764,
+      "spec": {
+        "factor_base": "koblitz-orbit",
+        "factor_base_params": {
+          "divisor": "1"
+        },
+        "linalg": "incremental-gauss",
+        "max_trials": 8000000,
+        "oracle": "mitm-frobenius",
+        "oracle_params": {},
+        "seed": 20423116,
+        "solver": null,
+        "solver_budget_seconds": 600,
+        "solver_params": {},
+        "targets": "Walk"
+      },
+      "total_gae": 3550897.155873137,
+      "verified": true,
+      "verify": {
+        "gae": 37.0,
+        "group_ops": {
+          "adds": 13,
+          "doubles": 24,
+          "scalar_mults": 1
+        },
+        "native": {},
+        "wall_ns": 6734
+      },
+      "wall_seconds": 1.211180483
+    },
+    {
+      "collector_wall_seconds": 1.154259139,
+      "decomposition": {
+        "cost": {
+          "gae": 2738500.0,
+          "group_ops": {
+            "adds": 2736498,
+            "doubles": 2002,
+            "scalar_mults": 66
+          },
+          "native": {
+            "canonicalisations": 2734632,
+            "direct_relations_skipped": 0,
+            "frobfold_mismatches": 0,
+            "inversions": 0,
+            "lift_failures": 0,
+            "lookups": 2734632,
+            "relations": 77,
+            "repeated_targets_skipped": 725,
+            "s4_hits": 0,
+            "s4_pairs": 0,
+            "sqrt_solves": 0,
+            "target_guard_probes": 2735357,
+            "trials": 2735357,
+            "unliftable_systems": 0,
+            "walk_jumps": 32,
+            "walk_pool_offsets": 16,
+            "walk_pool_ops": 1471,
+            "walk_pool_restarts": 725,
+            "walk_restarts": 726,
+            "walk_steps": 2734631
+          },
+          "wall_ns": 1152078244
+        },
+        "description": "a pair table folded by the signed Frobenius, one entry per orbit",
+        "hit_rate": 0.000028149890489614336,
+        "name": "mitm-frobenius",
+        "relations_found": 77,
+        "setup": {
+          "gae": 1745801.0,
+          "group_ops": {
+            "adds": 1745801,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {},
+          "wall_ns": 610351851
+        },
+        "solver": null,
+        "summands": 2,
+        "system": null,
+        "targets_tried": 2735357
+      },
+      "exhausted": false,
+      "factor_base": {
+        "abscissae": 8601,
+        "columns": 201,
+        "cost": {
+          "gae": 9756.618118817662,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {
+            "abscissae_scanned": 16384,
+            "as_solves": 16384,
+            "derived_counts": 1,
+            "frobenius_maps": 17201
+          },
+          "wall_ns": 32447990
+        },
+        "description": "the Frobenius-invariant subspace spanned by divisor factors 1, each signed Frobenius orbit folded onto one column",
+        "name": "koblitz-orbit",
+        "points_per_column": 85.57711442786069,
+        "signed_points": 17201
+      },
+      "group_order": 8796094020926,
+      "instance": "K_1 / GF(2^43)",
+      "label": "koblitz-orbit[divisor=1] + mitm-frobenius + — + walk",
+      "linear_algebra": {
+        "cost": {
+          "gae": 12.44558216686166,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {
+            "columns": 202,
+            "pinned_by_repeated_row": 0,
+            "rank": 77,
+            "repeated_column_rows": 0,
+            "row_ops": 586,
+            "rows": 77,
+            "single_column_rows": 0,
+            "two_column_rows": 77
+          },
+          "wall_ns": 650692
+        },
+        "dependent": 0,
+        "name": "incremental-gauss",
+        "rank": 77,
+        "rows": 77,
+        "work": 586,
+        "work_unit": "row_ops"
+      },
+      "log2_r": 32.112779548336775,
+      "r": 4644189029,
+      "recovered": 20463620,
+      "rho_s": 0.22443571341956434,
+      "s": 65.94588444823104,
+      "s_over_rho": 293.82972720099394,
+      "spec": {
+        "factor_base": "koblitz-orbit",
+        "factor_base_params": {
+          "divisor": "1"
+        },
+        "linalg": "incremental-gauss",
+        "max_trials": 8000000,
+        "oracle": "mitm-frobenius",
+        "oracle_params": {},
+        "seed": 20463619,
+        "solver": null,
+        "solver_budget_seconds": 600,
+        "solver_params": {},
+        "targets": "Walk"
+      },
+      "total_gae": 4494099.063700985,
+      "verified": true,
+      "verify": {
+        "gae": 29.0,
+        "group_ops": {
+          "adds": 5,
+          "doubles": 24,
+          "scalar_mults": 1
+        },
+        "native": {},
+        "wall_ns": 5330
+      },
+      "wall_seconds": 1.797082727
+    },
+    {
+      "collector_wall_seconds": 0.878298244,
+      "decomposition": {
+        "cost": {
+          "gae": 1927890.0,
+          "group_ops": {
+            "adds": 1925886,
+            "doubles": 2004,
+            "scalar_mults": 66
+          },
+          "native": {
+            "canonicalisations": 1924423,
+            "direct_relations_skipped": 0,
+            "frobfold_mismatches": 0,
+            "inversions": 0,
+            "lift_failures": 0,
+            "lookups": 1924423,
+            "relations": 51,
+            "repeated_targets_skipped": 384,
+            "s4_hits": 0,
+            "s4_pairs": 0,
+            "sqrt_solves": 0,
+            "target_guard_probes": 1924807,
+            "trials": 1924807,
+            "unliftable_systems": 0,
+            "walk_jumps": 32,
+            "walk_pool_offsets": 16,
+            "walk_pool_ops": 1481,
+            "walk_pool_restarts": 384,
+            "walk_restarts": 385,
+            "walk_steps": 1924422
+          },
+          "wall_ns": 875937431
+        },
+        "description": "a pair table folded by the signed Frobenius, one entry per orbit",
+        "hit_rate": 0.000026496162991925944,
+        "name": "mitm-frobenius",
+        "relations_found": 51,
+        "setup": {
+          "gae": 1745801.0,
+          "group_ops": {
+            "adds": 1745801,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {},
+          "wall_ns": 624694235
+        },
+        "solver": null,
+        "summands": 2,
+        "system": null,
+        "targets_tried": 1924807
+      },
+      "exhausted": false,
+      "factor_base": {
+        "abscissae": 8601,
+        "columns": 201,
+        "cost": {
+          "gae": 9756.618118817662,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {
+            "abscissae_scanned": 16384,
+            "as_solves": 16384,
+            "derived_counts": 1,
+            "frobenius_maps": 17201
+          },
+          "wall_ns": 30980663
+        },
+        "description": "the Frobenius-invariant subspace spanned by divisor factors 1, each signed Frobenius orbit folded onto one column",
+        "name": "koblitz-orbit",
+        "points_per_column": 85.57711442786069,
+        "signed_points": 17201
+      },
+      "group_order": 8796094020926,
+      "instance": "K_1 / GF(2^43)",
+      "label": "koblitz-orbit[divisor=1] + mitm-frobenius + — + walk",
+      "linear_algebra": {
+        "cost": {
+          "gae": 7.6032737469905705,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {
+            "columns": 202,
+            "pinned_by_repeated_row": 0,
+            "rank": 51,
+            "repeated_column_rows": 0,
+            "row_ops": 358,
+            "rows": 51,
+            "single_column_rows": 0,
+            "two_column_rows": 51
+          },
+          "wall_ns": 451833
+        },
+        "dependent": 0,
+        "name": "incremental-gauss",
+        "rank": 51,
+        "rows": 51,
+        "work": 358,
+        "work_unit": "row_ops"
+      },
+      "log2_r": 32.112779548336775,
+      "r": 4644189029,
+      "recovered": 20504123,
+      "rho_s": 0.22443571341956434,
+      "s": 54.05114905138604,
+      "s_over_rho": 240.83131970330322,
+      "spec": {
+        "factor_base": "koblitz-orbit",
+        "factor_base_params": {
+          "divisor": "1"
+        },
+        "linalg": "incremental-gauss",
+        "max_trials": 8000000,
+        "oracle": "mitm-frobenius",
+        "oracle_params": {},
+        "seed": 20504122,
+        "solver": null,
+        "solver_budget_seconds": 600,
+        "solver_params": {},
+        "targets": "Walk"
+      },
+      "total_gae": 3683493.221392565,
+      "verified": true,
+      "verify": {
+        "gae": 38.0,
+        "group_ops": {
+          "adds": 14,
+          "doubles": 24,
+          "scalar_mults": 1
+        },
+        "native": {},
+        "wall_ns": 7076
+      },
+      "wall_seconds": 1.533999176
+    },
+    {
+      "collector_wall_seconds": 0.238776274,
+      "decomposition": {
+        "cost": {
+          "gae": 656677.0,
+          "group_ops": {
+            "adds": 654673,
+            "doubles": 2004,
+            "scalar_mults": 66
+          },
+          "native": {
+            "canonicalisations": 653574,
+            "direct_relations_skipped": 0,
+            "frobfold_mismatches": 0,
+            "inversions": 0,
+            "lift_failures": 0,
+            "lookups": 653574,
+            "relations": 33,
+            "repeated_targets_skipped": 49,
+            "s4_hits": 0,
+            "s4_pairs": 0,
+            "sqrt_solves": 0,
+            "target_guard_probes": 653623,
+            "trials": 653623,
+            "unliftable_systems": 0,
+            "walk_jumps": 32,
+            "walk_pool_offsets": 16,
+            "walk_pool_ops": 1467,
+            "walk_pool_restarts": 49,
+            "walk_restarts": 50,
+            "walk_steps": 653573
+          },
+          "wall_ns": 238536660
+        },
+        "description": "a pair table folded by the signed Frobenius, one entry per orbit",
+        "hit_rate": 0.00005048781943107877,
+        "name": "mitm-frobenius",
+        "relations_found": 33,
+        "setup": {
+          "gae": 1745801.0,
+          "group_ops": {
+            "adds": 1745801,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {},
+          "wall_ns": 553478807
+        },
+        "solver": null,
+        "summands": 2,
+        "system": null,
+        "targets_tried": 653623
+      },
+      "exhausted": false,
+      "factor_base": {
+        "abscissae": 8601,
+        "columns": 201,
+        "cost": {
+          "gae": 9756.618118817662,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {
+            "abscissae_scanned": 16384,
+            "as_solves": 16384,
+            "derived_counts": 1,
+            "frobenius_maps": 17201
+          },
+          "wall_ns": 25397905
+        },
+        "description": "the Frobenius-invariant subspace spanned by divisor factors 1, each signed Frobenius orbit folded onto one column",
+        "name": "koblitz-orbit",
+        "points_per_column": 85.57711442786069,
+        "signed_points": 17201
+      },
+      "group_order": 8796094020926,
+      "instance": "K_1 / GF(2^43)",
+      "label": "koblitz-orbit[divisor=1] + mitm-frobenius + — + walk",
+      "linear_algebra": {
+        "cost": {
+          "gae": 5.05469036811105,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {
+            "columns": 202,
+            "pinned_by_repeated_row": 0,
+            "rank": 33,
+            "repeated_column_rows": 0,
+            "row_ops": 238,
+            "rows": 33,
+            "single_column_rows": 0,
+            "two_column_rows": 33
+          },
+          "wall_ns": 208640
+        },
+        "dependent": 0,
+        "name": "incremental-gauss",
+        "rank": 33,
+        "rows": 33,
+        "work": 238,
+        "work_unit": "row_ops"
+      },
+      "log2_r": 32.112779548336775,
+      "r": 4644189029,
+      "recovered": 20544626,
+      "rho_s": 0.22443571341956434,
+      "s": 35.3974659809195,
+      "s_over_rho": 157.71761740408405,
+      "spec": {
+        "factor_base": "koblitz-orbit",
+        "factor_base_params": {
+          "divisor": "1"
+        },
+        "linalg": "incremental-gauss",
+        "max_trials": 8000000,
+        "oracle": "mitm-frobenius",
+        "oracle_params": {},
+        "seed": 20544625,
+        "solver": null,
+        "solver_budget_seconds": 600,
+        "solver_params": {},
+        "targets": "Walk"
+      },
+      "total_gae": 2412276.672809186,
+      "verified": true,
+      "verify": {
+        "gae": 37.0,
+        "group_ops": {
+          "adds": 13,
+          "doubles": 24,
+          "scalar_mults": 1
+        },
+        "native": {},
+        "wall_ns": 6383
+      },
+      "wall_seconds": 0.81767497
+    }
+  ],
+  "schema_version": 1,
+  "software": {
+    "arch": "x86_64",
+    "binary_blake3": "0f4d11b91e28ab71573b2b48253edda09d048d6fdd362533a3169854e379f376",
+    "git_commit": "f371746e38a5069e62c5c7f6cf192c62c4522205",
+    "os": "linux",
+    "version": "0.1.0"
+  },
+  "status": "complete",
+  "what_this_is": "Index-calculus configurations -- each a choice of factor base, target source, decomposition oracle, polynomial solver and relation matrix -- run end to end against a planted logarithm, with every stage's cost in group-addition equivalents and the total divided by sqrt(r).",
+  "what_this_is_not": [
+    "not a speed claim: a configuration on a toy instance is a measurement, and a comparison needs the matched reference rows AGENTS.md section 1 asks for",
+    "not a wall-clock benchmark: operation counts are the metric, wall time rides along",
+    "not a claim about any deployed curve"
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "algorithm": "for each first source code and its two pair-output roots, solve S3 quadratic for second output by half-trace; recover second source product; exact source lookup and group replay",
+  "command": [
+    "/opt/homebrew/bin/gtimeout",
+    "180",
+    "/Volumes/SSD990/cryptanalysis/sage",
+    "-python",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_s3_code_inverse_20261017/run_sage.py"
+  ],
+  "curve_id": "EC1N41Ckb1h7d5e80d3c4d0",
+  "queries": [
+    "archived relation suffix",
+    "all 64 independently frozen ordinary miss suffixes"
+  ],
+  "resource_envelope": {
+    "observational_rss_bytes": 4294967296,
+    "parent_wall_seconds": 180,
+    "workers": 1
+  },
+  "source_sha256": {
+    "panel": "fd01a977af8053953f28cbf5f4d395c90ddde144bc5381c250338e1956aa66d3",
+    "panel_audit": "8a091dd8ccad02164984c945d435c30645e3efda0986dad18f3930c21686df28",
+    "quartic_result": "8ce1205497f6e53967ca000a0d57d10e10777729f94c4ff84fa8ebfa11690538",
+    "relation_audit": "a5d8e53d191c5dfc183e26bdc952cf961e2918b94019dc7b0138b30c4219f738",
+    "runtime": "073ca37250b100a7f961de3475da8a4d489f3f2140c15f4c72457816893f3f01",
+    "script": "d2e31551fdf752e0be4c71b1ebd25fe41c1b7bf87fcda1b5fc23460604779b82",
+    "states": "bff6f50a6b62ff627c79002b2fc19a5e5dcdc80b254d5c9e7e7a7949a763795b"
+  },
+  "status": "FROZEN_BEFORE_N41_DIRECT_S3_SOURCE_CODE_INVERSE",
+  "target": "frozen public raw point at Frobenius orientation 6"
+}

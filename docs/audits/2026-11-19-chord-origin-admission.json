@@ -1,0 +1,92 @@
+{
+  "schema": "cryptanalysis.chord-origin-native-admission/v1",
+  "standing": "unverified",
+  "local_candidate_source_commit": null,
+  "candidate_gate_sha256": "6f389291bdfc7c37698e25037db78965db43bd9cbf6a147fe04d5e648018e4c3",
+  "original_source_sha256": "a39502fa742dea436d8a04c6011c18c8d65fbaf85a1c64a1cdb699a48a01d839",
+  "named_and_exhaustive_theorems": 4,
+  "elaborated_types": 4,
+  "successful_native_commands": 4,
+  "retained_file_hashes_rechecked": 15,
+  "integration_tests_passed": 156,
+  "new_chord_controls": 8,
+  "local_execution_status": {
+    "phase": "finished",
+    "supervisor_pid": 56284,
+    "started_at": "2026-11-19T18:06:25.362869+00:00",
+    "child_pid": 56286,
+    "returncode": 0,
+    "stop_reason": null,
+    "elapsed_seconds": 119.7969048330051,
+    "source_hashes_match": true,
+    "ended_at": "2026-11-19T18:08:25.161021+00:00"
+  },
+  "native_log_sha256": "4adb5655a0cf4116b6c9e15991d2e5f2f8c7abbd45f2764126720471893bcb91",
+  "baseline_control": {
+    "schema": "cryptanalysis.chord-origin-baseline-control/v1",
+    "source_commit": "ad942f04b1c90edf9eb2960486cc9c698162d2da",
+    "gate_sha256": "ed777dde76efee822b9b71563c19ea133bbc753404707b2e604a26d38f490dcf",
+    "source_path": "research/xedni_plane_group_20261117/formal/ChordOrigin.lean",
+    "baseline_refusal": "unreviewed Lean corpus addition: research/xedni_plane_group_20261117/formal/ChordOrigin.lean",
+    "scope": "Dispatcher software control with mocked dependency-path output; no native proof evidence"
+  },
+  "semantic_audit": {
+    "schema": "cryptanalysis.chord-origin-semantic-audit/v1",
+    "standing": "unverified",
+    "sources_read": [
+      "research/xedni_plane_group_20261117/README.md",
+      "research/xedni_plane_group_20261117/PROTOCOL.md",
+      "research/xedni_plane_group_20261117/formal/CHECK.md",
+      "research/xedni_plane_group_20261117/formal/ChordOrigin.lean",
+      "research/xedni_plane_group_20261117/formal/lean-toolchain",
+      "research/xedni_plane_group_20261117/formal/lakefile.toml",
+      "research/xedni_plane_group_20261117/formal/lake-manifest.json"
+    ],
+    "original_source_sha256": "a39502fa742dea436d8a04c6011c18c8d65fbaf85a1c64a1cdb699a48a01d839",
+    "dependency_revision_pairs_checked": 9,
+    "all_nine_dependency_revisions_match": true,
+    "semantic_boundaries": {
+      "shifted_relation_identity": "Integer linear combination of translated points equals the original combination minus the total coefficient times the origin.",
+      "chord_origin_scalar_identity": "Substitutes the assumed origin scalar -(m_j+m_k); does not establish the concrete geometric chord or good-reduction premise.",
+      "shifted_target_linear": "Equivalent rearrangement in a commutative ring.",
+      "shifted_target_recovers": "Division in a field assuming a nonzero coefficient; no guarantee that relation selection provides that coefficient."
+    },
+    "not_established": [
+      "Machine-checked good-reduction bridge for a concrete plane cubic",
+      "Frequency of target-bearing relations",
+      "End-to-end cost or speedup",
+      "Independent empirical panel verification"
+    ],
+    "scientific_trials_launched": false,
+    "frozen_artifacts_changed": false
+  },
+  "static_inventory": {
+    "schema": "cryptanalysis.static-corpus-registration-inventory/v1",
+    "scope": "Static path-dispatch inventory only; no native build success or semantic completeness inferred",
+    "tracked_lean_sources": 569,
+    "separately_dispatched_paths": 492,
+    "generic_dispatch_paths": 77,
+    "unregistered_before_chord_admission": [
+      "research/xedni_plane_group_20261117/formal/ChordOrigin.lean"
+    ],
+    "unregistered_after_chord_admission": []
+  },
+  "original_bindings": {
+    "source_commit": "ad942f04b1c90edf9eb2960486cc9c698162d2da",
+    "files_sha256": {
+      "research/xedni_plane_group_20261117/formal/ChordOrigin.lean": "a39502fa742dea436d8a04c6011c18c8d65fbaf85a1c64a1cdb699a48a01d839",
+      "research/xedni_plane_group_20261117/formal/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+      "research/xedni_plane_group_20261117/formal/lakefile.toml": "0b319f57000ee23f5ad7f2b85184945cd153edc39d3ed1f71f435e6b40432d54",
+      "research/xedni_plane_group_20261117/formal/lake-manifest.json": "4f5e0931ffce635571fed2a65f8b8f4141a3173308dcd41498f1f5ac2926db4f",
+      "research/xedni_plane_group_20261117/formal/CHECK.md": "f9e12a292b7c55ac5102c7823ac61e782d5d94823fa52d3926f8f164b36d9a48",
+      "research/xedni_plane_group_20261117/PROTOCOL.md": "64ea14546f9a054556e8397a0c00d6b8f46e413e2f944f3fd0a4d733c1dd7684",
+      "research/xedni_plane_group_20261117/README.md": "e4a2585a819893fc2edb72a62dfe886cc60e92335a74f52d24b546d48e3d823e"
+    },
+    "scientific_trials_launched": false,
+    "scope": "Original source/dependencies materialized from Git; all original bytes retained. Source algebra identities do not establish good-reduction geometry or measured costs."
+  },
+  "scope": "Fresh native source check with matching recorded Lean/Mathlib revisions, using maintained shared dependencies; no frozen empirical panel or historical timing is replayed",
+  "frozen_artifacts_changed": false,
+  "performance_measurement": false,
+  "next_gate": "All applicable CI checks must pass before merge"
+}

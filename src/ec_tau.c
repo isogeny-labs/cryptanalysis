@@ -3425,6 +3425,33 @@ int ca_ec_tau4_paired_two_plane_mul_profile(const ca_group *g,
                                         a, b, counts, 2);
 }
 
+/* total += part, every field (the inversions included). */
+static void tau4_joint_counts_add(ca_tau4_joint_counts *total, const ca_tau4_joint_counts *part)
+{
+    total->tau_steps += part->tau_steps;
+    total->doubles += part->doubles;
+    total->mixed_adds += part->mixed_adds;
+    total->full_adds += part->full_adds;
+    total->rotations += part->rotations;
+    total->inversions += part->inversions;
+    total->tau_pairs += part->tau_pairs;
+    total->tau_pair_cheap_z += part->tau_pair_cheap_z;
+    total->overlaps += part->overlaps;
+    total->fused_hits += part->fused_hits;
+    total->recode_attempts += part->recode_attempts;
+    total->pair_scores += part->pair_scores;
+    total->selected_changed += part->selected_changed;
+    total->lattice_points_checked += part->lattice_points_checked;
+    total->gauge_selected += part->gauge_selected;
+    total->digit_rotations += part->digit_rotations;
+    total->gauge_transitions += part->gauge_transitions;
+    total->final_rotations += part->final_rotations;
+    total->gauge_table_lookups += part->gauge_table_lookups;
+    total->gauge_model_rotations += part->gauge_model_rotations;
+    total->free_gauge_transitions += part->free_gauge_transitions;
+    total->tau_square_z_steps += part->tau_square_z_steps;
+}
+
 static int tau4_paired_two_batch_impl(const ca_group *g,
                                        const ca_tau4_joint_precomp *pre,
                                        const ca_tau4_joint_plane_precomp *plane,
@@ -3432,12 +3459,29 @@ static int tau4_paired_two_batch_impl(const ca_group *g,
                                        const uint64_t *b, size_t count,
                                        ca_tau4_joint_counts *counts, int mode)
 {
-    if (!g || !pre || !out || !a || !b || pre->g != g || count > 32 ||
-        (plane && &plane->base != pre)) return 0;
+    if (!g || !pre || !out || !a || !b || pre->g != g || (plane && &plane->base != pre)) return 0;
     ca_tau4_joint_counts total = {0};
     if (!count) { if (counts) *counts = total; return 1; }
-    tau_jac projective[32];
-    uint64_t prefixes[32];
+    /* Blocks of TAU_BATCH_CHUNK points, each converted to affine with one
+     * shared inversion.  The GLV start-up asks for its whole multiplier
+     * table here (up to 128 entries from 40 bits up, see curve.c), and a
+     * flat limit of 32 made every such start-up fail with
+     * CA_ERR_INTERNAL. */
+    enum { TAU_BATCH_CHUNK = 32 };
+    if (count > TAU_BATCH_CHUNK) {
+        for (size_t off = 0; off < count; off += TAU_BATCH_CHUNK) {
+            size_t len = count - off < TAU_BATCH_CHUNK ? count - off : TAU_BATCH_CHUNK;
+            ca_tau4_joint_counts part = {0};
+            if (!tau4_paired_two_batch_impl(g, pre, plane, out + off, a + off, b + off, len, &part,
+                                            mode))
+                return 0;
+            tau4_joint_counts_add(&total, &part);
+        }
+        if (counts) *counts = total;
+        return 1;
+    }
+    tau_jac projective[TAU_BATCH_CHUNK];
+    uint64_t prefixes[TAU_BATCH_CHUNK];
     for (size_t i = 0; i < count; i++) {
         ca_tau4_joint_counts one = {0};
         if (!tau4_paired_lattice_mul_impl(g, pre, plane, NULL, &projective[i],

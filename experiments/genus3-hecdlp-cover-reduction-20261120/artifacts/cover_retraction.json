@@ -1,0 +1,69 @@
+{
+  "format": "cover-retraction-certificates-v1",
+  "general": {
+    "after_polarized_isogeny": "f_* phi^dagger phi f^*=[m*d] when phi^dagger phi=[m]",
+    "cover_only": "f_* f^*=[d]",
+    "dlog_consequence": "Q=[k]P in E[n] iff the corresponding nonzero transported images have the same k modulo n, provided gcd(m*d,n)=1"
+  },
+  "limitations": [
+    "requires explicit executable pullback/pushforward (or diagonal/summation) maps",
+    "requires the polarized dual of any composed isogeny",
+    "does not solve arbitrary HECDLP instances outside the transported elliptic subgroup",
+    "does not improve the asymptotic hardness of the original elliptic DLP"
+  ],
+  "nist_333_diagonal_composition": {
+    "P-224": {
+      "complexity_interpretation": "dimension reduction to the original ECDLP, not a speedup over the original ECDLP",
+      "composed_multiplier": 9,
+      "coprime_to_subgroup_order": true,
+      "cover_degree": 3,
+      "identity": "f_* o phi^dagger o phi o f^* = [m*d]",
+      "isogeny_multiplier": 3,
+      "kernel_intersection": "trivial on E[n] because the composed multiplier is invertible modulo n",
+      "recovery_map": "[23964397037467235373037346744017445280406940190599459308162419882721] o f_* o phi^dagger",
+      "recovery_scalar_mod_n": 23964397037467235373037346744017445280406940190599459308162419882721,
+      "scope": "only the transported subgroup image; arbitrary classes in the full Jacobian or Prym component are not covered",
+      "subgroup_order": 26959946667150639794667015087019625940457807714424391721682722368061,
+      "symbol_assignment": {
+        "d": 3,
+        "m": 3,
+        "phi_dual_phi": "[3]"
+      },
+      "typed_path": [
+        "E[n] --f^*--> J_H[n]",
+        "J_H[n] --phi--> A[n]",
+        "A[n] --phi^dagger--> J_H[n]",
+        "J_H[n] --f_*--> E[n]"
+      ]
+    },
+    "P-256": {
+      "complexity_interpretation": "dimension reduction to the original ECDLP, not a speedup over the original ECDLP",
+      "composed_multiplier": 9,
+      "coprime_to_subgroup_order": true,
+      "cover_degree": 3,
+      "identity": "f_* o phi^dagger o phi o f^* = [m*d]",
+      "isogeny_multiplier": 3,
+      "kernel_intersection": "trivial on E[n] because the composed multiplier is invertible modulo n",
+      "recovery_map": "[64328938450197915979276359416337540849998308457853200190234588367260284469094] o f_* o phi^dagger",
+      "recovery_scalar_mod_n": 64328938450197915979276359416337540849998308457853200190234588367260284469094,
+      "scope": "only the transported subgroup image; arbitrary classes in the full Jacobian or Prym component are not covered",
+      "subgroup_order": 115792089210356248762697446949407573529996955224135760342422259061068512044369,
+      "symbol_assignment": {
+        "d": 3,
+        "m": 3,
+        "phi_dual_phi": "[3]"
+      },
+      "typed_path": [
+        "E[n] --f^*--> J_H[n]",
+        "J_H[n] --phi--> A[n]",
+        "A[n] --phi^dagger--> J_H[n]",
+        "J_H[n] --f_*--> E[n]"
+      ]
+    }
+  },
+  "smith_222_composition": {
+    "condition": "gcd(2d,n)=1",
+    "identity": "f_* phi^dagger phi f^*=[2d]",
+    "isogeny_multiplier": 2
+  }
+}

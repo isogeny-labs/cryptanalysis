@@ -1,0 +1,12 @@
+--- experiments/ecc2k130-ic-goal-20260929/joint_block_gb_20261018/joint_gb.py	2026-10-18 00:28:07
++++ experiments/ecc2k130-ic-goal-20260929/joint_block_order_20261018/joint_gb_order.py	2026-10-18 01:22:20
+@@ -1 +1 @@
+-"""Solve the frozen two-pair resultant with a first-code block still free."""
++"""Degree-order joint-block Gröbner pilot on frozen resultant inputs."""
+@@ -176 +176 @@
+-R = BooleanPolynomialRing(variable_count, 'x', order='lex')
++R = BooleanPolynomialRing(variable_count, 'x', order=cfg['term_order'])
+@@ -193,0 +194 @@
++                  'term_order': cfg['term_order'],
+@@ -216,0 +218 @@
++       'term_order': cfg['term_order'],

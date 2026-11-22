@@ -1,0 +1,28 @@
+{
+  "schema": "engineering.native-corpus-budget-amendment/v1",
+  "at": "2026-11-20T02:24:09.682189+00:00",
+  "baseline_head": "56dd1a8f77ff76be7e2300e12b71c5fd8314dcac",
+  "baseline_workflow_blob": "2d8898483312e2cef4b8767a0cee963d42b03bfe",
+  "censored_run": 44637299258,
+  "censored_job": 135959009865,
+  "job_started_at": "2026-11-19T23:23:55Z",
+  "job_completed_at": "2026-11-20T01:24:14Z",
+  "annotation": "The job has exceeded the maximum execution time of 2h0m0s",
+  "completed_command_records": 513,
+  "command_failures": 0,
+  "command_timeouts": 0,
+  "partial_artifact_sha256": "296cb48632b1b6ab862f7398747a11fda85fe64deadc5055651fd57db410fe83",
+  "change": {
+    "job": "corpus",
+    "old_timeout_minutes": 120,
+    "new_timeout_minutes": 180
+  },
+  "standalone_timeout_minutes_unchanged": 180,
+  "all_commands_assertions_inputs_and_child_deadlines_unchanged": true,
+  "yaml_structure_identical_after_reverting_timeout": true,
+  "automatic_retry_policy_changed": false,
+  "previous_failure_and_complete_receipts_retained": true,
+  "new_complete_corpus_result": false,
+  "frozen_artifacts_changed": false,
+  "performance_claim": null
+}

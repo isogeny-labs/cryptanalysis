@@ -1,0 +1,19 @@
+FlatCandidate.lean:30:19: error: unsolved goals
+R : Type
+inst✝ : CommRing R
+valid : R → Prop
+base : R
+offsets : List R
+v w : R
+h : candidate valid base (extend offsets v) w
+s : R
+hs : s ∈ offsets
+⊢ s + v ∈ offsets ∨ ∃ a, a ∈ offsets ∧ a + v = s + v
+FlatCandidate.lean:30:36: warning: This simp argument is unused:
+  hs
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [extend]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'FlatCandidate.candidate_extend' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]

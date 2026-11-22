@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-18T22:24:32Z",
+ "id": "PCC-20261118-d1a1d6",
+ "kind": "theorem",
+ "producer": {
+  "commit": "fef3072ba439719210ca8994dc2c08fe22c535b4",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "84b457aa009a284f1bb7510bbebf4bb1b2fb2030214ceee37fdbcbb37fd26c1c",
+   "kind": "lean",
+   "project": "research/xedni_rank_decay_20261118/formal",
+   "theorem": "XedniRankDecay.certLT_implies_selected_rank_deficient"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Natural-number rank-bound decision bridge only; PARI/Magma validity, elliptic-curve rank certification, selected-subgroup rank construction, dependence coefficients, and useful target recovery remain separate obligations.",
+ "statement": "If selectedRank is at most the actual curve rank, the actual rank lies between certified lower and upper bounds, and upper < r, then selectedRank < r."
+}

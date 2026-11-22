@@ -1,0 +1,23 @@
+{
+  "command": [
+    "/opt/homebrew/bin/cryptominisat5",
+    "--threads=1",
+    "--maxtime=180",
+    "--zero-exit-status",
+    "--verb=1",
+    "--printsol=1",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_sixpair_shared_target_20261017/public.xcnf"
+  ],
+  "exit_code": -15,
+  "monitor_degraded": false,
+  "protocol_sha256": "02b541294ec1a58e55c7c4eb96fe4c3a60db54009409be76a166cfbe93a4f88c",
+  "sampled_peak_combined_rss_bytes": 205340672,
+  "sha256": {
+    "solver.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "solver.stdout": "bec5cd97ca170f76a48ee2215fcdefb405d967ebcacbe9e7d9ddfe569b63cfc7"
+  },
+  "status": "BOUNDED_UNKNOWN",
+  "stop_reason": "PARENT_WALL_CAP",
+  "terminal_lines": [],
+  "wall_ns": 185052455709
+}

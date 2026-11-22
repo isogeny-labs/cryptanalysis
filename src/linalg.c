@@ -106,6 +106,8 @@ static inline uint64_t shoup_mul(uint64_t a, uint64_t w, uint64_t wp, uint64_t q
 
 static ca_status dense_solve_rowops(uint64_t *M, uint32_t n, uint64_t *rhs, uint64_t q, uint64_t *x)
 {
+    ca_mont mont;
+    if (ca_mont_init(&mont, q)) return dense_solve_mont(M, n, rhs, &mont, x);
 #define A(i, j) M[(size_t)(i) * n + (j)]
     /* Reduce once: every entry the elimination writes is already in
      * [0, q), so the per-access % q of the loops below had nothing left to
@@ -373,6 +375,18 @@ static inline uint64_t i128_mod_fast(ca_i128 v, const mod128_ctx *mc)
  * data-dependent branch and with one reduction a row instead of two. */
 static void spmv(const ca_spmat *A, const uint64_t *v, uint64_t *y, uint64_t q)
 {
+    if (word_sums) {
+        for (uint32_t i = 0; i < A->rows; ++i) {
+            uint64_t pos = 0, neg = 0;
+            for (uint32_t k = A->row_ptr[i]; k < A->row_ptr[i + 1]; ++k) {
+                int32_t c = A->val[k];
+                if (c > 0) pos += (uint64_t)(uint32_t)c * v[A->col[k]];
+                else neg += (uint64_t)(-(int64_t)c) * v[A->col[k]];
+            }
+            y[i] = ca_submod(pos % q, neg % q, q);
+        }
+        return;
+    }
     mod128_ctx mc;
     mod128_init(&mc, q);
     for (uint32_t i = 0; i < A->rows; i++) {
@@ -1160,6 +1174,17 @@ static void lz_atw_p(lz_pool *P, const lz_ctx *z, const ca_spmat *A, const uint6
 static ca_status lanczos(const ca_spmat *A, const uint64_t *b, uint64_t q, uint64_t *x, ca_rng *rng,
                          uint32_t *iters_out, lz_pool *P0)
 {
+    ca_mont mont;
+    if (!ca_mont_init(&mont, q)) return CA_ERR_INVALID;
+    /* Every row/column sum is bounded by (q-1) times the total absolute
+     * coefficient weight. Use word accumulators only when that product is
+     * provably representable. The nnz and int32 bounds make weight <2^63. */
+    uint64_t weight = 0;
+    for (uint32_t k = 0; k < A->nnz; ++k) {
+        int64_t c = A->val[k];
+        weight += (uint64_t)(c < 0 ? -c : c);
+    }
+    int word_sums = !weight || q - 1 <= UINT64_MAX / weight;
     lz_pool *P = P0;
     uint32_t n = A->cols, m = A->rows;
     uint64_t *D = malloc(m * sizeof(uint64_t));
@@ -1488,6 +1513,18 @@ ca_status ca_linsolve_mod_prime_mt(const ca_spmat *A, const uint64_t *b, uint64_
                     }
                 }
                 rc = ca_dense_solve_mod_prime(M, nc, rhs, q, xred);
+                /* A^T A x = A^T b has a solution even when A x = b has
+                 * none (an overdetermined, inconsistent system gives its
+                 * least-squares point), so check the original rows, as the
+                 * Lanczos path does, before reporting success. */
+                for (uint32_t i = 0; rc == CA_OK && i < Ared.rows; i++) {
+                    uint64_t acc = 0;
+                    for (uint32_t k = Ared.row_ptr[i]; k < Ared.row_ptr[i + 1]; k++) {
+                        uint64_t a = coef_mod(Ared.val[k], q);
+                        acc = ca_addmod(acc, ca_mulmod(a, xred[Ared.col[k]], q), q);
+                    }
+                    if (acc != bred[i]) rc = CA_ERR_SINGULAR;
+                }
             } else rc = CA_ERR_NOMEM;
             free(M); free(rhs);
         }
