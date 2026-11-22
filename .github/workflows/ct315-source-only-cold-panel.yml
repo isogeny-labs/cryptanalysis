@@ -1,0 +1,49 @@
+name: CT315 source-only complete cold ECDLP cost admission
+
+on:
+  pull_request:
+    paths:
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/ct315_complete_cold_panel.py'
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT315_COMPLETE_COLD_PANEL_PROTOCOL.md'
+      - '.github/workflows/ct315-source-only-cold-panel.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  synthetic-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Python syntax and exact standalone synthetic checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          p=experiments/chained-transfer-public-target/norm-point-reuse-01/ct315_complete_cold_panel.py
+          python3 -m py_compile "$p"
+          python3 "$p" --self-test > /tmp/ct315-normal.json
+          python3 -O "$p" --self-test > /tmp/ct315-optimized.json
+          cmp /tmp/ct315-normal.json /tmp/ct315-optimized.json
+          python3 - <<'PY'
+          import json
+          x=json.load(open('/tmp/ct315-normal.json'))
+          assert x['mutations_rejected'] == 19, x
+          assert x['positive_and_negative_controls'] == 2, x
+          assert x['actual_native_executions'] == 0, x
+          assert x['pcc'] == 'unverified', x
+          print('CT315_SYNTHETIC_COMPLETE_COLD_GATE_PASS', x)
+          PY
+      - name: Standalone production invocation requires actual panel
+        shell: bash
+        run: |
+          set -euo pipefail
+          p=experiments/chained-transfer-public-target/norm-point-reuse-01/ct315_complete_cold_panel.py
+          if python3 "$p" > /tmp/ct315-missing.out 2>&1; then
+            echo 'bad: missing panel silently accepted'
+            exit 1
+          fi
+          grep -q 'required' /tmp/ct315-missing.out
