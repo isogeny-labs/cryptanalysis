@@ -339,9 +339,12 @@ static ca_status k_solve_impl(const ca_group *g, const ca_elem *base, const ca_e
     if (existing < 0) return CA_ERR_INVALID;
     uint64_t seed = existing ? saved.seed : ca_seed_or_random(params->seed);
 
-    /* jump table */
+    /* jump table: AoS for generic/Z_p paths, plus SoA (Jx, Jy) for the
+     * native-EC Montgomery-trick hop (affine addends only). */
     ca_elem *J = calloc(nj, sizeof(ca_elem));
     uint64_t *jsz = calloc(nj, sizeof(uint64_t));
+    uint64_t *Jx = calloc(nj, sizeof(uint64_t));
+    uint64_t *Jy = calloc(nj, sizeof(uint64_t));
     roo *roos = calloc(total, sizeof(roo));
     ca_elem *Yn = calloc(total, sizeof(ca_elem));
     ca_elem *B = calloc(total, sizeof(ca_elem));
@@ -352,10 +355,12 @@ static ca_status k_solve_impl(const ca_group *g, const ca_elem *base, const ca_e
      * next jump, and hashing twice was a third of a Z_p hop. */
     uint64_t *hs = calloc(total, sizeof(uint64_t));
     ca_htab tab;
-    if (!J || !jsz || !roos || !Yn || !B || !scratch || !jidx || !hs ||
+    if (!J || !jsz || !Jx || !Jy || !roos || !Yn || !B || !scratch || !jidx || !hs ||
         ca_htab_init(&tab, 4096) != CA_OK) {
         free(J);
         free(jsz);
+        free(Jx);
+        free(Jy);
         free(roos);
         free(Yn);
         free(B);
@@ -370,6 +375,8 @@ static ca_status k_solve_impl(const ca_group *g, const ca_elem *base, const ca_e
     for (uint32_t j = 0; j < nj; j++) {
         jsz[j] = 1ULL << j;
         ca_group_mul(g, &J[j], base, jsz[j], &ops);
+        Jx[j] = J[j].w[0];
+        Jy[j] = J[j].w[1];
     }
     ca_rng rng;
     ca_rng_seed(&rng, seed);
@@ -452,7 +459,7 @@ static ca_status k_solve_impl(const ca_group *g, const ca_elem *base, const ca_e
             const uint32_t k = total < K_CHAINS ? total : K_CHAINS;
             for (uint32_t i = 0; i < total; i++) {
                 jidx[i] = (uint32_t)(((ca_u128)(nj_magic * (hs[i] >> 32)) * nj) >> 64);
-                den[i] = ca_ec_add_den(&ecc, &roos[i].Y, &J[jidx[i]]);
+                den[i] = ca_ec_add_den_xy(&ecc, &roos[i].Y, Jx[jidx[i]], Jy[jidx[i]]);
             }
             for (uint32_t i = total; i-- > 0;)
                 suf[i] = i + k < total ? BM(den[i], suf[i + k]) : den[i];
@@ -465,9 +472,10 @@ static ca_status k_solve_impl(const ca_group *g, const ca_elem *base, const ca_e
             all = ca_mont_inv(&g->mont, all);
             for (uint32_t j = 0; j < k; j++) inv[j] = BM(all, BM(before[j], after[j]));
             for (uint32_t i = 0, j = 0; i < total; i++) {
+                const uint32_t ji = jidx[i];
                 uint64_t di = i + k < total ? BM(inv[j], suf[i + k]) : inv[j];
                 inv[j] = BM(inv[j], den[i]);
-                ca_ec_add_with_di(&ecc, &roos[i].Y, &roos[i].Y, &J[jidx[i]], di);
+                ca_ec_add_with_di_xy(&ecc, &roos[i].Y, &roos[i].Y, Jx[ji], Jy[ji], di);
                 j = j + 1 == k ? 0 : j + 1;
             }
 #undef BM
@@ -623,6 +631,8 @@ cleanup:
     ca_htab_free(&tab);
     free(J);
     free(jsz);
+    free(Jx);
+    free(Jy);
     free(roos);
     free(Yn);
     free(B);

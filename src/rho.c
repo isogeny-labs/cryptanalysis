@@ -97,6 +97,7 @@ typedef struct rho_shared {
     uint32_t r_mask; /* r - 1 for power-of-two tables, otherwise zero */
     uint64_t r_magic; /* floor(2^64 / r) + 1, for rho_index */
     ca_elem *M;
+    uint64_t *Mx, *My; /* SoA view of M for native-EC dens (affine addends) */
     uint64_t *alpha, *beta;
     int negmap;
     int dp_bits;
@@ -913,10 +914,11 @@ static void *rho_thread_main(void *arg)
 #define RHO_CHAINS 4u
 #define BM(x, y)   (CA_FC_ADD(CA_FC_MUL, 1), ca_ec_bmul((x), (y), ecc.p, ecc.npi))
             const uint32_t k = W < RHO_CHAINS ? W : RHO_CHAINS;
+            const uint64_t *const Mx = sh->Mx, *const My = sh->My;
             for (uint32_t w = 0; w < W; w++) {
                 rho_walk *wk = &walks[w];
                 if (!wk->retry) wk->idx = rho_index(sh, wk->h);
-                den[w] = ca_ec_add_den(&ecc, &wk->Y, &sh->M[wk->idx]);
+                den[w] = ca_ec_add_den_xy(&ecc, &wk->Y, Mx[wk->idx], My[wk->idx]);
             }
             for (uint32_t w = W; w-- > 0;) suf[w] = w + k < W ? BM(den[w], suf[w + k]) : den[w];
             /* total[j] = suf[j] is chain j's product; invert the product of
@@ -933,9 +935,10 @@ static void *rho_thread_main(void *arg)
              * running inverse, then the step into Yn[w]. */
             for (uint32_t w = 0, j = 0; w < W; w++) {
                 rho_walk *wk = &walks[w];
+                const uint32_t mi = wk->idx;
                 uint64_t di = w + k < W ? BM(inv[j], suf[w + k]) : inv[j];
                 inv[j] = BM(inv[j], den[w]);
-                ca_ec_add_with_di(&ecc, &Yn[w], &wk->Y, &sh->M[wk->idx], di);
+                ca_ec_add_with_di_xy(&ecc, &Yn[w], &wk->Y, Mx[mi], My[mi], di);
                 j = j + 1 == k ? 0 : j + 1;
             }
 #undef BM
@@ -1293,10 +1296,14 @@ static ca_status rho_solve_impl(const ca_group *g, const ca_elem *base, const ca
 
     /* multipliers */
     sh.M = calloc(sh.r, sizeof(ca_elem));
+    sh.Mx = calloc(sh.r, sizeof(uint64_t));
+    sh.My = calloc(sh.r, sizeof(uint64_t));
     sh.alpha = calloc(sh.r, sizeof(uint64_t));
     sh.beta = calloc(sh.r, sizeof(uint64_t));
-    if (!sh.M || !sh.alpha || !sh.beta) {
+    if (!sh.M || !sh.Mx || !sh.My || !sh.alpha || !sh.beta) {
         free(sh.M);
+        free(sh.Mx);
+        free(sh.My);
         free(sh.alpha);
         free(sh.beta);
         free(sh.fb_base);
@@ -1310,6 +1317,8 @@ static ca_status rho_solve_impl(const ca_group *g, const ca_elem *base, const ca
         sh.fb_base = calloc(2 * (size_t)sh.fb_bits, sizeof(ca_elem));
         if (!sh.fb_base) {
             free(sh.M);
+            free(sh.Mx);
+            free(sh.My);
             free(sh.alpha);
             free(sh.beta);
             free(sh.fb_base);
@@ -1332,6 +1341,10 @@ static ca_status rho_solve_impl(const ca_group *g, const ca_elem *base, const ca
         for (uint32_t i = 0; i < sh.r; i++)
             rho_start_point(&sh, &sh.M[i], sh.alpha[i], sh.beta[i], &setup_ops);
     }
+    for (uint32_t i = 0; i < sh.r; i++) {
+        sh.Mx[i] = sh.M[i].w[0];
+        sh.My[i] = sh.M[i].w[1];
+    }
     sh.setup_ops = setup_ops;
 #ifdef CA_RHO_TRACE
     sh.tr.table_ops = setup_ops;
@@ -1339,6 +1352,8 @@ static ca_status rho_solve_impl(const ca_group *g, const ca_elem *base, const ca
     double expected_dps = 1.25 * (double)sqrt_n / (double)(1ULL << dp) + 1024;
     if (ca_htab_init(&sh.tab, (size_t)(expected_dps < 1e8 ? expected_dps : 1e8)) != CA_OK) {
         free(sh.M);
+        free(sh.Mx);
+        free(sh.My);
         free(sh.alpha);
         free(sh.beta);
         free(sh.fb_base);
@@ -1350,6 +1365,8 @@ static ca_status rho_solve_impl(const ca_group *g, const ca_elem *base, const ca
     if (existing && !rho_checkpoint_load(&sh, &saved)) {
         ca_htab_free(&sh.tab);
         free(sh.M);
+        free(sh.Mx);
+        free(sh.My);
         free(sh.alpha);
         free(sh.beta);
         free(sh.fb_base);
@@ -1364,6 +1381,8 @@ static ca_status rho_solve_impl(const ca_group *g, const ca_elem *base, const ca
             !rho_progress(&sh, ca_now() - t0, verbose)) {
             ca_htab_free(&sh.tab);
             free(sh.M);
+            free(sh.Mx);
+            free(sh.My);
             free(sh.alpha);
             free(sh.beta);
             free(sh.fb_base);
@@ -1381,6 +1400,8 @@ static ca_status rho_solve_impl(const ca_group *g, const ca_elem *base, const ca
         free(created);
         ca_htab_free(&sh.tab);
         free(sh.M);
+        free(sh.Mx);
+        free(sh.My);
         free(sh.alpha);
         free(sh.beta);
         free(sh.fb_base);
@@ -1510,6 +1531,8 @@ static ca_status rho_solve_impl(const ca_group *g, const ca_elem *base, const ca
     free(created);
     ca_htab_free(&sh.tab);
     free(sh.M);
+    free(sh.Mx);
+    free(sh.My);
     free(sh.alpha);
     free(sh.beta);
     free(sh.fb_base);
