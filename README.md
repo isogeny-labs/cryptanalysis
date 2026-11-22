@@ -861,7 +861,7 @@ all of these.
 
 ## License
 
-MIT, see [LICENSE](LICENSE).
+MIT, see [LICENSE](LICENSE); third-party code and patches keep their own licences, listed in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). To report a vulnerability, and for the acceptable-use and dual-use policy, see [SECURITY.md](SECURITY.md).
 
 ## Verified Boolean solver comparisons
 

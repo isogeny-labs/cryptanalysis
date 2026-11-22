@@ -237,6 +237,36 @@ the targets and the arithmetic they stand on.
 [docs/ECDLP_ATTACK_MATRIX.md](docs/ECDLP_ATTACK_MATRIX.md) is the
 attack-by-curve-family applicability matrix.
 
+#### Defensive use of `ecdsa_audit`
+
+`cryptanalysis::ecdsa_audit` (`crax ecdsa audit`) is a defensive auditor. It
+checks whether an ECDSA signer's nonces are biased or reused, and it
+demonstrates a finding the only convincing way: by recovering the private key
+from the transcript and checking it against the public key.
+
+- **Who should use it.** The owner or operator of an ECDSA signer (an HSM, a
+  wallet, a TLS, code-signing or firmware-signing service), or an assessor
+  working for them, to check that the signer's nonces are uniform (RFC 6979
+  or a sound random generator).
+- **On what data.** Signatures `(r, s, z)` and the public key, from keys you
+  own or are authorised in writing to assess. Signatures being public does
+  not make their key yours to recover.
+- **With what authorisation.** For a client, a signed authorisation naming
+  the keys and systems comes before any analysis
+  ([SECURITY.md](../SECURITY.md), "How Isogeny Labs runs client
+  engagements").
+- **What the output contains.** A `key_recovered` verdict prints the private
+  scalar `d` in the report. Treat that output as secret: give it only to the
+  key's owner through the agreed channel, never commit, log or paste it, and
+  delete it when the engagement ends. If you recover a key that is not yours
+  to assess, stop and report it privately as [SECURITY.md](../SECURITY.md)
+  says.
+- **What a clean result means.** `no_bias` is evidence about the sample you
+  gave, not a certificate. The statistical prefilter is a heuristic (a score
+  threshold of 0.5) that can return `no_bias` without attempting recovery,
+  and biases below one bit per nonce need the Bleichenbacher FFT, which this
+  module does not implement.
+
 ### Integer factorisation
 
 `cryptanalysis::factoring` attacks RSA's hardness assumption directly.
