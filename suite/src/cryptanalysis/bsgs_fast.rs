@@ -210,9 +210,77 @@ impl FastField {
     /// in place with one inversion and `3(k-1)` multiplications.
     /// `scratch` must be at least `xs.len()` long.  No element may be zero
     /// -- callers substitute `1` for the steps that need no inverse.
+    #[inline]
     pub fn batch_inv(&self, xs: &mut [u64], scratch: &mut [u64]) {
         let k = xs.len();
         if k == 0 {
+            return;
+        }
+        const C: usize = 4;
+        if k >= 2 * C {
+            for c in 0..C {
+                scratch[c] = xs[c];
+            }
+            let mut i = C;
+            while i + C <= k {
+                scratch[i] = self.mul(scratch[i - C], xs[i]);
+                scratch[i + 1] = self.mul(scratch[i + 1 - C], xs[i + 1]);
+                scratch[i + 2] = self.mul(scratch[i + 2 - C], xs[i + 2]);
+                scratch[i + 3] = self.mul(scratch[i + 3 - C], xs[i + 3]);
+                i += C;
+            }
+            while i < k {
+                scratch[i] = self.mul(scratch[i - C], xs[i]);
+                i += 1;
+            }
+            let mut last_idx = [0usize; C];
+            let mut totals = [0u64; C];
+            for c in 0..C {
+                let rem = (k - 1 - c) % C;
+                let idx = (k - 1) - rem;
+                last_idx[c] = idx;
+                totals[c] = scratch[idx];
+            }
+            let p01 = self.mul(totals[0], totals[1]);
+            let p23 = self.mul(totals[2], totals[3]);
+            let all_inv = self.inv(self.mul(p01, p23));
+            let i01 = self.mul(all_inv, p23);
+            let i23 = self.mul(all_inv, p01);
+            let mut acc = [
+                self.mul(i01, totals[1]),
+                self.mul(i01, totals[0]),
+                self.mul(i23, totals[3]),
+                self.mul(i23, totals[2]),
+            ];
+            let tail_start = (k / C) * C;
+            for idx in (tail_start..k).rev() {
+                let c = idx % C;
+                if idx == last_idx[c] {
+                    let xi = self.mul(acc[c], scratch[idx - C]);
+                    acc[c] = self.mul(acc[c], xs[idx]);
+                    xs[idx] = xi;
+                }
+            }
+            let mut base = tail_start;
+            while base >= 2 * C {
+                base -= C;
+                let x0 = self.mul(acc[0], scratch[base - C]);
+                let x1 = self.mul(acc[1], scratch[base + 1 - C]);
+                let x2 = self.mul(acc[2], scratch[base + 2 - C]);
+                let x3 = self.mul(acc[3], scratch[base + 3 - C]);
+                acc[0] = self.mul(acc[0], xs[base]);
+                acc[1] = self.mul(acc[1], xs[base + 1]);
+                acc[2] = self.mul(acc[2], xs[base + 2]);
+                acc[3] = self.mul(acc[3], xs[base + 3]);
+                xs[base] = x0;
+                xs[base + 1] = x1;
+                xs[base + 2] = x2;
+                xs[base + 3] = x3;
+            }
+            xs[0] = acc[0];
+            xs[1] = acc[1];
+            xs[2] = acc[2];
+            xs[3] = acc[3];
             return;
         }
         scratch[0] = xs[0];
@@ -317,6 +385,20 @@ pub struct FastCurve {
 }
 
 impl FastCurve {
+    /// Build a single-word curve from raw `u64` coefficients.  `g` is left
+    /// at infinity; callers that need a generator set it explicitly.
+    /// Returns `None` when `p` is not an odd prime fitting the Montgomery field.
+    pub fn from_u64(p: u64, a: u64, b: u64, n: u64) -> Option<Self> {
+        let f = FastField::new(p)?;
+        Some(Self {
+            f,
+            a: f.to_mont(a % p),
+            b: f.to_mont(b % p),
+            n,
+            g: FastPoint::INFINITY,
+        })
+    }
+
     /// Adopt a [`CurveParams`] whose prime, order and coordinates all fit
     /// a single word.  Returns `None` when they do not -- callers stay on
     /// the general arithmetic then.
@@ -674,6 +756,31 @@ impl BabyTable {
         false
     }
 
+    /// Software-prefetch the primary probe slot of `x` into L1 so a batch
+    /// of chain steps can overlap SLC/DRAM misses with field arithmetic.
+    #[inline(always)]
+    fn prefetch_slot(&self, x: u64, for_write: bool) {
+        let idx = (hash_x(x) & self.mask()) as usize;
+        let ptr = unsafe { self.slots.as_ptr().add(idx) as *const u8 };
+        #[cfg(target_arch = "aarch64")]
+        unsafe {
+            if for_write {
+                core::arch::asm!("prfm pstl1keep, [{p}]", p = in(reg) ptr, options(nostack, preserves_flags));
+            } else {
+                core::arch::asm!("prfm pldl1keep, [{p}]", p = in(reg) ptr, options(nostack, preserves_flags));
+            }
+        }
+        #[cfg(target_arch = "x86_64")]
+        unsafe {
+            let _ = for_write;
+            core::arch::x86_64::_mm_prefetch(ptr as *const i8, core::arch::x86_64::_MM_HINT_T0);
+        }
+        #[cfg(not(any(target_arch = "aarch64", target_arch = "x86_64")))]
+        {
+            let _ = (ptr, for_write);
+        }
+    }
+
     /// Every index whose tag matches the hash of `x`, passed to `f`.
     /// Probing stops at the first empty slot, so nothing stored is missed.
     #[inline]
@@ -870,7 +977,7 @@ impl BsgsFast {
                         }
                     })
                     .collect();
-                run_chains(&curve, &mut cs, curve.g, |p, pos| {
+                run_chains(&curve, &mut cs, curve.g, Some((&table, true)), |p, pos| {
                     // j = 0 is O and has no x; the giant phase reports a
                     // giant point landing on O as the j = 0 hit instead.
                     if !p.infinity && pos > 0 {
@@ -972,7 +1079,7 @@ impl BsgsFast {
                         }
                     })
                     .collect();
-                run_chains(curve, &mut cs, neg_s, |p, i| {
+                run_chains(curve, &mut cs, neg_s, Some((&self.table, false)), |p, i| {
                     if stop.load(Ordering::Relaxed) {
                         return false;
                     }
@@ -1037,7 +1144,13 @@ impl BsgsFast {
 /// for the early exit once a candidate has verified.  Returns the number
 /// of chain-steps taken, which is exact: a worker that stops early is
 /// charged only for what it did.
-fn run_chains<F>(curve: &FastCurve, cs: &mut [Chain], addend: FastPoint, mut visit: F) -> u64
+fn run_chains<F>(
+    curve: &FastCurve,
+    cs: &mut [Chain],
+    addend: FastPoint,
+    prefetch: Option<(&BabyTable, bool)>,
+    mut visit: F,
+) -> u64
 where
     F: FnMut(&FastPoint, u64) -> bool,
 {
@@ -1046,6 +1159,13 @@ where
     let mut scratch = vec![0u64; w];
     let mut mode = vec![StepMode::Add; w];
     let mut steps = 0u64;
+    if let Some((tab, wr)) = prefetch {
+        for c in cs.iter() {
+            if c.pos < c.end && !c.p.infinity {
+                tab.prefetch_slot(c.p.x, wr);
+            }
+        }
+    }
     loop {
         let mut live = false;
         for c in cs.iter() {
@@ -1072,6 +1192,11 @@ where
             }
             c.p = curve.step_finish(c.p, addend, mode[k], den[k]);
             c.pos += 1;
+            if let Some((tab, wr)) = prefetch {
+                if c.pos < c.end && !c.p.infinity {
+                    tab.prefetch_slot(c.p.x, wr);
+                }
+            }
         }
     }
 }

@@ -1,0 +1,20 @@
+{
+  "schema": "x011-p317-restored-source-protocol-v1",
+  "p": 317,
+  "curve": "11a1: y^2+y=x^3-x^2-10x-20",
+  "source_point": [16, 60],
+  "source_j": -121,
+  "class_size": 40,
+  "class_rank_result_sha256": "b04b533b8e4d22d69d56ca35e08b0ebee9fc5e4b23d7731cd5e0ed266fac44de",
+  "archived_inputs_sha256": "1fa1a25c88bbb5a1dce11c0ac6dae63493bcc84be6ec1d0c7ef56ec74b263f69",
+  "degrees": [2, 5, 13],
+  "regularized_hecke_source_sha256": "d13a8663c1beb145c0b66147305831bb15678208d126df5b69ddf5e17962b32b",
+  "degree13_function_artifact_sha256": "131d0dc58a1a92a5c8f7aa2f79870dbd3b906accd17e019ee0e72d054ebc86ac",
+  "degree13_function_artifact_source_sha256": "7e66144e76bf62f7e645d87cc58be2bb0f7cc5e52601665650ef0706a6f715fb",
+  "degree13_extension_cap": 12,
+  "candidate_policy": "For degrees 2 and 5, retain each complete rational-neighbor multiset and its exact group row if every neighbor is in the corrected 40-point class. For degree 13, factor the neighbor-x polynomial, reconstruct all neighbors up to extension degree 12, verify moments and Hecke sum, group Frobenius orbits, and retain class part and outside trace points. Cancel against archived source outside traces only on exact trace-multiset equality; verify every resulting class row by the group law before rank insertion.",
+  "rank_fields": ["QQ", "F61"],
+  "resource_cap_seconds": 300,
+  "candidate_id": null,
+  "target_online_ms": null
+}
