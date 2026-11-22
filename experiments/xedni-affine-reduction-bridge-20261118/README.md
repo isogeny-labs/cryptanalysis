@@ -24,6 +24,7 @@ The generic mathematical statement is: for a commutative ring `R`, field `S`, an
 | Residue chord is the projective zero point | `XedniResidueProjectiveZero.chordResidueTriple_projective_zero` | The reduced homogeneous chord triple is a nonsingular projective point equal to the point at infinity; field-valued residue map, reduced x-difference zero, reduced y-difference nonzero; checked |
 | Source homogeneous chord lies on its projective curve | `XedniSourceChordEquation.sourceChordTriple_on_curve` | Any two source-ring affine points on the same short-Weierstrass curve; no denominator invertibility; checked |
 | Source chord is nonsingular at a residue-vertical boundary | `XedniSourceChordNonsingular.sourceChordTriple_nonsingular` | Source projective curve point, field-valued reduction, reduced x-difference zero and reduced y-difference nonzero; checked |
+| Local projective chord derivative is a unit | `XedniLocalChordUnitDerivative.chordZDerivative_isUnit`, `primeLocal_chordZDerivative_isUnit` | Source local ring with its canonical residue field, or the recorded integer prime-local ring; reduced x-difference zero and y-difference nonzero; checked |
 | Field step is elliptic-curve addition | `XedniRegularGroupLaw.fieldStep_group_add` | Over a field, with the reduced short curve elliptic, a `FieldStep` is equality to mathlib's point-group addition; covers distinct-x chords and nonvertical doubling |
 | Field chain gives a group relation | `XedniRegularGroupLaw.fieldChain_group_relation` | The field endpoint equals its start plus a natural-number multiple of the fixed addend |
 | Reduced regular chain gives a group relation | `XedniRegularGroupLaw.reduced_regularChain_group_relation` | Combines the source-chain reduction theorem and field group law; requires ellipticity of the coefficient-reduced short curve |
@@ -181,7 +182,19 @@ At a residue-vertical chord, the source homogeneous triple `(Xd,Y,d³)` has a no
 | Coordinatewise reduction | `XedniSourceChordNonsingular.map_sourceChordTriple` | Commutative source ring, field target, ring homomorphism, two source curve points; checked |
 | Source projective nonsingularity | `XedniSourceChordNonsingular.sourceChordTriple_nonsingular` | Same data plus reduced x-difference zero and reduced y-difference nonzero; checked |
 
-Run `lake build SourceChordNonsingular` in this directory. `build-source-nonsingular-output.txt` records the fresh build and `#print axioms` for both declarations; each lists only `propext`, `Classical.choice`, and `Quot.sound`. The remaining structural proof is that a suitable local projective group law makes this source chord representative the sum of the source inputs and that point reduction preserves addition for all exceptional cases.
+Run `lake build SourceChordNonsingular` in this directory. `build-source-nonsingular-output.txt` records the fresh build and `#print axioms` for both declarations; each lists only `propext`, `Classical.choice`, and `Quot.sound`. The next module strengthens the relevant derivative from nonzero to a unit in the prime-local source ring.
+
+## Unit projective derivative in the prime-local ring
+
+At the residue-vertical chord, the projective `Z` derivative of the source short-Weierstrass equation is `Y²−(2A(Xd)d³+3B(d³)²)` at the homogeneous triple `(Xd,Y,d³)`. The module `LocalChordUnitDerivative.lean` checks this expression against mathlib's projective derivative. Reduction sends the first and third homogeneous coordinates to zero and `Y` to a nonzero element, so the derivative reduces to `Ȳ²≠0`. In a local ring, mathlib's `residue_ne_zero_iff_isUnit` then proves the source derivative is a unit. The theorem is specialized to `Localization.AtPrime P` and the repository's `reduce P` map used in the recorded rational lifts.
+
+| Result | Lean declaration | Exact hypotheses and status |
+| --- | --- | --- |
+| Derivative matches mathlib | `XedniLocalChordUnitDerivative.chordZDerivative_eq_polynomialZ` | Any commutative source ring and two source curve points; checked |
+| Local derivative is a unit | `XedniLocalChordUnitDerivative.chordZDerivative_isUnit` | Local commutative ring, canonical residue field, reduced chord x-difference zero and y-difference nonzero; checked |
+| Prime-local specialization | `XedniLocalChordUnitDerivative.primeLocal_chordZDerivative_isUnit` | Localization of `ℤ` at a prime ideal with the existing `reduce P` map and the same residue conditions; checked |
+
+Run `lake build LocalChordUnitDerivative` in this directory. `build-local-chord-unit-output.txt` records the fresh build and `#print axioms` for all three declarations; each lists only `propext`, `Classical.choice`, and `Quot.sound`. The remaining structural obligation is to define the local projective addition law and prove that this source chord representative is the sum of its inputs and that reduction preserves it in every addition case.
 
 ## Reproduction
 
