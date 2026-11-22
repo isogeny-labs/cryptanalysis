@@ -4,6 +4,8 @@
 
 - [ ] CT302 bind primitive pricing to dual full 695-record native logs (ChatGPT, started 2026-11-21, branch research/ct302-full-native-log-admission-20261121, PR #1912): reuse existing whole-population comparator and CT301 frozen-vector gate; source-only controls first; no native timing/PCC claim.
 
+- [ ] CT311 direction/sector-resolved CT248 C169/C13/D physical-cost frontier (ChatGPT, continued 2026-11-22, branch research/ct302-full-native-log-admission-20261121, PR #1912): 48 paired exact-source rows, 24+24 directions and six per sector; CT304-admitted full 695 logs required for production, synthetic positive/negative and sector-reversal source-only controls. No native provenance, measured speedup or PCC from tests; owner-approved six-S3-object custody and physical hardware remain blocked.
+
 - [ ] CT304/CT309/CT310 full-native evidence gate on existing draft PR #1912 (ChatGPT, continued 2026-11-22, branch research/ct302-full-native-log-admission-20261121): dual-695 audited receipts, seven-slot clock nesting and new plan-only bounded full-native pair producer with exact retained binaries; source-only CI #45029620704 passed (mock/benign children only). Approved original S3 six-object custody, actual physical C169/C13a/C13b/D/N2_actual, complete cold single-target ECDLP cost, independent PCC, per-process RSS and protected merge gates remain open; no paid compute.
 
 - [ ] CT301 bind native CT248 transcript to immutable authentic 48-vector fixture (ChatGPT, started 2026-11-21, branch research/ct301-native-transcript-fixture-binding-20261121, PR #1905): reject same-shape class-key/counter substitutions in actual --log admission; synthetic source guards only, retain draft until native/PCC gates. 
