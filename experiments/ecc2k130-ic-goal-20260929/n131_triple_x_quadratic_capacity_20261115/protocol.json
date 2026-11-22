@@ -1,0 +1,56 @@
+{
+  "checkpoints": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    8,
+    16,
+    32,
+    64,
+    128,
+    192,
+    256,
+    320
+  ],
+  "curve_id": "EC1N131Ckb1heb5f1998f20b",
+  "family_cap": 320,
+  "feature_rule": "131 linear bits and 8515 distinct pairwise bit products of triple-sum x; affine hull of exact 32 x values per family",
+  "mask_scan_cap": 10000,
+  "one_worker": true,
+  "rss_cap_bytes": 4294967296,
+  "rss_cap_kind": "sampled self-process guard checked each family",
+  "schema": "n131_w23_triple_x_quadratic_capacity_v1",
+  "seed_mask": 898618,
+  "source_rule": "first four archived source-valid families, then ascending canonical mask from 47; both endpoints source valid and distinct folded columns disjoint from fixed slots 1..5",
+  "sources": {
+    "panel": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_rr_code_family_span_20261017/panel_n131_v2.json",
+      "sha256": "a814b1e070666696a57f74f20c247a24381b5c354fef3ffaa67cd7ad71552fbb"
+    },
+    "prior_x_sets": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_triple_x_prefix_capacity_20261023/x_sets_v2.json",
+      "sha256": "2a17fe5d2ceeb6e4a969b3a6304e4af8cd94d12258cac505ff82db354bd7214f"
+    },
+    "public": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w23_sixpair_public_sat_20261017/protocol.json",
+      "sha256": "c66381fdef0bcc47339672a17253319da296a0570c541607924005be615904d4"
+    },
+    "run": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_triple_x_quadratic_capacity_20261115/run_sage.py",
+      "sha256": "c81c3705f2f2365a4c429e839b726035fddec965a2650b1d369e3071f48889be"
+    },
+    "runtime": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_triple_x_quadratic_capacity_20261115/sage_runtime_info.json",
+      "sha256": "073ca37250b100a7f961de3475da8a4d489f3f2140c15f4c72457816893f3f01"
+    },
+    "sixpair": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_sixpair_rr_root_span_20261016/frozen_panels.json",
+      "sha256": "d53cf86cb7e4eaf47d5c61ba21df2ab657fbc3ff9540def97d7c440ad367930b"
+    }
+  },
+  "status": "FROZEN_BEFORE_PRODUCER",
+  "wall_cap_seconds": 600,
+  "workload": "constructed six-pair residual and two previously archived ordinary raw-point residuals; fixed pair slots 1 and 2 and fixed suffix slots 3..5"
+}

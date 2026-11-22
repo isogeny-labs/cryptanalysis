@@ -1,0 +1,44 @@
+{
+  "auditor_sha256": "1bfba2de233e3dcae154ee3bcf32d1115cf610b1015b4002b5e87ecc57d252a1",
+  "first_result_sha256": "b82a015395795bf30b5d5c6eb94b149552a5a40043fc1e454cbbf97d64a4422b",
+  "repeat_result_sha256": "f8603696bf8ffbec38eb62b11d5d10342cf6704db7929e450f0d55e9c8b04edb",
+  "rows": [
+    {
+      "arm": "three_plus_two",
+      "classification": "COMPLETE",
+      "conflicts": 100001,
+      "elapsed_ns": 7381594375,
+      "order": "topology",
+      "restart_count": 336,
+      "sampled_peak_combined_rss_bytes": 182026240
+    },
+    {
+      "arm": "four_plus_one",
+      "classification": "COMPLETE",
+      "conflicts": 100002,
+      "elapsed_ns": 10423243458,
+      "order": "topology",
+      "restart_count": 336,
+      "sampled_peak_combined_rss_bytes": 215891968
+    },
+    {
+      "arm": "four_plus_one",
+      "classification": "COMPLETE",
+      "conflicts": 100002,
+      "elapsed_ns": 9706344792,
+      "order": "topology_repeat",
+      "restart_count": 336,
+      "sampled_peak_combined_rss_bytes": 168640512
+    },
+    {
+      "arm": "three_plus_two",
+      "classification": "COMPLETE_WITH_TERMINAL_POLL_RACE",
+      "conflicts": 100001,
+      "elapsed_ns": 6448657542,
+      "order": "topology_repeat",
+      "restart_count": 336,
+      "sampled_peak_combined_rss_bytes": 151076864
+    }
+  ],
+  "status": "PASS_TOPOLOGY_TERMINAL_AUDIT"
+}

@@ -21,6 +21,10 @@ and construction gates. [pcc:unverified]
 
 - [x] Repair the second-pass C library findings (rho/gpu_rho dp_bits defeats the runaway guard; kangaroo interval wider than the group; grumpy unbounded on an unsolvable target; dense linear-solve fallback unchecked; GLV batch start-up for n >= 2^39; ca_crt2 zero modulus) and re-sync the shared pcc files to the crypto owner copy (claude, completed 2026-11-18, branch claude/codebase-assessment-report-fp044d, PR #1773; coord.c dp cap left for the owner)
 
+- [ ] Trace the documented and reproducible origins of the NIST/ANSI elliptic-curve base points, including bounded negative generator searches (Codex, started 2026-11-18, branch codex/nist-base-point-origins-20261118, PR #1769) [pcc:unverified]
+
+- [x] Audit rational 2-isogeny ECDLP transfer: subgroup, kernel, image, dual/inverse, exact costs and toy DLP (automation, started 2026-11-18, branch research/examine-2isogeny-obligations-20261118, PR #1775; 64/64 local BSGS logs, independent PCC pending) [pcc:unverified]
+
 - [ ] Coset filter behind the BASELINES n = 41 K_0 row: Koblitz base builder at n >= 41 and the filter wired into that row's pair-table pipeline (Claude Code, started 2026-11-22, branch claude/coset-filter-n41-koblitz) [pcc:unverified]
 
 - [ ] ic bench: coset-filtered MITM pair tables (`mitm` / `mitm-frobenius` `coset_filter=1`), frozen ratchet protocol and bench record; stage improvement from the trunk's graph-theory note (Claude Code, started 2026-11-22, branch claude/mitm-coset-class-filter, PR #1892) [pcc:unverified]
@@ -41,9 +45,17 @@ and construction gates. [pcc:unverified]
 
 - [x] CT188: randomized physical A/B crossover and carryover diagnostics, source-only; protocol PR #1723 merged, implementation draft PR #1725 (automation, started 2026-11-17, branch research/ct188-physical-crossover-20261117) [pcc:unverified]
 
-- [x] Extend certified Xedni lift-success trials to the ten-coefficient `r=7..9` regime with exact rational dependence verification; local frozen panel completed 1,600/1,600 rows with 67 certified relations and 23 recoveries (Codex, started 2026-11-17, branch codex/xedni-breakthrough-20261117, implementation PR #1730 merged, outcome draft PR #1762) [pcc:unverified]
+- [x] Extend certified Xedni lift-success trials to the ten-coefficient `r=7..9` regime with exact rational dependence verification; local frozen panel completed 1,600/1,600 rows with 67 certified relations and 23 recoveries (Codex, started 2026-11-17, branch codex/xedni-breakthrough-20261117, implementation PR #1730 merged, outcome PR #1762 merged) [pcc:unverified]
 
-- [ ] Freeze and run a fresh-seed target-bearing relation-enumeration panel, preserving target-independent lift success and comparing complete recovery work against the frozen baseline (Codex, started 2026-11-18, branch codex/xedni-breakthrough-20261117, outcome draft PR #1762) [pcc:unverified]
+- [x] Derive and implement target-dependent chord-origin recovery, including a zero-explicit-target exact relation, Rust/Python controls, Lean algebra and an editable SVG diagram (Codex, started 2026-11-18, branch codex/xedni-breakthrough-20261117, draft PR #1768) [pcc:unverified]
+
+- [ ] Freeze and run a fresh-seed target-bearing relation-enumeration panel, preserving target-independent lift success and comparing complete recovery work against the frozen baseline (Codex, started 2026-11-18, branch codex/xedni-breakthrough-20261117, draft PR #1768) [pcc:unverified]
+
+- [ ] Derive, formalize and prospectively freeze a target-origin-pencil relation search that expands bounded target-bearing coefficient coverage without claiming new relation information; measure it only after checkpoint transport is restored (Codex, started 2026-11-18, branch codex/xedni-breakthrough-20261117, draft PR #1768) [pcc:unverified]
+
+- [ ] Prospectively implement and freeze a first-representative fixed-coordinate dedup arm for the target-origin pencil, requiring semantic parity and full work accounting before any optimization claim (Codex, started 2026-11-18, branch codex/xedni-breakthrough-20261117, draft PR #1768) [pcc:unverified]
+
+- [ ] Actively attempt to disprove the Xedni rank-decay heuristic over 16--32-bit primes with independent lift, r, and exact Silverman/JKSST local-condition factors; preserve the frozen signed-slope/useful-recovery criterion, close production gates, and run the first admissible rows without downscaling (Codex, started 2026-11-18, resumed 2026-11-19, branch codex/xedni-breakthrough-20261117, PR #1768) [pcc:unverified]
 
 - [x] CT187: bounded admitted-source native 1,536-call same-route sham producer, strict evidence reader and synthetic handshake; no paid execution (automation, started 2026-11-17, branch research/ct187-native-sham-source-admission-20261117, PR #1719)
 
@@ -63,5 +75,8 @@ and construction gates. [pcc:unverified]
 - [ ] Gröbner reference table: `f4_fp` vs msolve on PKM tower + direct Semaev systems (workspace goal GB-1/GB-2) (Claude Code, started 2026-11-21, branch claude/gb-reference-20261121, PR #1882)
 
 ## Blocked / questions for the owner
+
+- The fresh Xedni selector panel is frozen but cannot generate its first row: checkpoint upload has no token/profile, and the documented ambient AWS fallback returns `AllAccessDisabled`. Resume requires valid scoped checkpoint transport; the earlier local waiver explicitly excludes modified panels. [pcc:unverified]
+- The rank-decay panel additionally needs licensed pinned Magma, a trusted execution-verifier/keyring, an integrated authorizing freeze, a natural `r=7..9` constructor/global map certificate, a trusted full saturated-basis route, fresh replication primes, and committed powered compute. The current runner diagnostic is intentionally `BLOCKED_NON_PRODUCTION` with zero rows. [pcc:unverified]
 
 - Controlled representation comparison PR #1767: real S3 checkpoint upload/gate failed with AllAccessDisabled; explicit CPU/Git exception question is pending. Source/protocol preparation is not a measured panel. [pcc:unverified]

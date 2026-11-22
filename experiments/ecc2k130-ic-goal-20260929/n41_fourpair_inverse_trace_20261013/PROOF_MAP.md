@@ -1,0 +1,5 @@
+# Proof and verification map
+
+This experiment changes a Boolean encoding of an established exact source predicate. It introduces no new mathematical theorem. The [N131 inverse-trace source proof map](../n131_common_frob_inverse_trace_retry1_20261012/PROOF_MAP.md) records a Lean theorem for witness preservation **conditional on** source-predicate equivalence; it does not formalize the concrete field bridge. For this N41 source, the predicate `w·v=1 ∧ Tr(v)=0` is checked against all 255 nonzero masks by independent binary-field enumeration in `build.py` and by the prior checked-Sage `n41_control_result.json` cited in `RESULT.md`.
+
+The four-pair reciprocal S3 equations, distinct folded-column condition, and complete known-relation chart are inherited from the [four-pair proof map](../n131_w18_allseed_fourpair_20261012/PROOF_MAP.md). `build.py` evaluates all clauses and XOR rows on that chart. `verify.py` checks the frozen artifact hashes and terminal classification. Neither check substitutes for a solver model; any returned model would require independent signed group and quotient-row replay.

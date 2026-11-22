@@ -836,8 +836,8 @@ static void *rho_thread_main(void *arg)
     ca_rng_seed(&rng, sh->seed ^ (0x9E3779B97F4A7C15ULL * (th->id + 1)));
     uint64_t ops = 0;
     {
-        uint64_t *wa = malloc((size_t)W * sizeof(uint64_t));
-        uint64_t *wb = malloc((size_t)W * sizeof(uint64_t));
+        uint64_t *wa = calloc((size_t)W, sizeof(uint64_t));
+        uint64_t *wb = calloc((size_t)W, sizeof(uint64_t));
         if (wa && wb) {
             for (uint32_t w = 0; w < W; w++) {
                 wa[w] = ca_rng_below(&rng, sh->n);

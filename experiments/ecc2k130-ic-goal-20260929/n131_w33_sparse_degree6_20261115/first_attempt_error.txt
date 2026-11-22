@@ -1,0 +1,10 @@
+Command: python3 experiments/ecc2k130-ic-goal-20260929/n131_w33_sparse_degree6_20261115/run.py
+Exit code: 1
+Stage: parent import, before any child launch or target-dependent computation
+Traceback:
+  File "run.py", line 10, in <module>
+    import psutil
+ModuleNotFoundError: No module named 'psutil'
+
+The frozen runner source and protocol were retained. The same source is executed
+through the checked repository Sage launcher, whose Python includes psutil.

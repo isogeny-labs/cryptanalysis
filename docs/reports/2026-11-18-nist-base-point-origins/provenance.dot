@@ -1,0 +1,22 @@
+digraph provenance {
+  graph [rankdir=LR, bgcolor="white", pad="0.2", nodesep="0.35", ranksep="0.6"];
+  node [shape=box, style="rounded,filled", fontname="DejaVu Sans", fontsize=10, color="#334155", fillcolor="#f8fafc"];
+  edge [fontname="DejaVu Sans", fontsize=9, color="#475569"];
+
+  fips [label="FIPS 186-2\ncoordinates + order\n‘sample base point’", fillcolor="#e0f2fe"];
+  freelip [label="FreeLIP zrandom\nsmall seed; discard 7\nlow 26-bit limbs", fillcolor="#dcfce7"];
+  old [label="Six 1997 prime curves\nP-192 + five X9.62 examples\nGx exactly recovered", fillcolor="#dcfce7"];
+  later [label="P-224 / 256 / 384 / 521\nsource unknown", fillcolor="#fef3c7"];
+  binary [label="B-163…B-571\nsource unknown\n(two coordinate bases)", fillcolor="#fef3c7"];
+  koblitz [label="K-163…K-571\nno curve seed\nbase-point source unknown", fillcolor="#fef3c7"];
+  curve_seed [label="Curve seed / lrand48\nexplains curve coefficient\nnot G", fillcolor="#fee2e2"];
+
+  freelip -> old [label="exact seed + attempt + Gx"];
+  fips -> old [label="publishes G"];
+  fips -> later [label="publishes G only"];
+  fips -> binary [label="publishes G only"];
+  fips -> koblitz [label="publishes G only"];
+  curve_seed -> later [style=dashed, label="no derivation established"];
+  curve_seed -> binary [style=dashed, label="seed generates b, not G"];
+  curve_seed -> koblitz [style=dotted, label="not applicable"];
+}
