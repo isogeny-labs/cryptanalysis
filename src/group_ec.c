@@ -251,6 +251,8 @@ typedef struct ec_jac {
     int inf;
 } ec_jac;
 
+static void ec_jac_to_affine(const ca_group *g, ca_elem *r, const ec_jac *acc);
+
 /* 2P (dbl-2007-bl, general a). */
 static void ec_jac_dbl(const ca_group *g, ec_jac *r)
 {
@@ -317,24 +319,69 @@ static void ec_jac_add_affine(const ca_group *g, ec_jac *r, uint64_t x2, uint64_
 int ca_ec_group_mul(const ca_group *g, ca_elem *r, const ca_elem *a, uint64_t k)
 {
     if (g->vt != &ec_vt) return 0; /* a caller's own vtable: use it */
-    const uint64_t ax = FX(a), ay = FY(a);
-    const int ainf = FINF(a) != 0;
-    ec_jac acc = {0, 0, 0, 1};
-    if (!ainf) {
-        for (int bit = 63 - (k ? __builtin_clzll(k) : 63); k && bit >= 0; bit--) {
-            ec_jac_dbl(g, &acc);
-            if ((k >> bit) & 1) ec_jac_add_affine(g, &acc, ax, ay);
-        }
-    }
-    if (acc.inf) {
+    if (FINF(a) || k == 0) {
         ec_identity(g, r);
         return 1;
     }
-    uint64_t zi = ec_field_inv(g, acc.z), zi2 = ec_field_sqr(g, zi);
-    FX(r) = ec_field_mul(g, acc.x, zi2);
-    FY(r) = ec_field_mul(g, acc.y, ec_field_mul(g, zi2, zi));
-    FINF(r) = 0;
-    r->w[3] = 0;
+    /* Sliding-window width 4: odd affine table {P,3P,...,15P}.  Build the
+     * table in Jacobian (madd from 2P), then one Montgomery-trick inversion
+     * yields all eight affine rows — same point as binary L→R. */
+    enum { WIN = 4, NODD = 1 << (WIN - 1) };
+    ca_elem two, odd[NODD];
+    ec_dbl(g, &two, a); /* affine 2P, one inversion */
+    ec_jac J[NODD];
+    J[0].x = FX(a);
+    J[0].y = FY(a);
+    J[0].z = g->mont.r1;
+    J[0].inf = 0;
+    for (int t = 1; t < NODD; t++) {
+        J[t] = J[t - 1];
+        ec_jac_add_affine(g, &J[t], FX(&two), FY(&two)); /* (2t+1)P */
+    }
+    /* Batch-invert the Z's (Montgomery's trick); J[0].z = R already. */
+    uint64_t prod[NODD], invz[NODD];
+    prod[0] = J[0].z;
+    for (int t = 1; t < NODD; t++)
+        prod[t] = J[t].inf ? prod[t - 1] : ec_field_mul(g, prod[t - 1], J[t].z);
+    uint64_t acc_inv = ec_field_inv(g, prod[NODD - 1]);
+    for (int t = NODD - 1; t > 0; t--) {
+        if (J[t].inf) {
+            invz[t] = 0;
+            continue;
+        }
+        invz[t] = ec_field_mul(g, acc_inv, prod[t - 1]);
+        acc_inv = ec_field_mul(g, acc_inv, J[t].z);
+    }
+    invz[0] = acc_inv;
+    for (int t = 0; t < NODD; t++) {
+        if (J[t].inf) {
+            ec_identity(g, &odd[t]);
+            continue;
+        }
+        uint64_t zi = invz[t], zi2 = ec_field_sqr(g, zi);
+        FX(&odd[t]) = ec_field_mul(g, J[t].x, zi2);
+        FY(&odd[t]) = ec_field_mul(g, J[t].y, ec_field_mul(g, zi2, zi));
+        FINF(&odd[t]) = 0;
+        odd[t].w[3] = 0;
+    }
+
+    ec_jac acc = {0, 0, 0, 1};
+    int i = 63 - __builtin_clzll(k);
+    while (i >= 0) {
+        if (((k >> i) & 1) == 0) {
+            ec_jac_dbl(g, &acc);
+            i--;
+            continue;
+        }
+        int s = i + 1 < WIN ? i + 1 : WIN;
+        while (s > 1 && ((k >> (i - s + 1)) & 1) == 0) s--;
+        uint64_t u = (k >> (i - s + 1)) & (((uint64_t)1 << s) - 1);
+        for (int t = 0; t < s; t++) ec_jac_dbl(g, &acc);
+        const ca_elem *T = &odd[(u - 1) >> 1];
+        ec_jac_add_affine(g, &acc, FX(T), FY(T));
+        i -= s;
+    }
+    ec_jac_to_affine(g, r, &acc);
     return 1;
 }
 
