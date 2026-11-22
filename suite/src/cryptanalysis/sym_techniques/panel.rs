@@ -40,7 +40,7 @@ use crate::cryptanalysis::sym_techniques::arx::diff_linear::{
 };
 use crate::cryptanalysis::sym_techniques::arx::pnb::{best_significant, PnbTarget};
 use crate::cryptanalysis::sym_techniques::arx::rotational::{
-    empirical_rx, rotational_chain, rx_chain,
+    empirical_rx, rotational_applicable, rotational_chain, rx_chain,
 };
 use crate::cryptanalysis::sym_techniques::hash::local_collision::Sha2Params;
 use crate::cryptanalysis::sym_techniques::hash::md_adaptor::IrMdHash;
@@ -205,6 +205,16 @@ fn guarded(id: TechniqueId, p: &Primitive, f: impl FnOnce() -> TechniqueResult) 
             )
         }
     }
+}
+
+/// Add a `budget_note` string to the outcome object of `r`: where the panel
+/// number is below the package's own reproduction because of the panel
+/// budget, the row says so and points at the test that reaches more.
+fn with_budget_note(mut r: TechniqueResult, note: &str) -> TechniqueResult {
+    if let Some(o) = r.outcome.as_object_mut() {
+        o.insert("budget_note".into(), json!(note));
+    }
+    r
 }
 
 fn status_of(o: &Value) -> &str {
@@ -495,7 +505,7 @@ impl Technique for DivisionPropertyTechnique {
                         })
                     });
                     let status = if best.is_some() { "ok" } else { "not_found" };
-                    result(
+                    let r = result(
                         id,
                         p,
                         Cost::default(),
@@ -506,7 +516,16 @@ impl Technique for DivisionPropertyTechnique {
                             "bit_candidates_tried": s.bit_candidates_tried,
                         }),
                         s.budget_exhausted,
-                    )
+                    );
+                    if p.name.to_ascii_lowercase().starts_with("present") {
+                        with_budget_note(
+                            r,
+                            "panel budget 1000 conflicts/query; package reaches 9 rounds \
+                             with larger budget \u{2014} see integral tests",
+                        )
+                    } else {
+                        r
+                    }
                 }
             }
         })
@@ -621,28 +640,40 @@ impl Technique for DeltaSetTechnique {
             let (front, inner) = delta_set_window(p);
             match mitm::delta_set_cost_table(p, front, inner, 0, 0) {
                 Err(e) => unsupported(id, p, e.to_string()),
-                Ok(t) => result(
-                    id,
-                    p,
-                    Cost::default(),
-                    json!({
-                        "status": "ok",
-                        "front_rounds": t.front_rounds,
-                        "inner_rounds": t.inner_rounds,
-                        "back_rounds": t.back_rounds,
-                        "params_ordered": t.params_ordered,
-                        "params_multiset": t.params_multiset,
-                        "data_log2": t.data_log2,
-                        "table_ordered_log2": t.table_ordered_log2,
-                        "table_multiset_log2": t.table_multiset_log2,
-                        "guesses_log2": t.guesses_log2,
-                        "online_time_log2": t.online_time_log2,
-                        "time_ordered_log2": t.time_ordered_log2,
-                        "memory_ordered_log2": t.memory_ordered_log2,
-                        "model_only": true,
-                    }),
-                    false,
-                ),
+                Ok(t) => {
+                    let inner = t.inner_rounds;
+                    let r = result(
+                        id,
+                        p,
+                        Cost::default(),
+                        json!({
+                            "status": "ok",
+                            "front_rounds": t.front_rounds,
+                            "inner_rounds": t.inner_rounds,
+                            "back_rounds": t.back_rounds,
+                            "params_ordered": t.params_ordered,
+                            "params_multiset": t.params_multiset,
+                            "data_log2": t.data_log2,
+                            "table_ordered_log2": t.table_ordered_log2,
+                            "table_multiset_log2": t.table_multiset_log2,
+                            "guesses_log2": t.guesses_log2,
+                            "online_time_log2": t.online_time_log2,
+                            "time_ordered_log2": t.time_ordered_log2,
+                            "memory_ordered_log2": t.memory_ordered_log2,
+                            "model_only": true,
+                        }),
+                        false,
+                    );
+                    if p.name.to_ascii_lowercase().starts_with("aes") && inner == 4 {
+                        with_budget_note(
+                            r,
+                            "4-round window at panel defaults; 7-round counts 25/24 in \
+                             mitm tests",
+                        )
+                    } else {
+                        r
+                    }
+                }
             }
         })
     }
@@ -848,7 +879,7 @@ impl Technique for ArxPnbTechnique {
                     "beats_brute_force": r.complexity.beats_brute_force,
                 })
             });
-            result(
+            let r = result(
                 id,
                 p,
                 Cost {
@@ -869,7 +900,15 @@ impl Technique for ArxPnbTechnique {
                     "estimate_only": true,
                 }),
                 false,
-            )
+            );
+            if w == 32 && big_r == 6 {
+                with_budget_note(
+                    r,
+                    "small sample sizes; package estimate 2^135.7, published 2^139",
+                )
+            } else {
+                r
+            }
         })
     }
 }
@@ -891,6 +930,9 @@ impl Technique for ArxRotationalTechnique {
     fn run(&self, p: &Primitive, budget: &Budget) -> TechniqueResult {
         let id = self.id();
         guarded(id, p, || {
+            if let Err(reason) = rotational_applicable(p) {
+                return unsupported(id, p, reason);
+            }
             let w = p.block_codec.word_bits;
             let rounds = p.num_rounds();
             let mut best: Option<(usize, f64)> = None;
@@ -985,19 +1027,57 @@ impl Technique for ArxRxTechnique {
                 return unsupported(id, p, "no input difference tried");
             };
             let samples = 1u64 << 14;
-            let measured = (!stopped && l.is_finite()).then(|| {
-                empirical_rx(
+            // Measurable only when the expected number of hits is at least
+            // 2^RX_MIN_HIT_BITS: estimate >= -log2(samples) + that margin.
+            let floor = RX_MIN_HIT_BITS - (samples as f64).log2();
+            if stopped {
+                return exhausted(
+                    id,
                     p,
-                    rounds,
-                    1,
-                    &bit_vector(nb, &[bit]),
-                    &zero_key,
-                    &out,
-                    samples,
-                    0x77,
-                )
-            });
-            let evals = measured.map_or(0, |_| 2 * samples);
+                    "wall clock expired before every difference was tried",
+                );
+            }
+            if !l.is_finite() || l < floor {
+                let est = if l.is_finite() {
+                    format!("2^{l:.0}")
+                } else {
+                    "0".to_string()
+                };
+                return result(
+                    id,
+                    p,
+                    Cost::default(),
+                    json!({
+                        "status": "not_found",
+                        "reason": format!(
+                            "estimate {est} below measurable range at N={samples} samples \
+                             (measurable from 2^{floor:.0})"
+                        ),
+                        "rounds": rounds,
+                        "gamma": 1,
+                        "best_in_bit": bit,
+                        "log2_prob_estimate": if l.is_finite() { json!(l) } else { Value::Null },
+                        "measurable_floor_log2": floor,
+                        "samples": samples,
+                        "differences_tried": positions.len(),
+                        "estimate_only": true,
+                    }),
+                    false,
+                );
+            }
+            let m = empirical_rx(
+                p,
+                rounds,
+                1,
+                &bit_vector(nb, &[bit]),
+                &zero_key,
+                &out,
+                samples,
+                0x77,
+            );
+            let (pe, n) = (l.exp2(), m.samples as f64);
+            let z_vs_estimate = (m.ones as f64 - n * pe) / (n * pe * (1.0 - pe)).sqrt();
+            let evals = 2 * samples;
             result(
                 id,
                 p,
@@ -1011,17 +1091,24 @@ impl Technique for ArxRxTechnique {
                     "rounds": rounds,
                     "gamma": 1,
                     "best_in_bit": bit,
-                    "log2_prob_estimate": if l.is_finite() { json!(l) } else { Value::Null },
-                    "measured_p": measured.map(|m| m.p1),
-                    "measured_samples": measured.map(|m| m.samples),
+                    "log2_prob_estimate": l,
+                    "measured_p": m.p1,
+                    "measured_hits": m.ones,
+                    "measured_samples": m.samples,
+                    "z_vs_estimate": z_vs_estimate,
+                    "measurable_floor_log2": floor,
                     "differences_tried": positions.len(),
                     "estimate_only": true,
                 }),
-                stopped,
+                false,
             )
         })
     }
 }
+
+/// Bits of margin above one expected hit that an RX estimate needs before
+/// the panel measures it (expected hits at least `2^RX_MIN_HIT_BITS`).
+const RX_MIN_HIT_BITS: f64 = 4.0;
 
 // ── Hash ────────────────────────────────────────────────────────────────
 

@@ -532,7 +532,7 @@ mod tests {
     /// through the word engine, so the expectation of exactly 3 sections
     /// became "the 3 pre-existing sections plus the trail search run".)
     #[test]
-    fn auto_attack_aes_skips_trail_search() {
+    fn auto_attack_aes_runs_trail_search_via_word_engine() {
         let opts = AutoAttackOptions {
             boomerang_pairs: 32,
             rectangle_pool: 32,

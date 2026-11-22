@@ -183,11 +183,16 @@ pub fn ir_facts(p: &Primitive) -> IrFacts {
 ///   of `min(4, rounds)` rounds, see [`panel::delta_set_window`]).
 /// * Boomerang: invertible primitive; rectangle: any keyed or unkeyed block
 ///   function with a non-empty block.
-/// * ARX diff-linear, rotational, RX: ARX layers. PNB: the primitive
+/// * ARX diff-linear: ARX layers. Rotational: the walk models the structure
+///   (no `Shr`/`And`, only ARX and AddRoundKey layers, ARX key schedule;
+///   [`arx::rotational::rotational_structure_gap`]) and some rotation amount
+///   keeps every constant invariant. RX: the same structure condition.
+///   PNB: the primitive
 ///   computes the reduced-width ChaCha permutation of its round count
 ///   ([`panel::chacha_word_bits`]).
-/// * Hash local collision: the primitive computes the first `n` steps of
-///   SHA-256 or SHA-512 ([`panel::sha2_family`]); generic Merkle-Damgard
+/// * Hash local collision: the primitive computes the first `n >= 9` steps
+///   of SHA-256 or SHA-512 ([`panel::sha2_family`]; a local collision spans
+///   at least nine steps); generic Merkle-Damgard
 ///   attacks: SHA-256, SHA-512 or MD5 steps.
 pub fn applicable_techniques(p: &Primitive) -> Vec<TechniqueId> {
     use panel::Sha2Family;
@@ -223,14 +228,23 @@ pub fn applicable_techniques(p: &Primitive) -> Vec<TechniqueId> {
         out.push(Rectangle);
     }
     if f.has_arx {
-        out.extend([ArxDiffLinear, ArxRotational, ArxRx]);
+        out.push(ArxDiffLinear);
+        if arx::rotational::rotational_applicable(p).is_ok() {
+            out.push(ArxRotational);
+        }
+        if arx::rotational::rotational_structure_gap(p).is_none() {
+            out.push(ArxRx);
+        }
     }
     if panel::chacha_word_bits(p).is_some() {
         out.push(ArxPnb);
     }
     match panel::sha2_family(p) {
         Some(Sha2Family::Sha256 | Sha2Family::Sha512) => {
-            out.extend([HashLocalCollision, HashMdGeneric])
+            if p.num_rounds() >= panel::LOCAL_COLLISION_MIN_STEPS {
+                out.push(HashLocalCollision);
+            }
+            out.push(HashMdGeneric)
         }
         Some(Sha2Family::Md5) => out.push(HashMdGeneric),
         None => {}
@@ -396,12 +410,19 @@ mod tests {
         let present = applicable_techniques(&present80::present80());
         assert!(!present.contains(&DeltaSetMitm) && present.contains(&DifferentialTrails));
         let sp = applicable_techniques(&speck::speck64_128());
-        assert!(sp.contains(&ArxRotational) && sp.contains(&Boomerang));
+        // Speck's round counters are rotation-variant constants for every
+        // rotation amount, so the pure rotational estimate is zero: only RX.
+        assert!(!sp.contains(&ArxRotational) && sp.contains(&ArxRx));
+        assert!(sp.contains(&Boomerang));
         assert!(!sp.contains(&SboxAnalysis));
         let cc = applicable_techniques(&chacha::chacha8());
         assert!(cc.contains(&ArxPnb) && !cc.contains(&Boomerang));
         let sha = applicable_techniques(&sha256_compress::steps(8));
-        assert!(sha.contains(&HashLocalCollision) && !sha.contains(&Boomerang));
+        assert!(!sha.contains(&HashLocalCollision) && !sha.contains(&Boomerang));
+        assert!(sha.contains(&HashMdGeneric));
+        assert!(!sha.contains(&ArxRotational) && !sha.contains(&ArxRx));
+        let sha9 = applicable_techniques(&sha256_compress::steps(9));
+        assert!(sha9.contains(&HashLocalCollision));
     }
 
     #[test]

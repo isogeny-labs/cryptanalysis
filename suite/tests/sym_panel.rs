@@ -41,6 +41,11 @@ fn panel(name: &str) -> Vec<Value> {
         if should {
             let st = row["result"]["outcome"]["status"].as_str();
             assert_ne!(st, Some("error"), "{name}: {t} panicked: {row}");
+            assert_ne!(
+                st,
+                Some("unsupported"),
+                "{name}: applicable row {t} is unsupported: {row}"
+            );
             assert!(row["result"]["cost"].is_object(), "{name}: {t} has no cost");
         }
     }
@@ -86,7 +91,9 @@ fn aes_4r_panel() {
     }
     let d = outcome(&rows, "division_property");
     assert_eq!(d["best"]["rounds"], 3, "AES 3-round integral distinguisher");
-    assert_eq!(outcome(&rows, "delta_set_mitm")["status"], "ok");
+    let ds = outcome(&rows, "delta_set_mitm");
+    assert_eq!(ds["status"], "ok");
+    assert!(ds["budget_note"].as_str().unwrap().contains("25/24"));
     assert_eq!(row(&rows, "arx_pnb")["applicable"], false);
 }
 
@@ -108,7 +115,9 @@ fn present80_5r_panel() {
         m["status"] == "ok" || m["status"] == "budget_exhausted",
         "{m}"
     );
-    assert_eq!(outcome(&rows, "division_property")["best"]["rounds"], 5);
+    let dp = outcome(&rows, "division_property");
+    assert_eq!(dp["best"]["rounds"], 5);
+    assert!(dp["budget_note"].as_str().unwrap().contains("9 rounds"));
     assert_eq!(row(&rows, "delta_set_mitm")["applicable"], false);
 }
 
@@ -119,8 +128,21 @@ fn speck64_128_8r_panel() {
     assert_eq!(row(&rows, "boomerang")["applicable"], true);
     let dl = outcome(&rows, "arx_diff_linear");
     assert!(!dl["per_round"].as_array().unwrap().is_empty());
-    assert_eq!(outcome(&rows, "arx_rotational")["status"], "ok");
-    assert_eq!(outcome(&rows, "arx_rx")["status"], "ok");
+    // Speck's round counters are rotation-variant constants: the pure
+    // rotational estimate is zero, so the row is not applicable (run
+    // directly it reports `unsupported` with that reason).
+    assert_eq!(row(&rows, "arx_rotational")["applicable"], false);
+    // The RX estimate (about 2^-128) is below what 2^14 samples can measure.
+    let rx = outcome(&rows, "arx_rx");
+    assert_eq!(rx["status"], "not_found");
+    assert!(
+        rx["reason"]
+            .as_str()
+            .unwrap()
+            .contains("below measurable range"),
+        "{rx}"
+    );
+    assert!(rx.get("measured_p").is_none(), "{rx}");
     assert_eq!(row(&rows, "arx_pnb")["applicable"], false);
     assert_eq!(row(&rows, "hash_local_collision")["applicable"], false);
 }
@@ -146,6 +168,16 @@ fn chacha_w32_6r_panel() {
     assert!(best["m"].as_u64().unwrap() > 0);
     assert_eq!(best["key_bits"], 256);
     assert_eq!(outcome(&rows, "arx_rotational")["status"], "ok");
+    let rx = outcome(&rows, "arx_rx");
+    assert_eq!(rx["status"], "not_found");
+    assert!(
+        rx["reason"]
+            .as_str()
+            .unwrap()
+            .contains("below measurable range"),
+        "{rx}"
+    );
+    assert!(pnb["budget_note"].as_str().unwrap().contains("2^135.7"));
 }
 
 #[test]
@@ -163,6 +195,9 @@ fn sha256_20steps_panel() {
     assert_eq!(md["birthday_24bit_verified"], true);
     assert_eq!(row(&rows, "boomerang")["applicable"], false);
     assert_eq!(row(&rows, "sbox_analysis")["applicable"], false);
+    // Shr and And in the SHA-256 step do not commute with rotation.
+    assert_eq!(row(&rows, "arx_rotational")["applicable"], false);
+    assert_eq!(row(&rows, "arx_rx")["applicable"], false);
 }
 
 #[test]

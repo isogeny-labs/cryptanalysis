@@ -609,6 +609,86 @@ pub fn rx_chain(
     walk(p, rounds, gamma, Mode::Rx, in_delta, key_delta)
 }
 
+/// Structural reason the rotational / RX walk cannot model `p`, if any:
+/// an operation that does not commute with rotation (`Shr`, `And`), a layer
+/// other than ARX and AddRoundKey on the data path, a linear key schedule,
+/// or a non-ARX key-schedule step. This is the condition under which
+/// [`rotational_chain`] and [`rx_chain`] clear [`RotChain::supported`],
+/// stated on the IR so applicability can use it without running a walk.
+pub fn rotational_structure_gap(p: &Primitive) -> Option<String> {
+    fn ops_gap(ops: &[ArxOp]) -> Option<&'static str> {
+        ops.iter().find_map(|op| match op {
+            ArxOp::Shr { .. } => Some("Shr (logical shift) does not commute with rotation"),
+            ArxOp::And { .. } => Some("And (Ch/Maj-style choice) does not commute with rotation"),
+            _ => None,
+        })
+    }
+    let rounds = p.num_rounds();
+    let mut w = 0;
+    for r in &p.rounds[..rounds] {
+        for l in &r.layers {
+            match l {
+                Layer::Arx { word_bits, ops } => {
+                    if let Some(g) = ops_gap(ops) {
+                        return Some(g.into());
+                    }
+                    if w != 0 && w != *word_bits {
+                        return Some("ARX layers of different word widths".into());
+                    }
+                    w = *word_bits;
+                }
+                Layer::AddRoundKey { .. } => {}
+                other => {
+                    let name: String = format!("{other:?}").chars().take(24).collect();
+                    return Some(format!("non-ARX layer on the data path ({name})"));
+                }
+            }
+        }
+    }
+    if w == 0 {
+        return Some("no ARX layer in the first rounds".into());
+    }
+    match &p.key_schedule {
+        KeySchedule::Linear { .. } => Some("linear key schedule is not modelled".into()),
+        KeySchedule::Nonlinear { steps, .. } => steps.iter().flatten().find_map(|l| match l {
+            Layer::Arx { ops, .. } => ops_gap(ops).map(String::from),
+            _ => Some("non-ARX key-schedule layer".into()),
+        }),
+        _ => None,
+    }
+}
+
+/// Whether the pure rotational estimate of `p` is meaningful: the walk
+/// models the structure ([`rotational_structure_gap`]) and some rotation
+/// amount `gamma = 1..w-1` leaves every constant rotation-invariant (a
+/// rotation-variant constant makes the estimate zero, `log2 = -inf`). `Err`
+/// carries the reason.
+pub fn rotational_applicable(p: &Primitive) -> Result<(), String> {
+    if let Some(g) = rotational_structure_gap(p) {
+        return Err(g);
+    }
+    let rounds = p.num_rounds();
+    let w = p
+        .rounds
+        .iter()
+        .take(rounds)
+        .flat_map(|r| r.layers.iter())
+        .find_map(|l| match l {
+            Layer::Arx { word_bits, .. } => Some(*word_bits),
+            _ => None,
+        })
+        .unwrap_or(0);
+    if (1..w).any(|g| rotational_chain(p, rounds, g).log2_prob.is_finite()) {
+        Ok(())
+    } else {
+        Err(
+            "rotation-variant constant: no rotation amount keeps every constant invariant, \
+             so the pure rotational probability is zero"
+                .into(),
+        )
+    }
+}
+
 /// Empirical probability that `rounds` rounds of `p` map a rotational-XOR
 /// pair to one: for random `K, B`, with `K' = rot_γ(K) ⊕ ΔK` (key-codec
 /// words), `B' = rot_γ(B) ⊕ Δ` (block words), check
