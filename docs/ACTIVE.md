@@ -131,6 +131,7 @@ and construction gates. [pcc:unverified]
 - [ ] <task> (<runtime>, started YYYY-MM-DD, branch <branch>, PR #<n>) -->
 - [ ] Speed up prime-field index-calculus relation finding and solving in `ic bench`: batched x-only pair-table preparation and m=3 probes with complete native accounting, faster prime arithmetic, gated by the lead-testing protocol (Claude Code, started 2026-11-21, branch claude/ic-prime-batched-relations-20261121, PR #1891) [pcc:unverified]
 - [ ] Gröbner reference table: `f4_fp` vs msolve on PKM tower + direct Semaev systems (workspace goal GB-1/GB-2) (Claude Code, started 2026-11-21, branch claude/gb-reference-20261121, PR #1882)
+- [ ] Licence files and SECURITY.md (disclosure, acceptable use, dual-use) per business action plan F3/F4/F5 (Claude Code, started 2026-11-22, branch claude/licence-security-policy-20261122)
 
 ## Blocked / questions for the owner
 
