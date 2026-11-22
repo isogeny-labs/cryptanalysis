@@ -1,0 +1,26 @@
+{
+  "baseline": "top seven training translations conditional on shared block seed",
+  "candidate_id": null,
+  "curve_id": "EC1N41Ckb1h023d9a38bbf7",
+  "feature_arms": [
+    "public_xy",
+    "after_one_free_pair_xy",
+    "after_two_free_pairs_xy"
+  ],
+  "input_law": "offset-zero subset of archived 100000 generated 12-column sums, first 80000 train and last 20000 holdout before filtering",
+  "label": "canonical full-width translation min(u,u XOR seed) for each corresponding pair slot",
+  "model": "global per-translation Bernoulli bit likelihood with Laplace-one smoothing and conditional seed prior, top seven",
+  "one_worker": true,
+  "proposal_id": "Q20261011213500",
+  "rss_cap_bytes": 1073741824,
+  "sha256": {
+    "generator_protocol": "88e42c0d3cd2ecc28b4eb0d035439016be2f4a331c74ce82c646ab9f4c32b4ab",
+    "residual_protocol": "557bf927b393059b53938626b9ec192639a476f942396e11e21a3548ff1e7105",
+    "residuals": "8bfdfebf8308de58b05f0265ac9a45061fde8fc397f9385dc9d342ba082f2c96",
+    "rows": "c8b4fc85700a82135cdf6b04d47510e124c2389c48f3dac1294cb5c663a07eb5",
+    "source": "3bba0672698c97bad19f58307f314bc83b78ea1be87b138ed2845250f33aa542",
+    "source_input": "2db09af37e8bd3b4cb1068c79218132b828920fb2ec8c87311db7dbae12f5496"
+  },
+  "status": "FROZEN_BEFORE_RUN",
+  "wall_cap_seconds": 120
+}

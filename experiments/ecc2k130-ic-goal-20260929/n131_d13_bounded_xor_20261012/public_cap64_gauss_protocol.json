@@ -1,0 +1,60 @@
+{
+  "batch": false,
+  "candidate_id": null,
+  "curve_id": "EC1N131Ckb1heb5f1998f20b",
+  "factor_base": {
+    "actual_usable_points_before_folding": 1083108,
+    "folded_columns": 4134,
+    "nominal_phi_dimension": 13
+  },
+  "kind": "n131_d13_m12_bounded_xor_large_matrix_preflight_protocol",
+  "point_decomposition": {
+    "solver": "cryptominisat5",
+    "summands": 12,
+    "xor_projection": "CNF-private pivot elimination, skipping a pivot if any new row would exceed 64 variables; exact reverse lift"
+  },
+  "proposal_id": "Q20261012163800",
+  "resource_limit_bytes": 4294967296,
+  "run_id": null,
+  "run_policy": {
+    "acceptance": "A SAT model must pass the projected XCNF, reverse lift, frozen original XCNF, exact leaf and folded-row decoding, and independent installed-Sage point-sum, subgroup, and factor-base replay.",
+    "max_models": 1,
+    "predecessor_policy": "After the cap-64 540-second censored stage, test whether admitting its observed 38213 x 80536 XOR component fits 4 GiB and changes Gaussian usefulness; this 120-second preflight has no speedup claim.",
+    "preserve_failures_and_raw_solver_output": true,
+    "solver_flags": [
+      "--threads=1",
+      "--verb=1",
+      "--verbstat=2",
+      "--printsol=1",
+      "--restartprint=10000000",
+      "--random=2026100613",
+      "--maxtime=118.000",
+      "--maxmatrixrows=40000",
+      "--maxmatrixcols=85000",
+      "--maxnummatrices=10",
+      "--maxconfl=1000000000000"
+    ],
+    "worker_count": 1
+  },
+  "source_sha256": {
+    "auditor": "b6b5cd7bd91bcee8764ed3dd3cd03f91f8a6bf55e338565e92ea1db89ed84dcc",
+    "control_audit": "6b8021487f2bfaa43b83f6be4704d0a30fcc06f7424c892fe62d4c8ce0008a55",
+    "curve_parameters": "f41972681d260ef4eeb2fea7441f31859f4a121fdd5f2ecc4ff3dee54082aeae",
+    "frozen_original_formula": "91ed7b49e8a8e8637f79c94cdb568ece415f32359d82425d4369fd829481622e",
+    "geometry": "77fb9a0f5979ad01d04f49e3bbce0b5bde5204d59d6b34926cc30e35ccc52827",
+    "predecessor_terminal_audit": "ff8e98c16fadfa317f3bf24ba4380a95feea167a9dc4cfcbfe97fbbc17c037be",
+    "projected_formula": "8d8697698876867e58190b433678def88d21a0b196b687710fdc7d660899e2d3",
+    "projection_result": "9d657c6228002fb4760640d8a932202f2c7fed438d507940a8082ea8b681576e",
+    "runner": "8802fb714bac05bdd5b0a64e0ba282a095bc8179bcba126a65752f54f428b2bd",
+    "runtime": "073ca37250b100a7f961de3475da8a4d489f3f2140c15f4c72457816893f3f01",
+    "solver": "a3f85c3709b5e2a040bf82a4a604d1c7b9f10219bbf180a9e0f72319a2e892ac",
+    "structure_audit": "e9f38d7463dc03460bd595048643dec8c972b074ee6f6243ffcae5bee2704f28",
+    "transform": "849df0f72d3f1bc3ce1eb5a910989b127d4b7e860135f81820336bde801a0549",
+    "workload": "e9acc7f5709828b3a1eb350d0eb8baa68cd68c018f92cf29093798a140f6a0d0"
+  },
+  "stage_solver_limit_seconds": 120,
+  "status": "FROZEN_PROPOSAL",
+  "target_count": 1,
+  "timing_boundary": "Exploratory 120-second solver-stage memory and matrix-admission preflight on the same frozen ordinary target; formula generation and projection remain separate target-dependent costs.",
+  "workload_id": "3c1992b7c92f"
+}
