@@ -35,7 +35,7 @@ and construction gates. [pcc:unverified]
 - [ ] CT201–CT203: complete cold ECDLP source adjudication (matched five-arm rho/BSGS/IC, Williams order, distinct-Q per-block prospective gate; automation, started 2026-11-18, branch research/ct201-complete-single-target-gate-20261118, PR #1766; source CI 44/44 normal and -O at 36807d15; native/PCC blocked) [pcc:unverified]
 
 - [x] gaudry_cubic: gain-forest cycle harvester with k = 3 large primes and a threshold stop beside `LargePrimeEliminator`, paired against the six-seed §11.11 protocol; k = 4 follow-on if it passes — k=3 harvester PASS (S 0.31-0.57x, exponent 0.428 -> 0.332, paired 6 seeds x 4 sizes); k=4 r 0.532 -> 0.279 (LA phase only) (Claude Code, completed 2026-11-22; started 2026-11-22, branch claude/gaudry-gain-forest-harvester) [pcc:unverified]
-- [ ] WP0 symmetric cipher IR (sym_ir): types, eval, GF(2) matrices, primitive descriptions and bit-exact regression tests against symmetric/* and hash/* (Claude Code, started 2026-11-21, branch claude/sym-ir-wp0, plan docs/plans/2026-11-21-generic-symmetric-cryptanalysis.md in workspace PR #62, PR #1890) [pcc:unverified]
+- [x] WP0 symmetric cipher IR (sym_ir): types, eval, GF(2) matrices, primitive descriptions and bit-exact regression tests against symmetric/* and hash/* (Claude Code, started 2026-11-21, completed 2026-11-22 with WP1–WP5 via #1909, branch claude/sym-ir-wp0, plan docs/plans/2026-11-21-generic-symmetric-cryptanalysis.md in workspace PR #62, PR #1890) [pcc:unverified]
 
 - [ ] Audit high-genus order-certification claims and gate unproved exact-order language (ChatGPT, started 2026-11-21, branch audit/highgenus-order-certification-20261121, PR #1897) [pcc:unverified]
 
