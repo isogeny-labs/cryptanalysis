@@ -12,6 +12,8 @@
 
 - [ ] CT300 authentic 48-vector norm-pricing admission fix (ChatGPT, started 2026-11-21, branch research/ct300-authentic-scalar-fixture-20261121, PR #1904): correct the real fixed-chain scalar and literal C13 counts; freeze genuine fixture source gates; retain draft until inherited CI/review/PCC gates are satisfied.
 
+- [ ] CT312 source-admission clock/byte fix (ChatGPT, continued 2026-11-22, branch research/ct302-full-native-log-admission-20261121, PR #1912): reject every called but zero-ns direct/retained C169/C13/D primitive and preserve exact receipt-bound stdout bytes for SHA256 even with CRLF; only source mocks, no native measurement or speedup.
+
 ## Blocked / questions
 
 - Full native CT244/CT300 pricing and 695/701 record replay still require approved authenticated original six-object artifact custody; previous STS invalid-token and S3 403 are unresolved. This source-only correction does not authorize paid compute, artifact substitution, modified provenance or protected merge.
