@@ -2,6 +2,8 @@
 
 ## Active items
 
+- [ ] CT315 complete-cold ABBA ECDLP cost-panel admission (ChatGPT, started 2026-11-22, existing draft PR #1912): prospective 7-run/block, >=4-block exact-target panel with per-run cold setup/transfer/precompute/relation/LA/descent/recovery/verification/teardown, measured RSS and fixed memory cap; compare candidate to min(retained-lift, rho, BSGS, IC) rather than primitive-only cost; source-only synthetic positive/negative and 19 sabotage/parser controls. Original S3 custody, real cold logs, independent source group-law verification, CI/PCC still open; never a speedup claim. [pcc:unverified]
+
 - [x] CT314 enforce failure-receipt status/exit/error consistency (ChatGPT, started 2026-11-22, branch research/ct302-full-native-log-admission-20261121, PR #1912): preregister and reject forged timeout/overflow/spawn/nonzero/invalid-exit labels while preserving raw failed-capture custody; source-only CI #45051825751 passed at da20cbb5 (nine status mutations, four bounded negative controls); no native execution or pricing. [pcc:unverified]
 
 - [ ] CT302 bind primitive pricing to dual full 695-record native logs (ChatGPT, started 2026-11-21, branch research/ct302-full-native-log-admission-20261121, PR #1912): reuse existing whole-population comparator and CT301 frozen-vector gate; source-only controls first; no native timing/PCC claim.
