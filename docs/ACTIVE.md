@@ -19,6 +19,8 @@ and construction gates. [pcc:unverified]
 ## Active items (top = next)
 - [ ] CT201–CT203: complete cold ECDLP source adjudication (matched five-arm rho/BSGS/IC, Williams order, distinct-Q per-block prospective gate; automation, started 2026-11-18, branch research/ct201-complete-single-target-gate-20261118, PR #1766; source CI 44/44 normal and -O at 36807d15; native/PCC blocked) [pcc:unverified]
 
+- [x] Expand higher-genus support: genus-generic index calculus and Pollard rho for hyperelliptic and non-hyperelliptic (superelliptic one-point) Jacobians over F_p, genus 5..131 (`suite/src/highgenus/`; rho verified at g = 5..131 hyperelliptic and g = 5, 7, 11, 23, 97 non-hyperelliptic; IC with order-from-relations verified to g = 47; `suite/docs/highgenus/RESULTS.md`) (Claude Code, completed 2026-11-21, branch claude/higher-genus-5-131, PR #1884) [pcc:unverified]
+
 - [ ] Run the registered PKM tower phase-1 comparison at feasible m=5,6 with the frozen baseline, planted controls and resource limits; report full cell outcomes; prepared and checkpoint upload blocked (Codex, started 2026-11-21, branch codex/pkm-high-arity-phase1-20261121, PR #1883)
 
 - [ ] Complete native import-cache verification (Codex, started 2026-11-17, branch fix/native-import-cache-followup-20261117; tracking PR #1763 merged before implementation; full CI pending).
