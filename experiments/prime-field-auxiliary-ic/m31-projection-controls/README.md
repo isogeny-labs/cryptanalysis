@@ -1,0 +1,9 @@
+# Controls for four-bit projections on M31 fibers
+
+On the frozen 32 coordinates there are 565,722,720 possible choices of 17 positive labels. Among them 34,483,164 (6.0954%) admit at least one exact four-bit projection and 7,387,695 (1.3059%) admit at least two. These are exact uniform-labeling frequencies conditional on these coordinates. They do not account for prior exploration or selection of the fixture.
+
+For each of the 31,465 coordinate projections, null.js partitions the 32 coordinates by projected key. It enumerates unions of buckets of total size 17, accumulating labeling counts saturated at two. An independent generating-function check counted 53,887,730 total projection/labeling incidences by multiplying the factors (1+z^bucket_size) and adding their coefficients of z^17 over projections.
+
+A separate sample drew distinct nonzero auxiliary class indices with a fixed PARI seed, accepting the first 256 fibers with exactly 17 target lifts. Exhaustive four-bit searches succeeded on 12 of 256 real labelings and on 15 of 256 independently shuffled labelings of the same coordinates. One fiber succeeded under both. Run `node null.js` and `gp -q -f sample.gp </dev/null | python3 controls.py` to reproduce the two controls.
+
+The frozen optimized benchmark's prepare_folder computes the target y-coordinate and charges basis time. The native driver reads the resulting affine points before the query loop. On the three audited v2_batch runs, the whole basis charge was 1.154286 ms, respectively 0.01192%, 0.02234%, and 0.00989% of end-to-end time. The four-bit lift classifier still needs a known fiber and supplies no y-coordinate. Ceiling.lean checks the upper bound of 0.023% on the fractional time saved if the entire charged basis preparation disappears while all other times stay fixed. Run Lean 4.28 with Mathlib on this file.
