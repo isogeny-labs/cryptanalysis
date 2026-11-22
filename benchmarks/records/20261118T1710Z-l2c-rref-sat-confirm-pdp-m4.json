@@ -1,0 +1,100 @@
+{
+  "branch": "claude/sat-solver-index-calculus-zczysc",
+  "closed_utc": "2026-11-18T17:49:05+00:00",
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "research/sat-pdp-leads-20261118/l2b_rref/run_l2b.py",
+        "--inst",
+        "/tmp/claude-0/-home-user/ca33b680-080e-5559-8c69-94b98a775c60/scratchpad/l2cinst",
+        "--cadical",
+        "/tmp/claude-0/-home-user/ca33b680-080e-5559-8c69-94b98a775c60/scratchpad/solvers/cadical/build/cadical",
+        "--out",
+        "/tmp/claude-0/-home-user/ca33b680-080e-5559-8c69-94b98a775c60/scratchpad/l2c_rows.jsonl",
+        "--workers",
+        "3"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "started_utc": "2026-11-18T17:10:21+00:00",
+      "wall_s": 2227.286
+    }
+  ],
+  "commit": "8c3dfacbc7db5c2b65731c9c048c45c5c7b90a3f",
+  "commit_dirty": false,
+  "created_utc": "2026-11-18T17:10:10+00:00",
+  "curve_uid": null,
+  "entries": [],
+  "host": {
+    "cpu": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+    "cpus_online": 4,
+    "hostname": "vm",
+    "isolation": "unstated",
+    "platform": "Linux-6.18.44-fc-v595-x86_64-with-glibc2.39"
+  },
+  "id": "20261118T1710Z-l2c-rref-sat-confirm-pdp-m4",
+  "metrics": [
+    {
+      "baseline": 1.0,
+      "better": "higher",
+      "n": 96,
+      "name": "conflicts_base_over_rref_l4_sat",
+      "note": "CaDiCaL conflicts on base CNF / on base+RREF prefix chains (= 1/0.631 [1/0.809, 1/0.494]), l4 decomposable targets, fresh curve, 32 base CNFs x 3 shuffles; A/A (C/A orientation) 1.210 [0.892,1.659]; CONFIRMED. Solver effect on SAT instances, not an IC gain (break-even decomposable fraction ~0.22).",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.236,
+        2.024
+      ],
+      "unit": "ratio",
+      "value": 1.585
+    },
+    {
+      "baseline": 1.0,
+      "better": "higher",
+      "n": 96,
+      "name": "wall_base_over_rref_l4_sat",
+      "note": "wall, unisolated shared container, exploratory",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.045,
+        1.736
+      ],
+      "unit": "ratio",
+      "value": 1.348
+    }
+  ],
+  "problem": "pdp:m4-dualrail-l3l4",
+  "raw": [
+    {
+      "bytes": 58790,
+      "path": "research/sat-pdp-leads-20261118/l2c_sat_confirm/rows.jsonl",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/a2/a23cd74380f0b4a86b4afa4ed32495455fec0b83b63be3074011f510624b9b0c",
+      "sha256": "a23cd74380f0b4a86b4afa4ed32495455fec0b83b63be3074011f510624b9b0c",
+      "uploaded": false
+    },
+    {
+      "bytes": 32111,
+      "path": "research/sat-pdp-leads-20261118/l2c_sat_confirm/manifest.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/50/50e8352ced0194bdb4d8f86832df53c672820bcd322b51527f0884296830a051",
+      "sha256": "50e8352ced0194bdb4d8f86832df53c672820bcd322b51527f0884296830a051",
+      "uploaded": false
+    }
+  ],
+  "repo": "cryptanalysis",
+  "reports": {
+    "pdf": "research/sat-pdp-leads-20261118/l2c_sat_confirm/l2c_report.pdf",
+    "png": [],
+    "svg": [
+      "research/sat-pdp-leads-20261118/l2c_sat_confirm/l2c_ratios.svg"
+    ]
+  },
+  "schema": "bench.record/v1",
+  "session": null,
+  "slug": "l2c-rref-sat-confirm-pdp-m4",
+  "status": "measured",
+  "summary": "L2c CONFIRMED: RREF prefix-chain rows cut CaDiCaL conflicts on fresh l4 decomposable m=4 PDP targets to 0.631x [0.494,0.809] (wall 0.742x); solver effect on SAT instances, not an IC improvement. [pcc:unverified]",
+  "validation": null
+}
