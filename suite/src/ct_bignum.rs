@@ -40,7 +40,7 @@
 //! vary), and we never divide.  See SECURITY.md for the full picture.
 
 use num_bigint::BigUint;
-use subtle::{Choice, ConditionallySelectable};
+use subtle::Choice;
 
 /// A multi-precision unsigned integer stored as `LIMBS` 64-bit limbs
 /// in little-endian order: `limbs[0]` is the least significant.
@@ -101,6 +101,7 @@ impl<const LIMBS: usize> Uint<LIMBS> {
     /// Constant-time equality.  Returns `Choice(1)` iff every limb
     /// matches.  XOR-fold over all limbs followed by an
     /// "any nonzero bit" reduction.
+    #[inline]
     pub fn ct_eq_full(&self, other: &Self) -> Choice {
         let mut diff: u64 = 0;
         for i in 0..LIMBS {
@@ -114,12 +115,14 @@ impl<const LIMBS: usize> Uint<LIMBS> {
 
     /// Constant-time `self < other`.  Computes the borrow-out of
     /// `self - other`; that bit is 1 iff `self < other`.
+    #[inline]
     pub fn ct_lt(&self, other: &Self) -> Choice {
         let (_, borrow) = Self::sbb(self, other);
         Choice::from((borrow & 1) as u8)
     }
 
     /// True iff `self == 0`.
+    #[inline]
     pub fn ct_is_zero(&self) -> Choice {
         self.ct_eq_full(&Self::ZERO)
     }
@@ -127,20 +130,27 @@ impl<const LIMBS: usize> Uint<LIMBS> {
     // ── Conditional selection ────────────────────────────────────────────
 
     /// `cmov(a, b, choice)` returns `b` if `choice == 1`, else `a`.
-    /// Limb-wise `subtle::ConditionallySelectable`.
+    /// Uses a single `black_box` mask barrier across all limbs so LLVM
+    /// emits branchless bitwise blends/csels without per-limb barriers.
+    #[inline]
     pub fn cmov(a: &Self, b: &Self, choice: Choice) -> Self {
+        let mask = 0u64.wrapping_sub(core::hint::black_box(choice.unwrap_u8() as u64));
         let mut out = [0u64; LIMBS];
         for i in 0..LIMBS {
-            out[i] = u64::conditional_select(&a.0[i], &b.0[i], choice);
+            out[i] = a.0[i] ^ ((a.0[i] ^ b.0[i]) & mask);
         }
         Self(out)
     }
 
     /// Swap `a` and `b` iff `choice == 1`.  Used by the Montgomery
     /// ladder over the new field type.
+    #[inline]
     pub fn cswap(a: &mut Self, b: &mut Self, choice: Choice) {
+        let mask = 0u64.wrapping_sub(core::hint::black_box(choice.unwrap_u8() as u64));
         for i in 0..LIMBS {
-            u64::conditional_swap(&mut a.0[i], &mut b.0[i], choice);
+            let diff = (a.0[i] ^ b.0[i]) & mask;
+            a.0[i] ^= diff;
+            b.0[i] ^= diff;
         }
     }
 
@@ -149,6 +159,7 @@ impl<const LIMBS: usize> Uint<LIMBS> {
     /// Add with carry-in zero.  Returns `(sum, carry_out)`.  The carry
     /// is propagated through all limbs uniformly; there is no early
     /// exit when the carry chain dies.
+    #[inline]
     pub fn adc(a: &Self, b: &Self) -> (Self, u64) {
         let mut out = [0u64; LIMBS];
         let mut carry: u64 = 0;
@@ -163,6 +174,7 @@ impl<const LIMBS: usize> Uint<LIMBS> {
     }
 
     /// Subtract with borrow-in zero.  Returns `(diff, borrow_out)`.
+    #[inline]
     pub fn sbb(a: &Self, b: &Self) -> (Self, u64) {
         let mut out = [0u64; LIMBS];
         let mut borrow: u64 = 0;
@@ -287,6 +299,7 @@ impl<const LIMBS: usize> Uint<LIMBS> {
     /// - `p` is odd
     /// - `a < p` and `b < p`
     /// - `p_inv_low == (-p[0])^(-1) mod 2^64`
+    #[inline]
     pub fn mont_mul(a: &Self, b: &Self, p: &Self, p_inv_low: u64) -> Self {
         // Conceptual `2·LIMBS+1`-limb scratch, split into:
         //   lo[0..LIMBS]    = positions 0..LIMBS
@@ -386,8 +399,113 @@ impl<const LIMBS: usize> Uint<LIMBS> {
     /// Convenience: Montgomery squaring.  Same as `mont_mul(a, a, ..)`,
     /// kept as a separate method to make call sites self-documenting
     /// and to leave room for a dedicated squaring routine later.
+    #[inline]
     pub fn mont_sqr(a: &Self, p: &Self, p_inv_low: u64) -> Self {
-        Self::mont_mul(a, a, p, p_inv_low)
+        let mut lo = [0u64; LIMBS];
+        let mut hi = [0u64; LIMBS];
+        let mut extra: u64 = 0;
+
+        // Off-diagonal products (strictly i < j), accumulated overflow-safely
+        // row by row, then doubled and combined with diagonal squares.
+        for i in 0..LIMBS {
+            let mut carry: u64 = 0;
+            for j in (i + 1)..LIMBS {
+                let idx = i + j;
+                let cur = if idx < LIMBS {
+                    lo[idx]
+                } else {
+                    hi[idx - LIMBS]
+                };
+                let acc = (cur as u128) + (a.0[i] as u128) * (a.0[j] as u128) + (carry as u128);
+                let new = acc as u64;
+                if idx < LIMBS {
+                    lo[idx] = new;
+                } else {
+                    hi[idx - LIMBS] = new;
+                }
+                carry = (acc >> 64) as u64;
+            }
+            if i + 1 < LIMBS {
+                let idx = i + LIMBS;
+                hi[idx - LIMBS] = carry;
+            }
+        }
+        // Shift left by 1 bit across [lo, hi].
+        let mut shift_in = 0u64;
+        for i in 0..LIMBS {
+            let next = lo[i] >> 63;
+            lo[i] = (lo[i] << 1) | shift_in;
+            shift_in = next;
+        }
+        for i in 0..LIMBS {
+            let next = hi[i] >> 63;
+            hi[i] = (hi[i] << 1) | shift_in;
+            shift_in = next;
+        }
+        // Add diagonal squares a[i]^2 at positions 2*i, 2*i+1.
+        let mut d_carry = 0u128;
+        for i in 0..LIMBS {
+            let sq = (a.0[i] as u128) * (a.0[i] as u128);
+            let idx0 = 2 * i;
+            let idx1 = 2 * i + 1;
+            let cur0 = if idx0 < LIMBS {
+                lo[idx0]
+            } else {
+                hi[idx0 - LIMBS]
+            };
+            let cur1 = if idx1 < LIMBS {
+                lo[idx1]
+            } else {
+                hi[idx1 - LIMBS]
+            };
+            let s0 = (cur0 as u128) + (sq & 0xFFFF_FFFF_FFFF_FFFF) + d_carry;
+            if idx0 < LIMBS {
+                lo[idx0] = s0 as u64;
+            } else {
+                hi[idx0 - LIMBS] = s0 as u64;
+            }
+            let s1 = (cur1 as u128) + (sq >> 64) + (s0 >> 64);
+            if idx1 < LIMBS {
+                lo[idx1] = s1 as u64;
+            } else {
+                hi[idx1 - LIMBS] = s1 as u64;
+            }
+            d_carry = s1 >> 64;
+        }
+
+        // Montgomery reduction phase (identical to mont_mul).
+        for i in 0..LIMBS {
+            let m = lo[i].wrapping_mul(p_inv_low);
+            let mut carry: u64 = 0;
+            for j in 0..LIMBS {
+                let idx = i + j;
+                let cur = if idx < LIMBS {
+                    lo[idx]
+                } else {
+                    hi[idx - LIMBS]
+                };
+                let acc = (cur as u128) + (m as u128) * (p.0[j] as u128) + (carry as u128);
+                let new = acc as u64;
+                if idx < LIMBS {
+                    lo[idx] = new;
+                } else {
+                    hi[idx - LIMBS] = new;
+                }
+                carry = (acc >> 64) as u64;
+            }
+            for k in i..LIMBS {
+                let acc = (hi[k] as u128) + (carry as u128);
+                hi[k] = acc as u64;
+                carry = (acc >> 64) as u64;
+            }
+            let acc = (extra as u128) + (carry as u128);
+            extra = acc as u64;
+        }
+
+        let result = Self(hi);
+        let (sub, borrow) = Self::sbb(&result, p);
+        let need_sub = Choice::from(((extra | (borrow ^ 1)) & 1) as u8);
+        Self::cmov(&result, &sub, need_sub)
     }
 }
 
