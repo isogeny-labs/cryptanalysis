@@ -14,6 +14,8 @@
 
 - [ ] CT312 source-admission clock/byte fix (ChatGPT, continued 2026-11-22, branch research/ct302-full-native-log-admission-20261121, PR #1912): reject every called but zero-ns direct/retained C169/C13/D primitive and preserve exact receipt-bound stdout bytes for SHA256 even with CRLF; only source mocks, no native measurement or speedup.
 
+- [x] CT313 retain bounded failed-native capture bytes and separate SHA-bound refusal receipts (ChatGPT, started 2026-11-22, branch research/ct302-full-native-log-admission-20261121, PR #1912): four nonzero/timeout/overflow/spawn mocks, independent source-only failure receipt checker and four SHA tamper refusals; [source CI #45045972591](https://github.com/isogeny-labs/cryptanalysis/actions/runs/45045972591) passed at d1a31e2b. No native model execution, complete solver, authenticated S3 or PCC.
+
 ## Blocked / questions
 
 - Full native CT244/CT300 pricing and 695/701 record replay still require approved authenticated original six-object artifact custody; previous STS invalid-token and S3 403 are unresolved. This source-only correction does not authorize paid compute, artifact substitution, modified provenance or protected merge.
