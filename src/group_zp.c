@@ -6,17 +6,29 @@
 
 static void zp_op(const ca_group *g, ca_elem *r, const ca_elem *a, const ca_elem *b)
 {
-    r->w[0] = ca_mont_mul(&g->mont, a->w[0], b->w[0]);
+    const uint64_t p = g->mont.p;
+    if (p < (1ULL << 62)) {
+        r->w[0] = ca_mont_mul_lazy(a->w[0], b->w[0], p, g->mont.pinv);
+    } else {
+        r->w[0] = ca_mont_mul(&g->mont, a->w[0], b->w[0]);
+    }
 }
 
 static void zp_dbl(const ca_group *g, ca_elem *r, const ca_elem *a)
 {
-    r->w[0] = ca_mont_sqr(&g->mont, a->w[0]);
+    const uint64_t p = g->mont.p;
+    if (p < (1ULL << 62)) {
+        r->w[0] = ca_mont_sqr_lazy(a->w[0], p, g->mont.pinv);
+    } else {
+        r->w[0] = ca_mont_sqr(&g->mont, a->w[0]);
+    }
 }
 
 static void zp_inv(const ca_group *g, ca_elem *r, const ca_elem *a)
 {
-    r->w[0] = ca_mont_inv(&g->mont, a->w[0]);
+    /* Invert the canonical residue; output is canonical Montgomery form. */
+    uint64_t x = ca_fp_canon(a->w[0], g->p);
+    r->w[0] = ca_mont_inv(&g->mont, x);
 }
 
 static void zp_identity(const ca_group *g, ca_elem *r)
@@ -27,19 +39,17 @@ static void zp_identity(const ca_group *g, ca_elem *r)
 
 static int zp_is_identity(const ca_group *g, const ca_elem *a)
 {
-    return a->w[0] == g->mont.r1;
+    return ca_fp_canon(a->w[0], g->p) == g->mont.r1;
 }
 
 static int zp_equal(const ca_group *g, const ca_elem *a, const ca_elem *b)
 {
-    (void)g;
-    return a->w[0] == b->w[0];
+    return ca_fp_canon(a->w[0], g->p) == ca_fp_canon(b->w[0], g->p);
 }
 
 static uint64_t zp_hash(const ca_group *g, const ca_elem *a)
 {
-    (void)g;
-    return ca_zp_hash_word(a->w[0]);
+    return ca_zp_hash_residue(a->w[0], g->p);
 }
 
 /* The scratch pointer is non-const because the vtable slot is shared with the
@@ -49,7 +59,14 @@ static void zp_batch_op(const ca_group *g, ca_elem *r, const ca_elem *a, const c
                         size_t n, uint64_t *scratch)
 {
     (void)scratch;
-    for (size_t i = 0; i < n; i++) r[i].w[0] = ca_mont_mul(&g->mont, a[i].w[0], b[i].w[0]);
+    const uint64_t p = g->mont.p;
+    if (p < (1ULL << 62)) {
+        const uint64_t np = g->mont.pinv;
+        for (size_t i = 0; i < n; i++)
+            r[i].w[0] = ca_mont_mul_lazy(a[i].w[0], b[i].w[0], p, np);
+    } else {
+        for (size_t i = 0; i < n; i++) r[i].w[0] = ca_mont_mul(&g->mont, a[i].w[0], b[i].w[0]);
+    }
 }
 /* NOLINTEND(readability-non-const-parameter) */
 
@@ -64,19 +81,26 @@ static int zp_encode(const ca_group *g, ca_elem *r, const uint64_t *words)
 
 static void zp_decode(const ca_group *g, uint64_t *words, const ca_elem *a)
 {
-    words[0] = ca_mont_from(&g->mont, a->w[0]);
+    words[0] = ca_mont_from(&g->mont, ca_fp_canon(a->w[0], g->p));
     words[1] = words[2] = words[3] = 0;
 }
 
 static int zp_is_valid(const ca_group *g, const ca_elem *a)
 {
-    return a->w[0] != 0 && a->w[0] < g->p;
+    /* Lazy residues live in [0, 2p) when p < 2^62; p itself is 0 in F_p. */
+    const uint64_t x = a->w[0], p = g->p;
+    if (p < (1ULL << 62)) return x != 0 && x != p && x < p * 2;
+    return x != 0 && x < p;
 }
 
 static const ca_group_vtable zp_vt = {
     zp_op, zp_dbl, zp_inv, zp_identity, zp_is_identity, zp_equal, zp_hash,
     zp_batch_op, zp_encode, zp_decode, zp_is_valid, NULL,
 };
+
+/* Address published for ca_group_op's inline Zp fast path (pointer compare,
+ * no call).  Wrapped diagnostic vtables must not match. */
+const ca_group_vtable *const ca_zp_vt_ptr = &zp_vt;
 
 int ca_zp_group_is_native(const ca_group *g) { return g->vt == &zp_vt; }
 
