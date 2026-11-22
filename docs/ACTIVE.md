@@ -19,6 +19,8 @@ and construction gates. [pcc:unverified]
 ## Active items (top = next)
 - [ ] CT201–CT203: complete cold ECDLP source adjudication (matched five-arm rho/BSGS/IC, Williams order, distinct-Q per-block prospective gate; automation, started 2026-11-18, branch research/ct201-complete-single-target-gate-20261118, PR #1766; source CI 44/44 normal and -O at 36807d15; native/PCC blocked) [pcc:unverified]
 
+- [x] Lead 2D: evaluate prescribed-singularity (nodal) degree-`d >= 4` plane Bezout lifts (`d in {4, 5, 6}`) and Cayley-Bacharach 9-point cubic pencils + shared `CoordinateFb` preimage sieve (Cursor, started 2026-11-19, branch cursor/pdp-lead-2d-xedni-cb-nodal-20261119, PR #1849) [pcc:unverified] Lean 14/14 [pcc:unverified]
+
 - [x] PDP Lead 3B: Aut-equivariant signed multi-orbit coefficient-box (`wsum`) relation collector on Generic/J1728/J0 prime curves in `prime_orbit_index_calculus` (Cursor, started 2026-11-19, branch cursor/pdp-lead-3b-orbit-wsum-20261119, PR #1848) [pcc:unverified] 27/27 tests [pcc:unverified]
 - [x] Rho-parity remasure: CLI `--wsum` + `orbit_wsum_vs_rho` panel vs matched rho — Generic fp28 S/wall ~2.3–2.6×; falsified for cold single-target (Cursor, 2026-11-20, PR #1848; workspace #42)
 
