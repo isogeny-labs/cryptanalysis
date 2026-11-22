@@ -19,6 +19,7 @@ and construction gates. [pcc:unverified]
 ## Active items (top = next)
 - [ ] CT201–CT203: complete cold ECDLP source adjudication (matched five-arm rho/BSGS/IC, Williams order, distinct-Q per-block prospective gate; automation, started 2026-11-18, branch research/ct201-complete-single-target-gate-20261118, PR #1766; source CI 44/44 normal and -O at 36807d15; native/PCC blocked) [pcc:unverified]
 
+- [x] gaudry_cubic: gain-forest cycle harvester with k = 3 large primes and a threshold stop beside `LargePrimeEliminator`, paired against the six-seed §11.11 protocol; k = 4 follow-on if it passes — k=3 harvester PASS (S 0.31-0.57x, exponent 0.428 -> 0.332, paired 6 seeds x 4 sizes); k=4 r 0.532 -> 0.279 (LA phase only) (Claude Code, completed 2026-11-22; started 2026-11-22, branch claude/gaudry-gain-forest-harvester) [pcc:unverified]
 - [ ] WP0 symmetric cipher IR (sym_ir): types, eval, GF(2) matrices, primitive descriptions and bit-exact regression tests against symmetric/* and hash/* (Claude Code, started 2026-11-21, branch claude/sym-ir-wp0, plan docs/plans/2026-11-21-generic-symmetric-cryptanalysis.md in workspace PR #62, PR #1890) [pcc:unverified]
 
 - [x] Expand higher-genus support: genus-generic index calculus and Pollard rho for hyperelliptic and non-hyperelliptic (superelliptic one-point) Jacobians over F_p, genus 5..131 (`suite/src/highgenus/`; rho verified at g = 5..131 hyperelliptic and g = 5, 7, 11, 23, 97 non-hyperelliptic; IC with order-from-relations verified to g = 47; `suite/docs/highgenus/RESULTS.md`) (Claude Code, completed 2026-11-21, branch claude/higher-genus-5-131, PR #1884) [pcc:unverified]
@@ -62,9 +63,9 @@ and construction gates. [pcc:unverified]
 
 - [x] Audit rational 2-isogeny ECDLP transfer: subgroup, kernel, image, dual/inverse, exact costs and toy DLP (automation, started 2026-11-18, branch research/examine-2isogeny-obligations-20261118, PR #1775; 64/64 local BSGS logs, independent PCC pending) [pcc:unverified]
 
-- [ ] Coset filter behind the BASELINES n = 41 K_0 row: Koblitz base builder at n >= 41 and the filter wired into that row's pair-table pipeline (Claude Code, started 2026-11-22, branch claude/coset-filter-n41-koblitz) [pcc:unverified]
+- [x] Coset filter behind the BASELINES n = 41 K_0 row: Koblitz base builder at n >= 41 and the filter wired into that row's pair-table pipeline — row made by crypto ic price; its subgroup-orbit base is one coset class, so the filter cannot help it; n=41 oom_alloc was real (136/544 GiB), now a clean refusal; koblitz-orbit points= base added (Claude Code, completed 2026-11-22; started 2026-11-22, branch claude/coset-filter-n41-koblitz) [pcc:unverified]
 
-- [ ] ic bench: coset-filtered MITM pair tables (`mitm` / `mitm-frobenius` `coset_filter=1`), frozen ratchet protocol and bench record; stage improvement from the trunk's graph-theory note (Claude Code, started 2026-11-22, branch claude/mitm-coset-class-filter, PR #1892) [pcc:unverified]
+- [x] ic bench: coset-filtered MITM pair tables (`mitm` / `mitm-frobenius` `coset_filter=1`), frozen ratchet protocol and bench record; stage improvement from the trunk's graph-theory note — merged as PR #1892 (Claude Code, completed 2026-11-22; started 2026-11-22, branch claude/mitm-coset-class-filter, PR #1892) [pcc:unverified]
 
 - [ ] Controlled comparison of curve-coordinate relation solvers on growing toy instances with matched controls (Codex, started 2026-11-18, branch codex/curve-representation-controlled-20261118, PR #1767) [pcc:unverified]
 
