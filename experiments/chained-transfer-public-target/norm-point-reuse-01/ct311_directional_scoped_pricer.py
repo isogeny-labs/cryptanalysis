@@ -54,6 +54,15 @@ def scoped_price(raw, fixture_bytes):
         a, lit, b = samples[3 * i:3 * i + 3]
         if not (a["sequence"], lit["sequence"], b["sequence"]) == (3*i, 3*i+1, 3*i+2):
             refuse("selected triplet ordering changed")
+        # CT312: CT248's source-integrity audit explicitly permits a called
+        # primitive with 0 ns. That is acceptable for synthetic source gates
+        # but cannot be admitted as a physical C169/C13/D price.
+        for arm_name, priced in (("direct", a), ("retained", b)):
+            for slot, (calls, elapsed) in enumerate(
+                    zip(priced["calls"], priced["elapsed_ns"])):
+                if calls > 0 and elapsed == 0:
+                    refuse(f"unpriced called primitive in {arm_name} arm "
+                           f"at row {i}, slot {slot}")
         fr, to = entry["from"], entry["to"]
         direction = f"{fr}_to_{to}"
         direct_map = sum(a["elapsed_ns"][4:6])
@@ -75,7 +84,10 @@ def scoped_price(raw, fixture_bytes):
             "doubling_delta_ns": doubling_delta,
             "direct_minus_retained_ns": map_delta + doubling_delta,
             "literal_control_ns": sum(lit["elapsed_ns"]),
-            "total_nonzero": (direct_map + retained_map + direct_d + retained_d) > 0,
+            "total_nonzero": all(
+                elapsed > 0 for s in (a, b)
+                for calls, elapsed in zip(s["calls"], s["elapsed_ns"])
+                if calls > 0),
         })
     if len(out) != 48:
         refuse("expected 48 paired selected rows")
@@ -149,6 +161,39 @@ def self_test(fixture_path):
         if (r["direct_minus_retained_ns"] !=
                 r["map_delta_ns"] + r["doubling_delta_ns"]):
             raise AssertionError("arithmetic accounting drift")
+
+    # CT312: an unmeasured called map must not masquerade as a win just
+    # because the doubling clock and other slots remain nonzero.
+    zero_clock_rejections = 0
+    for sample_idx, slot in ((0, 4), (2, 0), (0, 6)):
+        candidate, vecs, life = ct248.decode(
+            fabricate([40, 40, 40, 40, 120, 120, 10]))
+        if candidate[sample_idx]["calls"][slot] != 1:
+            raise AssertionError("CT312 chosen synthetic primitive not called")
+        amount = candidate[sample_idx]["elapsed_ns"][slot]
+        candidate[sample_idx]["elapsed_ns"][slot] = 0
+        life["elapsed_ns"][slot] -= amount
+        tampered = ct248.encode(candidate, vecs, life)
+        ct248.audit(tampered)  # Source integrity deliberately permits 0 ns.
+        try:
+            scoped_price(tampered, raw_fixture)
+        except ValueError as exc:
+            if "unpriced called primitive" not in str(exc):
+                raise
+            zero_clock_rejections += 1
+        else:
+            raise AssertionError("unmeasured called primitive was priced")
+
+    # CT312: the *actual* raw bytes, not universal-newline-normalized text,
+    # define the SHA256. Exercise the exact decode path used for capture.
+    lf_log = fabricate([40, 40, 40, 40, 120, 120, 10]).encode("utf8")
+    crlf_log = lf_log.replace(b"\n", b"\r\n")
+    crlf_priced = scoped_price(crlf_log.decode("utf8"), raw_fixture)
+    if (crlf_priced["optimized_stdout_sha256"] !=
+            hashlib.sha256(crlf_log).hexdigest()):
+        raise AssertionError("CRLF raw-capture digest was normalized")
+    if hashlib.sha256(crlf_log).digest() == hashlib.sha256(lf_log).digest():
+        raise AssertionError("distinct CRLF/LF test inputs hashed equally")
     if reversal["whole_cold_single_target_ecdlp_cost"] is not None:
         raise AssertionError("synthetic primitive clock was promoted to a full solve")
     return {
@@ -158,6 +203,8 @@ def self_test(fixture_path):
         "positive_directional_controls":2,
         "negative_directional_controls":2,
         "negative_sector_reversal_controls":1,
+        "zero_called_clock_mutations_rejected":zero_clock_rejections,
+        "exact_crlf_raw_sha256_controls":1,
         "original_native_model_executions":0,
         "physical_primitive_timings":0,
         "pcc":"unverified",
@@ -173,8 +220,12 @@ def admitted_capture(capture_dir, fixture):
         c/"original.receipt.json", c/"reuse.receipt.json", fixture)
     if admission["full_695_and_144_population_consistent"] is not True:
         refuse("incomplete or missing full-population capture")
-    raw = (c/"reuse.stdout").read_text(encoding="utf8")
-    result = scoped_price(raw, fixture.read_bytes())
+    # Preserve CT304-receipted raw bytes: Path.read_text performs universal
+    # newline translation and can silently change a CRLF stream's SHA256.
+    raw_bytes = (c/"reuse.stdout").read_bytes()
+    result = scoped_price(raw_bytes.decode("utf8"), fixture.read_bytes())
+    if result["optimized_stdout_sha256"] != hashlib.sha256(raw_bytes).hexdigest():
+        refuse("optimized raw stdout hash changed during parsing")
     result["original_stdout_sha256"] = hashlib.sha256(
         (c/"original.stdout").read_bytes()).hexdigest()
     result["full_695_dual_native_transcript_admitted"] = True
