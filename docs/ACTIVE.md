@@ -2,6 +2,8 @@
 
 ## Active items
 
+- [ ] CT314 enforce failure-receipt status/exit/error consistency (ChatGPT, started 2026-11-22, branch research/ct302-full-native-log-admission-20261121, PR #1912): preregister and reject forged timeout/overflow/spawn/nonzero/invalid-exit labels while preserving raw failed-capture custody; source-only tests, no native execution or timing. [pcc:unverified]
+
 - [ ] CT302 bind primitive pricing to dual full 695-record native logs (ChatGPT, started 2026-11-21, branch research/ct302-full-native-log-admission-20261121, PR #1912): reuse existing whole-population comparator and CT301 frozen-vector gate; source-only controls first; no native timing/PCC claim.
 
 - [ ] CT311 direction/sector-resolved CT248 C169/C13/D physical-cost frontier (ChatGPT, continued 2026-11-22, branch research/ct302-full-native-log-admission-20261121, PR #1912): 48 paired exact-source rows, 24+24 directions and six per sector; CT304-admitted full 695 logs required for production, synthetic positive/negative and sector-reversal source-only controls. No native provenance, measured speedup or PCC from tests; owner-approved six-S3-object custody and physical hardware remain blocked.
