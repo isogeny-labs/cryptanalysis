@@ -2,7 +2,7 @@
 
 Include m31.h and call `m31_batch_inverse(input, output, count)`. The function accepts any uint32_t encoding, reduces each input modulo 2³¹−1 and writes a canonical uint32_t residue. An input congruent to zero produces zero. Inputs and outputs may be the same array or disjoint arrays. A zero count accepts two null pointers. Callers supply their own output buffer. The implementation uses stack storage bounded independently of count and has no mutable global state.
 
-The C++17 implementation uses 64-element product trees and an exact-length tree for the final partial block. The parent rule in the sibling m31-inverse-arithmetic/Tree.lean proof covers arbitrary binary tree shapes. Fold.lean checks the Mersenne multiplication reduction and intermediate bounds for canonical inputs. These mathematical proofs accompany tests of the compiled C ABI.
+The portable C++17 path uses 64-element product trees and an exact-length tree for the final partial block. The parent rule in the sibling m31-inverse-arithmetic/Tree.lean proof covers arbitrary binary tree shapes. Fold.lean checks the Mersenne multiplication reduction and intermediate bounds for canonical inputs. These mathematical proofs accompany tests of the compiled C ABI.
 
 ## Build and replay
 
@@ -37,6 +37,14 @@ The two warm-up rounds precede 24 measured rounds with alternating call order. E
 
 ## Four-lane batch inversion
 
-On ARM64 with NEON, each full 256-word block uses four 64-leaf product trees. A vector lane owns one tree throughout the upward and downward passes. A remainder uses four exact-length trees if it contains at least 65 inputs or is a positive multiple of four. Other remainders and portable builds use the scalar tree. A partial vector is padded with ones and only live lanes are written. Both paths use the same tree and root-inversion code. Zero masks are saved before writing output, including for in-place calls.
+On ARM64 with NEON, each full 1,024-word block uses four 256-leaf product trees. A remainder of 512–1,023 words uses one partial wide block. Smaller batches use a 256-word block with four 64-leaf trees when it fits. The largest tree and mask arrays occupy 12 KiB of stack. A vector lane owns one tree throughout the upward and downward passes. The final small remainder uses four exact-length trees if it contains at least 65 inputs or is a positive multiple of four. Other remainders and portable builds use the scalar tree. A partial vector is padded with ones and only live lanes are written. Both paths use the same tree and root-inversion code. Zero masks are saved before writing output, including for in-place calls.
 
-From the builds above, run `python3 time_inverse.py ./portable.so ./native.so` to reproduce the paired ctypes benchmark. The recorded Apple M4 Pro medians (portable time divided by native time) were 1.84× at 256 words, 2.69× at 4,096 and 2.81× at 65,539. The earlier standalone C-client observations above describe the original scalar inversion implementation. The paired raw observations for this version are in inverse-neon-timings.csv.
+From the builds above, run `python3 time_inverse.py ./portable.so ./native.so` to reproduce the paired ctypes benchmark. The original 64-leaf ARM64 measurements (portable time divided by native time) were 1.84× at 256 words, 2.69× at 4,096 and 2.81× at 65,539. The earlier standalone C-client observations above describe the original scalar inversion implementation. The paired raw observations for this version are in inverse-neon-timings.csv.
+
+The wide-tree comparison in `inverse-wide-timings.csv` uses the previous NEON implementation as the control (commit `c414fb141`). On the Apple M4 Pro, paired median ctypes speedups were 1.51× at 1,000 words and 1.69× at 4,096 words. To replay from this directory:
+
+```sh
+git show c414fb141:experiments/prime-field-auxiliary-ic/m31-field-ffi/m31.cpp | clang++ -x c++ -std=c++17 -O3 -mcpu=native -shared -fPIC -I. - -o control.so
+clang++ -std=c++17 -O3 -mcpu=native -shared -fPIC m31.cpp -o native.so
+python3 time_inverse.py ./control.so ./native.so
+```

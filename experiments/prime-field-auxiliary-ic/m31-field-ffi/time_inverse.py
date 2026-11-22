@@ -15,7 +15,7 @@ assert len(functions) == 2
 if __name__ == '__main__':
     w=csv.writer(sys.stdout, lineterminator="\n")
     w.writerow(['n','pair','calls','control_ns','candidate_ns'])
-    for n in (64,255,256,257,512,4096,65539):
+    for n in (64,255,256,257,511,512,513,999,1000,1001,1023,1024,1025,4096,65539):
         inputs=(U*n)(*(rng.getrandbits(32) for _ in range(n)))
         outputs=(U*n)()
         want=[pow(x,2147483645,2147483647) for x in inputs]

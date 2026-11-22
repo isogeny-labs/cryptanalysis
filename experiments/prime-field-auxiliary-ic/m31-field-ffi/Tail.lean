@@ -45,4 +45,12 @@ theorem discard_padding {F : Type*} [Field F] (xs : List F) (pad : ℕ) :
   simp
 
 
+/-- The wide remainder branch uses a bounded tree and writes exactly count words. -/
+theorem wide_dimensions {count : ℕ} (lo : 512 ≤ count) (hi : count < 1024) :
+    (count + 3) / 4 = vectors count ∧
+    (count - 1) % 4 + 1 = last count ∧
+    vectors count ≤ 256 ∧ 4 * (vectors count - 1) + last count = count := by
+  unfold vectors last
+  split <;> omega
+
 end M31Tail

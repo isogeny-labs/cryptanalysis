@@ -67,8 +67,10 @@ inline void invert_leaves(T *nodes, size_t n) {
 }
 
 #ifdef M31_USE_NEON
-inline void four_tiles(const uint32_t *input, uint32_t *output, size_t n = width, size_t last = 4) {
-    uint32x4_t nodes[2 * width], zero_masks[width];
+// Keep the larger scratch arrays in the wide helper frame.
+template<size_t capacity = width>
+[[gnu::noinline]] void four_tiles(const uint32_t *input, uint32_t *output, size_t n = capacity, size_t last = 4) {
+    uint32x4_t nodes[2 * capacity], zero_masks[capacity];
     for (size_t j = 0; j < n; ++j) {
         uint32_t padded[4] = {1, 1, 1, 1};
         const uint32_t *src = input + 4*j;
@@ -108,6 +110,17 @@ inline void tile(const uint32_t *input, uint32_t *output, size_t n) {
 
 void m31_batch_inverse(const uint32_t *input, uint32_t *output, size_t count) {
 #ifdef M31_USE_NEON
+    constexpr size_t wide = 256;  // leaves per SIMD lane
+    while (count >= 4 * wide) {
+        four_tiles<wide>(input, output, wide);
+        input += 4 * wide;
+        output += 4 * wide;
+        count -= 4 * wide;
+    }
+    if (count >= 512) {
+        four_tiles<wide>(input, output, (count + 3) / 4, (count - 1) % 4 + 1);
+        return;
+    }
     while (count >= 4 * width) {
         four_tiles(input, output);
         input += 4 * width;
