@@ -6,6 +6,8 @@ on:
       - 'experiments/chained-transfer-public-target/norm-point-reuse-01/ct248_scoped_sample_audit.py'
       - 'experiments/chained-transfer-public-target/norm-point-reuse-01/ct300_authentic_fixture_guard.py'
       - 'experiments/chained-transfer-public-target/norm-point-reuse-01/ct302_full_native_gate.py'
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/ct304_execution_receipt_gate.py'
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT304_RAW_CAPTURE_CUSTODY_PROTOCOL.md'
       - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT302_FULL_NATIVE_POPULATION_ADMISSION_PROTOCOL.md'
       - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT300_AUTHENTIC_SCALAR_FIX_PROTOCOL.md'
       - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT301_NATIVE_FIXTURE_BOUND_ADMISSION_PROTOCOL.md'
@@ -120,6 +122,29 @@ jobs:
             echo 'ERROR: CT302 accepted one-sided native log' >&2; exit 1
           fi
           grep -F 'CT302 requires BOTH complete native logs' /tmp/ct302-partial.err
+      - name: CT304 bounded process capture custody (synthetic receipts only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          script=experiments/chained-transfer-public-target/norm-point-reuse-01/ct304_execution_receipt_gate.py
+          python3 -W error -m py_compile "$script"
+          python3 -W error -S "$script" --self-test > /tmp/ct304-normal.json
+          python3 -W error -O -S "$script" --self-test > /tmp/ct304-opt.json
+          cmp /tmp/ct304-normal.json /tmp/ct304-opt.json
+          python3 -S - <<'PY'
+          import json
+          x=json.load(open('/tmp/ct304-normal.json', encoding='utf8'))
+          assert x['synthetic_positive']==1
+          assert x['synthetic_mutations_rejected']==15
+          assert x['synthetic_parser_mutations_rejected']==3
+          assert x['native_executions']==0 and x['physical_timings']==0
+          assert x['pcc']=='unverified'
+          print("CT304_SOURCE_ONLY_PASS 15 capture mutations + 3 parser controls; no native process")
+          PY
+          if python3 -S "$script" --original /dev/null --fixture /dev/null > /tmp/ct304-partial.out 2> /tmp/ct304-partial.err; then
+            echo 'ERROR: CT304 admitted a one-sided receipt' >&2; exit 1
+          fi
+          grep -F 'CT304 requires both raw logs' /tmp/ct304-partial.err
       - name: Create separate guarded Rust package and parse with rustfmt
         shell: bash
         run: |
