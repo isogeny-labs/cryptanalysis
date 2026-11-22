@@ -1,0 +1,20 @@
+{
+  "schema": "x011-p1009-one-target-protocol-v1",
+  "question": "Can the certified p1009 X011 relation lattice prepare all 84 fiber logs and recover one fresh public point by additive shifts, with a same-point rho reference?",
+  "curve": "y^2+y=x^3-x^2-10x-20 over F_1009",
+  "group_order": 1020,
+  "generator": [2, 155],
+  "fiber_source": "../hecke-x011-p1009-degree2-rank-20261119/result.json",
+  "hnf_source": "../hecke-x011-p1009-relation-lattice-20261119/hnf-basis.json",
+  "hnf_sha256": "116a71e13e5df220de236176ae0df2509c63ba5b921324e49b50e18803e39036",
+  "target_seed": "X011-p1009-lattice-target-2026-11-19-v1",
+  "target_law": "SHA256(seed || ':' || counter) interpreted big-endian modulo 1020, reject zero and points already in the 84-point fiber; take first accepted counter; publish only point to solver",
+  "prepared_log_rule": "Reduce each standard basis vector and k times the first standard basis vector by the saved upper triangular row HNF; unique coset equality determines k; independently replay kG for all 84 points",
+  "target_rule": "Scan Q+kG for k=0..1019 until first fiber hit, return log(P)-k modulo 1020, independently replay result",
+  "rho_rule": "One-target Floyd rho with 3 deterministic partitions by x mod 3, states aG+bQ, collision congruence solved with gcd and candidate replay, deterministic SHA256-derived restarts, cap 200000 group steps",
+  "timing": "Local ordinary-host diagnostic, one process and one worker for each algorithm; preparation outside target interval; target generation outside both intervals; correctness replay included in each target interval",
+  "candidate_id": null,
+  "benchmark_tier": "exploratory_ordinary_host",
+  "rho_repetitions": 2,
+  "order": ["connector", "rho", "rho", "connector"]
+}
