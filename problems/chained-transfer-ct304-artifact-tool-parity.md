@@ -46,3 +46,10 @@ The first condition repairs only source identity. Even satisfying all three unbl
 ## Resolution and history
 
 2026-11-22: discovered via exact-head CT304 follow-up. The two failures and byte identities are retained; no source parity repair, credential change, native ECDLP run or independent PCC claimed. **Unresolved. [pcc:unverified]**
+
+
+## CT305 source-semantics audit — 2026-11-22
+
+The exact historical/current source comparison identified an **additional migration hazard**, separate from the pre-S3 `cmp` failure: current `artifacts.py pull` defaults to `GitHistory` for S3-configured repositories (`--source auto`) whereas historical `pull` uses `Remote(cfg)`. Current `--source remote` restores remote selection **only when a download is necessary**; already-hydrated files and verified cache entries can suppress remote reads. Current S3 client changed from `aws s3 cp` to `aws s3api get-object`, and tracked-path/manifest validation was tightened. A new pin cannot be inferred to certify original S3 access simply because materialization succeeds. Source comparison supports this conclusion; no hosted S3 experiment occurred.
+
+Full immutable source identities, 27-hunk source audit, exact fallback selection, impact, and owner-reviewed decision gates: [CT305 audit](../experiments/chained-transfer-public-target/norm-point-reuse-01/CT305_ARTIFACT_SOURCE_SEMANTICS_AUDIT.md) (GitHub commit `e8bf9eff5e3850d8ff382e71a6e19dd7bdb3dc55`). **Reconciliation now also requires explicit owner selection of remote-S3 custody versus separately labeled SHA-bound Git recovery.** For remote evidence, mandate isolated empty cache, explicit remote selection, original six-object manifest checks and remote/status receipts before allowing native timing. This is not authority to waive pin comparisons or modify shared tool/source. Existing STS 403, budget STOP and PCC gates remain. [pcc:unverified].
