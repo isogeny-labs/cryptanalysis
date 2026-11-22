@@ -496,28 +496,28 @@ uint64_t ca_next_prime(uint64_t n)
 
 /* ---- factoring -------------------------------------------------------- */
 
-static uint64_t pollard_brent(uint64_t n, uint64_t c, uint64_t seed)
+/* Brent's Pollard rho in Montgomery form, batched gcd.  m is for modulus n
+ * (odd composite); the caller owns it so retries for different (c, seed) do
+ * not re-init R, R^2, R^3. */
+static uint64_t pollard_brent(const ca_mont *m, uint64_t n, uint64_t c, uint64_t seed)
 {
-    /* Brent's variant of Pollard rho with Montgomery arithmetic, batched gcd. */
-    ca_mont m;
-    if (!ca_mont_init(&m, n)) return 0;
-    uint64_t cm = ca_mont_to(&m, c);
-    uint64_t y = ca_mont_to(&m, seed), q = m.r1, g = 1;
+    uint64_t cm = ca_mont_to(m, c);
+    uint64_t y = ca_mont_to(m, seed), q = m->r1, g = 1;
     uint64_t x, ys; /* both are set before first use inside the loop */
     uint64_t r = 1;
     const uint64_t batch = 128;
     do {
         x = y;
-        for (uint64_t i = 0; i < r; i++) y = ca_addmod(ca_mont_sqr(&m, y), cm, n);
+        for (uint64_t i = 0; i < r; i++) y = ca_addmod(ca_mont_sqr(m, y), cm, n);
         uint64_t k = 0;
         do {
             ys = y;
             uint64_t lim = (batch < r - k) ? batch : r - k;
             for (uint64_t i = 0; i < lim; i++) {
-                y = ca_addmod(ca_mont_sqr(&m, y), cm, n);
-                q = ca_mont_mul(&m, q, x > y ? x - y : y - x);
+                y = ca_addmod(ca_mont_sqr(m, y), cm, n);
+                q = ca_mont_mul(m, q, x > y ? x - y : y - x);
             }
-            g = ca_gcd(ca_mont_from(&m, q), n);
+            g = ca_gcd(ca_mont_from(m, q), n);
             k += lim;
         } while (k < r && g == 1);
         r <<= 1;
@@ -525,9 +525,69 @@ static uint64_t pollard_brent(uint64_t n, uint64_t c, uint64_t seed)
     } while (g == 1);
     if (g == n) {
         do {
-            ys = ca_addmod(ca_mont_sqr(&m, ys), cm, n);
-            g = ca_gcd(ca_mont_from(&m, x > ys ? x - ys : ys - x), n);
+            ys = ca_addmod(ca_mont_sqr(m, ys), cm, n);
+            g = ca_gcd(ca_mont_from(m, x > ys ? x - ys : ys - x), n);
         } while (g == 1);
+    }
+    return g;
+}
+
+/* Two Brent walks on the same n, stepped in lockstep so each Montgomery
+ * squaring of one walk overlaps the other's dependency.  The first
+ * nontrivial factor either walk finds is returned; factorization is unique,
+ * so any 1 < d < n is a correct split. */
+static uint64_t pollard_brent_dual(const ca_mont *m, uint64_t n, uint64_t c0, uint64_t seed0,
+                                  uint64_t c1, uint64_t seed1)
+{
+    uint64_t cm0 = ca_mont_to(m, c0), cm1 = ca_mont_to(m, c1);
+    uint64_t y0 = ca_mont_to(m, seed0), y1 = ca_mont_to(m, seed1);
+    uint64_t q0 = m->r1, q1 = m->r1, g = 1;
+    uint64_t x0, x1, ys0, ys1;
+    uint64_t r = 1;
+    const uint64_t batch = 128;
+    int which = 0; /* 0 → walk0 found g, 1 → walk1 */
+    do {
+        x0 = y0;
+        x1 = y1;
+        for (uint64_t i = 0; i < r; i++) {
+            y0 = ca_addmod(ca_mont_sqr(m, y0), cm0, n);
+            y1 = ca_addmod(ca_mont_sqr(m, y1), cm1, n);
+        }
+        uint64_t k = 0;
+        do {
+            ys0 = y0;
+            ys1 = y1;
+            uint64_t lim = (batch < r - k) ? batch : r - k;
+            for (uint64_t i = 0; i < lim; i++) {
+                y0 = ca_addmod(ca_mont_sqr(m, y0), cm0, n);
+                y1 = ca_addmod(ca_mont_sqr(m, y1), cm1, n);
+                q0 = ca_mont_mul(m, q0, x0 > y0 ? x0 - y0 : y0 - x0);
+                q1 = ca_mont_mul(m, q1, x1 > y1 ? x1 - y1 : y1 - x1);
+            }
+            g = ca_gcd(ca_mont_from(m, q0), n);
+            if (g != 1) {
+                which = 0;
+            } else {
+                g = ca_gcd(ca_mont_from(m, q1), n);
+                which = 1;
+            }
+            k += lim;
+        } while (k < r && g == 1);
+        r <<= 1;
+        if (r > (1ULL << 40)) return 0;
+    } while (g == 1);
+    if (g == n) {
+        if (which == 0) {
+            do {
+                ys0 = ca_addmod(ca_mont_sqr(m, ys0), cm0, n);
+                g = ca_gcd(ca_mont_from(m, x0 > ys0 ? x0 - ys0 : ys0 - x0), n);
+            } while (g == 1);
+        } else {
+            do {
+                ys1 = ca_addmod(ca_mont_sqr(m, ys1), cm1, n);
+                g = ca_gcd(ca_mont_from(m, x1 > ys1 ? x1 - ys1 : ys1 - x1), n);
+            } while (g == 1);
+        }
     }
     return g;
 }
@@ -549,10 +609,17 @@ static void factor_rec(uint64_t n, ca_factorization *out, unsigned depth)
     if (n == 1) return;
     if (ca_is_prime(n)) { add_factor(out, n); return; }
     if (depth > 64) { add_factor(out, n); return; }
+    ca_mont mo;
+    if (!ca_mont_init(&mo, n)) { add_factor(out, n); return; }
     uint64_t d = 0;
-    for (uint64_t c = 1; c < 100 && (d == 0 || d == n); c++) {
-        d = pollard_brent(n, c, 2 + c);
+    /* Dual walks for (c, c+1): one Montgomery context, interleaved
+     * squarings.  Covers every c in 1..99; a single leftover uses the
+     * one-walk routine. */
+    for (uint64_t c = 1; c + 1 < 100 && (d == 0 || d == n); c += 2) {
+        d = pollard_brent_dual(&mo, n, c, 2 + c, c + 1, 3 + c);
     }
+    if (d == 0 || d == n)
+        d = pollard_brent(&mo, n, 99, 2 + 99);
     if (d == 0 || d == n) {
         /* fall back to trial division - should be unreachable for 64-bit */
         for (uint64_t q = 3; (ca_u128)q * q <= n; q += 2) {
