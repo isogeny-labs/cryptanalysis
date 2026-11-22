@@ -538,6 +538,9 @@ static void mont_pow4(const ca_mont *m, uint64_t w[4], uint64_t e)
 int ca_is_prime(uint64_t n)
 {
     if (n < 2) return 0;
+    /* Small trial rejects obvious composites before the Montgomery setup.
+     * Hashed SPRP bases below may share larger factors with n; a % n == 0
+     * then skips that witness (the 7-base set stays deterministic for n < 2^64). */
     static const uint64_t small[] = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37};
     for (size_t i = 0; i < sizeof(small) / sizeof(small[0]); i++) {
         if (n == small[i]) return 1;
@@ -546,27 +549,39 @@ int ca_is_prime(uint64_t n)
     uint64_t d = n - 1;
     unsigned s = 0;
     while ((d & 1) == 0) { d >>= 1; s++; }
-    /* n is odd here.  These 12 bases are deterministic for all n < 2^64. */
+    /* n is odd here.  The 7 hashed bases are deterministic for all n < 2^64
+     * (https://miller-rabin.appspot.com/); fewer witnesses than the first
+     * twelve primes, same verdict. */
+    static const uint64_t bases[] = {2, 325, 9375, 28178, 450775, 9780504, 1795265022ull};
     ca_mont m;
     ca_mont_init(&m, n);
-    const size_t nb = sizeof(small) / sizeof(small[0]);
+    const size_t nb = sizeof(bases) / sizeof(bases[0]);
 #ifdef CA_GLV_FIELD_COUNT
     for (size_t i = 0; i < nb; i++) {
-        if (mr_witness(&m, small[i], d, s)) return 0;
+        uint64_t a = bases[i] % n;
+        if (a <= 1) continue;
+        if (mr_witness(&m, a, d, s)) return 0;
     }
 #else
     /* Base 2 alone first: it already rejects nearly every composite.  A
      * number that passes (a prime, almost always) needs all the other bases,
      * which then run four at a time.  The verdict is the same: n is
      * composite iff some base is a witness. */
-    if (mr_witness(&m, small[0], d, s)) return 0;
+    if (mr_witness(&m, 2, d, s)) return 0;
     for (size_t i = 1; i < nb; i += 4) {
         uint64_t w[4];
         size_t cnt = nb - i < 4 ? nb - i : 4;
-        for (size_t l = 0; l < 4; l++) w[l] = ca_mont_to(&m, small[i + (l < cnt ? l : cnt - 1)]);
+        for (size_t l = 0; l < 4; l++) {
+            uint64_t a = bases[i + (l < cnt ? l : cnt - 1)] % n;
+            if (a <= 1) a = 2; /* padding / n | base: inert under mont_pow4 */
+            w[l] = ca_mont_to(&m, a);
+        }
         mont_pow4(&m, w, d);
-        for (size_t l = 0; l < cnt; l++)
+        for (size_t l = 0; l < cnt; l++) {
+            uint64_t a = bases[i + l] % n;
+            if (a <= 1) continue;
             if (mr_after_pow(&m, w[l], s)) return 0;
+        }
     }
 #endif
     return 1;
