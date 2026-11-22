@@ -438,8 +438,41 @@ static ca_status k_solve_impl(const ca_group *g, const ca_elem *base, const ca_e
     }
     uint64_t batches = 0;
     const int zp = ca_zp_group_is_native(g);
+    const int ec = !zp && ca_ec_group_is_native(g);
+    const ca_ec_consts ecc = ec ? ca_ec_consts_of(g) : (ca_ec_consts){0, 0, 0, 0};
     while (running) {
-        if (!zp) {
+        if (ec) {
+            /* Native E(F_p): same Montgomery-trick batch as rho's EC walk —
+             * dens from (Y, J[j]) in place, four interleaved product chains,
+             * then ca_ec_add_with_di into Y (aliases OK).  Skips the Yn/B
+             * element copies the generic batch_op path needed for AoS roos. */
+#define K_CHAINS 4u
+#define BM(x, y) (CA_FC_ADD(CA_FC_MUL, 1), ca_ec_bmul((x), (y), ecc.p, ecc.npi))
+            uint64_t *const den = scratch, *const suf = scratch + total;
+            const uint32_t k = total < K_CHAINS ? total : K_CHAINS;
+            for (uint32_t i = 0; i < total; i++) {
+                jidx[i] = (uint32_t)(((ca_u128)(nj_magic * (hs[i] >> 32)) * nj) >> 64);
+                den[i] = ca_ec_add_den(&ecc, &roos[i].Y, &J[jidx[i]]);
+            }
+            for (uint32_t i = total; i-- > 0;)
+                suf[i] = i + k < total ? BM(den[i], suf[i + k]) : den[i];
+            uint64_t before[K_CHAINS], after[K_CHAINS], inv[K_CHAINS];
+            before[0] = ecc.one;
+            for (uint32_t j = 1; j < k; j++) before[j] = BM(before[j - 1], suf[j - 1]);
+            after[k - 1] = ecc.one;
+            for (uint32_t j = k - 1; j-- > 0;) after[j] = BM(after[j + 1], suf[j + 1]);
+            uint64_t all = BM(before[k - 1], suf[k - 1]);
+            all = ca_mont_inv(&g->mont, all);
+            for (uint32_t j = 0; j < k; j++) inv[j] = BM(all, BM(before[j], after[j]));
+            for (uint32_t i = 0, j = 0; i < total; i++) {
+                uint64_t di = i + k < total ? BM(inv[j], suf[i + k]) : inv[j];
+                inv[j] = BM(inv[j], den[i]);
+                ca_ec_add_with_di(&ecc, &roos[i].Y, &roos[i].Y, &J[jidx[i]], di);
+                j = j + 1 == k ? 0 : j + 1;
+            }
+#undef BM
+#undef K_CHAINS
+        } else if (!zp) {
             for (uint32_t i = 0; i < total; i++) {
                 jidx[i] = (uint32_t)(((ca_u128)(nj_magic * (hs[i] >> 32)) * nj) >> 64);
                 B[i] = J[jidx[i]];
@@ -466,6 +499,9 @@ static ca_status k_solve_impl(const ca_group *g, const ca_elem *base, const ca_e
                 }
                 r->dist += jsz[ji];
                 h = ca_zp_hash_residue(r->Y.w[0], g->p);
+            } else if (ec) {
+                r->dist += jsz[jidx[i]];
+                h = ca_ec_hash_words(r->Y.w[0], r->Y.w[1], r->Y.w[2]);
             } else {
                 r->Y = Yn[i];
                 r->dist += jsz[jidx[i]];
