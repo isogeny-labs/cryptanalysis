@@ -2,6 +2,8 @@
 
 ## Active items
 
+- [ ] CT317 independent prime-field cold-target group replay (ChatGPT, started 2026-11-22, existing draft PR #1912, branch research/ct302-full-native-log-admission-20261121): source-only bound exact raw solver stdout/receipt to verified Q=[k]P on short-Weierstrass <=31-bit prime curves; independent subgroup and curve validation, toy sabotages; native 695/701 and authenticated custody still blocked. [pcc:unverified]
+
 - [ ] CT316 Linux per-child GNU-time RSS capture (ChatGPT, started 2026-11-22, existing draft PR #1912, branch research/ct302-full-native-log-admission-20261121): explicit time-executable SHA pin, full CT176 bounded original/reuse capture, separate read-only meter/output receipt, measured positive OS RSS on benign Python stand-ins, 18 meter corruption controls, no original Jacobian models or independent PCC; same-host native 695/701 and CT315 full-cold panel still blocked on authenticated S3/tool/STS owner gate. [pcc:unverified]
 
 - [ ] CT315 complete-cold ABBA ECDLP cost-panel admission (ChatGPT, started 2026-11-22, existing draft PR #1912): prospective 7-run/block, >=4-block exact-target panel with per-run cold setup/transfer/precompute/relation/LA/descent/recovery/verification/teardown, measured RSS and fixed memory cap; compare candidate to min(retained-lift, rho, BSGS, IC) rather than primitive-only cost; source-only synthetic positive/negative and 19 sabotage/parser controls. Original S3 custody, real cold logs, independent source group-law verification, CI/PCC still open; never a speedup claim. [pcc:unverified]
