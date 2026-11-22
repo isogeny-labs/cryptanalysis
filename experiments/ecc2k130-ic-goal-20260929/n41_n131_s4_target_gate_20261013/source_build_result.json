@@ -1,0 +1,59 @@
+{
+  "candidate_id": null,
+  "curve_id": "EC1N41Ckb1h7d5e80d3c4d0",
+  "protocol_sha256": "512cff0caa8619c4dd9c1f38eecdc22160fabe9390f1e7b0c9f08978056e1740",
+  "public_point": [
+    920359962848,
+    755404565011
+  ],
+  "public_target_reciprocal": 1000731834126,
+  "rows": [
+    {
+      "bdd_nodes": 72,
+      "build_and_write_seconds": 0.42049687500000005,
+      "collision_pairs": 12,
+      "formula_bytes": 356474,
+      "formula_sha256": "d124ba398989c948bea10e7edda26f81f29a551fe6c19fdf75cef976598b18fa",
+      "middle_input_bits": 41,
+      "source_counts": {
+        "and_gates": 2397,
+        "build_seconds": 0.015407708999999992,
+        "clauses": 7698,
+        "variables": 3906,
+        "xor_rows": 1338
+      },
+      "source_masks": 125,
+      "total_counts": {
+        "and_gates": 5223,
+        "clauses": 16259,
+        "variables": 9197,
+        "xor_rows": 3762
+      },
+      "variant": "two_s3_links"
+    },
+    {
+      "bdd_nodes": 72,
+      "build_and_write_seconds": 0.44178995899999995,
+      "collision_pairs": 12,
+      "formula_bytes": 548451,
+      "formula_sha256": "ea5ca91c14809cd4545bd44d43f51f1dd714503ec77a4748c8424f37d201e3e9",
+      "middle_input_bits": 0,
+      "source_counts": {
+        "and_gates": 2397,
+        "build_seconds": 0.018868291999999953,
+        "clauses": 7698,
+        "variables": 3906,
+        "xor_rows": 1338
+      },
+      "source_masks": 125,
+      "total_counts": {
+        "and_gates": 8049,
+        "clauses": 24695,
+        "variables": 13580,
+        "xor_rows": 5360
+      },
+      "variant": "direct_s4"
+    }
+  ],
+  "status": "PAIRED_SOURCE_CONSTRAINED_FORMULAS_BUILT"
+}

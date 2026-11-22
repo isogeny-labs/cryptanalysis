@@ -1002,6 +1002,11 @@ class ReceiptBoundSourceControls(unittest.TestCase):
         self.root_patch = patch.object(gate, "ROOT", self.root)
         self.root_patch.start()
         self.addCleanup(self.root_patch.stop)
+        # These controls isolate native-output admission. Git-backed context
+        # integrity and actual native replay have separate controls.
+        context_patch = patch.object(gate, "receipt_source_context", return_value=(self.root, {}))
+        context_patch.start()
+        self.addCleanup(context_patch.stop)
 
     def test_pinned_bytes_match_the_registered_digests(self):
         record = gate.RECEIPT_BOUND_SOURCES[self.SOURCE]

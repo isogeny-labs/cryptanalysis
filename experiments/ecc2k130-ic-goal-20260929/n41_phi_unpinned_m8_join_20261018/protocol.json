@@ -1,0 +1,75 @@
+{
+  "candidate_id": null,
+  "commands": {
+    "positive": [
+      "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_phi_unpinned_m8_join_20261018/join",
+      "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_phi_unpinned_m8_join_20261018/positive_input.tsv",
+      "590",
+      "4294967296"
+    ],
+    "public": [
+      "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_phi_unpinned_m8_join_20261018/join",
+      "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_phi_unpinned_m8_join_20261018/public_input.tsv",
+      "590",
+      "4294967296"
+    ]
+  },
+  "compile_command": "clang++ -std=c++17 -O3 -DNDEBUG -Wall -Wextra join.cpp -o join",
+  "compiler_version": "Apple clang version 17.0.0 (clang-1700.0.13.5)",
+  "curve_id": "EC1N41Ckb1h7d5e80d3c4d0",
+  "native_cap_seconds": 590,
+  "positive_law": "independently constructed eight-state sum, all codes and signs free to search",
+  "promotion_gate": "positive exact group replay then unpinned public exact group and cofactor replay",
+  "public_law": "archived raw endpoint from N41 phi public subgroup point; all eight codes and signs free",
+  "rss_cap_bytes": 4294967296,
+  "source_law": "30 valid d6 phi codes, eight Frobenius positions 0..7, both signs, 60 states per slot",
+  "sources": {
+    "export_protocol.json": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_phi_unpinned_m8_join_20261018/export_protocol.json",
+      "sha256": "e44ffd48f870d73438bebd9ff1bba3da48c84a4f7e0e529e4ab347c4eba322c8"
+    },
+    "export_result.json": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_phi_unpinned_m8_join_20261018/export_result.json",
+      "sha256": "6cba7ec5164c07ea9e1ce52c9547488cc37d531384ff56599708501d6ef201ea"
+    },
+    "join": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_phi_unpinned_m8_join_20261018/join",
+      "sha256": "5d9ccd67b9e907c7ceb618f577de164a09d916b9a85b32d80126bb04a85b3420"
+    },
+    "join.cpp": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_phi_unpinned_m8_join_20261018/join.cpp",
+      "sha256": "06186cd98c0bbcae16d7da822b149f56d28078200915a39d067089ca3a46cc6a"
+    },
+    "positive_input.tsv": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_phi_unpinned_m8_join_20261018/positive_input.tsv",
+      "sha256": "11de9e2291c5b83dd06a24bc1c1dcf2d72773195ed69fd8139dc3d20edfcf43c"
+    },
+    "prior_n41_relation_replay.json": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_phi_target_coupled_pair_join_20261009/replay.json",
+      "sha256": "eada3a0a8d400bf09e3ac7742b4bc87d38b4b89f3df5273eb06bb9454e5205a3"
+    },
+    "public_input.tsv": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_phi_unpinned_m8_join_20261018/public_input.tsv",
+      "sha256": "b4cdde36f28c78aac63d868232f2d123c7d4ff97aed45631fd7389c34224c73b"
+    },
+    "run.py": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_phi_unpinned_m8_join_20261018/run.py",
+      "sha256": "cc5a9e036740d2eb343c5cbcc8cd9e56638e3c5df76775c05e1a0c05a71e700a"
+    },
+    "sage_runtime_info.json": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_phi_unpinned_m8_join_20261018/sage_runtime_info.json",
+      "sha256": "073ca37250b100a7f961de3475da8a4d489f3f2140c15f4c72457816893f3f01"
+    },
+    "source_protocol.json": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_phi_second_link_control_20261009/protocol.json",
+      "sha256": "82b18cc697e0fb256c0d9f5dbecf7068606a8cbe5043a802a3021d69873cca09"
+    },
+    "source_table.json": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_phi_second_link_control_20261009/table.json",
+      "sha256": "373a53b1080788de74a176b0e5402083e619bee2e524f429a03ae7fc32e573ee"
+    }
+  },
+  "status": "FROZEN_N41_PHI_UNPINNED_M8_JOIN",
+  "wall_cap_seconds": 600,
+  "worker_count": 1
+}

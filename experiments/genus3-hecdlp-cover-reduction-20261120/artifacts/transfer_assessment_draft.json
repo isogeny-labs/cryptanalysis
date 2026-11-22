@@ -1,0 +1,136 @@
+{
+  "format": "correspondence-assessment-draft-v1",
+  "assessment_state": "draft",
+  "authority": "companion artifact; not a ledger record or certificate",
+  "source": {
+    "object_uid": "cover-lifted-elliptic-subgroup-family",
+    "representation_uid": "f-star-E-n-inside-genus3-hyperelliptic-jacobian",
+    "equations": "H: y^2=f(x), deg(f)=7 or 8, together with a supplied degree-d cover f:H->E",
+    "field": "F_q, characteristic greater than 3 for the Smith construction",
+    "dimension": 3,
+    "subgroup_order": "odd prime n with gcd(d,n)=1"
+  },
+  "destination": {
+    "object_uid": "smith-plane-quartic-jacobian-family",
+    "representation_uid": "nonhyperelliptic-genus3-jacobian",
+    "equations": "user-specific plane quartic not constructed in this package",
+    "field": "F_q",
+    "dimension": 3,
+    "ambient_group_order": null
+  },
+  "transformation": {
+    "kind": "curve-cover pullback followed by a rational (2,2,2)-isogeny",
+    "family": "Smith 2008 genus-3 hyperelliptic-to-plane-quartic transfer",
+    "degree": 8,
+    "field_of_definition": "F_q when the Frobenius-stable matching and construction hypotheses hold",
+    "formulas": "published family; no user-specific executable Smith map in this package",
+    "exceptional_cases": [
+      "characteristic 2 or 3",
+      "no Frobenius-stable perfect matching",
+      "even-order transported subgroup",
+      "arbitrary Jacobian classes outside f*E[n]"
+    ],
+    "normalization": "phi^dagger o phi=[2]; f_* o f^*=[d]"
+  },
+  "obligations": {
+    "existence": {
+      "state": "supported",
+      "evidence": ["Smith 2008", "artifacts/screen.json", "artifacts/smith_f37_control.json"],
+      "scope": "published family and combinatorial eligibility screen; no user-specific target"
+    },
+    "explicit_construction": {
+      "state": "unknown",
+      "evidence": ["the package has no executable Smith isogeny constructor"],
+      "scope": "the supplied toy HECDLP measurements remain on hyperelliptic Jacobians"
+    },
+    "map_correctness": {
+      "state": "unknown",
+      "evidence": ["artifacts/cover_retraction.json records the theorem-level identities"],
+      "scope": "no supplied cover map or user-specific isogeny formulas were executed"
+    },
+    "subgroup_preservation": {
+      "state": "supported",
+      "evidence": ["odd n gives ker(phi) intersection G_H={0}", "phi^dagger o phi=[2]", "f_* o f^*=[d]"],
+      "scope": "conditional theorem on f*E[n] when gcd(2d,n)=1"
+    },
+    "computational_advantage": {
+      "state": "unknown",
+      "evidence": ["artifacts/end_to_end_hecdlp.json measures a source-Jacobian toy pipeline", "the Smith transfer and plane-quartic destination pipeline were not measured end to end"],
+      "scope": "toy multi-target HECDLP only; no NIST or user-specific transfer advantage"
+    },
+    "scaling_support": {
+      "state": "partial",
+      "evidence": ["seven q=17..101 toy Jacobians", "relation-candidate fit 1.1216", "rho-addition fit 0.5047"],
+      "scope": "retrospective bounded panel; no cryptographic-size extrapolation"
+    }
+  },
+  "preservation_certificate": {
+    "identity": "f_* o phi^dagger o phi o f^*=[2d]",
+    "kernel_intersection": "trivial on odd prime-order G_H",
+    "recovery_map": "[(2d)^(-1) mod n] o f_* o phi^dagger",
+    "scalar_multiplier": "2d",
+    "proof_artifact": "report.md and artifacts/cover_retraction.json"
+  },
+  "mechanism": {
+    "proposed_benefit": "replace direct genus-3 hyperelliptic index calculus modeled at soft-O(q^(4/3)) with plane-quartic index calculus modeled at soft-O(q)",
+    "prediction": "the exponent reduction applies to eligible HECDLP instances but does not improve a native same-field prime-field ECDLP",
+    "falsification_condition": "a checked field/subgroup transfer plus complete cold destination solve fails to improve the matched source-Jacobian method, or the user-specific construction/map obligation fails",
+    "assumptions": ["published Smith construction hypotheses", "Diem destination model", "odd subgroup order", "complete cost accounting still owed"]
+  },
+  "cost_comparison": {
+    "workload": "HECDLP in an order-about-q^3 subgroup; toy panel uses 20 targets per source Jacobian",
+    "baseline": "same-Jacobian Pollard rho for the toy panel; direct genus-3 hyperelliptic index calculus for the modeled comparison",
+    "units": "producer wall seconds and counted candidates/additions for toy rows; soft-O powers of q for the published model",
+    "construction": "unmeasured",
+    "transfer": "unmeasured for Smith; elliptic 2-isogeny controls only",
+    "destination": "modeled soft-O(q); not executed",
+    "recovery": "theorem-level formula; not executed for a Smith transfer",
+    "verification": "toy source-Jacobian logs replayed by scalar multiplication in the producer",
+    "failed_attempts_and_duplicates": "attempts.md",
+    "memory_and_data": "toy sparse pivot counts retained; production memory unmeasured",
+    "setup_reuse": "20-target toy rows report setup separately; cold one-target advantage is not established",
+    "uncertainty": "no independent replay, signed PCC standing, or matched native repository benchmark record",
+    "evidence_label": "mixed retrospective measurement and modeled asymptotics"
+  },
+  "controls": [
+    "105 perfect matchings enumerated",
+    "Smith F_37 positive control",
+    "dense solve cross-checks sparse elimination",
+    "factor-base and target scalar replay",
+    "same-Jacobian rho on each toy curve",
+    "six toy elliptic signed 2-isogeny controls"
+  ],
+  "protocol": {
+    "parameter_scope": "q in {17,19,47,53,67,83,101}; one fixed genus-3 curve per q; 20 targets",
+    "sample_selection": "retrospective producer-selected toy panel",
+    "stopping_rules": "full factor-base rank and 20 recovered target logs per curve",
+    "invalidation_rules": "any failed scalar replay, rank deficiency, sparse/dense disagreement, or unmatched rho target",
+    "hardware_manifest": "embedded producer environment in artifacts/end_to_end_hecdlp.json",
+    "execution_route": "historical standalone Python producer; this integration performs validation tests only"
+  },
+  "exploration_boundary": {
+    "families": ["Smith rational (2,2,2)-isogenies", "degree-d curve-cover pullback", "toy hyperelliptic index calculus"],
+    "parameters": "characteristic greater than 3; genus 3; bounded toy q panel",
+    "completed_scope": "screen, preservation theorem, source-Jacobian toy pipeline, and elliptic signed-map controls",
+    "completeness_claim": "none for a user-specific Smith construction, plane-quartic destination solve, or NIST-scale advantage"
+  },
+  "composition": {
+    "edge_ids": ["cover-pullback", "smith-222-isogeny", "plane-quartic-index-calculus", "dual-and-norm-recovery"],
+    "junction_compatibility": "the theorem-level subgroup identities compose; the executable middle and destination edges are missing",
+    "weakest_open_obligation": "explicit user-specific Smith isogeny and complete destination solve"
+  },
+  "sources": [
+    "Benjamin Smith, arXiv:0806.2995",
+    "crypto:research/genus_ladder_20261114/PROTOCOL.md",
+    "crypto:research/genus_ladder_20261114/RESULTS.md"
+  ],
+  "open_obligations": [
+    "supply and verify an actual cover f:H->E",
+    "construct the eligible Smith isogeny and plane quartic",
+    "execute subgroup transport and dual recovery",
+    "measure the complete cold destination workload against matched controls",
+    "independent replay and PCC standing"
+  ],
+  "recommended_next_action": "construct Smith's F_37 control isogeny natively and run one complete transferred target before extending the panel",
+  "official_status_change": "none"
+}

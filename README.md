@@ -135,8 +135,8 @@ validate the crate and replay its examples. The
 records the binary checks and includes an inspected PDF.
 
 For genus-2 and higher Jacobian transfers, use the
-[`ecdlp-surfaces` skill](.agents/skills/ecdlp-surfaces/SKILL.md) and its
-[higher-genus reference](.agents/skills/ecdlp-surfaces/references/higher-genus.md)
+[`ecdlp-surfaces` skill](https://github.com/isogeny-labs/workspace/blob/main/.agents/skills/ecdlp-surfaces/SKILL.md) and its
+[higher-genus reference](https://github.com/isogeny-labs/workspace/blob/main/.agents/skills/ecdlp-surfaces/references/higher-genus.md)
 for the existing cover/arithmetic tools, native pullback APIs, and construction
 and subgroup-validation requirements.
 

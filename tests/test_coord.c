@@ -462,6 +462,263 @@ static void test_leases_expire_and_units_resume(void)
     ca_coord_ctx_close(ctx);
 }
 
+typedef struct delta_sink {
+    ca_coord_state *st;
+    const ca_coord_ctx *ctx;
+    size_t lines;
+} delta_sink;
+
+static int delta_apply(void *user, const ca_coord_checkin *ci)
+{
+    delta_sink *d = user;
+    d->lines++;
+    if (d->st) CHECK(ca_coord_apply(d->st, d->ctx, ci, 10, 1, NULL) == CA_OK);
+    return 0;
+}
+
+/* C-F6: a forged line under a lane's next (peer, seq) used to make the
+ * real line look like a resend, so its points were dropped unmerged. */
+static void test_forged_twin_does_not_drop_the_real_checkin(void)
+{
+    ca_group g;
+    ca_elem gen;
+    ca_coord_ctx *ctx = make_ctx(&g, &gen, 9001, 0, NULL);
+    ca_coord_state *src = NULL, *hub = NULL, *late = NULL;
+    CHECK(ca_coord_state_init(&src, ctx) == CA_OK);
+    CHECK(ca_coord_state_init(&hub, ctx) == CA_OK);
+    CHECK(ca_coord_state_init(&late, ctx) == CA_OK);
+
+    collector c;
+    memset(&c, 0, sizeof(c));
+    ca_coord_lane_params p;
+    ca_coord_lane_params_default(&p, "victim.0");
+    p.max_walkers = 16;
+    p.checkin_every = 8;
+    ca_coord_lane_result res;
+    CHECK(ca_coord_lane_run(ctx, src, &p, collect, &c, NULL, NULL, &res) == CA_OK);
+    const ca_coord_checkin *real = NULL;
+    for (size_t i = 0; i < c.count && !real; i++)
+        if (c.ci[i].num_dps > 0) real = &c.ci[i];
+    CHECK(real != NULL);
+    if (!real) goto done;
+
+    ca_coord_checkin forged = *real;
+    forged.num_dps = 0;
+    forged.num_units = 0;
+    ca_coord_outcome oc;
+    CHECK(ca_coord_apply(hub, ctx, &forged, 10, 1, &oc) == CA_OK);
+    CHECK(oc.fresh == 1);
+
+    /* The real line still lands, points and all. */
+    CHECK(ca_coord_apply(hub, ctx, real, 10, 1, &oc) == CA_OK);
+    CHECK(oc.fresh == 1);
+    CHECK_EQ_U64(oc.accepted_dps, real->num_dps);
+    ca_coord_progress pr;
+    ca_coord_progress_get(hub, ctx, 10, 120, &pr);
+    CHECK_EQ_U64(pr.dps_stored, real->num_dps);
+
+    /* Resends of either line are still no-ops. */
+    CHECK(ca_coord_apply(hub, ctx, real, 10, 1, &oc) == CA_OK);
+    CHECK(oc.fresh == 0);
+    CHECK(ca_coord_apply(hub, ctx, &forged, 10, 1, &oc) == CA_OK);
+    CHECK(oc.fresh == 0);
+    CHECK_EQ_U64(ca_coord_log_count(hub), 2);
+
+    /* A replica that saw only the forgery has already advanced its
+     * version vector past this seq; the delta must still carry both. */
+    CHECK(ca_coord_apply(late, ctx, &forged, 10, 1, NULL) == CA_OK);
+    ca_coord_vv *vv = NULL;
+    CHECK(ca_coord_vv_new(&vv) == CA_OK);
+    ca_coord_state_vv(late, vv);
+    CHECK_EQ_U64(ca_coord_vv_get(vv, "victim.0"), real->seq);
+    delta_sink sink = {late, ctx, 0};
+    ca_coord_delta_for(hub, vv, delta_apply, &sink);
+    CHECK_EQ_U64(sink.lines, 2);
+    ca_coord_progress_get(late, ctx, 10, 120, &pr);
+    CHECK_EQ_U64(pr.dps_stored, real->num_dps);
+    ca_coord_vv_free(vv);
+
+done:
+    free(c.ci);
+    ca_coord_state_free(late);
+    ca_coord_state_free(hub);
+    ca_coord_state_free(src);
+    ca_coord_ctx_close(ctx);
+}
+
+/* C-F7: every unsigned wire field is digits that fit, nothing else. */
+static void test_checkin_numbers_are_strict(void)
+{
+    ca_coord_checkin ci;
+    CHECK(ca_coord_checkin_decode(&ci, "ci 5 p.0 1 0 U:0,1,1,1,0,0; D: S:7") == CA_OK);
+    static const char *bad[] = {
+        "ci 5 p.0 -1 0 U: D: S:-",
+        "ci 5 p.0 +1 0 U: D: S:-",
+        "ci 5 p.0 18446744073709551616 0 U: D: S:-",
+        "ci -5 p.0 1 0 U: D: S:-",
+        "ci 5 p.0 1 -1 U: D: S:-",
+        "ci 5 p.0 1 0 U: D: S:-1",
+        "ci 5 p.0 1 0 U: D: S: 1",
+        "ci 5 p.0 1 0 U:0,99999999999999999999,0,0,0,0; D: S:-",
+    };
+    for (size_t i = 0; i < sizeof(bad) / sizeof(bad[0]); i++)
+        CHECK(ca_coord_checkin_decode(&ci, bad[i]) == CA_ERR_INVALID);
+}
+
+/* C-F7: a forged seq near 2^64 wrapped the victim's next seq to 0, after
+ * which every check-in it sent collided with one already logged. */
+static void test_seq_cannot_wrap(void)
+{
+    ca_group g;
+    ca_elem gen;
+    ca_coord_ctx *ctx = make_ctx(&g, &gen, 4242, 0, NULL);
+    ca_coord_state *st = NULL;
+    CHECK(ca_coord_state_init(&st, ctx) == CA_OK);
+    ca_coord_checkin ci;
+    memset(&ci, 0, sizeof(ci));
+    ci.job_id = ca_coord_ctx_job(ctx)->id;
+    snprintf(ci.peer, sizeof(ci.peer), "victim.0");
+
+    ci.seq = UINT64_MAX;
+    CHECK(ca_coord_apply(st, ctx, &ci, 10, 1, NULL) == CA_ERR_INVALID);
+    ci.seq = 0;
+    CHECK(ca_coord_apply(st, ctx, &ci, 10, 1, NULL) == CA_ERR_INVALID);
+    ci.seq = CA_COORD_SEQ_MAX + 1;
+    CHECK(ca_coord_apply(st, ctx, &ci, 10, 1, NULL) == CA_ERR_INVALID);
+    CHECK_EQ_U64(ca_coord_next_seq(st, "victim.0"), 1);
+
+    /* The largest seq is legal, and then the space is spent: the lane
+     * says so instead of reusing numbers. */
+    ci.seq = CA_COORD_SEQ_MAX;
+    CHECK(ca_coord_apply(st, ctx, &ci, 10, 1, NULL) == CA_OK);
+    CHECK_EQ_U64(ca_coord_next_seq(st, "victim.0"), 0);
+    ca_coord_lane_params p;
+    ca_coord_lane_params_default(&p, "victim.0");
+    p.max_walkers = 4;
+    ca_coord_lane_result res;
+    CHECK(ca_coord_lane_run(ctx, st, &p, NULL, NULL, NULL, NULL, &res) == CA_ERR_INVALID);
+    CHECK_EQ_U64(res.checkins, 0);
+    CHECK_EQ_U64(ca_coord_next_seq(st, "other.0"), 1);
+
+    ca_coord_state_free(st);
+    ca_coord_ctx_close(ctx);
+}
+
+/* C-F8, C-F10: unit reports no lane can write are refused, and the fleet
+ * step total saturates instead of wrapping. */
+static void test_impossible_unit_reports_are_refused(void)
+{
+    ca_group g;
+    ca_elem gen;
+    ca_coord_ctx *ctx = make_ctx(&g, &gen, 5151, 0, NULL);
+    ca_coord_state *st = NULL;
+    CHECK(ca_coord_state_init(&st, ctx) == CA_OK);
+    const uint64_t size = ca_coord_ctx_job(ctx)->unit_size;
+    const uint64_t per = ca_coord_walker_steps_max(ctx);
+    ca_coord_checkin ci;
+    memset(&ci, 0, sizeof(ci));
+    ci.job_id = ca_coord_ctx_job(ctx)->id;
+    snprintf(ci.peer, sizeof(ci.peer), "mallory.0");
+    ci.num_units = 1;
+    uint64_t seq = 0;
+    struct {
+        uint64_t walkers_done, steps, dps, dead_trails;
+        int32_t completed;
+        ca_status want;
+    } cases[] = {
+        {size + 1, 0, 0, 0, 0, CA_ERR_INVALID},    /* cursor past the unit */
+        {UINT64_MAX, 0, 0, 0, 0, CA_ERR_INVALID},  /* ditto */
+        {3, 0, 0, 0, 1, CA_ERR_INVALID},           /* complete, three walkers in */
+        {3, 0, 2, 2, 0, CA_ERR_INVALID},           /* more trails than walkers */
+        {0, 1, 0, 0, 0, CA_ERR_INVALID},           /* steps without walkers */
+        {1, UINT64_MAX, 1, 0, 0, CA_ERR_INVALID},  /* steps that wrap the total */
+        {2, 2 * per + 1, 2, 0, 0, CA_ERR_INVALID}, /* one step too many */
+        {2, 2 * per, 2, 0, 0, CA_OK},              /* the most two walkers can take */
+        {size, 0, 0, size, 1, CA_OK},              /* all dead: legal, and unprovable */
+    };
+    uint64_t refused = 0;
+    for (size_t i = 0; i < sizeof(cases) / sizeof(cases[0]); i++) {
+        ci.seq = ++seq;
+        ci.units[0].unit = 0;
+        ci.units[0].walkers_done = cases[i].walkers_done;
+        ci.units[0].steps = cases[i].steps;
+        ci.units[0].dps = cases[i].dps;
+        ci.units[0].dead_trails = cases[i].dead_trails;
+        ci.units[0].completed = cases[i].completed;
+        ca_status rc = ca_coord_apply(st, ctx, &ci, 1000, 1, NULL);
+        CHECK(rc == cases[i].want);
+        if (rc != CA_OK) refused++;
+        if (i == 4) {
+            /* Nothing refused so far moved the cursor: unit 0 is free
+             * again once the lease lapses, from walker 0. */
+            uint64_t resume = 99;
+            CHECK_EQ_U64(ca_coord_claim_unit(st, ctx, "bob.0", 1000 + 121, 120, 1, &resume), 0);
+            CHECK_EQ_U64(resume, 0);
+        }
+    }
+    CHECK_EQ_U64(st->rejected_checkins, refused);
+
+    st->steps = UINT64_MAX - 3;
+    ci.seq = ++seq;
+    ci.units[0].unit = 1;
+    ci.units[0].walkers_done = 1;
+    ci.units[0].steps = 10;
+    ci.units[0].dps = 1;
+    ci.units[0].dead_trails = 0;
+    ci.units[0].completed = 0;
+    CHECK(ca_coord_apply(st, ctx, &ci, 1000, 1, NULL) == CA_OK);
+    CHECK_EQ_U64(st->steps, UINT64_MAX);
+
+    ca_coord_state_free(st);
+    ca_coord_ctx_close(ctx);
+}
+
+static uint64_t mul_ops(uint64_t k)
+{
+    return k ? (uint64_t)__builtin_popcountll(k) + (uint64_t)(63 - __builtin_clzll(k)) : 0;
+}
+
+/* C-F12: the two scalar multiplications that place each walker are group
+ * work, and the lane's step count now carries them. */
+static void test_lane_charges_walker_start(void)
+{
+    ca_group g;
+    ca_elem gen;
+    ca_coord_ctx *ctx = make_ctx(&g, &gen, 6161, 0, NULL);
+    ca_coord_state *st = NULL;
+    CHECK(ca_coord_state_init(&st, ctx) == CA_OK);
+    collector c;
+    memset(&c, 0, sizeof(c));
+    ca_coord_lane_params p;
+    ca_coord_lane_params_default(&p, "count.0");
+    p.max_walkers = 12;
+    p.checkin_every = 4;
+    ca_coord_lane_result res;
+    CHECK(ca_coord_lane_run(ctx, st, &p, collect, &c, NULL, NULL, &res) == CA_OK);
+    CHECK(c.count > 0);
+    CHECK_EQ_U64(res.walkers, 12);
+
+    const uint64_t first = c.ci[0].units[0].unit * ca_coord_ctx_job(ctx)->unit_size;
+    const uint64_t cap = (uint64_t)20 << ca_coord_ctx_job(ctx)->dp_bits;
+    uint64_t walk = 0, start = 0;
+    for (uint64_t k = 0; k < 12; k++) {
+        uint64_t s = 0, a = 0, b = 0;
+        (void)ca_coord_walk_one(ctx, first + k, cap, NULL, &s);
+        walk += s;
+        ca_coord_walker_start(ctx, first + k, NULL, &a, &b);
+        start += mul_ops(a) + mul_ops(b) + 1;
+    }
+    CHECK(start > 0);
+    CHECK_EQ_U64(res.steps, walk + start);
+    ca_coord_progress pr;
+    ca_coord_progress_get(st, ctx, (uint64_t)time(NULL), 120, &pr);
+    CHECK_EQ_U64(pr.steps, res.steps);
+
+    free(c.ci);
+    ca_coord_state_free(st);
+    ca_coord_ctx_close(ctx);
+}
+
 static void test_sequence_numbers_and_deltas(void)
 {
     ca_group g;
@@ -1659,6 +1916,19 @@ static void test_same_node_instances_do_not_clobber(void)
 /* Finding 8: ingest was O(N^2) because dedup and unit lookups scanned the
  * whole log/unit table per check-in.  With the hash indices it is O(1) per
  * check-in; this asserts correctness at scale and sub-quadratic growth. */
+static void ingest_fill(ca_coord_checkin *ci, const ca_coord_ctx *ctx, size_t i)
+{
+    memset(ci, 0, sizeof(*ci));
+    ci->job_id = ca_coord_ctx_job(ctx)->id;
+    snprintf(ci->peer, sizeof(ci->peer), "load.0");
+    ci->seq = (uint64_t)i + 1;
+    ci->num_units = 1;
+    ci->units[0].unit = (uint64_t)i; /* a distinct unit each time */
+    ci->units[0].walkers_done = 1;
+    ci->units[0].dps = 1;
+    ci->units[0].steps = 1;
+}
+
 static double ingest_n(size_t n)
 {
     ca_group g;
@@ -1670,13 +1940,7 @@ static double ingest_n(size_t n)
     clock_gettime(CLOCK_MONOTONIC, &t0);
     ca_coord_checkin ci;
     for (size_t i = 0; i < n; i++) {
-        memset(&ci, 0, sizeof(ci));
-        ci.job_id = ca_coord_ctx_job(ctx)->id;
-        snprintf(ci.peer, sizeof(ci.peer), "load.0");
-        ci.seq = (uint64_t)i + 1;
-        ci.num_units = 1;
-        ci.units[0].unit = (uint64_t)i; /* a distinct unit each time */
-        ci.units[0].steps = 1;
+        ingest_fill(&ci, ctx, i);
         CHECK(ca_coord_apply(st, ctx, &ci, 10, 0, NULL) == CA_OK);
     }
     clock_gettime(CLOCK_MONOTONIC, &t1);
@@ -1684,10 +1948,7 @@ static double ingest_n(size_t n)
     CHECK_EQ_U64(ca_coord_log_count(st), n);
     /* Re-applying the whole run is a no-op: nothing new is logged. */
     for (size_t i = 0; i < n; i++) {
-        memset(&ci, 0, sizeof(ci));
-        ci.job_id = ca_coord_ctx_job(ctx)->id;
-        snprintf(ci.peer, sizeof(ci.peer), "load.0");
-        ci.seq = (uint64_t)i + 1;
+        ingest_fill(&ci, ctx, i);
         CHECK(ca_coord_apply(st, ctx, &ci, 10, 0, NULL) == CA_OK);
     }
     CHECK_EQ_U64(ca_coord_log_count(st), n);
@@ -1745,6 +2006,11 @@ int main(void)
     test_merge_is_order_independent_and_idempotent();
     test_foreign_and_forged_are_refused();
     test_leases_expire_and_units_resume();
+    test_forged_twin_does_not_drop_the_real_checkin();
+    test_checkin_numbers_are_strict();
+    test_seq_cannot_wrap();
+    test_impossible_unit_reports_are_refused();
+    test_lane_charges_walker_start();
     test_sequence_numbers_and_deltas();
     test_two_lanes_merge_to_a_solution();
     test_shards_ride_in_the_job_id();

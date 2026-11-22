@@ -1,0 +1,91 @@
+{
+  "candidate_id": null,
+  "control_raw_point": [
+    167429553570628168435800121777147797548,
+    432289823068532888106096392179806077420
+  ],
+  "control_subgroup_point": [
+    2553717643802668698489115767580191290827,
+    151046985529166123884942854303192471651
+  ],
+  "curve_id": "EC1N131Ckb1heb5f1998f20b",
+  "protocol_sha256": "1917ee5e0cef8086ae849d2a53b23c7026342528821f638cb31c302b2e05d654",
+  "rows": [
+    {
+      "and_gates": 86937,
+      "build_ns": 3517642917,
+      "check_ns": 361310000,
+      "clauses": 263060,
+      "control_check": {
+        "clauses": 263060,
+        "native_xor_rows": 38657
+      },
+      "generic_mul_calls": 9,
+      "peak_rss_bytes": 136314880,
+      "sparse_mul_calls": 7,
+      "target": "control",
+      "variables": 127822,
+      "variant": "shared",
+      "xor_rows": 38657
+    },
+    {
+      "and_gates": 100881,
+      "build_ns": 1657629083,
+      "check_ns": 375840833,
+      "clauses": 305678,
+      "control_check": {
+        "clauses": 305678,
+        "native_xor_rows": 49649
+      },
+      "generic_mul_calls": 15,
+      "peak_rss_bytes": 159694848,
+      "sparse_mul_calls": 13,
+      "target": "control",
+      "variables": 153544,
+      "variant": "two",
+      "xor_rows": 49649
+    },
+    {
+      "and_gates": 86937,
+      "build_ns": 3672640458,
+      "check_ns": 1083,
+      "clauses": 263060,
+      "control_check": null,
+      "generic_mul_calls": 9,
+      "peak_rss_bytes": 159694848,
+      "sparse_mul_calls": 7,
+      "target": "public",
+      "variables": 127822,
+      "variant": "shared",
+      "xor_rows": 38657
+    },
+    {
+      "and_gates": 100881,
+      "build_ns": 1665247750,
+      "check_ns": 1209,
+      "clauses": 305678,
+      "control_check": null,
+      "generic_mul_calls": 15,
+      "peak_rss_bytes": 160219136,
+      "sparse_mul_calls": 13,
+      "target": "public",
+      "variables": 153544,
+      "variant": "two",
+      "xor_rows": 49649
+    }
+  ],
+  "source_semantics": "Exact fixed-seed eligible endpoints and six-pair S3 target links; distinct folded columns checked on constructed control only.",
+  "source_sha256": {
+    "circuit": "a64d791fe635193aaf6956da91e6c82c61e315bf181b2c667a50d226ffae5844",
+    "fixture": "d02cf4f3d1e5ada2e2bb37743a7328f95b3a8f9696cfbddc7dc172e26ceaa5e0",
+    "public": "38fbd878f0301e3cc82d8879abc1a694cd9c47706c28c8482530f7a743f97ca3",
+    "run": "8f8c199c4cf3604001757bc3cb3802fd814f9171d2d4dcf9653e576859525eae",
+    "runtime": "073ca37250b100a7f961de3475da8a4d489f3f2140c15f4c72457816893f3f01"
+  },
+  "status": "COMPLETE",
+  "target_public_point": [
+    877610862732227974378969808549299291499,
+    2063336771837286479337213121437715536874
+  ],
+  "target_public_reciprocal": 2160830939097265115946515685140930399471
+}
