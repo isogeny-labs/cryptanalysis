@@ -6452,6 +6452,7 @@ pub fn price_phase(phase: &mut PhaseCost, calib: &Calibration) {
     // group operations; convert with one nanosecond per recorded unit.
     gae += conv("symbolic_descent_ns", Some(1.0));
     gae += conv("affine_s3_ns", Some(1.0));
+    gae += conv("hashed_tensor_ns", Some(1.0));
     gae += conv("mitm_batch_setup_ns", Some(1.0));
     gae += conv("mitm_native_setup_ns", Some(1.0));
     gae += conv("mitm_native_probe_ns", Some(1.0));
