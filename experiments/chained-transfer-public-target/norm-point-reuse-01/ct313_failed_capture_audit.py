@@ -44,7 +44,7 @@ def hexdigest(raw):
 
 
 def gitblob(raw):
-    return hashlib.sha1(b"blob " + str(len(raw)).encode("ascii") + b"\\0" + raw).hexdigest()
+    return hashlib.sha1(b"blob " + str(len(raw)).encode("ascii") + b"\0" + raw).hexdigest()
 
 
 def check(d, root, role, fixture):
