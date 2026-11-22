@@ -1,0 +1,16 @@
+{
+  "schema": "xedni-beam-auxiliary-independence-protocol-v1",
+  "question": "Can frozen auxiliary good reductions certify Z-linear independence of the two exact rational points in each of the eight final width-eight beam states?",
+  "beam_commit": "77e25abe94ed9903921569f7390cc47f73f68450",
+  "beam_result_normalized_sha256": "2e80f0c75e043db49ff8097186d4132ae23d775f35397e12d0b500d66bdce52f",
+  "states": "all eight states in beam result depth eight, in beam order; no resampling or favorable-state selection",
+  "auxiliary_prime_law": "all odd primes from 3 through 199 inclusive, ascending, tested for every state",
+  "good_reduction": "short Weierstrass A,B have denominators coprime to ell and discriminant nonzero modulo ell",
+  "point_reduction": "for quotient test require both rational point-coordinate denominators coprime to ell and verify reduced points lie on the reduced curve",
+  "odd_order_witness": "first good-reduction ell with #E(F_ell) odd; then rational E(Q)[2] is trivial by prime-to-ell torsion injection",
+  "quotient_witness": "first good-reduction ell with both point reductions and P1, P2, P1-P2 outside 2E(F_ell); their images are independent in E(F_ell)/2E(F_ell)",
+  "certificate": "a state is certified Z-linearly independent only if both witnesses exist; reduction parity plus absence of rational 2-torsion gives infinite descent for every integer relation",
+  "recording": "retain every prime status, group order and double-image count where computed, point reductions, first witnesses, and uncategorized states; audit independently with Python finite-field arithmetic",
+  "claim_boundary": "certificate applies to the eight exact rational curves and pairs at fixed 313-adic depth eight; it neither changes the beam selection nor estimates relation yield elsewhere",
+  "run_cap_seconds": 1200
+}
