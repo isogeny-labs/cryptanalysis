@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_sixpair_three_norm_hybrid_20261017/build.py", line 97, in <module>
+    main()
+    ~~~~^^
+  File "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_sixpair_three_norm_hybrid_20261017/build.py", line 41, in main
+    left = add(add(points[0], points[1]), points[2])
+               ~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_sixpair_three_norm_hybrid_20261017/build.py", line 22, in add
+    result = circuit.direct.old.old.replay.add(F, point_a, point_b)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'run' has no attribute 'replay'

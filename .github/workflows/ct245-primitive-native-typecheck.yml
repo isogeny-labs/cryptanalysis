@@ -1,0 +1,184 @@
+# CT245 protocol: norm-point-reuse-01/CT245_NATIVE_TYPECHECK_PROTOCOL.md
+# Typecheck ONLY; no original native experiment, timing or ECDLP solve.
+name: CT245 CT244 primitive clocks exact-source native typecheck
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/ct245-primitive-native-typecheck.yml'
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/ct244_primitive_probe.py'
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT245_NATIVE_TYPECHECK_PROTOCOL.md'
+permissions:
+  contents: read
+jobs:
+  ct245-checked-release:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Record source identities
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p ct245-evidence
+          git rev-parse HEAD | tee ct245-evidence/cryptanalysis-head.txt
+          b=experiments/chained-transfer-public-target
+          test "$(git hash-object "$b/fixed-jacobian-chain-evaluator-01/src/lib.rs")" = 8016634385d76207b23a3eb3a4dae9b0366ac68d
+          git hash-object "$b/fixed-jacobian-chain-evaluator-01/src/lib.rs" | tee ct245-evidence/pinned-original-git-blob.txt
+          python3 -S "$b/norm-point-reuse-01/ct244_primitive_probe.py" --original "$b/fixed-jacobian-chain-evaluator-01" --self-test \
+            2>&1 | tee ct245-evidence/generator-selftest.txt
+          python3 -O -S "$b/norm-point-reuse-01/ct244_primitive_probe.py" --original "$b/fixed-jacobian-chain-evaluator-01" --self-test \
+            2>&1 | tee ct245-evidence/generator-selftest-optimized.txt
+      - name: Checkout pinned sibling crypto arithmetic
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          repository: isogeny-labs/crypto
+          ref: 4de29a113dfc1b9d32c1809820b8caa2975042a8
+          path: _ct245_crypto
+          persist-credentials: false
+      - name: Verify and stage unchanged crypto source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C _ct245_crypto rev-parse HEAD)" = 4de29a113dfc1b9d32c1809820b8caa2975042a8
+          test -d _ct245_crypto/isogeny_algos
+          test -d _ct245_crypto/research/chained_jacobian_transfers_20261110/genus3-prime-descent/engine
+          ln -s "$GITHUB_WORKSPACE/_ct245_crypto" "$(dirname "$GITHUB_WORKSPACE")/crypto"
+          git -C _ct245_crypto rev-parse HEAD | tee ct245-evidence/crypto-head.txt
+      - name: Checkout pinned read-only artifact hydration tool
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          repository: isogeny-labs/cryptanalysis
+          ref: 3de8c174cf65e6b34bf8579d97b817b8f5dc2ded
+          path: _ct245_artifact_tools
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            tools/artifacts/artifacts.py
+            .artifacts/config.json
+      - name: Hydrate original manifest-verified model inputs, no native experiment
+        shell: bash
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_SESSION_TOKEN: ${{ secrets.ARTIFACTS_AWS_SESSION_TOKEN }}
+          AWS_EC2_METADATA_DISABLED: 'true'
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+        run: |
+          set -euo pipefail
+          test "$(git -C _ct245_artifact_tools hash-object tools/artifacts/artifacts.py)" = c49cd3de885c5b4292c283eb85e4327b872529ed
+          test "$(git -C _ct245_artifact_tools hash-object .artifacts/config.json)" = 2a9a2e9e679fb697c429597f5053ff55e264b90a
+          python3 -S - <<'PY' | tee ct245-evidence/artifact-policy-check.txt
+          import json
+          from pathlib import Path
+          old=json.loads(Path("_ct245_artifact_tools/.artifacts/config.json").read_text())
+          cur=json.loads(Path(".artifacts/config.json").read_text())
+          assert old["schema"]==cur["schema"]=="artifacts.config/v1"
+          assert old["remote"]==cur["remote"]=="s3://setec-astronomy-artifacts/store"
+          assert set(old)==set(cur)=={"schema","remote","policy"}
+          assert set(old["policy"])==set(cur["policy"])=={"keep"}
+          assert cur["policy"]["keep"][:-1]==old["policy"]["keep"]
+          assert cur["policy"]["keep"][-1]=="pcc/ledger.jsonl"
+          print("Original remote/policy unchanged except duplicated PCC keep entry")
+          PY
+          if ! command -v aws >/dev/null; then
+            python3 -m venv "$RUNNER_TEMP/ct245-awscli"
+            "$RUNNER_TEMP/ct245-awscli/bin/python" -m pip install --disable-pip-version-check awscli==1.46.2
+            export ARTIFACTS_AWS="$RUNNER_TEMP/ct245-awscli/bin/aws"
+          fi
+          # CT247: authentication admission before immutable model retrieval.
+          # STS returns identity metadata; never emit it, the credentials, or raw stderr.
+          ct247_cli="${ARTIFACTS_AWS:-aws}"
+          if [[ -z "${AWS_ACCESS_KEY_ID:-}" || -z "${AWS_SECRET_ACCESS_KEY:-}" ]]; then
+            echo "CT247_STS_CLASS=missing_credentials; artifact pull not attempted"
+            exit 42
+          fi
+          if [[ -n "${AWS_SESSION_TOKEN:-}" ]]; then
+            echo "CT247_SESSION_TOKEN_PRESENT=true"
+          else
+            echo "CT247_SESSION_TOKEN_PRESENT=false"
+          fi
+          ct247_stderr="$(mktemp "$RUNNER_TEMP/ct247-sts.XXXXXX")"
+          trap 'rm -f "$ct247_stderr"' EXIT
+          if timeout 20s "$ct247_cli" sts get-caller-identity --region "$AWS_REGION" --output json > /dev/null 2> "$ct247_stderr"; then
+            echo "CT247_STS_CLASS=accepted; original six-object custody still required"
+          else
+            ct247_exit=$?
+            if grep -Eqi 'ExpiredToken|RequestExpired' "$ct247_stderr"; then
+              ct247_class=expired_token
+            elif grep -Eqi 'InvalidClientTokenId|InvalidAccessKeyId|UnrecognizedClientException' "$ct247_stderr"; then
+              ct247_class=invalid_token
+            elif grep -Eqi 'SignatureDoesNotMatch|InvalidSignature' "$ct247_stderr"; then
+              ct247_class=invalid_signature
+            elif grep -Eqi 'AccessDenied|UnauthorizedOperation' "$ct247_stderr"; then
+              ct247_class=access_denied
+            elif [[ "$ct247_exit" == 124 ]]; then
+              ct247_class=timed_out
+            else
+              ct247_class=other_or_unknown
+            fi
+            echo "CT247_STS_EXIT=$ct247_exit CT247_STS_CLASS=$ct247_class; artifact pull not attempted"
+            exit 42
+          fi
+          rm -f "$ct247_stderr"
+          trap - EXIT
+          timeout 180s python3 _ct245_artifact_tools/tools/artifacts/artifacts.py pull --jobs 2 \
+            docs/research-artifacts/chained-transfer/nondual-models-18 \
+            2>&1 | tee ct245-evidence/model-hydration.txt
+          b=docs/research-artifacts/chained-transfer/nondual-models-18
+          test "$(sha256sum "$b/second-model-expected-native-01.json.xz" | cut -d' ' -f1)" = 22225094b7e3727332a761593b47ac44a2efd2f04bbdb1b1865abf3c35ba7267
+          test "$(sha256sum "$b/third-model-expected-native-01.json.xz" | cut -d' ' -f1)" = 1a7c90c81310a9d1a329b830c9c7b9f52a6c4504152c26162fb46f7fc5184787
+          test "$(stat -c%s "$b/second-model-expected-native-01.json.xz")" = 217960
+          test "$(stat -c%s "$b/third-model-expected-native-01.json.xz")" = 326200
+          realpath experiments/chained-transfer-public-target/nondual13-preflight/models/expected-native-01.json.xz
+          realpath experiments/chained-transfer-public-target/nondual13-next-preflight/models/expected-native-01.json.xz
+          echo "CT245_MODEL_CUSTODY_PASS" | tee ct245-evidence/model-custody.txt
+      - name: Reconstruct unchanged predecessor sources, then separate priced derivative
+        shell: bash
+        run: |
+          set -euo pipefail
+          b=experiments/chained-transfer-public-target
+          python3 -S "$b/paired-fourth-preflight/materialize.py" 2>&1 | tee ct245-evidence/paired-fourth-materialization.txt
+          python3 -S "$b/fixed-jacobian-chain-01/materialize.py" 2>&1 | tee ct245-evidence/chain-materialization.txt
+          python3 -S "$b/fixed-jacobian-chain-evaluator-01/materialize.py" 2>&1 | tee ct245-evidence/evaluator-materialization.txt
+          python3 -S "$b/norm-point-reuse-01/ct244_primitive_probe.py" \
+            --original "$b/fixed-jacobian-chain-evaluator-01" \
+            --out "$b/fixed-jacobian-chain-priced-01" \
+            2>&1 | tee ct245-evidence/ct244-derivative-receipt.txt
+          python3 -S - <<'PY' | tee ct245-evidence/instrument-guard.txt
+          import json
+          from pathlib import Path
+          p=Path('experiments/chained-transfer-public-target/fixed-jacobian-chain-priced-01')
+          r=json.loads((p/'CT244_SOURCE_RECEIPT.json').read_text())
+          assert r['source_blob']=='8016634385d76207b23a3eb3a4dae9b0366ac68d'
+          assert len(r['clock_slots'])==7 and len(set(r['clock_slots']))==7
+          assert r['measurements'] is None
+          s=(p/'src/lib.rs').read_text()
+          assert s.count('ct244_record(')==3
+          assert 'if ep(n.norm(&entry.class)?) != entry.norm {' in s
+          print('CT245_INSTRUMENT_GUARD_PASS; no native execution')
+          PY
+          rustfmt --edition 2021 --config skip_children=true --emit stdout "$b/fixed-jacobian-chain-priced-01/src/lib.rs" >/dev/null
+          git hash-object "$b/fixed-jacobian-chain-priced-01/src/lib.rs" | tee ct245-evidence/generated-priced-rust-git-blob.txt
+      - name: Rust 1.99.1 release semantic typecheck ONLY (no binary execution)
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.99.1 --profile minimal
+          rustup default 1.99.1
+          { rustc -Vv; cargo -V; } | tee ct245-evidence/rust-toolchain.txt
+          b=experiments/chained-transfer-public-target
+          timeout 360s cargo check --release --manifest-path "$b/fixed-jacobian-chain-priced-01/Cargo.toml" \
+            2>&1 | tee ct245-evidence/cargo-check-release.txt
+          echo 'CT245 semantic typecheck only; no 695-record replay, primitive timing, complete ECDLP or PCC [pcc:unverified]' \
+            | tee ct245-evidence/standing.txt
+      - name: Retain receipts including failed prerequisites and compiler diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ct245-ct244-release-typecheck-evidence
+          path: ct245-evidence/
+          retention-days: 30

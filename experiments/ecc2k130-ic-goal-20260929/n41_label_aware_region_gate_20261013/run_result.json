@@ -1,0 +1,48 @@
+{
+  "cases": [
+    {
+      "command": [
+        "/opt/homebrew/bin/cryptominisat5",
+        "--threads",
+        "1",
+        "--verb",
+        "1",
+        "--maxtime",
+        "30",
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_label_aware_region_gate_20261013/constructed_positive.xcnf"
+      ],
+      "exit_code": -15,
+      "monitor_degraded": false,
+      "name": "constructed_positive",
+      "raw_solver_status_lines": [],
+      "sampled_peak_combined_rss_bytes": 68829184,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "f505c7a0920228fef08624a40cf17d4a8c4a2b51375fac69d49bd1b28811cf29",
+      "stop_reason": "PARENT_WALL_CAP",
+      "wall_ns": 35047859084
+    },
+    {
+      "command": [
+        "/opt/homebrew/bin/cryptominisat5",
+        "--threads",
+        "1",
+        "--verb",
+        "1",
+        "--maxtime",
+        "30",
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_label_aware_region_gate_20261013/public_same_regions.xcnf"
+      ],
+      "exit_code": -15,
+      "monitor_degraded": false,
+      "name": "public_same_regions",
+      "raw_solver_status_lines": [],
+      "sampled_peak_combined_rss_bytes": 65159168,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "6150eda055a65883732cbd6d05f23cedc366613b501e54d7c86fd718e29c5575",
+      "stop_reason": "PARENT_WALL_CAP",
+      "wall_ns": 35139686959
+    }
+  ],
+  "protocol_sha256": "b83803f9d1e34b07dccedf3b28c43712fe5f3f3f6d86c9e102d09eb8b11c718b",
+  "status": "COMPLETE_MONITORED_PAIR"
+}

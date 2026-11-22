@@ -1,0 +1,34 @@
+{
+  "candidate_id": null,
+  "command": [
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w20_ntl_global_norm_20261018/native_norm",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w20_sevenpair_gate_20261010/support_w20.tsv",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w20_ntl_global_norm_20261018/coefficients.tsv",
+    "256"
+  ],
+  "compile_command": "clang++ -std=c++17 -O3 -DNDEBUG -I/opt/homebrew/opt/ntl/include -L/opt/homebrew/opt/ntl/lib -L/opt/homebrew/opt/gmp/lib native_norm.cpp -lntl -lgmp -o native_norm",
+  "curve_id": "EC1N131Ckb1heb5f1998f20b",
+  "rss_cap_bytes": 4294967296,
+  "selected_count": 256,
+  "source_sha256": {
+    "GF2E.h": "ee11bb09c2da76d9ecba0c8baa92b14e8da78a668f97e81075e54cded131c7c9",
+    "GF2EX.h": "76fa202e4a97defad51eb8ba1b397a3a1770af5a50869ae1d82abc16e95cc99d",
+    "coefficients.tsv": "6196352ca4b704c9ce11c7e8d1b2c29dc9184e0aaeefadbb8bff1953cd5b5a21",
+    "field.hpp": "d85b70e38a1cae4ca68b5b6a3ed708d7578166daa13b987cac44988960710649",
+    "libgmp.dylib": "bc6145edbeca608b4fecd4440dbbd7b27cacd55cbfd2b552b8bc333febe43b35",
+    "libntl.dylib": "73f15168c58c29999d7c8f60a7ad7fbcad450f277b76e2f0b75835b8cb065959",
+    "native_norm": "8640282f2ee8bcb6dde11403b2f33f4b7ebd01cab9f6b25acdb4d60fb7ec4b5d",
+    "native_norm.cpp": "ce1b53e6348eda1e27d23678aa2b01a1a71bb342bfd5575f31fa27279898201e",
+    "run.py": "dade7d6c780b781640e7afa12d4dcd74cf263ccff1bd5fda1af58899c2b4d0e5",
+    "sage_runtime_info.json": "073ca37250b100a7f961de3475da8a4d489f3f2140c15f4c72457816893f3f01",
+    "support_w20.tsv": "21f190a925c60044ba85b89dbcef39a71407b0c852de7c7ab88c95bed05e8944"
+  },
+  "status": "FROZEN_N131_W20_NATIVE_NTL_GLOBAL_NORM",
+  "subset_rule": "first n valid canonical codes, replace last with code 16722 if absent",
+  "target_rows": [
+    0,
+    1
+  ],
+  "wall_cap_seconds": 180,
+  "worker_count": 1
+}

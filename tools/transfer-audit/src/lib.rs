@@ -536,7 +536,9 @@ fn cover_transfer(
     let mut out = json!({"applicable":true,"genus":3,"degree":3,"same_field":true,"geometry_checked":true,
         "subgroup_injectivity_conditional_on_exact_order":gcd(r.clone(),BigUint::from(3u32)).is_one(),
         "map_and_divisor_arithmetic_executed":false,"source_generator_image_order_verified":false,
-        "reference":"suite/src/binary_ecc/cover_transfer.rs","arbitrary_jacobian_norm_supported":false});
+        "reference":"suite/src/binary_ecc/cover_transfer.rs","arbitrary_jacobian_norm_supported":true,
+        "arbitrary_jacobian_norm_generator_certificate_executed":false,
+        "arbitrary_jacobian_norm_independent_oracle":false});
     if let Some(p) = p {
         let native = BinaryPoint::Affine {
             x: elt(&p.0),
@@ -548,6 +550,12 @@ fn cover_transfer(
         );
         let d = cover.pullback_point_class(&native)?;
         let witness = cover.pull_push_composition_certificate(&native)?;
+        let norm_certificate = cover.jacobian_pushforward_certificate(&d)?;
+        ensure!(
+            norm_certificate.component_sum_holds
+                && norm_certificate.general_pushforward == witness.formal_pushforward,
+            "general Jacobian norm disagrees with typed generator pullback"
+        );
         let image_order = exact_order
             && !d.is_identity()
             && d.try_scalar_mul(r, cover.source_curve())?.is_identity();
@@ -574,6 +582,10 @@ fn cover_transfer(
         );
         out["map_and_divisor_arithmetic_executed"] = json!(true);
         out["source_generator_image_order_verified"] = json!(image_order);
+        out["arbitrary_jacobian_norm_generator_certificate_executed"] = json!(true);
+        out["arbitrary_jacobian_norm_generator_component_count"] =
+            json!(norm_certificate.components.len());
+        out["arbitrary_jacobian_norm_agrees_with_typed_pullback"] = json!(true);
         out["generator_image"] = divisor(&d);
         out["public_known_answer_control"] = json!({"scalar":37,"image":divisor(&dq),"scalar_relation_verified":scalar_ok,"unknown_log_solved":false});
         out["pull_push_equals_three_times_generator"] = json!(witness.identity_holds);

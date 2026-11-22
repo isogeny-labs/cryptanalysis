@@ -2,8 +2,12 @@
 
 Date: 2026-11-18
 
-Status: implementation and fresh-seed protocol in preparation; no natural
-outcome has been generated. [pcc:unverified]
+Status: implementation and fresh-seed protocol are frozen at commit
+`10a28313a6`; no natural outcome has been generated because the mandatory
+resume-checkpoint gate has no upload transport in this environment.  The
+access obstruction is tracked in
+[`problems/xedni-affine-cvp-checkpoint-access.md`](../../problems/xedni-affine-cvp-checkpoint-access.md).
+[pcc:unverified]
 
 The November 17 panel demonstrated exact bounded relations on optimized
 plane-cubic lifts, but 44 of 67 selected relations had zero target coefficient.

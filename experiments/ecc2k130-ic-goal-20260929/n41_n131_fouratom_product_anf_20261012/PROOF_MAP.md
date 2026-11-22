@@ -1,0 +1,9 @@
+# Proof map for the joint product ANF
+
+| Statement | Evidence and exact scope | Lean status |
+| --- | --- | --- |
+| The finite specialized ANF equals the 266-term four-atom eliminant after substituting the two linear product images | `anf.cpp` builds in the Boolean quotient with idempotent source bits; `audit.py` independently rebuilds N41 positive/negative and N131 positive coefficients. Complete N41 truth-table Möbius inversion agrees on all 16,384 coefficients in both cases. Native producer also checks 32 pseudorandom assignments per case. | **Partial.** No concrete finite-field/Boolean-polynomial definitions are imported into Lean. |
+| N41 positive and negative relaxed seed-image zero counts are 1 and 0 | `audit.py` evaluates every assignment before its Möbius transform; source inputs and protocol hashes are frozen. | **Partial.** Finite exhaustive certificates have independent executable replay, not a Lean kernel certificate. |
+| N131 W15 positive ANF has 220,172 nonzero monomials and observed degree six | Native result and independent Python expansion agree exactly on the monomial and degree histogram. | **Partial.** The 28-variable coefficient map and field arithmetic have not been encoded in Lean. |
+
+The readable algebraic proof of expansion correctness is distributivity in the binary field followed by the Boolean quotient identities `x_i²=x_i` and `y_j²=y_j`. In a characteristic-two field, squaring a linear form is linear, so powers through eight are built from four Frobenius-linear forms; the producer applies the original 266-term sum after specialization. The missing formal bridge is an exact Lean model of the two polynomial-basis fields, the 266-term coefficient list, the product-image bases, and the Boolean quotient evaluation map. No Lean theorem is reported for this experiment; full formalization remains open. The sibling experiments pin Lean 4.34.1, with no additional dependency used here.

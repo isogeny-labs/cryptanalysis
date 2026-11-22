@@ -1,0 +1,9 @@
+# S4 proof map
+
+| Result | Lean declaration | Exact formal statement | Check | Remaining bridge |
+| --- | --- | --- | --- | --- |
+| Quadratic resultant Bézout identity | `S4Bezout.bezout_equals_resultant` | XOR-normalized coefficient lists in seven independent variables `A,B,C,D,E,F,z` for `(Df+Ag)²+V(Ef+Bg)=U²+VW` | `lean S4Bezout.lean`, no `sorry` or custom axioms; `#print axioms` reports `propext` | Interpretation of the custom normalizer as a polynomial over every commutative characteristic-two ring, followed by substitution and common-root implication, is written mathematically but not formalized in Lean. |
+| 24-term reciprocal S4 resultant equals six-term symmetric form | `S4Polynomial.resultant_eq_symmetric` | XOR-normalized coefficient lists in four independent variables `a,b,c,t`; `R=e3⁴+e1²e4²+e1⁴+e3²e4+e1²e4+e3²` | `lean S4Polynomial.lean`, no `sorry` or custom axioms; `#print axioms` reports `propext` | The same custom-normalizer interpretation bridge remains. Sage independently checks equality in `GF(2)[a,b,c,t]`. |
+| Reciprocal S3 links imply the S4 constraint for actual curve points | None yet | Curve `y²+xy=x³+1`, nonidentity points with nonzero x; two adjacent S3 links over GF(2^41) or GF(2^131) | Independent checked-Sage controls for the selected three-pair inputs and a written Bézout proof | A Lean model of the binary elliptic curve, inverse-x chart, and S3 addition relation, including exceptional points, remains open. |
+
+The pinned Lean toolchain is `leanprover/lean4:v4.34.1`. The [Lean version](lean_version.txt), [polynomial check log](lean_polynomial_check.log), and [Bézout check log](lean_bezout_check.log) were retained. `lean4checker --fresh` was unavailable in this environment. The only reported foundation from `#print axioms` is Lean's standard `propext`.

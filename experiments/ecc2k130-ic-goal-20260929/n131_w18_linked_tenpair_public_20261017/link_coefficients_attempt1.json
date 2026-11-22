@@ -1,0 +1,7 @@
+{
+  "status": "FAILED_INCORRECT_FROBENIUS_ROOT_ASSUMPTION",
+  "command": "python3 -B experiments/ecc2k130-ic-goal-20260929/n131_w18_linked_tenpair_public_20261017/link_coefficients.py",
+  "exit_code": 1,
+  "failed_check": "assert pow(lam, 131, r) == 1 for both characteristic-polynomial roots",
+  "correction": "Exactly one root acts as Frobenius on the rational prime-order subgroup; both roots were separately checked for nonzero same- and opposite-sign factors."
+}
