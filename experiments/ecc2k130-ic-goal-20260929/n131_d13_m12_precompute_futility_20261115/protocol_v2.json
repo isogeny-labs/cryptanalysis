@@ -1,0 +1,32 @@
+{
+  "amends_protocol_sha256": "e725d48a8779ffaddeaebcc90f5965e6ff698184904af86055a53a455079b51f",
+  "candidate_id": "IC1N131Ckb1fb1083108PDP12satRCdirectLAgaussTDdirectISO0h195ae7ea5e75",
+  "claim_boundary": "operational futility signal under stated sampling model, not a proof that future queries or the target are indecomposable",
+  "continue_condition": "at least one future attempt contains a verified relation",
+  "curve_id": "EC1N131Ckb1heb5f1998f20b",
+  "frozen_utc": "2026-11-15T07:51:01.241241+00:00",
+  "ineligible_condition": "any zero-relation future attempt is not an audited ordinary timeout, including OOM or producer/infrastructure failure",
+  "kind": "n131_d13_m12_prospective_precompute_futility_protocol_v2",
+  "null_productive_probability_lower_bound": "1098/8192",
+  "observed_prefix_attempt_count": 7,
+  "productive_definition": "verified_relation_count >= 1 in a completed preparation query",
+  "prospective_attempt_indices": [
+    8,
+    30
+  ],
+  "prospective_sample_size": 23,
+  "reason_for_amendment": "Require every zero-yield prospective row to be an independently audited ordinary timeout; infrastructure and producer failures cannot count as low relation yield.",
+  "run_dir": "/Volumes/SSD990-2/ecc2k130-ic-runstore/d13-m12-20261115/IC1N131Ckb1fb1083108PDP12satRCdirectLAgaussTDdirectISO0h195ae7ea5e75W3c1992b7c92fR1",
+  "run_id": "IC1N131Ckb1fb1083108PDP12satRCdirectLAgaussTDdirectISO0h195ae7ea5e75W3c1992b7c92fR1",
+  "source_sha256": {
+    "auditor": "ce6be9d4e17002341bbe649544f8510a2f6d2a9d62c2be148f4f67d8c9bcbf7a",
+    "first_seven": "a4d8df64f5b6ef25b58c5fe6c90376053a118d5b69027c8aa678581e00e3048e",
+    "freeze_v2": "00ce325726672496e526dc8e3341beafb058896a46974566708974fe7dce9d95",
+    "lean_arithmetic": "6084b9a56df9eafe5f16d14a051cf0bd9d7a177c61b96856c09e3a1e7fe58133"
+  },
+  "statistical_model": "conditional exploratory Bernoulli check only if future query outcomes are independent and share a constant productive probability p",
+  "status": "FROZEN_BEFORE_ATTEMPT_EIGHT_COMPLETED",
+  "stop_recommendation_condition": "all 23 future attempts complete as independently audited timeout rows with zero verified relations",
+  "workload_id": "3c1992b7c92f",
+  "zero_in_next_23_null_tail_upper_bound": "(7094/8192)^23 < 1/20"
+}

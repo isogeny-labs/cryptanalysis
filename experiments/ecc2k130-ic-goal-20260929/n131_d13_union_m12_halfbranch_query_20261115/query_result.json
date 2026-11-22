@@ -1,0 +1,25 @@
+{
+  "command": [
+    "/opt/homebrew/bin/cryptominisat5",
+    "--threads=1",
+    "--maxtime=600",
+    "--zero-exit-status",
+    "--verb=1",
+    "--printsol=1",
+    "--maxnummatrices=0",
+    "--sls=1",
+    "--slseveryn=1",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_d13_union_m12_halfbranch_query_20261115/ordinary.xcnf"
+  ],
+  "exit_code": -15,
+  "kind": "n131_d13_halfbranch_m12_sls600_ordinary_query",
+  "monitor_degraded": false,
+  "query_protocol_sha256": "8bbbc4e820d517a3b47fca4a3c134ae5d9a931570cb2d72d63e770b3cfea829c",
+  "sampled_peak_combined_rss_bytes": 781189120,
+  "status": "BOUNDED_UNKNOWN",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_sha256": "2689a3b49d9e9c34b764d9384f067d270023a276a6e9f52d30c06d1af34ba9cf",
+  "stop_reason": "PARENT_WALL_CAP",
+  "terminal_lines": [],
+  "wall_ns": 615065349708
+}

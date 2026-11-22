@@ -1,0 +1,27 @@
+SignQuadratic.lean:76:6: error: Tactic `subst` failed: did not find equation for eliminating 'x'
+
+case inr.inr.inr.inr.inr.inr.inr.inr.inr.inr.inr.inr.inr.inr
+G : Type
+inst✝ : AddCommGroup G
+L : G → Bool
+hzero : L 0 = false
+hadd : ∀ (x y : G), L (x + y) = (L x ^^ L y)
+base : G
+linear : Fin 5 → G
+pair : Fin 5 → Fin 5 → G
+hbase : L base = true
+hlinear : ∀ (i : Fin 5), L (linear i) = false
+hpair : ∀ (i j : Fin 5), L (pair i j) = false
+b : Fin 5 → Bool
+x : G
+h : x = select (b 3 && b 4) (pair 3 4) ∨ x ∈ []
+⊢ L x = false
+SignQuadratic.lean:72:37: warning: This simp argument is unused:
+  List.mem_singleton
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [terms, List.mem_cons] at hx
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'SignQuadratic.pair_coefficient' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SignQuadratic.certificate_nonzero' depends on axioms: [propext, sorryAx]

@@ -1,0 +1,96 @@
+# CT246 registered protocol: experiments/chained-transfer-public-target/norm-point-reuse-01/CT246_AUTH_PREFLIGHT_PROTOCOL.md
+# Read-only cloud credential and ONE immutable object-access diagnostic.
+# Not a native compile, corpus replay, crypto measurement or PCC.
+name: CT246 original model read-only auth discriminator
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/ct246-original-artifact-auth-preflight.yml'
+permissions:
+  contents: read
+jobs:
+  ct246-readonly-access:
+    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Classify original artifact access without exposing credential identity
+        shell: bash
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_SESSION_TOKEN: ${{ secrets.ARTIFACTS_AWS_SESSION_TOKEN }}
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+          AWS_EC2_METADATA_DISABLED: 'true'
+          AWS_PAGER: ''
+        run: |
+          set -uo pipefail
+          echo "CT246_READONLY_SOURCE pr_head=${{ github.event.pull_request.head.sha }} event=${GITHUB_EVENT_NAME}; no checkout"
+          echo "CT246_SCOPE one approved immutable HeadObject, one STS identity-existence check; stdout and raw stderr suppressed"
+          if [[ -z "${AWS_ACCESS_KEY_ID:-}" || -z "${AWS_SECRET_ACCESS_KEY:-}" ]]; then
+            echo "CT246_CREDENTIALS_PRESENT=false"
+            echo "CT246_AUTH_CLASS=missing_github_secrets"
+            echo "CT246_HEAD_CLASS=not_attempted"
+            echo "CT246_RESULT=blocked; not a native or arithmetic result [pcc:unverified]"
+            exit 0
+          fi
+          echo "CT246_CREDENTIALS_PRESENT=true (values and identity suppressed)"
+          if [[ -n "${AWS_SESSION_TOKEN:-}" ]]; then
+            echo "CT247_SESSION_TOKEN_PRESENT=true"
+          else
+            echo "CT247_SESSION_TOKEN_PRESENT=false"
+          fi
+          if ! command -v aws >/dev/null 2>&1; then
+            python3 -m venv "$RUNNER_TEMP/ct246-awscli" >/dev/null 2>&1 || exit 2
+            "$RUNNER_TEMP/ct246-awscli/bin/python" -m pip install --disable-pip-version-check -q awscli==1.46.2 >/dev/null 2>&1 || exit 2
+            export PATH="$RUNNER_TEMP/ct246-awscli/bin:$PATH"
+          fi
+          test -x "$(command -v aws)" || exit 2
+          export AWS_DEFAULT_REGION="$AWS_REGION"
+          err_file="$(mktemp "$RUNNER_TEMP/ct246-error.XXXXXX")"
+          trap 'rm -f "$err_file"' EXIT
+          classify() {
+            if grep -Eqi 'ExpiredToken|RequestExpired' "$err_file"; then echo expired_token
+            elif grep -Eqi 'InvalidClientTokenId|InvalidAccessKeyId|UnrecognizedClientException' "$err_file"; then echo invalid_token
+            elif grep -Eqi 'SignatureDoesNotMatch|InvalidSignature' "$err_file"; then echo invalid_signature
+            elif grep -Eqi 'Unable to locate credentials|NoCredentials' "$err_file"; then echo no_credentials
+            elif grep -Eqi 'AccessDenied|UnauthorizedOperation' "$err_file"; then echo access_denied
+            elif grep -Eqi 'Forbidden|\(403\)' "$err_file"; then echo forbidden_403
+            elif grep -Eqi 'Not Found|\(404\)' "$err_file"; then echo not_found_404
+            elif grep -Eqi 'Could not connect|EndpointConnectionError|timed out' "$err_file"; then echo network_or_endpoint
+            else echo other_or_unknown
+            fi
+          }
+          : > "$err_file"
+          if aws sts get-caller-identity --region "$AWS_REGION" --output json > /dev/null 2> "$err_file"; then
+            sts_exit=0
+          else
+            sts_exit=$?
+          fi
+          if [[ "$sts_exit" == 0 ]]; then sts_class=accepted_by_sts
+          else sts_class="$(classify)"
+          fi
+          : > "$err_file"
+          if aws s3api head-object \
+            --bucket setec-astronomy-artifacts \
+            --key store/sha256/22/22225094b7e3727332a761593b47ac44a2efd2f04bbdb1b1865abf3c35ba7267 \
+            --region "$AWS_REGION" --output json > /dev/null 2> "$err_file"; then
+            head_exit=0
+          else
+            head_exit=$?
+          fi
+          if [[ "$head_exit" == 0 ]]; then head_class=approved_object_head_succeeded
+          else head_class="$(classify)"
+          fi
+          echo "CT246_STS_EXIT=$sts_exit CT246_STS_CLASS=$sts_class"
+          echo "CT246_HEAD_EXIT=$head_exit CT246_HEAD_CLASS=$head_class"
+          if [[ "$head_exit" == 0 ]]; then
+            echo "CT246_RESULT=one_key_accessible; do not infer other five; rerun unchanged CT245 only after approved review"
+          elif [[ "$sts_exit" == 0 && "$head_class" == forbidden_403 ]]; then
+            echo "CT246_RESULT=STS_accepted_but_single_key_forbidden_or_concealed"
+          elif [[ "$sts_exit" != 0 ]]; then
+            echo "CT246_RESULT=auth_not_established_or_STS_policy_denied; do not assume missing model"
+          else
+            echo "CT246_RESULT=single_key_not_accessible_or_error; investigate exact class"
+          fi
+          echo "CT246_STANDING=diagnostic_only; no source hydration, native compile, timing, complete ECDLP or signed PCC [pcc:unverified]"

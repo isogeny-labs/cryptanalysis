@@ -1,0 +1,21 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-18T07:21:24Z",
+ "id": "PCC-20261118-489303",
+ "kind": "statement",
+ "producer": {
+  "commit": "7ce8c60c9892389314ff664dfcbe8be5c7c9e210",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "recompute",
+   "path": "research/xedni_target_origin_20261118/validator-report.json",
+   "sha256": "888c70b7849fccaf99e607b1c75e0f28871ce6a342b578f97c50f384440432d0"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Fixed deterministic control only; it does not measure occurrence on natural optimized lifts, runtime, or end-to-end ECDLP advantage. The unsigned validator report corrects the malformed recompute proof in PCC-20261118-01c104 but does not establish independent standing.",
+ "statement": "On the fixed y^2=x^3-x+1 rational control, the exact relation (-2,-1,0,0,0,0,2,0,0) has zero explicit coefficient on target 9G, coefficient sum -1, and recovers target scalar 9 through chord origin -10G modulo source order 73."
+}

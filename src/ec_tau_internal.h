@@ -290,8 +290,8 @@ int ca_ec_tau4_paired_two_free_gauge_square_z_mul_profile(const ca_group *g,
 int ca_ec_tau4_free_gauge_verify_map(void);
 int ca_ec_tau4_pair_steer_verify_map(void);
 int ca_ec_tau4_gauge_trellis_verify_map(void);
-/* Up to 32 independent pairs against one prepared P,Q table; batch-normalize
- * all nonidentity outputs with one inversion. */
+/* Independent pairs against one prepared P,Q table; batch-normalize the
+ * nonidentity outputs with one inversion per block of 32 pairs. */
 int ca_ec_tau4_paired_two_batch_profile(const ca_group *g,
                                          const ca_tau4_joint_precomp *pre,
                                          ca_elem *out, const uint64_t *a,

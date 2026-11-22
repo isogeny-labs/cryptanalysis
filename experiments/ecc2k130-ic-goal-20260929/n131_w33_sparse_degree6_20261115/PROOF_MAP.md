@@ -1,0 +1,9 @@
+# Sparse degree-six block proof map
+
+| Result | Formal or executable check | Scope and status |
+| --- | --- | --- |
+| A constant-one row identity in the Boolean Macaulay span excludes every simultaneous root of the coordinate equations. | `../n41_w11_block_macaulay_20261019/BlockCertificate.lean`, `constant_one_block_certificate_sound` | Previously checked Lean 4.34.1 theorem under an explicit certificate identity and `1≠0`. This experiment did not obtain such an identity on either frozen N131 block within its cap. |
+| The 13-term target-conditioned eliminant is necessary for a two-pair relation and expands to 1,619 degree-four squarefree ANF terms on each N131 target row. | `../n131_w33_freecode_resultant_20261018/coefficients.json`, `../n131_w33_block_macaulay_20261019/PROOF_MAP.md`, `prepare.py` | Prior symbolic and independent finite-slice audits provide the field and source-law bridge. The new exporter rebuilds the same ANF and checks the constructed `(3,16722)` zero before emitting all 131 coordinate rows. |
+| Sparse row construction represents Boolean monomial multiplication and GF(2) row reduction exactly. | `sparse_degree6.cpp`, `verify.py`, `run_protocol.json` | `make_row` ORs source and multiplier masks and cancels duplicate masks modulo two; `xor_rows` computes symmetric difference. The verifier binds binary, source, inputs and logs. The run gives only a bounded prefix result, so it does not establish a whole-block certificate or a full degree-six rank. |
+
+No new general mathematical theorem is asserted by the sparse representation experiment. Its source and row operations implement the prior certificate setting. The concrete N131 curve and source equations are inherited from the frozen coefficients and their checked-Sage audit; this experiment does not formalize that complete curve bridge in Lean.

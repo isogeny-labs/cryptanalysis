@@ -1,0 +1,12 @@
+Initial native run was not launched: Python subprocess preexec_fn raised
+`SubprocessError: Exception occurred in preexec_fn` while attempting to set
+macOS RLIMIT_AS to 4 GiB. Reproducing resource.setrlimit in the parent raised
+`ValueError: current limit exceeds maximum limit`. This is an infrastructure
+limit-setting failure, not a group-join result. The revised frozen runner
+enforces a sampled RSS cutoff and records the peak sample.
+
+Second launch stopped before the native input check completed: the filesystem
+sandbox denied the runner's `ps -o rss=` probe with `PermissionError: [Errno 1]
+Operation not permitted: 'ps'`. Both solver logs were empty, and an exact-path
+`pgrep` found no remaining join process. The same hash-pinned runner was then
+launched with process-observation permission.

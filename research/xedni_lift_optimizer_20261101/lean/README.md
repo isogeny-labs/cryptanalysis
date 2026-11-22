@@ -21,6 +21,7 @@ hypotheses, the algebraic fact needed for an LLL basis change. The helper
 `candidate_preserves_divisibility` states the equivalent divisibility form.
 The proof covers both coefficient dimensions because `n` is quantified and the
 Rust validator checks dimensions before constructing candidates.
+[pcc:unverified]
 
 ## Reproduce
 
@@ -32,13 +33,14 @@ python3 research/xedni_lift_optimizer_20261101/lean/check.py
 ```
 
 The [receipt](receipt.json) pins this Lean source, `lean-toolchain`,
-`suite/src/cryptanalysis/xedni_lift.rs`, and its LLL basis implementation
-`suite/src/cryptanalysis/lattice.rs` by SHA-256 at source commit
-`545de2e1c91a301b342b45317f402be4497647ba`. The checker runs Lean and
+`suite/src/cryptanalysis/xedni_lift.rs`, including the additive chord-origin
+recovery helpers that do not alter the affine-coset optimizer, and its LLL
+basis implementation `suite/src/cryptanalysis/lattice.rs` by SHA-256. The checker runs Lean and
 compares all three `#print axioms` lines with the receipt. The accepted axioms are
 `propext` and `Quot.sound`; `sorryAx`, custom research axioms, and unverified
 native evaluation are absent. The dedicated GitHub Actions job reruns the
 same check on PRs and on relevant `main` changes.
+[pcc:unverified]
 
 ## Scope of the bridge
 
@@ -51,3 +53,4 @@ rule, or the later `certify` call. Those are separate source and implementation
 obligations. The frozen p=67 diagnostic in the parent report
 still has no run rows because its checkpoint upload gate failed; this proof
 does not turn that unexecuted comparison into a measured result.
+[pcc:unverified]

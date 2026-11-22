@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-18T07:20:29Z",
+ "id": "PCC-20261118-f769e5",
+ "kind": "theorem",
+ "producer": {
+  "commit": "7ce8c60c9892389314ff664dfcbe8be5c7c9e210",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "b4507a89e2775d9f9923ff9806e1c6683797dc387fb02be07af64db0dfd89f68",
+   "kind": "lean",
+   "path": "research/xedni_target_origin_20261118/formal/TargetChordOriginCore.lean",
+   "theorem": "XedniTargetChordOriginCore.recover_from_effective_coefficient"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Kernel-level inverse step only. The full commutative-ring expansion is checked separately in TargetChordOrigin.lean; geometric chord construction, good reduction, natural frequency, runtime, and end-to-end ECDLP impact remain separate obligations. This supersedes the proof-metadata failures PCC-20261118-b813f9 and PCC-20261118-1dac7c.",
+ "statement": "If an effective target coefficient times the target equals the known term, the effective coefficient has a left inverse, one acts on the target, and the required associative instance holds, then the target equals the inverse times the known term."
+}

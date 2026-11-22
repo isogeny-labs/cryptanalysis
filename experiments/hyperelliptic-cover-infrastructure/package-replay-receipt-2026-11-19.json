@@ -1,0 +1,382 @@
+{
+  "schema_version": "hyperelliptic-cover-package-replay-receipt/v1",
+  "recorded_at_utc": "2026-11-19T08:42:12Z",
+  "status": "verified_exact_head_ci_package_with_bounded_replays",
+  "pcc_standing": "unverified",
+  "producer": {
+    "repository": "https://github.com/isogeny-labs/crypto",
+    "pull_request": "https://github.com/isogeny-labs/crypto/pull/4697",
+    "branch": "codex/curve-transfer-implementation-20261118",
+    "head_commit": "22f195741f2f68f37e56ffe134fe2b48fe172245",
+    "catalog_producer_commit": "e0ae0fe5d09c0492a8b50600e88d0b9da68afef1",
+    "binary_catalog_producer_source_sha256": "73afe2092d1c065c048c5c9aa566d0c0ab606f3291230392a70697898267b870",
+    "odd_catalog_producer_source_sha256": "3116ef637921b9aade22bbbaa0bd5f3eaaa798e6d7517474dab912a9dc8c2768",
+    "producer_rustc_version": "rustc 1.98.0 (88d9e12ae 2026-08-18)"
+  },
+  "workflow": {
+    "run_id": 44486941745,
+    "run_attempt": 1,
+    "event": "workflow_dispatch",
+    "url": "https://github.com/isogeny-labs/crypto/actions/runs/44486941745",
+    "created_at": "2026-11-19T08:21:43Z",
+    "updated_at": "2026-11-19T08:35:12Z",
+    "overall_conclusion": "cancelled",
+    "overall_conclusion_note": "The required Linux Rust package job succeeded. The aggregate run was non-green because unrelated matrix jobs were cancelled or failed; their conclusions are not substituted for the named package job.",
+    "package_job": {
+      "id": 135433215419,
+      "name": "rust (x86_64-unknown-linux-gnu, ubuntu-latest)",
+      "url": "https://github.com/isogeny-labs/crypto/actions/runs/44486941745/job/135433215419",
+      "started_at": "2026-11-19T08:22:58Z",
+      "completed_at": "2026-11-19T08:35:11Z",
+      "conclusion": "success",
+      "successful_stages": [
+        "release build with source provenance",
+        "installed-layout smoke tests",
+        "archive staging with retained binary replay comparison",
+        "artifact upload"
+      ]
+    },
+    "recorded_predecessor_attempts": [
+      {
+        "run_id": 44478019358,
+        "head_commit": "e0bb87e6e99ec8020f0c6437a4640f315fa79850",
+        "package_job_id": 135403325986,
+        "package_job_conclusion": "failure",
+        "completed_at": "2026-11-19T07:29:55Z",
+        "artifact_uploaded": false,
+        "disposition": "failed_archive_staging",
+        "error": "git fetch --no-tags --filter=blob:none origin $odd_producer_commit exited 1 after Git reported that it could not access submodule verification/pqc-assay/upstream"
+      },
+      {
+        "run_id": 44480453055,
+        "head_commit": "9c3a2e1c7acb57b62e62d44ff2130c41fd636da9",
+        "package_job_id": 135411253959,
+        "package_job_conclusion": "cancelled",
+        "completed_at": "2026-11-19T07:38:02Z",
+        "artifact_uploaded": false,
+        "disposition": "superseded_before_completion",
+        "error": "The run was cancelled after stale cover-transfer-assessment hashes were identified and repaired at a successor head."
+      },
+      {
+        "run_id": 44481091226,
+        "head_commit": "207f2766965fce78f39823faa5b59b6d9cd0b0d6",
+        "package_job_id": 135413421404,
+        "package_job_conclusion": "failure",
+        "completed_at": "2026-11-19T07:54:58Z",
+        "artifact_uploaded": false,
+        "disposition": "failed_archive_staging",
+        "error": "Binary catalog replay exited 3 because the historical corpus recorded source_sha256 04fc744060ec7a4c1ced6c36f9190422d886c593d29e4bd263f223db77f36c65 while the current source closure regenerated 73afe2092d1c065c048c5c9aa566d0c0ab606f3291230392a70697898267b870; the diagnostic regenerated file had SHA-256 822ded45c79b63f5be0fd3dae9eab5d10bf99fabcd6405a0ffb754e9ada5d031."
+      },
+      {
+        "run_id": 44486163793,
+        "head_commit": "7c3b4d194fc2e434132438b4ae92830b6a9a397e",
+        "package_job_id": 135430209085,
+        "package_job_conclusion": "cancelled",
+        "completed_at": "2026-11-19T08:22:39Z",
+        "artifact_uploaded": false,
+        "disposition": "superseded_before_completion",
+        "error": "The run was cancelled after the retained canonical replay path was found missing from the sparse checkout and added at the final head."
+      }
+    ]
+  },
+  "artifact": {
+    "id": 14511771570,
+    "name": "rust-x86_64-unknown-linux-gnu",
+    "api_url": "https://api.github.com/repos/isogeny-labs/crypto/actions/artifacts/14511771570/zip",
+    "created_at": "2026-11-19T08:35:04Z",
+    "updated_at": "2026-11-19T08:35:04Z",
+    "expires_at": "2027-02-17T08:21:46Z",
+    "retention_bound": true,
+    "expired_when_verified": false,
+    "size_bytes": 104395359,
+    "api_digest": "sha256:da77a91bf90511f264ff6ba89995aa2440cc9b57d5a28f7dfe83cfaf7cca2fb8",
+    "downloaded_zip": {
+      "file_name": "rust-x86_64-unknown-linux-gnu.zip",
+      "size_bytes": 104395359,
+      "sha256": "da77a91bf90511f264ff6ba89995aa2440cc9b57d5a28f7dfe83cfaf7cca2fb8",
+      "matches_api_size": true,
+      "matches_api_digest": true,
+      "transport": "GitHub connector artifact downloader to File Service, then File Service HTTPS materialized locally",
+      "file_service_id": "file_00000000c24c81fdaea7f9f14940959e"
+    },
+    "download_attempts": [
+      {
+        "command": "gh api repos/isogeny-labs/crypto/actions/artifacts/14511771570/zip > /tmp/release-44486941745.MKpu1Z/rust-x86_64-unknown-linux-gnu.zip",
+        "exit_code": 1,
+        "result": "GitHub's redirect reached productionresultssa1.blob.core.windows.net and the execution transport returned HTTP 403 Forbidden; no artifact bytes from this attempt were accepted."
+      },
+      {
+        "command": "gh run download 44486941745 --repo isogeny-labs/crypto --name rust-x86_64-unknown-linux-gnu --dir /tmp/release-44486941745.MKpu1Z/gh-run-download",
+        "exit_code": 1,
+        "result": "GitHub's redirect reached productionresultssa1.blob.core.windows.net and the execution transport returned HTTP 403 Forbidden; no artifact bytes from this attempt were accepted."
+      },
+      {
+        "command": "github_download_workflow_artifact(repo_full_name=isogeny-labs/crypto, artifact_id=14511771570, file_name=rust-x86_64-unknown-linux-gnu.zip); curl --fail --location --silent --show-error --output /tmp/release-44486941745.MKpu1Z/rust-x86_64-unknown-linux-gnu.zip $FILE_SERVICE_DOWNLOAD_URL",
+        "exit_code": 0,
+        "result": "The connector followed the GitHub artifact redirect into File Service. The short-lived signed File Service URL was intentionally not retained; the materialized bytes match the immutable GitHub API digest and size."
+      }
+    ]
+  },
+  "zip_archive": {
+    "file_name": "rust-x86_64-unknown-linux-gnu.zip",
+    "member_count": 1,
+    "sorted_member_list_sha256": "e034daee86111ec56f6c4380b7d77b00837d6d6f0c87160a254e9833e1a739b4",
+    "safe_relative_paths": true,
+    "duplicate_paths_present": false,
+    "links_or_non_regular_types_present": false,
+    "members": [
+      {
+        "path": "crypto-v0.1.7267-x86_64-unknown-linux-gnu.tar.gz",
+        "type": "regular",
+        "uncompressed_size_bytes": 105176141,
+        "compressed_size_bytes": 104395149,
+        "crc32": "d24c8fcb",
+        "mode": "0100644"
+      }
+    ]
+  },
+  "inner_archive": {
+    "file_name": "crypto-v0.1.7267-x86_64-unknown-linux-gnu.tar.gz",
+    "package_version_tag": "v0.1.7267",
+    "size_bytes": 105176141,
+    "sha256": "6b0bf03c6b09f090e3e3e5ee6390e0b8510520790c2b080da5d7f46413d7f0d7",
+    "member_count": 116,
+    "regular_file_count": 96,
+    "directory_count": 20,
+    "sorted_member_list_sha256": "5f641c33309a1da4a2b2698f99a29ff3008aa5eddc522908491d7ae000c2aa24",
+    "sorted_member_list_digest_command": "LC_ALL=C tar -tzf crypto-v0.1.7267-x86_64-unknown-linux-gnu.tar.gz | LC_ALL=C sort | sha256sum",
+    "safe_relative_paths": true,
+    "duplicate_paths_present": false,
+    "links_devices_or_fifos_present": false,
+    "single_top_level_root": true,
+    "extracted_root": "crypto-v0.1.7267-x86_64-unknown-linux-gnu"
+  },
+  "packaged_files": {
+    "hyperelliptic_cover": {
+      "path": "hyperelliptic-cover",
+      "size_bytes": 9462568,
+      "sha256": "3220318ef10a39fea26cbc9830ced1b8d9660b52cd62722dc2c462eeabf3f9e4"
+    },
+    "curve_transfer_sweep": {
+      "path": "curve-transfer-sweep",
+      "size_bytes": 7907200,
+      "sha256": "32933834245b3b774d05a998aed33bdd29f8429bd3a126aa900d1a86b3c6ff4c"
+    },
+    "odd_transfer_catalog": {
+      "path": "odd-transfer-catalog",
+      "size_bytes": 8719272,
+      "sha256": "8d97453b937b08f53ed6007960f64ce563e7c3c523cfe54e392e31d0b9a0ba58"
+    },
+    "ecdlp_audit": {
+      "path": "ecdlp-audit",
+      "size_bytes": 8009248,
+      "sha256": "8652fa9948864c318570f1504364cbcf86f20ee2c16334005071c836a9c5a680"
+    },
+    "curve_cover_check": {
+      "path": "curve_cover_check",
+      "size_bytes": 7601904,
+      "sha256": "b400604b603f3741c970c51e8527da6c8b6f09e44e0ca807e4f419e31dc44af8"
+    },
+    "binary_transfer_corpus": {
+      "path": "docs/curves/binary-subgroup-transfer-certificates.json",
+      "size_bytes": 500924,
+      "sha256": "671425585e8f67e0596186fc574f2265938cd6465057d85ca1ae9844e47619cc"
+    },
+    "odd_transfer_corpus": {
+      "path": "docs/curves/odd-subgroup-transfer-certificates.json",
+      "size_bytes": 17879352,
+      "sha256": "7c60fc122c73abbe7b0df1413d24abbb064a9842bb35c2da8248d30c87f65670"
+    },
+    "registry": {
+      "path": "docs/curves/registry.json",
+      "size_bytes": 22548033,
+      "sha256": "b7046bad4a8e0b9e261a851b20e54affc035bd3dda12bc893796c38db5dc6183"
+    },
+    "cover_graph": {
+      "path": "docs/curves/cover-links.yaml",
+      "size_bytes": 62132486,
+      "sha256": "4f5ecf4db98098ad3a2bdf35481d123ab0ba3e0eaea1cfdf1bf61f67bcfafa28"
+    },
+    "traits": {
+      "path": "docs/curves/traits.json",
+      "size_bytes": 13679071,
+      "sha256": "ffce05374cc02628afda44c123f7184d7a3f3d2d15fed66496b85cf58830d2fc"
+    },
+    "fixed_f8_order_certificate": {
+      "path": "docs/curves/fixed-f8-genus3-order-certificate.json",
+      "size_bytes": 5956,
+      "sha256": "fc83eab0e52757913623213703112835a2ba5c2d6caf03e9ef519a6be96f8e38"
+    },
+    "cover_transfer_assessments": {
+      "path": "docs/curves/cover-transfer-assessments.json",
+      "size_bytes": 29079644,
+      "sha256": "9cd5f0cc35ee305f979c2d81780965217fbbc6cda6d8a5becddeefc6438f90f1"
+    },
+    "retained_binary_replay": {
+      "path": "research/curve_transfer_infrastructure_20261118/binary-transfer-catalog-canonical-replay-e0ae0fe5.json",
+      "size_bytes": 1681,
+      "sha256": "f8aba60113f2090f5c183ba2e759b17c7195cb2b9a484f1bd2182ec8a4f7e815"
+    }
+  },
+  "installed_layout_checks": {
+    "working_directory": "/tmp/release-44486941745.MKpu1Z/extracted/crypto-v0.1.7267-x86_64-unknown-linux-gnu",
+    "working_directory_note": "This was the extracted package root outside both repository checkouts. The /tmp directory and replay outputs are execution-local and were retained for this session rather than copied into either repository.",
+    "help": [
+      {
+        "command": "./hyperelliptic-cover --help",
+        "exit_code": 0,
+        "response_size_bytes": 1227,
+        "response_sha256": "80690ec4d4877a3446d50f0b8354e1ba43693719610f27e394056ba53f0bc740"
+      },
+      {
+        "command": "./curve-transfer-sweep --help",
+        "exit_code": 0,
+        "response_size_bytes": 646,
+        "response_sha256": "fae6594123be83c571a48872ae3012516ce316a7bcdf050a06569e71bf61277a"
+      },
+      {
+        "command": "./odd-transfer-catalog --help",
+        "exit_code": 0,
+        "response_size_bytes": 641,
+        "response_sha256": "6d51cee7c5f53d452acfebed6ac6e5587f63245e77f19ff91d41919ad191f846"
+      },
+      {
+        "command": "./ecdlp-audit --help",
+        "exit_code": 0,
+        "response_size_bytes": 383,
+        "response_sha256": "2c972e3ac7f8b41c062a3c55c8dcec2bf335629cd79709fd2abc6d1f8a3d4d97"
+      }
+    ],
+    "version_note": "These CLIs do not implement --version; the inner archive name records package tag v0.1.7267 and workflow metadata binds the exact Git head.",
+    "binary_catalog_replay": {
+      "command": "./hyperelliptic-cover transfer-catalog-verify --input docs/curves/binary-subgroup-transfer-certificates.json --registry docs/curves/registry.json --cover-graph docs/curves/cover-links.yaml --traits docs/curves/traits.json --expected-sha256 671425585e8f67e0596186fc574f2265938cd6465057d85ca1ae9844e47619cc --expected-bytes 500924 --output /tmp/release-44486941745.MKpu1Z/binary-catalog-replay.json",
+      "exit_code": 0,
+      "captured_combined_output": "",
+      "response_size_bytes": 1681,
+      "response_sha256": "f8aba60113f2090f5c183ba2e759b17c7195cb2b9a484f1bd2182ec8a4f7e815",
+      "matches_packaged_retained_replay": true,
+      "schema_version": "binary-subgroup-transfer-catalog-verification/v1",
+      "status": "verified_complete",
+      "corpus": {
+        "bytes": 500924,
+        "sha256": "671425585e8f67e0596186fc574f2265938cd6465057d85ca1ae9844e47619cc"
+      },
+      "checks": {
+        "all_maps_and_named_generators_replayed": true,
+        "all_records_supported": true,
+        "canonical_bytes_equal": true,
+        "complete_value_regenerated": true,
+        "cover_graph_rebuilt_exactly": true,
+        "optional_raw_hash_and_size": true,
+        "schema_and_metadata_reparsed": true
+      },
+      "summary": {
+        "binary_maps": 174,
+        "maps_with_named_subgroups": 147,
+        "maps_without_named_subgroups": 27,
+        "named_subgroup_records": 150,
+        "supported_named_subgroup_records": 150,
+        "failed_named_subgroup_records": 0
+      },
+      "recorded_producer": {
+        "attestation": "caller_supplied_unverified",
+        "git_commit": "e0ae0fe5d09c0492a8b50600e88d0b9da68afef1",
+        "rustc_version": "rustc 1.98.0 (88d9e12ae 2026-08-18)",
+        "source_sha256": "73afe2092d1c065c048c5c9aa566d0c0ab606f3291230392a70697898267b870"
+      }
+    },
+    "odd_catalog_replay": {
+      "command": "./odd-transfer-catalog verify --input docs/curves/odd-subgroup-transfer-certificates.json --registry docs/curves/registry.json --cover-graph docs/curves/cover-links.yaml --expected-sha256 7c60fc122c73abbe7b0df1413d24abbb064a9842bb35c2da8248d30c87f65670 --expected-bytes 17879352 --output /tmp/release-44486941745.MKpu1Z/odd-catalog-replay.json",
+      "exit_code": 1,
+      "exit_code_note": "Exit 1 is the required semantic incomplete result for retained unsupported named bindings; exit 3 would indicate malformed or stale evidence.",
+      "captured_combined_output": "",
+      "response_size_bytes": 2315,
+      "response_sha256": "5d0af6512e1c5bf989c6136dc54d6c965f8c3e6dce41dc2b3b71417c0ffc046c",
+      "schema_version": "odd-subgroup-transfer-catalog-verification/v1",
+      "status": "verified_named_subgroup_incomplete",
+      "corpus": {
+        "bytes": 17879352,
+        "sha256": "7c60fc122c73abbe7b0df1413d24abbb064a9842bb35c2da8248d30c87f65670"
+      },
+      "checks": {
+        "all_named_subgroup_records_supported": false,
+        "all_odd_maps_and_named_bindings_retained": true,
+        "canonical_bytes_equal": true,
+        "cover_graph_rebuilt_exactly": true,
+        "entire_corpus_value_regenerated": true,
+        "optional_raw_hash_and_size": true,
+        "supported_bindings_semantically_replayed": true
+      },
+      "summary": {
+        "odd_maps": 22243,
+        "named_subgroup_records": 940,
+        "supported_named_subgroup_records": 675,
+        "unsupported_without_primality_certificate": 233,
+        "unsupported_normalized_target_transfer_backend": 22,
+        "unsupported_odd_extension_field_transfer_backend": 9,
+        "failed_invalid_target_generator": 1,
+        "failed_transfer_arithmetic": 0
+      }
+    },
+    "odd_source_replay": {
+      "command": "./odd-transfer-catalog verify-source --input docs/curves/odd-subgroup-transfer-certificates.json --repo-root /workspace/crypto-next --output /tmp/release-44486941745.MKpu1Z/odd-source-replay.json",
+      "exit_code": 0,
+      "response_size_bytes": 798,
+      "response_sha256": "de6a85a8a32ba96842f2f44f9697917f939df57eb3858d7c3490f24b58d8f77d",
+      "schema_version": "odd-subgroup-transfer-source-verification/v1",
+      "status": "source_manifest_bound_to_recorded_git_tree",
+      "producer_commit": "e0ae0fe5d09c0492a8b50600e88d0b9da68afef1",
+      "source_sha256": "3116ef637921b9aade22bbbaa0bd5f3eaaa798e6d7517474dab912a9dc8c2768",
+      "source_files_checked": 27,
+      "proof_artifacts_checked": 1,
+      "checks": {
+        "commit_object_resolved": true,
+        "framed_source_digest_equal": true,
+        "individual_source_hashes_equal": true,
+        "ordered_source_paths_equal": true,
+        "proof_artifact_hash_equal": true
+      }
+    },
+    "fixed_f8_order_replay": {
+      "command": "./ecdlp-audit verify-fixed-f8-order --input docs/curves/fixed-f8-genus3-order-certificate.json --repo-root . > /tmp/release-44486941745.MKpu1Z/fixed-f8-order-replay.json",
+      "exit_code": 0,
+      "response_size_bytes": 331,
+      "response_sha256": "e3984e8d1fa0314a66aa93d31704e19d11bb7e10ab561fa2a4d85cfde7d3364a",
+      "schema": "ecdlp.fixed-f8-genus3-order-certificate/v1",
+      "status": "verified",
+      "extension_point_counts": [
+        6,
+        104,
+        558
+      ],
+      "jacobian_order_over_f8": 486,
+      "certificate_uid": "urn:ecdlp-order-certificate:1:sha256:44b0072f58f744d173b1c92bda05c81a757e2f770ed8831dbc5ae10faf1bfc36"
+    },
+    "sweeper_capabilities": {
+      "command": "./curve-transfer-sweep capabilities --output /tmp/release-44486941745.MKpu1Z/transfer-capabilities.json",
+      "exit_code": 0,
+      "response_size_bytes": 4872,
+      "response_sha256": "1cfca93430721f281cc55cabf2f0e30ff7e7ef29e17ebb173f3ee6745c77d527",
+      "schema_version": "curve-transfer-sweep-capabilities/v1",
+      "integrated_request_families": [
+        "binary_cubic_pullback_v1",
+        "prime_quadratic_pullback_v1"
+      ],
+      "all_family_ids": [
+        "binary_cubic_pullback_v1",
+        "prime_quadratic_pullback_v1",
+        "prime_bielliptic_genus2_atlas_v1",
+        "nist_genus3_hyperelliptic_cover_v1",
+        "bielliptic_plane_quartic_diagnostic_v1",
+        "gf2_small_genus_factor_search_v1"
+      ],
+      "family_count": 6
+    },
+    "acceptance_assertions": {
+      "command_family": "jq -e assertions over all five replay outputs, plus cmp of binary-catalog-replay.json against the packaged retained replay",
+      "exit_code": 0,
+      "result": "all acceptance assertions passed"
+    }
+  },
+  "claim_boundary": "This is an unverified, same-implementation, post-download installed-layout replay of a retention-bound feature-branch CI artifact. It verifies artifact byte identity, safe archive structure, CLI startup, exact binary and odd corpus regeneration, supported named-binding replay, odd Git-tree source binding, one fixed-GF(8) order certificate, and the declared sweeper capability inventory. It does not provide signed PCC standing, an independent mathematical implementation or review, a stable public GitHub Release, proof of exact orders marked unknown, packaged execution of the fixed-GF(8) integration-test oracle, catalog-wide independent divisor-map evidence, a full Jacobian index-calculus relation solver, key recovery, comparative cost, or evidence of a DLP advantage. A failed or empty bounded search remains non-evidence of nonexistence."
+}
