@@ -65,6 +65,37 @@ Let `F` be a finite field of size `q`, and fix coefficients `a, b ∈ F` with `b
 
 When coefficients may be chosen after seeing the scalar pair `(u,v)`, the choice `(a,b)=(v,−u)` gives `a u+b v=0` whenever `u≠0`, and `b` remains nonzero. If `u=v=0`, choose `(0,1)`. For `u=0,v≠0`, the equation reduces to `b v=0`, which is impossible with `b≠0`. Thus the exact success condition is `u≠0` or `v=0`, and the finite-field count is `q²−(q−1)=q²−q+1`. `AdaptiveCoefficientBoundary.lean` proves this equivalence and cardinality. The coefficient choice uses the scalar coordinates themselves; deriving those coordinates from elliptic-curve public points is a separate computation.
 
+`AdaptivePublicRelationReduction.lean` identifies the corresponding public-point computation. In any `ZMod q`-module `G` for prime `q`, a valid relation `a • P + b • Q = 0` with `b ≠ 0` certifies `Q = (−a/b) • P`. If `P ≠ 0` and `Q = v • P`, it recovers the unique scalar `v = −a/b`. Conversely, a known scalar gives the relation `(-v) • P + 1 • Q = 0`. The module also proves the integer-scalar version in any additive commutative group: if `P` has additive order `q`, `Q` lies in its generated subgroup, and `a • P + b • Q = 0` for integers `a,b` with `b mod q ≠ 0`, then the target log modulo `q` is `−a/b`. A checked specialization applies this theorem to mathlib's elliptic-curve affine point group. A concrete curve application supplies the point-order and target-membership facts; no ambient `ZMod q`-module instance is required. A procedure returning such a valid relation for an unknown public target therefore returns its discrete logarithm by field arithmetic. These are algebraic reductions, with no runtime claim.
+
+The module now defines a public-input extractor `extractScalar`: given `P`, `Q`, and an optional integer coefficient pair from any deterministic oracle, it checks `b mod q ≠ 0` and `a • P + b • Q = 0`, then returns `−a/b mod q`. For an order-`q` base point and any finite set of target scalars, `extractor_success_set_eq` proves that the extractor returns the correct scalar on **exactly** the targets where the oracle outputs a valid relation. The target input to the oracle and extractor is the point `Q`, while the scalar appears only in the theorem's correctness specification. The set equality also transfers a rate under any declared distribution on that set; measuring total runtime requires charging the oracle, relation check, division, and scalar verification.
+
+`selected_lift_relation_recovers_scalar` closes the algebraic path from a selected lift: an additive reduction map sends lift points `p,t` to public `P,Q`; applying it to `a • p + b • t = 0` yields `a • P + b • Q = 0` and the exact target scalar residue. `selected_lift_family_recovers_scalar` permits a different lift group, reduction map, selected points, and coefficients for every public target in a declared set. Its hypotheses retain the base-point order, target-subgroup membership, additive reduction, and `b mod q ≠ 0` conditions. A concrete lift construction must establish its reduction map and point images to use the theorem.
+
+`CertifiedRelationExtraction.lean` supplies a pathwise implication from local addition certificates to a public relation. For selected local curve points `p,t`, choose two signs and repetition counts `m,n`. If a `CertifiedSum` of those signed points ends at infinity, `certified_sum_public_relation` proves the exact integer relation between their reduced public points. The curve field has prime characteristic `fieldPrime`; the subgroup order is a separate prime `r`. With an order-`r` base, target membership in its subgroup, and a nonzero target coefficient modulo `r`, `certified_sum_recovers_scalar` gives the target log residue modulo `r`. Every step of the `CertifiedSum` carries a regular, identity, or exact inverse-cancellation certificate. `RecordedCertifiedRelation.lean` builds the required certificate for row 0 from its three checked regular additions and one inverse cancellation, deriving `4P−T=0` from the path. A new selected xedni path needs its own signed list and endpoint certificate.
+
+| Result | Lean declaration | Exact hypotheses and status |
+| --- | --- | --- |
+| Public relation certificate | `XedniAdaptivePublicRelationReduction.relation_certificate_verifies` | Prime `q`, `ZMod q`-module `G`, `b ≠ 0`, `a • P + b • Q = 0`; proves `Q = (−a/b) • P`; checked |
+| Scalar extraction | `XedniAdaptivePublicRelationReduction.relation_certificate_recovers` | Same module, `P ≠ 0`, `Q = v • P`; proves `v = −a/b`; checked |
+| Converse and span characterization | `XedniAdaptivePublicRelationReduction.known_scalar_gives_relation`, `relation_certificate_iff_span` | Known scalar yields coefficients `(-v,1)`; a valid relation exists exactly when `Q` lies in the `ZMod q`-span of `P`; checked |
+| Integer-scalar group extraction | `XedniAdaptivePublicRelationReduction.integer_relation_recovers_scalar`, `integer_relation_for_subgroup` | Additive commutative group, `addOrderOf P = q`, target in `zmultiples P`, integer relation with `b mod q ≠ 0`; recovers target log residue `−a/b` modulo `q`; checked |
+| Elliptic-curve point specialization | `XedniAdaptivePublicRelationReduction.elliptic_relation_for_subgroup` | Smooth Weierstrass curve over `ZMod q`, affine group points `P,Q`, `addOrderOf P = q`, `Q ∈ zmultiples P`, and a valid integer-scalar relation; checked |
+| Public-input extractor and exact success transfer | `XedniAdaptivePublicRelationReduction.extractScalar_iff_valid`, `validRelationOutput_iff`, `extractor_success_set_eq` | `DecidableEq` additive group, order-`q` base point, arbitrary point-to-coefficient oracle, and arbitrary finite target set; verified relation outputs and correct extracted scalars occur on identical target sets; checked |
+| Selected-lift reduction | `XedniAdaptivePublicRelationReduction.selected_lift_relation_recovers_scalar`, `selected_lift_family_recovers_scalar` | Additive reduction from lift group to public group, selected points reducing to `P,Q`, order-`q` base, target-subgroup membership, valid integer relation with `b mod q ≠ 0`; family theorem allows all lift data and coefficients to depend on public target; checked |
+| Certified finite-path extraction | `XedniCertifiedRelationExtraction.certified_sum_public_relation`, `certified_sum_recovers_scalar` | Short Weierstrass curve over a commutative source ring, ring map to `ZMod fieldPrime`, elliptic reduced curve, signed repeated inputs with a `CertifiedSum` endpoint at infinity; scalar theorem adds independent prime subgroup order `r`, target subgroup membership, and nonzero target coefficient modulo `r`; checked |
+| Recorded row 0 certified relation | `XedniRecordedCertifiedRelation.row0_certified_sum`, `row0_public_relation_from_certified_sum` | Prime-local curve at field prime 313, three recorded regular additions `T+T=2T`, `2T+T=3T`, `3T+T=4T`, followed by exact cancellation of `4T` with its inverse; yields public `4P−T=0`; checked |
+| Row 0 finite base order | `XedniRecordedPointOrder.finite_double_step`, `step_*`, `point330_scalar`, `point330_eq_neg`, `basePoint_mul331`, `basePoint_order` | Point `(306,125)` on `y²=x³−x+15961` over `ZMod 313`; eleven explicit slope and group-law steps give `330P=(306,188)=−P`, then `331P=O`; nonzero point and prime 331 imply exact order 331; checked |
+| Recorded public base order | `XedniRecordedPointOrder.original_step_*`, `originalBasePoint_order`, `recorded_map_eq_original`, `recorded_base_order` | Recheck the eleven finite-field addition steps on the curve with the original reduced coefficient expressions; identify its `(306,125)` base with the prime-local `mapPoint`; prove `addOrderOf (publicImage 313 (reduceZMod 313) row0_m1_localPoint) = 331`; checked |
+| Recorded row 0 scalar certificate | `XedniRecordedPointOrder.row0_certified_scalar` | Apply `certified_sum_recovers_scalar` at field prime 313 and subgroup prime 331 to the recorded signed path ending at infinity; use the checked public relation for subgroup membership; obtain a scalar witness congruent to 4 modulo 331 for the recorded `4P` point; checked |
+
+Run `lake build AdaptivePublicRelationReduction`; `build-adaptive-public-relation-output.txt` records the registered build, direct module check, and `#print axioms` audit. The toolchain and Mathlib revision are pinned beside this module; `lean4checker --fresh` is unavailable on this host.
+
+Run `lake build CertifiedRelationExtraction`; `build-certified-relation-extraction-output.txt` records the registered build, direct module check, and `#print axioms` audit for the pathwise theorems.
+
+Run `lake build RecordedCertifiedRelation`; `build-recorded-certified-relation-output.txt` records the registered build, direct module check, and axiom audit for the concrete row 0 certificate.
+
+`python3 check_row0_point_order.py --check` replays `row0-point-order-result.json` with exact integer arithmetic. Independent square-table and quadratic-character counts both give curve order 331 over `F₃₁₃`; repeated affine addition agrees with the Lean order proof. `RecordedPointOrder.lean` proves each finite-field addition with an explicit division certificate, identifies `330P=(306,188)=−P`, derives `331P=O`, and applies the prime-order lemma. It rechecks the ladder on the exact coefficient-reduced curve type, identifies that base with the recorded prime-local `mapPoint`, and proves its order 331. The row 0 certified path then gives a scalar witness congruent to 4 modulo 331. All 80 theorem declarations have `#print axioms` audits. This row uses a recorded known-scalar input and measures no relation-search cost; an adaptive unknown-target procedure needs its own certificate and runtime measurement.
+
 The frozen [adaptive census protocol](adaptive-coefficient-protocol.json) admits all ordered pairs over `F₇`, `F₁₁`, and `F₃₁`. [The result](adaptive-coefficient-result.json) compares a fixed `(1,1)` relation, the explicit adaptive rule, and an exhaustive search over every `a` and nonzero `b`:
 
 | `q` | Total pairs | Fixed hits | Adaptive hits | Exhaustive disagreement |
@@ -74,6 +105,88 @@ The frozen [adaptive census protocol](adaptive-coefficient-protocol.json) admits
 | 31 | 961 | 31 | 931 | 0 |
 
 Run `python3 run_adaptive_coefficient_census.py` to reproduce these rows. The protocol SHA-256 is `0678db96b117e812dcf435c2eef435672070c2c138ec50e5418c2b0d712e5662`; the result retains all three fields and zero disagreement counts.
+
+## Canonical-lift additive obstruction
+
+A homomorphic lift of a finite subgroup carries no signal through an additive
+logarithm into a torsion-free group. More sharply, if the lift group is
+torsion-free, every set-theoretic section of reduction on a nontrivial finite
+subgroup has an additive defect at some pair of inputs. The latter theorem
+identifies exactly where a proposed nonhomomorphic lift must account for an
+extra term. The statements are group-theoretic: an elliptic-curve or p-adic
+application must supply the stated additive logarithm and reduction map on
+their actual domains.
+
+| Result | Lean declaration | Exact hypotheses and status |
+| --- | --- | --- |
+| Finite-source additive map vanishes | `XedniCanonicalLiftTorsionObstruction.finite_log_zero` | Finite additive group `G`, additive torsion-free group `A`, additive homomorphism `G →+ A`; checked |
+| Homomorphic lift logarithm vanishes | `XedniCanonicalLiftTorsionObstruction.homomorphic_lift_log_zero` | Additive lift `G →+ L` and additive logarithm `L →+ A` under the preceding hypotheses; checked |
+| Torsion-free homomorphic section forces trivial source | `XedniCanonicalLiftTorsionObstruction.torsion_free_section_trivial` | Additive torsion-free `L` and an exact section of `L →+ G`; checked |
+| Set-theoretic section has a defect | `XedniCanonicalLiftTorsionObstruction.section_has_additive_defect` | Nontrivial finite `G`, additive torsion-free `L`, additive reduction and section; an explicit existential pair fails additivity; checked |
+| Defect reduces to zero | `XedniCanonicalLiftDefect.defect_reduces_to_zero` | Abelian lift and residue groups, additive reduction, exact set-theoretic section; checked |
+| Defect cocycle | `XedniCanonicalLiftDefect.defect_cocycle` | Arbitrary map between abelian groups; the two ways of adding three inputs have equal accumulated defect; checked |
+| Zero defect characterizes additivity | `XedniCanonicalLiftDefect.defect_zero_iff_additive` | Arbitrary map between abelian groups; checked |
+
+For a section `s` and additive reduction `r`, define
+`d(x,y)=s(x+y)−s(x)−s(y)`. The kernel theorem says `r(d(x,y))=0`.
+The cocycle identity is
+`d(x,y)+d(x+y,z)=d(y,z)+d(x,y+z)`; it accounts for every
+reassociation of a longer relation for one fixed section. The section may be
+selected after public inputs are known, but the same selected map must be used
+throughout that relation. The reduction-kernel statement
+does not imply that the defect is numerically small or recoverable.
+
+The frozen [section-defect protocol](section-defect-protocol.json) uses the
+recorded row-0 subgroup order 331 and the exact integer section
+`s(k)=k` for `0≤k<331`. [The exhaustive result](section-defect-result.json)
+covers all 109,561 ordered pairs. There are 54,946 defects equal to zero and
+54,615 defects equal to `−331`; every defect reduces to zero modulo 331.
+Indeed, `d(x,y)=0` when `x+y<331` and `−331` otherwise, giving the two
+counts `331·332/2` and `331·330/2`. The pair `(330,1)` is a wrap witness.
+Run `python3 run_section_defect_census.py` to reproduce the exact census;
+its result records the frozen protocol SHA-256. This integer section is an
+algebraic control for the lift obstruction, with no p-adic curve arithmetic.
+
+Run `lake build CanonicalLiftTorsionObstruction` in this directory. The
+project pins Lean `v4.35.0-rc4` and Mathlib revision
+`021c46bdd042f67b538b9f9871d556a93713a9a9`. The build output and all
+seven `#print axioms` results are in `build-canonical-lift-torsion-output.txt`;
+each theorem uses only `propext`, `Classical.choice`, and `Quot.sound`.
+
+## Ordinary anomalous exception
+
+The prime-to-`p` premise in a canonical-lift argument needs an explicit
+group-order condition. The actual nonsingular elliptic curve
+`E: y²=x³+3x+2` over `F₅` has four affine solutions,
+`(1,1), (1,4), (2,1), (2,4)`, plus infinity. Thus `#E(F₅)=5` and its
+Frobenius trace is `5+1−5=1`. The curve is ordinary by the standard
+[trace criterion](https://math.mit.edu/classes/18.783/2015/LectureNotes14.pdf):
+supersingularity over a finite field is equivalent to trace divisible by its
+characteristic. Nevertheless its group order is divisible by the field prime.
+
+The older `research/exotic_ecdlp_20261021/PROOFS.md` T3 sketch states both
+that the Frobenius-fixed subgroup is isomorphic to `E(F_p)` and that it has
+prime-to-`p` order for every ordinary curve. The two statements cannot both
+hold for this curve. Its formal-group step also uses the stronger condition
+that the unit-root eigenvalue differs from one modulo `p`; ordinary reduction
+alone gives a nonzero unit root. State `p ∤ #E(F_p)` (equivalently trace
+`≠1 mod p`) when using that step. The earlier H3 digit measurements used
+recorded non-anomalous curves, so this exception changes the proof hypothesis
+and does not alter those measured rows.
+
+| Result | Lean declaration | Exact hypotheses and status |
+| --- | --- | --- |
+| Smooth curve over `F₅` | `XedniAnomalousOrdinaryException.curve_elliptic` | Discriminant of the exact short model is nonzero in `ZMod 5`; checked |
+| Coordinate equation matches Mathlib's point predicate | `XedniAnomalousOrdinaryException.nonsingular_iff_coordinates` | Same curve and field; checked |
+| Actual elliptic group has five points | `XedniAnomalousOrdinaryException.curve_group_card` | Equivalence to four checked affine coordinate solutions plus infinity; checked |
+| Anomalous order and trace one | `XedniAnomalousOrdinaryException.anomalous_order`, `trace_one` | Actual point-group cardinality equals the field prime and trace is one; checked |
+
+Run `lake build AnomalousOrdinaryException`. The pinned build and all five
+`#print axioms` audits are preserved in `build-anomalous-exception-output.txt`;
+each uses only `propext`, `Classical.choice`, and `Quot.sound`. Mathlib does
+not expose an ordinarity predicate for this curve here, so the final
+ordinary classification uses the cited finite-field trace criterion and the
+Lean-checked exact trace.
 
 ## Selector-invariant fixed-family bound
 
