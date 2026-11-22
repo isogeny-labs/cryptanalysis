@@ -48,16 +48,31 @@
 //! `W'_t` so that `a'_{t+1}` and `e'_{t+1}` take the forced values
 //! ([`solve_corrections`]). The `Delta W_t` are modular differences that
 //! depend on the actual register values, so *which* of them vanish is a matter
-//! of conditions on those values. Over 3e7 random states and `j = 0`, and over
-//! 5e6 with `j = 7`, the support of `(Delta W_i, ..., Delta W_{i+8})` is always
-//! a superset of `{i, i+1, i+2, i+3, i+5, i+8}` ([`MIN_SUPPORT`]); that set is
-//! reached with frequency about `2^-11`. `Delta W_{i+5}` contains both
-//! `Sigma0`-spread and `Sigma1`-spread terms of the perturbation, which no
-//! condition on the `Ch`/`Maj` selector bits can cancel, so the five-word
-//! pattern `{i, i+1, i+2, i+3, i+8}` is *not* reachable by this local
-//! collision (see `no_five_word_support_in_sample`).
+//! of conditions on those values.
 //!
-//! [`find_local_collision`] samples register values until the minimal support
+//! Two supports matter ([`SUPPORT_6`], [`MIN_SUPPORT`]):
+//!
+//! * With register values drawn uniformly (what [`find_local_collision`] and
+//!   [`support_histogram`] do), every sampled support contained
+//!   `{i, i+1, i+2, i+3, i+5, i+8}` (3e7 states with `j = 0`, 5e6 with
+//!   `j = 7`); that six-word set appeared with frequency about `2^-11`. That
+//!   is a statement about the sampling distribution only.
+//! * Imposing *value conditions* on the registers
+//!   ([`ValueConditions`], [`NB_CONDITIONS`]) makes the correction at offset 5
+//!   vanish as well, giving the five-word support `{i, i+1, i+2, i+3, i+8}` of
+//!   Nikolic and Biryukov (FSE 2008): `a_{i+1} = -1` (so `a'_{i+1} = 0` after
+//!   the `+1` perturbation), `a_i = a_{i-1} = a_{i+2} = a_{i+3} = 0`,
+//!   `a_{i-2} = -1`, `e_{i+1} = -1`, `e_{i+4} = 0`, `e_{i+5} = -1`,
+//!   `e_{i+6} = 0`, `e_{i+7} = -1` (words of all ones are written `-1`).
+//!   [`find_local_collision_conditioned`] constructs register values meeting
+//!   them and keeps the result only if the measured support is the requested
+//!   one. [`MIN_SUPPORT`] is this five-word support. Measured in the tests:
+//!   with the `+1` perturbation (`j = 0`) the support was exactly the five
+//!   words in every construction, for SHA-256 and SHA-512 and for every start
+//!   `0..=7`; the same value conditions with `-1`, `+-2^7` or `+2^31` gave a
+//!   wider support (the conditions would need re-derivation for those).
+//!
+//! [`find_local_collision`] samples register values until the six-word support
 //! appears, [`observe_characteristic`] collects the generalized conditions
 //! that the found solutions satisfy (as the per-bit union of observed pairs,
 //! hence empirical, not derived), and [`embed`] turns a local collision into a
@@ -603,9 +618,17 @@ pub fn gc_expand(p: &Sha2Params, block: &[GcWord; 16], n: usize) -> Vec<GcWord> 
 /// Number of steps spanned by the local collision.
 pub const LOCAL_COLLISION_STEPS: usize = 9;
 
-/// The smallest message-difference support observed: offsets `0, 1, 2, 3, 5,
-/// 8` from the perturbed step (see the module docs).
+/// The five-word message-difference support of the Nikolic-Biryukov local
+/// collision: offsets `0, 1, 2, 3, 8` from the perturbed step. It needs value
+/// conditions on the registers (see [`NB_CONDITIONS`]); uniformly sampled
+/// register values essentially never produce it.
 pub const MIN_SUPPORT: [bool; LOCAL_COLLISION_STEPS] =
+    [true, true, true, true, false, false, false, false, true];
+
+/// The six-word support offsets `0, 1, 2, 3, 5, 8`: the smallest support
+/// seen when register values are sampled uniformly and no value conditions are
+/// imposed.
+pub const SUPPORT_6: [bool; LOCAL_COLLISION_STEPS] =
     [true, true, true, true, false, true, false, false, true];
 
 /// Where and how the local collision is injected.
@@ -717,9 +740,10 @@ pub fn solve_corrections(
     w2
 }
 
-/// Search random register values for a local collision whose message
-/// difference support equals [`MIN_SUPPORT`], giving up after `max_trials`
-/// states.
+/// Search uniformly random register values for a local collision whose message
+/// difference support equals [`SUPPORT_6`], giving up after `max_trials`
+/// states. (The five-word [`MIN_SUPPORT`] needs
+/// [`find_local_collision_conditioned`].)
 pub fn find_local_collision(
     p: &Sha2Params,
     spec: LocalCollisionSpec,
@@ -740,7 +764,7 @@ pub fn find_local_collision(
             let n1 = p.step(&s1, w[t], k);
             w2[t] = solve_correction(p, &spec, t == 0, n1[0], &s2, k);
             dw[t] = p.sub(w2[t], w[t]);
-            if (dw[t] != 0) != MIN_SUPPORT[t] {
+            if (dw[t] != 0) != SUPPORT_6[t] {
                 continue 'trial;
             }
             s1 = n1;
@@ -756,6 +780,158 @@ pub fn find_local_collision(
             delta_w: dw,
             trials: trial,
         });
+    }
+    None
+}
+
+/// A required value of a whole register word.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum RegValue {
+    /// All bits zero.
+    Zero,
+    /// All bits one (`-1` modulo `2^w`).
+    Ones,
+}
+
+/// Value conditions on the `a` and `e` register sequences around a local
+/// collision at step `i`. `a[t + 3]` constrains `a_{i+t}` for `t = -3..=9` and
+/// `e[t]` constrains `e_{i+t}` for `t = 0..=9` (`a_t`, `e_t` are the registers
+/// after step `t - 1`, so `a_i` is the `a` register before step `i`). `b, c,
+/// d` are `a_{t-1}, a_{t-2}, a_{t-3}`, `f, g, h` likewise for `e`, so these
+/// sequences are the whole state. `f, g, h` before step `i` are unconstrained.
+/// Constraints on `e_{i+2}`, `e_{i+3}`, and on `a_{i-3}` together with
+/// `e_{i+1}`, are rejected (the construction determines them from the others).
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct ValueConditions {
+    /// Conditions on `a_{i-3}..=a_{i+9}`.
+    pub a: [Option<RegValue>; 13],
+    /// Conditions on `e_i..=e_{i+9}`.
+    pub e: [Option<RegValue>; 10],
+}
+
+/// The conditions listed in the module docs, giving [`MIN_SUPPORT`].
+pub const NB_CONDITIONS: ValueConditions = {
+    use RegValue::{Ones, Zero};
+    let mut a = [None; 13];
+    // a_{i-2} = -1, a_{i-1} = 0, a_i = 0, a_{i+1} = -1, a_{i+2} = a_{i+3} = 0
+    a[1] = Some(Ones);
+    a[2] = Some(Zero);
+    a[3] = Some(Zero);
+    a[4] = Some(Ones);
+    a[5] = Some(Zero);
+    a[6] = Some(Zero);
+    let mut e = [None; 10];
+    e[1] = Some(Ones);
+    e[4] = Some(Zero);
+    e[5] = Some(Ones);
+    e[6] = Some(Zero);
+    e[7] = Some(Ones);
+    ValueConditions { a, e }
+};
+
+/// Build register values meeting `conds`, member-1 message words that realise
+/// them, and the forced corrections. Unconstrained values are drawn from
+/// `rng`. The result is *not* checked against any support; the caller reads
+/// [`LocalCollision::support`].
+pub fn construct_local_collision(
+    p: &Sha2Params,
+    spec: LocalCollisionSpec,
+    conds: &ValueConditions,
+    rng: &mut StdRng,
+) -> LocalCollision {
+    let mask = p.mask();
+    let val = |c: RegValue| match c {
+        RegValue::Zero => 0,
+        RegValue::Ones => mask,
+    };
+    assert!(conds.e[2].is_none() && conds.e[3].is_none());
+    assert!(
+        !(conds.a[0].is_some() && conds.e[1].is_some()),
+        "a_(i-3) is determined by e_(i+1)"
+    );
+    // a[t + 3] = a_{i+t}
+    let mut a = [0u64; 13];
+    for t in 1..=6 {
+        a[t] = conds.a[t].map_or_else(|| rng.gen::<u64>() & mask, val);
+    }
+    let t2 = |a: &[u64; 13], t: usize| {
+        // T2 of step i + (t - 3), reading a_{i+t-3}, a_{i+t-4}, a_{i+t-5}
+        p.add(
+            p.sigma0_big(a[t]),
+            p.maj(a[t], a[t.wrapping_sub(1)], a[t.wrapping_sub(2)]),
+        )
+    };
+    // e_{i+t} = a_{i+t} - T2_{i+t-1} + a_{i+t-4}
+    // a_{i-3} from e_{i+1}: a_{i-3} = e_{i+1} - a_{i+1} + T2_i
+    a[0] = match (conds.a[0], conds.e[1]) {
+        (Some(c), _) => val(c),
+        (None, Some(c)) => p.add(p.sub(val(c), a[4]), t2(&a, 3)),
+        (None, None) => rng.gen::<u64>() & mask,
+    };
+    for t in 7..13 {
+        // a_{i+t-3}; e condition index is t - 3
+        a[t] = match (conds.a[t], if t - 3 <= 9 { conds.e[t - 3] } else { None }) {
+            (Some(c), _) => val(c),
+            (None, Some(c)) => p.sub(p.add(val(c), t2(&a, t - 1)), a[t - 4]),
+            (None, None) => rng.gen::<u64>() & mask,
+        };
+    }
+    let e0 = conds.e[0].map_or_else(|| rng.gen::<u64>() & mask, val);
+    let state = [
+        a[3],
+        a[2],
+        a[1],
+        a[0],
+        e0,
+        rng.gen::<u64>() & mask,
+        rng.gen::<u64>() & mask,
+        rng.gen::<u64>() & mask,
+    ];
+    let mut w = [0u64; 9];
+    let mut s = state;
+    for t in 0..LOCAL_COLLISION_STEPS {
+        let k = p.k[spec.start + t];
+        let t1 = p.sub(a[t + 4], t2(&a, t + 3));
+        w[t] = p.sub(
+            p.sub(
+                p.sub(p.sub(t1, s[7]), p.sigma1_big(s[4])),
+                p.ch(s[4], s[5], s[6]),
+            ),
+            k,
+        );
+        s = p.step(&s, w[t], k);
+        debug_assert_eq!(s[0], a[t + 4]);
+    }
+    let w2 = solve_corrections(p, &spec, state, &w);
+    LocalCollision {
+        params: p.clone(),
+        spec,
+        state,
+        w,
+        w2,
+        delta_w: std::array::from_fn(|t| p.sub(w2[t], w[t])),
+        trials: 1,
+    }
+}
+
+/// Construct local collisions under `conds` until one has exactly the message
+/// difference support `target`, giving up after `max_trials` constructions
+/// (the free register values and `f, g, h` are redrawn each time).
+pub fn find_local_collision_conditioned(
+    p: &Sha2Params,
+    spec: LocalCollisionSpec,
+    conds: &ValueConditions,
+    target: [bool; LOCAL_COLLISION_STEPS],
+    seed: u64,
+    max_trials: u64,
+) -> Option<LocalCollision> {
+    let mut rng = StdRng::seed_from_u64(seed);
+    for trial in 1..=max_trials {
+        let mut lc = construct_local_collision(p, spec, conds, &mut rng);
+        if lc.support() == target {
+            lc.trials = trial;
+            return Some(lc);
+        }
     }
     None
 }
@@ -1208,7 +1384,7 @@ mod tests {
             let t0 = Instant::now();
             let lc = find_local_collision(&p, spec, 1, 1 << 24).expect("local collision");
             let dt = t0.elapsed();
-            assert_eq!(lc.support(), MIN_SUPPORT);
+            assert_eq!(lc.support(), SUPPORT_6);
             let nz: Vec<usize> = (0..9).filter(|&t| lc.delta_w[t] != 0).collect();
             assert_eq!(nz, vec![0, 1, 2, 3, 5, 8]);
             let want = if positive {
@@ -1256,7 +1432,7 @@ mod tests {
             positive: true,
         };
         let lc = find_local_collision(&p, spec, 3, 1 << 26).expect("local collision");
-        assert_eq!(lc.support(), MIN_SUPPORT);
+        assert_eq!(lc.support(), SUPPORT_6);
         let e = embed(&lc, 6);
         let prim = sha512_compress::steps(2 + 9);
         assert_eq!(
@@ -1266,10 +1442,12 @@ mod tests {
         assert_ne!(e.m1, e.m2);
     }
 
-    /// In a sample, offsets 0, 1, 2, 5 and 8 are always nonzero, so the
-    /// five-word pattern (offset 5 zero) is absent.
+    /// Measurement on uniformly random register values (2^21 samples, start 0,
+    /// `+1`): offsets 0, 1, 2, 5 and 8 were always nonzero and the five-word
+    /// pattern did not occur. This says nothing about register values chosen
+    /// under conditions; see the conditioned tests below.
     #[test]
-    fn no_five_word_support_in_sample() {
+    fn uniform_register_samples_did_not_show_five_word_support() {
         let p = Sha2Params::sha256();
         let spec = LocalCollisionSpec {
             start: 0,
@@ -1288,9 +1466,108 @@ mod tests {
         }
         assert!(
             !hist.contains_key(&0b1_0000_1111),
-            "five-word pattern reached"
+            "five-word pattern appeared in the uniform sample"
         );
         eprintln!("support histogram (LSB = offset 0): {hist:?}");
+    }
+
+    /// Value-conditioned construction ([`NB_CONDITIONS`]), `+1` perturbation:
+    /// the support is exactly [`MIN_SUPPORT`] at every start that fits, for
+    /// SHA-256 and SHA-512, on every construction drawn; each pair is run
+    /// through the IR, collides after `start + 9` steps and not after one step
+    /// fewer.
+    #[test]
+    fn conditioned_five_word_support_through_the_ir() {
+        for p in [Sha2Params::sha256(), Sha2Params::sha512()] {
+            for start in 0..=16 - LOCAL_COLLISION_STEPS {
+                let spec = LocalCollisionSpec {
+                    start,
+                    bit: 0,
+                    positive: true,
+                };
+                let mut rng = StdRng::seed_from_u64(41 + start as u64);
+                for _ in 0..50 {
+                    let lc = construct_local_collision(&p, spec, &NB_CONDITIONS, &mut rng);
+                    assert_eq!(lc.support(), MIN_SUPPORT, "{} start {start}", p.name);
+                }
+                let lc =
+                    find_local_collision_conditioned(&p, spec, &NB_CONDITIONS, MIN_SUPPORT, 7, 10)
+                        .expect("conditioned collision");
+                assert_eq!(lc.trials, 1);
+                let nz: Vec<usize> = (0..9).filter(|&t| lc.delta_w[t] != 0).collect();
+                assert_eq!(nz, vec![0, 1, 2, 3, 8]);
+                assert_eq!(lc.delta_w[0], 1);
+                let e = embed(&lc, 9);
+                let n = start + 9;
+                let (prim, short) = if p.w == 32 {
+                    (sha256_compress::steps(n), sha256_compress::steps(n - 1))
+                } else {
+                    (sha512_compress::steps(n), sha512_compress::steps(n - 1))
+                };
+                assert_eq!(
+                    eval(&prim, &e.m1, &e.chaining),
+                    eval(&prim, &e.m2, &e.chaining),
+                    "{} start {start}",
+                    p.name
+                );
+                assert_ne!(
+                    eval(&short, &e.m1, &e.chaining),
+                    eval(&short, &e.m2, &e.chaining)
+                );
+                if start == 0 {
+                    eprintln!("{} start 0 conditioned dW = {:x?}", p.name, lc.delta_w);
+                }
+            }
+        }
+    }
+
+    /// With the register conditions, `+1`, start 0, SHA-256: over 100
+    /// constructions with different free register values, `dW_0 = 1`,
+    /// `dW_3 = dW_8 = -1` and offsets 4..=7 are zero every time, while `dW_1`
+    /// and `dW_2` depend on the free values (an independent Python
+    /// implementation of the same conditions gave `dW = [1, f46fd34f,
+    /// cd613e31, ffffffff, 0, 0, 0, 0, ffffffff]` for its own free values).
+    #[test]
+    fn conditioned_dw_shape_for_free_choices() {
+        let p = Sha2Params::sha256();
+        let spec = LocalCollisionSpec {
+            start: 0,
+            bit: 0,
+            positive: true,
+        };
+        let mut rng = StdRng::seed_from_u64(3);
+        for _ in 0..100 {
+            let lc = construct_local_collision(&p, spec, &NB_CONDITIONS, &mut rng);
+            let d = lc.delta_w;
+            assert_eq!(d[0], 1);
+            assert!(d[1] != 0 && d[2] != 0);
+            assert_eq!(d[3], 0xffff_ffff);
+            assert_eq!(d[4..8], [0, 0, 0, 0]);
+            assert_eq!(d[8], 0xffff_ffff);
+        }
+    }
+
+    /// Other bit positions and the `-2^j` sign with the same value conditions
+    /// do not give the five-word support (measured on SHA-256, start 0).
+    #[test]
+    fn same_conditions_do_not_close_five_words_for_other_perturbations() {
+        let p = Sha2Params::sha256();
+        for (bit, positive) in [(0usize, false), (7, true), (7, false), (31, true)] {
+            let spec = LocalCollisionSpec {
+                start: 0,
+                bit,
+                positive,
+            };
+            assert!(find_local_collision_conditioned(
+                &p,
+                spec,
+                &NB_CONDITIONS,
+                MIN_SUPPORT,
+                1,
+                200
+            )
+            .is_none());
+        }
     }
 
     /// The empirical characteristic is consistent with `step_gc` and has
