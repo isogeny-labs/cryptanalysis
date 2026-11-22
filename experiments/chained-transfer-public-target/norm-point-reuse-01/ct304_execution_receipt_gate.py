@@ -314,7 +314,7 @@ def self_test_with_authentic_source(fixture_path):
             with_clock.append(line)
         if not changed_sample or not changed_lifetime:
             raise AssertionError('CT309 synthetic timestamp sources missing')
-        timed_candidate = ('\\n'.join(with_clock) + '\\n').encode()
+        timed_candidate = (chr(10).join(with_clock) + chr(10)).encode()
         timed_receipt = copy.deepcopy(b)
         timed_receipt['stdout_sha256'] = digest(timed_candidate)
         timed_receipt['stdout_bytes'] = len(timed_candidate)
