@@ -2,7 +2,7 @@
 
 ## Active items
 
-- [ ] CT302 bind primitive pricing to dual full 695-record native logs (ChatGPT, started 2026-11-21, branch research/ct302-full-native-log-admission-20261121): reuse existing whole-population comparator and CT301 frozen-vector gate; source-only controls first; no native timing/PCC claim.
+- [ ] CT302 bind primitive pricing to dual full 695-record native logs (ChatGPT, started 2026-11-21, branch research/ct302-full-native-log-admission-20261121, PR #1912): reuse existing whole-population comparator and CT301 frozen-vector gate; source-only controls first; no native timing/PCC claim.
 
 - [ ] CT301 bind native CT248 transcript to immutable authentic 48-vector fixture (ChatGPT, started 2026-11-21, branch research/ct301-native-transcript-fixture-binding-20261121, PR #1905): reject same-shape class-key/counter substitutions in actual --log admission; synthetic source guards only, retain draft until native/PCC gates. 
 
