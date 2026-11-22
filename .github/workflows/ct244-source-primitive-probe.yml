@@ -281,9 +281,11 @@ jobs:
           assert r["positive_directional_controls"]==2
           assert r["negative_directional_controls"]==2
           assert r["negative_sector_reversal_controls"]==1
+          assert r["zero_called_clock_mutations_rejected"]==3
+          assert r["exact_crlf_raw_sha256_controls"]==1
           assert r["original_native_model_executions"]==0
           assert r["physical_primitive_timings"]==0 and r["pcc"]=="unverified"
-          print("CT311_DIRECTIONAL_SYNTHETIC_FRONTIER_PASS; 48 real source rows, 144 fabricated clocks; no native solve")
+          print("CT312_DIRECTIONAL_MISSING_CLOCK_RAW_BYTES_PASS; 48 real source rows, 144 fabricated clocks, three zero-clock refusals, exact CRLF hash; no native solve")
           PY
           if python3 -S "$script" --fixture "$fixture" > /tmp/ct311-missing.out 2> /tmp/ct311-missing.err; then
             echo 'ERROR: CT311 production accepted without complete CT310 capture' >&2; exit 1
