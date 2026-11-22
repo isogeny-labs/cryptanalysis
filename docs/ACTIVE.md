@@ -18,7 +18,7 @@ and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
 
-- [ ] ic bench: coset-filtered MITM pair tables (`mitm` / `mitm-frobenius` `coset_filter=1`), frozen ratchet protocol and bench record; stage improvement from the trunk's graph-theory note (Claude Code, started 2026-11-22, branch claude/mitm-coset-class-filter) [pcc:unverified]
+- [ ] ic bench: coset-filtered MITM pair tables (`mitm` / `mitm-frobenius` `coset_filter=1`), frozen ratchet protocol and bench record; stage improvement from the trunk's graph-theory note (Claude Code, started 2026-11-22, branch claude/mitm-coset-class-filter, PR #1892) [pcc:unverified]
 
 - [ ] Mirror the general binary hyperelliptic-cover transfer interface from crypto after its source commit is frozen, with split provenance and exact parity checks (Codex, started 2026-11-18, branch codex/general-binary-cover-transfer-mirror-20261118, PR #1765) [pcc:unverified]
 
