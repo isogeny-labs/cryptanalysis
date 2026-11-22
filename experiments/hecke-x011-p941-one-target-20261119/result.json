@@ -1,0 +1,59 @@
+{
+  "schema": "x011-p941-one-target-result-v1",
+  "public_point": [
+    283,
+    221
+  ],
+  "fiber_size": 112,
+  "group_order": 900,
+  "full_quotient_cosets": 900,
+  "prepared_coordinates_verified": 112,
+  "target_subgroup_order": 180,
+  "target_subgroup_prepared_points": 23,
+  "prepared_coordinate_derivation_ns": 100252167,
+  "prepared_coordinates_sha256": "86f2f5e6033b701194b94799368f46594f0a685675af5d3e248cc0503dd1ef00",
+  "runs": [
+    {
+      "status": "verified",
+      "scalar": 170,
+      "shift": 1,
+      "probes": 2,
+      "group_additions": 1,
+      "online_ns": 8875,
+      "arm": "connector",
+      "order_index": 0
+    },
+    {
+      "status": "verified",
+      "scalar": 170,
+      "walk_transitions": 66,
+      "collisions": 1,
+      "restarts": 0,
+      "online_ns": 94750,
+      "arm": "rho",
+      "order_index": 1
+    },
+    {
+      "status": "verified",
+      "scalar": 170,
+      "walk_transitions": 66,
+      "collisions": 1,
+      "restarts": 0,
+      "online_ns": 67833,
+      "arm": "rho",
+      "order_index": 2
+    },
+    {
+      "status": "verified",
+      "scalar": 170,
+      "shift": 1,
+      "probes": 2,
+      "group_additions": 1,
+      "online_ns": 7583,
+      "arm": "connector",
+      "order_index": 3
+    }
+  ],
+  "candidate_id": null,
+  "benchmark_tier": "exploratory_ordinary_host"
+}
