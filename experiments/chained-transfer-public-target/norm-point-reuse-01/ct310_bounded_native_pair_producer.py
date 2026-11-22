@@ -125,6 +125,18 @@ def custody_lock(path, expected_sha):
     return expected_sha
 
 
+def retain_binary(original, destination, expected_sha):
+    """Copy and execute the exact retained bytes; output bundle is replayable."""
+    raw = source_bytes(original)
+    if digest(raw) != expected_sha:
+        refuse('source executable changed before retention')
+    new_file(destination, raw)
+    destination.chmod(0o700)
+    if digest(source_bytes(destination)) != expected_sha:
+        refuse('retained executable failed byte-for-byte SHA256 check')
+    return destination
+
+
 def capture_one(role, binary, argv, source_commit, fixture_bytes, root, collector,
                 child_seconds, deadline_ns, expected_host):
     if host() != expected_host:
@@ -193,7 +205,7 @@ def run(args):
     reuse_argv = argv_lock(args.reuse_argv_json, reuse)
     collector = locked_collector(args.ct176_source)
     machine = host()
-    root = args.output_dir
+    root = args.output_dir.absolute()
     root.mkdir(mode=0o700, parents=False, exist_ok=False)
     deadline = time.monotonic_ns() + args.panel_wall_seconds * 1_000_000_000
     new_json(root / 'provenance.json', {
@@ -203,12 +215,16 @@ def run(args):
         'independent_native_execution_verified':False, 'pcc':'unverified'
     })
     try:
-        capture_one('original', original, original_argv, args.original_source_sha,
+        retained_original = retain_binary(original, root/'original.bin', args.original_sha256)
+        retained_reuse = retain_binary(reuse, root/'reuse.bin', args.reuse_sha256)
+        original_argv = [str(retained_original)] + original_argv[1:]
+        reuse_argv = [str(retained_reuse)] + reuse_argv[1:]
+        capture_one('original', retained_original, original_argv, args.original_source_sha,
                     fixture, root, collector, args.timeout_seconds, deadline, machine)
-        capture_one('reuse', reuse, reuse_argv, args.reuse_source_sha,
+        capture_one('reuse', retained_reuse, reuse_argv, args.reuse_source_sha,
                     fixture, root, collector, args.timeout_seconds, deadline, machine)
         result = audit.verify_pair(root/'original.stdout',root/'reuse.stdout',
-                    root/'original.stderr',root/'reuse.stderr',original,reuse,
+                    root/'original.stderr',root/'reuse.stderr',retained_original,retained_reuse,
                     root/'original.receipt.json',root/'reuse.receipt.json',args.fixture)
         new_json(root/'admission.json', result)
         new_json(root/'terminal.json', {'schema':'ct310-terminal/v1',
