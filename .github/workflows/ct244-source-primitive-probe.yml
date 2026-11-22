@@ -6,6 +6,7 @@ on:
       - 'experiments/chained-transfer-public-target/norm-point-reuse-01/ct248_scoped_sample_audit.py'
       - 'experiments/chained-transfer-public-target/norm-point-reuse-01/ct300_authentic_fixture_guard.py'
       - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT300_AUTHENTIC_SCALAR_FIX_PROTOCOL.md'
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT301_NATIVE_FIXTURE_BOUND_ADMISSION_PROTOCOL.md'
       - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT248_SCOPED_PRIMITIVE_SAMPLES_PROTOCOL.md'
       - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT244_PRIMITIVE_PRICING_PROTOCOL.md'
       - '.github/workflows/ct244-source-primitive-probe.yml'
@@ -53,6 +54,44 @@ jobs:
           python3 -O -S "$script" --fixture "$fixture" > /tmp/ct300-optimized.json
           cmp /tmp/ct300-normal.json /tmp/ct300-optimized.json
           cat /tmp/ct300-normal.json
+      - name: CT301 actual CLI immutable fixture binding (mock times only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          root=experiments/chained-transfer-public-target
+          script="$root/norm-point-reuse-01/ct248_scoped_sample_audit.py"
+          guard="$root/norm-point-reuse-01/ct300_authentic_fixture_guard.py"
+          fixture="$root/evidence/fixed-chain-norm-point-native-01/literal-selected-vectors.json"
+          python3 -S - <<'PY'
+          from pathlib import Path
+          import sys
+          root = Path("experiments/chained-transfer-public-target")
+          sys.path.insert(0, str((root / "norm-point-reuse-01").resolve()))
+          import ct300_authentic_fixture_guard as ct300
+          fixture = (root / "evidence/fixed-chain-norm-point-native-01/literal-selected-vectors.json").read_bytes()
+          source = ct300.load_frozen(fixture)
+          Path("/tmp/ct301-mock-only.log").write_text(ct300.build_mock_transcript(source))
+          print("CT301_MOCK_CLOCK_ONLY: authentic 48 rows; zero synthetic ns; NO native execution")
+          PY
+          python3 -S "$script" --log /tmp/ct301-mock-only.log --fixture "$fixture" > /tmp/ct301-normal.json
+          python3 -O -S "$script" --log /tmp/ct301-mock-only.log --fixture "$fixture" > /tmp/ct301-optimized.json
+          cmp /tmp/ct301-normal.json /tmp/ct301-optimized.json
+          python3 -S - <<'PY'
+          import json
+          v = json.load(open("/tmp/ct301-normal.json", encoding="utf8"))
+          assert v["selected_vectors"] == 48 and v["scoped_samples"] == 144
+          assert v["complete_single_target_cost"] is None
+          assert v["native_timing_reproduced_by_independent_runner"] is False
+          print("CT301_SOURCE_BOUND_CLI_PASS; synthetic only, no timing/PCC claim")
+          PY
+          if python3 -S "$script" --log /tmp/ct301-mock-only.log > /tmp/ct301-missing.out 2> /tmp/ct301-missing.err; then
+            echo 'ERROR: native --log accepted without --fixture' >&2; exit 1
+          fi
+          grep -F 'CT301 requires --fixture' /tmp/ct301-missing.err
+          if python3 -S "$script" --log /tmp/ct301-mock-only.log --fixture /dev/null > /tmp/ct301-wrong.out 2> /tmp/ct301-wrong.err; then
+            echo 'ERROR: native --log accepted a wrong authentic source' >&2; exit 1
+          fi
+          grep -F 'Git blob mismatch' /tmp/ct301-wrong.err
       - name: Create separate guarded Rust package and parse with rustfmt
         shell: bash
         run: |

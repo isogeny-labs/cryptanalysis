@@ -40,6 +40,46 @@ def load_frozen(data):
     return doc
 
 
+
+def typed_equal(a, b):
+    """No bool-as-int or float-as-int source-record aliasing."""
+    if type(a) is not type(b):
+        return False
+    if type(a) is dict:
+        return set(a) == set(b) and all(typed_equal(a[k], b[k]) for k in a)
+    if type(a) is list:
+        return len(a) == len(b) and all(typed_equal(x, y) for x, y in zip(a, b))
+    return a == b
+
+
+def normalize_frozen_native_vectors(doc):
+    """Map ONLY the archived counter name to CT125/CT244's native name."""
+    work = copy.deepcopy(doc)
+    for row in work["all48"]:
+        for route in auditor.ROUTES:
+            old = row[route]
+            if type(old) is not dict or OLD_NORM not in old or NEW_NORM in old:
+                raise ValueError("CT301 frozen Calls schema differs")
+            old[NEW_NORM] = old.pop(OLD_NORM)
+            if set(old) != set(auditor.CALL_FIELDS):
+                raise ValueError("CT301 original Calls counters differ")
+    return work
+
+
+def bind_transcript_to_frozen(raw_log, frozen_bytes):
+    """Require complete *value* parity with the exact original 48-row source.
+
+    This source-only integrity check does not independently verify arithmetic,
+    clocks, process provenance, or physical execution.
+    """
+    frozen = load_frozen(frozen_bytes)  # byte-level pinned Git-object check
+    expected = normalize_frozen_native_vectors(frozen)
+    _, native_vectors, _ = auditor.decode(raw_log)
+    if not typed_equal(native_vectors, expected):
+        raise ValueError("CT301 native selected vectors differ from pinned authentic 48-row source")
+    return True
+
+
 def build_mock_transcript(doc):
     """Preserve every frozen class key; adapt only the old/new norm counter name."""
     if auditor.SCALARS != EXPECTED_SCALARS:
@@ -92,6 +132,7 @@ def run(raw):
     document = load_frozen(raw)
     transcript = build_mock_transcript(document)
     checked = auditor.audit(transcript)
+    bind_transcript_to_frozen(transcript, raw)  # CT301 positive: genuine source, synthetic clocks
     if checked["selected_vectors"] != 48 or checked["scoped_samples"] != 144:
         raise RuntimeError("CT300 authentic selected program was not admitted")
     if checked["complete_single_target_cost"] is not None:
@@ -122,6 +163,34 @@ def run(raw):
     expect_reject(lambda: auditor.audit(build_mock_transcript(bad_doc)),
                   "tampered full-route source counter")
 
+    # CT301: the old structural auditor accepts altered 19-word values or
+    # unpriced counters; source-bound native admission must reject all three.
+    samples, original_vectors, lifetime = auditor.decode(transcript)
+    def forged(mutator):
+        vectors = copy.deepcopy(original_vectors)
+        mutator(vectors)
+        return auditor.encode(samples, vectors, lifetime)
+    def flip_input(vectors):
+        key = vectors["all48"][0]["input"]
+        key[3] = (key[3] + 1) % (2 ** 32)
+    def flip_output(vectors):
+        key = vectors["all48"][7]["whole_outputs_equal"]
+        key[4] = (key[4] + 1) % (2 ** 32)
+    def flip_unpriced(vectors):
+        route = vectors["all48"][0]["direct_composite"]
+        route["infinity_halves"] += 1
+    for name, mutator in (
+        ("same-shape input class key", flip_input),
+        ("same-shape output class key", flip_output),
+        ("unpriced original call counter", flip_unpriced),
+    ):
+        forged_log = forged(mutator)
+        # Demonstrate the gap without claiming it is a mathematical proof.
+        auditor.audit(forged_log)
+        expect_reject(lambda log=forged_log: bind_transcript_to_frozen(log, raw), name)
+    expect_reject(lambda: bind_transcript_to_frozen(transcript, raw + b" "),
+                  "native admission with altered immutable fixture bytes")
+
     return {
         "schema": "ct300-authentic-fixture-source-gate-v1",
         "frozen_git_blob": FROZEN_GIT_BLOB,
@@ -129,6 +198,8 @@ def run(raw):
         "real_scalar_schedule": list(EXPECTED_SCALARS),
         "synthetic_clock_samples": 144,
         "negative_controls_rejected": 5,
+        "ct301_binding_negative_controls_rejected": 4,
+        "ct301_source_values_bound": True,
         "scope": "producer-native frozen rows, source-only mock clock; no elapsed timing or full-solve result",
         "pcc": "unverified",
     }

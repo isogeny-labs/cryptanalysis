@@ -360,11 +360,23 @@ def main():
     g = p.add_mutually_exclusive_group(required=True)
     g.add_argument("--self-test", action="store_true")
     g.add_argument("--log", type=Path)
+    p.add_argument("--fixture", type=Path,
+                   help="required for --log: exact immutable 48-vector source fixture")
     args = p.parse_args()
     if args.self_test:
+        if args.fixture is not None:
+            p.error("--fixture is for native --log admission only")
         self_test()
     else:
-        print(json.dumps(audit(args.log.read_text(encoding="utf8")), sort_keys=True))
+        if args.fixture is None:
+            p.error("CT301 requires --fixture for all native --log admissions")
+        raw = args.log.read_text(encoding="utf8")
+        result = audit(raw)
+        # CT300's source-only mock-clock test alone does not bind an actual
+        # native transcript. Require immutable full-value parity here too.
+        from ct300_authentic_fixture_guard import bind_transcript_to_frozen
+        bind_transcript_to_frozen(raw, args.fixture.read_bytes())
+        print(json.dumps(result, sort_keys=True))
 
 
 if __name__ == "__main__":
