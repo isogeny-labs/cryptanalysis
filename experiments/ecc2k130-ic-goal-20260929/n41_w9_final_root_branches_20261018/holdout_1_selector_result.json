@@ -1,0 +1,28 @@
+{
+  "arm": "selector",
+  "arm_index": 1,
+  "command": [
+    "/opt/homebrew/Cellar/cryptominisat/5.14.7/bin/cryptominisat5",
+    "--threads=1",
+    "--maxconfl=50000",
+    "--maxtime=240",
+    "--zero-exit-status",
+    "--verb=1",
+    "--printsol=1",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w9_final_root_branches_20261018/formula.xcnf"
+  ],
+  "last_restart_line": "c rst  geom ibes   vs   182   50K  123742  123K  216K    3.92    2.70   272   276 19511     4  228.34  228.30",
+  "monitor_error": null,
+  "protocol_sha256": "6b2e9386c75c4402495c7e5abc72ca737c41044f325e37b12a7f1aefc7fe501d",
+  "reported_conflicts": 50002,
+  "reported_decisions": 204585,
+  "reported_propagations": "114M",
+  "rss_samples": 438,
+  "sampled_peak_combined_rss_bytes": 144916480,
+  "solver_exit_code": 0,
+  "solver_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "solver_stdout_sha256": "c87083770c3a08f0e6a5857298581bf6536fdb7b3a3625bf21b8a97ee8ca9f8d",
+  "status": "INDETERMINATE_CONFLICT_CAP",
+  "stop_reason": null,
+  "wall_seconds": 45.23036395800227
+}

@@ -393,6 +393,20 @@ static void ec_jac_add_affine(const ca_group *g, ec_jac *r, uint64_t x2, uint64_
     r->z = z3;
 }
 
+/* Binary left-to-right ladder: adds only P itself, so it is correct for
+ * points of any order.  Used when the sliding-window table would contain
+ * the identity (P of order <= 15). */
+static void ec_group_mul_binary(const ca_group *g, ca_elem *r, const ca_elem *a, uint64_t k)
+{
+    const uint64_t ax = FX(a), ay = FY(a);
+    ec_jac acc = {0, 0, 0, 1};
+    for (int bit = 63 - __builtin_clzll(k); bit >= 0; bit--) {
+        ec_jac_dbl(g, &acc);
+        if ((k >> bit) & 1) ec_jac_add_affine(g, &acc, ax, ay);
+    }
+    ec_jac_to_affine(g, r, &acc);
+}
+
 int ca_ec_group_mul(const ca_group *g, ca_elem *r, const ca_elem *a, uint64_t k)
 {
     if (g->vt != &ec_vt) return 0; /* a caller's own vtable: use it */
@@ -406,6 +420,10 @@ int ca_ec_group_mul(const ca_group *g, ca_elem *r, const ca_elem *a, uint64_t k)
     enum { WIN = 4, NODD = 1 << (WIN - 1) };
     ca_elem two, odd[NODD];
     ec_dbl(g, &two, a); /* affine 2P, one inversion */
+    if (FINF(&two)) { /* P of order 2: the table below would add the identity */
+        ec_group_mul_binary(g, r, a, k);
+        return 1;
+    }
     ec_jac J[NODD];
     J[0].x = FX(a);
     J[0].y = FY(a);
@@ -414,6 +432,10 @@ int ca_ec_group_mul(const ca_group *g, ca_elem *r, const ca_elem *a, uint64_t k)
     for (int t = 1; t < NODD; t++) {
         J[t] = J[t - 1];
         ec_jac_add_affine(g, &J[t], FX(&two), FY(&two)); /* (2t+1)P */
+        if (J[t].inf) { /* (2t+1)P = O: order <= 15, a table row would be O */
+            ec_group_mul_binary(g, r, a, k);
+            return 1;
+        }
     }
     /* Batch-invert the Z's (Montgomery's trick); J[0].z = R already. */
     uint64_t prod[NODD], invz[NODD];

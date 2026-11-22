@@ -1,0 +1,29 @@
+{
+  "schema": "engineering.replay-control-readiness/v1",
+  "at": "2026-11-20T20:05:11.000900+00:00",
+  "parent_heads": {
+    "base": "e7156bee0606858b18278b303dafb48b4f24ccec",
+    "consumer": "5a3102bf38c4389e94ece750f80e89dda3f0a55c"
+  },
+  "change": "atomic PID readiness marker and3second test-only timeout to avoid startup/read races",
+  "production_replay_sha256": "4e681a379f327800385595833d31fa601157e04db1c1f4a56599bc84faa098c0",
+  "production_replay_changed": false,
+  "test_source_sha256": "39ca98d32dd747527a9a62322ef32997233974f878859b59f95c29954e8d88ec",
+  "baseline": {
+    "tests": 11,
+    "failures": 3,
+    "log_sha256": "e4ca6d3a95e309111e9a7ad00af24c5166c7829d691f6798e5e8dbaead3d3bf9"
+  },
+  "candidate": {
+    "tests": 11,
+    "failures": 0,
+    "log_sha256": "87bc93569b8d96fa7b2c4340465819c3af39334bebbde4463e40cf4d39200fdd"
+  },
+  "original_seven_guard_tests_unchanged": true,
+  "lifecycle_control_scope": "disposable processes with mocked source guards",
+  "prior_interruption_audit_preserved": true,
+  "retained_fixture_failure": "v3 embedded-driver quoting error; corrected before this qualification",
+  "frozen_sources_changed": false,
+  "production_deadlines_changed": false,
+  "s3_accessed": false
+}

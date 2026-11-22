@@ -1,0 +1,30 @@
+{
+  "baseline": "top seven training translations conditional on shared block seed",
+  "candidate_id": null,
+  "curve_id": "EC1N41Ckb1h023d9a38bbf7",
+  "feature_arms": [
+    "public_xy",
+    "after_one_free_pair_xy",
+    "after_two_free_pairs_xy"
+  ],
+  "input_law": "offset-zero subset of archived 100000 generated 12-column sums, first 80000 train and last 20000 holdout before filtering",
+  "label": "canonical full-width translation min(u,u XOR seed) for each corresponding pair slot",
+  "model": "global per-translation Bernoulli bit likelihood with Laplace-one smoothing and conditional seed prior, top seven",
+  "one_worker": true,
+  "prior_protocol_sha256": "244975366fe7300c08ea02e5518a8e3b0396d45f3671f7c1d5cbc568647cbafb",
+  "prior_result_sha256": "314c3e2db9c5747a623e02a28ba94d2b59f52feb94388ab6f751ed785a435e6c",
+  "proposal_id": "Q20261011213500",
+  "rss_cap_bytes": 1073741824,
+  "score_contraction": "numpy.einsum optimize=False; validated against v1 matrix product on finite scores",
+  "sha256": {
+    "generator_protocol": "88e42c0d3cd2ecc28b4eb0d035439016be2f4a331c74ce82c646ab9f4c32b4ab",
+    "residual_protocol": "557bf927b393059b53938626b9ec192639a476f942396e11e21a3548ff1e7105",
+    "residuals": "8bfdfebf8308de58b05f0265ac9a45061fde8fc397f9385dc9d342ba082f2c96",
+    "rows": "c8b4fc85700a82135cdf6b04d47510e124c2389c48f3dac1294cb5c663a07eb5",
+    "source": "2a6ced5627f65e651dafe6a85c643184f44f0b16ef1ef192c6bba3358383a7ca",
+    "source_input": "2db09af37e8bd3b4cb1068c79218132b828920fb2ec8c87311db7dbae12f5496"
+  },
+  "status": "FROZEN_BEFORE_V2_RUN",
+  "version": 2,
+  "wall_cap_seconds": 120
+}

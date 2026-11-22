@@ -1,0 +1,200 @@
+{
+  "schema": "xedni-rank-decay-control-results/v1",
+  "captured_at_utc": "2026-11-19T05:07:07Z",
+  "implementation_commit": "cb8c4cf48bfba1e76f90536a62c029810c45c1a4",
+  "scope": "Producer-side deterministic implementation controls only. The fixed p=101 instance is outside the 16--32-bit natural manifest. Timings are not isolation-qualified. No decay, frequency, security, speedup, or end-to-end ECDLP conclusion follows.",
+  "natural_inference_rows_started": 0,
+  "natural_inference_rows_retained": 0,
+  "natural_run_authorized": false,
+  "tool_state": {
+    "pari": {
+      "available": true,
+      "version": "2.17.2",
+      "image_digest": "sha256:923e7e41d2fe1716fc3f1a6e06486d469b608baa6d6b4b0fdbb6e43b132049cf",
+      "parisizemax": 2147483648
+    },
+    "magma": {
+      "available": false,
+      "required_version": "2.29-10",
+      "status": "BLOCKED_NO_LICENSED_EXECUTABLE"
+    },
+    "ca_icx": {
+      "sha256": "f6b75d48dc957350ba9c9de0c7239cf6c30b4ea7396c7d051b84ee5f97dcf78e"
+    }
+  },
+  "test_suites": [
+    {
+      "command": "python3 -m unittest discover -v",
+      "working_directory": "research/xedni_rank_decay_20261118",
+      "passed": 160,
+      "failed": 0,
+      "skipped": 6,
+      "note": "The six skips are the real-PARI tests when host gp is absent; the same tests ran in the immutable PARI container below."
+    },
+    {
+      "command": "docker run --rm --network=none -v /workspace/cryptanalysis:/workspace/cryptanalysis:ro -w /workspace/cryptanalysis/research/xedni_rank_decay_20261118 --entrypoint python3 xedni-pari-rank:2.17.2 -m unittest -v test_invariants_pari.py test_relation_pari.py",
+      "passed": 25,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "command": "docker run --rm --network=none -v $PWD:/work:ro --entrypoint python3 xedni-pari-rank:2.17.2 /work/tool_controls.py --gp gp --real-timeout 60",
+      "passed": 18,
+      "failed": 0,
+      "skipped": 0,
+      "known_rank_controls": {
+        "11a1": {
+          "expected_rank": 0,
+          "bounds": [0, 0],
+          "classification_at_r_1": "CERT_LT"
+        },
+        "37a1": {
+          "expected_rank": 1,
+          "bounds": [1, 1],
+          "classification_at_r_1": "CERT_GE"
+        }
+      }
+    },
+    {
+      "command": "lake build && lake env lean XedniRankClassification/Decision.lean",
+      "working_directory": "research/xedni_rank_decay_20261118/formal",
+      "passed": 4,
+      "failed": 0,
+      "axiom_audit": "All four named XedniRankDecay theorems report no axioms."
+    }
+  ],
+  "fixed_p101_control": {
+    "inference_eligible": false,
+    "outside_frozen_natural_manifest": true,
+    "master_seed": "integration-control-not-natural",
+    "source": {
+      "p": 101,
+      "family": "generic",
+      "source_index": 0,
+      "curve": {
+        "a": 72,
+        "b": 90,
+        "generation_attempts": 1
+      },
+      "cardinality": 92,
+      "factorization": [[2, 2], [23, 1]],
+      "source_subgroup_order": 23,
+      "source_cofactor": 4,
+      "max_r": 6
+    },
+    "r4_lifts": [
+      {
+        "strategy": "balanced",
+        "model_sha256": "f04c2e7d2fe101f524629eb035b1018c3e809455b7fa5b83bcaee36c328e54f6",
+        "coefficient_height_bits": 48,
+        "construction_discriminant_bits": 495,
+        "minimal_discriminant_bits": 459,
+        "optimizer_candidates": 0,
+        "max_canonical_height": "23.17260512038306001802906543404826881590208217842058565042202876696275062594847721298986675949750943211297317326107",
+        "rho": "13.70883506967045010357582516387210839799992302038508449621599080985397087281266300068328461819229942036249114402616",
+        "selection_evidence_sha256": "d65648c8f101b33dd4093ad3d79c7e393f8c5d3fe41b3073e8f82b076a863408"
+      },
+      {
+        "strategy": "wide",
+        "model_sha256": "1ec2101c8115912bf4a476a1a073b95f3b809f7ec680b02ba0c691ba583bf2b6",
+        "coefficient_height_bits": 77,
+        "construction_discriminant_bits": 789,
+        "optimizer_candidates": 0
+      },
+      {
+        "strategy": "optimized",
+        "model_sha256": "f1d228b25692e3f41d839a8be700a88db1f8fcbce10c37370c5c94cc89a58008",
+        "coefficient_height_bits": 21,
+        "construction_discriminant_bits": 177,
+        "minimal_discriminant_bits": 177,
+        "optimizer_candidates": 27,
+        "max_canonical_height": "9.016969856902428677847433573149789343155718902099230864340600672711190190467313803081030150058135044255167075390361",
+        "rho": "13.57808734135477282417944563413066726717863639249760171116121204107532289160949647803039200390789006547612996961470",
+        "selection_evidence_sha256": "0030a82dc152bd627fffff53fcb3722821d6237640b7b90b812878e054ef7e61"
+      }
+    ],
+    "invariant_certificate_boundary": {
+      "minimum_height_lower_bound": "UNAVAILABLE_NOT_CERTIFIED",
+      "mordell_weil_regulator": "UNAVAILABLE_BASIS_NOT_ESTABLISHED",
+      "selected_height_gram_determinant": "numerical_only"
+    },
+    "optimized_pari_rank": [
+      {
+        "r": 2,
+        "model_sha256": "e980f5c56d5b822530e826e24acdcbc1900fb81e95d4499933cea9a26bff9d0c",
+        "construction_discriminant_bits": 55,
+        "bounds": [2, 2],
+        "classification": "CERT_GE"
+      },
+      {
+        "r": 3,
+        "model_sha256": "6c12302957ab080c7d3a69055249431636b1380122c680b62fe043abd828e1e2",
+        "construction_discriminant_bits": 55,
+        "bounds": [6, 6],
+        "classification": "CERT_GE"
+      },
+      {
+        "r": 4,
+        "model_sha256": "f1d228b25692e3f41d839a8be700a88db1f8fcbce10c37370c5c94cc89a58008",
+        "construction_discriminant_bits": 177,
+        "bounds": [5, 5],
+        "classification": "CERT_GE"
+      },
+      {
+        "r": 5,
+        "model_sha256": "9255e4d380243440aabbf50dbf728167a7694bed2a2716c4f279af4cb88e6e7b",
+        "construction_discriminant_bits": 221,
+        "bounds": [7, 7],
+        "classification": "CERT_GE"
+      },
+      {
+        "r": 6,
+        "model_sha256": "b0f2428f0192fb4c4fe4ff8c40830f8b63480eecdade2f690bd42a980a8a44e1",
+        "construction_discriminant_bits": 528,
+        "bounds": null,
+        "classification": "UNKNOWN",
+        "reason": "60-second timeout"
+      }
+    ],
+    "optimized_bounded_relation_search": [
+      {"r": 2, "candidate_count": 4, "exact_Q_relations": 0, "counted_relations": 0},
+      {"r": 3, "candidate_count": 13, "exact_Q_relations": 0, "counted_relations": 0},
+      {"r": 4, "candidate_count": 40, "exact_Q_relations": 0, "counted_relations": 0},
+      {"r": 5, "candidate_count": 64, "exact_Q_relations": 0, "counted_relations": 0},
+      {"r": 6, "candidate_count": 64, "exact_Q_relations": 0, "counted_relations": 0}
+    ],
+    "bounded_search_interpretation": "No exact relation was found within the frozen proposal budget. This is not an independence or absence certificate and remains UNKNOWN for the useful-recovery endpoint."
+  },
+  "planted_relation_controls": [
+    {"r": 2, "planted_relation_recovered": true, "exact_Q_relations": 1, "counted_after_exact_source_replay": 1},
+    {"r": 3, "planted_relation_recovered": true, "exact_Q_relations": 1, "counted_after_exact_source_replay": 1},
+    {"r": 4, "planted_relation_recovered": true, "exact_Q_relations": 1, "counted_after_exact_source_replay": 1},
+    {"r": 5, "planted_relation_recovered": true, "exact_Q_relations": 1, "counted_after_exact_source_replay": 1},
+    {"r": 6, "planted_relation_recovered": true, "exact_Q_relations": 4, "counted_after_exact_source_replay": 4}
+  ],
+  "bounded_independent_control": {
+    "r": 3,
+    "exact_Q_relations": 0,
+    "interpretation": "No relation within the frozen budget; not an independence certificate."
+  },
+  "planned_rosters": {
+    "calibration": {
+      "status": "PLANNED_NO_NATURAL_ROWS_RUN",
+      "executable": 1080,
+      "blocked_r7_to_r9": 648,
+      "roster_sha256": "4c820b8785b6377bc2b3094871fcf04a372f2c20892d8d138e9622af1618837a"
+    },
+    "sentinel": {
+      "status": "PLANNED_NO_NATURAL_ROWS_RUN",
+      "executable": 12150,
+      "blocked_r7_to_r9": 7290,
+      "roster_sha256": "866602c266ac50f28b819df868915edb26647995fccb57b663a17a819b848d19"
+    }
+  },
+  "result": {
+    "decay_heuristic_classification": "NOT_TESTED_NO_NATURAL_ROWS",
+    "decay_heuristic_defeated": false,
+    "interesting_control_observation": "The optimizer greatly reduced the fixed control's equation size and made r<=5 PARI rank calls feasible, but changed rho only modestly and produced no exact relation within the bounded proposal budget.",
+    "standing": "producer-side unverified assertion"
+  }
+}

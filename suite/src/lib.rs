@@ -35,6 +35,7 @@ pub mod hash;
 pub mod isogeny;
 pub mod kdf;
 pub mod pqc;
+pub mod highgenus;
 pub mod prime_hyperelliptic;
 pub mod symmetric;
 pub mod utils;

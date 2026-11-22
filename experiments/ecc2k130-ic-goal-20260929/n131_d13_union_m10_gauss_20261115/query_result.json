@@ -1,0 +1,28 @@
+{
+  "command": [
+    "/opt/homebrew/bin/cryptominisat5",
+    "--threads=1",
+    "--maxtime=120",
+    "--zero-exit-status",
+    "--verb=1",
+    "--printsol=1",
+    "--maxmatrixrows=16000",
+    "--maxmatrixcols=20000",
+    "--maxnummatrices=10",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_d13_union_m10_gauss_20261115/ordinary.xcnf"
+  ],
+  "exit_code": -15,
+  "kind": "n131_d13_union_m10_gauss_admission_probe",
+  "matrix_usage_lines": [
+    "c [matrix] Using 10 matrices recovered from 135116 xors T: 0.05 T-out: N"
+  ],
+  "monitor_degraded": false,
+  "query_protocol_sha256": "ebaf29d22c31910db92c91244d20e28943614b275923795c98dbca375e056662",
+  "sampled_peak_combined_rss_bytes": 1024475136,
+  "status": "BOUNDED_UNKNOWN",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_sha256": "9d293b3fd60f58dd22584d7314b9ad8533f33033365292e9cdcfd2ba54a9d9ac",
+  "stop_reason": "PARENT_WALL_CAP",
+  "terminal_lines": [],
+  "wall_ns": 135067580625
+}

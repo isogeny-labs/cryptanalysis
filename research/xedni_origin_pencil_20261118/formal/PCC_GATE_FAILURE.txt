@@ -1,0 +1,14 @@
+producer-side proof-gate failure receipt; no PCC standing
+date: 2026-11-18 UTC
+command: tools/lean/proof-gate.sh --out /tmp/xedni-origin-pencil-proof-receipt research/xedni_origin_pencil_20261118/formal
+exit status: 1
+build status: completed successfully (9040 jobs)
+audit status: FAIL_audit before theorem audit (0 theorems, 0 trusted)
+
+/workspace/cryptanalysis/tools/lean/AuditAxioms.lean:43:9: error(lean.unknownIdentifier): Unknown constant `Lean.ofReduceBool`
+/workspace/cryptanalysis/tools/lean/AuditAxioms.lean:43:37: error(lean.unknownIdentifier): Unknown constant `Lean.trustCompiler`
+/workspace/cryptanalysis/tools/lean/AuditAxioms.lean:49:37: error(lean.invalidField): Invalid field `trim`: The environment does not contain `String.trim`
+/workspace/cryptanalysis/tools/lean/AuditAxioms.lean:50:7: error(lean.invalidField): Type of `n` is not known; cannot resolve field `isEmpty`
+
+The direct kernel build and source #print axioms output remain in BUILD.txt.
+This receipt does not reinterpret the failed gate as a passing proof verdict.
