@@ -164,6 +164,24 @@ def self_test(fixture_path):
     }
 
 
+def admitted_capture(capture_dir, fixture):
+    """Validate CT304 whole-population raw original/reuse custody before pricing."""
+    c = Path(capture_dir)
+    admission = ct304.verify_pair(
+        c/"original.stdout", c/"reuse.stdout", c/"original.stderr",
+        c/"reuse.stderr", c/"original.bin", c/"reuse.bin",
+        c/"original.receipt.json", c/"reuse.receipt.json", fixture)
+    if admission["full_695_and_144_population_consistent"] is not True:
+        refuse("incomplete or missing full-population capture")
+    raw = (c/"reuse.stdout").read_text(encoding="utf8")
+    result = scoped_price(raw, fixture.read_bytes())
+    result["original_stdout_sha256"] = hashlib.sha256(
+        (c/"original.stdout").read_bytes()).hexdigest()
+    result["full_695_dual_native_transcript_admitted"] = True
+    result["source_of_scoped_timer_values"] = "captured optimized stdout; uncalibrated"
+    return result
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--fixture", required=True, type=Path)
@@ -177,20 +195,7 @@ def main():
         return
     if a.capture_dir is None:
         parser.error("production requires --capture-dir with two complete captured logs/receipts")
-    c = a.capture_dir
-    admission = ct304.verify_pair(
-        c/"original.stdout", c/"reuse.stdout", c/"original.stderr",
-        c/"reuse.stderr", c/"original.bin", c/"reuse.bin",
-        c/"original.receipt.json", c/"reuse.receipt.json", a.fixture)
-    if admission["full_695_and_144_population_consistent"] is not True:
-        refuse("incomplete or missing full-population capture")
-    raw = (c/"reuse.stdout").read_text(encoding="utf8")
-    result = scoped_price(raw, a.fixture.read_bytes())
-    result["original_stdout_sha256"] = hashlib.sha256(
-        (c/"original.stdout").read_bytes()).hexdigest()
-    result["full_695_dual_native_transcript_admitted"] = True
-    result["source_of_scoped_timer_values"] = "captured optimized stdout; uncalibrated"
-    print(json.dumps(result, sort_keys=True))
+    print(json.dumps(admitted_capture(a.capture_dir, a.fixture), sort_keys=True))
 
 
 if __name__ == "__main__":
