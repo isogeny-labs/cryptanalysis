@@ -1,0 +1,38 @@
+{
+  "candidate_id": null,
+  "curve_id": "EC1N41Ckb1h7d5e80d3c4d0",
+  "input_law": "one frozen public raw N41 point, five W11 pair slots at rotations 0,0,0,12,12",
+  "join_binary": {
+    "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w11_fivepair_native_join_20261018/join",
+    "sha256": "2b29d304bc0d478dc0f69184c8a45676a67650f7a4f9cf5000051ecb2764cc44"
+  },
+  "join_input": {
+    "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_triple_pair_20261019/n41_join_input.tsv",
+    "sha256": "34da72bfdfc9eb902da9dcd2faf551ff8a6abccd23f4b8e696f4ece36fbb11a5"
+  },
+  "max_probes": 20000000,
+  "query_seed": 411153130,
+  "rss_cap_bytes": 4294967296,
+  "script_sha256": "0b8d947a723e9a1faba7bc51a8b8991cf2dd036e9041740ec990df7ca078cecb",
+  "sources": {
+    "native_source": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w11_fivepair_native_join_20261018/join.cpp",
+      "sha256": "c4ecd09ec96dd96f778975e31f49d374d18ca8bcec57a0c677c5a0295559eb88"
+    },
+    "prior_prepare": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w11_fivepair_native_join_20261018/prepare_result.json",
+      "sha256": "12553c3e23ba8137fca849acd53f61dec2317a96ff673207bd65f42345f08654"
+    },
+    "runtime": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_triple_pair_20261019/sage_runtime_info.json",
+      "sha256": "073ca37250b100a7f961de3475da8a4d489f3f2140c15f4c72457816893f3f01"
+    },
+    "transform_result": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_triple_pair_20261019/transform_result.json",
+      "sha256": "19b2a44c02c266eb30872598602705e4ee1850ea88d33f4fdb3317b7ac7d8989"
+    }
+  },
+  "status": "FROZEN_BEFORE_TRIPLE_PAIR_N41_PUBLIC_QUERY",
+  "wall_cap_seconds": 600,
+  "worker_count": 1
+}

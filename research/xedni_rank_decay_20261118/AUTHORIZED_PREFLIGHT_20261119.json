@@ -1,0 +1,18 @@
+{
+  "command": "python3 research/xedni_rank_decay_20261118/runner.py preflight-natural --stage calibration --r-values 2,3,4,5,6 --output research/xedni_rank_decay_20261118/AUTHORIZED_PREFLIGHT_20261119.json",
+  "exit_code": 2,
+  "observed_at": "2026-11-19T05:34:20Z",
+  "result": {
+    "error": "freeze must set natural_rows_authorized=true before any natural preflight",
+    "evidence": {
+      "natural_rows_authorized": false,
+      "path": "/workspace/cryptanalysis/research/xedni_rank_decay_20261118/FREEZE.json",
+      "sha256": "13a3e082ee180ab3ec2e562b7708bfc9bb72578284659f10997b3a8f3564337c"
+    },
+    "natural_rows_started": 0,
+    "reason": "natural_rows_not_authorized",
+    "schema": "xedni.rank-decay-runner/v1",
+    "status": "BLOCKED"
+  },
+  "schema": "xedni.rank-decay-authorized-preflight/v1"
+}

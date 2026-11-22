@@ -6,11 +6,14 @@ use serde::Deserialize;
 use std::collections::BTreeSet;
 use std::fs;
 use std::path::{Component, Path, PathBuf};
-use std::process::ExitCode;
+use std::process::{Command, ExitCode};
 
-const SCHEMA_VERSION: &str = "hyperelliptic-cover-source-parity/v1";
+const SCHEMA_VERSION: &str = "hyperelliptic-cover-source-parity/v3";
 const BINARY_ADAPTER_MODE: &str = "binary_module_rustdoc_adapter";
-const BINARY_ADAPTER_VERSION: &str = "unlinked-private-field-helper-rustdoc/v1";
+const BINARY_ADAPTER_VERSION: &str =
+    "unlinked-private-field-helper-and-unrelated-module-omission/v2";
+const PRIME_MODULE_ADAPTER_MODE: &str = "prime_module_operation_pricing_omission";
+const PRIME_MODULE_ADAPTER_VERSION: &str = "operation-pricing-module-omission/v1";
 const DOMAIN_BINDING_MODE: &str = "selected_domain_binding";
 const DOMAIN_BINDING_VERSION: &str = "coefficient-field-equality/v1";
 
@@ -36,6 +39,7 @@ struct Manifest {
 
 #[derive(Clone, Debug, Deserialize)]
 struct FileRecord {
+    source_commit: String,
     source_path: PathBuf,
     mirror_path: PathBuf,
     source_sha256: String,
@@ -70,7 +74,19 @@ fn replace_all(data: &[u8], needle: &[u8], replacement: &[u8]) -> Vec<u8> {
 
 fn binary_module_adapter(data: &[u8]) -> Vec<u8> {
     let normalized = replace_all(data, b"[`f2m::karatsuba_mul`]", b"`f2m::karatsuba_mul`");
-    replace_all(&normalized, b"[`f2m::flt_inverse`]", b"`f2m::flt_inverse`")
+    let normalized = replace_all(&normalized, b"[`f2m::flt_inverse`]", b"`f2m::flt_inverse`");
+    let normalized = replace_all(&normalized, b"pub mod efd;\n", b"");
+    let normalized = replace_all(&normalized, b"pub mod operation_tally;\n", b"");
+    let normalized = replace_all(&normalized, b"pub mod trace_zero;\n", b"");
+    replace_all(
+        &normalized,
+        b"pub use trace_zero::{\n    TraceZeroAffineMode, TraceZeroAffineSystem, TraceZeroCoordinates, TraceZeroError,\n    TraceZeroFactorBase, TraceZeroKummerMode, TraceZeroKummerSystem, TraceZeroSubspaceProfile,\n    TraceZeroVariety,\n};\n",
+        b"",
+    )
+}
+
+fn prime_module_adapter(data: &[u8]) -> Vec<u8> {
+    replace_all(data, b"pub mod ops;\n", b"")
 }
 
 fn is_lower_hex(value: &str, length: usize) -> bool {
@@ -127,6 +143,11 @@ fn validate_manifest(manifest: &Manifest, errors: &mut Vec<String>) {
     let mut mirrors = BTreeSet::new();
     for record in &manifest.files {
         let mirror = record.mirror_path.display();
+        if !is_lower_hex(&record.source_commit, 40) {
+            errors.push(format!(
+                "{mirror}: source_commit must be a 40-character lowercase hex commit"
+            ));
+        }
         if !is_relative_file_path(&record.source_path) {
             errors.push(format!(
                 "{}: source_path must stay within the crypto checkout",
@@ -178,6 +199,19 @@ fn validate_manifest(manifest: &Manifest, errors: &mut Vec<String>) {
                     ));
                 }
             }
+            PRIME_MODULE_ADAPTER_MODE => {
+                if record.adapter_version.as_deref() != Some(PRIME_MODULE_ADAPTER_VERSION) {
+                    errors.push(format!(
+                        "{mirror}: unsupported prime-module adapter version {:?}",
+                        record.adapter_version
+                    ));
+                }
+                if !record.required_fragments.is_empty() {
+                    errors.push(format!(
+                        "{mirror}: prime-module adapter cannot declare required_fragments"
+                    ));
+                }
+            }
             DOMAIN_BINDING_MODE => {
                 if record.adapter_version.as_deref() != Some(DOMAIN_BINDING_VERSION) {
                     errors.push(format!(
@@ -211,6 +245,44 @@ fn read_recorded_file(path: &Path, errors: &mut Vec<String>) -> Option<Vec<u8>> 
     }
 }
 
+fn read_source_revision(
+    crypto_root: &Path,
+    record: &FileRecord,
+    errors: &mut Vec<String>,
+) -> Option<Vec<u8>> {
+    let source_path = record.source_path.to_string_lossy().replace('\\', "/");
+    let revision_path = format!("{}:{source_path}", record.source_commit);
+    let output = match Command::new("git")
+        .arg("-C")
+        .arg(crypto_root)
+        .arg("show")
+        .arg(&revision_path)
+        .output()
+    {
+        Ok(output) => output,
+        Err(error) => {
+            errors.push(format!(
+                "run git for {} at {}: {error}",
+                record.source_path.display(),
+                record.source_commit
+            ));
+            return None;
+        }
+    };
+    if !output.status.success() {
+        let stderr = String::from_utf8_lossy(&output.stderr);
+        errors.push(format!(
+            "read {} at {} from {}: {}",
+            record.source_path.display(),
+            record.source_commit,
+            crypto_root.display(),
+            stderr.trim()
+        ));
+        return None;
+    }
+    Some(output.stdout)
+}
+
 fn contains(haystack: &[u8], needle: &[u8]) -> bool {
     !needle.is_empty()
         && haystack
@@ -234,6 +306,13 @@ fn verify_pair(
         BINARY_ADAPTER_MODE => {
             if binary_module_adapter(source_data) != mirror_data {
                 errors.push(format!("{mirror}: unexpected adapter difference"));
+            }
+        }
+        PRIME_MODULE_ADAPTER_MODE => {
+            if prime_module_adapter(source_data) != mirror_data {
+                errors.push(format!(
+                    "{mirror}: unexpected prime-module adapter difference"
+                ));
             }
         }
         DOMAIN_BINDING_MODE => {
@@ -276,11 +355,10 @@ fn verify_files(
         let Some(crypto_root) = crypto_root else {
             continue;
         };
-        if !is_relative_file_path(&record.source_path) {
+        if !is_relative_file_path(&record.source_path) || !is_lower_hex(&record.source_commit, 40) {
             continue;
         }
-        let source_path = crypto_root.join(&record.source_path);
-        let Some(source_data) = read_recorded_file(&source_path, errors) else {
+        let Some(source_data) = read_source_revision(crypto_root, record, errors) else {
             continue;
         };
         let source_digest = digest(&source_data);
@@ -324,7 +402,7 @@ fn run(cli: &Cli) -> Result<String, Vec<String>> {
             ""
         };
         Ok(format!(
-            "hyperelliptic mirror manifest{qualifier}: verified"
+            "hyperelliptic mirror manifest{qualifier}: source bytes matched"
         ))
     } else {
         Err(errors)
@@ -353,6 +431,7 @@ mod tests {
 
     fn record(mode: &str) -> FileRecord {
         FileRecord {
+            source_commit: "0".repeat(40),
             source_path: "source.rs".into(),
             mirror_path: "mirror.rs".into(),
             source_sha256: "0".repeat(64),
@@ -364,12 +443,54 @@ mod tests {
     }
 
     #[test]
-    fn binary_adapter_performs_only_the_two_declared_rewrites() {
-        let source = b"//! [`f2m::karatsuba_mul`] x [`f2m::flt_inverse`] [other]";
+    fn binary_adapter_performs_only_the_declared_rewrites_and_omissions() {
+        let source = b"//! [`f2m::karatsuba_mul`] x [`f2m::flt_inverse`] [other]\npub mod efd;\npub mod operation_tally;\npub mod trace_zero;\npub mod retained;\npub use trace_zero::{\n    TraceZeroAffineMode, TraceZeroAffineSystem, TraceZeroCoordinates, TraceZeroError,\n    TraceZeroFactorBase, TraceZeroKummerMode, TraceZeroKummerSystem, TraceZeroSubspaceProfile,\n    TraceZeroVariety,\n};\n";
         assert_eq!(
             binary_module_adapter(source),
-            b"//! `f2m::karatsuba_mul` x `f2m::flt_inverse` [other]"
+            b"//! `f2m::karatsuba_mul` x `f2m::flt_inverse` [other]\npub mod retained;\n"
         );
+    }
+
+    #[test]
+    fn prime_module_adapter_omits_only_the_unmirrored_pricing_module() {
+        let source = b"pub mod balanced;\npub mod model_transfer;\npub mod normalized_cover_transfer;\npub mod ops;\npub mod cover_transfer;\n";
+        assert_eq!(
+            prime_module_adapter(source),
+            b"pub mod balanced;\npub mod model_transfer;\npub mod normalized_cover_transfer;\npub mod cover_transfer;\n"
+        );
+    }
+
+    #[test]
+    fn manifest_rejects_missing_per_file_source_revision() {
+        let mut invalid = record("exact");
+        invalid.source_commit.clear();
+        let manifest = Manifest {
+            schema_version: SCHEMA_VERSION.into(),
+            source_repository: "https://example.invalid/source".into(),
+            source_branch: "test".into(),
+            source_implementation_commit: "0".repeat(40),
+            source_baseline_commit: "0".repeat(40),
+            captured_at: "test".into(),
+            files: vec![invalid],
+        };
+        let mut errors = Vec::new();
+        validate_manifest(&manifest, &mut errors);
+        assert!(errors
+            .iter()
+            .any(|error| error.contains("source_commit must be a 40-character")));
+    }
+
+    #[test]
+    fn missing_crypto_checkout_fails_closed() {
+        let mut errors = Vec::new();
+        assert!(read_source_revision(
+            Path::new("definitely-missing-crypto-checkout"),
+            &record("exact"),
+            &mut errors,
+        )
+        .is_none());
+        assert_eq!(errors.len(), 1);
+        assert!(errors[0].contains("read source.rs at"));
     }
 
     #[test]

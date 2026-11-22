@@ -1,0 +1,14 @@
+# Same N131 public formula under a no-Gaussian-matrix solver policy
+
+**Result.** CryptoMiniSat accepted the exact archived ten-pair N131 public formula with `--maxnummatrices=0` and continued ordinary search for the frozen 470-second parent interval. It emitted 2,286 restart rows and no terminal SAT/UNSAT/INDETERMINATE line before the parent cap killed it. Sampled combined RSS peaked at 457,523,200 B, below 4 GiB. A previously frozen positive N41 native-XOR formula passed a SAT correctness smoke with this policy in 0.454 s; every returned CNF clause and XOR row checked. The N131 outcome is `PARENT_TIME_CAP`, with its log and stopped process preserved as such.
+
+The [protocol](protocol.json) froze the solver binary, both compressed source formulas, the model checker, one worker, the 4-GiB cap, and the controlled `--xor=0 --maxnummatrices=0` policy before launch. The ordinary XCNF decompresses to exactly 16,141,734 B with SHA-256 `7832bf557829605e97945df5fa984e57a7df014b214b8b5923d7b83c997d79a0`, matching the prior ten-pair formula on public `Q=(1052727368764798954359115163823647684025,2071227447786120917960296877345506689833)` over the N131 Koblitz curve. The N41 source formula and its archive hash also matched before smoke execution.
+
+| Frozen same-formula run | Status | Exclusive archive replay | Solver and terminal interval | Sampled combined RSS |
+| --- | --- | ---: | ---: | ---: |
+| N41 positive smoke | SAT; 12,138 clauses and 41 XOR rows checked | 0.003 s | 0.454 s | 33,587,200 B |
+| N131 ordinary public point | `PARENT_TIME_CAP`; 2,286 restart rows | 0.034 s | 470.025 s | 457,523,200 B |
+
+The [N41 receipt](n41_smoke.json) and [N131 receipt](n131_public.json) retain the exact command, formula hashes, stdout/stderr hashes, phase times, memory observation, exit status, and terminal classification. The N131 solver's `--maxtime=450` did not produce its own terminal line before the independently enforced 470-second wall cap. The earlier default-policy run on this exact formula returned `s INDETERMINATE` after 588.515 s target-dependent total and 7,986 restart rows; the different caps and unisolated CPU prevent a wall-speed comparison. The new log contains no “TODO disable matrix” diagnostic, so the controlled flag removed that observed solver behavior without resolving the public-point query.
+
+This is a solver-stage trial with `candidate_id: null`. Archive replay is target-independent loading in this same-formula rerun; a complete online IC interval would also charge target-dependent formula construction, relation checking, rank, target descent, and scalar verification. The next method gate remains an exact target-derived filter on multiple unresolved pair-output families before source-mask expansion, tested first on the unpinned N41 public-point control. A solver-policy change alone did not provide that filter.

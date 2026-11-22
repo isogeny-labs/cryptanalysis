@@ -1,0 +1,11 @@
+# Proof and verification map
+
+| Result | Formal or executable check | Scope and status |
+| --- | --- | --- |
+| Exact constant-one block certificate excludes every simultaneous root | `../n41_w11_block_macaulay_20261019/BlockCertificate.lean`, `constant_one_block_certificate_sound` | Lean 4.34.1 checked for arbitrary assignment and multiplier index types, a commutative ring with `1≠0`, and an explicit certificate identity. Only standard Lean axioms appear in its `#print axioms` output. It applies to N131 if such a row identity is found. |
+| The 13-term two-product eliminant is necessary for a pair relation | `../n41_w11_freecode_resultant_20261018/FreeCodeElimination.lean` and `../n131_w33_freecode_resultant_20261018/coefficients.json` | The structural theorem is checked under split-quadratic and remainder hypotheses; the N131 symbolic export and field checks instantiate the coefficient data. |
+| W33 34-variable ANF expansion on two target rows | `run_n131.py`, `result.json`, `audit_sage.py`, `audit_result.json` | Producer obtains 1,619 terms of squarefree degree four; separate Sage polynomial-basis arithmetic agrees with direct eliminant evaluation on 16,384 assignments and includes the known positive root. The audit covers two explicit right-code slices, not the full `2^32` domain. |
+| Degree-four and degree-five row-span outcomes | `run_n131.py`, `result.json`, `verify.py` | Exact binary elimination by the producer records ranks 131 and 4,585 and no constant-one row in each span. An independent full-matrix rank proof is not archived; retain this as a bounded producer result. |
+| Dense degree-six representation size | `resource_bound.py`, `resource_bound.json`, `verify.py` | Exact binomial arithmetic for 34 Boolean variables, 131 coordinate equations, and multipliers of degree at most two. The byte count describes a literal rectangular bit matrix only. |
+
+The generic Lean theorem's readable proof appears in the N41 proof map. This experiment adds finite field computations and representation counts, without asserting a new general algebraic theorem. The concrete `GF(2^131)` bit encoding and complete producer rank computation are not fully formalized in Lean; the exact assumptions and independent finite slice boundary above remain explicit.

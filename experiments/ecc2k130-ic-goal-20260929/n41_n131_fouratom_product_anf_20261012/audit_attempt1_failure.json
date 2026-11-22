@@ -1,0 +1,8 @@
+{
+  "status": "AUDIT_SCRIPT_FAILURE_PYTHON_POPCOUNT",
+  "command": "gtimeout 180 python3 experiments/ecc2k130-ic-goal-20260929/n41_n131_fouratom_product_anf_20261012/audit.py",
+  "exit_code": 1,
+  "error": "AttributeError: 'int' object has no attribute 'bit_count'",
+  "stage": "degree histogram before semantic checks",
+  "correction": "portable bin(mask).count('1') replacement; corrected audit.json passed"
+}

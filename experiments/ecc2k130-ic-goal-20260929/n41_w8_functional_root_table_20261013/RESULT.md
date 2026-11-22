@@ -1,0 +1,5 @@
+# Exact fixed-seed root-offset preflight; first circuit build failed
+
+For the frozen N41 W8 fixed-seed source, all **40 permitted pair codes** have exactly two standard reciprocal outputs. Across all seven Frobenius rotations, the two outputs agree with the pair equation and differ by `p/(1+h²)`, where `p` is the pair-product linear function of the seven source-code bits. The preflight also matches the 125 rational source masks and checks the rank-seven selector projector. These identities support a functional output table with one source code and one root branch per pair.
+
+The first frozen circuit build ended `EXIT_ERROR` in 30.419 s before writing a formula. Its source omitted initialization of the trace basis later used by the S3 links, producing the retained `NameError` in `control.stderr`. The 180 s / 4 GiB monitored build did not reach a solver query. The corrected implementation is a separately frozen version-two experiment. `python3 -B verify.py` checks the original source hashes, preflight counts, failure status, and raw stderr. This is a component proposal with `candidate_id: null`.

@@ -1,0 +1,20 @@
+digraph DedupPipeline {
+  graph [rankdir=TB, bgcolor="white", pad="0.25", nodesep="0.35", ranksep="0.55"];
+  node [shape=box, style="rounded,filled", fontname="DejaVu Sans", fontsize=11,
+        color="#31546f", fillcolor="#eef6fb", margin="0.14,0.10"];
+  edge [color="#496c84", penwidth=1.4, arrowsize=0.75, fontname="DejaVu Sans", fontsize=9];
+
+  source [label="Same source instance + optimized lift"];
+  pencil [label="Complete globally ordered origin pencil\n(all tables, modular candidates, transports)"];
+  reference [label="Reference\nexact-check every ordered representative", fillcolor="#fff5df", color="#9a6a16"];
+  dedup [label="Dedup\nkeep first representative per fixed key", fillcolor="#eaf8ee", color="#347a48"];
+  parity [label="Required semantic parity\nsame fixed relation, recovery, and status", fillcolor="#f2ebfb", color="#6b4b91"];
+  accounting [label="Full accounting\nconstruction + hash probes + memory + exact checks"];
+
+  source -> pencil;
+  pencil -> reference;
+  pencil -> dedup [label="ordered key set"];
+  reference -> parity;
+  dedup -> parity;
+  parity -> accounting;
+}
