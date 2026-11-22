@@ -1,0 +1,211 @@
+⚠ [9039/9062] Replayed AffineReductionBridge
+warning: AffineReductionBridge.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+info: AffineReductionBridge.lean:70:0: 'XedniAffineReductionBridge.map_regularSlope' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AffineReductionBridge.lean:71:0: 'XedniAffineReductionBridge.map_addX' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AffineReductionBridge.lean:72:0: 'XedniAffineReductionBridge.map_addY' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AffineReductionBridge.lean:73:0: 'XedniAffineReductionBridge.regular_chord_reduction' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AffineReductionBridge.lean:74:0: 'XedniAffineReductionBridge.regular_tangent_reduction' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [9040/9062] Replayed RegularChainReduction
+info: RegularChainReduction.lean:104:0: 'XedniRegularChainReduction.mapPoint' depends on axioms: [propext, Quot.sound]
+info: RegularChainReduction.lean:105:0: 'XedniRegularChainReduction.map_regularStep' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RegularChainReduction.lean:106:0: 'XedniRegularChainReduction.map_regularChain' depends on axioms: [propext, Classical.choice, Quot.sound]
+⚠ [9041/9062] Replayed RegularGroupLaw
+warning: RegularGroupLaw.lean:16:0: automatically included section variable(s) unused in theorem `XedniRegularGroupLaw.short_equation`:
+  [DecidableEq F]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq F] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: RegularGroupLaw.lean:25:8: automatically included section variable(s) unused in theorem `_private.RegularGroupLaw.0.XedniRegularGroupLaw.short_addX`:
+  [DecidableEq F]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq F] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: RegularGroupLaw.lean:29:8: automatically included section variable(s) unused in theorem `_private.RegularGroupLaw.0.XedniRegularGroupLaw.short_addY`:
+  [DecidableEq F]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq F] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+info: RegularGroupLaw.lean:98:0: 'XedniRegularGroupLaw.short_equation' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RegularGroupLaw.lean:99:0: 'XedniRegularGroupLaw.fieldStep_group_add' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RegularGroupLaw.lean:100:0: 'XedniRegularGroupLaw.fieldChain_group_relation' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RegularGroupLaw.lean:101:0: 'XedniRegularGroupLaw.reduced_regularChain_group_relation' depends on axioms: [propext, Classical.choice, Quot.sound]
+⚠ [9042/9062] Replayed RegularSumReduction
+warning: RegularSumReduction.lean: imports `Mathlib.Tactic` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+info: RegularSumReduction.lean:53:0: 'XedniRegularSumReduction.reduce_regularSum' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RegularSumReduction.lean:54:0: 'XedniRegularSumReduction.equal_regularSums' depends on axioms: [propext, Classical.choice, Quot.sound]
+⚠ [9043/9062] Replayed ExceptionalSumReduction
+warning: ExceptionalSumReduction.lean: imports `Mathlib.Tactic` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+info: ExceptionalSumReduction.lean:94:0: 'XedniExceptionalSumReduction.image_neg' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: ExceptionalSumReduction.lean:95:0: 'XedniExceptionalSumReduction.reduce_certifiedStep' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: ExceptionalSumReduction.lean:96:0: 'XedniExceptionalSumReduction.reduce_certifiedSum' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: ExceptionalSumReduction.lean:97:0: 'XedniExceptionalSumReduction.equal_certifiedSums' depends on axioms: [propext, Classical.choice, Quot.sound]
+⚠ [9044/9062] Replayed ResidueVerticalObstruction
+warning: ResidueVerticalObstruction.lean: imports `Mathlib.Tactic` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+info: ResidueVerticalObstruction.lean:139:0: 'XedniResidueVerticalObstruction.no_integral_chord_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: ResidueVerticalObstruction.lean:140:0: 'XedniResidueVerticalObstruction.chord_numerators_correct' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: ResidueVerticalObstruction.lean:141:0: 'XedniResidueVerticalObstruction.homogeneous_chord_at_infinity' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: ResidueVerticalObstruction.lean:142:0: 'XedniResidueVerticalObstruction.residue_inverse_add_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: ResidueVerticalObstruction.lean:143:0: 'XedniResidueVerticalObstruction.residue_inverse_affine_obstruction' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: ResidueVerticalObstruction.lean:144:0: 'XedniResidueVerticalObstruction.concrete_residue_vertical' depends on axioms: [propext, Classical.choice, Quot.sound]
+⚠ [9045/9062] Replayed ResidueProjectiveZero
+warning: ResidueProjectiveZero.lean: imports `Mathlib.Tactic` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+info: ResidueProjectiveZero.lean:54:0: 'XedniResidueProjectiveZero.chordResidueTriple_eq_smul_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: ResidueProjectiveZero.lean:55:0: 'XedniResidueProjectiveZero.chordResidueTriple_projective_zero' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+⚠ [9046/9062] Replayed SourceChordEquation
+warning: SourceChordEquation.lean: imports `Mathlib.Tactic` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+info: SourceChordEquation.lean:104:0: 'XedniSourceChordEquation.chord_key_factor' depends on axioms: [propext, Quot.sound]
+info: SourceChordEquation.lean:105:0: 'XedniSourceChordEquation.chord_polynomial_identity' depends on axioms: [propext, Quot.sound]
+info: SourceChordEquation.lean:106:0: 'XedniSourceChordEquation.secant_relation' depends on axioms: [propext, Quot.sound]
+info: SourceChordEquation.lean:107:0: 'XedniSourceChordEquation.source_chord_weighted_equation' depends on axioms: [propext, Quot.sound]
+info: SourceChordEquation.lean:108:0: 'XedniSourceChordEquation.sourceChordTriple_on_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+⚠ [9047/9062] Replayed SourceChordNonsingular
+warning: SourceChordNonsingular.lean: imports `Mathlib.Tactic` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+info: SourceChordNonsingular.lean:45:0: 'XedniSourceChordNonsingular.map_sourceChordTriple' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: SourceChordNonsingular.lean:46:0: 'XedniSourceChordNonsingular.sourceChordTriple_nonsingular' depends on axioms: [propext, Classical.choice, Quot.sound]
+⚠ [9048/9062] Replayed PrimeLocalReduction
+warning: PrimeLocalReduction.lean: imports `Mathlib.RingTheory.Localization.AtPrime.Basic` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: PrimeLocalReduction.lean: imports `Mathlib.RingTheory.LocalRing.ResidueField.Defs` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+info: PrimeLocalReduction.lean:57:0: 'XedniPrimeLocalReduction.denominator_is_unit' depends on axioms: [propext, Quot.sound]
+info: PrimeLocalReduction.lean:58:0: 'XedniPrimeLocalReduction.integer_reduction' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: PrimeLocalReduction.lean:59:0: 'XedniPrimeLocalReduction.fraction_reduction' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: PrimeLocalReduction.lean:60:0: 'XedniPrimeLocalReduction.local_chain_group_relation' depends on axioms: [propext, Classical.choice, Quot.sound]
+⚠ [9049/9062] Replayed LocalChordUnitDerivative
+warning: LocalChordUnitDerivative.lean: imports `Mathlib.RingTheory.LocalRing.ResidueField.Basic` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: LocalChordUnitDerivative.lean: imports `Mathlib.Tactic` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+info: LocalChordUnitDerivative.lean:63:0: 'XedniLocalChordUnitDerivative.chordZDerivative_eq_polynomialZ' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: LocalChordUnitDerivative.lean:64:0: 'XedniLocalChordUnitDerivative.chordZDerivative_isUnit' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: LocalChordUnitDerivative.lean:65:0: 'XedniLocalChordUnitDerivative.primeLocal_chordZDerivative_isUnit' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+⚠ [9050/9062] Replayed SourceChordAddition
+warning: SourceChordAddition.lean: imports `Mathlib.Tactic` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+info: SourceChordAddition.lean:42:0: 'XedniSourceChordAddition.addXYZ_eq_neg_sourceChordTriple' depends on axioms: [propext, Classical.choice, Quot.sound]
+⚠ [9051/9062] Replayed SourceChordDistinctAddition
+warning: SourceChordDistinctAddition.lean: imports `Mathlib.Tactic` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+info: SourceChordDistinctAddition.lean:48:0: 'XedniSourceChordDistinctAddition.affineTriple_not_equiv' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: SourceChordDistinctAddition.lean:49:0: 'XedniSourceChordDistinctAddition.add_eq_neg_sourceChordTriple' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: SourceChordDistinctAddition.lean:50:0: 'XedniSourceChordDistinctAddition.addMap_eq_sourceChordClass' depends on axioms: [propext, Classical.choice, Quot.sound]
+⚠ [9052/9062] Replayed ResidueAdditionZero
+warning: ResidueAdditionZero.lean: imports `Mathlib.Tactic` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+info: ResidueAdditionZero.lean:91:0: 'XedniResidueAdditionZero.source_add_eq_neg_chord_of_y_ne' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: ResidueAdditionZero.lean:92:0: 'XedniResidueAdditionZero.reduced_source_add_class_eq_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: ResidueAdditionZero.lean:93:0: 'XedniResidueAdditionZero.reduced_source_add_point_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+⚠ [9053/9062] Replayed ProjectiveClassReduction
+warning: ProjectiveClassReduction.lean: imports `Mathlib.Tactic` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+info: ProjectiveClassReduction.lean:118:0: 'XedniProjectiveClassReduction.map_equiv' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: ProjectiveClassReduction.lean:119:0: 'XedniProjectiveClassReduction.mapClass_mk' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: ProjectiveClassReduction.lean:120:0: 'XedniProjectiveClassReduction.mapClass_source_addMap_eq_zero' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: ProjectiveClassReduction.lean:121:0: 'XedniProjectiveClassReduction.mapClass_addMap_residue_vertical' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+⚠ [9054/9062] Replayed ProjectiveAddMapDistinct
+warning: ProjectiveAddMapDistinct.lean: imports `Mathlib.Tactic` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+info: ProjectiveAddMapDistinct.lean:76:0: 'XedniProjectiveAddMapDistinct.mapClass_addMap_of_mapped_not_equiv' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: ProjectiveAddMapDistinct.lean:77:0: 'XedniProjectiveAddMapDistinct.mapClass_affine_add_of_x_ne' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: ProjectiveAddMapDistinct.lean:78:0: 'XedniProjectiveAddMapDistinct.mapClass_affine_add_of_y_ne' depends on axioms: [propext, Classical.choice, Quot.sound]
+⚠ [9055/9062] Replayed ProjectiveCoalescenceObstruction
+warning: ProjectiveCoalescenceObstruction.lean: imports `Mathlib.Tactic` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+info: ProjectiveCoalescenceObstruction.lean:62:0: 'XedniProjectiveCoalescenceObstruction.mapped_source_add_vector_zero' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: ProjectiveCoalescenceObstruction.lean:63:0: 'XedniProjectiveCoalescenceObstruction.mapClass_source_addMap_zero' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: ProjectiveCoalescenceObstruction.lean:64:0: 'XedniProjectiveCoalescenceObstruction.mapClass_addMap_ne_addMap_of_coalescence' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+⚠ [9056/9062] Replayed ProjectiveClassCoalescence
+warning: ProjectiveClassCoalescence.lean: imports `Mathlib.Tactic` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+info: ProjectiveClassCoalescence.lean:65:0: 'XedniProjectiveClassCoalescence.mapped_source_add_vector_zero_of_equiv' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: ProjectiveClassCoalescence.lean:66:0: 'XedniProjectiveClassCoalescence.mapClass_source_addMap_zero_of_equiv' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: ProjectiveClassCoalescence.lean:67:0: 'XedniProjectiveClassCoalescence.mapClass_addMap_ne_addMap_of_equiv' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+⚠ [9057/9062] Replayed ProjectiveGenericNormalization
+warning: ProjectiveGenericNormalization.lean: imports `Mathlib.Tactic` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+info: ProjectiveGenericNormalization.lean:50:0: 'XedniProjectiveGenericNormalization.mapClass_addMap_eq_primitive_of_unit_factor' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: ProjectiveGenericNormalization.lean:51:0: 'XedniProjectiveGenericNormalization.addMap_map_eq_primitive_of_unit_factor' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+⚠ [9058/9062] Replayed ProjectiveAffineNormalizationUniqueness
+warning: ProjectiveAffineNormalizationUniqueness.lean: imports `Mathlib.Tactic` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+info: ProjectiveAffineNormalizationUniqueness.lean:53:0: 'XedniProjectiveAffineNormalizationUniqueness.affine_z_one_equiv_iff_eq' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: ProjectiveAffineNormalizationUniqueness.lean:54:0: 'XedniProjectiveAffineNormalizationUniqueness.integral_affine_representative_unique' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: ProjectiveAffineNormalizationUniqueness.lean:55:0: 'XedniProjectiveAffineNormalizationUniqueness.integral_affine_reduction_independent' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+⚠ [9059/9062] Replayed ProjectivePrimitiveUniqueness
+warning: ProjectivePrimitiveUniqueness.lean: imports `Mathlib.Tactic` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+info: ProjectivePrimitiveUniqueness.lean:106:0: 'XedniProjectivePrimitiveUniqueness.primitive_of_z_one' depends on axioms: [propext]
+info: ProjectivePrimitiveUniqueness.lean:107:0: 'XedniProjectivePrimitiveUniqueness.primitive_map_ne_zero' depends on axioms: [propext, Quot.sound]
+info: ProjectivePrimitiveUniqueness.lean:108:0: 'XedniProjectivePrimitiveUniqueness.int_equiv_of_rational_equiv_primitive' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: ProjectivePrimitiveUniqueness.lean:109:0: 'XedniProjectivePrimitiveUniqueness.primitive_reduction_independent' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+⚠ [9060/9062] Replayed ProjectivePrimitiveExistence
+warning: ProjectivePrimitiveExistence.lean: imports `Mathlib.Tactic` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: ProjectivePrimitiveExistence.lean:124:23: Unused tactic linter: `change P 0` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: ProjectivePrimitiveExistence.lean:131:23: Unused tactic linter: `change P 1` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: ProjectivePrimitiveExistence.lean:138:23: Unused tactic linter: `change P 2` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: ProjectivePrimitiveExistence.lean:169:0: 'XedniProjectivePrimitiveExistence.exists_primitive_int_representative' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: ProjectivePrimitiveExistence.lean:170:0: 'XedniProjectivePrimitiveExistence.exists_primitive_rational_representative' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+⚠ [9061/9062] Built ProjectivePrimitiveReductionMap (29s)
+warning: ProjectivePrimitiveReductionMap.lean: imports `Mathlib.Tactic` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+info: ProjectivePrimitiveReductionMap.lean:89:0: 'XedniProjectivePrimitiveReductionMap.representative_primitive' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: ProjectivePrimitiveReductionMap.lean:90:0: 'XedniProjectivePrimitiveReductionMap.representative_class' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: ProjectivePrimitiveReductionMap.lean:91:0: 'XedniProjectivePrimitiveReductionMap.reduceClass_eq_of_rep' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: ProjectivePrimitiveReductionMap.lean:92:0: 'XedniProjectivePrimitiveReductionMap.reduceClass_ne_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: ProjectivePrimitiveReductionMap.lean:93:0: 'XedniProjectivePrimitiveReductionMap.reduceNonzero_eq_of_rep' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Build completed successfully (9062 jobs).
+'XedniProjectivePrimitiveReductionMap.representative_primitive' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'XedniProjectivePrimitiveReductionMap.representative_class' depends on axioms: [propext, Classical.choice, Quot.sound]
+'XedniProjectivePrimitiveReductionMap.reduceClass_eq_of_rep' depends on axioms: [propext, Classical.choice, Quot.sound]
+'XedniProjectivePrimitiveReductionMap.reduceClass_ne_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'XedniProjectivePrimitiveReductionMap.reduceNonzero_eq_of_rep' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

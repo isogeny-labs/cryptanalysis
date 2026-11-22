@@ -1,0 +1,93 @@
+⚠ [9039/9047] Replayed AffineReductionBridge
+warning: AffineReductionBridge.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+info: AffineReductionBridge.lean:70:0: 'XedniAffineReductionBridge.map_regularSlope' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AffineReductionBridge.lean:71:0: 'XedniAffineReductionBridge.map_addX' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AffineReductionBridge.lean:72:0: 'XedniAffineReductionBridge.map_addY' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AffineReductionBridge.lean:73:0: 'XedniAffineReductionBridge.regular_chord_reduction' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AffineReductionBridge.lean:74:0: 'XedniAffineReductionBridge.regular_tangent_reduction' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [9040/9047] Replayed RegularChainReduction
+info: RegularChainReduction.lean:104:0: 'XedniRegularChainReduction.mapPoint' depends on axioms: [propext, Quot.sound]
+info: RegularChainReduction.lean:105:0: 'XedniRegularChainReduction.map_regularStep' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RegularChainReduction.lean:106:0: 'XedniRegularChainReduction.map_regularChain' depends on axioms: [propext, Classical.choice, Quot.sound]
+⚠ [9041/9047] Replayed RegularGroupLaw
+warning: RegularGroupLaw.lean:16:0: automatically included section variable(s) unused in theorem `XedniRegularGroupLaw.short_equation`:
+  [DecidableEq F]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq F] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: RegularGroupLaw.lean:25:8: automatically included section variable(s) unused in theorem `_private.RegularGroupLaw.0.XedniRegularGroupLaw.short_addX`:
+  [DecidableEq F]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq F] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: RegularGroupLaw.lean:29:8: automatically included section variable(s) unused in theorem `_private.RegularGroupLaw.0.XedniRegularGroupLaw.short_addY`:
+  [DecidableEq F]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq F] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+info: RegularGroupLaw.lean:98:0: 'XedniRegularGroupLaw.short_equation' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RegularGroupLaw.lean:99:0: 'XedniRegularGroupLaw.fieldStep_group_add' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RegularGroupLaw.lean:100:0: 'XedniRegularGroupLaw.fieldChain_group_relation' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RegularGroupLaw.lean:101:0: 'XedniRegularGroupLaw.reduced_regularChain_group_relation' depends on axioms: [propext, Classical.choice, Quot.sound]
+⚠ [9042/9047] Replayed PrimeLocalReduction
+warning: PrimeLocalReduction.lean: imports `Mathlib.RingTheory.Localization.AtPrime.Basic` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: PrimeLocalReduction.lean: imports `Mathlib.RingTheory.LocalRing.ResidueField.Defs` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+info: PrimeLocalReduction.lean:57:0: 'XedniPrimeLocalReduction.denominator_is_unit' depends on axioms: [propext, Quot.sound]
+info: PrimeLocalReduction.lean:58:0: 'XedniPrimeLocalReduction.integer_reduction' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: PrimeLocalReduction.lean:59:0: 'XedniPrimeLocalReduction.fraction_reduction' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: PrimeLocalReduction.lean:60:0: 'XedniPrimeLocalReduction.local_chain_group_relation' depends on axioms: [propext, Classical.choice, Quot.sound]
+⚠ [9043/9047] Replayed LocalZModReduction
+warning: LocalZModReduction.lean: imports `Mathlib.RingTheory.Ideal.Int` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: LocalZModReduction.lean: imports `Mathlib.Data.ZMod.QuotientRing` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: LocalZModReduction.lean:50:4: `simp` already closes the goal
+
+Hint: Use `simp` instead of `simpa`:
+  [apply] simp [primeIdeal]
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: LocalZModReduction.lean:55:4: `simp` already closes the goal
+
+Hint: Use `simp` instead of `simpa`:
+  [apply] simp [primeIdeal]
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+info: LocalZModReduction.lean:60:0: 'XedniLocalZModReduction.reduce_integer' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: LocalZModReduction.lean:61:0: 'XedniLocalZModReduction.reduce_fraction' depends on axioms: [propext, Classical.choice, Quot.sound]
+⚠ [9044/9047] Replayed RationalLocalWitness
+warning: RationalLocalWitness.lean: imports `Mathlib.Data.Rat.Lemmas` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: RationalLocalWitness.lean:21:0: automatically included section variable(s) unused in theorem `XedniRationalLocalWitness.admissible_iff_not_dvd`:
+  [Fact (Nat.Prime p)]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Fact (Nat.Prime p)] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+info: RationalLocalWitness.lean:45:0: 'XedniRationalLocalWitness.admissible_iff_not_dvd' depends on axioms: [propext, Quot.sound]
+info: RationalLocalWitness.lean:46:0: 'XedniRationalLocalWitness.rational_reconstruction' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RationalLocalWitness.lean:47:0: 'XedniRationalLocalWitness.reduce_rational' depends on axioms: [propext, Classical.choice, Quot.sound]
+⚠ [9045/9047] Replayed RationalCurveBridge
+warning: RationalCurveBridge.lean: imports `Mathlib.RingTheory.Localization.FractionRing` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: RationalCurveBridge.lean:25:25: `simp` already closes the goal
+
+Hint: Use `simp` instead of `simpa`:
+  [apply] simp [hz]
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: RationalCurveBridge.lean:46:2: `simp` already closes the goal
+
+Hint: Use `simp` instead of `simpa`:
+  [apply] simp [s, Int.cast_natCast, mul_comm]
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+info: RationalCurveBridge.lean:70:0: 'XedniRationalCurveBridge.localToRat_integer' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RationalCurveBridge.lean:71:0: 'XedniRationalCurveBridge.localToRat_fraction' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RationalCurveBridge.lean:72:0: 'XedniRationalCurveBridge.localToRat_injective' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RationalCurveBridge.lean:73:0: 'XedniRationalCurveBridge.localCurvePoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+⚠ [9046/9047] Built RationalRegularStep (72s)
+warning: RationalRegularStep.lean: imports `Mathlib.RingTheory.LocalRing.ResidueField.Basic` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+info: RationalRegularStep.lean:80:0: 'XedniRationalRegularStep.unit_of_reduction_ne_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RationalRegularStep.lean:81:0: 'XedniRationalRegularStep.chord_step' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RationalRegularStep.lean:82:0: 'XedniRationalRegularStep.tangent_step' depends on axioms: [propext, Classical.choice, Quot.sound]
+Build completed successfully (9047 jobs).

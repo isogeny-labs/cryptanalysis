@@ -1,0 +1,10 @@
+{
+  "schema": "xedni-relation-collision-count-protocol-v1",
+  "question": "Does the primitive-relation lattice count predict every bounded public-subgroup image in the frozen fresh-panel experiment?",
+  "source": "../xedni-bounded-rank-coverage-20261118/result.json",
+  "admission": "all 39 hit-height rows, including any failed assumption checks",
+  "assumptions": ["gcd(abs(a),abs(b))=1", "q>2H(abs(a)+abs(b))"],
+  "prediction": "L^2-max(0,L-abs(a))*max(0,L-abs(b)), where L=2H+1",
+  "comparison": "exact equality to independently enumerated reachable count",
+  "status": "frozen before execution"
+}
