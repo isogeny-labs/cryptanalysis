@@ -51,7 +51,7 @@ Per size means over six seeds (`summary_ABA2.txt`):
 | 1039 | 7558 / 2863 | 96.0 / 42.9 | 15.0 / 43.3 | 239 500 / 477 900 | 36 500 / 44 680 | 66 |
 | 2083 | 19 260 / 5874 | 152.8 / 51.2 | 16.6 / 73.5 | 638 100 / 2 533 000 | 66 700 / 141 100 | 103 |
 
-- The relation phase is the saving: 2.1x to 3.3x fewer residuals to pin `d`, growing with p, because the 3-LP decompositions
+- The relation phase is the saving: 1.8x to 3.3x fewer residuals to pin `d`, growing with p, because the 3-LP decompositions
   (49 to 56 percent of the generator output, discarded by the eliminator at `--max-lp 2`) now enter as 3-edges and mostly peel (at p = 2083: 713 accepted
   3-edges, 70 reduced on arrival, 642 peeled later, 1 left in the buffer).
 - The cost is row weight and linear algebra. Harvested rows are denser (73.5 against 16.6 at p = 2083) and LA ops are 4.0x higher there.
@@ -62,7 +62,7 @@ Per size means over six seeds (`summary_ABA2.txt`):
 - Of the harvested rows nearly all (26.8 / 40 / 64.5 / 113.7 per run, see `harvest_stats_B.txt`) came from components already attached to the sink; balanced
   cycles in a free component gave 0.3 to 2 rows per run. At these sizes the 1-LP decompositions pin components early, so the sink is doing most of the work.
 - Not part of the verdict: a quirk of the existing eliminator. It filters `c >= small`, which also catches the `d` column at index `small`, so `d` is reduced like a large prime. Keeping `d`
-  out (A2, `--eliminator-d-small`) lowers S by only 24 to 236 (0.6 to 5 percent) and the exponent by 0.006 +- 0.013, so this is not what B's win rests on.
+  out (A2, `--eliminator-d-small`) lowers S by only 24 to 236 (0.6 to 8 percent) and the exponent by 0.006 +- 0.013, so this is not what B's win rests on.
   B against A2: S lower by 1788 +- 120 / 2006 +- 62 / 1851 +- 76 / 1824 +- 51 (z = -14.9 / -32.5 / -24.4 / -36.0, 6 of 6 seeds each), exponent -0.090 +- 0.007.
   The harvester treats `d` as a small-base column (rows carry it), so A2 is the cleaner like-for-like and the conclusion is unchanged.
 
@@ -118,7 +118,7 @@ Per curve, r plain / r lp: p = 269: 0.413/0.174, 0.544/0.235; p = 521: 0.560/0.3
 
 ## What the numbers also say (read before quoting r)
 
-- **r leaves out the relation phase, and the lp arm's relation phase is bigger.** It needs 1.46x the residuals and 1.5x the MITM group ops (z 2.3), because only 0.75-power of the base are unknowns and 4-large-prime decompositions (21-36 % of the verified decompositions, from `lp_histogram` vs `accepted` in `k4/extra_k4.txt`) are thrown away. The relation phase is 1 053-3 700 x rho (plain) and 1 449-5 708 x rho (lp) by this accounting, i.e. thousands of times the linear algebra. So the total cost (relation + LA) is higher in the lp arm; the claim is about the linear-algebra phase only, as r defines it.
+- **r leaves out the relation phase, and the lp arm's relation phase is bigger.** It needs 1.46x the residuals and 1.5x the MITM group ops (z 2.3), because only 0.75-power of the base are unknowns and 4-large-prime decompositions (21-37 % of the verified decompositions, from `lp_histogram` vs `accepted` in `k4/extra_k4.txt`) are thrown away. The relation phase is 1 053-3 700 x rho (plain) and 1 449-5 708 x rho (lp) by this accounting, i.e. thousands of times the linear algebra. So the total cost (relation + LA) is higher in the lp arm; the claim is about the linear-algebra phase only, as r defines it.
 - **The gap closes with p.** r_lp by size: 0.205, 0.298, 0.334 (own rho); plain: 0.479, 0.573, 0.546. The core row weight of the lp arm grows as n^0.22 +- 0.03 (22-24, 36-47, 52-64), and LA ops as n^0.558 +- 0.028 against 0.478 +- 0.022 for plain (the plain figure matches §11.19's 0.479). With three sizes and 6 pairs the exponents are rough, but at 0.56 the lp linear algebra would pass plain's cost on a longer ladder; the 0.5 scaling that gives r_inf is not what the lp arm shows.
 - Cycle structure: all harvested rows came from the sink-attached component (pinned; balanced rows 0 or 1 per run), mean 31-110 relations composed per row (from `mean_cycle_len`), no inconsistent equations, no 3-edges left buffered. This is the same root-to-root combination item 1 found at k = 3, not a shortest cycle. Row weight 41 against 5 is the cost.
 - 0-LP rows are 0-2 per run, so almost every row is harvested.
