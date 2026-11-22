@@ -19,6 +19,10 @@ and construction gates. [pcc:unverified]
 ## Active items (top = next)
 - [ ] CT201–CT203: complete cold ECDLP source adjudication (matched five-arm rho/BSGS/IC, Williams order, distinct-Q per-block prospective gate; automation, started 2026-11-18, branch research/ct201-complete-single-target-gate-20261118, PR #1766; source CI 44/44 normal and -O at 36807d15; native/PCC blocked) [pcc:unverified]
 
+- [ ] Xedni scaling Phase 2: test Cayley--Bacharach pencil-enforced lifting (`dim ker_Q B = 2`) and shared coordinate-factor-base decomposition above `11` bits (Cursor, follow-up to PR #1810) [pcc:unverified]
+
+- [x] Advance Xedni toward cryptographic scale (Phase 1): native Rust multi-prime subgroup-kernel LLL relation extractor, order-statistic 3D-LLL preselection, `ca-icx xedni-solve` (verified non-collinear solves through `p = 1021`), and Lean 4 modular-kernel + function-field section specialization bridge (Cursor, started 2026-11-18, branch cursor/xedni-crypto-scale-ef34, PR #1810) [pcc:unverified]
+
 - [x] Prove Xedni chord-origin good-reduction bridge in Lean 4, decompose Nov 17 `r=6..9` panel collinearities, and implement JKSST `PGL_3(F_p)` + 3D-LLL plane-cubic lift (Cursor, started 2026-11-18, branch cursor/xedni-plane-group-chase-ef34, PR #1779) [pcc:unverified]
 
 - [x] Chase Xedni Phase 2 geometric escapes: Cayley-Bacharach 9-point cubic pencils, nodal degree-d>=4 Bezout curves, and L4-check F1 small-height lift selector; all three escapes benchmarked in native Rust (`crates/xedni-phase2`) with Lean 4 obstruction proofs (`experiments/xedni-phase2-20261119/formal/Phase2Obstructions.lean`) and closed against sub-sqrt(p) thresholds (Cursor Cloud, started 2026-11-19, branch cursor/xedni-cb-nodal-escapes-3858, PR #1846) [pcc:unverified]
