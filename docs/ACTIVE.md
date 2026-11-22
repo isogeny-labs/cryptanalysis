@@ -2,7 +2,7 @@
 
 ## Active items
 
-- [ ] CT301 bind native CT248 transcript to immutable authentic 48-vector fixture (ChatGPT, started 2026-11-21, branch research/ct301-native-transcript-fixture-binding-20261121): reject same-shape class-key/counter substitutions in actual --log admission; synthetic source guards only, retain draft until native/PCC gates. 
+- [ ] CT301 bind native CT248 transcript to immutable authentic 48-vector fixture (ChatGPT, started 2026-11-21, branch research/ct301-native-transcript-fixture-binding-20261121, PR #1905): reject same-shape class-key/counter substitutions in actual --log admission; synthetic source guards only, retain draft until native/PCC gates. 
 
 - [ ] CT300 authentic 48-vector norm-pricing admission fix (ChatGPT, started 2026-11-21, branch research/ct300-authentic-scalar-fixture-20261121, PR #1904): correct the real fixed-chain scalar and literal C13 counts; freeze genuine fixture source gates; retain draft until inherited CI/review/PCC gates are satisfied.
 
