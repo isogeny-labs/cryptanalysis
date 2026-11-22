@@ -1,0 +1,10 @@
+# Proof map: five-pair inverse-trace source gate
+
+| Result | Formal or concrete witness | Exact assumptions and status |
+| --- | --- | --- |
+| A pointwise equivalent source predicate preserves existence of a five-pair witness with the same target and distinct-column rule | `FivePairGateReplacement.exact_gate_substitution` in [FivePairGateReplacement.lean](FivePairGateReplacement.lean) | Arbitrary code and target types; `∀ code, bdd code ↔ inverseTrace code`; arbitrary five-by-two point-sum map and distinct-column predicate. Lean 4.34.1 checked; `#print axioms` reports none. |
+| The inverse-witness gate selects the frozen W18 source | [earlier source census](../n131_w18_inverse_trace_terminal_20261011/gate_equivalence.json), [width audit](../n131_w16_w18_sixpair_width_gate_20261010/native_audit_result.json) | Concrete GF(2^131) polynomial basis, seed 212, W18 encoding and folded-column map. Finite native/Sage evidence; field-level Lean bridge remains open. |
+| The constructed five-pair witness meets the complete Boolean formula and represents ten valid curve source points | [control receipt](../n131_common_frob_inverse_trace_20261012/control_result.json), [Sage gate replay](gate_result.json) | Exact archived fixture and source; every clause/XOR row checked, and Sage checks each inverse and trace. |
+| The public target projection preserves the subgroup relation | [checked Sage target receipt](target_result.json) and [prior projection](../n41_common_frob_factor_20261012/n131_projection_result.json) | Frozen curve/subgroup, Frobenius shift 16, four raw preimages, and `(1+Frobenius^16)^{-1}` on the subgroup. Concrete-curve Lean bridge remains open. |
+
+Build command, from this directory: `lean FivePairGateReplacement.lean`. The [toolchain](lean-toolchain), [runtime](lean_runtime.txt), and [build/axiom output](lean_check.txt) pin the formal receipt. `lean4checker --fresh` was unavailable on this host. The conditional Lean theorem preserves the exact five-pair existence implication; a full formal source equivalence would require definitions and proofs for the 131-bit binary field, point encoding, source rationality, and folded-column table.

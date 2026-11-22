@@ -1,0 +1,43 @@
+digraph XedniScalingPipeline {
+    rankdir=TB;
+    fontname="Helvetica";
+    fontsize=11;
+    node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+    edge [fontname="Helvetica", fontsize=9, color="#334155"];
+
+    subgraph cluster_source {
+        label="1. Source ECDLP & Pseudorandom 16-Jump Pool (ca-icx xedni-solve)";
+        style="rounded,dashed";
+        color="#0284c7";
+        pool [label="E/F_p : y^2 = x^3 + ax + b,  ord(G) = n (prime),  Q = x G\n16-jump walk R_t = u_t G + v_t Q  (1 curve add/pt, no AP tautologies)", fillcolor="#e0f2fe", color="#0284c7"];
+    }
+
+    subgraph cluster_lift {
+        label="2. Order-Statistic Short-Pool JKSST Lift (xedni_solver.rs)";
+        style="rounded,dashed";
+        color="#0d9488";
+        frame [label="4-Point PGL_3(F_p) Frame + (W - 4) 3D-LLL Lifts\nGreedy non-collinear selection of r - 4 shortest preimages\nH_min ~ (5/W)^(1/3) p^(2/3)  =>  r=9 cubic ~ (5/W)^5 p^10", fillcolor="#ccfbf1", color="#0d9488"];
+    }
+
+    subgraph cluster_rel {
+        label="3. Polynomial-Time Multi-Prime Subgroup-Kernel LLL";
+        style="rounded,dashed";
+        color="#4f46e5";
+        kern [label="Exact Abelian-Subgroup Kernels ker(Z^r -> C(F_{q_j}))\nZassenhaus HNF Intersection + LLL + 4-Prime u64 Screen\nZero false negatives (Lean-proved); 0 wasted Q-checks", fillcolor="#e0e7ff", color="#4f46e5"];
+    }
+
+    subgraph cluster_lean {
+        label="4. Lean 4.35 + Mathlib Barrier & Soundness Theorems";
+        style="rounded,dashed";
+        color="#7c3aed";
+        lean [label="ModularKernelAndSurfaceBridge.lean (11 theorems, 0 sorryAx)\n- globalRelation_le_iInf_modularRelation & incremental_kernel_step_complete\n- torsion_relation_specializes_zero (char 0 & F_p(t) surfaces)\n- fresh_mask_hits_card (= q^(2k-1)) & union bound (<= |M| / q)", fillcolor="#f3e8ff", color="#7c3aed"];
+    }
+
+    out [label="Verified x = log_G(Q) mod n  +  Cold Cost Ratio S / S_rho\nPhase 1 raises non-collinear Xedni solves beyond p=31 to p=67..509+\nPhase 2 target: escape fixed-rank S <= 8 fresh-mask ceiling", fillcolor="#fef3c7", color="#d97706"];
+
+    pool -> frame [label="W candidates"];
+    frame -> kern [label="smooth low-height C/Q\n+ chord origin O"];
+    lean -> kern [label="certifies completeness"];
+    kern -> out [label="exact Q cert +\nsource [x]G == Q"];
+    lean -> out [label="explains S/S_rho slope\nfor fixed rank r <= 9"];
+}

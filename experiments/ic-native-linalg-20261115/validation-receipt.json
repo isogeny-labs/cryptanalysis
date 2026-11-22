@@ -1,0 +1,38 @@
+{
+  "source_sha256": {
+    "src/indexcalc.c": "0f9c17150dce7f1a7f60b423190cc61863f49b42a5960b00585ef60d7dc826b3",
+    "src/linalg.c": "9041e7a851c25ce4f7f8006f553e041e786fa00fe25237240420095da358276b",
+    "tests/test_linalg.c": "38a48677b393c959953df72a8699780f6fb512263bfb278de019fef23f000b46",
+    "tests/test_indexcalc.c": "ddd90ee17eee84ff9791d47addc9e71def866efda5ad917f82384db95febf616",
+    "include/cryptanalysis/ca_indexcalc.h": "a5d90fe47a99c5a0f51760fb23594cbff1c9eb2c0111367dcd8f20e412515c60"
+  },
+  "commands": [
+    {
+      "command": "ctest --test-dir /tmp/cryptanalysis-ic-native-20261115 --output-on-failure",
+      "exit_code": 0,
+      "log": "validation-tests.log"
+    },
+    {
+      "command": "ctest --test-dir /tmp/cryptanalysis-ic-sanitize-20261115 -R '^(indexcalc|linalg)$' --output-on-failure",
+      "exit_code": 0,
+      "log": "validation-sanitizers.log"
+    },
+    {
+      "command": "/tmp/ic-graph-test",
+      "exit_code": 0,
+      "log": "graph-tests.log"
+    },
+    {
+      "command": "/tmp/ic-graph-test-sanitize",
+      "exit_code": 0,
+      "log": "graph-sanitizers.log"
+    }
+  ],
+  "post_measurement_documentation_change": {
+    "include/cryptanalysis/ca_indexcalc.h": {
+      "measured_sha256": "07c8205860762b6688ced27f45e09fa13e6028dbf3f12a8b308f7ab2463dc70e",
+      "current_sha256": "a5d90fe47a99c5a0f51760fb23594cbff1c9eb2c0111367dcd8f20e412515c60"
+    }
+  },
+  "documentation_change_explanation": "Only the public header algorithm description changed after the final timing panel. Function declarations and executable behavior are unchanged."
+}

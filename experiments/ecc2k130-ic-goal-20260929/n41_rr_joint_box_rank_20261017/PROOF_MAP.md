@@ -1,0 +1,11 @@
+# Proof map
+
+| Mathematical result | Lean declaration | Exact hypotheses | Verification status |
+| --- | --- | --- | --- |
+| An affine determinant-value family is nonzero when a binary-linear functional is one on its base and zero on every difference | `AffineCertificate.affine_nonzero` | Additive commutative group; `L(0)=false`; `L(x+y)=L(x) xor L(y)`; listed differences annihilated; base maps to true | Lean 4.34.1 checked; only `propext` in `#print axioms` |
+| A full additive span obstructs every nonzero functional annihilating the spanning differences | `AffineCertificate.full_span_obstruction` | Same group and functional laws; each group value is a finite sum of listed basis differences | Lean 4.34.1 checked; only `propext` |
+| The 32 finite sign boxes admit explicit certificates and 65 sampled boxes have full 41-bit difference rank | `audit_result.json`, `terminal.json` | Frozen source and panel; exact 41-bit field representation; distinct x and column conditions | Independent integer-field Gaussian determinant, opposite rank pivot order, 4,896 direct group checks, and 2,048 certificate-value replays |
+
+`lean-toolchain` pins `leanprover/lean4:v4.34.1` with bundled Std. Build command: `cd experiments/ecc2k130-ic-goal-20260929/n41_rr_joint_box_rank_20261017 && lake env lean AffineCertificate.lean`. Output is retained in `lean_check.stdout` and `lean_check.stderr`. `lean4checker --fresh` was unavailable on this host. The source contains no `sorry`, `admit`, `sorryAx`, custom claim axiom, or native proof evaluation.
+
+The Lean theorems cover the structural functional implications with their quantifiers. A kernel-checked concrete theorem that the 35-term Laplace expression equals the `L(7O)` determinant on this curve, that a seven-point group relation forces its vanishing, and that the integer rank certificates instantiate the abstract full-span hypothesis remains open. The independent Gaussian determinant and direct group-law replay check those bridges on every finite assignment evaluated here. The 32 sign certificates explicitly list their functional masks in `audit_result.json`; terminal replay checks all their source values. This is partial formalization of the complete curve-specific claim, with the exact missing obligations stated above.

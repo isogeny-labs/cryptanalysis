@@ -58,25 +58,34 @@
 //!    inversion per step, over a jump table of multiples of `G` that every
 //!    target shares, as they share the logarithm database.  It does not
 //!    fold by `Aut`; the report carries the `√w` folded expectation
-//!    beside it.
+//!    beside it, and [`rho_folded`] executes an `Aut`-folded walk directly
+//!    when [`OrbitIcOptions::fold_rho`] is enabled.
+//! 8. **Signed multi-orbit box (`wsum`).**  With [`OrbitIcOptions::wsum`],
+//!    [`OrbitWsumTable`] builds the half-box `Σ_{c < C} [e_c]P_c` (`|e_c| ≤ B`,
+//!    `C ≥ 3` independent orbit representatives) using [`SWEEP_BLOCK`]-wide
+//!    Montgomery `batch_inv` and keys every entry by [`OrbitCurve::canonical_x`].
+//!    Each stored entry simultaneously covers all `w = |Aut(E)|` points of its
+//!    orbit (`w = 2, 4, 6`), `Aut`-collisions during construction yield
+//!    target-free homogeneous relations, and [`auto_wsum_bound`] chooses `B*`
+//!    so total table build + probe walks + exact `F_r` RREF + single-probe
+//!    descent scales as `O(√(r / w))`.
 //!
 //! # Costs, and what they mean
 //!
 //! A random point decomposes with `≈ (wm)²/(2r)` expected witnesses, and
-//! the sweep stops at the first one, so a relation costs `≈ r/(wm)`
-//! subtractions.  Collecting the `≈ c·m` relations the logarithms need is
-//! therefore `≈ c·r/w` whatever `m` is — linear in `r`, far above rho's
-//! `√r` — while one *descent* costs `≈ r/(wm)`, which a wide base pushes
-//! below rho.  That is the same split the binary `vs_rho` block reports:
-//! a charged (per-target, database paid) comparison that index calculus
-//! can win, and a whole-process one it loses unless the precomputation is
-//! amortised over `Ω(√r)` targets.  Counts are reported in group
-//! operations (one charge per oracle difference or walk step, independent of
-//! the coordinate backend), so they compare algorithms rather than field
-//! formulas; wall time is reported beside them.
+//! the 2-summand sweep stops at the first one, so a relation costs `≈ r/(wm)`
+//! subtractions.  Collecting the `≈ c·m` relations the logarithms need by
+//! 2-decomposition is therefore `≈ c·r/w` whatever `m` is — linear in `r`,
+//! far above rho's `√r` — whereas both the single-large-prime collector (on a
+//! fixed bootstrap base) and the `Aut`-folded `wsum` signed coefficient box
+//! (`C ≥ 3`, `B* ≈ 2^(1/C − 1) (2 √(r/w))^(1/C)`) reduce whole-process
+//! single-target cost to `O(√(r / w))`.  Counts are reported in group
+//! operations (one charge per oracle difference, box addition, or walk step,
+//! independent of the coordinate backend), so they compare algorithms rather
+//! than field formulas; wall time is reported beside them.
 //!
-//! None of this threatens a deployed curve: at 256 bits the precomputation
-//! alone is `≈ 2^{256}/w` operations.
+//! None of this threatens a deployed curve: at 256 bits both `√(r / w)` and
+//! `r / w` remain infeasible (`≥ 2^{126}` group operations).
 
 use crate::cryptanalysis::bsgs_fast::{FastCurve, FastField, FastJacobianPoint, FastPoint};
 use crate::cryptanalysis::ec_index_calculus_curves::{classify, CurveKind, ScaledInstance};
@@ -126,6 +135,19 @@ const LEARN_CAP: usize = 1 << 18;
 /// times this; past it the descents go on against a database that no
 /// longer grows.
 const MAX_LEARNT: usize = 1 << 24;
+/// Minimum independent orbit columns for the multi-seed `wsum` signed box
+/// (`C ≥ 3`, matching the multibase track boundary).
+pub const WSUM_MIN_ORBITS: usize = 3;
+/// Maximum independent orbit columns packed by [`OrbitWsumTable`].
+pub const WSUM_MAX_ORBITS: usize = 8;
+/// Default orbit column count when [`OrbitIcOptions::wsum`] sizes the base.
+pub const WSUM_DEFAULT_ORBITS: usize = 3;
+/// Largest per-coordinate signed box bound `B` (`e_c ∈ [−B, B]`).
+pub const WSUM_MAX_BOUND: u64 = 255;
+/// Largest number of half-box entries `((2B + 1)^C − 1) / 2` [`OrbitWsumTable`] builds.
+const WSUM_MAX_ENTRIES: u64 = 1 << 24;
+/// Batched affine walk lanes used when probing an [`OrbitWsumTable`].
+const WSUM_MAX_LANES: usize = 32;
 
 // ── Arithmetic modulo the subgroup order ───────────────────────────────
 
@@ -283,6 +305,9 @@ pub struct OrbitCurve {
     aut_inv: Vec<usize>,
     /// The distinct abscissa multipliers `cx`, one per `x`-image of an orbit.
     xmul: Vec<u64>,
+    /// Inline copy of `xmul` (`≤ 3` entries for `w ≤ 6`) avoiding heap loads in [`Self::canonical_x`].
+    xmul_inline: [u64; 3],
+    xmul_count: u8,
     /// Tonelli–Shanks data for square roots in `F_p`.
     sqrt_nonresidue: u64,
     two_adicity: u32,
@@ -331,6 +356,8 @@ impl OrbitCurve {
             aut: Vec::new(),
             aut_inv: Vec::new(),
             xmul: Vec::new(),
+            xmul_inline: [0; 3],
+            xmul_count: 0,
             sqrt_nonresidue,
             two_adicity,
             odd_part,
@@ -445,6 +472,11 @@ impl OrbitCurve {
         let mut xmul: Vec<u64> = self.aut.iter().map(|al| al.cx).collect();
         xmul.sort_unstable();
         xmul.dedup();
+        self.xmul_inline = [0; 3];
+        for (i, &cx) in xmul.iter().take(3).enumerate() {
+            self.xmul_inline[i] = cx;
+        }
+        self.xmul_count = xmul.len().min(3) as u8;
         self.xmul = xmul;
         Ok(())
     }
@@ -478,16 +510,76 @@ impl OrbitCurve {
 
     /// The least abscissa over a point's orbit, from its abscissa alone:
     /// every automorphism scales `x` by one of the `xmul`, and the sign of
-    /// `y` never moves it.  At most two multiplications (on `j = 0`).
+    /// `y` never moves it.  Zero multiplications on generic (`w = 2`) and
+    /// `j = 1728` (`w = 4`, where `−1` is field negation); two on `j = 0`.
     #[inline]
-    fn canonical_x(&self, x: u64) -> u64 {
-        let f = &self.fast.f;
-        let one = f.one();
-        self.xmul
-            .iter()
-            .map(|&cx| if cx == one { x } else { f.mul(cx, x) })
-            .min()
-            .unwrap_or(x)
+    pub fn canonical_x(&self, x: u64) -> u64 {
+        match self.xmul_count {
+            0 | 1 => x,
+            2 => {
+                let f = &self.fast.f;
+                let one = f.one();
+                let other = if self.xmul_inline[0] == one {
+                    self.xmul_inline[1]
+                } else {
+                    self.xmul_inline[0]
+                };
+                let img = if other == f.neg(one) {
+                    f.neg(x)
+                } else {
+                    f.mul(other, x)
+                };
+                x.min(img)
+            }
+            _ => {
+                let f = &self.fast.f;
+                let one = f.one();
+                let mut best = x;
+                for i in 0..(self.xmul_count as usize) {
+                    let cx = self.xmul_inline[i];
+                    let img = if cx == one { x } else { f.mul(cx, x) };
+                    if img < best {
+                        best = img;
+                    }
+                }
+                best
+            }
+        }
+    }
+
+    /// Canonical representative `(α(p), eig(α))` of `p`'s `Aut`-orbit,
+    /// minimizing `(x, y)` in Montgomery representation.  For `p == O`
+    /// returns `(O, 1)`.
+    #[inline]
+    pub fn canonical_rep(&self, p: FastPoint) -> (FastPoint, u64) {
+        if p.infinity {
+            return (p, 1);
+        }
+        if self.aut.len() == 2 {
+            let neg_y = self.fast.f.neg(p.y);
+            return if neg_y < p.y {
+                (
+                    FastPoint {
+                        x: p.x,
+                        y: neg_y,
+                        infinity: false,
+                    },
+                    self.r - 1,
+                )
+            } else {
+                (p, 1)
+            };
+        }
+        let mut best_pt = p;
+        let mut best_eig = 1u64;
+        for (idx, al) in self.aut.iter().enumerate() {
+            let img = if idx == 0 { p } else { self.apply(al, p) };
+            if idx == 0 || (img.x, img.y) < (best_pt.x, best_pt.y) {
+                best_pt = img;
+                best_eig = al.eig;
+            }
+        }
+        (best_pt, best_eig)
     }
 
     /// `x³ + a x + b`, Montgomery form in and out.
@@ -575,6 +667,8 @@ impl OrbitCurve {
         ];
         c.aut_inv = vec![0, 1];
         c.xmul = vec![f.one()];
+        c.xmul_inline = [f.one(), 0, 0];
+        c.xmul_count = 1;
         c
     }
 }
@@ -1375,6 +1469,20 @@ pub struct OrbitIcOptions {
     /// Collect the logarithm relations with the single-large-prime
     /// variation (see [`solve_logs`]) instead of full 2-decompositions.
     pub large_primes: bool,
+    /// Collect relations and descend targets via an `Aut`-equivariant signed
+    /// multi-orbit coefficient box ([`OrbitWsumTable`], `C ≥ 3` orbits).
+    /// Overrides `large_primes` when `true`.
+    pub wsum: bool,
+    /// Signed coefficient bound `B` (`|e_c| ≤ B`) for [`OrbitWsumTable`];
+    /// `0` selects the optimal bound [`auto_wsum_bound`].
+    pub wsum_bound: u64,
+    /// Harvest target-free homogeneous relations from `Aut`-orbit collisions
+    /// encountered while building [`OrbitWsumTable`].
+    pub wsum_free: bool,
+    /// Target count used by [`auto_wsum_bound`] when `wsum_bound == 0`; `0`
+    /// defaults to the batch length in [`run_known_answer`] (or `1` in a
+    /// standalone [`solve_logs`] call).
+    pub wsum_targets: usize,
     /// Coordinate representation of the single-large-prime adding walk.
     /// Full-decomposition collection remains affine.
     pub relation_coordinates: RelationCoordinates,
@@ -1389,6 +1497,9 @@ pub struct OrbitIcOptions {
     pub max_descent_ops: u64,
     /// Rho walk-step bound; 0 → `64·√r`.
     pub rho_max_steps: u64,
+    /// Fold the Pollard-rho reference walk by `Aut(E)` ([`rho_folded`]) so
+    /// the measured rho arm achieves the `√|Aut|` speedup directly.
+    pub fold_rho: bool,
     /// Skip the rho baseline.
     pub skip_rho: bool,
     pub seed: u64,
@@ -1402,13 +1513,46 @@ impl Default for OrbitIcOptions {
             orbits_per_target: 0.5,
             relations_per_orbit: 1.5,
             large_primes: true,
+            wsum: false,
+            wsum_bound: 0,
+            wsum_free: true,
+            wsum_targets: 0,
             relation_coordinates: RelationCoordinates::Affine,
             learn: true,
             max_ops: 1 << 32,
             max_descent_ops: 1 << 30,
             rho_max_steps: 0,
+            fold_rho: false,
             skip_rho: false,
             seed: 1,
+        }
+    }
+}
+
+impl OrbitIcOptions {
+    /// Options for cold `Aut`-folded signed-box (`wsum`) index calculus over
+    /// `C = 3` independent orbits, paired with [`rho_folded`].
+    pub fn wsum() -> Self {
+        Self {
+            orbits: 0,
+            large_primes: false,
+            wsum: true,
+            wsum_bound: 0,
+            wsum_free: true,
+            wsum_targets: 0,
+            learn: false,
+            fold_rho: true,
+            ..Self::default()
+        }
+    }
+
+    /// [`Self::wsum`] with an explicit orbit count `C ∈ [3, 8]` and coefficient
+    /// bound `B` (`0` for [`auto_wsum_bound`]).
+    pub fn wsum_with(orbits: usize, bound: u64) -> Self {
+        Self {
+            orbits,
+            wsum_bound: bound,
+            ..Self::wsum()
         }
     }
 }
@@ -1444,6 +1588,8 @@ impl RelationCoordinates {
 pub enum BaseSizing {
     /// [`OrbitIcOptions::orbits`] orbits.
     Explicit,
+    /// Multi-seed signed coefficient box (`C = 3` default orbits).
+    Wsum,
     /// To the batch of targets, [`batch_orbits`].
     Batch,
     /// To the group, [`auto_orbits`] at [`OrbitIcOptions::width`].
@@ -1454,6 +1600,7 @@ impl BaseSizing {
     pub fn as_str(self) -> &'static str {
         match self {
             BaseSizing::Explicit => "explicit",
+            BaseSizing::Wsum => "wsum",
             BaseSizing::Batch => "batch",
             BaseSizing::Width => "width",
         }
@@ -1464,6 +1611,8 @@ impl OrbitIcOptions {
     pub fn sizing(&self) -> BaseSizing {
         if self.orbits != 0 {
             BaseSizing::Explicit
+        } else if self.wsum {
+            BaseSizing::Wsum
         } else if self.large_primes && self.orbits_per_target > 0.0 {
             BaseSizing::Batch
         } else {
@@ -1483,9 +1632,11 @@ pub struct LogsReport {
     /// Relations whose re-addition in the group failed; must be zero.
     pub rejected_relations: u64,
     /// With large primes: relations with both summands in the base.
+    /// With `wsum`: inhomogeneous probe relations accepted into RREF.
     pub full_relations: u64,
     /// With large primes: relations from two probes meeting on one large
-    /// prime, eliminated.
+    /// prime, eliminated.  With `wsum`: target-free homogeneous relations
+    /// from `Aut`-orbit collisions during box construction.
     pub combined_relations: u64,
     /// With large primes: distinct large-prime orbits seen.
     pub distinct_large_primes: u64,
@@ -1493,6 +1644,10 @@ pub struct LogsReport {
     /// their first occurrence lying on a certified orbit.  These extend
     /// the base a descent looks up at no further cost.
     pub known_large_primes: u64,
+    /// With `wsum`: signed coefficient bound `B` (`|e_c| ≤ B`), else `0`.
+    pub wsum_bound: u64,
+    /// With `wsum`: distinct `Aut`-orbits stored in [`OrbitWsumTable`], else `0`.
+    pub wsum_entries: u64,
     /// Rounds of relations gathered: more than one when too few columns
     /// certified after the first.
     pub collection_rounds: u32,
@@ -1992,6 +2147,670 @@ impl<'t> LargePrimeCollector<'t> {
     }
 }
 
+// ── Multi-seed Aut-equivariant signed coefficient box (wsum) ───────────
+
+/// Exact incremental Reduced Row Echelon Form over the prime field `F_r`
+/// for up to [`WSUM_MAX_ORBITS`] columns.
+#[derive(Clone, Debug)]
+pub struct IncrementalRrefModR {
+    pub cols: usize,
+    pub r: u64,
+    pivots: [Option<([u64; WSUM_MAX_ORBITS], u64)>; WSUM_MAX_ORBITS],
+    pub rank: usize,
+    pub inconsistent: bool,
+}
+
+impl IncrementalRrefModR {
+    pub fn new(cols: usize, r: u64) -> Self {
+        assert!(cols <= WSUM_MAX_ORBITS);
+        Self {
+            cols,
+            r,
+            pivots: [None; WSUM_MAX_ORBITS],
+            rank: 0,
+            inconsistent: false,
+        }
+    }
+
+    /// Reduce `(row, rhs)` against existing pivots and insert it if it
+    /// increases rank.  Maintains full RREF so every existing pivot column
+    /// is zero in every other pivot row.
+    pub fn insert(&mut self, mut row: [u64; WSUM_MAX_ORBITS], mut rhs: u64) -> bool {
+        let r = self.r;
+        rhs %= r;
+        for c in 0..self.cols {
+            row[c] %= r;
+        }
+        for p in 0..self.cols {
+            let factor = row[p];
+            if factor == 0 {
+                continue;
+            }
+            if let Some((piv_row, piv_rhs)) = self.pivots[p] {
+                row[p] = 0;
+                for j in (p + 1)..self.cols {
+                    row[j] = sub_r(row[j], mul_r(factor, piv_row[j], r), r);
+                }
+                rhs = sub_r(rhs, mul_r(factor, piv_rhs, r), r);
+            } else {
+                let inv = inv_r(factor, r).expect("r is prime and 0 < factor < r");
+                row[p] = 1;
+                for j in (p + 1)..self.cols {
+                    row[j] = mul_r(row[j], inv, r);
+                }
+                rhs = mul_r(rhs, inv, r);
+                // Eliminate any already-filled pivot columns k > p from the new row.
+                for k in (p + 1)..self.cols {
+                    let fk = row[k];
+                    if fk == 0 {
+                        continue;
+                    }
+                    if let Some((k_row, k_rhs)) = self.pivots[k] {
+                        row[k] = 0;
+                        for j in (k + 1)..self.cols {
+                            row[j] = sub_r(row[j], mul_r(fk, k_row[j], r), r);
+                        }
+                        rhs = sub_r(rhs, mul_r(fk, k_rhs, r), r);
+                    }
+                }
+                // Back-eliminate column p from all earlier pivots q < p.
+                for q in 0..p {
+                    if let Some((ref mut q_row, ref mut q_rhs)) = self.pivots[q] {
+                        let fq = q_row[p];
+                        if fq != 0 {
+                            q_row[p] = 0;
+                            for j in (p + 1)..self.cols {
+                                q_row[j] = sub_r(q_row[j], mul_r(fq, row[j], r), r);
+                            }
+                            *q_rhs = sub_r(*q_rhs, mul_r(fq, rhs, r), r);
+                        }
+                    }
+                }
+                self.pivots[p] = Some((row, rhs));
+                self.rank += 1;
+                return true;
+            }
+        }
+        if rhs != 0 {
+            self.inconsistent = true;
+        }
+        false
+    }
+
+    /// Unique solution vector when `rank == cols && !inconsistent`.
+    pub fn solution(&self) -> Option<[u64; WSUM_MAX_ORBITS]> {
+        if self.inconsistent || self.rank != self.cols {
+            return None;
+        }
+        let mut out = [0u64; WSUM_MAX_ORBITS];
+        for c in 0..self.cols {
+            let (_, rhs) = self.pivots[c]?;
+            out[c] = rhs;
+        }
+        Some(out)
+    }
+}
+
+const EMPTY_ORBIT_KEY: u64 = u64::MAX;
+
+#[derive(Clone, Copy, Debug)]
+struct OrbitSlot {
+    key: u64,
+    packed: u64,
+}
+
+/// Flat open-addressed table keyed by `OrbitCurve::canonical_x(pt.x)`.
+#[derive(Clone, Debug)]
+struct FlatOrbitMap {
+    slots: Vec<OrbitSlot>,
+    mask: usize,
+    shift: u32,
+    len: u64,
+}
+
+impl FlatOrbitMap {
+    fn with_capacity(entries: usize) -> Self {
+        let cap = entries.saturating_mul(2).max(16).next_power_of_two();
+        let shift = 64 - cap.trailing_zeros();
+        Self {
+            slots: vec![
+                OrbitSlot {
+                    key: EMPTY_ORBIT_KEY,
+                    packed: 0,
+                };
+                cap
+            ],
+            mask: cap - 1,
+            shift,
+            len: 0,
+        }
+    }
+
+    #[inline]
+    fn insert_or_get(&mut self, key: u64, packed: u64) -> Option<u64> {
+        let mut idx = (key.wrapping_mul(0x9E37_79B9_7F4A_7C15) >> self.shift) as usize;
+        loop {
+            let slot = &mut self.slots[idx];
+            if slot.key == EMPTY_ORBIT_KEY {
+                slot.key = key;
+                slot.packed = packed;
+                self.len += 1;
+                return None;
+            }
+            if slot.key == key {
+                return Some(slot.packed);
+            }
+            idx = (idx + 1) & self.mask;
+        }
+    }
+
+    #[inline]
+    fn get(&self, key: u64) -> Option<u64> {
+        let mut idx = (key.wrapping_mul(0x9E37_79B9_7F4A_7C15) >> self.shift) as usize;
+        loop {
+            let slot = self.slots[idx];
+            if slot.key == EMPTY_ORBIT_KEY {
+                return None;
+            }
+            if slot.key == key {
+                return Some(slot.packed);
+            }
+            idx = (idx + 1) & self.mask;
+        }
+    }
+}
+
+/// Number of half-box entries `((2B + 1)^C − 1) / 2`, if it fits `u64`.
+pub fn wsum_entry_count(cols: usize, bound: u64) -> Option<u64> {
+    if !(WSUM_MIN_ORBITS..=WSUM_MAX_ORBITS).contains(&cols) || !(1..=WSUM_MAX_BOUND).contains(&bound)
+    {
+        return None;
+    }
+    let width = 2 * bound + 1;
+    let bits = 64 - width.leading_zeros();
+    if cols as u32 * bits > 64 {
+        return None;
+    }
+    let total = (0..cols).try_fold(1u64, |acc, _| acc.checked_mul(width))?;
+    let half = (total - 1) / 2;
+    (half <= WSUM_MAX_ENTRIES).then_some(half)
+}
+
+/// Choose the integer box bound `B* ∈ [1, WSUM_MAX_BOUND]` that minimizes
+/// expected total group operations `N(B) + (k_logs(B) + T) / p_hit(B)` over
+/// `M = r / |Aut(E)|` canonical orbits.
+pub fn auto_wsum_bound(r: u64, w: usize, cols: usize, targets: usize, free: bool) -> u64 {
+    let cols = cols.clamp(WSUM_MIN_ORBITS, WSUM_MAX_ORBITS);
+    let m_orbits = (r as f64) / (w.max(1) as f64);
+    let t = (targets.max(1)) as f64;
+    let mut best_b = 1u64;
+    let mut best_cost = f64::INFINITY;
+    for b in 1..=WSUM_MAX_BOUND {
+        let Some(entries) = wsum_entry_count(cols, b) else {
+            break;
+        };
+        let n = entries as f64;
+        let ratio = n / m_orbits;
+        let p_hit = -(-ratio).exp_m1();
+        if p_hit <= 0.0 {
+            continue;
+        }
+        let lambda = (n - m_orbits * p_hit).max(0.0);
+        let r_homog = if free && lambda > 0.0 {
+            let cap = cols - 1;
+            let mut rem = 0.0f64;
+            let mut term = (-lambda).exp();
+            for k in 0..cap {
+                rem += (cap - k) as f64 * term;
+                term *= lambda / ((k + 1) as f64);
+            }
+            (cap as f64 - rem).clamp(0.0, cap as f64)
+        } else {
+            0.0
+        };
+        let k_logs = (cols as f64) - r_homog;
+        let cost = n + (k_logs + t) / p_hit;
+        if cost < best_cost {
+            best_cost = cost;
+            best_b = b;
+        } else if cost > best_cost * 2.0 {
+            break;
+        }
+    }
+    best_b
+}
+
+/// Batched in-place affine curve addition `pts[i] = pts[i] + addends[i]`
+/// sharing a single [`FastField::batch_inv`] across the slice.
+#[inline]
+fn batch_add_in_place(
+    c: &OrbitCurve,
+    pts: &mut [FastPoint],
+    addends: &[FastPoint],
+    den: &mut [u64],
+    scratch: &mut [u64],
+) {
+    let n = pts.len();
+    if n == 0 {
+        return;
+    }
+    let f = &c.fast.f;
+    let one = f.one();
+    for i in 0..n {
+        let (u, v) = (pts[i], addends[i]);
+        den[i] = if u.infinity || v.infinity {
+            one
+        } else if u.x != v.x {
+            f.sub(v.x, u.x)
+        } else if u.y == v.y && u.y != 0 {
+            f.dbl(u.y)
+        } else {
+            one
+        };
+    }
+    f.batch_inv(&mut den[..n], &mut scratch[..n]);
+    for i in 0..n {
+        let (u, v) = (pts[i], addends[i]);
+        pts[i] = if u.infinity {
+            v
+        } else if v.infinity {
+            u
+        } else if u.x != v.x {
+            let lam = f.mul(f.sub(v.y, u.y), den[i]);
+            let x3 = f.sub(f.sub(f.sqr(lam), u.x), v.x);
+            let y3 = f.sub(f.mul(lam, f.sub(u.x, x3)), u.y);
+            FastPoint {
+                x: x3,
+                y: y3,
+                infinity: false,
+            }
+        } else if u.y == v.y && u.y != 0 {
+            let x2 = f.sqr(u.x);
+            let num = f.add(f.add(f.dbl(x2), x2), c.a);
+            let lam = f.mul(num, den[i]);
+            let x3 = f.sub(f.sqr(lam), f.dbl(u.x));
+            let y3 = f.sub(f.mul(lam, f.sub(u.x, x3)), u.y);
+            FastPoint {
+                x: x3,
+                y: y3,
+                infinity: false,
+            }
+        } else {
+            FastPoint::INFINITY
+        };
+    }
+}
+
+/// **`Aut`-equivariant signed coefficient-box table** (`wsum`) over
+/// `C ∈ [3, 8]` independent orbit representatives `P_0, …, P_{C−1}`:
+/// stores every half-box sum `S(e) = Σ_{c < C} [e_c]P_c` (`|e_c| ≤ B`,
+/// first non-zero `e_c > 0`) keyed by [`OrbitCurve::canonical_x`], so one
+/// probe simultaneously tests all `w = |Aut(E)|` orbit images `α(S(e))`.
+#[derive(Clone, Debug)]
+pub struct OrbitWsumTable {
+    map: FlatOrbitMap,
+    pub cols: usize,
+    pub bound: u64,
+    bits: u32,
+    multiples: Vec<Vec<FastPoint>>,
+    pub entries: u64,
+    pub build_ops: u64,
+    pub insert_attempts: u64,
+    pub identities_skipped: u64,
+    pub collisions_seen: u64,
+    pub free_relations: Vec<([u64; WSUM_MAX_ORBITS], u64)>,
+}
+
+struct WsumBuilder<'a> {
+    curve: &'a OrbitCurve,
+    map: FlatOrbitMap,
+    cols: usize,
+    bound: u64,
+    bits: u32,
+    free: bool,
+    multiples: Vec<Vec<FastPoint>>,
+    rref: IncrementalRrefModR,
+    free_relations: Vec<([u64; WSUM_MAX_ORBITS], u64)>,
+    build_ops: u64,
+    insert_attempts: u64,
+    identities_skipped: u64,
+    collisions_seen: u64,
+    batch_u: [FastPoint; SWEEP_BLOCK],
+    batch_v: [FastPoint; SWEEP_BLOCK],
+    batch_packed: [u64; SWEEP_BLOCK],
+    batch_len: usize,
+    den: [u64; SWEEP_BLOCK],
+    scratch: [u64; SWEEP_BLOCK],
+}
+
+impl<'a> WsumBuilder<'a> {
+    #[inline]
+    fn unpack_array(&self, packed: u64) -> [i64; WSUM_MAX_ORBITS] {
+        let mask = (1u64 << self.bits) - 1;
+        let b = self.bound as i64;
+        let mut out = [0i64; WSUM_MAX_ORBITS];
+        for d in 0..self.cols {
+            out[d] = ((packed >> (d as u32 * self.bits)) & mask) as i64 - b;
+        }
+        out
+    }
+
+    fn evaluate_point(&self, e: &[i64; WSUM_MAX_ORBITS], ops: &mut u64) -> FastPoint {
+        let mut acc = FastPoint::INFINITY;
+        for col in 0..self.cols {
+            let ec = e[col];
+            if ec == 0 {
+                continue;
+            }
+            let term = self.multiples[col][(ec.unsigned_abs() - 1) as usize];
+            if term.infinity {
+                continue;
+            }
+            let signed = if ec < 0 {
+                self.curve.fast.neg(term)
+            } else {
+                term
+            };
+            if acc.infinity {
+                acc = signed;
+            } else {
+                *ops += 1;
+                acc = self.curve.fast.add(acc, signed);
+            }
+        }
+        acc
+    }
+
+    #[inline]
+    fn record_point(&mut self, pt: FastPoint, packed: u64) {
+        if pt.infinity {
+            self.identities_skipped += 1;
+            return;
+        }
+        self.insert_attempts += 1;
+        let key = self.curve.canonical_x(pt.x);
+        if let Some(prev_packed) = self.map.insert_or_get(key, packed) {
+            self.collisions_seen += 1;
+            if self.free && self.rref.rank + 1 < self.cols && !self.rref.inconsistent {
+                let e_prev = self.unpack_array(prev_packed);
+                let e_new = self.unpack_array(packed);
+                let mut verify_ops = 0u64;
+                let s_prev = self.evaluate_point(&e_prev, &mut verify_ops);
+                self.build_ops += verify_ops;
+                if let Some(eig) = self.curve.image_eig(s_prev, pt) {
+                    let r = self.curve.r;
+                    let mut coeffs = [0u64; WSUM_MAX_ORBITS];
+                    let mut nonzero = false;
+                    for d in 0..self.cols {
+                        let n_mod = e_new[d].rem_euclid(r as i64) as u64;
+                        let p_mod = e_prev[d].rem_euclid(r as i64) as u64;
+                        coeffs[d] = sub_r(n_mod, mul_r(eig, p_mod, r), r);
+                        nonzero |= coeffs[d] != 0;
+                    }
+                    if nonzero && self.rref.insert(coeffs, 0) {
+                        self.free_relations.push((coeffs, 0));
+                    }
+                }
+            }
+        }
+    }
+
+    fn flush_batch(&mut self) {
+        let len = self.batch_len;
+        if len == 0 {
+            return;
+        }
+        self.build_ops += len as u64;
+        batch_add_in_place(
+            self.curve,
+            &mut self.batch_u[..len],
+            &self.batch_v[..len],
+            &mut self.den[..len],
+            &mut self.scratch[..len],
+        );
+        let mut results = [(FastPoint::INFINITY, 0u64); SWEEP_BLOCK];
+        for i in 0..len {
+            results[i] = (self.batch_u[i], self.batch_packed[i]);
+        }
+        self.batch_len = 0;
+        for &(pt, packed) in &results[..len] {
+            self.record_point(pt, packed);
+        }
+    }
+
+    fn walk_prefixes(
+        &mut self,
+        depth: usize,
+        partial: FastPoint,
+        leading: bool,
+        prefix_packed: u64,
+        last_terms: &[(FastPoint, u64)],
+    ) {
+        let b = self.bound as i64;
+        let last = self.cols - 1;
+        if depth == last {
+            if leading {
+                // Prefix is all-zero: only e_last in 1..=B, already in `self.multiples[last]`.
+                let zero_prefix = prefix_packed;
+                for e_last in 1..=b {
+                    let pt = self.multiples[last][(e_last - 1) as usize];
+                    let digit = ((e_last + b) as u64) << (last as u32 * self.bits);
+                    self.record_point(pt, zero_prefix | digit);
+                }
+            } else {
+                // e_last = 0: sum is `partial` with no extra curve addition.
+                let zero_digit = (b as u64) << (last as u32 * self.bits);
+                self.record_point(partial, prefix_packed | zero_digit);
+                // Non-zero e_last in [-B..-1] ∪ [1..B]: batch 256 affine additions per inversion.
+                for &(v_pt, last_bits) in last_terms {
+                    let packed = prefix_packed | last_bits;
+                    if partial.infinity {
+                        self.record_point(v_pt, packed);
+                    } else {
+                        let idx = self.batch_len;
+                        self.batch_u[idx] = partial;
+                        self.batch_v[idx] = v_pt;
+                        self.batch_packed[idx] = packed;
+                        self.batch_len += 1;
+                        if self.batch_len == SWEEP_BLOCK {
+                            self.flush_batch();
+                        }
+                    }
+                }
+            }
+            return;
+        }
+        let lo = if leading { 0 } else { -b };
+        let shift = depth as u32 * self.bits;
+        for e in lo..=b {
+            let next_packed = prefix_packed | (((e + b) as u64) << shift);
+            let next_partial = if e == 0 {
+                partial
+            } else {
+                let m = self.multiples[depth][(e.unsigned_abs() - 1) as usize];
+                let term = if e < 0 { self.curve.fast.neg(m) } else { m };
+                if partial.infinity {
+                    term
+                } else if term.infinity {
+                    partial
+                } else {
+                    self.build_ops += 1;
+                    self.curve.fast.add(partial, term)
+                }
+            };
+            self.walk_prefixes(
+                depth + 1,
+                next_partial,
+                leading && e == 0,
+                next_packed,
+                last_terms,
+            );
+        }
+    }
+}
+
+impl OrbitWsumTable {
+    /// Build the `Aut`-folded signed coefficient box of `|e_c| ≤ bound`
+    /// over `fb`'s `C` orbit representatives, returning the table and the
+    /// incremental RREF pre-populated with any verified target-free
+    /// `Aut`-collision rows.
+    pub fn build(
+        c: &OrbitCurve,
+        fb: &OrbitFactorBase,
+        bound: u64,
+        free: bool,
+    ) -> Result<(Self, IncrementalRrefModR), String> {
+        let cols = fb.len();
+        if !(WSUM_MIN_ORBITS..=WSUM_MAX_ORBITS).contains(&cols) {
+            return Err(format!(
+                "wsum needs {WSUM_MIN_ORBITS}..={WSUM_MAX_ORBITS} orbits, got {cols}"
+            ));
+        }
+        let estimate = wsum_entry_count(cols, bound).ok_or_else(|| {
+            format!("wsum box (cols={cols}, bound={bound}) exceeds packing or size limits")
+        })?;
+        let width = 2 * bound + 1;
+        let bits = 64 - width.leading_zeros();
+        let mut build_ops = 0u64;
+        let mut multiples: Vec<Vec<FastPoint>> = Vec::with_capacity(cols);
+        for rep in &fb.reps {
+            let mut row = Vec::with_capacity(bound as usize);
+            row.push(*rep);
+            for _ in 1..bound {
+                let prev = *row.last().expect("non-empty");
+                let next = if prev.infinity {
+                    *rep
+                } else {
+                    build_ops += 1;
+                    c.fast.add(prev, *rep)
+                };
+                row.push(next);
+            }
+            multiples.push(row);
+        }
+        let last = cols - 1;
+        let b = bound as i64;
+        let last_shift = last as u32 * bits;
+        let mut last_terms: Vec<(FastPoint, u64)> = Vec::with_capacity(2 * bound as usize);
+        for e in (-b..=b).filter(|&e| e != 0) {
+            let m = multiples[last][(e.unsigned_abs() - 1) as usize];
+            if m.infinity {
+                continue;
+            }
+            let v_pt = if e < 0 { c.fast.neg(m) } else { m };
+            let last_bits = ((e + b) as u64) << last_shift;
+            last_terms.push((v_pt, last_bits));
+        }
+        let mut builder = WsumBuilder {
+            curve: c,
+            map: FlatOrbitMap::with_capacity(estimate as usize),
+            cols,
+            bound,
+            bits,
+            free,
+            multiples,
+            rref: IncrementalRrefModR::new(cols, c.r),
+            free_relations: Vec::new(),
+            build_ops,
+            insert_attempts: 0,
+            identities_skipped: 0,
+            collisions_seen: 0,
+            batch_u: [FastPoint::INFINITY; SWEEP_BLOCK],
+            batch_v: [FastPoint::INFINITY; SWEEP_BLOCK],
+            batch_packed: [0; SWEEP_BLOCK],
+            batch_len: 0,
+            den: [0; SWEEP_BLOCK],
+            scratch: [0; SWEEP_BLOCK],
+        };
+        builder.walk_prefixes(0, FastPoint::INFINITY, true, 0, &last_terms);
+        builder.flush_batch();
+        let entries = builder.map.len;
+        let rref = builder.rref;
+        Ok((
+            Self {
+                map: builder.map,
+                cols,
+                bound,
+                bits,
+                multiples: builder.multiples,
+                entries,
+                build_ops: builder.build_ops,
+                insert_attempts: builder.insert_attempts,
+                identities_skipped: builder.identities_skipped,
+                collisions_seen: builder.collisions_seen,
+                free_relations: builder.free_relations,
+            },
+            rref,
+        ))
+    }
+
+    /// Unpack a stored digit word into signed integer coefficients `e_0..e_{C-1}`.
+    #[inline]
+    pub fn unpack(&self, packed: u64) -> [i64; WSUM_MAX_ORBITS] {
+        let mask = (1u64 << self.bits) - 1;
+        let b = self.bound as i64;
+        let mut out = [0i64; WSUM_MAX_ORBITS];
+        for d in 0..self.cols {
+            out[d] = ((packed >> (d as u32 * self.bits)) & mask) as i64 - b;
+        }
+        out
+    }
+
+    /// Reconstruct `S(e) = Σ_{c < C} [e_c]P_c` from the stored multiples,
+    /// charging each addition to `ops`.
+    pub fn evaluate_point(
+        &self,
+        c: &OrbitCurve,
+        e: &[i64; WSUM_MAX_ORBITS],
+        ops: &mut u64,
+    ) -> FastPoint {
+        let mut acc = FastPoint::INFINITY;
+        for col in 0..self.cols {
+            let ec = e[col];
+            if ec == 0 {
+                continue;
+            }
+            let term = self.multiples[col][(ec.unsigned_abs() - 1) as usize];
+            if term.infinity {
+                continue;
+            }
+            let signed = if ec < 0 { c.fast.neg(term) } else { term };
+            if acc.infinity {
+                acc = signed;
+            } else {
+                *ops += 1;
+                acc = c.fast.add(acc, signed);
+            }
+        }
+        acc
+    }
+
+    /// Probe `pt` against the `Aut`-folded box in `O(1)`: if `pt = α(S(e))`
+    /// for some stored `S(e)` and `α ∈ Aut(E)`, returns the verified modular
+    /// coefficient vector `eig(α)·e mod r` so `Σ coeffs[c]·x_c ≡ log_G(pt)`.
+    #[inline]
+    pub fn probe_point(
+        &self,
+        c: &OrbitCurve,
+        pt: FastPoint,
+        oracle_ops: &mut u64,
+    ) -> Option<[u64; WSUM_MAX_ORBITS]> {
+        if pt.infinity {
+            return None;
+        }
+        let packed = self.map.get(c.canonical_x(pt.x))?;
+        let e = self.unpack(packed);
+        let s = self.evaluate_point(c, &e, oracle_ops);
+        let eig = c.image_eig(s, pt)?;
+        let mut coeffs = [0u64; WSUM_MAX_ORBITS];
+        for col in 0..self.cols {
+            let em = e[col].rem_euclid(c.r as i64) as u64;
+            coeffs[col] = mul_r(eig, em, c.r);
+        }
+        Some(coeffs)
+    }
+}
+
 /// Solve `rows` over `fb` and certify every solved column as
 /// `[x_o]G == P_o`: the certified logarithm of each column (or `None`),
 /// the system's statistics and the count of solved columns that failed.
@@ -2044,6 +2863,9 @@ pub struct LogDatabase {
     /// targets' probes from running parallel, where one coincidence
     /// between a probe and a learnt difference would recur at every step.
     jumps: RhoJumps,
+    /// When built in `wsum` mode (`C ≥ 3` certified seed orbits), the
+    /// `Aut`-folded signed coefficient-box table reused by every descent.
+    pub wsum: Option<OrbitWsumTable>,
 }
 
 impl LogDatabase {
@@ -2098,6 +2920,9 @@ pub fn solve_logs(
     fb: &OrbitFactorBase,
     opts: &OrbitIcOptions,
 ) -> (LogDatabase, LogsReport) {
+    if opts.wsum {
+        return solve_logs_wsum(c, fb, opts);
+    }
     let begin = Instant::now();
     let mut rep = LogsReport {
         orbits: fb.len(),
@@ -2167,8 +2992,200 @@ pub fn solve_logs(
         large,
         peel,
         jumps,
+        wsum: None,
     };
     (db, rep)
+}
+
+/// Build an [`OrbitWsumTable`] over `fb`'s `C ≥ 3` independent orbits,
+/// collect any missing inhomogeneous probe relations via batched affine
+/// `r`-adding walks, solve the `C × C` linear system over `F_r`, and
+/// certify every solved column via `[x_c]G == P_c`.
+fn solve_logs_wsum(
+    c: &OrbitCurve,
+    fb: &OrbitFactorBase,
+    opts: &OrbitIcOptions,
+) -> (LogDatabase, LogsReport) {
+    let begin = Instant::now();
+    let cols = fb.len();
+    let mut rep = LogsReport {
+        orbits: cols,
+        points: cols * c.automorphism_order(),
+        factor_base_draws: fb.draws,
+        ..LogsReport::default()
+    };
+    let jumps = RhoJumps::new_chained(c, opts.seed ^ 0x7773_756d_6a6d_7073);
+    rep.probe_ops += jumps.ops;
+    let bound = if opts.wsum_bound != 0 {
+        opts.wsum_bound
+    } else {
+        auto_wsum_bound(
+            c.r,
+            c.automorphism_order(),
+            cols,
+            opts.wsum_targets.max(1),
+            opts.wsum_free,
+        )
+    };
+    let Ok((table, mut rref)) = OrbitWsumTable::build(c, fb, bound, opts.wsum_free) else {
+        rep.seconds = begin.elapsed().as_secs_f64();
+        return (
+            LogDatabase {
+                base: fb.restrict(c, &[]),
+                logs: Vec::new(),
+                large: FxMap::default(),
+                peel: Vec::new(),
+                jumps,
+                wsum: None,
+            },
+            rep,
+        );
+    };
+    rep.oracle_ops += table.build_ops;
+    rep.wsum_bound = bound;
+    rep.wsum_entries = table.entries;
+    rep.combined_relations = table.free_relations.len() as u64;
+    rep.collection_rounds = 1;
+
+    let m_orbits = (c.r as f64) / (c.automorphism_order().max(1) as f64);
+    let p_hit = (-((table.entries as f64) / m_orbits).exp_m1()).max(1e-12);
+    let needed = cols.saturating_sub(rref.rank).max(1) as f64;
+    let lanes = (((needed / p_hit) / 16.0).round() as usize).clamp(1, WSUM_MAX_LANES);
+
+    let mut rng = StdRng::seed_from_u64(opts.seed ^ 0x7773_756d_7072_6f62);
+    let mut pts = [FastPoint::INFINITY; WSUM_MAX_LANES];
+    let mut addends = [FastPoint::INFINITY; WSUM_MAX_LANES];
+    let mut scalars = [0u64; WSUM_MAX_LANES];
+    let mut saved = [FastPoint::INFINITY; WSUM_MAX_LANES];
+    let mut lap = [1u64; WSUM_MAX_LANES];
+    let mut since = [0u64; WSUM_MAX_LANES];
+    let mut den = [0u64; WSUM_MAX_LANES];
+    let mut scratch = [0u64; WSUM_MAX_LANES];
+
+    if rref.rank < cols && !rref.inconsistent && rep.oracle_ops + rep.probe_ops < opts.max_ops {
+        // Seed `lanes` distinct `[a_k]G` probes by adding pairs of already-built jump points.
+        for k in 0..lanes {
+            let i = (k * 5 + 1) & 31;
+            let j = (k * 11 + 8 + (rng.gen::<usize>() & 3)) & 31;
+            let j = if i == j { (j + 1) & 31 } else { j };
+            pts[k] = jumps.jumps[i].0;
+            addends[k] = jumps.jumps[j].0;
+            scalars[k] = add_r(jumps.jumps[i].1, jumps.jumps[j].1, c.r);
+        }
+        batch_add_in_place(
+            c,
+            &mut pts[..lanes],
+            &addends[..lanes],
+            &mut den[..lanes],
+            &mut scratch[..lanes],
+        );
+        rep.probe_ops += lanes as u64;
+        for k in 0..lanes {
+            saved[k] = pts[k];
+            rep.trials += 1;
+            if let Some(coeffs) = table.probe_point(c, pts[k], &mut rep.oracle_ops) {
+                if rref.insert(coeffs, scalars[k]) {
+                    rep.full_relations += 1;
+                    if rref.rank == cols {
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    'walk: while rref.rank < cols
+        && !rref.inconsistent
+        && rep.oracle_ops + rep.probe_ops < opts.max_ops
+    {
+        for k in 0..lanes {
+            let (jp, u) = jumps.jumps[partition(pts[k].x)];
+            addends[k] = jp;
+            scalars[k] = add_r(scalars[k], u, c.r);
+        }
+        batch_add_in_place(
+            c,
+            &mut pts[..lanes],
+            &addends[..lanes],
+            &mut den[..lanes],
+            &mut scratch[..lanes],
+        );
+        rep.probe_ops += lanes as u64;
+        for k in 0..lanes {
+            rep.trials += 1;
+            if let Some(coeffs) = table.probe_point(c, pts[k], &mut rep.oracle_ops) {
+                if rref.insert(coeffs, scalars[k]) {
+                    rep.full_relations += 1;
+                    if rref.rank == cols {
+                        break 'walk;
+                    }
+                }
+            }
+            since[k] += 1;
+            if pts[k] == saved[k] || pts[k].infinity {
+                let next_a = rng.gen_range(1..c.r);
+                pts[k] = c.mul_g(next_a);
+                scalars[k] = next_a;
+                rep.probe_ops += scalar_mul_ops(c.r);
+                rep.walk_restarts += 1;
+                saved[k] = pts[k];
+                lap[k] = 1;
+                since[k] = 0;
+            } else if since[k] == lap[k] {
+                saved[k] = pts[k];
+                lap[k] *= 2;
+                since[k] = 0;
+            }
+        }
+    }
+
+    rep.relations = rref.rank;
+    let mut keep = Vec::new();
+    let mut logs = Vec::new();
+    let mut uncertified = 0usize;
+    if let Some(sol) = rref.solution() {
+        for col in 0..cols {
+            let x = sol[col];
+            if c.mul_g(x) == fb.reps[col] {
+                keep.push(col);
+                logs.push(x);
+            } else {
+                uncertified += 1;
+            }
+        }
+    }
+    let all_certified = keep.len() == cols && uncertified == 0 && !rref.inconsistent;
+    rep.certified_columns = if all_certified { keep.len() } else { 0 };
+    rep.uncertified_columns = uncertified;
+    rep.system = TwoTermStats {
+        components: usize::from(cols > 0),
+        determined_components: usize::from(all_certified),
+        inconsistent_components: usize::from(rref.inconsistent),
+        rank: rref.rank,
+        solved_columns: rep.certified_columns,
+    };
+    let (base, logs, peel, wsum_opt) = if all_certified {
+        let peel: Vec<(FastPoint, u64)> = keep
+            .iter()
+            .zip(&logs)
+            .map(|(&o, &x)| (fb.reps[o], x))
+            .collect();
+        (fb.restrict(c, &keep), logs, peel, Some(table))
+    } else {
+        (fb.restrict(c, &[]), Vec::new(), Vec::new(), None)
+    };
+    rep.seconds = begin.elapsed().as_secs_f64();
+    (
+        LogDatabase {
+            base,
+            logs,
+            large: FxMap::default(),
+            peel,
+            jumps,
+            wsum: wsum_opt,
+        },
+        rep,
+    )
 }
 
 /// Recover `log_G Q` from one probe `R = [a]G + Q` that the database can
@@ -2238,6 +3255,9 @@ fn descend_with(
     opts: &OrbitIcOptions,
     mut prepared: Option<&mut Vec<(FastPoint, u64)>>,
 ) -> DescentReport {
+    if let Some(ref table) = db.wsum {
+        return descend_wsum(c, db, table, q, opts, prepared);
+    }
     let begin = Instant::now();
     let (f, r) = (&c.fast.f, c.r);
     let peel = &db.peel;
@@ -2322,6 +3342,176 @@ fn descend_with(
     rep
 }
 
+/// Recover `log_G Q` against a certified [`OrbitWsumTable`] (and any
+/// learnt orbits in `db.large`) using batched affine `r`-adding walks.
+fn descend_wsum(
+    c: &OrbitCurve,
+    db: &LogDatabase,
+    table: &OrbitWsumTable,
+    q: FastPoint,
+    opts: &OrbitIcOptions,
+    mut prepared: Option<&mut Vec<(FastPoint, u64)>>,
+) -> DescentReport {
+    let begin = Instant::now();
+    let r = c.r;
+    let mut rep = DescentReport::default();
+    if db.logs.len() != table.cols {
+        rep.seconds = begin.elapsed().as_secs_f64();
+        return rep;
+    }
+    if q.infinity {
+        rep.recovered = Some(0);
+        rep.verified = true;
+        rep.seconds = begin.elapsed().as_secs_f64();
+        return rep;
+    }
+    let eval_log = |coeffs: &[u64; WSUM_MAX_ORBITS]| -> u64 {
+        let mut acc = 0u64;
+        for col in 0..table.cols {
+            acc = add_r(acc, mul_r(coeffs[col], db.logs[col], r), r);
+        }
+        acc
+    };
+
+    // Direct zero-step check on Q itself.
+    rep.trials += 1;
+    if let Some(coeffs) = table.probe_point(c, q, &mut rep.oracle_ops) {
+        let d = eval_log(&coeffs);
+        if c.mul_g(d) == q {
+            rep.recovered = Some(d);
+            rep.verified = true;
+            rep.seconds = begin.elapsed().as_secs_f64();
+            return rep;
+        }
+    }
+
+    let m_orbits = (r as f64) / (c.automorphism_order().max(1) as f64);
+    let known = (table.entries + db.large.len() as u64) as f64;
+    let p_hit = (-(known / m_orbits).exp_m1()).max(1e-12);
+    let lanes = (((1.0 / p_hit) / 16.0).round() as usize).clamp(1, WSUM_MAX_LANES);
+
+    let mut rng = StdRng::seed_from_u64(opts.seed ^ 0x7773_756d_6465_7363);
+    let start_off = rng.gen::<usize>() & 31;
+    let mut pts = [q; WSUM_MAX_LANES];
+    let mut addends = [FastPoint::INFINITY; WSUM_MAX_LANES];
+    let mut scalars = [0u64; WSUM_MAX_LANES];
+    let mut saved = [FastPoint::INFINITY; WSUM_MAX_LANES];
+    let mut lap = [1u64; WSUM_MAX_LANES];
+    let mut since = [0u64; WSUM_MAX_LANES];
+    let mut den = [0u64; WSUM_MAX_LANES];
+    let mut scratch = [0u64; WSUM_MAX_LANES];
+
+    // Seed `lanes` distinct `[a_k]G + Q` walks with one batched addition against `db.jumps`.
+    for k in 0..lanes {
+        let idx = (start_off + k) & 31;
+        addends[k] = db.jumps.jumps[idx].0;
+        scalars[k] = db.jumps.jumps[idx].1;
+    }
+    batch_add_in_place(
+        c,
+        &mut pts[..lanes],
+        &addends[..lanes],
+        &mut den[..lanes],
+        &mut scratch[..lanes],
+    );
+    rep.probe_ops += lanes as u64;
+
+    for k in 0..lanes {
+        saved[k] = pts[k];
+        rep.trials += 1;
+        if let Some(buf) = prepared.as_mut() {
+            if !pts[k].infinity && buf.len() < LEARN_CAP {
+                buf.push((pts[k], scalars[k]));
+            }
+        }
+        if let Some(coeffs) = table.probe_point(c, pts[k], &mut rep.oracle_ops) {
+            let d = sub_r(eval_log(&coeffs), scalars[k], r);
+            if c.mul_g(d) == q {
+                rep.recovered = Some(d);
+                rep.verified = true;
+                rep.seconds = begin.elapsed().as_secs_f64();
+                return rep;
+            }
+        }
+        if !db.large.is_empty() && !pts[k].infinity {
+            if let Some(&(p_lp, log_lp)) = db.large.get(&c.canonical_x(pts[k].x)) {
+                if let Some(g) = c.image_eig(p_lp, pts[k]) {
+                    let d = sub_r(mul_r(g, log_lp, r), scalars[k], r);
+                    if c.mul_g(d) == q {
+                        rep.recovered = Some(d);
+                        rep.verified = true;
+                        rep.through_large_prime = true;
+                        rep.seconds = begin.elapsed().as_secs_f64();
+                        return rep;
+                    }
+                }
+            }
+        }
+    }
+
+    'walk: while rep.oracle_ops + rep.probe_ops < opts.max_descent_ops {
+        for k in 0..lanes {
+            let (jp, u) = db.jumps.jumps[partition(pts[k].x)];
+            addends[k] = jp;
+            scalars[k] = add_r(scalars[k], u, r);
+        }
+        batch_add_in_place(
+            c,
+            &mut pts[..lanes],
+            &addends[..lanes],
+            &mut den[..lanes],
+            &mut scratch[..lanes],
+        );
+        rep.probe_ops += lanes as u64;
+        for k in 0..lanes {
+            rep.trials += 1;
+            if let Some(buf) = prepared.as_mut() {
+                if !pts[k].infinity && buf.len() < LEARN_CAP {
+                    buf.push((pts[k], scalars[k]));
+                }
+            }
+            if let Some(coeffs) = table.probe_point(c, pts[k], &mut rep.oracle_ops) {
+                let d = sub_r(eval_log(&coeffs), scalars[k], r);
+                if c.mul_g(d) == q {
+                    rep.recovered = Some(d);
+                    rep.verified = true;
+                    break 'walk;
+                }
+            }
+            if !db.large.is_empty() && !pts[k].infinity {
+                if let Some(&(p_lp, log_lp)) = db.large.get(&c.canonical_x(pts[k].x)) {
+                    if let Some(g) = c.image_eig(p_lp, pts[k]) {
+                        let d = sub_r(mul_r(g, log_lp, r), scalars[k], r);
+                        if c.mul_g(d) == q {
+                            rep.recovered = Some(d);
+                            rep.verified = true;
+                            rep.through_large_prime = true;
+                            break 'walk;
+                        }
+                    }
+                }
+            }
+            since[k] += 1;
+            if pts[k] == saved[k] || pts[k].infinity {
+                let next_a = rng.gen_range(1..r);
+                pts[k] = c.fast.add(c.mul_g(next_a), q);
+                scalars[k] = next_a;
+                rep.probe_ops += scalar_mul_ops(r) + 1;
+                rep.restarts += 1;
+                saved[k] = pts[k];
+                lap[k] = 1;
+                since[k] = 0;
+            } else if since[k] == lap[k] {
+                saved[k] = pts[k];
+                lap[k] *= 2;
+                since[k] = 0;
+            }
+        }
+    }
+    rep.seconds = begin.elapsed().as_secs_f64();
+    rep
+}
+
 /// A 32-way r-adding walk's partition index for an abscissa.
 #[inline]
 fn partition(x: u64) -> usize {
@@ -2354,6 +3544,12 @@ impl RhoJumps {
             .collect();
         let ops = jumps.len() as u64 * scalar_mul_ops(c.r);
         Self { jumps, ops }
+    }
+
+    /// Jump table for chained multi-orbit `wsum` probe walks (same construction
+    /// as [`Self::new`], distinct seed mixing at the call site).
+    pub fn new_chained(c: &OrbitCurve, seed: u64) -> Self {
+        Self::new(c, seed)
     }
 }
 
@@ -2566,6 +3762,14 @@ pub fn batch_orbits(c: &OrbitCurve, opts: &OrbitIcOptions, targets: usize) -> us
 pub fn base_orbits(c: &OrbitCurve, opts: &OrbitIcOptions, targets: usize) -> usize {
     match opts.sizing() {
         BaseSizing::Explicit => opts.orbits,
+        BaseSizing::Wsum => {
+            let c_orb = if opts.orbits == 0 {
+                WSUM_DEFAULT_ORBITS
+            } else {
+                opts.orbits
+            };
+            c_orb.clamp(WSUM_MIN_ORBITS, WSUM_MAX_ORBITS)
+        }
         BaseSizing::Batch => batch_orbits(c, opts, targets),
         BaseSizing::Width => auto_orbits(c, opts.width),
     }
@@ -3071,6 +4275,7 @@ mod tests {
             large: FxMap::default(),
             peel: db.peel.clone(),
             jumps: db.jumps.clone(),
+            wsum: None,
         };
         let targets = inst.targets(16, 4);
         let run = |db: &LogDatabase| {
