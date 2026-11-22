@@ -85,3 +85,44 @@ Per size means over six seeds (`summary_ABA2.txt`):
 - The k = 4 pipeline, the char-2 regime, a minimum-weight cycle basis, and any claim about rho or sizes above 2^33 were not touched.
 - Harvester `lp_mean_merge_depth` in the JSON is the mean number of relations composed per row (a different quantity from the eliminator's merge depth).
 - `lp_full_relations` for B counts harvested rows released before the stop; the summarizer's residuals-per-full-row column uses `lp_full_relations` plus 0-LP decompositions for both arms.
+
+# k = 4 (item 5): large primes in `run_k4_la`, paired against the plain run
+
+All numbers [pcc:unverified]. Raw: `k4/paired_a.json` (p = 269, 521), `k4/paired_b.json` (p = 769); summaries `k4/summary_k4.txt`, `k4/extra_k4.txt`; summarizer `summarize_k4_paired.py`. Original scratch copies: `/tmp/claude-0/-home-user-workspace/c8bb5f86-f825-52e5-8fb5-701f80d9a4ff/scratchpad/next/harvester-k4/`.
+
+## What was built
+
+`gaudry_quartic::run_k4_la_opts(p, seed, rho_runs, &K4LaOptions)`; `run_k4_la` is the default-options call (a unit test checks that `la_ops` and `residuals` are identical to the options form with defaults). Small base = `ceil(|F|^0.75)` (`small_exp`; also `small_frac`, `small_base`). Base points with index >= small are large primes: each verified MITM decomposition is kept if it has at most 3 of them (4 = all four large are discarded) and is fed to item 1's `GainForestHarvester` (used in place from `gaudry_cubic`, unchanged). Harvested rows and direct rows go to the same `square_core` + `wiedemann_u64` + `[d]G = Q` check as before. Harvester multiplications are counted in `la_ops` (split into `merge_ops` and `wiedemann_ops`). Example flags: `--arm plain|lp|paired --lp-exp 0.75 --lp-frac f --lp-small s --max-lp 3`. New test `k4_large_prime_arm_recovers_the_planted_logarithm` passes (3 of 3 k4 tests pass).
+
+## Run
+
+`--sizes 269,521,769 --seeds 2 --rho-runs 8 --arm paired`, run under `lead_sweep.py watch` (4 GiB; peak RSS 0.33 and 0.57 GiB; no kills or timeouts; wall 1459 s for 269+521 and 3307 s for 769, two processes at RAYON_NUM_THREADS = 2). Both arms of a (p, seed) share the curve, base, residual stream and the 8 rho runs. All 12 runs recovered the planted log, group-checked. **p = 1033 was not run**: the 769 pair alone took 55 min, so 1033 does not fit in the 90 min budget.
+
+## Result (mean over 6 pairs; paired difference = mean of per-pair lp - plain, +- SE)
+
+| quantity | plain | lp | paired lp - plain |
+|---|---:|---:|---:|
+| **r** (own rho, the registered statistic) | 0.532 +- 0.027 | **0.279 +- 0.032** | -0.254 +- 0.020 (z -13.0) |
+| r (rho pooled over 48 runs, S = 1.320) | 0.524 +- 0.020 | 0.269 +- 0.016 | -0.255 +- 0.027 |
+| LA ops, mod-n mults (merge + Wiedemann) | 1.27e6 | 7.2e5 | -5.6e5 +- 1.6e5 (z -3.6) |
+| unknowns (core) | 236 | 65 | -171 +- 32 |
+| rows fed to the filter | 264 | 66 | -198 +- 37 |
+| row weight (core) | 5.00 | 41.1 | +36 +- 6.8 |
+| residuals | 6 332 | 9 247 | +2 916 +- 771 (z 3.8) |
+| residuals per row fed | 23.8 | 133 | +110 +- 14 |
+| MITM relation-phase group ops | 1.27e9 | 1.91e9 | +6.4e8 +- 2.8e8 (z 2.3) |
+
+Per curve, r plain / r lp: p = 269: 0.413/0.174, 0.544/0.235; p = 521: 0.560/0.322, 0.585/0.273; p = 769: 0.501/0.267, 0.591/0.401.
+
+**Pre-registered report.** r_lp = 0.279 +- 0.032 (N = 6). 0.518 - r_lp = 0.239 = 7.6 SE (own rho) and 15.2 SE with pooled rho. So r falls below 0.518 by more than 2 standard errors, on these three sizes. The registered 0.518 was measured on a different seed set (2 per size at 4 sizes, 16 rho runs); the plain arm here gives 0.532 +- 0.027, consistent with it, and the paired difference is the cleaner comparison.
+
+## What the numbers also say (read before quoting r)
+
+- **r leaves out the relation phase, and the lp arm's relation phase is bigger.** It needs 1.46x the residuals and 1.5x the MITM group ops (z 2.3), because only 0.75-power of the base are unknowns and 4-large-prime decompositions (21-36 % of the verified decompositions, from `lp_histogram` vs `accepted` in `k4/extra_k4.txt`) are thrown away. The relation phase is 1 053-3 700 x rho (plain) and 1 449-5 708 x rho (lp) by this accounting, i.e. thousands of times the linear algebra. So the total cost (relation + LA) is higher in the lp arm; the claim is about the linear-algebra phase only, as r defines it.
+- **The gap closes with p.** r_lp by size: 0.205, 0.298, 0.334 (own rho); plain: 0.479, 0.573, 0.546. The core row weight of the lp arm grows as n^0.22 +- 0.03 (22-24, 36-47, 52-64), and LA ops as n^0.558 +- 0.028 against 0.478 +- 0.022 for plain (the plain figure matches §11.19's 0.479). With three sizes and 6 pairs the exponents are rough, but at 0.56 the lp linear algebra would pass plain's cost on a longer ladder; the 0.5 scaling that gives r_inf is not what the lp arm shows.
+- Cycle structure: all harvested rows came from the sink-attached component (pinned; balanced rows 0 or 1 per run), mean 31-110 relations composed per row (from `mean_cycle_len`), no inconsistent equations, no 3-edges left buffered. This is the same root-to-root combination item 1 found at k = 3, not a shortest cycle. Row weight 41 against 5 is the cost.
+- 0-LP rows are 0-2 per run, so almost every row is harvested.
+
+## Limits
+
+3 sizes, 2 seeds each, 8 rho runs per curve; one small-base rule (|F|^0.75) and one cap (3) were tried; no fraction sweep. No minimum-weight cycle basis. Nothing here is an end-to-end S, a claim about rho at any size, or a deployment extrapolation. The `r_inf = 0.518` it is compared with is a statistic of the plain method's LA at these sizes. No push, PR or remote write was made.
