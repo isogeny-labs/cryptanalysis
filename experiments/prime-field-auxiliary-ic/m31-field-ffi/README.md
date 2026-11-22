@@ -34,3 +34,9 @@ python3 check_multiply.py ./portable.so ./native.so
 ```
 
 The two warm-up rounds precede 24 measured rounds with alternating call order. Each timing covers repeated calls on the same buffers. The check includes exact aliasing, boundary residues, full-width inputs, tails and guard words. Replay Lane.lean in the same Lean environment as Fold.lean to check the arithmetic model.
+
+## Four-lane batch inversion
+
+On ARM64 with NEON, each full 256-word block uses four 64-leaf product trees. A vector lane owns one tree throughout the upward and downward passes. The existing scalar tree handles trailing inputs and portable builds. Both paths use the same tree and root-inversion code. Zero masks are saved before writing output, including for in-place calls.
+
+From the builds above, run `python3 time_inverse.py ./portable.so ./native.so` to reproduce the paired ctypes benchmark. The recorded Apple M4 Pro medians (portable time divided by native time) were 1.84× at 256 words, 2.69× at 4,096 and 2.81× at 65,539. The earlier standalone C-client observations above describe the original scalar inversion implementation. The paired raw observations for this version are in inverse-neon-timings.csv.
