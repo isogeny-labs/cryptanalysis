@@ -19,6 +19,8 @@ and construction gates. [pcc:unverified]
 ## Active items (top = next)
 - [ ] CT201–CT203: complete cold ECDLP source adjudication (matched five-arm rho/BSGS/IC, Williams order, distinct-Q per-block prospective gate; automation, started 2026-11-18, branch research/ct201-complete-single-target-gate-20261118, PR #1766; source CI 44/44 normal and -O at 36807d15; native/PCC blocked) [pcc:unverified]
 
+- [x] Chase Xedni Phase 2 geometric escapes: Cayley-Bacharach 9-point cubic pencils, nodal degree-d>=4 Bezout curves, and L4-check F1 small-height lift selector; all three escapes benchmarked in native Rust (`crates/xedni-phase2`) with Lean 4 obstruction proofs (`experiments/xedni-phase2-20261119/formal/Phase2Obstructions.lean`) and closed against sub-sqrt(p) thresholds (Cursor Cloud, started 2026-11-19, branch cursor/xedni-cb-nodal-escapes-3858, PR #1846) [pcc:unverified]
+
 - [x] Execute preregistered 5-encoding/3-arm auxiliary-IC benchmark panel, implement division-free m=3,4 split-S3 resultant evaluation in `crates/prime-field-auxiliary-ic`, and audit disjoint 3-window CDCL(T) nogood width + CT186 prime-field cost floor; KN-FIND-007 yield conservation confirmed across 5 fresh 31-bit targets, Multiplicative(126) m=3,4 circuit beats same-base direct by 1.32x/1.23x, CDCL(T) slope e=2.00 refutes sub-birthday gate (Cursor, started 2026-11-19, branch cursor/aux-ic-m34-and-cdclt-audit-3858, PR #1845) [pcc:unverified]
 
 - [x] Fix second-pass audit C-F6, C-F7, C-F8, C-F10, C-F11, C-F12 (coordinator check-in forgery, sequence overflow, unverified step sums, walkers_done, ca_bench averaging, walker start-up steps) (Cursor, started 2026-11-18, branch cursor/coord-bench-audit-fixes-a95f, PR #1774)
