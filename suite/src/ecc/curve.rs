@@ -286,9 +286,27 @@ impl CurveParams {
         if matches!(point, Point::Infinity) || !self.is_on_curve(point) {
             return false;
         }
+        // Standard secp256k1 and NIST P-256 have prime curve order `#E(F_p) = n`
+        // (cofactor `h == 1`), so by Lagrange's theorem every non-infinity point
+        // on the canonical curve satisfies `[n]P = O`.  Verify exact canonical
+        // curve parameters before skipping the redundant `[n]P` check so custom
+        // or tampered `CurveParams` still run the full subgroup check.
+        if self.h == 1 {
+            if self.name == "secp256k1" {
+                let canon = Self::secp256k1();
+                if self.p == canon.p && self.a == canon.a && self.b == canon.b && self.n == canon.n
+                {
+                    return true;
+                }
+            } else if self.name == "P-256" {
+                let canon = Self::p256();
+                if self.p == canon.p && self.a == canon.a && self.b == canon.b && self.n == canon.n
+                {
+                    return true;
+                }
+            }
+        }
 
-        // Cofactor-one curves get the same subgroup check; it is cheap compared
-        // with accepting invalid-curve or small-subgroup public inputs.
         matches!(point.scalar_mul(&self.n, &self.a_fe()), Point::Infinity)
     }
 }
