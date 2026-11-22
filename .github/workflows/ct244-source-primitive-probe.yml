@@ -9,6 +9,8 @@ on:
       - 'experiments/chained-transfer-public-target/norm-point-reuse-01/ct304_execution_receipt_gate.py'
       - 'experiments/chained-transfer-public-target/norm-point-reuse-01/ct310_bounded_native_pair_producer.py'
       - 'experiments/chained-transfer-public-target/norm-point-reuse-01/ct310_source_mock_full_pair_smoke.py'
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/ct311_directional_scoped_pricer.py'
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT311_DIRECTIONAL_PRIMITIVE_FRONTIER_PROTOCOL.md'
       - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT310_BOUNDED_FULL_PAIR_PRODUCER_PROTOCOL.md'
       - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT304_RAW_CAPTURE_CUSTODY_PROTOCOL.md'
       - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT309_NATIVE_WALL_NESTING_PROTOCOL.md'
@@ -261,6 +263,32 @@ jobs:
           assert v['pcc']=='unverified'
           print('CT310_FULL_MOCK_HANDSHAKE_PASS: four benign Python subprocesses; 695 source rows with 694 fabricated; no native math')
           PY
+      - name: CT311 complete-source directional C169 C13 D scoped pricer (mock clocks ONLY)
+        shell: bash
+        run: |
+          set -euo pipefail
+          script=experiments/chained-transfer-public-target/norm-point-reuse-01/ct311_directional_scoped_pricer.py
+          fixture=experiments/chained-transfer-public-target/evidence/fixed-chain-norm-point-native-01/literal-selected-vectors.json
+          python3 -W error -m py_compile "$script"
+          python3 -W error -S "$script" --self-test --fixture "$fixture" > /tmp/ct311-normal.json
+          python3 -W error -O -S "$script" --self-test --fixture "$fixture" > /tmp/ct311-opt.json
+          cmp /tmp/ct311-normal.json /tmp/ct311-opt.json
+          python3 -S - <<'PY'
+          import json
+          r=json.load(open('/tmp/ct311-normal.json',encoding='utf8'))
+          assert r["frozen_selected_source_rows"]==48
+          assert r["synthetic_primitive_timing_rows"]==144
+          assert r["positive_directional_controls"]==2
+          assert r["negative_directional_controls"]==2
+          assert r["negative_sector_reversal_controls"]==1
+          assert r["original_native_model_executions"]==0
+          assert r["physical_primitive_timings"]==0 and r["pcc"]=="unverified"
+          print("CT311_DIRECTIONAL_SYNTHETIC_FRONTIER_PASS; 48 real source rows, 144 fabricated clocks; no native solve")
+          PY
+          if python3 -S "$script" --fixture "$fixture" > /tmp/ct311-missing.out 2> /tmp/ct311-missing.err; then
+            echo 'ERROR: CT311 production accepted without complete CT310 capture' >&2; exit 1
+          fi
+          grep -F 'production requires --capture-dir' /tmp/ct311-missing.err
       - name: Create separate guarded Rust package and parse with rustfmt
         shell: bash
         run: |
