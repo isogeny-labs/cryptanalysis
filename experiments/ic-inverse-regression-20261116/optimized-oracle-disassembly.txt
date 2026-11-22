@@ -1,0 +1,49 @@
+0000000000119ae0 <_RNvXNtNtNtCseRqN0d7Y2SB_19cryptanalysis_suite13cryptanalysis12ic_framework10batch_mitmNtB2_21BinaryBatchMitmOracleINtNtB4_6stages19DecompositionOracleNtNtB6_11ic_boundary11BinaryGroupE9decompose>:
+  119ae0:      	pushq	%rbx
+  119ae1:      	subq	$0x40, %rsp
+  119ae5:      	movq	%rdi, %rbx
+  119ae8:      	cmpq	$0x0, (%rsi)
+  119aec:      	je	0x119b55 <_RNvXNtNtNtCseRqN0d7Y2SB_19cryptanalysis_suite13cryptanalysis12ic_framework10batch_mitmNtB2_21BinaryBatchMitmOracleINtNtB4_6stages19DecompositionOracleNtNtB6_11ic_boundary11BinaryGroupE9decompose+0x75>
+  119aee:      	movq	0x50(%rsp), %rax
+  119af3:      	movq	0x50(%rdx), %rdx
+  119af7:      	movq	%rax, (%rsp)
+  119afb:      	leaq	0x28(%rsp), %rdi
+  119b00:      	callq	0x11fc40 <_RINvMsj_NtNtCseRqN0d7Y2SB_19cryptanalysis_suite13cryptanalysis11ic_boundaryNtB6_9PairTable5probeNtB6_11BinaryGroupEBa_>
+  119b05:      	cmpb	$0x0, 0x28(%rsp)
+  119b0a:      	je	0x119b55 <_RNvXNtNtNtCseRqN0d7Y2SB_19cryptanalysis_suite13cryptanalysis12ic_framework10batch_mitmNtB2_21BinaryBatchMitmOracleINtNtB4_6stages19DecompositionOracleNtNtB6_11ic_boundary11BinaryGroupE9decompose+0x75>
+  119b0c:      	movups	0x30(%rsp), %xmm0
+  119b11:      	movaps	%xmm0, 0x10(%rsp)
+  119b16:      	callq	*0x87eb4(%rip)          # 0x1a19d0 <writev+0x1a19d0>
+  119b1c:      	movl	$0x10, %edi
+  119b21:      	movl	$0x8, %esi
+  119b26:      	callq	*0x87eac(%rip)          # 0x1a19d8 <writev+0x1a19d8>
+  119b2c:      	testq	%rax, %rax
+  119b2f:      	je	0x119b65 <_RNvXNtNtNtCseRqN0d7Y2SB_19cryptanalysis_suite13cryptanalysis12ic_framework10batch_mitmNtB2_21BinaryBatchMitmOracleINtNtB4_6stages19DecompositionOracleNtNtB6_11ic_boundary11BinaryGroupE9decompose+0x85>
+  119b31:      	movaps	0x10(%rsp), %xmm0
+  119b36:      	movups	%xmm0, (%rax)
+  119b39:      	movq	$0x2, (%rbx)
+  119b40:      	movq	%rax, 0x8(%rbx)
+  119b44:      	movq	$0x2, 0x10(%rbx)
+  119b4c:      	movq	%rbx, %rax
+  119b4f:      	addq	$0x40, %rsp
+  119b53:      	popq	%rbx
+  119b54:      	retq
+  119b55:      	movq	$-0x1, (%rbx)
+  119b5c:      	movq	%rbx, %rax
+  119b5f:      	addq	$0x40, %rsp
+  119b63:      	popq	%rbx
+  119b64:      	retq
+  119b65:      	movl	$0x8, %edi
+  119b6a:      	movl	$0x10, %esi
+  119b6f:      	callq	*0x87f4b(%rip)          # 0x1a1ac0 <writev+0x1a1ac0>
+  119b75:      	int3
+  119b76:      	int3
+  119b77:      	int3
+  119b78:      	int3
+  119b79:      	int3
+  119b7a:      	int3
+  119b7b:      	int3
+  119b7c:      	int3
+  119b7d:      	int3
+  119b7e:      	int3
+  119b7f:      	int3

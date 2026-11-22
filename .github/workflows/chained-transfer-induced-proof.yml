@@ -8,6 +8,7 @@ on:
       - 'tools/lean/**'
       - 'tools/pcc/**'
       - 'pcc/claims/**'
+      - 'pcc/keyring.json'
       - '.github/workflows/chained-transfer-induced-proof.yml'
   push:
     branches: [main]
@@ -17,6 +18,7 @@ on:
       - 'tools/lean/**'
       - 'tools/pcc/**'
       - 'pcc/claims/**'
+      - 'pcc/keyring.json'
       - '.github/workflows/chained-transfer-induced-proof.yml'
   workflow_dispatch:
 
@@ -26,13 +28,14 @@ permissions:
 jobs:
   induced-transfer-proof:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
           path: cryptanalysis
+          fetch-depth: 0
           sparse-checkout-cone-mode: false
           sparse-checkout: |
             experiments/chained-transfer-public-target/original-induced-transfer-01
@@ -41,6 +44,95 @@ jobs:
             experiments/chained-transfer-public-target/upstream-commit.txt
             tools/lean
             tools/pcc
+            tools/ci/quartic_certificates.json
+            src/curve.c
+            docs/known-label-next-leads-20261028/Algebra.lean
+            docs/known-label-pair-index-20261029/PairIndex.lean
+            reports/ci-xedni-proof-elaboration-repair-20261030
+            experiments/hecke-432-formal-ci-20261025
+            experiments/ic-s3-direct-coefficients-20261115/AuditS3.lean
+            experiments/ic-s3-direct-coefficients-20261115/S3Direct.lean
+            experiments/ic-s3-direct-coefficients-20261115/lakefile.toml
+            experiments/ic-s3-direct-coefficients-20261115/lean-toolchain
+            experiments/xedni-auxiliary-mod2-independence-20261116/AuxiliaryMod2Independence.lean
+            experiments/xedni-auxiliary-mod2-independence-20261116/lake-manifest.json
+            experiments/xedni-auxiliary-mod2-independence-20261116/lakefile.toml
+            experiments/xedni-auxiliary-mod2-independence-20261116/lean-toolchain
+            experiments/xedni-rank-one-coordinate-control-20261115/RankOneCoordinate.lean
+            experiments/xedni-rank-one-coordinate-control-20261115/lake-manifest.json
+            experiments/xedni-rank-one-coordinate-control-20261115/lakefile.toml
+            experiments/xedni-rank-one-coordinate-control-20261115/lean-toolchain
+            experiments/xedni-selected-lift-height-panel-20261116/SelectedLiftHeightBound.lean
+            experiments/xedni-selected-lift-height-panel-20261116/lake-manifest.json
+            experiments/xedni-selected-lift-height-panel-20261116/lakefile.toml
+            experiments/xedni-selected-lift-height-panel-20261116/lean-toolchain
+            experiments/xedni-adaptive-collision-trace-20261116/formal
+            experiments/xedni-adaptive-oracle-coupling-20261116/formal
+            experiments/xedni-adaptive-program-invariant-20261116/formal
+            experiments/xedni-adaptive-stage-sum-20261116/formal
+            experiments/xedni-adaptive-total-bound-20261116/formal
+            experiments/xedni-adaptive-zero-test-bound-20261116/formal
+            experiments/xedni-basis-coercivity-20261115/formal
+            experiments/xedni-bounded-witness-20261030/formal
+            experiments/xedni-bucket-fiber-partition-20261116/formal
+            experiments/xedni-coefficient-family-control-20261115/formal
+            experiments/xedni-coefficient-holdout-20261115/formal
+            experiments/xedni-coefficient-optimization-20261115/formal
+            experiments/xedni-common-preimage-lift-20261116/formal
+            experiments/xedni-constructive-doubling-lift-20261116/formal
+            experiments/xedni-crt-curve-choice-20261115/formal
+            experiments/xedni-dependent-lift-bound-20261115/formal
+            experiments/xedni-direct-relation-control-20261115/formal
+            experiments/xedni-elliptic-torsion-kernel-20261116/formal
+            experiments/xedni-euclidean-packing-20261116/formal
+            experiments/xedni-finite-family-coverage-20261115/formal
+            experiments/xedni-finite-height-packing-20261116/formal
+            experiments/xedni-finite-kernel-packing-20261116/formal
+            experiments/xedni-first-collision-ledger-20261116/formal
+            experiments/xedni-first-hit-dominance-20261115/formal
+            experiments/xedni-first-hit-partition-20261116/formal
+            experiments/xedni-fixed-curve-admission-20261115/formal
+            experiments/xedni-full-hit-bound-20261116/formal
+            experiments/xedni-group-fiber-bound-20261116/formal
+            experiments/xedni-group-trace-invariant-20261116/formal
+            experiments/xedni-height-growth-obstruction-20261116/formal
+            experiments/xedni-height-pigeonhole-20261115/formal
+            experiments/xedni-integral-chord-filter-20261115/formal
+            experiments/xedni-isomorphic-family-admission-20261115/formal
+            experiments/xedni-label-conditioned-collision-20261116/formal
+            experiments/xedni-lattice-obstruction-20261028/formal
+            experiments/xedni-leading-defect-selector-20261116/formal
+            experiments/xedni-lift-height-search-20261116/formal
+            experiments/xedni-metric-packing-20261115/formal
+            experiments/xedni-nonisomorphic-expansion-20261115/formal
+            experiments/xedni-nonisomorphic-family-screen-20261115/formal
+            experiments/xedni-nonisomorphic-holdout-20261115/formal
+            experiments/xedni-nonisomorphic-relation-20261115/formal
+            experiments/xedni-point-lift-shift-20261115/formal
+            experiments/xedni-precommitted-vector-lift-20261116/formal
+            experiments/xedni-prefix-pattern-bridge-20261116/formal
+            experiments/xedni-public-first-large-holdout-20261115/formal
+            experiments/xedni-random-label-coupling-20261116/formal
+            experiments/xedni-random-label-oracle-step-20261116/formal
+            experiments/xedni-rank-one-cover-20261115/formal
+            experiments/xedni-rank-sample-bridge-20261115/formal
+            experiments/xedni-sampled-witness-20261115/formal
+            experiments/xedni-selection-law-20261115/formal
+            experiments/xedni-stage-hit-equivalence-20261116/formal
+            experiments/xedni-symbolic-collision-bound-20261116/formal
+            experiments/xedni-tangent-admission-20261116/formal
+            experiments/xedni-target-diversity-holdout-20261115/formal
+            experiments/xedni-torsion-section-obstruction-20261116/formal
+            experiments/xedni-transcript-determinism-20261116/formal
+            experiments/xedni-transcript-fiber-equivalence-20261116/formal
+            experiments/xedni-two-image-precommit-20261116/formal
+            experiments/xedni-typed-prefix-program-20261116/formal
+            experiments/xedni-vector-dependent-rank-one-lift-20261115/formal
+            experiments/xedni-vector-shift-lift-search-20261116/formal
+            experiments/glv-table-rule-confirm-20261022
+            experiments/glv-cap-confirm-20261106/formal/no-worse-20261108
+            experiments/prime-field-auxiliary-ic/rust-validation/field-fibers-20261115/formal
+            research/xedni_lift_optimizer_20261101/lean
             pcc/keyring.json
             pcc/claims
             .github/workflows/chained-transfer-induced-proof.yml
@@ -59,6 +151,33 @@ jobs:
           sparse-checkout-cone-mode: false
           sparse-checkout: |
             tools/lean
+      - name: Check out the sealed consumer independently
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          ref: 41e35d8c701484a6ca5406ecbf7bb83278be6073
+          persist-credentials: false
+          path: frozen/cryptanalysis
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            experiments/chained-transfer-public-target/original-induced-transfer-01
+            experiments/chained-transfer-public-target/ci_induced_transfer
+            experiments/chained-transfer-public-target/upstream-commit.txt
+            .github/workflows/chained-transfer-induced-proof.yml
+            experiments/chained-transfer-public-target/evidence/original-induced-full-transfer-proof-01
+            tools/lean
+            tools/pcc
+            pcc/keyring.json
+            pcc/claims
+      - name: Check out the sealed producer independently
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          repository: isogeny-labs/crypto
+          ref: 3d49af7f3d0a28e76b79e4825c9d2324e85853d2
+          persist-credentials: false
+          path: frozen/crypto
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            tools/lean
       - name: Install both pinned original Lean toolchains
         run: |
           set -euo pipefail
@@ -66,13 +185,19 @@ jobs:
           sh "$RUNNER_TEMP/elan-init.sh" -y --no-modify-path --default-toolchain leanprover/lean4:v4.35.0
           "$HOME/.elan/bin/elan" toolchain install leanprover/lean4:v4.34.1
           echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
-      - name: Replay all21 declarations and allnine exact bindings
+      - name: Test replay immutability and refusal controls
+        working-directory: cryptanalysis
+        run: python3 -m unittest tools/lean/test_replay_induced_transfer.py
+      - name: Replay frozen sources and separately check current verifier
         run: |
           set -euo pipefail
-          timeout 1500 bash cryptanalysis/experiments/chained-transfer-public-target/ci_induced_transfer/check-01.sh crypto "$RUNNER_TEMP/induced-full-transfer-proof"
+          python3 cryptanalysis/tools/lean/replay_induced_transfer.py \
+            --repo cryptanalysis --producer crypto \
+            --frozen-consumer frozen/cryptanalysis --frozen-producer frozen/crypto \
+            --out "$RUNNER_TEMP/induced-full-transfer-proof"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
-          name: induced-full-transfer-${{ github.event.pull_request.head.sha || github.sha }}
+          name: induced-full-transfer-dual-replay-${{ github.event.pull_request.head.sha || github.sha }}
           path: ${{ runner.temp }}/induced-full-transfer-proof
           if-no-files-found: ignore

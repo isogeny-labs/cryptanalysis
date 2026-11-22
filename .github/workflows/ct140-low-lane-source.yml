@@ -1,0 +1,41 @@
+name: CT140 low-lane native source and corrected unit guards
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/ct140-low-lane-source.yml'
+      - 'experiments/chained-transfer-public-target/ct130-prime31/ct139_headroom.py'
+      - 'experiments/chained-transfer-public-target/ct130-prime31/ct140_generate.py'
+      - 'experiments/chained-transfer-public-target/ct130-prime31/ct140_verify.py'
+      - 'experiments/chained-transfer-public-target/ct130-prime31/CT140_LOCAL_EXECUTION.md'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  syntax-guard:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Checkout exact head, not a synthetic merge
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Generate original-source-hash-pinned variants and compile syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd experiments/chained-transfer-public-target/ct130-prime31
+          python3 -m py_compile ct140_generate.py ct140_verify.py ct139_headroom.py
+          python3 ct140_generate.py /tmp/ct140_generated
+          for width in 2 4 8 16; do
+            g++ -std=c++17 -O3 -DNDEBUG -I. -fsyntax-only "/tmp/ct140_generated/ct140_width${width}.cpp"
+          done
+          python3 - <<'PY'
+          from pathlib import Path
+          src=Path('ct139_headroom.py').read_text()
+          old="'extra_headroom_ms_per_target':(so[0]-ta[0])/len(targets)}"
+          new="'extra_headroom_ms_per_target':(so[0]-ta[0])/len(targets)/1e6}"
+          if old in src or src.count(new)!=1:
+              raise SystemExit('CT139 per-width millisecond unit conversion regressed')
+          print('all CT140 source/compile and unit guards passed; no scientific timing run')
+          PY

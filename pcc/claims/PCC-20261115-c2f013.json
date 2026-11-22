@@ -1,0 +1,21 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-15T07:55:55Z",
+ "id": "PCC-20261115-c2f013",
+ "kind": "statement",
+ "producer": {
+  "commit": "be49786f93a401c1a88f8f2524798cc3b9cf0782",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "recompute",
+   "path": "experiments/prime-field-auxiliary-ic/rust-validation/producer-checks.json",
+   "sha256": "722a1082cccd8dd3d19ce651ee7600e9853ec738a1d9cf97b0698d7cfa46ab97"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Unsigned producer correctness and build diagnostics only. No independent execution proof, qualified timing, full 61-bit search recovery, or performance promotion.",
+ "statement": "The producer implementation-check report lists 13 passing native Rust checks on stable and 13 on Rust 1.78, two C arithmetic parity checks, three auxiliary/direct/rho CLI checks, and 26 archived Python regression checks; it contains no new performance result."
+}

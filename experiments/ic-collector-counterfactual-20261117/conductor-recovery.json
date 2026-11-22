@@ -1,0 +1,84 @@
+{
+  "schema": "conductor-approved-recovery/v1",
+  "status": "operational_restore_check_passed",
+  "observed_utc": "2026-11-17T15:26:08Z",
+  "route": {
+    "bucket": "conductor-backups-590183823895-us-west-2",
+    "region": "us-west-2",
+    "prefix": "conductor",
+    "auth_method": "profile",
+    "profile": "default"
+  },
+  "uses_preserved": true,
+  "database_settings_preserved": true,
+  "database_settings": {
+    "archive_wal": true,
+    "archive_timeout_seconds": 60,
+    "base_backup_every_hours": 24,
+    "keep_base_backups": 7,
+    "seal": true
+  },
+  "supported_storage_probe": {
+    "ok": true,
+    "credentials": "profile default",
+    "location": "s3://conductor-backups-590183823895-us-west-2/conductor",
+    "steps": [
+      {
+        "name": "credentials",
+        "ok": true,
+        "ms": 0
+      },
+      {
+        "name": "put",
+        "ok": true,
+        "ms": 191
+      },
+      {
+        "name": "get",
+        "ok": true,
+        "ms": 49
+      },
+      {
+        "name": "list",
+        "ok": true,
+        "ms": 46
+      },
+      {
+        "name": "delete",
+        "ok": true,
+        "ms": 128
+      }
+    ],
+    "error": ""
+  },
+  "restore": {
+    "status": "pass",
+    "observed_utc": "2026-11-17T15:23:37Z",
+    "backup_id": "20261117T144809Z-a0bbce04",
+    "system_id": "7695100223817188411",
+    "sealed": true,
+    "backup_manifest_and_wal_verified": true,
+    "recovery_finished_naturally": true,
+    "prior_identities": 8319,
+    "restored_identities": 8322,
+    "all_prior_identities_present": true,
+    "restored_identity_sha256": "80bd8e17b737d2446987c1972486c84def33afc51002b48e2529246ba0d983b1",
+    "initial_premature_check_retained": true,
+    "scope": "Fresh sealed backup authenticated/decrypted, file+WAL manifest verified, isolated natural recovery completed and prior identity inclusion checked. Live WAL backlog remains a separate ongoing operation."
+  },
+  "verification_copy_cleanup": {
+    "status": "stopped_verification_copy_removed",
+    "path": "/Users/adamburan/.conductor-restore-verify-20261117",
+    "backup_id": "20261117T144809Z-a0bbce04",
+    "backup_manifest_sha256": "a5104ad7f79ef74e3a25db8dd7a561a0540707b81d27a2fe40f8931149005b85",
+    "pg_controldata_sha256": "1fcb7c71d23fc5cbbdd198ea4a05c0f146431dca3242e9fa0042efca20aac9fd",
+    "source_restore_receipt_sha256": "84f2504a4680df6e5b33a1a85fcbe85b793b1fe200307e440d946add27817b02",
+    "scope": "Only the temporary isolated verification cluster created by this repair; source database and standard WAL archive lifecycle unchanged"
+  },
+  "current_upload_failing": false,
+  "live_wal_backlog_allocated_bytes": 36641443840,
+  "backlog_scope": "Standard PostgreSQL archival continues; this receipt proves the fresh backup restore, not a completed backlog or one-minute recovery point objective",
+  "private_rollback_preserved": true,
+  "initial_failed_verifier_preserved": true,
+  "scope": "Operational producer evidence; no scientific performance conclusion or signed verification standing."
+}

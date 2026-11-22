@@ -1,0 +1,46 @@
+name: CT185 counterbalanced order-dependent nuisance falsification (synthetic only)
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/ct185-order-locked-null.yml'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/test_ct185_order_locked_null.py'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/CT185_*'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  immutable-v2-scorer-negative-control:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout proposed falsifier
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Pin original CT182 v2 scoring implementation
+        uses: actions/checkout@v4
+        with:
+          repository: isogeny-labs/cryptanalysis
+          ref: 92d0c646a757046f8f10a015ae17ce0ed9d0fd2c
+          path: ct182-pinned
+          persist-credentials: false
+          sparse-checkout: |
+            experiments/chained-transfer-public-target/primitive-pricing-01
+      - name: Validate original source identities
+        run: |
+          set -euo pipefail
+          test "$(git -C ct182-pinned rev-parse HEAD)" = 92d0c646a757046f8f10a015ae17ce0ed9d0fd2c
+          test "$(git -C ct182-pinned hash-object "experiments/chained-transfer-public-target/primitive-pricing-01/ct182_v2_panel_adjudicator.py")" = da70198f0a4b4b673c50f103f02be75da292d115
+          test "$(git hash-object "experiments/chained-transfer-public-target/evidence/fixed-chain-norm-point-native-01/literal-selected-vectors.json")" = 9ac741668dd1ffa9632ff0d58e6f4dd9f2dd18c3
+          echo 'Original v2 scorer and public fixture pinned [pcc:unverified]'
+      - name: Run actual CT182 scoring function on synthetic treatment-null nuisance
+        env:
+          CT182_SOURCE_ROOT: ${{ github.workspace }}/ct182-pinned/experiments/chained-transfer-public-target/primitive-pricing-01
+        run: |
+          set -euo pipefail
+          root=experiments/chained-transfer-public-target/primitive-pricing-01
+          python3 -S -m py_compile "$root/test_ct185_order_locked_null.py"
+          python3 -S -m unittest discover -s "$root" -p 'test_ct185_order_locked_null.py' -v
+          python3 -O -S -m unittest discover -s "$root" -p 'test_ct185_order_locked_null.py' -v
+          echo 'CT185: synthetic falsification only, NO native Jacobian timings or speedup'

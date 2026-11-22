@@ -1,0 +1,17 @@
+{
+  "schema": "xedni-height-growth-obstruction-protocol-v1",
+  "curve": "E/Q: y^2=x^3-x-2",
+  "generator": "P=(2,2)",
+  "selected_pairs": "(P,nP)",
+  "n_panel": [1, 2, 3, 5, 8, 13, 21, 34],
+  "K_law": "all integer radii from 0 through n inclusive, retained for every n",
+  "height_law": "Sage Point.height default normalised Neron-Tate height; display-precision diagnostic only",
+  "falsifiers": [
+    "rank or torsion or generator assertion differs from the fixed-curve control",
+    "a coefficient-box collision occurs with 2K<n",
+    "the finite packing inequality holds at positive K<n or fails at K=n",
+    "exact rational-point sum cardinality differs from integer scalar cardinality",
+    "the first collision radius differs from ceil(n/2)"
+  ],
+  "status_law": "retain noncertifying and zero-radius cells"
+}

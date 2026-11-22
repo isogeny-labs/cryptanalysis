@@ -1,0 +1,15 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-17T01:46:58Z",
+ "id": "PCC-20261117-1bc12f",
+ "kind": "statement",
+ "producer": {
+  "commit": "fa95ae69c9b57cb139931c693ee557c18fbd16f4",
+  "model": "",
+  "session": "ic-inverse-regression-20261116"
+ },
+ "proofs": [],
+ "schema": "pcc.claim/v1",
+ "scope": "Frozen/current/SIMD inverse profile, exact development point and archived dimension10/531-column base",
+ "statement": "Frozen profile20261117-013021-5b0f completed6IC+2rho Callgrind captures on fixed N27 development fixture0. Existing Python replayed8answers and1024states. Header/footer/exclusive sums/annotation totals agree. Whole-guest Ir: anchor111367568 twice; current113105531/113105545; inverse108121148/108121144. Anchor batch oracle calls PairTable.probe directly; current and inverse add55163 calls to generic decompose_mitm, with1933760 exclusive Ir absent in anchor. PairTable.probe callee work is identical3597613 inclusive Ir. Ordinary pairwise wrapper path rises only34511 inclusive Ir (19892502 to19927013), with inverse/point formula callees unchanged between anchor/current. Thus lost fixed-m2 dispatch specialization is the dominant observed instruction regression; exact contribution to native wall timing remains unestablished until a focused patch/control panel. Instrumented Ir is not native wall or hardware-retired instructions. Unsigned exploratory data, no promotion."
+}

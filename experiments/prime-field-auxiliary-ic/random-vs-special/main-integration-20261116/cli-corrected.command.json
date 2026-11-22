@@ -1,0 +1,18 @@
+{
+  "source_commit": "79249df63174ba387e423634e9b2e815803591b2",
+  "argv": [
+    "/home/agent/.cargo/bin/cargo",
+    "+stable",
+    "test",
+    "--locked",
+    "--manifest-path",
+    "suite/Cargo.toml",
+    "--lib",
+    "cli::tools::ic::auxiliary::tests"
+  ],
+  "explicit_environment": {
+    "CARGO_BUILD_JOBS": "2"
+  },
+  "exit_code": 101,
+  "scope": "producer development correctness check; no benchmark"
+}

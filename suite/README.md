@@ -132,6 +132,8 @@ $ ca-ic run --degree 11 --curve-a 1 --known-log 53 --solver enumerate --json
 $ ca-ic compare --degree 7 --curve-a 1 --samples 3 --holdout 2 --json
 $ ca-ic fixed --params docs/ic/params/k0n9-fixed.json --dir runs/k0n9 --attempts 256 --json
 $ ca-ic prime --curve secp256k1 --bits 28 --targets 64  # j = 0: |Aut| = 6 orbits, a batch vs rho
+$ ca-ic auxiliary --input public.json --max-queries 1000000 --json # bounded auxiliary-map IC
+$ ca-ic auxiliary --input public.json --without-auxiliary --json # same-base direct IC control
 $ ca-ic boundary --quick                            # every IC variant vs the generic floor and a counted rho
 $ ca-ic swap --cells 13:3 --pairs 16                # is a solver priced the same on R and R - P + Q?
 $ ca-ic bench --sweep docs/ic/sweeps/solver-engines.json   # plug-in pipeline configurations, compared
@@ -139,6 +141,18 @@ $ ca-ic descent --families K --cells 11:6:2        # degree a Weil-descent syste
 $ ca-ic corpus --degree 15 --dimension 5 --dir corpus/   # Semaev S4 corpus (Magma, DIMACS+XOR, CNF, ANF)
 $ ca-ic rho --koblitz-degrees 23,31 --runs 4       # the counted Pollard-rho references, paired
 ```
+
+`ca-ic auxiliary` uses the native
+[prime-field auxiliary-map IC crate](../crates/prime-field-auxiliary-ic/README.md)
+for `p=2^31-1`, `p=2^61-1`, and small Mersenne correctness fixtures. It accepts
+public parameters and a complete map fiber, collects distinct signed
+relations, and returns a replayable recovery certificate or an explicit budget
+exhaustion. `--without-auxiliary` selects direct batched-subtraction IC;
+`--rho` adds the repository C batched negation-map reference on the same target.
+`--replay-relations` is a separately labeled certificate check with null attack
+timing. Run measurements under the repository checkpoint, GPU-host, and fresh
+target-panel rules; this integration establishes no qualified speedup.
+[pcc:unverified]
 
 `ca-icx` runs index calculus across every standardized curve: the curve
 catalog (`curve_catalog`), the engine that classifies each curve into an
@@ -202,6 +216,7 @@ the targets and the arithmetic they stand on.
 | `pollard_collab` | the collaborative rho: indexed work units, self-verifying DP check-ins, CRDT merge, mailbox / TCP gossip / cairn transports ([design](docs/POLLARD_COLLAB_DESIGN.md)) |
 | `pohlig_hellman`, `cheon_attack`, `ecm`, `shor`, `quantum_estimator` | Pohlig-Hellman, Cheon's strong-DH attack, ECM factoring, Shor's order finding, quantum resource estimates |
 | `prime_orbit_index_calculus`, `ec_index_calculus_curves` | index calculus on prime-field curves by type — generic, `j = 0` (secp256k1) and `j = 1728` — with factor bases of whole automorphism orbits, certified scaled-down curves, exact logarithms, descent, and a batched rho baseline |
+| `prime_auxiliary_index_calculus` | native Mersenne-prime IC with centered auxiliary-map circuits, direct IC controls, batched target walks, signed graph elimination, and public recovery certificates |
 | `ec_index_calculus`, `ec_index_calculus_j0`, `residual_walk`, `gaudry_cubic`, `semaev_*`, `symmetrized_semaev`, `diem_descent`, `descent_*`, `degree_reduction*`, `coordinate_*` | Semaev index calculus on prime-field curves and `E(F_{p^3})`, residual walks, Diem descent, and the summation-polynomial machinery they share |
 | `koblitz_*`, `binary_semaev*`, `wdsat_oracle`, `polynomial_reuse`, `algebra_cache` | Frobenius-invariant factor bases on binary Koblitz curves, the F4 / SAT / WDSat decomposition oracles, relation collection and the sparse solve |
 | `ghs_descent`, `ghs_full_attack`, `binary_isogeny`, `ec_trapdoor`, `hyperelliptic_index_calculus`, `coleman_integration` | Weil descent (GHS / Hess) from `E(F_{2^n})` to a hyperelliptic Jacobian and index calculus there |

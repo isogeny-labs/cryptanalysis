@@ -1,0 +1,141 @@
+{
+  "standing": "unsigned exact whole-guest exclusive Ir differences; distinct binaries; no native or cache-miss inference",
+  "rows": [
+    {
+      "method": "current",
+      "coefficient_ir": 109294361,
+      "compact_ir": 113478716,
+      "difference": 4184355,
+      "largest_positive_exclusive_deltas": [
+        {
+          "function": "<alloc::vec::Vec<core::option::Option<u64>> as alloc::vec::spec_extend::SpecExtend<core::option::Option<u64>, core::iter::adapters::map::Map<core::array::iter::IntoIter<u64, 4>, core::option::Option<u64>::Some>>>::spec_extend",
+          "ir_delta": 3925152
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::ic_boundary::PairWitnessMap>::get",
+          "ir_delta": 2426388
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::ic_boundary::PairTable>::build_binary_batch::{closure#3}",
+          "ir_delta": 855943
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::ic_boundary::PairTable>::build_binary_batch",
+          "ir_delta": 156670
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::koblitz_fast::simd256::Simd256>::add_full",
+          "ir_delta": 82824
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::koblitz_fast::simd256::Simd256>::add_cached",
+          "ir_delta": 12420
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::koblitz_fast::simd256::Simd256>::new",
+          "ir_delta": 3728
+        },
+        {
+          "function": "_int_malloc",
+          "ir_delta": 1132
+        },
+        {
+          "function": "<alloc::collections::btree::map::BTreeMap<alloc::string::String, u64> as core::convert::From<[(alloc::string::String, u64); 11]>>::from",
+          "ir_delta": 1043
+        },
+        {
+          "function": "core::slice::memchr::memrchr",
+          "ir_delta": 763
+        },
+        {
+          "function": "<std::io::stdio::StdoutLock as std::io::Write>::write_all",
+          "ir_delta": 564
+        },
+        {
+          "function": "<alloc::collections::btree::map::BTreeMap<alloc::string::String, serde_json::value::Value>>::insert",
+          "ir_delta": 554
+        },
+        {
+          "function": "__memcmp_avx2_movbe",
+          "ir_delta": 554
+        },
+        {
+          "function": "serde_json::ser::format_escaped_str::<&mut <serde_json::value::Value as core::fmt::Display>::fmt::WriterFormatter, serde_json::ser::CompactFormatter>",
+          "ir_delta": 464
+        },
+        {
+          "function": "_int_free",
+          "ir_delta": 383
+        }
+      ]
+    },
+    {
+      "method": "inverse",
+      "coefficient_ir": 104310134,
+      "compact_ir": 108516630,
+      "difference": 4206496,
+      "largest_positive_exclusive_deltas": [
+        {
+          "function": "<alloc::vec::Vec<core::option::Option<u64>> as alloc::vec::spec_extend::SpecExtend<core::option::Option<u64>, core::iter::adapters::map::Map<core::array::iter::IntoIter<u64, 4>, core::option::Option<u64>::Some>>>::spec_extend",
+          "ir_delta": 3925152
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::ic_boundary::PairWitnessMap>::get",
+          "ir_delta": 2426388
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::ic_boundary::PairTable>::build_binary_batch::{closure#3}",
+          "ir_delta": 855943
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::ic_boundary::PairTable>::build_binary_batch",
+          "ir_delta": 156670
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::koblitz_fast::simd256::Simd256>::add_full",
+          "ir_delta": 82824
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::koblitz_fast::simd256::Simd256>::add_cached",
+          "ir_delta": 12420
+        },
+        {
+          "function": "<cryptanalysis_suite::cryptanalysis::koblitz_fast::simd256::Simd256>::new",
+          "ir_delta": 3728
+        },
+        {
+          "function": "<alloc::collections::btree::map::BTreeMap<alloc::string::String, u64> as core::convert::From<[(alloc::string::String, u64); 11]>>::from",
+          "ir_delta": 1043
+        },
+        {
+          "function": "core::slice::memchr::memrchr",
+          "ir_delta": 755
+        },
+        {
+          "function": "__memcmp_avx2_movbe",
+          "ir_delta": 617
+        },
+        {
+          "function": "<std::io::stdio::StdoutLock as std::io::Write>::write_all",
+          "ir_delta": 564
+        },
+        {
+          "function": "<alloc::collections::btree::map::BTreeMap<alloc::string::String, serde_json::value::Value>>::insert",
+          "ir_delta": 554
+        },
+        {
+          "function": "serde_json::ser::format_escaped_str::<&mut <serde_json::value::Value as core::fmt::Display>::fmt::WriterFormatter, serde_json::ser::CompactFormatter>",
+          "ir_delta": 464
+        },
+        {
+          "function": "<<serde_json::value::Value as core::fmt::Display>::fmt::WriterFormatter as std::io::Write>::write_all",
+          "ir_delta": 312
+        },
+        {
+          "function": "_int_free",
+          "ir_delta": 302
+        }
+      ]
+    }
+  ]
+}

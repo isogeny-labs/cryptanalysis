@@ -1,0 +1,33 @@
+name: Complete cold-cost software checks
+on:
+  pull_request:
+    paths:
+      - 'experiments/transfer-cold-cost-20261115/**'
+      - 'experiments/chained-transfer-public-target/ct130-prime31/cold_cost_audit.py'
+      - 'experiments/chained-transfer-public-target/ct130-prime31/test_cold_cost_audit.py'
+      - '.github/workflows/transfer-cold-cost-software.yml'
+permissions:
+  contents: read
+jobs:
+  software:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            experiments/transfer-cold-cost-20261115
+            experiments/chained-transfer-public-target/ct130-prime31
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install pytest
+      - name: Synthetic software checks, no curve or timing study
+        run: |
+          python -m pytest -q experiments/chained-transfer-public-target/ct130-prime31/test_cold_cost_audit.py experiments/transfer-cold-cost-20261115/test_instrument_toy.py
+      - name: Generate guarded native sources and compile without executing
+        run: |
+          python experiments/transfer-cold-cost-20261115/instrument_toy.py "$RUNNER_TEMP/cold-phase"
+          for width in 4 16; do
+            g++ -std=c++17 -O3 -DNDEBUG -I experiments/chained-transfer-public-target/ct130-prime31 -c "$RUNNER_TEMP/cold-phase/cold_phase_width${width}.cpp" -o "$RUNNER_TEMP/cold-phase/width${width}.o"
+          done

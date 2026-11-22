@@ -1,0 +1,61 @@
+name: CT136 matched batched rho cold DLP and independent audit
+on:
+  pull_request:
+    paths:
+      - 'experiments/chained-transfer-public-target/ct130-prime31/ct136_*'
+      - 'experiments/chained-transfer-public-target/ct130-prime31/CT136_*'
+      - '.github/workflows/ct136-batch-rho-cold.yml'
+  workflow_dispatch:
+jobs:
+  prospective-holdout:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Check unchanged CT135 code and compile CT136
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p ct136-artifacts
+          echo "commit=$(git rev-parse HEAD)" | tee ct136-artifacts/host.txt
+          uname -a | tee -a ct136-artifacts/host.txt
+          g++ --version | head -1 | tee -a ct136-artifacts/host.txt
+          grep -m1 'model name' /proc/cpuinfo | tee -a ct136-artifacts/host.txt
+          cat /sys/fs/cgroup/cpu.max 2>/dev/null | tee -a ct136-artifacts/host.txt || true
+          test "$(git hash-object experiments/chained-transfer-public-target/ct130-prime31/ct135_native.cpp)" = 4d94fc9163e86689a09c6d6685dd017c5c4c9698
+          g++ -O3 -std=c++17 -Wall -Wextra -Werror \
+            experiments/chained-transfer-public-target/ct130-prime31/ct136_native.cpp \
+            -o ct136-artifacts/ct136_native
+          sha256sum experiments/chained-transfer-public-target/ct130-prime31/ct136_{native.cpp,verify.py} > ct136-artifacts/SOURCE_SHA256
+      - name: Run four fixed panels, count complete cold solves
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd ct136-artifacts
+          for seed in 20261230 20261231 20261232 20261233; do
+            /usr/bin/time -f "seed=$seed wall=%e maxrss_kb=%M" \
+              -o "$seed.time" ./ct136_native 64 "$seed" > "$seed.csv"
+          done
+          sha256sum 2026123*.csv > RAW_SHA256
+      - name: Independent Python and optimized Python evidence audits
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -S experiments/chained-transfer-public-target/ct130-prime31/ct136_verify.py \
+            ct136-artifacts/2026123{0,1,2,3}.csv > ct136-artifacts/audit.json
+          python3 -O -S experiments/chained-transfer-public-target/ct130-prime31/ct136_verify.py \
+            ct136-artifacts/2026123{0,1,2,3}.csv > ct136-artifacts/audit-optimized.json
+          cmp ct136-artifacts/audit.json ct136-artifacts/audit-optimized.json
+          cat ct136-artifacts/audit.json
+      - name: Preserve all raw evidence even after a failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ct136-batched-cold-matched-prospective
+          path: ct136-artifacts/
+          retention-days: 30

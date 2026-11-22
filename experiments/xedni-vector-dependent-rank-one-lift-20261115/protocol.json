@@ -1,0 +1,15 @@
+{
+  "schema": "xedni-vector-dependent-rank-one-lift-protocol-v1",
+  "question": "Can every public relation from the frozen selected 13-vector family be realized by a deterministic rank-one rational lift, and what information must be known before construction?",
+  "parent_public_relation_result_sha256": "b6c37896ae64c113c92190d411218db97c6008131af6f0bde31c16ae61e4c6a2",
+  "selected_family_sha256": "82b340802ae37e8aaa3b1b0c2774911c27de88ef0e7d99e54fd9378b53f92894",
+  "adaptive_inverse_lean_source_sha256": "7e553b80159c0f2408e58a7498cce59de8f972145c1c788210ff52f31c9b58b8",
+  "field_panel": [47,101,191,211,251,281,347,349],
+  "public_input": "For each admitted pair R1=Q-t1G, R2=Q-t2G and each selected vector (a,b), first test aR1+bR2=O with public group operations; retain all failed tests in the parent cost ledger",
+  "construction": "Only after a public relation, compute T=b^{-1}R1 in the prime-order subgroup; choose centered integer lifts (x,y) of T; set B=y^2-x^3+x and E/Q:y^2=x^3-x+B; form A=[b]T and C=[-a]T as rational points",
+  "verification": "Check E nonsingular over Q, good reduction to y^2=x^3-x-2 over F_p, reductions A=R1 and C=R2, rational relation [a]A+[b]C=O, and public scalar replay",
+  "event_cap": 6136,
+  "cost_boundary": "Charge all 371592 parent public vector tests across 30008 ordered queries; for each actual public hit count one modular inverse, one public scalar multiplication, one curve construction, two rational scalar multiplications, one rational relation test, two reduction checks, and one scalar replay. Record failures and exceptions as event rows. No candidate curve search is performed.",
+  "falsifiers": ["a public relation has no valid generated rational lift", "a constructed curve has bad reduction", "a rational relation does not reduce to the saved public pair", "construction can be run before the public relation without equivalent relation work"],
+  "claim_boundary": "Constructive public-first rational realization for this exact finite panel; the procedure consumes a detected public relation and is not an independent relation finder"
+}

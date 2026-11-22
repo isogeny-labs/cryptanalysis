@@ -1,9 +1,11 @@
 # Fixed-parameter index calculus
 
 `ic fixed` runs a persistent CPU workflow on explicit K_0 parameters, including
-the ECC2K-130 curve over GF(2^131). It uses the existing Python arbitrary-width
-normal-basis arithmetic and Semaev engine. The Rust symbolic implementation's
-degree-63 limit still applies to the older `run` and `workflow` commands.
+the ECC2K-130 curve over GF(2^131). Its exact ECC2K-130 preflight is native Rust;
+the durable campaign stages use the existing Python arbitrary-width normal-basis
+arithmetic and Semaev engine behind the Rust CLI. The Rust symbolic
+implementation's degree-63 limit still applies to the older `run` and
+`workflow` commands.
 
 The fixed workflow supports selection, resumable pair-table construction,
 target-independent relation collection, factor-base logarithms, and target
@@ -18,13 +20,26 @@ Build the CLI, then initialize the exact public ECC2K-130 profile:
 ```sh
 cargo build --release --bin ca-ic
 target/release/ca-ic fixed --params docs/ic/params/ecc2k130-fixed.json \
+  --dir runs/ecc2k130-fixed --stage preflight --json
+target/release/ca-ic fixed --params docs/ic/params/ecc2k130-fixed.json \
   --dir runs/ecc2k130-fixed --stage select --json
 ```
 
-This validates the polynomial, its explicit image in the normal basis, the
-generator, target subgroup membership, and the selected factor base. The profile
-uses the public polynomial-basis coordinates and basis image already present in
-the upstream [`ecc2k130/codegen/gen.py`](https://github.com/aburan28/crypto/blob/main/ecc2k130/codegen/gen.py) and [`ecc2k130/generated/eccF131.h`](https://github.com/aburan28/crypto/blob/main/ecc2k130/generated/eccF131.h).
+`preflight` does not invoke Python or create campaign state. It constructs the
+exact binary curve from the published polynomial, checks the point count,
+prime subgroup, generator, and target, derives the Frobenius
+eigenvalue, reconstructs the polynomial/ONB conversion, and materializes the
+same signed Frobenius-orbit factor base used by the durable workflow. The
+acceptance check requires exactly 14 orbit columns and 3,668 signed points.
+
+`select` initializes the persistent campaign through the arbitrary-width Python
+engine. Every persistent-stage report for the exact checked-in profile embeds
+the native report as `rust_native_preflight`, so a run cannot begin after the
+two implementations disagree. The profile uses the public polynomial-basis
+coordinates and basis image already present in the upstream
+[`ecc2k130/codegen/gen.py`](https://github.com/aburan28/crypto/blob/main/ecc2k130/codegen/gen.py)
+and
+[`ecc2k130/generated/eccF131.h`](https://github.com/aburan28/crypto/blob/main/ecc2k130/generated/eccF131.h).
 
 Build a bounded number of new pair candidates and save the cursor:
 
@@ -57,6 +72,32 @@ containing the requested target directly. `all` attempts both stages. `--attempt
 is the maximum **additional** attempts per collection stream or target in the
 current invocation. Attempts, including failures and timeouts, are retained.
 Changing budgets does not invalidate the campaign.
+
+Use `--stage status --json` with the same parameters and directory to check
+input and checkpoint status without collecting relations. `base_point` is
+`known` after validating the subgroup generator. A missing or null `generator`
+returns an error with `base_point: "missing"`.
+
+For each target, `scalar_known` is true after checking a saved scalar or the
+optional `known_log` field on that target against `Q = kP`, or after confirming
+a candidate below. `scalar_source` is `checkpoint` for a saved result,
+`provided` for a matching `known_log`, and `null` when the scalar is unknown.
+Omit `known_log` or set it to `null` for a target specified only by coordinates.
+A `known_log` that fails the check is an input error. The supplied value is a
+status annotation. The status report omits scalar values.
+
+`in_base_subgroup` answers whether some scalar could generate the target from
+the validated generator. An on-curve target outside that subgroup returns an
+input error with `in_base_subgroup: false` for its target ID.
+
+To check a particular scalar against a target, add `"candidate_log": "..."`
+to that target alongside `id`, `x`, and `y`. Use a decimal or hexadecimal
+integer in the range from zero through subgroup order minus one. Status
+reports `candidate_residual`, the point `Q - [candidate_log]P`. If
+`is_identity` is true, the candidate generates `Q` and `scalar_source` is
+`candidate` when no checkpoint or `known_log` already supplies the answer.
+A nonidentity residual gives the difference in `type-ii-onb` coordinates
+and rules out that candidate. Omit `candidate_log` for the subgroup check alone.
 
 For bounded Semaev SAT queries, use `--solver sat --pair-budget 0` and select an
 interpreter with `--python /path/to/python`. It needs `python-sat` and
@@ -129,7 +170,8 @@ nonzero subgroup targets. This is a functional fixed-parameter profile, with
 an extremely low-yield base. The implementation reports this counting bound and
 preserves incomplete runs. Practical completion at degree 131 has not been
 established. A wider or differently structured base still needs measured yield
-and affordable decomposition.
+and affordable decomposition. The exact remaining obligation is tracked in the
+[ECC2K-130 relation-yield problem record](../../../problems/ecc2k130-index-calculus-relation-yield.md).
 
 ## Evidence and accounting
 

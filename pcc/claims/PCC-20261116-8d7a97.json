@@ -1,0 +1,21 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-16T00:26:10Z",
+ "id": "PCC-20261116-8d7a97",
+ "kind": "statement",
+ "producer": {
+  "commit": "76a941c2658ac9520150f227a550478186c871d7",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "recompute",
+   "path": "experiments/prime-field-auxiliary-ic/random-vs-special/evidence/comparison-validator.json",
+   "sha256": "f923139647ed9c69f0bc5ff19ee2993321568d8aa6eb929c66030445bfc55740"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Source-bound implementation and local development tests; separate toolchain and CLI scopes, no fresh benchmark or signed independent replay.",
+ "statement": "Source 5e3a4202 implements three IC comparison arms: special auxiliary maps, direct search on exactly the special base, and ordinary random equal-column subgroup bases. Fixed-prefix relation-yield mode processes matching public walks without early recovery; full solve mode retains graph/certificate recovery. Stable and Rust 1.78 core suites each pass 25 checks including a doctest, and six targeted CLI checks plus strict lint/format/docs controls pass on the pinned source. The 61-bit random control clears the Hasse-certified cofactor rather than relying on rare subgroup rejection. Source 76a941c2 adds a hosted CLI comparison job without removing prior checks; hosted results are not yet established. The snapshot remains unchanged. This is unsigned development correctness, not an observed random-versus-auxiliary timing advantage."
+}

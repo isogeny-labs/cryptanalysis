@@ -137,6 +137,7 @@ pub mod ec_index_calculus;
 pub mod ec_index_calculus_curves;
 pub mod ec_index_calculus_j0;
 pub mod ec_trapdoor;
+pub mod ecc2k130_index_calculus;
 pub mod ecdlp_variants;
 pub mod ecdsa_audit;
 pub mod ecm;
@@ -230,6 +231,8 @@ pub mod pq_wiedemann;
 pub mod pq_xl;
 pub mod preprocessing_rho;
 pub mod prime_orbit_index_calculus;
+/// Native auxiliary-map IC over Mersenne prime fields, with checked recovery.
+pub use prime_field_auxiliary_ic as prime_auxiliary_index_calculus;
 pub mod quantum_estimator;
 pub mod quasi_subfield;
 pub mod research_bench;

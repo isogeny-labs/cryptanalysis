@@ -1,0 +1,58 @@
+{
+  "schema": "bsgs.budget-boundary-controls/v1",
+  "id": "BSGS-BUDGET-20261116-01",
+  "at": "2026-11-17T02:49:19.800150+00:00",
+  "canonical_base": "49da9519de12a5606b52582e9e74c017cdc6b0e9",
+  "before_source_sha256": "619d8b8477be42f1b695c34b6481a3e1434c7aa8d7f844df61093cc8174a6c2e",
+  "after_source_sha256": "8efbb87f3370ddb5e52d03f6bf5b7c0538bb18c7e163ea45123f40f5ad11c382",
+  "test_source_sha256": "89fbbd178f0c9a75904a5d038224af239139a1b41327c1f26234b9818073dd09",
+  "before": {
+    "new_overflow_limit_checks_failed": 2,
+    "checks": 2088,
+    "exit": 1
+  },
+  "after": {
+    "checks": 2091,
+    "failed": 0,
+    "finite_exact_budget_positive_control": true,
+    "one_below_budget_negative_control": true,
+    "result_and_stats_unchanged_on_rejection": true
+  },
+  "configured_ctest": {
+    "tests": 21,
+    "failed": 0,
+    "build_tools": false,
+    "werror": true,
+    "cuda": false,
+    "backend": "native ARM64 CPU, including software GPU emulator; no hardware execution"
+  },
+  "headers": "ca_bsgs_params.max_ops and table_size; ca_resolve_interval; ca_htab1_init representability guard",
+  "scope": "Preflight integer comparison only; group arithmetic, batching, counters, ABI and frozen artifacts unchanged. The prior allocation guard already prevents the oversized allocation.",
+  "logs": {
+    "before.log.gz": {
+      "sha256": "413fa63e0f6447cd5d7f242a1295dea4fedbabbd35c3b42965e770979faab6d4",
+      "uncompressed_sha256": "b99f9b6c8d444190c95ddc72bf1c1f091b211c19997d2dae1cfbf1c51219589e"
+    },
+    "after.log.gz": {
+      "sha256": "29e8ad2a8e1022d14884ffac84af7f89cc3bfb5136e01f5e73a4226c9f84237b",
+      "uncompressed_sha256": "5b7e23912daee1413b36c22e4dc8a1f12407bf2d5d5e5052b0a36ce8030ece66"
+    },
+    "ctest.log.gz": {
+      "sha256": "bf5e62404164f75be024f8007a7507f6fd815d9adaa5276f3c8567aeeb15a83d",
+      "uncompressed_sha256": "ffb1870174c9656c6ee463d49333a70ee401d8ba782228913ad2dadc315c5120"
+    },
+    "initial-ctest-missing-fixture.log.gz": {
+      "sha256": "db5a9c1e70d856fd11722f54d8e54e7b5f9ad2e4d78624e0d8420a47e832ff72",
+      "uncompressed_sha256": "ffd11386a82b716b173b693c2025c949d6c6453def3da95255b732a7628af054"
+    },
+    "initial-build-missing-cuda-header.log.gz": {
+      "sha256": "3fb7546c71aa8583dbf5ac1edcfdbd332bcb09a6d8c81356de2c274cd9d37803",
+      "uncompressed_sha256": "6dd6d8e58a3acf93d2995ea284af1613a9d6c2db535c2e89cb7eaaf5c26994b7"
+    },
+    "initial-build-missing-orbit-header.log.gz": {
+      "sha256": "2a836e5129c1c1a4b47f857dfc60498aa721b51f08b4187bcb4072401d7e1eb5",
+      "uncompressed_sha256": "64d59a4b99a66a5ebbc6ff49ccca6461bcd79782c0d69ab3cd493e48854aa0f2"
+    }
+  },
+  "independent_attestation": false
+}

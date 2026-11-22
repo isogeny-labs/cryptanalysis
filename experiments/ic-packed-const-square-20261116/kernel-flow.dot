@@ -1,0 +1,10 @@
+digraph kernel {
+ rankdir=LR; bgcolor="white"; node [shape=box,style="rounded,filled",fillcolor="#edf5f4",fontname="Helvetica",fontsize=12]; edge [fontname="Helvetica",fontsize=10];
+ input [label="Once-checked base"];
+ packed [label="Pairs copied from base\nPack with 32-bit spacing"];
+ squares [label="Two PCLMUL squares\nNo cross terms"];
+ fold [label="Shared constant folds\nSame ordered output"];
+ fallback [label="Public inputs / exceptions / tails\nGuarded general fallback"];
+ input -> packed -> squares -> fold;
+ input -> fallback -> fold;
+}

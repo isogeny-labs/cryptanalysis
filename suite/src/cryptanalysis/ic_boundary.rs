@@ -676,6 +676,9 @@ impl Hasher for MixHasher {
     fn write_u64(&mut self, v: u64) {
         self.0 = (self.0.rotate_left(5) ^ v).wrapping_mul(0x9E37_79B9_7F4A_7C15);
     }
+    fn write_u32(&mut self, v: u32) {
+        self.write_u64(u64::from(v));
+    }
 }
 
 pub(crate) type FastMap<V> = HashMap<u64, V, BuildHasherDefault<MixHasher>>;
@@ -1114,6 +1117,15 @@ pub trait CountedGroup {
     fn neg(&self, p: Self::Elt) -> Self::Elt;
     /// A key that identifies the element (both walks must agree on it).
     fn key(&self, p: &Self::Elt) -> u64;
+    /// The class of `p` in `E / 2E` when the group can read it without
+    /// a group operation (`None` otherwise).  On an ordinary binary curve
+    /// `y² + xy = x³ + ax² + b` a point lies in `2E` exactly when
+    /// `Tr(x) = Tr(a)`, so the class is `Tr(x) + Tr(a)`: a few field
+    /// squarings, no additions.  With cofactor 2 the index-`r` subgroup
+    /// is `2E`, so this is the full coset class of the point.
+    fn coset_parity(&self, _p: &Self::Elt) -> Option<u8> {
+        None
+    }
     /// `[k]P` by double-and-add, counted exactly.
     fn mul(&self, ops: &mut GroupOps, p: Self::Elt, k: u64) -> Self::Elt {
         ops.scalar_mults += 1;
@@ -2930,6 +2942,22 @@ impl CountedGroup for BinaryGroup<'_> {
     fn key(&self, p: &FastPoint) -> u64 {
         p.pack()
     }
+    fn coset_parity(&self, p: &FastPoint) -> Option<u8> {
+        if p.infinity {
+            return Some(0);
+        }
+        let f = &self.0.field;
+        let tr = |v: u64| -> u64 {
+            let (mut acc, mut t) = (v, v);
+            for _ in 1..f.n {
+                t = f.sqr(t);
+                acc ^= t;
+            }
+            debug_assert!(acc == 0 || acc == 1);
+            acc
+        };
+        Some((tr(p.x) ^ tr(self.0.a)) as u8)
+    }
 }
 
 /// Trial-division factorisation of a word.
@@ -3409,8 +3437,100 @@ pub struct TableCost {
 
 /// A table of all pair sums of a base, keyed by the sum's abscissa so
 /// `S` and `−S` share one entry; the probe checks which it found.
+enum PairWitnessMap {
+    Wide(FastMap<(u32, u32)>),
+    Compact(HashMap<u32, u32, BuildHasherDefault<MixHasher>>),
+}
+
+fn compact_pair_storage_shape(degree: u32, points: usize) -> bool {
+    (1..=31).contains(&degree) && points <= usize::from(u16::MAX) + 1
+}
+
+fn compact_pair_storage_eligible(curve: &FastCurve, fb: &FactorBase<FastPoint>) -> bool {
+    compact_pair_storage_shape(curve.field.n, fb.points.len())
+        && fb
+            .points
+            .iter()
+            .all(|p| p.infinity || (p.x >> curve.field.n == 0 && p.y >> curve.field.n == 0))
+}
+
+impl PairWitnessMap {
+    fn new(capacity: usize, compact: bool) -> Self {
+        if compact {
+            Self::Compact(HashMap::with_capacity_and_hasher(
+                capacity,
+                BuildHasherDefault::default(),
+            ))
+        } else {
+            Self::Wide(fast_map(capacity))
+        }
+    }
+
+    fn len(&self) -> usize {
+        match self {
+            Self::Wide(map) => map.len(),
+            Self::Compact(map) => map.len(),
+        }
+    }
+
+    #[inline]
+    fn get(&self, key: u64) -> Option<(u32, u32)> {
+        match self {
+            Self::Wide(map) => map.get(&key).copied(),
+            Self::Compact(map) => {
+                let packed = *map.get(&u32::try_from(key).ok()?)?;
+                Some((packed >> 16, packed & u32::from(u16::MAX)))
+            }
+        }
+    }
+
+    // Select storage once per bounded flush, outside the per-pair loop.
+    fn insert_abscissae(&mut self, xs: &[Option<u64>], indices: &[(u32, u32)]) {
+        match self {
+            Self::Wide(map) => {
+                for (x, &pair) in xs.iter().zip(indices) {
+                    if let Some(x) = x {
+                        map.entry(*x + 1).or_insert(pair);
+                    }
+                }
+            }
+            Self::Compact(map) => {
+                for (x, &(i, j)) in xs.iter().zip(indices) {
+                    if let Some(x) = x {
+                        // Construction checked canonical coordinates, degree <=31,
+                        // and at most 65536 points. No key or index bits are lost.
+                        debug_assert!(*x < u64::from(u32::MAX));
+                        debug_assert!(i <= u32::from(u16::MAX) && j <= u32::from(u16::MAX));
+                        map.entry((*x + 1) as u32).or_insert((i << 16) | j);
+                    }
+                }
+            }
+        }
+    }
+
+    fn same_entries(&self, other: &Self) -> bool {
+        self.len() == other.len()
+            && match self {
+                Self::Wide(map) => map.iter().all(|(&key, &pair)| other.get(key) == Some(pair)),
+                Self::Compact(map) => map.iter().all(|(&key, &pair)| {
+                    other.get(u64::from(key)) == Some((pair >> 16, pair & u32::from(u16::MAX)))
+                }),
+            }
+    }
+
+    fn calibration_probe(&self, key: u64) -> bool {
+        // Measure a real hash-table bucket probe, not the compact lookup's
+        // early rejection of synthetic keys with nonzero upper 32 bits.
+        match self {
+            Self::Wide(map) => map.contains_key(&key),
+            Self::Compact(map) => map.contains_key(&(key as u32)),
+        }
+    }
+}
+
+/// Pair sums keyed by abscissa, retaining the first ordered witness for each key.
 pub struct PairTable {
-    map: FastMap<(u32, u32)>,
+    map: PairWitnessMap,
     /// `full` (every `i ≤ j`) or `negation_folded` (one pair per orbit
     /// under negation).
     pub kind: &'static str,
@@ -3423,13 +3543,28 @@ pub struct PairTable {
     pub vector_pclmul128_pairs: usize,
     pub vector_packed_square_pairs: usize,
     pub vector_const_pairs: usize,
+    /// Pairs prepared directly from immutable base indices, including fallback lanes.
+    pub indexed_prepare_pairs: usize,
 }
 
 impl PairTable {
     /// Exact diagnostic comparison of keys and first witnesses, ignoring
     /// preparation counters, timing and allocation strategy.
     pub fn same_witness_map(&self, other: &Self) -> bool {
-        self.map == other.map
+        self.map.same_entries(&other.map)
+    }
+
+    pub fn uses_compact_storage(&self) -> bool {
+        matches!(self.map, PairWitnessMap::Compact(_))
+    }
+
+    /// Per-bucket key/value payload; excludes hash control bytes and allocation rounding.
+    pub fn witness_entry_payload_bytes(&self) -> usize {
+        if self.uses_compact_storage() {
+            std::mem::size_of::<(u32, u32)>()
+        } else {
+            std::mem::size_of::<(u64, (u32, u32))>()
+        }
     }
 
     /// The identical ordered negation-folded table, using bounded batches of
@@ -3490,6 +3625,31 @@ impl PairTable {
         Self::build_binary_batch(curve, fb, chunk_size, true, true, 3)
     }
 
+    /// Constant arithmetic with the original point-buffer staging, for
+    /// within-binary setup-state comparisons against indexed preparation.
+    pub fn build_negation_folded_binary_vector_const_staged_cached(
+        curve: &FastCurve,
+        fb: &FactorBase<FastPoint>,
+        chunk_size: usize,
+    ) -> Result<Self, &'static str> {
+        Self::build_binary_batch(curve, fb, chunk_size, true, true, 5)
+    }
+
+    /// Indexed arithmetic with observed point-buffer state. Experimental only:
+    /// 0 observes empty buffers, 1 also reserves, 2 also gathers ordered points.
+    /// The shared opaque observation prevents dead-store/allocation elimination.
+    pub fn build_negation_folded_binary_vector_const_setup_control_cached(
+        curve: &FastCurve,
+        fb: &FactorBase<FastPoint>,
+        chunk_size: usize,
+        state: u8,
+    ) -> Result<Self, &'static str> {
+        if state > 2 {
+            return Err("setup control must be0,1 or2");
+        }
+        Self::build_binary_batch(curve, fb, chunk_size, true, true, 6 + state)
+    }
+
     /// Dynamic-reduction ordinary-PCLMUL control for the constant kernel.
     pub fn build_negation_folded_binary_vector_narrow_cached(
         curve: &FastCurve,
@@ -3510,6 +3670,7 @@ impl PairTable {
         if !(1..=65536).contains(&chunk_size) {
             return Err("MITM batch size must be in1..=65536");
         }
+        let const_strategy = matches!(vector_cached, 3 | 5..=8);
         let start = Instant::now();
         let cache = if prefix_cache {
             fb.subspace_basis.as_deref().and_then(|basis| {
@@ -3542,15 +3703,23 @@ impl PairTable {
         };
         let prefix_inverse_bytes = cache.as_ref().map_or(0, |c| c.bytes());
         let mut vector_pairs = 0;
+        let mut indexed_prepare_pairs = 0;
         let map = {
             let groups: Vec<_> = fb
                 .abscissa_list
                 .iter()
                 .map(|x| fb.x_index.get(x).expect("every listed abscissa is indexed"))
                 .collect();
-            let mut map = fast_map(groups.len() * groups.len() + 1);
-            let mut ps = Vec::with_capacity(chunk_size);
-            let mut qs = Vec::with_capacity(chunk_size);
+            let compact = x_only && const_strategy && compact_pair_storage_eligible(curve, fb);
+            let mut map = PairWitnessMap::new(groups.len() * groups.len() + 1, compact);
+            let indexed = compact
+                && matches!(vector_cached, 3 | 6..=8)
+                && cache.is_some()
+                && curve.has_const_vector_field();
+            let reserve_points = !indexed || matches!(vector_cached, 7 | 8);
+            let gather_points = !indexed || vector_cached == 8;
+            let mut ps = Vec::with_capacity(if reserve_points { chunk_size } else { 0 });
+            let mut qs = Vec::with_capacity(if reserve_points { chunk_size } else { 0 });
             let mut indices = Vec::with_capacity(chunk_size);
             let mut sums = Vec::with_capacity(if x_only { 0 } else { chunk_size });
             let mut abscissae = Vec::with_capacity(if x_only { chunk_size } else { 0 });
@@ -3558,22 +3727,53 @@ impl PairTable {
             let mut flush = |ps: &mut Vec<FastPoint>,
                              qs: &mut Vec<FastPoint>,
                              indices: &mut Vec<(u32, u32)>| {
-                if x_only {
+                if matches!(vector_cached, 6..=8) {
+                    std::hint::black_box((&*ps, &*qs));
+                }
+                if indexed {
+                    abscissae.clear();
+                    vector_pairs += curve
+                        .add_indexed_abscissae_vector_const_cached(
+                            &fb.points,
+                            indices,
+                            &mut abscissae,
+                            &mut scratch,
+                            cache
+                                .as_ref()
+                                .expect("indexed preparation requires a prefix cache"),
+                        )
+                        .expect("cache was constructed for this exact field");
+                    indexed_prepare_pairs += indices.len();
+                    map.insert_abscissae(&abscissae, indices);
+                } else if x_only {
                     abscissae.clear();
                     if let Some(cache) = &cache {
                         if vector_cached != 0 {
                             let prepare = if vector_cached == 4 {
                                 FastCurve::add_pairwise_abscissae_vector_narrow_cached
-                            } else if vector_cached == 3 {
+                            } else if const_strategy {
                                 FastCurve::add_pairwise_abscissae_vector_const_cached
                             } else if vector_cached == 2 {
                                 FastCurve::add_pairwise_abscissae_vector_packed_cached
                             } else {
                                 FastCurve::add_pairwise_abscissae_vector_cached
                             };
+                            // `compact` was checked once from the immutable base;
+                            // both point buffers contain only copies from that base.
+                            let result =
+                                if compact && const_strategy && curve.has_const_vector_field() {
+                                    curve.add_pairwise_abscissae_vector_const_validated_cached(
+                                        ps,
+                                        qs,
+                                        &mut abscissae,
+                                        &mut scratch,
+                                        cache,
+                                    )
+                                } else {
+                                    prepare(curve, ps, qs, &mut abscissae, &mut scratch, cache)
+                                };
                             vector_pairs +=
-                                prepare(curve, ps, qs, &mut abscissae, &mut scratch, cache)
-                                    .expect("cache was constructed for this exact field");
+                                result.expect("cache was constructed for this exact field");
                         } else {
                             curve
                                 .add_pairwise_abscissae_cached(
@@ -3588,15 +3788,14 @@ impl PairTable {
                     } else {
                         curve.add_pairwise_abscissae(ps, qs, &mut abscissae, &mut scratch);
                     }
-                    for (x, &pair) in abscissae.iter().zip(indices.iter()) {
-                        if let Some(x) = x {
-                            // Match FastPoint::pack() >> 1: zero is reserved for O.
-                            map.entry(*x + 1).or_insert(pair);
-                        }
-                    }
+                    // Match FastPoint::pack() >> 1: zero is reserved for O.
+                    map.insert_abscissae(&abscissae, indices);
                 } else {
                     sums.clear();
                     curve.add_pairwise(ps, qs, &mut sums, &mut scratch);
+                    let PairWitnessMap::Wide(map) = &mut map else {
+                        unreachable!("compact storage is only selected for x-only preparation");
+                    };
                     for (sum, &pair) in sums.iter().zip(indices.iter()) {
                         if !sum.infinity {
                             map.entry(sum.pack() >> 1).or_insert(pair);
@@ -3611,16 +3810,18 @@ impl PairTable {
                 let i = group[0];
                 for later in groups.iter().skip(ai) {
                     for &j in later.iter() {
-                        ps.push(fb.points[i]);
-                        qs.push(fb.points[j]);
+                        if gather_points {
+                            ps.push(fb.points[i]);
+                            qs.push(fb.points[j]);
+                        }
                         indices.push((i as u32, j as u32));
-                        if ps.len() == chunk_size {
+                        if indices.len() == chunk_size {
                             flush(&mut ps, &mut qs, &mut indices);
                         }
                     }
                 }
             }
-            if !ps.is_empty() {
+            if !indices.is_empty() {
                 flush(&mut ps, &mut qs, &mut indices);
             }
             map
@@ -3644,33 +3845,55 @@ impl PairTable {
             vector_pclmul128_pairs: if vector_pairs != 0
                 && (curve.cached_vector_backend() == "avx2-pclmul128"
                     || vector_cached == 4
-                    || (vector_cached == 3 && curve.has_const_vector_field()))
+                    || (const_strategy && curve.has_const_vector_field()))
             {
                 vector_pairs
             } else {
                 0
             },
-            vector_packed_square_pairs: if vector_cached == 2 && curve.field.n <= 32 {
+            vector_packed_square_pairs: if (vector_cached == 2 && curve.field.n <= 32)
+                || (const_strategy && curve.has_const_vector_field())
+            {
                 vector_pairs
             } else {
                 0
             },
-            vector_const_pairs: if vector_cached == 3 && curve.has_const_vector_field() {
+            vector_const_pairs: if const_strategy && curve.has_const_vector_field() {
                 vector_pairs
             } else {
                 0
             },
             vector_pairs,
+            indexed_prepare_pairs,
         })
     }
 
     pub fn build<G: CountedGroup>(g: &G, fb: &FactorBase<G::Elt>) -> Self {
+        Self::build_filtered(g, fb, None)
+    }
+
+    /// The full table restricted to the pairs `keep(i, j)` admits, in the
+    /// same order, so every key the filtered table holds carries the same
+    /// first witness as the full table's.  The use is the coset filter:
+    /// with cofactor `h > 1` only pairs whose classes in `E/⟨G⟩` cancel
+    /// can sum to a subgroup target, and a pair that cannot be hit is an
+    /// addition the table pays for nothing.  `None` keeps every pair.
+    pub fn build_filtered<G: CountedGroup>(
+        g: &G,
+        fb: &FactorBase<G::Elt>,
+        keep: Option<&dyn Fn(usize, usize) -> bool>,
+    ) -> Self {
         let start = Instant::now();
         let n = fb.points.len();
         let mut ops = GroupOps::default();
         let mut map: FastMap<(u32, u32)> = fast_map(n * (n + 1) / 4 + 1);
         for i in 0..n {
             for j in i..n {
+                if let Some(keep) = keep {
+                    if !keep(i, j) {
+                        continue;
+                    }
+                }
                 let s = g.add(&mut ops, fb.points[i], fb.points[j]);
                 if g.is_identity(&s) {
                     continue;
@@ -3679,9 +3902,13 @@ impl PairTable {
             }
         }
         Self {
-            kind: "full",
+            kind: if keep.is_some() {
+                "full_coset_filtered"
+            } else {
+                "full"
+            },
             entries: map.len() as u64,
-            map,
+            map: PairWitnessMap::Wide(map),
             build_ops: ops,
             build_wall_ns: start.elapsed().as_nanos() as u64,
             prefix_inverse_bytes: 0,
@@ -3689,6 +3916,7 @@ impl PairTable {
             vector_pclmul128_pairs: 0,
             vector_packed_square_pairs: 0,
             vector_const_pairs: 0,
+            indexed_prepare_pairs: 0,
         }
     }
 
@@ -3700,6 +3928,16 @@ impl PairTable {
     /// plus its own double.  About `|F|²/4` additions instead of
     /// `|F|²/2`; the probe is unchanged.
     pub fn build_negation_folded<G: CountedGroup>(g: &G, fb: &FactorBase<G::Elt>) -> Self {
+        Self::build_negation_folded_filtered(g, fb, None)
+    }
+
+    /// The negation-folded table restricted to the pairs `keep(i, j)`
+    /// admits (see [`Self::build_filtered`]); the probe is unchanged.
+    pub fn build_negation_folded_filtered<G: CountedGroup>(
+        g: &G,
+        fb: &FactorBase<G::Elt>,
+        keep: Option<&dyn Fn(usize, usize) -> bool>,
+    ) -> Self {
         let start = Instant::now();
         let mut ops = GroupOps::default();
         let groups: Vec<&Vec<usize>> = fb
@@ -3713,6 +3951,11 @@ impl PairTable {
             let i = groups[ai][0];
             for group in groups.iter().skip(ai) {
                 for &j in group.iter() {
+                    if let Some(keep) = keep {
+                        if !keep(i, j) {
+                            continue;
+                        }
+                    }
                     let s = g.add(&mut ops, fb.points[i], fb.points[j]);
                     if g.is_identity(&s) {
                         continue;
@@ -3722,9 +3965,13 @@ impl PairTable {
             }
         }
         Self {
-            kind: "negation_folded",
+            kind: if keep.is_some() {
+                "negation_folded_coset_filtered"
+            } else {
+                "negation_folded"
+            },
             entries: map.len() as u64,
-            map,
+            map: PairWitnessMap::Wide(map),
             build_ops: ops,
             build_wall_ns: start.elapsed().as_nanos() as u64,
             prefix_inverse_bytes: 0,
@@ -3732,6 +3979,7 @@ impl PairTable {
             vector_pclmul128_pairs: 0,
             vector_packed_square_pairs: 0,
             vector_const_pairs: 0,
+            indexed_prepare_pairs: 0,
         }
     }
 
@@ -3766,7 +4014,7 @@ impl PairTable {
         target: G::Elt,
     ) -> Option<(usize, usize)> {
         *lookups += 1;
-        let &(i, j) = self.map.get(&(g.key(&target) >> 1))?;
+        let (i, j) = self.map.get(g.key(&target) >> 1)?;
         let (i, j) = (i as usize, j as usize);
         let s = g.add(ops, fb.points[i], fb.points[j]);
         if s == target {
@@ -3784,7 +4032,7 @@ impl PairTable {
         let start = Instant::now();
         let mut hits = 0u64;
         for i in 0..samples {
-            if self.map.contains_key(&keys[(i % 1024) as usize]) {
+            if self.map.calibration_probe(keys[(i % 1024) as usize]) {
                 hits += 1;
             }
         }
@@ -3831,6 +4079,18 @@ impl FrobeniusPairTable {
     /// `None` when the base is not closed under the Frobenius, has more
     /// than `2^26` points, or the field yields no normal basis.
     pub fn build(inst: &BinaryInstance, fb: &FactorBase<FastPoint>) -> Option<Self> {
+        Self::build_filtered(inst, fb, None)
+    }
+
+    /// The folded table restricted to the representative–point pairs
+    /// `keep(rep, j)` admits, in the same order (the coset filter of
+    /// [`PairTable::build_filtered`]; the Frobenius preserves the class of
+    /// a point, so a representative's class is its orbit's).
+    pub fn build_filtered(
+        inst: &BinaryInstance,
+        fb: &FactorBase<FastPoint>,
+        keep: Option<&dyn Fn(usize, usize) -> bool>,
+    ) -> Option<Self> {
         let start = Instant::now();
         let g = BinaryGroup(&inst.fast);
         let n = inst.n as usize;
@@ -3872,6 +4132,11 @@ impl FrobeniusPairTable {
             for j in 0..f {
                 if fb.col_of[j] < col {
                     continue;
+                }
+                if let Some(keep) = keep {
+                    if !keep(rep, j) {
+                        continue;
+                    }
                 }
                 let u = g.add(&mut ops, fb.points[rep], fb.points[j]);
                 if g.is_identity(&u) {
@@ -6695,6 +6960,151 @@ pub fn format_markdown(ledger: &BoundaryLedger) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn compact_pair_witness_map_preserves_first_entries_and_rejects_wide_aliases() {
+        let mut wide = PairWitnessMap::new(8, false);
+        let mut compact = PairWitnessMap::new(8, true);
+        let xs = [
+            Some(0),
+            Some(7),
+            Some(7),
+            None,
+            Some(u64::from(u32::MAX) - 1),
+        ];
+        let indices = [(0, 0), (65535, 12345), (7, 9), (11, 12), (65535, 65535)];
+        wide.insert_abscissae(&xs, &indices);
+        compact.insert_abscissae(&xs, &indices);
+        assert!(wide.same_entries(&compact) && compact.same_entries(&wide));
+        assert_eq!(compact.len(), 3);
+        assert_eq!(compact.get(8), Some((65535, 12345)));
+        assert_eq!(compact.get(u64::from(u32::MAX)), Some((65535, 65535)));
+        assert_eq!(compact.get((1u64 << 32) | 8), None);
+        assert_eq!(compact.get(u64::MAX), None);
+        assert_eq!(compact.get(0), None);
+        assert_eq!(std::mem::size_of::<(u32, u32)>(), 8);
+        assert_eq!(std::mem::size_of::<(u64, (u32, u32))>(), 16);
+    }
+
+    #[test]
+    fn compact_pair_witness_hash_matches_the_wide_key_rule() {
+        for key in (0..4096).chain([1 << 31, u32::MAX - 1, u32::MAX]) {
+            let mut narrow = MixHasher::default();
+            let mut wide = MixHasher::default();
+            std::hash::Hash::hash(&key, &mut narrow);
+            std::hash::Hash::hash(&u64::from(key), &mut wide);
+            assert_eq!(narrow.finish(), wide.finish());
+        }
+    }
+
+    #[test]
+    fn counterfactual_staged_preparation_preserves_first_witnesses() {
+        for n in [13, 15] {
+            let inst = random_binary_instance(n, 3, 8).unwrap();
+            let fb = binary_subspace_factor_base(&inst, &[1, 2, 4, 8]);
+            let reference = PairTable::build_negation_folded(&BinaryGroup(&inst.fast), &fb);
+            for chunk in [1, 7, 64] {
+                let indexed = PairTable::build_negation_folded_binary_vector_const_cached(
+                    &inst.fast, &fb, chunk,
+                )
+                .unwrap();
+                let staged = PairTable::build_negation_folded_binary_vector_const_staged_cached(
+                    &inst.fast, &fb, chunk,
+                )
+                .unwrap();
+                assert!(reference.same_witness_map(&indexed));
+                assert!(reference.same_witness_map(&staged));
+                assert_eq!(indexed.vector_pairs, staged.vector_pairs);
+                assert_eq!(indexed.vector_const_pairs, staged.vector_const_pairs);
+                assert_eq!(
+                    indexed.uses_compact_storage(),
+                    staged.uses_compact_storage()
+                );
+                assert_eq!(staged.indexed_prepare_pairs, 0);
+                if inst.fast.has_const_vector_field() {
+                    assert!(indexed.indexed_prepare_pairs > 0);
+                }
+            }
+            for chunk in [0, 65537] {
+                assert!(
+                    PairTable::build_negation_folded_binary_vector_const_staged_cached(
+                        &inst.fast, &fb, chunk,
+                    )
+                    .is_err()
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn counterfactual_setup_state_preserves_first_witnesses() {
+        for n in [13, 15] {
+            let inst = random_binary_instance(n, 3, 8).unwrap();
+            let fb = binary_subspace_factor_base(&inst, &[1, 2, 4, 8]);
+            let scalar = PairTable::build_negation_folded(&BinaryGroup(&inst.fast), &fb);
+            for chunk in [1, 7, 64, 1024] {
+                let indexed = PairTable::build_negation_folded_binary_vector_const_cached(
+                    &inst.fast, &fb, chunk,
+                )
+                .unwrap();
+                for state in 0..=2 {
+                    let controlled =
+                        PairTable::build_negation_folded_binary_vector_const_setup_control_cached(
+                            &inst.fast, &fb, chunk, state,
+                        )
+                        .unwrap();
+                    assert!(scalar.same_witness_map(&controlled));
+                    assert!(indexed.same_witness_map(&controlled));
+                    assert_eq!(
+                        indexed.indexed_prepare_pairs,
+                        controlled.indexed_prepare_pairs
+                    );
+                    assert_eq!(indexed.vector_pairs, controlled.vector_pairs);
+                    assert_eq!(indexed.vector_const_pairs, controlled.vector_const_pairs);
+                    assert_eq!(
+                        indexed.uses_compact_storage(),
+                        controlled.uses_compact_storage()
+                    );
+                }
+            }
+            for (chunk, state) in [(0, 0), (65537, 0), (7, 3)] {
+                assert!(
+                    PairTable::build_negation_folded_binary_vector_const_setup_control_cached(
+                        &inst.fast, &fb, chunk, state,
+                    )
+                    .is_err()
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn compact_pair_witness_bounds_and_complete_curve_map() {
+        assert!(compact_pair_storage_shape(1, 0));
+        assert!(compact_pair_storage_shape(31, 65536));
+        assert!(!compact_pair_storage_shape(0, 1));
+        assert!(!compact_pair_storage_shape(32, 1));
+        assert!(!compact_pair_storage_shape(31, 65537));
+        let inst = random_binary_instance(13, 3, 8).unwrap();
+        let mut fb = binary_subspace_factor_base(&inst, &[1, 2, 4]);
+        assert!(compact_pair_storage_eligible(&inst.fast, &fb));
+        let reference = PairTable::build_negation_folded(&BinaryGroup(&inst.fast), &fb);
+        let compact =
+            PairTable::build_negation_folded_binary_vector_const_cached(&inst.fast, &fb, 7)
+                .unwrap();
+        assert!(!reference.uses_compact_storage());
+        assert!(compact.uses_compact_storage());
+        assert!(reference.same_witness_map(&compact) && compact.same_witness_map(&reference));
+        assert_eq!(compact.witness_entry_payload_bytes(), 8);
+        if inst.fast.has_const_vector_field() {
+            assert!(compact.indexed_prepare_pairs > 0);
+        } else {
+            assert_eq!(compact.indexed_prepare_pairs, 0);
+        }
+        let point = fb.points.iter_mut().find(|p| !p.infinity).unwrap();
+        point.x |= 1 << inst.n;
+        assert!(!compact_pair_storage_eligible(&inst.fast, &fb));
+    }
 
     #[test]
     fn floors_are_the_textbook_numbers() {

@@ -57,6 +57,14 @@ path = "src/bin/koblitz_pdp_prepare.rs"
 name = "ca-curves"
 path = "src/bin/curves.rs"
 
+# Go-style benchmarks (`testing.B` auto-scaled b.N) in the Go benchmark
+# format, so `benchstat` can compare them with the C `ca_bench` numbers or
+# any other benchfmt producer.  See src/benchfmt.rs.
+[[bench]]
+name = "go_bench"
+path = "benches/go_bench.rs"
+harness = false
+
 [features]
 default = []
 # Experimental six-product three-limb carryless multiply; timing not established.
@@ -78,6 +86,7 @@ gpu-emulator = []
 rho_debug = []
 
 [dependencies]
+prime-field-auxiliary-ic = { path = "../crates/prime-field-auxiliary-ic" }
 # Pinned, hash-checked source snapshot from the crypto repository.
 crypto_analysis_core = { package = "crypto-analysis-core", path = "vendor/crypto-analysis-core" }
 redis = { version = "0.32", optional = true, default-features = false, features = ["tls-rustls"] }

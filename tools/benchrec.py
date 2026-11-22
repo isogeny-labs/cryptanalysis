@@ -842,8 +842,11 @@ def record_errors(root: Path, cfg: dict, rec: dict, name: str, *, require_closed
     for p in rec["reports"].get("svg", []) + rec["reports"].get("png", []):
         if not stored_ok(p, "graph"):
             e.append(f"{name}: graph {p} is not in the checkout or a .artifacts.json manifest")
-    if rec.get("validation") and not stored_ok(rec["validation"], "validation file"):
-        e.append(f"{name}: validation file {rec['validation']} is not in the checkout or a .artifacts.json manifest")
+    validation = rec.get("validation")
+    if validation is not None and (not isinstance(validation, str) or not validation):
+        e.append(f"{name}: validation must be a nonempty path string or null")
+    elif validation and not stored_ok(validation, "validation file"):
+        e.append(f"{name}: validation file {validation} is not in the checkout or a .artifacts.json manifest")
     for d in rec["entries"]:
         if not (root / d).is_dir():
             e.append(f"{name}: entry directory {d} is not in the checkout")

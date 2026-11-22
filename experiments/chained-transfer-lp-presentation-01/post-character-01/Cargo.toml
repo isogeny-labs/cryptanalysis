@@ -1,0 +1,12 @@
+[package]
+name = "chained-transfer-lp-post-character-01"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[workspace]
+
+[dependencies]
+serde_json = "=1.0.145"
+chained-transfer-lp-historical-01 = { path = "../historical-01" }
+chained-transfer-lp-finite-projection-01 = { path = "../matrix-01" }

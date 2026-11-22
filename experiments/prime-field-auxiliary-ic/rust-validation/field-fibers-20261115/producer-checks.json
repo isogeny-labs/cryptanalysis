@@ -1,0 +1,577 @@
+{
+  "schema": "producer-field-fiber-correctness/v1",
+  "status": "pass",
+  "independent": false,
+  "source_commit": "facaac33bfe62bb59d9997141e53d9cffca72d2c",
+  "baseline_commit": "ad3dfc9383ed4efbe4c408965e5c4639409e6868",
+  "scope": "Implementation, exact-product/relation/recovery producer checks and derived source counts only. No performance benchmark, independent signed replay or checked Lean theorem.",
+  "source_files": [
+    {
+      "path": "crates/prime-field-auxiliary-ic/README.md",
+      "sha256": "d525191af6a1337bdcb930021ef2277fd27a30d5145c7eb35cd4358e6b9ddbe1"
+    },
+    {
+      "path": "crates/prime-field-auxiliary-ic/src/circuit.rs",
+      "sha256": "aefa16dcaaeaef304eaf283aed0b550a5bcd8a9572b5025c545ba4edf6f50807"
+    },
+    {
+      "path": "crates/prime-field-auxiliary-ic/src/circuit_x86.rs",
+      "sha256": "5bf6efa4b892a8b6b1f5557a35d3a3a8fe3dd3f69cea10223248f2384b1456a4"
+    },
+    {
+      "path": "crates/prime-field-auxiliary-ic/src/field.rs",
+      "sha256": "19f18d1763842fdecfa2f14d600e249b6b1777f68065ec7f290c17e3178ae5e6"
+    },
+    {
+      "path": "crates/prime-field-auxiliary-ic/src/graph.rs",
+      "sha256": "e8b9a27ffadabba9351ef2fd47a1cb15ba9affb6ed0ba0bef1abf09cbe823f4f"
+    },
+    {
+      "path": "crates/prime-field-auxiliary-ic/src/kernel.rs",
+      "sha256": "50aa8d68a6e9d617a6aeaf279b101f2cc392bd45ab427a260380b14e0500c5dc"
+    },
+    {
+      "path": "crates/prime-field-auxiliary-ic/src/lib.rs",
+      "sha256": "ce2be7ae6abc3763f0d842e8b58d6904010aa7d48bc6ee20ca8445c03a8938f7"
+    },
+    {
+      "path": "crates/prime-field-auxiliary-ic/src/solve.rs",
+      "sha256": "e6a3b9a0faa6a6e697f5f38c5c2210e1cb4d398887c5a1600864c4aff49a196f"
+    },
+    {
+      "path": "crates/prime-field-auxiliary-ic/tests/common/mod.rs",
+      "sha256": "55dd7ebc5f1ee46d4cb04c1404d6b9ab4c45830443529b3f0bd6dc4485bd2e8b"
+    },
+    {
+      "path": "crates/prime-field-auxiliary-ic/tests/common/multi_tile.rs",
+      "sha256": "8df9a1d57ba99a2db6e1fa1ae339452536b5b1a698adbb0426ecee5c24c0a199"
+    },
+    {
+      "path": "crates/prime-field-auxiliary-ic/tests/field_fibers.rs",
+      "sha256": "7246583a72152d12d5e0a369d5f27ea23ce3eaffca0d72772d063940b00a88ee"
+    },
+    {
+      "path": "crates/prime-field-auxiliary-ic/tests/pipeline.rs",
+      "sha256": "483097fcf0077868407a8a7fa2d64ba7140f830ab66ea26e500b7057580ab588"
+    },
+    {
+      "path": "experiments/prime-field-auxiliary-ic/rust-validation/field-fibers-20261115/formal/FieldFibers.lean",
+      "sha256": "465cebaea93c566e9b00aeebe5d8b0f8c077104f1a76f6fbee76975ad68e0032"
+    },
+    {
+      "path": "experiments/prime-field-auxiliary-ic/rust-validation/field-fibers-20261115/formal/lakefile.lean",
+      "sha256": "f16d28347a1566ca7a1dc14afd7b1ef9cd1cb52a9892dabe6a8558aba82ba141"
+    },
+    {
+      "path": "experiments/prime-field-auxiliary-ic/rust-validation/field-fibers-20261115/formal/lean-toolchain",
+      "sha256": "ca5f1f601d34c49079e38d7e7041eb0f2a9c227fbc1df0f404820069a052330c"
+    },
+    {
+      "path": "suite/src/cli/tools/ic/auxiliary.rs",
+      "sha256": "29b9c78a0c03565ce61c0eb93a8621aac629fbf5a8bd33b82d0d815d27f0a22c"
+    }
+  ],
+  "raw_data": [
+    {
+      "path": "cli.log",
+      "sha256": "439ec8a65f778e13c6a59ced85a31cb3a5ed54f776dbb20e3fe6d9edd42b1b17"
+    },
+    {
+      "path": "cli.run.json",
+      "sha256": "b4a4cdacf277987231f5ae942dbad71c890f75988802f0e13e1a999b4bf5fbf2"
+    },
+    {
+      "path": "clippy.log",
+      "sha256": "2e08baafa356761eeea80a211cf38f0f61d1ef63c555af0950036786765e8d41"
+    },
+    {
+      "path": "clippy.run.json",
+      "sha256": "52267bb82adcae8a74abb22c369aa5259a24f09de3acb0c1dfab7f6e751f7113"
+    },
+    {
+      "path": "core-msrv-final.log",
+      "sha256": "c93bc0792f643f6f2cc6abbe419757c30a2f9cb5348cadb1d1ededff4b1f7a06"
+    },
+    {
+      "path": "core-msrv-final.run.json",
+      "sha256": "ce2d9242ebd671bb29460c58caa6340f72fd4c346bb62beae3b3a6b1a81fbe1f"
+    },
+    {
+      "path": "core-msrv.log",
+      "sha256": "4f59f0a2121b142ef50c09de10c6d08ba883346228fd098cf951311f5ba650b7"
+    },
+    {
+      "path": "core-msrv.run.json",
+      "sha256": "2963189da04d7ab69f421b963efe25155c50de73e7b2fa7ade841fa577fa914c"
+    },
+    {
+      "path": "core-stable-final.log",
+      "sha256": "93af215489623975655e75e2f3b015d1ee09aeabbf85e3d51b3958077a5441d5"
+    },
+    {
+      "path": "core-stable-final.run.json",
+      "sha256": "e39697b00e4b9d70ce7113b11bd2362045323d267ccdf09b9b86589803641c6c"
+    },
+    {
+      "path": "core-stable.log",
+      "sha256": "6877d8c19a416c7af4d88e55d014a02f0f37645bb3b01710bb5df78f8275db8d"
+    },
+    {
+      "path": "core-stable.run.json",
+      "sha256": "17bc6bf67f03a53e30bbe3339d90e39feee54c597fadeb6b22a389028233bccc"
+    },
+    {
+      "path": "development-failures.txt",
+      "sha256": "b7fa1ad032f4a94f566d0b071bf7bc1cd9b58d9aade1109e001959ed1671045b"
+    },
+    {
+      "path": "docs-initial.log",
+      "sha256": "2043244474977584bb6fb47d1d640d3fb8bc366e40c023f5040286db6c7a8080"
+    },
+    {
+      "path": "docs-initial.run.json",
+      "sha256": "0db4b08a6c7dd12d6f633c811e01573cc4411c26f7ddbd045a6ef506fbca60fd"
+    },
+    {
+      "path": "docs.log",
+      "sha256": "18711d5c05fd38657d1f4207cde134c5ad274e437128593cf7df5231149bd003"
+    },
+    {
+      "path": "docs.run.json",
+      "sha256": "95d72943fd44299382679c8cd6dabcedb528fb2da8f585ff89a11434cf8a0289"
+    },
+    {
+      "path": "final-cli.log",
+      "sha256": "7f80480e082bd4a41b8b108ed9a37117c194bd8569bc1d404515ed0d1c51005d"
+    },
+    {
+      "path": "final-cli.run.json",
+      "sha256": "92ccb7af4466358f6e53426d8eb2da317e7af0c229ac43d35b7731749cd40383"
+    },
+    {
+      "path": "final-clippy.log",
+      "sha256": "a3f219d3ef2ffbd8c83a80a28fd32b00638e05b8c8ef4888561242679a91db5f"
+    },
+    {
+      "path": "final-clippy.run.json",
+      "sha256": "a231f1004b62cfa188a0e55b883bd0d7ca61ba1a2e75b8bbc2da743f9edcf323"
+    },
+    {
+      "path": "final-docs.log",
+      "sha256": "a209c93165bde56f66ed07c46821e2f1e6442948aa68fa382d2121b9c018ac5e"
+    },
+    {
+      "path": "final-docs.run.json",
+      "sha256": "a44d04c0e0eab1d89276eb9f8cb8d78bf7ca9f09553c9c21b0568952ffde5ab4"
+    },
+    {
+      "path": "final-fmt.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "final-fmt.run.json",
+      "sha256": "c0f8f36c80705929e68655edc8a8d7cd32a7d9a9e3225cd7fdd4e601f47dd92d"
+    },
+    {
+      "path": "final-msrv.log",
+      "sha256": "d50dcbdab37f8e1f94c30f41f8e210671a1bcbb276836e3dc207f9174609ceac"
+    },
+    {
+      "path": "final-msrv.run.json",
+      "sha256": "2454eaeed8c9ee7836c10a1f40afb9227f099acef41138252a002f6a37a130c2"
+    },
+    {
+      "path": "final-stable.log",
+      "sha256": "ab8499abdca37f7a42986f2aa4264c7715c05dfb3bee9625a6fdb782c0389238"
+    },
+    {
+      "path": "final-stable.run.json",
+      "sha256": "d2a329dffaa3eeff45c50a57191c3031286915a9ee80472bc5c5c900eea2652b"
+    },
+    {
+      "path": "fmt-wrong-cwd.log",
+      "sha256": "cf52e68904c431233dc7caebcc440537125766d211018451c1766d2dd4398532"
+    },
+    {
+      "path": "fmt-wrong-cwd.run.json",
+      "sha256": "0827f832567a8ed1d58a8f62d6c37eef0e368faaba40d8c757a5609e7b7a40dd"
+    },
+    {
+      "path": "fmt.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "fmt.run.json",
+      "sha256": "11eef754a5ba245045dbe69baee6fdb27d94722861589188a2ee3d12bc62fca7"
+    },
+    {
+      "path": "formal-missing-toolchain.log",
+      "sha256": "15254f6438afadc9f9397cbbe3dc2872055560c0ea9b5409d7c1d60dfb29fd1a"
+    },
+    {
+      "path": "formal-missing-toolchain.run.json",
+      "sha256": "fa10b0dbdd811934424434bc63a66d4c73397b101993fd3a36952dc9207f9911"
+    },
+    {
+      "path": "formal.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "inventory.log",
+      "sha256": "990d3694b039245d2eb61d36e4977713c33bf3a91f810cc6f6b67b19458dc54d"
+    },
+    {
+      "path": "inventory.run.json",
+      "sha256": "fb8704e803a6a1aaabe00e0ed7c67e88117206bbb5923ba8114006b6d91eb2c7"
+    },
+    {
+      "path": "msrv-toolchain.txt",
+      "sha256": "8e31f128f5ac4bf7918a69597e247f7a37a31b12a2a48c4c9d6644e6f1b7adf2"
+    },
+    {
+      "path": "orbit-core.log",
+      "sha256": "b3e71c9158903ca39f8b4e7e91beeddbd59dce9bcf64b4caa0f84a30a0888501"
+    },
+    {
+      "path": "orbit-core.run.json",
+      "sha256": "6dac7abd933af29cd82f52474c3f8300f7a80a2139c0222deb1605f088ec387e"
+    },
+    {
+      "path": "resource-presence.json",
+      "sha256": "ef48a7d3238307bf8a102e32401332ce03a2c9be54ec338bbe31f9e6a222d226"
+    },
+    {
+      "path": "rust-toolchain.txt",
+      "sha256": "be69adad9137eaa0bdac1dd07e2fe286b1831fc8bad193ea27806ca0c7c8e7c6"
+    },
+    {
+      "path": "source-operations.json",
+      "sha256": "08d6f4c9b40d683002c6847a5f052b5f72254d866d417d9c3f57fa5b5e563148"
+    }
+  ],
+  "runs": [
+    {
+      "command": [
+        "/home/agent/.cargo/bin/cargo",
+        "test",
+        "--manifest-path",
+        "suite/Cargo.toml",
+        "--lib",
+        "cli::tools::ic::auxiliary::tests",
+        "-j",
+        "2"
+      ],
+      "exit_code": 0,
+      "output": "cli.log",
+      "stage": "cli",
+      "source_provenance": "development/pre-final checks; not headline evidence"
+    },
+    {
+      "command": [
+        "/home/agent/.cargo/bin/cargo",
+        "clippy",
+        "--manifest-path",
+        "crates/prime-field-auxiliary-ic/Cargo.toml",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "output": "clippy.log",
+      "stage": "clippy",
+      "source_provenance": "development/pre-final checks; not headline evidence"
+    },
+    {
+      "command": [
+        "/home/agent/.cargo/bin/cargo",
+        "+1.78.0",
+        "test",
+        "--manifest-path",
+        "crates/prime-field-auxiliary-ic/Cargo.toml",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/workspace/cryptanalysis-pr",
+      "exit_code": 0,
+      "output": "core-msrv-final.log",
+      "stage": "core-msrv-final",
+      "source_provenance": "development/pre-final checks; not headline evidence"
+    },
+    {
+      "command": [
+        "/home/agent/.cargo/bin/cargo",
+        "+1.78.0",
+        "test",
+        "--manifest-path",
+        "crates/prime-field-auxiliary-ic/Cargo.toml",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "output": "core-msrv.log",
+      "stage": "core-msrv",
+      "source_provenance": "development/pre-final checks; not headline evidence"
+    },
+    {
+      "command": [
+        "/home/agent/.cargo/bin/cargo",
+        "test",
+        "--release",
+        "--manifest-path",
+        "crates/prime-field-auxiliary-ic/Cargo.toml",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/workspace/cryptanalysis-pr",
+      "exit_code": 0,
+      "output": "core-stable-final.log",
+      "stage": "core-stable-final",
+      "source_provenance": "development/pre-final checks; not headline evidence"
+    },
+    {
+      "command": [
+        "/home/agent/.cargo/bin/cargo",
+        "test",
+        "--release",
+        "--manifest-path",
+        "crates/prime-field-auxiliary-ic/Cargo.toml",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "output": "core-stable.log",
+      "stage": "core-stable",
+      "source_provenance": "development/pre-final checks; not headline evidence"
+    },
+    {
+      "command": [
+        "/home/agent/.cargo/bin/cargo",
+        "doc",
+        "--no-deps",
+        "--manifest-path",
+        "crates/prime-field-auxiliary-ic/Cargo.toml"
+      ],
+      "exit_code": 101,
+      "output": "docs-initial.log",
+      "cwd": "/workspace/cryptanalysis-pr",
+      "stage": "docs-initial",
+      "source_provenance": "development/pre-final checks; not headline evidence"
+    },
+    {
+      "command": [
+        "/home/agent/.cargo/bin/cargo",
+        "doc",
+        "--no-deps",
+        "--manifest-path",
+        "crates/prime-field-auxiliary-ic/Cargo.toml"
+      ],
+      "cwd": "/workspace/cryptanalysis-pr",
+      "exit_code": 0,
+      "output": "docs.log",
+      "stage": "docs",
+      "source_provenance": "development/pre-final checks; not headline evidence"
+    },
+    {
+      "command": [
+        "/home/agent/.cargo/bin/cargo",
+        "test",
+        "--manifest-path",
+        "suite/Cargo.toml",
+        "--lib",
+        "cli::tools::ic::auxiliary::tests",
+        "-j",
+        "2"
+      ],
+      "cwd": "/workspace/cryptanalysis-pr",
+      "exit_code": 0,
+      "output": "final-cli.log",
+      "stage": "final-cli",
+      "source_provenance": "facaac33bfe62bb59d9997141e53d9cffca72d2c"
+    },
+    {
+      "command": [
+        "/home/agent/.cargo/bin/cargo",
+        "clippy",
+        "--manifest-path",
+        "crates/prime-field-auxiliary-ic/Cargo.toml",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "cwd": "/workspace/cryptanalysis-pr",
+      "exit_code": 0,
+      "output": "final-clippy.log",
+      "stage": "final-clippy",
+      "source_provenance": "facaac33bfe62bb59d9997141e53d9cffca72d2c"
+    },
+    {
+      "command": [
+        "/home/agent/.cargo/bin/cargo",
+        "doc",
+        "--no-deps",
+        "--manifest-path",
+        "crates/prime-field-auxiliary-ic/Cargo.toml"
+      ],
+      "cwd": "/workspace/cryptanalysis-pr",
+      "exit_code": 0,
+      "output": "final-docs.log",
+      "stage": "final-docs",
+      "source_provenance": "facaac33bfe62bb59d9997141e53d9cffca72d2c"
+    },
+    {
+      "command": [
+        "/home/agent/.cargo/bin/cargo",
+        "fmt",
+        "--check",
+        "--manifest-path",
+        "crates/prime-field-auxiliary-ic/Cargo.toml"
+      ],
+      "cwd": "/workspace/cryptanalysis-pr",
+      "exit_code": 0,
+      "output": "final-fmt.log",
+      "stage": "final-fmt",
+      "source_provenance": "facaac33bfe62bb59d9997141e53d9cffca72d2c"
+    },
+    {
+      "command": [
+        "/home/agent/.cargo/bin/cargo",
+        "+1.78.0",
+        "test",
+        "--manifest-path",
+        "crates/prime-field-auxiliary-ic/Cargo.toml",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/workspace/cryptanalysis-pr",
+      "exit_code": 0,
+      "output": "final-msrv.log",
+      "stage": "final-msrv",
+      "source_provenance": "facaac33bfe62bb59d9997141e53d9cffca72d2c"
+    },
+    {
+      "command": [
+        "/home/agent/.cargo/bin/cargo",
+        "test",
+        "--release",
+        "--manifest-path",
+        "crates/prime-field-auxiliary-ic/Cargo.toml",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/workspace/cryptanalysis-pr",
+      "exit_code": 0,
+      "output": "final-stable.log",
+      "stage": "final-stable",
+      "source_provenance": "facaac33bfe62bb59d9997141e53d9cffca72d2c"
+    },
+    {
+      "command": [
+        "/home/agent/.cargo/bin/cargo",
+        "fmt",
+        "--check",
+        "--manifest-path",
+        "crates/prime-field-auxiliary-ic/Cargo.toml"
+      ],
+      "exit_code": 1,
+      "output": "fmt-wrong-cwd.log",
+      "cwd": "/workspace/cryptanalysis-pr/experiments/prime-field-auxiliary-ic/rust-validation/field-fibers-20261115/formal",
+      "stage": "fmt-wrong-cwd",
+      "source_provenance": "development/pre-final checks; not headline evidence"
+    },
+    {
+      "command": [
+        "/home/agent/.cargo/bin/cargo",
+        "fmt",
+        "--check",
+        "--manifest-path",
+        "crates/prime-field-auxiliary-ic/Cargo.toml"
+      ],
+      "cwd": "/workspace/cryptanalysis-pr",
+      "exit_code": 0,
+      "output": "fmt.log",
+      "stage": "fmt",
+      "source_provenance": "development/pre-final checks; not headline evidence"
+    },
+    {
+      "command": [
+        "lake",
+        "build"
+      ],
+      "cwd": "/workspace/cryptanalysis-pr/experiments/prime-field-auxiliary-ic/rust-validation/field-fibers-20261115/formal",
+      "exit_code": 127,
+      "output": "formal-missing-toolchain.log",
+      "stage": "formal-missing-toolchain",
+      "source_provenance": "development/pre-final checks; not headline evidence"
+    },
+    {
+      "command": [
+        "python3",
+        "experiments/prime-field-auxiliary-ic/check_snapshot.py"
+      ],
+      "cwd": "/workspace/cryptanalysis-pr",
+      "exit_code": 0,
+      "output": "inventory.log",
+      "stage": "inventory",
+      "source_provenance": "development/pre-final checks; not headline evidence"
+    },
+    {
+      "command": [
+        "/home/agent/.cargo/bin/cargo",
+        "test",
+        "--release",
+        "--manifest-path",
+        "crates/prime-field-auxiliary-ic/Cargo.toml",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/workspace/cryptanalysis-pr",
+      "exit_code": 0,
+      "output": "orbit-core.log",
+      "stage": "orbit-core",
+      "source_provenance": "development/pre-final checks; not headline evidence"
+    }
+  ],
+  "headline": [
+    {
+      "name": "final-stable-passed-checks",
+      "claimed": 20,
+      "recomputed": 20,
+      "rel_tol": 0
+    },
+    {
+      "name": "final-msrv-passed-checks",
+      "claimed": 20,
+      "recomputed": 20,
+      "rel_tol": 0
+    },
+    {
+      "name": "final-cli-passed-checks",
+      "claimed": 4,
+      "recomputed": 4,
+      "rel_tol": 0
+    }
+  ],
+  "negative_fixture": {
+    "p": 2305843009213693951,
+    "a": 0,
+    "b": 3,
+    "degree": 9,
+    "coset": 3,
+    "raw_roots": 9,
+    "lifted_points": 0,
+    "handling": "Independent test lift is empty; every constructor mode must reject."
+  },
+  "arithmetic_audit": "source-operations.json",
+  "formal_status": {
+    "declarations": 6,
+    "built": false,
+    "axiom_audited": false,
+    "blocker": "lake/Lean unavailable",
+    "structural_finite_field_proof": "open"
+  },
+  "snapshot_files_preserved": 2473,
+  "qualified_speedup": null,
+  "remaining_work": "A fresh frozen panel, exclusive accounting, successful checkpoint gate, admitted GPU host and independent signed replay remain required for end-to-end IC/direct/rho measurements. Owning lead atlas is encrypted/unavailable in this environment."
+}

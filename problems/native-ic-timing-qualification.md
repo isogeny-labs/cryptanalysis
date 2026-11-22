@@ -4,7 +4,7 @@
 - **Kind:** measurement and reader/placement evidence gap; independent-standing gap
 - **Affected work:** [current-upstream IC report](../experiments/ic-native-current-20261115/REPORT.md), PR #1612, PCC-20261116-040da5
 - **Next action owner:** current optimization session; prepared-host route pending
-- **Last updated:** 2026-11-15 (America/Los_Angeles)
+- **Last updated:** 2026-11-16 (America/Los_Angeles)
 
 ## Problem
 
@@ -60,3 +60,31 @@ replacing noisy pairs or relaxing the acceptance conditions. In parallel,
 2026-11-15: recorded the completed but rejected Modal panel and the specific
 reader/placement omissions. Unresolved; creating this record does not complete
 the performance goal. [pcc:unverified]
+
+
+2026-11-16 successor evidence: the elliptic-curve fixed-m2 panel
+[report](../experiments/ic-inverse-regression-20261116/REPORT-optimization001.md)
+retains three failed A/A controls; the separate canonical-coefficient panel
+[report](../experiments/ic-canonical-coeff-20261116/REPORT.md) retains thirty.
+The latter completed150same-target blocks,750IC/300rho/300A/A answers,
+7680exported states and zero IC caps; all arithmetic replays and routing/work
+checks passed. Both source optimizations have separate fixed-development
+instruction profiles. Claims PCC-20261117-2f6f5a and PCC-20261117-f39ffd remain
+unsigned and exploratory. No general native pipeline improvement follows from
+the coefficient panel's noisy intervals. [pcc:unverified]
+
+These successor readers collect equivalent v1/v2 cgroup paths and process/NUMA
+snapshots, unlike the original reader omission above. That improves observation
+coverage for these new runs without repairing the old record or qualifying the
+new host. Physical placement, CPU model and memory technology remain unknown;
+A/A failures and absent signed standing remain explicit. [pcc:unverified]
+
+Next discriminating work: freeze a separately admitted allocation and the exact
+chosen evidence tier before timing; require the corresponding hardware/placement
+receipt, all original controls, same-target references and independent standing.
+Do not relabel or replace these failed rows. Meanwhile, test compact pair-table
+storage on fresh inputs as a distinct implementation hypothesis, retaining
+instruction-level and native results separately. A larger effect may be easier
+to resolve, but that is a hypothesis, not a performance result. Resolving this
+measurement problem would qualify only that declared comparison, not the broad
+ECDLP/GPU goal. [pcc:unverified]

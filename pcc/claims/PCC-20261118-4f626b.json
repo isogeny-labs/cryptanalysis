@@ -1,0 +1,23 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-18T01:25:41Z",
+ "id": "PCC-20261118-4f626b",
+ "kind": "statement",
+ "producer": {
+  "commit": "8c79b510a2b8bccc8663c785e56e43a42c9b08a5",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/ic-collector-counterfactual-20261117/setup-parameter-presence-audit.json",
+    "sha256": "c25c39e48dd3a2605cd938ca751d951b58f62b8d04e8f511f6e6049250afae05"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "experiments/ic-collector-counterfactual-20261117",
+ "statement": "Correction to PCC-20261118-2f3d76: the retained control outputs have13input oracle_params keys for I and12for O/R/G, not14and13. The earlier numerical assertion is withdrawn and preserved as error history. The one-key presence difference and interpretive limitation remain: I/O combines explicit-default configuration presence with opaque observation, while O/R/G key sets match. The frozen experiment is unchanged and no retry is launched."
+}

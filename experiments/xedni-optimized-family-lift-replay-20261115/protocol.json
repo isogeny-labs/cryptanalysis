@@ -1,0 +1,20 @@
+{
+  "schema": "xedni-optimized-family-lift-replay-protocol-v1",
+  "question": "Do the 13 target-independent optimized public coefficient vectors yield rational relations under the two previously frozen centered and shifted CRT lift laws, with all archived failed construction probes charged?",
+  "optimized_family_selection_sha256": "82b340802ae37e8aaa3b1b0c2774911c27de88ef0e7d99e54fd9378b53f92894",
+  "optimized_family_protocol_sha256": "416b67e4ffd20f99346581bc74793cb4e3b43936913455331a6b6790ca1c7c5f",
+  "parent_lift_protocol_sha256": "db3dcde3dcb774b3984d06e05d5b34d81efee7f8ff962c32f8938648baa69e65",
+  "parent_lift_result_sha256": "5d6e15d0c4afb06791468fb57944fe1179cf2619e63a77671f3071b5f9dc3e71",
+  "parent_lift_source_sha256": "7df34f07b19c2740cd95ae321242939539edbe89a1b0d964e8aecda2d6692470",
+  "centered_result_sha256": "edbe3a808aa86054c00f15a5ae40814ed2f8452c4316abbe68f41a62f2219b49",
+  "shifted_result_sha256": "b5262749615ab776239416c6324a7e95be741c8a4db9adb4cadf9890077920fc",
+  "fields": [47,101,191,211,251,281,347,349],
+  "vectors": "exact selected 13-vector list from optimized_family_selection_sha256, in saved greedy order",
+  "rows": "all 30008 archived ordered target-query rows per lift arm; verify each uncompressed row-shard hash and exact row order",
+  "public_relation": "test all 13 vectors on each admissible pair of public points Q-t1G,Q-t2G; preserve multiple vector hits per query",
+  "lift_rule": "for accepted rows with a public relation, reconstruct centered or shifted archived CRT curve at saved candidate ordinals, verify point incidence and reductions, and test every selected-vector rational relation",
+  "cost_boundary": "charge all archived auxiliary probes, including failed and nonrelation rows; all public vector tests on admissible queries; accepted rational group tests; replay reconstruction is a diagnostic, not a replacement for producer probes",
+  "positive_control": "pin the parent fixed-family result and independently replay its first (1,2) rational witness against the archived lift law",
+  "falsifiers": ["selected vector yields a rational relation before the archived (1,2) control", "selected rational relation count is zero under both laws", "an accepted public hit fails scalar replay", "raw row hashes, archive probe counts, or positive control disagree"],
+  "claim_boundary": "retrospective exact finite-panel replay under two previously fixed lift laws; no new vector-dependent curve search or isolated wall-time comparison"
+}

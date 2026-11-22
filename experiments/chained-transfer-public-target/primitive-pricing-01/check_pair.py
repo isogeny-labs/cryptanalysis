@@ -8,6 +8,7 @@ import argparse
 import copy
 import hashlib
 import json
+import math
 import random
 import statistics as st
 from pathlib import Path
@@ -32,15 +33,39 @@ def exact_positive_integer(value):
     return type(value) is int and value > 0
 
 
+def strict_json_loads(raw):
+    def unique_keys(pairs):
+        result = {}
+        for key, value in pairs:
+            require(key not in result, f'duplicate JSON key: {key}')
+            result[key] = value
+        return result
+    def invalid_constant(token):
+        raise InvalidEvidence(f'non-JSON constant: {token}')
+    def finite_float(token):
+        value = float(token)
+        require(math.isfinite(value), 'nonfinite JSON number')
+        return value
+    return json.loads(raw, object_pairs_hook=unique_keys,
+                      parse_constant=invalid_constant, parse_float=finite_float)
+
+
+def typed_json_equal(a, b):
+    # Unlike Python ==, JSON encoding distinguishes true, 1 and 1.0.
+    return json.dumps(a, sort_keys=True, separators=(',', ':'), allow_nan=False) == (
+           json.dumps(b, sort_keys=True, separators=(',', ':'), allow_nan=False))
+
+
 def validate(x):
     require(type(x) is dict, 'record must be object')
     require(x.get('schema') == 'ct126-primitive-price/v1', 'schema')
     require(x.get('standing') == '[pcc:unverified]', 'standing')
-    require((x.get('source_prime'), x.get('subgroup_prime'),
-             x.get('complete_group_order')) == (223, 2_771_711, 11_086_844),
-            'field/subgroup/complete-group identity')
-    require((x.get('scalar_fixture_count'), x.get('rounds_recorded'),
-             x.get('warmup_rounds')) == (5, 12, 4), 'sample dimensions')
+    for name, expected in (('source_prime', 223), ('subgroup_prime', 2_771_711),
+                           ('complete_group_order', 11_086_844),
+                           ('scalar_fixture_count', 5), ('rounds_recorded', 12),
+                           ('warmup_rounds', 4)):
+        require(type(x.get(name)) is int and x[name] == expected,
+                f'exact integer identity: {name}')
     require(exact_positive_integer(x.get('setup_construct_ns')), 'setup ns')
     require(exact_positive_integer(x.get('linux_vm_hwm_kb')), 'peak resident memory missing')
     require(x.get('scope') == 'actual elliptic arithmetic in prebuilt geometry; NOT cold single-target ECDLP',
@@ -49,8 +74,9 @@ def validate(x):
             'timing order')
     ids = x.get('identity_checks')
     require(type(ids) is list and len(ids) == 5, 'identity count')
-    require(tuple(v.get('scalar_fixture_only') for v in ids if type(v) is dict) == SCALARS,
-            'fixed scalar identities')
+    require(all(type(v) is dict and type(v.get('scalar_fixture_only')) is int
+                and v['scalar_fixture_only'] == k for v, k in zip(ids, SCALARS)),
+            'exact integer scalar identities')
     # The JSON objects have no intrinsic curve verification; require at least
     # nonempty, distinct outputs so the all-constant substitution is not accepted.
     public_source, public_target = [], []
@@ -88,8 +114,9 @@ def audit(runs):
         except InvalidEvidence as error:
             raise InvalidEvidence(f'{arm}: {error}') from error
     same = runs['original-1']['identity_checks']
-    require(all(r['identity_checks'] == same for r in runs.values()),
-            'public output mismatch across ABBA arms')
+    require(all(typed_json_equal(r['identity_checks'], same)
+                for r in runs.values()),
+            'typed public output mismatch across ABBA arms')
 
     def samples(arm, label):
         rec = runs[arm]['timed'][label]
@@ -160,6 +187,13 @@ def selftest():
         'wrong_scalar': lambda x: x['reuse-1']['identity_checks'][0].update(scalar_fixture_only=2),
         'constant_public': lambda x: [row.update(output_public=[1]) for row in x['reuse-1']['identity_checks']],
         'false_scope': lambda x: x['original-1'].update(scope='complete ECDLP speedup'),
+        'bool_public_alias': lambda x: x['reuse-1']['identity_checks'][0].update(source_public=[True]),
+        'float_public_alias': lambda x: x['reuse-2']['identity_checks'][0].update(output_public=[2.0]),
+        'float_scalar_alias': lambda x: x['reuse-1']['identity_checks'][0].update(scalar_fixture_only=1.0),
+        'bool_scalar_alias': lambda x: x['original-2']['identity_checks'][0].update(scalar_fixture_only=True),
+        'float_prime_alias': lambda x: x['reuse-1'].update(source_prime=223.0),
+        'float_order_alias': lambda x: x['reuse-2'].update(subgroup_prime=2771711.0),
+        'float_round_alias': lambda x: x['original-2'].update(rounds_recorded=12.0),
     }
     for name, mutate in mutations.items():
         bad = copy.deepcopy(runs)
@@ -169,7 +203,19 @@ def selftest():
         except InvalidEvidence:
             continue
         raise RuntimeError(f'MUTATION ACCEPTED: {name}')
-    return {'positive': 'pass', **{name: 'rejected' for name in mutations}}
+    require(typed_json_equal(strict_json_loads(json.dumps(runs)), runs),
+            'valid JSON fixture roundtrip')
+    invalid_json = {'duplicate_key':'{"x":1,"x":2}', 'nan':'{"x":NaN}',
+                    'infinity':'{"x":Infinity}', 'neg_infinity':'{"x":-Infinity}',
+                    'overflow':'{"x":1e999}'}
+    for name, source in invalid_json.items():
+        try:
+            strict_json_loads(source)
+        except ValueError:
+            continue
+        raise RuntimeError(f'INVALID JSON ACCEPTED: {name}')
+    return {'positive': 'pass', 'invalid_json_rejected': len(invalid_json),
+            **{name: 'rejected' for name in mutations}}
 
 
 def main():
@@ -189,7 +235,7 @@ def main():
     require(bool(host.strip()) and 'rustc' in host and 'cargo' in host,
             'host/toolchain receipt missing')
     paths = [directory / (arm + '.json') for arm in ARMS]
-    runs = {arm: json.loads(path.read_text()) for arm, path in zip(ARMS, paths)}
+    runs = {arm: strict_json_loads(path.read_text()) for arm, path in zip(ARMS, paths)}
     report = audit(runs)
     report['raw_input_sha256'] = {
         path.name: hashlib.sha256(path.read_bytes()).hexdigest() for path in paths}

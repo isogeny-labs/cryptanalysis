@@ -1,5 +1,133 @@
 # Changelog
 
+## [0.1.14](https://github.com/isogeny-labs/cryptanalysis/compare/cryptanalysis-v0.1.13...cryptanalysis-v0.1.14) (2026-11-18)
+
+
+### Features
+
+* add native ECC2K-130 index-calculus preflight ([b7abc1e](https://github.com/isogeny-labs/cryptanalysis/commit/b7abc1edf35daa60d676e24f74c12e5124d01733))
+
+
+### Bug Fixes
+
+* **ct200:** accept only audited duplicate PCC keep entry in policy drift ([d830a5e](https://github.com/isogeny-labs/cryptanalysis/commit/d830a5ee937143daeee71a6619d416e7b296274d))
+
+## [0.1.13](https://github.com/isogeny-labs/cryptanalysis/compare/cryptanalysis-v0.1.12...cryptanalysis-v0.1.13) (2026-11-18)
+
+
+### Features
+
+* certify nine-point xedni plane relations ([31c6e60](https://github.com/isogeny-labs/cryptanalysis/commit/31c6e6016c295407c9940b37c7282291ae21e45a))
+* **ct192:** bind explicit direction and source group metadata to raw 96-packet records ([87b400a](https://github.com/isogeny-labs/cryptanalysis/commit/87b400adc2b5541e4004c5d825516c13966fd60d))
+* **ct192:** exact CT125 source derivative and public-48 guarded admission ([29d4301](https://github.com/isogeny-labs/cryptanalysis/commit/29d430116ad84cce4f43c4f8c7419c96df7ebf6f))
+* **ct192:** native-eligible scalar-blind 48-operand N2_actual and D_padd paired panel ([2b4f8c4](https://github.com/isogeny-labs/cryptanalysis/commit/2b4f8c4be64042b2b80d3ecf06c6ace002f9038c))
+
+
+### Bug Fixes
+
+* **ct190:** pin real CT175 cold-request expression ([28b78f3](https://github.com/isogeny-labs/cryptanalysis/commit/28b78f3b62bb5866d7182c7833cd1e48c5eaebc3))
+* **ct192:** audit package identity separately from dependency declarations ([7945795](https://github.com/isogeny-labs/cryptanalysis/commit/7945795be4541121350241e55bf7173e2714ec11))
+* **ct192:** correct literal Git blob NUL and source newline escapes ([9a51079](https://github.com/isogeny-labs/cryptanalysis/commit/9a51079551902fbb7f7d6c0336a2f27e8eb3d354))
+* **ct192:** emit real module path newlines in materialized Rust ([cfac2b2](https://github.com/isogeny-labs/cryptanalysis/commit/cfac2b213a43cfd1d93c275e186659feba13ba9a))
+* **ct192:** use unambiguous Rust CLI admission predicates ([e8bd7de](https://github.com/isogeny-labs/cryptanalysis/commit/e8bd7de6d52eb0edd30ea5b2eab978288a9ae343))
+* **ct193:** check target Jacobian class as well as doubled norm in pre-norm probe ([e8ffd96](https://github.com/isogeny-labs/cryptanalysis/commit/e8ffd96063a708e7542f1aa0276a8f6106c45b7d))
+* **ct193:** remove mistaken positive mutation duplicating final check ([e7bfdd4](https://github.com/isogeny-labs/cryptanalysis/commit/e7bfdd4a9b08af450046b182e4fb0daac18302df))
+* **CT194:** input-opaque operand per timed primitive repetition ([b46fa91](https://github.com/isogeny-labs/cryptanalysis/commit/b46fa915025fb39f2ee2ede63d9b1b8b7ad51860))
+* restore suite build after binary subtract merge ([9b75b92](https://github.com/isogeny-labs/cryptanalysis/commit/9b75b92519d575a1e72d6085055baea6053add75))
+
+## [0.1.12](https://github.com/isogeny-labs/cryptanalysis/compare/cryptanalysis-v0.1.11...cryptanalysis-v0.1.12) (2026-11-17)
+
+
+### Bug Fixes
+
+* **ct187:** prevent plan mode execution flag bypass ([84b51b2](https://github.com/isogeny-labs/cryptanalysis/commit/84b51b22e801ccc5acc0c43fc15abc77330b2b0e))
+
+## [0.1.11](https://github.com/isogeny-labs/cryptanalysis/compare/cryptanalysis-v0.1.10...cryptanalysis-v0.1.11) (2026-11-17)
+
+
+### Features
+
+* **ct182:** add independent versioned counterbalanced v2 panel adjudication with strict legacy child checks ([8745412](https://github.com/isogeny-labs/cryptanalysis/commit/87454126a73744f75d0c0bc384b3035e55815226))
+
+
+### Bug Fixes
+
+* **ct178:** require total wall budget and truncate each native child allowance ([d873cfc](https://github.com/isogeny-labs/cryptanalysis/commit/d873cfcf115317427caf870e6b8c0dc7ceca1a64))
+* **ct179:** bind recorded child command and match lossless pipe rendering ([317b2a6](https://github.com/isogeny-labs/cryptanalysis/commit/317b2a6961a3c1fca7b8b626346f8ba96046821e))
+* **ct180:** encode actual JSONL newline in mutation tests ([2374402](https://github.com/isogeny-labs/cryptanalysis/commit/237440225c06ef1e82dab7a47906b15746da847d))
+* **ct180:** reject impossible nested cold-process timing transcripts ([bbf6e83](https://github.com/isogeny-labs/cryptanalysis/commit/bbf6e83e43aaca66e1f6a37f55c614cafb7128cc))
+* **ct185:** use defined pinned-reader environment variable ([0d4ce55](https://github.com/isogeny-labs/cryptanalysis/commit/0d4ce551d166358aad6c33a6452ea784dfc4d2dd))
+
+## [0.1.10](https://github.com/isogeny-labs/cryptanalysis/compare/cryptanalysis-v0.1.9...cryptanalysis-v0.1.10) (2026-11-17)
+
+
+### Features
+
+* **ct175:** measure one native public packet in a fresh process without preflight warmup ([dba326f](https://github.com/isogeny-labs/cryptanalysis/commit/dba326fdd3d0f06d38f55f755cae578a0c3a5dce))
+
+
+### Bug Fixes
+
+* **ct175:** exclude rustc child-process probe from cold sample wall time ([2b89f4a](https://github.com/isogeny-labs/cryptanalysis/commit/2b89f4a7c2d1613e6896656eb0d727f9bd0e4696))
+* **ct176:** pin actual Git blob bytes and preserve raw process failures ([61679d1](https://github.com/isogeny-labs/cryptanalysis/commit/61679d1e1a3f2cafe1bbe32727e0d1086170700b))
+* **ct176:** terminal refusal matches incomplete-panel exit status ([4564b89](https://github.com/isogeny-labs/cryptanalysis/commit/4564b8944b0a47a1aa086dcfb812864bac720c5f))
+
+## [0.1.9](https://github.com/isogeny-labs/cryptanalysis/compare/cryptanalysis-v0.1.8...cryptanalysis-v0.1.9) (2026-11-17)
+
+
+### Features
+
+* **ct172:** add scalar-blind exact native replay for 48 frozen public packets ([c1ca4df](https://github.com/isogeny-labs/cryptanalysis/commit/c1ca4df47acf4695b0e06c67e5871b64bf7f8f72))
+
+
+### Bug Fixes
+
+* **ct172:** bind CT125 and frozen fixture at correct sibling source root ([d213e40](https://github.com/isogeny-labs/cryptanalysis/commit/d213e409f156c7e729e299c259f1f5bbc592a284))
+* **ct172:** correct exact-head Actions ref expression ([eff1dd5](https://github.com/isogeny-labs/cryptanalysis/commit/eff1dd5b6aae9982daffdbbac9fb5d72a13c3e08))
+* **ct172:** make CLI gate explicit and type-safe ([b984778](https://github.com/isogeny-labs/cryptanalysis/commit/b9847782f39ff54005c62c51ac2a0fabe84b448b))
+
+## [0.1.8](https://github.com/isogeny-labs/cryptanalysis/compare/cryptanalysis-v0.1.7...cryptanalysis-v0.1.8) (2026-11-17)
+
+
+### Bug Fixes
+
+* **ct170:** bind all three frozen census partitions, not just point totals ([215ef6e](https://github.com/isogeny-labs/cryptanalysis/commit/215ef6eb5715c8ce42524d31d6c9e3c186a812d4))
+* **ct171:** bind source guard to actual frozen fixture Git blob ([8b221fe](https://github.com/isogeny-labs/cryptanalysis/commit/8b221feab72e9210f1ce01a4b556164bfca92887))
+* **ct171:** bind source guard to actual frozen fixture Git blob ([13f33d1](https://github.com/isogeny-labs/cryptanalysis/commit/13f33d1856cd99a15a527775faf20a130d171ba2))
+
+## [0.1.7](https://github.com/isogeny-labs/cryptanalysis/compare/cryptanalysis-v0.1.6...cryptanalysis-v0.1.7) (2026-11-16)
+
+
+### Bug Fixes
+
+* **ct168:** exclude harness-only public Q construction from cold timing ([40568e4](https://github.com/isogeny-labs/cryptanalysis/commit/40568e4d6ef43a26f87ca5431fe357b7bde7ded1))
+* **ct168:** fail closed on truncated census, typed values and schema spoofing ([76a8077](https://github.com/isogeny-labs/cryptanalysis/commit/76a80779735476d0a48bc632b6b0fe85b9ceb2e9))
+* **ct168:** isolate public-Q timed solvers from known verifier scalar ([c06d255](https://github.com/isogeny-labs/cryptanalysis/commit/c06d2552139400ecb3fb78124aff8c12f390ffe0))
+* **ct168:** preserve exact 22-digit integer Frobenius traces in frozen JSON ([69daaa9](https://github.com/isogeny-labs/cryptanalysis/commit/69daaa9c4f8ecfc5f7e559f9b53557e0356630d9))
+
+## [0.1.6](https://github.com/isogeny-labs/cryptanalysis/compare/cryptanalysis-v0.1.5...cryptanalysis-v0.1.6) (2026-11-16)
+
+
+### Features
+
+* **ic:** native batched binary subtraction and frontier controls ([b96d797](https://github.com/isogeny-labs/cryptanalysis/commit/b96d797fd56019a7fa42e81b4bc9e035b1cd18dd))
+
+## [0.1.5](https://github.com/isogeny-labs/cryptanalysis/compare/cryptanalysis-v0.1.4...cryptanalysis-v0.1.5) (2026-11-16)
+
+
+### Bug Fixes
+
+* **artifacts:** retain PCC ledger as the Git trust witness ([148d8b6](https://github.com/isogeny-labs/cryptanalysis/commit/148d8b66c6c6b36e15db469c5745085643c5dd0d))
+* **artifacts:** sync canonical source and enforce native parity ([f7dfc2a](https://github.com/isogeny-labs/cryptanalysis/commit/f7dfc2a55917a22780052384c33d91829c41196f))
+* **ci:** correct log proof classification and projection controls ([d9ee51f](https://github.com/isogeny-labs/cryptanalysis/commit/d9ee51f20644b412a909dffec37c94907e7eba86))
+* **ci:** pin PCC trust and ledger checks to the tested merge base ([5dfcf82](https://github.com/isogeny-labs/cryptanalysis/commit/5dfcf82e698db8d895452c7089f566d3e68d1337))
+* **ci:** retain claim history and harden projection controls ([a6ee96c](https://github.com/isogeny-labs/cryptanalysis/commit/a6ee96c4b0410097a72fc4405dd21ab7e5aca1db))
+* **ct157:** reject boolean/float aliases in 695-record parity [pcc:unverified] ([7a77cf0](https://github.com/isogeny-labs/cryptanalysis/commit/7a77cf046af8a80cbe8f3516260be66575d86233))
+* **ct159:** type-preserving native C169/C13/D pricing evidence audit ([8f26796](https://github.com/isogeny-labs/cryptanalysis/commit/8f267962f8d6992c5dda622fd4735a96fcd80b9b))
+* **ct159:** typed finite JSON and ABBA public identity price guards ([658dca5](https://github.com/isogeny-labs/cryptanalysis/commit/658dca512276c426d5e04c291193a49717824170))
+* **grumpy:** bound automatic floating step conversion ([c539cd1](https://github.com/isogeny-labs/cryptanalysis/commit/c539cd11aed992bf80b501b76296b9751c55485b))
+* **grumpy:** validate checkpoint counters before resume and iteration ([443641b](https://github.com/isogeny-labs/cryptanalysis/commit/443641b50c4a33fb128ea2b4319095cf7b46ab4a))
+
 ## [0.1.4](https://github.com/isogeny-labs/cryptanalysis/compare/cryptanalysis-v0.1.3...cryptanalysis-v0.1.4) (2026-11-16)
 
 

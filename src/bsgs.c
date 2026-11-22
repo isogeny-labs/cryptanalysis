@@ -44,7 +44,7 @@ static void bsgs_hash_block(const ca_group *g, const ca_htab1 *tab, uint64_t *hs
     if (ca_ec_group_is_native(g)) {
         BSGS_HASH_LOOP(ca_ec_hash_words(e[k].w[0], e[k].w[1], e[k].w[2]))
     } else if (ca_zp_group_is_native(g)) {
-        BSGS_HASH_LOOP(ca_zp_hash_word(e[k].w[0]))
+        BSGS_HASH_LOOP(ca_zp_hash_residue(e[k].w[0], g->p))
     } else {
         BSGS_HASH_LOOP(ca_group_hash(g, &e[k]))
     }
@@ -353,7 +353,8 @@ ca_status ca_bsgs_solve(const ca_group *g, const ca_elem *base, const ca_elem *t
     uint64_t width_m1 = hi - lo;
     uint64_t m = params->table_size;
     if (m == 0) { m = ca_isqrt(width_m1) + 1; /* >= 1 for every width, including 0 */ }
-    if (params->max_ops && m + width_m1 / m > params->max_ops) return CA_ERR_LIMIT;
+    const uint64_t budget = params->max_ops;
+    if (budget && (m > budget || width_m1 / m > budget - m)) return CA_ERR_LIMIT;
     ca_bsgs_table *t;
     rc = ca_bsgs_table_new(g, base, m, &t);
     if (rc != CA_OK) return rc;

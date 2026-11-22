@@ -1,0 +1,33 @@
+{
+  "schema": "research.archive-packaging-checks/v1",
+  "standing": "unverified",
+  "note": "Producer packaging observations, not an independently signed verdict. No scientific run replay was performed during PR packaging.",
+  "base_commit": "cfc03a37e5dfe5fc29d4eb8a50562a56ba758ba2",
+  "checks": [
+    {
+      "command": "make -C research/curve25519-representations-20261117 report",
+      "exit_code": 0,
+      "scope": "historical-file byte checks, source AST parsing, TeX build and text extraction"
+    },
+    {
+      "command": "python tools/pcc/pcc.py --keyring-ref origin/main lint-prose research/curve25519-representations-20261117/README.md problems/curve25519-representation-evidence-qualification.md",
+      "exit_code": 0
+    },
+    {
+      "command": "python tools/pcc/pcc.py ledger verify --base origin/main",
+      "exit_code": 0
+    },
+    {
+      "command": "python tools/benchrec.py gate",
+      "exit_code": 1,
+      "scope": "pre-existing record validation error; no benchmark records are changed",
+      "source": "benchmarks/records/20261104T0352Z-descent-walks-k0n53.json",
+      "error": "command 3 and command 4 have no successful integer exit code; use invalid/censored or an explicit pinned historical exclusion"
+    }
+  ],
+  "storage": {
+    "tool_push_exit_code": 2,
+    "focused_bucket_check_exit_code": 255,
+    "error": "AllAccessDisabled"
+  }
+}

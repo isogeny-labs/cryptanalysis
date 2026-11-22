@@ -1,0 +1,16 @@
+{
+  "schema": "x011-trace-fiber-protocol-v1",
+  "primes": [317, 941, 1009],
+  "curve": "11a1: y^2+y=x^3-x^2-10x-20",
+  "j_source": "jfun.json",
+  "j_source_sha256": "d44c0250db7b284ed7819315958c26c18514fddb81006769c715541506848348",
+  "upstream_function_artifact_sha256": "131d0dc58a1a92a5c8f7aa2f79870dbd3b906accd17e019ee0e72d054ebc86ac",
+  "j_formula": "A(x,y)/(x-16)^11 from the pinned artifact",
+  "trace_law": "for regular j distinct from 0 and 1728 use E_j:y^2=x^3+3k*x+2k with k=j/(1728-j); count points by quadratic character; record absolute trace",
+  "exception_policy": "retain infinity, every x=16 pole or 0/0, and j=0 or 1728 separately; exclude only from trace partition",
+  "archived_trace_targets": [
+    {"p":317,"abs_trace":2,"archived_class_points":39,"archived_result_sha256":"66d8e89aeeb425e7d1ff01433fcc05f4cb7bfb5320db3d669d494bf73b4a4769"},
+    {"p":941,"abs_trace":50,"archived_class_points":40,"archived_result_sha256":"ea725c2f30f289cb1ecf25535108a672904006e37fcd540014a9a9c2e19b7e9c"}
+  ],
+  "resource_cap_seconds": 120
+}

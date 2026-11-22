@@ -113,6 +113,10 @@ pub struct FastCurve {
     /// the CPU has it and the field's reduction polynomial suits it.
     #[cfg(all(target_arch = "x86_64", suite_avx512))]
     simd: Option<simd512::Simd512>,
+    /// The eight-lane (4 × `poly64x2_t`) AArch64 NEON PMULL kernel for
+    /// [`Self::add_many_lazy`].
+    #[cfg(target_arch = "aarch64")]
+    simd_neon: Option<simdaarch64::SimdNeon>,
 }
 
 impl FastCurve {
@@ -131,6 +135,8 @@ impl FastCurve {
         Some(Self {
             #[cfg(all(target_arch = "x86_64", suite_avx512))]
             simd: simd512::Simd512::new(&field),
+            #[cfg(target_arch = "aarch64")]
+            simd_neon: simdaarch64::SimdNeon::new(&field),
             field,
             n: curve.m,
             a,
@@ -293,6 +299,12 @@ impl FastCurve {
     ) {
         #[cfg(all(target_arch = "x86_64", suite_avx512))]
         if let Some(simd) = &self.simd {
+            if simd.add_many_lazy(self, p, qs, out, lambdas, scratch) {
+                return;
+            }
+        }
+        #[cfg(target_arch = "aarch64")]
+        if let Some(simd) = &self.simd_neon {
             if simd.add_many_lazy(self, p, qs, out, lambdas, scratch) {
                 return;
             }
@@ -588,6 +600,87 @@ impl FastCurve {
         cache: &PrefixInverseTable,
         strategy: u8,
     ) -> Result<usize, &'static str> {
+        self.add_pairwise_abscissae_vector_cached_impl_validated::<false>(
+            ps, qs, out, scratch, cache, strategy,
+        )
+    }
+
+    /// Internal specialization for pairs copied from an immutable base whose
+    /// finite coordinates were already checked against this field's mask.
+    /// The table builder establishes that invariant once before generating pairs.
+    pub(super) fn add_pairwise_abscissae_vector_const_validated_cached(
+        &self,
+        ps: &[FastPoint],
+        qs: &[FastPoint],
+        out: &mut Vec<Option<u64>>,
+        scratch: &mut BatchScratch,
+        cache: &PrefixInverseTable,
+    ) -> Result<usize, &'static str> {
+        debug_assert!(self.has_const_vector_field());
+        debug_assert!(ps
+            .iter()
+            .chain(qs)
+            .all(|p| p.infinity || (p.x | p.y) & !self.field.mask == 0));
+        self.add_pairwise_abscissae_vector_cached_impl_validated::<true>(
+            ps, qs, out, scratch, cache, 2,
+        )
+    }
+
+    /// Internal pair-index path. The caller checks the immutable base once;
+    /// coordinates are loaded directly instead of staging full point buffers.
+    pub(super) fn add_indexed_abscissae_vector_const_cached(
+        &self,
+        points: &[FastPoint],
+        indices: &[(u32, u32)],
+        out: &mut Vec<Option<u64>>,
+        scratch: &mut BatchScratch,
+        cache: &PrefixInverseTable,
+    ) -> Result<usize, &'static str> {
+        if self.field.irr != cache.irr {
+            return Err("prefix inverse cache belongs to another field");
+        }
+        debug_assert!(points
+            .iter()
+            .all(|p| p.infinity || (p.x | p.y) & !self.field.mask == 0));
+        #[cfg(all(target_arch = "x86_64", suite_avx512))]
+        if self.has_const_vector_field() {
+            if let Some(kernel) = simd256::Simd256::new(&self.field) {
+                // SAFETY: new() checks AVX2/PCLMUL; field shape is checked and
+                // every coordinate access uses a bounds-checked base index.
+                return unsafe {
+                    kernel.add_indexed_const(self, points, indices, out, scratch, cache)
+                };
+            }
+        }
+        out.reserve(indices.len());
+        for pairs in indices.chunks(4) {
+            let mut ps = [FastPoint::INFINITY; 4];
+            let mut qs = [FastPoint::INFINITY; 4];
+            for (lane, &(i, j)) in pairs.iter().enumerate() {
+                ps[lane] = points[i as usize];
+                qs[lane] = points[j as usize];
+            }
+            self.add_pairwise_abscissae_cached(
+                &ps[..pairs.len()],
+                &qs[..pairs.len()],
+                out,
+                scratch,
+                cache,
+            )?;
+        }
+        Ok(0)
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn add_pairwise_abscissae_vector_cached_impl_validated<const CANONICAL: bool>(
+        &self,
+        ps: &[FastPoint],
+        qs: &[FastPoint],
+        out: &mut Vec<Option<u64>>,
+        scratch: &mut BatchScratch,
+        cache: &PrefixInverseTable,
+        strategy: u8,
+    ) -> Result<usize, &'static str> {
         if self.field.irr != cache.irr {
             return Err("prefix inverse cache belongs to another field");
         }
@@ -597,7 +690,9 @@ impl FastCurve {
         if let Some(kernel) = simd256::Simd256::new(&self.field) {
             // SAFETY: new() checks AVX2 and PCLMUL; its dispatcher guards VPCLMUL, field shape is checked,
             // and the kernel uses bounded four-element chunks.
-            return unsafe { kernel.add_cached(self, ps, qs, out, scratch, cache, strategy) };
+            return unsafe {
+                kernel.add_cached::<CANONICAL>(self, ps, qs, out, scratch, cache, strategy)
+            };
         }
         self.add_pairwise_abscissae_cached(ps, qs, out, scratch, cache)?;
         Ok(0)
@@ -1051,6 +1146,23 @@ impl FrobeniusCanon {
             }
             return;
         }
+        #[cfg(target_arch = "aarch64")]
+        if self.n <= 28 && canon_simd_neon_enabled() {
+            let mut chunks = xs.chunks_exact_mut(8);
+            for chunk in &mut chunks {
+                let mut c = [0u64; 8];
+                for (slot, &x) in c.iter_mut().zip(chunk.iter()) {
+                    *slot = self.coords(x);
+                }
+                // SAFETY: NEON is baseline on `aarch64`, and `1 <= self.n <= 63`.
+                let mins = unsafe { least_rotation8_neon(&c, self.n, self.mask) };
+                chunk.copy_from_slice(&mins);
+            }
+            for x in chunks.into_remainder() {
+                *x = self.canon(*x);
+            }
+            return;
+        }
         for x in xs {
             *x = self.canon(*x);
         }
@@ -1153,6 +1265,44 @@ fn canon_simd_enabled() -> bool {
     })
 }
 
+#[cfg(target_arch = "aarch64")]
+fn canon_simd_neon_enabled() -> bool {
+    static ON: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
+    *ON.get_or_init(|| std::env::var("KIC_SCAN_SIMD").as_deref() != Ok("0"))
+}
+
+/// Branchless NEON cyclic rotation minimum over 8 `n`-bit words in four
+/// interleaved `uint64x2_t` registers, avoiding branch mispredictions in
+/// `canon_in_place`.
+#[cfg(target_arch = "aarch64")]
+#[inline]
+unsafe fn least_rotation8_neon(c: &[u64; 8], n: u32, mask: u64) -> [u64; 8] {
+    use std::arch::aarch64::*;
+    let m = vdupq_n_u64(mask);
+    let back = vdupq_n_s64(-((n - 1) as i64));
+    let mut v0 = vld1q_u64(c.as_ptr());
+    let mut v1 = vld1q_u64(c.as_ptr().add(2));
+    let mut v2 = vld1q_u64(c.as_ptr().add(4));
+    let mut v3 = vld1q_u64(c.as_ptr().add(6));
+    let (mut b0, mut b1, mut b2, mut b3) = (v0, v1, v2, v3);
+    for _ in 1..n {
+        v0 = vandq_u64(vorrq_u64(vshlq_n_u64::<1>(v0), vshlq_u64(v0, back)), m);
+        v1 = vandq_u64(vorrq_u64(vshlq_n_u64::<1>(v1), vshlq_u64(v1, back)), m);
+        v2 = vandq_u64(vorrq_u64(vshlq_n_u64::<1>(v2), vshlq_u64(v2, back)), m);
+        v3 = vandq_u64(vorrq_u64(vshlq_n_u64::<1>(v3), vshlq_u64(v3, back)), m);
+        b0 = vbslq_u64(vcgtq_u64(b0, v0), v0, b0);
+        b1 = vbslq_u64(vcgtq_u64(b1, v1), v1, b1);
+        b2 = vbslq_u64(vcgtq_u64(b2, v2), v2, b2);
+        b3 = vbslq_u64(vcgtq_u64(b3, v3), v3, b3);
+    }
+    let mut out = [0u64; 8];
+    vst1q_u64(out.as_mut_ptr(), b0);
+    vst1q_u64(out.as_mut_ptr().add(2), b1);
+    vst1q_u64(out.as_mut_ptr().add(4), b2);
+    vst1q_u64(out.as_mut_ptr().add(6), b3);
+    out
+}
+
 /// The least cyclic rotation of each of sixteen `n`-bit words.
 ///
 /// Rotation by one is `((v << 1) | (v >> (n − 1))) & mask`, one
@@ -1224,9 +1374,9 @@ pub struct BatchScratch {
     dens: Vec<u64>,
     acc: Vec<u64>,
     /// Structure-of-arrays copies of a block's addends, for the SIMD path.
-    #[cfg(all(target_arch = "x86_64", suite_avx512))]
+    #[cfg(any(all(target_arch = "x86_64", suite_avx512), target_arch = "aarch64"))]
     qx: Vec<u64>,
-    #[cfg(all(target_arch = "x86_64", suite_avx512))]
+    #[cfg(any(all(target_arch = "x86_64", suite_avx512), target_arch = "aarch64"))]
     qy: Vec<u64>,
 }
 
@@ -1411,6 +1561,16 @@ mod simd256 {
                 _mm256_castsi128_si256(_mm_unpackhi_epi64(p0, p1)),
                 _mm_unpackhi_epi64(p2, p3),
             );
+            self.reduce_products_const::<N, TAIL>(low, high)
+        }
+
+        #[inline]
+        #[target_feature(enable = "avx2")]
+        unsafe fn reduce_products_const<const N: u32, const TAIL: u64>(
+            &self,
+            low: __m256i,
+            high: __m256i,
+        ) -> __m256i {
             if N == 0 {
                 return self.reduce_products(low, high);
             }
@@ -1459,9 +1619,19 @@ mod simd256 {
             self.reduce_products(raw, _mm256_setzero_si256())
         }
 
+        #[cfg(test)]
         #[inline]
         #[target_feature(enable = "avx2,pclmulqdq")]
         unsafe fn square_packed_narrow(&self, a: __m256i) -> __m256i {
+            self.square_packed_narrow_const::<0, 0>(a)
+        }
+
+        #[inline]
+        #[target_feature(enable = "avx2,pclmulqdq")]
+        unsafe fn square_packed_narrow_const<const N: u32, const TAIL: u64>(
+            &self,
+            a: __m256i,
+        ) -> __m256i {
             let packed = _mm256_shuffle_epi32::<0xd8>(a);
             let low = _mm256_castsi256_si128(packed);
             let high = _mm256_extracti128_si256::<1>(packed);
@@ -1469,7 +1639,7 @@ mod simd256 {
                 _mm256_castsi128_si256(_mm_clmulepi64_si128::<0x00>(low, low)),
                 _mm_clmulepi64_si128::<0x00>(high, high),
             );
-            self.reduce_products(raw, _mm256_setzero_si256())
+            self.reduce_products_const::<N, TAIL>(raw, _mm256_setzero_si256())
         }
 
         #[cfg(test)]
@@ -1492,6 +1662,31 @@ mod simd256 {
                 _mm256_storeu_si256(out.as_mut_ptr() as *mut __m256i, value);
             }
             out
+        }
+
+        #[cfg(test)]
+        pub(super) fn square4_const(&self, a: &[u64; 4]) -> Option<[u64; 4]> {
+            if a.iter().any(|&x| x > self.mask) {
+                return None;
+            }
+            let mut out = [0; 4];
+            // SAFETY: new() checked CPU features; each admitted input is canonical.
+            unsafe {
+                let av = _mm256_loadu_si256(a.as_ptr().cast());
+                let tail = self.terms[..self.nterms]
+                    .iter()
+                    .fold(0u64, |value, &bit| value | (1u64 << bit));
+                let value = match (self.n, tail) {
+                    (15, 3) => self.square_packed_narrow_const::<15, 3>(av),
+                    (18, 9) => self.square_packed_narrow_const::<18, 9>(av),
+                    (21, 5) => self.square_packed_narrow_const::<21, 5>(av),
+                    (24, 27) => self.square_packed_narrow_const::<24, 27>(av),
+                    (27, 39) => self.square_packed_narrow_const::<27, 39>(av),
+                    _ => return None,
+                };
+                _mm256_storeu_si256(out.as_mut_ptr().cast(), value);
+            }
+            Some(out)
         }
 
         /// Lane-wise version of Gf2's existing four accumulators. Padding
@@ -1616,7 +1811,7 @@ mod simd256 {
         }
 
         #[allow(clippy::too_many_arguments)]
-        pub(super) unsafe fn add_cached(
+        pub(super) unsafe fn add_cached<const CANONICAL: bool>(
             &self,
             curve: &FastCurve,
             ps: &[FastPoint],
@@ -1627,31 +1822,38 @@ mod simd256 {
             strategy: u8,
         ) -> Result<usize, &'static str> {
             if strategy == 3 {
-                return self.add_cached_narrow::<false, 0, 0>(curve, ps, qs, out, scratch, cache);
+                return self.add_cached_narrow::<false, 0, 0, CANONICAL>(
+                    curve, ps, qs, out, scratch, cache,
+                );
             }
             if strategy == 2 {
                 // PCLMUL is available on every admitted host. Keep this narrow
                 // specialization explicit even on VPCLMUL-capable CPUs.
                 match (curve.field.n, curve.field.irr ^ (1u64 << curve.field.n)) {
                     (15, 3) => {
-                        return self
-                            .add_cached_narrow::<false, 15, 3>(curve, ps, qs, out, scratch, cache)
+                        return self.add_cached_narrow::<true, 15, 3, CANONICAL>(
+                            curve, ps, qs, out, scratch, cache,
+                        )
                     }
                     (18, 9) => {
-                        return self
-                            .add_cached_narrow::<false, 18, 9>(curve, ps, qs, out, scratch, cache)
+                        return self.add_cached_narrow::<true, 18, 9, CANONICAL>(
+                            curve, ps, qs, out, scratch, cache,
+                        )
                     }
                     (21, 5) => {
-                        return self
-                            .add_cached_narrow::<false, 21, 5>(curve, ps, qs, out, scratch, cache)
+                        return self.add_cached_narrow::<true, 21, 5, CANONICAL>(
+                            curve, ps, qs, out, scratch, cache,
+                        )
                     }
                     (24, 27) => {
-                        return self
-                            .add_cached_narrow::<false, 24, 27>(curve, ps, qs, out, scratch, cache)
+                        return self.add_cached_narrow::<true, 24, 27, CANONICAL>(
+                            curve, ps, qs, out, scratch, cache,
+                        )
                     }
                     (27, 39) => {
-                        return self
-                            .add_cached_narrow::<false, 27, 39>(curve, ps, qs, out, scratch, cache)
+                        return self.add_cached_narrow::<true, 27, 39, CANONICAL>(
+                            curve, ps, qs, out, scratch, cache,
+                        )
                     }
                     _ => {}
                 }
@@ -1659,12 +1861,11 @@ mod simd256 {
             match (self.use_vpclmul, strategy == 1 && self.n <= 32) {
                 (true, true) => self.add_cached_wide::<true>(curve, ps, qs, out, scratch, cache),
                 (true, false) => self.add_cached_wide::<false>(curve, ps, qs, out, scratch, cache),
-                (false, true) => {
-                    self.add_cached_narrow::<true, 0, 0>(curve, ps, qs, out, scratch, cache)
-                }
-                (false, false) => {
-                    self.add_cached_narrow::<false, 0, 0>(curve, ps, qs, out, scratch, cache)
-                }
+                (false, true) => self
+                    .add_cached_narrow::<true, 0, 0, CANONICAL>(curve, ps, qs, out, scratch, cache),
+                (false, false) => self.add_cached_narrow::<false, 0, 0, CANONICAL>(
+                    curve, ps, qs, out, scratch, cache,
+                ),
             }
         }
 
@@ -1728,8 +1929,98 @@ mod simd256 {
             Ok(vector_pairs)
         }
 
+        pub(super) unsafe fn add_indexed_const(
+            &self,
+            curve: &FastCurve,
+            points: &[FastPoint],
+            indices: &[(u32, u32)],
+            out: &mut Vec<Option<u64>>,
+            scratch: &mut BatchScratch,
+            cache: &PrefixInverseTable,
+        ) -> Result<usize, &'static str> {
+            match (curve.field.n, curve.field.irr ^ (1u64 << curve.field.n)) {
+                (15, 3) => self
+                    .add_indexed_const_narrow::<15, 3>(curve, points, indices, out, scratch, cache),
+                (18, 9) => self
+                    .add_indexed_const_narrow::<18, 9>(curve, points, indices, out, scratch, cache),
+                (21, 5) => self
+                    .add_indexed_const_narrow::<21, 5>(curve, points, indices, out, scratch, cache),
+                (24, 27) => self.add_indexed_const_narrow::<24, 27>(
+                    curve, points, indices, out, scratch, cache,
+                ),
+                (27, 39) => self.add_indexed_const_narrow::<27, 39>(
+                    curve, points, indices, out, scratch, cache,
+                ),
+                _ => Err("indexed constant kernel needs an admitted field"),
+            }
+        }
+
         #[target_feature(enable = "avx2,pclmulqdq")]
-        unsafe fn add_cached_narrow<const PACKED: bool, const N: u32, const TAIL: u64>(
+        unsafe fn add_indexed_const_narrow<const N: u32, const TAIL: u64>(
+            &self,
+            curve: &FastCurve,
+            points: &[FastPoint],
+            indices: &[(u32, u32)],
+            out: &mut Vec<Option<u64>>,
+            scratch: &mut BatchScratch,
+            cache: &PrefixInverseTable,
+        ) -> Result<usize, &'static str> {
+            let mut vector_pairs = 0;
+            out.reserve(indices.len());
+            for pairs in indices.chunks(4) {
+                let mut pc = [FastPoint::INFINITY; 4];
+                let mut qc = [FastPoint::INFINITY; 4];
+                for (lane, &(i, j)) in pairs.iter().enumerate() {
+                    pc[lane] = points[i as usize];
+                    qc[lane] = points[j as usize];
+                }
+                let mut inv = [0u64; 4];
+                let normal = pairs.len() == 4
+                    && (0..4).all(|i| {
+                        if pc[i].infinity || qc[i].infinity || pc[i].x == qc[i].x {
+                            return false;
+                        }
+                        let Some(&value) = cache.inverses.get((pc[i].x ^ qc[i].x) as usize) else {
+                            return false;
+                        };
+                        inv[i] = value;
+                        value != 0
+                    });
+                if !normal {
+                    curve.add_pairwise_abscissae_cached(
+                        &pc[..pairs.len()],
+                        &qc[..pairs.len()],
+                        out,
+                        scratch,
+                        cache,
+                    )?;
+                    continue;
+                }
+                let numerator: [u64; 4] = std::array::from_fn(|i| pc[i].y ^ qc[i].y);
+                let offset: [u64; 4] = std::array::from_fn(|i| pc[i].x ^ qc[i].x ^ curve.a);
+                let lambda = self.mul_pclmul128_reduction::<N, TAIL>(
+                    _mm256_loadu_si256(numerator.as_ptr() as *const __m256i),
+                    _mm256_loadu_si256(inv.as_ptr() as *const __m256i),
+                );
+                let x = _mm256_xor_si256(
+                    _mm256_xor_si256(self.square_packed_narrow_const::<N, TAIL>(lambda), lambda),
+                    _mm256_loadu_si256(offset.as_ptr() as *const __m256i),
+                );
+                let mut xs = [0u64; 4];
+                _mm256_storeu_si256(xs.as_mut_ptr() as *mut __m256i, x);
+                out.extend(xs.into_iter().map(Some));
+                vector_pairs += 4;
+            }
+            Ok(vector_pairs)
+        }
+
+        #[target_feature(enable = "avx2,pclmulqdq")]
+        unsafe fn add_cached_narrow<
+            const PACKED: bool,
+            const N: u32,
+            const TAIL: u64,
+            const CANONICAL: bool,
+        >(
             &self,
             curve: &FastCurve,
             ps: &[FastPoint],
@@ -1752,6 +2043,15 @@ mod simd256 {
                     if pc[i].infinity || qc[i].infinity || pc[i].x == qc[i].x {
                         return false;
                     }
+                    // Packed squares require canonical inputs. Keep the complete
+                    // scalar group fallback for arbitrary public FastPoint values.
+                    if PACKED
+                        && N != 0
+                        && !CANONICAL
+                        && (pc[i].x | pc[i].y | qc[i].x | qc[i].y) & !self.mask != 0
+                    {
+                        return false;
+                    }
                     let Some(&value) = cache.inverses.get((pc[i].x ^ qc[i].x) as usize) else {
                         return false;
                     };
@@ -1771,7 +2071,7 @@ mod simd256 {
                 let x = _mm256_xor_si256(
                     _mm256_xor_si256(
                         if PACKED {
-                            self.square_packed_narrow(lambda)
+                            self.square_packed_narrow_const::<N, TAIL>(lambda)
                         } else {
                             self.mul_pclmul128_reduction::<N, TAIL>(lambda, lambda)
                         },
@@ -2005,6 +2305,228 @@ mod simd512 {
                 _mm512_storeu_si512(out.as_mut_ptr() as *mut _, r);
             }
             out
+        }
+    }
+}
+
+#[cfg(target_arch = "aarch64")]
+mod simdaarch64 {
+    use super::{BatchScratch, FastCurve, FastPoint};
+    use crate::cryptanalysis::semaev_decomp::Gf2;
+    use std::arch::aarch64::*;
+
+    /// Eight-lane (4 × `poly64x2_t`) AArch64 NEON PMULL kernel for
+    /// [`FastCurve::add_many_lazy`].
+    #[derive(Clone, Copy, Debug)]
+    pub(super) struct SimdNeon {
+        n: u32,
+        mask: u64,
+        has_const_one: bool,
+        pos_terms: [u32; 7],
+        npos_terms: usize,
+    }
+
+    impl SimdNeon {
+        pub(super) fn new(field: &Gf2) -> Option<Self> {
+            #[cfg(not(target_feature = "aes"))]
+            if !std::arch::is_aarch64_feature_detected!("aes") {
+                return None;
+            }
+            if std::env::var("KIC_SCAN_SIMD").as_deref() == Ok("0") {
+                return None;
+            }
+            Self::for_field(field)
+        }
+
+        pub(super) fn for_field(field: &Gf2) -> Option<Self> {
+            let n = field.n;
+            if !(2..=63).contains(&n) {
+                return None;
+            }
+            let tail = field.irr ^ (1u64 << n);
+            let t_max = 63 - tail.leading_zeros();
+            if n + t_max > 64 || 2 * t_max > n + 1 || tail.count_ones() as usize > 8 {
+                return None;
+            }
+            let has_const_one = (tail & 1) == 1;
+            let mut pos_terms = [0u32; 7];
+            let mut npos_terms = 0;
+            for t in 1..n {
+                if (tail >> t) & 1 == 1 {
+                    if npos_terms >= 7 {
+                        return None;
+                    }
+                    pos_terms[npos_terms] = t;
+                    npos_terms += 1;
+                }
+            }
+            Some(Self {
+                n,
+                mask: (1u64 << n) - 1,
+                has_const_one,
+                pos_terms,
+                npos_terms,
+            })
+        }
+
+        pub(super) fn add_many_lazy(
+            &self,
+            curve: &FastCurve,
+            p: FastPoint,
+            qs: &[FastPoint],
+            out: &mut Vec<FastPoint>,
+            lambdas: &mut Vec<u64>,
+            scratch: &mut BatchScratch,
+        ) -> bool {
+            if p.infinity || qs.is_empty() {
+                return false;
+            }
+            let padded = qs.len().div_ceil(8) * 8;
+            let BatchScratch { dens, acc, qx, qy } = scratch;
+            dens.clear();
+            qx.clear();
+            qy.clear();
+            for q in qs {
+                if q.infinity || q.x == p.x {
+                    return false;
+                }
+                qx.push(q.x);
+                qy.push(q.y);
+                dens.push(p.x ^ q.x);
+            }
+            qx.resize(padded, 0);
+            qy.resize(padded, 0);
+            dens.resize(padded, 1);
+            acc.clear();
+            acc.resize(padded, 0);
+            // SAFETY: `SimdNeon` verified `aes` (`PMULL`) support and `padded` is a multiple of 8.
+            unsafe { self.kernel(curve, p, dens, acc, qx, qy) };
+            out.reserve(qs.len());
+            lambdas.reserve(qs.len());
+            out.extend(acc[..qs.len()].iter().map(|&x| FastPoint::affine(x, 0)));
+            lambdas.extend_from_slice(&dens[..qs.len()]);
+            true
+        }
+
+        #[cfg_attr(not(target_feature = "aes"), target_feature(enable = "aes"))]
+        unsafe fn kernel(
+            &self,
+            curve: &FastCurve,
+            p: FastPoint,
+            dens: &mut [u64],
+            pre: &mut [u64],
+            qx: &[u64],
+            qy: &[u64],
+        ) {
+            let groups = dens.len() / 8;
+            let mut acc0 = vdupq_n_u64(1);
+            let mut acc1 = vdupq_n_u64(1);
+            let mut acc2 = vdupq_n_u64(1);
+            let mut acc3 = vdupq_n_u64(1);
+            for g in 0..groups {
+                let off = 8 * g;
+                vst1q_u64(pre.as_mut_ptr().add(off), acc0);
+                vst1q_u64(pre.as_mut_ptr().add(off + 2), acc1);
+                vst1q_u64(pre.as_mut_ptr().add(off + 4), acc2);
+                vst1q_u64(pre.as_mut_ptr().add(off + 6), acc3);
+                acc0 = self.mul2(acc0, vld1q_u64(dens.as_ptr().add(off)));
+                acc1 = self.mul2(acc1, vld1q_u64(dens.as_ptr().add(off + 2)));
+                acc2 = self.mul2(acc2, vld1q_u64(dens.as_ptr().add(off + 4)));
+                acc3 = self.mul2(acc3, vld1q_u64(dens.as_ptr().add(off + 6)));
+            }
+            let mut lanes = [0u64; 8];
+            vst1q_u64(lanes.as_mut_ptr(), acc0);
+            vst1q_u64(lanes.as_mut_ptr().add(2), acc1);
+            vst1q_u64(lanes.as_mut_ptr().add(4), acc2);
+            vst1q_u64(lanes.as_mut_ptr().add(6), acc3);
+            let mut tmp = Vec::with_capacity(8);
+            curve.field.batch_inv(&mut lanes, &mut tmp);
+            let mut inv0 = vld1q_u64(lanes.as_ptr());
+            let mut inv1 = vld1q_u64(lanes.as_ptr().add(2));
+            let mut inv2 = vld1q_u64(lanes.as_ptr().add(4));
+            let mut inv3 = vld1q_u64(lanes.as_ptr().add(6));
+            let py = vdupq_n_u64(p.y);
+            let px_a = vdupq_n_u64(p.x ^ curve.a);
+            for g in (0..groups).rev() {
+                let off = 8 * g;
+                let d0 = vld1q_u64(dens.as_ptr().add(off));
+                let d1 = vld1q_u64(dens.as_ptr().add(off + 2));
+                let d2 = vld1q_u64(dens.as_ptr().add(off + 4));
+                let d3 = vld1q_u64(dens.as_ptr().add(off + 6));
+
+                let di0 = self.mul2(inv0, vld1q_u64(pre.as_ptr().add(off)));
+                let di1 = self.mul2(inv1, vld1q_u64(pre.as_ptr().add(off + 2)));
+                let di2 = self.mul2(inv2, vld1q_u64(pre.as_ptr().add(off + 4)));
+                let di3 = self.mul2(inv3, vld1q_u64(pre.as_ptr().add(off + 6)));
+                inv0 = self.mul2(inv0, d0);
+                inv1 = self.mul2(inv1, d1);
+                inv2 = self.mul2(inv2, d2);
+                inv3 = self.mul2(inv3, d3);
+
+                let l0 = self.mul2(veorq_u64(py, vld1q_u64(qy.as_ptr().add(off))), di0);
+                let l1 = self.mul2(veorq_u64(py, vld1q_u64(qy.as_ptr().add(off + 2))), di1);
+                let l2 = self.mul2(veorq_u64(py, vld1q_u64(qy.as_ptr().add(off + 4))), di2);
+                let l3 = self.mul2(veorq_u64(py, vld1q_u64(qy.as_ptr().add(off + 6))), di3);
+
+                let x0 = veorq_u64(
+                    veorq_u64(self.mul2(l0, l0), l0),
+                    veorq_u64(px_a, vld1q_u64(qx.as_ptr().add(off))),
+                );
+                let x1 = veorq_u64(
+                    veorq_u64(self.mul2(l1, l1), l1),
+                    veorq_u64(px_a, vld1q_u64(qx.as_ptr().add(off + 2))),
+                );
+                let x2 = veorq_u64(
+                    veorq_u64(self.mul2(l2, l2), l2),
+                    veorq_u64(px_a, vld1q_u64(qx.as_ptr().add(off + 4))),
+                );
+                let x3 = veorq_u64(
+                    veorq_u64(self.mul2(l3, l3), l3),
+                    veorq_u64(px_a, vld1q_u64(qx.as_ptr().add(off + 6))),
+                );
+
+                vst1q_u64(pre.as_mut_ptr().add(off), x0);
+                vst1q_u64(pre.as_mut_ptr().add(off + 2), x1);
+                vst1q_u64(pre.as_mut_ptr().add(off + 4), x2);
+                vst1q_u64(pre.as_mut_ptr().add(off + 6), x3);
+                vst1q_u64(dens.as_mut_ptr().add(off), l0);
+                vst1q_u64(dens.as_mut_ptr().add(off + 2), l1);
+                vst1q_u64(dens.as_mut_ptr().add(off + 4), l2);
+                vst1q_u64(dens.as_mut_ptr().add(off + 6), l3);
+            }
+        }
+
+        #[inline(always)]
+        #[cfg_attr(not(target_feature = "aes"), target_feature(enable = "aes"))]
+        unsafe fn mul2(&self, a: uint64x2_t, b: uint64x2_t) -> uint64x2_t {
+            let p0 = vreinterpretq_u64_p128(vmull_p64(vgetq_lane_u64(a, 0), vgetq_lane_u64(b, 0)));
+            let p1 = vreinterpretq_u64_p128(vmull_high_p64(
+                vreinterpretq_p64_u64(a),
+                vreinterpretq_p64_u64(b),
+            ));
+            let lo = vuzp1q_u64(p0, p1);
+            let hi = vuzp2q_u64(p0, p1);
+            let sn_neg = vdupq_n_s64(-(self.n as i64));
+            let sn_comp = vdupq_n_s64((64 - self.n) as i64);
+            let mask = vdupq_n_u64(self.mask);
+            let h = vorrq_u64(vshlq_u64(lo, sn_neg), vshlq_u64(hi, sn_comp));
+            let f = self.times_tail(h);
+            let low = vandq_u64(veorq_u64(lo, f), mask);
+            let f2 = self.times_tail(vshlq_u64(f, sn_neg));
+            veorq_u64(low, f2)
+        }
+
+        #[inline(always)]
+        unsafe fn times_tail(&self, h: uint64x2_t) -> uint64x2_t {
+            let mut acc = if self.has_const_one {
+                h
+            } else {
+                vdupq_n_u64(0)
+            };
+            for &t in &self.pos_terms[..self.npos_terms] {
+                acc = veorq_u64(acc, vshlq_u64(h, vdupq_n_s64(i64::from(t))));
+            }
+            acc
         }
     }
 }
@@ -2606,6 +3128,34 @@ mod tests {
     }
 
     #[test]
+    fn packed_const_square_matches_scalar_and_rejects_noncanonical() {
+        #[cfg(all(target_arch = "x86_64", suite_avx512))]
+        {
+            let mut rng = StdRng::seed_from_u64(0x00C0_575A);
+            for n in [15, 18, 21, 24, 27] {
+                let field = nb_field(n);
+                let Some(kernel) = simd256::Simd256::new(&field) else {
+                    eprintln!("skipped: packed const square requires native SIMD");
+                    return;
+                };
+                let edge = [0, 1, field.mask, 1 << (n - 1)];
+                for i in 0..1001 {
+                    let a = if i == 0 {
+                        edge
+                    } else {
+                        std::array::from_fn(|_| rng.gen::<u64>() & field.mask)
+                    };
+                    assert_eq!(kernel.square4_const(&a), Some(a.map(|x| field.mul(x, x))));
+                }
+                assert_eq!(kernel.square4_const(&[1u64 << n, 0, 1, field.mask]), None);
+            }
+            eprintln!("SIMD packed constant squares accepted");
+        }
+        #[cfg(not(all(target_arch = "x86_64", suite_avx512)))]
+        eprintln!("skipped: packed const square requires native SIMD");
+    }
+
+    #[test]
     fn const_cached_reduction_matches_general_with_exceptions_and_tails() {
         let mut rng = StdRng::seed_from_u64(0xC057_F1E1D);
         for (n, tail) in [(15, 3u64), (18, 9), (21, 5), (24, 27), (27, 39), (19, 39)] {
@@ -2617,6 +3167,8 @@ mod tests {
                 field,
                 #[cfg(all(target_arch = "x86_64", suite_avx512))]
                 simd: None,
+                #[cfg(target_arch = "aarch64")]
+                simd_neon: None,
             };
             let exact = matches!(n, 15 | 18 | 21 | 24 | 27);
             if exact {
@@ -2637,6 +3189,10 @@ mod tests {
             qs[14] = ps[14];
             qs[15] = curve.neg(ps[15]);
             let cache = PrefixInverseTable::new(&curve.field, 3).unwrap();
+            let points: Vec<_> = ps.iter().chain(&qs).copied().collect();
+            let indices: Vec<_> = (0..ps.len())
+                .map(|i| (i as u32, (ps.len() + i) as u32))
+                .collect();
             let mut scratch = BatchScratch::default();
             for len in [0, 1, 3, 4, 7, 15, 16, 17, 96, 97] {
                 let mut expected = vec![Some(123)];
@@ -2672,8 +3228,79 @@ mod tests {
                 assert_eq!(dynamic, expected, "forced narrow n={n}, len={len}");
                 assert_eq!(dynamic_count, count);
                 assert_eq!(got, expected, "n={n}, len={len}");
+                let mut indexed = vec![Some(123)];
+                let indexed_count = curve
+                    .add_indexed_abscissae_vector_const_cached(
+                        &points,
+                        &indices[..len],
+                        &mut indexed,
+                        &mut scratch,
+                        &cache,
+                    )
+                    .unwrap();
+                assert_eq!(indexed, expected, "indexed n={n}, len={len}");
+                assert_eq!(indexed_count, if exact { count } else { 0 });
+                if exact {
+                    let mut validated = vec![Some(123)];
+                    let validated_count = curve
+                        .add_pairwise_abscissae_vector_const_validated_cached(
+                            &ps[..len],
+                            &qs[..len],
+                            &mut validated,
+                            &mut scratch,
+                            &cache,
+                        )
+                        .unwrap();
+                    assert_eq!(validated, expected, "validated base n={n}, len={len}");
+                    assert_eq!(validated_count, count);
+                }
                 if exact && len >= 4 && curve.cached_vector_backend() != "scalar" {
                     assert!(count >= 4, "specialized normal block must execute");
+                }
+            }
+            // Noncanonical inputs remain outside the field arithmetic domain.
+            // Preserve the scalar fallback's behavior, including its assertions.
+            if exact {
+                for bit in [n, 63] {
+                    let mut bad_ps = ps.clone();
+                    let mut bad_qs = qs.clone();
+                    bad_ps[4].x |= 1u64 << bit;
+                    bad_qs[4].x |= 1u64 << bit;
+                    bad_ps[4].y |= 1u64 << bit;
+                    for len in [7, 21] {
+                        let expected =
+                            std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+                                let mut out = vec![Some(987)];
+                                curve
+                                    .add_pairwise_abscissae_cached(
+                                        &bad_ps[..len],
+                                        &bad_qs[..len],
+                                        &mut out,
+                                        &mut scratch,
+                                        &cache,
+                                    )
+                                    .unwrap();
+                                out
+                            }));
+                        let got = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+                            let mut out = vec![Some(987)];
+                            curve
+                                .add_pairwise_abscissae_vector_const_cached(
+                                    &bad_ps[..len],
+                                    &bad_qs[..len],
+                                    &mut out,
+                                    &mut scratch,
+                                    &cache,
+                                )
+                                .unwrap();
+                            out
+                        }));
+                        match (expected, got) {
+                            (Ok(expected), Ok(got)) => assert_eq!(got, expected),
+                            (Err(_), Err(_)) => {},
+                            _ => panic!("noncanonical fallback behavior changed n={n}, bit={bit}, len={len}"),
+                        }
+                    }
                 }
             }
             let other = PrefixInverseTable::new(&nb_field(7), 3).unwrap();
@@ -2878,7 +3505,10 @@ mod tests {
                 a: 1,
                 b: 1,
                 field,
+                #[cfg(all(target_arch = "x86_64", suite_avx512))]
                 simd: None,
+                #[cfg(target_arch = "aarch64")]
+                simd_neon: None,
             };
             let mut ps: Vec<_> = (0..37)
                 .map(|_| {
@@ -2957,5 +3587,36 @@ mod tests {
     fn refuses_fields_wider_than_a_word() {
         let curve = BinaryCurve::sect113r1();
         assert!(FastCurve::new(&curve).is_none());
+    }
+
+    #[cfg(target_arch = "aarch64")]
+    #[test]
+    fn simd_neon_lazy_matches_scalar() {
+        for &n in &[19u32, 31, 41, 53] {
+            let kc = KoblitzCurve::new(0, n).unwrap();
+            let fc = FastCurve::new(&kc.curve).unwrap();
+            assert!(fc.simd_neon.is_some(), "SimdNeon should enable for n={n}");
+            let pts: Vec<FastPoint> = random_points(&kc, 35, 17)
+                .iter()
+                .map(|p| fc.lift(p))
+                .collect();
+            let p = pts.iter().copied().find(|q| !q.infinity).unwrap();
+            let qs: Vec<FastPoint> = pts
+                .iter()
+                .copied()
+                .filter(|q| !q.infinity && q.x != p.x)
+                .collect();
+            let (mut out_v, mut lam_v, mut scr_v) =
+                (Vec::new(), Vec::new(), BatchScratch::default());
+            let (mut out_s, mut lam_s, mut scr_s) =
+                (Vec::new(), Vec::new(), BatchScratch::default());
+            assert!(fc
+                .simd_neon
+                .unwrap()
+                .add_many_lazy(&fc, p, &qs, &mut out_v, &mut lam_v, &mut scr_v));
+            fc.add_many_lazy_scalar(p, &qs, &mut out_s, &mut lam_s, &mut scr_s);
+            assert_eq!(out_v, out_s);
+            assert_eq!(lam_v, lam_s);
+        }
     }
 }

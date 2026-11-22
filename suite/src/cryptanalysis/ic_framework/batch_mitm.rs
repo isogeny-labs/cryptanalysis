@@ -1,7 +1,7 @@
 //! Opt-in binary MITM with complete native batch preparation accounting.
 use super::stages::{DecompositionOracle, InstanceCtx, Params};
 use crate::cryptanalysis::ic_boundary::{
-    decompose_mitm, BinaryGroup, FactorBase, GroupOps, OracleCounters, PairTable,
+    BinaryGroup, FactorBase, GroupOps, OracleCounters, PairTable,
 };
 use crate::cryptanalysis::koblitz_fast::FastPoint;
 use std::collections::BTreeMap;
@@ -12,6 +12,7 @@ pub struct BinaryBatchMitmOracle {
     table: Option<PairTable>,
     setup_ns: u64,
     used_scalar: bool,
+    suppress_indexed_counter: bool,
 }
 
 impl<'a> DecompositionOracle<BinaryGroup<'a>> for BinaryBatchMitmOracle {
@@ -28,6 +29,10 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for BinaryBatchMitmOracle {
             "scalar at <=64 abscissae, bounded prefix inverse reuse above64"
         } else if params.u64_or("vector_prepare", 0).ok() == Some(4) {
             "ordinary PCLMUL dynamic reduction control, exact fallback"
+        } else if matches!(params.u64_or("vector_prepare", 0).ok(), Some(6..=8)) {
+            "indexed constant preparation with observed point-buffer setup control"
+        } else if params.u64_or("vector_prepare", 0).ok() == Some(5) {
+            "staged point-buffer constant polynomial preparation, general fallback"
         } else if params.u64_or("vector_prepare", 0).ok() == Some(3) {
             "exact-field constant polynomial PCLMUL preparation, general fallback"
         } else if params.u64_or("vector_prepare", 0).ok() == Some(2) {
@@ -47,7 +52,8 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for BinaryBatchMitmOracle {
     }
     fn parameters(&self) -> &[(&str, &str)] {
         &[
-            ("vector_prepare", "0 scalar default,1 vector,2 vector with packed squaring <=32 bits,3 exact-field constant reduction,4 ordinary PCLMUL dynamic control; guarded AVX2/PCLMUL with complete fallback"),
+            ("vector_prepare", "0 scalar default,1 vector,2 vector with packed squaring <=32 bits,3 exact-field constant reduction,4 ordinary PCLMUL dynamic control,5 staged constant control,6 observed empty buffers,7 observed reserved buffers,8 observed gathered buffers; guarded AVX2/PCLMUL with complete fallback"),
+            ("suppress_indexed_counter", "0 default or1; setup-state experiment omitting only the indexed-pair metadata entry, with accumulation retained"),
             ("scalar_prepare", "0 or1, default0; original scalar table with fixed-two-summand query dispatch"),
             ("adaptive_prepare", "0 or1, default0; scalar at <=64 abscissae, prefix-cached x-only above64; experimental policy"),
             (
@@ -83,13 +89,17 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for BinaryBatchMitmOracle {
         if prefix_cache > 1 {
             return Err("prefix_inverse_cache must be0 or1".into());
         }
+        let suppress_indexed_counter = params.u64_or("suppress_indexed_counter", 0)?;
+        if suppress_indexed_counter > 1 {
+            return Err("suppress_indexed_counter must be0 or1".into());
+        }
         let start = Instant::now();
         let scalar = params.u64_or("scalar_prepare", 0)?;
         let adaptive = params.u64_or("adaptive_prepare", 0)?;
         let vector = params.u64_or("vector_prepare", 0)?;
-        if scalar > 1 || adaptive > 1 || vector > 4 {
+        if scalar > 1 || adaptive > 1 || vector > 8 {
             return Err(
-                "scalar/adaptive flags must be0 or1; vector_prepare must be0,1,2,3 or4".into(),
+                "scalar/adaptive flags must be0 or1; vector_prepare must be in0..=8".into(),
             );
         }
         if (scalar == 1 && (adaptive == 1 || prefix_cache == 1 || x_only == 1 || vector != 0))
@@ -99,12 +109,26 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for BinaryBatchMitmOracle {
                 "scalar/adaptive preparation cannot be combined with another strategy".into(),
             );
         }
+        self.suppress_indexed_counter = suppress_indexed_counter == 1;
         self.used_scalar = scalar == 1 || (adaptive == 1 && fb.abscissa_list.len() <= 64);
         self.table = Some(
             (if self.used_scalar {
                 Ok(PairTable::build_negation_folded(ctx.group, fb))
             } else if vector != 0 {
-                if vector == 4 {
+                if vector >= 6 {
+                    PairTable::build_negation_folded_binary_vector_const_setup_control_cached(
+                        ctx.group.0,
+                        fb,
+                        size as usize,
+                        (vector - 6) as u8,
+                    )
+                } else if vector == 5 {
+                    PairTable::build_negation_folded_binary_vector_const_staged_cached(
+                        ctx.group.0,
+                        fb,
+                        size as usize,
+                    )
+                } else if vector == 4 {
                     PairTable::build_negation_folded_binary_vector_narrow_cached(
                         ctx.group.0,
                         fb,
@@ -148,15 +172,55 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for BinaryBatchMitmOracle {
         Ok(())
     }
     fn setup_native(&self) -> BTreeMap<String, u64> {
+        // Each branch retains a fixed-array constructor. The absent branch
+        // never allocates/inserts the omitted key, rather than removing it
+        // after constructing the original map.
+        macro_rules! setup_map {
+            ($($indexed:expr)?) => {
         BTreeMap::from([
             ("mitm_batch_setup_ns".into(), self.setup_ns),
+            (
+                "mitm_compact_map32_backend".into(),
+                u64::from(
+                    self.table
+                        .as_ref()
+                        .is_some_and(PairTable::uses_compact_storage),
+                ),
+            ),
+            (
+                "mitm_map_entry_payload_bytes".into(),
+                self.table
+                    .as_ref()
+                    .map_or(0, |t| t.witness_entry_payload_bytes() as u64),
+            ),
             (
                 "mitm_vector_const_pairs".into(),
                 self.table
                     .as_ref()
                     .map_or(0, |t| t.vector_const_pairs as u64),
             ),
+            $($indexed,)?
             ("mitm_scalar_prepare".into(), u64::from(self.used_scalar)),
+            (
+                "mitm_vector_const_validated_pairs".into(),
+                self.table.as_ref().map_or(0, |t| {
+                    if t.uses_compact_storage() {
+                        t.vector_const_pairs as u64
+                    } else {
+                        0
+                    }
+                }),
+            ),
+            (
+                "mitm_vector_const_packed_square_pairs".into(),
+                self.table.as_ref().map_or(0, |t| {
+                    if t.vector_const_pairs != 0 {
+                        t.vector_packed_square_pairs as u64
+                    } else {
+                        0
+                    }
+                }),
+            ),
             (
                 "mitm_vector_packed_square_pairs".into(),
                 self.table
@@ -190,6 +254,18 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for BinaryBatchMitmOracle {
                     .map_or(0, |t| t.prefix_inverse_bytes as u64),
             ),
         ])
+            };
+        }
+        if self.suppress_indexed_counter {
+            setup_map!()
+        } else {
+            setup_map!((
+                "mitm_indexed_prepare_pairs".into(),
+                self.table
+                    .as_ref()
+                    .map_or(0, |t| t.indexed_prepare_pairs as u64),
+            ))
+        }
     }
     fn decompose(
         &mut self,
@@ -199,7 +275,13 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for BinaryBatchMitmOracle {
         counters: &mut OracleCounters,
         point: FastPoint,
     ) -> Option<Vec<usize>> {
-        decompose_mitm(ctx.group, fb, self.table.as_ref()?, 2, ops, counters, point)
+        // This oracle accepts exactly two summands. Keep that specialization
+        // explicit: relying on inlining the general m=2/m=3 dispatcher added
+        // an extra call and general-case frame to every relation query.
+        self.table
+            .as_ref()?
+            .probe(ctx.group, fb, ops, &mut counters.lookups, point)
+            .map(|(i, j)| vec![i, j])
     }
 }
 
@@ -210,6 +292,49 @@ mod tests {
     use crate::cryptanalysis::ic_framework::plugins::BinarySubspaceBase;
     use crate::cryptanalysis::ic_framework::stages::Targets;
     use crate::cryptanalysis::ic_framework::{run_pipeline, PipelineSpec};
+
+    #[test]
+    fn counterfactual_metadata_omits_only_one_entry_and_keeps_accumulation() {
+        use crate::cryptanalysis::ic_boundary::binary_subspace_factor_base;
+        let inst = random_binary_instance(7, 3, 8).unwrap();
+        let fb = binary_subspace_factor_base(&inst, &[1, 2, 4]);
+        let mut table = PairTable::build_negation_folded(&BinaryGroup(&inst.fast), &fb);
+        table.indexed_prepare_pairs = 123;
+        let mut oracle = BinaryBatchMitmOracle {
+            table: Some(table),
+            ..Default::default()
+        };
+        let mut present = oracle.setup_native();
+        assert_eq!(present.remove("mitm_indexed_prepare_pairs"), Some(123));
+        oracle.suppress_indexed_counter = true;
+        assert_eq!(present, oracle.setup_native());
+        assert_eq!(oracle.table.as_ref().unwrap().indexed_prepare_pairs, 123);
+    }
+
+    #[test]
+    fn counterfactual_metadata_flag_rejects_non_boolean_values() {
+        use crate::cryptanalysis::ic_boundary::binary_subspace_factor_base;
+        let inst = random_binary_instance(7, 3, 8).unwrap();
+        let group = BinaryGroup(&inst.fast);
+        let fb = binary_subspace_factor_base(&inst, &[1, 2, 4]);
+        let ctx = InstanceCtx {
+            group: &group,
+            generator: inst.generator,
+            target: inst.generator,
+            r: inst.r,
+            cofactor: inst.cofactor,
+            group_order: inst.group_order,
+            name: inst.name.clone(),
+            field_degree: Some(inst.n),
+        };
+        let mut params = Params::default();
+        params.set("suppress_indexed_counter", "2");
+        let mut oracle = BinaryBatchMitmOracle::default();
+        assert!(oracle
+            .prepare(&ctx, &fb, &params, &mut GroupOps::default())
+            .is_err());
+        assert!(oracle.table.is_none());
+    }
 
     #[test]
     fn complete_pipeline_prices_native_preparation_without_individual_adds() {
@@ -424,7 +549,7 @@ mod tests {
             ("batch_size", "65537"),
             ("x_only", "2"),
             ("prefix_inverse_cache", "2"),
-            ("vector_prepare", "5"),
+            ("vector_prepare", "9"),
             ("scalar_prepare", "2"),
             ("adaptive_prepare", "2"),
         ] {
@@ -434,6 +559,13 @@ mod tests {
                 .prepare(&ctx, &empty, &params, &mut GroupOps::default())
                 .is_err());
         }
+        let mut staged_params = Params::default();
+        staged_params.set("vector_prepare", "5");
+        let mut staged = BinaryBatchMitmOracle::default();
+        staged
+            .prepare(&ctx, &empty, &staged_params, &mut GroupOps::default())
+            .unwrap();
+        assert_eq!(staged.table.as_ref().unwrap().entries, 0);
     }
     #[test]
     fn batched_walk_pipeline_matches_scalar_schedule_and_counts_unused_work() {

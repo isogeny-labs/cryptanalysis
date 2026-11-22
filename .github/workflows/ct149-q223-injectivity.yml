@@ -1,0 +1,37 @@
+name: CT149 q223 13-primary injectivity integer audit
+
+on:
+  push:
+    branches:
+      - research/ct146-correction-torsion-contract-20261115
+  pull_request:
+    paths:
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/ct149_q223_injectivity_audit.py'
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT149_Q223_INJECTIVITY_*.md'
+      - '.github/workflows/ct149-q223-injectivity.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  exact-integer-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit q223 reported integer orders with optimized-mode parity
+        shell: bash
+        run: |
+          set -euo pipefail
+          f=experiments/chained-transfer-public-target/norm-point-reuse-01/ct149_q223_injectivity_audit.py
+          python3 -S "$f" > /tmp/ct149-normal.json
+          python3 -O -S "$f" > /tmp/ct149-opt.json
+          cmp /tmp/ct149-normal.json /tmp/ct149-opt.json
+          python3 - <<'PY'
+          import json
+          r=json.load(open('/tmp/ct149-normal.json'))
+          assert r['negative_controls_rejected']==3
+          assert [(x['ell'],x['full_group_order']) for x in r['models']]==[(2773073,11092292),(2771711,11086844)]
+          assert [[y['degree'] for y in x['degree_checks']] for x in r['models']]==[[13,169],[13,169]]
+          PY
+          sha256sum "$f" /tmp/ct149-normal.json

@@ -1,0 +1,18 @@
+   Compiling cryptanalysis-sys v0.1.0 (/tmp/ic-canonical-frozen-source-001/bindings/rust/cryptanalysis-sys)
+   Compiling cryptanalysis-suite v0.1.0 (/tmp/ic-canonical-frozen-source-001/suite)
+   Compiling hashed-ecdl-tensor v0.1.1 (/tmp/ic-canonical-frozen-source-001/crates/hashed-ecdl-tensor)
+   Compiling crypto-analysis-core v0.1.0 (/tmp/ic-canonical-frozen-source-001/suite/vendor/crypto-analysis-core)
+   Compiling cryptanalysis v0.1.0 (/tmp/ic-canonical-frozen-source-001/bindings/rust/cryptanalysis)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 53.99s
+     Running unittests src/lib.rs (suite/target/debug/deps/cryptanalysis_suite-41506936d1e77cdf)
+
+running 6 tests
+test cryptanalysis::ic_framework::batch_mitm::tests::batched_walk_pipeline_matches_scalar_schedule_and_counts_unused_work ... ok
+test cryptanalysis::ic_framework::batch_mitm::tests::batched_walk_vector_matches_ordinary_batch_schedule ... ok
+test cryptanalysis::ic_framework::batch_mitm::tests::batched_walk_vector_inverse_matches_vector_schedule ... ok
+test cryptanalysis::ic_boundary::batched_walk::tests::generic_pairwise_fallback_preserves_the_same_schedule ... ok
+test cryptanalysis::ic_boundary::batched_walk::tests::native_and_scalar_streams_preserve_coefficients_restarts_and_caps ... ok
+test cryptanalysis::ic_boundary::batched_walk::tests::canonical_add_matches_wide_remainder_across_moduli ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 3177 filtered out; finished in 0.10s
+

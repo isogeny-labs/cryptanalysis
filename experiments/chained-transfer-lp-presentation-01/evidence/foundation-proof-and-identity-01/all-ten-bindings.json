@@ -1,0 +1,52 @@
+[
+  {
+    "claim": "pcc/claims/PCC-20261115-374c1b.json",
+    "theorem": "LPProjection.even_four_cycle",
+    "statement": "theorem even_four_cycle {K : Type} [CommRing K] (a b c d : K) : ((a + b) - (b + c)) + ((c + d) - (d + a)) = 0"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-13cbd3.json",
+    "theorem": "LPProjection.odd_triangle",
+    "statement": "theorem odd_triangle {K : Type} [CommRing K] (a b c : K) : ((a + b) - (b + c)) + (c + a) = 2 * a"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-ca6c10.json",
+    "theorem": "LPProjection.two_odd_triangles",
+    "statement": "theorem two_odd_triangles {K : Type} [CommRing K] (a b c d e : K) : (((a + b) - (b + c)) + (c + a)) - (((a + d) - (d + e)) + (e + a)) = 0"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-e3db4f.json",
+    "theorem": "LPProjection.half_ground_edge",
+    "statement": "theorem half_ground_edge {K : Type} [CommRing K] (a b : K) : 2 * (a + b) - 2 * a = 2 * b"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-b58e30.json",
+    "theorem": "LPProjection.dot_zero",
+    "statement": "theorem dot_zero {C K : Type} [CommRing K] (columns : List C) (r : C \u2192 K) : dot columns r (fun _ => 0) = 0"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-d0de65.json",
+    "theorem": "LPProjection.dot_add",
+    "statement": "theorem dot_add {C K : Type} [CommRing K] (columns : List C) (r v w : C \u2192 K) : dot columns r (fun c => v c + w c) = dot columns r v + dot columns r w"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-84566e.json",
+    "theorem": "LPProjection.dot_scale",
+    "statement": "theorem dot_scale {C K : Type} [CommRing K] (columns : List C) (r v : C \u2192 K) (s : K) : dot columns r (fun c => s * v c) = s * dot columns r v"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-032fe9.json",
+    "theorem": "LPProjection.combine_kernel",
+    "statement": "theorem combine_kernel {I R C K : Type} [CommRing K] (columns : List C) (matrix : R \u2192 C \u2192 K) (indices : List I) (coefficient : I \u2192 K) (vectors : I \u2192 C \u2192 K) (valid : \u2200 i, RowKernel columns matrix (vectors i)) : RowKernel columns matrix (combine indices coefficient vectors)"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-afdc2b.json",
+    "theorem": "LPProjection.combine_full_kernel",
+    "statement": "theorem combine_full_kernel {I R LP FB K : Type} [CommRing K] (lpcols : List LP) (fbcols : List FB) (left : R \u2192 LP \u2192 K) (right : R \u2192 FB \u2192 K) (indices : List I) (coefficient : I \u2192 K) (lifts : I \u2192 LP \u2192 K) (images : I \u2192 FB \u2192 K) (valid : \u2200 i, FullKernel lpcols fbcols left right (lifts i) (images i)) : FullKernel lpcols fbcols left right (combine indices coefficient lifts) (combine indices coefficient images)"
+  },
+  {
+    "claim": "pcc/claims/PCC-20261115-fe357e.json",
+    "theorem": "LPProjection.projected_kernel_iff_of_finite_spans",
+    "statement": "theorem projected_kernel_iff_of_finite_spans {I J R S LP FB K : Type} [CommRing K] (lpcols : List LP) (fbcols : List FB) (left : R \u2192 LP \u2192 K) (right : R \u2192 FB \u2192 K) (constraints : S \u2192 FB \u2192 K) (fullIndices : List I) (fullImages : I \u2192 FB \u2192 K) (imageIndices : List J) (lifts : J \u2192 LP \u2192 K) (images : J \u2192 FB \u2192 K) (fullSpan : \u2200 lp fb, FullKernel lpcols fbcols left right lp fb \u2192 \u2203 coefficient, combine fullIndices coefficient fullImages = fb) (annihilated : \u2200 i, RowKernel fbcols constraints (fullImages i)) (constraintSpan : \u2200 fb, RowKernel fbcols constraints fb \u2192 \u2203 coefficient, combine imageIndices coefficient images = fb) (validLifts : \u2200 j, FullKernel lpcols fbcols left right (lifts j) (images j)) (fb : FB \u2192 K) : RowKernel fbcols constraints fb \u2194 \u2203 lp, FullKernel lpcols fbcols left right lp fb"
+  }
+]
