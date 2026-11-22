@@ -98,8 +98,10 @@ def audit(panel):
                          "stdout_sha256", "receipt_sha256"):
                 if type(row[name]) is not str or HEX.fullmatch(row[name]) is None:
                     refuse("missing or invalid " + name)
-            compiled = (row["source_sha256"], row["binary_sha256"],
-                        row["argv_sha256"])
+            # The source and executable must stay fixed for an arm, but
+            # argv legitimately changes when a later block has a different Q.
+            # Each trial still binds its own exact argv digest.
+            compiled = (row["source_sha256"], row["binary_sha256"])
             if arm in per_arm_binaries and per_arm_binaries[arm] != compiled:
                 refuse("arm changed executable/source/arguments between blocks")
             per_arm_binaries.setdefault(arm, compiled)
