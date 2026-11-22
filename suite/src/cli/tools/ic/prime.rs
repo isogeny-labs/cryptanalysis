@@ -175,6 +175,17 @@ pub struct PrimeArgs {
     /// Skip the rho baseline (orbit).
     #[arg(long)]
     pub no_rho: bool,
+    /// Use the Aut-equivariant signed multi-orbit coefficient-box (`wsum`)
+    /// collector instead of large-prime / full-decomposition sweeps (orbit).
+    /// Cold single-target cost targets O(√(r / |Aut|)).
+    #[arg(long)]
+    pub wsum: bool,
+    /// Explicit signed box bound B (`|e_c| ≤ B`) for `--wsum`; 0 = auto.
+    #[arg(long, default_value_t = 0)]
+    pub wsum_bound: u64,
+    /// Run Aut-folded rho beside the IC arm (orbit; default on with `--wsum`).
+    #[arg(long)]
+    pub fold_rho: bool,
     /// Factor-base points or orbits (semaev); 0 sizes it from the group order.
     #[arg(long, default_value_t = 0)]
     pub factor_base: usize,
@@ -523,26 +534,60 @@ pub fn run(args: PrimeArgs, quiet: bool) -> Result<Value, String> {
         PrimeSolver::Orbit => {
             let targets = inst.targets(args.targets as usize, args.seed);
             let points: Vec<FastPoint> = targets.iter().map(|&(_, q)| q).collect();
-            let defaults = OrbitIcOptions::default();
+            let defaults = if args.wsum {
+                OrbitIcOptions::wsum()
+            } else {
+                OrbitIcOptions::default()
+            };
             let opts = OrbitIcOptions {
-                orbits: args.orbits,
+                orbits: if args.wsum && args.orbits == 0 {
+                    defaults.orbits
+                } else {
+                    args.orbits
+                },
                 width: args.width.unwrap_or(defaults.width),
                 orbits_per_target: match (args.width, args.orbits_per_target) {
                     (Some(_), _) => 0.0,
                     (None, k) => k.unwrap_or(defaults.orbits_per_target),
                 },
                 relations_per_orbit: args.relations_per_orbit,
-                large_primes: !args.no_large_primes,
+                large_primes: if args.wsum {
+                    false
+                } else {
+                    !args.no_large_primes
+                },
                 relation_coordinates: args.relation_coordinates.into(),
                 learn: !args.no_learn,
                 max_ops: args.max_ops,
                 skip_rho: args.no_rho,
                 seed: args.seed,
+                wsum: args.wsum || defaults.wsum,
+                wsum_bound: if args.wsum_bound != 0 {
+                    args.wsum_bound
+                } else {
+                    defaults.wsum_bound
+                },
+                wsum_free: defaults.wsum_free,
+                wsum_targets: if args.wsum {
+                    args.targets as usize
+                } else {
+                    defaults.wsum_targets
+                },
+                fold_rho: args.fold_rho || defaults.fold_rho,
                 ..defaults
             };
             if !quiet {
                 let sized = match opts.sizing() {
                     BaseSizing::Explicit => "as given".to_string(),
+                    BaseSizing::Wsum => format!(
+                        "wsum box, C={} orbits, B={}",
+                        base_orbits(c, &opts, targets.len()),
+                        if opts.wsum_bound != 0 {
+                            opts.wsum_bound.to_string()
+                        } else {
+                            "auto".to_string()
+                        }
+                    ),
                     BaseSizing::Batch => {
                         format!("to the batch, {} per target", opts.orbits_per_target)
                     }

@@ -1,0 +1,23 @@
+digraph nist333 {
+  graph [rankdir=LR, bgcolor="white", fontname="DejaVu Sans", pad="0.15", nodesep="0.45", ranksep="0.7"];
+  node [shape=box, style="rounded,filled", fontname="DejaVu Sans", fontsize=10, color="#334155", fillcolor="#f8fafc", margin="0.12,0.08"];
+  edge [fontname="DejaVu Sans", fontsize=9, color="#475569", arrowsize=0.75];
+
+  e [label="NIST E[n] / F_p\nprime-order subgroup", fillcolor="#dbeafe"];
+  cube [label="E^3\ndiagonal embedding Δ", fillcolor="#dbeafe"];
+  quotient [label="A = E^3 / Λ\n|Λ| = 27, maximal isotropic", fillcolor="#ede9fe"];
+  p224 [label="P-224 plane quartic / F_p\n15 terms; Hilbert-90 descent", fillcolor="#dcfce7"];
+  p256 [label="P-256 quartic / F_(p^3)\nF_p descent open", fillcolor="#fef3c7"];
+  kummer [label="Kum(J_C)\n64 coordinates; Q ~ -Q", fillcolor="#fef3c7"];
+  signed [label="Signed J_C divisor class\nNOT CONSTRUCTED", fillcolor="#fee2e2", color="#b91c1c"];
+  dual [label="Executable π†π = [3]\nNOT CHECKED", fillcolor="#fee2e2", color="#b91c1c"];
+
+  e -> cube [label="Δ; injective"];
+  cube -> quotient [label="quotient by Λ\n3-primary kernel"];
+  quotient -> p224 [label="P-224 reconstruction"];
+  quotient -> p256 [label="P-256 reconstruction"];
+  p224 -> kummer [label="producer-checked"];
+  p256 -> signed [label="descent first", style=dashed, color="#b91c1c"];
+  kummer -> signed [label="recover sign / divisor", style=dashed, color="#b91c1c"];
+  signed -> dual [label="homomorphism + recovery", style=dashed, color="#b91c1c"];
+}

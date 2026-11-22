@@ -126,9 +126,10 @@ int main(void)
         dp.dp_bits = dpb;
         dp.max_ops = 200000;
         uint64_t any = 0;
+        /* solvable, and dp_bits is clamped to floor(log2 n)/2 - 2 (C-F2) */
         ca_status r = ca_kangaroo_solve(&g, &gen, &h, 0, 100000, &dp, &any, NULL);
-        CHECK(r == CA_OK || r == CA_ERR_LIMIT || r == CA_ERR_NOT_FOUND);
-        if (r == CA_OK) CHECK_EQ_U64(any, 4242);
+        CHECK(r == CA_OK);
+        CHECK_EQ_U64(any, 4242);
     }
 
     /* Regression, fuzz/crashes/kangaroo_herd_size_hang: 2 * herd_size used to
@@ -183,18 +184,24 @@ int main(void)
     /* Regression: the abandon threshold 32 << dp_bits wrapped to 0 for
      * dp_bits >= 59 (dp_bits is clamped to 62), which restarted every
      * kangaroo at every hop.  No distinguished point is reachable at these
-     * widths, so there must be no restart at all. */
+     * widths, so there must be no restart at all.  With a known order dp_bits
+     * is now also clamped to floor(log2 n)/2 - 2, so these widths are only
+     * reachable when the order is unknown: the same group with order 0. */
     fx_instance(&g, &gen, 4242, &h);
-    for (int32_t dpb = 59; dpb <= 62; dpb++) {
-        ca_kangaroo_params ap;
-        ca_kangaroo_params_default(&ap);
-        ap.seed = 3;
-        ap.dp_bits = dpb;
-        ap.max_ops = 20000;
-        ca_stats ast = {0};
-        uint64_t ax = 0;
-        CHECK(ca_kangaroo_solve(&g, &gen, &h, 0, 100000, &ap, &ax, &ast) == CA_ERR_LIMIT);
-        CHECK_EQ_U64(ast.collisions, 0);
+    {
+        ca_group ug = g;
+        ug.order = 0;
+        for (int32_t dpb = 59; dpb <= 62; dpb++) {
+            ca_kangaroo_params ap;
+            ca_kangaroo_params_default(&ap);
+            ap.seed = 3;
+            ap.dp_bits = dpb;
+            ap.max_ops = 20000;
+            ca_stats ast = {0};
+            uint64_t ax = 0;
+            CHECK(ca_kangaroo_solve(&ug, &gen, &h, 0, 100000, &ap, &ax, &ast) == CA_ERR_LIMIT);
+            CHECK_EQ_U64(ast.collisions, 0);
+        }
     }
     TEST_MAIN_END();
 }

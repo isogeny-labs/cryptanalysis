@@ -1,0 +1,32 @@
+pairs: 6; pooled rho S = 1.320 over 48 runs
+p seed arm small unknowns rows_fed resid resid/row row_w core_w merge_ops wied_ops la_ops r_own r_pool correct
+269 1 plain 132 120 133 3553 26.7 5.00 5.00 0 288721 288721 0.413 0.498 True
+269 1 lp 39 40 40 4640 116.0 22.15 22.15 6678 115247 121925 0.174 0.211 True
+269 2 plain 145 132 146 2386 16.3 5.00 5.00 0 349273 349273 0.544 0.603 True
+269 2 lp 42 43 43 3285 76.4 24.00 24.00 7218 143449 150667 0.235 0.260 True
+521 1 plain 264 241 265 6337 23.9 5.00 5.00 0 1163067 1163067 0.560 0.535 True
+521 1 lp 66 66 67 8762 130.8 46.73 47.24 26697 642329 669026 0.322 0.308 True
+521 2 plain 259 235 260 7169 27.6 5.00 5.00 0 1105911 1105911 0.585 0.509 True
+521 2 lp 65 66 66 10075 152.7 36.27 36.27 17963 498253 516216 0.273 0.238 True
+769 1 plain 404 359 405 8053 19.9 5.00 5.00 0 2579775 2579775 0.501 0.545 True
+769 1 lp 91 91 92 12538 136.3 52.12 51.86 39236 1334503 1373739 0.267 0.290 True
+769 2 plain 371 328 372 10491 28.2 5.00 5.00 0 2153649 2153649 0.591 0.455 True
+769 2 lp 85 84 86 16184 188.2 64.36 64.82 48643 1412950 1461593 0.401 0.309 True
+
+r (own rho)                plain       0.5323 +-   0.0273   lp       0.2786 +-   0.0315   paired lp-plain     -0.2536 +-   0.0195 (z -13.0)
+r (pooled rho)             plain       0.5243 +-   0.0204   lp       0.2692 +-   0.0164   paired lp-plain     -0.2551 +-   0.0269 (z -9.5)
+LA ops (mod-n mults)       plain    1.273e+06 +- 3.81e+05   lp    7.155e+05 +- 2.38e+05   paired lp-plain  -5.579e+05 +- 1.55e+05 (z -3.6)
+unknowns                   plain        235.8 +-       40   lp           65 +-     8.46   paired lp-plain      -170.8 +-     31.5 (z -5.4)
+rows fed                   plain        263.5 +-     45.7   lp        65.67 +-     8.72   paired lp-plain      -197.8 +-       37 (z -5.3)
+row weight (fed)           plain            5 +-        0   lp        40.94 +-     6.75   paired lp-plain       35.94 +-     6.75 (z 5.3)
+row weight (core)          plain            5 +-        0   lp        41.06 +-     6.81   paired lp-plain       36.06 +-     6.81 (z 5.3)
+residuals                  plain         6332 +- 1.21e+03   lp         9247 +- 1.97e+03   paired lp-plain        2916 +-      771 (z 3.8)
+residuals per row          plain        23.77 +-     1.94   lp        133.4 +-     15.2   paired lp-plain       109.6 +-     13.8 (z 8.0)
+relation-phase group ops   plain    1.265e+09 +- 4.96e+08   lp    1.905e+09 +-  7.8e+08   paired lp-plain   6.395e+08 +- 2.84e+08 (z 2.3)
+
+registered check (own rho): mean r_lp = 0.279 +- 0.032 (N=6); 0.518 - r_lp = 0.239 = 7.59 SE; below by more than 2 SE: True
+registered check (pooled rho): mean r_lp = 0.269 +- 0.016 (N=6); 0.518 - r_lp = 0.249 = 15.20 SE; below by more than 2 SE: True
+
+p=269: r plain ['0.413', '0.544']  r lp ['0.174', '0.235']
+p=521: r plain ['0.560', '0.585']  r lp ['0.322', '0.273']
+p=769: r plain ['0.501', '0.591']  r lp ['0.267', '0.401']

@@ -1,0 +1,102 @@
+{
+  "schema": "xedni.rank-decay-freeze/v1",
+  "status": "BLOCKED_PRE_EXECUTION",
+  "natural_rows_authorized": false,
+  "implementation_commit": "cb8c4cf48bfba1e76f90536a62c029810c45c1a4",
+  "master_seed": "xedni-rank-decay-20261118-v1",
+  "blockers": [
+    "mandatory checkpoint upload and gate have not succeeded",
+    "missing licensed immutable Magma executable or image",
+    "natural-row executor is absent",
+    "redacted public-selector and private-evaluator process boundary is absent",
+    "freeze-bound raw row and relation-inventory provenance validator is absent",
+    "rigorous mixed per-prime unresolved-allocation optimizer is absent",
+    "exhaustive relation-lattice or selected-point independence certificate is absent",
+    "r=7..9 selected-point plane-cubic-to-Jacobian map is absent",
+    "powered discovery and replication resource allocation is absent"
+  ],
+  "files": {
+    "research/xedni_lift_success_20261112/sweep.py": "19892a888a1e2bb99b16cf43e8d31b07773e843441f488c1db0dbf4e1b16a3ba",
+    "research/xedni_rank_decay_20261118/AMENDMENT.md": "85702d0c8d9d3956a49ecd13e048caa73e78b871ce235b4c11e80aa1a7ff7e69",
+    "research/xedni_rank_decay_20261118/HARDWARE.json": "fd65590b7a9eecdc935afcfe71af0ecb190b0be6572e0b3ba4cb4b39ec97602f",
+    "research/xedni_rank_decay_20261118/PRIMES.json": "6136c983b416d31a5e3baf99458d3c884f5e0421e0d116c766ce4f1caf75b246",
+    "research/xedni_rank_decay_20261118/PROTOCOL.md": "c07fe771020b239d4c2ea37ce0ebdbd00112cdca5e0c05fd97eec47f4a8c2ab2",
+    "research/xedni_rank_decay_20261118/analyze.py": "a66c180a08e07c4e17abb88c10f7c921969691421d5128cb1385c1e2d7e1cacf",
+    "research/xedni_rank_decay_20261118/field.py": "1f32d76776befe4ea46dc871aff794aeaca8f863fe742971dfdec9232b2d2001",
+    "research/xedni_rank_decay_20261118/gp_container_wrapper.sh": "23e3b91d595d052a30b9f95c4b5bb7f135e5abc1a7d8fd6ff898f79831c7ea72",
+    "research/xedni_rank_decay_20261118/invariants_pari.py": "85060e78672e71d7f97f091558f7d2d7c4a14e9d56d94e691b8fe3067589787f",
+    "research/xedni_rank_decay_20261118/lift_builder.py": "f040b4a596f418b3ceb6b83de52ea0444e5248b1106f5869a0a685bc688c5322",
+    "research/xedni_rank_decay_20261118/local_conditions.py": "8b5d8052574911dd4a2cd5f17923bb74117953e7eb9ecade8c7470484bbda9c8",
+    "research/xedni_rank_decay_20261118/mechanism_panels.py": "a3122e1c90cb4eafad3c70454b20eaef7efab820dede55dd5351337c9c8370ef",
+    "research/xedni_rank_decay_20261118/prime_manifest.py": "24d571b810463fe7e6be40b5eaef6d356c03e1934e72782c89b0cc46897b3a0a",
+    "research/xedni_rank_decay_20261118/rank_magma.py": "3722d3038ba5be582e4019e2398c59c0060ac0193dad5a7f1f5157ee38735ca8",
+    "research/xedni_rank_decay_20261118/rank_pari.py": "345f26d710d171b37a57eee1846fad20b96abdcb03636762a6cc24ca3e1b2c42",
+    "research/xedni_rank_decay_20261118/relation_certificate.py": "d54a4fc3d4c984d462e13ea6f418a77bda8b2188713c6f32ec2d3aa090cd5999",
+    "research/xedni_rank_decay_20261118/relation_pari.py": "ae36553270191cafb452029e1a2f3c24632edfb1c943cbdf36064379dca8c8ec",
+    "research/xedni_rank_decay_20261118/runner.py": "f98a157fc10c1b9f147c81dc60369d52134e1605144da943ddaae0fba42a7763",
+    "research/xedni_rank_decay_20261118/sensitivity.py": "ed68f22bef73142c8ff27302064fa1d21795e555e6996e11e4b939f3a61f548f",
+    "research/xedni_rank_decay_20261118/source_generator.py": "4855715e95cebd3d4e941ba94ff1d4392ea9ca2a46e856b6b5f175f19582dc07"
+  },
+  "rosters": {
+    "calibration": {
+      "sha256": "4c820b8785b6377bc2b3094871fcf04a372f2c20892d8d138e9622af1618837a",
+      "executable": 1080,
+      "blocked_r7_to_r9": 648
+    },
+    "sentinel": {
+      "sha256": "866602c266ac50f28b819df868915edb26647995fccb57b663a17a819b848d19",
+      "executable": 12150,
+      "blocked_r7_to_r9": 7290
+    }
+  },
+  "binary": {
+    "path": "suite/target/release/ca-icx",
+    "sha256": "f6b75d48dc957350ba9c9de0c7239cf6c30b4ea7396c7d051b84ee5f97dcf78e"
+  },
+  "tools": {
+    "pari": {
+      "available": true,
+      "version": "2.17.2",
+      "image_digest": "sha256:923e7e41d2fe1716fc3f1a6e06486d469b608baa6d6b4b0fdbb6e43b132049cf",
+      "parisizemax": 2147483648
+    },
+    "magma": {
+      "available": false,
+      "version": "2.29-10",
+      "image_digest": null,
+      "executable_sha256": null,
+      "status": "BLOCKED_NO_LICENSED_EXECUTABLE"
+    }
+  },
+  "analysis": {
+    "familywise_alpha": 0.05,
+    "simultaneous_hypotheses": 4320,
+    "endpoints": [
+      "rank_lt_r",
+      "nontrivial_useful_recovery"
+    ],
+    "denominators": [
+      "admitted",
+      "proposed"
+    ],
+    "unresolved_allocations": [
+      "all_failure",
+      "all_success"
+    ],
+    "methods": [
+      "conditional_poisson",
+      "binomial_cloglog",
+      "cluster_robust_cloglog"
+    ],
+    "cluster_method": "cluster_bootstrap_cloglog",
+    "cluster_keys": [
+      "bits",
+      "p",
+      "source_id",
+      "curve_id"
+    ],
+    "cluster_replicates": 172800,
+    "cluster_seed": "xedni-rank-decay-cluster-bootstrap-20261118-v1",
+    "useful_event_min_bits": 20
+  }
+}

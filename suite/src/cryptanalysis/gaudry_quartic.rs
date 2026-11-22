@@ -1621,10 +1621,66 @@ pub struct K4LaReport {
     /// `LA / rho` in `F_p` multiplications: `la_ops·16 / (S_rho·√n·c_add)`.
     pub r: f64,
     pub wall_ms: f64,
+    /// `"plain"` (every base point is a column) or `"lp"` (large primes).
+    pub arm: String,
+    /// Columns that are unknowns of the final system (`|F|` for the plain arm).
+    pub small_base: usize,
+    pub max_large_primes: usize,
+    /// Verified decompositions by number of large primes: 0, 1, 2, 3+ (the
+    /// last bucket holds the ones over the cap, which are discarded).
+    pub lp_histogram: [u64; 4],
+    /// Full rows handed to the filter (direct rows plus harvested rows).
+    pub rows_fed: usize,
+    pub rows_direct: u64,
+    pub rows_harvested: u64,
+    /// Multiplications mod `n` spent merging partial relations (harvester).
+    pub merge_ops: u64,
+    /// Multiplications mod `n` spent in Wiedemann, every attempt.
+    pub wiedemann_ops: u64,
+    /// Mean weight of the rows of the square core the solve used.
+    pub core_row_weight: f64,
+    /// Residuals spent per full row fed.
+    pub residuals_per_row: f64,
+    pub harvest: Option<super::gaudry_cubic::HarvestStats>,
+}
+
+/// Options of [`run_k4_la_opts`].  The default is the plain run.
+#[derive(Clone, Debug)]
+pub struct K4LaOptions {
+    /// Small base size; `0` with `small_exp == 0` and `small_frac == 0` is
+    /// the plain run (every base point a column).
+    pub small_base: usize,
+    /// Small base `= ceil(|F|^small_exp)` (e.g. `0.75`).
+    pub small_exp: f64,
+    /// Small base `= ceil(small_frac · |F|)`.
+    pub small_frac: f64,
+    /// Largest number of large primes a kept relation may carry.
+    pub max_large_primes: usize,
+}
+
+impl Default for K4LaOptions {
+    fn default() -> Self {
+        K4LaOptions {
+            small_base: 0,
+            small_exp: 0.0,
+            small_frac: 0.0,
+            max_large_primes: 3,
+        }
+    }
 }
 
 pub fn run_k4_la(p: u64, seed: u64, rho_runs: usize) -> K4LaReport {
-    use super::gaudry_cubic::{square_core, wiedemann_u64, SparseRel};
+    run_k4_la_opts(p, seed, rho_runs, &K4LaOptions::default())
+}
+
+/// [`run_k4_la`] with an optional large-prime variation: only the first
+/// `small` base points are unknowns of the final system; a decomposition
+/// that uses base points beyond them (large primes, at most
+/// `max_large_primes` of the four) is fed to the gain-forest harvester,
+/// which turns cycles of the large-prime graph into full rows.  With no
+/// small base given the behaviour is exactly the plain run's.
+pub fn run_k4_la_opts(p: u64, seed: u64, rho_runs: usize, opts: &K4LaOptions) -> K4LaReport {
+    use super::gaudry_cubic::{square_core, wiedemann_u64, GainForestHarvester, SparseRel};
     let start = Instant::now();
     let inst = generate_instance4(p, seed);
     let curve = &inst.curve;
@@ -1642,21 +1698,38 @@ pub fn run_k4_la(p: u64, seed: u64, rho_runs: usize) -> K4LaReport {
     curve.reset_ops();
     let table = pair_table(curve, &base);
     let spec = inst.spec();
-    let small = base.len();
+    let nf = base.len();
+    let wanted = if opts.small_base > 0 {
+        opts.small_base
+    } else if opts.small_exp > 0.0 {
+        (nf as f64).powf(opts.small_exp).ceil() as usize
+    } else if opts.small_frac > 0.0 {
+        (opts.small_frac * nf as f64).ceil() as usize
+    } else {
+        0
+    };
+    let small = if wanted == 0 || wanted >= nf { nf } else { wanted };
+    let max_lp = if small == nf { 0 } else { opts.max_large_primes };
     let unknowns = small + 1;
     let mut rep = K4LaReport {
         p,
         seed,
         n,
         bits: (n as f64).log2(),
-        base: small,
+        base: nf,
         fp_muls_per_add: fp_per_add,
+        arm: if max_lp > 0 { "lp" } else { "plain" }.to_string(),
+        small_base: small,
+        max_large_primes: max_lp,
         ..Default::default()
     };
     let mut rel_ops = curve.ops();
     let mut full_rels: Vec<SparseRel> = Vec::new();
+    let mut forest = GainForestHarvester::new(small, n, nf + 2);
+    let (mut rows_direct, mut rows_harvested) = (0u64, 0u64);
     let mut next_attempt = unknowns;
     let mut la_ops = 0u64;
+    let mut merge_ops = 0u64;
     'collect: while rep.residuals < 50_000_000 {
         let batch: Vec<(u64, u64)> = (0..64)
             .map(|_| (rng.gen_range(0..n), rng.gen_range(1..n)))
@@ -1687,63 +1760,101 @@ pub fn run_k4_la(p: u64, seed: u64, rho_runs: usize) -> K4LaReport {
                     continue;
                 }
                 rep.decompositions += 1;
+                // Small points keep their index, `d` is column `small`, and
+                // large primes are shifted up by one to make room for it.
                 let mut cols: Vec<(usize, u64)> = terms
                     .iter()
-                    .map(|&(i, s)| (i, if s == 1 { 1 } else { n - 1 }))
+                    .map(|&(i, s)| {
+                        (
+                            if i < small { i } else { i + 1 },
+                            if s == 1 { 1 } else { n - 1 },
+                        )
+                    })
                     .collect();
                 cols.push((small, (n - b) % n));
                 cols.sort_unstable();
-                full_rels.push(SparseRel { cols, rhs: a });
-            }
-            if full_rels.len() >= next_attempt {
-                if let Some(core) = square_core(&full_rels, small) {
-                    rep.la_attempts += 1;
-                    let mut map = vec![usize::MAX; unknowns];
-                    let mut k = 0;
-                    for c in 0..unknowns {
-                        if core.columns.get(c).copied().unwrap_or(false) {
-                            map[c] = k;
-                            k += 1;
-                        }
-                    }
-                    let sel: Vec<SparseRel> = core
-                        .rows
-                        .iter()
-                        .map(|&i| SparseRel {
-                            cols: full_rels[i]
-                                .cols
-                                .iter()
-                                .map(|&(c, v)| (map[c], v))
-                                .collect(),
-                            rhs: full_rels[i].rhs,
-                        })
-                        .collect();
-                    let before = la_ops;
-                    let x = wiedemann_u64(&sel, sel.len(), n, &mut rng, &mut la_ops);
-                    let dd = x.map(|x| x[map[small]]);
-                    if dd.is_some_and(|dd| curve.mul(&inst.g, dd) == inst.q) {
-                        rep.solved = true;
-                        rep.correct = dd == Some(inst.d);
-                        rep.unknowns = sel.len();
-                        rep.filtered_out = full_rels.len() - sel.len();
-                        rep.la_ops_last = la_ops - before;
-                        break 'collect;
-                    }
-                    next_attempt = full_rels.len() + (sel.len() / 20).max(1);
+                let lp_count = cols.iter().filter(|&&(c, _)| c > small).count();
+                rep.lp_histogram[lp_count.min(3)] += 1;
+                if lp_count > max_lp {
+                    continue;
+                }
+                let rel = SparseRel { cols, rhs: a };
+                let fulls: Vec<SparseRel> = if lp_count == 0 {
+                    rows_direct += 1;
+                    vec![rel]
                 } else {
-                    next_attempt = full_rels.len() + (unknowns / 20).max(1);
+                    let before = la_ops;
+                    let rows = forest.feed(rel, &mut la_ops);
+                    merge_ops += la_ops - before;
+                    rows_harvested += rows.len() as u64;
+                    rows
+                };
+                for full in fulls {
+                    full_rels.push(full);
+                    if full_rels.len() < next_attempt {
+                        continue;
+                    }
+                    if let Some(core) = square_core(&full_rels, small) {
+                        rep.la_attempts += 1;
+                        let mut map = vec![usize::MAX; unknowns];
+                        let mut k = 0;
+                        for c in 0..unknowns {
+                            if core.columns.get(c).copied().unwrap_or(false) {
+                                map[c] = k;
+                                k += 1;
+                            }
+                        }
+                        let sel: Vec<SparseRel> = core
+                            .rows
+                            .iter()
+                            .map(|&i| SparseRel {
+                                cols: full_rels[i]
+                                    .cols
+                                    .iter()
+                                    .map(|&(c, v)| (map[c], v))
+                                    .collect(),
+                                rhs: full_rels[i].rhs,
+                            })
+                            .collect();
+                        let before = la_ops;
+                        let x = wiedemann_u64(&sel, sel.len(), n, &mut rng, &mut la_ops);
+                        let dd = x.map(|x| x[map[small]]);
+                        if dd.is_some_and(|dd| curve.mul(&inst.g, dd) == inst.q) {
+                            rep.solved = true;
+                            rep.correct = dd == Some(inst.d);
+                            rep.unknowns = sel.len();
+                            rep.filtered_out = full_rels.len() - sel.len();
+                            rep.la_ops_last = la_ops - before;
+                            rep.core_row_weight = sel.iter().map(|r| r.cols.len()).sum::<usize>()
+                                as f64
+                                / sel.len().max(1) as f64;
+                            break 'collect;
+                        }
+                        next_attempt = full_rels.len() + (sel.len() / 20).max(1);
+                    } else {
+                        next_attempt = full_rels.len() + (unknowns / 20).max(1);
+                    }
                 }
             }
         }
     }
     rep.relations = full_rels.len();
+    rep.rows_fed = full_rels.len();
+    rep.rows_direct = rows_direct;
+    rep.rows_harvested = rows_harvested;
+    rep.merge_ops = merge_ops;
+    rep.wiedemann_ops = la_ops - merge_ops;
+    rep.residuals_per_row = rep.residuals as f64 / full_rels.len().max(1) as f64;
+    if max_lp > 0 {
+        rep.harvest = Some(forest.finish());
+    }
     rep.relation_group_ops = rel_ops;
     rep.la_ops = la_ops;
     rep.decomposition_rate = rep.decompositions as f64 / rep.residuals.max(1) as f64;
     rep.phi = rep.unknowns as f64 / small as f64;
     rep.row_weight = full_rels.iter().map(|r| r.cols.len()).sum::<usize>() as f64
         / full_rels.len().max(1) as f64;
-    rep.wiedemann_constant = la_ops as f64 / (rep.unknowns.max(1) as f64).powi(2);
+    rep.wiedemann_constant = rep.wiedemann_ops as f64 / (rep.unknowns.max(1) as f64).powi(2);
     rep.rho = (0..rho_runs as u64)
         .into_par_iter()
         .map(|k| rho4(&spec, seed * 1000 + k))
@@ -1874,5 +1985,33 @@ mod tests {
             rep.row_weight
         );
         assert_eq!(rep.fp_muls_per_add, 97.0);
+    }
+
+    /// The large-prime arm at a toy size: the same instance, the logarithm
+    /// recovered through harvested rows, and the plain arm unchanged by the
+    /// options (default options reproduce `run_k4_la`).
+    #[test]
+    fn k4_large_prime_arm_recovers_the_planted_logarithm() {
+        let plain = run_k4_la(29, 3, 2);
+        let same = run_k4_la_opts(29, 3, 2, &K4LaOptions::default());
+        assert_eq!(plain.la_ops, same.la_ops);
+        assert_eq!(plain.residuals, same.residuals);
+        assert_eq!(plain.arm, "plain");
+        let lp = run_k4_la_opts(
+            29,
+            3,
+            2,
+            &K4LaOptions {
+                small_exp: 0.75,
+                ..Default::default()
+            },
+        );
+        assert_eq!(lp.arm, "lp");
+        assert!(lp.small_base < lp.base, "{lp:?}");
+        assert!(lp.solved && lp.correct, "{lp:?}");
+        assert!(lp.rows_harvested > 0 && lp.merge_ops > 0, "{lp:?}");
+        let h = lp.harvest.as_ref().unwrap();
+        assert_eq!(h.inconsistent, 0, "{h:?}");
+        assert!(lp.lp_histogram.iter().sum::<u64>() == lp.decompositions);
     }
 }

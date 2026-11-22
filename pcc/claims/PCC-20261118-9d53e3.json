@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-18T22:24:32Z",
+ "id": "PCC-20261118-9d53e3",
+ "kind": "theorem",
+ "producer": {
+  "commit": "fef3072ba439719210ca8994dc2c08fe22c535b4",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "732a30f037072d306b5af05717397eacf5d2eb7e7a316b60279a1e0ebe468e10",
+   "kind": "lean",
+   "project": "research/xedni_rank_decay_20261118/formal",
+   "theorem": "XedniRankDecay.certified_classes_disjoint"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Natural-number classifier consistency only; it does not establish that any external tool output is a valid rank bound.",
+ "statement": "Under valid lower and upper rank bounds, CERT_LT and CERT_GE cannot both hold for the same threshold r."
+}

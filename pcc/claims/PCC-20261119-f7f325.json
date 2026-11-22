@@ -1,0 +1,23 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-19T05:11:32Z",
+ "id": "PCC-20261119-f7f325",
+ "kind": "statement",
+ "producer": {
+  "commit": "e5fb9a69a715ea9ebfce48d0fad873c650443917",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "research/xedni_rank_decay_20261118/CONTROL_RESULTS.json",
+    "sha256": "a1dd1c8a15db0dbcb4f5a9ff502eb96e742c55874ce4ba621c4ce6897adffe1f"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Deterministic non-natural implementation controls only; timings are not isolation-qualified, bounded relation no-hits are not absence proofs, and no decay, speedup, security, or end-to-end ECDLP conclusion follows.",
+ "statement": "Producer-side fixed p=101 and planted-relation controls exercised the Xedni source, lift, PARI rank, invariant, exact relation-replay, analyzer, and runner implementations; no natural 2^16 through 2^32 inference row was run."
+}

@@ -34,8 +34,8 @@
 use std::time::{Duration, Instant};
 
 use super::stages::{
-    BooleanSystem, DecompositionOracle, FactorBaseBuilder, InstanceCtx, Params, SolverCost,
-    SolverTotals, SolverVerdict, SystemShape, SystemSolver,
+    BooleanSystem, DecompositionOracle, FactorBaseBuilder, InstanceCtx, OracleDelta, Params,
+    SolverCost, SolverTotals, SolverVerdict, SystemShape, SystemSolver,
 };
 use crate::cryptanalysis::ic_boundary::{
     binary_subspace_factor_base, decompose_mitm, decompose_mitm_frobenius, koblitz_factor_base,
@@ -232,6 +232,10 @@ impl<G: CountedGroup> DecompositionOracle<G> for SubtractOracle {
         "for each signed base point P, test whether R − P is in the base".into()
     }
 
+    fn fork(&self) -> Option<Box<dyn DecompositionOracle<G> + Send + '_>> {
+        Some(Box::new(SubtractOracle))
+    }
+
     fn decompose(
         &mut self,
         ctx: &InstanceCtx<G>,
@@ -349,7 +353,7 @@ fn read_coset_flag(params: &Params) -> Result<bool, String> {
 /// that makes a two-summand search `O(1)` a target instead of `O(|F|)`.
 pub struct MitmOracle {
     m: u32,
-    table: Option<PairTable>,
+    table: Option<std::sync::Arc<PairTable>>,
     native_setup_ns: u64,
     pub coset: CosetFilter,
 }
@@ -433,7 +437,7 @@ impl<G: CountedGroup> DecompositionOracle<G> for MitmOracle {
         if native == 0 {
             ops.merge(table.build_ops);
         }
-        self.table = Some(table);
+        self.table = Some(std::sync::Arc::new(table));
         self.native_setup_ns = if native == 1 {
             started.elapsed().as_nanos() as u64
         } else {
@@ -478,6 +482,14 @@ impl<G: CountedGroup> DecompositionOracle<G> for MitmOracle {
     ) -> Option<Vec<usize>> {
         let table = self.table.as_ref()?;
         decompose_mitm(ctx.group, fb, table, self.m, ops, counters, point)
+    }
+
+    fn fork(&self) -> Option<Box<dyn DecompositionOracle<G> + Send + '_>> {
+        Some(Box::new(MitmOracle {
+            m: self.m,
+            table: self.table.clone(),
+            native_setup_ns: 0,
+        }))
     }
 }
 
@@ -562,7 +574,7 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for FrobeniusMitmOracle<'_> {
             .ok_or("this instance has no Koblitz structure to fold by")?;
         ops.merge(label_ops);
         ops.merge(table.build_ops);
-        self.table = Some(table);
+        self.table = Some(std::sync::Arc::new(table));
         Ok(())
     }
 
@@ -576,6 +588,14 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for FrobeniusMitmOracle<'_> {
     ) -> Option<Vec<usize>> {
         let table = self.table.as_ref()?;
         decompose_mitm_frobenius(ctx.group, fb, table, self.m, ops, counters, point)
+    }
+
+    fn fork(&self) -> Option<Box<dyn DecompositionOracle<BinaryGroup<'a>> + Send + '_>> {
+        Some(Box::new(FrobeniusMitmOracle {
+            m: self.m,
+            instance: self.instance,
+            table: self.table.clone(),
+        }))
     }
 }
 
@@ -670,6 +690,9 @@ pub struct DescentAlgebraicOracle<'i> {
     summands: u32,
     instance: &'i BinaryInstance,
     v_basis: Vec<u64>,
+    /// `m = 4` only: basis of the subspace the two intermediates of the
+    /// balanced split are restricted to (the representation filter).
+    inter_basis: Vec<u64>,
     harness: SolverHarness,
     totals: SolverTotals,
     descent_setup_ns: u64,
@@ -701,6 +724,7 @@ impl<'i> DescentAlgebraicOracle<'i> {
             summands,
             instance,
             v_basis: Vec::new(),
+            inter_basis: Vec::new(),
             harness: SolverHarness::new(solver, solver_params, budget),
             totals,
             descent_setup_ns: 0,
@@ -715,22 +739,56 @@ impl<'i> DescentAlgebraicOracle<'i> {
 
     /// The descended system for a target abscissa; its `lift` maps a
     /// solution back to abscissae.  `prepare` must have run.
-    fn descend(&self, x_r: u64) -> SymbolicDescent {
-        descend(
-            &self.instance.gf,
-            self.instance.b,
-            x_r,
-            &self.v_basis,
-            self.summands,
+    fn descend(&self, x_r: u64) -> Descended {
+        if self.summands == 4 {
+            return Descended::Split(
+                crate::cryptanalysis::pq_descent_symbolic::descend_split4(
+                    &self.instance.gf,
+                    self.instance.b,
+                    x_r,
+                    &self.v_basis,
+                    &self.inter_basis,
+                )
+                .expect("prepare checked the dimension"),
+            );
+        }
+        Descended::Plain(
+            descend(
+                &self.instance.gf,
+                self.instance.b,
+                x_r,
+                &self.v_basis,
+                self.summands,
+            )
+            .expect("prepare checked the dimension"),
         )
-        .expect("prepare checked the dimension")
     }
 }
 
-fn system_of(sys: &SymbolicDescent) -> BooleanSystem {
+/// Either descent the oracle builds: `S_{m+1}` directly (`m = 2, 3`) or
+/// the balanced representation split of `S_5` (`m = 4`).
+enum Descended {
+    Plain(SymbolicDescent),
+    Split(crate::cryptanalysis::pq_descent_symbolic::SplitDescent),
+}
+
+impl Descended {
+    fn lift(&self, v: u64) -> Vec<u64> {
+        match self {
+            Descended::Plain(s) => s.lift(v),
+            Descended::Split(s) => s.lift(v),
+        }
+    }
+}
+
+fn system_of(sys: &Descended) -> BooleanSystem {
+    let (equations, n_vars) = match sys {
+        Descended::Plain(s) => (&s.equations, s.n_vars),
+        Descended::Split(s) => (&s.equations, s.n_vars),
+    };
     BooleanSystem {
-        equations: sys.equations.clone(),
-        n_vars: sys.n_vars,
+        equations: equations.clone(),
+        n_vars,
     }
 }
 
@@ -752,7 +810,13 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for DescentAlgebraicOracle<'_> {
     }
 
     fn parameters(&self) -> &[(&str, &str)] {
-        &[("m", "summands, 2 (descends S3) or 3 (descends S4)")]
+        &[
+            ("m", "summands, 2 (descends S3), 3 (descends S4) or 4 (balanced split of S5)"),
+            (
+                "inter_dim",
+                "m = 4 only: dimension l' of the subspace span(1, z, ..., z^(l'-1)) the two intermediates are restricted to; default n (unrestricted chain)",
+            ),
+        ]
     }
 
     fn setup_native(&self) -> std::collections::BTreeMap<String, u64> {
@@ -767,12 +831,12 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for DescentAlgebraicOracle<'_> {
         &mut self,
         _ctx: &InstanceCtx<BinaryGroup<'a>>,
         fb: &FactorBase<FastPoint>,
-        _params: &Params,
+        params: &Params,
         _ops: &mut GroupOps,
     ) -> Result<(), String> {
-        if !(2..=3).contains(&self.summands) {
+        if !(2..=4).contains(&self.summands) {
             return Err(format!(
-                "descent-algebraic takes m = 2 or 3, got {}",
+                "descent-algebraic takes m = 2, 3 or 4, got {}",
                 self.summands
             ));
         }
@@ -780,7 +844,26 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for DescentAlgebraicOracle<'_> {
             "descent-algebraic needs a factor base whose abscissae form an F_2-subspace; \
              use binary-subspace or koblitz-orbit",
         )?;
-        let cap = max_n_prime(self.summands);
+        if self.summands == 4 {
+            let n = self.instance.n;
+            let l = params.u64_or("inter_dim", n as u64)? as u32;
+            if l == 0 || l > n {
+                return Err(format!("inter_dim must be 1..={n}, got {l}"));
+            }
+            let vars = 4 * basis.len() as u32 + 2 * l;
+            if vars > 64 {
+                return Err(format!(
+                    "the split descent needs 4·{} + 2·{l} = {vars} boolean variables; the mask holds 64",
+                    basis.len()
+                ));
+            }
+            self.inter_basis = (0..l).map(|k| 1u64 << k).collect();
+        }
+        let cap = if self.summands == 4 {
+            16
+        } else {
+            max_n_prime(self.summands)
+        };
         if basis.len() as u32 > cap {
             return Err(format!(
                 "the descent's monomial mask holds n' ≤ {cap} at m = {}; this base has n' = {}",
@@ -856,6 +939,47 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for DescentAlgebraicOracle<'_> {
 
     fn solver_totals(&self) -> Option<SolverTotals> {
         Some(self.totals.clone())
+    }
+
+    /// A fork solves with a fresh engine of the same name and
+    /// parameters; an engine the registry cannot build again (a test
+    /// double) keeps the oracle serial.
+    fn fork(&self) -> Option<Box<dyn DecompositionOracle<BinaryGroup<'a>> + Send + '_>> {
+        let solver = super::solvers::solver_by_name(self.harness.solver.name()).ok()?;
+        let mut fork = DescentAlgebraicOracle::new(
+            self.summands,
+            self.instance,
+            solver,
+            self.harness.params.clone(),
+            self.harness.budget,
+        );
+        fork.v_basis = self.v_basis.clone();
+        Some(Box::new(fork))
+    }
+
+    fn take_delta(&mut self) -> OracleDelta {
+        let fresh = SolverTotals {
+            solver: self.totals.solver.clone(),
+            ..Default::default()
+        };
+        OracleDelta {
+            solver: Some(std::mem::replace(&mut self.totals, fresh)),
+            native: std::collections::BTreeMap::from([(
+                "symbolic_descent_ns".into(),
+                std::mem::take(&mut self.descent_relation_ns),
+            )]),
+            unliftable: std::mem::take(&mut self.unliftable),
+        }
+    }
+
+    fn absorb_delta(&mut self, delta: &OracleDelta) {
+        if let Some(t) = &delta.solver {
+            self.totals.merge(t);
+        }
+        if let Some(ns) = delta.native.get("symbolic_descent_ns") {
+            self.descent_relation_ns = self.descent_relation_ns.saturating_add(*ns);
+        }
+        self.unliftable += delta.unliftable;
     }
 }
 
