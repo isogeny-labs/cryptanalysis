@@ -1,0 +1,15 @@
+{
+  "schema": "xedni-fresh-beam-independence-protocol-v1",
+  "question": "Which of all 104 depth-eight rational point pairs retained by the frozen beam on the fresh target panel admit an auxiliary-reduction Z-independence certificate?",
+  "fresh_result_gzip_sha256": "dc6aefbdcc34ee73d4b24b11bf638405150eacbe80334e46be8f70bf9d62f68d",
+  "states": "all eight final beam states for every one of 13 eligible fresh-panel public hits, in hit and beam order; retain all 104 states and all prime statuses",
+  "auxiliary_prime_law": "all odd primes from 3 through 199 inclusive, ascending, tested for every state",
+  "good_reduction": "short Weierstrass A,B have denominators coprime to ell and discriminant nonzero modulo ell",
+  "point_reduction": "for quotient test require both rational point-coordinate denominators coprime to ell and verify reduced points lie on the reduced curve",
+  "odd_order_witness": "first good-reduction ell with #E(F_ell) odd; then rational E(Q)[2] is trivial by prime-to-ell torsion injection",
+  "quotient_witness": "first good-reduction ell with both point reductions and P1, P2, P1-P2 outside 2E(F_ell); their images are independent in E(F_ell)/2E(F_ell)",
+  "certificate": "a state is certified Z-linearly independent only if both witnesses exist; reduction parity plus absence of rational 2-torsion gives infinite descent for every integer relation",
+  "recording": "retain every state-prime status, group order and doubled-image count where computed, first witnesses, and uncategorized states; audit independently with Python finite-field arithmetic",
+  "claim_boundary": "certificates apply only to these 104 exact rational curves and point pairs at depth eight; no inference to arbitrary lifts or relation-discovery cost",
+  "run_cap_seconds": 1200
+}

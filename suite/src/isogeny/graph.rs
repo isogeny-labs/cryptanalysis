@@ -27,7 +27,6 @@
 use super::velu::{velu_isogeny_2, velu_isogeny_odd, VeluIsogeny};
 use super::volcano::j_invariant;
 use super::SmallCurve;
-use num_bigint::BigUint;
 use std::collections::{BTreeMap, BTreeSet, HashMap, VecDeque};
 
 /// Find every 2-isogeny `φ: E → E'` defined over `F_p` by sampling
@@ -37,15 +36,17 @@ use std::collections::{BTreeMap, BTreeSet, HashMap, VecDeque};
 /// F_p-rational 2-torsion and we short-circuit.  Cost:
 /// `O(log² p)` per sample, `O(1)` samples per isogeny.
 fn two_isogenies_via_cubic_roots(curve: &SmallCurve) -> Vec<VeluIsogeny> {
-    use crate::ecc::point::Point;
+    use crate::cryptanalysis::bsgs_fast::{FastCurve, FastPoint};
+    use crate::isogeny::cm::sample_random_xy;
     use std::collections::HashSet;
     let cm = crate::isogeny::cm::cm_discriminant(curve);
     if cm.order <= 0 || !(cm.order as u64).is_multiple_of(2) {
         return Vec::new();
     }
     let cofactor = (cm.order as u64) / 2;
-    let cp = curve.to_curve_params();
-    let a_fe = cp.a_fe();
+    let Some(fc) = FastCurve::from_u64(curve.p, curve.a, curve.b, cm.order as u64) else {
+        return Vec::new();
+    };
     let mut seen: HashSet<u64> = HashSet::new();
     let mut result = Vec::new();
     let mut rng: u64 = curve
@@ -60,25 +61,21 @@ fn two_isogenies_via_cubic_roots(curve: &SmallCurve) -> Vec<VeluIsogeny> {
         rng = rng
             .wrapping_mul(6364136223846793005)
             .wrapping_add(1442695040888963407);
-        let p_point = match crate::isogeny::cm::sample_random_point(curve, &mut rng) {
-            Some(p) => p,
-            None => continue,
+        let Some((x, y)) = sample_random_xy(curve, &mut rng) else {
+            continue;
         };
-        let q = p_point.scalar_mul(&BigUint::from(cofactor), &a_fe);
-        let x_t = match &q {
-            Point::Affine { x, y } => {
-                // 2-torsion: y must be zero.  If non-zero, the point
-                // has order > 2 (the random scalar landed in a larger
-                // subgroup of the doubled cofactor) — skip and try
-                // again.
-                let yv = y.value.iter_u64_digits().next().unwrap_or(0);
-                if yv != 0 {
-                    continue;
-                }
-                x.value.iter_u64_digits().next().unwrap_or(0)
-            }
-            Point::Infinity => continue,
+        let p_point = FastPoint {
+            x: fc.f.to_mont(x),
+            y: fc.f.to_mont(y),
+            infinity: false,
         };
+        let q = fc.scalar_mul(p_point, cofactor);
+        // 2-torsion: y must be zero.  If non-zero, the point has order > 2
+        // (the random scalar landed in a larger subgroup) — skip.
+        if q.infinity || q.y != 0 {
+            continue;
+        }
+        let x_t = fc.f.from_mont(q.x);
         if !seen.insert(x_t) {
             continue;
         }
