@@ -10,14 +10,15 @@
 //!
 //! Two modes:
 //!
-//! - **order**: `α = β = 0`; the relation lattice `Λ ⊂ Z^{|FB|}` has index
-//!   `h = [Z^{|FB|} : Λ] = #⟨FB⟩` once it is complete, computed here as the
-//!   gcd of the determinants of a few random maximal minors (exact, by
-//!   Chinese remaindering over 61-bit primes against the Hadamard bound).
-//!   With the factor base generating the Jacobian, `h = #Jac(F_p)`; the
-//!   result is checked against `h·R = 0` for random `R` and the Hasse–Weil
-//!   interval, and reported as the order of the subgroup the factor base
-//!   generates.
+//! - **order**: `α = β = 0`; the sampled relations span a lattice
+//!   `L ⊆ ker(Z^{|FB|} -> ⟨FB⟩)`. If full rank, its index is a multiple
+//!   of `#⟨FB⟩`, not necessarily equal to it. The gcd of a few sampled
+//!   maximal minors (reconstructed exactly by CRT) is likewise only a
+//!   candidate multiple. Random `h·R = 0` checks and the Hasse–Weil
+//!   interval do not certify `h = #Jac(F_p)` or full factor-base generation.
+//!   See `suite/docs/highgenus/ORDER_CERTIFICATION_AUDIT.md`.
+//!   Reported order candidates remain `[pcc:unverified]` without an
+//!   independent order certificate.
 //! - **dlp**: the subgroup order `N` (prime) is known; the system
 //!   `Σ r_{iP} y_P − β_i x ≡ α_i (mod N)` is solved by dense elimination
 //!   modulo `N` (`N < 2^63`), and `x = log_{D₁} D₂` is **verified** by a
