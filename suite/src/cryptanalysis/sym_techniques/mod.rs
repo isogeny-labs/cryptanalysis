@@ -376,3 +376,8 @@ mod tests {
         }
     }
 }
+
+// WP2: differential and linear trail search (branch and bound, MILP, SAT).
+pub mod trails;
+// WP2: division-property integral distinguishers.
+pub mod integral;
