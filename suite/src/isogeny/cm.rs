@@ -31,7 +31,7 @@
 
 use super::SmallCurve;
 use num_bigint::{BigInt, BigUint};
-use num_traits::{Signed, Zero};
+use num_traits::Signed;
 use std::collections::HashMap;
 
 // ── Frobenius trace ───────────────────────────────────────────────────────────
@@ -100,10 +100,12 @@ pub fn frobenius_trace(curve: &SmallCurve) -> i64 {
 /// point with `ord > 4√p` within 4 draws — extremely unlikely except
 /// on pathological curves).
 pub fn frobenius_trace_bsgs(curve: &SmallCurve) -> Option<i64> {
+    use crate::cryptanalysis::bsgs_fast::{FastCurve, FastPoint};
     let p = curve.p;
     if p < 5 {
         return None;
     }
+    let fc = FastCurve::from_u64(p, curve.a, curve.b, 0)?;
     // Hasse interval [N_lo, N_hi].
     let sqrt_p = isqrt_u64(p);
     let two_sqrt_p = 2 * sqrt_p + 2; // +1 for ceil rounding, +1 conservative
@@ -121,9 +123,14 @@ pub fn frobenius_trace_bsgs(curve: &SmallCurve) -> Option<i64> {
         rng_state = rng_state
             .wrapping_mul(6364136223846793005)
             .wrapping_add(1442695040888963407);
-        let point = sample_random_point(curve, &mut rng_state)?;
-        let k = bsgs_find_zero_in_hasse(curve, &point, n_lo, n_hi)?;
-        let ord = refine_point_order(curve, &point, k);
+        let (x, y) = sample_random_xy(curve, &mut rng_state)?;
+        let point = FastPoint {
+            x: fc.f.to_mont(x),
+            y: fc.f.to_mont(y),
+            infinity: false,
+        };
+        let k = bsgs_find_zero_in_hasse(&fc, point, n_lo, n_hi)?;
+        let ord = refine_point_order(&fc, point, k);
         combined = lcm_u64(combined, ord);
         // If `combined > 4√p`, the Hasse interval contains exactly
         // one multiple of `combined`; that's #E.
@@ -141,23 +148,38 @@ pub fn frobenius_trace_bsgs(curve: &SmallCurve) -> Option<i64> {
     None
 }
 
-/// Encode a point as a hash key.  Affine `(x, y)` packs into 16 bytes
-/// (two `u64` field elements).  `Infinity` uses a sentinel.
-fn point_key(p: &crate::ecc::point::Point) -> [u8; 17] {
+/// Encode a Montgomery affine point as a hash key.  `Infinity` uses a sentinel.
+fn fast_point_key(p: crate::cryptanalysis::bsgs_fast::FastPoint) -> [u8; 17] {
     let mut out = [0u8; 17];
-    match p {
-        crate::ecc::point::Point::Infinity => {
-            out[16] = 0xFF;
-        }
-        crate::ecc::point::Point::Affine { x, y } => {
-            let xv: u64 = x.value.iter_u64_digits().next().unwrap_or(0);
-            let yv: u64 = y.value.iter_u64_digits().next().unwrap_or(0);
-            out[..8].copy_from_slice(&xv.to_le_bytes());
-            out[8..16].copy_from_slice(&yv.to_le_bytes());
-            out[16] = 0;
-        }
+    if p.infinity {
+        out[16] = 0xFF;
+    } else {
+        out[..8].copy_from_slice(&p.x.to_le_bytes());
+        out[8..16].copy_from_slice(&p.y.to_le_bytes());
+        out[16] = 0;
     }
     out
+}
+
+/// Sample a random affine `(x, y)` on the curve without heap traffic.
+/// Same LCG walk and Tonelli–Shanks path as [`sample_random_point`].
+pub fn sample_random_xy(curve: &SmallCurve, rng: &mut u64) -> Option<(u64, u64)> {
+    let p = curve.p;
+    for _ in 0..p {
+        *rng = rng
+            .wrapping_mul(6364136223846793005)
+            .wrapping_add(1442695040888963407);
+        let x = (*rng >> 7) % p;
+        let rhs = curve.rhs(x);
+        if rhs == 0 {
+            return Some((x, 0));
+        }
+        if legendre_u64(rhs, p) == 1 {
+            let y = tonelli_shanks_u64(rhs, p)?;
+            return Some((x, y));
+        }
+    }
+    None
 }
 
 /// Sample a random affine point on the curve.  Iterates `x` from a
@@ -166,32 +188,12 @@ fn point_key(p: &crate::ecc::point::Point) -> [u8; 17] {
 /// square root via Tonelli-Shanks (or `rhs = 0` directly).
 pub fn sample_random_point(curve: &SmallCurve, rng: &mut u64) -> Option<crate::ecc::point::Point> {
     use crate::ecc::point::Point;
-    let p = curve.p;
+    let (x, y) = sample_random_xy(curve, rng)?;
     let cp = curve.to_curve_params();
-    for _ in 0..p {
-        *rng = rng
-            .wrapping_mul(6364136223846793005)
-            .wrapping_add(1442695040888963407);
-        let x = (*rng >> 7) % p;
-        let rhs = curve.rhs(x);
-        if rhs == 0 {
-            return Some(Point::Affine {
-                x: cp.fe(BigUint::from(x)),
-                y: cp.fe(BigUint::zero()),
-            });
-        }
-        match legendre_u64(rhs, p) {
-            1 => {
-                let y = tonelli_shanks_u64(rhs, p)?;
-                return Some(Point::Affine {
-                    x: cp.fe(BigUint::from(x)),
-                    y: cp.fe(BigUint::from(y)),
-                });
-            }
-            _ => continue,
-        }
-    }
-    None
+    Some(Point::Affine {
+        x: cp.fe(BigUint::from(x)),
+        y: cp.fe(BigUint::from(y)),
+    })
 }
 
 /// Tonelli-Shanks square root mod prime `p` (odd p).  Returns one of
@@ -262,39 +264,35 @@ fn mod_pow_u64(base: u64, mut exp: u64, m: u64) -> u64 {
 }
 
 /// BSGS for the smallest `k ∈ [lo, hi]` with `k·P = O` on the curve.
-/// Standard step size `m = ⌈√(hi - lo)⌉`.
+/// Standard step size `m = ⌈√(hi - lo)⌉`. Single-word Montgomery arithmetic.
 fn bsgs_find_zero_in_hasse(
-    curve: &SmallCurve,
-    point: &crate::ecc::point::Point,
+    fc: &crate::cryptanalysis::bsgs_fast::FastCurve,
+    point: crate::cryptanalysis::bsgs_fast::FastPoint,
     lo: u64,
     hi: u64,
 ) -> Option<u64> {
-    use crate::ecc::point::Point;
-    let cp = curve.to_curve_params();
-    let a_fe = cp.a_fe();
+    use crate::cryptanalysis::bsgs_fast::FastPoint;
     let width = hi - lo;
     let m = isqrt_u64(width) + 1;
     // Baby table: store j ↦ key(j·P)   for j ∈ [0, m].  We also store
     // the negated point for sign-folding so the giant-step inner test
     // costs O(1).
     let mut table: HashMap<[u8; 17], u64> = HashMap::with_capacity((m as usize) * 2);
-    let mut j_p = Point::Infinity;
+    let mut j_p = FastPoint::INFINITY;
     for j in 0..=m {
-        let key = point_key(&j_p);
-        table.entry(key).or_insert(j);
+        table.entry(fast_point_key(j_p)).or_insert(j);
         // Also store -j·P with the same |j| value so that
         // (i·m·P − j·P) and (i·m·P + j·P) both hit on a single lookup.
-        let neg = j_p.neg();
-        table.entry(point_key(&neg)).or_insert(j.wrapping_neg());
-        j_p = j_p.add(point, &a_fe);
+        table
+            .entry(fast_point_key(fc.neg(j_p)))
+            .or_insert(j.wrapping_neg());
+        j_p = fc.add(j_p, point);
     }
-    // m·P.
-    let m_p = point.scalar_mul(&BigUint::from(m), &a_fe);
-    // Giant walker: start at lo·P, step by m·P.
-    let mut walker = point.scalar_mul(&BigUint::from(lo), &a_fe);
+    let m_p = fc.scalar_mul(point, m);
+    let mut walker = fc.scalar_mul(point, lo);
     let giants_max = (width / m) + 2;
     for i in 0..=giants_max {
-        if let Some(&j_signed) = table.get(&point_key(&walker)) {
+        if let Some(&j_signed) = table.get(&fast_point_key(walker)) {
             // Resolve sign: j_signed is either a small positive value
             // (≤ m, meaning walker matched +j·P, so k = i_m − j) or
             // the two's-complement negation of such a j (walker matched
@@ -313,24 +311,23 @@ fn bsgs_find_zero_in_hasse(
                 }
             };
             if ok && k_candidate >= lo && k_candidate <= hi {
-                // Verify: k·P = O.
-                let test = point.scalar_mul(&BigUint::from(k_candidate), &a_fe);
-                if matches!(test, Point::Infinity) {
+                if fc.scalar_mul(point, k_candidate).infinity {
                     return Some(k_candidate);
                 }
             }
         }
-        walker = walker.add(&m_p, &a_fe);
+        walker = fc.add(walker, m_p);
     }
     None
 }
 
 /// Strip small prime factors `q` from `k` as long as `(k/q)·P = O`.
 /// The result is `ord(P)`.  Trial-divides primes up to `√k`.
-fn refine_point_order(curve: &SmallCurve, point: &crate::ecc::point::Point, mut k: u64) -> u64 {
-    use crate::ecc::point::Point;
-    let cp = curve.to_curve_params();
-    let a_fe = cp.a_fe();
+fn refine_point_order(
+    fc: &crate::cryptanalysis::bsgs_fast::FastCurve,
+    point: crate::cryptanalysis::bsgs_fast::FastPoint,
+    mut k: u64,
+) -> u64 {
     let primes: &[u64] = &[
         2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89,
         97,
@@ -338,8 +335,7 @@ fn refine_point_order(curve: &SmallCurve, point: &crate::ecc::point::Point, mut 
     for &q in primes {
         while k > 1 && k.is_multiple_of(q) {
             let candidate = k / q;
-            let test = point.scalar_mul(&BigUint::from(candidate), &a_fe);
-            if matches!(test, Point::Infinity) {
+            if fc.scalar_mul(point, candidate).infinity {
                 k = candidate;
             } else {
                 break;

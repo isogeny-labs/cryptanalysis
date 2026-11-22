@@ -1,0 +1,69 @@
+{
+  "schema": "x011-p1009-one-target-result-v1",
+  "public_point": [
+    75,
+    527
+  ],
+  "fiber_size": 84,
+  "group_order": 1020,
+  "prepared_log_derivation_ns": 6369625,
+  "prepared_log_sha256": "2377cc48f6a6b0a8b44836731daff2a4987a08bda61ded27d251454c021d0e08",
+  "prepared_log_first12": [
+    1,
+    190,
+    991,
+    191,
+    60,
+    515,
+    505,
+    756,
+    936,
+    315,
+    81,
+    181
+  ],
+  "runs": [
+    {
+      "status": "verified",
+      "scalar": 19,
+      "shift": 7,
+      "probes": 8,
+      "group_additions": 7,
+      "online_ns": 9875,
+      "arm": "connector",
+      "order_index": 0
+    },
+    {
+      "status": "verified",
+      "scalar": 19,
+      "group_steps": 258,
+      "collisions": 1,
+      "restarts": 0,
+      "online_ns": 182875,
+      "arm": "rho",
+      "order_index": 1
+    },
+    {
+      "status": "verified",
+      "scalar": 19,
+      "group_steps": 258,
+      "collisions": 1,
+      "restarts": 0,
+      "online_ns": 168084,
+      "arm": "rho",
+      "order_index": 2
+    },
+    {
+      "status": "verified",
+      "scalar": 19,
+      "shift": 7,
+      "probes": 8,
+      "group_additions": 7,
+      "online_ns": 7875,
+      "arm": "connector",
+      "order_index": 3
+    }
+  ],
+  "candidate_id": null,
+  "benchmark_tier": "exploratory_ordinary_host"
+}
