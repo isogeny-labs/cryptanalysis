@@ -115,6 +115,7 @@ impl ProjectivePoint {
     }
 
     /// Constant-time conditional move: returns `b` iff `choice == 1`.
+    #[inline]
     pub fn cmov(a: &Self, b: &Self, choice: Choice) -> Self {
         ProjectivePoint {
             x: SecpFieldElement::cmov(&a.x, &b.x, choice),
@@ -123,12 +124,21 @@ impl ProjectivePoint {
         }
     }
 
+    /// Constant-time conditional swap: swaps `a` and `b` iff `choice == 1`.
+    #[inline]
+    pub fn cswap(a: &mut Self, b: &mut Self, choice: Choice) {
+        SecpFieldElement::cswap(&mut a.x, &mut b.x, choice);
+        SecpFieldElement::cswap(&mut a.y, &mut b.y, choice);
+        SecpFieldElement::cswap(&mut a.z, &mut b.z, choice);
+    }
+
     /// Renes–Costello–Batina **Algorithm 7**: complete addition for
     /// short-Weierstrass curves with `a = 0`.  Works uniformly for all
     /// input combinations — different points, doublings, identity on
     /// either side, and `P + (-P)` — without branching on operand values.
     ///
     /// 12 multiplications + 2 multiplications by `b3` + 22 add/subs.
+    #[inline]
     pub fn add(&self, other: &Self) -> Self {
         let (x1, y1, z1) = (&self.x, &self.y, &self.z);
         let (x2, y2, z2) = (&other.x, &other.y, &other.z);
@@ -175,18 +185,19 @@ impl ProjectivePoint {
     }
 
     /// Renes–Costello–Batina **Algorithm 9**: complete doubling for
-    /// short-Weierstrass curves with `a = 0`.  6 multiplications +
-    /// 2 multiplications by `b3` + 9 add/subs.  Faster than calling
-    /// `add(self, self)` because the formula exploits the equality.
+    /// short-Weierstrass curves with `a = 0`.  4 multiplications + 2
+    /// squarings + 2 multiplications by `b3` + 9 add/subs.  Faster than
+    /// calling `add(self, self)` because the formula exploits equality.
+    #[inline]
     pub fn double(&self) -> Self {
         let (x, y, z) = (&self.x, &self.y, &self.z);
 
-        let mut t0 = y.mul(y); // 1.  t0 = Y*Y
+        let mut t0 = y.sqr(); // 1.  t0 = Y^2
         let mut z3 = t0.add(&t0); // 2.  Z3 = t0+t0
         z3 = z3.add(&z3); // 3.  Z3 = Z3+Z3
         z3 = z3.add(&z3); // 4.  Z3 = Z3+Z3
         let mut t1 = y.mul(z); // 5.  t1 = Y*Z
-        let mut t2 = z.mul(z); // 6.  t2 = Z*Z
+        let mut t2 = z.sqr(); // 6.  t2 = Z^2
         t2 = B3_FE.mul(&t2); // 7.  t2 = b3*t2
         let mut x3 = t2.mul(&z3); // 8.  X3 = t2*Z3
         let mut y3 = t0.add(&t2); // 9.  Y3 = t0+t2
@@ -258,18 +269,16 @@ impl ProjectivePoint {
     pub fn scalar_mul_ct(&self, k: &BigUint, scalar_bits: usize) -> Self {
         let mut r0 = ProjectivePoint::IDENTITY;
         let mut r1 = *self;
+        let mut prev_bit = Choice::from(0u8);
         for i in (0..scalar_bits).rev() {
             let bit = Choice::from(k.bit(i as u64) as u8);
-
-            // Compute every candidate next-state up front; cmov picks.
-            let sum = r0.add(&r1);
-            let r0_dbl = r0.double();
-            let r1_dbl = r1.double();
-            // bit == 1: r0 ← sum,    r1 ← r1_dbl
-            // bit == 0: r0 ← r0_dbl, r1 ← sum
-            r0 = ProjectivePoint::cmov(&r0_dbl, &sum, bit);
-            r1 = ProjectivePoint::cmov(&sum, &r1_dbl, bit);
+            let swap = prev_bit ^ bit;
+            ProjectivePoint::cswap(&mut r0, &mut r1, swap);
+            prev_bit = bit;
+            r1 = r0.add(&r1);
+            r0 = r0.double();
         }
+        ProjectivePoint::cswap(&mut r0, &mut r1, prev_bit);
         r0
     }
 }
@@ -301,6 +310,269 @@ pub fn ct_scalar_mul(point: &Point, k: &BigUint, curve: &CurveParams) -> Point {
         // field arithmetic that this module's projective ladder gets
         // from `SecpFieldElement`.
         point.scalar_mul_ct(k, &curve.a_fe(), curve.order_bits())
+    }
+}
+
+/// CM endomorphism `ψ(X : Y : Z) = (β·X : Y : Z)` on secp256k1 (`j = 0`,
+/// `End(E) ≅ Z[ω]`), where `β³ ≡ 1 (mod p)` and `ψ(P) = [λ]P` on the
+/// prime-order subgroup.
+pub fn secp256k1_glv_params() -> &'static (
+    SecpFieldElement,
+    BigUint,
+    (num_bigint::BigInt, num_bigint::BigInt),
+    (num_bigint::BigInt, num_bigint::BigInt),
+) {
+    use num_bigint::BigInt;
+    use num_integer::Integer;
+    use num_traits::{One, Signed, Zero};
+    static PARAMS: std::sync::OnceLock<(
+        SecpFieldElement,
+        BigUint,
+        (BigInt, BigInt),
+        (BigInt, BigInt),
+    )> = std::sync::OnceLock::new();
+    PARAMS.get_or_init(|| {
+        let beta_u = Uint([
+            0xC139_6C28_7195_01EE,
+            0x9CF0_4975_12F5_8995,
+            0x6E64_479E_AC34_34E9,
+            0x7AE9_6A2B_657C_0710,
+        ]);
+        let beta = SecpFieldElement::from_canonical(&beta_u);
+        let lambda = BigUint::parse_bytes(
+            b"5363ad4cc05c30e0a5261c028812645a122e22ea20816678df02967c1b23bd72",
+            16,
+        )
+        .expect("valid hex");
+        let n = BigInt::from(CurveParams::secp256k1().n);
+        let lam_i = BigInt::from(lambda.clone());
+        let sqrt_n = n.sqrt();
+
+        // Half-GCD on (n, λ) to extract the two short basis vectors of
+        // L = { (x, y) ∈ Z² : x + λ·y ≡ 0 (mod n) } with |x|, |y| ≤ √n.
+        let (mut r0, mut r1) = (n.clone(), lam_i);
+        let (mut t0, mut t1) = (BigInt::zero(), BigInt::one());
+        while r1 > sqrt_n {
+            let (q, rem) = r0.div_rem(&r1);
+            r0 = r1;
+            r1 = rem;
+            let next_t = &t0 - &q * &t1;
+            t0 = t1;
+            t1 = next_t;
+        }
+        let v1 = (r1.clone(), -&t1);
+        let (_, rem2) = r0.div_rem(&r1);
+        let q2 = (&r0 - &rem2) / &r1;
+        let t2 = &t0 - &q2 * &t1;
+        let cand_a = (r0, -t0);
+        let cand_b = (rem2, -t2);
+        let norm_sq = |(x, y): &(BigInt, BigInt)| x * x + y * y;
+        let v2 = if norm_sq(&cand_a) <= norm_sq(&cand_b) {
+            cand_a
+        } else {
+            cand_b
+        };
+        debug_assert!((&v1.0 + &v1.1 * BigInt::from(lambda.clone()))
+            .mod_floor(&n)
+            .is_zero());
+        debug_assert!((&v2.0 + &v2.1 * BigInt::from(lambda.clone()))
+            .mod_floor(&n)
+            .is_zero());
+        debug_assert!(v1.0.abs() > BigInt::zero());
+        (beta, lambda, v1, v2)
+    })
+}
+
+impl ProjectivePoint {
+    /// Apply the CM endomorphism `ψ(X, Y, Z) = (β·X, Y, Z)` (cost: 1M).
+    #[inline]
+    pub fn endomorphism_psi(&self) -> Self {
+        let (beta, _, _, _) = secp256k1_glv_params();
+        ProjectivePoint {
+            x: self.x.mul(beta),
+            y: self.y,
+            z: self.z,
+        }
+    }
+
+    /// Decompose a scalar `k mod n` via the `secp256k1` `Z[ω]` Babai lattice
+    /// into `(neg1, |k1|, neg2, |k2|)` with `k ≡ (±|k1|) + (±|k2|)·λ (mod n)`
+    /// and `|k1|, |k2| < 2^128`.
+    fn decompose_glv_scalar(k: &BigUint) -> (bool, BigUint, bool, BigUint) {
+        use num_bigint::BigInt;
+        use num_integer::Integer;
+        use num_traits::{Signed, Zero};
+
+        let (_, _, v1, v2) = secp256k1_glv_params();
+        let n_bu = BigUint::parse_bytes(
+            b"FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141",
+            16,
+        )
+        .unwrap();
+        let k_mod = k % &n_bu;
+        if k_mod.is_zero() {
+            return (false, BigUint::zero(), false, BigUint::zero());
+        }
+        let k_i = BigInt::from(k_mod);
+        let det = &v1.0 * &v2.1 - &v1.1 * &v2.0;
+        let round_div = |num: BigInt, den: &BigInt| -> BigInt {
+            if den.is_negative() {
+                let d_pos: BigInt = -den;
+                let n_adj: BigInt = -num;
+                let half: BigInt = &d_pos >> 1usize;
+                if n_adj >= BigInt::zero() {
+                    (n_adj + half).div_floor(&d_pos)
+                } else {
+                    (n_adj - half).div_ceil(&d_pos)
+                }
+            } else {
+                let half: BigInt = den >> 1usize;
+                if num >= BigInt::zero() {
+                    (num + half).div_floor(den)
+                } else {
+                    (num - half).div_ceil(den)
+                }
+            }
+        };
+        let b1 = round_div(&k_i * &v2.1, &det);
+        let b2 = round_div(-(&k_i * &v1.1), &det);
+        let k1 = &k_i - &b1 * &v1.0 - &b2 * &v2.0;
+        let k2 = -(&b1 * &v1.1 + &b2 * &v2.1);
+        (
+            k1.is_negative(),
+            k1.magnitude().clone(),
+            k2.is_negative(),
+            k2.magnitude().clone(),
+        )
+    }
+
+    /// 4-dimensional GLV + Shamir multi-scalar multiplication `[u₁]P + [u₂]Q`
+    /// on `secp256k1` (~128 doublings total instead of ~512 for two separate
+    /// 256-bit scalar multiplications).
+    pub fn lincomb_glv(p: &Self, u1: &BigUint, q: &Self, u2: &BigUint) -> Self {
+        let (neg_p1, k_p1, neg_p2, k_p2) = Self::decompose_glv_scalar(u1);
+        let (neg_q1, k_q1, neg_q2, k_q2) = Self::decompose_glv_scalar(u2);
+
+        let max_bits = k_p1
+            .bits()
+            .max(k_p2.bits())
+            .max(k_q1.bits())
+            .max(k_q2.bits()) as usize;
+        if max_bits == 0 {
+            return ProjectivePoint::IDENTITY;
+        }
+
+        let b0 = if neg_p1 { p.neg() } else { *p };
+        let psi_p = p.endomorphism_psi();
+        let b1 = if neg_p2 { psi_p.neg() } else { psi_p };
+        let b2 = if neg_q1 { q.neg() } else { *q };
+        let psi_q = q.endomorphism_psi();
+        let b3 = if neg_q2 { psi_q.neg() } else { psi_q };
+
+        let mut tab = [ProjectivePoint::IDENTITY; 16];
+        tab[1] = b0;
+        tab[2] = b1;
+        tab[3] = b0.add(&b1);
+        tab[4] = b2;
+        tab[5] = tab[1].add(&b2);
+        tab[6] = tab[2].add(&b2);
+        tab[7] = tab[3].add(&b2);
+        tab[8] = b3;
+        for m in 1..8 {
+            tab[8 + m] = tab[m].add(&b3);
+        }
+
+        let mut acc = ProjectivePoint::IDENTITY;
+        for bit in (0..max_bits).rev() {
+            if !bool::from(acc.is_identity()) {
+                acc = acc.double();
+            }
+            let b = bit as u64;
+            let idx = (k_p1.bit(b) as usize)
+                | ((k_p2.bit(b) as usize) << 1)
+                | ((k_q1.bit(b) as usize) << 2)
+                | ((k_q2.bit(b) as usize) << 3);
+            if idx != 0 {
+                acc = if bool::from(acc.is_identity()) {
+                    tab[idx]
+                } else {
+                    acc.add(&tab[idx])
+                };
+            }
+        }
+        acc
+    }
+
+    /// 2D GLV scalar multiplication `[k]P = [k₁]P + [k₂]ψ(P)` using Babai
+    /// nearest-plane lattice decomposition over `Z[ω]` and Shamir's 2-bit
+    /// joint table (4×4 = 16 precomputed combinations, ~65 joint steps =
+    /// ~130 doublings + ~65 additions instead of 256 doublings + 256 adds).
+    pub fn scalar_mul_glv(&self, k: &BigUint) -> Self {
+        if bool::from(self.is_identity()) {
+            return ProjectivePoint::IDENTITY;
+        }
+        let (neg1, u1, neg2, u2) = Self::decompose_glv_scalar(k);
+        let max_bits = u1.bits().max(u2.bits()) as usize;
+        if max_bits == 0 {
+            return ProjectivePoint::IDENTITY;
+        }
+
+        let p1 = if neg1 { self.neg() } else { *self };
+        let psi_p = self.endomorphism_psi();
+        let p2 = if neg2 { psi_p.neg() } else { psi_p };
+
+        // 2-bit × 2-bit Shamir table: T[d1 + 4*d2] = [d1]P1 + [d2]P2 for d1, d2 ∈ 0..4.
+        let p1_2 = p1.double();
+        let p1_3 = p1_2.add(&p1);
+        let row1 = [ProjectivePoint::IDENTITY, p1, p1_2, p1_3];
+
+        let p2_2 = p2.double();
+        let p2_3 = p2_2.add(&p2);
+        let row2 = [ProjectivePoint::IDENTITY, p2, p2_2, p2_3];
+
+        let mut tab = [ProjectivePoint::IDENTITY; 16];
+        for d2 in 0..4 {
+            for d1 in 0..4 {
+                tab[d1 + 4 * d2] = match (d1, d2) {
+                    (0, 0) => ProjectivePoint::IDENTITY,
+                    (_, 0) => row1[d1],
+                    (0, _) => row2[d2],
+                    _ => row1[d1].add(&row2[d2]),
+                };
+            }
+        }
+
+        let top_pair = max_bits.div_ceil(2);
+        let mut acc = ProjectivePoint::IDENTITY;
+        for step in (0..top_pair).rev() {
+            if step + 1 < top_pair {
+                acc = acc.double().double();
+            }
+            let b_lo = (2 * step) as u64;
+            let b_hi = b_lo + 1;
+            let d1 = (u1.bit(b_lo) as usize) | ((u1.bit(b_hi) as usize) << 1);
+            let d2 = (u2.bit(b_lo) as usize) | ((u2.bit(b_hi) as usize) << 1);
+            let idx = d1 + 4 * d2;
+            if idx != 0 {
+                acc = if bool::from(acc.is_identity()) {
+                    tab[idx]
+                } else {
+                    acc.add(&tab[idx])
+                };
+            }
+        }
+        acc
+    }
+}
+
+/// Public 2D GLV scalar multiplication on secp256k1, returning an affine [`Point`].
+pub fn scalar_mul_glv(point: &Point, k: &BigUint, curve: &CurveParams) -> Point {
+    if curve.name == "secp256k1" {
+        ProjectivePoint::from_textbook(point)
+            .scalar_mul_glv(k)
+            .to_textbook(&curve.p)
+    } else {
+        point.scalar_mul(k, &curve.a_fe())
     }
 }
 
@@ -467,6 +739,38 @@ mod tests {
             let want = g.scalar_mul_ct(&k, &a_fe, bits);
             let got = pg.scalar_mul_ct(&k, bits);
             assert!(proj_eq_textbook(&got, &want), "mismatch at k={}", k_hex);
+        }
+    }
+
+    #[test]
+    fn glv_endomorphism_and_scalar_mul_match_reference() {
+        let curve = secp();
+        let g = curve.generator();
+        let a_fe = curve.a_fe();
+        let pg = proj_from_textbook(&g);
+        let (beta, lambda, _, _) = secp256k1_glv_params();
+
+        // Certificate checks on (β, λ): β³ = 1, β ≠ 1, ψ(G) = [λ]G.
+        assert_eq!(beta.sqr().mul(beta), SecpFieldElement::ONE);
+        assert_ne!(*beta, SecpFieldElement::ONE);
+        let psi_g = pg.endomorphism_psi();
+        let lam_g = g.scalar_mul(&lambda, &a_fe);
+        assert!(proj_eq_textbook(&psi_g, &lam_g));
+
+        for k_hex in [
+            "0",
+            "1",
+            "2",
+            "3",
+            "deadbeef",
+            "5363ad4cc05c30e0a5261c028812645a122e22ea20816678df02967c1b23bd72",
+            "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364140",
+            "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+        ] {
+            let k = BigUint::parse_bytes(k_hex.as_bytes(), 16).unwrap();
+            let want = g.scalar_mul(&k, &a_fe);
+            let got = scalar_mul_glv(&g, &k, &curve);
+            assert_eq!(got, want, "GLV scalar_mul mismatch at k={}", k_hex);
         }
     }
 

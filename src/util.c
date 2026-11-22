@@ -187,6 +187,12 @@ void ca_htab1_free(ca_htab1 *t)
     t->cap = t->count = 0;
 }
 
+void ca_htab1_clear(ca_htab1 *t)
+{
+    if (t->e && t->cap) memset(t->e, 0, t->cap * sizeof(ca_htab1_entry));
+    t->count = 0;
+}
+
 static int htab1_grow(ca_htab1 *t)
 {
     ca_htab1 old = *t;
