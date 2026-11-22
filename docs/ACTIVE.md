@@ -19,6 +19,8 @@ and construction gates. [pcc:unverified]
 ## Active items (top = next)
 - [ ] CT201–CT203: complete cold ECDLP source adjudication (matched five-arm rho/BSGS/IC, Williams order, distinct-Q per-block prospective gate; automation, started 2026-11-18, branch research/ct201-complete-single-target-gate-20261118, PR #1766; source CI 44/44 normal and -O at 36807d15; native/PCC blocked) [pcc:unverified]
 
+- [x] Lead 2B: implement compact binary-selector arity-three disjoint-window chained-S3 native Fp CDCL(T) solver with checked explanations and run s=5..12 scaling screen (Cursor, started 2026-11-19, branch cursor/pdp-lead-2b-m3-cdclt-fp-20261119, PR #1847) [pcc:unverified]
+
 - [ ] Xedni scaling Phase 2: test Cayley--Bacharach pencil-enforced lifting (`dim ker_Q B = 2`) and shared coordinate-factor-base decomposition above `11` bits (Cursor, follow-up to PR #1810) [pcc:unverified]
 
 - [x] Advance Xedni toward cryptographic scale (Phase 1): native Rust multi-prime subgroup-kernel LLL relation extractor, order-statistic 3D-LLL preselection, `ca-icx xedni-solve` (verified non-collinear solves through `p = 1021`), and Lean 4 modular-kernel + function-field section specialization bridge (Cursor, started 2026-11-18, branch cursor/xedni-crypto-scale-ef34, PR #1810) [pcc:unverified]
