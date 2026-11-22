@@ -49,7 +49,7 @@ uint64_t ca_powmod(uint64_t base, uint64_t exp, uint64_t m)
      * multiply has no 128-bit division.  Setting it up costs three, so
      * short exponents stay on the plain ladder.  Same residue either way. */
     if ((m & 1) && exp >= 16) {
-        ca_mont *mo = ca_pow_mont_for(m);
+        const ca_mont *mo = ca_pow_mont_for(m);
         return ca_mont_from(mo, ca_mont_pow(mo, ca_mont_to(mo, base), exp));
     }
     uint64_t r = 1;
@@ -369,7 +369,7 @@ int ca_sqrtmod_prime(uint64_t a, uint64_t p, uint64_t *root)
         ca_ts_q = q;
         ca_ts_s = s;
     }
-    ca_mont *mo = ca_pow_mont_for(p);
+    const ca_mont *mo = ca_pow_mont_for(p);
     const uint64_t one = mo->r1;
     uint64_t c = ca_mont_pow(mo, ca_mont_to(mo, z), q);
     uint64_t r = ca_mont_pow(mo, ca_mont_to(mo, a), (q + 1) / 2);
@@ -649,7 +649,9 @@ static uint64_t pollard_brent_dual(const ca_mont *m, uint64_t n, uint64_t c0, ui
 {
     uint64_t cm0 = ca_mont_to(m, c0), cm1 = ca_mont_to(m, c1);
     uint64_t y0 = ca_mont_to(m, seed0), y1 = ca_mont_to(m, seed1);
-    uint64_t q0 = m->r1, q1 = m->r1, g = 1;
+    /* One accumulator per lane; both start at Montgomery one. */
+    const uint64_t one = m->r1;
+    uint64_t q0 = one, q1 = one, g = 1;
     uint64_t x0, x1, ys0, ys1;
     uint64_t r = 1;
     const uint64_t batch = 128;

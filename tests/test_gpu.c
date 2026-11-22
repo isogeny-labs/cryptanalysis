@@ -249,7 +249,7 @@ static void test_walk_invariant(const ca_group *g, const ca_elem *base, const ca
     ca_rng_seed(&rng, 4242);
     for (uint32_t i = 0; i < a.r; i++) {
         uint64_t al = ca_rng_below(&rng, g->order), be = ca_rng_below(&rng, g->order);
-        ca_elem t1, t2, m;
+        ca_elem t1 = {{0}}, t2 = {{0}}, m = {{0}};
         ca_group_mul(g, &t1, base, al, NULL);
         ca_group_mul(g, &t2, target, be, NULL);
         ca_group_op(g, &m, &t1, &t2);
