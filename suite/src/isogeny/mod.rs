@@ -69,7 +69,10 @@ pub use cm::{cm_discriminant, frobenius_trace, CmData, EndomorphismRing};
 pub use experiment::{run_experiment, ExperimentConfig, ExperimentReport};
 pub use graph::{IsogenyGraph, IsogenyNode};
 pub use stable_three::{three_isogenies_over_fp_small, StableThreeError, StableThreeIsogeny};
-pub use velu::{velu_isogeny_2, velu_isogeny_odd, VeluIsogeny};
+pub use velu::{
+    velu_isogeny_2, velu_isogeny_odd, CmVeluGlv2, Isogeny2Doubler, MontgomeryIsogenyBridge,
+    VeluIsogeny,
+};
 pub use volcano::{VolcanoLevel, VolcanoMap};
 
 // ── Small toy curves used by the unit tests and CLI demo ─────────────────────
