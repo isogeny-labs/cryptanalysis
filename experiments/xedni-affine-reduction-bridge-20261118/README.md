@@ -287,6 +287,17 @@ Run `lake build ProjectivePrimitiveCurveEquation`; `build-projective-primitive-e
 
 Run `lake build ProjectivePrimitiveAddition`; `build-projective-primitive-addition-output.txt` records the registered build, direct module check, and `#print axioms` audit. The audited declarations use only `propext`, `Classical.choice`, and `Quot.sound`.
 
+`ProjectiveNormalizedCoalescenceFamily.lean` supplies the complementary residue-coalescing result for the exact family `E_d : y² = x³ − d²x + 1`, with `d = 5^(k+1)`. It first embeds any primitive integer triple as a nonzero rational projective class and proves that the global `reduceNonzero` map agrees with reduction of that representative. For every natural `k`, the rational sum of `P=(0,1)` and `T=(d,1)` is the primitive class of `U=(-d,-1)`, whose normalized reduction equals the reduced doubling class. The reduced discriminant is `3` in `ZMod 5`, while direct reduction of the unnormalized integral chord class differs from that doubling class. This gives an arbitrary-depth, smooth-reduction witness for the normalization boundary.
+
+| Result | Lean declaration | Exact hypotheses and status |
+| --- | --- | --- |
+| Primitive representative computes global reduction | `XedniProjectiveNormalizedCoalescenceFamily.reduce_classOfPrimitive` | Primitive integer triple, ring map to nontrivial commutative ring; checked |
+| Rational sum and normalized reduced sum | `XedniProjectiveNormalizedCoalescenceFamily.power_family_normalized_add` | Natural `k`, exact family offset `5^(k+1)`, residue map to `ZMod 5`; checked |
+| Raw class map differs from reduced addition | `XedniProjectiveNormalizedCoalescenceFamily.power_family_raw_map_differs` | Same family and offset; checked |
+| Smooth reduced curve | `XedniProjectiveNormalizedCoalescenceFamily.power_family_reduced_smooth` | Same family and offset; checked |
+
+Run `lake build ProjectiveNormalizedCoalescenceFamily`; `build-projective-normalized-coalescence-output.txt` records the registered build, direct module check, and `#print axioms` audit. The audited declarations use only `propext`, `Classical.choice`, and `Quot.sound`.
+
 | Result | Lean declaration | Exact hypotheses and status |
 | --- | --- | --- |
 | Primitive reduction remains nonzero | `XedniProjectivePrimitiveUniqueness.primitive_map_ne_zero` | Integer triple with Bézout certificate, homomorphism to nontrivial commutative ring; checked |
