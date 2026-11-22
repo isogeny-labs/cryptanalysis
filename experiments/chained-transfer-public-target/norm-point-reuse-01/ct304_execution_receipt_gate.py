@@ -110,6 +110,23 @@ def check_capture(receipt_path, role, stdout_path, stderr_path, executable_path,
     return record
 
 
+
+def check_lifetime_inside_external_wall(candidate_log, external_wall_ns):
+    """CT309: the seven disjoint CT244 in-process primitive intervals fit wall."""
+    marker = 'CT244_PRIMITIVE_TIMING '
+    records = [strict_json(line[len(marker):])
+               for line in candidate_log.read_text(encoding='utf-8').splitlines()
+               if line.startswith(marker)]
+    if len(records) != 1:
+        refuse('expected one native optimized lifetime timing row')
+    slots = records[0].get('elapsed_ns')
+    if type(slots) is not list or len(slots) != 7:
+        refuse('expected seven primitive lifetime elapsed slots')
+    total = sum(integer(v, 'primitive lifetime ns') for v in slots)
+    if total > integer(external_wall_ns, 'external wall ns', 1):
+        refuse('in-process primitive time exceeds complete external process wall')
+    return total
+
 def verify_pair(original_log, candidate_log, original_stderr, candidate_stderr,
                 original_executable, candidate_executable, original_receipt,
                 candidate_receipt, fixture, population_gate=True):
@@ -129,10 +146,15 @@ def verify_pair(original_log, candidate_log, original_stderr, candidate_stderr,
     if a['executable_sha256'] == b['executable_sha256']:
         refuse('candidate and original binary are indistinguishable')
     result = None
+    nested_total_ns = None
     if population_gate:
         # Source-only population equality is necessary, not execution proof.
         import ct302_full_native_gate as ct302
         result = ct302.validate(original_log, candidate_log, fixture)
+        # CT309: all seven disjoint CT244 lifetime intervals are enclosed by
+        # this single optimized native process's external wall duration.
+        nested_total_ns = check_lifetime_inside_external_wall(
+            candidate_log, b['external_wall_ns'])
     return {
         'schema': 'ct304-captured-pair-admission/v1',
         'fixture_git_blob': blob,
@@ -141,6 +163,7 @@ def verify_pair(original_log, candidate_log, original_stderr, candidate_stderr,
         'receipt_reports_successful_complete_processes': True,
         'paired_host_affinity_matches': True,
         'full_695_and_144_population_consistent': result is not None,
+        'primitive_lifetime_fits_external_wall': nested_total_ns is not None,
         'native_execution_independently_verified': False,
         'complete_single_target_ecdlp_cost': None,
         'pcc': 'unverified',
@@ -269,6 +292,37 @@ def self_test_with_authentic_source(fixture_path):
         good=trial()
         if not good['full_695_and_144_population_consistent'] or good['native_execution_independently_verified']:
             raise AssertionError('CT304 integrated mock standing changed')
+        # CT309: one producer-only positive C169 interval in the first
+        # otherwise synthetic sample; the full 695 and 144 scopes stay intact.
+        sample_marker = ct302.clocks.SAMPLE
+        lifetime_marker = ct302.clocks.LIFETIME
+        with_clock = []
+        changed_sample = changed_lifetime = False
+        for line in candidate.splitlines():
+            if line.startswith(sample_marker) and not changed_sample:
+                obj = strict_json(line[len(sample_marker):])
+                if obj['calls'][4] != 1:
+                    raise AssertionError('first CT248 C169 slot changed')
+                obj['elapsed_ns'][4] = 20000
+                line = sample_marker + json.dumps(obj, sort_keys=True)
+                changed_sample = True
+            elif line.startswith(lifetime_marker):
+                obj = strict_json(line[len(lifetime_marker):])
+                obj['elapsed_ns'][4] += 20000
+                line = lifetime_marker + json.dumps(obj, sort_keys=True)
+                changed_lifetime = True
+            with_clock.append(line)
+        if not changed_sample or not changed_lifetime:
+            raise AssertionError('CT309 synthetic timestamp sources missing')
+        timed_candidate = ('\\n'.join(with_clock) + '\\n').encode()
+        timed_receipt = copy.deepcopy(b)
+        timed_receipt['stdout_sha256'] = digest(timed_candidate)
+        timed_receipt['stdout_bytes'] = len(timed_candidate)
+        timed_receipt['external_wall_ns'] = 20000
+        positive_timed = trial(rb=timed_receipt, candidate_bytes=timed_candidate)
+        if not positive_timed['primitive_lifetime_fits_external_wall']:
+            raise AssertionError('CT309 positive nested-clock gate failed')
+
         mutations=[]
         def mut(fn):
             ra,rb=copy.deepcopy(a),copy.deepcopy(b)
@@ -286,6 +340,11 @@ def self_test_with_authentic_source(fixture_path):
         forged['stdout_sha256']=digest(badlog.encode())
         forged['stdout_bytes']=len(badlog.encode())
         mutations.append((forged,b,badlog.encode(),None))
+        impossible = copy.deepcopy(timed_receipt)
+        impossible['external_wall_ns'] = 19999
+        # This forged receipt matches the positive-clock raw stdout hash and
+        # all CT302 math/counters; only its external/nested time is impossible.
+        mutations.append((a, impossible, None, timed_candidate))
         for i,(ra,rb,oa,ob) in enumerate(mutations):
             try:
                 trial(ra,rb,oa,ob)
@@ -297,6 +356,7 @@ def self_test_with_authentic_source(fixture_path):
             'synthetic_other_rows':694,
             'synthetic_zero_ns_clock_samples':144,
             'synthetic_integrated_positive':1,
+            'synthetic_clock_nesting_positive':1,
             'synthetic_integrated_mutations_rejected':len(mutations),
             'native_executions':0, 'pcc':'unverified',
         }
