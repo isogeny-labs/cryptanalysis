@@ -1,0 +1,160 @@
+{
+  "format": "correspondence-assessment-draft-v1",
+  "assessment_state": "draft",
+  "authority": "companion artifact; not a ledger record or certificate",
+  "source": {
+    "object_uid": "xedni-r7-r9-plane-cubic-family-v1",
+    "representation_uid": "homogeneous-ternary-cubic-with-chord-origin",
+    "equations": "F(X,Y,Z)=0 over Q; natural members not yet constructed by a pinned map backend",
+    "field": "Q; at the named p the verifier checks the Jacobian discriminant, coefficient units, and selected-point map commutation; it makes no global smooth-extension claim for a non-linear map",
+    "dimension": 1,
+    "subgroup_order": "row-specific source subgroup order q"
+  },
+  "destination": {
+    "object_uid": "row-specific-jacobian-elliptic-curve",
+    "representation_uid": "short-weierstrass-projective-model",
+    "equations": "y^2 z=x^3+a x z^2+b z^3",
+    "field": "Q with reduction to F_p",
+    "dimension": 1,
+    "ambient_group_order": null
+  },
+  "transformation": {
+    "kind": "curve birational map followed by Jacobian group translation",
+    "family": "explicit supplied f:C->E with psi(P)=f(P)-f(O)",
+    "degree": "certificate-specific; only the degree-1 projective-linear control receives a global transfer status",
+    "field_of_definition": "Q",
+    "formulas": "three homogeneous rational-polynomial components for f and f^{-1}; exact short-Weierstrass addition for translation by -f(O)",
+    "exceptional_cases": [
+      "base-locus points where all map components vanish",
+      "nonunit map denominators at p",
+      "Jacobian discriminant zero modulo p",
+      "non-flex-origin extensions not certified by supplied polynomial identities",
+      "completeness of the listed exceptional locus is not established for a general birational map"
+    ],
+    "normalization": "primitive projective coordinates; translated chosen origin maps to the elliptic identity"
+  },
+  "obligations": {
+    "existence": {
+      "state": "supported",
+      "evidence": [
+        "cubic_jacobian_map.py: deterministic projective-Weierstrass identity controls for r=7,8,9"
+      ],
+      "scope": "bounded degree-1 controls only; general natural cubics remain unknown"
+    },
+    "explicit_construction": {
+      "state": "unknown",
+      "evidence": [
+        "construction_probe reports no Sage or Magma executable",
+        "PARI ellfromeqn supplies Jacobian coefficients but not selected-point maps"
+      ],
+      "scope": "natural r=7..9 cubic family"
+    },
+    "map_correctness": {
+      "state": "supported",
+      "evidence": [
+        "test_cubic_jacobian_map.py exact polynomial, inverse-composition, point-image, origin-translation, and mutation controls"
+      ],
+      "scope": "explicit supplied certificates; exceptional entries are checked on-curve and in the base locus, but completeness is open; global status only for projective-linear isomorphisms"
+    },
+    "subgroup_preservation": {
+      "state": "supported",
+      "evidence": [
+        "exact Q and F_p replay of f(P_i), f(O), psi(P_i)=[m_i-m_O]H, and supplied relations"
+      ],
+      "scope": "bounded p=101 identity controls only"
+    },
+    "computational_advantage": {
+      "state": "unknown",
+      "evidence": [],
+      "scope": "no rank, relation-yield, decay, or end-to-end cost measurement"
+    },
+    "scaling_support": {
+      "state": "unknown",
+      "evidence": [],
+      "scope": "no natural 16--32-bit row and no general constructor timing"
+    }
+  },
+  "preservation_certificate": {
+    "identity": "psi(P)=f(P)-f(O); reduction requires psi_bar(P_i)=[m_i-m_O]H",
+    "kernel_intersection": "not a separate isogeny kernel obligation for a verified birational genus-one isomorphism; exceptional loci must be excluded",
+    "recovery_map": "f^{-1}(Q+f(O)) on the certified domain",
+    "scalar_multiplier": 1,
+    "proof_artifact": "cubic_jacobian_map.py exact symbolic and group replay; producer control only"
+  },
+  "mechanism": {
+    "proposed_benefit": "map selected r=7..9 cubic points to their actual Jacobian so rank and selected-point relations refer to the same points",
+    "prediction": "a valid map permits rank-tool input and exact relation transport without changing the source subgroup relation",
+    "falsification_condition": "any polynomial identity, exceptional-point, origin, reduction, subgroup, or relation replay fails",
+    "assumptions": [
+      "the supplied cubic is smooth",
+      "the explicit map extends at every selected point and origin",
+      "the map and inverse are defined over Q",
+      "all relevant denominators are units modulo p"
+    ]
+  },
+  "cost_comparison": {
+    "workload": "one explicit r=7..9 map certificate and its selected points",
+    "baseline": "plane-cubic chord arithmetic without a Jacobian selected-point map",
+    "units": null,
+    "construction": null,
+    "transfer": null,
+    "destination": null,
+    "recovery": null,
+    "verification": null,
+    "failed_attempts_and_duplicates": null,
+    "memory_and_data": null,
+    "setup_reuse": null,
+    "uncertainty": "all natural-row costs unmeasured",
+    "evidence_label": "unmeasured"
+  },
+  "controls": [
+    "r=7,8,9 projective-Weierstrass identity maps with nonidentity chosen chord origin",
+    "forward-map polynomial mutation",
+    "forward-point and origin-translation mutations",
+    "source multiplier and exact-order mutations",
+    "relation replay, exceptional-point, off-curve, Jacobian-discriminant, and self-hash mutations"
+  ],
+  "protocol": {
+    "parameter_scope": "non-natural p=101 controls with r in {7,8,9}",
+    "sample_selection": "deterministic multiples [2]P through [r+1]P on y^2=x^3-x+1 with chosen origin P=(0,1)",
+    "stopping_rules": "fail at the first strict schema, symbolic identity, point, reduction, subgroup, or relation mismatch",
+    "invalidation_rules": "missing constructor identity, unbound map, selected exceptional point, Jacobian discriminant zero, nonunit coefficient, failed selected-point reduction commutation, or failed source replay",
+    "hardware_manifest": "HARDWARE.json",
+    "execution_route": "producer unit controls only; no runner natural-row command"
+  },
+  "exploration_boundary": {
+    "families": [
+      "explicit projective-linear maps to short-Weierstrass cubics",
+      "schema-only support for supplied birational maps with exceptional points"
+    ],
+    "parameters": "r=7..9; exact Q arithmetic; source prime below 2^32",
+    "completed_scope": "degree-1 identity controls and strict certificate mutation tests",
+    "completeness_claim": "none"
+  },
+  "composition": {
+    "edge_ids": [
+      "cubic-to-jacobian-f",
+      "translate-by-minus-f-origin",
+      "coefficient-unit-selected-point-reduction-replay"
+    ],
+    "junction_compatibility": "checked exactly in bounded controls; natural rows absent",
+    "weakest_open_obligation": "pinned executable construction of f and f^{-1} for each natural cubic"
+  },
+  "sources": [
+    "research/xedni_plane_group_20261117/README.md",
+    "research/xedni_plane_group_20261117/sweep.py",
+    "research/xedni_rank_decay_20261118/AMENDMENT.md",
+    "research/xedni_rank_decay_20261118/cubic_jacobian_map.py",
+    "Sage constructor.py EllipticCurve_from_cubic(..., morphism=True), audited commit 8de8dad7bcb38e1baa43508cbe944bf04a2d0401"
+  ],
+  "open_obligations": [
+    "install and pin Sage/eclib or a licensed Magma constructor",
+    "retain explicit f and f^{-1} formulas and exceptional-point branches for every natural cubic",
+    "verify global smoothness, exceptional-locus completeness, and global extension of each map through reduction for every non-linear row",
+    "integrate the verifier into runner, provenance, and an authorizing freeze",
+    "run PARI/Magma rank agreement on the mapped selected points",
+    "measure complete construction, transfer, verification, rank, and recovery cost"
+  ],
+  "recommended_next_action": "pin a Sage runtime, generate one excluded r=7 calibration map, and require this verifier to replay it before any rank call",
+  "official_status_change": "none"
+}

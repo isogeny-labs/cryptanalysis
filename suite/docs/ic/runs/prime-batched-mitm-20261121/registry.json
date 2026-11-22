@@ -1,0 +1,109 @@
+{
+  "schema": "lead-testing.registry/v1",
+  "frozen": "2026-11-19",
+  "note": "The one set of fields, seeds, budgets, m ladder and memory limits every lead is tested on (PROTOCOL.md). Change it only in its own PR that says why; every run records this file's sha256, and runs under different registry hashes are never compared. Calibrated on cryptanalysis 6b64ee6c (4 vCPU, 15 GiB host): every baseline arm below was run and verified at its sizes.",
+
+  "tooling": {
+    "repo": "cryptanalysis",
+    "ic_bin": "ca-ic",
+    "pilot_example": "pkm_tower_pilot",
+    "build": "cargo build --release --bin ca-ic --example pkm_tower_pilot"
+  },
+
+  "m_ladder": [2, 3, 4, 5, 6, 7, 8, 9],
+
+  "memory": {
+    "ceiling_gib": 12,
+    "fraction_of_available": 0.8,
+    "host_floor_gib": 0.5,
+    "poll_seconds": 0.25,
+    "note": "Effective per-cell ceiling = min(ceiling_gib, fraction_of_available x MemAvailable at the start of the run). The watchdog sums RSS over the cell's whole process tree and SIGKILLs the process group above the ceiling, when host MemAvailable drops under host_floor_gib (swap thrash), or past the cell's wall budget."
+  },
+
+  "gate": {
+    "statistic": "geometric mean of paired per-seed (bench) or per-cell (pkm) cost ratios, baseline over lead",
+    "bootstrap_resamples": 10000,
+    "confidence": 0.95,
+    "seed": 20261119,
+    "rule": "PROTOCOL.md section 6"
+  },
+
+  "coordinates": {
+    "prime": "affine short Weierstrass y^2 = x^3 + a x + b over F_p, a = -3 kept where ic scales a NIST shape; factor base by abscissa x; Semaev summation polynomials in x",
+    "char2": "ordinary y^2 + x y = x^3 + a x^2 + b over GF(2^n) in ic's polynomial basis; random curve with cofactor <= max_cofactor; factor base an F_2-subspace of abscissae",
+    "koblitz": "K_a: y^2 + x y = x^3 + a x^2 + 1 over GF(2^n) (the smaller-cofactor a); factor base a Frobenius-invariant subspace chosen by `divisor`",
+    "pkm": "Semaev S_3 (S_3 chain for m >= 3) in x over F_p plus the tower equations, raw presentation (`--engine f4`)",
+    "rule": "A lead that changes the representation (projective, Edwards, x-only Montgomery, normal basis, reduced tower presentation) declares it as its change and still runs on these instances and seeds; logarithms are verified on the registry curve."
+  },
+
+  "baseline": {
+    "bench": {
+      "prime":   {"label": "generic MITM on an abscissa base", "factor_base": "prime-abscissa", "oracle": "mitm"},
+      "char2":   {"label": "generic MITM on a subspace base", "factor_base": "binary-subspace", "oracle": "mitm"},
+      "koblitz": {"label": "Frobenius-folded MITM on an invariant base", "factor_base": "koblitz-orbit", "oracle": "mitm-frobenius"}
+    },
+    "rho": "ic bench's matched rho on the same instance and planted targets: negation walk (A = 2) on prime and char2; on Koblitz the lower of the signed-Frobenius and negation walks (ic's own rule). Reported as each row's S over rho: the distance remaining, not a gate.",
+    "pkm": {
+      "label": "PKM tower, raw presentation, degree-bounded F4 (f4_fp), with the null and naive controls",
+      "args": []
+    }
+  },
+
+  "pkm": {
+    "kinds": ["kummer", "dickson", "isogeny"],
+    "controls": ["tower", "null", "naive"],
+    "t_min": 1,
+    "cost_metric": "max_cols",
+    "cost_metric_note": "Widest F4 matrix: host-independent and the quantity that runs out of memory. Wall time is kept on every row beside it."
+  },
+
+  "phases": {
+    "1": {
+      "name": "screen",
+      "bench": {
+        "repeats": 6, "rho_runs": 8, "seed": 123145648762, "max_trials": 2000000,
+        "solver_budget_seconds": 120, "max_cofactor": 8, "cell_wall_seconds": 1800,
+        "instances": {
+          "prime":   [{"degree": 16, "factor_base_params": {"prime-abscissa": {"size": 40}}},
+                      {"degree": 18, "factor_base_params": {"prime-abscissa": {"size": 63}}}],
+          "char2":   [{"degree": 17, "factor_base_params": {"binary-subspace": {"dimension": 6}}},
+                      {"degree": 21, "factor_base_params": {"binary-subspace": {"dimension": 7}}}],
+          "koblitz": [{"degree": 23, "factor_base_params": {"koblitz-orbit": {"divisor": "0;1"}}}]
+        }
+      },
+      "pkm": {"p": 786433, "t_max": 8, "budget_seconds": 60, "seed": 1347112276,
+              "planted": 3, "random": 3, "cell_wall_seconds": 3600}
+    },
+    "2": {
+      "name": "confirm",
+      "bench": {
+        "repeats": 8, "rho_runs": 16, "seed": 20261102, "max_trials": 4000000,
+        "solver_budget_seconds": 300, "max_cofactor": 8, "cell_wall_seconds": 7200,
+        "instances": {
+          "prime":   [{"degree": 20, "factor_base_params": {"prime-abscissa": {"size": 100}}},
+                      {"degree": 22, "factor_base_params": {"prime-abscissa": {"size": 160}}}],
+          "char2":   [{"degree": 23, "factor_base_params": {"binary-subspace": {"dimension": 7}}},
+                      {"degree": 25, "factor_base_params": {"binary-subspace": {"dimension": 8}}}],
+          "koblitz": [{"degree": 31, "factor_base_params": {"koblitz-orbit": {"divisor": "0;1;2"}}}]
+        }
+      },
+      "pkm": {"p": 469762049, "t_max": 8, "budget_seconds": 120, "seed": 20261103,
+              "planted": 3, "random": 3, "cell_wall_seconds": 7200}
+    },
+    "3": {
+      "name": "scale",
+      "bench": {
+        "repeats": 8, "rho_runs": 16, "seed": 20261104, "max_trials": 8000000,
+        "solver_budget_seconds": 600, "max_cofactor": 8, "cell_wall_seconds": 21600,
+        "instances": {
+          "prime":   [{"degree": 24, "factor_base_params": {"prime-abscissa": {"size": 256}}}],
+          "char2":   [{"degree": 27, "factor_base_params": {"binary-subspace": {"dimension": 9}}},
+                      {"degree": 29, "factor_base_params": {"binary-subspace": {"dimension": 9}}}],
+          "koblitz": [{"degree": 43, "factor_base_params": {"koblitz-orbit": {"divisor": "1"}}}]
+        }
+      },
+      "pkm": {"p": 3221225473, "t_max": 10, "budget_seconds": 300, "seed": 20261105,
+              "planted": 3, "random": 3, "cell_wall_seconds": 21600}
+    }
+  }
+}

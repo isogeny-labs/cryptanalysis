@@ -52,17 +52,35 @@
 //! key, and notes documenting how the full attack scales.
 
 use super::reduced::{ReducedAes128, INV_SBOX, SBOX};
+use crate::cryptanalysis::sym_ir::primitives::aes128;
+use crate::cryptanalysis::sym_ir::Primitive;
+use crate::cryptanalysis::sym_techniques::mitm as generic;
+use std::sync::OnceLock;
+
+/// The IR description of AES (block codec: plain bytes), built once. Only
+/// its block codec is used by the set helpers below.
+fn ir_aes() -> &'static Primitive {
+    static P: OnceLock<Primitive> = OnceLock::new();
+    P.get_or_init(|| aes128::reduced(1, false))
+}
+
+/// Cost table of the 7-round Demirci-Selcuk MITM on AES-128, derived from
+/// the IR description by
+/// [`delta_set_cost_table`](crate::cryptanalysis::sym_techniques::mitm::delta_set_cost_table):
+/// one round before the 4-round window, two after, active and target byte
+/// 0. See that function for what the model does and does not capture.
+pub fn demirci_selcuk_cost_table_7_round() -> generic::DeltaSetCostTable {
+    generic::delta_set_cost_table(&aes128::reduced(7, false), 1, 4, 0, 0)
+        .expect("AES IR is modelled")
+}
 
 /// Generate a δ-set: 256 plaintexts equal to `base` everywhere except
 /// position `active_byte`, which cycles `0..=255`.
 pub fn delta_set(base: &[u8; 16], active_byte: usize) -> Vec<[u8; 16]> {
     assert!(active_byte < 16);
-    (0..256u16)
-        .map(|v| {
-            let mut p = *base;
-            p[active_byte] = v as u8;
-            p
-        })
+    generic::delta_set(ir_aes(), base, active_byte, 8)
+        .into_iter()
+        .map(|b| b.try_into().expect("16-byte block"))
         .collect()
 }
 
@@ -70,17 +88,21 @@ pub fn delta_set(base: &[u8; 16], active_byte: usize) -> Vec<[u8; 16]> {
 /// δ-set's ciphertexts.
 pub fn ordered_sequence(ciphertexts: &[[u8; 16]], byte_pos: usize) -> Vec<u8> {
     assert!(ciphertexts.len() == 256);
-    ciphertexts.iter().map(|c| c[byte_pos]).collect()
+    let blocks: Vec<Vec<u8>> = ciphertexts.iter().map(|c| c.to_vec()).collect();
+    generic::ordered_sequence(ir_aes(), &blocks, byte_pos, 8)
+        .into_iter()
+        .map(|v| v as u8)
+        .collect()
 }
 
 /// Multiset (histogram) of values at a single output byte over a
 /// δ-set's ciphertexts.
 pub fn multiset(ciphertexts: &[[u8; 16]], byte_pos: usize) -> [u32; 256] {
-    let mut h = [0u32; 256];
-    for c in ciphertexts {
-        h[c[byte_pos] as usize] += 1;
-    }
-    h
+    let blocks: Vec<Vec<u8>> = ciphertexts.iter().map(|c| c.to_vec()).collect();
+    let h = generic::multiset(ir_aes(), &blocks, byte_pos, 8);
+    let mut out = [0u32; 256];
+    out.copy_from_slice(&h);
+    out
 }
 
 /// True iff `m` is a uniform histogram: every value appears exactly
@@ -227,5 +249,11 @@ mod tests {
             "expected unique recovery, got {} candidates",
             cands.len()
         );
+    }
+
+    #[test]
+    fn cost_table_reproduces_parameter_counts() {
+        let t = demirci_selcuk_cost_table_7_round();
+        assert_eq!((t.params_ordered, t.params_multiset), (25, 24));
     }
 }

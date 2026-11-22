@@ -1,0 +1,77 @@
+{
+  "curve_artifact": "artifacts/p224_descended_quartic.json",
+  "field_prime": "26959946667150639794667015087019630673557916260026308143510066298881",
+  "format": "nist-p224-jacobian-prerequisites-v1",
+  "jacobian_representation": {
+    "chosen_rational_basepoint": "P1",
+    "degree_zero_encoding": "[D - deg(D)*P1] for an F_p-rational divisor D",
+    "field_of_definition": "F_p; no extension-field base divisor is required",
+    "generic_genus_three_encoding": "[D3 - 3*P1] with D3 an effective degree-3 divisor, away from exceptional loci",
+    "rational_canonical_divisor": "K = 2*P1 + 2*P2"
+  },
+  "points": [
+    {
+      "contact_multiplicity": 2,
+      "gradient_mod_p": [
+        "7331266159313269270856611365219450629939682637791851865076393183042",
+        "0",
+        "0"
+      ],
+      "name": "P1",
+      "projective_xyz": [
+        "0",
+        "22787173778508524698301357359670643493480311217601617318077615795862",
+        "1"
+      ],
+      "quartic_value_mod_p": "0",
+      "smooth": true,
+      "tangent_line": "X=0"
+    },
+    {
+      "contact_multiplicity": 2,
+      "gradient_mod_p": [
+        "17767021402079833718001351166473653116434310910505669089759263778571",
+        "0",
+        "0"
+      ],
+      "name": "P2",
+      "projective_xyz": [
+        "0",
+        "13535062028274435351443631403241021304881425966529312421607570796382",
+        "1"
+      ],
+      "quartic_value_mod_p": "0",
+      "smooth": true,
+      "tangent_line": "X=0"
+    }
+  ],
+  "rational_bitangent": {
+    "canonical_divisor_verified": true,
+    "factorization": "c*(Y-y1*Z)^2*(Y-y2*Z)^2",
+    "factorization_verified": true,
+    "intersection_divisor": "2*P1 + 2*P2",
+    "leading_coefficient_c": "4820844509965210903154656650018691395109768803919309923232483592888",
+    "line": "X=0",
+    "restriction_coefficients_low_to_high": [
+      "16357462546507975892052026681520860983692116115217410288188390587272",
+      "4891274673068042537139598676961274321798020328245007740267703397722",
+      "2191122478227970367639344059218507829246517678805047955930149305147",
+      "2606918536317247384401097258492456910336664868908690228525338871688",
+      "4820844509965210903154656650018691395109768803919309923232483592888"
+    ]
+  },
+  "scope_boundary": {
+    "completed": "rational basepoint, divisor encoding, and canonical-divisor prerequisites",
+    "not_completed": "general plane-quartic Jacobian addition/reduction and the source isogeny point map"
+  },
+  "source_curve_normalization": "coefficient of X^4 is 1",
+  "verification": {
+    "all_checks_pass": true,
+    "checks": [
+      "F(P1)=F(P2)=0",
+      "P1 and P2 are smooth",
+      "the tangent at each point is X=0",
+      "F(0,Y,Z)=c*(Y-y1*Z)^2*(Y-y2*Z)^2"
+    ]
+  }
+}

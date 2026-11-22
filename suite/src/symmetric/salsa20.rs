@@ -42,7 +42,7 @@
 //! the one IETF (RFC 8439) standardised.  This module is provided for
 //! NaCl interoperability and for understanding ChaCha's lineage.
 
-const SIGMA: [u32; 4] = [0x61707865, 0x3320646e, 0x79622d32, 0x6b206574];
+pub(crate) const SIGMA: [u32; 4] = [0x61707865, 0x3320646e, 0x79622d32, 0x6b206574];
 
 #[inline]
 fn qr(state: &mut [u32; 16], a: usize, b: usize, c: usize, d: usize) {

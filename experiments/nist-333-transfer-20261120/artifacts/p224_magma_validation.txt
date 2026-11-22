@@ -1,0 +1,32 @@
+Public Magma calculator validation
+Date: 2026-11-19 UTC
+Magma: V2.29-10
+Input: handoff/p224_quartic_descent.m generated from artifacts/p224_finite_field_theta.json
+
+Historical failed candidate (preserved):
+- calculator seed 2433015371
+- the preprint signs on alpha_32 and alpha_33 gave non-Frobenius-rational
+  Dixmier-Ohno moduli and were rejected
+
+Corrected reduced-characteristic signs:
+- calculator seed 1371805104; time 2.669 s; memory 32.09 MB
+- extension quartic nonsingular: true
+- Dixmier-Ohno moduli Frobenius-rational: true
+- normalized representatives Frobenius-fixed: 13/13
+- Frobenius isomorphism unique: true
+- degree-three matrix cocycle identity: true
+- Hilbert-90 descent identity B^sigma*M=B: true
+- descended plane quartic over F_p nonsingular: true
+- descended and extension quartics have equal Dixmier-Ohno moduli: true
+
+An earlier attempt to reconstruct a quartic from the invariants alone exceeded
+the public service's memory limit after the invariant checks had passed.  The
+final script instead performs direct Galois descent using the unique
+Frobenius isomorphism and uses only 32.09 MB.
+
+Interpretation:
+The finite-field quartic construction and descent gates now pass for P-224.
+This establishes an explicit candidate curve over F_p with independently
+validated geometric moduli.  The source-to-Jacobian point map, its kernel, and
+the polarized-dual composition remain unimplemented and are not implied by
+this validation.

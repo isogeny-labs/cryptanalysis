@@ -1,0 +1,42 @@
+[
+ {
+  "cell": "prime-24",
+  "args": "--bits 24 --factor-base prime-abscissa:size=256 --oracle mitm --repeats 8 --seed 20261104 --max-trials 8000000 --max-cofactor 8 --solver-budget-seconds 600 --rho-runs 16",
+  "previous_wall_s": 39.911,
+  "previous_all_verified": true,
+  "this_wall_s": 0.342,
+  "this_all_verified": true,
+  "same_counts": true,
+  "speedup": 116.7
+ },
+ {
+  "cell": "char2-27",
+  "args": "--char2-degree 27 --factor-base binary-subspace:dimension=9 --oracle mitm --repeats 8 --seed 20261104 --max-trials 8000000 --max-cofactor 8 --solver-budget-seconds 600 --rho-runs 16",
+  "previous_wall_s": 15.737,
+  "previous_all_verified": true,
+  "this_wall_s": 0.444,
+  "this_all_verified": true,
+  "same_counts": true,
+  "speedup": 35.4
+ },
+ {
+  "cell": "char2-29",
+  "args": "--char2-degree 29 --factor-base binary-subspace:dimension=9 --oracle mitm --repeats 8 --seed 20261104 --max-trials 8000000 --max-cofactor 8 --solver-budget-seconds 600 --rho-runs 16",
+  "previous_wall_s": 355.701,
+  "previous_all_verified": true,
+  "this_wall_s": 1.4,
+  "this_all_verified": true,
+  "same_counts": true,
+  "speedup": 254.1
+ },
+ {
+  "cell": "koblitz-43",
+  "args": "--koblitz-degree 43 --factor-base koblitz-orbit:divisor=1 --oracle mitm-frobenius --repeats 8 --seed 20261104 --max-trials 8000000 --max-cofactor 8 --solver-budget-seconds 600 --rho-runs 16",
+  "previous_wall_s": 13.876,
+  "previous_all_verified": true,
+  "this_wall_s": 14.45,
+  "this_all_verified": true,
+  "same_counts": true,
+  "speedup": 1.0
+ }
+]

@@ -1,0 +1,20 @@
+# Four signs of one terminal edge recover the N41 public scalar
+
+Restricting the terminal slot to **one source edge and its four point-sign states** retained an ordinary N41 relation on the frozen public point. The native seven-pair join found it after 1,788,523 probes; independent checked Sage replay verified the raw group sum, fourteen distinct folded columns, and **one novel relation row**. Combining that row with the already prepared full-rank 70-column factor logs recovered scalar **`445577591162`**, which Sage independently replayed against the supplied public point. The stricter single signed terminal state completed its entire scan with zero hits, giving an exact fixed-point boundary between the two frozen source laws.
+
+## Frozen source laws and point
+
+The field is GF(2)[t]/(t^41+t³+1), the curve is `y²+xy=x³+1`, curve ID `EC1N41Ckb1h7d5e80d3c4d0`, subgroup order `549756390943`, and cofactor four. The W8 seed-184 source has 35 eligible pair edges and 70 folded columns. Six pair slots use rotations `0,7,14,21,28,35`; the terminal repeats rotation zero. Both runs use the same previously published transported public point `(920359962848, 755404565011)` and raw preimage index zero `(344545435656, 924092594889)`. The terminal laws were fixed before their respective queries: version one permits only signed state ID 0; version two permits IDs 0–3, all four signs of the first eligible edge. All other six pairs remain unpinned.
+
+The [single-state protocol](protocol.json) and [four-sign protocol](protocol_v2.json) bind the native source and binary, input table, public point, terminal law, one worker, exact source count, 4 GiB RSS cap, and parent wall cap before either query. The input includes 128 independently generated group-addition checks. The checked [Sage runtime](sage_runtime_info.json) was saved before the independent relation and recovery runs. Those runs have their own frozen [relation audit](audit_protocol_v2.json) and [recovery](recovery_protocol_v2.json) protocols. Candidate ID is null because this is a controlled component study using factor logs prepared in an earlier phase.
+
+| Frozen terminal law | Uniform raw-point mean upper ceiling | Target probes | Native result | Parent wall | Sampled peak RSS |
+| --- | ---: | ---: | --- | ---: | ---: |
+| State ID 0 | 1.80365492326 | 2,297,856 | `COMPLETE_RESTRICTED_SOURCE_SCAN`, zero hits | 53.204 s | 217,677,824 B |
+| IDs 0–3, first edge | 7.21461969305 | 1,788,523 before first hit | one hit, native sum check passed | 39.265 s | 217,874,432 B |
+
+The ceiling divides each exact distinct-edge ordered signed-tuple count by the full curve order `4r`; it predicts neither fixed-point existence nor time to first relation. Both local wall times are exploratory on a contended host. The four-sign hit has state IDs `[9,109,43,30,69,34,3]` and terminal ID 3, within its preselected pool. The [checked-Sage relation replay](sage_audit_result_v2.json) confirms its raw sum, `[4]U=Q`, fourteen distinct folded columns, correct signed-Frobenius coefficients, and rank one from an empty relation matrix. The [scalar recovery receipt](recovery_result_v2.json) binds the earlier factor-log system, computes the same scalar from this new row, and checks scalar multiplication on the curve. The [terminal verifier](verify.py) checks both frozen source hashes and transcripts, source caps, audit and recovery hashes, row rank, and scalar replay; `python3 -B verify.py` passes.
+
+## N131 promotion gate
+
+The same first-edge four-sign law is an exact subset of the frozen N131 32-state terminal pool. Its N131 source-count ceiling is approximately **141.6092 labeled eight-pair relations per uniformly chosen raw point**, four times the first edge's single-state ceiling. The next experiment should restrict the existing N131 terminal-fiber circuit to those four states, freeze the same public workload before construction, validate the constructed control with all masks unpinned in the ordinary query, and run one worker under 600 seconds and 4 GiB. Any solver model needs complete signed-point, distinct-column, relation-rank, and target-scalar replay before promotion.

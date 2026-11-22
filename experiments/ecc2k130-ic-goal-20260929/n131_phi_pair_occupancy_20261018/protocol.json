@@ -1,0 +1,39 @@
+{
+  "candidate_id": null,
+  "curve_id": "EC1N131Ckb1heb5f1998f20b",
+  "expected_x_lifts_per_slot": 532,
+  "input_law": "all 532 valid x-lift codes per slot, both signs; enumerate before any target-specific filtering",
+  "purpose": "exact signed pair-sum occupancy in the Q1358 d10 phi domain, slots 0 and 1",
+  "rss_cap_bytes": 4294967296,
+  "slot_positions": [
+    0,
+    1
+  ],
+  "source_candidate_id": "IC1N131Ckb1fb139384PDP15satRCdirectLAgaussTDdirectISO0h91f3d222e01b",
+  "source_geometry_sha256": "8fae791696e014ba25c5879e468ad5e281374337d525787f657cf53d6b668cbb",
+  "sources": {
+    "curves.py": {
+      "path": "/Volumes/SSD990/cryptanalysis/ecc2k130/codegen/curves.py",
+      "sha256": "1cdf373f471e0703693e12bf1f5a9e1ef8dd7e8853951968b7efac58095ecd63"
+    },
+    "field.py": {
+      "path": "/Volumes/SSD990/cryptanalysis/ecc2k130/codegen/field.py",
+      "sha256": "8ddb4497c2306f5d2fb49c60124f9f0d1465efac237985685272776f7f136b67"
+    },
+    "geometry": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_phi_torsion_frobenius_domains_20261005/m15_d10_static/d10_exact_geometry_v1.json",
+      "sha256": "8fae791696e014ba25c5879e468ad5e281374337d525787f657cf53d6b668cbb"
+    },
+    "run.py": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_phi_pair_occupancy_20261018/run.py",
+      "sha256": "3363713040b1a5fd40f1a4a3aff111f6e7e704afc1cfd29beb6fe8cdd754bf35"
+    },
+    "sage_runtime_info": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_phi_pair_occupancy_20261018/sage_runtime_info.json",
+      "sha256": "073ca37250b100a7f961de3475da8a4d489f3f2140c15f4c72457816893f3f01"
+    }
+  },
+  "status": "FROZEN_BEFORE_RUN",
+  "wall_cap_seconds": 600,
+  "worker_count": 1
+}

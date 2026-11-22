@@ -1,0 +1,9 @@
+{
+  "kind": "n131_d13_m12_prospective_gate_auditor_preexecution_failure_v3",
+  "status": "AUDITOR_KEY_ERROR_BEFORE_PANEL",
+  "error": "KeyError: first_seven",
+  "cause": "The copied v3 auditor used the first_eight prefix file but still looked up the v2 first_seven hash key.",
+  "live_candidate_interrupted": false,
+  "prospective_query_10_started": false,
+  "correction": "Preserve audit_v3.py and protocol_v3.json; use audit_v4.py and protocol_v4.json for the same fully unstarted query 10-32 panel."
+}

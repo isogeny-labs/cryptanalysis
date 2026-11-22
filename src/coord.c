@@ -12,6 +12,8 @@
 #include "coord_internal.h"
 #include "dlog_internal.h"
 
+#include <ctype.h>
+#include <errno.h>
 #include <inttypes.h>
 #include <stdio.h>
 
@@ -229,15 +231,26 @@ static const char *coord_field(const char *line, const char *key)
     return NULL;
 }
 
+/* One unsigned field.  strtoull alone is too forgiving for a wire format:
+ * it skips leading space, takes a sign ("-1" reads as 2^64 - 1) and
+ * saturates on overflow.  Here a field starts with a digit and must fit. */
+static int coord_parse_u64(const char *s, int base, char **end, uint64_t *out)
+{
+    unsigned char c = (unsigned char)*s;
+    if (base == 16 ? !isxdigit(c) : (c < '0' || c > '9')) return 0;
+    errno = 0;
+    unsigned long long v = strtoull(s, end, base);
+    if (errno == ERANGE || *end == s) return 0;
+    *out = (uint64_t)v;
+    return 1;
+}
+
 static int coord_u64(const char *line, const char *key, uint64_t *out)
 {
     const char *p = coord_field(line, key);
     if (!p) return 0;
     char *end = NULL;
-    unsigned long long v = strtoull(p, &end, 10);
-    if (end == p) return 0;
-    *out = (uint64_t)v;
-    return 1;
+    return coord_parse_u64(p, 10, &end, out);
 }
 
 static int coord_i32(const char *line, const char *key, int32_t *out)
@@ -257,9 +270,7 @@ static int coord_words(const char *line, const char *key, uint64_t out[4])
     if (!p) return 0;
     for (int i = 0; i < 4; i++) {
         char *end = NULL;
-        unsigned long long v = strtoull(p, &end, 10);
-        if (end == p) return 0;
-        out[i] = (uint64_t)v;
+        if (!coord_parse_u64(p, 10, &end, &out[i])) return 0;
         p = end;
         if (i < 3) {
             if (*p != ',') return 0;
@@ -316,8 +327,7 @@ ca_status ca_coord_job_decode(ca_coord_job *job, const char *line)
     if (rc != CA_OK) return rc;
     {
         char *end = NULL;
-        id = strtoull(idp, &end, 16);
-        if (end == idp) {
+        if (!coord_parse_u64(idp, 16, &end, &id)) {
             ca_set_error("bad job id");
             return CA_ERR_INVALID;
         }
@@ -419,15 +429,16 @@ void ca_coord_ctx_close(ca_coord_ctx *ctx)
 const ca_coord_job *ca_coord_ctx_job(const ca_coord_ctx *ctx) { return &ctx->job; }
 const ca_group *ca_coord_ctx_group(const ca_coord_ctx *ctx) { return &ctx->g; }
 
-void ca_coord_walker_start(const ca_coord_ctx *ctx, uint64_t walker, ca_elem *out, uint64_t *a,
-                           uint64_t *b)
+static void coord_walker_start(const ca_coord_ctx *ctx, uint64_t walker, ca_elem *out, uint64_t *a,
+                               uint64_t *b, uint64_t *ops)
 {
     uint64_t av = coord_scalar(ctx->job.id, COORD_TAG_WALKER, walker, 0, ctx->n);
     uint64_t bv = coord_scalar(ctx->job.id, COORD_TAG_WALKER, walker, 1, ctx->n);
     ca_elem t1, t2, y;
-    ca_group_mul(&ctx->g, &t1, &ctx->base, av, NULL);
-    ca_group_mul(&ctx->g, &t2, &ctx->target, bv, NULL);
+    ca_group_mul(&ctx->g, &t1, &ctx->base, av, ops);
+    ca_group_mul(&ctx->g, &t2, &ctx->target, bv, ops);
     ca_group_op(&ctx->g, &y, &t1, &t2);
+    if (ops) (*ops)++;
     if (ctx->job.negation_map && ca_group_canonicalize(&ctx->g, &y)) {
         av = av ? ctx->n - av : 0;
         bv = bv ? ctx->n - bv : 0;
@@ -435,6 +446,26 @@ void ca_coord_walker_start(const ca_coord_ctx *ctx, uint64_t walker, ca_elem *ou
     if (out) *out = y;
     if (a) *a = av;
     if (b) *b = bv;
+}
+
+void ca_coord_walker_start(const ca_coord_ctx *ctx, uint64_t walker, ca_elem *out, uint64_t *a,
+                           uint64_t *b)
+{
+    coord_walker_start(ctx, walker, out, a, b, NULL);
+}
+
+/* The lane's step cap: 20 mean trails.  A walk that has not reached a DP
+ * by then is in a fruitless cycle (or very unlucky), and is worth less
+ * than the next walker. */
+static uint64_t coord_step_cap(const ca_coord_ctx *ctx)
+{
+    return ctx->job.dp_bits >= 58 ? UINT64_MAX : (uint64_t)20 << ctx->job.dp_bits;
+}
+
+uint64_t ca_coord_walker_steps_max(const ca_coord_ctx *ctx)
+{
+    uint64_t cap = coord_step_cap(ctx);
+    return cap > UINT64_MAX - CA_COORD_START_OPS_MAX ? UINT64_MAX : cap + CA_COORD_START_OPS_MAX;
 }
 
 double ca_coord_expected_steps(const ca_coord_ctx *ctx)
@@ -543,8 +574,15 @@ static void coord_step(const ca_coord_ctx *ctx, coord_walk *w, uint64_t *ops)
 int ca_coord_walk_one(const ca_coord_ctx *ctx, uint64_t index, uint64_t cap, ca_coord_dp *out,
                       uint64_t *steps_out)
 {
+    return ca_coord_walk_one_counted(ctx, index, cap, out, steps_out, NULL);
+}
+
+int ca_coord_walk_one_counted(const ca_coord_ctx *ctx, uint64_t index, uint64_t cap,
+                              ca_coord_dp *out, uint64_t *steps_out, uint64_t *start_ops)
+{
     coord_walk w;
-    ca_coord_walker_start(ctx, index, &w.y, &w.a, &w.b);
+    if (start_ops) *start_ops = 0;
+    coord_walker_start(ctx, index, &w.y, &w.a, &w.b, start_ops);
     uint64_t steps = 0;
     /* A start that is already distinguished is reported as it is. */
     while (!ca_coord_is_dp(ctx, &w.y)) {
@@ -704,11 +742,8 @@ static int coord_read_group(const char **p, uint64_t *out, int count)
 {
     const char *s = *p;
     for (int i = 0; i < count; i++) {
-        if (*s < '0' || *s > '9') return 0; /* no signs, no spaces, no empties */
         char *end = NULL;
-        unsigned long long v = strtoull(s, &end, 10);
-        if (end == s) return 0;
-        out[i] = (uint64_t)v;
+        if (!coord_parse_u64(s, 10, &end, &out[i])) return 0;
         s = end;
         if (i < count - 1) {
             if (*s != ',') return 0;
@@ -735,8 +770,7 @@ ca_status ca_coord_checkin_decode(ca_coord_checkin *ci, const char *line)
     const char *p = line + 3;
     char *end = NULL;
 
-    ci->job_id = (uint64_t)strtoull(p, &end, 10);
-    if (end == p || *end != ' ') goto bad;
+    if (!coord_parse_u64(p, 10, &end, &ci->job_id) || *end != ' ') goto bad;
     p = end + 1;
 
     const char *sp = strchr(p, ' ');
@@ -746,11 +780,9 @@ ca_status ca_coord_checkin_decode(ca_coord_checkin *ci, const char *line)
     if (!coord_peer_name_ok(ci->peer)) goto bad;
     p = sp + 1;
 
-    ci->seq = (uint64_t)strtoull(p, &end, 10);
-    if (end == p || *end != ' ') goto bad;
+    if (!coord_parse_u64(p, 10, &end, &ci->seq) || *end != ' ') goto bad;
     p = end + 1;
-    ci->time = (uint64_t)strtoull(p, &end, 10);
-    if (end == p || *end != ' ') goto bad;
+    if (!coord_parse_u64(p, 10, &end, &ci->time) || *end != ' ') goto bad;
     p = end + 1;
 
     if (strncmp(p, "U:", 2) != 0) goto bad;
@@ -803,8 +835,7 @@ ca_status ca_coord_checkin_decode(ca_coord_checkin *ci, const char *line)
     if (*p == '-' && p[1] == 0) {
         ci->has_solution = 0;
     } else {
-        ci->solution = (uint64_t)strtoull(p, &end, 10);
-        if (end == p || *end != 0) goto bad;
+        if (!coord_parse_u64(p, 10, &end, &ci->solution) || *end != 0) goto bad;
         ci->has_solution = 1;
     }
     return CA_OK;
@@ -1084,9 +1115,9 @@ static int coord_seen_grow(ca_coord_state *st)
     return 1;
 }
 
-/* Record (peer, seq) in the dedup index.  Caller has already checked it is
- * not present, so this only inserts. */
-static int coord_seen_add(ca_coord_state *st, uint32_t peer, uint64_t seq)
+/* Record log line `log_idx` under (peer, seq) in the dedup index.  Caller
+ * has already checked that this exact line is not present. */
+static int coord_seen_add(ca_coord_state *st, uint32_t peer, uint64_t seq, size_t log_idx)
 {
     if (st->seen_count * 4 >= st->seen_cap * 3 && !coord_seen_grow(st)) return 0;
     size_t j = coord_pair_hash(peer, seq) & (st->seen_cap - 1);
@@ -1094,6 +1125,7 @@ static int coord_seen_add(ca_coord_state *st, uint32_t peer, uint64_t seq)
     st->seen[j].used = 1;
     st->seen[j].peer = peer;
     st->seen[j].seq = seq;
+    st->seen[j].log_idx = log_idx;
     st->seen_count++;
     return 1;
 }
@@ -1157,7 +1189,8 @@ static coord_unit_view *coord_unit_slot(ca_coord_state *st, uint64_t unit, uint3
 
 /* the log ----------------------------------------------------------------- */
 
-static int coord_log_append(ca_coord_state *st, uint32_t peer, uint64_t seq, const char *line)
+static int coord_log_append(ca_coord_state *st, uint32_t peer, uint64_t seq, const char *line,
+                            int conflicted)
 {
     if (st->log_count == st->log_cap) {
         size_t cap = st->log_cap ? st->log_cap * 2 : 64;
@@ -1171,7 +1204,7 @@ static int coord_log_append(ca_coord_state *st, uint32_t peer, uint64_t seq, con
     copy = malloc(n);
     if (!copy) return 0;
     /* Index before publishing the row, so coord_seen never trails the log. */
-    if (!coord_seen_add(st, peer, seq)) {
+    if (!coord_seen_add(st, peer, seq, st->log_count)) {
         free(copy);
         return 0;
     }
@@ -1179,22 +1212,86 @@ static int coord_log_append(ca_coord_state *st, uint32_t peer, uint64_t seq, con
     st->log[st->log_count].peer = peer;
     st->log[st->log_count].seq = seq;
     st->log[st->log_count].line = copy;
+    st->log[st->log_count].conflicted = conflicted;
     st->log_count++;
     return 1;
 }
 
-static int coord_seen(const ca_coord_state *st, uint32_t peer, uint64_t seq)
+enum { COORD_UNSEEN, COORD_SEEN_SAME, COORD_SEEN_OTHER };
+
+/*
+ * Has this line been merged?  (peer, seq) alone cannot say: peer names are
+ * not authenticated, so anyone can send a line under another lane's next
+ * (peer, seq), and if the pair were the identity the real line would then
+ * be dropped as a resend.  The bytes are the identity -- a check-in's
+ * encoding is canonical, so an honest resend is byte-identical -- and the
+ * pair only says where to look.  With `mark`, every other line already
+ * under the pair is flagged conflicted.
+ */
+static int coord_seen(ca_coord_state *st, uint32_t peer, uint64_t seq, const char *line, int mark)
 {
-    if (!st->seen_cap) return 0;
+    if (!st->seen_cap) return COORD_UNSEEN;
+    int found = COORD_UNSEEN;
     size_t j = coord_pair_hash(peer, seq) & (st->seen_cap - 1);
     while (st->seen[j].used) {
-        if (st->seen[j].peer == peer && st->seen[j].seq == seq) return 1;
+        if (st->seen[j].peer == peer && st->seen[j].seq == seq) {
+            coord_log_entry *e = &st->log[st->seen[j].log_idx];
+            if (strcmp(e->line, line) == 0) return COORD_SEEN_SAME;
+            found = COORD_SEEN_OTHER;
+            if (mark) e->conflicted = 1;
+        }
         j = (j + 1) & (st->seen_cap - 1);
     }
-    return 0;
+    return found;
 }
 
 /* merge ------------------------------------------------------------------- */
+
+static uint64_t coord_sat_add(uint64_t a, uint64_t b)
+{
+    return a > UINT64_MAX - b ? UINT64_MAX : a + b;
+}
+
+/*
+ * A unit report no honest lane can write is refused.  walkers_done is a
+ * cursor into the unit, and dps, dead_trails and steps count only the
+ * reporting lane's own walkers past the cursor it resumed from, so each is
+ * bounded by the cursor.  This catches impossible reports -- a cursor past
+ * the unit, which every later claimant would resume from and mark complete
+ * unwalked, or a step count that wraps the fleet total.  It cannot catch a
+ * consistent lie: dead trails leave no evidence, and names are not
+ * authenticated.
+ */
+static int coord_unit_report_ok(const ca_coord_ctx *ctx, const ca_coord_unit *u)
+{
+    uint64_t size = ctx->job.unit_size;
+    if (u->walkers_done > size) {
+        ca_set_error("unit report: walkers_done %" PRIu64 " exceeds the unit size %" PRIu64,
+                     u->walkers_done, size);
+        return 0;
+    }
+    if (u->dps > u->walkers_done || u->dead_trails > u->walkers_done - u->dps) {
+        ca_set_error("unit report: more trails than walkers");
+        return 0;
+    }
+    if (u->completed && u->walkers_done != size) {
+        ca_set_error("unit report: completed before its last walker");
+        return 0;
+    }
+    uint64_t per = ca_coord_walker_steps_max(ctx);
+    int fits;
+    if (u->walkers_done == 0)
+        fits = u->steps == 0;
+    else if (per > UINT64_MAX / u->walkers_done)
+        fits = 1;
+    else
+        fits = u->steps <= per * u->walkers_done;
+    if (!fits) {
+        ca_set_error("unit report: more steps than its walkers can take");
+        return 0;
+    }
+    return 1;
+}
 
 ca_status ca_coord_apply(ca_coord_state *st, const ca_coord_ctx *ctx, const ca_coord_checkin *ci,
                          uint64_t now, int verify, ca_coord_outcome *out)
@@ -1218,6 +1315,21 @@ ca_status ca_coord_apply(ca_coord_state *st, const ca_coord_ctx *ctx, const ca_c
         pthread_mutex_unlock(&st->lock);
         return CA_ERR_INVALID;
     }
+    if (ci->seq == 0 || ci->seq > CA_COORD_SEQ_MAX) {
+        ca_set_error("check-in seq must be in [1, 2^62]");
+        pthread_mutex_lock(&st->lock);
+        st->rejected_checkins++;
+        pthread_mutex_unlock(&st->lock);
+        return CA_ERR_INVALID;
+    }
+    for (uint32_t i = 0; i < ci->num_units; i++) {
+        if (!coord_unit_report_ok(ctx, &ci->units[i])) {
+            pthread_mutex_lock(&st->lock);
+            st->rejected_checkins++;
+            pthread_mutex_unlock(&st->lock);
+            return CA_ERR_INVALID;
+        }
+    }
 
     char line[CA_COORD_LINE_MAX];
     if (!ca_coord_checkin_encode(ci, line, sizeof(line))) {
@@ -1231,14 +1343,16 @@ ca_status ca_coord_apply(ca_coord_state *st, const ca_coord_ctx *ctx, const ca_c
         pthread_mutex_unlock(&st->lock);
         return CA_ERR_NOMEM;
     }
-    /* Idempotence: the same (peer, seq) twice is a no-op, which is what
-     * lets any transport resend freely. */
-    if (coord_seen(st, peer, ci->seq)) {
+    /* Idempotence: the same line twice is a no-op, which is what lets any
+     * transport resend freely.  A different line under a known (peer, seq)
+     * is merged too; see coord_seen. */
+    int seen = coord_seen(st, peer, ci->seq, line, 1);
+    if (seen == COORD_SEEN_SAME) {
         pthread_mutex_unlock(&st->lock);
         return CA_OK;
     }
     out->fresh = 1;
-    if (!coord_log_append(st, peer, ci->seq, line)) {
+    if (!coord_log_append(st, peer, ci->seq, line, seen == COORD_SEEN_OTHER)) {
         pthread_mutex_unlock(&st->lock);
         return CA_ERR_NOMEM;
     }
@@ -1254,8 +1368,9 @@ ca_status ca_coord_apply(ca_coord_state *st, const ca_coord_ctx *ctx, const ca_c
             return CA_ERR_NOMEM;
         }
         if (ci->seq >= v->seq) {
-            if (u->steps > v->steps) st->steps += u->steps - v->steps;
-            if (u->dead_trails > v->dead_trails) st->dead_trails += u->dead_trails - v->dead_trails;
+            if (u->steps > v->steps) st->steps = coord_sat_add(st->steps, u->steps - v->steps);
+            if (u->dead_trails > v->dead_trails)
+                st->dead_trails = coord_sat_add(st->dead_trails, u->dead_trails - v->dead_trails);
             v->seq = ci->seq;
             v->walkers_done = u->walkers_done > v->walkers_done ? u->walkers_done : v->walkers_done;
             v->steps = u->steps > v->steps ? u->steps : v->steps;
@@ -1419,7 +1534,8 @@ int ca_coord_delta_for(ca_coord_state *st, const ca_coord_vv *known,
     pthread_mutex_lock(&st->lock);
     for (size_t i = 0; i < st->log_count && rc == 0; i++) {
         const char *name = st->peers[st->log[i].peer].name;
-        if (known && st->log[i].seq <= ca_coord_vv_get(known, name)) continue;
+        if (known && !st->log[i].conflicted && st->log[i].seq <= ca_coord_vv_get(known, name))
+            continue;
         ca_coord_checkin ci;
         if (ca_coord_checkin_decode(&ci, st->log[i].line) != CA_OK) continue;
         rc = fn(user, &ci);
@@ -1464,7 +1580,7 @@ uint64_t ca_coord_next_seq(ca_coord_state *st, const char *peer)
     uint32_t idx;
     if (coord_peer_index(st, peer, &idx, 0)) seq = st->peers[idx].max_seq + 1;
     pthread_mutex_unlock(&st->lock);
-    return seq;
+    return seq > CA_COORD_SEQ_MAX ? 0 : seq;
 }
 
 /* ---- claiming ----------------------------------------------------------- */
@@ -1582,18 +1698,24 @@ static uint64_t coord_now(void) { return (uint64_t)time(NULL); }
 /* Merge our own check-in (no verification: we just made it), then hand
  * it to the transport.  Merging first is what makes the hook's argument
  * a fact and not a proposal. */
-static void coord_emit_one(const ca_coord_ctx *ctx, ca_coord_state *st, ca_coord_checkin *ci,
-                           void (*on_checkin)(void *, const ca_coord_checkin *), void *user,
-                           ca_coord_lane_result *res)
+static ca_status coord_emit_one(const ca_coord_ctx *ctx, ca_coord_state *st, ca_coord_checkin *ci,
+                                void (*on_checkin)(void *, const ca_coord_checkin *), void *user,
+                                ca_coord_lane_result *res)
 {
     ci->job_id = ctx->job.id;
     ci->seq = ca_coord_next_seq(st, ci->peer);
     ci->time = coord_now();
-    if (ca_coord_apply(st, ctx, ci, coord_now(), 0, NULL) != CA_OK) return;
+    if (ci->seq == 0) {
+        ca_set_error("peer %s has used its whole sequence space", ci->peer);
+        return CA_ERR_INVALID;
+    }
+    ca_status rc = ca_coord_apply(st, ctx, ci, coord_now(), 0, NULL);
+    if (rc != CA_OK) return rc;
     res->checkins++;
     if (on_checkin) on_checkin(user, ci);
     ci->num_dps = 0;
     ci->has_solution = 0;
+    return CA_OK;
 }
 
 /*
@@ -1621,16 +1743,17 @@ static void coord_emit_one(const ca_coord_ctx *ctx, ca_coord_state *st, ca_coord
  * check-in to shard 7 carry different records, so they must not claim to
  * be the same (peer, seq) -- the log is a set keyed on exactly that.
  */
-static void coord_emit(const ca_coord_ctx *ctx, ca_coord_state *st, ca_coord_checkin *ci,
-                       const char *lane_peer, void (*on_checkin)(void *, const ca_coord_checkin *),
-                       void *user, ca_coord_lane_result *res)
+static ca_status coord_emit(const ca_coord_ctx *ctx, ca_coord_state *st, ca_coord_checkin *ci,
+                            const char *lane_peer,
+                            void (*on_checkin)(void *, const ca_coord_checkin *), void *user,
+                            ca_coord_lane_result *res)
 {
     uint32_t shards = ctx->job.shards;
     if (shards <= 1) {
         snprintf(ci->peer, sizeof(ci->peer), "%s", lane_peer);
-        coord_emit_one(ctx, st, ci, on_checkin, user, res);
-        return;
+        return coord_emit_one(ctx, st, ci, on_checkin, user, res);
     }
+    ca_status rc = CA_OK;
     for (uint32_t sh = 0; sh < shards; sh++) {
         ca_coord_checkin part;
         memset(&part, 0, sizeof(part));
@@ -1646,10 +1769,12 @@ static void coord_emit(const ca_coord_ctx *ctx, ca_coord_state *st, ca_coord_che
         part.has_solution = ci->has_solution;
         part.solution = ci->solution;
         if (!part.num_dps && !part.num_units && !part.has_solution) continue;
-        coord_emit_one(ctx, st, &part, on_checkin, user, res);
+        ca_status prc = coord_emit_one(ctx, st, &part, on_checkin, user, res);
+        if (prc != CA_OK && rc == CA_OK) rc = prc;
     }
     ci->num_dps = 0;
     ci->has_solution = 0;
+    return rc;
 }
 
 ca_status ca_coord_lane_run(const ca_coord_ctx *ctx, ca_coord_state *st,
@@ -1676,11 +1801,9 @@ ca_status ca_coord_lane_run(const ca_coord_ctx *ctx, ca_coord_state *st,
     }
     uint64_t every = p->checkin_every ? p->checkin_every : 64;
     uint64_t lease = p->lease_secs ? p->lease_secs : 120;
-    /* The step cap: 20 mean trails.  A walk that has not reached a DP by
-     * then is in a fruitless cycle (or very unlucky), and is worth less
-     * than the next walker. */
-    uint64_t cap = ctx->job.dp_bits >= 58 ? UINT64_MAX : (uint64_t)20 << ctx->job.dp_bits;
+    uint64_t cap = coord_step_cap(ctx);
     uint64_t units_done = 0;
+    ca_status rc = CA_OK;
 
     for (;;) {
         if (should_stop && should_stop(should_stop_user)) break;
@@ -1706,7 +1829,8 @@ ca_status ca_coord_lane_run(const ca_coord_ctx *ctx, ca_coord_state *st,
         ci.units[0].walkers_done = resume;
         /* Announce the claim before walking it: a lane that dies after
          * one walker should still have told everyone which unit it took. */
-        coord_emit(ctx, st, &ci, p->peer, on_checkin, on_checkin_user, &res);
+        rc = coord_emit(ctx, st, &ci, p->peer, on_checkin, on_checkin_user, &res);
+        if (rc != CA_OK) break;
 
         uint64_t since_checkin = 0;
         for (uint64_t k = resume; k < count; k++) {
@@ -1714,8 +1838,11 @@ ca_status ca_coord_lane_run(const ca_coord_ctx *ctx, ca_coord_state *st,
             if (p->max_walkers && res.walkers >= p->max_walkers) break;
 
             ca_coord_dp dp;
-            uint64_t steps = 0;
-            int got = ca_coord_walk_one(ctx, first + k, cap, &dp, &steps);
+            uint64_t steps = 0, start_ops = 0;
+            int got = ca_coord_walk_one_counted(ctx, first + k, cap, &dp, &steps, &start_ops);
+            /* Deriving the start point is group work too, and it is
+             * charged with the walk. */
+            steps += start_ops;
             res.walkers++;
             res.steps += steps;
             ci.units[0].walkers_done = k + 1;
@@ -1732,13 +1859,15 @@ ca_status ca_coord_lane_run(const ca_coord_ctx *ctx, ca_coord_state *st,
 
             if (since_checkin >= every || ci.num_dps == CA_COORD_DPS_MAX) {
                 since_checkin = 0;
-                coord_emit(ctx, st, &ci, p->peer, on_checkin, on_checkin_user, &res);
+                rc = coord_emit(ctx, st, &ci, p->peer, on_checkin, on_checkin_user, &res);
+                if (rc != CA_OK) break;
                 if (ca_coord_solution(st, &res.solution)) {
                     res.have_solution = 1;
                     break;
                 }
             }
         }
+        if (rc != CA_OK) break;
 
         if (ci.units[0].walkers_done >= count) {
             ci.units[0].completed = 1;
@@ -1752,11 +1881,11 @@ ca_status ca_coord_lane_run(const ca_coord_ctx *ctx, ca_coord_state *st,
             ci.has_solution = 1;
             ci.solution = res.solution;
         }
-        coord_emit(ctx, st, &ci, p->peer, on_checkin, on_checkin_user, &res);
-        if (res.have_solution) break;
+        rc = coord_emit(ctx, st, &ci, p->peer, on_checkin, on_checkin_user, &res);
+        if (rc != CA_OK || res.have_solution) break;
     }
 
     if (!res.have_solution && ca_coord_solution(st, &res.solution)) res.have_solution = 1;
     if (out) *out = res;
-    return CA_OK;
+    return rc;
 }

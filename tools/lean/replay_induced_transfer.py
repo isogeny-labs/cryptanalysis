@@ -22,6 +22,12 @@ AMENDMENTS = frozenset({
 })
 
 
+class ReplayInterrupted(BaseException):
+    def __init__(self, signum: int):
+        self.signum = signum
+        super().__init__(f"replay interrupted by signal {signum}")
+
+
 def digest(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
@@ -110,29 +116,59 @@ def main() -> int:
     def save() -> None:
         (out / "dual-replay.json").write_text(json.dumps(state, indent=2) + "\n")
 
+    def stop_phase(process: subprocess.Popen) -> None:
+        try:
+            os.killpg(process.pid, signal.SIGTERM)
+        except ProcessLookupError:
+            pass
+        try:
+            process.wait(timeout=10)
+        except subprocess.TimeoutExpired:
+            try:
+                os.killpg(process.pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+            process.wait()
+        finally:
+            # Also stop descendants left behind after the phase parent exits.
+            try:
+                os.killpg(process.pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+
     def phase(name: str, command: list[str], cwd: Path, limit: int = 300) -> None:
         entry = {"name": name, "command": command, "timeout_seconds": limit}
         state["phases"].append(entry)
         save()
+        process = None
         with (out / f"{name}.txt").open("wb") as stream:
             try:
                 process = subprocess.Popen(command, cwd=cwd, env=env, stdout=stream,
                                            stderr=subprocess.STDOUT, start_new_session=True)
                 code = process.wait(timeout=limit)
                 entry["exit"] = code
-            except subprocess.TimeoutExpired:
-                os.killpg(process.pid, signal.SIGTERM)
-                try:
-                    process.wait(timeout=10)
-                except subprocess.TimeoutExpired:
-                    os.killpg(process.pid, signal.SIGKILL)
-                    process.wait()
-                entry["status"] = "timeout"
+            except BaseException as exc:
+                entry["status"] = ("timeout" if isinstance(exc, subprocess.TimeoutExpired)
+                                   else "interrupted" if isinstance(exc, (ReplayInterrupted, KeyboardInterrupt))
+                                   else "fail")
+                if process is not None:
+                    stop_phase(process)
+                    entry["exit"] = process.returncode
                 save()
                 raise
+        if code:
+            entry["status"] = "fail"
         save()
         if code:
             raise RuntimeError(f"{name} failed with exit {code}; retained log: {out / (name + '.txt')}")
+
+    def interrupted(signum: int, _frame) -> None:
+        raise ReplayInterrupted(signum)
+
+    previous_handlers = {s: signal.getsignal(s) for s in (signal.SIGINT, signal.SIGTERM)}
+    for signum in previous_handlers:
+        signal.signal(signum, interrupted)
+    result = 0
 
     try:
         if head(frozen) != HISTORICAL:
@@ -177,13 +213,21 @@ def main() -> int:
               f"{STUDY}/ci_induced_transfer/validate_receipts_01.py", str(repo), str(current)], repo)
         state["source_guards_after"] = verify_files(repo, producer, frozen, frozen_producer, contract)
         state["status"] = "pass"
-        return 0
+    except (ReplayInterrupted, KeyboardInterrupt) as exc:
+        signum = exc.signum if isinstance(exc, ReplayInterrupted) else signal.SIGINT
+        state["status"] = "interrupted"
+        state["interruption_signal"] = int(signum)
+        state["error"] = str(exc) or "replay interrupted"
+        print(state["error"], file=sys.stderr)
+        result = 128 + signum
     except (OSError, ValueError, RuntimeError, subprocess.SubprocessError) as exc:
         state["status"] = "fail"
         state["error"] = str(exc)
         print(str(exc), file=sys.stderr)
-        return 1
+        result = 1
     finally:
+        for signum, handler in previous_handlers.items():
+            signal.signal(signum, handler)
         try:
             state["source_guards_final"] = verify_files(repo, producer, frozen, frozen_producer, contract)
         except (OSError, ValueError) as exc:
@@ -191,7 +235,8 @@ def main() -> int:
             state["status"] = "fail"
         save()
         if state.get("status") == "fail":
-            return 1
+            result = 1
+    return result
 
 
 if __name__ == "__main__":

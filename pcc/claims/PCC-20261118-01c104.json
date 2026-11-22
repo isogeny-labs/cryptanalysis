@@ -1,0 +1,21 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-18T07:01:15Z",
+ "id": "PCC-20261118-01c104",
+ "kind": "statement",
+ "producer": {
+  "commit": "639d160a808245d774089f0dd82e7d810bb286aa",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "recompute",
+   "path": "research/xedni_target_origin_20261118/control-output.json",
+   "sha256": "3d87afeeb5d4b39d7a48d7f171900f94336c673cd5a3abea36e99e286ecdc8d3"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Fixed deterministic control only; it does not measure occurrence on natural optimized lifts, runtime, or end-to-end ECDLP advantage.",
+ "statement": "On the fixed y^2=x^3-x+1 rational control, the exact relation (-2,-1,0,0,0,0,2,0,0) has zero explicit coefficient on target 9G, coefficient sum -1, and recovers target scalar 9 through chord origin -10G modulo source order 73."
+}

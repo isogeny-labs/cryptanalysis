@@ -67,6 +67,9 @@ pub struct AuxiliaryArgs {
     /// Public coefficient sampler seed; never a target logarithm.
     #[arg(long, default_value_t = 0)]
     pub seed: u64,
+    /// Signed factor-base summands per relation (2, 3, or 4).
+    #[arg(long, default_value_t = 2, value_parser = clap::value_parser!(u8).range(2..=4))]
+    pub summands: u8,
     /// Processed-query cap, including failed queries and infinity targets.
     #[arg(long, default_value_t = 1_000_000)]
     pub max_queries: u64,
@@ -147,6 +150,17 @@ struct ImportedRow {
     si: i8,
     sj: i8,
 }
+#[derive(Deserialize)]
+struct ImportedTerm {
+    column: usize,
+    sign: i8,
+}
+#[derive(Deserialize)]
+struct ImportedMultiRow {
+    a: u64,
+    b: u64,
+    terms: Vec<ImportedTerm>,
+}
 
 fn read_bounded(path: &Path) -> Result<Vec<u8>, String> {
     const LIMIT: u64 = 64 << 20;
@@ -168,6 +182,19 @@ fn row_json(row: &aux::Relation) -> Value {
 fn certificate_json(certificate: &aux::Certificate) -> Value {
     json!({"order":certificate.order,"P":certificate.generator.coordinates(),"Q":certificate.target.coordinates(),
         "scalar":certificate.scalar,"relations":certificate.relations.iter().map(row_json).collect::<Vec<_>>(),"weights":certificate.weights})
+}
+fn multi_row_json(row: &aux::MultiRelation) -> Value {
+    let terms: Vec<Value> = row
+        .decomposition
+        .summands()
+        .iter()
+        .map(|t| json!({"column": t.index, "sign": if t.negative { -1 } else { 1 }}))
+        .collect();
+    json!({"a":row.a,"b":row.b,"terms":terms})
+}
+fn multi_certificate_json(certificate: &aux::MultiCertificate) -> Value {
+    json!({"summands":certificate.summands,"order":certificate.order,"P":certificate.generator.coordinates(),"Q":certificate.target.coordinates(),
+        "scalar":certificate.scalar,"relations":certificate.relations.iter().map(multi_row_json).collect::<Vec<_>>(),"weights":certificate.weights})
 }
 fn stats_json(stats: &aux::SearchStats) -> Value {
     json!({"queries":stats.queries,"generated_targets":stats.generated_targets,"circuit_queries":stats.circuit_queries,
@@ -411,7 +438,7 @@ fn execute<const B: u32>(
             "selection_encoding":selection_encoding,"terminal_coordinate":terminal_coordinate,
             "folded_columns":base.representatives().len(),"backend":base.backend().name()},
         "qualification":"unverified producer diagnostic; no signed independent replay or admitted performance tier",
-        "configured_search":{"seed":args.seed,"max_queries":args.max_queries,"walk_lanes":args.walk_lanes,
+        "configured_search":{"seed":args.seed,"summands":args.summands,"max_queries":args.max_queries,"walk_lanes":args.walk_lanes,
             "max_relations":args.max_relations,"max_proof_nodes":args.max_proof_nodes,"max_millis":args.max_millis,
             "profile_phases":args.profile_phases},
         "online_exclusive_phases":null,"online_accounting":null,"online_wall_ns":null,
@@ -430,19 +457,38 @@ fn execute<const B: u32>(
             .point(public.target[0], public.target[1])
             .map_err(|e| e.to_string())?;
         let mut workspace = base.workspace();
-        let row = base
-            .decompose(target, &mut workspace)
-            .map_err(|e| e.to_string())?;
         report["mode"] = json!("single-decomposition-control");
-        report["status"] = json!(if row.is_some() {
-            "relation_found"
+        if args.summands == 2 {
+            let row = base
+                .decompose(target, &mut workspace)
+                .map_err(|e| e.to_string())?;
+            report["status"] = json!(if row.is_some() {
+                "relation_found"
+            } else {
+                "no_relation"
+            });
+            report["decomposition"] = row.map_or(
+                Value::Null,
+                |d| json!({"i":d.i,"j":d.j,"negative_i":d.negative_i,"negative_j":d.negative_j}),
+            );
         } else {
-            "no_relation"
-        });
-        report["decomposition"] = row.map_or(
-            Value::Null,
-            |d| json!({"i":d.i,"j":d.j,"negative_i":d.negative_i,"negative_j":d.negative_j}),
-        );
+            let row = base
+                .decompose_multi(args.summands, target, &mut workspace)
+                .map_err(|e| e.to_string())?;
+            report["status"] = json!(if row.is_some() {
+                "relation_found"
+            } else {
+                "no_relation"
+            });
+            report["decomposition"] = row.map_or(Value::Null, |d| {
+                let terms: Vec<Value> = d
+                    .summands()
+                    .iter()
+                    .map(|t| json!({"column": t.index, "sign": if t.negative { -1 } else { 1 }}))
+                    .collect();
+                json!({"summands": args.summands, "terms": terms})
+            });
+        }
         return Ok(report);
     }
     let prepared =
@@ -456,44 +502,88 @@ fn execute<const B: u32>(
             .point(public.target[0], public.target[1])
             .map_err(|e| e.to_string())?;
         let raw = read_bounded(path)?;
-        let mut rows = Vec::new();
-        for (index, line) in raw
-            .split(|&b| b == b'\n')
-            .filter(|line| !line.is_empty())
-            .enumerate()
-        {
-            if index >= 1_000_000 {
-                return Err("replay relation cap reached".into());
-            }
-            let row: ImportedRow =
-                serde_json::from_slice(line).map_err(|e| format!("relation {}: {e}", index + 1))?;
-            if ![-1, 1].contains(&row.si) || ![-1, 1].contains(&row.sj) {
-                return Err("relation signs must be -1 or 1".into());
-            }
-            rows.push(aux::Relation {
-                a: row.a,
-                b: row.b,
-                decomposition: aux::SignedRelation {
-                    i: row.i,
-                    j: row.j,
-                    negative_i: row.si < 0,
-                    negative_j: row.sj < 0,
-                },
-            });
-        }
-        let certificate = prepared
-            .recover_from_relations(target, &rows, args.max_proof_nodes)
-            .map_err(|e| e.to_string())?;
         report["mode"] = json!("public-relation-certificate-replay");
         report["queries"] = Value::Null;
-        report["status"] = json!(if certificate.is_some() {
-            "replayed"
-        } else {
-            "insufficient_relations"
-        });
-        report["producer_check_passed"] = json!(certificate.is_some());
-        report["certificate"] = certificate.as_ref().map_or(Value::Null, certificate_json);
         report["online_wall_seconds"] = Value::Null;
+        if args.summands == 2 {
+            let mut rows = Vec::new();
+            for (index, line) in raw
+                .split(|&b| b == b'\n')
+                .filter(|line| !line.is_empty())
+                .enumerate()
+            {
+                if index >= 1_000_000 {
+                    return Err("replay relation cap reached".into());
+                }
+                let row: ImportedRow = serde_json::from_slice(line)
+                    .map_err(|e| format!("relation {}: {e}", index + 1))?;
+                if ![-1, 1].contains(&row.si) || ![-1, 1].contains(&row.sj) {
+                    return Err("relation signs must be -1 or 1".into());
+                }
+                rows.push(aux::Relation {
+                    a: row.a,
+                    b: row.b,
+                    decomposition: aux::SignedRelation {
+                        i: row.i,
+                        j: row.j,
+                        negative_i: row.si < 0,
+                        negative_j: row.sj < 0,
+                    },
+                });
+            }
+            let certificate = prepared
+                .recover_from_relations(target, &rows, args.max_proof_nodes)
+                .map_err(|e| e.to_string())?;
+            report["status"] = json!(if certificate.is_some() {
+                "replayed"
+            } else {
+                "insufficient_relations"
+            });
+            report["producer_check_passed"] = json!(certificate.is_some());
+            report["certificate"] = certificate.as_ref().map_or(Value::Null, certificate_json);
+        } else {
+            let mut rows = Vec::new();
+            for (index, line) in raw
+                .split(|&b| b == b'\n')
+                .filter(|line| !line.is_empty())
+                .enumerate()
+            {
+                if index >= 1_000_000 {
+                    return Err("replay relation cap reached".into());
+                }
+                let row: ImportedMultiRow = serde_json::from_slice(line)
+                    .map_err(|e| format!("relation {}: {e}", index + 1))?;
+                let mut terms = Vec::with_capacity(row.terms.len());
+                for term in row.terms {
+                    if ![-1, 1].contains(&term.sign) {
+                        return Err("relation signs must be -1 or 1".into());
+                    }
+                    terms.push(aux::SignedTerm {
+                        index: term.column,
+                        negative: term.sign < 0,
+                    });
+                }
+                let decomposition =
+                    aux::MultiSignedRelation::new(&terms).map_err(|e| e.to_string())?;
+                rows.push(aux::MultiRelation {
+                    a: row.a,
+                    b: row.b,
+                    decomposition,
+                });
+            }
+            let certificate = prepared
+                .recover_from_multi_relations(args.summands, target, &rows, args.max_proof_nodes)
+                .map_err(|e| e.to_string())?;
+            report["status"] = json!(if certificate.is_some() {
+                "replayed"
+            } else {
+                "insufficient_relations"
+            });
+            report["producer_check_passed"] = json!(certificate.is_some());
+            report["certificate"] = certificate
+                .as_ref()
+                .map_or(Value::Null, multi_certificate_json);
+        }
         return Ok(report);
     }
     let config = aux::Config {
@@ -511,13 +601,23 @@ fn execute<const B: u32>(
     let validated_at = Instant::now();
     let input_validation = validated_at.duration_since(online);
     if args.relation_yield_only {
-        let (reason, stats, phases) = if args.profile_phases {
+        let (reason, stats, phases) = if args.summands == 2 {
+            if args.profile_phases {
+                prepared
+                    .relation_yield_profiled(target, &config)
+                    .map(|(reason, stats, phases)| (reason, stats, Some(phases)))
+            } else {
+                prepared
+                    .relation_yield(target, &config)
+                    .map(|(reason, stats)| (reason, stats, None))
+            }
+        } else if args.profile_phases {
             prepared
-                .relation_yield_profiled(target, &config)
+                .relation_yield_multi_profiled(args.summands, target, &config)
                 .map(|(reason, stats, phases)| (reason, stats, Some(phases)))
         } else {
             prepared
-                .relation_yield(target, &config)
+                .relation_yield_multi(args.summands, target, &config)
                 .map(|(reason, stats)| (reason, stats, None))
         }
         .map_err(|e| e.to_string())?;
@@ -549,100 +649,163 @@ fn execute<const B: u32>(
         )?;
         return Ok(report);
     }
-    let (outcome, phases) = if args.profile_phases {
-        prepared
-            .solve_profiled(target, &config)
-            .map(|(outcome, phases)| (outcome, Some(phases)))
+    if args.summands == 2 {
+        let (outcome, phases) = if args.profile_phases {
+            prepared
+                .solve_profiled(target, &config)
+                .map(|(outcome, phases)| (outcome, Some(phases)))
+        } else {
+            prepared
+                .solve(target, &config)
+                .map(|outcome| (outcome, None))
+        }
+        .map_err(|e| e.to_string())?;
+        let online_end = Instant::now();
+        record_online_time(
+            &mut report,
+            online_end.duration_since(online),
+            input_validation,
+            phases.as_ref(),
+        )?;
+        report["mode"] = json!("bounded-single-target-search");
+        report["sampler"] = json!("splitmix64-rejection-public-coefficient-walks");
+        report["work"] = stats_json(outcome.stats());
+        match &outcome {
+            aux::SolveOutcome::Solved { certificate, .. } => {
+                report["status"] = json!("solved");
+                report["producer_check_passed"] = json!(true);
+                report["certificate"] = certificate_json(certificate);
+            }
+            aux::SolveOutcome::Exhausted { reason, .. } => {
+                report["status"] = json!("incomplete");
+                report["stop_reason"] = json!(format!("{reason:?}"));
+                report["certificate"] = Value::Null;
+                report["producer_check_passed"] = json!(false);
+            }
+        }
+        let mut reference_start = online_end;
+        let mut reference_end = online_end;
+        if args.rho {
+            reference_start = Instant::now();
+            report["rho"] = run_rho_reference(&curve, public, generator, target, args)?;
+            reference_end = Instant::now();
+        }
+        report["resources"] = experiment::resources();
+        report["cli_accounting"] = cli_costs_json(
+            preparation,
+            online.duration_since(begin),
+            online_end.duration_since(begin),
+            reference_start.duration_since(begin),
+            reference_end.duration_since(begin),
+            begin.elapsed(),
+        )?;
+        Ok(report)
     } else {
-        prepared
-            .solve(target, &config)
-            .map(|outcome| (outcome, None))
-    }
-    .map_err(|e| e.to_string())?;
-    let online_end = Instant::now();
-    record_online_time(
-        &mut report,
-        online_end.duration_since(online),
-        input_validation,
-        phases.as_ref(),
-    )?;
-    report["mode"] = json!("bounded-single-target-search");
-    report["sampler"] = json!("splitmix64-rejection-public-coefficient-walks");
-    report["work"] = stats_json(outcome.stats());
-    match &outcome {
-        aux::SolveOutcome::Solved { certificate, .. } => {
-            report["status"] = json!("solved");
-            report["producer_check_passed"] = json!(true);
-            report["certificate"] = certificate_json(certificate);
+        let (outcome, phases) = if args.profile_phases {
+            prepared
+                .solve_multi_profiled(args.summands, target, &config)
+                .map(|(outcome, phases)| (outcome, Some(phases)))
+        } else {
+            prepared
+                .solve_multi(args.summands, target, &config)
+                .map(|outcome| (outcome, None))
         }
-        aux::SolveOutcome::Exhausted { reason, .. } => {
-            report["status"] = json!("incomplete");
-            report["stop_reason"] = json!(format!("{reason:?}"));
-            report["certificate"] = Value::Null;
-            report["producer_check_passed"] = json!(false);
+        .map_err(|e| e.to_string())?;
+        let online_end = Instant::now();
+        record_online_time(
+            &mut report,
+            online_end.duration_since(online),
+            input_validation,
+            phases.as_ref(),
+        )?;
+        report["mode"] = json!("bounded-single-target-search");
+        report["sampler"] = json!("splitmix64-rejection-public-coefficient-walks");
+        report["work"] = stats_json(outcome.stats());
+        match &outcome {
+            aux::MultiSolveOutcome::Solved { certificate, .. } => {
+                report["status"] = json!("solved");
+                report["producer_check_passed"] = json!(true);
+                report["certificate"] = multi_certificate_json(certificate);
+            }
+            aux::MultiSolveOutcome::Exhausted { reason, .. } => {
+                report["status"] = json!("incomplete");
+                report["stop_reason"] = json!(format!("{reason:?}"));
+                report["certificate"] = Value::Null;
+                report["producer_check_passed"] = json!(false);
+            }
         }
+        let mut reference_start = online_end;
+        let mut reference_end = online_end;
+        if args.rho {
+            reference_start = Instant::now();
+            report["rho"] = run_rho_reference(&curve, public, generator, target, args)?;
+            reference_end = Instant::now();
+        }
+        report["resources"] = experiment::resources();
+        report["cli_accounting"] = cli_costs_json(
+            preparation,
+            online.duration_since(begin),
+            online_end.duration_since(begin),
+            reference_start.duration_since(begin),
+            reference_end.duration_since(begin),
+            begin.elapsed(),
+        )?;
+        Ok(report)
     }
-    let mut reference_start = online_end;
-    let mut reference_end = online_end;
-    if args.rho {
-        reference_start = Instant::now();
-        let group =
-            libca::Group::ec(public.p, public.a, public.b, public.n).map_err(|e| e.to_string())?;
-        let options = libca::Options {
-            solver: libca::Solver::Rho,
-            seed: args.seed.max(1),
-            threads: 1,
-            max_ops: args.rho_max_ops,
-            rho_max_table_entries: 1 << 20,
-            ..libca::Options::default()
-        };
-        let start = Instant::now();
-        let result = group.dlog(
-            &libca::Elem::ec(public.generator[0], public.generator[1]),
-            &libca::Elem::ec(public.target[0], public.target[1]),
-            &options,
-        );
-        let recovered_at = Instant::now();
-        let search_wall = recovered_at.duration_since(start);
-        report["rho"] = match result {
-            Ok((scalar, stats)) => {
-                let replayed = curve
-                    .mul(Some(generator), scalar)
-                    .map_err(|e| e.to_string())?
-                    == Some(target);
-                let checked_at = Instant::now();
-                if !replayed {
-                    return Err("rho public-key replay failed".into());
-                }
-                let total = checked_at.duration_since(start);
-                json!({"status":"solved","scalar":scalar,"producer_check_passed":true,
-                    "online_wall_seconds":total.as_secs_f64(),"online_wall_ns":nanos(total)?,
-                    "online_accounting":{"unit":"ns","search":nanos(search_wall)?,
-                        "local_replay":nanos(checked_at.duration_since(recovered_at))?,"total":nanos(total)?,"independent_replay":null},
-                    "group_ops":stats.group_ops,"seed":options.seed,"threads":1,
-                    "group_ops_scope":"native solver only; excludes Rust scalar replay",
-                    "reference":"repository C batched negation-map rho; Montgomery arithmetic"})
+}
+
+fn run_rho_reference<const B: u32>(
+    curve: &aux::Curve<B>,
+    public: &Public,
+    generator: aux::Point,
+    target: aux::Point,
+    args: &AuxiliaryArgs,
+) -> Result<Value, String> {
+    let group =
+        libca::Group::ec(public.p, public.a, public.b, public.n).map_err(|e| e.to_string())?;
+    let options = libca::Options {
+        solver: libca::Solver::Rho,
+        seed: args.seed.max(1),
+        threads: 1,
+        max_ops: args.rho_max_ops,
+        rho_max_table_entries: 1 << 20,
+        ..libca::Options::default()
+    };
+    let start = Instant::now();
+    let result = group.dlog(
+        &libca::Elem::ec(public.generator[0], public.generator[1]),
+        &libca::Elem::ec(public.target[0], public.target[1]),
+        &options,
+    );
+    let recovered_at = Instant::now();
+    let search_wall = recovered_at.duration_since(start);
+    // Raw unqualified durations only. Complete cold accounting, admission
+    // and independent replay belong to the frozen measurement harness.
+    Ok(match result {
+        Ok((scalar, stats)) => {
+            let replayed = curve
+                .mul(Some(generator), scalar)
+                .map_err(|e| e.to_string())?
+                == Some(target);
+            let checked_at = Instant::now();
+            if !replayed {
+                return Err("rho public-key replay failed".into());
             }
-            Err(error) => {
-                json!({"status":"incomplete","error":error.to_string(),"online_wall_seconds":search_wall.as_secs_f64(),
-                    "online_wall_ns":nanos(search_wall)?,"online_accounting":{"unit":"ns","search":nanos(search_wall)?,
-                        "local_replay":0,"total":nanos(search_wall)?,"independent_replay":null},"seed":options.seed})
-            }
-        };
-        reference_end = Instant::now();
-        // Raw unqualified durations only. Complete cold accounting, admission
-        // and independent replay belong to the frozen measurement harness.
-    }
-    report["resources"] = experiment::resources();
-    report["cli_accounting"] = cli_costs_json(
-        preparation,
-        online.duration_since(begin),
-        online_end.duration_since(begin),
-        reference_start.duration_since(begin),
-        reference_end.duration_since(begin),
-        begin.elapsed(),
-    )?;
-    Ok(report)
+            let total = checked_at.duration_since(start);
+            json!({"status":"solved","scalar":scalar,"producer_check_passed":true,
+                "online_wall_seconds":total.as_secs_f64(),"online_wall_ns":nanos(total)?,
+                "online_accounting":{"unit":"ns","search":nanos(search_wall)?,
+                    "local_replay":nanos(checked_at.duration_since(recovered_at))?,"total":nanos(total)?,"independent_replay":null},
+                "group_ops":stats.group_ops,"seed":options.seed,"threads":1,
+                "group_ops_scope":"native solver only; excludes Rust scalar replay",
+                "reference":"repository C batched negation-map rho; Montgomery arithmetic"})
+        }
+        Err(error) => {
+            json!({"status":"incomplete","error":error.to_string(),"online_wall_seconds":search_wall.as_secs_f64(),
+                "online_wall_ns":nanos(search_wall)?,"online_accounting":{"unit":"ns","search":nanos(search_wall)?,
+                    "local_replay":0,"total":nanos(search_wall)?,"independent_replay":null},"seed":options.seed})
+        }
+    })
 }
 
 #[cfg(test)]
@@ -1135,5 +1298,67 @@ mod tests {
         assert_eq!(report["status"], "replayed");
         assert_eq!(report["queries"], Value::Null);
         assert_eq!(report["online_wall_seconds"], Value::Null);
+    }
+
+    #[test]
+    fn multi_summand_cli_modes_solve_align_and_reject_invalid_bounds() {
+        for invalid in ["0", "1", "5"] {
+            assert!(
+                TestCli::try_parse_from(["test", "--input", "x", "--summands", invalid]).is_err()
+            );
+        }
+        let curve = aux::Curve::<7>::new(2, 51).unwrap();
+        let generator = curve.point(3, 46).unwrap();
+        let target = curve.mul(Some(generator), 37).unwrap().unwrap();
+        let input: Input = serde_json::from_value(json!({
+            "public":{"p":127,"a":2,"b":51,"n":109,"P":[3,46],"Q":[target.x(),target.y()]},
+            "auxiliary":{"p":127,"maps":[{"r":0,"A":0,"B":1},{"r":2,"A":6,"B":8},{"r":70,"A":71,"B":70}],"terminal_c":38},
+            "roots":[3,111,78,67,85,119,57,91]
+        }))
+        .unwrap();
+        for summands in ["3", "4"] {
+            let mut args = TestCli::parse_from([
+                "test",
+                "--input",
+                "unused",
+                "--summands",
+                summands,
+                "--seed",
+                "43",
+                "--max-queries",
+                "10000",
+                "--profile-phases",
+            ])
+            .args;
+            let aux_rep = execute::<7>(&args, &input, "fixture".into(), Instant::now()).unwrap();
+            args.without_auxiliary = true;
+            args.rho = true;
+            let dir_rep = execute::<7>(&args, &input, "fixture".into(), Instant::now()).unwrap();
+            assert_eq!(aux_rep["status"], "solved");
+            assert_eq!(dir_rep["status"], "solved");
+            assert_eq!(aux_rep["certificate"], dir_rep["certificate"]);
+            assert_eq!(aux_rep["certificate"]["scalar"], 37);
+            assert_eq!(
+                aux_rep["certificate"]["summands"],
+                summands.parse::<u64>().unwrap()
+            );
+            assert_eq!(dir_rep["rho"]["scalar"], 37);
+            assert_eq!(aux_rep["work"]["queries"], dir_rep["work"]["queries"]);
+            check_cli_costs(&aux_rep);
+            check_cli_costs(&dir_rep);
+
+            let decomp_args = TestCli::parse_from([
+                "test",
+                "--input",
+                "unused",
+                "--summands",
+                summands,
+                "--decompose-only",
+            ])
+            .args;
+            let decomp =
+                execute::<7>(&decomp_args, &input, "fixture".into(), Instant::now()).unwrap();
+            assert_eq!(decomp["mode"], "single-decomposition-control");
+        }
     }
 }

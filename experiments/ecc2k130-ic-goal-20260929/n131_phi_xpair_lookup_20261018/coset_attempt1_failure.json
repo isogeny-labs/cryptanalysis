@@ -1,0 +1,9 @@
+{
+  "status": "AUDITOR_ASSUMPTION_FAILURE",
+  "command": "./sage -python experiments/ecc2k130-ic-goal-20260929/n131_phi_xpair_lookup_20261018/coset_audit_sage.py",
+  "script_sha256": "3ad6fc93cca205366f1a87740efa57ebaaa4ba88d0aa2ef7c4d88501aa76e731",
+  "exit_code": 1,
+  "failed_assertion": "curve.mul(point, subgroup_order) is None",
+  "first_failed_code_domain": "valid raw phi x lifts",
+  "interpretation": "The raw curve lifts need not already lie in the prime-order subgroup; the factor-base subgroup points are obtained through the cofactor map. No endpoint-coset exclusion was inferred."
+}

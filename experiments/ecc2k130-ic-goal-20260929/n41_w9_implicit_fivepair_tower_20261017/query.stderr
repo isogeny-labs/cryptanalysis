@@ -1,0 +1,15 @@
+Traceback (most recent call last):
+  File "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w9_implicit_fivepair_tower_20261017/run_solver.py", line 46, in <module>
+    for descendant in observed.children(recursive=True):
+                      ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/Volumes/SSD990/cryptanalysis/third_party/sage-binary/local/var/lib/sage/venv-python3.14/lib/python3.14/site-packages/psutil/__init__.py", line 977, in children
+    ppid_map = _ppid_map()
+  File "/Volumes/SSD990/cryptanalysis/third_party/sage-binary/local/var/lib/sage/venv-python3.14/lib/python3.14/site-packages/psutil/__init__.py", line 255, in _ppid_map
+    for pid in pids():
+               ~~~~^^
+  File "/Volumes/SSD990/cryptanalysis/third_party/sage-binary/local/var/lib/sage/venv-python3.14/lib/python3.14/site-packages/psutil/__init__.py", line 1484, in pids
+    ret = sorted(_psplatform.pids())
+                 ~~~~~~~~~~~~~~~~^^
+  File "/Volumes/SSD990/cryptanalysis/third_party/sage-binary/local/var/lib/sage/venv-python3.14/lib/python3.14/site-packages/psutil/_psosx.py", line 320, in pids
+    ls = cext.pids()
+PermissionError: [Errno 1] Operation not permitted (originated from sysctl() malloc 1/3)

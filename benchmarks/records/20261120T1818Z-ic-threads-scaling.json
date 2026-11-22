@@ -1,0 +1,63 @@
+{
+  "branch": "claude/ic-parallel-relations",
+  "closed_utc": "2026-11-20T18:52:50+00:00",
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "benchmarks/20261120-ic-parallel/scaling.py",
+        "suite/target/release/ca-ic",
+        "benchmarks/20261120-ic-parallel/data/scaling"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "started_utc": "2026-11-20T18:18:41+00:00",
+      "wall_s": 191.795
+    }
+  ],
+  "commit": "1cb80326ebd6596be850581f068d1837bdaa25c3",
+  "commit_dirty": false,
+  "created_utc": "2026-11-20T18:18:34+00:00",
+  "curve_uid": null,
+  "entries": [
+    "benchmarks/20261120-ic-parallel"
+  ],
+  "host": {
+    "cpu": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+    "cpus_online": 4,
+    "hostname": "vm",
+    "isolation": "unstated",
+    "platform": "Linux-6.18.44-fc-v726-x86_64-with-glibc2.39"
+  },
+  "id": "20261120T1818Z-ic-threads-scaling",
+  "metrics": [],
+  "problem": "ic:relation-phase-threads",
+  "raw": [
+    {
+      "bytes": 28072,
+      "path": "benchmarks/20261120-ic-parallel/data/superseded-1f54ade6/scaling_rows.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/68/68cf50ab893628798c0d48b42a33dcee8ab6908043c3ba539ccab0f99f1a178c",
+      "sha256": "68cf50ab893628798c0d48b42a33dcee8ab6908043c3ba539ccab0f99f1a178c",
+      "uploaded": false
+    },
+    {
+      "bytes": 5765,
+      "path": "benchmarks/20261120-ic-parallel/data/superseded-1f54ade6/scaling_summary.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/66/66451cf84b10a9b9195bc193be3e13f0a001af41a4da4d5968dd20485f0b0fd4",
+      "sha256": "66451cf84b10a9b9195bc193be3e13f0a001af41a4da4d5968dd20485f0b0fd4",
+      "uploaded": false
+    }
+  ],
+  "repo": "cryptanalysis",
+  "reports": {
+    "pdf": null,
+    "png": [],
+    "svg": []
+  },
+  "schema": "bench.record/v1",
+  "session": null,
+  "slug": "ic-threads-scaling",
+  "status": "invalid",
+  "summary": "superseded: measured build 1f54ade6, whose rebuilt serial loop was ~30% slower on cheap oracles (fixed in 94fa0d6); rerun under the next ic-threads-scaling record",
+  "validation": null
+}

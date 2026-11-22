@@ -1,0 +1,20 @@
+{
+  "attempts": [
+    {
+      "command": "python3 run.py",
+      "exit_code": 1,
+      "classification": "INFRASTRUCTURE_PYTHON_ENVIRONMENT",
+      "observed_error": "ModuleNotFoundError: No module named 'psutil'",
+      "workload_started": false,
+      "resolution": "Saved the checked Sage runtime and launched the frozen runner through /Volumes/SSD990/cryptanalysis/sage -python"
+    },
+    {
+      "command": "clang++ -O3 -std=c++20 -Wall -Wextra rowkernel.cpp -o rowkernel",
+      "exit_code": 1,
+      "classification": "BUILD_SOURCE_ERROR",
+      "observed_error": "redefinition of main from nested include; mixed auto declaration types",
+      "workload_started": false,
+      "resolution": "Extracted the shared core header and compiled the corrected source before freezing row_protocol.json"
+    }
+  ]
+}

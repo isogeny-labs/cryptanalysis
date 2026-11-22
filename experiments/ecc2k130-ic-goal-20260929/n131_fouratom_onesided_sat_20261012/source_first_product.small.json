@@ -1,0 +1,48 @@
+{
+  "candidate_id": null,
+  "cap": {
+    "rss_bytes": 4294967296,
+    "solver_wall_s": 20
+  },
+  "command": [
+    "/opt/homebrew/bin/cryptominisat5",
+    "--threads=1",
+    "--xor=0",
+    "--printsol=1",
+    "--random=20261012",
+    "--maxconfl=20000000",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_fouratom_onesided_sat_20261012/source_first_product.small.xcnf"
+  ],
+  "formula": {
+    "and_gates": 455,
+    "bytes": 131230,
+    "cnf_clauses": 1365,
+    "native_xor_rows": 131,
+    "primary_bits": 14,
+    "sha256": "2362a586b6d99995883c5f10942bb00f0b657fddebb1830606356fb0f6e4c048",
+    "variables": 469,
+    "xor_literal_count": 30738
+  },
+  "formula_check": {
+    "cnf_clauses_checked": 1365,
+    "native_xor_rows_checked": 131
+  },
+  "label": "source_first_product",
+  "peak_solver_rss_bytes_sampled": 4358144,
+  "phase_ns_exploratory": {
+    "anf_specialize": 19581167,
+    "formula_emit": 10385958,
+    "model_check": 12971500,
+    "solver": 47911125
+  },
+  "returncode": 10,
+  "semantic_check": {
+    "direct_field_value": 0,
+    "first_product_mask": 5576,
+    "matches_archived_source_products": true,
+    "second_product_mask": 3
+  },
+  "specialized_anf_monomials": 470,
+  "status": "SAT",
+  "stdout_sha256": "8a985644d385c5cbe5c44dac4684d4026b3f0e67e4324925ac6def18fc36071c"
+}

@@ -1,0 +1,15 @@
+{
+  "schema": "maintained-audit.native-import-cache/v1",
+  "scope": "Actual pinned Lean correctness controls with synthetic known-answer source; no mathematical evidence promotion",
+  "baseline_control": "2026-11-17-native-import-cache-baseline.json",
+  "fixed_negative_changed_dependency": {
+    "native_exit": 1,
+    "stdout_sha256": "cf1b3debf5fbd560e7a7a94e4e17dabd5bd7526a7b74bf8b8d769435af93a765",
+    "diagnostics": "/Volumes/SSD990-2/.codex/worktrees/ci-audit-main/.venv/tmp/maintained-path-audit-20261118/native-header-cache-control/fixed-evidence/formal-native-lrp4g3az/Z.lean:4:0: error: Not a definitional equality: the left-hand side\n  B.n\nis not definitionally equal to the right-hand side\n  1\n/Volumes/SSD990-2/.codex/worktrees/ci-audit-main/.venv/tmp/maintained-path-audit-20261118/native-header-cache-control/fixed-evidence/formal-native-lrp4g3az/Z.lean:4:28: error: Type mismatch\n  rfl\nhas type\n  ?m.5 = ?m.5\nbut is expected to have type\n  B.n = 1\n'Z.result' depends on axioms: [sorryAx]\n",
+    "no_success_receipt": true
+  },
+  "fixed_positive_fresh_contexts": 4,
+  "fixed_positive_checked_paths": 4,
+  "checker_sha256": "39651f83df07856f633765f6a89a23e5424cd7f65c85229386ee363379820839",
+  "raw_control_receipt_sha256": "ab0492fab0be878d329a31523186b13e79f26b8b2d671ae8d524619bf51fa0b9"
+}

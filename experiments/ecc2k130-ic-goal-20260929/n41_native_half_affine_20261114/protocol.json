@@ -1,0 +1,19 @@
+{
+  "schema": "n41_native_half_affine_abba_v1",
+  "curve_id": "EC1N41Ckb1h7d5e80d3c4d0",
+  "workload": "160 frozen residual charts by 1554 admissible two-code families, eight roots each, 40 actual third-source products",
+  "input_sha256": "05cdc6655cd2f06531755457f6fe16b8acbfc41999cf889f6a025fa17b00fd5d",
+  "half_affine_source_sha256": "8d572d4e37f270a07ed2fd29744ebfd96c28eae44f0bfb048cb4e88ea00ef292",
+  "rank_source_sha256": "85838e2a2c55655a7bb3f2325fc50da8074b1ae2367271b124fb534d5e86aebf",
+  "compiler": "c++ -O3 -std=c++17 -Wall -Wextra",
+  "order": ["half_affine", "rank", "rank", "half_affine"],
+  "resource_envelope": "one process at a time on ordinary macOS arm64 host; no isolation tier; no timeout; input and output outside query interval",
+  "expected": {
+    "families": 248640,
+    "half_survivors": [258, 237],
+    "retained": 495,
+    "source_hit": [0, 24, 37, 2, 10],
+    "rank_queries": 1989120,
+    "gate_hits": 1
+  }
+}

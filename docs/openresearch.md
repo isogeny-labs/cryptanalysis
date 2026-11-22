@@ -24,9 +24,12 @@ is left in place and reported; use `OPENRESEARCH_BIN=/absolute/path/to/orx`
 to select another installation. `OPENRESEARCH_PREFIX` selects an install prefix.
 Anonymous analytics and agent feedback are disabled by setup.
 
-The repository-local `orx` skill is discoverable through both
-`.agents/skills/orx/` (Codex/OpenCode) and `.claude/skills/orx/` (Claude Code).
-There is one canonical body; the other surface is a relative symlink.
+The `orx` agent skill lives in the lab's workspace trunk,
+`isogeny-labs/workspace:.agents/skills/orx/SKILL.md` (Claude Code reads it as
+`.claude/skills/orx`, a link). It loads when a session starts from a workspace
+checkout, where this repository is `repos/cryptanalysis`. `doctor` prints where
+it found the skill: `${WORKSPACE_ROOT:-../..}/.agents/skills/orx/SKILL.md`, or
+the trunk's GitHub URL when no workspace checkout surrounds this one.
 To also install the upstream global Codex shim, optionally run:
 
 ```sh

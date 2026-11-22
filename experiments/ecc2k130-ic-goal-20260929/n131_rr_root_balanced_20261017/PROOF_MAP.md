@@ -1,0 +1,10 @@
+# Proof map
+
+| Result | Formal statement or computational certificate | Status |
+| --- | --- | --- |
+| A zero-constant factored Boolean circuit equals zero on the zero word, and universal output one excludes zero from its family | `QuadraticCertificate.factored_excludes_zero` in `../n41_rr_quadratic_separator_20261017/QuadraticCertificate.lean`; pinned Lean 4.34.1 build and `#print axioms` in that directory | Checked Lean theorem; standard axioms `propext`, `Quot.sound` |
+| The specific 16-AND N131 circuit equals its 8,646-coefficient squarefree quadratic polynomial for every 131-bit input | `audit_fit.py` independently expands each product and checks all 131 linear plus 8,515 quadratic coefficient bits; zero constant checked separately | Exact finite symbolic audit passed in `audit_result.json`; no Lean encoding of the 8,646-bit certificate |
+| The training eight charts satisfy the exact circuit output one for every one of their 512 determinant values | `audit_fit.py` checks all eight frozen 64-sign charts; archived root-0 Sage audit and earlier root-1 independent Gaussian/group audit bind the determinants | Exact finite replay passed; full binary-curve and RR determinant bridge remains outside Lean |
+| The prospective code is source-valid and its two charts have the reported detector outputs and no group hit | Checked Sage `prepare_holdout_sage.py` verifies trace, point and folded orbit-key conditions; `audit_holdout.py` independently computes 128 Gaussian determinants and group sums | Exact finite replay passed; formal curve/divisor bridge remains open |
+
+The general symplectic factorization theorem and the RR determinant/group-law equivalence have readable arguments in the prior experiment's report and remain open as full Lean theorems. This experiment introduces a new finite certificate and prospective source-code test, and reuses the checked Lean no-zero implication without weakening its hypotheses. The build toolchain and source revisions for the dependency are hash-bound in `protocol.json`.
