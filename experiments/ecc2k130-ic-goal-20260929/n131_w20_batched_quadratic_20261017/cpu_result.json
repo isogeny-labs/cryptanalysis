@@ -1,0 +1,102 @@
+{
+  "protocol_sha256": "73d538946ddc637ce161a4f3dd0d1c78c0ee872baa9b2e40a097535fc3a8dcc1",
+  "rows": [
+    {
+      "child_ru_maxrss_raw": 16465920,
+      "child_system_cpu_s": 0.505725,
+      "child_user_cpu_s": 13.811008,
+      "command": [
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w20_quadratic_algebra_20261014/linearized",
+        "ordinary",
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w20_inverse_membership_join_20261014/fixture.txt",
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w20_sevenpair_gate_20261010/support_w20.tsv",
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w20_code_trace_bitset_20261014/valid_bitmap.bin",
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w20_batched_quadratic_20261017/cpu_baseline_ordinary.json",
+        "180",
+        "4294967296"
+      ],
+      "exit_code": 0,
+      "implementation": "baseline",
+      "mode": "ordinary",
+      "parent_wall_s": 68.97938900000008,
+      "result_sha256": "31784832bd78c088c67849cc539ce0649a810f45f6f7ec35349607016d3cdbfa",
+      "result_status": "COMPLETE_LINEARIZED_QUADRATIC_QUERY",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "ee5751ff2409a79af241a89e2b751380b54698aa533f54e672975f3f31ea1a65",
+      "timed_out": false
+    },
+    {
+      "child_ru_maxrss_raw": 88391680,
+      "child_system_cpu_s": 0.23502299999999998,
+      "child_user_cpu_s": 8.479167000000002,
+      "command": [
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w20_batched_quadratic_20261017/batched",
+        "ordinary",
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w20_inverse_membership_join_20261014/fixture.txt",
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w20_sevenpair_gate_20261010/support_w20.tsv",
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w20_code_trace_bitset_20261014/valid_bitmap.bin",
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w20_batched_quadratic_20261017/cpu_batch_ordinary.json",
+        "180",
+        "4294967296"
+      ],
+      "exit_code": 0,
+      "implementation": "batch",
+      "mode": "ordinary",
+      "parent_wall_s": 15.110125084000174,
+      "result_sha256": "465a5f782971f28e8e09e59e4e9b8236d77d54ffb160a0d3a4337a9cf8879d8d",
+      "result_status": "COMPLETE_BATCHED_QUADRATIC_QUERY",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "205ec533a7c3aee324426388ee9a588e719a0da0ad33b6d276d32add92da87f4",
+      "timed_out": false
+    },
+    {
+      "child_ru_maxrss_raw": 88391680,
+      "child_system_cpu_s": 0.22298600000000002,
+      "child_user_cpu_s": 8.470227999999999,
+      "command": [
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w20_batched_quadratic_20261017/batched",
+        "positive",
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w20_inverse_membership_join_20261014/fixture.txt",
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w20_sevenpair_gate_20261010/support_w20.tsv",
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w20_code_trace_bitset_20261014/valid_bitmap.bin",
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w20_batched_quadratic_20261017/cpu_batch_positive.json",
+        "180",
+        "4294967296"
+      ],
+      "exit_code": 0,
+      "implementation": "batch",
+      "mode": "positive",
+      "parent_wall_s": 15.5996555419988,
+      "result_sha256": "50bb216d0e532338c0a0f0276d02f49092d0253d328b8dc757673aebab4a3fae",
+      "result_status": "COMPLETE_BATCHED_QUADRATIC_QUERY",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "8fc2d045f157f7eddf66e47141f4f5864f01156805c25ae22d32f196318d3749",
+      "timed_out": false
+    },
+    {
+      "child_ru_maxrss_raw": 88391680,
+      "child_system_cpu_s": 0.6399130000000001,
+      "child_user_cpu_s": 14.016805000000002,
+      "command": [
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w20_quadratic_algebra_20261014/linearized",
+        "positive",
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w20_inverse_membership_join_20261014/fixture.txt",
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w20_sevenpair_gate_20261010/support_w20.tsv",
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w20_code_trace_bitset_20261014/valid_bitmap.bin",
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w20_batched_quadratic_20261017/cpu_baseline_positive.json",
+        "180",
+        "4294967296"
+      ],
+      "exit_code": 0,
+      "implementation": "baseline",
+      "mode": "positive",
+      "parent_wall_s": 75.960386499999,
+      "result_sha256": "ef030e25a41c3d36bba12ca4d5e708fbd6d9e7473bbadb91c04ac7606fc747fe",
+      "result_status": "COMPLETE_LINEARIZED_QUADRATIC_QUERY",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "c3cc3d5999cb0d893937cdf2ee4ff925a5cb489f86e0c13176461a5d18dc4137",
+      "timed_out": false
+    }
+  ],
+  "status": "COMPLETE"
+}

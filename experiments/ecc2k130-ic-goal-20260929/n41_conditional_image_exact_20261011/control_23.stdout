@@ -1,0 +1,189 @@
+c CMS SHA1: GIT-notfound
+c CryptoMiniSat version 5.14.7
+c CMS compilation env CMAKE_CXX_COMPILER = clang++ | CMAKE_CXX_FLAGS =  -fno-stack-protector -msse4.2 -Wno-bitfield-constant-conversion -Wlogical-op -Wrestrict -Wnull-dereference -Wdouble-promotion -Wshadow -Wformat=2 -Wextra-semi -pedantic | COMPILE_DEFINES =  -DNDEBUG -D_FORTIFY_SOURCE=0 -DUSE_ZLIB | BUILD_SHARED_LIBS = ON | ONLY_SIMPLE =  | STATS = OFF | SQLITE3_FOUND =  | ZLIB_FOUND = TRUE | VALGRIND_FOUND =  | ENABLE_TESTING = OFF | SLOW_DEBUG = OFF | ENABLE_ASSERTIONS = OFF | PYTHON_EXECUTABLE =  | PYTHON_LIBRARY =  | PYTHON_INCLUDE_DIRS =  | MY_TARGETS =  | LARGEMEM = OFF | LIMITMEM = OFF | BREAKID_LIBRARIES =  | BREAKID-VER = . | c c Using VMTF, picosat, CaDiCaL, and CadiBack code by Armin Biere
+c CMS is MIT licensed
+c Using code from 'When Boolean Satisfiability Meets Gauss-E. in a Simplex Way'
+c       by C.-S. Han and J.-H. Roland Jiang in CAV 2012. Fixes by M. Soos
+c Using CCAnr from 'CCAnr: A Conf. Checking Based Local Search Solver [...]'
+c       by Shaowei Cai, Chuan Luo, and Kaile Su, SAT 2015
+c Using Oracle code from 'Integrating Tree Decompositions [...]'
+c       by Tuukka Korhonen and Matti Jarvisalo, CP 2021
+c Executed with command line: /opt/homebrew/bin/cryptominisat5 --threads=1 --xor=0 --printsol=1 --random=20261011 --maxtime=30 /Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_conditional_image_exact_20261011/control_23.xcnf
+c Reading file '/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_conditional_image_exact_20261011/control_23.xcnf'
+c o -- header says num vars:           3607
+c o -- header says num clauses:        8820
+c -- clauses added: 7299
+c -- xor clauses added: 1521
+c -- vars added 3607
+c Parsing time: 0.00 s
+c [gauss] clauses deleted that are represented by XORs: 0 xorclauses: 1401 GJ matrices: 0 T: 0.00
+c [find&init matx] performing matrix init
+c [matrix] Too many columns in matrix: 2901 -> set usage to NO
+c [matrix] UNused matrix      1007 x 2901  density:0.0078  xorlen avg: 22.59
+c [matrix] Good   matrix  0c [matrix] disabling SLS since matrix is found
+    197 x  208  density:0.0226  xorlen avg:  4.70
+c [matrix] Good   matrix  1    197 x  208  density:0.0226  xorlen avg:  4.70
+c [matrix] unused matrices: 1 of which too few rows: 0
+c [matrix] Using 2 matrices recovered from 1007 xors T: 0.00 T-out: N
+c [branch] adjusting to: vsids (from: vsids) var_decay:0.95 descr: VSIDS
+c rst  geom  stb   vs     1   112    3446  1939  5362    3.31    2.35     0    28    84     0   58.91   58.91
+c rst  geom  stb   vs     2   235    3446  1939  5362    3.31    2.35     0    34   200     1   60.53   60.29
+c  res  pol bran  nres  conf freevar  IrrL  IrrB l/longC  l/allC RedL0 RedL1 RedL2  RedB l/longC  l/allC
+c rst  geom  stb   vs     3   369    3446  1939  5362    3.31    2.35     6    44   317     2   65.47   65.13
+c rst  geom  stb   vs     4   517    3446  1939  5362    3.31    2.35     6    49   459     3   65.27   64.91
+c rst  geom  stb   vs     5   678    3446  1939  5362    3.31    2.35    11    58   606     3   62.89   62.62
+c rst  geom  stb   vs     6   855    3446  1939  5362    3.31    2.35    11    86   755     3   65.23   65.00
+c rst  geom  stb   vs     7  1049    3446  1939  5362    3.31    2.35    11    89   946     3   67.17   66.98
+c rst  geom  stb   vs     8  1262    3446  1939  5362    3.31    2.35    17   122  1116     7   68.21   67.84
+c rst  geom  stb   vs     9  1496    3446  1939  5362    3.31    2.35    17   122  1350     7   63.87   63.58
+c rst  geom  stb   vs    10  1754    3446  1939  5362    3.31    2.35    20   147  1579     8   65.06   64.77
+c rst  geom  stb   vs    11  2037    3446  1939  5362    3.31    2.35    20   163  1846     8   62.40   62.16
+c rst  geom  stb   vs    12  2348    3446  1939  5362    3.31    2.35    20   166  2154     8   66.00   65.78
+c rst  geom  stb   vs    13  2688    3446  1939  5362    3.31    2.35    31   227  2420    10   64.89   64.65
+c rst  geom  stb   vs    14  3062    3446  1939  5362    3.31    2.35    31   227  2794    10   67.88   67.67
+c rst  geom  stb   vs    15  3472    3446  1939  5362    3.31    2.35    49   329  3080    14   63.94   63.69
+c rst  geom  stb   vs    16  3923    3446  1939  5362    3.31    2.35    49   329  3531    14   61.16   60.95
+c rst  geom  stb   vs    17  4417    3446  1939  5362    3.31    2.35    63   413  3923    18   62.90   62.65
+c rst  geom  stb   vs    18  4961    3446  1939  5362    3.31    2.35    65   417  4461    18   61.56   61.35
+c rst  geom  stb   vs    19  5559    3446  1939  5362    3.31    2.35    80   467  4993    19   64.10   63.89
+c [branch] adjusting to: vmtf (from: vsids) var_decay:0.95 descr: VMTF
+c [distill-long-red0] cls tried: 80/80 T: 0.00 T-out: N T-r: 100.00%
+c [distill-long-red1] cls tried: 467/467 T: 0.00 T-out: N T-r: 99.23%
+c rst  luby ibes  vmt    20  5660    3446  1939  5362    3.31    2.35    77   467  5094    22   63.57   63.33
+c rst  luby ibes  vmt    21  5761    3446  1939  5362    3.31    2.35    82   487  5170    22   62.96   62.72
+c rst  luby ibes  vmt    22  5962    3446  1939  5362    3.31    2.35    89   514  5335    24   61.97   61.73
+c rst  luby ibes  vmt    23  6063    3446  1939  5362    3.31    2.35    96   542  5401    24   61.25   61.02
+c rst  luby ibes  vmt    24  6164    3446  1939  5362    3.31    2.35    96   544  5500    24   61.14   60.91
+c rst  luby ibes  vmt    25  6366    3446  1939  5362    3.31    2.35    97   551  5694    24   60.39   60.17
+c rst  luby ibes  vmt    26  6768    3446  1939  5362    3.31    2.35   133   629  5976    30   59.37   59.11
+c rst  luby ibes  vmt    27  6869    3446  1939  5362    3.31    2.35   133   644  6062    30   59.15   58.90
+c rst  luby ibes  vmt    28  6970    3446  1939  5362    3.31    2.35   133   650  6157    30   59.70   59.45
+c rst  luby ibes  vmt    29  7171    3446  1939  5362    3.31    2.35   134   665  6342    30   59.85   59.61
+c rst  luby ibes  vmt    30  7273    3446  1939  5362    3.31    2.35   134   666  6443    30   61.65   61.40
+c rst  luby ibes  vmt    31  7374    3446  1939  5362    3.31    2.35   135   676  6533    30   61.32   61.08
+c rst  luby ibes  vmt    32  7575    3446  1939  5362    3.31    2.35   136   697  6712    30   61.47   61.24
+c rst  luby ibes  vmt    33  7976    3446  1939  5362    3.31    2.35   138   715  7093    30   70.95   70.69
+c rst  luby ibes  vmt    34  8777    3446  1939  5362    3.31    2.35   144   766  7836    31   76.05   75.79
+c rst  luby ibes  vmt    35  8878    3446  1939  5362    3.31    2.35   147   800  7900    31   75.40   75.14
+c rst  luby ibes  vmt    36  8979    3446  1939  5362    3.31    2.35   147   805  7996    31   74.91   74.66
+c rst  luby ibes  vmt    37  9180    3446  1939  5362    3.31    2.35   147   808  8194    31   77.75   77.50
+c rst  luby ibes  vmt    38  9281    3446  1939  5362    3.31    2.35   148   824  8278    31   77.17   76.92
+c rst  luby ibes  vmt    39  9382    3446  1939  5362    3.31    2.35   148   827  8376    31   76.82   76.57
+c rst  luby ibes  vmt    40  9584    3446  1939  5362    3.31    2.35   148   845  8560    31   79.87   79.62
+c rst  luby ibes  vmt    41  9985    3446  1939  5362    3.31    2.35   148   881  8925    31   77.76   77.52
+c rst  luby ibes  vmt    42 10087    3446  1939  5362    3.31    2.35   507   532  9017    31   77.69   77.46
+c rst  luby ibes  vmt    43 10188    3446  1939  5362    3.31    2.35   508   547  9102    31   77.63   77.40
+c rst  luby ibes  vmt    44 10390    3446  1939  5362    3.31    2.35   510   571  9278    31   76.73   76.51
+c rst  luby ibes  vmt    45 10492    3446  1939  5362    3.31    2.35   510   571  9380    31   78.46   78.23
+c rst  luby ibes  vmt    46 10595    3446  1939  5362    3.31    2.35   511   579  9474    31   78.01   77.79
+c rst  luby ibes  vmt    47 10798    3446  1939  5362    3.31    2.35   511   580  9676    31   80.65   80.42
+c rst  luby  svd  vmt    48 11199    3446  1939  5362    3.31    2.35   518   608 10042    31   81.27   81.05
+c rst  luby  svd  vmt    49 12000    3446  1939  5362    3.31    2.35   526   672 10771    31   83.92   83.71
+c [branch] adjusting to: vsids (from: vmtf) var_decay:0.95 descr: VSIDS
+c rst  geom  svd   vs    50 12112    3446  1939  5362    3.31    2.35   527   681 10873    31   84.10   83.89
+c [distill-bin] useful: 12/5362/5362 lits-rem: 0 cl-rem: 12 0-depth-assigns: 0 T: 0.01 T-out: N
+c rst  geom  svd   vs    51 12234    3446  1939  5350    3.31    2.35   527   706 10970    31   83.55   83.34
+c rst  geom  svd   vs    52 12368    3446  1939  5350    3.31    2.35   527   706 11104    31   85.13   84.92
+c rst  geom  svd   vs    53 12515    3446  1939  5350    3.31    2.35   528   724 11232    31   84.45   84.25
+c rst  geom  svd   vs    54 12677    3446  1939  5350    3.31    2.35   530   735 11381    31   85.02   84.82
+c rst  geom  svd   vs    55 12854    3446  1939  5350    3.31    2.35   530   743 11550    31   86.26   86.05
+c rst  geom  svd   vs    56 13049    3446  1939  5350    3.31    2.35   530   752 11736    31   85.51   85.32
+c rst  geom  svd   vs    57 13262    3446  1939  5350    3.31    2.35   532   779 11919    32   84.86   84.66
+c rst  geom  svd   vs    58 13496    3446  1939  5350    3.31    2.35   534   805 12125    32   84.69   84.50
+c rst  geom  svd   vs    59 13753    3446  1939  5350    3.31    2.35   537   845 12339    32   84.11   83.92
+c rst  geom  svd   vs    60 14035    3446  1939  5350    3.31    2.35   537   854 12612    32   86.45   86.26
+c rst  geom  svd   vs    61 14346    3446  1939  5350    3.31    2.35   537   886 12891    32   87.83   87.64
+c rst  geom  svd   vs    62 14688    3446  1939  5350    3.31    2.35   541   921 13194    32   87.02   86.84
+c rst  geom  svd   vs    63 15061    3446  1939  5350    3.31    2.35   603  1589 11831    32   89.03   88.83
+c rst  geom  svd   vs    64 15473    3446  1939  5350    3.31    2.35   607  1624 12204    32   87.80   87.61
+c rst  geom  svd   vs    65 15924    3446  1939  5350    3.31    2.35   608  1634 12644    32   86.43   86.25
+c rst  geom  svd   vs    66 16418    3446  1939  5350    3.31    2.35   608  1643 13129    32   89.79   89.61
+c rst  geom best   vs    67 16962    3446  1939  5350    3.31    2.35   613  1649 13662    32   89.23   89.06
+c rst  geom best   vs    68 17560    3446  1939  5350    3.31    2.35   627  1728 14166    33   88.45   88.28
+c rst  geom best   vs    69 18217    3446  1939  5350    3.31    2.35   628  1739 14811    33   91.79   91.62
+c [branch] adjusting to: vmtf (from: vsids) var_decay:0.95 descr: VMTF
+c rst  luby best  vmt    70 18318    3446  1939  5350    3.31    2.35   628  1746 14905    33   91.63   91.46
+c rst  luby best  vmt    71 18419    3446  1939  5350    3.31    2.35   628  1749 15003    33   92.26   92.09
+c rst  luby best  vmt    72 18620    3446  1939  5350    3.31    2.35   628  1759 15194    33   93.10   92.93
+c rst  luby best  vmt    73 18721    3446  1939  5350    3.31    2.35   629  1768 15285    33   93.24   93.07
+c rst  luby best  vmt    74 18823    3446  1939  5350    3.31    2.35   629  1771 15384    33   93.49   93.32
+c rst  luby best  vmt    75 19024    3446  1939  5350    3.31    2.35   629  1781 15575    33   94.05   93.88
+c rst  luby best  vmt    76 19425    3446  1939  5350    3.31    2.35   630  1792 15964    33   95.74   95.57
+c rst  luby best  vmt    77 19528    3446  1939  5350    3.31    2.35   633  1800 16056    33   95.58   95.41
+c rst  luby best  vmt    78 19629    3446  1939  5350    3.31    2.35   633  1812 16145    33   95.46   95.29
+c rst  luby best  vmt    79 19830    3446  1939  5350    3.31    2.35   633  1817 16341    33   96.51   96.34
+c rst  luby best  vmt    80 19932    3446  1939  5350    3.31    2.35   633  1818 16442    33   96.22   96.05
+c rst  luby best  vmt    81   20K    3446  1939  5350    3.31    2.35  1072  1405 16518    33   95.97   95.81
+c [full-probe]  bin_only: 1 set: 0 repl: 0 T: 0.00 T-out: N T-r: 99.74%
+c rst  luby best  vmt    82   20K    3446  1939  5590    3.31    2.34  1074  1431 16690    34   95.71   95.55
+c rst  luby best  vmt    83   20K    3446  1939  5590    3.31    2.34  1074  1447 17076    34   97.00   96.84
+c [distill-long-red0] cls tried: 743/743 T: 0.00 T-out: N T-r: 99.99%
+c [distill-long-red1] cls tried: 1234/1234 T: 0.01 T-out: N T-r: 89.51%
+c rst  luby best  vmt    84   21K    3446  1939  5590    3.31    2.34  1073  1477 17847    36   96.26   96.10
+c rst  luby best  vmt    85   21K    3446  1939  5590    3.31    2.34  1073  1477 17948    36   96.57   96.41
+c rst  luby best  vmt    86   21K    3446  1939  5590    3.31    2.34  1073  1486 18041    36   96.50   96.34
+c rst  luby  stb  vmt    87   21K    3446  1939  5590    3.31    2.34  1073  1494 18235    36   96.38   96.21
+c rst  luby  stb  vmt    88   21K    3446  1939  5590    3.31    2.34  1086  1518 18301    37   96.00   95.84
+c rst  luby  stb  vmt    89   22K    3446  1939  5590    3.31    2.34  1086  1521 18400    37   96.23   96.06
+c rst  luby  stb  vmt    90   22K    3446  1939  5590    3.31    2.34  1086  1521 18601    37   95.74   95.58
+c rst  luby  stb  vmt    91   22K    3446  1939  5590    3.31    2.34  1097  1562 18949    38   95.17   95.00
+c rst  luby  stb  vmt    92   22K    3446  1939  5590    3.31    2.34  1098  1569 19042    38   95.27   95.11
+c rst  luby  stb  vmt    93   22K    3446  1939  5590    3.31    2.34  1100  1575 19137    38   95.20   95.04
+c rst  luby  stb  vmt    94   23K    3446  1939  5590    3.31    2.34  1101  1577 19336    38   94.83   94.67
+c rst  luby  stb  vmt    95   23K    3446  1939  5590    3.31    2.34  1104  1593 19418    38   94.69   94.53
+c rst  luby  stb  vmt    96   23K    3446  1939  5590    3.31    2.34  1105  1596 19516    38   94.87   94.71
+c rst  luby  stb  vmt    97   23K    3446  1939  5590    3.31    2.34  1107  1599 19712    38   94.82   94.67
+c rst  luby  stb  vmt    98   23K    3446  1939  5590    3.31    2.34  1115  1662   20K    41   93.94   93.77
+c rst  luby  stb  vmt    99   24K    3446  1939  5590    3.31    2.34  1116  1678   20K    41   92.71   92.55
+c rst  luby  stb  vmt   100   26K    3446  1939  5590    3.31    2.34  1157  1912   22K    42   90.36   90.21
+c [branch] adjusting to: vsids (from: vmtf) var_decay:0.95 descr: VSIDS
+c [distill] watch-based irred--  cl tried     3878 cl-sh     0 cl-rem    0 lit-rem      0 T: 0.00 T-out: N
+c [distill] watch-based   red--  cl tried     2310 cl-sh    19 cl-rem    4 lit-rem     20 T: 0.00 T-out: N
+c rst  geom  stb   vs   101   26K    3446  1939  5590    3.31    2.34  1153  1920   22K    42   90.50   90.36
+c rst  geom  stb   vs   102   26K    3446  1939  5590    3.31    2.34  1153  1927   22K    42   90.54   90.39
+c rst  geom  stb   vs   103   26K    3446  1939  5590    3.31    2.34  1153  1931   22K    42   90.66   90.51
+c rst  geom  stb   vs   104   26K    3446  1939  5590    3.31    2.34  1153  1935   22K    42   90.90   90.75
+c rst  geom  stb   vs   105   26K    3446  1939  5590    3.31    2.34  1154  1940   22K    42   90.94   90.79
+c rst  geom ibes   vs   106   27K    3446  1939  5590    3.31    2.34  1154  1947   22K    42   91.09   90.94
+c rst  geom ibes   vs   107   27K    3446  1939  5590    3.31    2.34  1155  1964   23K    42   90.69   90.55
+c rst  geom ibes   vs   108   27K    3446  1939  5590    3.31    2.34  1155  1970   23K    42   91.54   91.40
+c rst  geom ibes   vs   109   27K    3446  1939  5590    3.31    2.34  1155  1978   23K    42   91.12   90.98
+c rst  geom ibes   vs   110   28K    3446  1939  5590    3.31    2.34  1155  1990   23K    42   90.75   90.62
+c rst  geom ibes   vs   111   28K    3446  1939  5590    3.31    2.34  1155  1996   24K    42   92.77   92.63
+c rst  geom ibes   vs   112   28K    3446  1939  5590    3.31    2.34  1157  2024   24K    43   92.10   91.96
+c rst  geom ibes   vs   113   28K    3446  1939  5590    3.31    2.34  1157  2024   24K    43   93.78   93.64
+c rst  geom ibes   vs   114   29K    3446  1939  5590    3.31    2.34  1162  2062   25K    43   92.95   92.82
+c rst  geom ibes   vs   115   29K    3446  1939  5590    3.31    2.34  1162  2073   25K    43   94.46   94.33
+c rst  geom ibes   vs   116   30K    3446  1939  5590    3.31    2.34  1621  2321 17513    43   94.75   94.57
+c rst  geom ibes   vs   117   30K    3446  1939  5590    3.31    2.34  1621  2321 18007    43   98.00   97.81
+c rst  geom ibes   vs   118   31K    3446  1939  5590    3.31    2.34  1622  2341 18529    43   97.35   97.17
+c rst  geom ibes   vs   119   31K    3446  1939  5590    3.31    2.34  1623  2344 19122    43  101.23  101.05
+c rst  geom ibes   vs   120   32K    3446  1939  5590    3.31    2.34  1626  2376 19744    43  100.66  100.48
+c [distill-bin] useful: 259/5590/5590 lits-rem: 0 cl-rem: 259 0-depth-assigns: 0 T: 0.01 T-out: N
+c rst  geom  svd   vs   121   33K    3446  1939  5331    3.31    2.35  1629  2420   20K    43  100.78  100.61
+c rst  geom  svd   vs   122   34K    3446  1939  5331    3.31    2.35  1632  2484   21K    43   98.82   98.65
+c [branch] adjusting to: vmtf (from: vsids) var_decay:0.95 descr: VMTF
+c rst  luby  svd  vmt   123   34K    3446  1939  5331    3.31    2.35  1633  2495   21K    43   98.70   98.53
+c rst  luby  svd  vmt   124   34K    3446  1939  5331    3.31    2.35  1633  2502   21K    43   98.88   98.72
+c rst  luby  svd  vmt   125   34K    3446  1939  5331    3.31    2.35  1634  2517   21K    43   98.70   98.53
+c rst  luby  svd  vmt   126   34K    3446  1939  5331    3.31    2.35  1634  2523   21K    43   98.75   98.59
+c rst  luby  svd  vmt   127   34K    3446  1939  5331    3.31    2.35  1634  2530   21K    43   99.18   99.02
+c rst  luby  svd  vmt   128   34K    3446  1939  5331    3.31    2.35  1634  2547   21K    43   98.72   98.56
+c rst  luby  svd  vmt   129   35K    3446  1939  5331    3.31    2.35  1635  2567   22K    43   98.02   97.86
+c rst  luby  svd  vmt   130   35K    3446  1939  5331    3.31    2.35  1635  2569   22K    43   98.50   98.35
+c rst  luby  svd  vmt   131   35K    3446  1939  5331    3.31    2.35  1636  2577   22K    43   98.26   98.10
+c rst  luby  svd  vmt   132   35K    3446  1939  5331    3.31    2.35  1637  2591   22K    43   97.78   97.62
+c rst  luby  svd  vmt   133   35K    3446  1939  5331    3.31    2.35  1637  2596   22K    43   97.56   97.40
+c [distill-long-red0] cls tried: 444/444 T: 0.00 T-out: N T-r: 99.99%
+c [distill-long-red1] cls tried: 1290/1290 T: 0.01 T-out: N T-r: 84.37%
+c rst  luby  svd  vmt   134   35K    3446  1939  5331    3.31    2.35  1636  2597   22K    44   97.97   97.82
+c rst  luby  svd  vmt   135   36K    3446  1939  5331    3.31    2.35  1637  2608   23K    44   97.52   97.37
+c rst  luby  svd  vmt   136   36K    3446  1939  5331    3.31    2.35  1637  2612   23K    44   99.70   99.54
+c rst  luby  svd  vmt   137   37K    3446  1939  5331    3.31    2.35  1658  2708   24K    44   97.76   97.61
+c rst  luby  svd  vmt   138   37K    3446  1939  5331    3.31    2.35  1658  2710   24K    44   98.27   98.12
+c rst  luby  svd  vmt   139   37K    3446  1939  5331    3.31    2.35  1659  2731   24K    44   98.01   97.86
+c rst  luby  svd  vmt   140   37K    3446  1939  5331    3.31    2.35  1661  2737   24K    44   98.74   98.59
+c rst  luby  svd  vmt   141   37K    3446  1939  5331    3.31    2.35  1661  2741   24K    44   98.50   98.36
+c rst  luby  svd  vmt   142   37K    3446  1939  5331    3.31    2.35  1661  2743   24K    44   98.29   98.14
+c rst  luby  svd  vmt   143   38K    3446  1939  5331    3.31    2.35  1661  2791   24K    44   97.84   97.70
+c rst  geom best  vmt   144   38K    3446  1939  5331    3.31    2.35  1663  2796   24K    44   98.20   98.05

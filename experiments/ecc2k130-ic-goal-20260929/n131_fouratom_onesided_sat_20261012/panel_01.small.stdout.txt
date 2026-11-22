@@ -1,0 +1,178 @@
+c CMS SHA1: GIT-notfound
+c CryptoMiniSat version 5.14.7
+c CMS compilation env CMAKE_CXX_COMPILER = clang++ | CMAKE_CXX_FLAGS =  -fno-stack-protector -msse4.2 -Wno-bitfield-constant-conversion -Wlogical-op -Wrestrict -Wnull-dereference -Wdouble-promotion -Wshadow -Wformat=2 -Wextra-semi -pedantic | COMPILE_DEFINES =  -DNDEBUG -D_FORTIFY_SOURCE=0 -DUSE_ZLIB | BUILD_SHARED_LIBS = ON | ONLY_SIMPLE =  | STATS = OFF | SQLITE3_FOUND =  | ZLIB_FOUND = TRUE | VALGRIND_FOUND =  | ENABLE_TESTING = OFF | SLOW_DEBUG = OFF | ENABLE_ASSERTIONS = OFF | PYTHON_EXECUTABLE =  | PYTHON_LIBRARY =  | PYTHON_INCLUDE_DIRS =  | MY_TARGETS =  | LARGEMEM = OFF | LIMITMEM = OFF | BREAKID_LIBRARIES =  | BREAKID-VER = . | c c Using VMTF, picosat, CaDiCaL, and CadiBack code by Armin Biere
+c CMS is MIT licensed
+c Using code from 'When Boolean Satisfiability Meets Gauss-E. in a Simplex Way'
+c       by C.-S. Han and J.-H. Roland Jiang in CAV 2012. Fixes by M. Soos
+c Using CCAnr from 'CCAnr: A Conf. Checking Based Local Search Solver [...]'
+c       by Shaowei Cai, Chuan Luo, and Kaile Su, SAT 2015
+c Using Oracle code from 'Integrating Tree Decompositions [...]'
+c       by Tuukka Korhonen and Matti Jarvisalo, CP 2021
+c Executed with command line: /opt/homebrew/bin/cryptominisat5 --threads=1 --xor=0 --printsol=1 --random=20261012 --maxconfl=20000000 /Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_fouratom_onesided_sat_20261012/panel_01.small.xcnf
+c Reading file '/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_fouratom_onesided_sat_20261012/panel_01.small.xcnf'
+c o -- header says num vars:            469
+c o -- header says num clauses:        1496
+c -- clauses added: 1365
+c -- xor clauses added: 131
+c -- vars added 469
+c Parsing time: 0.00 s
+c [gauss] clauses deleted that are represented by XORs: 0 xorclauses: 131 GJ matrices: 0 T: 0.00
+c [find&init matx] performing matrix init
+c [matrix] Good   matrix  0c [matrix] disabling SLS since matrix is found
+    131 x  469  density:0.5036  xorlen avg: 236.17
+c [matrix] Using 1 matrices recovered from 0 xors T: 0.00 T-out: N
+c [branch] adjusting to: vsids (from: vsids) var_decay:0.95 descr: VSIDS
+c rst  geom  stb   vs     1   151     469   455   910    3.00    2.33     0     0   151     0  156.64  156.64
+c rst  geom  stb   vs     2   275     469   455   910    3.00    2.33     0     0   272     3  104.63  103.51
+c  res  pol bran  nres  conf freevar  IrrL  IrrB l/longC  l/allC RedL0 RedL1 RedL2  RedB l/longC  l/allC
+c rst  geom  stb   vs     3   412     469   455   910    3.00    2.33     2    20   396     4   73.32   72.65
+c rst  geom  stb   vs     4   559     469   455   910    3.00    2.33     2    93   477     7   58.61   57.92
+c rst  geom  stb   vs     5   720     469   455   910    3.00    2.33    14   224   510     8   48.25   47.76
+c rst  geom  stb   vs     6   897     469   455   910    3.00    2.33    16   335   594     8   41.94   41.61
+c rst  geom  stb   vs     7  1092     462   455   910    3.00    2.33    46   452   646    17   37.17   36.65
+c rst  geom  stb   vs     8  1267     106   233   840    3.00    2.22    17    25     3    19   14.38   10.70
+c ------- FINAL TOTAL SEARCH STATS ---------
+c UIP search time          : 0.09        (87.95     % time)
+c All times are for this thread only except if explicitly specified
+c restarts                 : 8           (158.38    confls per restart)
+c blocked restarts         : 0           (0.00      per normal restart)
+c time                     : 0.09        
+c decisions                : 1514        (0.00      % random)
+c propagations             : 81K         (871K      props/s)
+c decisions/conflicts      : 1.19        
+c conflicts                : 1267        
+c LEARNT stats
+c units learnt             : 8           (0.63      % of conflicts)
+c bins learnt              : 32          (2.53      % of conflicts)
+c long learnt              : 1313        (103.63    % of conflicts)
+c red which0               : 80          (6.31      % of confl)
+c SEAMLESS HYPERBIN&TRANS-RED stats
+c advProp called           : 0           
+c hyper-bin add bin        : 0           (0.00      bin/call)
+c trans-red rem irred bin  : 0           (0.00      bin/call)
+c trans-red rem red bin    : 0           (0.00      bin/call)
+c CONFL LITS stats
+c orig                     : 251751      (198.70    lit/confl)
+c recurs-min effective     : 1221        (96.37     % attempt successful)
+c recurs-min lits          : 207243      (82.32     % less overall)
+c permDiff call%           : 40.49       (0.00      % attempt successful)
+c permDiff lits-rem        : 0           (0.00      less lits/cl on attempts)
+c further-min call%        : 5.52        (44.29     % attempt successful)
+c bintri-min lits          : 92          (0.04      % less overall)
+c final avg                : 35.13       
+c all-threads sum CPU time : 0.09         s
+c PROP stats
+c Mbogo-props              : 0.00        (0.00      / sec)
+c MHyper-props             : 0.00        (0.00      / sec)
+c Mprops                   : 0.08        (0.87      / sec)
+c -------- OccSimplifier STATS ----------
+c time                     : 0.00        (0.00      % var-elim)
+c called                   : 0           (0.00      s per call)
+c 0-depth assigns          : 0           (0.00      % vars)
+c -------- OccSimplifier STATS END ----------
+c -------- SubsumeStrengthen STATS ----------
+c cl-subs                  : 0            Clauses
+c cl-str rem lit           : 0            Lits
+c cl-sub T                 : 0.00         s
+c cl-str T                 : 0.00         s
+c -------- SubsumeStrengthen STATS END ----------
+c ----- SCC STATS --------
+c time                     : 0.00        (0.00      per call)
+c called                   : 0           (0.00      new found per call)
+c found                    : 0           (0.00      % of all found)
+c bogoprops                : 0           % of all found
+c ----- SCC STATS END --------
+c --------- VAR REPLACE STATS ----------
+c time                     : 0.00        (0.00      per call)
+c trees' crown             : 0           (0.00      % of vars)
+c 0-depth assigns          : 0           (0.00      % vars)
+c lits replaced            : 0           
+c bin cls removed          : 0           
+c long cls removed         : 0           
+c long lits removed        : 0           
+c bogoprops                : 0           
+c --------- VAR REPLACE STATS END ----------
+c vrep replace time        : 0.00        (0.00      % time)
+c vrep tree roots          : 0           
+c vrep trees' crown        : 0           (0.00      leafs/tree)
+c -------- DISTILL-BIN STATS --------
+c time                     : 0.00        (0.00      per call)
+c timed out                : 0           (0.00      % of calls)
+c distill/checked/potential: 0          /0/0
+c lits-rem                 : 0           
+c 0-depth-assigns          : 0           (0.00      % of vars)
+c -------- DISTILL STATS END --------
+c -------- STRENGTHEN STATS --------
+c --> watch-based on irred cls
+c time                     : 0.00        (0.00      s/call)
+c shrinked/tried/total     : 0          /0/0
+c subsumed/tried/total     : 0          /0/0
+c lits-rem                 : 0           (0.00      % of lits tried)
+c called                   : 0           (0.00      % ran out of time)
+c --> watch-based on red cls
+c time                     : 0.00        (0.00      s/call)
+c shrinked/tried/total     : 0          /0/0
+c subsumed/tried/total     : 0          /0/0
+c lits-rem                 : 0           (0.00      % of lits tried)
+c called                   : 0           (0.00      % ran out of time)
+c -------- STRENGTHEN STATS END --------
+c -------- IMPLICIT SUB  STATS --------
+c time                     : 0.00        (0.00      per call)
+c timed out                : 0           (0.00      % of calls)
+c rem bins                 : 0           
+c -------- IMPLICIT SUB STATS END --------
+c Mem used                 : 0           MB
+c Mem for longclauses      : 2           MB (0.00      %)
+c Mem for watch alloc      : 0           MB (0.00      %)
+c Mem for watch array      : 0           MB (0.00      %)
+c Mem for assings&vardata  : 0           MB (0.00      %)
+c Mem for search&solve     : 0           MB (0.00      %)
+c Mem for renumberer       : 0           MB (0.00      %)
+c Mem for occsimplifier    : 0           MB (0.00      %)
+c Mem for varReplacer&SCC  : 0           MB (0.00      %)
+c Mem for impl subsume     : 0           MB (0.00      %)
+c Mem for 3 distills       : 0           MB (0.00      %)
+c Accounted for mem (rss)  : 0.00        %
+c Accounted for mem (vm)   : 0.00        %
+c restarts                 : 8           (158.38    confls per restart)
+c blocked restarts         : 0           (0.00      per normal restart)
+c time                     : 0.09        
+c decisions                : 1514        (0.00      % random)
+c propagations             : 81K         (871K      props/s)
+c decisions/conflicts      : 1.19        
+c conflicts                : 1267        
+c conf lits non-minim      : 251751      (198.70    lit/confl)
+c conf lits final          : 35.13       
+c red which0               : 80          (6.31      % of confl)
+c props/decision           : 0.00        
+c props/conflict           : 0.00        
+c 0-depth assigns          : 363         (77.40     % vars)
+c 0-depth assigns by CNF   : 0           (0.00      % vars)
+c reduceDB time            : 0.00        (0.00      % time)
+c OccSimplifier time       : 0.00        (0.00      % time)
+c [occur] 0.00 is overhead
+c [occur] link-in T: 0.00 cleanup T: 0.00
+c [occ-substr] long subBySub: 0 subByStr: 0 lits-rem-str: 0 T: 0.00
+c SCC time                 : 0.00        (0.00      % time)
+c [scc] new: 0 BP 0M T: 0.00
+c vrep replace time        : 0.00        (0.00      % time)
+c vrep tree roots          : 0           
+c vrep trees' crown        : 0           (0.00      leafs/tree)
+c distill long time        : 0.00        (0.00      % time)
+c distill bin time         : 0.00        (0.00      % time)
+c strength cache-irred time: 0.00        (0.00      % time)
+c strength cache-red time  : 0.00        (0.00      % time)
+c avg cls in red 0         : 12.39       
+c avg cls in red 1         : 172.49      
+c avg cls in red 2         : 418.92      
+c Conflicts in UIP         : 1267        (11967.06  confl/time_this_thread)
+c Mem used                 : 0.00        MB
+c Total time (this thread) : 0.11        
+s UNSATISFIABLE
+c [g 0] truth-find prop checks  : 48K
+c [g 0] -> of which prop        :  2.80 %
+c [g 0] -> of which confl       :  0.60 %
+c [g 0] elim called             : 31K
+c [g 0] ---> which lead to prop : 55.58 %
+c [g 0] ---> which lead to confl:  4.22 %
+c [g 0] size: 131   x 469  

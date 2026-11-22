@@ -42,9 +42,9 @@ typedef struct ca_gpu_rho_params {
     uint32_t steps_per_launch;  /* 0 => auto */
     uint32_t r;                 /* adding-walk multipliers, 0 => auto */
     /* Distinguished-point bits; -1 chooses automatically (never above 48).
-     * An explicit value is honoured but clamped to 63, and a value anywhere
-     * near that makes distinguished points so rare that max_ops should be
-     * set, or the search will not terminate in practice. */
+     * An explicit value is clamped to floor(log2 n)/2 - 2 (2^dp_bits <=
+     * sqrt(n)/4): rarer distinguished points miss a walk's post-collision
+     * cycle, and the search never ends. */
     int32_t dp_bits;
     int32_t negation_map; /* 1 => use on curves */
     uint64_t seed;        /* 0 => random */

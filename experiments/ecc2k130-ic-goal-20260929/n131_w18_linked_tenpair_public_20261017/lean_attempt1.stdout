@@ -1,0 +1,45 @@
+LinkedSign.lean:6:21: error: invalid binder annotation, type is not a class instance
+  ?m.2
+
+Note: Use the command `set_option checkBinderAnnotations false` to disable the check
+LinkedSign.lean:9:4: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  HPow R Nat ?m.10
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+LinkedSign.lean:11:6: error(lean.unknownIdentifier): Unknown identifier `pow_add`
+LinkedSign.lean:10:49: error: unsolved goals
+R : Type u_1
+lambda epsilon : R
+a k : Nat
+⊢ sorry
+LinkedSign.lean:15:4: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  HPow R Nat ?m.10
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+LinkedSign.lean:17:41: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  OfNat R 1
+numerals are polymorphic in Lean, but the numeral `1` cannot be used in a context where the expected type is
+  R
+due to the absence of the instance above
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+LinkedSign.lean:20:4: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  HPow R Nat ?m.10
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+LinkedSign.lean:22:9: error(lean.unknownIdentifier): Unknown identifier `sub_eq_add_neg`
+LinkedSign.lean:22:25: error(lean.unknownIdentifier): Unknown identifier `neg_mul`
+LinkedSign.lean:23:31: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  Neg R
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+LinkedSign.lean:23:32: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  OfNat R 1
+numerals are polymorphic in Lean, but the numeral `1` cannot be used in a context where the expected type is
+  R
+due to the absence of the instance above
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+'LinkedSign.coefficient_factor' does not depend on any axioms
+'LinkedSign.same_sign' does not depend on any axioms
+'LinkedSign.opposite_sign' does not depend on any axioms

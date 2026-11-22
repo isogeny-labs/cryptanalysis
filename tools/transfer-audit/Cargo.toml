@@ -4,6 +4,12 @@ version = "0.1.0"
 edition = "2021"
 license = "MIT"
 description = "Scoped binary ECDLP transfer classification and obstruction certificates"
+[features]
+default = []
+# Keep imported suite source cfgs known to rustc without enabling either
+# optional arithmetic specialization in this standalone audit crate.
+f2m-karatsuba3 = []
+f2m-fixed-reduction = []
 [workspace]
 [dependencies]
 anyhow = "1"

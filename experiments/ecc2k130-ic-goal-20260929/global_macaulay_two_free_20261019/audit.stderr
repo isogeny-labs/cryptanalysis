@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/private/tmp/ecc2k130-global-macaulay-20261019/audit.py", line 92, in <module>
+    while row:
+          ^^^
+  File "/private/tmp/ecc2k130-global-macaulay-20261019/audit.py", line 11, in <lambda>
+    signal.signal(signal.SIGALRM,lambda *_:(_ for _ in ()).throw(TimeoutError('audit wall cap')))
+                                           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/ecc2k130-global-macaulay-20261019/audit.py", line 11, in <genexpr>
+    signal.signal(signal.SIGALRM,lambda *_:(_ for _ in ()).throw(TimeoutError('audit wall cap')))
+TimeoutError: audit wall cap

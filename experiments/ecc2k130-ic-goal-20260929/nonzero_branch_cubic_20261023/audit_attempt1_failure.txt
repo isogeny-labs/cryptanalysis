@@ -1,0 +1,6 @@
+Command: ./sage -python experiments/ecc2k130-ic-goal-20260929/nonzero_branch_cubic_20261023/audit_sage.py
+Exit: 1
+Failure: KeyError: 225 at the valid-source product-table lookup in the first audit implementation.
+Cause: first-code branch 225 includes source-invalid words, while the archived P table lists only valid codes.
+Correction: compare computed products with the P table only when the code is present; still check nonzero product for every branch code.
+Follow-up: checked-Sage audit completed with PASS_SAGE_NONZERO_BRANCH_AUDIT.
